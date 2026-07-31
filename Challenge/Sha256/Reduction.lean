@@ -10,7 +10,7 @@ from two facts about the *Yul source* alone —
 
 * `ComputesDigest prog` — the Yul program, run from a fresh state, halts by
   returning the digest of its calldata (the functional obligation; the real
-  work, decomposed in `Challenge/README.md`);
+  work, decomposed in `README.md`);
 * `AbstractsFrame code` — the canonical EVM frame is matched by some
   yul-semantics state with the same calldata and empty memory (pure
   plumbing: build the source-level state from the target one).
