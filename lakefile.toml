@@ -1,0 +1,36 @@
+name = "eip8200-challenges"
+version = "0.1.0"
+defaultTargets = ["Challenge"]
+
+# The verified Yul→EVM compiler. Submissions written in Yul are compiled by
+# *this* compiler, so a Yul-level proof lands on the bytecode with no
+# bytecode-level reasoning (see Challenge/Sha256/Reduction.lean). It also
+# brings in the two semantics it is proved against.
+[[require]]
+name = "yul-evm-compiler"
+git = "https://github.com/powdr-labs/yul-compiler"
+rev = "b0b6d6985709dbd007a877befd92ee6c238ff203"
+
+# The EVM semantics. This is where the *specification* lives: a challenge is
+# equality with `EvmSemantics.Crypto.Sha256.hash`, the function
+# `Precompile.runSha256` computes for the 0x02 precompile. Required explicitly
+# (rather than relied on transitively) because the pin is part of the trust
+# boundary a submission is judged against — it must stay identical to the
+# revision `yul-evm-compiler` pins, or Lake resolves the conflict silently in
+# this root package's favour and the two would drift apart.
+[[require]]
+name = "evm_semantics"
+git = "https://github.com/powdr-labs/evm-semantics"
+rev = "601183cb2d959748243d59093c144652a6f10716"
+
+[[lean_lib]]
+name = "Challenge"
+
+# The Tier-1 scorer: runs a candidate implementation (Yul source or raw
+# bytecode) in the pinned executable EVM semantics over the FIPS and
+# padding-boundary vectors, and reports gas. Built natively rather than run
+# with `lake env lean`: compiling real Yul recurses deeper than the
+# interpreter's stack allows, and the scored runs are millions of steps.
+[[lean_exe]]
+name = "sha256challenge"
+root = "Main"

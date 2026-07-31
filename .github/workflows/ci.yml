@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Build, verify, score
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # The pinned dependency builds (yul-compiler and the two semantics) are
+      # the expensive part; Mathlib itself comes from its own olean cache.
+      - name: Cache package builds
+        uses: actions/cache@v4
+        with:
+          path: |
+            .lake/packages/*/.lake/build
+          key: packages-${{ hashFiles('lake-manifest.json', 'lean-toolchain') }}
+          restore-keys: packages-
+
+      - name: Build (fetch Mathlib cache + lake build)
+        uses: leanprover/lean-action@v1
+        with:
+          use-mathlib-cache: "true"
+          build: "true"
+          test: "false"
+          lint: "false"
+          use-github-cache: "false"
+
+      # A proof is only a proof if its axiom footprint is the standard one.
+      # Checks.lean pins it with `#guard_msgs`, so a `sorry` (`sorryAx`) or a
+      # `native_decide` (`Lean.ofReduceBool`) fails the job. The textual scan
+      # catches an unfinished proof in a file Checks.lean does not reach.
+      - name: Verify soundness (axiom footprint, no unfinished proofs)
+        run: |
+          if grep -rn --include='*.lean' -w 'sorry' Challenge Challenge.lean Main.lean; then
+            echo "::error::found an unfinished proof"
+            exit 1
+          fi
+          lake env lean Checks.lean
+
+      # Tier 1: the reference implementation must still compile through the
+      # verified compiler and return exactly EvmSemantics.Crypto.Sha256.hash on
+      # every FIPS and padding-boundary vector, in a clean frame and a dirty
+      # one. This also pins the reference's gas in the job log.
+      - name: Tier 1 — score the reference implementation
+        run: |
+          lake build sha256challenge
+          lake exe sha256challenge
+
+      # The scorer must be able to reject: a candidate that returns 32 zero
+      # bytes has to fail every vector. A green Tier-1 gate that cannot fail
+      # is worse than no gate.
+      - name: Tier 1 — negative control
+        run: |
+          printf '60206000f3' > /tmp/zeros.hex
+          if lake exe sha256challenge --hex=/tmp/zeros.hex; then
+            echo "::error::the scorer accepted a candidate returning 32 zero bytes"
+            exit 1
+          fi
