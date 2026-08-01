@@ -204,6 +204,46 @@ theorem shiftRight_ofUInt32 (x : UInt32) (n : Nat) (hn : n < 32) :
     Nat.mod_eq_of_lt (Nat.lt_trans hn (by norm_num)),
     Nat.mod_eq_of_lt hn]
 
+theorem shiftRight_ofNat {value shift : Nat}
+    (hvalue : value < 2 ^ 256) (hshift : shift < 256) :
+    EvmSemantics.UInt256.shiftRight
+        (EvmSemantics.UInt256.ofNat value)
+        (EvmSemantics.UInt256.ofNat shift) =
+      EvmSemantics.UInt256.ofNat (value >>> shift) := by
+  have hshift256 : shift < 2 ^ 256 :=
+    Nat.lt_trans hshift (by norm_num)
+  have hshiftWord : (EvmSemantics.UInt256.ofNat shift).toNat = shift := by
+    rw [word_toNat_ofNat, Nat.mod_eq_of_lt hshift256]
+  apply word_ext
+  unfold EvmSemantics.UInt256.shiftRight
+  rw [if_neg (by omega)]
+  change ((EvmSemantics.UInt256.ofNat value).val >>>
+    (EvmSemantics.UInt256.ofNat shift).val).val = _
+  rw [Fin.shiftRight_val]
+  rw [show (EvmSemantics.UInt256.ofNat value).val.val = value by
+        exact (word_toNat_ofNat value).trans (Nat.mod_eq_of_lt hvalue),
+      show (EvmSemantics.UInt256.ofNat shift).val.val = shift by
+        exact hshiftWord]
+  rw [word_toNat_ofNat]
+  rw [Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) hvalue)]
+
+theorem shiftLeft_ofNat {value shift : Nat}
+    (hvalue : value < 2 ^ 256) (hshift : shift < 256)
+    (hresult : value * 2 ^ shift < 2 ^ 256) :
+    EvmSemantics.UInt256.shiftLeft
+        (EvmSemantics.UInt256.ofNat value)
+        (EvmSemantics.UInt256.ofNat shift) =
+      EvmSemantics.UInt256.ofNat (value * 2 ^ shift) := by
+  have hshift256 : shift < 2 ^ 256 :=
+    Nat.lt_trans hshift (by norm_num)
+  have hshiftWord : (EvmSemantics.UInt256.ofNat shift).toNat = shift := by
+    rw [word_toNat_ofNat, Nat.mod_eq_of_lt hshift256]
+  unfold EvmSemantics.UInt256.shiftLeft
+  rw [if_neg (by omega), hshiftWord, word_toNat_ofNat,
+    Nat.mod_eq_of_lt hvalue, Nat.shiftLeft_eq,
+    show EvmSemantics.UInt256.size = 2 ^ 256 by rfl,
+    Nat.mod_eq_of_lt hresult]
+
 theorem mask32_shiftLeft_ofUInt32 (x : UInt32) (n : Nat) (hn : n < 32) :
     mask32 (EvmSemantics.UInt256.shiftLeft
         (ofUInt32 x) (EvmSemantics.UInt256.ofNat n)) =

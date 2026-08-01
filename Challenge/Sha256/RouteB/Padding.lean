@@ -21,6 +21,12 @@ def messageOffset : Nat := 0xb20
 reference bytecode. -/
 def paddedLength (n : Nat) : Nat := ((n + 72) / 64) * 64
 
+def paddedWord (input : ByteArray) : UInt256 :=
+  UInt256.shiftLeft
+    (UInt256.shiftRight
+      (UInt256.ofNat input.size + UInt256.ofNat 72) (UInt256.ofNat 6))
+    (UInt256.ofNat 6)
+
 def zeroCount (n : Nat) : Nat := paddedLength n - n - 9
 
 def zeroBytes (n : Nat) : ByteArray :=
@@ -63,6 +69,24 @@ theorem paddedLength_lt (n : Nat) : paddedLength n < n + 73 := by
   have h := Nat.mod_lt (n + 72) (by omega : 0 < 64)
   have hsplit := Nat.div_add_mod (n + 72) 64
   omega
+
+theorem paddedWord_eq (input : ByteArray) (hfit : input.size < 2 ^ 64) :
+    paddedWord input = UInt256.ofNat (paddedLength input.size) := by
+  have hsum : input.size + 72 < 2 ^ 256 := by
+    have : 2 ^ 64 + 72 < 2 ^ 256 := by norm_num
+    omega
+  have hshr : (input.size + 72) >>> 6 < 2 ^ 256 :=
+    Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) hsum
+  have hmul : ((input.size + 72) >>> 6) * 2 ^ 6 < 2 ^ 256 := by
+    rw [Nat.shiftRight_eq_div_pow]
+    have hle := Nat.div_mul_le_self (input.size + 72) (2 ^ 6)
+    omega
+  unfold paddedWord
+  rw [Challenge.RouteB.Word.ofNat_add_ofNat hsum,
+    Challenge.RouteB.Word.shiftRight_ofNat hsum (by omega),
+    Challenge.RouteB.Word.shiftLeft_ofNat hshr (by omega) hmul]
+  congr 1
+  simp [paddedLength, Nat.shiftRight_eq_div_pow]
 
 theorem zeroCount_add (n : Nat) : n + 1 + zeroCount n + 8 = paddedLength n := by
   unfold zeroCount

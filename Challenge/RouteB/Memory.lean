@@ -162,6 +162,14 @@ theorem readPadded_toList (bs : ByteArray) (start n : Nat) :
   simp [MachineState.readPadded, Challenge.RouteB.Bytecode.toList_eq_data,
     ByteArray.data_extract, Array.toList_extract, List.extract_eq_take_drop]
 
+theorem readPadded_zero_size (bs : ByteArray) :
+    MachineState.readPadded bs 0 bs.size = bs := by
+  unfold MachineState.readPadded
+  simp only [Nat.min_eq_left (Nat.zero_le _), Nat.sub_zero, Nat.min_self,
+    Nat.add_comm 0, Nat.sub_self, Array.replicate_zero]
+  apply ByteArray.ext
+  simp
+
 theorem writeBytes_extract_same (bs bytes : ByteArray) (start : Nat) :
     (MachineState.writeBytes bs bytes start).extract start (start + bytes.size) =
       bytes := by
