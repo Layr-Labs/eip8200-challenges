@@ -43,6 +43,26 @@ end RawInstr
 
 namespace Bytecode
 
+/-- One expected result of the pinned EVM decoder at a byte offset. -/
+structure DecodeEntry where
+  pc : Nat
+  op : Operation
+  imm : Option (UInt256 × Nat)
+  deriving DecidableEq, Repr
+
+/-- A single Boolean certificate can validate every decoder fact used by a
+submission proof.  Keeping this separate from the symbolic trace prevents a
+large concrete byte-array reduction from being repeated at every opcode. -/
+def DecodeCertificate (code : ByteArray) (entries : List DecodeEntry) : Prop :=
+  entries.all (fun e => decide (Decode.decodeAt code e.pc = some (e.op, e.imm))) = true
+
+theorem DecodeCertificate.valid {code : ByteArray} {entries : List DecodeEntry}
+    (hcert : DecodeCertificate code entries) {entry : DecodeEntry}
+    (hentry : entry ∈ entries) :
+    Decode.decodeAt code entry.pc = some (entry.op, entry.imm) := by
+  have h := (List.all_eq_true.mp hcert) entry hentry
+  exact of_decide_eq_true h
+
 /-! ### `ByteArray.toList` bridge
 
 Core implements `ByteArray.toList` as an opaque tail-recursive loop. Direct
