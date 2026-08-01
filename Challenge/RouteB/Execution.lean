@@ -1,4 +1,4 @@
-import EvmSemantics.EVM.StepDeterminism
+import EvmSemantics.EVM.Equiv
 set_option warningAsError true
 /-!
 # Direct EVM execution proof combinators

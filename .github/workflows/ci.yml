@@ -13,21 +13,41 @@ concurrency:
 jobs:
   verify:
     name: Build, verify, score
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
+    runs-on: warp-ubuntu-2404-x64-32x
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # The pinned dependency builds (yul-compiler and the two semantics) are
-      # the expensive part; Mathlib itself comes from its own olean cache.
+      # Change the dependency cache only when this repository's import surface
+      # changes. Ordinary proof edits can reuse the same package build, while a
+      # new import gets a fresh key that can save the expanded closure.
+      - name: Fingerprint Lean imports
+        id: lean-imports
+        run: |
+          import_hash="$({ rg --no-heading '^import ' --glob '*.lean' || true; } | sort | sha256sum | cut -d' ' -f1)"
+          echo "hash=$import_hash" >> "$GITHUB_OUTPUT"
+
+      # Cache this repository separately from its pinned dependencies. The
+      # restore prefix gives Lake a safe incremental base after source edits.
+      - name: Cache compiled project build
+        uses: actions/cache@v4
+        with:
+          path: .lake/build
+          key: project-lake-build-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ hashFiles('Challenge/**/*.lean', 'Challenge.lean', 'Checks.lean', 'Main.lean', 'lakefile.toml') }}
+          restore-keys: |
+            project-lake-build-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+
+      # The verified compiler and EVM semantics are the expensive part;
+      # Mathlib itself also has its upstream olean cache.
       - name: Cache package builds
         uses: actions/cache@v4
         with:
-          path: |
-            .lake/packages/*/.lake/build
-          key: packages-${{ hashFiles('lake-manifest.json', 'lean-toolchain') }}
-          restore-keys: packages-
+          path: .lake/packages/*/.lake/build
+          key: lake-package-builds-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ steps.lean-imports.outputs.hash }}
+          restore-keys: |
+            lake-package-builds-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+            packages-${{ hashFiles('lake-manifest.json', 'lean-toolchain') }}
 
       - name: Build (fetch Mathlib cache + lake build)
         uses: leanprover/lean-action@v1
