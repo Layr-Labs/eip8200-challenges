@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Change the dependency cache only when this repository's import surface
       # changes. Ordinary proof edits can reuse the same package build, while a
@@ -31,28 +31,31 @@ jobs:
       # Cache this repository separately from its pinned dependencies. The
       # restore prefix gives Lake a safe incremental base after source edits.
       - name: Cache compiled project build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .lake/build
           key: project-lake-build-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ hashFiles('Challenge/**/*.lean', 'Challenge.lean', 'Checks.lean', 'Main.lean', 'lakefile.toml') }}
           restore-keys: |
             project-lake-build-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
 
-      # The verified compiler and EVM semantics are the expensive part;
-      # Mathlib itself also has its upstream olean cache.
-      - name: Cache package builds
-        uses: actions/cache@v4
+      # Preserve complete package workspaces, including Git metadata. Caching
+      # only their build directories makes Lake regard the restored packages
+      # as invalid checkouts and delete the artifacts before building.
+      - name: Cache pinned packages
+        id: package-cache
+        uses: actions/cache@v5
         with:
-          path: .lake/packages/*/.lake/build
-          key: lake-package-builds-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ steps.lean-imports.outputs.hash }}
+          path: .lake/packages
+          key: lake-packages-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ steps.lean-imports.outputs.hash }}
           restore-keys: |
-            lake-package-builds-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
-            packages-${{ hashFiles('lake-manifest.json', 'lean-toolchain') }}
+            lake-packages-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
 
-      - name: Build (fetch Mathlib cache + lake build)
+      - name: Build (fetch Mathlib cache on cold start + lake build)
         uses: leanprover/lean-action@v1
         with:
-          use-mathlib-cache: "true"
+          # `cache-hit` is empty only for a total miss; it is `false` for a
+          # restore-prefix hit, whose complete workspace already has Mathlib.
+          use-mathlib-cache: ${{ steps.package-cache.outputs.cache-hit == '' }}
           build: "true"
           test: "false"
           lint: "false"
