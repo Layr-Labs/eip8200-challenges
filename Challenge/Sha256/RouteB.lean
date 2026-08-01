@@ -22,13 +22,15 @@ open EvmSemantics.EVM
 /-- Direct, compositional small-step obligation for any SHA-256 bytecode. -/
 def DirectProof (code : ByteArray) : Prop :=
   Challenge.RouteB.EventuallyEvaluates
-    (fun calldata gas => frame code calldata gas)
-    (fun calldata => .returned (spec calldata))
+    (Input := { calldata : ByteArray // CalldataFits calldata })
+    (fun calldata gas => frame code calldata.1 gas)
+    (fun calldata => .returned (spec calldata.1))
 
 /-- A direct raw-bytecode execution proof discharges the canonical challenge. -/
 theorem correct_of_directProof {code : ByteArray} (h : DirectProof code) :
-    Correct code :=
-  h.sound
+    Correct code := by
+  intro calldata hfit
+  simpa using h.sound ⟨calldata, hfit⟩
 
 /-- The first Route B target: the frozen bytecode generated from the reference
 Yul, treated only as raw bytes from this point onward. -/

@@ -60,11 +60,12 @@ The challenge is one `Prop`, in [`Challenge/Sha256/Statement.lean`](Challenge/Sh
 
 ```lean
 def Correct (code : ByteArray) : Prop :=
-  ∀ calldata : ByteArray, ∃ g₀ : Nat, ∀ g : Nat, g₀ ≤ g →
+  ∀ calldata : ByteArray, calldata.size < 2 ^ 64 →
+    ∃ g₀ : Nat, ∀ g : Nat, g₀ ≤ g →
     Eval (frame code calldata g) (.returned (spec calldata))
 ```
 
-*For any message, given enough gas, a frame running `code` halts by returning
+*For any realizable message, given enough gas, a frame running `code` halts by returning
 exactly the 32 digest bytes.* Three things to notice:
 
 * **It never mentions any implementation.** Not our Yul, not our bytecode, not

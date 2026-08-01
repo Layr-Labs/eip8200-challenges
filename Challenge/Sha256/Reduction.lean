@@ -77,7 +77,7 @@ theorem correct_of_computesDigest {prog : Block Op} {is : List Instr}
     (habs : AbstractsFrame (assemble is))
     (hyul : ComputesDigest prog) :
     Correct (assemble is) := by
-  intro calldata
+  intro calldata _hfit
   obtain ⟨yst, hmatch, hmem, hcd, hhalted⟩ := habs calldata
   obtain ⟨V, yst', hrun, hres⟩ := hyul yst hmem hhalted
   obtain ⟨b, H⟩ :=

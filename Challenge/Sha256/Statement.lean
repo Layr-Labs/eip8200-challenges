@@ -22,7 +22,7 @@ is FIPS 180-4 as pinned and vector-checked by `evm-semantics`
 
 ## What a submission must prove
 
-`Correct code`: for every calldata, given enough gas, a frame executing
+`Correct code`: for every realizable calldata, given enough gas, a frame executing
 `code` halts by *returning* exactly the 32 digest bytes. Notably it does
 **not** talk about our bytecode, our Yul, our memory layout, or our gas —
 two implementations that both satisfy `Correct` are automatically
@@ -68,6 +68,13 @@ def spec (input : ByteArray) : ByteArray := Crypto.Sha256.hash input
 return data. -/
 def digestOf (calldata : List UInt8) : List UInt8 :=
   (spec (mkCode calldata)).toList
+
+/-- Calldata sizes representable by the protocol/runtime boundary.  Lean's
+logical `Array` type has no intrinsic size bound, whereas an EVM program sees
+`CALLDATASIZE` through a 256-bit word.  The much tighter 64-bit bound captures
+all realizable Ethereum inputs and prevents the challenge from quantifying
+over mathematical arrays no EVM execution environment can represent. -/
+def CalldataFits (input : ByteArray) : Prop := input.size < 2 ^ 64
 
 /-! ## The frame a candidate is judged in -/
 
@@ -117,8 +124,12 @@ def frame (code calldata : ByteArray) (gas : Nat) : EVM.State :=
 /-! ## The challenge -/
 
 /-- **The challenge.** `code` computes SHA-256 the way the precompile does:
-for every calldata there is a gas level above which the frame halts by
+for every realizable calldata there is a gas level above which the frame halts by
 returning exactly the digest of that calldata.
+
+`CalldataFits` excludes only logical arrays of at least `2^64` bytes. Such
+arrays exist in Lean's unbounded model but cannot cross an Ethereum/runtime
+boundary, and `CALLDATASIZE` could not represent their length faithfully.
 
 The `∃ g₀, ∀ g ≥ g₀` shape is "given enough gas": gas *must* appear, since
 below some level every implementation runs out, and no fixed constant can
@@ -126,20 +137,23 @@ be right for all input lengths. It carries real content — the conclusion
 holds for every larger budget, so a candidate cannot pass by succeeding at
 one lucky gas value. -/
 def Correct (code : ByteArray) : Prop :=
-  ∀ calldata : ByteArray, ∃ g₀ : Nat, ∀ g : Nat, g₀ ≤ g →
+  ∀ calldata : ByteArray, CalldataFits calldata →
+    ∃ g₀ : Nat, ∀ g : Nat, g₀ ≤ g →
     Eval (frame code calldata g) (.returned (spec calldata))
 
 /-- The efficiency-carrying strengthening: `schedule n` gas suffices for
 every input of `n` bytes. This is what a gas schedule in an EIP would need,
 and the top tier of the challenge. -/
 def CorrectWithSchedule (code : ByteArray) (schedule : Nat → Nat) : Prop :=
-  ∀ (calldata : ByteArray) (g : Nat), schedule calldata.size ≤ g →
+  ∀ (calldata : ByteArray), CalldataFits calldata → ∀ (g : Nat),
+    schedule calldata.size ≤ g →
     Eval (frame code calldata g) (.returned (spec calldata))
 
 /-- A proven gas schedule implies correctness. -/
 theorem correct_of_schedule {code : ByteArray} {schedule : Nat → Nat}
     (h : CorrectWithSchedule code schedule) : Correct code :=
-  fun calldata => ⟨schedule calldata.size, fun g hg => h calldata g hg⟩
+  fun calldata hfit =>
+    ⟨schedule calldata.size, fun g hg => h calldata hfit g hg⟩
 
 /-- The frame-generalized statement: the same conclusion from *any* machine
 state that is a fresh frame executing `code` — arbitrary world, caller, call
@@ -150,6 +164,7 @@ def CorrectInAnyFrame (code : ByteArray) : Prop :=
     s.callStack = [] → s.halt = .Running → s.memory = .empty →
     s.activeWords = 0 → s.executionEnv.fork = .Osaka →
     Precompile.isPrecompile s.executionEnv.fork s.executionEnv.codeAddr = false →
+    CalldataFits s.executionEnv.calldata →
     ∃ g₀ : Nat, ∀ g : Nat, g₀ ≤ g →
       Eval { s with gasAvailable := g } (.returned (spec s.executionEnv.calldata))
 
