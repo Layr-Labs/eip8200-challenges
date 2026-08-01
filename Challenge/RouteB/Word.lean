@@ -53,6 +53,30 @@ theorem ofNat_add_ofNat {a b : Nat} (h : a + b < 2 ^ 256) :
     show EvmSemantics.UInt256.size = 2 ^ 256 by rfl,
     Nat.mod_eq_of_lt h]
 
+theorem ofNat_sub_ofNat {a b : Nat} (hba : b ≤ a) (ha : a < 2 ^ 256) :
+    EvmSemantics.UInt256.ofNat a - EvmSemantics.UInt256.ofNat b =
+      EvmSemantics.UInt256.ofNat (a - b) := by
+  have hb : b < 2 ^ 256 := Nat.lt_of_le_of_lt hba ha
+  have hab : a - b < 2 ^ 256 := Nat.lt_of_le_of_lt (Nat.sub_le a b) ha
+  apply word_ext
+  change ((EvmSemantics.UInt256.ofNat a).val -
+    (EvmSemantics.UInt256.ofNat b).val).val = _
+  rw [Fin.val_sub]
+  change (EvmSemantics.UInt256.size -
+      (EvmSemantics.UInt256.ofNat b).toNat +
+      (EvmSemantics.UInt256.ofNat a).toNat) %
+      EvmSemantics.UInt256.size =
+    (EvmSemantics.UInt256.ofNat (a - b)).toNat
+  rw [word_toNat_ofNat, word_toNat_ofNat, word_toNat_ofNat,
+    Nat.mod_eq_of_lt hb, Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt hab]
+  have hrearrange : EvmSemantics.UInt256.size - b + a =
+      EvmSemantics.UInt256.size + (a - b) := by
+    change 2 ^ 256 - b + a = 2 ^ 256 + (a - b)
+    omega
+  rw [hrearrange, Nat.add_mod, Nat.mod_self, Nat.zero_add]
+  change ((a - b) % 2 ^ 256) % 2 ^ 256 = a - b
+  rw [Nat.mod_eq_of_lt hab, Nat.mod_eq_of_lt hab]
+
 theorem succ_ofNat {n : Nat} (h : n + 1 < 2 ^ 256) :
     (EvmSemantics.UInt256.ofNat n).succ =
       EvmSemantics.UInt256.ofNat (n + 1) := by

@@ -219,6 +219,54 @@ theorem readPadded_writeBytes_same (bs bytes : ByteArray) (start : Nat) :
     apply ByteArray.ext
     simp
 
+/-- Adjacent memory writes compose into one write of the concatenated bytes.
+This is the main bridge from byte-at-a-time EVM loops to a functional byte
+array specification. -/
+theorem writeBytes_append_adjacent (bs a b : ByteArray) (start : Nat) :
+    MachineState.writeBytes (MachineState.writeBytes bs a start) b
+        (start + a.size) =
+      MachineState.writeBytes bs (a ++ b) start := by
+  by_cases ha : a.size = 0
+  · have haempty : a = ByteArray.empty := by
+      apply ByteArray.ext
+      apply Array.ext
+      · simpa using ha
+      · intro i hi
+        simp [ha] at hi
+    subst a
+    simp [MachineState.writeBytes]
+  by_cases hb : b.size = 0
+  · have hbempty : b = ByteArray.empty := by
+      apply ByteArray.ext
+      apply Array.ext
+      · simpa using hb
+      · intro i hi
+        simp [hb] at hi
+    subst b
+    simp [MachineState.writeBytes]
+  apply ByteArray.ext_getElem
+  · simp only [MachineState.writeBytes_size, ha, hb, if_false,
+      ByteArray.size_append]
+    have hab : a.size + b.size ≠ 0 := by omega
+    rw [if_neg hab]
+    omega
+  · intro i hi₁ hi₂
+    rw [← getD0_eq_getElem _ _ hi₁, ← getD0_eq_getElem _ _ hi₂]
+    rw [MachineState.writeBytes_getElem?_getD,
+      MachineState.writeBytes_getElem?_getD,
+      MachineState.writeBytes_getElem?_getD]
+    simp only [ByteArray.size_append]
+    by_cases hbwin : start + a.size ≤ i ∧
+        i < start + a.size + b.size
+    · rw [if_pos hbwin, if_pos (by omega)]
+      rw [getElem?_getD_append, if_neg (by omega)]
+      rw [show i - start - a.size = i - (start + a.size) by omega]
+    · rw [if_neg hbwin]
+      by_cases hawin : start ≤ i ∧ i < start + a.size
+      · rw [if_pos hawin, if_pos (by omega)]
+        rw [getElem?_getD_append, if_pos (by omega)]
+      · rw [if_neg hawin, if_neg (by omega)]
+
 theorem readWord_writeBytes (bs : ByteArray) (start value : Nat) :
     MachineState.readWord
         (MachineState.writeBytes bs (Data.Bytes.natToBytesPadded value 32) start)

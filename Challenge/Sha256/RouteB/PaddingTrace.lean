@@ -152,6 +152,70 @@ def lengthSetupPath :
    ⟨287, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
    ⟨288, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
+def lengthByteWord (input : ByteArray) (i : Nat) : UInt256 :=
+  UInt256.land
+    (UInt256.shiftRight (bitLengthWord input)
+      (UInt256.shiftLeft (UInt256.ofNat 7 - UInt256.ofNat i)
+        (UInt256.ofNat 3)))
+    (UInt256.ofNat 255)
+
+def lengthLoopMemory (input : ByteArray) : Nat → ByteArray
+  | 0 => (padSentinel input).memory
+  | i + 1 => MachineState.writeBytes (lengthLoopMemory input i)
+      (ByteArray.mk #[UInt8.ofNat ((lengthByteWord input i).toNat % 256)])
+      (lengthOffsetWord input + UInt256.ofNat i).toNat
+
+def lengthLoopActiveWords (input : ByteArray) : Nat → UInt256
+  | 0 => (padSentinel input).activeWords
+  | i + 1 => UInt256.ofNat (MachineState.activeWordsAfter
+      (lengthLoopActiveWords input i).toNat
+      (lengthOffsetWord input + UInt256.ofNat i).toNat 1)
+
+def lengthLoopState (input : ByteArray) (i : Nat) : State :=
+  { lengthLoopStart input with
+    pc := UInt256.ofNat (Artifact.instructionPC 289)
+    stack := [UInt256.ofNat i, lengthOffsetWord input, bitLengthWord input,
+      UInt256.ofNat input.size, Padding.paddedWord input, UInt256.ofNat 1367]
+    memory := lengthLoopMemory input i
+    activeWords := lengthLoopActiveWords input i }
+
+private def wfOp {op : Operation}
+    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
+    (hplain : YulEvmCompiler.plainOp op)
+    (havailable : op.availableInFork .Osaka = true) :
+    Challenge.RouteB.Stepper.WellFormed .Osaka (.op op) :=
+  ⟨hopcode, hplain, havailable⟩
+
+def lengthIterationPath :
+    List (Challenge.RouteB.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [⟨289, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨290, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨291, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨292, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨293, .push ⟨2, by decide⟩ (UInt256.ofNat 434), by rfl, by decide⟩,
+   ⟨294, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨295, .push ⟨1, by decide⟩ (UInt256.ofNat 255), by rfl, by decide⟩,
+   ⟨296, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨297, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨298, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
+   ⟨299, .op .SUB, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨300, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
+   ⟨301, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨302, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨303, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨304, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨305, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨306, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨307, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨308, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨309, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨310, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨311, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨312, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨313, .push ⟨2, by decide⟩ (UInt256.ofNat 398), by rfl, by decide⟩,
+   ⟨314, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨288, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+
 @[simp] private theorem padLengthReady_halt (input : ByteArray) :
     (padLengthReady input).halt = .Running := by rfl
 
@@ -252,6 +316,64 @@ def lengthSetupPath :
 @[simp] private theorem next286 : (UInt256.ofNat 396).succ = UInt256.ofNat 397 := by decide
 @[simp] private theorem next287 : (UInt256.ofNat 397).succ = UInt256.ofNat 398 := by decide
 @[simp] private theorem next288 : (UInt256.ofNat 398).succ = UInt256.ofNat 399 := by decide
+
+@[simp] private theorem refPc289 : Artifact.referenceArtifact.instructionPC 289 = 399 := by decide
+@[simp] private theorem refPc290 : Artifact.referenceArtifact.instructionPC 290 = 401 := by decide
+@[simp] private theorem refPc291 : Artifact.referenceArtifact.instructionPC 291 = 402 := by decide
+@[simp] private theorem refPc292 : Artifact.referenceArtifact.instructionPC 292 = 403 := by decide
+@[simp] private theorem refPc293 : Artifact.referenceArtifact.instructionPC 293 = 404 := by decide
+@[simp] private theorem refPc294 : Artifact.referenceArtifact.instructionPC 294 = 407 := by decide
+@[simp] private theorem refPc295 : Artifact.referenceArtifact.instructionPC 295 = 408 := by decide
+@[simp] private theorem refPc296 : Artifact.referenceArtifact.instructionPC 296 = 410 := by decide
+@[simp] private theorem refPc297 : Artifact.referenceArtifact.instructionPC 297 = 411 := by decide
+@[simp] private theorem refPc298 : Artifact.referenceArtifact.instructionPC 298 = 412 := by decide
+@[simp] private theorem refPc299 : Artifact.referenceArtifact.instructionPC 299 = 414 := by decide
+@[simp] private theorem refPc300 : Artifact.referenceArtifact.instructionPC 300 = 415 := by decide
+@[simp] private theorem refPc301 : Artifact.referenceArtifact.instructionPC 301 = 417 := by decide
+@[simp] private theorem refPc302 : Artifact.referenceArtifact.instructionPC 302 = 418 := by decide
+@[simp] private theorem refPc303 : Artifact.referenceArtifact.instructionPC 303 = 419 := by decide
+@[simp] private theorem refPc304 : Artifact.referenceArtifact.instructionPC 304 = 420 := by decide
+@[simp] private theorem refPc305 : Artifact.referenceArtifact.instructionPC 305 = 421 := by decide
+@[simp] private theorem refPc306 : Artifact.referenceArtifact.instructionPC 306 = 422 := by decide
+@[simp] private theorem refPc307 : Artifact.referenceArtifact.instructionPC 307 = 423 := by decide
+@[simp] private theorem refPc308 : Artifact.referenceArtifact.instructionPC 308 = 424 := by decide
+@[simp] private theorem refPc309 : Artifact.referenceArtifact.instructionPC 309 = 426 := by decide
+@[simp] private theorem refPc310 : Artifact.referenceArtifact.instructionPC 310 = 427 := by decide
+@[simp] private theorem refPc311 : Artifact.referenceArtifact.instructionPC 311 = 428 := by decide
+@[simp] private theorem refPc312 : Artifact.referenceArtifact.instructionPC 312 = 429 := by decide
+@[simp] private theorem refPc313 : Artifact.referenceArtifact.instructionPC 313 = 430 := by decide
+@[simp] private theorem refPc314 : Artifact.referenceArtifact.instructionPC 314 = 433 := by decide
+@[simp] private theorem refPc315 : Artifact.referenceArtifact.instructionPC 315 = 434 := by decide
+
+@[simp] private theorem next289 : UInt256.ofNat 399 + UInt256.ofNat 2 = UInt256.ofNat 401 := by decide
+@[simp] private theorem next290 : (UInt256.ofNat 401).succ = UInt256.ofNat 402 := by decide
+@[simp] private theorem next291 : (UInt256.ofNat 402).succ = UInt256.ofNat 403 := by decide
+@[simp] private theorem next292 : (UInt256.ofNat 403).succ = UInt256.ofNat 404 := by decide
+@[simp] private theorem next293 : UInt256.ofNat 404 + UInt256.ofNat 3 = UInt256.ofNat 407 := by decide
+@[simp] private theorem next294 : (UInt256.ofNat 407).succ = UInt256.ofNat 408 := by decide
+@[simp] private theorem next295 : UInt256.ofNat 408 + UInt256.ofNat 2 = UInt256.ofNat 410 := by decide
+@[simp] private theorem next296 : (UInt256.ofNat 410).succ = UInt256.ofNat 411 := by decide
+@[simp] private theorem next297 : (UInt256.ofNat 411).succ = UInt256.ofNat 412 := by decide
+@[simp] private theorem next298 : UInt256.ofNat 412 + UInt256.ofNat 2 = UInt256.ofNat 414 := by decide
+@[simp] private theorem next299 : (UInt256.ofNat 414).succ = UInt256.ofNat 415 := by decide
+@[simp] private theorem next300 : UInt256.ofNat 415 + UInt256.ofNat 2 = UInt256.ofNat 417 := by decide
+@[simp] private theorem next301 : (UInt256.ofNat 417).succ = UInt256.ofNat 418 := by decide
+@[simp] private theorem next302 : (UInt256.ofNat 418).succ = UInt256.ofNat 419 := by decide
+@[simp] private theorem next303 : (UInt256.ofNat 419).succ = UInt256.ofNat 420 := by decide
+@[simp] private theorem next304 : (UInt256.ofNat 420).succ = UInt256.ofNat 421 := by decide
+@[simp] private theorem next305 : (UInt256.ofNat 421).succ = UInt256.ofNat 422 := by decide
+@[simp] private theorem next306 : (UInt256.ofNat 422).succ = UInt256.ofNat 423 := by decide
+@[simp] private theorem next307 : (UInt256.ofNat 423).succ = UInt256.ofNat 424 := by decide
+@[simp] private theorem next308 : UInt256.ofNat 424 + UInt256.ofNat 2 = UInt256.ofNat 426 := by decide
+@[simp] private theorem next309 : (UInt256.ofNat 426).succ = UInt256.ofNat 427 := by decide
+@[simp] private theorem next310 : (UInt256.ofNat 427).succ = UInt256.ofNat 428 := by decide
+@[simp] private theorem next311 : (UInt256.ofNat 428).succ = UInt256.ofNat 429 := by decide
+@[simp] private theorem next312 : (UInt256.ofNat 429).succ = UInt256.ofNat 430 := by decide
+@[simp] private theorem next313 : UInt256.ofNat 430 + UInt256.ofNat 3 = UInt256.ofNat 433 := by decide
+
+@[simp] private theorem valid398 :
+    Decode.isValidJumpDest referenceBytecode 398 = true := by
+  simpa using Artifact.isValidJumpDest_index 288 (by rfl)
 
 theorem gasSteps_enterPad (input : ByteArray) :
     Challenge.RouteB.GasSteps (Main.initializedState input) (padEntry input) := by
@@ -493,7 +615,7 @@ theorem gasSteps_computePaddedLength (input : ByteArray) :
 set_option maxHeartbeats 2000000 in
 private theorem run_lengthSetup (input : ByteArray) (hfit : CalldataFits input) :
     Challenge.RouteB.Stepper.runLocatedBlock
-      lengthSetupPath (padLengthReady input) = some (lengthLoopStart input) := by
+      lengthSetupPath (padLengthReady input) = some (lengthLoopState input 0) := by
   have hsize : input.size < 2 ^ 256 := by
     exact Nat.lt_trans hfit (by norm_num)
   have hoff : Padding.messageOffset < 2 ^ 256 := by decide
@@ -510,15 +632,16 @@ private theorem run_lengthSetup (input : ByteArray) (hfit : CalldataFits input) 
   have hoffWord : (UInt256.ofNat Padding.messageOffset).toNat =
       Padding.messageOffset := by
     rw [Challenge.RouteB.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hoff]
-  have hzeroWord : (⟨0⟩ : UInt256).toNat = 0 := rfl
+  have hzero : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
   simp [lengthSetupPath,
     Challenge.RouteB.Stepper.runLocatedBlock,
     Challenge.RouteB.Stepper.runLocated, Challenge.RouteB.Stepper.runInstr,
-    lengthLoopStart, padSentinel, padCopied, lengthOffsetWord, bitLengthWord,
-    State.activeWordsAfterUInt256, hsizeWord, hoffWord, hzeroWord, hadd]
+    lengthLoopState, lengthLoopMemory, lengthLoopActiveWords, lengthLoopStart,
+    padSentinel, padCopied, lengthOffsetWord, bitLengthWord,
+    State.activeWordsAfterUInt256, hsizeWord, hoffWord, hzero, hadd]
 
 theorem gasSteps_lengthSetup (input : ByteArray) (hfit : CalldataFits input) :
-    Challenge.RouteB.GasSteps (padLengthReady input) (lengthLoopStart input) := by
+    Challenge.RouteB.GasSteps (padLengthReady input) (lengthLoopState input 0) := by
   apply Challenge.RouteB.Stepper.runLocatedBlock_sound Artifact.referenceArtifact
     .Osaka lengthSetupPath
   · rfl
@@ -526,5 +649,486 @@ theorem gasSteps_lengthSetup (input : ByteArray) (hfit : CalldataFits input) :
   · exact run_lengthSetup input hfit
   · rfl
   · rfl
+
+@[simp] private theorem lengthLoopStart_halt (input : ByteArray) :
+    (lengthLoopStart input).halt = .Running := by rfl
+
+@[simp] private theorem lengthLoopStart_code (input : ByteArray) :
+    (lengthLoopStart input).executionEnv.code = referenceBytecode := by rfl
+
+@[simp] private theorem lengthLoopState_halt (input : ByteArray) (i : Nat) :
+    (lengthLoopState input i).halt = .Running := by rfl
+
+@[simp] private theorem lengthLoopState_fork (input : ByteArray) (i : Nat) :
+    (lengthLoopState input i).fork = .Osaka := by
+  exact padLengthReady_fork input
+
+@[simp] private theorem lengthLoopState_code (input : ByteArray) (i : Nat) :
+    (lengthLoopState input i).executionEnv.code = referenceBytecode := by rfl
+
+@[simp] private theorem lengthLoopState_pc (input : ByteArray) (i : Nat) :
+    (lengthLoopState input i).pc = UInt256.ofNat 399 := by
+  simp [lengthLoopState, lengthLoopStart]
+
+@[simp] private theorem lengthLoopState_stack (input : ByteArray) (i : Nat) :
+    (lengthLoopState input i).stack =
+      [UInt256.ofNat i, lengthOffsetWord input, bitLengthWord input,
+        UInt256.ofNat input.size, Padding.paddedWord input, UInt256.ofNat 1367] := by
+  rfl
+
+def lengthConditionPath := lengthIterationPath.take 6
+def lengthBytePath := (lengthIterationPath.drop 6).take 9
+def lengthStorePath := (lengthIterationPath.drop 15).take 4
+def lengthIncrementPath := (lengthIterationPath.drop 19).take 5
+def lengthBackPath := lengthIterationPath.drop 24
+
+def lengthBodyState (input : ByteArray) (i : Nat) : State :=
+  { lengthLoopState input i with pc := UInt256.ofNat 408 }
+
+def lengthByteState (input : ByteArray) (i : Nat) : State :=
+  { lengthLoopState input i with
+    pc := UInt256.ofNat 420
+    stack := [lengthByteWord input i, UInt256.ofNat i,
+      lengthOffsetWord input, bitLengthWord input, UInt256.ofNat input.size,
+      Padding.paddedWord input, UInt256.ofNat 1367] }
+
+def lengthStoredState (input : ByteArray) (i : Nat) : State :=
+  { lengthLoopState input i with
+    pc := UInt256.ofNat 424
+    memory := lengthLoopMemory input (i + 1)
+    activeWords := lengthLoopActiveWords input (i + 1) }
+
+def lengthIncrementedState (input : ByteArray) (i : Nat) : State :=
+  { lengthStoredState input i with
+    pc := UInt256.ofNat 430
+    stack := [UInt256.ofNat (i + 1), lengthOffsetWord input,
+      bitLengthWord input, UInt256.ofNat input.size,
+      Padding.paddedWord input, UInt256.ofNat 1367] }
+
+set_option maxHeartbeats 200000 in
+private theorem run_lengthCondition (input : ByteArray) (i : Nat) (hi : i < 8) :
+    Challenge.RouteB.Stepper.runLocatedBlock lengthConditionPath
+      (lengthLoopState input i) = some (lengthBodyState input i) := by
+  have hi256 : i < 2 ^ 256 := by omega
+  have hiWord : (UInt256.ofNat i).toNat = i := by
+    rw [Challenge.RouteB.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hi256]
+  have hlt : UInt256.lt (UInt256.ofNat i) (UInt256.ofNat 8) = UInt256.ofNat 1 := by
+    simp [UInt256.lt, hiWord, Challenge.RouteB.Word.word_toNat_ofNat, hi]
+  have hzero : UInt256.isZero (UInt256.ofNat 1) = (⟨0⟩ : UInt256) := by decide
+  have hzeroToNat : (⟨0⟩ : UInt256).toNat = 0 := rfl
+  simp [lengthConditionPath, lengthIterationPath,
+    Challenge.RouteB.Stepper.runLocatedBlock, Challenge.RouteB.Stepper.runLocated,
+    Challenge.RouteB.Stepper.runInstr, lengthLoopState, lengthBodyState,
+    UInt256.isTrue, hlt, hzero, hzeroToNat, lengthLoopStart_halt]
+
+set_option maxHeartbeats 200000 in
+private theorem run_lengthByte (input : ByteArray) (i : Nat) :
+    Challenge.RouteB.Stepper.runLocatedBlock lengthBytePath
+      (lengthBodyState input i) = some (lengthByteState input i) := by
+  simp [lengthBytePath, lengthIterationPath,
+    Challenge.RouteB.Stepper.runLocatedBlock, Challenge.RouteB.Stepper.runLocated,
+    Challenge.RouteB.Stepper.runInstr, lengthBodyState, lengthByteState,
+    lengthLoopState, lengthByteWord]
+
+set_option maxHeartbeats 200000 in
+private theorem run_lengthStore (input : ByteArray) (i : Nat) :
+    Challenge.RouteB.Stepper.runLocatedBlock lengthStorePath
+      (lengthByteState input i) = some (lengthStoredState input i) := by
+  simp [lengthStorePath, lengthIterationPath,
+    Challenge.RouteB.Stepper.runLocatedBlock, Challenge.RouteB.Stepper.runLocated,
+    Challenge.RouteB.Stepper.runInstr, lengthByteState, lengthStoredState,
+    lengthLoopState, lengthLoopMemory, lengthLoopActiveWords,
+    State.activeWordsAfterUInt256]
+
+set_option maxHeartbeats 200000 in
+private theorem run_lengthIncrement (input : ByteArray) (i : Nat) (hi : i < 8) :
+    Challenge.RouteB.Stepper.runLocatedBlock lengthIncrementPath
+      (lengthStoredState input i) = some (lengthIncrementedState input i) := by
+  have hiSucc : i + 1 < 2 ^ 256 := by omega
+  have hadd : UInt256.ofNat i + UInt256.ofNat 1 = UInt256.ofNat (i + 1) :=
+    Challenge.RouteB.Word.ofNat_add_ofNat hiSucc
+  simp [lengthIncrementPath, lengthIterationPath,
+    Challenge.RouteB.Stepper.runLocatedBlock, Challenge.RouteB.Stepper.runLocated,
+    Challenge.RouteB.Stepper.runInstr, lengthStoredState, lengthIncrementedState,
+    lengthLoopState, hadd, List.exchange]
+
+set_option maxHeartbeats 200000 in
+private theorem run_lengthBack (input : ByteArray) (i : Nat) :
+    Challenge.RouteB.Stepper.runLocatedBlock lengthBackPath
+      (lengthIncrementedState input i) = some (lengthLoopState input (i + 1)) := by
+  simp [lengthBackPath, lengthIterationPath,
+    Challenge.RouteB.Stepper.runLocatedBlock, Challenge.RouteB.Stepper.runLocated,
+    Challenge.RouteB.Stepper.runInstr, lengthIncrementedState, lengthStoredState,
+    lengthLoopState, lengthLoopStart_code]
+
+theorem gasSteps_lengthIteration (input : ByteArray) (i : Nat) (hi : i < 8) :
+    Challenge.RouteB.GasSteps (lengthLoopState input i)
+      (lengthLoopState input (i + 1)) := by
+  have g₁ := Challenge.RouteB.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka lengthConditionPath
+    (lengthLoopState_code input i) (lengthLoopState_fork input i)
+    (run_lengthCondition input i hi) (lengthLoopState_halt input i) (by rfl)
+  have g₂ := Challenge.RouteB.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka lengthBytePath (by rfl) (by rfl)
+    (run_lengthByte input i) (by rfl) (by rfl)
+  have g₃ := Challenge.RouteB.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka lengthStorePath (by rfl) (by rfl)
+    (run_lengthStore input i) (by rfl) (by rfl)
+  have g₄ := Challenge.RouteB.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka lengthIncrementPath (by rfl) (by rfl)
+    (run_lengthIncrement input i hi) (by rfl) (by rfl)
+  have g₅ := Challenge.RouteB.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka lengthBackPath (by rfl) (by rfl)
+    (run_lengthBack input i) (by rfl) (by rfl)
+  exact g₁.trans (g₂.trans (g₃.trans (g₄.trans g₅)))
+
+theorem gasSteps_lengthLoop (input : ByteArray) :
+    Challenge.RouteB.GasSteps (lengthLoopState input 0)
+      (lengthLoopState input 8) := by
+  exact Challenge.RouteB.GasSteps.iterateBounded (count := 8)
+    (I := lengthLoopState input)
+    (fun i hi => gasSteps_lengthIteration input i hi)
+
+/-- State returned by `pad`: the padded byte length is its sole result. -/
+def padReturned (input : ByteArray) : State :=
+  { lengthLoopState input 8 with
+    pc := UInt256.ofNat 1367
+    stack := [Padding.paddedWord input] }
+
+def lengthExitPath :
+    List (Challenge.RouteB.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [⟨289, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨290, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨291, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨292, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨293, .push ⟨2, by decide⟩ (UInt256.ofNat 434), by rfl, by decide⟩,
+   ⟨294, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨315, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨316, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨317, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨318, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨319, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨320, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨321, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+
+@[simp] private theorem refPc316 : Artifact.referenceArtifact.instructionPC 316 = 435 := by decide
+@[simp] private theorem refPc317 : Artifact.referenceArtifact.instructionPC 317 = 436 := by decide
+@[simp] private theorem refPc318 : Artifact.referenceArtifact.instructionPC 318 = 437 := by decide
+@[simp] private theorem refPc319 : Artifact.referenceArtifact.instructionPC 319 = 438 := by decide
+@[simp] private theorem refPc320 : Artifact.referenceArtifact.instructionPC 320 = 439 := by decide
+@[simp] private theorem refPc321 : Artifact.referenceArtifact.instructionPC 321 = 440 := by decide
+@[simp] private theorem refPc711 : Artifact.referenceArtifact.instructionPC 711 = 1367 := by decide
+@[simp] private theorem next315 : (UInt256.ofNat 434).succ = UInt256.ofNat 435 := by decide
+@[simp] private theorem next316 : (UInt256.ofNat 435).succ = UInt256.ofNat 436 := by decide
+@[simp] private theorem next317 : (UInt256.ofNat 436).succ = UInt256.ofNat 437 := by decide
+@[simp] private theorem next318 : (UInt256.ofNat 437).succ = UInt256.ofNat 438 := by decide
+@[simp] private theorem next319 : (UInt256.ofNat 438).succ = UInt256.ofNat 439 := by decide
+@[simp] private theorem next320 : (UInt256.ofNat 439).succ = UInt256.ofNat 440 := by decide
+
+@[simp] private theorem valid434 :
+    Decode.isValidJumpDest referenceBytecode 434 = true := by
+  rw [← refPc315]
+  exact Artifact.isValidJumpDest_index 315 (by rfl)
+
+@[simp] private theorem valid1367 :
+    Decode.isValidJumpDest referenceBytecode 1367 = true := by
+  rw [← refPc711]
+  exact Artifact.isValidJumpDest_index 711 (by rfl)
+
+def lengthExitComparePath := lengthExitPath.take 3
+def lengthExitBranchPath := (lengthExitPath.drop 3).take 3
+def lengthExitPopPath := (lengthExitPath.drop 6).take 5
+def lengthExitReturnPath := lengthExitPath.drop 11
+
+def lengthExitComparedState (input : ByteArray) : State :=
+  { lengthLoopState input 8 with
+    pc := UInt256.ofNat 403
+    stack := [⟨0⟩, UInt256.ofNat 8, lengthOffsetWord input,
+      bitLengthWord input, UInt256.ofNat input.size,
+      Padding.paddedWord input, UInt256.ofNat 1367] }
+
+def lengthExitBodyState (input : ByteArray) : State :=
+  { lengthLoopState input 8 with pc := UInt256.ofNat 434 }
+
+def lengthExitPoppedState (input : ByteArray) : State :=
+  { lengthLoopState input 8 with
+    pc := UInt256.ofNat 439
+    stack := [Padding.paddedWord input, UInt256.ofNat 1367] }
+
+set_option maxHeartbeats 200000 in
+private theorem run_lengthExitCompare (input : ByteArray) :
+    Challenge.RouteB.Stepper.runLocatedBlock lengthExitComparePath
+      (lengthLoopState input 8) = some (lengthExitComparedState input) := by
+  have hlt : UInt256.lt (UInt256.ofNat 8) (UInt256.ofNat 8) = (⟨0⟩ : UInt256) := by
+    decide
+  simp [lengthExitComparePath, lengthExitPath,
+    Challenge.RouteB.Stepper.runLocatedBlock,
+    Challenge.RouteB.Stepper.runLocated, Challenge.RouteB.Stepper.runInstr,
+    lengthExitComparedState, hlt]
+
+set_option maxHeartbeats 200000 in
+private theorem run_lengthExitBranch (input : ByteArray) :
+    Challenge.RouteB.Stepper.runLocatedBlock lengthExitBranchPath
+      (lengthExitComparedState input) = some (lengthExitBodyState input) := by
+  have hzero : UInt256.isZero (⟨0⟩ : UInt256) = UInt256.ofNat 1 := by decide
+  simp [lengthExitBranchPath, lengthExitPath,
+    Challenge.RouteB.Stepper.runLocatedBlock,
+    Challenge.RouteB.Stepper.runLocated, Challenge.RouteB.Stepper.runInstr,
+    lengthExitComparedState, lengthExitBodyState, UInt256.isTrue, hzero]
+
+set_option maxHeartbeats 200000 in
+private theorem run_lengthExitPop (input : ByteArray) :
+    Challenge.RouteB.Stepper.runLocatedBlock lengthExitPopPath
+      (lengthExitBodyState input) = some (lengthExitPoppedState input) := by
+  simp [lengthExitPopPath, lengthExitPath,
+    Challenge.RouteB.Stepper.runLocatedBlock,
+    Challenge.RouteB.Stepper.runLocated, Challenge.RouteB.Stepper.runInstr,
+    lengthExitBodyState, lengthExitPoppedState]
+
+set_option maxHeartbeats 200000 in
+private theorem run_lengthExitReturn (input : ByteArray) :
+    Challenge.RouteB.Stepper.runLocatedBlock lengthExitReturnPath
+      (lengthExitPoppedState input) = some (padReturned input) := by
+  simp [lengthExitReturnPath, lengthExitPath,
+    Challenge.RouteB.Stepper.runLocatedBlock,
+    Challenge.RouteB.Stepper.runLocated, Challenge.RouteB.Stepper.runInstr,
+    lengthExitPoppedState, padReturned, List.exchange]
+
+theorem gasSteps_lengthExit (input : ByteArray) :
+    Challenge.RouteB.GasSteps (lengthLoopState input 8) (padReturned input) := by
+  have g₁ := Challenge.RouteB.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka lengthExitComparePath
+    (lengthLoopState_code input 8) (lengthLoopState_fork input 8)
+    (run_lengthExitCompare input) (lengthLoopState_halt input 8) (by rfl)
+  have g₂ := Challenge.RouteB.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka lengthExitBranchPath (by rfl) (by rfl)
+    (run_lengthExitBranch input) (by rfl) (by rfl)
+  have g₃ := Challenge.RouteB.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka lengthExitPopPath (by rfl) (by rfl)
+    (run_lengthExitPop input) (by rfl) (by rfl)
+  have g₄ := Challenge.RouteB.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka lengthExitReturnPath (by rfl) (by rfl)
+    (run_lengthExitReturn input) (by rfl) (by rfl)
+  exact g₁.trans (g₂.trans (g₃.trans g₄))
+
+theorem bitLengthWord_eq (input : ByteArray) (hfit : CalldataFits input) :
+    bitLengthWord input = UInt256.ofNat (input.size * 8) := by
+  have hsize : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
+  have hresult : input.size * 2 ^ 3 < 2 ^ 256 := by
+    unfold CalldataFits at hfit
+    norm_num at hfit ⊢
+    omega
+  simpa [bitLengthWord] using
+    (Challenge.RouteB.Word.shiftLeft_ofNat hsize (by decide : 3 < 256) hresult)
+
+private theorem seven_sub_word (i : Nat) (hi : i < 8) :
+    UInt256.ofNat 7 - UInt256.ofNat i = UInt256.ofNat (7 - i) := by
+  have hi256 : i < 2 ^ 256 := by omega
+  have hiWord : (UInt256.ofNat i).toNat = i := by
+    rw [Challenge.RouteB.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hi256]
+  have h7Word : (UInt256.ofNat 7).toNat = 7 := by decide
+  have hsmall : 7 - i < 2 ^ 256 :=
+    Nat.lt_of_le_of_lt (Nat.sub_le 7 i) (by norm_num)
+  have hsubWord : (UInt256.ofNat (7 - i)).toNat = 7 - i := by
+    rw [Challenge.RouteB.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hsmall]
+  apply Challenge.RouteB.Word.word_ext
+  change ((UInt256.ofNat 7).val - (UInt256.ofNat i).val).val = _
+  rw [Fin.val_sub]
+  change (UInt256.size - (UInt256.ofNat i).toNat +
+    (UInt256.ofNat 7).toNat) % UInt256.size =
+      (UInt256.ofNat (7 - i)).toNat
+  rw [hiWord, h7Word, hsubWord]
+  have hrearrange : UInt256.size - i + 7 = UInt256.size + (7 - i) := by
+    change 2 ^ 256 - i + 7 = 2 ^ 256 + (7 - i)
+    omega
+  rw [hrearrange, Nat.add_mod]
+  rw [Nat.mod_self, Nat.zero_add]
+  change ((7 - i) % 2 ^ 256) % 2 ^ 256 = 7 - i
+  rw [Nat.mod_eq_of_lt hsmall, Nat.mod_eq_of_lt hsmall]
+
+theorem lengthByteWord_toNat (input : ByteArray) (hfit : CalldataFits input)
+    (i : Nat) (hi : i < 8) :
+    (lengthByteWord input i).toNat =
+      input.size * 8 / 256 ^ (7 - i) % 256 := by
+  have hvalue : input.size * 8 < 2 ^ 256 := by
+    unfold CalldataFits at hfit
+    norm_num at hfit ⊢
+    omega
+  have hshift : (7 - i) * 8 < 256 := by omega
+  have hshiftValue : 7 - i < 2 ^ 256 := by omega
+  have hshiftResult : (7 - i) * 2 ^ 3 < 2 ^ 256 := by omega
+  have hshiftWord : UInt256.shiftLeft (UInt256.ofNat (7 - i))
+      (UInt256.ofNat 3) = UInt256.ofNat ((7 - i) * 8) := by
+    simpa using Challenge.RouteB.Word.shiftLeft_ofNat hshiftValue
+      (by decide : 3 < 256) hshiftResult
+  rw [lengthByteWord, bitLengthWord_eq input hfit, seven_sub_word i hi,
+    hshiftWord, Challenge.RouteB.Word.shiftRight_ofNat hvalue hshift]
+  simp only [UInt256.land, UInt256.toNat]
+  have hland : (↑(Fin.land
+      (UInt256.ofNat ((input.size * 8) >>> ((7 - i) * 8))).val
+      (UInt256.ofNat 255).val) : Nat) =
+      (UInt256.ofNat ((input.size * 8) >>> ((7 - i) * 8))).val.val &&&
+        (UInt256.ofNat 255).val.val := by
+    exact Fin.and_val _ _
+  rw [hland]
+  change (UInt256.ofNat ((input.size * 8) >>> ((7 - i) * 8))).toNat &&&
+      (UInt256.ofNat 255).toNat = _
+  rw [Challenge.RouteB.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) hvalue)]
+  have h255 : (UInt256.ofNat 255).toNat = 255 := by decide
+  rw [h255, show 255 = 2 ^ 8 - 1 by decide,
+    Nat.and_two_pow_sub_one_eq_mod, Nat.shiftRight_eq_div_pow]
+  rw [show 2 ^ ((7 - i) * 8) = 256 ^ (7 - i) by
+    rw [Nat.mul_comm, Nat.pow_mul]]
+
+theorem lengthByte_eq (input : ByteArray) (hfit : CalldataFits input)
+    (i : Nat) (hi : i < 8) :
+    UInt8.ofNat ((lengthByteWord input i).toNat % 256) =
+      (Padding.lengthBytes input)[i]?.getD 0 := by
+  change UInt8.ofNat ((lengthByteWord input i).toNat % 256) =
+    (Data.Bytes.natToBytesPadded (input.size * 8) 8)[i]?.getD 0
+  rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD
+    (input.size * 8) 8 i hi]
+  rw [show 8 - 1 - i = 7 - i by omega]
+  rw [lengthByteWord_toNat input hfit i hi]
+  simp only [Nat.mod_mod]
+
+theorem lengthOffsetWord_eq (input : ByteArray) (hfit : CalldataFits input) :
+    lengthOffsetWord input = UInt256.ofNat
+      (Padding.messageOffset + Padding.paddedLength input.size - 8) := by
+  have hfooter := Padding.input_and_footer_fit input.size
+  have hpadded : Padding.paddedLength input.size < 2 ^ 256 := by
+    have hlt := Padding.paddedLength_lt input.size
+    unfold CalldataFits at hfit
+    norm_num at hfit ⊢
+    omega
+  have hsub := Challenge.RouteB.Word.ofNat_sub_ofNat
+    (a := Padding.paddedLength input.size) (b := 8) (by omega) hpadded
+  have hsum : Padding.messageOffset +
+      (Padding.paddedLength input.size - 8) < 2 ^ 256 := by
+    have hlt := Padding.paddedLength_lt input.size
+    have hoffset : Padding.messageOffset + Padding.paddedLength input.size <
+        2 ^ 256 := by
+      calc
+        Padding.messageOffset + Padding.paddedLength input.size <
+            Padding.messageOffset + (input.size + 73) :=
+          Nat.add_lt_add_left hlt _
+        _ < 2 ^ 256 := by
+          have hinput73 : input.size + 73 < 2 ^ 65 := by
+            unfold CalldataFits at hfit
+            norm_num at hfit ⊢
+            omega
+          calc
+            Padding.messageOffset + (input.size + 73) <
+                Padding.messageOffset + 2 ^ 65 :=
+              Nat.add_lt_add_left hinput73 _
+            _ < 2 ^ 256 := by norm_num [Padding.messageOffset]
+    exact Nat.lt_of_le_of_lt
+      (Nat.add_le_add_left (Nat.sub_le (Padding.paddedLength input.size) 8) _)
+      hoffset
+  rw [lengthOffsetWord, Padding.paddedWord_eq input hfit, hsub,
+    Challenge.RouteB.Word.ofNat_add_ofNat hsum]
+  congr 1
+  omega
+
+theorem lengthOffset_add_toNat (input : ByteArray) (hfit : CalldataFits input)
+    (i : Nat) (hi : i ≤ 8) :
+    (lengthOffsetWord input + UInt256.ofNat i).toNat =
+      Padding.messageOffset + Padding.paddedLength input.size - 8 + i := by
+  let base := Padding.messageOffset + Padding.paddedLength input.size - 8
+  have hbase : base + i < 2 ^ 256 := by
+    have hlt := Padding.paddedLength_lt input.size
+    unfold CalldataFits at hfit
+    dsimp only [base]
+    norm_num [Padding.messageOffset] at hfit ⊢
+    omega
+  rw [lengthOffsetWord_eq input hfit,
+    Challenge.RouteB.Word.ofNat_add_ofNat hbase,
+    Challenge.RouteB.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hbase]
+
+def lengthWrittenBytes (input : ByteArray) : Nat → ByteArray
+  | 0 => ByteArray.empty
+  | i + 1 => lengthWrittenBytes input i ++ ByteArray.mk #[
+      (Padding.lengthBytes input)[i]?.getD 0]
+
+@[simp] theorem lengthWrittenBytes_size (input : ByteArray) (i : Nat) :
+    (lengthWrittenBytes input i).size = i := by
+  induction i with
+  | zero => rfl
+  | succ i ih =>
+      rw [lengthWrittenBytes, ByteArray.size_append, ih]
+      rfl
+
+theorem lengthLoopMemory_eq (input : ByteArray) (hfit : CalldataFits input)
+    (i : Nat) (hi : i ≤ 8) :
+    lengthLoopMemory input i = MachineState.writeBytes
+      (padSentinel input).memory (lengthWrittenBytes input i)
+      (Padding.messageOffset + Padding.paddedLength input.size - 8) := by
+  induction i with
+  | zero => simp [lengthLoopMemory, lengthWrittenBytes, MachineState.writeBytes]
+  | succ i ih =>
+      have hii : i < 8 := by omega
+      rw [lengthLoopMemory, lengthWrittenBytes, lengthByte_eq input hfit i hii,
+        lengthOffset_add_toNat input hfit i (by omega), ih (by omega)]
+      simpa only [lengthWrittenBytes_size] using
+        Challenge.RouteB.Memory.writeBytes_append_adjacent
+          (padSentinel input).memory (lengthWrittenBytes input i)
+          (ByteArray.mk #[(Padding.lengthBytes input)[i]?.getD 0])
+          (Padding.messageOffset + Padding.paddedLength input.size - 8)
+
+theorem lengthWrittenBytes_getD (input : ByteArray) (i j : Nat) (hj : j < i) :
+    (lengthWrittenBytes input i)[j]?.getD 0 =
+      (Padding.lengthBytes input)[j]?.getD 0 := by
+  induction i with
+  | zero => omega
+  | succ i ih =>
+      rw [lengthWrittenBytes,
+        Challenge.RouteB.Memory.getElem?_getD_append,
+        lengthWrittenBytes_size]
+      by_cases hji : j < i
+      · rw [if_pos hji]
+        exact ih hji
+      · have hjiEq : j = i := by omega
+        subst j
+        rw [if_neg (by omega)]
+        rw [Nat.sub_self]
+        rfl
+
+theorem lengthWrittenBytes_eight (input : ByteArray) :
+    lengthWrittenBytes input 8 = Padding.lengthBytes input := by
+  apply ByteArray.ext_getElem
+  · simp
+  · intro i hi₁ hi₂
+    rw [← Challenge.RouteB.Memory.getD0_eq_getElem _ _ hi₁,
+      ← Challenge.RouteB.Memory.getD0_eq_getElem _ _ hi₂]
+    exact lengthWrittenBytes_getD input 8 i (by simpa using hi₁)
+
+theorem lengthLoopMemory_eight (input : ByteArray) (hfit : CalldataFits input) :
+    lengthLoopMemory input 8 =
+      Padding.paddedMemory (padLengthReady input).memory input := by
+  rw [lengthLoopMemory_eq input hfit 8 (by omega), lengthWrittenBytes_eight]
+  have hsentinel : (padSentinel input).memory =
+      Padding.sentinelMemory (padLengthReady input).memory input := by
+    simp [padSentinel, padCopied, Padding.sentinelMemory,
+      Padding.copiedMemory, Challenge.RouteB.Memory.readPadded_zero_size]
+  rw [hsentinel]
+  rfl
+
+/-- Complete certified execution of initialization and the reference `pad`
+function, exposing the canonical padded-memory model. -/
+theorem gasSteps_pad (input : ByteArray) (hfit : CalldataFits input) :
+    Challenge.RouteB.GasSteps (frame referenceBytecode input 0)
+      (padReturned input) :=
+  (Main.gasSteps_initialize input).trans
+    ((gasSteps_enterPad input).trans
+      ((gasSteps_padReadSize input).trans
+        ((gasSteps_computePaddedLength input).trans
+          ((gasSteps_lengthSetup input hfit).trans
+            ((gasSteps_lengthLoop input).trans (gasSteps_lengthExit input))))))
+
+theorem padReturned_memory (input : ByteArray) (hfit : CalldataFits input) :
+    (padReturned input).memory =
+      Padding.paddedMemory (padLengthReady input).memory input := by
+  exact lengthLoopMemory_eight input hfit
 
 end Challenge.Sha256.RouteB.PaddingTrace
