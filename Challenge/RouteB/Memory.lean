@@ -170,6 +170,119 @@ theorem readPadded_zero_size (bs : ByteArray) :
   apply ByteArray.ext
   simp
 
+/-- Pointwise form of the EVM's zero-padded byte read. -/
+theorem readPadded_getElem?_getD (bs : ByteArray) (start n i : Nat) :
+    (MachineState.readPadded bs start n)[i]?.getD 0 =
+      if i < n then bs[start + i]?.getD 0 else 0 := by
+  unfold MachineState.readPadded
+  let start' := min start bs.size
+  let take := min (bs.size - start') n
+  change ((bs.extract start' (start' + take) ++
+    ByteArray.mk (Array.replicate (n - take) 0))[i]?.getD 0) = _
+  have hstartLe : start' ≤ bs.size := by simp [start']
+  have htakeLe : take ≤ bs.size - start' := by simp [take]
+  have htakeN : take ≤ n := by simp [take]
+  have hstop : start' + take ≤ bs.size := by omega
+  have hextractSize : (bs.extract start' (start' + take)).size = take := by
+    rw [ByteArray.size_extract, min_eq_left hstop]
+    omega
+  rw [getElem?_getD_append, hextractSize]
+  by_cases hi : i < n
+  · rw [if_pos hi]
+    by_cases hitake : i < take
+    · rw [if_pos hitake]
+      have hsle : start ≤ bs.size := by
+        by_contra h
+        have hge : bs.size ≤ start := by omega
+        have hstartEq : start' = bs.size := by simp [start', hge]
+        rw [hstartEq] at htakeLe
+        simp at htakeLe
+        omega
+      have hstartEq : start' = start := by simp [start', hsle]
+      simp only [hstartEq] at hstop hextractSize ⊢
+      have hextract : i < (bs.extract start (start + take)).size := by
+        simpa [hextractSize] using hitake
+      rw [getD0_eq_getElem!]
+      rw [getElem!_pos _ i hextract]
+      rw [ByteArray.getElem_extract]
+      rw [getD0_eq_getElem!]
+      rw [getElem!_pos bs (start + i) (by omega)]
+    · rw [if_neg hitake]
+      have hpad : i - take < (ByteArray.mk (Array.replicate (n - take) 0)).size := by
+        change i - take < (Array.replicate (n - take) 0).size
+        rw [Array.size_replicate]
+        omega
+      rw [getD0_eq_getElem!]
+      rw [getElem!_pos _ (i - take) hpad]
+      change (Array.replicate (n - take) 0)[i - take] = _
+      rw [Array.getElem_replicate]
+      apply (getElem?_getD_eq_zero_of_size_le bs (start + i) ?_).symm
+      by_cases hsle : start ≤ bs.size
+      · have hstartEq : start' = start := by simp [start', hsle]
+        dsimp only [take] at hitake
+        rw [hstartEq] at hitake
+        omega
+      · omega
+  · rw [if_neg hi]
+    rw [if_neg (by omega)]
+    apply getElem?_getD_eq_zero_of_size_le
+    change (Array.replicate (n - take) 0).size ≤ i - take
+    rw [Array.size_replicate]
+    omega
+
+@[simp] theorem readPadded_size (bs : ByteArray) (start n : Nat) :
+    (MachineState.readPadded bs start n).size = n := by
+  let start' := min start bs.size
+  let take := min (bs.size - start') n
+  have hstop : start' + take ≤ bs.size := by
+    dsimp only [start', take]
+    omega
+  unfold MachineState.readPadded
+  change (bs.extract start' (start' + take) ++
+    ByteArray.mk (Array.replicate (n - take) 0)).size = n
+  rw [ByteArray.size_append, ByteArray.size_extract, min_eq_left hstop]
+  change start' + take - start' + (Array.replicate (n - take) 0).size = n
+  rw [Array.size_replicate]
+  omega
+
+/-- A zero-padded read depends only on the addressed byte window. -/
+theorem readPadded_congr (a b : ByteArray) (start n : Nat)
+    (h : ∀ i, i < n → a[start + i]?.getD 0 = b[start + i]?.getD 0) :
+    MachineState.readPadded a start n = MachineState.readPadded b start n := by
+  apply ByteArray.ext_getElem
+  · simp
+  · intro i hia hib
+    rw [← getD0_eq_getElem _ _ hia, ← getD0_eq_getElem _ _ hib,
+      readPadded_getElem?_getD, readPadded_getElem?_getD]
+    have hi : i < n := by simpa using hia
+    rw [if_pos hi, if_pos hi]
+    exact h i hi
+
+/-- Writing outside a read window leaves the read unchanged. -/
+theorem readPadded_writeBytes_disjoint (bs bytes : ByteArray)
+    (readStart readSize writeStart : Nat)
+    (hdisjoint : readStart + readSize ≤ writeStart ∨
+      writeStart + bytes.size ≤ readStart) :
+    MachineState.readPadded (MachineState.writeBytes bs bytes writeStart)
+        readStart readSize =
+      MachineState.readPadded bs readStart readSize := by
+  apply readPadded_congr
+  intro i hi
+  rw [MachineState.writeBytes_getElem?_getD]
+  rw [if_neg]
+  rcases hdisjoint with hbefore | hafter
+  · omega
+  · omega
+
+theorem readWord_writeBytes_disjoint (bs bytes : ByteArray)
+    (readStart writeStart : Nat)
+    (hdisjoint : readStart + 32 ≤ writeStart ∨
+      writeStart + bytes.size ≤ readStart) :
+    MachineState.readWord (MachineState.writeBytes bs bytes writeStart) readStart =
+      MachineState.readWord bs readStart := by
+  unfold MachineState.readWord
+  rw [readPadded_writeBytes_disjoint bs bytes readStart 32 writeStart hdisjoint]
+
 theorem writeBytes_extract_same (bs bytes : ByteArray) (start : Nat) :
     (MachineState.writeBytes bs bytes start).extract start (start + bytes.size) =
       bytes := by
