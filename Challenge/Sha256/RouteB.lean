@@ -11,8 +11,8 @@ soundness theorem then yields the challenge's canonical `Correct code` without
 source semantics or compiler correctness.
 
 `referenceDirectGoal` fixes the first concrete target to the frozen reference
-artifact. Its padding, schedule, compression-round, block-loop, and output
-invariants are the next proof layer.
+artifact. `RouteB.ReferenceCorrect` discharges it through reusable padding,
+schedule, compression-round, block-loop, and output invariants.
 -/
 
 namespace Challenge.Sha256.RouteB

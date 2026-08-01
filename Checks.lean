@@ -43,6 +43,18 @@ The same discipline applies to a submission: a Tier-2 proof is only a proof if
 #guard_msgs in
 #print axioms Challenge.Sha256.RouteB.Reference.reaches_firstTarget
 
+/--
+info: 'Challenge.Sha256.RouteB.ReferenceCorrect.referenceDirectProof' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Sha256.RouteB.ReferenceCorrect.referenceDirectProof
+
+/-- info: 'Challenge.Sha256.RouteB.ReferenceCorrect.reference_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Challenge.Sha256.RouteB.ReferenceCorrect.reference_correct
+
 /-- info: 'Challenge.Sha256.correct_of_computesDigest' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms Challenge.Sha256.correct_of_computesDigest

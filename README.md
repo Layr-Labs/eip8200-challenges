@@ -208,11 +208,20 @@ easiest first:
   invariants. `Challenge.Sha256.RouteB.DirectProof code` packages those traces,
   and `correct_of_directProof` closes `Correct code`.
   [`Challenge/Sha256/RouteB/Reference.lean`](Challenge/Sha256/RouteB/Reference.lean)
-  applies this to the frozen reference: the entry bytes decode under the
-  pinned EVM decoder, the compiler-generated entry targets are certified, and
-  the initial `PUSH2; JUMP` is proved both as an exact `stepF` calculation and
-  a relational `Reaches` block. Extending that trace through initialization,
-  then adding the SHA padding/schedule/round invariants, is the next layer.
+  starts this architecture with reusable entry and decoder certificates.
+  [`Challenge/Sha256/RouteB/ReferenceCorrect.lean`](Challenge/Sha256/RouteB/ReferenceCorrect.lean)
+  completes it for the frozen reference bytes: exact gas-parametric EVM traces
+  cover initialization, padding, all schedule and compression loops, digest
+  packing, and `RETURN`; the functional invariant identifies every block with
+  `Sha256.compressBlock`, and the final theorem proves both `DirectProof` and
+  `Correct referenceBytecode`. SHA is computed by the bytecode itself; no
+  precompile call or compiler-correctness theorem is used by this proof.
+
+  Optimized raw-bytecode submissions can reuse the same split. Their execution
+  proof may use different basic blocks and loop invariants, while targeting
+  the stable functional seams in `ScheduleCorrect`, `CompressionCorrect`, and
+  `SpecBridge`. `GasSteps.toEventuallyEvaluates` then turns an exact halted
+  endpoint into the common `DirectProof` obligation.
 
 ### Tier 3 — proved fast
 
@@ -258,8 +267,9 @@ hand-optimized implementation should take one to two of those orders back.
 * **Stage 2.** Obligation S, then Y1/Y2/Y8: leaf lemmas and the memory framing
   framework.
 * **Stage 3.** Y3–Y7. The reference reaches Tier 2.
-* **Stage 4.** W (any frame) and G (gas schedule); extend the Route B kernel
-  with opcode-specific symbolic automation and complete a raw-bytecode proof.
+* **Stage 4 — Route B reference done.** The frozen raw bytecode has an
+  end-to-end direct EVM proof. W (any frame), G (a concrete gas schedule), and
+  additional opcode-specific automation remain.
 * **Stage 5.** Open the leaderboard. Then the precompiles EIP-8200 actually
   names: RIPEMD-160 is the same shape, MODEXP and BLAKE2f are where it gets
   interesting.
@@ -274,8 +284,12 @@ hand-optimized implementation should take one to two of those orders back.
 | `Challenge/Sha256/Bytecode.lean` | the frozen artifact as a Lean value and its disassembly round trip |
 | `Challenge/Sha256/RouteB.lean` | direct raw-bytecode obligation and reduction to `Correct` |
 | `Challenge/Sha256/RouteB/Reference.lean` | direct `stepF` certificates and traces for the frozen reference bytecode |
+| `Challenge/Sha256/RouteB/CompressionCorrect.lean` | reusable bytecode compression invariant and equivalence to `Sha256.compressBlock` |
+| `Challenge/Sha256/RouteB/DriverCorrect.lean` | padded-block outer invariant and canonical digest packing |
+| `Challenge/Sha256/RouteB/ReferenceCorrect.lean` | end-to-end `DirectProof` and `Correct referenceBytecode` theorem |
 | `Challenge/RouteB/Bytecode.lean` | verified raw disassembler/assembler round trip |
 | `Challenge/RouteB/Execution.lean` | direct `Step`/`Eval`, reachability, and loop proof combinators |
+| `Challenge/RouteB/Gas.lean` | gas-parametric trace composition and `EventuallyEvaluates` bridge |
 | `Challenge/Sha256/Statement.lean` | `Correct`, `CorrectWithSchedule`, the frame, frame facts |
 | `Challenge/Sha256/Reduction.lean` | `correct_of_computesDigest`: Yul obligation ⟹ challenge statement |
 | `Challenge/Sha256/Reference.lean` | the artifact, its obligations, `reference_correct` |

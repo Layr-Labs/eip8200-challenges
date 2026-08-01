@@ -8,6 +8,7 @@ import Challenge.Sha256.RouteB.Reference
 import Challenge.Sha256.RouteB.Main
 import Challenge.Sha256.RouteB.Padding
 import Challenge.Sha256.RouteB.PaddingTrace
+import Challenge.Sha256.RouteB.ReferenceCorrect
 import Challenge.Sha256.RouteB.Trace
 import Challenge.Sha256.RouteB.Word
 import Challenge.Sha256.Scorer
@@ -34,6 +35,8 @@ SHA-256 (`0x02`) is the pilot:
   named obligations.
 * `Challenge.Sha256.RouteB` — the submission-facing direct-bytecode obligation
   and its reduction to `Correct`.
+* `Challenge.Sha256.RouteB.ReferenceCorrect` — the end-to-end direct proof
+  that the frozen reference bytes compute canonical SHA-256 in EVM bytecode.
 * `Challenge.Sha256.Scorer` — Tier 1, falsification by execution
   (`lake exe sha256challenge`).
 

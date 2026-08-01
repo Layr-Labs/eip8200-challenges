@@ -1,5 +1,4 @@
 import Challenge.Sha256.RouteB.ScheduleCorrect
-import Std.Tactic.BVDecide
 
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -19,16 +18,22 @@ open EvmSemantics
 open EvmSemantics.Crypto
 open EvmSemantics.EVM
 
-private theorem shl8_or_byte (w : UInt32) (b : UInt8) :
-    (w <<< 8) ||| b.toUInt32 = w * 256 + b.toUInt32 := by
-  bv_decide
-
 private theorem shl8_eq_mul256 (w : UInt32) : w <<< 8 = w * 256 := by
-  bv_decide
+  apply UInt32.ext
+  simp [UInt32.toNat_shiftLeft, UInt32.toNat_mul, Nat.shiftLeft_eq]
 
 private theorem mul256_or_byte (w : UInt32) (b : UInt8) :
     w * 256 ||| b.toUInt32 = w * 256 + b.toUInt32 := by
-  bv_decide
+  apply UInt32.toBitVec_inj.1
+  simp only [UInt32.toBitVec_or, UInt32.toBitVec_add]
+  symm
+  apply BitVec.add_eq_or_of_and_eq_zero
+  rw [← shl8_eq_mul256]
+  simp only [UInt32.toBitVec_shiftLeft, UInt8.toBitVec_toUInt32]
+  ext i hi
+  by_cases hi8 : i < 8
+  · simp [hi8]
+  · simp [hi8, BitVec.getLsbD_of_ge b.toBitVec i (by omega)]
 
 private theorem readBE32_eq_bytes (bs : ByteArray) (off : Nat) :
     Sha256.readBE32 bs off = UInt32.ofNat
