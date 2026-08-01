@@ -31,6 +31,11 @@ theorem word_ext {a b : EvmSemantics.UInt256} (h : a.toNat = b.toNat) : a = b :=
   cases b
   exact congrArg EvmSemantics.UInt256.mk (Fin.ext h)
 
+theorem word_add_comm (a b : EvmSemantics.UInt256) : a + b = b + a := by
+  apply word_ext
+  change (a.val + b.val).val = (b.val + a.val).val
+  rw [Fin.val_add, Fin.val_add, Nat.add_comm]
+
 @[simp] theorem word_toNat_ofNat (n : Nat) :
     (EvmSemantics.UInt256.ofNat n).toNat = n % 2 ^ 256 := by
   simp [EvmSemantics.UInt256.ofNat, EvmSemantics.UInt256.toNat,
