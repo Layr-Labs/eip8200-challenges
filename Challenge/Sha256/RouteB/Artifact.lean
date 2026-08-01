@@ -1,7 +1,8 @@
+import Challenge.RouteB.Program
 import Challenge.Sha256.Bytecode
-import YulEvmCompiler.Decode
 set_option warningAsError true
 set_option maxRecDepth 10000
+set_option maxHeartbeats 1000000
 /-!
 # Structural certificate for the frozen SHA-256 artifact
 
@@ -841,97 +842,41 @@ theorem assemble_referenceInstructions :
   repeat' apply And.intro
   all_goals decide
 
+/-- The reference bytes packaged through the submission-generic structural
+artifact interface. -/
+def referenceArtifact : Challenge.RouteB.ProgramArtifact where
+  code := referenceBytecode
+  instructions := referenceInstructions
+  assembly_eq := assemble_referenceInstructions
+
 /-- Byte offset of instruction `index` in the structural artifact. -/
 def instructionPC (index : Nat) : Nat :=
-  (assembleBytes (referenceInstructions.take index)).length
-
-private theorem split_at_get {α : Type} {xs : List α} {index : Nat} {x : α}
-    (hget : xs[index]? = some x) :
-    xs = xs.take index ++ x :: xs.drop (index + 1) := by
-  obtain ⟨hi, hx⟩ := List.getElem?_eq_some_iff.mp hget
-  calc
-    xs = xs.take index ++ xs.drop index := (List.take_append_drop index xs).symm
-    _ = xs.take index ++ x :: xs.drop (index + 1) := by
-      rw [List.drop_eq_getElem_cons hi, hx]
+  referenceArtifact.instructionPC index
 
 /-- Decode a plain instruction by its index in the structural artifact. -/
 theorem decodeAt_op_index (index : Nat) (o : Operation)
     (hget : referenceInstructions[index]? = some (.op o))
     (hopcode : Decode.opcodeOf (Instr.opByte o) = some o)
     (hplain : YulEvmCompiler.plainOp o) :
-    Decode.decodeAt referenceBytecode (instructionPC index) = some (o, none) := by
-  have hsplit := split_at_get hget
-  rw [← assemble_referenceInstructions]
-  unfold assemble instructionPC
-  change Decode.decodeAt (mkCode (assembleBytes referenceInstructions))
-    (assembleBytes (List.take index referenceInstructions)).length = _
-  have hbytes : assembleBytes referenceInstructions =
-      assembleBytes (referenceInstructions.take index) ++
-        (Instr.op o).bytes ++
-          assembleBytes (referenceInstructions.drop (index + 1)) := by
-    calc
-      assembleBytes referenceInstructions = assembleBytes
-          (referenceInstructions.take index ++
-            Instr.op o :: referenceInstructions.drop (index + 1)) :=
-        congrArg assembleBytes hsplit
-      _ = _ := by rw [assembleBytes_append, assembleBytes_cons]; simp [List.append_assoc]
-  rw [hbytes]
-  exact
-    YulEvmCompiler.decodeAt_op
-      (assembleBytes (referenceInstructions.take index))
-      (assembleBytes (referenceInstructions.drop (index + 1))) o hopcode hplain
+    Decode.decodeAt referenceBytecode (instructionPC index) = some (o, none) :=
+  Challenge.RouteB.ProgramArtifact.decodeAt_op_index
+    referenceArtifact index o hget hopcode hplain
 
 /-- Decode a PUSH instruction by its index in the structural artifact. -/
 theorem decodeAt_push_index (index : Nat) (width : Fin 33) (value : UInt256)
     (hget : referenceInstructions[index]? = some (.push width value))
     (hfit : value.toNat < 256 ^ width.val) :
     Decode.decodeAt referenceBytecode (instructionPC index) =
-      some (.Push ⟨width⟩, some (value, width.val)) := by
-  have hsplit := split_at_get hget
-  rw [← assemble_referenceInstructions]
-  unfold assemble instructionPC
-  change Decode.decodeAt (mkCode (assembleBytes referenceInstructions))
-    (assembleBytes (List.take index referenceInstructions)).length = _
-  have hbytes : assembleBytes referenceInstructions =
-      assembleBytes (referenceInstructions.take index) ++
-        (Instr.push width value).bytes ++
-          assembleBytes (referenceInstructions.drop (index + 1)) := by
-    calc
-      assembleBytes referenceInstructions = assembleBytes
-          (referenceInstructions.take index ++
-            Instr.push width value :: referenceInstructions.drop (index + 1)) :=
-        congrArg assembleBytes hsplit
-      _ = _ := by rw [assembleBytes_append, assembleBytes_cons]; simp [List.append_assoc]
-  rw [hbytes]
-  exact
-    YulEvmCompiler.decodeAt_push
-      (assembleBytes (referenceInstructions.take index))
-      (assembleBytes (referenceInstructions.drop (index + 1))) width value hfit
+      some (.Push ⟨width⟩, some (value, width.val)) :=
+  Challenge.RouteB.ProgramArtifact.decodeAt_push_index
+    referenceArtifact index width value hget hfit
 
 /-- A JUMPDEST at an instruction index is accepted by the pinned EVM scan. -/
 theorem isValidJumpDest_index (index : Nat)
     (hget : referenceInstructions[index]? = some (.op .JUMPDEST)) :
-    Decode.isValidJumpDest referenceBytecode (instructionPC index) = true := by
-  have hsplit := split_at_get hget
-  rw [← assemble_referenceInstructions]
-  unfold assemble instructionPC
-  change Decode.isValidJumpDest (mkCode (assembleBytes referenceInstructions))
-    (assembleBytes (List.take index referenceInstructions)).length = true
-  have hbytes : assembleBytes referenceInstructions =
-      assembleBytes (referenceInstructions.take index) ++
-        (Instr.op .JUMPDEST).bytes ++
-          assembleBytes (referenceInstructions.drop (index + 1)) := by
-    calc
-      assembleBytes referenceInstructions = assembleBytes
-          (referenceInstructions.take index ++
-            Instr.op .JUMPDEST :: referenceInstructions.drop (index + 1)) :=
-        congrArg assembleBytes hsplit
-      _ = _ := by rw [assembleBytes_append, assembleBytes_cons]; simp [List.append_assoc]
-  rw [hbytes]
-  exact
-    YulEvmCompiler.isValidJumpDest_boundary
-      (referenceInstructions.take index)
-      (assembleBytes (referenceInstructions.drop (index + 1)))
+    Decode.isValidJumpDest referenceBytecode (instructionPC index) = true :=
+  Challenge.RouteB.ProgramArtifact.isValidJumpDest_index
+    referenceArtifact index hget
 
 /-- Structural locations for the compiler-generated entry trampolines. -/
 structure EntryTrampoline where
@@ -993,5 +938,50 @@ theorem entryTarget_isValid {pc : Nat} (hpc : pc ∈ entryTargets) :
     have hv := entryTrampoline_valid t ht
     simpa [hv.2.2.2.2.2.2.1] using
       isValidJumpDest_index t.destIndex hv.2.2.2.2.2.2.2
+
+structure InitStore where
+  index : Nat
+  valueWidth : Fin 33
+  value : UInt256
+  offsetWidth : Fin 33
+  offset : UInt256
+
+def initStores : List InitStore :=
+  [⟨659, 32, 0x428a2f9871374491b5c0fbcfe9b5dba53956c25b59f111f1923f82a4ab1c5ed5, 1, 0x20⟩,
+   ⟨662, 32, 0xd807aa9812835b01243185be550c7dc372be5d7480deb1fe9bdc06a7c19bf174, 1, 0x40⟩,
+   ⟨665, 32, 0xe49b69c1efbe47860fc19dc6240ca1cc2de92c6f4a7484aa5cb0a9dc76f988da, 1, 0x60⟩,
+   ⟨668, 32, 0x983e5152a831c66db00327c8bf597fc7c6e00bf3d5a7914706ca635114292967, 1, 0x80⟩,
+   ⟨671, 32, 0x27b70a852e1b21384d2c6dfc53380d13650a7354766a0abb81c2c92e92722c85, 1, 0xa0⟩,
+   ⟨674, 32, 0xa2bfe8a1a81a664bc24b8b70c76c51a3d192e819d6990624f40e3585106aa070, 1, 0xc0⟩,
+   ⟨677, 32, 0x19a4c1161e376c082748774c34b0bcb5391c0cb34ed8aa4a5b9cca4f682e6ff3, 1, 0xe0⟩,
+   ⟨680, 32, 0x748f82ee78a5636f84c878148cc7020890befffaa4506cebbef9a3f7c67178f2, 2, 0x100⟩,
+   ⟨683, 4, 0x6a09e667, 2, 0x120⟩,
+   ⟨686, 4, 0xbb67ae85, 2, 0x140⟩,
+   ⟨689, 4, 0x3c6ef372, 2, 0x160⟩,
+   ⟨692, 4, 0xa54ff53a, 2, 0x180⟩,
+   ⟨695, 4, 0x510e527f, 2, 0x1a0⟩,
+   ⟨698, 4, 0x9b05688c, 2, 0x1c0⟩,
+   ⟨701, 4, 0x1f83d9ab, 2, 0x1e0⟩,
+   ⟨704, 4, 0x5be0cd19, 2, 0x200⟩]
+
+theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
+    referenceInstructions[w.index]? = some (.push w.valueWidth w.value) ∧
+    instructionPC (w.index + 1) = instructionPC w.index + w.valueWidth.val + 1 ∧
+    referenceInstructions[w.index + 1]? = some (.push w.offsetWidth w.offset) ∧
+    instructionPC (w.index + 2) = instructionPC (w.index + 1) + w.offsetWidth.val + 1 ∧
+    referenceInstructions[w.index + 2]? = some (.op .MSTORE) ∧
+    instructionPC (w.index + 3) = instructionPC (w.index + 2) + 1 := by
+  simp only [initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
+  rcases hw with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  all_goals repeat' apply And.intro
+  all_goals rfl
+
+theorem mainEntry_valid :
+    instructionPC 658 = 0x03e5 ∧
+    referenceInstructions[658]? = some (.op .JUMPDEST) ∧
+    instructionPC 659 = 0x03e6 := by
+  repeat' apply And.intro
+  all_goals rfl
 
 end Challenge.Sha256.RouteB.Artifact

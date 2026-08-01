@@ -2,6 +2,7 @@ import Challenge.RouteB.Bytecode
 import Challenge.RouteB.Execution
 import Challenge.RouteB.Gas
 import Challenge.RouteB.Ops
+import Challenge.RouteB.Program
 import Challenge.RouteB.Word
 set_option warningAsError true
 /-!
