@@ -82,6 +82,27 @@ theorem toReaches {s t : State} (h : GasSteps s t) :
   subst u
   exact ⟨_, hs gas hgas, gas - cost, rfl⟩
 
+/-- Turn a family of gas-parametric traces to exact halted states into the
+submission-facing `EventuallyEvaluates` obligation.  Both `isDone` and
+`toResult` ignore the available-gas field, so callers only need to identify
+the gas-erased final state once. -/
+theorem toEventuallyEvaluates {Input : Type}
+    (initial final : Input → State) (expected : Input → ExecutionResult)
+    (hsteps : ∀ input, GasSteps (initial input) (final input))
+    (hdone : ∀ input, (final input).isDone = true)
+    (hresult : ∀ input, (final input).toResult = expected input) :
+    EventuallyEvaluates
+      (fun input gas => withGas (initial input) gas) expected := by
+  intro input
+  obtain ⟨cost, htrace⟩ := hsteps input
+  refine ⟨cost, fun gas hgas s hs => ?_⟩
+  subst s
+  refine ⟨withGas (final input) (gas - cost), htrace gas hgas, ?_, ?_⟩
+  · change (final input).isDone = true
+    exact hdone input
+  · change (final input).toResult = expected input
+    exact hresult input
+
 end GasSteps
 
 end Challenge.RouteB
