@@ -1,5 +1,6 @@
 import Challenge.RouteB.Bytecode
 import EvmSemantics.Machine.MachineState
+import YulEvmCompiler.Instr
 set_option warningAsError true
 /-!
 # Pointwise EVM memory reasoning
@@ -11,6 +12,147 @@ pointwise views suitable for functional bytecode proofs.
 namespace Challenge.RouteB.Memory
 
 open EvmSemantics
+
+theorem getD0_eq_getElem! (c : ByteArray) (i : Nat) :
+    c[i]?.getD 0 = c[i]! := by
+  rw [getElem!_def]
+  cases c[i]? <;> rfl
+
+theorem getD0_eq_getElem (c : ByteArray) (i : Nat) (h : i < c.size) :
+    c[i]?.getD 0 = c[i] := by
+  rw [getD0_eq_getElem!, getElem!_pos c i h]
+
+theorem getElem?_getD_eq_zero_of_size_le (bs : ByteArray) (i : Nat)
+    (h : bs.size ≤ i) : bs[i]?.getD 0 = 0 := by
+  change (bs.data[i]?).getD 0 = 0
+  rw [Array.getElem?_eq_none]
+  · rfl
+  · exact h
+
+theorem getElem?_getD_append (a b : ByteArray) (i : Nat) :
+    (a ++ b)[i]?.getD 0 =
+      if i < a.size then a[i]?.getD 0 else b[i - a.size]?.getD 0 := by
+  rw [getD0_eq_getElem!, getD0_eq_getElem!]
+  by_cases ha : i < a.size
+  · rw [if_pos ha, getElem!_pos (a ++ b) i (by
+        rw [ByteArray.size_append]; omega), getElem!_pos a i ha]
+    exact ByteArray.getElem_append_left ha
+  · rw [if_neg ha]
+    by_cases hb : i - a.size < b.size
+    · have hai : a.size ≤ i := by omega
+      rw [getD0_eq_getElem!]
+      rw [getElem!_pos (a ++ b) i (by rw [ByteArray.size_append]; omega),
+        getElem!_pos b (i - a.size) hb]
+      exact ByteArray.getElem_append_right hai
+    · rw [getD0_eq_getElem!,
+        getElem!_neg (a ++ b) i (by rw [ByteArray.size_append]; omega),
+        getElem!_neg b (i - a.size) hb]
+
+private def lowBytes (n : Nat) : Nat → List UInt8
+  | 0 => []
+  | w + 1 => UInt8.ofNat (n % 256) :: lowBytes (n / 256) w
+
+@[simp] private theorem length_lowBytes (n width : Nat) :
+    (lowBytes n width).length = width := by
+  induction width generalizing n with
+  | zero => rfl
+  | succ width ih => simp [lowBytes, ih]
+
+private def pullBytes : Nat → Array UInt8 → Nat → MProd Nat (Array UInt8)
+  | n, acc, 0 => ⟨n, acc⟩
+  | n, acc, w + 1 => pullBytes (n / 256) (acc.push (UInt8.ofNat (n % 256))) w
+
+private theorem foldl_pullBytes (xs : List Nat) (n : Nat) (acc : Array UInt8) :
+    xs.foldl
+        (fun (b : MProd Nat (Array UInt8)) _ =>
+          ⟨b.fst / 256, b.snd.push (UInt8.ofNat (b.fst % 256))⟩)
+        ⟨n, acc⟩ =
+      pullBytes n acc xs.length := by
+  induction xs generalizing n acc with
+  | nil => rfl
+  | cons _ xs ih =>
+      simp only [List.foldl_cons, List.length_cons, pullBytes]
+      exact ih _ _
+
+private theorem pullBytes_eq (n : Nat) (acc : Array UInt8) (w : Nat) :
+    (pullBytes n acc w).snd = acc ++ (lowBytes n w).toArray := by
+  induction w generalizing n acc with
+  | zero => simp [pullBytes, lowBytes]
+  | succ w ih =>
+      rw [pullBytes, ih]
+      simp [lowBytes]
+
+private theorem map_reverse_get (l : List UInt8) :
+    (List.range' 0 l.length).map (fun i => l[l.length - 1 - i]!) =
+      l.reverse := by
+  apply List.ext_get
+  · simp
+  · intro i _ hi
+    simp [List.getElem_reverse]
+    have hi' : i < l.length := by simpa using hi
+    rw [List.getElem?_eq_getElem (by omega)]
+    rfl
+
+private theorem reverse_lowBytes (n width : Nat) :
+    (lowBytes n width).reverse = YulEvmCompiler.natToBE n width := by
+  induction width generalizing n with
+  | zero => rfl
+  | succ width ih =>
+      simp [lowBytes, YulEvmCompiler.natToBE, ih]
+
+theorem natToBytesPadded_eq_natToBE (n width : Nat) :
+    Data.Bytes.natToBytesPadded n width =
+      ByteArray.mk (YulEvmCompiler.natToBE n width).toArray := by
+  have hpull := foldl_pullBytes (List.range' 0 width) n #[]
+  have hsnd := congrArg MProd.snd hpull
+  rw [pullBytes_eq] at hsnd
+  simp at hsnd
+  apply ByteArray.ext
+  simp [Data.Bytes.natToBytesPadded]
+  rw [hsnd]
+  calc
+    _ = (lowBytes n width).reverse := by
+      simpa only [length_lowBytes, List.getElem!_toArray] using
+        map_reverse_get (lowBytes n width)
+    _ = _ := reverse_lowBytes n width
+
+private theorem foldl_natToBE (width : Nat) :
+    ∀ n acc : Nat, n < 256 ^ width →
+      (YulEvmCompiler.natToBE n width).foldl
+          (fun acc b => acc * 256 + b.toNat) acc =
+        acc * 256 ^ width + n := by
+  induction width with
+  | zero =>
+      intro n acc h
+      have hn : n = 0 := by omega
+      subst n
+      simp [YulEvmCompiler.natToBE]
+  | succ width ih =>
+      intro n acc h
+      rw [YulEvmCompiler.natToBE, List.foldl_append]
+      have hdiv : n / 256 < 256 ^ width := by
+        rw [Nat.div_lt_iff_lt_mul (by omega)]
+        calc
+          n < 256 ^ (width + 1) := h
+          _ = 256 ^ width * 256 := by rw [Nat.pow_succ]
+      rw [ih (n / 256) acc hdiv]
+      have hmod : (UInt8.ofNat (n % 256)).toNat = n % 256 := by simp
+      simp only [List.foldl_cons, List.foldl_nil, hmod]
+      have hsplit := Nat.div_add_mod n 256
+      rw [Nat.pow_succ]
+      rw [Nat.add_mul, ← Nat.mul_assoc]
+      omega
+
+theorem bytesToBigEndianNat_natToBytesPadded (n width : Nat)
+    (h : n < 256 ^ width) :
+    Data.Bytes.bytesToBigEndianNat (Data.Bytes.natToBytesPadded n width) = n := by
+  rw [natToBytesPadded_eq_natToBE]
+  unfold Data.Bytes.bytesToBigEndianNat
+  rw [Challenge.RouteB.Bytecode.toList_eq_data]
+  change (YulEvmCompiler.natToBE n width).foldl
+    (fun acc b => acc * 256 + b.toNat) 0 = n
+  rw [foldl_natToBE width n 0 h]
+  simp
 
 theorem readPadded_toList (bs : ByteArray) (start n : Nat) :
     (MachineState.readPadded bs start n).toList =
@@ -85,5 +227,34 @@ theorem readWord_writeBytes (bs : ByteArray) (start value : Nat) :
       start 32 = Data.Bytes.natToBytesPadded value 32 := by
     simpa only [hsize] using hr
   rw [hr32]
+
+theorem readWord_writeBytes_of_lt (bs : ByteArray) (start value : Nat)
+    (hvalue : value < 256 ^ 32) :
+    MachineState.readWord
+        (MachineState.writeBytes bs (Data.Bytes.natToBytesPadded value 32) start)
+        start = UInt256.ofNat value := by
+  rw [readWord_writeBytes, bytesToBigEndianNat_natToBytesPadded value 32 hvalue]
+
+private theorem pow_256_32 : (256 : Nat) ^ 32 = 2 ^ 256 := by
+  have h8 : (256 : Nat) = 2 ^ 8 := by decide
+  calc
+    (256 : Nat) ^ 32 = (2 ^ 8) ^ 32 := by rw [h8]
+    _ = 2 ^ (8 * 32) := (Nat.pow_mul 2 8 32).symm
+    _ = 2 ^ 256 := by rfl
+
+theorem readWord_writeWord (bs : ByteArray) (start : Nat) (value : UInt256) :
+    MachineState.readWord
+        (MachineState.writeBytes bs
+          (Data.Bytes.natToBytesPadded value.toNat 32) start)
+        start = value := by
+  rw [readWord_writeBytes_of_lt]
+  · cases value with
+    | mk value =>
+        unfold UInt256.ofNat
+        apply congrArg
+        apply Fin.ext
+        exact Nat.mod_eq_of_lt value.isLt
+  · rw [pow_256_32]
+    exact value.val.isLt
 
 end Challenge.RouteB.Memory
