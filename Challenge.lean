@@ -7,6 +7,8 @@ import Challenge.Sha256.RouteB
 import Challenge.Sha256.RouteB.Reference
 import Challenge.Sha256.RouteB.Main
 import Challenge.Sha256.RouteB.Padding
+import Challenge.Sha256.RouteB.PaddingTrace
+import Challenge.Sha256.RouteB.Trace
 import Challenge.Sha256.RouteB.Word
 import Challenge.Sha256.Scorer
 set_option warningAsError true
