@@ -194,10 +194,19 @@ easiest first:
   sound Yul→Yul pass (`Optimizer.Sound` in yul-compiler). Then *every* program
   that compiler compiles gets faster — the most valuable kind of submission.
 * **Route B (raw bytecode).** Prove directly over `EvmSemantics.EVM.Step`. This
-  needs infrastructure that does not exist yet: a verified disassembler with a
-  round-trip theorem (`assemble ∘ disassemble = id`) so reasoning can happen at
-  the byte-free `Asm` layer, plus a symbolic-execution/Hoare kit for loops.
-  Contributions to *that* are as welcome as a submission.
+  route starts from the submitted bytes and does not assume compiler
+  provenance. [`Challenge/RouteB/Bytecode.lean`](Challenge/RouteB/Bytecode.lean)
+  provides a verified byte-preserving disassembler
+  (`assemble (disassemble code) = code`), including invalid opcodes and
+  truncated immediates. [`Challenge/RouteB/Execution.lean`](Challenge/RouteB/Execution.lean)
+  lifts deterministic `stepF` calculations into relational `Step`/`Eval`
+  proofs and supplies compositional reachability and indexed-loop lemmas.
+  A submission proves straight-line blocks with `Reaches.of_execN`, composes
+  them with `Reaches.trans`, and instantiates `Reaches.iterate` with its loop
+  invariants. `Challenge.Sha256.RouteB.DirectProof code` packages those traces,
+  and `correct_of_directProof` closes `Correct code`. Opcode-specific
+  automation and the SHA padding/schedule/round invariants are the next layer;
+  contributions to those remain welcome.
 
 ### Tier 3 — proved fast
 
@@ -243,8 +252,8 @@ hand-optimized implementation should take one to two of those orders back.
 * **Stage 2.** Obligation S, then Y1/Y2/Y8: leaf lemmas and the memory framing
   framework.
 * **Stage 3.** Y3–Y7. The reference reaches Tier 2.
-* **Stage 4.** W (any frame) and G (gas schedule); Route B infrastructure so
-  raw-bytecode submissions become possible.
+* **Stage 4.** W (any frame) and G (gas schedule); extend the Route B kernel
+  with opcode-specific symbolic automation and complete a raw-bytecode proof.
 * **Stage 5.** Open the leaderboard. Then the precompiles EIP-8200 actually
   names: RIPEMD-160 is the same shape, MODEXP and BLAKE2f are where it gets
   interesting.
@@ -254,6 +263,11 @@ hand-optimized implementation should take one to two of those orders back.
 | path | what |
 |---|---|
 | `Challenge/Sha256/reference.yul` | the reference implementation |
+| `Challenge/Sha256/reference.hex` | the frozen raw-bytecode artifact generated from the reference |
+| `Challenge/Sha256/Bytecode.lean` | the frozen artifact as a Lean value and its disassembly round trip |
+| `Challenge/Sha256/RouteB.lean` | direct raw-bytecode obligation and reduction to `Correct` |
+| `Challenge/RouteB/Bytecode.lean` | verified raw disassembler/assembler round trip |
+| `Challenge/RouteB/Execution.lean` | direct `Step`/`Eval`, reachability, and loop proof combinators |
 | `Challenge/Sha256/Statement.lean` | `Correct`, `CorrectWithSchedule`, the frame, frame facts |
 | `Challenge/Sha256/Reduction.lean` | `correct_of_computesDigest`: Yul obligation ⟹ challenge statement |
 | `Challenge/Sha256/Reference.lean` | the artifact, its obligations, `reference_correct` |

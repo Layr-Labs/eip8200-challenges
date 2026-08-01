@@ -50,6 +50,17 @@ jobs:
           fi
           lake env lean Checks.lean
 
+      # `reference.hex` is the frozen Route-B artifact. The compiler is only
+      # its reproducible generator; no Route-B theorem uses compiler soundness.
+      - name: Verify frozen reference bytecode
+        run: |
+          compiled="$(lake exe yulc Challenge/Sha256/reference.yul)"
+          frozen="$(tr -d '[:space:]' < Challenge/Sha256/reference.hex)"
+          if [ "$compiled" != "$frozen" ]; then
+            echo "::error::reference.hex is stale"
+            exit 1
+          fi
+
       # Tier 1: the reference implementation must still compile through the
       # verified compiler and return exactly EvmSemantics.Crypto.Sha256.hash on
       # every FIPS and padding-boundary vector, in a clean frame and a dirty
