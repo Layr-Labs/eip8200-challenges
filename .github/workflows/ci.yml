@@ -13,26 +13,49 @@ concurrency:
 jobs:
   verify:
     name: Build, verify, score
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
+    runs-on: warp-ubuntu-2404-x64-32x
+    timeout-minutes: 45
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      # The pinned dependency builds (yul-compiler and the two semantics) are
-      # the expensive part; Mathlib itself comes from its own olean cache.
-      - name: Cache package builds
-        uses: actions/cache@v4
+      # Change the dependency cache only when this repository's import surface
+      # changes. Ordinary proof edits can reuse the same package build, while a
+      # new import gets a fresh key that can save the expanded closure.
+      - name: Fingerprint Lean imports
+        id: lean-imports
+        run: |
+          import_hash="$({ git grep --no-color '^import ' -- '*.lean' || true; } | sort | sha256sum | cut -d' ' -f1)"
+          echo "hash=$import_hash" >> "$GITHUB_OUTPUT"
+
+      # Cache this repository separately from its pinned dependencies. The
+      # restore prefix gives Lake a safe incremental base after source edits.
+      - name: Cache compiled project build
+        uses: actions/cache@v5
         with:
-          path: |
-            .lake/packages/*/.lake/build
-          key: packages-${{ hashFiles('lake-manifest.json', 'lean-toolchain') }}
-          restore-keys: packages-
+          path: .lake/build
+          key: project-lake-build-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ hashFiles('Challenge/**/*.lean', 'Challenge.lean', 'Checks.lean', 'Main.lean', 'lakefile.toml') }}
+          restore-keys: |
+            project-lake-build-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
 
-      - name: Build (fetch Mathlib cache + lake build)
+      # Preserve complete package workspaces, including Git metadata. Caching
+      # only their build directories makes Lake regard the restored packages
+      # as invalid checkouts and delete the artifacts before building.
+      - name: Cache pinned packages
+        id: package-cache
+        uses: actions/cache@v5
+        with:
+          path: .lake/packages
+          key: lake-packages-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ steps.lean-imports.outputs.hash }}
+          restore-keys: |
+            lake-packages-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+
+      - name: Build (fetch Mathlib cache on cold start + lake build)
         uses: leanprover/lean-action@v1
         with:
-          use-mathlib-cache: "true"
+          # `cache-hit` is empty only for a total miss; it is `false` for a
+          # restore-prefix hit, whose complete workspace already has Mathlib.
+          use-mathlib-cache: ${{ steps.package-cache.outputs.cache-hit == '' }}
           build: "true"
           test: "false"
           lint: "false"
@@ -49,6 +72,17 @@ jobs:
             exit 1
           fi
           lake env lean Checks.lean
+
+      # `reference.hex` is the frozen Route-B artifact. The compiler is only
+      # its reproducible generator; no Route-B theorem uses compiler soundness.
+      - name: Verify frozen reference bytecode
+        run: |
+          compiled="$(lake exe yulc Challenge/Sha256/reference.yul)"
+          frozen="$(tr -d '[:space:]' < Challenge/Sha256/reference.hex)"
+          if [ "$compiled" != "$frozen" ]; then
+            echo "::error::reference.hex is stale"
+            exit 1
+          fi
 
       # Tier 1: the reference implementation must still compile through the
       # verified compiler and return exactly EvmSemantics.Crypto.Sha256.hash on
