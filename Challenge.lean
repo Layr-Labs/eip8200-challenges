@@ -4,6 +4,7 @@ import Challenge.Sha256.Statement
 import Challenge.Sha256.Reduction
 import Challenge.Sha256.Reference
 import Challenge.Sha256.RouteB
+import Challenge.Sha256.RouteB.Reference
 import Challenge.Sha256.Scorer
 set_option warningAsError true
 /-!

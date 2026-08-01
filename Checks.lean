@@ -23,6 +23,10 @@ The same discipline applies to a submission: a Tier-2 proof is only a proof if
 #guard_msgs in
 #print axioms Challenge.RouteB.Bytecode.assemble_disassemble
 
+/-- info: 'Challenge.RouteB.Bytecode.JumpDestCertificate.valid' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms Challenge.RouteB.Bytecode.JumpDestCertificate.valid
+
 /-- info: 'Challenge.RouteB.eval_of_steps' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms Challenge.RouteB.eval_of_steps
@@ -34,6 +38,10 @@ The same discipline applies to a submission: a Tier-2 proof is only a proof if
 /-- info: 'Challenge.Sha256.RouteB.correct_of_directProof' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms Challenge.Sha256.RouteB.correct_of_directProof
+
+/-- info: 'Challenge.Sha256.RouteB.Reference.reaches_firstTarget' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Challenge.Sha256.RouteB.Reference.reaches_firstTarget
 
 /-- info: 'Challenge.Sha256.correct_of_computesDigest' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

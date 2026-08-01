@@ -198,15 +198,20 @@ easiest first:
   provenance. [`Challenge/RouteB/Bytecode.lean`](Challenge/RouteB/Bytecode.lean)
   provides a verified byte-preserving disassembler
   (`assemble (disassemble code) = code`), including invalid opcodes and
-  truncated immediates. [`Challenge/RouteB/Execution.lean`](Challenge/RouteB/Execution.lean)
+  truncated immediates, plus reusable jump-destination certificates and
+  PUSH-immediate normalization. [`Challenge/RouteB/Execution.lean`](Challenge/RouteB/Execution.lean)
   lifts deterministic `stepF` calculations into relational `Step`/`Eval`
   proofs and supplies compositional reachability and indexed-loop lemmas.
   A submission proves straight-line blocks with `Reaches.of_execN`, composes
   them with `Reaches.trans`, and instantiates `Reaches.iterate` with its loop
   invariants. `Challenge.Sha256.RouteB.DirectProof code` packages those traces,
-  and `correct_of_directProof` closes `Correct code`. Opcode-specific
-  automation and the SHA padding/schedule/round invariants are the next layer;
-  contributions to those remain welcome.
+  and `correct_of_directProof` closes `Correct code`.
+  [`Challenge/Sha256/RouteB/Reference.lean`](Challenge/Sha256/RouteB/Reference.lean)
+  applies this to the frozen reference: the entry bytes decode under the
+  pinned EVM decoder, the compiler-generated entry targets are certified, and
+  the initial `PUSH2; JUMP` is proved both as an exact `stepF` calculation and
+  a relational `Reaches` block. Extending that trace through initialization,
+  then adding the SHA padding/schedule/round invariants, is the next layer.
 
 ### Tier 3 — proved fast
 
@@ -264,8 +269,10 @@ hand-optimized implementation should take one to two of those orders back.
 |---|---|
 | `Challenge/Sha256/reference.yul` | the reference implementation |
 | `Challenge/Sha256/reference.hex` | the frozen raw-bytecode artifact generated from the reference |
+| `Challenge/Sha256/ReferenceBytes.lean` | reducible literal form of the same frozen bytes, pinned by CI |
 | `Challenge/Sha256/Bytecode.lean` | the frozen artifact as a Lean value and its disassembly round trip |
 | `Challenge/Sha256/RouteB.lean` | direct raw-bytecode obligation and reduction to `Correct` |
+| `Challenge/Sha256/RouteB/Reference.lean` | direct `stepF` certificates and traces for the frozen reference bytecode |
 | `Challenge/RouteB/Bytecode.lean` | verified raw disassembler/assembler round trip |
 | `Challenge/RouteB/Execution.lean` | direct `Step`/`Eval`, reachability, and loop proof combinators |
 | `Challenge/Sha256/Statement.lean` | `Correct`, `CorrectWithSchedule`, the frame, frame facts |

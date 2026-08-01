@@ -17,7 +17,7 @@ what is run, and `README.md` for what passing does and does not mean.
 -/
 
 open EvmSemantics
-open Challenge.Sha256 (referenceSourcePath)
+open Challenge.Sha256 (referenceBytecode referenceSourcePath)
 open Challenge.Sha256.Scorer
 
 private def hexToBytes? (text : String) : Option ByteArray :=
@@ -36,6 +36,9 @@ private def usage : String :=
   s!"  default: {referenceSourcePath}"
 
 def main (args : List String) : IO UInt32 := do
+  if args = ["--print-reference-hex"] then
+    IO.println (Hex.bytesToHex referenceBytecode)
+    return 0
   let flag (name : String) : Option String :=
     args.findSome? fun arg =>
       if arg.startsWith s!"--{name}=" then some (arg.drop (name.length + 3)).copy else none

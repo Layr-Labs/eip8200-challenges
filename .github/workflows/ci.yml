@@ -79,7 +79,8 @@ jobs:
         run: |
           compiled="$(lake exe yulc Challenge/Sha256/reference.yul)"
           frozen="$(tr -d '[:space:]' < Challenge/Sha256/reference.hex)"
-          if [ "$compiled" != "$frozen" ]; then
+          literal="$(lake exe sha256challenge --print-reference-hex)"
+          if [ "$compiled" != "$frozen" ] || [ "$literal" != "$frozen" ]; then
             echo "::error::reference.hex is stale"
             exit 1
           fi
