@@ -167,6 +167,21 @@ theorem xor {s : State} {a b : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.xor_ (withGas s gas) a b rest hop hgas hstack hcap
 
+theorem lnot {s : State} {a : UInt256} {rest : List UInt256}
+    (hop : s.decodedOp = some .NOT)
+    (hstack : s.stack = a :: rest)
+    (hcap : s.stack.length + Operation.pushArity .NOT ≤
+      1024 + Operation.popArity .NOT)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with stack := UInt256.lnot a :: rest, pc := s.pc.succ } := by
+  let cost := Gas.baseCost s.fork .NOT
+  apply of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost] using
+    StepRunning.not (withGas s gas) a rest hop hgas hstack hcap
+
 theorem shl {s : State} {shift value : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .SHL)
     (hstack : s.stack = shift :: value :: rest)
@@ -352,6 +367,25 @@ theorem mstore {s : State} (offset value : UInt256) (rest : List UInt256)
   simpa [withGas, cost, Gas.mstoreTotal, State.activeWordsAfterUInt256] using
     StepRunning.mstore (withGas s gas) offset value rest hop hstack hgas hcap
 
+theorem mload {s : State} (offset : UInt256) (rest : List UInt256)
+    (hop : s.decodedOp = some .MLOAD)
+    (hstack : s.stack = offset :: rest)
+    (hcap : s.stack.length + Operation.pushArity .MLOAD ≤
+      1024 + Operation.popArity .MLOAD)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with
+      stack := MachineState.readWord s.memory offset.toNat :: rest
+      pc := s.pc.succ
+      activeWords := s.activeWordsAfterUInt256 offset.toNat 32 } := by
+  let cost := Gas.mloadTotal s offset
+  apply of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost, Gas.mloadTotal,
+    State.activeWordsAfterUInt256] using
+    StepRunning.mload (withGas s gas) offset rest hop hstack hgas hcap
+
 theorem mstore8 {s : State} (offset value : UInt256) (rest : List UInt256)
     (hop : s.decodedOp = some .MSTORE8)
     (hstack : s.stack = offset :: value :: rest)
@@ -371,6 +405,31 @@ theorem mstore8 {s : State} (offset value : UInt256) (rest : List UInt256)
   intro gas hgas
   simpa [withGas, cost, Gas.mstore8Total, State.activeWordsAfterUInt256] using
     StepRunning.mstore8 (withGas s gas) offset value rest hop hstack hgas hcap
+
+theorem mcopy {s : State} (destOff srcOff size : UInt256)
+    (rest : List UInt256)
+    (hop : s.decodedOp = some .MCOPY)
+    (hstack : s.stack = destOff :: srcOff :: size :: rest)
+    (hcap : s.stack.length + Operation.pushArity .MCOPY ≤
+      1024 + Operation.popArity .MCOPY)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with
+      stack := rest
+      pc := s.pc.succ
+      memory := MachineState.writeBytes s.memory
+        (MachineState.readPadded s.memory srcOff.toNat size.toNat)
+        destOff.toNat
+      activeWords := s.activeWordsAfterUInt256_2
+        destOff.toNat size.toNat srcOff.toNat size.toNat } := by
+  let cost := Gas.mcopyTotal s destOff srcOff size
+  apply of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost, Gas.mcopyTotal,
+    State.activeWordsAfterUInt256_2] using
+    StepRunning.mcopy (withGas s gas) destOff srcOff size rest
+      hop hstack hgas hcap
 
 theorem jump {s : State} (dest : UInt256) (rest : List UInt256)
     (hop : s.decodedOp = some .JUMP)
@@ -422,5 +481,25 @@ theorem jumpiNotTaken {s : State} (dest cond : UInt256) (rest : List UInt256)
   simpa [withGas, cost] using
     StepRunning.jumpi_notTaken (withGas s gas) dest cond rest hop hgas hstack
       hcond hcap
+
+theorem return_ {s : State} (offset size : UInt256) (rest : List UInt256)
+    (hop : s.decodedOp = some .RETURN)
+    (hstack : s.stack = offset :: size :: rest)
+    (hcap : s.stack.length + Operation.pushArity .RETURN ≤
+      1024 + Operation.popArity .RETURN)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with
+      halt := .Returned
+      hReturn := MachineState.readPadded s.memory offset.toNat size.toNat
+      stack := rest
+      activeWords := s.activeWordsAfterUInt256 offset.toNat size.toNat } := by
+  let cost := Gas.returnTotal s offset size
+  apply of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost, Gas.returnTotal,
+    State.activeWordsAfterUInt256] using
+    StepRunning.return_ (withGas s gas) offset size rest hop hstack hgas hcap
 
 end Challenge.RouteB.GasStep
