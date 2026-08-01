@@ -25,7 +25,7 @@ jobs:
       - name: Fingerprint Lean imports
         id: lean-imports
         run: |
-          import_hash="$({ rg --no-heading '^import ' --glob '*.lean' || true; } | sort | sha256sum | cut -d' ' -f1)"
+          import_hash="$({ rg --no-heading '^import ' --glob '*.lean' . || true; } | sort | sha256sum | cut -d' ' -f1)"
           echo "hash=$import_hash" >> "$GITHUB_OUTPUT"
 
       # Cache this repository separately from its pinned dependencies. The
