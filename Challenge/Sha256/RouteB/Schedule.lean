@@ -288,6 +288,15 @@ def firstLoopState (s : State) (msgOff returnDest : UInt256)
       simp [firstLoopState, afterFirstIteration, afterFirstStore,
         afterFirstLoad, ih]
 
+@[simp] theorem firstLoopState_callStack (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) (j : Nat) :
+    (firstLoopState s msgOff returnDest rest j).callStack = s.callStack := by
+  induction j with
+  | zero => rfl
+  | succ j ih =>
+      simp [firstLoopState, afterFirstIteration, afterFirstStore,
+        afterFirstLoad, ih]
+
 @[simp] theorem firstAt_firstLoopState (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (j : Nat) :
     firstAt (firstLoopState s msgOff returnDest rest j)
@@ -1082,6 +1091,12 @@ def secondLoopState (s : State) (msgOff returnDest : UInt256)
     (afterSecondIteration s msgOff returnDest rest j).halt = s.halt := by
   rfl
 
+@[simp] theorem afterSecondIteration_callStack (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) (j : Nat) :
+    (afterSecondIteration s msgOff returnDest rest j).callStack =
+      s.callStack := by
+  rfl
+
 @[simp] theorem secondLoopState_executionEnv (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (n : Nat) :
     (secondLoopState s msgOff returnDest rest n).executionEnv = s.executionEnv := by
@@ -1092,6 +1107,13 @@ def secondLoopState (s : State) (msgOff returnDest : UInt256)
 @[simp] theorem secondLoopState_halt (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (n : Nat) :
     (secondLoopState s msgOff returnDest rest n).halt = s.halt := by
+  induction n with
+  | zero => rfl
+  | succ n ih => simp [secondLoopState, ih]
+
+@[simp] theorem secondLoopState_callStack (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) (n : Nat) :
+    (secondLoopState s msgOff returnDest rest n).callStack = s.callStack := by
   induction n with
   | zero => rfl
   | succ n ih => simp [secondLoopState, ih]

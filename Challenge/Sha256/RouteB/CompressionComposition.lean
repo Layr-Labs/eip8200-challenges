@@ -26,6 +26,12 @@ open EvmSemantics.EVM
     (shiftReturned q src dest loadReturn storeReturn context).halt = q.halt := by
   rfl
 
+@[simp] theorem shiftReturned_callStack (q : State) (src dest loadReturn
+    storeReturn : Nat) (context : List UInt256) :
+    (shiftReturned q src dest loadReturn storeReturn context).callStack =
+      q.callStack := by
+  rfl
+
 @[simp] theorem directStored_executionEnv (q : State) (offset : Nat)
     (value : UInt256) (nextPC : Nat) (context : List UInt256) :
     (directStored q offset value nextPC context).executionEnv =
@@ -35,6 +41,11 @@ open EvmSemantics.EVM
 @[simp] theorem directStored_halt (q : State) (offset : Nat)
     (value : UInt256) (nextPC : Nat) (context : List UInt256) :
     (directStored q offset value nextPC context).halt = q.halt := by
+  rfl
+
+@[simp] theorem directStored_callStack (q : State) (offset : Nat)
+    (value : UInt256) (nextPC : Nat) (context : List UInt256) :
+    (directStored q offset value nextPC context).callStack = q.callStack := by
   rfl
 
 @[simp] theorem afterSchedule_executionEnv (s : State)
@@ -50,12 +61,22 @@ open EvmSemantics.EVM
   simp only [afterSchedule, Schedule.scheduleResult, Schedule.scheduleReturned,
     Schedule.secondLoopState_halt, Schedule.firstLoopState_halt]
 
+@[simp] theorem afterSchedule_callStack (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) :
+    (afterSchedule s msgOff returnDest rest).callStack = s.callStack := by
+  simp only [afterSchedule, Schedule.scheduleResult, Schedule.scheduleReturned,
+    Schedule.secondLoopState_callStack, Schedule.firstLoopState_callStack]
+
 @[simp] theorem copyHashState_executionEnv (s : State) :
     (copyHashState s).executionEnv = s.executionEnv := by
   rfl
 
 @[simp] theorem copyHashState_halt (s : State) :
     (copyHashState s).halt = s.halt := by
+  rfl
+
+@[simp] theorem copyHashState_callStack (s : State) :
+    (copyHashState s).callStack = s.callStack := by
   rfl
 
 theorem gasSteps_entry (s : State) (msgOff returnDest : UInt256)
@@ -607,6 +628,14 @@ theorem gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
     loadedE, Functions.unaryReturned, Accessors.loadReturned,
     Accessors.kAtReturned]
 
+@[simp] theorem afterT2_callStack (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (j : Nat) :
+    (afterT2 s msgOff returnDest rest j).callStack = s.callStack := by
+  simp [afterT2, gotBigSigma0, gotMaj, gotT2H1, gotT2H2, loadedA,
+    afterT1, gotH7, gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW,
+    loadedE, Functions.unaryReturned, Accessors.loadReturned,
+    Accessors.kAtReturned]
+
 private theorem gasSteps_shift (loadPath storePath : List
     (Challenge.RouteB.Stepper.Located Artifact.referenceArtifact .Osaka))
     (q : State) (src dest loadReturn storeReturn startPC : Nat)
@@ -939,6 +968,15 @@ def roundLoopState (s : State) (msgOff returnDest : UInt256)
     Accessors.storeReturned, h4Loaded, Accessors.loadReturned, afterStoreE,
     afterShift6, afterShift7, afterT2_halt]
 
+@[simp] theorem afterSecondIteration_callStack (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) (j : Nat) :
+    (afterSecondIteration s msgOff returnDest rest j).callStack =
+      s.callStack := by
+  simp only [afterSecondIteration, afterStoreH1, directStored_callStack,
+    afterShift2, shiftReturned_callStack, afterShift3, afterStoreH4,
+    Accessors.storeReturned, h4Loaded, Accessors.loadReturned, afterStoreE,
+    afterShift6, afterShift7, afterT2_callStack]
+
 @[simp] theorem roundLoopState_executionEnv (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (n : Nat) :
     (roundLoopState s msgOff returnDest rest n).executionEnv =
@@ -950,6 +988,13 @@ def roundLoopState (s : State) (msgOff returnDest : UInt256)
 @[simp] theorem roundLoopState_halt (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (n : Nat) :
     (roundLoopState s msgOff returnDest rest n).halt = s.halt := by
+  induction n with
+  | zero => rfl
+  | succ n ih => simp [roundLoopState, ih]
+
+@[simp] theorem roundLoopState_callStack (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) (n : Nat) :
+    (roundLoopState s msgOff returnDest rest n).callStack = s.callStack := by
   induction n with
   | zero => rfl
   | succ n ih => simp [roundLoopState, ih]
@@ -1117,6 +1162,12 @@ def foldLoopState (s : State) (msgOff returnDest : UInt256)
     (afterFoldIteration s msgOff returnDest rest i).halt = s.halt := by
   rfl
 
+@[simp] theorem afterFoldIteration_callStack (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) (i : Nat) :
+    (afterFoldIteration s msgOff returnDest rest i).callStack =
+      s.callStack := by
+  rfl
+
 @[simp] theorem foldLoopState_executionEnv (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (n : Nat) :
     (foldLoopState s msgOff returnDest rest n).executionEnv =
@@ -1128,6 +1179,13 @@ def foldLoopState (s : State) (msgOff returnDest : UInt256)
 @[simp] theorem foldLoopState_halt (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (n : Nat) :
     (foldLoopState s msgOff returnDest rest n).halt = s.halt := by
+  induction n with
+  | zero => rfl
+  | succ n ih => simp [foldLoopState, ih]
+
+@[simp] theorem foldLoopState_callStack (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) (n : Nat) :
+    (foldLoopState s msgOff returnDest rest n).callStack = s.callStack := by
   induction n with
   | zero => rfl
   | succ n ih => simp [foldLoopState, ih]
@@ -1182,6 +1240,13 @@ def compressResult (s : State) (msgOff returnDest : UInt256)
   let afterRounds := roundLoopState prepared msgOff returnDest rest 64
   let afterFold := foldLoopState afterRounds msgOff returnDest rest 8
   compressReturned afterFold returnDest rest
+
+@[simp] theorem compressResult_callStack (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) :
+    (compressResult s msgOff returnDest rest).callStack = s.callStack := by
+  simp only [compressResult, compressReturned, foldLoopState_callStack,
+    roundLoopState_callStack, copyHashState_callStack,
+    afterSchedule_callStack]
 
 /-- Complete direct execution theorem for the reference `compress` bytecode:
 schedule construction, saved-state copy, 64 rounds, eight-word feed-forward,
