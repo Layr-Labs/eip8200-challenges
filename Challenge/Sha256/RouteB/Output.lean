@@ -26,7 +26,7 @@ open EvmSemantics.EVM
     UInt256.ofNat a + UInt256.ofNat b = UInt256.ofNat (a + b) :=
   Challenge.RouteB.Word.ofNat_add_ofNat h
 
-@[simp] private theorem uintZero : (0 : UInt256) = UInt256.ofNat 0 := by decide
+private theorem uintZero : (0 : UInt256) = UInt256.ofNat 0 := by decide
 
 private def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)

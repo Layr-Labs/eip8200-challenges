@@ -795,6 +795,29 @@ def padReturned (input : ByteArray) : State :=
     pc := UInt256.ofNat 1367
     stack := [Padding.paddedWord input] }
 
+@[simp] theorem padReturned_pc (input : ByteArray) :
+    (padReturned input).pc = UInt256.ofNat 1367 := by rfl
+
+@[simp] theorem padReturned_stack (input : ByteArray) :
+    (padReturned input).stack = [Padding.paddedWord input] := by rfl
+
+@[simp] theorem padReturned_halt (input : ByteArray) :
+    (padReturned input).halt = .Running := by rfl
+
+@[simp] theorem padReturned_code (input : ByteArray) :
+    (padReturned input).executionEnv.code = referenceBytecode := by rfl
+
+@[simp] theorem padReturned_fork (input : ByteArray) :
+    (padReturned input).fork = .Osaka := by rfl
+
+@[simp] theorem padReturned_codeAddr (input : ByteArray) :
+    (padReturned input).executionEnv.codeAddr = deployAddress := by rfl
+
+@[simp] theorem padReturned_noPrecompile (input : ByteArray) :
+    Precompile.isPrecompile (padReturned input).executionEnv.fork
+      (padReturned input).executionEnv.codeAddr = false := by
+  exact deployAddress_not_precompile
+
 def lengthExitPath :
     List (Challenge.RouteB.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨289, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
