@@ -47,6 +47,18 @@ theorem scheduleWord_of_ge (padded : ByteArray) (blockOff j : Nat)
   rw [scheduleWord]
   simp [show ¬j < 16 by omega]
 
+/-- The recurrence in the exact left-associated spelling used by
+`Sha256.compressBlock`. -/
+theorem scheduleWord_of_ge_compressBlock (padded : ByteArray)
+    (blockOff j : Nat) (hj : 16 ≤ j) :
+    scheduleWord padded blockOff j =
+      Sha256.smallSigma1 (scheduleWord padded blockOff (j - 2)) +
+        scheduleWord padded blockOff (j - 7) +
+        Sha256.smallSigma0 (scheduleWord padded blockOff (j - 15)) +
+        scheduleWord padded blockOff (j - 16) := by
+  rw [scheduleWord_of_ge padded blockOff j hj]
+  ac_rfl
+
 theorem scheduleSlot_eq (j : Nat) (hj : j < 64) :
     Schedule.scheduleSlot j = 800 + j * 32 := by
   unfold Schedule.scheduleSlot Accessors.slotOffset
