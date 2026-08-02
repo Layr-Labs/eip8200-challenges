@@ -19,7 +19,7 @@ and the top tier of the challenge. -/
 def CorrectWithSchedule (code : ByteArray) (schedule : Nat → Nat) : Prop :=
   ∀ (calldata : ByteArray), CalldataFits calldata → ∀ (g : Nat),
     schedule calldata.size ≤ g →
-    Eval (frame code calldata g) (.returned (spec calldata))
+    Eval (initialState code calldata g) (.returned (spec calldata))
 
 /-- A proven gas schedule implies correctness. -/
 theorem correct_of_schedule {code : ByteArray} {schedule : Nat → Nat}

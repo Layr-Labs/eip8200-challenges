@@ -15,8 +15,9 @@ expected set is Lean's three standard classical axioms and nothing else, which
 is also the footprint the pinned compiler and semantics are checked against
 upstream.
 
-The same discipline applies to a submission: a Tier-2 proof is only a proof if
-`#print axioms` of it prints this line.
+The dynamic submission checker applies the same discipline to every discovered
+candidate theorem, allowing any subset of these standard axioms and rejecting
+every project-defined or computational escape-hatch axiom.
 -/
 
 /-- info: 'Challenge.EvmProof.Bytecode.assemble_disassemble' depends on axioms: [propext, Quot.sound] -/
@@ -71,14 +72,10 @@ info: 'Challenge.Sha256.Reference.Proofs.Bytecode.ReferenceCorrect.reference_cor
 #guard_msgs in
 #print axioms Challenge.Sha256.correct_of_computesDigest
 
-/-- info: 'Challenge.Sha256.reference_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in
-#print axioms Challenge.Sha256.reference_correct
-
 /-- info: 'Challenge.Sha256.correct_of_schedule' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms Challenge.Sha256.correct_of_schedule
 
-/-- info: 'Challenge.Sha256.frame_frameOK' depends on axioms: [propext, Quot.sound] -/
+/-- info: 'Challenge.Sha256.initialState_frameOK' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in
-#print axioms Challenge.Sha256.frame_frameOK
+#print axioms Challenge.Sha256.initialState_frameOK

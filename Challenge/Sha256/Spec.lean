@@ -21,7 +21,8 @@ is FIPS 180-4 as pinned and vector-checked by `evm-semantics`
 
 ## What a submission must prove
 
-`Correct code`: for every realizable calldata, given enough gas, a frame executing
+`Correct code`: for every realizable calldata, given enough gas, the initial
+EVM state executing
 `code` halts by *returning* exactly the 32 digest bytes. Notably it does
 **not** talk about our bytecode, our Yul, our memory layout, or our gas —
 two implementations that both satisfy `Correct` are automatically
@@ -31,14 +32,15 @@ equivalence to the spec, not equivalence to the incumbent's code.
 
 ## Scope, stated honestly
 
-* The frame is the canonical one (`frame` below): fresh memory, empty
-  storage, zero balance, zero call value, depth 0, Osaka. A precompile call
-  frame is always fresh-memory, and `0x02` has no storage of its own, so
-  this is the situation that actually arises — but a submission that reads
-  `SLOAD`/`CALLVALUE`/`CALLER` is only constrained here at those values.
-  Stronger frame and gas-schedule predicates live under `AdditionalGoals/`.
+* `initialState` below is the repository's fixed judging state: fresh memory,
+  empty storage, zero balance, zero call value, depth 0, Osaka. It is not an
+  Ethereum object called "the canonical frame." A call always starts with fresh
+  memory, but caller, call value, and surrounding world state can vary. Thus a
+  submission that reads `SLOAD`/`CALLVALUE`/`CALLER` is constrained here only at
+  the fixed values below. `CorrectInAnyContext` under `AdditionalGoals/` states
+  the stronger context-independent property.
 * `deployAddress` is *not* `0x02`. In the pinned Osaka semantics `0x02` is
-  still a precompile (`Precompile.isPrecompile … = true`), so a frame there
+  still a precompile (`Precompile.isPrecompile … = true`), so an initial state there
   never executes bytecode at all — flipping that bit is exactly what
   EIP-8200 activation does. Until the pinned semantics has a post-8200
   fork, the challenge runs the candidate at a non-precompile address, which
@@ -63,19 +65,19 @@ all realizable Ethereum inputs and prevents the challenge from quantifying
 over mathematical arrays no EVM execution environment can represent. -/
 def CalldataFits (input : ByteArray) : Prop := input.size < 2 ^ 64
 
-/-! ## The frame a candidate is judged in -/
+/-! ## The initial state a candidate is judged in -/
 
 /-- Where the challenge deploys a candidate. Any non-precompile address will
 do; `0x8200` names the EIP. -/
 def deployAddress : AccountAddress := AccountAddress.ofNat 0x8200
 
-/-- The canonical call frame: `code` deployed at `deployAddress`, `calldata`
-as input, `gas` available, and everything else at its zero — fresh memory,
-no storage, no transient storage, no balance, no call value, depth 0, Osaka.
+/-- The fixed initial EVM state used by the challenge: `code` deployed at
+`deployAddress`, `calldata` as input, `gas` available, and everything else at
+its zero — fresh memory, no storage, no transient storage, no balance, no call
+value, depth 0, Osaka.
 
-Nothing here is a modeling choice about SHA-256; it is the frame a
-`CALL` into a freshly deployed, storage-free account produces. -/
-def frame (code calldata : ByteArray) (gas : Nat) : EVM.State :=
+The constructor makes every environmental assumption in `Correct` explicit. -/
+def initialState (code calldata : ByteArray) (gas : Nat) : EVM.State :=
   let account : Account := { Account.empty with code }
   let accounts := AccountMap.empty.set deployAddress account
   let env : ExecutionEnv := {
@@ -111,8 +113,8 @@ def frame (code calldata : ByteArray) (gas : Nat) : EVM.State :=
 /-! ## The challenge -/
 
 /-- **The challenge.** `code` computes SHA-256 the way the precompile does:
-for every realizable calldata there is a gas level above which the frame halts by
-returning exactly the digest of that calldata.
+for every realizable calldata there is a gas level above which execution from
+`initialState` halts by returning exactly the digest of that calldata.
 
 `CalldataFits` excludes only logical arrays of at least `2^64` bytes. Such
 arrays exist in Lean's unbounded model but cannot cross an Ethereum/runtime
@@ -126,6 +128,6 @@ one lucky gas value. -/
 def Correct (code : ByteArray) : Prop :=
   ∀ calldata : ByteArray, CalldataFits calldata →
     ∃ g₀ : Nat, ∀ g : Nat, g₀ ≤ g →
-    Eval (frame code calldata g) (.returned (spec calldata))
+    Eval (initialState code calldata g) (.returned (spec calldata))
 
 end Challenge.Sha256

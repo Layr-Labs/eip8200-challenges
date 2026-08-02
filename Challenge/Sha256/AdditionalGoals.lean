@@ -1,4 +1,4 @@
-import Challenge.Sha256.AdditionalGoals.AnyFrame
+import Challenge.Sha256.AdditionalGoals.AnyContext
 import Challenge.Sha256.AdditionalGoals.GasSchedule
 
 /-!

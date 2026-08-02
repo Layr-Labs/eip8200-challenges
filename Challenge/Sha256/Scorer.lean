@@ -10,11 +10,11 @@ Runs a candidate implementation in the pinned *executable* EVM semantics
 same `Crypto.Sha256.hash` that `Challenge.Sha256.Correct` is stated against,
 and that the `0x02` precompile computes.
 
-The frame is `Challenge.Sha256.frame`, i.e. *the frame the theorem quantifies
-over*, so Tier 1 and Tier 2 speak about the same execution and a Tier-1 pass
-is exactly a finite sample of the Tier-2 statement. Each vector is also run in
-a `dirtyFrame`: same frame with storage, transient storage, and a nonzero call
-value seeded. A faithful precompile replacement cannot notice.
+The clean starting state is `Challenge.Sha256.initialState`, exactly the state
+used by `Correct`, so a Tier-1 pass is a finite sample of the Tier-2 statement.
+Each vector is also run from `dirtyInitialState`, which seeds storage,
+transient storage, and a nonzero call value. A faithful precompile replacement
+cannot notice those contextual differences.
 
 Passing is necessary and never sufficient. The sufficient condition is a Lean
 proof of `Correct`.
@@ -37,12 +37,12 @@ def runEvm : Nat → EVM.State → EVM.State
   | 0, state => state
   | fuel + 1, state => if state.isDone then state else runEvm fuel (EVM.stepF state)
 
-/-- The canonical frame with a *dirty* world: seeded storage and transient
+/-- The fixed initial state with a *dirty* world: seeded storage and transient
 storage in the executing account, and a nonzero call value. Everything a
 SHA-256 implementation is entitled to read (calldata) is unchanged, so a
 correct candidate returns the same digest for the same gas. -/
-def dirtyFrame (code calldata : ByteArray) (gas : Nat) : EVM.State :=
-  let state := frame code calldata gas
+def dirtyInitialState (code calldata : ByteArray) (gas : Nat) : EVM.State :=
+  let state := initialState code calldata gas
   let account := state.accountMap deployAddress
   let account := { account with
     storage := account.storage
@@ -118,10 +118,10 @@ def Outcome.gas? : Outcome → Option Nat
   | .ok gas | .wrongDigest _ gas | .badHalt _ gas => some gas
   | .outOfFuel => none
 
-/-- Run one vector in one frame and compare with the specification. -/
-def score (mkFrame : ByteArray → ByteArray → Nat → EVM.State)
+/-- Run one vector from one initial state and compare with the specification. -/
+def score (mkInitialState : ByteArray → ByteArray → Nat → EVM.State)
     (code calldata : ByteArray) : Outcome :=
-  let start := mkFrame code calldata scoringGas
+  let start := mkInitialState code calldata scoringGas
   let final := runEvm scoringFuel start
   if !final.isDone then .outOfFuel else
   let gas := start.gasAvailable - final.gasAvailable
@@ -131,18 +131,18 @@ def score (mkFrame : ByteArray → ByteArray → Nat → EVM.State)
       else .wrongDigest (Hex.bytesToHex final.hReturn) gas
   | h => .badHalt (toString (repr h)) gas
 
-/-- One vector's verdict across both frames. -/
+/-- One vector's verdict from both the clean and dirty initial states. -/
 def verdict (code : ByteArray) (v : Vector) : Outcome × Outcome × String :=
-  let clean := score frame code v.input
-  let dirty := score dirtyFrame code v.input
+  let clean := score initialState code v.input
+  let dirty := score dirtyInitialState code v.input
   let status :=
     match clean, dirty with
     | .ok g1, .ok g2 =>
         if g1 == g2 then "ok" else s!"ok (state-dependent gas: {g1} vs {g2})"
     | .wrongDigest got _, _ => s!"WRONG DIGEST {got}"
-    | _, .wrongDigest got _ => s!"WRONG DIGEST (dirty frame) {got}"
+    | _, .wrongDigest got _ => s!"WRONG DIGEST (dirty state) {got}"
     | .badHalt h _, _ => s!"HALTED {h}"
-    | _, .badHalt h _ => s!"HALTED (dirty frame) {h}"
+    | _, .badHalt h _ => s!"HALTED (dirty state) {h}"
     | .outOfFuel, _ | _, .outOfFuel => "OUT OF FUEL"
   (clean, dirty, status)
 

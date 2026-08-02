@@ -179,7 +179,7 @@ theorem gasSteps_initStores (s : State) (ws : List Artifact.InitStore)
           simpa [List.foldl] using gone.trans grest
 
 def initStart (calldata : ByteArray) : State :=
-  { frame referenceBytecode calldata 0 with
+  { initialState referenceBytecode calldata 0 with
     pc := UInt256.ofNat (Artifact.instructionPC 659) }
 
 def initializedState (calldata : ByteArray) : State :=
@@ -197,7 +197,7 @@ theorem gasSteps_mainJumpdest (calldata : ByteArray) :
 
 theorem gasSteps_initialize (calldata : ByteArray) :
     Challenge.EvmProof.GasSteps
-      (frame referenceBytecode calldata 0) (initializedState calldata) := by
+      (initialState referenceBytecode calldata 0) (initializedState calldata) := by
   have body := gasSteps_initStores (initStart calldata) Artifact.initStores
     (fun _ h => h) (by norm_num [InitChain, Artifact.initStores])
     (by
@@ -205,10 +205,10 @@ theorem gasSteps_initialize (calldata : ByteArray) :
       simp only [Artifact.initStores, List.head?_cons, Option.some.injEq] at hw
       subst w
       rfl)
-    (by simp [initStart, frame])
-    (by simp [initStart, frame])
-    (by simp [initStart, frame])
-    (by simp [initStart, frame, deployAddress_not_precompile])
+    (by simp [initStart, initialState])
+    (by simp [initStart, initialState])
+    (by simp [initStart, initialState])
+    (by simp [initStart, initialState, deployAddress_not_precompile])
   exact (Reference.gasSteps_to_main calldata).trans
     ((gasSteps_mainJumpdest calldata).trans (by
       simpa [initializedState] using body))

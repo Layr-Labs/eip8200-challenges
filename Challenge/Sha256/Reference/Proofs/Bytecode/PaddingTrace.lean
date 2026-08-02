@@ -1141,7 +1141,7 @@ theorem lengthLoopMemory_eight (input : ByteArray) (hfit : CalldataFits input) :
 /-- Complete certified execution of initialization and the reference `pad`
 function, exposing the canonical padded-memory model. -/
 theorem gasSteps_pad (input : ByteArray) (hfit : CalldataFits input) :
-    Challenge.EvmProof.GasSteps (frame referenceBytecode input 0)
+    Challenge.EvmProof.GasSteps (initialState referenceBytecode input 0)
       (padReturned input) :=
   (Main.gasSteps_initialize input).trans
     ((gasSteps_enterPad input).trans

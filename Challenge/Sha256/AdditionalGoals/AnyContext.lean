@@ -3,21 +3,22 @@ import Challenge.Sha256.Spec
 set_option warningAsError true
 
 /-!
-# Arbitrary-frame strengthening
+# Context-independent strengthening
 
-The minimal specification uses one canonical fresh EVM frame. This optional
-goal makes independence from irrelevant caller and world state explicit.
+The minimal specification uses one fixed fresh EVM state. This optional goal
+makes independence from irrelevant caller and world state explicit.
 -/
 
 namespace Challenge.Sha256
 
 open EvmSemantics.EVM
 
-/-- The frame-generalized statement: the same conclusion from *any* machine
-state that is a fresh frame executing `code` — arbitrary world, caller, call
-value, and storage. `Correct` is this restricted to the canonical world; the
-gap between them is the noninterference obligation `Obligation.W`. -/
-def CorrectInAnyFrame (code : ByteArray) : Prop :=
+/-- The context-generalized statement: the same conclusion from any machine
+state that is at the fresh entry point for `code`, while allowing the world,
+caller, call value, address, and storage to vary. This is not an arbitrary
+mid-execution state: the PC, stacks, memory, halt status, fork, and code still
+satisfy the listed entry conditions. -/
+def CorrectInAnyContext (code : ByteArray) : Prop :=
   ∀ (s : State), s.executionEnv.code = code → s.pc = 0 → s.stack = [] →
     s.callStack = [] → s.halt = .Running → s.memory = .empty →
     s.activeWords = 0 → s.executionEnv.fork = .Osaka →

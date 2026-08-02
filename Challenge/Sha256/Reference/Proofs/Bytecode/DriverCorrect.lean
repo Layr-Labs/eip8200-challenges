@@ -66,7 +66,7 @@ private theorem padBase_size (input : ByteArray) :
   rw [padBase_memory, InitializationCorrect.initializedState_memory]
   norm_num [InitializationCorrect.initializedMemory, Main.initializedState,
     Main.initStart, Artifact.initStores, Main.applyInitStore,
-    Challenge.Sha256.frame, MachineState.writeBytes_size,
+    Challenge.Sha256.initialState, MachineState.writeBytes_size,
     YulEvmCompiler.BytesLemmas.natToBytesPadded_size,
     Padding.messageOffset]
 

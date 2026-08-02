@@ -220,7 +220,7 @@ private theorem initializedMemory_kWord_eq_table (j : Nat) (hj : j < 64) :
     PaddedBlockBridge.shiftRight_readWord_224]
   rw [kOffset_eq j hj]
   unfold initializedMemory kTableMemory Main.initializedState Main.initStart
-  norm_num [Artifact.initStores, Main.applyInitStore, Challenge.Sha256.frame,
+  norm_num [Artifact.initStores, Main.applyInitStore, Challenge.Sha256.initialState,
     Challenge.EvmProof.Word.word_toNat_ofNat]
   repeat'
     rw [readBE32_writeBytes_disjoint _ _ _ _
@@ -423,7 +423,7 @@ private theorem initializedMemory_h_fin (i : Fin 8) :
   fin_cases i <;>
     norm_num [hWord, initializedMemory, Main.initializedState,
       Artifact.initStores, Main.applyInitStore, Main.initStart,
-      Challenge.Sha256.frame]
+      Challenge.Sha256.initialState]
   all_goals
     repeat'
       first

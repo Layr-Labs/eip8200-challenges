@@ -1,6 +1,6 @@
 import Challenge.Sha256.Reference.Proofs.Bytecode
 import Challenge.Sha256.Reference.Proofs.Bytecode.Artifact
-import Challenge.Sha256.ProofSupport.Frame
+import Challenge.Sha256.ProofSupport.InitialState
 import EvmSemantics.EVM.StepDeterminism
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -25,14 +25,14 @@ def mainPC : Nat := 0x03e5
 /-- Gas-erased reference state at a concrete program counter.  `GasSteps`
 supplies the actual budget without duplicating otherwise identical states. -/
 def atPC (calldata : ByteArray) (pc : Nat) : State :=
-  { frame referenceBytecode calldata 0 with pc := UInt256.ofNat pc }
+  { initialState referenceBytecode calldata 0 with pc := UInt256.ofNat pc }
 
 def atPCStack (calldata : ByteArray) (pc : Nat) (stack : List UInt256) : State :=
-  { frame referenceBytecode calldata 0 with pc := UInt256.ofNat pc, stack }
+  { initialState referenceBytecode calldata 0 with pc := UInt256.ofNat pc, stack }
 
 @[simp] theorem withGas_atPC (calldata : ByteArray) (pc gas : Nat) :
     Challenge.EvmProof.withGas (atPC calldata pc) gas =
-      { frame referenceBytecode calldata gas with pc := UInt256.ofNat pc } := by
+      { initialState referenceBytecode calldata gas with pc := UInt256.ofNat pc } := by
   rfl
 
 theorem gasSteps_jumpdest_at (calldata : ByteArray) (pc : Nat)
@@ -57,8 +57,8 @@ theorem gasSteps_jumpdest_at (calldata : ByteArray) (pc : Nat)
   intro gas hgas
   have hstep := StepRunning.jumpdest
     (s := Challenge.EvmProof.withGas (atPC calldata pc) gas)
-    hop (by simpa [atPC, frame, State.fork, Gas.baseCost] using hgas)
-    (by simp [Challenge.EvmProof.withGas, atPC, frame,
+    hop (by simpa [atPC, initialState, State.fork, Gas.baseCost] using hgas)
+    (by simp [Challenge.EvmProof.withGas, atPC, initialState,
       Operation.pushArity, Operation.popArity])
   simpa [Challenge.EvmProof.withGas, atPC, hsucc, Gas.baseCost] using hstep
 
@@ -85,10 +85,10 @@ theorem gasSteps_push2_at (calldata : ByteArray) (pc dest : Nat)
           Nat.mod_eq_of_lt (by omega : pc < 2 ^ 256)]]
       rw [hdecode]
       rfl)
-    (by simpa [atPC, frame, State.fork, Gas.baseCost] using hgas)
-    (by simp [Challenge.EvmProof.withGas, atPC, frame])
+    (by simpa [atPC, initialState, State.fork, Gas.baseCost] using hgas)
+    (by simp [Challenge.EvmProof.withGas, atPC, initialState])
   simpa [Challenge.EvmProof.withGas, atPC, atPCStack, hpcadd,
-    frame, Gas.baseCost] using hstep
+    initialState, Gas.baseCost] using hstep
 
 theorem gasSteps_jump_at (calldata : ByteArray) (pc dest : Nat)
     (hpc : pc + 1 < 2 ^ 256)
@@ -120,17 +120,17 @@ theorem gasSteps_jump_at (calldata : ByteArray) (pc dest : Nat)
     (s := Challenge.EvmProof.withGas
       (atPCStack calldata pc [UInt256.ofNat dest]) gas)
     (dest := UInt256.ofNat dest) (rest := []) hop
-    (by simpa [atPCStack, frame, State.fork, Gas.baseCost] using hgas)
-    (by simp [Challenge.EvmProof.withGas, atPCStack, frame])
+    (by simpa [atPCStack, initialState, State.fork, Gas.baseCost] using hgas)
+    (by simp [Challenge.EvmProof.withGas, atPCStack, initialState])
     (by
       change Decode.isValidJumpDest referenceBytecode
         (UInt256.ofNat dest).toNat = true
       rw [Challenge.EvmProof.Word.word_toNat_ofNat,
         Nat.mod_eq_of_lt hdest]
       exact hvalid)
-    (by simp [Challenge.EvmProof.withGas, atPCStack, frame,
+    (by simp [Challenge.EvmProof.withGas, atPCStack, initialState,
       Operation.pushArity, Operation.popArity])
-  simpa [Challenge.EvmProof.withGas, atPC, atPCStack, frame,
+  simpa [Challenge.EvmProof.withGas, atPC, atPCStack, initialState,
     Gas.baseCost] using hstep
 
 theorem gasSteps_trampoline (calldata : ByteArray) (src dest : Nat)
@@ -181,23 +181,23 @@ theorem reference_first_target_is_jumpdest :
   apply reference_entryTarget_isValid
   simp [entryTargets, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTargets]
 
-theorem frame_decoded_entry_push (calldata : ByteArray) (gas : Nat) :
-    (frame referenceBytecode calldata gas).decoded =
+theorem initialState_decoded_entry_push (calldata : ByteArray) (gas : Nat) :
+    (initialState referenceBytecode calldata gas).decoded =
       some (.Push ⟨2, by decide⟩, some (UInt256.ofNat 0x001b, 2)) := by
   unfold State.decoded
-  rw [show (frame referenceBytecode calldata gas).executionEnv.code =
+  rw [show (initialState referenceBytecode calldata gas).executionEnv.code =
     referenceBytecode by rfl]
-  rw [show (frame referenceBytecode calldata gas).pc.toNat = 0 by rfl]
+  rw [show (initialState referenceBytecode calldata gas).pc.toNat = 0 by rfl]
   rw [reference_decode_entry_push]
   rfl
 
 theorem pushed_decoded_entry_jump (calldata : ByteArray) (gas : Nat) :
-    ({ frame referenceBytecode calldata gas with
+    ({ initialState referenceBytecode calldata gas with
       pc := UInt256.ofNat 3
       stack := [UInt256.ofNat 0x001b]
       gasAvailable := gas - 3 } : State).decodedOp = some .JUMP := by
   unfold State.decodedOp State.decoded
-  rw [show ({ frame referenceBytecode calldata gas with
+  rw [show ({ initialState referenceBytecode calldata gas with
     pc := UInt256.ofNat 3
     stack := [UInt256.ofNat 0x001b]
     gasAvailable := gas - 3 } : State).executionEnv.code = referenceBytecode by rfl]
@@ -206,41 +206,41 @@ theorem pushed_decoded_entry_jump (calldata : ByteArray) (gas : Nat) :
   rfl
 
 theorem step_entry_push (calldata : ByteArray) (gas : Nat) (hgas : 3 ≤ gas) :
-    Step (frame referenceBytecode calldata gas)
-      { frame referenceBytecode calldata gas with
+    Step (initialState referenceBytecode calldata gas)
+      { initialState referenceBytecode calldata gas with
           pc := UInt256.ofNat 3
           stack := [UInt256.ofNat 0x001b]
           gasAvailable := gas - 3 } := by
   have hpc : (0 : UInt256) + UInt256.ofNat 3 = UInt256.ofNat 3 := by decide
   apply Step.running rfl deployAddress_not_precompile
-  simpa [frame, State.fork, Gas.baseCost, hpc] using
-    StepRunning.pushN (s := frame referenceBytecode calldata gas)
+  simpa [initialState, State.fork, Gas.baseCost, hpc] using
+    StepRunning.pushN (s := initialState referenceBytecode calldata gas)
       (k := ⟨2, by decide⟩) (data := UInt256.ofNat 0x001b) (immWidth := 2)
-      (by decide) (frame_decoded_entry_push calldata gas)
-      (by change 3 ≤ gas; exact hgas) (by simp [frame])
+      (by decide) (initialState_decoded_entry_push calldata gas)
+      (by change 3 ≤ gas; exact hgas) (by simp [initialState])
 
 theorem stepF_entry_push (calldata : ByteArray) (gas : Nat) (hgas : 3 ≤ gas) :
-    stepF (frame referenceBytecode calldata gas) =
-      { frame referenceBytecode calldata gas with
+    stepF (initialState referenceBytecode calldata gas) =
+      { initialState referenceBytecode calldata gas with
           pc := UInt256.ofNat 3
           stack := [UInt256.ofNat 0x001b]
           gasAvailable := gas - 3 } := by
   exact step_complete (step_entry_push calldata gas hgas)
 
 theorem step_entry_jump (calldata : ByteArray) (gas : Nat) (hgas : 11 ≤ gas) :
-    Step { frame referenceBytecode calldata gas with
+    Step { initialState referenceBytecode calldata gas with
         pc := UInt256.ofNat 3
         stack := [UInt256.ofNat 0x001b]
         gasAvailable := gas - 3 }
-      { frame referenceBytecode calldata gas with
+      { initialState referenceBytecode calldata gas with
           pc := UInt256.ofNat 0x001b
           gasAvailable := gas - 11 } := by
   have hjump : 8 ≤ gas - 3 := by omega
   have hsub : gas - 3 - 8 = gas - 11 := by omega
   apply Step.running rfl deployAddress_not_precompile
-  simpa [frame, State.fork, Gas.baseCost, hsub] using
+  simpa [initialState, State.fork, Gas.baseCost, hsub] using
     StepRunning.jump
-      (s := { frame referenceBytecode calldata gas with
+      (s := { initialState referenceBytecode calldata gas with
         pc := UInt256.ofNat 3
         stack := [UInt256.ofNat 0x001b]
         gasAvailable := gas - 3 })
@@ -252,11 +252,11 @@ theorem step_entry_jump (calldata : ByteArray) (gas : Nat) (hgas : 11 ≤ gas) :
           norm_num [Operation.pushArity, Operation.popArity])
 
 theorem stepF_entry_jump (calldata : ByteArray) (gas : Nat) (hgas : 11 ≤ gas) :
-    stepF { frame referenceBytecode calldata gas with
+    stepF { initialState referenceBytecode calldata gas with
         pc := UInt256.ofNat 3
         stack := [UInt256.ofNat 0x001b]
         gasAvailable := gas - 3 } =
-      { frame referenceBytecode calldata gas with
+      { initialState referenceBytecode calldata gas with
           pc := UInt256.ofNat 0x001b
           gasAvailable := gas - 11 } := by
   exact step_complete (step_entry_jump calldata gas hgas)
@@ -264,8 +264,8 @@ theorem stepF_entry_jump (calldata : ByteArray) (gas : Nat) (hgas : 11 ≤ gas) 
 /-- The first executable direct-bytecode block consumes the initial `PUSH2; JUMP` and
 lands on the first certified trampoline target. -/
 theorem execN_to_firstTarget (calldata : ByteArray) (gas : Nat) (hgas : 11 ≤ gas) :
-    Challenge.EvmProof.execN 2 (frame referenceBytecode calldata gas) =
-      { frame referenceBytecode calldata gas with
+    Challenge.EvmProof.execN 2 (initialState referenceBytecode calldata gas) =
+      { initialState referenceBytecode calldata gas with
           pc := UInt256.ofNat 0x001b
           gasAvailable := gas - 11 } := by
   have hpush : 3 ≤ gas := by omega
@@ -276,8 +276,8 @@ theorem execN_to_firstTarget (calldata : ByteArray) (gas : Nat) (hgas : 11 ≤ g
 loop proofs compose this theorem with `Reaches.trans`. -/
 theorem reaches_firstTarget (calldata : ByteArray) (gas : Nat) (hgas : 11 ≤ gas) :
     Challenge.EvmProof.Reaches
-      (fun s => s = frame referenceBytecode calldata gas)
-      (fun s => s = { frame referenceBytecode calldata gas with
+      (fun s => s = initialState referenceBytecode calldata gas)
+      (fun s => s = { initialState referenceBytecode calldata gas with
         pc := UInt256.ofNat 0x001b
         gasAvailable := gas - 11 }) := by
   intro s hs
@@ -288,11 +288,11 @@ theorem reaches_firstTarget (calldata : ByteArray) (gas : Nat) (hgas : 11 ≤ ga
 
 /-- Gas-parametric form of the first `PUSH2; JUMP`. -/
 theorem gasSteps_to_firstTarget (calldata : ByteArray) :
-    Challenge.EvmProof.GasSteps (frame referenceBytecode calldata 0)
+    Challenge.EvmProof.GasSteps (initialState referenceBytecode calldata 0)
       (atPC calldata 0x001b) := by
   refine ⟨11, fun gas hgas => ?_⟩
   have hpush : 3 ≤ gas := by omega
-  simpa [Challenge.EvmProof.withGas, atPC, frame] using
+  simpa [Challenge.EvmProof.withGas, atPC, initialState] using
     (Steps.trans (step_entry_push calldata gas hpush)
       (Steps.trans (step_entry_jump calldata gas hgas) (Steps.refl _)))
 
@@ -333,7 +333,7 @@ theorem gasSteps_entryLink (calldata : ByteArray) (src dest : Nat)
 
 /-- The complete compiler-generated entry chain lands at the SHA body. -/
 theorem gasSteps_to_main (calldata : ByteArray) :
-    Challenge.EvmProof.GasSteps (frame referenceBytecode calldata 0)
+    Challenge.EvmProof.GasSteps (initialState referenceBytecode calldata 0)
       (atPC calldata mainPC) := by
   have l₁ := gasSteps_entryLink calldata 0x001b 0x0044
     (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
