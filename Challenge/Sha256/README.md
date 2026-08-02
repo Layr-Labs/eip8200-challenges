@@ -14,24 +14,24 @@ Read [`Spec.lean`](Spec.lean). It defines only:
   input and every sufficiently large gas budget.
 
 `Spec.lean` imports the pinned EVM big-step semantics directly. It does not
-import the Yul compiler, the bundled reference, the scorer, or either proof
-route. [`Extensions.lean`](Extensions.lean) contains stronger but optional
-gas-schedule and arbitrary-frame predicates. CI pins this one-way dependency
-boundary.
+import the Yul compiler, the bundled reference, the scorer, or any proof
+support. [`AdditionalGoals/`](AdditionalGoals/) contains stronger but
+optional gas-schedule and arbitrary-frame predicates. CI pins this one-way
+dependency boundary.
 
-## 2. Submission proof interfaces
+## 2. Reusable proof support
 
-[`Proofs/`](Proofs/) contains implementation-independent ways to reach
+[`ProofSupport/`](ProofSupport/) contains implementation-independent ways to reach
 `Correct`:
 
-- [`Proofs/RouteB.lean`](Proofs/RouteB.lean) is the direct raw-bytecode
+- [`ProofSupport/Bytecode.lean`](ProofSupport/Bytecode.lean) is the direct raw-bytecode
   obligation;
-- [`Proofs/Yul.lean`](Proofs/Yul.lean) is the verified-compiler reduction; and
-- [`Proofs/Frame.lean`](Proofs/Frame.lean) contains routine facts about the
+- [`ProofSupport/Yul.lean`](ProofSupport/Yul.lean) is the verified-compiler reduction; and
+- [`ProofSupport/Frame.lean`](ProofSupport/Frame.lean) contains routine facts about the
   canonical frame.
 
 The generic EVM symbolic-execution infrastructure shared by future challenges
-lives one level up in [`../RouteB/`](../RouteB/).
+lives one level up in [`../BytecodeProof/`](../BytecodeProof/).
 
 ## 3. Bundled reference
 
@@ -49,7 +49,7 @@ EVM instruction steps.
 
 Reference-specific proofs are further isolated in
 [`Reference/Proofs/`](Reference/Proofs/). The large direct-bytecode proof is in
-[`Reference/Proofs/RouteB/`](Reference/Proofs/RouteB/), ending at
+[`Reference/Proofs/Bytecode/`](Reference/Proofs/Bytecode/), ending at
 `ReferenceCorrect.reference_correct : Correct referenceBytecode`.
 
 ## 4. Non-proof tooling
@@ -57,7 +57,8 @@ Reference-specific proofs are further isolated in
 [`Scorer.lean`](Scorer.lean) and the repository-root `Main.lean` implement the
 finite Tier-1 test runner. Passing it is useful evidence, never a proof.
 
-The short umbrella modules `Proofs.lean`, `Reference.lean`, and
-`Reference/Proofs.lean` expose each layer without mixing their dependencies.
+The short umbrella modules `ProofSupport.lean`, `AdditionalGoals.lean`,
+`Reference.lean`, and `Reference/Proofs.lean` expose each layer without mixing
+their dependencies.
 `Reduction.lean` is only a compatibility import for work using the former Yul
 reduction path.

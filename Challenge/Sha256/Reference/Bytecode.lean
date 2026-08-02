@@ -1,4 +1,4 @@
-import Challenge.RouteB.Bytecode
+import Challenge.BytecodeProof.Bytecode
 import Challenge.Sha256.Reference.Bytes
 import EvmSemantics.Data.Hex
 set_option warningAsError true
@@ -12,7 +12,7 @@ set_option maxRecDepth 10000
 lake exe yulc Challenge/Sha256/Reference/reference.yul
 ```
 
-The compiler is used only to generate the artifact. Route B proofs target
+The compiler is used only to generate the artifact. direct-bytecode proofs target
 these frozen bytes and reason through `EvmSemantics.EVM.Step`; they do not
 appeal to compiler correctness.
 -/
@@ -44,7 +44,7 @@ def referenceBytecode : ByteArray := referenceBytes
     EvmSemantics.Data.Bytes.bytesToBigEndianNat
       (ByteArray.mk #[0x00, 0x1b]) = 0x001b := by
   simp [EvmSemantics.Data.Bytes.bytesToBigEndianNat,
-    Challenge.RouteB.Bytecode.toList_eq_data, UInt8.toNat_ofNat]
+    Challenge.BytecodeProof.Bytecode.toList_eq_data, UInt8.toNat_ofNat]
 
 @[simp] theorem referenceBytecode_entry_value :
     EvmSemantics.Data.Bytes.bytesToBigEndianNat
@@ -52,10 +52,10 @@ def referenceBytecode : ByteArray := referenceBytes
   rw [referenceBytecode_extract_entry]
   exact bytesToBigEndianNat_entry_literal
 
-/-- The generic Route B disassembler round-trips the frozen artifact. -/
+/-- The generic direct-bytecode disassembler round-trips the frozen artifact. -/
 theorem referenceBytecode_roundtrip :
-    Challenge.RouteB.Bytecode.assemble
-      (Challenge.RouteB.Bytecode.disassemble referenceBytecode) = referenceBytecode :=
-  Challenge.RouteB.Bytecode.assemble_disassemble _
+    Challenge.BytecodeProof.Bytecode.assemble
+      (Challenge.BytecodeProof.Bytecode.disassemble referenceBytecode) = referenceBytecode :=
+  Challenge.BytecodeProof.Bytecode.assemble_disassemble _
 
 end Challenge.Sha256

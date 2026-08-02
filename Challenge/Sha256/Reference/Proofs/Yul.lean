@@ -1,4 +1,4 @@
-import Challenge.Sha256.Proofs.Yul
+import Challenge.Sha256.ProofSupport.Yul
 import Challenge.Sha256.Reference.Source
 set_option warningAsError true
 /-!

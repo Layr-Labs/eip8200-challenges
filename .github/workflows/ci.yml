@@ -73,7 +73,7 @@ jobs:
           fi
           lake env lean Checks.lean
 
-      # Keep the statement auditable in isolation. Proof routes and the
+      # Keep the statement auditable in isolation. Proof support and the
       # bundled implementation may depend on the spec, never the reverse.
       - name: Verify SHA specification boundary
         run: |
@@ -84,8 +84,9 @@ jobs:
             exit 1
           fi
 
-      # `reference.hex` is the frozen Route-B artifact. The compiler is only
-      # its reproducible generator; no Route-B theorem uses compiler soundness.
+      # `reference.hex` is the frozen direct-bytecode artifact. The compiler is
+      # only its reproducible generator; its bytecode proof uses no compiler
+      # soundness theorem.
       - name: Verify frozen reference bytecode
         run: |
           compiled="$(lake exe yulc Challenge/Sha256/Reference/reference.yul)"

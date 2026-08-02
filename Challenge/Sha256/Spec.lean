@@ -36,7 +36,7 @@ equivalence to the spec, not equivalence to the incumbent's code.
   frame is always fresh-memory, and `0x02` has no storage of its own, so
   this is the situation that actually arises — but a submission that reads
   `SLOAD`/`CALLVALUE`/`CALLER` is only constrained here at those values.
-  Stronger frame and gas-schedule predicates live in `Extensions.lean`.
+  Stronger frame and gas-schedule predicates live under `AdditionalGoals/`.
 * `deployAddress` is *not* `0x02`. In the pinned Osaka semantics `0x02` is
   still a precompile (`Precompile.isPrecompile … = true`), so a frame there
   never executes bytecode at all — flipping that bit is exactly what
