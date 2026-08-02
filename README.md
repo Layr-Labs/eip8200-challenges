@@ -21,7 +21,7 @@ That makes the specification side of the equivalence *not ours to get wrong*.
 
 ```sh
 lake exe cache get                                # prebuilt Mathlib oleans
-lake build                                        # the statement + the reduction
+lake build                                        # spec, proof routes, and reference proof
 lake exe sha256challenge                          # score the reference
 lake exe sha256challenge --hex=my_impl.hex        # score your bytecode
 ```
@@ -56,7 +56,9 @@ So proving that a candidate returns `Crypto.Sha256.hash calldata` proves
 equivalence **to the precompile as modeled by the reference semantics** — no
 second SHA-256 of our own to reconcile.
 
-The challenge is one `Prop`, in [`Challenge/Sha256/Statement.lean`](Challenge/Sha256/Statement.lean):
+The minimal audit surface is one file,
+[`Challenge/Sha256/Spec.lean`](Challenge/Sha256/Spec.lean), centered on one
+`Prop`:
 
 ```lean
 def Correct (code : ByteArray) : Prop :=
@@ -80,11 +82,13 @@ exactly the 32 digest bytes.* Three things to notice:
 * **`Returned`, not `Success`.** Reverting, throwing, or returning the wrong
   number of bytes all fail.
 
-The efficiency-carrying strengthening:
+The efficiency-carrying strengthening in
+[`Extensions.lean`](Challenge/Sha256/Extensions.lean):
 
 ```lean
 def CorrectWithSchedule (code : ByteArray) (schedule : Nat → Nat) : Prop :=
-  ∀ (calldata : ByteArray) (g : Nat), schedule calldata.size ≤ g →
+  ∀ (calldata : ByteArray), CalldataFits calldata → ∀ (g : Nat),
+    schedule calldata.size ≤ g →
     Eval (frame code calldata g) (.returned (spec calldata))
 ```
 
@@ -109,7 +113,8 @@ a gas schedule. `correct_of_schedule` shows it implies `Correct`.
 
 ## 2. The reference submission, and why the compiler matters
 
-[`Challenge/Sha256/reference.yul`](Challenge/Sha256/reference.yul) is SHA-256
+[`Challenge/Sha256/Reference/reference.yul`](Challenge/Sha256/Reference/reference.yul)
+is SHA-256
 in the verified Yul fragment: message from calldata, digest in returndata, 1524
 bytes compiled. It is written **for provability, not gas** — hash state and
 message schedule live in memory, so every loop body is a short memory
@@ -127,12 +132,12 @@ ComputesDigest referenceBlock            ← obligation Y (the real work)
   ⟹ Correct referenceBytecode
 ```
 
-[`Challenge/Sha256/Reduction.lean`](Challenge/Sha256/Reduction.lean) proves the
+[`Challenge/Sha256/Proofs/Yul.lean`](Challenge/Sha256/Proofs/Yul.lean) proves the
 reduction (`correct_of_computesDigest`) today, with no unfinished goals and the
 same axiom footprint as its dependencies (`propext`, `Classical.choice`,
 `Quot.sound`). Its hypotheses are ordinary `Prop`s — the challenge is to
 inhabit them — and no step of the proof mentions an opcode.
-[`Challenge/Sha256/Reference.lean`](Challenge/Sha256/Reference.lean)
+[`Challenge/Sha256/Reference/Proofs/Yul.lean`](Challenge/Sha256/Reference/Proofs/Yul.lean)
 instantiates it for the shipped artifact.
 
 ### Open obligations
@@ -205,11 +210,13 @@ easiest first:
   proofs and supplies compositional reachability and indexed-loop lemmas.
   A submission proves straight-line blocks with `Reaches.of_execN`, composes
   them with `Reaches.trans`, and instantiates `Reaches.iterate` with its loop
-  invariants. `Challenge.Sha256.RouteB.DirectProof code` packages those traces,
-  and `correct_of_directProof` closes `Correct code`.
-  [`Challenge/Sha256/RouteB/Reference.lean`](Challenge/Sha256/RouteB/Reference.lean)
+  invariants. [`Challenge/Sha256/Proofs/RouteB.lean`](Challenge/Sha256/Proofs/RouteB.lean)
+  packages those traces as `Challenge.Sha256.RouteB.DirectProof code`, and
+  `correct_of_directProof` closes `Correct code` without depending on the
+  bundled reference.
+  [`Challenge/Sha256/Reference/Proofs/RouteB/Reference.lean`](Challenge/Sha256/Reference/Proofs/RouteB/Reference.lean)
   starts this architecture with reusable entry and decoder certificates.
-  [`Challenge/Sha256/RouteB/ReferenceCorrect.lean`](Challenge/Sha256/RouteB/ReferenceCorrect.lean)
+  [`Challenge/Sha256/Reference/Proofs/RouteB/ReferenceCorrect.lean`](Challenge/Sha256/Reference/Proofs/RouteB/ReferenceCorrect.lean)
   completes it for the frozen reference bytes: exact gas-parametric EVM traces
   cover initialization, padding, all schedule and compression loops, digest
   packing, and `RETURN`; the functional invariant identifies every block with
@@ -278,21 +285,19 @@ hand-optimized implementation should take one to two of those orders back.
 
 | path | what |
 |---|---|
-| `Challenge/Sha256/reference.yul` | the reference implementation |
-| `Challenge/Sha256/reference.hex` | the frozen raw-bytecode artifact generated from the reference |
-| `Challenge/Sha256/ReferenceBytes.lean` | reducible literal form of the same frozen bytes, pinned by CI |
-| `Challenge/Sha256/Bytecode.lean` | the frozen artifact as a Lean value and its disassembly round trip |
-| `Challenge/Sha256/RouteB.lean` | direct raw-bytecode obligation and reduction to `Correct` |
-| `Challenge/Sha256/RouteB/Reference.lean` | direct `stepF` certificates and traces for the frozen reference bytecode |
-| `Challenge/Sha256/RouteB/CompressionCorrect.lean` | reusable bytecode compression invariant and equivalence to `Sha256.compressBlock` |
-| `Challenge/Sha256/RouteB/DriverCorrect.lean` | padded-block outer invariant and canonical digest packing |
-| `Challenge/Sha256/RouteB/ReferenceCorrect.lean` | end-to-end `DirectProof` and `Correct referenceBytecode` theorem |
+| `Challenge/Sha256/README.md` | audit map and dependency boundaries |
+| `Challenge/Sha256/Spec.lean` | minimal `spec`, canonical `frame`, and `Correct` audit surface |
+| `Challenge/Sha256/Extensions.lean` | optional gas-schedule and arbitrary-frame strengthenings |
+| `Challenge/Sha256/Proofs/` | implementation-independent Yul and raw-bytecode reductions |
+| `Challenge/Sha256/Reference/` | bundled Yul, frozen hex/bytes, and lightweight artifact wrappers |
+| `Challenge/Sha256/Reference/Proofs/Yul.lean` | reference-specific verified-compiler route |
+| `Challenge/Sha256/Reference/Proofs/RouteB/` | implementation-specific direct EVM proof |
+| `Challenge/Sha256/Reference/Proofs/RouteB/CompressionCorrect.lean` | bytecode compression invariant and equivalence to `Sha256.compressBlock` |
+| `Challenge/Sha256/Reference/Proofs/RouteB/DriverCorrect.lean` | padded-block outer invariant and canonical digest packing |
+| `Challenge/Sha256/Reference/Proofs/RouteB/ReferenceCorrect.lean` | end-to-end `DirectProof` and `Correct referenceBytecode` theorem |
 | `Challenge/RouteB/Bytecode.lean` | verified raw disassembler/assembler round trip |
 | `Challenge/RouteB/Execution.lean` | direct `Step`/`Eval`, reachability, and loop proof combinators |
 | `Challenge/RouteB/Gas.lean` | gas-parametric trace composition and `EventuallyEvaluates` bridge |
-| `Challenge/Sha256/Statement.lean` | `Correct`, `CorrectWithSchedule`, the frame, frame facts |
-| `Challenge/Sha256/Reduction.lean` | `correct_of_computesDigest`: Yul obligation ⟹ challenge statement |
-| `Challenge/Sha256/Reference.lean` | the artifact, its obligations, `reference_correct` |
 | `Challenge/Sha256/Scorer.lean` | the Tier-1 vectors, frames, and scoring |
 | `Main.lean` | the `sha256challenge` CLI |
 

@@ -1,17 +1,5 @@
 import Challenge.RouteB
-import Challenge.Sha256.Bytecode
-import Challenge.Sha256.Statement
-import Challenge.Sha256.Reduction
-import Challenge.Sha256.Reference
-import Challenge.Sha256.RouteB
-import Challenge.Sha256.RouteB.Reference
-import Challenge.Sha256.RouteB.Main
-import Challenge.Sha256.RouteB.Padding
-import Challenge.Sha256.RouteB.PaddingTrace
-import Challenge.Sha256.RouteB.ReferenceCorrect
-import Challenge.Sha256.RouteB.Trace
-import Challenge.Sha256.RouteB.Word
-import Challenge.Sha256.Scorer
+import Challenge.Sha256
 set_option warningAsError true
 /-!
 # EIP-8200 challenges
@@ -24,19 +12,13 @@ SHA-256 (`0x02`) is the pilot:
 
 * `Challenge.RouteB` — verified disassembly and direct small-step proof
   combinators for raw-bytecode submissions.
-* `Challenge.Sha256.Bytecode` — the frozen 1,524-byte reference artifact.
-* `Challenge.Sha256.Statement` — `Correct`, the statement every submission
-  must satisfy, and the frame it is judged in.
-* `Challenge.Sha256.Reduction` — the reduction that discharges it for
-  bytecode the verified Yul compiler produced, leaving a Yul-level
-  obligation as the only open goal.
-* `Challenge.Sha256.Reference` — the reference submission
-  (`Challenge/Sha256/reference.yul`) and its end-to-end theorem modulo the
-  named obligations.
-* `Challenge.Sha256.RouteB` — the submission-facing direct-bytecode obligation
-  and its reduction to `Correct`.
-* `Challenge.Sha256.RouteB.ReferenceCorrect` — the end-to-end direct proof
-  that the frozen reference bytes compute canonical SHA-256 in EVM bytecode.
+* `Challenge.Sha256.Spec` — the minimal auditor-facing `Correct` predicate and
+  the canonical EVM frame it quantifies over.
+* `Challenge.Sha256.Proofs` — submission-facing Yul and direct-bytecode
+  reductions to `Correct`.
+* `Challenge.Sha256.Reference` — the bundled Yul and frozen 1,524-byte artifact.
+* `Challenge.Sha256.Reference.Proofs` — implementation-specific correctness
+  proofs, including the complete direct EVM proof of the frozen bytes.
 * `Challenge.Sha256.Scorer` — Tier 1, falsification by execution
   (`lake exe sha256challenge`).
 

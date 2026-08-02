@@ -73,12 +73,23 @@ jobs:
           fi
           lake env lean Checks.lean
 
+      # Keep the statement auditable in isolation. Proof routes and the
+      # bundled implementation may depend on the spec, never the reverse.
+      - name: Verify SHA specification boundary
+        run: |
+          imports="$(grep '^import ' Challenge/Sha256/Spec.lean)"
+          if [ "$imports" != 'import EvmSemantics.EVM.BigStep' ]; then
+            echo "::error::Spec.lean must depend only on the pinned EVM semantics"
+            printf '%s\n' "$imports"
+            exit 1
+          fi
+
       # `reference.hex` is the frozen Route-B artifact. The compiler is only
       # its reproducible generator; no Route-B theorem uses compiler soundness.
       - name: Verify frozen reference bytecode
         run: |
-          compiled="$(lake exe yulc Challenge/Sha256/reference.yul)"
-          frozen="$(tr -d '[:space:]' < Challenge/Sha256/reference.hex)"
+          compiled="$(lake exe yulc Challenge/Sha256/Reference/reference.yul)"
+          frozen="$(tr -d '[:space:]' < Challenge/Sha256/Reference/reference.hex)"
           literal="$(lake exe sha256challenge --print-reference-hex)"
           if [ "$compiled" != "$frozen" ] || [ "$literal" != "$frozen" ]; then
             echo "::error::reference.hex is stale"
