@@ -29,6 +29,7 @@ Challenge/Sha256/Submissions/FastSha256/
   bytecode.hex
   Bytecode.lean
   Proof.lean
+  Gas.lean       # optional proved gas schedule
   README.md
 ```
 
@@ -73,6 +74,34 @@ end Challenge.Sha256.Submissions.FastSha256
 `README.md` should state the implementation strategy, provenance of the bytes,
 measured gas, and the main proof invariants. It is explanatory; CI never treats
 it as evidence of correctness.
+
+### Optional proved gas schedule
+
+Measured gas is not a theorem. To enter the proved input-size-bound category,
+add `Gas.lean` with these exact declarations:
+
+```lean
+import Challenge.Sha256.Submissions.FastSha256.Proof
+import Challenge.Sha256.AdditionalGoals.GasSchedule
+
+namespace Challenge.Sha256.Submissions.FastSha256
+
+def gasSchedule : Nat → Nat := fun inputSize =>
+  -- sufficient initial gas as a function of input byte length
+
+theorem gasSchedule_correct :
+    Challenge.Sha256.CorrectWithSchedule bytecode gasSchedule := by
+  -- proof
+
+end Challenge.Sha256.Submissions.FastSha256
+```
+
+This theorem says `gasSchedule n` is sufficient for every valid `n`-byte
+input, not merely for the test vector of that size. The function must be
+executable so the gas report can display representative values. CI checks its
+exact type, transitive axiom footprint, and kernel reduction of every displayed
+number. Omitting `Gas.lean` leaves the candidate in the measured-gas category
+without affecting its ordinary correctness submission.
 
 ## Direct bytecode proofs
 
@@ -137,6 +166,7 @@ lake exe cache get
 lake build
 lake exe sha256challenge --hex=Challenge/Sha256/Submissions/FastSha256/bytecode.hex
 scripts/check-sha256-submissions.sh
+scripts/check-sha256-gas-report.sh
 ```
 
 The submission checker discovers every immediate subdirectory of
@@ -153,6 +183,11 @@ Thus `sorry`, `native_decide`, a project-defined `axiom`, a theorem about a
 different byte array, or a proof paired with different hex all fail CI. The CI
 job also runs the checker against a deliberately fake axiom as a negative
 control.
+
+The gas-report checker separately scores the reference and every submission,
+validates any optional `Gas.lean`, and fails if the generated tables in
+[`README.md`](README.md) are stale. CI also confirms that a deliberately
+axiomatized gas schedule is rejected.
 
 ## PR guidance
 
