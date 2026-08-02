@@ -3,7 +3,7 @@ set_option warningAsError true
 /-!
 # Raw bytecode, without a compiler provenance assumption
 
-Route B starts from bytes supplied by a participant. `disassemble` splits such
+direct-bytecode starts from bytes supplied by a participant. `disassemble` splits such
 a byte array at EVM instruction boundaries while preserving opcode immediates,
 including truncated immediates at the end of code. `assemble` merely joins the
 chunks again. The round-trip theorem therefore applies to every `ByteArray`,
@@ -15,7 +15,7 @@ Proofs can inspect `RawInstr.opcodeOperation?` to classify a valid opcode and
 use `Decode.decodeAt` when they need its full immediate-bearing semantics.
 -/
 
-namespace Challenge.RouteB
+namespace Challenge.EvmProof
 
 open EvmSemantics
 open EvmSemantics.EVM
@@ -42,6 +42,91 @@ def opcodeOperation? (i : RawInstr) : Option Operation := Decode.opcodeOf i.opco
 end RawInstr
 
 namespace Bytecode
+
+/-- One expected result of the pinned EVM decoder at a byte offset. -/
+structure DecodeEntry where
+  pc : Nat
+  op : Operation
+  imm : Option (UInt256 × Nat)
+  deriving DecidableEq, Repr
+
+/-- A single Boolean certificate can validate every decoder fact used by a
+submission proof.  Keeping this separate from the symbolic trace prevents a
+large concrete byte-array reduction from being repeated at every opcode. -/
+def DecodeCertificate (code : ByteArray) (entries : List DecodeEntry) : Prop :=
+  entries.all (fun e => decide (Decode.decodeAt code e.pc = some (e.op, e.imm))) = true
+
+theorem DecodeCertificate.valid {code : ByteArray} {entries : List DecodeEntry}
+    (hcert : DecodeCertificate code entries) {entry : DecodeEntry}
+    (hentry : entry ∈ entries) :
+    Decode.decodeAt code entry.pc = some (entry.op, entry.imm) := by
+  have h := (List.all_eq_true.mp hcert) entry hentry
+  exact of_decide_eq_true h
+
+/-! ### `ByteArray.toList` bridge
+
+Core implements `ByteArray.toList` as an opaque tail-recursive loop. Direct
+decoder proofs need a structural view of immediate bytes, so establish the
+bridge to the underlying array once for every direct-bytecode submission.
+-/
+
+private theorem get!_eq_data_toList (bs : Array UInt8) (i : Nat)
+    (hi : i < bs.toList.length) : ByteArray.get! ⟨bs⟩ i = bs.toList[i] := by
+  show bs[i]! = _
+  have hib : i < bs.size := by simpa using hi
+  rw [getElem!_pos bs i hib]
+  exact (Array.getElem_toList hib).symm
+
+private theorem byteArrayToList_loop_eq (bs : Array UInt8) :
+    ∀ n i r, bs.size - i ≤ n →
+      ByteArray.toList.loop ⟨bs⟩ i r = r.reverse ++ bs.toList.drop i := by
+  intro n
+  induction n with
+  | zero =>
+    intro i r h
+    unfold ByteArray.toList.loop
+    rw [if_neg (by show ¬i < bs.size; omega)]
+    rw [List.drop_eq_nil_of_le (by rw [Array.length_toList]; omega)]
+    rw [List.append_nil]
+  | succ n ih =>
+    intro i r h
+    unfold ByteArray.toList.loop
+    by_cases hi : (⟨bs⟩ : ByteArray).size > i
+    · rw [if_pos hi]
+      rw [ih (i + 1) _ (by
+        show bs.size - (i + 1) ≤ n
+        have : bs.size > i := hi
+        omega)]
+      have hi' : i < bs.toList.length := by
+        rw [Array.length_toList]
+        exact hi
+      rw [List.drop_eq_getElem_cons hi', get!_eq_data_toList bs i hi']
+      simp
+    · rw [if_neg hi]
+      have hle : bs.toList.length ≤ i := by
+        rw [Array.length_toList]
+        exact Nat.le_of_not_lt hi
+      rw [List.drop_eq_nil_of_le hle, List.append_nil]
+
+/-- Structural view of core's tail-recursive `ByteArray.toList`. This is the
+normal form used when proving concrete PUSH immediate values. -/
+theorem toList_eq_data (b : ByteArray) : b.toList = b.data.toList := by
+  obtain ⟨bs⟩ := b
+  show ByteArray.toList.loop ⟨bs⟩ 0 [] = _
+  rw [byteArrayToList_loop_eq bs bs.size 0 [] (by omega)]
+  simp
+
+/-- A compact, executable certificate that every listed target satisfies the
+pinned EVM semantics' jump-destination scan. -/
+def JumpDestCertificate (code : ByteArray) (targets : List Nat) : Prop :=
+  targets.all (Decode.isValidJumpDest code) = true
+
+/-- Recover the exact `JUMP`/`JUMPI` side condition for any target named in a
+validated certificate. -/
+theorem JumpDestCertificate.valid {code : ByteArray} {targets : List Nat}
+    (hcert : JumpDestCertificate code targets) {pc : Nat} (hpc : pc ∈ targets) :
+    Decode.isValidJumpDest code pc = true := by
+  exact (List.all_eq_true.mp hcert) pc hpc
 
 /-- Immediate width of an opcode. PUSH1..PUSH32 carry 1..32 bytes. The Osaka
 EIP-8024 opcodes DUPN/SWAPN/EXCHANGE carry one byte. The classification comes
@@ -122,4 +207,4 @@ example : disassembleList [0x61, 0xaa] =
 example : assembleList (disassembleList [0x0c, 0xfe]) = [0x0c, 0xfe] := by decide
 
 end Bytecode
-end Challenge.RouteB
+end Challenge.EvmProof

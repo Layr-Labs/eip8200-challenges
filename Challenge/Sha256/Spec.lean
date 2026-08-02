@@ -1,5 +1,4 @@
-import YulEvmCompiler.Correctness
-import EvmSemantics.Crypto.Sha256
+import EvmSemantics.EVM.BigStep
 set_option warningAsError true
 /-!
 # The SHA-256 challenge statement
@@ -22,17 +21,13 @@ is FIPS 180-4 as pinned and vector-checked by `evm-semantics`
 
 ## What a submission must prove
 
-`Correct code`: for every calldata, given enough gas, a frame executing
+`Correct code`: for every realizable calldata, given enough gas, a frame executing
 `code` halts by *returning* exactly the 32 digest bytes. Notably it does
 **not** talk about our bytecode, our Yul, our memory layout, or our gas —
 two implementations that both satisfy `Correct` are automatically
 interchangeable on the interface a caller can observe. That is what makes
 this a challenge statement rather than a description of one implementation:
 equivalence to the spec, not equivalence to the incumbent's code.
-
-`CorrectWithSchedule code schedule` strengthens it with a *proven* gas
-bound — the thing an EIP actually needs, and the top tier of the challenge
-leaderboard.
 
 ## Scope, stated honestly
 
@@ -41,7 +36,7 @@ leaderboard.
   frame is always fresh-memory, and `0x02` has no storage of its own, so
   this is the situation that actually arises — but a submission that reads
   `SLOAD`/`CALLVALUE`/`CALLER` is only constrained here at those values.
-  Generalizing the frame is `CorrectInAnyFrame` below.
+  Stronger frame and gas-schedule predicates live under `AdditionalGoals/`.
 * `deployAddress` is *not* `0x02`. In the pinned Osaka semantics `0x02` is
   still a precompile (`Precompile.isPrecompile … = true`), so a frame there
   never executes bytecode at all — flipping that bit is exactly what
@@ -54,9 +49,6 @@ namespace Challenge.Sha256
 
 open EvmSemantics
 open EvmSemantics.EVM
-open YulSemantics (Block Run VEnv Outcome)
-open YulSemantics.EVM (EvmState Op evmWithExternal)
-open YulEvmCompiler
 
 /-! ## The specification -/
 
@@ -64,10 +56,12 @@ open YulEvmCompiler
 pinned semantics (`Precompile.runSha256`). -/
 def spec (input : ByteArray) : ByteArray := Crypto.Sha256.hash input
 
-/-- The spec at the byte-list view yul-semantics uses for calldata and
-return data. -/
-def digestOf (calldata : List UInt8) : List UInt8 :=
-  (spec (mkCode calldata)).toList
+/-- Calldata sizes representable by the protocol/runtime boundary.  Lean's
+logical `Array` type has no intrinsic size bound, whereas an EVM program sees
+`CALLDATASIZE` through a 256-bit word.  The much tighter 64-bit bound captures
+all realizable Ethereum inputs and prevents the challenge from quantifying
+over mathematical arrays no EVM execution environment can represent. -/
+def CalldataFits (input : ByteArray) : Prop := input.size < 2 ^ 64
 
 /-! ## The frame a candidate is judged in -/
 
@@ -117,8 +111,12 @@ def frame (code calldata : ByteArray) (gas : Nat) : EVM.State :=
 /-! ## The challenge -/
 
 /-- **The challenge.** `code` computes SHA-256 the way the precompile does:
-for every calldata there is a gas level above which the frame halts by
+for every realizable calldata there is a gas level above which the frame halts by
 returning exactly the digest of that calldata.
+
+`CalldataFits` excludes only logical arrays of at least `2^64` bytes. Such
+arrays exist in Lean's unbounded model but cannot cross an Ethereum/runtime
+boundary, and `CALLDATASIZE` could not represent their length faithfully.
 
 The `∃ g₀, ∀ g ≥ g₀` shape is "given enough gas": gas *must* appear, since
 below some level every implementation runs out, and no fixed constant can
@@ -126,62 +124,8 @@ be right for all input lengths. It carries real content — the conclusion
 holds for every larger budget, so a candidate cannot pass by succeeding at
 one lucky gas value. -/
 def Correct (code : ByteArray) : Prop :=
-  ∀ calldata : ByteArray, ∃ g₀ : Nat, ∀ g : Nat, g₀ ≤ g →
-    Eval (frame code calldata g) (.returned (spec calldata))
-
-/-- The efficiency-carrying strengthening: `schedule n` gas suffices for
-every input of `n` bytes. This is what a gas schedule in an EIP would need,
-and the top tier of the challenge. -/
-def CorrectWithSchedule (code : ByteArray) (schedule : Nat → Nat) : Prop :=
-  ∀ (calldata : ByteArray) (g : Nat), schedule calldata.size ≤ g →
-    Eval (frame code calldata g) (.returned (spec calldata))
-
-/-- A proven gas schedule implies correctness. -/
-theorem correct_of_schedule {code : ByteArray} {schedule : Nat → Nat}
-    (h : CorrectWithSchedule code schedule) : Correct code :=
-  fun calldata => ⟨schedule calldata.size, fun g hg => h calldata g hg⟩
-
-/-- The frame-generalized statement: the same conclusion from *any* machine
-state that is a fresh frame executing `code` — arbitrary world, caller, call
-value, and storage. `Correct` is this restricted to the canonical world; the
-gap between them is the noninterference obligation `Obligation.W`. -/
-def CorrectInAnyFrame (code : ByteArray) : Prop :=
-  ∀ (s : EVM.State), s.executionEnv.code = code → s.pc = 0 → s.stack = [] →
-    s.callStack = [] → s.halt = .Running → s.memory = .empty →
-    s.activeWords = 0 → s.executionEnv.fork = .Osaka →
-    Precompile.isPrecompile s.executionEnv.fork s.executionEnv.codeAddr = false →
+  ∀ calldata : ByteArray, CalldataFits calldata →
     ∃ g₀ : Nat, ∀ g : Nat, g₀ ≤ g →
-      Eval { s with gasAvailable := g } (.returned (spec s.executionEnv.calldata))
-
-/-! ## Frame facts
-
-The canonical frame satisfies the compiler correctness theorem's target-side
-side conditions. These are what let a Yul-level proof land on `Correct`
-without any bytecode-level reasoning. -/
-
-theorem frame_pc (code calldata : ByteArray) (gas : Nat) :
-    (frame code calldata gas).pc = UInt256.ofNat 0 := rfl
-
-theorem frame_stack (code calldata : ByteArray) (gas : Nat) :
-    (frame code calldata gas).stack = [] := rfl
-
-theorem frame_gas (code calldata : ByteArray) (gas : Nat) :
-    (frame code calldata gas).gasAvailable = gas := rfl
-
-theorem frame_calldata (code calldata : ByteArray) (gas : Nat) :
-    (frame code calldata gas).executionEnv.calldata = calldata := rfl
-
-theorem deployAddress_not_precompile :
-    Precompile.isPrecompile .Osaka deployAddress = false := by
-  decide
-
-theorem frame_frameOK {code calldata : ByteArray} {gas : Nat}
-    (hsize : code.size < 2 ^ 256) : FrameOK code (frame code calldata gas) where
-  hcode := rfl
-  codeSmall := hsize
-  fork := rfl
-  noPrecompile := deployAddress_not_precompile
-  callStack := rfl
-  running := rfl
+    Eval (frame code calldata g) (.returned (spec calldata))
 
 end Challenge.Sha256

@@ -19,21 +19,53 @@ The same discipline applies to a submission: a Tier-2 proof is only a proof if
 `#print axioms` of it prints this line.
 -/
 
-/-- info: 'Challenge.RouteB.Bytecode.assemble_disassemble' depends on axioms: [propext, Quot.sound] -/
+/-- info: 'Challenge.EvmProof.Bytecode.assemble_disassemble' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in
-#print axioms Challenge.RouteB.Bytecode.assemble_disassemble
+#print axioms Challenge.EvmProof.Bytecode.assemble_disassemble
 
-/-- info: 'Challenge.RouteB.eval_of_steps' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'Challenge.EvmProof.Bytecode.JumpDestCertificate.valid' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in
-#print axioms Challenge.RouteB.eval_of_steps
+#print axioms Challenge.EvmProof.Bytecode.JumpDestCertificate.valid
 
-/-- info: 'Challenge.RouteB.Reaches.toEval' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'Challenge.EvmProof.eval_of_steps' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
-#print axioms Challenge.RouteB.Reaches.toEval
+#print axioms Challenge.EvmProof.eval_of_steps
 
-/-- info: 'Challenge.Sha256.RouteB.correct_of_directProof' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'Challenge.EvmProof.Reaches.toEval' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
-#print axioms Challenge.Sha256.RouteB.correct_of_directProof
+#print axioms Challenge.EvmProof.Reaches.toEval
+
+/--
+info: 'Challenge.Sha256.ProofSupport.Bytecode.correct_of_directProof' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Sha256.ProofSupport.Bytecode.correct_of_directProof
+
+/--
+info: 'Challenge.Sha256.Reference.Proofs.Bytecode.Reference.reaches_firstTarget' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Sha256.Reference.Proofs.Bytecode.Reference.reaches_firstTarget
+
+/--
+info: 'Challenge.Sha256.Reference.Proofs.Bytecode.ReferenceCorrect.referenceDirectProof' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Sha256.Reference.Proofs.Bytecode.ReferenceCorrect.referenceDirectProof
+
+/--
+info: 'Challenge.Sha256.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correct' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Sha256.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correct
 
 /-- info: 'Challenge.Sha256.correct_of_computesDigest' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

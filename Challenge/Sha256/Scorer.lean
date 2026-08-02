@@ -1,4 +1,4 @@
-import Challenge.Sha256.Statement
+import Challenge.Sha256.Spec
 import EvmSemantics.EVM.StepF
 import EvmSemantics.Data.Hex
 set_option warningAsError true

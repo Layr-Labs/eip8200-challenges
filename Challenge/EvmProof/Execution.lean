@@ -13,7 +13,7 @@ predicate `I`. SHA's padding, schedule, block, and round counters can each be
 the index of one such invariant.
 -/
 
-namespace Challenge.RouteB
+namespace Challenge.EvmProof
 
 open EvmSemantics
 open EvmSemantics.EVM
@@ -121,7 +121,7 @@ theorem Reaches.toEval {P : State → Prop} {result : ExecutionResult}
   obtain ⟨t, hsteps, hdone, hresult⟩ := h hs
   simpa [hresult] using eval_of_steps hsteps hdone
 
-/-- Reusable Route B obligation for an arbitrary input type and challenge:
+/-- Reusable direct-bytecode obligation for an arbitrary input type and challenge:
 from the gas-parameterized initial state, reach a done state with the expected
 result at every sufficiently large gas budget. -/
 def EventuallyEvaluates {Input : Type} (initial : Input → Nat → State)
@@ -130,7 +130,7 @@ def EventuallyEvaluates {Input : Type} (initial : Input → Nat → State)
     Reaches (fun s => s = initial input g)
       (fun t => t.isDone = true ∧ t.toResult = expected input)
 
-/-- Soundness of the generic Route B obligation. -/
+/-- Soundness of the generic direct-bytecode obligation. -/
 theorem EventuallyEvaluates.sound {Input : Type} {initial : Input → Nat → State}
     {expected : Input → ExecutionResult}
     (h : EventuallyEvaluates initial expected) :
@@ -147,4 +147,4 @@ theorem eval_execN {n : Nat} {s : State}
     Eval s (execN n s).toResult :=
   eval_of_steps (steps_execN hsteps) hdone
 
-end Challenge.RouteB
+end Challenge.EvmProof

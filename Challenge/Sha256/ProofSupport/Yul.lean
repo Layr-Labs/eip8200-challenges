@@ -1,4 +1,5 @@
-import Challenge.Sha256.Statement
+import Challenge.Sha256.ProofSupport.Frame
+import YulEvmCompiler.Correctness
 set_option warningAsError true
 /-!
 # From a Yul-level obligation to the challenge statement
@@ -31,6 +32,10 @@ open EvmSemantics.EVM
 open YulSemantics (Block Run VEnv)
 open YulSemantics.EVM (EvmState Op evmWithExternal ExternalCalls ExternalCreates)
 open YulEvmCompiler
+
+/-- The SHA specification at the byte-list view used by Yul semantics. -/
+def digestOf (calldata : List UInt8) : List UInt8 :=
+  (spec (mkCode calldata)).toList
 
 /-- The closed-world model: the reference implementation makes no external
 calls and creates no contracts, so the open-world relations are empty and
@@ -65,6 +70,17 @@ def ComputesDigest (prog : Block Op) : Prop :=
       Run localDialect prog yst V yst' .halt ∧
         yst'.halted = some (.ret, digestOf yst.env.calldata)
 
+/-- The canonical frame satisfies the compiler theorem's target-side
+conditions. This belongs to the Yul reduction, not the challenge spec. -/
+theorem frame_frameOK {code calldata : ByteArray} {gas : Nat}
+    (hsize : code.size < 2 ^ 256) : FrameOK code (frame code calldata gas) where
+  hcode := rfl
+  codeSmall := hsize
+  fork := rfl
+  noPrecompile := deployAddress_not_precompile
+  callStack := rfl
+  running := rfl
+
 /-- **The reduction.** A compiler-accepted Yul program that computes the
 digest yields bytecode satisfying the challenge statement. No step of this
 proof mentions an opcode: the bytecode-level work is `compile_correct_eval`.
@@ -77,7 +93,7 @@ theorem correct_of_computesDigest {prog : Block Op} {is : List Instr}
     (habs : AbstractsFrame (assemble is))
     (hyul : ComputesDigest prog) :
     Correct (assemble is) := by
-  intro calldata
+  intro calldata _hfit
   obtain ⟨yst, hmatch, hmem, hcd, hhalted⟩ := habs calldata
   obtain ⟨V, yst', hrun, hres⟩ := hyul yst hmem hhalted
   obtain ⟨b, H⟩ :=

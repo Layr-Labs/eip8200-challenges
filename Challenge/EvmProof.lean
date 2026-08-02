@@ -1,8 +1,13 @@
-import Challenge.RouteB.Bytecode
-import Challenge.RouteB.Execution
+import Challenge.EvmProof.Bytecode
+import Challenge.EvmProof.Execution
+import Challenge.EvmProof.Gas
+import Challenge.EvmProof.Memory
+import Challenge.EvmProof.Ops
+import Challenge.EvmProof.Program
+import Challenge.EvmProof.Word
 set_option warningAsError true
 /-!
-# Route B support
+# Direct-bytecode proof support
 
 Infrastructure for proofs that start from participant-supplied EVM bytecode:
 a byte-preserving verified disassembler and direct `Step`/`Eval` proof
