@@ -23,16 +23,16 @@ private def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork .Osaka = true) :
-    Challenge.BytecodeProof.Stepper.WellFormed .Osaka (.op op) :=
+    Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
   ⟨hopcode, hplain, havailable⟩
 
 def setupPath :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨711, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨712, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩]
 
 def conditionPath :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨713, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨714, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨715, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
@@ -42,7 +42,7 @@ def conditionPath :
    ⟨719, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def callPath :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨720, .push ⟨2, by decide⟩ (UInt256.ofNat 1390), by rfl, by decide⟩,
    ⟨721, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨722, .push ⟨2, by decide⟩ (UInt256.ofNat Padding.messageOffset),
@@ -52,7 +52,7 @@ def callPath :
    ⟨725, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def incrementPath :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨726, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨727, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
    ⟨728, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
@@ -182,8 +182,8 @@ private theorem offset_lt_total (input : ByteArray) (hfit : CalldataFits input)
     omega
   rw [Padding.paddedWord_eq input hfit]
   unfold UInt256.lt blockOffsetWord
-  rw [Challenge.BytecodeProof.Word.word_toNat_ofNat,
-    Challenge.BytecodeProof.Word.word_toNat_ofNat,
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt hoff, Nat.mod_eq_of_lt hpad]
   simp only [if_pos hnat]
 
@@ -199,8 +199,8 @@ private theorem offset_not_lt_total (input : ByteArray)
     rfl
   rw [Padding.paddedWord_eq input hfit]
   unfold UInt256.lt blockOffsetWord
-  rw [Challenge.BytecodeProof.Word.word_toNat_ofNat,
-    Challenge.BytecodeProof.Word.word_toNat_ofNat,
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt hoff, Nat.mod_eq_of_lt hpad, heq]
   simp only [Nat.lt_irrefl, if_false]
   rfl
@@ -250,16 +250,16 @@ private theorem offset_not_lt_total (input : ByteArray)
   cases i <;> simp [blockLoopState, afterIteration, loopAt]
 
 private theorem run_setup (input : ByteArray) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock setupPath
+    Challenge.EvmProof.Stepper.runLocatedBlock setupPath
       (PaddingTrace.padReturned input) = some (blockLoopState input 0) := by
-  simp [setupPath, Challenge.BytecodeProof.Stepper.runLocatedBlock,
-    Challenge.BytecodeProof.Stepper.runLocated, Challenge.BytecodeProof.Stepper.runInstr,
+  simp [setupPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     blockLoopState, loopAt, blockOffsetWord, blockOffset]
 
 theorem gasSteps_setup (input : ByteArray) :
-    Challenge.BytecodeProof.GasSteps (PaddingTrace.padReturned input)
+    Challenge.EvmProof.GasSteps (PaddingTrace.padReturned input)
       (blockLoopState input 0) := by
-  apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka setupPath
   · rfl
   · rfl
@@ -270,29 +270,29 @@ theorem gasSteps_setup (input : ByteArray) :
 private theorem run_condition_continue (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)
     (hrun : s.halt = .Running) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock conditionPath (loopAt s input i) =
+    Challenge.EvmProof.Stepper.runLocatedBlock conditionPath (loopAt s input i) =
       some (afterCondition s input i) := by
   have hlt := offset_lt_total input hfit i hi
   have hzero : UInt256.isZero (UInt256.ofNat 1) = 0 := by decide
   have hfalse : UInt256.isTrue (0 : UInt256) = false := by decide
-  simp [conditionPath, Challenge.BytecodeProof.Stepper.runLocatedBlock,
-    Challenge.BytecodeProof.Stepper.runLocated, Challenge.BytecodeProof.Stepper.runInstr,
+  simp [conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopAt, afterCondition, hrun, hlt, hzero, hfalse]
 
 private theorem run_call (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock callPath
+    Challenge.EvmProof.Stepper.runLocatedBlock callPath
       (afterCondition s input i) =
       some (Compression.compressEntry (loopAt s input i)
         (messageOffsetWord i) (UInt256.ofNat 1390)
         [blockOffsetWord i, Padding.paddedWord input]) := by
-  have hadd := Challenge.BytecodeProof.Word.ofNat_add_ofNat
+  have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (messageOffset_lt_uint256 input hfit i hi)
   have hdest : Decode.isValidJumpDest referenceBytecode 612 = true := by decide
-  simp [callPath, Challenge.BytecodeProof.Stepper.runLocatedBlock,
-    Challenge.BytecodeProof.Stepper.runLocated, Challenge.BytecodeProof.Stepper.runInstr,
+  simp [callPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     afterCondition, loopAt, Compression.compressEntry, messageOffsetWord,
     blockOffsetWord, hcode, hrun, hadd, hdest]
 
@@ -304,20 +304,20 @@ private theorem run_increment_core (q : State) (input : ByteArray) (i : Nat)
     (hstack : q.stack = [blockOffsetWord i, Padding.paddedWord input])
     (hadd : blockOffsetWord i + UInt256.ofNat 64 =
       blockOffsetWord (i + 1)) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock incrementPath q =
+    Challenge.EvmProof.Stepper.runLocatedBlock incrementPath q =
       some { q with
         pc := UInt256.ofNat 1369
         stack := [blockOffsetWord (i + 1), Padding.paddedWord input] } := by
   have hdest : Decode.isValidJumpDest referenceBytecode 1369 = true := by decide
-  simp [incrementPath, Challenge.BytecodeProof.Stepper.runLocatedBlock,
-    Challenge.BytecodeProof.Stepper.runLocated, Challenge.BytecodeProof.Stepper.runInstr,
+  simp [incrementPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     hpc, hstack, hcode, hrun, hadd, hdest, List.exchange]
 
 private theorem run_increment (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock incrementPath
+    Challenge.EvmProof.Stepper.runLocatedBlock incrementPath
       (afterCompression s input i) = some (afterIteration s input i) := by
   have hoff := blockOffset_lt_uint256 input hfit (i + 1) (by omega)
   have haddBound : i * 64 + 64 < 2 ^ 256 := by
@@ -325,7 +325,7 @@ private theorem run_increment (s : State) (input : ByteArray)
   have hadd : blockOffsetWord i + UInt256.ofNat 64 =
       blockOffsetWord (i + 1) := by
     simpa [blockOffsetWord, blockOffset, Nat.add_mul] using
-      Challenge.BytecodeProof.Word.ofNat_add_ofNat (a := i * 64) (b := 64) haddBound
+      Challenge.EvmProof.Word.ofNat_add_ofNat (a := i * 64) (b := 64) haddBound
   have qcode : (afterCompression s input i).executionEnv.code =
       referenceBytecode := by simpa using hcode
   have qrun : (afterCompression s input i).halt = .Running := by
@@ -345,20 +345,20 @@ theorem gasSteps_iteration (s : State) (input : ByteArray)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps (loopAt s input i) (afterIteration s input i) := by
-  have gCondition : Challenge.BytecodeProof.GasSteps (loopAt s input i)
+    Challenge.EvmProof.GasSteps (loopAt s input i) (afterIteration s input i) := by
+  have gCondition : Challenge.EvmProof.GasSteps (loopAt s input i)
       (afterCondition s input i) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka conditionPath
     · exact hcode
     · exact hfork
     · exact run_condition_continue s input hfit i hi hrun
     · exact hrun
     · exact hnp
-  have gCall : Challenge.BytecodeProof.GasSteps (afterCondition s input i)
+  have gCall : Challenge.EvmProof.GasSteps (afterCondition s input i)
       (Compression.compressEntry (loopAt s input i) (messageOffsetWord i)
         (UInt256.ofNat 1390) [blockOffsetWord i, Padding.paddedWord input]) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka callPath
     · exact hcode
     · exact hfork
@@ -381,16 +381,16 @@ theorem gasSteps_iteration (s : State) (input : ByteArray)
       (afterCompression s input i).executionEnv.fork
       (afterCompression s input i).executionEnv.codeAddr = false := by
     simpa using hnp
-  have gIncrement : Challenge.BytecodeProof.GasSteps (afterCompression s input i)
+  have gIncrement : Challenge.EvmProof.GasSteps (afterCompression s input i)
       (afterIteration s input i) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka incrementPath
     · exact qcode
     · exact qfork
     · exact run_increment s input hfit i hi hcode hrun
     · exact qrun
     · exact qnp
-  have gCompress' : Challenge.BytecodeProof.GasSteps
+  have gCompress' : Challenge.EvmProof.GasSteps
       (Compression.compressEntry (loopAt s input i) (messageOffsetWord i)
         (UInt256.ofNat 1390) [blockOffsetWord i, Padding.paddedWord input])
       (afterCompression s input i) := by
@@ -398,9 +398,9 @@ theorem gasSteps_iteration (s : State) (input : ByteArray)
   exact gCondition.trans (gCall.trans (gCompress'.trans gIncrement))
 
 theorem gasSteps_blockLoop (input : ByteArray) (hfit : CalldataFits input) :
-    Challenge.BytecodeProof.GasSteps (blockLoopState input 0)
+    Challenge.EvmProof.GasSteps (blockLoopState input 0)
       (blockLoopState input (blockCount input)) := by
-  apply Challenge.BytecodeProof.GasSteps.iterateBounded (count := blockCount input)
+  apply Challenge.EvmProof.GasSteps.iterateBounded (count := blockCount input)
   intro i hi
   let q := blockLoopState input i
   have qcode : q.executionEnv.code = referenceBytecode := by
@@ -416,7 +416,7 @@ theorem gasSteps_blockLoop (input : ByteArray) (hfit : CalldataFits input) :
 
 private theorem run_condition_exit (input : ByteArray)
     (hfit : CalldataFits input) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock conditionPath
+    Challenge.EvmProof.Stepper.runLocatedBlock conditionPath
       (blockLoopState input (blockCount input)) =
       some (Output.outputEntry (blockLoopState input (blockCount input))
         (blockOffsetWord (blockCount input)) [Padding.paddedWord input]) := by
@@ -426,15 +426,15 @@ private theorem run_condition_exit (input : ByteArray)
   have hdest : Decode.isValidJumpDest referenceBytecode 1401 = true := by decide
   conv_lhs =>
     rw [← loopAt_blockLoopState input (blockCount input)]
-  simp [conditionPath, Challenge.BytecodeProof.Stepper.runLocatedBlock,
-    Challenge.BytecodeProof.Stepper.runLocated, Challenge.BytecodeProof.Stepper.runInstr,
+  simp [conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopAt, Output.outputEntry, hlt, hzero, htrue, hdest]
 
 theorem gasSteps_exit (input : ByteArray) (hfit : CalldataFits input) :
-    Challenge.BytecodeProof.GasSteps (blockLoopState input (blockCount input))
+    Challenge.EvmProof.GasSteps (blockLoopState input (blockCount input))
       (Output.outputEntry (blockLoopState input (blockCount input))
         (blockOffsetWord (blockCount input)) [Padding.paddedWord input]) := by
-  apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka conditionPath
   · simp [Artifact.referenceArtifact]
   · simp [State.fork]
@@ -445,7 +445,7 @@ theorem gasSteps_exit (input : ByteArray) (hfit : CalldataFits input) :
 /-- Complete direct execution of the reference artifact, from the canonical
 fresh call frame through padding, every message block, and `RETURN`. -/
 theorem gasSteps_reference (input : ByteArray) (hfit : CalldataFits input) :
-    Challenge.BytecodeProof.GasSteps (frame referenceBytecode input 0)
+    Challenge.EvmProof.GasSteps (frame referenceBytecode input 0)
       (Output.outputResult (blockLoopState input (blockCount input))
         [Padding.paddedWord input]) := by
   let final := blockLoopState input (blockCount input)

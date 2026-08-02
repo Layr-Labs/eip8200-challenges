@@ -31,7 +31,7 @@ dependency boundary.
   canonical frame.
 
 The generic EVM symbolic-execution infrastructure shared by future challenges
-lives one level up in [`../BytecodeProof/`](../BytecodeProof/).
+lives one level up in [`../EvmProof/`](../EvmProof/).
 
 ## 3. Bundled reference
 

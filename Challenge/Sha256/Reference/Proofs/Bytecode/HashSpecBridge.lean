@@ -340,7 +340,7 @@ theorem lengthLoop_eq_lengthBytes (input : ByteArray) :
       _ = UInt8.ofNat ((input.size * 8) / 256 ^ (8 - 1 - i) % 256) :=
         lengthDigit_eq _ _ hi
       _ = (Padding.lengthBytes input)[i] := by
-        rw [← Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hright]
+        rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hright]
         exact YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD
           (input.size * 8) 8 i hi |>.symm
 

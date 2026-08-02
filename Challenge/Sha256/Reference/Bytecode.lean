@@ -1,4 +1,4 @@
-import Challenge.BytecodeProof.Bytecode
+import Challenge.EvmProof.Bytecode
 import Challenge.Sha256.Reference.Bytes
 import EvmSemantics.Data.Hex
 set_option warningAsError true
@@ -44,7 +44,7 @@ def referenceBytecode : ByteArray := referenceBytes
     EvmSemantics.Data.Bytes.bytesToBigEndianNat
       (ByteArray.mk #[0x00, 0x1b]) = 0x001b := by
   simp [EvmSemantics.Data.Bytes.bytesToBigEndianNat,
-    Challenge.BytecodeProof.Bytecode.toList_eq_data, UInt8.toNat_ofNat]
+    Challenge.EvmProof.Bytecode.toList_eq_data, UInt8.toNat_ofNat]
 
 @[simp] theorem referenceBytecode_entry_value :
     EvmSemantics.Data.Bytes.bytesToBigEndianNat
@@ -54,8 +54,8 @@ def referenceBytecode : ByteArray := referenceBytes
 
 /-- The generic direct-bytecode disassembler round-trips the frozen artifact. -/
 theorem referenceBytecode_roundtrip :
-    Challenge.BytecodeProof.Bytecode.assemble
-      (Challenge.BytecodeProof.Bytecode.disassemble referenceBytecode) = referenceBytecode :=
-  Challenge.BytecodeProof.Bytecode.assemble_disassemble _
+    Challenge.EvmProof.Bytecode.assemble
+      (Challenge.EvmProof.Bytecode.disassemble referenceBytecode) = referenceBytecode :=
+  Challenge.EvmProof.Bytecode.assemble_disassemble _
 
 end Challenge.Sha256

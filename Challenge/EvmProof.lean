@@ -1,10 +1,10 @@
-import Challenge.BytecodeProof.Bytecode
-import Challenge.BytecodeProof.Execution
-import Challenge.BytecodeProof.Gas
-import Challenge.BytecodeProof.Memory
-import Challenge.BytecodeProof.Ops
-import Challenge.BytecodeProof.Program
-import Challenge.BytecodeProof.Word
+import Challenge.EvmProof.Bytecode
+import Challenge.EvmProof.Execution
+import Challenge.EvmProof.Gas
+import Challenge.EvmProof.Memory
+import Challenge.EvmProof.Ops
+import Challenge.EvmProof.Program
+import Challenge.EvmProof.Word
 set_option warningAsError true
 /-!
 # Direct-bytecode proof support

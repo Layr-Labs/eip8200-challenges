@@ -15,7 +15,7 @@ Proofs can inspect `RawInstr.opcodeOperation?` to classify a valid opcode and
 use `Decode.decodeAt` when they need its full immediate-bearing semantics.
 -/
 
-namespace Challenge.BytecodeProof
+namespace Challenge.EvmProof
 
 open EvmSemantics
 open EvmSemantics.EVM
@@ -207,4 +207,4 @@ example : disassembleList [0x61, 0xaa] =
 example : assembleList (disassembleList [0x0c, 0xfe]) = [0x0c, 0xfe] := by decide
 
 end Bytecode
-end Challenge.BytecodeProof
+end Challenge.EvmProof

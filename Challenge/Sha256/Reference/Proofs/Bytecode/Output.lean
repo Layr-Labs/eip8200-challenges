@@ -1,5 +1,5 @@
 import Challenge.Sha256.Reference.Proofs.Bytecode.Accessors
-import Challenge.BytecodeProof.Memory
+import Challenge.EvmProof.Memory
 set_option warningAsError true
 set_option maxRecDepth 10000
 set_option linter.unusedSimpArgs false
@@ -20,11 +20,11 @@ open EvmSemantics.EVM
 
 @[simp] private theorem succSmall (n : Nat) (h : n + 1 < 2 ^ 256) :
     (UInt256.ofNat n).succ = UInt256.ofNat (n + 1) :=
-  Challenge.BytecodeProof.Word.succ_ofNat h
+  Challenge.EvmProof.Word.succ_ofNat h
 
 @[simp] private theorem addSmall (a b : Nat) (h : a + b < 2 ^ 256) :
     UInt256.ofNat a + UInt256.ofNat b = UInt256.ofNat (a + b) :=
-  Challenge.BytecodeProof.Word.ofNat_add_ofNat h
+  Challenge.EvmProof.Word.ofNat_add_ofNat h
 
 private theorem uintZero : (0 : UInt256) = UInt256.ofNat 0 := by decide
 
@@ -32,11 +32,11 @@ private def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork .Osaka = true) :
-    Challenge.BytecodeProof.Stepper.WellFormed .Osaka (.op op) :=
+    Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
   ⟨hopcode, hplain, havailable⟩
 
 def startPath :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨734, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨735, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨736, .push ⟨2, by decide⟩ (UInt256.ofNat 1413), by rfl, by decide⟩,
@@ -46,7 +46,7 @@ def startPath :
    ⟨740, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setup6Path :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨741, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨742, .push ⟨2, by decide⟩ (UInt256.ofNat 1424), by rfl, by decide⟩,
    ⟨743, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
@@ -55,7 +55,7 @@ def setup6Path :
    ⟨746, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setup5Path :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨747, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨748, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
    ⟨749, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -67,7 +67,7 @@ def setup5Path :
    ⟨755, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setup4Path :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨756, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨757, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
    ⟨758, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -78,7 +78,7 @@ def setup4Path :
    ⟨763, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setup3Path :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨764, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨765, .push ⟨1, by decide⟩ (UInt256.ofNat 96), by rfl, by decide⟩,
    ⟨766, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -91,7 +91,7 @@ def setup3Path :
    ⟨773, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setup2Path :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨774, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨775, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
    ⟨776, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -102,7 +102,7 @@ def setup2Path :
    ⟨781, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setup1Path :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨782, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨783, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
    ⟨784, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -114,7 +114,7 @@ def setup1Path :
    ⟨790, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setup0Path :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨791, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨792, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
    ⟨793, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -125,7 +125,7 @@ def setup0Path :
    ⟨798, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def finishPath :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨799, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨800, .push ⟨1, by decide⟩ (UInt256.ofNat 224), by rfl, by decide⟩,
    ⟨801, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -305,7 +305,7 @@ def outputResult (s : State) (rest : List UInt256) : State :=
 private theorem run_start (s : State) (offset : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1019) (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock startPath (outputEntry s offset rest) =
+    Challenge.EvmProof.Stepper.runLocatedBlock startPath (outputEntry s offset rest) =
       some (Accessors.loadEntry s 318 (UInt256.ofNat 7) ⟨0⟩
         (UInt256.ofNat 1413) rest) := by
   have hc0 : rest.length < 1024 := by omega
@@ -315,14 +315,14 @@ private theorem run_start (s : State) (offset : UInt256) (rest : List UInt256)
   have hc4 : rest.length + 4 < 1024 := by omega
   have hdest : Decode.isValidJumpDest referenceBytecode 318 = true := by decide
   simp [startPath, outputEntry, Accessors.loadEntry,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock, Challenge.BytecodeProof.Stepper.runLocated,
-    Challenge.BytecodeProof.Stepper.runInstr, hc0, hc1, hc2, hc3, hc4,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, hc0, hc1, hc2, hc3, hc4,
     hcode, hrun, hdest]
 
 private theorem run_setup6 (s : State) (h7 : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1018) (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock setup6Path
+    Challenge.EvmProof.Stepper.runLocatedBlock setup6Path
       { s with pc := UInt256.ofNat 1413, stack := h7 :: rest } =
       some (Accessors.loadEntry s 318 (UInt256.ofNat 6) ⟨0⟩
         (UInt256.ofNat 1424) (h7 :: rest)) := by
@@ -333,14 +333,14 @@ private theorem run_setup6 (s : State) (h7 : UInt256) (rest : List UInt256)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hdest : Decode.isValidJumpDest referenceBytecode 318 = true := by decide
   simp [setup6Path, Accessors.loadEntry,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock, Challenge.BytecodeProof.Stepper.runLocated,
-    Challenge.BytecodeProof.Stepper.runInstr, hc1, hc2, hc3, hc4, hc5,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4, hc5,
     hcode, hrun, hdest]
 
 private theorem run_setup5 (s : State) (h6 h7 : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1017) (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock setup5Path
+    Challenge.EvmProof.Stepper.runLocatedBlock setup5Path
       { s with pc := UInt256.ofNat 1424, stack := h6 :: h7 :: rest } =
       some (Accessors.loadEntry s 318 (UInt256.ofNat 5) ⟨0⟩
         (UInt256.ofNat 1439)
@@ -352,14 +352,14 @@ private theorem run_setup5 (s : State) (h6 h7 : UInt256) (rest : List UInt256)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hdest : Decode.isValidJumpDest referenceBytecode 318 = true := by decide
   simp [setup5Path, Accessors.loadEntry,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock, Challenge.BytecodeProof.Stepper.runLocated,
-    Challenge.BytecodeProof.Stepper.runInstr, hc1, hc2, hc3, hc4, hc5,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4, hc5,
     hcode, hrun, hdest]
 
 private theorem run_setup4 (s : State) (h5 packed67 : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1017)
     (hcode : s.executionEnv.code = referenceBytecode) (hrun : s.halt = .Running) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock setup4Path
+    Challenge.EvmProof.Stepper.runLocatedBlock setup4Path
       { s with pc := UInt256.ofNat 1439, stack := h5 :: packed67 :: rest } =
       some (Accessors.loadEntry s 318 (UInt256.ofNat 4) ⟨0⟩
         (UInt256.ofNat 1453)
@@ -371,14 +371,14 @@ private theorem run_setup4 (s : State) (h5 packed67 : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hdest : Decode.isValidJumpDest referenceBytecode 318 = true := by decide
   simp [setup4Path, Accessors.loadEntry,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock, Challenge.BytecodeProof.Stepper.runLocated,
-    Challenge.BytecodeProof.Stepper.runInstr, hc2, hc3, hc4, hc5, hc6,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, hc2, hc3, hc4, hc5, hc6,
     hcode, hrun, hdest]
 
 private theorem run_setup3 (s : State) (h4 shifted5 packed67 : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1016)
     (hcode : s.executionEnv.code = referenceBytecode) (hrun : s.halt = .Running) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock setup3Path
+    Challenge.EvmProof.Stepper.runLocatedBlock setup3Path
       { s with pc := UInt256.ofNat 1453, stack := h4 :: shifted5 :: packed67 :: rest } =
       some (Accessors.loadEntry s 318 (UInt256.ofNat 3) ⟨0⟩
         (UInt256.ofNat 1469)
@@ -392,14 +392,14 @@ private theorem run_setup3 (s : State) (h4 shifted5 packed67 : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hdest : Decode.isValidJumpDest referenceBytecode 318 = true := by decide
   simp [setup3Path, Accessors.loadEntry,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock, Challenge.BytecodeProof.Stepper.runLocated,
-    Challenge.BytecodeProof.Stepper.runInstr, hc1, hc2, hc3, hc4, hc5, hc6,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4, hc5, hc6,
     hcode, hrun, hdest]
 
 private theorem run_setup2 (s : State) (h3 packedLow : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1017)
     (hcode : s.executionEnv.code = referenceBytecode) (hrun : s.halt = .Running) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock setup2Path
+    Challenge.EvmProof.Stepper.runLocatedBlock setup2Path
       { s with pc := UInt256.ofNat 1469, stack := h3 :: packedLow :: rest } =
       some (Accessors.loadEntry s 318 (UInt256.ofNat 2) ⟨0⟩
         (UInt256.ofNat 1483)
@@ -411,14 +411,14 @@ private theorem run_setup2 (s : State) (h3 packedLow : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hdest : Decode.isValidJumpDest referenceBytecode 318 = true := by decide
   simp [setup2Path, Accessors.loadEntry,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock, Challenge.BytecodeProof.Stepper.runLocated,
-    Challenge.BytecodeProof.Stepper.runInstr, hc2, hc3, hc4, hc5, hc6,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, hc2, hc3, hc4, hc5, hc6,
     hcode, hrun, hdest]
 
 private theorem run_setup1 (s : State) (h2 shifted3 packedLow : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1016)
     (hcode : s.executionEnv.code = referenceBytecode) (hrun : s.halt = .Running) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock setup1Path
+    Challenge.EvmProof.Stepper.runLocatedBlock setup1Path
       { s with pc := UInt256.ofNat 1483, stack := h2 :: shifted3 :: packedLow :: rest } =
       some (Accessors.loadEntry s 318 (UInt256.ofNat 1) ⟨0⟩
         (UInt256.ofNat 1498)
@@ -431,14 +431,14 @@ private theorem run_setup1 (s : State) (h2 shifted3 packedLow : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hdest : Decode.isValidJumpDest referenceBytecode 318 = true := by decide
   simp [setup1Path, Accessors.loadEntry,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock, Challenge.BytecodeProof.Stepper.runLocated,
-    Challenge.BytecodeProof.Stepper.runInstr, hc2, hc3, hc4, hc5, hc6,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, hc2, hc3, hc4, hc5, hc6,
     hcode, hrun, hdest]
 
 private theorem run_setup0 (s : State) (h1 packed23 packedLow : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1016)
     (hcode : s.executionEnv.code = referenceBytecode) (hrun : s.halt = .Running) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock setup0Path
+    Challenge.EvmProof.Stepper.runLocatedBlock setup0Path
       { s with pc := UInt256.ofNat 1498, stack := h1 :: packed23 :: packedLow :: rest } =
       some (Accessors.loadEntry s 318 ⟨0⟩ ⟨0⟩
         (UInt256.ofNat 1511)
@@ -450,8 +450,8 @@ private theorem run_setup0 (s : State) (h1 packed23 packedLow : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hdest : Decode.isValidJumpDest referenceBytecode 318 = true := by decide
   simp [setup0Path, Accessors.loadEntry,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock, Challenge.BytecodeProof.Stepper.runLocated,
-    Challenge.BytecodeProof.Stepper.runInstr, hc3, hc4, hc5, hc6, hc7,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, hc3, hc4, hc5, hc6, hc7,
     hcode, hrun, hdest]
 
 private theorem run_finish (s : State) (h0 shifted1 packed23 packedLow : UInt256)
@@ -468,7 +468,7 @@ private theorem run_finish (s : State) (h0 shifted1 packed23 packedLow : UInt256
       stack := rest
       memory := storedMemory
       activeWords := s.activeWordsAfterUInt256 0 32 }
-    Challenge.BytecodeProof.Stepper.runLocatedBlock finishPath
+    Challenge.EvmProof.Stepper.runLocatedBlock finishPath
       ({ s with
         pc := UInt256.ofNat 1511
         stack := h0 :: shifted1 :: packed23 :: packedLow :: rest }) =
@@ -492,12 +492,12 @@ private theorem run_finish (s : State) (h0 shifted1 packed23 packedLow : UInt256
   let bytes := Data.Bytes.natToBytesPadded word.toNat 32
   have hsize : bytes.size = 32 := by
     simp [bytes, Data.Bytes.natToBytesPadded, ByteArray.size]
-  have hread := Challenge.BytecodeProof.Memory.readPadded_writeBytes_same s.memory bytes 0
+  have hread := Challenge.EvmProof.Memory.readPadded_writeBytes_same s.memory bytes 0
   rw [hsize] at hread
   have hz : (⟨0⟩ : UInt256).toNat = 0 := rfl
   have h32 : (UInt256.ofNat 32).toNat = 32 := by decide
-  simp [finishPath, Challenge.BytecodeProof.Stepper.runLocatedBlock,
-    Challenge.BytecodeProof.Stepper.runLocated, Challenge.BytecodeProof.Stepper.runInstr,
+  simp [finishPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     State.activeWordsAfterUInt256, hc0, hc1, hc2, hc3, hc4, hc5,
     hrun, hread, hz, h32, word, bytes]
 
@@ -509,7 +509,7 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps (outputEntry s offset rest) (outputResult s rest) := by
+    Challenge.EvmProof.GasSteps (outputEntry s offset rest) (outputResult s rest) := by
   let q7 := afterH7 s rest
   let q6 := afterH6 s rest
   let q5 := afterH5 s rest
@@ -535,17 +535,17 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
     simpa [Artifact.instructionPC] using Artifact.isValidJumpDest_index 791 (by rfl)
   have valid1511 : Decode.isValidJumpDest referenceBytecode 1511 = true := by
     simpa [Artifact.instructionPC] using Artifact.isValidJumpDest_index 799 (by rfl)
-  have gStart : Challenge.BytecodeProof.GasSteps (outputEntry s offset rest)
+  have gStart : Challenge.EvmProof.GasSteps (outputEntry s offset rest)
       (Accessors.loadEntry s 318 (UInt256.ofNat 7) ⟨0⟩
         (UInt256.ofNat 1413) rest) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka startPath
     · exact hcode
     · exact hfork
     · exact run_start s offset rest (by omega) hcode hrun
     · exact hrun
     · exact hnp
-  have gH7 : Challenge.BytecodeProof.GasSteps
+  have gH7 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry s 318 (UInt256.ofNat 7) ⟨0⟩
         (UInt256.ofNat 1413) rest) q7 := by
     simpa [q7, afterH7] using Accessors.gasSteps_hAt s
@@ -561,16 +561,16 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
   have q7np : Precompile.isPrecompile q7.executionEnv.fork
       q7.executionEnv.codeAddr = false := by
     simpa [q7, afterH7, Accessors.loadReturned] using hnp
-  have gSetup6 : Challenge.BytecodeProof.GasSteps q7
+  have gSetup6 : Challenge.EvmProof.GasSteps q7
       (Accessors.loadEntry q7 318 (UInt256.ofNat 6) ⟨0⟩
         (UInt256.ofNat 1424) (hWord s 7 :: rest)) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setup6Path q7code q7fork
     · simpa [q7, afterH7, hWord, Accessors.loadReturned] using
         run_setup6 q7 (hWord s 7) rest (by omega) q7code q7run
     · exact q7run
     · exact q7np
-  have gH6 : Challenge.BytecodeProof.GasSteps
+  have gH6 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q7 318 (UInt256.ofNat 6) ⟨0⟩
         (UInt256.ofNat 1424) (hWord s 7 :: rest)) q6 := by
     simpa [q6, afterH6] using Accessors.gasSteps_hAt q7
@@ -586,10 +586,10 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
   have q6np : Precompile.isPrecompile q6.executionEnv.fork
       q6.executionEnv.codeAddr = false := by
     simpa [q6, afterH6, q7, afterH7, Accessors.loadReturned] using hnp
-  have gSetup5 : Challenge.BytecodeProof.GasSteps q6
+  have gSetup5 : Challenge.EvmProof.GasSteps q6
       (Accessors.loadEntry q6 318 (UInt256.ofNat 5) ⟨0⟩
         (UInt256.ofNat 1439) (pair67 s :: rest)) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setup5Path q6code q6fork
     · simpa [q6, afterH6, q7, afterH7, hWord, pair67,
         Accessors.loadReturned] using
@@ -597,7 +597,7 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
           (by omega) q6code q6run
     · exact q6run
     · exact q6np
-  have gH5 : Challenge.BytecodeProof.GasSteps
+  have gH5 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q6 318 (UInt256.ofNat 5) ⟨0⟩
         (UInt256.ofNat 1439) (pair67 s :: rest)) q5 := by
     simpa [q5, afterH5] using Accessors.gasSteps_hAt q6
@@ -617,10 +617,10 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
       q5.executionEnv.codeAddr = false := by
     simpa [q5, afterH5, q6, afterH6, q7, afterH7,
       Accessors.loadReturned] using hnp
-  have gSetup4 : Challenge.BytecodeProof.GasSteps q5
+  have gSetup4 : Challenge.EvmProof.GasSteps q5
       (Accessors.loadEntry q5 318 (UInt256.ofNat 4) ⟨0⟩
         (UInt256.ofNat 1453) (shifted5 s :: pair67 s :: rest)) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setup4Path q5code q5fork
     · simpa [q5, afterH5, q6, afterH6, q7, afterH7, hWord, shifted5,
         pair67, Accessors.loadReturned] using
@@ -628,7 +628,7 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
           (by omega) q5code q5run
     · exact q5run
     · exact q5np
-  have gH4 : Challenge.BytecodeProof.GasSteps
+  have gH4 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q5 318 (UInt256.ofNat 4) ⟨0⟩
         (UInt256.ofNat 1453) (shifted5 s :: pair67 s :: rest)) q4 := by
     simpa [q4, afterH4] using Accessors.gasSteps_hAt q5
@@ -649,10 +649,10 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
       q4.executionEnv.codeAddr = false := by
     simpa [q4, afterH4, q5, afterH5, q6, afterH6, q7, afterH7,
       Accessors.loadReturned] using hnp
-  have gSetup3 : Challenge.BytecodeProof.GasSteps q4
+  have gSetup3 : Challenge.EvmProof.GasSteps q4
       (Accessors.loadEntry q4 318 (UInt256.ofNat 3) ⟨0⟩
         (UInt256.ofNat 1469) (lowHalf s :: rest)) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setup3Path q4code q4fork
     · simpa [q4, afterH4, q5, afterH5, q6, afterH6, q7, afterH7,
         hWord, shifted5, pair67, pair45, lowHalf, Accessors.loadReturned] using
@@ -660,7 +660,7 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
           (by omega) q4code q4run
     · exact q4run
     · exact q4np
-  have gH3 : Challenge.BytecodeProof.GasSteps
+  have gH3 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q4 318 (UInt256.ofNat 3) ⟨0⟩
         (UInt256.ofNat 1469) (lowHalf s :: rest)) q3 := by
     simpa [q3, afterH3] using Accessors.gasSteps_hAt q4
@@ -680,10 +680,10 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
       q3.executionEnv.codeAddr = false := by
     simpa [q3, afterH3, q4, afterH4, q5, afterH5, q6, afterH6,
       q7, afterH7, Accessors.loadReturned] using hnp
-  have gSetup2 : Challenge.BytecodeProof.GasSteps q3
+  have gSetup2 : Challenge.EvmProof.GasSteps q3
       (Accessors.loadEntry q3 318 (UInt256.ofNat 2) ⟨0⟩
         (UInt256.ofNat 1483) (shifted3 s :: lowHalf s :: rest)) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setup2Path q3code q3fork
     · simpa [q3, afterH3, q4, afterH4, q5, afterH5, q6, afterH6,
         q7, afterH7, hWord, shifted3, Accessors.loadReturned] using
@@ -691,7 +691,7 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
           (by omega) q3code q3run
     · exact q3run
     · exact q3np
-  have gH2 : Challenge.BytecodeProof.GasSteps
+  have gH2 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q3 318 (UInt256.ofNat 2) ⟨0⟩
         (UInt256.ofNat 1483) (shifted3 s :: lowHalf s :: rest)) q2 := by
     simpa [q2, afterH2] using Accessors.gasSteps_hAt q3
@@ -712,10 +712,10 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
       q2.executionEnv.codeAddr = false := by
     simpa [q2, afterH2, q3, afterH3, q4, afterH4, q5, afterH5,
       q6, afterH6, q7, afterH7, Accessors.loadReturned] using hnp
-  have gSetup1 : Challenge.BytecodeProof.GasSteps q2
+  have gSetup1 : Challenge.EvmProof.GasSteps q2
       (Accessors.loadEntry q2 318 (UInt256.ofNat 1) ⟨0⟩
         (UInt256.ofNat 1498) (pair23 s :: lowHalf s :: rest)) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setup1Path q2code q2fork
     · simpa [q2, afterH2, q3, afterH3, q4, afterH4, q5, afterH5,
         q6, afterH6, q7, afterH7, hWord, shifted3, pair23,
@@ -724,7 +724,7 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
           (by omega) q2code q2run
     · exact q2run
     · exact q2np
-  have gH1 : Challenge.BytecodeProof.GasSteps
+  have gH1 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q2 318 (UInt256.ofNat 1) ⟨0⟩
         (UInt256.ofNat 1498) (pair23 s :: lowHalf s :: rest)) q1 := by
     simpa [q1, afterH1] using Accessors.gasSteps_hAt q2
@@ -745,10 +745,10 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
       q1.executionEnv.codeAddr = false := by
     simpa [q1, afterH1, q2, afterH2, q3, afterH3, q4, afterH4,
       q5, afterH5, q6, afterH6, q7, afterH7, Accessors.loadReturned] using hnp
-  have gSetup0 : Challenge.BytecodeProof.GasSteps q1
+  have gSetup0 : Challenge.EvmProof.GasSteps q1
       (Accessors.loadEntry q1 318 (UInt256.ofNat 0) ⟨0⟩ (UInt256.ofNat 1511)
         (shifted1 s :: pair23 s :: lowHalf s :: rest)) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setup0Path q1code q1fork
     · simpa [q1, afterH1, q2, afterH2, q3, afterH3, q4, afterH4,
         q5, afterH5, q6, afterH6, q7, afterH7, hWord, shifted1, hzero,
@@ -757,7 +757,7 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
           (by omega) q1code q1run
     · exact q1run
     · exact q1np
-  have gH0 : Challenge.BytecodeProof.GasSteps
+  have gH0 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q1 318 (UInt256.ofNat 0) ⟨0⟩ (UInt256.ofNat 1511)
         (shifted1 s :: pair23 s :: lowHalf s :: rest)) q0 := by
     simpa [q0, afterH0] using Accessors.gasSteps_hAt q1
@@ -782,8 +782,8 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
     simpa [q0, afterH0, q1, afterH1, q2, afterH2, q3, afterH3,
       q4, afterH4, q5, afterH5, q6, afterH6, q7, afterH7,
       Accessors.loadReturned] using hnp
-  have gFinish : Challenge.BytecodeProof.GasSteps q0 (outputResult s rest) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  have gFinish : Challenge.EvmProof.GasSteps q0 (outputResult s rest) := by
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka finishPath q0code q0fork
     · simpa [q0, outputResult, afterH0, q1, afterH1, q2, afterH2,
         q3, afterH3, q4, afterH4, q5, afterH5, q6, afterH6,
@@ -829,13 +829,13 @@ theorem outputResult_memoryWindow (s : State) (rest : List UInt256) :
   rw [outputResult_memory]
   have hsize : (digestBytes s).size = 32 := by
     simp [digestBytes, Data.Bytes.natToBytesPadded, ByteArray.size]
-  simpa [hsize] using Challenge.BytecodeProof.Memory.readPadded_writeBytes_same
+  simpa [hsize] using Challenge.EvmProof.Memory.readPadded_writeBytes_same
     s.memory (digestBytes s) 0
 
 /-- Reading the returned memory as an EVM word recovers the packed digest. -/
 theorem outputResult_readWord (s : State) (rest : List UInt256) :
     MachineState.readWord (outputResult s rest).memory 0 = digestWord s := by
   rw [outputResult_memory]
-  exact Challenge.BytecodeProof.Memory.readWord_writeWord s.memory 0 (digestWord s)
+  exact Challenge.EvmProof.Memory.readWord_writeWord s.memory 0 (digestWord s)
 
 end Challenge.Sha256.Reference.Proofs.Bytecode.Output

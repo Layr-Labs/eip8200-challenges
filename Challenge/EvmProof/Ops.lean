@@ -1,4 +1,4 @@
-import Challenge.BytecodeProof.Gas
+import Challenge.EvmProof.Gas
 set_option warningAsError true
 /-!
 # Gas-parametric opcode transitions
@@ -9,11 +9,11 @@ so a raw-bytecode proof supplies only a certificate for the bytes at its
 current program counter.
 -/
 
-namespace Challenge.BytecodeProof.GasStep
+namespace Challenge.EvmProof.GasStep
 
 open EvmSemantics
 open EvmSemantics.EVM
-open Challenge.BytecodeProof
+open Challenge.EvmProof
 
 /-- Lift one successful `StepRunning` rule into the gas-parametric trace
 algebra.  This is the common endpoint used by every opcode-specific symbolic
@@ -502,4 +502,4 @@ theorem return_ {s : State} (offset size : UInt256) (rest : List UInt256)
     State.activeWordsAfterUInt256] using
     StepRunning.return_ (withGas s gas) offset size rest hop hstack hgas hcap
 
-end Challenge.BytecodeProof.GasStep
+end Challenge.EvmProof.GasStep

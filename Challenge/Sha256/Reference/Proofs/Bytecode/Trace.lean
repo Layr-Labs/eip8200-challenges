@@ -1,6 +1,6 @@
 import Challenge.Sha256.Reference.Proofs.Bytecode.Artifact
-import Challenge.BytecodeProof.Ops
-import Challenge.BytecodeProof.Word
+import Challenge.EvmProof.Ops
+import Challenge.EvmProof.Word
 set_option warningAsError true
 set_option maxRecDepth 10000
 /-!
@@ -18,7 +18,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 
 theorem pcBound (index : Nat) : Artifact.instructionPC index < 2 ^ 256 := by
-  have hle := Challenge.BytecodeProof.ProgramArtifact.instructionPC_le_code_size
+  have hle := Challenge.EvmProof.ProgramArtifact.instructionPC_le_code_size
     Artifact.referenceArtifact index
   change Artifact.instructionPC index ≤ referenceBytecode.size at hle
   rw [referenceBytecode_size] at hle
@@ -27,7 +27,7 @@ theorem pcBound (index : Nat) : Artifact.instructionPC index < 2 ^ 256 := by
 theorem pcToNat {s : State} {index : Nat}
     (hpc : s.pc = UInt256.ofNat (Artifact.instructionPC index)) :
     s.pc.toNat = Artifact.instructionPC index := by
-  rw [hpc, Challenge.BytecodeProof.Word.word_toNat_ofNat,
+  rw [hpc, Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt (pcBound index)]
 
 theorem decodedOpAt (s : State) (index : Nat) (op : Operation)
@@ -38,7 +38,7 @@ theorem decodedOpAt (s : State) (index : Nat) (op : Operation)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork s.fork = true) :
     s.decodedOp = some op := by
-  apply Challenge.BytecodeProof.ProgramArtifact.state_decodedOp_of
+  apply Challenge.EvmProof.ProgramArtifact.state_decodedOp_of
     Artifact.referenceArtifact s index
     (by simpa [Artifact.referenceArtifact] using hcode) (pcToNat hpc) op none
   · exact Artifact.decodeAt_op_index index op hget hopcode hplain
@@ -52,7 +52,7 @@ theorem decodedPushAt (s : State) (index : Nat) (width : Fin 33)
     (hfit : value.toNat < 256 ^ width.val)
     (havailable : (Operation.Push ⟨width⟩).availableInFork s.fork = true) :
     s.decoded = some (.Push ⟨width⟩, some (value, width.val)) := by
-  apply Challenge.BytecodeProof.ProgramArtifact.state_decoded_of
+  apply Challenge.EvmProof.ProgramArtifact.state_decoded_of
     Artifact.referenceArtifact s index
     (by simpa [Artifact.referenceArtifact] using hcode) (pcToNat hpc)
     (.Push ⟨width⟩) (some (value, width.val))
@@ -76,7 +76,7 @@ theorem validJumpDestAt (index : Nat)
     (hget : Artifact.referenceInstructions[index]? = some (.op .JUMPDEST)) :
     Decode.isValidJumpDest referenceBytecode
       (UInt256.ofNat (Artifact.instructionPC index)).toNat = true := by
-  rw [Challenge.BytecodeProof.Word.word_toNat_ofNat,
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt (pcBound index)]
   exact Artifact.isValidJumpDest_index index hget
 
@@ -85,7 +85,7 @@ theorem succPC {index : Nat}
       Artifact.instructionPC index + 1) :
     (UInt256.ofNat (Artifact.instructionPC index)).succ =
       UInt256.ofNat (Artifact.instructionPC (index + 1)) := by
-  rw [Challenge.BytecodeProof.Word.succ_ofNat (by
+  rw [Challenge.EvmProof.Word.succ_ofNat (by
     have := pcBound (index + 1)
     omega), hnext]
 
@@ -94,7 +94,7 @@ theorem pushPC {index width : Nat}
       Artifact.instructionPC index + (width + 1)) :
     UInt256.ofNat (Artifact.instructionPC index) + UInt256.ofNat (width + 1) =
       UInt256.ofNat (Artifact.instructionPC (index + 1)) := by
-  rw [Challenge.BytecodeProof.Word.ofNat_add_ofNat (by
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by
     have := pcBound (index + 1)
     omega), hnext]
 

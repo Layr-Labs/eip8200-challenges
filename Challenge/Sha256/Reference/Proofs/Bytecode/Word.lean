@@ -1,4 +1,4 @@
-import Challenge.BytecodeProof.Word
+import Challenge.EvmProof.Word
 set_option warningAsError true
 /-!
 # SHA-256 operations as EVM word expressions
@@ -13,7 +13,7 @@ step.
 namespace Challenge.Sha256.Reference.Proofs.Bytecode.Word
 
 open EvmSemantics
-open Challenge.BytecodeProof.Word
+open Challenge.EvmProof.Word
 
 abbrev EWord := EvmSemantics.UInt256
 
@@ -45,7 +45,7 @@ def evmBigSigma1 (x : EWord) : EWord :=
     (hn0 : 0 < n) (hn : n < 32) :
     evmRotr32 (ofUInt32 x) n =
       ofUInt32 (Crypto.Sha256.rotr32 x n) := by
-  exact Challenge.BytecodeProof.Word.evm_rotr32 x n hn0 hn
+  exact Challenge.EvmProof.Word.evm_rotr32 x n hn0 hn
 
 @[simp] theorem evmCh_ofUInt32 (x y z : UInt32) :
     evmCh (ofUInt32 x) (ofUInt32 y) (ofUInt32 z) =

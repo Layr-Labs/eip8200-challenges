@@ -12,7 +12,7 @@ those two representations.  It deliberately has no dependency on the Yul
 compiler or on the reference bytecode.
 -/
 
-namespace Challenge.BytecodeProof.Word
+namespace Challenge.EvmProof.Word
 
 /-- Embed a SHA word in the low 32 bits of an EVM word. -/
 def ofUInt32 (x : UInt32) : EvmSemantics.UInt256 :=
@@ -386,4 +386,4 @@ theorem evm_rotr32 (x : UInt32) (n : Nat) (hn0 : 0 < n) (hn : n < 32) :
     toUInt32_shiftLeft_ofUInt32 x (32 - n) (by omega)]
   rfl
 
-end Challenge.BytecodeProof.Word
+end Challenge.EvmProof.Word

@@ -14,7 +14,7 @@ and jump-destination facts. Proof authors can therefore reason by
 instruction index without repeatedly reducing a large byte-array literal.
 -/
 
-namespace Challenge.BytecodeProof
+namespace Challenge.EvmProof
 
 open EvmSemantics
 open EvmSemantics.EVM
@@ -163,4 +163,4 @@ theorem state_decodedOp_of (p : ProgramArtifact) (s : EvmSemantics.EVM.State)
   rfl
 
 end ProgramArtifact
-end Challenge.BytecodeProof
+end Challenge.EvmProof

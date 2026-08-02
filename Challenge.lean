@@ -1,4 +1,4 @@
-import Challenge.BytecodeProof
+import Challenge.EvmProof
 import Challenge.Sha256
 set_option warningAsError true
 /-!
@@ -10,7 +10,7 @@ computed.
 
 SHA-256 (`0x02`) is the pilot:
 
-* `Challenge.BytecodeProof` — verified disassembly and direct small-step proof
+* `Challenge.EvmProof` — verified disassembly and direct small-step proof
   combinators for raw-bytecode submissions.
 * `Challenge.Sha256.Spec` — the minimal auditor-facing `Correct` predicate and
   the canonical EVM frame it quantifies over.

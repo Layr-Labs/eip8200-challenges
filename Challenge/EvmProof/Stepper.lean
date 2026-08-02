@@ -1,5 +1,5 @@
-import Challenge.BytecodeProof.Ops
-import Challenge.BytecodeProof.Program
+import Challenge.EvmProof.Ops
+import Challenge.EvmProof.Program
 import YulEvmCompiler.Instr
 set_option warningAsError true
 /-!
@@ -13,7 +13,7 @@ straight-line blocks with this evaluator and supplies only decoder facts for
 its own artifact.
 -/
 
-namespace Challenge.BytecodeProof.Stepper
+namespace Challenge.EvmProof.Stepper
 
 open EvmSemantics
 open EvmSemantics.EVM
@@ -785,4 +785,4 @@ theorem runLocatedBlock_sound (artifact : ProgramArtifact)
             | Exception error =>
               simp [runLocatedBlock, hnext, hnextRun] at hresult
 
-end Challenge.BytecodeProof.Stepper
+end Challenge.EvmProof.Stepper

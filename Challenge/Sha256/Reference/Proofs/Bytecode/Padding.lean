@@ -1,4 +1,4 @@
-import Challenge.BytecodeProof.Memory
+import Challenge.EvmProof.Memory
 import Challenge.Sha256.Reference.Proofs.Bytecode.Main
 set_option warningAsError true
 set_option maxHeartbeats 1000000
@@ -82,9 +82,9 @@ theorem paddedWord_eq (input : ByteArray) (hfit : input.size < 2 ^ 64) :
     have hle := Nat.div_mul_le_self (input.size + 72) (2 ^ 6)
     omega
   unfold paddedWord
-  rw [Challenge.BytecodeProof.Word.ofNat_add_ofNat hsum,
-    Challenge.BytecodeProof.Word.shiftRight_ofNat hsum (by omega),
-    Challenge.BytecodeProof.Word.shiftLeft_ofNat hshr (by omega) hmul]
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat hsum,
+    Challenge.EvmProof.Word.shiftRight_ofNat hsum (by omega),
+    Challenge.EvmProof.Word.shiftLeft_ofNat hshr (by omega) hmul]
   congr 1
   simp [paddedLength, Nat.shiftRight_eq_div_pow]
 
@@ -104,7 +104,7 @@ theorem prefix_size (n : Nat) :
 
 @[simp] theorem lengthBytes_size (input : ByteArray) :
     (lengthBytes input).size = 8 := by
-  rw [lengthBytes, Challenge.BytecodeProof.Memory.natToBytesPadded_eq_natToBE]
+  rw [lengthBytes, Challenge.EvmProof.Memory.natToBytesPadded_eq_natToBE]
   change (YulEvmCompiler.natToBE (input.size * 8) 8).length = 8
   exact YulEvmCompiler.length_natToBE _ _
 
@@ -159,11 +159,11 @@ theorem paddedMemory_eq_write (memory input : ByteArray)
       (paddedMessage input) messageOffset i
     have hleft : (paddedMemory memory input)[i]?.getD 0 =
         (paddedMemory memory input)[i] := by
-      exact Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hi₁
+      exact Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hi₁
     have hright :
         (MachineState.writeBytes memory (paddedMessage input) messageOffset)[i]?.getD 0 =
           (MachineState.writeBytes memory (paddedMessage input) messageOffset)[i] := by
-      exact Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hi₂
+      exact Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hi₂
     rw [← hleft, ← hright]
     change (MachineState.writeBytes (sentinelMemory memory input) (lengthBytes input)
       (messageOffset + paddedLength input.size - 8))[i]?.getD 0 = _
@@ -188,7 +188,7 @@ theorem paddedMemory_eq_write (memory input : ByteArray)
       by_cases hlen : messageOffset + paddedLength input.size - 8 ≤ i
       · rw [if_pos (by omega), if_pos (by omega)]
         simp only [paddedMessage]
-        rw [Challenge.BytecodeProof.Memory.getElem?_getD_append]
+        rw [Challenge.EvmProof.Memory.getElem?_getD_append]
         rw [if_neg (by
           simp only [ByteArray.size_append, zeroBytes_size,
             show (ByteArray.mk #[0x80]).size = 1 by rfl]
@@ -204,39 +204,39 @@ theorem paddedMemory_eq_write (memory input : ByteArray)
         · subst i
           rw [if_pos (by omega), if_pos (by omega)]
           simp only [paddedMessage]
-          rw [Challenge.BytecodeProof.Memory.getElem?_getD_append, if_pos (by
+          rw [Challenge.EvmProof.Memory.getElem?_getD_append, if_pos (by
             simp only [ByteArray.size_append, zeroBytes_size,
               show (ByteArray.mk #[0x80]).size = 1 by rfl]
             omega)]
-          rw [Challenge.BytecodeProof.Memory.getElem?_getD_append, if_pos (by
+          rw [Challenge.EvmProof.Memory.getElem?_getD_append, if_pos (by
             simp only [ByteArray.size_append,
               show (ByteArray.mk #[0x80]).size = 1 by rfl]
             omega)]
-          rw [Challenge.BytecodeProof.Memory.getElem?_getD_append, if_neg (by omega)]
+          rw [Challenge.EvmProof.Memory.getElem?_getD_append, if_neg (by omega)]
           apply congrArg (fun k : Nat => (ByteArray.mk #[0x80])[k]?.getD 0)
           omega
         · rw [if_neg (by omega)]
           by_cases hinput : i < messageOffset + input.size
           · rw [if_pos (by omega), if_pos (by omega)]
             simp only [paddedMessage]
-            rw [Challenge.BytecodeProof.Memory.getElem?_getD_append, if_pos (by
+            rw [Challenge.EvmProof.Memory.getElem?_getD_append, if_pos (by
               simp only [ByteArray.size_append, zeroBytes_size,
                 show (ByteArray.mk #[0x80]).size = 1 by rfl]
               omega)]
-            rw [Challenge.BytecodeProof.Memory.getElem?_getD_append, if_pos (by
+            rw [Challenge.EvmProof.Memory.getElem?_getD_append, if_pos (by
               simp only [ByteArray.size_append,
                 show (ByteArray.mk #[0x80]).size = 1 by rfl]
               omega)]
-            rw [Challenge.BytecodeProof.Memory.getElem?_getD_append, if_pos (by omega)]
+            rw [Challenge.EvmProof.Memory.getElem?_getD_append, if_pos (by omega)]
           · rw [if_neg (by omega), if_pos (by omega)]
-            rw [Challenge.BytecodeProof.Memory.getElem?_getD_eq_zero_of_size_le memory i
+            rw [Challenge.EvmProof.Memory.getElem?_getD_eq_zero_of_size_le memory i
               (by omega)]
             simp only [paddedMessage]
-            rw [Challenge.BytecodeProof.Memory.getElem?_getD_append, if_pos (by
+            rw [Challenge.EvmProof.Memory.getElem?_getD_append, if_pos (by
               simp only [ByteArray.size_append, zeroBytes_size,
                 show (ByteArray.mk #[0x80]).size = 1 by rfl]
               omega)]
-            rw [Challenge.BytecodeProof.Memory.getElem?_getD_append, if_neg (by
+            rw [Challenge.EvmProof.Memory.getElem?_getD_append, if_neg (by
               simp only [ByteArray.size_append,
                 show (ByteArray.mk #[0x80]).size = 1 by rfl]
               omega)]
@@ -252,7 +252,7 @@ theorem paddedMemory_eq_write (memory input : ByteArray)
               simp only [ByteArray.size_append]
               rfl
             rw [hindex]
-            rw [Challenge.BytecodeProof.Memory.getD0_eq_getElem!]
+            rw [Challenge.EvmProof.Memory.getD0_eq_getElem!]
             by_cases hz : i - messageOffset - (input.size + 1) < zeroCount input.size
             · rw [getElem!_pos
                 zeros _ (by rw [hzeros]; exact hz)]
@@ -277,7 +277,7 @@ theorem readPadded_paddedMemory (memory input : ByteArray)
       rw [paddedMemory_eq_write memory input hmemory]
     _ = _ := by
       simpa only [paddedMessage_size] using
-        Challenge.BytecodeProof.Memory.readPadded_writeBytes_same
+        Challenge.EvmProof.Memory.readPadded_writeBytes_same
           memory (paddedMessage input) messageOffset
 
 end Challenge.Sha256.Reference.Proofs.Bytecode.Padding

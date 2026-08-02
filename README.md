@@ -201,11 +201,11 @@ easiest first:
   that compiler compiles gets faster — the most valuable kind of submission.
 * **Direct bytecode.** Prove directly over `EvmSemantics.EVM.Step`. This
   approach starts from the submitted bytes and does not assume compiler
-  provenance. [`Challenge/BytecodeProof/Bytecode.lean`](Challenge/BytecodeProof/Bytecode.lean)
+  provenance. [`Challenge/EvmProof/Bytecode.lean`](Challenge/EvmProof/Bytecode.lean)
   provides a verified byte-preserving disassembler
   (`assemble (disassemble code) = code`), including invalid opcodes and
   truncated immediates, plus reusable jump-destination certificates and
-  PUSH-immediate normalization. [`Challenge/BytecodeProof/Execution.lean`](Challenge/BytecodeProof/Execution.lean)
+  PUSH-immediate normalization. [`Challenge/EvmProof/Execution.lean`](Challenge/EvmProof/Execution.lean)
   lifts deterministic `stepF` calculations into relational `Step`/`Eval`
   proofs and supplies compositional reachability and indexed-loop lemmas.
   A submission proves straight-line blocks with `Reaches.of_execN`, composes
@@ -295,9 +295,9 @@ hand-optimized implementation should take one to two of those orders back.
 | `Challenge/Sha256/Reference/Proofs/Bytecode/CompressionCorrect.lean` | bytecode compression invariant and equivalence to `Sha256.compressBlock` |
 | `Challenge/Sha256/Reference/Proofs/Bytecode/DriverCorrect.lean` | padded-block outer invariant and canonical digest packing |
 | `Challenge/Sha256/Reference/Proofs/Bytecode/ReferenceCorrect.lean` | end-to-end `DirectProof` and `Correct referenceBytecode` theorem |
-| `Challenge/BytecodeProof/Bytecode.lean` | verified raw disassembler/assembler round trip |
-| `Challenge/BytecodeProof/Execution.lean` | direct `Step`/`Eval`, reachability, and loop proof combinators |
-| `Challenge/BytecodeProof/Gas.lean` | gas-parametric trace composition and `EventuallyEvaluates` bridge |
+| `Challenge/EvmProof/Bytecode.lean` | verified raw disassembler/assembler round trip |
+| `Challenge/EvmProof/Execution.lean` | direct `Step`/`Eval`, reachability, and loop proof combinators |
+| `Challenge/EvmProof/Gas.lean` | gas-parametric trace composition and `EventuallyEvaluates` bridge |
 | `Challenge/Sha256/Scorer.lean` | the Tier-1 vectors, frames, and scoring |
 | `Main.lean` | the `sha256challenge` CLI |
 

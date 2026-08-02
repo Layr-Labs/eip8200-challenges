@@ -85,9 +85,9 @@ theorem gasSteps_entry (s : State) (msgOff returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps (compressEntry s msgOff returnDest rest)
+    Challenge.EvmProof.GasSteps (compressEntry s msgOff returnDest rest)
       (callSchedule s msgOff returnDest rest) := by
-  apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka entryPath
   · exact hcode
   · exact hfork
@@ -101,7 +101,7 @@ theorem gasSteps_toRoundLoop (s : State) (msgOff returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps (compressEntry s msgOff returnDest rest)
+    Challenge.EvmProof.GasSteps (compressEntry s msgOff returnDest rest)
       (roundAt (copyHashState (afterSchedule s msgOff returnDest rest))
         msgOff returnDest rest 0) := by
   have gEntry := gasSteps_entry s msgOff returnDest rest hcap
@@ -140,11 +140,11 @@ theorem gasSteps_toRoundLoop (s : State) (msgOff returnDest : UInt256)
       ({ q with pc := UInt256.ofNat 621
                 stack := [msgOff, returnDest] ++ rest } : State) = q := by
     rw [← qpc, ← qstack]
-  have gCopyRaw : Challenge.BytecodeProof.GasSteps
+  have gCopyRaw : Challenge.EvmProof.GasSteps
       { q with pc := UInt256.ofNat 621
                stack := [msgOff, returnDest] ++ rest }
       (roundAt (copyHashState q) msgOff returnDest rest 0) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka copyAndLoopStartPath
     · rw [qentry]
       exact qcode
@@ -155,7 +155,7 @@ theorem gasSteps_toRoundLoop (s : State) (msgOff returnDest : UInt256)
       exact qrun
     · rw [qentry]
       exact qnp
-  have gCopy : Challenge.BytecodeProof.GasSteps q
+  have gCopy : Challenge.EvmProof.GasSteps q
       (roundAt (copyHashState q) msgOff returnDest rest 0) := by
     simpa only [qentry] using gCopyRaw
   exact gEntry.trans (gSchedule.trans gCopy)
@@ -167,9 +167,9 @@ theorem gasSteps_condition (s : State) (msgOff returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps (roundAt s msgOff returnDest rest j)
+    Challenge.EvmProof.GasSteps (roundAt s msgOff returnDest rest j)
       (afterCondition s msgOff returnDest rest j) := by
-  apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka conditionPath
   · exact hcode
   · exact hfork
@@ -186,14 +186,14 @@ theorem gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps (roundAt s msgOff returnDest rest j)
+    Challenge.EvmProof.GasSteps (roundAt s msgOff returnDest rest j)
       (afterT1 s msgOff returnDest rest j) := by
   have gCond := gasSteps_condition s msgOff returnDest rest j hj (by omega)
     hcode hfork hrun hnp
-  have gSetupW : Challenge.BytecodeProof.GasSteps
+  have gSetupW : Challenge.EvmProof.GasSteps
       (afterCondition s msgOff returnDest rest j)
       (callW s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupWPath
     · exact hcode
     · exact hfork
@@ -218,9 +218,9 @@ theorem gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
       (gotW s msgOff returnDest rest j).executionEnv.fork
       (gotW s msgOff returnDest rest j).executionEnv.codeAddr = false := by
     simpa [gotW, loadedE, Accessors.loadReturned] using hnp
-  have gSetupK : Challenge.BytecodeProof.GasSteps
+  have gSetupK : Challenge.EvmProof.GasSteps
       (gotW s msgOff returnDest rest j) (callK s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupKPath
     · exact qWcode
     · exact qWfork
@@ -247,9 +247,9 @@ theorem gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
       (gotK s msgOff returnDest rest j).executionEnv.codeAddr = false := by
     simpa [gotK, gotW, loadedE, Accessors.kAtReturned,
       Accessors.loadReturned] using hnp
-  have gSetupH6 : Challenge.BytecodeProof.GasSteps
+  have gSetupH6 : Challenge.EvmProof.GasSteps
       (gotK s msgOff returnDest rest j) (callH6 s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupH6Path
     · exact qKcode
     · exact qKfork
@@ -277,9 +277,9 @@ theorem gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
       (gotH6 s msgOff returnDest rest j).executionEnv.codeAddr = false := by
     simpa [gotH6, gotK, gotW, loadedE, Accessors.loadReturned,
       Accessors.kAtReturned] using hnp
-  have gSetupH5 : Challenge.BytecodeProof.GasSteps
+  have gSetupH5 : Challenge.EvmProof.GasSteps
       (gotH6 s msgOff returnDest rest j) (callH5 s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupH5Path
     · exact qH6code
     · exact qH6fork
@@ -307,9 +307,9 @@ theorem gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
       (gotH5 s msgOff returnDest rest j).executionEnv.codeAddr = false := by
     simpa [gotH5, gotH6, gotK, gotW, loadedE, Accessors.loadReturned,
       Accessors.kAtReturned] using hnp
-  have gSetupCh : Challenge.BytecodeProof.GasSteps
+  have gSetupCh : Challenge.EvmProof.GasSteps
       (gotH5 s msgOff returnDest rest j) (callCh s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupChPath
     · exact qH5code
     · exact qH5fork
@@ -340,10 +340,10 @@ theorem gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
     simpa [gotCh, gotH5, gotH6, gotK, gotW, loadedE,
       Functions.unaryReturned, Accessors.loadReturned,
       Accessors.kAtReturned] using hnp
-  have gSetupB1 : Challenge.BytecodeProof.GasSteps
+  have gSetupB1 : Challenge.EvmProof.GasSteps
       (gotCh s msgOff returnDest rest j)
       (callBigSigma1 s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupBigSigma1Path
     · exact qChcode
     · exact qChfork
@@ -375,10 +375,10 @@ theorem gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
     simpa [gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW, loadedE,
       Functions.unaryReturned, Accessors.loadReturned,
       Accessors.kAtReturned] using hnp
-  have gSetupH7 : Challenge.BytecodeProof.GasSteps
+  have gSetupH7 : Challenge.EvmProof.GasSteps
       (gotBigSigma1 s msgOff returnDest rest j)
       (callH7 s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupH7Path
     · exact qB1code
     · exact qB1fork
@@ -411,9 +411,9 @@ theorem gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
     simpa [gotH7, gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW,
       loadedE, Functions.unaryReturned, Accessors.loadReturned,
       Accessors.kAtReturned] using hnp
-  have gFinish : Challenge.BytecodeProof.GasSteps
+  have gFinish : Challenge.EvmProof.GasSteps
       (gotH7 s msgOff returnDest rest j) (afterT1 s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka finishT1Path
     · exact qH7code
     · exact qH7fork
@@ -433,7 +433,7 @@ theorem gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps (afterT1 s msgOff returnDest rest j)
+    Challenge.EvmProof.GasSteps (afterT1 s msgOff returnDest rest j)
       (afterT2 s msgOff returnDest rest j) := by
   have qT1code : (afterT1 s msgOff returnDest rest j).executionEnv.code =
       referenceBytecode := by
@@ -454,10 +454,10 @@ theorem gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
     simpa [afterT1, gotH7, gotBigSigma1, gotCh, gotH5, gotH6, gotK,
       gotW, loadedE, Functions.unaryReturned, Accessors.loadReturned,
       Accessors.kAtReturned] using hnp
-  have gSetupH2 : Challenge.BytecodeProof.GasSteps
+  have gSetupH2 : Challenge.EvmProof.GasSteps
       (afterT1 s msgOff returnDest rest j)
       (callT2H2 s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupT2H2Path
     · exact qT1code
     · exact qT1fork
@@ -497,10 +497,10 @@ theorem gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
       (afterT1 s msgOff returnDest rest j).executionEnv.fork
       (afterT1 s msgOff returnDest rest j).executionEnv.codeAddr = false
     exact qT1np
-  have gSetupH1 : Challenge.BytecodeProof.GasSteps
+  have gSetupH1 : Challenge.EvmProof.GasSteps
       (gotT2H2 s msgOff returnDest rest j)
       (callT2H1 s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupT2H1Path
     · exact qH2code
     · exact qH2fork
@@ -531,10 +531,10 @@ theorem gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
       (afterT1 s msgOff returnDest rest j).executionEnv.fork
       (afterT1 s msgOff returnDest rest j).executionEnv.codeAddr = false
     exact qT1np
-  have gSetupMaj : Challenge.BytecodeProof.GasSteps
+  have gSetupMaj : Challenge.EvmProof.GasSteps
       (gotT2H1 s msgOff returnDest rest j)
       (callMaj s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupMajPath
     · exact qH1code
     · exact qH1fork
@@ -564,10 +564,10 @@ theorem gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
       (afterT1 s msgOff returnDest rest j).executionEnv.fork
       (afterT1 s msgOff returnDest rest j).executionEnv.codeAddr = false
     exact qT1np
-  have gSetupB0 : Challenge.BytecodeProof.GasSteps
+  have gSetupB0 : Challenge.EvmProof.GasSteps
       (gotMaj s msgOff returnDest rest j)
       (callBigSigma0 s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupBigSigma0Path
     · exact qMajcode
     · exact qMajfork
@@ -599,10 +599,10 @@ theorem gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
       (afterT1 s msgOff returnDest rest j).executionEnv.fork
       (afterT1 s msgOff returnDest rest j).executionEnv.codeAddr = false
     exact qT1np
-  have gFinish : Challenge.BytecodeProof.GasSteps
+  have gFinish : Challenge.EvmProof.GasSteps
       (gotBigSigma0 s msgOff returnDest rest j)
       (afterT2 s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka finishT2Path
     · exact qB0code
     · exact qB0fork
@@ -637,7 +637,7 @@ theorem gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
     Accessors.kAtReturned]
 
 private theorem gasSteps_shift (loadPath storePath : List
-    (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka))
+    (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
     (q : State) (src dest loadReturn storeReturn startPC : Nat)
     (context : List UInt256)
     (hload :
@@ -664,11 +664,11 @@ private theorem gasSteps_shift (loadPath storePath : List
     (hfork : q.fork = .Osaka) (hrun : q.halt = .Running)
     (hnp : Precompile.isPrecompile q.executionEnv.fork
       q.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps q
+    Challenge.EvmProof.GasSteps q
       (shiftReturned q src dest loadReturn storeReturn context) := by
-  have gSetupLoad : Challenge.BytecodeProof.GasSteps q
+  have gSetupLoad : Challenge.EvmProof.GasSteps q
       (shiftLoadEntry q src loadReturn storeReturn context) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka loadPath
     · exact hcode
     · exact hfork
@@ -696,10 +696,10 @@ private theorem gasSteps_shift (loadPath storePath : List
       (shiftLoaded q src loadReturn storeReturn context).executionEnv.codeAddr =
         false := by
     simpa [shiftLoaded, Accessors.loadReturned] using hnp
-  have gSetupStore : Challenge.BytecodeProof.GasSteps
+  have gSetupStore : Challenge.EvmProof.GasSteps
       (shiftLoaded q src loadReturn storeReturn context)
       (shiftStoreEntry q src dest loadReturn storeReturn context) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka storePath
     · exact qLoadedCode
     · exact qLoadedFork
@@ -724,7 +724,7 @@ theorem gasSteps_updates (s : State) (msgOff returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps (afterT2 s msgOff returnDest rest j)
+    Challenge.EvmProof.GasSteps (afterT2 s msgOff returnDest rest j)
       (afterSecondIteration s msgOff returnDest rest j) := by
   let ctx := roundContext s msgOff returnDest rest j
   let q0 := afterT2 s msgOff returnDest rest j
@@ -784,9 +784,9 @@ theorem gasSteps_updates (s : State) (msgOff returnDest : UInt256)
     change Precompile.isPrecompile q1.executionEnv.fork
       q1.executionEnv.codeAddr = false
     exact q1np
-  have gE : Challenge.BytecodeProof.GasSteps q2
+  have gE : Challenge.EvmProof.GasSteps q2
       (afterStoreE s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka storeEPath
     · exact q2code
     · exact q2fork
@@ -809,9 +809,9 @@ theorem gasSteps_updates (s : State) (msgOff returnDest : UInt256)
     change Precompile.isPrecompile q2.executionEnv.fork
       q2.executionEnv.codeAddr = false
     exact q2np
-  have gH3Setup : Challenge.BytecodeProof.GasSteps q3
+  have gH3Setup : Challenge.EvmProof.GasSteps q3
       (h4LoadEntry s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupH3ForH4Path
     · exact q3code
     · exact q3fork
@@ -840,10 +840,10 @@ theorem gasSteps_updates (s : State) (msgOff returnDest : UInt256)
     change Precompile.isPrecompile q3.executionEnv.fork
       q3.executionEnv.codeAddr = false
     exact q3np
-  have gH4Setup : Challenge.BytecodeProof.GasSteps
+  have gH4Setup : Challenge.EvmProof.GasSteps
       (h4Loaded s msgOff returnDest rest j)
       (h4StoreEntry s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka storeH4Path
     · exact qH3code
     · exact qH3fork
@@ -913,9 +913,9 @@ theorem gasSteps_updates (s : State) (msgOff returnDest : UInt256)
       q6.executionEnv.codeAddr = false := by
     simpa only [q6env] using q5np
   have q6eq : q6 = afterShift2 s msgOff returnDest rest j := by rfl
-  have gFinish : Challenge.BytecodeProof.GasSteps q6
+  have gFinish : Challenge.EvmProof.GasSteps q6
       (afterSecondIteration s msgOff returnDest rest j) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka finishRoundPath
     · exact q6code
     · exact q6fork
@@ -936,7 +936,7 @@ theorem gasSteps_roundIteration (s : State) (msgOff returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps (roundAt s msgOff returnDest rest j)
+    Challenge.EvmProof.GasSteps (roundAt s msgOff returnDest rest j)
       (afterSecondIteration s msgOff returnDest rest j) :=
   (gasSteps_t1 s msgOff returnDest rest j hj hcap hcode hfork hrun hnp).trans
     ((gasSteps_t2 s msgOff returnDest rest j hcap hcode hfork hrun hnp).trans
@@ -1011,9 +1011,9 @@ theorem gasSteps_roundLoop (s : State) (msgOff returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps (roundLoopState s msgOff returnDest rest 0)
+    Challenge.EvmProof.GasSteps (roundLoopState s msgOff returnDest rest 0)
       (roundLoopState s msgOff returnDest rest 64) := by
-  apply Challenge.BytecodeProof.GasSteps.iterateBounded (count := 64)
+  apply Challenge.EvmProof.GasSteps.iterateBounded (count := 64)
   intro n hn
   let q := roundLoopState s msgOff returnDest rest n
   have qcode : q.executionEnv.code = referenceBytecode := by
@@ -1036,9 +1036,9 @@ theorem gasSteps_roundsExit (s : State) (msgOff returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps (roundAt s msgOff returnDest rest 64)
+    Challenge.EvmProof.GasSteps (roundAt s msgOff returnDest rest 64)
       (foldAt s msgOff returnDest rest 0) := by
-  apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka roundsExitPath
   · exact hcode
   · exact hfork
@@ -1053,12 +1053,12 @@ theorem gasSteps_foldIteration (s : State) (msgOff returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps (foldAt s msgOff returnDest rest i)
+    Challenge.EvmProof.GasSteps (foldAt s msgOff returnDest rest i)
       (afterFoldIteration s msgOff returnDest rest i) := by
-  have gCond : Challenge.BytecodeProof.GasSteps
+  have gCond : Challenge.EvmProof.GasSteps
       (foldAt s msgOff returnDest rest i)
       (afterFoldCondition s msgOff returnDest rest i) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka foldConditionPath
     · exact hcode
     · exact hfork
@@ -1066,10 +1066,10 @@ theorem gasSteps_foldIteration (s : State) (msgOff returnDest : UInt256)
         (by omega) hrun
     · exact hrun
     · exact hnp
-  have gSetup : Challenge.BytecodeProof.GasSteps
+  have gSetup : Challenge.EvmProof.GasSteps
       (afterFoldCondition s msgOff returnDest rest i)
       (foldCallH s msgOff returnDest rest i) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka foldSetupPath
     · exact hcode
     · exact hfork
@@ -1101,10 +1101,10 @@ theorem gasSteps_foldIteration (s : State) (msgOff returnDest : UInt256)
       (foldGotH s msgOff returnDest rest i).executionEnv.fork
       (foldGotH s msgOff returnDest rest i).executionEnv.codeAddr = false := by
     simpa [foldGotH, loadedSaved, Accessors.loadReturned] using hnp
-  have gStoreSetup : Challenge.BytecodeProof.GasSteps
+  have gStoreSetup : Challenge.EvmProof.GasSteps
       (foldGotH s msgOff returnDest rest i)
       (foldCallSet s msgOff returnDest rest i) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka foldStorePath
     · exact qHCode
     · exact qHFork
@@ -1131,10 +1131,10 @@ theorem gasSteps_foldIteration (s : State) (msgOff returnDest : UInt256)
       (foldGotSet s msgOff returnDest rest i).executionEnv.codeAddr = false := by
     simpa [foldGotSet, foldGotH, loadedSaved, Accessors.storeReturned,
       Accessors.loadReturned] using hnp
-  have gInc : Challenge.BytecodeProof.GasSteps
+  have gInc : Challenge.EvmProof.GasSteps
       (foldGotSet s msgOff returnDest rest i)
       (afterFoldIteration s msgOff returnDest rest i) := by
-    apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka foldIncrementPath
     · exact qSetCode
     · exact qSetFork
@@ -1202,9 +1202,9 @@ theorem gasSteps_foldLoop (s : State) (msgOff returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.BytecodeProof.GasSteps (foldLoopState s msgOff returnDest rest 0)
+    Challenge.EvmProof.GasSteps (foldLoopState s msgOff returnDest rest 0)
       (foldLoopState s msgOff returnDest rest 8) := by
-  apply Challenge.BytecodeProof.GasSteps.iterateBounded (count := 8)
+  apply Challenge.EvmProof.GasSteps.iterateBounded (count := 8)
   intro i hi
   let q := foldLoopState s msgOff returnDest rest i
   have qcode : q.executionEnv.code = referenceBytecode := by simpa [q] using hcode
@@ -1224,9 +1224,9 @@ theorem gasSteps_foldExit (s : State) (msgOff returnDest : UInt256)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false)
     (hreturn : Decode.isValidJumpDest referenceBytecode returnDest.toNat = true) :
-    Challenge.BytecodeProof.GasSteps (foldAt s msgOff returnDest rest 8)
+    Challenge.EvmProof.GasSteps (foldAt s msgOff returnDest rest 8)
       (compressReturned s returnDest rest) := by
-  apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka foldExitPath
   · exact hcode
   · exact hfork
@@ -1258,7 +1258,7 @@ theorem gasSteps_compress (s : State) (msgOff returnDest : UInt256)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false)
     (hreturn : Decode.isValidJumpDest referenceBytecode returnDest.toNat = true) :
-    Challenge.BytecodeProof.GasSteps (compressEntry s msgOff returnDest rest)
+    Challenge.EvmProof.GasSteps (compressEntry s msgOff returnDest rest)
       (compressResult s msgOff returnDest rest) := by
   let prepared := copyHashState (afterSchedule s msgOff returnDest rest)
   have gPrepare := gasSteps_toRoundLoop s msgOff returnDest rest hcap

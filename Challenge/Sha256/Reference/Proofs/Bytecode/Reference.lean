@@ -31,14 +31,14 @@ def atPCStack (calldata : ByteArray) (pc : Nat) (stack : List UInt256) : State :
   { frame referenceBytecode calldata 0 with pc := UInt256.ofNat pc, stack }
 
 @[simp] theorem withGas_atPC (calldata : ByteArray) (pc gas : Nat) :
-    Challenge.BytecodeProof.withGas (atPC calldata pc) gas =
+    Challenge.EvmProof.withGas (atPC calldata pc) gas =
       { frame referenceBytecode calldata gas with pc := UInt256.ofNat pc } := by
   rfl
 
 theorem gasSteps_jumpdest_at (calldata : ByteArray) (pc : Nat)
     (hpc : pc + 1 < 2 ^ 256)
     (hdecode : Decode.decodeAt referenceBytecode pc = some (.JUMPDEST, none)) :
-    Challenge.BytecodeProof.GasSteps (atPC calldata pc) (atPC calldata (pc + 1)) := by
+    Challenge.EvmProof.GasSteps (atPC calldata pc) (atPC calldata (pc + 1)) := by
   have hop : (atPC calldata pc).decodedOp = some .JUMPDEST := by
     unfold State.decodedOp
     have hd : (atPC calldata pc).decoded = some (.JUMPDEST, none) := by
@@ -46,48 +46,48 @@ theorem gasSteps_jumpdest_at (calldata : ByteArray) (pc : Nat)
       rw [show (atPC calldata pc).executionEnv.code = referenceBytecode by rfl]
       rw [show (atPC calldata pc).pc.toNat = pc by
         rw [show (atPC calldata pc).pc = UInt256.ofNat pc by rfl,
-          Challenge.BytecodeProof.Word.word_toNat_ofNat,
+          Challenge.EvmProof.Word.word_toNat_ofNat,
           Nat.mod_eq_of_lt (by omega : pc < 2 ^ 256)]]
       rw [hdecode]
       rfl
     rw [hd]
     rfl
-  have hsucc := Challenge.BytecodeProof.Word.succ_ofNat hpc
-  apply Challenge.BytecodeProof.GasStep.of_running 1 rfl deployAddress_not_precompile
+  have hsucc := Challenge.EvmProof.Word.succ_ofNat hpc
+  apply Challenge.EvmProof.GasStep.of_running 1 rfl deployAddress_not_precompile
   intro gas hgas
   have hstep := StepRunning.jumpdest
-    (s := Challenge.BytecodeProof.withGas (atPC calldata pc) gas)
+    (s := Challenge.EvmProof.withGas (atPC calldata pc) gas)
     hop (by simpa [atPC, frame, State.fork, Gas.baseCost] using hgas)
-    (by simp [Challenge.BytecodeProof.withGas, atPC, frame,
+    (by simp [Challenge.EvmProof.withGas, atPC, frame,
       Operation.pushArity, Operation.popArity])
-  simpa [Challenge.BytecodeProof.withGas, atPC, hsucc, Gas.baseCost] using hstep
+  simpa [Challenge.EvmProof.withGas, atPC, hsucc, Gas.baseCost] using hstep
 
 theorem gasSteps_push2_at (calldata : ByteArray) (pc dest : Nat)
     (hpc : pc + 3 < 2 ^ 256)
     (hdecode : Decode.decodeAt referenceBytecode pc =
       some (.Push ⟨2, by decide⟩, some (UInt256.ofNat dest, 2))) :
-    Challenge.BytecodeProof.GasSteps (atPC calldata pc)
+    Challenge.EvmProof.GasSteps (atPC calldata pc)
       (atPCStack calldata (pc + 3) [UInt256.ofNat dest]) := by
-  have hpcadd := Challenge.BytecodeProof.Word.ofNat_add_ofNat hpc
-  apply Challenge.BytecodeProof.GasStep.of_running 3 rfl deployAddress_not_precompile
+  have hpcadd := Challenge.EvmProof.Word.ofNat_add_ofNat hpc
+  apply Challenge.EvmProof.GasStep.of_running 3 rfl deployAddress_not_precompile
   intro gas hgas
   have hstep := StepRunning.pushN
-    (s := Challenge.BytecodeProof.withGas (atPC calldata pc) gas)
+    (s := Challenge.EvmProof.withGas (atPC calldata pc) gas)
     (k := ⟨2, by decide⟩) (data := UInt256.ofNat dest) (immWidth := 2)
     (by decide) (by
       unfold State.decoded
-      rw [show (Challenge.BytecodeProof.withGas (atPC calldata pc) gas).executionEnv.code =
+      rw [show (Challenge.EvmProof.withGas (atPC calldata pc) gas).executionEnv.code =
         referenceBytecode by rfl]
-      rw [show (Challenge.BytecodeProof.withGas (atPC calldata pc) gas).pc.toNat = pc by
-        rw [show (Challenge.BytecodeProof.withGas (atPC calldata pc) gas).pc =
+      rw [show (Challenge.EvmProof.withGas (atPC calldata pc) gas).pc.toNat = pc by
+        rw [show (Challenge.EvmProof.withGas (atPC calldata pc) gas).pc =
           UInt256.ofNat pc by rfl,
-          Challenge.BytecodeProof.Word.word_toNat_ofNat,
+          Challenge.EvmProof.Word.word_toNat_ofNat,
           Nat.mod_eq_of_lt (by omega : pc < 2 ^ 256)]]
       rw [hdecode]
       rfl)
     (by simpa [atPC, frame, State.fork, Gas.baseCost] using hgas)
-    (by simp [Challenge.BytecodeProof.withGas, atPC, frame])
-  simpa [Challenge.BytecodeProof.withGas, atPC, atPCStack, hpcadd,
+    (by simp [Challenge.EvmProof.withGas, atPC, frame])
+  simpa [Challenge.EvmProof.withGas, atPC, atPCStack, hpcadd,
     frame, Gas.baseCost] using hstep
 
 theorem gasSteps_jump_at (calldata : ByteArray) (pc dest : Nat)
@@ -95,7 +95,7 @@ theorem gasSteps_jump_at (calldata : ByteArray) (pc dest : Nat)
     (hdest : dest < 2 ^ 256)
     (hdecode : Decode.decodeAt referenceBytecode pc = some (.JUMP, none))
     (hvalid : Decode.isValidJumpDest referenceBytecode dest = true) :
-    Challenge.BytecodeProof.GasSteps
+    Challenge.EvmProof.GasSteps
       (atPCStack calldata pc [UInt256.ofNat dest]) (atPC calldata dest) := by
   have hop : (atPCStack calldata pc [UInt256.ofNat dest]).decodedOp =
       some .JUMP := by
@@ -108,29 +108,29 @@ theorem gasSteps_jump_at (calldata : ByteArray) (pc dest : Nat)
       rw [show (atPCStack calldata pc [UInt256.ofNat dest]).pc.toNat = pc by
         rw [show (atPCStack calldata pc [UInt256.ofNat dest]).pc =
           UInt256.ofNat pc by rfl,
-          Challenge.BytecodeProof.Word.word_toNat_ofNat,
+          Challenge.EvmProof.Word.word_toNat_ofNat,
           Nat.mod_eq_of_lt (by omega : pc < 2 ^ 256)]]
       rw [hdecode]
       rfl
     rw [hd]
     rfl
-  apply Challenge.BytecodeProof.GasStep.of_running 8 rfl deployAddress_not_precompile
+  apply Challenge.EvmProof.GasStep.of_running 8 rfl deployAddress_not_precompile
   intro gas hgas
   have hstep := StepRunning.jump
-    (s := Challenge.BytecodeProof.withGas
+    (s := Challenge.EvmProof.withGas
       (atPCStack calldata pc [UInt256.ofNat dest]) gas)
     (dest := UInt256.ofNat dest) (rest := []) hop
     (by simpa [atPCStack, frame, State.fork, Gas.baseCost] using hgas)
-    (by simp [Challenge.BytecodeProof.withGas, atPCStack, frame])
+    (by simp [Challenge.EvmProof.withGas, atPCStack, frame])
     (by
       change Decode.isValidJumpDest referenceBytecode
         (UInt256.ofNat dest).toNat = true
-      rw [Challenge.BytecodeProof.Word.word_toNat_ofNat,
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
         Nat.mod_eq_of_lt hdest]
       exact hvalid)
-    (by simp [Challenge.BytecodeProof.withGas, atPCStack, frame,
+    (by simp [Challenge.EvmProof.withGas, atPCStack, frame,
       Operation.pushArity, Operation.popArity])
-  simpa [Challenge.BytecodeProof.withGas, atPC, atPCStack, frame,
+  simpa [Challenge.EvmProof.withGas, atPC, atPCStack, frame,
     Gas.baseCost] using hstep
 
 theorem gasSteps_trampoline (calldata : ByteArray) (src dest : Nat)
@@ -140,7 +140,7 @@ theorem gasSteps_trampoline (calldata : ByteArray) (src dest : Nat)
       some (.Push ⟨2, by decide⟩, some (UInt256.ofNat dest, 2)))
     (hjump : Decode.decodeAt referenceBytecode (src + 4) = some (.JUMP, none))
     (hvalid : Decode.isValidJumpDest referenceBytecode dest = true) :
-    Challenge.BytecodeProof.GasSteps (atPC calldata src) (atPC calldata dest) := by
+    Challenge.EvmProof.GasSteps (atPC calldata src) (atPC calldata dest) := by
   exact (gasSteps_jumpdest_at calldata src (by omega) hjd).trans
     ((gasSteps_push2_at calldata (src + 1) dest (by omega) (by simpa using hpush)).trans
       (gasSteps_jump_at calldata (src + 4) dest (by omega) hdest
@@ -264,18 +264,18 @@ theorem stepF_entry_jump (calldata : ByteArray) (gas : Nat) (hgas : 11 ≤ gas) 
 /-- The first executable direct-bytecode block consumes the initial `PUSH2; JUMP` and
 lands on the first certified trampoline target. -/
 theorem execN_to_firstTarget (calldata : ByteArray) (gas : Nat) (hgas : 11 ≤ gas) :
-    Challenge.BytecodeProof.execN 2 (frame referenceBytecode calldata gas) =
+    Challenge.EvmProof.execN 2 (frame referenceBytecode calldata gas) =
       { frame referenceBytecode calldata gas with
           pc := UInt256.ofNat 0x001b
           gasAvailable := gas - 11 } := by
   have hpush : 3 ≤ gas := by omega
-  simp [Challenge.BytecodeProof.execN, stepF_entry_push calldata gas hpush,
+  simp [Challenge.EvmProof.execN, stepF_entry_push calldata gas hpush,
     stepF_entry_jump calldata gas hgas]
 
 /-- Relational form of the first reference-bytecode block. Later block and
 loop proofs compose this theorem with `Reaches.trans`. -/
 theorem reaches_firstTarget (calldata : ByteArray) (gas : Nat) (hgas : 11 ≤ gas) :
-    Challenge.BytecodeProof.Reaches
+    Challenge.EvmProof.Reaches
       (fun s => s = frame referenceBytecode calldata gas)
       (fun s => s = { frame referenceBytecode calldata gas with
         pc := UInt256.ofNat 0x001b
@@ -288,17 +288,17 @@ theorem reaches_firstTarget (calldata : ByteArray) (gas : Nat) (hgas : 11 ≤ ga
 
 /-- Gas-parametric form of the first `PUSH2; JUMP`. -/
 theorem gasSteps_to_firstTarget (calldata : ByteArray) :
-    Challenge.BytecodeProof.GasSteps (frame referenceBytecode calldata 0)
+    Challenge.EvmProof.GasSteps (frame referenceBytecode calldata 0)
       (atPC calldata 0x001b) := by
   refine ⟨11, fun gas hgas => ?_⟩
   have hpush : 3 ≤ gas := by omega
-  simpa [Challenge.BytecodeProof.withGas, atPC, frame] using
+  simpa [Challenge.EvmProof.withGas, atPC, frame] using
     (Steps.trans (step_entry_push calldata gas hpush)
       (Steps.trans (step_entry_jump calldata gas hgas) (Steps.refl _)))
 
 theorem gasSteps_entryLink (calldata : ByteArray) (src dest : Nat)
     (hlink : (src, dest) ∈ entryLinks) :
-    Challenge.BytecodeProof.GasSteps (atPC calldata src) (atPC calldata dest) := by
+    Challenge.EvmProof.GasSteps (atPC calldata src) (atPC calldata dest) := by
   rw [entryLinks] at hlink
   obtain ⟨t, ht, hp⟩ := List.mem_map.mp hlink
   have hsrc : t.src = src := congrArg Prod.fst hp
@@ -316,7 +316,7 @@ theorem gasSteps_entryLink (calldata : ByteArray) (src dest : Nat)
       Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.decodeAt_op_index t.srcIndex .JUMPDEST
         hv.2.1 (by decide) trivial
   · have hfit : (UInt256.ofNat t.dest).toNat < 256 ^ 2 := by
-      rw [Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hb.2]
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hb.2]
       simp only [Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines,
         List.mem_cons, List.not_mem_nil, or_false] at ht
       rcases ht with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
@@ -333,7 +333,7 @@ theorem gasSteps_entryLink (calldata : ByteArray) (src dest : Nat)
 
 /-- The complete compiler-generated entry chain lands at the SHA body. -/
 theorem gasSteps_to_main (calldata : ByteArray) :
-    Challenge.BytecodeProof.GasSteps (frame referenceBytecode calldata 0)
+    Challenge.EvmProof.GasSteps (frame referenceBytecode calldata 0)
       (atPC calldata mainPC) := by
   have l₁ := gasSteps_entryLink calldata 0x001b 0x0044
     (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])

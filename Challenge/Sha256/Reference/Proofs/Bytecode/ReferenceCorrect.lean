@@ -62,12 +62,12 @@ def finalState (input : ByteArray) : State :=
   rw [finalState_hReturn input hfit]
 
 theorem gasSteps_finalState (input : ByteArray) (hfit : CalldataFits input) :
-    Challenge.BytecodeProof.GasSteps (frame referenceBytecode input 0)
+    Challenge.EvmProof.GasSteps (frame referenceBytecode input 0)
       (finalState input) := by
   simpa [finalState] using Driver.gasSteps_reference input hfit
 
 @[simp] theorem withGas_frame_zero (input : ByteArray) (gas : Nat) :
-    Challenge.BytecodeProof.withGas (frame referenceBytecode input 0) gas =
+    Challenge.EvmProof.withGas (frame referenceBytecode input 0) gas =
       frame referenceBytecode input gas := by
   rfl
 
@@ -75,7 +75,7 @@ theorem gasSteps_finalState (input : ByteArray) (hfit : CalldataFits input) :
 obligation, with SHA computed entirely by the proved EVM instruction trace. -/
 theorem referenceDirectProof : DirectProof referenceBytecode := by
   let Input := { calldata : ByteArray // CalldataFits calldata }
-  have h := Challenge.BytecodeProof.GasSteps.toEventuallyEvaluates
+  have h := Challenge.EvmProof.GasSteps.toEventuallyEvaluates
     (initial := fun input : Input => frame referenceBytecode input.1 0)
     (final := fun input : Input => finalState input.1)
     (expected := fun input : Input => .returned (Challenge.Sha256.spec input.1))

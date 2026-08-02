@@ -1,4 +1,4 @@
-import Challenge.BytecodeProof.Execution
+import Challenge.EvmProof.Execution
 set_option warningAsError true
 /-!
 # Gas-parametric direct EVM traces
@@ -10,7 +10,7 @@ same trace from every larger budget and records only the remaining gas at the
 end.  Costs compose by addition, including through input-dependent loops.
 -/
 
-namespace Challenge.BytecodeProof
+namespace Challenge.EvmProof
 
 open EvmSemantics
 open EvmSemantics.EVM
@@ -105,4 +105,4 @@ theorem toEventuallyEvaluates {Input : Type}
 
 end GasSteps
 
-end Challenge.BytecodeProof
+end Challenge.EvmProof

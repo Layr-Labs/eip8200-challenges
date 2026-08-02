@@ -1,4 +1,4 @@
-import Challenge.BytecodeProof
+import Challenge.EvmProof
 import Challenge.Sha256.Spec
 set_option warningAsError true
 /-!
@@ -18,7 +18,7 @@ open EvmSemantics.EVM
 
 /-- Direct, compositional small-step obligation for any SHA-256 bytecode. -/
 def DirectProof (code : ByteArray) : Prop :=
-  Challenge.BytecodeProof.EventuallyEvaluates
+  Challenge.EvmProof.EventuallyEvaluates
     (Input := { calldata : ByteArray // CalldataFits calldata })
     (fun calldata gas => frame code calldata.1 gas)
     (fun calldata => .returned (spec calldata.1))

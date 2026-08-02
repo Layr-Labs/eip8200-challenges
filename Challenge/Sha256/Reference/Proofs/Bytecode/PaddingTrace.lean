@@ -1,6 +1,6 @@
 import Challenge.Sha256.Reference.Proofs.Bytecode.Padding
 import Challenge.Sha256.Reference.Proofs.Bytecode.Trace
-import Challenge.BytecodeProof.Stepper
+import Challenge.EvmProof.Stepper
 import YulEvmCompiler.BytesLemmas
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -125,7 +125,7 @@ def lengthLoopStart (input : ByteArray) : State :=
       UInt256.ofNat input.size, Padding.paddedWord input, UInt256.ofNat 1367] }
 
 def lengthSetupPath :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨270, .op (.Dup ⟨0, by decide⟩), by rfl,
       ⟨by decide, trivial, rfl⟩⟩,
    ⟨271, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
@@ -184,11 +184,11 @@ private def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork .Osaka = true) :
-    Challenge.BytecodeProof.Stepper.WellFormed .Osaka (.op op) :=
+    Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
   ⟨hopcode, hplain, havailable⟩
 
 def lengthIterationPath :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨289, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
    ⟨290, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨291, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -377,7 +377,7 @@ def lengthIterationPath :
   simpa using Artifact.isValidJumpDest_index 288 (by rfl)
 
 theorem gasSteps_enterPad (input : ByteArray) :
-    Challenge.BytecodeProof.GasSteps (Main.initializedState input) (padEntry input) := by
+    Challenge.EvmProof.GasSteps (Main.initializedState input) (padEntry input) := by
   have hinitPC : (Main.initializedState input).pc =
       UInt256.ofNat (Artifact.instructionPC 707) := by rfl
   have hinitStack : (Main.initializedState input).stack = [] := by rfl
@@ -393,38 +393,38 @@ theorem gasSteps_enterPad (input : ByteArray) :
       UInt256.ofNat (Artifact.instructionPC 710) := by
     rw [pushedPad, houtputPC]
     exact Trace.pushPC (index := 709) (width := 2) (by decide)
-  have hpushReturn : Challenge.BytecodeProof.GasSteps
+  have hpushReturn : Challenge.EvmProof.GasSteps
       (Main.initializedState input) (pushedReturn input) := by
     have hdecode := Trace.decodedPushAt (Main.initializedState input) 707
       ⟨2, by decide⟩ (UInt256.ofNat 1367) rfl rfl rfl (by decide)
       (by rfl)
-    have hstep := Challenge.BytecodeProof.GasStep.pushN
+    have hstep := Challenge.EvmProof.GasStep.pushN
       (s := Main.initializedState input) ⟨2, by decide⟩
       (UInt256.ofNat 1367) 2 (by decide) hdecode (by simp [hinitStack])
       (by rfl) (by rfl)
     simpa [pushedReturn] using hstep
-  have hpushOutput : Challenge.BytecodeProof.GasSteps
+  have hpushOutput : Challenge.EvmProof.GasSteps
       (pushedReturn input) (pushedOutput input) := by
     have hdecode := Trace.decodedPushOpAt (pushedReturn input) 708
       ⟨0, by decide⟩ ⟨0⟩ rfl (by
         exact hreturnPC) rfl
         (by decide) (by rfl)
-    have hstep := Challenge.BytecodeProof.GasStep.push0 (s := pushedReturn input)
+    have hstep := Challenge.EvmProof.GasStep.push0 (s := pushedReturn input)
       hdecode (by simp [pushedReturn, hinitStack]) (by rfl) (by rfl)
     simpa [pushedOutput] using hstep
-  have hpushPad : Challenge.BytecodeProof.GasSteps
+  have hpushPad : Challenge.EvmProof.GasSteps
       (pushedOutput input) (pushedPad input) := by
     have hdecode := Trace.decodedPushAt (pushedOutput input) 709
       ⟨2, by decide⟩ (UInt256.ofNat 357) rfl (by
         exact houtputPC) rfl
         (by decide) (by rfl)
-    have hstep := Challenge.BytecodeProof.GasStep.pushN
+    have hstep := Challenge.EvmProof.GasStep.pushN
       (s := pushedOutput input) ⟨2, by decide⟩
       (UInt256.ofNat 357) 2 (by decide) hdecode
       (by simp [pushedOutput, pushedReturn, hinitStack])
       (by rfl) (by rfl)
     simpa [pushedPad] using hstep
-  have hjump : Challenge.BytecodeProof.GasSteps (pushedPad input) (padEntry input) := by
+  have hjump : Challenge.EvmProof.GasSteps (pushedPad input) (padEntry input) := by
     have hdecode := Trace.decodedOpAt (pushedPad input) 710 .JUMP rfl hpadPC rfl
       (by decide) trivial (by rfl)
     have hvalid : Decode.isValidJumpDest
@@ -435,7 +435,7 @@ theorem gasSteps_enterPad (input : ByteArray) :
         (Artifact.instructionPC 259 % 2 ^ 256) = true at hv
       rw [show Artifact.instructionPC 259 % 2 ^ 256 = 357 by decide] at hv
       exact hv
-    have hstep := Challenge.BytecodeProof.GasStep.jump (s := pushedPad input)
+    have hstep := Challenge.EvmProof.GasStep.jump (s := pushedPad input)
       (UInt256.ofNat 357) [⟨0⟩, UInt256.ofNat 1367] hdecode (by rfl) hvalid
       (by simp [pushedPad, pushedOutput, pushedReturn, hinitStack,
         Operation.pushArity, Operation.popArity])
@@ -444,7 +444,7 @@ theorem gasSteps_enterPad (input : ByteArray) :
   exact hpushReturn.trans (hpushOutput.trans (hpushPad.trans hjump))
 
 theorem gasSteps_padReadSize (input : ByteArray) :
-    Challenge.BytecodeProof.GasSteps (padEntry input) (padSized input) := by
+    Challenge.EvmProof.GasSteps (padEntry input) (padSized input) := by
   have hentryPC : (padEntry input).pc =
       UInt256.ofNat (Artifact.instructionPC 259) := by
     rw [padEntry]
@@ -453,27 +453,27 @@ theorem gasSteps_padReadSize (input : ByteArray) :
       UInt256.ofNat (Artifact.instructionPC 260) := by
     rw [padBodyStart, hentryPC]
     exact Trace.succPC (index := 259) (by decide)
-  have gjumpdest : Challenge.BytecodeProof.GasSteps
+  have gjumpdest : Challenge.EvmProof.GasSteps
       (padEntry input) (padBodyStart input) := by
     have hdecode := Trace.decodedOpAt (padEntry input) 259 .JUMPDEST rfl
       hentryPC rfl (by decide) trivial (by rfl)
-    have hstep := Challenge.BytecodeProof.GasStep.jumpdest (s := padEntry input)
+    have hstep := Challenge.EvmProof.GasStep.jumpdest (s := padEntry input)
       hdecode (by simp [padEntry, pushedPad, pushedOutput, pushedReturn,
         Operation.pushArity, Operation.popArity]) (by rfl) (by rfl)
     simpa [padBodyStart] using hstep
-  have gsize : Challenge.BytecodeProof.GasSteps
+  have gsize : Challenge.EvmProof.GasSteps
       (padBodyStart input) (padSized input) := by
     have hcalldata : (padBodyStart input).executionEnv.calldata = input := by rfl
     have hdecode := Trace.decodedOpAt (padBodyStart input) 260 .CALLDATASIZE
       rfl hbodyPC rfl (by decide) trivial (by rfl)
-    have hstep := Challenge.BytecodeProof.GasStep.calldatasize (s := padBodyStart input)
+    have hstep := Challenge.EvmProof.GasStep.calldatasize (s := padBodyStart input)
       hdecode (by simp [padBodyStart, padEntry, pushedPad, pushedOutput,
         pushedReturn]) (by rfl) (by rfl)
     simpa [padSized, hcalldata] using hstep
   exact gjumpdest.trans gsize
 
 theorem gasSteps_computePaddedLength (input : ByteArray) :
-    Challenge.BytecodeProof.GasSteps (padSized input) (padLengthReady input) := by
+    Challenge.EvmProof.GasSteps (padSized input) (padLengthReady input) := by
   have hinitStack : (Main.initializedState input).stack = [] := by rfl
   have hbodyStack : (padBodyStart input).stack =
       [⟨0⟩, UInt256.ofNat 1367] := by rfl
@@ -513,28 +513,28 @@ theorem gasSteps_computePaddedLength (input : ByteArray) :
   have h269 : (p269 input).pc = UInt256.ofNat (Artifact.instructionPC 269) := by
     rw [p269, h268]
     exact Trace.succPC (index := 268) (by decide)
-  have g261 : Challenge.BytecodeProof.GasSteps (padSized input) (p262 input) := by
+  have g261 : Challenge.EvmProof.GasSteps (padSized input) (p262 input) := by
     have hd := Trace.decodedPushAt (padSized input) 261 ⟨1, by decide⟩
       (UInt256.ofNat 72) rfl h261 rfl (by decide) (by rfl)
-    have g := Challenge.BytecodeProof.GasStep.pushN (s := padSized input)
+    have g := Challenge.EvmProof.GasStep.pushN (s := padSized input)
       ⟨1, by decide⟩ (UInt256.ofNat 72) 1 (by decide) hd
       (by simp [padSized, padBodyStart, padEntry, pushedPad, pushedOutput,
         pushedReturn, hinitStack]) (by rfl) (by rfl)
     simpa [p262] using g
-  have g262 : Challenge.BytecodeProof.GasSteps (p262 input) (p263 input) := by
+  have g262 : Challenge.EvmProof.GasSteps (p262 input) (p263 input) := by
     have hd := Trace.decodedOpAt (p262 input) 262 (.Dup ⟨1, by decide⟩)
       rfl h262 rfl (by decide) trivial (by rfl)
-    have g := Challenge.BytecodeProof.GasStep.dup (s := p262 input) ⟨1, by decide⟩
+    have g := Challenge.EvmProof.GasStep.dup (s := p262 input) ⟨1, by decide⟩
       (UInt256.ofNat input.size) hd (by
         simp [p262, padSized, padBodyStart, padEntry, pushedPad, pushedOutput,
           pushedReturn, hinitStack]) (by
         simp [p262, padSized, padBodyStart, padEntry, pushedPad, pushedOutput,
           pushedReturn, hinitStack]) (by rfl) (by rfl)
     simpa [p263] using g
-  have g263 : Challenge.BytecodeProof.GasSteps (p263 input) (p264 input) := by
+  have g263 : Challenge.EvmProof.GasSteps (p263 input) (p264 input) := by
     have hd := Trace.decodedOpAt (p263 input) 263 .ADD rfl h263 rfl
       (by decide) trivial (by rfl)
-    have g := Challenge.BytecodeProof.GasStep.add (s := p263 input)
+    have g := Challenge.EvmProof.GasStep.add (s := p263 input)
       (a := UInt256.ofNat input.size) (b := UInt256.ofNat 72)
       (rest := [UInt256.ofNat input.size, ⟨0⟩, UInt256.ofNat 1367]) hd (by
       simp [p263, p262, padSized, padBodyStart, padEntry, pushedPad,
@@ -543,18 +543,18 @@ theorem gasSteps_computePaddedLength (input : ByteArray) :
         pushedOutput, pushedReturn, hinitStack, Operation.pushArity,
         Operation.popArity]) (by rfl) (by rfl)
     simpa [p264, p263, p262, padSized, hinitStack, hbodyStack] using g
-  have g264 : Challenge.BytecodeProof.GasSteps (p264 input) (p265 input) := by
+  have g264 : Challenge.EvmProof.GasSteps (p264 input) (p265 input) := by
     have hd := Trace.decodedPushAt (p264 input) 264 ⟨1, by decide⟩
       (UInt256.ofNat 6) rfl h264 rfl (by decide) (by rfl)
-    have g := Challenge.BytecodeProof.GasStep.pushN (s := p264 input)
+    have g := Challenge.EvmProof.GasStep.pushN (s := p264 input)
       ⟨1, by decide⟩ (UInt256.ofNat 6) 1 (by decide) hd
       (by simp [p264, p263, p262, padSized, padBodyStart, padEntry, pushedPad,
         pushedOutput, pushedReturn, hinitStack]) (by rfl) (by rfl)
     simpa [p265] using g
-  have g265 : Challenge.BytecodeProof.GasSteps (p265 input) (p266 input) := by
+  have g265 : Challenge.EvmProof.GasSteps (p265 input) (p266 input) := by
     have hd := Trace.decodedOpAt (p265 input) 265 .SHR rfl h265 rfl
       (by decide) trivial (by rfl)
-    have g := Challenge.BytecodeProof.GasStep.shr (s := p265 input)
+    have g := Challenge.EvmProof.GasStep.shr (s := p265 input)
       (shift := UInt256.ofNat 6)
       (value := UInt256.ofNat input.size + UInt256.ofNat 72)
       (rest := [UInt256.ofNat input.size, ⟨0⟩, UInt256.ofNat 1367]) hd (by
@@ -565,19 +565,19 @@ theorem gasSteps_computePaddedLength (input : ByteArray) :
         Operation.pushArity, Operation.popArity]) (by rfl) (by rfl)
     simpa [p266, p265, p264, p263, p262, padSized, hinitStack,
       hbodyStack] using g
-  have g266 : Challenge.BytecodeProof.GasSteps (p266 input) (p267 input) := by
+  have g266 : Challenge.EvmProof.GasSteps (p266 input) (p267 input) := by
     have hd := Trace.decodedPushAt (p266 input) 266 ⟨1, by decide⟩
       (UInt256.ofNat 6) rfl h266 rfl (by decide) (by rfl)
-    have g := Challenge.BytecodeProof.GasStep.pushN (s := p266 input)
+    have g := Challenge.EvmProof.GasStep.pushN (s := p266 input)
       ⟨1, by decide⟩ (UInt256.ofNat 6) 1 (by decide) hd
       (by simp [p266, p265, p264, p263, p262, padSized, padBodyStart,
         padEntry, pushedPad, pushedOutput, pushedReturn, hinitStack])
       (by rfl) (by rfl)
     simpa [p267] using g
-  have g267 : Challenge.BytecodeProof.GasSteps (p267 input) (p268 input) := by
+  have g267 : Challenge.EvmProof.GasSteps (p267 input) (p268 input) := by
     have hd := Trace.decodedOpAt (p267 input) 267 .SHL rfl h267 rfl
       (by decide) trivial (by rfl)
-    have g := Challenge.BytecodeProof.GasStep.shl (s := p267 input)
+    have g := Challenge.EvmProof.GasStep.shl (s := p267 input)
       (shift := UInt256.ofNat 6)
       (value := UInt256.shiftRight
         (UInt256.ofNat input.size + UInt256.ofNat 72) (UInt256.ofNat 6))
@@ -589,10 +589,10 @@ theorem gasSteps_computePaddedLength (input : ByteArray) :
         Operation.pushArity, Operation.popArity]) (by rfl) (by rfl)
     simpa [p268, Padding.paddedWord, p267, p266, p265, p264, p263, p262,
       padSized, hinitStack, hbodyStack] using g
-  have g268 : Challenge.BytecodeProof.GasSteps (p268 input) (p269 input) := by
+  have g268 : Challenge.EvmProof.GasSteps (p268 input) (p269 input) := by
     have hd := Trace.decodedOpAt (p268 input) 268 (.Swap ⟨1, by decide⟩)
       rfl h268 rfl (by decide) trivial (by rfl)
-    have g := Challenge.BytecodeProof.GasStep.swap (s := p268 input) ⟨1, by decide⟩
+    have g := Challenge.EvmProof.GasStep.swap (s := p268 input) ⟨1, by decide⟩
       [⟨0⟩, UInt256.ofNat input.size, Padding.paddedWord input,
         UInt256.ofNat 1367] hd (by
           simp [p268, p267, p266, p265, p264, p263, p262, padSized,
@@ -603,10 +603,10 @@ theorem gasSteps_computePaddedLength (input : ByteArray) :
             hinitStack, Operation.pushArity, Operation.popArity])
       (by rfl) (by rfl)
     simpa [p269] using g
-  have g269 : Challenge.BytecodeProof.GasSteps (p269 input) (padLengthReady input) := by
+  have g269 : Challenge.EvmProof.GasSteps (p269 input) (padLengthReady input) := by
     have hd := Trace.decodedOpAt (p269 input) 269 .POP rfl h269 rfl
       (by decide) trivial (by rfl)
-    have g := Challenge.BytecodeProof.GasStep.pop (s := p269 input) hd (by rfl)
+    have g := Challenge.EvmProof.GasStep.pop (s := p269 input) hd (by rfl)
       (by simp [p269, Operation.pushArity, Operation.popArity])
       (by rfl) (by rfl)
     simpa [padLengthReady] using g
@@ -615,7 +615,7 @@ theorem gasSteps_computePaddedLength (input : ByteArray) :
 
 set_option maxHeartbeats 2000000 in
 private theorem run_lengthSetup (input : ByteArray) (hfit : CalldataFits input) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock
+    Challenge.EvmProof.Stepper.runLocatedBlock
       lengthSetupPath (padLengthReady input) = some (lengthLoopState input 0) := by
   have hsize : input.size < 2 ^ 256 := by
     exact Nat.lt_trans hfit (by norm_num)
@@ -626,24 +626,24 @@ private theorem run_lengthSetup (input : ByteArray) (hfit : CalldataFits input) 
     omega
   have hadd : (UInt256.ofNat Padding.messageOffset +
       UInt256.ofNat input.size).toNat = Padding.messageOffset + input.size := by
-    rw [Challenge.BytecodeProof.Word.ofNat_add_ofNat hsum,
-      Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hsum]
+    rw [Challenge.EvmProof.Word.ofNat_add_ofNat hsum,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hsum]
   have hsizeWord : (UInt256.ofNat input.size).toNat = input.size := by
-    rw [Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hsize]
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hsize]
   have hoffWord : (UInt256.ofNat Padding.messageOffset).toNat =
       Padding.messageOffset := by
-    rw [Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hoff]
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hoff]
   have hzero : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
   simp [lengthSetupPath,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock,
-    Challenge.BytecodeProof.Stepper.runLocated, Challenge.BytecodeProof.Stepper.runInstr,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     lengthLoopState, lengthLoopMemory, lengthLoopActiveWords, lengthLoopStart,
     padSentinel, padCopied, lengthOffsetWord, bitLengthWord,
     State.activeWordsAfterUInt256, hsizeWord, hoffWord, hzero, hadd]
 
 theorem gasSteps_lengthSetup (input : ByteArray) (hfit : CalldataFits input) :
-    Challenge.BytecodeProof.GasSteps (padLengthReady input) (lengthLoopState input 0) := by
-  apply Challenge.BytecodeProof.Stepper.runLocatedBlock_sound Artifact.referenceArtifact
+    Challenge.EvmProof.GasSteps (padLengthReady input) (lengthLoopState input 0) := by
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound Artifact.referenceArtifact
     .Osaka lengthSetupPath
   · rfl
   · exact padLengthReady_fork input
@@ -708,85 +708,85 @@ def lengthIncrementedState (input : ByteArray) (i : Nat) : State :=
 
 set_option maxHeartbeats 200000 in
 private theorem run_lengthCondition (input : ByteArray) (i : Nat) (hi : i < 8) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock lengthConditionPath
+    Challenge.EvmProof.Stepper.runLocatedBlock lengthConditionPath
       (lengthLoopState input i) = some (lengthBodyState input i) := by
   have hi256 : i < 2 ^ 256 := by omega
   have hiWord : (UInt256.ofNat i).toNat = i := by
-    rw [Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hi256]
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hi256]
   have hlt : UInt256.lt (UInt256.ofNat i) (UInt256.ofNat 8) = UInt256.ofNat 1 := by
-    simp [UInt256.lt, hiWord, Challenge.BytecodeProof.Word.word_toNat_ofNat, hi]
+    simp [UInt256.lt, hiWord, Challenge.EvmProof.Word.word_toNat_ofNat, hi]
   have hzero : UInt256.isZero (UInt256.ofNat 1) = (⟨0⟩ : UInt256) := by decide
   have hzeroToNat : (⟨0⟩ : UInt256).toNat = 0 := rfl
   simp [lengthConditionPath, lengthIterationPath,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock, Challenge.BytecodeProof.Stepper.runLocated,
-    Challenge.BytecodeProof.Stepper.runInstr, lengthLoopState, lengthBodyState,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, lengthLoopState, lengthBodyState,
     UInt256.isTrue, hlt, hzero, hzeroToNat, lengthLoopStart_halt]
 
 set_option maxHeartbeats 200000 in
 private theorem run_lengthByte (input : ByteArray) (i : Nat) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock lengthBytePath
+    Challenge.EvmProof.Stepper.runLocatedBlock lengthBytePath
       (lengthBodyState input i) = some (lengthByteState input i) := by
   simp [lengthBytePath, lengthIterationPath,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock, Challenge.BytecodeProof.Stepper.runLocated,
-    Challenge.BytecodeProof.Stepper.runInstr, lengthBodyState, lengthByteState,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, lengthBodyState, lengthByteState,
     lengthLoopState, lengthByteWord]
 
 set_option maxHeartbeats 200000 in
 private theorem run_lengthStore (input : ByteArray) (i : Nat) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock lengthStorePath
+    Challenge.EvmProof.Stepper.runLocatedBlock lengthStorePath
       (lengthByteState input i) = some (lengthStoredState input i) := by
   simp [lengthStorePath, lengthIterationPath,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock, Challenge.BytecodeProof.Stepper.runLocated,
-    Challenge.BytecodeProof.Stepper.runInstr, lengthByteState, lengthStoredState,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, lengthByteState, lengthStoredState,
     lengthLoopState, lengthLoopMemory, lengthLoopActiveWords,
     State.activeWordsAfterUInt256]
 
 set_option maxHeartbeats 200000 in
 private theorem run_lengthIncrement (input : ByteArray) (i : Nat) (hi : i < 8) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock lengthIncrementPath
+    Challenge.EvmProof.Stepper.runLocatedBlock lengthIncrementPath
       (lengthStoredState input i) = some (lengthIncrementedState input i) := by
   have hiSucc : i + 1 < 2 ^ 256 := by omega
   have hadd : UInt256.ofNat i + UInt256.ofNat 1 = UInt256.ofNat (i + 1) :=
-    Challenge.BytecodeProof.Word.ofNat_add_ofNat hiSucc
+    Challenge.EvmProof.Word.ofNat_add_ofNat hiSucc
   simp [lengthIncrementPath, lengthIterationPath,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock, Challenge.BytecodeProof.Stepper.runLocated,
-    Challenge.BytecodeProof.Stepper.runInstr, lengthStoredState, lengthIncrementedState,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, lengthStoredState, lengthIncrementedState,
     lengthLoopState, hadd, List.exchange]
 
 set_option maxHeartbeats 200000 in
 private theorem run_lengthBack (input : ByteArray) (i : Nat) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock lengthBackPath
+    Challenge.EvmProof.Stepper.runLocatedBlock lengthBackPath
       (lengthIncrementedState input i) = some (lengthLoopState input (i + 1)) := by
   simp [lengthBackPath, lengthIterationPath,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock, Challenge.BytecodeProof.Stepper.runLocated,
-    Challenge.BytecodeProof.Stepper.runInstr, lengthIncrementedState, lengthStoredState,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, lengthIncrementedState, lengthStoredState,
     lengthLoopState, lengthLoopStart_code]
 
 theorem gasSteps_lengthIteration (input : ByteArray) (i : Nat) (hi : i < 8) :
-    Challenge.BytecodeProof.GasSteps (lengthLoopState input i)
+    Challenge.EvmProof.GasSteps (lengthLoopState input i)
       (lengthLoopState input (i + 1)) := by
-  have g₁ := Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  have g₁ := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka lengthConditionPath
     (lengthLoopState_code input i) (lengthLoopState_fork input i)
     (run_lengthCondition input i hi) (lengthLoopState_halt input i) (by rfl)
-  have g₂ := Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  have g₂ := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka lengthBytePath (by rfl) (by rfl)
     (run_lengthByte input i) (by rfl) (by rfl)
-  have g₃ := Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  have g₃ := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka lengthStorePath (by rfl) (by rfl)
     (run_lengthStore input i) (by rfl) (by rfl)
-  have g₄ := Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  have g₄ := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka lengthIncrementPath (by rfl) (by rfl)
     (run_lengthIncrement input i hi) (by rfl) (by rfl)
-  have g₅ := Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  have g₅ := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka lengthBackPath (by rfl) (by rfl)
     (run_lengthBack input i) (by rfl) (by rfl)
   exact g₁.trans (g₂.trans (g₃.trans (g₄.trans g₅)))
 
 theorem gasSteps_lengthLoop (input : ByteArray) :
-    Challenge.BytecodeProof.GasSteps (lengthLoopState input 0)
+    Challenge.EvmProof.GasSteps (lengthLoopState input 0)
       (lengthLoopState input 8) := by
-  exact Challenge.BytecodeProof.GasSteps.iterateBounded (count := 8)
+  exact Challenge.EvmProof.GasSteps.iterateBounded (count := 8)
     (I := lengthLoopState input)
     (fun i hi => gasSteps_lengthIteration input i hi)
 
@@ -820,7 +820,7 @@ def padReturned (input : ByteArray) : State :=
   exact deployAddress_not_precompile
 
 def lengthExitPath :
-    List (Challenge.BytecodeProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨289, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
    ⟨290, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨291, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -881,56 +881,56 @@ def lengthExitPoppedState (input : ByteArray) : State :=
 
 set_option maxHeartbeats 200000 in
 private theorem run_lengthExitCompare (input : ByteArray) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock lengthExitComparePath
+    Challenge.EvmProof.Stepper.runLocatedBlock lengthExitComparePath
       (lengthLoopState input 8) = some (lengthExitComparedState input) := by
   have hlt : UInt256.lt (UInt256.ofNat 8) (UInt256.ofNat 8) = (⟨0⟩ : UInt256) := by
     decide
   simp [lengthExitComparePath, lengthExitPath,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock,
-    Challenge.BytecodeProof.Stepper.runLocated, Challenge.BytecodeProof.Stepper.runInstr,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     lengthExitComparedState, hlt]
 
 set_option maxHeartbeats 200000 in
 private theorem run_lengthExitBranch (input : ByteArray) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock lengthExitBranchPath
+    Challenge.EvmProof.Stepper.runLocatedBlock lengthExitBranchPath
       (lengthExitComparedState input) = some (lengthExitBodyState input) := by
   have hzero : UInt256.isZero (⟨0⟩ : UInt256) = UInt256.ofNat 1 := by decide
   simp [lengthExitBranchPath, lengthExitPath,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock,
-    Challenge.BytecodeProof.Stepper.runLocated, Challenge.BytecodeProof.Stepper.runInstr,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     lengthExitComparedState, lengthExitBodyState, UInt256.isTrue, hzero]
 
 set_option maxHeartbeats 200000 in
 private theorem run_lengthExitPop (input : ByteArray) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock lengthExitPopPath
+    Challenge.EvmProof.Stepper.runLocatedBlock lengthExitPopPath
       (lengthExitBodyState input) = some (lengthExitPoppedState input) := by
   simp [lengthExitPopPath, lengthExitPath,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock,
-    Challenge.BytecodeProof.Stepper.runLocated, Challenge.BytecodeProof.Stepper.runInstr,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     lengthExitBodyState, lengthExitPoppedState]
 
 set_option maxHeartbeats 200000 in
 private theorem run_lengthExitReturn (input : ByteArray) :
-    Challenge.BytecodeProof.Stepper.runLocatedBlock lengthExitReturnPath
+    Challenge.EvmProof.Stepper.runLocatedBlock lengthExitReturnPath
       (lengthExitPoppedState input) = some (padReturned input) := by
   simp [lengthExitReturnPath, lengthExitPath,
-    Challenge.BytecodeProof.Stepper.runLocatedBlock,
-    Challenge.BytecodeProof.Stepper.runLocated, Challenge.BytecodeProof.Stepper.runInstr,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     lengthExitPoppedState, padReturned, List.exchange]
 
 theorem gasSteps_lengthExit (input : ByteArray) :
-    Challenge.BytecodeProof.GasSteps (lengthLoopState input 8) (padReturned input) := by
-  have g₁ := Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+    Challenge.EvmProof.GasSteps (lengthLoopState input 8) (padReturned input) := by
+  have g₁ := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka lengthExitComparePath
     (lengthLoopState_code input 8) (lengthLoopState_fork input 8)
     (run_lengthExitCompare input) (lengthLoopState_halt input 8) (by rfl)
-  have g₂ := Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  have g₂ := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka lengthExitBranchPath (by rfl) (by rfl)
     (run_lengthExitBranch input) (by rfl) (by rfl)
-  have g₃ := Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  have g₃ := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka lengthExitPopPath (by rfl) (by rfl)
     (run_lengthExitPop input) (by rfl) (by rfl)
-  have g₄ := Challenge.BytecodeProof.Stepper.runLocatedBlock_sound
+  have g₄ := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka lengthExitReturnPath (by rfl) (by rfl)
     (run_lengthExitReturn input) (by rfl) (by rfl)
   exact g₁.trans (g₂.trans (g₃.trans g₄))
@@ -943,19 +943,19 @@ theorem bitLengthWord_eq (input : ByteArray) (hfit : CalldataFits input) :
     norm_num at hfit ⊢
     omega
   simpa [bitLengthWord] using
-    (Challenge.BytecodeProof.Word.shiftLeft_ofNat hsize (by decide : 3 < 256) hresult)
+    (Challenge.EvmProof.Word.shiftLeft_ofNat hsize (by decide : 3 < 256) hresult)
 
 private theorem seven_sub_word (i : Nat) (hi : i < 8) :
     UInt256.ofNat 7 - UInt256.ofNat i = UInt256.ofNat (7 - i) := by
   have hi256 : i < 2 ^ 256 := by omega
   have hiWord : (UInt256.ofNat i).toNat = i := by
-    rw [Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hi256]
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hi256]
   have h7Word : (UInt256.ofNat 7).toNat = 7 := by decide
   have hsmall : 7 - i < 2 ^ 256 :=
     Nat.lt_of_le_of_lt (Nat.sub_le 7 i) (by norm_num)
   have hsubWord : (UInt256.ofNat (7 - i)).toNat = 7 - i := by
-    rw [Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hsmall]
-  apply Challenge.BytecodeProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hsmall]
+  apply Challenge.EvmProof.Word.word_ext
   change ((UInt256.ofNat 7).val - (UInt256.ofNat i).val).val = _
   rw [Fin.val_sub]
   change (UInt256.size - (UInt256.ofNat i).toNat +
@@ -983,10 +983,10 @@ theorem lengthByteWord_toNat (input : ByteArray) (hfit : CalldataFits input)
   have hshiftResult : (7 - i) * 2 ^ 3 < 2 ^ 256 := by omega
   have hshiftWord : UInt256.shiftLeft (UInt256.ofNat (7 - i))
       (UInt256.ofNat 3) = UInt256.ofNat ((7 - i) * 8) := by
-    simpa using Challenge.BytecodeProof.Word.shiftLeft_ofNat hshiftValue
+    simpa using Challenge.EvmProof.Word.shiftLeft_ofNat hshiftValue
       (by decide : 3 < 256) hshiftResult
   rw [lengthByteWord, bitLengthWord_eq input hfit, seven_sub_word i hi,
-    hshiftWord, Challenge.BytecodeProof.Word.shiftRight_ofNat hvalue hshift]
+    hshiftWord, Challenge.EvmProof.Word.shiftRight_ofNat hvalue hshift]
   simp only [UInt256.land, UInt256.toNat]
   have hland : (↑(Fin.land
       (UInt256.ofNat ((input.size * 8) >>> ((7 - i) * 8))).val
@@ -997,7 +997,7 @@ theorem lengthByteWord_toNat (input : ByteArray) (hfit : CalldataFits input)
   rw [hland]
   change (UInt256.ofNat ((input.size * 8) >>> ((7 - i) * 8))).toNat &&&
       (UInt256.ofNat 255).toNat = _
-  rw [Challenge.BytecodeProof.Word.word_toNat_ofNat,
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) hvalue)]
   have h255 : (UInt256.ofNat 255).toNat = 255 := by decide
   rw [h255, show 255 = 2 ^ 8 - 1 by decide,
@@ -1026,7 +1026,7 @@ theorem lengthOffsetWord_eq (input : ByteArray) (hfit : CalldataFits input) :
     unfold CalldataFits at hfit
     norm_num at hfit ⊢
     omega
-  have hsub := Challenge.BytecodeProof.Word.ofNat_sub_ofNat
+  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat
     (a := Padding.paddedLength input.size) (b := 8) (by omega) hpadded
   have hsum : Padding.messageOffset +
       (Padding.paddedLength input.size - 8) < 2 ^ 256 := by
@@ -1051,7 +1051,7 @@ theorem lengthOffsetWord_eq (input : ByteArray) (hfit : CalldataFits input) :
       (Nat.add_le_add_left (Nat.sub_le (Padding.paddedLength input.size) 8) _)
       hoffset
   rw [lengthOffsetWord, Padding.paddedWord_eq input hfit, hsub,
-    Challenge.BytecodeProof.Word.ofNat_add_ofNat hsum]
+    Challenge.EvmProof.Word.ofNat_add_ofNat hsum]
   congr 1
   omega
 
@@ -1067,8 +1067,8 @@ theorem lengthOffset_add_toNat (input : ByteArray) (hfit : CalldataFits input)
     norm_num [Padding.messageOffset] at hfit ⊢
     omega
   rw [lengthOffsetWord_eq input hfit,
-    Challenge.BytecodeProof.Word.ofNat_add_ofNat hbase,
-    Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hbase]
+    Challenge.EvmProof.Word.ofNat_add_ofNat hbase,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hbase]
 
 def lengthWrittenBytes (input : ByteArray) : Nat → ByteArray
   | 0 => ByteArray.empty
@@ -1095,7 +1095,7 @@ theorem lengthLoopMemory_eq (input : ByteArray) (hfit : CalldataFits input)
       rw [lengthLoopMemory, lengthWrittenBytes, lengthByte_eq input hfit i hii,
         lengthOffset_add_toNat input hfit i (by omega), ih (by omega)]
       simpa only [lengthWrittenBytes_size] using
-        Challenge.BytecodeProof.Memory.writeBytes_append_adjacent
+        Challenge.EvmProof.Memory.writeBytes_append_adjacent
           (padSentinel input).memory (lengthWrittenBytes input i)
           (ByteArray.mk #[(Padding.lengthBytes input)[i]?.getD 0])
           (Padding.messageOffset + Padding.paddedLength input.size - 8)
@@ -1107,7 +1107,7 @@ theorem lengthWrittenBytes_getD (input : ByteArray) (i j : Nat) (hj : j < i) :
   | zero => omega
   | succ i ih =>
       rw [lengthWrittenBytes,
-        Challenge.BytecodeProof.Memory.getElem?_getD_append,
+        Challenge.EvmProof.Memory.getElem?_getD_append,
         lengthWrittenBytes_size]
       by_cases hji : j < i
       · rw [if_pos hji]
@@ -1123,8 +1123,8 @@ theorem lengthWrittenBytes_eight (input : ByteArray) :
   apply ByteArray.ext_getElem
   · simp
   · intro i hi₁ hi₂
-    rw [← Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hi₁,
-      ← Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hi₂]
+    rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hi₁,
+      ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hi₂]
     exact lengthWrittenBytes_getD input 8 i (by simpa using hi₁)
 
 theorem lengthLoopMemory_eight (input : ByteArray) (hfit : CalldataFits input) :
@@ -1134,14 +1134,14 @@ theorem lengthLoopMemory_eight (input : ByteArray) (hfit : CalldataFits input) :
   have hsentinel : (padSentinel input).memory =
       Padding.sentinelMemory (padLengthReady input).memory input := by
     simp [padSentinel, padCopied, Padding.sentinelMemory,
-      Padding.copiedMemory, Challenge.BytecodeProof.Memory.readPadded_zero_size]
+      Padding.copiedMemory, Challenge.EvmProof.Memory.readPadded_zero_size]
   rw [hsentinel]
   rfl
 
 /-- Complete certified execution of initialization and the reference `pad`
 function, exposing the canonical padded-memory model. -/
 theorem gasSteps_pad (input : ByteArray) (hfit : CalldataFits input) :
-    Challenge.BytecodeProof.GasSteps (frame referenceBytecode input 0)
+    Challenge.EvmProof.GasSteps (frame referenceBytecode input 0)
       (padReturned input) :=
   (Main.gasSteps_initialize input).trans
     ((gasSteps_enterPad input).trans

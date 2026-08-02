@@ -62,9 +62,9 @@ theorem scheduleWord_of_ge_compressBlock (padded : ByteArray)
 theorem scheduleSlot_eq (j : Nat) (hj : j < 64) :
     Schedule.scheduleSlot j = 800 + j * 32 := by
   unfold Schedule.scheduleSlot Accessors.slotOffset
-  rw [Challenge.BytecodeProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
-  rw [Challenge.BytecodeProof.Word.ofNat_add_ofNat (by omega),
-    Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
   omega
 
 theorem scheduleSlot_end_le_messageOffset (j : Nat) (hj : j < 64) :
@@ -74,16 +74,16 @@ theorem scheduleSlot_end_le_messageOffset (j : Nat) (hj : j < 64) :
   omega
 
 private theorem mask32_add_distrib (x y : UInt256) :
-    Challenge.BytecodeProof.Word.mask32 (x + y) =
-      Challenge.BytecodeProof.Word.mask32
-        (Challenge.BytecodeProof.Word.mask32 x + Challenge.BytecodeProof.Word.mask32 y) := by
-  rw [Challenge.BytecodeProof.Word.mask32_eq_ofUInt32,
-    Challenge.BytecodeProof.Word.mask32_eq_ofUInt32 x,
-    Challenge.BytecodeProof.Word.mask32_eq_ofUInt32 y,
-    Challenge.BytecodeProof.Word.mask32_add]
+    Challenge.EvmProof.Word.mask32 (x + y) =
+      Challenge.EvmProof.Word.mask32
+        (Challenge.EvmProof.Word.mask32 x + Challenge.EvmProof.Word.mask32 y) := by
+  rw [Challenge.EvmProof.Word.mask32_eq_ofUInt32,
+    Challenge.EvmProof.Word.mask32_eq_ofUInt32 x,
+    Challenge.EvmProof.Word.mask32_eq_ofUInt32 y,
+    Challenge.EvmProof.Word.mask32_add]
   congr 1
   apply UInt32.toNat_inj.mp
-  simp only [Challenge.BytecodeProof.Word.toUInt32_toNat, UInt32.toNat_add]
+  simp only [Challenge.EvmProof.Word.toUInt32_toNat, UInt32.toNat_add]
   change ((x.val + y.val).val % 2 ^ 32) =
     (x.toNat % 2 ^ 32 + y.toNat % 2 ^ 32) % 2 ^ 32
   rw [Fin.val_add]
@@ -92,30 +92,30 @@ private theorem mask32_add_distrib (x y : UInt256) :
     Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega)), Nat.add_mod]
 
 private theorem recurrence_of_words (a b c d : UInt32) :
-    Challenge.BytecodeProof.Word.mask32
-        ((Word.evmSmallSigma1 (Challenge.BytecodeProof.Word.ofUInt32 a) +
-            Challenge.BytecodeProof.Word.ofUInt32 b) +
-          (Word.evmSmallSigma0 (Challenge.BytecodeProof.Word.ofUInt32 c) +
-            Challenge.BytecodeProof.Word.ofUInt32 d)) =
-      Challenge.BytecodeProof.Word.ofUInt32
+    Challenge.EvmProof.Word.mask32
+        ((Word.evmSmallSigma1 (Challenge.EvmProof.Word.ofUInt32 a) +
+            Challenge.EvmProof.Word.ofUInt32 b) +
+          (Word.evmSmallSigma0 (Challenge.EvmProof.Word.ofUInt32 c) +
+            Challenge.EvmProof.Word.ofUInt32 d)) =
+      Challenge.EvmProof.Word.ofUInt32
         ((Sha256.smallSigma1 a + b) + (Sha256.smallSigma0 c + d)) := by
   rw [Word.evmSmallSigma1_ofUInt32, Word.evmSmallSigma0_ofUInt32,
-    mask32_add_distrib, Challenge.BytecodeProof.Word.mask32_add,
-    Challenge.BytecodeProof.Word.mask32_add, Challenge.BytecodeProof.Word.mask32_add]
+    mask32_add_distrib, Challenge.EvmProof.Word.mask32_add,
+    Challenge.EvmProof.Word.mask32_add, Challenge.EvmProof.Word.mask32_add]
 
 theorem recurrenceWord_eq (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (padded : ByteArray) (blockOff j : Nat)
     (hj16 : 16 ≤ j)
     (h2 : Schedule.wValue s (j - 2) =
-      Challenge.BytecodeProof.Word.ofUInt32 (scheduleWord padded blockOff (j - 2)))
+      Challenge.EvmProof.Word.ofUInt32 (scheduleWord padded blockOff (j - 2)))
     (h7 : Schedule.wValue s (j - 7) =
-      Challenge.BytecodeProof.Word.ofUInt32 (scheduleWord padded blockOff (j - 7)))
+      Challenge.EvmProof.Word.ofUInt32 (scheduleWord padded blockOff (j - 7)))
     (h15 : Schedule.wValue s (j - 15) =
-      Challenge.BytecodeProof.Word.ofUInt32 (scheduleWord padded blockOff (j - 15)))
+      Challenge.EvmProof.Word.ofUInt32 (scheduleWord padded blockOff (j - 15)))
     (h16 : Schedule.wValue s (j - 16) =
-      Challenge.BytecodeProof.Word.ofUInt32 (scheduleWord padded blockOff (j - 16))) :
+      Challenge.EvmProof.Word.ofUInt32 (scheduleWord padded blockOff (j - 16))) :
     Schedule.recurrenceWord s msgOff returnDest rest j =
-      Challenge.BytecodeProof.Word.ofUInt32 (scheduleWord padded blockOff j) := by
+      Challenge.EvmProof.Word.ofUInt32 (scheduleWord padded blockOff j) := by
   rw [scheduleWord_of_ge padded blockOff j hj16]
   simp only [Schedule.recurrenceWord, Schedule.firstSum, Schedule.gotW2,
     Schedule.gotW7, Schedule.gotSsig0, Schedule.gotW15, Schedule.gotW16,
@@ -131,14 +131,14 @@ theorem recurrenceWord_eq (s : State) (msgOff returnDest : UInt256)
 /-- Correctness of all schedule slots below an exclusive upper bound. -/
 def SlotsCorrect (s : State) (padded : ByteArray) (blockOff upto : Nat) : Prop :=
   ∀ k, k < upto → Schedule.wValue s k =
-    Challenge.BytecodeProof.Word.ofUInt32 (scheduleWord padded blockOff k)
+    Challenge.EvmProof.Word.ofUInt32 (scheduleWord padded blockOff k)
 
 /-- Exact initial-memory seam required by the schedule proof: the sixteen
 four-byte words addressed through `msgOff` are the selected padded block. -/
 def PaddedBlockAt (memory : ByteArray) (msgOff : UInt256)
     (padded : ByteArray) (blockOff : Nat) : Prop :=
   ∀ k, k < 16 → Schedule.initialWord memory msgOff k =
-    Challenge.BytecodeProof.Word.ofUInt32
+    Challenge.EvmProof.Word.ofUInt32
       (Sha256.readBE32 padded (blockOff + k * 4))
 
 @[simp] theorem afterFirstIteration_memory (s : State)
@@ -172,7 +172,7 @@ private theorem initialWord_write_schedule (memory : ByteArray)
         msgOff readIndex =
       Schedule.initialWord memory msgOff readIndex := by
   unfold Schedule.initialWord
-  rw [Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint]
+  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
   exact Or.inr (by
     have h := le_trans (scheduleSlot_end_le_messageOffset writeIndex hwrite)
       hseparated
@@ -198,7 +198,7 @@ theorem firstLoopState_slots (s : State) (msgOff returnDest : UInt256)
       Padding.messageOffset ≤ Schedule.loadOffset msgOff k)
     (hread : ∀ k, k < 16 →
       Schedule.initialWord s.memory msgOff k =
-        Challenge.BytecodeProof.Word.ofUInt32
+        Challenge.EvmProof.Word.ofUInt32
           (Sha256.readBE32 padded (blockOff + k * 4))) :
     SlotsCorrect (Schedule.firstLoopState s msgOff returnDest rest n)
       padded blockOff n := by
@@ -212,12 +212,12 @@ theorem firstLoopState_slots (s : State) (msgOff returnDest : UInt256)
       simp only [Schedule.wValue, afterFirstIteration_memory]
       by_cases hkn : k = n
       · subst k
-        rw [Challenge.BytecodeProof.Memory.readWord_writeWord]
+        rw [Challenge.EvmProof.Memory.readWord_writeWord]
         rw [firstLoopState_initialWord s msgOff returnDest rest n n
           (by omega) (hseparated n (by omega))]
         rw [scheduleWord_of_lt padded blockOff n (by omega)]
         exact hread n (by omega)
-      · rw [Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint]
+      · rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
         · exact ih (by omega) k (by omega)
         · left
           rw [scheduleSlot_eq k (by omega), scheduleSlot_eq n (by omega)]
@@ -240,13 +240,13 @@ theorem secondLoopState_slots (s : State) (msgOff returnDest : UInt256)
       let j := 16 + n
       by_cases hkj : k = j
       · subst k
-        rw [Challenge.BytecodeProof.Memory.readWord_writeWord]
+        rw [Challenge.EvmProof.Memory.readWord_writeWord]
         apply recurrenceWord_eq (hj16 := by omega)
         · exact ih (by omega) (j - 2) (by omega)
         · exact ih (by omega) (j - 7) (by omega)
         · exact ih (by omega) (j - 15) (by omega)
         · exact ih (by omega) (j - 16) (by omega)
-      · rw [Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint]
+      · rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
         · exact ih (by omega) k (by omega)
         · left
           rw [scheduleSlot_eq k (by omega), scheduleSlot_eq j (by omega)]
@@ -261,7 +261,7 @@ theorem scheduleResult_slots (s : State) (msgOff returnDest : UInt256)
       Padding.messageOffset ≤ Schedule.loadOffset msgOff k)
     (hread : ∀ k, k < 16 →
       Schedule.initialWord s.memory msgOff k =
-        Challenge.BytecodeProof.Word.ofUInt32
+        Challenge.EvmProof.Word.ofUInt32
           (Sha256.readBE32 padded (blockOff + k * 4))) :
     SlotsCorrect (Schedule.scheduleResult s msgOff returnDest rest)
       padded blockOff 64 := by

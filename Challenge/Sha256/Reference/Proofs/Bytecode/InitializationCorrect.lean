@@ -36,9 +36,9 @@ private def kOffset (j : Nat) : Nat :=
 private theorem kOffset_eq (j : Nat) (hj : j < 64) :
     kOffset j = 32 + 4 * j := by
   unfold kOffset
-  rw [Challenge.BytecodeProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
-  rw [Challenge.BytecodeProof.Word.ofNat_add_ofNat (by omega),
-    Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
   omega
 
 /-- A hash-state word at the reference program's 32-byte-strided layout. -/
@@ -50,9 +50,9 @@ round-constant reader and the strided hash-state reader agree with the pinned
 SHA-256 specification arrays at every valid index. -/
 def ConstantsCorrect (memory : ByteArray) : Prop :=
   (∀ j : Nat, j < 64 →
-    kWord memory j = Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]!) ∧
+    kWord memory j = Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]!) ∧
   (∀ i : Nat, i < 8 →
-    hWord memory i = Challenge.BytecodeProof.Word.ofUInt32 Sha256.H0[i]!)
+    hWord memory i = Challenge.EvmProof.Word.ofUInt32 Sha256.H0[i]!)
 
 /-- The fixed memory image produced by initialization. -/
 def initializedMemory : ByteArray :=
@@ -221,7 +221,7 @@ private theorem initializedMemory_kWord_eq_table (j : Nat) (hj : j < 64) :
   rw [kOffset_eq j hj]
   unfold initializedMemory kTableMemory Main.initializedState Main.initStart
   norm_num [Artifact.initStores, Main.applyInitStore, Challenge.Sha256.frame,
-    Challenge.BytecodeProof.Word.word_toNat_ofNat]
+    Challenge.EvmProof.Word.word_toNat_ofNat]
   repeat'
     rw [readBE32_writeBytes_disjoint _ _ _ _
       (by simp only [initBytes_size]; omega)]
@@ -229,7 +229,7 @@ private theorem initializedMemory_kWord_eq_table (j : Nat) (hj : j < 64) :
 private theorem initializedMemory_k_0_8 (j : Nat)
     (hlo : 0 ≤ j) (hhi : j < 8) :
     kWord initializedMemory j =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]! := by
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]! := by
   rw [initializedMemory_kWord_eq_table j (by omega)]
   unfold kWord
   change UInt256.shiftRight (MachineState.readWord kTableMemory (kOffset j))
@@ -245,13 +245,13 @@ private theorem initializedMemory_k_0_8 (j : Nat)
         (by simp only [initBytes_size]; omega)]
   rw [readBE32_natToBytesPadded_32 _ _ (by omega)]
   interval_cases j <;>
-    norm_num [Sha256.K, Challenge.BytecodeProof.Word.ofUInt32,
-      Challenge.BytecodeProof.Word.word_toNat_ofNat] <;> decide
+    norm_num [Sha256.K, Challenge.EvmProof.Word.ofUInt32,
+      Challenge.EvmProof.Word.word_toNat_ofNat] <;> decide
 
 private theorem initializedMemory_k_8_16 (j : Nat)
     (hlo : 8 ≤ j) (hhi : j < 16) :
     kWord initializedMemory j =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]! := by
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]! := by
   rw [initializedMemory_kWord_eq_table j (by omega)]
   unfold kWord
   change UInt256.shiftRight (MachineState.readWord kTableMemory (kOffset j))
@@ -267,13 +267,13 @@ private theorem initializedMemory_k_8_16 (j : Nat)
         (by simp only [initBytes_size]; omega)]
   rw [readBE32_natToBytesPadded_32 _ _ (by omega)]
   interval_cases j <;>
-    norm_num [Sha256.K, Challenge.BytecodeProof.Word.ofUInt32,
-      Challenge.BytecodeProof.Word.word_toNat_ofNat] <;> decide
+    norm_num [Sha256.K, Challenge.EvmProof.Word.ofUInt32,
+      Challenge.EvmProof.Word.word_toNat_ofNat] <;> decide
 
 private theorem initializedMemory_k_16_24 (j : Nat)
     (hlo : 16 ≤ j) (hhi : j < 24) :
     kWord initializedMemory j =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]! := by
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]! := by
   rw [initializedMemory_kWord_eq_table j (by omega)]
   unfold kWord
   change UInt256.shiftRight (MachineState.readWord kTableMemory (kOffset j))
@@ -289,13 +289,13 @@ private theorem initializedMemory_k_16_24 (j : Nat)
         (by simp only [initBytes_size]; omega)]
   rw [readBE32_natToBytesPadded_32 _ _ (by omega)]
   interval_cases j <;>
-    norm_num [Sha256.K, Challenge.BytecodeProof.Word.ofUInt32,
-      Challenge.BytecodeProof.Word.word_toNat_ofNat] <;> decide
+    norm_num [Sha256.K, Challenge.EvmProof.Word.ofUInt32,
+      Challenge.EvmProof.Word.word_toNat_ofNat] <;> decide
 
 private theorem initializedMemory_k_24_32 (j : Nat)
     (hlo : 24 ≤ j) (hhi : j < 32) :
     kWord initializedMemory j =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]! := by
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]! := by
   rw [initializedMemory_kWord_eq_table j (by omega)]
   unfold kWord
   change UInt256.shiftRight (MachineState.readWord kTableMemory (kOffset j))
@@ -311,13 +311,13 @@ private theorem initializedMemory_k_24_32 (j : Nat)
         (by simp only [initBytes_size]; omega)]
   rw [readBE32_natToBytesPadded_32 _ _ (by omega)]
   interval_cases j <;>
-    norm_num [Sha256.K, Challenge.BytecodeProof.Word.ofUInt32,
-      Challenge.BytecodeProof.Word.word_toNat_ofNat] <;> decide
+    norm_num [Sha256.K, Challenge.EvmProof.Word.ofUInt32,
+      Challenge.EvmProof.Word.word_toNat_ofNat] <;> decide
 
 private theorem initializedMemory_k_32_40 (j : Nat)
     (hlo : 32 ≤ j) (hhi : j < 40) :
     kWord initializedMemory j =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]! := by
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]! := by
   rw [initializedMemory_kWord_eq_table j (by omega)]
   unfold kWord
   change UInt256.shiftRight (MachineState.readWord kTableMemory (kOffset j))
@@ -333,13 +333,13 @@ private theorem initializedMemory_k_32_40 (j : Nat)
         (by simp only [initBytes_size]; omega)]
   rw [readBE32_natToBytesPadded_32 _ _ (by omega)]
   interval_cases j <;>
-    norm_num [Sha256.K, Challenge.BytecodeProof.Word.ofUInt32,
-      Challenge.BytecodeProof.Word.word_toNat_ofNat] <;> decide
+    norm_num [Sha256.K, Challenge.EvmProof.Word.ofUInt32,
+      Challenge.EvmProof.Word.word_toNat_ofNat] <;> decide
 
 private theorem initializedMemory_k_40_48 (j : Nat)
     (hlo : 40 ≤ j) (hhi : j < 48) :
     kWord initializedMemory j =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]! := by
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]! := by
   rw [initializedMemory_kWord_eq_table j (by omega)]
   unfold kWord
   change UInt256.shiftRight (MachineState.readWord kTableMemory (kOffset j))
@@ -355,13 +355,13 @@ private theorem initializedMemory_k_40_48 (j : Nat)
         (by simp only [initBytes_size]; omega)]
   rw [readBE32_natToBytesPadded_32 _ _ (by omega)]
   interval_cases j <;>
-    norm_num [Sha256.K, Challenge.BytecodeProof.Word.ofUInt32,
-      Challenge.BytecodeProof.Word.word_toNat_ofNat] <;> decide
+    norm_num [Sha256.K, Challenge.EvmProof.Word.ofUInt32,
+      Challenge.EvmProof.Word.word_toNat_ofNat] <;> decide
 
 private theorem initializedMemory_k_48_56 (j : Nat)
     (hlo : 48 ≤ j) (hhi : j < 56) :
     kWord initializedMemory j =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]! := by
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]! := by
   rw [initializedMemory_kWord_eq_table j (by omega)]
   unfold kWord
   change UInt256.shiftRight (MachineState.readWord kTableMemory (kOffset j))
@@ -377,13 +377,13 @@ private theorem initializedMemory_k_48_56 (j : Nat)
         (by simp only [initBytes_size]; omega)]
   rw [readBE32_natToBytesPadded_32 _ _ (by omega)]
   interval_cases j <;>
-    norm_num [Sha256.K, Challenge.BytecodeProof.Word.ofUInt32,
-      Challenge.BytecodeProof.Word.word_toNat_ofNat] <;> decide
+    norm_num [Sha256.K, Challenge.EvmProof.Word.ofUInt32,
+      Challenge.EvmProof.Word.word_toNat_ofNat] <;> decide
 
 private theorem initializedMemory_k_56_64 (j : Nat)
     (hlo : 56 ≤ j) (hhi : j < 64) :
     kWord initializedMemory j =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]! := by
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]! := by
   rw [initializedMemory_kWord_eq_table j (by omega)]
   unfold kWord
   change UInt256.shiftRight (MachineState.readWord kTableMemory (kOffset j))
@@ -395,12 +395,12 @@ private theorem initializedMemory_k_56_64 (j : Nat)
     (by omega) (by simp only [initBytes_size]; omega)]
   rw [readBE32_natToBytesPadded_32 _ _ (by omega)]
   interval_cases j <;>
-    norm_num [Sha256.K, Challenge.BytecodeProof.Word.ofUInt32,
-      Challenge.BytecodeProof.Word.word_toNat_ofNat] <;> decide
+    norm_num [Sha256.K, Challenge.EvmProof.Word.ofUInt32,
+      Challenge.EvmProof.Word.word_toNat_ofNat] <;> decide
 
 private theorem initializedMemory_k (j : Nat) (hj : j < 64) :
     kWord initializedMemory j =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]! := by
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]! := by
   by_cases h8 : j < 8
   · exact initializedMemory_k_0_8 j (by omega) h8
   by_cases h16 : j < 16
@@ -419,7 +419,7 @@ private theorem initializedMemory_k (j : Nat) (hj : j < 64) :
 
 private theorem initializedMemory_h_fin (i : Fin 8) :
     hWord initializedMemory i.val =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.H0[i.val]! := by
+      Challenge.EvmProof.Word.ofUInt32 Sha256.H0[i.val]! := by
   fin_cases i <;>
     norm_num [hWord, initializedMemory, Main.initializedState,
       Artifact.initStores, Main.applyInitStore, Main.initStart,
@@ -427,20 +427,20 @@ private theorem initializedMemory_h_fin (i : Fin 8) :
   all_goals
     repeat'
       first
-      | rw [Challenge.BytecodeProof.Memory.readWord_writeWord]
-      | rw [Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+      | rw [Challenge.EvmProof.Memory.readWord_writeWord]
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
           (by simp only [initBytes_size]; decide)]
     decide
 
 theorem initializedState_kWord (input : ByteArray) (j : Nat) (hj : j < 64) :
     kWord (Main.initializedState input).memory j =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]! := by
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]! := by
   rw [initializedState_memory]
   exact initializedMemory_k j hj
 
 theorem initializedState_hWord (input : ByteArray) (i : Nat) (hi : i < 8) :
     hWord (Main.initializedState input).memory i =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.H0[i]! := by
+      Challenge.EvmProof.Word.ofUInt32 Sha256.H0[i]! := by
   rw [initializedState_memory]
   exact initializedMemory_h_fin ⟨i, hi⟩
 

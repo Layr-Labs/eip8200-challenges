@@ -13,7 +13,7 @@ predicate `I`. SHA's padding, schedule, block, and round counters can each be
 the index of one such invariant.
 -/
 
-namespace Challenge.BytecodeProof
+namespace Challenge.EvmProof
 
 open EvmSemantics
 open EvmSemantics.EVM
@@ -147,4 +147,4 @@ theorem eval_execN {n : Nat} {s : State}
     Eval s (execN n s).toResult :=
   eval_of_steps (steps_execN hsteps) hdone
 
-end Challenge.BytecodeProof
+end Challenge.EvmProof

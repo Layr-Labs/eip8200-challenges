@@ -1,4 +1,4 @@
-import Challenge.BytecodeProof.Program
+import Challenge.EvmProof.Program
 import Challenge.Sha256.Reference.Bytecode
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -844,7 +844,7 @@ theorem assemble_referenceInstructions :
 
 /-- The reference bytes packaged through the submission-generic structural
 artifact interface. -/
-def referenceArtifact : Challenge.BytecodeProof.ProgramArtifact where
+def referenceArtifact : Challenge.EvmProof.ProgramArtifact where
   code := referenceBytecode
   instructions := referenceInstructions
   assembly_eq := assemble_referenceInstructions
@@ -859,7 +859,7 @@ theorem decodeAt_op_index (index : Nat) (o : Operation)
     (hopcode : Decode.opcodeOf (Instr.opByte o) = some o)
     (hplain : YulEvmCompiler.plainOp o) :
     Decode.decodeAt referenceBytecode (instructionPC index) = some (o, none) :=
-  Challenge.BytecodeProof.ProgramArtifact.decodeAt_op_index
+  Challenge.EvmProof.ProgramArtifact.decodeAt_op_index
     referenceArtifact index o hget hopcode hplain
 
 /-- Decode a PUSH instruction by its index in the structural artifact. -/
@@ -868,14 +868,14 @@ theorem decodeAt_push_index (index : Nat) (width : Fin 33) (value : UInt256)
     (hfit : value.toNat < 256 ^ width.val) :
     Decode.decodeAt referenceBytecode (instructionPC index) =
       some (.Push ⟨width⟩, some (value, width.val)) :=
-  Challenge.BytecodeProof.ProgramArtifact.decodeAt_push_index
+  Challenge.EvmProof.ProgramArtifact.decodeAt_push_index
     referenceArtifact index width value hget hfit
 
 /-- A JUMPDEST at an instruction index is accepted by the pinned EVM scan. -/
 theorem isValidJumpDest_index (index : Nat)
     (hget : referenceInstructions[index]? = some (.op .JUMPDEST)) :
     Decode.isValidJumpDest referenceBytecode (instructionPC index) = true :=
-  Challenge.BytecodeProof.ProgramArtifact.isValidJumpDest_index
+  Challenge.EvmProof.ProgramArtifact.isValidJumpDest_index
     referenceArtifact index hget
 
 /-- Structural locations for the compiler-generated entry trampolines. -/

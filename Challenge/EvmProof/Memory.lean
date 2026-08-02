@@ -1,4 +1,4 @@
-import Challenge.BytecodeProof.Bytecode
+import Challenge.EvmProof.Bytecode
 import EvmSemantics.Machine.MachineState
 import YulEvmCompiler.Instr
 set_option warningAsError true
@@ -9,7 +9,7 @@ Reusable bridges from the executable `ByteArray` memory helpers to list and
 pointwise views suitable for functional bytecode proofs.
 -/
 
-namespace Challenge.BytecodeProof.Memory
+namespace Challenge.EvmProof.Memory
 
 open EvmSemantics
 
@@ -148,7 +148,7 @@ theorem bytesToBigEndianNat_natToBytesPadded (n width : Nat)
     Data.Bytes.bytesToBigEndianNat (Data.Bytes.natToBytesPadded n width) = n := by
   rw [natToBytesPadded_eq_natToBE]
   unfold Data.Bytes.bytesToBigEndianNat
-  rw [Challenge.BytecodeProof.Bytecode.toList_eq_data]
+  rw [Challenge.EvmProof.Bytecode.toList_eq_data]
   change (YulEvmCompiler.natToBE n width).foldl
     (fun acc b => acc * 256 + b.toNat) 0 = n
   rw [foldl_natToBE width n 0 h]
@@ -159,7 +159,7 @@ theorem readPadded_toList (bs : ByteArray) (start n : Nat) :
       (bs.data.toList.drop (min start bs.size)).take
           (min (bs.size - min start bs.size) n) ++
         List.replicate (n - min (bs.size - min start bs.size) n) 0 := by
-  simp [MachineState.readPadded, Challenge.BytecodeProof.Bytecode.toList_eq_data,
+  simp [MachineState.readPadded, Challenge.EvmProof.Bytecode.toList_eq_data,
     ByteArray.data_extract, Array.toList_extract, List.extract_eq_take_drop]
 
 theorem readPadded_zero_size (bs : ByteArray) :
@@ -426,4 +426,4 @@ theorem readWord_writeWord (bs : ByteArray) (start : Nat) (value : UInt256) :
   · rw [pow_256_32]
     exact value.val.isLt
 
-end Challenge.BytecodeProof.Memory
+end Challenge.EvmProof.Memory

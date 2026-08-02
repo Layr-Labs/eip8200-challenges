@@ -55,12 +55,12 @@ private theorem readPadded_four_eq (bs : ByteArray) (off : Nat) :
       bs[off]?.getD 0, bs[off + 1]?.getD 0,
       bs[off + 2]?.getD 0, bs[off + 3]?.getD 0] := by
   apply ByteArray.ext_getElem
-  · rw [Challenge.BytecodeProof.Memory.readPadded_size]
+  · rw [Challenge.EvmProof.Memory.readPadded_size]
     rfl
   · intro i hi₁ hi₂
     have hi : i < 4 := by simpa using hi₁
-    rw [← Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hi₁,
-      Challenge.BytecodeProof.Memory.readPadded_getElem?_getD, if_pos hi]
+    rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hi₁,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD, if_pos hi]
     interval_cases i <;> rfl
 
 private theorem bytesToBigEndianNat_readPadded_four (bs : ByteArray)
@@ -72,7 +72,7 @@ private theorem bytesToBigEndianNat_readPadded_four (bs : ByteArray)
         (bs[off + 3]?.getD 0).toNat := by
   rw [readPadded_four_eq]
   simp [Data.Bytes.bytesToBigEndianNat,
-    Challenge.BytecodeProof.Bytecode.toList_eq_data]
+    Challenge.EvmProof.Bytecode.toList_eq_data]
 
 private theorem readBE32_eq_readPadded (bs : ByteArray) (off : Nat) :
     Sha256.readBE32 bs off = UInt32.ofNat
@@ -86,17 +86,17 @@ private theorem readPadded_thirtyTwo_split (bs : ByteArray) (off : Nat) :
   apply ByteArray.ext_getElem
   · simp
   · intro i hi₁ hi₂
-    rw [← Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hi₁,
-      ← Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hi₂,
-      Challenge.BytecodeProof.Memory.readPadded_getElem?_getD]
+    rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hi₁,
+      ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hi₂,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD]
     have hi : i < 32 := by simpa using hi₁
-    rw [if_pos hi, Challenge.BytecodeProof.Memory.getElem?_getD_append]
-    simp only [Challenge.BytecodeProof.Memory.readPadded_size]
+    rw [if_pos hi, Challenge.EvmProof.Memory.getElem?_getD_append]
+    simp only [Challenge.EvmProof.Memory.readPadded_size]
     by_cases h4 : i < 4
     · rw [if_pos h4,
-        Challenge.BytecodeProof.Memory.readPadded_getElem?_getD, if_pos h4]
+        Challenge.EvmProof.Memory.readPadded_getElem?_getD, if_pos h4]
     · rw [if_neg h4,
-        Challenge.BytecodeProof.Memory.readPadded_getElem?_getD, if_pos (by omega)]
+        Challenge.EvmProof.Memory.readPadded_getElem?_getD, if_pos (by omega)]
       congr 2
       omega
 
@@ -117,9 +117,9 @@ private theorem bytesToBigEndianNat_append (a b : ByteArray) :
       Data.Bytes.bytesToBigEndianNat a * 256 ^ b.size +
         Data.Bytes.bytesToBigEndianNat b := by
   unfold Data.Bytes.bytesToBigEndianNat
-  rw [Challenge.BytecodeProof.Bytecode.toList_eq_data,
-    Challenge.BytecodeProof.Bytecode.toList_eq_data,
-    Challenge.BytecodeProof.Bytecode.toList_eq_data]
+  rw [Challenge.EvmProof.Bytecode.toList_eq_data,
+    Challenge.EvmProof.Bytecode.toList_eq_data,
+    Challenge.EvmProof.Bytecode.toList_eq_data]
   rw [ByteArray.data_append, Array.toList_append, List.foldl_append,
     foldl_bytes]
   rfl
@@ -146,14 +146,14 @@ private theorem foldl_bytes_lt (xs : List UInt8) :
 private theorem bytesToBigEndianNat_lt (bs : ByteArray) :
     Data.Bytes.bytesToBigEndianNat bs < 256 ^ bs.size := by
   unfold Data.Bytes.bytesToBigEndianNat
-  rw [Challenge.BytecodeProof.Bytecode.toList_eq_data]
+  rw [Challenge.EvmProof.Bytecode.toList_eq_data]
   simpa using foldl_bytes_lt bs.data.toList
 
 /-- An EVM `MLOAD` followed by `SHR 224` is exactly the specification's
 four-byte big-endian reader, embedded in the low 32 bits of an EVM word. -/
 theorem shiftRight_readWord_224 (bs : ByteArray) (off : Nat) :
     UInt256.shiftRight (MachineState.readWord bs off) (UInt256.ofNat 224) =
-      Challenge.BytecodeProof.Word.ofUInt32 (Sha256.readBE32 bs off) := by
+      Challenge.EvmProof.Word.ofUInt32 (Sha256.readBE32 bs off) := by
   let first := Data.Bytes.bytesToBigEndianNat
     (MachineState.readPadded bs off 4)
   let rest := Data.Bytes.bytesToBigEndianNat
@@ -178,7 +178,7 @@ theorem shiftRight_readWord_224 (bs : ByteArray) (off : Nat) :
       omega
     omega
   unfold MachineState.readWord
-  rw [Challenge.BytecodeProof.Word.shiftRight_ofNat hvalue (by omega)]
+  rw [Challenge.EvmProof.Word.shiftRight_ofNat hvalue (by omega)]
   rw [hsplit, Nat.shiftRight_eq_div_pow]
   have hpow224 : (2 : Nat) ^ 224 = 256 ^ 28 := by norm_num
   rw [hpow224]
@@ -190,10 +190,10 @@ theorem shiftRight_readWord_224 (bs : ByteArray) (off : Nat) :
           Nat.mul_add_div (by positivity)]
       _ = first := by rw [Nat.div_eq_of_lt hrest, Nat.add_zero]
   rw [hquot, readBE32_eq_readPadded]
-  unfold Challenge.BytecodeProof.Word.ofUInt32
-  apply Challenge.BytecodeProof.Word.word_ext
-  rw [Challenge.BytecodeProof.Word.word_toNat_ofNat,
-    Challenge.BytecodeProof.Word.word_toNat_ofNat, UInt32.toNat_ofNat']
+  unfold Challenge.EvmProof.Word.ofUInt32
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat, UInt32.toNat_ofNat']
   have hpow32 : (2 : Nat) ^ 32 = 256 ^ 4 := by norm_num
   rw [hpow32, Nat.mod_eq_of_lt hfirst]
 
@@ -209,10 +209,10 @@ theorem readPadded_paddedMemory_shift (base input : ByteArray)
   apply ByteArray.ext_getElem
   · simp
   · intro i hi₁ hi₂
-    rw [← Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hi₁,
-      ← Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hi₂,
-      Challenge.BytecodeProof.Memory.readPadded_getElem?_getD,
-      Challenge.BytecodeProof.Memory.readPadded_getElem?_getD]
+    rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hi₁,
+      ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hi₂,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD]
     have hi : i < width := by simpa using hi₁
     rw [if_pos hi, if_pos hi]
     rw [MachineState.writeBytes_getElem?_getD]
@@ -223,9 +223,9 @@ theorem readPadded_paddedMemory_shift (base input : ByteArray)
         (Padding.paddedMessage input)[n]?.getD 0)
       omega
     · rw [if_neg (by omega)]
-      rw [Challenge.BytecodeProof.Memory.getElem?_getD_eq_zero_of_size_le base _
+      rw [Challenge.EvmProof.Memory.getElem?_getD_eq_zero_of_size_le base _
         (by omega)]
-      exact (Challenge.BytecodeProof.Memory.getElem?_getD_eq_zero_of_size_le
+      exact (Challenge.EvmProof.Memory.getElem?_getD_eq_zero_of_size_le
         (Padding.paddedMessage input) (off + i) (by
           rw [Padding.paddedMessage_size]
           omega)).symm
@@ -244,7 +244,7 @@ theorem shiftRight_readWord_paddedMemory_224 (base input : ByteArray)
         (MachineState.readWord (Padding.paddedMemory base input)
           (Padding.messageOffset + off))
         (UInt256.ofNat 224) =
-      Challenge.BytecodeProof.Word.ofUInt32
+      Challenge.EvmProof.Word.ofUInt32
         (Sha256.readBE32 (Padding.paddedMessage input) off) := by
   rw [readWord_paddedMemory_shift base input off hbase]
   exact shiftRight_readWord_224 (Padding.paddedMessage input) off
@@ -265,9 +265,9 @@ private theorem loadOffset_eq (input : ByteArray) (blockOff k : Nat)
       omega
     exact lt_trans hsmall (by norm_num)
   unfold Schedule.loadOffset
-  rw [Challenge.BytecodeProof.Word.shiftLeft_ofNat (by omega) (by omega) (by omega),
-    Challenge.BytecodeProof.Word.ofNat_add_ofNat (by omega),
-    Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by omega) (by omega),
+    Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
   · omega
   · omega
 

@@ -27,13 +27,13 @@ open EvmSemantics.EVM
 /-- The reference memory's eight chaining slots represent a SHA-256 state. -/
 def ChainRepresents (s : State) (H : Array UInt32) : Prop :=
   ∀ i, i < 8 →
-    Compression.hValue s i = Challenge.BytecodeProof.Word.ofUInt32 H[i]!
+    Compression.hValue s i = Challenge.EvmProof.Word.ofUInt32 H[i]!
 
 /-- The packed SHA round-constant table is intact. -/
 def KCorrect (s : State) : Prop :=
   ∀ j, j < 64 →
     Compression.kValue s j =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]!
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]!
 
 /-- Every padded block remains readable at its concrete bytecode address.
 This predicate is stable across the loop even though compression rewrites all
@@ -50,9 +50,9 @@ def Invariant (s : State) (input : ByteArray) (H : Array UInt32) : Prop :=
 private theorem hSlot_eq (i : Nat) (hi : i < 8) :
     Accessors.slotOffset 288 (UInt256.ofNat i) = 288 + 32 * i := by
   unfold Accessors.slotOffset
-  rw [Challenge.BytecodeProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
-  rw [Challenge.BytecodeProof.Word.ofNat_add_ofNat (by omega),
-    Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
   omega
 
 private theorem padBase_memory (input : ByteArray) :
@@ -76,7 +76,7 @@ private theorem padReturned_hValue (input : ByteArray) (hfit : CalldataFits inpu
       InitializationCorrect.hWord (Main.initializedState input).memory i := by
   rw [Compression.hValue, hSlot_eq i hi, PaddingTrace.padReturned_memory input hfit,
     Padding.paddedMemory_eq_write _ _ (padBase_size input)]
-  rw [Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint]
+  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
   · rw [padBase_memory]
     congr 2
   · left
@@ -86,9 +86,9 @@ private theorem padReturned_hValue (input : ByteArray) (hfit : CalldataFits inpu
 private theorem kOffset_eq (j : Nat) (hj : j < 64) :
     (UInt256.shiftLeft (UInt256.ofNat j) (UInt256.ofNat 2) +
       UInt256.ofNat 32).toNat = 32 + 4 * j := by
-  rw [Challenge.BytecodeProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega),
-    Challenge.BytecodeProof.Word.ofNat_add_ofNat (by omega),
-    Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega),
+    Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
   omega
 
 private theorem padReturned_kValue (input : ByteArray) (hfit : CalldataFits input)
@@ -99,7 +99,7 @@ private theorem padReturned_kValue (input : ByteArray) (hfit : CalldataFits inpu
   apply congrArg (fun w => UInt256.shiftRight w (UInt256.ofNat 224))
   rw [PaddingTrace.padReturned_memory input hfit,
     Padding.paddedMemory_eq_write _ _ (padBase_size input)]
-  rw [Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint]
+  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
   · rw [padBase_memory]
   · left
     rw [kOffset_eq j hj]
@@ -176,7 +176,7 @@ private theorem readWord_writeScratch (memory bytes : ByteArray)
     (hout : OutsideScratch addr) :
     MachineState.readWord (MachineState.writeBytes memory bytes writeStart) addr =
       MachineState.readWord memory addr := by
-  apply Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   rcases hout with hlow | hhigh
   · exact Or.inl (by omega)
   · exact Or.inr (by rw [hbytes]; omega)
@@ -260,7 +260,7 @@ private theorem readWord_copyHashState (s : State) (addr : Nat)
       MachineState.readWord s.memory addr := by
   unfold Compression.copyHashState
   apply readWord_writeScratch (writeSize := 256)
-  · exact Challenge.BytecodeProof.Memory.readPadded_size _ _ _
+  · exact Challenge.EvmProof.Memory.readPadded_size _ _ _
   · omega
   · norm_num [Padding.messageOffset]
   · exact hout
@@ -514,7 +514,7 @@ theorem or_ofNat_eq_add {a b : Nat}
     (hab : a ||| b < 2 ^ 256) (hdis : a + b = a ||| b) :
     UInt256.lor (UInt256.ofNat a) (UInt256.ofNat b) =
       UInt256.ofNat (a + b) := by
-  apply Challenge.BytecodeProof.Word.word_ext
+  apply Challenge.EvmProof.Word.word_ext
   unfold UInt256.lor UInt256.toNat
   simp only [Fin.lor]
   simp only [UInt256.ofNat, Fin.ofNat]
@@ -539,7 +539,7 @@ theorem concatWord {a b shift : Nat}
     omega
   have hmul : a * 2 ^ shift < 2 ^ 256 := by
     nlinarith [Nat.mul_lt_mul_of_pos_right ha (Nat.two_pow_pos shift)]
-  rw [Challenge.BytecodeProof.Word.shiftLeft_ofNat ha256 hshift hmul]
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat ha256 hshift hmul]
   apply or_ofNat_eq_add hmul (lt_trans hb (Nat.pow_lt_pow_right (by omega) hshift))
   · rw [← Nat.shiftLeft_eq, ← Nat.shiftLeft_add_eq_or_of_lt hb,
       Nat.shiftLeft_eq]
@@ -620,9 +620,9 @@ theorem natToBytesPadded_concat (a b hi lo : Nat) (hb : b < 256 ^ lo) :
     Data.Bytes.natToBytesPadded (a * 256 ^ lo + b) (hi + lo) =
       Data.Bytes.natToBytesPadded a hi ++
         Data.Bytes.natToBytesPadded b lo := by
-  rw [Challenge.BytecodeProof.Memory.natToBytesPadded_eq_natToBE,
-    Challenge.BytecodeProof.Memory.natToBytesPadded_eq_natToBE,
-    Challenge.BytecodeProof.Memory.natToBytesPadded_eq_natToBE,
+  rw [Challenge.EvmProof.Memory.natToBytesPadded_eq_natToBE,
+    Challenge.EvmProof.Memory.natToBytesPadded_eq_natToBE,
+    Challenge.EvmProof.Memory.natToBytesPadded_eq_natToBE,
     natToBE_concat a b hi lo hb]
   apply ByteArray.ext
   simp
@@ -664,9 +664,9 @@ theorem packedBytes_eq
         exact lt_of_lt_of_le x1.toNat_lt (by norm_num))]
 
 theorem shiftUInt32 (x : UInt32) (shift : Nat) (hs : shift ≤ 224) :
-    UInt256.shiftLeft (Challenge.BytecodeProof.Word.ofUInt32 x) (UInt256.ofNat shift) =
+    UInt256.shiftLeft (Challenge.EvmProof.Word.ofUInt32 x) (UInt256.ofNat shift) =
       UInt256.ofNat (x.toNat * 2 ^ shift) := by
-  apply Challenge.BytecodeProof.Word.shiftLeft_ofNat
+  apply Challenge.EvmProof.Word.shiftLeft_ofNat
   · exact Nat.lt_trans x.toNat_lt (by norm_num)
   · omega
   · calc
@@ -727,18 +727,18 @@ theorem directPackWord (x0 x1 x2 x3 x4 x5 x6 x7 : UInt32) :
     UInt256.lor
       (UInt256.lor
         (UInt256.lor
-          (UInt256.shiftLeft (Challenge.BytecodeProof.Word.ofUInt32 x0) (UInt256.ofNat 224))
-          (UInt256.shiftLeft (Challenge.BytecodeProof.Word.ofUInt32 x1) (UInt256.ofNat 192)))
+          (UInt256.shiftLeft (Challenge.EvmProof.Word.ofUInt32 x0) (UInt256.ofNat 224))
+          (UInt256.shiftLeft (Challenge.EvmProof.Word.ofUInt32 x1) (UInt256.ofNat 192)))
         (UInt256.lor
-          (UInt256.shiftLeft (Challenge.BytecodeProof.Word.ofUInt32 x2) (UInt256.ofNat 160))
-          (UInt256.shiftLeft (Challenge.BytecodeProof.Word.ofUInt32 x3) (UInt256.ofNat 128))))
+          (UInt256.shiftLeft (Challenge.EvmProof.Word.ofUInt32 x2) (UInt256.ofNat 160))
+          (UInt256.shiftLeft (Challenge.EvmProof.Word.ofUInt32 x3) (UInt256.ofNat 128))))
       (UInt256.lor
         (UInt256.lor
-          (UInt256.shiftLeft (Challenge.BytecodeProof.Word.ofUInt32 x4) (UInt256.ofNat 96))
-          (UInt256.shiftLeft (Challenge.BytecodeProof.Word.ofUInt32 x5) (UInt256.ofNat 64)))
+          (UInt256.shiftLeft (Challenge.EvmProof.Word.ofUInt32 x4) (UInt256.ofNat 96))
+          (UInt256.shiftLeft (Challenge.EvmProof.Word.ofUInt32 x5) (UInt256.ofNat 64)))
         (UInt256.lor
-          (UInt256.shiftLeft (Challenge.BytecodeProof.Word.ofUInt32 x6) (UInt256.ofNat 32))
-          (Challenge.BytecodeProof.Word.ofUInt32 x7))) =
+          (UInt256.shiftLeft (Challenge.EvmProof.Word.ofUInt32 x6) (UInt256.ofNat 32))
+          (Challenge.EvmProof.Word.ofUInt32 x7))) =
     UInt256.ofNat (packNat x0 x1 x2 x3 x4 x5 x6 x7) := by
   let n0 := x0.toNat
   let n1 := x1.toNat
@@ -852,13 +852,13 @@ open EvmSemantics.EVM
 
 theorem digestBytes_eq_emitDigest (s : State) (H : Array UInt32)
     (h : ∀ i, i < 8 →
-      Output.hWord s i = Challenge.BytecodeProof.Word.ofUInt32 H[i]!) :
+      Output.hWord s i = Challenge.EvmProof.Word.ofUInt32 H[i]!) :
     Output.digestBytes s = SpecBridge.emitDigest H := by
   unfold Output.digestBytes Output.digestWord Output.shifted1 Output.pair23
     Output.shifted3 Output.lowHalf Output.pair45 Output.shifted5 Output.pair67
   rw [h 0 (by omega), h 1 (by omega), h 2 (by omega), h 3 (by omega),
     h 4 (by omega), h 5 (by omega), h 6 (by omega), h 7 (by omega)]
-  rw [directPackWord, Challenge.BytecodeProof.Word.word_toNat_ofNat,
+  rw [directPackWord, Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt (packNat_lt H[0]! H[1]! H[2]! H[3]!
       H[4]! H[5]! H[6]! H[7]!), packedBytes_eq]
   norm_num [SpecBridge.emitDigest, List.range, List.range.loop]

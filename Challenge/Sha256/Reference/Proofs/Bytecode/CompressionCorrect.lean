@@ -43,26 +43,26 @@ def round (x : Working) (k w : UInt32) : Working :=
 
 /-- The bytecode's working-memory region represents `x`. -/
 def Represents (s : State) (x : Working) : Prop :=
-  Compression.hValue s 0 = Challenge.BytecodeProof.Word.ofUInt32 x.a ∧
-  Compression.hValue s 1 = Challenge.BytecodeProof.Word.ofUInt32 x.b ∧
-  Compression.hValue s 2 = Challenge.BytecodeProof.Word.ofUInt32 x.c ∧
-  Compression.hValue s 3 = Challenge.BytecodeProof.Word.ofUInt32 x.d ∧
-  Compression.hValue s 4 = Challenge.BytecodeProof.Word.ofUInt32 x.e ∧
-  Compression.hValue s 5 = Challenge.BytecodeProof.Word.ofUInt32 x.f ∧
-  Compression.hValue s 6 = Challenge.BytecodeProof.Word.ofUInt32 x.g ∧
-  Compression.hValue s 7 = Challenge.BytecodeProof.Word.ofUInt32 x.h
+  Compression.hValue s 0 = Challenge.EvmProof.Word.ofUInt32 x.a ∧
+  Compression.hValue s 1 = Challenge.EvmProof.Word.ofUInt32 x.b ∧
+  Compression.hValue s 2 = Challenge.EvmProof.Word.ofUInt32 x.c ∧
+  Compression.hValue s 3 = Challenge.EvmProof.Word.ofUInt32 x.d ∧
+  Compression.hValue s 4 = Challenge.EvmProof.Word.ofUInt32 x.e ∧
+  Compression.hValue s 5 = Challenge.EvmProof.Word.ofUInt32 x.f ∧
+  Compression.hValue s 6 = Challenge.EvmProof.Word.ofUInt32 x.g ∧
+  Compression.hValue s 7 = Challenge.EvmProof.Word.ofUInt32 x.h
 
 private theorem mask32_add_distrib (x y : UInt256) :
-    Challenge.BytecodeProof.Word.mask32 (x + y) =
-      Challenge.BytecodeProof.Word.mask32
-        (Challenge.BytecodeProof.Word.mask32 x + Challenge.BytecodeProof.Word.mask32 y) := by
-  rw [Challenge.BytecodeProof.Word.mask32_eq_ofUInt32,
-    Challenge.BytecodeProof.Word.mask32_eq_ofUInt32 x,
-    Challenge.BytecodeProof.Word.mask32_eq_ofUInt32 y,
-    Challenge.BytecodeProof.Word.mask32_add]
+    Challenge.EvmProof.Word.mask32 (x + y) =
+      Challenge.EvmProof.Word.mask32
+        (Challenge.EvmProof.Word.mask32 x + Challenge.EvmProof.Word.mask32 y) := by
+  rw [Challenge.EvmProof.Word.mask32_eq_ofUInt32,
+    Challenge.EvmProof.Word.mask32_eq_ofUInt32 x,
+    Challenge.EvmProof.Word.mask32_eq_ofUInt32 y,
+    Challenge.EvmProof.Word.mask32_add]
   congr 1
   apply UInt32.toNat_inj.mp
-  simp only [Challenge.BytecodeProof.Word.toUInt32_toNat, UInt32.toNat_add]
+  simp only [Challenge.EvmProof.Word.toUInt32_toNat, UInt32.toNat_add]
   change ((x.val + y.val).val % 2 ^ 32) =
     (x.toNat % 2 ^ 32 + y.toNat % 2 ^ 32) % 2 ^ 32
   rw [Fin.val_add]
@@ -71,10 +71,10 @@ private theorem mask32_add_distrib (x y : UInt256) :
     Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega)), Nat.add_mod]
 
 private theorem toUInt32_add (x y : UInt256) :
-    Challenge.BytecodeProof.Word.toUInt32 (x + y) =
-      Challenge.BytecodeProof.Word.toUInt32 x + Challenge.BytecodeProof.Word.toUInt32 y := by
+    Challenge.EvmProof.Word.toUInt32 (x + y) =
+      Challenge.EvmProof.Word.toUInt32 x + Challenge.EvmProof.Word.toUInt32 y := by
   apply UInt32.toNat_inj.mp
-  simp only [Challenge.BytecodeProof.Word.toUInt32_toNat, UInt32.toNat_add]
+  simp only [Challenge.EvmProof.Word.toUInt32_toNat, UInt32.toNat_add]
   change ((x.val + y.val).val % 2 ^ 32) =
     (x.toNat % 2 ^ 32 + y.toNat % 2 ^ 32) % 2 ^ 32
   rw [Fin.val_add]
@@ -84,33 +84,33 @@ private theorem toUInt32_add (x y : UInt256) :
 
 theorem t1_eq (s : State) (j : Nat) (x : Working) (k w : UInt32)
     (hx : Represents s x)
-    (hk : Compression.kValue s j = Challenge.BytecodeProof.Word.ofUInt32 k)
-    (hw : Compression.wValue s j = Challenge.BytecodeProof.Word.ofUInt32 w) :
-    Compression.t1 s j = Challenge.BytecodeProof.Word.ofUInt32
+    (hk : Compression.kValue s j = Challenge.EvmProof.Word.ofUInt32 k)
+    (hw : Compression.wValue s j = Challenge.EvmProof.Word.ofUInt32 w) :
+    Compression.t1 s j = Challenge.EvmProof.Word.ofUInt32
       (x.h + Sha256.bigSigma1 x.e + Sha256.Ch x.e x.f x.g + k + w) := by
   rcases hx with ⟨ha, hb, hc, hd, he, hf, hg, hh⟩
   unfold Compression.t1 Compression.chPlusK
   rw [he, hf, hg, hh, hk, hw, Word.evmBigSigma1_ofUInt32,
     Word.evmCh_ofUInt32]
-  rw [Challenge.BytecodeProof.Word.mask32_eq_ofUInt32]
+  rw [Challenge.EvmProof.Word.mask32_eq_ofUInt32]
   congr 1
-  simp only [toUInt32_add, Challenge.BytecodeProof.Word.toUInt32_ofUInt32]
+  simp only [toUInt32_add, Challenge.EvmProof.Word.toUInt32_ofUInt32]
   ac_rfl
 
 theorem t2_eq (s : State) (x : Working) (hx : Represents s x) :
-    Compression.t2 s = Challenge.BytecodeProof.Word.ofUInt32
+    Compression.t2 s = Challenge.EvmProof.Word.ofUInt32
       (Sha256.bigSigma0 x.a + Sha256.Maj x.a x.b x.c) := by
   rcases hx with ⟨ha, hb, hc, hd, he, hf, hg, hh⟩
   unfold Compression.t2
   rw [ha, hb, hc, Word.evmBigSigma0_ofUInt32, Word.evmMaj_ofUInt32,
-    Challenge.BytecodeProof.Word.mask32_add]
+    Challenge.EvmProof.Word.mask32_add]
 
 private theorem hSlot_eq (i : Nat) (hi : i < 8) :
     Accessors.slotOffset 288 (UInt256.ofNat i) = 288 + i * 32 := by
   unfold Accessors.slotOffset
-  rw [Challenge.BytecodeProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
-  rw [Challenge.BytecodeProof.Word.ofNat_add_ofNat (by omega),
-    Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
   omega
 
 private def writeH (memory : ByteArray) (i : Nat) (value : UInt256) : ByteArray :=
@@ -120,13 +120,13 @@ private def writeH (memory : ByteArray) (i : Nat) (value : UInt256) : ByteArray 
 private theorem readH_writeH_same (memory : ByteArray) (i : Nat)
     (value : UInt256) :
     MachineState.readWord (writeH memory i value) (288 + i * 32) = value := by
-  exact Challenge.BytecodeProof.Memory.readWord_writeWord memory (288 + i * 32) value
+  exact Challenge.EvmProof.Memory.readWord_writeWord memory (288 + i * 32) value
 
 private theorem readH_writeH_ne (memory : ByteArray) (read write : Nat)
     (value : UInt256) (hne : read ≠ write) :
     MachineState.readWord (writeH memory write value) (288 + read * 32) =
       MachineState.readWord memory (288 + read * 32) := by
-  apply Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   have hsize : (Data.Bytes.natToBytesPadded value.toNat 32).size = 32 := by
     simp [Data.Bytes.natToBytesPadded, ByteArray.size]
   rw [hsize]
@@ -224,7 +224,7 @@ private theorem afterSecondIteration_memory (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (j : Nat) :
     (Compression.afterSecondIteration s msgOff returnDest rest j).memory =
       writeH (Compression.afterStoreH1 s msgOff returnDest rest j).memory 0
-        (Challenge.BytecodeProof.Word.mask32
+        (Challenge.EvmProof.Word.mask32
           (Compression.t1 s j + Compression.t2 s)) := by
   rfl
 
@@ -234,8 +234,8 @@ theorem afterSecondIteration_represents (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (j : Nat)
     (x : Working) (k w : UInt32)
     (hx : Represents s x)
-    (hk : Compression.kValue s j = Challenge.BytecodeProof.Word.ofUInt32 k)
-    (hw : Compression.wValue s j = Challenge.BytecodeProof.Word.ofUInt32 w) :
+    (hk : Compression.kValue s j = Challenge.EvmProof.Word.ofUInt32 k)
+    (hw : Compression.wValue s j = Challenge.EvmProof.Word.ofUInt32 w) :
     Represents (Compression.afterSecondIteration s msgOff returnDest rest j)
       (round x k w) := by
   let qt := Compression.afterT2 s msgOff returnDest rest j
@@ -268,7 +268,7 @@ theorem afterSecondIteration_represents (s : State)
   have hm1 : q1.memory = writeH q2.memory 1 (Compression.hValue s 0) := by
     simpa [q1, q2] using afterStoreH1_memory s msgOff returnDest rest j
   have hm0 : q0.memory = writeH q1.memory 0
-      (Challenge.BytecodeProof.Word.mask32
+      (Challenge.EvmProof.Word.mask32
         (Compression.t1 s j + Compression.t2 s)) := by
     simpa [q0, q1] using afterSecondIteration_memory s msgOff returnDest rest j
   have p7 (i : Nat) (hi : i < 8) (hne : i ≠ 7) :
@@ -321,20 +321,20 @@ theorem afterSecondIteration_represents (s : State)
   have ht2 := t2_eq s x hx
   let T1 := x.h + Sha256.bigSigma1 x.e + Sha256.Ch x.e x.f x.g + k + w
   let T2 := Sha256.bigSigma0 x.a + Sha256.Maj x.a x.b x.c
-  have hnewA : Challenge.BytecodeProof.Word.mask32
+  have hnewA : Challenge.EvmProof.Word.mask32
       (Compression.t1 s j + Compression.t2 s) =
-      Challenge.BytecodeProof.Word.ofUInt32 (T1 + T2) := by
-    rw [ht1, ht2, Challenge.BytecodeProof.Word.mask32_add]
+      Challenge.EvmProof.Word.ofUInt32 (T1 + T2) := by
+    rw [ht1, ht2, Challenge.EvmProof.Word.mask32_add]
   have hnewE : Compression.newH4 s msgOff returnDest rest j =
-      Challenge.BytecodeProof.Word.ofUInt32 (x.d + T1) := by
+      Challenge.EvmProof.Word.ofUInt32 (x.d + T1) := by
     unfold Compression.newH4
-    change Challenge.BytecodeProof.Word.mask32
+    change Challenge.EvmProof.Word.mask32
       (Compression.hValue q5 3 + Compression.t1 s j) = _
     rw [hq5d]
     rcases hx with ⟨ha, hb, hc, hd, he, hf, hg, hh⟩
-    rw [hd, ht1, Challenge.BytecodeProof.Word.mask32_add]
+    rw [hd, ht1, Challenge.EvmProof.Word.mask32_add]
   have hs4 : Compression.hValue q4 4 =
-      Challenge.BytecodeProof.Word.ofUInt32 (x.d + T1) := by
+      Challenge.EvmProof.Word.ofUInt32 (x.d + T1) := by
     rw [hValue_of_write_same q5 q4 4 (by decide) _ hm4, hnewE]
   rcases hx with ⟨ha, hb, hc, hd, he, hf, hg, hh⟩
   unfold Represents round
@@ -385,10 +385,10 @@ def RoundInputsCorrect (s : State) (msgOff returnDest : UInt256)
   ∀ n, n < 64 →
     Compression.kValue
         (Compression.roundLoopState s msgOff returnDest rest n) n =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[n]! ∧
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[n]! ∧
     Compression.wValue
         (Compression.roundLoopState s msgOff returnDest rest n) n =
-      Challenge.BytecodeProof.Word.ofUInt32
+      Challenge.EvmProof.Word.ofUInt32
         (ScheduleCorrect.scheduleWord padded blockOff n)
 
 theorem roundLoopState_represents (s : State)
@@ -419,12 +419,12 @@ private theorem wValue_of_writeH (before after : State) (read write : Nat)
   have hoff : Accessors.slotOffset 800 (UInt256.ofNat read) =
       800 + read * 32 := by
     unfold Accessors.slotOffset
-    rw [Challenge.BytecodeProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
-    rw [Challenge.BytecodeProof.Word.ofNat_add_ofNat (by omega),
-      Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
+    rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
     omega
   rw [hmemory, hoff]
-  apply Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   right
   simp [Data.Bytes.natToBytesPadded, ByteArray.size]
   omega
@@ -432,9 +432,9 @@ private theorem wValue_of_writeH (before after : State) (read write : Nat)
 private theorem kOffset_eq (j : Nat) (hj : j < 64) :
     (UInt256.shiftLeft (UInt256.ofNat j) (UInt256.ofNat 2) +
       UInt256.ofNat 32).toNat = 32 + 4 * j := by
-  rw [Challenge.BytecodeProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
-  rw [Challenge.BytecodeProof.Word.ofNat_add_ofNat (by omega),
-    Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
   omega
 
 private theorem readBE32_writeH (memory : ByteArray) (j write : Nat)
@@ -460,8 +460,8 @@ private theorem readBE32_writeH (memory : ByteArray) (j write : Nat)
       (Data.Bytes.natToBytesPadded value.toNat 32) (288 + write * 32) idx
     rw [if_neg (by simp only [hbytes]; omega)] at hg
     change (writeH memory write value)[idx]?.getD 0 = memory[idx]?.getD 0 at hg
-    rw [Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hw,
-      Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hm] at hg
+    rw [Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hw,
+      Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hm] at hg
     exact hg
   · by_cases hw : idx < (writeH memory write value).size
     · rw [dif_pos hw, dif_neg hm]
@@ -469,8 +469,8 @@ private theorem readBE32_writeH (memory : ByteArray) (j write : Nat)
         (Data.Bytes.natToBytesPadded value.toNat 32) (288 + write * 32) idx
       rw [if_neg (by simp only [hbytes]; omega)] at hg
       change (writeH memory write value)[idx]?.getD 0 = memory[idx]?.getD 0 at hg
-      rw [Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hw,
-        Challenge.BytecodeProof.Memory.getElem?_getD_eq_zero_of_size_le _ _
+      rw [Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hw,
+        Challenge.EvmProof.Memory.getElem?_getD_eq_zero_of_size_le _ _
           (by omega)] at hg
       simpa using congrArg UInt8.toUInt32 hg
     · rw [dif_neg hw, dif_neg hm]
@@ -524,7 +524,7 @@ theorem afterSecondIteration_preserves_inputs (s : State)
   have hm1 : q1.memory = writeH q2.memory 1 (Compression.hValue s 0) := by
     simpa [q1, q2] using afterStoreH1_memory s msgOff returnDest rest j
   have hm0 : q0.memory = writeH q1.memory 0
-      (Challenge.BytecodeProof.Word.mask32
+      (Challenge.EvmProof.Word.mask32
         (Compression.t1 s j + Compression.t2 s)) := by
     simpa [q0, q1] using afterSecondIteration_memory s msgOff returnDest rest j
   constructor
@@ -575,9 +575,9 @@ theorem roundInputsCorrect_of_entry (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256)
     (padded : ByteArray) (blockOff : Nat)
     (hk : ∀ n, n < 64 → Compression.kValue s n =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[n]!)
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[n]!)
     (hw : ∀ n, n < 64 → Compression.wValue s n =
-      Challenge.BytecodeProof.Word.ofUInt32
+      Challenge.EvmProof.Word.ofUInt32
         (ScheduleCorrect.scheduleWord padded blockOff n)) :
     RoundInputsCorrect s msgOff returnDest rest padded blockOff := by
   intro n hn
@@ -596,7 +596,7 @@ def Working.get (x : Working) : Nat → UInt32
 
 theorem represents_get (s : State) (x : Working) (hx : Represents s x)
     (i : Nat) (hi : i < 8) :
-    Compression.hValue s i = Challenge.BytecodeProof.Word.ofUInt32 (x.get i) := by
+    Compression.hValue s i = Challenge.EvmProof.Word.ofUInt32 (x.get i) := by
   rcases hx with ⟨ha, hb, hc, hd, he, hf, hg, hh⟩
   interval_cases i
   · exact ha
@@ -611,14 +611,14 @@ theorem represents_get (s : State) (x : Working) (hx : Represents s x)
 /-- Saved pre-round hash words used by the feed-forward loop. -/
 def SavedRepresents (s : State) (H : Array UInt32) : Prop :=
   ∀ i, i < 8 → Compression.savedValue s i =
-    Challenge.BytecodeProof.Word.ofUInt32 H[i]!
+    Challenge.EvmProof.Word.ofUInt32 H[i]!
 
 private theorem savedOffset_eq (i : Nat) (hi : i < 8) :
     Compression.savedOffset i = 544 + i * 32 := by
   unfold Compression.savedOffset
-  rw [Challenge.BytecodeProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
-  rw [Challenge.BytecodeProof.Word.ofNat_add_ofNat (by omega),
-    Challenge.BytecodeProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
   omega
 
 private theorem savedValue_of_writeH (before after : State) (read write : Nat)
@@ -627,7 +627,7 @@ private theorem savedValue_of_writeH (before after : State) (read write : Nat)
     Compression.savedValue after read = Compression.savedValue before read := by
   unfold Compression.savedValue
   rw [hmemory, savedOffset_eq read hread]
-  apply Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   right
   simp [Data.Bytes.natToBytesPadded, ByteArray.size]
   omega
@@ -646,22 +646,22 @@ private theorem afterFoldIteration_memory (s : State)
 theorem foldedValue_eq (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (H : Array UInt32) (x : Working) (i : Nat)
     (hx : Compression.hValue s i =
-      Challenge.BytecodeProof.Word.ofUInt32 (x.get i))
+      Challenge.EvmProof.Word.ofUInt32 (x.get i))
     (hH : Compression.savedValue s i =
-      Challenge.BytecodeProof.Word.ofUInt32 H[i]!) :
+      Challenge.EvmProof.Word.ofUInt32 H[i]!) :
     Compression.foldedValue s msgOff returnDest rest i =
-      Challenge.BytecodeProof.Word.ofUInt32 (H[i]! + x.get i) := by
+      Challenge.EvmProof.Word.ofUInt32 (H[i]! + x.get i) := by
   unfold Compression.foldedValue Compression.loadedSaved
-  change Challenge.BytecodeProof.Word.mask32
+  change Challenge.EvmProof.Word.mask32
     (Compression.hValue s i + Compression.savedValue s i) = _
-  rw [hx, hH, Challenge.BytecodeProof.Word.mask32_add]
+  rw [hx, hH, Challenge.EvmProof.Word.mask32_add]
   congr 1
   exact UInt32.add_comm _ _
 
 /-- Pointwise invariant after `n` feed-forward stores. -/
 def FoldCorrect (s : State) (H : Array UInt32) (x : Working) (n : Nat) : Prop :=
   (∀ i, i < 8 → Compression.hValue s i =
-    Challenge.BytecodeProof.Word.ofUInt32
+    Challenge.EvmProof.Word.ofUInt32
       (if i < n then H[i]! + x.get i else x.get i)) ∧
   SavedRepresents s H
 
@@ -690,7 +690,7 @@ theorem foldLoopState_correct (s : State) (msgOff returnDest : UInt256)
         simpa [q, q'] using afterFoldIteration_memory q msgOff returnDest rest n
           (by omega)
       have hv : Compression.foldedValue q msgOff returnDest rest n =
-          Challenge.BytecodeProof.Word.ofUInt32 (H[n]! + x.get n) := by
+          Challenge.EvmProof.Word.ofUInt32 (H[n]! + x.get n) := by
         apply foldedValue_eq q msgOff returnDest rest H x n
         · simpa using hprev.1 n (by omega)
         · exact hprev.2 n (by omega)
@@ -747,7 +747,7 @@ theorem afterSecondIteration_preserves_saved (s : State)
   have hm1 : q1.memory = writeH q2.memory 1 (Compression.hValue s 0) := by
     simpa [q1, q2] using afterStoreH1_memory s msgOff returnDest rest j
   have hm0 : q0.memory = writeH q1.memory 0
-      (Challenge.BytecodeProof.Word.mask32
+      (Challenge.EvmProof.Word.mask32
         (Compression.t1 s j + Compression.t2 s)) := by
     simpa [q0, q1] using afterSecondIteration_memory s msgOff returnDest rest j
   rw [show Compression.afterSecondIteration s msgOff returnDest rest j = q0 by rfl]
@@ -796,7 +796,7 @@ theorem compressionCore_words (prepared : State)
           (Compression.foldLoopState
             (Compression.roundLoopState prepared msgOff returnDest rest 64)
             msgOff returnDest rest 8) i =
-        Challenge.BytecodeProof.Word.ofUInt32
+        Challenge.EvmProof.Word.ofUInt32
           (H[i]! + (rounds initial padded blockOff 64).get i) := by
   intro i hi
   let afterRounds := Compression.roundLoopState prepared msgOff returnDest rest 64
@@ -1029,7 +1029,7 @@ private theorem hValue_after_first (s : State) (msgOff returnDest : UInt256)
       Compression.hValue s i := by
   unfold Compression.hValue
   rw [ScheduleCorrect.afterFirstIteration_memory]
-  apply Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   left
   rw [hSlot_eq i hi, ScheduleCorrect.scheduleSlot_eq j (by omega)]
   omega
@@ -1050,7 +1050,7 @@ private theorem hValue_after_second (s : State) (msgOff returnDest : UInt256)
       Compression.hValue s i := by
   unfold Compression.hValue
   rw [ScheduleCorrect.afterSecondIteration_memory]
-  apply Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   left
   rw [hSlot_eq i hi, ScheduleCorrect.scheduleSlot_eq j hj]
   omega
@@ -1090,10 +1090,10 @@ private theorem readPadded_write_inside (memory bytes : ByteArray)
   · simp
   · intro i hleft hright
     have hi : i < n := by simpa using hleft
-    rw [← Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hleft,
-      ← Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hright,
-      Challenge.BytecodeProof.Memory.readPadded_getElem?_getD,
-      Challenge.BytecodeProof.Memory.readPadded_getElem?_getD,
+    rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hleft,
+      ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hright,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD,
       if_pos hi, if_pos hi]
     rw [MachineState.writeBytes_getElem?_getD, if_pos]
     · congr 2
@@ -1108,13 +1108,13 @@ private theorem readPadded_readPadded (memory : ByteArray)
   · simp
   · intro i hleft hright
     have hi : i < n := by simpa using hleft
-    rw [← Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hleft,
-      ← Challenge.BytecodeProof.Memory.getD0_eq_getElem _ _ hright,
-      Challenge.BytecodeProof.Memory.readPadded_getElem?_getD,
-      Challenge.BytecodeProof.Memory.readPadded_getElem?_getD,
+    rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hleft,
+      ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hright,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD,
       if_pos hi]
     rw [if_pos (by omega)]
-    rw [Challenge.BytecodeProof.Memory.readPadded_getElem?_getD]
+    rw [Challenge.EvmProof.Memory.readPadded_getElem?_getD]
     rw [if_pos hi]
     congr 2
     omega
@@ -1123,7 +1123,7 @@ theorem copyHashState_hValue (s : State) (i : Nat) (hi : i < 8) :
     Compression.hValue (Compression.copyHashState s) i =
       Compression.hValue s i := by
   unfold Compression.hValue Compression.copyHashState
-  apply Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   left
   rw [hSlot_eq i hi]
   omega
@@ -1153,7 +1153,7 @@ private theorem kValue_after_scheduleWrite (before after : State)
       readBE32_writeH before.memory j write value hj]
   · rw [hm]
     congr 1
-    apply Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint
+    apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
     left
     omega
 
@@ -1222,7 +1222,7 @@ theorem copyHashState_kValue (s : State) (k : Nat) (hk : k < 64) :
   rw [show (Compression.copyHashState s).memory =
       MachineState.writeBytes s.memory
         (MachineState.readPadded s.memory 288 256) 544 from rfl]
-  rw [Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint]
+  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
   left
   omega
 
@@ -1230,12 +1230,12 @@ theorem copyHashState_wValue (s : State) (j : Nat) (hj : j < 64) :
     Compression.wValue (Compression.copyHashState s) j =
       Compression.wValue s j := by
   unfold Compression.wValue Compression.copyHashState
-  apply Challenge.BytecodeProof.Memory.readWord_writeBytes_disjoint
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   right
   change 544 + (MachineState.readPadded s.memory 288 256).size ≤
     Schedule.scheduleSlot j
   rw [ScheduleCorrect.scheduleSlot_eq j hj,
-    Challenge.BytecodeProof.Memory.readPadded_size]
+    Challenge.EvmProof.Memory.readPadded_size]
   simp
 
 private theorem afterFoldIteration_kValue (s : State)
@@ -1297,15 +1297,15 @@ theorem compressResult_eq_compressBlock (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256)
     (padded : ByteArray) (blockOff : Nat) (H : Array UInt32)
     (hH : ∀ i, i < 8 → Compression.hValue s i =
-      Challenge.BytecodeProof.Word.ofUInt32 H[i]!)
+      Challenge.EvmProof.Word.ofUInt32 H[i]!)
     (hK : ∀ j, j < 64 → Compression.kValue s j =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]!)
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]!)
     (hW : ScheduleCorrect.SlotsCorrect
       (Compression.afterSchedule s msgOff returnDest rest)
       padded blockOff 64) :
     ∀ i, i < 8 →
       Compression.hValue (Compression.compressResult s msgOff returnDest rest) i =
-        Challenge.BytecodeProof.Word.ofUInt32
+        Challenge.EvmProof.Word.ofUInt32
           (Sha256.compressBlock H padded blockOff)[i]! := by
   intro i hi
   let q := Compression.afterSchedule s msgOff returnDest rest
@@ -1329,7 +1329,7 @@ theorem compressResult_eq_compressBlock (s : State)
       (returnDest := returnDest) (rest := rest) (i := k) (hi := hk)]
     exact hH k hk
   have hpK : ∀ j, j < 64 → Compression.kValue prepared j =
-      Challenge.BytecodeProof.Word.ofUInt32 Sha256.K[j]! := by
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[j]! := by
     intro j hj
     rw [copyHashState_kValue _ j hj]
     change Compression.kValue
@@ -1338,7 +1338,7 @@ theorem compressResult_eq_compressBlock (s : State)
       (returnDest := returnDest) (rest := rest) (k := j) (hk := hj)]
     exact hK j hj
   have hpW : ∀ j, j < 64 → Compression.wValue prepared j =
-      Challenge.BytecodeProof.Word.ofUInt32
+      Challenge.EvmProof.Word.ofUInt32
         (ScheduleCorrect.scheduleWord padded blockOff j) := by
     intro j hj
     rw [copyHashState_wValue _ j hj]
