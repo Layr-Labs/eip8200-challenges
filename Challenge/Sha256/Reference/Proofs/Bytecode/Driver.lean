@@ -442,10 +442,10 @@ theorem gasSteps_exit (input : ByteArray) (hfit : CalldataFits input) :
   · simp
   · simpa [State.fork] using PaddingTrace.padReturned_noPrecompile input
 
-/-- Complete direct execution of the reference artifact, from the canonical
-fresh call frame through padding, every message block, and `RETURN`. -/
+/-- Complete direct execution of the reference artifact from the fixed initial
+state through padding, every message block, and `RETURN`. -/
 theorem gasSteps_reference (input : ByteArray) (hfit : CalldataFits input) :
-    Challenge.EvmProof.GasSteps (frame referenceBytecode input 0)
+    Challenge.EvmProof.GasSteps (initialState referenceBytecode input 0)
       (Output.outputResult (blockLoopState input (blockCount input))
         [Padding.paddedWord input]) := by
   let final := blockLoopState input (blockCount input)

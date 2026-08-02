@@ -1,9 +1,9 @@
-import Challenge.Sha256.Reference.Proofs.Yul
 import Challenge.Sha256.Reference.Proofs.Bytecode.ReferenceCorrect
 
 /-!
-# Correctness proofs for the bundled reference
+# Correctness proof for the bundled reference
 
-The Yul/compiler proof and the complete direct-bytecode proof.  These
-are implementation-specific and are not part of the challenge specification.
+The complete direct-bytecode proof. It proves the frozen bytes directly in the
+EVM semantics and does not require a second correctness proof for the Yul source.
+This layer is implementation-specific and is not part of the challenge specification.
 -/

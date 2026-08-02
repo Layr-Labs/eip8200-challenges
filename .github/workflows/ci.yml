@@ -73,6 +73,15 @@ jobs:
           fi
           lake env lean Checks.lean
 
+      # Candidate PRs follow a fixed module/declaration convention. This gate
+      # checks the theorem type, bytecode/hex identity, transitive axiom set,
+      # and executable vectors without trusting contributor-written checks.
+      # Its negative control proves that a type-correct fake axiom is rejected.
+      - name: Verify SHA-256 candidate submissions
+        run: |
+          scripts/check-sha256-submissions.sh --self-test
+          scripts/check-sha256-submissions.sh
+
       # Keep the statement auditable in isolation. Proof support and the
       # bundled implementation may depend on the spec, never the reverse.
       - name: Verify SHA specification boundary
@@ -99,8 +108,8 @@ jobs:
 
       # Tier 1: the reference implementation must still compile through the
       # verified compiler and return exactly EvmSemantics.Crypto.Sha256.hash on
-      # every FIPS and padding-boundary vector, in a clean frame and a dirty
-      # one. This also pins the reference's gas in the job log.
+      # every FIPS and padding-boundary vector, from clean and dirty initial
+      # states. This also pins the reference's gas in the job log.
       - name: Tier 1 — score the reference implementation
         run: |
           lake build sha256challenge

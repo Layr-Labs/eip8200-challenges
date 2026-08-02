@@ -20,7 +20,7 @@ open EvmSemantics.EVM
 def DirectProof (code : ByteArray) : Prop :=
   Challenge.EvmProof.EventuallyEvaluates
     (Input := { calldata : ByteArray // CalldataFits calldata })
-    (fun calldata gas => frame code calldata.1 gas)
+    (fun calldata gas => initialState code calldata.1 gas)
     (fun calldata => .returned (spec calldata.1))
 
 /-- A direct raw-bytecode execution proof discharges the canonical challenge. -/
