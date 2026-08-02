@@ -129,7 +129,7 @@ def afterFirstIteration (s : State) (msgOff returnDest : UInt256)
   interval_cases i <;> decide
 
 set_option linter.unusedSimpArgs false in
-private theorem run_firstCondition (s : State) (msgOff returnDest : UInt256)
+theorem run_firstCondition (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj : j < 16)
     (hstack : rest.length < 1019)
     (hrun : s.halt = .Running) :
@@ -152,7 +152,7 @@ private theorem run_firstCondition (s : State) (msgOff returnDest : UInt256)
     htrue]
 
 set_option linter.unusedSimpArgs false in
-private theorem run_firstLoad (s : State) (msgOff returnDest : UInt256)
+theorem run_firstLoad (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hstack : rest.length < 1018)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock firstLoadPath
@@ -171,7 +171,7 @@ private theorem run_firstLoad (s : State) (msgOff returnDest : UInt256)
     hc3, hc4, hc5, hc6, hrun, hoff, State.activeWordsAfterUInt256]
 
 set_option linter.unusedSimpArgs false in
-private theorem run_firstStore (s : State) (msgOff returnDest : UInt256)
+theorem run_firstStore (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hstack : rest.length < 1016)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock firstStorePath
@@ -193,7 +193,7 @@ private theorem run_firstStore (s : State) (msgOff returnDest : UInt256)
     State.activeWordsAfterUInt256]
 
 set_option linter.unusedSimpArgs false in
-private theorem run_firstIncrement (s : State) (msgOff returnDest : UInt256)
+theorem run_firstIncrement (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj : j < 16)
     (hstack : rest.length < 1019)
     (hcode : s.executionEnv.code = referenceBytecode)
@@ -212,7 +212,7 @@ private theorem run_firstIncrement (s : State) (msgOff returnDest : UInt256)
     afterFirstStore, afterFirstIteration, afterFirstLoad, List.exchange,
     hc3, hc4, hc5, hcode, hrun, hadd, hdest]
 
-theorem gasSteps_firstIteration (s : State) (msgOff returnDest : UInt256)
+def gasSteps_firstIteration (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj : j < 16)
     (hstack : rest.length < 1016)
     (hcode : s.executionEnv.code = referenceBytecode)
@@ -303,7 +303,7 @@ def firstLoopState (s : State) (msgOff returnDest : UInt256)
       msgOff returnDest rest j = firstLoopState s msgOff returnDest rest j := by
   cases j <;> rfl
 
-theorem gasSteps_firstLoop (s : State) (msgOff returnDest : UInt256)
+def gasSteps_firstLoop (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1016)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -325,8 +325,13 @@ theorem gasSteps_firstLoop (s : State) (msgOff returnDest : UInt256)
     simpa [q] using hnp
   have g := gasSteps_firstIteration q msgOff returnDest rest j hj hstack
     hqcode hqfork hqrun hqnp
-  rw [firstAt_firstLoopState] at g
-  simpa [firstLoopState, q] using g
+  have hs : firstAt q msgOff returnDest rest j =
+      firstLoopState s msgOff returnDest rest j := by
+    simp [q]
+  have ht : afterFirstIteration q msgOff returnDest rest j =
+      firstLoopState s msgOff returnDest rest (j + 1) := by
+    simp [q, firstLoopState]
+  exact Challenge.EvmProof.GasSteps.cast g hs ht
 
 def scheduleEntry (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) : State :=
@@ -342,7 +347,7 @@ def scheduleStartPath :
 @[simp] private theorem pc325 : Artifact.referenceArtifact.instructionPC 325 = 446 := by decide
 @[simp] private theorem pc326 : Artifact.referenceArtifact.instructionPC 326 = 447 := by decide
 
-private theorem run_scheduleStart (s : State) (msgOff returnDest : UInt256)
+theorem run_scheduleStart (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1021)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock scheduleStartPath
@@ -354,7 +359,7 @@ private theorem run_scheduleStart (s : State) (msgOff returnDest : UInt256)
     scheduleEntry, firstLoopState, firstAt, hc2, hrun]
   rfl
 
-theorem gasSteps_scheduleStart (s : State) (msgOff returnDest : UInt256)
+def gasSteps_scheduleStart (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1021)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -610,7 +615,7 @@ def afterSecondIteration (s : State) (msgOff returnDest : UInt256)
     msgOff returnDest rest (j + 1)
 
 set_option linter.unusedSimpArgs false in
-private theorem run_secondCondition (s : State) (msgOff returnDest : UInt256)
+theorem run_secondCondition (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj16 : 16 ≤ j) (hj64 : j < 64)
     (hstack : rest.length < 1019) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock secondConditionPath
@@ -631,7 +636,7 @@ private theorem run_secondCondition (s : State) (msgOff returnDest : UInt256)
     secondAt, afterSecondCondition, hc3, hc4, hc5, hrun, hlt, hzero, htrue]
 
 set_option linter.unusedSimpArgs false in
-private theorem run_setupW16 (s : State) (msgOff returnDest : UInt256)
+theorem run_setupW16 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj16 : 16 ≤ j) (hj64 : j < 64)
     (hstack : rest.length < 1014)
     (hcode : s.executionEnv.code = referenceBytecode)
@@ -655,7 +660,7 @@ private theorem run_setupW16 (s : State) (msgOff returnDest : UInt256)
   rfl
 
 set_option linter.unusedSimpArgs false in
-private theorem run_setupW15 (s : State) (msgOff returnDest : UInt256)
+theorem run_setupW15 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj16 : 16 ≤ j) (hj64 : j < 64)
     (hstack : rest.length < 1011)
     (hcode : s.executionEnv.code = referenceBytecode)
@@ -681,7 +686,7 @@ private theorem run_setupW15 (s : State) (msgOff returnDest : UInt256)
   constructor
 
 set_option linter.unusedSimpArgs false in
-private theorem run_setupSsig0 (s : State) (msgOff returnDest : UInt256)
+theorem run_setupSsig0 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hstack : rest.length < 1014)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
@@ -700,7 +705,7 @@ private theorem run_setupSsig0 (s : State) (msgOff returnDest : UInt256)
     hdest]
 
 set_option linter.unusedSimpArgs false in
-private theorem run_setupW7 (s : State) (msgOff returnDest : UInt256)
+theorem run_setupW7 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj16 : 16 ≤ j) (hj64 : j < 64)
     (hstack : rest.length < 1012)
     (hcode : s.executionEnv.code = referenceBytecode)
@@ -725,7 +730,7 @@ private theorem run_setupW7 (s : State) (msgOff returnDest : UInt256)
   rfl
 
 set_option linter.unusedSimpArgs false in
-private theorem run_setupW2 (s : State) (msgOff returnDest : UInt256)
+theorem run_setupW2 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj16 : 16 ≤ j) (hj64 : j < 64)
     (hstack : rest.length < 1009)
     (hcode : s.executionEnv.code = referenceBytecode)
@@ -753,7 +758,7 @@ private theorem run_setupW2 (s : State) (msgOff returnDest : UInt256)
   rfl
 
 set_option linter.unusedSimpArgs false in
-private theorem run_setupSsig1 (s : State) (msgOff returnDest : UInt256)
+theorem run_setupSsig1 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hstack : rest.length < 1010)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
@@ -772,7 +777,7 @@ private theorem run_setupSsig1 (s : State) (msgOff returnDest : UInt256)
     hdest]
 
 set_option linter.unusedSimpArgs false in
-private theorem run_finishRecurrence (s : State) (msgOff returnDest : UInt256)
+theorem run_finishRecurrence (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hstack : rest.length < 1010)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
@@ -802,7 +807,7 @@ private theorem run_finishRecurrence (s : State) (msgOff returnDest : UInt256)
   rfl
 
 set_option linter.unusedSimpArgs false in
-private theorem run_secondIncrement (s : State) (msgOff returnDest : UInt256)
+theorem run_secondIncrement (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj64 : j < 64)
     (hstack : rest.length < 1019)
     (hcode : s.executionEnv.code = referenceBytecode)
@@ -823,7 +828,7 @@ private theorem run_secondIncrement (s : State) (msgOff returnDest : UInt256)
     Functions.unaryReturned, Accessors.loadReturned, List.exchange,
     hc3, hc4, hc5, hcode, hrun, hadd, hdest]
 
-theorem gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
+def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj16 : 16 ≤ j) (hj64 : j < 64)
     (hstack : rest.length < 990)
     (hcode : s.executionEnv.code = referenceBytecode)
@@ -1125,7 +1130,7 @@ def secondLoopState (s : State) (msgOff returnDest : UInt256)
         secondLoopState s msgOff returnDest rest n := by
   cases n <;> simp [secondLoopState, afterSecondIteration, secondAt, Nat.add_assoc]
 
-theorem gasSteps_secondLoop (s : State) (msgOff returnDest : UInt256)
+def gasSteps_secondLoop (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 990)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -1147,8 +1152,13 @@ theorem gasSteps_secondLoop (s : State) (msgOff returnDest : UInt256)
     simpa [q] using hnp
   have g := gasSteps_secondIteration q msgOff returnDest rest (16 + n)
     (by omega) (by omega) hstack hqcode hqfork hqrun hqnp
-  rw [secondAt_secondLoopState] at g
-  simpa [secondLoopState, q, Nat.add_assoc] using g
+  have hs : secondAt q msgOff returnDest rest (16 + n) =
+      secondLoopState s msgOff returnDest rest n := by
+    simp [q]
+  have ht : afterSecondIteration q msgOff returnDest rest (16 + n) =
+      secondLoopState s msgOff returnDest rest (n + 1) := by
+    simp [q, secondLoopState]
+  exact Challenge.EvmProof.GasSteps.cast g hs ht
 
 /-! ## Loop exits and the complete schedule subroutine -/
 
@@ -1179,7 +1189,7 @@ def scheduleReturned (s : State) (returnDest : UInt256)
 @[simp] private theorem pc430 : Artifact.referenceArtifact.instructionPC 430 = 605 := by decide
 @[simp] private theorem pc431 : Artifact.referenceArtifact.instructionPC 431 = 606 := by decide
 
-private theorem run_firstExit (s : State) (msgOff returnDest : UInt256)
+theorem run_firstExit (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1019)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
@@ -1199,7 +1209,7 @@ private theorem run_firstExit (s : State) (msgOff returnDest : UInt256)
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     firstAt, secondAt, hc2, hc3, hc4, hc5, hcode, hrun, hlt, hzero, htrue, hdest]
 
-theorem gasSteps_firstExit (s : State) (msgOff returnDest : UInt256)
+def gasSteps_firstExit (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1019)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -1215,7 +1225,7 @@ theorem gasSteps_firstExit (s : State) (msgOff returnDest : UInt256)
   · exact hrun
   · exact hnp
 
-private theorem run_secondExit (s : State) (msgOff returnDest : UInt256)
+theorem run_secondExit (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1019)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running)
@@ -1238,7 +1248,7 @@ private theorem run_secondExit (s : State) (msgOff returnDest : UInt256)
     secondAt, scheduleReturned, hc1, hc2, hc3, hc4, hc5, hcode, hrun, hlt, hzero, htrue,
     hdest, hreturn]
 
-theorem gasSteps_secondExit (s : State) (msgOff returnDest : UInt256)
+def gasSteps_secondExit (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1019)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -1261,7 +1271,7 @@ def scheduleResult (s : State) (msgOff returnDest : UInt256)
   let afterSecond := secondLoopState afterFirst msgOff returnDest rest 48
   scheduleReturned afterSecond returnDest rest
 
-theorem gasSteps_schedule (s : State) (msgOff returnDest : UInt256)
+def gasSteps_schedule (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 990)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -1281,9 +1291,11 @@ theorem gasSteps_schedule (s : State) (msgOff returnDest : UInt256)
   have q1run : q1.halt = .Running := by simpa [q1] using hrun
   have q1np : Precompile.isPrecompile q1.executionEnv.fork
       q1.executionEnv.codeAddr = false := by simpa [q1] using hnp
-  have bridge := gasSteps_firstExit q1 msgOff returnDest rest (by omega)
+  have bridgeRaw := gasSteps_firstExit q1 msgOff returnDest rest (by omega)
     q1code q1fork q1run q1np
-  rw [firstAt_firstLoopState] at bridge
+  have bridgeStart : firstAt q1 msgOff returnDest rest 16 = q1 := by
+    simp [q1]
+  have bridge := Challenge.EvmProof.GasSteps.cast bridgeRaw bridgeStart rfl
   have second := gasSteps_secondLoop q1 msgOff returnDest rest hstack
     q1code q1fork q1run q1np
   have q2code : q2.executionEnv.code = referenceBytecode := by simpa [q2] using q1code
@@ -1291,13 +1303,29 @@ theorem gasSteps_schedule (s : State) (msgOff returnDest : UInt256)
   have q2run : q2.halt = .Running := by simpa [q2] using q1run
   have q2np : Precompile.isPrecompile q2.executionEnv.fork
       q2.executionEnv.codeAddr = false := by simpa [q2] using q1np
-  have finish := gasSteps_secondExit q2 msgOff returnDest rest (by omega)
+  have finishRaw := gasSteps_secondExit q2 msgOff returnDest rest (by omega)
     q2code q2fork q2run q2np hreturn
-  rw [secondAt_secondLoopState] at finish
+  have finishStart : secondAt q2 msgOff returnDest rest 64 = q2 := by
+    simpa [q2] using
+      secondAt_secondLoopState q1 msgOff returnDest rest 48
+  have finish := Challenge.EvmProof.GasSteps.cast finishRaw finishStart rfl
   exact start
     |>.trans first
     |>.trans bridge
     |>.trans second
     |>.trans finish
+
+def gasSteps_scheduleCost (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 990)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hreturn : Decode.isValidJumpDest referenceBytecode returnDest.toNat = true) : Nat :=
+  @Challenge.EvmProof.GasSteps.cost
+    (scheduleEntry s msgOff returnDest rest)
+    (scheduleResult s msgOff returnDest rest)
+    (gasSteps_schedule s msgOff returnDest rest hstack hcode hfork hrun hnp
+      hreturn)
 
 end Challenge.Sha256.Reference.Proofs.Bytecode.Schedule

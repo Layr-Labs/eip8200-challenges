@@ -256,7 +256,7 @@ private theorem run_setup (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     blockLoopState, loopAt, blockOffsetWord, blockOffset]
 
-theorem gasSteps_setup (input : ByteArray) :
+def gasSteps_setup (input : ByteArray) :
     Challenge.EvmProof.GasSteps (PaddingTrace.padReturned input)
       (blockLoopState input 0) := by
   apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
@@ -267,7 +267,7 @@ theorem gasSteps_setup (input : ByteArray) :
   · rfl
   · rfl
 
-private theorem run_condition_continue (s : State) (input : ByteArray)
+theorem run_condition_continue (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock conditionPath (loopAt s input i) =
@@ -279,7 +279,7 @@ private theorem run_condition_continue (s : State) (input : ByteArray)
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopAt, afterCondition, hrun, hlt, hzero, hfalse]
 
-private theorem run_call (s : State) (input : ByteArray)
+theorem run_call (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
@@ -313,7 +313,7 @@ private theorem run_increment_core (q : State) (input : ByteArray) (i : Nat)
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     hpc, hstack, hcode, hrun, hadd, hdest, List.exchange]
 
-private theorem run_increment (s : State) (input : ByteArray)
+theorem run_increment (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
@@ -339,38 +339,102 @@ private theorem run_increment (s : State) (input : ByteArray)
     qcode qrun qpc qstack hadd
   simpa only [afterIteration, loopAt] using hcore
 
-theorem gasSteps_iteration (s : State) (input : ByteArray)
+def gasSteps_iterationCondition (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (loopAt s input i) (afterIteration s input i) := by
-  have gCondition : Challenge.EvmProof.GasSteps (loopAt s input i)
+    Challenge.EvmProof.GasSteps (loopAt s input i)
       (afterCondition s input i) := by
-    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.referenceArtifact .Osaka conditionPath
-    · exact hcode
-    · exact hfork
-    · exact run_condition_continue s input hfit i hi hrun
-    · exact hrun
-    · exact hnp
-  have gCall : Challenge.EvmProof.GasSteps (afterCondition s input i)
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka conditionPath
+  · exact hcode
+  · exact hfork
+  · exact run_condition_continue s input hfit i hi hrun
+  · exact hrun
+  · exact hnp
+
+@[simp] theorem gasSteps_iterationCondition_cost (s : State)
+    (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
+    (hi : i < blockCount input)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (gasSteps_iterationCondition s input hfit i hi hcode hfork hrun hnp).cost =
+      Challenge.EvmProof.Stepper.runLocatedBlockCost conditionPath
+        (loopAt s input i) := by
+  unfold gasSteps_iterationCondition
+  rw [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+
+def gasSteps_iterationCall (s : State) (input : ByteArray)
+    (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (afterCondition s input i)
       (Compression.compressEntry (loopAt s input i) (messageOffsetWord i)
         (UInt256.ofNat 1390) [blockOffsetWord i, Padding.paddedWord input]) := by
-    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.referenceArtifact .Osaka callPath
-    · exact hcode
-    · exact hfork
-    · exact run_call s input hfit i hi hcode hrun
-    · exact hrun
-    · exact hnp
-  have valid1390 : Decode.isValidJumpDest referenceBytecode 1390 = true := by
-    decide
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka callPath
+  · exact hcode
+  · exact hfork
+  · exact run_call s input hfit i hi hcode hrun
+  · exact hrun
+  · exact hnp
+
+@[simp] theorem gasSteps_iterationCall_cost (s : State) (input : ByteArray)
+    (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (gasSteps_iterationCall s input hfit i hi hcode hfork hrun hnp).cost =
+      Challenge.EvmProof.Stepper.runLocatedBlockCost callPath
+        (afterCondition s input i) := by
+  unfold gasSteps_iterationCall
+  rw [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+
+def gasSteps_iterationCompress (s : State) (input : ByteArray) (i : Nat)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (Compression.compressEntry (loopAt s input i) (messageOffsetWord i)
+        (UInt256.ofNat 1390) [blockOffsetWord i, Padding.paddedWord input])
+      (afterCompression s input i) := by
   have gCompress := Compression.gasSteps_compress (loopAt s input i)
     (messageOffsetWord i) (UInt256.ofNat 1390)
     [blockOffsetWord i, Padding.paddedWord input] (by simp)
-    hcode hfork hrun hnp valid1390
+    hcode hfork hrun hnp (by decide)
+  exact Challenge.EvmProof.GasSteps.cast gCompress rfl (by
+    simp [afterCompression])
+
+@[simp] theorem gasSteps_iterationCompress_cost (s : State)
+    (input : ByteArray) (i : Nat)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (gasSteps_iterationCompress s input i hcode hfork hrun hnp).cost =
+      (Compression.gasSteps_compress (loopAt s input i)
+        (messageOffsetWord i) (UInt256.ofNat 1390)
+        [blockOffsetWord i, Padding.paddedWord input] (by simp)
+        hcode hfork hrun hnp (by decide)).cost := by
+  unfold gasSteps_iterationCompress
+  rw [Challenge.EvmProof.GasSteps.cast_cost]
+
+def gasSteps_iterationIncrement (s : State) (input : ByteArray)
+    (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (afterCompression s input i)
+      (afterIteration s input i) := by
   have qcode : (afterCompression s input i).executionEnv.code =
       referenceBytecode := by simpa using hcode
   have qfork : (afterCompression s input i).fork = .Osaka := by
@@ -381,27 +445,43 @@ theorem gasSteps_iteration (s : State) (input : ByteArray)
       (afterCompression s input i).executionEnv.fork
       (afterCompression s input i).executionEnv.codeAddr = false := by
     simpa using hnp
-  have gIncrement : Challenge.EvmProof.GasSteps (afterCompression s input i)
-      (afterIteration s input i) := by
-    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.referenceArtifact .Osaka incrementPath
-    · exact qcode
-    · exact qfork
-    · exact run_increment s input hfit i hi hcode hrun
-    · exact qrun
-    · exact qnp
-  have gCompress' : Challenge.EvmProof.GasSteps
-      (Compression.compressEntry (loopAt s input i) (messageOffsetWord i)
-        (UInt256.ofNat 1390) [blockOffsetWord i, Padding.paddedWord input])
-      (afterCompression s input i) := by
-    simpa [afterCompression] using gCompress
-  exact gCondition.trans (gCall.trans (gCompress'.trans gIncrement))
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka incrementPath
+  · exact qcode
+  · exact qfork
+  · exact run_increment s input hfit i hi hcode hrun
+  · exact qrun
+  · exact qnp
 
-theorem gasSteps_blockLoop (input : ByteArray) (hfit : CalldataFits input) :
-    Challenge.EvmProof.GasSteps (blockLoopState input 0)
-      (blockLoopState input (blockCount input)) := by
-  apply Challenge.EvmProof.GasSteps.iterateBounded (count := blockCount input)
-  intro i hi
+@[simp] theorem gasSteps_iterationIncrement_cost (s : State)
+    (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
+    (hi : i < blockCount input)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (gasSteps_iterationIncrement s input hfit i hi hcode hfork hrun hnp).cost =
+      Challenge.EvmProof.Stepper.runLocatedBlockCost incrementPath
+        (afterCompression s input i) := by
+  unfold gasSteps_iterationIncrement
+  rw [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+
+def gasSteps_iteration (s : State) (input : ByteArray)
+    (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (loopAt s input i) (afterIteration s input i) :=
+  (gasSteps_iterationCondition s input hfit i hi hcode hfork hrun hnp).trans
+    ((gasSteps_iterationCall s input hfit i hi hcode hfork hrun hnp).trans
+      ((gasSteps_iterationCompress s input i hcode hfork hrun hnp).trans
+        (gasSteps_iterationIncrement s input hfit i hi hcode hfork hrun hnp)))
+
+def gasSteps_blockLoopIteration (input : ByteArray) (hfit : CalldataFits input)
+    (i : Nat) (hi : i < blockCount input) :
+    Challenge.EvmProof.GasSteps (blockLoopState input i)
+      (blockLoopState input (i + 1)) := by
   let q := blockLoopState input i
   have qcode : q.executionEnv.code = referenceBytecode := by
     simp [q]
@@ -411,8 +491,31 @@ theorem gasSteps_blockLoop (input : ByteArray) (hfit : CalldataFits input) :
       q.executionEnv.codeAddr = false := by
     simpa [q, State.fork] using PaddingTrace.padReturned_noPrecompile input
   have g := gasSteps_iteration q input hfit i hi qcode qfork qrun qnp
-  rw [loopAt_blockLoopState] at g
-  simpa [blockLoopState, q] using g
+  exact Challenge.EvmProof.GasSteps.cast g
+    (by simp [q])
+    (by simp [blockLoopState, q])
+
+@[simp] theorem gasSteps_blockLoopIteration_cost (input : ByteArray)
+    (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input) :
+    (gasSteps_blockLoopIteration input hfit i hi).cost =
+      (gasSteps_iteration (blockLoopState input i) input hfit i hi
+        (by simp) (by simp [State.fork]) (by simp)
+        (by simpa [State.fork] using
+          PaddingTrace.padReturned_noPrecompile input)).cost := by
+  unfold gasSteps_blockLoopIteration
+  rw [Challenge.EvmProof.GasSteps.cast_cost]
+
+def gasSteps_blockLoop (input : ByteArray) (hfit : CalldataFits input) :
+    Challenge.EvmProof.GasSteps (blockLoopState input 0)
+      (blockLoopState input (blockCount input)) :=
+  Challenge.EvmProof.GasSteps.iterateBounded (count := blockCount input)
+    (gasSteps_blockLoopIteration input hfit)
+
+@[simp] theorem gasSteps_blockLoop_cost (input : ByteArray)
+    (hfit : CalldataFits input) :
+    (gasSteps_blockLoop input hfit).cost =
+      (Challenge.EvmProof.GasSteps.iterateBounded (count := blockCount input)
+        (gasSteps_blockLoopIteration input hfit)).cost := rfl
 
 private theorem run_condition_exit (input : ByteArray)
     (hfit : CalldataFits input) :
@@ -430,7 +533,7 @@ private theorem run_condition_exit (input : ByteArray)
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopAt, Output.outputEntry, hlt, hzero, htrue, hdest]
 
-theorem gasSteps_exit (input : ByteArray) (hfit : CalldataFits input) :
+def gasSteps_exit (input : ByteArray) (hfit : CalldataFits input) :
     Challenge.EvmProof.GasSteps (blockLoopState input (blockCount input))
       (Output.outputEntry (blockLoopState input (blockCount input))
         (blockOffsetWord (blockCount input)) [Padding.paddedWord input]) := by
@@ -444,7 +547,7 @@ theorem gasSteps_exit (input : ByteArray) (hfit : CalldataFits input) :
 
 /-- Complete direct execution of the reference artifact from the fixed initial
 state through padding, every message block, and `RETURN`. -/
-theorem gasSteps_reference (input : ByteArray) (hfit : CalldataFits input) :
+def gasSteps_reference (input : ByteArray) (hfit : CalldataFits input) :
     Challenge.EvmProof.GasSteps (initialState referenceBytecode input 0)
       (Output.outputResult (blockLoopState input (blockCount input))
         [Padding.paddedWord input]) := by

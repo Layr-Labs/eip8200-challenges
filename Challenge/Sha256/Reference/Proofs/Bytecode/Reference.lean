@@ -35,7 +35,7 @@ def atPCStack (calldata : ByteArray) (pc : Nat) (stack : List UInt256) : State :
       { initialState referenceBytecode calldata gas with pc := UInt256.ofNat pc } := by
   rfl
 
-theorem gasSteps_jumpdest_at (calldata : ByteArray) (pc : Nat)
+def gasSteps_jumpdest_at (calldata : ByteArray) (pc : Nat)
     (hpc : pc + 1 < 2 ^ 256)
     (hdecode : Decode.decodeAt referenceBytecode pc = some (.JUMPDEST, none)) :
     Challenge.EvmProof.GasSteps (atPC calldata pc) (atPC calldata (pc + 1)) := by
@@ -62,7 +62,7 @@ theorem gasSteps_jumpdest_at (calldata : ByteArray) (pc : Nat)
       Operation.pushArity, Operation.popArity])
   simpa [Challenge.EvmProof.withGas, atPC, hsucc, Gas.baseCost] using hstep
 
-theorem gasSteps_push2_at (calldata : ByteArray) (pc dest : Nat)
+def gasSteps_push2_at (calldata : ByteArray) (pc dest : Nat)
     (hpc : pc + 3 < 2 ^ 256)
     (hdecode : Decode.decodeAt referenceBytecode pc =
       some (.Push ⟨2, by decide⟩, some (UInt256.ofNat dest, 2))) :
@@ -90,7 +90,7 @@ theorem gasSteps_push2_at (calldata : ByteArray) (pc dest : Nat)
   simpa [Challenge.EvmProof.withGas, atPC, atPCStack, hpcadd,
     initialState, Gas.baseCost] using hstep
 
-theorem gasSteps_jump_at (calldata : ByteArray) (pc dest : Nat)
+def gasSteps_jump_at (calldata : ByteArray) (pc dest : Nat)
     (hpc : pc + 1 < 2 ^ 256)
     (hdest : dest < 2 ^ 256)
     (hdecode : Decode.decodeAt referenceBytecode pc = some (.JUMP, none))
@@ -133,7 +133,7 @@ theorem gasSteps_jump_at (calldata : ByteArray) (pc dest : Nat)
   simpa [Challenge.EvmProof.withGas, atPC, atPCStack, initialState,
     Gas.baseCost] using hstep
 
-theorem gasSteps_trampoline (calldata : ByteArray) (src dest : Nat)
+def gasSteps_trampoline (calldata : ByteArray) (src dest : Nat)
     (hsrc : src + 5 < 2 ^ 256) (hdest : dest < 2 ^ 256)
     (hjd : Decode.decodeAt referenceBytecode src = some (.JUMPDEST, none))
     (hpush : Decode.decodeAt referenceBytecode (src + 1) =
@@ -287,7 +287,7 @@ theorem reaches_firstTarget (calldata : ByteArray) (gas : Nat) (hgas : 11 ≤ ga
     (.trans (step_entry_jump calldata gas hgas) (.refl _)), rfl⟩
 
 /-- Gas-parametric form of the first `PUSH2; JUMP`. -/
-theorem gasSteps_to_firstTarget (calldata : ByteArray) :
+def gasSteps_to_firstTarget (calldata : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState referenceBytecode calldata 0)
       (atPC calldata 0x001b) := by
   refine ⟨11, fun gas hgas => ?_⟩
@@ -296,21 +296,15 @@ theorem gasSteps_to_firstTarget (calldata : ByteArray) :
     (Steps.trans (step_entry_push calldata gas hpush)
       (Steps.trans (step_entry_jump calldata gas hgas) (Steps.refl _)))
 
-theorem gasSteps_entryLink (calldata : ByteArray) (src dest : Nat)
-    (hlink : (src, dest) ∈ entryLinks) :
-    Challenge.EvmProof.GasSteps (atPC calldata src) (atPC calldata dest) := by
-  rw [entryLinks] at hlink
-  obtain ⟨t, ht, hp⟩ := List.mem_map.mp hlink
-  have hsrc : t.src = src := congrArg Prod.fst hp
-  have hdest : t.dest = dest := congrArg Prod.snd hp
-  subst src
-  subst dest
+def gasSteps_entryTrampoline (calldata : ByteArray)
+    (t : Artifact.EntryTrampoline) (ht : t ∈ Artifact.entryTrampolines) :
+    Challenge.EvmProof.GasSteps (atPC calldata t.src) (atPC calldata t.dest) := by
   have hv := Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampoline_valid t ht
   have hb : t.src + 5 < 2 ^ 256 ∧ t.dest < 2 ^ 256 := by
     simp only [Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines,
       List.mem_cons, List.not_mem_nil, or_false] at ht
-    rcases ht with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-      rfl | rfl | rfl | rfl | rfl | rfl <;> decide
+    rcases ht with h | h | h | h | h | h | h | h | h | h | h | h | h | h <;>
+      simp_all
   apply gasSteps_trampoline calldata t.src t.dest hb.1 hb.2
   · simpa [hv.1] using
       Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.decodeAt_op_index t.srcIndex .JUMPDEST
@@ -319,8 +313,8 @@ theorem gasSteps_entryLink (calldata : ByteArray) (src dest : Nat)
       rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hb.2]
       simp only [Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines,
         List.mem_cons, List.not_mem_nil, or_false] at ht
-      rcases ht with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-        rfl | rfl | rfl | rfl | rfl | rfl <;> decide
+      rcases ht with h | h | h | h | h | h | h | h | h | h | h | h | h | h <;>
+        simp_all
     simpa [hv.2.2.1] using
       Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.decodeAt_push_index (t.srcIndex + 1)
         ⟨2, by decide⟩ (UInt256.ofNat t.dest) hv.2.2.2.1 hfit
@@ -331,39 +325,52 @@ theorem gasSteps_entryLink (calldata : ByteArray) (src dest : Nat)
       Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.isValidJumpDest_index t.destIndex
         hv.2.2.2.2.2.2.2
 
+noncomputable def gasSteps_entryLink (calldata : ByteArray) (src dest : Nat)
+    (hlink : (src, dest) ∈ entryLinks) :
+    Challenge.EvmProof.GasSteps (atPC calldata src) (atPC calldata dest) := by
+  rw [entryLinks] at hlink
+  let t := Classical.choose (List.mem_map.mp hlink)
+  have ht : t ∈ Artifact.entryTrampolines :=
+    (Classical.choose_spec (List.mem_map.mp hlink)).1
+  have hp : (t.src, t.dest) = (src, dest) :=
+    (Classical.choose_spec (List.mem_map.mp hlink)).2
+  have hsrc : t.src = src := congrArg Prod.fst hp
+  have hdest : t.dest = dest := congrArg Prod.snd hp
+  rw [← hsrc, ← hdest]
+  exact gasSteps_entryTrampoline calldata t ht
+
 /-- The complete compiler-generated entry chain lands at the SHA body. -/
-theorem gasSteps_to_main (calldata : ByteArray) :
+def gasSteps_to_main (calldata : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState referenceBytecode calldata 0)
       (atPC calldata mainPC) := by
-  have l₁ := gasSteps_entryLink calldata 0x001b 0x0044
-    (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
-  have l₂ := gasSteps_entryLink calldata 0x0044 0x006d
-    (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
-  have l₃ := gasSteps_entryLink calldata 0x006d 0x009e
-    (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
-  have l₄ := gasSteps_entryLink calldata 0x009e 0x00cf
-    (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
-  have l₅ := gasSteps_entryLink calldata 0x00cf 0x00e4
-    (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
-  have l₆ := gasSteps_entryLink calldata 0x00e4 0x00fc
-    (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
-  have l₇ := gasSteps_entryLink calldata 0x00fc 0x0112
-    (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
-  have l₈ := gasSteps_entryLink calldata 0x0112 0x0126
-    (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
-  have l₉ := gasSteps_entryLink calldata 0x0126 0x0139
-    (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
-  have l₁₀ := gasSteps_entryLink calldata 0x0139 0x014d
-    (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
-  have l₁₁ := gasSteps_entryLink calldata 0x014d 0x0160
-    (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
-  have l₁₂ := gasSteps_entryLink calldata 0x0160 0x01b9
-    (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
-  have l₁₃ := gasSteps_entryLink calldata 0x01b9 0x025f
-    (by simp [entryLinks, Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
-  have l₁₄ := gasSteps_entryLink calldata 0x025f mainPC
-    (by simp [entryLinks, mainPC,
-      Challenge.Sha256.Reference.Proofs.Bytecode.Artifact.entryTrampolines])
+  have l₁ := gasSteps_entryTrampoline calldata ⟨0x001b, 0x0044, 20, 48⟩
+    (by simp [Artifact.entryTrampolines])
+  have l₂ := gasSteps_entryTrampoline calldata ⟨0x0044, 0x006d, 48, 76⟩
+    (by simp [Artifact.entryTrampolines])
+  have l₃ := gasSteps_entryTrampoline calldata ⟨0x006d, 0x009e, 76, 108⟩
+    (by simp [Artifact.entryTrampolines])
+  have l₄ := gasSteps_entryTrampoline calldata ⟨0x009e, 0x00cf, 108, 140⟩
+    (by simp [Artifact.entryTrampolines])
+  have l₅ := gasSteps_entryTrampoline calldata ⟨0x00cf, 0x00e4, 140, 159⟩
+    (by simp [Artifact.entryTrampolines])
+  have l₆ := gasSteps_entryTrampoline calldata ⟨0x00e4, 0x00fc, 159, 181⟩
+    (by simp [Artifact.entryTrampolines])
+  have l₇ := gasSteps_entryTrampoline calldata ⟨0x00fc, 0x0112, 181, 198⟩
+    (by simp [Artifact.entryTrampolines])
+  have l₈ := gasSteps_entryTrampoline calldata ⟨0x0112, 0x0126, 198, 213⟩
+    (by simp [Artifact.entryTrampolines])
+  have l₉ := gasSteps_entryTrampoline calldata ⟨0x0126, 0x0139, 213, 227⟩
+    (by simp [Artifact.entryTrampolines])
+  have l₁₀ := gasSteps_entryTrampoline calldata ⟨0x0139, 0x014d, 227, 242⟩
+    (by simp [Artifact.entryTrampolines])
+  have l₁₁ := gasSteps_entryTrampoline calldata ⟨0x014d, 0x0160, 242, 256⟩
+    (by simp [Artifact.entryTrampolines])
+  have l₁₂ := gasSteps_entryTrampoline calldata ⟨0x0160, 0x01b9, 256, 322⟩
+    (by simp [Artifact.entryTrampolines])
+  have l₁₃ := gasSteps_entryTrampoline calldata ⟨0x01b9, 0x025f, 322, 432⟩
+    (by simp [Artifact.entryTrampolines])
+  have l₁₄ := gasSteps_entryTrampoline calldata ⟨0x025f, mainPC, 432, 658⟩
+    (by simp [Artifact.entryTrampolines, mainPC])
   exact (gasSteps_to_firstTarget calldata).trans
     (l₁.trans
     (l₂.trans (l₃.trans (l₄.trans (l₅.trans (l₆.trans (l₇.trans

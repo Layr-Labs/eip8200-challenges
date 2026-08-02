@@ -125,8 +125,10 @@ toolkit:
 - `Bytecode.lean`: byte-preserving disassembly and jump-destination facts;
 - `Execution.lean`: `Step`, `Eval`, `Reaches`, and straight-line composition;
 - `Stepper.lean`: executable instruction-block proofs;
-- `Gas.lean`: gas-erased traces, bounded-loop composition, and the final
+- `Gas.lean`: exact-cost traces, bounded-loop composition, and the final
   `EventuallyEvaluates` bridge;
+- `Meter.lean`: exact instruction/block work costs with memory expansion
+  expressed as a telescoping potential difference;
 - `Memory.lean` and `Word.lean`: common EVM memory and 256-bit arithmetic facts;
 - `Ops.lean` and `Program.lean`: reusable opcode and program-artifact support.
 

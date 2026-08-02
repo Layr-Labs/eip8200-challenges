@@ -61,7 +61,7 @@ def finalState (input : ByteArray) : State :=
   rw [State.toResult_returned _ (by simp [finalState])]
   rw [finalState_hReturn input hfit]
 
-theorem gasSteps_finalState (input : ByteArray) (hfit : CalldataFits input) :
+def gasSteps_finalState (input : ByteArray) (hfit : CalldataFits input) :
     Challenge.EvmProof.GasSteps (initialState referenceBytecode input 0)
       (finalState input) := by
   simpa [finalState] using Driver.gasSteps_reference input hfit

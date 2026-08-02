@@ -382,10 +382,18 @@ main() {
     report_proved_row "$index"
   done
   printf '\n'
-  printf '%s\n' \
-    'The reference correctness proof currently establishes that a sufficient' \
-    'gas threshold exists for each concrete input. It does not yet expose the' \
-    'stronger uniform function of input size required for a proved row.'
+  if [[ -f "${gas_files[0]}" ]]; then
+    printf '%s\n' \
+      'For the bundled reference, let `blocks(n) = ⌊(n + 72) / 64⌋` and' \
+      '`Cmem(w) = 3w + ⌊w² / 512⌋`. Its proved schedule is the exact trace cost' \
+      '`1747 + 155996 × blocks(n) + 3 × ⌊(n + 31) / 32⌋ +' \
+      'Cmem(90 + 2 × blocks(n))`.'
+  else
+    printf '%s\n' \
+      'The reference correctness proof currently establishes that a sufficient' \
+      'gas threshold exists for each concrete input. It does not yet expose the' \
+      'stronger uniform function of input size required for a proved row.'
+  fi
   printf '<!-- END GENERATED SHA256 GAS REPORT -->\n'
 }
 

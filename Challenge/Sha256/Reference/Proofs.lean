@@ -1,4 +1,5 @@
 import Challenge.Sha256.Reference.Proofs.Bytecode.ReferenceCorrect
+import Challenge.Sha256.Reference.Proofs.Gas
 
 /-!
 # Correctness proof for the bundled reference

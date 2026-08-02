@@ -1,6 +1,7 @@
 import Challenge.Sha256.Reference.Proofs.Bytecode.Padding
 import Challenge.Sha256.Reference.Proofs.Bytecode.Trace
 import Challenge.EvmProof.Stepper
+import Challenge.EvmProof.Meter
 import YulEvmCompiler.BytesLemmas
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -186,6 +187,122 @@ private def wfOp {op : Operation}
     (havailable : op.availableInFork .Osaka = true) :
     Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
   ⟨hopcode, hplain, havailable⟩
+
+def computePaddedLength261 :
+    Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka :=
+  ⟨261, .push ⟨1, by decide⟩ (UInt256.ofNat 72), by rfl, by decide⟩
+def computePaddedLength262 :
+    Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka :=
+  ⟨262, .op (.Dup ⟨1, by decide⟩), by rfl,
+    wfOp (by decide) trivial rfl⟩
+def computePaddedLength263 :
+    Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka :=
+  ⟨263, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩
+def computePaddedLength264 :
+    Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka :=
+  ⟨264, .push ⟨1, by decide⟩ (UInt256.ofNat 6), by rfl, by decide⟩
+def computePaddedLength265 :
+    Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka :=
+  ⟨265, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩
+def computePaddedLength266 :
+    Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka :=
+  ⟨266, .push ⟨1, by decide⟩ (UInt256.ofNat 6), by rfl, by decide⟩
+def computePaddedLength267 :
+    Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka :=
+  ⟨267, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩
+def computePaddedLength268 :
+    Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka :=
+  ⟨268, .op (.Swap ⟨1, by decide⟩), by rfl,
+    wfOp (by decide) trivial rfl⟩
+def computePaddedLength269 :
+    Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka :=
+  ⟨269, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩
+
+/-- The straight-line arithmetic block which rounds `input.size + 72` up to
+the next 64-byte boundary.  This path is also the reusable executable seam for
+gas metering and participant bytecode equivalence proofs. -/
+def computePaddedLengthPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [computePaddedLength261, computePaddedLength262, computePaddedLength263,
+   computePaddedLength264, computePaddedLength265, computePaddedLength266,
+   computePaddedLength267, computePaddedLength268, computePaddedLength269]
+
+@[simp] private theorem refPc261 :
+    Artifact.referenceArtifact.instructionPC 261 = 359 := by decide
+@[simp] private theorem refPc262 :
+    Artifact.referenceArtifact.instructionPC 262 = 361 := by decide
+@[simp] private theorem refPc263 :
+    Artifact.referenceArtifact.instructionPC 263 = 362 := by decide
+@[simp] private theorem refPc264 :
+    Artifact.referenceArtifact.instructionPC 264 = 363 := by decide
+@[simp] private theorem refPc265 :
+    Artifact.referenceArtifact.instructionPC 265 = 365 := by decide
+@[simp] private theorem refPc266 :
+    Artifact.referenceArtifact.instructionPC 266 = 366 := by decide
+@[simp] private theorem refPc267 :
+    Artifact.referenceArtifact.instructionPC 267 = 368 := by decide
+@[simp] private theorem refPc268 :
+    Artifact.referenceArtifact.instructionPC 268 = 369 := by decide
+@[simp] private theorem refPc269 :
+    Artifact.referenceArtifact.instructionPC 269 = 370 := by decide
+
+@[simp] private theorem padSized_pcToNat (input : ByteArray) :
+    (padSized input).pc.toNat = 359 := by rfl
+@[simp] private theorem p262_pcToNat (input : ByteArray) :
+    (p262 input).pc.toNat = 361 := by rfl
+@[simp] private theorem p263_pcToNat (input : ByteArray) :
+    (p263 input).pc.toNat = 362 := by rfl
+@[simp] private theorem p264_pcToNat (input : ByteArray) :
+    (p264 input).pc.toNat = 363 := by rfl
+@[simp] private theorem p265_pcToNat (input : ByteArray) :
+    (p265 input).pc.toNat = 365 := by rfl
+@[simp] private theorem p266_pcToNat (input : ByteArray) :
+    (p266 input).pc.toNat = 366 := by rfl
+@[simp] private theorem p267_pcToNat (input : ByteArray) :
+    (p267 input).pc.toNat = 368 := by rfl
+@[simp] private theorem p268_pcToNat (input : ByteArray) :
+    (p268 input).pc.toNat = 369 := by rfl
+@[simp] private theorem p269_pcToNat (input : ByteArray) :
+    (p269 input).pc.toNat = 370 := by rfl
+@[simp] private theorem padSized_stack (input : ByteArray) :
+    (padSized input).stack =
+      [UInt256.ofNat input.size, ⟨0⟩, UInt256.ofNat 1367] := by rfl
+@[simp] private theorem p262_stack (input : ByteArray) :
+    (p262 input).stack =
+      [UInt256.ofNat 72, UInt256.ofNat input.size, ⟨0⟩,
+        UInt256.ofNat 1367] := by rfl
+@[simp] private theorem p263_stack (input : ByteArray) :
+    (p263 input).stack =
+      [UInt256.ofNat input.size, UInt256.ofNat 72,
+        UInt256.ofNat input.size, ⟨0⟩, UInt256.ofNat 1367] := by rfl
+@[simp] private theorem p264_stack (input : ByteArray) :
+    (p264 input).stack =
+      [UInt256.ofNat input.size + UInt256.ofNat 72,
+        UInt256.ofNat input.size, ⟨0⟩, UInt256.ofNat 1367] := by rfl
+@[simp] private theorem p265_stack (input : ByteArray) :
+    (p265 input).stack =
+      [UInt256.ofNat 6,
+        UInt256.ofNat input.size + UInt256.ofNat 72,
+        UInt256.ofNat input.size, ⟨0⟩, UInt256.ofNat 1367] := by rfl
+@[simp] private theorem p266_stack (input : ByteArray) :
+    (p266 input).stack =
+      [UInt256.shiftRight
+          (UInt256.ofNat input.size + UInt256.ofNat 72) (UInt256.ofNat 6),
+        UInt256.ofNat input.size, ⟨0⟩, UInt256.ofNat 1367] := by rfl
+@[simp] private theorem p267_stack (input : ByteArray) :
+    (p267 input).stack =
+      [UInt256.ofNat 6,
+        UInt256.shiftRight
+          (UInt256.ofNat input.size + UInt256.ofNat 72) (UInt256.ofNat 6),
+        UInt256.ofNat input.size, ⟨0⟩, UInt256.ofNat 1367] := by rfl
+@[simp] private theorem p268_stack (input : ByteArray) :
+    (p268 input).stack =
+      [Padding.paddedWord input, UInt256.ofNat input.size, ⟨0⟩,
+        UInt256.ofNat 1367] := by rfl
+@[simp] private theorem p269_stack (input : ByteArray) :
+    (p269 input).stack =
+      [⟨0⟩, UInt256.ofNat input.size, Padding.paddedWord input,
+        UInt256.ofNat 1367] := by rfl
 
 def lengthIterationPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -376,7 +493,7 @@ def lengthIterationPath :
     Decode.isValidJumpDest referenceBytecode 398 = true := by
   simpa using Artifact.isValidJumpDest_index 288 (by rfl)
 
-theorem gasSteps_enterPad (input : ByteArray) :
+def gasSteps_enterPad (input : ByteArray) :
     Challenge.EvmProof.GasSteps (Main.initializedState input) (padEntry input) := by
   have hinitPC : (Main.initializedState input).pc =
       UInt256.ofNat (Artifact.instructionPC 707) := by rfl
@@ -443,7 +560,7 @@ theorem gasSteps_enterPad (input : ByteArray) :
     simpa [padEntry] using hstep
   exact hpushReturn.trans (hpushOutput.trans (hpushPad.trans hjump))
 
-theorem gasSteps_padReadSize (input : ByteArray) :
+def gasSteps_padReadSize (input : ByteArray) :
     Challenge.EvmProof.GasSteps (padEntry input) (padSized input) := by
   have hentryPC : (padEntry input).pc =
       UInt256.ofNat (Artifact.instructionPC 259) := by
@@ -472,7 +589,7 @@ theorem gasSteps_padReadSize (input : ByteArray) :
     simpa [padSized, hcalldata] using hstep
   exact gjumpdest.trans gsize
 
-theorem gasSteps_computePaddedLength (input : ByteArray) :
+private def gasSteps_computePaddedLength_manual (input : ByteArray) :
     Challenge.EvmProof.GasSteps (padSized input) (padLengthReady input) := by
   have hinitStack : (Main.initializedState input).stack = [] := by rfl
   have hbodyStack : (padBodyStart input).stack =
@@ -614,6 +731,103 @@ theorem gasSteps_computePaddedLength (input : ByteArray) :
     (g266.trans (g267.trans (g268.trans g269)))))))
 
 set_option maxHeartbeats 2000000 in
+theorem run_computePaddedLength (input : ByteArray) :
+    Challenge.EvmProof.Stepper.runLocatedBlock computePaddedLengthPath
+      (padSized input) = some (padLengthReady input) := by
+  have h261 : Challenge.EvmProof.Stepper.runLocated computePaddedLength261
+      (padSized input) = some (p262 input) := by
+    simp [Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr, computePaddedLength261,
+      p262]
+  have h262 : Challenge.EvmProof.Stepper.runLocated computePaddedLength262
+      (p262 input) = some (p263 input) := by
+    simp [Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr, computePaddedLength262,
+      p263]
+  have h263 : Challenge.EvmProof.Stepper.runLocated computePaddedLength263
+      (p263 input) = some (p264 input) := by
+    simp [Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr, computePaddedLength263,
+      p264]
+  have h264 : Challenge.EvmProof.Stepper.runLocated computePaddedLength264
+      (p264 input) = some (p265 input) := by
+    simp [Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr, computePaddedLength264,
+      p265]
+  have h265 : Challenge.EvmProof.Stepper.runLocated computePaddedLength265
+      (p265 input) = some (p266 input) := by
+    simp [Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr, computePaddedLength265,
+      p266]
+  have h266 : Challenge.EvmProof.Stepper.runLocated computePaddedLength266
+      (p266 input) = some (p267 input) := by
+    simp [Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr, computePaddedLength266,
+      p267]
+  have h267 : Challenge.EvmProof.Stepper.runLocated computePaddedLength267
+      (p267 input) = some (p268 input) := by
+    simp [Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr, computePaddedLength267,
+      p268, Padding.paddedWord]
+  have h268 : Challenge.EvmProof.Stepper.runLocated computePaddedLength268
+      (p268 input) = some (p269 input) := by
+    simp [Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr, computePaddedLength268,
+      p269, List.exchange]
+  have h269 : Challenge.EvmProof.Stepper.runLocated computePaddedLength269
+      (p269 input) = some (padLengthReady input) := by
+    simp [Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr, computePaddedLength269,
+      padLengthReady]
+  simp only [computePaddedLengthPath,
+    Challenge.EvmProof.Stepper.runLocatedBlock, h261, h262, h263, h264,
+    h265, h266, h267, h268, h269]
+  rfl
+
+def gasSteps_computePaddedLength (input : ByteArray) :
+    Challenge.EvmProof.GasSteps (padSized input) (padLengthReady input) := by
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka computePaddedLengthPath
+  · rfl
+  · rfl
+  · exact run_computePaddedLength input
+  · rfl
+  · rfl
+
+@[simp] theorem gasSteps_computePaddedLength_cost (input : ByteArray) :
+    (gasSteps_computePaddedLength input).cost = 26 := by
+  change Challenge.EvmProof.Stepper.runLocatedBlockCost
+    computePaddedLengthPath (padSized input) = 26
+  have hstatic : ∀ located, located ∈ computePaddedLengthPath → ∀ q,
+      q.fork = .Osaka →
+        Challenge.EvmProof.Meter.instrCostWithoutMemory located.instruction q =
+          Challenge.EvmProof.Meter.instrStaticCost .Osaka
+            located.instruction := by
+    intro located hlocated q _
+    simp only [computePaddedLengthPath, List.mem_cons, List.not_mem_nil,
+      or_false] at hlocated
+    rcases hlocated with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
+      simp [computePaddedLength261, computePaddedLength262,
+        computePaddedLength263, computePaddedLength264,
+        computePaddedLength265, computePaddedLength266,
+        computePaddedLength267, computePaddedLength268,
+        computePaddedLength269,
+        Challenge.EvmProof.Meter.instrCostWithoutMemory,
+        Challenge.EvmProof.Meter.instrStaticCost, Gas.baseCost]
+  have hcost := Challenge.EvmProof.Meter.runLocatedBlock_cost_static_potential
+    computePaddedLengthPath (run_computePaddedLength input) (by rfl) hstatic
+  have hwords : (padLengthReady input).activeWords =
+      (padSized input).activeWords := by rfl
+  rw [hwords] at hcost
+  norm_num [Challenge.EvmProof.Meter.runLocatedBlockStaticCost,
+    computePaddedLengthPath, computePaddedLength261, computePaddedLength262,
+    computePaddedLength263, computePaddedLength264, computePaddedLength265,
+    computePaddedLength266, computePaddedLength267, computePaddedLength268,
+    computePaddedLength269, Challenge.EvmProof.Meter.instrStaticCost,
+    Gas.baseCost] at hcost ⊢
+  omega
+
+set_option maxHeartbeats 2000000 in
 private theorem run_lengthSetup (input : ByteArray) (hfit : CalldataFits input) :
     Challenge.EvmProof.Stepper.runLocatedBlock
       lengthSetupPath (padLengthReady input) = some (lengthLoopState input 0) := by
@@ -641,7 +855,7 @@ private theorem run_lengthSetup (input : ByteArray) (hfit : CalldataFits input) 
     padSentinel, padCopied, lengthOffsetWord, bitLengthWord,
     State.activeWordsAfterUInt256, hsizeWord, hoffWord, hzero, hadd]
 
-theorem gasSteps_lengthSetup (input : ByteArray) (hfit : CalldataFits input) :
+def gasSteps_lengthSetup (input : ByteArray) (hfit : CalldataFits input) :
     Challenge.EvmProof.GasSteps (padLengthReady input) (lengthLoopState input 0) := by
   apply Challenge.EvmProof.Stepper.runLocatedBlock_sound Artifact.referenceArtifact
     .Osaka lengthSetupPath
@@ -762,7 +976,7 @@ private theorem run_lengthBack (input : ByteArray) (i : Nat) :
     Challenge.EvmProof.Stepper.runInstr, lengthIncrementedState, lengthStoredState,
     lengthLoopState, lengthLoopStart_code]
 
-theorem gasSteps_lengthIteration (input : ByteArray) (i : Nat) (hi : i < 8) :
+def gasSteps_lengthIteration (input : ByteArray) (i : Nat) (hi : i < 8) :
     Challenge.EvmProof.GasSteps (lengthLoopState input i)
       (lengthLoopState input (i + 1)) := by
   have g₁ := Challenge.EvmProof.Stepper.runLocatedBlock_sound
@@ -783,7 +997,7 @@ theorem gasSteps_lengthIteration (input : ByteArray) (i : Nat) (hi : i < 8) :
     (run_lengthBack input i) (by rfl) (by rfl)
   exact g₁.trans (g₂.trans (g₃.trans (g₄.trans g₅)))
 
-theorem gasSteps_lengthLoop (input : ByteArray) :
+def gasSteps_lengthLoop (input : ByteArray) :
     Challenge.EvmProof.GasSteps (lengthLoopState input 0)
       (lengthLoopState input 8) := by
   exact Challenge.EvmProof.GasSteps.iterateBounded (count := 8)
@@ -918,7 +1132,7 @@ private theorem run_lengthExitReturn (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     lengthExitPoppedState, padReturned, List.exchange]
 
-theorem gasSteps_lengthExit (input : ByteArray) :
+def gasSteps_lengthExit (input : ByteArray) :
     Challenge.EvmProof.GasSteps (lengthLoopState input 8) (padReturned input) := by
   have g₁ := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka lengthExitComparePath
@@ -1140,7 +1354,7 @@ theorem lengthLoopMemory_eight (input : ByteArray) (hfit : CalldataFits input) :
 
 /-- Complete certified execution of initialization and the reference `pad`
 function, exposing the canonical padded-memory model. -/
-theorem gasSteps_pad (input : ByteArray) (hfit : CalldataFits input) :
+def gasSteps_pad (input : ByteArray) (hfit : CalldataFits input) :
     Challenge.EvmProof.GasSteps (initialState referenceBytecode input 0)
       (padReturned input) :=
   (Main.gasSteps_initialize input).trans

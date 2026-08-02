@@ -15,7 +15,6 @@ namespace Challenge.Sha256.Reference.Proofs.Bytecode.Main
 open EvmSemantics
 open EvmSemantics.EVM
 
-
 /-- Exact state transformer for one initialization store. -/
 def applyInitStore (s : State) (w : Artifact.InitStore) : State :=
   { s with
@@ -25,7 +24,7 @@ def applyInitStore (s : State) (w : Artifact.InitStore) : State :=
       (Data.Bytes.natToBytesPadded w.value.toNat 32) w.offset.toNat
     activeWords := s.activeWordsAfterUInt256 w.offset.toNat 32 }
 
-theorem gasSteps_initStore (s : State) (w : Artifact.InitStore)
+def gasSteps_initStore (s : State) (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores)
     (hpc : s.pc = UInt256.ofNat (Artifact.instructionPC w.index))
     (hstack : s.stack = [])
@@ -134,49 +133,54 @@ theorem gasSteps_initStore (s : State) (w : Artifact.InitStore)
       decStore (by simp [s₂, s₁, hstack])
       (by norm_num [s₂, s₁, hstack, Operation.pushArity, Operation.popArity])
       (by simpa [s₂, s₁] using hrun) (by simpa [s₂, s₁] using hnp)
-    simpa [applyInitStore, s₂, s₁, hstack, pc₃,
-      State.activeWordsAfterUInt256] using gm
+    exact Challenge.EvmProof.GasSteps.cast gm rfl (by
+      simp [applyInitStore, s₂, s₁, pc₃,
+        State.activeWordsAfterUInt256])
   exact g₁.trans (g₂.trans g₃)
 
 def InitChain : List Artifact.InitStore → Prop
   | [] | [_] => True
   | a :: b :: rest => b.index = a.index + 3 ∧ InitChain (b :: rest)
 
-theorem gasSteps_initStores (s : State) (ws : List Artifact.InitStore)
-    (hmem : ∀ w, w ∈ ws → w ∈ Artifact.initStores)
-    (hchain : InitChain ws)
-    (hpc : ∀ w, ws.head? = some w →
-      s.pc = UInt256.ofNat (Artifact.instructionPC w.index))
-    (hstack : s.stack = [])
-    (hcode : s.executionEnv.code = referenceBytecode)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompile s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps s (ws.foldl applyInitStore s) := by
-  induction ws generalizing s with
-  | nil => exact Challenge.EvmProof.GasSteps.refl s
-  | cons w ws ih =>
+def gasSteps_initStores (s : State) :
+    (ws : List Artifact.InitStore) →
+    (∀ w, w ∈ ws → w ∈ Artifact.initStores) →
+    InitChain ws →
+    (∀ w, ws.head? = some w →
+      s.pc = UInt256.ofNat (Artifact.instructionPC w.index)) →
+    s.stack = [] →
+    s.executionEnv.code = referenceBytecode →
+    s.halt = .Running →
+    Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false →
+    Challenge.EvmProof.GasSteps s (ws.foldl applyInitStore s)
+  | [], _, _, _, _, _, _, _ => Challenge.EvmProof.GasSteps.refl s
+  | [w], hmem, _, hpc, hstack, hcode, hrun, hnp => by
       have hw : w ∈ Artifact.initStores := hmem w (by simp)
       have hpcw : s.pc = UInt256.ofNat (Artifact.instructionPC w.index) :=
         hpc w (by simp)
-      have gone := gasSteps_initStore s w hw hpcw hstack hcode hrun hnp
-      cases ws with
-      | nil => simpa using gone
-      | cons next rest =>
-          have hnext : next.index = w.index + 3 := hchain.1
-          have htail : InitChain (next :: rest) := hchain.2
-          have grest := ih (applyInitStore s w)
-            (fun x hx => hmem x (List.mem_cons_of_mem w hx))
-            htail
-            (fun x hx => by
-              simp only [List.head?_cons, Option.some.injEq] at hx
-              subst x
-              simp [applyInitStore, hnext])
-            (by simp [applyInitStore])
-            (by simpa [applyInitStore] using hcode)
-            (by simpa [applyInitStore] using hrun)
-            (by simpa [applyInitStore] using hnp)
-          simpa [List.foldl] using gone.trans grest
+      let gone := gasSteps_initStore s w hw hpcw hstack hcode hrun hnp
+      exact Challenge.EvmProof.GasSteps.cast gone rfl (by simp)
+  | w :: next :: rest, hmem, hchain, hpc, hstack, hcode, hrun, hnp => by
+      have hw : w ∈ Artifact.initStores := hmem w (by simp)
+      have hpcw : s.pc = UInt256.ofNat (Artifact.instructionPC w.index) :=
+        hpc w (by simp)
+      let gone := gasSteps_initStore s w hw hpcw hstack hcode hrun hnp
+      have hnext : next.index = w.index + 3 := hchain.1
+      have htail : InitChain (next :: rest) := hchain.2
+      let grest := gasSteps_initStores (applyInitStore s w) (next :: rest)
+        (fun x hx => hmem x (List.mem_cons_of_mem w hx))
+        htail
+        (fun x hx => by
+          simp only [List.head?_cons, Option.some.injEq] at hx
+          subst x
+          simp [applyInitStore, hnext])
+        (by simp [applyInitStore])
+        (by simpa [applyInitStore] using hcode)
+        (by simpa [applyInitStore] using hrun)
+        (by simpa [applyInitStore] using hnp)
+      let joined := gone.trans grest
+      exact Challenge.EvmProof.GasSteps.cast joined rfl (by simp [List.foldl])
 
 def initStart (calldata : ByteArray) : State :=
   { initialState referenceBytecode calldata 0 with
@@ -185,7 +189,7 @@ def initStart (calldata : ByteArray) : State :=
 def initializedState (calldata : ByteArray) : State :=
   Artifact.initStores.foldl applyInitStore (initStart calldata)
 
-theorem gasSteps_mainJumpdest (calldata : ByteArray) :
+def gasSteps_mainJumpdest (calldata : ByteArray) :
     Challenge.EvmProof.GasSteps
       (Reference.atPC calldata Reference.mainPC) (initStart calldata) := by
   have hv := Artifact.mainEntry_valid
@@ -195,7 +199,7 @@ theorem gasSteps_mainJumpdest (calldata : ByteArray) :
     simp [Reference.mainPC]) (by simpa [Reference.mainPC, hv.1] using hd)
   simpa [initStart, Reference.atPC, Reference.mainPC, hv.2.2] using g
 
-theorem gasSteps_initialize (calldata : ByteArray) :
+def gasSteps_initialize (calldata : ByteArray) :
     Challenge.EvmProof.GasSteps
       (initialState referenceBytecode calldata 0) (initializedState calldata) := by
   have body := gasSteps_initStores (initStart calldata) Artifact.initStores
@@ -209,8 +213,10 @@ theorem gasSteps_initialize (calldata : ByteArray) :
     (by simp [initStart, initialState])
     (by simp [initStart, initialState])
     (by simp [initStart, initialState, deployAddress_not_precompile])
+  have body' : Challenge.EvmProof.GasSteps (initStart calldata)
+      (initializedState calldata) :=
+    Challenge.EvmProof.GasSteps.cast body rfl (by simp [initializedState])
   exact (Reference.gasSteps_to_main calldata).trans
-    ((gasSteps_mainJumpdest calldata).trans (by
-      simpa [initializedState] using body))
+    ((gasSteps_mainJumpdest calldata).trans body')
 
 end Challenge.Sha256.Reference.Proofs.Bytecode.Main
