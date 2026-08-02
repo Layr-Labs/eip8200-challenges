@@ -106,14 +106,13 @@ jobs:
             exit 1
           fi
 
-      # Tier 1: the reference implementation must still compile through the
-      # verified compiler and return exactly EvmSemantics.Crypto.Sha256.hash on
-      # every FIPS and padding-boundary vector, from clean and dirty initial
-      # states. This also pins the reference's gas in the job log.
-      - name: Tier 1 — score the reference implementation
+      # Score the reference and every submission, validate optional proved
+      # input-size schedules, and keep the checked gas tables in the SHA README
+      # synchronized with the exact submitted artifacts.
+      - name: Verify and report SHA-256 gas
         run: |
-          lake build sha256challenge
-          lake exe sha256challenge
+          scripts/report-sha256-gas.sh --self-test
+          scripts/check-sha256-gas-report.sh
 
       # The scorer must be able to reject: a candidate that returns 32 zero
       # bytes has to fail every vector. A green Tier-1 gate that cannot fail
