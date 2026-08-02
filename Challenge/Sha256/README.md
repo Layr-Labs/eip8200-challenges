@@ -60,5 +60,3 @@ finite Tier-1 test runner. Passing it is useful evidence, never a proof.
 The short umbrella modules `ProofSupport.lean`, `AdditionalGoals.lean`,
 `Reference.lean`, and `Reference/Proofs.lean` expose each layer without mixing
 their dependencies.
-`Reduction.lean` is only a compatibility import for work using the former Yul
-reduction path.
