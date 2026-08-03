@@ -19,19 +19,19 @@ open Compression
 
 private theorem leftRotation_pos (i : Nat) (hi : i < 80) :
     0 < Crypto.Ripemd160.s[i]! := by
-  interval_cases i <;> native_decide
+  interval_cases i <;> decide
 
 private theorem leftRotation_lt (i : Nat) (hi : i < 80) :
     Crypto.Ripemd160.s[i]! < 32 := by
-  interval_cases i <;> native_decide
+  interval_cases i <;> decide
 
 private theorem rightRotation_pos (i : Nat) (hi : i < 80) :
     0 < Crypto.Ripemd160.sP[i]! := by
-  interval_cases i <;> native_decide
+  interval_cases i <;> decide
 
 private theorem rightRotation_lt (i : Nat) (hi : i < 80) :
     Crypto.Ripemd160.sP[i]! < 32 := by
-  interval_cases i <;> native_decide
+  interval_cases i <;> decide
 
 def leftStep (word : Nat → UInt32) (i : Nat) (x : Working) : Working :=
   round x (i / 16) (word (Crypto.Ripemd160.r[i]!))
