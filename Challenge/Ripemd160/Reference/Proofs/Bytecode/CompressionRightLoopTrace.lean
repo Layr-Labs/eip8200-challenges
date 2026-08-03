@@ -104,31 +104,36 @@ def gasSteps_rightRoundSetup (s : State)
   have hp' : Challenge.EvmProof.GasSteps
       (rightBodyAt s messageOffset returnDest rest i)
       (TableTrace.tableAtEntry q0 (UInt256.ofNat 1472) (UInt256.ofNat i)
-        (UInt256.ofNat 767) tail1) := by simpa [q0, tail1] using gp
+        (UInt256.ofNat 767) tail1) :=
+    Challenge.EvmProof.GasSteps.cast gp rfl (by simp [q0, tail1])
   have ht1' : Challenge.EvmProof.GasSteps
       (TableTrace.tableAtEntry q0 (UInt256.ofNat 1472) (UInt256.ofNat i)
-        (UInt256.ofNat 767) tail1) q1 := by
-    simpa [q1, q0, tail1, rightFirstReturned] using gt1
+        (UInt256.ofNat 767) tail1) q1 :=
+    Challenge.EvmProof.GasSteps.cast gt1 rfl (by
+      simp [q1, q0, tail1, rightFirstReturned])
   have hm' : Challenge.EvmProof.GasSteps q1
       (TableTrace.tableAtEntry q1 (UInt256.ofNat 1280) (UInt256.ofNat i)
-        (UInt256.ofNat 780) tail2) := by simpa [q1, tail2] using gm
+        (UInt256.ofNat 780) tail2) :=
+    Challenge.EvmProof.GasSteps.cast gm rfl (by simp [q1, tail2])
   have ht2' : Challenge.EvmProof.GasSteps
       (TableTrace.tableAtEntry q1 (UInt256.ofNat 1280) (UInt256.ofNat i)
-        (UInt256.ofNat 780) tail2) q2 := by
-    simpa [q2, q1, tail2, rightSecondReturned] using gt2
+        (UInt256.ofNat 780) tail2) q2 :=
+    Challenge.EvmProof.GasSteps.cast gt2 rfl (by
+      simp [q2, q1, tail2, rightSecondReturned])
   have hs' : Challenge.EvmProof.GasSteps q2
       (RoundTrace.roundEntry q2 (UInt256.ofNat 352) (rightRoundIndex i)
         (TableTrace.tableValue q1 (UInt256.ofNat 1280) (UInt256.ofNat i))
         (TableTrace.tableValue s (UInt256.ofNat 1472) (UInt256.ofNat i))
-        (constantAt s 1728 i) (UInt256.ofNat 792) roundTail) := by
-    simpa [q2, q1, roundTail] using gs
+        (constantAt s 1728 i) (UInt256.ofNat 792) roundTail) :=
+    Challenge.EvmProof.GasSteps.cast gs rfl (by simp [q2, q1, roundTail])
   have gr' : Challenge.EvmProof.GasSteps
       (RoundTrace.roundEntry q2 (UInt256.ofNat 352) (rightRoundIndex i)
         (TableTrace.tableValue q1 (UInt256.ofNat 1280) (UInt256.ofNat i))
         (TableTrace.tableValue s (UInt256.ofNat 1472) (UInt256.ofNat i))
         (constantAt s 1728 i) (UInt256.ofNat 792) roundTail)
-      (rightRoundState s messageOffset returnDest rest i) := by
-    simpa [rightRoundState, q2, q1, roundTail] using gr
+      (rightRoundState s messageOffset returnDest rest i) :=
+    Challenge.EvmProof.GasSteps.cast gr rfl (by
+      simp [rightRoundState, q2, q1, roundTail])
   exact hp'.trans (ht1'.trans (hm'.trans (ht2'.trans (hs'.trans gr'))))
 
 set_option linter.unusedSimpArgs false in
