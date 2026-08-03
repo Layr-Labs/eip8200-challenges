@@ -58,6 +58,9 @@ def vectors : List Vector :=
   , { label := "120-byte", input := patterned 120 }
   , { label := "128-byte", input := patterned 128 }
   , { label := "256-byte", input := patterned 256 }
+  -- Seven padded blocks cross a quadratic-memory-cost boundary.  This catches
+  -- formulas that incorrectly trade one active word for a constant three gas.
+  , { label := "376-byte", input := patterned 376 }
   , { label := "1000-byte", input := patterned 1000 }
   , { label := "1000 a's", input := repeated 1000 0x61 } ]
 
