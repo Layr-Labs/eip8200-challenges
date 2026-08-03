@@ -17,7 +17,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open YulEvmCompiler
 
-private def op (opcode : UInt8) : Instr :=
+def op (opcode : UInt8) : Instr :=
   match Decode.opcodeOf opcode with
   | some decoded => .op decoded
   | none => .op .INVALID
@@ -876,5 +876,214 @@ def referenceArtifact : Challenge.EvmProof.ProgramArtifact where
 
 def instructionPC (index : Nat) : Nat :=
   referenceArtifact.instructionPC index
+
+@[simp] theorem referenceArtifact_pc_0 :
+    referenceArtifact.instructionPC 0 = 0x0 := by rfl
+
+@[simp] theorem referenceArtifact_pc_1 :
+    referenceArtifact.instructionPC 1 = 0x3 := by rfl
+
+@[simp] theorem referenceArtifact_pc_20 :
+    referenceArtifact.instructionPC 20 = 0x1b := by rfl
+
+@[simp] theorem referenceArtifact_pc_21 :
+    referenceArtifact.instructionPC 21 = 0x1c := by rfl
+
+@[simp] theorem referenceArtifact_pc_22 :
+    referenceArtifact.instructionPC 22 = 0x1f := by rfl
+
+@[simp] theorem referenceArtifact_pc_35 :
+    referenceArtifact.instructionPC 35 = 0x2e := by rfl
+
+@[simp] theorem referenceArtifact_pc_36 :
+    referenceArtifact.instructionPC 36 = 0x2f := by rfl
+
+@[simp] theorem referenceArtifact_pc_37 :
+    referenceArtifact.instructionPC 37 = 0x32 := by rfl
+
+@[simp] theorem referenceArtifact_pc_52 :
+    referenceArtifact.instructionPC 52 = 0x46 := by rfl
+
+@[simp] theorem referenceArtifact_pc_53 :
+    referenceArtifact.instructionPC 53 = 0x47 := by rfl
+
+@[simp] theorem referenceArtifact_pc_54 :
+    referenceArtifact.instructionPC 54 = 0x4a := by rfl
+
+@[simp] theorem referenceArtifact_pc_67 :
+    referenceArtifact.instructionPC 67 = 0x5a := by rfl
+
+@[simp] theorem referenceArtifact_pc_68 :
+    referenceArtifact.instructionPC 68 = 0x5b := by rfl
+
+@[simp] theorem referenceArtifact_pc_69 :
+    referenceArtifact.instructionPC 69 = 0x5e := by rfl
+
+@[simp] theorem referenceArtifact_pc_83 :
+    referenceArtifact.instructionPC 83 = 0x73 := by rfl
+
+@[simp] theorem referenceArtifact_pc_84 :
+    referenceArtifact.instructionPC 84 = 0x74 := by rfl
+
+@[simp] theorem referenceArtifact_pc_85 :
+    referenceArtifact.instructionPC 85 = 0x77 := by rfl
+
+@[simp] theorem referenceArtifact_pc_105 :
+    referenceArtifact.instructionPC 105 = 0x8e := by rfl
+
+@[simp] theorem referenceArtifact_pc_106 :
+    referenceArtifact.instructionPC 106 = 0x8f := by rfl
+
+@[simp] theorem referenceArtifact_pc_107 :
+    referenceArtifact.instructionPC 107 = 0x92 := by rfl
+
+@[simp] theorem referenceArtifact_pc_205 :
+    referenceArtifact.instructionPC 205 = 0x10f := by rfl
+
+@[simp] theorem referenceArtifact_pc_206 :
+    referenceArtifact.instructionPC 206 = 0x110 := by rfl
+
+@[simp] theorem referenceArtifact_pc_207 :
+    referenceArtifact.instructionPC 207 = 0x113 := by rfl
+
+@[simp] theorem referenceArtifact_pc_313 :
+    referenceArtifact.instructionPC 313 = 0x1b2 := by rfl
+
+@[simp] theorem referenceArtifact_pc_314 :
+    referenceArtifact.instructionPC 314 = 0x1b3 := by rfl
+
+@[simp] theorem referenceArtifact_pc_315 :
+    referenceArtifact.instructionPC 315 = 0x1b6 := by rfl
+
+@[simp] theorem referenceArtifact_pc_346 :
+    referenceArtifact.instructionPC 346 = 0x1db := by rfl
+
+@[simp] theorem referenceArtifact_pc_347 :
+    referenceArtifact.instructionPC 347 = 0x1dc := by rfl
+
+@[simp] theorem referenceArtifact_pc_348 :
+    referenceArtifact.instructionPC 348 = 0x1df := by rfl
+
+@[simp] theorem referenceArtifact_pc_410 :
+    referenceArtifact.instructionPC 410 = 0x231 := by rfl
+
+@[simp] theorem referenceArtifact_pc_411 :
+    referenceArtifact.instructionPC 411 = 0x232 := by rfl
+
+@[simp] theorem referenceArtifact_pc_412 :
+    referenceArtifact.instructionPC 412 = 0x235 := by rfl
+
+@[simp] theorem referenceArtifact_pc_448 :
+    referenceArtifact.instructionPC 448 = 0x268 := by rfl
+
+@[simp] theorem referenceArtifact_pc_449 :
+    referenceArtifact.instructionPC 449 = 0x269 := by rfl
+
+@[simp] theorem referenceArtifact_pc_450 :
+    referenceArtifact.instructionPC 450 = 0x26c := by rfl
+
+@[simp] theorem referenceArtifact_pc_647 :
+    referenceArtifact.instructionPC 647 = 0x3c1 := by rfl
+
+@[simp] theorem referenceArtifact_pc_648 :
+    referenceArtifact.instructionPC 648 = 0x3c2 := by rfl
+
+@[simp] theorem referenceArtifact_pc_649 :
+    referenceArtifact.instructionPC 649 = 0x3c5 := by rfl
+
+@[simp] theorem referenceArtifact_pc_682 :
+    referenceArtifact.instructionPC 682 = 0x3ee := by rfl
+
+@[simp] theorem validJumpDest_1b :
+    Decode.isValidJumpDest referenceBytecode 0x1b = true := by
+  have h := referenceArtifact.isValidJumpDest_index 20 (by rfl)
+  change Decode.isValidJumpDest referenceBytecode
+    (referenceArtifact.instructionPC 20) = true at h
+  simpa using h
+
+@[simp] theorem validJumpDest_2e :
+    Decode.isValidJumpDest referenceBytecode 0x2e = true := by
+  have h := referenceArtifact.isValidJumpDest_index 35 (by rfl)
+  change Decode.isValidJumpDest referenceBytecode
+    (referenceArtifact.instructionPC 35) = true at h
+  simpa using h
+
+@[simp] theorem validJumpDest_46 :
+    Decode.isValidJumpDest referenceBytecode 0x46 = true := by
+  have h := referenceArtifact.isValidJumpDest_index 52 (by rfl)
+  change Decode.isValidJumpDest referenceBytecode
+    (referenceArtifact.instructionPC 52) = true at h
+  simpa using h
+
+@[simp] theorem validJumpDest_5a :
+    Decode.isValidJumpDest referenceBytecode 0x5a = true := by
+  have h := referenceArtifact.isValidJumpDest_index 67 (by rfl)
+  change Decode.isValidJumpDest referenceBytecode
+    (referenceArtifact.instructionPC 67) = true at h
+  simpa using h
+
+@[simp] theorem validJumpDest_73 :
+    Decode.isValidJumpDest referenceBytecode 0x73 = true := by
+  have h := referenceArtifact.isValidJumpDest_index 83 (by rfl)
+  change Decode.isValidJumpDest referenceBytecode
+    (referenceArtifact.instructionPC 83) = true at h
+  simpa using h
+
+@[simp] theorem validJumpDest_8e :
+    Decode.isValidJumpDest referenceBytecode 0x8e = true := by
+  have h := referenceArtifact.isValidJumpDest_index 105 (by rfl)
+  change Decode.isValidJumpDest referenceBytecode
+    (referenceArtifact.instructionPC 105) = true at h
+  simpa using h
+
+@[simp] theorem validJumpDest_10f :
+    Decode.isValidJumpDest referenceBytecode 0x10f = true := by
+  have h := referenceArtifact.isValidJumpDest_index 205 (by rfl)
+  change Decode.isValidJumpDest referenceBytecode
+    (referenceArtifact.instructionPC 205) = true at h
+  simpa using h
+
+@[simp] theorem validJumpDest_1b2 :
+    Decode.isValidJumpDest referenceBytecode 0x1b2 = true := by
+  have h := referenceArtifact.isValidJumpDest_index 313 (by rfl)
+  change Decode.isValidJumpDest referenceBytecode
+    (referenceArtifact.instructionPC 313) = true at h
+  simpa using h
+
+@[simp] theorem validJumpDest_1db :
+    Decode.isValidJumpDest referenceBytecode 0x1db = true := by
+  have h := referenceArtifact.isValidJumpDest_index 346 (by rfl)
+  change Decode.isValidJumpDest referenceBytecode
+    (referenceArtifact.instructionPC 346) = true at h
+  simpa using h
+
+@[simp] theorem validJumpDest_231 :
+    Decode.isValidJumpDest referenceBytecode 0x231 = true := by
+  have h := referenceArtifact.isValidJumpDest_index 410 (by rfl)
+  change Decode.isValidJumpDest referenceBytecode
+    (referenceArtifact.instructionPC 410) = true at h
+  simpa using h
+
+@[simp] theorem validJumpDest_268 :
+    Decode.isValidJumpDest referenceBytecode 0x268 = true := by
+  have h := referenceArtifact.isValidJumpDest_index 448 (by rfl)
+  change Decode.isValidJumpDest referenceBytecode
+    (referenceArtifact.instructionPC 448) = true at h
+  simpa using h
+
+@[simp] theorem validJumpDest_3c1 :
+    Decode.isValidJumpDest referenceBytecode 0x3c1 = true := by
+  have h := referenceArtifact.isValidJumpDest_index 647 (by rfl)
+  change Decode.isValidJumpDest referenceBytecode
+    (referenceArtifact.instructionPC 647) = true at h
+  simpa using h
+
+@[simp] theorem validJumpDest_3ee :
+    Decode.isValidJumpDest referenceBytecode 0x3ee = true := by
+  have h := referenceArtifact.isValidJumpDest_index 682 (by rfl)
+  change Decode.isValidJumpDest referenceBytecode
+    (referenceArtifact.instructionPC 682) = true at h
+  simpa using h
+
 
 end Challenge.Ripemd160.Reference.Proofs.Bytecode.Artifact
