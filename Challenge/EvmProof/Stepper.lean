@@ -75,6 +75,13 @@ def runInstr (instruction : Instr) (s : State) : Option State :=
     | .op .LT => match s.stack with
         | a :: b :: rest => some { s with stack := UInt256.lt a b :: rest, pc := s.pc.succ }
         | _ => none
+    | .op .EQ => match s.stack with
+        | a :: b :: rest => some { s with stack := UInt256.eq a b :: rest, pc := s.pc.succ }
+        | _ => none
+    | .op .BYTE => match s.stack with
+        | i :: x :: rest => some { s with
+            stack := UInt256.byteAt i x :: rest, pc := s.pc.succ }
+        | _ => none
     | .op .ISZERO => match s.stack with
         | a :: rest => some { s with stack := UInt256.isZero a :: rest, pc := s.pc.succ }
         | _ => none
@@ -244,6 +251,8 @@ makeBinarySound sound_mul for .MUL via GasStep.mul
 makeBinarySound sound_sub for .SUB via GasStep.sub
 makeBinarySound sound_div for .DIV via GasStep.div
 makeBinarySound sound_lt for .LT via GasStep.lt
+makeBinarySound sound_eq for .EQ via GasStep.eq
+makeBinarySound sound_byte for .BYTE via GasStep.byte
 makeBinarySound sound_and for .AND via GasStep.land
 makeBinarySound sound_or for .OR via GasStep.lor
 makeBinarySound sound_xor for .XOR via GasStep.xor
@@ -541,6 +550,8 @@ def runInstr_sound {instruction : Instr} {s t : State}
     | CompBit op =>
       cases op <;> first
         | exact (sound_lt hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_eq hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_byte hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_iszero hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_and hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_or hdecode hresult hrun hnp).trace gas hgas
