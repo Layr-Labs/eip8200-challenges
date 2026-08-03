@@ -823,6 +823,28 @@ structure Located (artifact : ProgramArtifact) (fork : Fork) where
   atIndex : artifact.instructions[index]? = some instruction
   wellFormed : WellFormed fork instruction
 
+/-- One Boolean certificate establishes opcode availability and encoding
+well-formedness for every instruction in an artifact. -/
+def AllWellFormed (artifact : ProgramArtifact) (fork : Fork) : Prop :=
+  artifact.instructions.all (fun instruction =>
+    decide (WellFormed fork instruction)) = true
+
+theorem AllWellFormed.valid {artifact : ProgramArtifact} {fork : Fork}
+    (hcert : AllWellFormed artifact fork) {instruction : Instr}
+    (hmem : instruction ∈ artifact.instructions) :
+    WellFormed fork instruction := by
+  exact of_decide_eq_true ((List.all_eq_true.mp hcert) instruction hmem)
+
+/-- Build a proof-carrying location from an in-bounds instruction index and a
+single whole-artifact well-formedness certificate. -/
+def Located.ofIndex {artifact : ProgramArtifact} {fork : Fork}
+    (hcert : AllWellFormed artifact fork)
+    (index : Fin artifact.instructions.length) : Located artifact fork where
+  index := index.val
+  instruction := artifact.instructions[index.val]
+  atIndex := List.getElem?_eq_getElem index.isLt
+  wellFormed := hcert.valid (List.getElem_mem index.isLt)
+
 def runLocated {artifact : ProgramArtifact} {fork : Fork}
     (located : Located artifact fork)
     (s : State) : Option State :=

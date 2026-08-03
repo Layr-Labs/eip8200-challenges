@@ -1,4 +1,5 @@
 import Challenge.EvmProof.Program
+import Challenge.EvmProof.Stepper
 import Challenge.Modexp.Reference.Bytecode
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -995,6 +996,14 @@ def referenceArtifact : Challenge.EvmProof.ProgramArtifact where
   code := referenceBytecode
   instructions := referenceInstructions
   assembly_eq := assemble_referenceInstructions
+
+theorem allWellFormed :
+    Challenge.EvmProof.Stepper.AllWellFormed referenceArtifact .Osaka := by
+  simp [Challenge.EvmProof.Stepper.AllWellFormed, referenceArtifact,
+    referenceInstructions, Challenge.EvmProof.Stepper.WellFormed,
+    YulEvmCompiler.plainOp]
+  repeat' apply And.intro
+  all_goals decide
 
 def instructionPC (index : Nat) : Nat :=
   referenceArtifact.instructionPC index
