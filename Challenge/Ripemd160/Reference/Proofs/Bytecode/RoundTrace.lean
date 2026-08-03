@@ -843,6 +843,109 @@ def roundResult (x : Compression.EvmWorking) (j : Nat) (word : UInt256)
       (UInt256.ofNat 0xffffffff)
     e := UInt256.land x.d (UInt256.ofNat 0xffffffff) }
 
+/-- The five contiguous words at a non-wrapping natural-number base. -/
+def workingAtNat (s : State) (base : Nat) : Compression.EvmWorking :=
+  { a := MachineState.readWord s.memory base
+    b := MachineState.readWord s.memory (base + 32)
+    c := MachineState.readWord s.memory (base + 64)
+    d := MachineState.readWord s.memory (base + 96)
+    e := MachineState.readWord s.memory (base + 128) }
+
+private theorem readWord_writePadded32_disjoint (memory : ByteArray)
+    (value readStart writeStart : Nat)
+    (hdisjoint : readStart + 32 ≤ writeStart ∨
+      writeStart + 32 ≤ readStart) :
+    MachineState.readWord
+        (MachineState.writeBytes memory
+          (Data.Bytes.natToBytesPadded value 32) writeStart) readStart =
+      MachineState.readWord memory readStart := by
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
+  simpa only [YulEvmCompiler.BytesLemmas.natToBytesPadded_size] using hdisjoint
+
+private theorem land_mask32_idem (x : UInt256) :
+    UInt256.land
+        (UInt256.land x (UInt256.ofNat 0xffffffff))
+        (UInt256.ofNat 0xffffffff) =
+      UInt256.land x (UInt256.ofNat 0xffffffff) := by
+  change (x &&& UInt256.ofNat 0xffffffff) &&&
+      UInt256.ofNat 0xffffffff = x &&& UInt256.ofNat 0xffffffff
+  simpa [Challenge.EvmProof.Word.mask32] using
+    Challenge.EvmProof.Word.mask32_idem x
+
+set_option linter.unusedSimpArgs false in
+/-- The concrete helper's five stores are exactly `roundResult`. -/
+theorem roundReturned_workingAtNat (s : State) (base : Nat)
+    (hbase : base + 160 < 2 ^ 256) (j : Nat)
+    (wordIndex rotation k returnDest : UInt256) (rest : List UInt256) :
+    workingAtNat
+        (roundReturned s (UInt256.ofNat base) j wordIndex rotation k
+          returnDest rest) base =
+      roundResult (workingAtNat s base) j
+        (roundWord s (UInt256.ofNat base) wordIndex) rotation.toNat k := by
+  have hslot (n : Nat) (hn : n ≤ 4) :
+      TableTrace.slotAddress (UInt256.ofNat base) (UInt256.ofNat n) =
+        UInt256.ofNat (base + n * 32) := by
+    exact TableTrace.slotAddress_ofNat base n (by omega) (by omega)
+  have htoNat (n : Nat) (hn : n ≤ 160) :
+      (UInt256.ofNat (base + n)).toNat = base + n := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by omega)]
+  have hbaseToNat : (UInt256.ofNat base).toNat = base := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by omega)]
+  have hadd (n : Nat) (hn : n ≤ 160) :
+      UInt256.ofNat base + UInt256.ofNat n = UInt256.ofNat (base + n) := by
+    exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
+  have hrotation : UInt256.ofNat rotation.toNat = rotation := by
+    apply Challenge.EvmProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat]
+    exact Nat.mod_eq_of_lt rotation.val.isLt
+  simp (config := { maxSteps := 500000 }) (discharger := omega)
+    [workingAtNat, roundReturned, genericReturned, genericAfterThirdStore,
+      genericAfterFirstStores, genericNextB, genericT0, xReturnedState,
+      afterLoads, roundResult, roundWord, loadedA, loadedB, loadedC, loadedD,
+      loadedE, TableTrace.atReturned, TableTrace.storedWord,
+      hslot, hadd, htoNat, hbaseToNat, hrotation,
+      Challenge.EvmProof.Memory.readWord_writeWord,
+      readWord_writePadded32_disjoint,
+      Challenge.EvmProof.Word.mask32,
+      Challenge.EvmProof.Word.mask32_idem, land_mask32_idem]
+
+set_option linter.unusedSimpArgs false in
+/-- All 32-byte words disjoint from the five-word working region survive a
+round unchanged. -/
+theorem roundReturned_word_outside (s : State) (base address : Nat)
+    (hbase : base + 160 < 2 ^ 256)
+    (houtside : address + 32 ≤ base ∨ base + 160 ≤ address)
+    (j : Nat) (wordIndex rotation k returnDest : UInt256)
+    (rest : List UInt256) :
+    MachineState.readWord
+        (roundReturned s (UInt256.ofNat base) j wordIndex rotation k
+          returnDest rest).memory address =
+      MachineState.readWord s.memory address := by
+  have hslot (n : Nat) (hn : n ≤ 4) :
+      TableTrace.slotAddress (UInt256.ofNat base) (UInt256.ofNat n) =
+        UInt256.ofNat (base + n * 32) := by
+    exact TableTrace.slotAddress_ofNat base n (by omega) (by omega)
+  have htoNat (n : Nat) (hn : n ≤ 160) :
+      (UInt256.ofNat (base + n)).toNat = base + n := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by omega)]
+  have hbaseToNat : (UInt256.ofNat base).toNat = base := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by omega)]
+  have hadd (n : Nat) (hn : n ≤ 160) :
+      UInt256.ofNat base + UInt256.ofNat n = UInt256.ofNat (base + n) := by
+    exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
+  rcases houtside with hbefore | hafter
+  all_goals
+    simp (config := { maxSteps := 500000 }) (discharger := omega)
+      [roundReturned, genericReturned, genericAfterThirdStore,
+        genericAfterFirstStores, xReturnedState, afterLoads,
+        TableTrace.atReturned, TableTrace.storedWord,
+        hslot, hadd, htoNat, hbaseToNat,
+        readWord_writePadded32_disjoint]
+
 private theorem rotlValue_ofUInt32 (x : UInt32) (n : Nat)
     (hn0 : 0 < n) (hn : n < 32) :
     rotlValue (Challenge.EvmProof.Word.ofUInt32 x) (UInt256.ofNat n) =
