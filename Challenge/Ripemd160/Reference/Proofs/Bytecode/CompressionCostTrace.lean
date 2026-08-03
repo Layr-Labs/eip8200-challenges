@@ -87,7 +87,7 @@ private theorem soundBlock_cost_potential
   exact noMemoryCost_eq_static located.instruction q fork hq
     (hfree located hmem)
 
-private theorem blockCost_potential
+theorem blockCost_potential
     {artifact : ProgramArtifact} {fork : Fork}
     (path : List (Stepper.Located artifact fork)) (s t : State)
     (hresult : Stepper.runLocatedBlock path s = some t)
@@ -235,6 +235,198 @@ theorem copyState_cost_potential (s : State)
       hrun, hcap, Challenge.EvmProof.Word.word_toNat_ofNat, Nat.add_assoc]
   rw [hwork] at hraw
   simpa [gasSteps_copyState, scheduleReturned] using hraw
+
+def scheduleIterationWork : Nat :=
+  Meter.runLocatedBlockStaticCost Schedule.conditionPath +
+  Meter.runLocatedBlockStaticCost Schedule.setupReadPath +
+  Meter.runLocatedBlockStaticCost Schedule.readLEPath +
+  Meter.runLocatedBlockStaticCost Schedule.setupXSetPath +
+  Meter.runLocatedBlockStaticCost Schedule.xSetPath +
+  Meter.runLocatedBlockStaticCost Schedule.incrementPath
+
+def scheduleWork : Nat :=
+  Meter.runLocatedBlockStaticCost Schedule.scheduleStartPath +
+  16 * scheduleIterationWork +
+  Meter.runLocatedBlockStaticCost Schedule.conditionPath +
+  Meter.runLocatedBlockStaticCost Schedule.exitPath
+
+theorem scheduleIterationWork_eq : scheduleIterationWork = 230 := by
+  native_decide
+
+theorem scheduleWork_eq : scheduleWork = 3722 := by native_decide
+
+theorem readLE_cost_potential (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (i : Nat) (hstack : rest.length < 1012)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (Schedule.gasSteps_readLE s msgOff returnDest rest i hstack hcode hfork
+      hrun hnp).cost + MachineState.memCost s.activeWords.toNat =
+      Meter.runLocatedBlockStaticCost Schedule.readLEPath +
+        MachineState.memCost
+          (Schedule.afterRead s msgOff returnDest rest i).activeWords.toNat := by
+  have hraw := blockCost_potential Schedule.readLEPath
+    (Schedule.readEntry s msgOff returnDest rest i)
+    (Schedule.afterRead s msgOff returnDest rest i)
+    (Schedule.run_readLE s msgOff returnDest rest i hstack hcode hrun)
+    (by simpa [Schedule.readEntry] using hfork)
+    (by simp [Schedule.readLEPath, CopyFree])
+  simpa [Schedule.gasSteps_readLE, Schedule.readEntry] using hraw
+
+theorem scheduleIteration_cost_potential (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256)
+    (i : Nat) (hi : i < 16) (hstack : rest.length < 1012)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (Schedule.gasSteps_iteration_of_readLE s msgOff returnDest rest i hi hstack
+      hcode hfork hrun hnp
+      (Schedule.gasSteps_readLE s msgOff returnDest rest i hstack hcode hfork
+        hrun hnp)).cost + MachineState.memCost s.activeWords.toNat =
+      scheduleIterationWork + MachineState.memCost
+        (Schedule.afterIteration s msgOff returnDest rest i).activeWords.toNat := by
+  let q0 := Schedule.afterCondition s msgOff returnDest rest i
+  let q1 := Schedule.readEntry s msgOff returnDest rest i
+  let q2 := Schedule.afterRead s msgOff returnDest rest i
+  let q3 := Schedule.xSetEntry s msgOff returnDest rest i
+  let q4 := Schedule.afterStore s msgOff returnDest rest i
+  let q5 := Schedule.afterIteration s msgOff returnDest rest i
+  have h0 := blockCost_potential Schedule.conditionPath
+    (Schedule.loopAt s msgOff returnDest rest i) q0
+    (Schedule.run_condition_continue s msgOff returnDest rest i hi (by omega) hrun)
+    (by simpa [Schedule.loopAt] using hfork)
+    (by simp [Schedule.conditionPath, CopyFree])
+  have h1 := blockCost_potential Schedule.setupReadPath q0 q1
+    (Schedule.run_setupRead s msgOff returnDest rest i hi (by omega) hcode hrun)
+    (by simpa [q0, Schedule.afterCondition, State.fork] using hfork)
+    (by simp [Schedule.setupReadPath, CopyFree])
+  have h2 := readLE_cost_potential s msgOff returnDest rest i hstack hcode
+    hfork hrun hnp
+  have h3 := blockCost_potential Schedule.setupXSetPath q2 q3
+    (Schedule.run_setupXSet s msgOff returnDest rest i (by omega) hcode hrun)
+    (by simpa [q2, Schedule.afterRead, State.fork] using hfork)
+    (by simp [Schedule.setupXSetPath, CopyFree])
+  have h4 := blockCost_potential Schedule.xSetPath q3 q4
+    (Schedule.run_xSet s msgOff returnDest rest i hi (by omega) hcode hrun)
+    (by simpa [q3, Schedule.xSetEntry, Schedule.afterRead, State.fork] using hfork)
+    (by simp [Schedule.xSetPath, CopyFree])
+  have h5 := blockCost_potential Schedule.incrementPath q4 q5
+    (Schedule.run_increment s msgOff returnDest rest i hi (by omega) hcode hrun)
+    (by simpa [q4, Schedule.afterStore, Schedule.afterRead, State.fork] using hfork)
+    (by simp [Schedule.incrementPath, CopyFree])
+  have h01 := potential_trans _ _ _ _ _ _ _ h0 h1
+  have h012 := potential_trans _ _ _ _ _ _ _ h01 h2
+  have h0123 := potential_trans _ _ _ _ _ _ _ h012 h3
+  have h01234 := potential_trans _ _ _ _ _ _ _ h0123 h4
+  have hall := potential_trans _ _ _ _ _ _ _ h01234 h5
+  simpa [Schedule.gasSteps_iteration_of_readLE, Schedule.gasSteps_readLE,
+    scheduleIterationWork, q0, q1, q2, q3, q4, q5, Schedule.loopAt,
+    GasSteps.trans_cost, Nat.add_assoc] using hall
+
+private def concreteScheduleRead (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 1012)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (i : Nat) (_hi : i < 16) :
+    GasSteps
+      (Schedule.readEntry (Schedule.loopState s msgOff returnDest rest i)
+        msgOff returnDest rest i)
+      (Schedule.afterRead (Schedule.loopState s msgOff returnDest rest i)
+        msgOff returnDest rest i) := by
+  let q := Schedule.loopState s msgOff returnDest rest i
+  apply Schedule.gasSteps_readLE q msgOff returnDest rest i hstack
+  · simpa [q] using hcode
+  · simpa [q, State.fork] using hfork
+  · simpa [q] using hrun
+  · simpa [q] using hnp
+
+private def concreteScheduleIteration (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256)
+    (hstack : rest.length < 1012)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (i : Nat) (hi : i < 16) :
+    GasSteps (Schedule.loopState s msgOff returnDest rest i)
+      (Schedule.loopState s msgOff returnDest rest (i + 1)) := by
+  let q := Schedule.loopState s msgOff returnDest rest i
+  let gone := Schedule.gasSteps_iteration_of_readLE q msgOff returnDest rest
+    i hi hstack (by simpa [q] using hcode)
+    (by simpa [q, State.fork] using hfork) (by simpa [q] using hrun)
+    (by simpa [q] using hnp)
+    (by simpa [q] using
+      (concreteScheduleRead s msgOff returnDest rest hstack hcode hfork hrun
+        hnp i hi))
+  exact GasSteps.cast gone (by simp [q]) (by simp [q, Schedule.loopState])
+
+private theorem concreteScheduleIteration_cost_potential (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256)
+    (hstack : rest.length < 1012)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (i : Nat) (hi : i < 16) :
+    (concreteScheduleIteration s msgOff returnDest rest hstack hcode hfork
+      hrun hnp i hi).cost + MachineState.memCost
+        (Schedule.loopState s msgOff returnDest rest i).activeWords.toNat =
+      scheduleIterationWork + MachineState.memCost
+        (Schedule.loopState s msgOff returnDest rest (i + 1)).activeWords.toNat := by
+  have h := scheduleIteration_cost_potential
+    (Schedule.loopState s msgOff returnDest rest i)
+    msgOff returnDest rest i hi hstack
+    (by simpa using hcode) (by simpa [State.fork] using hfork)
+    (by simpa using hrun) (by simpa using hnp)
+  calc
+    _ = scheduleIterationWork + MachineState.memCost
+          (Schedule.afterIteration
+            (Schedule.loopState s msgOff returnDest rest i)
+            msgOff returnDest rest i).activeWords.toNat := by
+      simpa [concreteScheduleIteration, concreteScheduleRead] using h
+    _ = scheduleIterationWork + MachineState.memCost
+          (Schedule.loopState s msgOff returnDest rest (i + 1)).activeWords.toNat := by
+      congr 2
+
+private def concreteScheduleLoop (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 1012)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps (Schedule.loopState s msgOff returnDest rest 0)
+      (Schedule.loopState s msgOff returnDest rest 16) :=
+  GasSteps.iterateBounded 16
+    (concreteScheduleIteration s msgOff returnDest rest hstack hcode hfork
+      hrun hnp)
+
+theorem scheduleLoop_cost_potential (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256)
+    (hstack : rest.length < 1012)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (concreteScheduleLoop s msgOff returnDest rest hstack hcode hfork hrun
+      hnp).cost + MachineState.memCost s.activeWords.toNat =
+      16 * scheduleIterationWork + MachineState.memCost
+        (Schedule.loopState s msgOff returnDest rest 16).activeWords.toNat := by
+  unfold concreteScheduleLoop
+  have hloop := Meter.iterateBounded_cost_potential_add 16
+    scheduleIterationWork
+    (concreteScheduleIteration s msgOff returnDest rest hstack hcode hfork
+      hrun hnp)
+    (concreteScheduleIteration_cost_potential s msgOff returnDest rest hstack
+      hcode hfork hrun hnp)
+  have hstart :
+      (Schedule.loopState s msgOff returnDest rest 0).activeWords =
+        s.activeWords := rfl
+  rw [hstart] at hloop
+  exact hloop
 
 theorem combination_cost_potential (s : State)
     (messageOffset returnDest : UInt256) (rest : List UInt256)
