@@ -32,13 +32,15 @@ def blockCount (inputSize : Nat) : Nat := (inputSize + 72) / 64
 /-- Number of words copied by `CALLDATACOPY`. -/
 def calldataWords (inputSize : Nat) : Nat := (inputSize + 31) / 32
 
-/-- Final memory high-water mark, in 32-byte words. -/
-def finalActiveWords (inputSize : Nat) : Nat := 64 + 2 * blockCount inputSize
+/-- Final memory high-water mark, in 32-byte words. Padding itself ends at
+`64 + 2 * blockCount`; the final block's last schedule `MLOAD` reaches one
+additional word. -/
+def finalActiveWords (inputSize : Nat) : Nat := 65 + 2 * blockCount inputSize
 
 /-- Exact gas consumed by the frozen RIPEMD-160 reference for `inputSize`
 bytes of calldata. -/
 def referenceGasForSize (inputSize : Nat) : Nat :=
-  3880 + 148364 * blockCount inputSize + 3 * calldataWords inputSize +
+  3877 + 148364 * blockCount inputSize + 3 * calldataWords inputSize +
     MachineState.memCost (finalActiveWords inputSize)
 
 /-- Byte-array form of `referenceGasForSize`, convenient for execution traces. -/
@@ -51,15 +53,15 @@ def referenceGas (input : ByteArray) : Nat := referenceGasForSize input.size
     calldataWords inputSize = (inputSize + 31) / 32 := rfl
 
 @[simp] theorem finalActiveWords_eq (inputSize : Nat) :
-    finalActiveWords inputSize = 64 + 2 * ((inputSize + 72) / 64) := rfl
+    finalActiveWords inputSize = 65 + 2 * ((inputSize + 72) / 64) := rfl
 
 /-- The schedule with the EVM memory-cost definition made explicit. -/
 theorem referenceGasForSize_expanded (inputSize : Nat) :
     referenceGasForSize inputSize =
-      3880 + 148364 * ((inputSize + 72) / 64) +
+      3877 + 148364 * ((inputSize + 72) / 64) +
         3 * ((inputSize + 31) / 32) +
-        (3 * (64 + 2 * ((inputSize + 72) / 64)) +
-          (64 + 2 * ((inputSize + 72) / 64)) ^ 2 / 512) := by
+        (3 * (65 + 2 * ((inputSize + 72) / 64)) +
+          (65 + 2 * ((inputSize + 72) / 64)) ^ 2 / 512) := by
   rfl
 
 theorem blockCount_monotone : Monotone blockCount := by
@@ -72,7 +74,7 @@ theorem calldataWords_monotone : Monotone calldataWords := by
 
 theorem finalActiveWords_monotone : Monotone finalActiveWords := by
   intro left right hle
-  exact Nat.add_le_add_left (Nat.mul_le_mul_left 2 (blockCount_monotone hle)) 64
+  exact Nat.add_le_add_left (Nat.mul_le_mul_left 2 (blockCount_monotone hle)) 65
 
 /-- Larger calldata never makes the exact reference schedule smaller. -/
 theorem referenceGasForSize_monotone : Monotone referenceGasForSize := by
@@ -81,7 +83,7 @@ theorem referenceGasForSize_monotone : Monotone referenceGasForSize := by
   exact Nat.add_le_add
     (Nat.add_le_add
       (Nat.add_le_add_left
-        (Nat.mul_le_mul_left 148364 (blockCount_monotone hle)) 3880)
+        (Nat.mul_le_mul_left 148364 (blockCount_monotone hle)) 3877)
       (Nat.mul_le_mul_left 3 (calldataWords_monotone hle)))
     (Challenge.EvmProof.Meter.memCost_monotone
       (finalActiveWords_monotone hle))
@@ -108,6 +110,12 @@ theorem referenceGasForSize_monotone : Monotone referenceGasForSize := by
 
 @[simp] theorem referenceGasForSize_256 :
     referenceGasForSize 256 = 745956 := by decide
+
+/-- Boundary regression: here the corrected final high-water mark crosses a
+memory-cost quotient boundary, so it distinguishes `65 + 2 * blocks` from
+the padded-memory endpoint `64 + 2 * blocks`. -/
+@[simp] theorem referenceGasForSize_376 :
+    referenceGasForSize 376 = 1042710 := by decide
 
 @[simp] theorem referenceGasForSize_1000 :
     referenceGasForSize 1000 = 2378106 := by decide
