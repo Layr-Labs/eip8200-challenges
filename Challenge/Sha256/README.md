@@ -95,9 +95,10 @@ inferred from measurements.
 
 | implementation | status | 0 bytes | 3 bytes | 55 bytes | 56 bytes | 64 bytes | 1,000 bytes |
 |---|---|---:|---:|---:|---:|---:|---:|
-| [Reference](Reference/) | Not provided | — | — | — | — | — | — |
+| [Reference](Reference/) | [proved](Reference/Proofs/Gas.lean) | 158035 | 158038 | 158041 | 314044 | 314044 | 2498174 |
 
-The reference correctness proof currently establishes that a sufficient
-gas threshold exists for each concrete input. It does not yet expose the
-stronger uniform function of input size required for a proved row.
+For the bundled reference, let `blocks(n) = ⌊(n + 72) / 64⌋` and
+`Cmem(w) = 3w + ⌊w² / 512⌋`. Its proved schedule is the exact trace cost
+`1747 + 155996 × blocks(n) + 3 × ⌊(n + 31) / 32⌋ +
+Cmem(90 + 2 × blocks(n))`.
 <!-- END GENERATED SHA256 GAS REPORT -->

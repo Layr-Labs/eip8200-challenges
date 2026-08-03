@@ -18,7 +18,7 @@ open Challenge.EvmProof
 /-- Lift one successful `StepRunning` rule into the gas-parametric trace
 algebra.  This is the common endpoint used by every opcode-specific symbolic
 rule, including submission-specific rules written outside this module. -/
-theorem of_running {s t : State} (cost : Nat)
+def of_running {s t : State} (cost : Nat)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false)
@@ -32,7 +32,7 @@ theorem of_running {s t : State} (cost : Nat)
     (by simpa [withGas] using hnp)
     (hstep gas hgas)
 
-theorem add {s : State} {a b : UInt256} {rest : List UInt256}
+def add {s : State} {a b : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .ADD)
     (hstack : s.stack = a :: b :: rest)
     (hcap : s.stack.length + Operation.pushArity .ADD ≤
@@ -47,7 +47,7 @@ theorem add {s : State} {a b : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.add (withGas s gas) a b rest hop hgas hstack hcap
 
-theorem mul {s : State} {a b : UInt256} {rest : List UInt256}
+def mul {s : State} {a b : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .MUL)
     (hstack : s.stack = a :: b :: rest)
     (hcap : s.stack.length + Operation.pushArity .MUL ≤
@@ -62,7 +62,7 @@ theorem mul {s : State} {a b : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.mul (withGas s gas) a b rest hop hgas hstack hcap
 
-theorem sub {s : State} {a b : UInt256} {rest : List UInt256}
+def sub {s : State} {a b : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .SUB)
     (hstack : s.stack = a :: b :: rest)
     (hcap : s.stack.length + Operation.pushArity .SUB ≤
@@ -77,7 +77,7 @@ theorem sub {s : State} {a b : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.sub (withGas s gas) a b rest hop hgas hstack hcap
 
-theorem div {s : State} {a b : UInt256} {rest : List UInt256}
+def div {s : State} {a b : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .DIV)
     (hstack : s.stack = a :: b :: rest)
     (hcap : s.stack.length + Operation.pushArity .DIV ≤
@@ -92,7 +92,7 @@ theorem div {s : State} {a b : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.div (withGas s gas) a b rest hop hgas hstack hcap
 
-theorem lt {s : State} {a b : UInt256} {rest : List UInt256}
+def lt {s : State} {a b : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .LT)
     (hstack : s.stack = a :: b :: rest)
     (hcap : s.stack.length + Operation.pushArity .LT ≤
@@ -107,7 +107,7 @@ theorem lt {s : State} {a b : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.lt (withGas s gas) a b rest hop hgas hstack hcap
 
-theorem iszero {s : State} {a : UInt256} {rest : List UInt256}
+def iszero {s : State} {a : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .ISZERO)
     (hstack : s.stack = a :: rest)
     (hcap : s.stack.length + Operation.pushArity .ISZERO ≤
@@ -122,7 +122,7 @@ theorem iszero {s : State} {a : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.iszero (withGas s gas) a rest hop hgas hstack hcap
 
-theorem land {s : State} {a b : UInt256} {rest : List UInt256}
+def land {s : State} {a b : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .AND)
     (hstack : s.stack = a :: b :: rest)
     (hcap : s.stack.length + Operation.pushArity .AND ≤
@@ -137,7 +137,7 @@ theorem land {s : State} {a b : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.and (withGas s gas) a b rest hop hgas hstack hcap
 
-theorem lor {s : State} {a b : UInt256} {rest : List UInt256}
+def lor {s : State} {a b : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .OR)
     (hstack : s.stack = a :: b :: rest)
     (hcap : s.stack.length + Operation.pushArity .OR ≤
@@ -152,7 +152,7 @@ theorem lor {s : State} {a b : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.or (withGas s gas) a b rest hop hgas hstack hcap
 
-theorem xor {s : State} {a b : UInt256} {rest : List UInt256}
+def xor {s : State} {a b : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .XOR)
     (hstack : s.stack = a :: b :: rest)
     (hcap : s.stack.length + Operation.pushArity .XOR ≤
@@ -167,7 +167,7 @@ theorem xor {s : State} {a b : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.xor_ (withGas s gas) a b rest hop hgas hstack hcap
 
-theorem lnot {s : State} {a : UInt256} {rest : List UInt256}
+def lnot {s : State} {a : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .NOT)
     (hstack : s.stack = a :: rest)
     (hcap : s.stack.length + Operation.pushArity .NOT ≤
@@ -182,7 +182,7 @@ theorem lnot {s : State} {a : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.not (withGas s gas) a rest hop hgas hstack hcap
 
-theorem shl {s : State} {shift value : UInt256} {rest : List UInt256}
+def shl {s : State} {shift value : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .SHL)
     (hstack : s.stack = shift :: value :: rest)
     (hcap : s.stack.length + Operation.pushArity .SHL ≤
@@ -199,7 +199,7 @@ theorem shl {s : State} {shift value : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.shl (withGas s gas) shift value rest hop hgas hstack hcap
 
-theorem shr {s : State} {shift value : UInt256} {rest : List UInt256}
+def shr {s : State} {shift value : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .SHR)
     (hstack : s.stack = shift :: value :: rest)
     (hcap : s.stack.length + Operation.pushArity .SHR ≤
@@ -216,7 +216,7 @@ theorem shr {s : State} {shift value : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.shr (withGas s gas) shift value rest hop hgas hstack hcap
 
-theorem jumpdest {s : State}
+def jumpdest {s : State}
     (hop : s.decodedOp = some .JUMPDEST)
     (hcap : s.stack.length + Operation.pushArity .JUMPDEST ≤
       1024 + Operation.popArity .JUMPDEST)
@@ -230,7 +230,7 @@ theorem jumpdest {s : State}
   simpa [withGas, cost] using
     StepRunning.jumpdest (withGas s gas) hop hgas hcap
 
-theorem push0 {s : State}
+def push0 {s : State}
     (hop : s.decodedOp = some (.Push ⟨0, by decide⟩))
     (hcap : s.stack.length < 1024)
     (hrun : s.halt = .Running)
@@ -244,7 +244,7 @@ theorem push0 {s : State}
   simpa [withGas, cost, op] using
     StepRunning.push0 (withGas s gas) hop hgas hcap
 
-theorem pushN {s : State} (k : Fin 33) (data : UInt256) (immWidth : Nat)
+def pushN {s : State} (k : Fin 33) (data : UInt256) (immWidth : Nat)
     (hk : 0 < k.val)
     (hdecoded : s.decoded =
       some (.Push ⟨k, k.isLt⟩, some (data, immWidth)))
@@ -262,7 +262,7 @@ theorem pushN {s : State} (k : Fin 33) (data : UInt256) (immWidth : Nat)
   simpa [withGas, cost, op] using
     StepRunning.pushN (withGas s gas) k data immWidth hk hdecoded hgas hcap
 
-theorem pop {s : State} {a : UInt256} {rest : List UInt256}
+def pop {s : State} {a : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .POP)
     (hstack : s.stack = a :: rest)
     (hcap : s.stack.length + Operation.pushArity .POP ≤
@@ -277,7 +277,7 @@ theorem pop {s : State} {a : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.pop (withGas s gas) a rest hop hgas hstack hcap
 
-theorem dup {s : State} (n : Fin 16) (value : UInt256)
+def dup {s : State} (n : Fin 16) (value : UInt256)
     (hop : s.decodedOp = some (.Dup ⟨n⟩))
     (hget : s.stack[n.val]? = some value)
     (hcap : s.stack.length < 1024)
@@ -292,7 +292,7 @@ theorem dup {s : State} (n : Fin 16) (value : UInt256)
   simpa [withGas, cost, op] using
     StepRunning.dup (withGas s gas) n value hop hgas hget hcap
 
-theorem swap {s : State} (n : Fin 16) (stack' : List UInt256)
+def swap {s : State} (n : Fin 16) (stack' : List UInt256)
     (hop : s.decodedOp = some (.Swap ⟨n⟩))
     (hswap : s.stack.exchange 0 (n.val + 1) = some stack')
     (hcap : s.stack.length + Operation.pushArity (.Swap ⟨n⟩) ≤
@@ -308,7 +308,7 @@ theorem swap {s : State} (n : Fin 16) (stack' : List UInt256)
   simpa [withGas, cost, op] using
     StepRunning.swap (withGas s gas) n stack' hop hgas hswap hcap
 
-theorem calldatasize {s : State}
+def calldatasize {s : State}
     (hop : s.decodedOp = some .CALLDATASIZE)
     (hcap : s.stack.length < 1024)
     (hrun : s.halt = .Running)
@@ -323,7 +323,7 @@ theorem calldatasize {s : State}
   simpa [withGas, cost] using
     StepRunning.calldatasize (withGas s gas) hop hgas hcap
 
-theorem calldatacopy {s : State} (destOff srcOff size : UInt256)
+def calldatacopy {s : State} (destOff srcOff size : UInt256)
     (rest : List UInt256)
     (hop : s.decodedOp = some .CALLDATACOPY)
     (hstack : s.stack = destOff :: srcOff :: size :: rest)
@@ -347,7 +347,7 @@ theorem calldatacopy {s : State} (destOff srcOff size : UInt256)
     StepRunning.calldatacopy (withGas s gas) destOff srcOff size rest
       hop hstack hgas hcap
 
-theorem mstore {s : State} (offset value : UInt256) (rest : List UInt256)
+def mstore {s : State} (offset value : UInt256) (rest : List UInt256)
     (hop : s.decodedOp = some .MSTORE)
     (hstack : s.stack = offset :: value :: rest)
     (hcap : s.stack.length + Operation.pushArity .MSTORE ≤
@@ -367,7 +367,13 @@ theorem mstore {s : State} (offset value : UInt256) (rest : List UInt256)
   simpa [withGas, cost, Gas.mstoreTotal, State.activeWordsAfterUInt256] using
     StepRunning.mstore (withGas s gas) offset value rest hop hstack hgas hcap
 
-theorem mload {s : State} (offset : UInt256) (rest : List UInt256)
+@[simp] theorem mstore_cost {s : State} (offset value : UInt256)
+    (rest : List UInt256) (hop : s.decodedOp = some .MSTORE)
+    (hstack : s.stack = offset :: value :: rest) (hcap) (hrun) (hnp) :
+    (mstore (s := s) offset value rest hop hstack hcap hrun hnp).cost =
+      Gas.mstoreTotal s offset := rfl
+
+def mload {s : State} (offset : UInt256) (rest : List UInt256)
     (hop : s.decodedOp = some .MLOAD)
     (hstack : s.stack = offset :: rest)
     (hcap : s.stack.length + Operation.pushArity .MLOAD ≤
@@ -386,7 +392,7 @@ theorem mload {s : State} (offset : UInt256) (rest : List UInt256)
     State.activeWordsAfterUInt256] using
     StepRunning.mload (withGas s gas) offset rest hop hstack hgas hcap
 
-theorem mstore8 {s : State} (offset value : UInt256) (rest : List UInt256)
+def mstore8 {s : State} (offset value : UInt256) (rest : List UInt256)
     (hop : s.decodedOp = some .MSTORE8)
     (hstack : s.stack = offset :: value :: rest)
     (hcap : s.stack.length + Operation.pushArity .MSTORE8 ≤
@@ -406,7 +412,13 @@ theorem mstore8 {s : State} (offset value : UInt256) (rest : List UInt256)
   simpa [withGas, cost, Gas.mstore8Total, State.activeWordsAfterUInt256] using
     StepRunning.mstore8 (withGas s gas) offset value rest hop hstack hgas hcap
 
-theorem mcopy {s : State} (destOff srcOff size : UInt256)
+@[simp] theorem mstore8_cost {s : State} (offset value : UInt256)
+    (rest : List UInt256) (hop : s.decodedOp = some .MSTORE8)
+    (hstack : s.stack = offset :: value :: rest) (hcap) (hrun) (hnp) :
+    (mstore8 (s := s) offset value rest hop hstack hcap hrun hnp).cost =
+      Gas.mstore8Total s offset := rfl
+
+def mcopy {s : State} (destOff srcOff size : UInt256)
     (rest : List UInt256)
     (hop : s.decodedOp = some .MCOPY)
     (hstack : s.stack = destOff :: srcOff :: size :: rest)
@@ -431,7 +443,7 @@ theorem mcopy {s : State} (destOff srcOff size : UInt256)
     StepRunning.mcopy (withGas s gas) destOff srcOff size rest
       hop hstack hgas hcap
 
-theorem jump {s : State} (dest : UInt256) (rest : List UInt256)
+def jump {s : State} (dest : UInt256) (rest : List UInt256)
     (hop : s.decodedOp = some .JUMP)
     (hstack : s.stack = dest :: rest)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code dest.toNat = true)
@@ -447,7 +459,7 @@ theorem jump {s : State} (dest : UInt256) (rest : List UInt256)
   simpa [withGas, cost] using
     StepRunning.jump (withGas s gas) dest rest hop hgas hstack hvalid hcap
 
-theorem jumpiTaken {s : State} (dest cond : UInt256) (rest : List UInt256)
+def jumpiTaken {s : State} (dest cond : UInt256) (rest : List UInt256)
     (hop : s.decodedOp = some .JUMPI)
     (hstack : s.stack = dest :: cond :: rest)
     (hcond : UInt256.isTrue cond)
@@ -465,7 +477,7 @@ theorem jumpiTaken {s : State} (dest cond : UInt256) (rest : List UInt256)
     StepRunning.jumpi_taken (withGas s gas) dest cond rest hop hgas hstack
       hcond hvalid hcap
 
-theorem jumpiNotTaken {s : State} (dest cond : UInt256) (rest : List UInt256)
+def jumpiNotTaken {s : State} (dest cond : UInt256) (rest : List UInt256)
     (hop : s.decodedOp = some .JUMPI)
     (hstack : s.stack = dest :: cond :: rest)
     (hcond : ¬ UInt256.isTrue cond)
@@ -482,7 +494,7 @@ theorem jumpiNotTaken {s : State} (dest cond : UInt256) (rest : List UInt256)
     StepRunning.jumpi_notTaken (withGas s gas) dest cond rest hop hgas hstack
       hcond hcap
 
-theorem return_ {s : State} (offset size : UInt256) (rest : List UInt256)
+def return_ {s : State} (offset size : UInt256) (rest : List UInt256)
     (hop : s.decodedOp = some .RETURN)
     (hstack : s.stack = offset :: size :: rest)
     (hcap : s.stack.length + Operation.pushArity .RETURN ≤
@@ -501,5 +513,11 @@ theorem return_ {s : State} (offset size : UInt256) (rest : List UInt256)
   simpa [withGas, cost, Gas.returnTotal,
     State.activeWordsAfterUInt256] using
     StepRunning.return_ (withGas s gas) offset size rest hop hstack hgas hcap
+
+@[simp] theorem return_cost {s : State} (offset size : UInt256)
+    (rest : List UInt256) (hop : s.decodedOp = some .RETURN)
+    (hstack : s.stack = offset :: size :: rest) (hcap) (hrun) (hnp) :
+    (return_ (s := s) offset size rest hop hstack hcap hrun hnp).cost =
+      Gas.returnTotal s offset size := rfl
 
 end Challenge.EvmProof.GasStep

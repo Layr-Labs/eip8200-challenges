@@ -302,7 +302,7 @@ def outputResult (s : State) (rest : List UInt256) : State :=
 @[simp] private theorem pc808 : Artifact.referenceArtifact.instructionPC 808 = 1522 := by decide
 @[simp] private theorem pc809 : Artifact.referenceArtifact.instructionPC 809 = 1523 := by decide
 
-private theorem run_start (s : State) (offset : UInt256) (rest : List UInt256)
+theorem run_start (s : State) (offset : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1019) (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock startPath (outputEntry s offset rest) =
@@ -319,7 +319,7 @@ private theorem run_start (s : State) (offset : UInt256) (rest : List UInt256)
     Challenge.EvmProof.Stepper.runInstr, hc0, hc1, hc2, hc3, hc4,
     hcode, hrun, hdest]
 
-private theorem run_setup6 (s : State) (h7 : UInt256) (rest : List UInt256)
+theorem run_setup6 (s : State) (h7 : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1018) (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setup6Path
@@ -337,7 +337,7 @@ private theorem run_setup6 (s : State) (h7 : UInt256) (rest : List UInt256)
     Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4, hc5,
     hcode, hrun, hdest]
 
-private theorem run_setup5 (s : State) (h6 h7 : UInt256) (rest : List UInt256)
+theorem run_setup5 (s : State) (h6 h7 : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1017) (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setup5Path
@@ -356,7 +356,7 @@ private theorem run_setup5 (s : State) (h6 h7 : UInt256) (rest : List UInt256)
     Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4, hc5,
     hcode, hrun, hdest]
 
-private theorem run_setup4 (s : State) (h5 packed67 : UInt256)
+theorem run_setup4 (s : State) (h5 packed67 : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1017)
     (hcode : s.executionEnv.code = referenceBytecode) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setup4Path
@@ -375,7 +375,7 @@ private theorem run_setup4 (s : State) (h5 packed67 : UInt256)
     Challenge.EvmProof.Stepper.runInstr, hc2, hc3, hc4, hc5, hc6,
     hcode, hrun, hdest]
 
-private theorem run_setup3 (s : State) (h4 shifted5 packed67 : UInt256)
+theorem run_setup3 (s : State) (h4 shifted5 packed67 : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1016)
     (hcode : s.executionEnv.code = referenceBytecode) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setup3Path
@@ -396,7 +396,7 @@ private theorem run_setup3 (s : State) (h4 shifted5 packed67 : UInt256)
     Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4, hc5, hc6,
     hcode, hrun, hdest]
 
-private theorem run_setup2 (s : State) (h3 packedLow : UInt256)
+theorem run_setup2 (s : State) (h3 packedLow : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1017)
     (hcode : s.executionEnv.code = referenceBytecode) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setup2Path
@@ -415,7 +415,7 @@ private theorem run_setup2 (s : State) (h3 packedLow : UInt256)
     Challenge.EvmProof.Stepper.runInstr, hc2, hc3, hc4, hc5, hc6,
     hcode, hrun, hdest]
 
-private theorem run_setup1 (s : State) (h2 shifted3 packedLow : UInt256)
+theorem run_setup1 (s : State) (h2 shifted3 packedLow : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1016)
     (hcode : s.executionEnv.code = referenceBytecode) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setup1Path
@@ -435,7 +435,7 @@ private theorem run_setup1 (s : State) (h2 shifted3 packedLow : UInt256)
     Challenge.EvmProof.Stepper.runInstr, hc2, hc3, hc4, hc5, hc6,
     hcode, hrun, hdest]
 
-private theorem run_setup0 (s : State) (h1 packed23 packedLow : UInt256)
+theorem run_setup0 (s : State) (h1 packed23 packedLow : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1016)
     (hcode : s.executionEnv.code = referenceBytecode) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setup0Path
@@ -454,7 +454,7 @@ private theorem run_setup0 (s : State) (h1 packed23 packedLow : UInt256)
     Challenge.EvmProof.Stepper.runInstr, hc3, hc4, hc5, hc6, hc7,
     hcode, hrun, hdest]
 
-private theorem run_finish (s : State) (h0 shifted1 packed23 packedLow : UInt256)
+theorem run_finish (s : State) (h0 shifted1 packed23 packedLow : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1019)
     (_hcode : s.executionEnv.code = referenceBytecode) (hrun : s.halt = .Running) :
     let word := UInt256.lor
@@ -503,7 +503,7 @@ private theorem run_finish (s : State) (h0 shifted1 packed23 packedLow : UInt256
 
 /-- The final output block returns exactly the 32-byte big-endian packing of
 the eight words stored in H slots 0 through 7. -/
-theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
+def gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1010)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -548,9 +548,11 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
   have gH7 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry s 318 (UInt256.ofNat 7) ⟨0⟩
         (UInt256.ofNat 1413) rest) q7 := by
-    simpa [q7, afterH7] using Accessors.gasSteps_hAt s
-      (UInt256.ofNat 7) ⟨0⟩ (UInt256.ofNat 1413) rest (by omega)
-      hcode hfork hrun hnp valid1413
+    exact Challenge.EvmProof.GasSteps.cast
+      (Accessors.gasSteps_hAt s (UInt256.ofNat 7) ⟨0⟩
+        (UInt256.ofNat 1413) rest (by omega)
+        hcode hfork hrun hnp valid1413)
+      rfl (by simp [q7, afterH7])
   have q7code : q7.executionEnv.code = referenceBytecode := by
     simp [q7, afterH7, Accessors.loadReturned, hcode]
   have q7fork : q7.fork = .Osaka := by
@@ -573,9 +575,11 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
   have gH6 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q7 318 (UInt256.ofNat 6) ⟨0⟩
         (UInt256.ofNat 1424) (hWord s 7 :: rest)) q6 := by
-    simpa [q6, afterH6] using Accessors.gasSteps_hAt q7
-      (UInt256.ofNat 6) ⟨0⟩ (UInt256.ofNat 1424) (hWord s 7 :: rest)
-      (by simp; omega) q7code q7fork q7run q7np valid1424
+    exact Challenge.EvmProof.GasSteps.cast
+      (Accessors.gasSteps_hAt q7 (UInt256.ofNat 6) ⟨0⟩
+        (UInt256.ofNat 1424) (hWord s 7 :: rest)
+        (by simp; omega) q7code q7fork q7run q7np valid1424)
+      rfl (by simp [q6, afterH6, q7])
   have q6code : q6.executionEnv.code = referenceBytecode := by
     simp [q6, afterH6, q7, afterH7, Accessors.loadReturned, hcode]
   have q6fork : q6.fork = .Osaka := by
@@ -600,9 +604,11 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
   have gH5 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q6 318 (UInt256.ofNat 5) ⟨0⟩
         (UInt256.ofNat 1439) (pair67 s :: rest)) q5 := by
-    simpa [q5, afterH5] using Accessors.gasSteps_hAt q6
-      (UInt256.ofNat 5) ⟨0⟩ (UInt256.ofNat 1439) (pair67 s :: rest)
-      (by simp; omega) q6code q6fork q6run q6np valid1439
+    exact Challenge.EvmProof.GasSteps.cast
+      (Accessors.gasSteps_hAt q6 (UInt256.ofNat 5) ⟨0⟩
+        (UInt256.ofNat 1439) (pair67 s :: rest)
+        (by simp; omega) q6code q6fork q6run q6np valid1439)
+      rfl (by simp [q5, afterH5, q6])
   have q5code : q5.executionEnv.code = referenceBytecode := by
     simp [q5, afterH5, q6, afterH6, q7, afterH7,
       Accessors.loadReturned, hcode]
@@ -631,10 +637,11 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
   have gH4 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q5 318 (UInt256.ofNat 4) ⟨0⟩
         (UInt256.ofNat 1453) (shifted5 s :: pair67 s :: rest)) q4 := by
-    simpa [q4, afterH4] using Accessors.gasSteps_hAt q5
-      (UInt256.ofNat 4) ⟨0⟩ (UInt256.ofNat 1453)
-      (shifted5 s :: pair67 s :: rest) (by simp; omega)
-      q5code q5fork q5run q5np valid1453
+    exact Challenge.EvmProof.GasSteps.cast
+      (Accessors.gasSteps_hAt q5 (UInt256.ofNat 4) ⟨0⟩
+        (UInt256.ofNat 1453) (shifted5 s :: pair67 s :: rest)
+        (by simp; omega) q5code q5fork q5run q5np valid1453)
+      rfl (by simp [q4, afterH4, q5])
   have q4code : q4.executionEnv.code = referenceBytecode := by
     simp [q4, afterH4, q5, afterH5, q6, afterH6, q7, afterH7,
       Accessors.loadReturned, hcode]
@@ -663,9 +670,11 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
   have gH3 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q4 318 (UInt256.ofNat 3) ⟨0⟩
         (UInt256.ofNat 1469) (lowHalf s :: rest)) q3 := by
-    simpa [q3, afterH3] using Accessors.gasSteps_hAt q4
-      (UInt256.ofNat 3) ⟨0⟩ (UInt256.ofNat 1469) (lowHalf s :: rest)
-      (by simp; omega) q4code q4fork q4run q4np valid1469
+    exact Challenge.EvmProof.GasSteps.cast
+      (Accessors.gasSteps_hAt q4 (UInt256.ofNat 3) ⟨0⟩
+        (UInt256.ofNat 1469) (lowHalf s :: rest)
+        (by simp; omega) q4code q4fork q4run q4np valid1469)
+      rfl (by simp [q3, afterH3, q4])
   have q3code : q3.executionEnv.code = referenceBytecode := by
     simp [q3, afterH3, q4, afterH4, q5, afterH5, q6, afterH6,
       q7, afterH7, Accessors.loadReturned, hcode]
@@ -694,10 +703,11 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
   have gH2 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q3 318 (UInt256.ofNat 2) ⟨0⟩
         (UInt256.ofNat 1483) (shifted3 s :: lowHalf s :: rest)) q2 := by
-    simpa [q2, afterH2] using Accessors.gasSteps_hAt q3
-      (UInt256.ofNat 2) ⟨0⟩ (UInt256.ofNat 1483)
-      (shifted3 s :: lowHalf s :: rest) (by simp; omega)
-      q3code q3fork q3run q3np valid1483
+    exact Challenge.EvmProof.GasSteps.cast
+      (Accessors.gasSteps_hAt q3 (UInt256.ofNat 2) ⟨0⟩
+        (UInt256.ofNat 1483) (shifted3 s :: lowHalf s :: rest)
+        (by simp; omega) q3code q3fork q3run q3np valid1483)
+      rfl (by simp [q2, afterH2, q3])
   have q2code : q2.executionEnv.code = referenceBytecode := by
     simp [q2, afterH2, q3, afterH3, q4, afterH4, q5, afterH5,
       q6, afterH6, q7, afterH7, Accessors.loadReturned, hcode]
@@ -727,10 +737,11 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
   have gH1 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q2 318 (UInt256.ofNat 1) ⟨0⟩
         (UInt256.ofNat 1498) (pair23 s :: lowHalf s :: rest)) q1 := by
-    simpa [q1, afterH1] using Accessors.gasSteps_hAt q2
-      (UInt256.ofNat 1) ⟨0⟩ (UInt256.ofNat 1498)
-      (pair23 s :: lowHalf s :: rest) (by simp; omega)
-      q2code q2fork q2run q2np valid1498
+    exact Challenge.EvmProof.GasSteps.cast
+      (Accessors.gasSteps_hAt q2 (UInt256.ofNat 1) ⟨0⟩
+        (UInt256.ofNat 1498) (pair23 s :: lowHalf s :: rest)
+        (by simp; omega) q2code q2fork q2run q2np valid1498)
+      rfl (by simp [q1, afterH1, q2])
   have q1code : q1.executionEnv.code = referenceBytecode := by
     simp [q1, afterH1, q2, afterH2, q3, afterH3, q4, afterH4,
       q5, afterH5, q6, afterH6, q7, afterH7, Accessors.loadReturned, hcode]
@@ -760,10 +771,11 @@ theorem gasSteps_output (s : State) (offset : UInt256) (rest : List UInt256)
   have gH0 : Challenge.EvmProof.GasSteps
       (Accessors.loadEntry q1 318 (UInt256.ofNat 0) ⟨0⟩ (UInt256.ofNat 1511)
         (shifted1 s :: pair23 s :: lowHalf s :: rest)) q0 := by
-    simpa [q0, afterH0] using Accessors.gasSteps_hAt q1
-      (UInt256.ofNat 0) ⟨0⟩ (UInt256.ofNat 1511)
-      (shifted1 s :: pair23 s :: lowHalf s :: rest) (by simp; omega)
-      q1code q1fork q1run q1np valid1511
+    exact Challenge.EvmProof.GasSteps.cast
+      (Accessors.gasSteps_hAt q1 (UInt256.ofNat 0) ⟨0⟩
+        (UInt256.ofNat 1511) (shifted1 s :: pair23 s :: lowHalf s :: rest)
+        (by simp; omega) q1code q1fork q1run q1np valid1511)
+      rfl (by simp [q0, afterH0, q1])
   have q0code : q0.executionEnv.code = referenceBytecode := by
     simp [q0, afterH0, q1, afterH1, q2, afterH2, q3, afterH3,
       q4, afterH4, q5, afterH5, q6, afterH6, q7, afterH7,

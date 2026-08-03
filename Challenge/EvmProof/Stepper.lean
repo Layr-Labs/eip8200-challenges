@@ -176,16 +176,31 @@ def runInstr (instruction : Instr) (s : State) : Option State :=
     | _ => none
   else none
 
+/-- Exact gas charged by a successful `runInstr` step.  Keeping this
+projection separate from `runInstr_sound` makes gas metering executable: Lean
+does not need to normalize the semantic trace proof to read its cost. -/
+def instrCost : Instr → State → Nat
+  | .push width _, s => Gas.baseCost s.fork (.Push ⟨width⟩)
+  | .op .CALLDATACOPY, s => Gas.totalCost s .CALLDATACOPY
+  | .op .MLOAD, s => Gas.totalCost s .MLOAD
+  | .op .MSTORE, s => Gas.totalCost s .MSTORE
+  | .op .MSTORE8, s => Gas.totalCost s .MSTORE8
+  | .op .MCOPY, s => Gas.totalCost s .MCOPY
+  | .op .RETURN, s => Gas.totalCost s .RETURN
+  | .op op, s => Gas.baseCost s.fork op
+
 syntax "makeBinarySound " ident " for " term " via " term : command
 
 macro_rules
   | `(makeBinarySound $name:ident for $op:term via $rule:term) =>
-    `(private theorem $name {s t : State}
+    `(private def $name {s t : State}
         (hdecode : s.decodedOp = some $op)
         (hresult : runInstr (.op $op) s = some t)
         (hrun : s.halt = .Running)
         (hnp : Precompile.isPrecompile s.executionEnv.fork
           s.executionEnv.codeAddr = false) : GasSteps s t := by
+      refine ⟨Gas.baseCost s.fork $op, ?_⟩
+      intro gas hgas
       by_cases hcap : s.stack.length < 1024
       · rw [runInstr, if_pos hcap] at hresult
         cases hs : s.stack with
@@ -197,22 +212,22 @@ macro_rules
             have hstack : s.stack = a :: b :: rest := by simp [hs, ht]
             simp [hs, ht] at hresult
             subst t
-            apply ($rule hdecode hstack)
-            · exact stackCap s $op hcap
-            · exact hrun
-            · exact hnp
+            exact (($rule hdecode hstack (stackCap s $op hcap) hrun hnp).trace
+              gas hgas)
       · simp [runInstr, hcap] at hresult)
 
 syntax "makeUnarySound " ident " for " term " via " term : command
 
 macro_rules
   | `(makeUnarySound $name:ident for $op:term via $rule:term) =>
-    `(private theorem $name {s t : State}
+    `(private def $name {s t : State}
         (hdecode : s.decodedOp = some $op)
         (hresult : runInstr (.op $op) s = some t)
         (hrun : s.halt = .Running)
         (hnp : Precompile.isPrecompile s.executionEnv.fork
           s.executionEnv.codeAddr = false) : GasSteps s t := by
+      refine ⟨Gas.baseCost s.fork $op, ?_⟩
+      intro gas hgas
       by_cases hcap : s.stack.length < 1024
       · rw [runInstr, if_pos hcap] at hresult
         cases hs : s.stack with
@@ -220,10 +235,8 @@ macro_rules
         | cons a rest =>
           simp [hs] at hresult
           subst t
-          apply ($rule hdecode hs)
-          · exact stackCap s $op hcap
-          · exact hrun
-          · exact hnp
+          exact (($rule hdecode hs (stackCap s $op hcap) hrun hnp).trace
+            gas hgas)
       · simp [runInstr, hcap] at hresult)
 
 makeBinarySound sound_add for .ADD via GasStep.add
@@ -240,12 +253,14 @@ makeUnarySound sound_iszero for .ISZERO via GasStep.iszero
 makeUnarySound sound_not for .NOT via GasStep.lnot
 makeUnarySound sound_pop for .POP via GasStep.pop
 
-private theorem sound_push {s t : State} (width : Fin 33) (value : UInt256)
+private def sound_push {s t : State} (width : Fin 33) (value : UInt256)
     (hdecode : Decodes s (.push width value))
     (hresult : runInstr (.push width value) s = some t)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.push width value) s, ?_⟩
+  intro gas hgas
   by_cases hcap : s.stack.length < 1024
   · rw [runInstr, if_pos hcap] at hresult
     by_cases hzero : width.val = 0
@@ -254,20 +269,23 @@ private theorem sound_push {s t : State} (width : Fin 33) (value : UInt256)
       subst width
       simp at hresult
       subst t
-      apply GasStep.push0 (State.decoded_to_op hdecode) hcap hrun hnp
+      exact (GasStep.push0 (State.decoded_to_op hdecode) hcap hrun hnp).trace
+        gas hgas
     · rw [if_neg hzero] at hresult
       simp at hresult
       subst t
-      apply GasStep.pushN width value width.val (Nat.pos_of_ne_zero hzero)
-        hdecode hcap hrun hnp
+      exact (GasStep.pushN width value width.val (Nat.pos_of_ne_zero hzero)
+        hdecode hcap hrun hnp).trace gas hgas
   · simp [runInstr, hcap] at hresult
 
-private theorem sound_dup {s t : State} (n : Operation.DupOp)
+private def sound_dup {s t : State} (n : Operation.DupOp)
     (hdecode : s.decodedOp = some (.Dup n))
     (hresult : runInstr (.op (.Dup n)) s = some t)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.op (.Dup n)) s, ?_⟩
+  intro gas hgas
   by_cases hcap : s.stack.length < 1024
   · rw [runInstr, if_pos hcap] at hresult
     cases hget : s.stack[n.idx.val]? with
@@ -275,16 +293,18 @@ private theorem sound_dup {s t : State} (n : Operation.DupOp)
       rw [hget] at hresult
       injection hresult
       subst t
-      exact GasStep.dup n.idx value hdecode hget hcap hrun hnp
+      exact (GasStep.dup n.idx value hdecode hget hcap hrun hnp).trace gas hgas
     | none => simp [hget] at hresult
   · simp [runInstr, hcap] at hresult
 
-private theorem sound_swap {s t : State} (n : Operation.SwapOp)
+private def sound_swap {s t : State} (n : Operation.SwapOp)
     (hdecode : s.decodedOp = some (.Swap n))
     (hresult : runInstr (.op (.Swap n)) s = some t)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.op (.Swap n)) s, ?_⟩
+  intro gas hgas
   by_cases hcap : s.stack.length < 1024
   · rw [runInstr, if_pos hcap] at hresult
     cases hswap : s.stack.exchange 0 (n.idx.val + 1) with
@@ -292,53 +312,60 @@ private theorem sound_swap {s t : State} (n : Operation.SwapOp)
       rw [hswap] at hresult
       injection hresult
       subst t
-      apply GasStep.swap n.idx stack hdecode hswap
-      · exact stackCap s (.Swap n) hcap
-      · exact hrun
-      · exact hnp
+      exact (GasStep.swap n.idx stack hdecode hswap
+        (stackCap s (.Swap n) hcap) hrun hnp).trace gas hgas
     | none => simp [hswap] at hresult
   · simp [runInstr, hcap] at hresult
 
-private theorem sound_calldatasize {s t : State}
+private def sound_calldatasize {s t : State}
     (hdecode : s.decodedOp = some .CALLDATASIZE)
     (hresult : runInstr (.op .CALLDATASIZE) s = some t)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.op .CALLDATASIZE) s, ?_⟩
+  intro gas hgas
   by_cases hcap : s.stack.length < 1024
   · rw [runInstr, if_pos hcap] at hresult
     simp at hresult
     subst t
-    exact GasStep.calldatasize hdecode hcap hrun hnp
+    exact (GasStep.calldatasize hdecode hcap hrun hnp).trace gas hgas
   · simp [runInstr, hcap] at hresult
 
-private theorem sound_calldatacopy {s t : State}
+private def sound_calldatacopy {s t : State}
     (hdecode : s.decodedOp = some .CALLDATACOPY)
     (hresult : runInstr (.op .CALLDATACOPY) s = some t)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.op .CALLDATACOPY) s, ?_⟩
+  intro gas hgas
   by_cases hcap : s.stack.length < 1024
   · rw [runInstr, if_pos hcap] at hresult
     match hstack : s.stack with
     | destOff :: srcOff :: size :: rest =>
       simp [hstack] at hresult
       subst t
-      apply GasStep.calldatacopy destOff srcOff size rest hdecode hstack
-      · exact stackCap s .CALLDATACOPY hcap
-      · exact hrun
-      · exact hnp
+      let g := GasStep.calldatacopy destOff srcOff size rest hdecode hstack
+        (stackCap s .CALLDATACOPY hcap) hrun hnp
+      have hg : g.cost ≤ gas := by
+        simpa [g, GasStep.calldatacopy, GasStep.of_running, GasSteps.one,
+          instrCost, Gas.totalCost, hstack] using hgas
+      simpa [g, GasStep.calldatacopy, GasStep.of_running, GasSteps.one,
+        instrCost, Gas.totalCost, hstack] using g.trace gas hg
     | [] => simp [hstack] at hresult
     | _ :: [] => simp [hstack] at hresult
     | _ :: _ :: [] => simp [hstack] at hresult
   · simp [runInstr, hcap] at hresult
 
-private theorem sound_mload {s t : State}
+private def sound_mload {s t : State}
     (hdecode : s.decodedOp = some .MLOAD)
     (hresult : runInstr (.op .MLOAD) s = some t)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.op .MLOAD) s, ?_⟩
+  intro gas hgas
   by_cases hcap : s.stack.length < 1024
   · rw [runInstr, if_pos hcap] at hresult
     cases hstack : s.stack with
@@ -346,22 +373,27 @@ private theorem sound_mload {s t : State}
     | cons offset rest =>
       simp [hstack] at hresult
       subst t
-      apply GasStep.mload offset rest hdecode hstack
-      · exact stackCap s .MLOAD hcap
-      · exact hrun
-      · exact hnp
+      let g := GasStep.mload offset rest hdecode hstack
+        (stackCap s .MLOAD hcap) hrun hnp
+      have hg : g.cost ≤ gas := by
+        simpa [g, GasStep.mload, GasStep.of_running, GasSteps.one,
+          instrCost, Gas.totalCost, hstack] using hgas
+      simpa [g, GasStep.mload, GasStep.of_running, GasSteps.one,
+        instrCost, Gas.totalCost, hstack] using g.trace gas hg
   · simp [runInstr, hcap] at hresult
 
 syntax "makeMemoryBinarySound " ident " for " term " via " term : command
 
 macro_rules
   | `(makeMemoryBinarySound $name:ident for $op:term via $rule:term) =>
-    `(private theorem $name {s t : State}
+    `(private def $name {s t : State}
         (hdecode : s.decodedOp = some $op)
         (hresult : runInstr (.op $op) s = some t)
         (hrun : s.halt = .Running)
         (hnp : Precompile.isPrecompile s.executionEnv.fork
           s.executionEnv.codeAddr = false) : GasSteps s t := by
+      refine ⟨Gas.totalCost s $op, ?_⟩
+      intro gas hgas
       by_cases hcap : s.stack.length < 1024
       · rw [runInstr, if_pos hcap] at hresult
         cases hs : s.stack with
@@ -374,43 +406,53 @@ macro_rules
               simp [hs, ht]
             simp [hs, ht] at hresult
             subst t
-            apply ($rule first second rest hdecode hstack)
-            · exact stackCap s $op hcap
-            · exact hrun
-            · exact hnp
+            let g := $rule first second rest hdecode hstack
+              (stackCap s $op hcap) hrun hnp
+            have hg : g.cost ≤ gas := by
+              simpa [g, GasStep.of_running, GasSteps.one,
+                Gas.totalCost, hstack] using hgas
+            simpa [g, GasStep.of_running, GasSteps.one,
+              Gas.totalCost, hstack] using g.trace gas hg
       · simp [runInstr, hcap] at hresult)
 
 makeMemoryBinarySound sound_mstore for .MSTORE via GasStep.mstore
 makeMemoryBinarySound sound_mstore8 for .MSTORE8 via GasStep.mstore8
 makeMemoryBinarySound sound_return for .RETURN via GasStep.return_
 
-private theorem sound_mcopy {s t : State}
+private def sound_mcopy {s t : State}
     (hdecode : s.decodedOp = some .MCOPY)
     (hresult : runInstr (.op .MCOPY) s = some t)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.op .MCOPY) s, ?_⟩
+  intro gas hgas
   by_cases hcap : s.stack.length < 1024
   · rw [runInstr, if_pos hcap] at hresult
     match hstack : s.stack with
     | destOff :: srcOff :: size :: rest =>
       simp [hstack] at hresult
       subst t
-      apply GasStep.mcopy destOff srcOff size rest hdecode hstack
-      · exact stackCap s .MCOPY hcap
-      · exact hrun
-      · exact hnp
+      let g := GasStep.mcopy destOff srcOff size rest hdecode hstack
+        (stackCap s .MCOPY hcap) hrun hnp
+      have hg : g.cost ≤ gas := by
+        simpa [g, GasStep.mcopy, GasStep.of_running, GasSteps.one,
+          instrCost, Gas.totalCost, hstack] using hgas
+      simpa [g, GasStep.mcopy, GasStep.of_running, GasSteps.one,
+        instrCost, Gas.totalCost, hstack] using g.trace gas hg
     | [] => simp [hstack] at hresult
     | _ :: [] => simp [hstack] at hresult
     | _ :: _ :: [] => simp [hstack] at hresult
   · simp [runInstr, hcap] at hresult
 
-private theorem sound_jump {s t : State}
+private def sound_jump {s t : State}
     (hdecode : s.decodedOp = some .JUMP)
     (hresult : runInstr (.op .JUMP) s = some t)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.op .JUMP) s, ?_⟩
+  intro gas hgas
   by_cases hcap : s.stack.length < 1024
   · rw [runInstr, if_pos hcap] at hresult
     cases hstack : s.stack with
@@ -420,19 +462,19 @@ private theorem sound_jump {s t : State}
           s.executionEnv.code dest.toNat = true
       · simp [hstack, hvalid] at hresult
         subst t
-        apply GasStep.jump dest rest hdecode hstack hvalid
-        · exact stackCap s .JUMP hcap
-        · exact hrun
-        · exact hnp
+        exact (GasStep.jump dest rest hdecode hstack hvalid
+          (stackCap s .JUMP hcap) hrun hnp).trace gas hgas
       · simp [hstack, hvalid] at hresult
   · simp [runInstr, hcap] at hresult
 
-private theorem sound_jumpi {s t : State}
+private def sound_jumpi {s t : State}
     (hdecode : s.decodedOp = some .JUMPI)
     (hresult : runInstr (.op .JUMPI) s = some t)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.op .JUMPI) s, ?_⟩
+  intro gas hgas
   by_cases hcap : s.stack.length < 1024
   · rw [runInstr, if_pos hcap] at hresult
     cases hs : s.stack with
@@ -447,89 +489,87 @@ private theorem sound_jumpi {s t : State}
               s.executionEnv.code dest.toNat = true
           · simp [hs, ht, hcondition, hvalid] at hresult
             subst t
-            apply GasStep.jumpiTaken dest condition rest hdecode hstack
-              hcondition hvalid
-            · exact stackCap s .JUMPI hcap
-            · exact hrun
-            · exact hnp
+            exact (GasStep.jumpiTaken dest condition rest hdecode hstack
+              hcondition hvalid (stackCap s .JUMPI hcap) hrun hnp).trace
+              gas hgas
           · simp [hs, ht, hcondition, hvalid] at hresult
         · simp [hs, ht, hcondition] at hresult
           subst t
-          apply GasStep.jumpiNotTaken dest condition rest hdecode hstack
-            hcondition
-          · exact stackCap s .JUMPI hcap
-          · exact hrun
-          · exact hnp
+          exact (GasStep.jumpiNotTaken dest condition rest hdecode hstack
+            hcondition (stackCap s .JUMPI hcap) hrun hnp).trace gas hgas
   · simp [runInstr, hcap] at hresult
 
-private theorem sound_jumpdest {s t : State}
+private def sound_jumpdest {s t : State}
     (hdecode : s.decodedOp = some .JUMPDEST)
     (hresult : runInstr (.op .JUMPDEST) s = some t)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.op .JUMPDEST) s, ?_⟩
+  intro gas hgas
   by_cases hcap : s.stack.length < 1024
   · rw [runInstr, if_pos hcap] at hresult
     simp at hresult
     subst t
-    apply GasStep.jumpdest hdecode
-    · exact stackCap s .JUMPDEST hcap
-    · exact hrun
-    · exact hnp
+    exact (GasStep.jumpdest hdecode (stackCap s .JUMPDEST hcap) hrun hnp).trace
+      gas hgas
   · simp [runInstr, hcap] at hresult
 
 /-- Every successful evaluator result is a gas-parametric trace in the
-relational EVM semantics.  This is the only theorem block proofs need to use. -/
-theorem runInstr_sound {instruction : Instr} {s t : State}
+relational EVM semantics. This is the only definition block proofs need to use. -/
+def runInstr_sound {instruction : Instr} {s t : State}
     (hdecode : Decodes s instruction)
     (hresult : runInstr instruction s = some t)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost instruction s, ?_⟩
+  intro gas hgas
   cases instruction with
-  | push width value => exact sound_push width value hdecode hresult hrun hnp
+  | push width value =>
+      exact (sound_push width value hdecode hresult hrun hnp).trace gas hgas
   | op op =>
     change s.decodedOp = some op at hdecode
     cases op with
     | StopArith op =>
       cases op <;> first
-        | exact sound_add hdecode hresult hrun hnp
-        | exact sound_mul hdecode hresult hrun hnp
-        | exact sound_sub hdecode hresult hrun hnp
-        | exact sound_div hdecode hresult hrun hnp
+        | exact (sound_add hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_mul hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_sub hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_div hdecode hresult hrun hnp).trace gas hgas
         | simp [runInstr] at hresult
     | CompBit op =>
       cases op <;> first
-        | exact sound_lt hdecode hresult hrun hnp
-        | exact sound_iszero hdecode hresult hrun hnp
-        | exact sound_and hdecode hresult hrun hnp
-        | exact sound_or hdecode hresult hrun hnp
-        | exact sound_xor hdecode hresult hrun hnp
-        | exact sound_not hdecode hresult hrun hnp
-        | exact sound_shl hdecode hresult hrun hnp
-        | exact sound_shr hdecode hresult hrun hnp
+        | exact (sound_lt hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_iszero hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_and hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_or hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_xor hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_not hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_shl hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_shr hdecode hresult hrun hnp).trace gas hgas
         | simp [runInstr] at hresult
     | Env op =>
       cases op <;> first
-        | exact sound_calldatasize hdecode hresult hrun hnp
-        | exact sound_calldatacopy hdecode hresult hrun hnp
+        | exact (sound_calldatasize hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_calldatacopy hdecode hresult hrun hnp).trace gas hgas
         | simp [runInstr] at hresult
     | StackMemFlow op =>
       cases op <;> first
-        | exact sound_pop hdecode hresult hrun hnp
-        | exact sound_mload hdecode hresult hrun hnp
-        | exact sound_mstore hdecode hresult hrun hnp
-        | exact sound_mstore8 hdecode hresult hrun hnp
-        | exact sound_jump hdecode hresult hrun hnp
-        | exact sound_jumpi hdecode hresult hrun hnp
-        | exact sound_jumpdest hdecode hresult hrun hnp
-        | exact sound_mcopy hdecode hresult hrun hnp
+        | exact (sound_pop hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_mload hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_mstore hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_mstore8 hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_jump hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_jumpi hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_jumpdest hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_mcopy hdecode hresult hrun hnp).trace gas hgas
         | simp [runInstr] at hresult
-    | Dup n => exact sound_dup n hdecode hresult hrun hnp
-    | Swap n => exact sound_swap n hdecode hresult hrun hnp
+    | Dup n => exact (sound_dup n hdecode hresult hrun hnp).trace gas hgas
+    | Swap n => exact (sound_swap n hdecode hresult hrun hnp).trace gas hgas
     | System op =>
       cases op <;> first
-        | exact sound_return hdecode hresult hrun hnp
+        | exact (sound_return hdecode hresult hrun hnp).trace gas hgas
         | simp [runInstr] at hresult
     | Keccak op => cases op; simp [runInstr] at hresult
     | Block op => cases op <;> simp [runInstr] at hresult
@@ -538,6 +578,15 @@ theorem runInstr_sound {instruction : Instr} {s t : State}
     | SwapN op => simp [runInstr] at hresult
     | Exchange op => simp [runInstr] at hresult
     | Log op => simp [runInstr] at hresult
+
+@[simp] theorem runInstr_sound_cost {instruction : Instr} {s t : State}
+    (hdecode : Decodes s instruction)
+    (hresult : runInstr instruction s = some t)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (runInstr_sound hdecode hresult hrun hnp).cost = instrCost instruction s :=
+  rfl
 
 /-- Structural and fork-specific conditions under which an artifact
 instruction decodes exactly as its instruction-boundary view claims. -/
@@ -583,7 +632,7 @@ def runAt (artifact : ProgramArtifact) (index : Nat) (s : State) : Option State 
     | none => none
   else none
 
-theorem runAt_sound {artifact : ProgramArtifact} {index : Nat} {s t : State}
+def runAt_sound {artifact : ProgramArtifact} {index : Nat} {s t : State}
     (hcode : s.executionEnv.code = artifact.code)
     (hresult : runAt artifact index s = some t)
     (hrun : s.halt = .Running)
@@ -641,7 +690,7 @@ def runBlock (artifact : ProgramArtifact) : List Nat → State → Option State
               | .Running => runBlock artifact rest next
               | _ => none
 
-theorem runBlock_sound (artifact : ProgramArtifact) (indices : List Nat)
+def runBlock_sound (artifact : ProgramArtifact) (indices : List Nat)
     {s t : State}
     (hcode : s.executionEnv.code = artifact.code)
     (hresult : runBlock artifact indices s = some t)
@@ -697,7 +746,7 @@ def runLocated {artifact : ProgramArtifact} {fork : Fork}
     runInstr located.instruction s
   else none
 
-theorem runLocated_sound {artifact : ProgramArtifact}
+def runLocated_sound {artifact : ProgramArtifact}
     {fork : Fork} {located : Located artifact fork} {s t : State}
     (hcode : s.executionEnv.code = artifact.code)
     (hfork : s.fork = fork)
@@ -705,15 +754,29 @@ theorem runLocated_sound {artifact : ProgramArtifact}
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost located.instruction s, ?_⟩
+  intro gas hgas
   unfold runLocated at hresult
   split at hresult
   · rename_i hpc
     have hwf : WellFormed s.fork located.instruction := by
       simpa [hfork] using located.wellFormed
-    exact runInstr_sound
+    exact (runInstr_sound
       (decodes_of_artifact artifact s located.index located.instruction
         hcode hpc located.atIndex hwf) hresult hrun hnp
+      ).trace gas hgas
   · simp_all
+
+@[simp] theorem runLocated_sound_cost {artifact : ProgramArtifact}
+    {fork : Fork} {located : Located artifact fork} {s t : State}
+    (hcode : s.executionEnv.code = artifact.code)
+    (hfork : s.fork = fork)
+    (hresult : runLocated located s = some t)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (runLocated_sound hcode hfork hresult hrun hnp).cost =
+      instrCost located.instruction s := rfl
 
 theorem runLocated_executionEnv {artifact : ProgramArtifact}
     {fork : Fork} {located : Located artifact fork} {s t : State}
@@ -738,7 +801,25 @@ def runLocatedBlock {artifact : ProgramArtifact} {fork : Fork} :
               | .Running => runLocatedBlock rest next
               | _ => none
 
-theorem runLocatedBlock_sound (artifact : ProgramArtifact)
+/-- Executable exact cost of a located path.  On successful paths this follows
+the same intermediate states as `runLocatedBlock`; failure branches are
+irrelevant to `runLocatedBlock_sound` and return the cost accumulated so far. -/
+def runLocatedBlockCost {artifact : ProgramArtifact} {fork : Fork} :
+    List (Located artifact fork) → State → Nat
+  | [], _ => 0
+  | located :: rest, s =>
+      instrCost located.instruction s +
+        match rest with
+        | [] => 0
+        | _ :: _ =>
+            match runLocated located s with
+            | some next =>
+                match next.halt with
+                | .Running => runLocatedBlockCost rest next
+                | _ => 0
+            | none => 0
+
+def runLocatedBlock_sound (artifact : ProgramArtifact)
     (fork : Fork) (path : List (Located artifact fork)) {s t : State}
     (hcode : s.executionEnv.code = artifact.code)
     (hfork : s.fork = fork)
@@ -746,11 +827,14 @@ theorem runLocatedBlock_sound (artifact : ProgramArtifact)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompile s.executionEnv.fork
       s.executionEnv.codeAddr = false) : GasSteps s t := by
-  induction path generalizing s t with
+  refine ⟨runLocatedBlockCost path s, ?_⟩
+  intro gas hgas
+  induction path generalizing s t gas with
   | nil =>
       simp [runLocatedBlock] at hresult
       subst t
-      exact GasSteps.refl s
+      simpa [runLocatedBlockCost, withGas] using
+        Steps.refl (withGas s gas)
   | cons located rest ih =>
       cases rest with
       | nil =>
@@ -759,7 +843,8 @@ theorem runLocatedBlock_sound (artifact : ProgramArtifact)
           | some next =>
             simp [runLocatedBlock, hnext] at hresult
             subst t
-            exact runLocated_sound hcode hfork hnext hrun hnp
+            exact (runLocated_sound hcode hfork hnext hrun hnp).trace gas
+              (by simpa [runLocatedBlockCost] using hgas)
       | cons nextLocated tail =>
           cases hnext : runLocated located s with
           | none => simp [runLocatedBlock, hnext] at hresult
@@ -777,12 +862,45 @@ theorem runLocatedBlock_sound (artifact : ProgramArtifact)
                 change next.executionEnv.fork = fork
                 rw [henv]
                 exact hfork
-              exact (runLocated_sound hcode hfork hnext hrun hnp).trans
-                (ih hnextCode hnextFork hresult hnextRun hnextNp)
+              let head := runLocated_sound hcode hfork hnext hrun hnp
+              have hcost :
+                  runLocatedBlockCost (located :: nextLocated :: tail) s =
+                    head.cost +
+                      runLocatedBlockCost (nextLocated :: tail) next := by
+                simp [runLocatedBlockCost, hnext, hnextRun, head]
+              have hhead : head.cost ≤ gas := by
+                rw [hcost] at hgas
+                omega
+              have htail : runLocatedBlockCost (nextLocated :: tail) next ≤
+                  gas - head.cost := by
+                rw [hcost] at hgas
+                omega
+              have hsHead := head.trace gas hhead
+              have hsTail := ih hnextCode hnextFork hresult hnextRun hnextNp
+                (gas := gas - head.cost) htail
+              have hsub :
+                  gas - head.cost -
+                      runLocatedBlockCost (nextLocated :: tail) next =
+                    gas - runLocatedBlockCost
+                      (located :: nextLocated :: tail) s := by
+                rw [hcost]
+                omega
+              simpa [hsub] using hsHead.append hsTail
             | Success => simp [runLocatedBlock, hnext, hnextRun] at hresult
             | Returned => simp [runLocatedBlock, hnext, hnextRun] at hresult
             | Reverted => simp [runLocatedBlock, hnext, hnextRun] at hresult
             | Exception error =>
               simp [runLocatedBlock, hnext, hnextRun] at hresult
+
+@[simp] theorem runLocatedBlock_sound_cost (artifact : ProgramArtifact)
+    (fork : Fork) (path : List (Located artifact fork)) {s t : State}
+    (hcode : s.executionEnv.code = artifact.code)
+    (hfork : s.fork = fork)
+    (hresult : runLocatedBlock path s = some t)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (runLocatedBlock_sound artifact fork path hcode hfork hresult hrun hnp).cost =
+      runLocatedBlockCost path s := rfl
 
 end Challenge.EvmProof.Stepper

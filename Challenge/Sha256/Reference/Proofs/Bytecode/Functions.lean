@@ -107,7 +107,7 @@ def unaryReturned (s : State) (value returnDest : UInt256)
 @[simp] private theorem rotrNext25 : (UInt256.ofNat 25).succ = UInt256.ofNat 26 := by decide
 
 set_option linter.unusedSimpArgs false in
-private theorem run_rotr (s : State) (x : UInt256) (n : Nat)
+theorem run_rotr (s : State) (x : UInt256) (n : Nat)
     (output returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1016) (hn : n ≤ 32)
     (hcode : s.executionEnv.code = referenceBytecode)
@@ -132,7 +132,7 @@ private theorem run_rotr (s : State) (x : UInt256) (n : Nat)
     hsub]
   rfl
 
-theorem gasSteps_rotr (s : State) (x : UInt256) (n : Nat)
+def gasSteps_rotr (s : State) (x : UInt256) (n : Nat)
     (output returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1016) (hn : n ≤ 32)
     (hcode : s.executionEnv.code = referenceBytecode)
@@ -210,7 +210,7 @@ def ternaryEntry (s : State) (entry : Nat) (x y z output returnDest : UInt256)
   exact Challenge.EvmProof.Word.succ_ofNat (by omega)
 
 set_option linter.unusedSimpArgs false in
-private theorem run_ch (s : State) (x y z output returnDest : UInt256)
+theorem run_ch (s : State) (x y z output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1016)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running)
@@ -233,7 +233,7 @@ private theorem run_ch (s : State) (x y z output returnDest : UInt256)
   rfl
 
 set_option linter.unusedSimpArgs false in
-private theorem run_maj (s : State) (x y z output returnDest : UInt256)
+theorem run_maj (s : State) (x y z output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1015)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running)
@@ -256,7 +256,7 @@ private theorem run_maj (s : State) (x y z output returnDest : UInt256)
     hc4, hc5, hc6, hc7, hc8, hc9, hcode, hrun, hvalid]
   rfl
 
-theorem gasSteps_ch (s : State) (x y z output returnDest : UInt256)
+def gasSteps_ch (s : State) (x y z output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1016)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -273,7 +273,7 @@ theorem gasSteps_ch (s : State) (x y z output returnDest : UInt256)
   · exact hrun
   · exact hnp
 
-theorem gasSteps_maj (s : State) (x y z output returnDest : UInt256)
+def gasSteps_maj (s : State) (x y z output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1015)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -353,7 +353,7 @@ def ssig0AfterSecondRotr (s : State) (x output returnDest : UInt256)
       x :: output :: returnDest :: rest)
 
 set_option linter.unusedSimpArgs false in
-private theorem run_ssig0Setup (s : State) (x output returnDest : UInt256)
+theorem run_ssig0Setup (s : State) (x output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1013)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
@@ -377,7 +377,7 @@ private theorem run_ssig0Setup (s : State) (x output returnDest : UInt256)
   rfl
 
 set_option linter.unusedSimpArgs false in
-private theorem run_ssig0Middle (s : State) (x output returnDest : UInt256)
+theorem run_ssig0Middle (s : State) (x output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1012)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
@@ -403,7 +403,7 @@ private theorem run_ssig0Middle (s : State) (x output returnDest : UInt256)
   rfl
 
 set_option linter.unusedSimpArgs false in
-private theorem run_ssig0Finish (s : State) (x output returnDest : UInt256)
+theorem run_ssig0Finish (s : State) (x output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1017)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running)
@@ -424,7 +424,7 @@ private theorem run_ssig0Finish (s : State) (x output returnDest : UInt256)
     hc1, hc2, hc3, hc4, hc5, hc6, hc7, hcode, hrun, hvalid]
   rfl
 
-theorem gasSteps_ssig0 (s : State) (x output returnDest : UInt256)
+def gasSteps_ssig0 (s : State) (x output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1011)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -536,7 +536,7 @@ def ssig1AfterSecondRotr (s : State) (x output returnDest : UInt256)
       x :: output :: returnDest :: rest)
 
 set_option linter.unusedSimpArgs false in
-private theorem run_ssig1Setup (s : State) (x output returnDest : UInt256)
+theorem run_ssig1Setup (s : State) (x output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1013)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
@@ -560,7 +560,7 @@ private theorem run_ssig1Setup (s : State) (x output returnDest : UInt256)
   rfl
 
 set_option linter.unusedSimpArgs false in
-private theorem run_ssig1Middle (s : State) (x output returnDest : UInt256)
+theorem run_ssig1Middle (s : State) (x output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1012)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running) :
@@ -586,7 +586,7 @@ private theorem run_ssig1Middle (s : State) (x output returnDest : UInt256)
   rfl
 
 set_option linter.unusedSimpArgs false in
-private theorem run_ssig1Finish (s : State) (x output returnDest : UInt256)
+theorem run_ssig1Finish (s : State) (x output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1017)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running)
@@ -607,7 +607,7 @@ private theorem run_ssig1Finish (s : State) (x output returnDest : UInt256)
     hc1, hc2, hc3, hc4, hc5, hc6, hc7, hcode, hrun, hvalid]
   rfl
 
-theorem gasSteps_ssig1 (s : State) (x output returnDest : UInt256)
+def gasSteps_ssig1 (s : State) (x output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1011)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)

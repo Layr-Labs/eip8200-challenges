@@ -116,7 +116,7 @@ def loadReturned (s : State) (base : Nat) (index returnDest : UInt256)
 @[simp] private theorem next240 : (UInt256.ofNat 331).succ = UInt256.ofNat 332 := by decide
 
 set_option linter.unusedSimpArgs false in
-private theorem run_load (path : List
+theorem run_load (path : List
     (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
     (s : State) (entry base : Nat) (index output returnDest : UInt256)
     (rest : List UInt256)
@@ -155,7 +155,7 @@ private theorem run_load (path : List
       hca3, hca4, hca5, hcode, hrun, hvalid, hoff,
       State.activeWordsAfterUInt256]
 
-theorem gasSteps_wAt (s : State) (index output returnDest : UInt256)
+def gasSteps_wAt (s : State) (index output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1018)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -173,7 +173,7 @@ theorem gasSteps_wAt (s : State) (index output returnDest : UInt256)
   · exact hrun
   · exact hnp
 
-theorem gasSteps_hAt (s : State) (index output returnDest : UInt256)
+def gasSteps_hAt (s : State) (index output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1018)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -279,7 +279,7 @@ def storeReturned (s : State) (base : Nat) (index value returnDest : UInt256)
 @[simp] private theorem next254 : (UInt256.ofNat 350).succ = UInt256.ofNat 351 := by decide
 
 set_option linter.unusedSimpArgs false in
-private theorem run_store (path : List
+theorem run_store (path : List
     (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
     (s : State) (entry base : Nat) (index value returnDest : UInt256)
     (rest : List UInt256)
@@ -320,7 +320,7 @@ private theorem run_store (path : List
       hc5, hc6, hca3, hca4, hca5, hca6, hcode, hrun, hvalid, hoff,
       State.activeWordsAfterUInt256]
 
-theorem gasSteps_wSet (s : State) (index value returnDest : UInt256)
+def gasSteps_wSet (s : State) (index value returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1017)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -338,7 +338,7 @@ theorem gasSteps_wSet (s : State) (index value returnDest : UInt256)
   · exact hrun
   · exact hnp
 
-theorem gasSteps_hSet (s : State) (index value returnDest : UInt256)
+def gasSteps_hSet (s : State) (index value returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1017)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -411,7 +411,7 @@ def kAtReturned (s : State) (index returnDest : UInt256)
 @[simp] private theorem next196 : (UInt256.ofNat 272).succ = UInt256.ofNat 273 := by decide
 
 set_option linter.unusedSimpArgs false in
-private theorem run_kAt (s : State) (index output returnDest : UInt256)
+theorem run_kAt (s : State) (index output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1018)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running)
@@ -434,7 +434,7 @@ private theorem run_kAt (s : State) (index output returnDest : UInt256)
     loadEntry, kAtReturned, List.exchange, hc2, hc3, hc4, hc5, hca3, hca4,
     hca5, hcode, hrun, hvalid, hoff, State.activeWordsAfterUInt256]
 
-theorem gasSteps_kAt (s : State) (index output returnDest : UInt256)
+def gasSteps_kAt (s : State) (index output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1018)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)

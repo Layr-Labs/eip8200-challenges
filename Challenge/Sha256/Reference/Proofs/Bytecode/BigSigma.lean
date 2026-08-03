@@ -150,7 +150,7 @@ def afterThirdRotr (s : State) (x output returnDest : UInt256)
       x :: output :: returnDest :: rest)
 
 set_option linter.unusedSimpArgs false in
-private theorem run_setup (path : List
+theorem run_setup (path : List
     (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
     (s : State) (entry n returnPC : Nat) (x output returnDest : UInt256)
     (rest : List UInt256)
@@ -184,7 +184,7 @@ private theorem run_setup (path : List
     rfl
 
 set_option linter.unusedSimpArgs false in
-private theorem run_middle1 (path : List
+theorem run_middle1 (path : List
     (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
     (s : State) (n1 n2 returnPC : Nat) (x output returnDest : UInt256)
     (rest : List UInt256)
@@ -222,7 +222,7 @@ private theorem run_middle1 (path : List
     rfl
 
 set_option linter.unusedSimpArgs false in
-private theorem run_middle2 (path : List
+theorem run_middle2 (path : List
     (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
     (s : State) (n1 n2 n3 returnPC previousPC : Nat)
     (x output returnDest : UInt256) (rest : List UInt256)
@@ -262,7 +262,7 @@ private theorem run_middle2 (path : List
     rfl
 
 set_option linter.unusedSimpArgs false in
-private theorem run_finish (path : List
+theorem run_finish (path : List
     (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
     (s : State) (n1 n2 n3 returnPC : Nat) (value : UInt256)
     (x output returnDest : UInt256) (rest : List UInt256)
@@ -298,7 +298,7 @@ private theorem run_finish (path : List
       hcode, hrun, hvalid]
     rfl
 
-theorem gasSteps_bigSigma0 (s : State) (x output returnDest : UInt256)
+def gasSteps_bigSigma0 (s : State) (x output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1011)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -368,7 +368,7 @@ theorem gasSteps_bigSigma0 (s : State) (x output returnDest : UInt256)
   exact gSetup.trans (gFirst.trans
     (gMiddle1.trans (gSecond.trans (gMiddle2.trans (gThird.trans gFinish)))))
 
-theorem gasSteps_bigSigma1 (s : State) (x output returnDest : UInt256)
+def gasSteps_bigSigma1 (s : State) (x output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1011)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
