@@ -71,7 +71,13 @@ structure BlockInputs (s : State) (messageOffset : UInt256)
   messageBlock : ScheduleCorrect.MessageBlockAt s.memory messageOffset
     padded blockOff
   tables : InitializationCorrect.TablesCorrect s.memory
-  constants : InitializationCorrect.ConstantsCorrect s.memory
+  constants :
+    (∀ j, j < 5 →
+      InitializationCorrect.slotWord s.memory 0x620 j =
+        Challenge.EvmProof.Word.ofUInt32 (Crypto.Ripemd160.K[j]!)) ∧
+    (∀ j, j < 5 →
+      InitializationCorrect.slotWord s.memory 0x6c0 j =
+        Challenge.EvmProof.Word.ofUInt32 (Crypto.Ripemd160.KP[j]!))
   hash : hashAt32 s = Compression.embedHash h
 
 private theorem loopState_word_outsideX (s : State)
@@ -309,10 +315,16 @@ theorem leftInitialState_tables (inputs :
 
 theorem leftInitialState_constants (inputs :
     BlockInputs s messageOffset padded blockOff h) :
-    InitializationCorrect.ConstantsCorrect
-      (leftInitialState s messageOffset returnDest rest).memory := by
-  rcases inputs.constants with ⟨hk, hkP, hh⟩
-  refine ⟨?_, ?_, ?_⟩
+    (∀ j, j < 5 →
+      InitializationCorrect.slotWord
+          (leftInitialState s messageOffset returnDest rest).memory 0x620 j =
+        Challenge.EvmProof.Word.ofUInt32 (Crypto.Ripemd160.K[j]!)) ∧
+    (∀ j, j < 5 →
+      InitializationCorrect.slotWord
+          (leftInitialState s messageOffset returnDest rest).memory 0x6c0 j =
+        Challenge.EvmProof.Word.ofUInt32 (Crypto.Ripemd160.KP[j]!)) := by
+  rcases inputs.constants with ⟨hk, hkP⟩
+  refine ⟨?_, ?_⟩
   · intro j hj
     unfold InitializationCorrect.slotWord
     change wordAt (leftInitialState s messageOffset returnDest rest)
@@ -327,16 +339,6 @@ theorem leftInitialState_constants (inputs :
     rw [leftInitialState_words s messageOffset returnDest rest
       (0x6c0 + 32 * j) (by omega)]
     exact hkP j hj
-  · intro i hi
-    unfold InitializationCorrect.slotWord
-    unfold leftInitialState
-    change wordAt (copiedWorkingState
-      (scheduledState s messageOffset returnDest rest)) (0x020 + 32 * i) = _
-    rw [copiedWorkingState_word_below]
-    · rw [scheduledState_word_outsideX s messageOffset returnDest rest
-        (0x020 + 32 * i) (Or.inl (by omega))]
-      exact hh i hi
-    · omega
 
 /-- The concrete schedule state contains the sixteen little-endian words of
 the selected padded-message block. -/
@@ -915,7 +917,7 @@ theorem rightStates_concrete (inputs :
         unfold rightInitialState leftFinalState
         rw [leftStates_word_outside _ _ _ _ 80 _ (Or.inr (by omega))]
         simpa [wordAt, InitializationCorrect.slotWord, Nat.mul_comm] using
-          hconstants.2.1 (roundIndex i) (by unfold roundIndex; omega)
+          hconstants.2 (roundIndex i) (by unfold roundIndex; omega)
       have hworking : workingAt q 352 = Compression.embed
           (CompressionCorrect.rightRounds (blockWords padded blockOff) i
             (CompressionCorrect.workingOfHash h)) := by
