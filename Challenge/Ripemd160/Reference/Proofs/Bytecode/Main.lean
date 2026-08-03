@@ -74,6 +74,25 @@ def locatedInitStore (w : Artifact.InitStore) (hw : w ∈ Artifact.initStores) :
 def initializedState (input : ByteArray) : State :=
   Artifact.initStores.foldl applyInitStore (Execution.mainStart input)
 
+@[simp] theorem initializedState_pc (input : ByteArray) :
+    (initializedState input).pc = UInt256.ofNat (Artifact.instructionPC 764) := by
+  rfl
+
+@[simp] theorem initializedState_stack (input : ByteArray) :
+    (initializedState input).stack = [] := by rfl
+
+@[simp] theorem initializedState_halt (input : ByteArray) :
+    (initializedState input).halt = .Running := by rfl
+
+@[simp] theorem initializedState_fork (input : ByteArray) :
+    (initializedState input).fork = .Osaka := by rfl
+
+@[simp] theorem initializedState_code (input : ByteArray) :
+    (initializedState input).executionEnv.code = referenceBytecode := by rfl
+
+@[simp] theorem initializedState_codeAddr (input : ByteArray) :
+    (initializedState input).executionEnv.codeAddr = deployAddress := by rfl
+
 theorem run_initStore (s : State) (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores)
     (hpc : s.pc = UInt256.ofNat (Artifact.instructionPC w.index))
