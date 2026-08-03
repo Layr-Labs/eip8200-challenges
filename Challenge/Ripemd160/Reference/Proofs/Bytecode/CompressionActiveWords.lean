@@ -1,4 +1,6 @@
 import Challenge.Ripemd160.Reference.Proofs.Bytecode.DriverTrace
+import Challenge.Ripemd160.Reference.Proofs.Bytecode.CompressionTrace
+import Batteries.Tactic.OpenPrivate
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -17,6 +19,11 @@ open Challenge.Ripemd160
 open Challenge.EvmProof
 open EvmSemantics
 open EvmSemantics.EVM
+open CompressionTrace
+
+open private afterLoads xReturnedState afterFirstStores genericAfterThirdStore
+  genericReturned from
+  Challenge.Ripemd160.Reference.Proofs.Bytecode.RoundTrace
 
 private theorem activeWordsAfter_eq_of_end_le (curr offset size : Nat)
     (hend : offset + size ≤ curr * 32) :
@@ -340,5 +347,201 @@ theorem scheduledState_activeWords (s : State) (input : ByteArray)
     exact ⟨hprevLe, Nat.le_max_right _ _⟩
   · apply (Nat.max_le).2
     exact ⟨hprevGe.trans (Nat.le_max_left _ _), Nat.le_max_right _ _⟩
+
+private theorem activeWordsAfterUInt256_2_eq (s : State)
+    (off₁ size₁ off₂ size₂ : Nat)
+    (hend₁ : off₁ + size₁ ≤ s.activeWords.toNat * 32)
+    (hend₂ : off₂ + size₂ ≤ s.activeWords.toNat * 32) :
+    s.activeWordsAfterUInt256_2 off₁ size₁ off₂ size₂ = s.activeWords := by
+  unfold State.activeWordsAfterUInt256_2
+  rw [activeWordsAfter_eq_of_end_le _ _ _ hend₁,
+    activeWordsAfter_eq_of_end_le _ _ _ hend₂, ofNat_toNat]
+
+private theorem copyRegion_activeWords (s : State) (dest src size : Nat)
+    (hdest : dest + size ≤ s.activeWords.toNat * 32)
+    (hsrc : src + size ≤ s.activeWords.toNat * 32) :
+    (copyRegion s dest src size).activeWords = s.activeWords := by
+  unfold copyRegion
+  exact activeWordsAfterUInt256_2_eq s dest size src size hdest hsrc
+
+theorem copiedWorkingState_activeWords (s : State)
+    (hactive : 21 ≤ s.activeWords.toNat) :
+    (copiedWorkingState s).activeWords = s.activeWords := by
+  let q₁ := copyRegion s 192 32 160
+  let q₂ := copyRegion q₁ 352 32 160
+  have h₁ : q₁.activeWords = s.activeWords := by
+    apply copyRegion_activeWords <;> omega
+  have h₂ : q₂.activeWords = s.activeWords := by
+    exact (copyRegion_activeWords q₁ 352 32 160
+      (by rw [h₁]; omega) (by rw [h₁]; omega)).trans h₁
+  unfold copiedWorkingState
+  exact (copyRegion_activeWords q₂ 512 32 160
+    (by rw [h₂]; omega) (by rw [h₂]; omega)).trans h₂
+
+private theorem slotAddress_toNat (base : Nat) (i : UInt256)
+    (hi : i.toNat < 16) (hbase : base + 32 * i.toNat < 2 ^ 256) :
+    (TableTrace.slotAddress (UInt256.ofNat base) i).toNat =
+      base + 32 * i.toNat := by
+  have hshift : UInt256.shiftLeft i (UInt256.ofNat 5) =
+      UInt256.ofNat (32 * i.toNat) := by
+    conv_lhs => rw [← ofNat_toNat i]
+    rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide)
+        (by omega : i.toNat * 2 ^ 5 < 2 ^ 256)]
+    congr 1
+    omega
+  unfold TableTrace.slotAddress
+  rw [hshift]
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)]
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by omega)]
+  omega
+
+private theorem tableAddress_toNat (base i : Nat) (hi : i < 80)
+    (hbase : base + 32 * (i / 32) < 2 ^ 256) :
+    (TableTrace.tableAddress (UInt256.ofNat base) (UInt256.ofNat i)).toNat =
+      base + 32 * (i / 32) := by
+  unfold TableTrace.tableAddress
+  rw [Challenge.EvmProof.Word.shiftRight_ofNat (by omega) (by decide)]
+  rw [Nat.shiftRight_eq_div_pow]
+  norm_num
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide)
+      (by omega : (i / 32) * 2 ^ 5 < 2 ^ 256)]
+  rw [show (i / 32) * 2 ^ 5 = 32 * (i / 32) by omega]
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)]
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by omega)]
+  omega
+
+private theorem tableAtReturned_activeWords (s : State) (base i : Nat)
+    (hi : i < 80) (hactive : 67 ≤ s.activeWords.toNat)
+    (hbase : base + 96 + 32 ≤ 67 * 32) (returnDest : UInt256)
+    (rest : List UInt256) :
+    (TableTrace.tableAtReturned s (UInt256.ofNat base) (UInt256.ofNat i)
+      returnDest rest).activeWords = s.activeWords := by
+  unfold TableTrace.tableAtReturned
+  apply activeWordsAfterUInt256_eq
+  rw [tableAddress_toNat base i hi (by omega)]
+  have hdiv : i / 32 ≤ 2 := by omega
+  omega
+
+private theorem afterConstantLoad_activeWords (s : State) (base i : Nat)
+    (hi : i < 80) (hactive : 67 ≤ s.activeWords.toNat)
+    (hbase : base + 4 * 32 + 32 ≤ 67 * 32) :
+    (afterConstantLoad s base i).activeWords = s.activeWords := by
+  unfold afterConstantLoad roundIndex
+  apply activeWordsAfterUInt256_eq
+  have hdiv : i / 16 ≤ 4 := by omega
+  omega
+
+private theorem addWord_toNat (base off : Nat)
+    (hlt : base + off < 2 ^ 256) :
+    (UInt256.ofNat base + UInt256.ofNat off).toNat = base + off := by
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat hlt,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlt]
+
+private theorem afterLoads_activeWords (s : State) (base : Nat)
+    (hactive : 67 ≤ s.activeWords.toNat)
+    (hbase : base + 0x80 + 32 ≤ 67 * 32) :
+    (afterLoads s (UInt256.ofNat base)).activeWords = s.activeWords := by
+  let q₀ := { s with activeWords :=
+    s.activeWordsAfterUInt256 (UInt256.ofNat base).toNat 32 }
+  let q₁ := { q₀ with activeWords := (q₀.activeWordsAfterUInt256
+    (UInt256.ofNat base + UInt256.ofNat 0x20).toNat 32) }
+  let q₂ := { q₁ with activeWords := (q₁.activeWordsAfterUInt256
+    (UInt256.ofNat base + UInt256.ofNat 0x40).toNat 32) }
+  let q₃ := { q₂ with activeWords := (q₂.activeWordsAfterUInt256
+    (UInt256.ofNat base + UInt256.ofNat 0x60).toNat 32) }
+  have h₀ : q₀.activeWords = s.activeWords := by
+    apply activeWordsAfterUInt256_eq
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by omega : base < 2 ^ 256)]
+    omega
+  have h₁ : q₁.activeWords = s.activeWords := by
+    apply Eq.trans (activeWordsAfterUInt256_eq q₀ _ 32 (by
+      rw [addWord_toNat base 0x20 (by omega), h₀]
+      omega)) h₀
+  have h₂ : q₂.activeWords = s.activeWords := by
+    apply Eq.trans (activeWordsAfterUInt256_eq q₁ _ 32 (by
+      rw [addWord_toNat base 0x40 (by omega), h₁]
+      omega)) h₁
+  have h₃ : q₃.activeWords = s.activeWords := by
+    apply Eq.trans (activeWordsAfterUInt256_eq q₂ _ 32 (by
+      rw [addWord_toNat base 0x60 (by omega), h₂]
+      omega)) h₂
+  unfold afterLoads
+  change (q₃.activeWordsAfterUInt256
+    (UInt256.ofNat base + UInt256.ofNat 0x80).toNat 32) = _
+  exact (activeWordsAfterUInt256_eq q₃ _ 32 (by
+    rw [addWord_toNat base 0x80 (by omega), h₃]
+    omega)).trans h₃
+
+private theorem storedWord_activeWords (s : State) (base index : Nat)
+    (hindex : index < 16) (hactive : 67 ≤ s.activeWords.toNat)
+    (hbase : base + 32 * index + 32 ≤ 67 * 32) (value : UInt256) :
+    (TableTrace.storedWord s (UInt256.ofNat base) (UInt256.ofNat index)
+      value).activeWords = s.activeWords := by
+  unfold TableTrace.storedWord
+  apply activeWordsAfterUInt256_eq
+  rw [slotAddress_toNat base (UInt256.ofNat index)
+    (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt (by omega : index < 2 ^ 256)]
+      exact hindex)
+    (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt (by omega : index < 2 ^ 256)]
+      omega)]
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by omega : index < 2 ^ 256)]
+  omega
+
+/-- A compiled round only touches fixed scratch words, provided its X selector
+is one of the sixteen schedule entries. -/
+theorem roundReturned_activeWords (s : State) (base : Nat)
+    (hbase : base + 0x80 + 32 ≤ 67 * 32) (j : Nat)
+    (wordIndex rotation k returnDest : UInt256) (hword : wordIndex.toNat < 16)
+    (rest : List UInt256) (hactive : 67 ≤ s.activeWords.toNat) :
+    (RoundTrace.roundReturned s (UInt256.ofNat base) j wordIndex rotation k
+      returnDest rest).activeWords = s.activeWords := by
+  let loaded := afterLoads s (UInt256.ofNat base)
+  have hloaded : loaded.activeWords = s.activeWords :=
+    afterLoads_activeWords s base hactive hbase
+  let xret := xReturnedState s (UInt256.ofNat base) j wordIndex rotation k
+    returnDest rest
+  have hx : xret.activeWords = s.activeWords := by
+    unfold xret xReturnedState TableTrace.atReturned
+    apply Eq.trans (activeWordsAfterUInt256_eq loaded _ 32 (by
+      rw [slotAddress_toNat 0x2a0 wordIndex hword (by omega), hloaded]
+      omega)) hloaded
+  let first := afterFirstStores xret (UInt256.ofNat base)
+  have hfirst : first.activeWords = s.activeWords := by
+    unfold first afterFirstStores
+    have h₀ := storedWord_activeWords xret base 0 (by omega)
+      (by rw [hx]; exact hactive) (by omega) (RoundTrace.loadedE xret (UInt256.ofNat base))
+    exact (storedWord_activeWords
+      (TableTrace.storedWord xret (UInt256.ofNat base) (UInt256.ofNat 0)
+        (RoundTrace.loadedE xret (UInt256.ofNat base)))
+      base 4 (by omega) (by rw [h₀, hx]; exact hactive) (by omega)
+      (RoundTrace.loadedD xret (UInt256.ofNat base))).trans (h₀.trans hx)
+  have hthird : (genericAfterThirdStore first (UInt256.ofNat base)
+      (RoundTrace.loadedC s (UInt256.ofNat base))).activeWords = s.activeWords := by
+    unfold genericAfterThirdStore
+    exact (storedWord_activeWords first base 3 (by omega)
+      (by rw [hfirst]; exact hactive) (by omega) _).trans hfirst
+  unfold RoundTrace.roundReturned genericReturned
+  dsimp only
+  have h₂ := storedWord_activeWords
+    (genericAfterThirdStore first (UInt256.ofNat base)
+      (RoundTrace.loadedC s (UInt256.ofNat base)))
+    base 2 (by omega) (by rw [hthird]; exact hactive) (by omega)
+    (RoundTrace.loadedB s (UInt256.ofNat base))
+  exact (storedWord_activeWords
+    (TableTrace.storedWord
+      (genericAfterThirdStore first (UInt256.ofNat base)
+        (RoundTrace.loadedC s (UInt256.ofNat base)))
+      (UInt256.ofNat base) (UInt256.ofNat 2)
+      (RoundTrace.loadedB s (UInt256.ofNat base)))
+    base 1 (by omega) (by rw [h₂, hthird]; exact hactive) (by omega) _).trans
+      (h₂.trans hthird)
 
 end Challenge.Ripemd160.Reference.Proofs.Bytecode.CompressionActiveWords
