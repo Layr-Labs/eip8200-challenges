@@ -120,6 +120,12 @@ theorem bytesToNatPadded_succ (bytes : ByteArray) (offset width : Nat) :
   rw [← bytesNat_toList, readPadded_toList_succ, bytesNat_snoc,
     bytesNat_toList]
 
+@[simp] theorem bytesToNatPadded_zero_width (bytes : ByteArray) (offset : Nat) :
+    EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset 0 = 0 := by
+  unfold EvmSemantics.EVM.Precompile.bytesToNatPadded
+  rw [← bytesNat_toList, readPadded_toList]
+  rfl
+
 theorem bytesToNatPadded_add (bytes : ByteArray)
     (offset left right : Nat) :
     EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset (left + right) =
@@ -206,5 +212,25 @@ theorem shiftRight_readWord (bytes : ByteArray) (offset width : Nat)
     simpa [readWord_toNat] using readWord_shift_toNat bytes offset width hwidth
   · exact bytesToNatPadded_lt_pow bytes offset 32 |>.trans_le (by norm_num)
   · omega
+
+theorem byteAt_zero_readWord (bytes : ByteArray) (offset : Nat) :
+    EvmSemantics.UInt256.byteAt ⟨0⟩
+        (EvmSemantics.MachineState.readWord bytes offset) =
+      EvmSemantics.UInt256.ofNat
+        (YulSemantics.EVM.byteFrom bytes.toList offset).toNat := by
+  have hshift := readWord_shift_toNat bytes offset 1 (by omega)
+  have hone := bytesToNatPadded_succ bytes offset 0
+  have hbyte :
+      EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset 1 =
+        (YulSemantics.EVM.byteFrom bytes.toList offset).toNat := by
+    simpa using hone
+  unfold EvmSemantics.UInt256.byteAt
+  rw [show (⟨0⟩ : EvmSemantics.UInt256).toNat = 0 by rfl]
+  rw [if_neg (by omega)]
+  congr 1
+  rw [show 8 * (31 - 0) = (32 - 1) * 8 by norm_num, hshift, hbyte]
+  rw [show 0xff = 2 ^ 8 - 1 by norm_num,
+    Nat.and_two_pow_sub_one_eq_mod]
+  exact Nat.mod_eq_of_lt (YulSemantics.EVM.byteFrom bytes.toList offset).toNat_lt
 
 end Challenge.EvmProof.Bytes

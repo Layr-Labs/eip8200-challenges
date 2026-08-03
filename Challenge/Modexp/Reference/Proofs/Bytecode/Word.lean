@@ -135,6 +135,80 @@ def baseLoopState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
       UInt256.ofNat 1267] ++ callerRest input }
 
+theorem byteWord_eq (input : ByteArray) (offset : Nat)
+    (hoffset : offset < 2 ^ 256) :
+    byteWord input offset = UInt256.ofNat
+      (YulSemantics.EVM.byteFrom input.toList offset).toNat := by
+  unfold byteWord Accessors.calldataByteValue
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt hoffset]
+  change UInt256.byteAt ⟨0⟩ (MachineState.readWord input offset) = _
+  exact Challenge.EvmProof.Bytes.byteAt_zero_readWord input offset
+
+theorem baseStep_spec (input : ByteArray) (i prefix modulus : Nat)
+    (hmodulus : modulusValue input = modulus) (hmodpos : 0 < modulus)
+    (hmodlt : modulus < 2 ^ 256) (hoffset : 96 + i < 2 ^ 256) :
+    baseStep input i (UInt256.ofNat (prefix % modulus)) =
+      UInt256.ofNat
+        (Precompile.bytesToNatPadded input 96 (i + 1) % modulus) := by
+  have hbase : prefix % modulus < modulus := Nat.mod_lt _ hmodpos
+  have hbase256 : prefix % modulus < 2 ^ 256 := hbase.trans hmodlt
+  have hbyte := byteWord_eq input (96 + i) hoffset
+  have hmword : (UInt256.ofNat modulus).val.val ≠ 0 := by
+    change (UInt256.ofNat modulus).toNat ≠ 0
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hmodlt]
+    omega
+  have hmul : (prefix % modulus * 256) % modulus < modulus :=
+    Nat.mod_lt _ hmodpos
+  have hmul256 : (prefix % modulus * 256) % modulus < 2 ^ 256 :=
+    hmul.trans hmodlt
+  have hbyte256 :
+      (YulSemantics.EVM.byteFrom input.toList (96 + i)).toNat < 2 ^ 256 :=
+    (YulSemantics.EVM.byteFrom input.toList (96 + i)).toNat_lt.trans (by norm_num)
+  unfold baseStep
+  rw [hmodulus, hbyte]
+  unfold UInt256.mulMod UInt256.addMod
+  rw [if_neg hmword, if_neg hmword]
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt hbase256,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by norm_num : 256 < 2 ^ 256),
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt hmodlt,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt hmul256,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt hbyte256,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt hmodlt]
+  congr 1
+  rw [Challenge.EvmProof.Bytes.bytesToNatPadded_succ]
+  let p := Precompile.bytesToNatPadded input 96 i
+  let b := (YulSemantics.EVM.byteFrom input.toList (96 + i)).toNat
+  change (((prefix % modulus * 256) % modulus + b) % modulus) =
+    (p * 256 + b) % modulus
+  rw [Nat.mod_add_mod]
+  rw [← Nat.mod_add_mod (p * 256) modulus b]
+  congr 2
+  rw [Nat.mod_mul_mod]
+  rfl
+
+theorem baseAfter_correct (input : ByteArray) (count : Nat)
+    (hmodpos : 0 < modulusValue input)
+    (hmodlt : modulusValue input < 2 ^ 256)
+    (hbaseSize : baseSize input ≤ 1024)
+    (hcount : count ≤ baseSize input) :
+    baseAfter input count = UInt256.ofNat
+      (Precompile.bytesToNatPadded input 96 count % modulusValue input) := by
+  induction count with
+  | zero =>
+      simp [baseAfter, Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width]
+  | succ count ih =>
+      rw [baseAfter, ih (by omega)]
+      exact baseStep_spec input count
+        (Precompile.bytesToNatPadded input 96 count) (modulusValue input)
+        rfl hmodpos hmodlt (by omega)
+
 @[simp] private theorem startPCs (i : Nat) (hi : 415 ≤ i) (hii : i ≤ 426) :
     Artifact.referenceArtifact.instructionPC i =
       [517, 518, 519, 520, 521, 523, 524, 526, 527, 528, 529, 532][i - 415]! := by
