@@ -191,13 +191,13 @@ theorem loopTrace_cost_potential (input : ByteArray)
       (seam.noPrecompile (i + 1) (by omega)) (seam.compress i hi)
       (hcompress i hi)
 
-def paddingWork : Nat := 1215
+def paddingWork : Nat := 1212
 
 /-- Driver setup/final test plus the complete five-word output routine:
 `3 + 26 + 2636`.  The last summand is exposed path-by-path in `OutputGas`. -/
 def framingWork : Nat := 2665
 
-theorem fixedWork_eq : paddingWork + framingWork = 3880 := by
+theorem fixedWork_eq : paddingWork + framingWork = 3877 := by
   rfl
 
 /-- Cost facts delivered by the concrete schedule/round/compression trace.
@@ -218,9 +218,9 @@ structure OuterCostFacts (input : ByteArray) (hfit : CalldataFits input)
     (seam : DirectCorrect.CompressionSeam input) : Prop where
   padding : (PaddingTrace.gasSteps_pad input hfit).cost =
     paddingWork + 3 * GasCost.calldataWords input.size +
-      MachineState.memCost (63 + 2 * DriverTrace.blockCount input)
+      MachineState.memCost (64 + 2 * DriverTrace.blockCount input)
   initialActive : (seam.states 0).activeWords.toNat =
-    63 + 2 * DriverTrace.blockCount input
+    64 + 2 * DriverTrace.blockCount input
   finalActive :
     (seam.states (DriverTrace.blockCount input)).activeWords.toNat =
       GasCost.finalActiveWords input.size
