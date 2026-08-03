@@ -68,4 +68,49 @@ theorem evmRound_embed (x : Working) (j : Nat) (word constant : UInt32)
     Word.evmRotl32_ofUInt32 _ rotation hr0 hr,
     Word.evmRotl32_ofUInt32 x.c 10 (by decide) (by decide)]
 
+/-- Five-word chaining state, named to make the final cross-permutation
+auditable without array-index side conditions. -/
+structure HashState where
+  h0 : UInt32
+  h1 : UInt32
+  h2 : UInt32
+  h3 : UInt32
+  h4 : UInt32
+deriving DecidableEq
+
+structure EvmHashState where
+  h0 : UInt256
+  h1 : UInt256
+  h2 : UInt256
+  h3 : UInt256
+  h4 : UInt256
+deriving DecidableEq
+
+def embedHash (h : HashState) : EvmHashState :=
+  { h0 := ofUInt32 h.h0, h1 := ofUInt32 h.h1, h2 := ofUInt32 h.h2
+    h3 := ofUInt32 h.h3, h4 := ofUInt32 h.h4 }
+
+/-- RIPEMD-160's final cross-combination of the left and right lines. -/
+def combine (h : HashState) (left right : Working) : HashState :=
+  { h0 := h.h1 + left.c + right.d
+    h1 := h.h2 + left.d + right.e
+    h2 := h.h3 + left.e + right.a
+    h3 := h.h4 + left.a + right.b
+    h4 := h.h0 + left.b + right.c }
+
+/-- The exact masked EVM additions used by `compress`'s five final stores. -/
+def evmCombine (h : EvmHashState) (left right : EvmWorking) : EvmHashState :=
+  { h0 := mask32 (h.h1 + left.c + right.d)
+    h1 := mask32 (h.h2 + left.d + right.e)
+    h2 := mask32 (h.h3 + left.e + right.a)
+    h3 := mask32 (h.h4 + left.a + right.b)
+    h4 := mask32 (h.h0 + left.b + right.c) }
+
+/-- The reference's five final EVM stores implement the specified
+cross-permutation, including 32-bit modular addition. -/
+theorem evmCombine_embed (h : HashState) (left right : Working) :
+    evmCombine (embedHash h) (embed left) (embed right) =
+      embedHash (combine h left right) := by
+  simp [evmCombine, embedHash, embed, combine, mask32_eq_ofUInt32]
+
 end Challenge.Ripemd160.Reference.Proofs.Bytecode.Compression
