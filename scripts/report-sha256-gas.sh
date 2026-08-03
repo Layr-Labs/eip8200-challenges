@@ -8,7 +8,7 @@ cd "$(git rev-parse --show-toplevel)"
 source scripts/check-sha256-submissions.sh
 
 readonly gas_module_suffix="Gas"
-readonly report_sizes=(0 3 55 56 64 1000)
+readonly largest_input_size="18446744073709551615"
 readonly report_labels=(
   "empty"
   "abc"
@@ -24,6 +24,7 @@ declare -a artifact_paths=("Challenge/Sha256/Reference/reference.hex")
 declare -a gas_files=("Challenge/Sha256/Reference/Proofs/Gas.lean")
 declare -a gas_modules=("Challenge.Sha256.Reference.Proofs.Gas")
 declare -a bytecode_names=("Challenge.Sha256.referenceBytecode")
+declare -a formula_names=("Challenge.Sha256.Reference.Proofs.Gas.gasFormula")
 declare -a schedule_names=("Challenge.Sha256.Reference.Proofs.Gas.gasSchedule")
 declare -a schedule_theorems=("Challenge.Sha256.Reference.Proofs.Gas.gasSchedule_correct")
 reference_clean_total=""
@@ -51,6 +52,7 @@ discover_submissions() {
     gas_files+=("$submission_dir/Gas.lean")
     gas_modules+=("$module.$gas_module_suffix")
     bytecode_names+=("$module.bytecode")
+    formula_names+=("$module.gasFormula")
     schedule_names+=("$module.gasSchedule")
     schedule_theorems+=("$module.gasSchedule_correct")
   done
@@ -193,12 +195,13 @@ report_proved_row() {
   local gas_file="${gas_files[$index]}"
   local gas_module="${gas_modules[$index]}"
   local bytecode_name="${bytecode_names[$index]}"
+  local formula_name="${formula_names[$index]}"
   local schedule_name="${schedule_names[$index]}"
   local theorem_name="${schedule_theorems[$index]}"
 
   if [[ ! -f "$gas_file" ]]; then
-    printf '| [%s](%s) | Not provided | — | — | — | — | — | — |\n' \
-      "$name" "${implementation_links[$index]}"
+    printf '1\t0\t%s\t| [%s](%s) | — | Not provided |\n' \
+      "$name" "$name" "${implementation_links[$index]}"
     return
   fi
 
@@ -220,6 +223,8 @@ report_proved_row() {
     printf 'import Challenge.Sha256.AdditionalGoals.GasSchedule\n\n'
     printf 'example : Challenge.Sha256.CorrectWithSchedule %s %s := %s\n\n' \
       "$bytecode_name" "$schedule_name" "$theorem_name"
+    printf 'example : %s = %s.eval := by rfl\n\n' \
+      "$schedule_name" "$formula_name"
     printf '#print axioms %s\n' "$theorem_name"
   } > "$proof_check"
 
@@ -234,11 +239,9 @@ report_proved_row() {
 
   {
     printf 'import %s\n\n' "$gas_module"
-    local size
-    for size in "${report_sizes[@]}"; do
-      printf '#eval IO.println s!"GAS_BOUND,%s,{%s %s}"\n' \
-        "$size" "$schedule_name" "$size"
-    done
+    printf '#eval IO.println ("GAS_FORMULA," ++ %s.toLatex)\n' "$formula_name"
+    printf '#eval IO.println s!"GAS_RANK,{%s.eval %s}"\n' \
+      "$formula_name" "$largest_input_size"
   } > "$eval_check"
 
   local eval_output
@@ -247,27 +250,29 @@ report_proved_row() {
     return 1
   fi
 
-  local -A bounds=()
-  local marker size value
-  while IFS=, read -r marker size value; do
-    [[ "$marker" == "GAS_BOUND" ]] || continue
-    if [[ ! "$size" =~ ^[0-9]+$ || ! "$value" =~ ^[0-9]+$ ]]; then
-      printf 'error: invalid evaluated gas bound for %s: %s,%s\n' "$name" "$size" "$value" >&2
-      return 1
-    fi
-    bounds["$size"]="$value"
+  local latex=""
+  local rank=""
+  local line
+  while IFS= read -r line; do
+    case "$line" in
+      GAS_FORMULA,*) latex="${line#GAS_FORMULA,}" ;;
+      GAS_RANK,*) rank="${line#GAS_RANK,}" ;;
+    esac
   done <<< "$eval_output"
+
+  if [[ -z "$latex" || "$latex" == *'|'* || "$latex" == *'$'* || "$latex" == *$'\t'* ]]; then
+    printf 'error: invalid rendered gas formula for %s: %s\n' "$name" "$latex" >&2
+    return 1
+  fi
+  if [[ ! "$rank" =~ ^[0-9]+$ ]]; then
+    printf 'error: invalid gas ranking value for %s: %s\n' "$name" "$rank" >&2
+    return 1
+  fi
 
   {
     printf 'import %s\n\n' "$gas_module"
-    for size in "${report_sizes[@]}"; do
-      if [[ -z "${bounds[$size]:-}" ]]; then
-        printf 'error: no evaluated bound at size %s for %s\n' "$size" "$name" >&2
-        return 1
-      fi
-      printf 'example : %s %s = %s := by decide\n' \
-        "$schedule_name" "$size" "${bounds[$size]}"
-    done
+    printf 'example : %s.eval %s = %s := by decide\n' \
+      "$formula_name" "$largest_input_size" "$rank"
   } > "$value_check"
   if ! lean_output="$(lake env lean "$value_check" 2>&1)"; then
     printf 'error: evaluated gas values do not kernel-reduce for %s\n%s\n' \
@@ -275,12 +280,9 @@ report_proved_row() {
     return 1
   fi
 
-  printf '| [%s](%s) | [proved](%s)' "$name" "${implementation_links[$index]}" \
+  printf '0\t%s\t%s\t| [%s](%s) | $G(\\mathrm{CALLDATASIZE}) = %s$ | [proved](%s) |\n' \
+    "$rank" "$name" "$name" "${implementation_links[$index]}" "$latex" \
     "${gas_file#Challenge/Sha256/}"
-  for size in "${report_sizes[@]}"; do
-    printf ' | %s' "${bounds[$size]}"
-  done
-  printf ' |\n'
 
   cleanup_files "$proof_check" "$eval_check" "$value_check"
   trap - RETURN
@@ -311,7 +313,8 @@ run_axiom_self_test() {
     printf 'import %s.%s.Bytecode\n' "$module_prefix" "$name"
     printf 'import Challenge.Sha256.AdditionalGoals.GasSchedule\n\n'
     printf 'namespace %s.%s\n\n' "$module_prefix" "$name"
-    printf 'def gasSchedule : Nat → Nat := fun _ => 0\n\n'
+    printf 'def gasFormula : Challenge.Sha256.GasFormula := 0\n'
+    printf 'def gasSchedule : Nat → Nat := gasFormula.eval\n\n'
     printf 'axiom gasSchedule_correct :\n'
     printf '  Challenge.Sha256.CorrectWithSchedule bytecode gasSchedule\n\n'
     printf 'end %s.%s\n' "$module_prefix" "$name"
@@ -322,6 +325,7 @@ run_axiom_self_test() {
   gas_files=("$fixture_dir/Gas.lean")
   gas_modules=("$module_prefix.$name.Gas")
   bytecode_names=("$module_prefix.$name.bytecode")
+  formula_names=("$module_prefix.$name.gasFormula")
   schedule_names=("$module_prefix.$name.gasSchedule")
   schedule_theorems=("$module_prefix.$name.gasSchedule_correct")
 
@@ -368,32 +372,31 @@ main() {
     report_measured_row "$index"
   done
 
-  printf '\n### Category 2: proved input-size gas bounds\n\n'
+  printf '\n### Category 2: proved `CALLDATASIZE` gas bounds\n\n'
   printf '%s\n' \
-    'A proved row supplies an executable `gasSchedule n` and a kernel-checked' \
-    '`CorrectWithSchedule bytecode gasSchedule` theorem, meaning the displayed' \
-    'initial gas is sufficient for every input of that byte length. The table' \
-    'samples the full function at representative sizes; “Not provided” is not' \
-    'inferred from measurements.'
+    'A proved row supplies a symbolic `gasFormula`, its executable' \
+    '`gasSchedule`, and a kernel-checked `CorrectWithSchedule bytecode' \
+    'gasSchedule` theorem. The checker requires `gasSchedule = gasFormula.eval`' \
+    'by definitional equality, then renders the proved function directly as' \
+    'LaTeX. `calldataSize` is exactly the byte length returned by the EVM' \
+    '`CALLDATASIZE` opcode. Here' \
+    '$C_{\mathrm{mem}}(w) = 3w + \lfloor w^2/512 \rfloor$. Every expressible' \
+    'formula is monotone, so entries are ordered by their worst-case bound at' \
+    'the largest admissible calldata size, $2^{64}-1$, smallest first.' \
+    '“Not provided” is not inferred from measurements.'
   printf '\n'
-  printf '| implementation | status | 0 bytes | 3 bytes | 55 bytes | 56 bytes | 64 bytes | 1,000 bytes |\n'
-  printf '|---|---|---:|---:|---:|---:|---:|---:|\n'
-  for index in "${!implementation_names[@]}"; do
-    report_proved_row "$index"
-  done
+  printf '| implementation | proved symbolic bound | proof |\n'
+  printf '|---|---|---|\n'
+  local proved_rows
+  proved_rows="$({
+    for index in "${!implementation_names[@]}"; do
+      report_proved_row "$index"
+    done
+  } | sort -t $'\t' -k1,1n -k2,2n -k3,3)"
+  while IFS=$'\t' read -r _status _rank _name row; do
+    printf '%s\n' "$row"
+  done <<< "$proved_rows"
   printf '\n'
-  if [[ -f "${gas_files[0]}" ]]; then
-    printf '%s\n' \
-      'For the bundled reference, let `blocks(n) = ⌊(n + 72) / 64⌋` and' \
-      '`Cmem(w) = 3w + ⌊w² / 512⌋`. Its proved schedule is the exact trace cost' \
-      '`1747 + 155996 × blocks(n) + 3 × ⌊(n + 31) / 32⌋ +' \
-      'Cmem(90 + 2 × blocks(n))`.'
-  else
-    printf '%s\n' \
-      'The reference correctness proof currently establishes that a sufficient' \
-      'gas threshold exists for each concrete input. It does not yet expose the' \
-      'stronger uniform function of input size required for a proved row.'
-  fi
   printf '<!-- END GENERATED SHA256 GAS REPORT -->\n'
 }
 

@@ -86,8 +86,11 @@ import Challenge.Sha256.AdditionalGoals.GasSchedule
 
 namespace Challenge.Sha256.Submissions.FastSha256
 
-def gasSchedule : Nat → Nat := fun inputSize =>
-  -- sufficient initial gas as a function of input byte length
+def gasFormula : Challenge.Sha256.GasFormula :=
+  let calldataSize := Challenge.Sha256.GasFormula.calldataSize
+  -- symbolic sufficient gas as a function of CALLDATASIZE
+
+def gasSchedule : Nat → Nat := gasFormula.eval
 
 theorem gasSchedule_correct :
     Challenge.Sha256.CorrectWithSchedule bytecode gasSchedule := by
@@ -97,11 +100,15 @@ end Challenge.Sha256.Submissions.FastSha256
 ```
 
 This theorem says `gasSchedule n` is sufficient for every valid `n`-byte
-input, not merely for the test vector of that size. The function must be
-executable so the gas report can display representative values. CI checks its
-exact type, transitive axiom footprint, and kernel reduction of every displayed
-number. Omitting `Gas.lean` leaves the candidate in the measured-gas category
-without affecting its ordinary correctness submission.
+input, not merely for the test vector of that size. `GasFormula` supports
+`.calldataSize` (the value returned by EVM `CALLDATASIZE`), natural constants,
+`+`, `*`, natural-number `/`, and
+`.memoryCost`; its evaluator is executable and its renderer produces the
+LaTeX shown in the leaderboard. CI requires `gasSchedule = gasFormula.eval` by
+definitional equality, checks the theorem's exact type and transitive axiom
+footprint, and kernel-checks the value used to order the symbolic leaderboard.
+Omitting `Gas.lean` leaves the candidate in the measured-gas category without
+affecting its ordinary correctness submission.
 
 ## Direct bytecode proofs
 

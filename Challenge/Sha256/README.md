@@ -85,20 +85,21 @@ against the bundled reference. These measurements are tests, not proofs.
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | [Reference](Reference/) | 1524 | 158035 | 158038 | 158041 | 314044 | 314044 | 2498174 | 10179119 | 4199.31× | 1.00× |
 
-### Category 2: proved input-size gas bounds
+### Category 2: proved `CALLDATASIZE` gas bounds
 
-A proved row supplies an executable `gasSchedule n` and a kernel-checked
-`CorrectWithSchedule bytecode gasSchedule` theorem, meaning the displayed
-initial gas is sufficient for every input of that byte length. The table
-samples the full function at representative sizes; “Not provided” is not
-inferred from measurements.
+A proved row supplies a symbolic `gasFormula`, its executable
+`gasSchedule`, and a kernel-checked `CorrectWithSchedule bytecode
+gasSchedule` theorem. The checker requires `gasSchedule = gasFormula.eval`
+by definitional equality, then renders the proved function directly as
+LaTeX. `calldataSize` is exactly the byte length returned by the EVM
+`CALLDATASIZE` opcode. Here
+$C_{\mathrm{mem}}(w) = 3w + \lfloor w^2/512 \rfloor$. Every expressible
+formula is monotone, so entries are ordered by their worst-case bound at
+the largest admissible calldata size, $2^{64}-1$, smallest first.
+“Not provided” is not inferred from measurements.
 
-| implementation | status | 0 bytes | 3 bytes | 55 bytes | 56 bytes | 64 bytes | 1,000 bytes |
-|---|---|---:|---:|---:|---:|---:|---:|
-| [Reference](Reference/) | [proved](Reference/Proofs/Gas.lean) | 158035 | 158038 | 158041 | 314044 | 314044 | 2498174 |
+| implementation | proved symbolic bound | proof |
+|---|---|---|
+| [Reference](Reference/) | $G(\mathrm{CALLDATASIZE}) = 1747 + 155996 \cdot \left\lfloor\frac{\mathrm{CALLDATASIZE} + 72}{64}\right\rfloor + 3 \cdot \left\lfloor\frac{\mathrm{CALLDATASIZE} + 31}{32}\right\rfloor + C_{\mathrm{mem}}\left(90 + 2 \cdot \left\lfloor\frac{\mathrm{CALLDATASIZE} + 72}{64}\right\rfloor\right)$ | [proved](Reference/Proofs/Gas.lean) |
 
-For the bundled reference, let `blocks(n) = ⌊(n + 72) / 64⌋` and
-`Cmem(w) = 3w + ⌊w² / 512⌋`. Its proved schedule is the exact trace cost
-`1747 + 155996 × blocks(n) + 3 × ⌊(n + 31) / 32⌋ +
-Cmem(90 + 2 × blocks(n))`.
 <!-- END GENERATED SHA256 GAS REPORT -->

@@ -18,10 +18,14 @@ open Challenge.Sha256
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Sha256.Reference.Proofs.Bytecode
 
+/-- Symbolic form of the reference gas schedule used by the leaderboard. -/
+def gasFormula : GasFormula :=
+  let blocks := (GasFormula.calldataSize + 72) / 64
+  1747 + 155996 * blocks + 3 * ((GasFormula.calldataSize + 31) / 32) +
+    .memoryCost (90 + 2 * blocks)
+
 /-- Exact gas consumed by the bundled reference on an input of `n` bytes. -/
-def gasSchedule (n : Nat) : Nat :=
-  1747 + 155996 * ((n + 72) / 64) + 3 * ((n + 31) / 32) +
-    MachineState.memCost (90 + 2 * ((n + 72) / 64))
+def gasSchedule : Nat → Nat := gasFormula.eval
 
 theorem blockCount_eq (input : ByteArray) :
     Driver.blockCount input = (input.size + 72) / 64 := by
@@ -37,8 +41,12 @@ theorem gasSchedule_correct :
       (Driver.gasSteps_reference input hfit).cost := by
     rfl
   have hcost : trace.cost = gasSchedule input.size := by
+    change trace.cost =
+      1747 + 155996 * ((input.size + 72) / 64) +
+        3 * ((input.size + 31) / 32) +
+        MachineState.memCost (90 + 2 * ((input.size + 72) / 64))
     rw [htraceCost]
-    simpa [gasSchedule, GasCost.referenceGas, blockCount_eq] using
+    simpa [GasCost.referenceGas, blockCount_eq] using
       GasCost.gasSteps_reference_cost input hfit
   have htrace : Steps (initialState referenceBytecode input gas)
       (Challenge.EvmProof.withGas (ReferenceCorrect.finalState input)
