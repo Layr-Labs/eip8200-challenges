@@ -1092,4 +1092,34 @@ theorem tail_hash_eq_compressBlock_of_inputs (inputs :
   rw [← embedHashArray_hashArray,
     compressModel_hashArray_eq_compressBlock]
 
+/-- A complete compressor invocation only mutates memory below the packed
+lookup-table region.  This is the frame property used to carry tables,
+constants, and the padded message across driver iterations. -/
+theorem compressorResult_word_above (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256)
+    (address : Nat) (haddress : 0x4a0 ≤ address) :
+    wordAt
+        (rightTailResult (leftFinalState s messageOffset returnDest rest)
+          messageOffset returnDest rest) address =
+      wordAt s address := by
+  unfold wordAt rightTailResult combinationReturned combinationCleaned
+  simp only [combination4]
+  unfold CompressionTailTrace.storeWordMemory
+  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint,
+    Challenge.EvmProof.Memory.readWord_writeBytes_disjoint,
+    Challenge.EvmProof.Memory.readWord_writeBytes_disjoint,
+    Challenge.EvmProof.Memory.readWord_writeBytes_disjoint,
+    Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+  · change wordAt
+        (rightStates (leftFinalState s messageOffset returnDest rest)
+          messageOffset returnDest rest 80) address = wordAt s address
+    rw [rightStates_word_outside _ _ _ _ 80 address (Or.inr (by omega))]
+    unfold leftFinalState
+    rw [leftStates_word_outside _ _ _ _ 80 address (Or.inr (by omega))]
+    exact leftInitialState_words s messageOffset returnDest rest address haddress
+  all_goals
+    simp only [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+    right
+    omega
+
 end Challenge.Ripemd160.Reference.Proofs.Bytecode.CompressionFunctionalTrace
