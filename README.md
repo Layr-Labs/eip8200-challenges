@@ -39,6 +39,7 @@ It is independent of any particular precompile or challenge specification.
 | challenge | audit map | submission guide |
 |---|---|---|
 | SHA-256 | [`Challenge/Sha256/README.md`](Challenge/Sha256/README.md) | [`Challenge/Sha256/SUBMITTING.md`](Challenge/Sha256/SUBMITTING.md) |
+| MODEXP | [`Challenge/Modexp/README.md`](Challenge/Modexp/README.md) | reference implementation in progress |
 
 ## Build and verify
 

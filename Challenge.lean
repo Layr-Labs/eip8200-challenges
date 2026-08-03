@@ -1,4 +1,5 @@
 import Challenge.EvmProof
+import Challenge.Modexp
 import Challenge.Sha256
 set_option warningAsError true
 /-!
@@ -8,7 +9,7 @@ Verified replacements for Ethereum precompiles: EVM bytecode, plus a
 machine-checked proof that the bytecode computes what the precompile
 computed.
 
-SHA-256 (`0x02`) is the pilot:
+SHA-256 (`0x02`) is the pilot, followed by MODEXP (`0x05`):
 
 * `Challenge.EvmProof` — verified disassembly and direct small-step proof
   combinators for raw-bytecode submissions.
@@ -21,6 +22,10 @@ SHA-256 (`0x02`) is the pilot:
   proofs, including the complete direct EVM proof of the frozen bytes.
 * `Challenge.Sha256.Scorer` — Tier 1, falsification by execution
   (`lake exe sha256challenge`).
+* `Challenge.Modexp.Spec` — the successful Osaka/EIP-7823 MODEXP interface.
+* `Challenge.Modexp.Reference` — reference Yul and its frozen 1,284-byte artifact.
+* `Challenge.Modexp.Scorer` — EIP-198 and arbitrary-precision falsification
+  (`lake exe modexpchallenge`).
 
 See each challenge directory for its specification, audit map, submission
 instructions, reference artifact, and proof.
