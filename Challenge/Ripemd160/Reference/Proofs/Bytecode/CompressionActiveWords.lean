@@ -1,10 +1,12 @@
 import Challenge.Ripemd160.Reference.Proofs.Bytecode.DriverTrace
 import Challenge.Ripemd160.Reference.Proofs.Bytecode.CompressionTrace
+import Challenge.Ripemd160.Reference.Proofs.Bytecode.CompressionFullTrace
+import Challenge.Ripemd160.Reference.Proofs.Bytecode.CompressionFunctionalTrace
 import Batteries.Tactic.OpenPrivate
 
 set_option warningAsError true
 set_option maxRecDepth 50000
-set_option maxHeartbeats 500000
+set_option maxHeartbeats 100000
 
 /-!
 # Active-memory endpoint of one RIPEMD-160 compression call
@@ -20,10 +22,16 @@ open Challenge.EvmProof
 open EvmSemantics
 open EvmSemantics.EVM
 open CompressionTrace
+open CompressionRightTrace
+open CompressionTailTrace
 
 open private afterLoads xReturnedState afterFirstStores genericAfterThirdStore
   genericReturned from
   Challenge.Ripemd160.Reference.Proofs.Bytecode.RoundTrace
+
+open private leftSelector_lt rightSelector_lt leftStates_tableByte
+  rightStates_tableByte from
+  Challenge.Ripemd160.Reference.Proofs.Bytecode.CompressionFunctionalTrace
 
 private theorem activeWordsAfter_eq_of_end_le (curr offset size : Nat)
     (hend : offset + size ≤ curr * 32) :
@@ -543,5 +551,324 @@ theorem roundReturned_activeWords (s : State) (base : Nat)
       (RoundTrace.loadedB s (UInt256.ofNat base)))
     base 1 (by omega) (by rw [h₂, hthird]; exact hactive) (by omega) _).trans
       (h₂.trans hthird)
+
+private theorem leftRoundState_activeWords (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256)
+    (i : Nat) (hi : i < 80)
+    (htables : InitializationCorrect.TablesCorrect s.memory)
+    (hactive : 67 ≤ s.activeWords.toNat) :
+    (leftRoundState s messageOffset returnDest rest i).activeWords =
+      s.activeWords := by
+  let q₀ := afterConstantLoad s 1568 i
+  have h₀ : q₀.activeWords = s.activeWords :=
+    afterConstantLoad_activeWords s 1568 i hi hactive (by omega)
+  let q₁ := leftFirstReturned s messageOffset returnDest rest i
+  have h₁ : q₁.activeWords = s.activeWords := by
+    unfold q₁ leftFirstReturned
+    exact (tableAtReturned_activeWords q₀ 1376 i hi
+      (by rw [h₀]; exact hactive) (by omega) _ _).trans h₀
+  let q₂ := leftSecondReturned s messageOffset returnDest rest i
+  have h₂ : q₂.activeWords = s.activeWords := by
+    unfold q₂ leftSecondReturned
+    exact (tableAtReturned_activeWords q₁ 1184 i hi
+      (by rw [h₁]; exact hactive) (by omega) _ _).trans h₁
+  have hword :
+      (TableTrace.tableValue q₁ (UInt256.ofNat 1184)
+        (UInt256.ofNat i)).toNat < 16 := by
+    rw [TableTrace.tableValue_tableByte q₁ 1184 i (by omega) hi]
+    change (InitializationCorrect.tableByte s.memory 1184 i).toNat < 16
+    rw [htables.1 i hi, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (lt_trans (leftSelector_lt i hi) (by norm_num))]
+    exact leftSelector_lt i hi
+  unfold leftRoundState
+  exact (roundReturned_activeWords q₂ 192 (by omega) (roundIndex i)
+    (TableTrace.tableValue q₁ (UInt256.ofNat 1184) (UInt256.ofNat i))
+    (TableTrace.tableValue s (UInt256.ofNat 1376) (UInt256.ofNat i))
+    (constantAt s 1568 i) (UInt256.ofNat 714) hword _
+    (by rw [h₂]; exact hactive)).trans h₂
+
+private theorem leftStates_tables_preserved (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) (n : Nat)
+    (htables : InitializationCorrect.TablesCorrect s.memory) :
+    InitializationCorrect.TablesCorrect
+      (leftStates s messageOffset returnDest rest n).memory := by
+  rcases htables with ⟨hr, hrP, hs, hsP⟩
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · intro i hi
+    rw [leftStates_tableByte s messageOffset returnDest rest n 1184 i
+      (by omega)]
+    exact hr i hi
+  · intro i hi
+    rw [leftStates_tableByte s messageOffset returnDest rest n 1280 i
+      (by omega)]
+    exact hrP i hi
+  · intro i hi
+    rw [leftStates_tableByte s messageOffset returnDest rest n 1376 i
+      (by omega)]
+    exact hs i hi
+  · intro i hi
+    rw [leftStates_tableByte s messageOffset returnDest rest n 1472 i
+      (by omega)]
+    exact hsP i hi
+
+theorem leftStates_activeWords (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256)
+    (htables : InitializationCorrect.TablesCorrect s.memory)
+    (hactive : 67 ≤ s.activeWords.toNat) :
+    (leftStates s messageOffset returnDest rest 80).activeWords =
+      s.activeWords := by
+  have hloop : ∀ n, n ≤ 80 →
+      (leftStates s messageOffset returnDest rest n).activeWords =
+        s.activeWords := by
+    intro n hn
+    induction n with
+    | zero => rfl
+    | succ n ih =>
+        rw [leftStates_succ]
+        exact (leftRoundState_activeWords
+          (leftStates s messageOffset returnDest rest n)
+          messageOffset returnDest rest n (by omega)
+          (leftStates_tables_preserved s messageOffset returnDest rest n htables)
+          (by rw [ih (by omega)]; exact hactive)).trans (ih (by omega))
+  exact hloop 80 (by omega)
+
+private theorem rightRoundState_activeWords (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256)
+    (i : Nat) (hi : i < 80)
+    (htables : InitializationCorrect.TablesCorrect s.memory)
+    (hactive : 67 ≤ s.activeWords.toNat) :
+    (rightRoundState s messageOffset returnDest rest i).activeWords =
+      s.activeWords := by
+  let q₀ := afterConstantLoad s 1728 i
+  have h₀ : q₀.activeWords = s.activeWords :=
+    afterConstantLoad_activeWords s 1728 i hi hactive (by omega)
+  let q₁ := rightFirstReturned s messageOffset returnDest rest i
+  have h₁ : q₁.activeWords = s.activeWords := by
+    unfold q₁ rightFirstReturned
+    exact (tableAtReturned_activeWords q₀ 1472 i hi
+      (by rw [h₀]; exact hactive) (by omega) _ _).trans h₀
+  let q₂ := rightSecondReturned s messageOffset returnDest rest i
+  have h₂ : q₂.activeWords = s.activeWords := by
+    unfold q₂ rightSecondReturned
+    exact (tableAtReturned_activeWords q₁ 1280 i hi
+      (by rw [h₁]; exact hactive) (by omega) _ _).trans h₁
+  have hword :
+      (TableTrace.tableValue q₁ (UInt256.ofNat 1280)
+        (UInt256.ofNat i)).toNat < 16 := by
+    rw [TableTrace.tableValue_tableByte q₁ 1280 i (by omega) hi]
+    change (InitializationCorrect.tableByte s.memory 1280 i).toNat < 16
+    rw [htables.2.1 i hi, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (lt_trans (rightSelector_lt i hi) (by norm_num))]
+    exact rightSelector_lt i hi
+  unfold rightRoundState
+  exact (roundReturned_activeWords q₂ 352 (by omega) (rightRoundIndex i)
+    (TableTrace.tableValue q₁ (UInt256.ofNat 1280) (UInt256.ofNat i))
+    (TableTrace.tableValue s (UInt256.ofNat 1472) (UInt256.ofNat i))
+    (constantAt s 1728 i) (UInt256.ofNat 792) hword _
+    (by rw [h₂]; exact hactive)).trans h₂
+
+private theorem rightStates_tables_preserved (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) (n : Nat)
+    (htables : InitializationCorrect.TablesCorrect s.memory) :
+    InitializationCorrect.TablesCorrect
+      (rightStates s messageOffset returnDest rest n).memory := by
+  rcases htables with ⟨hr, hrP, hs, hsP⟩
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · intro i hi
+    rw [rightStates_tableByte s messageOffset returnDest rest n 1184 i
+      (by omega)]
+    exact hr i hi
+  · intro i hi
+    rw [rightStates_tableByte s messageOffset returnDest rest n 1280 i
+      (by omega)]
+    exact hrP i hi
+  · intro i hi
+    rw [rightStates_tableByte s messageOffset returnDest rest n 1376 i
+      (by omega)]
+    exact hs i hi
+  · intro i hi
+    rw [rightStates_tableByte s messageOffset returnDest rest n 1472 i
+      (by omega)]
+    exact hsP i hi
+
+theorem rightStates_activeWords (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256)
+    (htables : InitializationCorrect.TablesCorrect s.memory)
+    (hactive : 67 ≤ s.activeWords.toNat) :
+    (rightStates s messageOffset returnDest rest 80).activeWords =
+      s.activeWords := by
+  have hloop : ∀ n, n ≤ 80 →
+      (rightStates s messageOffset returnDest rest n).activeWords =
+        s.activeWords := by
+    intro n hn
+    induction n with
+    | zero => rfl
+    | succ n ih =>
+        rw [rightStates_succ]
+        exact (rightRoundState_activeWords
+          (rightStates s messageOffset returnDest rest n)
+          messageOffset returnDest rest n (by omega)
+          (rightStates_tables_preserved s messageOffset returnDest rest n htables)
+          (by rw [ih (by omega)]; exact hactive)).trans (ih (by omega))
+  exact hloop 80 (by omega)
+
+private def touchWords : State → List Nat → State
+  | s, [] => s
+  | s, off :: rest => touchWords (touchWord s off) rest
+
+private theorem touchWords_activeWords (s : State) (offsets : List Nat)
+    (hactive : 21 ≤ s.activeWords.toNat)
+    (hoffsets : ∀ off ∈ offsets, off ≤ 640) :
+    (touchWords s offsets).activeWords = s.activeWords := by
+  induction offsets generalizing s with
+  | nil => rfl
+  | cons off rest ih =>
+      have hoff : off ≤ 640 := hoffsets off (by simp)
+      have htail : ∀ next ∈ rest, next ≤ 640 := by
+        intro next hnext
+        exact hoffsets next (by simp [hnext])
+      have htouch : (touchWord s off).activeWords = s.activeWords := by
+        unfold touchWord
+        exact activeWords_unchanged s hactive off hoff
+      exact (ih (touchWord s off) (by rw [htouch]; exact hactive) htail).trans
+        htouch
+
+private theorem touched4_activeWords (s : State)
+    (hactive : 67 ≤ s.activeWords.toNat) :
+    (touched4 s).activeWords = s.activeWords := by
+  change (touchWords s
+    [448, 256, 544, 480, 288, 576, 64, 352, 320, 608, 96,
+      384, 192, 640, 128, 416, 224, 512, 160, 32]).activeWords = _
+  apply touchWords_activeWords s _ (by omega)
+  simp
+
+private theorem combination4_activeWords_eq (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) :
+    (combination4 s messageOffset returnDest rest).activeWords =
+      (touched4 s).activeWords := rfl
+
+private theorem combinationReturned_activeWords_eq (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) :
+    (combinationReturned s messageOffset returnDest rest).activeWords =
+      (combination4 s messageOffset returnDest rest).activeWords := rfl
+
+private theorem rightTailResult_outer_activeWords (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) :
+    (rightTailResult s messageOffset returnDest rest).activeWords =
+      (combinationReturned (rightStates s messageOffset returnDest rest 80)
+        messageOffset returnDest rest).activeWords := rfl
+
+private theorem rightTailResult_activeWords (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256)
+    (htables : InitializationCorrect.TablesCorrect s.memory)
+    (hactive : 67 ≤ s.activeWords.toNat) :
+    (rightTailResult s messageOffset returnDest rest).activeWords =
+      s.activeWords := by
+  have hrounded :
+      (rightStates s messageOffset returnDest rest 80).activeWords =
+        s.activeWords :=
+    rightStates_activeWords s messageOffset returnDest rest htables hactive
+  rw [rightTailResult_outer_activeWords, combinationReturned_activeWords_eq,
+    combination4_activeWords_eq]
+  exact (touched4_activeWords
+    (rightStates s messageOffset returnDest rest 80)
+    (by rw [hrounded]; exact hactive)).trans hrounded
+
+private theorem leftInitialState_tables_preserved (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256)
+    (htables : InitializationCorrect.TablesCorrect s.memory) :
+    InitializationCorrect.TablesCorrect
+      (leftInitialState s messageOffset returnDest rest).memory := by
+  rcases htables with ⟨hr, hrP, hs, hsP⟩
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · intro i hi
+    unfold InitializationCorrect.tableByte
+    change UInt256.byteAt (UInt256.ofNat (i % 32))
+      (wordAt (leftInitialState s messageOffset returnDest rest)
+        (0x4a0 + 32 * (i / 32))) = _
+    rw [CompressionFunctionalTrace.leftInitialState_words s messageOffset
+      returnDest rest _ (by omega)]
+    exact hr i hi
+  · intro i hi
+    unfold InitializationCorrect.tableByte
+    change UInt256.byteAt (UInt256.ofNat (i % 32))
+      (wordAt (leftInitialState s messageOffset returnDest rest)
+        (0x500 + 32 * (i / 32))) = _
+    rw [CompressionFunctionalTrace.leftInitialState_words s messageOffset
+      returnDest rest _ (by omega)]
+    exact hrP i hi
+  · intro i hi
+    unfold InitializationCorrect.tableByte
+    change UInt256.byteAt (UInt256.ofNat (i % 32))
+      (wordAt (leftInitialState s messageOffset returnDest rest)
+        (0x560 + 32 * (i / 32))) = _
+    rw [CompressionFunctionalTrace.leftInitialState_words s messageOffset
+      returnDest rest _ (by omega)]
+    exact hs i hi
+  · intro i hi
+    unfold InitializationCorrect.tableByte
+    change UInt256.byteAt (UInt256.ofNat (i % 32))
+      (wordAt (leftInitialState s messageOffset returnDest rest)
+        (0x5c0 + 32 * (i / 32))) = _
+    rw [CompressionFunctionalTrace.leftInitialState_words s messageOffset
+      returnDest rest _ (by omega)]
+    exact hsP i hi
+
+/-- One complete compression call reaches exactly the schedule's last
+unaligned message load. All subsequent scratch and table accesses stay below
+that high-water mark. -/
+theorem resultState_activeWords (s : State) (input : ByteArray)
+    (hfit : CalldataFits input) (block : Nat)
+    (hblock : block < DriverTrace.blockCount input)
+    (htables : InitializationCorrect.TablesCorrect s.memory) :
+    (CompressionFullTrace.resultState s input block).activeWords.toNat =
+      max s.activeWords.toNat (67 + 2 * block) := by
+  let messageOffset := DriverTrace.messageOffsetWord block
+  let returnDest := UInt256.ofNat 0x643
+  let rest := CompressionFullTrace.driverRest input block
+  let scheduled := scheduledState s messageOffset returnDest rest
+  have hscheduled : scheduled.activeWords.toNat =
+      max s.activeWords.toNat (67 + 2 * block) := by
+    unfold scheduled messageOffset
+    simpa [scheduledState] using
+      scheduledState_activeWords s input hfit block hblock
+        (UInt256.ofNat 630) (DriverTrace.messageOffsetWord block ::
+          returnDest :: rest)
+  have hscheduledActive : 67 ≤ scheduled.activeWords.toNat := by
+    rw [hscheduled]
+    exact le_trans (by omega : 67 ≤ 67 + 2 * block)
+      (Nat.le_max_right _ _)
+  let initial := leftInitialState s messageOffset returnDest rest
+  have hinitial : initial.activeWords = scheduled.activeWords := by
+    unfold initial leftInitialState
+    exact copiedWorkingState_activeWords scheduled (by omega)
+  have hinitialActive : 67 ≤ initial.activeWords.toNat := by
+    rw [hinitial]
+    exact hscheduledActive
+  have hinitialTables : InitializationCorrect.TablesCorrect initial.memory := by
+    unfold initial
+    exact leftInitialState_tables_preserved s messageOffset returnDest rest htables
+  let leftFinal := leftFinalState s messageOffset returnDest rest
+  have hleft : leftFinal.activeWords = initial.activeWords := by
+    unfold leftFinal initial
+    exact leftStates_activeWords _ messageOffset returnDest rest hinitialTables
+      hinitialActive
+  have hleftActive : 67 ≤ leftFinal.activeWords.toNat := by
+    rw [hleft]
+    exact hinitialActive
+  have hleftTables : InitializationCorrect.TablesCorrect leftFinal.memory := by
+    unfold leftFinal
+    exact leftStates_tables_preserved initial messageOffset returnDest rest 80
+      hinitialTables
+  have htail := rightTailResult_activeWords leftFinal messageOffset returnDest
+    rest hleftTables hleftActive
+  calc
+    (CompressionFullTrace.resultState s input block).activeWords.toNat =
+        (rightTailResult leftFinal messageOffset returnDest rest).activeWords.toNat := by
+      rfl
+    _ = leftFinal.activeWords.toNat := congrArg UInt256.toNat htail
+    _ = initial.activeWords.toNat := congrArg UInt256.toNat hleft
+    _ = scheduled.activeWords.toNat := congrArg UInt256.toNat hinitial
+    _ = max s.activeWords.toNat (67 + 2 * block) := hscheduled
 
 end Challenge.Ripemd160.Reference.Proofs.Bytecode.CompressionActiveWords
