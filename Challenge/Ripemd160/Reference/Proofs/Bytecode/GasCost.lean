@@ -143,31 +143,33 @@ with the final halted state and the same full trace used for correctness, then
 prove `hcost` by telescoping the per-block `Meter` potential equations.
 -/
 theorem gasSchedule_correct_of_trace
-    (finalState : ByteArray → State)
-    (fullTrace : ∀ input : ByteArray, CalldataFits input →
-      GasSteps (initialState referenceBytecode input 0) (finalState input))
+    (finalState : ∀ input : ByteArray, CalldataFits input → State)
+    (fullTrace : ∀ (input : ByteArray) (hfit : CalldataFits input),
+      GasSteps (initialState referenceBytecode input 0)
+        (finalState input hfit))
     (hcost : ∀ (input : ByteArray) (hfit : CalldataFits input),
       (fullTrace input hfit).cost = referenceGas input)
-    (hdone : ∀ input : ByteArray, (finalState input).isDone = true)
-    (hresult : ∀ (input : ByteArray), CalldataFits input →
-      (finalState input).toResult = .returned (spec input)) :
+    (hdone : ∀ (input : ByteArray) (hfit : CalldataFits input),
+      (finalState input hfit).isDone = true)
+    (hresult : ∀ (input : ByteArray) (hfit : CalldataFits input),
+      (finalState input hfit).toResult = .returned (spec input)) :
     CorrectWithSchedule referenceBytecode referenceGasForSize := by
   intro input hfit gas hgas
   let trace := fullTrace input hfit
   have htraceCost : trace.cost = referenceGas input := hcost input hfit
   have hsteps : Steps (initialState referenceBytecode input gas)
-      (withGas (finalState input) (gas - referenceGas input)) := by
+      (withGas (finalState input hfit) (gas - referenceGas input)) := by
     have hs := trace.trace gas (by
       rw [htraceCost]
       exact hgas)
     simpa [trace, htraceCost] using hs
   have heval := Challenge.EvmProof.eval_of_steps hsteps (by
-    change (finalState input).isDone = true
-    exact hdone input)
+    change (finalState input hfit).isDone = true
+    exact hdone input hfit)
   have hfinal :
-      (withGas (finalState input) (gas - referenceGas input)).toResult =
+      (withGas (finalState input hfit) (gas - referenceGas input)).toResult =
         .returned (spec input) := by
-    change (finalState input).toResult = .returned (spec input)
+    change (finalState input hfit).toResult = .returned (spec input)
     exact hresult input hfit
   simpa [hfinal] using heval
 

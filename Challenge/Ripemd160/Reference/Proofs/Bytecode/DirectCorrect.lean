@@ -485,33 +485,33 @@ noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
 All control-flow costs are already carried by `fullTrace`; the remaining cost
 identity is precisely the compression-cost telescope. -/
 theorem correctWithSchedule_of_compression
-    (seam : ∀ input : ByteArray, CompressionSeam input)
+    (seam : ∀ (input : ByteArray), CalldataFits input → CompressionSeam input)
     (hcost : ∀ (input : ByteArray) (hfit : CalldataFits input),
-      (fullTrace input hfit (seam input)).cost = GasCost.referenceGas input)
-    (hresult : ∀ (input : ByteArray) (_hfit : CalldataFits input),
+      (fullTrace input hfit (seam input hfit)).cost = GasCost.referenceGas input)
+    (hresult : ∀ (input : ByteArray) (hfit : CalldataFits input),
       (outputResult
-        ((seam input).states (DriverTrace.blockCount input)) input).toResult =
+        ((seam input hfit).states (DriverTrace.blockCount input)) input).toResult =
           .returned (spec input)) :
     GasCost.CorrectWithSchedule referenceBytecode GasCost.referenceGasForSize := by
   apply GasCost.gasSchedule_correct_of_trace
-    (finalState := fun input => outputResult
-      ((seam input).states (DriverTrace.blockCount input)) input)
-    (fullTrace := fun input hfit => fullTrace input hfit (seam input))
+    (finalState := fun input hfit => outputResult
+      ((seam input hfit).states (DriverTrace.blockCount input)) input)
+    (fullTrace := fun input hfit => fullTrace input hfit (seam input hfit))
   · exact hcost
-  · intro input
+  · intro input hfit
     simp [outputResult, State.isDone, State.isHalted, State.isRunning,
-      (seam input).callStack (DriverTrace.blockCount input) (by omega)]
+      (seam input hfit).callStack (DriverTrace.blockCount input) (by omega)]
   · exact hresult
 
 /-- The same conditional certificate, projected to the challenge's minimal
 eventual-sufficiency statement. -/
 theorem correct_of_compression
-    (seam : ∀ input : ByteArray, CompressionSeam input)
+    (seam : ∀ (input : ByteArray), CalldataFits input → CompressionSeam input)
     (hcost : ∀ (input : ByteArray) (hfit : CalldataFits input),
-      (fullTrace input hfit (seam input)).cost = GasCost.referenceGas input)
-    (hresult : ∀ (input : ByteArray) (_hfit : CalldataFits input),
+      (fullTrace input hfit (seam input hfit)).cost = GasCost.referenceGas input)
+    (hresult : ∀ (input : ByteArray) (hfit : CalldataFits input),
       (outputResult
-        ((seam input).states (DriverTrace.blockCount input)) input).toResult =
+        ((seam input hfit).states (DriverTrace.blockCount input)) input).toResult =
           .returned (spec input)) :
     Correct referenceBytecode :=
   GasCost.correct_of_schedule

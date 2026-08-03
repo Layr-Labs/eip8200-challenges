@@ -254,23 +254,25 @@ theorem fullTrace_cost (input : ByteArray) (hfit : CalldataFits input)
 the exact-cost premise of `DirectCorrect`.  The inferred remaining argument is
 its already-separated functional output theorem. -/
 noncomputable def correctWithSchedule
-    (seam : ∀ input : ByteArray, DirectCorrect.CompressionSeam input)
-    (compression : ∀ input : ByteArray,
-      CompressionCostFacts input (seam input))
+    (seam : ∀ (input : ByteArray), CalldataFits input →
+      DirectCorrect.CompressionSeam input)
+    (compression : ∀ (input : ByteArray) (hfit : CalldataFits input),
+      CompressionCostFacts input (seam input hfit))
     (outer : ∀ (input : ByteArray) (hfit : CalldataFits input),
-      OuterCostFacts input hfit (seam input)) :=
+      OuterCostFacts input hfit (seam input hfit)) :=
   DirectCorrect.correctWithSchedule_of_compression seam
-    (fun input hfit => fullTrace_cost input hfit (seam input)
-      (compression input) (outer input hfit))
+    (fun input hfit => fullTrace_cost input hfit (seam input hfit)
+      (compression input hfit) (outer input hfit))
 
 noncomputable def correct
-    (seam : ∀ input : ByteArray, DirectCorrect.CompressionSeam input)
-    (compression : ∀ input : ByteArray,
-      CompressionCostFacts input (seam input))
+    (seam : ∀ (input : ByteArray), CalldataFits input →
+      DirectCorrect.CompressionSeam input)
+    (compression : ∀ (input : ByteArray) (hfit : CalldataFits input),
+      CompressionCostFacts input (seam input hfit))
     (outer : ∀ (input : ByteArray) (hfit : CalldataFits input),
-      OuterCostFacts input hfit (seam input)) :=
+      OuterCostFacts input hfit (seam input hfit)) :=
   DirectCorrect.correct_of_compression seam
-    (fun input hfit => fullTrace_cost input hfit (seam input)
-      (compression input) (outer input hfit))
+    (fun input hfit => fullTrace_cost input hfit (seam input hfit)
+      (compression input hfit) (outer input hfit))
 
 end Challenge.Ripemd160.Reference.Proofs.Bytecode.ExactGasBridge

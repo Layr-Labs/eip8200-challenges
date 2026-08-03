@@ -265,25 +265,26 @@ private theorem outputBytes_eq_spec (input : ByteArray)
 /-- `finalWords` is sufficient to discharge the concrete output machine's
 functional result obligation. -/
 theorem correctWithSchedule_of_compression
-    (seam : ∀ input : ByteArray, CompressionSeam input)
+    (seam : ∀ (input : ByteArray), CalldataFits input → CompressionSeam input)
     (hcost : ∀ (input : ByteArray) (hfit : CalldataFits input),
-      (fullTrace input hfit (seam input)).cost = GasCost.referenceGas input) :
+      (fullTrace input hfit (seam input hfit)).cost = GasCost.referenceGas input) :
     GasCost.CorrectWithSchedule referenceBytecode GasCost.referenceGasForSize := by
   apply DirectCorrect.correctWithSchedule_of_compression seam hcost
-  intro input _hfit
+  intro input hfit
   rw [State.toResult_returned _ (by rfl)]
   congr 1
   change MachineState.readPadded
-    (outputLoopState ((seam input).states (DriverTrace.blockCount input)) input 5).memory
+    (outputLoopState ((seam input hfit).states
+      (DriverTrace.blockCount input)) input 5).memory
     0 32 = spec input
-  rw [readOutput_eq, outputBytes_eq_spec input (seam input)]
+  rw [readOutput_eq, outputBytes_eq_spec input (seam input hfit)]
 
 /-- Minimal challenge correctness, now conditional only on compression traces
 and their exact-cost telescope. -/
 theorem correct_of_compression
-    (seam : ∀ input : ByteArray, CompressionSeam input)
+    (seam : ∀ (input : ByteArray), CalldataFits input → CompressionSeam input)
     (hcost : ∀ (input : ByteArray) (hfit : CalldataFits input),
-      (fullTrace input hfit (seam input)).cost = GasCost.referenceGas input) :
+      (fullTrace input hfit (seam input hfit)).cost = GasCost.referenceGas input) :
     Correct referenceBytecode :=
   GasCost.correct_of_schedule (correctWithSchedule_of_compression seam hcost)
 

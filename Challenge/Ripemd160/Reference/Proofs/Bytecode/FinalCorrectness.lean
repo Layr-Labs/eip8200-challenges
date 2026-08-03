@@ -33,26 +33,28 @@ padding/framing costs and the two active-memory boundary values.
 No result-byte equality, whole-program trace, or whole-program gas equality is
 assumed here; all three are derived below. -/
 structure RemainingFacts : Type where
-  run : ∀ input : ByteArray, CompressionSeamBridge.CompressionRun input
-  compressionCost : ∀ input : ByteArray,
+  run : ∀ (input : ByteArray), CalldataFits input →
+    CompressionSeamBridge.CompressionRun input
+  compressionCost : ∀ (input : ByteArray) (hfit : CalldataFits input),
     ExactGasBridge.CompressionCostFacts input
-      (CompressionSeamBridge.toCompressionSeam (run input))
+      (CompressionSeamBridge.toCompressionSeam (run input hfit))
   outerCost : ∀ (input : ByteArray) (hfit : CalldataFits input),
     ExactGasBridge.OuterCostFacts input hfit
-      (CompressionSeamBridge.toCompressionSeam (run input))
+      (CompressionSeamBridge.toCompressionSeam (run input hfit))
 
 /-- The `DirectCorrect` seam is derived, rather than independently assumed. -/
-def seam (facts : RemainingFacts) (input : ByteArray) :
+def seam (facts : RemainingFacts) (input : ByteArray)
+    (hfit : CalldataFits input) :
     DirectCorrect.CompressionSeam input :=
-  CompressionSeamBridge.toCompressionSeam (facts.run input)
+  CompressionSeamBridge.toCompressionSeam (facts.run input hfit)
 
 /-- Exact cost of the same end-to-end trace used for functional correctness. -/
 theorem fullTrace_cost (facts : RemainingFacts) (input : ByteArray)
     (hfit : CalldataFits input) :
-    (DirectCorrect.fullTrace input hfit (seam facts input)).cost =
+    (DirectCorrect.fullTrace input hfit (seam facts input hfit)).cost =
       GasCost.referenceGas input := by
-  exact ExactGasBridge.fullTrace_cost input hfit (seam facts input)
-    (facts.compressionCost input) (facts.outerCost input hfit)
+  exact ExactGasBridge.fullTrace_cost input hfit (seam facts input hfit)
+    (facts.compressionCost input hfit) (facts.outerCost input hfit)
 
 /-- The reference bytecode is correct at the closed exact gas schedule.
 
