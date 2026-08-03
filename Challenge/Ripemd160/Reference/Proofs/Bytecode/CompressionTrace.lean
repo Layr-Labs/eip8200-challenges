@@ -1,6 +1,7 @@
 import Challenge.Ripemd160.Reference.Proofs.Bytecode.Trace
 import Challenge.Ripemd160.Reference.Proofs.Bytecode.ScheduleCorrect
 import Challenge.Ripemd160.Reference.Proofs.Bytecode.CompressionCorrect
+import Challenge.Ripemd160.Reference.Proofs.Bytecode.RoundTrace
 
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -115,6 +116,205 @@ def leftIncrementLocated : List Located :=
    ⟨512, .push ⟨2, by decide⟩ (UInt256.ofNat 655), by rfl, by decide⟩,
    ⟨513, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
+def leftInitLocated : List Located :=
+  [⟨469, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩]
+
+def leftRoundPrefixLocated : List Located :=
+  [⟨477, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨478, .push ⟨1, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
+   ⟨479, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨480, .push ⟨2, by decide⟩ (UInt256.ofNat 714), by rfl, by decide⟩,
+   ⟨481, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨482, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨483, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨484, .push ⟨2, by decide⟩ (UInt256.ofNat 1568), by rfl, by decide⟩,
+   ⟨485, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨486, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨487, .push ⟨2, by decide⟩ (UInt256.ofNat 693), by rfl, by decide⟩,
+   ⟨488, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨489, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨490, .push ⟨2, by decide⟩ (UInt256.ofNat 1376), by rfl, by decide⟩,
+   ⟨491, .push ⟨2, by decide⟩ (UInt256.ofNat 120), by rfl, by decide⟩,
+   ⟨492, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+
+def leftRoundMiddleLocated : List Located :=
+  [⟨493, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨494, .push ⟨2, by decide⟩ (UInt256.ofNat 706), by rfl, by decide⟩,
+   ⟨495, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨496, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨497, .push ⟨2, by decide⟩ (UInt256.ofNat 1184), by rfl, by decide⟩,
+   ⟨498, .push ⟨2, by decide⟩ (UInt256.ofNat 120), by rfl, by decide⟩,
+   ⟨499, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+
+def leftRoundSuffixLocated : List Located :=
+  [⟨500, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨501, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨502, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
+   ⟨503, .push ⟨2, by decide⟩ (UInt256.ofNat 276), by rfl, by decide⟩,
+   ⟨504, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+
+@[simp] private theorem leftInitPC :
+    Artifact.referenceArtifact.instructionPC 469 = 654 := by rfl
+
+@[simp] private theorem leftRoundSetupPC (j : Nat)
+    (hlo : 477 ≤ j) (hhi : j ≤ 504) :
+    Artifact.referenceArtifact.instructionPC j =
+      [665, 666, 668, 669, 672, 673, 675, 676, 679, 680, 681, 684,
+        685, 686, 689, 692, 693, 694, 697, 698, 699, 702, 705, 706,
+        707, 708, 710, 713][j - 477]! := by
+  interval_cases j <;> rfl
+
+def leftExitLocated : List Located :=
+  [⟨514, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨515, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
+
+def rightInitLocated : List Located :=
+  [⟨516, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩]
+
+def rightTestLocated : List Located :=
+  [⟨517, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨518, .push ⟨1, by decide⟩ (UInt256.ofNat 80), by rfl, by decide⟩,
+   ⟨519, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨520, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨521, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨522, .push ⟨2, by decide⟩ (UInt256.ofNat 804), by rfl, by decide⟩,
+   ⟨523, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+
+def rightRoundPrefixLocated : List Located :=
+  [⟨524, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨525, .push ⟨1, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
+   ⟨526, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨527, .push ⟨2, by decide⟩ (UInt256.ofNat 792), by rfl, by decide⟩,
+   ⟨528, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨529, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨530, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨531, .push ⟨2, by decide⟩ (UInt256.ofNat 1728), by rfl, by decide⟩,
+   ⟨532, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨533, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨534, .push ⟨2, by decide⟩ (UInt256.ofNat 767), by rfl, by decide⟩,
+   ⟨535, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨536, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨537, .push ⟨2, by decide⟩ (UInt256.ofNat 1472), by rfl, by decide⟩,
+   ⟨538, .push ⟨2, by decide⟩ (UInt256.ofNat 120), by rfl, by decide⟩,
+   ⟨539, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+
+def rightRoundMiddleLocated : List Located :=
+  [⟨540, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨541, .push ⟨2, by decide⟩ (UInt256.ofNat 780), by rfl, by decide⟩,
+   ⟨542, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨543, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨544, .push ⟨2, by decide⟩ (UInt256.ofNat 1280), by rfl, by decide⟩,
+   ⟨545, .push ⟨2, by decide⟩ (UInt256.ofNat 120), by rfl, by decide⟩,
+   ⟨546, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+
+def rightRoundSuffixLocated : List Located :=
+  [⟨547, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨548, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨549, .push ⟨1, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
+   ⟨550, .op .SUB, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨551, .push ⟨2, by decide⟩ (UInt256.ofNat 352), by rfl, by decide⟩,
+   ⟨552, .push ⟨2, by decide⟩ (UInt256.ofNat 276), by rfl, by decide⟩,
+   ⟨553, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+
+def rightIncrementLocated : List Located :=
+  [⟨554, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨555, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨556, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨557, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨558, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨559, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨560, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨561, .push ⟨2, by decide⟩ (UInt256.ofNat 729), by rfl, by decide⟩,
+   ⟨562, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+
+def rightExitLocated : List Located :=
+  [⟨563, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨564, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
+
+def combinationLocated : List Located :=
+  [⟨565, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨566, .push ⟨2, by decide⟩ (UInt256.ofNat 448), by rfl, by decide⟩,
+   ⟨567, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨568, .push ⟨2, by decide⟩ (UInt256.ofNat 256), by rfl, by decide⟩,
+   ⟨569, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨570, .push ⟨2, by decide⟩ (UInt256.ofNat 544), by rfl, by decide⟩,
+   ⟨571, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨572, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨573, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨574, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨575, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨576, .push ⟨2, by decide⟩ (UInt256.ofNat 480), by rfl, by decide⟩,
+   ⟨577, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨578, .push ⟨2, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
+   ⟨579, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨580, .push ⟨2, by decide⟩ (UInt256.ofNat 576), by rfl, by decide⟩,
+   ⟨581, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨582, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨583, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨584, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨585, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨586, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨587, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨588, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
+   ⟨589, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨590, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨591, .push ⟨2, by decide⟩ (UInt256.ofNat 352), by rfl, by decide⟩,
+   ⟨592, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨593, .push ⟨2, by decide⟩ (UInt256.ofNat 320), by rfl, by decide⟩,
+   ⟨594, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨595, .push ⟨2, by decide⟩ (UInt256.ofNat 608), by rfl, by decide⟩,
+   ⟨596, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨597, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨598, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨599, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨600, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨601, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨602, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨603, .push ⟨1, by decide⟩ (UInt256.ofNat 96), by rfl, by decide⟩,
+   ⟨604, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨605, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨606, .push ⟨2, by decide⟩ (UInt256.ofNat 384), by rfl, by decide⟩,
+   ⟨607, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨608, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
+   ⟨609, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨610, .push ⟨2, by decide⟩ (UInt256.ofNat 640), by rfl, by decide⟩,
+   ⟨611, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨612, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨613, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨614, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨615, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨616, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨617, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨618, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
+   ⟨619, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨620, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨621, .push ⟨2, by decide⟩ (UInt256.ofNat 416), by rfl, by decide⟩,
+   ⟨622, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨623, .push ⟨1, by decide⟩ (UInt256.ofNat 224), by rfl, by decide⟩,
+   ⟨624, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨625, .push ⟨2, by decide⟩ (UInt256.ofNat 512), by rfl, by decide⟩,
+   ⟨626, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨627, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨628, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨629, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨630, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨631, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨632, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨633, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
+   ⟨634, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨635, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨636, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨637, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨638, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨639, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨640, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨641, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨642, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨643, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨644, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨645, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨646, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+
 @[simp] private theorem leftIncrementPC (j : Nat)
     (hlo : 505 ≤ j) (hhi : j ≤ 513) :
     Artifact.referenceArtifact.instructionPC j =
@@ -171,6 +371,304 @@ def leftRoundReturned (s : State) (messageOffset returnDest discard : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
   { s with pc := UInt256.ofNat 714
            stack := discard :: UInt256.ofNat i :: messageOffset :: returnDest :: rest }
+
+def roundIndex (i : Nat) : Nat := i / 16
+
+def constantAt (s : State) (base : Nat) (i : Nat) : UInt256 :=
+  MachineState.readWord s.memory (base + roundIndex i * 32)
+
+def afterConstantLoad (s : State) (base : Nat) (i : Nat) : State :=
+  { s with activeWords := (s.activeWordsAfterUInt256
+      (base + roundIndex i * 32) 32) }
+
+def leftFirstReturned (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (i : Nat) : State :=
+  TableTrace.tableAtReturned (afterConstantLoad s 1568 i)
+    (UInt256.ofNat 1376) (UInt256.ofNat i)
+    (UInt256.ofNat 693)
+    ([constantAt s 1568 i, UInt256.ofNat 714, UInt256.ofNat (roundIndex i),
+      UInt256.ofNat i, messageOffset, returnDest] ++ rest)
+
+def leftSecondReturned (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (i : Nat) : State :=
+  let q := leftFirstReturned s messageOffset returnDest rest i
+  TableTrace.tableAtReturned q (UInt256.ofNat 1184) (UInt256.ofNat i)
+    (UInt256.ofNat 706)
+    ([TableTrace.tableValue s (UInt256.ofNat 1376) (UInt256.ofNat i),
+      constantAt s 1568 i, UInt256.ofNat 714,
+      UInt256.ofNat (roundIndex i), UInt256.ofNat i,
+      messageOffset, returnDest] ++ rest)
+
+def leftRoundState (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (i : Nat) : State :=
+  let q1 := leftFirstReturned s messageOffset returnDest rest i
+  let q := leftSecondReturned s messageOffset returnDest rest i
+  RoundTrace.roundReturned q (UInt256.ofNat 192) (roundIndex i)
+    (TableTrace.tableValue q1 (UInt256.ofNat 1184) (UInt256.ofNat i))
+    (TableTrace.tableValue s (UInt256.ofNat 1376) (UInt256.ofNat i))
+    (constantAt s 1568 i) (UInt256.ofNat 714)
+    (UInt256.ofNat (roundIndex i) :: UInt256.ofNat i ::
+      messageOffset :: returnDest :: rest)
+
+set_option linter.unusedSimpArgs false in
+theorem run_leftInit (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 1021)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock leftInitLocated
+      (copiesReturned s messageOffset returnDest rest) =
+        some (leftLoopAt (copiedWorkingState s) messageOffset returnDest rest 0) := by
+  have hc2 : rest.length + 2 < 1024 := by omega
+  simp [leftInitLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    copiesReturned, leftLoopAt, copiedWorkingState, copyRegion, hrun, hc2]
+
+set_option linter.unusedSimpArgs false in
+theorem run_leftRoundPrefix (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (i : Nat) (hi : i < 80)
+    (hstack : rest.length < 1010) (hcode : s.executionEnv.code = referenceBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock leftRoundPrefixLocated
+      (leftBodyAt s messageOffset returnDest rest i) =
+      some (TableTrace.tableAtEntry (afterConstantLoad s 1568 i)
+        (UInt256.ofNat 1376) (UInt256.ofNat i)
+        (UInt256.ofNat 693)
+        ([constantAt s 1568 i, UInt256.ofNat 714,
+          UInt256.ofNat (roundIndex i), UInt256.ofNat i,
+          messageOffset, returnDest] ++ rest)) := by
+  have hshift : UInt256.shiftRight (UInt256.ofNat i) (UInt256.ofNat 4) =
+      UInt256.ofNat (roundIndex i) := by
+    rw [roundIndex, Challenge.EvmProof.Word.shiftRight_ofNat (by omega)
+      (by decide)]
+    simp [Nat.shiftRight_eq_div_pow]
+  have haddr : UInt256.ofNat 1568 +
+      UInt256.shiftLeft (UInt256.ofNat (roundIndex i)) (UInt256.ofNat 5) =
+      UInt256.ofNat (1568 + roundIndex i * 32) := by
+    have hj : roundIndex i < 5 := by unfold roundIndex; omega
+    rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega),
+      Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)]
+    congr 1
+  have haddrNat : (UInt256.ofNat 1568 +
+      UInt256.shiftLeft (UInt256.ofNat (roundIndex i)) (UInt256.ofNat 5)).toNat =
+      1568 + roundIndex i * 32 := by
+    rw [haddr, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by unfold roundIndex; omega)]
+  have hsmall : 1568 + roundIndex i * 32 < 2 ^ 256 := by
+    unfold roundIndex
+    omega
+  have hmod : (1568 + roundIndex i * 32) % 2 ^ 256 =
+      1568 + roundIndex i * 32 := Nat.mod_eq_of_lt hsmall
+  have hmodSize : (1568 + roundIndex i * 32) % UInt256.size =
+      1568 + roundIndex i * 32 := by
+    apply Nat.mod_eq_of_lt
+    change 1568 + roundIndex i * 32 < 2 ^ 256
+    exact hsmall
+  have hmodLiteral : (1568 + roundIndex i * 32) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      1568 + roundIndex i * 32 := by
+    apply Nat.mod_eq_of_lt
+    change 1568 + roundIndex i * 32 < 2 ^ 256
+    exact hsmall
+  have hdest : Decode.isValidJumpDest referenceBytecode 120 = true := by decide
+  have hcap (m : Nat) (hm : m ≤ 12) : rest.length + m < 1024 := by omega
+  simp (config := { maxSteps := 300000 })
+    [leftRoundPrefixLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      leftBodyAt, TableTrace.tableAtEntry, constantAt, afterConstantLoad,
+      State.activeWordsAfterUInt256, hrun, hcode, hshift,
+      haddr, haddrNat, hsmall, hmod, hmodSize, hmodLiteral,
+      hdest, hcap, Nat.add_assoc,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_leftRoundMiddle (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (i : Nat) (hstack : rest.length < 1010)
+    (hcode : s.executionEnv.code = referenceBytecode) (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock leftRoundMiddleLocated
+      (leftFirstReturned s messageOffset returnDest rest i) =
+      some (TableTrace.tableAtEntry
+        (leftFirstReturned s messageOffset returnDest rest i)
+        (UInt256.ofNat 1184) (UInt256.ofNat i) (UInt256.ofNat 706)
+        ([TableTrace.tableValue s (UInt256.ofNat 1376) (UInt256.ofNat i),
+          constantAt s 1568 i, UInt256.ofNat 714,
+          UInt256.ofNat (roundIndex i), UInt256.ofNat i,
+          messageOffset, returnDest] ++ rest)) := by
+  have hdest : Decode.isValidJumpDest referenceBytecode 120 = true := by decide
+  have hcap (m : Nat) (hm : m ≤ 12) : rest.length + m < 1024 := by omega
+  simp (config := { maxSteps := 200000 })
+    [leftRoundMiddleLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      leftFirstReturned, TableTrace.tableAtReturned, TableTrace.tableAtEntry,
+      TableTrace.tableValue, afterConstantLoad, hrun, hcode, hdest, hcap,
+      Nat.add_assoc,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_leftRoundSuffix (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (i : Nat) (hstack : rest.length < 1010)
+    (hcode : s.executionEnv.code = referenceBytecode) (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock leftRoundSuffixLocated
+      (leftSecondReturned s messageOffset returnDest rest i) =
+      some (RoundTrace.roundEntry
+        (leftSecondReturned s messageOffset returnDest rest i)
+        (UInt256.ofNat 192) (roundIndex i)
+        (TableTrace.tableValue (leftFirstReturned s messageOffset returnDest rest i)
+          (UInt256.ofNat 1184) (UInt256.ofNat i))
+        (TableTrace.tableValue s (UInt256.ofNat 1376) (UInt256.ofNat i))
+        (constantAt s 1568 i) (UInt256.ofNat 714)
+        (UInt256.ofNat (roundIndex i) :: UInt256.ofNat i ::
+          messageOffset :: returnDest :: rest)) := by
+  have hdest : Decode.isValidJumpDest referenceBytecode 276 = true := by decide
+  have hcap (m : Nat) (hm : m ≤ 12) : rest.length + m < 1024 := by omega
+  simp (config := { maxSteps := 200000 })
+    [leftRoundSuffixLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      leftSecondReturned, leftFirstReturned, RoundTrace.roundEntry,
+      TableTrace.tableAtReturned, TableTrace.tableValue, afterConstantLoad,
+      hrun, hcode, hdest, hcap, Nat.add_assoc,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat]
+
+def gasSteps_leftRoundSetup (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (i : Nat) (hi : i < 80)
+    (hstack : rest.length < 970)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (leftBodyAt s messageOffset returnDest rest i)
+      (leftRoundState s messageOffset returnDest rest i) := by
+  let q0 := afterConstantLoad s 1568 i
+  let tail1 := [constantAt s 1568 i, UInt256.ofNat 714,
+    UInt256.ofNat (roundIndex i), UInt256.ofNat i,
+    messageOffset, returnDest] ++ rest
+  let q1 := leftFirstReturned s messageOffset returnDest rest i
+  let tail2 := [TableTrace.tableValue s (UInt256.ofNat 1376) (UInt256.ofNat i),
+    constantAt s 1568 i, UInt256.ofNat 714, UInt256.ofNat (roundIndex i),
+    UInt256.ofNat i, messageOffset, returnDest] ++ rest
+  let q2 := leftSecondReturned s messageOffset returnDest rest i
+  let roundTail := UInt256.ofNat (roundIndex i) :: UInt256.ofNat i ::
+    messageOffset :: returnDest :: rest
+  have hq0code : q0.executionEnv.code = referenceBytecode := by
+    simpa [q0, afterConstantLoad] using hcode
+  have hq0fork : q0.fork = .Osaka := by
+    simpa [q0, afterConstantLoad, State.fork] using hfork
+  have hq0run : q0.halt = .Running := by simpa [q0, afterConstantLoad] using hrun
+  have hq0np : Precompile.isPrecompile q0.executionEnv.fork
+      q0.executionEnv.codeAddr = false := by simpa [q0, afterConstantLoad] using hnp
+  have gp := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka leftRoundPrefixLocated
+      (s := leftBodyAt s messageOffset returnDest rest i)
+      hcode hfork
+      (run_leftRoundPrefix s messageOffset returnDest rest i hi (by omega)
+        hcode hrun) hrun hnp
+  have gt1 := TableTrace.gasSteps_tableAt q0 (UInt256.ofNat 1376)
+    (UInt256.ofNat i) (UInt256.ofNat 693) tail1 (by simp [tail1]; omega)
+    hq0code hq0fork hq0run hq0np (by decide)
+  have hq1code : q1.executionEnv.code = referenceBytecode := by
+    simpa [q1, leftFirstReturned, TableTrace.tableAtReturned,
+      q0, afterConstantLoad] using hcode
+  have hq1fork : q1.fork = .Osaka := by
+    simpa [q1, leftFirstReturned, TableTrace.tableAtReturned,
+      q0, afterConstantLoad, State.fork] using hfork
+  have hq1run : q1.halt = .Running := by
+    simpa [q1, leftFirstReturned, TableTrace.tableAtReturned,
+      q0, afterConstantLoad] using hrun
+  have hq1np : Precompile.isPrecompile q1.executionEnv.fork
+      q1.executionEnv.codeAddr = false := by
+    simpa [q1, leftFirstReturned, TableTrace.tableAtReturned,
+      q0, afterConstantLoad] using hnp
+  have gm := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka leftRoundMiddleLocated
+      (s := q1)
+      hq1code hq1fork
+      (run_leftRoundMiddle s messageOffset returnDest rest i (by omega)
+        hcode hrun) hq1run hq1np
+  have gt2 := TableTrace.gasSteps_tableAt q1 (UInt256.ofNat 1184)
+    (UInt256.ofNat i) (UInt256.ofNat 706) tail2 (by simp [tail2]; omega)
+    hq1code hq1fork hq1run hq1np (by decide)
+  have hq2code : q2.executionEnv.code = referenceBytecode := by
+    simpa [q2, leftSecondReturned, q1, leftFirstReturned,
+      TableTrace.tableAtReturned, afterConstantLoad] using hcode
+  have hq2fork : q2.fork = .Osaka := by
+    simpa [q2, leftSecondReturned, q1, leftFirstReturned,
+      TableTrace.tableAtReturned, afterConstantLoad, State.fork] using hfork
+  have hq2run : q2.halt = .Running := by
+    simpa [q2, leftSecondReturned, q1, leftFirstReturned,
+      TableTrace.tableAtReturned, afterConstantLoad] using hrun
+  have hq2np : Precompile.isPrecompile q2.executionEnv.fork
+      q2.executionEnv.codeAddr = false := by
+    simpa [q2, leftSecondReturned, q1, leftFirstReturned,
+      TableTrace.tableAtReturned, afterConstantLoad] using hnp
+  have gs := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka leftRoundSuffixLocated
+      (s := q2)
+      hq2code hq2fork
+      (run_leftRoundSuffix s messageOffset returnDest rest i (by omega)
+        hcode hrun) hq2run hq2np
+  have gr := RoundTrace.gasSteps_round q2 (UInt256.ofNat 192) (roundIndex i)
+    (by unfold roundIndex; omega)
+    (TableTrace.tableValue q1 (UInt256.ofNat 1184) (UInt256.ofNat i))
+    (TableTrace.tableValue s (UInt256.ofNat 1376) (UInt256.ofNat i))
+    (constantAt s 1568 i) (UInt256.ofNat 714) roundTail
+    (by simp [roundTail]; omega) hq2code hq2fork hq2run hq2np (by decide)
+  have hp' : Challenge.EvmProof.GasSteps
+      (leftBodyAt s messageOffset returnDest rest i)
+      (TableTrace.tableAtEntry q0 (UInt256.ofNat 1376) (UInt256.ofNat i)
+        (UInt256.ofNat 693) tail1) := by simpa [q0, tail1] using gp
+  have ht1' : Challenge.EvmProof.GasSteps
+      (TableTrace.tableAtEntry q0 (UInt256.ofNat 1376) (UInt256.ofNat i)
+        (UInt256.ofNat 693) tail1) q1 := by
+    simpa [q1, q0, tail1, leftFirstReturned] using gt1
+  have hm' : Challenge.EvmProof.GasSteps q1
+      (TableTrace.tableAtEntry q1 (UInt256.ofNat 1184) (UInt256.ofNat i)
+        (UInt256.ofNat 706) tail2) := by simpa [q1, tail2] using gm
+  have ht2' : Challenge.EvmProof.GasSteps
+      (TableTrace.tableAtEntry q1 (UInt256.ofNat 1184) (UInt256.ofNat i)
+        (UInt256.ofNat 706) tail2) q2 := by
+    simpa [q2, q1, tail2, leftSecondReturned] using gt2
+  have hs' : Challenge.EvmProof.GasSteps q2
+      (RoundTrace.roundEntry q2 (UInt256.ofNat 192) (roundIndex i)
+        (TableTrace.tableValue q1 (UInt256.ofNat 1184) (UInt256.ofNat i))
+        (TableTrace.tableValue s (UInt256.ofNat 1376) (UInt256.ofNat i))
+        (constantAt s 1568 i) (UInt256.ofNat 714) roundTail) := by
+    simpa [q2, q1, roundTail] using gs
+  have gr' : Challenge.EvmProof.GasSteps
+      (RoundTrace.roundEntry q2 (UInt256.ofNat 192) (roundIndex i)
+        (TableTrace.tableValue q1 (UInt256.ofNat 1184) (UInt256.ofNat i))
+        (TableTrace.tableValue s (UInt256.ofNat 1376) (UInt256.ofNat i))
+        (constantAt s 1568 i) (UInt256.ofNat 714) roundTail)
+      (leftRoundState s messageOffset returnDest rest i) := by
+    simpa [leftRoundState, q2, q1, roundTail] using gr
+  exact hp'.trans (ht1'.trans (hm'.trans (ht2'.trans (hs'.trans gr'))))
+
+@[simp] theorem leftRoundState_executionEnv (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) (i : Nat) :
+    (leftRoundState s messageOffset returnDest rest i).executionEnv =
+      s.executionEnv := by rfl
+
+@[simp] theorem leftRoundState_fork (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) (i : Nat) :
+    (leftRoundState s messageOffset returnDest rest i).fork = s.fork := by
+  rw [State.fork, leftRoundState_executionEnv]
+
+@[simp] theorem leftRoundState_halt (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) (i : Nat) :
+    (leftRoundState s messageOffset returnDest rest i).halt = s.halt := by rfl
+
+@[simp] theorem leftRoundState_codeAddr (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) (i : Nat) :
+    (leftRoundState s messageOffset returnDest rest i).executionEnv.codeAddr =
+      s.executionEnv.codeAddr := by
+  rw [leftRoundState_executionEnv]
+
+private theorem leftRoundState_atReturn (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) (i : Nat) :
+    leftRoundState s messageOffset returnDest rest i =
+      leftRoundReturned (leftRoundState s messageOffset returnDest rest i)
+        messageOffset returnDest (UInt256.ofNat (roundIndex i)) rest i := by rfl
 
 set_option linter.unusedSimpArgs false in
 theorem run_scheduleSetup (s : State) (messageOffset returnDest : UInt256)
@@ -382,6 +880,98 @@ def gasSteps_left80 (I : Nat → State)
     (iteration : ∀ i, i < 80 → Challenge.EvmProof.GasSteps (I i) (I (i + 1))) :
     Challenge.EvmProof.GasSteps (I 0) (I 80) :=
   Challenge.EvmProof.GasSteps.iterateBounded 80 iteration
+
+def gasSteps_leftIterationConcrete (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256)
+    (i : Nat) (hi : i < 80) (hstack : rest.length < 970)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (leftLoopAt s messageOffset returnDest rest i)
+      (leftLoopAt (leftRoundState s messageOffset returnDest rest i)
+        messageOffset returnDest rest (i + 1)) := by
+  have gt := gasSteps_leftTest_continue s messageOffset returnDest rest i hi
+    (by omega) hcode hfork hrun hnp
+  have gr := gasSteps_leftRoundSetup s messageOffset returnDest rest i hi
+    hstack hcode hfork hrun hnp
+  let q := leftRoundState s messageOffset returnDest rest i
+  have hqcode : q.executionEnv.code = referenceBytecode := by
+    simpa [q] using hcode
+  have hqfork : q.fork = .Osaka := by simpa [q] using hfork
+  have hqrun : q.halt = .Running := by simpa [q] using hrun
+  have hqnp : Precompile.isPrecompile q.executionEnv.fork
+      q.executionEnv.codeAddr = false := by simpa [q] using hnp
+  have gi := gasSteps_leftIncrement q messageOffset returnDest
+    (UInt256.ofNat (roundIndex i)) rest i hi (by omega)
+    hqcode hqfork hqrun hqnp
+  have gr' : Challenge.EvmProof.GasSteps
+      (leftBodyAt s messageOffset returnDest rest i)
+      (leftRoundReturned q messageOffset returnDest
+        (UInt256.ofNat (roundIndex i)) rest i) :=
+    Challenge.EvmProof.GasSteps.cast gr rfl (by
+      simpa [q] using leftRoundState_atReturn s messageOffset returnDest rest i)
+  exact gt.trans (gr'.trans gi)
+
+def leftStates (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) : Nat → State
+  | 0 => s
+  | i + 1 => leftRoundState (leftStates s messageOffset returnDest rest i)
+      messageOffset returnDest rest i
+
+@[simp] theorem leftStates_zero (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) : leftStates s messageOffset returnDest rest 0 = s := rfl
+
+@[simp] theorem leftStates_succ (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (i : Nat) :
+    leftStates s messageOffset returnDest rest (i + 1) =
+      leftRoundState (leftStates s messageOffset returnDest rest i)
+        messageOffset returnDest rest i := rfl
+
+theorem leftStates_executionEnv (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (i : Nat) :
+    (leftStates s messageOffset returnDest rest i).executionEnv =
+      s.executionEnv := by
+  induction i with
+  | zero => rfl
+  | succ i ih => simp [leftStates, ih]
+
+theorem leftStates_halt (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (i : Nat) :
+    (leftStates s messageOffset returnDest rest i).halt = s.halt := by
+  induction i with
+  | zero => rfl
+  | succ i ih => simp [leftStates, ih]
+
+def gasSteps_left80Concrete (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 970)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (leftLoopAt s messageOffset returnDest rest 0)
+      (leftLoopAt (leftStates s messageOffset returnDest rest 80)
+        messageOffset returnDest rest 80) := by
+  apply gasSteps_left80 (fun i =>
+    leftLoopAt (leftStates s messageOffset returnDest rest i)
+      messageOffset returnDest rest i)
+  intro i hi
+  let q := leftStates s messageOffset returnDest rest i
+  have hqcode : q.executionEnv.code = referenceBytecode := by
+    rw [leftStates_executionEnv]
+    exact hcode
+  have hqfork : q.fork = .Osaka := by
+    rw [State.fork, leftStates_executionEnv]
+    exact hfork
+  have hqrun : q.halt = .Running := by rw [leftStates_halt]; exact hrun
+  have hqnp : Precompile.isPrecompile q.executionEnv.fork
+      q.executionEnv.codeAddr = false := by
+    simpa [q, leftStates_executionEnv] using hnp
+  simpa [q, leftStates] using
+    gasSteps_leftIterationConcrete q messageOffset returnDest rest i hi hstack
+      hqcode hqfork hqrun hqnp
 
 def rightLoopAt (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
