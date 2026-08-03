@@ -25,6 +25,18 @@ private def wfOp {op : Operation}
     Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
   ⟨hopcode, hplain, havailable⟩
 
+private def opAt (index : Nat) (op : Operation)
+    (hget : Artifact.referenceInstructions[index]? = some (.op op) := by rfl)
+    (hwf : Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) := by decide) :
+    Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka :=
+  ⟨index, .op op, hget, hwf⟩
+
+private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
+    (hget : Artifact.referenceInstructions[index]? = some (.push width value) := by rfl)
+    (hwf : Challenge.EvmProof.Stepper.WellFormed .Osaka (.push width value) := by decide) :
+    Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka :=
+  ⟨index, .push width value, hget, hwf⟩
+
 def startPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨415, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -49,6 +61,26 @@ def zeroTailPath :
 def zeroModulusPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   startPath ++ zeroTailPath
+
+def baseSetupPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [opAt 430 .JUMPDEST, pushAt 431 0 0, pushAt 432 0 0]
+
+def baseIterationPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [opAt 433 .JUMPDEST, opAt 434 (.Dup ⟨3, by decide⟩),
+   opAt 435 (.Dup ⟨1, by decide⟩), opAt 436 .LT, opAt 437 .ISZERO,
+   pushAt 438 2 582, opAt 439 .JUMPI,
+   opAt 440 (.Dup ⟨2, by decide⟩), pushAt 441 2 562, pushAt 442 0 0,
+   opAt 443 (.Dup ⟨3, by decide⟩), opAt 444 (.Dup ⟨10, by decide⟩),
+   opAt 445 .ADD, pushAt 446 2 4, opAt 447 .JUMP] ++
+  Accessors.calldataBytePath ++
+  [opAt 448 .JUMPDEST, opAt 449 (.Dup ⟨4, by decide⟩), pushAt 450 2 256,
+   opAt 451 (.Dup ⟨5, by decide⟩), opAt 452 .MULMOD, opAt 453 .ADDMOD,
+   opAt 454 (.Swap ⟨1, by decide⟩), opAt 455 .POP, pushAt 456 1 1,
+   opAt 457 (.Dup ⟨1, by decide⟩), opAt 458 .ADD,
+   opAt 459 (.Swap ⟨0, by decide⟩), opAt 460 .POP,
+   pushAt 461 2 541, opAt 462 .JUMP]
 
 def expOffset (input : ByteArray) : Nat := 96 + baseSize input
 def modulusOffset (input : ByteArray) : Nat := expOffset input + exponentSize input
@@ -82,6 +114,27 @@ def zeroModulusFinalState (input : ByteArray) : State :=
     activeWords := (Dispatch.wordEntryState input).activeWordsAfterUInt256
       6144 (modulusSize input) }
 
+def byteWord (input : ByteArray) (offset : Nat) : UInt256 :=
+  Accessors.calldataByteValue (Dispatch.wordEntryState input) (UInt256.ofNat offset)
+
+def baseStep (input : ByteArray) (i : Nat) (base : UInt256) : UInt256 :=
+  UInt256.addMod
+    (UInt256.mulMod base (UInt256.ofNat 256) (UInt256.ofNat (modulusValue input)))
+    (byteWord input (96 + i)) (UInt256.ofNat (modulusValue input))
+
+def baseAfter (input : ByteArray) : Nat → UInt256
+  | 0 => 0
+  | i + 1 => baseStep input i (baseAfter input i)
+
+def baseLoopState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
+  { nonzeroState input with
+    pc := UInt256.ofNat 541
+    stack := [UInt256.ofNat i, base, UInt256.ofNat (modulusValue input),
+      UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
+      UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
+      UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
+      UInt256.ofNat 1267] ++ callerRest input }
+
 @[simp] private theorem startPCs (i : Nat) (hi : 415 ≤ i) (hii : i ≤ 426) :
     Artifact.referenceArtifact.instructionPC i =
       [517, 518, 519, 520, 521, 523, 524, 526, 527, 528, 529, 532][i - 415]! := by
@@ -90,6 +143,29 @@ def zeroModulusFinalState (input : ByteArray) : State :=
 @[simp] private theorem jump538 :
     Decode.isValidJumpDest referenceBytecode 538 = true :=
   Artifact.isValidJumpDest_index 430 (by rfl)
+
+@[simp] private theorem wordPCs (i : Nat) (hi : 430 ≤ i) (hii : i ≤ 462) :
+    Artifact.referenceArtifact.instructionPC i =
+      [538, 539, 540, 541, 542, 543, 544, 545, 546, 549, 550,
+       551, 554, 555, 556, 557, 558, 561, 562, 563, 564, 567,
+       568, 569, 570, 571, 572, 574, 575, 576, 577, 578, 581][i - 430]! := by
+  interval_cases i <;> decide
+
+@[simp] private theorem jump582 :
+    Decode.isValidJumpDest referenceBytecode 582 = true :=
+  Artifact.isValidJumpDest_index 463 (by rfl)
+
+@[simp] private theorem jump562 :
+    Decode.isValidJumpDest referenceBytecode 562 = true :=
+  Artifact.isValidJumpDest_index 448 (by rfl)
+
+@[simp] private theorem jump4 :
+    Decode.isValidJumpDest referenceBytecode 4 = true :=
+  Artifact.isValidJumpDest_index 2 (by rfl)
+
+@[simp] private theorem jump541 :
+    Decode.isValidJumpDest referenceBytecode 541 = true :=
+  Artifact.isValidJumpDest_index 433 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_start (input : ByteArray) (hvalid : ValidInput input)
@@ -154,6 +230,39 @@ theorem run_zeroModulus (input : ByteArray) (hvalid : ValidInput input)
       hslice, hmodulus, UInt256.isTrue,
       Challenge.EvmProof.Word.word_toNat_ofNat]
 
+set_option linter.unusedSimpArgs false in
+theorem run_baseSetup (input : ByteArray) :
+    Challenge.EvmProof.Stepper.runLocatedBlock baseSetupPath
+      (nonzeroState input) = some (baseLoopState input 0 0) := by
+  simp (config := { maxSteps := 100000 })
+    [baseSetupPath, opAt, pushAt,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      nonzeroState, baseLoopState, wordPCs]
+
+set_option linter.unusedSimpArgs false in
+theorem run_baseIteration (input : ByteArray) (i : Nat) (base : UInt256)
+    (hvalid : ValidInput input) (hi : i < baseSize input) :
+    Challenge.EvmProof.Stepper.runLocatedBlock baseIterationPath
+      (baseLoopState input i base) =
+        some (baseLoopState input (i + 1) (baseStep input i base)) := by
+  rcases hvalid with ⟨_, hb, he, hm⟩
+  have hi256 : i < 2 ^ 256 := by omega
+  have hb256 : baseSize input < 2 ^ 256 := by omega
+  have hoff : 96 + i < 2 ^ 256 := by omega
+  have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
+    (a := i) (b := 96) (by omega : i + 96 < 2 ^ 256)
+  have hisucc := Challenge.EvmProof.Word.ofNat_add_ofNat
+    (a := 1) (b := i) (by omega : 1 + i < 2 ^ 256)
+  simp (config := { maxSteps := 700000 })
+    [baseIterationPath, opAt, pushAt, Accessors.calldataBytePath,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      baseLoopState, baseStep, byteWord, Accessors.calldataByteValue,
+      nonzeroState, callerRest, wordPCs, List.exchange,
+      UInt256.isTrue, UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt, hi, hi256, hb256, hoff, hadd, hisucc]
+
 def gasSteps_start (input : ByteArray) (hvalid : ValidInput input)
     (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
     (hmodulus : 0 < modulusValue input) :
@@ -166,6 +275,35 @@ def gasSteps_start (input : ByteArray) (hvalid : ValidInput input)
   · exact run_start input hvalid hmsize hword hmodulus
   · rfl
   · exact deployAddress_not_precompile
+
+def gasSteps_baseSetup (input : ByteArray) :
+    Challenge.EvmProof.GasSteps (nonzeroState input)
+      (baseLoopState input 0 0) := by
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka baseSetupPath
+  · rfl
+  · rfl
+  · exact run_baseSetup input
+  · rfl
+  · exact deployAddress_not_precompile
+
+def gasSteps_baseIteration (input : ByteArray) (i : Nat) (base : UInt256)
+    (hvalid : ValidInput input) (hi : i < baseSize input) :
+    Challenge.EvmProof.GasSteps (baseLoopState input i base)
+      (baseLoopState input (i + 1) (baseStep input i base)) := by
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka baseIterationPath
+  · rfl
+  · rfl
+  · exact run_baseIteration input i base hvalid hi
+  · rfl
+  · exact deployAddress_not_precompile
+
+def gasSteps_baseLoop (input : ByteArray) (hvalid : ValidInput input) :
+    Challenge.EvmProof.GasSteps (baseLoopState input 0 0)
+      (baseLoopState input (baseSize input) (baseAfter input (baseSize input))) := by
+  exact Challenge.EvmProof.GasSteps.iterateBounded (baseSize input)
+    (fun i hi => gasSteps_baseIteration input i (baseAfter input i) hvalid hi)
 
 def gasSteps_zeroModulus (input : ByteArray) (hvalid : ValidInput input)
     (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
