@@ -1,0 +1,166 @@
+import Challenge.EvmProof.Meter
+import Challenge.Ripemd160.Reference.Bytecode
+import Challenge.Ripemd160.Spec
+
+set_option warningAsError true
+
+/-!
+# Exact gas schedule for the RIPEMD-160 reference
+
+This file records the closed form measured for the frozen reference bytecode
+and proves its arithmetic properties.  Memory expansion is kept as
+`MachineState.memCost`, the same potential used by `Challenge.EvmProof.Meter`,
+so a completed `GasSteps` trace can telescope its memory charges directly into
+the final term below.
+
+The remaining bytecode-specific obligation is deliberately isolated by
+`gasSchedule_correct_of_trace`: the full execution proof must supply a trace
+whose `cost` is `referenceGas input`.  No separate execution or gas model is
+introduced here.
+-/
+
+namespace Challenge.Ripemd160.Reference.Proofs.Bytecode.GasCost
+
+open Challenge.Ripemd160
+open Challenge.EvmProof
+open EvmSemantics
+open EvmSemantics.EVM
+
+/-- Number of 64-byte compression blocks after RIPEMD-160 padding. -/
+def blockCount (inputSize : Nat) : Nat := (inputSize + 72) / 64
+
+/-- Number of words copied by `CALLDATACOPY`. -/
+def calldataWords (inputSize : Nat) : Nat := (inputSize + 31) / 32
+
+/-- Final memory high-water mark, in 32-byte words. -/
+def finalActiveWords (inputSize : Nat) : Nat := 64 + 2 * blockCount inputSize
+
+/-- Exact gas consumed by the frozen RIPEMD-160 reference for `inputSize`
+bytes of calldata. -/
+def referenceGasForSize (inputSize : Nat) : Nat :=
+  3880 + 148364 * blockCount inputSize + 3 * calldataWords inputSize +
+    MachineState.memCost (finalActiveWords inputSize)
+
+/-- Byte-array form of `referenceGasForSize`, convenient for execution traces. -/
+def referenceGas (input : ByteArray) : Nat := referenceGasForSize input.size
+
+@[simp] theorem blockCount_eq (inputSize : Nat) :
+    blockCount inputSize = (inputSize + 72) / 64 := rfl
+
+@[simp] theorem calldataWords_eq (inputSize : Nat) :
+    calldataWords inputSize = (inputSize + 31) / 32 := rfl
+
+@[simp] theorem finalActiveWords_eq (inputSize : Nat) :
+    finalActiveWords inputSize = 64 + 2 * ((inputSize + 72) / 64) := rfl
+
+/-- The schedule with the EVM memory-cost definition made explicit. -/
+theorem referenceGasForSize_expanded (inputSize : Nat) :
+    referenceGasForSize inputSize =
+      3880 + 148364 * ((inputSize + 72) / 64) +
+        3 * ((inputSize + 31) / 32) +
+        (3 * (64 + 2 * ((inputSize + 72) / 64)) +
+          (64 + 2 * ((inputSize + 72) / 64)) ^ 2 / 512) := by
+  rfl
+
+theorem blockCount_monotone : Monotone blockCount := by
+  intro left right hle
+  exact Nat.div_le_div_right (Nat.add_le_add_right hle 72)
+
+theorem calldataWords_monotone : Monotone calldataWords := by
+  intro left right hle
+  exact Nat.div_le_div_right (Nat.add_le_add_right hle 31)
+
+theorem finalActiveWords_monotone : Monotone finalActiveWords := by
+  intro left right hle
+  exact Nat.add_le_add_left (Nat.mul_le_mul_left 2 (blockCount_monotone hle)) 64
+
+/-- Larger calldata never makes the exact reference schedule smaller. -/
+theorem referenceGasForSize_monotone : Monotone referenceGasForSize := by
+  intro left right hle
+  unfold referenceGasForSize
+  exact Nat.add_le_add
+    (Nat.add_le_add
+      (Nat.add_le_add_left
+        (Nat.mul_le_mul_left 148364 (blockCount_monotone hle)) 3880)
+      (Nat.mul_le_mul_left 3 (calldataWords_monotone hle)))
+    (Challenge.EvmProof.Meter.memCost_monotone
+      (finalActiveWords_monotone hle))
+
+/-! The scorer checkpoints are kernel-checked consequences of the formula. -/
+
+@[simp] theorem referenceGasForSize_zero :
+    referenceGasForSize 0 = 152450 := by decide
+
+@[simp] theorem referenceGasForSize_three :
+    referenceGasForSize 3 = 152453 := by decide
+
+@[simp] theorem referenceGasForSize_55 :
+    referenceGasForSize 55 = 152456 := by decide
+
+@[simp] theorem referenceGasForSize_56 :
+    referenceGasForSize 56 = 300827 := by decide
+
+@[simp] theorem referenceGasForSize_64 :
+    referenceGasForSize 64 = 300827 := by decide
+
+@[simp] theorem referenceGasForSize_120 :
+    referenceGasForSize 120 = 449203 := by decide
+
+@[simp] theorem referenceGasForSize_256 :
+    referenceGasForSize 256 = 745956 := by decide
+
+@[simp] theorem referenceGasForSize_1000 :
+    referenceGasForSize 1000 = 2378106 := by decide
+
+/-- Schedule-level strengthening of the minimal challenge statement. -/
+def CorrectWithSchedule (code : ByteArray) (schedule : Nat → Nat) : Prop :=
+  ∀ input : ByteArray, CalldataFits input → ∀ gas : Nat,
+    schedule input.size ≤ gas →
+    Eval (initialState code input gas) (.returned (spec input))
+
+theorem correct_of_schedule {code : ByteArray} {schedule : Nat → Nat}
+    (hcorrect : CorrectWithSchedule code schedule) : Correct code := by
+  intro input hfit
+  exact ⟨schedule input.size, fun gas hgas => hcorrect input hfit gas hgas⟩
+
+@[simp] theorem withGas_initialState_zero
+    (code input : ByteArray) (gas : Nat) :
+    withGas (initialState code input 0) gas = initialState code input gas := by
+  rfl
+
+/--
+Turn the completed functional `GasSteps` certificate into the exact gas
+schedule theorem.  To close the gas proof for the reference, instantiate this
+with the final halted state and the same full trace used for correctness, then
+prove `hcost` by telescoping the per-block `Meter` potential equations.
+-/
+theorem gasSchedule_correct_of_trace
+    (finalState : ByteArray → State)
+    (fullTrace : ∀ input : ByteArray, CalldataFits input →
+      GasSteps (initialState referenceBytecode input 0) (finalState input))
+    (hcost : ∀ (input : ByteArray) (hfit : CalldataFits input),
+      (fullTrace input hfit).cost = referenceGas input)
+    (hdone : ∀ input : ByteArray, (finalState input).isDone = true)
+    (hresult : ∀ (input : ByteArray), CalldataFits input →
+      (finalState input).toResult = .returned (spec input)) :
+    CorrectWithSchedule referenceBytecode referenceGasForSize := by
+  intro input hfit gas hgas
+  let trace := fullTrace input hfit
+  have htraceCost : trace.cost = referenceGas input := hcost input hfit
+  have hsteps : Steps (initialState referenceBytecode input gas)
+      (withGas (finalState input) (gas - referenceGas input)) := by
+    have hs := trace.trace gas (by
+      rw [htraceCost]
+      exact hgas)
+    simpa [trace, htraceCost] using hs
+  have heval := Challenge.EvmProof.eval_of_steps hsteps (by
+    change (finalState input).isDone = true
+    exact hdone input)
+  have hfinal :
+      (withGas (finalState input) (gas - referenceGas input)).toResult =
+        .returned (spec input) := by
+    change (finalState input).toResult = .returned (spec input)
+    exact hresult input hfit
+  simpa [hfinal] using heval
+
+end Challenge.Ripemd160.Reference.Proofs.Bytecode.GasCost
