@@ -59,6 +59,60 @@ private theorem rightTailResult_halt (s : State)
   rw [rightTailResult, combinationReturned, combinationCleaned,
     combination4_halt, rightStates_halt]
 
+private theorem scheduleLoop_callStack (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) (n : Nat) :
+    (Schedule.loopState s messageOffset returnDest rest n).callStack =
+      s.callStack := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      simp only [Schedule.loopState, Schedule.afterIteration,
+        Schedule.afterStore, Schedule.afterRead, ih]
+
+private theorem leftRoundState_callStack (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) (i : Nat) :
+    (leftRoundState s messageOffset returnDest rest i).callStack =
+      s.callStack := by
+  rfl
+
+private theorem leftStates_callStack (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) (n : Nat) :
+    (leftStates s messageOffset returnDest rest n).callStack = s.callStack := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      rw [leftStates_succ, leftRoundState_callStack, ih]
+
+private theorem leftFinalState_callStack (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) :
+    (leftFinalState s messageOffset returnDest rest).callStack =
+      s.callStack := by
+  rw [leftFinalState, leftStates_callStack]
+  simp only [leftInitialState, copiedWorkingState, copyRegion, scheduledState,
+    scheduleLoop_callStack]
+
+private theorem rightRoundState_callStack (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) (i : Nat) :
+    (rightRoundState s messageOffset returnDest rest i).callStack =
+      s.callStack := by
+  rfl
+
+private theorem rightStates_callStack (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) (n : Nat) :
+    (rightStates s messageOffset returnDest rest n).callStack = s.callStack := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      rw [rightStates_succ, rightRoundState_callStack, ih]
+
+private theorem rightTailResult_callStack (s : State)
+    (messageOffset returnDest : UInt256) (rest : List UInt256) :
+    (rightTailResult s messageOffset returnDest rest).callStack =
+      s.callStack := by
+  rw [rightTailResult, combinationReturned, combinationCleaned]
+  simp only [combination4, touched4, touched3, touched2, touched1, touched0,
+    touchWord, rightStates_callStack]
+
 @[simp] theorem resultState_executionEnv (s : State)
     (input : ByteArray) (i : Nat) :
     (resultState s input i).executionEnv = s.executionEnv := by
@@ -67,6 +121,11 @@ private theorem rightTailResult_halt (s : State)
 @[simp] theorem resultState_halt (s : State) (input : ByteArray) (i : Nat) :
     (resultState s input i).halt = s.halt := by
   rw [resultState, rightTailResult_halt, leftFinalState_halt]
+
+@[simp] theorem resultState_callStack (s : State)
+    (input : ByteArray) (i : Nat) :
+    (resultState s input i).callStack = s.callStack := by
+  rw [resultState, rightTailResult_callStack, leftFinalState_callStack]
 
 /-- One complete invocation of the compiled `compress` helper, normalized to
 the exact return seam consumed by `DriverTrace`. -/
