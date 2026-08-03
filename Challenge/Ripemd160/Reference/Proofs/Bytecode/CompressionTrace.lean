@@ -164,6 +164,11 @@ def leftRoundSuffixLocated : List Located :=
         707, 708, 710, 713][j - 477]! := by
   interval_cases j <;> rfl
 
+@[simp] private theorem leftExitPC (j : Nat)
+    (hlo : 514 ≤ j) (hhi : j ≤ 516) :
+    Artifact.referenceArtifact.instructionPC j = [726, 727, 728][j - 514]! := by
+  interval_cases j <;> rfl
+
 def leftExitLocated : List Located :=
   [⟨514, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨515, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
@@ -987,6 +992,219 @@ def rightRoundReturned (s : State) (messageOffset returnDest discard : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
   { s with pc := UInt256.ofNat 792
            stack := discard :: UInt256.ofNat i :: messageOffset :: returnDest :: rest }
+
+def leftExitCompared (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 726
+           stack := UInt256.ofNat 80 :: messageOffset :: returnDest :: rest }
+
+def leftExited (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 728
+           stack := messageOffset :: returnDest :: rest }
+
+set_option linter.unusedSimpArgs false in
+theorem run_leftTest_exit (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 1019)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock leftTestLocated
+      (leftLoopAt s messageOffset returnDest rest 80) =
+        some (leftExitCompared s messageOffset returnDest rest) := by
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hlt : UInt256.lt (UInt256.ofNat 80) (UInt256.ofNat 80) = 0 := by decide
+  have hzero : UInt256.isZero (0 : UInt256) = UInt256.ofNat 1 := by decide
+  have htrue : UInt256.isTrue (UInt256.ofNat 1) = true := by decide
+  have hdest : Decode.isValidJumpDest referenceBytecode 726 = true := by decide
+  simp [leftTestLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    leftLoopAt, leftExitCompared, hrun, hcode, hlt, hzero, htrue, hdest,
+    hc3, hc4, hc5]
+
+def gasSteps_leftTest_exit (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 1019)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (leftLoopAt s messageOffset returnDest rest 80)
+      (leftExitCompared s messageOffset returnDest rest) := by
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka leftTestLocated
+      (s := leftLoopAt s messageOffset returnDest rest 80)
+  · exact hcode
+  · exact hfork
+  · exact run_leftTest_exit s messageOffset returnDest rest hstack hcode hrun
+  · exact hrun
+  · exact hnp
+
+set_option linter.unusedSimpArgs false in
+theorem run_leftExit (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 1021)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock leftExitLocated
+      (leftExitCompared s messageOffset returnDest rest) =
+        some (leftExited s messageOffset returnDest rest) := by
+  have hc3 : rest.length + 3 < 1024 := by omega
+  simp [leftExitLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    leftExitCompared, leftExited, hrun, hc3,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat]
+
+def gasSteps_leftExit (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 1021)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (leftExitCompared s messageOffset returnDest rest)
+      (leftExited s messageOffset returnDest rest) := by
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka leftExitLocated
+      (s := leftExitCompared s messageOffset returnDest rest)
+  · exact hcode
+  · exact hfork
+  · exact run_leftExit s messageOffset returnDest rest hstack hrun
+  · exact hrun
+  · exact hnp
+
+set_option linter.unusedSimpArgs false in
+theorem run_rightInit (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 1021)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock rightInitLocated
+      (leftExited s messageOffset returnDest rest) =
+        some (rightLoopAt s messageOffset returnDest rest 0) := by
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  simp [rightInitLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    leftExited, rightLoopAt, hrun, hc2, hc3, Nat.add_assoc,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat]
+
+def gasSteps_rightInit (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 1021)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (leftExited s messageOffset returnDest rest)
+      (rightLoopAt s messageOffset returnDest rest 0) := by
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka rightInitLocated
+      (s := leftExited s messageOffset returnDest rest)
+  · exact hcode
+  · exact hfork
+  · exact run_rightInit s messageOffset returnDest rest hstack hrun
+  · exact hrun
+  · exact hnp
+
+def scheduledState (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) : State :=
+  Schedule.loopState s messageOffset (UInt256.ofNat 630)
+    (messageOffset :: returnDest :: rest) 16
+
+def leftInitialState (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) : State :=
+  copiedWorkingState (scheduledState s messageOffset returnDest rest)
+
+def leftFinalState (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) : State :=
+  leftStates (leftInitialState s messageOffset returnDest rest)
+    messageOffset returnDest rest 80
+
+/-- Concrete handoff from the compiled `compress` entry through schedule,
+the three working-state copies, and all eighty left-line rounds.  The result
+is exactly the right-loop head at index zero, ready for `CompressionRightTrace`.
+-/
+def gasSteps_compressToRight (s : State) (messageOffset returnDest : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 970)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (compressEntry s messageOffset returnDest rest)
+      (rightLoopAt (leftFinalState s messageOffset returnDest rest)
+        messageOffset returnDest rest 0) := by
+  have gsetup := gasSteps_scheduleSetup s messageOffset returnDest rest
+    (by omega) hcode hfork hrun hnp
+  let tail := messageOffset :: returnDest :: rest
+  have gschedule := Schedule.gasSteps_schedule s messageOffset
+    (UInt256.ofNat 630) tail (by simp [tail]; omega)
+    hcode hfork hrun hnp (by decide)
+  let q := scheduledState s messageOffset returnDest rest
+  have hqcode : q.executionEnv.code = referenceBytecode := by
+    simpa [q, scheduledState] using hcode
+  have hqfork : q.fork = .Osaka := by
+    simpa [q, scheduledState, State.fork] using hfork
+  have hqrun : q.halt = .Running := by
+    simpa [q, scheduledState] using hrun
+  have hqnp : Precompile.isPrecompile q.executionEnv.fork
+      q.executionEnv.codeAddr = false := by
+    simpa [q, scheduledState] using hnp
+  have gcopy := gasSteps_copyState q messageOffset returnDest rest (by omega)
+    hqcode hqfork hqrun hqnp
+  let q0 := leftInitialState s messageOffset returnDest rest
+  have hq0code : q0.executionEnv.code = referenceBytecode := by
+    simpa [q0, q, leftInitialState, copiedWorkingState, copyRegion] using hqcode
+  have hq0fork : q0.fork = .Osaka := by
+    simpa [q0, q, leftInitialState, copiedWorkingState, copyRegion, State.fork]
+      using hqfork
+  have hq0run : q0.halt = .Running := by
+    simpa [q0, q, leftInitialState, copiedWorkingState, copyRegion] using hqrun
+  have hq0np : Precompile.isPrecompile q0.executionEnv.fork
+      q0.executionEnv.codeAddr = false := by
+    simpa [q0, q, leftInitialState, copiedWorkingState, copyRegion] using hqnp
+  have ginit := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka leftInitLocated
+      (s := copiesReturned q messageOffset returnDest rest)
+      hqcode hqfork
+      (run_leftInit q messageOffset returnDest rest (by omega) hqrun)
+      hqrun hqnp
+  have gleft := gasSteps_left80Concrete q0 messageOffset returnDest rest hstack
+    hq0code hq0fork hq0run hq0np
+  let q80 := leftFinalState s messageOffset returnDest rest
+  have hq80code : q80.executionEnv.code = referenceBytecode := by
+    simpa [q80, leftFinalState, q0, leftStates_executionEnv] using hq0code
+  have hq80fork : q80.fork = .Osaka := by
+    simpa [q80, q0, leftFinalState, State.fork] using hq0fork
+  have hq80run : q80.halt = .Running := by
+    simpa [q80, leftFinalState, q0, leftStates_halt] using hq0run
+  have hq80np : Precompile.isPrecompile q80.executionEnv.fork
+      q80.executionEnv.codeAddr = false := by
+    simpa [q80, leftFinalState, q0, leftStates_executionEnv] using hq0np
+  have gtest := gasSteps_leftTest_exit q80 messageOffset returnDest rest
+    (by omega) hq80code hq80fork hq80run hq80np
+  have gexit := gasSteps_leftExit q80 messageOffset returnDest rest
+    (by omega) hq80code hq80fork hq80run hq80np
+  have gright := gasSteps_rightInit q80 messageOffset returnDest rest
+    (by omega) hq80code hq80fork hq80run hq80np
+  have gschedule' : Challenge.EvmProof.GasSteps
+      (scheduleEntry s messageOffset returnDest rest)
+      (scheduleReturned q messageOffset returnDest rest) := by
+    simpa [tail, q, scheduledState, scheduleEntry, scheduleReturned,
+      Schedule.scheduleEntry, Schedule.scheduleReturned] using gschedule
+  have gcopy' : Challenge.EvmProof.GasSteps
+      (scheduleReturned q messageOffset returnDest rest)
+      (copiesReturned q messageOffset returnDest rest) := gcopy
+  have ginit' : Challenge.EvmProof.GasSteps
+      (copiesReturned q messageOffset returnDest rest)
+      (leftLoopAt q0 messageOffset returnDest rest 0) := by
+    simpa [q0, q, leftInitialState] using ginit
+  have gleft' : Challenge.EvmProof.GasSteps
+      (leftLoopAt q0 messageOffset returnDest rest 0)
+      (leftLoopAt q80 messageOffset returnDest rest 80) := by
+    simpa [q80, q0, leftFinalState] using gleft
+  exact gsetup.trans (gschedule'.trans (gcopy'.trans (ginit'.trans
+    (gleft'.trans (gtest.trans (gexit.trans gright))))))
 
 /-- Right-line loop skeleton.  `iteration` is discharged by composing the
 right condition, table/round seam, and increment paths pinned above. -/
