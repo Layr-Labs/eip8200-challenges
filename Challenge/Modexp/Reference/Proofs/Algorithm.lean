@@ -1,4 +1,6 @@
 import Challenge.Modexp.Spec
+import Challenge.EvmProof.Memory
+import YulEvmCompiler.BytesLemmas
 set_option warningAsError true
 /-!
 # Mathematical MODEXP facts
@@ -83,5 +85,24 @@ theorem modPow_lt {base exponent modulus : Nat} (hmodulus : 0 < modulus) :
     Precompile.modPow base exponent modulus < modulus := by
   rw [modPow_eq, if_neg (Nat.ne_of_gt hmodulus)]
   exact Nat.mod_lt _ hmodulus
+
+theorem zeroBytes (offset width : Nat) :
+    MachineState.readPadded ByteArray.empty offset width =
+      Precompile.natToBytes 0 width := by
+  unfold Precompile.natToBytes
+  apply ByteArray.ext_getElem
+  · rw [Challenge.EvmProof.Memory.readPadded_size,
+      YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+  · intro i hleft hright
+    have hiwidth : i < width := by
+      rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size] at hright
+      exact hright
+    rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hleft,
+      ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hright,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD,
+      if_pos (by simpa using hleft),
+      YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD
+        0 width i hiwidth]
+    simp
 
 end Challenge.Modexp.Reference.Proofs.Algorithm

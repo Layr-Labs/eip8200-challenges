@@ -40,6 +40,16 @@ def startPath :
    ⟨425, .push ⟨2, by decide⟩ 538, by rfl, by decide⟩,
    ⟨426, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
+def zeroTailPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [⟨427, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨428, .push ⟨2, by decide⟩ 6144, by rfl, by decide⟩,
+   ⟨429, .op .RETURN, by rfl, wfOp (by decide) trivial rfl⟩]
+
+def zeroModulusPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  startPath ++ zeroTailPath
+
 def expOffset (input : ByteArray) : Nat := 96 + baseSize input
 def modulusOffset (input : ByteArray) : Nat := expOffset input + exponentSize input
 
@@ -59,6 +69,18 @@ def nonzeroState (input : ByteArray) : State :=
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
       UInt256.ofNat 1267] ++ callerRest input }
+
+def zeroModulusFinalState (input : ByteArray) : State :=
+  { Dispatch.wordEntryState input with
+    pc := UInt256.ofNat 537
+    stack := [UInt256.ofNat 0, UInt256.ofNat (baseSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
+      UInt256.ofNat 96, UInt256.ofNat (expOffset input),
+      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1267] ++ callerRest input
+    halt := .Returned
+    hReturn := MachineState.readPadded ByteArray.empty 6144 (modulusSize input)
+    activeWords := (Dispatch.wordEntryState input).activeWordsAfterUInt256
+      6144 (modulusSize input) }
 
 @[simp] private theorem startPCs (i : Nat) (hi : 415 ≤ i) (hii : i ≤ 426) :
     Artifact.referenceArtifact.instructionPC i =
@@ -103,6 +125,35 @@ theorem run_start (input : ByteArray) (hvalid : ValidInput input)
       hmodulus, hmodlt, UInt256.isTrue,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
 
+set_option linter.unusedSimpArgs false in
+theorem run_zeroModulus (input : ByteArray) (hvalid : ValidInput input)
+    (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hmodulus : modulusValue input = 0) :
+    Challenge.EvmProof.Stepper.runLocatedBlock zeroModulusPath
+      (Dispatch.wordEntryState input) = some (zeroModulusFinalState input) := by
+  rcases hvalid with ⟨_, hb, he, hm⟩
+  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat hword
+    (by norm_num : 32 < 2 ^ 256)
+  have hshift :
+      UInt256.shiftLeft (UInt256.ofNat (32 - modulusSize input))
+          (UInt256.ofNat 3) =
+        UInt256.ofNat ((32 - modulusSize input) * 8) := by
+    rw [Challenge.EvmProof.Word.shiftLeft_ofNat]
+    · congr 1
+      simp [Nat.shiftLeft_eq]
+    · omega
+    · omega
+  have hslice := Challenge.EvmProof.Bytes.shiftRight_readWord input
+    (modulusOffset input) (modulusSize input) hmsize hword
+  simp (config := { maxSteps := 400000 })
+    [zeroModulusPath, startPath, zeroTailPath,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      Dispatch.wordEntryState, Main.headerState, zeroModulusFinalState,
+      callerRest, expOffset, modulusOffset, modulusValue, startPCs, hsub, hshift,
+      hslice, hmodulus, UInt256.isTrue,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+
 def gasSteps_start (input : ByteArray) (hvalid : ValidInput input)
     (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
     (hmodulus : 0 < modulusValue input) :
@@ -115,5 +166,40 @@ def gasSteps_start (input : ByteArray) (hvalid : ValidInput input)
   · exact run_start input hvalid hmsize hword hmodulus
   · rfl
   · exact deployAddress_not_precompile
+
+def gasSteps_zeroModulus (input : ByteArray) (hvalid : ValidInput input)
+    (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hmodulus : modulusValue input = 0) :
+    Challenge.EvmProof.GasSteps (Dispatch.wordEntryState input)
+      (zeroModulusFinalState input) := by
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka zeroModulusPath
+  · rfl
+  · rfl
+  · exact run_zeroModulus input hvalid hmsize hword hmodulus
+  · rfl
+  · exact deployAddress_not_precompile
+
+def gasSteps_zeroModulus_total (input : ByteArray) (hvalid : ValidInput input)
+    (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hmodulus : modulusValue input = 0) :
+    Challenge.EvmProof.GasSteps (initialState referenceBytecode input 0)
+      (zeroModulusFinalState input) :=
+  ((Main.gasSteps_header input hvalid).trans
+    (Dispatch.gasSteps_wordEntry input hvalid hmsize hword)).trans
+      (gasSteps_zeroModulus input hvalid hmsize hword hmodulus)
+
+@[simp] theorem zeroModulusFinalState_isDone (input : ByteArray) :
+    (zeroModulusFinalState input).isDone = true := by
+  rfl
+
+theorem zeroModulusFinalState_result (input : ByteArray)
+    (hmsize : 0 < modulusSize input) (hmodulus : modulusValue input = 0) :
+    (zeroModulusFinalState input).toResult = .returned (spec input) := by
+  rw [show (zeroModulusFinalState input).toResult =
+      .returned (Precompile.natToBytes 0 (modulusSize input)) by
+    simp [zeroModulusFinalState, Algorithm.zeroBytes]]
+  simp [spec, Nat.ne_of_gt hmsize, modulusValue, modulusOffset, expOffset,
+    hmodulus, Precompile.modPow]
 
 end Challenge.Modexp.Reference.Proofs.Bytecode.Word
