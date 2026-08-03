@@ -1,6 +1,7 @@
 import EvmSemantics.Data.Bytes
 import Mathlib.Tactic.Ring
 import YulEvmCompiler.StateRel
+import Challenge.EvmProof.Word
 set_option warningAsError true
 set_option maxRecDepth 10000
 /-!
@@ -52,6 +53,19 @@ theorem readPadded_toList_succ (bytes : ByteArray) (offset width : Nat) :
   rw [readPadded_toList, readPadded_toList, List.range_succ, List.map_append]
   rfl
 
+theorem readPadded_toList_add (bytes : ByteArray)
+    (offset left right : Nat) :
+    (EvmSemantics.MachineState.readPadded bytes offset (left + right)).toList =
+      (EvmSemantics.MachineState.readPadded bytes offset left).toList ++
+        (EvmSemantics.MachineState.readPadded bytes (offset + left) right).toList := by
+  rw [readPadded_toList, readPadded_toList, readPadded_toList,
+    List.range_add, List.map_append, List.map_map]
+  congr 2
+  funext i
+  simp only [Function.comp_apply]
+  congr 1
+  omega
+
 theorem foldl_step (bytes : List UInt8) (acc : Nat) :
     bytes.foldl step acc =
       acc * 256 ^ bytes.length + bytes.foldl step 0 := by
@@ -81,14 +95,6 @@ theorem bytesNat_snoc (bytes : List UInt8) (byte : UInt8) :
   rw [bytesNat_append]
   simp [bytesNat, step]
 
-theorem bytesToNatPadded_succ (bytes : ByteArray) (offset width : Nat) :
-    EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset (width + 1) =
-      EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset width * 256 +
-        (YulSemantics.EVM.byteFrom bytes.toList (offset + width)).toNat := by
-  unfold EvmSemantics.EVM.Precompile.bytesToNatPadded
-  rw [← bytesNat_toList, readPadded_toList_succ, bytesNat_snoc,
-    bytesNat_toList]
-
 theorem bytesNat_lt_pow (bytes : List UInt8) :
     bytesNat bytes < 256 ^ bytes.length := by
   induction bytes with
@@ -105,5 +111,100 @@ theorem bytesNat_lt_pow (bytes : List UInt8) :
       _ ≤ 256 * 256 ^ bytes.length :=
         Nat.mul_le_mul_right _ (by omega)
       _ = 256 ^ bytes.length * 256 := Nat.mul_comm _ _
+
+theorem bytesToNatPadded_succ (bytes : ByteArray) (offset width : Nat) :
+    EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset (width + 1) =
+      EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset width * 256 +
+        (YulSemantics.EVM.byteFrom bytes.toList (offset + width)).toNat := by
+  unfold EvmSemantics.EVM.Precompile.bytesToNatPadded
+  rw [← bytesNat_toList, readPadded_toList_succ, bytesNat_snoc,
+    bytesNat_toList]
+
+theorem bytesToNatPadded_add (bytes : ByteArray)
+    (offset left right : Nat) :
+    EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset (left + right) =
+      EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset left *
+          256 ^ right +
+        EvmSemantics.EVM.Precompile.bytesToNatPadded bytes (offset + left) right := by
+  unfold EvmSemantics.EVM.Precompile.bytesToNatPadded
+  rw [← bytesNat_toList, readPadded_toList_add, bytesNat_append,
+    bytesNat_toList, bytesNat_toList]
+  congr 2
+  have h := congrArg List.length (readPadded_toList bytes (offset + left) right)
+  simpa using h
+
+theorem bytesToNatPadded_lt_pow (bytes : ByteArray) (offset width : Nat) :
+    EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset width <
+      256 ^ width := by
+  unfold EvmSemantics.EVM.Precompile.bytesToNatPadded
+  rw [← bytesNat_toList]
+  have h := bytesNat_lt_pow
+    (EvmSemantics.MachineState.readPadded bytes offset width).toList
+  have hlen := congrArg List.length (readPadded_toList bytes offset width)
+  have hlen' :
+      (EvmSemantics.MachineState.readPadded bytes offset width).toList.length =
+        width := by simpa using hlen
+  simpa [hlen'] using h
+
+theorem readWord_toNat (bytes : ByteArray) (offset : Nat) :
+    (EvmSemantics.MachineState.readWord bytes offset).toNat =
+      EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset 32 := by
+  unfold EvmSemantics.MachineState.readWord
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat]
+  apply Nat.mod_eq_of_lt
+  have h := bytesToNatPadded_lt_pow bytes offset 32
+  change EvmSemantics.Data.Bytes.bytesToBigEndianNat
+      (EvmSemantics.MachineState.readPadded bytes offset 32) < 2 ^ 256
+  exact h.trans_le (by norm_num)
+
+theorem readWord_shift_toNat (bytes : ByteArray) (offset width : Nat)
+    (hwidth : width ≤ 32) :
+    (EvmSemantics.MachineState.readWord bytes offset).toNat >>>
+        ((32 - width) * 8) =
+      EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset width := by
+  let tail := 32 - width
+  have hsum : width + tail = 32 := by omega
+  have hsplit := bytesToNatPadded_add bytes offset width tail
+  rw [hsum] at hsplit
+  have hden : 256 ^ tail = 2 ^ (tail * 8) := by
+    calc
+      256 ^ tail = (2 ^ 8) ^ tail := by norm_num
+      _ = 2 ^ (8 * tail) := (Nat.pow_mul 2 8 tail).symm
+      _ = 2 ^ (tail * 8) := by rw [Nat.mul_comm]
+  have htail := bytesToNatPadded_lt_pow bytes (offset + width) tail
+  rw [Nat.shiftRight_eq_div_pow, ← hden, readWord_toNat, hsplit]
+  calc
+    (EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset width *
+          256 ^ tail +
+        EvmSemantics.EVM.Precompile.bytesToNatPadded bytes (offset + width) tail) /
+        256 ^ tail =
+      (EvmSemantics.EVM.Precompile.bytesToNatPadded bytes (offset + width) tail +
+          256 ^ tail *
+            EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset width) /
+        256 ^ tail := by
+      congr 1
+      rw [Nat.add_comm, Nat.mul_comm]
+    _ = EvmSemantics.EVM.Precompile.bytesToNatPadded bytes (offset + width) tail /
+          256 ^ tail +
+        EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset width :=
+      Nat.add_mul_div_left _ _ (Nat.pow_pos (by omega))
+    _ = EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset width := by
+      rw [Nat.div_eq_of_lt htail, Nat.zero_add]
+
+theorem shiftRight_readWord (bytes : ByteArray) (offset width : Nat)
+    (hpositive : 0 < width) (hwidth : width ≤ 32) :
+    EvmSemantics.UInt256.shiftRight
+        (EvmSemantics.MachineState.readWord bytes offset)
+        (EvmSemantics.UInt256.ofNat ((32 - width) * 8)) =
+      EvmSemantics.UInt256.ofNat
+        (EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset width) := by
+  rw [show EvmSemantics.MachineState.readWord bytes offset =
+      EvmSemantics.UInt256.ofNat
+        (EvmSemantics.EVM.Precompile.bytesToNatPadded bytes offset 32) by rfl]
+  rw [Challenge.EvmProof.Word.shiftRight_ofNat]
+  · congr 1
+    simpa [readWord_toNat] using readWord_shift_toNat bytes offset width hwidth
+  · exact bytesToNatPadded_lt_pow bytes offset 32 |>.trans_le (by norm_num)
+  · omega
 
 end Challenge.EvmProof.Bytes
