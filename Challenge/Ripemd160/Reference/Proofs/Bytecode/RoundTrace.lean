@@ -165,7 +165,7 @@ private def roundPCs : List Nat :=
 
 /-! The compiler calls the same `rotl` helper twice in every round. -/
 
-private def rotlPath : List Located :=
+def rotlPath : List Located :=
   [⟨2, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨3, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
    ⟨4, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
@@ -198,12 +198,12 @@ private def rotlValue (x n : UInt256) : UInt256 :=
       (UInt256.shiftRight x (UInt256.ofNat 32 - n)))
     (UInt256.ofNat 0xffffffff)
 
-private def rotlEntry (s : State) (x n returnDest : UInt256)
+def rotlEntry (s : State) (x n returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 4
            stack := [x, n, 0, returnDest] ++ rest }
 
-private def rotlReturned (s : State) (x n returnDest : UInt256)
+def rotlReturned (s : State) (x n returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := returnDest
            stack := rotlValue x n :: rest }
@@ -215,7 +215,7 @@ private def rotlReturned (s : State) (x n returnDest : UInt256)
   interval_cases i <;> rfl
 
 set_option linter.unusedSimpArgs false in
-private theorem run_rotl (s : State) (x n returnDest : UInt256)
+theorem run_rotl (s : State) (x n returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1015)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hrun : s.halt = .Running)
@@ -239,7 +239,7 @@ private theorem run_rotl (s : State) (x n returnDest : UInt256)
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat]
 
-private def gasSteps_rotl (s : State) (x n returnDest : UInt256)
+def gasSteps_rotl (s : State) (x n returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1015)
     (hcode : s.executionEnv.code = referenceBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
