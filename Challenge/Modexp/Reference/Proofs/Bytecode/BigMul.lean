@@ -2115,6 +2115,94 @@ theorem gasSteps_mulWordLoop_cost_potential (current : State)
       (by simpa using hcode) (by simpa [State.fork] using hfork)
       (by simpa using hrun) (by simpa [State.fork] using hnp)
 
+theorem gasSteps_mulOuterIteration_cost_potential (current : State)
+    (a b out modulus : UInt256) (count i : Nat) (returnDest : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 980)
+    (hcount : count < 2 ^ 256) (hi : i < count)
+    (hcode : current.executionEnv.code = Challenge.Modexp.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false) :
+    let before := mulOuterProgress current a b out modulus count returnDest rest i
+    let after := mulOuterProgress current a b out modulus count returnDest rest (i + 1)
+    (gasSteps_mulOuterIteration current a b out modulus count i returnDest rest
+        hcap hcount hi hcode hfork hrun hnp).cost +
+        MachineState.memCost
+          (mulOuterState before a b out modulus count i returnDest rest).activeWords.toNat =
+      (102 + 256 * (426 + count * 906)) + MachineState.memCost
+        (mulOuterState after a b out modulus count (i + 1) returnDest rest).activeWords.toNat := by
+  dsimp only
+  let before := mulOuterProgress current a b out modulus count returnDest rest i
+  let loaded := mulLoadedState before b i
+  let word := mulLoadedWord before b i
+  let afterWord := mulWordProgress loaded word a b out modulus count i
+    returnDest rest 256
+  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulOuterGuardPath 26
+      (run_mulOuterGuard before a b out modulus count i returnDest rest
+        (by omega) hcount hi (by simpa [before] using hrun))
+      (by simpa [before, mulOuterState, State.fork] using hfork)
+      (by native_decide) (by native_decide)
+  have hload := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulOuterLoadPath 20
+      (run_mulOuterLoad before a b out modulus count i returnDest rest
+        (by omega) (by omega) (by simpa [before] using hrun))
+      (by simpa [before, mulOuterBody, State.fork] using hfork)
+      (by native_decide) (by native_decide)
+  have hword := gasSteps_mulWordLoop_cost_potential loaded word a b out modulus
+    count i returnDest rest hcap hcount
+    (by simpa [loaded, mulLoadedState, before] using hcode)
+    (by simpa [loaded, mulLoadedState, before, State.fork] using hfork)
+    (by simpa [loaded, mulLoadedState, before] using hrun)
+    (by simpa [loaded, mulLoadedState, before, State.fork] using hnp)
+  have hfinish := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulInnerGuardPath 26
+      (run_mulWordInnerFinishGuard afterWord word a b out modulus count i
+        returnDest rest (by omega)
+        (by simpa [afterWord, loaded, mulLoadedState, before] using hcode)
+        (by simpa [afterWord, loaded, mulLoadedState, before] using hrun))
+      (by simpa [afterWord, loaded, mulLoadedState, before, mulInnerState,
+        State.fork] using hfork)
+      (by native_decide) (by native_decide)
+  have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulInnerToOuterPath 30
+      (run_mulWordInnerToOuter afterWord word a b out modulus count i
+        returnDest rest (by omega) (by omega)
+        (by simpa [afterWord, loaded, mulLoadedState, before] using hcode)
+        (by simpa [afterWord, loaded, mulLoadedState, before] using hrun))
+      (by simpa [afterWord, loaded, mulLoadedState, before, mulInnerState,
+        State.fork] using hfork)
+      (by native_decide) (by native_decide)
+  unfold gasSteps_mulOuterIteration
+  simp only [Challenge.EvmProof.GasSteps.trans_cost,
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost,
+    Challenge.EvmProof.GasSteps.cast_cost]
+  dsimp only [before, loaded, word, afterWord] at hguard hload hword hfinish hexit
+  simp only [mulOuterState, mulOuterBody, mulInnerLoop_eq_state,
+    mulInnerState, mulOuterNext_innerState] at hguard hload hword hfinish hexit ⊢
+  omega
+
+theorem gasSteps_mulOuterLoop_cost_potential (current : State)
+    (a b out modulus : UInt256) (count : Nat) (returnDest : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 980)
+    (hcount : count < 2 ^ 256)
+    (hcode : current.executionEnv.code = Challenge.Modexp.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false) :
+    (gasSteps_mulOuterLoop current a b out modulus count returnDest rest hcap
+        hcount hcode hfork hrun hnp).cost + MachineState.memCost
+          (mulOuterState current a b out modulus count 0 returnDest rest).activeWords.toNat =
+      count * (102 + 256 * (426 + count * 906)) + MachineState.memCost
+        (mulOuterState
+          (mulOuterProgress current a b out modulus count returnDest rest count)
+          a b out modulus count count returnDest rest).activeWords.toNat := by
+  unfold gasSteps_mulOuterLoop
+  apply Challenge.EvmProof.GasSteps.iterateBounded_cost_potential_eq
+  intro i hi
+  simpa using gasSteps_mulOuterIteration_cost_potential current a b out modulus
+    count i returnDest rest hcap hcount hi hcode hfork hrun hnp
+
 theorem gasSteps_mulFinish_cost_potential (current : State)
     (a b out modulus : UInt256) (count : Nat) (returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 980)
@@ -2403,6 +2491,49 @@ theorem gasSteps_mulInitialize_cost_potential (s : State)
   simp only [mulEntry, BigHelpers.clearEntry, mulAfterClear,
     BigHelpers.clearReturned, BigHelpers.copyEntry, BigHelpers.copyReturned,
     mulAfterCopy, mulOuterLoop] at htoClear hclear htoCopy hcopy hsetup ⊢
+  omega
+
+theorem gasSteps_mulModBig_cost_potential (s : State)
+    (a b out modulus : UInt256) (count : Nat) (returnDest : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 980)
+    (hcount : count < 2 ^ 256)
+    (hcode : s.executionEnv.code = Challenge.Modexp.referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest Challenge.Modexp.referenceBytecode
+      returnDest.toNat = true) :
+    let copied := mulAfterCopy s a b out modulus count returnDest rest
+    let progress := mulOuterProgress copied a b out modulus count returnDest rest count
+    (gasSteps_mulModBig s a b out modulus count returnDest rest hcap hcount
+        hcode hfork hrun hnp hvalid).cost +
+        MachineState.memCost s.activeWords.toNat =
+      (185 + count * 158 +
+          count * (102 + 256 * (426 + count * 906))) +
+        MachineState.memCost (mulReturned progress returnDest rest).activeWords.toNat := by
+  dsimp only
+  let copied := mulAfterCopy s a b out modulus count returnDest rest
+  let progress := mulOuterProgress copied a b out modulus count returnDest rest count
+  have hinit := gasSteps_mulInitialize_cost_potential s a b out modulus count
+    returnDest rest (by omega) hcount hcode hfork hrun hnp
+  have hloop := gasSteps_mulOuterLoop_cost_potential copied a b out modulus count
+    returnDest rest hcap hcount
+    (by simpa [copied, mulAfterCopy, mulAfterClear] using hcode)
+    (by simpa [copied, mulAfterCopy, mulAfterClear, State.fork] using hfork)
+    (by simpa [copied, mulAfterCopy, mulAfterClear] using hrun)
+    (by simpa [copied, mulAfterCopy, mulAfterClear, State.fork] using hnp)
+  have hfinish := gasSteps_mulFinish_cost_potential progress a b out modulus count
+    returnDest rest hcap hcount
+    (by simpa [progress, copied, mulAfterCopy, mulAfterClear] using hcode)
+    (by simpa [progress, copied, mulAfterCopy, mulAfterClear, State.fork] using hfork)
+    (by simpa [progress, copied, mulAfterCopy, mulAfterClear] using hrun)
+    (by simpa [progress, copied, mulAfterCopy, mulAfterClear, State.fork] using hnp)
+    hvalid
+  unfold gasSteps_mulModBig
+  simp only [Challenge.EvmProof.GasSteps.trans_cost,
+    Challenge.EvmProof.GasSteps.cast_cost]
+  dsimp only [copied, progress] at hinit hloop hfinish
+  simp only [mulOuterLoop, mulOuterState] at hinit hloop hfinish ⊢
   omega
 
 end Challenge.Modexp.Reference.Proofs.Bytecode.BigMul
