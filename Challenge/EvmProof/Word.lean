@@ -346,6 +346,19 @@ theorem shiftRight_ofNat {value shift : Nat}
   rw [word_toNat_ofNat]
   rw [Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) hvalue)]
 
+theorem shiftRight_toNat (value : EvmSemantics.UInt256) {shift : Nat}
+    (hshift : shift < 256) :
+    (EvmSemantics.UInt256.shiftRight value
+      (EvmSemantics.UInt256.ofNat shift)).toNat = value.toNat >>> shift := by
+  have hright := shiftRight_ofNat (value := value.toNat) (shift := shift)
+    value.val.isLt hshift
+  have hshifted : value.toNat >>> shift < 2 ^ 256 :=
+    Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) value.val.isLt
+  have hvalue : (EvmSemantics.UInt256.ofNat value.toNat).toNat = value.toNat :=
+    (word_toNat_ofNat value.toNat).trans (Nat.mod_eq_of_lt value.val.isLt)
+  rw [word_eq_ofNat_toNat value, hright, word_toNat_ofNat,
+    Nat.mod_eq_of_lt hshifted, hvalue]
+
 theorem shiftLeft_ofNat {value shift : Nat}
     (hvalue : value < 2 ^ 256) (hshift : shift < 256)
     (hresult : value * 2 ^ shift < 2 ^ 256) :

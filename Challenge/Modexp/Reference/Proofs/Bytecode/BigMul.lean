@@ -248,6 +248,29 @@ theorem mulWordBit_toNat_le_one (word : UInt256) (j : Nat) :
     Nat.mod_eq_of_lt (by norm_num : 1 < 2 ^ 256)]
   exact Nat.and_le_right
 
+theorem mulWordBit_toNat (word : UInt256) {j : Nat} (hj : j < 256) :
+    (mulWordBit word j).toNat = (word.toNat >>> j) &&& 1 := by
+  rw [mulWordBit, Challenge.EvmProof.Word.word_toNat_land,
+    Challenge.EvmProof.Word.shiftRight_toNat word hj,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by norm_num : 1 < 2 ^ 256)]
+
+theorem mulWordBits_eq_digitsAppend (word : UInt256) :
+    mulWordBits word 256 = Nat.digitsAppend 2 256 word.toNat := by
+  apply List.ext_get
+  · rw [Nat.length_digitsAppend (by norm_num) 256 word.val.isLt]
+    simp [mulWordBits]
+  · intro j hleft hright
+    have hj : j < 256 := by simpa [mulWordBits] using hleft
+    rw [Nat.digitsAppend, Nat.digits_two_eq_bits]
+    simp [mulWordBits, hj, mulWordBit_toNat word hj,
+      Nat.testBit_eq_inth, Nat.testBit]
+
+theorem value_mulWordBits (word : UInt256) :
+    Nat.ofDigits 2 (mulWordBits word 256) = word.toNat := by
+  rw [mulWordBits_eq_digitsAppend, Nat.digitsAppend,
+    Nat.ofDigits_append_replicate_zero, Nat.ofDigits_digits]
+
 def mulBitRest (current : State) (a b out modulus : UInt256)
     (count i j : Nat) (returnDest : UInt256) (rest : List UInt256) :
     List UInt256 :=
@@ -1122,6 +1145,34 @@ theorem mulWordProgress_represents (current : State) (word a b : UInt256)
       simpa [mulWordProgress, mulWordBits, List.range_succ,
         List.map_append, Algorithm.mulBits_append, Algorithm.mulBits,
         before, beforeResult] using hstep
+
+theorem mulWordProgress_256_represents_value (current : State)
+    (word a b : UInt256) (count i acc addend modulusValue : Nat)
+    (returnDest : UInt256) (rest : List UInt256) (hcount : count ≤ 32)
+    (hmodulusPos : 0 < modulusValue)
+    (hmodulusBound : modulusValue < Limbs.radix ^ count)
+    (hacc : Limbs.Represents current.memory 3072 count acc)
+    (haddend : Limbs.Represents current.memory 4096 count addend)
+    (hmodulus : Limbs.Represents current.memory 0 count modulusValue)
+    (haccReduced : acc < modulusValue)
+    (haddendReduced : addend < modulusValue) :
+    let progress := mulWordProgress current word a b (UInt256.ofNat 3072)
+      (UInt256.ofNat 0) count i returnDest rest 256
+    Limbs.Represents progress.memory 3072 count
+        ((acc + addend * word.toNat) % modulusValue) ∧
+      Limbs.Represents progress.memory 0 count modulusValue := by
+  let result := Algorithm.mulBits modulusValue acc addend
+    (mulWordBits word 256)
+  have hprogress := mulWordProgress_represents current word a b count i 256
+    acc addend modulusValue returnDest rest (by omega) hcount hmodulusPos
+    hmodulusBound hacc haddend hmodulus haccReduced haddendReduced
+  have hresultLt := Algorithm.mulBits_lt (mulWordBits word 256) hmodulusPos
+    haccReduced haddendReduced
+  have hvalue := Algorithm.mulBits_fst modulusValue acc addend
+    (mulWordBits word 256)
+  rw [Nat.mod_eq_of_lt hresultLt.1, value_mulWordBits] at hvalue
+  rw [← hvalue]
+  exact ⟨hprogress.1, hprogress.2.2⟩
 
 theorem gasSteps_mulBitIteration_cost_potential (current : State)
     (a b out modulus : UInt256) (count i j : Nat) (returnDest : UInt256)
