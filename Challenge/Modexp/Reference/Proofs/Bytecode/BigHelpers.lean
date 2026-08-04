@@ -795,4 +795,336 @@ theorem run_copyExit (s : State) (dst src : UInt256) (count : Nat)
     hcode, hvalid, hrun, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
+def gasSteps_copySetup (s : State) (dst src : UInt256) (count : Nat)
+    (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1016) (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (copyEntry s dst src count returnDest rest)
+      (copyLoop s dst src count 0 returnDest rest) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka copySetupPath hcode hfork
+      (run_copySetup s dst src count returnDest rest hcap hrun) hrun hnp
+
+def gasSteps_copyIteration (s : State) (dst src : UInt256) (count i : Nat)
+    (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1016) (hcount : count < 2 ^ 256) (hi : i < count)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (copyLoop s dst src count i returnDest rest)
+      (copyLoop s dst src count (i + 1) returnDest rest) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka copyGuardPath
+        (by simpa [copyLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [copyLoop, State.fork] using hfork)
+        (run_copyGuard s dst src count i returnDest rest hcap hcount hi hrun)
+        (by simpa [copyLoop] using hrun)
+        (by simpa [copyLoop, State.fork] using hnp)).trans
+    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka copyBodyPath
+        (by simpa [copyBodyEntry, copyLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [copyBodyEntry, copyLoop, State.fork] using hfork)
+        (run_copyBody s dst src count i returnDest rest hcap (by omega) hcode hrun)
+        (by simpa [copyBodyEntry, copyLoop] using hrun)
+        (by simpa [copyBodyEntry, copyLoop, State.fork] using hnp))
+
+def gasSteps_copyLoop (s : State) (dst src : UInt256) (count : Nat)
+    (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1016) (hcount : count < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (copyLoop s dst src count 0 returnDest rest)
+      (copyLoop s dst src count count returnDest rest) := by
+  exact Challenge.EvmProof.GasSteps.iterateBounded count fun i hi =>
+    gasSteps_copyIteration s dst src count i returnDest rest hcap hcount hi
+      hcode hfork hrun hnp
+
+def gasSteps_copyFinish (s : State) (dst src : UInt256) (count : Nat)
+    (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1016) (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest referenceBytecode returnDest.toNat = true) :
+    Challenge.EvmProof.GasSteps (copyLoop s dst src count count returnDest rest)
+      (copyReturned s dst src count returnDest rest) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka copyGuardPath
+        (by simpa [copyLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [copyLoop, State.fork] using hfork)
+        (run_copyFinishGuard s dst src count returnDest rest hcap hcode hrun)
+        (by simpa [copyLoop] using hrun)
+        (by simpa [copyLoop, State.fork] using hnp)).trans
+    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka copyExitPath
+        (by simpa [copyExit, copyLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [copyExit, copyLoop, State.fork] using hfork)
+        (run_copyExit s dst src count returnDest rest hcap hcode hvalid hrun)
+        (by simpa [copyExit, copyLoop] using hrun)
+        (by simpa [copyExit, copyLoop, State.fork] using hnp))
+
+def gasSteps_copy (s : State) (dst src : UInt256) (count : Nat)
+    (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1016) (hcount : count < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest referenceBytecode returnDest.toNat = true) :
+    Challenge.EvmProof.GasSteps (copyEntry s dst src count returnDest rest)
+      (copyReturned s dst src count returnDest rest) :=
+  (gasSteps_copySetup s dst src count returnDest rest hcap hcode hfork hrun hnp).trans <|
+    (gasSteps_copyLoop s dst src count returnDest rest hcap hcount hcode hfork
+      hrun hnp).trans
+    (gasSteps_copyFinish s dst src count returnDest rest hcap hcode hfork hrun
+      hnp hvalid)
+
+theorem readWord_copyMemory_source (memory : ByteArray) (dst src count iter j : Nat)
+    (hiter : iter ≤ count) (hj : j < count)
+    (hdstfit : dst + 32 * count < 2 ^ 256)
+    (_hsrcfit : src + 32 * count < 2 ^ 256)
+    (hdisjoint : dst + 32 * count ≤ src ∨ src + 32 * count ≤ dst) :
+    MachineState.readWord
+        (copyMemory memory (UInt256.ofNat dst) (UInt256.ofNat src) iter)
+        (src + 32 * j) =
+      MachineState.readWord memory (src + 32 * j) := by
+  induction iter with
+  | zero => rfl
+  | succ iter ih =>
+      rw [copyMemory, Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+      · exact ih (by omega)
+      · rw [clearOffset_toNat dst iter (by omega)]
+        rcases hdisjoint with hbefore | hafter
+        · right
+          have hsize :
+              (Data.Bytes.natToBytesPadded
+                (MachineState.readWord
+                  (copyMemory memory (UInt256.ofNat dst) (UInt256.ofNat src) iter)
+                  (clearOffset (UInt256.ofNat src) iter).toNat).toNat 32).size = 32 := by
+            simp [Data.Bytes.natToBytesPadded, ByteArray.size]
+          rw [hsize]
+          omega
+        · left
+          omega
+
+theorem readWord_copyMemory_dest (memory : ByteArray) (dst src count j : Nat)
+    (hj : j < count) (hdstfit : dst + 32 * count < 2 ^ 256)
+    (hsrcfit : src + 32 * count < 2 ^ 256)
+    (hdisjoint : dst + 32 * count ≤ src ∨ src + 32 * count ≤ dst) :
+    MachineState.readWord
+        (copyMemory memory (UInt256.ofNat dst) (UInt256.ofNat src) count)
+        (dst + 32 * j) =
+      MachineState.readWord memory (src + 32 * j) := by
+  induction count with
+  | zero => omega
+  | succ count ih =>
+      rw [copyMemory]
+      by_cases hjlast : j = count
+      · subst j
+        rw [clearOffset_toNat dst count (by omega),
+          Challenge.EvmProof.Memory.readWord_writeWord,
+          clearOffset_toNat src count (by omega)]
+        exact readWord_copyMemory_source memory dst src (count + 1) count count
+          (by omega) (by omega) hdstfit hsrcfit hdisjoint
+      · rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+        · apply ih (by omega) (by omega) (by omega)
+          rcases hdisjoint with hbefore | hafter
+          · exact Or.inl (by omega)
+          · exact Or.inr (by omega)
+        · left
+          rw [clearOffset_toNat dst count (by omega)]
+          omega
+
+theorem memoryLimbs_copyMemory (memory : ByteArray) (dst src count : Nat)
+    (hdstfit : dst + 32 * count < 2 ^ 256)
+    (hsrcfit : src + 32 * count < 2 ^ 256)
+    (hdisjoint : dst + 32 * count ≤ src ∨ src + 32 * count ≤ dst) :
+    Limbs.memoryLimbs
+        (copyMemory memory (UInt256.ofNat dst) (UInt256.ofNat src) count)
+        dst count =
+      Limbs.memoryLimbs memory src count := by
+  apply List.ext_get
+  · simp [Limbs.memoryLimbs]
+  · intro i hiLeft hiRight
+    have hi : i < count := by simpa [Limbs.memoryLimbs] using hiRight
+    simp [Limbs.memoryLimbs,
+      readWord_copyMemory_dest memory dst src count i hi hdstfit hsrcfit hdisjoint]
+
+theorem copyMemory_represents (memory : ByteArray) (dst src count value : Nat)
+    (hsrc : Limbs.Represents memory src count value)
+    (hdstfit : dst + 32 * count < 2 ^ 256)
+    (hsrcfit : src + 32 * count < 2 ^ 256)
+    (hdisjoint : dst + 32 * count ≤ src ∨ src + 32 * count ≤ dst) :
+    Limbs.Represents
+      (copyMemory memory (UInt256.ofNat dst) (UInt256.ofNat src) count)
+      dst count value := by
+  refine ⟨hsrc.1, ?_⟩
+  rw [memoryLimbs_copyMemory memory dst src count hdstfit hsrcfit hdisjoint,
+    hsrc.2]
+
+theorem gasSteps_copySetup_cost_potential (s : State) (dst src : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1016) (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (gasSteps_copySetup s dst src count returnDest rest hcap hcode hfork hrun hnp).cost +
+        MachineState.memCost s.activeWords.toNat =
+      3 + MachineState.memCost s.activeWords.toNat := by
+  have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    copySetupPath 3 (run_copySetup s dst src count returnDest rest hcap hrun)
+    (by simpa [copyEntry, State.fork] using hfork)
+    (by native_decide) (by rfl)
+  unfold gasSteps_copySetup
+  simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+  simp [copyEntry, copyLoop, copyWords] at hmeter
+  have hcost : Challenge.EvmProof.Stepper.runLocatedBlockCost copySetupPath
+      (copyEntry s dst src count returnDest rest) = 3 := by
+    simpa [copyEntry] using hmeter
+  omega
+
+theorem gasSteps_copyIteration_cost_potential (s : State) (dst src : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1016) (hcount : count < 2 ^ 256) (hi : i < count)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (gasSteps_copyIteration s dst src count i returnDest rest hcap hcount hi
+      hcode hfork hrun hnp).cost + MachineState.memCost
+        (copyLoop s dst src count i returnDest rest).activeWords.toNat =
+      87 + MachineState.memCost
+        (copyLoop s dst src count (i + 1) returnDest rest).activeWords.toNat := by
+  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    copyGuardPath 26 (run_copyGuard s dst src count i returnDest rest
+      hcap hcount hi hrun)
+    (by simpa [copyLoop, State.fork] using hfork)
+    (by native_decide) (by rfl)
+  have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    copyBodyPath 61 (run_copyBody s dst src count i returnDest rest hcap
+      (by omega) hcode hrun)
+    (by simpa [copyBodyEntry, copyLoop, State.fork] using hfork)
+    (by native_decide) (by rfl)
+  have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
+    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka copyGuardPath
+        (by simpa [copyLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [copyLoop, State.fork] using hfork)
+        (run_copyGuard s dst src count i returnDest rest hcap hcount hi hrun)
+        (by simpa [copyLoop] using hrun)
+        (by simpa [copyLoop, State.fork] using hnp)))
+    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka copyBodyPath
+        (by simpa [copyBodyEntry, copyLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [copyBodyEntry, copyLoop, State.fork] using hfork)
+        (run_copyBody s dst src count i returnDest rest hcap (by omega) hcode hrun)
+        (by simpa [copyBodyEntry, copyLoop] using hrun)
+        (by simpa [copyBodyEntry, copyLoop, State.fork] using hnp)))
+    26 61 hguard hbody
+  simpa [gasSteps_copyIteration] using htrans
+
+theorem gasSteps_copyLoop_cost_potential (s : State) (dst src : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1016) (hcount : count < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (gasSteps_copyLoop s dst src count returnDest rest hcap hcount hcode hfork
+      hrun hnp).cost + MachineState.memCost
+        (copyLoop s dst src count 0 returnDest rest).activeWords.toNat =
+      count * 87 + MachineState.memCost
+        (copyLoop s dst src count count returnDest rest).activeWords.toNat := by
+  unfold gasSteps_copyLoop
+  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
+  intro i hi
+  exact gasSteps_copyIteration_cost_potential s dst src count i returnDest rest
+    hcap hcount hi hcode hfork hrun hnp
+
+theorem gasSteps_copyFinish_cost_potential (s : State) (dst src : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1016) (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest referenceBytecode returnDest.toNat = true) :
+    (gasSteps_copyFinish s dst src count returnDest rest hcap hcode hfork hrun hnp
+      hvalid).cost + MachineState.memCost
+        (copyLoop s dst src count count returnDest rest).activeWords.toNat =
+      43 + MachineState.memCost
+        (copyReturned s dst src count returnDest rest).activeWords.toNat := by
+  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    copyGuardPath 26 (run_copyFinishGuard s dst src count returnDest rest
+      hcap hcode hrun)
+    (by simpa [copyLoop, State.fork] using hfork)
+    (by native_decide) (by rfl)
+  have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    copyExitPath 17 (run_copyExit s dst src count returnDest rest hcap hcode
+      hvalid hrun)
+    (by simpa [copyExit, copyLoop, State.fork] using hfork)
+    (by native_decide) (by rfl)
+  have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
+    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka copyGuardPath
+        (by simpa [copyLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [copyLoop, State.fork] using hfork)
+        (run_copyFinishGuard s dst src count returnDest rest hcap hcode hrun)
+        (by simpa [copyLoop] using hrun)
+        (by simpa [copyLoop, State.fork] using hnp)))
+    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka copyExitPath
+        (by simpa [copyExit, copyLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [copyExit, copyLoop, State.fork] using hfork)
+        (run_copyExit s dst src count returnDest rest hcap hcode hvalid hrun)
+        (by simpa [copyExit, copyLoop] using hrun)
+        (by simpa [copyExit, copyLoop, State.fork] using hnp)))
+    26 17 hguard hexit
+  simpa [gasSteps_copyFinish] using htrans
+
+theorem gasSteps_copy_cost_potential (s : State) (dst src : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1016) (hcount : count < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest referenceBytecode returnDest.toNat = true) :
+    (gasSteps_copy s dst src count returnDest rest hcap hcount hcode hfork hrun
+      hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
+      (46 + count * 87) + MachineState.memCost
+        (copyReturned s dst src count returnDest rest).activeWords.toNat := by
+  have hsetup := gasSteps_copySetup_cost_potential s dst src count returnDest rest
+    hcap hcode hfork hrun hnp
+  have hloop := gasSteps_copyLoop_cost_potential s dst src count returnDest rest
+    hcap hcount hcode hfork hrun hnp
+  have hfinish := gasSteps_copyFinish_cost_potential s dst src count returnDest rest
+    hcap hcode hfork hrun hnp hvalid
+  have hsetup' :
+      (gasSteps_copySetup s dst src count returnDest rest hcap hcode hfork hrun hnp).cost +
+          MachineState.memCost
+            (copyEntry s dst src count returnDest rest).activeWords.toNat =
+        3 + MachineState.memCost
+          (copyLoop s dst src count 0 returnDest rest).activeWords.toNat := by
+    simpa only [copyEntry, copyLoop, copyWords] using hsetup
+  have hprefix := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
+    (gasSteps_copySetup s dst src count returnDest rest hcap hcode hfork hrun hnp)
+    (gasSteps_copyLoop s dst src count returnDest rest hcap hcount hcode hfork hrun hnp)
+    3 (count * 87) hsetup' hloop
+  have htotal := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
+    ((gasSteps_copySetup s dst src count returnDest rest hcap hcode hfork hrun hnp).trans
+      (gasSteps_copyLoop s dst src count returnDest rest hcap hcount hcode hfork hrun hnp))
+    (gasSteps_copyFinish s dst src count returnDest rest hcap hcode hfork hrun
+      hnp hvalid) (3 + count * 87) 43 hprefix hfinish
+  unfold gasSteps_copy
+  simp only [Challenge.EvmProof.GasSteps.trans_cost] at htotal ⊢
+  have hactive : (copyEntry s dst src count returnDest rest).activeWords =
+      s.activeWords := by rfl
+  rw [hactive] at htotal
+  omega
+
 end Challenge.Modexp.Reference.Proofs.Bytecode.BigHelpers
