@@ -407,6 +407,41 @@ theorem clearMemory_represents_zero (memory : ByteArray) (ptr count : Nat)
   rw [memoryLimbs_clearMemory memory ptr count hfit]
   simp [Limbs.limbDigits, Nat.digitsAppend]
 
+theorem readWord_clearMemory_disjoint_region (memory : ByteArray)
+    (dst ptr count iter j : Nat) (hiter : iter ≤ count) (hj : j < count)
+    (hdstfit : dst + 32 * count < 2 ^ 256)
+    (hdisjoint : dst + 32 * count ≤ ptr ∨
+      ptr + 32 * count ≤ dst) :
+    MachineState.readWord (clearMemory memory (UInt256.ofNat dst) iter)
+        (ptr + 32 * j) = MachineState.readWord memory (ptr + 32 * j) := by
+  induction iter with
+  | zero => rfl
+  | succ iter ih =>
+      rw [clearMemory, Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+      · exact ih (by omega)
+      · have hsize (n : Nat) :
+            (Data.Bytes.natToBytesPadded n 32).size = 32 := by
+          simp [Data.Bytes.natToBytesPadded, ByteArray.size]
+        rw [hsize, clearOffset_toNat dst iter (by omega)]
+        rcases hdisjoint with hbefore | hafter
+        · right; omega
+        · left; omega
+
+theorem represents_clearMemory_disjoint_region (memory : ByteArray)
+    (dst ptr count value : Nat) (hdstfit : dst + 32 * count < 2 ^ 256)
+    (hdisjoint : dst + 32 * count ≤ ptr ∨
+      ptr + 32 * count ≤ dst)
+    (hrep : Limbs.Represents memory ptr count value) :
+    Limbs.Represents (clearMemory memory (UInt256.ofNat dst) count)
+      ptr count value := by
+  refine ⟨hrep.1, ?_⟩
+  rw [← hrep.2]
+  unfold Limbs.memoryLimbs
+  apply List.map_congr_left
+  intro j hj
+  rw [readWord_clearMemory_disjoint_region memory dst ptr count count j
+    (by omega) (by simpa using hj) hdstfit hdisjoint]
+
 theorem gasSteps_clearSetup_cost_potential (s : State) (ptr : UInt256)
     (count : Nat) (returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1017) (hcode : s.executionEnv.code = referenceBytecode)
@@ -967,6 +1002,44 @@ theorem copyMemory_represents (memory : ByteArray) (dst src count value : Nat)
   rw [memoryLimbs_copyMemory memory dst src count hdstfit hsrcfit hdisjoint,
     hsrc.2]
 
+theorem readWord_copyMemory_disjoint_region (memory : ByteArray)
+    (dst src ptr count iter j : Nat) (hiter : iter ≤ count) (hj : j < count)
+    (hdstfit : dst + 32 * count < 2 ^ 256)
+    (hdisjoint : dst + 32 * count ≤ ptr ∨
+      ptr + 32 * count ≤ dst) :
+    MachineState.readWord
+        (copyMemory memory (UInt256.ofNat dst) (UInt256.ofNat src) iter)
+        (ptr + 32 * j) = MachineState.readWord memory (ptr + 32 * j) := by
+  induction iter with
+  | zero => rfl
+  | succ iter ih =>
+      rw [copyMemory, Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+      · exact ih (by omega)
+      · have hsize (n : Nat) :
+            (Data.Bytes.natToBytesPadded n 32).size = 32 := by
+          simp [Data.Bytes.natToBytesPadded, ByteArray.size]
+        rw [hsize, clearOffset_toNat dst iter (by omega)]
+        rcases hdisjoint with hbefore | hafter
+        · right; omega
+        · left; omega
+
+theorem represents_copyMemory_disjoint_region (memory : ByteArray)
+    (dst src ptr count value : Nat)
+    (hdstfit : dst + 32 * count < 2 ^ 256)
+    (hdisjoint : dst + 32 * count ≤ ptr ∨
+      ptr + 32 * count ≤ dst)
+    (hrep : Limbs.Represents memory ptr count value) :
+    Limbs.Represents
+      (copyMemory memory (UInt256.ofNat dst) (UInt256.ofNat src) count)
+      ptr count value := by
+  refine ⟨hrep.1, ?_⟩
+  rw [← hrep.2]
+  unfold Limbs.memoryLimbs
+  apply List.map_congr_left
+  intro j hj
+  rw [readWord_copyMemory_disjoint_region memory dst src ptr count count j
+    (by omega) (by simpa using hj) hdstfit hdisjoint]
+
 theorem gasSteps_copySetup_cost_potential (s : State) (dst src : UInt256)
     (count : Nat) (returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1016) (hcode : s.executionEnv.code = referenceBytecode)
@@ -1221,7 +1294,9 @@ theorem subLimbStep_toNat (x y borrow : UInt256)
       (UInt256.lor (UInt256.lt x y)
         (UInt256.lt difference borrow)).toNat = nextBorrow := by
   dsimp only
-  have hstep := Limbs.subLimbBits x.val.isLt y.val.isLt hborrow
+  have hx : x.toNat < Limbs.radix := x.val.isLt
+  have hy : y.toNat < Limbs.radix := y.val.isLt
+  have hstep := Limbs.subLimbBits hx hy hborrow
   simpa only [Challenge.EvmProof.Word.word_toNat_sub_cond,
     Challenge.EvmProof.Word.word_toNat_lor,
     Challenge.EvmProof.Word.word_toNat_lt, Limbs.radix] using hstep
@@ -1348,8 +1423,8 @@ theorem readWord_addProgress_disjoint_region (memory : ByteArray)
           simp [Data.Bytes.natToBytesPadded, ByteArray.size]
         rw [hsize, addOffset_toNat dst iter (by omega)]
         rcases hdisjoint with hbefore | hafter
-        · left; omega
         · right; omega
+        · left; omega
 
 theorem memoryLimbs_addProgress_disjoint_region (memory : ByteArray)
     (activeWords src mask : UInt256) (dst ptr count iter : Nat)
@@ -2337,8 +2412,8 @@ theorem readWord_selectProgress_candidate (memory : ByteArray)
           simp [Data.Bytes.natToBytesPadded, ByteArray.size]
         rw [hsize, addOffset_toNat dst iter (by omega)]
         rcases hdisjoint with hbefore | hafter
-        · left; omega
         · right; omega
+        · left; omega
 
 theorem readWord_selectProgress_disjoint_region (memory : ByteArray)
     (activeWords mask : UInt256) (dst ptr count iter j : Nat)
@@ -2361,8 +2436,8 @@ theorem readWord_selectProgress_disjoint_region (memory : ByteArray)
           simp [Data.Bytes.natToBytesPadded, ByteArray.size]
         rw [hsize, addOffset_toNat dst iter (by omega)]
         rcases hdisjoint with hbefore | hafter
-        · left; omega
         · right; omega
+        · left; omega
 
 theorem represents_selectProgress_disjoint_region (memory : ByteArray)
     (activeWords mask : UInt256) (dst ptr count iter value : Nat)
