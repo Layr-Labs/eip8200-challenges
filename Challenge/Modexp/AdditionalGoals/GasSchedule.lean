@@ -70,6 +70,40 @@ instance : Add GasFormula := ⟨.add⟩
 instance : Mul GasFormula := ⟨.mul⟩
 instance : HDiv GasFormula Nat GasFormula := ⟨.div⟩
 
+@[simp] theorem eval_calldataSize (input : ByteArray) :
+    calldataSize.eval input = input.size := rfl
+
+@[simp] theorem eval_baseSize (input : ByteArray) :
+    baseSize.eval input = Challenge.Modexp.baseSize input := rfl
+
+@[simp] theorem eval_exponentSize (input : ByteArray) :
+    exponentSize.eval input = Challenge.Modexp.exponentSize input := rfl
+
+@[simp] theorem eval_modulusSize (input : ByteArray) :
+    modulusSize.eval input = Challenge.Modexp.modulusSize input := rfl
+
+@[simp] theorem eval_modulusValue (input : ByteArray) :
+    modulusValue.eval input = Challenge.Modexp.modulusValue input := rfl
+
+@[simp] theorem eval_ofNat (value : Nat) (input : ByteArray) :
+    (OfNat.ofNat value : GasFormula).eval input = value := rfl
+
+@[simp] theorem eval_add (left right : GasFormula) (input : ByteArray) :
+    (left + right).eval input = left.eval input + right.eval input := rfl
+
+@[simp] theorem eval_mul (left right : GasFormula) (input : ByteArray) :
+    (left * right).eval input = left.eval input * right.eval input := rfl
+
+@[simp] theorem eval_div (numerator : GasFormula) (denominator : Nat)
+    (input : ByteArray) :
+    (numerator / denominator).eval input =
+      numerator.eval input / denominator := rfl
+
+@[simp] theorem eval_memoryCost (activeWords : GasFormula)
+    (input : ByteArray) :
+    (memoryCost activeWords).eval input =
+      MachineState.memCost (activeWords.eval input) := rfl
+
 private def parenthesize (needed : Bool) (body : String) : String :=
   if needed then "\\left(" ++ body ++ "\\right)" else body
 
