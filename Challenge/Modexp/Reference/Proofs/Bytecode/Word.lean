@@ -22,14 +22,14 @@ open EvmSemantics.EVM
 attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
 
-private def wfOp {op : Operation}
+def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork .Osaka = true) :
     Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
   ⟨hopcode, hplain, havailable⟩
 
-private def opAt (index : Nat) (op : Operation)
+def opAt (index : Nat) (op : Operation)
     (hget : Artifact.referenceInstructions[index]? = some (.op op) := by rfl)
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op := by decide)
     (hplain : YulEvmCompiler.plainOp op := by trivial)
@@ -37,7 +37,7 @@ private def opAt (index : Nat) (op : Operation)
     Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka :=
   ⟨index, .op op, hget, wfOp hopcode hplain havailable⟩
 
-private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
+def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
     (hget : Artifact.referenceInstructions[index]? = some (.push width value) := by rfl)
     (hwf : Challenge.EvmProof.Stepper.WellFormed .Osaka (.push width value) := by decide) :
     Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka :=
