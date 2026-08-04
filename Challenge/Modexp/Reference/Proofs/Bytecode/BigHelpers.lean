@@ -2587,7 +2587,7 @@ theorem addReturned_represents_mod (s : State)
     (hdst : Limbs.Represents s.memory dst count x)
     (hsrc : Limbs.Represents s.memory src count y)
     (hmodulus : Limbs.Represents s.memory modulus count modulusValue)
-    (hx : x < modulusValue) (hy : y < modulusValue)
+    (hx : x < modulusValue) (hy : y ≤ modulusValue)
     (hmodulusBound : modulusValue < Limbs.radix ^ count) :
     Limbs.Represents
       (addReturned s (UInt256.ofNat dst) (UInt256.ofNat src)
@@ -2599,7 +2599,7 @@ theorem addReturned_represents_mod (s : State)
     (UInt256.ofNat src) (0 - UInt256.ofNat take) count
   let wrapped := total % bound
   have htotalLt : total < 2 * modulusValue := by
-    exact Limbs.masked_sum_lt_twice hx hy htake
+    exact Limbs.masked_sum_lt_twice_of_le hx hy htake
   have hwrappedLt : wrapped < bound := by
     exact Nat.mod_lt _ (pow_pos Limbs.radix_pos _)
   have hadded : Limbs.Represents added.memory dst count wrapped := by

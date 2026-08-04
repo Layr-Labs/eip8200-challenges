@@ -135,6 +135,11 @@ theorem masked_sum_lt_twice {x y take modulus : Nat}
     x + take * y < 2 * modulus := by
   interval_cases take <;> simp_all <;> omega
 
+theorem masked_sum_lt_twice_of_le {x y take modulus : Nat}
+    (hx : x < modulus) (hy : y ≤ modulus) (htake : take ≤ 1) :
+    x + take * y < 2 * modulus := by
+  interval_cases take <;> simp_all <;> omega
+
 theorem mod_eq_cond_sub {total modulus : Nat}
     (htotal : total < 2 * modulus) :
     total % modulus = if total < modulus then total else total - modulus := by

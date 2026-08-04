@@ -1536,7 +1536,7 @@ theorem mulAfterBitDouble_represents (current : State) (a b : UInt256)
       acc addend modulusValue (UInt256.ofNat 383) saved hbitLe hfit3072
       hfit4096 hfit0 hfit5120 (by right; left; omega) (by right; omega)
       (by left; omega) (by left; omega) hinnerAcc hinnerAddend
-      hinnerModulus haccReduced haddendReduced hmodulusBound
+      hinnerModulus haccReduced haddendReduced.le hmodulusBound
   have hafterAddend : Limbs.Represents afterAdd.memory 4096 count addend := by
     simpa [afterAdd, mulAfterBitAdd, inner, bitWord, saved, hbitWord] using
       BigHelpers.addReturned_preserves_region inner 3072 4096 bit 0 4096
@@ -1555,7 +1555,7 @@ theorem mulAfterBitDouble_represents (current : State) (a b : UInt256)
       addend addend modulusValue (UInt256.ofNat 401) saved (by omega)
       hfit4096 hfit4096 hfit0 hfit5120 (by left; rfl) (by right; omega)
       (by left; omega) (by left; omega) hafterAddend hafterAddend
-      hafterModulus haddendReduced haddendReduced hmodulusBound
+      hafterModulus haddendReduced haddendReduced.le hmodulusBound
   have hdoubleAcc : Limbs.Represents doubled.memory 3072 count
       ((acc + bit * addend) % modulusValue) := by
     exact BigHelpers.addReturned_preserves_region afterAdd 4096 4096 1 0 3072
@@ -1616,7 +1616,7 @@ theorem mulWordAfterDouble_represents (current : State) (word a b : UInt256)
       acc addend modulusValue (UInt256.ofNat 383) saved hbitLe hfit3072
       hfit4096 hfit0 hfit5120 (by right; left; omega) (by right; omega)
       (by left; omega) (by left; omega) hinnerAcc hinnerAddend
-      hinnerModulus haccReduced haddendReduced hmodulusBound
+      hinnerModulus haccReduced haddendReduced.le hmodulusBound
   have hafterAddend : Limbs.Represents afterAdd.memory 4096 count addend := by
     simpa [afterAdd, mulWordAfterAdd, inner, bitWord, saved, hbitWord] using
       BigHelpers.addReturned_preserves_region inner 3072 4096 bit 0 4096
@@ -1635,7 +1635,7 @@ theorem mulWordAfterDouble_represents (current : State) (word a b : UInt256)
       addend addend modulusValue (UInt256.ofNat 401) saved (by omega)
       hfit4096 hfit4096 hfit0 hfit5120 (by left; rfl) (by right; omega)
       (by left; omega) (by left; omega) hafterAddend hafterAddend
-      hafterModulus haddendReduced haddendReduced hmodulusBound
+      hafterModulus haddendReduced haddendReduced.le hmodulusBound
   have hdoubleAcc : Limbs.Represents doubled.memory 3072 count
       ((acc + bit * addend) % modulusValue) := by
     exact BigHelpers.addReturned_preserves_region afterAdd 4096 4096 1 0 3072
