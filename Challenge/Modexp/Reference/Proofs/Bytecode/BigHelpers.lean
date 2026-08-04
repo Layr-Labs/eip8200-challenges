@@ -1236,6 +1236,66 @@ def addProgress (memory : ByteArray) (activeWords dst src mask : UInt256) :
           (Data.Bytes.natToBytesPadded z.toNat 32) dstAt.toNat,
         stored, carry⟩
 
+theorem addOffset_toNat (ptr i : Nat) (hfit : ptr + 32 * i < 2 ^ 256) :
+    (UInt256.ofNat ptr +
+      UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5)).toNat =
+        ptr + 32 * i := by
+  rw [Challenge.EvmProof.Word.word_add_comm]
+  exact clearOffset_toNat ptr i hfit
+
+/-- Earlier destination writes cannot affect a destination limb that has not
+yet been processed. -/
+theorem readWord_addProgress_future_dest (memory : ByteArray)
+    (activeWords mask : UInt256) (dst src iter j : Nat)
+    (hiter : iter ≤ j) (hfit : dst + 32 * (j + 1) < 2 ^ 256) :
+    MachineState.readWord
+        (addProgress memory activeWords (UInt256.ofNat dst)
+          (UInt256.ofNat src) mask iter).memory
+        (dst + 32 * j) =
+      MachineState.readWord memory (dst + 32 * j) := by
+  induction iter with
+  | zero => rfl
+  | succ iter ih =>
+      rw [addProgress, Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+      · exact ih (by omega)
+      · right
+        have hsize (value : Nat) :
+            (Data.Bytes.natToBytesPadded value 32).size = 32 := by
+          simp [Data.Bytes.natToBytesPadded, ByteArray.size]
+        rw [hsize, addOffset_toNat dst iter (by omega)]
+        omega
+
+/-- Under the aliasing patterns used by the reference (identical regions or
+disjoint regions), earlier destination writes also leave the next source limb
+unchanged. -/
+theorem readWord_addProgress_source (memory : ByteArray)
+    (activeWords mask : UInt256) (dst src count iter j : Nat)
+    (hiter : iter ≤ j) (hj : j < count)
+    (hdstfit : dst + 32 * count < 2 ^ 256)
+    (hsrcfit : src + 32 * count < 2 ^ 256)
+    (halias : dst = src ∨ dst + 32 * count ≤ src ∨
+      src + 32 * count ≤ dst) :
+    MachineState.readWord
+        (addProgress memory activeWords (UInt256.ofNat dst)
+          (UInt256.ofNat src) mask iter).memory
+        (src + 32 * j) =
+      MachineState.readWord memory (src + 32 * j) := by
+  rcases halias with rfl | hdisjoint
+  · exact readWord_addProgress_future_dest memory activeWords mask dst dst
+      iter j hiter (by omega)
+  · induction iter with
+    | zero => rfl
+    | succ iter ih =>
+        rw [addProgress, Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+        · exact ih (by omega)
+        · have hsize (value : Nat) :
+              (Data.Bytes.natToBytesPadded value 32).size = 32 := by
+            simp [Data.Bytes.natToBytesPadded, ByteArray.size]
+          rw [hsize, addOffset_toNat dst iter (by omega)]
+          rcases hdisjoint with hbefore | hafter
+          · right; omega
+          · left; omega
+
 def addEntry (s : State) (dst src take modulus : UInt256) (count : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 104
