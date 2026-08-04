@@ -146,6 +146,10 @@ jobs:
 
       - name: Verify RIPEMD-160 reference and scorer negative control
         run: |
+          scripts/check-ripemd160-submissions.sh --self-test
+          scripts/check-ripemd160-submissions.sh
+          scripts/report-ripemd160-gas.sh --self-test
+          scripts/check-ripemd160-gas-report.sh
           lake exe ripemd160challenge --hex=Challenge/Ripemd160/Reference/reference.hex
           printf '60206000f3' > /tmp/ripemd-zeros.hex
           if lake exe ripemd160challenge --hex=/tmp/ripemd-zeros.hex; then
