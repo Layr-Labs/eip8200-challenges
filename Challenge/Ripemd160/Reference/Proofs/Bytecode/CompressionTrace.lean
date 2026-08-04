@@ -1195,19 +1195,23 @@ def gasSteps_compressToRight (s : State) (messageOffset returnDest : UInt256)
   have gschedule' : Challenge.EvmProof.GasSteps
       (scheduleEntry s messageOffset returnDest rest)
       (scheduleReturned q messageOffset returnDest rest) := by
-    simpa [tail, q, scheduledState, scheduleEntry, scheduleReturned,
-      Schedule.scheduleEntry, Schedule.scheduleReturned] using gschedule
+    exact Challenge.EvmProof.GasSteps.cast gschedule
+      (by simp [tail, scheduleEntry, Schedule.scheduleEntry])
+      (by simp [tail, q, scheduledState, scheduleReturned,
+        Schedule.scheduleReturned])
   have gcopy' : Challenge.EvmProof.GasSteps
       (scheduleReturned q messageOffset returnDest rest)
       (copiesReturned q messageOffset returnDest rest) := gcopy
   have ginit' : Challenge.EvmProof.GasSteps
       (copiesReturned q messageOffset returnDest rest)
       (leftLoopAt q0 messageOffset returnDest rest 0) := by
-    simpa [q0, q, leftInitialState] using ginit
+    exact Challenge.EvmProof.GasSteps.cast ginit rfl (by
+      simp [q0, q, leftInitialState])
   have gleft' : Challenge.EvmProof.GasSteps
       (leftLoopAt q0 messageOffset returnDest rest 0)
       (leftLoopAt q80 messageOffset returnDest rest 80) := by
-    simpa [q80, q0, leftFinalState] using gleft
+    exact Challenge.EvmProof.GasSteps.cast gleft rfl (by
+      simp [q80, q0, leftFinalState])
   exact gsetup.trans (gschedule'.trans (gcopy'.trans (ginit'.trans
     (gleft'.trans (gtest.trans (gexit.trans gright))))))
 
