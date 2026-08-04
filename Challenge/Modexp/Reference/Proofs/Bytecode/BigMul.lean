@@ -105,6 +105,14 @@ def mulDoubleToNextPath :
    opAt 328 (.Swap ⟨0, by decide⟩), opAt 329 .POP,
    pushAt 330 2 352, opAt 331 .JUMP]
 
+def mulInnerToOuterPath :
+    List (Challenge.EvmProof.Stepper.Located
+      BigHelpers.Artifact.referenceArtifact .Osaka) :=
+  [opAt 332 .JUMPDEST, opAt 333 .POP, opAt 334 .POP,
+   pushAt 335 1 1, opAt 336 (.Dup ⟨1, by decide⟩), opAt 337 .ADD,
+   opAt 338 (.Swap ⟨0, by decide⟩), opAt 339 .POP,
+   pushAt 340 2 335, opAt 341 .JUMP]
+
 def mulEntry (s : State) (a b out modulus : UInt256) (count : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 310
@@ -198,6 +206,12 @@ def mulInnerNext (current : State) (a b out modulus : UInt256)
       stack := [UInt256.ofNat (j + 1), word, UInt256.ofNat i, a, b, out,
         modulus, UInt256.ofNat count, returnDest] ++ rest }
 
+def mulOuterNext (inner : State) (a b out modulus : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256) : State :=
+  { inner with pc := UInt256.ofNat 335
+      stack := [UInt256.ofNat (i + 1), a, b, out, modulus,
+        UInt256.ofNat count, returnDest] ++ rest }
+
 @[simp] private theorem mulPCs (i : Nat) (hi : 265 ≤ i) (hii : i ≤ 279) :
     BigHelpers.Artifact.referenceArtifact.instructionPC i =
       [310,311,314,315,316,319,320,321,324,325,326,329,332,333,334]
@@ -220,6 +234,16 @@ def mulInnerNext (current : State) (a b out modulus : UInt256)
     BigHelpers.Artifact.referenceArtifact.instructionPC i =
       [401,402,403,405,406,407,408,409,412][i - 323]! := by
   interval_cases i <;> decide
+
+@[simp] private theorem mulInnerExitPCs (i : Nat) (hi : 332 ≤ i)
+    (hii : i ≤ 341) :
+    BigHelpers.Artifact.referenceArtifact.instructionPC i =
+      [413,414,415,416,418,419,420,421,422,425][i - 332]! := by
+  interval_cases i <;> decide
+
+@[simp] private theorem jump335 :
+    Decode.isValidJumpDest BigHelpers.referenceBytecode 335 = true :=
+  BigHelpers.Artifact.isValidJumpDest_index 280 (by rfl)
 
 @[simp] private theorem jump352 :
     Decode.isValidJumpDest BigHelpers.referenceBytecode 352 = true :=
@@ -380,6 +404,50 @@ theorem run_mulInnerGuard (current : State) (a b out modulus : UInt256)
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
     hlt, honeIsZero]
+
+set_option linter.unusedSimpArgs false in
+theorem run_mulInnerFinishGuard (current : State) (a b out modulus : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1013) (hcode : current.executionEnv.code =
+      BigHelpers.referenceBytecode) (hrun : current.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock mulInnerGuardPath
+      (mulInnerLoop current a b out modulus count i 256 returnDest rest) =
+    some { mulInnerLoop current a b out modulus count i 256 returnDest rest with
+      pc := UInt256.ofNat 413 } := by
+  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
+  have hvalid : Decode.isValidJumpDest BigHelpers.referenceBytecode
+      (413 : UInt256).toNat = true := by simpa using jump413
+  simp [mulInnerGuardPath, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    mulInnerLoop, mulLoopPCs, hcode, hrun, UInt256.lt, UInt256.isTrue,
+    hzeroFalse, hvalid, jump413,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
+
+set_option linter.unusedSimpArgs false in
+theorem run_mulInnerToOuter (current : State) (a b out modulus : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1013) (hi : i + 1 < 2 ^ 256)
+    (hcode : current.executionEnv.code = BigHelpers.referenceBytecode)
+    (hrun : current.halt = .Running) :
+    let inner := mulInnerLoop current a b out modulus count i 256 returnDest rest
+    Challenge.EvmProof.Stepper.runLocatedBlock mulInnerToOuterPath
+      { inner with pc := UInt256.ofNat 413 } =
+    some (mulOuterNext inner a b out modulus count i returnDest rest) := by
+  dsimp only
+  have hvalid : Decode.isValidJumpDest BigHelpers.referenceBytecode
+      (335 : UInt256).toNat = true := by simpa using jump335
+  have hinc := Challenge.EvmProof.Word.ofNat_add_ofNat (a := i) (b := 1) hi
+  simp [mulInnerToOuterPath, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    mulInnerLoop, mulOuterNext, mulInnerExitPCs, hcode, hrun, hvalid,
+    jump335, hinc, Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+    List.exchange]
 
 set_option linter.unusedSimpArgs false in
 theorem run_mulInnerToAdd (current : State) (a b out modulus : UInt256)
