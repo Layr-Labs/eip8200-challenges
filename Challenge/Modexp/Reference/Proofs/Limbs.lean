@@ -122,4 +122,47 @@ theorem represents_iff_value {memory : ByteArray} {ptr count value : Nat}
     · exact fun digit hdigit => limbDigits_lt hdigit
     · rw [heq, value_limbDigits]
 
+/-! ## Arithmetic used by `addMaskedMod`
+
+The bytecode adds either zero or one residue and then performs one conditional
+subtraction.  These lemmas isolate the mathematical reason one subtraction is
+enough from the word-by-word carry and borrow implementation proved below the
+bytecode layer.
+-/
+
+theorem masked_sum_lt_twice {x y take modulus : Nat}
+    (hx : x < modulus) (hy : y < modulus) (htake : take ≤ 1) :
+    x + take * y < 2 * modulus := by
+  interval_cases take <;> simp_all <;> omega
+
+theorem mod_eq_cond_sub {total modulus : Nat}
+    (htotal : total < 2 * modulus) :
+    total % modulus = if total < modulus then total else total - modulus := by
+  split_ifs with hlt
+  · exact Nat.mod_eq_of_lt hlt
+  · rw [Nat.mod_eq_sub_mod (by omega), Nat.mod_eq_of_lt (by omega)]
+
+theorem masked_sum_mod_eq_cond_sub {x y take modulus : Nat}
+    (hx : x < modulus) (hy : y < modulus) (htake : take ≤ 1) :
+    (x + take * y) % modulus =
+      if x + take * y < modulus then x + take * y
+      else x + take * y - modulus := by
+  exact mod_eq_cond_sub (masked_sum_lt_twice hx hy htake)
+
+/-- The bytecode selects its subtraction candidate exactly when the
+mathematical sum is at least the modulus.  The first disjunct is the final
+carry out of the fixed-width addition; the second is a borrow-free comparison
+of the wrapped sum with the modulus. -/
+theorem useSub_iff {total modulus bound : Nat} (hmodulus : modulus < bound) :
+    (bound ≤ total ∨ modulus ≤ total % bound) ↔ modulus ≤ total := by
+  constructor
+  · rintro (hcarry | hwrapped)
+    · exact hmodulus.le.trans hcarry
+    · exact hwrapped.trans (Nat.mod_le total bound)
+  · intro htotal
+    by_cases hcarry : bound ≤ total
+    · exact Or.inl hcarry
+    · right
+      rwa [Nat.mod_eq_of_lt (Nat.lt_of_not_ge hcarry)]
+
 end Challenge.Modexp.Reference.Proofs.Limbs
