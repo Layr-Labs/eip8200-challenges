@@ -21,80 +21,19 @@ open WordLoops
 open WordExit
 open WordCorrect
 
-private def CopyFree : Instr → Bool
-  | .op .CALLDATACOPY => false
-  | .op .MCOPY => false
-  | _ => true
-
-private theorem noMemoryCost_eq_static (instruction : Instr) (s : State)
-    (fork : Fork) (hfork : s.fork = fork) (hfree : CopyFree instruction) :
-    Challenge.EvmProof.Meter.instrCostWithoutMemory instruction s =
-      Challenge.EvmProof.Meter.instrStaticCost fork instruction := by
-  cases instruction with
-  | push width value =>
-      simp [Challenge.EvmProof.Meter.instrCostWithoutMemory,
-        Challenge.EvmProof.Meter.instrStaticCost, hfork]
-  | op op =>
-      cases op with
-      | StopArith op => cases op <;> simp [Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork]
-      | CompBit op => cases op <;> simp [Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork]
-      | Keccak op => cases op; simp [Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork]
-      | Env op => cases op <;> simp [CopyFree,
-          Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork] at hfree ⊢
-      | Block op => cases op <;> simp [Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork]
-      | StackMemFlow op => cases op <;> simp [CopyFree,
-          Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork] at hfree ⊢
-      | Push op => cases op; simp [Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork]
-      | Dup op => cases op; simp [Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork]
-      | Swap op => cases op; simp [Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork]
-      | DupN op => cases op; simp [Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork]
-      | SwapN op => cases op; simp [Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork]
-      | Exchange op => cases op; simp [Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork]
-      | Log op => cases op; simp [Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork]
-      | System op => cases op <;> simp [Challenge.EvmProof.Meter.instrCostWithoutMemory,
-          Challenge.EvmProof.Meter.instrStaticCost, hfork]
-
-private theorem blockCost_potential_of_static
-    {artifact : Challenge.EvmProof.ProgramArtifact} {fork : Fork}
-    (path : List (Challenge.EvmProof.Stepper.Located artifact fork)) {s t : State}
-    (work : Nat)
-    (hresult : Challenge.EvmProof.Stepper.runLocatedBlock path s = some t)
-    (hfork : s.fork = fork)
-    (hfree : ∀ located ∈ path, CopyFree located.instruction)
-    (hcost : Challenge.EvmProof.Meter.runLocatedBlockStaticCost path = work) :
-    Challenge.EvmProof.Stepper.runLocatedBlockCost path s +
-        MachineState.memCost s.activeWords.toNat =
-      work + MachineState.memCost t.activeWords.toNat := by
-  rw [← hcost]
-  apply Challenge.EvmProof.Meter.runLocatedBlock_cost_static_potential path hresult hfork
-  intro located hmem q hq
-  exact noMemoryCost_eq_static located.instruction q fork hq
-    (hfree located hmem)
-
 private theorem blockCost_of_static
     {artifact : Challenge.EvmProof.ProgramArtifact} {fork : Fork}
     (path : List (Challenge.EvmProof.Stepper.Located artifact fork)) {s t : State}
     (work : Nat)
     (hresult : Challenge.EvmProof.Stepper.runLocatedBlock path s = some t)
     (hfork : s.fork = fork)
-    (hfree : ∀ located ∈ path, CopyFree located.instruction)
+    (hfree : ∀ located ∈ path,
+      Challenge.EvmProof.Meter.CopyFree located.instruction)
     (hcost : Challenge.EvmProof.Meter.runLocatedBlockStaticCost path = work)
     (hactive : s.activeWords = t.activeWords) :
     Challenge.EvmProof.Stepper.runLocatedBlockCost path s = work := by
-  have hmeter := blockCost_potential_of_static path work hresult hfork hfree hcost
+  have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    path work hresult hfork hfree hcost
   rw [hactive] at hmeter
   omega
 
@@ -274,7 +213,8 @@ theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)
   have hguard := blockCost_of_static expGuardPath 26
     (run_expFinishGuard input acc base hvalid) (by rfl)
     (by native_decide) (by rfl) (by rfl)
-  have htail := blockCost_potential_of_static expFinishTailPath 36
+  have htail := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    expFinishTailPath 36
     (run_expFinishTail input acc base hvalid hword) (by rfl)
     (by native_decide) (by rfl)
   have hreturned : MachineState.activeWordsAfter 193 6144

@@ -227,6 +227,40 @@ def instrStaticCost (fork : Fork) : Instr → Nat
   | .push width _ => Gas.baseCost fork (.Push ⟨width⟩)
   | .op op => Gas.baseCost fork op
 
+/-- Instructions whose non-memory charge is state-independent.  The two copy
+opcodes are excluded because their per-word charge depends on the runtime
+copy length; ordinary loads, stores, and returns are included because their
+memory expansion is already separated by `instrCostWithoutMemory`. -/
+def CopyFree : Instr → Bool
+  | .op .CALLDATACOPY => false
+  | .op .MCOPY => false
+  | _ => true
+
+theorem instrCostWithoutMemory_eq_static_of_copyFree
+    (instruction : Instr) (s : State) (fork : Fork)
+    (hfork : s.fork = fork) (hfree : CopyFree instruction) :
+    instrCostWithoutMemory instruction s = instrStaticCost fork instruction := by
+  cases instruction with
+  | push width value => simp [instrCostWithoutMemory, instrStaticCost, hfork]
+  | op op =>
+      cases op with
+      | StopArith op => cases op <;> simp [instrCostWithoutMemory, instrStaticCost, hfork]
+      | CompBit op => cases op <;> simp [instrCostWithoutMemory, instrStaticCost, hfork]
+      | Keccak op => cases op; simp [instrCostWithoutMemory, instrStaticCost, hfork]
+      | Env op => cases op <;> simp [CopyFree, instrCostWithoutMemory,
+          instrStaticCost, hfork] at hfree ⊢
+      | Block op => cases op <;> simp [instrCostWithoutMemory, instrStaticCost, hfork]
+      | StackMemFlow op => cases op <;> simp [CopyFree, instrCostWithoutMemory,
+          instrStaticCost, hfork] at hfree ⊢
+      | Push op => cases op; simp [instrCostWithoutMemory, instrStaticCost, hfork]
+      | Dup op => cases op; simp [instrCostWithoutMemory, instrStaticCost, hfork]
+      | Swap op => cases op; simp [instrCostWithoutMemory, instrStaticCost, hfork]
+      | DupN op => cases op; simp [instrCostWithoutMemory, instrStaticCost, hfork]
+      | SwapN op => cases op; simp [instrCostWithoutMemory, instrStaticCost, hfork]
+      | Exchange op => cases op; simp [instrCostWithoutMemory, instrStaticCost, hfork]
+      | Log op => cases op; simp [instrCostWithoutMemory, instrStaticCost, hfork]
+      | System op => cases op <;> simp [instrCostWithoutMemory, instrStaticCost, hfork]
+
 def runLocatedBlockStaticCost
     {artifact : Challenge.EvmProof.ProgramArtifact} {fork : Fork}
     (path : List (Stepper.Located artifact fork)) : Nat :=
@@ -377,6 +411,24 @@ theorem runLocatedBlock_cost_static_potential
         MachineState.memCost t.activeWords.toNat := by
   rw [runLocatedBlock_cost_potential path hresult]
   rw [runLocatedBlockCostWithoutMemory_eq_static path hresult hfork hstatic]
+
+/-- Convenient specialization of `runLocatedBlock_cost_static_potential` for
+concrete paths containing no length-dependent copy instruction. -/
+theorem runLocatedBlock_cost_potential_of_copyFree
+    {artifact : Challenge.EvmProof.ProgramArtifact} {fork : Fork}
+    (path : List (Stepper.Located artifact fork)) {s t : State} (work : Nat)
+    (hresult : Stepper.runLocatedBlock path s = some t)
+    (hfork : s.fork = fork)
+    (hfree : ∀ located ∈ path, CopyFree located.instruction)
+    (hcost : runLocatedBlockStaticCost path = work) :
+    Stepper.runLocatedBlockCost path s +
+        MachineState.memCost s.activeWords.toNat =
+      work + MachineState.memCost t.activeWords.toNat := by
+  rw [← hcost]
+  apply runLocatedBlock_cost_static_potential path hresult hfork
+  intro located hmem q hq
+  exact instrCostWithoutMemory_eq_static_of_copyFree
+    located.instruction q fork hq (hfree located hmem)
 
 theorem gasSteps_trans_cost_potential {s t u : State}
     (first : GasSteps s t) (second : GasSteps t u) (firstWork secondWork : Nat)
