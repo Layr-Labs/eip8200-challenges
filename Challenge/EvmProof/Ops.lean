@@ -107,6 +107,38 @@ def lt {s : State} {a b : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.lt (withGas s gas) a b rest hop hgas hstack hcap
 
+def eq {s : State} {a b : UInt256} {rest : List UInt256}
+    (hop : s.decodedOp = some .EQ)
+    (hstack : s.stack = a :: b :: rest)
+    (hcap : s.stack.length + Operation.pushArity .EQ ≤
+      1024 + Operation.popArity .EQ)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with
+      stack := UInt256.eq a b :: rest, pc := s.pc.succ } := by
+  let cost := Gas.baseCost s.fork .EQ
+  apply of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost] using
+    StepRunning.eq (withGas s gas) a b rest hop hgas hstack hcap
+
+def byte {s : State} {i x : UInt256} {rest : List UInt256}
+    (hop : s.decodedOp = some .BYTE)
+    (hstack : s.stack = i :: x :: rest)
+    (hcap : s.stack.length + Operation.pushArity .BYTE ≤
+      1024 + Operation.popArity .BYTE)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with
+      stack := UInt256.byteAt i x :: rest, pc := s.pc.succ } := by
+  let cost := Gas.baseCost s.fork .BYTE
+  apply of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost] using
+    StepRunning.byte_ (withGas s gas) i x rest hop hgas hstack hcap
+
 def iszero {s : State} {a : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .ISZERO)
     (hstack : s.stack = a :: rest)

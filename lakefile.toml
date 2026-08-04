@@ -34,3 +34,7 @@ name = "Challenge"
 [[lean_exe]]
 name = "sha256challenge"
 root = "Main"
+
+[[lean_exe]]
+name = "ripemd160challenge"
+root = "Ripemd160Main"
