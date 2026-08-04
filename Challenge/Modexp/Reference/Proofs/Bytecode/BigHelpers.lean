@@ -2340,6 +2340,47 @@ theorem readWord_selectProgress_candidate (memory : ByteArray)
         · left; omega
         · right; omega
 
+theorem readWord_selectProgress_disjoint_region (memory : ByteArray)
+    (activeWords mask : UInt256) (dst ptr count iter j : Nat)
+    (hiter : iter ≤ count) (hj : j < count)
+    (hdstFit : dst + 32 * count < 2 ^ 256)
+    (hdisjoint : dst + 32 * count ≤ ptr ∨
+      ptr + 32 * count ≤ dst) :
+    MachineState.readWord
+        (selectProgress memory activeWords (UInt256.ofNat dst) mask iter).memory
+        (ptr + 32 * j) =
+      MachineState.readWord memory (ptr + 32 * j) := by
+  induction iter with
+  | zero => rfl
+  | succ iter ih =>
+      rw [selectProgress,
+        Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+      · exact ih (by omega)
+      · have hsize (value : Nat) :
+            (Data.Bytes.natToBytesPadded value 32).size = 32 := by
+          simp [Data.Bytes.natToBytesPadded, ByteArray.size]
+        rw [hsize, addOffset_toNat dst iter (by omega)]
+        rcases hdisjoint with hbefore | hafter
+        · left; omega
+        · right; omega
+
+theorem represents_selectProgress_disjoint_region (memory : ByteArray)
+    (activeWords mask : UInt256) (dst ptr count iter value : Nat)
+    (hiter : iter ≤ count) (hdstFit : dst + 32 * count < 2 ^ 256)
+    (hdisjoint : dst + 32 * count ≤ ptr ∨
+      ptr + 32 * count ≤ dst)
+    (hrep : Limbs.Represents memory ptr count value) :
+    Limbs.Represents
+      (selectProgress memory activeWords (UInt256.ofNat dst) mask iter).memory
+      ptr count value := by
+  refine ⟨hrep.1, ?_⟩
+  unfold Limbs.memoryLimbs
+  rw [← hrep.2]
+  apply List.map_congr_left
+  intro j hj
+  rw [readWord_selectProgress_disjoint_region memory activeWords mask dst ptr
+    count iter j hiter (by simpa using hj) hdstFit hdisjoint]
+
 theorem selectProgress_memoryLimbs (memory : ByteArray)
     (activeWords : UInt256) (dst count iter : Nat) (useSub : UInt256)
     (hiter : iter ≤ count) (huseSub : useSub.toNat ≤ 1)
@@ -2543,6 +2584,37 @@ theorem addReturned_represents_mod (s : State)
     useSub huseSubLe hdstFit hdstCandidate hsubtractedDst
     hsubtractedCandidate hchosen.symm hresultFit
   simpa [addReturned, added, subtracted, useSub] using hselected
+
+theorem addReturned_preserves_region (s : State)
+    (dst src take modulus ptr count value : Nat)
+    (returnDest : UInt256) (rest : List UInt256)
+    (hdstFit : dst + 32 * count < 2 ^ 256)
+    (hcandidateFit : 5120 + 32 * count < 2 ^ 256)
+    (hptrDst : dst + 32 * count ≤ ptr ∨
+      ptr + 32 * count ≤ dst)
+    (hptrCandidate : ptr + 32 * count ≤ 5120 ∨
+      5120 + 32 * count ≤ ptr)
+    (hrep : Limbs.Represents s.memory ptr count value) :
+    Limbs.Represents
+      (addReturned s (UInt256.ofNat dst) (UInt256.ofNat src)
+        (UInt256.ofNat take) (UInt256.ofNat modulus) count returnDest rest).memory
+      ptr count value := by
+  let added := addProgress s.memory s.activeWords (UInt256.ofNat dst)
+    (UInt256.ofNat src) (0 - UInt256.ofNat take) count
+  have hadded : Limbs.Represents added.memory ptr count value := by
+    exact represents_addProgress_disjoint_region s.memory s.activeWords
+      (UInt256.ofNat src) (0 - UInt256.ofNat take) dst ptr count count
+      (by omega) hdstFit hptrDst hrep
+  let subtracted := subtractProgress added.memory added.activeWords
+    (UInt256.ofNat dst) (UInt256.ofNat modulus) count
+  have hsubtracted : Limbs.Represents subtracted.memory ptr count value := by
+    exact represents_subtractProgress_input added.memory added.activeWords
+      (UInt256.ofNat dst) (UInt256.ofNat modulus) ptr count count value
+      (by omega) hcandidateFit hptrCandidate hadded
+  let useSub := UInt256.lor added.carry (UInt256.isZero subtracted.borrow)
+  exact represents_selectProgress_disjoint_region subtracted.memory
+    subtracted.activeWords (0 - useSub) dst ptr count count value (by omega)
+    hdstFit hptrDst hsubtracted
 
 @[simp] private theorem selectPCs (i : Nat) (hi : 210 ≤ i) (hii : i ≤ 261) :
     Artifact.referenceArtifact.instructionPC i =
