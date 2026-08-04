@@ -429,4 +429,311 @@ theorem gasSteps_exponentBit_cost_potential (s : State)
     BigHelpers.copyReturned] at hguard htoSquare hsquare htoCopy hcopy htoProduct hproduct htoSelect hselect ⊢
   omega
 
+def exponentBitProgress (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) : Nat → State
+  | 0 => s
+  | j + 1 =>
+      selectProgress
+        (exponentBitProgress s accumulatorWord count b e m baseOff expOff i
+          offset byte rest j)
+        accumulatorWord count b e m baseOff expOff i j offset byte rest count
+
+@[simp] theorem exponentBitProgress_executionEnv (s : State)
+    (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
+    (offset byte : UInt256) (rest : List UInt256) :
+    (exponentBitProgress s accumulatorWord count b e m baseOff expOff i offset
+      byte rest j).executionEnv = s.executionEnv := by
+  induction j with
+  | zero => rfl
+  | succ j ih => simp [exponentBitProgress, ih]
+
+@[simp] theorem exponentBitProgress_halt (s : State)
+    (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
+    (offset byte : UInt256) (rest : List UInt256) :
+    (exponentBitProgress s accumulatorWord count b e m baseOff expOff i offset
+      byte rest j).halt = s.halt := by
+  induction j with
+  | zero => rfl
+  | succ j ih => simp [exponentBitProgress, ih]
+
+def exponentBitLoopState (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (j : Nat) : State :=
+  innerLoop
+    (exponentBitProgress s accumulatorWord count b e m baseOff expOff i offset
+      byte rest j)
+    accumulatorWord count b e m baseOff expOff i offset byte rest j
+
+def gasSteps_exponentBitAt (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 968)
+    (hcount : count < 2 ^ 256) (hj : j < 8)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
+        offset byte rest j)
+      (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
+        offset byte rest (j + 1)) := by
+  let current := exponentBitProgress s accumulatorWord count b e m baseOff
+    expOff i offset byte rest j
+  have hstep := gasSteps_exponentBit current accumulatorWord count b e m baseOff
+    expOff i j offset byte rest hcap hcount hj
+    (by simpa [current] using hcode)
+    (by simpa [current, State.fork] using hfork)
+    (by simpa [current] using hrun)
+    (by simpa [current, State.fork] using hnp)
+  simpa [exponentBitLoopState, afterSelectedBit, exponentBitProgress, current]
+    using hstep
+
+theorem gasSteps_exponentBitAt_cost_potential (s : State)
+    (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
+    (offset byte : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 968) (hcount : count < 2 ^ 256) (hj : j < 8)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (gasSteps_exponentBitAt s accumulatorWord count b e m baseOff expOff i j
+      offset byte rest hcap hcount hj hcode hfork hrun hnp).cost +
+        MachineState.memCost
+          (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
+            offset byte rest j).activeWords.toNat =
+      (613 + count * 526 +
+          2 * (count * (102 + 256 * (426 + count * 906)))) +
+        MachineState.memCost
+          (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
+            offset byte rest (j + 1)).activeWords.toNat := by
+  let current := exponentBitProgress s accumulatorWord count b e m baseOff
+    expOff i offset byte rest j
+  have hstep := gasSteps_exponentBit_cost_potential current accumulatorWord count
+    b e m baseOff expOff i j offset byte rest hcap hcount hj
+    (by simpa [current] using hcode)
+    (by simpa [current, State.fork] using hfork)
+    (by simpa [current] using hrun)
+    (by simpa [current, State.fork] using hnp)
+  simpa [gasSteps_exponentBitAt, exponentBitLoopState, afterSelectedBit,
+    exponentBitProgress, current] using hstep
+
+def gasSteps_exponentBits (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 968)
+    (hcount : count < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
+        offset byte rest 0)
+      (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
+        offset byte rest 8) :=
+  Challenge.EvmProof.GasSteps.iterateBounded 8 fun j hj =>
+    gasSteps_exponentBitAt s accumulatorWord count b e m baseOff expOff i j
+      offset byte rest hcap hcount hj hcode hfork hrun hnp
+
+theorem gasSteps_exponentBits_cost_potential (s : State)
+    (accumulatorWord : UInt256) (count b e m baseOff expOff i : Nat)
+    (offset byte : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 968) (hcount : count < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (gasSteps_exponentBits s accumulatorWord count b e m baseOff expOff i
+      offset byte rest hcap hcount hcode hfork hrun hnp).cost +
+        MachineState.memCost
+          (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
+            offset byte rest 0).activeWords.toNat =
+      8 * (613 + count * 526 +
+          2 * (count * (102 + 256 * (426 + count * 906)))) +
+        MachineState.memCost
+          (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
+            offset byte rest 8).activeWords.toNat := by
+  unfold gasSteps_exponentBits
+  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
+  intro j hj
+  exact gasSteps_exponentBitAt_cost_potential s accumulatorWord count b e m
+    baseOff expOff i j offset byte rest hcap hcount hj hcode hfork hrun hnp
+
+def afterExponentByte (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) : State :=
+  outerLoop
+    (exponentBitProgress s accumulatorWord count b e m baseOff expOff i offset
+      byte rest 8)
+    accumulatorWord count b e m baseOff expOff rest (i + 1)
+
+def gasSteps_exponentByteFinish (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 968)
+    (_hcount : count < 2 ^ 256) (hi : i + 1 < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
+        offset byte rest 8)
+      (afterExponentByte s accumulatorWord count b e m baseOff expOff i offset
+        byte rest) := by
+  let current := exponentBitProgress s accumulatorWord count b e m baseOff
+    expOff i offset byte rest 8
+  have hguard := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka innerGuardPath
+      (by simpa [exponentBitLoopState, innerLoop, current,
+        Artifact.referenceArtifact] using hcode)
+      (by simpa [exponentBitLoopState, innerLoop, current, State.fork] using hfork)
+      (run_innerFinishGuard current accumulatorWord count b e m baseOff expOff i
+        offset byte rest (by omega) (by simpa [current] using hcode)
+        (by simpa [current] using hrun))
+      (by simpa [exponentBitLoopState, innerLoop, current] using hrun)
+      (by simpa [exponentBitLoopState, innerLoop, current, State.fork] using hnp)
+  have hfinish := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka innerFinishPath
+      (by simpa [innerExit, innerLoop, current,
+        Artifact.referenceArtifact] using hcode)
+      (by simpa [innerExit, innerLoop, current, State.fork] using hfork)
+      (run_innerFinish current accumulatorWord count b e m baseOff expOff i
+        offset byte rest (by omega) hi (by simpa [current] using hcode)
+        (by simpa [current] using hrun))
+      (by simpa [innerExit, innerLoop, current] using hrun)
+      (by simpa [innerExit, innerLoop, current, State.fork] using hnp)
+  exact Challenge.EvmProof.GasSteps.cast (hguard.trans hfinish)
+    (by simp [exponentBitLoopState, current])
+    (by simp [afterExponentByte, current])
+
+theorem gasSteps_exponentByteFinish_cost_potential (s : State)
+    (accumulatorWord : UInt256) (count b e m baseOff expOff i : Nat)
+    (offset byte : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 968) (hcount : count < 2 ^ 256)
+    (hi : i + 1 < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (gasSteps_exponentByteFinish s accumulatorWord count b e m baseOff expOff i
+      offset byte rest hcap hcount hi hcode hfork hrun hnp).cost +
+        MachineState.memCost
+          (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
+            offset byte rest 8).activeWords.toNat =
+      58 + MachineState.memCost
+        (afterExponentByte s accumulatorWord count b e m baseOff expOff i offset
+          byte rest).activeWords.toNat := by
+  let current := exponentBitProgress s accumulatorWord count b e m baseOff
+    expOff i offset byte rest 8
+  have hguard :=
+    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+      innerGuardPath 26
+        (run_innerFinishGuard current accumulatorWord count b e m baseOff expOff
+          i offset byte rest (by omega) (by simpa [current] using hcode)
+          (by simpa [current] using hrun))
+        (by simpa [exponentBitLoopState, innerLoop, current, State.fork]
+          using hfork)
+        (by native_decide) (by native_decide)
+  have hfinish :=
+    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+      innerFinishPath 32
+        (run_innerFinish current accumulatorWord count b e m baseOff expOff i
+          offset byte rest (by omega) hi (by simpa [current] using hcode)
+          (by simpa [current] using hrun))
+        (by simpa [innerExit, innerLoop, current, State.fork] using hfork)
+        (by native_decide) (by native_decide)
+  unfold gasSteps_exponentByteFinish
+  simp only [Challenge.EvmProof.GasSteps.cast_cost,
+    Challenge.EvmProof.GasSteps.trans_cost,
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+  simp only [exponentBitLoopState, innerExit, innerLoop, afterExponentByte,
+    outerLoop, current] at hguard hfinish ⊢
+  omega
+
+def gasSteps_exponentByte (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (rest : List UInt256)
+    (hcap : rest.length < 968) (hcount : count < 2 ^ 256)
+    (he : e < 2 ^ 256) (hi : i < e) (hoff : expOff + i < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (outerLoop s accumulatorWord count b e m baseOff expOff rest i)
+      (afterExponentByte s accumulatorWord count b e m baseOff expOff i
+        (UInt256.ofNat (expOff + i)) (loadedExponentByte s expOff i) rest) := by
+  let offset := UInt256.ofNat (expOff + i)
+  let byte := loadedExponentByte s expOff i
+  have hguard := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka outerGuardPath
+      (by simpa [outerLoop, Artifact.referenceArtifact] using hcode)
+      (by simpa [outerLoop, State.fork] using hfork)
+      (run_outerGuard s accumulatorWord count b e m baseOff expOff i rest
+        (by omega) he hi hrun)
+      (by simpa [outerLoop] using hrun)
+      (by simpa [outerLoop, State.fork] using hnp)
+  have hload := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka outerToInnerPath
+      (by simpa [outerBody, outerLoop, Artifact.referenceArtifact] using hcode)
+      (by simpa [outerBody, outerLoop, State.fork] using hfork)
+      (run_outerToInner s accumulatorWord count b e m baseOff expOff i rest
+        (by omega) hoff hrun)
+      (by simpa [outerBody, outerLoop] using hrun)
+      (by simpa [outerBody, outerLoop, State.fork] using hnp)
+  have hbits := gasSteps_exponentBits s accumulatorWord count b e m baseOff
+    expOff i offset byte rest hcap hcount hcode hfork hrun hnp
+  have hfinish := gasSteps_exponentByteFinish s accumulatorWord count b e m
+    baseOff expOff i offset byte rest hcap hcount (by omega) hcode hfork hrun hnp
+  exact Challenge.EvmProof.GasSteps.cast
+    (hguard.trans (hload.trans (hbits.trans hfinish))) rfl
+    (by simp [afterExponentByte, offset, byte])
+
+theorem gasSteps_exponentByte_cost_potential (s : State)
+    (accumulatorWord : UInt256) (count b e m baseOff expOff i : Nat)
+    (rest : List UInt256) (hcap : rest.length < 968)
+    (hcount : count < 2 ^ 256) (he : e < 2 ^ 256) (hi : i < e)
+    (hoff : expOff + i < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (gasSteps_exponentByte s accumulatorWord count b e m baseOff expOff i rest
+      hcap hcount he hi hoff hcode hfork hrun hnp).cost +
+        MachineState.memCost
+          (outerLoop s accumulatorWord count b e m baseOff expOff rest i).activeWords.toNat =
+      (106 + 8 * (613 + count * 526 +
+          2 * (count * (102 + 256 * (426 + count * 906))))) +
+        MachineState.memCost
+          (afterExponentByte s accumulatorWord count b e m baseOff expOff i
+            (UInt256.ofNat (expOff + i)) (loadedExponentByte s expOff i)
+            rest).activeWords.toNat := by
+  let offset := UInt256.ofNat (expOff + i)
+  let byte := loadedExponentByte s expOff i
+  have hguard :=
+    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+      outerGuardPath 26
+        (run_outerGuard s accumulatorWord count b e m baseOff expOff i rest
+          (by omega) he hi hrun)
+        (by simpa [outerLoop, State.fork] using hfork)
+        (by native_decide) (by native_decide)
+  have hload :=
+    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+      outerToInnerPath 22
+        (run_outerToInner s accumulatorWord count b e m baseOff expOff i rest
+          (by omega) hoff hrun)
+        (by simpa [outerBody, outerLoop, State.fork] using hfork)
+        (by native_decide) (by native_decide)
+  have hbits := gasSteps_exponentBits_cost_potential s accumulatorWord count b e
+    m baseOff expOff i offset byte rest hcap hcount hcode hfork hrun hnp
+  have hfinish := gasSteps_exponentByteFinish_cost_potential s accumulatorWord
+    count b e m baseOff expOff i offset byte rest hcap hcount (by omega) hcode
+    hfork hrun hnp
+  unfold gasSteps_exponentByte
+  simp only [Challenge.EvmProof.GasSteps.cast_cost,
+    Challenge.EvmProof.GasSteps.trans_cost,
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+  simp only [outerLoop, outerBody, exponentBitLoopState,
+    exponentBitProgress, afterExponentByte, offset, byte] at hguard hload hbits hfinish ⊢
+  omega
+
 end Challenge.Modexp.Reference.Proofs.Bytecode.BigExponent
