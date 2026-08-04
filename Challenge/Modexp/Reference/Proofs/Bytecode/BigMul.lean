@@ -148,6 +148,44 @@ def mulOuterBody (current : State) (a b out modulus : UInt256)
       stack := [UInt256.ofNat i, a, b, out, modulus, UInt256.ofNat count,
         returnDest] ++ rest }
 
+/-- Inner-loop state with the multiplier word fixed after its single `MLOAD`.
+This form is used to iterate all 256 bits without re-reading memory. -/
+def mulInnerState (current : State) (word a b out modulus : UInt256)
+    (count i j : Nat) (returnDest : UInt256) (rest : List UInt256) : State :=
+  { current with pc := UInt256.ofNat 352
+      stack := [UInt256.ofNat j, word, UInt256.ofNat i, a, b, out, modulus,
+        UInt256.ofNat count, returnDest] ++ rest }
+
+def mulWordBit (word : UInt256) (j : Nat) : UInt256 :=
+  UInt256.land (UInt256.shiftRight word (UInt256.ofNat j)) (UInt256.ofNat 1)
+
+def mulWordRest (word a b out modulus : UInt256) (count i j : Nat)
+    (returnDest : UInt256) (rest : List UInt256) : List UInt256 :=
+  [mulWordBit word j, UInt256.ofNat j, word, UInt256.ofNat i, a, b, out,
+    modulus, UInt256.ofNat count, returnDest] ++ rest
+
+def mulWordAfterAdd (current : State) (word a b out modulus : UInt256)
+    (count i j : Nat) (returnDest : UInt256) (rest : List UInt256) : State :=
+  let inner := mulInnerState current word a b out modulus count i j
+    returnDest rest
+  BigHelpers.addReturned inner out (UInt256.ofNat 4096) (mulWordBit word j)
+    modulus count (UInt256.ofNat 383)
+    (mulWordRest word a b out modulus count i j returnDest rest)
+
+def mulWordAfterDouble (current : State) (word a b out modulus : UInt256)
+    (count i j : Nat) (returnDest : UInt256) (rest : List UInt256) : State :=
+  let afterAdd := mulWordAfterAdd current word a b out modulus count i j
+    returnDest rest
+  BigHelpers.addReturned afterAdd (UInt256.ofNat 4096) (UInt256.ofNat 4096)
+    (UInt256.ofNat 1) modulus count (UInt256.ofNat 401)
+    (mulWordRest word a b out modulus count i j returnDest rest)
+
+def mulWordInnerNext (current : State) (word a b out modulus : UInt256)
+    (count i j : Nat) (returnDest : UInt256) (rest : List UInt256) : State :=
+  let doubled := mulWordAfterDouble current word a b out modulus count i j
+    returnDest rest
+  mulInnerState doubled word a b out modulus count i (j + 1) returnDest rest
+
 def mulInnerLoop (current : State) (a b out modulus : UInt256)
     (count i j : Nat) (returnDest : UInt256) (rest : List UInt256) : State :=
   let off := UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5)
@@ -167,6 +205,13 @@ def mulBit (current : State) (b : UInt256) (i j : Nat) : UInt256 :=
 theorem mulBit_toNat_le_one (current : State) (b : UInt256) (i j : Nat) :
     (mulBit current b i j).toNat ≤ 1 := by
   rw [mulBit, Challenge.EvmProof.Word.word_toNat_land,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by norm_num : 1 < 2 ^ 256)]
+  exact Nat.and_le_right
+
+theorem mulWordBit_toNat_le_one (word : UInt256) (j : Nat) :
+    (mulWordBit word j).toNat ≤ 1 := by
+  rw [mulWordBit, Challenge.EvmProof.Word.word_toNat_land,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt (by norm_num : 1 < 2 ^ 256)]
   exact Nat.and_le_right
@@ -406,6 +451,28 @@ theorem run_mulInnerGuard (current : State) (a b out modulus : UInt256)
     hlt, honeIsZero]
 
 set_option linter.unusedSimpArgs false in
+theorem run_mulWordInnerGuard (current : State) (word a b out modulus : UInt256)
+    (count i j : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1013) (hj : j < 256)
+    (hrun : current.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock mulInnerGuardPath
+      (mulInnerState current word a b out modulus count i j returnDest rest) =
+    some { mulInnerState current word a b out modulus count i j returnDest rest
+      with pc := UInt256.ofNat 363 } := by
+  have hlt : j % 2 ^ 256 < 256 % 2 ^ 256 := by
+    rw [Nat.mod_eq_of_lt (by omega), Nat.mod_eq_of_lt (by norm_num)]
+    exact hj
+  have honeIsZero : (UInt256.ofNat 1).isZero.toNat = 0 := by decide
+  simp [mulInnerGuardPath, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    mulInnerState, mulLoopPCs, hrun, UInt256.lt, UInt256.isTrue,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+    hlt, honeIsZero]
+
+set_option linter.unusedSimpArgs false in
 theorem run_mulInnerFinishGuard (current : State) (a b out modulus : UInt256)
     (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1013) (hcode : current.executionEnv.code =
@@ -477,6 +544,33 @@ theorem run_mulInnerToAdd (current : State) (a b out modulus : UInt256)
       List.exchange]
 
 set_option linter.unusedSimpArgs false in
+theorem run_mulWordInnerToAdd (current : State) (word a b out modulus : UInt256)
+    (count i j : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1008) (hj : j < 256)
+    (hcode : current.executionEnv.code = BigHelpers.referenceBytecode)
+    (hrun : current.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock mulInnerToAddPath
+      { mulInnerState current word a b out modulus count i j returnDest rest with
+        pc := UInt256.ofNat 363 } =
+    some (BigHelpers.addEntry
+      (mulInnerState current word a b out modulus count i j returnDest rest)
+      out (UInt256.ofNat 4096) (mulWordBit word j) modulus count
+      (UInt256.ofNat 383)
+      (mulWordRest word a b out modulus count i j returnDest rest)) := by
+  have hvalid : Decode.isValidJumpDest BigHelpers.referenceBytecode
+      (104 : UInt256).toNat = true := by simpa using jump104
+  simp (config := { maxSteps := 500000 })
+    [mulInnerToAddPath, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      mulInnerState, mulWordBit, mulWordRest, BigHelpers.addEntry,
+      mulInnerPCs, hcode, hrun, hvalid, jump104,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+      List.exchange]
+
+set_option linter.unusedSimpArgs false in
 theorem run_mulAddToDouble (current : State) (a b out modulus : UInt256)
     (count i j : Nat) (returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1008)
@@ -506,6 +600,35 @@ theorem run_mulAddToDouble (current : State) (a b out modulus : UInt256)
       List.exchange]
 
 set_option linter.unusedSimpArgs false in
+theorem run_mulWordAddToDouble (current : State) (word a b out modulus : UInt256)
+    (count i j : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1008)
+    (hcode : current.executionEnv.code = BigHelpers.referenceBytecode)
+    (hrun : current.halt = .Running) :
+    let inner := mulInnerState current word a b out modulus count i j
+      returnDest rest
+    let saved := mulWordRest word a b out modulus count i j returnDest rest
+    let afterAdd := mulWordAfterAdd current word a b out modulus count i j
+      returnDest rest
+    Challenge.EvmProof.Stepper.runLocatedBlock mulAddToDoublePath afterAdd =
+      some (BigHelpers.addEntry afterAdd (UInt256.ofNat 4096)
+        (UInt256.ofNat 4096) (UInt256.ofNat 1) modulus count
+        (UInt256.ofNat 401) saved) := by
+  dsimp only
+  have hvalid : Decode.isValidJumpDest BigHelpers.referenceBytecode
+      (104 : UInt256).toNat = true := by simpa using jump104
+  simp (config := { maxSteps := 500000 })
+    [mulAddToDoublePath, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      mulWordAfterAdd, BigHelpers.addReturned, BigHelpers.addEntry,
+      mulInnerPCs, hcode, hrun, hvalid, jump104,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+      List.exchange]
+
+set_option linter.unusedSimpArgs false in
 theorem run_mulDoubleToNext (current : State) (a b out modulus : UInt256)
     (count i j : Nat) (returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1008) (hj : j + 1 < 2 ^ 256)
@@ -524,6 +647,33 @@ theorem run_mulDoubleToNext (current : State) (a b out modulus : UInt256)
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       mulAfterBitDouble, mulAfterBitAdd, mulInnerNext, mulBitRest,
       BigHelpers.addReturned, mulNextPCs, hcode, hrun, hvalid, jump352, hinc,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+      List.exchange]
+
+set_option linter.unusedSimpArgs false in
+theorem run_mulWordDoubleToNext (current : State) (word a b out modulus : UInt256)
+    (count i j : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1008) (hj : j + 1 < 2 ^ 256)
+    (hcode : current.executionEnv.code = BigHelpers.referenceBytecode)
+    (hrun : current.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock mulDoubleToNextPath
+      (mulWordAfterDouble current word a b out modulus count i j
+        returnDest rest) =
+    some (mulWordInnerNext current word a b out modulus count i j
+      returnDest rest) := by
+  have hvalid : Decode.isValidJumpDest BigHelpers.referenceBytecode
+      (352 : UInt256).toNat = true := by simpa using jump352
+  have hinc := Challenge.EvmProof.Word.ofNat_add_ofNat
+    (a := j) (b := 1) hj
+  simp (config := { maxSteps := 400000 })
+    [mulDoubleToNextPath, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      mulWordAfterDouble, mulWordAfterAdd, mulWordInnerNext, mulWordRest,
+      mulInnerState, BigHelpers.addReturned, mulNextPCs, hcode, hrun,
+      hvalid, jump352, hinc,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
