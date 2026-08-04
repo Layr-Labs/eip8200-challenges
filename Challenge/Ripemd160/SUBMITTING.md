@@ -13,7 +13,8 @@ Challenge.Ripemd160.Correct bytecode
 
 `Correct` is defined in [`Spec.lean`](Spec.lean). It runs the bytes from the
 fixed `initialState` for every realizable calldata and requires exactly the
-32-byte RIPEMD-160 digest for every sufficiently large gas budget.
+32-byte precompile-compatible result—twelve zero bytes followed by the
+20-byte RIPEMD-160 digest—for every sufficiently large gas budget.
 
 Read `Spec.lean` before starting. It is the complete required functional
 statement. Properties under [`AdditionalGoals/`](AdditionalGoals/) are useful
@@ -33,8 +34,9 @@ Challenge/Ripemd160/Submissions/FastRipemd160/
   README.md
 ```
 
-Use namespace `Challenge.Ripemd160.Submissions.FastRipemd160`. CI derives the module
-and declaration names from the directory name, so the convention is mandatory.
+Use namespace `Challenge.Ripemd160.Submissions.FastRipemd160`. CI derives the
+module and declaration names from the directory name, so the convention is
+mandatory.
 
 `bytecode.hex` contains one line of lowercase hexadecimal EVM bytes without a
 `0x` prefix. A final newline is allowed. This canonical representation lets CI
