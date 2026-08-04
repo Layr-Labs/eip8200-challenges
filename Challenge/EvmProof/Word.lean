@@ -58,6 +58,26 @@ theorem ofNat_add_ofNat {a b : Nat} (h : a + b < 2 ^ 256) :
     show EvmSemantics.UInt256.size = 2 ^ 256 by rfl,
     Nat.mod_eq_of_lt h]
 
+/-- Addition commutes with embedding even when the natural sum wraps.  Both
+sides use the same EVM-word modulus, so no range side condition is needed. -/
+theorem ofNat_add_mod (a b : Nat) :
+    EvmSemantics.UInt256.ofNat a + EvmSemantics.UInt256.ofNat b =
+      EvmSemantics.UInt256.ofNat (a + b) := by
+  apply word_ext
+  change ((EvmSemantics.UInt256.ofNat a).val +
+    (EvmSemantics.UInt256.ofNat b).val).val = _
+  rw [Fin.val_add]
+  change ((a % 2 ^ 256 + b % 2 ^ 256) % 2 ^ 256) =
+    (a + b) % 2 ^ 256
+  exact (Nat.add_mod a b (2 ^ 256)).symm
+
+/-- Program-counter successor commutes with natural embedding modulo the EVM
+word size. -/
+theorem succ_ofNat_mod (n : Nat) :
+    (EvmSemantics.UInt256.ofNat n).succ =
+      EvmSemantics.UInt256.ofNat (n + 1) := by
+  exact ofNat_add_mod n 1
+
 theorem ofNat_sub_ofNat {a b : Nat} (hba : b ≤ a) (ha : a < 2 ^ 256) :
     EvmSemantics.UInt256.ofNat a - EvmSemantics.UInt256.ofNat b =
       EvmSemantics.UInt256.ofNat (a - b) := by
