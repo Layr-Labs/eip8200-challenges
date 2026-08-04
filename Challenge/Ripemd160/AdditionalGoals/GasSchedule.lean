@@ -1,5 +1,5 @@
 import Challenge.EvmProof.GasFormula
-import Challenge.Sha256.Spec
+import Challenge.Ripemd160.Spec
 
 set_option warningAsError true
 
@@ -10,7 +10,7 @@ The minimal specification asks only for some sufficient gas threshold for each
 input. This optional goal exposes a concrete input-size-dependent schedule.
 -/
 
-namespace Challenge.Sha256
+namespace Challenge.Ripemd160
 
 open EvmSemantics.EVM
 
@@ -52,4 +52,4 @@ theorem correct_of_schedule {code : ByteArray} {schedule : Nat → Nat}
   fun calldata hfit =>
     ⟨schedule calldata.size, fun g hg => h calldata hfit g hg⟩
 
-end Challenge.Sha256
+end Challenge.Ripemd160

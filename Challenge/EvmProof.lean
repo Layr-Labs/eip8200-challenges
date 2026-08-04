@@ -1,6 +1,7 @@
 import Challenge.EvmProof.Bytecode
 import Challenge.EvmProof.Execution
 import Challenge.EvmProof.Gas
+import Challenge.EvmProof.GasFormula
 import Challenge.EvmProof.Memory
 import Challenge.EvmProof.Ops
 import Challenge.EvmProof.Program

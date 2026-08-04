@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Reference.Proofs.Bytecode
+import Challenge.Ripemd160.Reference.Proofs.Gas
 import Challenge.Ripemd160.Reference.Proofs.Yul
 
 /-!
