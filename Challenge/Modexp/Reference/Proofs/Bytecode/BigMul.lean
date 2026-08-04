@@ -557,6 +557,85 @@ def gasSteps_mulBitIteration (current : State) (a b out modulus : UInt256)
   exact hguard.trans <| htoAdd.trans <| hadd'.trans <|
     htoDouble.trans <| hdouble'.trans hnext
 
+theorem mulAfterBitDouble_represents (current : State) (a b : UInt256)
+    (count i j acc addend modulusValue : Nat) (returnDest : UInt256)
+    (rest : List UInt256) (hcount : count ≤ 32)
+    (hmodulusPos : 0 < modulusValue)
+    (hmodulusBound : modulusValue < Limbs.radix ^ count)
+    (hacc : Limbs.Represents current.memory 3072 count acc)
+    (haddend : Limbs.Represents current.memory 4096 count addend)
+    (hmodulus : Limbs.Represents current.memory 0 count modulusValue)
+    (haccReduced : acc < modulusValue)
+    (haddendReduced : addend < modulusValue) :
+    let doubled := mulAfterBitDouble current a b (UInt256.ofNat 3072)
+      (UInt256.ofNat 0) count i j returnDest rest
+    let bit := (mulBit current b i j).toNat
+    Limbs.Represents doubled.memory 3072 count
+        ((acc + bit * addend) % modulusValue) ∧
+      Limbs.Represents doubled.memory 4096 count
+        ((addend + addend) % modulusValue) ∧
+      Limbs.Represents doubled.memory 0 count modulusValue := by
+  let inner := mulInnerLoop current a b (UInt256.ofNat 3072)
+    (UInt256.ofNat 0) count i j returnDest rest
+  let bitWord := mulBit current b i j
+  let bit := bitWord.toNat
+  let saved := mulBitRest current a b (UInt256.ofNat 3072)
+    (UInt256.ofNat 0) count i j returnDest rest
+  let afterAdd := mulAfterBitAdd current a b (UInt256.ofNat 3072)
+    (UInt256.ofNat 0) count i j returnDest rest
+  let doubled := mulAfterBitDouble current a b (UInt256.ofNat 3072)
+    (UInt256.ofNat 0) count i j returnDest rest
+  have hbitLe : bit ≤ 1 := mulBit_toNat_le_one current b i j
+  have hbitWord : bitWord = UInt256.ofNat bit :=
+    Challenge.EvmProof.Word.word_eq_ofNat_toNat bitWord
+  have hfit0 : 0 + 32 * count < 2 ^ 256 := by omega
+  have hfit3072 : 3072 + 32 * count < 2 ^ 256 := by omega
+  have hfit4096 : 4096 + 32 * count < 2 ^ 256 := by omega
+  have hfit5120 : 5120 + 32 * count < 2 ^ 256 := by omega
+  have hinnerAcc : Limbs.Represents inner.memory 3072 count acc := by
+    simpa [inner, mulInnerLoop] using hacc
+  have hinnerAddend : Limbs.Represents inner.memory 4096 count addend := by
+    simpa [inner, mulInnerLoop] using haddend
+  have hinnerModulus : Limbs.Represents inner.memory 0 count modulusValue := by
+    simpa [inner, mulInnerLoop] using hmodulus
+  have hafterAcc : Limbs.Represents afterAdd.memory 3072 count
+      ((acc + bit * addend) % modulusValue) := by
+    rw [hbitWord]
+    exact BigHelpers.addReturned_represents_mod inner 3072 4096 0 count bit
+      acc addend modulusValue (UInt256.ofNat 383) saved hbitLe hfit3072
+      hfit4096 hfit0 hfit5120 (by right; left; omega) (by right; omega)
+      (by left; omega) (by left; omega) hinnerAcc hinnerAddend
+      hinnerModulus haccReduced haddendReduced hmodulusBound
+  have hafterAddend : Limbs.Represents afterAdd.memory 4096 count addend := by
+    rw [hbitWord]
+    exact BigHelpers.addReturned_preserves_region inner 3072 4096 bit 0 4096
+      count addend (UInt256.ofNat 383) saved hfit3072 hfit5120
+      (by left; omega) (by left; omega) hinnerAddend
+  have hafterModulus :
+      Limbs.Represents afterAdd.memory 0 count modulusValue := by
+    rw [hbitWord]
+    exact BigHelpers.addReturned_preserves_region inner 3072 4096 bit 0 0
+      count modulusValue (UInt256.ofNat 383) saved hfit3072 hfit5120
+      (by right; omega) (by left; omega) hinnerModulus
+  have hdoubleAddend : Limbs.Represents doubled.memory 4096 count
+      ((addend + addend) % modulusValue) := by
+    exact BigHelpers.addReturned_represents_mod afterAdd 4096 4096 0 count 1
+      addend addend modulusValue (UInt256.ofNat 401) saved (by omega)
+      hfit4096 hfit4096 hfit0 hfit5120 (by left) (by right; omega)
+      (by left; omega) (by left; omega) hafterAddend hafterAddend
+      hafterModulus haddendReduced haddendReduced hmodulusBound
+  have hdoubleAcc : Limbs.Represents doubled.memory 3072 count
+      ((acc + bit * addend) % modulusValue) := by
+    exact BigHelpers.addReturned_preserves_region afterAdd 4096 4096 1 0 3072
+      count ((acc + bit * addend) % modulusValue) (UInt256.ofNat 401) saved
+      hfit4096 hfit5120 (by right; omega) (by left; omega) hafterAcc
+  have hdoubleModulus :
+      Limbs.Represents doubled.memory 0 count modulusValue := by
+    exact BigHelpers.addReturned_preserves_region afterAdd 4096 4096 1 0 0
+      count modulusValue (UInt256.ofNat 401) saved hfit4096 hfit5120
+      (by right; omega) (by left; omega) hafterModulus
+  exact ⟨hdoubleAcc, hdoubleAddend, hdoubleModulus⟩
+
 def gasSteps_mulInitialize (s : State) (a b out modulus : UInt256)
     (count : Nat) (returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1000) (hcount : count < 2 ^ 256)
