@@ -364,6 +364,14 @@ def mulOuterState (current : State) (a b out modulus : UInt256)
     stack := [UInt256.ofNat i, a, b, out, modulus, UInt256.ofNat count,
       returnDest] ++ rest }
 
+theorem mulOuterNext_innerState (current : State) (word a b out modulus : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256) :
+    mulOuterNext
+        (mulInnerState current word a b out modulus count i 256 returnDest rest)
+        a b out modulus count i returnDest rest =
+      mulOuterState current a b out modulus count (i + 1) returnDest rest := by
+  rfl
+
 def mulOuterProgress (current : State) (a b out modulus : UInt256)
     (count : Nat) (returnDest : UInt256) (rest : List UInt256) : Nat → State
   | 0 => current
@@ -1260,7 +1268,24 @@ def gasSteps_mulOuterIteration (current : State) (a b out modulus : UInt256)
       (by simpa [afterWord, loaded, mulLoadedState, before,
         mulInnerState, State.fork] using hnp)
   have hchain := hguard.trans (hload.trans (hword.trans (hfinish.trans hexit)))
-  simpa only [mulOuterNext, mulOuterState, mulInnerState] using hchain
+  exact Challenge.EvmProof.GasSteps.cast hchain rfl
+    (mulOuterNext_innerState afterWord word a b out modulus count i returnDest rest)
+
+def gasSteps_mulOuterLoop (current : State) (a b out modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 980) (hcount : count < 2 ^ 256)
+    (hcode : current.executionEnv.code = Challenge.Modexp.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (mulOuterState current a b out modulus count 0 returnDest rest)
+      (mulOuterState
+        (mulOuterProgress current a b out modulus count returnDest rest count)
+        a b out modulus count count returnDest rest) := by
+  exact Challenge.EvmProof.GasSteps.iterateBounded count fun i hi =>
+    gasSteps_mulOuterIteration current a b out modulus count i returnDest rest
+      hcap hcount hi hcode hfork hrun hnp
 
 theorem mulAfterBitDouble_represents (current : State) (a b : UInt256)
     (count i j acc addend modulusValue : Nat) (returnDest : UInt256)
