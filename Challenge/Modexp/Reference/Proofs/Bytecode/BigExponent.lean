@@ -113,6 +113,13 @@ def selectFinishPath :
    opAt 823 (.Swap ⟨0, by decide⟩), opAt 824 .POP,
    pushAt 825 2 963, opAt 826 .JUMP]
 
+def innerFinishPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [opAt 827 .JUMPDEST, opAt 828 .POP, opAt 829 .POP, opAt 830 .POP,
+   pushAt 831 1 1, opAt 832 (.Dup ⟨1, by decide⟩), opAt 833 .ADD,
+   opAt 834 (.Swap ⟨0, by decide⟩), opAt 835 .POP,
+   pushAt 836 2 946, opAt 837 .JUMP]
+
 def exponentEntry (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 944
@@ -385,6 +392,12 @@ def afterSelectedBit (s : State) (accumulatorWord : UInt256)
       byte rest count)
     accumulatorWord count b e m baseOff expOff i offset byte rest (j + 1)
 
+def innerExit (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) : State :=
+  { innerLoop s accumulatorWord count b e m baseOff expOff i offset byte rest 8
+      with pc := UInt256.ofNat 1104 }
+
 @[simp] private theorem exponentPCs (i : Nat) (hi : 717 ≤ i) (hii : i ≤ 755) :
     Artifact.referenceArtifact.instructionPC i =
       ([944,945,946,947,948,949,950,951,954,955,956,957,958,959,960,961,
@@ -428,6 +441,20 @@ private theorem jump1090 :
 private theorem jump963 :
     Decode.isValidJumpDest referenceBytecode 963 = true :=
   Artifact.isValidJumpDest_index 734 (by rfl)
+
+@[simp] private theorem innerFinishPCs (i : Nat) (hi : 827 ≤ i)
+    (hii : i ≤ 837) :
+    Artifact.referenceArtifact.instructionPC i =
+      ([1104,1105,1106,1107,1108,1110,1111,1112,1113,1114,1117])[i - 827]! := by
+  interval_cases i <;> decide
+
+private theorem jump1104 :
+    Decode.isValidJumpDest referenceBytecode 1104 = true :=
+  Artifact.isValidJumpDest_index 827 (by rfl)
+
+private theorem jump946 :
+    Decode.isValidJumpDest referenceBytecode 946 = true :=
+  Artifact.isValidJumpDest_index 719 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_startExponent (s : State) (accumulatorWord : UInt256)
@@ -796,6 +823,63 @@ theorem run_selectFinish (s : State) (accumulatorWord : UInt256)
   simp [selectFinishPath, opAt, pushAt, wfOp, selectExit, selectLoop,
     afterSelectedBit, innerLoop, selectPCs, hcode, hrun, jump963,
     h963, h963Word, hone, hinc, hc11, hc12, hc13, hc14, hc15,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, List.exchange]
+
+set_option linter.unusedSimpArgs false in
+theorem run_innerFinishGuard (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1011)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock innerGuardPath
+      (innerLoop s accumulatorWord count b e m baseOff expOff i offset byte rest
+        8) =
+      some (innerExit s accumulatorWord count b e m baseOff expOff i offset byte
+        rest) := by
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
+  have h8Nat : (8 : UInt256).toNat = 8 := by decide
+  have h1104 : (1104 : UInt256).toNat = 1104 := by decide
+  have h1104Word : (1104 : UInt256) = UInt256.ofNat 1104 := by decide
+  simp [innerGuardPath, opAt, pushAt, wfOp, innerLoop, innerExit,
+    exponentPCs, hcode, hrun, hzeroFalse, h8Nat, h1104, h1104Word, jump1104,
+    hc11, hc12, hc13, UInt256.lt, UInt256.isTrue,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_innerFinish (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1011)
+    (hi : i + 1 < 2 ^ 256) (hcode : s.executionEnv.code = referenceBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock innerFinishPath
+      (innerExit s accumulatorWord count b e m baseOff expOff i offset byte
+        rest) =
+      some (outerLoop s accumulatorWord count b e m baseOff expOff rest
+        (i + 1)) := by
+  have hinc := Challenge.EvmProof.Word.ofNat_add_ofNat
+    (a := i) (b := 1) hi
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have h946 : (946 : UInt256).toNat = 946 := by decide
+  have h946Word : (946 : UInt256) = UInt256.ofNat 946 := by decide
+  have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
+  simp [innerFinishPath, opAt, pushAt, wfOp, innerExit, innerLoop,
+    outerLoop, innerFinishPCs, hcode, hrun, jump946, h946, h946Word, hone,
+    hinc, hc8, hc9, hc10, hc11, hc12,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
