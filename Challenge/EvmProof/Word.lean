@@ -1,4 +1,5 @@
 import EvmSemantics.Crypto.Sha256
+import EvmSemantics.Crypto.Ripemd160
 import EvmSemantics.Data.UInt256
 import Init.Data.Fin.Bitwise
 import Mathlib.Tactic.NormNum
@@ -304,6 +305,17 @@ theorem mask32_eq_ofUInt32 (x : EvmSemantics.UInt256) :
   apply UInt32.toNat_inj.mp
   simp [Nat.add_comm]
 
+@[simp] theorem toUInt32_add (x y : EvmSemantics.UInt256) :
+    toUInt32 (x + y) = toUInt32 x + toUInt32 y := by
+  apply UInt32.toNat_inj.mp
+  simp only [toUInt32_toNat, UInt32.toNat_add]
+  change ((x.val + y.val).val % 2 ^ 32) =
+    (x.toNat % 2 ^ 32 + y.toNat % 2 ^ 32) % 2 ^ 32
+  rw [Fin.val_add]
+  change ((x.toNat + y.toNat) % EvmSemantics.UInt256.size) % 2 ^ 32 = _
+  rw [show EvmSemantics.UInt256.size = 2 ^ 256 by rfl,
+    Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega)), Nat.add_mod]
+
 theorem shiftRight_ofUInt32 (x : UInt32) (n : Nat) (hn : n < 32) :
     EvmSemantics.UInt256.shiftRight
         (ofUInt32 x) (EvmSemantics.UInt256.ofNat n) =
@@ -411,6 +423,29 @@ theorem mask32_or (x y : EvmSemantics.UInt256) :
     Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega)),
     Nat.or_mod_two_pow]
 
+theorem mask32_xor (x y : EvmSemantics.UInt256) :
+    mask32 (x ^^^ y) = ofUInt32 (toUInt32 x ^^^ toUInt32 y) := by
+  apply word_ext
+  rw [mask32_toNat, ofUInt32_toNat, UInt32.toNat_xor,
+    toUInt32_toNat, toUInt32_toNat]
+  change (((x.toNat ^^^ y.toNat) % EvmSemantics.UInt256.size) &&&
+    0xffffffff) = _
+  rw [show 0xffffffff = 2 ^ 32 - 1 by norm_num,
+    Nat.and_two_pow_sub_one_eq_mod,
+    show EvmSemantics.UInt256.size = 2 ^ 256 by rfl,
+    Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega)),
+    Nat.xor_mod_two_pow]
+
+@[simp] theorem toUInt32_or (x y : EvmSemantics.UInt256) :
+    toUInt32 (x ||| y) = toUInt32 x ||| toUInt32 y := by
+  apply ofUInt32_injective
+  rw [← mask32_eq_ofUInt32, mask32_or]
+
+@[simp] theorem toUInt32_xor (x y : EvmSemantics.UInt256) :
+    toUInt32 (x ^^^ y) = toUInt32 x ^^^ toUInt32 y := by
+  apply ofUInt32_injective
+  rw [← mask32_eq_ofUInt32, mask32_xor]
+
 theorem mask32_and (x y : EvmSemantics.UInt256) :
     mask32 (x &&& y) = ofUInt32 (toUInt32 x &&& toUInt32 y) := by
   apply word_ext
@@ -487,6 +522,19 @@ theorem evm_rotr32 (x : UInt32) (n : Nat) (hn0 : 0 < n) (hn : n < 32) :
       ofUInt32 (EvmSemantics.Crypto.Sha256.rotr32 x n) := by
   rw [mask32_or, toUInt32_shiftRight_ofUInt32 x n hn,
     toUInt32_shiftLeft_ofUInt32 x (32 - n) (by omega)]
+  rfl
+
+/-- The masked EVM `SHL/SHR/OR` idiom used by RIPEMD-160 is exactly a
+32-bit left rotation. -/
+theorem evm_rotl32 (x : UInt32) (n : Nat) (hn0 : 0 < n) (hn : n < 32) :
+    mask32
+      (EvmSemantics.UInt256.shiftLeft
+          (ofUInt32 x) (EvmSemantics.UInt256.ofNat n) |||
+       EvmSemantics.UInt256.shiftRight
+          (ofUInt32 x) (EvmSemantics.UInt256.ofNat (32 - n))) =
+      ofUInt32 (EvmSemantics.Crypto.Ripemd160.rotl32 x n) := by
+  rw [mask32_or, toUInt32_shiftLeft_ofUInt32 x n hn,
+    toUInt32_shiftRight_ofUInt32 x (32 - n) (by omega)]
   rfl
 
 end Challenge.EvmProof.Word

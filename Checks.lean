@@ -103,3 +103,19 @@ info: 'Challenge.Modexp.Reference.Proofs.Bytecode.ReferenceCorrect.gasSteps_refe
 /-- info: 'Challenge.Sha256.initialState_frameOK' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in
 #print axioms Challenge.Sha256.initialState_frameOK
+
+/--
+info: 'Challenge.Ripemd160.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correctWithSchedule' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Ripemd160.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correctWithSchedule
+
+/--
+info: 'Challenge.Ripemd160.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correct' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Ripemd160.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correct

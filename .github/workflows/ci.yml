@@ -146,3 +146,35 @@ jobs:
             echo "::error::the scorer accepted a candidate returning 32 zero bytes"
             exit 1
           fi
+
+      # RIPEMD-160 uses the same minimal-spec/frozen-artifact discipline as
+      # SHA-256.  Keep the independently checked source, literal bytecode, and
+      # executable artifact synchronized.
+      - name: Verify RIPEMD-160 specification boundary and frozen bytecode
+        run: |
+          imports="$(grep '^import ' Challenge/Ripemd160/Spec.lean)"
+          if [ "$imports" != 'import EvmSemantics.EVM.BigStep' ]; then
+            echo "::error::RIPEMD-160 Spec.lean must depend only on the pinned EVM semantics"
+            printf '%s\n' "$imports"
+            exit 1
+          fi
+          compiled="$(lake exe yulc Challenge/Ripemd160/Reference/reference.yul)"
+          frozen="$(tr -d '[:space:]' < Challenge/Ripemd160/Reference/reference.hex)"
+          literal="$(lake exe ripemd160challenge --print-reference-hex)"
+          if [ "$compiled" != "$frozen" ] || [ "$literal" != "$frozen" ]; then
+            echo "::error::RIPEMD-160 reference.hex is stale"
+            exit 1
+          fi
+
+      - name: Verify RIPEMD-160 reference and scorer negative control
+        run: |
+          scripts/check-ripemd160-submissions.sh --self-test
+          scripts/check-ripemd160-submissions.sh
+          scripts/report-ripemd160-gas.sh --self-test
+          scripts/check-ripemd160-gas-report.sh
+          lake exe ripemd160challenge --hex=Challenge/Ripemd160/Reference/reference.hex
+          printf '60206000f3' > /tmp/ripemd-zeros.hex
+          if lake exe ripemd160challenge --hex=/tmp/ripemd-zeros.hex; then
+            echo "::error::the RIPEMD-160 scorer accepted a candidate returning 32 zero bytes"
+            exit 1
+          fi
