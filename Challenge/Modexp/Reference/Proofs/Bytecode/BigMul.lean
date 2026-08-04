@@ -186,6 +186,38 @@ def mulWordInnerNext (current : State) (word a b out modulus : UInt256)
     returnDest rest
   mulInnerState doubled word a b out modulus count i (j + 1) returnDest rest
 
+def mulWordBits (word : UInt256) (length : Nat) : List Nat :=
+  (List.range length).map fun j => (mulWordBit word j).toNat
+
+def mulWordProgress (current : State) (word a b out modulus : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256) : Nat → State
+  | 0 => current
+  | j + 1 => mulWordAfterDouble
+      (mulWordProgress current word a b out modulus count i returnDest rest j)
+      word a b out modulus count i j returnDest rest
+
+@[simp] theorem mulWordProgress_executionEnv (current : State)
+    (word a b out modulus : UInt256) (count i j : Nat)
+    (returnDest : UInt256) (rest : List UInt256) :
+    (mulWordProgress current word a b out modulus count i returnDest rest j)
+        .executionEnv = current.executionEnv := by
+  induction j with
+  | zero => rfl
+  | succ j ih =>
+      simp [mulWordProgress, mulWordAfterDouble, mulWordAfterAdd,
+        BigHelpers.addReturned, ih]
+
+@[simp] theorem mulWordProgress_halt (current : State)
+    (word a b out modulus : UInt256) (count i j : Nat)
+    (returnDest : UInt256) (rest : List UInt256) :
+    (mulWordProgress current word a b out modulus count i returnDest rest j)
+        .halt = current.halt := by
+  induction j with
+  | zero => rfl
+  | succ j ih =>
+      simp [mulWordProgress, mulWordAfterDouble, mulWordAfterAdd,
+        BigHelpers.addReturned, ih]
+
 def mulInnerLoop (current : State) (a b out modulus : UInt256)
     (count i j : Nat) (returnDest : UInt256) (rest : List UInt256) : State :=
   let off := UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5)
@@ -775,6 +807,126 @@ def gasSteps_mulBitIteration (current : State) (a b out modulus : UInt256)
   exact hguard.trans <| htoAdd.trans <| hadd'.trans <|
     htoDouble.trans <| hdouble'.trans hnext
 
+def gasSteps_mulWordBitIteration (current : State)
+    (word a b out modulus : UInt256) (count i j : Nat)
+    (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 980) (hcount : count < 2 ^ 256) (hj : j < 256)
+    (hcode : current.executionEnv.code = BigHelpers.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (mulInnerState current word a b out modulus count i j returnDest rest)
+      (mulWordInnerNext current word a b out modulus count i j
+        returnDest rest) := by
+  let inner := mulInnerState current word a b out modulus count i j
+    returnDest rest
+  let bit := mulWordBit word j
+  let saved := mulWordRest word a b out modulus count i j returnDest rest
+  let afterAdd := mulWordAfterAdd current word a b out modulus count i j
+    returnDest rest
+  let afterDouble := mulWordAfterDouble current word a b out modulus count i j
+    returnDest rest
+  have hguard := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    BigHelpers.Artifact.referenceArtifact .Osaka mulInnerGuardPath
+      (by simpa [inner, mulInnerState,
+        BigHelpers.Artifact.referenceArtifact] using hcode)
+      (by simpa [inner, mulInnerState, State.fork] using hfork)
+      (run_mulWordInnerGuard current word a b out modulus count i j returnDest
+        rest (by omega) hj hrun)
+      (by simpa [inner, mulInnerState] using hrun)
+      (by simpa [inner, mulInnerState, State.fork] using hnp)
+  have htoAdd := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    BigHelpers.Artifact.referenceArtifact .Osaka mulInnerToAddPath
+      (by simpa [inner, mulInnerState,
+        BigHelpers.Artifact.referenceArtifact] using hcode)
+      (by simpa [inner, mulInnerState, State.fork] using hfork)
+      (run_mulWordInnerToAdd current word a b out modulus count i j returnDest
+        rest (by omega) hj hcode hrun)
+      (by simpa [inner, mulInnerState] using hrun)
+      (by simpa [inner, mulInnerState, State.fork] using hnp)
+  have hadd := BigHelpers.gasSteps_addMaskedMod inner out (UInt256.ofNat 4096)
+    bit modulus count (UInt256.ofNat 383) saved (by simp [saved]; omega)
+    hcount (by simpa [inner, mulInnerState] using hcode)
+    (by simpa [inner, mulInnerState, State.fork] using hfork)
+    (by simpa [inner, mulInnerState] using hrun)
+    (by simpa [inner, mulInnerState, State.fork] using hnp) (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt (by norm_num : 383 < 2 ^ 256)]
+      exact jump383)
+  have hadd' : Challenge.EvmProof.GasSteps
+      (BigHelpers.addEntry inner out (UInt256.ofNat 4096) bit modulus count
+        (UInt256.ofNat 383) saved) afterAdd := by
+    simpa [afterAdd, mulWordAfterAdd, inner, bit, saved] using hadd
+  have htoDouble := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    BigHelpers.Artifact.referenceArtifact .Osaka mulAddToDoublePath
+      (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
+        BigHelpers.addReturned, BigHelpers.Artifact.referenceArtifact] using hcode)
+      (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
+        BigHelpers.addReturned, State.fork] using hfork)
+      (by simpa [afterAdd, mulWordAfterAdd, inner, saved] using
+        run_mulWordAddToDouble current word a b out modulus count i j returnDest
+          rest (by omega) hcode hrun)
+      (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
+        BigHelpers.addReturned] using hrun)
+      (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
+        BigHelpers.addReturned, State.fork] using hnp)
+  have hdouble := BigHelpers.gasSteps_addMaskedMod afterAdd
+    (UInt256.ofNat 4096) (UInt256.ofNat 4096) (UInt256.ofNat 1) modulus
+    count (UInt256.ofNat 401) saved (by simp [saved]; omega) hcount
+    (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
+      BigHelpers.addReturned] using hcode)
+    (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
+      BigHelpers.addReturned, State.fork] using hfork)
+    (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
+      BigHelpers.addReturned] using hrun)
+    (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
+      BigHelpers.addReturned, State.fork] using hnp) (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt (by norm_num : 401 < 2 ^ 256)]
+      exact jump401)
+  have hdouble' : Challenge.EvmProof.GasSteps
+      (BigHelpers.addEntry afterAdd (UInt256.ofNat 4096)
+        (UInt256.ofNat 4096) (UInt256.ofNat 1) modulus count
+        (UInt256.ofNat 401) saved) afterDouble := by
+    simpa [afterDouble, mulWordAfterDouble, afterAdd, saved] using hdouble
+  have hnext := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    BigHelpers.Artifact.referenceArtifact .Osaka mulDoubleToNextPath
+      (by simpa [afterDouble, mulWordAfterDouble, mulWordAfterAdd, inner,
+        mulInnerState, BigHelpers.addReturned,
+        BigHelpers.Artifact.referenceArtifact] using hcode)
+      (by simpa [afterDouble, mulWordAfterDouble, mulWordAfterAdd, inner,
+        mulInnerState, BigHelpers.addReturned, State.fork] using hfork)
+      (by simpa [afterDouble] using run_mulWordDoubleToNext current word a b out
+        modulus count i j returnDest rest (by omega) (by omega) hcode hrun)
+      (by simpa [afterDouble, mulWordAfterDouble, mulWordAfterAdd, inner,
+        mulInnerState, BigHelpers.addReturned] using hrun)
+      (by simpa [afterDouble, mulWordAfterDouble, mulWordAfterAdd, inner,
+        mulInnerState, BigHelpers.addReturned, State.fork] using hnp)
+  exact hguard.trans <| htoAdd.trans <| hadd'.trans <|
+    htoDouble.trans <| hdouble'.trans hnext
+
+def gasSteps_mulWordLoop (current : State) (word a b out modulus : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 980) (hcount : count < 2 ^ 256)
+    (hcode : current.executionEnv.code = BigHelpers.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (mulInnerState current word a b out modulus count i 0 returnDest rest)
+      (mulInnerState
+        (mulWordProgress current word a b out modulus count i returnDest rest 256)
+        word a b out modulus count i 256 returnDest rest) := by
+  exact Challenge.EvmProof.GasSteps.iterateBounded 256 fun j hj =>
+    gasSteps_mulWordBitIteration
+      (mulWordProgress current word a b out modulus count i returnDest rest j)
+      word a b out modulus count i j returnDest rest hcap hcount hj
+      (by simpa using hcode)
+      (by simpa [State.fork] using hfork)
+      (by simpa using hrun)
+      (by simpa [State.fork] using hnp)
+
 theorem mulAfterBitDouble_represents (current : State) (a b : UInt256)
     (count i j acc addend modulusValue : Nat) (returnDest : UInt256)
     (rest : List UInt256) (hcount : count ≤ 32)
@@ -854,6 +1006,123 @@ theorem mulAfterBitDouble_represents (current : State) (a b : UInt256)
       (by right; omega) (by left; omega) hafterModulus
   exact ⟨hdoubleAcc, hdoubleAddend, hdoubleModulus⟩
 
+theorem mulWordAfterDouble_represents (current : State) (word a b : UInt256)
+    (count i j acc addend modulusValue : Nat) (returnDest : UInt256)
+    (rest : List UInt256) (hcount : count ≤ 32)
+    (hmodulusPos : 0 < modulusValue)
+    (hmodulusBound : modulusValue < Limbs.radix ^ count)
+    (hacc : Limbs.Represents current.memory 3072 count acc)
+    (haddend : Limbs.Represents current.memory 4096 count addend)
+    (hmodulus : Limbs.Represents current.memory 0 count modulusValue)
+    (haccReduced : acc < modulusValue)
+    (haddendReduced : addend < modulusValue) :
+    let doubled := mulWordAfterDouble current word a b (UInt256.ofNat 3072)
+      (UInt256.ofNat 0) count i j returnDest rest
+    let bit := (mulWordBit word j).toNat
+    Limbs.Represents doubled.memory 3072 count
+        ((acc + bit * addend) % modulusValue) ∧
+      Limbs.Represents doubled.memory 4096 count
+        ((addend + addend) % modulusValue) ∧
+      Limbs.Represents doubled.memory 0 count modulusValue := by
+  let inner := mulInnerState current word a b (UInt256.ofNat 3072)
+    (UInt256.ofNat 0) count i j returnDest rest
+  let bitWord := mulWordBit word j
+  let bit := bitWord.toNat
+  let saved := mulWordRest word a b (UInt256.ofNat 3072)
+    (UInt256.ofNat 0) count i j returnDest rest
+  let afterAdd := mulWordAfterAdd current word a b (UInt256.ofNat 3072)
+    (UInt256.ofNat 0) count i j returnDest rest
+  let doubled := mulWordAfterDouble current word a b (UInt256.ofNat 3072)
+    (UInt256.ofNat 0) count i j returnDest rest
+  have hbitLe : bit ≤ 1 := mulWordBit_toNat_le_one word j
+  have hbitWord : bitWord = UInt256.ofNat bit :=
+    Challenge.EvmProof.Word.word_eq_ofNat_toNat bitWord
+  have hfit0 : 0 + 32 * count < 2 ^ 256 := by omega
+  have hfit3072 : 3072 + 32 * count < 2 ^ 256 := by omega
+  have hfit4096 : 4096 + 32 * count < 2 ^ 256 := by omega
+  have hfit5120 : 5120 + 32 * count < 2 ^ 256 := by omega
+  have hinnerAcc : Limbs.Represents inner.memory 3072 count acc := by
+    simpa [inner, mulInnerState] using hacc
+  have hinnerAddend : Limbs.Represents inner.memory 4096 count addend := by
+    simpa [inner, mulInnerState] using haddend
+  have hinnerModulus : Limbs.Represents inner.memory 0 count modulusValue := by
+    simpa [inner, mulInnerState] using hmodulus
+  have hafterAcc : Limbs.Represents afterAdd.memory 3072 count
+      ((acc + bit * addend) % modulusValue) := by
+    rw [hbitWord]
+    exact BigHelpers.addReturned_represents_mod inner 3072 4096 0 count bit
+      acc addend modulusValue (UInt256.ofNat 383) saved hbitLe hfit3072
+      hfit4096 hfit0 hfit5120 (by right; left; omega) (by right; omega)
+      (by left; omega) (by left; omega) hinnerAcc hinnerAddend
+      hinnerModulus haccReduced haddendReduced hmodulusBound
+  have hafterAddend : Limbs.Represents afterAdd.memory 4096 count addend := by
+    rw [hbitWord]
+    exact BigHelpers.addReturned_preserves_region inner 3072 4096 bit 0 4096
+      count addend (UInt256.ofNat 383) saved hfit3072 hfit5120
+      (by left; omega) (by left; omega) hinnerAddend
+  have hafterModulus :
+      Limbs.Represents afterAdd.memory 0 count modulusValue := by
+    rw [hbitWord]
+    exact BigHelpers.addReturned_preserves_region inner 3072 4096 bit 0 0
+      count modulusValue (UInt256.ofNat 383) saved hfit3072 hfit5120
+      (by right; omega) (by left; omega) hinnerModulus
+  have hdoubleAddend : Limbs.Represents doubled.memory 4096 count
+      ((addend + addend) % modulusValue) := by
+    exact BigHelpers.addReturned_represents_mod afterAdd 4096 4096 0 count 1
+      addend addend modulusValue (UInt256.ofNat 401) saved (by omega)
+      hfit4096 hfit4096 hfit0 hfit5120 (by left) (by right; omega)
+      (by left; omega) (by left; omega) hafterAddend hafterAddend
+      hafterModulus haddendReduced haddendReduced hmodulusBound
+  have hdoubleAcc : Limbs.Represents doubled.memory 3072 count
+      ((acc + bit * addend) % modulusValue) := by
+    exact BigHelpers.addReturned_preserves_region afterAdd 4096 4096 1 0 3072
+      count ((acc + bit * addend) % modulusValue) (UInt256.ofNat 401) saved
+      hfit4096 hfit5120 (by right; omega) (by left; omega) hafterAcc
+  have hdoubleModulus :
+      Limbs.Represents doubled.memory 0 count modulusValue := by
+    exact BigHelpers.addReturned_preserves_region afterAdd 4096 4096 1 0 0
+      count modulusValue (UInt256.ofNat 401) saved hfit4096 hfit5120
+      (by right; omega) (by left; omega) hafterModulus
+  exact ⟨hdoubleAcc, hdoubleAddend, hdoubleModulus⟩
+
+theorem mulWordProgress_represents (current : State) (word a b : UInt256)
+    (count i steps acc addend modulusValue : Nat) (returnDest : UInt256)
+    (rest : List UInt256) (hsteps : steps ≤ 256) (hcount : count ≤ 32)
+    (hmodulusPos : 0 < modulusValue)
+    (hmodulusBound : modulusValue < Limbs.radix ^ count)
+    (hacc : Limbs.Represents current.memory 3072 count acc)
+    (haddend : Limbs.Represents current.memory 4096 count addend)
+    (hmodulus : Limbs.Represents current.memory 0 count modulusValue)
+    (haccReduced : acc < modulusValue)
+    (haddendReduced : addend < modulusValue) :
+    let progress := mulWordProgress current word a b (UInt256.ofNat 3072)
+      (UInt256.ofNat 0) count i returnDest rest steps
+    let result := Algorithm.mulBits modulusValue acc addend
+      (mulWordBits word steps)
+    Limbs.Represents progress.memory 3072 count result.1 ∧
+      Limbs.Represents progress.memory 4096 count result.2 ∧
+      Limbs.Represents progress.memory 0 count modulusValue := by
+  induction steps with
+  | zero =>
+      simp [mulWordProgress, mulWordBits, Algorithm.mulBits, hacc, haddend,
+        hmodulus]
+  | succ steps ih =>
+      have hsteps' : steps ≤ 256 := by omega
+      let before := mulWordProgress current word a b (UInt256.ofNat 3072)
+        (UInt256.ofNat 0) count i returnDest rest steps
+      let beforeResult := Algorithm.mulBits modulusValue acc addend
+        (mulWordBits word steps)
+      have hbefore := ih hsteps'
+      have hbeforeReduced := Algorithm.mulBits_lt (mulWordBits word steps)
+        hmodulusPos haccReduced haddendReduced
+      have hstep := mulWordAfterDouble_represents before word a b count i steps
+        beforeResult.1 beforeResult.2 modulusValue returnDest rest hcount
+        hmodulusPos hmodulusBound hbefore.1 hbefore.2.1 hbefore.2.2
+        hbeforeReduced.1 hbeforeReduced.2
+      simpa [mulWordProgress, mulWordBits, List.range_succ,
+        List.map_append, Algorithm.mulBits_append, Algorithm.mulBits,
+        before, beforeResult] using hstep
+
 theorem gasSteps_mulBitIteration_cost_potential (current : State)
     (a b out modulus : UInt256) (count i j : Nat) (returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 980)
@@ -930,6 +1199,112 @@ theorem gasSteps_mulBitIteration_cost_potential (current : State)
   unfold gasSteps_mulBitIteration
   simp only [Challenge.EvmProof.GasSteps.trans_cost]
   omega
+
+theorem gasSteps_mulWordBitIteration_cost_potential (current : State)
+    (word a b out modulus : UInt256) (count i j : Nat)
+    (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 980) (hcount : count < 2 ^ 256) (hj : j < 256)
+    (hcode : current.executionEnv.code = BigHelpers.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false) :
+    (gasSteps_mulWordBitIteration current word a b out modulus count i j
+      returnDest rest hcap hcount hj hcode hfork hrun hnp).cost +
+        MachineState.memCost
+          (mulInnerState current word a b out modulus count i j
+            returnDest rest).activeWords.toNat =
+      (423 + count * 906) + MachineState.memCost
+        (mulWordInnerNext current word a b out modulus count i j
+          returnDest rest).activeWords.toNat := by
+  let inner := mulInnerState current word a b out modulus count i j
+    returnDest rest
+  let bit := mulWordBit word j
+  let saved := mulWordRest word a b out modulus count i j returnDest rest
+  let afterAdd := mulWordAfterAdd current word a b out modulus count i j
+    returnDest rest
+  let afterDouble := mulWordAfterDouble current word a b out modulus count i j
+    returnDest rest
+  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulInnerGuardPath 25
+      (run_mulWordInnerGuard current word a b out modulus count i j returnDest
+        rest (by omega) hj hrun)
+      (by simpa [inner, mulInnerState, State.fork] using hfork)
+      (by native_decide) (by rfl)
+  have htoAdd := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulInnerToAddPath 44
+      (run_mulWordInnerToAdd current word a b out modulus count i j returnDest
+        rest (by omega) hj hcode hrun)
+      (by simpa [inner, mulInnerState, State.fork] using hfork)
+      (by native_decide) (by rfl)
+  have hadd := BigHelpers.gasSteps_addMaskedMod_cost_potential inner out
+    (UInt256.ofNat 4096) bit modulus count (UInt256.ofNat 383) saved
+    (by simp [saved]; omega) hcount
+    (by simpa [inner, mulInnerState] using hcode)
+    (by simpa [inner, mulInnerState, State.fork] using hfork)
+    (by simpa [inner, mulInnerState] using hrun)
+    (by simpa [inner, mulInnerState, State.fork] using hnp) (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt (by norm_num : 383 < 2 ^ 256)]
+      exact jump383)
+  have htoDouble :=
+    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+      mulAddToDoublePath 29
+      (by simpa [afterAdd, mulWordAfterAdd, inner, saved] using
+        run_mulWordAddToDouble current word a b out modulus count i j returnDest
+          rest (by omega) hcode hrun)
+      (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
+        BigHelpers.addReturned, State.fork] using hfork)
+      (by native_decide) (by rfl)
+  have hdouble := BigHelpers.gasSteps_addMaskedMod_cost_potential afterAdd
+    (UInt256.ofNat 4096) (UInt256.ofNat 4096) (UInt256.ofNat 1) modulus
+    count (UInt256.ofNat 401) saved (by simp [saved]; omega) hcount
+    (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
+      BigHelpers.addReturned] using hcode)
+    (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
+      BigHelpers.addReturned, State.fork] using hfork)
+    (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
+      BigHelpers.addReturned] using hrun)
+    (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
+      BigHelpers.addReturned, State.fork] using hnp) (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt (by norm_num : 401 < 2 ^ 256)]
+      exact jump401)
+  have hnext := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulDoubleToNextPath 27
+      (by simpa [afterDouble] using run_mulWordDoubleToNext current word a b out
+        modulus count i j returnDest rest (by omega) (by omega) hcode hrun)
+      (by simpa [afterDouble, mulWordAfterDouble, mulWordAfterAdd, inner,
+        mulInnerState, BigHelpers.addReturned, State.fork] using hfork)
+      (by native_decide) (by rfl)
+  unfold gasSteps_mulWordBitIteration
+  simp only [Challenge.EvmProof.GasSteps.trans_cost]
+  omega
+
+theorem gasSteps_mulWordLoop_cost_potential (current : State)
+    (word a b out modulus : UInt256) (count i : Nat)
+    (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 980) (hcount : count < 2 ^ 256)
+    (hcode : current.executionEnv.code = BigHelpers.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false) :
+    (gasSteps_mulWordLoop current word a b out modulus count i returnDest rest
+      hcap hcount hcode hfork hrun hnp).cost + MachineState.memCost
+        (mulInnerState current word a b out modulus count i 0
+          returnDest rest).activeWords.toNat =
+      256 * (423 + count * 906) + MachineState.memCost
+        (mulInnerState
+          (mulWordProgress current word a b out modulus count i returnDest rest 256)
+          word a b out modulus count i 256 returnDest rest).activeWords.toNat := by
+  unfold gasSteps_mulWordLoop
+  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
+  intro j hj
+  simpa [mulWordInnerNext, mulWordProgress] using
+    gasSteps_mulWordBitIteration_cost_potential
+      (mulWordProgress current word a b out modulus count i returnDest rest j)
+      word a b out modulus count i j returnDest rest hcap hcount hj
+      (by simpa using hcode) (by simpa [State.fork] using hfork)
+      (by simpa using hrun) (by simpa [State.fork] using hnp)
 
 theorem mulAfterCopy_represents (s : State) (bPtr count aValue bValue
     modulusValue : Nat) (returnDest : UInt256) (rest : List UInt256)

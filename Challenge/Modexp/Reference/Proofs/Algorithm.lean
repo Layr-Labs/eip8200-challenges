@@ -98,6 +98,27 @@ def mulBits (modulus : Nat) : Nat → Nat → List Nat → Nat × Nat
       mulBits modulus ((acc + bit * addend) % modulus)
         ((addend + addend) % modulus) bits
 
+theorem mulBits_append (modulus acc addend : Nat) (left right : List Nat) :
+    mulBits modulus acc addend (left ++ right) =
+      let middle := mulBits modulus acc addend left
+      mulBits modulus middle.1 middle.2 right := by
+  induction left generalizing acc addend with
+  | nil => rfl
+  | cons bit bits ih =>
+      simp only [List.cons_append, mulBits]
+      exact ih _ _
+
+theorem mulBits_lt {modulus acc addend : Nat} (bits : List Nat)
+    (hmodulus : 0 < modulus) (hacc : acc < modulus)
+    (haddend : addend < modulus) :
+    (mulBits modulus acc addend bits).1 < modulus ∧
+      (mulBits modulus acc addend bits).2 < modulus := by
+  induction bits generalizing acc addend with
+  | nil => exact ⟨hacc, haddend⟩
+  | cons bit bits ih =>
+      rw [mulBits]
+      exact ih (Nat.mod_lt _ hmodulus) (Nat.mod_lt _ hmodulus)
+
 theorem mulBits_fst (modulus acc addend : Nat) (bits : List Nat) :
     (mulBits modulus acc addend bits).1 % modulus =
       (acc + addend * Nat.ofDigits 2 bits) % modulus := by
