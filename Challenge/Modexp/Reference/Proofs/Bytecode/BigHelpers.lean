@@ -1737,6 +1737,172 @@ def subtractProgress (memory : ByteArray) (activeWords dst modulus : UInt256) :
           (Data.Bytes.natToBytesPadded z.toNat 32) candidateAt.toNat,
         stored, borrow⟩
 
+/-- Candidate writes preserve an input region that is disjoint from the fixed
+`0x1400` candidate buffer. -/
+theorem readWord_subtractProgress_input (memory : ByteArray)
+    (activeWords dst modulus : UInt256) (ptr count iter j : Nat)
+    (hiter : iter ≤ j) (hj : j < count)
+    (hcandidateFit : 5120 + 32 * count < 2 ^ 256)
+    (hdisjoint : ptr + 32 * count ≤ 5120 ∨
+      5120 + 32 * count ≤ ptr) :
+    MachineState.readWord
+        (subtractProgress memory activeWords dst modulus iter).memory
+        (ptr + 32 * j) =
+      MachineState.readWord memory (ptr + 32 * j) := by
+  induction iter with
+  | zero => rfl
+  | succ iter ih =>
+      rw [subtractProgress,
+        Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+      · exact ih (by omega)
+      · have hsize (value : Nat) :
+            (Data.Bytes.natToBytesPadded value 32).size = 32 := by
+          simp [Data.Bytes.natToBytesPadded, ByteArray.size]
+        rw [hsize, addOffset_toNat 5120 iter (by omega)]
+        rcases hdisjoint with hbefore | hafter
+        · right; omega
+        · left; omega
+
+structure SubtractNatProgress where
+  digits : List Nat
+  borrow : Nat
+
+/-- Mathematical subtraction prefix driven by the unchanged input regions. -/
+def subtractNatProgress (memory : ByteArray) (dst modulus : Nat) :
+    Nat → SubtractNatProgress
+  | 0 => ⟨[], 0⟩
+  | i + 1 =>
+      let before := subtractNatProgress memory dst modulus i
+      let x := (MachineState.readWord memory (dst + 32 * i)).toNat
+      let y := (MachineState.readWord memory (modulus + 32 * i)).toNat
+      let nextBorrow := if x < y + before.borrow then 1 else 0
+      ⟨before.digits ++
+          [x + Limbs.radix * nextBorrow - y - before.borrow], nextBorrow⟩
+
+theorem subtractNatProgress_eq_subDigitLists (memory : ByteArray)
+    (dst modulus count : Nat) :
+    let natural := subtractNatProgress memory dst modulus count
+    let result := Limbs.subDigitLists
+      (Limbs.memoryLimbs memory dst count)
+      (Limbs.memoryLimbs memory modulus count) 0
+    natural.digits = result.1 ∧ natural.borrow = result.2 := by
+  induction count with
+  | zero =>
+      simp [subtractNatProgress, Limbs.memoryLimbs, Limbs.subDigitLists]
+  | succ count ih =>
+      rw [subtractNatProgress, memoryLimbs_succ, memoryLimbs_succ,
+        Limbs.subDigitLists_append_single (by simp [Limbs.memoryLimbs])]
+      rcases ih with ⟨hdigits, hborrow⟩
+      simp only
+      rw [hdigits, hborrow]
+      exact ⟨rfl, rfl⟩
+
+theorem subtractProgress_matches_nat (memory : ByteArray)
+    (activeWords : UInt256) (dst modulus count iter : Nat)
+    (hiter : iter ≤ count)
+    (hdstFit : dst + 32 * count < 2 ^ 256)
+    (hmodulusFit : modulus + 32 * count < 2 ^ 256)
+    (hcandidateFit : 5120 + 32 * count < 2 ^ 256)
+    (hdstDisjoint : dst + 32 * count ≤ 5120 ∨
+      5120 + 32 * count ≤ dst)
+    (hmodulusDisjoint : modulus + 32 * count ≤ 5120 ∨
+      5120 + 32 * count ≤ modulus) :
+    let progress := subtractProgress memory activeWords (UInt256.ofNat dst)
+      (UInt256.ofNat modulus) iter
+    let natural := subtractNatProgress memory dst modulus iter
+    Limbs.memoryLimbs progress.memory 5120 iter = natural.digits ∧
+      progress.borrow.toNat = natural.borrow ∧ natural.borrow ≤ 1 := by
+  induction iter with
+  | zero =>
+      have hzero : (0 : UInt256).toNat = 0 := by decide
+      simp [subtractProgress, subtractNatProgress, Limbs.memoryLimbs, hzero]
+  | succ iter ih =>
+      have hi : iter < count := by omega
+      have hprefix := ih (by omega)
+      let before := subtractProgress memory activeWords (UInt256.ofNat dst)
+        (UInt256.ofNat modulus) iter
+      let naturalBefore := subtractNatProgress memory dst modulus iter
+      have hbeforeMemory :
+          Limbs.memoryLimbs before.memory 5120 iter = naturalBefore.digits :=
+        hprefix.1
+      have hbeforeBorrow : before.borrow.toNat = naturalBefore.borrow :=
+        hprefix.2.1
+      have hbeforeBorrowLe : naturalBefore.borrow ≤ 1 := hprefix.2.2
+      let x := MachineState.readWord before.memory (dst + 32 * iter)
+      let y := MachineState.readWord before.memory (modulus + 32 * iter)
+      have hx : x = MachineState.readWord memory (dst + 32 * iter) := by
+        exact readWord_subtractProgress_input memory activeWords
+          (UInt256.ofNat dst) (UInt256.ofNat modulus) dst count iter iter
+          (by omega) hi hcandidateFit hdstDisjoint
+      have hy : y = MachineState.readWord memory (modulus + 32 * iter) := by
+        exact readWord_subtractProgress_input memory activeWords
+          (UInt256.ofNat dst) (UInt256.ofNat modulus) modulus count iter iter
+          (by omega) hi hcandidateFit hmodulusDisjoint
+      have hstep := subLimbStep_toNat x y before.borrow (by
+        rw [hbeforeBorrow]
+        exact hbeforeBorrowLe)
+      have hoffDst :
+          (UInt256.ofNat dst + UInt256.shiftLeft (UInt256.ofNat iter)
+            (UInt256.ofNat 5)).toNat = dst + 32 * iter :=
+        addOffset_toNat dst iter (by omega)
+      have hoffModulus :
+          (UInt256.ofNat modulus + UInt256.shiftLeft (UInt256.ofNat iter)
+            (UInt256.ofNat 5)).toNat = modulus + 32 * iter :=
+        addOffset_toNat modulus iter (by omega)
+      have hoffCandidate :
+          (UInt256.ofNat 5120 + UInt256.shiftLeft (UInt256.ofNat iter)
+            (UInt256.ofNat 5)).toNat = 5120 + 32 * iter :=
+        addOffset_toNat 5120 iter (by omega)
+      dsimp only [subtractProgress, subtractNatProgress]
+      rw [hoffDst, hoffModulus, hoffCandidate, memoryLimbs_write_next]
+      constructor
+      · rw [hbeforeMemory]
+        congr 2
+        simpa [x, y, before, naturalBefore, hx, hy, hbeforeBorrow]
+          using hstep.1
+      · constructor
+        · simpa [x, y, before, naturalBefore, hx, hy, hbeforeBorrow]
+            using hstep.2
+        · split <;> omega
+
+theorem subtractProgress_value_borrow (memory : ByteArray)
+    (activeWords : UInt256) (dst modulus count wrapped modulusValue : Nat)
+    (hdstFit : dst + 32 * count < 2 ^ 256)
+    (hmodulusFit : modulus + 32 * count < 2 ^ 256)
+    (hcandidateFit : 5120 + 32 * count < 2 ^ 256)
+    (hdstDisjoint : dst + 32 * count ≤ 5120 ∨
+      5120 + 32 * count ≤ dst)
+    (hmodulusDisjoint : modulus + 32 * count ≤ 5120 ∨
+      5120 + 32 * count ≤ modulus)
+    (hdst : Limbs.Represents memory dst count wrapped)
+    (hmodulus : Limbs.Represents memory modulus count modulusValue) :
+    let progress := subtractProgress memory activeWords (UInt256.ofNat dst)
+      (UInt256.ofNat modulus) count
+    Nat.ofDigits Limbs.radix
+        (Limbs.memoryLimbs progress.memory 5120 count) + modulusValue =
+      wrapped + Limbs.radix ^ count * progress.borrow.toNat ∧
+      progress.borrow.toNat ≤ 1 := by
+  let progress := subtractProgress memory activeWords (UInt256.ofNat dst)
+    (UInt256.ofNat modulus) count
+  let natural := subtractNatProgress memory dst modulus count
+  let result := Limbs.subDigitLists
+    (Limbs.memoryLimbs memory dst count)
+    (Limbs.memoryLimbs memory modulus count) 0
+  have hmatch := subtractProgress_matches_nat memory activeWords dst modulus
+    count count (by omega) hdstFit hmodulusFit hcandidateFit hdstDisjoint
+    hmodulusDisjoint
+  have hcanonical := subtractNatProgress_eq_subDigitLists memory dst modulus count
+  have hvalue := Limbs.subDigitLists_value (borrow := 0)
+    (xs := Limbs.memoryLimbs memory dst count)
+    (ys := Limbs.memoryLimbs memory modulus count) (by simp)
+    (Limbs.memoryLimb_lt memory dst count)
+    (Limbs.memoryLimb_lt memory modulus count) (by omega)
+  rw [Nat.add_zero, Limbs.value_of_represents hdst,
+    Limbs.value_of_represents hmodulus] at hvalue
+  dsimp only [progress, natural, result] at hmatch hcanonical ⊢
+  rw [hmatch.1, hcanonical.1, hmatch.2.1, hcanonical.2]
+  exact ⟨hvalue, by simpa [← hcanonical.2] using hmatch.2.2⟩
+
 def subtractLoop (s : State) (dst src take modulus : UInt256)
     (count i : Nat) (returnDest : UInt256) (rest : List UInt256) : State :=
   let mask := 0 - take

@@ -369,6 +369,26 @@ def subDigitLists : List Nat → List Nat → Nat → List Nat × Nat
       (digit :: next.1, next.2)
   | _, _, borrow => ([], borrow)
 
+theorem subDigitLists_append_single {xs ys : List Nat} {borrow x y : Nat}
+    (hlength : xs.length = ys.length) :
+    subDigitLists (xs ++ [x]) (ys ++ [y]) borrow =
+      let before := subDigitLists xs ys borrow
+      let nextBorrow := if x < y + before.2 then 1 else 0
+      (before.1 ++ [x + radix * nextBorrow - y - before.2], nextBorrow) := by
+  induction xs generalizing ys borrow with
+  | nil =>
+      cases ys with
+      | nil => rfl
+      | cons y ys => simp at hlength
+  | cons head xs ih =>
+      cases ys with
+      | nil => simp at hlength
+      | cons other ys =>
+          have hlength' : xs.length = ys.length := by simpa using hlength
+          simp only [List.cons_append, subDigitLists]
+          rw [ih hlength']
+          rfl
+
 theorem subDigitLists_value {xs ys : List Nat} {borrow : Nat}
     (hlength : xs.length = ys.length)
     (hxs : ∀ digit ∈ xs, digit < radix)
