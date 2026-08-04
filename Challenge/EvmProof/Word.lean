@@ -42,6 +42,37 @@ theorem word_add_comm (a b : EvmSemantics.UInt256) : a + b = b + a := by
   rw [Fin.val_add]
   rfl
 
+@[simp] theorem word_toNat_sub (a b : EvmSemantics.UInt256) :
+    (a - b).toNat = (2 ^ 256 + a.toNat - b.toNat) % 2 ^ 256 := by
+  change (a.val - b.val).val = _
+  rw [Fin.val_sub]
+  change (EvmSemantics.UInt256.size - b.toNat + a.toNat) %
+      EvmSemantics.UInt256.size = _
+  congr 1
+  change 2 ^ 256 - b.toNat + a.toNat = 2 ^ 256 + a.toNat - b.toNat
+  have hb : b.toNat < 2 ^ 256 := b.val.isLt
+  omega
+
+theorem word_toNat_sub_cond (a b : EvmSemantics.UInt256) :
+    (a - b).toNat =
+      if a.toNat < b.toNat then 2 ^ 256 + a.toNat - b.toNat
+      else a.toNat - b.toNat := by
+  rw [word_toNat_sub]
+  by_cases hab : a.toNat < b.toNat
+  · rw [if_pos hab, Nat.mod_eq_of_lt]
+    have ha : a.toNat < 2 ^ 256 := a.val.isLt
+    have hb : b.toNat < 2 ^ 256 := b.val.isLt
+    omega
+  · rw [if_neg hab]
+    have hb : b.toNat < 2 ^ 256 := b.val.isLt
+    have hrearrange : 2 ^ 256 + a.toNat - b.toNat =
+        2 ^ 256 + (a.toNat - b.toNat) := by omega
+    have hdifference : a.toNat - b.toNat < 2 ^ 256 :=
+      Nat.lt_of_le_of_lt (Nat.sub_le _ _) a.val.isLt
+    rw [hrearrange, Nat.add_mod, Nat.mod_self, Nat.zero_add,
+      Nat.mod_eq_of_lt hdifference]
+    exact Nat.mod_eq_of_lt hdifference
+
 @[simp] theorem word_toNat_lt (a b : EvmSemantics.UInt256) :
     (EvmSemantics.UInt256.lt a b).toNat =
       if a.toNat < b.toNat then 1 else 0 := by

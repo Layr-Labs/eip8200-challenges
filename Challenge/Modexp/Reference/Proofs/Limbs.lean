@@ -441,4 +441,46 @@ theorem subDigitLists_digits_lt {xs ys : List Nat} {borrow digit : Nat}
               (fun value hvalue => hys value (by simp [hvalue]))
               (by split <;> simp) hdigit
 
+/-- Natural-number specification of the EVM's two-stage `SUB`/`LT` borrow
+sequence for one limb. -/
+theorem subLimbBits {x y borrow : Nat}
+    (hx : x < radix) (hy : y < radix) (hborrow : borrow ≤ 1) :
+    let difference := if x < y then radix + x - y else x - y
+    let digit := if difference < borrow then radix + difference - borrow
+      else difference - borrow
+    let nextBorrow := if x < y + borrow then 1 else 0
+    digit = x + radix * nextBorrow - y - borrow ∧
+      ((if x < y then 1 else 0) |||
+        (if difference < borrow then 1 else 0)) = nextBorrow := by
+  dsimp only
+  interval_cases borrow
+  · by_cases hxy : x < y
+    · rw [if_pos hxy, if_neg (by omega), if_pos (by omega),
+        if_pos hxy, if_neg (by omega)]
+      constructor
+      · omega
+      · norm_num
+    · rw [if_neg hxy, if_neg (by omega), if_neg (by omega),
+        if_neg hxy, if_neg (by omega)]
+      constructor <;> norm_num
+  · by_cases hxy : x < y
+    · have hdiffPos : 0 < radix + x - y := by omega
+      rw [if_pos hxy, if_neg (by omega), if_pos (by omega),
+        if_pos hxy, if_neg (by omega)]
+      constructor
+      · omega
+      · norm_num
+    · rw [if_neg hxy, if_neg hxy]
+      by_cases heq : x = y
+      · subst x
+        rw [Nat.sub_self, if_pos (by omega), if_pos (by omega),
+          if_pos (by omega)]
+        constructor <;> norm_num
+      · have hyxStrict : y < x := by omega
+        have hdiffPos : 0 < x - y := by omega
+        rw [if_neg (by omega), if_neg (by omega), if_neg (by omega)]
+        constructor
+        · omega
+        · norm_num
+
 end Challenge.Modexp.Reference.Proofs.Limbs

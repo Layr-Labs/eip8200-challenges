@@ -1212,6 +1212,20 @@ theorem addLimbStep_toNat (x y carry : UInt256) (hcarry : carry.toNat ≤ 1) :
       Challenge.EvmProof.Word.word_toNat_add, Limbs.radix]
     exact Limbs.addCarryBits x.val.isLt y.val.isLt hcarry
 
+theorem subLimbStep_toNat (x y borrow : UInt256)
+    (hborrow : borrow.toNat ≤ 1) :
+    let difference := x - y
+    let z := difference - borrow
+    let nextBorrow := if x.toNat < y.toNat + borrow.toNat then 1 else 0
+    z.toNat = x.toNat + Limbs.radix * nextBorrow - y.toNat - borrow.toNat ∧
+      (UInt256.lor (UInt256.lt x y)
+        (UInt256.lt difference borrow)).toNat = nextBorrow := by
+  dsimp only
+  have hstep := Limbs.subLimbBits x.val.isLt y.val.isLt hborrow
+  simpa only [Challenge.EvmProof.Word.word_toNat_sub_cond,
+    Challenge.EvmProof.Word.word_toNat_lor,
+    Challenge.EvmProof.Word.word_toNat_lt, Limbs.radix] using hstep
+
 def addProgress (memory : ByteArray) (activeWords dst src mask : UInt256) :
     Nat → AddProgress
   | 0 => ⟨memory, activeWords, 0⟩
