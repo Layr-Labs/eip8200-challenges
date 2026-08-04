@@ -165,4 +165,96 @@ theorem useSub_iff {total modulus bound : Nat} (hmodulus : modulus < bound) :
     · right
       rwa [Nat.mod_eq_of_lt (Nat.lt_of_not_ge hcarry)]
 
+/-! ## Canonical carry recurrence -/
+
+/-- Add two equally-sized little-endian limb lists, returning the result limbs
+and the carry beyond their common width. -/
+def addDigitLists : List Nat → List Nat → Nat → List Nat × Nat
+  | [], [], carry => ([], carry)
+  | x :: xs, y :: ys, carry =>
+      let total := x + y + carry
+      let next := addDigitLists xs ys (total / radix)
+      (total % radix :: next.1, next.2)
+  | _, _, carry => ([], carry)
+
+theorem length_addDigitLists_left {xs ys : List Nat} {carry : Nat}
+    (hlength : xs.length = ys.length) :
+    (addDigitLists xs ys carry).1.length = xs.length := by
+  induction xs generalizing ys carry with
+  | nil =>
+      cases ys <;> simp_all [addDigitLists]
+  | cons x xs ih =>
+      cases ys with
+      | nil => simp_all
+      | cons y ys =>
+          have hlength' : xs.length = ys.length := by simpa using hlength
+          simp [addDigitLists, ih hlength']
+
+theorem addDigitLists_value {xs ys : List Nat} {carry : Nat}
+    (hlength : xs.length = ys.length) :
+    Nat.ofDigits radix (addDigitLists xs ys carry).1 +
+        radix ^ xs.length * (addDigitLists xs ys carry).2 =
+      Nat.ofDigits radix xs + Nat.ofDigits radix ys + carry := by
+  induction xs generalizing ys carry with
+  | nil =>
+      cases ys <;> simp_all [addDigitLists]
+  | cons x xs ih =>
+      cases ys with
+      | nil => simp_all
+      | cons y ys =>
+          have hlength' : xs.length = ys.length := by simpa using hlength
+          let total := x + y + carry
+          let next := addDigitLists xs ys (total / radix)
+          have hnext := ih (carry := total / radix) hlength'
+          have hdivide := Nat.mod_add_div total radix
+          simp only [addDigitLists, Nat.ofDigits_cons,
+            List.length_cons, pow_succ]
+          simp only [total] at hnext hdivide
+          nlinarith
+
+theorem addDigitLists_digits_lt {xs ys : List Nat} {carry digit : Nat}
+    (hdigit : digit ∈ (addDigitLists xs ys carry).1) : digit < radix := by
+  induction xs generalizing ys carry with
+  | nil =>
+      cases ys <;> simp_all [addDigitLists]
+  | cons x xs ih =>
+      cases ys with
+      | nil => simp_all [addDigitLists]
+      | cons y ys =>
+          simp only [addDigitLists, List.mem_cons] at hdigit
+          rcases hdigit with rfl | hdigit
+          · exact Nat.mod_lt _ radix_pos
+          · exact ih hdigit
+
+theorem addDigitLists_carry_le_one {xs ys : List Nat} {carry : Nat}
+    (hlength : xs.length = ys.length)
+    (hxs : ∀ digit ∈ xs, digit < radix)
+    (hys : ∀ digit ∈ ys, digit < radix) (hcarry : carry ≤ 1) :
+    (addDigitLists xs ys carry).2 ≤ 1 := by
+  induction xs generalizing ys carry with
+  | nil =>
+      cases ys <;> simp_all [addDigitLists]
+  | cons x xs ih =>
+      cases ys with
+      | nil => simp_all
+      | cons y ys =>
+          have hlength' : xs.length = ys.length := by simpa using hlength
+          have hx : x < radix := hxs x (by simp)
+          have hy : y < radix := hys y (by simp)
+          have hquotient : (x + y + carry) / radix ≤ 1 := by
+            rw [Nat.div_le_iff_le_mul radix_pos]
+            omega
+          simp only [addDigitLists]
+          exact ih hlength' (fun digit hdigit => hxs digit (by simp [hdigit]))
+            (fun digit hdigit => hys digit (by simp [hdigit])) hquotient
+
+theorem ofDigits_map_mul (digits : List Nat) (take : Nat) :
+    Nat.ofDigits radix (digits.map (take * ·)) =
+      take * Nat.ofDigits radix digits := by
+  induction digits with
+  | nil => simp
+  | cons digit digits ih =>
+      simp [Nat.ofDigits_cons, ih]
+      ring
+
 end Challenge.Modexp.Reference.Proofs.Limbs
