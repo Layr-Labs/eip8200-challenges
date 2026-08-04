@@ -1622,7 +1622,7 @@ theorem addProgress_represents_wrapped (memory : ByteArray)
   rw [Limbs.value_of_represents hdst, Limbs.value_of_represents hsrc] at hmod
   rw [Limbs.represents_iff_value (Nat.mod_lt _ (pow_pos Limbs.radix_pos _))]
   rw [hmatch.1, hcanonical.1]
-  exact hmod
+  simpa using hmod
 
 def addEntry (s : State) (dst src take modulus : UInt256) (count : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
@@ -1907,8 +1907,8 @@ theorem readWord_subtractProgress_input (memory : ByteArray)
           simp [Data.Bytes.natToBytesPadded, ByteArray.size]
         rw [hsize, addOffset_toNat 5120 iter (by omega)]
         rcases hdisjoint with hbefore | hafter
-        · right; omega
         · left; omega
+        · right; omega
 
 theorem memoryLimbs_subtractProgress_input (memory : ByteArray)
     (activeWords dst modulus : UInt256) (ptr count iter : Nat)
@@ -2070,20 +2070,23 @@ theorem subtractProgress_value_borrow (memory : ByteArray)
   have hvalue := Limbs.subDigitLists_value (borrow := 0)
     (xs := Limbs.memoryLimbs memory dst count)
     (ys := Limbs.memoryLimbs memory modulus count) (by simp)
-    (Limbs.memoryLimb_lt memory dst count)
-    (Limbs.memoryLimb_lt memory modulus count) (by omega)
+    (fun digit hdigit => Limbs.memoryLimb_lt memory dst count hdigit)
+    (fun digit hdigit => Limbs.memoryLimb_lt memory modulus count hdigit)
+    (by omega)
   rw [Nat.add_zero, Limbs.value_of_represents hdst,
     Limbs.value_of_represents hmodulus] at hvalue
   dsimp only [progress, natural, result] at hmatch hcanonical ⊢
   rw [hmatch.1, hcanonical.1, hmatch.2.1, hcanonical.2]
-  exact ⟨hvalue, by simpa [← hcanonical.2] using hmatch.2.2⟩
+  constructor
+  · simpa using hvalue
+  · simpa [← hcanonical.2] using hmatch.2.2
 
 theorem memoryLimbs_value_lt (memory : ByteArray) (ptr count : Nat) :
     Nat.ofDigits Limbs.radix (Limbs.memoryLimbs memory ptr count) <
       Limbs.radix ^ count := by
-  rw [← Limbs.length_memoryLimbs memory ptr count]
-  exact Nat.ofDigits_lt_base_pow_length Limbs.radix_gt_one
-    (Limbs.memoryLimb_lt memory ptr count)
+  have hlt := Nat.ofDigits_lt_base_pow_length Limbs.radix_gt_one
+    (fun digit hdigit => Limbs.memoryLimb_lt memory ptr count hdigit)
+  simpa using hlt
 
 theorem represents_memoryLimbs_value (memory : ByteArray) (ptr count : Nat) :
     Limbs.Represents memory ptr count
@@ -2097,7 +2100,7 @@ theorem carry_eq_one_iff {wrapped bound carry total : Nat}
   interval_cases carry <;> omega
 
 theorem borrow_eq_zero_iff {candidate modulus wrapped bound borrow : Nat}
-    (hcandidate : candidate < bound) (hmodulus : modulus < bound)
+    (hcandidate : candidate < bound) (_hmodulus : modulus < bound)
     (hborrow : borrow ≤ 1)
     (hvalue : candidate + modulus = wrapped + bound * borrow) :
     borrow = 0 ↔ modulus ≤ wrapped := by
@@ -2363,13 +2366,21 @@ theorem selectWord_toNat (sum reduced useSub : UInt256)
   · have hword : useSub = UInt256.ofNat 0 := by
       rw [Challenge.EvmProof.Word.word_eq_ofNat_toNat useSub, huse]
     rw [hword]
-    simp [UInt256.land, UInt256.lor, UInt256.lnot,
-      UInt256.ofNat, UInt256.toNat, UInt256.size]
+    have hnot : UInt256.lnot (0 - UInt256.ofNat 0) =
+        0 - UInt256.ofNat 1 := by native_decide
+    rw [Challenge.EvmProof.Word.word_toNat_lor,
+      land_sub_zero_take_toNat reduced (by omega), hnot,
+      land_sub_zero_take_toNat sum (by omega)]
+    norm_num
   · have hword : useSub = UInt256.ofNat 1 := by
       rw [Challenge.EvmProof.Word.word_eq_ofNat_toNat useSub, huse]
     rw [hword]
-    simp [UInt256.land, UInt256.lor, UInt256.lnot,
-      UInt256.ofNat, UInt256.toNat, UInt256.size]
+    have hnot : UInt256.lnot (0 - UInt256.ofNat 1) =
+        0 - UInt256.ofNat 0 := by native_decide
+    rw [Challenge.EvmProof.Word.word_toNat_lor,
+      land_sub_zero_take_toNat reduced (by omega), hnot,
+      land_sub_zero_take_toNat sum (by omega)]
+    norm_num
 
 theorem readWord_selectProgress_future_dst (memory : ByteArray)
     (activeWords mask : UInt256) (dst iter j : Nat)
@@ -2512,7 +2523,9 @@ theorem selectProgress_represents (memory : ByteArray)
   rw [Limbs.represents_iff_value hchosenFit,
     selectProgress_memoryLimbs memory activeWords dst count count useSub
       (by omega) huseSub hdstFit hdisjoint, hchosen]
-  split <;> simp_all only [Limbs.value_of_represents]
+  by_cases hselect : useSub.toNat = 1
+  · simpa [hselect] using Limbs.value_of_represents hreduced
+  · simpa [hselect] using Limbs.value_of_represents hsum
 
 def selectLoop (s : State) (dst src take modulus : UInt256)
     (count i : Nat) (returnDest : UInt256) (rest : List UInt256) : State :=
@@ -2602,6 +2615,7 @@ theorem addReturned_represents_mod (s : State)
       Limbs.Represents added.memory modulus count modulusValue := by
     exact represents_addProgress_disjoint_region s.memory s.activeWords
       (UInt256.ofNat src) (0 - UInt256.ofNat take) dst modulus count count
+      modulusValue
       (by omega) hdstFit hdstModulus hmodulus
   let subtracted := subtractProgress added.memory added.activeWords
     (UInt256.ofNat dst) (UInt256.ofNat modulus) count
@@ -2643,15 +2657,27 @@ theorem addReturned_represents_mod (s : State)
         total % modulusValue := by
     rw [Limbs.mod_eq_cond_sub htotalLt]
     by_cases hlt : total < modulusValue
-    · rw [if_pos hlt, if_neg (fun h => hlt (huseSubIff.mp h))]
+    · rw [if_pos hlt,
+        if_neg (fun h => (Nat.not_le_of_lt hlt) (huseSubIff.mp h))]
       exact Nat.mod_eq_of_lt (by simpa [wrapped, bound, total] using
         (show total < bound from hlt.trans hmodulusBound))
     · have hge : modulusValue ≤ total := Nat.le_of_not_gt hlt
       rw [if_neg hlt, if_pos (huseSubIff.mpr hge)]
-      interval_cases hcarryCase : added.carry.toNat <;>
-        interval_cases hborrowCase : subtracted.borrow.toNat <;>
-        simp_all [total, bound, wrapped]
-      <;> omega
+      let carryNat := added.carry.toNat
+      let borrowNat := subtracted.borrow.toNat
+      have hcarryNat : carryNat ≤ 1 := haddValue.2
+      have hborrowNat : borrowNat ≤ 1 := hsubValue.2
+      have haddEq : wrapped + bound * carryNat = total := by
+        simpa [carryNat, Limbs.value_of_represents hadded] using haddValue.1
+      have hsubEq : candidate + modulusValue =
+          wrapped + bound * borrowNat := by
+        simpa [borrowNat] using hsubValue.1
+      have hcarryIff' : carryNat = 1 ↔ bound ≤ total := by
+        simpa [carryNat] using hcarryIff
+      have hborrowIff' : borrowNat = 0 ↔ modulusValue ≤ wrapped := by
+        simpa [borrowNat] using hborrowIff
+      interval_cases carryNat <;> interval_cases borrowNat <;>
+        omega
   have hresultFit : total % modulusValue < bound :=
     (Nat.mod_lt total (by omega)).trans hmodulusBound
   have hselected := selectProgress_represents subtracted.memory
@@ -2678,7 +2704,7 @@ theorem addReturned_preserves_region (s : State)
     (UInt256.ofNat src) (0 - UInt256.ofNat take) count
   have hadded : Limbs.Represents added.memory ptr count value := by
     exact represents_addProgress_disjoint_region s.memory s.activeWords
-      (UInt256.ofNat src) (0 - UInt256.ofNat take) dst ptr count count
+      (UInt256.ofNat src) (0 - UInt256.ofNat take) dst ptr count count value
       (by omega) hdstFit hptrDst hrep
   let subtracted := subtractProgress added.memory added.activeWords
     (UInt256.ofNat dst) (UInt256.ofNat modulus) count
