@@ -781,6 +781,52 @@ theorem gasSteps_mulBitIteration_cost_potential (current : State)
   simp only [Challenge.EvmProof.GasSteps.trans_cost]
   omega
 
+theorem mulAfterCopy_represents (s : State) (bPtr count aValue bValue
+    modulusValue : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcount : count ≤ 32) (hbPtr : bPtr + 32 * count ≤ 3072)
+    (ha : Limbs.Represents s.memory 2048 count aValue)
+    (hb : Limbs.Represents s.memory bPtr count bValue)
+    (hmodulus : Limbs.Represents s.memory 0 count modulusValue) :
+    let copied := mulAfterCopy s (UInt256.ofNat 2048) (UInt256.ofNat bPtr)
+      (UInt256.ofNat 3072) (UInt256.ofNat 0) count returnDest rest
+    Limbs.Represents copied.memory 3072 count 0 ∧
+      Limbs.Represents copied.memory 4096 count aValue ∧
+      Limbs.Represents copied.memory bPtr count bValue ∧
+      Limbs.Represents copied.memory 0 count modulusValue := by
+  let cleared := mulAfterClear s (UInt256.ofNat 2048) (UInt256.ofNat bPtr)
+    (UInt256.ofNat 3072) (UInt256.ofNat 0) count returnDest rest
+  let copied := mulAfterCopy s (UInt256.ofNat 2048) (UInt256.ofNat bPtr)
+    (UInt256.ofNat 3072) (UInt256.ofNat 0) count returnDest rest
+  have hfit3072 : 3072 + 32 * count < 2 ^ 256 := by omega
+  have hfit4096 : 4096 + 32 * count < 2 ^ 256 := by omega
+  have hfit2048 : 2048 + 32 * count < 2 ^ 256 := by omega
+  have hclearedZero : Limbs.Represents cleared.memory 3072 count 0 := by
+    exact BigHelpers.clearMemory_represents_zero s.memory 3072 count hfit3072
+  have hclearedA : Limbs.Represents cleared.memory 2048 count aValue := by
+    exact BigHelpers.represents_clearMemory_disjoint_region s.memory 3072 2048
+      count aValue hfit3072 (by right; omega) ha
+  have hclearedB : Limbs.Represents cleared.memory bPtr count bValue := by
+    exact BigHelpers.represents_clearMemory_disjoint_region s.memory 3072 bPtr
+      count bValue hfit3072 (by right; omega) hb
+  have hclearedModulus :
+      Limbs.Represents cleared.memory 0 count modulusValue := by
+    exact BigHelpers.represents_clearMemory_disjoint_region s.memory 3072 0
+      count modulusValue hfit3072 (by right; omega) hmodulus
+  have hcopiedAddend : Limbs.Represents copied.memory 4096 count aValue := by
+    exact BigHelpers.copyMemory_represents cleared.memory 4096 2048 count aValue
+      hclearedA hfit4096 hfit2048 (by right; omega)
+  have hcopiedZero : Limbs.Represents copied.memory 3072 count 0 := by
+    exact BigHelpers.represents_copyMemory_disjoint_region cleared.memory 4096
+      2048 3072 count 0 hfit4096 (by right; omega) hclearedZero
+  have hcopiedB : Limbs.Represents copied.memory bPtr count bValue := by
+    exact BigHelpers.represents_copyMemory_disjoint_region cleared.memory 4096
+      2048 bPtr count bValue hfit4096 (by right; omega) hclearedB
+  have hcopiedModulus :
+      Limbs.Represents copied.memory 0 count modulusValue := by
+    exact BigHelpers.represents_copyMemory_disjoint_region cleared.memory 4096
+      2048 0 count modulusValue hfit4096 (by right; omega) hclearedModulus
+  exact ⟨hcopiedZero, hcopiedAddend, hcopiedB, hcopiedModulus⟩
+
 def gasSteps_mulInitialize (s : State) (a b out modulus : UInt256)
     (count : Nat) (returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1000) (hcount : count < 2 ^ 256)
@@ -843,5 +889,58 @@ def gasSteps_mulInitialize (s : State) (a b out modulus : UInt256)
       (by simpa [mulAfterCopy, mulAfterClear, State.fork] using hnp)
   exact htoClear.trans <| hclear'.trans <| htoCopy.trans <|
     hcopy'.trans hsetup
+
+theorem gasSteps_mulInitialize_cost_potential (s : State)
+    (a b out modulus : UInt256) (count : Nat) (returnDest : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1000)
+    (hcount : count < 2 ^ 256)
+    (hcode : s.executionEnv.code = BigHelpers.referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (gasSteps_mulInitialize s a b out modulus count returnDest rest hcap
+      hcount hcode hfork hrun hnp).cost +
+        MachineState.memCost s.activeWords.toNat =
+      (135 + count * 158) + MachineState.memCost
+        (mulOuterLoop s a b out modulus count 0 returnDest rest).activeWords.toNat := by
+  let saved := [a, b, out, modulus, UInt256.ofNat count, returnDest] ++ rest
+  let cleared := mulAfterClear s a b out modulus count returnDest rest
+  let copied := mulAfterCopy s a b out modulus count returnDest rest
+  have htoClear := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulToClearPath 20
+      (run_mulToClear s a b out modulus count returnDest rest (by omega)
+        hcode hrun)
+      (by simpa [mulEntry, State.fork] using hfork)
+      (by native_decide) (by rfl)
+  have hclear := BigHelpers.gasSteps_clear_cost_potential s out count
+    (UInt256.ofNat 320) saved (by simp [saved]; omega) hcount hcode hfork
+    hrun hnp (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt (by norm_num : 320 < 2 ^ 256)]
+      exact jump320)
+  have htoCopy := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulToCopyPath 23
+      (run_mulToCopy s a b out modulus count returnDest rest (by omega)
+        hcode hrun)
+      (by simpa [cleared, mulAfterClear, State.fork] using hfork)
+      (by native_decide) (by rfl)
+  have hcopy := BigHelpers.gasSteps_copy_cost_potential cleared
+    (UInt256.ofNat 4096) a count (UInt256.ofNat 333) saved
+    (by simp [saved]; omega) hcount
+    (by simpa [cleared, mulAfterClear] using hcode)
+    (by simpa [cleared, mulAfterClear, State.fork] using hfork)
+    (by simpa [cleared, mulAfterClear] using hrun)
+    (by simpa [cleared, mulAfterClear, State.fork] using hnp) (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt (by norm_num : 333 < 2 ^ 256)]
+      exact jump333)
+  have hsetup := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulSetupPath 2
+      (run_mulSetup s a b out modulus count returnDest rest (by omega) hrun)
+      (by simpa [copied, mulAfterCopy, mulAfterClear, State.fork] using hfork)
+      (by native_decide) (by rfl)
+  unfold gasSteps_mulInitialize
+  simp only [Challenge.EvmProof.GasSteps.trans_cost]
+  omega
 
 end Challenge.Modexp.Reference.Proofs.Bytecode.BigMul
