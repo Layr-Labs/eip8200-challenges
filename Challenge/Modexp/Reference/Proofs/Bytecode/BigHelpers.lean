@@ -1127,4 +1127,266 @@ theorem gasSteps_copy_cost_potential (s : State) (dst src : UInt256)
   rw [hactive] at htotal
   omega
 
+/-! ## `addMaskedMod`: fixed-width addition phase -/
+
+def addSetupPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [opAt 83 .JUMPDEST, opAt 84 (.Dup ⟨2, by decide⟩), pushAt 85 0 0,
+   opAt 86 .SUB, pushAt 87 0 0, pushAt 88 0 0]
+
+def addGuardPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [opAt 89 .JUMPDEST, opAt 90 (.Dup ⟨7, by decide⟩),
+   opAt 91 (.Dup ⟨1, by decide⟩), opAt 92 .LT, opAt 93 .ISZERO,
+   pushAt 94 2 170, opAt 95 .JUMPI]
+
+def addBodyPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [opAt 96 (.Dup ⟨0, by decide⟩), pushAt 97 1 5, opAt 98 .SHL,
+   opAt 99 (.Dup ⟨0, by decide⟩), opAt 100 (.Dup ⟨5, by decide⟩),
+   opAt 101 .ADD, opAt 102 .MLOAD, opAt 103 (.Dup ⟨4, by decide⟩),
+   opAt 104 (.Dup ⟨2, by decide⟩), opAt 105 (.Dup ⟨8, by decide⟩),
+   opAt 106 .ADD, opAt 107 .MLOAD, opAt 108 .AND,
+   opAt 109 (.Dup ⟨1, by decide⟩), opAt 110 .ADD,
+   opAt 111 (.Dup ⟨1, by decide⟩), opAt 112 (.Dup ⟨1, by decide⟩),
+   opAt 113 .LT, opAt 114 (.Dup ⟨5, by decide⟩),
+   opAt 115 (.Dup ⟨2, by decide⟩), opAt 116 .ADD,
+   opAt 117 (.Dup ⟨2, by decide⟩), opAt 118 (.Dup ⟨1, by decide⟩),
+   opAt 119 .LT, opAt 120 (.Dup ⟨1, by decide⟩),
+   opAt 121 (.Dup ⟨6, by decide⟩), opAt 122 (.Dup ⟨11, by decide⟩),
+   opAt 123 .ADD, opAt 124 .MSTORE, opAt 125 (.Dup ⟨0, by decide⟩),
+   opAt 126 (.Dup ⟨3, by decide⟩), opAt 127 .OR,
+   opAt 128 (.Swap ⟨7, by decide⟩), opAt 129 .POP, opAt 130 .POP,
+   opAt 131 .POP, opAt 132 .POP, opAt 133 .POP, opAt 134 .POP,
+   opAt 135 .POP, pushAt 136 1 1, opAt 137 (.Dup ⟨1, by decide⟩),
+   opAt 138 .ADD, opAt 139 (.Swap ⟨0, by decide⟩), opAt 140 .POP,
+   pushAt 141 2 110, opAt 142 .JUMP]
+
+def addToSubtractPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [opAt 143 .JUMPDEST, opAt 144 .POP, pushAt 145 0 0, pushAt 146 0 0]
+
+structure AddProgress where
+  memory : ByteArray
+  activeWords : UInt256
+  carry : UInt256
+
+def addProgress (memory : ByteArray) (activeWords dst src mask : UInt256) :
+    Nat → AddProgress
+  | 0 => ⟨memory, activeWords, 0⟩
+  | i + 1 =>
+      let before := addProgress memory activeWords dst src mask i
+      let off := UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5)
+      let dstAt := dst + off
+      let srcAt := src + off
+      let x := MachineState.readWord before.memory dstAt.toNat
+      let y := UInt256.land
+        (MachineState.readWord before.memory srcAt.toNat) mask
+      let sum := x + y
+      let z := sum + before.carry
+      let carry := UInt256.lor (UInt256.lt sum x) (UInt256.lt z sum)
+      let loadedDst := UInt256.ofNat (MachineState.activeWordsAfter
+        before.activeWords.toNat dstAt.toNat 32)
+      let loadedSrc := UInt256.ofNat (MachineState.activeWordsAfter
+        loadedDst.toNat srcAt.toNat 32)
+      let stored := UInt256.ofNat (MachineState.activeWordsAfter
+        loadedSrc.toNat dstAt.toNat 32)
+      ⟨MachineState.writeBytes before.memory
+          (Data.Bytes.natToBytesPadded z.toNat 32) dstAt.toNat,
+        stored, carry⟩
+
+def addEntry (s : State) (dst src take modulus : UInt256) (count : Nat)
+    (returnDest : UInt256) (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 104
+           stack := [dst, src, take, modulus, UInt256.ofNat count,
+             returnDest] ++ rest }
+
+def addLoop (s : State) (dst src take modulus : UInt256) (count i : Nat)
+    (returnDest : UInt256) (rest : List UInt256) : State :=
+  let mask := 0 - take
+  let progress := addProgress s.memory s.activeWords dst src mask i
+  { s with pc := UInt256.ofNat 110
+           stack := [UInt256.ofNat i, progress.carry, mask, dst, src, take,
+             modulus, UInt256.ofNat count, returnDest] ++ rest
+           memory := progress.memory
+           activeWords := progress.activeWords }
+
+def addBodyEntry (s : State) (dst src take modulus : UInt256) (count i : Nat)
+    (returnDest : UInt256) (rest : List UInt256) : State :=
+  { addLoop s dst src take modulus count i returnDest rest with
+      pc := UInt256.ofNat 119 }
+
+def subtractLoopEntry (s : State) (dst src take modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256) : State :=
+  let mask := 0 - take
+  let progress := addProgress s.memory s.activeWords dst src mask count
+  { s with pc := UInt256.ofNat 174
+           stack := [0, 0, progress.carry, mask, dst, src, take, modulus,
+             UInt256.ofNat count, returnDest] ++ rest
+           memory := progress.memory
+           activeWords := progress.activeWords }
+
+@[simp] private theorem addPCs (i : Nat) (hi : 83 ≤ i) (hii : i ≤ 146) :
+    Artifact.referenceArtifact.instructionPC i =
+      [104,105,106,107,108,109,110,111,112,113,114,115,118,119,120,122,
+       123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,
+       139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,
+       155,156,157,158,159,160,162,163,164,165,166,169,170,171,172,
+       173][i - 83]! := by
+  interval_cases i <;> decide
+
+@[simp] private theorem jump110 :
+    Decode.isValidJumpDest referenceBytecode 110 = true :=
+  Artifact.isValidJumpDest_index 89 (by rfl)
+
+@[simp] private theorem jump170 :
+    Decode.isValidJumpDest referenceBytecode 170 = true :=
+  Artifact.isValidJumpDest_index 143 (by rfl)
+
+set_option linter.unusedSimpArgs false in
+theorem run_addSetup (s : State) (dst src take modulus : UInt256) (count : Nat)
+    (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1006) (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock addSetupPath
+      (addEntry s dst src take modulus count returnDest rest) =
+        some (addLoop s dst src take modulus count 0 returnDest rest) := by
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
+  have hzero' : UInt256.ofNat 0 = (0 : UInt256) := by decide
+  simp [addSetupPath, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    addEntry, addLoop, addProgress, addPCs, hc6, hc7, hc8, hc9, hrun, hzero,
+    hzero',
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
+
+set_option linter.unusedSimpArgs false in
+theorem run_addGuard (s : State) (dst src take modulus : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1006) (hcount : count < 2 ^ 256)
+    (hi : i < count) (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock addGuardPath
+      (addLoop s dst src take modulus count i returnDest rest) =
+        some (addBodyEntry s dst src take modulus count i returnDest rest) := by
+  have hi256 : i < 2 ^ 256 := hi.trans hcount
+  have hlt : i % 2 ^ 256 < count % 2 ^ 256 := by
+    rw [Nat.mod_eq_of_lt hi256, Nat.mod_eq_of_lt hcount]
+    exact hi
+  have hltLiteral :
+      i % 115792089237316195423570985008687907853269984665640564039457584007913129639936 <
+        count % 115792089237316195423570985008687907853269984665640564039457584007913129639936 := by
+    norm_num at hlt ⊢
+    exact hlt
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have honeIsZero : (UInt256.ofNat 1).isZero.toNat = 0 := by decide
+  have hpc : UInt256.ofNat 115 + UInt256.ofNat 3 = UInt256.ofNat 118 := by
+    exact Challenge.EvmProof.Word.ofNat_add_ofNat (by norm_num)
+  simp [addGuardPath, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    addLoop, addBodyEntry, addPCs, hc9, hc10, hc11, hrun,
+    UInt256.lt, UInt256.isTrue, Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+    hltLiteral, honeIsZero, hpc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_addBody (s : State) (dst src take modulus : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1006) (hi : i + 1 < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock addBodyPath
+      (addBodyEntry s dst src take modulus count i returnDest rest) =
+        some (addLoop s dst src take modulus count (i + 1) returnDest rest) := by
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
+  have hfive : (5 : UInt256) = UInt256.ofNat 5 := by decide
+  have honeTen : (110 : UInt256) = UInt256.ofNat 110 := by decide
+  have honeTenNat : (110 : UInt256).toNat = 110 := by decide
+  have hjump : Decode.isValidJumpDest referenceBytecode
+      (110 : UInt256).toNat = true := by
+    rw [honeTenNat]
+    exact jump110
+  have hinc := Challenge.EvmProof.Word.ofNat_add_ofNat
+    (a := i) (b := 1) hi
+  simp (config := { maxSteps := 800000 })
+    [addBodyPath, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      addBodyEntry, addLoop, addProgress,
+      addPCs, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, hc17, hc18,
+      hcode, hrun, hone, hfive, hinc, honeTen, honeTenNat, hjump, jump110,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+      List.exchange]
+
+set_option linter.unusedSimpArgs false in
+theorem run_addFinishGuard (s : State) (dst src take modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1006) (hcode : s.executionEnv.code = referenceBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock addGuardPath
+      (addLoop s dst src take modulus count count returnDest rest) =
+        some { addLoop s dst src take modulus count count returnDest rest with
+          pc := UInt256.ofNat 170 } := by
+  have hzeroFalse : ¬(0 : UInt256).isZero.toNat = 0 := by decide
+  have hzeroOfNatFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
+  have hdest : (170 : UInt256) = UInt256.ofNat 170 := by decide
+  have hdestNat : (170 : UInt256).toNat = 170 := by decide
+  have hjump : Decode.isValidJumpDest referenceBytecode
+      (170 : UInt256).toNat = true := by
+    rw [hdestNat]
+    exact jump170
+  have hpc : UInt256.ofNat 115 + UInt256.ofNat 3 = UInt256.ofNat 118 := by
+    exact Challenge.EvmProof.Word.ofNat_add_ofNat (by norm_num)
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  simp [addGuardPath, opAt, pushAt, wfOp, addLoop, addPCs,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    hc9, hc10, hc11, hcode, hrun, UInt256.lt, UInt256.isTrue,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+    hzeroFalse, hzeroOfNatFalse, hdest, hdestNat, hjump, jump170, hpc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_addToSubtract (s : State) (dst src take modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1006) (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock addToSubtractPath
+      { addLoop s dst src take modulus count count returnDest rest with
+        pc := UInt256.ofNat 170 } =
+      some (subtractLoopEntry s dst src take modulus count returnDest rest) := by
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
+  have hzero' : UInt256.ofNat 0 = (0 : UInt256) := by decide
+  simp [addToSubtractPath, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    addLoop, subtractLoopEntry, addPCs, hc8, hc9, hc10, hrun, hzero, hzero',
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
+
 end Challenge.Modexp.Reference.Proofs.Bytecode.BigHelpers
