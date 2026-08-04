@@ -1301,6 +1301,86 @@ def gasSteps_mulWordLoop (current : State) (word a b out modulus : UInt256)
       (by simpa using hrun)
       (by simpa [State.fork] using hnp)
 
+def gasSteps_mulOuterGuardSegment (current : State) (a b out modulus : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 980) (hcount : count < 2 ^ 256) (hi : i < count)
+    (hcode : current.executionEnv.code = Challenge.Modexp.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (mulOuterState current a b out modulus count i returnDest rest)
+      (mulOuterBody current a b out modulus count i returnDest rest) := by
+  exact Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka mulOuterGuardPath
+      (by simpa [mulOuterState, Artifact.referenceArtifact] using hcode)
+      (by simpa [mulOuterState, State.fork] using hfork)
+      (run_mulOuterGuard current a b out modulus count i returnDest rest
+        (by omega) hcount hi hrun)
+      (by simpa [mulOuterState] using hrun)
+      (by simpa [mulOuterState, State.fork] using hnp)
+
+def gasSteps_mulOuterLoadSegment (current : State) (a b out modulus : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 980) (hcount : count < 2 ^ 256) (hi : i < count)
+    (hcode : current.executionEnv.code = Challenge.Modexp.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (mulOuterBody current a b out modulus count i returnDest rest)
+      (mulInnerLoop current a b out modulus count i 0 returnDest rest) := by
+  exact Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka mulOuterLoadPath
+      (by simpa [mulOuterBody, Artifact.referenceArtifact] using hcode)
+      (by simpa [mulOuterBody, State.fork] using hfork)
+      (run_mulOuterLoad current a b out modulus count i returnDest rest
+        (by omega) (by omega) hrun)
+      (by simpa [mulOuterBody] using hrun)
+      (by simpa [mulOuterBody, State.fork] using hnp)
+
+def gasSteps_mulInnerFinishSegment (current : State)
+    (word a b out modulus : UInt256) (count i : Nat)
+    (returnDest : UInt256) (rest : List UInt256) (hcap : rest.length < 980)
+    (hcode : current.executionEnv.code = Challenge.Modexp.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false) :
+    let inner := mulInnerState current word a b out modulus count i 256
+      returnDest rest
+    Challenge.EvmProof.GasSteps inner { inner with pc := UInt256.ofNat 413 } := by
+  dsimp only
+  exact Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka mulInnerGuardPath
+      (by simpa [mulInnerState, Artifact.referenceArtifact] using hcode)
+      (by simpa [mulInnerState, State.fork] using hfork)
+      (run_mulWordInnerFinishGuard current word a b out modulus count i
+        returnDest rest (by omega) hcode hrun)
+      (by simpa [mulInnerState] using hrun)
+      (by simpa [mulInnerState, State.fork] using hnp)
+
+def gasSteps_mulInnerExitSegment (current : State)
+    (word a b out modulus : UInt256) (count i : Nat)
+    (returnDest : UInt256) (rest : List UInt256) (hcap : rest.length < 980)
+    (hcount : count < 2 ^ 256) (hi : i < count)
+    (hcode : current.executionEnv.code = Challenge.Modexp.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false) :
+    let inner := mulInnerState current word a b out modulus count i 256
+      returnDest rest
+    Challenge.EvmProof.GasSteps { inner with pc := UInt256.ofNat 413 }
+      (mulOuterNext inner a b out modulus count i returnDest rest) := by
+  dsimp only
+  exact Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka mulInnerToOuterPath
+      (by simpa [mulInnerState, Artifact.referenceArtifact] using hcode)
+      (by simpa [mulInnerState, State.fork] using hfork)
+      (run_mulWordInnerToOuter current word a b out modulus count i
+        returnDest rest (by omega) (by omega) hcode hrun)
+      (by simpa [mulInnerState] using hrun)
+      (by simpa [mulInnerState, State.fork] using hnp)
+
 def gasSteps_mulOuterIteration (current : State) (a b out modulus : UInt256)
     (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 980) (hcount : count < 2 ^ 256) (hi : i < count)
@@ -1323,59 +1403,41 @@ def gasSteps_mulOuterIteration (current : State) (a b out modulus : UInt256)
   change Challenge.EvmProof.GasSteps
     (mulOuterState before a b out modulus count i returnDest rest)
     (mulOuterState afterWord a b out modulus count (i + 1) returnDest rest)
-  have hguard := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.referenceArtifact .Osaka mulOuterGuardPath
-      (by simpa [mulOuterState, Artifact.referenceArtifact] using
-        (show before.executionEnv.code = Challenge.Modexp.referenceBytecode by
-          simpa [before] using hcode))
-      (by simpa [mulOuterState, before, State.fork] using hfork)
-      (run_mulOuterGuard before a b out modulus count i returnDest rest
-        (by omega) hcount hi (by simpa [before] using hrun))
-      (by simpa [mulOuterState, before] using hrun)
-      (by simpa [mulOuterState, before, State.fork] using hnp)
-  have hload := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.referenceArtifact .Osaka mulOuterLoadPath
-      (by simpa [mulOuterBody, before,
-        Artifact.referenceArtifact] using hcode)
-      (by simpa [mulOuterBody, before, State.fork] using hfork)
-      (run_mulOuterLoad before a b out modulus count i returnDest rest
-        (by omega) (by omega) (by simpa [before] using hrun))
-      (by simpa [mulOuterBody, before] using hrun)
-      (by simpa [mulOuterBody, before, State.fork] using hnp)
+  have hguard := gasSteps_mulOuterGuardSegment before a b out modulus count i
+    returnDest rest hcap hcount hi
+    (by simpa [before] using hcode)
+    (by simpa [before, State.fork] using hfork)
+    (by simpa [before] using hrun)
+    (by simpa [before, State.fork] using hnp)
+  have hloadRaw := gasSteps_mulOuterLoadSegment before a b out modulus count i
+    returnDest rest hcap hcount hi
+    (by simpa [before] using hcode)
+    (by simpa [before, State.fork] using hfork)
+    (by simpa [before] using hrun)
+    (by simpa [before, State.fork] using hnp)
+  have hload : Challenge.EvmProof.GasSteps
+      (mulOuterBody before a b out modulus count i returnDest rest)
+      (mulInnerState loaded word a b out modulus count i 0 returnDest rest) := by
+    exact Challenge.EvmProof.GasSteps.cast hloadRaw rfl (by
+      simp only [loaded, word, mulInnerLoop_eq_state])
   have hword := gasSteps_mulWordLoop loaded word a b out modulus count i
     returnDest rest hcap hcount
     (by simpa [loaded, mulLoadedState, before] using hcode)
     (by simpa [loaded, mulLoadedState, before, State.fork] using hfork)
     (by simpa [loaded, mulLoadedState, before] using hrun)
     (by simpa [loaded, mulLoadedState, before, State.fork] using hnp)
-  have hfinish := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.referenceArtifact .Osaka mulInnerGuardPath
-      (by simpa [afterWord, loaded, mulLoadedState, before, mulInnerState,
-        Artifact.referenceArtifact] using hcode)
-      (by simpa [afterWord, loaded, mulLoadedState, before, mulInnerState,
-        State.fork] using hfork)
-      (run_mulWordInnerFinishGuard afterWord word a b out modulus count i
-        returnDest rest (by omega)
-        (by simpa [afterWord, loaded, mulLoadedState, before] using hcode)
-        (by simpa [afterWord, loaded, mulLoadedState, before] using hrun))
-      (by simpa [afterWord, loaded, mulLoadedState, before,
-        mulInnerState] using hrun)
-      (by simpa [afterWord, loaded, mulLoadedState, before,
-        mulInnerState, State.fork] using hnp)
-  have hexit := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.referenceArtifact .Osaka mulInnerToOuterPath
-      (by simpa [afterWord, loaded, mulLoadedState, before, mulInnerState,
-        Artifact.referenceArtifact] using hcode)
-      (by simpa [afterWord, loaded, mulLoadedState, before, mulInnerState,
-        State.fork] using hfork)
-      (run_mulWordInnerToOuter afterWord word a b out modulus count i
-        returnDest rest (by omega) (by omega)
-        (by simpa [afterWord, loaded, mulLoadedState, before] using hcode)
-        (by simpa [afterWord, loaded, mulLoadedState, before] using hrun))
-      (by simpa [afterWord, loaded, mulLoadedState, before,
-        mulInnerState] using hrun)
-      (by simpa [afterWord, loaded, mulLoadedState, before,
-        mulInnerState, State.fork] using hnp)
+  have hfinish := gasSteps_mulInnerFinishSegment afterWord word a b out modulus
+    count i returnDest rest hcap
+    (by simpa [afterWord, loaded, mulLoadedState, before] using hcode)
+    (by simpa [afterWord, loaded, mulLoadedState, before, State.fork] using hfork)
+    (by simpa [afterWord, loaded, mulLoadedState, before] using hrun)
+    (by simpa [afterWord, loaded, mulLoadedState, before, State.fork] using hnp)
+  have hexit := gasSteps_mulInnerExitSegment afterWord word a b out modulus
+    count i returnDest rest hcap hcount hi
+    (by simpa [afterWord, loaded, mulLoadedState, before] using hcode)
+    (by simpa [afterWord, loaded, mulLoadedState, before, State.fork] using hfork)
+    (by simpa [afterWord, loaded, mulLoadedState, before] using hrun)
+    (by simpa [afterWord, loaded, mulLoadedState, before, State.fork] using hnp)
   have hchain := hguard.trans (hload.trans (hword.trans (hfinish.trans hexit)))
   exact Challenge.EvmProof.GasSteps.cast hchain rfl
     (mulOuterNext_innerState afterWord word a b out modulus count i returnDest rest)
@@ -2052,6 +2114,39 @@ theorem gasSteps_mulWordLoop_cost_potential (current : State)
       word a b out modulus count i j returnDest rest hcap hcount hj
       (by simpa using hcode) (by simpa [State.fork] using hfork)
       (by simpa using hrun) (by simpa [State.fork] using hnp)
+
+theorem gasSteps_mulFinish_cost_potential (current : State)
+    (a b out modulus : UInt256) (count : Nat) (returnDest : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 980)
+    (hcount : count < 2 ^ 256)
+    (hcode : current.executionEnv.code = Challenge.Modexp.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest Challenge.Modexp.referenceBytecode
+      returnDest.toNat = true) :
+    (gasSteps_mulFinish current a b out modulus count returnDest rest hcap
+        hcount hcode hfork hrun hnp hvalid).cost + MachineState.memCost
+          (mulOuterState current a b out modulus count count returnDest rest).activeWords.toNat =
+      47 + MachineState.memCost
+        (mulReturned current returnDest rest).activeWords.toNat := by
+  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulOuterGuardPath 26
+      (run_mulOuterFinishGuard current a b out modulus count returnDest rest
+        (by omega) hcount hcode hrun)
+      (by simpa [mulOuterState, State.fork] using hfork)
+      (by native_decide) (by native_decide)
+  have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulOuterExitPath 21
+      (run_mulOuterExit current a b out modulus count returnDest rest (by omega)
+        hcode hrun hvalid)
+      (by simpa [mulOuterState, State.fork] using hfork)
+      (by native_decide) (by native_decide)
+  unfold gasSteps_mulFinish
+  simp only [Challenge.EvmProof.GasSteps.trans_cost,
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+  simp only [mulOuterState, mulReturned] at hguard hexit ⊢
+  omega
 
 theorem mulAfterCopy_represents (s : State) (bPtr count aValue bValue
     modulusValue : Nat) (returnDest : UInt256) (rest : List UInt256)
