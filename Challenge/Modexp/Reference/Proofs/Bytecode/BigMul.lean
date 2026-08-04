@@ -636,6 +636,83 @@ theorem mulAfterBitDouble_represents (current : State) (a b : UInt256)
       (by right; omega) (by left; omega) hafterModulus
   exact ⟨hdoubleAcc, hdoubleAddend, hdoubleModulus⟩
 
+theorem gasSteps_mulBitIteration_cost_potential (current : State)
+    (a b out modulus : UInt256) (count i j : Nat) (returnDest : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 980)
+    (hcount : count < 2 ^ 256) (hj : j < 256)
+    (hcode : current.executionEnv.code = BigHelpers.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false) :
+    (gasSteps_mulBitIteration current a b out modulus count i j returnDest rest
+        hcap hcount hj hcode hfork hrun hnp).cost +
+        MachineState.memCost
+          (mulInnerLoop current a b out modulus count i j returnDest rest).activeWords.toNat =
+      (423 + count * 906) + MachineState.memCost
+        (mulInnerNext current a b out modulus count i j returnDest rest).activeWords.toNat := by
+  let inner := mulInnerLoop current a b out modulus count i j returnDest rest
+  let bit := mulBit current b i j
+  let saved := mulBitRest current a b out modulus count i j returnDest rest
+  let afterAdd := mulAfterBitAdd current a b out modulus count i j
+    returnDest rest
+  let afterDouble := mulAfterBitDouble current a b out modulus count i j
+    returnDest rest
+  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulInnerGuardPath 25
+      (run_mulInnerGuard current a b out modulus count i j returnDest rest
+        (by omega) hj hrun)
+      (by simpa [inner, mulInnerLoop, State.fork] using hfork)
+      (by native_decide) (by rfl)
+  have htoAdd := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulInnerToAddPath 44
+      (run_mulInnerToAdd current a b out modulus count i j returnDest rest
+        (by omega) hj hcode hrun)
+      (by simpa [inner, mulInnerLoop, State.fork] using hfork)
+      (by native_decide) (by rfl)
+  have hadd := BigHelpers.gasSteps_addMaskedMod_cost_potential inner out
+    (UInt256.ofNat 4096) bit modulus count (UInt256.ofNat 383) saved
+    (by simp [saved]; omega) hcount
+    (by simpa [inner, mulInnerLoop] using hcode)
+    (by simpa [inner, mulInnerLoop, State.fork] using hfork)
+    (by simpa [inner, mulInnerLoop] using hrun)
+    (by simpa [inner, mulInnerLoop, State.fork] using hnp) (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt (by norm_num : 383 < 2 ^ 256)]
+      exact jump383)
+  have htoDouble :=
+    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+      mulAddToDoublePath 29
+      (by simpa [afterAdd, mulAfterBitAdd, inner, bit, saved] using
+        run_mulAddToDouble current a b out modulus count i j returnDest rest
+          (by omega) hcode hrun)
+      (by simpa [afterAdd, mulAfterBitAdd, inner, mulInnerLoop,
+        BigHelpers.addReturned, State.fork] using hfork)
+      (by native_decide) (by rfl)
+  have hdouble := BigHelpers.gasSteps_addMaskedMod_cost_potential afterAdd
+    (UInt256.ofNat 4096) (UInt256.ofNat 4096) (UInt256.ofNat 1) modulus
+    count (UInt256.ofNat 401) saved (by simp [saved]; omega) hcount
+    (by simpa [afterAdd, mulAfterBitAdd, inner, mulInnerLoop,
+      BigHelpers.addReturned] using hcode)
+    (by simpa [afterAdd, mulAfterBitAdd, inner, mulInnerLoop,
+      BigHelpers.addReturned, State.fork] using hfork)
+    (by simpa [afterAdd, mulAfterBitAdd, inner, mulInnerLoop,
+      BigHelpers.addReturned] using hrun)
+    (by simpa [afterAdd, mulAfterBitAdd, inner, mulInnerLoop,
+      BigHelpers.addReturned, State.fork] using hnp) (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt (by norm_num : 401 < 2 ^ 256)]
+      exact jump401)
+  have hnext := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    mulDoubleToNextPath 27
+      (by simpa [afterDouble] using run_mulDoubleToNext current a b out modulus
+        count i j returnDest rest (by omega) (by omega) hcode hrun)
+      (by simpa [afterDouble, mulAfterBitDouble, mulAfterBitAdd, inner,
+        mulInnerLoop, BigHelpers.addReturned, State.fork] using hfork)
+      (by native_decide) (by rfl)
+  unfold gasSteps_mulBitIteration
+  simp only [Challenge.EvmProof.GasSteps.trans_cost]
+  omega
+
 def gasSteps_mulInitialize (s : State) (a b out modulus : UInt256)
     (count : Nat) (returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1000) (hcount : count < 2 ^ 256)
