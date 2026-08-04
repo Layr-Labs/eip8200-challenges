@@ -2115,6 +2115,20 @@ theorem gasSteps_mulWordLoop_cost_potential (current : State)
       (by simpa using hcode) (by simpa [State.fork] using hfork)
       (by simpa using hrun) (by simpa [State.fork] using hnp)
 
+/- Split into `BigMulGas` so the large execution certificate is opaque while
+the aggregate cost proof is elaborated. -/
+/-
+private theorem telescope_outer_costs
+    (guard load word finish exit p₀ p₁ p₂ p₃ p₄ p₅ work : Nat)
+    (hguard : guard + p₀ = 26 + p₁)
+    (hload : load + p₁ = 20 + p₂)
+    (hword : word + p₂ = work + p₃)
+    (hfinish : finish + p₃ = 26 + p₄)
+    (hexit : exit + p₄ = 30 + p₅) :
+    guard + (load + (word + (finish + exit))) + p₀ =
+      (102 + work) + p₅ := by
+  omega
+
 theorem gasSteps_mulOuterIteration_cost_potential (current : State)
     (a b out modulus : UInt256) (count i : Nat) (returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 980)
@@ -2173,14 +2187,19 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
       (by simpa [afterWord, loaded, mulLoadedState, before, mulInnerState,
         State.fork] using hfork)
       (by native_decide) (by native_decide)
-  unfold gasSteps_mulOuterIteration
+  unfold gasSteps_mulOuterIteration gasSteps_mulOuterGuardSegment
+    gasSteps_mulOuterLoadSegment gasSteps_mulInnerFinishSegment
+    gasSteps_mulInnerExitSegment
+  simp only [id_eq]
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost,
     Challenge.EvmProof.GasSteps.cast_cost]
   dsimp only [before, loaded, word, afterWord] at hguard hload hword hfinish hexit
   simp only [mulOuterState, mulOuterBody, mulInnerLoop_eq_state,
-    mulInnerState, mulOuterNext_innerState] at hguard hload hword hfinish hexit ⊢
-  omega
+    mulInnerState] at hguard hload hword hfinish hexit ⊢
+  simp only [mulOuterProgress] at ⊢
+  exact telescope_outer_costs _ _ _ _ _ _ _ _ _ _ _ _ hguard hload hword
+    hfinish hexit
 
 theorem gasSteps_mulOuterLoop_cost_potential (current : State)
     (a b out modulus : UInt256) (count : Nat) (returnDest : UInt256)
@@ -2198,7 +2217,7 @@ theorem gasSteps_mulOuterLoop_cost_potential (current : State)
           (mulOuterProgress current a b out modulus count returnDest rest count)
           a b out modulus count count returnDest rest).activeWords.toNat := by
   unfold gasSteps_mulOuterLoop
-  apply Challenge.EvmProof.GasSteps.iterateBounded_cost_potential_eq
+  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
   intro i hi
   simpa using gasSteps_mulOuterIteration_cost_potential current a b out modulus
     count i returnDest rest hcap hcount hi hcode hfork hrun hnp
@@ -2236,6 +2255,7 @@ theorem gasSteps_mulFinish_cost_potential (current : State)
   simp only [mulOuterState, mulReturned] at hguard hexit ⊢
   omega
 
+-/
 theorem mulAfterCopy_represents (s : State) (bPtr count aValue bValue
     modulusValue : Nat) (returnDest : UInt256) (rest : List UInt256)
     (hcount : count ≤ 32) (hbPtr : bPtr + 32 * count ≤ 3072)
@@ -2493,6 +2513,8 @@ theorem gasSteps_mulInitialize_cost_potential (s : State)
     mulAfterCopy, mulOuterLoop] at htoClear hclear htoCopy hcopy hsetup ⊢
   omega
 
+/- Aggregate theorem is in `BigMulGas`. -/
+/-
 theorem gasSteps_mulModBig_cost_potential (s : State)
     (a b out modulus : UInt256) (count : Nat) (returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 980)
@@ -2530,10 +2552,12 @@ theorem gasSteps_mulModBig_cost_potential (s : State)
     (by simpa [progress, copied, mulAfterCopy, mulAfterClear, State.fork] using hnp)
     hvalid
   unfold gasSteps_mulModBig
+  simp only [id_eq]
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.GasSteps.cast_cost]
   dsimp only [copied, progress] at hinit hloop hfinish
   simp only [mulOuterLoop, mulOuterState] at hinit hloop hfinish ⊢
   omega
 
+-/
 end Challenge.Modexp.Reference.Proofs.Bytecode.BigMul
