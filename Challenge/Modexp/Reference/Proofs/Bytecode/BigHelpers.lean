@@ -1867,4 +1867,255 @@ theorem run_selectExit (s : State) (dst src take modulus : UInt256)
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
+/-! ### Whole-helper execution certificate -/
+
+def gasSteps_addSetup (s : State) (dst src take modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1000) (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (addEntry s dst src take modulus count returnDest rest)
+      (addLoop s dst src take modulus count 0 returnDest rest) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka addSetupPath hcode hfork
+      (run_addSetup s dst src take modulus count returnDest rest (by omega) hrun)
+      hrun hnp
+
+def gasSteps_addIteration (s : State) (dst src take modulus : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1000) (hcount : count < 2 ^ 256) (hi : i < count)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (addLoop s dst src take modulus count i returnDest rest)
+      (addLoop s dst src take modulus count (i + 1) returnDest rest) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka addGuardPath
+        (by simpa [addLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [addLoop, State.fork] using hfork)
+        (run_addGuard s dst src take modulus count i returnDest rest (by omega)
+          hcount hi hrun)
+        (by simpa [addLoop] using hrun)
+        (by simpa [addLoop, State.fork] using hnp)).trans
+    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka addBodyPath
+        (by simpa [addBodyEntry, addLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [addBodyEntry, addLoop, State.fork] using hfork)
+        (run_addBody s dst src take modulus count i returnDest rest (by omega)
+          (by omega) hcode hrun)
+        (by simpa [addBodyEntry, addLoop] using hrun)
+        (by simpa [addBodyEntry, addLoop, State.fork] using hnp))
+
+def gasSteps_addLoop (s : State) (dst src take modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1000) (hcount : count < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (addLoop s dst src take modulus count 0 returnDest rest)
+      (addLoop s dst src take modulus count count returnDest rest) := by
+  exact Challenge.EvmProof.GasSteps.iterateBounded count fun i hi =>
+    gasSteps_addIteration s dst src take modulus count i returnDest rest hcap
+      hcount hi hcode hfork hrun hnp
+
+def gasSteps_addToSubtract (s : State) (dst src take modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1000) (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (addLoop s dst src take modulus count count returnDest rest)
+      (subtractLoop s dst src take modulus count 0 returnDest rest) := by
+  have hguard := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka addGuardPath
+      (by simpa [addLoop, Artifact.referenceArtifact] using hcode)
+      (by simpa [addLoop, State.fork] using hfork)
+      (run_addFinishGuard s dst src take modulus count returnDest rest (by omega)
+        hcode hrun)
+      (by simpa [addLoop] using hrun)
+      (by simpa [addLoop, State.fork] using hnp)
+  have htransition := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka addToSubtractPath
+      (by simpa [addLoop, Artifact.referenceArtifact] using hcode)
+      (by simpa [addLoop, State.fork] using hfork)
+      (run_addToSubtract s dst src take modulus count returnDest rest (by omega)
+        hrun)
+      (by simpa [addLoop] using hrun)
+      (by simpa [addLoop, State.fork] using hnp)
+  have hzero : (0 : UInt256) = UInt256.ofNat 0 := by decide
+  simpa [subtractLoop, subtractLoopEntry, subtractProgress, hzero] using
+    hguard.trans htransition
+
+def gasSteps_subtractIteration (s : State) (dst src take modulus : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1000) (hcount : count < 2 ^ 256) (hi : i < count)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (subtractLoop s dst src take modulus count i returnDest rest)
+      (subtractLoop s dst src take modulus count (i + 1) returnDest rest) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka subtractGuardPath
+        (by simpa [subtractLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [subtractLoop, State.fork] using hfork)
+        (run_subtractGuard s dst src take modulus count i returnDest rest hcap
+          hcount hi hrun)
+        (by simpa [subtractLoop] using hrun)
+        (by simpa [subtractLoop, State.fork] using hnp)).trans
+    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka subtractBodyPath
+        (by simpa [subtractBodyEntry, subtractLoop,
+          Artifact.referenceArtifact] using hcode)
+        (by simpa [subtractBodyEntry, subtractLoop, State.fork] using hfork)
+        (run_subtractBody s dst src take modulus count i returnDest rest hcap
+          (by omega) hcode hrun)
+        (by simpa [subtractBodyEntry, subtractLoop] using hrun)
+        (by simpa [subtractBodyEntry, subtractLoop, State.fork] using hnp))
+
+def gasSteps_subtractLoop (s : State) (dst src take modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1000) (hcount : count < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (subtractLoop s dst src take modulus count 0 returnDest rest)
+      (subtractLoop s dst src take modulus count count returnDest rest) := by
+  exact Challenge.EvmProof.GasSteps.iterateBounded count fun i hi =>
+    gasSteps_subtractIteration s dst src take modulus count i returnDest rest
+      hcap hcount hi hcode hfork hrun hnp
+
+def gasSteps_subtractToSelect (s : State) (dst src take modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1000) (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (subtractLoop s dst src take modulus count count returnDest rest)
+      (selectLoop s dst src take modulus count 0 returnDest rest) := by
+  have hguard := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka subtractGuardPath
+      (by simpa [subtractLoop, Artifact.referenceArtifact] using hcode)
+      (by simpa [subtractLoop, State.fork] using hfork)
+      (run_subtractFinishGuard s dst src take modulus count returnDest rest hcap
+        hcode hrun)
+      (by simpa [subtractLoop] using hrun)
+      (by simpa [subtractLoop, State.fork] using hnp)
+  have htransition := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka subtractToSelectPath
+      (by simpa [subtractLoop, Artifact.referenceArtifact] using hcode)
+      (by simpa [subtractLoop, State.fork] using hfork)
+      (run_subtractToSelect s dst src take modulus count returnDest rest hcap hrun)
+      (by simpa [subtractLoop] using hrun)
+      (by simpa [subtractLoop, State.fork] using hnp)
+  have hzero : (0 : UInt256) = UInt256.ofNat 0 := by decide
+  simpa [selectLoop, selectLoopEntry, selectProgress, hzero] using
+    hguard.trans htransition
+
+def gasSteps_selectIteration (s : State) (dst src take modulus : UInt256)
+    (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1000) (hcount : count < 2 ^ 256) (hi : i < count)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (selectLoop s dst src take modulus count i returnDest rest)
+      (selectLoop s dst src take modulus count (i + 1) returnDest rest) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka selectGuardPath
+        (by simpa [selectLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [selectLoop, State.fork] using hfork)
+        (run_selectGuard s dst src take modulus count i returnDest rest hcap
+          hcount hi hrun)
+        (by simpa [selectLoop] using hrun)
+        (by simpa [selectLoop, State.fork] using hnp)).trans
+    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka selectBodyPath
+        (by simpa [selectBodyEntry, selectLoop,
+          Artifact.referenceArtifact] using hcode)
+        (by simpa [selectBodyEntry, selectLoop, State.fork] using hfork)
+        (run_selectBody s dst src take modulus count i returnDest rest hcap
+          (by omega) hcode hrun)
+        (by simpa [selectBodyEntry, selectLoop] using hrun)
+        (by simpa [selectBodyEntry, selectLoop, State.fork] using hnp))
+
+def gasSteps_selectLoop (s : State) (dst src take modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1000) (hcount : count < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (selectLoop s dst src take modulus count 0 returnDest rest)
+      (selectLoop s dst src take modulus count count returnDest rest) := by
+  exact Challenge.EvmProof.GasSteps.iterateBounded count fun i hi =>
+    gasSteps_selectIteration s dst src take modulus count i returnDest rest
+      hcap hcount hi hcode hfork hrun hnp
+
+def gasSteps_selectFinish (s : State) (dst src take modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1000) (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest referenceBytecode returnDest.toNat = true) :
+    Challenge.EvmProof.GasSteps
+      (selectLoop s dst src take modulus count count returnDest rest)
+      (addReturned s dst src take modulus count returnDest rest) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka selectGuardPath
+        (by simpa [selectLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [selectLoop, State.fork] using hfork)
+        (run_selectFinishGuard s dst src take modulus count returnDest rest hcap
+          hcode hrun)
+        (by simpa [selectLoop] using hrun)
+        (by simpa [selectLoop, State.fork] using hnp)).trans
+    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka selectExitPath
+        (by simpa [selectExit, selectLoop, Artifact.referenceArtifact] using hcode)
+        (by simpa [selectExit, selectLoop, State.fork] using hfork)
+        (run_selectExit s dst src take modulus count returnDest rest hcap hcode
+          hvalid hrun)
+        (by simpa [selectExit, selectLoop] using hrun)
+        (by simpa [selectExit, selectLoop, State.fork] using hnp))
+
+def gasSteps_addMaskedMod (s : State) (dst src take modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1000) (hcount : count < 2 ^ 256)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest referenceBytecode returnDest.toNat = true) :
+    Challenge.EvmProof.GasSteps
+      (addEntry s dst src take modulus count returnDest rest)
+      (addReturned s dst src take modulus count returnDest rest) :=
+  (gasSteps_addSetup s dst src take modulus count returnDest rest hcap hcode
+    hfork hrun hnp).trans <|
+  (gasSteps_addLoop s dst src take modulus count returnDest rest hcap hcount
+    hcode hfork hrun hnp).trans <|
+  (gasSteps_addToSubtract s dst src take modulus count returnDest rest hcap hcode
+    hfork hrun hnp).trans <|
+  (gasSteps_subtractLoop s dst src take modulus count returnDest rest hcap hcount
+    hcode hfork hrun hnp).trans <|
+  (gasSteps_subtractToSelect s dst src take modulus count returnDest rest hcap
+    hcode hfork hrun hnp).trans <|
+  (gasSteps_selectLoop s dst src take modulus count returnDest rest hcap hcount
+    hcode hfork hrun hnp).trans <|
+  gasSteps_selectFinish s dst src take modulus count returnDest rest hcap hcode
+    hfork hrun hnp hvalid
+
 end Challenge.Modexp.Reference.Proofs.Bytecode.BigHelpers
