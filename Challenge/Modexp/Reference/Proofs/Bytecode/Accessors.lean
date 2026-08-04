@@ -1,4 +1,5 @@
 import Challenge.Modexp.Reference.Proofs.Bytecode.Artifact
+import Challenge.EvmProof.Meter
 import Challenge.EvmProof.Word
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -95,5 +96,25 @@ def gasSteps_calldataByte (s : State) (offset output returnDest : UInt256)
   · exact run_calldataByte s offset output returnDest rest hcap hcode hrun hvalid
   · exact hrun
   · exact hnp
+
+theorem gasSteps_calldataByte_cost_potential (s : State)
+    (offset output returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1017)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest referenceBytecode returnDest.toNat = true) :
+    (gasSteps_calldataByte s offset output returnDest rest hcap hcode hfork
+        hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
+      30 + MachineState.memCost
+        (calldataByteReturned s offset returnDest rest).activeWords.toNat := by
+  have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    calldataBytePath 30
+      (run_calldataByte s offset output returnDest rest hcap hcode hrun hvalid)
+      hfork (by native_decide) (by native_decide)
+  unfold gasSteps_calldataByte
+  simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+  simpa [calldataByteEntry, calldataByteReturned] using hmeter
 
 end Challenge.Modexp.Reference.Proofs.Bytecode.Accessors
