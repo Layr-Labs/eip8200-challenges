@@ -114,6 +114,12 @@ def mulInnerToOuterPath :
    opAt 338 (.Swap ⟨0, by decide⟩), opAt 339 .POP,
    pushAt 340 2 335, opAt 341 .JUMP]
 
+def mulOuterExitPath :
+    List (Challenge.EvmProof.Stepper.Located
+      Artifact.referenceArtifact .Osaka) :=
+  [opAt 342 .JUMPDEST, opAt 343 .POP, opAt 344 .POP, opAt 345 .POP,
+   opAt 346 .POP, opAt 347 .POP, opAt 348 .POP, opAt 349 .JUMP]
+
 def mulEntry (s : State) (a b out modulus : UInt256) (count : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 310
@@ -364,6 +370,10 @@ def mulOuterState (current : State) (a b out modulus : UInt256)
     stack := [UInt256.ofNat i, a, b, out, modulus, UInt256.ofNat count,
       returnDest] ++ rest }
 
+def mulReturned (current : State) (returnDest : UInt256)
+    (rest : List UInt256) : State :=
+  { current with pc := returnDest, stack := rest }
+
 theorem mulOuterNext_innerState (current : State) (word a b out modulus : UInt256)
     (count i : Nat) (returnDest : UInt256) (rest : List UInt256) :
     mulOuterNext
@@ -485,6 +495,12 @@ theorem readWord_eq_of_represents (left right : ByteArray)
     (hii : i ≤ 341) :
     Artifact.referenceArtifact.instructionPC i =
       [413,414,415,416,418,419,420,421,422,425][i - 332]! := by
+  interval_cases i <;> decide
+
+@[simp] private theorem mulReturnPCs (i : Nat) (hi : 342 ≤ i)
+    (hii : i ≤ 349) :
+    Artifact.referenceArtifact.instructionPC i =
+      [426,427,428,429,430,431,432,433][i - 342]! := by
   interval_cases i <;> decide
 
 private theorem jump335 :
@@ -624,6 +640,52 @@ theorem run_mulOuterGuard (current : State) (a b out modulus : UInt256)
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
     hlt, honeIsZero, Nat.add_assoc, hc, hi]
+
+set_option linter.unusedSimpArgs false in
+theorem run_mulOuterFinishGuard (current : State) (a b out modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1014) (hcount : count < 2 ^ 256)
+    (hcode : current.executionEnv.code = Challenge.Modexp.referenceBytecode)
+    (hrun : current.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock mulOuterGuardPath
+      (mulOuterState current a b out modulus count count returnDest rest) =
+    some { mulOuterState current a b out modulus count count returnDest rest with
+      pc := UInt256.ofNat 426 } := by
+  have hc : ∀ n ≤ 10, rest.length + n < 1024 := by omega
+  have h426 : (426 : UInt256) = UInt256.ofNat 426 := by decide
+  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
+  have hvalid : Decode.isValidJumpDest Challenge.Modexp.referenceBytecode
+      (426 : UInt256).toNat = true := by
+    rw [show (426 : UInt256).toNat = 426 by decide]
+    exact jump426
+  simp (disch := omega) [mulOuterGuardPath, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    mulOuterState, mulLoopPCs, hcode, hrun, UInt256.lt, UInt256.isTrue,
+    hzeroFalse, hvalid, jump426,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+    Nat.add_assoc, hc, h426]
+
+set_option linter.unusedSimpArgs false in
+theorem run_mulOuterExit (current : State) (a b out modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 1014)
+    (hcode : current.executionEnv.code = Challenge.Modexp.referenceBytecode)
+    (hrun : current.halt = .Running)
+    (hvalid : Decode.isValidJumpDest Challenge.Modexp.referenceBytecode
+      returnDest.toNat = true) :
+    Challenge.EvmProof.Stepper.runLocatedBlock mulOuterExitPath
+      { mulOuterState current a b out modulus count count returnDest rest with
+        pc := UInt256.ofNat 426 } =
+    some (mulReturned current returnDest rest) := by
+  have hc : ∀ n ≤ 10, rest.length + n < 1024 := by omega
+  simp (disch := omega) [mulOuterExitPath, opAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    mulOuterState, mulReturned, mulReturnPCs, hcode, hrun, hvalid,
+    Challenge.EvmProof.Word.succ_ofNat_mod, List.exchange, Nat.add_assoc, hc]
 
 set_option linter.unusedSimpArgs false in
 theorem run_mulOuterLoad (current : State) (a b out modulus : UInt256)
@@ -1334,6 +1396,36 @@ def gasSteps_mulOuterLoop (current : State) (a b out modulus : UInt256)
     gasSteps_mulOuterIteration current a b out modulus count i returnDest rest
       hcap hcount hi hcode hfork hrun hnp
 
+def gasSteps_mulFinish (current : State) (a b out modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 980) (hcount : count < 2 ^ 256)
+    (hcode : current.executionEnv.code = Challenge.Modexp.referenceBytecode)
+    (hfork : current.fork = .Osaka) (hrun : current.halt = .Running)
+    (hnp : Precompile.isPrecompile current.executionEnv.fork
+      current.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest Challenge.Modexp.referenceBytecode
+      returnDest.toNat = true) :
+    Challenge.EvmProof.GasSteps
+      (mulOuterState current a b out modulus count count returnDest rest)
+      (mulReturned current returnDest rest) := by
+  have hguard := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka mulOuterGuardPath
+      (by simpa [mulOuterState, Artifact.referenceArtifact] using hcode)
+      (by simpa [mulOuterState, State.fork] using hfork)
+      (run_mulOuterFinishGuard current a b out modulus count returnDest rest
+        (by omega) hcount hcode hrun)
+      (by simpa [mulOuterState] using hrun)
+      (by simpa [mulOuterState, State.fork] using hnp)
+  have hexit := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka mulOuterExitPath
+      (by simpa [mulOuterState, Artifact.referenceArtifact] using hcode)
+      (by simpa [mulOuterState, State.fork] using hfork)
+      (run_mulOuterExit current a b out modulus count returnDest rest (by omega)
+        hcode hrun hvalid)
+      (by simpa [mulOuterState] using hrun)
+      (by simpa [mulOuterState, State.fork] using hnp)
+  exact hguard.trans hexit
+
 theorem mulAfterBitDouble_represents (current : State) (a b : UInt256)
     (count i j acc addend modulusValue : Nat) (returnDest : UInt256)
     (rest : List UInt256) (hcount : count ≤ 32)
@@ -2034,6 +2126,27 @@ theorem mulOuterProgress_afterCopy_represents_product (s : State)
     (by omega) haReduced
   simpa [Nat.zero_add] using hproduct
 
+theorem mulReturned_represents_product (s : State)
+    (bPtr count aValue bValue modulusValue : Nat)
+    (returnDest : UInt256) (rest : List UInt256) (hcount : count ≤ 32)
+    (hbPtr : bPtr + 32 * count ≤ 3072) (hmodulusPos : 0 < modulusValue)
+    (haReduced : aValue < modulusValue)
+    (ha : Limbs.Represents s.memory 2048 count aValue)
+    (hb : Limbs.Represents s.memory bPtr count bValue)
+    (hmodulus : Limbs.Represents s.memory 0 count modulusValue) :
+    let copied := mulAfterCopy s (UInt256.ofNat 2048) (UInt256.ofNat bPtr)
+      (UInt256.ofNat 3072) (UInt256.ofNat 0) count returnDest rest
+    let progress := mulOuterProgress copied (UInt256.ofNat 2048)
+      (UInt256.ofNat bPtr) (UInt256.ofNat 3072) (UInt256.ofNat 0) count
+      returnDest rest count
+    let returned := mulReturned progress returnDest rest
+    Limbs.Represents returned.memory 3072 count
+      ((aValue * bValue) % modulusValue) := by
+  have hproduct := mulOuterProgress_afterCopy_represents_product s bPtr count
+    aValue bValue modulusValue returnDest rest hcount hbPtr hmodulusPos
+    haReduced ha hb hmodulus
+  simpa [mulReturned] using hproduct.1
+
 def gasSteps_mulInitialize (s : State) (a b out modulus : UInt256)
     (count : Nat) (returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1000) (hcount : count < 2 ^ 256)
@@ -2098,6 +2211,45 @@ def gasSteps_mulInitialize (s : State) (a b out modulus : UInt256)
       (by simpa [mulAfterCopy, mulAfterClear, State.fork] using hnp)
   exact htoClear.trans <| hclear'.trans <| htoCopy.trans <|
     hcopy'.trans hsetup
+
+def gasSteps_mulModBig (s : State) (a b out modulus : UInt256)
+    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
+    (hcap : rest.length < 980) (hcount : count < 2 ^ 256)
+    (hcode : s.executionEnv.code = Challenge.Modexp.referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest Challenge.Modexp.referenceBytecode
+      returnDest.toNat = true) :
+    let copied := mulAfterCopy s a b out modulus count returnDest rest
+    let progress := mulOuterProgress copied a b out modulus count returnDest rest count
+    Challenge.EvmProof.GasSteps
+      (mulEntry s a b out modulus count returnDest rest)
+      (mulReturned progress returnDest rest) := by
+  dsimp only
+  let copied := mulAfterCopy s a b out modulus count returnDest rest
+  let progress := mulOuterProgress copied a b out modulus count returnDest rest count
+  have hinit := gasSteps_mulInitialize s a b out modulus count returnDest rest
+    (by omega) hcount hcode hfork hrun hnp
+  have hinit' : Challenge.EvmProof.GasSteps
+      (mulEntry s a b out modulus count returnDest rest)
+      (mulOuterState copied a b out modulus count 0 returnDest rest) := by
+    exact Challenge.EvmProof.GasSteps.cast hinit rfl (by
+      simp [copied, mulOuterState, mulOuterLoop])
+  have hloop := gasSteps_mulOuterLoop copied a b out modulus count returnDest
+    rest hcap hcount
+    (by simpa [copied, mulAfterCopy, mulAfterClear] using hcode)
+    (by simpa [copied, mulAfterCopy, mulAfterClear, State.fork] using hfork)
+    (by simpa [copied, mulAfterCopy, mulAfterClear] using hrun)
+    (by simpa [copied, mulAfterCopy, mulAfterClear, State.fork] using hnp)
+  have hfinish := gasSteps_mulFinish progress a b out modulus count returnDest
+    rest hcap hcount
+    (by simpa [progress, copied, mulAfterCopy, mulAfterClear] using hcode)
+    (by simpa [progress, copied, mulAfterCopy, mulAfterClear, State.fork] using hfork)
+    (by simpa [progress, copied, mulAfterCopy, mulAfterClear] using hrun)
+    (by simpa [progress, copied, mulAfterCopy, mulAfterClear, State.fork] using hnp)
+    hvalid
+  exact hinit'.trans (hloop.trans hfinish)
 
 theorem gasSteps_mulInitialize_cost_potential (s : State)
     (a b out modulus : UInt256) (count : Nat) (returnDest : UInt256)
