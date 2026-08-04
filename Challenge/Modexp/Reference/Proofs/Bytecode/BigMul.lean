@@ -382,6 +382,53 @@ def mulOuterProgress (current : State) (a b out modulus : UInt256)
       let word := mulLoadedWord before b i
       mulWordProgress loaded word a b out modulus count i returnDest rest 256
 
+def mulOuterBits (memory : ByteArray) (bPtr steps : Nat) : List Nat :=
+  (List.range steps).flatMap fun i =>
+    mulWordBits (MachineState.readWord memory (bPtr + 32 * i)) 256
+
+theorem mulOuterBits_succ (memory : ByteArray) (bPtr i : Nat) :
+    mulOuterBits memory bPtr (i + 1) =
+      mulOuterBits memory bPtr i ++
+        mulWordBits (MachineState.readWord memory (bPtr + 32 * i)) 256 := by
+  simp [mulOuterBits, List.range_succ]
+
+@[simp] theorem length_mulOuterBits (memory : ByteArray) (bPtr steps : Nat) :
+    (mulOuterBits memory bPtr steps).length = 256 * steps := by
+  simp [mulOuterBits, mulWordBits]
+  omega
+
+theorem value_mulOuterBits (memory : ByteArray) (bPtr count : Nat) :
+    Nat.ofDigits 2 (mulOuterBits memory bPtr count) =
+      Nat.ofDigits Limbs.radix (Limbs.memoryLimbs memory bPtr count) := by
+  induction count with
+  | zero => simp [mulOuterBits, Limbs.memoryLimbs]
+  | succ count ih =>
+      rw [mulOuterBits_succ, Nat.ofDigits_append, ih, value_mulWordBits]
+      simp [Limbs.memoryLimbs, List.range_succ, Nat.ofDigits_append,
+        Limbs.radix, Nat.pow_mul]
+
+theorem readWord_eq_of_represents (left right : ByteArray)
+    (ptr count value i : Nat) (hi : i < count)
+    (hleft : Limbs.Represents left ptr count value)
+    (hright : Limbs.Represents right ptr count value) :
+    MachineState.readWord left (ptr + 32 * i) =
+      MachineState.readWord right (ptr + 32 * i) := by
+  have hlists : Limbs.memoryLimbs left ptr count =
+      Limbs.memoryLimbs right ptr count := hleft.2.trans hright.2.symm
+  have hget := congrArg (fun digits => digits[i]?) hlists
+  have htoNat :
+      (MachineState.readWord left (ptr + 32 * i)).toNat =
+        (MachineState.readWord right (ptr + 32 * i)).toNat := by
+    simpa [Limbs.memoryLimbs, hi] using hget
+  calc
+    MachineState.readWord left (ptr + 32 * i) =
+        UInt256.ofNat (MachineState.readWord left (ptr + 32 * i)).toNat :=
+      Challenge.EvmProof.Word.word_eq_ofNat_toNat _
+    _ = UInt256.ofNat (MachineState.readWord right (ptr + 32 * i)).toNat := by
+      rw [htoNat]
+    _ = MachineState.readWord right (ptr + 32 * i) :=
+      (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
+
 @[simp] theorem mulOuterProgress_executionEnv (current : State)
     (a b out modulus : UInt256) (count i : Nat) (returnDest : UInt256)
     (rest : List UInt256) :
@@ -1447,6 +1494,63 @@ theorem mulWordAfterDouble_represents (current : State) (word a b : UInt256)
       (by right; omega) (by left; omega) hafterModulus
   exact ⟨hdoubleAcc, hdoubleAddend, hdoubleModulus⟩
 
+theorem mulWordAfterDouble_preserves_region (current : State)
+    (word a b : UInt256) (count i j ptr value : Nat)
+    (returnDest : UInt256) (rest : List UInt256) (hcount : count ≤ 32)
+    (hptrOut : 3072 + 32 * count ≤ ptr ∨ ptr + 32 * count ≤ 3072)
+    (hptrAddend : 4096 + 32 * count ≤ ptr ∨ ptr + 32 * count ≤ 4096)
+    (hptrCandidate : ptr + 32 * count ≤ 5120 ∨ 5120 + 32 * count ≤ ptr)
+    (hrep : Limbs.Represents current.memory ptr count value) :
+    Limbs.Represents
+      (mulWordAfterDouble current word a b (UInt256.ofNat 3072)
+        (UInt256.ofNat 0) count i j returnDest rest).memory ptr count value := by
+  let inner := mulInnerState current word a b (UInt256.ofNat 3072)
+    (UInt256.ofNat 0) count i j returnDest rest
+  let bitWord := mulWordBit word j
+  let bit := bitWord.toNat
+  let saved := mulWordRest word a b (UInt256.ofNat 3072)
+    (UInt256.ofNat 0) count i j returnDest rest
+  let afterAdd := mulWordAfterAdd current word a b (UInt256.ofNat 3072)
+    (UInt256.ofNat 0) count i j returnDest rest
+  have hbitWord : bitWord = UInt256.ofNat bit :=
+    Challenge.EvmProof.Word.word_eq_ofNat_toNat bitWord
+  have hfit3072 : 3072 + 32 * count < 2 ^ 256 := by omega
+  have hfit4096 : 4096 + 32 * count < 2 ^ 256 := by omega
+  have hfit5120 : 5120 + 32 * count < 2 ^ 256 := by omega
+  have hinnerRep : Limbs.Represents inner.memory ptr count value := by
+    simpa [inner, mulInnerState] using hrep
+  have hafterRep : Limbs.Represents afterAdd.memory ptr count value := by
+    simpa [afterAdd, mulWordAfterAdd, inner, bitWord, saved, hbitWord] using
+      BigHelpers.addReturned_preserves_region inner 3072 4096 bit 0 ptr
+        count value (UInt256.ofNat 383) saved hfit3072 hfit5120 hptrOut
+        hptrCandidate hinnerRep
+  simpa [mulWordAfterDouble, afterAdd, saved] using
+    BigHelpers.addReturned_preserves_region afterAdd 4096 4096 1 0 ptr
+      count value (UInt256.ofNat 401) saved hfit4096 hfit5120 hptrAddend
+      hptrCandidate hafterRep
+
+theorem mulWordProgress_preserves_region (current : State)
+    (word a b : UInt256) (count i steps ptr value : Nat)
+    (returnDest : UInt256) (rest : List UInt256) (hsteps : steps ≤ 256)
+    (hcount : count ≤ 32)
+    (hptrOut : 3072 + 32 * count ≤ ptr ∨ ptr + 32 * count ≤ 3072)
+    (hptrAddend : 4096 + 32 * count ≤ ptr ∨ ptr + 32 * count ≤ 4096)
+    (hptrCandidate : ptr + 32 * count ≤ 5120 ∨ 5120 + 32 * count ≤ ptr)
+    (hrep : Limbs.Represents current.memory ptr count value) :
+    Limbs.Represents
+      (mulWordProgress current word a b (UInt256.ofNat 3072)
+        (UInt256.ofNat 0) count i returnDest rest steps).memory ptr count value := by
+  induction steps with
+  | zero => simpa [mulWordProgress] using hrep
+  | succ steps ih =>
+      have hbefore := ih (by omega)
+      simpa [mulWordProgress] using
+        mulWordAfterDouble_preserves_region
+          (mulWordProgress current word a b (UInt256.ofNat 3072)
+            (UInt256.ofNat 0) count i returnDest rest steps)
+          word a b count i steps ptr value returnDest rest hcount hptrOut
+          hptrAddend hptrCandidate hbefore
+
 theorem mulWordProgress_represents (current : State) (word a b : UInt256)
     (count i steps acc addend modulusValue : Nat) (returnDest : UInt256)
     (rest : List UInt256) (hsteps : steps ≤ 256) (hcount : count ≤ 32)
@@ -1484,6 +1588,145 @@ theorem mulWordProgress_represents (current : State) (word a b : UInt256)
       simpa [mulWordProgress, mulWordBits, List.range_succ,
         List.map_append, Algorithm.mulBits_append, Algorithm.mulBits,
         before, beforeResult] using hstep
+
+theorem mulOuterProgress_represents (current : State)
+    (bPtr count steps acc addend bValue modulusValue : Nat)
+    (returnDest : UInt256) (rest : List UInt256) (hsteps : steps ≤ count)
+    (hcount : count ≤ 32) (hbPtr : bPtr + 32 * count ≤ 3072)
+    (hmodulusPos : 0 < modulusValue)
+    (hmodulusBound : modulusValue < Limbs.radix ^ count)
+    (hacc : Limbs.Represents current.memory 3072 count acc)
+    (haddend : Limbs.Represents current.memory 4096 count addend)
+    (hb : Limbs.Represents current.memory bPtr count bValue)
+    (hmodulus : Limbs.Represents current.memory 0 count modulusValue)
+    (haccReduced : acc < modulusValue)
+    (haddendReduced : addend < modulusValue) :
+    let progress := mulOuterProgress current (UInt256.ofNat 2048)
+      (UInt256.ofNat bPtr) (UInt256.ofNat 3072) (UInt256.ofNat 0) count
+      returnDest rest steps
+    let result := Algorithm.mulBits modulusValue acc addend
+      (mulOuterBits current.memory bPtr steps)
+    Limbs.Represents progress.memory 3072 count result.1 ∧
+      Limbs.Represents progress.memory 4096 count result.2 ∧
+      Limbs.Represents progress.memory bPtr count bValue ∧
+      Limbs.Represents progress.memory 0 count modulusValue := by
+  induction steps with
+  | zero =>
+      simp [mulOuterProgress, mulOuterBits, Algorithm.mulBits, hacc, haddend,
+        hb, hmodulus]
+  | succ steps ih =>
+      have hsteps' : steps ≤ count := by omega
+      have hi : steps < count := by omega
+      let before := mulOuterProgress current (UInt256.ofNat 2048)
+        (UInt256.ofNat bPtr) (UInt256.ofNat 3072) (UInt256.ofNat 0) count
+        returnDest rest steps
+      let loaded := mulLoadedState before (UInt256.ofNat bPtr) steps
+      let word := mulLoadedWord before (UInt256.ofNat bPtr) steps
+      let beforeResult := Algorithm.mulBits modulusValue acc addend
+        (mulOuterBits current.memory bPtr steps)
+      have hbefore := ih hsteps'
+      have hbeforeReduced := Algorithm.mulBits_lt
+        (mulOuterBits current.memory bPtr steps) hmodulusPos haccReduced
+        haddendReduced
+      have hloadedAcc : Limbs.Represents loaded.memory 3072 count
+          beforeResult.1 := by
+        simpa [loaded, mulLoadedState] using hbefore.1
+      have hloadedAddend : Limbs.Represents loaded.memory 4096 count
+          beforeResult.2 := by
+        simpa [loaded, mulLoadedState] using hbefore.2.1
+      have hloadedB : Limbs.Represents loaded.memory bPtr count bValue := by
+        simpa [loaded, mulLoadedState] using hbefore.2.2.1
+      have hloadedModulus :
+          Limbs.Represents loaded.memory 0 count modulusValue := by
+        simpa [loaded, mulLoadedState] using hbefore.2.2.2
+      have hwordAt : word =
+          MachineState.readWord before.memory (bPtr + 32 * steps) := by
+        have hfit : bPtr + 32 * steps < 2 ^ 256 := by omega
+        have haddr :
+            (UInt256.ofNat bPtr + UInt256.shiftLeft (UInt256.ofNat steps)
+              (UInt256.ofNat 5)).toNat = bPtr + 32 * steps := by
+          simpa [BigHelpers.clearOffset, add_comm] using
+            BigHelpers.clearOffset_toNat bPtr steps hfit
+        simp [word, mulLoadedWord, haddr]
+      have hwordOriginal : word =
+          MachineState.readWord current.memory (bPtr + 32 * steps) := by
+        rw [hwordAt]
+        exact readWord_eq_of_represents before.memory current.memory bPtr count
+          bValue steps hi hbefore.2.2.1 hb
+      have hwordProgress := mulWordProgress_represents loaded word
+        (UInt256.ofNat 2048) (UInt256.ofNat bPtr) count steps 256
+        beforeResult.1 beforeResult.2 modulusValue returnDest rest (by omega)
+        hcount hmodulusPos hmodulusBound hloadedAcc hloadedAddend
+        hloadedModulus hbeforeReduced.1 hbeforeReduced.2
+      have hwordB := mulWordProgress_preserves_region loaded word
+        (UInt256.ofNat 2048) (UInt256.ofNat bPtr) count steps 256 bPtr bValue
+        returnDest rest (by omega) hcount (by right; omega) (by right; omega)
+        (by left; omega) hloadedB
+      let afterWord := mulWordProgress loaded word (UInt256.ofNat 2048)
+        (UInt256.ofNat bPtr) (UInt256.ofNat 3072) (UInt256.ofNat 0) count
+        steps returnDest rest 256
+      let wordResult := Algorithm.mulBits modulusValue beforeResult.1
+        beforeResult.2 (mulWordBits word 256)
+      have hbits : mulOuterBits current.memory bPtr (steps + 1) =
+          mulOuterBits current.memory bPtr steps ++ mulWordBits word 256 := by
+        rw [mulOuterBits_succ, hwordOriginal]
+      have hresult : Algorithm.mulBits modulusValue acc addend
+          (mulOuterBits current.memory bPtr (steps + 1)) = wordResult := by
+        rw [hbits, Algorithm.mulBits_append]
+      have hwordProgress' :
+          Limbs.Represents afterWord.memory 3072 count wordResult.1 ∧
+            Limbs.Represents afterWord.memory 4096 count wordResult.2 ∧
+            Limbs.Represents afterWord.memory 0 count modulusValue := by
+        simpa only [afterWord, wordResult] using hwordProgress
+      have hwordB' :
+          Limbs.Represents afterWord.memory bPtr count bValue := by
+        simpa only [afterWord] using hwordB
+      change Limbs.Represents afterWord.memory 3072 count
+          (Algorithm.mulBits modulusValue acc addend
+            (mulOuterBits current.memory bPtr (steps + 1))).1 ∧
+        Limbs.Represents afterWord.memory 4096 count
+          (Algorithm.mulBits modulusValue acc addend
+            (mulOuterBits current.memory bPtr (steps + 1))).2 ∧
+        Limbs.Represents afterWord.memory bPtr count bValue ∧
+        Limbs.Represents afterWord.memory 0 count modulusValue
+      rw [hresult]
+      exact ⟨hwordProgress'.1, hwordProgress'.2.1, hwordB',
+        hwordProgress'.2.2⟩
+
+theorem mulOuterProgress_count_represents_value (current : State)
+    (bPtr count acc addend bValue modulusValue : Nat)
+    (returnDest : UInt256) (rest : List UInt256) (hcount : count ≤ 32)
+    (hbPtr : bPtr + 32 * count ≤ 3072)
+    (hmodulusPos : 0 < modulusValue)
+    (hmodulusBound : modulusValue < Limbs.radix ^ count)
+    (hacc : Limbs.Represents current.memory 3072 count acc)
+    (haddend : Limbs.Represents current.memory 4096 count addend)
+    (hb : Limbs.Represents current.memory bPtr count bValue)
+    (hmodulus : Limbs.Represents current.memory 0 count modulusValue)
+    (haccReduced : acc < modulusValue)
+    (haddendReduced : addend < modulusValue) :
+    let progress := mulOuterProgress current (UInt256.ofNat 2048)
+      (UInt256.ofNat bPtr) (UInt256.ofNat 3072) (UInt256.ofNat 0) count
+      returnDest rest count
+    Limbs.Represents progress.memory 3072 count
+        ((acc + addend * bValue) % modulusValue) ∧
+      Limbs.Represents progress.memory bPtr count bValue ∧
+      Limbs.Represents progress.memory 0 count modulusValue := by
+  let result := Algorithm.mulBits modulusValue acc addend
+    (mulOuterBits current.memory bPtr count)
+  have hprogress := mulOuterProgress_represents current bPtr count count acc
+    addend bValue modulusValue returnDest rest (by omega) hcount hbPtr
+    hmodulusPos hmodulusBound hacc haddend hb hmodulus haccReduced
+    haddendReduced
+  have hresultLt := Algorithm.mulBits_lt
+    (mulOuterBits current.memory bPtr count) hmodulusPos haccReduced
+    haddendReduced
+  have hvalue := Algorithm.mulBits_fst modulusValue acc addend
+    (mulOuterBits current.memory bPtr count)
+  rw [Nat.mod_eq_of_lt hresultLt.1, value_mulOuterBits,
+    Limbs.value_of_represents hb] at hvalue
+  rw [← hvalue]
+  exact ⟨hprogress.1, hprogress.2.2.1, hprogress.2.2.2⟩
 
 theorem mulWordProgress_256_represents_value (current : State)
     (word a b : UInt256) (count i acc addend modulusValue : Nat)
@@ -1763,6 +2006,33 @@ theorem mulAfterCopy_represents (s : State) (bPtr count aValue bValue
     exact BigHelpers.represents_copyMemory_disjoint_region cleared.memory 4096
       2048 0 count modulusValue hfit4096 (by right; omega) hclearedModulus
   exact ⟨hcopiedZero, hcopiedAddend, hcopiedB, hcopiedModulus⟩
+
+theorem mulOuterProgress_afterCopy_represents_product (s : State)
+    (bPtr count aValue bValue modulusValue : Nat)
+    (returnDest : UInt256) (rest : List UInt256) (hcount : count ≤ 32)
+    (hbPtr : bPtr + 32 * count ≤ 3072) (hmodulusPos : 0 < modulusValue)
+    (haReduced : aValue < modulusValue)
+    (ha : Limbs.Represents s.memory 2048 count aValue)
+    (hb : Limbs.Represents s.memory bPtr count bValue)
+    (hmodulus : Limbs.Represents s.memory 0 count modulusValue) :
+    let copied := mulAfterCopy s (UInt256.ofNat 2048) (UInt256.ofNat bPtr)
+      (UInt256.ofNat 3072) (UInt256.ofNat 0) count returnDest rest
+    let progress := mulOuterProgress copied (UInt256.ofNat 2048)
+      (UInt256.ofNat bPtr) (UInt256.ofNat 3072) (UInt256.ofNat 0) count
+      returnDest rest count
+    Limbs.Represents progress.memory 3072 count
+        ((aValue * bValue) % modulusValue) ∧
+      Limbs.Represents progress.memory bPtr count bValue ∧
+      Limbs.Represents progress.memory 0 count modulusValue := by
+  let copied := mulAfterCopy s (UInt256.ofNat 2048) (UInt256.ofNat bPtr)
+    (UInt256.ofNat 3072) (UInt256.ofNat 0) count returnDest rest
+  have hcopied := mulAfterCopy_represents s bPtr count aValue bValue
+    modulusValue returnDest rest hcount hbPtr ha hb hmodulus
+  have hproduct := mulOuterProgress_count_represents_value copied bPtr count
+    0 aValue bValue modulusValue returnDest rest hcount hbPtr hmodulusPos
+    hmodulus.1 hcopied.1 hcopied.2.1 hcopied.2.2.1 hcopied.2.2.2
+    (by omega) haReduced
+  simpa [Nat.zero_add] using hproduct
 
 def gasSteps_mulInitialize (s : State) (a b out modulus : UInt256)
     (count : Nat) (returnDest : UInt256) (rest : List UInt256)
