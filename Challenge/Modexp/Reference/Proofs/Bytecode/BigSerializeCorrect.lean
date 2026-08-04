@@ -106,4 +106,138 @@ theorem serializedByte_correct (memory : ByteArray) (m k value : Nat)
     hrecompose] using
     extractedLimbByte value limb rem hrem
 
+theorem serializeMemory_preserves_represents (memory : ByteArray)
+    (m steps value : Nat) (hmBound : m ≤ 1024) (hsteps : steps ≤ m)
+    (hrep : Limbs.Represents memory 2048 (Limbs.limbCount m) value) :
+    Limbs.Represents (BigSerialize.serializeMemory memory m steps) 2048
+      (Limbs.limbCount m) value := by
+  induction steps with
+  | zero => simpa [BigSerialize.serializeMemory] using hrep
+  | succ steps ih =>
+      let before := BigSerialize.serializeMemory memory m steps
+      let byte := ByteArray.mk
+        #[UInt8.ofNat ((BigSerialize.serializedByte before m steps).toNat % 256)]
+      have hsteps' : steps ≤ m := by omega
+      have hbefore := ih hsteps'
+      have haddr : (6144 + UInt256.ofNat steps).toNat = 6144 + steps := by
+        change (UInt256.ofNat 6144 + UInt256.ofNat steps).toNat = 6144 + steps
+        rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+          Challenge.EvmProof.Word.word_toNat_ofNat,
+          Nat.mod_eq_of_lt (by omega)]
+      have hmemory : BigSerialize.serializeMemory memory m (steps + 1) =
+          MachineState.writeBytes before byte
+            (6144 + UInt256.ofNat steps).toNat := by
+        rfl
+      refine ⟨hbefore.1, ?_⟩
+      rw [← hbefore.2]
+      rw [hmemory]
+      unfold Limbs.memoryLimbs
+      apply List.map_congr_left
+      intro j hj
+      have hj' : j < Limbs.limbCount m := by simpa using hj
+      apply congrArg UInt256.toNat
+      rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+      left
+      rw [haddr]
+      have hn := Limbs.limbCount_le_32 m hmBound
+      omega
+
+theorem serializeMemory_outputByte (memory : ByteArray)
+    (m steps k value : Nat) (hmBound : m ≤ 1024) (hsteps : steps ≤ m)
+    (hk : k < steps)
+    (hrep : Limbs.Represents memory 2048 (Limbs.limbCount m) value) :
+    (BigSerialize.serializeMemory memory m steps)[6144 + k]?.getD 0 =
+      UInt8.ofNat (value / 256 ^ (m - 1 - k) % 256) := by
+  induction steps with
+  | zero => omega
+  | succ steps ih =>
+      let before := BigSerialize.serializeMemory memory m steps
+      let byte := ByteArray.mk
+        #[UInt8.ofNat ((BigSerialize.serializedByte before m steps).toNat % 256)]
+      have hsteps' : steps ≤ m := by omega
+      have haddr : (6144 + UInt256.ofNat steps).toNat = 6144 + steps := by
+        change (UInt256.ofNat 6144 + UInt256.ofNat steps).toNat = 6144 + steps
+        rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+          Challenge.EvmProof.Word.word_toNat_ofNat,
+          Nat.mod_eq_of_lt (by omega)]
+      have hmemory : BigSerialize.serializeMemory memory m (steps + 1) =
+          MachineState.writeBytes before byte
+            (6144 + UInt256.ofNat steps).toNat := by
+        rfl
+      rw [hmemory, MachineState.writeBytes_getElem?_getD, haddr]
+      by_cases hlast : k = steps
+      · subst k
+        rw [if_pos (by
+          constructor
+          · omega
+          · simp [byte, ByteArray.size])]
+        have hbefore := serializeMemory_preserves_represents memory m steps
+          value hmBound hsteps' hrep
+        have hbyte := serializedByte_correct before m steps value hmBound
+          (by omega) (by simpa [before] using hbefore)
+        simp [byte, hbyte]
+        rfl
+      · rw [if_neg (by
+          have : k < steps := by omega
+          simp [byte, ByteArray.size]
+          omega)]
+        exact ih hsteps' (by omega)
+
+theorem serializeMemory_readPadded (memory : ByteArray) (m value : Nat)
+    (hmBound : m ≤ 1024)
+    (hrep : Limbs.Represents memory 2048 (Limbs.limbCount m) value) :
+    MachineState.readPadded (BigSerialize.serializeMemory memory m m) 6144 m =
+      Precompile.natToBytes value m := by
+  apply ByteArray.ext_getElem
+  · rw [Challenge.EvmProof.Memory.readPadded_size, Precompile.natToBytes,
+      YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+  · intro k hleft hright
+    have hk : k < m := by
+      simpa [Precompile.natToBytes,
+        YulEvmCompiler.BytesLemmas.natToBytesPadded_size] using hright
+    rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hleft,
+      ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hright,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD,
+      if_pos hk,
+      serializeMemory_outputByte memory m m k value hmBound (by omega) hk hrep,
+      Precompile.natToBytes,
+      YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD value m k hk]
+
+theorem completedState_hReturn (input : ByteArray) (returnDest : UInt256)
+    (rest : List UInt256) (hvalid : ValidInput input)
+    (hbig : 32 < modulusSize input)
+    (hmodulusPos : 0 < Word.modulusValue input) :
+    (BigComplete.completedState (Main.headerState input) (baseSize input)
+      (exponentSize input) (modulusSize input) 96 (Word.expOffset input)
+      (Word.modulusOffset input) returnDest rest).hReturn = spec input := by
+  let m := modulusSize input
+  let result := Precompile.modPow (WordCorrect.baseNat input)
+    (WordCorrect.exponentNat input) (Word.modulusValue input)
+  let progress := BigComplete.exponentProgressState (Main.headerState input)
+    (baseSize input) (exponentSize input) m 96 (Word.expOffset input)
+    (Word.modulusOffset input) returnDest rest
+  have hm : m ≤ 1024 := by simpa [m] using hvalid.2.2.2
+  have hrep : Limbs.Represents progress.memory 2048
+      (Limbs.limbCount m) result := by
+    simpa [progress, m, result] using
+      BigCorrect.exponentProgress_represents_result input returnDest rest
+        hvalid hbig hmodulusPos
+  have hserialized := serializeMemory_readPadded progress.memory m result hm hrep
+  rw [spec, if_neg (by omega)]
+  simpa [BigComplete.completedState, BigSerialize.bigReturned,
+    BigSerialize.serializeProgress, progress, m, result,
+    WordCorrect.baseNat, WordCorrect.exponentNat, Word.expOffset,
+    Word.modulusOffset, Word.modulusValue] using hserialized
+
+theorem completedState_result (input : ByteArray) (returnDest : UInt256)
+    (rest : List UInt256) (hvalid : ValidInput input)
+    (hbig : 32 < modulusSize input)
+    (hmodulusPos : 0 < Word.modulusValue input) :
+    (BigComplete.completedState (Main.headerState input) (baseSize input)
+      (exponentSize input) (modulusSize input) 96 (Word.expOffset input)
+      (Word.modulusOffset input) returnDest rest).toResult =
+        .returned (spec input) := by
+  rw [State.toResult_returned _ (by rfl),
+    completedState_hReturn input returnDest rest hvalid hbig hmodulusPos]
+
 end Challenge.Modexp.Reference.Proofs.Bytecode.BigSerializeCorrect
