@@ -212,6 +212,25 @@ theorem addDigitLists_value {xs ys : List Nat} {carry : Nat}
           simp only [total] at hnext hdivide
           nlinarith
 
+theorem addDigitLists_append_single {xs ys : List Nat} {carry x y : Nat}
+    (hlength : xs.length = ys.length) :
+    addDigitLists (xs ++ [x]) (ys ++ [y]) carry =
+      let before := addDigitLists xs ys carry
+      let total := x + y + before.2
+      (before.1 ++ [total % radix], total / radix) := by
+  induction xs generalizing ys carry with
+  | nil =>
+      cases ys with
+      | nil => rfl
+      | cons y ys => simp at hlength
+  | cons head xs ih =>
+      cases ys with
+      | nil => simp at hlength
+      | cons other ys =>
+          have hlength' : xs.length = ys.length := by simpa using hlength
+          simp only [List.cons_append, addDigitLists]
+          rw [ih hlength']
+
 theorem addDigitLists_digits_lt {xs ys : List Nat} {carry digit : Nat}
     (hdigit : digit ∈ (addDigitLists xs ys carry).1) : digit < radix := by
   induction xs generalizing ys carry with

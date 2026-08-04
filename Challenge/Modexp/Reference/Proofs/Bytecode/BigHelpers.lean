@@ -1329,6 +1329,31 @@ def addNatProgress (memory : ByteArray) (dst src take : Nat) :
       let total := x + take * y + before.carry
       ⟨before.digits ++ [total % Limbs.radix], total / Limbs.radix⟩
 
+theorem memoryLimbs_succ (memory : ByteArray) (ptr count : Nat) :
+    Limbs.memoryLimbs memory ptr (count + 1) =
+      Limbs.memoryLimbs memory ptr count ++
+        [(MachineState.readWord memory (ptr + 32 * count)).toNat] := by
+  simp [Limbs.memoryLimbs, List.range_succ]
+
+theorem addNatProgress_eq_addDigitLists (memory : ByteArray)
+    (dst src take count : Nat) :
+    let natural := addNatProgress memory dst src take count
+    let result := Limbs.addDigitLists
+      (Limbs.memoryLimbs memory dst count)
+      ((Limbs.memoryLimbs memory src count).map (take * ·)) 0
+    natural.digits = result.1 ∧ natural.carry = result.2 := by
+  induction count with
+  | zero => simp [addNatProgress, Limbs.memoryLimbs, Limbs.addDigitLists]
+  | succ count ih =>
+      rw [addNatProgress, memoryLimbs_succ, memoryLimbs_succ,
+        List.map_append, List.map_singleton]
+      rw [Limbs.addDigitLists_append_single (by
+        simp [Limbs.memoryLimbs])]
+      rcases ih with ⟨hdigits, hcarry⟩
+      simp only
+      rw [hdigits, hcarry]
+      exact ⟨rfl, rfl⟩
+
 theorem addProgress_matches_nat (memory : ByteArray) (activeWords : UInt256)
     (dst src count iter take : Nat) (hiter : iter ≤ count)
     (htake : take ≤ 1) (hdstfit : dst + 32 * count < 2 ^ 256)
@@ -1401,6 +1426,42 @@ theorem addProgress_matches_nat (memory : ByteArray) (activeWords : UInt256)
             change y.val.val < UInt256.size
             exact y.val.isLt
           omega
+
+theorem addProgress_value_carry (memory : ByteArray) (activeWords : UInt256)
+    (dst src count take x y : Nat) (htake : take ≤ 1)
+    (hdstfit : dst + 32 * count < 2 ^ 256)
+    (hsrcfit : src + 32 * count < 2 ^ 256)
+    (halias : dst = src ∨ dst + 32 * count ≤ src ∨
+      src + 32 * count ≤ dst)
+    (hdst : Limbs.Represents memory dst count x)
+    (hsrc : Limbs.Represents memory src count y) :
+    let progress := addProgress memory activeWords (UInt256.ofNat dst)
+      (UInt256.ofNat src) (0 - UInt256.ofNat take) count
+    Nat.ofDigits Limbs.radix
+        (Limbs.memoryLimbs progress.memory dst count) +
+          Limbs.radix ^ count * progress.carry.toNat = x + take * y ∧
+      progress.carry.toNat ≤ 1 := by
+  let progress := addProgress memory activeWords (UInt256.ofNat dst)
+    (UInt256.ofNat src) (0 - UInt256.ofNat take) count
+  let natural := addNatProgress memory dst src take count
+  let result := Limbs.addDigitLists
+    (Limbs.memoryLimbs memory dst count)
+    ((Limbs.memoryLimbs memory src count).map (take * ·)) 0
+  have hmatch := addProgress_matches_nat memory activeWords dst src count count
+    take (by omega) htake hdstfit hsrcfit halias
+  have hcanonical := addNatProgress_eq_addDigitLists memory dst src take count
+  have hlength :
+      (Limbs.memoryLimbs memory dst count).length =
+        ((Limbs.memoryLimbs memory src count).map (take * ·)).length := by
+    simp
+  have hvalue := Limbs.addDigitLists_value (carry := 0) hlength
+  rw [Limbs.ofDigits_map_mul, Nat.add_zero,
+    Limbs.value_of_represents hdst, Limbs.value_of_represents hsrc] at hvalue
+  dsimp only [progress, natural, result] at hmatch hcanonical ⊢
+  rw [hmatch.1, hcanonical.1, hmatch.2.1, hcanonical.2]
+  constructor
+  · simpa using hvalue
+  · simpa [← hcanonical.2] using hmatch.2.2
 
 def addEntry (s : State) (dst src take modulus : UInt256) (count : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
