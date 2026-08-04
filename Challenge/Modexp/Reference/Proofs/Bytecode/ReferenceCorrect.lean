@@ -223,6 +223,48 @@ def gasSteps_bigNonzeroTotal (input : ByteArray) (hvalid : ValidInput input)
   exact ((Main.gasSteps_header input hvalid).trans
     (BigDispatch.gasSteps_bigEntry input hvalid (by omega) hbig)).trans hcore'
 
+theorem gasSteps_bigNonzeroTotal_cost (input : ByteArray)
+    (hvalid : ValidInput input) (hbig : 32 < modulusSize input)
+    (hmodulusPos : 0 < Word.modulusValue input) :
+    (gasSteps_bigNonzeroTotal input hvalid hbig hmodulusPos).cost =
+      253 + BigComplete.nonzeroWork (Limbs.limbCount (modulusSize input))
+        (baseSize input) (exponentSize input) (modulusSize input) +
+        MachineState.memCost (bigCompletedState input).activeWords.toNat := by
+  have hb := hvalid.2.1
+  have he := hvalid.2.2.1
+  have hm := hvalid.2.2.2
+  have hmodOff : Word.modulusOffset input < 2 ^ 256 := by
+    simp only [Word.modulusOffset, Word.expOffset]
+    omega
+  have hinputFit : Word.modulusOffset input + modulusSize input ≤ 2 ^ 256 := by
+    simp only [Word.modulusOffset, Word.expOffset]
+    omega
+  have hor : BigComplete.modulusOr (Main.headerState input) (baseSize input)
+      (exponentSize input) (modulusSize input) 96 (Word.expOffset input)
+      (Word.modulusOffset input) bigReturnDest (bigRest input) ≠ 0 := by
+    intro hz
+    have := (BigZeroCorrect.modulusOr_eq_zero_iff input bigReturnDest
+      (bigRest input) hvalid).1 hz
+    omega
+  have hcore := BigComplete.gasSteps_nonzero_cost_potential
+    (Main.headerState input) (baseSize input) (exponentSize input)
+    (modulusSize input) 96 (Word.expOffset input) (Word.modulusOffset input)
+    bigReturnDest (bigRest input) hm hmodOff hinputFit (by omega) (by omega)
+    (by omega) (by simp [Word.expOffset]; omega) (by simp [bigRest]) hor
+    (by rfl) (by rfl) (by rfl) deployAddress_not_precompile
+  have hactive : (Main.headerState input).activeWords.toNat = 0 := by rfl
+  rw [hactive] at hcore
+  norm_num [MachineState.memCost] at hcore
+  unfold gasSteps_bigNonzeroTotal
+  simp only [Challenge.EvmProof.GasSteps.trans_cost]
+  rw [Main.gasSteps_header_cost, BigDispatch.gasSteps_bigEntry_cost]
+  change 162 + 91 +
+      (BigComplete.gasSteps_nonzero (Main.headerState input) (baseSize input)
+        (exponentSize input) (modulusSize input) 96 (Word.expOffset input)
+        (Word.modulusOffset input) bigReturnDest (bigRest input) hm hmodOff
+        hinputFit _ _ _ _ _ hor _ _ _ _).cost = _
+  simpa [bigCompletedState] using congrArg (fun n => 253 + n) hcore
+
 def gasSteps_bigZeroTotal (input : ByteArray) (hvalid : ValidInput input)
     (hbig : 32 < modulusSize input) (hmodulus : Word.modulusValue input = 0) :
     Challenge.EvmProof.GasSteps (initialState referenceBytecode input 0)
@@ -254,6 +296,45 @@ def gasSteps_bigZeroTotal (input : ByteArray) (hvalid : ValidInput input)
   exact ((Main.gasSteps_header input hvalid).trans
     (BigDispatch.gasSteps_bigEntry input hvalid (by omega) hbig)).trans hcore'
 
+theorem gasSteps_bigZeroTotal_cost (input : ByteArray)
+    (hvalid : ValidInput input) (hbig : 32 < modulusSize input)
+    (hmodulus : Word.modulusValue input = 0) :
+    (gasSteps_bigZeroTotal input hvalid hbig hmodulus).cost =
+      253 + BigZeroCorrect.zeroWork (Limbs.limbCount (modulusSize input))
+        (modulusSize input) +
+        MachineState.memCost (bigZeroFinalState input).activeWords.toNat := by
+  have hb := hvalid.2.1
+  have he := hvalid.2.2.1
+  have hm := hvalid.2.2.2
+  have hmodOff : Word.modulusOffset input < 2 ^ 256 := by
+    simp only [Word.modulusOffset, Word.expOffset]
+    omega
+  have hinputFit : Word.modulusOffset input + modulusSize input ≤ 2 ^ 256 := by
+    simp only [Word.modulusOffset, Word.expOffset]
+    omega
+  have hor : BigComplete.modulusOr (Main.headerState input) (baseSize input)
+      (exponentSize input) (modulusSize input) 96 (Word.expOffset input)
+      (Word.modulusOffset input) bigReturnDest (bigRest input) = 0 :=
+    (BigZeroCorrect.modulusOr_eq_zero_iff input bigReturnDest (bigRest input)
+      hvalid).2 hmodulus
+  have hcore := BigZeroCorrect.gasSteps_zero_cost_potential
+    (Main.headerState input) (baseSize input) (exponentSize input)
+    (modulusSize input) 96 (Word.expOffset input) (Word.modulusOffset input)
+    bigReturnDest (bigRest input) hm hmodOff hinputFit (by simp [bigRest]) hor
+    (by rfl) (by rfl) (by rfl) deployAddress_not_precompile
+  have hactive : (Main.headerState input).activeWords.toNat = 0 := by rfl
+  rw [hactive] at hcore
+  norm_num [MachineState.memCost] at hcore
+  unfold gasSteps_bigZeroTotal
+  simp only [Challenge.EvmProof.GasSteps.trans_cost]
+  rw [Main.gasSteps_header_cost, BigDispatch.gasSteps_bigEntry_cost]
+  change 162 + 91 +
+      (BigZeroCorrect.gasSteps_zero (Main.headerState input) (baseSize input)
+        (exponentSize input) (modulusSize input) 96 (Word.expOffset input)
+        (Word.modulusOffset input) bigReturnDest (bigRest input) hm hmodOff
+        hinputFit _ hor _ _ _ _).cost = _
+  simpa [bigZeroFinalState] using congrArg (fun n => 253 + n) hcore
+
 def finalState (input : ByteArray) : State :=
   if modulusSize input = 0 then Dispatch.zeroSizeFinalState input
   else if modulusSize input ≤ 32 then
@@ -262,6 +343,19 @@ def finalState (input : ByteArray) : State :=
       (WordCorrect.wordBase input)
   else if Word.modulusValue input = 0 then bigZeroFinalState input
   else bigCompletedState input
+
+def referenceGas (input : ByteArray) : Nat :=
+  if modulusSize input = 0 then 183
+  else if modulusSize input ≤ 32 then
+    if Word.modulusValue input = 0 then 950 else WordGas.wordGas input
+  else if Word.modulusValue input = 0 then
+    253 + BigZeroCorrect.zeroWork (Limbs.limbCount (modulusSize input))
+      (modulusSize input) +
+      MachineState.memCost (bigZeroFinalState input).activeWords.toNat
+  else
+    253 + BigComplete.nonzeroWork (Limbs.limbCount (modulusSize input))
+      (baseSize input) (exponentSize input) (modulusSize input) +
+      MachineState.memCost (bigCompletedState input).activeWords.toNat
 
 def gasSteps_reference (input : ByteArray) (hvalid : ValidInput input) :
     Challenge.EvmProof.GasSteps (initialState referenceBytecode input 0)
@@ -286,6 +380,33 @@ def gasSteps_reference (input : ByteArray) (hvalid : ValidInput input) :
     · have hmodulusPos : 0 < Word.modulusValue input := by omega
       simpa [finalState, hzeroSize, hword, hzeroModulus] using
         gasSteps_bigNonzeroTotal input hvalid hbig hmodulusPos
+
+theorem gasSteps_reference_cost (input : ByteArray) (hvalid : ValidInput input) :
+    (gasSteps_reference input hvalid).cost = referenceGas input := by
+  by_cases hzeroSize : modulusSize input = 0
+  · simpa [gasSteps_reference, referenceGas, hzeroSize] using
+      Dispatch.gasSteps_zeroSize_total_cost input hvalid hzeroSize
+  have hpositive : 0 < modulusSize input := by omega
+  by_cases hword : modulusSize input ≤ 32
+  · by_cases hzeroModulus : Word.modulusValue input = 0
+    · simpa [gasSteps_reference, referenceGas, hzeroSize, hword,
+        hzeroModulus] using
+        WordGas.gasSteps_zeroModulusTotal_cost input hvalid hpositive hword
+          hzeroModulus
+    · have hmodulusPos : 0 < Word.modulusValue input := by omega
+      simpa [gasSteps_reference, referenceGas, hzeroSize, hword,
+        hzeroModulus] using
+        WordGas.gasSteps_wordNonzeroTotal_cost input hvalid hpositive hword
+          hmodulusPos
+  · have hbig : 32 < modulusSize input := by omega
+    by_cases hzeroModulus : Word.modulusValue input = 0
+    · simpa [gasSteps_reference, referenceGas, hzeroSize, hword,
+        hzeroModulus] using
+        gasSteps_bigZeroTotal_cost input hvalid hbig hzeroModulus
+    · have hmodulusPos : 0 < Word.modulusValue input := by omega
+      simpa [gasSteps_reference, referenceGas, hzeroSize, hword,
+        hzeroModulus] using
+        gasSteps_bigNonzeroTotal_cost input hvalid hbig hmodulusPos
 
 @[simp] theorem finalState_isDone (input : ByteArray) :
     (finalState input).isDone = true := by
