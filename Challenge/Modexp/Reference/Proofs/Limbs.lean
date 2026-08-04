@@ -356,4 +356,89 @@ theorem addCarryBits {x y carry : Nat}
     rw [hdiv]
     split <;> norm_num
 
+/-! ## Canonical borrow recurrence -/
+
+/-- Subtract the second equally-sized little-endian limb list from the first,
+returning the wrapped result and the final borrow. -/
+def subDigitLists : List Nat → List Nat → Nat → List Nat × Nat
+  | [], [], borrow => ([], borrow)
+  | x :: xs, y :: ys, borrow =>
+      let nextBorrow := if x < y + borrow then 1 else 0
+      let digit := x + radix * nextBorrow - y - borrow
+      let next := subDigitLists xs ys nextBorrow
+      (digit :: next.1, next.2)
+  | _, _, borrow => ([], borrow)
+
+theorem subDigitLists_value {xs ys : List Nat} {borrow : Nat}
+    (hlength : xs.length = ys.length)
+    (hxs : ∀ digit ∈ xs, digit < radix)
+    (hys : ∀ digit ∈ ys, digit < radix) (hborrow : borrow ≤ 1) :
+    Nat.ofDigits radix (subDigitLists xs ys borrow).1 +
+        Nat.ofDigits radix ys + borrow =
+      Nat.ofDigits radix xs +
+        radix ^ xs.length * (subDigitLists xs ys borrow).2 := by
+  induction xs generalizing ys borrow with
+  | nil =>
+      cases ys <;> simp_all [subDigitLists]
+  | cons x xs ih =>
+      cases ys with
+      | nil => simp_all
+      | cons y ys =>
+          have hlength' : xs.length = ys.length := by simpa using hlength
+          have hx : x < radix := hxs x (by simp)
+          have hy : y < radix := hys y (by simp)
+          let nextBorrow := if x < y + borrow then 1 else 0
+          have hnextBorrow : nextBorrow ≤ 1 := by
+            dsimp only [nextBorrow]
+            split <;> omega
+          have hstep :
+              x + radix * nextBorrow - y - borrow + y + borrow =
+                x + radix * nextBorrow := by
+            dsimp only [nextBorrow]
+            split <;> omega
+          have hnext := ih hlength'
+            (fun digit hdigit => hxs digit (by simp [hdigit]))
+            (fun digit hdigit => hys digit (by simp [hdigit])) hnextBorrow
+          simp only [subDigitLists, Nat.ofDigits_cons, List.length_cons,
+            pow_succ]
+          dsimp only [nextBorrow] at hstep hnext ⊢
+          nlinarith
+
+theorem subDigitLists_borrow_le_one {xs ys : List Nat} {borrow : Nat}
+    (hlength : xs.length = ys.length) (hborrow : borrow ≤ 1) :
+    (subDigitLists xs ys borrow).2 ≤ 1 := by
+  induction xs generalizing ys borrow with
+  | nil =>
+      cases ys <;> simp_all [subDigitLists]
+  | cons x xs ih =>
+      cases ys with
+      | nil => simp_all
+      | cons y ys =>
+          have hlength' : xs.length = ys.length := by simpa using hlength
+          simp only [subDigitLists]
+          exact ih hlength' (by split <;> simp)
+
+theorem subDigitLists_digits_lt {xs ys : List Nat} {borrow digit : Nat}
+    (hlength : xs.length = ys.length)
+    (hxs : ∀ value ∈ xs, value < radix)
+    (hys : ∀ value ∈ ys, value < radix) (hborrow : borrow ≤ 1)
+    (hdigit : digit ∈ (subDigitLists xs ys borrow).1) : digit < radix := by
+  induction xs generalizing ys borrow digit with
+  | nil =>
+      cases ys <;> simp_all [subDigitLists]
+  | cons x xs ih =>
+      cases ys with
+      | nil => simp_all
+      | cons y ys =>
+          have hlength' : xs.length = ys.length := by simpa using hlength
+          have hx : x < radix := hxs x (by simp)
+          have hy : y < radix := hys y (by simp)
+          simp only [subDigitLists, List.mem_cons] at hdigit
+          rcases hdigit with rfl | hdigit
+          · split <;> omega
+          · apply ih hlength'
+              (fun value hvalue => hxs value (by simp [hvalue]))
+              (fun value hvalue => hys value (by simp [hvalue]))
+              (by split <;> simp) hdigit
+
 end Challenge.Modexp.Reference.Proofs.Limbs
