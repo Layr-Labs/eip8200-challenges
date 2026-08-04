@@ -137,7 +137,7 @@ def baseProgress (count baseOff : Nat) : Nat → State → State
   | 0, s => s
   | i + 1, s =>
       let before := baseProgress count baseOff i s
-      bitProgress count (loadedBaseByte s baseOff i) 8 before
+      bitProgress count (loadedBaseByte before baseOff i) 8 before
 
 @[simp] theorem bitProgress_halt (count : Nat) (byte : UInt256)
     (j : Nat) (s : State) : (bitProgress count byte j s).halt = s.halt := by
