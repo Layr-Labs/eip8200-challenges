@@ -1,4 +1,5 @@
 import Challenge.EvmProof
+import Challenge.Ripemd160
 import Challenge.Sha256
 set_option warningAsError true
 /-!
@@ -8,7 +9,7 @@ Verified replacements for Ethereum precompiles: EVM bytecode, plus a
 machine-checked proof that the bytecode computes what the precompile
 computed.
 
-SHA-256 (`0x02`) is the pilot:
+SHA-256 (`0x02`) and RIPEMD-160 (`0x03`) are the first challenges:
 
 * `Challenge.EvmProof` — verified disassembly and direct small-step proof
   combinators for raw-bytecode submissions.
@@ -21,6 +22,12 @@ SHA-256 (`0x02`) is the pilot:
   proofs, including the complete direct EVM proof of the frozen bytes.
 * `Challenge.Sha256.Scorer` — Tier 1, falsification by execution
   (`lake exe sha256challenge`).
+* `Challenge.Ripemd160.Spec` — the minimal RIPEMD-160 precompile-equivalence
+  statement.
+* `Challenge.Ripemd160.Reference.Proofs.Bytecode.ReferenceCorrect` — the
+  unconditional direct-bytecode correctness and exact-gas theorems.
+* `Challenge.Ripemd160.Scorer` — executable clean- and dirty-memory vectors
+  (`lake exe ripemd160challenge`).
 
 See each challenge directory for its specification, audit map, submission
 instructions, reference artifact, and proof.

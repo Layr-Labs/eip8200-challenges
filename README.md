@@ -39,7 +39,7 @@ It is independent of any particular precompile or challenge specification.
 | challenge | audit map | submission guide |
 |---|---|---|
 | SHA-256 | [`Challenge/Sha256/README.md`](Challenge/Sha256/README.md) | [`Challenge/Sha256/SUBMITTING.md`](Challenge/Sha256/SUBMITTING.md) |
-| RIPEMD-160 *(in progress)* | [`Challenge/Ripemd160/README.md`](Challenge/Ripemd160/README.md) | coming in this draft |
+| RIPEMD-160 | [`Challenge/Ripemd160/README.md`](Challenge/Ripemd160/README.md) | — |
 
 ## Build and verify
 
