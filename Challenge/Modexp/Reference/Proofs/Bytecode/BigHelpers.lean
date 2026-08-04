@@ -1171,6 +1171,24 @@ structure AddProgress where
   activeWords : UInt256
   carry : UInt256
 
+theorem land_sub_zero_take_toNat (word : UInt256) {take : Nat}
+    (htake : take ≤ 1) :
+    (UInt256.land word (0 - UInt256.ofNat take)).toNat = take * word.toNat := by
+  interval_cases take
+  · simp only [UInt256.land, UInt256.toNat, Nat.zero_mul]
+    change (word.val &&& ((0 : UInt256).val - (UInt256.ofNat 0).val)).val = 0
+    rw [Fin.and_val, Fin.val_sub]
+    have hzeroVal : (0 : UInt256).val.val = 0 := by decide
+    rw [hzeroVal]
+    norm_num [UInt256.ofNat, UInt256.size]
+  · simp only [UInt256.land, UInt256.toNat, Nat.one_mul]
+    change (word.val &&& ((0 : UInt256).val - (UInt256.ofNat 1).val)).val =
+      word.val
+    rw [Fin.and_val, Fin.val_sub]
+    change word.toNat &&& (2 ^ 256 - 1) = word.toNat
+    exact Nat.and_two_pow_sub_one_eq_mod word.toNat 256 |>.trans
+      (Nat.mod_eq_of_lt word.val.isLt)
+
 def addProgress (memory : ByteArray) (activeWords dst src mask : UInt256) :
     Nat → AddProgress
   | 0 => ⟨memory, activeWords, 0⟩
