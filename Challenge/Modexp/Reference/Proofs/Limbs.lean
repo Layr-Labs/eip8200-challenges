@@ -257,4 +257,43 @@ theorem ofDigits_map_mul (digits : List Nat) (take : Nat) :
       simp [Nat.ofDigits_cons, ih]
       ring
 
+theorem addDigitLists_masked_value_mod {xs ys : List Nat} {take : Nat}
+    (hlength : xs.length = ys.length) :
+    Nat.ofDigits radix (addDigitLists xs (ys.map (take * ·)) 0).1 =
+      (Nat.ofDigits radix xs + take * Nat.ofDigits radix ys) %
+        radix ^ xs.length := by
+  have hmaskedLength : xs.length = (ys.map (take * ·)).length := by
+    simpa using hlength
+  have hvalue := addDigitLists_value (carry := 0) hmaskedLength
+  rw [ofDigits_map_mul] at hvalue
+  simp only [Nat.add_zero] at hvalue
+  have hresultLength := length_addDigitLists_left
+    (carry := 0) hmaskedLength
+  have hresultDigits : ∀ digit ∈
+      (addDigitLists xs (ys.map (take * ·)) 0).1, digit < radix :=
+    fun digit hdigit => addDigitLists_digits_lt hdigit
+  have hresultLt :
+      Nat.ofDigits radix (addDigitLists xs (ys.map (take * ·)) 0).1 <
+        radix ^ xs.length := by
+    rw [← hresultLength]
+    exact Nat.ofDigits_lt_base_pow_length radix_gt_one hresultDigits
+  rw [← hvalue, Nat.add_mod, Nat.mul_mod, Nat.mod_self, Nat.zero_mul,
+    Nat.zero_mod, Nat.add_zero, Nat.mod_mod]
+  exact (Nat.mod_eq_of_lt hresultLt).symm
+
+theorem addDigitLists_masked_carry_le_one {xs ys : List Nat} {take : Nat}
+    (hlength : xs.length = ys.length)
+    (hxs : ∀ digit ∈ xs, digit < radix)
+    (hys : ∀ digit ∈ ys, digit < radix) (htake : take ≤ 1) :
+    (addDigitLists xs (ys.map (take * ·)) 0).2 ≤ 1 := by
+  apply addDigitLists_carry_le_one (by simpa using hlength) hxs
+  · intro digit hdigit
+    simp only [List.mem_map] at hdigit
+    rcases hdigit with ⟨source, hsource, rfl⟩
+    have hsourceLt := hys source hsource
+    interval_cases take
+    · simpa using radix_pos
+    · simpa using hsourceLt
+  · omega
+
 end Challenge.Modexp.Reference.Proofs.Limbs
