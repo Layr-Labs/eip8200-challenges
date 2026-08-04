@@ -2130,6 +2130,125 @@ def selectProgress (memory : ByteArray) (activeWords dst selectMask : UInt256) :
       ⟨MachineState.writeBytes before.memory
           (Data.Bytes.natToBytesPadded selected.toNat 32) dstAt.toNat, stored⟩
 
+theorem selectWord_toNat (sum reduced useSub : UInt256)
+    (huseSub : useSub.toNat ≤ 1) :
+    (UInt256.lor (UInt256.land reduced (0 - useSub))
+      (UInt256.land sum (UInt256.lnot (0 - useSub)))).toNat =
+        if useSub.toNat = 1 then reduced.toNat else sum.toNat := by
+  interval_cases huse : useSub.toNat
+  · have hword : useSub = UInt256.ofNat 0 := by
+      rw [Challenge.EvmProof.Word.word_eq_ofNat_toNat useSub, huse]
+    rw [hword]
+    simp [UInt256.land, UInt256.lor, UInt256.lnot,
+      UInt256.ofNat, UInt256.toNat, UInt256.size]
+  · have hword : useSub = UInt256.ofNat 1 := by
+      rw [Challenge.EvmProof.Word.word_eq_ofNat_toNat useSub, huse]
+    rw [hword]
+    simp [UInt256.land, UInt256.lor, UInt256.lnot,
+      UInt256.ofNat, UInt256.toNat, UInt256.size]
+
+theorem readWord_selectProgress_future_dst (memory : ByteArray)
+    (activeWords mask : UInt256) (dst iter j : Nat)
+    (hiter : iter ≤ j) (hfit : dst + 32 * (j + 1) < 2 ^ 256) :
+    MachineState.readWord
+        (selectProgress memory activeWords (UInt256.ofNat dst) mask iter).memory
+        (dst + 32 * j) =
+      MachineState.readWord memory (dst + 32 * j) := by
+  induction iter with
+  | zero => rfl
+  | succ iter ih =>
+      rw [selectProgress,
+        Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+      · exact ih (by omega)
+      · have hsize (value : Nat) :
+            (Data.Bytes.natToBytesPadded value 32).size = 32 := by
+          simp [Data.Bytes.natToBytesPadded, ByteArray.size]
+        rw [hsize, addOffset_toNat dst iter (by omega)]
+        right
+        omega
+
+theorem readWord_selectProgress_candidate (memory : ByteArray)
+    (activeWords mask : UInt256) (dst count iter j : Nat)
+    (hiter : iter ≤ j) (hj : j < count)
+    (hdstFit : dst + 32 * count < 2 ^ 256)
+    (hdisjoint : dst + 32 * count ≤ 5120 ∨
+      5120 + 32 * count ≤ dst) :
+    MachineState.readWord
+        (selectProgress memory activeWords (UInt256.ofNat dst) mask iter).memory
+        (5120 + 32 * j) =
+      MachineState.readWord memory (5120 + 32 * j) := by
+  induction iter with
+  | zero => rfl
+  | succ iter ih =>
+      rw [selectProgress,
+        Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+      · exact ih (by omega)
+      · have hsize (value : Nat) :
+            (Data.Bytes.natToBytesPadded value 32).size = 32 := by
+          simp [Data.Bytes.natToBytesPadded, ByteArray.size]
+        rw [hsize, addOffset_toNat dst iter (by omega)]
+        rcases hdisjoint with hbefore | hafter
+        · left; omega
+        · right; omega
+
+theorem selectProgress_memoryLimbs (memory : ByteArray)
+    (activeWords : UInt256) (dst count iter : Nat) (useSub : UInt256)
+    (hiter : iter ≤ count) (huseSub : useSub.toNat ≤ 1)
+    (hdstFit : dst + 32 * count < 2 ^ 256)
+    (hdisjoint : dst + 32 * count ≤ 5120 ∨
+      5120 + 32 * count ≤ dst) :
+    Limbs.memoryLimbs
+        (selectProgress memory activeWords (UInt256.ofNat dst)
+          (0 - useSub) iter).memory dst iter =
+      if useSub.toNat = 1 then Limbs.memoryLimbs memory 5120 iter
+      else Limbs.memoryLimbs memory dst iter := by
+  induction iter with
+  | zero => simp [selectProgress, Limbs.memoryLimbs]
+  | succ iter ih =>
+      have hi : iter < count := by omega
+      let before := selectProgress memory activeWords (UInt256.ofNat dst)
+        (0 - useSub) iter
+      let sum := MachineState.readWord before.memory (dst + 32 * iter)
+      let reduced := MachineState.readWord before.memory (5120 + 32 * iter)
+      have hsum : sum = MachineState.readWord memory (dst + 32 * iter) := by
+        exact readWord_selectProgress_future_dst memory activeWords
+          (0 - useSub) dst iter iter (by omega) (by omega)
+      have hreduced : reduced =
+          MachineState.readWord memory (5120 + 32 * iter) := by
+        exact readWord_selectProgress_candidate memory activeWords
+          (0 - useSub) dst count iter iter (by omega) hi hdstFit hdisjoint
+      have hselected := selectWord_toNat sum reduced useSub huseSub
+      have hoffDst :
+          (UInt256.ofNat dst + UInt256.shiftLeft (UInt256.ofNat iter)
+            (UInt256.ofNat 5)).toNat = dst + 32 * iter :=
+        addOffset_toNat dst iter (by omega)
+      have hoffCandidate :
+          (UInt256.ofNat 5120 + UInt256.shiftLeft (UInt256.ofNat iter)
+            (UInt256.ofNat 5)).toNat = 5120 + 32 * iter :=
+        addOffset_toNat 5120 iter (by omega)
+      dsimp only [selectProgress]
+      rw [hoffDst, hoffCandidate, memoryLimbs_write_next,
+        memoryLimbs_succ, memoryLimbs_succ, ih (by omega)]
+      split <;> simp_all [sum, reduced, before]
+
+theorem selectProgress_represents (memory : ByteArray)
+    (activeWords : UInt256) (dst count sum reduced chosen : Nat)
+    (useSub : UInt256) (huseSub : useSub.toNat ≤ 1)
+    (hdstFit : dst + 32 * count < 2 ^ 256)
+    (hdisjoint : dst + 32 * count ≤ 5120 ∨
+      5120 + 32 * count ≤ dst)
+    (hsum : Limbs.Represents memory dst count sum)
+    (hreduced : Limbs.Represents memory 5120 count reduced)
+    (hchosen : chosen = if useSub.toNat = 1 then reduced else sum)
+    (hchosenFit : chosen < Limbs.radix ^ count) :
+    Limbs.Represents
+      (selectProgress memory activeWords (UInt256.ofNat dst)
+        (0 - useSub) count).memory dst count chosen := by
+  rw [Limbs.represents_iff_value hchosenFit,
+    selectProgress_memoryLimbs memory activeWords dst count count useSub
+      (by omega) huseSub hdstFit hdisjoint, hchosen]
+  split <;> simp_all only [Limbs.value_of_represents]
+
 def selectLoop (s : State) (dst src take modulus : UInt256)
     (count i : Nat) (returnDest : UInt256) (rest : List UInt256) : State :=
   let mask := 0 - take

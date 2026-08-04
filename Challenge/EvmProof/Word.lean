@@ -80,6 +80,12 @@ theorem word_toNat_sub_cond (a b : EvmSemantics.UInt256) :
   split <;> norm_num [EvmSemantics.UInt256.ofNat,
     EvmSemantics.UInt256.toNat, EvmSemantics.UInt256.size]
 
+@[simp] theorem word_toNat_isZero (a : EvmSemantics.UInt256) :
+    a.isZero.toNat = if a.toNat = 0 then 1 else 0 := by
+  simp only [EvmSemantics.UInt256.isZero]
+  split <;> norm_num [EvmSemantics.UInt256.ofNat,
+    EvmSemantics.UInt256.toNat, EvmSemantics.UInt256.size]
+
 @[simp] theorem word_toNat_lor (a b : EvmSemantics.UInt256) :
     (EvmSemantics.UInt256.lor a b).toNat = a.toNat ||| b.toNat := by
   change (a.val ||| b.val).val = _
@@ -92,6 +98,12 @@ theorem word_toNat_sub_cond (a b : EvmSemantics.UInt256) :
     (EvmSemantics.UInt256.ofNat n).toNat = n % 2 ^ 256 := by
   simp [EvmSemantics.UInt256.ofNat, EvmSemantics.UInt256.toNat,
     EvmSemantics.UInt256.size]
+
+theorem word_eq_ofNat_toNat (a : EvmSemantics.UInt256) :
+    a = EvmSemantics.UInt256.ofNat a.toNat := by
+  apply word_ext
+  rw [word_toNat_ofNat]
+  exact (Nat.mod_eq_of_lt a.val.isLt).symm
 
 theorem ofNat_add_ofNat {a b : Nat} (h : a + b < 2 ^ 256) :
     EvmSemantics.UInt256.ofNat a + EvmSemantics.UInt256.ofNat b =
