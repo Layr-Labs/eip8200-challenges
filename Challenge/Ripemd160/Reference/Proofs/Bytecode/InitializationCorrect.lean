@@ -102,32 +102,102 @@ private theorem initialized_r (i : Nat) (hi : i < 80) :
 private theorem initialized_rP (i : Nat) (hi : i < 80) :
     tableByte initializedMemory 0x500 i =
       UInt256.ofNat (Crypto.Ripemd160.rP[i]!) := by
-  interval_cases i <;> native_decide
+  interval_cases i <;>
+    unfold tableByte initializedMemory Main.initializedState <;>
+    norm_num [Artifact.initStores, Main.applyInitStore,
+      Challenge.EvmProof.Word.word_toNat_ofNat, numeralToNat]
+  all_goals
+    repeat'
+      first
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ _ _
+          (by exact Fin.isLt _)]
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+          (by simp only [initBytes_size]; omega)]
+  all_goals norm_num [Crypto.Ripemd160.rP] ; decide
 
 private theorem initialized_s (i : Nat) (hi : i < 80) :
     tableByte initializedMemory 0x560 i =
       UInt256.ofNat (Crypto.Ripemd160.s[i]!) := by
-  interval_cases i <;> native_decide
+  interval_cases i <;>
+    unfold tableByte initializedMemory Main.initializedState <;>
+    norm_num [Artifact.initStores, Main.applyInitStore,
+      Challenge.EvmProof.Word.word_toNat_ofNat, numeralToNat]
+  all_goals
+    repeat'
+      first
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ _ _
+          (by exact Fin.isLt _)]
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+          (by simp only [initBytes_size]; omega)]
+  all_goals norm_num [Crypto.Ripemd160.s] ; decide
 
 private theorem initialized_sP (i : Nat) (hi : i < 80) :
     tableByte initializedMemory 0x5c0 i =
       UInt256.ofNat (Crypto.Ripemd160.sP[i]!) := by
-  interval_cases i <;> native_decide
+  interval_cases i <;>
+    unfold tableByte initializedMemory Main.initializedState <;>
+    norm_num [Artifact.initStores, Main.applyInitStore,
+      Challenge.EvmProof.Word.word_toNat_ofNat, numeralToNat]
+  all_goals
+    repeat'
+      first
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ _ _
+          (by exact Fin.isLt _)]
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+          (by simp only [initBytes_size]; omega)]
+  all_goals norm_num [Crypto.Ripemd160.sP] ; decide
 
 private theorem initialized_k (j : Nat) (hj : j < 5) :
     slotWord initializedMemory 0x620 j =
       ofUInt32 (Crypto.Ripemd160.K[j]!) := by
-  interval_cases j <;> native_decide
+  interval_cases j <;>
+    unfold slotWord initializedMemory Main.initializedState <;>
+    norm_num [Artifact.initStores, Main.applyInitStore,
+      Challenge.EvmProof.Word.word_toNat_ofNat, numeralToNat]
+  all_goals
+    repeat'
+      first
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ _ 0
+          (by norm_num)]
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ _ _
+          (by exact Fin.isLt _)]
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+          (by simp only [initBytes_size]; omega)]
+  all_goals (norm_num [Crypto.Ripemd160.K, ofUInt32] <;> decide)
 
 private theorem initialized_kP (j : Nat) (hj : j < 5) :
     slotWord initializedMemory 0x6c0 j =
       ofUInt32 (Crypto.Ripemd160.KP[j]!) := by
-  interval_cases j <;> native_decide
+  interval_cases j <;>
+    unfold slotWord initializedMemory Main.initializedState <;>
+    norm_num [Artifact.initStores, Main.applyInitStore,
+      Challenge.EvmProof.Word.word_toNat_ofNat, numeralToNat]
+  all_goals
+    repeat'
+      first
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ _ 0
+          (by norm_num)]
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ _ _
+          (by exact Fin.isLt _)]
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+          (by simp only [initBytes_size]; omega)]
+  all_goals (norm_num [Crypto.Ripemd160.KP, ofUInt32] <;> decide)
 
 private theorem initialized_h (i : Nat) (hi : i < 5) :
     slotWord initializedMemory 0x020 i =
       ofUInt32 (Crypto.Ripemd160.H0[i]!) := by
-  interval_cases i <;> native_decide
+  interval_cases i <;>
+    unfold slotWord initializedMemory Main.initializedState <;>
+    norm_num [Artifact.initStores, Main.applyInitStore,
+      Challenge.EvmProof.Word.word_toNat_ofNat, numeralToNat]
+  all_goals
+    repeat'
+      first
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ _ _
+          (by exact Fin.isLt _)]
+      | rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+          (by simp only [initBytes_size]; omega)]
+  all_goals norm_num [Crypto.Ripemd160.H0, ofUInt32] ; decide
 
 theorem initializedMemory_tables : TablesCorrect initializedMemory :=
   ⟨initialized_r, initialized_rP, initialized_s, initialized_sP⟩

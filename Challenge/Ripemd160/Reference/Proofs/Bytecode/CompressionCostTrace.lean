@@ -118,15 +118,15 @@ def tailWork : Nat :=
   Meter.runLocatedBlockStaticCost combinationPopsLocated +
   Meter.runLocatedBlockStaticCost combinationJumpLocated
 
-theorem tailWork_eq : tailWork = 245 := by native_decide
+theorem tailWork_eq : tailWork = 245 := by rfl
 
 def tableAtWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.tableAtPath
 def xAtWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.xAtPath
 def wordSetWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.hSetPath
 
-theorem tableAtWork_eq : tableAtWork = 57 := by native_decide
-theorem xAtWork_eq : xAtWork = 37 := by native_decide
-theorem wordSetWork_eq : wordSetWork = 42 := by native_decide
+theorem tableAtWork_eq : tableAtWork = 57 := by rfl
+theorem xAtWork_eq : xAtWork = 37 := by rfl
+theorem wordSetWork_eq : wordSetWork = 42 := by rfl
 
 theorem tableAt_cost_potential (s : State) (base i returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1016)
@@ -190,7 +190,7 @@ theorem wordSet_cost_potential (s : State)
 def scheduleSetupWork : Nat :=
   Meter.runLocatedBlockStaticCost scheduleSetupLocated
 
-theorem scheduleSetupWork_eq : scheduleSetupWork = 18 := by native_decide
+theorem scheduleSetupWork_eq : scheduleSetupWork = 18 := by rfl
 
 theorem scheduleSetup_cost_potential (s : State)
     (messageOffset returnDest : UInt256) (rest : List UInt256)
@@ -251,9 +251,9 @@ def scheduleWork : Nat :=
   Meter.runLocatedBlockStaticCost Schedule.exitPath
 
 theorem scheduleIterationWork_eq : scheduleIterationWork = 230 := by
-  native_decide
+  rfl
 
-theorem scheduleWork_eq : scheduleWork = 3722 := by native_decide
+theorem scheduleWork_eq : scheduleWork = 3722 := by rfl
 
 theorem readLE_cost_potential (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (i : Nat) (hstack : rest.length < 1012)
