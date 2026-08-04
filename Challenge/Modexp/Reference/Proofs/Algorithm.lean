@@ -1,5 +1,7 @@
 import Challenge.Modexp.Spec
 import Challenge.EvmProof.Memory
+import Mathlib.Data.Nat.Digits.Lemmas
+import Mathlib.Tactic.Ring
 import YulEvmCompiler.BytesLemmas
 set_option warningAsError true
 /-!
@@ -85,6 +87,49 @@ theorem modPow_lt {base exponent modulus : Nat} (hmodulus : 0 < modulus) :
     Precompile.modPow base exponent modulus < modulus := by
   rw [modPow_eq, if_neg (Nat.ne_of_gt hmodulus)]
   exact Nat.mod_lt _ hmodulus
+
+/-! ## Constant-shape double-and-add multiplication -/
+
+/-- Process an LSB-first list of selector bits.  The first component is the
+accumulated product and the second is the repeatedly doubled addend. -/
+def mulBits (modulus : Nat) : Nat → Nat → List Nat → Nat × Nat
+  | acc, addend, [] => (acc, addend)
+  | acc, addend, bit :: bits =>
+      mulBits modulus ((acc + bit * addend) % modulus)
+        ((addend + addend) % modulus) bits
+
+theorem mulBits_fst (modulus acc addend : Nat) (bits : List Nat) :
+    (mulBits modulus acc addend bits).1 % modulus =
+      (acc + addend * Nat.ofDigits 2 bits) % modulus := by
+  induction bits generalizing acc addend with
+  | nil => simp [mulBits]
+  | cons bit bits ih =>
+      rw [mulBits, ih]
+      simp only [Nat.ofDigits_cons]
+      have hacc := Nat.mod_modEq (acc + bit * addend) modulus
+      have haddend := Nat.mod_modEq (addend + addend) modulus
+      have hcongr := hacc.add (haddend.mul_right (Nat.ofDigits 2 bits))
+      have heq : (acc + bit * addend) +
+          (addend + addend) * Nat.ofDigits 2 bits =
+        acc + addend * (bit + 2 * Nat.ofDigits 2 bits) := by ring
+      rw [heq] at hcongr
+      exact hcongr
+
+theorem mulBits_snd (modulus acc addend : Nat) (bits : List Nat) :
+    (mulBits modulus acc addend bits).2 % modulus =
+      (addend * 2 ^ bits.length) % modulus := by
+  induction bits generalizing acc addend with
+  | nil => simp [mulBits]
+  | cons bit bits ih =>
+      rw [mulBits, ih]
+      have haddend := Nat.mod_modEq (addend + addend) modulus
+      have hcongr := haddend.mul_right (2 ^ bits.length)
+      have heq : (addend + addend) * 2 ^ bits.length =
+          addend * 2 ^ (bit :: bits).length := by
+        simp only [List.length_cons, pow_succ]
+        ring
+      rw [heq] at hcongr
+      exact hcongr
 
 theorem zeroBytes (offset width : Nat) :
     MachineState.readPadded ByteArray.empty offset width =
