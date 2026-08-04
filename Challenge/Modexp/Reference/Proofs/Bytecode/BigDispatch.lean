@@ -1,4 +1,5 @@
 import Challenge.Modexp.Reference.Proofs.Bytecode.Dispatch
+import Challenge.EvmProof.Meter
 set_option warningAsError true
 set_option maxRecDepth 10000
 set_option maxHeartbeats 3000000
@@ -124,6 +125,16 @@ theorem run_bigCheck (input : ByteArray) (hvalid : ValidInput input)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       hb', he', hm', hexp, hmod, Nat.add_assoc]
+  constructor
+  · change UInt256.ofNat 96 + UInt256.ofNat (baseSize input) +
+      UInt256.ofNat (exponentSize input) =
+        UInt256.ofNat (96 + (baseSize input + exponentSize input))
+    rw [hadd₁, hadd₂']
+    congr 1
+    omega
+  · change UInt256.ofNat 96 + UInt256.ofNat (baseSize input) =
+      UInt256.ofNat (96 + baseSize input)
+    exact hadd₁
 
 set_option linter.unusedSimpArgs false in
 theorem run_bigTail (input : ByteArray) :
@@ -150,8 +161,16 @@ def gasSteps_bigTail (input : ByteArray) :
       (run_bigTail input) rfl deployAddress_not_precompile
 
 theorem gasSteps_bigTail_cost (input : ByteArray) :
-    (gasSteps_bigTail input).cost = 30 := by
-  rfl
+    (gasSteps_bigTail input).cost = 33 := by
+  have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    bigTailPath 33 (run_bigTail input) (by rfl)
+      (by native_decide) (by native_decide)
+  have hactive : (bigCheckedState input).activeWords =
+      (bigEntryState input).activeWords := by rfl
+  rw [hactive] at hmeter
+  have hcost : Challenge.EvmProof.Stepper.runLocatedBlockCost bigTailPath
+      (bigCheckedState input) = 33 := by omega
+  simpa [gasSteps_bigTail] using hcost
 
 def gasSteps_bigCheck (input : ByteArray) (hvalid : ValidInput input)
     (hbig : 32 < modulusSize input) :
@@ -166,18 +185,38 @@ theorem gasSteps_bigCheck_cost (input : ByteArray) (hvalid : ValidInput input)
     (gasSteps_bigCheck input hvalid hbig).cost = 41 := by
   rfl
 
+def gasSteps_bigJump (input : ByteArray) (hvalid : ValidInput input)
+    (hpositive : 0 < modulusSize input) :
+    Challenge.EvmProof.GasSteps (Main.headerState input)
+      (Dispatch.wordDispatchState input) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka Dispatch.wordJumpPath rfl rfl
+      (Dispatch.run_wordJump input hvalid hpositive) rfl
+      deployAddress_not_precompile
+
+theorem gasSteps_bigJump_cost (input : ByteArray) (hvalid : ValidInput input)
+    (hpositive : 0 < modulusSize input) :
+    (gasSteps_bigJump input hvalid hpositive).cost = 17 := by
+  have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    Dispatch.wordJumpPath 17 (Dispatch.run_wordJump input hvalid hpositive)
+      (by rfl) (by native_decide) (by native_decide)
+  have hactive : (Main.headerState input).activeWords =
+      (Dispatch.wordDispatchState input).activeWords := by rfl
+  rw [hactive] at hmeter
+  have hcost : Challenge.EvmProof.Stepper.runLocatedBlockCost
+      Dispatch.wordJumpPath (Main.headerState input) = 17 := by omega
+  simpa [gasSteps_bigJump] using hcost
+
 def gasSteps_bigEntry (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hbig : 32 < modulusSize input) :
     Challenge.EvmProof.GasSteps (Main.headerState input) (bigEntryState input) :=
-  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.referenceArtifact .Osaka Dispatch.wordJumpPath rfl rfl
-      (Dispatch.run_wordJump input hvalid hpositive) rfl
-      deployAddress_not_precompile).trans <|
+  (gasSteps_bigJump input hvalid hpositive).trans <|
     (gasSteps_bigCheck input hvalid hbig).trans (gasSteps_bigTail input)
 
 theorem gasSteps_bigEntry_cost (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hbig : 32 < modulusSize input) :
-    (gasSteps_bigEntry input hvalid hpositive hbig).cost = 88 := by
-  simp [gasSteps_bigEntry, gasSteps_bigCheck_cost, gasSteps_bigTail_cost]
+    (gasSteps_bigEntry input hvalid hpositive hbig).cost = 91 := by
+  simp [gasSteps_bigEntry, gasSteps_bigJump_cost, gasSteps_bigCheck_cost,
+    gasSteps_bigTail_cost]
 
 end Challenge.Modexp.Reference.Proofs.Bytecode.BigDispatch
