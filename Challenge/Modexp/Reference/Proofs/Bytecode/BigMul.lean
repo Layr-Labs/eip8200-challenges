@@ -156,6 +156,13 @@ def mulBit (current : State) (b : UInt256) (i j : Nat) : UInt256 :=
   let word := MachineState.readWord current.memory (b + off).toNat
   UInt256.land (UInt256.shiftRight word (UInt256.ofNat j)) (UInt256.ofNat 1)
 
+theorem mulBit_toNat_le_one (current : State) (b : UInt256) (i j : Nat) :
+    (mulBit current b i j).toNat ≤ 1 := by
+  rw [mulBit, Challenge.EvmProof.Word.word_toNat_land,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by norm_num : 1 < 2 ^ 256)]
+  exact Nat.and_le_right
+
 def mulBitRest (current : State) (a b out modulus : UInt256)
     (count i j : Nat) (returnDest : UInt256) (rest : List UInt256) :
     List UInt256 :=

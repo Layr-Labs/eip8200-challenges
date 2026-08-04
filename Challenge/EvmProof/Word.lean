@@ -94,6 +94,12 @@ theorem word_toNat_sub_cond (a b : EvmSemantics.UInt256) :
   exact Nat.lt_of_lt_of_le
     (Nat.or_lt_two_pow a.val.isLt b.val.isLt) (by rfl)
 
+@[simp] theorem word_toNat_land (a b : EvmSemantics.UInt256) :
+    (EvmSemantics.UInt256.land a b).toNat = a.toNat &&& b.toNat := by
+  change (a.val &&& b.val).val = _
+  rw [Fin.and_val]
+  rfl
+
 @[simp] theorem word_toNat_ofNat (n : Nat) :
     (EvmSemantics.UInt256.ofNat n).toNat = n % 2 ^ 256 := by
   simp [EvmSemantics.UInt256.ofNat, EvmSemantics.UInt256.toNat,
