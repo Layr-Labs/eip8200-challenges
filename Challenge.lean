@@ -1,4 +1,5 @@
 import Challenge.EvmProof
+import Challenge.Modexp
 import Challenge.Ripemd160
 import Challenge.Sha256
 set_option warningAsError true
@@ -9,7 +10,8 @@ Verified replacements for Ethereum precompiles: EVM bytecode, plus a
 machine-checked proof that the bytecode computes what the precompile
 computed.
 
-SHA-256 (`0x02`) and RIPEMD-160 (`0x03`) are the first challenges:
+SHA-256 (`0x02`), RIPEMD-160 (`0x03`), and MODEXP (`0x05`) are the first
+challenges:
 
 * `Challenge.EvmProof` — verified disassembly and direct small-step proof
   combinators for raw-bytecode submissions.
@@ -22,6 +24,12 @@ SHA-256 (`0x02`) and RIPEMD-160 (`0x03`) are the first challenges:
   proofs, including the complete direct EVM proof of the frozen bytes.
 * `Challenge.Sha256.Scorer` — Tier 1, falsification by execution
   (`lake exe sha256challenge`).
+* `Challenge.Modexp.Spec` — the successful Osaka/EIP-7823 MODEXP interface.
+* `Challenge.Modexp.Reference` — reference Yul and its frozen 1,284-byte artifact.
+* `Challenge.Modexp.Reference.Proofs` — complete correctness and exact-gas
+  proofs for the frozen MODEXP bytecode.
+* `Challenge.Modexp.Scorer` — EIP-198 and arbitrary-precision falsification
+  (`lake exe modexpchallenge`).
 * `Challenge.Ripemd160.Spec` — the minimal RIPEMD-160 precompile-equivalence
   statement.
 * `Challenge.Ripemd160.Reference.Proofs.Bytecode.ReferenceCorrect` — the

@@ -37,10 +37,80 @@ theorem word_add_comm (a b : EvmSemantics.UInt256) : a + b = b + a := by
   change (a.val + b.val).val = (b.val + a.val).val
   rw [Fin.val_add, Fin.val_add, Nat.add_comm]
 
+theorem word_toNat_add (a b : EvmSemantics.UInt256) :
+    (a + b).toNat = (a.toNat + b.toNat) % 2 ^ 256 := by
+  change (a.val + b.val).val = _
+  rw [Fin.val_add]
+  rfl
+
+theorem word_toNat_sub (a b : EvmSemantics.UInt256) :
+    (a - b).toNat = (2 ^ 256 + a.toNat - b.toNat) % 2 ^ 256 := by
+  change (a.val - b.val).val = _
+  rw [Fin.val_sub]
+  change (EvmSemantics.UInt256.size - b.toNat + a.toNat) %
+      EvmSemantics.UInt256.size = _
+  congr 1
+  change 2 ^ 256 - b.toNat + a.toNat = 2 ^ 256 + a.toNat - b.toNat
+  have hb : b.toNat < 2 ^ 256 := b.val.isLt
+  omega
+
+theorem word_toNat_sub_cond (a b : EvmSemantics.UInt256) :
+    (a - b).toNat =
+      if a.toNat < b.toNat then 2 ^ 256 + a.toNat - b.toNat
+      else a.toNat - b.toNat := by
+  rw [word_toNat_sub]
+  by_cases hab : a.toNat < b.toNat
+  · rw [if_pos hab, Nat.mod_eq_of_lt]
+    have ha : a.toNat < 2 ^ 256 := a.val.isLt
+    have hb : b.toNat < 2 ^ 256 := b.val.isLt
+    omega
+  · rw [if_neg hab]
+    have hb : b.toNat < 2 ^ 256 := b.val.isLt
+    have hrearrange : 2 ^ 256 + a.toNat - b.toNat =
+        2 ^ 256 + (a.toNat - b.toNat) := by omega
+    have hdifference : a.toNat - b.toNat < 2 ^ 256 :=
+      Nat.lt_of_le_of_lt (Nat.sub_le _ _) a.val.isLt
+    rw [hrearrange, Nat.add_mod, Nat.mod_self, Nat.zero_add,
+      Nat.mod_eq_of_lt hdifference]
+    exact Nat.mod_eq_of_lt hdifference
+
+theorem word_toNat_lt (a b : EvmSemantics.UInt256) :
+    (EvmSemantics.UInt256.lt a b).toNat =
+      if a.toNat < b.toNat then 1 else 0 := by
+  simp only [EvmSemantics.UInt256.lt]
+  split <;> norm_num [EvmSemantics.UInt256.ofNat,
+    EvmSemantics.UInt256.toNat, EvmSemantics.UInt256.size]
+
+theorem word_toNat_isZero (a : EvmSemantics.UInt256) :
+    a.isZero.toNat = if a.toNat = 0 then 1 else 0 := by
+  simp only [EvmSemantics.UInt256.isZero]
+  split <;> norm_num [EvmSemantics.UInt256.ofNat,
+    EvmSemantics.UInt256.toNat, EvmSemantics.UInt256.size]
+
+theorem word_toNat_lor (a b : EvmSemantics.UInt256) :
+    (EvmSemantics.UInt256.lor a b).toNat = a.toNat ||| b.toNat := by
+  change (a.val ||| b.val).val = _
+  rw [Fin.or_val]
+  apply Nat.mod_eq_of_lt
+  exact Nat.lt_of_lt_of_le
+    (Nat.or_lt_two_pow a.val.isLt b.val.isLt) (by rfl)
+
+theorem word_toNat_land (a b : EvmSemantics.UInt256) :
+    (EvmSemantics.UInt256.land a b).toNat = a.toNat &&& b.toNat := by
+  change (a.val &&& b.val).val = _
+  rw [Fin.and_val]
+  rfl
+
 @[simp] theorem word_toNat_ofNat (n : Nat) :
     (EvmSemantics.UInt256.ofNat n).toNat = n % 2 ^ 256 := by
   simp [EvmSemantics.UInt256.ofNat, EvmSemantics.UInt256.toNat,
     EvmSemantics.UInt256.size]
+
+theorem word_eq_ofNat_toNat (a : EvmSemantics.UInt256) :
+    a = EvmSemantics.UInt256.ofNat a.toNat := by
+  apply word_ext
+  rw [word_toNat_ofNat]
+  exact (Nat.mod_eq_of_lt a.val.isLt).symm
 
 theorem ofNat_add_ofNat {a b : Nat} (h : a + b < 2 ^ 256) :
     EvmSemantics.UInt256.ofNat a + EvmSemantics.UInt256.ofNat b =
@@ -58,6 +128,26 @@ theorem ofNat_add_ofNat {a b : Nat} (h : a + b < 2 ^ 256) :
     Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt hb,
     show EvmSemantics.UInt256.size = 2 ^ 256 by rfl,
     Nat.mod_eq_of_lt h]
+
+/-- Addition commutes with embedding even when the natural sum wraps.  Both
+sides use the same EVM-word modulus, so no range side condition is needed. -/
+theorem ofNat_add_mod (a b : Nat) :
+    EvmSemantics.UInt256.ofNat a + EvmSemantics.UInt256.ofNat b =
+      EvmSemantics.UInt256.ofNat (a + b) := by
+  apply word_ext
+  change ((EvmSemantics.UInt256.ofNat a).val +
+    (EvmSemantics.UInt256.ofNat b).val).val = _
+  rw [Fin.val_add]
+  change ((a % 2 ^ 256 + b % 2 ^ 256) % 2 ^ 256) =
+    (a + b) % 2 ^ 256
+  exact (Nat.add_mod a b (2 ^ 256)).symm
+
+/-- Program-counter successor commutes with natural embedding modulo the EVM
+word size. -/
+theorem succ_ofNat_mod (n : Nat) :
+    (EvmSemantics.UInt256.ofNat n).succ =
+      EvmSemantics.UInt256.ofNat (n + 1) := by
+  exact ofNat_add_mod n 1
 
 theorem ofNat_sub_ofNat {a b : Nat} (hba : b ≤ a) (ha : a < 2 ^ 256) :
     EvmSemantics.UInt256.ofNat a - EvmSemantics.UInt256.ofNat b =
@@ -267,6 +357,19 @@ theorem shiftRight_ofNat {value shift : Nat}
         exact hshiftWord]
   rw [word_toNat_ofNat]
   rw [Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) hvalue)]
+
+theorem shiftRight_toNat (value : EvmSemantics.UInt256) {shift : Nat}
+    (hshift : shift < 256) :
+    (EvmSemantics.UInt256.shiftRight value
+      (EvmSemantics.UInt256.ofNat shift)).toNat = value.toNat >>> shift := by
+  have hright := shiftRight_ofNat (value := value.toNat) (shift := shift)
+    value.val.isLt hshift
+  have hshifted : value.toNat >>> shift < 2 ^ 256 :=
+    Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) value.val.isLt
+  have hvalue : (EvmSemantics.UInt256.ofNat value.toNat).toNat = value.toNat :=
+    (word_toNat_ofNat value.toNat).trans (Nat.mod_eq_of_lt value.val.isLt)
+  rw [word_eq_ofNat_toNat value, hright, word_toNat_ofNat,
+    Nat.mod_eq_of_lt hshifted, hvalue]
 
 theorem shiftLeft_ofNat {value shift : Nat}
     (hvalue : value < 2 ^ 256) (hshift : shift < 256)

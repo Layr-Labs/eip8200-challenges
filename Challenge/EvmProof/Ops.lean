@@ -92,6 +92,53 @@ def div {s : State} {a b : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.div (withGas s gas) a b rest hop hgas hstack hcap
 
+def mod {s : State} {a b : UInt256} {rest : List UInt256}
+    (hop : s.decodedOp = some .MOD)
+    (hstack : s.stack = a :: b :: rest)
+    (hcap : s.stack.length + Operation.pushArity .MOD ≤
+      1024 + Operation.popArity .MOD)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with stack := (a % b) :: rest, pc := s.pc.succ } := by
+  let cost := Gas.baseCost s.fork .MOD
+  apply of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost] using
+    StepRunning.mod (withGas s gas) a b rest hop hgas hstack hcap
+
+def addmod {s : State} {a b n : UInt256} {rest : List UInt256}
+    (hop : s.decodedOp = some .ADDMOD)
+    (hstack : s.stack = a :: b :: n :: rest)
+    (hcap : s.stack.length + Operation.pushArity .ADDMOD ≤
+      1024 + Operation.popArity .ADDMOD)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with
+      stack := UInt256.addMod a b n :: rest, pc := s.pc.succ } := by
+  let cost := Gas.baseCost s.fork .ADDMOD
+  apply of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost] using
+    StepRunning.addmod (withGas s gas) a b n rest hop hgas hstack hcap
+
+def mulmod {s : State} {a b n : UInt256} {rest : List UInt256}
+    (hop : s.decodedOp = some .MULMOD)
+    (hstack : s.stack = a :: b :: n :: rest)
+    (hcap : s.stack.length + Operation.pushArity .MULMOD ≤
+      1024 + Operation.popArity .MULMOD)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with
+      stack := UInt256.mulMod a b n :: rest, pc := s.pc.succ } := by
+  let cost := Gas.baseCost s.fork .MULMOD
+  apply of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost] using
+    StepRunning.mulmod (withGas s gas) a b n rest hop hgas hstack hcap
+
 def lt {s : State} {a b : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .LT)
     (hstack : s.stack = a :: b :: rest)
@@ -106,6 +153,21 @@ def lt {s : State} {a b : UInt256} {rest : List UInt256}
   intro gas hgas
   simpa [withGas, cost] using
     StepRunning.lt (withGas s gas) a b rest hop hgas hstack hcap
+
+def gt {s : State} {a b : UInt256} {rest : List UInt256}
+    (hop : s.decodedOp = some .GT)
+    (hstack : s.stack = a :: b :: rest)
+    (hcap : s.stack.length + Operation.pushArity .GT ≤
+      1024 + Operation.popArity .GT)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with stack := UInt256.gt a b :: rest, pc := s.pc.succ } := by
+  let cost := Gas.baseCost s.fork .GT
+  apply of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost] using
+    StepRunning.gt (withGas s gas) a b rest hop hgas hstack hcap
 
 def eq {s : State} {a b : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .EQ)
@@ -354,6 +416,23 @@ def calldatasize {s : State}
   intro gas hgas
   simpa [withGas, cost] using
     StepRunning.calldatasize (withGas s gas) hop hgas hcap
+
+def calldataload {s : State} (offset : UInt256) (rest : List UInt256)
+    (hop : s.decodedOp = some .CALLDATALOAD)
+    (hstack : s.stack = offset :: rest)
+    (hcap : s.stack.length + Operation.pushArity .CALLDATALOAD ≤
+      1024 + Operation.popArity .CALLDATALOAD)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with
+      stack := MachineState.readWord s.executionEnv.calldata offset.toNat :: rest
+      pc := s.pc.succ } := by
+  let cost := Gas.baseCost s.fork .CALLDATALOAD
+  apply of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost] using
+    StepRunning.calldataload (withGas s gas) offset rest hop hgas hstack hcap
 
 def calldatacopy {s : State} (destOff srcOff size : UInt256)
     (rest : List UInt256)

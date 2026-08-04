@@ -136,6 +136,27 @@ theorem iterateBounded_cost_of_const {I : Nat → State} (count cost : Nat)
       · intro i hi
         exact hcost i (Nat.lt_succ_of_lt hi)
 
+/-- Telescope an exact per-iteration cost equation against a state potential.
+This form avoids separately proving monotonicity when the instruction meter
+already states each charge as `base + nextPotential - currentPotential`. -/
+theorem iterateBounded_cost_potential_eq {I : Nat → State}
+    (count base : Nat) (potential : Nat → Nat)
+    (body : ∀ i, i < count → GasSteps (I i) (I (i + 1)))
+    (hcost : ∀ i (hi : i < count),
+      (body i hi).cost + potential i = base + potential (i + 1)) :
+    (iterateBounded count body).cost + potential 0 =
+      count * base + potential count := by
+  induction count with
+  | zero => simp
+  | succ count ih =>
+      rw [iterateBounded_succ_cost]
+      have hprefix := ih
+        (body := fun i hi => body i (Nat.lt_succ_of_lt hi))
+        (hcost := fun i hi => hcost i (Nat.lt_succ_of_lt hi))
+      have hlast := hcost count (Nat.lt_succ_self count)
+      rw [Nat.succ_mul]
+      omega
+
 /-- Sum a loop whose body has a fixed instruction cost plus the increase of a
 monotone potential (typically the EVM memory high-water cost). -/
 theorem iterateBounded_cost_of_potential {I : Nat → State}

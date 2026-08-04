@@ -72,8 +72,22 @@ def runInstr (instruction : Instr) (s : State) : Option State :=
     | .op .DIV => match s.stack with
         | a :: b :: rest => some { s with stack := (a / b) :: rest, pc := s.pc.succ }
         | _ => none
+    | .op .MOD => match s.stack with
+        | a :: b :: rest => some { s with stack := (a % b) :: rest, pc := s.pc.succ }
+        | _ => none
+    | .op .ADDMOD => match s.stack with
+        | a :: b :: n :: rest => some { s with
+            stack := UInt256.addMod a b n :: rest, pc := s.pc.succ }
+        | _ => none
+    | .op .MULMOD => match s.stack with
+        | a :: b :: n :: rest => some { s with
+            stack := UInt256.mulMod a b n :: rest, pc := s.pc.succ }
+        | _ => none
     | .op .LT => match s.stack with
         | a :: b :: rest => some { s with stack := UInt256.lt a b :: rest, pc := s.pc.succ }
+        | _ => none
+    | .op .GT => match s.stack with
+        | a :: b :: rest => some { s with stack := UInt256.gt a b :: rest, pc := s.pc.succ }
         | _ => none
     | .op .EQ => match s.stack with
         | a :: b :: rest => some { s with stack := UInt256.eq a b :: rest, pc := s.pc.succ }
@@ -117,6 +131,11 @@ def runInstr (instruction : Instr) (s : State) : Option State :=
     | .op .CALLDATASIZE => some { s with
         stack := UInt256.ofNat s.executionEnv.calldata.size :: s.stack
         pc := s.pc.succ }
+    | .op .CALLDATALOAD => match s.stack with
+        | offset :: rest => some { s with
+            stack := MachineState.readWord s.executionEnv.calldata offset.toNat :: rest
+            pc := s.pc.succ }
+        | _ => none
     | .op .CALLDATACOPY => match s.stack with
         | destOff :: srcOff :: size :: rest => some { s with
             stack := rest
@@ -250,7 +269,9 @@ makeBinarySound sound_add for .ADD via GasStep.add
 makeBinarySound sound_mul for .MUL via GasStep.mul
 makeBinarySound sound_sub for .SUB via GasStep.sub
 makeBinarySound sound_div for .DIV via GasStep.div
+makeBinarySound sound_mod for .MOD via GasStep.mod
 makeBinarySound sound_lt for .LT via GasStep.lt
+makeBinarySound sound_gt for .GT via GasStep.gt
 makeBinarySound sound_eq for .EQ via GasStep.eq
 makeBinarySound sound_byte for .BYTE via GasStep.byte
 makeBinarySound sound_and for .AND via GasStep.land
@@ -261,6 +282,39 @@ makeBinarySound sound_shr for .SHR via GasStep.shr
 makeUnarySound sound_iszero for .ISZERO via GasStep.iszero
 makeUnarySound sound_not for .NOT via GasStep.lnot
 makeUnarySound sound_pop for .POP via GasStep.pop
+
+syntax "makeTernarySound " ident " for " term " via " term : command
+
+macro_rules
+  | `(makeTernarySound $name:ident for $op:term via $rule:term) =>
+    `(private def $name {s t : State}
+        (hdecode : s.decodedOp = some $op)
+        (hresult : runInstr (.op $op) s = some t)
+        (hrun : s.halt = .Running)
+        (hnp : Precompile.isPrecompile s.executionEnv.fork
+          s.executionEnv.codeAddr = false) : GasSteps s t := by
+      refine ⟨Gas.baseCost s.fork $op, ?_⟩
+      intro gas hgas
+      by_cases hcap : s.stack.length < 1024
+      · rw [runInstr, if_pos hcap] at hresult
+        cases hs : s.stack with
+        | nil => simp [hs] at hresult
+        | cons a tail =>
+          cases ht : tail with
+          | nil => simp [hs, ht] at hresult
+          | cons b tail' =>
+            cases hu : tail' with
+            | nil => simp [hs, ht, hu] at hresult
+            | cons n rest =>
+              have hstack : s.stack = a :: b :: n :: rest := by simp [hs, ht, hu]
+              simp [hs, ht, hu] at hresult
+              subst t
+              exact (($rule hdecode hstack (stackCap s $op hcap) hrun hnp).trace
+                gas hgas)
+      · simp [runInstr, hcap] at hresult)
+
+makeTernarySound sound_addmod for .ADDMOD via GasStep.addmod
+makeTernarySound sound_mulmod for .MULMOD via GasStep.mulmod
 
 private def sound_push {s t : State} (width : Fin 33) (value : UInt256)
     (hdecode : Decodes s (.push width value))
@@ -339,6 +393,25 @@ private def sound_calldatasize {s t : State}
     simp at hresult
     subst t
     exact (GasStep.calldatasize hdecode hcap hrun hnp).trace gas hgas
+  · simp [runInstr, hcap] at hresult
+
+private def sound_calldataload {s t : State}
+    (hdecode : s.decodedOp = some .CALLDATALOAD)
+    (hresult : runInstr (.op .CALLDATALOAD) s = some t)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompile s.executionEnv.fork
+      s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.op .CALLDATALOAD) s, ?_⟩
+  intro gas hgas
+  by_cases hcap : s.stack.length < 1024
+  · rw [runInstr, if_pos hcap] at hresult
+    cases hstack : s.stack with
+    | nil => simp [hstack] at hresult
+    | cons offset rest =>
+      simp [hstack] at hresult
+      subst t
+      exact (GasStep.calldataload offset rest hdecode hstack
+        (stackCap s .CALLDATALOAD hcap) hrun hnp).trace gas hgas
   · simp [runInstr, hcap] at hresult
 
 private def sound_calldatacopy {s t : State}
@@ -546,10 +619,14 @@ def runInstr_sound {instruction : Instr} {s t : State}
         | exact (sound_mul hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_sub hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_div hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_mod hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_addmod hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_mulmod hdecode hresult hrun hnp).trace gas hgas
         | simp [runInstr] at hresult
     | CompBit op =>
       cases op <;> first
         | exact (sound_lt hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_gt hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_eq hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_byte hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_iszero hdecode hresult hrun hnp).trace gas hgas
@@ -562,6 +639,7 @@ def runInstr_sound {instruction : Instr} {s t : State}
         | simp [runInstr] at hresult
     | Env op =>
       cases op <;> first
+        | exact (sound_calldataload hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_calldatasize hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_calldatacopy hdecode hresult hrun hnp).trace gas hgas
         | simp [runInstr] at hresult
@@ -749,6 +827,28 @@ structure Located (artifact : ProgramArtifact) (fork : Fork) where
   instruction : Instr
   atIndex : artifact.instructions[index]? = some instruction
   wellFormed : WellFormed fork instruction
+
+/-- One Boolean certificate establishes opcode availability and encoding
+well-formedness for every instruction in an artifact. -/
+def AllWellFormed (artifact : ProgramArtifact) (fork : Fork) : Prop :=
+  artifact.instructions.all (fun instruction =>
+    decide (WellFormed fork instruction)) = true
+
+theorem AllWellFormed.valid {artifact : ProgramArtifact} {fork : Fork}
+    (hcert : AllWellFormed artifact fork) {instruction : Instr}
+    (hmem : instruction ∈ artifact.instructions) :
+    WellFormed fork instruction := by
+  exact of_decide_eq_true ((List.all_eq_true.mp hcert) instruction hmem)
+
+/-- Build a proof-carrying location from an in-bounds instruction index and a
+single whole-artifact well-formedness certificate. -/
+def Located.ofIndex {artifact : ProgramArtifact} {fork : Fork}
+    (hcert : AllWellFormed artifact fork)
+    (index : Fin artifact.instructions.length) : Located artifact fork where
+  index := index.val
+  instruction := artifact.instructions[index.val]
+  atIndex := List.getElem?_eq_getElem index.isLt
+  wellFormed := hcert.valid (List.getElem_mem index.isLt)
 
 def runLocated {artifact : ProgramArtifact} {fork : Fork}
     (located : Located artifact fork)
