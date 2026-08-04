@@ -128,11 +128,11 @@ private def render : GasFormula → Nat → String
       "C_{\\mathrm{mem}}\\left(" ++ activeWords.render 0 ++ "\\right)"
   | .ifZero condition whenZero whenNonzero, _ =>
       "\\begin{cases}" ++ whenZero.render 0 ++ ",&" ++ condition.render 0 ++
-        "=0\\\\" ++ whenNonzero.render 0 ++ ",&" ++ condition.render 0 ++
+        "=0\\\\\\\\" ++ whenNonzero.render 0 ++ ",&" ++ condition.render 0 ++
         "\\ne0\\end{cases}"
   | .ifLe condition bound whenLe whenGt, _ =>
       "\\begin{cases}" ++ whenLe.render 0 ++ ",&" ++ condition.render 0 ++
-        "\\le" ++ toString bound ++ "\\\\" ++ whenGt.render 0 ++ ",&" ++
+        "\\le" ++ toString bound ++ "\\\\\\\\" ++ whenGt.render 0 ++ ",&" ++
         condition.render 0 ++ ">" ++ toString bound ++ "\\end{cases}"
 
 /-- LaTeX used directly by the generated MODEXP gas leaderboard. -/

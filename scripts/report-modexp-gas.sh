@@ -250,7 +250,7 @@ report_proved_row() {
     return 1
   fi
 
-  printf '0\t%s\t%s\t| [%s](%s) | $G(I) = %s$ | [proved](%s) |\n' \
+  printf '0\t%s\t%s\t| [%s](%s) | $`G(I) = %s`$ | [proved](%s) |\n' \
     "$rank" "$name" "$name" "${implementation_links[$index]}" "$latex" \
     "${gas_file#"$challenge_dir/"}"
 
