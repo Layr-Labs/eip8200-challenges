@@ -93,6 +93,15 @@ jobs:
             exit 1
           fi
 
+      - name: Verify MODEXP specification boundary
+        run: |
+          imports="$(grep '^import ' Challenge/Modexp/Spec.lean)"
+          if [ "$imports" != 'import EvmSemantics.EVM.BigStep' ]; then
+            echo "::error::MODEXP Spec.lean must depend only on the pinned EVM semantics"
+            printf '%s\n' "$imports"
+            exit 1
+          fi
+
       # `reference.hex` is the frozen direct-bytecode artifact. The compiler is
       # only its reproducible generator; its bytecode proof uses no compiler
       # soundness theorem.
@@ -105,6 +114,19 @@ jobs:
             echo "::error::reference.hex is stale"
             exit 1
           fi
+
+      - name: Verify frozen MODEXP reference bytecode
+        run: |
+          compiled="$(lake exe yulc Challenge/Modexp/Reference/reference.yul)"
+          frozen="$(tr -d '[:space:]' < Challenge/Modexp/Reference/reference.hex)"
+          literal="$(lake exe modexpchallenge --print-reference-hex)"
+          if [ "$compiled" != "$frozen" ] || [ "$literal" != "$frozen" ]; then
+            echo "::error::MODEXP reference.hex is stale"
+            exit 1
+          fi
+
+      - name: Tier 1 — MODEXP reference vectors
+        run: lake exe modexpchallenge
 
       # Score the reference and every submission, validate optional proved
       # input-size schedules, and keep the checked gas tables in the SHA README

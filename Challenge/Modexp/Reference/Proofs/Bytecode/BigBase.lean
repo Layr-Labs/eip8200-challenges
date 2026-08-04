@@ -747,13 +747,13 @@ theorem gasSteps_innerIteration_cost_potential (s : State)
       (run_innerGuard s accumulator count baseSize i j offset byte rest
         (by omega) hj hrun)
       (by simpa [innerLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have htoDouble := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     innerToDoublePath 28
       (run_innerToDouble s accumulator count baseSize i j offset byte rest
         (by omega) hcode hrun)
       (by simpa [innerBody, innerLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hdouble := BigHelpers.gasSteps_addMaskedMod_cost_potential
     (innerBody s accumulator count baseSize i offset byte rest j)
     1024 1024 1 0 count 875
@@ -768,7 +768,7 @@ theorem gasSteps_innerIteration_cost_potential (s : State)
         (by omega) hj hcode hrun)
       (by simpa [doubledReturned, BigHelpers.addReturned, innerBody,
         innerLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hbit := BigHelpers.gasSteps_addMaskedMod_cost_potential
     (doubledReturned s accumulator count baseSize i j offset byte rest)
     1024 3072 (baseBit byte j) 0 count 900
@@ -787,7 +787,7 @@ theorem gasSteps_innerIteration_cost_potential (s : State)
         (by omega) hj hcode hrun)
       (by simpa [bitReturned, doubledReturned, BigHelpers.addReturned,
         innerBody, innerLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hguard' :
       Challenge.EvmProof.Stepper.runLocatedBlockCost innerGuardPath
           (innerLoop s accumulator count baseSize i offset byte rest j) +
@@ -971,13 +971,13 @@ theorem gasSteps_baseByte_cost_potential (s : State)
       (run_outerGuard s accumulator count baseSize i fullRest
         (by simp [fullRest]; omega) hbase hi hrun)
       (by simpa [outerLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hload := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     outerToInnerPath 22
       (run_outerToInner s accumulator count baseSize e m baseOff i rest
         (by omega) hoff hrun)
       (by simpa [outerBody, outerLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hinner := gasSteps_innerLoop_cost_potential s accumulator count baseSize i
     (UInt256.ofNat (baseOff + i)) byte fullRest hfull hcount hcode hfork hrun hnp
   have hfinishGuard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
@@ -986,14 +986,14 @@ theorem gasSteps_baseByte_cost_potential (s : State)
         (UInt256.ofNat (baseOff + i)) byte fullRest
         (by simp [fullRest]; omega) hcode hrun)
       (by simpa [innerLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hfinish := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     innerFinishPath 32
       (run_innerFinish s accumulator count baseSize i
         (UInt256.ofNat (baseOff + i)) byte fullRest
         (by simp [fullRest]; omega) (by omega) hcode hrun)
       (by simpa [innerExit, innerLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   unfold gasSteps_baseByte
   simp only [Challenge.EvmProof.GasSteps.cast_cost,
     Challenge.EvmProof.GasSteps.trans_cost,
@@ -1081,7 +1081,7 @@ theorem gasSteps_baseSetup_cost_potential (s : State)
     toClearDoublePath 21
       (run_toClearDouble s accumulator count rest hcapRaw hacc hcode hrun)
       (by simpa [BigModulus.scanNonzero, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hclear := BigHelpers.gasSteps_clear_cost_potential
     (BigModulus.scanNonzero s count rest) 3072 count 823
       (frame accumulator count rest) hframe hcount hcodeScan hforkScan
@@ -1091,7 +1091,7 @@ theorem gasSteps_baseSetup_cost_potential (s : State)
       (run_startBaseLoop s accumulator count rest hcapRaw hrun)
       (by simpa [afterClearDouble, BigHelpers.clearReturned,
         BigModulus.scanNonzero, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   unfold gasSteps_baseSetup
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]

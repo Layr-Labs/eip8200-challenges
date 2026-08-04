@@ -107,7 +107,7 @@ theorem gasSteps_startExponent_cost_potential (s : State)
         (run_startExponent s accumulatorWord count b e m baseOff expOff rest
           hcap hrun)
         (by simpa [exponentEntry, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   simpa [gasSteps_startExponent] using hmeter
 
 def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)

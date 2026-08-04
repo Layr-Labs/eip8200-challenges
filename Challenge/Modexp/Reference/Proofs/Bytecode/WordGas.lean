@@ -48,10 +48,10 @@ theorem gasSteps_start_cost (input : ByteArray) (hvalid : ValidInput input)
         exact hp.trans (by norm_num))
   have hload := blockCost_of_static startLoadPath 31
     (run_startLoad input hvalid hmsize hword) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have hjump := blockCost_of_static startJumpPath 10
     (run_startJump_nonzero input hmodpos hmodlt) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   unfold gasSteps_start
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
@@ -61,7 +61,7 @@ theorem gasSteps_start_cost (input : ByteArray) (hvalid : ValidInput input)
     (gasSteps_baseSetup input).cost = 5 := by
   have hmeter := blockCost_of_static baseSetupPath 5
     (run_baseSetup input) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   unfold gasSteps_baseSetup
   simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
   exact hmeter
@@ -71,20 +71,20 @@ theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
     (gasSteps_baseIteration input i base hvalid hi).cost = 140 := by
   have hguard := blockCost_of_static baseGuardPath 26
     (run_baseGuard input i base hvalid hi) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have hcall := blockCost_of_static baseCallPath 28
     (run_baseCall input i base hvalid hi) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have hcap : (baseRest input i base).length < 1017 := by
     simp [baseRest, callerRest]
   have hhelper := blockCost_of_static Accessors.calldataBytePath 30
     (Accessors.run_calldataByte (baseLoopState input i base)
       (UInt256.ofNat (96 + i)) 0 562 (baseRest input i base) hcap rfl rfl
       (by decide)) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have htail := blockCost_of_static baseTailPath 56
     (run_baseTail input i base hvalid hi) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have htail' : Challenge.EvmProof.Stepper.runLocatedBlockCost baseTailPath
       (Accessors.calldataByteReturned (baseLoopState input i base)
         (UInt256.ofNat (96 + i)) 562 (baseRest input i base)) = 56 := by
@@ -110,10 +110,10 @@ theorem gasSteps_baseFinish_cost (input : ByteArray) (base : UInt256)
     (gasSteps_baseFinish input base hvalid hword).cost = 42 := by
   have hguard := blockCost_of_static baseGuardPath 26
     (run_baseFinishGuard input base hvalid) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have htail := blockCost_of_static baseFinishTailPath 16
     (run_baseFinishTail input base hvalid hword) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   unfold gasSteps_baseFinish
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
@@ -125,10 +125,10 @@ theorem gasSteps_expEnter_cost (input : ByteArray) (i : Nat)
     (gasSteps_expEnter input i acc base hvalid hi).cost = 48 := by
   have hguard := blockCost_of_static expGuardPath 26
     (run_expGuard input i acc base hvalid hi) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have hload := blockCost_of_static expLoadPath 22
     (run_expLoad input i acc base hvalid hi) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   unfold gasSteps_expEnter
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
@@ -139,25 +139,25 @@ theorem gasSteps_bitIteration_cost (input : ByteArray) (outer j : Nat)
     (gasSteps_bitIteration input outer j byte offset acc base hj).cost = 138 := by
   have hguard := blockCost_of_static bitGuardPath 26
     (run_bitGuard input outer j byte offset acc base hj) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have hdecode := blockCost_of_static bitDecodePath 21
     (run_bitDecode input outer j byte offset acc base hj) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have hsquare := blockCost_of_static bitSquarePath 17
     (run_bitSquare input outer j byte offset acc base) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have hmask := blockCost_of_static bitMaskPath 8
     (run_bitMask input outer j byte offset acc base) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have hproduct := blockCost_of_static bitProductPath 17
     (run_bitProduct input outer j byte offset acc base) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have hchoose := blockCost_of_static bitChoosePath 15
     (run_bitChoose input outer j byte offset acc base) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have hadvance := blockCost_of_static bitAdvancePath 34
     (run_bitAdvance input outer j byte offset acc base hj) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   unfold gasSteps_bitIteration
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
@@ -179,10 +179,10 @@ theorem gasSteps_bitFinish_cost (input : ByteArray) (outer : Nat)
     (gasSteps_bitFinish input outer byte offset acc base hvalid houter).cost = 58 := by
   have hguard := blockCost_of_static bitGuardPath 26
     (run_bitFinishGuard input outer byte offset acc base) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have htail := blockCost_of_static bitFinishTailPath 32
     (run_bitFinishTail input outer byte offset acc base hvalid houter) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   unfold gasSteps_bitFinish
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
@@ -212,11 +212,11 @@ theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)
     (gasSteps_expFinish input acc base hvalid hword).cost = 713 := by
   have hguard := blockCost_of_static expGuardPath 26
     (run_expFinishGuard input acc base hvalid) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have htail := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     expFinishTailPath 36
     (run_expFinishTail input acc base hvalid hword) (by rfl)
-    (by native_decide) (by rfl)
+    (by decide) (by rfl)
   have hreturned : MachineState.activeWordsAfter 193 6144
       (modulusSize input) = 193 := by
     unfold MachineState.activeWordsAfter
@@ -253,13 +253,13 @@ theorem gasSteps_zeroModulusTotal_cost (input : ByteArray)
       950 := by
   have hload := blockCost_of_static startLoadPath 31
     (run_startLoad input hvalid hmsize hword) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have hjump := blockCost_of_static startJumpPath 10
     (run_startJump_zero input hmodulus) (by rfl)
-    (by native_decide) (by rfl) (by rfl)
+    (by decide) (by rfl) (by rfl)
   have htail := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     zeroTailPath 6 (run_zeroTail input hvalid hmodulus) (by rfl)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hfinal : (zeroModulusFinalState input).activeWords.toNat = 193 := by
     change (UInt256.ofNat
       (MachineState.activeWordsAfter 0 6144 (modulusSize input))).toNat = 193

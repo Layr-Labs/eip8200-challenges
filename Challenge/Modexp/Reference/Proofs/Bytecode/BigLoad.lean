@@ -399,23 +399,23 @@ theorem run_loadAfterByte (s : State) (offset length : Nat)
 
 theorem loadSetup_staticCost :
     Challenge.EvmProof.Meter.runLocatedBlockStaticCost loadSetupPath = 3 := by
-  native_decide
+  decide
 
 theorem loadGuard_staticCost :
     Challenge.EvmProof.Meter.runLocatedBlockStaticCost loadGuardPath = 26 := by
-  native_decide
+  decide
 
 theorem loadToByte_staticCost :
     Challenge.EvmProof.Meter.runLocatedBlockStaticCost loadToBytePath = 79 := by
-  native_decide
+  decide
 
 theorem loadAfterByte_staticCost :
     Challenge.EvmProof.Meter.runLocatedBlockStaticCost loadAfterBytePath = 55 := by
-  native_decide
+  decide
 
 theorem loadExit_staticCost :
     Challenge.EvmProof.Meter.runLocatedBlockStaticCost loadExitPath = 17 := by
-  native_decide
+  decide
 
 def gasSteps_loadIteration (s : State) (offset length : Nat)
     (dst returnDest : UInt256) (i : Nat) (rest : List UInt256)
@@ -517,13 +517,13 @@ theorem gasSteps_loadIteration_cost_potential (s : State)
       (run_loadGuard s offset length dst returnDest i rest (by omega)
         (by omega) hlength hi hrun)
       (by simpa [loop, loadLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have htoByte := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     loadToBytePath 79
       (run_loadToByte s offset length dst returnDest i rest hcap hoffset
         hlength hcode hrun)
       (by simpa [body, loadBody, loadLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hbyte := Accessors.gasSteps_calldataByte_cost_potential body
     (UInt256.ofNat offset + UInt256.ofNat i) (UInt256.ofNat 0)
     (UInt256.ofNat 484) (loadSaved (UInt256.ofNat offset)
@@ -543,7 +543,7 @@ theorem gasSteps_loadIteration_cost_potential (s : State)
         hlength hi hcode hrun)
       (by simpa [afterByte, loadAfterByte, body, loadBody, loadLoop,
         Accessors.calldataByteReturned, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   unfold gasSteps_loadIteration
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost,
@@ -671,7 +671,7 @@ theorem gasSteps_loadBigEndian_cost_potential (s : State)
     loadSetupPath 3
       (run_loadSetup s offset length dst returnDest rest (by omega) hrun)
       (by simpa [loadEntry, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hloop := gasSteps_loadLoop_cost_potential s offset length dst returnDest
     rest hcap hoffset hlength hcode hfork hrun hnp
   have hfinish := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
@@ -679,13 +679,13 @@ theorem gasSteps_loadBigEndian_cost_potential (s : State)
       (run_loadFinishGuard s offset length dst returnDest rest (by omega)
         hoffsetWord hlength hcode hrun)
       (by simpa [loadLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     loadExitPath 17
       (run_loadExit s offset length dst returnDest rest (by omega) hoffsetWord
         hlength hcode hrun hvalid)
       (by simpa [loadLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   unfold gasSteps_loadBigEndian
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]

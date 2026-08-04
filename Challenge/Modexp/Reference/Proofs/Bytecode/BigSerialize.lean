@@ -409,14 +409,14 @@ theorem gasSteps_serializerIteration_cost_potential (s : State)
         (run_serializerGuard s accumulatorWord count b e m baseOff expOff k
           rest (by omega) hm hk hrun)
         (by simpa [serializerLoop, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hbody :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
       serializerBodyPath 112
         (run_serializerBody s accumulatorWord count b e m baseOff expOff k
           rest (by omega) hm hk hcode hrun)
         (by simpa [serializerBody, serializerLoop, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   unfold gasSteps_serializerIteration
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
@@ -508,14 +508,14 @@ theorem gasSteps_serializerFinish_cost_potential (s : State)
         (run_serializerFinishGuard s accumulatorWord count b e m baseOff expOff
           rest (by omega) hm hcode hrun)
         (by simpa [serializerLoop, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hreturn :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
       serializerReturnPath 9
         (run_serializerReturn s accumulatorWord count b e m baseOff expOff rest
           (by omega) hm hrun)
         (by simpa [serializerExit, serializerLoop, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   unfold gasSteps_serializerFinish
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
@@ -576,14 +576,14 @@ theorem gasSteps_serializeResult_cost_potential (s : State)
         (run_outerFinishGuard s accumulatorWord count b e m baseOff expOff rest
           (by omega) he hcode hrun)
         (by simpa [outerLoop, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hentry :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
       serializerEntryPath 5
         (run_serializerEntry s accumulatorWord count b e m baseOff expOff rest
           (by omega) hrun)
         (by simpa [serializerEntry, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hloop := gasSteps_serializerLoop_cost_potential s accumulatorWord count b
     e m baseOff expOff rest hcap hm hcode hfork hrun hnp
   have hfinish := gasSteps_serializerFinish_cost_potential s accumulatorWord

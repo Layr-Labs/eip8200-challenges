@@ -24,6 +24,8 @@ SHA-256 (`0x02`) is the pilot, followed by MODEXP (`0x05`):
   (`lake exe sha256challenge`).
 * `Challenge.Modexp.Spec` — the successful Osaka/EIP-7823 MODEXP interface.
 * `Challenge.Modexp.Reference` — reference Yul and its frozen 1,284-byte artifact.
+* `Challenge.Modexp.Reference.Proofs` — complete correctness and exact-gas
+  proofs for the frozen MODEXP bytecode.
 * `Challenge.Modexp.Scorer` — EIP-198 and arbitrary-precision falsification
   (`lake exe modexpchallenge`).
 

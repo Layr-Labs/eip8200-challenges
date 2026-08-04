@@ -1,6 +1,16 @@
 import Challenge.EvmProof.Program
 import Challenge.EvmProof.Stepper
+import Challenge.EvmProof.Word
 import Challenge.Modexp.Reference.Bytecode
+
+attribute [simp]
+  Challenge.EvmProof.Word.word_toNat_add
+  Challenge.EvmProof.Word.word_toNat_sub
+  Challenge.EvmProof.Word.word_toNat_lt
+  Challenge.EvmProof.Word.word_toNat_isZero
+  Challenge.EvmProof.Word.word_toNat_lor
+  Challenge.EvmProof.Word.word_toNat_land
+
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 2000000

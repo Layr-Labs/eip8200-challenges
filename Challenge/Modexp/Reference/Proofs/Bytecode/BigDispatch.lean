@@ -164,7 +164,7 @@ theorem gasSteps_bigTail_cost (input : ByteArray) :
     (gasSteps_bigTail input).cost = 33 := by
   have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     bigTailPath 33 (run_bigTail input) (by rfl)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hactive : (bigCheckedState input).activeWords =
       (bigEntryState input).activeWords := by rfl
   rw [hactive] at hmeter
@@ -199,7 +199,7 @@ theorem gasSteps_bigJump_cost (input : ByteArray) (hvalid : ValidInput input)
     (gasSteps_bigJump input hvalid hpositive).cost = 17 := by
   have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     Dispatch.wordJumpPath 17 (Dispatch.run_wordJump input hvalid hpositive)
-      (by rfl) (by native_decide) (by native_decide)
+      (by rfl) (by decide) (by decide)
   have hactive : (Main.headerState input).activeWords =
       (Dispatch.wordDispatchState input).activeWords := by rfl
   rw [hactive] at hmeter

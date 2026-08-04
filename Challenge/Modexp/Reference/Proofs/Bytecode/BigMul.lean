@@ -1944,13 +1944,13 @@ theorem gasSteps_mulBitIteration_cost_potential (current : State)
       (run_mulInnerGuard current a b out modulus count i j returnDest rest
         (by omega) hj hrun)
       (by simpa [inner, mulInnerLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have htoAdd := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     mulInnerToAddPath 44
       (run_mulInnerToAdd current a b out modulus count i j returnDest rest
         (by omega) hj hcode hrun)
       (by simpa [inner, mulInnerLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hadd := BigHelpers.gasSteps_addMaskedMod_cost_potential inner out
     (UInt256.ofNat 4096) bit modulus count (UInt256.ofNat 383) saved
     hsavedCap hcount
@@ -1968,7 +1968,7 @@ theorem gasSteps_mulBitIteration_cost_potential (current : State)
         hrunToDouble)
       (by simpa [afterAdd, mulAfterBitAdd, inner, mulInnerLoop,
         BigHelpers.addReturned, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hdouble := BigHelpers.gasSteps_addMaskedMod_cost_potential afterAdd
     (UInt256.ofNat 4096) (UInt256.ofNat 4096) (UInt256.ofNat 1) modulus
     count (UInt256.ofNat 401) saved hsavedCap hcount
@@ -1988,7 +1988,7 @@ theorem gasSteps_mulBitIteration_cost_potential (current : State)
       (by simpa [afterDouble] using hrunNext)
       (by simpa [afterDouble, mulAfterBitDouble, mulAfterBitAdd, inner,
         mulInnerLoop, BigHelpers.addReturned, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   unfold gasSteps_mulBitIteration
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost,
@@ -2035,13 +2035,13 @@ theorem gasSteps_mulWordBitIteration_cost_potential (current : State)
       (run_mulWordInnerGuard current word a b out modulus count i j returnDest
         rest (by omega) hj hrun)
       (by simpa [inner, mulInnerState, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have htoAdd := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     mulInnerToAddPath 44
       (run_mulWordInnerToAdd current word a b out modulus count i j returnDest
         rest (by omega) hj hcode hrun)
       (by simpa [inner, mulInnerState, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hadd := BigHelpers.gasSteps_addMaskedMod_cost_potential inner out
     (UInt256.ofNat 4096) bit modulus count (UInt256.ofNat 383) saved
     hsavedCap hcount
@@ -2059,7 +2059,7 @@ theorem gasSteps_mulWordBitIteration_cost_potential (current : State)
         hrunToDouble)
       (by simpa [afterAdd, mulWordAfterAdd, inner, mulInnerState,
         BigHelpers.addReturned, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hdouble := BigHelpers.gasSteps_addMaskedMod_cost_potential afterAdd
     (UInt256.ofNat 4096) (UInt256.ofNat 4096) (UInt256.ofNat 1) modulus
     count (UInt256.ofNat 401) saved hsavedCap hcount
@@ -2079,7 +2079,7 @@ theorem gasSteps_mulWordBitIteration_cost_potential (current : State)
       (by simpa [afterDouble] using hrunNext)
       (by simpa [afterDouble, mulWordAfterDouble, mulWordAfterAdd, inner,
         mulInnerState, BigHelpers.addReturned, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   unfold gasSteps_mulWordBitIteration
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost,
@@ -2156,13 +2156,13 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
       (run_mulOuterGuard before a b out modulus count i returnDest rest
         (by omega) hcount hi (by simpa [before] using hrun))
       (by simpa [before, mulOuterState, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hload := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     mulOuterLoadPath 20
       (run_mulOuterLoad before a b out modulus count i returnDest rest
         (by omega) (by omega) (by simpa [before] using hrun))
       (by simpa [before, mulOuterBody, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hword := gasSteps_mulWordLoop_cost_potential loaded word a b out modulus
     count i returnDest rest hcap hcount
     (by simpa [loaded, mulLoadedState, before] using hcode)
@@ -2177,7 +2177,7 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
         (by simpa [afterWord, loaded, mulLoadedState, before] using hrun))
       (by simpa [afterWord, loaded, mulLoadedState, before, mulInnerState,
         State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     mulInnerToOuterPath 30
       (run_mulWordInnerToOuter afterWord word a b out modulus count i
@@ -2186,7 +2186,7 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
         (by simpa [afterWord, loaded, mulLoadedState, before] using hrun))
       (by simpa [afterWord, loaded, mulLoadedState, before, mulInnerState,
         State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   unfold gasSteps_mulOuterIteration gasSteps_mulOuterGuardSegment
     gasSteps_mulOuterLoadSegment gasSteps_mulInnerFinishSegment
     gasSteps_mulInnerExitSegment
@@ -2242,13 +2242,13 @@ theorem gasSteps_mulFinish_cost_potential (current : State)
       (run_mulOuterFinishGuard current a b out modulus count returnDest rest
         (by omega) hcount hcode hrun)
       (by simpa [mulOuterState, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     mulOuterExitPath 21
       (run_mulOuterExit current a b out modulus count returnDest rest (by omega)
         hcode hrun hvalid)
       (by simpa [mulOuterState, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   unfold gasSteps_mulFinish
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
@@ -2475,7 +2475,7 @@ theorem gasSteps_mulInitialize_cost_potential (s : State)
       (run_mulToClear s a b out modulus count returnDest rest (by omega)
         hcode hrun)
       (by simpa [mulEntry, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hclear := BigHelpers.gasSteps_clear_cost_potential s out count
     (UInt256.ofNat 320) saved (by simp [saved]; omega) hcount hcode hfork
     hrun hnp (by
@@ -2487,7 +2487,7 @@ theorem gasSteps_mulInitialize_cost_potential (s : State)
       (run_mulToCopy s a b out modulus count returnDest rest (by omega)
         hcode hrun)
       (by simpa [cleared, mulAfterClear, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hcopy := BigHelpers.gasSteps_copy_cost_potential cleared
     (UInt256.ofNat 4096) a count (UInt256.ofNat 333) saved
     (by simp [saved]; omega) hcount
@@ -2502,7 +2502,7 @@ theorem gasSteps_mulInitialize_cost_potential (s : State)
     mulSetupPath 3
       (run_mulSetup s a b out modulus count returnDest rest (by omega) hrun)
       (by simpa [copied, mulAfterCopy, mulAfterClear, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   unfold gasSteps_mulInitialize
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost,

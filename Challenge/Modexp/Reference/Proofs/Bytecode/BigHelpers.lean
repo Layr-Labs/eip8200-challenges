@@ -454,7 +454,7 @@ theorem gasSteps_clearSetup_cost_potential (s : State) (ptr : UInt256)
   have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     clearSetupPath 3 (run_clearSetup s ptr count returnDest rest hcap hrun)
     (by simpa [clearEntry, State.fork] using hfork)
-    (by native_decide) (by rfl)
+    (by decide) (by rfl)
   unfold gasSteps_clearSetup
   simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
   simp [clearEntry, clearLoop, clearWords] at hmeter
@@ -479,12 +479,12 @@ theorem gasSteps_clearIteration_cost_potential (s : State) (ptr : UInt256)
     clearGuardPath 26 (run_clearGuard s ptr count i returnDest rest
       hcap hcount hi hrun)
     (by simpa [clearLoop, State.fork] using hfork)
-    (by native_decide) (by rfl)
+    (by decide) (by rfl)
   have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     clearBodyPath 45 (run_clearBody s ptr count i returnDest rest hcap
       (by omega) hcode hrun)
     (by simpa [clearBodyEntry, clearLoop, State.fork] using hfork)
-    (by native_decide) (by rfl)
+    (by decide) (by rfl)
   have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka clearGuardPath
@@ -538,12 +538,12 @@ theorem gasSteps_clearFinish_cost_potential (s : State) (ptr : UInt256)
     clearGuardPath 26 (run_clearFinishGuard s ptr count returnDest rest
       hcap hcount hcode hrun)
     (by simpa [clearLoop, State.fork] using hfork)
-    (by native_decide) (by rfl)
+    (by decide) (by rfl)
   have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     clearExitPath 15 (run_clearExit s ptr count returnDest rest hcap hcode
       hvalid hrun)
     (by simpa [clearExit, clearLoop, State.fork] using hfork)
-    (by native_decide) (by rfl)
+    (by decide) (by rfl)
   have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka clearGuardPath
@@ -1052,7 +1052,7 @@ theorem gasSteps_copySetup_cost_potential (s : State) (dst src : UInt256)
   have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     copySetupPath 3 (run_copySetup s dst src count returnDest rest hcap hrun)
     (by simpa [copyEntry, State.fork] using hfork)
-    (by native_decide) (by rfl)
+    (by decide) (by rfl)
   unfold gasSteps_copySetup
   simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
   simp [copyEntry, copyLoop, copyWords] at hmeter
@@ -1077,12 +1077,12 @@ theorem gasSteps_copyIteration_cost_potential (s : State) (dst src : UInt256)
     copyGuardPath 26 (run_copyGuard s dst src count i returnDest rest
       hcap hcount hi hrun)
     (by simpa [copyLoop, State.fork] using hfork)
-    (by native_decide) (by rfl)
+    (by decide) (by rfl)
   have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     copyBodyPath 61 (run_copyBody s dst src count i returnDest rest hcap
       (by omega) hcode hrun)
     (by simpa [copyBodyEntry, copyLoop, State.fork] using hfork)
-    (by native_decide) (by rfl)
+    (by decide) (by rfl)
   have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka copyGuardPath
@@ -1135,12 +1135,12 @@ theorem gasSteps_copyFinish_cost_potential (s : State) (dst src : UInt256)
     copyGuardPath 26 (run_copyFinishGuard s dst src count returnDest rest
       hcap hcode hrun)
     (by simpa [copyLoop, State.fork] using hfork)
-    (by native_decide) (by rfl)
+    (by decide) (by rfl)
   have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     copyExitPath 17 (run_copyExit s dst src count returnDest rest hcap hcode
       hvalid hrun)
     (by simpa [copyExit, copyLoop, State.fork] using hfork)
-    (by native_decide) (by rfl)
+    (by decide) (by rfl)
   have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka copyGuardPath
@@ -2367,7 +2367,7 @@ theorem selectWord_toNat (sum reduced useSub : UInt256)
       rw [Challenge.EvmProof.Word.word_eq_ofNat_toNat useSub, huse]
     rw [hword]
     have hnot : UInt256.lnot (0 - UInt256.ofNat 0) =
-        0 - UInt256.ofNat 1 := by native_decide
+        0 - UInt256.ofNat 1 := by decide
     rw [Challenge.EvmProof.Word.word_toNat_lor,
       land_sub_zero_take_toNat reduced (by omega), hnot,
       land_sub_zero_take_toNat sum (by omega)]
@@ -2376,7 +2376,7 @@ theorem selectWord_toNat (sum reduced useSub : UInt256)
       rw [Challenge.EvmProof.Word.word_eq_ofNat_toNat useSub, huse]
     rw [hword]
     have hnot : UInt256.lnot (0 - UInt256.ofNat 1) =
-        0 - UInt256.ofNat 0 := by native_decide
+        0 - UInt256.ofNat 0 := by decide
     rw [Challenge.EvmProof.Word.word_toNat_lor,
       land_sub_zero_take_toNat reduced (by omega), hnot,
       land_sub_zero_take_toNat sum (by omega)]
@@ -3136,7 +3136,7 @@ theorem gasSteps_addSetup_cost_potential (s : State)
     addSetupPath 13
       (run_addSetup s dst src take modulus count returnDest rest (by omega) hrun)
       (by simpa [addEntry, State.fork] using hfork)
-      (by native_decide) (by rfl)
+      (by decide) (by rfl)
   unfold gasSteps_addSetup
   simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
   simpa [addEntry] using hmeter
@@ -3159,13 +3159,13 @@ theorem gasSteps_addIteration_cost_potential (s : State)
       (run_addGuard s dst src take modulus count i returnDest rest (by omega)
         hcount hi hrun)
       (by simpa [addLoop, State.fork] using hfork)
-      (by native_decide) (by rfl)
+      (by decide) (by rfl)
   have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     addBodyPath 138
       (run_addBody s dst src take modulus count i returnDest rest (by omega)
         (by omega) hcode hrun)
       (by simpa [addBodyEntry, addLoop, State.fork] using hfork)
-      (by native_decide) (by rfl)
+      (by decide) (by rfl)
   have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka addGuardPath
@@ -3222,13 +3222,13 @@ theorem gasSteps_addToSubtract_cost_potential (s : State)
       (run_addFinishGuard s dst src take modulus count returnDest rest (by omega)
         hcode hrun)
       (by simpa [addLoop, State.fork] using hfork)
-      (by native_decide) (by rfl)
+      (by decide) (by rfl)
   have hnext := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     addToSubtractPath 7
       (run_addToSubtract s dst src take modulus count returnDest rest (by omega)
         hrun)
       (by simpa [addLoop, State.fork] using hfork)
-      (by native_decide) (by rfl)
+      (by decide) (by rfl)
   have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka addGuardPath
@@ -3269,13 +3269,13 @@ theorem gasSteps_subtractIteration_cost_potential (s : State)
       (run_subtractGuard s dst src take modulus count i returnDest rest hcap
         hcount hi hrun)
       (by simpa [subtractLoop, State.fork] using hfork)
-      (by native_decide) (by rfl)
+      (by decide) (by rfl)
   have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     subtractBodyPath 137
       (run_subtractBody s dst src take modulus count i returnDest rest hcap
         (by omega) hcode hrun)
       (by simpa [subtractBodyEntry, subtractLoop, State.fork] using hfork)
-      (by native_decide) (by rfl)
+      (by decide) (by rfl)
   have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka subtractGuardPath
@@ -3333,12 +3333,12 @@ theorem gasSteps_subtractToSelect_cost_potential (s : State)
       (run_subtractFinishGuard s dst src take modulus count returnDest rest hcap
         hcode hrun)
       (by simpa [subtractLoop, State.fork] using hfork)
-      (by native_decide) (by rfl)
+      (by decide) (by rfl)
   have hnext := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     subtractToSelectPath 22
       (run_subtractToSelect s dst src take modulus count returnDest rest hcap hrun)
       (by simpa [subtractLoop, State.fork] using hfork)
-      (by native_decide) (by rfl)
+      (by decide) (by rfl)
   have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka subtractGuardPath
@@ -3378,13 +3378,13 @@ theorem gasSteps_selectIteration_cost_potential (s : State)
       (run_selectGuard s dst src take modulus count i returnDest rest hcap
         hcount hi hrun)
       (by simpa [selectLoop, State.fork] using hfork)
-      (by native_decide) (by rfl)
+      (by decide) (by rfl)
   have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     selectBodyPath 100
       (run_selectBody s dst src take modulus count i returnDest rest hcap
         (by omega) hcode hrun)
       (by simpa [selectBodyEntry, selectLoop, State.fork] using hfork)
-      (by native_decide) (by rfl)
+      (by decide) (by rfl)
   have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka selectGuardPath
@@ -3443,13 +3443,13 @@ theorem gasSteps_selectFinish_cost_potential (s : State)
       (run_selectFinishGuard s dst src take modulus count returnDest rest hcap
         hcode hrun)
       (by simpa [selectLoop, State.fork] using hfork)
-      (by native_decide) (by rfl)
+      (by decide) (by rfl)
   have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     selectExitPath 29
       (run_selectExit s dst src take modulus count returnDest rest hcap hcode
         hvalid hrun)
       (by simpa [selectExit, selectLoop, State.fork] using hfork)
-      (by native_decide) (by rfl)
+      (by decide) (by rfl)
   have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka selectGuardPath

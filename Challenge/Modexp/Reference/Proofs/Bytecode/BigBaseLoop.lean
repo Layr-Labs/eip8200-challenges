@@ -190,7 +190,7 @@ theorem gasSteps_baseFinish_cost_potential (s : State)
         (by simp [fullRest]; omega) hbase (by simpa [progress] using hcode)
         (by simpa [progress] using hrun))
       (by simpa [outerLoop, progress, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have htoAccumulator :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
       outerFinishToAccumulatorPath 31
@@ -198,7 +198,7 @@ theorem gasSteps_baseFinish_cost_potential (s : State)
           fullRest (by simp [fullRest]; omega)
           (by simpa [progress] using hcode) (by simpa [progress] using hrun))
         (by simpa [outerExit, outerLoop, progress, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hadd := BigHelpers.gasSteps_addMaskedMod_cost_potential
     (baseConvertedExit s accumulator count baseSize e m baseOff rest)
     2048 3072 1 0 count 944 helperRest hhelper hcount

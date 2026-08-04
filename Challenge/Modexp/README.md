@@ -25,6 +25,20 @@ to `EvmProof.EventuallyEvaluates`. The direct proof is organized under
 `Reference/Proofs/Bytecode/`; its execution and gas certificates target the
 frozen byte array, not a compiler assumption.
 
+[`Reference/Proofs/Bytecode/ReferenceCorrect.lean`](Reference/Proofs/Bytecode/ReferenceCorrect.lean)
+composes every public branch and exports:
+
+* `reference_correct : Correct referenceBytecode`, the end-to-end functional
+  correctness theorem;
+* `referenceGas`, the exact branch-sensitive gas formula; and
+* `gasSteps_reference_cost`, proving the certified EVM trace consumes exactly
+  `referenceGas input` for every valid input.
+
+The multi-limb gas theorem telescopes setup, modulus scan, base conversion,
+exponentiation, and serialization through the shared `EvmProof` memory-cost
+potential. Functional correctness separately proves the limb arithmetic,
+modular exponent invariant, and exact fixed-width output bytes.
+
 ## Falsification
 
 ```sh

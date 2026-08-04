@@ -36,13 +36,13 @@ theorem word_add_comm (a b : EvmSemantics.UInt256) : a + b = b + a := by
   change (a.val + b.val).val = (b.val + a.val).val
   rw [Fin.val_add, Fin.val_add, Nat.add_comm]
 
-@[simp] theorem word_toNat_add (a b : EvmSemantics.UInt256) :
+theorem word_toNat_add (a b : EvmSemantics.UInt256) :
     (a + b).toNat = (a.toNat + b.toNat) % 2 ^ 256 := by
   change (a.val + b.val).val = _
   rw [Fin.val_add]
   rfl
 
-@[simp] theorem word_toNat_sub (a b : EvmSemantics.UInt256) :
+theorem word_toNat_sub (a b : EvmSemantics.UInt256) :
     (a - b).toNat = (2 ^ 256 + a.toNat - b.toNat) % 2 ^ 256 := by
   change (a.val - b.val).val = _
   rw [Fin.val_sub]
@@ -73,20 +73,20 @@ theorem word_toNat_sub_cond (a b : EvmSemantics.UInt256) :
       Nat.mod_eq_of_lt hdifference]
     exact Nat.mod_eq_of_lt hdifference
 
-@[simp] theorem word_toNat_lt (a b : EvmSemantics.UInt256) :
+theorem word_toNat_lt (a b : EvmSemantics.UInt256) :
     (EvmSemantics.UInt256.lt a b).toNat =
       if a.toNat < b.toNat then 1 else 0 := by
   simp only [EvmSemantics.UInt256.lt]
   split <;> norm_num [EvmSemantics.UInt256.ofNat,
     EvmSemantics.UInt256.toNat, EvmSemantics.UInt256.size]
 
-@[simp] theorem word_toNat_isZero (a : EvmSemantics.UInt256) :
+theorem word_toNat_isZero (a : EvmSemantics.UInt256) :
     a.isZero.toNat = if a.toNat = 0 then 1 else 0 := by
   simp only [EvmSemantics.UInt256.isZero]
   split <;> norm_num [EvmSemantics.UInt256.ofNat,
     EvmSemantics.UInt256.toNat, EvmSemantics.UInt256.size]
 
-@[simp] theorem word_toNat_lor (a b : EvmSemantics.UInt256) :
+theorem word_toNat_lor (a b : EvmSemantics.UInt256) :
     (EvmSemantics.UInt256.lor a b).toNat = a.toNat ||| b.toNat := by
   change (a.val ||| b.val).val = _
   rw [Fin.or_val]
@@ -94,7 +94,7 @@ theorem word_toNat_sub_cond (a b : EvmSemantics.UInt256) :
   exact Nat.lt_of_lt_of_le
     (Nat.or_lt_two_pow a.val.isLt b.val.isLt) (by rfl)
 
-@[simp] theorem word_toNat_land (a b : EvmSemantics.UInt256) :
+theorem word_toNat_land (a b : EvmSemantics.UInt256) :
     (EvmSemantics.UInt256.land a b).toNat = a.toNat &&& b.toNat := by
   change (a.val &&& b.val).val = _
   rw [Fin.and_val]

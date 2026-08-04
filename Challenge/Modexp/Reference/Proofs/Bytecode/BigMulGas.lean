@@ -48,7 +48,7 @@ theorem gasSteps_mulOuterGuardSegment_cost_potential (current : State)
       (run_mulOuterGuard current a b out modulus count i returnDest rest
         (by omega) hcount hi hrun)
       (by simpa [mulOuterState, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
 
 theorem gasSteps_mulOuterLoadSegment_cost_potential (current : State)
     (a b out modulus : UInt256) (count i : Nat) (returnDest : UInt256)
@@ -69,7 +69,7 @@ theorem gasSteps_mulOuterLoadSegment_cost_potential (current : State)
       (run_mulOuterLoad current a b out modulus count i returnDest rest
         (by omega) (by omega) hrun)
       (by simpa [mulOuterBody, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
 
 theorem gasSteps_mulInnerFinishSegment_cost_potential (current : State)
     (word a b out modulus : UInt256) (count i : Nat)
@@ -91,7 +91,7 @@ theorem gasSteps_mulInnerFinishSegment_cost_potential (current : State)
       (run_mulWordInnerFinishGuard current word a b out modulus count i
         returnDest rest (by omega) hcode hrun)
       (by simpa [mulInnerState, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   simpa using hm
 
 theorem gasSteps_mulInnerExitSegment_cost_potential (current : State)
@@ -116,7 +116,7 @@ theorem gasSteps_mulInnerExitSegment_cost_potential (current : State)
       (run_mulWordInnerToOuter current word a b out modulus count i returnDest
         rest (by omega) (by omega) hcode hrun)
       (by simpa [mulInnerState, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
 
 /- Direct normalization version retained for audit comparison. -/
 /-
@@ -147,13 +147,13 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
       (run_mulOuterGuard before a b out modulus count i returnDest rest
         (by omega) hcount hi (by simpa [before] using hrun))
       (by simpa [before, mulOuterState, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hload := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     mulOuterLoadPath 20
       (run_mulOuterLoad before a b out modulus count i returnDest rest
         (by omega) (by omega) (by simpa [before] using hrun))
       (by simpa [before, mulOuterBody, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hword := gasSteps_mulWordLoop_cost_potential loaded word a b out modulus
     count i returnDest rest hcap hcount
     (by simpa [loaded, mulLoadedState, before] using hcode)
@@ -168,7 +168,7 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
         (by simpa [afterWord, loaded, mulLoadedState, before] using hrun))
       (by simpa [afterWord, loaded, mulLoadedState, before, mulInnerState,
         State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     mulInnerToOuterPath 30
       (run_mulWordInnerToOuter afterWord word a b out modulus count i
@@ -177,7 +177,7 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
         (by simpa [afterWord, loaded, mulLoadedState, before] using hrun))
       (by simpa [afterWord, loaded, mulLoadedState, before, mulInnerState,
         State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   unfold gasSteps_mulOuterIteration gasSteps_mulOuterGuardSegment
     gasSteps_mulOuterLoadSegment gasSteps_mulInnerFinishSegment
     gasSteps_mulInnerExitSegment
@@ -338,13 +338,13 @@ theorem gasSteps_mulFinish_cost_potential (current : State)
       (run_mulOuterFinishGuard current a b out modulus count returnDest rest
         (by omega) hcount hcode hrun)
       (by simpa [mulOuterState, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     mulOuterExitPath 21
       (run_mulOuterExit current a b out modulus count returnDest rest (by omega)
         hcode hrun hvalid)
       (by simpa [mulOuterState, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   unfold gasSteps_mulFinish
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]

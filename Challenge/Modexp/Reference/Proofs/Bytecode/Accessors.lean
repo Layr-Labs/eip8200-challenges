@@ -112,7 +112,7 @@ theorem gasSteps_calldataByte_cost_potential (s : State)
   have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     calldataBytePath 30
       (run_calldataByte s offset output returnDest rest hcap hcode hrun hvalid)
-      hfork (by native_decide) (by native_decide)
+      hfork (by decide) (by decide)
   unfold gasSteps_calldataByte
   simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
   simpa [calldataByteEntry, calldataByteReturned] using hmeter

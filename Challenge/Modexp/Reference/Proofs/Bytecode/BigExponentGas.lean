@@ -74,14 +74,14 @@ theorem gasSteps_selectIteration_cost_potential (s : State)
         (run_selectGuard s accumulatorWord count b e m baseOff expOff i j k
           offset byte rest (by omega) hcount hk hrun)
         (by simpa [selectLoop, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hbody :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
       selectBodyPath 97
         (run_selectBody s accumulatorWord count b e m baseOff expOff i j k
           offset byte rest (by omega) (by omega) hcode hrun)
         (by simpa [selectBody, selectLoop, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   unfold gasSteps_selectIteration
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
@@ -181,14 +181,14 @@ theorem gasSteps_selectFinish_cost_potential (s : State)
         (run_selectFinishGuard s accumulatorWord count b e m baseOff expOff i j
           offset byte rest (by omega) hcount hcode hrun)
         (by simpa [selectLoop, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hfinish :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
       selectFinishPath 32
         (run_selectFinish s accumulatorWord count b e m baseOff expOff i j
           offset byte rest (by omega) hj hcode hrun)
         (by simpa [selectExit, selectLoop, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   unfold gasSteps_selectFinish
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
@@ -368,14 +368,14 @@ theorem gasSteps_exponentBit_cost_potential (s : State)
         (run_innerGuard s accumulatorWord count b e m baseOff expOff i j offset
           byte rest (by omega) hj hrun)
         (by simpa [innerLoop, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have htoSquare :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
       innerToSquarePath 49
         (run_innerToSquare s accumulatorWord count b e m baseOff expOff i j
           offset byte rest (by omega) hj hcode hrun)
         (by simpa [innerBody, innerLoop, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hsquare := BigMul.gasSteps_mulModBig_cost_potential
     (innerBody s accumulatorWord count b e m baseOff expOff i offset byte rest j)
     2048 2048 3072 0 count 1000 frame hframe hcount
@@ -389,7 +389,7 @@ theorem gasSteps_exponentBit_cost_potential (s : State)
         (run_squareToCopy s accumulatorWord count b e m baseOff expOff i j
           offset byte rest (by omega) hcode hrun)
         (by simpa [State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hcopy := BigHelpers.gasSteps_copy_cost_potential
     (squareReturned s accumulatorWord count b e m baseOff expOff i j offset
       byte rest)
@@ -402,7 +402,7 @@ theorem gasSteps_exponentBit_cost_potential (s : State)
         (run_copyToProduct s accumulatorWord count b e m baseOff expOff i j
           offset byte rest (by omega) hcode hrun)
         (by simpa [State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hproduct := BigMul.gasSteps_mulModBig_cost_potential
     (copiedSquare s accumulatorWord count b e m baseOff expOff i j offset byte
       rest)
@@ -415,7 +415,7 @@ theorem gasSteps_exponentBit_cost_potential (s : State)
         (run_productToSelect s accumulatorWord count b e m baseOff expOff i j
           offset byte rest (by omega) hrun)
         (by simpa [State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hselect := gasSteps_selection_cost_potential s accumulatorWord count b e
     m baseOff expOff i j offset byte rest (by omega) hcount hj hcode hfork hrun
     hnp
@@ -633,7 +633,7 @@ theorem gasSteps_exponentByteFinish_cost_potential (s : State)
           (by simpa [current] using hrun))
         (by simpa [exponentBitLoopState, innerLoop, current, State.fork]
           using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hfinish :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
       innerFinishPath 32
@@ -641,7 +641,7 @@ theorem gasSteps_exponentByteFinish_cost_potential (s : State)
           offset byte rest (by omega) hi (by simpa [current] using hcode)
           (by simpa [current] using hrun))
         (by simpa [innerExit, innerLoop, current, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   unfold gasSteps_exponentByteFinish
   simp only [Challenge.EvmProof.GasSteps.cast_cost,
     Challenge.EvmProof.GasSteps.trans_cost,
@@ -715,14 +715,14 @@ theorem gasSteps_exponentByte_cost_potential (s : State)
         (run_outerGuard s accumulatorWord count b e m baseOff expOff i rest
           (by omega) he hi hrun)
         (by simpa [outerLoop, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hload :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
       outerToInnerPath 22
         (run_outerToInner s accumulatorWord count b e m baseOff expOff i rest
           (by omega) hoff hrun)
         (by simpa [outerBody, outerLoop, State.fork] using hfork)
-        (by native_decide) (by native_decide)
+        (by decide) (by decide)
   have hbits := gasSteps_exponentBits_cost_potential s accumulatorWord count b e
     m baseOff expOff i offset byte rest hcap hcount hcode hfork hrun hnp
   have hfinish := gasSteps_exponentByteFinish_cost_potential s accumulatorWord

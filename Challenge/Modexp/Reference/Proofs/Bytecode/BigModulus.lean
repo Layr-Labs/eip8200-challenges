@@ -398,12 +398,12 @@ theorem gasSteps_scanIteration_cost_potential (s : State) (count i : Nat)
   have hg := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     scanGuardPath 26 (run_scanGuard s count i rest hcap (by omega) hi hrun)
       (by simpa [scanLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hb := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     scanBodyPath 48
       (run_scanBody s count i rest hcap hcount hi hcode hrun)
       (by simpa [scanBody, scanLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have ht := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     (Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka scanGuardPath
@@ -453,18 +453,18 @@ theorem gasSteps_scanNonzeroTotal_cost_potential (s : State) (count : Nat)
   have hs := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     scanSetupPath 5 (run_scanSetup s count rest hcap hrun)
       (by simpa [scanEntry, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hl := gasSteps_scanLoop_cost_potential s count rest hcap hcount hcode
     hfork hrun hnp
   have hg := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     scanGuardPath 26
       (run_scanFinishGuard s count rest hcap (by omega) hcode hrun)
       (by simpa [scanLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hn := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     scanNonzeroPath 19 (run_scanNonzero s count rest hcap hor hcode hrun)
       (by simpa [scanExit, scanLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   unfold gasSteps_scanNonzeroTotal gasSteps_scanSetup
     gasSteps_scanFinishNonzero
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
@@ -529,20 +529,20 @@ theorem gasSteps_scanZeroTotal_cost_potential (s : State)
   have hs := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     scanSetupPath 5 (run_scanSetup s count caller hcaller hrun)
       (by simpa [scanEntry, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hl := gasSteps_scanLoop_cost_potential s count caller hcaller hcount
     hcode hfork hrun hnp
   have hg := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     scanGuardPath 26
       (run_scanFinishGuard s count caller hcaller (by omega) hcode hrun)
       (by simpa [scanLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hz := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     scanZeroPath 25
       (run_scanZero s count b e m baseOff expOff modOff returnDest rest
         hcap hm hor hrun)
       (by simpa [scanExit, scanLoop, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   unfold gasSteps_scanZeroTotal gasSteps_scanSetup
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]

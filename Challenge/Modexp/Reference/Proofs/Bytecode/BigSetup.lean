@@ -471,7 +471,7 @@ theorem gasSteps_setupToClear0_cost (s : State)
       (run_setupToClear0 s b e m baseOff expOff modOff returnDest rest
         hm hcap hcode hrun)
       (by simpa [setupEntry, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hactive :
       (setupEntry s b e m baseOff expOff modOff returnDest rest).activeWords =
       (BigHelpers.clearEntry s 0 (Limbs.limbCount m) 721
@@ -498,7 +498,7 @@ theorem gasSteps_toClear1024_cost (s : State)
       (run_toClear1024 s b e m baseOff expOff modOff returnDest rest
         hcap hcode hrun)
       (by simpa [afterClear0, BigHelpers.clearReturned, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hactive :
       (afterClear0 s b e m baseOff expOff modOff returnDest rest).activeWords =
       (BigHelpers.clearEntry
@@ -528,7 +528,7 @@ theorem gasSteps_toClear2048_cost (s : State)
         hcap hcode hrun)
       (by simpa [afterClear1024, afterClear0, BigHelpers.clearReturned,
         State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hactive :
       (afterClear1024 s b e m baseOff expOff modOff returnDest rest).activeWords =
       (BigHelpers.clearEntry
@@ -558,7 +558,7 @@ theorem gasSteps_toClear6144_cost (s : State)
         hcap hcode hrun)
       (by simpa [afterClear2048, afterClear1024, afterClear0,
         BigHelpers.clearReturned, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hactive :
       (afterClear2048 s b e m baseOff expOff modOff returnDest rest).activeWords =
       (BigHelpers.clearEntry
@@ -589,7 +589,7 @@ theorem gasSteps_toLoadModulus_cost (s : State)
         hm hmodOff hcap hcode hrun)
       (by simpa [afterClear6144, afterClear2048, afterClear1024, afterClear0,
         BigHelpers.clearReturned, State.fork] using hfork)
-      (by native_decide) (by native_decide)
+      (by decide) (by decide)
   have hactive :
       (afterClear6144 s b e m baseOff expOff modOff returnDest rest).activeWords =
       (BigLoad.loadEntry
