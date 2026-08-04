@@ -40,6 +40,16 @@ def makeInput (base exponent modulus bsize esize msize : Nat) : ByteArray :=
   word bsize ++ word esize ++ word msize ++
     operand base bsize ++ operand exponent esize ++ operand modulus msize
 
+/-- The exponent prefix used by the Osaka/EIP-7883 precompile gas formula. -/
+def exponentHead (input : ByteArray) : Nat :=
+  let size := Nat.min (exponentSize input) 32
+  EVM.Precompile.bytesToNatPadded input (96 + baseSize input) size
+
+/-- Gas charged by the pinned Osaka MODEXP precompile for this tuple. -/
+def precompileGas (input : ByteArray) : Nat :=
+  EVM.Precompile.modexpGas .Osaka (baseSize input) (exponentSize input)
+    (modulusSize input) (exponentHead input)
+
 def eipExample1 : ByteArray := fromHex
   ("0000000000000000000000000000000000000000000000000000000000000001" ++
    "0000000000000000000000000000000000000000000000000000000000000020" ++
