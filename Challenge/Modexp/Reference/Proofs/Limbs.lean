@@ -296,4 +296,45 @@ theorem addDigitLists_masked_carry_le_one {xs ys : List Nat} {take : Nat}
     · simpa using hsourceLt
   · omega
 
+private theorem div_eq_one_of_le_of_lt_twice {value divisor : Nat}
+    (_hdivisor : 0 < divisor) (hle : divisor ≤ value)
+    (hlt : value < 2 * divisor) : value / divisor = 1 := by
+  apply Nat.div_eq_of_lt_le
+  · simpa using hle
+  · omega
+
+/-- The two EVM overflow tests in one `addMaskedMod` limb iteration compute
+exactly the carry quotient of the three-term natural sum. -/
+theorem addCarryBits {x y carry : Nat}
+    (hx : x < radix) (hy : y < radix) (hcarry : carry ≤ 1) :
+    ((if (x + y) % radix < x then 1 else 0) |||
+        (if ((x + y) % radix + carry) % radix < (x + y) % radix
+          then 1 else 0)) =
+      (x + y + carry) / radix := by
+  have hsum : x + y < 2 * radix := by omega
+  by_cases hwrap : x + y < radix
+  · rw [Nat.mod_eq_of_lt hwrap]
+    have hnotFirst : ¬ x + y < x := by omega
+    simp only [if_neg hnotFirst, Nat.zero_or]
+    by_cases htotal : x + y + carry < radix
+    · rw [Nat.mod_eq_of_lt htotal, if_neg (by omega),
+        Nat.div_eq_of_lt htotal]
+    · have htotalLe : radix ≤ x + y + carry := by omega
+      have htotalTwo : x + y + carry < 2 * radix := by omega
+      have hzero : x + y + carry - radix = 0 := by omega
+      have hsumPos : 0 < x + y := by
+        have := radix_gt_one
+        omega
+      rw [mod_eq_cond_sub htotalTwo, if_neg htotal,
+        hzero, if_pos hsumPos,
+        div_eq_one_of_le_of_lt_twice radix_pos htotalLe htotalTwo]
+  · have hwrapLe : radix ≤ x + y := by omega
+    rw [mod_eq_cond_sub hsum, if_neg hwrap]
+    have hfirst : x + y - radix < x := by omega
+    rw [if_pos hfirst]
+    have hdiv : (x + y + carry) / radix = 1 :=
+      div_eq_one_of_le_of_lt_twice radix_pos (by omega) (by omega)
+    rw [hdiv]
+    split <;> norm_num
+
 end Challenge.Modexp.Reference.Proofs.Limbs

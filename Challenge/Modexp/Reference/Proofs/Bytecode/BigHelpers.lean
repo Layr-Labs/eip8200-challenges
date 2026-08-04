@@ -1189,6 +1189,29 @@ theorem land_sub_zero_take_toNat (word : UInt256) {take : Nat}
     exact Nat.and_two_pow_sub_one_eq_mod word.toNat 256 |>.trans
       (Nat.mod_eq_of_lt word.val.isLt)
 
+theorem addLimbStep_toNat (x y carry : UInt256) (hcarry : carry.toNat ≤ 1) :
+    let sum := x + y
+    let z := sum + carry
+    z.toNat = (x.toNat + y.toNat + carry.toNat) % Limbs.radix ∧
+      (UInt256.lor (UInt256.lt sum x) (UInt256.lt z sum)).toNat =
+        (x.toNat + y.toNat + carry.toNat) / Limbs.radix := by
+  dsimp only
+  constructor
+  · simp only [Challenge.EvmProof.Word.word_toNat_add, Limbs.radix]
+    have hcarryLt : carry.toNat < 2 ^ 256 :=
+      carry.val.isLt
+    calc
+      ((x.toNat + y.toNat) % 2 ^ 256 + carry.toNat) % 2 ^ 256 =
+          ((x.toNat + y.toNat) % 2 ^ 256 +
+            carry.toNat % 2 ^ 256) % 2 ^ 256 := by
+              rw [Nat.mod_eq_of_lt hcarryLt]
+      _ = (x.toNat + y.toNat + carry.toNat) % 2 ^ 256 :=
+        (Nat.add_mod (x.toNat + y.toNat) carry.toNat (2 ^ 256)).symm
+  · simp only [Challenge.EvmProof.Word.word_toNat_lor,
+      Challenge.EvmProof.Word.word_toNat_lt,
+      Challenge.EvmProof.Word.word_toNat_add, Limbs.radix]
+    exact Limbs.addCarryBits x.val.isLt y.val.isLt hcarry
+
 def addProgress (memory : ByteArray) (activeWords dst src mask : UInt256) :
     Nat → AddProgress
   | 0 => ⟨memory, activeWords, 0⟩
