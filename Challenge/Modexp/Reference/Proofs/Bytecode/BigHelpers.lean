@@ -1314,6 +1314,94 @@ theorem readWord_addProgress_source (memory : ByteArray)
           · right; omega
           · left; omega
 
+structure AddNatProgress where
+  digits : List Nat
+  carry : Nat
+
+/-- Mathematical prefix computation driven by the original memory limbs. -/
+def addNatProgress (memory : ByteArray) (dst src take : Nat) :
+    Nat → AddNatProgress
+  | 0 => ⟨[], 0⟩
+  | i + 1 =>
+      let before := addNatProgress memory dst src take i
+      let x := (MachineState.readWord memory (dst + 32 * i)).toNat
+      let y := (MachineState.readWord memory (src + 32 * i)).toNat
+      let total := x + take * y + before.carry
+      ⟨before.digits ++ [total % Limbs.radix], total / Limbs.radix⟩
+
+theorem addProgress_matches_nat (memory : ByteArray) (activeWords : UInt256)
+    (dst src count iter take : Nat) (hiter : iter ≤ count)
+    (htake : take ≤ 1) (hdstfit : dst + 32 * count < 2 ^ 256)
+    (hsrcfit : src + 32 * count < 2 ^ 256)
+    (halias : dst = src ∨ dst + 32 * count ≤ src ∨
+      src + 32 * count ≤ dst) :
+    let progress := addProgress memory activeWords (UInt256.ofNat dst)
+      (UInt256.ofNat src) (0 - UInt256.ofNat take) iter
+    let natural := addNatProgress memory dst src take iter
+    Limbs.memoryLimbs progress.memory dst iter = natural.digits ∧
+      progress.carry.toNat = natural.carry ∧ natural.carry ≤ 1 := by
+  induction iter with
+  | zero =>
+      have hzero : (0 : UInt256).toNat = 0 := by decide
+      simp [addProgress, addNatProgress, Limbs.memoryLimbs, hzero]
+  | succ iter ih =>
+      have hi : iter < count := by omega
+      have hprefix := ih (by omega)
+      let before := addProgress memory activeWords (UInt256.ofNat dst)
+        (UInt256.ofNat src) (0 - UInt256.ofNat take) iter
+      let naturalBefore := addNatProgress memory dst src take iter
+      have hbeforeMemory :
+          Limbs.memoryLimbs before.memory dst iter = naturalBefore.digits :=
+        hprefix.1
+      have hbeforeCarry : before.carry.toNat = naturalBefore.carry :=
+        hprefix.2.1
+      have hbeforeCarryLe : naturalBefore.carry ≤ 1 := hprefix.2.2
+      let x := MachineState.readWord before.memory (dst + 32 * iter)
+      let source := MachineState.readWord before.memory (src + 32 * iter)
+      let y := UInt256.land source (0 - UInt256.ofNat take)
+      have hx : x = MachineState.readWord memory (dst + 32 * iter) := by
+        exact readWord_addProgress_future_dest memory activeWords
+          (0 - UInt256.ofNat take) dst src iter iter (by omega) (by omega)
+      have hsource : source =
+          MachineState.readWord memory (src + 32 * iter) := by
+        exact readWord_addProgress_source memory activeWords
+          (0 - UInt256.ofNat take) dst src count iter iter (by omega) hi
+          hdstfit hsrcfit halias
+      have hy : y.toNat = take *
+          (MachineState.readWord memory (src + 32 * iter)).toNat := by
+        change (UInt256.land source (0 - UInt256.ofNat take)).toNat = _
+        rw [land_sub_zero_take_toNat source htake, hsource]
+      have hstep := addLimbStep_toNat x y before.carry (by
+        rw [hbeforeCarry]
+        exact hbeforeCarryLe)
+      have hoff :
+          (UInt256.ofNat dst + UInt256.shiftLeft (UInt256.ofNat iter)
+            (UInt256.ofNat 5)).toNat = dst + 32 * iter :=
+        addOffset_toNat dst iter (by omega)
+      have hoffSource :
+          (UInt256.ofNat src + UInt256.shiftLeft (UInt256.ofNat iter)
+            (UInt256.ofNat 5)).toNat = src + 32 * iter :=
+        addOffset_toNat src iter (by omega)
+      dsimp only [addProgress, addNatProgress]
+      rw [hoff, hoffSource, memoryLimbs_write_next]
+      constructor
+      · rw [hbeforeMemory]
+        congr 2
+        simpa [x, y, source, before, naturalBefore, hx, hy, hbeforeCarry]
+          using hstep.1
+      · constructor
+        · simpa [x, y, source, before, naturalBefore, hx, hy, hbeforeCarry]
+            using hstep.2
+        · rw [Nat.div_le_iff_le_mul Limbs.radix_pos]
+          rw [← hx, ← hy, ← hbeforeCarry]
+          have hxLt : x.toNat < Limbs.radix := by
+            change x.val.val < UInt256.size
+            exact x.val.isLt
+          have hyLt : y.toNat < Limbs.radix := by
+            change y.val.val < UInt256.size
+            exact y.val.isLt
+          omega
+
 def addEntry (s : State) (dst src take modulus : UInt256) (count : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 104
