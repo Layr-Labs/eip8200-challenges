@@ -470,4 +470,142 @@ theorem wordResult_correct (input : ByteArray) (hvalid : ValidInput input)
   exact residue_power_eq_modPow (baseNat input) (exponentNat input)
     (modulusValue input) (exponentSize input) hmodpos
 
+theorem outputShift_eq (input : ByteArray) (hword : modulusSize input ≤ 32) :
+    outputShift input = UInt256.ofNat ((32 - modulusSize input) * 8) := by
+  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat hword
+    (by norm_num : 32 < 2 ^ 256)
+  unfold outputShift
+  rw [show (32 : UInt256) = UInt256.ofNat 32 by decide, hsub,
+    Challenge.EvmProof.Word.shiftLeft_ofNat] <;>
+    norm_num [Nat.shiftLeft_eq] <;> omega
+
+theorem outputWord_toNat (input : ByteArray) (n : Nat)
+    (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hn : n < 256 ^ modulusSize input) :
+    (outputWord input (UInt256.ofNat n)).toNat =
+      n * 256 ^ (32 - modulusSize input) := by
+  have hfactor : 0 < 256 ^ (32 - modulusSize input) := pow_pos (by norm_num) _
+  have hmul := Nat.mul_lt_mul_of_pos_right hn hfactor
+  have hbound : n * 256 ^ (32 - modulusSize input) < 2 ^ 256 := by
+    rw [show (2 : Nat) ^ 256 = 256 ^ 32 by norm_num]
+    calc
+      n * 256 ^ (32 - modulusSize input) <
+          256 ^ (modulusSize input) * 256 ^ (32 - modulusSize input) := hmul
+      _ = 256 ^ 32 := by rw [← Nat.pow_add]; congr 1; omega
+  have hn256 : n < 2 ^ 256 := by
+    calc
+      n < 256 ^ (modulusSize input) := hn
+      _ ≤ 256 ^ 32 := pow_le_pow_right₀ (by omega) hword
+      _ = 2 ^ 256 := by norm_num
+  unfold outputWord
+  rw [outputShift_eq input hword,
+    Challenge.EvmProof.Word.shiftLeft_ofNat hn256 (by omega) (by
+      simpa [show (2 : Nat) ^ ((32 - modulusSize input) * 8) =
+          256 ^ (32 - modulusSize input) by
+        rw [show (256 : Nat) = 2 ^ 8 by norm_num, ← Nat.pow_mul]
+        congr 1
+        omega] using hbound),
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  rw [show (2 : Nat) ^ ((32 - modulusSize input) * 8) =
+      256 ^ (32 - modulusSize input) by
+    rw [show (256 : Nat) = 2 ^ 8 by norm_num, ← Nat.pow_mul]
+    congr 1
+    omega,
+    Nat.mod_eq_of_lt hbound]
+
+theorem shifted_div (n width k : Nat) (hwidth : width ≤ 32) (hk : k < width) :
+    n * 256 ^ (32 - width) / 256 ^ (32 - 1 - k) =
+      n / 256 ^ (width - 1 - k) := by
+  have hexponent : 32 - 1 - k = (32 - width) + (width - 1 - k) := by
+    omega
+  rw [hexponent, Nat.pow_add, Nat.mul_comm (256 ^ (32 - width))]
+  exact Nat.mul_div_mul_right n (256 ^ (width - 1 - k))
+    (pow_pos (by norm_num) _)
+
+theorem outputMemory_readPadded (input : ByteArray) (n : Nat)
+    (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hn : n < 256 ^ modulusSize input) :
+    MachineState.readPadded (outputMemory input (UInt256.ofNat n)) 6144
+        (modulusSize input) =
+      Precompile.natToBytes n (modulusSize input) := by
+  apply ByteArray.ext_getElem
+  · rw [Challenge.EvmProof.Memory.readPadded_size]
+    rw [Precompile.natToBytes,
+      YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+  · intro k hleft hright
+    have hk : k < modulusSize input := by
+      simpa [Precompile.natToBytes,
+        YulEvmCompiler.BytesLemmas.natToBytesPadded_size] using hright
+    rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hleft,
+      ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hright,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD,
+      if_pos hk]
+    unfold outputMemory
+    rw [MachineState.writeBytes_getElem?_getD, if_pos (by
+      constructor
+      · omega
+      · simp [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+        omega)]
+    rw [show 6144 + k - 6144 = k by omega,
+      YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ 32 k
+        (by omega),
+      Precompile.natToBytes,
+      YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _
+        (modulusSize input) k hk,
+      outputWord_toNat input n hmsize hword hn,
+      shifted_div n (modulusSize input) k hword hk]
+
+theorem wordFinalState_result (input : ByteArray) (hvalid : ValidInput input)
+    (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hmodpos : 0 < modulusValue input) :
+    (wordFinalState input (wordResult input) (wordBase input)).toResult =
+      .returned (spec input) := by
+  have hmodWidth : modulusValue input < 256 ^ modulusSize input :=
+    Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow input
+      (modulusOffset input) (modulusSize input)
+  have hmodlt : modulusValue input < 2 ^ 256 := by
+    calc
+      modulusValue input < 256 ^ modulusSize input := hmodWidth
+      _ ≤ 256 ^ 32 := pow_le_pow_right₀ (by omega) hword
+      _ = 2 ^ 256 := by norm_num
+  let result := Precompile.modPow (baseNat input) (exponentNat input)
+    (modulusValue input)
+  have hresult : result < 256 ^ modulusSize input :=
+    (Algorithm.modPow_lt hmodpos).trans hmodWidth
+  rw [show wordResult input = UInt256.ofNat result by
+    exact wordResult_correct input hvalid hmodpos hmodlt]
+  change ExecutionResult.returned
+      (MachineState.readPadded (outputMemory input (UInt256.ofNat result))
+        6144 (modulusSize input)) = ExecutionResult.returned (spec input)
+  rw [outputMemory_readPadded input result hmsize hword hresult]
+  congr 1
+  simp [spec, Nat.ne_of_gt hmsize, result, baseNat, exponentNat,
+    modulusValue, modulusOffset, expOffset, Nat.add_assoc]
+
+def gasSteps_wordNonzeroTotal (input : ByteArray) (hvalid : ValidInput input)
+    (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hmodpos : 0 < modulusValue input) :
+    Challenge.EvmProof.GasSteps (initialState referenceBytecode input 0)
+      (wordFinalState input (wordResult input) (wordBase input)) := by
+  let header := Main.gasSteps_header input hvalid
+  let dispatch := Dispatch.gasSteps_wordEntry input hvalid hmsize hword
+  let start := gasSteps_start input hvalid hmsize hword hmodpos
+  let setup := gasSteps_baseSetup input
+  let baseLoop := gasSteps_baseLoop input hvalid
+  let baseFinish : Challenge.EvmProof.GasSteps
+      (baseLoopState input (baseSize input) (wordBase input))
+      (expLoopState input 0 (wordInitialAcc input) (wordBase input)) := by
+    simpa [wordBase, wordInitialAcc] using
+      gasSteps_baseFinish input (wordBase input) hvalid hword
+  let exponentLoop : Challenge.EvmProof.GasSteps
+      (expLoopState input 0 (wordInitialAcc input) (wordBase input))
+      (expLoopState input (exponentSize input) (wordResult input)
+        (wordBase input)) := by
+    simpa [wordResult] using
+      gasSteps_expLoop input (wordInitialAcc input) (wordBase input) hvalid
+  let finish := gasSteps_expFinish input (wordResult input) (wordBase input)
+    hvalid hword
+  exact ((((((header.trans dispatch).trans start).trans setup).trans baseLoop).trans
+    baseFinish).trans exponentLoop).trans finish
+
 end Challenge.Modexp.Reference.Proofs.Bytecode.WordCorrect
