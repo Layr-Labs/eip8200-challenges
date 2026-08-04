@@ -6,15 +6,14 @@ cd "$(git rev-parse --show-toplevel)"
 
 readonly challenge_dir="Challenge/Modexp"
 readonly challenge_module="Challenge.Modexp"
+readonly challenge_display="MODEXP"
 readonly challenge_slug="modexp"
-readonly submission_root="$challenge_dir/Submissions"
-readonly module_prefix="$challenge_module.Submissions"
 readonly marker_id="MODEXP"
 readonly report_script_path="scripts/report-modexp-gas.sh"
 readonly scorer_exe="modexpchallenge"
 readonly expected_rows=9
 
-source scripts/check-modexp-submissions.sh
+source scripts/lib/check-hash-submissions.sh
 
 declare -a implementation_names=("Reference")
 declare -a implementation_links=("Reference/")
@@ -197,7 +196,11 @@ report_proved_row() {
       "$name" "$lean_output" >&2
     return 1
   fi
-  check_axiom_output "$theorem_name" "$lean_output"
+  if ! check_axiom_output "$theorem_name" "$lean_output"; then
+    cleanup_files "$proof_check" "$eval_check" "$value_check"
+    trap - RETURN
+    return 1
+  fi
 
   {
     printf 'import %s\n' "$gas_module"
@@ -238,7 +241,8 @@ report_proved_row() {
     printf 'import %s\n' "$gas_module"
     printf 'import %s.Scorer\n\n' "$challenge_module"
     printf 'example : (%s.Scorer.vectors.map (fun vector => ' "$challenge_module"
-    printf '%s.eval vector.input)).sum = %s := by decide\n' "$formula_name" "$rank"
+    printf '%s.eval vector.input)).sum = %s := by native_decide\n' \
+      "$formula_name" "$rank"
   } > "$value_check"
   if ! lean_output="$(lake env lean "$value_check" 2>&1)"; then
     printf 'error: ranked gas value does not kernel-reduce for %s\n%s\n' \
