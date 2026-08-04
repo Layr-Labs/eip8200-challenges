@@ -1243,6 +1243,24 @@ theorem addOffset_toNat (ptr i : Nat) (hfit : ptr + 32 * i < 2 ^ 256) :
   rw [Challenge.EvmProof.Word.word_add_comm]
   exact clearOffset_toNat ptr i hfit
 
+theorem memoryLimbs_write_next (memory : ByteArray) (ptr i : Nat)
+    (value : UInt256) :
+    Limbs.memoryLimbs
+        (MachineState.writeBytes memory
+          (Data.Bytes.natToBytesPadded value.toNat 32) (ptr + 32 * i))
+        ptr (i + 1) =
+      Limbs.memoryLimbs memory ptr i ++ [value.toNat] := by
+  simp only [Limbs.memoryLimbs, List.range_succ, List.map_append,
+    List.map_singleton]
+  rw [Challenge.EvmProof.Memory.readWord_writeWord]
+  congr 1
+  apply List.map_congr_left
+  intro j hj
+  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+  · left
+    have hjlt : j < i := by simpa using hj
+    omega
+
 /-- Earlier destination writes cannot affect a destination limb that has not
 yet been processed. -/
 theorem readWord_addProgress_future_dest (memory : ByteArray)
