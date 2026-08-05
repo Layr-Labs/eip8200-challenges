@@ -54,6 +54,25 @@ CI additionally checks each contributed candidate using the convention in its
 submission guide, freezes reference artifacts, runs challenge scorers, and
 verifies that deliberately fake proofs are rejected by the submission checker.
 
+## Independent gas cross-check
+
+The gas figures in the challenge gas reports come from concrete execution in the
+pinned Lean semantics. [`foundry/`](foundry/) re-measures the same frozen
+bytecode over the same vectors under a production EVM (revm, via Foundry) and
+requires exact agreement, so a mispricing in the pinned semantics could not
+quietly become a published number. All 45 scored vectors currently agree to the
+gas. It also measures the equivalent implementations from
+[eth-act/evmification](https://github.com/eth-act/evmification) alongside the
+references.
+
+```sh
+cd foundry && forge test -vv
+```
+
+The cross-check is self-contained: it verifies for itself that the bytecode it
+runs is the artifact the Lean theorems cover, and produces no input to the
+generated gas tables.
+
 ## Trust boundary
 
 Dependencies are pinned in `lakefile.toml`:

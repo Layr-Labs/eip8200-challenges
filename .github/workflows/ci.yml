@@ -185,3 +185,38 @@ jobs:
             echo "::error::the RIPEMD-160 scorer accepted a candidate returning 32 zero bytes"
             exit 1
           fi
+
+  # An independent check on the gas numbers the challenge READMEs publish.
+  # Those numbers come from the pinned Lean semantics; this job re-measures the
+  # same frozen bytecode on the same vectors under revm and requires exact
+  # agreement. It shares no code with the job above, and deliberately does not
+  # build Lean: if the two EVMs ever disagree, that has to show up as a
+  # disagreement, not as a shared bug.
+  crosscheck:
+    name: Cross-check published gas under revm
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: foundry
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          # lib/forge-std and the pinned eth-act/evmification implementations.
+          # Not recursive: evmification's own libraries are not imported here.
+          submodules: true
+
+      # Pinned rather than floating: an exact-equality gas assertion is only
+      # reproducible against a fixed revm, and a toolchain bump should be a
+      # deliberate change with its own diff.
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.5.1
+
+      - name: Check formatting
+        run: forge fmt --check
+
+      - name: Cross-check reference gas against the published numbers
+        run: forge test -vv
