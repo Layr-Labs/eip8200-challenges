@@ -45,16 +45,34 @@ same precompiles in optimized Solidity. Its `*Deployed` contracts take raw
 calldata and return the precompile's exact output bytes, so they are measured
 through the identical probe on the identical vectors. Suite totals:
 
-| challenge | reference | evmification | precompile | reference ÷ evmification |
-|---|---:|---:|---:|---:|
-| RIPEMD-160 | 9,862,146 | 6,597,217 | 23,520 | 1.49× |
-| SHA-256 | 10,179,119 | 7,290,263 | 2,424 | 1.40× |
-| MODEXP | 19,046,904 | 98,126 | 11,660 | 194× |
+| challenge | reference | evmification | precompile | reference ÷ evmification | reference ÷ precompile | evmification ÷ precompile |
+|---|---:|---:|---:|---:|---:|---:|
+| RIPEMD-160 | 9,862,146 | 6,597,217 | 23,520 | 1.49× | 419.31× | 280.49× |
+| SHA-256 | 10,179,119 | 7,290,263 | 2,424 | 1.40× | 4199.31× | 3007.53× |
+| MODEXP | 19,046,904 | 98,126 | 11,660 | 194× | 1633.53× | 8.42× |
 
 For the two hash functions the bundled references cost about 1.4–1.5× the
 hand-optimized Solidity, which is the expected price of a deliberately regular,
 proof-friendly shape: one 32-byte memory slot per algorithm word, no packing,
-no reuse.
+no reuse. Against the precompiles, though, both are in a different regime
+entirely: the hash precompiles are priced per 32-byte word (`600 + 120 × ceil`,
+`60 + 12 × ceil`), so even optimized EVM code lands two to three orders of
+magnitude above them, and no vector comes close.
+
+MODEXP is where the comparison becomes interesting, because that precompile is
+priced by operand size rather than by word count and carries a 500-gas
+EIP-7883 floor. On four of the nine vectors evmification is *cheaper* than the
+precompile's own price — 349 gas against 500 for the empty tuple, the
+zero-modulus, and the zero-modulus-size cases, and 395 against 500 for the zero
+exponent. The suite ratio of 8.42× is carried almost entirely by the two EIP-198
+examples (32,350 against 4,080) and the wide-modulus tuple. Each comparison test
+reports this count directly:
+
+```
+evmification at or below the precompile's price on 4 of 9 vectors    (MODEXP)
+evmification at or below the precompile's price on 0 of 17 vectors   (RIPEMD-160)
+evmification at or below the precompile's price on 0 of 19 vectors   (SHA-256)
+```
 
 MODEXP is a different story, and the gap is concentrated in one vector. The
 257-bit-modulus tuple costs 18,958,693 gas in the reference against 28,843 in
@@ -66,6 +84,20 @@ return the same bytes on all nine vectors; the fallback is simply not written
 for speed.
 
 None of this is a defect in the published numbers. It is what the numbers mean.
+
+The evmification gas figures are reported, not asserted. Its output is required
+to equal the precompile's on every vector, but pinning a third party's gas would
+turn a submodule bump into an unrelated test failure. Only the reference's gas,
+which this repository publishes, is asserted.
+
+### Not covered
+
+[eth-act/evmification](https://github.com/eth-act/evmification/tree/main/src)
+also implements `identity` (`0x04`), `blake2f` (`0x09`), `point_eval` (`0x0a`),
+and the BLS12-381 family (`0x0b`–`0x11`). Those are measured here only if a
+challenge exists to compare them against, and none does yet, so they are out of
+scope for this suite. Adding one is mechanical: the probe and the precompile
+column need nothing challenge-specific.
 
 ## Measurement
 

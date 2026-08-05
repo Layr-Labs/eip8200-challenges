@@ -131,6 +131,7 @@ contract Ripemd160GasTest is GasCrossCheck {
         uint256 referenceTotal;
         uint256 evmificationTotal;
         uint256 precompileTotal;
+        uint256 atOrBelowPrecompile;
 
         console2.log("");
         console2.log("RIPEMD-160 on the Lean scorer's vectors (frame gas, revm)");
@@ -159,6 +160,7 @@ contract Ripemd160GasTest is GasCrossCheck {
                     vm.toString(precompileGas)
                 )
             );
+            if (evmificationGas <= precompileGas) atOrBelowPrecompile++;
             referenceTotal += referenceGas;
             evmificationTotal += evmificationGas;
             precompileTotal += precompileGas;
@@ -178,6 +180,15 @@ contract Ripemd160GasTest is GasCrossCheck {
                 _ratio(referenceTotal, precompileTotal),
                 ", evmification ",
                 _ratio(evmificationTotal, precompileTotal)
+            )
+        );
+        console2.log(
+            string.concat(
+                "evmification at or below the precompile's price on ",
+                vm.toString(atOrBelowPrecompile),
+                " of ",
+                vm.toString(cases.length),
+                " vectors"
             )
         );
     }
