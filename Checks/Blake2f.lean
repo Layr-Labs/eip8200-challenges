@@ -21,3 +21,11 @@ info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.MixG.gasSteps_cost' depends o
 -/
 #guard_msgs in
 #print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.MixG.gasSteps_cost
+
+/-- info: 'Challenge.Blake2f.ProofSupport.Algorithm.mixLanesEVM_embed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Challenge.Blake2f.ProofSupport.Algorithm.mixLanesEVM_embed
+
+/-- info: 'Challenge.Blake2f.ProofSupport.Algorithm.lanesAt_crypto_mixG' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms Challenge.Blake2f.ProofSupport.Algorithm.lanesAt_crypto_mixG

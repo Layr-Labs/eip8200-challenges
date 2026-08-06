@@ -13,6 +13,96 @@ namespace Challenge.Blake2f.ProofSupport.Algorithm
 
 open EvmSemantics
 
+/-- The four lanes touched by one BLAKE2b quarter-round. Keeping this view
+separate from any concrete memory layout makes the arithmetic bridge reusable
+by candidate implementations. -/
+structure Lanes (α : Type) where
+  a : α
+  b : α
+  c : α
+  d : α
+  deriving DecidableEq
+
+def Lanes.embed (v : Lanes UInt64) : Lanes UInt256 :=
+  ⟨Word.ofUInt64 v.a, Word.ofUInt64 v.b, Word.ofUInt64 v.c,
+    Word.ofUInt64 v.d⟩
+
+/-- The masked EVM shift/or idiom used for a 64-bit right rotation. -/
+def rotrWord (x : UInt256) (n : Nat) : UInt256 :=
+  Word.mask64 (UInt256.shiftRight x (UInt256.ofNat n) |||
+    UInt256.shiftLeft x (UInt256.ofNat (64 - n)))
+
+/-- Pure four-lane form of the pinned `Crypto.Blake2f.mixG` arithmetic. -/
+def mixLanes64 (v : Lanes UInt64) (x y : UInt64) : Lanes UInt64 :=
+  let a := v.a + v.b + x
+  let d := Crypto.Blake2f.rotr64 (v.d ^^^ a) 32
+  let c := v.c + d
+  let b := Crypto.Blake2f.rotr64 (v.b ^^^ c) 24
+  let a := a + b + y
+  let d := Crypto.Blake2f.rotr64 (d ^^^ a) 16
+  let c := c + d
+  let b := Crypto.Blake2f.rotr64 (b ^^^ c) 63
+  ⟨a, b, c, d⟩
+
+/-- The same quarter-round expressed with the exact 256-bit operations used by
+proof-friendly EVM bytecode. -/
+def mixLanesEVM (v : Lanes UInt256) (x y : UInt256) : Lanes UInt256 :=
+  let a := Word.mask64 (v.a + v.b + x)
+  let d := rotrWord (v.d ^^^ a) 32
+  let c := Word.mask64 (v.c + d)
+  let b := rotrWord (v.b ^^^ c) 24
+  let a := Word.mask64 (a + b + y)
+  let d := rotrWord (d ^^^ a) 16
+  let c := Word.mask64 (c + d)
+  let b := rotrWord (b ^^^ c) 63
+  ⟨a, b, c, d⟩
+
+@[simp] theorem rotrWord_ofUInt64 (x : UInt64) (n : Nat)
+    (hn0 : 0 < n) (hn : n < 64) :
+    rotrWord (Word.ofUInt64 x) n =
+      Word.ofUInt64 (Crypto.Blake2f.rotr64 x (UInt64.ofNat n)) := by
+  exact Word.evm_rotr64 x n hn0 hn
+
+/-- The EVM quarter-round is exactly the 64-bit BLAKE2b quarter-round whenever
+its six inputs are embedded algorithm words. -/
+theorem mixLanesEVM_embed (v : Lanes UInt64) (x y : UInt64) :
+    mixLanesEVM v.embed (Word.ofUInt64 x) (Word.ofUInt64 y) =
+      (mixLanes64 v x y).embed := by
+  cases v with
+  | mk a b c d =>
+    simp only [mixLanesEVM, mixLanes64, Lanes.embed, Word.mask64_add3]
+    rw [← Word.ofUInt64_xor, rotrWord_ofUInt64 _ 32 (by omega) (by omega)]
+    rw [Word.mask64_add]
+    rw [← Word.ofUInt64_xor, rotrWord_ofUInt64 _ 24 (by omega) (by omega)]
+    rw [Word.mask64_add3]
+    rw [← Word.ofUInt64_xor, rotrWord_ofUInt64 _ 16 (by omega) (by omega)]
+    rw [Word.mask64_add]
+    rw [← Word.ofUInt64_xor, rotrWord_ofUInt64 _ 63 (by omega) (by omega)]
+    have h32 : UInt64.ofNat 32 = 32 := by decide
+    have h24 : UInt64.ofNat 24 = 24 := by decide
+    have h16 : UInt64.ofNat 16 = 16 := by decide
+    have h63 : UInt64.ofNat 63 = 63 := by decide
+    simp only [h32, h24, h16, h63]
+
+/-- Project four algorithm lanes from an array using the same zero-defaulting
+indexing convention as the pinned crypto implementation. -/
+def lanesAt (v : Array UInt64) (a b c d : Nat) : Lanes UInt64 :=
+  ⟨v[a]!, v[b]!, v[c]!, v[d]!⟩
+
+/-- The pinned array implementation of `mixG`, viewed at its four distinct
+in-bounds lanes, is the reusable pure four-lane transition above. -/
+theorem lanesAt_crypto_mixG (v : Array UInt64) (a b c d : Nat) (x y : UInt64)
+    (ha : a < v.size) (hb : b < v.size) (hc : c < v.size) (hd : d < v.size)
+    (hab : a ≠ b) (hac : a ≠ c) (had : a ≠ d)
+    (hbc : b ≠ c) (hbd : b ≠ d) (hcd : c ≠ d) :
+    lanesAt (Crypto.Blake2f.mixG v a b c d x y) a b c d =
+      mixLanes64 (lanesAt v a b c d) x y := by
+  simp [Crypto.Blake2f.mixG, lanesAt, mixLanes64,
+    Array.set!_eq_setIfInBounds, ha, hb, hc, hd,
+    hab, hac, had, hbc, hbd, hcd,
+    Ne.symm hab, Ne.symm hac, Ne.symm had, Ne.symm hbc, Ne.symm hbd,
+    Ne.symm hcd]
+
 /-- One complete BLAKE2b mixing round, including columns then diagonals. -/
 def roundStep (message : Array UInt64) (v : Array UInt64) (round : Nat) :
     Array UInt64 :=

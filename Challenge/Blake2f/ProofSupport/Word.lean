@@ -116,6 +116,30 @@ theorem shiftLeft_byte_lane (byte : UInt8) (i : Nat) (hi : i < 8) :
     show UInt256.size = 2 ^ 256 by rfl,
     Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega))]
 
+/-- Truncating EVM addition to a BLAKE2b word is homomorphic to `UInt64`
+addition. This form is useful between consecutive quarter-round assignments,
+where an EVM word is already known only through its low 64 bits. -/
+theorem toUInt64_add (x y : UInt256) :
+    toUInt64 (x + y) = toUInt64 x + toUInt64 y := by
+  apply UInt64.toNat_inj.mp
+  rw [toUInt64_toNat, UInt64.toNat_add, toUInt64_toNat, toUInt64_toNat]
+  change ((x.val + y.val).val % 2 ^ 64) =
+    (x.toNat % 2 ^ 64 + y.toNat % 2 ^ 64) % 2 ^ 64
+  rw [Fin.val_add]
+  change ((x.toNat + y.toNat) % 2 ^ 256) % 2 ^ 64 = _
+  rw [Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega : 64 ≤ 256))]
+  exact Nat.add_mod _ _ _
+
+theorem mask64_add_words (x y : UInt256) :
+    mask64 (x + y) = ofUInt64 (toUInt64 x + toUInt64 y) := by
+  rw [mask64_eq_ofUInt64, toUInt64_add]
+
+@[simp] theorem mask64_add3 (x y z : UInt64) :
+    mask64 (ofUInt64 x + ofUInt64 y + ofUInt64 z) =
+      ofUInt64 (x + y + z) := by
+  rw [mask64_eq_ofUInt64, toUInt64_add, toUInt64_add]
+  simp
+
 theorem mask64_or (x y : UInt256) :
     mask64 (x ||| y) = ofUInt64 (toUInt64 x ||| toUInt64 y) := by
   apply word_ext
