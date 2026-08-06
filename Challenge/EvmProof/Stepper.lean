@@ -942,6 +942,47 @@ def runLocatedBlock {artifact : ProgramArtifact} {fork : Fork} :
               | .Running => runLocatedBlock rest next
               | _ => none
 
+/-- Compose two successful located traces through a running intermediate
+state.  This lets large bytecode certificates cache and reuse independently
+checked basic blocks. -/
+theorem runLocatedBlock_append {artifact : ProgramArtifact} {fork : Fork}
+    (left right : List (Located artifact fork)) (s t u : State)
+    (hleft : runLocatedBlock left s = some t)
+    (hrunning : t.halt = .Running)
+    (hright : runLocatedBlock right t = some u) :
+    runLocatedBlock (left ++ right) s = some u := by
+  induction left generalizing s with
+  | nil =>
+      simp [runLocatedBlock] at hleft
+      subst t
+      exact hright
+  | cons located rest ih =>
+      cases rest with
+      | nil =>
+          cases hnext : runLocated located s with
+          | none => simp [runLocatedBlock, hnext] at hleft
+          | some next =>
+              simp [runLocatedBlock, hnext] at hleft
+              subst next
+              cases right with
+              | nil => simpa [runLocatedBlock, hnext] using hright
+              | cons nextLocated tail =>
+                  simpa [runLocatedBlock, hnext, hrunning] using hright
+      | cons nextLocated tail =>
+          cases hnext : runLocated located s with
+          | none => simp [runLocatedBlock, hnext] at hleft
+          | some next =>
+              cases hhalt : next.halt with
+              | Running =>
+                  have hrest : runLocatedBlock (nextLocated :: tail) next = some t := by
+                    simpa [runLocatedBlock, hnext, hhalt] using hleft
+                  have happ := ih next hrest
+                  simpa [runLocatedBlock, hnext, hhalt] using happ
+              | Success => simp [runLocatedBlock, hnext, hhalt] at hleft
+              | Returned => simp [runLocatedBlock, hnext, hhalt] at hleft
+              | Reverted => simp [runLocatedBlock, hnext, hhalt] at hleft
+              | Exception error => simp [runLocatedBlock, hnext, hhalt] at hleft
+
 /-- Executable exact cost of a located path.  On successful paths this follows
 the same intermediate states as `runLocatedBlock`; failure branches are
 irrelevant to `runLocatedBlock_sound` and return the cost accumulated so far. -/
