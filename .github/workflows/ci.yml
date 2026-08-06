@@ -141,6 +141,7 @@ jobs:
           key: project-${{ matrix.slug }}-v1-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-${{ hashFiles(format('Challenge/{0}.lean', matrix.directory), format('Challenge/{0}/**', matrix.directory), matrix.main, format('Checks/{0}.lean', matrix.directory)) }}
           restore-keys: |
             project-${{ matrix.slug }}-v1-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-
+            project-lake-build-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
 
       - name: Set up Lean
         uses: leanprover/lean-action@v1
