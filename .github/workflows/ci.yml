@@ -136,6 +136,8 @@ jobs:
       - name: Cache ${{ matrix.name }} project build
         uses: actions/cache@v5
         with:
+          # These outputs form one Lake trace graph and must be restored as a
+          # unit; caching only the root outputs forces native dependencies cold.
           path: |
             .lake/build
             .lake/packages/*/.lake/build/ir
