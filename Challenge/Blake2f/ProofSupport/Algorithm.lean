@@ -157,6 +157,54 @@ theorem rounds_succ (message v) (count : Nat) :
     rounds message (count + 1) v =
       roundStep message (rounds message count v) count := rfl
 
+/-- The work vector before the first mixing round, factored out of the pinned
+`compress` implementation for bytecode refinement proofs. -/
+def initialVector (h : Array UInt64) (t0 t1 : UInt64) (f : Bool) :
+    Array UInt64 := Id.run do
+  let mut v : Array UInt64 := Array.mkEmpty 16
+  for i in [0:8] do v := v.push h[i]!
+  for i in [0:8] do v := v.push Crypto.Blake2f.IV[i]!
+  v := v.set! 12 (v[12]! ^^^ t0)
+  v := v.set! 13 (v[13]! ^^^ t1)
+  if f then v := v.set! 14 (v[14]! ^^^ 0xffffffffffffffff)
+  return v
+
+/-- Fold the two halves of a completed work vector back into the chaining
+state. -/
+def foldVector (h v : Array UInt64) : Array UInt64 := Id.run do
+  let mut out : Array UInt64 := Array.mkEmpty 8
+  for i in [0:8] do out := out.push (h[i]! ^^^ v[i]! ^^^ v[i + 8]!)
+  return out
+
+private def runRounds (message : Array UInt64) (count : Nat)
+    (vector : Array UInt64) : Array UInt64 :=
+  (List.range' 0 count).foldl (fun vector round =>
+    roundStep message vector round) vector
+
+private theorem runRounds_eq (message vector : Array UInt64) (count : Nat) :
+    runRounds message count vector = rounds message count vector := by
+  unfold runRounds
+  rw [show List.range' 0 count = List.range count by
+    simp [List.range'_eq_map_range]]
+  induction count with
+  | zero => rfl
+  | succ count ih =>
+      rw [List.range_succ, List.foldl_append]
+      simpa [rounds] using congrArg (roundStep message · count) ih
+
+/-- Decomposition of the pinned crypto function into the reusable initial,
+round, and fold models. -/
+theorem compress_eq (count : Nat) (h message : Array UInt64) (t0 t1 : UInt64)
+    (f : Bool) :
+    Crypto.Blake2f.compress count h message t0 t1 f =
+      foldVector h (rounds message count (initialVector h t0 t1 f)) := by
+  rw [← runRounds_eq]
+  by_cases hf : f = true
+  · simp [Crypto.Blake2f.compress, initialVector, foldVector, runRounds,
+      roundStep, hf]
+  · simp [Crypto.Blake2f.compress, initialVector, foldVector, runRounds,
+      roundStep, hf]
+
 @[simp] theorem roundStep_size (message v : Array UInt64) (round : Nat) :
     (roundStep message v round).size = v.size := by
   simp [roundStep]
