@@ -17,6 +17,7 @@ open EvmSemantics.EVM
 inductive GasFormula where
   | calldataSize
   | rounds
+  | finalFlag
   | constant (value : Nat)
   | add (left right : GasFormula)
   | mul (left right : GasFormula)
@@ -27,6 +28,7 @@ namespace GasFormula
 def eval : GasFormula → ByteArray → Nat
   | .calldataSize, input => input.size
   | .rounds, input => Challenge.Blake2f.rounds input
+  | .finalFlag, input => input[212]!.toNat
   | .constant value, _ => value
   | .add left right, input => left.eval input + right.eval input
   | .mul left right, input => left.eval input * right.eval input
@@ -45,6 +47,7 @@ private def parenthesize (needed : Bool) (body : String) : String :=
 private def render : GasFormula → Nat → String
   | .calldataSize, _ => "\\mathrm{CALLDATASIZE}"
   | .rounds, _ => "R"
+  | .finalFlag, _ => "f"
   | .constant value, _ => toString value
   | .add left right, precedence =>
       parenthesize (precedence > 1) (left.render 1 ++ " + " ++ right.render 1)
