@@ -6,6 +6,8 @@ namespace Challenge.Blake2f
 open YulSemantics (Block)
 open YulSemantics.EVM (Op)
 
+/-- The proof-friendly reference implementation, verbatim. Its helper layout
+is intentionally part of the auditable compiler artifact. -/
 def referenceSource : String := include_str "reference.yul"
 
 def referenceSourcePath : String := "Challenge/Blake2f/Reference/reference.yul"

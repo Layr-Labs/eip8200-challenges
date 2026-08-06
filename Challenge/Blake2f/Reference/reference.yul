@@ -20,42 +20,34 @@
         }
     }
 
-    function add64(x, y) -> z {
-        z := and(add(x, y), 0xffffffffffffffff)
-    }
-
     function rotr64(x, n) -> z {
         z := and(or(shr(n, x), shl(sub(64, n), x)), 0xffffffffffffffff)
     }
 
     // One BLAKE2b G quarter-round. Arguments a..d are memory addresses of
-    // words in v, while x and y are the selected message words.
-    function mixG(a, b, c, d, x, y) {
-        let va := add64(add64(mload(a), mload(b)), x)
+    // words in v; the final arguments select two words from the sigma row.
+    function mixG(a, b, c, d, round, xColumn, yColumn) {
+        let row := mload(add(0x600, mul(32, mod(round, 10))))
+        let x := mload(add(0x100, mul(32, byte(add(16, xColumn), row))))
+        let y := mload(add(0x100, mul(32, byte(add(16, yColumn), row))))
+
+        let va := and(add(add(mload(a), mload(b)), x), 0xffffffffffffffff)
         mstore(a, va)
         let vd := rotr64(xor(mload(d), va), 32)
         mstore(d, vd)
-        let vc := add64(mload(c), vd)
+        let vc := and(add(mload(c), vd), 0xffffffffffffffff)
         mstore(c, vc)
         let vb := rotr64(xor(mload(b), vc), 24)
         mstore(b, vb)
 
-        va := add64(add64(va, vb), y)
+        va := and(add(add(va, vb), y), 0xffffffffffffffff)
         mstore(a, va)
         vd := rotr64(xor(vd, va), 16)
         mstore(d, vd)
-        vc := add64(vc, vd)
+        vc := and(add(vc, vd), 0xffffffffffffffff)
         mstore(c, vc)
         vb := rotr64(xor(vb, vc), 63)
         mstore(b, vb)
-    }
-
-    // SIGMA[row][column], with each permutation packed into the low 16 bytes
-    // of one memory word. The ten-row table is initialized once below; this
-    // makes every round follow the same instruction path and exact gas cost.
-    function sigma(round, column) -> index {
-        let row := mload(add(0x600, mul(32, mod(round, 10))))
-        index := byte(add(16, column), row)
     }
 
     if iszero(eq(calldatasize(), 213)) { invalid() }
@@ -103,30 +95,14 @@
     }
 
     for { let round := 0 } lt(round, rounds) { round := add(round, 1) } {
-        mixG(0x300, 0x380, 0x400, 0x480,
-            mload(add(0x100, mul(32, sigma(round, 0)))),
-            mload(add(0x100, mul(32, sigma(round, 1)))))
-        mixG(0x320, 0x3a0, 0x420, 0x4a0,
-            mload(add(0x100, mul(32, sigma(round, 2)))),
-            mload(add(0x100, mul(32, sigma(round, 3)))))
-        mixG(0x340, 0x3c0, 0x440, 0x4c0,
-            mload(add(0x100, mul(32, sigma(round, 4)))),
-            mload(add(0x100, mul(32, sigma(round, 5)))))
-        mixG(0x360, 0x3e0, 0x460, 0x4e0,
-            mload(add(0x100, mul(32, sigma(round, 6)))),
-            mload(add(0x100, mul(32, sigma(round, 7)))))
-        mixG(0x300, 0x3a0, 0x440, 0x4e0,
-            mload(add(0x100, mul(32, sigma(round, 8)))),
-            mload(add(0x100, mul(32, sigma(round, 9)))))
-        mixG(0x320, 0x3c0, 0x460, 0x480,
-            mload(add(0x100, mul(32, sigma(round, 10)))),
-            mload(add(0x100, mul(32, sigma(round, 11)))))
-        mixG(0x340, 0x3e0, 0x400, 0x4a0,
-            mload(add(0x100, mul(32, sigma(round, 12)))),
-            mload(add(0x100, mul(32, sigma(round, 13)))))
-        mixG(0x360, 0x380, 0x420, 0x4c0,
-            mload(add(0x100, mul(32, sigma(round, 14)))),
-            mload(add(0x100, mul(32, sigma(round, 15)))))
+        mixG(0x300, 0x380, 0x400, 0x480, round, 0, 1)
+        mixG(0x320, 0x3a0, 0x420, 0x4a0, round, 2, 3)
+        mixG(0x340, 0x3c0, 0x440, 0x4c0, round, 4, 5)
+        mixG(0x360, 0x3e0, 0x460, 0x4e0, round, 6, 7)
+        mixG(0x300, 0x3a0, 0x440, 0x4e0, round, 8, 9)
+        mixG(0x320, 0x3c0, 0x460, 0x480, round, 10, 11)
+        mixG(0x340, 0x3e0, 0x400, 0x4a0, round, 12, 13)
+        mixG(0x360, 0x380, 0x420, 0x4c0, round, 14, 15)
     }
 
     for { let i := 0 } lt(i, 8) { i := add(i, 1) } {

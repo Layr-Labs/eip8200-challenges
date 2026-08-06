@@ -10,7 +10,7 @@ def referenceHex : String := (include_str "reference.hex").trimAscii.copy
 
 def referenceBytecode : ByteArray := referenceBytes
 
-@[simp] theorem referenceBytecode_size : referenceBytecode.size = 1475 := by
+@[simp] theorem referenceBytecode_size : referenceBytecode.size = 1169 := by
   exact referenceBytes_size
 
 theorem referenceBytecode_roundtrip :
