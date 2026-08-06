@@ -40,8 +40,7 @@ theorem foldIteration_cost_potential (s : State)
     simpa [Compression.loadedSaved, State.fork] using hfork
   have qSavedRun : (Compression.loadedSaved s i).halt = .Running := by
     simpa [Compression.loadedSaved] using hrun
-  have qSavedNp : Precompile.isPrecompile
-      (Compression.loadedSaved s i).executionEnv.fork
+  have qSavedNp : Precompile.isPrecompileWithConfig (Compression.loadedSaved s i).executionEnv.precompileConfig (Compression.loadedSaved s i).executionEnv.fork
       (Compression.loadedSaved s i).executionEnv.codeAddr = false := by
     simpa [Compression.loadedSaved] using hnp
   have hh := hAt_cost_potential (Compression.loadedSaved s i)
@@ -59,8 +58,7 @@ theorem foldIteration_cost_potential (s : State)
   have qHRun : (Compression.foldGotH s msgOff returnDest rest i).halt = .Running := by
     simpa [Compression.foldGotH, Compression.loadedSaved,
       Accessors.loadReturned] using hrun
-  have qHNp : Precompile.isPrecompile
-      (Compression.foldGotH s msgOff returnDest rest i).executionEnv.fork
+  have qHNp : Precompile.isPrecompileWithConfig (Compression.foldGotH s msgOff returnDest rest i).executionEnv.precompileConfig (Compression.foldGotH s msgOff returnDest rest i).executionEnv.fork
       (Compression.foldGotH s msgOff returnDest rest i).executionEnv.codeAddr = false := by
     simpa [Compression.foldGotH, Compression.loadedSaved,
       Accessors.loadReturned] using hnp
@@ -126,7 +124,7 @@ theorem foldLoop_cost_potential (s : State)
   have qcode : q.executionEnv.code = referenceBytecode := by simpa [q] using hcode
   have qfork : q.fork = .Osaka := by simpa [q, State.fork] using hfork
   have qrun : q.halt = .Running := by simpa [q] using hrun
-  have qnp : Precompile.isPrecompile q.executionEnv.fork
+  have qnp : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig q.executionEnv.fork
       q.executionEnv.codeAddr = false := by simpa [q] using hnp
   have h := foldIteration_cost_potential q msgOff returnDest rest i hi hcap
     qcode qfork qrun qnp
