@@ -154,3 +154,52 @@ info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness.memoryModel_
 -/
 #guard_msgs in
 #print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness.memoryModel_memories
+
+/-
+The completed functional, execution, and gas theorems use only Lean's standard
+logical foundations. In particular, the direct bytecode theorem does not
+depend on the finite `native_decide` compiler-reproducibility checks.
+-/
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.OutputCorrectness.finalState_return_eq_spec' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.OutputCorrectness.finalState_return_eq_spec
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.ReferenceCorrect.validGasSteps_cost' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.ReferenceCorrect.validGasSteps_cost
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correctWithExactGas' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correctWithExactGas
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correctWithSchedule' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correctWithSchedule
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correct' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correct
+
+/-- info: 'Challenge.Blake2f.Reference.Proofs.Gas.gasSchedule_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Gas.gasSchedule_correct
