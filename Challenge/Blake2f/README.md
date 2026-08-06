@@ -69,9 +69,10 @@ exceptional callee burns all forwarded gas; it checks those cases fail.
 ## Proof map
 
 `Reference/Proofs/Bytecode/Artifact.lean` pins the instructions,
-`Invalid.lean` proves the malformed-length path reaches an explicit exception,
-and `GasCost.lean` defines the exact path schedule plus a symbolic sufficient
-schedule and proves the latter bounds both exceptional costs. Shared
+`Invalid.lean` proves both malformed-input paths reach explicit exceptions and
+derives their exact 57/94-gas costs from those traces, and `GasCost.lean`
+defines the complete path schedule plus a symbolic sufficient schedule and
+proves the latter bounds both exceptional costs. Shared
 `INVALID` support was added to `Challenge.EvmProof` for reuse by submissions.
 
 The direct modules contain no `sorry`, project axiom, `unsafe`, or
