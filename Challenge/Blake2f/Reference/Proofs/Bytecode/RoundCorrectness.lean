@@ -4,6 +4,8 @@ set_option warningAsError true
 set_option maxRecDepth 30000
 set_option maxHeartbeats 5000000
 set_option linter.unusedSimpArgs false
+set_option linter.unusedTactic false
+set_option linter.unreachableTactic false
 
 /-! Memory invariants connecting compiled rounds to the pure BLAKE2f model. -/
 
@@ -193,9 +195,7 @@ theorem schedule_constantsMemory (input : ByteArray) :
     repeat first
       | rw [readWord_initialization_storeWord_same]
       | rw [readWord_initialization_storeWord_disjoint
-          (h := Or.inl (by omega))]
-      | rw [readWord_initialization_storeWord_disjoint
-          (h := Or.inr (by omega))]
+          (h := Or.inl (by decide))]
 
 theorem schedule_storeWord {memory : ByteArray} (offset : Nat) (value : UInt256)
     (schedule : ScheduleRows memory) (hoffset : offset + 32 ≤ 1536) :
@@ -241,7 +241,8 @@ theorem sigmaIndex_lt_16 (round column : Nat) (hcolumn : column < 16) :
   have hm : round % 10 < 10 := Nat.mod_lt _ (by omega)
   interval_cases hr : round % 10 <;>
     interval_cases hc : column <;>
-    subst_vars <;>
+    simp only [sigmaIndex] <;>
+    simp only [hr] <;>
     decide
 
 theorem messageOffset_sigma_toNat (round column : Nat)
@@ -252,7 +253,8 @@ theorem messageOffset_sigma_toNat (round column : Nat)
   have hm : round % 10 < 10 := Nat.mod_lt _ (by omega)
   interval_cases hr : round % 10 <;>
     interval_cases hc : column <;>
-    subst_vars <;>
+    simp only [sigmaIndex] <;>
+    simp only [hr] <;>
     norm_num [MixG.messageOffset, sigmaPacked, sigmaIndex,
       Crypto.Blake2f.SIGMA, UInt256.byteAt, UInt256.shiftLeft,
       UInt256.add, Challenge.EvmProof.Word.ofNat_add_ofNat,
@@ -365,7 +367,7 @@ def roundVector8 (message vector : Array UInt64) (round : Nat) :=
     message[sigmaIndex round 14]! message[sigmaIndex round 15]!
 
 @[simp] theorem roundVector_size (message vector : Array UInt64) (round stage : Nat)
-    (hvectorSize : vector.size = 16) :
+    (hstage : stage ≤ 8) (hvectorSize : vector.size = 16) :
     (match stage with
       | 0 => vector
       | 1 => roundVector1 message vector round
@@ -376,7 +378,7 @@ def roundVector8 (message vector : Array UInt64) (round : Nat) :=
       | 6 => roundVector6 message vector round
       | 7 => roundVector7 message vector round
       | _ => roundVector8 message vector round).size = 16 := by
-  cases stage <;> simp [roundVector1, roundVector2, roundVector3, roundVector4,
+  interval_cases stage <;> simp [roundVector1, roundVector2, roundVector3, roundVector4,
     roundVector5, roundVector6, roundVector7, roundVector8, hvectorSize]
 
 /-- The eight compiled helper calls are exactly one pinned BLAKE2f round. -/
@@ -389,64 +391,72 @@ theorem memoryModel_transition {memory : ByteArray}
       (Algorithm.roundStep message vector round) := by
   have model1 : MemoryModel (Round.memory1 memory round) message
       (roundVector1 message vector round) := by
-    simpa [Round.memory1, roundVector1] using
+    simpa [Round.memory1, roundVector1,
+      Challenge.EvmProof.Word.literal_eq_ofNat] using
       memoryModel_mixG round 0 4 8 12 0 1 hround hmessageSize hvectorSize
         (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) model
   have model2 : MemoryModel (Round.memory2 memory round) message
       (roundVector2 message vector round) := by
-    simpa [Round.memory2, roundVector2] using
+    simpa [Round.memory2, roundVector2,
+      Challenge.EvmProof.Word.literal_eq_ofNat] using
       memoryModel_mixG round 1 5 9 13 2 3 hround hmessageSize
-        (roundVector_size message vector round 1 hvectorSize)
+        (roundVector_size message vector round 1 (by decide) hvectorSize)
         (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) model1
   have model3 : MemoryModel (Round.memory3 memory round) message
       (roundVector3 message vector round) := by
-    simpa [Round.memory3, roundVector3] using
+    simpa [Round.memory3, roundVector3,
+      Challenge.EvmProof.Word.literal_eq_ofNat] using
       memoryModel_mixG round 2 6 10 14 4 5 hround hmessageSize
-        (roundVector_size message vector round 2 hvectorSize)
+        (roundVector_size message vector round 2 (by decide) hvectorSize)
         (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) model2
   have model4 : MemoryModel (Round.memory4 memory round) message
       (roundVector4 message vector round) := by
-    simpa [Round.memory4, roundVector4] using
+    simpa [Round.memory4, roundVector4,
+      Challenge.EvmProof.Word.literal_eq_ofNat] using
       memoryModel_mixG round 3 7 11 15 6 7 hround hmessageSize
-        (roundVector_size message vector round 3 hvectorSize)
+        (roundVector_size message vector round 3 (by decide) hvectorSize)
         (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) model3
   have model5 : MemoryModel (Round.memory5 memory round) message
       (roundVector5 message vector round) := by
-    simpa [Round.memory5, roundVector5] using
+    simpa [Round.memory5, roundVector5,
+      Challenge.EvmProof.Word.literal_eq_ofNat] using
       memoryModel_mixG round 0 5 10 15 8 9 hround hmessageSize
-        (roundVector_size message vector round 4 hvectorSize)
+        (roundVector_size message vector round 4 (by decide) hvectorSize)
         (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) model4
   have model6 : MemoryModel (Round.memory6 memory round) message
       (roundVector6 message vector round) := by
-    simpa [Round.memory6, roundVector6] using
+    simpa [Round.memory6, roundVector6,
+      Challenge.EvmProof.Word.literal_eq_ofNat] using
       memoryModel_mixG round 1 6 11 12 10 11 hround hmessageSize
-        (roundVector_size message vector round 5 hvectorSize)
+        (roundVector_size message vector round 5 (by decide) hvectorSize)
         (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) model5
   have model7 : MemoryModel (Round.memory7 memory round) message
       (roundVector7 message vector round) := by
-    simpa [Round.memory7, roundVector7] using
+    simpa [Round.memory7, roundVector7,
+      Challenge.EvmProof.Word.literal_eq_ofNat] using
       memoryModel_mixG round 2 7 8 13 12 13 hround hmessageSize
-        (roundVector_size message vector round 6 hvectorSize)
+        (roundVector_size message vector round 6 (by decide) hvectorSize)
         (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) model6
   have model8 : MemoryModel (Round.memory8 memory round) message
       (roundVector8 message vector round) := by
-    simpa [Round.memory8, roundVector8] using
+    simpa [Round.memory8, roundVector8,
+      Challenge.EvmProof.Word.literal_eq_ofNat] using
       memoryModel_mixG round 3 4 9 14 14 15 hround hmessageSize
-        (roundVector_size message vector round 7 hvectorSize)
+        (roundVector_size message vector round 7 (by decide) hvectorSize)
         (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) model7
