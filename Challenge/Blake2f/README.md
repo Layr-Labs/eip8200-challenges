@@ -14,9 +14,11 @@ cannot satisfy the statement by delegating to the incumbent implementation.
 [`ProofSupport/`](ProofSupport/) contains submission-independent reductions:
 `Bytecode.lean` for gas-parametric EVM traces, `Yul.lean` for the verified
 compiler route, `Word.lean` for masked 64-bit arithmetic and rotations,
-`Algorithm.lean` for the full-round invariant, and `InitialState.lean` for
-fixed-frame facts. The symbolic gas language additionally exposes calldata
-size, parsed rounds `R`, and final flag `f`.
+`Input.lean` for the exact EIP-152 decoder and little-endian serializer,
+`Memory.lean` for reusable array-at-memory predicates, `Algorithm.lean` for
+initialization, rounds, and folding, and `InitialState.lean` for fixed-frame
+facts. The symbolic gas language additionally exposes calldata size, parsed
+rounds `R`, and final flag `f`.
 
 ## Reference source and frozen artifact
 
@@ -35,8 +37,11 @@ lake exe yulc Challenge/Blake2f/Reference/reference.yul
 `Reference/Bytes.lean` is the reducible byte literal and
 `Reference/Proofs/Bytecode/Artifact.lean` kernel-checks its complete 588
 instruction assembly. `Reference/Proofs/Yul.lean` separately certifies parsing,
-optimization, compilation, and exact assembly. Its finite `native_decide`
-artifact checks are isolated from the direct-bytecode route.
+optimization, compilation, exact assembly, and
+`Yul.referenceCompiled_correct : Correct (assemble referenceInstructions)`.
+Its finite `native_decide` artifact checks are isolated from the direct
+bytecode route; the unconditional correctness theorem for the frozen bytes has
+no such dependency.
 
 ## Tier 1 and gas gap
 
@@ -74,6 +79,37 @@ derives their exact 57/94-gas costs from those traces, and `GasCost.lean`
 defines the complete path schedule plus a symbolic sufficient schedule and
 proves the latter bounds both exceptional costs. Shared
 `INVALID` support was added to `Challenge.EvmProof` for reuse by submissions.
+
+The valid path is split into auditable layers:
+
+- `InitializationCorrectness.lean` and
+  `ScalarInitializationCorrectness.lean` refine the compiled memory setup to
+  the reusable input and initial-vector models.
+- `MixGCorrectness.lean` proves one compiled `G`; `RoundCorrectness.lean`
+  lifts that result through the sigma schedule and any 32-bit round count.
+- `StoreLE64Correctness.lean` and `OutputCorrectness.lean` prove the fold,
+  eight-word serialization, and returned bytes equal `spec input`.
+- The corresponding trace/gas modules prove exact block costs and
+  `ReferenceCorrect.validGasSteps_cost` composes them.
+
+The final endpoints are:
+
+```lean
+ReferenceCorrect.reference_correctWithExactGas :
+  CorrectWithSchedule referenceBytecode GasCost.referenceGas
+
+ReferenceCorrect.reference_correctWithSchedule :
+  CorrectWithSchedule referenceBytecode GasCost.gasSchedule
+
+ReferenceCorrect.reference_correct : Correct referenceBytecode
+
+Gas.gasSchedule_correct :
+  CorrectWithSchedule referenceBytecode Gas.gasSchedule
+```
+
+`Checks/Blake2f.lean` freezes the axiom footprint of these functional and gas
+theorems. CI builds BLAKE2f in its own challenge job and cache, so its expensive
+round proof does not make SHA-256, RIPEMD-160, or MODEXP rebuild.
 
 The direct modules contain no `sorry`, project axiom, `unsafe`, or
 `native_decide`. Candidate bytecode belongs under [`Submissions/`](Submissions/)
