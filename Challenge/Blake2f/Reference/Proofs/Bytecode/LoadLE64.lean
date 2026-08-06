@@ -1,5 +1,6 @@
 import Challenge.Blake2f.Reference.Proofs.Bytecode.Artifact
 import Challenge.Blake2f.ProofSupport.InitialState
+import Challenge.EvmProof.Meter
 import Challenge.EvmProof.Word
 
 set_option warningAsError true
@@ -252,6 +253,107 @@ private def gasSteps_block
   · exact hrun
   · exact hnp
 
+@[simp] private theorem gasSteps_block_cost
+    (path : List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
+    {a b : State}
+    (hresult : Challenge.EvmProof.Stepper.runLocatedBlock path a = some b)
+    (hcode : a.executionEnv.code = referenceBytecode)
+    (hfork : a.fork = .Osaka) (hrun : a.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig a.executionEnv.precompileConfig
+      a.executionEnv.fork a.executionEnv.codeAddr = false) :
+    (gasSteps_block path hresult hcode hfork hrun hnp).cost =
+      Challenge.EvmProof.Stepper.runLocatedBlockCost path a := rfl
+
+private theorem locatedCost_eq
+    (path : List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
+    {a b : State} (work : Nat)
+    (hresult : Challenge.EvmProof.Stepper.runLocatedBlock path a = some b)
+    (hfork : a.fork = .Osaka) (hactive : b.activeWords = a.activeWords)
+    (hfree : ∀ located ∈ path,
+      Challenge.EvmProof.Meter.CopyFree located.instruction)
+    (hwork : Challenge.EvmProof.Meter.runLocatedBlockStaticCost path = work) :
+    Challenge.EvmProof.Stepper.runLocatedBlockCost path a = work := by
+  have hpotential := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    path work hresult hfork hfree hwork
+  rw [hactive] at hpotential
+  omega
+
+theorem init_cost (s : State) (offset returnDest : UInt256)
+    (tail : List UInt256) (htail : tail.length < 1016)
+    (hrun : s.halt = .Running) (hfork : s.fork = .Osaka) :
+    Challenge.EvmProof.Stepper.runLocatedBlockCost initPath
+      { s with
+        pc := UInt256.ofNat 4
+        stack := [offset, ⟨0⟩, returnDest] ++ tail } = 9 := by
+  apply locatedCost_eq initPath 9 (run_init s offset returnDest tail htail hrun)
+    (by simpa [State.fork] using hfork) (by rfl)
+  · intro located hlocated
+    have hall : initPath.all
+        (fun item => Challenge.EvmProof.Meter.CopyFree item.instruction) = true := by decide
+    exact List.all_eq_true.mp hall located hlocated
+  · decide
+
+theorem test_continue_cost (s : State) (offset returnDest : UInt256)
+    (tail : List UInt256) (i : Nat) (hi : i < 8)
+    (htail : tail.length < 1016) (hrun : s.halt = .Running)
+    (hfork : s.fork = .Osaka) :
+    Challenge.EvmProof.Stepper.runLocatedBlockCost testPath
+      (loopState s offset returnDest tail i) = 26 := by
+  apply locatedCost_eq testPath 26
+    (run_test_continue s offset returnDest tail i hi htail hrun)
+    (by simpa [loopState, State.fork] using hfork) (by rfl)
+  · intro located hlocated
+    have hall : testPath.all
+        (fun item => Challenge.EvmProof.Meter.CopyFree item.instruction) = true := by decide
+    exact List.all_eq_true.mp hall located hlocated
+  · decide
+
+theorem test_exit_cost (s : State) (offset returnDest : UInt256)
+    (tail : List UInt256) (htail : tail.length < 1016)
+    (hrun : s.halt = .Running) (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) :
+    Challenge.EvmProof.Stepper.runLocatedBlockCost testPath
+      (loopState s offset returnDest tail 8) = 26 := by
+  apply locatedCost_eq testPath 26
+    (run_test_exit s offset returnDest tail htail hrun hcode)
+    (by simpa [loopState, State.fork] using hfork) (by rfl)
+  · intro located hlocated
+    have hall : testPath.all
+        (fun item => Challenge.EvmProof.Meter.CopyFree item.instruction) = true := by decide
+    exact List.all_eq_true.mp hall located hlocated
+  · decide
+
+theorem body_cost (s : State) (offset returnDest : UInt256)
+    (tail : List UInt256) (i : Nat) (hi : i < 8)
+    (htail : tail.length < 1016) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = referenceBytecode) (hfork : s.fork = .Osaka) :
+    Challenge.EvmProof.Stepper.runLocatedBlockCost bodyPath
+      { loopState s offset returnDest tail i with pc := UInt256.ofNat 18 } = 57 := by
+  apply locatedCost_eq bodyPath 57
+    (run_body s offset returnDest tail i hi htail hrun hcode)
+    (by simpa [loopState, State.fork] using hfork) (by rfl)
+  · intro located hlocated
+    have hall : bodyPath.all
+        (fun item => Challenge.EvmProof.Meter.CopyFree item.instruction) = true := by decide
+    exact List.all_eq_true.mp hall located hlocated
+  · decide
+
+theorem exit_cost (s : State) (offset returnDest : UInt256)
+    (tail : List UInt256) (htail : tail.length < 1016)
+    (hrun : s.halt = .Running) (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka)
+    (hreturn : Decode.isValidJumpDest referenceBytecode returnDest.toNat = true) :
+    Challenge.EvmProof.Stepper.runLocatedBlockCost exitPath
+      { loopState s offset returnDest tail 8 with pc := UInt256.ofNat 40 } = 18 := by
+  apply locatedCost_eq exitPath 18
+    (run_exit s offset returnDest tail htail hrun hcode hreturn)
+    (by simpa [loopState, State.fork] using hfork) (by rfl)
+  · intro located hlocated
+    have hall : exitPath.all
+        (fun item => Challenge.EvmProof.Meter.CopyFree item.instruction) = true := by decide
+    exact List.all_eq_true.mp hall located hlocated
+  · decide
+
 private def gasSteps_iteration (s : State) (offset returnDest : UInt256)
     (tail : List UInt256) (i : Nat) (hi : i < 8)
     (htail : tail.length < 1016)
@@ -274,6 +376,20 @@ private def gasSteps_iteration (s : State) (offset returnDest : UInt256)
     (by simpa [loopState] using hrun)
     (by simpa [loopState] using hnp)
   exact gtest.trans gbody
+
+@[simp] private theorem gasSteps_iteration_cost (s : State)
+    (offset returnDest : UInt256) (tail : List UInt256) (i : Nat) (hi : i < 8)
+    (htail : tail.length < 1016)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    (gasSteps_iteration s offset returnDest tail i hi htail
+      hcode hfork hrun hnp).cost = 83 := by
+  unfold gasSteps_iteration
+  simp only [Challenge.EvmProof.GasSteps.trans_cost, gasSteps_block_cost]
+  rw [test_continue_cost s offset returnDest tail i hi htail hrun hfork]
+  rw [body_cost s offset returnDest tail i hi htail hrun hcode hfork]
 
 def gasSteps (s : State) (offset returnDest : UInt256)
     (tail : List UInt256) (htail : tail.length < 1016)
@@ -318,5 +434,27 @@ def gasSteps (s : State) (offset returnDest : UInt256)
     (by simpa [loopState] using hnp)
   exact Challenge.EvmProof.GasSteps.cast
     (ginit.trans (gloop.trans (gtest.trans gexit))) rfl rfl
+
+@[simp] theorem gasSteps_cost (s : State) (offset returnDest : UInt256)
+    (tail : List UInt256) (htail : tail.length < 1016)
+    (hcode : s.executionEnv.code = referenceBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hreturn : Decode.isValidJumpDest referenceBytecode returnDest.toNat = true) :
+    (gasSteps s offset returnDest tail htail hcode hfork hrun hnp hreturn).cost = 717 := by
+  unfold gasSteps
+  simp only [Challenge.EvmProof.GasSteps.cast_cost,
+    Challenge.EvmProof.GasSteps.trans_cost, gasSteps_block_cost]
+  rw [init_cost s offset returnDest tail htail hrun hfork]
+  rw [test_exit_cost s offset returnDest tail htail hrun hcode hfork]
+  rw [exit_cost s offset returnDest tail htail hrun hcode hfork hreturn]
+  have hloop := Challenge.EvmProof.GasSteps.iterateBounded_cost_of_const
+    8 83
+    (fun i hi => gasSteps_iteration s offset returnDest tail i hi htail
+      hcode hfork hrun hnp)
+    (fun i hi => gasSteps_iteration_cost s offset returnDest tail i hi htail
+      hcode hfork hrun hnp)
+  rw [hloop]
 
 end Challenge.Blake2f.Reference.Proofs.Bytecode.LoadLE64
