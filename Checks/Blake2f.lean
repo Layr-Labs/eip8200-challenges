@@ -45,3 +45,19 @@ info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.Initialization.mLoopGasSteps_
 -/
 #guard_msgs in
 #print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.Initialization.mLoopGasSteps_cost
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.Initialization.vLoopGasSteps_cost' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.Initialization.vLoopGasSteps_cost
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.Initialization.constantsGasSteps_cost' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.Initialization.constantsGasSteps_cost

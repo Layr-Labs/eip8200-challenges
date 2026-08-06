@@ -106,13 +106,86 @@ def mLoadedState (input : ByteArray) (count : Nat) : State :=
     stack := [decodedWord input (68 + 8 * count), UInt256.ofNat count,
       Prelude.roundsWord input, Prelude.finalFlagWord input] }
 
+def mMemory (input : ByteArray) : ByteArray :=
+  decodeWords input 68 256 16 (hMemory input 8)
+
+def copyHToV : Nat → ByteArray → ByteArray
+  | 0, memory => memory
+  | count + 1, memory =>
+      let prior := copyHToV count memory
+      storeWord prior (768 + 32 * count)
+        (MachineState.readWord prior (32 * count))
+
+def vMemory (input : ByteArray) (count : Nat) : ByteArray :=
+  copyHToV count (mMemory input)
+
 def vLoopState (input : ByteArray) (count : Nat) : State :=
   { Prelude.finalState input with
     pc := UInt256.ofNat 463
     stack := [UInt256.ofNat count, Prelude.roundsWord input,
       Prelude.finalFlagWord input]
-    memory := decodeWords input 68 256 16 (hMemory input 8)
+    memory := vMemory input count
     activeWords := UInt256.ofNat (24 + count) }
+
+def vContinuePath := Artifact.locatedPath
+  [322, 323, 324, 325, 326, 327]
+
+def vBodyPath := Artifact.locatedPath
+  [328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339,
+   340, 341, 342, 343, 344, 321]
+
+def vExitPath := Artifact.locatedPath
+  [322, 323, 324, 325, 326, 327, 345, 346]
+
+def vBodyState (input : ByteArray) (count : Nat) : State :=
+  { vLoopState input count with pc := UInt256.ofNat 472 }
+
+def constantsEntryState (input : ByteArray) : State :=
+  { Prelude.finalState input with
+    pc := UInt256.ofNat 498
+    stack := [Prelude.roundsWord input, Prelude.finalFlagWord input]
+    memory := vMemory input 8
+    activeWords := UInt256.ofNat 32 }
+
+def fixedStores : List (Nat × Nat) :=
+  [(1024, 0x6a09e667f3bcc908),
+   (1056, 0xbb67ae8584caa73b),
+   (1088, 0x3c6ef372fe94f82b),
+   (1120, 0xa54ff53a5f1d36f1),
+   (1152, 0x510e527fade682d1),
+   (1184, 0x9b05688c2b3e6c1f),
+   (1216, 0x1f83d9abfb41bd6b),
+   (1248, 0x5be0cd19137e2179),
+   (1536, 0x000102030405060708090a0b0c0d0e0f),
+   (1568, 0x0e0a0408090f0d06010c00020b070503),
+   (1600, 0x0b080c0005020f0d0a0e030607010904),
+   (1632, 0x070903010d0c0b0e0206050a04000f08),
+   (1664, 0x0900050702040a0f0e010b0c0608030d),
+   (1696, 0x020c060a000b0803040d07050f0e0109),
+   (1728, 0x0c05010f0e0d040a000706030902080b),
+   (1760, 0x0d0b070e0c01030905000f040806020a),
+   (1792, 0x060f0e090b0300080c020d0701040a05),
+   (1824, 0x0a020804070601050f0b090e030c0d00)]
+
+def applyFixedStore (memory : ByteArray) (entry : Nat × Nat) : ByteArray :=
+  storeWord memory entry.1 (UInt256.ofNat entry.2)
+
+def constantsMemory (input : ByteArray) : ByteArray :=
+  fixedStores.foldl applyFixedStore (vMemory input 8)
+
+def constantsFinalState (input : ByteArray) : State :=
+  { Prelude.finalState input with
+    pc := UInt256.ofNat 811
+    stack := [Prelude.roundsWord input, Prelude.finalFlagWord input]
+    memory := constantsMemory input
+    activeWords := UInt256.ofNat 58 }
+
+def constantsPath := Artifact.locatedPath
+  [347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358,
+   359, 360, 361, 362, 363, 364, 365, 366, 367, 368, 369, 370,
+   371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382,
+   383, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394,
+   395, 396, 397, 398, 399, 400]
 
 theorem hLoopState_zero (input : ByteArray) :
     hLoopState input 0 = Prelude.finalState input := by
@@ -422,12 +495,161 @@ theorem run_mExit (input : ByteArray) :
       Challenge.EvmProof.Stepper.Located.ofIndex,
       Artifact.referenceArtifact, Artifact.referenceInstructions,
       Challenge.EvmProof.ProgramArtifact.instructionPC,
-      mLoopState, vLoopState, Prelude.finalState, initialState,
+      mLoopState, vLoopState, vMemory, copyHToV, mMemory,
+      Prelude.finalState, initialState,
       h459', hpc417, hpc423, hzero, List.getElem?_cons_zero,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat,
       UInt256.lt, UInt256.isZero, UInt256.isTrue]
+
+theorem run_vContinue (input : ByteArray) (count : Nat) (hcount : count < 8) :
+    Challenge.EvmProof.Stepper.runLocatedBlock vContinuePath
+        (vLoopState input count) = some (vBodyState input count) := by
+  have hcountWord : (UInt256.ofNat count).toNat = count := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have hpc465 : UInt256.ofNat 463 + UInt256.ofNat 2 = UInt256.ofNat 465 := by
+    simpa using Challenge.EvmProof.Word.ofNat_add_ofNat
+      (a := 463) (b := 2) (by norm_num)
+  have hpc471 : UInt256.ofNat 468 + UInt256.ofNat 3 = UInt256.ofNat 471 := by
+    simpa using Challenge.EvmProof.Word.ofNat_add_ofNat
+      (a := 468) (b := 3) (by norm_num)
+  simp (config := { maxSteps := 300000 }) (discharger := omega)
+    [Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      vContinuePath, Artifact.locatedPath, Artifact.located,
+      Challenge.EvmProof.Stepper.Located.ofIndex,
+      Artifact.referenceArtifact, Artifact.referenceInstructions,
+      Challenge.EvmProof.ProgramArtifact.instructionPC,
+      vLoopState, vBodyState, Prelude.finalState, initialState,
+      hcount, hcountWord, hpc465, hpc471, List.getElem?_cons_zero,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat,
+      UInt256.lt, UInt256.isZero, UInt256.isTrue]
+
+theorem run_vBody (input : ByteArray) (count : Nat) (hcount : count < 8) :
+    Challenge.EvmProof.Stepper.runLocatedBlock vBodyPath
+        (vBodyState input count) = some (vLoopState input (count + 1)) := by
+  have hcountWord : (UInt256.ofNat count).toNat = count := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have hshift : UInt256.shiftLeft (UInt256.ofNat count) (UInt256.ofNat 5) =
+      UInt256.ofNat (32 * count) := by
+    simpa [Nat.mul_comm] using
+      (Challenge.EvmProof.Word.shiftLeft_ofNat
+        (value := count) (shift := 5) (by omega) (by omega) (by omega))
+  have hsourceNat : (UInt256.ofNat (32 * count)).toNat = 32 * count := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have hdest : UInt256.ofNat 768 + UInt256.ofNat (32 * count) =
+      UInt256.ofNat (768 + 32 * count) :=
+    Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
+  have hdestNat : (UInt256.ofNat (768 + 32 * count)).toNat =
+      768 + 32 * count := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have hadd : UInt256.ofNat count + UInt256.ofNat 1 =
+      UInt256.ofNat (count + 1) :=
+    Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
+  have hactiveNat : (UInt256.ofNat (24 + count)).toNat = 24 + count := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have hceil : (768 + (32 * count + 31)) / 32 + 1 = 24 + (count + 1) := by
+    rw [show 768 + (32 * count + 31) = 31 + 32 * (24 + count) by omega,
+      Nat.add_mul_div_left 31 (24 + count) (y := 32) (by norm_num)]
+    norm_num
+    omega
+  have hswap :
+      [UInt256.ofNat (count + 1), UInt256.ofNat count,
+        Prelude.roundsWord input, Prelude.finalFlagWord input].exchange 0 1 =
+      some [UInt256.ofNat count, UInt256.ofNat (count + 1),
+        Prelude.roundsWord input, Prelude.finalFlagWord input] := by rfl
+  have h462 := Artifact.referenceArtifact.isValidJumpDest_index 321 (by rfl)
+  have h462' : Decode.isValidJumpDest referenceBytecode 462 = true := by
+    simpa [Artifact.referenceArtifact, Challenge.EvmProof.ProgramArtifact.instructionPC,
+      Artifact.referenceInstructions] using h462
+  have hpc475 : UInt256.ofNat 473 + UInt256.ofNat 2 = UInt256.ofNat 475 := by
+    simpa using Challenge.EvmProof.Word.ofNat_add_ofNat
+      (a := 473) (b := 2) (by norm_num)
+  have hpc480 : UInt256.ofNat 478 + UInt256.ofNat 2 = UInt256.ofNat 480 := by
+    simpa using Challenge.EvmProof.Word.ofNat_add_ofNat
+      (a := 478) (b := 2) (by norm_num)
+  have hpc484 : UInt256.ofNat 481 + UInt256.ofNat 3 = UInt256.ofNat 484 := by
+    simpa using Challenge.EvmProof.Word.ofNat_add_ofNat
+      (a := 481) (b := 3) (by norm_num)
+  have hpc488 : UInt256.ofNat 486 + UInt256.ofNat 2 = UInt256.ofNat 488 := by
+    simpa using Challenge.EvmProof.Word.ofNat_add_ofNat
+      (a := 486) (b := 2) (by norm_num)
+  have hpc495 : UInt256.ofNat 492 + UInt256.ofNat 3 = UInt256.ofNat 495 := by
+    simpa using Challenge.EvmProof.Word.ofNat_add_ofNat
+      (a := 492) (b := 3) (by norm_num)
+  simp (config := { maxSteps := 700000 }) (discharger := omega)
+    [Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      vBodyPath, Artifact.locatedPath, Artifact.located,
+      Challenge.EvmProof.Stepper.Located.ofIndex,
+      Artifact.referenceArtifact, Artifact.referenceInstructions,
+      Challenge.EvmProof.ProgramArtifact.instructionPC,
+      vBodyState, vLoopState, vMemory, copyHToV, storeWord,
+      Prelude.finalState, initialState, State.activeWordsAfterUInt256,
+      MachineState.activeWordsAfter,
+      hcount, hcountWord, hshift, hsourceNat, hdest, hdestNat, hadd,
+      hactiveNat, hceil, hswap, h462', hpc475, hpc480, hpc484, hpc488,
+      hpc495, Nat.add_assoc, List.getElem?_cons_zero,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat,
+      UInt256.isTrue]
+
+theorem run_vExit (input : ByteArray) :
+    Challenge.EvmProof.Stepper.runLocatedBlock vExitPath
+        (vLoopState input 8) = some (constantsEntryState input) := by
+  have h496 := Artifact.referenceArtifact.isValidJumpDest_index 345 (by rfl)
+  have h496' : Decode.isValidJumpDest referenceBytecode 496 = true := by
+    simpa [Artifact.referenceArtifact, Challenge.EvmProof.ProgramArtifact.instructionPC,
+      Artifact.referenceInstructions] using h496
+  have hpc465 : UInt256.ofNat 463 + UInt256.ofNat 2 = UInt256.ofNat 465 := by
+    simpa using Challenge.EvmProof.Word.ofNat_add_ofNat
+      (a := 463) (b := 2) (by norm_num)
+  have hpc471 : UInt256.ofNat 468 + UInt256.ofNat 3 = UInt256.ofNat 471 := by
+    simpa using Challenge.EvmProof.Word.ofNat_add_ofNat
+      (a := 468) (b := 3) (by norm_num)
+  simp (config := { maxSteps := 300000 }) (discharger := omega)
+    [Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      vExitPath, Artifact.locatedPath, Artifact.located,
+      Challenge.EvmProof.Stepper.Located.ofIndex,
+      Artifact.referenceArtifact, Artifact.referenceInstructions,
+      Challenge.EvmProof.ProgramArtifact.instructionPC,
+      vLoopState, constantsEntryState, Prelude.finalState, initialState,
+      h496', hpc465, hpc471, List.getElem?_cons_zero,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat,
+      UInt256.lt, UInt256.isZero, UInt256.isTrue]
+
+theorem run_constants (input : ByteArray) :
+    Challenge.EvmProof.Stepper.runLocatedBlock constantsPath
+        (constantsEntryState input) = some (constantsFinalState input) := by
+  have ofNatAdd (a b : Nat) (h : a + b < 2 ^ 256) :
+      UInt256.ofNat a + UInt256.ofNat b = UInt256.ofNat (a + b) :=
+    Challenge.EvmProof.Word.ofNat_add_ofNat h
+  simp (config := { maxSteps := 2000000 }) (discharger := omega)
+    [Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      constantsPath, Artifact.locatedPath, Artifact.located,
+      Challenge.EvmProof.Stepper.Located.ofIndex,
+      Artifact.referenceArtifact, Artifact.referenceInstructions,
+      Challenge.EvmProof.ProgramArtifact.instructionPC,
+      constantsEntryState, constantsFinalState, constantsMemory,
+      fixedStores, applyFixedStore, storeWord,
+      Prelude.finalState, initialState, State.activeWordsAfterUInt256,
+      MachineState.activeWordsAfter, ofNatAdd,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat,
+      UInt256.isTrue]
 
 private def gasStepsBlock
     (path : List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
@@ -735,5 +957,149 @@ theorem mExit_cost (input : ByteArray) :
     (fun i hi => mIterationGasSteps_cost_potential input i hi)
   norm_num [MachineState.memCost] at hloop ⊢
   omega
+
+private theorem vState_code (input : ByteArray) (count : Nat) :
+    (vLoopState input count).executionEnv.code = referenceBytecode := by rfl
+
+private theorem vState_fork (input : ByteArray) (count : Nat) :
+    (vLoopState input count).fork = .Osaka := by rfl
+
+private theorem vState_running (input : ByteArray) (count : Nat) :
+    (vLoopState input count).halt = .Running := by rfl
+
+private theorem vState_notPrecompile (input : ByteArray) (count : Nat) :
+    Precompile.isPrecompileWithConfig
+      (vLoopState input count).executionEnv.precompileConfig
+      (vLoopState input count).executionEnv.fork
+      (vLoopState input count).executionEnv.codeAddr = false := by
+  exact deployAddress_not_precompile
+
+def vIterationGasSteps (input : ByteArray) (count : Nat) (hcount : count < 8) :
+    Challenge.EvmProof.GasSteps (vLoopState input count)
+      (vLoopState input (count + 1)) := by
+  have gcontinue := gasStepsBlock vContinuePath (run_vContinue input count hcount)
+    (vState_code input count) (vState_fork input count)
+    (vState_running input count) (vState_notPrecompile input count)
+  have gbody := gasStepsBlock vBodyPath (run_vBody input count hcount)
+    (by simpa [vBodyState] using vState_code input count)
+    (by simpa [vBodyState, State.fork] using vState_fork input count)
+    (by simpa [vBodyState] using vState_running input count)
+    (by simpa [vBodyState] using vState_notPrecompile input count)
+  exact gcontinue.trans gbody
+
+theorem vContinue_cost (input : ByteArray) (count : Nat) (hcount : count < 8) :
+    Challenge.EvmProof.Stepper.runLocatedBlockCost vContinuePath
+      (vLoopState input count) = 25 := by
+  have hpotential := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    vContinuePath 25 (run_vContinue input count hcount) rfl
+    (by
+      intro located hlocated
+      have hall : vContinuePath.all
+          (fun item => Challenge.EvmProof.Meter.CopyFree item.instruction) = true := by
+        decide
+      exact List.all_eq_true.mp hall located hlocated)
+    (by decide)
+  have hactiveNat : (UInt256.ofNat (24 + count)).toNat = 24 + count := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  simpa [vLoopState, vBodyState, hactiveNat] using hpotential
+
+theorem vBody_cost_potential (input : ByteArray) (count : Nat)
+    (hcount : count < 8) :
+    Challenge.EvmProof.Stepper.runLocatedBlockCost vBodyPath
+        (vBodyState input count) + MachineState.memCost (24 + count) =
+      56 + MachineState.memCost (24 + (count + 1)) := by
+  have hactiveNat : (UInt256.ofNat (24 + count)).toNat = 24 + count := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have hnextNat : (UInt256.ofNat (24 + (count + 1))).toNat =
+      24 + (count + 1) := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have hpotential := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    vBodyPath 56 (run_vBody input count hcount) rfl
+    (by
+      intro located hlocated
+      have hall : vBodyPath.all
+          (fun item => Challenge.EvmProof.Meter.CopyFree item.instruction) = true := by
+        decide
+      exact List.all_eq_true.mp hall located hlocated)
+    (by decide)
+  have hinActive : (vBodyState input count).activeWords.toNat = 24 + count := by
+    simp [vBodyState, vLoopState, hactiveNat]
+  have houtActive : (vLoopState input (count + 1)).activeWords.toNat =
+      24 + (count + 1) := by simp [vLoopState, hnextNat]
+  simpa [hinActive, houtActive] using hpotential
+
+theorem vIterationGasSteps_cost_potential (input : ByteArray) (count : Nat)
+    (hcount : count < 8) :
+    (vIterationGasSteps input count hcount).cost + MachineState.memCost (24 + count) =
+      81 + MachineState.memCost (24 + (count + 1)) := by
+  unfold vIterationGasSteps
+  simp only [Challenge.EvmProof.GasSteps.trans_cost, gasStepsBlock_cost]
+  rw [vContinue_cost input count hcount]
+  have hbody := vBody_cost_potential input count hcount
+  omega
+
+def vLoopGasSteps (input : ByteArray) :
+    Challenge.EvmProof.GasSteps (vLoopState input 0) (constantsEntryState input) := by
+  have gloop : Challenge.EvmProof.GasSteps (vLoopState input 0)
+      (vLoopState input 8) :=
+    Challenge.EvmProof.GasSteps.iterateBounded (count := 8)
+      (I := vLoopState input)
+      (fun i hi => vIterationGasSteps input i hi)
+  have gexit := gasStepsBlock vExitPath (run_vExit input)
+    (vState_code input 8) (vState_fork input 8)
+    (vState_running input 8) (vState_notPrecompile input 8)
+  exact gloop.trans gexit
+
+theorem vExit_cost (input : ByteArray) :
+    Challenge.EvmProof.Stepper.runLocatedBlockCost vExitPath
+      (vLoopState input 8) = 28 := by
+  have hpotential := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    vExitPath 28 (run_vExit input) rfl
+    (by
+      intro located hlocated
+      have hall : vExitPath.all
+          (fun item => Challenge.EvmProof.Meter.CopyFree item.instruction) = true := by
+        decide
+      exact List.all_eq_true.mp hall located hlocated)
+    (by decide)
+  simpa [vLoopState, constantsEntryState] using hpotential
+
+@[simp] theorem vLoopGasSteps_cost (input : ByteArray) :
+    (vLoopGasSteps input).cost = 701 := by
+  unfold vLoopGasSteps
+  simp only [Challenge.EvmProof.GasSteps.trans_cost, gasStepsBlock_cost]
+  rw [vExit_cost input]
+  have hloop := Challenge.EvmProof.GasSteps.iterateBounded_cost_potential_eq
+    8 81 (fun i => MachineState.memCost (24 + i))
+    (fun i hi => vIterationGasSteps input i hi)
+    (fun i hi => vIterationGasSteps_cost_potential input i hi)
+  norm_num [MachineState.memCost] at hloop ⊢
+  omega
+
+def constantsGasSteps (input : ByteArray) :
+    Challenge.EvmProof.GasSteps (constantsEntryState input)
+      (constantsFinalState input) := by
+  exact gasStepsBlock constantsPath (run_constants input) rfl rfl rfl
+    deployAddress_not_precompile
+
+theorem constants_path_cost (input : ByteArray) :
+    Challenge.EvmProof.Stepper.runLocatedBlockCost constantsPath
+      (constantsEntryState input) = 244 := by
+  have hpotential := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+    constantsPath 162 (run_constants input) rfl
+    (by
+      intro located hlocated
+      have hall : constantsPath.all
+          (fun item => Challenge.EvmProof.Meter.CopyFree item.instruction) = true := by
+        decide
+      exact List.all_eq_true.mp hall located hlocated)
+    (by decide)
+  norm_num [constantsEntryState, constantsFinalState, MachineState.memCost,
+    Challenge.EvmProof.Word.word_toNat_ofNat] at hpotential ⊢
+  omega
+
+@[simp] theorem constantsGasSteps_cost (input : ByteArray) :
+    (constantsGasSteps input).cost = 244 := by
+  exact constants_path_cost input
 
 end Challenge.Blake2f.Reference.Proofs.Bytecode.Initialization
