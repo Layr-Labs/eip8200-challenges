@@ -1,6 +1,79 @@
-# BLAKE2f challenge: implementation in progress
+# BLAKE2f challenge: audit map
 
-This directory is reserved for the EIP-8200 BLAKE2f challenge. The draft PR
-will add the minimal precompile-equivalence specification, reusable proof
-support, a Yul reference and frozen compiler artifact, direct bytecode and gas
-proofs, Tier-1 scoring, and an independent Foundry cross-check.
+This challenge asks for EVM bytecode replacing the EIP-152 BLAKE2b compression
+precompile at `0x09`. BLAKE2f accepts one fixed 213-byte record containing a
+caller-selected 32-bit round count; malformed lengths or final flags fail.
+
+## Specification and reusable support
+
+[`Spec.lean`](Spec.lean) defines the big-endian round parser, exact validity
+check, pinned `Crypto.Blake2f.compressBytes` result, fixed Osaka frame, and
+`Correct code`. The frame disables precompile address `0x09`, so a candidate
+cannot satisfy the statement by delegating to the incumbent implementation.
+
+[`ProofSupport/`](ProofSupport/) contains submission-independent reductions:
+`Bytecode.lean` for gas-parametric EVM traces, `Yul.lean` for the verified
+compiler route, `Word.lean` for masked 64-bit arithmetic and rotations,
+`Algorithm.lean` for the full-round invariant, and `InitialState.lean` for
+fixed-frame facts. The symbolic gas language additionally exposes calldata
+size, parsed rounds `R`, and final flag `f`.
+
+## Reference source and frozen artifact
+
+[`Reference/reference.yul`](Reference/reference.yul) is deliberately regular:
+each 64-bit word occupies one 32-byte memory slot. It validates the wrapper,
+parses little-endian words, initializes `v := h || IV`, executes eight `G`
+mixes per round through the ten-row sigma table, folds into `h`, and returns
+64 little-endian bytes.
+
+The verified compiler emits the frozen 1,169-byte artifact:
+
+```sh
+lake exe yulc Challenge/Blake2f/Reference/reference.yul
+```
+
+`Reference/Bytes.lean` is the reducible byte literal and
+`Reference/Proofs/Bytecode/Artifact.lean` kernel-checks its complete 588
+instruction assembly. `Reference/Proofs/Yul.lean` separately certifies parsing,
+optimization, compilation, and exact assembly. Its finite `native_decide`
+artifact checks are isolated from the direct-bytecode route.
+
+## Tier 1 and gas gap
+
+```sh
+lake exe blake2fchallenge
+lake exe blake2fchallenge --hex=path/to/bytecode.hex
+```
+
+The suite covers round boundaries `0, 1, 2, 9, 10, 11, 12, 100`, both flag
+branches, malformed lengths, and an invalid flag. It runs clean and dirty
+states and checks published EIP-152 outputs.
+
+For valid input the frozen reference consumes
+
+```text
+29,213 + 3,970 × R + 18 × f gas.
+```
+
+Wrong-length input reaches `INVALID` after 57 gas; an invalid flag after 94.
+The 13-vector total is 915,772. Over the ten valid vectors the reference uses
+915,564 gas while the native round-priced precompile uses 157 gas: a
+**5,831.62×** gap.
+
+[`foundry/test/Blake2fGas.t.sol`](../../foundry/test/Blake2fGas.t.sol) runs the
+same pinned artifact under revm, agrees with every successful Lean gas number,
+and compares output with `0x09` and eth-act's evmification implementation.
+Caller-side measurement cannot recover gas spent before `INVALID`, because an
+exceptional callee burns all forwarded gas; it checks those cases fail.
+
+## Proof map
+
+`Reference/Proofs/Bytecode/Artifact.lean` pins the instructions,
+`Invalid.lean` proves the malformed-length path reaches an explicit exception,
+and `GasCost.lean` defines the exact path schedule plus a symbolic sufficient
+schedule and proves the latter bounds both exceptional costs. Shared
+`INVALID` support was added to `Challenge.EvmProof` for reuse by submissions.
+
+The direct modules contain no `sorry`, project axiom, `unsafe`, or
+`native_decide`. Candidate bytecode belongs under [`Submissions/`](Submissions/)
+and follows [`SUBMITTING.md`](SUBMITTING.md).

@@ -186,6 +186,28 @@ jobs:
             exit 1
           fi
 
+      - name: Verify BLAKE2f specification, artifact, and Tier 1
+        run: |
+          imports="$(grep '^import ' Challenge/Blake2f/Spec.lean)"
+          if [ "$imports" != 'import EvmSemantics.EVM.BigStep' ]; then
+            echo "::error::BLAKE2f Spec.lean must depend only on the pinned EVM semantics"
+            printf '%s\n' "$imports"
+            exit 1
+          fi
+          compiled="$(lake exe yulc Challenge/Blake2f/Reference/reference.yul)"
+          frozen="$(tr -d '[:space:]' < Challenge/Blake2f/Reference/reference.hex)"
+          literal="$(lake exe blake2fchallenge --print-reference-hex)"
+          if [ "$compiled" != "$frozen" ] || [ "$literal" != "$frozen" ]; then
+            echo "::error::BLAKE2f reference.hex is stale"
+            exit 1
+          fi
+          lake exe blake2fchallenge --hex=Challenge/Blake2f/Reference/reference.hex
+          printf '60406000f3' > /tmp/blake2f-zeros.hex
+          if lake exe blake2fchallenge --hex=/tmp/blake2f-zeros.hex; then
+            echo "::error::the BLAKE2f scorer accepted a candidate returning 64 zero bytes"
+            exit 1
+          fi
+
   # An independent check on the gas numbers the challenge READMEs publish.
   # Those numbers come from the pinned Lean semantics; this job re-measures the
   # same frozen bytecode on the same vectors under revm and requires exact
