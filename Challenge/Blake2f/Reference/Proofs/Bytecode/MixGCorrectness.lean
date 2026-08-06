@@ -203,16 +203,20 @@ theorem representsAt_transition (memory : ByteArray) (v : Array UInt64)
   have hiOld : i < v.size := by simpa [hsize] using hi
   by_cases hia : i = ai
   · subst i
-    exact congrArg Algorithm.Lanes.a hlanes
+    simpa [Memory.lanesAtWords, Algorithm.lanesAt, Algorithm.Lanes.embed,
+      htoNat ai hai] using congrArg Algorithm.Lanes.a hlanes
   by_cases hib : i = bi
   · subst i
-    exact congrArg Algorithm.Lanes.b hlanes
+    simpa [Memory.lanesAtWords, Algorithm.lanesAt, Algorithm.Lanes.embed,
+      htoNat bi hbi] using congrArg Algorithm.Lanes.b hlanes
   by_cases hic : i = ci
   · subst i
-    exact congrArg Algorithm.Lanes.c hlanes
+    simpa [Memory.lanesAtWords, Algorithm.lanesAt, Algorithm.Lanes.embed,
+      htoNat ci hci] using congrArg Algorithm.Lanes.c hlanes
   by_cases hid : i = di
   · subst i
-    exact congrArg Algorithm.Lanes.d hlanes
+    simpa [Memory.lanesAtWords, Algorithm.lanesAt, Algorithm.Lanes.embed,
+      htoNat di hdi] using congrArg Algorithm.Lanes.d hlanes
   have hframe := readWord_transition_disjoint memory
     (UInt256.ofNat (base + 32 * i))
     (UInt256.ofNat (base + 32 * ai))
