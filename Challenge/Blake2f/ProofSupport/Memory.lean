@@ -72,4 +72,66 @@ theorem lanesAtWords_of_representsAt {memory : ByteArray} {base : Nat}
   · exact represents c hc
   · exact represents d hd
 
+/-- Extend a represented consecutive array by storing its next embedded
+64-bit word. This is the standard invariant step for decoding loops. -/
+theorem representsAt_storeWord_push {memory : ByteArray} {base : Nat}
+    {values : Array UInt64} (value : UInt64)
+    (represents : RepresentsAt memory base values) :
+    RepresentsAt
+      (storeWord memory (base + 32 * values.size) (Word.ofUInt64 value)) base
+      (values.push value) := by
+  intro i hi
+  rw [Array.size_push] at hi
+  by_cases hlast : i = values.size
+  · subst i
+    simp
+  · have hiold : i < values.size := by omega
+    rw [readWord_storeWord_disjoint memory (base + 32 * i)
+      (base + 32 * values.size) (Word.ofUInt64 value)
+      (wordDisjoint_slots base i values.size hlast)]
+    rw [represents i hiold]
+    congr 1
+    rw [getElem!_pos values i hiold,
+      getElem!_pos (values.push value) i (by simp; omega)]
+    exact (Array.getElem_push_lt hiold).symm
+
+/-- Pure value companion for a sequence of consecutive word stores. -/
+def appendValues (values : Array UInt64) : List UInt64 → Array UInt64
+  | [] => values
+  | value :: rest => appendValues (values.push value) rest
+
+/-- Append embedded 64-bit words immediately after an already represented
+array. Keeping this operation opaque prevents concrete proofs from expanding
+nested byte-array writes. -/
+def appendStoreWords (memory : ByteArray) (base : Nat)
+    (values : Array UInt64) : List UInt64 → ByteArray
+  | [] => memory
+  | value :: rest =>
+      appendStoreWords
+        (storeWord memory (base + 32 * values.size) (Word.ofUInt64 value))
+        base (values.push value) rest
+
+theorem representsAt_appendStoreWords {memory : ByteArray} {base : Nat}
+    {values : Array UInt64} (words : List UInt64)
+    (represents : RepresentsAt memory base values) :
+    RepresentsAt (appendStoreWords memory base values words) base
+      (appendValues values words) := by
+  induction words generalizing memory values with
+  | nil => exact represents
+  | cons value words ih =>
+      rw [appendStoreWords, appendValues]
+      exact ih (representsAt_storeWord_push value represents)
+
+/-- A store outside every represented slot preserves the represented array. -/
+theorem representsAt_storeWord_disjoint {memory : ByteArray} {base offset : Nat}
+    {values : Array UInt64} (value : UInt256)
+    (represents : RepresentsAt memory base values)
+    (hdisjoint : ∀ i, i < values.size →
+      WordDisjoint (base + 32 * i) offset) :
+    RepresentsAt (storeWord memory offset value) base values := by
+  intro i hi
+  rw [readWord_storeWord_disjoint memory (base + 32 * i) offset value
+    (hdisjoint i hi)]
+  exact represents i hi
+
 end Challenge.Blake2f.ProofSupport.Memory

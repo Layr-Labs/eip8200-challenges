@@ -18,6 +18,12 @@ def readWords (input : ByteArray) (base count : Nat) : Array UInt64 :=
   ((List.range' 0 count).map fun i =>
     Crypto.Blake2f.readLE64 input (base + i * 8)).toArray
 
+theorem readWords_succ (input : ByteArray) (base count : Nat) :
+    readWords input base (count + 1) =
+      (readWords input base count).push
+        (Crypto.Blake2f.readLE64 input (base + count * 8)) := by
+  simp [readWords, List.range'_1_concat]
+
 def chaining (input : ByteArray) : Array UInt64 := readWords input 4 8
 
 def message (input : ByteArray) : Array UInt64 := readWords input 68 16

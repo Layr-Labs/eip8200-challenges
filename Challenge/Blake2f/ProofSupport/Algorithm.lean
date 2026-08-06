@@ -169,6 +169,11 @@ def initialVector (h : Array UInt64) (t0 t1 : UInt64) (f : Bool) :
   if f then v := v.set! 14 (v[14]! ^^^ 0xffffffffffffffff)
   return v
 
+@[simp] theorem initialVector_size (h : Array UInt64) (t0 t1 : UInt64)
+    (f : Bool) :
+    (initialVector h t0 t1 f).size = 16 := by
+  cases f <;> simp [initialVector]
+
 /-- Fold the two halves of a completed work vector back into the chaining
 state. -/
 def foldVector (h v : Array UInt64) : Array UInt64 := Id.run do
