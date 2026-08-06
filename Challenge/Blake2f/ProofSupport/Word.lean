@@ -1,0 +1,129 @@
+import Challenge.EvmProof.Word
+import EvmSemantics.Crypto.Blake2f
+set_option warningAsError true
+
+/-! Reusable 64-bit BLAKE2b words embedded in the EVM's 256-bit word. -/
+
+namespace Challenge.Blake2f.ProofSupport.Word
+
+open EvmSemantics
+open Challenge.EvmProof.Word (word_ext word_toNat_ofNat)
+
+def ofUInt64 (x : UInt64) : UInt256 := UInt256.ofNat x.toNat
+
+def toUInt64 (x : UInt256) : UInt64 := UInt64.ofNat x.toNat
+
+def mask64 (x : UInt256) : UInt256 := x &&& UInt256.ofNat 0xffffffffffffffff
+
+@[simp] theorem ofUInt64_toNat (x : UInt64) : (ofUInt64 x).toNat = x.toNat := by
+  have hx : x.toNat < 2 ^ 256 := Nat.lt_trans x.toNat_lt (by norm_num)
+  rw [ofUInt64, word_toNat_ofNat, Nat.mod_eq_of_lt hx]
+
+@[simp] theorem toUInt64_ofUInt64 (x : UInt64) : toUInt64 (ofUInt64 x) = x := by
+  apply UInt64.toNat_inj.mp
+  rw [toUInt64, UInt64.toNat_ofNat', ofUInt64_toNat,
+    Nat.mod_eq_of_lt x.toNat_lt]
+
+@[simp] theorem toUInt64_toNat (x : UInt256) :
+    (toUInt64 x).toNat = x.toNat % 2 ^ 64 := by
+  simp [toUInt64]
+
+@[simp] theorem mask64_toNat (x : UInt256) :
+    (mask64 x).toNat = x.toNat &&& 0xffffffffffffffff := by
+  change (x.val &&& (UInt256.ofNat 0xffffffffffffffff).val).val = _
+  rw [Fin.and_val]
+  change x.toNat &&& (UInt256.ofNat 0xffffffffffffffff).toNat = _
+  rw [word_toNat_ofNat]
+  norm_num
+
+theorem mask64_eq_ofUInt64 (x : UInt256) :
+    mask64 x = ofUInt64 (toUInt64 x) := by
+  apply word_ext
+  rw [mask64_toNat, ofUInt64_toNat, toUInt64_toNat]
+  rw [show 0xffffffffffffffff = 2 ^ 64 - 1 by norm_num]
+  exact Nat.and_two_pow_sub_one_eq_mod _ _
+
+@[simp] theorem mask64_ofUInt64 (x : UInt64) :
+    mask64 (ofUInt64 x) = ofUInt64 x := by
+  rw [mask64_eq_ofUInt64, toUInt64_ofUInt64]
+
+@[simp] theorem ofUInt64_xor (x y : UInt64) :
+    ofUInt64 (x ^^^ y) = ofUInt64 x ^^^ ofUInt64 y := by
+  apply word_ext
+  rw [ofUInt64_toNat]
+  change (x ^^^ y).toNat =
+    ((ofUInt64 x).toNat ^^^ (ofUInt64 y).toNat) % UInt256.size
+  rw [UInt64.toNat_xor, ofUInt64_toNat, ofUInt64_toNat]
+  apply Eq.symm
+  apply Nat.mod_eq_of_lt
+  exact Nat.lt_trans (Nat.xor_lt_two_pow x.toNat_lt y.toNat_lt) (by
+    change 2 ^ 64 < 2 ^ 256
+    norm_num)
+
+@[simp] theorem mask64_add (x y : UInt64) :
+    mask64 (ofUInt64 x + ofUInt64 y) = ofUInt64 (x + y) := by
+  rw [mask64_eq_ofUInt64]
+  apply congrArg ofUInt64
+  apply UInt64.toNat_inj.mp
+  rw [toUInt64_toNat, UInt64.toNat_add]
+  change ((ofUInt64 x).val + (ofUInt64 y).val).val % 2 ^ 64 = _
+  rw [Fin.val_add]
+  change ((ofUInt64 x).toNat + (ofUInt64 y).toNat) % UInt256.size % 2 ^ 64 = _
+  rw [ofUInt64_toNat, ofUInt64_toNat,
+    show UInt256.size = 2 ^ 256 by rfl,
+    Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega))]
+
+theorem mask64_or (x y : UInt256) :
+    mask64 (x ||| y) = ofUInt64 (toUInt64 x ||| toUInt64 y) := by
+  apply word_ext
+  rw [mask64_toNat, ofUInt64_toNat, UInt64.toNat_or,
+    toUInt64_toNat, toUInt64_toNat]
+  change (((x.toNat ||| y.toNat) % UInt256.size) &&& 0xffffffffffffffff) = _
+  rw [show 0xffffffffffffffff = 2 ^ 64 - 1 by norm_num,
+    Nat.and_two_pow_sub_one_eq_mod,
+    show UInt256.size = 2 ^ 256 by rfl,
+    Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega)),
+    Nat.or_mod_two_pow]
+
+theorem toUInt64_shiftRight_ofUInt64 (x : UInt64) (n : Nat) (hn : n < 64) :
+    toUInt64 (UInt256.shiftRight (ofUInt64 x) (UInt256.ofNat n)) =
+      x >>> UInt64.ofNat n := by
+  apply UInt64.toNat_inj.mp
+  rw [toUInt64_toNat]
+  have hn256 : n < 256 := by omega
+  rw [Challenge.EvmProof.Word.shiftRight_toNat (ofUInt64 x) hn256,
+    ofUInt64_toNat, UInt64.toNat_shiftRight, UInt64.toNat_ofNat',
+    Nat.mod_eq_of_lt (Nat.lt_trans hn (by norm_num)),
+    Nat.mod_eq_of_lt hn]
+  exact Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) x.toNat_lt)
+
+theorem toUInt64_shiftLeft_ofUInt64 (x : UInt64) (n : Nat) (hn : n < 64) :
+    toUInt64 (UInt256.shiftLeft (ofUInt64 x) (UInt256.ofNat n)) =
+      x <<< UInt64.ofNat n := by
+  apply UInt64.toNat_inj.mp
+  rw [toUInt64_toNat]
+  unfold UInt256.shiftLeft
+  have hn256 : (UInt256.ofNat n).toNat = n := by
+    rw [word_toNat_ofNat, Nat.mod_eq_of_lt (Nat.lt_trans hn (by norm_num))]
+  rw [if_neg (by omega), hn256, word_toNat_ofNat,
+    show UInt256.size = 2 ^ 256 by rfl,
+    Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega)), ofUInt64_toNat,
+    UInt64.toNat_shiftLeft, UInt64.toNat_ofNat',
+    Nat.mod_eq_of_lt (Nat.lt_trans hn (by norm_num)),
+    Nat.mod_eq_of_lt hn]
+  rw [Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega))]
+
+/-- The masked `SHR/SHL/OR` idiom in the reference is BLAKE2b's rotation. -/
+theorem evm_rotr64 (x : UInt64) (n : Nat) (hn0 : 0 < n) (hn : n < 64) :
+    mask64
+      (UInt256.shiftRight (ofUInt64 x) (UInt256.ofNat n) |||
+       UInt256.shiftLeft (ofUInt64 x) (UInt256.ofNat (64 - n))) =
+      ofUInt64 (Crypto.Blake2f.rotr64 x (UInt64.ofNat n)) := by
+  rw [mask64_or, toUInt64_shiftRight_ofUInt64 x n hn,
+    toUInt64_shiftLeft_ofUInt64 x (64 - n) (by omega)]
+  unfold Crypto.Blake2f.rotr64
+  have hsub : (64 : UInt64) - UInt64.ofNat n = UInt64.ofNat (64 - n) := by
+    simpa using (UInt64.ofNat_sub (a := 64) (b := n) (by omega)).symm
+  rw [hsub]
+
+end Challenge.Blake2f.ProofSupport.Word
