@@ -60,6 +60,49 @@ theorem mask64_eq_ofUInt64 (x : UInt256) :
     change 2 ^ 64 < 2 ^ 256
     norm_num)
 
+@[simp] theorem ofUInt64_or (x y : UInt64) :
+    ofUInt64 (x ||| y) = ofUInt64 x ||| ofUInt64 y := by
+  apply word_ext
+  rw [ofUInt64_toNat]
+  change (x ||| y).toNat =
+    ((ofUInt64 x).toNat ||| (ofUInt64 y).toNat) % UInt256.size
+  rw [UInt64.toNat_or, ofUInt64_toNat, ofUInt64_toNat]
+  apply Eq.symm
+  apply Nat.mod_eq_of_lt
+  exact Nat.lt_trans (Nat.or_lt_two_pow x.toNat_lt y.toNat_lt) (by
+    change 2 ^ 64 < 2 ^ 256
+    norm_num)
+
+/-- A calldata byte shifted into one of eight little-endian lanes remains a
+64-bit value, so EVM `SHL` agrees exactly with `UInt64` shifting. -/
+theorem shiftLeft_byte_lane (byte : UInt8) (i : Nat) (hi : i < 8) :
+    UInt256.shiftLeft (UInt256.ofNat byte.toNat) (UInt256.ofNat (8 * i)) =
+      ofUInt64 (UInt64.ofNat byte.toNat <<< UInt64.ofNat (8 * i)) := by
+  have hbyte256 : byte.toNat < 2 ^ 256 := Nat.lt_trans byte.toNat_lt (by norm_num)
+  have hshift : 8 * i < 256 := by omega
+  have hresult64 : byte.toNat * 2 ^ (8 * i) < 2 ^ 64 := by
+    have hb : byte.toNat < 2 ^ 8 := by simpa using byte.toNat_lt
+    have hp : 2 ^ (8 * i) ≤ 2 ^ 56 := Nat.pow_le_pow_right (by omega) (by omega)
+    calc
+      byte.toNat * 2 ^ (8 * i) < 2 ^ 8 * 2 ^ (8 * i) :=
+        Nat.mul_lt_mul_of_pos_right hb (Nat.pow_pos (by omega))
+      _ ≤ 2 ^ 8 * 2 ^ 56 := Nat.mul_le_mul_left _ hp
+      _ = 2 ^ 64 := by norm_num
+  have hresult : byte.toNat * 2 ^ (8 * i) < 2 ^ 256 :=
+    hresult64.trans (by norm_num)
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat hbyte256 hshift hresult]
+  apply word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt hresult, ofUInt64_toNat,
+    UInt64.toNat_shiftLeft, UInt64.toNat_ofNat', UInt64.toNat_ofNat']
+  rw [Nat.mod_eq_of_lt (Nat.lt_trans byte.toNat_lt (by norm_num)),
+    Nat.mod_eq_of_lt (by omega : 8 * i < 2 ^ 64),
+    Nat.mod_eq_of_lt (by omega : 8 * i < 64), Nat.shiftLeft_eq]
+  change byte.toNat * 2 ^ (8 * i) =
+    byte.toNat * 2 ^ (8 * i) % 2 ^ 64
+  rw [Nat.mod_eq_of_lt]
+  exact hresult64
+
 @[simp] theorem mask64_add (x y : UInt64) :
     mask64 (ofUInt64 x + ofUInt64 y) = ofUInt64 (x + y) := by
   rw [mask64_eq_ofUInt64]

@@ -1,5 +1,7 @@
 import Challenge.Blake2f.Reference.Proofs.Bytecode.Artifact
 import Challenge.Blake2f.ProofSupport.InitialState
+import Challenge.Blake2f.ProofSupport.Word
+import Challenge.EvmProof.Bytes
 import Challenge.EvmProof.Meter
 import Challenge.EvmProof.Word
 
@@ -35,6 +37,62 @@ def accumulator (inputWord : UInt256) : Nat → UInt256
       UInt256.lor (accumulator inputWord i)
         (UInt256.shiftLeft (UInt256.byteAt (UInt256.ofNat i) inputWord)
           (UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 3)))
+
+/-- The byte-level little-endian prefix decoded by the compiled helper. -/
+def decodedPrefix (bytes : ByteArray) (offset : Nat) : Nat → UInt64
+  | 0 => 0
+  | i + 1 =>
+      decodedPrefix bytes offset i |||
+        (UInt64.ofNat
+            (YulSemantics.EVM.byteFrom bytes.toList (offset + i)).toNat <<<
+          UInt64.ofNat (8 * i))
+
+private theorem readLE64_eq_decodedPrefix (bytes : ByteArray) (offset : Nat) :
+    Crypto.Blake2f.readLE64 bytes offset = decodedPrefix bytes offset 8 := by
+  unfold Crypto.Blake2f.readLE64
+  simp only [Std.Legacy.Range.forIn_eq_forIn_range', Std.Legacy.Range.size,
+    Nat.sub_zero, Nat.add_sub_cancel, Nat.div_one, pure_bind,
+    List.forIn_pure_yield_eq_foldl, Id.run_pure]
+  simp only [List.range', List.foldl_cons, List.foldl_nil]
+  have hbyte (i : Nat) :
+      (if h : offset + i < bytes.size then bytes[offset + i].toUInt64 else 0) =
+        UInt64.ofNat
+          (YulSemantics.EVM.byteFrom bytes.toList (offset + i)).toNat := by
+    rw [Challenge.EvmProof.Bytes.memMatch_toList bytes (offset + i)]
+    by_cases h : offset + i < bytes.size <;> simp [h]
+  rw [hbyte 0, hbyte 1, hbyte 2, hbyte 3,
+    hbyte 4, hbyte 5, hbyte 6, hbyte 7]
+  simp [decodedPrefix]
+
+theorem accumulator_eq_decodedPrefix (bytes : ByteArray) (offset i : Nat)
+    (hi : i ≤ 8) :
+    accumulator (MachineState.readWord bytes offset) i =
+      Challenge.Blake2f.ProofSupport.Word.ofUInt64
+        (decodedPrefix bytes offset i) := by
+  induction i with
+  | zero => rfl
+  | succ i ih =>
+      have hilane : i < 8 := by omega
+      have hindexShift :
+          UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 3) =
+            UInt256.ofNat (8 * i) := by
+        simpa [Nat.mul_comm] using
+          (Challenge.EvmProof.Word.shiftLeft_ofNat
+            (value := i) (shift := 3) (by omega) (by omega) (by omega))
+      rw [accumulator, decodedPrefix, ih (by omega),
+        Challenge.EvmProof.Bytes.byteAt_readWord bytes offset i (by omega),
+        hindexShift,
+        Challenge.Blake2f.ProofSupport.Word.shiftLeft_byte_lane _ i hilane]
+      exact (Challenge.Blake2f.ProofSupport.Word.ofUInt64_or _ _).symm
+
+/-- The compiled eight-byte EVM loader returns exactly the word consumed by
+the pinned BLAKE2f specification. -/
+theorem accumulator_eight_eq_readLE64 (bytes : ByteArray) (offset : Nat) :
+    accumulator (MachineState.readWord bytes offset) 8 =
+      Challenge.Blake2f.ProofSupport.Word.ofUInt64
+        (Crypto.Blake2f.readLE64 bytes offset) := by
+  rw [readLE64_eq_decodedPrefix]
+  exact accumulator_eq_decodedPrefix bytes offset 8 (by omega)
 
 def loopState (s : State) (offset returnDest : UInt256)
     (tail : List UInt256) (i : Nat) : State :=
