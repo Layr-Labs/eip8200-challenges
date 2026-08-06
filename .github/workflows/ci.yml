@@ -41,7 +41,7 @@ jobs:
           SHARED_HASH: ${{ hashFiles('lakefile.toml', 'Challenge/EvmProof.lean', 'Challenge/EvmProof/**/*.lean', 'Checks/EvmProof.lean') }}
         run: |
           package_key="lake-packages-v2-${{ runner.os }}-${{ runner.arch }}-${DEPENDENCY_HASH}-${IMPORT_HASH}"
-          shared_key="project-shared-v1-${{ runner.os }}-${{ runner.arch }}-${DEPENDENCY_HASH}-${SHARED_HASH}"
+          shared_key="project-shared-v2-${{ runner.os }}-${{ runner.arch }}-${DEPENDENCY_HASH}-${SHARED_HASH}"
           echo "package-key=$package_key" >> "$GITHUB_OUTPUT"
           echo "shared-key=$shared_key" >> "$GITHUB_OUTPUT"
 
@@ -60,9 +60,15 @@ jobs:
       - name: Cache shared project build
         uses: actions/cache@v5
         with:
-          path: .lake/build
+          # Native module traces include native dependency artifacts. Preserve
+          # package IR alongside root build output so restoring one without
+          # the other cannot invalidate otherwise unchanged proofs.
+          path: |
+            .lake/build
+            .lake/packages/*/.lake/build/ir
           key: ${{ steps.cache-keys.outputs.shared-key }}
           restore-keys: |
+            project-shared-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
             project-shared-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
 
       - name: Set up Lean
@@ -77,7 +83,7 @@ jobs:
           use-github-cache: "false"
 
       - name: Build shared EVM proof support
-        run: lake build +Challenge.EvmProof
+        run: lake build +Challenge.EvmProof:c.o
 
       - name: Verify shared soundness
         run: |
@@ -137,12 +143,15 @@ jobs:
       - name: Cache ${{ matrix.name }} project build
         uses: actions/cache@v5
         with:
-          path: .lake/build
-          key: project-${{ matrix.slug }}-v1-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-${{ hashFiles(format('Challenge/{0}.lean', matrix.directory), format('Challenge/{0}/**', matrix.directory), matrix.main, format('Checks/{0}.lean', matrix.directory)) }}
+          path: |
+            .lake/build
+            .lake/packages/*/.lake/build/ir
+          key: project-${{ matrix.slug }}-v2-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-${{ hashFiles(format('Challenge/{0}.lean', matrix.directory), format('Challenge/{0}/**', matrix.directory), matrix.main, format('Checks/{0}.lean', matrix.directory)) }}
           # The final prefix can bootstrap the split from a base-branch cache
           # during migration; challenge-local caches always take precedence.
           restore-keys: |
-            project-${{ matrix.slug }}-v1-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-
+            project-${{ matrix.slug }}-v2-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-
+            project-${{ matrix.slug }}-v1-${{ runner.os }}-${{ runner.arch }}-
             project-lake-build-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
 
       - name: Set up Lean
