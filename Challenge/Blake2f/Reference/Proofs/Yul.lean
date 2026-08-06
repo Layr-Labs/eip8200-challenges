@@ -1,6 +1,7 @@
 import Challenge.Blake2f.ProofSupport.Yul
 import Challenge.Blake2f.Reference.Source
 import Challenge.Blake2f.Reference.Bytecode
+import Challenge.Blake2f.Reference.Proofs.Bytecode.ReferenceCorrect
 import YulEvmCompiler.Optimizer.Implementation.Pipeline
 
 set_option warningAsError true
@@ -66,6 +67,12 @@ theorem referenceOptimized_compile :
 
 theorem referenceInstructions_assemble :
     assemble referenceInstructions = referenceBytecode := by native_decide
+
+/-- The optimizer/compiler output, after assembly, obeys the challenge spec. -/
+theorem referenceCompiled_correct :
+    Correct (assemble referenceInstructions) := by
+  rw [referenceInstructions_assemble]
+  exact Bytecode.ReferenceCorrect.reference_correct
 
 theorem reference_runEquiv :
     Optimizer.RunEquivBlock localDialect referenceParsedBlock
