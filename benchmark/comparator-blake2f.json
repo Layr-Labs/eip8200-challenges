@@ -1,0 +1,7 @@
+{
+  "challenge_module": "Challenge.Blake2f.Benchmark.Challenge",
+  "solution_module": "Challenge.Blake2f.Submission.Solution",
+  "theorem_names": ["Challenge.Blake2f.Benchmark.candidate"],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": false
+}

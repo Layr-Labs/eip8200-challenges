@@ -51,6 +51,12 @@ lake build
 lake env lean Checks.lean
 ```
 
+## Yukon benchmark
+
+The repository is also a schema-v2 Yukon challenge with independent `sha256`,
+`modexp`, `ripemd160`, and `blake2f` tracks. See [`docs/benchmark.md`](docs/benchmark.md)
+for editable paths, scoring, proof verification, and local commands.
+
 CI additionally checks each contributed candidate using the convention in its
 submission guide, freezes reference artifacts, runs challenge scorers, and
 verifies that deliberately fake proofs are rejected by the submission checker.
@@ -61,7 +67,7 @@ The gas figures in the challenge gas reports come from concrete execution in the
 pinned Lean semantics. [`foundry/`](foundry/) re-measures the same frozen
 bytecode over the same vectors under a production EVM (revm, via Foundry) and
 requires exact agreement, so a mispricing in the pinned semantics could not
-quietly become a published number. All 45 scored vectors currently agree to the
+quietly become a published number. All 58 scored vectors currently agree on
 gas. It also measures the equivalent implementations from
 [eth-act/evmification](https://github.com/eth-act/evmification) alongside the
 references.
