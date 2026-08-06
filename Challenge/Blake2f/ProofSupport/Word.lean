@@ -73,6 +73,19 @@ theorem mask64_eq_ofUInt64 (x : UInt256) :
     change 2 ^ 64 < 2 ^ 256
     norm_num)
 
+@[simp] theorem ofUInt64_and (x y : UInt64) :
+    ofUInt64 (x &&& y) = ofUInt64 x &&& ofUInt64 y := by
+  apply word_ext
+  rw [ofUInt64_toNat]
+  change (x &&& y).toNat =
+    ((ofUInt64 x).toNat &&& (ofUInt64 y).toNat) % UInt256.size
+  rw [UInt64.toNat_and, ofUInt64_toNat, ofUInt64_toNat]
+  apply Eq.symm
+  apply Nat.mod_eq_of_lt
+  exact Nat.lt_trans (Nat.and_lt_two_pow x.toNat y.toNat_lt) (by
+    change 2 ^ 64 < 2 ^ 256
+    norm_num)
+
 /-- A calldata byte shifted into one of eight little-endian lanes remains a
 64-bit value, so EVM `SHL` agrees exactly with `UInt64` shifting. -/
 theorem shiftLeft_byte_lane (byte : UInt8) (i : Nat) (hi : i < 8) :
@@ -163,6 +176,17 @@ theorem toUInt64_shiftRight_ofUInt64 (x : UInt64) (n : Nat) (hn : n < 64) :
     Nat.mod_eq_of_lt (Nat.lt_trans hn (by norm_num)),
     Nat.mod_eq_of_lt hn]
   exact Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) x.toNat_lt)
+
+theorem shiftRight_ofUInt64 (x : UInt64) (n : Nat) (hn : n < 64) :
+    UInt256.shiftRight (ofUInt64 x) (UInt256.ofNat n) =
+      ofUInt64 (x >>> UInt64.ofNat n) := by
+  apply word_ext
+  have hn256 : n < 256 := by omega
+  rw [Challenge.EvmProof.Word.shiftRight_toNat (ofUInt64 x) hn256,
+    ofUInt64_toNat, ofUInt64_toNat, UInt64.toNat_shiftRight,
+    UInt64.toNat_ofNat',
+    Nat.mod_eq_of_lt (Nat.lt_trans hn (by norm_num))]
+  rw [Nat.mod_eq_of_lt hn]
 
 theorem toUInt64_shiftLeft_ofUInt64 (x : UInt64) (n : Nat) (hn : n < 64) :
     toUInt64 (UInt256.shiftLeft (ofUInt64 x) (UInt256.ofNat n)) =

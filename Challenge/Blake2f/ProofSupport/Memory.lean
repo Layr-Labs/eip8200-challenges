@@ -122,6 +122,27 @@ theorem representsAt_appendStoreWords {memory : ByteArray} {base : Nat}
       rw [appendStoreWords, appendValues]
       exact ih (representsAt_storeWord_push value represents)
 
+/-- Update one represented lane with another embedded 64-bit value. -/
+theorem representsAt_storeWord_set {memory : ByteArray} {base : Nat}
+    {values : Array UInt64} (index : Nat) (value : UInt64)
+    (hi : index < values.size) (represents : RepresentsAt memory base values) :
+    RepresentsAt
+      (storeWord memory (base + 32 * index) (Word.ofUInt64 value)) base
+      (values.set! index value) := by
+  intro i hnew
+  have hold : i < values.size := by
+    simpa [Array.set!_eq_setIfInBounds] using hnew
+  by_cases hsame : index = i
+  · subst i
+    rw [readWord_storeWord_same]
+    simp [Array.set!_eq_setIfInBounds, hi]
+  · rw [readWord_storeWord_disjoint memory (base + 32 * i)
+      (base + 32 * index) (Word.ofUInt64 value)
+      (wordDisjoint_slots base i index (Ne.symm hsame))]
+    rw [represents i hold]
+    congr 1
+    exact (Algorithm.getElem!_set!_other values index i value hold hsame).symm
+
 /-- A store outside every represented slot preserves the represented array. -/
 theorem representsAt_storeWord_disjoint {memory : ByteArray} {base offset : Nat}
     {values : Array UInt64} (value : UInt256)

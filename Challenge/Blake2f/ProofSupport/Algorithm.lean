@@ -174,12 +174,39 @@ def initialVector (h : Array UInt64) (t0 t1 : UInt64) (f : Bool) :
     (initialVector h t0 t1 f).size = 16 := by
   cases f <;> simp [initialVector]
 
+def counterVector (h : Array UInt64) (t0 t1 : UInt64) : Array UInt64 :=
+  let v := initialVector h 0 0 false
+  let v := v.set! 12 (v[12]! ^^^ t0)
+  v.set! 13 (v[13]! ^^^ t1)
+
+def flaggedVector (h : Array UInt64) (t0 t1 : UInt64) : Array UInt64 :=
+  let v := counterVector h t0 t1
+  v.set! 14 (v[14]! ^^^ 0xffffffffffffffff)
+
+theorem counterVector_eq (h : Array UInt64) (t0 t1 : UInt64) :
+    counterVector h t0 t1 = initialVector h t0 t1 false := by
+  simp [counterVector, initialVector]
+  norm_num [List.range', List.range.loop]
+
+theorem flaggedVector_eq (h : Array UInt64) (t0 t1 : UInt64) :
+    flaggedVector h t0 t1 = initialVector h t0 t1 true := by
+  simp [flaggedVector, counterVector, initialVector]
+  norm_num [List.range', List.range.loop]
+
 /-- Fold the two halves of a completed work vector back into the chaining
 state. -/
 def foldVector (h v : Array UInt64) : Array UInt64 := Id.run do
   let mut out : Array UInt64 := Array.mkEmpty 8
   for i in [0:8] do out := out.push (h[i]! ^^^ v[i]! ^^^ v[i + 8]!)
   return out
+
+@[simp] theorem foldVector_size (h v : Array UInt64) :
+    (foldVector h v).size = 8 := by
+  simp [foldVector]
+
+theorem foldVector_getElem! (h v : Array UInt64) (i : Nat) (hi : i < 8) :
+    (foldVector h v)[i]! = h[i]! ^^^ v[i]! ^^^ v[i + 8]! := by
+  simp [foldVector, hi]
 
 private def runRounds (message : Array UInt64) (count : Nat)
     (vector : Array UInt64) : Array UInt64 :=
