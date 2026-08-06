@@ -233,4 +233,241 @@ theorem schedule_finalMemory (input : ByteArray) :
   · exact schedule_t1Memory input
   · exact schedule_flaggedMemory input
 
+def sigmaIndex (round column : Nat) : Nat :=
+  Crypto.Blake2f.SIGMA[round % 10]![column]!
+
+theorem sigmaIndex_lt_16 (round column : Nat) (hcolumn : column < 16) :
+    sigmaIndex round column < 16 := by
+  have hm : round % 10 < 10 := Nat.mod_lt _ (by omega)
+  interval_cases hr : round % 10 <;>
+    interval_cases hc : column <;>
+    subst_vars <;>
+    decide
+
+theorem messageOffset_sigma_toNat (round column : Nat)
+    (hcolumn : column < 16) :
+    (MixG.messageOffset (UInt256.ofNat (sigmaPacked (round % 10)))
+      (UInt256.ofNat column)).toNat =
+      256 + 32 * sigmaIndex round column := by
+  have hm : round % 10 < 10 := Nat.mod_lt _ (by omega)
+  interval_cases hr : round % 10 <;>
+    interval_cases hc : column <;>
+    subst_vars <;>
+    norm_num [MixG.messageOffset, sigmaPacked, sigmaIndex,
+      Crypto.Blake2f.SIGMA, UInt256.byteAt, UInt256.shiftLeft,
+      UInt256.add, Challenge.EvmProof.Word.ofNat_add_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat] <;>
+    decide
+
+/-- The compiled table lookup selects exactly the message lane prescribed by
+the pinned `SIGMA` permutation. -/
+theorem messageWord_of_represents {memory : ByteArray}
+    {message : Array UInt64} (round column : Nat)
+    (hround : round < 2 ^ 256) (hcolumn : column < 16)
+    (hsize : message.size = 16)
+    (schedule : ScheduleRows memory)
+    (represents : Memory.RepresentsAt memory 256 message) :
+    MixG.messageWord memory
+        (MixG.rowWord memory (UInt256.ofNat round)) (UInt256.ofNat column) =
+      Word.ofUInt64 message[sigmaIndex round column]! := by
+  unfold MixG.messageWord
+  rw [schedule (UInt256.ofNat round)]
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hround]
+  rw [messageOffset_sigma_toNat round column hcolumn]
+  apply represents
+  rw [hsize]
+  exact sigmaIndex_lt_16 round column hcolumn
+
+structure MemoryModel (memory : ByteArray) (message vector : Array UInt64) : Prop where
+  schedule : ScheduleRows memory
+  message : Memory.RepresentsAt memory 256 message
+  vector : Memory.RepresentsAt memory 768 vector
+
+/-- One compiled helper call refines one pure `Crypto.Blake2f.mixG` while
+preserving both read-only tables. -/
+theorem memoryModel_mixG {memory : ByteArray} {message vector : Array UInt64}
+    (round ai bi ci di xColumn yColumn : Nat)
+    (hround : round < 2 ^ 256)
+    (hmessageSize : message.size = 16) (hvectorSize : vector.size = 16)
+    (hai : ai < 16) (hbi : bi < 16) (hci : ci < 16) (hdi : di < 16)
+    (hxColumn : xColumn < 16) (hyColumn : yColumn < 16)
+    (habi : ai ≠ bi) (haci : ai ≠ ci) (hadi : ai ≠ di)
+    (hbci : bi ≠ ci) (hbdi : bi ≠ di) (hcdi : ci ≠ di)
+    (model : MemoryModel memory message vector) :
+    MemoryModel
+      (MixG.transition memory
+        (UInt256.ofNat (768 + 32 * ai))
+        (UInt256.ofNat (768 + 32 * bi))
+        (UInt256.ofNat (768 + 32 * ci))
+        (UInt256.ofNat (768 + 32 * di))
+        (UInt256.ofNat round) (UInt256.ofNat xColumn) (UInt256.ofNat yColumn))
+      message
+      (Crypto.Blake2f.mixG vector ai bi ci di
+        message[sigmaIndex round xColumn]!
+        message[sigmaIndex round yColumn]!) := by
+  have hai' : ai < vector.size := by omega
+  have hbi' : bi < vector.size := by omega
+  have hci' : ci < vector.size := by omega
+  have hdi' : di < vector.size := by omega
+  have htarget (i : Nat) (hi : i < 16) :
+      (UInt256.ofNat (768 + 32 * i)).toNat = 768 + 32 * i := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by omega)]
+  constructor
+  · apply schedule_transition
+    · exact model.schedule
+    all_goals rw [htarget _ (by assumption)]; omega
+  · apply MixGCorrectness.representsAt_transition_before
+    · exact model.message
+    · rw [hmessageSize]
+      norm_num
+    all_goals rw [hmessageSize, htarget _ (by assumption)]; omega
+  · apply MixGCorrectness.representsAt_transition
+    · exact model.vector
+    · exact messageWord_of_represents round xColumn hround hxColumn
+        hmessageSize model.schedule model.message
+    · exact messageWord_of_represents round yColumn hround hyColumn
+        hmessageSize model.schedule model.message
+    · rw [hvectorSize]
+      norm_num
+    all_goals assumption
+
+def roundVector1 (message vector : Array UInt64) (round : Nat) :=
+  Crypto.Blake2f.mixG vector 0 4 8 12
+    message[sigmaIndex round 0]! message[sigmaIndex round 1]!
+
+def roundVector2 (message vector : Array UInt64) (round : Nat) :=
+  Crypto.Blake2f.mixG (roundVector1 message vector round) 1 5 9 13
+    message[sigmaIndex round 2]! message[sigmaIndex round 3]!
+
+def roundVector3 (message vector : Array UInt64) (round : Nat) :=
+  Crypto.Blake2f.mixG (roundVector2 message vector round) 2 6 10 14
+    message[sigmaIndex round 4]! message[sigmaIndex round 5]!
+
+def roundVector4 (message vector : Array UInt64) (round : Nat) :=
+  Crypto.Blake2f.mixG (roundVector3 message vector round) 3 7 11 15
+    message[sigmaIndex round 6]! message[sigmaIndex round 7]!
+
+def roundVector5 (message vector : Array UInt64) (round : Nat) :=
+  Crypto.Blake2f.mixG (roundVector4 message vector round) 0 5 10 15
+    message[sigmaIndex round 8]! message[sigmaIndex round 9]!
+
+def roundVector6 (message vector : Array UInt64) (round : Nat) :=
+  Crypto.Blake2f.mixG (roundVector5 message vector round) 1 6 11 12
+    message[sigmaIndex round 10]! message[sigmaIndex round 11]!
+
+def roundVector7 (message vector : Array UInt64) (round : Nat) :=
+  Crypto.Blake2f.mixG (roundVector6 message vector round) 2 7 8 13
+    message[sigmaIndex round 12]! message[sigmaIndex round 13]!
+
+def roundVector8 (message vector : Array UInt64) (round : Nat) :=
+  Crypto.Blake2f.mixG (roundVector7 message vector round) 3 4 9 14
+    message[sigmaIndex round 14]! message[sigmaIndex round 15]!
+
+@[simp] theorem roundVector_size (message vector : Array UInt64) (round stage : Nat)
+    (hvectorSize : vector.size = 16) :
+    (match stage with
+      | 0 => vector
+      | 1 => roundVector1 message vector round
+      | 2 => roundVector2 message vector round
+      | 3 => roundVector3 message vector round
+      | 4 => roundVector4 message vector round
+      | 5 => roundVector5 message vector round
+      | 6 => roundVector6 message vector round
+      | 7 => roundVector7 message vector round
+      | _ => roundVector8 message vector round).size = 16 := by
+  cases stage <;> simp [roundVector1, roundVector2, roundVector3, roundVector4,
+    roundVector5, roundVector6, roundVector7, roundVector8, hvectorSize]
+
+/-- The eight compiled helper calls are exactly one pinned BLAKE2f round. -/
+theorem memoryModel_transition {memory : ByteArray}
+    {message vector : Array UInt64} (round : Nat)
+    (hround : round < 2 ^ 256)
+    (hmessageSize : message.size = 16) (hvectorSize : vector.size = 16)
+    (model : MemoryModel memory message vector) :
+    MemoryModel (Round.transition memory round) message
+      (Algorithm.roundStep message vector round) := by
+  have model1 : MemoryModel (Round.memory1 memory round) message
+      (roundVector1 message vector round) := by
+    simpa [Round.memory1, roundVector1] using
+      memoryModel_mixG round 0 4 8 12 0 1 hround hmessageSize hvectorSize
+        (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) model
+  have model2 : MemoryModel (Round.memory2 memory round) message
+      (roundVector2 message vector round) := by
+    simpa [Round.memory2, roundVector2] using
+      memoryModel_mixG round 1 5 9 13 2 3 hround hmessageSize
+        (roundVector_size message vector round 1 hvectorSize)
+        (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) model1
+  have model3 : MemoryModel (Round.memory3 memory round) message
+      (roundVector3 message vector round) := by
+    simpa [Round.memory3, roundVector3] using
+      memoryModel_mixG round 2 6 10 14 4 5 hround hmessageSize
+        (roundVector_size message vector round 2 hvectorSize)
+        (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) model2
+  have model4 : MemoryModel (Round.memory4 memory round) message
+      (roundVector4 message vector round) := by
+    simpa [Round.memory4, roundVector4] using
+      memoryModel_mixG round 3 7 11 15 6 7 hround hmessageSize
+        (roundVector_size message vector round 3 hvectorSize)
+        (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) model3
+  have model5 : MemoryModel (Round.memory5 memory round) message
+      (roundVector5 message vector round) := by
+    simpa [Round.memory5, roundVector5] using
+      memoryModel_mixG round 0 5 10 15 8 9 hround hmessageSize
+        (roundVector_size message vector round 4 hvectorSize)
+        (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) model4
+  have model6 : MemoryModel (Round.memory6 memory round) message
+      (roundVector6 message vector round) := by
+    simpa [Round.memory6, roundVector6] using
+      memoryModel_mixG round 1 6 11 12 10 11 hround hmessageSize
+        (roundVector_size message vector round 5 hvectorSize)
+        (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) model5
+  have model7 : MemoryModel (Round.memory7 memory round) message
+      (roundVector7 message vector round) := by
+    simpa [Round.memory7, roundVector7] using
+      memoryModel_mixG round 2 7 8 13 12 13 hround hmessageSize
+        (roundVector_size message vector round 6 hvectorSize)
+        (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) model6
+  have model8 : MemoryModel (Round.memory8 memory round) message
+      (roundVector8 message vector round) := by
+    simpa [Round.memory8, roundVector8] using
+      memoryModel_mixG round 3 4 9 14 14 15 hround hmessageSize
+        (roundVector_size message vector round 7 hvectorSize)
+        (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide) model7
+  simpa [Round.transition, Algorithm.roundStep, sigmaIndex,
+    roundVector8, roundVector7, roundVector6, roundVector5,
+    roundVector4, roundVector3, roundVector2, roundVector1] using model8
+
+/-- Functional invariant for an arbitrary number of compiled rounds. -/
+theorem memoryModel_memories {initial : ByteArray}
+    {message vector : Array UInt64} (count : Nat)
+    (hcount : count < 2 ^ 256)
+    (hmessageSize : message.size = 16) (hvectorSize : vector.size = 16)
+    (model : MemoryModel initial message vector) :
+    MemoryModel (Round.memories initial count) message
+      (Algorithm.rounds message count vector) := by
+  induction count with
+  | zero => simpa [Round.memories, Algorithm.rounds] using model
+  | succ count ih =>
+      rw [Round.memories, Algorithm.rounds]
+      apply memoryModel_transition count (by omega) hmessageSize
+      · simpa using hvectorSize
+      · exact ih (by omega)
+
 end Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness

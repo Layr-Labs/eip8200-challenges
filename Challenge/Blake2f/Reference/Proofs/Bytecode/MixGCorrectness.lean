@@ -147,4 +147,128 @@ theorem lanesAt_transition_embed (memory : ByteArray) (v : Array UInt64)
   rw [Algorithm.lanesAt_crypto_mixG v ai bi ci di x y
     hai hbi hci hdi habi haci hadi hbci hbdi hcdi]
 
+/-- Submission-facing whole-array refinement. A bytecode using consecutive
+32-byte slots may reuse this theorem for every quarter-round rather than
+re-proving target-lane updates and the frame rule. -/
+theorem representsAt_transition (memory : ByteArray) (v : Array UInt64)
+    (base ai bi ci di : Nat) (round xColumn yColumn : UInt256)
+    (x y : UInt64)
+    (represents : Memory.RepresentsAt memory base v)
+    (hx : MixG.messageWord memory (MixG.rowWord memory round) xColumn =
+      Word.ofUInt64 x)
+    (hy : MixG.messageWord memory (MixG.rowWord memory round) yColumn =
+      Word.ofUInt64 y)
+    (hfits : base + 32 * v.size < 2 ^ 256)
+    (hai : ai < v.size) (hbi : bi < v.size)
+    (hci : ci < v.size) (hdi : di < v.size)
+    (habi : ai ≠ bi) (haci : ai ≠ ci) (hadi : ai ≠ di)
+    (hbci : bi ≠ ci) (hbdi : bi ≠ di) (hcdi : ci ≠ di) :
+    Memory.RepresentsAt
+      (MixG.transition memory
+        (UInt256.ofNat (base + 32 * ai))
+        (UInt256.ofNat (base + 32 * bi))
+        (UInt256.ofNat (base + 32 * ci))
+        (UInt256.ofNat (base + 32 * di)) round xColumn yColumn)
+      base (Crypto.Blake2f.mixG v ai bi ci di x y) := by
+  let updated := Crypto.Blake2f.mixG v ai bi ci di x y
+  have hsize : updated.size = v.size := Algorithm.crypto_mixG_size _ _ _ _ _ _ _
+  have hfit (i : Nat) (hi : i < v.size) : base + 32 * i < 2 ^ 256 := by
+    omega
+  have htoNat (i : Nat) (hi : i < v.size) :
+      (UInt256.ofNat (base + 32 * i)).toNat = base + 32 * i := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (hfit i hi)]
+  have hab := Memory.wordDisjoint_slots base ai bi habi
+  have hac := Memory.wordDisjoint_slots base ai ci haci
+  have had := Memory.wordDisjoint_slots base ai di hadi
+  have hbc := Memory.wordDisjoint_slots base bi ci hbci
+  have hbd := Memory.wordDisjoint_slots base bi di hbdi
+  have hcd := Memory.wordDisjoint_slots base ci di hcdi
+  have hlanes := lanesAt_transition_embed memory v
+    (UInt256.ofNat (base + 32 * ai))
+    (UInt256.ofNat (base + 32 * bi))
+    (UInt256.ofNat (base + 32 * ci))
+    (UInt256.ofNat (base + 32 * di)) round xColumn yColumn ai bi ci di x y
+    (by simpa [htoNat ai hai, htoNat bi hbi] using hab)
+    (by simpa [htoNat ai hai, htoNat ci hci] using hac)
+    (by simpa [htoNat ai hai, htoNat di hdi] using had)
+    (by simpa [htoNat bi hbi, htoNat ci hci] using hbc)
+    (by simpa [htoNat bi hbi, htoNat di hdi] using hbd)
+    (by simpa [htoNat ci hci, htoNat di hdi] using hcd)
+    (by simpa [htoNat ai hai, htoNat bi hbi, htoNat ci hci, htoNat di hdi]
+      using (Memory.lanesAtWords_of_representsAt represents ai bi ci di
+        hai hbi hci hdi))
+    hx hy hai hbi hci hdi habi haci hadi hbci hbdi hcdi
+  intro i hi
+  have hiOld : i < v.size := by simpa [hsize] using hi
+  by_cases hia : i = ai
+  · subst i
+    exact congrArg Algorithm.Lanes.a hlanes
+  by_cases hib : i = bi
+  · subst i
+    exact congrArg Algorithm.Lanes.b hlanes
+  by_cases hic : i = ci
+  · subst i
+    exact congrArg Algorithm.Lanes.c hlanes
+  by_cases hid : i = di
+  · subst i
+    exact congrArg Algorithm.Lanes.d hlanes
+  have hframe := readWord_transition_disjoint memory
+    (UInt256.ofNat (base + 32 * i))
+    (UInt256.ofNat (base + 32 * ai))
+    (UInt256.ofNat (base + 32 * bi))
+    (UInt256.ofNat (base + 32 * ci))
+    (UInt256.ofNat (base + 32 * di)) round xColumn yColumn
+    (by simpa [htoNat i hiOld, htoNat ai hai] using
+      Memory.wordDisjoint_slots base i ai hia)
+    (by simpa [htoNat i hiOld, htoNat bi hbi] using
+      Memory.wordDisjoint_slots base i bi hib)
+    (by simpa [htoNat i hiOld, htoNat ci hci] using
+      Memory.wordDisjoint_slots base i ci hic)
+    (by simpa [htoNat i hiOld, htoNat di hdi] using
+      Memory.wordDisjoint_slots base i di hid)
+  rw [htoNat i hiOld] at hframe
+  rw [hframe, represents i hiOld]
+  exact congrArg Word.ofUInt64
+    (Algorithm.crypto_mixG_getElem!_other v ai bi ci di i x y hiOld
+      hia hib hic hid).symm
+
+/-- Frame rule for a represented array stored wholly before the helper's four
+target words. This keeps message-array invariants reusable across rounds. -/
+theorem representsAt_transition_before (memory : ByteArray)
+    (values : Array UInt64) (base : Nat)
+    (a b c d round xColumn yColumn : UInt256)
+    (represents : Memory.RepresentsAt memory base values)
+    (hfits : base + 32 * values.size < 2 ^ 256)
+    (ha : base + 32 * values.size ≤ a.toNat)
+    (hb : base + 32 * values.size ≤ b.toNat)
+    (hc : base + 32 * values.size ≤ c.toNat)
+    (hd : base + 32 * values.size ≤ d.toNat) :
+    Memory.RepresentsAt
+      (MixG.transition memory a b c d round xColumn yColumn) base values := by
+  intro i hi
+  have hslot : base + 32 * i < 2 ^ 256 := by omega
+  have hframe := readWord_transition_disjoint memory
+    (UInt256.ofNat (base + 32 * i)) a b c d round xColumn yColumn
+    (Or.inl (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt hslot]
+      omega))
+    (Or.inl (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt hslot]
+      omega))
+    (Or.inl (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt hslot]
+      omega))
+    (Or.inl (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt hslot]
+      omega))
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt hslot] at hframe
+  rw [hframe]
+  exact represents i hi
+
 end Challenge.Blake2f.Reference.Proofs.Bytecode.MixGCorrectness

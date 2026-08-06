@@ -51,4 +51,25 @@ def RepresentsAt (memory : ByteArray) (base : Nat) (values : Array UInt64) : Pro
     MachineState.readWord memory (base + 32 * i) =
       Word.ofUInt64 values[i]!
 
+/-- Distinct slots in the consecutive 32-byte layout never overlap. -/
+theorem wordDisjoint_slots (base i j : Nat) (hij : i ≠ j) :
+    WordDisjoint (base + 32 * i) (base + 32 * j) := by
+  unfold WordDisjoint
+  omega
+
+/-- Projecting represented slots produces the embedded algorithm lanes. -/
+theorem lanesAtWords_of_representsAt {memory : ByteArray} {base : Nat}
+    {values : Array UInt64} (represents : RepresentsAt memory base values)
+    (a b c d : Nat) (ha : a < values.size) (hb : b < values.size)
+    (hc : c < values.size) (hd : d < values.size) :
+    lanesAtWords memory (base + 32 * a) (base + 32 * b)
+        (base + 32 * c) (base + 32 * d) =
+      (Algorithm.lanesAt values a b c d).embed := by
+  apply Algorithm.Lanes.ext <;>
+    simp only [lanesAtWords, Algorithm.lanesAt, Algorithm.Lanes.embed]
+  · exact represents a ha
+  · exact represents b hb
+  · exact represents c hc
+  · exact represents d hd
+
 end Challenge.Blake2f.ProofSupport.Memory

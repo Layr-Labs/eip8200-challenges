@@ -110,6 +110,29 @@ theorem lanesAt_crypto_mixG (v : Array UInt64) (a b c d : Nat) (x y : UInt64)
     Ne.symm hab, Ne.symm hac, Ne.symm had, Ne.symm hbc, Ne.symm hbd,
     Ne.symm hcd]
 
+@[simp] theorem crypto_mixG_size (v : Array UInt64) (a b c d : Nat)
+    (x y : UInt64) :
+    (Crypto.Blake2f.mixG v a b c d x y).size = v.size := by
+  simp [Crypto.Blake2f.mixG, Array.set!_eq_setIfInBounds]
+
+@[simp] theorem getElem!_set!_other {α : Type} [Inhabited α] (values : Array α)
+    (target i : Nat) (value : α) (hi : i < values.size)
+    (hne : target ≠ i) :
+    (values.set! target value)[i]! = values[i]! := by
+  rw [Array.set!_eq_setIfInBounds]
+  rw [getElem!_pos _ i (by simpa using hi),
+    Array.getElem_setIfInBounds (by simpa using hi), if_neg hne]
+  exact (getElem!_pos values i hi).symm
+
+/-- A quarter-round leaves every non-target lane unchanged. -/
+theorem crypto_mixG_getElem!_other (v : Array UInt64)
+    (a b c d i : Nat) (x y : UInt64)
+    (hi : i < v.size) (hia : i ≠ a) (hib : i ≠ b)
+    (hic : i ≠ c) (hid : i ≠ d) :
+    (Crypto.Blake2f.mixG v a b c d x y)[i]! = v[i]! := by
+  simp [Crypto.Blake2f.mixG, hi,
+    Ne.symm hia, Ne.symm hib, Ne.symm hic, Ne.symm hid]
+
 /-- One complete BLAKE2b mixing round, including columns then diagonals. -/
 def roundStep (message : Array UInt64) (v : Array UInt64) (round : Nat) :
     Array UInt64 :=
@@ -133,5 +156,17 @@ def rounds (message : Array UInt64) : Nat → Array UInt64 → Array UInt64
 theorem rounds_succ (message v) (count : Nat) :
     rounds message (count + 1) v =
       roundStep message (rounds message count v) count := rfl
+
+@[simp] theorem roundStep_size (message v : Array UInt64) (round : Nat) :
+    (roundStep message v round).size = v.size := by
+  simp [roundStep]
+
+@[simp] theorem rounds_size (message : Array UInt64) (count : Nat)
+    (v : Array UInt64) :
+    (rounds message count v).size = v.size := by
+  induction count with
+  | zero => rfl
+  | succ count ih =>
+      rw [rounds_succ, roundStep_size, ih]
 
 end Challenge.Blake2f.ProofSupport.Algorithm

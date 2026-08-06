@@ -130,3 +130,27 @@ info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness.schedule_fin
 -/
 #guard_msgs in
 #print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness.schedule_finalMemory
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.MixGCorrectness.representsAt_transition' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.MixGCorrectness.representsAt_transition
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness.memoryModel_transition' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness.memoryModel_transition
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness.memoryModel_memories' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness.memoryModel_memories
