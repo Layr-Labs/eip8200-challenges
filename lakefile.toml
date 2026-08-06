@@ -35,6 +35,11 @@ rev = "26fdf59"
 [[lean_lib]]
 name = "Challenge"
 
+# CI-only axiom-footprint guards. Kept out of the default targets and in a
+# separate library so each challenge's checks can be built independently.
+[[lean_lib]]
+name = "Checks"
+
 # The Tier-1 scorer: runs a candidate implementation (Yul source or raw
 # bytecode) in the pinned executable EVM semantics over the FIPS and
 # padding-boundary vectors, and reports gas. Built natively rather than run
@@ -42,7 +47,7 @@ name = "Challenge"
 # interpreter's stack allows, and the scored runs are millions of steps.
 [[lean_exe]]
 name = "sha256challenge"
-root = "Main"
+root = "Sha256Main"
 
 [[lean_exe]]
 name = "modexpchallenge"

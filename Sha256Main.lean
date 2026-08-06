@@ -1,4 +1,4 @@
-import Challenge
+import Challenge.Sha256
 import YulParser.Compile
 set_option warningAsError true
 /-!
