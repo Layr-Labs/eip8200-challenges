@@ -25,22 +25,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      # Change the dependency cache only when this repository's import surface
-      # changes. Ordinary proof edits can reuse the same package workspace.
-      - name: Fingerprint Lean imports
-        id: lean-imports
-        run: |
-          import_hash="$({ git grep --no-color '^import ' -- '*.lean' || true; } | sort | sha256sum | cut -d' ' -f1)"
-          echo "hash=$import_hash" >> "$GITHUB_OUTPUT"
-
       - name: Compute shared cache keys
         id: cache-keys
         env:
           DEPENDENCY_HASH: ${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
-          IMPORT_HASH: ${{ steps.lean-imports.outputs.hash }}
           SHARED_HASH: ${{ hashFiles('lakefile.toml', 'Challenge/EvmProof.lean', 'Challenge/EvmProof/**/*.lean', 'Checks/EvmProof.lean') }}
         run: |
-          package_key="lake-packages-v2-${{ runner.os }}-${{ runner.arch }}-${DEPENDENCY_HASH}-${IMPORT_HASH}"
+          package_key="lake-packages-v3-${{ runner.os }}-${{ runner.arch }}-${DEPENDENCY_HASH}"
           shared_key="project-shared-v2-${{ runner.os }}-${{ runner.arch }}-${DEPENDENCY_HASH}-${SHARED_HASH}"
           echo "package-key=$package_key" >> "$GITHUB_OUTPUT"
           echo "shared-key=$shared_key" >> "$GITHUB_OUTPUT"
@@ -136,7 +127,9 @@ jobs:
       - name: Restore shared project build
         uses: actions/cache/restore@v5
         with:
-          path: .lake/build
+          path: |
+            .lake/build
+            .lake/packages/*/.lake/build/ir
           key: ${{ needs.shared-lean.outputs.shared-key }}
           fail-on-cache-miss: true
 
