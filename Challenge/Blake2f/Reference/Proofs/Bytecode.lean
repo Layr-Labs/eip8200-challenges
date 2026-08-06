@@ -10,6 +10,7 @@ import Challenge.Blake2f.Reference.Proofs.Bytecode.Output
 import Challenge.Blake2f.Reference.Proofs.Bytecode.OutputGas
 import Challenge.Blake2f.Reference.Proofs.Bytecode.OutputCorrectness
 import Challenge.Blake2f.Reference.Proofs.Bytecode.Prelude
+import Challenge.Blake2f.Reference.Proofs.Bytecode.ReferenceCorrect
 import Challenge.Blake2f.Reference.Proofs.Bytecode.Round
 import Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness
 import Challenge.Blake2f.Reference.Proofs.Bytecode.RoundGas
