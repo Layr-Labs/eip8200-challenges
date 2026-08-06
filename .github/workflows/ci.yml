@@ -139,6 +139,8 @@ jobs:
         with:
           path: .lake/build
           key: project-${{ matrix.slug }}-v1-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-${{ hashFiles(format('Challenge/{0}.lean', matrix.directory), format('Challenge/{0}/**', matrix.directory), matrix.main, format('Checks/{0}.lean', matrix.directory)) }}
+          # The final prefix can bootstrap the split from a base-branch cache
+          # during migration; challenge-local caches always take precedence.
           restore-keys: |
             project-${{ matrix.slug }}-v1-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-
             project-lake-build-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
