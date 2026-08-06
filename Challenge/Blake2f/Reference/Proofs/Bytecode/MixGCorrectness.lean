@@ -88,6 +88,32 @@ theorem lanesAt_transition (memory : ByteArray)
       land_eq, lor_eq, xor_eq,
       rab, rac, rad, rba, rbc, rbd, rca, rcb, rcd, rda, rdb, rdc]
 
+/-- Any word disjoint from the four target lanes is unchanged by the helper.
+This is the frame rule used to preserve message words and sigma rows across a
+round. -/
+theorem readWord_transition_disjoint (memory : ByteArray)
+    (readStart a b c d round xColumn yColumn : UInt256)
+    (ha : Memory.WordDisjoint readStart.toNat a.toNat)
+    (hb : Memory.WordDisjoint readStart.toNat b.toNat)
+    (hc : Memory.WordDisjoint readStart.toNat c.toNat)
+    (hd : Memory.WordDisjoint readStart.toNat d.toNat) :
+    MachineState.readWord
+        (MixG.transition memory a b c d round xColumn yColumn)
+        readStart.toNat =
+      MachineState.readWord memory readStart.toNat := by
+  have ra (m : ByteArray) (v : UInt256) :=
+    readWord_storeWord_disjoint m readStart a v ha
+  have rb (m : ByteArray) (v : UInt256) :=
+    readWord_storeWord_disjoint m readStart b v hb
+  have rc (m : ByteArray) (v : UInt256) :=
+    readWord_storeWord_disjoint m readStart c v hc
+  have rd (m : ByteArray) (v : UInt256) :=
+    readWord_storeWord_disjoint m readStart d v hd
+  simp [MixG.transition, MixG.secondStage, MixG.firstStage,
+    MixG.aMemory, MixG.dMemory, MixG.cMemory, MixG.firstMemory,
+    MixG.a2Memory, MixG.d2Memory, MixG.c2Memory, MixG.b2Memory,
+    ra, rb, rc, rd]
+
 /-- Submission-facing semantic form: once the four memory lanes and the two
 message words represent 64-bit algorithm values, the helper agrees with the
 pinned array implementation of `Crypto.Blake2f.mixG`. -/

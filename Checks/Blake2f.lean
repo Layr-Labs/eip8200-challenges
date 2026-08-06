@@ -98,3 +98,35 @@ info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.ScalarInitialization.fullGasS
 -/
 #guard_msgs in
 #print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.ScalarInitialization.fullGasSteps_cost
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.Round.iterationGasSteps_cost' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.Round.iterationGasSteps_cost
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.Round.loopGasSteps_cost' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.Round.loopGasSteps_cost
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness.iterationSafe_of_schedule' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness.iterationSafe_of_schedule
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness.schedule_finalMemory' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.RoundCorrectness.schedule_finalMemory
