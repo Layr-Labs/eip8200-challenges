@@ -31,6 +31,14 @@ info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.MixG.gasSteps_cost' depends o
 #print axioms Challenge.Blake2f.ProofSupport.Algorithm.lanesAt_crypto_mixG
 
 /--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.MixGCorrectness.lanesAt_transition_embed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.MixGCorrectness.lanesAt_transition_embed
+
+/--
 info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.Initialization.hLoopGasSteps_cost' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]

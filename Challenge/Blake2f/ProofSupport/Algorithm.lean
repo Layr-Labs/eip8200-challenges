@@ -23,6 +23,13 @@ structure Lanes (α : Type) where
   d : α
   deriving DecidableEq
 
+@[ext] theorem Lanes.ext {α : Type} {x y : Lanes α}
+    (ha : x.a = y.a) (hb : x.b = y.b) (hc : x.c = y.c) (hd : x.d = y.d) :
+    x = y := by
+  cases x
+  cases y
+  simp_all
+
 def Lanes.embed (v : Lanes UInt64) : Lanes UInt256 :=
   ⟨Word.ofUInt64 v.a, Word.ofUInt64 v.b, Word.ofUInt64 v.c,
     Word.ofUInt64 v.d⟩
