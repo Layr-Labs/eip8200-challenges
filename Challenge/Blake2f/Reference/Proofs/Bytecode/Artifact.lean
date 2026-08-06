@@ -631,5 +631,22 @@ theorem allWellFormed :
 
 def instructionPC (index : Nat) : Nat := referenceArtifact.instructionPC index
 
-end Challenge.Blake2f.Reference.Proofs.Bytecode.Artifact
+/-- Frozen instruction count, used to make numeric path literals elaborate cheaply. -/
+@[simp] theorem referenceInstructions_length : referenceInstructions.length = 588 := by
+  rfl
 
+/-- Proof-carrying instruction lookup for direct traces of the frozen artifact. -/
+def located (index : Fin 588) :
+    Challenge.EvmProof.Stepper.Located referenceArtifact .Osaka :=
+  Challenge.EvmProof.Stepper.Located.ofIndex allWellFormed
+    ⟨index.val, by
+      change index.val < referenceInstructions.length
+      rw [referenceInstructions_length]
+      exact index.isLt⟩
+
+/-- Turn a compact list of in-bounds instruction indices into a certified path. -/
+def locatedPath (indices : List (Fin 588)) :
+    List (Challenge.EvmProof.Stepper.Located referenceArtifact .Osaka) :=
+  indices.map located
+
+end Challenge.Blake2f.Reference.Proofs.Bytecode.Artifact
