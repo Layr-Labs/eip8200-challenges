@@ -61,3 +61,32 @@ info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.Initialization.constantsGasSt
 -/
 #guard_msgs in
 #print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.Initialization.constantsGasSteps_cost
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.ScalarInitialization.gasSteps' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.ScalarInitialization.gasSteps
+
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.ScalarInitialization.gasSteps_cost' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.ScalarInitialization.gasSteps_cost
+
+/-
+The entire valid-input prefix, through calldata decoding and work-vector setup,
+is certified without any project axioms beyond Lean's standard quotient and
+extensionality foundations.
+-/
+/--
+info: 'Challenge.Blake2f.Reference.Proofs.Bytecode.ScalarInitialization.fullGasSteps_cost' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms Challenge.Blake2f.Reference.Proofs.Bytecode.ScalarInitialization.fullGasSteps_cost
