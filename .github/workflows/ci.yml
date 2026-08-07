@@ -101,18 +101,28 @@ jobs:
             executable: sha256challenge
             main: Sha256Main.lean
             target: +Challenge.Sha256 sha256challenge
+            has_submission_checks: true
           - name: RIPEMD-160
             directory: Ripemd160
             slug: ripemd160
             executable: ripemd160challenge
             main: Ripemd160Main.lean
             target: +Challenge.Ripemd160 ripemd160challenge
+            has_submission_checks: true
           - name: MODEXP
             directory: Modexp
             slug: modexp
             executable: modexpchallenge
             main: ModexpMain.lean
             target: +Challenge.Modexp modexpchallenge
+            has_submission_checks: true
+          - name: BLAKE2f
+            directory: Blake2f
+            slug: blake2f
+            executable: blake2fchallenge
+            main: Blake2fMain.lean
+            target: +Challenge.Blake2f blake2fchallenge
+            has_submission_checks: true
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -202,6 +212,7 @@ jobs:
       # checks validate theorem type, bytecode identity, transitive axioms,
       # executable vectors, and optional proved gas schedules.
       - name: Verify ${{ matrix.name }} submissions and gas report
+        if: matrix.has_submission_checks
         run: |
           scripts/check-${{ matrix.slug }}-submissions.sh --self-test
           scripts/check-${{ matrix.slug }}-submissions.sh
@@ -228,6 +239,14 @@ jobs:
               ;;
             modexp)
               lake exe modexpchallenge
+              ;;
+            blake2f)
+              lake exe blake2fchallenge --hex=Challenge/Blake2f/Reference/reference.hex
+              printf '60406000f3' > /tmp/blake2f-zeros.hex
+              if lake exe blake2fchallenge --hex=/tmp/blake2f-zeros.hex; then
+                echo "::error::the BLAKE2f scorer accepted a candidate returning 64 zero bytes"
+                exit 1
+              fi
               ;;
           esac
 

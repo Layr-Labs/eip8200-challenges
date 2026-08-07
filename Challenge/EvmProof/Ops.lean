@@ -32,6 +32,21 @@ def of_running {s t : State} (cost : Nat)
     (by simpa [withGas] using hnp)
     (hstep gas hgas)
 
+/-- The explicit `INVALID` instruction halts exceptionally without charging
+an opcode fee. Keeping it in the shared stepper lets interface specifications
+cover precompile-style malformed-input failure paths. -/
+def invalid {s : State}
+    (hop : s.decodedOp = some .INVALID)
+    (hcap : s.stack.length + Operation.pushArity .INVALID ≤
+      1024 + Operation.popArity .INVALID)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with halt := .Exception .InvalidInstruction } := by
+  apply of_running 0 hrun hnp
+  intro gas _
+  simpa [withGas] using StepRunning.invalidOpcode (withGas s gas) hop hcap
+
 def add {s : State} {a b : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .ADD)
     (hstack : s.stack = a :: b :: rest)

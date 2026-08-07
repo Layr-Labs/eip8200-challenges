@@ -199,6 +199,7 @@ def runInstr (instruction : Instr) (s : State) : Option State :=
             stack := rest
             activeWords := s.activeWordsAfterUInt256 offset.toNat size.toNat }
         | _ => none
+    | .op .INVALID => some { s with halt := .Exception .InvalidInstruction }
     | _ => none
   else none
 
@@ -597,6 +598,30 @@ private def sound_jumpdest {s t : State}
       gas hgas
   · simp [runInstr, hcap] at hresult
 
+private def sound_invalid {s t : State}
+    (hdecode : s.decodedOp = some .INVALID)
+    (hresult : runInstr (.op .INVALID) s = some t)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨0, ?_⟩
+  intro gas _
+  by_cases hcap : s.stack.length < 1024
+  · rw [runInstr, if_pos hcap] at hresult
+    simp at hresult
+    subst t
+    exact (GasStep.invalid hdecode (stackCap s .INVALID hcap) hrun hnp).trace
+      gas (Nat.zero_le gas)
+  · simp [runInstr, hcap] at hresult
+
+@[simp] private theorem sound_invalid_cost {s t : State}
+    (hdecode : s.decodedOp = some .INVALID)
+    (hresult : runInstr (.op .INVALID) s = some t)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (sound_invalid hdecode hresult hrun hnp).cost = 0 := rfl
+
 /-- Every successful evaluator result is a gas-parametric trace in the
 relational EVM semantics. This is the only definition block proofs need to use. -/
 def runInstr_sound {instruction : Instr} {s t : State}
@@ -657,9 +682,14 @@ def runInstr_sound {instruction : Instr} {s t : State}
     | Dup n => exact (sound_dup n hdecode hresult hrun hnp).trace gas hgas
     | Swap n => exact (sound_swap n hdecode hresult hrun hnp).trace gas hgas
     | System op =>
-      cases op <;> first
-        | exact (sound_return hdecode hresult hrun hnp).trace gas hgas
-        | simp [runInstr] at hresult
+      cases op with
+      | RETURN => exact (sound_return hdecode hresult hrun hnp).trace gas hgas
+      | INVALID =>
+          simpa [instrCost, Gas.baseCost] using
+            (sound_invalid hdecode hresult hrun hnp).trace gas
+              (by simp)
+      | CREATE | CALL | CALLCODE | DELEGATECALL | CREATE2 | STATICCALL |
+          REVERT | SELFDESTRUCT => simp [runInstr] at hresult
     | Keccak op => cases op; simp [runInstr] at hresult
     | Block op => cases op <;> simp [runInstr] at hresult
     | Push op => simp [runInstr] at hresult
@@ -911,6 +941,47 @@ def runLocatedBlock {artifact : ProgramArtifact} {fork : Fork} :
               match next.halt with
               | .Running => runLocatedBlock rest next
               | _ => none
+
+/-- Compose two successful located traces through a running intermediate
+state.  This lets large bytecode certificates cache and reuse independently
+checked basic blocks. -/
+theorem runLocatedBlock_append {artifact : ProgramArtifact} {fork : Fork}
+    (left right : List (Located artifact fork)) (s t u : State)
+    (hleft : runLocatedBlock left s = some t)
+    (hrunning : t.halt = .Running)
+    (hright : runLocatedBlock right t = some u) :
+    runLocatedBlock (left ++ right) s = some u := by
+  induction left generalizing s with
+  | nil =>
+      simp [runLocatedBlock] at hleft
+      subst t
+      exact hright
+  | cons located rest ih =>
+      cases rest with
+      | nil =>
+          cases hnext : runLocated located s with
+          | none => simp [runLocatedBlock, hnext] at hleft
+          | some next =>
+              simp [runLocatedBlock, hnext] at hleft
+              subst next
+              cases right with
+              | nil => simpa [runLocatedBlock, hnext] using hright
+              | cons nextLocated tail =>
+                  simpa [runLocatedBlock, hnext, hrunning] using hright
+      | cons nextLocated tail =>
+          cases hnext : runLocated located s with
+          | none => simp [runLocatedBlock, hnext] at hleft
+          | some next =>
+              cases hhalt : next.halt with
+              | Running =>
+                  have hrest : runLocatedBlock (nextLocated :: tail) next = some t := by
+                    simpa [runLocatedBlock, hnext, hhalt] using hleft
+                  have happ := ih next hrest
+                  simpa [runLocatedBlock, hnext, hhalt] using happ
+              | Success => simp [runLocatedBlock, hnext, hhalt] at hleft
+              | Returned => simp [runLocatedBlock, hnext, hhalt] at hleft
+              | Reverted => simp [runLocatedBlock, hnext, hhalt] at hleft
+              | Exception error => simp [runLocatedBlock, hnext, hhalt] at hleft
 
 /-- Executable exact cost of a located path.  On successful paths this follows
 the same intermediate states as `runLocatedBlock`; failure branches are

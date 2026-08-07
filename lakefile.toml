@@ -56,3 +56,7 @@ root = "ModexpMain"
 [[lean_exe]]
 name = "ripemd160challenge"
 root = "Ripemd160Main"
+
+[[lean_exe]]
+name = "blake2fchallenge"
+root = "Blake2fMain"
