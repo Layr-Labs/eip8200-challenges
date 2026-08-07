@@ -122,7 +122,7 @@ jobs:
             executable: blake2fchallenge
             main: Blake2fMain.lean
             target: +Challenge.Blake2f blake2fchallenge
-            has_submission_checks: false
+            has_submission_checks: true
     steps:
       - name: Checkout
         uses: actions/checkout@v5

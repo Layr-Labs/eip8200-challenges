@@ -34,3 +34,25 @@ Optional gas proofs define a `GasFormula`, its evaluator schedule, and prove
 round count, final flag, validity, constants, addition, and multiplication.
 Universal proofs may use only Lean's standard logical axioms; measurements and
 fixed-artifact `native_decide` checks are not correctness proofs.
+
+Use these exact declarations in `Gas.lean` so the generated leaderboard can
+check and render the proved schedule:
+
+```lean
+def gasFormula : Challenge.Blake2f.GasFormula := by
+  -- symbolic expression
+
+def gasSchedule : ByteArray → Nat := gasFormula.eval
+
+theorem gasSchedule_correct :
+    Challenge.Blake2f.CorrectWithSchedule bytecode gasSchedule := by
+  -- proof
+```
+
+Run the same checks as CI with:
+
+```sh
+scripts/check-blake2f-submissions.sh
+scripts/report-blake2f-gas.sh
+scripts/check-blake2f-gas-report.sh
+```

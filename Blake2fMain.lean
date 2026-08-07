@@ -57,8 +57,9 @@ def main (args : List String) : IO UInt32 := do
       match outcome.gas? with | some gas => toString gas | none => "-"
     let roundsText := if v.valid then toString (Challenge.Blake2f.rounds v.input) else "-"
     if csv then
-      IO.println s!"{v.label},{v.input.size},{roundsText},clean,{status},{gasText clean}"
-      IO.println s!"{v.label},{v.input.size},{roundsText},dirty,{status},{gasText dirty}"
+      let csvLabel := v.label.replace "," ""
+      IO.println s!"{csvLabel},{v.input.size},{roundsText},clean,{status},{gasText clean}"
+      IO.println s!"{csvLabel},{v.input.size},{roundsText},dirty,{status},{gasText dirty}"
     else
       IO.println s!"{pad v.label 24}{pad (toString v.input.size) 7}{pad roundsText 9}{pad (gasText clean) 12}{pad (gasText dirty) 12}{status}"
   if !csv then
