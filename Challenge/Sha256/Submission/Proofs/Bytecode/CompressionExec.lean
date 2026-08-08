@@ -1,5 +1,6 @@
 import Challenge.Sha256.Submission.Proofs.Bytecode.Schedule
 import Challenge.Sha256.Submission.Proofs.Bytecode.BigSigma
+import Challenge.Sha256.Submission.Proofs.Bytecode.PaddedBlockBridge
 set_option warningAsError true
 set_option maxRecDepth 10000
 set_option maxHeartbeats 5000000
@@ -18,6 +19,43 @@ open EvmSemantics.EVM
 
 @[simp] private theorem wordOfNatZero : UInt256.ofNat 0 = 0 := by decide
 @[simp] private theorem wordStructZero : ({ val := 0 } : UInt256) = 0 := by decide
+
+private theorem activeWordsAfter_small (curr offset : Nat)
+    (hcurr : 10 ≤ curr) (hoff : offset + 32 ≤ 320) :
+    MachineState.activeWordsAfter curr offset 32 = curr := by
+  unfold MachineState.activeWordsAfter
+  simp only [OfNat.ofNat, Nat.reduceEqDiff, ↓reduceIte]
+  apply Nat.max_eq_left
+  have hdiv : (offset + 32 - 1) / 32 < 10 := by
+    rw [Nat.div_lt_iff_lt_mul (by decide)]
+    omega
+  exact (Nat.succ_le_iff.mpr hdiv).trans hcurr
+
+private theorem activeWordsAfter_ge_ten (curr offset : Nat)
+    (hoff : 288 ≤ offset) :
+    10 ≤ MachineState.activeWordsAfter curr offset 32 := by
+  unfold MachineState.activeWordsAfter
+  simp only [OfNat.ofNat, Nat.reduceEqDiff, ↓reduceIte]
+  apply le_trans _ (Nat.le_max_right curr ((offset + 32 - 1) / 32 + 1))
+  have hdiv : 9 ≤ (offset + 32 - 1) / 32 := by
+    apply (Nat.le_div_iff_mul_le (by decide)).2
+    omega
+  exact Nat.succ_le_succ hdiv
+
+private theorem activeWordsAfter_lt (curr offset limit : Nat)
+    (hcurr : curr < limit) (hoff : offset + 32 < limit) :
+    MachineState.activeWordsAfter curr offset 32 < limit := by
+  unfold MachineState.activeWordsAfter
+  simp only [OfNat.ofNat, Nat.reduceEqDiff, ↓reduceIte]
+  rw [max_lt_iff]
+  constructor
+  · exact hcurr
+  · have hdiv := Nat.div_le_self (offset + 32 - 1) 32
+    calc
+      (offset + 32 - 1) / 32 + 1 ≤ (offset + 32 - 1) + 1 :=
+        Nat.add_le_add_right hdiv 1
+      _ = offset + 32 := by omega
+      _ < limit := hoff
 
 private def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
@@ -67,28 +105,28 @@ def setupWPath :
 
 def setupKPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨462, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨463, .push ⟨2, by decide⟩ (UInt256.ofNat 671), by rfl, by decide⟩,
-   ⟨464, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨465, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨466, .push ⟨2, by decide⟩ (UInt256.ofNat 257), by rfl, by decide⟩,
-   ⟨467, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨462, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨463, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
+   ⟨464, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨465, .push ⟨1, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
+   ⟨466, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨467, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨468, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨469, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupH6Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨468, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨469, .push ⟨2, by decide⟩ (UInt256.ofNat 703), by rfl, by decide⟩,
-   ⟨470, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨471, .push ⟨2, by decide⟩ (UInt256.ofNat 480), by rfl, by decide⟩,
-   ⟨472, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨473, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨474, .push ⟨3, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨475, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨470, .push ⟨3, by decide⟩ (UInt256.ofNat 703), by rfl, by decide⟩,
+   ⟨471, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
+   ⟨472, .push ⟨2, by decide⟩ (UInt256.ofNat 480), by rfl, by decide⟩,
+   ⟨473, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨474, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨475, .push ⟨3, by decide⟩ 0, by rfl, by decide⟩,
+   ⟨476, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupH5Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨476, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨477, .push ⟨2, by decide⟩ (UInt256.ofNat 448), by rfl, by decide⟩,
+  [⟨477, .push ⟨3, by decide⟩ (UInt256.ofNat 448), by rfl, by decide⟩,
    ⟨478, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨479, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨480, .push ⟨3, by decide⟩ 0, by rfl, by decide⟩,
@@ -782,8 +820,8 @@ def compressReturned (s : State) (returnDest : UInt256)
 @[simp] private theorem t1PC (i : Nat) (hlo : 453 ≤ i) (hhi : i ≤ 502) :
     Artifact.referenceArtifact.instructionPC i =
       [643, 646, 647, 652, 653, 655, 656, 659, 660, 661,
-       662, 665, 666, 667, 670, 671, 672, 675, 676, 679,
-       680, 681, 685, 686, 687, 690, 691, 692, 696, 697,
+       662, 664, 665, 667, 668, 669, 670, 671, 675, 676,
+       679, 680, 681, 685, 686, 690, 691, 692, 696, 697,
        698, 699, 702, 703, 704, 705, 708, 709, 710, 713,
        714, 715, 718, 719, 724, 725, 726, 727, 728, 729][i - 453]! := by
   interval_cases i <;> decide
@@ -904,27 +942,101 @@ theorem run_setupW (s : State) (msgOff returnDest : UInt256)
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupK (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (j : Nat) (hcap : rest.length < 1014)
-    (hcode : s.executionEnv.code = submissionBytecode)
+    (rest : List UInt256) (j : Nat) (hj : j < 64)
+    (hcap : rest.length < 1014)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupKPath
       (gotW s msgOff returnDest rest j) =
-        some (callK s msgOff returnDest rest j) := by
+        some (gotK s msgOff returnDest rest j) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
-  have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 257 = true := by decide
-  simp [setupKPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+  have hshift :
+      (UInt256.ofNat j).shiftLeft (UInt256.ofNat 2) =
+        UInt256.ofNat (j * 4) := by
+    simpa using Challenge.EvmProof.Word.shiftLeft_ofNat
+      (value := j) (shift := 2) (by omega) (by decide) (by omega)
+  have hdirect :
+      (UInt256.ofNat 4 + (UInt256.ofNat j).shiftLeft
+        (UInt256.ofNat 2)).toNat = 4 + j * 4 := by
+    rw [hshift, Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have hkoff :
+      ((UInt256.ofNat j).shiftLeft (UInt256.ofNat 2) +
+        UInt256.ofNat 32).toNat = 32 + j * 4 := by
+    rw [hshift, Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    omega
+  have hmask :
+      Challenge.EvmProof.Word.mask32
+          (MachineState.readWord s.memory (4 + j * 4)) = kValue s j := by
+    unfold kValue
+    rw [hkoff, PaddedBlockBridge.shiftRight_readWord_224,
+      PaddedBlockBridge.mask32_readWord_last4]
+    have hoff : 4 + j * 4 + 28 = 32 + j * 4 := by omega
+    rw [hoff]
+  have hand (a b : UInt256) : a &&& b = b &&& a := by
+    apply Challenge.EvmProof.Word.word_ext
+    change (a.val &&& b.val).val = (b.val &&& a.val).val
+    rw [Fin.and_val, Fin.and_val, Nat.and_comm]
+  have hmask' :
+      UInt256.ofNat 0xffffffff &&&
+          MachineState.readWord s.memory (4 + j * 4) = kValue s j := by
+    rw [hand]
+    simpa [Challenge.EvmProof.Word.mask32] using hmask
+  have hslotW :
+      Accessors.slotOffset 800 (UInt256.ofNat j) = 800 + j * 32 := by
+    unfold Accessors.slotOffset
+    rw [Challenge.EvmProof.Word.shiftLeft_ofNat
+        (value := j) (shift := 5) (by omega) (by decide) (by omega)]
+    rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    omega
+  have hcurr : (loadedE s).activeWords.toNat < 2 ^ 256 := by
+    change (loadedE s).activeWords.val.val < UInt256.size
+    exact (loadedE s).activeWords.val.isLt
+  have hnext : MachineState.activeWordsAfter
+      (loadedE s).activeWords.toNat (800 + j * 32) 32 < 2 ^ 256 := by
+    apply activeWordsAfter_lt
+    · exact hcurr
+    · omega
+  have hgotW : 10 ≤ (gotW s msgOff returnDest rest j).activeWords.toNat := by
+    simp only [gotW, Accessors.loadReturned]
+    rw [State.activeWordsAfterUInt256, hslotW,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hnext]
+    apply activeWordsAfter_ge_ten
+    omega
+  have hactiveD : MachineState.activeWordsAfter
+      (gotW s msgOff returnDest rest j).activeWords.toNat
+      (4 + j * 4) 32 = (gotW s msgOff returnDest rest j).activeWords.toNat :=
+    activeWordsAfter_small _ _ hgotW (by omega)
+  have hactiveK : MachineState.activeWordsAfter
+      (gotW s msgOff returnDest rest j).activeWords.toNat
+      (32 + j * 4) 32 = (gotW s msgOff returnDest rest j).activeWords.toNat :=
+    activeWordsAfter_small _ _ hgotW (by omega)
+  have hactiveEq :
+      (gotW s msgOff returnDest rest j).activeWordsAfterUInt256
+          (4 + j * 4) 32 =
+        (gotW s msgOff returnDest rest j).activeWordsAfterUInt256
+          (32 + j * 4) 32 := by
+    unfold State.activeWordsAfterUInt256
+    rw [hactiveD, hactiveK]
+  simp_all [setupKPath,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotW, callK, wValue, hValue, loadedE, Accessors.loadReturned,
-    Accessors.loadEntry, Accessors.slotOffset, List.exchange, hc3, hc4,
-    hc5, hc6, hc7, hc8, hc9, hc10, hcode, hrun, hdest]
+    gotW, gotK, wValue, hValue, kValue, loadedE,
+    Accessors.loadReturned, Accessors.kAtReturned, Accessors.slotOffset,
+    Challenge.EvmProof.Word.mask32, List.exchange, hc3, hc4, hc5, hc6,
+    hc7, hc8, hc9, hc10, hshift, hdirect, hkoff, hmask', hrun,
+    hactiveD, hactiveK, hactiveEq]
+  constructor
+  · exact hactiveEq
+  · exact (hand _ _).trans hmask
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupH6 (s : State) (msgOff returnDest : UInt256)

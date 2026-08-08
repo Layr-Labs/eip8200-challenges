@@ -100,6 +100,27 @@ private theorem readPadded_thirtyTwo_split (bs : ByteArray) (off : Nat) :
       congr 2
       omega
 
+private theorem readPadded_thirtyTwo_split_last (bs : ByteArray) (off : Nat) :
+    MachineState.readPadded bs off 32 =
+      MachineState.readPadded bs off 28 ++
+        MachineState.readPadded bs (off + 28) 4 := by
+  apply ByteArray.ext_getElem
+  · simp
+  · intro i hi₁ hi₂
+    rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hi₁,
+      ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hi₂,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD]
+    have hi : i < 32 := by simpa using hi₁
+    rw [if_pos hi, Challenge.EvmProof.Memory.getElem?_getD_append]
+    simp only [Challenge.EvmProof.Memory.readPadded_size]
+    by_cases h28 : i < 28
+    · rw [if_pos h28,
+        Challenge.EvmProof.Memory.readPadded_getElem?_getD, if_pos h28]
+    · rw [if_neg h28,
+        Challenge.EvmProof.Memory.readPadded_getElem?_getD, if_pos (by omega)]
+      congr 2
+      omega
+
 private theorem foldl_bytes (xs : List UInt8) (acc : Nat) :
     xs.foldl (fun n b => n * 256 + b.toNat) acc =
       acc * 256 ^ xs.length +
@@ -196,6 +217,47 @@ theorem shiftRight_readWord_224 (bs : ByteArray) (off : Nat) :
     Challenge.EvmProof.Word.word_toNat_ofNat, UInt32.toNat_ofNat']
   have hpow32 : (2 : Nat) ^ 32 = 256 ^ 4 := by norm_num
   rw [hpow32, Nat.mod_eq_of_lt hfirst]
+
+/-- The low 32 bits of an EVM word loaded 28 bytes before `off` are the
+same four-byte big-endian value that `MLOAD off; SHR 224` returns. -/
+theorem mask32_readWord_last4 (bs : ByteArray) (off : Nat) :
+    Challenge.EvmProof.Word.mask32 (MachineState.readWord bs off) =
+      Challenge.EvmProof.Word.ofUInt32 (Sha256.readBE32 bs (off + 28)) := by
+  let first := Data.Bytes.bytesToBigEndianNat
+    (MachineState.readPadded bs off 28)
+  let last := Data.Bytes.bytesToBigEndianNat
+    (MachineState.readPadded bs (off + 28) 4)
+  have hfirst : first < 256 ^ 28 := by
+    simpa [first] using bytesToBigEndianNat_lt
+      (MachineState.readPadded bs off 28)
+  have hlast : last < 256 ^ 4 := by
+    simpa [last] using bytesToBigEndianNat_lt
+      (MachineState.readPadded bs (off + 28) 4)
+  have hsplit : Data.Bytes.bytesToBigEndianNat
+      (MachineState.readPadded bs off 32) = first * 256 ^ 4 + last := by
+    rw [readPadded_thirtyTwo_split_last, bytesToBigEndianNat_append]
+    simp [first, last]
+  have hvalue : Data.Bytes.bytesToBigEndianNat
+      (MachineState.readPadded bs off 32) < 2 ^ 256 := by
+    rw [hsplit]
+    have hcombine : first * 256 ^ 4 + last < 256 ^ 32 := by
+      have hpowSplit : (256 : Nat) ^ 32 = 256 ^ 28 * 256 ^ 4 := by ring
+      rw [hpowSplit]
+      omega
+    norm_num at hcombine
+    exact hcombine
+  rw [readBE32_eq_readPadded]
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.mask32_toNat,
+    Challenge.EvmProof.Word.ofUInt32_toNat]
+  unfold MachineState.readWord
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    UInt32.toNat_ofNat', Nat.mod_eq_of_lt hvalue, hsplit]
+  rw [show 0xffffffff = 2 ^ 32 - 1 by norm_num,
+    Nat.and_two_pow_sub_one_eq_mod]
+  have hpow32 : (2 : Nat) ^ 32 = 256 ^ 4 := by norm_num
+  rw [hpow32]
+  simp [Nat.add_mod, last]
 
 /-- Reading after the message base in the concrete padded memory is the same
 zero-padded byte window as reading at the corresponding relative offset in

@@ -89,9 +89,10 @@ when executable behavior is correct.
 | Direct fixed `h5` | 8,984,647 | -162,240 | Submitted, validating when logged |
 | Direct fixed `h7` | 8,822,407 | -162,240 | Submitted, validating when logged |
 | Seven remaining fixed loads | 7,686,727 | -1,135,680 | Proof-complete; submitted for validation |
-| Inline variable `W[j]` load | 7,545,287 | -141,440 | Proof-complete; full Yukon gate next |
+| Inline variable `W[j]` load | 7,545,287 | -141,440 | Proof-complete; submitted for validation |
+| Inline overlapping `K[j]` load | 7,395,527 | -149,760 | Proof-complete; full Yukon gate running |
 
-The cumulative verified improvement is 2,633,832 gas versus the reference
+The cumulative verified improvement is 2,783,592 gas versus the reference
 public score.
 
 ## What worked
@@ -169,6 +170,16 @@ kernel-reducible lemma such as
 memory-read and high-water-mark obligations. This pattern is now added before
 the first expensive replay.
 
+### Memory high-water marks need an explicit invariant
+
+The first `K[j]` proof attempts established the loaded word equality but left
+64 identical active-memory goals, one for every round index. Enumerating the
+indices only duplicated the same obligation. The final proof factors three
+small lemmas: the earlier `W[j]` load expands memory beyond ten words, both K
+windows end at or below byte 320, and a sub-320 load cannot expand an already
+ten-word state. This closes every round uniformly and documents the modular
+`UInt256` high-water conversion instead of relying on simplifier arithmetic.
+
 ## Current seven-load hypothesis
 
 Call-graph inspection initially suggested that four state shifts used a
@@ -194,9 +205,9 @@ fell from 136,987 to 119,515, exactly 17,472. The predicted suite score is
 
 ## Next optimization direction
 
-After the inline `W[j]` candidate clears the full Yukon gate, inspect the
-remaining per-round dynamic paths for a second accessor removal or an
-instruction-neutral stack schedule. Favor changes that reuse an existing
-semantic boundary and preserve both byte length and the 810-instruction
-artifact. Measure exact temporary bytes across every clean and dirty vector
-before investing in another compression proof replay.
+After the inline `K[j]` candidate clears the full Yukon gate, specialize the
+five remaining fixed-index state shifts by fusing each `hAt` load and `hSet`
+store into direct `MLOAD`/`MSTORE` sequences. The measured byte layouts preserve
+each local span and the 810-instruction artifact, with a projected 748,800-gas
+suite reduction. The larger fused `BSIG0` schedule remains queued behind that
+lower-risk batch.
