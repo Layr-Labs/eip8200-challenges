@@ -52,21 +52,16 @@ private theorem shift_cost_potential
     (Compression.gasSteps_shift loadPath storePath q src dest loadReturn
       storeReturn startPC context hload hstore hpc hstack hcap hcode hfork hrun
       hnp).cost + MachineState.memCost q.activeWords.toNat =
-      loadWork + 32 + storeWork + 24 + MachineState.memCost
+      loadWork + storeWork + 24 + MachineState.memCost
         (Compression.shiftReturned q src dest loadReturn storeReturn context).activeWords.toNat := by
   have hsetupLoad := blockCost_potential_of_static loadPath loadWork
     (Compression.run_shiftLoad loadPath q src loadReturn storeReturn startPC
-      context hload hpc hstack (by omega) hcode hrun) hfork
+      context hload hpc hstack (by omega) hrun) hfork
     (by rcases hload with h | h | h | h <;>
         rcases h with ⟨rfl, rfl, rfl, rfl, rfl⟩ <;>
         simp [Compression.shift76Path, Compression.shift65Path,
           Compression.shift32Path, Compression.shift21Path, CopyFree])
     hloadWork
-  have hget := CompressionGas.hAt_cost_potential q (UInt256.ofNat src) 0
-    (UInt256.ofNat loadReturn) (UInt256.ofNat storeReturn :: context)
-    (by simp; omega) hcode hfork hrun hnp (by
-      rcases hload with h | h | h | h <;>
-        rcases h with ⟨_, rfl, rfl, rfl, _⟩ <;> decide)
   have qLoadedCode :
       (Compression.shiftLoaded q src loadReturn storeReturn context).executionEnv.code =
         submissionBytecode := by
@@ -99,9 +94,6 @@ private theorem shift_cost_potential
     qLoadedRun qLoadedNp (by
       rcases hstore with h | h | h | h <;>
         rcases h with ⟨_, rfl, rfl, rfl, rfl⟩ <;> decide)
-  have hawLoad :
-      (Compression.shiftLoadEntry q src loadReturn storeReturn context).activeWords =
-        q.activeWords := by rfl
   have hawStore :
       (Compression.shiftStoreEntry q src dest loadReturn storeReturn context).activeWords =
         (Compression.shiftLoaded q src loadReturn storeReturn context).activeWords := by
@@ -109,10 +101,7 @@ private theorem shift_cost_potential
   unfold Compression.gasSteps_shift
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  rw [hawLoad] at hsetupLoad
   rw [hawStore] at hsetupStore
-  change _ = 32 + MachineState.memCost
-    (Compression.shiftLoaded q src loadReturn storeReturn context).activeWords.toNat at hget
   change _ = 24 + MachineState.memCost
     (Compression.shiftReturned q src dest loadReturn storeReturn context).activeWords.toNat at hset
   omega
@@ -127,7 +116,7 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gasSteps_updates s msgOff returnDest rest j hj hcap hcode
       hfork hrun hnp).cost + MachineState.memCost
         (Compression.afterT2 s msgOff returnDest rest j).activeWords.toNat =
-      554 + MachineState.memCost
+      359 + MachineState.memCost
         (Compression.afterSecondIteration s msgOff returnDest rest j).activeWords.toNat := by
   let ctx := Compression.roundContext s msgOff returnDest rest j
   have hctx : ctx.length < 1016 := by simp [ctx, Compression.roundContext]; omega
@@ -139,7 +128,7 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
   have q0np : Precompile.isPrecompileWithConfig q0.executionEnv.precompileConfig q0.executionEnv.fork
       q0.executionEnv.codeAddr = false := by simpa [q0] using hnp
   have hs7 := shift_cost_potential Compression.shift76Path
-    Compression.store7Path q0 6 7 796 803 783 22 15 ctx
+    Compression.store7Path q0 6 7 796 803 783 15 15 ctx
     (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩)
     (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩) (by rfl) (by rfl) hctx
     q0code q0fork q0run q0np (by rfl) (by rfl)
@@ -162,7 +151,7 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
       Accessors.storeReturned, Compression.shiftLoaded,
       Accessors.loadReturned] using q0np
   have hs6 := shift_cost_potential Compression.shift65Path
-    Compression.store6Path q1 5 6 817 824 803 23 15 ctx
+    Compression.store6Path q1 5 6 817 824 803 16 15 ctx
     (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩))
     (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩))
     (by rfl) (by rfl) hctx q1code q1fork q1run q1np (by rfl) (by rfl)
@@ -199,15 +188,10 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
       q3.executionEnv.codeAddr = false := by
     simpa [q3, Compression.afterStoreE, Compression.directStored] using q2np
   have hsetupH4 := blockCost_potential_of_static
-    Compression.setupH3ForH4Path 28
+    Compression.setupH3ForH4Path 21
     (Compression.run_setupH3ForH4 s msgOff returnDest rest j (by omega)
-      hcode hrun) q3fork
+      hrun) q3fork
     (by simp [Compression.setupH3ForH4Path, CopyFree]) (by rfl)
-  have hgetH4 := CompressionGas.hAt_cost_potential q3 (UInt256.ofNat 3) 0
-    (UInt256.ofNat 849)
-    ([Compression.t1 s j, UInt256.ofNat 0xffffffff, UInt256.ofNat 858] ++ ctx)
-    (by simp [ctx, Compression.roundContext]; omega) q3code q3fork q3run q3np
-    (by decide)
   have hstoreH4 := blockCost_potential_of_static Compression.storeH4Path 21
     (Compression.run_storeH4 s msgOff returnDest rest j (by omega) hcode hrun)
     (by simpa [Compression.h4Loaded, Accessors.loadReturned, State.fork]
@@ -238,7 +222,7 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
     simpa [q4, Compression.afterStoreH4, Accessors.storeReturned,
       Compression.h4Loaded, Accessors.loadReturned] using q3np
   have hs3 := shift_cost_potential Compression.shift32Path
-    Compression.store3Path q4 2 3 872 879 858 23 15 ctx
+    Compression.store3Path q4 2 3 872 879 858 16 15 ctx
     (Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩)))
     (Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩)))
     (by rfl) (by rfl) hctx q4code q4fork q4run q4np (by rfl) (by rfl)
@@ -275,7 +259,7 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
     simpa [q5rawState, Compression.shiftReturned, Accessors.storeReturned,
       Compression.shiftLoaded, Accessors.loadReturned] using q4np
   have hs2 := shift_cost_potential Compression.shift21Path
-    Compression.store2Path q5rawState 1 2 893 900 879 23 15 ctx
+    Compression.store2Path q5rawState 1 2 893 900 879 16 15 ctx
     (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl, rfl, rfl⟩)))
     (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl, rfl, rfl⟩)))
     (by rfl) (by rfl) hctx q5rawCode q5rawFork q5rawRun q5rawNp
@@ -290,38 +274,31 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
   unfold Compression.gasSteps_updates
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  have hawH4Load :
-      (Compression.h4LoadEntry s msgOff returnDest rest j).activeWords =
-        q3.activeWords := by rfl
   have hawH4Store :
       (Compression.h4StoreEntry s msgOff returnDest rest j).activeWords =
         (Compression.h4Loaded s msgOff returnDest rest j).activeWords := by rfl
-  rw [hawH4Load] at hsetupH4
   rw [hawH4Store] at hstoreH4
-  change _ = 32 + MachineState.memCost
-    (Compression.h4Loaded s msgOff returnDest rest j).activeWords.toNat at hgetH4
   change _ = 24 + MachineState.memCost
     q4.activeWords.toNat at hsetH4
-  change _ = 93 + MachineState.memCost q1.activeWords.toNat at hs7
-  change _ = 94 + MachineState.memCost q2.activeWords.toNat at hs6
-  change _ = 94 + MachineState.memCost q5rawState.activeWords.toNat at hs3
-  change _ = 94 + MachineState.memCost
+  change _ = 54 + MachineState.memCost q1.activeWords.toNat at hs7
+  change _ = 55 + MachineState.memCost q2.activeWords.toNat at hs6
+  change _ = 55 + MachineState.memCost q5rawState.activeWords.toNat at hs3
+  change _ = 55 + MachineState.memCost
     (Compression.afterShift2 s msgOff returnDest rest j).activeWords.toNat at hs2
   dsimp only [q0, q1, q2, q3, q4, q5, q5rawState, ctx] at *
   have h₁ := potential_trans hs7 hs6
   have h₂ := potential_trans h₁ hstoreE
   have h₃ := potential_trans h₂ hsetupH4
-  have h₄ := potential_trans h₃ hgetH4
-  have h₅ := potential_trans h₄ hstoreH4
-  have h₆ := potential_trans h₅ hsetH4
-  have h₇ := potential_trans h₆ hs3
-  have h₈ := potential_trans h₇ hs2
-  have h₉ := potential_trans h₈ hfinish
-  unfold Compression.gasSteps_shift at h₉ ⊢
+  have h₄ := potential_trans h₃ hstoreH4
+  have h₅ := potential_trans h₄ hsetH4
+  have h₆ := potential_trans h₅ hs3
+  have h₇ := potential_trans h₆ hs2
+  have h₈ := potential_trans h₇ hfinish
+  unfold Compression.gasSteps_shift at h₈ ⊢
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost,
-    Compression.afterShift2, Compression.afterShift3] at h₉ ⊢
-  simpa only [Nat.add_assoc, Nat.reduceAdd] using h₉
+    Compression.afterShift2, Compression.afterShift3] at h₈ ⊢
+  simpa only [Nat.add_assoc, Nat.reduceAdd] using h₈
 
 
 end Challenge.Sha256.Submission.Proofs.Bytecode.CompressionGas

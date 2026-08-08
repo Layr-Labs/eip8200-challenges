@@ -78,14 +78,25 @@ The fixed `h7` load later in T1 is specialized identically, eliminating a third
 hot `hAt` call while keeping its following arithmetic at the same PC. This
 saves a further 39 gas per round and 162,240 gas over the suite.
 
-Fresh local scoring of the exact submission bytes projects 8,822,407 versus
-the 10,179,119 reference, a combined reduction of 1,356,712 gas. All 19 vectors
-passed from both clean and dirty initial states with identical gas.
+The remaining seven fixed-index state loads in T2 and the working-state update
+sequence are now specialized in one length-preserving batch. The two T2 loads
+read `h2` and `h1` directly. The update sequence directly reads `h6`, `h5`,
+`h3`, `h2`, and `h1` before their corresponding stores. Each site replaces the
+generic `hAt` call and return with `PUSH2 address; MLOAD`, followed by unreachable
+`JUMPDEST; PUSH3 0; POP` padding that preserves the next real instruction and
+every later program counter. Each direct load saves 39 gas per round. Together
+the seven sites save 273 gas per round, 17,472 gas per padded block, and
+1,135,680 gas over the public suite.
+
+Fresh local scoring of the exact submission bytes is 7,686,727 versus the
+10,179,119 reference, a combined reduction of 2,492,392 gas. All 19 vectors
+passed from both clean and dirty initial states with identical gas. The empty
+vector costs 119,515 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 135,196
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 117,724
 gas per padded block, plus calldata copying and memory expansion.

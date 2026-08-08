@@ -462,28 +462,14 @@ def gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
       Accessors.kAtReturned] using hnp
   have gSetupH2 : Challenge.EvmProof.GasSteps
       (afterT1 s msgOff returnDest rest j)
-      (callT2H2 s msgOff returnDest rest j) := by
+      (gotT2H2 s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupT2H2Path
     · exact qT1code
     · exact qT1fork
-    · exact run_setupT2H2 s msgOff returnDest rest j (by omega) hcode hrun
+    · exact run_setupT2H2 s msgOff returnDest rest j (by omega) hrun
     · exact qT1run
     · exact qT1np
-  have qAcode : (loadedA s msgOff returnDest rest j).executionEnv.code =
-      submissionBytecode := by simpa [loadedA] using qT1code
-  have qAfork : (loadedA s msgOff returnDest rest j).fork = .Osaka := by
-    simpa [loadedA, State.fork] using qT1fork
-  have qArun : (loadedA s msgOff returnDest rest j).halt = .Running := by
-    simpa [loadedA] using qT1run
-  have qAnp : Precompile.isPrecompileWithConfig (loadedA s msgOff returnDest rest j).executionEnv.precompileConfig (loadedA s msgOff returnDest rest j).executionEnv.fork
-      (loadedA s msgOff returnDest rest j).executionEnv.codeAddr = false := by
-    simpa [loadedA] using qT1np
-  have gH2 := Accessors.gasSteps_hAt (loadedA s msgOff returnDest rest j)
-    (UInt256.ofNat 2) 0 (UInt256.ofNat 753)
-    ([0, UInt256.ofNat 770, UInt256.ofNat 0xffffffff, hValue s 0,
-      t1 s j, hValue s 4, UInt256.ofNat j, msgOff, returnDest] ++ rest)
-    (by simp; omega) qAcode qAfork qArun qAnp (by decide)
   have qH2code : (gotT2H2 s msgOff returnDest rest j).executionEnv.code =
       submissionBytecode := by
     change (afterT1 s msgOff returnDest rest j).executionEnv.code =
@@ -502,20 +488,14 @@ def gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
     exact qT1np
   have gSetupH1 : Challenge.EvmProof.GasSteps
       (gotT2H2 s msgOff returnDest rest j)
-      (callT2H1 s msgOff returnDest rest j) := by
+      (gotT2H1 s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupT2H1Path
     · exact qH2code
     · exact qH2fork
-    · exact run_setupT2H1 s msgOff returnDest rest j (by omega) hcode hrun
+    · exact run_setupT2H1 s msgOff returnDest rest j (by omega) hrun
     · exact qH2run
     · exact qH2np
-  have gH1 := Accessors.gasSteps_hAt (gotT2H2 s msgOff returnDest rest j)
-    (UInt256.ofNat 1) 0 (UInt256.ofNat 764)
-    ([hValue s 2, 0, UInt256.ofNat 770, UInt256.ofNat 0xffffffff,
-      hValue s 0, t1 s j, hValue s 4, UInt256.ofNat j,
-      msgOff, returnDest] ++ rest)
-    (by simp; omega) qH2code qH2fork qH2run qH2np (by decide)
   have qH1code : (gotT2H1 s msgOff returnDest rest j).executionEnv.code =
       submissionBytecode := by
     change (afterT1 s msgOff returnDest rest j).executionEnv.code =
@@ -606,8 +586,8 @@ def gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
     · exact run_finishT2 s msgOff returnDest rest j (by omega) hrun
     · exact qB0run
     · exact qB0np
-  exact gSetupH2.trans (gH2.trans (gSetupH1.trans (gH1.trans
-    (gSetupMaj.trans (gMaj.trans (gSetupB0.trans (gB0.trans gFinish)))))))
+  exact gSetupH2.trans (gSetupH1.trans
+    (gSetupMaj.trans (gMaj.trans (gSetupB0.trans (gB0.trans gFinish)))))
 
 @[simp] theorem afterT2_executionEnv (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) :
@@ -664,20 +644,15 @@ def gasSteps_shift (loadPath storePath : List
     Challenge.EvmProof.GasSteps q
       (shiftReturned q src dest loadReturn storeReturn context) := by
   have gSetupLoad : Challenge.EvmProof.GasSteps q
-      (shiftLoadEntry q src loadReturn storeReturn context) := by
+      (shiftLoaded q src loadReturn storeReturn context) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka loadPath
     · exact hcode
     · exact hfork
     · exact run_shiftLoad loadPath q src loadReturn storeReturn startPC
-        context hload hpc hstack (by omega) hcode hrun
+        context hload hpc hstack (by omega) hrun
     · exact hrun
     · exact hnp
-  have gLoad := Accessors.gasSteps_hAt q (UInt256.ofNat src) 0
-    (UInt256.ofNat loadReturn) (UInt256.ofNat storeReturn :: context)
-    (by simp; omega) hcode hfork hrun hnp (by
-      rcases hload with h | h | h | h <;> rcases h with ⟨_, rfl, rfl, rfl, _⟩ <;>
-        decide)
   have qLoadedCode :
       (shiftLoaded q src loadReturn storeReturn context).executionEnv.code =
         submissionBytecode := by
@@ -709,7 +684,7 @@ def gasSteps_shift (loadPath storePath : List
     (by omega) qLoadedCode qLoadedFork qLoadedRun qLoadedNp (by
       rcases hstore with h | h | h | h <;>
         rcases h with ⟨_, rfl, rfl, rfl, rfl⟩ <;> decide)
-  exact gSetupLoad.trans (gLoad.trans (gSetupStore.trans gStore))
+  exact gSetupLoad.trans (gSetupStore.trans gStore)
 
 /-- Perform all eight working-state assignments and jump back to the round
 condition with `j + 1`. -/
@@ -806,20 +781,15 @@ def gasSteps_updates (s : State) (msgOff returnDest : UInt256)
       q2.executionEnv.codeAddr = false
     exact q2np
   have gH3Setup : Challenge.EvmProof.GasSteps q3
-      (h4LoadEntry s msgOff returnDest rest j) := by
+      (h4Loaded s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupH3ForH4Path
     · exact q3code
     · exact q3fork
     · simpa [q3] using run_setupH3ForH4 s msgOff returnDest rest j
-        (by omega) hcode hrun
+        (by omega) hrun
     · exact q3run
     · exact q3np
-  have gH3 := Accessors.gasSteps_hAt q3 (UInt256.ofNat 3) 0
-    (UInt256.ofNat 849)
-    ([t1 s j, UInt256.ofNat 0xffffffff, UInt256.ofNat 858] ++ ctx)
-    (by simp [ctx, roundContext]; omega) q3code q3fork q3run q3np
-    (by decide)
   have qH3code : (h4Loaded s msgOff returnDest rest j).executionEnv.code =
       submissionBytecode := by
     change q3.executionEnv.code = submissionBytecode
@@ -918,8 +888,8 @@ def gasSteps_updates (s : State) (msgOff returnDest : UInt256)
         (by omega) hcode hrun
     · exact q6run
     · exact q6np
-  exact g7.trans (g6.trans (gE.trans (gH3Setup.trans (gH3.trans
-    (gH4Setup.trans (gH4.trans (g3.trans (g2.trans gFinish))))))))
+  exact g7.trans (g6.trans (gE.trans (gH3Setup.trans
+    (gH4Setup.trans (gH4.trans (g3.trans (g2.trans gFinish)))))))
 
 /-- One complete concrete compression round, including the loop branch,
 arithmetic, all eight memory updates, and the back edge. -/
