@@ -88,15 +88,24 @@ every later program counter. Each direct load saves 39 gas per round. Together
 the seven sites save 273 gas per round, 17,472 gas per padded block, and
 1,135,680 gas over the public suite.
 
-Fresh local scoring of the exact submission bytes is 7,686,727 versus the
-10,179,119 reference, a combined reduction of 2,492,392 gas. All 19 vectors
+The compression round's variable-index message-schedule load now computes the
+`W[j]` address in place instead of calling the generic `wAt` accessor. The
+nine-byte call sequence is replaced by `DUP3; PUSH1 5; SHL; PUSH2 800; ADD;
+MLOAD`. This adds one structural instruction, so the unreachable pad after the
+direct `h7` load is compacted from `JUMPDEST; PUSH3 0; POP` to `PUSH4 0; POP`;
+bytecode length and the 810-instruction artifact are both unchanged. The
+direct load saves 33 gas per round and the padding compaction saves one more,
+for 2,176 gas per padded block and 141,440 gas over the public suite.
+
+Fresh local scoring of the exact submission bytes is 7,545,287 versus the
+10,179,119 reference, a combined reduction of 2,633,832 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 119,515 gas.
+vector costs 117,339 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 117,724
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 115,548
 gas per padded block, plus calldata copying and memory expansion.

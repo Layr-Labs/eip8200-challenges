@@ -6,6 +6,33 @@ keep proof cost proportional to measured runtime value.
 
 Development context: GPT 5.6 Sol, xhigh effort, Codex agent.
 
+## 2026-08-08: inline variable-index `W[j]` load — verified
+
+The compression round's hot message-schedule accessor call is now replaced by
+an in-place address calculation and `MLOAD`. The old nine-byte sequence
+`PUSH2 return; PUSH0; DUP5; PUSH2 wAt; JUMP` becomes `DUP3; PUSH1 5; SHL;
+PUSH2 800; ADD; MLOAD`. It consumes the same round index semantically while
+avoiding the accessor jump, return, and cleanup path.
+
+The direct sequence has six structural instructions where the call had five.
+To retain the benchmark's exact 810-instruction artifact as well as its
+1,524-byte bytecode size, the unreachable six-byte pad following the direct
+`h7` load was changed from `JUMPDEST; PUSH3 0; POP` to `PUSH4 0; POP`. The new
+padding is still unreachable and preserves the next executed PC.
+
+The raw execution proof establishes the dynamic memory address for every
+round index, using the existing UInt256 word-add commutativity theorem to
+bridge `800 + (j << 5)` with the semantic schedule layout `(j << 5) + 800`.
+Composition now reaches `gotW` directly and no longer includes the generic
+`wAt` certificate. Exact gas proofs establish T1 cost 487, round cost 1,215,
+compression cost 115,473, and driver cost 115,548 per padded block. The direct
+load saves 33 gas per round and padding compaction saves one more: 34 per
+round, 2,176 per block, and 141,440 over the public suite.
+
+The complete kernel build and protected native scorer pass. All 19 clean and
+dirty vectors are `ok` with identical paired gas. Clean suite score is
+7,545,287 and the empty vector costs 117,339 gas.
+
 ## 2026-08-08: seven fixed-index state loads — verified
 
 The batch specialization of the seven remaining hot, fixed-index `hAt` calls
@@ -61,10 +88,11 @@ when executable behavior is correct.
 | Direct fixed `h6` | 9,146,887 | -162,240 | Promoted; 39 gas per round |
 | Direct fixed `h5` | 8,984,647 | -162,240 | Submitted, validating when logged |
 | Direct fixed `h7` | 8,822,407 | -162,240 | Submitted, validating when logged |
-| Seven remaining fixed loads | 7,686,727 | -1,135,680 | Executable vectors pass; proof transport next |
+| Seven remaining fixed loads | 7,686,727 | -1,135,680 | Proof-complete; submitted for validation |
+| Inline variable `W[j]` load | 7,545,287 | -141,440 | Proof-complete; full Yukon gate next |
 
-The cumulative projected improvement for the seven-load candidate is
-2,492,392 gas versus the reference public score.
+The cumulative verified improvement is 2,633,832 gas versus the reference
+public score.
 
 ## What worked
 
@@ -164,12 +192,11 @@ temporary exact-byte candidate passed every clean and dirty vector. Empty gas
 fell from 136,987 to 119,515, exactly 17,472. The predicted suite score is
 7,686,727.
 
-## Next proof steps
+## Next optimization direction
 
-Batch the seven fixed spans in one candidate, update the seven localized paths
-and their internal PC entries, redirect each composition edge directly to its
-existing loaded semantic state, remove seven obsolete accessor gas edges, and
-propagate the exact costs through T2 and updates. Run `CompressionExec` before
-the full graph. If the batch produces a hard-to-localize failure, bisect by
-semantic phase (T2 two-load batch versus updates five-load batch), not by
-individual site, to retain fast iteration while identifying the blocker.
+After the inline `W[j]` candidate clears the full Yukon gate, inspect the
+remaining per-round dynamic paths for a second accessor removal or an
+instruction-neutral stack schedule. Favor changes that reuse an existing
+semantic boundary and preserve both byte length and the 810-instruction
+artifact. Measure exact temporary bytes across every clean and dirty vector
+before investing in another compression proof replay.
