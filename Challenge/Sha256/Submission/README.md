@@ -31,13 +31,20 @@ length-preserving, reduces the increment cost from 14 to 9 gas, and executes
 64 times per padded block. It saves 320 gas per block and 20,800 gas over the
 suite's 65 padded blocks.
 
-Fresh local scoring of the exact submission bytes measured 10,155,127 versus
-the 10,179,119 reference, a combined reduction of 23,992 gas. All 19 vectors
+The shared `Maj` helper at byte offset `0x00e9` now evaluates the equivalent
+Boolean identity `(x & y) | (z & (x | y))`. The new stack schedule uses nine
+very-low-cost operations rather than eleven; two unreachable `STOP` bytes
+preserve the following program counter. This saves 6 gas per helper call, 384
+gas per padded block, and 24,960 gas over the suite.
+
+Fresh local scoring of the exact submission bytes measured 10,130,167 versus
+the 10,179,119 reference, a combined reduction of 48,952 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
-candidate-specific compression trace executes the optimized increment; and
-the downstream proof establishes the SHA-256 specification for every calldata
-value. The accompanying exact-gas proof accounts for a fixed cost of 1,579 gas
-and 155,676 gas per padded block, plus calldata copying and memory expansion.
+candidate-specific compression trace executes the optimized increment; the
+helper trace executes the new `Maj` schedule; and the downstream proof
+establishes the SHA-256 specification for every calldata value. The
+accompanying exact-gas proof accounts for a fixed cost of 1,579 gas and 155,292
+gas per padded block, plus calldata copying and memory expansion.

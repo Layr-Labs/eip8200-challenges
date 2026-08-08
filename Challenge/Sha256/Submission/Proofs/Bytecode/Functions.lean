@@ -172,24 +172,22 @@ def chPath :
 def majPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨162, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨163, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨164, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨163, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨164, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨165, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨166, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨167, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨168, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨169, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨170, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨171, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨172, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨173, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨174, .op (.Swap ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨166, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨167, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨168, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨169, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨170, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨171, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨172, .op (.Swap ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨173, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨174, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨175, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨176, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨177, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨178, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨179, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨180, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨177, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨178, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def ternaryEntry (s : State) (entry : Nat) (x y z output returnDest : UInt256)
     (rest : List UInt256) : State :=

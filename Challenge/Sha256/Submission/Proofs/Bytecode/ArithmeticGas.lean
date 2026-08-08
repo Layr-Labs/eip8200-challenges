@@ -154,7 +154,7 @@ theorem gasSteps_ch_cost_potential (s : State) (x y z output returnDest : UInt25
   simpa [Functions.ternaryEntry] using hmeter
 
 private theorem maj_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.majPath = 56 := by
+    Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.majPath = 50 := by
   rfl
 
 theorem gasSteps_maj_cost_potential (s : State) (x y z output returnDest : UInt256)
@@ -166,7 +166,7 @@ theorem gasSteps_maj_cost_potential (s : State) (x y z output returnDest : UInt2
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (Functions.gasSteps_maj s x y z output returnDest rest hcap hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      56 + MachineState.memCost
+      50 + MachineState.memCost
         (Functions.unaryReturned s (Word.evmMaj x y z) returnDest rest).activeWords.toNat := by
   have hresult := Functions.run_maj s x y z output returnDest rest hcap hcode
     hrun hvalid

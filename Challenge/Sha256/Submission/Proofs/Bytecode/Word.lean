@@ -1,4 +1,5 @@
 import Challenge.EvmProof.Word
+import Std.Tactic.BVDecide
 set_option warningAsError true
 /-!
 # SHA-256 operations as EVM word expressions
@@ -25,7 +26,7 @@ def evmCh (x y z : EWord) : EWord :=
   (x &&& y) ^^^ (~~~x &&& z)
 
 def evmMaj (x y z : EWord) : EWord :=
-  ((x &&& y) ^^^ (x &&& z)) ^^^ (y &&& z)
+  (z &&& (y ||| x)) ||| (x &&& y)
 
 def evmSmallSigma0 (x : EWord) : EWord :=
   (evmRotr32 x 7 ^^^ evmRotr32 x 18) ^^^
@@ -60,9 +61,11 @@ def evmBigSigma1 (x : EWord) : EWord :=
 @[simp] theorem evmMaj_ofUInt32 (x y z : UInt32) :
     evmMaj (ofUInt32 x) (ofUInt32 y) (ofUInt32 z) =
       ofUInt32 (Crypto.Sha256.Maj x y z) := by
-  unfold evmMaj Crypto.Sha256.Maj
-  rw [← ofUInt32_and, ← ofUInt32_and, ← ofUInt32_and,
-    ← ofUInt32_xor, ← ofUInt32_xor]
+  unfold evmMaj
+  rw [← ofUInt32_or, ← ofUInt32_and, ← ofUInt32_and, ← ofUInt32_or]
+  apply congrArg ofUInt32
+  unfold Crypto.Sha256.Maj
+  bv_decide
 
 @[simp] theorem evmSmallSigma0_ofUInt32 (x : UInt32) :
     evmSmallSigma0 (ofUInt32 x) =
