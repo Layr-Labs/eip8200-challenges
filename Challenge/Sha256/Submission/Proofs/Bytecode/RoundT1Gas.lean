@@ -23,7 +23,7 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gasSteps_t1 s msgOff returnDest rest j hj hcap hcode hfork
       hrun hnp).cost + MachineState.memCost
         (Compression.roundAt s msgOff returnDest rest j).activeWords.toNat =
-      451 + MachineState.memCost
+      271 + MachineState.memCost
         (Compression.afterT1 s msgOff returnDest rest j).activeWords.toNat := by
   have hcond := blockCost_potential_of_static Compression.conditionPath 26
     (Compression.run_condition s msgOff returnDest rest j hj (by omega) hrun)
@@ -74,7 +74,7 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
       Compression.gotW, Compression.loadedE, Accessors.loadReturned,
       Accessors.kAtReturned] using hnp) (by decide)
   have hsetupB1 := blockCost_potential_of_static
-    Compression.setupBigSigma1Path 23
+    Compression.setupBigSigma1Path 21
     (Compression.run_setupBigSigma1 s msgOff returnDest rest j (by omega)
       hcode hrun)
     (by simpa [Compression.gotCh, Compression.gotH5, Compression.gotH6,
@@ -83,7 +83,7 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
       Accessors.kAtReturned, State.fork] using hfork)
     (by simp [Compression.setupBigSigma1Path, CopyFree]) (by rfl)
   have hb1 := ArithmeticGas.gasSteps_bigSigma1_cost_potential
-    (Compression.gotCh s msgOff returnDest rest j) (Compression.hValue s 4) 0
+    (Compression.gotCh s msgOff returnDest rest j) (Compression.hValue s 4)
     (UInt256.ofNat 714)
     ([Compression.chPlusK s j, Compression.wValue s j,
       UInt256.ofNat 0xffffffff, Compression.hValue s 4, UInt256.ofNat j,
@@ -132,7 +132,7 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
   rw [hawB1] at hsetupB1
   change _ = 44 + MachineState.memCost
     (Compression.gotCh s msgOff returnDest rest j).activeWords.toNat at hch
-  change _ = 238 + MachineState.memCost
+  change _ = 60 + MachineState.memCost
     (Compression.gotBigSigma1 s msgOff returnDest rest j).activeWords.toNat at hb1
   omega
 

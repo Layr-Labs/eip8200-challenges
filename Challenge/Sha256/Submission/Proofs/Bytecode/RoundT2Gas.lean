@@ -22,7 +22,7 @@ theorem t2_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gasSteps_t2 s msgOff returnDest rest j hcap hcode hfork
       hrun hnp).cost + MachineState.memCost
         (Compression.afterT1 s msgOff returnDest rest j).activeWords.toNat =
-      369 + MachineState.memCost
+      189 + MachineState.memCost
         (Compression.afterT2 s msgOff returnDest rest j).activeWords.toNat := by
   have hsetupH2 := blockCost_potential_of_static Compression.setupT2H2Path 26
     (Compression.run_setupT2H2 s msgOff returnDest rest j (by omega)
@@ -85,7 +85,7 @@ theorem t2_cost_potential (s : State) (msgOff returnDest : UInt256)
       Compression.loadedE, Functions.unaryReturned, Accessors.loadReturned,
       Accessors.kAtReturned] using hnp) (by decide)
   have hsetupB0 := blockCost_potential_of_static
-    Compression.setupBigSigma0Path 20
+    Compression.setupBigSigma0Path 18
     (Compression.run_setupBigSigma0 s msgOff returnDest rest j (by omega)
       hcode hrun)
     (by simpa [Compression.gotMaj, Compression.gotT2H1,
@@ -96,7 +96,7 @@ theorem t2_cost_potential (s : State) (msgOff returnDest : UInt256)
       Accessors.loadReturned, Accessors.kAtReturned, State.fork] using hfork)
     (by simp [Compression.setupBigSigma0Path, CopyFree]) (by rfl)
   have hb0 := ArithmeticGas.gasSteps_bigSigma0_cost_potential
-    (Compression.gotMaj s msgOff returnDest rest j) (Compression.hValue s 0) 0
+    (Compression.gotMaj s msgOff returnDest rest j) (Compression.hValue s 0)
     (UInt256.ofNat 780)
     ([Word.evmMaj (Compression.hValue s 0) (Compression.hValue s 1)
       (Compression.hValue s 2), UInt256.ofNat 0xffffffff,
@@ -149,7 +149,7 @@ theorem t2_cost_potential (s : State) (msgOff returnDest : UInt256)
   rw [hawB0] at hsetupB0
   change _ = 50 + MachineState.memCost
     (Compression.gotMaj s msgOff returnDest rest j).activeWords.toNat at hmaj
-  change _ = 238 + MachineState.memCost
+  change _ = 60 + MachineState.memCost
     (Compression.gotBigSigma0 s msgOff returnDest rest j).activeWords.toNat at hb0
   omega
 

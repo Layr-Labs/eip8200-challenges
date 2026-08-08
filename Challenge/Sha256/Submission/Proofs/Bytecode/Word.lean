@@ -105,6 +105,98 @@ def evmBigSigma0 (x : EWord) : EWord :=
 def evmBigSigma1 (x : EWord) : EWord :=
   (evmRotr32 x 6 ^^^ evmRotr32 x 11) ^^^ evmRotr32 x 25
 
+private theorem shiftRight_chain (x : UInt256) (a b : Nat)
+    (ha : a < 256) (hb : b < 256) (hab : a + b < 256) :
+    UInt256.shiftRight (UInt256.shiftRight x (UInt256.ofNat a))
+        (UInt256.ofNat b) =
+      UInt256.shiftRight x (UInt256.ofNat (a + b)) := by
+  apply word_ext
+  rw [shiftRight_toNat _ hb, shiftRight_toNat _ ha, shiftRight_toNat _ hab]
+  exact (Nat.shiftRight_add x.toNat a b).symm
+
+private theorem mask32_xor3_swap_outer (a b c : UInt256) :
+    mask32 ((a ^^^ b) ^^^ c) = mask32 ((c ^^^ b) ^^^ a) := by
+  rw [mask32_xor, toUInt32_xor, mask32_xor, toUInt32_xor]
+  congr 1
+  let a' := toUInt32 a
+  let b' := toUInt32 b
+  let c' := toUInt32 c
+  change (a' ^^^ b') ^^^ c' = (c' ^^^ b') ^^^ a'
+  rw [UInt32.xor_assoc, UInt32.xor_assoc]
+  rw [UInt32.xor_comm b' c', UInt32.xor_comm b' a']
+  rw [← UInt32.xor_assoc, UInt32.xor_comm a' c', UInt32.xor_assoc]
+
+private theorem mask32_xor_distrib (a b : UInt256) :
+    mask32 (a ^^^ b) = mask32 a ^^^ mask32 b := by
+  rw [mask32_xor, mask32_eq_ofUInt32, mask32_eq_ofUInt32, ← ofUInt32_xor]
+
+def duplicateLane (x : UInt256) : UInt256 :=
+  UInt256.shiftLeft x (UInt256.ofNat 32) ||| x
+
+def fusedBigSigma0 (x : UInt256) : UInt256 :=
+  let r2 := UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 2)
+  let r13 := UInt256.shiftRight r2 (UInt256.ofNat 11)
+  let r22 := UInt256.shiftRight r13 (UInt256.ofNat 9)
+  mask32 ((r22 ^^^ r13) ^^^ r2)
+
+theorem fusedBigSigma0_eq (x : UInt256) :
+    fusedBigSigma0 x = evmBigSigma0 x := by
+  let lane := duplicateLane x
+  let r2 := UInt256.shiftRight lane (UInt256.ofNat 2)
+  let r13 := UInt256.shiftRight r2 (UInt256.ofNat 11)
+  let r22 := UInt256.shiftRight r13 (UInt256.ofNat 9)
+  have h13 : r13 = UInt256.shiftRight lane (UInt256.ofNat 13) := by
+    simpa [r13, r2] using
+      shiftRight_chain lane 2 11 (by omega) (by omega) (by omega)
+  have h22 : r22 = UInt256.shiftRight lane (UInt256.ofNat 22) := by
+    rw [show r22 = UInt256.shiftRight r13 (UInt256.ofNat 9) by rfl, h13]
+    simpa using shiftRight_chain lane 13 9 (by omega) (by omega) (by omega)
+  rw [show fusedBigSigma0 x = mask32 ((r22 ^^^ r13) ^^^ r2) by rfl]
+  rw [mask32_xor3_swap_outer, mask32_xor_distrib, mask32_xor_distrib,
+    h13, h22]
+  change
+    mask32 (UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 2)) ^^^
+      mask32 (UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 13)) ^^^
+      mask32 (UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 22)) =
+    evmBigSigma0 x
+  unfold duplicateLane
+  rw [evmRotr32_duplicate x 2 (by omega),
+    evmRotr32_duplicate x 13 (by omega),
+    evmRotr32_duplicate x 22 (by omega)]
+  rfl
+
+def fusedBigSigma1 (x : UInt256) : UInt256 :=
+  let r6 := UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 6)
+  let r11 := UInt256.shiftRight r6 (UInt256.ofNat 5)
+  let r25 := UInt256.shiftRight r11 (UInt256.ofNat 14)
+  mask32 ((r25 ^^^ r11) ^^^ r6)
+
+theorem fusedBigSigma1_eq (x : UInt256) :
+    fusedBigSigma1 x = evmBigSigma1 x := by
+  let lane := duplicateLane x
+  let r6 := UInt256.shiftRight lane (UInt256.ofNat 6)
+  let r11 := UInt256.shiftRight r6 (UInt256.ofNat 5)
+  let r25 := UInt256.shiftRight r11 (UInt256.ofNat 14)
+  have h11 : r11 = UInt256.shiftRight lane (UInt256.ofNat 11) := by
+    simpa [r11, r6] using
+      shiftRight_chain lane 6 5 (by omega) (by omega) (by omega)
+  have h25 : r25 = UInt256.shiftRight lane (UInt256.ofNat 25) := by
+    rw [show r25 = UInt256.shiftRight r11 (UInt256.ofNat 14) by rfl, h11]
+    simpa using shiftRight_chain lane 11 14 (by omega) (by omega) (by omega)
+  rw [show fusedBigSigma1 x = mask32 ((r25 ^^^ r11) ^^^ r6) by rfl]
+  rw [mask32_xor3_swap_outer, mask32_xor_distrib, mask32_xor_distrib,
+    h11, h25]
+  change
+    mask32 (UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 6)) ^^^
+      mask32 (UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 11)) ^^^
+      mask32 (UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 25)) =
+    evmBigSigma1 x
+  unfold duplicateLane
+  rw [evmRotr32_duplicate x 6 (by omega),
+    evmRotr32_duplicate x 11 (by omega),
+    evmRotr32_duplicate x 25 (by omega)]
+  rfl
+
 @[simp] theorem evmRotr32_ofUInt32 (x : UInt32) (n : Nat)
     (hn0 : 0 < n) (hn : n < 32) :
     evmRotr32 (ofUInt32 x) n =

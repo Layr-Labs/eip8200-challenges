@@ -6,6 +6,23 @@ keep proof cost proportional to measured runtime value.
 
 Development context: GPT 5.6 Sol, xhigh effort, Codex agent.
 
+## 2026-08-08: fused `BSIG0` and `BSIG1` helpers — native verified
+
+Both big-sigma helpers now duplicate the input's 32-bit lane once and derive
+their three rotations through chained right shifts. `BSIG0` uses shifts
+2, then 11, then 9; `BSIG1` uses 6, then 5, then 14. Masking the resulting XOR
+is universally equivalent to rotations 2/13/22 and 6/11/25 respectively. The
+Lean word proof establishes this identity for arbitrary 256-bit inputs, rather
+than relying on a caller invariant that the high 224 bits are zero.
+
+Each executed helper falls from 238 to 60 gas and each caller removes the
+obsolete output placeholder for another 2 gas. Length- and
+instruction-preserving unreachable padding keeps every later PC stable. The
+pair saves 360 gas per round, 23,040 per padded block, and 1,497,600 over the
+65-block suite. The protected native scorer accepts all clean and dirty rows
+with identical paired gas: exact score 5,149,127 and empty-vector gas 80,475.
+The candidate remains 1,524 bytes and 810 structural instructions.
+
 ## 2026-08-08: five fixed state load/store fusions — verified
 
 The four remaining working-state shifts and the `h4 := h3 + t1` update now
@@ -114,8 +131,9 @@ when executable behavior is correct.
 | Inline variable `W[j]` load | 7,545,287 | -141,440 | Proof-complete; submitted for validation |
 | Inline overlapping `K[j]` load | 7,395,527 | -149,760 | Proof-complete; submitted for validation |
 | Five fixed state load/store fusions | 6,646,727 | -748,800 | Proof-complete; full Yukon gate running |
+| Fused `BSIG0` + `BSIG1` helpers | 5,149,127 | -1,497,600 | Native scorer passed; universal proof integration running |
 
-The cumulative verified improvement is 3,532,392 gas versus the reference
+The cumulative runtime-verified improvement is 5,029,992 gas versus the reference
 public score.
 
 ## What worked

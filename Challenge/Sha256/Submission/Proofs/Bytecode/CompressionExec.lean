@@ -144,10 +144,9 @@ def setupBigSigma1Path :
   [⟨486, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨487, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨488, .push ⟨2, by decide⟩ (UInt256.ofNat 714), by rfl, by decide⟩,
-   ⟨489, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨490, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨491, .push ⟨2, by decide⟩ (UInt256.ofNat 163), by rfl, by decide⟩,
-   ⟨492, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨489, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨490, .push ⟨2, by decide⟩ (UInt256.ofNat 163), by rfl, by decide⟩,
+   ⟨491, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupH7Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -198,10 +197,9 @@ def setupBigSigma0Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨523, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨524, .push ⟨2, by decide⟩ (UInt256.ofNat 780), by rfl, by decide⟩,
-   ⟨525, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨526, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨527, .push ⟨2, by decide⟩ (UInt256.ofNat 114), by rfl, by decide⟩,
-   ⟨528, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨525, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨526, .push ⟨2, by decide⟩ (UInt256.ofNat 114), by rfl, by decide⟩,
+   ⟨527, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def finishT2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -527,8 +525,8 @@ def chPlusK (s : State) (j : Nat) : UInt256 :=
 
 def callBigSigma1 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
-  Functions.unaryEntry (gotCh s msgOff returnDest rest j) 163
-    (hValue s 4) 0 (UInt256.ofNat 714)
+  BigSigma.entry (gotCh s msgOff returnDest rest j) 163
+    (hValue s 4) (UInt256.ofNat 714)
     ([chPlusK s j, wValue s j, UInt256.ofNat 0xffffffff, hValue s 4,
       UInt256.ofNat j, msgOff, returnDest] ++ rest)
 
@@ -620,8 +618,8 @@ def gotMaj (s : State) (msgOff returnDest : UInt256)
 
 def callBigSigma0 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
-  Functions.unaryEntry (gotMaj s msgOff returnDest rest j) 114
-    (hValue s 0) 0 (UInt256.ofNat 780)
+  BigSigma.entry (gotMaj s msgOff returnDest rest j) 114
+    (hValue s 0) (UInt256.ofNat 780)
     ([Word.evmMaj (hValue s 0) (hValue s 1) (hValue s 2),
       UInt256.ofNat 0xffffffff, hValue s 0, t1 s j, hValue s 4,
       UInt256.ofNat j, msgOff, returnDest] ++ rest)
@@ -827,7 +825,7 @@ def compressReturned (s : State) (returnDest : UInt256)
       [643, 646, 647, 652, 653, 655, 656, 659, 660, 661,
        662, 664, 665, 667, 668, 669, 670, 671, 675, 676,
        679, 680, 681, 685, 686, 690, 691, 692, 696, 697,
-       698, 699, 702, 703, 704, 705, 708, 709, 710, 713,
+       698, 699, 702, 703, 704, 705, 708, 709, 712, 713,
        714, 715, 718, 719, 724, 725, 726, 727, 728, 729][i - 453]! := by
   interval_cases i <;> decide
 
@@ -835,7 +833,7 @@ def compressReturned (s : State) (returnDest : UInt256)
     Artifact.referenceArtifact.instructionPC i =
       [730, 733, 734, 739, 742, 743, 746, 747, 748, 752,
        753, 754, 757, 758, 759, 763, 764, 765, 766, 769,
-       770, 771, 774, 775, 776, 779, 780, 781, 782][i - 503]! := by
+       770, 771, 774, 775, 778, 779, 780, 781, 782][i - 503]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem updatePC (i : Nat) (hlo : 532 ≤ i) (hhi : i ≤ 616) :
@@ -1145,7 +1143,7 @@ theorem run_setupBigSigma1 (s : State) (msgOff returnDest : UInt256)
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     gotCh, callBigSigma1, gotH5, gotH6, gotK, gotW, loadedE,
     chPlusK, kValue, wValue, hValue, Functions.unaryReturned,
-    Functions.unaryEntry, Accessors.loadReturned, Accessors.kAtReturned,
+    BigSigma.entry, Accessors.loadReturned, Accessors.kAtReturned,
     Accessors.slotOffset, List.exchange, hc7, hc8, hc9, hc10, hc11, hc12,
     hc13, hc14, hcode, hrun, hdest]
 
@@ -1301,7 +1299,7 @@ theorem run_setupBigSigma0 (s : State) (msgOff returnDest : UInt256)
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     gotMaj, callBigSigma0, gotT2H1, gotT2H2, loadedA, afterT1, gotH7,
     gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW, loadedE, hValue,
-    Functions.ternaryEntry, Functions.unaryEntry, Functions.unaryReturned,
+    Functions.ternaryEntry, BigSigma.entry, Functions.unaryReturned,
     Accessors.loadReturned, Accessors.kAtReturned, Accessors.slotOffset,
     List.exchange, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15,
     hcode, hrun, hdest]

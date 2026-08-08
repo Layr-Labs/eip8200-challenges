@@ -356,7 +356,7 @@ def gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
     · exact qChrun
     · exact qChnp
   have gB1 := BigSigma.gasSteps_bigSigma1 (gotCh s msgOff returnDest rest j)
-    (hValue s 4) 0 (UInt256.ofNat 714)
+    (hValue s 4) (UInt256.ofNat 714)
     ([chPlusK s j, wValue s j, UInt256.ofNat 0xffffffff, hValue s 4,
       UInt256.ofNat j, msgOff, returnDest] ++ rest)
     (by simp; omega) qChcode qChfork qChrun qChnp (by decide)
@@ -543,7 +543,7 @@ def gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
     · exact qMajrun
     · exact qMajnp
   have gB0 := BigSigma.gasSteps_bigSigma0 (gotMaj s msgOff returnDest rest j)
-    (hValue s 0) 0 (UInt256.ofNat 780)
+    (hValue s 0) (UInt256.ofNat 780)
     ([Word.evmMaj (hValue s 0) (hValue s 1) (hValue s 2),
       UInt256.ofNat 0xffffffff, hValue s 0, t1 s j, hValue s 4,
       UInt256.ofNat j, msgOff, returnDest] ++ rest)

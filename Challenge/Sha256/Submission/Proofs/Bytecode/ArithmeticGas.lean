@@ -279,146 +279,52 @@ theorem gasSteps_ssig1_cost_potential (s : State) (x output returnDest : UInt256
   simp only [Functions.unaryReturned] at ⊢
   omega
 
-private theorem bigSigma0_setup_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma0SetupPath = 23 := by
-  rfl
-
-private theorem bigSigma0_middle1_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma0Middle1Path = 23 := by
-  rfl
-
-private theorem bigSigma0_middle2_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma0Middle2Path = 23 := by
-  rfl
-
-private theorem bigSigma0_finish_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma0FinishPath = 25 := by
+private theorem bigSigma0_static :
+    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma0Path = 60 := by
   rfl
 
 theorem gasSteps_bigSigma0_cost_potential (s : State)
-    (x output returnDest : UInt256) (rest : List UInt256)
+    (x returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1011)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
-    (BigSigma.gasSteps_bigSigma0 s x output returnDest rest hcap hcode hfork
+    (BigSigma.gasSteps_bigSigma0 s x returnDest rest hcap hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      238 + MachineState.memCost
+      60 + MachineState.memCost
         (Functions.unaryReturned s (Word.evmBigSigma0 x) returnDest rest).activeWords.toNat := by
-  have setupResult := BigSigma.run_setup BigSigma.bigSigma0SetupPath s 114 22 126
-    x output returnDest rest (Or.inl ⟨rfl, rfl, rfl, rfl⟩) (by omega)
-    hcode hrun
-  have setupCost := block_cost_of_activeWords_eq BigSigma.bigSigma0SetupPath
-    setupResult hfork (by simp [BigSigma.bigSigma0SetupPath, CopyFree]) (by rfl)
-  rw [bigSigma0_setup_static] at setupCost
-  have firstCost := gasSteps_rotr_cost s x 22 0 (UInt256.ofNat 126)
-    (x :: output :: returnDest :: rest) (by simp; omega) (by decide)
-    hcode hfork hrun hnp (by decide)
-  have middle1Result := BigSigma.run_middle1 BigSigma.bigSigma0Middle1Path
-    s 22 13 138 x output returnDest rest (Or.inl ⟨rfl, rfl, rfl, rfl⟩)
-    (by omega) hcode hrun
-  have middle1Cost := block_cost_of_activeWords_eq BigSigma.bigSigma0Middle1Path
-    middle1Result hfork (by simp [BigSigma.bigSigma0Middle1Path, CopyFree])
-      (by rfl)
-  rw [bigSigma0_middle1_static] at middle1Cost
-  simp at middle1Cost
-  have secondCost := gasSteps_rotr_cost s x 13 0 (UInt256.ofNat 138)
-    (Word.evmRotr32 x 22 :: x :: output :: returnDest :: rest)
-    (by simp; omega) (by decide) hcode hfork hrun hnp (by decide)
-  have middle2Result := BigSigma.run_middle2 BigSigma.bigSigma0Middle2Path
-    s 22 13 2 150 138 x output returnDest rest
-    (Or.inl ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩) (by omega) hcode hrun
-  have middle2Cost := block_cost_of_activeWords_eq BigSigma.bigSigma0Middle2Path
-    middle2Result hfork (by simp [BigSigma.bigSigma0Middle2Path, CopyFree])
-      (by rfl)
-  rw [bigSigma0_middle2_static] at middle2Cost
-  have thirdCost := gasSteps_rotr_cost s x 2 0 (UInt256.ofNat 150)
-    (Word.evmRotr32 x 13 :: Word.evmRotr32 x 22 ::
-      x :: output :: returnDest :: rest)
-    (by simp; omega) (by decide) hcode hfork hrun hnp (by decide)
-  have finishResult := BigSigma.run_finish BigSigma.bigSigma0FinishPath
-    s 22 13 2 150 (Word.evmBigSigma0 x) x output returnDest rest
-    (Or.inl ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩) (by omega) hcode hrun hvalid
-  have finishCost := block_cost_of_activeWords_eq BigSigma.bigSigma0FinishPath
-    finishResult hfork (by simp [BigSigma.bigSigma0FinishPath, CopyFree]) (by rfl)
-  rw [bigSigma0_finish_static] at finishCost
+  have hresult := BigSigma.run_bigSigma0 s x returnDest rest hcap hcode hrun hvalid
+  have hmeter := block_cost_potential BigSigma.bigSigma0Path hresult hfork
+    (by simp [BigSigma.bigSigma0Path, CopyFree])
+  rw [bigSigma0_static] at hmeter
   unfold BigSigma.gasSteps_bigSigma0
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp only [Functions.unaryReturned] at ⊢
-  omega
+  simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+  simpa [BigSigma.entry] using hmeter
 
-private theorem bigSigma1_setup_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma1SetupPath = 23 := by
-  rfl
-
-private theorem bigSigma1_middle1_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma1Middle1Path = 23 := by
-  rfl
-
-private theorem bigSigma1_middle2_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma1Middle2Path = 23 := by
-  rfl
-
-private theorem bigSigma1_finish_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma1FinishPath = 25 := by
+private theorem bigSigma1_static :
+    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma1Path = 60 := by
   rfl
 
 theorem gasSteps_bigSigma1_cost_potential (s : State)
-    (x output returnDest : UInt256) (rest : List UInt256)
+    (x returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1011)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
-    (BigSigma.gasSteps_bigSigma1 s x output returnDest rest hcap hcode hfork
+    (BigSigma.gasSteps_bigSigma1 s x returnDest rest hcap hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      238 + MachineState.memCost
+      60 + MachineState.memCost
         (Functions.unaryReturned s (Word.evmBigSigma1 x) returnDest rest).activeWords.toNat := by
-  have setupResult := BigSigma.run_setup BigSigma.bigSigma1SetupPath s 163 25 175
-    x output returnDest rest (Or.inr ⟨rfl, rfl, rfl, rfl⟩) (by omega)
-    hcode hrun
-  have setupCost := block_cost_of_activeWords_eq BigSigma.bigSigma1SetupPath
-    setupResult hfork (by simp [BigSigma.bigSigma1SetupPath, CopyFree]) (by rfl)
-  rw [bigSigma1_setup_static] at setupCost
-  have firstCost := gasSteps_rotr_cost s x 25 0 (UInt256.ofNat 175)
-    (x :: output :: returnDest :: rest) (by simp; omega) (by decide)
-    hcode hfork hrun hnp (by decide)
-  have middle1Result := BigSigma.run_middle1 BigSigma.bigSigma1Middle1Path
-    s 25 11 187 x output returnDest rest (Or.inr ⟨rfl, rfl, rfl, rfl⟩)
-    (by omega) hcode hrun
-  have middle1Cost := block_cost_of_activeWords_eq BigSigma.bigSigma1Middle1Path
-    middle1Result hfork (by simp [BigSigma.bigSigma1Middle1Path, CopyFree])
-      (by rfl)
-  rw [bigSigma1_middle1_static] at middle1Cost
-  simp at middle1Cost
-  have secondCost := gasSteps_rotr_cost s x 11 0 (UInt256.ofNat 187)
-    (Word.evmRotr32 x 25 :: x :: output :: returnDest :: rest)
-    (by simp; omega) (by decide) hcode hfork hrun hnp (by decide)
-  have middle2Result := BigSigma.run_middle2 BigSigma.bigSigma1Middle2Path
-    s 25 11 6 199 187 x output returnDest rest
-    (Or.inr ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩) (by omega) hcode hrun
-  have middle2Cost := block_cost_of_activeWords_eq BigSigma.bigSigma1Middle2Path
-    middle2Result hfork (by simp [BigSigma.bigSigma1Middle2Path, CopyFree])
-      (by rfl)
-  rw [bigSigma1_middle2_static] at middle2Cost
-  have thirdCost := gasSteps_rotr_cost s x 6 0 (UInt256.ofNat 199)
-    (Word.evmRotr32 x 11 :: Word.evmRotr32 x 25 ::
-      x :: output :: returnDest :: rest)
-    (by simp; omega) (by decide) hcode hfork hrun hnp (by decide)
-  have finishResult := BigSigma.run_finish BigSigma.bigSigma1FinishPath
-    s 25 11 6 199 (Word.evmBigSigma1 x) x output returnDest rest
-    (Or.inr ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩) (by omega) hcode hrun hvalid
-  have finishCost := block_cost_of_activeWords_eq BigSigma.bigSigma1FinishPath
-    finishResult hfork (by simp [BigSigma.bigSigma1FinishPath, CopyFree]) (by rfl)
-  rw [bigSigma1_finish_static] at finishCost
+  have hresult := BigSigma.run_bigSigma1 s x returnDest rest hcap hcode hrun hvalid
+  have hmeter := block_cost_potential BigSigma.bigSigma1Path hresult hfork
+    (by simp [BigSigma.bigSigma1Path, CopyFree])
+  rw [bigSigma1_static] at hmeter
   unfold BigSigma.gasSteps_bigSigma1
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp only [Functions.unaryReturned] at ⊢
-  omega
+  simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+  simpa [BigSigma.entry] using hmeter
 
 end Challenge.Sha256.Submission.Proofs.Bytecode.ArithmeticGas
