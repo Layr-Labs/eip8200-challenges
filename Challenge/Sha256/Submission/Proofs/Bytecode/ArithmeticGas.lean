@@ -89,7 +89,7 @@ private theorem block_cost_of_activeWords_eq
   omega
 
 private theorem rotr_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.rotrPath = 54 := by
+    Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.rotrPath = 48 := by
   rfl
 
 theorem gasSteps_rotr_cost_potential (s : State) (x : UInt256) (n : Nat)
@@ -102,7 +102,7 @@ theorem gasSteps_rotr_cost_potential (s : State) (x : UInt256) (n : Nat)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (Functions.gasSteps_rotr s x n output returnDest rest hcap hn hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      54 + MachineState.memCost
+      48 + MachineState.memCost
         (Functions.unaryReturned s (Word.evmRotr32 x n)
           returnDest rest).activeWords.toNat := by
   have hresult := Functions.run_rotr s x n output returnDest rest hcap hn
@@ -123,7 +123,7 @@ theorem gasSteps_rotr_cost (s : State) (x : UInt256) (n : Nat)
       s.executionEnv.codeAddr = false)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (Functions.gasSteps_rotr s x n output returnDest rest hcap hn hcode hfork
-      hrun hnp hvalid).cost = 54 := by
+      hrun hnp hvalid).cost = 48 := by
   have hpotential := gasSteps_rotr_cost_potential s x n output returnDest rest
     hcap hn hcode hfork hrun hnp hvalid
   simp [Functions.unaryReturned] at hpotential
@@ -198,7 +198,7 @@ theorem gasSteps_ssig0_cost_potential (s : State) (x output returnDest : UInt256
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (Functions.gasSteps_ssig0 s x output returnDest rest hcap hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      188 + MachineState.memCost
+      176 + MachineState.memCost
         (Functions.unaryReturned s (Word.evmSmallSigma0 x) returnDest rest).activeWords.toNat := by
   have setupResult := Functions.run_ssig0Setup s x output returnDest rest
     (by omega) hcode hrun
@@ -249,7 +249,7 @@ theorem gasSteps_ssig1_cost_potential (s : State) (x output returnDest : UInt256
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (Functions.gasSteps_ssig1 s x output returnDest rest hcap hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      188 + MachineState.memCost
+      176 + MachineState.memCost
         (Functions.unaryReturned s (Word.evmSmallSigma1 x) returnDest rest).activeWords.toNat := by
   have setupResult := Functions.run_ssig1Setup s x output returnDest rest
     (by omega) hcode hrun
@@ -305,7 +305,7 @@ theorem gasSteps_bigSigma0_cost_potential (s : State)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (BigSigma.gasSteps_bigSigma0 s x output returnDest rest hcap hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      256 + MachineState.memCost
+      238 + MachineState.memCost
         (Functions.unaryReturned s (Word.evmBigSigma0 x) returnDest rest).activeWords.toNat := by
   have setupResult := BigSigma.run_setup BigSigma.bigSigma0SetupPath s 114 22 126
     x output returnDest rest (Or.inl ⟨rfl, rfl, rfl, rfl⟩) (by omega)
@@ -376,7 +376,7 @@ theorem gasSteps_bigSigma1_cost_potential (s : State)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (BigSigma.gasSteps_bigSigma1 s x output returnDest rest hcap hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      256 + MachineState.memCost
+      238 + MachineState.memCost
         (Functions.unaryReturned s (Word.evmBigSigma1 x) returnDest rest).activeWords.toNat := by
   have setupResult := BigSigma.run_setup BigSigma.bigSigma1SetupPath s 163 25 175
     x output returnDest rest (Or.inr ⟨rfl, rfl, rfl, rfl⟩) (by omega)

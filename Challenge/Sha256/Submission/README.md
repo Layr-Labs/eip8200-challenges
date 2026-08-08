@@ -48,8 +48,15 @@ compiler-generated increments at offsets `0x01a8`, `0x01e1`, `0x0251`, and
 `0x03d7`. These are reached 8 times per call and 72 times per padded block in
 aggregate. The four edits save another 24,160 gas over the public suite.
 
-Fresh local scoring of the exact submission bytes measured 10,093,527 versus
-the 10,179,119 reference, a combined reduction of 85,592 gas. All 19 vectors
+The shared rotate-right helper at byte offset `0x0004` now duplicates the
+32-bit lane with `(x | (x << 32)) >> n` before masking, instead of computing
+the left and right halves separately. This removes two executed very-low-cost
+operations while two unreachable `STOP` bytes preserve all following program
+counters. The helper is called 576 times per padded block, saving 3,456 gas per
+block and 224,640 gas over the suite.
+
+Fresh local scoring of the exact submission bytes measured 9,868,887 versus
+the 10,179,119 reference, a combined reduction of 310,232 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
@@ -57,5 +64,5 @@ directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,539 gas and 154,740
+accompanying exact-gas proof accounts for a fixed cost of 1,539 gas and 151,284
 gas per padded block, plus calldata copying and memory expansion.

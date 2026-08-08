@@ -21,6 +21,70 @@ def evmRotr32 (x : EWord) (n : Nat) : EWord :=
   mask32 (UInt256.shiftRight x (UInt256.ofNat n) |||
     UInt256.shiftLeft x (UInt256.ofNat (32 - n)))
 
+private theorem shiftLeft_toNat (value : UInt256) {shift : Nat}
+    (hshift : shift < 256) :
+    (UInt256.shiftLeft value (UInt256.ofNat shift)).toNat =
+      (value.toNat <<< shift) % 2 ^ 256 := by
+  have hs : (UInt256.ofNat shift).toNat = shift := by
+    rw [word_toNat_ofNat, Nat.mod_eq_of_lt (by omega : shift < 2 ^ 256)]
+  unfold UInt256.shiftLeft
+  rw [if_neg (by omega), word_toNat_ofNat, hs]
+  rw [show UInt256.size = 2 ^ 256 by rfl, Nat.mod_mod]
+
+private theorem rotrDuplicateNat (x n : Nat) (hn : n ≤ 32) :
+    (((x ||| ((x <<< 32) % 2 ^ 256)) >>> n) % 2 ^ 32) =
+      (((x >>> n) ||| ((x <<< (32 - n)) % 2 ^ 256)) % 2 ^ 32) := by
+  apply Nat.eq_of_testBit_eq
+  intro i
+  rw [Nat.testBit_mod_two_pow, Nat.testBit_mod_two_pow]
+  by_cases hi : i < 32
+  · simp only [decide_true, hi, Bool.true_and, Nat.testBit_shiftRight,
+      Nat.testBit_or, Nat.testBit_mod_two_pow, Nat.testBit_shiftLeft]
+    have hni : n + i < 256 := by omega
+    have hi256 : i < 256 := by omega
+    rw [show decide (n + i < 256) = true by simp [hni], Bool.true_and]
+    by_cases hwrap : 32 ≤ n + i
+    · have hsub : n + i - 32 = i - (32 - n) := by omega
+      have hge : 32 - n ≤ i := by omega
+      rw [show decide (n + i ≥ 32) = true by simp [hwrap], Bool.true_and,
+        show decide (i ≥ 32 - n) = true by simp [hge], Bool.true_and,
+        show decide (i < 256) = true by simp [hi256], Bool.true_and, hsub]
+    · have hlt : n + i < 32 := by omega
+      have hlt' : i < 32 - n := by omega
+      rw [show decide (n + i ≥ 32) = false by simp [hlt], Bool.false_and,
+        Bool.or_false, show decide (i ≥ 32 - n) = false by
+          have hnot : ¬ i ≥ 32 - n := by omega
+          simp [hnot],
+        Bool.false_and, show decide (i < 256) = true by simp [hi256],
+        Bool.true_and, Bool.or_false]
+  · simp [hi]
+
+/-- A single duplicated 64-bit lane computes the same low-32-bit rotate as
+the compiler's separate left and right shifts. -/
+theorem evmRotr32_duplicate (x : UInt256) (n : Nat) (hn : n ≤ 32) :
+    mask32 (UInt256.shiftRight
+      (UInt256.shiftLeft x (UInt256.ofNat 32) ||| x)
+      (UInt256.ofNat n)) = evmRotr32 x n := by
+  unfold evmRotr32
+  apply word_ext
+  rw [mask32_toNat, mask32_toNat]
+  rw [show 0xffffffff = 2 ^ 32 - 1 by norm_num,
+    Nat.and_two_pow_sub_one_eq_mod,
+    Nat.and_two_pow_sub_one_eq_mod]
+  rw [shiftRight_toNat
+    (UInt256.shiftLeft x (UInt256.ofNat 32) ||| x) (by omega : n < 256)]
+  change
+    ((UInt256.lor (UInt256.shiftLeft x (UInt256.ofNat 32)) x).toNat >>> n) %
+        2 ^ 32 =
+      (UInt256.lor (UInt256.shiftRight x (UInt256.ofNat n))
+        (UInt256.shiftLeft x (UInt256.ofNat (32 - n)))).toNat % 2 ^ 32
+  rw [word_toNat_lor, word_toNat_lor]
+  rw [shiftRight_toNat x (by omega : n < 256),
+    shiftLeft_toNat x (by omega : 32 < 256),
+    shiftLeft_toNat x (by omega : 32 - n < 256)]
+  rw [Nat.or_comm ((x.toNat <<< 32) % 2 ^ 256) x.toNat]
+  exact rotrDuplicateNat x.toNat n hn
+
 def evmCh (x y z : EWord) : EWord :=
   z ^^^ (x &&& (y ^^^ z))
 

@@ -36,21 +36,19 @@ def rotrPath :
   [⟨2, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨3, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
    ⟨4, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨6, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨7, .op .SUB, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨8, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨9, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨10, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨11, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨12, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨13, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨14, .op (.Swap ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨7, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨8, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨9, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨10, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨11, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨12, .op (.Swap ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨13, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨14, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨15, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨16, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨17, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨18, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨19, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨16, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨17, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def unaryEntry (s : State) (entry : Nat) (x output returnDest : UInt256)
     (rest : List UInt256) : State :=
@@ -116,7 +114,6 @@ theorem run_rotr (s : State) (x : UInt256) (n : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock rotrPath
       (rotrEntry s x n output returnDest rest) =
         some (unaryReturned s (Word.evmRotr32 x n) returnDest rest) := by
-  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat hn (by norm_num : 32 < 2 ^ 256)
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
@@ -128,9 +125,8 @@ theorem run_rotr (s : State) (x : UInt256) (n : Nat)
   simp [rotrPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     rotrEntry, unaryReturned, Word.evmRotr32, Challenge.EvmProof.Word.mask32,
-    List.exchange, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hcode, hrun, hvalid,
-    hsub]
-  rfl
+    List.exchange, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hcode, hrun, hvalid]
+  exact Word.evmRotr32_duplicate x n hn
 
 def gasSteps_rotr (s : State) (x : UInt256) (n : Nat)
     (output returnDest : UInt256) (rest : List UInt256)
