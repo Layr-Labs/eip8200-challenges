@@ -6,6 +6,28 @@ keep proof cost proportional to measured runtime value.
 
 Development context: GPT 5.6 Sol, xhigh effort, Codex agent.
 
+## 2026-08-08: five fixed state load/store fusions — verified
+
+The four remaining working-state shifts and the `h4 := h3 + t1` update now
+perform their fixed-address `MLOAD` and `MSTORE` operations directly. This
+removes the generic `hSet` setup, jump, return, and cleanup path that remained
+after the fixed `hAt` loads were specialized. Widened `PUSH5` address literals
+and unreachable `JUMPDEST` padding retain every enclosing byte span and
+structural instruction count, so the candidate remains exactly 1,524 bytes and
+810 instructions.
+
+The raw execution proofs end in the existing `afterShift7`, `afterShift6`,
+`afterStoreH4`, `afterShift3`, and `afterShift2` semantic states. The
+composition proof therefore reuses the unchanged SHA-256 round correctness
+layer. Exact gas proofs reduce the update phase from 359 to 179 gas, the round
+from 1,179 to 999 gas, compression from 113,169 to 101,649 gas, and the driver
+from 113,244 to 101,724 gas per padded block.
+
+The protected native scorer accepts every clean and dirty vector with equal
+paired gas. Each site saves 36 gas per round; the batch saves 11,520 gas per
+padded block and 748,800 across the suite. The exact clean score is 6,646,727
+and the empty vector costs 103,515 gas.
+
 ## 2026-08-08: inline variable-index `W[j]` load — verified
 
 The compression round's hot message-schedule accessor call is now replaced by
@@ -90,9 +112,10 @@ when executable behavior is correct.
 | Direct fixed `h7` | 8,822,407 | -162,240 | Submitted, validating when logged |
 | Seven remaining fixed loads | 7,686,727 | -1,135,680 | Proof-complete; submitted for validation |
 | Inline variable `W[j]` load | 7,545,287 | -141,440 | Proof-complete; submitted for validation |
-| Inline overlapping `K[j]` load | 7,395,527 | -149,760 | Proof-complete; full Yukon gate running |
+| Inline overlapping `K[j]` load | 7,395,527 | -149,760 | Proof-complete; submitted for validation |
+| Five fixed state load/store fusions | 6,646,727 | -748,800 | Proof-complete; full Yukon gate running |
 
-The cumulative verified improvement is 2,783,592 gas versus the reference
+The cumulative verified improvement is 3,532,392 gas versus the reference
 public score.
 
 ## What worked
@@ -205,9 +228,7 @@ fell from 136,987 to 119,515, exactly 17,472. The predicted suite score is
 
 ## Next optimization direction
 
-After the inline `K[j]` candidate clears the full Yukon gate, specialize the
-five remaining fixed-index state shifts by fusing each `hAt` load and `hSet`
-store into direct `MLOAD`/`MSTORE` sequences. The measured byte layouts preserve
-each local span and the 810-instruction artifact, with a projected 748,800-gas
-suite reduction. The larger fused `BSIG0` schedule remains queued behind that
-lower-risk batch.
+Fuse the shared `BSIG0` and `BSIG1` schedules around duplicated 32-bit lanes.
+Temporary exact layouts preserve both helper spans, caller spans, all later
+PCs, and the 810-instruction artifact. Each helper is projected to save 180 gas
+per round; applying both would save another 1,497,600 gas over the suite.

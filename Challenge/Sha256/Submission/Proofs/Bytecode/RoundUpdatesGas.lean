@@ -17,94 +17,44 @@ private theorem potential_trans {a b p q r k l : Nat}
   omega
 
 private theorem shift_cost_potential
-    (loadPath storePath : List
+    (path : List
       (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
-    (q : State) (src dest loadReturn storeReturn startPC loadWork storeWork : Nat)
+    (q : State) (src dest loadReturn storeReturn startPC work : Nat)
     (context : List UInt256)
-    (hload :
-      (loadPath = Compression.shift76Path ∧ src = 6 ∧ loadReturn = 796 ∧
+    (hmatch :
+      (path = Compression.shift76Path ∧ src = 6 ∧ dest = 7 ∧
+        loadReturn = 796 ∧
         storeReturn = 803 ∧ startPC = 783) ∨
-      (loadPath = Compression.shift65Path ∧ src = 5 ∧ loadReturn = 817 ∧
+      (path = Compression.shift65Path ∧ src = 5 ∧ dest = 6 ∧
+        loadReturn = 817 ∧
         storeReturn = 824 ∧ startPC = 803) ∨
-      (loadPath = Compression.shift32Path ∧ src = 2 ∧ loadReturn = 872 ∧
+      (path = Compression.shift32Path ∧ src = 2 ∧ dest = 3 ∧
+        loadReturn = 872 ∧
         storeReturn = 879 ∧ startPC = 858) ∨
-      (loadPath = Compression.shift21Path ∧ src = 1 ∧ loadReturn = 893 ∧
-        storeReturn = 900 ∧ startPC = 879))
-    (hstore :
-      (storePath = Compression.store7Path ∧ src = 6 ∧ dest = 7 ∧
-        loadReturn = 796 ∧ storeReturn = 803) ∨
-      (storePath = Compression.store6Path ∧ src = 5 ∧ dest = 6 ∧
-        loadReturn = 817 ∧ storeReturn = 824) ∨
-      (storePath = Compression.store3Path ∧ src = 2 ∧ dest = 3 ∧
-        loadReturn = 872 ∧ storeReturn = 879) ∨
-      (storePath = Compression.store2Path ∧ src = 1 ∧ dest = 2 ∧
-        loadReturn = 893 ∧ storeReturn = 900))
+      (path = Compression.shift21Path ∧ src = 1 ∧ dest = 2 ∧
+        loadReturn = 893 ∧ storeReturn = 900 ∧ startPC = 879))
     (hpc : q.pc = UInt256.ofNat startPC) (hstack : q.stack = context)
     (hcap : context.length < 1016)
     (hcode : q.executionEnv.code = submissionBytecode)
     (hfork : q.fork = .Osaka) (hrun : q.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig q.executionEnv.fork
       q.executionEnv.codeAddr = false)
-    (hloadWork : Challenge.EvmProof.Meter.runLocatedBlockStaticCost loadPath =
-      loadWork)
-    (hstoreWork : Challenge.EvmProof.Meter.runLocatedBlockStaticCost storePath =
-      storeWork) :
-    (Compression.gasSteps_shift loadPath storePath q src dest loadReturn
-      storeReturn startPC context hload hstore hpc hstack hcap hcode hfork hrun
+    (hwork : Challenge.EvmProof.Meter.runLocatedBlockStaticCost path = work) :
+    (Compression.gasSteps_shift path q src dest loadReturn
+      storeReturn startPC context hmatch hpc hstack hcap hcode hfork hrun
       hnp).cost + MachineState.memCost q.activeWords.toNat =
-      loadWork + storeWork + 24 + MachineState.memCost
+      work + MachineState.memCost
         (Compression.shiftReturned q src dest loadReturn storeReturn context).activeWords.toNat := by
-  have hsetupLoad := blockCost_potential_of_static loadPath loadWork
-    (Compression.run_shiftLoad loadPath q src loadReturn storeReturn startPC
-      context hload hpc hstack (by omega) hrun) hfork
-    (by rcases hload with h | h | h | h <;>
-        rcases h with ⟨rfl, rfl, rfl, rfl, rfl⟩ <;>
+  have hdirect := blockCost_potential_of_static path work
+    (Compression.run_shiftDirect path q src dest loadReturn storeReturn startPC
+      context hmatch hpc hstack (by omega) hrun) hfork
+    (by rcases hmatch with h | h | h | h <;>
+        rcases h with ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩ <;>
         simp [Compression.shift76Path, Compression.shift65Path,
           Compression.shift32Path, Compression.shift21Path, CopyFree])
-    hloadWork
-  have qLoadedCode :
-      (Compression.shiftLoaded q src loadReturn storeReturn context).executionEnv.code =
-        submissionBytecode := by
-    simpa [Compression.shiftLoaded, Accessors.loadReturned] using hcode
-  have qLoadedFork :
-      (Compression.shiftLoaded q src loadReturn storeReturn context).fork =
-        .Osaka := by
-    simpa [Compression.shiftLoaded, Accessors.loadReturned, State.fork]
-      using hfork
-  have qLoadedRun :
-      (Compression.shiftLoaded q src loadReturn storeReturn context).halt =
-        .Running := by
-    simpa [Compression.shiftLoaded, Accessors.loadReturned] using hrun
-  have qLoadedNp : Precompile.isPrecompileWithConfig (Compression.shiftLoaded q src loadReturn storeReturn context).executionEnv.precompileConfig (Compression.shiftLoaded q src loadReturn storeReturn context).executionEnv.fork
-      (Compression.shiftLoaded q src loadReturn storeReturn context).executionEnv.codeAddr =
-        false := by
-    simpa [Compression.shiftLoaded, Accessors.loadReturned] using hnp
-  have hsetupStore := blockCost_potential_of_static storePath storeWork
-    (Compression.run_shiftStore storePath q src dest loadReturn storeReturn
-      context hstore (by omega) hcode hrun) qLoadedFork
-    (by rcases hstore with h | h | h | h <;>
-        rcases h with ⟨rfl, rfl, rfl, rfl, rfl⟩ <;>
-        simp [Compression.store7Path, Compression.store6Path,
-          Compression.store3Path, Compression.store2Path, CopyFree])
-    hstoreWork
-  have hset := CompressionGas.hSet_cost_potential
-    (Compression.shiftLoaded q src loadReturn storeReturn context)
-    (UInt256.ofNat dest) (Compression.hValue q src)
-    (UInt256.ofNat storeReturn) context (by omega) qLoadedCode qLoadedFork
-    qLoadedRun qLoadedNp (by
-      rcases hstore with h | h | h | h <;>
-        rcases h with ⟨_, rfl, rfl, rfl, rfl⟩ <;> decide)
-  have hawStore :
-      (Compression.shiftStoreEntry q src dest loadReturn storeReturn context).activeWords =
-        (Compression.shiftLoaded q src loadReturn storeReturn context).activeWords := by
-    rfl
+    hwork
   unfold Compression.gasSteps_shift
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  rw [hawStore] at hsetupStore
-  change _ = 24 + MachineState.memCost
-    (Compression.shiftReturned q src dest loadReturn storeReturn context).activeWords.toNat at hset
-  omega
+  simpa only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost] using hdirect
 
 theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj : j < 64)
@@ -116,7 +66,7 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gasSteps_updates s msgOff returnDest rest j hj hcap hcode
       hfork hrun hnp).cost + MachineState.memCost
         (Compression.afterT2 s msgOff returnDest rest j).activeWords.toNat =
-      359 + MachineState.memCost
+      179 + MachineState.memCost
         (Compression.afterSecondIteration s msgOff returnDest rest j).activeWords.toNat := by
   let ctx := Compression.roundContext s msgOff returnDest rest j
   have hctx : ctx.length < 1016 := by simp [ctx, Compression.roundContext]; omega
@@ -128,10 +78,9 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
   have q0np : Precompile.isPrecompileWithConfig q0.executionEnv.precompileConfig q0.executionEnv.fork
       q0.executionEnv.codeAddr = false := by simpa [q0] using hnp
   have hs7 := shift_cost_potential Compression.shift76Path
-    Compression.store7Path q0 6 7 796 803 783 15 15 ctx
-    (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩)
-    (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩) (by rfl) (by rfl) hctx
-    q0code q0fork q0run q0np (by rfl) (by rfl)
+    q0 6 7 796 803 783 18 ctx
+    (Or.inl ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩)
+    (by rfl) (by rfl) hctx q0code q0fork q0run q0np (by rfl)
   let q1 := Compression.afterShift7 s msgOff returnDest rest j
   have q1code : q1.executionEnv.code = submissionBytecode := by
     simpa [q1, q0, Compression.afterShift7, Compression.shiftReturned,
@@ -151,10 +100,9 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
       Accessors.storeReturned, Compression.shiftLoaded,
       Accessors.loadReturned] using q0np
   have hs6 := shift_cost_potential Compression.shift65Path
-    Compression.store6Path q1 5 6 817 824 803 16 15 ctx
-    (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩))
-    (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩))
-    (by rfl) (by rfl) hctx q1code q1fork q1run q1np (by rfl) (by rfl)
+    q1 5 6 817 824 803 19 ctx
+    (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩))
+    (by rfl) (by rfl) hctx q1code q1fork q1run q1np (by rfl)
   let q2 := Compression.afterShift6 s msgOff returnDest rest j
   have q2code : q2.executionEnv.code = submissionBytecode := by
     simpa [q2, q1, Compression.afterShift6, Compression.shiftReturned,
@@ -187,26 +135,10 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
   have q3np : Precompile.isPrecompileWithConfig q3.executionEnv.precompileConfig q3.executionEnv.fork
       q3.executionEnv.codeAddr = false := by
     simpa [q3, Compression.afterStoreE, Compression.directStored] using q2np
-  have hsetupH4 := blockCost_potential_of_static
-    Compression.setupH3ForH4Path 21
-    (Compression.run_setupH3ForH4 s msgOff returnDest rest j (by omega)
-      hrun) q3fork
-    (by simp [Compression.setupH3ForH4Path, CopyFree]) (by rfl)
-  have hstoreH4 := blockCost_potential_of_static Compression.storeH4Path 21
-    (Compression.run_storeH4 s msgOff returnDest rest j (by omega) hcode hrun)
-    (by simpa [Compression.h4Loaded, Accessors.loadReturned, State.fork]
-      using q3fork)
-    (by simp [Compression.storeH4Path, CopyFree]) (by rfl)
-  have hsetH4 := CompressionGas.hSet_cost_potential
-    (Compression.h4Loaded s msgOff returnDest rest j) (UInt256.ofNat 4)
-    (Compression.newH4 s msgOff returnDest rest j) (UInt256.ofNat 858) ctx
-    (by simp [ctx, Compression.roundContext]; omega)
-    (by simpa [Compression.h4Loaded, Accessors.loadReturned] using q3code)
-    (by simpa [Compression.h4Loaded, Accessors.loadReturned, State.fork]
-      using q3fork)
-    (by simpa [Compression.h4Loaded, Accessors.loadReturned] using q3run)
-    (by simpa [Compression.h4Loaded, Accessors.loadReturned] using q3np)
-    (by decide)
+  have hupdateH4 := blockCost_potential_of_static
+    Compression.setupH3ForH4Path 30
+    (Compression.run_updateH4 s msgOff returnDest rest j (by omega) hrun)
+    q3fork (by simp [Compression.setupH3ForH4Path, CopyFree]) (by rfl)
   let q4 := Compression.afterStoreH4 s msgOff returnDest rest j
   have q4code : q4.executionEnv.code = submissionBytecode := by
     simpa [q4, Compression.afterStoreH4, Accessors.storeReturned,
@@ -222,10 +154,9 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
     simpa [q4, Compression.afterStoreH4, Accessors.storeReturned,
       Compression.h4Loaded, Accessors.loadReturned] using q3np
   have hs3 := shift_cost_potential Compression.shift32Path
-    Compression.store3Path q4 2 3 872 879 858 16 15 ctx
-    (Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩)))
-    (Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩)))
-    (by rfl) (by rfl) hctx q4code q4fork q4run q4np (by rfl) (by rfl)
+    q4 2 3 872 879 858 19 ctx
+    (Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩)))
+    (by rfl) (by rfl) hctx q4code q4fork q4run q4np (by rfl)
   let q5 := Compression.afterShift3 s msgOff returnDest rest j
   have q5code : q5.executionEnv.code = submissionBytecode := by
     simpa [q5, Compression.afterShift3, Compression.shiftReturned,
@@ -259,11 +190,9 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
     simpa [q5rawState, Compression.shiftReturned, Accessors.storeReturned,
       Compression.shiftLoaded, Accessors.loadReturned] using q4np
   have hs2 := shift_cost_potential Compression.shift21Path
-    Compression.store2Path q5rawState 1 2 893 900 879 16 15 ctx
-    (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl, rfl, rfl⟩)))
-    (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl, rfl, rfl⟩)))
-    (by rfl) (by rfl) hctx q5rawCode q5rawFork q5rawRun q5rawNp
-    (by rfl) (by rfl)
+    q5rawState 1 2 893 900 879 19 ctx
+    (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩)))
+    (by rfl) (by rfl) hctx q5rawCode q5rawFork q5rawRun q5rawNp (by rfl)
   have hfinish := blockCost_potential_of_static Compression.finishRoundPath 64
     (Compression.run_finishRound s msgOff returnDest rest j hj (by omega)
       hcode hrun)
@@ -274,31 +203,23 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
   unfold Compression.gasSteps_updates
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  have hawH4Store :
-      (Compression.h4StoreEntry s msgOff returnDest rest j).activeWords =
-        (Compression.h4Loaded s msgOff returnDest rest j).activeWords := by rfl
-  rw [hawH4Store] at hstoreH4
-  change _ = 24 + MachineState.memCost
-    q4.activeWords.toNat at hsetH4
-  change _ = 54 + MachineState.memCost q1.activeWords.toNat at hs7
-  change _ = 55 + MachineState.memCost q2.activeWords.toNat at hs6
-  change _ = 55 + MachineState.memCost q5rawState.activeWords.toNat at hs3
-  change _ = 55 + MachineState.memCost
+  change _ = 18 + MachineState.memCost q1.activeWords.toNat at hs7
+  change _ = 19 + MachineState.memCost q2.activeWords.toNat at hs6
+  change _ = 30 + MachineState.memCost q4.activeWords.toNat at hupdateH4
+  change _ = 19 + MachineState.memCost q5rawState.activeWords.toNat at hs3
+  change _ = 19 + MachineState.memCost
     (Compression.afterShift2 s msgOff returnDest rest j).activeWords.toNat at hs2
   dsimp only [q0, q1, q2, q3, q4, q5, q5rawState, ctx] at *
   have h₁ := potential_trans hs7 hs6
   have h₂ := potential_trans h₁ hstoreE
-  have h₃ := potential_trans h₂ hsetupH4
-  have h₄ := potential_trans h₃ hstoreH4
-  have h₅ := potential_trans h₄ hsetH4
-  have h₆ := potential_trans h₅ hs3
-  have h₇ := potential_trans h₆ hs2
-  have h₈ := potential_trans h₇ hfinish
-  unfold Compression.gasSteps_shift at h₈ ⊢
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost,
-    Compression.afterShift2, Compression.afterShift3] at h₈ ⊢
-  simpa only [Nat.add_assoc, Nat.reduceAdd] using h₈
+  have h₃ := potential_trans h₂ hupdateH4
+  have h₄ := potential_trans h₃ hs3
+  have h₅ := potential_trans h₄ hs2
+  have h₆ := potential_trans h₅ hfinish
+  unfold Compression.gasSteps_shift at h₆ ⊢
+  simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost,
+    Compression.afterShift2, Compression.afterShift3] at h₆ ⊢
+  simpa only [Nat.add_assoc, Nat.reduceAdd] using h₆
 
 
 end Challenge.Sha256.Submission.Proofs.Bytecode.CompressionGas

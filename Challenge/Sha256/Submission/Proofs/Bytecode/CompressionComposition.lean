@@ -601,28 +601,19 @@ def gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
     loadedE, Functions.unaryReturned, Accessors.loadReturned,
     Accessors.kAtReturned]
 
-def gasSteps_shift (loadPath storePath : List
+def gasSteps_shift (path : List
     (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
     (q : State) (src dest loadReturn storeReturn startPC : Nat)
     (context : List UInt256)
-    (hload :
-      (loadPath = shift76Path ∧ src = 6 ∧ loadReturn = 796 ∧
+    (hmatch :
+      (path = shift76Path ∧ src = 6 ∧ dest = 7 ∧ loadReturn = 796 ∧
         storeReturn = 803 ∧ startPC = 783) ∨
-      (loadPath = shift65Path ∧ src = 5 ∧ loadReturn = 817 ∧
+      (path = shift65Path ∧ src = 5 ∧ dest = 6 ∧ loadReturn = 817 ∧
         storeReturn = 824 ∧ startPC = 803) ∨
-      (loadPath = shift32Path ∧ src = 2 ∧ loadReturn = 872 ∧
+      (path = shift32Path ∧ src = 2 ∧ dest = 3 ∧ loadReturn = 872 ∧
         storeReturn = 879 ∧ startPC = 858) ∨
-      (loadPath = shift21Path ∧ src = 1 ∧ loadReturn = 893 ∧
+      (path = shift21Path ∧ src = 1 ∧ dest = 2 ∧ loadReturn = 893 ∧
         storeReturn = 900 ∧ startPC = 879))
-    (hstore :
-      (storePath = store7Path ∧ src = 6 ∧ dest = 7 ∧
-        loadReturn = 796 ∧ storeReturn = 803) ∨
-      (storePath = store6Path ∧ src = 5 ∧ dest = 6 ∧
-        loadReturn = 817 ∧ storeReturn = 824) ∨
-      (storePath = store3Path ∧ src = 2 ∧ dest = 3 ∧
-        loadReturn = 872 ∧ storeReturn = 879) ∨
-      (storePath = store2Path ∧ src = 1 ∧ dest = 2 ∧
-        loadReturn = 893 ∧ storeReturn = 900))
     (hpc : q.pc = UInt256.ofNat startPC) (hstack : q.stack = context)
     (hcap : context.length < 1016)
     (hcode : q.executionEnv.code = submissionBytecode)
@@ -631,48 +622,14 @@ def gasSteps_shift (loadPath storePath : List
       q.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps q
       (shiftReturned q src dest loadReturn storeReturn context) := by
-  have gSetupLoad : Challenge.EvmProof.GasSteps q
-      (shiftLoaded q src loadReturn storeReturn context) := by
-    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.referenceArtifact .Osaka loadPath
-    · exact hcode
-    · exact hfork
-    · exact run_shiftLoad loadPath q src loadReturn storeReturn startPC
-        context hload hpc hstack (by omega) hrun
-    · exact hrun
-    · exact hnp
-  have qLoadedCode :
-      (shiftLoaded q src loadReturn storeReturn context).executionEnv.code =
-        submissionBytecode := by
-    simpa [shiftLoaded, Accessors.loadReturned] using hcode
-  have qLoadedFork :
-      (shiftLoaded q src loadReturn storeReturn context).fork = .Osaka := by
-    simpa [shiftLoaded, Accessors.loadReturned, State.fork] using hfork
-  have qLoadedRun :
-      (shiftLoaded q src loadReturn storeReturn context).halt = .Running := by
-    simpa [shiftLoaded, Accessors.loadReturned] using hrun
-  have qLoadedNp : Precompile.isPrecompileWithConfig (shiftLoaded q src loadReturn storeReturn context).executionEnv.precompileConfig (shiftLoaded q src loadReturn storeReturn context).executionEnv.fork
-      (shiftLoaded q src loadReturn storeReturn context).executionEnv.codeAddr =
-        false := by
-    simpa [shiftLoaded, Accessors.loadReturned] using hnp
-  have gSetupStore : Challenge.EvmProof.GasSteps
-      (shiftLoaded q src loadReturn storeReturn context)
-      (shiftStoreEntry q src dest loadReturn storeReturn context) := by
-    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.referenceArtifact .Osaka storePath
-    · exact qLoadedCode
-    · exact qLoadedFork
-    · exact run_shiftStore storePath q src dest loadReturn storeReturn
-        context hstore (by omega) hcode hrun
-    · exact qLoadedRun
-    · exact qLoadedNp
-  have gStore := Accessors.gasSteps_hSet
-    (shiftLoaded q src loadReturn storeReturn context)
-    (UInt256.ofNat dest) (hValue q src) (UInt256.ofNat storeReturn) context
-    (by omega) qLoadedCode qLoadedFork qLoadedRun qLoadedNp (by
-      rcases hstore with h | h | h | h <;>
-        rcases h with ⟨_, rfl, rfl, rfl, rfl⟩ <;> decide)
-  exact gSetupLoad.trans (gSetupStore.trans gStore)
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka path
+  · exact hcode
+  · exact hfork
+  · exact run_shiftDirect path q src dest loadReturn storeReturn startPC
+      context hmatch hpc hstack (by omega) hrun
+  · exact hrun
+  · exact hnp
 
 /-- Perform all eight working-state assignments and jump back to the round
 condition with `j + 1`. -/
@@ -703,9 +660,8 @@ def gasSteps_updates (s : State) (msgOff returnDest : UInt256)
   have q0np : Precompile.isPrecompileWithConfig q0.executionEnv.precompileConfig q0.executionEnv.fork
       q0.executionEnv.codeAddr = false := by
     simpa only [q0env] using hnp
-  have g7 := gasSteps_shift shift76Path store7Path q0 6 7 796 803 783 ctx
-    (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩)
-    (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩)
+  have g7 := gasSteps_shift shift76Path q0 6 7 796 803 783 ctx
+    (Or.inl ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩)
     (by rfl) (by rfl) hctx q0code q0fork q0run q0np
   let q1 := afterShift7 s msgOff returnDest rest j
   have q1eq : q1 = shiftReturned q0 6 7 796 803 ctx := by rfl
@@ -723,9 +679,8 @@ def gasSteps_updates (s : State) (msgOff returnDest : UInt256)
     change Precompile.isPrecompileWithConfig q0.executionEnv.precompileConfig q0.executionEnv.fork
       q0.executionEnv.codeAddr = false
     exact q0np
-  have g6 := gasSteps_shift shift65Path store6Path q1 5 6 817 824 803 ctx
-    (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩))
-    (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩))
+  have g6 := gasSteps_shift shift65Path q1 5 6 817 824 803 ctx
+    (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩))
     (by rfl) (by rfl) hctx q1code q1fork q1run q1np
   let q2 := afterShift6 s msgOff returnDest rest j
   have q2eq : q2 = shiftReturned q1 5 6 817 824 ctx := by rfl
@@ -768,65 +723,33 @@ def gasSteps_updates (s : State) (msgOff returnDest : UInt256)
     change Precompile.isPrecompileWithConfig q2.executionEnv.precompileConfig q2.executionEnv.fork
       q2.executionEnv.codeAddr = false
     exact q2np
-  have gH3Setup : Challenge.EvmProof.GasSteps q3
-      (h4Loaded s msgOff returnDest rest j) := by
+  have gH4 : Challenge.EvmProof.GasSteps q3
+      (afterStoreH4 s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupH3ForH4Path
     · exact q3code
     · exact q3fork
-    · simpa [q3] using run_setupH3ForH4 s msgOff returnDest rest j
+    · simpa [q3] using run_updateH4 s msgOff returnDest rest j
         (by omega) hrun
     · exact q3run
     · exact q3np
-  have qH3code : (h4Loaded s msgOff returnDest rest j).executionEnv.code =
-      submissionBytecode := by
-    change q3.executionEnv.code = submissionBytecode
-    exact q3code
-  have qH3fork : (h4Loaded s msgOff returnDest rest j).fork = .Osaka := by
-    change q3.fork = .Osaka
-    exact q3fork
-  have qH3run : (h4Loaded s msgOff returnDest rest j).halt = .Running := by
-    change q3.halt = .Running
-    exact q3run
-  have qH3np : Precompile.isPrecompileWithConfig (h4Loaded s msgOff returnDest rest j).executionEnv.precompileConfig (h4Loaded s msgOff returnDest rest j).executionEnv.fork
-      (h4Loaded s msgOff returnDest rest j).executionEnv.codeAddr = false := by
-    change Precompile.isPrecompileWithConfig q3.executionEnv.precompileConfig q3.executionEnv.fork
-      q3.executionEnv.codeAddr = false
-    exact q3np
-  have gH4Setup : Challenge.EvmProof.GasSteps
-      (h4Loaded s msgOff returnDest rest j)
-      (h4StoreEntry s msgOff returnDest rest j) := by
-    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.referenceArtifact .Osaka storeH4Path
-    · exact qH3code
-    · exact qH3fork
-    · exact run_storeH4 s msgOff returnDest rest j (by omega) hcode hrun
-    · exact qH3run
-    · exact qH3np
-  have gH4 := Accessors.gasSteps_hSet
-    (h4Loaded s msgOff returnDest rest j) (UInt256.ofNat 4)
-    (newH4 s msgOff returnDest rest j) (UInt256.ofNat 858) ctx
-    (by simp [ctx, roundContext]; omega) qH3code qH3fork qH3run qH3np
-    (by decide)
   let q4 := afterStoreH4 s msgOff returnDest rest j
   have q4code : q4.executionEnv.code = submissionBytecode := by
-    change (h4Loaded s msgOff returnDest rest j).executionEnv.code =
-      submissionBytecode
-    exact qH3code
+    change q3.executionEnv.code = submissionBytecode
+    exact q3code
   have q4fork : q4.fork = .Osaka := by
-    change (h4Loaded s msgOff returnDest rest j).fork = .Osaka
-    exact qH3fork
+    change q3.fork = .Osaka
+    exact q3fork
   have q4run : q4.halt = .Running := by
-    change (h4Loaded s msgOff returnDest rest j).halt = .Running
-    exact qH3run
+    change q3.halt = .Running
+    exact q3run
   have q4np : Precompile.isPrecompileWithConfig q4.executionEnv.precompileConfig q4.executionEnv.fork
       q4.executionEnv.codeAddr = false := by
-    change Precompile.isPrecompileWithConfig (h4Loaded s msgOff returnDest rest j).executionEnv.precompileConfig (h4Loaded s msgOff returnDest rest j).executionEnv.fork
-      (h4Loaded s msgOff returnDest rest j).executionEnv.codeAddr = false
-    exact qH3np
-  have g3 := gasSteps_shift shift32Path store3Path q4 2 3 872 879 858 ctx
-    (Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩)))
-    (Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl⟩)))
+    change Precompile.isPrecompileWithConfig q3.executionEnv.precompileConfig
+      q3.executionEnv.fork q3.executionEnv.codeAddr = false
+    exact q3np
+  have g3 := gasSteps_shift shift32Path q4 2 3 872 879 858 ctx
+    (Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩)))
     (by rfl) (by rfl) hctx q4code q4fork q4run q4np
   let q5 := shiftReturned q4 2 3 872 879 ctx
   have q5env : q5.executionEnv = q4.executionEnv := by
@@ -844,9 +767,8 @@ def gasSteps_updates (s : State) (msgOff returnDest : UInt256)
   have q5np : Precompile.isPrecompileWithConfig q5.executionEnv.precompileConfig q5.executionEnv.fork
       q5.executionEnv.codeAddr = false := by
     simpa only [q5env] using q4np
-  have g2 := gasSteps_shift shift21Path store2Path q5 1 2 893 900 879 ctx
-    (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl, rfl, rfl⟩)))
-    (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl, rfl, rfl⟩)))
+  have g2 := gasSteps_shift shift21Path q5 1 2 893 900 879 ctx
+    (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩)))
     (by rfl) (by rfl) hctx q5code q5fork q5run q5np
   let q6 := shiftReturned q5 1 2 893 900 ctx
   have q6env : q6.executionEnv = q5.executionEnv := by
@@ -876,8 +798,8 @@ def gasSteps_updates (s : State) (msgOff returnDest : UInt256)
         (by omega) hcode hrun
     · exact q6run
     · exact q6np
-  exact g7.trans (g6.trans (gE.trans (gH3Setup.trans
-    (gH4Setup.trans (gH4.trans (g3.trans (g2.trans gFinish)))))))
+  exact g7.trans (g6.trans (gE.trans
+    (gH4.trans (g3.trans (g2.trans gFinish)))))
 
 /-- One complete concrete compression round, including the loop branch,
 arithmetic, all eight memory updates, and the back edge. -/

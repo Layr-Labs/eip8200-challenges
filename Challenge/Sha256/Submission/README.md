@@ -107,15 +107,24 @@ to `PUSH3` absorbs the two extra structural instructions without changing any
 later PC, the 1,524-byte length, or the 810-instruction artifact. This saves
 36 gas per round, 2,304 gas per padded block, and 149,760 gas over the suite.
 
-Fresh local scoring of the exact submission bytes is 7,395,527 versus the
-10,179,119 reference, a combined reduction of 2,783,592 gas. All 19 vectors
+The five remaining working-state moves now fuse each already-specialized
+fixed-address load with its corresponding store. Four shifts copy `h6` to
+`h7`, `h5` to `h6`, `h2` to `h3`, and `h1` to `h2`; the fifth computes and
+stores masked `h4 := h3 + t1`. Each direct `MLOAD`/`MSTORE` path replaces the
+old accessor-return scaffolding while widened `PUSH5` addresses and unreachable
+`JUMPDEST` padding preserve the local span, all downstream PCs, the 1,524-byte
+length, and all 810 structural instructions. Every fused site saves 36 gas per
+round, for 11,520 gas per padded block and 748,800 gas over the suite.
+
+Fresh local scoring of the exact submission bytes is 6,646,727 versus the
+10,179,119 reference, a combined reduction of 3,532,392 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 115,035 gas.
+vector costs 103,515 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 113,244
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 101,724
 gas per padded block, plus calldata copying and memory expansion.

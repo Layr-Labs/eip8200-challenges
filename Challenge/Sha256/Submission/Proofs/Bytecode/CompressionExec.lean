@@ -211,36 +211,38 @@ def finishT2Path :
 
 def shift76Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨532, .push ⟨2, by decide⟩ (UInt256.ofNat 803), by rfl, by decide⟩,
-   ⟨533, .push ⟨2, by decide⟩ (UInt256.ofNat 480), by rfl, by decide⟩,
-   ⟨534, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨535, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨536, .push ⟨3, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨537, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨532, .push ⟨5, by decide⟩ (UInt256.ofNat 480), by rfl, by decide⟩,
+   ⟨533, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨534, .push ⟨5, by decide⟩ (UInt256.ofNat 512), by rfl, by decide⟩,
+   ⟨535, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨536, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨537, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨538, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨539, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨540, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨541, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def store7Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨538, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨539, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
-   ⟨540, .push ⟨2, by decide⟩ (UInt256.ofNat 338), by rfl, by decide⟩,
-   ⟨541, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  []
 
 def shift65Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨542, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨543, .push ⟨2, by decide⟩ (UInt256.ofNat 824), by rfl, by decide⟩,
-   ⟨544, .push ⟨2, by decide⟩ (UInt256.ofNat 448), by rfl, by decide⟩,
-   ⟨545, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨546, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨547, .push ⟨3, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨548, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨543, .push ⟨5, by decide⟩ (UInt256.ofNat 448), by rfl, by decide⟩,
+   ⟨544, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨545, .push ⟨5, by decide⟩ (UInt256.ofNat 480), by rfl, by decide⟩,
+   ⟨546, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨547, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨548, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨549, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨550, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨551, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨552, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def store6Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨549, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨550, .push ⟨1, by decide⟩ (UInt256.ofNat 6), by rfl, by decide⟩,
-   ⟨551, .push ⟨2, by decide⟩ (UInt256.ofNat 338), by rfl, by decide⟩,
-   ⟨552, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  []
 
 def storeEPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -251,57 +253,60 @@ def storeEPath :
 
 def setupH3ForH4Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨557, .push ⟨2, by decide⟩ (UInt256.ofNat 858), by rfl, by decide⟩,
-   ⟨558, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨559, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨560, .push ⟨2, by decide⟩ (UInt256.ofNat 384), by rfl, by decide⟩,
-   ⟨561, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨562, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨563, .push ⟨3, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨564, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨557, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨558, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨559, .push ⟨5, by decide⟩ (UInt256.ofNat 384), by rfl, by decide⟩,
+   ⟨560, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨561, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨562, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨563, .push ⟨5, by decide⟩ (UInt256.ofNat 416), by rfl, by decide⟩,
+   ⟨564, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨565, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨566, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨567, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨568, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨569, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨570, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def storeH4Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨565, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨566, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨567, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨568, .push ⟨1, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
-   ⟨569, .push ⟨2, by decide⟩ (UInt256.ofNat 338), by rfl, by decide⟩,
-   ⟨570, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  []
 
 def shift32Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨571, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨572, .push ⟨2, by decide⟩ (UInt256.ofNat 879), by rfl, by decide⟩,
-   ⟨573, .push ⟨2, by decide⟩ (UInt256.ofNat 352), by rfl, by decide⟩,
-   ⟨574, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨575, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨576, .push ⟨3, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨577, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨572, .push ⟨5, by decide⟩ (UInt256.ofNat 352), by rfl, by decide⟩,
+   ⟨573, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨574, .push ⟨5, by decide⟩ (UInt256.ofNat 384), by rfl, by decide⟩,
+   ⟨575, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨576, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨577, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨578, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨579, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨580, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨581, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def store3Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨578, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨579, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
-   ⟨580, .push ⟨2, by decide⟩ (UInt256.ofNat 338), by rfl, by decide⟩,
-   ⟨581, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  []
 
 def shift21Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨582, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨583, .push ⟨2, by decide⟩ (UInt256.ofNat 900), by rfl, by decide⟩,
-   ⟨584, .push ⟨2, by decide⟩ (UInt256.ofNat 320), by rfl, by decide⟩,
-   ⟨585, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨586, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨587, .push ⟨3, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨588, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨583, .push ⟨5, by decide⟩ (UInt256.ofNat 320), by rfl, by decide⟩,
+   ⟨584, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨585, .push ⟨5, by decide⟩ (UInt256.ofNat 352), by rfl, by decide⟩,
+   ⟨586, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨587, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨588, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨589, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨590, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨591, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨592, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def store2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨589, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨590, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
-   ⟨591, .push ⟨2, by decide⟩ (UInt256.ofNat 338), by rfl, by decide⟩,
-   ⟨592, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  []
 
 def finishRoundPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -835,12 +840,12 @@ def compressReturned (s : State) (returnDest : UInt256)
 
 @[simp] private theorem updatePC (i : Nat) (hlo : 532 ≤ i) (hhi : i ≤ 616) :
     Artifact.referenceArtifact.instructionPC i =
-      [783, 786, 789, 790, 791, 795, 796, 797, 799, 802,
-       803, 804, 807, 810, 811, 812, 816, 817, 818, 820,
-       823, 824, 825, 826, 829, 830, 833, 838, 839, 842,
-       843, 844, 848, 849, 850, 851, 852, 854, 857, 858,
-       859, 862, 865, 866, 867, 871, 872, 873, 875, 878,
-       879, 880, 883, 886, 887, 888, 892, 893, 894, 896,
+      [783, 789, 790, 796, 797, 798, 799, 800, 801, 802,
+       803, 804, 810, 811, 817, 818, 819, 820, 821, 822,
+       823, 824, 825, 826, 829, 830, 835, 836, 842, 843,
+       844, 845, 851, 852, 853, 854, 855, 856, 857, 858,
+       859, 865, 866, 872, 873, 874, 875, 876, 877, 878,
+       879, 880, 886, 887, 893, 894, 895, 896, 897, 898,
        899, 900, 901, 902, 905, 906, 911, 912, 913, 914,
        915, 916, 919, 920, 921, 922, 923, 924, 925, 927,
        928, 929, 930, 931, 934][i - 532]! := by
@@ -1324,30 +1329,27 @@ theorem run_finishT2 (s : State) (msgOff returnDest : UInt256)
   rfl
 
 set_option linter.unusedSimpArgs false in
-theorem run_shiftLoad (path : List
+theorem run_shiftDirect (path : List
     (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
-    (q : State) (src loadReturn storeReturn startPC : Nat)
+    (q : State) (src dest loadReturn storeReturn startPC : Nat)
     (context : List UInt256)
     (hmatch :
-      (path = shift76Path ∧ src = 6 ∧ loadReturn = 796 ∧
+      (path = shift76Path ∧ src = 6 ∧ dest = 7 ∧ loadReturn = 796 ∧
         storeReturn = 803 ∧ startPC = 783) ∨
-      (path = shift65Path ∧ src = 5 ∧ loadReturn = 817 ∧
+      (path = shift65Path ∧ src = 5 ∧ dest = 6 ∧ loadReturn = 817 ∧
         storeReturn = 824 ∧ startPC = 803) ∨
-      (path = shift32Path ∧ src = 2 ∧ loadReturn = 872 ∧
+      (path = shift32Path ∧ src = 2 ∧ dest = 3 ∧ loadReturn = 872 ∧
         storeReturn = 879 ∧ startPC = 858) ∨
-      (path = shift21Path ∧ src = 1 ∧ loadReturn = 893 ∧
+      (path = shift21Path ∧ src = 1 ∧ dest = 2 ∧ loadReturn = 893 ∧
         storeReturn = 900 ∧ startPC = 879))
     (hpc : q.pc = UInt256.ofNat startPC) (hstack : q.stack = context)
     (hcap : context.length < 1016)
     (hrun : q.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock path q =
-      some (shiftLoaded q src loadReturn storeReturn context) := by
+      some (shiftReturned q src dest loadReturn storeReturn context) := by
   have hc0 : context.length < 1024 := by omega
   have hc1 : context.length + 1 < 1024 := by omega
   have hc2 : context.length + 2 < 1024 := by omega
-  have hc3 : context.length + 3 < 1024 := by omega
-  have hc4 : context.length + 4 < 1024 := by omega
-  have hc5 : context.length + 5 < 1024 := by omega
   have haddr6 :
       ((UInt256.ofNat 6).shiftLeft (UInt256.ofNat 5) +
         UInt256.ofNat 288).toNat = 480 := by decide
@@ -1360,49 +1362,22 @@ theorem run_shiftLoad (path : List
   have haddr1 :
       ((UInt256.ofNat 1).shiftLeft (UInt256.ofNat 5) +
         UInt256.ofNat 288).toNat = 320 := by decide
+  have haddr7 :
+      ((UInt256.ofNat 7).shiftLeft (UInt256.ofNat 5) +
+        UInt256.ofNat 288).toNat = 512 := by decide
+  have haddr3 :
+      ((UInt256.ofNat 3).shiftLeft (UInt256.ofNat 5) +
+        UInt256.ofNat 288).toNat = 384 := by decide
   rcases hmatch with h | h | h | h <;>
-    rcases h with ⟨rfl, rfl, rfl, rfl, rfl⟩
+    rcases h with ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩
   all_goals simp [shift76Path, shift65Path, shift32Path, shift21Path,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    shiftLoaded, Accessors.loadReturned, Accessors.slotOffset,
+    shiftReturned, shiftLoaded, hValue, Accessors.storeReturned,
+    Accessors.loadReturned, Accessors.slotOffset,
     hpc, hstack, List.exchange, hc0,
-    hc1, hc2, hc3, hc4, hc5,
-    haddr6, haddr5, haddr2, haddr1, hrun, State.activeWordsAfterUInt256]
-
-set_option linter.unusedSimpArgs false in
-theorem run_shiftStore (path : List
-    (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))
-    (q : State) (src dest loadReturn storeReturn : Nat)
-    (context : List UInt256)
-    (hmatch :
-      (path = store7Path ∧ src = 6 ∧ dest = 7 ∧ loadReturn = 796 ∧
-        storeReturn = 803) ∨
-      (path = store6Path ∧ src = 5 ∧ dest = 6 ∧ loadReturn = 817 ∧
-        storeReturn = 824) ∨
-      (path = store3Path ∧ src = 2 ∧ dest = 3 ∧ loadReturn = 872 ∧
-        storeReturn = 879) ∨
-      (path = store2Path ∧ src = 1 ∧ dest = 2 ∧ loadReturn = 893 ∧
-        storeReturn = 900))
-    (hcap : context.length < 1018)
-    (hcode : q.executionEnv.code = submissionBytecode)
-    (hrun : q.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock path
-      (shiftLoaded q src loadReturn storeReturn context) =
-        some (shiftStoreEntry q src dest loadReturn storeReturn context) := by
-  have hc1 : context.length + 1 < 1024 := by omega
-  have hc2 : context.length + 2 < 1024 := by omega
-  have hc3 : context.length + 3 < 1024 := by omega
-  have hc4 : context.length + 4 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 338 = true := by decide
-  rcases hmatch with h | h | h | h <;>
-    rcases h with ⟨rfl, rfl, rfl, rfl, rfl⟩
-  all_goals simp [store7Path, store6Path, store3Path, store2Path,
-    Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    shiftLoaded, shiftStoreEntry, hValue, Accessors.loadReturned,
-    Accessors.storeEntry, List.exchange, hc1, hc2, hc3, hc4,
-    hcode, hrun, hdest]
+    hc1, hc2, haddr7, haddr6, haddr5, haddr3, haddr2, haddr1, hrun,
+    State.activeWordsAfterUInt256]
 
 set_option linter.unusedSimpArgs false in
 theorem run_storeE (s : State) (msgOff returnDest : UInt256)
@@ -1430,12 +1405,12 @@ theorem run_storeE (s : State) (msgOff returnDest : UInt256)
     hc7, hc8, hc9, hc10, hrun, qB0run, State.activeWordsAfterUInt256]
 
 set_option linter.unusedSimpArgs false in
-theorem run_setupH3ForH4 (s : State) (msgOff returnDest : UInt256)
+theorem run_updateH4 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hcap : rest.length < 1009)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupH3ForH4Path
       (afterStoreE s msgOff returnDest rest j) =
-        some (h4Loaded s msgOff returnDest rest j) := by
+        some (afterStoreH4 s msgOff returnDest rest j) := by
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
@@ -1450,53 +1425,16 @@ theorem run_setupH3ForH4 (s : State) (msgOff returnDest : UInt256)
   have haddr3 :
       ((UInt256.ofNat 3).shiftLeft (UInt256.ofNat 5) +
         UInt256.ofNat 288).toNat = 384 := by decide
+  have haddr4 :
+      ((UInt256.ofNat 4).shiftLeft (UInt256.ofNat 5) +
+        UInt256.ofNat 288).toNat = 416 := by decide
   simp [setupH3ForH4Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    h4Loaded, afterStoreE, directStored, roundContext, Accessors.loadReturned,
-    Accessors.slotOffset,
+    afterStoreH4, h4Loaded, newH4, hValue, afterStoreE, directStored,
+    roundContext, Challenge.EvmProof.Word.mask32, Accessors.storeReturned,
+    Accessors.loadReturned, Accessors.slotOffset,
     List.exchange, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14,
-    haddr3, hrun, qrun, State.activeWordsAfterUInt256]
-
-set_option linter.unusedSimpArgs false in
-theorem run_storeH4 (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (j : Nat) (hcap : rest.length < 1010)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock storeH4Path
-      (h4Loaded s msgOff returnDest rest j) =
-        some (h4StoreEntry s msgOff returnDest rest j) := by
-  have hc7 : rest.length + 7 < 1024 := by omega
-  have hc8 : rest.length + 8 < 1024 := by omega
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
-  have hc13 : rest.length + 13 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 338 = true := by decide
-  let q := afterStoreE s msgOff returnDest rest j
-  have qrun : q.halt = .Running := by
-    change s.halt = .Running
-    exact hrun
-  have qcode : q.executionEnv.code = submissionBytecode := by
-    change s.executionEnv.code = submissionBytecode
-    exact hcode
-  change Challenge.EvmProof.Stepper.runLocatedBlock storeH4Path
-      (Accessors.loadReturned q 288 (UInt256.ofNat 3) (UInt256.ofNat 849)
-        ([t1 s j, UInt256.ofNat 0xffffffff, UInt256.ofNat 858] ++
-          roundContext s msgOff returnDest rest j)) =
-    some (Accessors.storeEntry
-      (Accessors.loadReturned q 288 (UInt256.ofNat 3) (UInt256.ofNat 849)
-        ([t1 s j, UInt256.ofNat 0xffffffff, UInt256.ofNat 858] ++
-          roundContext s msgOff returnDest rest j))
-      338 (UInt256.ofNat 4)
-      (Challenge.EvmProof.Word.mask32 (hValue q 3 + t1 s j))
-      (UInt256.ofNat 858) (roundContext s msgOff returnDest rest j))
-  simp [storeH4Path, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    hValue, roundContext,
-    Challenge.EvmProof.Word.mask32, Accessors.loadReturned,
-    Accessors.storeEntry, List.exchange, hc7, hc8, hc9, hc10, hc11,
-    hc12, hc13, hcode, hrun, qrun, qcode, hdest]
+    haddr3, haddr4, hrun, qrun, State.activeWordsAfterUInt256]
   rfl
 
 set_option linter.unusedSimpArgs false in
