@@ -22,10 +22,10 @@ def evmRotr32 (x : EWord) (n : Nat) : EWord :=
     UInt256.shiftLeft x (UInt256.ofNat (32 - n)))
 
 def evmCh (x y z : EWord) : EWord :=
-  (x &&& y) ^^^ (~~~x &&& z)
+  z ^^^ (x &&& (y ^^^ z))
 
 def evmMaj (x y z : EWord) : EWord :=
-  ((x &&& y) ^^^ (x &&& z)) ^^^ (y &&& z)
+  (z &&& (y ||| x)) ||| (x &&& y)
 
 def evmSmallSigma0 (x : EWord) : EWord :=
   (evmRotr32 x 7 ^^^ evmRotr32 x 18) ^^^
@@ -50,19 +50,36 @@ def evmBigSigma1 (x : EWord) : EWord :=
 @[simp] theorem evmCh_ofUInt32 (x y z : UInt32) :
     evmCh (ofUInt32 x) (ofUInt32 y) (ofUInt32 z) =
       ofUInt32 (Crypto.Sha256.Ch x y z) := by
-  have hnot :
-      (~~~ofUInt32 x) &&& ofUInt32 z =
-        ofUInt32 ((x ^^^ 0xffffffff) &&& z) := by
-    rw [and_ofUInt32, toUInt32_not_ofUInt32]
-  unfold evmCh Crypto.Sha256.Ch
-  rw [← ofUInt32_and, hnot, ← ofUInt32_xor]
+  unfold evmCh
+  rw [← ofUInt32_xor, ← ofUInt32_and, ← ofUInt32_xor]
+  apply congrArg ofUInt32
+  rw [← UInt32.toBitVec_inj]
+  apply BitVec.eq_of_getElem_eq
+  intro i hi
+  have hall : (4294967295#32) = BitVec.allOnes 32 := by decide
+  have hbit : (4294967295#32)[i] = true := by
+    simpa only [hall] using BitVec.getElem_allOnes i hi
+  simp [Crypto.Sha256.Ch]
+  rw [hbit]
+  generalize x.toBitVec[i] = xb
+  generalize y.toBitVec[i] = yb
+  generalize z.toBitVec[i] = zb
+  cases xb <;> cases yb <;> cases zb <;> decide
 
 @[simp] theorem evmMaj_ofUInt32 (x y z : UInt32) :
     evmMaj (ofUInt32 x) (ofUInt32 y) (ofUInt32 z) =
       ofUInt32 (Crypto.Sha256.Maj x y z) := by
-  unfold evmMaj Crypto.Sha256.Maj
-  rw [← ofUInt32_and, ← ofUInt32_and, ← ofUInt32_and,
-    ← ofUInt32_xor, ← ofUInt32_xor]
+  unfold evmMaj
+  rw [← ofUInt32_or, ← ofUInt32_and, ← ofUInt32_and, ← ofUInt32_or]
+  apply congrArg ofUInt32
+  rw [← UInt32.toBitVec_inj]
+  apply BitVec.eq_of_getElem_eq
+  intro i hi
+  simp [Crypto.Sha256.Maj]
+  generalize x.toBitVec[i] = xb
+  generalize y.toBitVec[i] = yb
+  generalize z.toBitVec[i] = zb
+  cases xb <;> cases yb <;> cases zb <;> decide
 
 @[simp] theorem evmSmallSigma0_ofUInt32 (x : UInt32) :
     evmSmallSigma0 (ofUInt32 x) =
