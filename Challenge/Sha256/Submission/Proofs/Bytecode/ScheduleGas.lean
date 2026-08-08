@@ -200,7 +200,7 @@ theorem secondIteration_cost_potential (s : State)
     (Schedule.gasSteps_secondIteration s msgOff returnDest rest j hj16 hj64
       hstack hcode hfork hrun hnp).cost + MachineState.memCost
         (Schedule.secondAt s msgOff returnDest rest j).activeWords.toNat =
-      357 + MachineState.memCost
+      323 + MachineState.memCost
         (Schedule.afterSecondIteration s msgOff returnDest rest j).activeWords.toNat := by
   have hcond := blockCost_potential_of_static Schedule.secondConditionPath 26
     (Schedule.run_secondCondition s msgOff returnDest rest j hj16 hj64
@@ -223,7 +223,7 @@ theorem secondIteration_cost_potential (s : State)
   have q16np : Precompile.isPrecompileWithConfig q16.executionEnv.precompileConfig q16.executionEnv.fork
       q16.executionEnv.codeAddr = false := by
     simpa [q16, Schedule.gotW16, Accessors.loadReturned] using hnp
-  have hW15 := blockCost_potential_of_static Schedule.setupW15Path 24
+  have hW15 := blockCost_potential_of_static Schedule.setupW15Path 33
     (Schedule.run_setupW15 s msgOff returnDest rest j hj16 hj64 (by omega)
       hcode hrun) q16fork
     (by simp [Schedule.setupW15Path, CopyFree]) (by rfl)
@@ -238,9 +238,6 @@ theorem secondIteration_cost_potential (s : State)
   have q15np : Precompile.isPrecompileWithConfig q15.executionEnv.precompileConfig q15.executionEnv.fork
       q15.executionEnv.codeAddr = false := by
     simpa [q15, Schedule.gotW15, q16, Accessors.loadReturned] using q16np
-  have hsetupS0 := blockCost_potential_of_static Schedule.setupSsig0Path 12
-    (Schedule.run_setupSsig0 s msgOff returnDest rest j (by omega) hcode hrun)
-    q15fork (by simp [Schedule.setupSsig0Path, CopyFree]) (by rfl)
   have hcallS0 := ArithmeticGas.gasSteps_ssig0_cost_potential q15
     (Schedule.wValue q15 (j - 15)) (UInt256.ofNat 547)
     ([Schedule.wValue s (j - 16), UInt256.ofNat 0xffffffff,
@@ -272,7 +269,7 @@ theorem secondIteration_cost_potential (s : State)
   have q7np : Precompile.isPrecompileWithConfig q7.executionEnv.precompileConfig q7.executionEnv.fork
       q7.executionEnv.codeAddr = false := by
     simpa [q7, Schedule.gotW7, qs0, Accessors.loadReturned] using qs0np
-  have hW2 := blockCost_potential_of_static Schedule.setupW2Path 24
+  have hW2 := blockCost_potential_of_static Schedule.setupW2Path 33
     (Schedule.run_setupW2 s msgOff returnDest rest j hj16 hj64 (by omega)
       hcode hrun) q7fork
     (by simp [Schedule.setupW2Path, CopyFree]) (by rfl)
@@ -287,13 +284,10 @@ theorem secondIteration_cost_potential (s : State)
   have q2np : Precompile.isPrecompileWithConfig q2.executionEnv.precompileConfig q2.executionEnv.fork
       q2.executionEnv.codeAddr = false := by
     simpa [q2, Schedule.gotW2, q7, Accessors.loadReturned] using q7np
-  have hsetupS1 := blockCost_potential_of_static Schedule.setupSsig1Path 12
-    (Schedule.run_setupSsig1 s msgOff returnDest rest j (by omega) hcode hrun)
-    q2fork (by simp [Schedule.setupSsig1Path, CopyFree]) (by rfl)
   have hcallS1 := ArithmeticGas.gasSteps_ssig1_cost_potential q2
     (Schedule.wValue q2 (j - 2)) (UInt256.ofNat 583)
     ([Schedule.wValue q7 (j - 7),
-      Schedule.firstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
+      Schedule.rawFirstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
       UInt256.ofNat 592, UInt256.ofNat j, msgOff, returnDest] ++ rest)
     (by simp; omega) q2code q2fork q2run q2np (by decide)
   let qs1 := Schedule.gotSsig1 s msgOff returnDest rest j
@@ -338,15 +332,11 @@ theorem secondIteration_cost_potential (s : State)
       (Schedule.gotW16 s msgOff returnDest rest j).activeWords.toNat at hW16
   change _ + MachineState.memCost
       (Schedule.gotW16 s msgOff returnDest rest j).activeWords.toNat =
-    24 + MachineState.memCost
+    33 + MachineState.memCost
       (Schedule.gotW15 s msgOff returnDest rest j).activeWords.toNat at hW15
   change _ + MachineState.memCost
       (Schedule.gotW15 s msgOff returnDest rest j).activeWords.toNat =
-    12 + MachineState.memCost
-      (Schedule.gotW15 s msgOff returnDest rest j).activeWords.toNat at hsetupS0
-  change _ + MachineState.memCost
-      (Schedule.gotW15 s msgOff returnDest rest j).activeWords.toNat =
-    71 + MachineState.memCost
+    57 + MachineState.memCost
       (Schedule.gotW15 s msgOff returnDest rest j).activeWords.toNat at hcallS0
   change _ + MachineState.memCost
       (Schedule.gotW15 s msgOff returnDest rest j).activeWords.toNat =
@@ -354,15 +344,11 @@ theorem secondIteration_cost_potential (s : State)
       (Schedule.gotW7 s msgOff returnDest rest j).activeWords.toNat at hW7
   change _ + MachineState.memCost
       (Schedule.gotW7 s msgOff returnDest rest j).activeWords.toNat =
-    24 + MachineState.memCost
+    33 + MachineState.memCost
       (Schedule.gotW2 s msgOff returnDest rest j).activeWords.toNat at hW2
   change _ + MachineState.memCost
       (Schedule.gotW2 s msgOff returnDest rest j).activeWords.toNat =
-    12 + MachineState.memCost
-      (Schedule.gotW2 s msgOff returnDest rest j).activeWords.toNat at hsetupS1
-  change _ + MachineState.memCost
-      (Schedule.gotW2 s msgOff returnDest rest j).activeWords.toNat =
-    71 + MachineState.memCost
+    57 + MachineState.memCost
       (Schedule.gotW2 s msgOff returnDest rest j).activeWords.toNat at hcallS1
   change _ + MachineState.memCost
       (Schedule.gotW2 s msgOff returnDest rest j).activeWords.toNat =
@@ -382,7 +368,7 @@ theorem secondIteration_cost_potential (s : State)
     Accessors.gasSteps_wSet,
     Functions.gasSteps_ssig0, Functions.gasSteps_ssig1]
   change _ + MachineState.memCost s.activeWords.toNat =
-    357 + MachineState.memCost
+    323 + MachineState.memCost
       (Schedule.gotWSet s msgOff returnDest rest j).activeWords.toNat
   omega
 
@@ -396,10 +382,10 @@ theorem secondLoop_cost_potential (s : State)
     (Schedule.gasSteps_secondLoop s msgOff returnDest rest hstack hcode hfork
       hrun hnp).cost + MachineState.memCost
         (Schedule.secondLoopState s msgOff returnDest rest 0).activeWords.toNat =
-      48 * 357 + MachineState.memCost
+      48 * 323 + MachineState.memCost
         (Schedule.secondLoopState s msgOff returnDest rest 48).activeWords.toNat := by
   unfold Schedule.gasSteps_secondLoop
-  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add 48 357
+  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add 48 323
   intro n hn
   let q := Schedule.secondLoopState s msgOff returnDest rest n
   have qcode : q.executionEnv.code = submissionBytecode := by simpa [q] using hcode
@@ -416,7 +402,7 @@ theorem secondLoop_cost_potential (s : State)
         msgOff returnDest rest (16 + n) (by omega) (by omega) hstack
         qcode qfork qrun qnp).cost + MachineState.memCost
           (Schedule.secondLoopState s msgOff returnDest rest n).activeWords.toNat =
-        357 + MachineState.memCost
+        323 + MachineState.memCost
           (Schedule.secondLoopState s msgOff returnDest rest (n + 1)).activeWords.toNat := by
     simpa [Schedule.secondAt, Schedule.secondLoopState] using h
   simpa only [Challenge.EvmProof.GasSteps.cast_cost] using h'
@@ -495,7 +481,7 @@ theorem schedule_cost_potential (s : State)
     Schedule.gasSteps_scheduleCost s msgOff returnDest rest hstack hcode hfork
       hrun hnp hreturn + MachineState.memCost
         (Schedule.scheduleEntry s msgOff returnDest rest).activeWords.toNat =
-      18778 + MachineState.memCost
+      17146 + MachineState.memCost
         (Schedule.scheduleResult s msgOff returnDest rest).activeWords.toNat := by
   let q1 := Schedule.firstLoopState s msgOff returnDest rest 16
   let q2 := Schedule.secondLoopState q1 msgOff returnDest rest 48
@@ -534,13 +520,13 @@ theorem schedule_cost_potential (s : State)
   change _ + MachineState.memCost q1.activeWords.toNat =
     32 + MachineState.memCost q1.activeWords.toNat at hbridge
   change _ + MachineState.memCost q1.activeWords.toNat =
-    48 * 357 + MachineState.memCost q2.activeWords.toNat at hsecond
+    48 * 323 + MachineState.memCost q2.activeWords.toNat at hsecond
   change _ + MachineState.memCost q2.activeWords.toNat =
     39 + MachineState.memCost q2.activeWords.toNat at hfinish
   dsimp [Schedule.scheduleResult]
   change _ + MachineState.memCost
       (Schedule.scheduleEntry s msgOff returnDest rest).activeWords.toNat =
-    18778 + MachineState.memCost q2.activeWords.toNat
+    17146 + MachineState.memCost q2.activeWords.toNat
   omega
 
 end Challenge.Sha256.Submission.Proofs.Bytecode.ScheduleGas

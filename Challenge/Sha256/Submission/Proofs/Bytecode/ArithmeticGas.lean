@@ -282,7 +282,7 @@ theorem gasSteps_ssig1_cost_potential (s : State) (x output returnDest : UInt256
 -/
 
 private theorem ssig0_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.ssig0Path = 71 := by
+    Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.ssig0Path = 57 := by
   rfl
 
 theorem gasSteps_ssig0_cost_potential (s : State) (x returnDest : UInt256)
@@ -294,8 +294,8 @@ theorem gasSteps_ssig0_cost_potential (s : State) (x returnDest : UInt256)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (Functions.gasSteps_ssig0 s x returnDest rest (by omega) hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      71 + MachineState.memCost
-        (Functions.unaryReturned s (Word.evmSmallSigma0 x) returnDest rest).activeWords.toNat := by
+      57 + MachineState.memCost
+        (Functions.unaryReturned s (Word.rawFusedSmallSigma0 x) returnDest rest).activeWords.toNat := by
   have hresult := Functions.run_ssig0 s x returnDest rest (by omega) hcode
     hrun hvalid
   have hmeter := block_cost_potential Functions.ssig0Path hresult hfork
@@ -306,7 +306,7 @@ theorem gasSteps_ssig0_cost_potential (s : State) (x returnDest : UInt256)
   simpa [Functions.smallSigmaEntry] using hmeter
 
 private theorem ssig1_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.ssig1Path = 71 := by
+    Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.ssig1Path = 57 := by
   rfl
 
 theorem gasSteps_ssig1_cost_potential (s : State) (x returnDest : UInt256)
@@ -318,8 +318,8 @@ theorem gasSteps_ssig1_cost_potential (s : State) (x returnDest : UInt256)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (Functions.gasSteps_ssig1 s x returnDest rest (by omega) hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      71 + MachineState.memCost
-        (Functions.unaryReturned s (Word.evmSmallSigma1 x) returnDest rest).activeWords.toNat := by
+      57 + MachineState.memCost
+        (Functions.unaryReturned s (Word.rawFusedSmallSigma1 x) returnDest rest).activeWords.toNat := by
   have hresult := Functions.run_ssig1 s x returnDest rest (by omega) hcode
     hrun hvalid
   have hmeter := block_cost_potential Functions.ssig1Path hresult hfork

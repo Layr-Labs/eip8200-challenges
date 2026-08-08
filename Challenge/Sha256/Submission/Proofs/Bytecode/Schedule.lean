@@ -430,20 +430,14 @@ def setupW15Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨378, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨379, .push ⟨2, by decide⟩ (UInt256.ofNat 547), by rfl, by decide⟩,
-   ⟨380, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨381, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨382, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨383, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨384, .push ⟨4, by decide⟩ (UInt256.ofNat 320), by rfl, by decide⟩,
-   ⟨385, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨386, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨387, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
-
-def setupSsig0Path :
-    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨388, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨389, .push ⟨2, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨390, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨380, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨381, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨382, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨383, .push ⟨4, by decide⟩ (UInt256.ofNat 320), by rfl, by decide⟩,
+   ⟨384, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨385, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨386, .push ⟨2, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨387, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupW7Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -461,20 +455,14 @@ def setupW2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨400, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨401, .push ⟨2, by decide⟩ (UInt256.ofNat 583), by rfl, by decide⟩,
-   ⟨402, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨403, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨404, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨405, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨406, .push ⟨4, by decide⟩ (UInt256.ofNat 736), by rfl, by decide⟩,
-   ⟨407, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨408, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨409, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
-
-def setupSsig1Path :
-    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨410, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨411, .push ⟨2, by decide⟩ (UInt256.ofNat 73), by rfl, by decide⟩,
-   ⟨412, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨402, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨403, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨404, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨405, .push ⟨4, by decide⟩ (UInt256.ofNat 736), by rfl, by decide⟩,
+   ⟨406, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨407, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨408, .push ⟨2, by decide⟩ (UInt256.ofNat 73), by rfl, by decide⟩,
+   ⟨409, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def finishRecurrencePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -500,9 +488,9 @@ def secondIncrementPath :
 @[simp] private theorem secondPC (i : Nat) (hlo : 362 ≤ i) (hhi : i ≤ 427) :
     Artifact.referenceArtifact.instructionPC i =
       [495,496,498,499,500,501,504,505,508,513,514,516,517,522,523,524,
-       525,526,529,530,531,533,534,539,540,541,542,543,546,547,548,549,
-       550,552,553,558,559,560,561,562,565,566,567,569,570,575,576,577,
-       578,579,582,583,584,585,586,587,588,591,592,593,595,596,597,598,
+       525,526,529,530,532,533,538,539,540,543,544,545,546,547,548,549,
+       550,552,553,558,559,560,561,562,565,566,568,569,574,575,576,579,
+       580,581,582,583,584,585,586,587,588,591,592,593,595,596,597,598,
        599,602][i - 362]! := by
   interval_cases i <;> decide
 
@@ -557,7 +545,7 @@ def callSsig0 (s : State) (msgOff returnDest : UInt256)
 def gotSsig0 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   let q := gotW15 s msgOff returnDest rest j
-  Functions.unaryReturned q (Word.evmSmallSigma0 (wValue q (j - 15)))
+  Functions.unaryReturned q (Word.rawFusedSmallSigma0 (wValue q (j - 15)))
     (UInt256.ofNat 547)
     ([wValue s (j - 16), UInt256.ofNat 0xffffffff, UInt256.ofNat 592,
       UInt256.ofNat j, msgOff, returnDest] ++ rest)
@@ -567,18 +555,23 @@ def firstSum (s : State) (msgOff returnDest : UInt256)
   let q := gotW15 s msgOff returnDest rest j
   Word.evmSmallSigma0 (wValue q (j - 15)) + wValue s (j - 16)
 
+def rawFirstSum (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (j : Nat) : UInt256 :=
+  let q := gotW15 s msgOff returnDest rest j
+  Word.rawFusedSmallSigma0 (wValue q (j - 15)) + wValue s (j - 16)
+
 def callW7 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   let q := gotSsig0 s msgOff returnDest rest j
   Accessors.loadEntry q 279 (UInt256.ofNat (j - 7)) 0 (UInt256.ofNat 561)
-    ([firstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
+    ([rawFirstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
       UInt256.ofNat 592, UInt256.ofNat j, msgOff, returnDest] ++ rest)
 
 def gotW7 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   let q := gotSsig0 s msgOff returnDest rest j
   Accessors.loadReturned q 800 (UInt256.ofNat (j - 7)) (UInt256.ofNat 561)
-    ([firstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
+    ([rawFirstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
       UInt256.ofNat 592, UInt256.ofNat j, msgOff, returnDest] ++ rest)
 
 def callW2 (s : State) (msgOff returnDest : UInt256)
@@ -586,7 +579,7 @@ def callW2 (s : State) (msgOff returnDest : UInt256)
   let q := gotW7 s msgOff returnDest rest j
   Accessors.loadEntry q 279 (UInt256.ofNat (j - 2)) 0 (UInt256.ofNat 578)
     ([0, UInt256.ofNat 583, wValue q (j - 7),
-      firstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
+      rawFirstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
       UInt256.ofNat 592, UInt256.ofNat j, msgOff, returnDest] ++ rest)
 
 def gotW2 (s : State) (msgOff returnDest : UInt256)
@@ -594,7 +587,7 @@ def gotW2 (s : State) (msgOff returnDest : UInt256)
   let q := gotW7 s msgOff returnDest rest j
   Accessors.loadReturned q 800 (UInt256.ofNat (j - 2)) (UInt256.ofNat 578)
     ([UInt256.ofNat 583, wValue q (j - 7),
-      firstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
+      rawFirstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
       UInt256.ofNat 592, UInt256.ofNat j, msgOff, returnDest] ++ rest)
 
 def callSsig1 (s : State) (msgOff returnDest : UInt256)
@@ -602,16 +595,16 @@ def callSsig1 (s : State) (msgOff returnDest : UInt256)
   let q := gotW2 s msgOff returnDest rest j
   Functions.smallSigmaEntry q 73 (wValue q (j - 2)) (UInt256.ofNat 583)
     ([wValue (gotW7 s msgOff returnDest rest j) (j - 7),
-      firstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
+      rawFirstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
       UInt256.ofNat 592, UInt256.ofNat j, msgOff, returnDest] ++ rest)
 
 def gotSsig1 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   let q := gotW2 s msgOff returnDest rest j
-  Functions.unaryReturned q (Word.evmSmallSigma1 (wValue q (j - 2)))
+  Functions.unaryReturned q (Word.rawFusedSmallSigma1 (wValue q (j - 2)))
     (UInt256.ofNat 583)
     ([wValue (gotW7 s msgOff returnDest rest j) (j - 7),
-      firstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
+      rawFirstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
       UInt256.ofNat 592, UInt256.ofNat j, msgOff, returnDest] ++ rest)
 
 def recurrenceWord (s : State) (msgOff returnDest : UInt256)
@@ -621,6 +614,40 @@ def recurrenceWord (s : State) (msgOff returnDest : UInt256)
   Challenge.EvmProof.Word.mask32
     ((Word.evmSmallSigma1 (wValue q2 (j - 2)) + wValue q7 (j - 7)) +
       firstSum s msgOff returnDest rest j)
+
+private theorem mask32_add_distrib (x y : UInt256) :
+    Challenge.EvmProof.Word.mask32 (x + y) =
+      Challenge.EvmProof.Word.mask32
+        (Challenge.EvmProof.Word.mask32 x + Challenge.EvmProof.Word.mask32 y) := by
+  rw [Challenge.EvmProof.Word.mask32_eq_ofUInt32,
+    Challenge.EvmProof.Word.mask32_eq_ofUInt32 x,
+    Challenge.EvmProof.Word.mask32_eq_ofUInt32 y,
+    Challenge.EvmProof.Word.mask32_add]
+  congr 1
+  apply UInt32.toNat_inj.mp
+  simp only [Challenge.EvmProof.Word.toUInt32_toNat, UInt32.toNat_add]
+  change ((x.val + y.val).val % 2 ^ 32) =
+    (x.toNat % 2 ^ 32 + y.toNat % 2 ^ 32) % 2 ^ 32
+  rw [Fin.val_add]
+  change ((x.toNat + y.toNat) % UInt256.size) % 2 ^ 32 = _
+  rw [show UInt256.size = 2 ^ 256 by rfl,
+    Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega)), Nat.add_mod]
+
+private theorem mask32_add_congr {x x' y y' : UInt256}
+    (hx : Challenge.EvmProof.Word.mask32 x = Challenge.EvmProof.Word.mask32 x')
+    (hy : Challenge.EvmProof.Word.mask32 y = Challenge.EvmProof.Word.mask32 y') :
+    Challenge.EvmProof.Word.mask32 (x + y) =
+      Challenge.EvmProof.Word.mask32 (x' + y') := by
+  rw [mask32_add_distrib x y, mask32_add_distrib x' y', hx, hy]
+
+private theorem rawRecurrence_eq (a b c d : UInt256) :
+    Challenge.EvmProof.Word.mask32
+        ((Word.rawFusedSmallSigma1 a + b) + (Word.rawFusedSmallSigma0 c + d)) =
+      Challenge.EvmProof.Word.mask32
+        ((Word.evmSmallSigma1 a + b) + (Word.evmSmallSigma0 c + d)) := by
+  apply mask32_add_congr
+  · exact mask32_add_congr (Word.mask32_rawFusedSmallSigma1 a) rfl
+  · exact mask32_add_congr (Word.mask32_rawFusedSmallSigma0 c) rfl
 
 def callWSet (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
@@ -690,11 +717,11 @@ set_option linter.unusedSimpArgs false in
 theorem run_setupW15 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj16 : 16 ≤ j) (hj64 : j < 64)
     (hstack : rest.length < 1011)
-    (_hcode : s.executionEnv.code = submissionBytecode)
+    (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupW15Path
       (gotW16 s msgOff returnDest rest j) =
-        some (gotW15 s msgOff returnDest rest j) := by
+        some (callSsig0 s msgOff returnDest rest j) := by
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
@@ -703,30 +730,13 @@ theorem run_setupW15 (s : State) (msgOff returnDest : UInt256)
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hoff := directScheduleSlot j 15 320 (by omega) hj64 (by omega)
+  have hdest : Decode.isValidJumpDest submissionBytecode 32 = true := by decide
   simp [setupW15Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotW16, gotW15, wValue, Accessors.loadReturned, scheduleSlot,
+    gotW16, gotW15, callSsig0, wValue, Functions.smallSigmaEntry,
+    Accessors.loadReturned, scheduleSlot,
     Accessors.slotOffset, List.exchange, hc6, hc7, hc8, hc9, hc10, hc11,
-    hc12, hrun, hoff, State.activeWordsAfterUInt256]
-
-set_option linter.unusedSimpArgs false in
-theorem run_setupSsig0 (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (j : Nat) (hstack : rest.length < 1014)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock setupSsig0Path
-      (gotW15 s msgOff returnDest rest j) =
-        some (callSsig0 s msgOff returnDest rest j) := by
-  have hc7 : rest.length + 7 < 1024 := by omega
-  have hc8 : rest.length + 8 < 1024 := by omega
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 32 = true := by decide
-  simp [setupSsig0Path, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotW15, gotW16, callSsig0, wValue, scheduleSlot, Functions.smallSigmaEntry,
-    Accessors.loadReturned, List.exchange, hc7, hc8, hc9, hc10, hcode, hrun,
-    hdest]
+    hc12, hcode, hrun, hoff, hdest, State.activeWordsAfterUInt256]
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupW7 (s : State) (msgOff returnDest : UInt256)
@@ -746,7 +756,7 @@ theorem run_setupW7 (s : State) (msgOff returnDest : UInt256)
   have hoff := directScheduleSlot j 7 576 (by omega) hj64 (by omega)
   simp [setupW7Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotSsig0, gotW15, gotW16, gotW7, firstSum, wValue, scheduleSlot,
+    gotSsig0, gotW15, gotW16, gotW7, rawFirstSum, wValue, scheduleSlot,
     Functions.unaryReturned, Accessors.loadReturned, Accessors.slotOffset,
     List.exchange, hc6, hc7, hc8, hc9, hc10, hc11, hrun, hoff,
     State.activeWordsAfterUInt256]
@@ -755,11 +765,11 @@ set_option linter.unusedSimpArgs false in
 theorem run_setupW2 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj16 : 16 ≤ j) (hj64 : j < 64)
     (hstack : rest.length < 1009)
-    (_hcode : s.executionEnv.code = submissionBytecode)
+    (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupW2Path
       (gotW7 s msgOff returnDest rest j) =
-        some (gotW2 s msgOff returnDest rest j) := by
+        some (callSsig1 s msgOff returnDest rest j) := by
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
@@ -769,32 +779,14 @@ theorem run_setupW2 (s : State) (msgOff returnDest : UInt256)
   have hc13 : rest.length + 13 < 1024 := by omega
   have hc14 : rest.length + 14 < 1024 := by omega
   have hoff := directScheduleSlot j 2 736 (by omega) hj64 (by omega)
+  have hdest : Decode.isValidJumpDest submissionBytecode 73 = true := by decide
   simp [setupW2Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotW7, gotSsig0, gotW15, gotW16, gotW2, firstSum, wValue,
+    gotW7, gotSsig0, gotW15, gotW16, gotW2, callSsig1, rawFirstSum, wValue,
     scheduleSlot, Functions.unaryReturned, Accessors.loadReturned,
-    Accessors.slotOffset, List.exchange, hc7, hc8, hc9, hc10, hc11, hc12,
-    hc13, hc14, hrun, hoff, State.activeWordsAfterUInt256]
-
-set_option linter.unusedSimpArgs false in
-theorem run_setupSsig1 (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (j : Nat) (hstack : rest.length < 1010)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock setupSsig1Path
-      (gotW2 s msgOff returnDest rest j) =
-        some (callSsig1 s msgOff returnDest rest j) := by
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 73 = true := by decide
-  simp [setupSsig1Path, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotW2, gotW7, gotSsig0, gotW15, gotW16, callSsig1, firstSum,
-    wValue, scheduleSlot, Functions.smallSigmaEntry, Functions.unaryReturned,
-    Accessors.loadReturned, List.exchange, hc9, hc10, hc11, hc12, hcode, hrun,
-    hdest]
+    Functions.smallSigmaEntry, Accessors.slotOffset, List.exchange,
+    hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hcode, hrun, hoff, hdest,
+    State.activeWordsAfterUInt256]
 
 set_option linter.unusedSimpArgs false in
 theorem run_finishRecurrence (s : State) (msgOff returnDest : UInt256)
@@ -820,11 +812,12 @@ theorem run_finishRecurrence (s : State) (msgOff returnDest : UInt256)
   simp [finishRecurrencePath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     gotSsig1, gotW2, gotW7, gotSsig0, gotW15, gotW16, callWSet,
-    recurrenceWord, firstSum, wValue, scheduleSlot, Challenge.EvmProof.Word.mask32,
+    recurrenceWord, firstSum, rawFirstSum, wValue, scheduleSlot,
+    Challenge.EvmProof.Word.mask32,
     Functions.unaryReturned, Accessors.storeEntry, Accessors.loadReturned,
     List.exchange, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10,
     hc11, hc12, hcode, hrun, hdest]
-  rfl
+  exact rawRecurrence_eq _ _ _ _
 
 set_option linter.unusedSimpArgs false in
 theorem run_secondIncrement (s : State) (msgOff returnDest : UInt256)
@@ -893,7 +886,7 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
     simpa [q16, gotW16, Accessors.loadReturned] using hnp
   have rawW15 : Challenge.EvmProof.GasSteps
       (gotW16 s msgOff returnDest rest j)
-      (gotW15 s msgOff returnDest rest j) := by
+      (callSsig0 s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupW15Path
     · exact q16code
@@ -912,16 +905,6 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
   have q15np : Precompile.isPrecompileWithConfig q15.executionEnv.precompileConfig q15.executionEnv.fork
       q15.executionEnv.codeAddr = false := by
     simpa [q15, gotW15, q16, Accessors.loadReturned] using q16np
-  have rawS0 : Challenge.EvmProof.GasSteps
-      (gotW15 s msgOff returnDest rest j)
-      (callSsig0 s msgOff returnDest rest j) := by
-    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.referenceArtifact .Osaka setupSsig0Path
-    · exact q15code
-    · exact q15fork
-    · exact run_setupSsig0 s msgOff returnDest rest j (by omega) hcode hrun
-    · exact q15run
-    · exact q15np
   have callS0 : Challenge.EvmProof.GasSteps
       (callSsig0 s msgOff returnDest rest j)
       (gotSsig0 s msgOff returnDest rest j) := by
@@ -963,7 +946,7 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
     simpa [q7, gotW7, qs0, Accessors.loadReturned] using qs0np
   have rawW2 : Challenge.EvmProof.GasSteps
       (gotW7 s msgOff returnDest rest j)
-      (gotW2 s msgOff returnDest rest j) := by
+      (callSsig1 s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupW2Path
     · exact q7code
@@ -982,22 +965,12 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
   have q2np : Precompile.isPrecompileWithConfig q2.executionEnv.precompileConfig q2.executionEnv.fork
       q2.executionEnv.codeAddr = false := by
     simpa [q2, gotW2, q7, Accessors.loadReturned] using q7np
-  have rawS1 : Challenge.EvmProof.GasSteps
-      (gotW2 s msgOff returnDest rest j)
-      (callSsig1 s msgOff returnDest rest j) := by
-    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.referenceArtifact .Osaka setupSsig1Path
-    · exact q2code
-    · exact q2fork
-    · exact run_setupSsig1 s msgOff returnDest rest j (by omega) hcode hrun
-    · exact q2run
-    · exact q2np
   have callS1 : Challenge.EvmProof.GasSteps
       (callSsig1 s msgOff returnDest rest j)
       (gotSsig1 s msgOff returnDest rest j) := by
     exact Functions.gasSteps_ssig1 q2 (wValue q2 (j - 2))
       (UInt256.ofNat 583)
-      ([wValue q7 (j - 7), firstSum s msgOff returnDest rest j,
+      ([wValue q7 (j - 7), rawFirstSum s msgOff returnDest rest j,
         UInt256.ofNat 0xffffffff, UInt256.ofNat 592, UInt256.ofNat j,
         msgOff, returnDest] ++ rest)
       (by simp; omega) q2code q2fork q2run q2np (by decide)
@@ -1053,11 +1026,9 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
   exact rawCondition
     |>.trans rawW16
     |>.trans rawW15
-    |>.trans rawS0
     |>.trans callS0
     |>.trans rawW7
     |>.trans rawW2
-    |>.trans rawS1
     |>.trans callS1
     |>.trans rawFinish
     |>.trans callSet
