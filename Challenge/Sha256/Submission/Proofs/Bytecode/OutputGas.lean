@@ -21,7 +21,7 @@ private def pathBaseCost {artifact : Challenge.EvmProof.ProgramArtifact}
   (path.map (fun located => osakaBaseCost located.instruction)).sum
 
 private theorem start_base : pathBaseCost Output.startPath = 22 := by rfl
-private theorem hAt_base : pathBaseCost Accessors.hAtPath = 37 := by rfl
+private theorem hAt_base : pathBaseCost Accessors.hAtPath = 32 := by rfl
 private theorem setup6_base : pathBaseCost Output.setup6Path = 20 := by rfl
 private theorem setup5_base : pathBaseCost Output.setup5Path = 29 := by rfl
 private theorem setup4_base : pathBaseCost Output.setup4Path = 26 := by rfl
@@ -161,7 +161,7 @@ theorem hAt_cost_potential (s : State) (index output returnDest : UInt256)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (Accessors.gasSteps_hAt s index output returnDest rest hcap hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      37 + MachineState.memCost
+      32 + MachineState.memCost
         (Accessors.loadReturned s 288 index returnDest rest).activeWords.toNat := by
   have hresult := Accessors.run_load Accessors.hAtPath s 318 288
     index output returnDest rest (Or.inr ⟨rfl, rfl, rfl⟩) hcap hcode hrun hvalid
@@ -365,7 +365,7 @@ theorem gasSteps_output_cost_potential (s : State) (offset : UInt256)
       s.executionEnv.codeAddr = false) :
     (Output.gasSteps_output s offset rest hcap hcode hfork hrun hnp).cost +
         MachineState.memCost s.activeWords.toNat =
-      531 + MachineState.memCost (Output.outputResult s rest).activeWords.toNat := by
+      491 + MachineState.memCost (Output.outputResult s rest).activeWords.toNat := by
   let q7 := Output.afterH7 s rest
   let q6 := Output.afterH6 s rest
   let q5 := Output.afterH5 s rest
@@ -543,7 +543,7 @@ theorem gasSteps_output_cost_potential (s : State) (offset : UInt256)
       (Accessors.gasSteps_hAt s (UInt256.ofNat 7) ⟨0⟩
           (UInt256.ofNat 1413) rest (by omega) hcode hfork hrun hnp
           valid1413).cost + MachineState.memCost s.activeWords.toNat =
-        37 + MachineState.memCost q7.activeWords.toNat := by
+        32 + MachineState.memCost q7.activeWords.toNat := by
     simpa [q7, Output.afterH7] using hH7
   have hSetup6' :
       Challenge.EvmProof.Stepper.runLocatedBlockCost Output.setup6Path q7 = 20 := by
@@ -555,7 +555,7 @@ theorem gasSteps_output_cost_potential (s : State) (offset : UInt256)
           (UInt256.ofNat 1424) (Output.hWord s 7 :: rest) (by simp; omega)
           q7code q7fork q7run q7np valid1424).cost +
           MachineState.memCost q7.activeWords.toNat =
-        37 + MachineState.memCost q6.activeWords.toNat := by
+        32 + MachineState.memCost q6.activeWords.toNat := by
     simpa [q6, Output.afterH6, q7] using hH6
   have hSetup5' :
       Challenge.EvmProof.Stepper.runLocatedBlockCost Output.setup5Path q6 = 29 := by
@@ -566,7 +566,7 @@ theorem gasSteps_output_cost_potential (s : State) (offset : UInt256)
           (UInt256.ofNat 1439) (Output.pair67 s :: rest) (by simp; omega)
           q6code q6fork q6run q6np valid1439).cost +
           MachineState.memCost q6.activeWords.toNat =
-        37 + MachineState.memCost q5.activeWords.toNat := by
+        32 + MachineState.memCost q5.activeWords.toNat := by
     simpa [q5, Output.afterH5, q6] using hH5
   have hSetup4' :
       Challenge.EvmProof.Stepper.runLocatedBlockCost Output.setup4Path q5 = 26 := by
@@ -578,7 +578,7 @@ theorem gasSteps_output_cost_potential (s : State) (offset : UInt256)
           (UInt256.ofNat 1453) (Output.shifted5 s :: Output.pair67 s :: rest)
           (by simp; omega) q5code q5fork q5run q5np valid1453).cost +
           MachineState.memCost q5.activeWords.toNat =
-        37 + MachineState.memCost q4.activeWords.toNat := by
+        32 + MachineState.memCost q4.activeWords.toNat := by
     simpa [q4, Output.afterH4, q5] using hH4
   have hSetup3' :
       Challenge.EvmProof.Stepper.runLocatedBlockCost Output.setup3Path q4 = 32 := by
@@ -592,7 +592,7 @@ theorem gasSteps_output_cost_potential (s : State) (offset : UInt256)
           (UInt256.ofNat 1469) (Output.lowHalf s :: rest) (by simp; omega)
           q4code q4fork q4run q4np valid1469).cost +
           MachineState.memCost q4.activeWords.toNat =
-        37 + MachineState.memCost q3.activeWords.toNat := by
+        32 + MachineState.memCost q3.activeWords.toNat := by
     simpa [q3, Output.afterH3, q4] using hH3
   have hSetup2' :
       Challenge.EvmProof.Stepper.runLocatedBlockCost Output.setup2Path q3 = 26 := by
@@ -605,7 +605,7 @@ theorem gasSteps_output_cost_potential (s : State) (offset : UInt256)
           (UInt256.ofNat 1483) (Output.shifted3 s :: Output.lowHalf s :: rest)
           (by simp; omega) q3code q3fork q3run q3np valid1483).cost +
           MachineState.memCost q3.activeWords.toNat =
-        37 + MachineState.memCost q2.activeWords.toNat := by
+        32 + MachineState.memCost q2.activeWords.toNat := by
     simpa [q2, Output.afterH2, q3] using hH2
   have hSetup1' :
       Challenge.EvmProof.Stepper.runLocatedBlockCost Output.setup1Path q2 = 29 := by
@@ -619,7 +619,7 @@ theorem gasSteps_output_cost_potential (s : State) (offset : UInt256)
           (UInt256.ofNat 1498) (Output.pair23 s :: Output.lowHalf s :: rest)
           (by simp; omega) q2code q2fork q2run q2np valid1498).cost +
           MachineState.memCost q2.activeWords.toNat =
-        37 + MachineState.memCost q1.activeWords.toNat := by
+        32 + MachineState.memCost q1.activeWords.toNat := by
     simpa [q1, Output.afterH1, q2] using hH1
   have hSetup0' :
       Challenge.EvmProof.Stepper.runLocatedBlockCost Output.setup0Path q1 = 25 := by
@@ -633,7 +633,7 @@ theorem gasSteps_output_cost_potential (s : State) (offset : UInt256)
           (Output.shifted1 s :: Output.pair23 s :: Output.lowHalf s :: rest)
           (by simp; omega) q1code q1fork q1run q1np valid1511).cost +
           MachineState.memCost q1.activeWords.toNat =
-        37 + MachineState.memCost q0.activeWords.toNat := by
+        32 + MachineState.memCost q0.activeWords.toNat := by
     simpa [q0, Output.afterH0, q1] using hH0
   have hFinish' :
       Challenge.EvmProof.Stepper.runLocatedBlockCost Output.finishPath q0 +
@@ -763,7 +763,7 @@ theorem gasSteps_output_cost_of_activeWords_ge (s : State) (offset : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false)
     (haw : 17 ≤ s.activeWords.toNat) :
-    (Output.gasSteps_output s offset rest hcap hcode hfork hrun hnp).cost = 531 := by
+    (Output.gasSteps_output s offset rest hcap hcode hfork hrun hnp).cost = 491 := by
   have hpotential := gasSteps_output_cost_potential s offset rest hcap hcode
     hfork hrun hnp
   rw [outputResult_activeWords_of_ge s rest haw] at hpotential

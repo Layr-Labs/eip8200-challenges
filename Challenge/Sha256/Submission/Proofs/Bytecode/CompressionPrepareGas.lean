@@ -16,9 +16,9 @@ open YulEvmCompiler
 
 private theorem prepare_chain (cEntry cSchedule cCopy p₀ p₁ p₂ p₃ : Nat)
     (hentry : cEntry + p₀ = 18 + p₁)
-    (hschedule : cSchedule + p₁ = 37690 + p₂)
+    (hschedule : cSchedule + p₁ = 36250 + p₂)
     (hcopy : cCopy + p₂ = 39 + p₃) :
-    (cEntry + (cSchedule + cCopy)) + p₀ = 37747 + p₃ := by
+    (cEntry + (cSchedule + cCopy)) + p₀ = 36307 + p₃ := by
   omega
 
 theorem prepare_parts_cost_potential (s : State)
@@ -44,7 +44,7 @@ theorem prepare_parts_cost_potential (s : State)
           stack := [msgOff, returnDest] ++ rest })) +
       MachineState.memCost
         (Compression.compressEntry s msgOff returnDest rest).activeWords.toNat =
-    37747 + MachineState.memCost
+    36307 + MachineState.memCost
       (Compression.roundAt
         (Compression.copyHashState
           (Compression.afterSchedule s msgOff returnDest rest))
@@ -59,7 +59,7 @@ theorem prepare_parts_cost_potential (s : State)
           MachineState.memCost
             (Schedule.scheduleEntry s msgOff (UInt256.ofNat 621)
               (msgOff :: returnDest :: rest)).activeWords.toNat =
-      37690 + MachineState.memCost
+      36250 + MachineState.memCost
         (Schedule.scheduleResult s msgOff (UInt256.ofNat 621)
           (msgOff :: returnDest :: rest)).activeWords.toNat := by
     exact ScheduleGas.schedule_cost_potential s msgOff (UInt256.ofNat 621)
@@ -88,7 +88,7 @@ theorem prepare_cost_potential (s : State) (msgOff returnDest : UInt256)
       (Compression.gasSteps_toRoundLoop s msgOff returnDest rest hcap hcode
         hfork hrun hnp) + MachineState.memCost
           (Compression.compressEntry s msgOff returnDest rest).activeWords.toNat =
-      37747 + MachineState.memCost
+      36307 + MachineState.memCost
         (Compression.roundAt
           (Compression.copyHashState
             (Compression.afterSchedule s msgOff returnDest rest))

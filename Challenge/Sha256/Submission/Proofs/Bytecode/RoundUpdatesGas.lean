@@ -52,7 +52,7 @@ private theorem shift_cost_potential
     (Compression.gasSteps_shift loadPath storePath q src dest loadReturn
       storeReturn startPC context hload hstore hpc hstack hcap hcode hfork hrun
       hnp).cost + MachineState.memCost q.activeWords.toNat =
-      loadWork + 37 + storeWork + 34 + MachineState.memCost
+      loadWork + 32 + storeWork + 24 + MachineState.memCost
         (Compression.shiftReturned q src dest loadReturn storeReturn context).activeWords.toNat := by
   have hsetupLoad := blockCost_potential_of_static loadPath loadWork
     (Compression.run_shiftLoad loadPath q src loadReturn storeReturn startPC
@@ -111,9 +111,9 @@ private theorem shift_cost_potential
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
   rw [hawLoad] at hsetupLoad
   rw [hawStore] at hsetupStore
-  change _ = 37 + MachineState.memCost
+  change _ = 32 + MachineState.memCost
     (Compression.shiftLoaded q src loadReturn storeReturn context).activeWords.toNat at hget
-  change _ = 34 + MachineState.memCost
+  change _ = 24 + MachineState.memCost
     (Compression.shiftReturned q src dest loadReturn storeReturn context).activeWords.toNat at hset
   omega
 
@@ -127,7 +127,7 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gasSteps_updates s msgOff returnDest rest j hj hcap hcode
       hfork hrun hnp).cost + MachineState.memCost
         (Compression.afterT2 s msgOff returnDest rest j).activeWords.toNat =
-      629 + MachineState.memCost
+      554 + MachineState.memCost
         (Compression.afterSecondIteration s msgOff returnDest rest j).activeWords.toNat := by
   let ctx := Compression.roundContext s msgOff returnDest rest j
   have hctx : ctx.length < 1016 := by simp [ctx, Compression.roundContext]; omega
@@ -298,14 +298,14 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
         (Compression.h4Loaded s msgOff returnDest rest j).activeWords := by rfl
   rw [hawH4Load] at hsetupH4
   rw [hawH4Store] at hstoreH4
-  change _ = 37 + MachineState.memCost
+  change _ = 32 + MachineState.memCost
     (Compression.h4Loaded s msgOff returnDest rest j).activeWords.toNat at hgetH4
-  change _ = 34 + MachineState.memCost
+  change _ = 24 + MachineState.memCost
     q4.activeWords.toNat at hsetH4
-  change _ = 108 + MachineState.memCost q1.activeWords.toNat at hs7
-  change _ = 109 + MachineState.memCost q2.activeWords.toNat at hs6
-  change _ = 109 + MachineState.memCost q5rawState.activeWords.toNat at hs3
-  change _ = 109 + MachineState.memCost
+  change _ = 93 + MachineState.memCost q1.activeWords.toNat at hs7
+  change _ = 94 + MachineState.memCost q2.activeWords.toNat at hs6
+  change _ = 94 + MachineState.memCost q5rawState.activeWords.toNat at hs3
+  change _ = 94 + MachineState.memCost
     (Compression.afterShift2 s msgOff returnDest rest j).activeWords.toNat at hs2
   dsimp only [q0, q1, q2, q3, q4, q5, q5rawState, ctx] at *
   have h₁ := potential_trans hs7 hs6

@@ -22,7 +22,7 @@ theorem t2_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gasSteps_t2 s msgOff returnDest rest j hcap hcode hfork
       hrun hnp).cost + MachineState.memCost
         (Compression.afterT1 s msgOff returnDest rest j).activeWords.toNat =
-      457 + MachineState.memCost
+      447 + MachineState.memCost
         (Compression.afterT2 s msgOff returnDest rest j).activeWords.toNat := by
   have hsetupH2 := blockCost_potential_of_static Compression.setupT2H2Path 33
     (Compression.run_setupT2H2 s msgOff returnDest rest j (by omega)
@@ -212,9 +212,9 @@ theorem t2_cost_potential (s : State) (msgOff returnDest : UInt256)
   rw [hawH1] at hsetupH1
   rw [hawMaj] at hsetupMaj
   rw [hawB0] at hsetupB0
-  change _ = 37 + MachineState.memCost
+  change _ = 32 + MachineState.memCost
     (Compression.gotT2H2 s msgOff returnDest rest j).activeWords.toNat at hh2
-  change _ = 37 + MachineState.memCost
+  change _ = 32 + MachineState.memCost
     (Compression.gotT2H1 s msgOff returnDest rest j).activeWords.toNat at hh1
   change _ = 50 + MachineState.memCost
     (Compression.gotMaj s msgOff returnDest rest j).activeWords.toNat at hmaj

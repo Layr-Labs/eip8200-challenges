@@ -96,7 +96,7 @@ theorem wAt_cost_potential (s : State) (index output returnDest : UInt256)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (Accessors.gasSteps_wAt s index output returnDest rest hcap hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      37 + MachineState.memCost
+      32 + MachineState.memCost
         (Accessors.loadReturned s 800 index returnDest rest).activeWords.toNat := by
   have hresult := Accessors.run_load Accessors.wAtPath s 279 800
     index output returnDest rest (Or.inl ⟨rfl, rfl, rfl⟩) hcap hcode hrun hvalid
@@ -117,7 +117,7 @@ theorem hAt_cost_potential (s : State) (index output returnDest : UInt256)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (Accessors.gasSteps_hAt s index output returnDest rest hcap hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      37 + MachineState.memCost
+      32 + MachineState.memCost
         (Accessors.loadReturned s 288 index returnDest rest).activeWords.toNat := by
   have hresult := Accessors.run_load Accessors.hAtPath s 318 288
     index output returnDest rest (Or.inr ⟨rfl, rfl, rfl⟩) hcap hcode hrun hvalid
@@ -138,7 +138,7 @@ theorem wSet_cost_potential (s : State) (index value returnDest : UInt256)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (Accessors.gasSteps_wSet s index value returnDest rest hcap hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      34 + MachineState.memCost
+      24 + MachineState.memCost
         (Accessors.storeReturned s 800 index value returnDest rest).activeWords.toNat := by
   have hresult := Accessors.run_store Accessors.wSetPath s 299 800
     index value returnDest rest (Or.inl ⟨rfl, rfl, rfl⟩) hcap hcode hrun hvalid
@@ -159,7 +159,7 @@ theorem hSet_cost_potential (s : State) (index value returnDest : UInt256)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (Accessors.gasSteps_hSet s index value returnDest rest hcap hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      34 + MachineState.memCost
+      24 + MachineState.memCost
         (Accessors.storeReturned s 288 index value returnDest rest).activeWords.toNat := by
   have hresult := Accessors.run_store Accessors.hSetPath s 338 288
     index value returnDest rest (Or.inr ⟨rfl, rfl, rfl⟩) hcap hcode hrun hvalid
@@ -180,7 +180,7 @@ theorem kAt_cost_potential (s : State) (index output returnDest : UInt256)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (Accessors.gasSteps_kAt s index output returnDest rest hcap hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      43 + MachineState.memCost
+      38 + MachineState.memCost
         (Accessors.kAtReturned s index returnDest rest).activeWords.toNat := by
   have hresult := Accessors.run_kAt s index output returnDest rest hcap
     hcode hrun hvalid

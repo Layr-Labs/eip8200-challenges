@@ -23,7 +23,7 @@ theorem foldIteration_cost_potential (s : State)
     (Compression.gasSteps_foldIteration s msgOff returnDest rest i hi hcap
       hcode hfork hrun hnp).cost +
         MachineState.memCost (Compression.foldAt s msgOff returnDest rest i).activeWords.toNat =
-      182 + MachineState.memCost
+      167 + MachineState.memCost
         (Compression.afterFoldIteration s msgOff returnDest rest i).activeWords.toNat := by
   have hcond := blockCost_potential_of_static Compression.foldConditionPath 26
     (Compression.run_foldCondition s msgOff returnDest rest i hi (by omega) hrun)
@@ -115,10 +115,10 @@ theorem foldLoop_cost_potential (s : State)
     (Compression.gasSteps_foldLoop s msgOff returnDest rest hcap hcode hfork
       hrun hnp).cost + MachineState.memCost
         (Compression.foldLoopState s msgOff returnDest rest 0).activeWords.toNat =
-      8 * 182 + MachineState.memCost
+      8 * 167 + MachineState.memCost
         (Compression.foldLoopState s msgOff returnDest rest 8).activeWords.toNat := by
   unfold Compression.gasSteps_foldLoop
-  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add 8 182
+  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add 8 167
   intro i hi
   let q := Compression.foldLoopState s msgOff returnDest rest i
   have qcode : q.executionEnv.code = submissionBytecode := by simpa [q] using hcode
@@ -135,7 +135,7 @@ theorem foldLoop_cost_potential (s : State)
         msgOff returnDest rest i hi hcap qcode qfork qrun qnp).cost +
           MachineState.memCost
             (Compression.foldLoopState s msgOff returnDest rest i).activeWords.toNat =
-        182 + MachineState.memCost
+        167 + MachineState.memCost
           (Compression.foldLoopState s msgOff returnDest rest (i + 1)).activeWords.toNat := by
     simpa [Compression.foldAt, Compression.foldLoopState] using h
   simpa only [Challenge.EvmProof.GasSteps.cast_cost] using h'
