@@ -67,10 +67,10 @@ def firstStorePath :
 def firstIncrementPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨352, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨353, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨354, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨355, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨356, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨353, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨354, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨355, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨356, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨357, .push ⟨2, by decide⟩ (UInt256.ofNat 448), by rfl, by decide⟩,
    ⟨358, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -204,12 +204,14 @@ theorem run_firstIncrement (s : State) (msgOff returnDest : UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hadd : UInt256.ofNat j + UInt256.ofNat 1 =
-      UInt256.ofNat (j + 1) := Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
+  have hadd : UInt256.ofNat 1 + UInt256.ofNat j =
+      UInt256.ofNat (j + 1) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
   have hdest : Decode.isValidJumpDest submissionBytecode 448 = true := by decide
   simp [firstIncrementPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    afterFirstStore, afterFirstIteration, afterFirstLoad, List.exchange,
+    afterFirstStore, afterFirstIteration, afterFirstLoad,
     hc3, hc4, hc5, hcode, hrun, hadd, hdest]
 
 def gasSteps_firstIteration (s : State) (msgOff returnDest : UInt256)
@@ -463,10 +465,10 @@ def secondIncrementPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨420, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨421, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨422, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨423, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨424, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨425, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨422, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨423, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨424, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨425, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨426, .push ⟨2, by decide⟩ (UInt256.ofNat 495), by rfl, by decide⟩,
    ⟨427, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -818,14 +820,16 @@ theorem run_secondIncrement (s : State) (msgOff returnDest : UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hadd : UInt256.ofNat j + UInt256.ofNat 1 =
-      UInt256.ofNat (j + 1) := Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
+  have hadd : UInt256.ofNat 1 + UInt256.ofNat j =
+      UInt256.ofNat (j + 1) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
   have hdest : Decode.isValidJumpDest submissionBytecode 495 = true := by decide
   simp [secondIncrementPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     gotWSet, gotSsig1, gotW2, gotW7, gotSsig0, gotW15, gotW16,
     afterSecondIteration, secondAt, Accessors.storeReturned,
-    Functions.unaryReturned, Accessors.loadReturned, List.exchange,
+    Functions.unaryReturned, Accessors.loadReturned,
     hc3, hc4, hc5, hcode, hrun, hadd, hdest]
 
 def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)

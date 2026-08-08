@@ -326,10 +326,10 @@ def lengthIterationPath :
    ⟨306, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨307, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨308, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨309, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨310, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨311, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨312, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨309, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨310, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨311, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨312, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨313, .push ⟨2, by decide⟩ (UInt256.ofNat 398), by rfl, by decide⟩,
    ⟨314, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨288, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
@@ -960,12 +960,13 @@ private theorem run_lengthIncrement (input : ByteArray) (i : Nat) (hi : i < 8) :
     Challenge.EvmProof.Stepper.runLocatedBlock lengthIncrementPath
       (lengthStoredState input i) = some (lengthIncrementedState input i) := by
   have hiSucc : i + 1 < 2 ^ 256 := by omega
-  have hadd : UInt256.ofNat i + UInt256.ofNat 1 = UInt256.ofNat (i + 1) :=
-    Challenge.EvmProof.Word.ofNat_add_ofNat hiSucc
+  have hadd : UInt256.ofNat 1 + UInt256.ofNat i = UInt256.ofNat (i + 1) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    exact Challenge.EvmProof.Word.ofNat_add_ofNat hiSucc
   simp [lengthIncrementPath, lengthIterationPath,
     Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr, lengthStoredState, lengthIncrementedState,
-    lengthLoopState, hadd, List.exchange]
+    lengthLoopState, hadd]
 
 set_option maxHeartbeats 200000 in
 private theorem run_lengthBack (input : ByteArray) (i : Nat) :

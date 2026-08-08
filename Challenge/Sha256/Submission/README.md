@@ -43,8 +43,13 @@ operation; one unreachable `STOP` byte preserves the following program
 counter. This saves 3 gas per helper call, 192 gas per padded block, and 12,480
 gas over the suite.
 
-Fresh local scoring of the exact submission bytes measured 10,117,687 versus
-the 10,179,119 reference, a combined reduction of 61,432 gas. All 19 vectors
+The same direct-add counter rewrite is now applied to the four remaining
+compiler-generated increments at offsets `0x01a8`, `0x01e1`, `0x0251`, and
+`0x03d7`. These are reached 8 times per call and 72 times per padded block in
+aggregate. The four edits save another 24,160 gas over the public suite.
+
+Fresh local scoring of the exact submission bytes measured 10,093,527 versus
+the 10,179,119 reference, a combined reduction of 85,592 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
@@ -52,5 +57,5 @@ directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,579 gas and 155,100
+accompanying exact-gas proof accounts for a fixed cost of 1,539 gas and 154,740
 gas per padded block, plus calldata copying and memory expansion.

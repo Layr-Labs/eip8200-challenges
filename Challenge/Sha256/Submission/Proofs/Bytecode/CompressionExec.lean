@@ -338,10 +338,10 @@ def foldIncrementPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨646, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨647, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨648, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨649, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨650, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨651, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨648, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨649, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨650, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨651, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨652, .push ⟨2, by decide⟩ (UInt256.ofNat 938), by rfl, by decide⟩,
    ⟨653, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -1519,13 +1519,15 @@ theorem run_foldIncrement (s : State) (msgOff returnDest : UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hadd : UInt256.ofNat i + UInt256.ofNat 1 =
-      UInt256.ofNat (i + 1) := Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
+  have hadd : UInt256.ofNat 1 + UInt256.ofNat i =
+      UInt256.ofNat (i + 1) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
   have hdest : Decode.isValidJumpDest submissionBytecode 938 = true := by decide
   simp [foldIncrementPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     foldGotSet, afterFoldIteration, foldGotH, loadedSaved,
-    Accessors.storeReturned, Accessors.loadReturned, List.exchange,
+    Accessors.storeReturned, Accessors.loadReturned,
     hc3, hc4, hc5, hcode, hrun, hadd, hdest]
 
 set_option linter.unusedSimpArgs false in
