@@ -69,8 +69,13 @@ accessor. An unreachable `PUSH3 0; POP` pad keeps the following `JUMPDEST` and
 all downstream program counters fixed. This saves 39 gas per round, 2,496 gas
 per padded block, and 162,240 gas over the public suite.
 
-Fresh local scoring of the exact submission bytes projects 9,146,887 versus
-the 10,179,119 reference, a combined reduction of 1,032,232 gas. All 19 vectors
+The adjacent fixed state-word `h5` load now uses the same direct-memory
+specialization. Its length-preserving pad retains the next call boundary and
+again saves 39 gas per round, 2,496 gas per padded block, and 162,240 gas over
+the public suite.
+
+Fresh local scoring of the exact submission bytes projects 8,984,647 versus
+the 10,179,119 reference, a combined reduction of 1,194,472 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
@@ -78,5 +83,5 @@ directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 140,188
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 137,692
 gas per padded block, plus calldata copying and memory expansion.

@@ -302,20 +302,14 @@ def gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
     simpa [gotH6, gotK, gotW, loadedE, Accessors.loadReturned,
       Accessors.kAtReturned] using hnp
   have gSetupH5 : Challenge.EvmProof.GasSteps
-      (gotH6 s msgOff returnDest rest j) (callH5 s msgOff returnDest rest j) := by
+      (gotH6 s msgOff returnDest rest j) (gotH5 s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupH5Path
     · exact qH6code
     · exact qH6fork
-    · exact run_setupH5 s msgOff returnDest rest j (by omega) hcode hrun
+    · exact run_setupH5 s msgOff returnDest rest j (by omega) hrun
     · exact qH6run
     · exact qH6np
-  have gH5 := Accessors.gasSteps_hAt (gotH6 s msgOff returnDest rest j)
-    (UInt256.ofNat 5) 0 (UInt256.ofNat 697)
-    ([hValue s 6, 0, UInt256.ofNat 703, kValue s j, wValue s j,
-      UInt256.ofNat 0xffffffff, hValue s 4, UInt256.ofNat j,
-      msgOff, returnDest] ++ rest)
-    (by simp; omega) qH6code qH6fork qH6run qH6np (by decide)
   have qH5code : (gotH5 s msgOff returnDest rest j).executionEnv.code =
       submissionBytecode := by
     simpa [gotH5, gotH6, gotK, gotW, loadedE, Accessors.loadReturned,
@@ -442,8 +436,8 @@ def gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
     · exact qH7np
   exact gCond.trans (gSetupW.trans (gW.trans
     (gSetupK.trans (gK.trans (gSetupH6.trans
-      (gSetupH5.trans (gH5.trans (gSetupCh.trans (gCh.trans
-        (gSetupB1.trans (gB1.trans (gSetupH7.trans (gH7.trans gFinish)))))))))))))
+      (gSetupH5.trans (gSetupCh.trans (gCh.trans
+        (gSetupB1.trans (gB1.trans (gSetupH7.trans (gH7.trans gFinish))))))))))))
 
 /-- Execute the complete `t2` half, leaving the eight working-state updates
 as the only remaining part of the round. -/

@@ -23,7 +23,7 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gasSteps_t1 s msgOff returnDest rest j hj hcap hcode hfork
       hrun hnp).cost + MachineState.memCost
         (Compression.roundAt s msgOff returnDest rest j).activeWords.toNat =
-      599 + MachineState.memCost
+      560 + MachineState.memCost
         (Compression.afterT1 s msgOff returnDest rest j).activeWords.toNat := by
   have hcond := blockCost_potential_of_static Compression.conditionPath 26
     (Compression.run_condition s msgOff returnDest rest j hj (by omega) hrun)
@@ -65,31 +65,12 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
     (by simpa [Compression.gotK, Compression.gotW, Compression.loadedE,
       Accessors.kAtReturned, Accessors.loadReturned, State.fork] using hfork)
     (by simp [Compression.setupH6Path, CopyFree]) (by rfl)
-  have hsetupH5 := blockCost_potential_of_static Compression.setupH5Path 20
-    (Compression.run_setupH5 s msgOff returnDest rest j (by omega) hcode hrun)
+  have hsetupH5 := blockCost_potential_of_static Compression.setupH5Path 13
+    (Compression.run_setupH5 s msgOff returnDest rest j (by omega) hrun)
     (by simpa [Compression.gotH6, Compression.gotK, Compression.gotW,
       Compression.loadedE, Accessors.loadReturned, Accessors.kAtReturned,
       State.fork] using hfork)
     (by simp [Compression.setupH5Path, CopyFree]) (by rfl)
-  have hh5 := CompressionGas.hAt_cost_potential
-    (Compression.gotH6 s msgOff returnDest rest j) (UInt256.ofNat 5) 0
-    (UInt256.ofNat 697)
-    ([Compression.hValue s 6, 0, UInt256.ofNat 703, Compression.kValue s j,
-      Compression.wValue s j, UInt256.ofNat 0xffffffff,
-      Compression.hValue s 4, UInt256.ofNat j, msgOff, returnDest] ++ rest)
-    (by simp; omega)
-    (by simpa [Compression.gotH6, Compression.gotK, Compression.gotW,
-      Compression.loadedE, Accessors.loadReturned,
-      Accessors.kAtReturned] using hcode)
-    (by simpa [Compression.gotH6, Compression.gotK, Compression.gotW,
-      Compression.loadedE, Accessors.loadReturned, Accessors.kAtReturned,
-      State.fork] using hfork)
-    (by simpa [Compression.gotH6, Compression.gotK, Compression.gotW,
-      Compression.loadedE, Accessors.loadReturned,
-      Accessors.kAtReturned] using hrun)
-    (by simpa [Compression.gotH6, Compression.gotK, Compression.gotW,
-      Compression.loadedE, Accessors.loadReturned,
-      Accessors.kAtReturned] using hnp) (by decide)
   have hsetupCh := blockCost_potential_of_static Compression.setupChPath 15
     (Compression.run_setupCh s msgOff returnDest rest j (by omega) hcode hrun)
     (by simpa [Compression.gotH5, Compression.gotH6, Compression.gotK,
@@ -189,9 +170,6 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
   have hawK :
       (Compression.callK s msgOff returnDest rest j).activeWords =
         (Compression.gotW s msgOff returnDest rest j).activeWords := by rfl
-  have hawH5 :
-      (Compression.callH5 s msgOff returnDest rest j).activeWords =
-        (Compression.gotH6 s msgOff returnDest rest j).activeWords := by rfl
   have hawCh :
       (Compression.callCh s msgOff returnDest rest j).activeWords =
         (Compression.gotH5 s msgOff returnDest rest j).activeWords := by rfl
@@ -206,7 +184,6 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
   rw [hawW] at hsetupW
   rw [hawK] at hsetupK
-  rw [hawH5] at hsetupH5
   rw [hawCh] at hsetupCh
   rw [hawB1] at hsetupB1
   rw [hawH7] at hsetupH7
@@ -214,8 +191,6 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gotW s msgOff returnDest rest j).activeWords.toNat at hw
   change _ = 38 + MachineState.memCost
     (Compression.gotK s msgOff returnDest rest j).activeWords.toNat at hk
-  change _ = 32 + MachineState.memCost
-    (Compression.gotH5 s msgOff returnDest rest j).activeWords.toNat at hh5
   change _ = 44 + MachineState.memCost
     (Compression.gotCh s msgOff returnDest rest j).activeWords.toNat at hch
   change _ = 238 + MachineState.memCost
