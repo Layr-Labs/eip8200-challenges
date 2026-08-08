@@ -285,10 +285,10 @@ def finishRoundPath :
    ⟨608, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨609, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨610, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨611, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨612, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨613, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨614, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨611, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨612, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨613, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨614, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨615, .push ⟨2, by decide⟩ (UInt256.ofNat 633), by rfl, by decide⟩,
    ⟨616, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -1386,8 +1386,10 @@ theorem run_finishRound (s : State) (msgOff returnDest : UInt256)
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
-  have hadd : UInt256.ofNat j + UInt256.ofNat 1 =
-      UInt256.ofNat (j + 1) := Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
+  have hadd : UInt256.ofNat 1 + UInt256.ofNat j =
+      UInt256.ofNat (j + 1) := by
+    rw [add_comm]
+    exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
   have hdest : Decode.isValidJumpDest submissionBytecode 633 = true := by decide
   have qrun : (afterStoreE s msgOff returnDest rest j).halt = .Running := by
     change s.halt = .Running

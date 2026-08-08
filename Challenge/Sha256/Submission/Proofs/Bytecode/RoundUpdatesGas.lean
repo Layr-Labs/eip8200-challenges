@@ -127,7 +127,7 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gasSteps_updates s msgOff returnDest rest j hj hcap hcode
       hfork hrun hnp).cost + MachineState.memCost
         (Compression.afterT2 s msgOff returnDest rest j).activeWords.toNat =
-      634 + MachineState.memCost
+      629 + MachineState.memCost
         (Compression.afterSecondIteration s msgOff returnDest rest j).activeWords.toNat := by
   let ctx := Compression.roundContext s msgOff returnDest rest j
   have hctx : ctx.length < 1016 := by simp [ctx, Compression.roundContext]; omega
@@ -280,7 +280,7 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl, rfl, rfl⟩)))
     (by rfl) (by rfl) hctx q5rawCode q5rawFork q5rawRun q5rawNp
     (by rfl) (by rfl)
-  have hfinish := blockCost_potential_of_static Compression.finishRoundPath 69
+  have hfinish := blockCost_potential_of_static Compression.finishRoundPath 64
     (Compression.run_finishRound s msgOff returnDest rest j hj (by omega)
       hcode hrun)
     (by simpa [Compression.afterShift2, Compression.shiftReturned,

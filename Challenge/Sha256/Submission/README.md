@@ -16,18 +16,28 @@ The same bytes must also return the correct result from the dirty state.
 Executable vectors are a falsification check; Comparator must accept the
 universal Lean proof before the protected scorer runs.
 
-## Experimental candidate
+## Optimized candidate
 
 The initial `PUSH2; JUMP` now targets the main body at `0x03e5` directly,
 skipping fourteen compiler-generated `JUMPDEST; PUSH2; JUMP` forwarding
 trampolines. The edit preserves bytecode length and every downstream program
-counter. Local scoring measured a 168-gas saving per invocation (3,192 gas
-over the 19-vector score suite): 10,175,927 versus the 10,179,119 reference.
-All 19 vectors passed from both clean and dirty initial states with identical
-gas.
+counter. This saves 168 gas per invocation, or 3,192 gas over the public
+19-vector suite.
+
+The compression loop's six-byte round-counter increment at byte offset
+`0x039d` is also rewritten from `PUSH1 1; DUP2; ADD; SWAP1; POP` to
+`PUSH1 1; ADD; JUMPDEST; JUMPDEST; JUMPDEST`. The replacement is stack- and
+length-preserving, reduces the increment cost from 14 to 9 gas, and executes
+64 times per padded block. It saves 320 gas per block and 20,800 gas over the
+suite's 65 padded blocks.
+
+Fresh local scoring of the exact submission bytes measured 10,155,127 versus
+the 10,179,119 reference, a combined reduction of 23,992 gas. All 19 vectors
+passed from both clean and dirty initial states with identical gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
-directory.  Its entry trace executes the direct `PUSH2 0x03e5; JUMP`, while
-the unchanged downstream proof establishes the SHA-256 specification for every
-calldata value.  Both the end-to-end correctness closure and the generated
-benchmark-facing candidate theorem compile successfully.
+directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
+candidate-specific compression trace executes the optimized increment; and
+the downstream proof establishes the SHA-256 specification for every calldata
+value. The accompanying exact-gas proof accounts for a fixed cost of 1,579 gas
+and 155,676 gas per padded block, plus calldata copying and memory expansion.

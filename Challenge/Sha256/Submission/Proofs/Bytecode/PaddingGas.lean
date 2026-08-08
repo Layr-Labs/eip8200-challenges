@@ -505,10 +505,10 @@ theorem lengthSetupLoop_cost (input : ByteArray) (hfit : CalldataFits input) :
 
 theorem gasSteps_pad_cost_of_fixed (input : ByteArray)
     (hfit : CalldataFits input)
-    (hinit : (Main.gasSteps_initialize input).cost = 375)
+    (hinit : (Main.gasSteps_initialize input).cost = 207)
     (hcompute : (PaddingTrace.gasSteps_computePaddedLength input).cost = 26) :
     (PaddingTrace.gasSteps_pad input hfit).cost =
-      1187 + 3 * ((input.size + 31) / 32) +
+      1019 + 3 * ((input.size + 31) / 32) +
         MachineState.memCost (89 + 2 * ((input.size + 72) / 64)) := by
   unfold PaddingTrace.gasSteps_pad
   simp only [Challenge.EvmProof.GasSteps.trans_cost]
@@ -517,7 +517,7 @@ theorem gasSteps_pad_cost_of_fixed (input : ByteArray)
   have hsetupLoop := lengthSetupLoop_cost input hfit
   omega
 private theorem toMain_cost (input : ByteArray) :
-    (Reference.gasSteps_to_main input).cost = 179 := by
+    (Reference.gasSteps_to_main input).cost = 11 := by
   rfl
 
 private theorem mainJumpdest_cost (input : ByteArray) :
@@ -668,7 +668,7 @@ theorem initStores_full_cost (input : ByteArray)
   omega
 
 theorem initialize_cost (input : ByteArray) :
-    (Main.gasSteps_initialize input).cost = 375 := by
+    (Main.gasSteps_initialize input).cost = 207 := by
   simp only [Main.gasSteps_initialize,
     Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.GasSteps.cast_cost]
@@ -677,7 +677,7 @@ theorem initialize_cost (input : ByteArray) :
 
 theorem gasSteps_pad_cost (input : ByteArray) (hfit : CalldataFits input) :
     (PaddingTrace.gasSteps_pad input hfit).cost =
-      1187 + 3 * ((input.size + 31) / 32) +
+      1019 + 3 * ((input.size + 31) / 32) +
         MachineState.memCost (89 + 2 * ((input.size + 72) / 64)) := by
   exact gasSteps_pad_cost_of_fixed input hfit (initialize_cost input)
     (PaddingTrace.gasSteps_computePaddedLength_cost input)
