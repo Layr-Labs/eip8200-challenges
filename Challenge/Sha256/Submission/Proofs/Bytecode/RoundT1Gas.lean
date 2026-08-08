@@ -23,7 +23,7 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gasSteps_t1 s msgOff returnDest rest j hj hcap hcode hfork
       hrun hnp).cost + MachineState.memCost
         (Compression.roundAt s msgOff returnDest rest j).activeWords.toNat =
-      560 + MachineState.memCost
+      521 + MachineState.memCost
         (Compression.afterT1 s msgOff returnDest rest j).activeWords.toNat := by
   have hcond := blockCost_potential_of_static Compression.conditionPath 26
     (Compression.run_condition s msgOff returnDest rest j hj (by omega) hrun)
@@ -126,36 +126,13 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
       Compression.gotK, Compression.gotW, Compression.loadedE,
       Functions.unaryReturned, Accessors.loadReturned,
       Accessors.kAtReturned] using hnp) (by decide)
-  have hsetupH7 := blockCost_potential_of_static Compression.setupH7Path 20
-    (Compression.run_setupH7 s msgOff returnDest rest j (by omega) hcode hrun)
+  have hsetupH7 := blockCost_potential_of_static Compression.setupH7Path 13
+    (Compression.run_setupH7 s msgOff returnDest rest j (by omega) hrun)
     (by simpa [Compression.gotBigSigma1, Compression.gotCh,
       Compression.gotH5, Compression.gotH6, Compression.gotK,
       Compression.gotW, Compression.loadedE, Functions.unaryReturned,
       Accessors.loadReturned, Accessors.kAtReturned, State.fork] using hfork)
     (by simp [Compression.setupH7Path, CopyFree]) (by rfl)
-  have hh7 := CompressionGas.hAt_cost_potential
-    (Compression.gotBigSigma1 s msgOff returnDest rest j) (UInt256.ofNat 7) 0
-    (UInt256.ofNat 725)
-    ([Word.evmBigSigma1 (Compression.hValue s 4), Compression.chPlusK s j,
-      Compression.wValue s j, UInt256.ofNat 0xffffffff,
-      Compression.hValue s 4, UInt256.ofNat j, msgOff, returnDest] ++ rest)
-    (by simp; omega)
-    (by simpa [Compression.gotBigSigma1, Compression.gotCh,
-      Compression.gotH5, Compression.gotH6, Compression.gotK,
-      Compression.gotW, Compression.loadedE, Functions.unaryReturned,
-      Accessors.loadReturned, Accessors.kAtReturned] using hcode)
-    (by simpa [Compression.gotBigSigma1, Compression.gotCh,
-      Compression.gotH5, Compression.gotH6, Compression.gotK,
-      Compression.gotW, Compression.loadedE, Functions.unaryReturned,
-      Accessors.loadReturned, Accessors.kAtReturned, State.fork] using hfork)
-    (by simpa [Compression.gotBigSigma1, Compression.gotCh,
-      Compression.gotH5, Compression.gotH6, Compression.gotK,
-      Compression.gotW, Compression.loadedE, Functions.unaryReturned,
-      Accessors.loadReturned, Accessors.kAtReturned] using hrun)
-    (by simpa [Compression.gotBigSigma1, Compression.gotCh,
-      Compression.gotH5, Compression.gotH6, Compression.gotK,
-      Compression.gotW, Compression.loadedE, Functions.unaryReturned,
-      Accessors.loadReturned, Accessors.kAtReturned] using hnp) (by decide)
   have hfinish := blockCost_potential_of_static Compression.finishT1Path 13
     (Compression.run_finishT1 s msgOff returnDest rest j (by omega) hrun)
     (by simpa [Compression.gotH7, Compression.gotBigSigma1,
@@ -176,9 +153,6 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
   have hawB1 :
       (Compression.callBigSigma1 s msgOff returnDest rest j).activeWords =
         (Compression.gotCh s msgOff returnDest rest j).activeWords := by rfl
-  have hawH7 :
-      (Compression.callH7 s msgOff returnDest rest j).activeWords =
-        (Compression.gotBigSigma1 s msgOff returnDest rest j).activeWords := by rfl
   simp only [Compression.gasSteps_t1, Compression.gasSteps_condition,
     Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
@@ -186,7 +160,6 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
   rw [hawK] at hsetupK
   rw [hawCh] at hsetupCh
   rw [hawB1] at hsetupB1
-  rw [hawH7] at hsetupH7
   change _ = 32 + MachineState.memCost
     (Compression.gotW s msgOff returnDest rest j).activeWords.toNat at hw
   change _ = 38 + MachineState.memCost
@@ -195,8 +168,6 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gotCh s msgOff returnDest rest j).activeWords.toNat at hch
   change _ = 238 + MachineState.memCost
     (Compression.gotBigSigma1 s msgOff returnDest rest j).activeWords.toNat at hb1
-  change _ = 32 + MachineState.memCost
-    (Compression.gotH7 s msgOff returnDest rest j).activeWords.toNat at hh7
   omega
 
 

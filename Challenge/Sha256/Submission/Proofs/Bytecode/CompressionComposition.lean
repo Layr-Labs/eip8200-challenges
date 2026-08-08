@@ -392,21 +392,14 @@ def gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
       Accessors.kAtReturned] using hnp
   have gSetupH7 : Challenge.EvmProof.GasSteps
       (gotBigSigma1 s msgOff returnDest rest j)
-      (callH7 s msgOff returnDest rest j) := by
+      (gotH7 s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupH7Path
     · exact qB1code
     · exact qB1fork
-    · exact run_setupH7 s msgOff returnDest rest j (by omega) hcode hrun
+    · exact run_setupH7 s msgOff returnDest rest j (by omega) hrun
     · exact qB1run
     · exact qB1np
-  have gH7 := Accessors.gasSteps_hAt
-    (gotBigSigma1 s msgOff returnDest rest j) (UInt256.ofNat 7) 0
-    (UInt256.ofNat 725)
-    ([Word.evmBigSigma1 (hValue s 4), chPlusK s j, wValue s j,
-      UInt256.ofNat 0xffffffff, hValue s 4, UInt256.ofNat j,
-      msgOff, returnDest] ++ rest)
-    (by simp; omega) qB1code qB1fork qB1run qB1np (by decide)
   have qH7code : (gotH7 s msgOff returnDest rest j).executionEnv.code =
       submissionBytecode := by
     simpa [gotH7, gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW,
@@ -437,7 +430,7 @@ def gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
   exact gCond.trans (gSetupW.trans (gW.trans
     (gSetupK.trans (gK.trans (gSetupH6.trans
       (gSetupH5.trans (gSetupCh.trans (gCh.trans
-        (gSetupB1.trans (gB1.trans (gSetupH7.trans (gH7.trans gFinish))))))))))))
+        (gSetupB1.trans (gB1.trans (gSetupH7.trans gFinish)))))))))))
 
 /-- Execute the complete `t2` half, leaving the eight working-state updates
 as the only remaining part of the round. -/
