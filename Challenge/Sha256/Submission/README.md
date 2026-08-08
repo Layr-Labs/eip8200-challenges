@@ -63,8 +63,14 @@ per call. Unreachable `STOP` padding keeps every later program counter fixed.
 Across the concrete call graph this saves 8,600 gas per padded block and 40
 gas per invocation, or 559,760 gas over the public suite.
 
-Fresh local scoring of the exact submission bytes projects 9,309,127 versus
-the 10,179,119 reference, a combined reduction of 869,992 gas. All 19 vectors
+The compression round now loads state word `h6` directly from memory at its
+only hot call site instead of entering and returning through the shared `hAt`
+accessor. An unreachable `PUSH3 0; POP` pad keeps the following `JUMPDEST` and
+all downstream program counters fixed. This saves 39 gas per round, 2,496 gas
+per padded block, and 162,240 gas over the public suite.
+
+Fresh local scoring of the exact submission bytes projects 9,146,887 versus
+the 10,179,119 reference, a combined reduction of 1,032,232 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
@@ -72,5 +78,5 @@ directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 142,684
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 140,188
 gas per padded block, plus calldata copying and memory expansion.

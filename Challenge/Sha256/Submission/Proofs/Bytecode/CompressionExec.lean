@@ -78,11 +78,11 @@ def setupH6Path :
   [⟨467, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨468, .push ⟨2, by decide⟩ (UInt256.ofNat 703), by rfl, by decide⟩,
    ⟨469, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨470, .push ⟨2, by decide⟩ (UInt256.ofNat 686), by rfl, by decide⟩,
-   ⟨471, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨472, .push ⟨1, by decide⟩ (UInt256.ofNat 6), by rfl, by decide⟩,
-   ⟨473, .push ⟨2, by decide⟩ (UInt256.ofNat 318), by rfl, by decide⟩,
-   ⟨474, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨470, .push ⟨2, by decide⟩ (UInt256.ofNat 480), by rfl, by decide⟩,
+   ⟨471, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨472, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨473, .push ⟨3, by decide⟩ 0, by rfl, by decide⟩,
+   ⟨474, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupH5Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -783,7 +783,7 @@ def compressReturned (s : State) (returnDest : UInt256)
     Artifact.referenceArtifact.instructionPC i =
       [643, 646, 647, 652, 655, 656, 657, 660, 661, 662,
        665, 666, 667, 670, 671, 672, 675, 676, 679, 680,
-       682, 685, 686, 687, 690, 691, 693, 696, 697, 698,
+       681, 685, 686, 687, 690, 691, 693, 696, 697, 698,
        699, 702, 703, 704, 705, 708, 709, 710, 713, 714,
        715, 718, 719, 721, 724, 725, 726, 727, 728, 729][i - 453]! := by
   interval_cases i <;> decide
@@ -925,11 +925,10 @@ theorem run_setupK (s : State) (msgOff returnDest : UInt256)
 set_option linter.unusedSimpArgs false in
 theorem run_setupH6 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hcap : rest.length < 1010)
-    (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupH6Path
       (gotK s msgOff returnDest rest j) =
-        some (callH6 s msgOff returnDest rest j) := by
+        some (gotH6 s msgOff returnDest rest j) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -941,13 +940,16 @@ theorem run_setupH6 (s : State) (msgOff returnDest : UInt256)
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 318 = true := by decide
+  have hslot :
+      ((UInt256.ofNat 6).shiftLeft (UInt256.ofNat 5) +
+        UInt256.ofNat 288).toNat = 480 := by decide
   simp [setupH6Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotK, callH6, gotW, loadedE, kValue, wValue, hValue,
+    gotK, gotH6, gotW, loadedE, kValue, wValue, hValue,
     Accessors.kAtReturned, Accessors.loadReturned, Accessors.loadEntry,
     Accessors.slotOffset, List.exchange, hc3, hc4, hc5, hc6, hc7, hc8,
-    hc9, hc10, hc11, hc12, hc13, hcode, hrun, hdest]
+    hc9, hc10, hc11, hc12, hc13, hslot, hrun,
+    State.activeWordsAfterUInt256]
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupH5 (s : State) (msgOff returnDest : UInt256)
