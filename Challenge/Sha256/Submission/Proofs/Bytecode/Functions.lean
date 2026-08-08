@@ -1,5 +1,6 @@
 import Challenge.Sha256.Submission.Proofs.Bytecode.Accessors
 import Challenge.Sha256.Submission.Proofs.Bytecode.Word
+import Mathlib.Data.Nat.Bitwise
 set_option warningAsError true
 set_option maxRecDepth 10000
 /-!
@@ -283,6 +284,92 @@ def gasSteps_maj (s : State) (x y z output returnDest : UInt256)
   · exact hrun
   · exact hnp
 
+def smallSigmaEntry (s : State) (entry : Nat) (x returnDest : UInt256)
+    (rest : List UInt256) : State :=
+  { s with
+    pc := UInt256.ofNat entry
+    stack := [x, returnDest] ++ rest }
+
+private theorem word_land_comm (a b : UInt256) : a.land b = b.land a := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_land,
+    Challenge.EvmProof.Word.word_toNat_land, Nat.land_comm]
+
+def ssig0Path :
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [⟨23, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨24, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨25, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
+   ⟨26, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨27, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨28, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨29, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨30, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨31, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨32, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨33, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
+   ⟨34, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨35, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨36, .push ⟨1, by decide⟩ (UInt256.ofNat 11), by rfl, by decide⟩,
+   ⟨37, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨38, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨39, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨40, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨41, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨42, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨43, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨44, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨45, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+
+@[simp] private theorem ssig0DirectPC (i : Nat) (hlo : 23 ≤ i)
+    (hhi : i ≤ 45) :
+    Artifact.referenceArtifact.instructionPC i =
+      [32, 33, 34, 36, 37, 38, 39, 41, 42, 43, 44, 46, 47, 48, 50, 51,
+       52, 57, 58, 59, 60, 61, 62][i - 23]! := by
+  interval_cases i <;> decide
+
+set_option linter.unusedSimpArgs false in
+theorem run_ssig0 (s : State) (x returnDest : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1018)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running)
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    Challenge.EvmProof.Stepper.runLocatedBlock ssig0Path
+      (smallSigmaEntry s 32 x returnDest rest) =
+        some (unaryReturned s (Word.evmSmallSigma0 x) returnDest rest) := by
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  simp [ssig0Path, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    smallSigmaEntry, unaryReturned, Word.fusedSmallSigma0,
+    Word.duplicateLane, Challenge.EvmProof.Word.mask32, List.exchange,
+    hc1, hc2, hc3, hc4, hc5, hc6, hcode, hrun, hvalid]
+  rw [word_land_comm (UInt256.ofNat 0xffffffff)]
+  change Word.fusedSmallSigma0 x = Word.evmSmallSigma0 x
+  exact Word.fusedSmallSigma0_eq x
+
+def gasSteps_ssig0 (s : State) (x returnDest : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1018)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    Challenge.EvmProof.GasSteps (smallSigmaEntry s 32 x returnDest rest)
+      (unaryReturned s (Word.evmSmallSigma0 x) returnDest rest) := by
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka ssig0Path
+  · exact hcode
+  · exact hfork
+  · exact run_ssig0 s x returnDest rest hcap hcode hrun hvalid
+  · exact hrun
+  · exact hnp
+
+/-
 def ssig0SetupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨23, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -466,6 +553,83 @@ def gasSteps_ssig0 (s : State) (x output returnDest : UInt256)
     · exact hnp
   exact gSetup.trans (gFirst.trans (gMiddle.trans (gSecond.trans gFinish)))
 
+-/
+
+def ssig1Path :
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [⟨51, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨52, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨53, .push ⟨1, by decide⟩ (UInt256.ofNat 10), by rfl, by decide⟩,
+   ⟨54, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨55, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨56, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨57, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨58, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨59, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨60, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨61, .push ⟨1, by decide⟩ (UInt256.ofNat 17), by rfl, by decide⟩,
+   ⟨62, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨63, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨64, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
+   ⟨65, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨66, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨67, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨68, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨69, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨70, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨71, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨72, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨73, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+
+@[simp] private theorem ssig1DirectPC (i : Nat) (hlo : 51 ≤ i)
+    (hhi : i ≤ 73) :
+    Artifact.referenceArtifact.instructionPC i =
+      [73, 74, 75, 77, 78, 79, 80, 82, 83, 84, 85, 87, 88, 89, 91, 92,
+       93, 98, 99, 100, 101, 102, 103][i - 51]! := by
+  interval_cases i <;> decide
+
+set_option linter.unusedSimpArgs false in
+theorem run_ssig1 (s : State) (x returnDest : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1018)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running)
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    Challenge.EvmProof.Stepper.runLocatedBlock ssig1Path
+      (smallSigmaEntry s 73 x returnDest rest) =
+        some (unaryReturned s (Word.evmSmallSigma1 x) returnDest rest) := by
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  simp [ssig1Path, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    smallSigmaEntry, unaryReturned, Word.fusedSmallSigma1,
+    Word.duplicateLane, Challenge.EvmProof.Word.mask32, List.exchange,
+    hc1, hc2, hc3, hc4, hc5, hc6, hcode, hrun, hvalid]
+  rw [word_land_comm (UInt256.ofNat 0xffffffff)]
+  change Word.fusedSmallSigma1 x = Word.evmSmallSigma1 x
+  exact Word.fusedSmallSigma1_eq x
+
+def gasSteps_ssig1 (s : State) (x returnDest : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1018)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    Challenge.EvmProof.GasSteps (smallSigmaEntry s 73 x returnDest rest)
+      (unaryReturned s (Word.evmSmallSigma1 x) returnDest rest) := by
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.referenceArtifact .Osaka ssig1Path
+  · exact hcode
+  · exact hfork
+  · exact run_ssig1 s x returnDest rest hcap hcode hrun hvalid
+  · exact hrun
+  · exact hnp
+
+/-
 def ssig1SetupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨51, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -648,5 +812,7 @@ def gasSteps_ssig1 (s : State) (x output returnDest : UInt256)
     · exact hrun
     · exact hnp
   exact gSetup.trans (gFirst.trans (gMiddle.trans (gSecond.trans gFinish)))
+
+-/
 
 end Challenge.Sha256.Submission.Proofs.Bytecode.Functions

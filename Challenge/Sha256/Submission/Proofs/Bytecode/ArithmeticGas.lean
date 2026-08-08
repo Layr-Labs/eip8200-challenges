@@ -177,6 +177,7 @@ theorem gasSteps_maj_cost_potential (s : State) (x y z output returnDest : UInt2
   simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
   simpa [Functions.ternaryEntry] using hmeter
 
+/-
 private theorem ssig0_setup_static :
     Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.ssig0SetupPath = 32 := by
   rfl
@@ -278,6 +279,55 @@ theorem gasSteps_ssig1_cost_potential (s : State) (x output returnDest : UInt256
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
   simp only [Functions.unaryReturned] at ⊢
   omega
+-/
+
+private theorem ssig0_static :
+    Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.ssig0Path = 71 := by
+  rfl
+
+theorem gasSteps_ssig0_cost_potential (s : State) (x returnDest : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1011)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    (Functions.gasSteps_ssig0 s x returnDest rest (by omega) hcode hfork
+      hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
+      71 + MachineState.memCost
+        (Functions.unaryReturned s (Word.evmSmallSigma0 x) returnDest rest).activeWords.toNat := by
+  have hresult := Functions.run_ssig0 s x returnDest rest (by omega) hcode
+    hrun hvalid
+  have hmeter := block_cost_potential Functions.ssig0Path hresult hfork
+    (by simp [Functions.ssig0Path, CopyFree])
+  rw [ssig0_static] at hmeter
+  unfold Functions.gasSteps_ssig0
+  simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+  simpa [Functions.smallSigmaEntry] using hmeter
+
+private theorem ssig1_static :
+    Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.ssig1Path = 71 := by
+  rfl
+
+theorem gasSteps_ssig1_cost_potential (s : State) (x returnDest : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1011)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    (Functions.gasSteps_ssig1 s x returnDest rest (by omega) hcode hfork
+      hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
+      71 + MachineState.memCost
+        (Functions.unaryReturned s (Word.evmSmallSigma1 x) returnDest rest).activeWords.toNat := by
+  have hresult := Functions.run_ssig1 s x returnDest rest (by omega) hcode
+    hrun hvalid
+  have hmeter := block_cost_potential Functions.ssig1Path hresult hfork
+    (by simp [Functions.ssig1Path, CopyFree])
+  rw [ssig1_static] at hmeter
+  unfold Functions.gasSteps_ssig1
+  simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+  simpa [Functions.smallSigmaEntry] using hmeter
 
 private theorem bigSigma0_static :
     Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma0Path = 60 := by

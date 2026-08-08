@@ -430,8 +430,8 @@ def setupW15Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨378, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨379, .push ⟨2, by decide⟩ (UInt256.ofNat 547), by rfl, by decide⟩,
-   ⟨380, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨381, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨380, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨381, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨382, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
    ⟨383, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨384, .push ⟨4, by decide⟩ (UInt256.ofNat 320), by rfl, by decide⟩,
@@ -461,8 +461,8 @@ def setupW2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨400, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨401, .push ⟨2, by decide⟩ (UInt256.ofNat 583), by rfl, by decide⟩,
-   ⟨402, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨403, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨402, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨403, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨404, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
    ⟨405, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨406, .push ⟨4, by decide⟩ (UInt256.ofNat 736), by rfl, by decide⟩,
@@ -544,13 +544,13 @@ def gotW15 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   let q := gotW16 s msgOff returnDest rest j
   Accessors.loadReturned q 800 (UInt256.ofNat (j - 15)) (UInt256.ofNat 542)
-    ([0, UInt256.ofNat 547, wValue s (j - 16), UInt256.ofNat 0xffffffff,
+    ([UInt256.ofNat 547, wValue s (j - 16), UInt256.ofNat 0xffffffff,
       UInt256.ofNat 592, UInt256.ofNat j, msgOff, returnDest] ++ rest)
 
 def callSsig0 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   let q := gotW15 s msgOff returnDest rest j
-  Functions.unaryEntry q 32 (wValue q (j - 15)) 0 (UInt256.ofNat 547)
+  Functions.smallSigmaEntry q 32 (wValue q (j - 15)) (UInt256.ofNat 547)
     ([wValue s (j - 16), UInt256.ofNat 0xffffffff, UInt256.ofNat 592,
       UInt256.ofNat j, msgOff, returnDest] ++ rest)
 
@@ -593,14 +593,14 @@ def gotW2 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   let q := gotW7 s msgOff returnDest rest j
   Accessors.loadReturned q 800 (UInt256.ofNat (j - 2)) (UInt256.ofNat 578)
-    ([0, UInt256.ofNat 583, wValue q (j - 7),
+    ([UInt256.ofNat 583, wValue q (j - 7),
       firstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
       UInt256.ofNat 592, UInt256.ofNat j, msgOff, returnDest] ++ rest)
 
 def callSsig1 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   let q := gotW2 s msgOff returnDest rest j
-  Functions.unaryEntry q 73 (wValue q (j - 2)) 0 (UInt256.ofNat 583)
+  Functions.smallSigmaEntry q 73 (wValue q (j - 2)) (UInt256.ofNat 583)
     ([wValue (gotW7 s msgOff returnDest rest j) (j - 7),
       firstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
       UInt256.ofNat 592, UInt256.ofNat j, msgOff, returnDest] ++ rest)
@@ -708,7 +708,6 @@ theorem run_setupW15 (s : State) (msgOff returnDest : UInt256)
     gotW16, gotW15, wValue, Accessors.loadReturned, scheduleSlot,
     Accessors.slotOffset, List.exchange, hc6, hc7, hc8, hc9, hc10, hc11,
     hc12, hrun, hoff, State.activeWordsAfterUInt256]
-  rfl
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupSsig0 (s : State) (msgOff returnDest : UInt256)
@@ -725,7 +724,7 @@ theorem run_setupSsig0 (s : State) (msgOff returnDest : UInt256)
   have hdest : Decode.isValidJumpDest submissionBytecode 32 = true := by decide
   simp [setupSsig0Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotW15, gotW16, callSsig0, wValue, scheduleSlot, Functions.unaryEntry,
+    gotW15, gotW16, callSsig0, wValue, scheduleSlot, Functions.smallSigmaEntry,
     Accessors.loadReturned, List.exchange, hc7, hc8, hc9, hc10, hcode, hrun,
     hdest]
 
@@ -776,7 +775,6 @@ theorem run_setupW2 (s : State) (msgOff returnDest : UInt256)
     scheduleSlot, Functions.unaryReturned, Accessors.loadReturned,
     Accessors.slotOffset, List.exchange, hc7, hc8, hc9, hc10, hc11, hc12,
     hc13, hc14, hrun, hoff, State.activeWordsAfterUInt256]
-  rfl
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupSsig1 (s : State) (msgOff returnDest : UInt256)
@@ -786,6 +784,7 @@ theorem run_setupSsig1 (s : State) (msgOff returnDest : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock setupSsig1Path
       (gotW2 s msgOff returnDest rest j) =
         some (callSsig1 s msgOff returnDest rest j) := by
+  have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
@@ -793,8 +792,8 @@ theorem run_setupSsig1 (s : State) (msgOff returnDest : UInt256)
   simp [setupSsig1Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     gotW2, gotW7, gotSsig0, gotW15, gotW16, callSsig1, firstSum,
-    wValue, scheduleSlot, Functions.unaryEntry, Functions.unaryReturned,
-    Accessors.loadReturned, List.exchange, hc10, hc11, hc12, hcode, hrun,
+    wValue, scheduleSlot, Functions.smallSigmaEntry, Functions.unaryReturned,
+    Accessors.loadReturned, List.exchange, hc9, hc10, hc11, hc12, hcode, hrun,
     hdest]
 
 set_option linter.unusedSimpArgs false in
@@ -926,7 +925,7 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
   have callS0 : Challenge.EvmProof.GasSteps
       (callSsig0 s msgOff returnDest rest j)
       (gotSsig0 s msgOff returnDest rest j) := by
-    exact Functions.gasSteps_ssig0 q15 (wValue q15 (j - 15)) 0
+    exact Functions.gasSteps_ssig0 q15 (wValue q15 (j - 15))
       (UInt256.ofNat 547)
       ([wValue s (j - 16), UInt256.ofNat 0xffffffff, UInt256.ofNat 592,
         UInt256.ofNat j, msgOff, returnDest] ++ rest)
@@ -996,7 +995,7 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
   have callS1 : Challenge.EvmProof.GasSteps
       (callSsig1 s msgOff returnDest rest j)
       (gotSsig1 s msgOff returnDest rest j) := by
-    exact Functions.gasSteps_ssig1 q2 (wValue q2 (j - 2)) 0
+    exact Functions.gasSteps_ssig1 q2 (wValue q2 (j - 2))
       (UInt256.ofNat 583)
       ([wValue q7 (j - 7), firstSum s msgOff returnDest rest j,
         UInt256.ofNat 0xffffffff, UInt256.ofNat 592, UInt256.ofNat j,

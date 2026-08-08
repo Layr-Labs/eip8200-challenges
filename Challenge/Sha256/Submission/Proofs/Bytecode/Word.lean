@@ -130,6 +130,10 @@ private theorem mask32_xor_distrib (a b : UInt256) :
     mask32 (a ^^^ b) = mask32 a ^^^ mask32 b := by
   rw [mask32_xor, mask32_eq_ofUInt32, mask32_eq_ofUInt32, ← ofUInt32_xor]
 
+private theorem mask32_xor_comm (a b : UInt256) :
+    mask32 (a ^^^ b) = mask32 (b ^^^ a) := by
+  rw [mask32_xor a b, mask32_xor b a, UInt32.xor_comm]
+
 def duplicateLane (x : UInt256) : UInt256 :=
   UInt256.shiftLeft x (UInt256.ofNat 32) ||| x
 
@@ -195,6 +199,58 @@ theorem fusedBigSigma1_eq (x : UInt256) :
   rw [evmRotr32_duplicate x 6 (by omega),
     evmRotr32_duplicate x 11 (by omega),
     evmRotr32_duplicate x 25 (by omega)]
+  rfl
+
+def fusedSmallSigma0 (x : UInt256) : UInt256 :=
+  let r7 := UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 7)
+  let r18 := UInt256.shiftRight r7 (UInt256.ofNat 11)
+  mask32 (r18 ^^^ r7) ^^^ UInt256.shiftRight x (UInt256.ofNat 3)
+
+theorem fusedSmallSigma0_eq (x : UInt256) :
+    fusedSmallSigma0 x = evmSmallSigma0 x := by
+  let lane := duplicateLane x
+  let r7 := UInt256.shiftRight lane (UInt256.ofNat 7)
+  let r18 := UInt256.shiftRight r7 (UInt256.ofNat 11)
+  have h18 : r18 = UInt256.shiftRight lane (UInt256.ofNat 18) := by
+    simpa [r18, r7] using
+      shiftRight_chain lane 7 11 (by omega) (by omega) (by omega)
+  rw [show fusedSmallSigma0 x =
+    mask32 (r18 ^^^ r7) ^^^ UInt256.shiftRight x (UInt256.ofNat 3) by rfl]
+  rw [mask32_xor_comm, mask32_xor_distrib, h18]
+  change
+    mask32 (UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 7)) ^^^
+        mask32 (UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 18)) ^^^
+        UInt256.shiftRight x (UInt256.ofNat 3) =
+      evmSmallSigma0 x
+  unfold duplicateLane
+  rw [evmRotr32_duplicate x 7 (by omega),
+    evmRotr32_duplicate x 18 (by omega)]
+  rfl
+
+def fusedSmallSigma1 (x : UInt256) : UInt256 :=
+  let r17 := UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 17)
+  let r19 := UInt256.shiftRight r17 (UInt256.ofNat 2)
+  mask32 (r19 ^^^ r17) ^^^ UInt256.shiftRight x (UInt256.ofNat 10)
+
+theorem fusedSmallSigma1_eq (x : UInt256) :
+    fusedSmallSigma1 x = evmSmallSigma1 x := by
+  let lane := duplicateLane x
+  let r17 := UInt256.shiftRight lane (UInt256.ofNat 17)
+  let r19 := UInt256.shiftRight r17 (UInt256.ofNat 2)
+  have h19 : r19 = UInt256.shiftRight lane (UInt256.ofNat 19) := by
+    simpa [r19, r17] using
+      shiftRight_chain lane 17 2 (by omega) (by omega) (by omega)
+  rw [show fusedSmallSigma1 x =
+    mask32 (r19 ^^^ r17) ^^^ UInt256.shiftRight x (UInt256.ofNat 10) by rfl]
+  rw [mask32_xor_comm, mask32_xor_distrib, h19]
+  change
+    mask32 (UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 17)) ^^^
+        mask32 (UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 19)) ^^^
+        UInt256.shiftRight x (UInt256.ofNat 10) =
+      evmSmallSigma1 x
+  unfold duplicateLane
+  rw [evmRotr32_duplicate x 17 (by omega),
+    evmRotr32_duplicate x 19 (by omega)]
   rfl
 
 @[simp] theorem evmRotr32_ofUInt32 (x : UInt32) (n : Nat)

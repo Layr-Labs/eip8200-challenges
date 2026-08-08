@@ -136,15 +136,25 @@ load replaces a setup plus the generic `wAt` helper, saving 38 gas; the batch
 saves 152 gas per recurrence iteration, 7,296 gas per padded block, and
 474,240 gas over the suite.
 
-Fresh local scoring of the exact submission bytes is 4,674,887 versus the
-10,179,119 reference, a combined reduction of 5,504,232 gas. All 19 vectors
+The shared `SSIG0` and `SSIG1` helpers now compute both rotations from one
+duplicated 32-bit lane. `SSIG0` derives rotations 7 and 18 with successive
+right shifts of 7 and 11 bits, while `SSIG1` derives rotations 17 and 19 with
+successive shifts of 17 and 2 bits. Each helper masks the rotation XOR once,
+then combines it with the ordinary 3- or 10-bit right shift. The two callers
+drop their obsolete output placeholders; same-size `JUMPDEST` instructions
+preserve every byte PC and unreachable padding preserves all 810 structural
+instructions. Each helper/caller pair saves 106 gas per recurrence, for
+10,176 gas per padded block and 661,440 gas over the suite.
+
+Fresh local scoring of the exact submission bytes is 4,013,447 versus the
+10,179,119 reference, a combined reduction of 6,165,672 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 73,179 gas.
+vector costs 63,003 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 71,388
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 61,212
 gas per padded block, plus calldata copying and memory expansion.

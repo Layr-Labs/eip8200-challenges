@@ -356,7 +356,7 @@ private theorem scheduleAfterSecondIteration_activeWords_eq
   have h15 : q15.activeWords = s.activeWords := by
     have h := loadReturned_activeWords_eq q16 800 (j - 15)
       (UInt256.ofNat 542)
-      ([0, UInt256.ofNat 547, Schedule.wValue s (j - 16),
+      ([UInt256.ofNat 547, Schedule.wValue s (j - 16),
         UInt256.ofNat 0xffffffff, UInt256.ofNat 592, UInt256.ofNat j,
         msgOff, returnDest] ++ rest) (by omega) (by omega) (by rw [h16]; omega)
     simpa [q15, Schedule.gotW15, q16] using h.trans h16
@@ -376,7 +376,7 @@ private theorem scheduleAfterSecondIteration_activeWords_eq
   have h2 : q2.activeWords = s.activeWords := by
     have h := loadReturned_activeWords_eq q7 800 (j - 2)
       (UInt256.ofNat 578)
-      ([0, UInt256.ofNat 583, Schedule.wValue q7 (j - 7),
+      ([UInt256.ofNat 583, Schedule.wValue q7 (j - 7),
         Schedule.firstSum s msgOff returnDest rest j,
         UInt256.ofNat 0xffffffff, UInt256.ofNat 592, UInt256.ofNat j,
         msgOff, returnDest] ++ rest) (by omega) (by omega) (by rw [h7]; omega)

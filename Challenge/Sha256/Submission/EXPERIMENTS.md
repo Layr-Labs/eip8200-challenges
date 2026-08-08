@@ -273,3 +273,32 @@ Fuse the shared `BSIG0` and `BSIG1` schedules around duplicated 32-bit lanes.
 Temporary exact layouts preserve both helper spans, caller spans, all later
 PCs, and the 810-instruction artifact. Each helper is projected to save 180 gas
 per round; applying both would save another 1,497,600 gas over the suite.
+
+## Fused small-sigma promotion
+
+The schedule recurrence's `SSIG0` and `SSIG1` calls were promoted after exact
+native testing on all clean and dirty vectors. Each helper now creates a
+duplicated 32-bit lane once, obtains the second rotate by shifting the first
+rotate, masks the rotate XOR once, and finally XORs the ordinary right-shift
+term. Both callers use a two-word argument/return ABI and no longer push the
+unused output placeholder.
+
+The universal word proofs do not assume that the helper input is already
+32-bit. They derive the chained shift identities with `Nat.shiftRight_add`,
+rewrite the low lane with `evmRotr32_duplicate`, and prove the masked XOR
+ordering explicitly. Direct helper traces then return the existing
+`evmSmallSigma0` and `evmSmallSigma1` semantic values, leaving every downstream
+schedule state unchanged.
+
+Each old helper cost 176 gas; each fused helper costs 71 gas. Replacing the
+placeholder `PUSH0` with a same-size executed `JUMPDEST` saves another gas at
+each of the two callers. The exact improvement is therefore 212 gas per
+recurrence iteration, 10,176 per padded block, and 661,440 over the 65-block
+public suite. Native scoring is 4,013,447 with an empty-vector cost of 63,003;
+all clean/dirty gas pairs are identical.
+
+The next tested candidates are an unmasked low-32-congruent small-sigma
+schedule at 3,907,367 and a direct recurrence store that combines with it at
+3,838,727. Both have exact passing native artifacts; they remain deliberately
+separate from this checkpoint so this universally masked version can reach the
+frontier first.
