@@ -33,8 +33,8 @@ def bigJumpPath := Dispatch.wordJumpPath
 
 def bigCheckExpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 928 .JUMPDEST, opAt 929 (.Dup ⟨2, by decide⟩),
-   pushAt 930 1 96, opAt 931 .ADD]
+  [opAt 928 .JUMPDEST, opAt 929 (.Dup ⟨2, by decide⟩), pushAt 930 1 96,
+   opAt 931 .ADD]
 
 def bigCheckModPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -133,7 +133,7 @@ def bigEntryState (input : ByteArray) : State :=
 
 @[simp] theorem bigTailPCs (i : Nat) (hi : 950 ≤ i) (hii : i ≤ 959) :
     Artifact.submissionArtifact.instructionPC i =
-      [1268,1269,1272,1273,1274,1276,1277,1278,1279,1282][i - 950]! := by
+      ([1268,1269,1272,1273,1274,1276,1277,1278,1279,1282])[i - 950]! := by
   interval_cases i <;> decide
 
 theorem jump704 : Decode.isValidJumpDest submissionBytecode 704 = true :=

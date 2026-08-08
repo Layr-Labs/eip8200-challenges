@@ -55,35 +55,34 @@ def outerToInnerPath :
 def innerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 734 .JUMPDEST, pushAt 735 1 8, opAt 736 (.Dup ⟨1, by decide⟩),
-   opAt 737 .LT, opAt 738 .ISZERO, pushAt 739 2 1104,
-   opAt 740 .JUMPI]
+   opAt 737 .LT, opAt 738 .ISZERO, pushAt 739 2 1104, opAt 740 .JUMPI]
 
 def innerToSquarePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 741 1 1, opAt 742 (.Dup ⟨2, by decide⟩),
-   opAt 743 (.Dup ⟨2, by decide⟩), pushAt 744 1 7,
-   opAt 745 .SUB, opAt 746 .SHR, opAt 747 .AND,
-   pushAt 748 2 1000, opAt 749 (.Dup ⟨7, by decide⟩),
-   pushAt 750 0 0, pushAt 751 2 3072, pushAt 752 2 2048,
-   pushAt 753 2 2048, pushAt 754 2 310, opAt 755 .JUMP]
+   opAt 743 (.Dup ⟨2, by decide⟩), pushAt 744 1 7, opAt 745 .SUB,
+   opAt 746 .SHR, opAt 747 .AND, pushAt 748 2 1000,
+   opAt 749 (.Dup ⟨7, by decide⟩), pushAt 750 0 0, pushAt 751 2 3072,
+   pushAt 752 2 2048, pushAt 753 2 2048, pushAt 754 2 310,
+   opAt 755 .JUMP]
 
 def squareToCopyPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 756 .JUMPDEST, pushAt 757 2 1015,
-   opAt 758 (.Dup ⟨7, by decide⟩), pushAt 759 2 3072,
-   pushAt 760 2 2048, pushAt 761 2 58, opAt 762 .JUMP]
+   opAt 758 (.Dup ⟨7, by decide⟩), pushAt 759 2 3072, pushAt 760 2 2048,
+   pushAt 761 2 58, opAt 762 .JUMP]
 
 def copyToProductPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 763 .JUMPDEST, pushAt 764 2 1034,
-   opAt 765 (.Dup ⟨7, by decide⟩), pushAt 766 0 0,
-   pushAt 767 2 3072, pushAt 768 2 1024, pushAt 769 2 2048,
-   pushAt 770 2 310, opAt 771 .JUMP]
+   opAt 765 (.Dup ⟨7, by decide⟩), pushAt 766 0 0, pushAt 767 2 3072,
+   pushAt 768 2 1024, pushAt 769 2 2048, pushAt 770 2 310,
+   opAt 771 .JUMP]
 
 def productToSelectPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 772 .JUMPDEST, opAt 773 (.Dup ⟨0, by decide⟩),
-   pushAt 774 0 0, opAt 775 .SUB, pushAt 776 0 0]
+  [opAt 772 .JUMPDEST, opAt 773 (.Dup ⟨0, by decide⟩), pushAt 774 0 0,
+   opAt 775 .SUB, pushAt 776 0 0]
 
 def selectGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -95,30 +94,24 @@ def selectBodyPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 784 (.Dup ⟨0, by decide⟩), pushAt 785 1 5, opAt 786 .SHL,
    opAt 787 (.Dup ⟨0, by decide⟩), pushAt 788 2 2048, opAt 789 .ADD,
-   opAt 790 .MLOAD, opAt 791 (.Dup ⟨1, by decide⟩),
-   pushAt 792 2 3072, opAt 793 .ADD, opAt 794 .MLOAD,
-   opAt 795 (.Dup ⟨4, by decide⟩), opAt 796 (.Dup ⟨1, by decide⟩),
-   opAt 797 (.Dup ⟨3, by decide⟩), opAt 798 .XOR, opAt 799 .AND,
-   opAt 800 (.Dup ⟨2, by decide⟩), opAt 801 .XOR,
-   opAt 802 (.Dup ⟨3, by decide⟩), pushAt 803 2 2048,
+   opAt 790 .MLOAD, opAt 791 (.Dup ⟨1, by decide⟩), pushAt 792 2 3072,
+   opAt 793 .ADD, opAt 794 .MLOAD, opAt 795 (.Dup ⟨4, by decide⟩),
+   opAt 796 (.Dup ⟨1, by decide⟩), opAt 797 (.Dup ⟨3, by decide⟩),
+   opAt 798 .XOR, opAt 799 .AND, opAt 800 (.Dup ⟨2, by decide⟩),
+   opAt 801 .XOR, opAt 802 (.Dup ⟨3, by decide⟩), pushAt 803 2 2048,
    opAt 804 .ADD, opAt 805 .MSTORE, opAt 806 .POP, opAt 807 .POP,
-   opAt 808 .POP, pushAt 809 1 1, opAt 810 (.Dup ⟨1, by decide⟩),
-   opAt 811 .ADD, opAt 812 (.Swap ⟨0, by decide⟩), opAt 813 .POP,
-   pushAt 814 2 1039, opAt 815 .JUMP]
+   opAt 808 .POP, pushAt 809 1 1, opAt 810 .ADD, pushAt 811 2 1039,
+   opAt 812 .JUMP]
 
 def selectFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 816 .JUMPDEST, opAt 817 .POP, opAt 818 .POP, opAt 819 .POP,
-   pushAt 820 1 1, opAt 821 (.Dup ⟨1, by decide⟩), opAt 822 .ADD,
-   opAt 823 (.Swap ⟨0, by decide⟩), opAt 824 .POP,
-   pushAt 825 2 963, opAt 826 .JUMP]
+   pushAt 820 1 1, opAt 821 .ADD, pushAt 822 2 963, opAt 823 .JUMP]
 
 def innerFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 827 .JUMPDEST, opAt 828 .POP, opAt 829 .POP, opAt 830 .POP,
-   pushAt 831 1 1, opAt 832 (.Dup ⟨1, by decide⟩), opAt 833 .ADD,
-   opAt 834 (.Swap ⟨0, by decide⟩), opAt 835 .POP,
-   pushAt 836 2 946, opAt 837 .JUMP]
+   pushAt 831 1 1, opAt 832 .ADD, pushAt 833 2 946, opAt 834 .JUMP]
 
 def exponentEntry (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
@@ -400,9 +393,9 @@ def innerExit (s : State) (accumulatorWord : UInt256)
 
 @[simp] private theorem exponentPCs (i : Nat) (hi : 717 ≤ i) (hii : i ≤ 755) :
     Artifact.submissionArtifact.instructionPC i =
-      ([944,945,946,947,948,949,950,951,954,955,956,957,958,959,960,961,
-        962,963,964,966,967,968,969,972,973,975,976,977,979,980,981,982,
-        985,986,987,990,993,996,999])[i - 717]! := by
+      ([944,945,946,947,948,949,950,951,954,955,956,957,958,959,960,
+       961,962,963,964,966,967,968,969,972,973,975,976,977,979,980,
+       981,982,985,986,987,990,993,996,999])[i - 717]! := by
   interval_cases i <;> decide
 
 private theorem jump310 :
@@ -413,7 +406,7 @@ private theorem jump310 :
     (hii : i ≤ 776) :
     Artifact.submissionArtifact.instructionPC i =
       ([1000,1001,1004,1005,1008,1011,1014,1015,1016,1019,1020,1021,
-        1024,1027,1030,1033,1034,1035,1036,1037,1038])[i - 756]! := by
+       1024,1027,1030,1033,1034,1035,1036,1037,1038])[i - 756]! := by
   interval_cases i <;> decide
 
 private theorem jump58 :
@@ -424,10 +417,10 @@ private theorem jump58 :
     (hii : i ≤ 826) :
     Artifact.submissionArtifact.instructionPC i =
       ([1039,1040,1041,1042,1043,1044,1047,1048,1049,1051,1052,1053,
-        1056,1057,1058,1059,1062,1063,1064,1065,1066,1067,1068,1069,
-        1070,1071,1072,1075,1076,1077,1078,1079,1080,1082,1083,1084,
-        1085,1086,1089,1090,1091,1092,1093,1094,1096,1097,1098,1099,
-        1100,1103])[i - 777]! := by
+       1056,1057,1058,1059,1062,1063,1064,1065,1066,1067,1068,1069,
+       1070,1071,1072,1075,1076,1077,1078,1079,1080,1082,1083,1086,
+       1087,1088,1089,1090,1091,1092,1093,1094,1096,1097,1100,1101,
+       1102,1103])[i - 777]! := by
   interval_cases i <;> decide
 
 private theorem jump1039 :
@@ -445,7 +438,7 @@ private theorem jump963 :
 @[simp] private theorem innerFinishPCs (i : Nat) (hi : 827 ≤ i)
     (hii : i ≤ 837) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1104,1105,1106,1107,1108,1110,1111,1112,1113,1114,1117])[i - 827]! := by
+      ([1104,1105,1106,1107,1108,1110,1111,1114,1115,1116,1117])[i - 827]! := by
   interval_cases i <;> decide
 
 private theorem jump1104 :

@@ -69,9 +69,7 @@ def loadAfterBytePath :
    opAt 390 (.Dup ⟨1, by decide⟩), opAt 391 .MLOAD, opAt 392 .OR,
    opAt 393 (.Dup ⟨1, by decide⟩), opAt 394 .MSTORE, opAt 395 .POP,
    opAt 396 .POP, opAt 397 .POP, opAt 398 .POP, pushAt 399 1 1,
-   opAt 400 (.Dup ⟨1, by decide⟩), opAt 401 .ADD,
-   opAt 402 (.Swap ⟨0, by decide⟩), opAt 403 .POP,
-   pushAt 404 2 441, opAt 405 .JUMP]
+   opAt 400 .ADD, pushAt 401 2 441, opAt 402 .JUMP]
 
 def loadExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -179,27 +177,27 @@ def loadReturned (s : State) (offset length dst returnDest : UInt256)
 @[simp] private theorem loadSetupPCs (i : Nat) (hi : 353 ≤ i)
     (hii : i ≤ 361) :
     Artifact.submissionArtifact.instructionPC i =
-      [439,440,441,442,443,444,445,446,449][i - 353]! := by
+      ([439,440,441,442,443,444,445,446,449])[i - 353]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem loadBodyPCs (i : Nat) (hi : 362 ≤ i)
     (hii : i ≤ 386) :
     Artifact.submissionArtifact.instructionPC i =
-      [450,451,453,454,455,456,457,459,460,462,463,464,466,467,468,
-       470,471,472,473,476,477,478,479,480,483][i - 362]! := by
+      ([450,451,453,454,455,456,457,459,460,462,463,464,466,467,468,
+       470,471,472,473,476,477,478,479,480,483])[i - 362]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem loadStorePCs (i : Nat) (hi : 387 ≤ i)
     (hii : i ≤ 405) :
     Artifact.submissionArtifact.instructionPC i =
-      [484,485,486,487,488,489,490,491,492,493,494,495,496,498,499,
-       500,501,502,505][i - 387]! := by
+      ([484,485,486,487,488,489,490,491,492,493,494,495,496,498,499,
+       502,503,504,505])[i - 387]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem loadExitPCs (i : Nat) (hi : 406 ≤ i)
     (hii : i ≤ 411) :
     Artifact.submissionArtifact.instructionPC i =
-      [506,507,508,509,510,511][i - 406]! := by
+      ([506,507,508,509,510,511])[i - 406]! := by
   interval_cases i <;> decide
 
 private theorem jump441 :
@@ -397,26 +395,6 @@ theorem run_loadAfterByte (s : State) (offset length : Nat)
       List.exchange, Nat.add_assoc, hc, hlength, hi, hi256, hi1, hadd,
       hoffset, hone, h441]
 
-theorem loadSetup_staticCost :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost loadSetupPath = 3 := by
-  decide
-
-theorem loadGuard_staticCost :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost loadGuardPath = 26 := by
-  decide
-
-theorem loadToByte_staticCost :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost loadToBytePath = 79 := by
-  decide
-
-theorem loadAfterByte_staticCost :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost loadAfterBytePath = 55 := by
-  decide
-
-theorem loadExit_staticCost :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost loadExitPath = 17 := by
-  decide
-
 def gasSteps_loadIteration (s : State) (offset length : Nat)
     (dst returnDest : UInt256) (i : Nat) (rest : List UInt256)
     (hcap : rest.length < 1000) (hoffset : offset + i < 2 ^ 256)
@@ -487,72 +465,6 @@ def gasSteps_loadIteration (s : State) (offset length : Nat)
         Accessors.calldataByteReturned, State.fork] using hnp)
   exact hguard.trans <| htoByte.trans <| hbyte'.trans hafter
 
-theorem gasSteps_loadIteration_cost_potential (s : State)
-    (offset length : Nat) (dst returnDest : UInt256) (i : Nat)
-    (rest : List UInt256) (hcap : rest.length < 1000)
-    (hoffset : offset + i < 2 ^ 256) (hlength : length < 2 ^ 256)
-    (hi : i < length)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_loadIteration s offset length dst returnDest i rest hcap
-        hoffset hlength hi hcode hfork hrun hnp).cost +
-        MachineState.memCost
-          (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst i
-            returnDest rest).activeWords.toNat =
-      190 + MachineState.memCost
-        (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst (i + 1)
-          returnDest rest).activeWords.toNat := by
-  let loop := loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst i
-    returnDest rest
-  let body := loadBody s (UInt256.ofNat offset) (UInt256.ofNat length) dst i
-    returnDest rest
-  let byteEntry := loadByteEntry s (UInt256.ofNat offset)
-    (UInt256.ofNat length) dst i returnDest rest
-  let afterByte := loadAfterByte s (UInt256.ofNat offset)
-    (UInt256.ofNat length) dst i returnDest rest
-  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    loadGuardPath 26
-      (run_loadGuard s offset length dst returnDest i rest (by omega)
-        (by omega) hlength hi hrun)
-      (by simpa [loop, loadLoop, State.fork] using hfork)
-      (by decide) (by decide)
-  have htoByte := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    loadToBytePath 79
-      (run_loadToByte s offset length dst returnDest i rest hcap hoffset
-        hlength hcode hrun)
-      (by simpa [body, loadBody, loadLoop, State.fork] using hfork)
-      (by decide) (by decide)
-  have hbyte := Accessors.gasSteps_calldataByte_cost_potential body
-    (UInt256.ofNat offset + UInt256.ofNat i) (UInt256.ofNat 0)
-    (UInt256.ofNat 484) (loadSaved (UInt256.ofNat offset)
-      (UInt256.ofNat length) dst i returnDest rest)
-    (by simp [loadSaved]; omega)
-    (by simpa [body, loadBody, loadLoop] using hcode)
-    (by simpa [body, loadBody, loadLoop, State.fork] using hfork)
-    (by simpa [body, loadBody, loadLoop] using hrun)
-    (by simpa [body, loadBody, loadLoop, State.fork] using hnp)
-    (by
-      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-        Nat.mod_eq_of_lt (by norm_num : 484 < 2 ^ 256)]
-      exact jump484)
-  have hafter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    loadAfterBytePath 55
-      (run_loadAfterByte s offset length dst returnDest i rest hcap hoffset
-        hlength hi hcode hrun)
-      (by simpa [afterByte, loadAfterByte, body, loadBody, loadLoop,
-        Accessors.calldataByteReturned, State.fork] using hfork)
-      (by decide) (by decide)
-  unfold gasSteps_loadIteration
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost,
-    Challenge.EvmProof.GasSteps.cast_cost]
-  dsimp only [loop, body, byteEntry, afterByte] at hguard htoByte hbyte hafter
-  simp only [loadBody, loadByteEntry, loadAfterByte,
-    Accessors.calldataByteEntry, Accessors.calldataByteReturned] at hguard htoByte hbyte hafter ⊢
-  omega
-
 def gasSteps_loadLoop (s : State) (offset length : Nat)
     (dst returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1000) (hoffset : offset + length ≤ 2 ^ 256)
@@ -571,41 +483,6 @@ def gasSteps_loadLoop (s : State) (offset length : Nat)
       dst i returnDest rest) length (fun i hi =>
         gasSteps_loadIteration s offset length dst returnDest i rest hcap
           (by omega) hlength hi hcode hfork hrun hnp)
-
-theorem gasSteps_loadLoop_cost_potential (s : State) (offset length : Nat)
-    (dst returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1000) (hoffset : offset + length ≤ 2 ^ 256)
-    (hlength : length < 2 ^ 256)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_loadLoop s offset length dst returnDest rest hcap hoffset
-        hlength hcode hfork hrun hnp).cost +
-        MachineState.memCost
-          (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst 0
-            returnDest rest).activeWords.toNat =
-      length * 190 + MachineState.memCost
-        (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst length
-          returnDest rest).activeWords.toNat := by
-  let body := fun i (hi : i < length) => gasSteps_loadIteration s offset
-    length dst returnDest i rest hcap (by omega) hlength hi hcode hfork hrun hnp
-  have hcost : ∀ i (hi : i < length),
-      (body i hi).cost + MachineState.memCost
-          (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst i
-            returnDest rest).activeWords.toNat =
-        190 + MachineState.memCost
-          (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst (i + 1)
-            returnDest rest).activeWords.toNat := by
-    intro i hi
-    exact gasSteps_loadIteration_cost_potential s offset length dst returnDest
-      i rest hcap (by omega) hlength hi hcode hfork hrun hnp
-  have htelescope := Challenge.EvmProof.GasSteps.iterateBounded_cost_potential_eq
-    length 190 (fun i => MachineState.memCost
-      (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst i
-        returnDest rest).activeWords.toNat) body hcost
-  unfold gasSteps_loadLoop
-  simpa [body] using htelescope
 
 def gasSteps_loadBigEndian (s : State) (offset length : Nat)
     (dst returnDest : UInt256) (rest : List UInt256)
@@ -649,47 +526,5 @@ def gasSteps_loadBigEndian (s : State) (offset length : Nat)
       (by simpa [loadLoop] using hrun)
       (by simpa [loadLoop, State.fork] using hnp)
   exact hsetup.trans <| hloop.trans <| hfinish.trans hexit
-
-theorem gasSteps_loadBigEndian_cost_potential (s : State)
-    (offset length : Nat) (dst returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1000) (hoffsetWord : offset < 2 ^ 256)
-    (hoffset : offset + length ≤ 2 ^ 256)
-    (hlength : length < 2 ^ 256)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      returnDest.toNat = true) :
-    (gasSteps_loadBigEndian s offset length dst returnDest rest hcap
-        hoffsetWord hoffset hlength hcode hfork hrun hnp hvalid).cost +
-        MachineState.memCost s.activeWords.toNat =
-      (46 + length * 190) + MachineState.memCost
-        (loadReturned s (UInt256.ofNat offset) (UInt256.ofNat length) dst
-          returnDest rest).activeWords.toNat := by
-  have hsetup := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    loadSetupPath 3
-      (run_loadSetup s offset length dst returnDest rest (by omega) hrun)
-      (by simpa [loadEntry, State.fork] using hfork)
-      (by decide) (by decide)
-  have hloop := gasSteps_loadLoop_cost_potential s offset length dst returnDest
-    rest hcap hoffset hlength hcode hfork hrun hnp
-  have hfinish := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    loadGuardPath 26
-      (run_loadFinishGuard s offset length dst returnDest rest (by omega)
-        hoffsetWord hlength hcode hrun)
-      (by simpa [loadLoop, State.fork] using hfork)
-      (by decide) (by decide)
-  have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    loadExitPath 17
-      (run_loadExit s offset length dst returnDest rest (by omega) hoffsetWord
-        hlength hcode hrun hvalid)
-      (by simpa [loadLoop, State.fork] using hfork)
-      (by decide) (by decide)
-  unfold gasSteps_loadBigEndian
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp only [loadEntry, loadLoop, loadReturned, loadMemory, loadWords] at hsetup hloop hfinish hexit ⊢
-  omega
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigLoad

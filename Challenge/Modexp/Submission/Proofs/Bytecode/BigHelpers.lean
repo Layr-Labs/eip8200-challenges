@@ -54,9 +54,8 @@ def clearBodyPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 24 0 0, opAt 25 (.Dup ⟨1, by decide⟩), pushAt 26 1 5,
    opAt 27 .SHL, opAt 28 (.Dup ⟨3, by decide⟩), opAt 29 .ADD,
-   opAt 30 .MSTORE, pushAt 31 1 1, opAt 32 (.Dup ⟨1, by decide⟩),
-   opAt 33 .ADD, opAt 34 (.Swap ⟨0, by decide⟩), opAt 35 .POP,
-   pushAt 36 2 21, opAt 37 .JUMP]
+   opAt 30 .MSTORE, pushAt 31 1 1, opAt 32 .ADD, pushAt 33 2 21,
+   opAt 34 .JUMP]
 
 def clearExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -105,8 +104,8 @@ def clearReturned (s : State) (ptr : UInt256) (count : Nat)
 
 @[simp] private theorem clearPCs (i : Nat) (hi : 15 ≤ i) (hii : i ≤ 42) :
     Artifact.submissionArtifact.instructionPC i =
-      [19,20,21,22,23,24,25,26,29,30,31,32,34,35,36,37,38,40,
-       41,42,43,44,47,48,49,50,51,52][i - 15]! := by
+      ([19,20,21,22,23,24,25,26,29,30,31,32,34,35,36,37,38,40,41,44,45,
+       46,47,48,49,50,51,52])[i - 15]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump21 :
@@ -442,168 +441,6 @@ theorem represents_clearMemory_disjoint_region (memory : ByteArray)
   rw [readWord_clearMemory_disjoint_region memory dst ptr count count j
     (by omega) (by simpa using hj) hdstfit hdisjoint]
 
-theorem gasSteps_clearSetup_cost_potential (s : State) (ptr : UInt256)
-    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1017) (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_clearSetup s ptr count returnDest rest hcap hcode hfork hrun hnp).cost +
-        MachineState.memCost s.activeWords.toNat =
-      3 + MachineState.memCost s.activeWords.toNat := by
-  have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    clearSetupPath 3 (run_clearSetup s ptr count returnDest rest hcap hrun)
-    (by simpa [clearEntry, State.fork] using hfork)
-    (by decide) (by rfl)
-  unfold gasSteps_clearSetup
-  simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp [clearEntry, clearLoop, clearWords] at hmeter
-  have hcost : Challenge.EvmProof.Stepper.runLocatedBlockCost clearSetupPath
-      (clearEntry s ptr count returnDest rest) = 3 := by
-    simpa [clearEntry] using hmeter
-  omega
-
-theorem gasSteps_clearIteration_cost_potential (s : State) (ptr : UInt256)
-    (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1017) (hcount : count < 2 ^ 256) (hi : i < count)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_clearIteration s ptr count i returnDest rest hcap hcount hi
-      hcode hfork hrun hnp).cost +
-        MachineState.memCost (clearLoop s ptr count i returnDest rest).activeWords.toNat =
-      71 + MachineState.memCost
-        (clearLoop s ptr count (i + 1) returnDest rest).activeWords.toNat := by
-  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    clearGuardPath 26 (run_clearGuard s ptr count i returnDest rest
-      hcap hcount hi hrun)
-    (by simpa [clearLoop, State.fork] using hfork)
-    (by decide) (by rfl)
-  have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    clearBodyPath 45 (run_clearBody s ptr count i returnDest rest hcap
-      (by omega) hcode hrun)
-    (by simpa [clearBodyEntry, clearLoop, State.fork] using hfork)
-    (by decide) (by rfl)
-  have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka clearGuardPath
-        (by simpa [clearLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [clearLoop, State.fork] using hfork)
-        (run_clearGuard s ptr count i returnDest rest hcap hcount hi hrun)
-        (by simpa [clearLoop] using hrun)
-        (by simpa [clearLoop, State.fork] using hnp)))
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka clearBodyPath
-        (by simpa [clearBodyEntry, clearLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [clearBodyEntry, clearLoop, State.fork] using hfork)
-        (run_clearBody s ptr count i returnDest rest hcap (by omega) hcode hrun)
-        (by simpa [clearBodyEntry, clearLoop] using hrun)
-        (by simpa [clearBodyEntry, clearLoop, State.fork] using hnp)))
-    26 45 hguard hbody
-  simpa [gasSteps_clearIteration] using htrans
-
-theorem gasSteps_clearLoop_cost_potential (s : State) (ptr : UInt256)
-    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1017) (hcount : count < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_clearLoop s ptr count returnDest rest hcap hcount hcode hfork
-      hrun hnp).cost + MachineState.memCost
-        (clearLoop s ptr count 0 returnDest rest).activeWords.toNat =
-      count * 71 + MachineState.memCost
-        (clearLoop s ptr count count returnDest rest).activeWords.toNat := by
-  unfold gasSteps_clearLoop
-  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
-  intro i hi
-  exact gasSteps_clearIteration_cost_potential s ptr count i returnDest rest
-    hcap hcount hi hcode hfork hrun hnp
-
-theorem gasSteps_clearFinish_cost_potential (s : State) (ptr : UInt256)
-    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1017) (hcount : count < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
-    (gasSteps_clearFinish s ptr count returnDest rest hcap hcount hcode hfork
-      hrun hnp hvalid).cost + MachineState.memCost
-        (clearLoop s ptr count count returnDest rest).activeWords.toNat =
-      41 + MachineState.memCost
-        (clearReturned s ptr count returnDest rest).activeWords.toNat := by
-  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    clearGuardPath 26 (run_clearFinishGuard s ptr count returnDest rest
-      hcap hcount hcode hrun)
-    (by simpa [clearLoop, State.fork] using hfork)
-    (by decide) (by rfl)
-  have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    clearExitPath 15 (run_clearExit s ptr count returnDest rest hcap hcode
-      hvalid hrun)
-    (by simpa [clearExit, clearLoop, State.fork] using hfork)
-    (by decide) (by rfl)
-  have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka clearGuardPath
-        (by simpa [clearLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [clearLoop, State.fork] using hfork)
-        (run_clearFinishGuard s ptr count returnDest rest hcap hcount hcode hrun)
-        (by simpa [clearLoop] using hrun)
-        (by simpa [clearLoop, State.fork] using hnp)))
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka clearExitPath
-        (by simpa [clearExit, clearLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [clearExit, clearLoop, State.fork] using hfork)
-        (run_clearExit s ptr count returnDest rest hcap hcode hvalid hrun)
-        (by simpa [clearExit, clearLoop] using hrun)
-        (by simpa [clearExit, clearLoop, State.fork] using hnp)))
-    26 15 hguard hexit
-  simpa [gasSteps_clearFinish] using htrans
-
-theorem gasSteps_clear_cost_potential (s : State) (ptr : UInt256)
-    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1017) (hcount : count < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
-    (gasSteps_clear s ptr count returnDest rest hcap hcount hcode hfork hrun hnp
-      hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      (44 + count * 71) + MachineState.memCost
-        (clearReturned s ptr count returnDest rest).activeWords.toNat := by
-  have hsetup := gasSteps_clearSetup_cost_potential s ptr count returnDest rest
-    hcap hcode hfork hrun hnp
-  have hloop := gasSteps_clearLoop_cost_potential s ptr count returnDest rest
-    hcap hcount hcode hfork hrun hnp
-  have hfinish := gasSteps_clearFinish_cost_potential s ptr count returnDest rest
-    hcap hcount hcode hfork hrun hnp hvalid
-  have hsetup' :
-      (gasSteps_clearSetup s ptr count returnDest rest hcap hcode hfork hrun hnp).cost +
-          MachineState.memCost (clearEntry s ptr count returnDest rest).activeWords.toNat =
-        3 + MachineState.memCost
-          (clearLoop s ptr count 0 returnDest rest).activeWords.toNat := by
-    simpa only [clearEntry, clearLoop, clearWords] using hsetup
-  have hprefix := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    (gasSteps_clearSetup s ptr count returnDest rest hcap hcode hfork hrun hnp)
-    (gasSteps_clearLoop s ptr count returnDest rest hcap hcount hcode hfork hrun hnp)
-    3 (count * 71) hsetup' hloop
-  have htotal := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    ((gasSteps_clearSetup s ptr count returnDest rest hcap hcode hfork hrun hnp).trans
-      (gasSteps_clearLoop s ptr count returnDest rest hcap hcount hcode hfork hrun hnp))
-    (gasSteps_clearFinish s ptr count returnDest rest hcap hcount hcode hfork
-      hrun hnp hvalid) (3 + count * 71) 41 hprefix hfinish
-  unfold gasSteps_clear
-  simp only [Challenge.EvmProof.GasSteps.trans_cost] at htotal ⊢
-  have hactive : (clearEntry s ptr count returnDest rest).activeWords =
-      s.activeWords := by rfl
-  rw [hactive] at htotal
-  omega
-
-/-! ## `copyLimbs` -/
-
 def copySetupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 46 .JUMPDEST, pushAt 47 0 0]
@@ -620,9 +457,7 @@ def copyBodyPath :
    opAt 58 (.Dup ⟨3, by decide⟩), opAt 59 .ADD, opAt 60 .MLOAD,
    opAt 61 (.Dup ⟨1, by decide⟩), pushAt 62 1 5, opAt 63 .SHL,
    opAt 64 (.Dup ⟨3, by decide⟩), opAt 65 .ADD, opAt 66 .MSTORE,
-   pushAt 67 1 1, opAt 68 (.Dup ⟨1, by decide⟩), opAt 69 .ADD,
-   opAt 70 (.Swap ⟨0, by decide⟩), opAt 71 .POP,
-   pushAt 72 2 60, opAt 73 .JUMP]
+   pushAt 67 1 1, opAt 68 .ADD, pushAt 69 2 60, opAt 70 .JUMP]
 
 def copyExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -676,8 +511,8 @@ def copyReturned (s : State) (dst src : UInt256) (count : Nat)
 
 @[simp] private theorem copyPCs (i : Nat) (hi : 46 ≤ i) (hii : i ≤ 79) :
     Artifact.submissionArtifact.instructionPC i =
-      [58,59,60,61,62,63,64,65,68,69,70,72,73,74,75,76,77,
-       79,80,81,82,83,85,86,87,88,89,92,93,94,95,96,97,98][i - 46]! := by
+      ([58,59,60,61,62,63,64,65,68,69,70,72,73,74,75,76,77,79,80,81,82,
+       83,85,86,89,90,91,92,93,94,95,96,97,98])[i - 46]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump60 :
@@ -1040,168 +875,6 @@ theorem represents_copyMemory_disjoint_region (memory : ByteArray)
   rw [readWord_copyMemory_disjoint_region memory dst src ptr count count j
     (by omega) (by simpa using hj) hdstfit hdisjoint]
 
-theorem gasSteps_copySetup_cost_potential (s : State) (dst src : UInt256)
-    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1016) (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_copySetup s dst src count returnDest rest hcap hcode hfork hrun hnp).cost +
-        MachineState.memCost s.activeWords.toNat =
-      3 + MachineState.memCost s.activeWords.toNat := by
-  have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    copySetupPath 3 (run_copySetup s dst src count returnDest rest hcap hrun)
-    (by simpa [copyEntry, State.fork] using hfork)
-    (by decide) (by rfl)
-  unfold gasSteps_copySetup
-  simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp [copyEntry, copyLoop, copyWords] at hmeter
-  have hcost : Challenge.EvmProof.Stepper.runLocatedBlockCost copySetupPath
-      (copyEntry s dst src count returnDest rest) = 3 := by
-    simpa [copyEntry] using hmeter
-  omega
-
-theorem gasSteps_copyIteration_cost_potential (s : State) (dst src : UInt256)
-    (count i : Nat) (returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1016) (hcount : count < 2 ^ 256) (hi : i < count)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_copyIteration s dst src count i returnDest rest hcap hcount hi
-      hcode hfork hrun hnp).cost + MachineState.memCost
-        (copyLoop s dst src count i returnDest rest).activeWords.toNat =
-      87 + MachineState.memCost
-        (copyLoop s dst src count (i + 1) returnDest rest).activeWords.toNat := by
-  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    copyGuardPath 26 (run_copyGuard s dst src count i returnDest rest
-      hcap hcount hi hrun)
-    (by simpa [copyLoop, State.fork] using hfork)
-    (by decide) (by rfl)
-  have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    copyBodyPath 61 (run_copyBody s dst src count i returnDest rest hcap
-      (by omega) hcode hrun)
-    (by simpa [copyBodyEntry, copyLoop, State.fork] using hfork)
-    (by decide) (by rfl)
-  have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka copyGuardPath
-        (by simpa [copyLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [copyLoop, State.fork] using hfork)
-        (run_copyGuard s dst src count i returnDest rest hcap hcount hi hrun)
-        (by simpa [copyLoop] using hrun)
-        (by simpa [copyLoop, State.fork] using hnp)))
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka copyBodyPath
-        (by simpa [copyBodyEntry, copyLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [copyBodyEntry, copyLoop, State.fork] using hfork)
-        (run_copyBody s dst src count i returnDest rest hcap (by omega) hcode hrun)
-        (by simpa [copyBodyEntry, copyLoop] using hrun)
-        (by simpa [copyBodyEntry, copyLoop, State.fork] using hnp)))
-    26 61 hguard hbody
-  simpa [gasSteps_copyIteration] using htrans
-
-theorem gasSteps_copyLoop_cost_potential (s : State) (dst src : UInt256)
-    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1016) (hcount : count < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_copyLoop s dst src count returnDest rest hcap hcount hcode hfork
-      hrun hnp).cost + MachineState.memCost
-        (copyLoop s dst src count 0 returnDest rest).activeWords.toNat =
-      count * 87 + MachineState.memCost
-        (copyLoop s dst src count count returnDest rest).activeWords.toNat := by
-  unfold gasSteps_copyLoop
-  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
-  intro i hi
-  exact gasSteps_copyIteration_cost_potential s dst src count i returnDest rest
-    hcap hcount hi hcode hfork hrun hnp
-
-theorem gasSteps_copyFinish_cost_potential (s : State) (dst src : UInt256)
-    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1016) (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
-    (gasSteps_copyFinish s dst src count returnDest rest hcap hcode hfork hrun hnp
-      hvalid).cost + MachineState.memCost
-        (copyLoop s dst src count count returnDest rest).activeWords.toNat =
-      43 + MachineState.memCost
-        (copyReturned s dst src count returnDest rest).activeWords.toNat := by
-  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    copyGuardPath 26 (run_copyFinishGuard s dst src count returnDest rest
-      hcap hcode hrun)
-    (by simpa [copyLoop, State.fork] using hfork)
-    (by decide) (by rfl)
-  have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    copyExitPath 17 (run_copyExit s dst src count returnDest rest hcap hcode
-      hvalid hrun)
-    (by simpa [copyExit, copyLoop, State.fork] using hfork)
-    (by decide) (by rfl)
-  have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka copyGuardPath
-        (by simpa [copyLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [copyLoop, State.fork] using hfork)
-        (run_copyFinishGuard s dst src count returnDest rest hcap hcode hrun)
-        (by simpa [copyLoop] using hrun)
-        (by simpa [copyLoop, State.fork] using hnp)))
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka copyExitPath
-        (by simpa [copyExit, copyLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [copyExit, copyLoop, State.fork] using hfork)
-        (run_copyExit s dst src count returnDest rest hcap hcode hvalid hrun)
-        (by simpa [copyExit, copyLoop] using hrun)
-        (by simpa [copyExit, copyLoop, State.fork] using hnp)))
-    26 17 hguard hexit
-  simpa [gasSteps_copyFinish] using htrans
-
-theorem gasSteps_copy_cost_potential (s : State) (dst src : UInt256)
-    (count : Nat) (returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1016) (hcount : count < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
-    (gasSteps_copy s dst src count returnDest rest hcap hcount hcode hfork hrun
-      hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      (46 + count * 87) + MachineState.memCost
-        (copyReturned s dst src count returnDest rest).activeWords.toNat := by
-  have hsetup := gasSteps_copySetup_cost_potential s dst src count returnDest rest
-    hcap hcode hfork hrun hnp
-  have hloop := gasSteps_copyLoop_cost_potential s dst src count returnDest rest
-    hcap hcount hcode hfork hrun hnp
-  have hfinish := gasSteps_copyFinish_cost_potential s dst src count returnDest rest
-    hcap hcode hfork hrun hnp hvalid
-  have hsetup' :
-      (gasSteps_copySetup s dst src count returnDest rest hcap hcode hfork hrun hnp).cost +
-          MachineState.memCost
-            (copyEntry s dst src count returnDest rest).activeWords.toNat =
-        3 + MachineState.memCost
-          (copyLoop s dst src count 0 returnDest rest).activeWords.toNat := by
-    simpa only [copyEntry, copyLoop, copyWords] using hsetup
-  have hprefix := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    (gasSteps_copySetup s dst src count returnDest rest hcap hcode hfork hrun hnp)
-    (gasSteps_copyLoop s dst src count returnDest rest hcap hcount hcode hfork hrun hnp)
-    3 (count * 87) hsetup' hloop
-  have htotal := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    ((gasSteps_copySetup s dst src count returnDest rest hcap hcode hfork hrun hnp).trans
-      (gasSteps_copyLoop s dst src count returnDest rest hcap hcount hcode hfork hrun hnp))
-    (gasSteps_copyFinish s dst src count returnDest rest hcap hcode hfork hrun
-      hnp hvalid) (3 + count * 87) 43 hprefix hfinish
-  unfold gasSteps_copy
-  simp only [Challenge.EvmProof.GasSteps.trans_cost] at htotal ⊢
-  have hactive : (copyEntry s dst src count returnDest rest).activeWords =
-      s.activeWords := by rfl
-  rw [hactive] at htotal
-  omega
-
-/-! ## `addMaskedMod`: fixed-width addition phase -/
-
 def addSetupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 83 .JUMPDEST, opAt 84 (.Dup ⟨2, by decide⟩), pushAt 85 0 0,
@@ -1231,9 +904,8 @@ def addBodyPath :
    opAt 126 (.Dup ⟨3, by decide⟩), opAt 127 .OR,
    opAt 128 (.Swap ⟨7, by decide⟩), opAt 129 .POP, opAt 130 .POP,
    opAt 131 .POP, opAt 132 .POP, opAt 133 .POP, opAt 134 .POP,
-   opAt 135 .POP, pushAt 136 1 1, opAt 137 (.Dup ⟨1, by decide⟩),
-   opAt 138 .ADD, opAt 139 (.Swap ⟨0, by decide⟩), opAt 140 .POP,
-   pushAt 141 2 110, opAt 142 .JUMP]
+   opAt 135 .POP, pushAt 136 1 1, opAt 137 .ADD, pushAt 138 2 110,
+   opAt 139 .JUMP]
 
 def addToSubtractPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -1657,11 +1329,11 @@ def subtractLoopEntry (s : State) (dst src take modulus : UInt256)
 
 @[simp] private theorem addPCs (i : Nat) (hi : 83 ≤ i) (hii : i ≤ 146) :
     Artifact.submissionArtifact.instructionPC i =
-      [104,105,106,107,108,109,110,111,112,113,114,115,118,119,120,122,
-       123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,
-       139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,
-       155,156,157,158,159,160,162,163,164,165,166,169,170,171,172,
-       173][i - 83]! := by
+      ([104,105,106,107,108,109,110,111,112,113,114,115,118,119,120,
+       122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,
+       137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,
+       152,153,154,155,156,157,158,159,160,162,163,166,167,168,169,
+       170,171,172,173])[i - 83]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump110 :
@@ -1843,10 +1515,8 @@ def subtractBodyPath :
    opAt 182 (.Dup ⟨0, by decide⟩), opAt 183 (.Dup ⟨3, by decide⟩),
    opAt 184 .OR, opAt 185 (.Swap ⟨8, by decide⟩), opAt 186 .POP,
    opAt 187 .POP, opAt 188 .POP, opAt 189 .POP, opAt 190 .POP,
-   opAt 191 .POP, opAt 192 .POP, opAt 193 .POP,
-   pushAt 194 1 1, opAt 195 (.Dup ⟨1, by decide⟩), opAt 196 .ADD,
-   opAt 197 (.Swap ⟨0, by decide⟩), opAt 198 .POP,
-   pushAt 199 2 174, opAt 200 .JUMP]
+   opAt 191 .POP, opAt 192 .POP, opAt 193 .POP, pushAt 194 1 1,
+   opAt 195 .ADD, pushAt 196 2 174, opAt 197 .JUMP]
 
 def subtractToSelectPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -2160,10 +1830,11 @@ def selectLoopEntry (s : State) (dst src take modulus : UInt256)
 
 @[simp] private theorem subtractPCs (i : Nat) (hi : 147 ≤ i) (hii : i ≤ 209) :
     Artifact.submissionArtifact.instructionPC i =
-      ([174,175,176,177,178,179,182,183,184,186,187,188,189,190,191,192,
-       193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,
-       209,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,
-       228,229,230,231,232,235,236,237,238,239,240,241,242,243,244])[i - 147]! := by
+      ([174,175,176,177,178,179,182,183,184,186,187,188,189,190,191,
+       192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,
+       207,208,209,212,213,214,215,216,217,218,219,220,221,222,223,
+       224,225,226,228,229,232,233,234,235,236,237,238,239,240,241,
+       242,243,244])[i - 147]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump174 :
@@ -2322,9 +1993,7 @@ def selectBodyPath :
    opAt 234 .AND, opAt 235 .OR, opAt 236 (.Dup ⟨3, by decide⟩),
    opAt 237 (.Dup ⟨10, by decide⟩), opAt 238 .ADD, opAt 239 .MSTORE,
    opAt 240 .POP, opAt 241 .POP, opAt 242 .POP, pushAt 243 1 1,
-   opAt 244 (.Dup ⟨1, by decide⟩), opAt 245 .ADD,
-   opAt 246 (.Swap ⟨0, by decide⟩), opAt 247 .POP,
-   pushAt 248 2 245, opAt 249 .JUMP]
+   opAt 244 .ADD, pushAt 245 2 245, opAt 246 .JUMP]
 
 def selectExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -2719,10 +2388,10 @@ theorem addReturned_preserves_region (s : State)
 
 @[simp] private theorem selectPCs (i : Nat) (hi : 210 ≤ i) (hii : i ≤ 261) :
     Artifact.submissionArtifact.instructionPC i =
-      [245,246,247,248,249,250,253,254,255,257,258,259,260,261,262,263,
-       266,267,268,269,270,271,272,273,274,275,276,277,278,279,280,281,
-       282,283,285,286,287,288,289,292,293,294,295,296,297,298,299,300,
-       301,302,303,304][i - 210]! := by
+      ([245,246,247,248,249,250,253,254,255,257,258,259,260,261,262,
+       263,266,267,268,269,270,271,272,273,274,275,276,277,278,279,
+       280,281,282,283,285,286,289,290,291,292,293,294,295,296,297,
+       298,299,300,301,302,303,304])[i - 210]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump245 :
@@ -3120,386 +2789,5 @@ As elsewhere in `EvmProof`, the potential is `gas + memCost(activeWords)`.
 This makes memory expansion telescope across loads and stores while retaining
 an exact, compositional statement for callers.
 -/
-
-theorem gasSteps_addSetup_cost_potential (s : State)
-    (dst src take modulus : UInt256) (count : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 1000)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_addSetup s dst src take modulus count returnDest rest hcap hcode
-        hfork hrun hnp).cost + MachineState.memCost s.activeWords.toNat =
-      13 + MachineState.memCost
-        (addLoop s dst src take modulus count 0 returnDest rest).activeWords.toNat := by
-  have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    addSetupPath 13
-      (run_addSetup s dst src take modulus count returnDest rest (by omega) hrun)
-      (by simpa [addEntry, State.fork] using hfork)
-      (by decide) (by rfl)
-  unfold gasSteps_addSetup
-  simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simpa [addEntry] using hmeter
-
-theorem gasSteps_addIteration_cost_potential (s : State)
-    (dst src take modulus : UInt256) (count i : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 1000)
-    (hcount : count < 2 ^ 256) (hi : i < count)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_addIteration s dst src take modulus count i returnDest rest hcap
-        hcount hi hcode hfork hrun hnp).cost + MachineState.memCost
-          (addLoop s dst src take modulus count i returnDest rest).activeWords.toNat =
-      164 + MachineState.memCost
-        (addLoop s dst src take modulus count (i + 1) returnDest rest).activeWords.toNat := by
-  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    addGuardPath 26
-      (run_addGuard s dst src take modulus count i returnDest rest (by omega)
-        hcount hi hrun)
-      (by simpa [addLoop, State.fork] using hfork)
-      (by decide) (by rfl)
-  have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    addBodyPath 138
-      (run_addBody s dst src take modulus count i returnDest rest (by omega)
-        (by omega) hcode hrun)
-      (by simpa [addBodyEntry, addLoop, State.fork] using hfork)
-      (by decide) (by rfl)
-  have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka addGuardPath
-        (by simpa [addLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [addLoop, State.fork] using hfork)
-        (run_addGuard s dst src take modulus count i returnDest rest (by omega)
-          hcount hi hrun)
-        (by simpa [addLoop] using hrun)
-        (by simpa [addLoop, State.fork] using hnp)))
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka addBodyPath
-        (by simpa [addBodyEntry, addLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [addBodyEntry, addLoop, State.fork] using hfork)
-        (run_addBody s dst src take modulus count i returnDest rest (by omega)
-          (by omega) hcode hrun)
-        (by simpa [addBodyEntry, addLoop] using hrun)
-        (by simpa [addBodyEntry, addLoop, State.fork] using hnp)))
-    26 138 hguard hbody
-  simpa [gasSteps_addIteration] using htrans
-
-theorem gasSteps_addLoop_cost_potential (s : State)
-    (dst src take modulus : UInt256) (count : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 1000)
-    (hcount : count < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_addLoop s dst src take modulus count returnDest rest hcap hcount
-        hcode hfork hrun hnp).cost + MachineState.memCost
-          (addLoop s dst src take modulus count 0 returnDest rest).activeWords.toNat =
-      count * 164 + MachineState.memCost
-        (addLoop s dst src take modulus count count returnDest rest).activeWords.toNat := by
-  unfold gasSteps_addLoop
-  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
-  intro i hi
-  exact gasSteps_addIteration_cost_potential s dst src take modulus count i
-    returnDest rest hcap hcount hi hcode hfork hrun hnp
-
-theorem gasSteps_addToSubtract_cost_potential (s : State)
-    (dst src take modulus : UInt256) (count : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 1000)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_addToSubtract s dst src take modulus count returnDest rest hcap
-        hcode hfork hrun hnp).cost + MachineState.memCost
-          (addLoop s dst src take modulus count count returnDest rest).activeWords.toNat =
-      33 + MachineState.memCost
-        (subtractLoop s dst src take modulus count 0 returnDest rest).activeWords.toNat := by
-  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    addGuardPath 26
-      (run_addFinishGuard s dst src take modulus count returnDest rest (by omega)
-        hcode hrun)
-      (by simpa [addLoop, State.fork] using hfork)
-      (by decide) (by rfl)
-  have hnext := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    addToSubtractPath 7
-      (run_addToSubtract s dst src take modulus count returnDest rest (by omega)
-        hrun)
-      (by simpa [addLoop, State.fork] using hfork)
-      (by decide) (by rfl)
-  have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka addGuardPath
-        (by simpa [addLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [addLoop, State.fork] using hfork)
-        (run_addFinishGuard s dst src take modulus count returnDest rest (by omega)
-          hcode hrun)
-        (by simpa [addLoop] using hrun)
-        (by simpa [addLoop, State.fork] using hnp)))
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka addToSubtractPath
-        (by simpa [addLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [addLoop, State.fork] using hfork)
-        (run_addToSubtract s dst src take modulus count returnDest rest (by omega)
-          hrun)
-        (by simpa [addLoop] using hrun)
-        (by simpa [addLoop, State.fork] using hnp)))
-    26 7 hguard hnext
-  have hzero : (0 : UInt256) = UInt256.ofNat 0 := by decide
-  simpa [gasSteps_addToSubtract, subtractLoop, subtractLoopEntry,
-    subtractProgress, hzero] using htrans
-
-theorem gasSteps_subtractIteration_cost_potential (s : State)
-    (dst src take modulus : UInt256) (count i : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 1000)
-    (hcount : count < 2 ^ 256) (hi : i < count)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_subtractIteration s dst src take modulus count i returnDest rest
-        hcap hcount hi hcode hfork hrun hnp).cost + MachineState.memCost
-          (subtractLoop s dst src take modulus count i returnDest rest).activeWords.toNat =
-      163 + MachineState.memCost
-        (subtractLoop s dst src take modulus count (i + 1) returnDest rest).activeWords.toNat := by
-  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    subtractGuardPath 26
-      (run_subtractGuard s dst src take modulus count i returnDest rest hcap
-        hcount hi hrun)
-      (by simpa [subtractLoop, State.fork] using hfork)
-      (by decide) (by rfl)
-  have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    subtractBodyPath 137
-      (run_subtractBody s dst src take modulus count i returnDest rest hcap
-        (by omega) hcode hrun)
-      (by simpa [subtractBodyEntry, subtractLoop, State.fork] using hfork)
-      (by decide) (by rfl)
-  have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka subtractGuardPath
-        (by simpa [subtractLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [subtractLoop, State.fork] using hfork)
-        (run_subtractGuard s dst src take modulus count i returnDest rest hcap
-          hcount hi hrun)
-        (by simpa [subtractLoop] using hrun)
-        (by simpa [subtractLoop, State.fork] using hnp)))
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka subtractBodyPath
-        (by simpa [subtractBodyEntry, subtractLoop,
-          Artifact.submissionArtifact] using hcode)
-        (by simpa [subtractBodyEntry, subtractLoop, State.fork] using hfork)
-        (run_subtractBody s dst src take modulus count i returnDest rest hcap
-          (by omega) hcode hrun)
-        (by simpa [subtractBodyEntry, subtractLoop] using hrun)
-        (by simpa [subtractBodyEntry, subtractLoop, State.fork] using hnp)))
-    26 137 hguard hbody
-  simpa [gasSteps_subtractIteration] using htrans
-
-theorem gasSteps_subtractLoop_cost_potential (s : State)
-    (dst src take modulus : UInt256) (count : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 1000)
-    (hcount : count < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_subtractLoop s dst src take modulus count returnDest rest hcap
-        hcount hcode hfork hrun hnp).cost + MachineState.memCost
-          (subtractLoop s dst src take modulus count 0 returnDest rest).activeWords.toNat =
-      count * 163 + MachineState.memCost
-        (subtractLoop s dst src take modulus count count returnDest rest).activeWords.toNat := by
-  unfold gasSteps_subtractLoop
-  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
-  intro i hi
-  exact gasSteps_subtractIteration_cost_potential s dst src take modulus count i
-    returnDest rest hcap hcount hi hcode hfork hrun hnp
-
-theorem gasSteps_subtractToSelect_cost_potential (s : State)
-    (dst src take modulus : UInt256) (count : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 1000)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_subtractToSelect s dst src take modulus count returnDest rest hcap
-        hcode hfork hrun hnp).cost + MachineState.memCost
-          (subtractLoop s dst src take modulus count count returnDest rest).activeWords.toNat =
-      48 + MachineState.memCost
-        (selectLoop s dst src take modulus count 0 returnDest rest).activeWords.toNat := by
-  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    subtractGuardPath 26
-      (run_subtractFinishGuard s dst src take modulus count returnDest rest hcap
-        hcode hrun)
-      (by simpa [subtractLoop, State.fork] using hfork)
-      (by decide) (by rfl)
-  have hnext := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    subtractToSelectPath 22
-      (run_subtractToSelect s dst src take modulus count returnDest rest hcap hrun)
-      (by simpa [subtractLoop, State.fork] using hfork)
-      (by decide) (by rfl)
-  have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka subtractGuardPath
-        (by simpa [subtractLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [subtractLoop, State.fork] using hfork)
-        (run_subtractFinishGuard s dst src take modulus count returnDest rest hcap
-          hcode hrun)
-        (by simpa [subtractLoop] using hrun)
-        (by simpa [subtractLoop, State.fork] using hnp)))
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka subtractToSelectPath
-        (by simpa [subtractLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [subtractLoop, State.fork] using hfork)
-        (run_subtractToSelect s dst src take modulus count returnDest rest hcap hrun)
-        (by simpa [subtractLoop] using hrun)
-        (by simpa [subtractLoop, State.fork] using hnp)))
-    26 22 hguard hnext
-  have hzero : (0 : UInt256) = UInt256.ofNat 0 := by decide
-  simpa [gasSteps_subtractToSelect, selectLoop, selectLoopEntry,
-    selectProgress, hzero] using htrans
-
-theorem gasSteps_selectIteration_cost_potential (s : State)
-    (dst src take modulus : UInt256) (count i : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 1000)
-    (hcount : count < 2 ^ 256) (hi : i < count)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_selectIteration s dst src take modulus count i returnDest rest
-        hcap hcount hi hcode hfork hrun hnp).cost + MachineState.memCost
-          (selectLoop s dst src take modulus count i returnDest rest).activeWords.toNat =
-      126 + MachineState.memCost
-        (selectLoop s dst src take modulus count (i + 1) returnDest rest).activeWords.toNat := by
-  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    selectGuardPath 26
-      (run_selectGuard s dst src take modulus count i returnDest rest hcap
-        hcount hi hrun)
-      (by simpa [selectLoop, State.fork] using hfork)
-      (by decide) (by rfl)
-  have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    selectBodyPath 100
-      (run_selectBody s dst src take modulus count i returnDest rest hcap
-        (by omega) hcode hrun)
-      (by simpa [selectBodyEntry, selectLoop, State.fork] using hfork)
-      (by decide) (by rfl)
-  have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka selectGuardPath
-        (by simpa [selectLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [selectLoop, State.fork] using hfork)
-        (run_selectGuard s dst src take modulus count i returnDest rest hcap
-          hcount hi hrun)
-        (by simpa [selectLoop] using hrun)
-        (by simpa [selectLoop, State.fork] using hnp)))
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka selectBodyPath
-        (by simpa [selectBodyEntry, selectLoop,
-          Artifact.submissionArtifact] using hcode)
-        (by simpa [selectBodyEntry, selectLoop, State.fork] using hfork)
-        (run_selectBody s dst src take modulus count i returnDest rest hcap
-          (by omega) hcode hrun)
-        (by simpa [selectBodyEntry, selectLoop] using hrun)
-        (by simpa [selectBodyEntry, selectLoop, State.fork] using hnp)))
-    26 100 hguard hbody
-  simpa [gasSteps_selectIteration] using htrans
-
-theorem gasSteps_selectLoop_cost_potential (s : State)
-    (dst src take modulus : UInt256) (count : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 1000)
-    (hcount : count < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_selectLoop s dst src take modulus count returnDest rest hcap hcount
-        hcode hfork hrun hnp).cost + MachineState.memCost
-          (selectLoop s dst src take modulus count 0 returnDest rest).activeWords.toNat =
-      count * 126 + MachineState.memCost
-        (selectLoop s dst src take modulus count count returnDest rest).activeWords.toNat := by
-  unfold gasSteps_selectLoop
-  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
-  intro i hi
-  exact gasSteps_selectIteration_cost_potential s dst src take modulus count i
-    returnDest rest hcap hcount hi hcode hfork hrun hnp
-
-theorem gasSteps_selectFinish_cost_potential (s : State)
-    (dst src take modulus : UInt256) (count : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 1000)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
-    (gasSteps_selectFinish s dst src take modulus count returnDest rest hcap hcode
-        hfork hrun hnp hvalid).cost + MachineState.memCost
-          (selectLoop s dst src take modulus count count returnDest rest).activeWords.toNat =
-      55 + MachineState.memCost
-        (addReturned s dst src take modulus count returnDest rest).activeWords.toNat := by
-  have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    selectGuardPath 26
-      (run_selectFinishGuard s dst src take modulus count returnDest rest hcap
-        hcode hrun)
-      (by simpa [selectLoop, State.fork] using hfork)
-      (by decide) (by rfl)
-  have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    selectExitPath 29
-      (run_selectExit s dst src take modulus count returnDest rest hcap hcode
-        hvalid hrun)
-      (by simpa [selectExit, selectLoop, State.fork] using hfork)
-      (by decide) (by rfl)
-  have htrans := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka selectGuardPath
-        (by simpa [selectLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [selectLoop, State.fork] using hfork)
-        (run_selectFinishGuard s dst src take modulus count returnDest rest hcap
-          hcode hrun)
-        (by simpa [selectLoop] using hrun)
-        (by simpa [selectLoop, State.fork] using hnp)))
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka selectExitPath
-        (by simpa [selectExit, selectLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [selectExit, selectLoop, State.fork] using hfork)
-        (run_selectExit s dst src take modulus count returnDest rest hcap hcode
-          hvalid hrun)
-        (by simpa [selectExit, selectLoop] using hrun)
-        (by simpa [selectExit, selectLoop, State.fork] using hnp)))
-    26 29 hguard hexit
-  simpa [gasSteps_selectFinish] using htrans
-
-theorem gasSteps_addMaskedMod_cost_potential (s : State)
-    (dst src take modulus : UInt256) (count : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 1000)
-    (hcount : count < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
-    (gasSteps_addMaskedMod s dst src take modulus count returnDest rest hcap
-        hcount hcode hfork hrun hnp hvalid).cost +
-        MachineState.memCost s.activeWords.toNat =
-      (149 + count * 453) + MachineState.memCost
-        (addReturned s dst src take modulus count returnDest rest).activeWords.toNat := by
-  have hsetup := gasSteps_addSetup_cost_potential s dst src take modulus count
-    returnDest rest hcap hcode hfork hrun hnp
-  have hadd := gasSteps_addLoop_cost_potential s dst src take modulus count
-    returnDest rest hcap hcount hcode hfork hrun hnp
-  have haddFinish := gasSteps_addToSubtract_cost_potential s dst src take modulus
-    count returnDest rest hcap hcode hfork hrun hnp
-  have hsub := gasSteps_subtractLoop_cost_potential s dst src take modulus count
-    returnDest rest hcap hcount hcode hfork hrun hnp
-  have hsubFinish := gasSteps_subtractToSelect_cost_potential s dst src take
-    modulus count returnDest rest hcap hcode hfork hrun hnp
-  have hselect := gasSteps_selectLoop_cost_potential s dst src take modulus count
-    returnDest rest hcap hcount hcode hfork hrun hnp
-  have hfinish := gasSteps_selectFinish_cost_potential s dst src take modulus
-    count returnDest rest hcap hcode hfork hrun hnp hvalid
-  unfold gasSteps_addMaskedMod
-  simp only [Challenge.EvmProof.GasSteps.trans_cost]
-  omega
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigHelpers

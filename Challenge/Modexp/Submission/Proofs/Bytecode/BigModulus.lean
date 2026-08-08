@@ -51,12 +51,10 @@ def scanGuardPath :
 
 def scanBodyPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 609 (.Dup ⟨0, by decide⟩), pushAt 610 1 5,
-   opAt 611 .SHL, opAt 612 .MLOAD, opAt 613 (.Dup ⟨2, by decide⟩),
-   opAt 614 .OR, opAt 615 (.Swap ⟨1, by decide⟩), opAt 616 .POP,
-   pushAt 617 1 1, opAt 618 (.Dup ⟨1, by decide⟩), opAt 619 .ADD,
-   opAt 620 (.Swap ⟨0, by decide⟩), opAt 621 .POP,
-   pushAt 622 2 771, opAt 623 .JUMP]
+  [opAt 609 (.Dup ⟨0, by decide⟩), pushAt 610 1 5, opAt 611 .SHL,
+   opAt 612 .MLOAD, opAt 613 (.Dup ⟨2, by decide⟩), opAt 614 .OR,
+   opAt 615 (.Swap ⟨1, by decide⟩), opAt 616 .POP, pushAt 617 1 1,
+   opAt 618 .ADD, pushAt 619 2 771, opAt 620 .JUMP]
 
 def scanNonzeroPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -115,9 +113,8 @@ def scanZeroFinal (s : State) (count b e m baseOff expOff modOff : Nat)
     (hii : i ≤ 631) :
     Artifact.submissionArtifact.instructionPC i =
       ([768,769,770,771,772,773,774,775,776,779,780,781,783,784,785,
-       786,787,788,789,791,792,793,794,795,798,799,800,801,802,805,
-       806,807,810]
-        )[i - 599]! := by
+       786,787,788,789,791,792,795,796,797,798,799,800,801,802,805,
+       806,807,810])[i - 599]! := by
   interval_cases i <;> decide
 
 private theorem jump771 :
@@ -383,96 +380,6 @@ def gasSteps_scanNonzeroTotal (s : State) (count : Nat)
       gasSteps_scanFinishNonzero s count rest hcap hcount hor hcode hfork
         hrun hnp
 
-theorem gasSteps_scanIteration_cost_potential (s : State) (count i : Nat)
-    (rest : List UInt256) (hcap : rest.length < 1018)
-    (hcount : count ≤ 32) (hi : i < count)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_scanIteration s count i rest hcap hcount hi hcode hfork hrun
-        hnp).cost + MachineState.memCost
-          (scanLoop s count i rest).activeWords.toNat =
-      74 + MachineState.memCost
-        (scanLoop s count (i + 1) rest).activeWords.toNat := by
-  have hg := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    scanGuardPath 26 (run_scanGuard s count i rest hcap (by omega) hi hrun)
-      (by simpa [scanLoop, State.fork] using hfork)
-      (by decide) (by decide)
-  have hb := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    scanBodyPath 48
-      (run_scanBody s count i rest hcap hcount hi hcode hrun)
-      (by simpa [scanBody, scanLoop, State.fork] using hfork)
-      (by decide) (by decide)
-  have ht := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka scanGuardPath
-        (by simpa [scanLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [scanLoop, State.fork] using hfork)
-        (run_scanGuard s count i rest hcap (by omega) hi hrun)
-        (by simpa [scanLoop] using hrun)
-        (by simpa [scanLoop, State.fork] using hnp))
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka scanBodyPath
-        (by simpa [scanBody, scanLoop, Artifact.submissionArtifact] using hcode)
-        (by simpa [scanBody, scanLoop, State.fork] using hfork)
-        (run_scanBody s count i rest hcap hcount hi hcode hrun)
-        (by simpa [scanBody, scanLoop] using hrun)
-        (by simpa [scanBody, scanLoop, State.fork] using hnp))
-    26 48 hg hb
-  simpa [gasSteps_scanIteration] using ht
-
-theorem gasSteps_scanLoop_cost_potential (s : State) (count : Nat)
-    (rest : List UInt256) (hcap : rest.length < 1018)
-    (hcount : count ≤ 32)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_scanLoop s count rest hcap hcount hcode hfork hrun hnp).cost +
-        MachineState.memCost (scanLoop s count 0 rest).activeWords.toNat =
-      count * 74 + MachineState.memCost
-        (scanLoop s count count rest).activeWords.toNat := by
-  unfold gasSteps_scanLoop
-  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
-  intro i hi
-  exact gasSteps_scanIteration_cost_potential s count i rest hcap hcount hi
-    hcode hfork hrun hnp
-
-theorem gasSteps_scanNonzeroTotal_cost_potential (s : State) (count : Nat)
-    (rest : List UInt256) (hcap : rest.length < 1018)
-    (hcount : count ≤ 32) (hor : scanOr s.memory count ≠ 0)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_scanNonzeroTotal s count rest hcap hcount hor hcode hfork hrun
-        hnp).cost + MachineState.memCost s.activeWords.toNat =
-      (50 + count * 74) + MachineState.memCost
-        (scanNonzero s count rest).activeWords.toNat := by
-  have hs := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    scanSetupPath 5 (run_scanSetup s count rest hcap hrun)
-      (by simpa [scanEntry, State.fork] using hfork)
-      (by decide) (by decide)
-  have hl := gasSteps_scanLoop_cost_potential s count rest hcap hcount hcode
-    hfork hrun hnp
-  have hg := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    scanGuardPath 26
-      (run_scanFinishGuard s count rest hcap (by omega) hcode hrun)
-      (by simpa [scanLoop, State.fork] using hfork)
-      (by decide) (by decide)
-  have hn := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    scanNonzeroPath 19 (run_scanNonzero s count rest hcap hor hcode hrun)
-      (by simpa [scanExit, scanLoop, State.fork] using hfork)
-      (by decide) (by decide)
-  unfold gasSteps_scanNonzeroTotal gasSteps_scanSetup
-    gasSteps_scanFinishNonzero
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp only [scanEntry, scanLoop, scanExit, scanNonzero, scanWords,
-    scanOr] at hs hl hg hn ⊢
-  omega
-
 def gasSteps_scanZeroTotal (s : State) (count b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1011) (hcount : count ≤ 32)
@@ -507,48 +414,6 @@ def gasSteps_scanZeroTotal (s : State) (count b e m baseOff expOff modOff : Nat)
           hcap hm hor hrun)
         (by simpa [scanExit, scanLoop] using hrun)
         (by simpa [scanExit, scanLoop, State.fork] using hnp))
-
-theorem gasSteps_scanZeroTotal_cost_potential (s : State)
-    (count b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 1011)
-    (hcount : count ≤ 32) (hm : m < 2 ^ 256)
-    (hor : scanOr s.memory count = 0)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_scanZeroTotal s count b e m baseOff expOff modOff returnDest
-        rest hcap hcount hm hor hcode hfork hrun hnp).cost +
-        MachineState.memCost s.activeWords.toNat =
-      (56 + count * 74) + MachineState.memCost
-        (scanZeroFinal s count b e m baseOff expOff modOff returnDest rest).activeWords.toNat := by
-  let caller := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
-    UInt256.ofNat baseOff, UInt256.ofNat expOff, UInt256.ofNat modOff,
-    returnDest] ++ rest
-  have hcaller : caller.length < 1018 := by simp [caller]; omega
-  have hs := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    scanSetupPath 5 (run_scanSetup s count caller hcaller hrun)
-      (by simpa [scanEntry, State.fork] using hfork)
-      (by decide) (by decide)
-  have hl := gasSteps_scanLoop_cost_potential s count caller hcaller hcount
-    hcode hfork hrun hnp
-  have hg := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    scanGuardPath 26
-      (run_scanFinishGuard s count caller hcaller (by omega) hcode hrun)
-      (by simpa [scanLoop, State.fork] using hfork)
-      (by decide) (by decide)
-  have hz := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    scanZeroPath 25
-      (run_scanZero s count b e m baseOff expOff modOff returnDest rest
-        hcap hm hor hrun)
-      (by simpa [scanExit, scanLoop, State.fork] using hfork)
-      (by decide) (by decide)
-  unfold gasSteps_scanZeroTotal gasSteps_scanSetup
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp only [caller, scanEntry, scanLoop, scanExit, scanZeroFinal, scanWords,
-    scanOr] at hs hl hg hz ⊢
-  omega
 
 private theorem natOr_eq_zero_iff (a b : Nat) :
     a ||| b = 0 ↔ a = 0 ∧ b = 0 := by

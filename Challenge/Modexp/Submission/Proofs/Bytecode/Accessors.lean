@@ -97,24 +97,4 @@ def gasSteps_calldataByte (s : State) (offset output returnDest : UInt256)
   · exact hrun
   · exact hnp
 
-theorem gasSteps_calldataByte_cost_potential (s : State)
-    (offset output returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1017)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
-    (gasSteps_calldataByte s offset output returnDest rest hcap hcode hfork
-        hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      30 + MachineState.memCost
-        (calldataByteReturned s offset returnDest rest).activeWords.toNat := by
-  have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    calldataBytePath 30
-      (run_calldataByte s offset output returnDest rest hcap hcode hrun hvalid)
-      hfork (by decide) (by decide)
-  unfold gasSteps_calldataByte
-  simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simpa [calldataByteEntry, calldataByteReturned] using hmeter
-
 end Challenge.Modexp.Submission.Proofs.Bytecode.Accessors

@@ -53,9 +53,8 @@ def trampoline2Path :
 /-- Three EIP-198 header loads. -/
 def headerLoadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 900 0 0, opAt 901 .CALLDATALOAD,
-   pushAt 902 1 32, opAt 903 .CALLDATALOAD,
-   pushAt 904 1 64, opAt 905 .CALLDATALOAD]
+  [pushAt 900 0 0, opAt 901 .CALLDATALOAD, pushAt 902 1 32,
+   opAt 903 .CALLDATALOAD, pushAt 904 1 64, opAt 905 .CALLDATALOAD]
 
 /-- Successful EIP-7823 bound check. -/
 def headerCheckPath :
@@ -63,8 +62,8 @@ def headerCheckPath :
   [pushAt 906 2 1024, opAt 907 (.Dup ⟨1, by decide⟩), opAt 908 .GT,
    pushAt 909 2 1024, opAt 910 (.Dup ⟨3, by decide⟩), opAt 911 .GT,
    pushAt 912 2 1024, opAt 913 (.Dup ⟨5, by decide⟩), opAt 914 .GT,
-   opAt 915 .OR, opAt 916 .OR, opAt 917 .ISZERO,
-   pushAt 918 2 1228, opAt 919 .JUMPI]
+   opAt 915 .OR, opAt 916 .OR, opAt 917 .ISZERO, pushAt 918 2 1228,
+   opAt 919 .JUMPI]
 
 def headerModulusCheckPath :=
   [pushAt 906 2 1024, opAt 907 (.Dup ⟨1, by decide⟩), opAt 908 .GT]
@@ -189,8 +188,8 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
 
 @[simp] theorem headerPCs899 (i : Nat) (hi : 899 ≤ i) (hii : i ≤ 919) :
     Artifact.submissionArtifact.instructionPC i =
-      [1196,1197,1198,1199,1201,1202,1204,1205,1208,1209,1210,
-       1213,1214,1215,1218,1219,1220,1221,1222,1223,1226][i - 899]! := by
+      ([1196,1197,1198,1199,1201,1202,1204,1205,1208,1209,1210,1213,
+       1214,1215,1218,1219,1220,1221,1222,1223,1226])[i - 899]! := by
   interval_cases i <;> decide
 
 @[simp] theorem jump14 :

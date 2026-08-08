@@ -59,11 +59,9 @@ def serializerBodyPath :
    opAt 862 (.Dup ⟨2, by decide⟩), pushAt 863 1 5, opAt 864 .SHL,
    pushAt 865 2 2048, opAt 866 .ADD, opAt 867 .MLOAD,
    opAt 868 (.Dup ⟨2, by decide⟩), opAt 869 .SHR, opAt 870 .AND,
-   opAt 871 (.Dup ⟨4, by decide⟩), pushAt 872 2 6144,
-   opAt 873 .ADD, opAt 874 .MSTORE8, opAt 875 .POP, opAt 876 .POP,
-   opAt 877 .POP, pushAt 878 1 1, opAt 879 (.Dup ⟨1, by decide⟩),
-   opAt 880 .ADD, opAt 881 (.Swap ⟨0, by decide⟩), opAt 882 .POP,
-   pushAt 883 2 1121, opAt 884 .JUMP]
+   opAt 871 (.Dup ⟨4, by decide⟩), pushAt 872 2 6144, opAt 873 .ADD,
+   opAt 874 .MSTORE8, opAt 875 .POP, opAt 876 .POP, opAt 877 .POP,
+   pushAt 878 1 1, opAt 879 .ADD, pushAt 880 2 1121, opAt 881 .JUMP]
 
 def serializerReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -168,10 +166,10 @@ def bigReturned (s : State) (accumulatorWord : UInt256)
     (hii : i ≤ 889) :
     Artifact.submissionArtifact.instructionPC i =
       ([1118,1119,1120,1121,1122,1123,1124,1125,1126,1129,1130,1131,
-        1133,1134,1135,1136,1137,1139,1140,1142,1143,1144,1146,1147,
-        1149,1150,1152,1153,1156,1157,1158,1159,1160,1161,1162,1165,
-        1166,1167,1168,1169,1170,1172,1173,1174,1175,1176,1179,1180,
-        1181,1182,1183,1186])[i - 838]! := by
+       1133,1134,1135,1136,1137,1139,1140,1142,1143,1144,1146,1147,
+       1149,1150,1152,1153,1156,1157,1158,1159,1160,1161,1162,1165,
+       1166,1167,1168,1169,1170,1172,1173,1176,1177,1178,1179,1180,
+       1181,1182,1183,1186])[i - 838]! := by
   interval_cases i <;> decide
 
 private theorem jump1118 :
@@ -387,42 +385,6 @@ def gasSteps_serializerIteration (s : State) (accumulatorWord : UInt256)
       (by simpa [serializerBody, serializerLoop, State.fork] using hnp)
   exact hguard.trans hbody
 
-theorem gasSteps_serializerIteration_cost_potential (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff k : Nat)
-    (rest : List UInt256) (hcap : rest.length < 968)
-    (hm : m < 2 ^ 256) (hk : k < m)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_serializerIteration s accumulatorWord count b e m baseOff expOff
-      k rest hcap hm hk hcode hfork hrun hnp).cost +
-        MachineState.memCost
-          (serializerLoop s accumulatorWord count b e m baseOff expOff rest
-            k).activeWords.toNat =
-      138 + MachineState.memCost
-        (serializerLoop s accumulatorWord count b e m baseOff expOff rest
-          (k + 1)).activeWords.toNat := by
-  have hguard :=
-    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      serializerGuardPath 26
-        (run_serializerGuard s accumulatorWord count b e m baseOff expOff k
-          rest (by omega) hm hk hrun)
-        (by simpa [serializerLoop, State.fork] using hfork)
-        (by decide) (by decide)
-  have hbody :=
-    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      serializerBodyPath 112
-        (run_serializerBody s accumulatorWord count b e m baseOff expOff k
-          rest (by omega) hm hk hcode hrun)
-        (by simpa [serializerBody, serializerLoop, State.fork] using hfork)
-        (by decide) (by decide)
-  unfold gasSteps_serializerIteration
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp only [serializerLoop, serializerBody] at hguard hbody ⊢
-  omega
-
 def gasSteps_serializerLoop (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
     (hcap : rest.length < 968) (hm : m < 2 ^ 256)
@@ -436,28 +398,6 @@ def gasSteps_serializerLoop (s : State) (accumulatorWord : UInt256)
   Challenge.EvmProof.GasSteps.iterateBounded m fun k hk =>
     gasSteps_serializerIteration s accumulatorWord count b e m baseOff expOff k
       rest hcap hm hk hcode hfork hrun hnp
-
-theorem gasSteps_serializerLoop_cost_potential (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff : Nat)
-    (rest : List UInt256) (hcap : rest.length < 968)
-    (hm : m < 2 ^ 256) (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_serializerLoop s accumulatorWord count b e m baseOff expOff rest
-      hcap hm hcode hfork hrun hnp).cost +
-        MachineState.memCost
-          (serializerLoop s accumulatorWord count b e m baseOff expOff rest
-            0).activeWords.toNat =
-      m * 138 + MachineState.memCost
-        (serializerLoop s accumulatorWord count b e m baseOff expOff rest
-          m).activeWords.toNat := by
-  unfold gasSteps_serializerLoop
-  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
-  intro k hk
-  simpa [Nat.mul_comm] using
-    gasSteps_serializerIteration_cost_potential s accumulatorWord count b e m
-      baseOff expOff k rest hcap hm hk hcode hfork hrun hnp
 
 def gasSteps_serializerFinish (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
@@ -487,40 +427,6 @@ def gasSteps_serializerFinish (s : State) (accumulatorWord : UInt256)
       (by simpa [serializerExit, serializerLoop] using hrun)
       (by simpa [serializerExit, serializerLoop, State.fork] using hnp)
   exact hguard.trans hreturn
-
-theorem gasSteps_serializerFinish_cost_potential (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff : Nat)
-    (rest : List UInt256) (hcap : rest.length < 968)
-    (hm : m < 2 ^ 256) (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_serializerFinish s accumulatorWord count b e m baseOff expOff
-      rest hcap hm hcode hfork hrun hnp).cost +
-        MachineState.memCost
-          (serializerLoop s accumulatorWord count b e m baseOff expOff rest
-            m).activeWords.toNat =
-      35 + MachineState.memCost
-        (bigReturned s accumulatorWord count b e m baseOff expOff rest).activeWords.toNat := by
-  have hguard :=
-    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      serializerGuardPath 26
-        (run_serializerFinishGuard s accumulatorWord count b e m baseOff expOff
-          rest (by omega) hm hcode hrun)
-        (by simpa [serializerLoop, State.fork] using hfork)
-        (by decide) (by decide)
-  have hreturn :=
-    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      serializerReturnPath 9
-        (run_serializerReturn s accumulatorWord count b e m baseOff expOff rest
-          (by omega) hm hrun)
-        (by simpa [serializerExit, serializerLoop, State.fork] using hfork)
-        (by decide) (by decide)
-  unfold gasSteps_serializerFinish
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp only [serializerLoop, serializerExit, bigReturned] at hguard hreturn ⊢
-  omega
 
 def gasSteps_serializeResult (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
@@ -554,46 +460,5 @@ def gasSteps_serializeResult (s : State) (accumulatorWord : UInt256)
     baseOff expOff rest hcap hm hcode hfork hrun hnp
   exact Challenge.EvmProof.GasSteps.cast
     (hguard.trans (hentry.trans (hloop.trans hfinish))) rfl rfl
-
-theorem gasSteps_serializeResult_cost_potential (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff : Nat)
-    (rest : List UInt256) (hcap : rest.length < 968)
-    (he : e < 2 ^ 256) (hm : m < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_serializeResult s accumulatorWord count b e m baseOff expOff rest
-      hcap he hm hcode hfork hrun hnp).cost +
-        MachineState.memCost
-          (outerLoop s accumulatorWord count b e m baseOff expOff rest
-            e).activeWords.toNat =
-      (66 + m * 138) + MachineState.memCost
-        (bigReturned s accumulatorWord count b e m baseOff expOff rest).activeWords.toNat := by
-  have hguard :=
-    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      outerFinishGuardPath 26
-        (run_outerFinishGuard s accumulatorWord count b e m baseOff expOff rest
-          (by omega) he hcode hrun)
-        (by simpa [outerLoop, State.fork] using hfork)
-        (by decide) (by decide)
-  have hentry :=
-    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      serializerEntryPath 5
-        (run_serializerEntry s accumulatorWord count b e m baseOff expOff rest
-          (by omega) hrun)
-        (by simpa [serializerEntry, State.fork] using hfork)
-        (by decide) (by decide)
-  have hloop := gasSteps_serializerLoop_cost_potential s accumulatorWord count b
-    e m baseOff expOff rest hcap hm hcode hfork hrun hnp
-  have hfinish := gasSteps_serializerFinish_cost_potential s accumulatorWord
-    count b e m baseOff expOff rest hcap hm hcode hfork hrun hnp
-  unfold gasSteps_serializeResult
-  simp only [Challenge.EvmProof.GasSteps.cast_cost,
-    Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp only [outerLoop, exponentOuterExit, serializerEntry, serializerLoop,
-    bigReturned] at hguard hentry hloop hfinish ⊢
-  omega
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigSerialize

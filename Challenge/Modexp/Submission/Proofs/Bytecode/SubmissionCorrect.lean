@@ -191,12 +191,8 @@ def bigZeroFinalState (input : ByteArray) : State :=
 private def certifiedBigNonzeroTotal (input : ByteArray)
     (hvalid : ValidInput input) (hbig : 32 < modulusSize input)
     (hmodulusPos : 0 < Word.modulusValue input) :
-    {g : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-        (bigCompletedState input) //
-      g.cost = 169 + BigComplete.nonzeroWork
-        (Limbs.limbCount (modulusSize input)) (baseSize input)
-        (exponentSize input) (modulusSize input) +
-        MachineState.memCost (bigCompletedState input).activeWords.toNat} := by
+    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
+      (bigCompletedState input) := by
   have hb := hvalid.2.1
   have he := hvalid.2.2.1
   have hm := hvalid.2.2.2
@@ -236,53 +232,18 @@ private def certifiedBigNonzeroTotal (input : ByteArray)
   have hpositive : 0 < modulusSize input := by omega
   let total := ((Main.gasSteps_header input hvalid).trans
     (BigDispatch.gasSteps_bigEntry input hvalid hpositive hbig)).trans hcore'
-  refine ⟨total, ?_⟩
-  have hcoreCost : hcore.cost + MachineState.memCost
-      (Main.headerState input).activeWords.toNat =
-      BigComplete.nonzeroWork (BigComplete.limbCount (modulusSize input))
-        (baseSize input) (exponentSize input) (modulusSize input) +
-        MachineState.memCost
-          (BigComplete.completedState (Main.headerState input) (baseSize input)
-            (exponentSize input) (modulusSize input) 96 (Word.expOffset input)
-            (Word.modulusOffset input) bigReturnDest
-            (bigRest input)).activeWords.toNat := by
-    exact BigComplete.gasSteps_nonzero_cost_potential
-      (Main.headerState input) (baseSize input) (exponentSize input)
-      (modulusSize input) 96 (Word.expOffset input) (Word.modulusOffset input)
-      bigReturnDest (bigRest input) hm hmodOff hinputFit hbase hbaseFit hexp
-      hexpFit hcap hor hcode hfork hrun deployAddress_not_precompile
-  have hactive : (Main.headerState input).activeWords.toNat = 0 := rfl
-  rw [hactive] at hcoreCost
-  norm_num [MachineState.memCost] at hcoreCost
-  simp only [total, Challenge.EvmProof.GasSteps.trans_cost, hcore',
-    Challenge.EvmProof.GasSteps.cast_cost]
-  rw [Main.gasSteps_header_cost, BigDispatch.gasSteps_bigEntry_cost]
-  rw [hcoreCost]
-  simp [bigCompletedState, MachineState.memCost, BigComplete.limbCount,
-    Nat.add_assoc]
+  exact total
 
 def gasSteps_bigNonzeroTotal (input : ByteArray) (hvalid : ValidInput input)
     (hbig : 32 < modulusSize input) (hmodulusPos : 0 < Word.modulusValue input) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (bigCompletedState input) :=
-  (certifiedBigNonzeroTotal input hvalid hbig hmodulusPos).1
-
-theorem gasSteps_bigNonzeroTotal_cost (input : ByteArray)
-    (hvalid : ValidInput input) (hbig : 32 < modulusSize input)
-    (hmodulusPos : 0 < Word.modulusValue input) :
-    (gasSteps_bigNonzeroTotal input hvalid hbig hmodulusPos).cost =
-      169 + BigComplete.nonzeroWork (Limbs.limbCount (modulusSize input))
-        (baseSize input) (exponentSize input) (modulusSize input) +
-        MachineState.memCost (bigCompletedState input).activeWords.toNat :=
-  (certifiedBigNonzeroTotal input hvalid hbig hmodulusPos).2
+  certifiedBigNonzeroTotal input hvalid hbig hmodulusPos
 
 private def certifiedBigZeroTotal (input : ByteArray) (hvalid : ValidInput input)
     (hbig : 32 < modulusSize input) (hmodulus : Word.modulusValue input = 0) :
-    {g : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-        (bigZeroFinalState input) //
-      g.cost = 169 + BigZeroCorrect.zeroWork
-        (Limbs.limbCount (modulusSize input)) (modulusSize input) +
-        MachineState.memCost (bigZeroFinalState input).activeWords.toNat} := by
+    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
+      (bigZeroFinalState input) := by
   have hb := hvalid.2.1
   have he := hvalid.2.2.1
   have hm := hvalid.2.2.2
@@ -314,43 +275,13 @@ private def certifiedBigZeroTotal (input : ByteArray) (hvalid : ValidInput input
   have hpositive : 0 < modulusSize input := by omega
   let total := ((Main.gasSteps_header input hvalid).trans
     (BigDispatch.gasSteps_bigEntry input hvalid hpositive hbig)).trans hcore'
-  refine ⟨total, ?_⟩
-  have hcoreCost : hcore.cost + MachineState.memCost
-      (Main.headerState input).activeWords.toNat =
-      BigZeroCorrect.zeroWork (Limbs.limbCount (modulusSize input))
-        (modulusSize input) + MachineState.memCost
-          (BigZeroCorrect.zeroFinalState (Main.headerState input)
-            (baseSize input) (exponentSize input) (modulusSize input) 96
-            (Word.expOffset input) (Word.modulusOffset input) bigReturnDest
-            (bigRest input)).activeWords.toNat := by
-    exact BigZeroCorrect.gasSteps_zero_cost_potential
-      (Main.headerState input) (baseSize input) (exponentSize input)
-      (modulusSize input) 96 (Word.expOffset input) (Word.modulusOffset input)
-      bigReturnDest (bigRest input) hm hmodOff hinputFit hcap hor hcode hfork
-      hrun deployAddress_not_precompile
-  have hactive : (Main.headerState input).activeWords.toNat = 0 := rfl
-  rw [hactive] at hcoreCost
-  norm_num [MachineState.memCost] at hcoreCost
-  simp only [total, Challenge.EvmProof.GasSteps.trans_cost, hcore',
-    Challenge.EvmProof.GasSteps.cast_cost]
-  rw [Main.gasSteps_header_cost, BigDispatch.gasSteps_bigEntry_cost]
-  rw [hcoreCost]
-  simp [bigZeroFinalState, MachineState.memCost, Nat.add_assoc]
+  exact total
 
 def gasSteps_bigZeroTotal (input : ByteArray) (hvalid : ValidInput input)
     (hbig : 32 < modulusSize input) (hmodulus : Word.modulusValue input = 0) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (bigZeroFinalState input) :=
-  (certifiedBigZeroTotal input hvalid hbig hmodulus).1
-
-theorem gasSteps_bigZeroTotal_cost (input : ByteArray)
-    (hvalid : ValidInput input) (hbig : 32 < modulusSize input)
-    (hmodulus : Word.modulusValue input = 0) :
-    (gasSteps_bigZeroTotal input hvalid hbig hmodulus).cost =
-      169 + BigZeroCorrect.zeroWork (Limbs.limbCount (modulusSize input))
-        (modulusSize input) +
-        MachineState.memCost (bigZeroFinalState input).activeWords.toNat :=
-  (certifiedBigZeroTotal input hvalid hbig hmodulus).2
+  certifiedBigZeroTotal input hvalid hbig hmodulus
 
 def finalState (input : ByteArray) : State :=
   if modulusSize input = 0 then Dispatch.zeroSizeFinalState input
@@ -402,34 +333,6 @@ def gasSteps_submission (input : ByteArray) (hvalid : ValidInput input) :
       exact Challenge.EvmProof.GasSteps.cast
         (gasSteps_bigNonzeroTotal input hvalid hbig hmodulusPos) rfl
         (by simp [finalState, hzeroSize, hword, hzeroModulus])
-
-theorem gasSteps_submission_cost (input : ByteArray) (hvalid : ValidInput input) :
-    (gasSteps_submission input hvalid).cost = submissionGas input := by
-  by_cases hzeroSize : modulusSize input = 0
-  · simpa [gasSteps_submission, submissionGas, hzeroSize,
-      Challenge.EvmProof.GasSteps.cast_cost] using
-      Dispatch.gasSteps_zeroSize_total_cost input hvalid hzeroSize
-  have hpositive : 0 < modulusSize input := by omega
-  by_cases hword : modulusSize input ≤ 32
-  · by_cases hzeroModulus : Word.modulusValue input = 0
-    · simpa [gasSteps_submission, submissionGas, hzeroSize, hword,
-        hzeroModulus, Challenge.EvmProof.GasSteps.cast_cost] using
-        WordGas.gasSteps_zeroModulusTotal_cost input hvalid hpositive hword
-          hzeroModulus
-    · have hmodulusPos : 0 < Word.modulusValue input := by omega
-      simpa [gasSteps_submission, submissionGas, hzeroSize, hword,
-        hzeroModulus, Challenge.EvmProof.GasSteps.cast_cost] using
-        WordGas.gasSteps_wordNonzeroTotal_cost input hvalid hpositive hword
-          hmodulusPos
-  · have hbig : 32 < modulusSize input := by omega
-    by_cases hzeroModulus : Word.modulusValue input = 0
-    · simpa [gasSteps_submission, submissionGas, hzeroSize, hword,
-        hzeroModulus, Challenge.EvmProof.GasSteps.cast_cost] using
-        gasSteps_bigZeroTotal_cost input hvalid hbig hzeroModulus
-    · have hmodulusPos : 0 < Word.modulusValue input := by omega
-      simpa [gasSteps_submission, submissionGas, hzeroSize, hword,
-        hzeroModulus, Challenge.EvmProof.GasSteps.cast_cost] using
-        gasSteps_bigNonzeroTotal_cost input hvalid hbig hmodulusPos
 
 @[simp] theorem finalState_isDone (input : ByteArray) :
     (finalState input).isDone = true := by

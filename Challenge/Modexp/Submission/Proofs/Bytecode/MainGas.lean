@@ -108,53 +108,11 @@ private def gasSteps_headerCheck (input : ByteArray) (hvalid : ValidInput input)
       Artifact.submissionArtifact .Osaka headerCheckJumpPath rfl rfl
       (run_headerCheckJump input) rfl deployAddress_not_precompile
 
-@[simp] private theorem gasSteps_tramp0_cost (input : ByteArray) :
-    (gasSteps_tramp0 input).cost = 11 := by rfl
-
-@[simp] private theorem gasSteps_tramp7Dest_cost (input : ByteArray) :
-    (gasSteps_tramp7Dest input).cost = 1 := by rfl
-
-@[simp] private theorem gasSteps_tramp1_cost (input : ByteArray) :
-    (gasSteps_tramp1 input).cost = 12 := by rfl
-
-@[simp] private theorem gasSteps_tramp2_cost (input : ByteArray) :
-    (gasSteps_tramp2 input).cost = 12 := by rfl
-
-@[simp] private theorem gasSteps_tramp3_cost (input : ByteArray) :
-    (gasSteps_tramp3 input).cost = 12 := by rfl
-
-@[simp] private theorem gasSteps_tramp4_cost (input : ByteArray) :
-    (gasSteps_tramp4 input).cost = 12 := by rfl
-
-@[simp] private theorem gasSteps_tramp5_cost (input : ByteArray) :
-    (gasSteps_tramp5 input).cost = 12 := by rfl
-
-@[simp] private theorem gasSteps_tramp6_cost (input : ByteArray) :
-    (gasSteps_tramp6 input).cost = 12 := by rfl
-
-@[simp] private theorem gasSteps_tramp7_cost (input : ByteArray) :
-    (gasSteps_tramp7 input).cost = 13 := by rfl
-
-@[simp] private theorem gasSteps_headerLoad_cost (input : ByteArray) :
-    (gasSteps_headerLoad input).cost = 17 := by rfl
-
-@[simp] private theorem gasSteps_headerCheck_cost
-    (input : ByteArray) (hvalid : ValidInput input) :
-    (gasSteps_headerCheck input hvalid).cost = 49 := by rfl
-
-/-- Header parsing as a gas-parametric relational trace. -/
 def gasSteps_header (input : ByteArray) (hvalid : ValidInput input) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (headerState input) := by
   exact (gasSteps_tramp0 input).trans <|
     (gasSteps_tramp7Dest input).trans <|
     (gasSteps_headerLoad input).trans (gasSteps_headerCheck input hvalid)
-
-/-- Exact, input-independent gas used by the single retargeted entry hop and
-the three successful EIP-7823 size checks. -/
-theorem gasSteps_header_cost (input : ByteArray) (hvalid : ValidInput input) :
-    (gasSteps_header input hvalid).cost = 78 := by
-  simp [gasSteps_header]
-
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Main

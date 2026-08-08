@@ -47,14 +47,13 @@ def startPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 415 .JUMPDEST, opAt 416 (.Dup ⟨5, by decide⟩),
    opAt 417 .CALLDATALOAD, opAt 418 (.Dup ⟨3, by decide⟩),
-   pushAt 419 1 32, opAt 420 .SUB, pushAt 421 1 3,
-   opAt 422 .SHL, opAt 423 .SHR, opAt 424 (.Dup ⟨0, by decide⟩),
-   pushAt 425 2 538, opAt 426 .JUMPI]
+   pushAt 419 1 32, opAt 420 .SUB, pushAt 421 1 3, opAt 422 .SHL,
+   opAt 423 .SHR, opAt 424 (.Dup ⟨0, by decide⟩), pushAt 425 2 538,
+   opAt 426 .JUMPI]
 
 def zeroTailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 427 (.Dup ⟨3, by decide⟩), pushAt 428 2 6144,
-   opAt 429 .RETURN]
+  [opAt 427 (.Dup ⟨3, by decide⟩), pushAt 428 2 6144, opAt 429 .RETURN]
 
 def zeroModulusPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -84,9 +83,7 @@ def baseTailPath :
   [opAt 448 .JUMPDEST, opAt 449 (.Dup ⟨4, by decide⟩), pushAt 450 2 256,
    opAt 451 (.Dup ⟨5, by decide⟩), opAt 452 .MULMOD, opAt 453 .ADDMOD,
    opAt 454 (.Swap ⟨1, by decide⟩), opAt 455 .POP, pushAt 456 1 1,
-   opAt 457 (.Dup ⟨1, by decide⟩), opAt 458 .ADD,
-   opAt 459 (.Swap ⟨0, by decide⟩), opAt 460 .POP,
-   pushAt 461 2 541, opAt 462 .JUMP]
+   opAt 457 .ADD, pushAt 458 2 541, opAt 459 .JUMP]
 
 def baseFinishTailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -102,8 +99,9 @@ def expGuardPath :
 def expLoadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 476 (.Dup ⟨0, by decide⟩), opAt 477 (.Dup ⟨9, by decide⟩),
-   opAt 478 .ADD, opAt 479 (.Dup ⟨0, by decide⟩), opAt 480 .CALLDATALOAD,
-   pushAt 481 0 0, opAt 482 .BYTE, pushAt 483 0 0]
+   opAt 478 .ADD, opAt 479 (.Dup ⟨0, by decide⟩),
+   opAt 480 .CALLDATALOAD, pushAt 481 0 0, opAt 482 .BYTE,
+   pushAt 483 0 0]
 
 def bitGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -138,9 +136,8 @@ def bitChoosePath :
 def bitAdvancePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 514 (.Swap ⟨6, by decide⟩), opAt 515 .POP, opAt 516 .POP,
-   opAt 517 .POP, pushAt 518 1 1, opAt 519 (.Dup ⟨1, by decide⟩),
-   opAt 520 .ADD, opAt 521 (.Swap ⟨0, by decide⟩), opAt 522 .POP,
-   pushAt 523 2 606, opAt 524 .JUMP]
+   opAt 517 .POP, pushAt 518 1 1, opAt 519 .ADD, pushAt 520 2 606,
+   opAt 521 .JUMP]
 
 def expOffset (input : ByteArray) : Nat := 96 + baseSize input
 def modulusOffset (input : ByteArray) : Nat := expOffset input + exponentSize input
@@ -393,8 +390,7 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
 
 @[simp] private theorem startPCs (i : Nat) (hi : 415 ≤ i) (hii : i ≤ 429) :
     Artifact.submissionArtifact.instructionPC i =
-      [517, 518, 519, 520, 521, 523, 524, 526, 527, 528, 529, 532,
-       533, 534, 537][i - 415]! := by
+      ([517,518,519,520,521,523,524,526,527,528,529,532,533,534,537])[i - 415]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump538 :
@@ -403,9 +399,9 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
 
 @[simp] private theorem wordPCs (i : Nat) (hi : 430 ≤ i) (hii : i ≤ 462) :
     Artifact.submissionArtifact.instructionPC i =
-      [538, 539, 540, 541, 542, 543, 544, 545, 546, 549, 550,
-       551, 554, 555, 556, 557, 558, 561, 562, 563, 564, 567,
-       568, 569, 570, 571, 572, 574, 575, 576, 577, 578, 581][i - 430]! := by
+      ([538,539,540,541,542,543,544,545,546,549,550,551,554,555,556,
+       557,558,561,562,563,564,567,568,569,570,571,572,574,575,578,
+       579,580,581])[i - 430]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump582 :
@@ -426,16 +422,16 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
 
 @[simp] private theorem baseFinishPCs (i : Nat) (hi : 463 ≤ i) (hii : i ≤ 468) :
     Artifact.submissionArtifact.instructionPC i =
-      [582, 583, 584, 585, 587, 588][i - 463]! := by
+      ([582,583,584,585,587,588])[i - 463]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem expPCs (i : Nat) (hi : 469 ≤ i) (hii : i ≤ 535) :
     Artifact.submissionArtifact.instructionPC i =
-      [589,590,591,592,593,594,597,598,599,600,601,602,603,604,605,
+      ([589,590,591,592,593,594,597,598,599,600,601,602,603,604,605,
        606,607,609,610,611,612,615,616,618,619,620,622,623,624,625,
        626,627,628,629,630,631,632,633,634,635,636,637,638,639,640,
-       641,642,643,644,645,647,648,649,650,651,654,655,656,657,658,
-       659,661,662,663,664,665,668][i - 469]! := by
+       641,642,643,644,645,647,648,651,652,653,654,655,656,657,658,
+       659,661,662,665,666,667,668])[i - 469]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump669 :
