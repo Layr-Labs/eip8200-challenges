@@ -6,6 +6,28 @@ keep proof cost proportional to measured runtime value.
 
 Development context: GPT 5.6 Sol, xhigh effort, Codex agent.
 
+## 2026-08-08: four direct recurrence schedule loads — native verified
+
+The four hot recurrence reads of `W[j-16]`, `W[j-15]`, `W[j-7]`, and
+`W[j-2]` now load from memory directly instead of entering the generic `wAt`
+accessor. Each address is folded to `base + (j << 5)`, with adjusted bases
+288, 320, 576, and 736. For `16 ≤ j < 64`, these are exactly the existing
+schedule slots `(j-k) * 32 + 800`.
+
+Every replacement retains its original byte length and structural instruction
+count by widening the base to `PUSH4` and retaining an executed `JUMPDEST` at
+the local boundary. All later PCs, semantic states, and the 1,524-byte,
+810-instruction artifact remain stable. The generic accessor proof legs are
+removed from the recurrence composition; four direct execution lemmas end in
+the existing `gotW16`, `gotW15`, `gotW7`, and `gotW2` states.
+
+Each direct path saves 38 gas, or 152 gas per recurrence iteration. Across 48
+iterations this is 7,296 gas per padded block and 474,240 over the public
+65-block suite. The protected native scorer accepts all clean and dirty rows
+with identical paired gas: exact score 4,674,887 and empty-vector gas 73,179.
+The exact schedule cost falls from 36,250 to 28,954, compression from 78,609
+to 71,313, and the driver from 78,684 to 71,388 gas per padded block.
+
 ## 2026-08-08: fused `BSIG0` and `BSIG1` helpers — native verified
 
 Both big-sigma helpers now duplicate the input's 32-bit lane once and derive
@@ -132,8 +154,9 @@ when executable behavior is correct.
 | Inline overlapping `K[j]` load | 7,395,527 | -149,760 | Proof-complete; submitted for validation |
 | Five fixed state load/store fusions | 6,646,727 | -748,800 | Proof-complete; full Yukon gate running |
 | Fused `BSIG0` + `BSIG1` helpers | 5,149,127 | -1,497,600 | Native scorer passed; universal proof integration running |
+| Four direct recurrence schedule loads | 4,674,887 | -474,240 | Native scorer passed; exact proof integration running |
 
-The cumulative runtime-verified improvement is 5,029,992 gas versus the reference
+The cumulative runtime-verified improvement is 5,504,232 gas versus the reference
 public score.
 
 ## What worked

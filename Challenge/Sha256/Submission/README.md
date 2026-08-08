@@ -127,15 +127,24 @@ every downstream PC, the 1,524-byte length, and all 810 instructions. Each
 fused helper plus caller saves 180 gas per round; together they save 23,040
 gas per padded block and 1,497,600 gas over the suite.
 
-Fresh local scoring of the exact submission bytes is 5,149,127 versus the
-10,179,119 reference, a combined reduction of 5,029,992 gas. All 19 vectors
+The four recurrence reads of `W[j-16]`, `W[j-15]`, `W[j-7]`, and `W[j-2]`
+now compute their memory addresses directly from the live loop index. Adjusted
+bases 288, 320, 576, and 736 make each address `base + (j << 5)`, exactly the
+same slot as `(j-k) * 32 + 800`. Widened `PUSH4` constants and an executed
+`JUMPDEST` preserve every local byte and instruction boundary. Each direct
+load replaces a setup plus the generic `wAt` helper, saving 38 gas; the batch
+saves 152 gas per recurrence iteration, 7,296 gas per padded block, and
+474,240 gas over the suite.
+
+Fresh local scoring of the exact submission bytes is 4,674,887 versus the
+10,179,119 reference, a combined reduction of 5,504,232 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 80,475 gas.
+vector costs 73,179 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 78,684
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 71,388
 gas per padded block, plus calldata copying and memory expansion.

@@ -84,6 +84,31 @@ def initialWord (memory : ByteArray) (msgOff : UInt256) (j : Nat) : UInt256 :=
 def scheduleSlot (j : Nat) : Nat :=
   Accessors.slotOffset 800 (UInt256.ofNat j)
 
+private theorem directScheduleSlot (j delta base : Nat)
+    (hdelta : delta ≤ j) (hj : j < 64)
+    (hbase : base + delta * 32 = 800) :
+    (UInt256.ofNat base +
+      UInt256.shiftLeft (UInt256.ofNat j) (UInt256.ofNat 5)).toNat =
+        scheduleSlot (j - delta) := by
+  have hjshift :
+      UInt256.shiftLeft (UInt256.ofNat j) (UInt256.ofNat 5) =
+        UInt256.ofNat (j * 32) := by
+    simpa using Challenge.EvmProof.Word.shiftLeft_ofNat
+      (value := j) (shift := 5) (by omega) (by decide) (by omega)
+  have hdshift :
+      UInt256.shiftLeft (UInt256.ofNat (j - delta)) (UInt256.ofNat 5) =
+        UInt256.ofNat ((j - delta) * 32) := by
+    simpa using Challenge.EvmProof.Word.shiftLeft_ofNat
+      (value := j - delta) (shift := 5) (by omega) (by decide) (by omega)
+  unfold scheduleSlot Accessors.slotOffset
+  rw [hjshift, hdshift,
+    Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by omega), Nat.mod_eq_of_lt (by omega)]
+  omega
+
 def firstAt (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   { s with
@@ -393,26 +418,26 @@ def setupW16Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨369, .push ⟨2, by decide⟩ (UInt256.ofNat 592), by rfl, by decide⟩,
    ⟨370, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨371, .push ⟨2, by decide⟩ (UInt256.ofNat 525), by rfl, by decide⟩,
-   ⟨372, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨373, .push ⟨1, by decide⟩ (UInt256.ofNat 16), by rfl, by decide⟩,
-   ⟨374, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨375, .op .SUB, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨376, .push ⟨2, by decide⟩ (UInt256.ofNat 279), by rfl, by decide⟩,
-   ⟨377, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨371, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨372, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨373, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨374, .push ⟨4, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
+   ⟨375, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨376, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨377, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupW15Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨378, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨379, .push ⟨2, by decide⟩ (UInt256.ofNat 547), by rfl, by decide⟩,
    ⟨380, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨381, .push ⟨2, by decide⟩ (UInt256.ofNat 542), by rfl, by decide⟩,
-   ⟨382, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨383, .push ⟨1, by decide⟩ (UInt256.ofNat 15), by rfl, by decide⟩,
-   ⟨384, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨385, .op .SUB, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨386, .push ⟨2, by decide⟩ (UInt256.ofNat 279), by rfl, by decide⟩,
-   ⟨387, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨381, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨382, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨383, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨384, .push ⟨4, by decide⟩ (UInt256.ofNat 320), by rfl, by decide⟩,
+   ⟨385, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨386, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨387, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupSsig0Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -424,26 +449,26 @@ def setupW7Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨391, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨392, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨393, .push ⟨2, by decide⟩ (UInt256.ofNat 561), by rfl, by decide⟩,
-   ⟨394, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨395, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
-   ⟨396, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨397, .op .SUB, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨398, .push ⟨2, by decide⟩ (UInt256.ofNat 279), by rfl, by decide⟩,
-   ⟨399, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨393, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨394, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨395, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨396, .push ⟨4, by decide⟩ (UInt256.ofNat 576), by rfl, by decide⟩,
+   ⟨397, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨398, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨399, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupW2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨400, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨401, .push ⟨2, by decide⟩ (UInt256.ofNat 583), by rfl, by decide⟩,
    ⟨402, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨403, .push ⟨2, by decide⟩ (UInt256.ofNat 578), by rfl, by decide⟩,
-   ⟨404, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨405, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
-   ⟨406, .op (.Dup ⟨9, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨407, .op .SUB, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨408, .push ⟨2, by decide⟩ (UInt256.ofNat 279), by rfl, by decide⟩,
-   ⟨409, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨403, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨404, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨405, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨406, .push ⟨4, by decide⟩ (UInt256.ofNat 736), by rfl, by decide⟩,
+   ⟨407, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨408, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨409, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupSsig1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -474,9 +499,9 @@ def secondIncrementPath :
 
 @[simp] private theorem secondPC (i : Nat) (hlo : 362 ≤ i) (hhi : i ≤ 427) :
     Artifact.referenceArtifact.instructionPC i =
-      [495,496,498,499,500,501,504,505,508,513,516,517,519,520,521,524,
-       525,526,529,530,533,534,536,537,538,541,542,543,546,547,548,549,
-       552,553,555,556,557,560,561,562,565,566,569,570,572,573,574,577,
+      [495,496,498,499,500,501,504,505,508,513,514,516,517,522,523,524,
+       525,526,529,530,531,533,534,539,540,541,542,543,546,547,548,549,
+       550,552,553,558,559,560,561,562,565,566,567,569,570,575,576,577,
        578,579,582,583,584,585,586,587,588,591,592,593,595,596,597,598,
        599,602][i - 362]! := by
   interval_cases i <;> decide
@@ -641,11 +666,11 @@ set_option linter.unusedSimpArgs false in
 theorem run_setupW16 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj16 : 16 ≤ j) (hj64 : j < 64)
     (hstack : rest.length < 1014)
-    (hcode : s.executionEnv.code = submissionBytecode)
+    (_hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupW16Path
       (afterSecondCondition s msgOff returnDest rest j) =
-        some (callW16 s msgOff returnDest rest j) := by
+        some (gotW16 s msgOff returnDest rest j) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -653,23 +678,23 @@ theorem run_setupW16 (s : State) (msgOff returnDest : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
-  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat hj16 (by omega : j < 2 ^ 256)
-  have hdest : Decode.isValidJumpDest submissionBytecode 279 = true := by decide
+  have hoff := directScheduleSlot j 16 288 hj16 hj64 (by omega)
   simp [setupW16Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    afterSecondCondition, callW16, Accessors.loadEntry, List.exchange,
-    hc3, hc4, hc5, hc6, hc7, hc8, hc9, hcode, hrun, hsub, hdest]
-  rfl
+    afterSecondCondition, gotW16, wValue, scheduleSlot,
+    Accessors.loadReturned, Accessors.slotOffset, List.exchange,
+    hc3, hc4, hc5, hc6, hc7, hc8, hc9, hrun, hoff,
+    State.activeWordsAfterUInt256]
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupW15 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj16 : 16 ≤ j) (hj64 : j < 64)
     (hstack : rest.length < 1011)
-    (hcode : s.executionEnv.code = submissionBytecode)
+    (_hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupW15Path
       (gotW16 s msgOff returnDest rest j) =
-        some (callW15 s msgOff returnDest rest j) := by
+        some (gotW15 s msgOff returnDest rest j) := by
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
@@ -677,15 +702,13 @@ theorem run_setupW15 (s : State) (msgOff returnDest : UInt256)
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
-  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega : 15 ≤ j)
-    (by omega : j < 2 ^ 256)
-  have hdest : Decode.isValidJumpDest submissionBytecode 279 = true := by decide
+  have hoff := directScheduleSlot j 15 320 (by omega) hj64 (by omega)
   simp [setupW15Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotW16, callW15, wValue, Accessors.loadEntry, Accessors.loadReturned,
-    scheduleSlot, List.exchange, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hcode, hrun,
-    hsub, hdest]
-  constructor
+    gotW16, gotW15, wValue, Accessors.loadReturned, scheduleSlot,
+    Accessors.slotOffset, List.exchange, hc6, hc7, hc8, hc9, hc10, hc11,
+    hc12, hrun, hoff, State.activeWordsAfterUInt256]
+  rfl
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupSsig0 (s : State) (msgOff returnDest : UInt256)
@@ -710,36 +733,34 @@ set_option linter.unusedSimpArgs false in
 theorem run_setupW7 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj16 : 16 ≤ j) (hj64 : j < 64)
     (hstack : rest.length < 1012)
-    (hcode : s.executionEnv.code = submissionBytecode)
+    (_hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupW7Path
       (gotSsig0 s msgOff returnDest rest j) =
-        some (callW7 s msgOff returnDest rest j) := by
+        some (gotW7 s msgOff returnDest rest j) := by
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
-  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega : 7 ≤ j)
-    (by omega : j < 2 ^ 256)
-  have hdest : Decode.isValidJumpDest submissionBytecode 279 = true := by decide
+  have hoff := directScheduleSlot j 7 576 (by omega) hj64 (by omega)
   simp [setupW7Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotSsig0, gotW15, gotW16, callW7, firstSum, wValue, scheduleSlot,
-    Functions.unaryReturned, Accessors.loadReturned, Accessors.loadEntry,
-    List.exchange, hc6, hc7, hc8, hc9, hc10, hc11, hcode, hrun, hsub, hdest]
-  rfl
+    gotSsig0, gotW15, gotW16, gotW7, firstSum, wValue, scheduleSlot,
+    Functions.unaryReturned, Accessors.loadReturned, Accessors.slotOffset,
+    List.exchange, hc6, hc7, hc8, hc9, hc10, hc11, hrun, hoff,
+    State.activeWordsAfterUInt256]
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupW2 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj16 : 16 ≤ j) (hj64 : j < 64)
     (hstack : rest.length < 1009)
-    (hcode : s.executionEnv.code = submissionBytecode)
+    (_hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupW2Path
       (gotW7 s msgOff returnDest rest j) =
-        some (callW2 s msgOff returnDest rest j) := by
+        some (gotW2 s msgOff returnDest rest j) := by
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
@@ -748,15 +769,13 @@ theorem run_setupW2 (s : State) (msgOff returnDest : UInt256)
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
   have hc14 : rest.length + 14 < 1024 := by omega
-  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega : 2 ≤ j)
-    (by omega : j < 2 ^ 256)
-  have hdest : Decode.isValidJumpDest submissionBytecode 279 = true := by decide
+  have hoff := directScheduleSlot j 2 736 (by omega) hj64 (by omega)
   simp [setupW2Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotW7, gotSsig0, gotW15, gotW16, callW2, firstSum, wValue,
+    gotW7, gotSsig0, gotW15, gotW16, gotW2, firstSum, wValue,
     scheduleSlot, Functions.unaryReturned, Accessors.loadReturned,
-    Accessors.loadEntry, List.exchange, hc7, hc8, hc9, hc10, hc11, hc12,
-    hc13, hc14, hcode, hrun, hsub, hdest]
+    Accessors.slotOffset, List.exchange, hc7, hc8, hc9, hc10, hc11, hc12,
+    hc13, hc14, hrun, hoff, State.activeWordsAfterUInt256]
   rfl
 
 set_option linter.unusedSimpArgs false in
@@ -854,7 +873,7 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
     · exact hnp
   have rawW16 : Challenge.EvmProof.GasSteps
       (afterSecondCondition s msgOff returnDest rest j)
-      (callW16 s msgOff returnDest rest j) := by
+      (gotW16 s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupW16Path
     · exact hcode
@@ -863,14 +882,6 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
         (by omega) hcode hrun
     · exact hrun
     · exact hnp
-  have call16 : Challenge.EvmProof.GasSteps
-      (callW16 s msgOff returnDest rest j)
-      (gotW16 s msgOff returnDest rest j) := by
-    exact Accessors.gasSteps_wAt s (UInt256.ofNat (j - 16)) 0
-      (UInt256.ofNat 525)
-      ([UInt256.ofNat 0xffffffff, UInt256.ofNat 592, UInt256.ofNat j,
-        msgOff, returnDest] ++ rest)
-      (by simp; omega) hcode hfork hrun hnp (by decide)
   let q16 := gotW16 s msgOff returnDest rest j
   have q16code : q16.executionEnv.code = submissionBytecode := by
     simpa [q16, gotW16, Accessors.loadReturned] using hcode
@@ -883,7 +894,7 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
     simpa [q16, gotW16, Accessors.loadReturned] using hnp
   have rawW15 : Challenge.EvmProof.GasSteps
       (gotW16 s msgOff returnDest rest j)
-      (callW15 s msgOff returnDest rest j) := by
+      (gotW15 s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupW15Path
     · exact q16code
@@ -892,14 +903,6 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
         (by omega) hcode hrun
     · exact q16run
     · exact q16np
-  have call15 : Challenge.EvmProof.GasSteps
-      (callW15 s msgOff returnDest rest j)
-      (gotW15 s msgOff returnDest rest j) := by
-    exact Accessors.gasSteps_wAt q16 (UInt256.ofNat (j - 15)) 0
-      (UInt256.ofNat 542)
-      ([0, UInt256.ofNat 547, wValue s (j - 16), UInt256.ofNat 0xffffffff,
-        UInt256.ofNat 592, UInt256.ofNat j, msgOff, returnDest] ++ rest)
-      (by simp; omega) q16code q16fork q16run q16np (by decide)
   let q15 := gotW15 s msgOff returnDest rest j
   have q15code : q15.executionEnv.code = submissionBytecode := by
     simpa [q15, gotW15, q16, Accessors.loadReturned] using q16code
@@ -940,7 +943,7 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
     simpa [qs0, gotSsig0, q15, Functions.unaryReturned] using q15np
   have rawW7 : Challenge.EvmProof.GasSteps
       (gotSsig0 s msgOff returnDest rest j)
-      (callW7 s msgOff returnDest rest j) := by
+      (gotW7 s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupW7Path
     · exact qs0code
@@ -949,14 +952,6 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
         (by omega) hcode hrun
     · exact qs0run
     · exact qs0np
-  have call7 : Challenge.EvmProof.GasSteps
-      (callW7 s msgOff returnDest rest j)
-      (gotW7 s msgOff returnDest rest j) := by
-    exact Accessors.gasSteps_wAt qs0 (UInt256.ofNat (j - 7)) 0
-      (UInt256.ofNat 561)
-      ([firstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
-        UInt256.ofNat 592, UInt256.ofNat j, msgOff, returnDest] ++ rest)
-      (by simp; omega) qs0code qs0fork qs0run qs0np (by decide)
   let q7 := gotW7 s msgOff returnDest rest j
   have q7code : q7.executionEnv.code = submissionBytecode := by
     simpa [q7, gotW7, qs0, Accessors.loadReturned] using qs0code
@@ -969,7 +964,7 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
     simpa [q7, gotW7, qs0, Accessors.loadReturned] using qs0np
   have rawW2 : Challenge.EvmProof.GasSteps
       (gotW7 s msgOff returnDest rest j)
-      (callW2 s msgOff returnDest rest j) := by
+      (gotW2 s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka setupW2Path
     · exact q7code
@@ -978,15 +973,6 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
         (by omega) hcode hrun
     · exact q7run
     · exact q7np
-  have call2 : Challenge.EvmProof.GasSteps
-      (callW2 s msgOff returnDest rest j)
-      (gotW2 s msgOff returnDest rest j) := by
-    exact Accessors.gasSteps_wAt q7 (UInt256.ofNat (j - 2)) 0
-      (UInt256.ofNat 578)
-      ([0, UInt256.ofNat 583, wValue q7 (j - 7),
-        firstSum s msgOff returnDest rest j, UInt256.ofNat 0xffffffff,
-        UInt256.ofNat 592, UInt256.ofNat j, msgOff, returnDest] ++ rest)
-      (by simp; omega) q7code q7fork q7run q7np (by decide)
   let q2 := gotW2 s msgOff returnDest rest j
   have q2code : q2.executionEnv.code = submissionBytecode := by
     simpa [q2, gotW2, q7, Accessors.loadReturned] using q7code
@@ -1067,15 +1053,11 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
     · exact qsetnp
   exact rawCondition
     |>.trans rawW16
-    |>.trans call16
     |>.trans rawW15
-    |>.trans call15
     |>.trans rawS0
     |>.trans callS0
     |>.trans rawW7
-    |>.trans call7
     |>.trans rawW2
-    |>.trans call2
     |>.trans rawS1
     |>.trans callS1
     |>.trans rawFinish
