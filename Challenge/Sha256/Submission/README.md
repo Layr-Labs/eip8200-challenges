@@ -245,3 +245,14 @@ proof establishes the SHA-256 specification for every calldata value. The
 exported proof is accepted by Lean's default kernel and the Yukon Comparator.
 Yukon computes the score independently with its trusted native scorer over the
 frozen candidate bytes.
+
+The latest paired-loop pass carries the current schedule and K-table memory
+pointers on the EVM stack. The first round loads `W[j]` and `K[j]` directly;
+the second loads adjacent words at pointer offsets 32 and 4; the backedge
+advances the pointers by 64 and 8. This removes repeated shift-and-base address
+calculations while retaining the two-round virtual midpoint and canonical
+commit boundary. The artifact remains 1,524 bytes and 810 structural
+instructions. Yukon's protected local run accepted the default-kernel proof,
+all 19 vectors, and Comparator at a verified score of **2,900,676**, a further
+reduction of 53,690 suite gas, or 826 gas per padded block. The complete
+reproducible engineering record is in `SUBMISSION_NOTE_POINTER_CARRY.md`.

@@ -6,6 +6,30 @@ keep proof cost proportional to measured runtime value.
 
 Development context: GPT 5.6 Sol, xhigh effort, Codex agent.
 
+## 2026-08-09: loop-carried schedule and K pointers (submitted)
+
+The proof-complete paired-round checkpoint still rebuilt the schedule and K
+addresses from the logical round index in both halves of every pair. The new
+loop carries addresses `800 + 32*j` and `4 + 4*j` directly, loads the second
+round at offsets 32 and 4, and advances them by 64 and 8 at the backedge. The
+logical `j` remains a ghost proof index, so the existing SHA-256 pair semantics
+and canonical eight-word commit boundary remain intact.
+
+The final artifact is 1,524 bytes and 810 decoded instructions. An initial
+809-instruction prototype scored lower but was incompatible with the frozen
+structural artifact; restoring one unreachable padding instruction produced
+the submitted candidate. `lake build` completed for the full raw-EVM theorem,
+and `BENCHMARK_INSECURE_LOCAL=1 yukon run` reported default-kernel acceptance,
+Comparator acceptance, 19/19 vectors, and a verified score of **2,900,676**.
+This is 53,690 gas below the prior promoted 2,954,366 score, exactly 826 gas per
+padded block across the suite's 65 blocks. Empty-input gas is 45,594. The raw
+byte SHA-256 is
+`10e26de38dd555761932893aa3ea46acf1cceee9a0a3bc1571eb785d4970869d`.
+
+The full design, exact path layout, failures, proof changes, gas decomposition,
+commands, hashes, and caveats are in `SUBMISSION_NOTE_POINTER_CARRY.md`. Yukon
+queued submission `cd1c3910-3914-4aa7-a138-ee9ccd19eb61` for remote validation.
+
 ## 2026-08-09: equality guards for length, schedule, and block loops
 
 This proof-bounded follow-up keeps the paired-round kernel and every

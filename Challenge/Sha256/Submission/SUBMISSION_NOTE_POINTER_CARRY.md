@@ -1,5 +1,84 @@
 # SHA-256 pointer-carry paired-round optimization
 
+## Submission update: relocate executed pair padding (current artifact)
+
+This upload is a proof-preserving follow-up to the pointer-carry artifact
+described below. Yukon promoted that intermediate checkpoint at 2,900,676 as
+submission `cd1c3910-3914-4aa7-a138-ee9ccd19eb61`. Inspection of its paired
+round trace found twelve structural `JUMPDEST` instructions that were executed
+only as byte/instruction-count padding: seven immediately before the first
+working-state load and five immediately before the second round's pointer
+load. They had no jump predecessors and no stack or memory effect, but cost one
+gas each on every one of the 32 paired iterations in a padded block.
+
+The current artifact absorbs those twelve live bytes into adjacent immediate
+encodings without changing their values. At PC 648, seven `JUMPDEST`s followed
+by `PUSH3 384` become one `PUSH10 384`; the next `MLOAD` remains at PC 659. At
+PC 757, five `JUMPDEST`s, `DUP11`, and `PUSH1 32` become `DUP11; PUSH6 32`;
+the following `ADD` remains at PC 765. Both transformations are byte-length
+preserving and have identical live stack semantics.
+
+Removing the twelve decoded instructions from the hot path would otherwise
+change the benchmark's frozen structural count. The 26-byte unreachable filler
+after the unconditional paired-loop backedge at PC 908 previously decoded as
+one `PUSH25 0`. It now decodes as thirteen `PUSH1 0` instructions. That filler
+cannot execute because the preceding `JUMP` always returns to the pair header,
+and the exit branch targets the `JUMPDEST` at PC 935. This adds exactly twelve
+decoded instructions in dead code, balancing the twelve removed live
+instructions. The artifact therefore remains exactly 1,524 bytes and 810
+decoded instructions, and every functional byte-PC boundary is unchanged.
+
+The structural index changes are local to the paired body. The first setup is
+now indices 486..518, first T2 setup 519..530, second T1 setup 531..563, second
+T2 setup 564..575, commit/backedge 576..631, and the thirteen unreachable
+filler instructions occupy 632..644. Index 645 and every downstream fold,
+driver, and output index are unchanged. `Artifact.lean`, the located path lists,
+and their PC tables were updated to these exact ranges. No semantic state,
+cryptographic lemma, loop invariant, helper ABI, or memory representation
+changed. The complete `ReferenceCorrect` build passed after the remap.
+
+The gas reduction is exact:
+
+```text
+12 removed JUMPDEST gas per pair
+12 * 32 pairs = 384 gas per padded block
+384 * 65 public-suite padded blocks = 24,960 gas
+2,900,676 - 24,960 = 2,875,716
+```
+
+Native scoring passed all 19 clean and 19 dirty frames with identical results
+and gas. Empty-input gas fell from 45,594 to 45,210. The protected Yukon run
+then rebuilt the frozen benchmark artifact and `Solution.lean`, exported the
+Comparator terms, ran Lean's default kernel, and reported:
+
+```text
+Lean default kernel accepts the solution
+Your solution is okay!
+Verified gas score: 2,875,716
+Bytecode size: 1,524 bytes
+Correctness vectors: 19/19
+Lean Comparator: accepted
+```
+
+The current ASCII-hex file SHA-256 is
+`c571167e9716b6aaf0f40e926538b3d0a63b5e372f090831a4f0a799f9e9c925`.
+The SHA-256 of the decoded 1,524 raw bytes is
+`9013696dd450f7c11f9ebc6e22e1e9cc17fc79d2a10db2bcd09af0e6236909d1`.
+The exact final commands were the same reproducible sequence documented below:
+
+```text
+lake build Challenge.Sha256.Submission.Proofs.Bytecode.ReferenceCorrect
+yukon setup
+BENCHMARK_INSECURE_LOCAL=1 yukon run
+```
+
+The only course correction in this follow-up was build-cache related: invoking
+Lean directly on `Artifact.lean` initially loaded the previous compiled
+`Bytecode.olean`, making the assembly equality appear false even though the
+source literals matched. Running the dependency-aware `lake build` rebuilt
+`Bytes`, `Bytecode`, and `Artifact` in order; the ordinary kernel assembly
+proof then passed. No axiom or native decision procedure was retained.
+
 ## Context and objective
 
 This submission continues the proof-producing optimization of the EIP-8200
