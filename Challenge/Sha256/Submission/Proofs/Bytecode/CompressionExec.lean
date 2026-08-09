@@ -89,10 +89,10 @@ def copyAndLoopStartPath :
 def conditionPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨476, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨477, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
-   ⟨478, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨479, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨480, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨477, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨478, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
+   ⟨479, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨480, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨481, .push ⟨2, by decide⟩ (UInt256.ofNat 935), by rfl, by decide⟩,
    ⟨482, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -313,10 +313,10 @@ def roundsExitPath :
 def foldConditionPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨620, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨621, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
-   ⟨622, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨623, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨624, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨621, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨622, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨623, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨624, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨625, .push ⟨2, by decide⟩ (UInt256.ofNat 993), by rfl, by decide⟩,
    ⟨626, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -789,7 +789,7 @@ def compressReturned (s : State) (returnDest : UInt256)
 @[simp] private theorem entryPC (i : Nat) (hlo : 465 ≤ i) (hhi : i ≤ 482) :
     Artifact.referenceArtifact.instructionPC i =
       [612, 613, 616, 617, 620, 621, 622, 625, 628, 631, 632, 633,
-       634, 636, 637, 638, 639, 642][i - 465]! := by
+       634, 635, 637, 638, 639, 642][i - 465]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem t1PC (i : Nat) (hlo : 483 ≤ i) (hhi : i ≤ 532) :
@@ -820,7 +820,7 @@ def compressReturned (s : State) (returnDest : UInt256)
 
 @[simp] private theorem foldPC (i : Nat) (hlo : 617 ≤ i) (hhi : i ≤ 657) :
     Artifact.referenceArtifact.instructionPC i =
-      [935, 936, 937, 938, 939, 941, 942, 943, 944, 947,
+      [935, 936, 937, 938, 939, 940, 942, 943, 944, 947,
        948, 949, 953, 954, 955, 959, 960, 961, 962, 966,
        967, 968, 969, 974, 975, 976, 979, 980, 981, 982,
        983, 985, 986, 987, 988, 989, 992, 993, 994, 995,
@@ -874,14 +874,13 @@ theorem run_condition (s : State) (msgOff returnDest : UInt256)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hjWord : (UInt256.ofNat j).toNat = j := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  have hlt : UInt256.lt (UInt256.ofNat j) (UInt256.ofNat 64) =
-      UInt256.ofNat 1 := by
-    simp [UInt256.lt, hjWord, Challenge.EvmProof.Word.word_toNat_ofNat, hj]
-  have hzero : UInt256.isZero (UInt256.ofNat 1) = 0 := by decide
+  have heq : UInt256.eq (UInt256.ofNat 64) (UInt256.ofNat j) = 0 := by
+    simp [UInt256.eq, hjWord, Challenge.EvmProof.Word.word_toNat_ofNat]
+    omega
   have htrue : UInt256.isTrue (0 : UInt256) = false := by decide
   simp [conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    roundAt, afterCondition, hc3, hc4, hc5, hrun, hlt, hzero, htrue]
+    roundAt, afterCondition, hc3, hc4, hc5, hrun, heq, htrue]
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupW (s : State) (msgOff returnDest : UInt256)
@@ -1461,15 +1460,14 @@ theorem run_roundsExit (s : State) (msgOff returnDest : UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hlt : UInt256.lt (UInt256.ofNat 64) (UInt256.ofNat 64) = 0 := by
-    simp [UInt256.lt]
-  have hzero : UInt256.isZero (0 : UInt256) = UInt256.ofNat 1 := by decide
+  have heq : UInt256.eq (UInt256.ofNat 64) (UInt256.ofNat 64) =
+      UInt256.ofNat 1 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat 1) = true := by decide
   have hdest935 : Decode.isValidJumpDest submissionBytecode 935 = true := by decide
   simp [roundsExitPath, conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     roundAt, foldAt, List.exchange, hc2, hc3, hc4, hc5, hcode, hrun,
-    hlt, hzero, htrue, hdest935]
+    heq, htrue, hdest935]
 
 set_option linter.unusedSimpArgs false in
 theorem run_foldCondition (s : State) (msgOff returnDest : UInt256)
@@ -1483,14 +1481,13 @@ theorem run_foldCondition (s : State) (msgOff returnDest : UInt256)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hiWord : (UInt256.ofNat i).toNat = i := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  have hlt : UInt256.lt (UInt256.ofNat i) (UInt256.ofNat 8) =
-      UInt256.ofNat 1 := by
-    simp [UInt256.lt, hiWord, Challenge.EvmProof.Word.word_toNat_ofNat, hi]
-  have hzero : UInt256.isZero (UInt256.ofNat 1) = 0 := by decide
+  have heq : UInt256.eq (UInt256.ofNat 8) (UInt256.ofNat i) = 0 := by
+    simp [UInt256.eq, hiWord, Challenge.EvmProof.Word.word_toNat_ofNat]
+    omega
   have htrue : UInt256.isTrue (0 : UInt256) = false := by decide
   simp [foldConditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    foldAt, afterFoldCondition, hc3, hc4, hc5, hrun, hlt, hzero, htrue]
+    foldAt, afterFoldCondition, hc3, hc4, hc5, hrun, heq, htrue]
 
 set_option linter.unusedSimpArgs false in
 theorem run_foldSetup (s : State) (msgOff returnDest : UInt256)
@@ -1561,15 +1558,14 @@ theorem run_foldExit (s : State) (msgOff returnDest : UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hlt : UInt256.lt (UInt256.ofNat 8) (UInt256.ofNat 8) = 0 := by
-    simp [UInt256.lt]
-  have hzero : UInt256.isZero (0 : UInt256) = UInt256.ofNat 1 := by decide
+  have heq : UInt256.eq (UInt256.ofNat 8) (UInt256.ofNat 8) =
+      UInt256.ofNat 1 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat 1) = true := by decide
   have hdest993 : Decode.isValidJumpDest submissionBytecode 993 = true := by decide
   simp [foldExitPath, foldConditionPath,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     foldAt, compressReturned, List.exchange, hc1, hc2, hc3, hc4, hc5,
-    hcode, hrun, hlt, hzero, htrue, hdest993, hreturn]
+    hcode, hrun, heq, htrue, hdest993, hreturn]
 
 end Challenge.Sha256.Submission.Proofs.Bytecode.Compression

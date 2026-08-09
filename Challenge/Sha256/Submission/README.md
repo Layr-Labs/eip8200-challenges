@@ -195,15 +195,22 @@ moved into unreachable helper padding, preserving every live byte PC, the
 1,524-byte length, and the 810-instruction artifact. This saves 30 gas per
 round, 1,920 gas per padded block, and 124,800 gas over the suite.
 
-Fresh local scoring of the exact submission bytes is 3,566,767 versus the
-10,179,119 reference, a combined reduction of 6,612,352 gas. All 19 vectors
+The compression round and feed-forward loop guards now compare their bounded
+indices directly with 64 and 8. On the proved loop invariants, `j == 64` and
+`i == 8` are equivalent to the former negated less-than tests. A sequential
+`JUMPDEST` preserves each ten-byte, seven-instruction span while removing
+`ISZERO`, saving two gas for every iteration and exit check. Across the public
+suite this saves another 9,620 gas.
+
+Fresh local scoring of the exact submission bytes is 3,557,147 versus the
+10,179,119 reference, a combined reduction of 6,621,972 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 56,131 gas.
+vector costs 55,983 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 54,340
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 54,192
 gas per padded block, plus calldata copying and memory expansion.

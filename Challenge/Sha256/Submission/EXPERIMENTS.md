@@ -393,3 +393,19 @@ fixed cost of 1,499 gas and 54,340 gas per padded block. `Bytes.lean`, the
 assembled artifact, all execution and correctness layers, and `GasCost.lean`
 compile successfully. The exact bytecode SHA-256 is
 `c9226b74ed0b2bac66f593cbb2b1d5dce14c1d311fd1480747f349819580c32b`.
+
+## 2026-08-08: bounded loop equality guards
+
+Both live compression loops have exact proved bounds. The 64-round guard and
+the eight-word feed-forward guard therefore replace `(i < bound) == 0` with
+`i == bound`. Each ten-byte, seven-instruction span uses a sequential
+`JUMPDEST` to preserve byte PCs and structural indices while eliminating one
+executed `ISZERO`.
+
+The trusted scorer accepted all 38 clean/dirty runs at **3,557,147**, with
+identical paired gas and an empty-vector cost of **55,983**. The improvement is
+9,620 suite gas, or 148 gas per padded block. The revised exact-gas proof uses
+1,499 fixed gas and 54,192 gas per padded block; the complete artifact,
+execution, correctness, and gas theorem builds are green. The exact bytecode
+SHA-256 is
+`e19051f32b98e2428a4ec69d54e799136da78bf71b7236d9f6f70ec7e1fe9c36`.
