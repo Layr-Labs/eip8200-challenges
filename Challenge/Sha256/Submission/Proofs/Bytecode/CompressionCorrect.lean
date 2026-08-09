@@ -1,4 +1,5 @@
 import Challenge.Sha256.Submission.Proofs.Bytecode.PairCorrectTest
+import Challenge.Sha256.Submission.Proofs.Bytecode.CompressionComposition
 import Challenge.Sha256.Submission.Proofs.Bytecode.ScheduleCorrect
 import Challenge.Sha256.Submission.Proofs.Bytecode.InitializationCorrect
 import Challenge.Sha256.Submission.Proofs.Bytecode.HashSpecBridge
@@ -763,21 +764,21 @@ theorem roundLoopState_represents (s : State)
     (padded : ByteArray) (blockOff : Nat) (initial : Working)
     (hinitial : Represents s initial)
     (hinputs : RoundInputsCorrect s msgOff returnDest rest padded blockOff) :
-    Represents (Compression.roundLoopState s msgOff returnDest rest 64)
+    Represents (Compression.roundsGhost s msgOff returnDest rest)
       (rounds initial padded blockOff 64) := by
-  simpa [Compression.roundLoopState] using
+  simpa [Compression.roundsGhost] using
     PairCorrectTest.pairLoopState_represents s msgOff returnDest rest padded
       blockOff initial hinitial hinputs 32 (by omega)
 
 theorem roundLoopState_inputs (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (n read : Nat) (hread : read < 64) :
     Compression.kValue
-        (Compression.roundLoopState s msgOff returnDest rest n) read =
+        (ResidentBridge.ghostLoopState s msgOff returnDest rest (n / 2)) read =
         Compression.kValue s read ∧
       Compression.wValue
-        (Compression.roundLoopState s msgOff returnDest rest n) read =
+        (ResidentBridge.ghostLoopState s msgOff returnDest rest (n / 2)) read =
         Compression.wValue s read := by
-  simpa [Compression.roundLoopState] using
+  simpa using
     PairCorrectTest.pairLoopState_inputs s msgOff returnDest rest (n / 2)
       read hread
 
@@ -992,11 +993,166 @@ theorem roundLoopState_saved (s : State) (msgOff returnDest : UInt256)
 theorem roundLoopState_saved (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (n read : Nat) (hread : read < 8) :
     Compression.savedValue
-        (Compression.roundLoopState s msgOff returnDest rest n) read =
+        (ResidentBridge.ghostLoopState s msgOff returnDest rest (n / 2)) read =
       Compression.savedValue s read := by
-  simpa [Compression.roundLoopState] using
+  simpa using
     PairCorrectTest.pairLoopState_saved s msgOff returnDest rest (n / 2)
       read hread
+
+/-- The resident-loop exit commits the ghost working words to the canonical
+eight memory slots. -/
+theorem roundsStored_hValue (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (i : Nat) (hi : i < 8) :
+    Compression.hValue (Compression.roundsStored s msgOff returnDest rest) i =
+      Compression.hValue (Compression.roundsGhost s msgOff returnDest rest) i := by
+  let base := Compression.roundsBase s msgOff returnDest rest
+  let ghost := Compression.roundsGhost s msgOff returnDest rest
+  let q0 := ResidentExitSegments.q0 base ghost msgOff returnDest rest
+  let q1 := ResidentExitSegments.q1 base ghost msgOff returnDest rest
+  let q2 := ResidentExitSegments.q2 base ghost msgOff returnDest rest
+  let q3 := ResidentExitSegments.q3 base ghost msgOff returnDest rest
+  let q4 := ResidentExitSegments.q4 base ghost msgOff returnDest rest
+  let q5 := ResidentExitSegments.q5 base ghost msgOff returnDest rest
+  let q6 := ResidentExitSegments.q6 base ghost msgOff returnDest rest
+  let q7 := ResidentExitSegments.q7 base ghost msgOff returnDest rest
+  let q8 := ResidentExitSegments.q8 base ghost msgOff returnDest rest
+  have hm1 : q1.memory = writeH q0.memory 0 (Compression.hValue ghost 0) := by rfl
+  have hm2 : q2.memory = writeH q1.memory 1 (Compression.hValue ghost 1) := by rfl
+  have hm3 : q3.memory = writeH q2.memory 2 (Compression.hValue ghost 2) := by rfl
+  have hm4 : q4.memory = writeH q3.memory 3 (Compression.hValue ghost 3) := by rfl
+  have hm5 : q5.memory = writeH q4.memory 4 (Compression.hValue ghost 4) := by rfl
+  have hm6 : q6.memory = writeH q5.memory 5 (Compression.hValue ghost 5) := by rfl
+  have hm7 : q7.memory = writeH q6.memory 6 (Compression.hValue ghost 6) := by rfl
+  have hm8 : q8.memory = writeH q7.memory 7 (Compression.hValue ghost 7) := by rfl
+  have p8 (k : Nat) (hk : k < 8) (hne : k ≠ 7) :
+      Compression.hValue q8 k = Compression.hValue q7 k :=
+    hValue_of_write_ne q7 q8 k 7 hk hne _ hm8
+  have p7 (k : Nat) (hk : k < 8) (hne : k ≠ 6) :
+      Compression.hValue q7 k = Compression.hValue q6 k :=
+    hValue_of_write_ne q6 q7 k 6 hk hne _ hm7
+  have p6 (k : Nat) (hk : k < 8) (hne : k ≠ 5) :
+      Compression.hValue q6 k = Compression.hValue q5 k :=
+    hValue_of_write_ne q5 q6 k 5 hk hne _ hm6
+  have p5 (k : Nat) (hk : k < 8) (hne : k ≠ 4) :
+      Compression.hValue q5 k = Compression.hValue q4 k :=
+    hValue_of_write_ne q4 q5 k 4 hk hne _ hm5
+  have p4 (k : Nat) (hk : k < 8) (hne : k ≠ 3) :
+      Compression.hValue q4 k = Compression.hValue q3 k :=
+    hValue_of_write_ne q3 q4 k 3 hk hne _ hm4
+  have p3 (k : Nat) (hk : k < 8) (hne : k ≠ 2) :
+      Compression.hValue q3 k = Compression.hValue q2 k :=
+    hValue_of_write_ne q2 q3 k 2 hk hne _ hm3
+  have p2 (k : Nat) (hk : k < 8) (hne : k ≠ 1) :
+      Compression.hValue q2 k = Compression.hValue q1 k :=
+    hValue_of_write_ne q1 q2 k 1 hk hne _ hm2
+  rw [show Compression.hValue
+      (Compression.roundsStored s msgOff returnDest rest) i =
+      Compression.hValue q8 i by rfl]
+  interval_cases i
+  · rw [p8 0 (by decide) (by decide), p7 0 (by decide) (by decide),
+      p6 0 (by decide) (by decide), p5 0 (by decide) (by decide),
+      p4 0 (by decide) (by decide), p3 0 (by decide) (by decide),
+      p2 0 (by decide) (by decide),
+      hValue_of_write_same q0 q1 0 (by decide) _ hm1]
+  · rw [p8 1 (by decide) (by decide), p7 1 (by decide) (by decide),
+      p6 1 (by decide) (by decide), p5 1 (by decide) (by decide),
+      p4 1 (by decide) (by decide), p3 1 (by decide) (by decide),
+      hValue_of_write_same q1 q2 1 (by decide) _ hm2]
+  · rw [p8 2 (by decide) (by decide), p7 2 (by decide) (by decide),
+      p6 2 (by decide) (by decide), p5 2 (by decide) (by decide),
+      p4 2 (by decide) (by decide),
+      hValue_of_write_same q2 q3 2 (by decide) _ hm3]
+  · rw [p8 3 (by decide) (by decide), p7 3 (by decide) (by decide),
+      p6 3 (by decide) (by decide), p5 3 (by decide) (by decide),
+      hValue_of_write_same q3 q4 3 (by decide) _ hm4]
+  · rw [p8 4 (by decide) (by decide), p7 4 (by decide) (by decide),
+      p6 4 (by decide) (by decide),
+      hValue_of_write_same q4 q5 4 (by decide) _ hm5]
+  · rw [p8 5 (by decide) (by decide), p7 5 (by decide) (by decide),
+      hValue_of_write_same q5 q6 5 (by decide) _ hm6]
+  · rw [p8 6 (by decide) (by decide),
+      hValue_of_write_same q6 q7 6 (by decide) _ hm7]
+  · rw [hValue_of_write_same q7 q8 7 (by decide) _ hm8]
+
+theorem roundsStored_saved (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (read : Nat) (hread : read < 8) :
+    Compression.savedValue (Compression.roundsStored s msgOff returnDest rest) read =
+      Compression.savedValue s read := by
+  let base := Compression.roundsBase s msgOff returnDest rest
+  let ghost := Compression.roundsGhost s msgOff returnDest rest
+  let q0 := ResidentExitSegments.q0 base ghost msgOff returnDest rest
+  let q1 := ResidentExitSegments.q1 base ghost msgOff returnDest rest
+  let q2 := ResidentExitSegments.q2 base ghost msgOff returnDest rest
+  let q3 := ResidentExitSegments.q3 base ghost msgOff returnDest rest
+  let q4 := ResidentExitSegments.q4 base ghost msgOff returnDest rest
+  let q5 := ResidentExitSegments.q5 base ghost msgOff returnDest rest
+  let q6 := ResidentExitSegments.q6 base ghost msgOff returnDest rest
+  let q7 := ResidentExitSegments.q7 base ghost msgOff returnDest rest
+  let q8 := ResidentExitSegments.q8 base ghost msgOff returnDest rest
+  have hm1 : q1.memory = writeH q0.memory 0 (Compression.hValue ghost 0) := by rfl
+  have hm2 : q2.memory = writeH q1.memory 1 (Compression.hValue ghost 1) := by rfl
+  have hm3 : q3.memory = writeH q2.memory 2 (Compression.hValue ghost 2) := by rfl
+  have hm4 : q4.memory = writeH q3.memory 3 (Compression.hValue ghost 3) := by rfl
+  have hm5 : q5.memory = writeH q4.memory 4 (Compression.hValue ghost 4) := by rfl
+  have hm6 : q6.memory = writeH q5.memory 5 (Compression.hValue ghost 5) := by rfl
+  have hm7 : q7.memory = writeH q6.memory 6 (Compression.hValue ghost 6) := by rfl
+  have hm8 : q8.memory = writeH q7.memory 7 (Compression.hValue ghost 7) := by rfl
+  have hq0 : q0.memory = s.memory := by
+    simp [q0, base, Compression.roundsBase, ResidentExitSegments.q0,
+      Compression.residentAt, Compression.residentBase, Compression.loadedWord]
+  rw [show Compression.savedValue
+      (Compression.roundsStored s msgOff returnDest rest) read =
+      Compression.savedValue q8 read by rfl]
+  rw [savedValue_of_writeH q7 q8 read 7 hread (by decide) _ hm8,
+    savedValue_of_writeH q6 q7 read 6 hread (by decide) _ hm7,
+    savedValue_of_writeH q5 q6 read 5 hread (by decide) _ hm6,
+    savedValue_of_writeH q4 q5 read 4 hread (by decide) _ hm5,
+    savedValue_of_writeH q3 q4 read 3 hread (by decide) _ hm4,
+    savedValue_of_writeH q2 q3 read 2 hread (by decide) _ hm3,
+    savedValue_of_writeH q1 q2 read 1 hread (by decide) _ hm2,
+    savedValue_of_writeH q0 q1 read 0 hread (by decide) _ hm1]
+  unfold Compression.savedValue
+  rw [hq0]
+
+theorem roundsStored_kValue (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (read : Nat) (hread : read < 64) :
+    Compression.kValue (Compression.roundsStored s msgOff returnDest rest) read =
+      Compression.kValue s read := by
+  let base := Compression.roundsBase s msgOff returnDest rest
+  let ghost := Compression.roundsGhost s msgOff returnDest rest
+  let q0 := ResidentExitSegments.q0 base ghost msgOff returnDest rest
+  let q1 := ResidentExitSegments.q1 base ghost msgOff returnDest rest
+  let q2 := ResidentExitSegments.q2 base ghost msgOff returnDest rest
+  let q3 := ResidentExitSegments.q3 base ghost msgOff returnDest rest
+  let q4 := ResidentExitSegments.q4 base ghost msgOff returnDest rest
+  let q5 := ResidentExitSegments.q5 base ghost msgOff returnDest rest
+  let q6 := ResidentExitSegments.q6 base ghost msgOff returnDest rest
+  let q7 := ResidentExitSegments.q7 base ghost msgOff returnDest rest
+  let q8 := ResidentExitSegments.q8 base ghost msgOff returnDest rest
+  have hm1 : q1.memory = writeH q0.memory 0 (Compression.hValue ghost 0) := by rfl
+  have hm2 : q2.memory = writeH q1.memory 1 (Compression.hValue ghost 1) := by rfl
+  have hm3 : q3.memory = writeH q2.memory 2 (Compression.hValue ghost 2) := by rfl
+  have hm4 : q4.memory = writeH q3.memory 3 (Compression.hValue ghost 3) := by rfl
+  have hm5 : q5.memory = writeH q4.memory 4 (Compression.hValue ghost 4) := by rfl
+  have hm6 : q6.memory = writeH q5.memory 5 (Compression.hValue ghost 5) := by rfl
+  have hm7 : q7.memory = writeH q6.memory 6 (Compression.hValue ghost 6) := by rfl
+  have hm8 : q8.memory = writeH q7.memory 7 (Compression.hValue ghost 7) := by rfl
+  have hq0 : q0.memory = s.memory := by
+    simp [q0, base, Compression.roundsBase, ResidentExitSegments.q0,
+      Compression.residentAt, Compression.residentBase, Compression.loadedWord]
+  rw [show Compression.kValue
+      (Compression.roundsStored s msgOff returnDest rest) read =
+      Compression.kValue q8 read by rfl]
+  rw [kValue_of_writeH q7 q8 read 7 hread _ hm8,
+    kValue_of_writeH q6 q7 read 6 hread _ hm7,
+    kValue_of_writeH q5 q6 read 5 hread _ hm6,
+    kValue_of_writeH q4 q5 read 4 hread _ hm5,
+    kValue_of_writeH q3 q4 read 3 hread _ hm4,
+    kValue_of_writeH q2 q3 read 2 hread _ hm3,
+    kValue_of_writeH q1 q2 read 1 hread _ hm2,
+    kValue_of_writeH q0 q1 read 0 hread _ hm1]
+  unfold Compression.kValue
+  rw [hq0]
 
 /-- The normalized eight-word feed-forward result. -/
 def feedForward (H : Array UInt32) (x : Working) : Array UInt32 := #[
@@ -1017,17 +1173,27 @@ theorem compressionCore_words (prepared : State)
     ∀ i, i < 8 →
       Compression.hValue
           (Compression.foldLoopState
-            (Compression.roundLoopState prepared msgOff returnDest rest 64)
+            (Compression.roundsStored prepared msgOff returnDest rest)
             msgOff returnDest rest 8) i =
         Challenge.EvmProof.Word.ofUInt32
           (H[i]! + (rounds initial padded blockOff 64).get i) := by
   intro i hi
-  let afterRounds := Compression.roundLoopState prepared msgOff returnDest rest 64
-  have hrounds := roundLoopState_represents prepared msgOff returnDest rest
+  let afterRounds := Compression.roundsStored prepared msgOff returnDest rest
+  have hghost := roundLoopState_represents prepared msgOff returnDest rest
     padded blockOff initial hinitial hinputs
+  have hrounds : Represents afterRounds (rounds initial padded blockOff 64) := by
+    rcases hghost with ⟨ha, hb, hc, hd, he, hf, hg, hh⟩
+    exact ⟨(roundsStored_hValue prepared msgOff returnDest rest 0 (by decide)).trans ha,
+      (roundsStored_hValue prepared msgOff returnDest rest 1 (by decide)).trans hb,
+      (roundsStored_hValue prepared msgOff returnDest rest 2 (by decide)).trans hc,
+      (roundsStored_hValue prepared msgOff returnDest rest 3 (by decide)).trans hd,
+      (roundsStored_hValue prepared msgOff returnDest rest 4 (by decide)).trans he,
+      (roundsStored_hValue prepared msgOff returnDest rest 5 (by decide)).trans hf,
+      (roundsStored_hValue prepared msgOff returnDest rest 6 (by decide)).trans hg,
+      (roundsStored_hValue prepared msgOff returnDest rest 7 (by decide)).trans hh⟩
   have hsavedRounds : SavedRepresents afterRounds H := by
     intro k hk
-    rw [roundLoopState_saved prepared msgOff returnDest rest 64 k hk]
+    rw [roundsStored_saved prepared msgOff returnDest rest k hk]
     exact hsaved k hk
   have hfold := foldLoopState_correct afterRounds msgOff returnDest rest H
     (rounds initial padded blockOff 64) hrounds hsavedRounds 8 (by omega)
@@ -1493,13 +1659,13 @@ theorem compressResult_kValue (s : State) (msgOff returnDest : UInt256)
   unfold Compression.compressReturned
   change Compression.kValue
     (Compression.foldLoopState
-      (Compression.roundLoopState
+      (Compression.roundsStored
         (Compression.copyHashState
           (Compression.afterSchedule s msgOff returnDest rest))
-        msgOff returnDest rest 64)
+        msgOff returnDest rest)
       msgOff returnDest rest 8) k = _
   rw [foldLoopState_kValue _ _ _ _ 8 k (by omega) hk,
-    (roundLoopState_inputs _ _ _ _ 64 k hk).1,
+    roundsStored_kValue _ _ _ _ k hk,
     copyHashState_kValue _ k hk,
     afterSchedule_kValue _ _ _ _ k hk]
 
@@ -1508,10 +1674,10 @@ theorem compressResult_hValue_core (s : State) (msgOff returnDest : UInt256)
     Compression.hValue (Compression.compressResult s msgOff returnDest rest) i =
       Compression.hValue
         (Compression.foldLoopState
-          (Compression.roundLoopState
+          (Compression.roundsStored
             (Compression.copyHashState
               (Compression.afterSchedule s msgOff returnDest rest))
-            msgOff returnDest rest 64)
+            msgOff returnDest rest)
           msgOff returnDest rest 8) i := by
   rfl
 

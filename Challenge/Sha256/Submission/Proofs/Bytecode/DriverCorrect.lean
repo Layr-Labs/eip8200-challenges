@@ -371,7 +371,7 @@ private theorem readWord_afterSecondIteration (s : State)
       rfl
 
 private theorem readWord_roundLoop (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (n addr : Nat) (hout : OutsideScratch addr) :
+    (rest : List UInt256) (n addr : Nat) (_hout : OutsideScratch addr) :
     MachineState.readWord
         (Compression.roundLoopState s msgOff returnDest rest n).memory addr =
       MachineState.readWord s.memory addr := by
@@ -445,26 +445,61 @@ private theorem readWord_afterPair (s : State) (msgOff returnDest : UInt256)
     ((readWord_storedWord q0 288 (Compression.pairA2 s j) addr
       (by omega) (by norm_num [Padding.messageOffset]) hout).trans (by rfl))))))))
 
-private theorem readWord_pairLoop (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (n addr : Nat) (hout : OutsideScratch addr) :
-    MachineState.readWord
-        (PairCompositionTest.pairLoopState s msgOff returnDest rest n).memory addr =
-      MachineState.readWord s.memory addr := by
-  induction n with
-  | zero => rfl
-  | succ n ih =>
-      rw [PairCompositionTest.pairLoopState]
-      exact (readWord_afterPair
-        (PairCompositionTest.pairLoopState s msgOff returnDest rest n)
-        msgOff returnDest rest (2 * n) addr hout).trans ih
-
 private theorem readWord_roundLoop (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (n addr : Nat) (hout : OutsideScratch addr) :
+    (rest : List UInt256) (n addr : Nat) (_hout : OutsideScratch addr) :
     MachineState.readWord
         (Compression.roundLoopState s msgOff returnDest rest n).memory addr =
       MachineState.readWord s.memory addr := by
-  simpa [Compression.roundLoopState] using
-    readWord_pairLoop s msgOff returnDest rest (n / 2) addr hout
+  simp [Compression.roundLoopState, ResidentLoop.loopState,
+    Compression.residentAt, Compression.residentBase, Compression.loadedWord]
+
+private theorem readWord_roundsStored (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) (addr : Nat)
+    (hout : OutsideScratch addr) :
+    MachineState.readWord
+        (Compression.roundsStored s msgOff returnDest rest).memory addr =
+      MachineState.readWord s.memory addr := by
+  let base := Compression.roundsBase s msgOff returnDest rest
+  let ghost := Compression.roundsGhost s msgOff returnDest rest
+  let q0 := ResidentExitSegments.q0 base ghost msgOff returnDest rest
+  let q1 := ResidentExitSegments.q1 base ghost msgOff returnDest rest
+  let q2 := ResidentExitSegments.q2 base ghost msgOff returnDest rest
+  let q3 := ResidentExitSegments.q3 base ghost msgOff returnDest rest
+  let q4 := ResidentExitSegments.q4 base ghost msgOff returnDest rest
+  let q5 := ResidentExitSegments.q5 base ghost msgOff returnDest rest
+  let q6 := ResidentExitSegments.q6 base ghost msgOff returnDest rest
+  let q7 := ResidentExitSegments.q7 base ghost msgOff returnDest rest
+  let q8 := ResidentExitSegments.q8 base ghost msgOff returnDest rest
+  have hbase : q0.memory = s.memory := by
+    simp [q0, base, Compression.roundsBase, ResidentExitSegments.q0,
+      Compression.residentAt, Compression.residentBase, Compression.loadedWord]
+  change MachineState.readWord q8.memory addr = _
+  calc
+    _ = MachineState.readWord q7.memory addr :=
+      readWord_storedWord q7 512 (Compression.hValue ghost 7) addr
+        (by omega) (by norm_num [Padding.messageOffset]) hout
+    _ = MachineState.readWord q6.memory addr :=
+      readWord_storedWord q6 480 (Compression.hValue ghost 6) addr
+        (by omega) (by norm_num [Padding.messageOffset]) hout
+    _ = MachineState.readWord q5.memory addr :=
+      readWord_storedWord q5 448 (Compression.hValue ghost 5) addr
+        (by omega) (by norm_num [Padding.messageOffset]) hout
+    _ = MachineState.readWord q4.memory addr :=
+      readWord_storedWord q4 416 (Compression.hValue ghost 4) addr
+        (by omega) (by norm_num [Padding.messageOffset]) hout
+    _ = MachineState.readWord q3.memory addr :=
+      readWord_storedWord q3 384 (Compression.hValue ghost 3) addr
+        (by omega) (by norm_num [Padding.messageOffset]) hout
+    _ = MachineState.readWord q2.memory addr :=
+      readWord_storedWord q2 352 (Compression.hValue ghost 2) addr
+        (by omega) (by norm_num [Padding.messageOffset]) hout
+    _ = MachineState.readWord q1.memory addr :=
+      readWord_storedWord q1 320 (Compression.hValue ghost 1) addr
+        (by omega) (by norm_num [Padding.messageOffset]) hout
+    _ = MachineState.readWord q0.memory addr :=
+      readWord_storedWord q0 288 (Compression.hValue ghost 0) addr
+        (by omega) (by norm_num [Padding.messageOffset]) hout
+    _ = MachineState.readWord s.memory addr := by rw [hbase]
 
 private theorem readWord_afterFoldIteration (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (i addr : Nat)
@@ -503,12 +538,12 @@ theorem compressResult_readWord (s : State) (msgOff returnDest : UInt256)
       MachineState.readWord s.memory addr := by
   let scheduled := Compression.afterSchedule s msgOff returnDest rest
   let prepared := Compression.copyHashState scheduled
-  let rounded := Compression.roundLoopState prepared msgOff returnDest rest 64
+  let rounded := Compression.roundsStored prepared msgOff returnDest rest
   change MachineState.readWord
       (Compression.foldLoopState rounded msgOff returnDest rest 8).memory addr = _
   exact (readWord_foldLoop rounded msgOff returnDest rest 8 addr
     (by omega) hout).trans
-      ((readWord_roundLoop prepared msgOff returnDest rest 64 addr hout).trans
+      ((readWord_roundsStored prepared msgOff returnDest rest addr hout).trans
         ((readWord_copyHashState scheduled addr hout).trans
           (readWord_afterSchedule s msgOff returnDest rest addr hout)))
 

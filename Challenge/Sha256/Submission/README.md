@@ -256,3 +256,11 @@ instructions. Yukon's protected local run accepted the default-kernel proof,
 all 19 vectors, and Comparator at a verified score of **2,900,676**, a further
 reduction of 53,690 suite gas, or 826 gas per padded block. The complete
 reproducible engineering record is in `SUBMISSION_NOTE_POINTER_CARRY.md`.
+
+The immediate follow-up removes twelve executed padding `JUMPDEST`s from each
+paired iteration. Wider `PUSH10 384` and `PUSH6 32` encodings absorb the same
+bytes without changing values or downstream PCs; thirteen unreachable
+`PUSH1 0` instructions replace the pair-tail `PUSH25 0` reservoir to retain
+810 structural instructions. The default-kernel Yukon run accepted all 19
+vectors and Comparator at **2,875,716**, another 24,960 suite gas or 384 gas
+per padded block below the promoted pointer-carry checkpoint.

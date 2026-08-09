@@ -487,23 +487,23 @@ def lengthIterationPath :
 def gasSteps_enterPad (input : ByteArray) :
     Challenge.EvmProof.GasSteps (Main.initializedState input) (padEntry input) := by
   have hinitPC : (Main.initializedState input).pc =
-      UInt256.ofNat (Artifact.instructionPC 731) := by rfl
+      UInt256.ofNat (Artifact.instructionPC 742) := by rfl
   have hinitStack : (Main.initializedState input).stack = [] := by rfl
   have hreturnPC : (pushedReturn input).pc =
-      UInt256.ofNat (Artifact.instructionPC 732) := by
+      UInt256.ofNat (Artifact.instructionPC 743) := by
     rw [pushedReturn, hinitPC]
-    exact Trace.pushPC (index := 731) (width := 2) (by decide)
+    exact Trace.pushPC (index := 742) (width := 2) (by decide)
   have houtputPC : (pushedOutput input).pc =
-      UInt256.ofNat (Artifact.instructionPC 733) := by
+      UInt256.ofNat (Artifact.instructionPC 744) := by
     rw [pushedOutput, hreturnPC]
-    exact Trace.succPC (index := 732) (by decide)
+    exact Trace.succPC (index := 743) (by decide)
   have hpadPC : (pushedPad input).pc =
-      UInt256.ofNat (Artifact.instructionPC 734) := by
+      UInt256.ofNat (Artifact.instructionPC 745) := by
     rw [pushedPad, houtputPC]
-    exact Trace.pushPC (index := 733) (width := 2) (by decide)
+    exact Trace.pushPC (index := 744) (width := 2) (by decide)
   have hpushReturn : Challenge.EvmProof.GasSteps
       (Main.initializedState input) (pushedReturn input) := by
-    have hdecode := Trace.decodedPushAt (Main.initializedState input) 731
+    have hdecode := Trace.decodedPushAt (Main.initializedState input) 742
       ⟨2, by decide⟩ (UInt256.ofNat 1367) rfl rfl rfl (by decide)
       (by rfl)
     have hstep := Challenge.EvmProof.GasStep.pushN
@@ -513,7 +513,7 @@ def gasSteps_enterPad (input : ByteArray) :
     simpa [pushedReturn] using hstep
   have hpushOutput : Challenge.EvmProof.GasSteps
       (pushedReturn input) (pushedOutput input) := by
-    have hdecode := Trace.decodedPushOpAt (pushedReturn input) 732
+    have hdecode := Trace.decodedPushOpAt (pushedReturn input) 743
       ⟨0, by decide⟩ ⟨0⟩ rfl (by
         exact hreturnPC) rfl
         (by decide) (by rfl)
@@ -522,7 +522,7 @@ def gasSteps_enterPad (input : ByteArray) :
     simpa [pushedOutput] using hstep
   have hpushPad : Challenge.EvmProof.GasSteps
       (pushedOutput input) (pushedPad input) := by
-    have hdecode := Trace.decodedPushAt (pushedOutput input) 733
+    have hdecode := Trace.decodedPushAt (pushedOutput input) 744
       ⟨2, by decide⟩ (UInt256.ofNat 357) rfl (by
         exact houtputPC) rfl
         (by decide) (by rfl)
@@ -533,7 +533,7 @@ def gasSteps_enterPad (input : ByteArray) :
       (by rfl) (by rfl)
     simpa [pushedPad] using hstep
   have hjump : Challenge.EvmProof.GasSteps (pushedPad input) (padEntry input) := by
-    have hdecode := Trace.decodedOpAt (pushedPad input) 734 .JUMP rfl hpadPC rfl
+    have hdecode := Trace.decodedOpAt (pushedPad input) 745 .JUMP rfl hpadPC rfl
       (by decide) trivial (by rfl)
     have hvalid : Decode.isValidJumpDest
         (pushedPad input).executionEnv.code (UInt256.ofNat 357).toNat = true := by
@@ -1058,7 +1058,7 @@ def lengthExitPath :
 @[simp] private theorem refPc319 : Artifact.referenceArtifact.instructionPC 354 = 438 := by decide
 @[simp] private theorem refPc320 : Artifact.referenceArtifact.instructionPC 355 = 439 := by decide
 @[simp] private theorem refPc321 : Artifact.referenceArtifact.instructionPC 356 = 440 := by decide
-@[simp] private theorem refPc711 : Artifact.referenceArtifact.instructionPC 735 = 1367 := by decide
+@[simp] private theorem refPc711 : Artifact.referenceArtifact.instructionPC 746 = 1367 := by decide
 @[simp] private theorem next315 : (UInt256.ofNat 434).succ = UInt256.ofNat 435 := by decide
 @[simp] private theorem next316 : (UInt256.ofNat 435).succ = UInt256.ofNat 436 := by decide
 @[simp] private theorem next317 : (UInt256.ofNat 436).succ = UInt256.ofNat 437 := by decide
@@ -1074,7 +1074,7 @@ def lengthExitPath :
 @[simp] private theorem valid1367 :
     Decode.isValidJumpDest submissionBytecode 1367 = true := by
   rw [← refPc711]
-  exact Artifact.isValidJumpDest_index 735 (by rfl)
+  exact Artifact.isValidJumpDest_index 746 (by rfl)
 
 def lengthExitComparePath := lengthExitPath.take 3
 def lengthExitBranchPath := (lengthExitPath.drop 3).take 2

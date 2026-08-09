@@ -1,4 +1,4 @@
-import Challenge.Sha256.Submission.Proofs.Bytecode.PairCompositionTest
+import Challenge.Sha256.Submission.Proofs.Bytecode.ResidentBridge
 import Challenge.Sha256.Submission.Proofs.Bytecode.CompressionSpec
 import Challenge.Sha256.Submission.Proofs.Bytecode.PaddedBlockBridge
 set_option warningAsError true
@@ -537,31 +537,31 @@ theorem afterPair_preserves_saved (s : State) (msgOff returnDest : UInt256)
 theorem pairLoopState_inputs (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (n read : Nat) (hread : read < 64) :
     Compression.kValue
-        (PairCompositionTest.pairLoopState s msgOff returnDest rest n) read =
+        (ResidentBridge.ghostLoopState s msgOff returnDest rest n) read =
         Compression.kValue s read ∧
       Compression.wValue
-        (PairCompositionTest.pairLoopState s msgOff returnDest rest n) read =
+        (ResidentBridge.ghostLoopState s msgOff returnDest rest n) read =
         Compression.wValue s read := by
   induction n with
   | zero => constructor <;> rfl
   | succ n ih =>
-      rw [PairCompositionTest.pairLoopState]
+      rw [ResidentBridge.ghostLoopState]
       have hp := afterPair_preserves_inputs
-        (PairCompositionTest.pairLoopState s msgOff returnDest rest n)
+        (ResidentBridge.ghostLoopState s msgOff returnDest rest n)
         msgOff returnDest rest (2 * n) read hread
       exact ⟨hp.1.trans ih.1, hp.2.trans ih.2⟩
 
 theorem pairLoopState_saved (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (n read : Nat) (hread : read < 8) :
     Compression.savedValue
-        (PairCompositionTest.pairLoopState s msgOff returnDest rest n) read =
+        (ResidentBridge.ghostLoopState s msgOff returnDest rest n) read =
       Compression.savedValue s read := by
   induction n with
   | zero => rfl
   | succ n ih =>
-      rw [PairCompositionTest.pairLoopState]
+      rw [ResidentBridge.ghostLoopState]
       exact (afterPair_preserves_saved
-        (PairCompositionTest.pairLoopState s msgOff returnDest rest n)
+        (ResidentBridge.ghostLoopState s msgOff returnDest rest n)
         msgOff returnDest rest (2 * n) read hread).trans ih
 
 def PairInputsCorrect (s : State) (padded : ByteArray) (blockOff : Nat) : Prop :=
@@ -578,16 +578,16 @@ theorem pairLoopState_represents (s : State) (msgOff returnDest : UInt256)
     (hinputs : PairInputsCorrect s padded blockOff) :
     ∀ n, n ≤ 32 →
       CompressionCorrect.Represents
-        (PairCompositionTest.pairLoopState s msgOff returnDest rest n)
+        (ResidentBridge.ghostLoopState s msgOff returnDest rest n)
         (CompressionCorrect.rounds initial padded blockOff (2 * n)) := by
   intro n hn
   induction n with
   | zero =>
-      simpa [PairCompositionTest.pairLoopState, Compression.pairAt,
+      simpa [ResidentBridge.ghostLoopState, Compression.pairAt,
         CompressionCorrect.Represents, Compression.hValue,
         CompressionCorrect.rounds] using hinitial
   | succ n ih =>
-      let q := PairCompositionTest.pairLoopState s msgOff returnDest rest n
+      let q := ResidentBridge.ghostLoopState s msgOff returnDest rest n
       have hprev : CompressionCorrect.Represents q
           (CompressionCorrect.rounds initial padded blockOff (2 * n)) :=
         ih (by omega)
@@ -604,7 +604,7 @@ theorem pairLoopState_represents (s : State) (msgOff returnDest : UInt256)
         (hp0.2.trans (hinputs (2 * n) (by omega)).2)
         (hp1.1.trans (hinputs (2 * n + 1) (by omega)).1)
         (hp1.2.trans (hinputs (2 * n + 1) (by omega)).2)
-      rw [PairCompositionTest.pairLoopState]
+      rw [ResidentBridge.ghostLoopState]
       have hr : CompressionCorrect.rounds initial padded blockOff (2 * (n + 1)) =
           CompressionCorrect.round
             (CompressionCorrect.round

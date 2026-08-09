@@ -6,7 +6,107 @@ keep proof cost proportional to measured runtime value.
 
 Development context: GPT 5.6 Sol, xhigh effort, Codex agent.
 
+## 2026-08-09: resident working-state loop (submitted)
+
+The starting frontier for this pass was the fully verified pointer-carry and
+depadding candidate at score **2,875,716**, empty-input gas 45,210, 1,524
+bytes, and 810 decoded instructions. Its paired-round loop still committed all
+eight SHA-256 working words to memory after every pair and reloaded them at the
+start of the next pair. The optimization hypothesis was that the pair boundary
+could instead keep the eight logical words resident on the ordinary EVM stack,
+with no `DUPN`, `SWAPN`, or other extended-stack opcode, and write canonical H
+memory only once after all 32 pairs.
+
+The native prototype rewrote the pair-loop entry, body, backedge, and exit. It
+loads the eight working words once, carries them together with the W and K
+pointers, computes the same two-round virtual midpoint already used by the
+proof, permutes the resulting resident tuple for the next pair, and commits the
+eight final words at counter 64. The deepest live stack access remains within
+ordinary `DUP16`/`SWAP16`. A complementary output rewrite spends the displaced
+structural padding by widening fixed-address and shift immediates, removing
+eleven executed no-op destinations per invocation. All rewritten spans retain
+the byte PCs expected by the surrounding driver. The final artifact remains
+exactly 1,524 bytes and 810 structural instructions; its submission-file
+SHA-256 is `019167bdf9fbd66dff139825fc244e30b315c4c1feff98fc51248828824103ff`.
+
+Native testing came first. The trusted SHA scorer was run on all 19 public
+vectors from both clean and dirty initial frames. All 38 rows returned `ok`,
+each dirty gas result exactly matched its clean partner, the empty vector cost
+**43,032**, and the clean suite score was **2,734,652**. Relative to the
+2,875,716 frontier this is an exact improvement of **141,064** suite gas. The
+resident loop accounts for 2,167 gas per padded block and output depadding for
+11 gas per invocation: `2,167 * 65 + 11 * 19 = 141,064`.
+
+The Lean proof was then rebuilt from the frozen bytes upward. `Bytes.lean` and
+`Artifact.lean` were regenerated from the exact scorer-passing hex. New
+`ResidentSegment`, `ResidentComposition`, and `ResidentLoop` modules prove the
+five execution segments, their one-pair composition, and 32 bounded resident
+iterations. `ResidentBridge` maintains a canonical memory-backed ghost state
+advanced by the already-proved mathematical two-round transition, while the
+executable state retains the working tuple on the EVM stack. This separation
+kept the proof mathematical rather than relying on concrete vectors.
+
+The exit proof was deliberately split into the loop guard, eight individual H
+stores, and cleanup. It proves that those stores transport the ghost working
+words back to canonical memory, preserve the saved pre-round hash words and K
+table, and leave padded input outside scratch unchanged. `CompressionCorrect`
+then reuses the existing 64-round SHA semantics and feed-forward proof.
+`DriverCorrect` was updated to show the resident loop itself leaves persistent
+memory unchanged and that the final eight scratch writes preserve every padded
+message word used by later blocks. The output trace was mechanically reindexed
+for its widened immediates; its packing semantics are unchanged.
+
+Several proof-engineering course corrections were necessary. Attempting to
+unfold the executable resident state directly into the old memory-backed round
+theorems exhausted Lean's heartbeat budget. The successful design states
+round semantics over the ghost state, proves the exit-store bridge pointwise,
+and only then enters feed-forward. A second issue came from stale driver and
+output structural indices after padding was moved; decoding the frozen bytes
+and rebuilding the exact located paths fixed that without changing the tested
+artifact. Finally, Yukon setup initially failed under restricted DNS, so it
+was rerun with network access to refresh Comparator before the official gate.
+
+The reproducible final commands were:
+
+```text
+yukon setup
+lake build Challenge.Sha256.Submission.Proofs.Bytecode.ReferenceCorrect
+BENCHMARK_INSECURE_LOCAL=1 yukon run
+```
+
+The official run regenerated the benchmark artifact from the current hex,
+built `Challenge.Sha256.Submission.Solution`, exported the candidate theorem,
+accepted it with Lean's default kernel, accepted it with Comparator using only
+the benchmark allowlist (`propext`, `Quot.sound`, `Classical.choice`, and the
+listed reducible primitives), and passed 19/19 protected correctness vectors.
+The official reported score is **2,734,652** and bytecode size is **1,524**.
+The Darwin insecure-local flag selects Comparator's local fake process sandbox;
+it does not alter the Lean theorem, exported proof, bytecode, native vectors,
+or scoring logic.
+
+The main remaining optimization direction is a larger resident superstep or a
+rotating physical-slot design that reduces stack permutation work. Any such
+follow-up should preserve ordinary stack-depth limits, native-test clean and
+dirty frames before proof work, freeze the exact bytes, and retain the current
+ghost/executable separation so the universal SHA correctness argument remains
+auditable.
+
 ## 2026-08-09: loop-carried schedule and K pointers (submitted)
+
+### Follow-up: move pair padding off the executed path
+
+Seven sequential destinations before the first pair load and five before the
+second pointer load were padding, not jump targets. Widening the adjacent
+immediates preserves their numeric values and every downstream byte PC while
+removing twelve gas per pair. Replacing the unreachable 26-byte `PUSH25 0`
+after the unconditional backedge with thirteen `PUSH1 0` instructions restores
+the structural count exactly. The result remains 1,524 bytes/810 instructions.
+
+Native clean/dirty scoring is 2,875,716 and empty-input gas is 45,210. The full
+`ReferenceCorrect` proof, Yukon setup, default kernel, 19/19 protected vectors,
+and Comparator all pass. Submission `d75dfa35-2b3e-4362-b487-bb94ba122f14`
+was queued for validation. The improvement from the promoted 2,900,676 pointer
+checkpoint is 12 gas * 32 pairs * 65 suite blocks = **24,960 gas**.
 
 The proof-complete paired-round checkpoint still rebuilt the schedule and K
 addresses from the logical round index in both halves of every pair. The new

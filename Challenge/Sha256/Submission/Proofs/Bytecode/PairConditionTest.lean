@@ -18,13 +18,12 @@ private def wfOp {op : Operation}
   ⟨hopcode, hplain, havailable⟩
 
 def path : List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨479, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨480, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨481, YulEvmCompiler.Instr.push 1 64, by rfl, by decide⟩,
-   ⟨482, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨483, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨484, YulEvmCompiler.Instr.push 2 935, by rfl, by decide⟩,
-   ⟨485, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)), by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨496, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨497, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 8 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨498, YulEvmCompiler.Instr.push 2 2848, by rfl, by decide⟩,
+   ⟨499, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨500, YulEvmCompiler.Instr.push 2 886, by rfl, by decide⟩,
+   ⟨501, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)), by rfl, wfOp (by decide) trivial rfl⟩]
 
 def before (s : State) (msg ret : UInt256) (rest : List UInt256) (j : Nat) : State :=
   { s with pc := UInt256.ofNat 633

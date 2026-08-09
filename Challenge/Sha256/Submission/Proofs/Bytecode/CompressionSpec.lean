@@ -1,4 +1,4 @@
-import Challenge.Sha256.Submission.Proofs.Bytecode.Compression
+import Challenge.Sha256.Submission.Proofs.Bytecode.CompressionExec
 import Challenge.Sha256.Submission.Proofs.Bytecode.ScheduleCorrect
 
 set_option warningAsError true

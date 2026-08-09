@@ -184,7 +184,7 @@ def gasSteps_initStores (s : State) :
 
 def initStart (calldata : ByteArray) : State :=
   { initialState submissionBytecode calldata 0 with
-    pc := UInt256.ofNat (Artifact.instructionPC 683) }
+    pc := UInt256.ofNat (Artifact.instructionPC 694) }
 
 def initializedState (calldata : ByteArray) : State :=
   Artifact.initStores.foldl applyInitStore (initStart calldata)
@@ -193,7 +193,7 @@ def gasSteps_mainJumpdest (calldata : ByteArray) :
     Challenge.EvmProof.GasSteps
       (Reference.atPC calldata Reference.mainPC) (initStart calldata) := by
   have hv := Artifact.mainEntry_valid
-  have hd := Artifact.decodeAt_op_index 682 .JUMPDEST hv.2.1
+  have hd := Artifact.decodeAt_op_index 693 .JUMPDEST hv.2.1
     (by decide) trivial
   have g := Reference.gasSteps_jumpdest_at calldata Reference.mainPC (by
     simp [Reference.mainPC]) (by simpa [Reference.mainPC, hv.1] using hd)

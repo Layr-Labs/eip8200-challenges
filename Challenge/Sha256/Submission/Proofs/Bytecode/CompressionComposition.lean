@@ -1,8 +1,8 @@
 
-import Challenge.Sha256.Submission.Proofs.Bytecode.PairCompositionTest
+import Challenge.Sha256.Submission.Proofs.Bytecode.ResidentExitSegments
 set_option warningAsError true
 set_option maxRecDepth 10000
-set_option maxHeartbeats 5000000
+set_option maxHeartbeats 20000000
 /-!
 # Composition of the reference SHA-256 compression executor
 
@@ -115,7 +115,9 @@ def gasSteps_toRoundLoop (s : State) (msgOff returnDest : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (compressEntry s msgOff returnDest rest)
-      (pairAt (copyHashState (afterSchedule s msgOff returnDest rest))
+      (residentAt
+        (residentBase (copyHashState (afterSchedule s msgOff returnDest rest)))
+        (copyHashState (afterSchedule s msgOff returnDest rest))
         msgOff returnDest rest 0) := by
   have gEntry := gasSteps_entry s msgOff returnDest rest hcap
     hcode hfork hrun hnp
@@ -157,7 +159,8 @@ def gasSteps_toRoundLoop (s : State) (msgOff returnDest : UInt256)
   have gCopyRaw : Challenge.EvmProof.GasSteps
       { q with pc := UInt256.ofNat 621
                stack := [msgOff, returnDest] ++ rest }
-      (pairAt (copyHashState q) msgOff returnDest rest 0) := by
+      (residentAt (residentBase (copyHashState q)) (copyHashState q)
+        msgOff returnDest rest 0) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka copyAndLoopStartPath
     · rw [qentry]
@@ -170,7 +173,8 @@ def gasSteps_toRoundLoop (s : State) (msgOff returnDest : UInt256)
     · rw [qentry]
       exact qnp
   have gCopy : Challenge.EvmProof.GasSteps q
-      (pairAt (copyHashState q) msgOff returnDest rest 0) :=
+      (residentAt (residentBase (copyHashState q)) (copyHashState q)
+        msgOff returnDest rest 0) :=
     Challenge.EvmProof.GasSteps.cast gCopyRaw qentry rfl
   exact gEntry.trans (gSchedule.trans gCopy)
 
@@ -1034,7 +1038,7 @@ def gasSteps_roundLoop (s : State) (msgOff returnDest : UInt256)
 `n = 64` denotes the state after 32 certified two-round pairs. -/
 def roundLoopState (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (n : Nat) : State :=
-  PairCompositionTest.pairLoopState s msgOff returnDest rest (n / 2)
+  ResidentLoop.loopState (residentBase s) s msgOff returnDest rest (n / 2)
 
 @[simp] theorem roundLoopState_executionEnv (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (n : Nat) :
@@ -1052,12 +1056,33 @@ def roundLoopState (s : State) (msgOff returnDest : UInt256)
     (roundLoopState s msgOff returnDest rest n).callStack = s.callStack := by
   simp [roundLoopState]
 
-@[simp] theorem pairAt_roundLoopState_64 (s : State)
+def roundsBase (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) : State :=
+  ResidentLoop.actualBaseState (residentBase s) s msgOff returnDest rest 32
+
+def roundsGhost (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) : State :=
+  ResidentBridge.ghostLoopState s msgOff returnDest rest 32
+
+def roundsStored (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) : State :=
+  residentExitStored (roundsBase s msgOff returnDest rest)
+    (roundsGhost s msgOff returnDest rest) msgOff returnDest rest
+
+@[simp] theorem roundsStored_executionEnv (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) :
-    pairAt (roundLoopState s msgOff returnDest rest 64)
-      msgOff returnDest rest 64 = roundLoopState s msgOff returnDest rest 64 := by
-  simp [roundLoopState, PairCompositionTest.pairLoopState,
-    afterPair, pairAt]
+    (roundsStored s msgOff returnDest rest).executionEnv = s.executionEnv := by
+  simp [roundsStored, roundsBase, residentExitStored, storedWord]
+
+@[simp] theorem roundsStored_halt (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) :
+    (roundsStored s msgOff returnDest rest).halt = s.halt := by
+  simp [roundsStored, roundsBase, residentExitStored, storedWord]
+
+@[simp] theorem roundsStored_callStack (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) :
+    (roundsStored s msgOff returnDest rest).callStack = s.callStack := by
+  simp [roundsStored, roundsBase, residentExitStored, storedWord]
 
 def gasSteps_roundLoop (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 988)
@@ -1068,8 +1093,11 @@ def gasSteps_roundLoop (s : State) (msgOff returnDest : UInt256)
     Challenge.EvmProof.GasSteps (roundLoopState s msgOff returnDest rest 0)
       (roundLoopState s msgOff returnDest rest 64) := by
   simpa [roundLoopState] using
-    PairCompositionTest.gasStepsPairLoop s msgOff returnDest rest hcap
-      hcode hfork hrun hnp
+    ResidentLoop.gasStepsLoop (residentBase s) s msgOff returnDest rest hcap
+      (by rfl) (by simpa using hcode)
+      (by simpa [State.fork] using hfork)
+      (by simpa using hrun)
+      (by simpa using hnp)
 
 def gasSteps_roundsExit (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1000)
@@ -1077,15 +1105,36 @@ def gasSteps_roundsExit (s : State) (msgOff returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (pairAt s msgOff returnDest rest 64)
-      (foldAt s msgOff returnDest rest 0) := by
-  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.referenceArtifact .Osaka pairExitPath
-  · exact hcode
-  · exact hfork
-  · exact run_pairExit s msgOff returnDest rest hcap hcode hrun
-  · exact hrun
-  · exact hnp
+    Challenge.EvmProof.GasSteps (roundLoopState s msgOff returnDest rest 64)
+      (roundsStored s msgOff returnDest rest) := by
+  let base := roundsBase s msgOff returnDest rest
+  let ghost := roundsGhost s msgOff returnDest rest
+  have baseCode : base.executionEnv.code = submissionBytecode := by
+    simpa only [base, roundsBase, ResidentLoop.actualBaseState_executionEnv,
+      ResidentLoop.residentBase_executionEnv] using hcode
+  have baseFork : base.fork = .Osaka := by
+    simpa only [base, roundsBase, State.fork,
+      ResidentLoop.actualBaseState_executionEnv,
+      ResidentLoop.residentBase_executionEnv] using hfork
+  have baseRun : base.halt = .Running := by
+    simpa only [base, roundsBase, ResidentLoop.actualBaseState_halt,
+      ResidentLoop.residentBase_halt] using hrun
+  have baseNp : Precompile.isPrecompileWithConfig
+      base.executionEnv.precompileConfig base.executionEnv.fork
+      base.executionEnv.codeAddr = false := by
+    simpa only [base, roundsBase, State.fork,
+      ResidentLoop.actualBaseState_executionEnv,
+      ResidentLoop.residentBase_executionEnv] using hnp
+  have g : Challenge.EvmProof.GasSteps
+      (residentAt base ghost msgOff returnDest rest 64)
+      (residentExitStored base ghost msgOff returnDest rest) := by
+    exact ResidentExitSegments.gasStepsExit base ghost msgOff returnDest rest
+      hcap baseCode baseFork baseRun baseNp
+  have hs : residentAt base ghost msgOff returnDest rest 64 =
+      roundLoopState s msgOff returnDest rest 64 := by rfl
+  have ht : residentExitStored base ghost msgOff returnDest rest =
+      roundsStored s msgOff returnDest rest := by rfl
+  exact Challenge.EvmProof.GasSteps.cast g hs ht
 
 def gasSteps_foldIteration (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (i : Nat) (hi : i < 8)
@@ -1241,7 +1290,7 @@ def gasSteps_foldExit (s : State) (msgOff returnDest : UInt256)
 def compressResult (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) : State :=
   let prepared := copyHashState (afterSchedule s msgOff returnDest rest)
-  let afterRounds := roundLoopState prepared msgOff returnDest rest 64
+  let afterRounds := roundsStored prepared msgOff returnDest rest
   let afterFold := foldLoopState afterRounds msgOff returnDest rest 8
   compressReturned afterFold returnDest rest
 
@@ -1249,7 +1298,7 @@ def compressResult (s : State) (msgOff returnDest : UInt256)
     (msgOff returnDest : UInt256) (rest : List UInt256) :
     (compressResult s msgOff returnDest rest).callStack = s.callStack := by
   simp only [compressResult, compressReturned, foldLoopState_callStack,
-    roundLoopState_callStack, copyHashState_callStack,
+    roundsStored_callStack, copyHashState_callStack,
     afterSchedule_callStack]
 
 /-- Complete direct execution theorem for the reference `compress` bytecode:
@@ -1285,7 +1334,9 @@ def gasSteps_compress (s : State) (msgOff returnDest : UInt256)
     simpa only [preparedEnv] using hnp
   have gRounds := gasSteps_roundLoop prepared msgOff returnDest rest hcap
     preparedCode preparedFork preparedRun preparedNp
-  let afterRounds := roundLoopState prepared msgOff returnDest rest 64
+  have gRoundsExit := gasSteps_roundsExit prepared msgOff returnDest rest
+    (by omega) preparedCode preparedFork preparedRun preparedNp
+  let afterRounds := roundsStored prepared msgOff returnDest rest
   have roundsCode : afterRounds.executionEnv.code = submissionBytecode := by
     simpa [afterRounds] using preparedCode
   have roundsFork : afterRounds.fork = .Osaka := by
@@ -1295,14 +1346,15 @@ def gasSteps_compress (s : State) (msgOff returnDest : UInt256)
   have roundsNp : Precompile.isPrecompileWithConfig afterRounds.executionEnv.precompileConfig afterRounds.executionEnv.fork
       afterRounds.executionEnv.codeAddr = false := by
     simpa [afterRounds] using preparedNp
-  have gRoundsExitRaw := gasSteps_roundsExit afterRounds msgOff returnDest rest
-    (by omega) roundsCode roundsFork roundsRun roundsNp
-  have roundsExitStart : pairAt afterRounds msgOff returnDest rest 64 =
-      afterRounds := by simp [afterRounds]
-  have gRoundsExit := Challenge.EvmProof.GasSteps.cast gRoundsExitRaw
-    roundsExitStart rfl
   have gFold := gasSteps_foldLoop afterRounds msgOff returnDest rest hcap
     roundsCode roundsFork roundsRun roundsNp
+  have afterRoundsPC : afterRounds.pc = UInt256.ofNat 939 := by rfl
+  have afterRoundsStack :
+      afterRounds.stack = [UInt256.ofNat 0, msgOff, returnDest] ++ rest := by rfl
+  have foldStart : foldAt afterRounds msgOff returnDest rest 0 =
+      afterRounds := ResidentExitSegments.foldAt_zero_eq afterRounds
+        msgOff returnDest rest afterRoundsPC afterRoundsStack
+  have gFoldFromStored := Challenge.EvmProof.GasSteps.cast gFold foldStart rfl
   let afterFold := foldLoopState afterRounds msgOff returnDest rest 8
   have foldCode : afterFold.executionEnv.code = submissionBytecode := by
     simpa [afterFold] using roundsCode
@@ -1321,7 +1373,7 @@ def gasSteps_compress (s : State) (msgOff returnDest : UInt256)
   have gAll := gPrepare
     |>.trans gRounds
     |>.trans gRoundsExit
-    |>.trans gFold
+    |>.trans gFoldFromStored
     |>.trans gReturn
   have resultEq : compressReturned afterFold returnDest rest =
       compressResult s msgOff returnDest rest := by
@@ -1345,7 +1397,7 @@ def gasSteps_compress (s : State) (msgOff returnDest : UInt256)
     let preparedNp : Precompile.isPrecompileWithConfig prepared.executionEnv.precompileConfig prepared.executionEnv.fork
         prepared.executionEnv.codeAddr = false := by
       simpa [prepared] using hnp
-    let afterRounds := roundLoopState prepared msgOff returnDest rest 64
+    let afterRounds := roundsStored prepared msgOff returnDest rest
     let roundsCode : afterRounds.executionEnv.code = submissionBytecode := by
       simpa [afterRounds] using preparedCode
     let roundsFork : afterRounds.fork = .Osaka := by
@@ -1371,8 +1423,8 @@ def gasSteps_compress (s : State) (msgOff returnDest : UInt256)
         hnp).cost +
       (gasSteps_roundLoop prepared msgOff returnDest rest hcap preparedCode
         preparedFork preparedRun preparedNp).cost) +
-      (gasSteps_roundsExit afterRounds msgOff returnDest rest (by omega)
-        roundsCode roundsFork roundsRun roundsNp).cost) +
+      (gasSteps_roundsExit prepared msgOff returnDest rest (by omega)
+        preparedCode preparedFork preparedRun preparedNp).cost) +
       (gasSteps_foldLoop afterRounds msgOff returnDest rest hcap roundsCode
         roundsFork roundsRun roundsNp).cost) +
       (gasSteps_foldExit afterFold msgOff returnDest rest (by omega) foldCode
