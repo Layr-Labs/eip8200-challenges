@@ -23,29 +23,29 @@ private def wfOp {op : Operation}
 
 def wAtPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨201, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨202, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨203, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨204, .push ⟨2, by decide⟩ (UInt256.ofNat 800), by rfl, by decide⟩,
-   ⟨205, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨206, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨207, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨208, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨209, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨210, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨231, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨232, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨233, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨234, .push ⟨2, by decide⟩ (UInt256.ofNat 800), by rfl, by decide⟩,
+   ⟨235, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨236, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨237, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨238, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨239, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨240, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def hAtPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨230, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨231, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨232, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨233, .push ⟨2, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
-   ⟨234, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨235, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨236, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨237, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨238, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨239, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨260, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨261, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨262, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨263, .push ⟨2, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
+   ⟨264, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨265, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨266, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨267, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨268, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨269, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def slotOffset (base : Nat) (index : UInt256) : Nat :=
   (UInt256.shiftLeft index (UInt256.ofNat 5) + UInt256.ofNat base).toNat
@@ -63,16 +63,16 @@ def loadReturned (s : State) (base : Nat) (index returnDest : UInt256)
     stack := MachineState.readWord s.memory (slotOffset base index) :: rest
     activeWords := s.activeWordsAfterUInt256 (slotOffset base index) 32 }
 
-@[simp] private theorem pc201 : Artifact.referenceArtifact.instructionPC 201 = 279 := by decide
-@[simp] private theorem pc202 : Artifact.referenceArtifact.instructionPC 202 = 280 := by decide
-@[simp] private theorem pc203 : Artifact.referenceArtifact.instructionPC 203 = 282 := by decide
-@[simp] private theorem pc204 : Artifact.referenceArtifact.instructionPC 204 = 283 := by decide
-@[simp] private theorem pc205 : Artifact.referenceArtifact.instructionPC 205 = 286 := by decide
-@[simp] private theorem pc206 : Artifact.referenceArtifact.instructionPC 206 = 287 := by decide
-@[simp] private theorem pc207 : Artifact.referenceArtifact.instructionPC 207 = 288 := by decide
-@[simp] private theorem pc208 : Artifact.referenceArtifact.instructionPC 208 = 289 := by decide
-@[simp] private theorem pc209 : Artifact.referenceArtifact.instructionPC 209 = 290 := by decide
-@[simp] private theorem pc210 : Artifact.referenceArtifact.instructionPC 210 = 291 := by decide
+@[simp] private theorem pc201 : Artifact.referenceArtifact.instructionPC 231 = 279 := by decide
+@[simp] private theorem pc202 : Artifact.referenceArtifact.instructionPC 232 = 280 := by decide
+@[simp] private theorem pc203 : Artifact.referenceArtifact.instructionPC 233 = 282 := by decide
+@[simp] private theorem pc204 : Artifact.referenceArtifact.instructionPC 234 = 283 := by decide
+@[simp] private theorem pc205 : Artifact.referenceArtifact.instructionPC 235 = 286 := by decide
+@[simp] private theorem pc206 : Artifact.referenceArtifact.instructionPC 236 = 287 := by decide
+@[simp] private theorem pc207 : Artifact.referenceArtifact.instructionPC 237 = 288 := by decide
+@[simp] private theorem pc208 : Artifact.referenceArtifact.instructionPC 238 = 289 := by decide
+@[simp] private theorem pc209 : Artifact.referenceArtifact.instructionPC 239 = 290 := by decide
+@[simp] private theorem pc210 : Artifact.referenceArtifact.instructionPC 240 = 291 := by decide
 @[simp] private theorem next201 : (UInt256.ofNat 279).succ = UInt256.ofNat 280 := by decide
 @[simp] private theorem next202 : UInt256.ofNat 280 + UInt256.ofNat 2 = UInt256.ofNat 282 := by decide
 @[simp] private theorem next203 : (UInt256.ofNat 282).succ = UInt256.ofNat 283 := by decide
@@ -83,16 +83,16 @@ def loadReturned (s : State) (base : Nat) (index returnDest : UInt256)
 @[simp] private theorem next208 : (UInt256.ofNat 289).succ = UInt256.ofNat 290 := by decide
 @[simp] private theorem next209 : (UInt256.ofNat 290).succ = UInt256.ofNat 291 := by decide
 
-@[simp] private theorem pc230 : Artifact.referenceArtifact.instructionPC 230 = 318 := by decide
-@[simp] private theorem pc231 : Artifact.referenceArtifact.instructionPC 231 = 319 := by decide
-@[simp] private theorem pc232 : Artifact.referenceArtifact.instructionPC 232 = 321 := by decide
-@[simp] private theorem pc233 : Artifact.referenceArtifact.instructionPC 233 = 322 := by decide
-@[simp] private theorem pc234 : Artifact.referenceArtifact.instructionPC 234 = 325 := by decide
-@[simp] private theorem pc235 : Artifact.referenceArtifact.instructionPC 235 = 326 := by decide
-@[simp] private theorem pc236 : Artifact.referenceArtifact.instructionPC 236 = 327 := by decide
-@[simp] private theorem pc237 : Artifact.referenceArtifact.instructionPC 237 = 328 := by decide
-@[simp] private theorem pc238 : Artifact.referenceArtifact.instructionPC 238 = 329 := by decide
-@[simp] private theorem pc239 : Artifact.referenceArtifact.instructionPC 239 = 330 := by decide
+@[simp] private theorem pc230 : Artifact.referenceArtifact.instructionPC 260 = 318 := by decide
+@[simp] private theorem pc231 : Artifact.referenceArtifact.instructionPC 261 = 319 := by decide
+@[simp] private theorem pc232 : Artifact.referenceArtifact.instructionPC 262 = 321 := by decide
+@[simp] private theorem pc233 : Artifact.referenceArtifact.instructionPC 263 = 322 := by decide
+@[simp] private theorem pc234 : Artifact.referenceArtifact.instructionPC 264 = 325 := by decide
+@[simp] private theorem pc235 : Artifact.referenceArtifact.instructionPC 265 = 326 := by decide
+@[simp] private theorem pc236 : Artifact.referenceArtifact.instructionPC 266 = 327 := by decide
+@[simp] private theorem pc237 : Artifact.referenceArtifact.instructionPC 267 = 328 := by decide
+@[simp] private theorem pc238 : Artifact.referenceArtifact.instructionPC 268 = 329 := by decide
+@[simp] private theorem pc239 : Artifact.referenceArtifact.instructionPC 269 = 330 := by decide
 @[simp] private theorem next230 : (UInt256.ofNat 318).succ = UInt256.ofNat 319 := by decide
 @[simp] private theorem next231 : UInt256.ofNat 319 + UInt256.ofNat 2 = UInt256.ofNat 321 := by decide
 @[simp] private theorem next232 : (UInt256.ofNat 321).succ = UInt256.ofNat 322 := by decide
@@ -181,23 +181,23 @@ def gasSteps_hAt (s : State) (index output returnDest : UInt256)
 
 def wSetPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨216, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨217, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨218, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨219, .push ⟨2, by decide⟩ (UInt256.ofNat 800), by rfl, by decide⟩,
-   ⟨220, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨221, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨222, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨246, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨247, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨248, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨249, .push ⟨2, by decide⟩ (UInt256.ofNat 800), by rfl, by decide⟩,
+   ⟨250, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨251, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨252, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def hSetPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨245, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨246, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨247, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨248, .push ⟨2, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
-   ⟨249, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨250, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨251, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨275, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨276, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨277, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨278, .push ⟨2, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
+   ⟨279, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨280, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨281, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def storeEntry (s : State) (entry : Nat) (index value returnDest : UInt256)
     (rest : List UInt256) : State :=
@@ -214,13 +214,13 @@ def storeReturned (s : State) (base : Nat) (index value returnDest : UInt256)
       (Data.Bytes.natToBytesPadded value.toNat 32) (slotOffset base index)
     activeWords := s.activeWordsAfterUInt256 (slotOffset base index) 32 }
 
-@[simp] private theorem pc216 : Artifact.referenceArtifact.instructionPC 216 = 299 := by decide
-@[simp] private theorem pc217 : Artifact.referenceArtifact.instructionPC 217 = 300 := by decide
-@[simp] private theorem pc218 : Artifact.referenceArtifact.instructionPC 218 = 302 := by decide
-@[simp] private theorem pc219 : Artifact.referenceArtifact.instructionPC 219 = 303 := by decide
-@[simp] private theorem pc220 : Artifact.referenceArtifact.instructionPC 220 = 306 := by decide
-@[simp] private theorem pc221 : Artifact.referenceArtifact.instructionPC 221 = 307 := by decide
-@[simp] private theorem pc222 : Artifact.referenceArtifact.instructionPC 222 = 308 := by decide
+@[simp] private theorem pc216 : Artifact.referenceArtifact.instructionPC 246 = 299 := by decide
+@[simp] private theorem pc217 : Artifact.referenceArtifact.instructionPC 247 = 300 := by decide
+@[simp] private theorem pc218 : Artifact.referenceArtifact.instructionPC 248 = 302 := by decide
+@[simp] private theorem pc219 : Artifact.referenceArtifact.instructionPC 249 = 303 := by decide
+@[simp] private theorem pc220 : Artifact.referenceArtifact.instructionPC 250 = 306 := by decide
+@[simp] private theorem pc221 : Artifact.referenceArtifact.instructionPC 251 = 307 := by decide
+@[simp] private theorem pc222 : Artifact.referenceArtifact.instructionPC 252 = 308 := by decide
 @[simp] private theorem next216 : (UInt256.ofNat 299).succ = UInt256.ofNat 300 := by decide
 @[simp] private theorem next217 : UInt256.ofNat 300 + UInt256.ofNat 2 = UInt256.ofNat 302 := by decide
 @[simp] private theorem next218 : (UInt256.ofNat 302).succ = UInt256.ofNat 303 := by decide
@@ -228,13 +228,13 @@ def storeReturned (s : State) (base : Nat) (index value returnDest : UInt256)
 @[simp] private theorem next220 : (UInt256.ofNat 306).succ = UInt256.ofNat 307 := by decide
 @[simp] private theorem next221 : (UInt256.ofNat 307).succ = UInt256.ofNat 308 := by decide
 
-@[simp] private theorem pc245 : Artifact.referenceArtifact.instructionPC 245 = 338 := by decide
-@[simp] private theorem pc246 : Artifact.referenceArtifact.instructionPC 246 = 339 := by decide
-@[simp] private theorem pc247 : Artifact.referenceArtifact.instructionPC 247 = 341 := by decide
-@[simp] private theorem pc248 : Artifact.referenceArtifact.instructionPC 248 = 342 := by decide
-@[simp] private theorem pc249 : Artifact.referenceArtifact.instructionPC 249 = 345 := by decide
-@[simp] private theorem pc250 : Artifact.referenceArtifact.instructionPC 250 = 346 := by decide
-@[simp] private theorem pc251 : Artifact.referenceArtifact.instructionPC 251 = 347 := by decide
+@[simp] private theorem pc245 : Artifact.referenceArtifact.instructionPC 275 = 338 := by decide
+@[simp] private theorem pc246 : Artifact.referenceArtifact.instructionPC 276 = 339 := by decide
+@[simp] private theorem pc247 : Artifact.referenceArtifact.instructionPC 277 = 341 := by decide
+@[simp] private theorem pc248 : Artifact.referenceArtifact.instructionPC 278 = 342 := by decide
+@[simp] private theorem pc249 : Artifact.referenceArtifact.instructionPC 279 = 345 := by decide
+@[simp] private theorem pc250 : Artifact.referenceArtifact.instructionPC 280 = 346 := by decide
+@[simp] private theorem pc251 : Artifact.referenceArtifact.instructionPC 281 = 347 := by decide
 @[simp] private theorem next245 : (UInt256.ofNat 338).succ = UInt256.ofNat 339 := by decide
 @[simp] private theorem next246 : UInt256.ofNat 339 + UInt256.ofNat 2 = UInt256.ofNat 341 := by decide
 @[simp] private theorem next247 : (UInt256.ofNat 341).succ = UInt256.ofNat 342 := by decide
@@ -322,18 +322,18 @@ def gasSteps_hSet (s : State) (index value returnDest : UInt256)
 
 def kAtPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨184, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨185, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
-   ⟨186, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨187, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨188, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨189, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨190, .push ⟨1, by decide⟩ (UInt256.ofNat 224), by rfl, by decide⟩,
-   ⟨191, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨192, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨193, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨194, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨195, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨214, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨215, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
+   ⟨216, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨217, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨218, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨219, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨220, .push ⟨1, by decide⟩ (UInt256.ofNat 224), by rfl, by decide⟩,
+   ⟨221, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨222, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨223, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨224, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨225, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def kAtReturned (s : State) (index returnDest : UInt256)
     (rest : List UInt256) : State :=
@@ -344,18 +344,18 @@ def kAtReturned (s : State) (index returnDest : UInt256)
       (UInt256.ofNat 224) :: rest
     activeWords := s.activeWordsAfterUInt256 offset 32 }
 
-@[simp] private theorem pc184 : Artifact.referenceArtifact.instructionPC 184 = 257 := by decide
-@[simp] private theorem pc185 : Artifact.referenceArtifact.instructionPC 185 = 258 := by decide
-@[simp] private theorem pc186 : Artifact.referenceArtifact.instructionPC 186 = 260 := by decide
-@[simp] private theorem pc187 : Artifact.referenceArtifact.instructionPC 187 = 261 := by decide
-@[simp] private theorem pc188 : Artifact.referenceArtifact.instructionPC 188 = 263 := by decide
-@[simp] private theorem pc189 : Artifact.referenceArtifact.instructionPC 189 = 264 := by decide
-@[simp] private theorem pc190 : Artifact.referenceArtifact.instructionPC 190 = 265 := by decide
-@[simp] private theorem pc191 : Artifact.referenceArtifact.instructionPC 191 = 267 := by decide
-@[simp] private theorem pc192 : Artifact.referenceArtifact.instructionPC 192 = 268 := by decide
-@[simp] private theorem pc193 : Artifact.referenceArtifact.instructionPC 193 = 269 := by decide
-@[simp] private theorem pc194 : Artifact.referenceArtifact.instructionPC 194 = 270 := by decide
-@[simp] private theorem pc195 : Artifact.referenceArtifact.instructionPC 195 = 271 := by decide
+@[simp] private theorem pc184 : Artifact.referenceArtifact.instructionPC 214 = 257 := by decide
+@[simp] private theorem pc185 : Artifact.referenceArtifact.instructionPC 215 = 258 := by decide
+@[simp] private theorem pc186 : Artifact.referenceArtifact.instructionPC 216 = 260 := by decide
+@[simp] private theorem pc187 : Artifact.referenceArtifact.instructionPC 217 = 261 := by decide
+@[simp] private theorem pc188 : Artifact.referenceArtifact.instructionPC 218 = 263 := by decide
+@[simp] private theorem pc189 : Artifact.referenceArtifact.instructionPC 219 = 264 := by decide
+@[simp] private theorem pc190 : Artifact.referenceArtifact.instructionPC 220 = 265 := by decide
+@[simp] private theorem pc191 : Artifact.referenceArtifact.instructionPC 221 = 267 := by decide
+@[simp] private theorem pc192 : Artifact.referenceArtifact.instructionPC 222 = 268 := by decide
+@[simp] private theorem pc193 : Artifact.referenceArtifact.instructionPC 223 = 269 := by decide
+@[simp] private theorem pc194 : Artifact.referenceArtifact.instructionPC 224 = 270 := by decide
+@[simp] private theorem pc195 : Artifact.referenceArtifact.instructionPC 225 = 271 := by decide
 @[simp] private theorem next184 : (UInt256.ofNat 257).succ = UInt256.ofNat 258 := by decide
 @[simp] private theorem next185 : UInt256.ofNat 258 + UInt256.ofNat 2 = UInt256.ofNat 260 := by decide
 @[simp] private theorem next186 : (UInt256.ofNat 260).succ = UInt256.ofNat 261 := by decide

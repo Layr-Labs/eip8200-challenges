@@ -149,41 +149,41 @@ def gasSteps_rotr (s : State) (x : UInt256) (n : Nat)
 
 def chPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨143, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨144, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨145, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨146, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨147, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨148, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨149, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨150, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨151, .op (.Swap ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨152, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨153, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨154, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨155, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨156, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨157, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨173, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨174, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨175, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨176, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨177, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨178, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨179, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨180, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨181, .op (.Swap ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨182, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨183, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨184, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨185, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨186, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨187, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def majPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨162, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨163, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨164, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨165, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨166, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨167, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨168, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨169, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨170, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨171, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨172, .op (.Swap ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨173, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨174, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨175, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨176, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨177, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨178, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨192, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨193, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨194, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨195, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨196, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨197, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨198, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨199, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨200, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨201, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨202, .op (.Swap ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨203, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨204, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨205, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨206, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨207, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨208, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def ternaryEntry (s : State) (entry : Nat) (x y z output returnDest : UInt256)
     (rest : List UInt256) : State :=
@@ -191,12 +191,12 @@ def ternaryEntry (s : State) (entry : Nat) (x y z output returnDest : UInt256)
     pc := UInt256.ofNat entry
     stack := [x, y, z, output, returnDest] ++ rest }
 
-@[simp] private theorem chPCs (i : Nat) (hi : 143 ≤ i) (hii : i ≤ 158) :
-    Artifact.referenceArtifact.instructionPC i = i + 69 := by
+@[simp] private theorem chPCs (i : Nat) (hi : 173 ≤ i) (hii : i ≤ 188) :
+    Artifact.referenceArtifact.instructionPC i = i + 39 := by
   interval_cases i <;> decide
 
-@[simp] private theorem majPCs (i : Nat) (hi : 162 ≤ i) (hii : i ≤ 180) :
-    Artifact.referenceArtifact.instructionPC i = i + 71 := by
+@[simp] private theorem majPCs (i : Nat) (hi : 192 ≤ i) (hii : i ≤ 210) :
+    Artifact.referenceArtifact.instructionPC i = i + 41 := by
   interval_cases i <;> decide
 
 @[simp] private theorem nextSmallPC (i : Nat) (hi : 212 ≤ i) (hii : i ≤ 250) :
@@ -554,30 +554,30 @@ def gasSteps_ssig0 (s : State) (x output returnDest : UInt256)
 
 def ssig1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨51, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨52, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨53, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨54, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨55, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨56, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨57, .push ⟨1, by decide⟩ (UInt256.ofNat 17), by rfl, by decide⟩,
-   ⟨58, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨58, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨59, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨60, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
-   ⟨61, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨62, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨63, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨64, .push ⟨1, by decide⟩ (UInt256.ofNat 10), by rfl, by decide⟩,
+   ⟨60, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨61, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨62, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨63, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨64, .push ⟨1, by decide⟩ (UInt256.ofNat 17), by rfl, by decide⟩,
    ⟨65, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨66, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨67, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨68, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨66, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨67, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
+   ⟨68, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨69, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨70, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨71, .push ⟨1, by decide⟩ (UInt256.ofNat 10), by rfl, by decide⟩,
+   ⟨72, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨73, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨74, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨75, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
-@[simp] private theorem ssig1DirectPC (i : Nat) (hlo : 51 ≤ i)
-    (hhi : i ≤ 68) :
+@[simp] private theorem ssig1DirectPC (i : Nat) (hlo : 58 ≤ i)
+    (hhi : i ≤ 75) :
     Artifact.referenceArtifact.instructionPC i =
       [73, 74, 75, 76, 78, 79, 80, 82, 83, 84, 86, 87, 88, 89, 91, 92,
-       93, 94][i - 51]! := by
+       93, 94][i - 58]! := by
   interval_cases i <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -622,30 +622,30 @@ def gasSteps_ssig1 (s : State) (x returnDest : UInt256)
 /-
 def ssig1SetupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨51, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨52, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨53, .push ⟨1, by decide⟩ (UInt256.ofNat 10), by rfl, by decide⟩,
-   ⟨54, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨55, .push ⟨2, by decide⟩ (UInt256.ofNat 89), by rfl, by decide⟩,
-   ⟨56, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨57, .push ⟨1, by decide⟩ (UInt256.ofNat 19), by rfl, by decide⟩,
-   ⟨58, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨59, .push ⟨2, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
-   ⟨60, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
-
-def ssig1MiddlePath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨61, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨62, .push ⟨2, by decide⟩ (UInt256.ofNat 101), by rfl, by decide⟩,
+  [⟨58, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨59, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨60, .push ⟨1, by decide⟩ (UInt256.ofNat 10), by rfl, by decide⟩,
+   ⟨61, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨62, .push ⟨2, by decide⟩ (UInt256.ofNat 89), by rfl, by decide⟩,
    ⟨63, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨64, .push ⟨1, by decide⟩ (UInt256.ofNat 17), by rfl, by decide⟩,
-   ⟨65, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨64, .push ⟨1, by decide⟩ (UInt256.ofNat 19), by rfl, by decide⟩,
+   ⟨65, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨66, .push ⟨2, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
    ⟨67, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
-def ssig1FinishPath :
+def ssig1MiddlePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨68, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨69, .push ⟨2, by decide⟩ (UInt256.ofNat 101), by rfl, by decide⟩,
+   ⟨70, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
+   ⟨71, .push ⟨1, by decide⟩ (UInt256.ofNat 17), by rfl, by decide⟩,
+   ⟨72, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨73, .push ⟨2, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
+   ⟨74, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+
+def ssig1FinishPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
+  [⟨75, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨69, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨70, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨71, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,

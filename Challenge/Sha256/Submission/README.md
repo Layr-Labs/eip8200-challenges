@@ -187,15 +187,23 @@ Unreachable helper padding keeps the artifact at 1,524 bytes and 810
 structural instructions. The complete T1 specialization saves 15 gas per
 round, 960 gas per padded block, and 62,400 gas over the suite.
 
-Fresh local scoring of the exact submission bytes is 3,691,567 versus the
-10,179,119 reference, a combined reduction of 6,487,552 gas. All 19 vectors
+The five hot working-state update spans now contain only their direct loads,
+arithmetic, and stores. Thirty sequential `JUMPDEST` padding instructions were
+removed from these paths and replaced byte-for-byte by wider `PUSH` encodings
+of the same fixed addresses. The same thirty structural instructions were
+moved into unreachable helper padding, preserving every live byte PC, the
+1,524-byte length, and the 810-instruction artifact. This saves 30 gas per
+round, 1,920 gas per padded block, and 124,800 gas over the suite.
+
+Fresh local scoring of the exact submission bytes is 3,566,767 versus the
+10,179,119 reference, a combined reduction of 6,612,352 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 58,051 gas.
+vector costs 56,131 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 56,260
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 54,340
 gas per padded block, plus calldata copying and memory expansion.

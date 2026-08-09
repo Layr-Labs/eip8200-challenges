@@ -102,62 +102,62 @@ def t1Returned (s : State) (x addend1 addend2 : UInt256)
 
 def bigSigma0Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨79, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨80, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨81, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨82, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨83, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨84, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
-   ⟨85, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨86, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨87, .push ⟨1, by decide⟩ (UInt256.ofNat 11), by rfl, by decide⟩,
-   ⟨88, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨89, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨90, .push ⟨1, by decide⟩ (UInt256.ofNat 9), by rfl, by decide⟩,
-   ⟨91, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨92, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨93, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨94, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨95, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨96, .push ⟨2, by decide⟩ (UInt256.ofNat 783), by rfl, by decide⟩,
-   ⟨97, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨93, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨94, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨95, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨96, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨97, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨98, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
+   ⟨99, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨100, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨101, .push ⟨1, by decide⟩ (UInt256.ofNat 11), by rfl, by decide⟩,
+   ⟨102, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨103, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨104, .push ⟨1, by decide⟩ (UInt256.ofNat 9), by rfl, by decide⟩,
+   ⟨105, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨106, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨107, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨108, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨109, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨110, .push ⟨2, by decide⟩ (UInt256.ofNat 783), by rfl, by decide⟩,
+   ⟨111, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def bigSigma1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨111, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨112, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨113, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨114, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨115, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨116, .push ⟨1, by decide⟩ (UInt256.ofNat 6), by rfl, by decide⟩,
-   ⟨117, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨118, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨119, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨120, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨121, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨122, .push ⟨1, by decide⟩ (UInt256.ofNat 14), by rfl, by decide⟩,
-   ⟨123, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨124, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨125, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨126, .push ⟨2, by decide⟩ (UInt256.ofNat 512), by rfl, by decide⟩,
-   ⟨127, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨128, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨129, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨130, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨131, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨132, .push ⟨2, by decide⟩ (UInt256.ofNat 729), by rfl, by decide⟩,
-   ⟨133, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨134, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨135, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨136, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨137, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨138, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨139, .push ⟨1, by decide⟩ (UInt256.ofNat 6), by rfl, by decide⟩,
+   ⟨140, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨141, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨142, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨143, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨144, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨145, .push ⟨1, by decide⟩ (UInt256.ofNat 14), by rfl, by decide⟩,
+   ⟨146, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨147, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨148, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨149, .push ⟨2, by decide⟩ (UInt256.ofNat 512), by rfl, by decide⟩,
+   ⟨150, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨151, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨152, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨153, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨154, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨155, .push ⟨2, by decide⟩ (UInt256.ofNat 729), by rfl, by decide⟩,
+   ⟨156, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
-@[simp] private theorem bigSigma0PC (i : Nat) (hlo : 79 ≤ i) (hhi : i ≤ 97) :
+@[simp] private theorem bigSigma0PC (i : Nat) (hlo : 93 ≤ i) (hhi : i ≤ 111) :
     Artifact.referenceArtifact.instructionPC i =
       [114, 115, 116, 118, 119, 120, 122, 123, 124, 126, 127, 128, 130,
-        131, 132, 133, 134, 135, 138][i - 79]! := by
+        131, 132, 133, 134, 135, 138][i - 93]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem bigSigma1PC (i : Nat) (hlo : 111 ≤ i) (hhi : i ≤ 133) :
+@[simp] private theorem bigSigma1PC (i : Nat) (hlo : 134 ≤ i) (hhi : i ≤ 156) :
     Artifact.referenceArtifact.instructionPC i =
       [163, 164, 165, 167, 168, 169, 171, 172, 173, 175, 176, 177, 179,
-        180, 181, 182, 185, 186, 187, 188, 189, 190, 193][i - 111]! := by
+        180, 181, 182, 185, 186, 187, 188, 189, 190, 193][i - 134]! := by
   interval_cases i <;> decide
 
 set_option maxHeartbeats 800000 in

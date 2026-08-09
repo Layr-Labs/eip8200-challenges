@@ -375,3 +375,21 @@ yukon run` verification was accepted by the Lean default kernel and
 Comparator at **3,691,567**, with 1,524 bytes and 19/19 vectors. The exact
 bytecode SHA-256 is
 `71aa7ea35c048153118966c4eaa64e0422a0079d0236252447d22d42e13cf421`.
+
+## 2026-08-08: remove hot update padding
+
+The five working-state update spans still executed thirty sequential
+`JUMPDEST` padding instructions per compression round. Each fixed memory
+address is now encoded with a wider `PUSH`, absorbing the same bytes while
+removing those live no-ops. Thirty replacement structural instructions were
+moved into unreachable small- and big-sigma helper padding, so all live byte
+PCs, the 1,524-byte length, and the 810-instruction artifact remain fixed.
+
+The trusted native scorer accepted all 38 clean and dirty runs with identical
+paired gas. The exact score is **3,566,767**, down 124,800 gas from the prior
+3,691,567 checkpoint: 30 gas per round, 1,920 gas per padded block, across 65
+public-suite blocks. Empty-vector gas is **56,131**. The exact-gas proof uses a
+fixed cost of 1,499 gas and 54,340 gas per padded block. `Bytes.lean`, the
+assembled artifact, all execution and correctness layers, and `GasCost.lean`
+compile successfully. The exact bytecode SHA-256 is
+`c9226b74ed0b2bac66f593cbb2b1d5dce14c1d311fd1480747f349819580c32b`.
