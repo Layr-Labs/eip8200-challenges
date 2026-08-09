@@ -141,11 +141,14 @@ private theorem masked_xor_comm (a b : UInt256) :
 def duplicateLane (x : UInt256) : UInt256 :=
   UInt256.shiftLeft x (UInt256.ofNat 32) ||| x
 
-def fusedBigSigma0 (x : UInt256) : UInt256 :=
+def rawFusedBigSigma0 (x : UInt256) : UInt256 :=
   let r2 := UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 2)
   let r13 := UInt256.shiftRight r2 (UInt256.ofNat 11)
   let r22 := UInt256.shiftRight r13 (UInt256.ofNat 9)
-  mask32 ((r22 ^^^ r13) ^^^ r2)
+  (r22 ^^^ r13) ^^^ r2
+
+def fusedBigSigma0 (x : UInt256) : UInt256 :=
+  mask32 (rawFusedBigSigma0 x)
 
 theorem fusedBigSigma0_eq (x : UInt256) :
     fusedBigSigma0 x = evmBigSigma0 x := by
@@ -172,6 +175,12 @@ theorem fusedBigSigma0_eq (x : UInt256) :
     evmRotr32_duplicate x 13 (by omega),
     evmRotr32_duplicate x 22 (by omega)]
   rfl
+
+theorem mask32_rawFusedBigSigma0 (x : UInt256) :
+    mask32 (rawFusedBigSigma0 x) = mask32 (evmBigSigma0 x) := by
+  rw [← fusedBigSigma0_eq x]
+  unfold fusedBigSigma0
+  rw [mask32_eq_ofUInt32, mask32_eq_ofUInt32, toUInt32_ofUInt32]
 
 def fusedBigSigma1 (x : UInt256) : UInt256 :=
   let r6 := UInt256.shiftRight (duplicateLane x) (UInt256.ofNat 6)

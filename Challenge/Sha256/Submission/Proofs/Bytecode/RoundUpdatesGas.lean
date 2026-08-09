@@ -66,7 +66,7 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gasSteps_updates s msgOff returnDest rest j hj hcap hcode
       hfork hrun hnp).cost + MachineState.memCost
         (Compression.afterT2 s msgOff returnDest rest j).activeWords.toNat =
-      179 + MachineState.memCost
+      180 + MachineState.memCost
         (Compression.afterSecondIteration s msgOff returnDest rest j).activeWords.toNat := by
   let ctx := Compression.roundContext s msgOff returnDest rest j
   have hctx : ctx.length < 1016 := by simp [ctx, Compression.roundContext]; omega
@@ -78,7 +78,7 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
   have q0np : Precompile.isPrecompileWithConfig q0.executionEnv.precompileConfig q0.executionEnv.fork
       q0.executionEnv.codeAddr = false := by simpa [q0] using hnp
   have hs7 := shift_cost_potential Compression.shift76Path
-    q0 6 7 796 803 783 18 ctx
+    q0 6 7 796 803 783 19 ctx
     (Or.inl ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩)
     (by rfl) (by rfl) hctx q0code q0fork q0run q0np (by rfl)
   let q1 := Compression.afterShift7 s msgOff returnDest rest j
@@ -203,7 +203,7 @@ theorem updates_cost_potential (s : State) (msgOff returnDest : UInt256)
   unfold Compression.gasSteps_updates
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  change _ = 18 + MachineState.memCost q1.activeWords.toNat at hs7
+  change _ = 19 + MachineState.memCost q1.activeWords.toNat at hs7
   change _ = 19 + MachineState.memCost q2.activeWords.toNat at hs6
   change _ = 30 + MachineState.memCost q4.activeWords.toNat at hupdateH4
   change _ = 19 + MachineState.memCost q5rawState.activeWords.toNat at hs3

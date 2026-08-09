@@ -201,20 +201,20 @@ def setupMajPath :
 def setupBigSigma0Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨523, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨524, .push ⟨2, by decide⟩ (UInt256.ofNat 780), by rfl, by decide⟩,
-   ⟨525, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨526, .push ⟨2, by decide⟩ (UInt256.ofNat 114), by rfl, by decide⟩,
-   ⟨527, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨524, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨525, .push ⟨2, by decide⟩ (UInt256.ofNat 114), by rfl, by decide⟩,
+   ⟨526, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def finishT2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨529, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨530, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨531, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨528, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨529, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨530, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def shift76Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨532, .push ⟨5, by decide⟩ (UInt256.ofNat 480), by rfl, by decide⟩,
+  [⟨531, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨532, .push ⟨4, by decide⟩ (UInt256.ofNat 480), by rfl, by decide⟩,
    ⟨533, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨534, .push ⟨5, by decide⟩ (UInt256.ofNat 512), by rfl, by decide⟩,
    ⟨535, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -620,10 +620,10 @@ def gotMaj (s : State) (msgOff returnDest : UInt256)
 
 def callBigSigma0 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
-  BigSigma.entry (gotMaj s msgOff returnDest rest j) 114
-    (hValue s 0) (UInt256.ofNat 780)
-    ([Word.evmMaj (hValue s 0) (hValue s 1) (hValue s 2),
-      UInt256.ofNat 0xffffffff, hValue s 0, t1 s j, hValue s 4,
+  BigSigma.t2Entry (gotMaj s msgOff returnDest rest j)
+    (hValue s 0)
+    (Word.evmMaj (hValue s 0) (hValue s 1) (hValue s 2))
+    ([hValue s 0, t1 s j, hValue s 4,
       UInt256.ofNat j, msgOff, returnDest] ++ rest)
 
 def gotBigSigma0 (s : State) (msgOff returnDest : UInt256)
@@ -831,16 +831,16 @@ def compressReturned (s : State) (returnDest : UInt256)
        714, 715, 718, 719, 724, 725, 726, 727, 728, 729][i - 453]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem t2PC (i : Nat) (hlo : 503 ≤ i) (hhi : i ≤ 531) :
+@[simp] private theorem t2PC (i : Nat) (hlo : 503 ≤ i) (hhi : i ≤ 530) :
     Artifact.referenceArtifact.instructionPC i =
       [730, 733, 734, 739, 742, 743, 746, 747, 748, 752,
        753, 754, 757, 758, 759, 763, 764, 765, 766, 769,
-       770, 771, 774, 775, 778, 779, 780, 781, 782][i - 503]! := by
+       770, 771, 772, 775, 776, 780, 781, 782][i - 503]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem updatePC (i : Nat) (hlo : 532 ≤ i) (hhi : i ≤ 616) :
+@[simp] private theorem updatePC (i : Nat) (hlo : 531 ≤ i) (hhi : i ≤ 616) :
     Artifact.referenceArtifact.instructionPC i =
-      [783, 789, 790, 796, 797, 798, 799, 800, 801, 802,
+      [783, 784, 789, 790, 796, 797, 798, 799, 800, 801, 802,
        803, 804, 810, 811, 817, 818, 819, 820, 821, 822,
        823, 824, 825, 826, 829, 830, 835, 836, 842, 843,
        844, 845, 851, 852, 853, 854, 855, 856, 857, 858,
@@ -848,7 +848,7 @@ def compressReturned (s : State) (returnDest : UInt256)
        879, 880, 886, 887, 893, 894, 895, 896, 897, 898,
        899, 900, 901, 902, 905, 906, 911, 912, 913, 914,
        915, 916, 919, 920, 921, 922, 923, 924, 925, 927,
-       928, 929, 930, 931, 934][i - 532]! := by
+       928, 929, 930, 931, 934][i - 531]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem foldPC (i : Nat) (hlo : 617 ≤ i) (hhi : i ≤ 657) :
@@ -1301,7 +1301,7 @@ theorem run_setupBigSigma0 (s : State) (msgOff returnDest : UInt256)
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     gotMaj, callBigSigma0, gotT2H1, gotT2H2, loadedA, afterT1, gotH7,
     gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW, loadedE, hValue,
-    Functions.ternaryEntry, BigSigma.entry, Functions.unaryReturned,
+    Functions.ternaryEntry, BigSigma.t2Entry, Functions.unaryReturned,
     Accessors.loadReturned, Accessors.kAtReturned, Accessors.slotOffset,
     List.exchange, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15,
     hcode, hrun, hdest]

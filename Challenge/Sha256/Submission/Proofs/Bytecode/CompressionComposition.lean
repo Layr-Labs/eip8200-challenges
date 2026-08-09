@@ -542,40 +542,19 @@ def gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
         hcode hrun
     · exact qMajrun
     · exact qMajnp
-  have gB0 := BigSigma.gasSteps_bigSigma0 (gotMaj s msgOff returnDest rest j)
-    (hValue s 0) (UInt256.ofNat 780)
-    ([Word.evmMaj (hValue s 0) (hValue s 1) (hValue s 2),
-      UInt256.ofNat 0xffffffff, hValue s 0, t1 s j, hValue s 4,
-      UInt256.ofNat j, msgOff, returnDest] ++ rest)
-    (by simp; omega) qMajcode qMajfork qMajrun qMajnp (by decide)
-  have qB0code : (gotBigSigma0 s msgOff returnDest rest j).executionEnv.code =
-      submissionBytecode := by
-    change (afterT1 s msgOff returnDest rest j).executionEnv.code =
-      submissionBytecode
-    exact qT1code
-  have qB0fork : (gotBigSigma0 s msgOff returnDest rest j).fork = .Osaka := by
-    change (afterT1 s msgOff returnDest rest j).fork = .Osaka
-    exact qT1fork
-  have qB0run : (gotBigSigma0 s msgOff returnDest rest j).halt = .Running := by
-    change (afterT1 s msgOff returnDest rest j).halt = .Running
-    exact qT1run
-  have qB0np : Precompile.isPrecompileWithConfig (gotBigSigma0 s msgOff returnDest rest j).executionEnv.precompileConfig (gotBigSigma0 s msgOff returnDest rest j).executionEnv.fork
-      (gotBigSigma0 s msgOff returnDest rest j).executionEnv.codeAddr = false := by
-    change Precompile.isPrecompileWithConfig (afterT1 s msgOff returnDest rest j).executionEnv.precompileConfig (afterT1 s msgOff returnDest rest j).executionEnv.fork
-      (afterT1 s msgOff returnDest rest j).executionEnv.codeAddr = false
-    exact qT1np
-  have gFinish : Challenge.EvmProof.GasSteps
-      (gotBigSigma0 s msgOff returnDest rest j)
+  have gB0 : Challenge.EvmProof.GasSteps
+      (callBigSigma0 s msgOff returnDest rest j)
       (afterT2 s msgOff returnDest rest j) := by
-    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.referenceArtifact .Osaka finishT2Path
-    · exact qB0code
-    · exact qB0fork
-    · exact run_finishT2 s msgOff returnDest rest j (by omega) hrun
-    · exact qB0run
-    · exact qB0np
+    simpa [callBigSigma0, afterT2, t2, gotBigSigma0, BigSigma.t2Returned,
+      Functions.unaryReturned] using
+      (BigSigma.gasSteps_bigSigma0
+        (gotMaj s msgOff returnDest rest j) (hValue s 0)
+        (Word.evmMaj (hValue s 0) (hValue s 1) (hValue s 2))
+        ([hValue s 0, t1 s j, hValue s 4, UInt256.ofNat j,
+          msgOff, returnDest] ++ rest)
+        (by simp; omega) qMajcode qMajfork qMajrun qMajnp)
   exact gSetupH2.trans (gSetupH1.trans
-    (gSetupMaj.trans (gMaj.trans (gSetupB0.trans (gB0.trans gFinish)))))
+    (gSetupMaj.trans (gMaj.trans (gSetupB0.trans gB0))))
 
 @[simp] theorem afterT2_executionEnv (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) :

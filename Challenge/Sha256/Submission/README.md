@@ -169,15 +169,22 @@ their return scaffolding in the same 35-byte, 20-instruction span, preserving
 every downstream PC and artifact index. It saves 65 gas per iteration, 520
 gas per padded block, and 33,800 gas over the suite.
 
-Fresh local scoring of the exact submission bytes is 3,791,407 versus the
-10,179,119 reference, a combined reduction of 6,387,712 gas. All 19 vectors
+The BSIG0 helper is specialized for its only compression-round caller: it now
+adds `Maj(a,b,c)`, applies the 32-bit mask, and jumps directly to the existing
+post-T2 boundary. The caller drops its placeholder and return scaffolding;
+one restored fall-through `JUMPDEST` keeps the artifact at 810 instructions.
+This saves 9 gas per round, 576 gas per padded block, and 37,440 gas over the
+suite.
+
+Fresh local scoring of the exact submission bytes is 3,753,967 versus the
+10,179,119 reference, a combined reduction of 6,425,152 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 59,587 gas.
+vector costs 59,011 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 57,796
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 57,220
 gas per padded block, plus calldata copying and memory expansion.
