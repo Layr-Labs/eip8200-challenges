@@ -1,4 +1,4 @@
-import Challenge.Sha256.Submission.Proofs.Bytecode.Compression
+import Challenge.Sha256.Submission.Proofs.Bytecode.PairCorrectTest
 import Challenge.Sha256.Submission.Proofs.Bytecode.ScheduleCorrect
 import Challenge.Sha256.Submission.Proofs.Bytecode.InitializationCorrect
 import Challenge.Sha256.Submission.Proofs.Bytecode.HashSpecBridge
@@ -22,6 +22,10 @@ open EvmSemantics
 open EvmSemantics.Crypto
 open EvmSemantics.EVM
 
+/- Superseded one-round semantic development.  The mathematical interface now
+lives in `CompressionSpec`, and the executable proof advances two rounds at a
+time in `PairCorrectTest`. -/
+/-
 /-- The eight SHA-256 working variables, in `a` through `h` order. -/
 structure Working where
   a : UInt32
@@ -153,6 +157,63 @@ private theorem hValue_of_write_ne (before after : State) (read write : Nat)
     Compression.hValue after read = Compression.hValue before read := by
   rw [hValue_eq_readH after read hread, hmemory,
     readH_writeH_ne _ _ _ _ hne, ← hValue_eq_readH before read hread]
+
+private theorem kOffset_eq (j : Nat) (hj : j < 64) :
+    (UInt256.shiftLeft (UInt256.ofNat j) (UInt256.ofNat 2) +
+      UInt256.ofNat 32).toNat = 32 + 4 * j := by
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  omega
+
+private theorem readBE32_writeH (memory : ByteArray) (j write : Nat)
+    (value : UInt256) (hj : j < 64) :
+    Sha256.readBE32 (writeH memory write value) (32 + 4 * j) =
+      Sha256.readBE32 memory (32 + 4 * j) := by
+  apply HashSpecBridge.readBE32_eq_of_byte
+  intro i hi
+  let idx := 32 + 4 * j + i
+  have hidx : idx < 288 + write * 32 := by
+    dsimp only [idx]
+    omega
+  have hbytes : (Data.Bytes.natToBytesPadded value.toNat 32).size = 32 := by
+    simp [Data.Bytes.natToBytesPadded, ByteArray.size]
+  by_cases hm : idx < memory.size
+  · have hw : idx < (writeH memory write value).size := by
+      unfold writeH
+      rw [MachineState.writeBytes_size, if_neg (by simp [hbytes]), hbytes]
+      omega
+    rw [dif_pos hw, dif_pos hm]
+    apply congrArg UInt8.toUInt32
+    have hg := MachineState.writeBytes_getElem?_getD memory
+      (Data.Bytes.natToBytesPadded value.toNat 32) (288 + write * 32) idx
+    rw [if_neg (by simp only [hbytes]; omega)] at hg
+    change (writeH memory write value)[idx]?.getD 0 = memory[idx]?.getD 0 at hg
+    rw [Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hw,
+      Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hm] at hg
+    exact hg
+  · by_cases hw : idx < (writeH memory write value).size
+    · rw [dif_pos hw, dif_neg hm]
+      have hg := MachineState.writeBytes_getElem?_getD memory
+        (Data.Bytes.natToBytesPadded value.toNat 32) (288 + write * 32) idx
+      rw [if_neg (by simp only [hbytes]; omega)] at hg
+      change (writeH memory write value)[idx]?.getD 0 = memory[idx]?.getD 0 at hg
+      rw [Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hw,
+        Challenge.EvmProof.Memory.getElem?_getD_eq_zero_of_size_le _ _
+          (by omega)] at hg
+      simpa using congrArg UInt8.toUInt32 hg
+    · rw [dif_neg hw, dif_neg hm]
+
+private theorem kValue_of_writeH (before after : State) (read write : Nat)
+    (hread : read < 64) (value : UInt256)
+    (hmemory : after.memory = writeH before.memory write value) :
+    Compression.kValue after read = Compression.kValue before read := by
+  unfold Compression.kValue
+  rw [kOffset_eq read hread]
+  dsimp only
+  rw [hmemory, PaddedBlockBridge.shiftRight_readWord_224,
+    PaddedBlockBridge.shiftRight_readWord_224,
+    readBE32_writeH before.memory read write value hread]
 
 private theorem shiftReturned_memory (q : State) (src dest loadReturn storeReturn : Nat)
     (context : List UInt256) (hdest : dest < 8) :
@@ -583,6 +644,156 @@ theorem roundInputsCorrect_of_entry (s : State)
   intro n hn
   have hp := roundLoopState_inputs s msgOff returnDest rest n n hn
   exact ⟨hp.1.trans (hk n hn), hp.2.trans (hw n hn)⟩
+-/
+
+private theorem hSlot_eq (i : Nat) (hi : i < 8) :
+    Accessors.slotOffset 288 (UInt256.ofNat i) = 288 + i * 32 := by
+  unfold Accessors.slotOffset
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  omega
+
+private def writeH (memory : ByteArray) (i : Nat) (value : UInt256) : ByteArray :=
+  MachineState.writeBytes memory
+    (Data.Bytes.natToBytesPadded value.toNat 32) (288 + i * 32)
+
+private theorem readH_writeH_same (memory : ByteArray) (i : Nat)
+    (value : UInt256) :
+    MachineState.readWord (writeH memory i value) (288 + i * 32) = value := by
+  exact Challenge.EvmProof.Memory.readWord_writeWord memory (288 + i * 32) value
+
+private theorem readH_writeH_ne (memory : ByteArray) (read write : Nat)
+    (value : UInt256) (hne : read ≠ write) :
+    MachineState.readWord (writeH memory write value) (288 + read * 32) =
+      MachineState.readWord memory (288 + read * 32) := by
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
+  have hsize : (Data.Bytes.natToBytesPadded value.toNat 32).size = 32 := by
+    simp [Data.Bytes.natToBytesPadded, ByteArray.size]
+  rw [hsize]
+  by_cases hlt : read < write
+  · left
+    omega
+  · right
+    omega
+
+private theorem hValue_eq_readH (s : State) (i : Nat) (hi : i < 8) :
+    Compression.hValue s i = MachineState.readWord s.memory (288 + i * 32) := by
+  unfold Compression.hValue
+  rw [hSlot_eq i hi]
+
+private theorem hValue_of_write_same (before after : State) (i : Nat)
+    (hi : i < 8) (value : UInt256)
+    (hmemory : after.memory = writeH before.memory i value) :
+    Compression.hValue after i = value := by
+  rw [hValue_eq_readH after i hi, hmemory, readH_writeH_same]
+
+private theorem hValue_of_write_ne (before after : State) (read write : Nat)
+    (hread : read < 8) (hne : read ≠ write) (value : UInt256)
+    (hmemory : after.memory = writeH before.memory write value) :
+    Compression.hValue after read = Compression.hValue before read := by
+  rw [hValue_eq_readH after read hread, hmemory,
+    readH_writeH_ne _ _ _ _ hne, ← hValue_eq_readH before read hread]
+
+/-- Concrete byte offset of packed constant `j`. -/
+private theorem kOffset_eq (j : Nat) (hj : j < 64) :
+    (UInt256.shiftLeft (UInt256.ofNat j) (UInt256.ofNat 2) +
+      UInt256.ofNat 32).toNat = 32 + 4 * j := by
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  omega
+
+private theorem readBE32_writeH (memory : ByteArray) (j write : Nat)
+    (value : UInt256) (hj : j < 64) :
+    Sha256.readBE32 (writeH memory write value) (32 + 4 * j) =
+      Sha256.readBE32 memory (32 + 4 * j) := by
+  apply HashSpecBridge.readBE32_eq_of_byte
+  intro i hi
+  let idx := 32 + 4 * j + i
+  have hidx : idx < 288 + write * 32 := by
+    dsimp only [idx]
+    omega
+  have hbytes : (Data.Bytes.natToBytesPadded value.toNat 32).size = 32 := by
+    simp [Data.Bytes.natToBytesPadded, ByteArray.size]
+  by_cases hm : idx < memory.size
+  · have hw : idx < (writeH memory write value).size := by
+      unfold writeH
+      rw [MachineState.writeBytes_size, if_neg (by simp [hbytes]), hbytes]
+      omega
+    rw [dif_pos hw, dif_pos hm]
+    apply congrArg UInt8.toUInt32
+    have hg := MachineState.writeBytes_getElem?_getD memory
+      (Data.Bytes.natToBytesPadded value.toNat 32) (288 + write * 32) idx
+    rw [if_neg (by simp only [hbytes]; omega)] at hg
+    change (writeH memory write value)[idx]?.getD 0 = memory[idx]?.getD 0 at hg
+    rw [Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hw,
+      Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hm] at hg
+    exact hg
+  · by_cases hw : idx < (writeH memory write value).size
+    · rw [dif_pos hw, dif_neg hm]
+      have hg := MachineState.writeBytes_getElem?_getD memory
+        (Data.Bytes.natToBytesPadded value.toNat 32) (288 + write * 32) idx
+      rw [if_neg (by simp only [hbytes]; omega)] at hg
+      change (writeH memory write value)[idx]?.getD 0 = memory[idx]?.getD 0 at hg
+      rw [Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hw,
+        Challenge.EvmProof.Memory.getElem?_getD_eq_zero_of_size_le _ _
+          (by omega)] at hg
+      simpa using congrArg UInt8.toUInt32 hg
+    · rw [dif_neg hw, dif_neg hm]
+
+private theorem kValue_of_writeH (before after : State) (read write : Nat)
+    (hread : read < 64) (value : UInt256)
+    (hmemory : after.memory = writeH before.memory write value) :
+    Compression.kValue after read = Compression.kValue before read := by
+  unfold Compression.kValue
+  rw [kOffset_eq read hread]
+  dsimp only
+  rw [hmemory, PaddedBlockBridge.shiftRight_readWord_224,
+    PaddedBlockBridge.shiftRight_readWord_224,
+    readBE32_writeH before.memory read write value hread]
+
+/-- All round-local inputs, stated once at pair-loop entry. -/
+def RoundInputsCorrect (s : State) (_msgOff _returnDest : UInt256)
+    (_rest : List UInt256) (padded : ByteArray) (blockOff : Nat) : Prop :=
+  PairCorrectTest.PairInputsCorrect s padded blockOff
+
+theorem roundLoopState_represents (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256)
+    (padded : ByteArray) (blockOff : Nat) (initial : Working)
+    (hinitial : Represents s initial)
+    (hinputs : RoundInputsCorrect s msgOff returnDest rest padded blockOff) :
+    Represents (Compression.roundLoopState s msgOff returnDest rest 64)
+      (rounds initial padded blockOff 64) := by
+  simpa [Compression.roundLoopState] using
+    PairCorrectTest.pairLoopState_represents s msgOff returnDest rest padded
+      blockOff initial hinitial hinputs 32 (by omega)
+
+theorem roundLoopState_inputs (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (n read : Nat) (hread : read < 64) :
+    Compression.kValue
+        (Compression.roundLoopState s msgOff returnDest rest n) read =
+        Compression.kValue s read ∧
+      Compression.wValue
+        (Compression.roundLoopState s msgOff returnDest rest n) read =
+        Compression.wValue s read := by
+  simpa [Compression.roundLoopState] using
+    PairCorrectTest.pairLoopState_inputs s msgOff returnDest rest (n / 2)
+      read hread
+
+/-- Construct the pair loop's input invariant from the constant table and
+completed schedule at loop entry. -/
+theorem roundInputsCorrect_of_entry (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256)
+    (padded : ByteArray) (blockOff : Nat)
+    (hk : ∀ n, n < 64 → Compression.kValue s n =
+      Challenge.EvmProof.Word.ofUInt32 Sha256.K[n]!)
+    (hw : ∀ n, n < 64 → Compression.wValue s n =
+      Challenge.EvmProof.Word.ofUInt32
+        (ScheduleCorrect.scheduleWord padded blockOff n)) :
+    RoundInputsCorrect s msgOff returnDest rest padded blockOff := by
+  intro n hn
+  exact ⟨hk n hn, hw n hn⟩
 
 def Working.get (x : Working) : Nat → UInt32
   | 0 => x.a
@@ -715,6 +926,8 @@ theorem foldLoopState_correct (s : State) (msgOff returnDest : UInt256)
         rw [savedValue_of_writeH q q' i n hi (by omega) _ hm]
         exact hprev.2 i hi
 
+/- Superseded single-round saved-state preservation. -/
+/-
 theorem afterSecondIteration_preserves_saved (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (j read : Nat)
     (hread : read < 8) :
@@ -774,6 +987,16 @@ theorem roundLoopState_saved (s : State) (msgOff returnDest : UInt256)
       exact (afterSecondIteration_preserves_saved
         (Compression.roundLoopState s msgOff returnDest rest n)
         msgOff returnDest rest n read hread).trans ih
+-/
+
+theorem roundLoopState_saved (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (n read : Nat) (hread : read < 8) :
+    Compression.savedValue
+        (Compression.roundLoopState s msgOff returnDest rest n) read =
+      Compression.savedValue s read := by
+  simpa [Compression.roundLoopState] using
+    PairCorrectTest.pairLoopState_saved s msgOff returnDest rest (n / 2)
+      read hread
 
 /-- The normalized eight-word feed-forward result. -/
 def feedForward (H : Array UInt32) (x : Working) : Array UInt32 := #[
@@ -801,7 +1024,7 @@ theorem compressionCore_words (prepared : State)
   intro i hi
   let afterRounds := Compression.roundLoopState prepared msgOff returnDest rest 64
   have hrounds := roundLoopState_represents prepared msgOff returnDest rest
-    padded blockOff initial hinitial hinputs 64 (by omega)
+    padded blockOff initial hinitial hinputs
   have hsavedRounds : SavedRepresents afterRounds H := by
     intro k hk
     rw [roundLoopState_saved prepared msgOff returnDest rest 64 k hk]

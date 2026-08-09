@@ -425,3 +425,312 @@ per round, 896 per padded block, and 58,240 across the 65-block suite. The
 full execution, correctness, composition, and exact-gas builds pass with 1,499
 fixed gas and 53,296 gas per block. The exact bytecode SHA-256 is
 `ce4f458a442d8f7eb7976d3439040b3c926ded1d10d5653f9abfb82558ebbe6e`.
+
+## 2026-08-09: integrated T1/T2 kernels
+
+The standalone Ch/BSIG1 and Maj/BSIG0 continuations were collapsed into two
+caller-specific straight-line kernels. T1 now consumes e/f/g, computes Ch and
+the chained BSIG1, adds K[j], W[j], and h7, masks once, and lands at the
+existing after-T1 boundary. T2 similarly combines Maj with chained BSIG0 and
+lands at the existing after-T2 boundary. Dead helper bodies and the first
+forwarding trampoline supplied the structural-instruction reservoir, so the
+artifact remained 1,524 bytes and 810 instructions.
+
+The trusted scorer and full Yukon run agreed on **3,186,907**, with empty gas
+**50,287**, all 19 clean vectors passing, all dirty-frame runs matching, Lean's
+default kernel accepting the proof, and Comparator accepting the candidate.
+Submission `a74ec96d-8be3-41f2-a719-d3efdd8952fa` was promoted. Exact bytecode
+SHA-256: `379be39507d9b236e894102a5abd356c034c7d6d45926959fcc57446c0f4e2f6`.
+
+Process lesson: freeze a scorer-passing byte sequence before proof work, make
+the new helper end at an existing semantic state, and regenerate the complete
+instruction/PC artifact first. This kept the difficult change localized even
+though the helper ABIs changed substantially.
+
+## 2026-08-09: global structural balancing and direct output
+
+The next pass treated unreachable byte ranges as a global structural budget.
+Live sequential `JUMPDEST` padding in the schedule, state updates, round tail,
+feed-forward, padding loop, and outer driver increment was removed by widening
+immediates without changing their values. The displaced instruction count was
+moved into unreachable forwarding trampolines, dead accessors, and helper
+padding. All eight terminal H accessor calls were replaced by fixed-address
+MLOAD paths. Every live byte PC, the 1,524-byte length, and the 810-instruction
+artifact remained fixed.
+
+The candidate was killed and restarted twice during proof integration: first
+when stale accessors remained imported by gas-only modules, and again when the
+output gas proof still modeled the removed helper calls. The fix was to delete
+unused accessor metering lemmas and meter the nine direct output blocks from
+their located instruction lists. This produced an independently checked exact
+model of **1,119 fixed gas plus 47,744 gas per padded block**, with compression
+at 47,677, rounds at 486, schedule at 15,690, and output at 135.
+
+Full `BENCHMARK_INSECURE_LOCAL=1 yukon run` passed the default kernel,
+Comparator, and all 19 vectors at **3,130,807**; empty gas is **49,155**. The
+exact bytecode SHA-256 is
+`a01f9ca5dcb712b974fe4285161f957a9a394c19df26e1690bfb7fc8398a5630`.
+Submission `bc160f88-434c-4013-ac73-2b37d9e54c1b` was queued with a 9 KiB
+public note while the next architecture search began; validation is treated as
+non-blocking.
+
+Process evolution:
+
+1. Native-score every byte candidate before any Lean edit and reject on the
+   first clean/dirty mismatch.
+2. Keep a promoted proof-complete checkpoint outside the workspace before a
+   broad artifact rewrite.
+3. Track gas as fixed, per-block, per-round, and per-invocation deltas; require
+   all four views to reconcile before changing theorem constants.
+4. Separate functional paths from gas-only modules so dead helper APIs can be
+   removed rather than kept alive for obsolete proofs.
+5. Treat Yukon validation latency as asynchronous: submit the last proved
+   checkpoint, then immediately prototype the next candidate.
+
+## 2026-08-09: ADHD architecture search after 3,130,807
+
+Five isolated divergent frames (hardware engineer, speedrunner, remove the
+load-bearing assumption, biology, and hostile competitor) generated 30 ideas.
+Scores are novelty/viability/fit on a 0--10 scale. Ideas are grouped by the
+underlying mechanism rather than by the frame that generated them.
+
+### State-role renaming
+
+- Circular memory register file with a three-bit phase `[N8 V8 F9]`
+- Eight phase-specific fixed-address round entries `[N9 V6 F9]`
+- Four modulo-renamed stack kernels `[N9 V5 F8]`
+- Fully stack-resident A--H across 64 rounds `[N8 V4 F9]`
+- Overlapping 60-byte H window with a rotating base `[N9 V5 F8]`
+- Differentiating-cell logical identities over fixed slots `[N8 V8 F9]`
+- Unaligned overlapping MSTORE update windows `[N9 V4 F7]`
+
+### Schedule/operand streaming
+
+- Interleave W expansion with compression in a 16-word ring `[N8 V8 F10]`
+- Channel each new W directly into T1 before its ring store `[N8 V8 F10]`
+- Sequential K+W operand cache in expired constant storage `[N8 V7 F8]`
+- Lifetime-alias expired K, W, and feed-forward snapshots `[N7 V7 F7]`
+- One unaligned MLOAD for paired W operands `[N8 V3 F5]`
+- CODECOPY constants interleaved with continuation metadata `[N8 V5 F6]`
+
+### Cross-round supersteps
+
+- Two-round virtual midpoint with no intermediate materialization `[N8 V7 F9]`
+- Pairwise round super-cycle forwarding T1/T2 `[N8 V7 F9]`
+- Thread the finished T1/T2 accumulators into the next round `[N8 V6 F9]`
+- Two-round polyprotein with one final cleavage boundary `[N8 V7 F9]`
+
+### Packed or redundant representations
+
+- Four guarded 256-bit lanes carrying paired H words `[N10 V3 F7]`
+- Redundant duplicated 32-bit lanes for rotation-friendly sigma `[N8 V4 F6]`
+- Pre-rotated state isoforms updated incrementally `[N9 V3 F6]`
+- Packed counter/K/W/phase capsule advanced by one ADD `[N8 V6 F6]`
+- Delay 32-bit normalization until observable boundaries `[N7 V7 F8]`
+
+### Control-flow carries state
+
+- W/K pointers replace the numeric round counter `[N7 V8 F8]`
+- Descending K code pointer exits through unsigned underflow `[N8 V7 F7]`
+- Multi-entry helper suffix selected by round phase `[N9 V5 F7]`
+- Return-threaded continuation chain encodes next K/W address `[N9 V4 F7]`
+- Eight residue-class continuations hardwire H rotation `[N9 V6 F9]`
+
+### Input/finalization fusion
+
+- Process full blocks from calldata and materialize only terminal padding `[N7 V7 F7]`
+- Fuse feed-forward and digest packing into the final round exit `[N7 V9 F7]`
+- Reuse the final paired-round body to perform feed-forward immediately `[N7 V8 F7]`
+
+The weighted shortlist (0.35 novelty, 0.40 viability, 0.25 fit) is:
+
+1. **Streaming 16-word W ring** -- highest direct fit and removes the separate
+   15,690-gas schedule phase while reusing the current recurrence arithmetic.
+2. **Rotating physical H roles** -- potentially removes most of the 142-gas
+   update phase, but only if phase is carried by control flow rather than a
+   paid dynamic dispatch.
+3. **Two-round virtual midpoint** -- halves loop control and may cancel first-
+   round stores against second-round loads while preserving a two-step semantic
+   specification.
+
+The non-obvious viable pick is the rotating H role map: after 64 rounds the
+phase returns to zero, so fold/output can retain their fixed-address boundary.
+The immediate trap is code size: eight copies of the current round body cannot
+fit, so the prototype must prove that only small address-specific continuations
+need duplication.
+
+Rejected traps:
+
+- Guarded paired lanes: SHA rotations and 32-bit carries cross the guard
+  structure often enough that unpack/repack cost is likely dominant.
+- Pre-rotated isoforms: every new A/E value would require regenerating three
+  rotations, moving rather than removing sigma work.
+- Paired W MLOAD: recurrence dependencies are not adjacent, so one unaligned
+  load cannot supply the required four words without a more expensive layout.
+- Full return-threaded 64-round chain: code growth is incompatible with the
+  current 1,524-byte artifact unless most arithmetic remains shared, restoring
+  the jumps it was intended to remove.
+
+Literature check:
+
+- NIST FIPS 180-4 defines W[t] only from t-2, t-7, t-15, and t-16, validating
+  the exact 16-word circular-window invariant.
+- The IACR comparative SHA-2 hardware study explicitly evaluates factor-two
+  unrolling, supporting the paired-round datapath but not proving it is cheaper
+  under EVM gas.
+- The Ethereum Yellow Paper gas schedule makes JUMP/JUMPI materially more
+  expensive than PUSH/MLOAD/MSTORE and JUMPDEST, so phase specialization must
+  use direct continuation geometry; a dynamic phase dispatcher is a trap.
+
+Three temp-only prototypes were launched in parallel with hard kill criteria:
+native clean/dirty correctness first, exact gas/byte accounting second, and no
+Lean edits until a candidate beats 3,130,807 concretely.
+
+### Prototype outcomes
+
+The first streaming-schedule implementation was brought from two control-flow
+faults to a full clean/dirty pass. It builds only W0--W15 before compression,
+then computes W16--W63 on demand and carries the fresh word directly into T1.
+Its exact score was **3,162,332**, a regression of **31,525** total or **485
+gas per padded block**. The eliminated W reload did not repay the second phase
+guard, dynamic backedge, and two extra continuation transfers. This version is
+rejected. A future streaming design must remove at least 486 gas/block of
+control rather than merely tightening the same geometry.
+
+The rotating-state audit proved the physical-ring invariant and found an
+optimistic ceiling of roughly 5,824 gas/block: only new A and new E need stores,
+and the loop guard can be checked once per eight phases. It is not a local
+splice. The integrated T1/T2 ABI must first accept phase-loaded H words while
+keeping every selection within DUP16/SWAP16; the modeled fork does not activate
+extended DUPN/SWAPN.
+
+The two-round virtual-midpoint prototype is the first architectural win. It
+loads A--H once, executes two rounds through dynamic helper continuations,
+keeps the midpoint virtual on the stack, and materializes only the state after
+the pair. All 38 clean/dirty rows passed. The artifact remains **1,524 bytes / 810
+instructions**, reaches at most DUP12, and scored **2,970,647**: exactly
+**160,160 below** the 3,130,807 checkpoint, or **2,464 gas per padded block**.
+One pair costs 895 gas versus 972 for two materialized rounds. This candidate
+advances to proof integration; the streaming candidate does not.
+
+## 2026-08-09: two-round virtual midpoint — proof complete
+
+The virtual-midpoint candidate is now the exact submission artifact. Its
+bytecode SHA-256 is
+`eb8c285b59def1ea1341d55c2d269a459ad0b808dffc4fccf7ff67dea72487f6`.
+The bytecode remains 1,524 bytes and the generated structural artifact remains
+810 instructions. No extended-stack opcodes are used: the deepest live access
+is `DUP12`, so the trace stays within ordinary Osaka EVM instructions.
+
+### Runtime design
+
+The old compression body executed one complete round at a time. Each round
+loaded the eight working variables, calculated T1 and T2, wrote all eight
+logical values back to fixed memory slots, incremented the counter, and
+repeated. Most of those stores merely materialized the state that the next
+round immediately loaded again.
+
+The new loop consumes two rounds per iteration. At byte PC 633 it checks the
+even counter and loads the working tuple once. The first T1 and T2 return to
+dynamic, statically certified continuation PCs. The resulting A1 and E1 stay
+on the EVM stack alongside the original working words. The second round reads
+its inputs from that virtual midpoint, computes A2 and E2, and only then
+commits the eight canonical H slots. The back edge increments by two. After 32
+pairs, counter 64 reaches the unchanged feed-forward loop at PC 935.
+
+The two fused big-sigma kernels were generalized from fixed continuations to
+valid dynamic return destinations. T1 now receives its two final addends from
+the caller, so the pair body can provide `h + K[j]` and `W[j]` for each of the
+two rounds without forcing an intermediate H-slot materialization. T2 uses the
+same dynamic-return pattern. All four concrete continuation destinations are
+proved valid jump destinations in the frozen bytecode.
+
+One pair costs exactly 895 gas. Two old rounds cost 972 gas, so the pair saves
+77 gas. There are 32 pairs per padded block, yielding the measured 2,464-gas
+per-block improvement. The public suite contains 65 padded blocks, hence the
+exact suite improvement is `2,464 * 65 = 160,160` gas. This takes the promoted
+3,130,807 checkpoint to 2,970,647. Empty-input gas is 46,691.
+
+### Proof architecture
+
+The proof was rebuilt from the frozen raw bytes upward rather than transported
+from native test vectors. `Bytes.lean` is reducible to the exact candidate
+hex, and `Artifact.lean` contains the complete 810-entry decoded instruction
+array with byte PCs and well-formedness certificates. The pair executor is
+split into small located blocks: condition, first T1 setup, first T2 setup,
+second T1 setup, second T2 setup, and commit/backedge. Each block has a direct
+small-step theorem, and their `GasSteps` witnesses compose into one pair and
+then 32 bounded iterations.
+
+The functional layer defines the usual eight-word SHA-256 `Working` record and
+one pure mathematical round. It proves the first virtual A/E values equal one
+round of that function, then proves the second virtual A/E values equal a
+second round. The commit theorem writes A2, A1, A, B, E2, E1, E, and F to the
+canonical slots and proves those eight words represent precisely two pure
+rounds. A 32-pair induction therefore represents 64 standard SHA-256 rounds,
+not a new or weakened specification.
+
+The invariant also proves that every pair preserves the packed K table, the
+64-word schedule, the saved pre-round chaining state, calldata-derived padded
+blocks outside scratch memory, the execution environment, halt state, and
+call stack. This reconnects at the existing feed-forward proof, which adds the
+saved chaining words and reaches the existing outer driver and digest-output
+theorems. The final theorem still establishes `Challenge.Sha256.Correct` for
+every calldata value; clean and dirty vectors are only falsification checks.
+
+A clean-source audit exposed stale single-round modules that cached object
+files had initially hidden. Those layers were replaced with the 32-pair
+executor and pair-preservation lemmas before the official run. The benchmark
+artifact was then regenerated from the exact current hex, preventing a proof
+from accidentally targeting an older candidate.
+
+### Verification record
+
+The exact official command was:
+
+```text
+BENCHMARK_INSECURE_LOCAL=1 yukon run
+```
+
+The insecure-local flag is required by the benchmark harness on Darwin; it
+does not weaken the Lean theorem or native vectors, but uses Comparator's local
+fake sandbox instead of ranked landrun isolation. The resulting gate reported:
+
+| Check | Result |
+|---|---:|
+| Lean submission build | accepted |
+| Lean default kernel | accepted |
+| Comparator | accepted |
+| Clean correctness vectors | 19/19 |
+| Dirty-frame native runs | all matched clean gas/results |
+| Bytecode size | 1,524 bytes |
+| Structural instructions | 810 |
+| Verified score | **2,970,647** |
+
+No `native_decide` or new trusted axiom is used in the exported proof. The
+accepted proof relies on the benchmark's allowed kernel foundations
+(`propext`, `Quot.sound`, and `Classical.choice`) and ordinary reducible
+arithmetic/list operations.
+
+### Course corrections and next work
+
+The main proof-engineering failure was asking Lean to reduce the complete
+post-pair state definitionally when proving frame fields. That triggered
+multi-minute heartbeat exhaustion. Small generic lemmas showing that loads,
+stores, and helper returns preserve `executionEnv`, `halt`, and `callStack`
+made the 32-pair composition compile reliably. Likewise, the eight final H
+writes were proved through named intermediate states instead of one enormous
+normalization.
+
+The streaming schedule prototype was retained in this ledger as a negative
+result because it looked architecturally stronger but regressed by 485 gas per
+block. The pair design won because it removes intermediate state traffic while
+keeping the full schedule and fixed feed-forward boundary unchanged.
+
+Promising next steps are a four-round superstep or phase-rotated physical H
+slots, provided the resulting stack layout stays within `DUP16`/`SWAP16` and
+does not reintroduce dynamic-dispatch gas. Any follow-up should begin from this
+proof-complete 2,970,647 checkpoint, native-score clean and dirty states first,
+and only then extend the pair invariant.
+
+Development context: GPT 5.6 Sol, xhigh effort, Codex agent.

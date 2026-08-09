@@ -1,5 +1,5 @@
 
-import Challenge.Sha256.Submission.Proofs.Bytecode.CompressionExec
+import Challenge.Sha256.Submission.Proofs.Bytecode.PairCompositionTest
 set_option warningAsError true
 set_option maxRecDepth 10000
 set_option maxHeartbeats 5000000
@@ -15,6 +15,8 @@ namespace Challenge.Sha256.Submission.Proofs.Bytecode.Compression
 open EvmSemantics
 open EvmSemantics.EVM
 
+/- Superseded one-round frame helpers. -/
+/-
 @[simp] theorem shiftReturned_executionEnv (q : State) (src dest loadReturn
     storeReturn : Nat) (context : List UInt256) :
     (shiftReturned q src dest loadReturn storeReturn context).executionEnv =
@@ -47,6 +49,7 @@ open EvmSemantics.EVM
     (value : UInt256) (nextPC : Nat) (context : List UInt256) :
     (directStored q offset value nextPC context).callStack = q.callStack := by
   rfl
+-/
 
 @[simp] theorem afterSchedule_executionEnv (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) :
@@ -112,7 +115,7 @@ def gasSteps_toRoundLoop (s : State) (msgOff returnDest : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (compressEntry s msgOff returnDest rest)
-      (roundAt (copyHashState (afterSchedule s msgOff returnDest rest))
+      (pairAt (copyHashState (afterSchedule s msgOff returnDest rest))
         msgOff returnDest rest 0) := by
   have gEntry := gasSteps_entry s msgOff returnDest rest hcap
     hcode hfork hrun hnp
@@ -154,7 +157,7 @@ def gasSteps_toRoundLoop (s : State) (msgOff returnDest : UInt256)
   have gCopyRaw : Challenge.EvmProof.GasSteps
       { q with pc := UInt256.ofNat 621
                stack := [msgOff, returnDest] ++ rest }
-      (roundAt (copyHashState q) msgOff returnDest rest 0) := by
+      (pairAt (copyHashState q) msgOff returnDest rest 0) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka copyAndLoopStartPath
     · rw [qentry]
@@ -167,7 +170,7 @@ def gasSteps_toRoundLoop (s : State) (msgOff returnDest : UInt256)
     · rw [qentry]
       exact qnp
   have gCopy : Challenge.EvmProof.GasSteps q
-      (roundAt (copyHashState q) msgOff returnDest rest 0) :=
+      (pairAt (copyHashState q) msgOff returnDest rest 0) :=
     Challenge.EvmProof.GasSteps.cast gCopyRaw qentry rfl
   exact gEntry.trans (gSchedule.trans gCopy)
 
@@ -193,6 +196,8 @@ def gasSteps_toRoundLoop (s : State) (msgOff returnDest : UInt256)
     Challenge.EvmProof.GasSteps.cast_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
 
+/- Superseded single-round composition. -/
+/-
 def gasSteps_condition (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj : j < 64)
     (hcap : rest.length < 1019)
@@ -1023,19 +1028,62 @@ def gasSteps_roundLoop (s : State) (msgOff returnDest : UInt256)
     simp [q, roundLoopState]
   exact Challenge.EvmProof.GasSteps.cast g hs ht
 
+-/
+
+/-- Compatibility view used by the outer compression and driver layers.
+`n = 64` denotes the state after 32 certified two-round pairs. -/
+def roundLoopState (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (n : Nat) : State :=
+  PairCompositionTest.pairLoopState s msgOff returnDest rest (n / 2)
+
+@[simp] theorem roundLoopState_executionEnv (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) (n : Nat) :
+    (roundLoopState s msgOff returnDest rest n).executionEnv =
+      s.executionEnv := by
+  simp [roundLoopState]
+
+@[simp] theorem roundLoopState_halt (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) (n : Nat) :
+    (roundLoopState s msgOff returnDest rest n).halt = s.halt := by
+  simp [roundLoopState]
+
+@[simp] theorem roundLoopState_callStack (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) (n : Nat) :
+    (roundLoopState s msgOff returnDest rest n).callStack = s.callStack := by
+  simp [roundLoopState]
+
+@[simp] theorem pairAt_roundLoopState_64 (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) :
+    pairAt (roundLoopState s msgOff returnDest rest 64)
+      msgOff returnDest rest 64 = roundLoopState s msgOff returnDest rest 64 := by
+  simp [roundLoopState, PairCompositionTest.pairLoopState,
+    afterPair, pairAt]
+
+def gasSteps_roundLoop (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 988)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (roundLoopState s msgOff returnDest rest 0)
+      (roundLoopState s msgOff returnDest rest 64) := by
+  simpa [roundLoopState] using
+    PairCompositionTest.gasStepsPairLoop s msgOff returnDest rest hcap
+      hcode hfork hrun hnp
+
 def gasSteps_roundsExit (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 1019)
+    (rest : List UInt256) (hcap : rest.length < 1000)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (roundAt s msgOff returnDest rest 64)
+    Challenge.EvmProof.GasSteps (pairAt s msgOff returnDest rest 64)
       (foldAt s msgOff returnDest rest 0) := by
   apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.referenceArtifact .Osaka roundsExitPath
+    Artifact.referenceArtifact .Osaka pairExitPath
   · exact hcode
   · exact hfork
-  · exact run_roundsExit s msgOff returnDest rest hcap hcode hrun
+  · exact run_pairExit s msgOff returnDest rest hcap hcode hrun
   · exact hrun
   · exact hnp
 
@@ -1249,7 +1297,7 @@ def gasSteps_compress (s : State) (msgOff returnDest : UInt256)
     simpa [afterRounds] using preparedNp
   have gRoundsExitRaw := gasSteps_roundsExit afterRounds msgOff returnDest rest
     (by omega) roundsCode roundsFork roundsRun roundsNp
-  have roundsExitStart : roundAt afterRounds msgOff returnDest rest 64 =
+  have roundsExitStart : pairAt afterRounds msgOff returnDest rest 64 =
       afterRounds := by simp [afterRounds]
   have gRoundsExit := Challenge.EvmProof.GasSteps.cast gRoundsExitRaw
     roundsExitStart rfl

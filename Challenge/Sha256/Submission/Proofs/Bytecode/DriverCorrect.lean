@@ -265,6 +265,8 @@ private theorem readWord_copyHashState (s : State) (addr : Nat)
   · norm_num [Padding.messageOffset]
   · exact hout
 
+/- Superseded single-round scratch-memory trace. -/
+/-
 private theorem readWord_storeReturnedH (q : State) (dest : Nat)
     (value returnDest : UInt256) (context : List UInt256) (addr : Nat)
     (hdest : dest < 8) (hout : OutsideScratch addr) :
@@ -380,6 +382,89 @@ private theorem readWord_roundLoop (s : State) (msgOff returnDest : UInt256)
       exact (readWord_afterSecondIteration
         (Compression.roundLoopState s msgOff returnDest rest n)
         msgOff returnDest rest n addr hout).trans ih
+-/
+
+private theorem readWord_storeReturnedH (q : State) (dest : Nat)
+    (value returnDest : UInt256) (context : List UInt256) (addr : Nat)
+    (hdest : dest < 8) (hout : OutsideScratch addr) :
+    MachineState.readWord
+        (Accessors.storeReturned q 288 (UInt256.ofNat dest) value
+          returnDest context).memory addr =
+      MachineState.readWord q.memory addr := by
+  unfold Accessors.storeReturned
+  rw [hSlot_eq dest hdest]
+  apply readWord_writeScratch (writeSize := 32)
+  · exact YulEvmCompiler.BytesLemmas.natToBytesPadded_size _ 32
+  · omega
+  · norm_num [Padding.messageOffset]
+    omega
+  · exact hout
+
+private theorem readWord_storedWord (q : State) (offset : Nat)
+    (value : UInt256) (addr : Nat)
+    (hstart : 288 ≤ offset) (hend : offset + 32 ≤ Padding.messageOffset)
+    (hout : OutsideScratch addr) :
+    MachineState.readWord (Compression.storedWord q offset value).memory addr =
+      MachineState.readWord q.memory addr := by
+  unfold Compression.storedWord
+  apply readWord_writeScratch (writeSize := 32)
+  · exact YulEvmCompiler.BytesLemmas.natToBytesPadded_size _ 32
+  · exact hstart
+  · exact hend
+  · exact hout
+
+private theorem readWord_afterPair (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (j addr : Nat) (hout : OutsideScratch addr) :
+    MachineState.readWord
+        (Compression.afterPair s msgOff returnDest rest j).memory addr =
+      MachineState.readWord s.memory addr := by
+  let q0 := Compression.afterPairT21 s msgOff returnDest rest j
+  let q1 := Compression.storedWord q0 288 (Compression.pairA2 s j)
+  let q2 := Compression.storedWord q1 320 (Compression.pairA1 s j)
+  let q3 := Compression.storedWord q2 352 (Compression.hValue s 0)
+  let q4 := Compression.storedWord q3 384 (Compression.hValue s 1)
+  let q5 := Compression.storedWord q4 416 (Compression.pairE2 s j)
+  let q6 := Compression.storedWord q5 448 (Compression.pairE1 s j)
+  let q7 := Compression.storedWord q6 480 (Compression.hValue s 4)
+  let q8 := Compression.storedWord q7 512 (Compression.hValue s 5)
+  change MachineState.readWord q8.memory addr = MachineState.readWord s.memory addr
+  exact (readWord_storedWord q7 512 (Compression.hValue s 5) addr
+    (by omega) (by norm_num [Padding.messageOffset]) hout).trans
+    ((readWord_storedWord q6 480 (Compression.hValue s 4) addr
+      (by omega) (by norm_num [Padding.messageOffset]) hout).trans
+    ((readWord_storedWord q5 448 (Compression.pairE1 s j) addr
+      (by omega) (by norm_num [Padding.messageOffset]) hout).trans
+    ((readWord_storedWord q4 416 (Compression.pairE2 s j) addr
+      (by omega) (by norm_num [Padding.messageOffset]) hout).trans
+    ((readWord_storedWord q3 384 (Compression.hValue s 1) addr
+      (by omega) (by norm_num [Padding.messageOffset]) hout).trans
+    ((readWord_storedWord q2 352 (Compression.hValue s 0) addr
+      (by omega) (by norm_num [Padding.messageOffset]) hout).trans
+    ((readWord_storedWord q1 320 (Compression.pairA1 s j) addr
+      (by omega) (by norm_num [Padding.messageOffset]) hout).trans
+    ((readWord_storedWord q0 288 (Compression.pairA2 s j) addr
+      (by omega) (by norm_num [Padding.messageOffset]) hout).trans (by rfl))))))))
+
+private theorem readWord_pairLoop (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (n addr : Nat) (hout : OutsideScratch addr) :
+    MachineState.readWord
+        (PairCompositionTest.pairLoopState s msgOff returnDest rest n).memory addr =
+      MachineState.readWord s.memory addr := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      rw [PairCompositionTest.pairLoopState]
+      exact (readWord_afterPair
+        (PairCompositionTest.pairLoopState s msgOff returnDest rest n)
+        msgOff returnDest rest (2 * n) addr hout).trans ih
+
+private theorem readWord_roundLoop (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (n addr : Nat) (hout : OutsideScratch addr) :
+    MachineState.readWord
+        (Compression.roundLoopState s msgOff returnDest rest n).memory addr =
+      MachineState.readWord s.memory addr := by
+  simpa [Compression.roundLoopState] using
+    readWord_pairLoop s msgOff returnDest rest (n / 2) addr hout
 
 private theorem readWord_afterFoldIteration (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (i addr : Nat)

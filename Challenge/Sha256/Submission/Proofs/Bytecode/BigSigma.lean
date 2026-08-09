@@ -50,20 +50,20 @@ private theorem mask32_add_congr {x x' y y' : UInt256}
       Challenge.EvmProof.Word.mask32 (x' + y') := by
   rw [mask32_add_distrib x y, mask32_add_distrib x' y', hx, hy]
 
-private theorem mask32_t1_fused (x y z addend1 addend2 h7 : UInt256) :
+private theorem mask32_t1_fused (x y z addend1 addend2 : UInt256) :
     Challenge.EvmProof.Word.mask32
-        (h7 + (((Word.rawFusedBigSigma1 x + Word.evmCh x y z) +
-          addend1) + addend2)) =
+        (((Word.rawFusedBigSigma1 x + Word.evmCh x y z) +
+          addend1) + addend2) =
       Challenge.EvmProof.Word.mask32
-        (h7 + (((Word.evmBigSigma1 x + Word.evmCh x y z) +
-          addend1) + addend2)) := by
+        (((Word.evmBigSigma1 x + Word.evmCh x y z) +
+          addend1) + addend2) := by
   have h0 := mask32_add_congr (Word.mask32_rawFusedBigSigma1 x)
     (y := Word.evmCh x y z)
     (y' := Word.evmCh x y z) rfl
   have h1 := mask32_add_congr h0
     (y := addend1) (y' := addend1) rfl
   have h2 := mask32_add_congr h1 (y := addend2) (y' := addend2) rfl
-  exact mask32_add_congr rfl h2
+  exact h2
 
 private theorem mask32_t2_fused (x y z : UInt256) :
     Challenge.EvmProof.Word.mask32
@@ -80,36 +80,34 @@ def entry (s : State) (entryPC : Nat) (x returnDest : UInt256)
     stack := [x, returnDest] ++ rest }
 
 /-- Specialized ABI for BSIG0 fused with the T2 addition and mask. -/
-def t2Entry (s : State) (x y z : UInt256)
+def t2Entry (s : State) (x y z returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with
     pc := UInt256.ofNat 114
-    stack := [x, y, z, UInt256.ofNat 0xffffffff] ++ rest }
+    stack := [x, y, z, UInt256.ofNat 0xffffffff, returnDest] ++ rest }
 
-def t2Returned (s : State) (x y z : UInt256)
+def t2Returned (s : State) (x y z returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 783
+    pc := returnDest
     stack := Challenge.EvmProof.Word.mask32
       (Word.evmBigSigma0 x + Word.evmMaj x y z) :: rest }
 
 /-- Specialized ABI for BSIG1 fused through all remaining T1 arithmetic. -/
-def t1Entry (s : State) (x y z addend1 addend2 : UInt256)
+def t1Entry (s : State) (x y z addend1 addend2 returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with
     pc := UInt256.ofNat 163
     stack := [x, y, z, addend1, addend2,
-      UInt256.ofNat 0xffffffff] ++ rest }
+      UInt256.ofNat 0xffffffff, returnDest] ++ rest }
 
-def t1Returned (s : State) (x y z addend1 addend2 : UInt256)
+def t1Returned (s : State) (x y z addend1 addend2 returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 729
+    pc := returnDest
     stack := Challenge.EvmProof.Word.mask32
-      (MachineState.readWord s.memory 512 +
-        (((Word.evmBigSigma1 x + Word.evmCh x y z) + addend1) +
-          addend2)) :: rest
-    activeWords := s.activeWordsAfterUInt256 512 32 }
+      (((Word.evmBigSigma1 x + Word.evmCh x y z) + addend1) +
+        addend2) :: rest }
 
 def bigSigma0Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -144,71 +142,71 @@ def bigSigma0Path :
    ⟨132, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨133, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨134, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨135, .push ⟨2, by decide⟩ (UInt256.ofNat 783), by rfl, by decide⟩,
+   ⟨135, .op (.Swap ⟨0, by decide⟩), by rfl,
+      wfOp (by decide) trivial rfl⟩,
    ⟨136, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def bigSigma1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨147, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨148, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨148, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨149, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨150, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨151, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨152, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨153, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨154, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨155, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨156, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨157, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨158, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨159, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨160, .push ⟨1, by decide⟩ (UInt256.ofNat 6), by rfl, by decide⟩,
-   ⟨161, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨162, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨163, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨164, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨165, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨166, .push ⟨1, by decide⟩ (UInt256.ofNat 14), by rfl, by decide⟩,
-   ⟨167, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨168, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨150, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨151, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨152, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨153, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨154, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨155, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨156, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨157, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨158, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨159, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨160, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨161, .push ⟨1, by decide⟩ (UInt256.ofNat 6), by rfl, by decide⟩,
+   ⟨162, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨163, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨164, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨165, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨166, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨167, .push ⟨1, by decide⟩ (UInt256.ofNat 14), by rfl, by decide⟩,
+   ⟨168, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨169, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨170, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨171, .op (.Swap ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨172, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨170, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨171, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨172, .op (.Swap ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨173, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨174, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨175, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨175, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨176, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨177, .push ⟨2, by decide⟩ (UInt256.ofNat 512), by rfl, by decide⟩,
-   ⟨178, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨179, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨180, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨181, .push ⟨2, by decide⟩ (UInt256.ofNat 729), by rfl, by decide⟩,
-   ⟨182, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨177, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨178, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨179, .op (.Swap ⟨0, by decide⟩), by rfl,
+      wfOp (by decide) trivial rfl⟩,
+   ⟨180, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem bigSigma0PC (i : Nat) (hlo : 104 ≤ i) (hhi : i ≤ 136) :
     Artifact.referenceArtifact.instructionPC i =
       [114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126,
         128, 129, 130, 132, 133, 134, 136, 137, 138, 140, 141, 142, 143,
-        144, 145, 146, 147, 148, 149, 152][i - 104]! := by
+        144, 145, 146, 147, 148, 149, 150][i - 104]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem bigSigma1PC (i : Nat) (hlo : 147 ≤ i) (hhi : i ≤ 182) :
+@[simp] private theorem bigSigma1PC (i : Nat) (hlo : 148 ≤ i) (hhi : i ≤ 180) :
     Artifact.referenceArtifact.instructionPC i =
       [163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 175, 176,
         177, 179, 180, 181, 183, 184, 185, 187, 188, 189, 190, 191, 192,
-        193, 194, 195, 196, 197, 200, 201, 202, 203, 206][i - 147]! := by
+        193, 194, 195, 196, 197, 198, 199][i - 148]! := by
   interval_cases i <;> decide
 
 set_option maxHeartbeats 800000 in
 set_option linter.unusedSimpArgs false in
-theorem run_bigSigma0 (s : State) (x y z : UInt256)
+theorem run_bigSigma0 (s : State) (x y z returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1011)
     (hcode : s.executionEnv.code = submissionBytecode)
-    (hrun : s.halt = .Running) :
+    (hrun : s.halt = .Running)
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock bigSigma0Path
-      (t2Entry s x y z rest) =
-        some (t2Returned s x y z rest) := by
+      (t2Entry s x y z returnDest rest) =
+        some (t2Returned s x y z returnDest rest) := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
@@ -218,12 +216,13 @@ theorem run_bigSigma0 (s : State) (x y z : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 783 = true := by decide
+  have hc10 : rest.length + 10 < 1024 := by omega
   simp [bigSigma0Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     t2Entry, t2Returned, Word.rawFusedBigSigma0, Word.duplicateLane,
     Challenge.EvmProof.Word.mask32, List.exchange,
-    hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hcode, hrun, hdest]
+    hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10,
+    hcode, hrun, hvalid]
   change Challenge.EvmProof.Word.mask32
       (Word.rawFusedBigSigma0 x + Word.evmMaj x y z) =
     Challenge.EvmProof.Word.mask32
@@ -232,13 +231,14 @@ theorem run_bigSigma0 (s : State) (x y z : UInt256)
 
 set_option maxHeartbeats 800000 in
 set_option linter.unusedSimpArgs false in
-theorem run_bigSigma1 (s : State) (x y z addend1 addend2 : UInt256)
+theorem run_bigSigma1 (s : State) (x y z addend1 addend2 returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1011)
     (hcode : s.executionEnv.code = submissionBytecode)
-    (hrun : s.halt = .Running) :
+    (hrun : s.halt = .Running)
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock bigSigma1Path
-      (t1Entry s x y z addend1 addend2 rest) =
-        some (t1Returned s x y z addend1 addend2 rest) := by
+      (t1Entry s x y z addend1 addend2 returnDest rest) =
+        some (t1Returned s x y z addend1 addend2 returnDest rest) := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
@@ -250,53 +250,52 @@ theorem run_bigSigma1 (s : State) (x y z addend1 addend2 : UInt256)
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 729 = true := by decide
+  have hc12 : rest.length + 12 < 1024 := by omega
   simp [bigSigma1Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     t1Entry, t1Returned, Word.rawFusedBigSigma1, Word.duplicateLane,
     Challenge.EvmProof.Word.mask32, List.exchange,
-    hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11,
-    hcode, hrun, hdest,
-    State.activeWordsAfterUInt256]
+    hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12,
+    hcode, hrun, hvalid]
   change Challenge.EvmProof.Word.mask32
-      (MachineState.readWord s.memory 512 +
-        (((Word.rawFusedBigSigma1 x + Word.evmCh x y z) + addend1) +
-          addend2)) =
+      (((Word.rawFusedBigSigma1 x + Word.evmCh x y z) + addend1) +
+        addend2) =
     Challenge.EvmProof.Word.mask32
-      (MachineState.readWord s.memory 512 +
-        (((Word.evmBigSigma1 x + Word.evmCh x y z) + addend1) + addend2))
+      (((Word.evmBigSigma1 x + Word.evmCh x y z) + addend1) + addend2)
   exact mask32_t1_fused x y z addend1 addend2
-    (MachineState.readWord s.memory 512)
 
-def gasSteps_bigSigma0 (s : State) (x y z : UInt256)
+def gasSteps_bigSigma0 (s : State) (x y z returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1011)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (t2Entry s x y z rest)
-      (t2Returned s x y z rest) := by
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    Challenge.EvmProof.GasSteps (t2Entry s x y z returnDest rest)
+      (t2Returned s x y z returnDest rest) := by
   apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka bigSigma0Path
   · exact hcode
   · exact hfork
-  · exact run_bigSigma0 s x y z rest hcap hcode hrun
+  · exact run_bigSigma0 s x y z returnDest rest hcap hcode hrun hvalid
   · exact hrun
   · exact hnp
 
-def gasSteps_bigSigma1 (s : State) (x y z addend1 addend2 : UInt256)
+def gasSteps_bigSigma1 (s : State) (x y z addend1 addend2 returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1011)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (t1Entry s x y z addend1 addend2 rest)
-      (t1Returned s x y z addend1 addend2 rest) := by
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    Challenge.EvmProof.GasSteps
+      (t1Entry s x y z addend1 addend2 returnDest rest)
+      (t1Returned s x y z addend1 addend2 returnDest rest) := by
   apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.referenceArtifact .Osaka bigSigma1Path
   · exact hcode
   · exact hfork
-  · exact run_bigSigma1 s x y z addend1 addend2 rest hcap hcode hrun
+  · exact run_bigSigma1 s x y z addend1 addend2 returnDest rest hcap hcode hrun hvalid
   · exact hrun
   · exact hnp
 
