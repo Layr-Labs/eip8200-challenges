@@ -176,15 +176,23 @@ one restored fall-through `JUMPDEST` keeps the artifact at 810 instructions.
 This saves 9 gas per round, 576 gas per padded block, and 37,440 gas over the
 suite.
 
-Fresh local scoring of the exact submission bytes is 3,753,967 versus the
-10,179,119 reference, a combined reduction of 6,425,152 gas. All 19 vectors
+The BSIG1 helper is now specialized for its only compression-round caller as
+well. It computes the raw chained rotates, adds `Ch(e,f,g) + K[j]` and `W[j]`,
+loads `h7` directly from memory offset 512, performs the final addition and
+32-bit mask, and jumps to the existing T1 boundary. Five fall-through
+`JUMPDEST`s preserve the downstream PC layout; unreachable padding keeps the
+artifact at 1,524 bytes and 810 structural instructions. This saves 11 gas per
+round, 704 gas per padded block, and 45,760 gas over the suite.
+
+Fresh local scoring of the exact submission bytes is 3,708,207 versus the
+10,179,119 reference, a combined reduction of 6,470,912 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 59,011 gas.
+vector costs 58,307 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 57,220
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 56,516
 gas per padded block, plus calldata copying and memory expansion.

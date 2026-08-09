@@ -23,7 +23,7 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gasSteps_t1 s msgOff returnDest rest j hj hcap hcode hfork
       hrun hnp).cost + MachineState.memCost
         (Compression.roundAt s msgOff returnDest rest j).activeWords.toNat =
-      271 + MachineState.memCost
+      260 + MachineState.memCost
         (Compression.afterT1 s msgOff returnDest rest j).activeWords.toNat := by
   have hcond := blockCost_potential_of_static Compression.conditionPath 26
     (Compression.run_condition s msgOff returnDest rest j hj (by omega) hrun)
@@ -74,7 +74,7 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
       Compression.gotW, Compression.loadedE, Accessors.loadReturned,
       Accessors.kAtReturned] using hnp) (by decide)
   have hsetupB1 := blockCost_potential_of_static
-    Compression.setupBigSigma1Path 21
+    Compression.setupBigSigma1Path 18
     (Compression.run_setupBigSigma1 s msgOff returnDest rest j (by omega)
       hcode hrun)
     (by simpa [Compression.gotCh, Compression.gotH5, Compression.gotH6,
@@ -84,10 +84,9 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
     (by simp [Compression.setupBigSigma1Path, CopyFree]) (by rfl)
   have hb1 := ArithmeticGas.gasSteps_bigSigma1_cost_potential
     (Compression.gotCh s msgOff returnDest rest j) (Compression.hValue s 4)
-    (UInt256.ofNat 714)
-    ([Compression.chPlusK s j, Compression.wValue s j,
-      UInt256.ofNat 0xffffffff, Compression.hValue s 4, UInt256.ofNat j,
-      msgOff, returnDest] ++ rest) (by simp; omega)
+    (Compression.chPlusK s j) (Compression.wValue s j)
+    ([Compression.hValue s 4, UInt256.ofNat j, msgOff, returnDest] ++ rest)
+    (by simp; omega)
     (by simpa [Compression.gotCh, Compression.gotH5, Compression.gotH6,
       Compression.gotK, Compression.gotW, Compression.loadedE,
       Functions.unaryReturned, Accessors.loadReturned,
@@ -103,17 +102,10 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
     (by simpa [Compression.gotCh, Compression.gotH5, Compression.gotH6,
       Compression.gotK, Compression.gotW, Compression.loadedE,
       Functions.unaryReturned, Accessors.loadReturned,
-      Accessors.kAtReturned] using hnp) (by decide)
-  have hsetupH7 := blockCost_potential_of_static Compression.setupH7Path 12
-    (Compression.run_setupH7 s msgOff returnDest rest j (by omega) hrun)
-    (by simpa [Compression.gotBigSigma1, Compression.gotCh,
-      Compression.gotH5, Compression.gotH6, Compression.gotK,
-      Compression.gotW, Compression.loadedE, Functions.unaryReturned,
-      Accessors.loadReturned, Accessors.kAtReturned, State.fork] using hfork)
-    (by simp [Compression.setupH7Path, CopyFree]) (by rfl)
-  have hfinish := blockCost_potential_of_static Compression.finishT1Path 13
+      Accessors.kAtReturned] using hnp)
+  have hfinish := blockCost_potential_of_static Compression.finishT1Path 5
     (Compression.run_finishT1 s msgOff returnDest rest j (by omega) hrun)
-    (by simpa [Compression.gotH7, Compression.gotBigSigma1,
+    (by simpa [Compression.gotFusedT1, BigSigma.t1Returned,
       Compression.gotCh, Compression.gotH5, Compression.gotH6,
       Compression.gotK, Compression.gotW, Compression.loadedE,
       Functions.unaryReturned, Accessors.loadReturned,
@@ -127,13 +119,14 @@ theorem t1_cost_potential (s : State) (msgOff returnDest : UInt256)
         (Compression.gotCh s msgOff returnDest rest j).activeWords := by rfl
   simp only [Compression.gasSteps_t1, Compression.gasSteps_condition,
     Challenge.EvmProof.GasSteps.trans_cost,
+    Challenge.EvmProof.GasSteps.cast_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
   rw [hawCh] at hsetupCh
   rw [hawB1] at hsetupB1
   change _ = 44 + MachineState.memCost
     (Compression.gotCh s msgOff returnDest rest j).activeWords.toNat at hch
-  change _ = 60 + MachineState.memCost
-    (Compression.gotBigSigma1 s msgOff returnDest rest j).activeWords.toNat at hb1
+  change _ = 72 + MachineState.memCost
+    (Compression.gotFusedT1 s msgOff returnDest rest j).activeWords.toNat at hb1
   omega
 
 

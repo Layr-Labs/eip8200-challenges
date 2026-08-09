@@ -353,27 +353,26 @@ theorem gasSteps_bigSigma0_cost_potential (s : State)
   simpa [BigSigma.t2Entry] using hmeter
 
 private theorem bigSigma1_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma1Path = 60 := by
+    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma1Path = 72 := by
   rfl
 
 theorem gasSteps_bigSigma1_cost_potential (s : State)
-    (x returnDest : UInt256) (rest : List UInt256)
+    (x addend1 addend2 : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1011)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
-    (BigSigma.gasSteps_bigSigma1 s x returnDest rest hcap hcode hfork
-      hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      60 + MachineState.memCost
-        (Functions.unaryReturned s (Word.evmBigSigma1 x) returnDest rest).activeWords.toNat := by
-  have hresult := BigSigma.run_bigSigma1 s x returnDest rest hcap hcode hrun hvalid
+      s.executionEnv.codeAddr = false) :
+    (BigSigma.gasSteps_bigSigma1 s x addend1 addend2 rest hcap hcode hfork
+      hrun hnp).cost + MachineState.memCost s.activeWords.toNat =
+      72 + MachineState.memCost
+        (BigSigma.t1Returned s x addend1 addend2 rest).activeWords.toNat := by
+  have hresult := BigSigma.run_bigSigma1 s x addend1 addend2 rest hcap hcode hrun
   have hmeter := block_cost_potential BigSigma.bigSigma1Path hresult hfork
     (by simp [BigSigma.bigSigma1Path, CopyFree])
   rw [bigSigma1_static] at hmeter
   unfold BigSigma.gasSteps_bigSigma1
   simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simpa [BigSigma.entry] using hmeter
+  simpa [BigSigma.t1Entry] using hmeter
 
 end Challenge.Sha256.Submission.Proofs.Bytecode.ArithmeticGas

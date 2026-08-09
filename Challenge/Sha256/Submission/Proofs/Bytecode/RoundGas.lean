@@ -23,7 +23,7 @@ theorem roundIteration_cost_potential (s : State)
     (Compression.gasSteps_roundIteration s msgOff returnDest rest j hj hcap
       hcode hfork hrun hnp).cost + MachineState.memCost
         (Compression.roundAt s msgOff returnDest rest j).activeWords.toNat =
-      630 + MachineState.memCost
+      619 + MachineState.memCost
         (Compression.afterSecondIteration s msgOff returnDest rest j).activeWords.toNat := by
   have h1 := t1_cost_potential s msgOff returnDest rest j hj hcap hcode
     hfork hrun hnp
@@ -45,10 +45,10 @@ theorem roundLoop_cost_potential (s : State)
     (Compression.gasSteps_roundLoop s msgOff returnDest rest hcap hcode hfork
       hrun hnp).cost + MachineState.memCost
         (Compression.roundLoopState s msgOff returnDest rest 0).activeWords.toNat =
-      64 * 630 + MachineState.memCost
+      64 * 619 + MachineState.memCost
         (Compression.roundLoopState s msgOff returnDest rest 64).activeWords.toNat := by
   unfold Compression.gasSteps_roundLoop
-  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add 64 630
+  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add 64 619
   intro i hi
   let q := Compression.roundLoopState s msgOff returnDest rest i
   have qcode : q.executionEnv.code = submissionBytecode := by
@@ -69,7 +69,7 @@ theorem roundLoop_cost_potential (s : State)
         msgOff returnDest rest i hi hcap qcode qfork qrun qnp).cost +
           MachineState.memCost
             (Compression.roundLoopState s msgOff returnDest rest i).activeWords.toNat =
-        630 + MachineState.memCost
+        619 + MachineState.memCost
           (Compression.roundLoopState s msgOff returnDest rest (i + 1)).activeWords.toNat := by
     simpa [Compression.roundAt, Compression.roundLoopState] using h
   simpa only [Challenge.EvmProof.GasSteps.cast_cost] using h'

@@ -302,3 +302,60 @@ schedule at 3,907,367 and a direct recurrence store that combines with it at
 3,838,727. Both have exact passing native artifacts; they remain deliberately
 separate from this checkpoint so this universally masked version can reach the
 frontier first.
+
+## 2026-08-08: post-3,753,967 audit and specialized BSIG1 experiment
+
+The current proof-complete checkpoint specializes BSIG0 through the T2
+addition and mask. Its exact local and Yukon scores agree at 3,753,967, with
+59,011 gas for the empty vector, 19/19 clean vectors, identical dirty-frame
+costs, 1,524 bytecode bytes, and 810 structural instructions. Submission
+`e2d09aee-566e-40cb-b721-b69fb49d1708` was queued while the next experiment
+began; validation latency is deliberately treated as non-blocking.
+
+The next component audit split each compression round into T1=271, T2=179,
+and updates=180 gas. T1 still paid four distinct pieces around BSIG1:
+
+| Piece | Current gas |
+|---|---:|
+| BSIG1 call setup | 21 |
+| BSIG1 helper | 60 |
+| direct `h7` load plus local pad | 12 |
+| three additions and final mask | 13 |
+
+BSIG1 has only this compression caller, so the experiment changed its ABI
+from `[e, returnPC, Ch+K, W, mask, ...]` to `[e, Ch+K, W, mask, ...]`. The
+helper computes the same raw chained rotations, adds `Ch+K` and `W`, directly
+loads `h7` from byte address 512, adds it, masks the low word, and hard-jumps
+to the existing T1 boundary at PC 725. PCs 725--729 become five executed
+`JUMPDEST` instructions, allowing execution to fall through at the unchanged
+PC 730 without relocating T2. A `PUSH7 0` plus five unreachable `STOP`s keeps
+the 44-byte helper at exactly 29 structural instructions; the caller remains
+11 bytes and seven instructions through an unreachable `PUSH2 0; STOP` pad.
+
+This stream-only candidate was tested before editing any Lean file. The native
+scorer accepted all 38 clean/dirty rows and preserved identical paired gas.
+Empty gas fell from 59,011 to 58,307, exactly 704 gas per padded block or 11
+gas per round. Across the public suite's 65 blocks the exact delta is 45,760,
+for a projected score of **3,708,207**. The result proves the hypothesis and
+justifies proof integration. The proof plan mirrors the already-landed BSIG0
+specialization: add a T1-specific helper entry/return state, prove low-32
+addition congruence from `fusedBigSigma1_eq`, replace the local execution path,
+compose directly from `gotCh` to `afterT1`, then update T1 271->260, round
+630->619, compression 57,145->56,441, and driver 57,220->56,516.
+
+The alternative of moving the next T2 load into PCs 726--729 was considered
+and rejected for this iteration. It could avoid the five 1-gas fall-through
+destinations, but would shift every internal PC across T2 and require a much
+larger artifact/proof relabel for only five additional gas per round. The
+locally preserving version captures the reliable 11-gas win first; the more
+aggressive packing remains a follow-up after promotion.
+
+Proof integration completed successfully. The specialized helper executes a
+direct `MLOAD 512` before the three additions so the resulting word matches
+the existing left-associated T1 invariant without a global semantic rewrite.
+The candidate-specific execution proof, compression composition, exact gas
+cascade, and full exported `Solution.lean` certificate all compile. A complete
+`BENCHMARK_INSECURE_LOCAL=1 yukon run` was accepted by the Lean default kernel
+and Comparator with score **3,708,207**, 1,524 bytes, and 19/19 vectors. The
+exact bytecode SHA-256 is
+`866bd54740716ffc7e5226762cb1f6e821a9cade1c162be1d0dae95d9e549076`.

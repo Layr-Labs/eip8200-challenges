@@ -355,70 +355,49 @@ def gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
         hcode hrun
     · exact qChrun
     · exact qChnp
-  have gB1 := BigSigma.gasSteps_bigSigma1 (gotCh s msgOff returnDest rest j)
-    (hValue s 4) (UInt256.ofNat 714)
-    ([chPlusK s j, wValue s j, UInt256.ofNat 0xffffffff, hValue s 4,
-      UInt256.ofNat j, msgOff, returnDest] ++ rest)
-    (by simp; omega) qChcode qChfork qChrun qChnp (by decide)
-  have qB1code : (gotBigSigma1 s msgOff returnDest rest j).executionEnv.code =
+  have gB1 : Challenge.EvmProof.GasSteps
+      (callBigSigma1 s msgOff returnDest rest j)
+      (gotFusedT1 s msgOff returnDest rest j) := by
+    exact Challenge.EvmProof.GasSteps.cast
+      (BigSigma.gasSteps_bigSigma1 (gotCh s msgOff returnDest rest j)
+        (hValue s 4) (chPlusK s j) (wValue s j)
+        ([hValue s 4, UInt256.ofNat j, msgOff, returnDest] ++ rest)
+        (by simp; omega) qChcode qChfork qChrun qChnp)
+      (by rfl) (by rfl)
+  have qB1code : (gotFusedT1 s msgOff returnDest rest j).executionEnv.code =
       submissionBytecode := by
-    simpa [gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW, loadedE,
-      Functions.unaryReturned, Accessors.loadReturned,
+    simpa [gotFusedT1, BigSigma.t1Returned, gotCh, gotH5, gotH6, gotK,
+      gotW, loadedE, Functions.unaryReturned, Accessors.loadReturned,
       Accessors.kAtReturned] using hcode
-  have qB1fork : (gotBigSigma1 s msgOff returnDest rest j).fork = .Osaka := by
-    simpa [gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW, loadedE,
-      Functions.unaryReturned, Accessors.loadReturned,
+  have qB1fork : (gotFusedT1 s msgOff returnDest rest j).fork = .Osaka := by
+    simpa [gotFusedT1, BigSigma.t1Returned, gotCh, gotH5, gotH6, gotK,
+      gotW, loadedE, Functions.unaryReturned, Accessors.loadReturned,
       Accessors.kAtReturned, State.fork] using hfork
-  have qB1run : (gotBigSigma1 s msgOff returnDest rest j).halt = .Running := by
-    simpa [gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW, loadedE,
-      Functions.unaryReturned, Accessors.loadReturned,
+  have qB1run : (gotFusedT1 s msgOff returnDest rest j).halt = .Running := by
+    simpa [gotFusedT1, BigSigma.t1Returned, gotCh, gotH5, gotH6, gotK,
+      gotW, loadedE, Functions.unaryReturned, Accessors.loadReturned,
       Accessors.kAtReturned] using hrun
-  have qB1np : Precompile.isPrecompileWithConfig (gotBigSigma1 s msgOff returnDest rest j).executionEnv.precompileConfig (gotBigSigma1 s msgOff returnDest rest j).executionEnv.fork
-      (gotBigSigma1 s msgOff returnDest rest j).executionEnv.codeAddr = false := by
-    simpa [gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW, loadedE,
-      Functions.unaryReturned, Accessors.loadReturned,
-      Accessors.kAtReturned] using hnp
-  have gSetupH7 : Challenge.EvmProof.GasSteps
-      (gotBigSigma1 s msgOff returnDest rest j)
-      (gotH7 s msgOff returnDest rest j) := by
-    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.referenceArtifact .Osaka setupH7Path
-    · exact qB1code
-    · exact qB1fork
-    · exact run_setupH7 s msgOff returnDest rest j (by omega) hrun
-    · exact qB1run
-    · exact qB1np
-  have qH7code : (gotH7 s msgOff returnDest rest j).executionEnv.code =
-      submissionBytecode := by
-    simpa [gotH7, gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW,
-      loadedE, Functions.unaryReturned, Accessors.loadReturned,
-      Accessors.kAtReturned] using hcode
-  have qH7fork : (gotH7 s msgOff returnDest rest j).fork = .Osaka := by
-    simpa [gotH7, gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW,
-      loadedE, Functions.unaryReturned, Accessors.loadReturned,
-      Accessors.kAtReturned, State.fork] using hfork
-  have qH7run : (gotH7 s msgOff returnDest rest j).halt = .Running := by
-    simpa [gotH7, gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW,
-      loadedE, Functions.unaryReturned, Accessors.loadReturned,
-      Accessors.kAtReturned] using hrun
-  have qH7np : Precompile.isPrecompileWithConfig (gotH7 s msgOff returnDest rest j).executionEnv.precompileConfig (gotH7 s msgOff returnDest rest j).executionEnv.fork
-      (gotH7 s msgOff returnDest rest j).executionEnv.codeAddr = false := by
-    simpa [gotH7, gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW,
-      loadedE, Functions.unaryReturned, Accessors.loadReturned,
+  have qB1np : Precompile.isPrecompileWithConfig
+      (gotFusedT1 s msgOff returnDest rest j).executionEnv.precompileConfig
+      (gotFusedT1 s msgOff returnDest rest j).executionEnv.fork
+      (gotFusedT1 s msgOff returnDest rest j).executionEnv.codeAddr = false := by
+    simpa [gotFusedT1, BigSigma.t1Returned, gotCh, gotH5, gotH6, gotK,
+      gotW, loadedE, Functions.unaryReturned, Accessors.loadReturned,
       Accessors.kAtReturned] using hnp
   have gFinish : Challenge.EvmProof.GasSteps
-      (gotH7 s msgOff returnDest rest j) (afterT1 s msgOff returnDest rest j) := by
+      (gotFusedT1 s msgOff returnDest rest j)
+      (afterT1 s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka finishT1Path
-    · exact qH7code
-    · exact qH7fork
+    · exact qB1code
+    · exact qB1fork
     · exact run_finishT1 s msgOff returnDest rest j (by omega) hrun
-    · exact qH7run
-    · exact qH7np
+    · exact qB1run
+    · exact qB1np
   exact gCond.trans (gSetupW.trans
     (gSetupK.trans (gSetupH6.trans
       (gSetupH5.trans (gSetupCh.trans (gCh.trans
-        (gSetupB1.trans (gB1.trans (gSetupH7.trans gFinish)))))))))
+        (gSetupB1.trans (gB1.trans gFinish))))))))
 
 /-- Execute the complete `t2` half, leaving the eight working-state updates
 as the only remaining part of the round. -/
