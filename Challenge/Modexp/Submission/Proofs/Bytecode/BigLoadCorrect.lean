@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigLoad
+import Challenge.Modexp.Submission.Proofs.Bytecode.LoadMath
 import Challenge.Modexp.Submission.Proofs.Limbs
 import Mathlib.Data.Nat.Bitwise
 set_option warningAsError true
@@ -10,6 +11,17 @@ set_option maxHeartbeats 2000000
 The execution model in `BigLoad` is deliberately instruction-shaped.  This
 module connects its word arithmetic and memory writes to the mathematical
 little-endian limb representation consumed by the big MODEXP path.
+
+The loader now walks the destination one 256-bit limb at a time, so the
+induction below is over limbs and the invariant is
+`Represents (loadMemory … k memory) dst n (V % radix ^ k)`: after `k` writes
+the destination holds exactly the low `k` limbs of the input.  Every `OR` the
+loader performs is against a limb that is still zero, so no bit-level
+disjointness argument is needed -- only `0 ||| v = v`.
+
+The per-byte index arithmetic (`loadLimb`, `loadShift`, `loadReverse` and
+their word forms) is kept verbatim: it belongs to the *serializer*, which
+still walks byte by byte, and `BigSerializeCorrect` consumes it.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.BigLoadCorrect
@@ -18,6 +30,8 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
+
+/-! ## Per-byte index arithmetic (consumed by `BigSerializeCorrect`) -/
 
 theorem loadReverseWord_ofNat (length i : Nat) (hlength : length < 2 ^ 256)
     (hi : i < length) :
@@ -93,37 +107,7 @@ theorem loadAt_ofNat (dst length i : Nat)
   rw [Nat.mod_eq_of_lt (by omega : BigLoad.loadLimb length i * 32 < 2 ^ 256)]
   rw [Nat.mod_eq_of_lt (by omega)]
   omega
-
-private theorem lor_eq_add_of_land_eq_zero {a b : Nat}
-    (ha : a < 2 ^ 256) (hb : b < 2 ^ 256) (hand : a &&& b = 0) :
-    a ||| b = a + b := by
-  let x : BitVec 256 := BitVec.ofFin ⟨a, ha⟩
-  let y : BitVec 256 := BitVec.ofFin ⟨b, hb⟩
-  have hx : x.toNat = a := by simp [x]
-  have hy : y.toNat = b := by simp [y]
-  have hxy : x &&& y = 0#256 := by
-    apply BitVec.eq_of_toNat_eq
-    rw [BitVec.toNat_and, hx, hy, hand]
-    rfl
-  calc
-    a ||| b = (x ||| y).toNat := by rw [BitVec.toNat_or, hx, hy]
-    _ = (x + y).toNat := by rw [BitVec.add_eq_or_of_and_eq_zero x y hxy]
-    _ = a + b := by simpa [hx, hy] using BitVec.toNat_add_of_and_eq_zero hxy
-
-private theorem land_separated_blocks (high low shift : Nat) (hlow : low < 256) :
-    (high * 2 ^ (shift + 8)) &&& (low * 2 ^ shift) = 0 := by
-  apply Nat.zero_of_testBit_eq_false
-  intro bit
-  rw [Nat.testBit_land, Nat.testBit_mul_two_pow,
-    Nat.testBit_mul_two_pow]
-  by_cases hhigh : shift + 8 ≤ bit
-  · have hindex : 8 ≤ bit - shift := by omega
-    have hlow' : low < 2 ^ 8 := by norm_num; exact hlow
-    have hpow : low < 2 ^ (bit - shift) := by
-      exact hlow'.trans_le (Nat.pow_le_pow_right (by omega) hindex)
-    rw [Nat.testBit_eq_false_of_lt hpow]
-    simp
-  · simp [hhigh]
+/-! ## Limb lists -/
 
 private theorem ofDigits_set_add (radix : Nat) (digits : List Nat)
     (index delta : Nat) (hindex : index < digits.length) :
@@ -215,44 +199,7 @@ theorem value_memoryLimbs_write_add (memory : ByteArray)
   rw [← hget]
   exact ofDigits_set_add Limbs.radix (Limbs.memoryLimbs memory ptr count)
     index delta (by simpa using hindex)
-
-def partialValue (calldata : ByteArray) (offset length i : Nat) : Nat :=
-  Precompile.bytesToNatPadded calldata offset i * 256 ^ (length - i)
-
-private theorem partial_digit (headValue index rem : Nat) (hrem : rem < 32) :
-    (headValue * 256 ^ (32 * index + (rem + 1)) /
-          Limbs.radix ^ index) % Limbs.radix =
-      (headValue % 256 ^ (31 - rem)) * 256 ^ (rem + 1) := by
-  have hsplit : 31 - rem + (rem + 1) = 32 := by omega
-  rw [Limbs.radix_eq]
-  rw [← Nat.pow_mul, Nat.pow_add]
-  have hpow : 0 < 256 ^ (32 * index) := Nat.pow_pos (by omega)
-  rw [show headValue * (256 ^ (32 * index) * 256 ^ (rem + 1)) =
-      256 ^ (32 * index) * (headValue * 256 ^ (rem + 1)) by ring]
-  rw [Nat.mul_div_cancel_left _ hpow]
-  rw [← hsplit]
-  rw [Nat.pow_add 256 (31 - rem) (rem + 1)]
-  exact Nat.mul_mod_mul_right (256 ^ (rem + 1)) headValue
-    (256 ^ (31 - rem))
-
-private theorem loaded_digit_factor (calldata : ByteArray)
-    (offset length i : Nat) (_hlength : length < 2 ^ 256) (hi : i < length) :
-    partialValue calldata offset length i /
-          Limbs.radix ^ BigLoad.loadLimb length i % Limbs.radix =
-      (Precompile.bytesToNatPadded calldata offset i %
-          256 ^ (31 - BigLoad.loadReverse length i % 32)) *
-        256 ^ (BigLoad.loadReverse length i % 32 + 1) := by
-  have hrem : BigLoad.loadReverse length i % 32 < 32 :=
-    Nat.mod_lt _ (by omega)
-  have hrecompose :
-      32 * BigLoad.loadLimb length i +
-          (BigLoad.loadReverse length i % 32 + 1) = length - i := by
-    unfold BigLoad.loadLimb BigLoad.loadReverse
-    have hdiv := Nat.div_add_mod (length - 1 - i) 32
-    omega
-  unfold partialValue
-  rw [← hrecompose]
-  exact partial_digit _ _ _ hrem
+/-! ## Byte extraction (retained) -/
 
 theorem loadByte_toNat (calldata : ByteArray) (offset i : Nat) :
     (BigLoad.loadByte calldata offset i).toNat =
@@ -306,177 +253,211 @@ theorem shiftedLoadByte_toNat (calldata : ByteArray) (offset length i : Nat)
           (2 ^ 8) ^ (BigLoad.loadReverse length i % 32) :=
         Nat.pow_mul 2 8 _
       _ = 256 ^ (BigLoad.loadReverse length i % 32) := by norm_num]
+/-! ## The limb the loader writes
 
-private theorem partialValue_lt (calldata : ByteArray)
-    (offset length i : Nat) (hi : i ≤ length) :
-    partialValue calldata offset length i <
-      Limbs.radix ^ Limbs.limbCount length := by
-  have hprefix := Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow
-    calldata offset i
-  have htail : 0 < 256 ^ (length - i) := Nat.pow_pos (by omega)
-  have hpartial : partialValue calldata offset length i < 256 ^ length := by
-    unfold partialValue
-    calc
-      Precompile.bytesToNatPadded calldata offset i * 256 ^ (length - i) <
-          256 ^ i * 256 ^ (length - i) :=
-        Nat.mul_lt_mul_of_pos_right hprefix htail
-      _ = 256 ^ length := by rw [← Nat.pow_add]; congr 2; omega
-  rw [Limbs.pow_radix]
-  exact hpartial.trans_le (Nat.pow_le_pow_right (by omega)
-    (Limbs.width_le_limbs length))
+Three bridges from `BigLoad`'s 256-bit word model to `Nat` limb arithmetic,
+then one induction. -/
 
-private theorem partialValue_succ (calldata : ByteArray)
-    (offset length i : Nat) (hi : i < length) :
-    partialValue calldata offset length i +
-        (YulSemantics.EVM.byteFrom calldata.toList (offset + i)).toNat *
-          256 ^ (BigLoad.loadReverse length i % 32) *
-          Limbs.radix ^ BigLoad.loadLimb length i =
-      partialValue calldata offset length (i + 1) := by
-  let reverse := BigLoad.loadReverse length i
-  let limb := BigLoad.loadLimb length i
-  let rem := reverse % 32
-  have hrecompose : 32 * limb + rem = reverse := by
-    dsimp [limb, rem, reverse, BigLoad.loadLimb]
-    simpa [Nat.mul_comm] using
-      (Nat.div_add_mod (BigLoad.loadReverse length i) 32)
-  have htail : length - i = reverse + 1 := by
-    dsimp only [reverse]
-    unfold BigLoad.loadReverse
+private theorem mod_mul_split (V m n : Nat) (hm : 0 < m) (hn : 0 < n) :
+    V % (m * n) = V % m + m * (V / m % n) := by
+  have hrem : V % m < m := Nat.mod_lt _ hm
+  have hdigit : V / m % n < n := Nat.mod_lt _ hn
+  have hlt : m * (V / m % n) + V % m < m * n := by
+    have hbound : m * (V / m % n) + m ≤ m * n := by
+      calc m * (V / m % n) + m = m * (V / m % n + 1) := by ring
+        _ ≤ m * n := Nat.mul_le_mul_left m (by omega)
     omega
-  have htailNext : length - (i + 1) = reverse := by
-    dsimp only [reverse]
-    unfold BigLoad.loadReverse
+  conv_lhs => rw [← Nat.div_add_mod V m]
+  rw [Nat.add_mod, Nat.mul_mod_mul_left,
+    Nat.mod_eq_of_lt (by omega : V % m < m * n), Nat.mod_eq_of_lt hlt]
+  omega
+
+theorem readLimb_of_represents {memory : ByteArray} {ptr count value index : Nat}
+    (hrep : Limbs.Represents memory ptr count value) (hindex : index < count) :
+    (MachineState.readWord memory (ptr + 32 * index)).toNat =
+      value / Limbs.radix ^ index % Limbs.radix := by
+  have hget := getElem_eq_div_mod_ofDigits Limbs.radix
+    (Limbs.memoryLimbs memory ptr count) index Limbs.radix_pos
+    (by simpa using hindex)
+    (fun digit hdigit => Limbs.memoryLimb_lt memory ptr count hdigit)
+  rw [Limbs.value_of_represents hrep] at hget
+  simpa [Limbs.memoryLimbs] using hget
+
+/-- Under the destination-fit hypothesis the address range does not wrap, so
+the loop performs exactly `len / 32` full-limb iterations.  This is where the
+wrapped branch of `loadRuns` is retired for every real caller. -/
+theorem loadRuns_eq (dst length : Nat) (hlength : length < 2 ^ 256)
+    (hfit : dst + 32 * Limbs.limbCount length < 2 ^ 256) :
+    BigLoad.loadRuns (UInt256.ofNat dst) (UInt256.ofNat length) = length / 32 := by
+  have hdst : dst < 2 ^ 256 := by omega
+  have hdstW : (UInt256.ofNat dst).toNat = dst := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hdst]
+  have hlenW : (UInt256.ofNat length).toNat = length := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlength]
+  have hlimb : 32 * (length / 32) ≤ 32 * Limbs.limbCount length := by
+    unfold Limbs.limbCount; omega
+  unfold BigLoad.loadRuns BigLoad.fullLimbs
+  rw [hdstW, hlenW, if_pos (by omega)]
+
+theorem loadCount_eq (dst length : Nat) (hlength : length < 2 ^ 256)
+    (hfit : dst + 32 * Limbs.limbCount length < 2 ^ 256) :
+    BigLoad.loadCount (UInt256.ofNat dst) (UInt256.ofNat length) =
+      Limbs.limbCount length := by
+  have hlenW : (UInt256.ofNat length).toNat = length := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlength]
+  unfold BigLoad.loadCount
+  rw [loadRuns_eq dst length hlength hfit, hlenW]
+  unfold Limbs.limbCount
+  split <;> omega
+
+theorem loadPtr_eq (dst length k : Nat)
+    (hfit : dst + 32 * Limbs.limbCount length < 2 ^ 256)
+    (hk : k ≤ Limbs.limbCount length) :
+    (BigLoad.loadPtr (UInt256.ofNat dst) k).toNat = dst + 32 * k := by
+  have hdst : dst < 2 ^ 256 := by omega
+  rw [BigLoad.loadPtr_toNat, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt hdst, Nat.mod_eq_of_lt (by omega)]
+
+/-- A full limb is one 32-byte calldata window. -/
+theorem loadWindow_toNat (calldata : ByteArray) (offset length k : Nat)
+    (hoffset : offset < 2 ^ 256) (hlength : length < 2 ^ 256)
+    (hk : 32 * (k + 1) ≤ length) :
+    (BigLoad.loadWindow calldata (UInt256.ofNat offset)
+      (UInt256.ofNat length) k).toNat =
+      Precompile.bytesToNatPadded calldata offset length /
+        Limbs.radix ^ k % Limbs.radix := by
+  have hoffW : (UInt256.ofNat offset).toNat = offset := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hoffset]
+  have hlenW : (UInt256.ofNat length).toNat = length := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlength]
+  unfold BigLoad.loadWindow
+  rw [hoffW, hlenW, Challenge.EvmProof.Bytes.readWord_toNat, Limbs.radix]
+  exact (LoadMath.limb_eq_window calldata offset length k hk).symm
+
+/-- The single partial top limb is the leading `len % 32` bytes. -/
+theorem loadPartialValue_toNat (calldata : ByteArray) (offset length : Nat)
+    (hoffset : offset < 2 ^ 256) (hlength : length < 2 ^ 256)
+    (hr : length % 32 ≠ 0) :
+    (BigLoad.loadPartialValue calldata (UInt256.ofNat offset)
+      (UInt256.ofNat length)).toNat =
+      Precompile.bytesToNatPadded calldata offset length /
+        Limbs.radix ^ (length / 32) % Limbs.radix := by
+  have hoffW : (UInt256.ofNat offset).toNat = offset := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hoffset]
+  have hlenW : (UInt256.ofNat length).toNat = length := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlength]
+  have hprefix : Precompile.bytesToNatPadded calldata offset (length % 32) <
+      2 ^ 256 := by
+    have h := Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow calldata offset
+      (length % 32)
+    have hmono : (256 : Nat) ^ (length % 32) ≤ 256 ^ 32 :=
+      Nat.pow_le_pow_right (by norm_num) (by omega)
+    have h256 : (256 : Nat) ^ 32 = 2 ^ 256 := by norm_num
     omega
-  unfold partialValue
-  rw [Challenge.EvmProof.Bytes.bytesToNatPadded_succ]
-  rw [htail, htailNext, Limbs.radix_eq, ← Nat.pow_mul]
-  rw [← hrecompose]
-  rw [Nat.pow_succ]
-  rw [Nat.pow_add 256 (32 * limb) rem]
-  ring
+  have htop := LoadMath.top_limb_lt calldata offset length hr
+  unfold BigLoad.loadPartialValue
+  rw [hoffW, hlenW,
+    Challenge.EvmProof.Bytes.shiftRight_readWord calldata offset (length % 32)
+      (by omega) (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hprefix,
+    Limbs.radix, Nat.mod_eq_of_lt htop]
+  exact (LoadMath.top_limb_eq_prefix calldata offset length).symm
 
-theorem loadMemory_represents_partial (calldata memory : ByteArray)
-    (offset dst length i : Nat) (hlength : length < 2 ^ 256)
-    (hi : i ≤ length)
+/-- The word the loader ORs into destination limb `k`. -/
+theorem loadLimbValue_toNat (calldata : ByteArray) (offset dst length k : Nat)
+    (hoffset : offset < 2 ^ 256) (hlength : length < 2 ^ 256)
     (hfit : dst + 32 * Limbs.limbCount length < 2 ^ 256)
-    (hzero : Limbs.Represents memory dst (Limbs.limbCount length) 0) :
-    Limbs.Represents
-      (BigLoad.loadMemory calldata offset (UInt256.ofNat dst) length i memory)
-      dst (Limbs.limbCount length) (partialValue calldata offset length i) := by
-  induction i with
-  | zero => simpa [BigLoad.loadMemory, partialValue] using hzero
-  | succ i ih =>
-      have hiStep : i < length := by omega
-      have hbefore := ih (by omega)
-      let before := BigLoad.loadMemory calldata offset (UInt256.ofNat dst)
-        length i memory
-      let limb := BigLoad.loadLimb length i
-      let rem := BigLoad.loadReverse length i % 32
-      let byte := (YulSemantics.EVM.byteFrom calldata.toList (offset + i)).toNat
-      let delta := byte * 256 ^ rem
-      let high := Precompile.bytesToNatPadded calldata offset i % 256 ^ (31 - rem)
-      have hlimb : limb < Limbs.limbCount length := by
-        dsimp only [limb]
-        unfold BigLoad.loadLimb BigLoad.loadReverse Limbs.limbCount
-        omega
-      have haddr := loadAt_ofNat dst length i hlength hiStep hfit
-      have hidx : limb < (Limbs.memoryLimbs before dst
-          (Limbs.limbCount length)).length := by simpa using hlimb
-      have hdidx : limb < (Limbs.limbDigits (Limbs.limbCount length)
-          (partialValue calldata offset length i)).length := by
-        rw [Limbs.length_limbDigits
-          (partialValue_lt calldata offset length i (by omega))]
-        exact hlimb
-      have hloaded :
-          (MachineState.readWord before (dst + 32 * limb)).toNat =
-            high * 256 ^ (rem + 1) := by
-        calc
-          (MachineState.readWord before (dst + 32 * limb)).toNat =
-              (Limbs.memoryLimbs before dst
-                (Limbs.limbCount length))[limb]'hidx := by
-            simp [Limbs.memoryLimbs]
-          _ = (Limbs.limbDigits (Limbs.limbCount length)
-                (partialValue calldata offset length i))[limb]'hdidx := by
-            have hopt := congrArg (fun xs : List Nat => xs[limb]?) hbefore.2
-            rw [List.getElem?_eq_getElem hidx,
-              List.getElem?_eq_getElem hdidx] at hopt
-            exact Option.some.inj hopt
-          _ = partialValue calldata offset length i / Limbs.radix ^ limb %
-                Limbs.radix := by
-            have hdigit := getElem_eq_div_mod_ofDigits Limbs.radix
-              (Limbs.limbDigits (Limbs.limbCount length)
-                (partialValue calldata offset length i)) limb Limbs.radix_pos
-              (by
-                rw [Limbs.length_limbDigits
-                  (partialValue_lt calldata offset length i (by omega))]
-                exact hlimb)
-              (by
-                intro digit hdigit
-                exact Limbs.limbDigits_lt hdigit)
-            rw [Limbs.value_limbDigits] at hdigit
-            exact hdigit
-          _ = high * 256 ^ (rem + 1) := by
-            simpa [limb, rem, high] using loaded_digit_factor calldata offset
-              length i hlength hiStep
-      have hbyte : byte < 256 := by
-        exact (YulSemantics.EVM.byteFrom calldata.toList (offset + i)).toNat_lt
-      have hp : 256 ^ (rem + 1) = 2 ^ (8 * rem + 8) := by
-        calc
-          256 ^ (rem + 1) = (2 ^ 8) ^ (rem + 1) := by norm_num
-          _ = 2 ^ (8 * (rem + 1)) := (Nat.pow_mul 2 8 _).symm
-          _ = 2 ^ (8 * rem + 8) := by ring
-      have hq : 256 ^ rem = 2 ^ (8 * rem) := by
-        calc
-          256 ^ rem = (2 ^ 8) ^ rem := by norm_num
-          _ = 2 ^ (8 * rem) := (Nat.pow_mul 2 8 _).symm
-      have hland : (high * 256 ^ (rem + 1)) &&& delta = 0 := by
-        simpa [delta, hp, hq] using land_separated_blocks high byte (8 * rem) hbyte
-      have hdelta :
-          (UInt256.shiftLeft (BigLoad.loadByte calldata offset i)
-            (BigLoad.loadShiftWord (UInt256.ofNat length) i)).toNat = delta := by
-        simpa [delta, byte, rem] using shiftedLoadByte_toNat calldata offset
-          length i hlength hiStep
-      have hlor :
-          (UInt256.lor (MachineState.readWord before (dst + 32 * limb))
-            (UInt256.shiftLeft (BigLoad.loadByte calldata offset i)
-              (BigLoad.loadShiftWord (UInt256.ofNat length) i))).toNat =
-            (MachineState.readWord before (dst + 32 * limb)).toNat + delta := by
-        rw [Challenge.EvmProof.Word.word_toNat_lor, hdelta, hloaded]
-        exact lor_eq_add_of_land_eq_zero
-          (by rw [← hloaded]
-              exact (MachineState.readWord before (dst + 32 * limb)).val.isLt)
-          (by rw [← hdelta]
-              exact (UInt256.shiftLeft (BigLoad.loadByte calldata offset i)
-                (BigLoad.loadShiftWord (UInt256.ofNat length) i)).val.isLt)
-          hland
-      have haddFit :
-          (MachineState.readWord before (dst + 32 * limb)).toNat + delta <
-            2 ^ 256 := by
-        rw [← hlor]
-        exact (UInt256.lor (MachineState.readWord before (dst + 32 * limb))
-          (UInt256.shiftLeft (BigLoad.loadByte calldata offset i)
-            (BigLoad.loadShiftWord (UInt256.ofNat length) i))).val.isLt
-      have hwrite := value_memoryLimbs_write_add before dst
-        (Limbs.limbCount length) limb delta hlimb haddFit
-      rw [Limbs.value_of_represents hbefore] at hwrite
-      apply (Limbs.represents_iff_value
-        (partialValue_lt calldata offset length (i + 1) hi)).2
-      rw [← partialValue_succ calldata offset length i hiStep]
-      rw [← hwrite]
-      simp only [BigLoad.loadMemory]
-      rw [haddr, hlor]
+    (hk : k < Limbs.limbCount length) :
+    (BigLoad.loadLimbValue calldata (UInt256.ofNat offset)
+      (UInt256.ofNat length) (UInt256.ofNat dst) k).toNat =
+      Precompile.bytesToNatPadded calldata offset length /
+        Limbs.radix ^ k % Limbs.radix := by
+  have hruns := loadRuns_eq dst length hlength hfit
+  have hlimb : Limbs.limbCount length = (length + 31) / 32 := rfl
+  by_cases hfull : k < length / 32
+  · rw [BigLoad.loadLimbValue_of_lt _ _ _ _ _ (by omega)]
+    exact loadWindow_toNat calldata offset length k hoffset hlength (by omega)
+  · have hr : length % 32 ≠ 0 := by
+      rw [hlimb] at hk; omega
+    have hkeq : k = length / 32 := by
+      rw [hlimb] at hk; omega
+    rw [BigLoad.loadLimbValue_of_ge _ _ _ _ _ (by omega), hkeq]
+    exact loadPartialValue_toNat calldata offset length hoffset hlength hr
 
-theorem loadMemory_represents (calldata memory : ByteArray)
-    (offset dst length : Nat) (hlength : length < 2 ^ 256)
+/-! ## The limb induction -/
+
+theorem loadMemory_represents_prefix (calldata memory : ByteArray)
+    (offset dst length k : Nat)
+    (hoffset : offset < 2 ^ 256) (hlength : length < 2 ^ 256)
     (hfit : dst + 32 * Limbs.limbCount length < 2 ^ 256)
-    (hzero : Limbs.Represents memory dst (Limbs.limbCount length) 0) :
+    (hzero : Limbs.Represents memory dst (Limbs.limbCount length) 0)
+    (hk : k ≤ Limbs.limbCount length) :
     Limbs.Represents
-      (BigLoad.loadMemory calldata offset (UInt256.ofNat dst) length length
-        memory)
+      (BigLoad.loadMemory calldata (UInt256.ofNat offset) (UInt256.ofNat length)
+        (UInt256.ofNat dst) k memory)
       dst (Limbs.limbCount length)
-        (Precompile.bytesToNatPadded calldata offset length) := by
-  simpa [partialValue] using loadMemory_represents_partial calldata memory
-    offset dst length length hlength (by omega) hfit hzero
+      (Precompile.bytesToNatPadded calldata offset length %
+        Limbs.radix ^ k) := by
+  have hcount := loadCount_eq dst length hlength hfit
+  induction k with
+  | zero => simpa [BigLoad.loadMemory, Nat.pow_zero, Nat.mod_one] using hzero
+  | succ k ih =>
+      have hkk : k < Limbs.limbCount length := by omega
+      have hbefore := ih (by omega)
+      have hpowPos : 0 < Limbs.radix ^ k := Nat.pow_pos Limbs.radix_pos
+      have hVk : Precompile.bytesToNatPadded calldata offset length %
+          Limbs.radix ^ k < Limbs.radix ^ k := Nat.mod_lt _ hpowPos
+      have hguard : k < BigLoad.loadCount (UInt256.ofNat dst)
+          (UInt256.ofNat length) := by rw [hcount]; exact hkk
+      have hptr := loadPtr_eq dst length k hfit (by omega)
+      have hdelta := loadLimbValue_toNat calldata offset dst length k hoffset
+        hlength hfit hkk
+      have hread : (MachineState.readWord
+          (BigLoad.loadMemory calldata (UInt256.ofNat offset)
+            (UInt256.ofNat length) (UInt256.ofNat dst) k memory)
+          (dst + 32 * k)).toNat = 0 := by
+        rw [readLimb_of_represents hbefore hkk, Nat.div_eq_of_lt hVk,
+          Nat.zero_mod]
+      have hdeltaLt : Precompile.bytesToNatPadded calldata offset length /
+          Limbs.radix ^ k % Limbs.radix < 2 ^ 256 := by
+        have := Nat.mod_lt (Precompile.bytesToNatPadded calldata offset length /
+          Limbs.radix ^ k) Limbs.radix_pos
+        rw [Limbs.radix] at this
+        exact this
+      have hlor : (UInt256.lor
+          (MachineState.readWord
+            (BigLoad.loadMemory calldata (UInt256.ofNat offset)
+              (UInt256.ofNat length) (UInt256.ofNat dst) k memory)
+            (dst + 32 * k))
+          (BigLoad.loadLimbValue calldata (UInt256.ofNat offset)
+            (UInt256.ofNat length) (UInt256.ofNat dst) k)).toNat =
+          (MachineState.readWord
+            (BigLoad.loadMemory calldata (UInt256.ofNat offset)
+              (UInt256.ofNat length) (UInt256.ofNat dst) k memory)
+            (dst + 32 * k)).toNat +
+            Precompile.bytesToNatPadded calldata offset length /
+              Limbs.radix ^ k % Limbs.radix := by
+        rw [Challenge.EvmProof.Word.word_toNat_lor, hread, hdelta,
+          Nat.zero_or, Nat.zero_add]
+      have hwrite := value_memoryLimbs_write_add
+        (BigLoad.loadMemory calldata (UInt256.ofNat offset)
+          (UInt256.ofNat length) (UInt256.ofNat dst) k memory)
+        dst (Limbs.limbCount length) k
+        (Precompile.bytesToNatPadded calldata offset length /
+          Limbs.radix ^ k % Limbs.radix) hkk (by rw [hread]; omega)
+      rw [Limbs.value_of_represents hbefore] at hwrite
+      have hfinalLt : Precompile.bytesToNatPadded calldata offset length %
+          Limbs.radix ^ (k + 1) < Limbs.radix ^ Limbs.limbCount length := by
+        have h1 : Precompile.bytesToNatPadded calldata offset length %
+            Limbs.radix ^ (k + 1) < Limbs.radix ^ (k + 1) :=
+          Nat.mod_lt _ (Nat.pow_pos Limbs.radix_pos)
+        have h2 : Limbs.radix ^ (k + 1) ≤ Limbs.radix ^ Limbs.limbCount length :=
+          Nat.pow_le_pow_right Limbs.radix_pos (by omega)
+        omega
+      apply (Limbs.represents_iff_value hfinalLt).2
+      rw [BigLoad.loadMemory_succ _ _ _ _ _ _ hguard, hptr, hlor, hwrite,
+        Nat.pow_succ, mod_mul_split _ _ _ hpowPos Limbs.radix_pos]
+      ring
 
 theorem loadReturned_represents (s : State) (offset dst length : Nat)
     (returnDest : UInt256) (rest : List UInt256)
@@ -488,12 +469,13 @@ theorem loadReturned_represents (s : State) (offset dst length : Nat)
         (UInt256.ofNat dst) returnDest rest).memory
       dst (Limbs.limbCount length)
         (Precompile.bytesToNatPadded s.executionEnv.calldata offset length) := by
-  have hoffsetWord : (UInt256.ofNat offset).toNat = offset := by
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hoffset]
-  have hlengthWord : (UInt256.ofNat length).toNat = length := by
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlength]
-  simpa [BigLoad.loadReturned, BigLoad.loadLoop, hoffsetWord, hlengthWord] using
-      loadMemory_represents s.executionEnv.calldata s.memory offset dst length
-        hlength hfit hzero
+  have hcount := loadCount_eq dst length hlength hfit
+  have hmain := loadMemory_represents_prefix s.executionEnv.calldata s.memory
+    offset dst length (Limbs.limbCount length) hoffset hlength hfit hzero
+    (Nat.le_refl _)
+  rw [Nat.mod_eq_of_lt (Limbs.byteValue_fits_limbs s.executionEnv.calldata
+    offset length)] at hmain
+  rw [BigLoad.loadReturned_eq]
+  simpa [BigLoad.loadLoop, hcount] using hmain
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigLoadCorrect

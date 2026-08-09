@@ -9,7 +9,7 @@ namespace Challenge.Modexp.Benchmark
 
 /-- Correctness of the submitted MODEXP bytecode.
 
-Five edits on top of the verified-compiler reference output, none of which
+Eight edits on top of the verified-compiler reference output, none of which
 recompiles the Yul:
 
 * the entry `PUSH2` is retargeted from the first compiler trampoline (pc 14)
@@ -33,15 +33,53 @@ recompiles the Yul:
   the modulus's *limb contents* rather than on its declared byte length is what
   makes the prefix provably a residue.
 
-The first two are semantics-preserving and keep every byte offset. The last
-three change behaviour, so each neutralizes its region in place with
+Three further edits, developed independently against the merged frontier and
+integrated here:
+
+* `loadBigEndian` walks the destination one 256-bit limb at a time instead of
+  one input byte at a time.  Limb `k` -- the word at `dst + 32 * k`, read with
+  an ordinary big-endian `MLOAD` -- holds exactly the input bytes of
+  significance `32 * k` through `32 * k + 31`, so for `k < len / 32` it is
+  precisely `calldataload(off + len - 32 * (k + 1))`, and the single partial
+  top limb, when `r = len % 32` is nonzero, is `calldataload off >> (8 * (32 -
+  r))`.  The cursor and source pointer are carried as `at` and `K - at` in the
+  256-bit ring.  `CALLDATALOAD` zero-pads past `calldatasize()` exactly as the
+  reference's per-byte `byte(0, calldataload (off + i))` did, so short, absent
+  and past-the-end calldata need no side condition, and the write is still an
+  `or`-write, so the set of memory words touched is unchanged;
+* `addMaskedMod` fuses the reference's three `n`-limb loops (add, subtract into
+  the `0x1400` scratch buffer, branchless blend) into one always-taken pass that
+  accumulates both the carry and the borrow, followed by a *branch*: the
+  limb-serial subtraction runs only when `useSub = or(carry, iszero borrow)`
+  holds, and recomputes the difference in place, so the scratch buffer is never
+  written.  `useSub` is bit-for-bit the reference's, so the `Nat`-level
+  justification is the reference's too.  Fusing is sound because at every call
+  site the modulus buffer (`0x0000`) is disjoint from the destination
+  (`0x0400`, `0x0800`, `0x1000`, `n ≤ 32` limbs), which is exactly the
+  `hdstModulus` hypothesis `addReturned_represents_mod` already carried;
+  aliasing of `src` with `dst` in the doubling call is unaffected, since the
+  read order of `src` relative to the `dst` writes is the reference's; and
+* the one-word path `modexpWord` reduces the base a whole 32-byte word at a
+  time by Horner in radix `2 ^ 256` -- the radix residue being
+  `addmod (mod (not 0) m) 1 m` -- then tabulates `T k = base ^ k mod m` for
+  `k < 16` in `[0x0000, 0x0200)` and consumes the exponent one byte at a time
+  as two 4-bit windows, four squarings and one table multiply each.  `T 0` is
+  `mod 1 m` rather than the literal `1`, so a zero exponent against `m = 1`
+  still returns `0`.  The table shares `[0x0000, 0x0200)` with the big path's
+  modulus buffer; the two are safe only because the paths are mutually
+  exclusive, which the block lemmas establish by showing that every exit from
+  this region is a `RETURN` or a hand-off to the unchanged block at `0x029d`,
+  never a re-entry into the dispatcher.
+
+The first two edits are semantics-preserving and keep every byte offset. The
+other six change behaviour, so each neutralizes its region in place with
 `JUMPDEST; PUSH2 <appended>; JUMP` plus unreachable filler padded to exactly
 the original byte *and* instruction count, and appends the replacement past
 the end of the program. Every instruction index below the appended code is
-therefore unchanged, and every jump target still resolves. The last three
-edits make gas depend on operand values -- on the exponent, the multiplier and
-now the modulus and base as well -- so this artifact deliberately has no
-value-independent gas bound; `Correct` needs only that a trace exists. -/
+therefore unchanged, and every jump target still resolves. Those six edits make
+gas depend on operand values -- on the exponent, the multiplier, the modulus
+and the base -- so this artifact deliberately has no value-independent gas
+bound; `Correct` needs only that a trace exists. -/
 theorem candidate : Challenge.Modexp.Correct bytecode := by
   change Challenge.Modexp.Correct Challenge.Modexp.submissionBytecode
   exact Challenge.Modexp.Submission.Proofs.Bytecode.SubmissionCorrect.submission_correct

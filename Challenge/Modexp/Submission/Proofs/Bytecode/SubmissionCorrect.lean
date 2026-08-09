@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.WordFinal
 import Challenge.Modexp.ProofSupport.Bytecode
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigZeroCorrect
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordGas
@@ -221,8 +222,8 @@ def finalState (input : ByteArray) : State :=
   if modulusSize input = 0 then Dispatch.zeroSizeFinalState input
   else if modulusSize input ≤ 32 then
     if Word.modulusValue input = 0 then Word.zeroModulusFinalState input
-    else WordExit.wordFinalState input (WordCorrect.wordResult input)
-      (WordCorrect.wordBase input)
+    else WordExit.wordFinalState input (WordLoops.wordBase input)
+      (WordLoops.wordResult input)
   else if Word.modulusValue input = 0 then bigZeroFinalState input
   else bigCompletedState input
 
@@ -255,7 +256,7 @@ def gasSteps_submission (input : ByteArray) (hvalid : ValidInput input) :
         (by simp [finalState, hzeroSize, hword, hzeroModulus])
     · have hmodulusPos : 0 < Word.modulusValue input := by omega
       exact Challenge.EvmProof.GasSteps.cast
-        (WordCorrect.gasSteps_wordNonzeroTotal input hvalid hpositive hword
+        (WordFinal.gasSteps_wordNonzeroTotal input hvalid hpositive hword
           hmodulusPos) rfl
         (by simp [finalState, hzeroSize, hword, hzeroModulus])
   · have hbig : 32 < modulusSize input := by omega
@@ -292,7 +293,7 @@ theorem finalState_result (input : ByteArray) (hvalid : ValidInput input) :
         Word.zeroModulusFinalState_result input hpositive hzeroModulus
     · have hmodulusPos : 0 < Word.modulusValue input := by omega
       simpa [finalState, hzeroSize, hword, hzeroModulus] using
-        WordCorrect.wordFinalState_result input hvalid hpositive hword
+        WordFinal.wordFinalState_result input hvalid hpositive hword
           hmodulusPos
   · have hbig : 32 < modulusSize input := by omega
     by_cases hzeroModulus : Word.modulusValue input = 0

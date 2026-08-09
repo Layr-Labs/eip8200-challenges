@@ -2,13 +2,19 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WordLoops
 import Challenge.EvmProof.Memory
 set_option warningAsError true
 set_option maxRecDepth 10000
-set_option maxHeartbeats 1000000
+set_option maxHeartbeats 2000000
 /-!
 # One-word MODEXP exit
 
-The completed exponent residue is left-padded into one EVM word, stored at
-memory `0x1800`, and returned with the declared modulus width.  This module
-certifies that final control-flow and memory transition.
+The completed residue is left-padded into one EVM word, stored at `0x1800`,
+and returned with the declared modulus width.  This block is byte-identical to
+the baseline (instruction indices 536–549 are inside the unchanged
+`[536, 1286)` range); only the incoming state changed, because the window table
+leaves memory non-empty and sixteen words active.
+
+The `RETURN` here is the sole normal exit of the word path.  Together with the
+zero-modulus `RETURN` at `0x0219` it is what makes the window table's use of
+`[0x0000, 0x0200)` invisible to the big path (constraint C1).
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WordExit
@@ -50,9 +56,6 @@ def expFinishTailPath :
    opAt 546 .MSTORE, opAt 547 (.Dup ⟨5, by decide⟩), pushAt 548 2 6144,
    opAt 549 .RETURN]
 
-def expFinishDispatchState (input : ByteArray) (acc base : UInt256) : State :=
-  { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 669 }
-
 def outputShift (input : ByteArray) : UInt256 :=
   UInt256.shiftLeft
     ((32 : UInt256) - UInt256.ofNat (modulusSize input)) (UInt256.ofNat 3)
@@ -60,25 +63,22 @@ def outputShift (input : ByteArray) : UInt256 :=
 def outputWord (input : ByteArray) (acc : UInt256) : UInt256 :=
   UInt256.shiftLeft acc (outputShift input)
 
-def outputMemory (input : ByteArray) (acc : UInt256) : ByteArray :=
-  MachineState.writeBytes ByteArray.empty
+/-- The return buffer sits on top of the window table, not on empty memory. -/
+def outputMemory (input : ByteArray) (base acc : UInt256) : ByteArray :=
+  MachineState.writeBytes (tableMem input base 16)
     (Data.Bytes.natToBytesPadded (outputWord input acc).toNat 32) 6144
 
-def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
-  let start := expLoopState input (exponentSize input) acc base
+def wordFinalState (input : ByteArray) (base acc : UInt256) : State :=
+  let start := wordExitState input base acc
   let storedWords := start.activeWordsAfterUInt256 6144 32
   { start with
     pc := UInt256.ofNat 688
-    stack := [acc, base, UInt256.ofNat (modulusValue input),
-      UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
-      UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
-      UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1267] ++ callerRest input
-    memory := outputMemory input acc
+    stack := [acc, base] ++ wordFrame input
+    memory := outputMemory input base acc
     activeWords := UInt256.ofNat (MachineState.activeWordsAfter storedWords.toNat
       6144 (modulusSize input))
     halt := .Returned
-    hReturn := MachineState.readPadded (outputMemory input acc) 6144
+    hReturn := MachineState.readPadded (outputMemory input base acc) 6144
       (modulusSize input) }
 
 @[simp] private theorem exitPCs (i : Nat) (hi : 536 ≤ i) (hii : i ≤ 549) :
@@ -86,38 +86,11 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
       ([669,670,671,672,673,675,676,678,679,680,683,684,685,688])[i - 536]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem jump669 :
-    Decode.isValidJumpDest submissionBytecode 669 = true :=
-  Artifact.isValidJumpDest_index 536 (by rfl)
-
 set_option linter.unusedSimpArgs false in
-theorem run_expFinishGuard (input : ByteArray) (acc base : UInt256)
-    (hvalid : ValidInput input) :
-    Challenge.EvmProof.Stepper.runLocatedBlock expGuardPath
-      (expLoopState input (exponentSize input) acc base) =
-        some (expFinishDispatchState input acc base) := by
-  rcases hvalid with ⟨_, hb, he, hm⟩
-  have he256 : exponentSize input < 2 ^ 256 := by omega
-  have hemod : exponentSize input % 2 ^ 256 = exponentSize input :=
-    Nat.mod_eq_of_lt he256
-  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
-  have h669 : (669 : UInt256).toNat = 669 := by decide
-  have h669Word : (669 : UInt256) = UInt256.ofNat 669 := by decide
-  simp (config := { maxSteps := 150000 })
-    [expGuardPath, Word.opAt, Word.pushAt, Word.wfOp,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      expLoopState, expFinishDispatchState, nonzeroState, callerRest,
-      Dispatch.wordEntryState, Main.headerState, initialState,
-      UInt256.isTrue, UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
-      he256, hemod, hzeroFalse, h669, h669Word, jump669]
-
-set_option linter.unusedSimpArgs false in
-theorem run_expFinishTail (input : ByteArray) (acc base : UInt256)
+theorem run_expFinishTail (input : ByteArray) (base acc : UInt256)
     (hvalid : ValidInput input) (hword : modulusSize input ≤ 32) :
     Challenge.EvmProof.Stepper.runLocatedBlock expFinishTailPath
-      (expFinishDispatchState input acc base) =
-        some (wordFinalState input acc base) := by
+      (wordExitState input base acc) = some (wordFinalState input base acc) := by
   rcases hvalid with ⟨_, hb, he, hm⟩
   have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat hword
     (by norm_num : 32 < 2 ^ 256)
@@ -138,34 +111,38 @@ theorem run_expFinishTail (input : ByteArray) (acc base : UInt256)
         modulusSize input := by
     norm_num at hmmod ⊢
     exact hmmod
-  simp (config := { maxSteps := 350000 })
+  simp (config := { maxSteps := 400000 })
     [expFinishTailPath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      expFinishDispatchState, expLoopState, wordFinalState, outputMemory,
-      outputWord, outputShift, nonzeroState, callerRest,
+      wordExitState, wordFinalState, outputMemory, outputWord, outputShift,
+      nonzeroState, wordFrame, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState, exitPCs,
       List.exchange, hsub, hshift, h6144, h32, h3Word, hm256, hmmod,
       hmmodLiteral, State.activeWordsAfterUInt256,
       MachineState.activeWordsAfter,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
 
-def gasSteps_expFinish (input : ByteArray) (acc base : UInt256)
+def gasSteps_expFinish (input : ByteArray) (base acc : UInt256)
     (hvalid : ValidInput input) (hword : modulusSize input ≤ 32) :
-    Challenge.EvmProof.GasSteps
-      (expLoopState input (exponentSize input) acc base)
-      (wordFinalState input acc base) :=
-  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka expGuardPath rfl rfl
-        (run_expFinishGuard input acc base hvalid) rfl
-        deployAddress_not_precompile).trans
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka expFinishTailPath rfl rfl
-        (run_expFinishTail input acc base hvalid hword) rfl
-        deployAddress_not_precompile)
+    Challenge.EvmProof.GasSteps (wordExitState input base acc)
+      (wordFinalState input base acc) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka expFinishTailPath rfl rfl
+      (run_expFinishTail input base acc hvalid hword) rfl
+      deployAddress_not_precompile
 
-@[simp] theorem wordFinalState_isDone (input : ByteArray) (acc base : UInt256) :
-    (wordFinalState input acc base).isDone = true := by
+@[simp] theorem wordFinalState_isDone (input : ByteArray) (base acc : UInt256) :
+    (wordFinalState input base acc).isDone = true := by
   rfl
+
+/-- The whole non-zero-modulus word path, entry to `RETURN`. -/
+def gasSteps_wordTotal (input : ByteArray) (hvalid : ValidInput input)
+    (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hmodpos : 0 < modulusValue input) :
+    Challenge.EvmProof.GasSteps (Dispatch.wordEntryState input)
+      (wordFinalState input (wordBase input) (wordResult input)) :=
+  (gasSteps_wordEntry input hvalid hmsize hword hmodpos).trans
+    (gasSteps_expFinish input (wordBase input) (wordResult input) hvalid hword)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordExit

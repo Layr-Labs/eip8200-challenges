@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.BitPrefix
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigComplete
 import Challenge.Modexp.Submission.Proofs.Bytecode.ExpCore
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordCorrect
@@ -61,11 +62,11 @@ theorem copyMemory_self_represents (memory : ByteArray) (ptr count value : Nat)
     (readWord_copyMemory_self memory ptr count j (by simpa using hj) hfit)
 
 theorem exponentBit_toNat_eq (byte : UInt256) (j : Nat) (hj : j < 8) :
-    (exponentBit byte j).toNat = WordCorrect.exponentBitNat byte j := by
-  have h := congrArg UInt256.toNat (WordCorrect.exponentBit_eq byte j hj)
-  have hbit := WordCorrect.exponentBitNat_zero_or_one byte j
+    (exponentBit byte j).toNat = BitPrefix.exponentBitNat byte j := by
+  have h := congrArg UInt256.toNat (BitPrefix.exponentBit_eq byte j hj)
+  have hbit := BitPrefix.exponentBitNat_zero_or_one byte j
   rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-    Nat.mod_eq_of_lt (by omega : WordCorrect.exponentBitNat byte j < 2 ^ 256)]
+    Nat.mod_eq_of_lt (by omega : BitPrefix.exponentBitNat byte j < 2 ^ 256)]
     at h
   exact h
 
@@ -88,7 +89,7 @@ def exponentValueAfter (s : State) (modulus base expOff : Nat) :
     Nat → Nat → Nat
   | 0, acc => acc
   | i + 1, acc =>
-      WordCorrect.natExpStep modulus (loadedExponentByte s expOff i)
+      BitPrefix.natExpStep modulus (loadedExponentByte s expOff i)
         (exponentValueAfter s modulus base expOff i acc) base
 
 theorem exponentValueAfter_lt (s : State) (modulus base expOff steps acc : Nat)
@@ -97,7 +98,7 @@ theorem exponentValueAfter_lt (s : State) (modulus base expOff steps acc : Nat)
   induction steps with
   | zero => exact hacc
   | succ steps ih =>
-      rw [exponentValueAfter, WordCorrect.natExpStep]
+      rw [exponentValueAfter, BitPrefix.natExpStep]
       exact Nat.mod_lt _ hmodulusPos
 
 
@@ -115,10 +116,10 @@ theorem accAfterBytes_eq_exponentValueAfter (s : State) (modulus base : Nat)
   | zero => rfl
   | succ i ih =>
       rw [(hspec (i + 1)).1]
-      show _ = WordCorrect.natExpStep modulus (loadedExponentByte s expOff i)
+      show _ = BitPrefix.natExpStep modulus (loadedExponentByte s expOff i)
         (exponentValueAfter s modulus base expOff i (base ^ 0 % modulus)) base
       rw [← ih, (hspec i).1]
-      unfold WordCorrect.natExpStep
+      unfold BitPrefix.natExpStep
       show base ^ (256 * ExpCore.expValueAfter s expOff i
         + (ExpCore.byteAt s expOff i).toNat) % modulus = _
       rw [pow_add, pow_mul']
@@ -148,8 +149,8 @@ theorem exponentByteProgress_represents (s : State)
 theorem loadedExponentByte_header (input : ByteArray) (i : Nat)
     (hoff : Word.expOffset input + i < 2 ^ 256) :
     loadedExponentByte (Main.headerState input) (Word.expOffset input) i =
-      WordCorrect.exponentByte input i := by
-  unfold loadedExponentByte WordCorrect.exponentByte Word.byteWord
+      BitPrefix.exponentByte input i := by
+  unfold loadedExponentByte BitPrefix.exponentByte Word.byteWord
     Accessors.calldataByteValue
   rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hoff]
   rfl
@@ -172,11 +173,11 @@ theorem exponentValueAfter_header_eq_natExpAfter (input : ByteArray)
     (hoff : Word.expOffset input + steps < 2 ^ 256) :
     exponentValueAfter (Main.headerState input) modulus base
         (Word.expOffset input) steps acc =
-      WordCorrect.natExpAfter input modulus base steps acc := by
+      BitPrefix.natExpAfter input modulus base steps acc := by
   induction steps with
   | zero => rfl
   | succ steps ih =>
-      rw [exponentValueAfter, WordCorrect.natExpAfter, ih (by omega),
+      rw [exponentValueAfter, BitPrefix.natExpAfter, ih (by omega),
         loadedExponentByte_header input steps (by omega)]
 
 theorem exponentValueAfter_header_eq (input : ByteArray)
@@ -193,7 +194,7 @@ theorem exponentValueAfter_header_eq (input : ByteArray)
     omega
   rw [exponentValueAfter_header_eq_natExpAfter input modulus base
     (exponentSize input) acc hoff]
-  exact WordCorrect.natExpAfter_eq input modulus base acc
+  exact BitPrefix.natExpAfter_eq input modulus base acc
     (exponentSize input) hvalid (by omega) hacc
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigExponentCorrect

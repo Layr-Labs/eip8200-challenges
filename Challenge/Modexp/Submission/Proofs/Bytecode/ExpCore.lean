@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.BitPrefix
 import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 import Challenge.Modexp.ProofSupport.InitialState
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigMul
@@ -2739,24 +2740,24 @@ theorem accAfter_spec (modulus base : Nat) (hmod : 0 < modulus)
 /-- My `exponentBit` is the one `Word` already defines, so the reference's bit
 arithmetic applies verbatim. -/
 theorem exponentBit_eq_word (byte : UInt256) (j : Nat) :
-    exponentBit byte j = Word.exponentBit byte j := rfl
+    exponentBit byte j = BitPrefix.exponentBit byte j := rfl
 
 theorem exponentBit_toNat_eq_nat (byte : UInt256) (j : Nat) (hj : j < 8) :
-    (exponentBit byte j).toNat = WordCorrect.exponentBitNat byte j := by
+    (exponentBit byte j).toNat = BitPrefix.exponentBitNat byte j := by
   rw [exponentBit_eq_word]
-  have h := congrArg UInt256.toNat (WordCorrect.exponentBit_eq byte j hj)
-  have hbit := WordCorrect.exponentBitNat_zero_or_one byte j
+  have h := congrArg UInt256.toNat (BitPrefix.exponentBit_eq byte j hj)
+  have hbit := BitPrefix.exponentBitNat_zero_or_one byte j
   rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-    Nat.mod_eq_of_lt (by omega : WordCorrect.exponentBitNat byte j < 2 ^ 256)] at h
+    Nat.mod_eq_of_lt (by omega : BitPrefix.exponentBitNat byte j < 2 ^ 256)] at h
   exact h
 
 /-- `prefixAfter` is the accumulated prefix shifted over the byte's own bits. -/
 theorem prefixAfter_eq (byte : UInt256) (v0 steps : Nat) (hsteps : steps ≤ 8) :
-    prefixAfter byte v0 steps = 2 ^ steps * v0 + WordCorrect.bitPrefix byte steps := by
+    prefixAfter byte v0 steps = 2 ^ steps * v0 + BitPrefix.bitPrefix byte steps := by
   induction steps with
-  | zero => simp [prefixAfter, WordCorrect.bitPrefix]
+  | zero => simp [prefixAfter, BitPrefix.bitPrefix]
   | succ steps ih =>
-      rw [prefixAfter, ih (by omega), WordCorrect.bitPrefix,
+      rw [prefixAfter, ih (by omega), BitPrefix.bitPrefix,
         exponentBit_toNat_eq_nat byte steps (by omega)]
       ring
 
@@ -2764,7 +2765,7 @@ theorem prefixAfter_eq (byte : UInt256) (v0 steps : Nat) (hsteps : steps ≤ 8) 
 theorem prefixAfter_eight (byte : UInt256) (v0 : Nat)
     (hbyte : byte.toNat < 256) :
     prefixAfter byte v0 8 = 256 * v0 + byte.toNat := by
-  rw [prefixAfter_eq byte v0 8 (by omega), WordCorrect.bitPrefix_eight byte hbyte]
+  rw [prefixAfter_eq byte v0 8 (by omega), BitPrefix.bitPrefix_eight byte hbyte]
   norm_num
 
 /-- Numeric value of the exponent bytes consumed so far, base-256. -/

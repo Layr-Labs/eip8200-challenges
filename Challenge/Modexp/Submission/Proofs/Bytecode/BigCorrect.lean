@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.BitPrefix
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigBaseCorrect
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -22,8 +23,8 @@ theorem exponentProgress_represents_result (input : ByteArray)
     let progress := BigComplete.exponentProgressState (Main.headerState input)
       b e m 96 expOff modOff returnDest rest
     Limbs.Represents progress.memory 2048 (Limbs.limbCount m)
-      (Precompile.modPow (WordCorrect.baseNat input)
-        (WordCorrect.exponentNat input) (Word.modulusValue input)) := by
+      (Precompile.modPow (BitPrefix.baseNat input)
+        (BitPrefix.exponentNat input) (Word.modulusValue input)) := by
   let b := baseSize input
   let e := exponentSize input
   let m := modulusSize input
@@ -44,19 +45,19 @@ theorem exponentProgress_represents_result (input : ByteArray)
     Nat.mod_lt _ hmodulusPos
   have hprogress := BigExponentCorrect.exponentByteProgress_represents entry
     accumulator n b e m 96 expOff expTail e (1 % Word.modulusValue input)
-    (WordCorrect.baseNat input % Word.modulusValue input)
+    (BitPrefix.baseNat input % Word.modulusValue input)
     (Word.modulusValue input) (by omega) hn hmodulusPos haccReduced
     (Nat.mod_lt _ hmodulusPos) hinitial.2.2.1
     hinitial.1 hinitial.2.1 hinitial.2.2
   have hconv : ExpCore.accAfterBytes entry (Word.modulusValue input)
-      (WordCorrect.baseNat input % Word.modulusValue input) expOff 0
+      (BitPrefix.baseNat input % Word.modulusValue input) expOff 0
       (1 % Word.modulusValue input) e =
       BigExponentCorrect.exponentValueAfter entry (Word.modulusValue input)
-        (WordCorrect.baseNat input % Word.modulusValue input) expOff e
+        (BitPrefix.baseNat input % Word.modulusValue input) expOff e
         (1 % Word.modulusValue input) :=
     BigExponentCorrect.accAfterBytes_eq_exponentValueAfter entry
       (Word.modulusValue input)
-      (WordCorrect.baseNat input % Word.modulusValue input) hmodulusPos
+      (BitPrefix.baseNat input % Word.modulusValue input) hmodulusPos
       (Nat.mod_lt _ hmodulusPos) expOff
       (fun k => BigExponentCorrect.loadedExponentByte_lt entry expOff k) e
   rw [hconv] at hprogress
@@ -75,23 +76,23 @@ theorem exponentProgress_represents_result (input : ByteArray)
       _ = header.executionEnv := by rfl
   have hvalueEnv := BigExponentCorrect.exponentValueAfter_executionEnv entry
     header (Word.modulusValue input)
-    (WordCorrect.baseNat input % Word.modulusValue input) expOff e
+    (BitPrefix.baseNat input % Word.modulusValue input) expOff e
     (1 % Word.modulusValue input) hentryEnv
   have hvalueHeader := BigExponentCorrect.exponentValueAfter_header_eq input
     (Word.modulusValue input)
-    (WordCorrect.baseNat input % Word.modulusValue input)
+    (BitPrefix.baseNat input % Word.modulusValue input)
     (1 % Word.modulusValue input) hvalid haccReduced
   have hvalue : BigExponentCorrect.exponentValueAfter entry
       (Word.modulusValue input)
-      (WordCorrect.baseNat input % Word.modulusValue input) expOff e
+      (BitPrefix.baseNat input % Word.modulusValue input) expOff e
       (1 % Word.modulusValue input) =
-      Precompile.modPow (WordCorrect.baseNat input)
-        (WordCorrect.exponentNat input) (Word.modulusValue input) := by
+      Precompile.modPow (BitPrefix.baseNat input)
+        (BitPrefix.exponentNat input) (Word.modulusValue input) := by
     rw [hvalueEnv]
-    simpa [b, e, expOff, WordCorrect.exponentNat] using
+    simpa [b, e, expOff, BitPrefix.exponentNat] using
       hvalueHeader.trans
-        (WordCorrect.residue_power_eq_modPow (WordCorrect.baseNat input)
-          (WordCorrect.exponentNat input) (Word.modulusValue input) e
+        (BitPrefix.residue_power_eq_modPow (BitPrefix.baseNat input)
+          (BitPrefix.exponentNat input) (Word.modulusValue input) e
           hmodulusPos)
   rw [hvalue] at hprogress
   simpa [BigComplete.exponentProgressState, entry, accumulator, n, b, e, m,

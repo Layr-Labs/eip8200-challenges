@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.BitPrefix
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigCorrect
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -211,8 +212,8 @@ theorem completedState_hReturn (input : ByteArray) (returnDest : UInt256)
       (exponentSize input) (modulusSize input) 96 (Word.expOffset input)
       (Word.modulusOffset input) returnDest rest).hReturn = spec input := by
   let m := modulusSize input
-  let result := Precompile.modPow (WordCorrect.baseNat input)
-    (WordCorrect.exponentNat input) (Word.modulusValue input)
+  let result := Precompile.modPow (BitPrefix.baseNat input)
+    (BitPrefix.exponentNat input) (Word.modulusValue input)
   let progress := BigComplete.exponentProgressState (Main.headerState input)
     (baseSize input) (exponentSize input) m 96 (Word.expOffset input)
     (Word.modulusOffset input) returnDest rest
@@ -226,7 +227,7 @@ theorem completedState_hReturn (input : ByteArray) (returnDest : UInt256)
   rw [spec, if_neg (by omega)]
   simpa [BigComplete.completedState, BigSerialize.bigReturned,
     BigSerialize.serializeProgress, progress, m, result,
-    WordCorrect.baseNat, WordCorrect.exponentNat, Word.expOffset,
+    BitPrefix.baseNat, BitPrefix.exponentNat, Word.expOffset,
     Word.modulusOffset, Word.modulusValue] using hserialized
 
 theorem completedState_result (input : ByteArray) (returnDest : UInt256)

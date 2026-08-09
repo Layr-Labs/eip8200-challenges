@@ -5,10 +5,16 @@ set_option maxHeartbeats 1000000
 /-!
 # One-word MODEXP loop composition
 
-This module closes the two nested exponent loops and composes their exact
-`GasSteps` certificates from the small execution segments proved in `Word`.
-Keeping this composition separate also lets later correctness and gas-cost
-proofs reuse the cached straight-line certificates.
+Two loops instead of the reference's three: a word-at-a-time base Horner loop
+(`bsize / 32` turns) and a byte-at-a-time exponent loop (`esize` turns, each a
+straight-line unrolled body of two 4-bit windows).  The 16-entry window table
+is built once, between them, by a straight-line block chain.
+
+The exit certificates here are the ones constraint C1 depends on: the byte loop
+leaves only through `run_byteJumpi_exit`, and that leads to `0x029d`, whose
+only continuation is a `RETURN`.  Nothing in this module re-enters the
+dispatcher, so the big path can never observe the window table in
+`[0x0000, 0x0200)`.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WordLoops
@@ -17,200 +23,207 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Word
 
-attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
-  Challenge.EvmProof.Word.succ_ofNat_mod
+private def sound {s t : State}
+    (path : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka))
+    (h : Challenge.EvmProof.Stepper.runLocatedBlock path s = some t)
+    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code := by rfl)
+    (hfork : s.fork = .Osaka := by rfl)
+    (hrun : s.halt = .Running := by rfl)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+        s.executionEnv.fork s.executionEnv.codeAddr = false := by
+      exact deployAddress_not_precompile) :
+    Challenge.EvmProof.GasSteps s t :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka path hcode hfork h hrun hnp
 
-private def wfOp {op : Operation}
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
-    (hplain : YulEvmCompiler.plainOp op)
-    (havailable : op.availableInFork .Osaka = true) :
-    Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
-  ⟨hopcode, hplain, havailable⟩
+/-! ## Word-at-a-time base reduction -/
 
-private def opAt (index : Nat) (op : Operation)
-    (hget : Artifact.submissionInstructions[index]? = some (.op op) := by rfl)
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op := by decide)
-    (hplain : YulEvmCompiler.plainOp op := by trivial)
-    (havailable : op.availableInFork .Osaka = true := by rfl) :
-    Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  ⟨index, .op op, hget, wfOp hopcode hplain havailable⟩
+def gasSteps_baseIteration (input : ByteArray) (k : Nat) (base : UInt256)
+    (hb : baseSize input ≤ 1024) (hk : k < baseSize input / 32) :
+    Challenge.EvmProof.GasSteps (baseLoopState input k base)
+      (baseLoopState input (k + 1) (hornerStep input k base)) := by
+  have hlw : leadWidth input < 32 := leadWidth_lt input
+  have hlwv : leadWidth input = baseSize input % 32 := rfl
+  have hptrv : basePtr input k = 96 + leadWidth input + 32 * k := rfl
+  have hexpv : expOffset input = 96 + baseSize input := rfl
+  have hcond : baseCond input k = UInt256.ofNat 0 :=
+    baseCond_lt input k (by omega) (by omega)
+  exact ((sound baseTestPath (run_baseTest input k base)).trans
+    (sound baseJumpiPath (run_baseJumpi_continue input k base hcond))).trans
+    ((sound baseBodyPath (run_baseBody input k base hb hk)).trans
+      (sound baseLoopJumpPath
+        (run_baseLoopJump input k (hornerStep input k base))))
 
-private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
-    (hget : Artifact.submissionInstructions[index]? = some (.push width value) := by rfl)
-    (hwf : Challenge.EvmProof.Stepper.WellFormed .Osaka (.push width value) := by decide) :
-    Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  ⟨index, .push width value, hget, hwf⟩
+def gasSteps_baseLoop (input : ByteArray) (hb : baseSize input ≤ 1024) :
+    Challenge.EvmProof.GasSteps (baseLoopState input 0 (baseInit input))
+      (baseLoopState input (baseSize input / 32)
+        (hornerAfter input (baseSize input / 32))) :=
+  Challenge.EvmProof.GasSteps.iterateBounded
+    (I := fun k => baseLoopState input k (hornerAfter input k))
+    (baseSize input / 32)
+    (fun k hk => gasSteps_baseIteration input k (hornerAfter input k) hb hk)
 
-def bitFinishTailPath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 525 .JUMPDEST, opAt 526 .POP, opAt 527 .POP, opAt 528 .POP,
-   pushAt 529 1 1, opAt 530 .ADD, pushAt 531 2 589, opAt 532 .JUMP]
-
-def bitFinishDispatchState (input : ByteArray) (outer : Nat)
-    (byte offset acc base : UInt256) : State :=
-  { bitLoopState input outer 8 byte offset acc base with pc := UInt256.ofNat 655 }
-
-@[simp] private theorem exitPCs (i : Nat) (hi : 525 ≤ i) (hii : i ≤ 549) :
-    Artifact.submissionArtifact.instructionPC i =
-      ([655,656,657,658,659,661,662,665,666,667,668,669,670,671,672,
-       673,675,676,678,679,680,683,684,685,688])[i - 525]! := by
-  interval_cases i <;> decide
-
-@[simp] private theorem jump655 :
-    Decode.isValidJumpDest submissionBytecode 655 = true :=
-  Artifact.isValidJumpDest_index 525 (by rfl)
-
-@[simp] private theorem jump589 :
-    Decode.isValidJumpDest submissionBytecode 589 = true :=
-  Artifact.isValidJumpDest_index 469 (by rfl)
-
-set_option linter.unusedSimpArgs false in
-theorem run_bitFinishGuard (input : ByteArray) (outer : Nat)
-    (byte offset acc base : UInt256) :
-    Challenge.EvmProof.Stepper.runLocatedBlock bitGuardPath
-      (bitLoopState input outer 8 byte offset acc base) =
-        some (bitFinishDispatchState input outer byte offset acc base) := by
-  have h8 : (8 : UInt256).toNat = 8 := by decide
-  have h8mod : 8 % 2 ^ 256 = 8 := by norm_num
-  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
-  have h655 : (655 : UInt256).toNat = 655 := by decide
-  have h655Word : (655 : UInt256) = UInt256.ofNat 655 := by decide
-  simp (config := { maxSteps := 150000 })
-    [bitGuardPath, Word.opAt, Word.pushAt, Word.wfOp,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitLoopState, bitFinishDispatchState, nonzeroState, callerRest,
-      Dispatch.wordEntryState, Main.headerState, initialState,
-      UInt256.isTrue, UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
-      h8, h8mod, hzeroFalse, h655, h655Word, jump655]
-
-set_option linter.unusedSimpArgs false in
-theorem run_bitFinishTail (input : ByteArray) (outer : Nat)
-    (byte offset acc base : UInt256) (hvalid : ValidInput input)
-    (houter : outer < exponentSize input) :
-    Challenge.EvmProof.Stepper.runLocatedBlock bitFinishTailPath
-      (bitFinishDispatchState input outer byte offset acc base) =
-        some (expLoopState input (outer + 1) acc base) := by
-  rcases hvalid with ⟨_, hb, he, hm⟩
-  have hsucc := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := outer) (b := 1) (by omega : outer + 1 < 2 ^ 256)
-  have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  have h589 : (589 : UInt256).toNat = 589 := by decide
-  have h589Word : (589 : UInt256) = UInt256.ofNat 589 := by decide
-  simp (config := { maxSteps := 175000 })
-    [bitFinishTailPath, opAt, pushAt,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitFinishDispatchState, bitLoopState, expLoopState, nonzeroState,
-      callerRest, Dispatch.wordEntryState, Main.headerState, initialState,
-      exitPCs, List.exchange, Challenge.EvmProof.Word.word_toNat_ofNat,
-      hsucc, honeWord, h589, h589Word, jump589]
-
-def gasSteps_expEnter (input : ByteArray) (i : Nat) (acc base : UInt256)
-    (hvalid : ValidInput input) (hi : i < exponentSize input) :
-    Challenge.EvmProof.GasSteps (expLoopState input i acc base)
-      (bitLoopState input i 0 (byteWord input (expOffset input + i))
-        (UInt256.ofNat (expOffset input + i)) acc base) :=
-  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka expGuardPath rfl rfl
-        (run_expGuard input i acc base hvalid hi) rfl
-        deployAddress_not_precompile).trans
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka expLoadPath rfl rfl
-        (run_expLoad input i acc base hvalid hi) rfl
-        deployAddress_not_precompile)
-
-def gasSteps_bitIteration (input : ByteArray) (outer j : Nat)
-    (byte offset acc base : UInt256) (hj : j < 8) :
+def gasSteps_baseExit (input : ByteArray) (base : UInt256)
+    (hb : baseSize input ≤ 1024) :
     Challenge.EvmProof.GasSteps
-      (bitLoopState input outer j byte offset acc base)
-      (bitLoopState input outer (j + 1) byte offset
-        (bitStep input byte j acc base) base) :=
-  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitGuardPath rfl rfl
-        (run_bitGuard input outer j byte offset acc base hj) rfl
-        deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitDecodePath rfl rfl
-        (run_bitDecode input outer j byte offset acc base hj) rfl
-        deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitSquarePath rfl rfl
-        (run_bitSquare input outer j byte offset acc base) rfl
-        deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitMaskPath rfl rfl
-        (run_bitMask input outer j byte offset acc base) rfl
-        deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitProductPath rfl rfl
-        (run_bitProduct input outer j byte offset acc base) rfl
-        deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitChoosePath rfl rfl
-        (run_bitChoose input outer j byte offset acc base) rfl
-        deployAddress_not_precompile).trans <|
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitAdvancePath rfl rfl
-        (run_bitAdvance input outer j byte offset acc base hj) rfl
-        deployAddress_not_precompile
+      (baseLoopState input (baseSize input / 32) base)
+      (baseExitState input base) := by
+  have hlw : leadWidth input < 32 := leadWidth_lt input
+  have hlwv : leadWidth input = baseSize input % 32 := rfl
+  have hptrv : basePtr input (baseSize input / 32) =
+      96 + leadWidth input + 32 * (baseSize input / 32) := rfl
+  have hexpv : expOffset input = 96 + baseSize input := rfl
+  have hcond : baseCond input (baseSize input / 32) = UInt256.ofNat 1 :=
+    baseCond_ge input (baseSize input / 32) (by omega) (by omega)
+  exact (sound baseTestPath (run_baseTest input (baseSize input / 32) base)).trans
+    (sound baseJumpiPath (run_baseJumpi_exit input base hcond))
 
-def bitAfter (input : ByteArray) (byte : UInt256) (base : UInt256) :
-    Nat → UInt256 → UInt256
-  | 0, acc => acc
-  | j + 1, acc => bitStep input byte j (bitAfter input byte base j acc) base
+/-! ## Building the window table -/
 
-def gasSteps_bitLoop (input : ByteArray) (outer : Nat)
-    (byte offset acc base : UInt256) :
+def gasSteps_table (input : ByteArray) (base : UInt256) :
+    Challenge.EvmProof.GasSteps (baseExitState input base)
+      (byteLoopState input base 0 0 (powTab input base 0)) :=
+  (sound tableInitPath (run_tableInit input base)).trans <|
+  (sound table2Path (run_table2 input base)).trans <|
+  (sound tablePath3 (run_table3 input base)).trans <|
+  (sound tablePath4 (run_table4 input base)).trans <|
+  (sound tablePath5 (run_table5 input base)).trans <|
+  (sound tablePath6 (run_table6 input base)).trans <|
+  (sound tablePath7 (run_table7 input base)).trans <|
+  (sound tablePath8 (run_table8 input base)).trans <|
+  (sound tablePath9 (run_table9 input base)).trans <|
+  (sound tablePath10 (run_table10 input base)).trans <|
+  (sound tablePath11 (run_table11 input base)).trans <|
+  (sound tablePath12 (run_table12 input base)).trans <|
+  (sound tablePath13 (run_table13 input base)).trans <|
+  (sound tablePath14 (run_table14 input base)).trans <|
+  (sound tablePath15 (run_table15 input base)).trans <|
+  sound tableLoadPath (run_tableLoad input base)
+
+/-! ## The exponent byte loop -/
+
+theorem byteWord_lt (input : ByteArray) (off : Nat) :
+    (byteWord input off).toNat < 256 := by
+  unfold byteWord Accessors.calldataByteValue UInt256.byteAt
+  rw [if_neg (by decide : ¬ (⟨0⟩ : UInt256).toNat ≥ 32),
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  have hmask :
+      (MachineState.readWord (Dispatch.wordEntryState input).executionEnv.calldata
+        (UInt256.ofNat off).toNat).toNat >>>
+          (8 * (31 - (⟨0⟩ : UInt256).toNat)) &&& 0xff < 256 := by
+    rw [show (0xff : Nat) = 2 ^ 8 - 1 by norm_num,
+      Nat.and_two_pow_sub_one_eq_mod]
+    omega
+  omega
+
+/-- The dead byte register at the top of each turn: `0` before the first, then
+the byte just consumed. -/
+def wordW (input : ByteArray) : Nat → UInt256
+  | 0 => 0
+  | i + 1 => byteWord input (expOffset input + i)
+
+/-- The accumulator after `i` exponent bytes. -/
+def wordAcc (input : ByteArray) (base : UInt256) : Nat → UInt256
+  | 0 => powTab input base 0
+  | i + 1 =>
+      windowStep input base (byteWord input (expOffset input + i))
+        (wordAcc input base i)
+
+def gasSteps_byteIteration (input : ByteArray) (base : UInt256) (i : Nat)
+    (w acc : UInt256) (hb : baseSize input ≤ 1024)
+    (he : exponentSize input ≤ 1024) (hi : i < exponentSize input) :
+    Challenge.EvmProof.GasSteps (byteLoopState input base i w acc)
+      (byteLoopState input base (i + 1) (byteWord input (expOffset input + i))
+        (windowStep input base (byteWord input (expOffset input + i)) acc)) := by
+  have hexpv : expOffset input = 96 + baseSize input := rfl
+  have hmodv : modulusOffset input = expOffset input + exponentSize input := rfl
+  have hcond : byteCond input i = UInt256.ofNat 0 :=
+    byteCond_lt input i hi hb he
+  have hw : (byteWord input (expOffset input + i)).toNat < 256 :=
+    byteWord_lt input (expOffset input + i)
+  exact ((sound byteTestPath (run_byteTest input base i w acc)).trans
+      (sound byteJumpiPath (run_byteJumpi_continue input base i w acc hcond))).trans <|
+    ((sound byteLoadPath (run_byteLoad input base i w acc hb he hi)).trans
+      (sound byteSq1Path
+        (run_byteSq1 input base i (byteWord input (expOffset input + i)) acc))).trans <|
+    ((sound byteHiPath
+        (run_byteHi input base i (byteWord input (expOffset input + i))
+          (sq4 input acc) hw)).trans
+      (sound byteSq2Path
+        (run_byteSq2 input base i (byteWord input (expOffset input + i))
+          (UInt256.mulMod (sq4 input acc)
+            (tabHi input base (byteWord input (expOffset input + i)))
+            (UInt256.ofNat (modulusValue input)))))).trans <|
+    (sound byteLoPath
+        (run_byteLo input base i (byteWord input (expOffset input + i))
+          (sq4 input
+            (UInt256.mulMod (sq4 input acc)
+              (tabHi input base (byteWord input (expOffset input + i)))
+              (UInt256.ofNat (modulusValue input)))) hw)).trans <|
+    (sound byteAdvancePath
+        (run_byteAdvance input base i (byteWord input (expOffset input + i))
+          (windowStep input base (byteWord input (expOffset input + i)) acc)
+          hb he hi)).trans
+      (sound byteLoopJumpPath
+        (run_byteLoopJump input base i (byteWord input (expOffset input + i))
+          (windowStep input base (byteWord input (expOffset input + i)) acc)))
+
+def gasSteps_byteLoop (input : ByteArray) (base : UInt256)
+    (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024) :
     Challenge.EvmProof.GasSteps
-      (bitLoopState input outer 0 byte offset acc base)
-      (bitLoopState input outer 8 byte offset (bitAfter input byte base 8 acc) base) := by
-  exact Challenge.EvmProof.GasSteps.iterateBounded (I := fun j =>
-      bitLoopState input outer j byte offset (bitAfter input byte base j acc) base) 8
-    (fun j hj => gasSteps_bitIteration input outer j byte offset
-      (bitAfter input byte base j acc) base hj)
+      (byteLoopState input base 0 0 (powTab input base 0))
+      (byteLoopState input base (exponentSize input)
+        (wordW input (exponentSize input))
+        (wordAcc input base (exponentSize input))) :=
+  Challenge.EvmProof.GasSteps.iterateBounded
+    (I := fun i => byteLoopState input base i (wordW input i) (wordAcc input base i))
+    (exponentSize input)
+    (fun i hi =>
+      gasSteps_byteIteration input base i (wordW input i) (wordAcc input base i)
+        hb he hi)
 
-def gasSteps_bitFinish (input : ByteArray) (outer : Nat)
-    (byte offset acc base : UInt256) (hvalid : ValidInput input)
-    (houter : outer < exponentSize input) :
+def gasSteps_byteExit (input : ByteArray) (base : UInt256) (w acc : UInt256)
+    (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024) :
     Challenge.EvmProof.GasSteps
-      (bitLoopState input outer 8 byte offset acc base)
-      (expLoopState input (outer + 1) acc base) :=
-  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitGuardPath rfl rfl
-        (run_bitFinishGuard input outer byte offset acc base) rfl
-        deployAddress_not_precompile).trans
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitFinishTailPath rfl rfl
-        (run_bitFinishTail input outer byte offset acc base hvalid houter) rfl
-        deployAddress_not_precompile)
+      (byteLoopState input base (exponentSize input) w acc)
+      (wordExitState input base acc) := by
+  have hcond : byteCond input (exponentSize input) = UInt256.ofNat 1 :=
+    byteCond_ge input hb he
+  exact ((sound byteTestPath
+      (run_byteTest input base (exponentSize input) w acc)).trans
+    (sound byteJumpiPath
+      (run_byteJumpi_exit input base w acc hcond))).trans <|
+    (sound byteExitPath (run_byteExit input base w acc)).trans
+      (sound byteExitJumpPath (run_byteExitJump input base acc))
 
-def expStep (input : ByteArray) (i : Nat) (acc base : UInt256) : UInt256 :=
-  bitAfter input (byteWord input (expOffset input + i)) base 8 acc
+/-! ## The whole appended body -/
 
-def expAfter (input : ByteArray) (base : UInt256) : Nat → UInt256 → UInt256
-  | 0, acc => acc
-  | i + 1, acc => expStep input i (expAfter input base i acc) base
+def wordBase (input : ByteArray) : UInt256 :=
+  hornerAfter input (baseSize input / 32)
 
-def gasSteps_expIteration (input : ByteArray) (i : Nat) (acc base : UInt256)
-    (hvalid : ValidInput input) (hi : i < exponentSize input) :
-    Challenge.EvmProof.GasSteps (expLoopState input i acc base)
-      (expLoopState input (i + 1) (expStep input i acc base) base) := by
-  let byte := byteWord input (expOffset input + i)
-  let offset := UInt256.ofNat (expOffset input + i)
-  exact (gasSteps_expEnter input i acc base hvalid hi).trans <|
-    (gasSteps_bitLoop input i byte offset acc base).trans
-      (gasSteps_bitFinish input i byte offset (bitAfter input byte base 8 acc)
-        base hvalid hi)
+def wordResult (input : ByteArray) : UInt256 :=
+  wordAcc input (wordBase input) (exponentSize input)
 
-def gasSteps_expLoop (input : ByteArray) (acc base : UInt256)
-    (hvalid : ValidInput input) :
-    Challenge.EvmProof.GasSteps (expLoopState input 0 acc base)
-      (expLoopState input (exponentSize input)
-        (expAfter input base (exponentSize input) acc) base) := by
-  exact Challenge.EvmProof.GasSteps.iterateBounded (I := fun i =>
-      expLoopState input i (expAfter input base i acc) base) (exponentSize input)
-    (fun i hi => gasSteps_expIteration input i
-      (expAfter input base i acc) base hvalid hi)
+def gasSteps_wordBody (input : ByteArray) (hvalid : ValidInput input)
+    (hword : modulusSize input ≤ 32) (hmodpos : 0 < modulusValue input) :
+    Challenge.EvmProof.GasSteps (wordBodyState input)
+      (wordExitState input (wordBase input) (wordResult input)) := by
+  obtain ⟨hsize, hb, he, hm⟩ := hvalid
+  exact ((sound newPath (run_new input ⟨hsize, hb, he, hm⟩ hword hmodpos)).trans
+    (gasSteps_baseLoop input hb)).trans <|
+    ((gasSteps_baseExit input (wordBase input) hb).trans
+      (gasSteps_table input (wordBase input))).trans <|
+    (gasSteps_byteLoop input (wordBase input) hb he).trans
+      (gasSteps_byteExit input (wordBase input) (wordW input (exponentSize input))
+        (wordResult input) hb he)
+
+def gasSteps_wordEntry (input : ByteArray) (hvalid : ValidInput input)
+    (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hmodpos : 0 < modulusValue input) :
+    Challenge.EvmProof.GasSteps (Dispatch.wordEntryState input)
+      (wordExitState input (wordBase input) (wordResult input)) :=
+  ((gasSteps_start input hvalid hmsize hword hmodpos).trans
+    (gasSteps_enterBody input)).trans
+    (gasSteps_wordBody input hvalid hword hmodpos)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordLoops

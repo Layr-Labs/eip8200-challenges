@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.BitPrefix
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigExponentCorrect
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigBaseLoop
 set_option warningAsError true
@@ -188,7 +189,7 @@ theorem baseBit_toNat_le_one (byte : UInt256) (j : Nat) :
   exact Nat.and_le_right
 
 theorem baseBit_toNat_eq (byte : UInt256) (j : Nat) (hj : j < 8) :
-    (baseBit byte j).toNat = WordCorrect.exponentBitNat byte j := by
+    (baseBit byte j).toNat = BitPrefix.exponentBitNat byte j := by
   have hsame : baseBit byte j = ExpCore.exponentBit byte j := by rfl
   rw [hsame]
   exact BigExponentCorrect.exponentBit_toNat_eq byte j hj
@@ -351,13 +352,13 @@ theorem bitProgress_preserves_2048 (s : State) (count : Nat)
 theorem baseBitAfter_eq (modulus : Nat) (byte : UInt256) (steps acc : Nat)
     (hsteps : steps ≤ 8) (hacc : acc < modulus) :
     baseBitAfter modulus byte steps acc =
-      (acc * 2 ^ steps + WordCorrect.bitPrefix byte steps) % modulus := by
+      (acc * 2 ^ steps + BitPrefix.bitPrefix byte steps) % modulus := by
   induction steps with
-  | zero => simp [baseBitAfter, WordCorrect.bitPrefix, Nat.mod_eq_of_lt hacc]
+  | zero => simp [baseBitAfter, BitPrefix.bitPrefix, Nat.mod_eq_of_lt hacc]
   | succ steps ih =>
-      let value := acc * 2 ^ steps + WordCorrect.bitPrefix byte steps
+      let value := acc * 2 ^ steps + BitPrefix.bitPrefix byte steps
       let bit := (baseBit byte steps).toNat
-      have hbit : bit = WordCorrect.exponentBitNat byte steps :=
+      have hbit : bit = BitPrefix.exponentBitNat byte steps :=
         baseBit_toNat_eq byte steps (by omega)
       have hmul : (2 * (value % modulus)) % modulus =
           (2 * value) % modulus := by
@@ -376,8 +377,8 @@ theorem baseBitAfter_eq (modulus : Nat) (byte : UInt256) (steps acc : Nat)
         _ = ((2 * value) % modulus + bit) % modulus := by rw [hmul]
         _ = (2 * value + bit) % modulus := Nat.mod_add_mod _ _ _
         _ = (acc * 2 ^ (steps + 1) +
-              WordCorrect.bitPrefix byte (steps + 1)) % modulus := by
-          simp only [value, bit, WordCorrect.bitPrefix, hbit, pow_succ]
+              BitPrefix.bitPrefix byte (steps + 1)) % modulus := by
+          simp only [value, bit, BitPrefix.bitPrefix, hbit, pow_succ]
           congr 1
           ring
 
@@ -386,7 +387,7 @@ theorem baseBitAfter_eight (modulus : Nat) (byte : UInt256) (acc : Nat)
     baseBitAfter modulus byte 8 acc =
       (acc * 256 + byte.toNat) % modulus := by
   rw [baseBitAfter_eq modulus byte 8 acc (by omega) hacc,
-    WordCorrect.bitPrefix_eight byte hbyte]
+    BitPrefix.bitPrefix_eight byte hbyte]
   norm_num
 
 theorem loadedBaseByte_lt (s : State) (baseOff i : Nat) :
@@ -547,30 +548,29 @@ theorem loadMemory_preserves_region (calldata : ByteArray) (memory : ByteArray)
     (hdisjoint : dst + 32 * Limbs.limbCount length ≤ ptr ∨ ptr + 32 * count ≤ dst)
     (hrep : Limbs.Represents memory ptr count value) :
     Limbs.Represents
-      (BigLoad.loadMemory calldata offset (UInt256.ofNat dst) length iter memory)
+      (BigLoad.loadMemory calldata (UInt256.ofNat offset) (UInt256.ofNat length)
+        (UInt256.ofNat dst) iter memory)
       ptr count value := by
+  have hcount := BigLoadCorrect.loadCount_eq dst length hlength hdstFit
   induction iter with
   | zero => exact hrep
   | succ iter ih =>
-      let before := BigLoad.loadMemory calldata offset (UInt256.ofNat dst)
-        length iter memory
-      let addr := BigLoad.loadAt (UInt256.ofNat dst) length iter
-      let shifted := UInt256.shiftLeft (BigLoad.loadByte calldata offset iter)
-        (BigLoad.loadShiftWord (UInt256.ofNat length) iter)
-      let word := UInt256.lor (MachineState.readWord before addr.toNat) shifted
-      have haddr := BigLoadCorrect.loadAt_ofNat dst length iter hlength
-        (by omega) hdstFit
-      have hlimb : BigLoad.loadLimb length iter < Limbs.limbCount length := by
-        unfold BigLoad.loadLimb BigLoad.loadReverse Limbs.limbCount
-        omega
-      have hdisj : addr.toNat + 32 ≤ ptr ∨ ptr + 32 * count ≤ addr.toNat := by
-        rw [haddr]
-        rcases hdisjoint with h | h
-        · left; omega
-        · right; omega
-      simpa [BigLoad.loadMemory, before, addr, shifted, word] using
-        represents_writeWord_disjoint_region before addr.toNat ptr count value
-          word.toNat hdisj (ih (by omega))
+      by_cases hguard : iter < BigLoad.loadCount (UInt256.ofNat dst)
+          (UInt256.ofNat length)
+      · have hlimb : iter < Limbs.limbCount length := by rwa [hcount] at hguard
+        have haddr : (BigLoad.loadPtr (UInt256.ofNat dst) iter).toNat =
+            dst + 32 * iter :=
+          BigLoadCorrect.loadPtr_eq dst length iter hdstFit (by omega)
+        have hdisj : dst + 32 * iter + 32 ≤ ptr ∨
+            ptr + 32 * count ≤ dst + 32 * iter := by
+          rcases hdisjoint with h | h
+          · left; omega
+          · right; omega
+        rw [BigLoad.loadMemory_succ _ _ _ _ _ _ hguard, haddr]
+        exact represents_writeWord_disjoint_region _ (dst + 32 * iter) ptr count
+          value _ hdisj (ih (by omega))
+      · rw [BigLoad.loadMemory_succ_of_ge _ _ _ _ _ _ hguard]
+        exact ih (by omega)
 
 theorem setupReturned_base_buffers_zero (s : State)
     (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
@@ -975,7 +975,7 @@ theorem exponentState_initial (input : ByteArray) (returnDest : UInt256)
     Limbs.Represents entry.memory 2048 (Limbs.limbCount m)
         (1 % Word.modulusValue input) ∧
       Limbs.Represents entry.memory 1024 (Limbs.limbCount m)
-        (WordCorrect.baseNat input % Word.modulusValue input) ∧
+        (BitPrefix.baseNat input % Word.modulusValue input) ∧
       Limbs.Represents entry.memory 0 (Limbs.limbCount m)
         (Word.modulusValue input) := by
   let b := baseSize input
@@ -1039,7 +1039,7 @@ theorem exponentState_initial (input : ByteArray) (returnDest : UInt256)
     (by rw [hbaseEq]; exact hentry.2.2.2.2)
   have hshift : baseValueSeq base (Word.modulusValue input) 96 direct
       (baseValueAfter loaded (Word.modulusValue input) 96 direct)
-      (b - direct) = WordCorrect.baseNat input % Word.modulusValue input := by
+      (b - direct) = BitPrefix.baseNat input % Word.modulusValue input := by
     rw [baseValueSeq_executionEnv base loaded _ _ _ _ _ hbaseEnv]
     have hsplit := baseValueSeq_shift loaded (Word.modulusValue input) 96
       direct 0 (b - direct)
