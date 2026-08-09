@@ -1,4 +1,4 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.BigExponentGas
+import Challenge.Modexp.Submission.Proofs.Bytecode.ExpCore
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 3000000
@@ -9,7 +9,7 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.BigSerialize
 open EvmSemantics
 open EvmSemantics.EVM
 open YulEvmCompiler
-open BigExponent
+open ExpCore
 
 private def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
@@ -32,13 +32,6 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
       (.push width value) := by decide) :
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨index, .push width value, hget, hwf⟩
-
-def outerFinishGuardPath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 719 .JUMPDEST, opAt 720 (.Dup ⟨4, by decide⟩),
-   opAt 721 (.Dup ⟨1, by decide⟩), opAt 722 .LT, opAt 723 .ISZERO,
-   pushAt 724 2 1118, opAt 725 .JUMPI]
-
 def serializerEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 838 .JUMPDEST, opAt 839 .POP, pushAt 840 0 0]
@@ -67,12 +60,6 @@ def serializerReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 885 .JUMPDEST, opAt 886 .POP, opAt 887 (.Dup ⟨4, by decide⟩),
    pushAt 888 2 6144, opAt 889 .RETURN]
-
-def exponentOuterExit (s : State) (accumulatorWord : UInt256)
-    (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
-  { outerLoop s accumulatorWord count b e m baseOff expOff rest e with
-    pc := UInt256.ofNat 1118 }
-
 def serializerEntry (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 1118
@@ -156,12 +143,6 @@ def bigReturned (s : State) (accumulatorWord : UInt256)
     activeWords := UInt256.ofNat
       (MachineState.activeWordsAfter current.activeWords.toNat 6144 m) }
 
-@[simp] private theorem outerFinishPCs (i : Nat) (hi : 719 ≤ i)
-    (hii : i ≤ 725) :
-    Artifact.submissionArtifact.instructionPC i =
-      ([946,947,948,949,950,951,954])[i - 719]! := by
-  interval_cases i <;> decide
-
 @[simp] private theorem serializerPCs (i : Nat) (hi : 838 ≤ i)
     (hii : i ≤ 889) :
     Artifact.submissionArtifact.instructionPC i =
@@ -183,33 +164,6 @@ private theorem jump1121 :
 private theorem jump1180 :
     Decode.isValidJumpDest submissionBytecode 1180 = true :=
   Artifact.isValidJumpDest_index 885 (by rfl)
-
-set_option linter.unusedSimpArgs false in
-theorem run_outerFinishGuard (s : State) (accumulatorWord : UInt256)
-    (count b e m baseOff expOff : Nat) (rest : List UInt256)
-    (hcap : rest.length < 1014) (_he : e < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock outerFinishGuardPath
-      (outerLoop s accumulatorWord count b e m baseOff expOff rest e) =
-      some (exponentOuterExit s accumulatorWord count b e m baseOff expOff
-        rest) := by
-  have hc8 : rest.length + 8 < 1024 := by omega
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
-  have h1118 : (1118 : UInt256).toNat = 1118 := by decide
-  have h1118Word : (1118 : UInt256) = UInt256.ofNat 1118 := by decide
-  simp [outerFinishGuardPath, opAt, pushAt, wfOp, outerLoop,
-    exponentOuterExit, outerFinishPCs,
-    hcode, hrun, hzeroFalse, h1118, h1118Word, jump1118,
-    hc8, hc9, hc10, UInt256.lt, UInt256.isTrue,
-    Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.ofNat_add_mod,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
-
 set_option linter.unusedSimpArgs false in
 theorem run_serializerEntry (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
@@ -430,22 +384,14 @@ def gasSteps_serializerFinish (s : State) (accumulatorWord : UInt256)
 
 def gasSteps_serializeResult (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
-    (hcap : rest.length < 968) (he : e < 2 ^ 256) (hm : m < 2 ^ 256)
+    (hcap : rest.length < 968) (_he : e < 2 ^ 256) (hm : m < 2 ^ 256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (outerLoop s accumulatorWord count b e m baseOff expOff rest e)
+      (serializerEntry s accumulatorWord count b e m baseOff expOff rest)
       (bigReturned s accumulatorWord count b e m baseOff expOff rest) := by
-  have hguard := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka outerFinishGuardPath
-      (by simpa [outerLoop, Artifact.submissionArtifact] using hcode)
-      (by simpa [outerLoop, State.fork] using hfork)
-      (run_outerFinishGuard s accumulatorWord count b e m baseOff expOff rest
-        (by omega) he hcode hrun)
-      (by simpa [outerLoop] using hrun)
-      (by simpa [outerLoop, State.fork] using hnp)
   have hentry := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka serializerEntryPath
       (by simpa [serializerEntry, Artifact.submissionArtifact] using hcode)
@@ -459,6 +405,6 @@ def gasSteps_serializeResult (s : State) (accumulatorWord : UInt256)
   have hfinish := gasSteps_serializerFinish s accumulatorWord count b e m
     baseOff expOff rest hcap hm hcode hfork hrun hnp
   exact Challenge.EvmProof.GasSteps.cast
-    (hguard.trans (hentry.trans (hloop.trans hfinish))) rfl rfl
+    (hentry.trans (hloop.trans hfinish)) rfl rfl
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigSerialize

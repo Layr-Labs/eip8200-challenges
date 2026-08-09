@@ -46,7 +46,20 @@ theorem exponentProgress_represents_result (input : ByteArray)
     accumulator n b e m 96 expOff expTail e (1 % Word.modulusValue input)
     (WordCorrect.baseNat input % Word.modulusValue input)
     (Word.modulusValue input) (by omega) hn hmodulusPos haccReduced
+    (Nat.mod_lt _ hmodulusPos) hinitial.2.2.1
     hinitial.1 hinitial.2.1 hinitial.2.2
+  have hconv : ExpCore.accAfterBytes entry (Word.modulusValue input)
+      (WordCorrect.baseNat input % Word.modulusValue input) expOff 0
+      (1 % Word.modulusValue input) e =
+      BigExponentCorrect.exponentValueAfter entry (Word.modulusValue input)
+        (WordCorrect.baseNat input % Word.modulusValue input) expOff e
+        (1 % Word.modulusValue input) :=
+    BigExponentCorrect.accAfterBytes_eq_exponentValueAfter entry
+      (Word.modulusValue input)
+      (WordCorrect.baseNat input % Word.modulusValue input) hmodulusPos
+      (Nat.mod_lt _ hmodulusPos) expOff
+      (fun k => BigExponentCorrect.loadedExponentByte_lt entry expOff k) e
+  rw [hconv] at hprogress
   have hentryEnv : entry.executionEnv = header.executionEnv := by
     calc
       entry.executionEnv =

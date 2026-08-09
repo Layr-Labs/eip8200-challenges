@@ -33,60 +33,6 @@ open EvmSemantics.EVM
   | succ i ih =>
       simp [BigMul.mulOuterProgress, BigMul.mulLoadedState, ih]
 
-@[simp] theorem mulResult_callStack (s : State) (a b out modulus : UInt256)
-    (count : Nat) (returnDest : UInt256) (rest : List UInt256) :
-    (BigExponent.mulResult s a b out modulus count returnDest rest).callStack =
-      s.callStack := by
-  simp [BigExponent.mulResult, BigMul.mulReturned, BigMul.mulAfterCopy,
-    BigMul.mulAfterClear]
-
-@[simp] theorem squareReturned_callStack (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
-    (offset byte : UInt256) (rest : List UInt256) :
-    (BigExponent.squareReturned s accumulatorWord count b e m baseOff expOff
-      i j offset byte rest).callStack = s.callStack := by
-  simp [BigExponent.squareReturned, BigExponent.innerBody,
-    BigExponent.innerLoop]
-
-@[simp] theorem copiedSquare_callStack (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
-    (offset byte : UInt256) (rest : List UInt256) :
-    (BigExponent.copiedSquare s accumulatorWord count b e m baseOff expOff
-      i j offset byte rest).callStack = s.callStack := by
-  simp [BigExponent.copiedSquare, BigHelpers.copyReturned]
-
-@[simp] theorem productReturned_callStack (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
-    (offset byte : UInt256) (rest : List UInt256) :
-    (BigExponent.productReturned s accumulatorWord count b e m baseOff expOff
-      i j offset byte rest).callStack = s.callStack := by
-  simp [BigExponent.productReturned]
-
-@[simp] theorem selectProgress_callStack (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff i j k : Nat)
-    (offset byte : UInt256) (rest : List UInt256) :
-    (BigExponent.selectProgress s accumulatorWord count b e m baseOff expOff
-      i j offset byte rest k).callStack = s.callStack := by
-  simp [BigExponent.selectProgress]
-
-@[simp] theorem exponentBitProgress_callStack (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
-    (offset byte : UInt256) (rest : List UInt256) :
-    (BigExponent.exponentBitProgress s accumulatorWord count b e m baseOff
-      expOff i offset byte rest j).callStack = s.callStack := by
-  induction j with
-  | zero => rfl
-  | succ j ih => simp [BigExponent.exponentBitProgress, ih]
-
-@[simp] theorem exponentByteProgress_callStack (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff i : Nat)
-    (rest : List UInt256) :
-    (BigExponent.exponentByteProgress s accumulatorWord count b e m baseOff
-      expOff rest i).callStack = s.callStack := by
-  induction i with
-  | zero => rfl
-  | succ i ih => simp [BigExponent.exponentByteProgress, ih]
-
 @[simp] theorem baseBitProgress_callStack (count : Nat) (byte : UInt256)
     (j : Nat) (s : State) :
     (BigBase.bitProgress count byte j s).callStack = s.callStack := by

@@ -20,7 +20,7 @@ theorem baseBit_toNat_le_one (byte : UInt256) (j : Nat) :
 
 theorem baseBit_toNat_eq (byte : UInt256) (j : Nat) (hj : j < 8) :
     (baseBit byte j).toNat = WordCorrect.exponentBitNat byte j := by
-  have hsame : baseBit byte j = BigExponent.exponentBit byte j := by rfl
+  have hsame : baseBit byte j = ExpCore.exponentBit byte j := by rfl
   rw [hsame]
   exact BigExponentCorrect.exponentBit_toNat_eq byte j hj
 
@@ -222,7 +222,7 @@ theorem baseBitAfter_eight (modulus : Nat) (byte : UInt256) (acc : Nat)
 
 theorem loadedBaseByte_lt (s : State) (baseOff i : Nat) :
     (loadedBaseByte s baseOff i).toNat < 256 := by
-  change (BigExponent.loadedExponentByte s baseOff i).toNat < 256
+  change (ExpCore.loadedExponentByte s baseOff i).toNat < 256
   exact BigExponentCorrect.loadedExponentByte_lt s baseOff i
 
 def baseValueAfter (s : State) (modulus baseOff : Nat) : Nat → Nat
