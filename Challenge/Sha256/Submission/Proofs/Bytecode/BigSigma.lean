@@ -94,7 +94,7 @@ def t1Entry (s : State) (x addend1 addend2 : UInt256)
 def t1Returned (s : State) (x addend1 addend2 : UInt256)
     (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 729
+    pc := UInt256.ofNat 714
     stack := Challenge.EvmProof.Word.mask32
       (((MachineState.readWord s.memory 512 + Word.evmBigSigma1 x) +
         addend1) + addend2) :: rest
@@ -145,7 +145,7 @@ def bigSigma1Path :
    ⟨152, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨153, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨154, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨155, .push ⟨2, by decide⟩ (UInt256.ofNat 729), by rfl, by decide⟩,
+   ⟨155, .push ⟨2, by decide⟩ (UInt256.ofNat 714), by rfl, by decide⟩,
    ⟨156, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem bigSigma0PC (i : Nat) (hlo : 93 ≤ i) (hhi : i ≤ 111) :
@@ -202,7 +202,7 @@ theorem run_bigSigma1 (s : State) (x addend1 addend2 : UInt256)
   have hc5 : rest.length + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc7 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 729 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 714 = true := by decide
   simp [bigSigma1Path, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     t1Entry, t1Returned, Word.rawFusedBigSigma1, Word.duplicateLane,

@@ -152,46 +152,30 @@ def setupBigSigma1Path :
    ⟨519, .push ⟨2, by decide⟩ (UInt256.ofNat 163), by rfl, by decide⟩,
    ⟨520, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
-def setupH7Path :
-    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨523, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨524, .push ⟨2, by decide⟩ (UInt256.ofNat 512), by rfl, by decide⟩,
-   ⟨525, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨526, .push ⟨4, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨527, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
-
 def finishT1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨532, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨523, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupT2H2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨533, .push ⟨2, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
-   ⟨534, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨535, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨536, .push ⟨2, by decide⟩ (UInt256.ofNat 770), by rfl, by decide⟩,
-   ⟨537, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨538, .push ⟨2, by decide⟩ (UInt256.ofNat 352), by rfl, by decide⟩,
-   ⟨539, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨540, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨541, .push ⟨3, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨542, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨524, .push ⟨2, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
+   ⟨525, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨526, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨527, .push ⟨2, by decide⟩ (UInt256.ofNat 770), by rfl, by decide⟩,
+   ⟨528, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
+   ⟨529, .push ⟨2, by decide⟩ (UInt256.ofNat 352), by rfl, by decide⟩,
+   ⟨530, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupT2H1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨543, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨544, .push ⟨2, by decide⟩ (UInt256.ofNat 320), by rfl, by decide⟩,
-   ⟨545, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨546, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨547, .push ⟨3, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨548, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨531, .push ⟨2, by decide⟩ (UInt256.ofNat 320), by rfl, by decide⟩,
+   ⟨532, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupMajPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨549, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨550, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨551, .push ⟨2, by decide⟩ (UInt256.ofNat 233), by rfl, by decide⟩,
-   ⟨552, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨533, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨534, .push ⟨2, by decide⟩ (UInt256.ofNat 233), by rfl, by decide⟩,
+   ⟨535, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupBigSigma0Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -533,7 +517,7 @@ def t1 (s : State) (j : Nat) : UInt256 :=
 def afterT1 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   { gotH7 s msgOff returnDest rest j with
-    pc := UInt256.ofNat 730
+    pc := UInt256.ofNat 715
     stack := [t1 s j, hValue s 4, UInt256.ofNat j,
       msgOff, returnDest] ++ rest }
 
@@ -553,7 +537,7 @@ def callT2H2 (s : State) (msgOff returnDest : UInt256)
 def gotT2H2 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   Accessors.loadReturned (loadedA s msgOff returnDest rest j) 288
-    (UInt256.ofNat 2) (UInt256.ofNat 753)
+    (UInt256.ofNat 2) (UInt256.ofNat 732)
     ([0, UInt256.ofNat 770, UInt256.ofNat 0xffffffff, hValue s 0,
       t1 s j, hValue s 4, UInt256.ofNat j, msgOff, returnDest] ++ rest)
 
@@ -568,7 +552,7 @@ def callT2H1 (s : State) (msgOff returnDest : UInt256)
 def gotT2H1 (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   Accessors.loadReturned (gotT2H2 s msgOff returnDest rest j) 288
-    (UInt256.ofNat 1) (UInt256.ofNat 764)
+    (UInt256.ofNat 1) (UInt256.ofNat 736)
     ([hValue s 2, 0, UInt256.ofNat 770, UInt256.ofNat 0xffffffff,
       hValue s 0, t1 s j, hValue s 4, UInt256.ofNat j,
       msgOff, returnDest] ++ rest)
@@ -798,13 +782,13 @@ def compressReturned (s : State) (returnDest : UInt256)
        662, 664, 665, 667, 668, 669, 670, 671, 675, 676,
        679, 680, 681, 685, 686, 690, 691, 692, 696, 697,
        698, 699, 702, 703, 704, 705, 706, 709, 710, 713,
-       714, 715, 718, 719, 724, 725, 726, 727, 728, 729][i - 483]! := by
+       714, 715, 718, 719, 724, 727, 728, 731, 732, 735][i - 483]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem t2PC (i : Nat) (hlo : 533 ≤ i) (hhi : i ≤ 560) :
     Artifact.referenceArtifact.instructionPC i =
-      [730, 733, 734, 739, 742, 743, 746, 747, 748, 752,
-       753, 754, 757, 758, 759, 763, 764, 765, 766, 769,
+      [736, 737, 740, 741, 743, 745, 747, 749, 751, 753,
+       755, 757, 759, 761, 763, 765, 766, 767, 768, 769,
        770, 771, 772, 775, 776, 780, 781, 782][i - 533]! := by
   interval_cases i <;> decide
 
@@ -1114,30 +1098,6 @@ theorem run_setupBigSigma1 (s : State) (msgOff returnDest : UInt256)
     BigSigma.t1Entry, Accessors.loadReturned, Accessors.kAtReturned,
     Accessors.slotOffset, List.exchange, hc7, hc8, hc9, hc10, hc11, hc12,
     hc13, hc14, hcode, hrun, hdest]
-
-set_option linter.unusedSimpArgs false in
-theorem run_setupH7 (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (j : Nat) (hcap : rest.length < 1010)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock setupH7Path
-      (gotBigSigma1 s msgOff returnDest rest j) =
-        some (gotH7 s msgOff returnDest rest j) := by
-  have hc8 : rest.length + 8 < 1024 := by omega
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
-  have hc13 : rest.length + 13 < 1024 := by omega
-  have hslot :
-      ((UInt256.ofNat 7).shiftLeft (UInt256.ofNat 5) +
-        UInt256.ofNat 288).toNat = 512 := by decide
-  simp [setupH7Path, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotBigSigma1, gotH7, gotCh, gotH5, gotH6, gotK, gotW, loadedE,
-    chPlusK, kValue, wValue, hValue, Functions.unaryReturned,
-    Accessors.loadEntry, Accessors.loadReturned, Accessors.kAtReturned,
-    Accessors.slotOffset, List.exchange, hc8, hc9, hc10, hc11, hc12,
-    hc13, hslot, hrun, State.activeWordsAfterUInt256]
 
 set_option linter.unusedSimpArgs false in
 theorem run_finishT1 (s : State) (msgOff returnDest : UInt256)

@@ -22,9 +22,9 @@ theorem t2_cost_potential (s : State) (msgOff returnDest : UInt256)
     (Compression.gasSteps_t2 s msgOff returnDest rest j hcap hcode hfork
       hrun hnp).cost + MachineState.memCost
         (Compression.afterT1 s msgOff returnDest rest j).activeWords.toNat =
-      179 + MachineState.memCost
+      165 + MachineState.memCost
         (Compression.afterT2 s msgOff returnDest rest j).activeWords.toNat := by
-  have hsetupH2 := blockCost_potential_of_static Compression.setupT2H2Path 26
+  have hsetupH2 := blockCost_potential_of_static Compression.setupT2H2Path 20
     (Compression.run_setupT2H2 s msgOff returnDest rest j (by omega)
       hrun)
     (by simpa [Compression.afterT1, Compression.gotH7,
@@ -33,7 +33,7 @@ theorem t2_cost_potential (s : State) (msgOff returnDest : UInt256)
       Compression.loadedE, Functions.unaryReturned, Accessors.loadReturned,
       Accessors.kAtReturned, State.fork] using hfork)
     (by simp [Compression.setupT2H2Path, CopyFree]) (by rfl)
-  have hsetupH1 := blockCost_potential_of_static Compression.setupT2H1Path 13
+  have hsetupH1 := blockCost_potential_of_static Compression.setupT2H1Path 6
     (Compression.run_setupT2H1 s msgOff returnDest rest j (by omega)
       hrun)
     (by simpa [Compression.gotT2H2, Compression.loadedA,
@@ -43,7 +43,7 @@ theorem t2_cost_potential (s : State) (msgOff returnDest : UInt256)
       Functions.unaryReturned, Accessors.loadReturned,
       Accessors.kAtReturned, State.fork] using hfork)
     (by simp [Compression.setupT2H1Path, CopyFree]) (by rfl)
-  have hsetupMaj := blockCost_potential_of_static Compression.setupMajPath 15
+  have hsetupMaj := blockCost_potential_of_static Compression.setupMajPath 14
     (Compression.run_setupMaj s msgOff returnDest rest j (by omega)
       hcode hrun)
     (by simpa [Compression.gotT2H1, Compression.gotT2H2,

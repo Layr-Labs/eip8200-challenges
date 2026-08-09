@@ -409,3 +409,19 @@ identical paired gas and an empty-vector cost of **55,983**. The improvement is
 execution, correctness, and gas theorem builds are green. The exact bytecode
 SHA-256 is
 `e19051f32b98e2428a4ec69d54e799136da78bf71b7236d9f6f70ec7e1fe9c36`.
+
+## 2026-08-08: fuse the T1 return into T2 setup
+
+The specialized BSIG1 helper now jumps to PC 714 instead of the end of the old
+T1 landing pad. From there, one packed fall-through path loads `h0`, the mask,
+`h2`, and `h1`, then enters `Maj`. Twelve unreachable `PUSH1 0` instructions
+and five `STOP`s preserve the original 56-byte, 30-instruction region and all
+downstream boundaries. The semantic endpoints for `afterT1`, `gotT2H2`,
+`gotT2H1`, and the `Maj` entry remain unchanged apart from their earlier PCs.
+
+Native scoring accepted all 38 clean/dirty runs at **3,498,907** with identical
+paired gas; the empty vector costs **55,087**. The exact improvement is 14 gas
+per round, 896 per padded block, and 58,240 across the 65-block suite. The
+full execution, correctness, composition, and exact-gas builds pass with 1,499
+fixed gas and 53,296 gas per block. The exact bytecode SHA-256 is
+`ce4f458a442d8f7eb7976d3439040b3c926ded1d10d5653f9abfb82558ebbe6e`.

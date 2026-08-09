@@ -202,15 +202,23 @@ indices directly with 64 and 8. On the proved loop invariants, `j == 64` and
 `ISZERO`, saving two gas for every iteration and exit check. Across the public
 suite this saves another 9,620 gas.
 
-Fresh local scoring of the exact submission bytes is 3,557,147 versus the
-10,179,119 reference, a combined reduction of 6,621,972 gas. All 19 vectors
+The BSIG1 helper now returns directly to the start of the following T2 setup
+at PC 714. That setup performs the fixed `h0`, `h2`, and `h1` loads in one
+packed fall-through sequence and enters `Maj` without the old landing pads or
+dead load cleanup. The 56-byte region and its 30 structural instructions are
+preserved with unreachable padding, while every following PC and instruction
+index remains unchanged. This saves 14 gas per round, 896 gas per padded block,
+and 58,240 gas over the suite.
+
+Fresh local scoring of the exact submission bytes is 3,498,907 versus the
+10,179,119 reference, a combined reduction of 6,680,212 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 55,983 gas.
+vector costs 55,087 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 54,192
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 53,296
 gas per padded block, plus calldata copying and memory expansion.
