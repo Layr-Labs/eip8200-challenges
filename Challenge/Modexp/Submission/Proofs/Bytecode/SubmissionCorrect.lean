@@ -12,27 +12,6 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.SubmissionCorrect
 open EvmSemantics
 open EvmSemantics.EVM
 
-@[simp] theorem mulWordProgress_callStack (current : State)
-    (word a b out modulus : UInt256) (count i j : Nat)
-    (returnDest : UInt256) (rest : List UInt256) :
-    (BigMul.mulWordProgress current word a b out modulus count i returnDest rest
-      j).callStack = current.callStack := by
-  induction j with
-  | zero => rfl
-  | succ j ih =>
-      simp [BigMul.mulWordProgress, BigMul.mulWordAfterDouble,
-        BigMul.mulWordAfterAdd, BigMul.mulInnerState, BigHelpers.addReturned, ih]
-
-@[simp] theorem mulOuterProgress_callStack (current : State)
-    (a b out modulus : UInt256) (count i : Nat) (returnDest : UInt256)
-    (rest : List UInt256) :
-    (BigMul.mulOuterProgress current a b out modulus count returnDest rest
-      i).callStack = current.callStack := by
-  induction i with
-  | zero => rfl
-  | succ i ih =>
-      simp [BigMul.mulOuterProgress, BigMul.mulLoadedState, ih]
-
 @[simp] theorem baseBitProgress_callStack (count : Nat) (byte : UInt256)
     (j : Nat) (s : State) :
     (BigBase.bitProgress count byte j s).callStack = s.callStack := by

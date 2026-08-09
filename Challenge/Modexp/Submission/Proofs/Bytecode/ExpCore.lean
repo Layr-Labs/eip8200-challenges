@@ -925,7 +925,7 @@ theorem run_squareCall (s : State) (accumulatorWord : UInt256)
   have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
   simp [squareCallPath, opAt, pushAt, wfOp, startedBody, squareEntry,
-    BigMul.mulEntry, incJEntry, bitFrame, appendedPCs, hcode, hrun,
+    BigMul.mulEntry, BigMul.mulFrame, incJEntry, bitFrame, appendedPCs, hcode, hrun,
     hdest, hdestWord, h1347, h2048, h3072, hzero, jump310,
     hc13, hc14, hc15, hc16, hc17, hc18, hc19, hc20,
     Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -983,7 +983,7 @@ theorem run_squareToCopy (s : State) (accumulatorWord : UInt256)
   have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
   have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
-  simp [squareToCopyPath, opAt, pushAt, wfOp, squareReturned, BigMul.mulEntry,
+  simp [squareToCopyPath, opAt, pushAt, wfOp, squareReturned, BigMul.mulEntry, BigMul.mulFrame,
     BigHelpers.copyEntry, incJEntry, bitFrame, appendedPCs, hcode, hrun,
     hdest, hdestWord, h1362, h2048, h3072, hzero, jump58,
     hc13, hc14, hc15, hc16, hc17, hc18, hc19, hc20,
@@ -1022,7 +1022,7 @@ theorem run_productCall (s : State) (accumulatorWord : UInt256)
   have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
   have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
-  simp [productCallPath, opAt, pushAt, wfOp, productEntry, BigMul.mulEntry,
+  simp [productCallPath, opAt, pushAt, wfOp, productEntry, BigMul.mulEntry, BigMul.mulFrame,
     BigHelpers.copyEntry, incJEntry, bitFrame, appendedPCs, hcode, hrun,
     hdest, hdestWord, h1387, h1024, h2048, h3072, hzero, jump310,
     hc13, hc14, hc15, hc16, hc17, hc18, hc19, hc20,
@@ -1060,7 +1060,7 @@ theorem run_productToCopy (s : State) (accumulatorWord : UInt256)
   have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
   have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
-  simp [productToCopyPath, opAt, pushAt, wfOp, productReturned, BigMul.mulEntry,
+  simp [productToCopyPath, opAt, pushAt, wfOp, productReturned, BigMul.mulEntry, BigMul.mulFrame,
     BigHelpers.copyEntry, incJEntry, bitFrame, appendedPCs, hcode, hrun,
     hdest, hdestWord, h1402, h2048, h3072, hzero, jump58,
     hc13, hc14, hc15, hc16, hc17, hc18, hc19, hc20,
@@ -1098,7 +1098,7 @@ theorem run_seedCall (s : State) (accumulatorWord : UInt256)
   have h1024 : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
   have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
-  simp [seedCallPath, opAt, pushAt, wfOp, seedEntry, BigMul.mulEntry,
+  simp [seedCallPath, opAt, pushAt, wfOp, seedEntry, BigMul.mulEntry, BigMul.mulFrame,
     BigHelpers.copyEntry, incJEntry, bitFrame, appendedPCs, hcode, hrun,
     hdest, hdestWord, h1428, h1024, h2048, hzero, jump58,
     hc13, hc14, hc15, hc16, hc17, hc18, hc19, hc20,
@@ -1131,7 +1131,7 @@ theorem run_afterProduct (s : State) (accumulatorWord : UInt256)
   have hdestWord : (1433 : UInt256) = UInt256.ofNat 1433 := by decide
 
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
-  simp [afterProductPath, opAt, pushAt, wfOp, afterProductState, BigMul.mulEntry,
+  simp [afterProductPath, opAt, pushAt, wfOp, afterProductState, BigMul.mulEntry, BigMul.mulFrame,
     BigHelpers.copyEntry, incJEntry, bitFrame, appendedPCs, hcode, hrun,
     hdest, hdestWord, hzero, jump1433,
     hc13, hc14, hc15, hc16, hc17, hc18, hc19, hc20,
@@ -1270,15 +1270,11 @@ def gasSteps_bitSeed (s : State) (accumulatorWord : UInt256)
 def squareApplied (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
     (started i : Nat) (offset byte bit : UInt256) (j : Nat) : State :=
-  BigMul.mulOuterProgress
-    (BigMul.mulAfterCopy
-      (startedBody s accumulatorWord count b e m baseOff expOff rest started i
-        offset byte bit j) 2048 2048 3072 0 count 1347
-      (bitFrame accumulatorWord count b e m baseOff expOff started i offset byte
-        bit j rest))
-    2048 2048 3072 0 count 1347
+  BigMul.mulApplied
+    (startedBody s accumulatorWord count b e m baseOff expOff rest started i
+      offset byte bit j) 2048 2048 3072 0 count 1347
     (bitFrame accumulatorWord count b e m baseOff expOff started i offset byte
-      bit j rest) count
+      bit j rest)
 
 /-- Then `copyLimbs(acc, 0x0c00, n)` moves the square into the accumulator. -/
 def squareCopied (s : State) (accumulatorWord : UInt256)
@@ -1322,16 +1318,14 @@ private theorem squareCopy_eq (s : State) (accumulatorWord : UInt256)
     (started i : Nat) (offset byte bit : UInt256) (j : Nat) :
     (squareApplied s accumulatorWord count b e m baseOff expOff rest started i
       offset byte bit j).executionEnv = s.executionEnv := by
-  simp [squareApplied, BigMul.mulAfterCopy, BigMul.mulAfterClear,
-    startedBody, incJEntry]
+  simp [squareApplied, startedBody, incJEntry]
 
 @[simp] theorem squareApplied_halt (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
     (started i : Nat) (offset byte bit : UInt256) (j : Nat) :
     (squareApplied s accumulatorWord count b e m baseOff expOff rest started i
       offset byte bit j).halt = s.halt := by
-  simp [squareApplied, BigMul.mulAfterCopy, BigMul.mulAfterClear,
-    startedBody, incJEntry]
+  simp [squareApplied, startedBody, incJEntry]
 
 @[simp] theorem squareCopied_executionEnv (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
@@ -1574,15 +1568,11 @@ taken from the already-squared state. -/
 def productApplied (sq : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
     (started i : Nat) (offset byte bit : UInt256) (j : Nat) : State :=
-  BigMul.mulOuterProgress
-    (BigMul.mulAfterCopy
-      (productEntry sq accumulatorWord count b e m baseOff expOff rest started i
-        offset byte bit j) 2048 1024 3072 0 count 1387
-      (bitFrame accumulatorWord count b e m baseOff expOff started i offset byte
-        bit j rest))
-    2048 1024 3072 0 count 1387
+  BigMul.mulApplied
+    (productEntry sq accumulatorWord count b e m baseOff expOff rest started i
+      offset byte bit j) 2048 1024 3072 0 count 1387
     (bitFrame accumulatorWord count b e m baseOff expOff started i offset byte
-      bit j rest) count
+      bit j rest)
 
 /-- Then `copyLimbs(acc, 0x0c00, n)` moves the product into the accumulator. -/
 def productCopied (sq : State) (accumulatorWord : UInt256)
@@ -1598,14 +1588,14 @@ def productCopied (sq : State) (accumulatorWord : UInt256)
     (started i : Nat) (offset byte bit : UInt256) (j : Nat) :
     (productApplied sq accumulatorWord count b e m baseOff expOff rest started i
       offset byte bit j).executionEnv = sq.executionEnv := by
-  simp [productApplied, BigMul.mulAfterCopy, BigMul.mulAfterClear]
+  simp [productApplied, productEntry, incJEntry]
 
 @[simp] theorem productApplied_halt (sq : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
     (started i : Nat) (offset byte bit : UInt256) (j : Nat) :
     (productApplied sq accumulatorWord count b e m baseOff expOff rest started i
       offset byte bit j).halt = sq.halt := by
-  simp [productApplied, BigMul.mulAfterCopy, BigMul.mulAfterClear]
+  simp [productApplied, productEntry, incJEntry]
 
 @[simp] theorem productCopied_executionEnv (sq : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
@@ -2021,42 +2011,19 @@ def gasSteps_bitLoop (s : State) (accumulatorWord : UInt256)
       offset byte).halt = s.halt := by
   simp [nextByteEntry]
 
-@[simp] theorem mulWordProgress_callStack (current : State)
-    (word a b out modulus : UInt256) (count i j : Nat)
-    (returnDest : UInt256) (rest : List UInt256) :
-    (BigMul.mulWordProgress current word a b out modulus count i returnDest rest
-      j).callStack = current.callStack := by
-  induction j with
-  | zero => rfl
-  | succ j ih =>
-      simp [BigMul.mulWordProgress, BigMul.mulWordAfterDouble,
-        BigMul.mulWordAfterAdd, BigMul.mulInnerState, BigHelpers.addReturned, ih]
-
-@[simp] theorem mulOuterProgress_callStack (current : State)
-    (a b out modulus : UInt256) (count i : Nat) (returnDest : UInt256)
-    (rest : List UInt256) :
-    (BigMul.mulOuterProgress current a b out modulus count returnDest rest
-      i).callStack = current.callStack := by
-  induction i with
-  | zero => rfl
-  | succ i ih =>
-      simp [BigMul.mulOuterProgress, BigMul.mulLoadedState, ih]
-
 @[simp] theorem squareApplied_callStack (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
     (started i : Nat) (offset byte bit : UInt256) (j : Nat) :
     (squareApplied s accumulatorWord count b e m baseOff expOff rest started i
       offset byte bit j).callStack = s.callStack := by
-  simp [squareApplied, BigMul.mulAfterCopy, BigMul.mulAfterClear, startedBody,
-    incJEntry]
+  simp [squareApplied, startedBody, incJEntry]
 
 @[simp] theorem productApplied_callStack (sq : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
     (started i : Nat) (offset byte bit : UInt256) (j : Nat) :
     (productApplied sq accumulatorWord count b e m baseOff expOff rest started i
       offset byte bit j).callStack = sq.callStack := by
-  simp [productApplied, BigMul.mulAfterCopy, BigMul.mulAfterClear, productEntry,
-    incJEntry]
+  simp [productApplied, productEntry, incJEntry]
 
 @[simp] theorem bitStep_callStack (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
@@ -2349,78 +2316,6 @@ theorem bitSeed_represents (s : State) (accumulatorWord : UInt256)
   · exact BigHelpers.represents_copyMemory_disjoint_region s.memory 2048 1024
       0 count modulus (by omega) (Or.inr (by omega)) hmodulus
 
-/-- Other memory regions survive the multiply. Re-proved here rather than
-imported: the reference's copy lives in `BigExponentCorrect`, which depends on
-the superseded `BigExponent`. -/
-theorem mulOuterProgress_preserves_region (current : State) (a b : UInt256)
-    (count steps ptr value : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hsteps : steps ≤ count) (hcount : count ≤ 32)
-    (hptrOut : 3072 + 32 * count ≤ ptr ∨ ptr + 32 * count ≤ 3072)
-    (hptrAddend : 4096 + 32 * count ≤ ptr ∨ ptr + 32 * count ≤ 4096)
-    (hptrCandidate : ptr + 32 * count ≤ 5120 ∨ 5120 + 32 * count ≤ ptr)
-    (hrep : Limbs.Represents current.memory ptr count value) :
-    Limbs.Represents
-      (BigMul.mulOuterProgress current a b (UInt256.ofNat 3072)
-        (UInt256.ofNat 0) count returnDest rest steps).memory
-      ptr count value := by
-  induction steps with
-  | zero => simpa [BigMul.mulOuterProgress] using hrep
-  | succ steps ih =>
-      let before := BigMul.mulOuterProgress current a b (UInt256.ofNat 3072)
-        (UInt256.ofNat 0) count returnDest rest steps
-      let loaded := BigMul.mulLoadedState before b steps
-      let word := BigMul.mulLoadedWord before b steps
-      have hbefore : Limbs.Represents before.memory ptr count value :=
-        ih (by omega)
-      have hloaded : Limbs.Represents loaded.memory ptr count value := by
-        simpa [loaded, BigMul.mulLoadedState] using hbefore
-      simpa [BigMul.mulOuterProgress, before, loaded, word] using
-        BigMul.mulWordProgress_preserves_region loaded word a b count steps
-          256 ptr value returnDest rest (by omega) hcount hptrOut hptrAddend
-          hptrCandidate hloaded
-
-/-- Regions of `mulAfterCopy`'s state: `out` is cleared, the addend holds `a`,
-and everything else survives. -/
-private theorem mulAfterCopy_regions (s : State) (accumulatorWord : UInt256)
-    (count b e m baseOff expOff : Nat) (rest : List UInt256)
-    (started i : Nat) (offset byte bit : UInt256) (j : Nat)
-    (hcount : count ≤ 32) (acc base modulus : Nat)
-    (hacc : Limbs.Represents s.memory 2048 count acc)
-    (hbase : Limbs.Represents s.memory 1024 count base)
-    (hmodulus : Limbs.Represents s.memory 0 count modulus) :
-    let copied := BigMul.mulAfterCopy
-      (startedBody s accumulatorWord count b e m baseOff expOff rest started i
-        offset byte bit j) 2048 2048 3072 0 count 1347
-      (bitFrame accumulatorWord count b e m baseOff expOff started i offset byte
-        bit j rest)
-    Limbs.Represents copied.memory 3072 count 0 ∧
-      Limbs.Represents copied.memory 4096 count acc ∧
-      Limbs.Represents copied.memory 2048 count acc ∧
-      Limbs.Represents copied.memory 1024 count base ∧
-      Limbs.Represents copied.memory 0 count modulus := by
-  have h32 : 32 * count ≤ 1024 := by omega
-  simp only [BigMul.mulAfterCopy, BigMul.mulAfterClear, startedBody, incJEntry]
-  refine ⟨?_, ?_, ?_, ?_, ?_⟩
-  · exact BigHelpers.represents_copyMemory_disjoint_region _ 4096 2048 3072
-      count 0 (by omega) (Or.inr (by omega))
-      (BigHelpers.clearMemory_represents_zero s.memory 3072 count (by omega))
-  · exact BigHelpers.copyMemory_represents _ 4096 2048 count acc
-      (BigHelpers.represents_clearMemory_disjoint_region s.memory 3072 2048
-        count acc (by omega) (Or.inr (by omega)) hacc)
-      (by omega) (by omega) (Or.inr (by omega))
-  · exact BigHelpers.represents_copyMemory_disjoint_region _ 4096 2048 2048
-      count acc (by omega) (Or.inr (by omega))
-      (BigHelpers.represents_clearMemory_disjoint_region s.memory 3072 2048
-        count acc (by omega) (Or.inr (by omega)) hacc)
-  · exact BigHelpers.represents_copyMemory_disjoint_region _ 4096 2048 1024
-      count base (by omega) (Or.inr (by omega))
-      (BigHelpers.represents_clearMemory_disjoint_region s.memory 3072 1024
-        count base (by omega) (Or.inr (by omega)) hbase)
-  · exact BigHelpers.represents_copyMemory_disjoint_region _ 4096 2048 0
-      count modulus (by omega) (Or.inr (by omega))
-      (BigHelpers.represents_clearMemory_disjoint_region s.memory 3072 0
-        count modulus (by omega) (Or.inr (by omega)) hmodulus)
-
 /-- The square case: the accumulator becomes `acc^2 mod modulus`. -/
 theorem bitSquare_represents (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
@@ -2444,24 +2339,31 @@ theorem bitSquare_represents (s : State) (accumulatorWord : UInt256)
   have hzero : (exponentBit byte j).toNat = 0 := by
     rw [hbit]; simp [Challenge.EvmProof.Word.word_toNat_ofNat]
   have h32 : 32 * count ≤ 1024 := by omega
-  obtain ⟨hout, haddend, hb, hbase', hmod'⟩ :=
-    mulAfterCopy_regions s accumulatorWord count b e m baseOff expOff rest 1 i
-      offset byte (exponentBit byte j) j hcount acc base modulus hacc hbase
-      hmodulus
-  simp only [word_2048, word_3072, word_0] at hout haddend hb hbase' hmod'
+  set entry := startedBody s accumulatorWord count b e m baseOff expOff rest 1 i
+    offset byte (exponentBit byte j) j with hentry
+  have hmem : entry.memory = s.memory := by
+    simp [hentry, startedBody, incJEntry]
+  have hacc' : Limbs.Represents entry.memory 2048 count acc := by
+    rw [hmem]; exact hacc
+  have hbase' : Limbs.Represents entry.memory 1024 count base := by
+    rw [hmem]; exact hbase
+  have hmod' : Limbs.Represents entry.memory 0 count modulus := by
+    rw [hmem]; exact hmodulus
   obtain ⟨hres, _, hmodAfter⟩ :=
-    BigMul.mulOuterProgress_count_represents_value _ 2048 count 0 acc acc
-      modulus 1347
+    BigMul.mulApplied_represents_product entry 2048 count acc acc modulus 1347
       (bitFrame accumulatorWord count b e m baseOff expOff 1 i offset byte
         (exponentBit byte j) j rest)
-      hcount (by omega) hmodulusPos hmodulusBound hout haddend hb hmod'
-      (by omega) haccReduced
+      hcount (by omega) hmodulusPos hmodulusBound haccReduced hacc' hacc' hmod'
   have hbaseAfter : Limbs.Represents
       (squareApplied s accumulatorWord count b e m baseOff expOff rest 1 i
-        offset byte (exponentBit byte j) j).memory 1024 count base :=
-    mulOuterProgress_preserves_region _ 2048 2048 count count 1024 base 1347 _
-      (by omega) hcount (Or.inr (by omega)) (Or.inr (by omega))
-      (Or.inl (by omega)) hbase'
+        offset byte (exponentBit byte j) j).memory 1024 count base := by
+    simpa [squareApplied, ← hentry, word_2048, word_3072, word_0] using
+      BigMul.mulApplied_preserves_region entry (UInt256.ofNat 2048) count 1024
+        base 1347
+        (bitFrame accumulatorWord count b e m baseOff expOff 1 i offset byte
+          (exponentBit byte j) j rest)
+        hcount (Or.inr (by omega)) (Or.inr (by omega)) (Or.inl (by omega))
+        hbase'
   have hstep : bitStep s accumulatorWord count b e m baseOff expOff rest 1 i
       offset byte j =
       squareCopied s accumulatorWord count b e m baseOff expOff rest 1 i offset
@@ -2472,52 +2374,23 @@ theorem bitSquare_represents (s : State) (accumulatorWord : UInt256)
     unfold bitValue
     rw [if_pos rfl, if_pos hzero]
   rw [hstep, hval]
-  simp only [Nat.zero_add] at hres
-  simp only [squareCopied, squareApplied, word_2048, word_3072, word_0]
+  have hres' : Limbs.Represents
+      (squareApplied s accumulatorWord count b e m baseOff expOff rest 1 i
+        offset byte (exponentBit byte j) j).memory 3072 count
+      (acc * acc % modulus) := by
+    simpa [squareApplied, ← hentry, word_2048, word_3072, word_0] using hres
+  have hmodAfter' : Limbs.Represents
+      (squareApplied s accumulatorWord count b e m baseOff expOff rest 1 i
+        offset byte (exponentBit byte j) j).memory 0 count modulus := by
+    simpa [squareApplied, ← hentry, word_2048, word_3072, word_0] using hmodAfter
+  simp only [squareCopied, word_2048, word_3072, word_0]
   refine ⟨?_, ?_, ?_⟩
-  · exact BigHelpers.copyMemory_represents _ 2048 3072 count _ hres
+  · exact BigHelpers.copyMemory_represents _ 2048 3072 count _ hres'
       (by omega) (by omega) (Or.inl (by omega))
   · exact BigHelpers.represents_copyMemory_disjoint_region _ 2048 3072 1024
       count base (by omega) (Or.inr (by omega)) hbaseAfter
   · exact BigHelpers.represents_copyMemory_disjoint_region _ 2048 3072 0
-      count modulus (by omega) (Or.inr (by omega)) hmodAfter
-
-/-- Region layout entering the *multiply* call: same shape as the squaring, but
-the multiplier is the base at 0x0400 rather than the accumulator. -/
-private theorem mulAfterCopyProduct_regions (sq : State) (accumulatorWord : UInt256)
-    (count b e m baseOff expOff : Nat) (rest : List UInt256)
-    (started i : Nat) (offset byte bit : UInt256) (j : Nat)
-    (hcount : count ≤ 32) (sqAcc base modulus : Nat)
-    (hacc : Limbs.Represents sq.memory 2048 count sqAcc)
-    (hbase : Limbs.Represents sq.memory 1024 count base)
-    (hmodulus : Limbs.Represents sq.memory 0 count modulus) :
-    let copied := BigMul.mulAfterCopy
-      (productEntry sq accumulatorWord count b e m baseOff expOff rest started i
-        offset byte bit j) 2048 1024 3072 0 count 1387
-      (bitFrame accumulatorWord count b e m baseOff expOff started i offset byte
-        bit j rest)
-    Limbs.Represents copied.memory 3072 count 0 ∧
-      Limbs.Represents copied.memory 4096 count sqAcc ∧
-      Limbs.Represents copied.memory 1024 count base ∧
-      Limbs.Represents copied.memory 0 count modulus := by
-  have h32 : 32 * count ≤ 1024 := by omega
-  simp only [BigMul.mulAfterCopy, BigMul.mulAfterClear, productEntry, incJEntry]
-  refine ⟨?_, ?_, ?_, ?_⟩
-  · exact BigHelpers.represents_copyMemory_disjoint_region _ 4096 2048 3072
-      count 0 (by omega) (Or.inr (by omega))
-      (BigHelpers.clearMemory_represents_zero sq.memory 3072 count (by omega))
-  · exact BigHelpers.copyMemory_represents _ 4096 2048 count sqAcc
-      (BigHelpers.represents_clearMemory_disjoint_region sq.memory 3072 2048
-        count sqAcc (by omega) (Or.inr (by omega)) hacc)
-      (by omega) (by omega) (Or.inr (by omega))
-  · exact BigHelpers.represents_copyMemory_disjoint_region _ 4096 2048 1024
-      count base (by omega) (Or.inr (by omega))
-      (BigHelpers.represents_clearMemory_disjoint_region sq.memory 3072 1024
-        count base (by omega) (Or.inr (by omega)) hbase)
-  · exact BigHelpers.represents_copyMemory_disjoint_region _ 4096 2048 0
-      count modulus (by omega) (Or.inr (by omega))
-      (BigHelpers.represents_clearMemory_disjoint_region sq.memory 3072 0
-        count modulus (by omega) (Or.inr (by omega)) hmodulus)
+      count modulus (by omega) (Or.inr (by omega)) hmodAfter'
 
 /-- The square-and-multiply case: `acc^2 * base mod modulus`. -/
 theorem bitSquareMul_represents (s : State) (accumulatorWord : UInt256)
@@ -2545,58 +2418,92 @@ theorem bitSquareMul_represents (s : State) (accumulatorWord : UInt256)
   have h32 : 32 * count ≤ 1024 := by omega
   set sq := squareCopied s accumulatorWord count b e m baseOff expOff rest 1 i
     offset byte (exponentBit byte j) j with hsq
-  -- the squaring's effect, reusing the square-case region reasoning
-  obtain ⟨hout, haddend, hb, hbase', hmod'⟩ :=
-    mulAfterCopy_regions s accumulatorWord count b e m baseOff expOff rest 1 i
-      offset byte (exponentBit byte j) j hcount acc base modulus hacc hbase
-      hmodulus
-  simp only [word_2048, word_3072, word_0] at hout haddend hb hbase' hmod'
+  -- the squaring, reusing the square-case reasoning
+  set entry := startedBody s accumulatorWord count b e m baseOff expOff rest 1 i
+    offset byte (exponentBit byte j) j with hentry
+  have hmem : entry.memory = s.memory := by
+    simp [hentry, startedBody, incJEntry]
+  have hacc' : Limbs.Represents entry.memory 2048 count acc := by
+    rw [hmem]; exact hacc
+  have hbase' : Limbs.Represents entry.memory 1024 count base := by
+    rw [hmem]; exact hbase
+  have hmod' : Limbs.Represents entry.memory 0 count modulus := by
+    rw [hmem]; exact hmodulus
   obtain ⟨hres, _, hmodAfter⟩ :=
-    BigMul.mulOuterProgress_count_represents_value _ 2048 count 0 acc acc
-      modulus 1347
+    BigMul.mulApplied_represents_product entry 2048 count acc acc modulus 1347
       (bitFrame accumulatorWord count b e m baseOff expOff 1 i offset byte
         (exponentBit byte j) j rest)
-      hcount (by omega) hmodulusPos hmodulusBound hout haddend hb hmod'
-      (by omega) haccReduced
-  simp only [Nat.zero_add] at hres
+      hcount (by omega) hmodulusPos hmodulusBound haccReduced hacc' hacc' hmod'
   have hbaseAfter : Limbs.Represents
       (squareApplied s accumulatorWord count b e m baseOff expOff rest 1 i
-        offset byte (exponentBit byte j) j).memory 1024 count base :=
-    mulOuterProgress_preserves_region _ 2048 2048 count count 1024 base 1347 _
-      (by omega) hcount (Or.inr (by omega)) (Or.inr (by omega))
-      (Or.inl (by omega)) hbase'
+        offset byte (exponentBit byte j) j).memory 1024 count base := by
+    simpa [squareApplied, ← hentry, word_2048, word_3072, word_0] using
+      BigMul.mulApplied_preserves_region entry (UInt256.ofNat 2048) count 1024
+        base 1347
+        (bitFrame accumulatorWord count b e m baseOff expOff 1 i offset byte
+          (exponentBit byte j) j rest)
+        hcount (Or.inr (by omega)) (Or.inr (by omega)) (Or.inl (by omega))
+        hbase'
+  have hres' : Limbs.Represents
+      (squareApplied s accumulatorWord count b e m baseOff expOff rest 1 i
+        offset byte (exponentBit byte j) j).memory 3072 count
+      (acc * acc % modulus) := by
+    simpa [squareApplied, ← hentry, word_2048, word_3072, word_0] using hres
+  have hmodAfter' : Limbs.Represents
+      (squareApplied s accumulatorWord count b e m baseOff expOff rest 1 i
+        offset byte (exponentBit byte j) j).memory 0 count modulus := by
+    simpa [squareApplied, ← hentry, word_2048, word_3072, word_0] using hmodAfter
   have hsqAcc : Limbs.Represents sq.memory 2048 count (acc * acc % modulus) := by
-    rw [hsq]; simp only [squareCopied, squareApplied, word_2048, word_3072, word_0]
-    exact BigHelpers.copyMemory_represents _ 2048 3072 count _ hres
+    rw [hsq]; simp only [squareCopied, word_2048, word_3072, word_0]
+    exact BigHelpers.copyMemory_represents _ 2048 3072 count _ hres'
       (by omega) (by omega) (Or.inl (by omega))
   have hsqBase : Limbs.Represents sq.memory 1024 count base := by
-    rw [hsq]; simp only [squareCopied, squareApplied, word_2048, word_3072, word_0]
+    rw [hsq]; simp only [squareCopied, word_2048, word_3072, word_0]
     exact BigHelpers.represents_copyMemory_disjoint_region _ 2048 3072 1024
       count base (by omega) (Or.inr (by omega)) hbaseAfter
   have hsqMod : Limbs.Represents sq.memory 0 count modulus := by
-    rw [hsq]; simp only [squareCopied, squareApplied, word_2048, word_3072, word_0]
+    rw [hsq]; simp only [squareCopied, word_2048, word_3072, word_0]
     exact BigHelpers.represents_copyMemory_disjoint_region _ 2048 3072 0
-      count modulus (by omega) (Or.inr (by omega)) hmodAfter
+      count modulus (by omega) (Or.inr (by omega)) hmodAfter'
   -- now the multiply
-  obtain ⟨pout, paddend, pb, pmod⟩ :=
-    mulAfterCopyProduct_regions sq accumulatorWord count b e m baseOff expOff
-      rest 1 i offset byte (exponentBit byte j) j hcount (acc * acc % modulus)
-      base modulus hsqAcc hsqBase hsqMod
-  simp only [word_2048, word_1024, word_3072, word_0] at pout paddend pb pmod
+  set pentry := productEntry sq accumulatorWord count b e m baseOff expOff rest
+    1 i offset byte (exponentBit byte j) j with hpentry
+  have hpmem : pentry.memory = sq.memory := by
+    simp [hpentry, productEntry, incJEntry]
+  have hpacc : Limbs.Represents pentry.memory 2048 count (acc * acc % modulus) := by
+    rw [hpmem]; exact hsqAcc
+  have hpbase : Limbs.Represents pentry.memory 1024 count base := by
+    rw [hpmem]; exact hsqBase
+  have hpmod : Limbs.Represents pentry.memory 0 count modulus := by
+    rw [hpmem]; exact hsqMod
   obtain ⟨pres, _, pmodAfter⟩ :=
-    BigMul.mulOuterProgress_count_represents_value _ 1024 count 0
-      (acc * acc % modulus) base modulus 1387
+    BigMul.mulApplied_represents_product pentry 1024 count (acc * acc % modulus)
+      base modulus 1387
       (bitFrame accumulatorWord count b e m baseOff expOff 1 i offset byte
         (exponentBit byte j) j rest)
-      hcount (by omega) hmodulusPos hmodulusBound pout paddend pb pmod
-      (by omega) (Nat.mod_lt _ hmodulusPos)
-  simp only [Nat.zero_add] at pres
+      hcount (by omega) hmodulusPos hmodulusBound (Nat.mod_lt _ hmodulusPos)
+      hpacc hpbase hpmod
   have pbaseAfter : Limbs.Represents
       (productApplied sq accumulatorWord count b e m baseOff expOff rest 1 i
-        offset byte (exponentBit byte j) j).memory 1024 count base :=
-    mulOuterProgress_preserves_region _ 2048 1024 count count 1024 base 1387 _
-      (by omega) hcount (Or.inr (by omega)) (Or.inr (by omega))
-      (Or.inl (by omega)) pb
+        offset byte (exponentBit byte j) j).memory 1024 count base := by
+    simpa [productApplied, ← hpentry, word_2048, word_1024, word_3072, word_0]
+      using BigMul.mulApplied_preserves_region pentry (UInt256.ofNat 1024) count
+        1024 base 1387
+        (bitFrame accumulatorWord count b e m baseOff expOff 1 i offset byte
+          (exponentBit byte j) j rest)
+        hcount (Or.inr (by omega)) (Or.inr (by omega)) (Or.inl (by omega))
+        hpbase
+  have pres' : Limbs.Represents
+      (productApplied sq accumulatorWord count b e m baseOff expOff rest 1 i
+        offset byte (exponentBit byte j) j).memory 3072 count
+      ((acc * acc % modulus) * base % modulus) := by
+    simpa [productApplied, ← hpentry, word_2048, word_1024, word_3072, word_0]
+      using pres
+  have pmodAfter' : Limbs.Represents
+      (productApplied sq accumulatorWord count b e m baseOff expOff rest 1 i
+        offset byte (exponentBit byte j) j).memory 0 count modulus := by
+    simpa [productApplied, ← hpentry, word_2048, word_1024, word_3072, word_0]
+      using pmodAfter
   have hstep : bitStep s accumulatorWord count b e m baseOff expOff rest 1 i
       offset byte j =
       productCopied sq accumulatorWord count b e m baseOff expOff rest 1 i
@@ -2608,14 +2515,14 @@ theorem bitSquareMul_represents (s : State) (accumulatorWord : UInt256)
     unfold bitValue
     rw [if_pos rfl, if_neg (by omega : ¬ (exponentBit byte j).toNat = 0)]
   rw [hstep, hval]
-  simp only [productCopied, productApplied, word_2048, word_1024, word_3072, word_0]
+  simp only [productCopied, word_2048, word_1024, word_3072, word_0]
   refine ⟨?_, ?_, ?_⟩
-  · exact BigHelpers.copyMemory_represents _ 2048 3072 count _ pres
+  · exact BigHelpers.copyMemory_represents _ 2048 3072 count _ pres'
       (by omega) (by omega) (Or.inl (by omega))
   · exact BigHelpers.represents_copyMemory_disjoint_region _ 2048 3072 1024
       count base (by omega) (Or.inr (by omega)) pbaseAfter
   · exact BigHelpers.represents_copyMemory_disjoint_region _ 2048 3072 0
-      count modulus (by omega) (Or.inr (by omega)) pmodAfter
+      count modulus (by omega) (Or.inr (by omega)) pmodAfter'
 
 /-- The accumulator stays reduced. -/
 theorem bitValue_lt (modulus base : Nat) (byte : UInt256) (started j acc : Nat)

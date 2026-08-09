@@ -60,34 +60,6 @@ theorem copyMemory_self_represents (memory : ByteArray) (ptr count value : Nat)
   exact congrArg UInt256.toNat
     (readWord_copyMemory_self memory ptr count j (by simpa using hj) hfit)
 
-theorem mulOuterProgress_preserves_region (current : State) (a b : UInt256)
-    (count steps ptr value : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hsteps : steps ≤ count) (hcount : count ≤ 32)
-    (hptrOut : 3072 + 32 * count ≤ ptr ∨ ptr + 32 * count ≤ 3072)
-    (hptrAddend : 4096 + 32 * count ≤ ptr ∨ ptr + 32 * count ≤ 4096)
-    (hptrCandidate : ptr + 32 * count ≤ 5120 ∨
-      5120 + 32 * count ≤ ptr)
-    (hrep : Limbs.Represents current.memory ptr count value) :
-    Limbs.Represents
-      (BigMul.mulOuterProgress current a b (UInt256.ofNat 3072)
-        (UInt256.ofNat 0) count returnDest rest steps).memory
-      ptr count value := by
-  induction steps with
-  | zero => simpa [BigMul.mulOuterProgress] using hrep
-  | succ steps ih =>
-      let before := BigMul.mulOuterProgress current a b (UInt256.ofNat 3072)
-        (UInt256.ofNat 0) count returnDest rest steps
-      let loaded := BigMul.mulLoadedState before b steps
-      let word := BigMul.mulLoadedWord before b steps
-      have hbefore : Limbs.Represents before.memory ptr count value :=
-        ih (by omega)
-      have hloaded : Limbs.Represents loaded.memory ptr count value := by
-        simpa [loaded, BigMul.mulLoadedState] using hbefore
-      simpa [BigMul.mulOuterProgress, before, loaded, word] using
-        BigMul.mulWordProgress_preserves_region loaded word a b count steps
-          256 ptr value returnDest rest (by omega) hcount hptrOut hptrAddend
-          hptrCandidate hloaded
-
 theorem exponentBit_toNat_eq (byte : UInt256) (j : Nat) (hj : j < 8) :
     (exponentBit byte j).toNat = WordCorrect.exponentBitNat byte j := by
   have h := congrArg UInt256.toNat (WordCorrect.exponentBit_eq byte j hj)
