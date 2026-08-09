@@ -88,47 +88,6 @@ private theorem block_cost_of_activeWords_eq
   rw [hwords] at hpotential
   omega
 
-private theorem rotr_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.rotrPath = 48 := by
-  rfl
-
-theorem gasSteps_rotr_cost_potential (s : State) (x : UInt256) (n : Nat)
-    (output returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1016) (hn : n ≤ 32)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
-    (Functions.gasSteps_rotr s x n output returnDest rest hcap hn hcode hfork
-      hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      48 + MachineState.memCost
-        (Functions.unaryReturned s (Word.evmRotr32 x n)
-          returnDest rest).activeWords.toNat := by
-  have hresult := Functions.run_rotr s x n output returnDest rest hcap hn
-    hcode hrun hvalid
-  have hmeter := block_cost_potential Functions.rotrPath hresult hfork
-    (by simp [Functions.rotrPath, CopyFree])
-  rw [rotr_static] at hmeter
-  unfold Functions.gasSteps_rotr
-  simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simpa [Functions.rotrEntry] using hmeter
-
-theorem gasSteps_rotr_cost (s : State) (x : UInt256) (n : Nat)
-    (output returnDest : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 1016) (hn : n ≤ 32)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
-    (Functions.gasSteps_rotr s x n output returnDest rest hcap hn hcode hfork
-      hrun hnp hvalid).cost = 48 := by
-  have hpotential := gasSteps_rotr_cost_potential s x n output returnDest rest
-    hcap hn hcode hfork hrun hnp hvalid
-  simp [Functions.unaryReturned] at hpotential
-  exact hpotential
-
 /- Standalone Ch/Maj helpers are dead in the integrated kernel. -/
 /-
 private theorem ch_static :

@@ -20,15 +20,14 @@ private def pathBaseCost {artifact : Challenge.EvmProof.ProgramArtifact}
     (path : List (Challenge.EvmProof.Stepper.Located artifact .Osaka)) : Nat :=
   (path.map (fun located => osakaBaseCost located.instruction)).sum
 
-private theorem start_base : pathBaseCost Output.startPath = 22 := by rfl
-private theorem hAt_base : pathBaseCost Accessors.hAtPath = 32 := by rfl
-private theorem setup6_base : pathBaseCost Output.setup6Path = 20 := by rfl
-private theorem setup5_base : pathBaseCost Output.setup5Path = 29 := by rfl
-private theorem setup4_base : pathBaseCost Output.setup4Path = 26 := by rfl
-private theorem setup3_base : pathBaseCost Output.setup3Path = 32 := by rfl
-private theorem setup2_base : pathBaseCost Output.setup2Path = 26 := by rfl
-private theorem setup1_base : pathBaseCost Output.setup1Path = 29 := by rfl
-private theorem setup0_base : pathBaseCost Output.setup0Path = 25 := by rfl
+private theorem start_base : pathBaseCost Output.startPath = 9 := by rfl
+private theorem setup6_base : pathBaseCost Output.setup6Path = 7 := by rfl
+private theorem setup5_base : pathBaseCost Output.setup5Path = 16 := by rfl
+private theorem setup4_base : pathBaseCost Output.setup4Path = 13 := by rfl
+private theorem setup3_base : pathBaseCost Output.setup3Path = 19 := by rfl
+private theorem setup2_base : pathBaseCost Output.setup2Path = 14 := by rfl
+private theorem setup1_base : pathBaseCost Output.setup1Path = 17 := by rfl
+private theorem setup0_base : pathBaseCost Output.setup0Path = 14 := by rfl
 private theorem finish_base : pathBaseCost Output.finishPath = 26 := by rfl
 
 private def CopyFree : Instr → Prop
@@ -152,6 +151,8 @@ private theorem blockCost_potential_base
   rw [Challenge.EvmProof.Meter.runLocatedBlock_cost_potential path hresult,
     blockWork_eq_base path hresult hfork hfree]
 
+/- Legacy accessor-based output metering, superseded by the direct-load paths. -/
+/-
 theorem hAt_cost_potential (s : State) (index output returnDest : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1018)
     (hcode : s.executionEnv.code = submissionBytecode)
@@ -652,6 +653,204 @@ theorem gasSteps_output_cost_potential (s : State) (offset : UInt256)
   dsimp only [q7, q6, q5, q4, q3, q2, q1, q0] at *
   omega
 
+-/
+
+theorem gasSteps_output_cost_potential (s : State) (offset : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1010)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    (Output.gasSteps_output s offset rest hcap hcode hfork hrun hnp).cost +
+        MachineState.memCost s.activeWords.toNat =
+      135 + MachineState.memCost (Output.outputResult s rest).activeWords.toNat := by
+  let q7 := Output.afterH7 s rest
+  let q6 := Output.afterH6 s rest
+  let q5 := Output.afterH5 s rest
+  let q4 := Output.afterH4 s rest
+  let q3 := Output.afterH3 s rest
+  let q2 := Output.afterH2 s rest
+  let q1 := Output.afterH1 s rest
+  let q0 := Output.afterH0 s rest
+  have q7code : q7.executionEnv.code = submissionBytecode := by
+    simpa [q7, Output.afterH7, Accessors.loadReturned] using hcode
+  have q7fork : q7.fork = .Osaka := by
+    simpa [q7, Output.afterH7, Accessors.loadReturned, State.fork] using hfork
+  have q7run : q7.halt = .Running := by
+    simpa [q7, Output.afterH7, Accessors.loadReturned] using hrun
+  have q6code : q6.executionEnv.code = submissionBytecode := by
+    simpa [q6, Output.afterH6, q7, Output.afterH7, Accessors.loadReturned] using hcode
+  have q6fork : q6.fork = .Osaka := by
+    simpa [q6, Output.afterH6, q7, Output.afterH7, Accessors.loadReturned,
+      State.fork] using hfork
+  have q6run : q6.halt = .Running := by
+    simpa [q6, Output.afterH6, q7, Output.afterH7, Accessors.loadReturned] using hrun
+  have q5code : q5.executionEnv.code = submissionBytecode := by
+    simpa [q5, Output.afterH5, q6, Output.afterH6, q7, Output.afterH7,
+      Accessors.loadReturned] using hcode
+  have q5fork : q5.fork = .Osaka := by
+    simpa [q5, Output.afterH5, q6, Output.afterH6, q7, Output.afterH7,
+      Accessors.loadReturned, State.fork] using hfork
+  have q5run : q5.halt = .Running := by
+    simpa [q5, Output.afterH5, q6, Output.afterH6, q7, Output.afterH7,
+      Accessors.loadReturned] using hrun
+  have q4code : q4.executionEnv.code = submissionBytecode := by
+    simpa [q4, Output.afterH4, q5, Output.afterH5, q6, Output.afterH6,
+      q7, Output.afterH7, Accessors.loadReturned] using hcode
+  have q4fork : q4.fork = .Osaka := by
+    simpa [q4, Output.afterH4, q5, Output.afterH5, q6, Output.afterH6,
+      q7, Output.afterH7, Accessors.loadReturned, State.fork] using hfork
+  have q4run : q4.halt = .Running := by
+    simpa [q4, Output.afterH4, q5, Output.afterH5, q6, Output.afterH6,
+      q7, Output.afterH7, Accessors.loadReturned] using hrun
+  have q3code : q3.executionEnv.code = submissionBytecode := by
+    simpa [q3, Output.afterH3, q4, Output.afterH4, q5, Output.afterH5,
+      q6, Output.afterH6, q7, Output.afterH7, Accessors.loadReturned] using hcode
+  have q3fork : q3.fork = .Osaka := by
+    simpa [q3, Output.afterH3, q4, Output.afterH4, q5, Output.afterH5,
+      q6, Output.afterH6, q7, Output.afterH7, Accessors.loadReturned,
+      State.fork] using hfork
+  have q3run : q3.halt = .Running := by
+    simpa [q3, Output.afterH3, q4, Output.afterH4, q5, Output.afterH5,
+      q6, Output.afterH6, q7, Output.afterH7, Accessors.loadReturned] using hrun
+  have q2code : q2.executionEnv.code = submissionBytecode := by
+    simpa [q2, Output.afterH2, q3, Output.afterH3, q4, Output.afterH4,
+      q5, Output.afterH5, q6, Output.afterH6, q7, Output.afterH7,
+      Accessors.loadReturned] using hcode
+  have q2fork : q2.fork = .Osaka := by
+    simpa [q2, Output.afterH2, q3, Output.afterH3, q4, Output.afterH4,
+      q5, Output.afterH5, q6, Output.afterH6, q7, Output.afterH7,
+      Accessors.loadReturned, State.fork] using hfork
+  have q2run : q2.halt = .Running := by
+    simpa [q2, Output.afterH2, q3, Output.afterH3, q4, Output.afterH4,
+      q5, Output.afterH5, q6, Output.afterH6, q7, Output.afterH7,
+      Accessors.loadReturned] using hrun
+  have q1code : q1.executionEnv.code = submissionBytecode := by
+    simpa [q1, Output.afterH1, q2, Output.afterH2, q3, Output.afterH3,
+      q4, Output.afterH4, q5, Output.afterH5, q6, Output.afterH6,
+      q7, Output.afterH7, Accessors.loadReturned] using hcode
+  have q1fork : q1.fork = .Osaka := by
+    simpa [q1, Output.afterH1, q2, Output.afterH2, q3, Output.afterH3,
+      q4, Output.afterH4, q5, Output.afterH5, q6, Output.afterH6,
+      q7, Output.afterH7, Accessors.loadReturned, State.fork] using hfork
+  have q1run : q1.halt = .Running := by
+    simpa [q1, Output.afterH1, q2, Output.afterH2, q3, Output.afterH3,
+      q4, Output.afterH4, q5, Output.afterH5, q6, Output.afterH6,
+      q7, Output.afterH7, Accessors.loadReturned] using hrun
+  have q0code : q0.executionEnv.code = submissionBytecode := by
+    simpa [q0, Output.afterH0, q1, Output.afterH1, q2, Output.afterH2,
+      q3, Output.afterH3, q4, Output.afterH4, q5, Output.afterH5,
+      q6, Output.afterH6, q7, Output.afterH7, Accessors.loadReturned] using hcode
+  have q0fork : q0.fork = .Osaka := by
+    simpa [q0, Output.afterH0, q1, Output.afterH1, q2, Output.afterH2,
+      q3, Output.afterH3, q4, Output.afterH4, q5, Output.afterH5,
+      q6, Output.afterH6, q7, Output.afterH7, Accessors.loadReturned,
+      State.fork] using hfork
+  have q0run : q0.halt = .Running := by
+    simpa [q0, Output.afterH0, q1, Output.afterH1, q2, Output.afterH2,
+      q3, Output.afterH3, q4, Output.afterH4, q5, Output.afterH5,
+      q6, Output.afterH6, q7, Output.afterH7, Accessors.loadReturned] using hrun
+  have runStart : Challenge.EvmProof.Stepper.runLocatedBlock Output.startPath
+      (Output.outputEntry s offset rest) = some q7 := by
+    simpa [q7] using Output.run_start s offset rest (by omega) hcode hrun
+  have run6 : Challenge.EvmProof.Stepper.runLocatedBlock Output.setup6Path q7 =
+      some q6 := by
+    simpa [q7, q6, Output.afterH7, Output.afterH6, Output.hWord,
+      Accessors.loadReturned] using
+      Output.run_setup6 q7 (Output.hWord s 7) rest (by omega) q7code q7run
+  have run5 : Challenge.EvmProof.Stepper.runLocatedBlock Output.setup5Path q6 =
+      some q5 := by
+    simpa [q6, q5, Output.afterH6, Output.afterH5, q7, Output.afterH7,
+      Output.hWord, Output.pair67, Accessors.loadReturned] using
+      Output.run_setup5 q6 (Output.hWord s 6) (Output.hWord s 7) rest
+        (by omega) q6code q6run
+  have run4 : Challenge.EvmProof.Stepper.runLocatedBlock Output.setup4Path q5 =
+      some q4 := by
+    simpa [q5, q4, Output.afterH5, Output.afterH4, q6, Output.afterH6,
+      q7, Output.afterH7, Output.hWord, Output.shifted5, Output.pair67,
+      Accessors.loadReturned] using
+      Output.run_setup4 q5 (Output.hWord s 5) (Output.pair67 s) rest
+        (by omega) q5code q5run
+  have run3 : Challenge.EvmProof.Stepper.runLocatedBlock Output.setup3Path q4 =
+      some q3 := by
+    simpa [q4, q3, Output.afterH4, Output.afterH3, q5, Output.afterH5,
+      q6, Output.afterH6, q7, Output.afterH7, Output.hWord,
+      Output.shifted5, Output.pair67, Output.pair45, Output.lowHalf,
+      Accessors.loadReturned] using
+      Output.run_setup3 q4 (Output.hWord s 4) (Output.shifted5 s)
+        (Output.pair67 s) rest (by omega) q4code q4run
+  have run2 : Challenge.EvmProof.Stepper.runLocatedBlock Output.setup2Path q3 =
+      some q2 := by
+    simpa [q3, q2, Output.afterH3, Output.afterH2, q4, Output.afterH4,
+      q5, Output.afterH5, q6, Output.afterH6, q7, Output.afterH7,
+      Output.hWord, Output.shifted3, Accessors.loadReturned] using
+      Output.run_setup2 q3 (Output.hWord s 3) (Output.lowHalf s) rest
+        (by omega) q3code q3run
+  have run1 : Challenge.EvmProof.Stepper.runLocatedBlock Output.setup1Path q2 =
+      some q1 := by
+    simpa [q2, q1, Output.afterH2, Output.afterH1, q3, Output.afterH3,
+      q4, Output.afterH4, q5, Output.afterH5, q6, Output.afterH6,
+      q7, Output.afterH7, Output.hWord, Output.shifted3, Output.pair23,
+      Accessors.loadReturned] using
+      Output.run_setup1 q2 (Output.hWord s 2) (Output.shifted3 s)
+        (Output.lowHalf s) rest (by omega) q2code q2run
+  have run0 : Challenge.EvmProof.Stepper.runLocatedBlock Output.setup0Path q1 =
+      some q0 := by
+    simpa [q1, q0, Output.afterH1, Output.afterH0, q2, Output.afterH2,
+      q3, Output.afterH3, q4, Output.afterH4, q5, Output.afterH5,
+      q6, Output.afterH6, q7, Output.afterH7, Output.hWord,
+      Output.shifted1, Accessors.loadReturned] using
+      Output.run_setup0 q1 (Output.hWord s 1) (Output.pair23 s)
+        (Output.lowHalf s) rest (by omega) q1code q1run
+  have runFinish : Challenge.EvmProof.Stepper.runLocatedBlock Output.finishPath q0 =
+      some (Output.outputResult s rest) := by
+    simpa [q0, Output.outputResult, Output.afterH0, q1, Output.afterH1,
+      q2, Output.afterH2, q3, Output.afterH3, q4, Output.afterH4,
+      q5, Output.afterH5, q6, Output.afterH6, q7, Output.afterH7,
+      Output.hWord, Output.shifted1, Output.pair23, Output.lowHalf,
+      Output.digestWord, Output.digestBytes, Accessors.loadReturned] using
+      Output.run_finish q0 (Output.hWord s 0) (Output.shifted1 s)
+        (Output.pair23 s) (Output.lowHalf s) rest (by omega) q0code q0run
+  have hStart := blockCost_potential_base Output.startPath runStart
+    (by simpa [Output.outputEntry, State.fork] using hfork)
+    (by simp [Output.startPath, CopyFree])
+  have h6 := blockCost_potential_base Output.setup6Path run6 q7fork
+    (by simp [Output.setup6Path, CopyFree])
+  have h5 := blockCost_potential_base Output.setup5Path run5 q6fork
+    (by simp [Output.setup5Path, CopyFree])
+  have h4 := blockCost_potential_base Output.setup4Path run4 q5fork
+    (by simp [Output.setup4Path, CopyFree])
+  have h3 := blockCost_potential_base Output.setup3Path run3 q4fork
+    (by simp [Output.setup3Path, CopyFree])
+  have h2 := blockCost_potential_base Output.setup2Path run2 q3fork
+    (by simp [Output.setup2Path, CopyFree])
+  have h1 := blockCost_potential_base Output.setup1Path run1 q2fork
+    (by simp [Output.setup1Path, CopyFree])
+  have h0 := blockCost_potential_base Output.setup0Path run0 q1fork
+    (by simp [Output.setup0Path, CopyFree])
+  have hFinish := blockCost_potential_base Output.finishPath runFinish q0fork
+    (by simp [Output.finishPath, CopyFree])
+  rw [start_base] at hStart
+  rw [setup6_base] at h6
+  rw [setup5_base] at h5
+  rw [setup4_base] at h4
+  rw [setup3_base] at h3
+  rw [setup2_base] at h2
+  rw [setup1_base] at h1
+  rw [setup0_base] at h0
+  rw [finish_base] at hFinish
+  have hStart' :
+      Challenge.EvmProof.Stepper.runLocatedBlockCost Output.startPath
+          (Output.outputEntry s offset rest) +
+          MachineState.memCost s.activeWords.toNat =
+        9 + MachineState.memCost q7.activeWords.toNat := by
+    simpa [Output.outputEntry] using hStart
+  unfold Output.gasSteps_output
+  simp only [Challenge.EvmProof.GasSteps.trans_cost,
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+  dsimp only [q7, q6, q5, q4, q3, q2, q1, q0] at *
+  omega
+
 private theorem activeWordsAfter_eq_of_end_le (curr offset size : Nat)
     (hend : offset + size ≤ curr * 32) :
     MachineState.activeWordsAfter curr offset size = curr := by
@@ -763,7 +962,7 @@ theorem gasSteps_output_cost_of_activeWords_ge (s : State) (offset : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false)
     (haw : 17 ≤ s.activeWords.toNat) :
-    (Output.gasSteps_output s offset rest hcap hcode hfork hrun hnp).cost = 491 := by
+    (Output.gasSteps_output s offset rest hcap hcode hfork hrun hnp).cost = 135 := by
   have hpotential := gasSteps_output_cost_potential s offset rest hcap hcode
     hfork hrun hnp
   rw [outputResult_activeWords_of_ge s rest haw] at hpotential

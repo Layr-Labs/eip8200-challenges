@@ -212,10 +212,18 @@ padded block, and 312,000 gas over the public suite. Unreachable padding and
 the now-dead first forwarding trampoline keep the artifact at exactly 1,524
 bytes and 810 structural instructions.
 
-Fresh local scoring of the exact submission bytes is 3,186,907 versus the
-10,179,119 reference, a combined reduction of 6,992,212 gas. All 19 vectors
+The latest pass widens live immediate encodings to absorb sequential
+`JUMPDEST` padding, moves the displaced structural instructions into
+unreachable helper and trampoline reservoirs, loads all eight final state
+words directly, and simplifies the padding and outer-loop increments. The
+byte PCs, 1,524-byte size, and 810-instruction artifact remain unchanged.
+Together these changes save another 380 gas per invocation and 752 gas per
+padded block.
+
+Fresh local scoring of the exact submission bytes is 3,130,807 versus the
+10,179,119 reference, a combined reduction of 7,048,312 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 50,287 gas.
+vector costs 49,155 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the

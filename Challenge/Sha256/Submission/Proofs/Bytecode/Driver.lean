@@ -28,86 +28,77 @@ private def wfOp {op : Operation}
 
 def setupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨711, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨712, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩]
+  [⟨735, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨736, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩]
 
 def conditionPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨713, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨714, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨715, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨716, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨717, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨718, .push ⟨2, by decide⟩ (UInt256.ofNat 1401), by rfl, by decide⟩,
-   ⟨719, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨737, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨738, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨739, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨740, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨741, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨742, .push ⟨2, by decide⟩ (UInt256.ofNat 1401), by rfl, by decide⟩,
+   ⟨743, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def callPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨720, .push ⟨2, by decide⟩ (UInt256.ofNat 1390), by rfl, by decide⟩,
-   ⟨721, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨722, .push ⟨2, by decide⟩ (UInt256.ofNat Padding.messageOffset),
+  [⟨744, .push ⟨2, by decide⟩ (UInt256.ofNat 1390), by rfl, by decide⟩,
+   ⟨745, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨746, .push ⟨2, by decide⟩ (UInt256.ofNat Padding.messageOffset),
       by rfl, by decide⟩,
-   ⟨723, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨724, .push ⟨2, by decide⟩ (UInt256.ofNat 612), by rfl, by decide⟩,
-   ⟨725, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨747, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨748, .push ⟨2, by decide⟩ (UInt256.ofNat 612), by rfl, by decide⟩,
+   ⟨749, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def incrementPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨726, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨727, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
-   ⟨728, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨729, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨730, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨731, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨732, .push ⟨2, by decide⟩ (UInt256.ofNat 1369), by rfl, by decide⟩,
-   ⟨733, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨750, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨751, .push ⟨4, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
+   ⟨752, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨753, .push ⟨2, by decide⟩ (UInt256.ofNat 1369), by rfl, by decide⟩,
+   ⟨754, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem pc711 :
-    Artifact.referenceArtifact.instructionPC 711 = 1367 := by decide
+    Artifact.referenceArtifact.instructionPC 735 = 1367 := by decide
 @[simp] private theorem pc712 :
-    Artifact.referenceArtifact.instructionPC 712 = 1368 := by decide
+    Artifact.referenceArtifact.instructionPC 736 = 1368 := by decide
 @[simp] private theorem pc713 :
-    Artifact.referenceArtifact.instructionPC 713 = 1369 := by decide
+    Artifact.referenceArtifact.instructionPC 737 = 1369 := by decide
 @[simp] private theorem pc714 :
-    Artifact.referenceArtifact.instructionPC 714 = 1370 := by decide
+    Artifact.referenceArtifact.instructionPC 738 = 1370 := by decide
 @[simp] private theorem pc715 :
-    Artifact.referenceArtifact.instructionPC 715 = 1371 := by decide
+    Artifact.referenceArtifact.instructionPC 739 = 1371 := by decide
 @[simp] private theorem pc716 :
-    Artifact.referenceArtifact.instructionPC 716 = 1372 := by decide
+    Artifact.referenceArtifact.instructionPC 740 = 1372 := by decide
 @[simp] private theorem pc717 :
-    Artifact.referenceArtifact.instructionPC 717 = 1373 := by decide
+    Artifact.referenceArtifact.instructionPC 741 = 1373 := by decide
 @[simp] private theorem pc718 :
-    Artifact.referenceArtifact.instructionPC 718 = 1374 := by decide
+    Artifact.referenceArtifact.instructionPC 742 = 1374 := by decide
 @[simp] private theorem pc719 :
-    Artifact.referenceArtifact.instructionPC 719 = 1377 := by decide
+    Artifact.referenceArtifact.instructionPC 743 = 1377 := by decide
 @[simp] private theorem pc720 :
-    Artifact.referenceArtifact.instructionPC 720 = 1378 := by decide
+    Artifact.referenceArtifact.instructionPC 744 = 1378 := by decide
 @[simp] private theorem pc721 :
-    Artifact.referenceArtifact.instructionPC 721 = 1381 := by decide
+    Artifact.referenceArtifact.instructionPC 745 = 1381 := by decide
 @[simp] private theorem pc722 :
-    Artifact.referenceArtifact.instructionPC 722 = 1382 := by decide
+    Artifact.referenceArtifact.instructionPC 746 = 1382 := by decide
 @[simp] private theorem pc723 :
-    Artifact.referenceArtifact.instructionPC 723 = 1385 := by decide
+    Artifact.referenceArtifact.instructionPC 747 = 1385 := by decide
 @[simp] private theorem pc724 :
-    Artifact.referenceArtifact.instructionPC 724 = 1386 := by decide
+    Artifact.referenceArtifact.instructionPC 748 = 1386 := by decide
 @[simp] private theorem pc725 :
-    Artifact.referenceArtifact.instructionPC 725 = 1389 := by decide
+    Artifact.referenceArtifact.instructionPC 749 = 1389 := by decide
 @[simp] private theorem pc726 :
-    Artifact.referenceArtifact.instructionPC 726 = 1390 := by decide
+    Artifact.referenceArtifact.instructionPC 750 = 1390 := by decide
 @[simp] private theorem pc727 :
-    Artifact.referenceArtifact.instructionPC 727 = 1391 := by decide
-@[simp] private theorem pc728 :
-    Artifact.referenceArtifact.instructionPC 728 = 1393 := by decide
-@[simp] private theorem pc729 :
-    Artifact.referenceArtifact.instructionPC 729 = 1394 := by decide
-@[simp] private theorem pc730 :
-    Artifact.referenceArtifact.instructionPC 730 = 1395 := by decide
+    Artifact.referenceArtifact.instructionPC 751 = 1391 := by decide
 @[simp] private theorem pc731 :
-    Artifact.referenceArtifact.instructionPC 731 = 1396 := by decide
+    Artifact.referenceArtifact.instructionPC 752 = 1396 := by decide
 @[simp] private theorem pc732 :
-    Artifact.referenceArtifact.instructionPC 732 = 1397 := by decide
+    Artifact.referenceArtifact.instructionPC 753 = 1397 := by decide
 @[simp] private theorem pc733 :
-    Artifact.referenceArtifact.instructionPC 733 = 1400 := by decide
+    Artifact.referenceArtifact.instructionPC 754 = 1400 := by decide
 
 def blockCount (input : ByteArray) : Nat :=
   Padding.paddedLength input.size / 64
@@ -309,9 +300,13 @@ private theorem run_increment_core (q : State) (input : ByteArray) (i : Nat)
         pc := UInt256.ofNat 1369
         stack := [blockOffsetWord (i + 1), Padding.paddedWord input] } := by
   have hdest : Decode.isValidJumpDest submissionBytecode 1369 = true := by decide
+  have hadd' : UInt256.ofNat 64 + blockOffsetWord i =
+      blockOffsetWord (i + 1) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    exact hadd
   simp [incrementPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    hpc, hstack, hcode, hrun, hadd, hdest, List.exchange]
+    hpc, hstack, hcode, hrun, hadd, hadd', hdest, List.exchange]
 
 theorem run_increment (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)

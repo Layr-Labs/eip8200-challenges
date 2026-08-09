@@ -31,7 +31,7 @@ theorem gasSteps_compress_cost_potential (s : State)
     (Compression.gasSteps_compress s msgOff returnDest rest hcap hcode hfork
       hrun hnp hreturn).cost + MachineState.memCost
         (Compression.compressEntry s msgOff returnDest rest).activeWords.toNat =
-      48421 + MachineState.memCost
+      47677 + MachineState.memCost
         (Compression.compressResult s msgOff returnDest rest).activeWords.toNat := by
   let prepared := Compression.copyHashState
     (Compression.afterSchedule s msgOff returnDest rest)
@@ -102,8 +102,8 @@ theorem gasSteps_compress_cost_potential (s : State)
   have h₂ := potential_trans _ _ _ _ _ _ _ h₁ hexit
   have h₃ := potential_trans _ _ _ _ _ _ _ h₂ hfold
   have h₄ := potential_trans _ _ _ _ _ _ _ h₃ hreturnCost
-  have hconst : ((((15939 + 64 * 494) + 29) + 8 * 100) + 37) =
-      48421 := by norm_num
+  have hconst : ((((15747 + 64 * 486) + 29) + 8 * 95) + 37) =
+      47677 := by norm_num
   rw [hconst] at h₄
   simpa only [Nat.add_assoc] using h₄
 

@@ -16,7 +16,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 
 def referenceGas (input : ByteArray) : Nat :=
-  1499 + 48496 * Driver.blockCount input +
+  1119 + 47744 * Driver.blockCount input +
     3 * ((input.size + 31) / 32) +
     MachineState.memCost (90 + 2 * Driver.blockCount input)
 
@@ -32,7 +32,7 @@ theorem memCost_monotone : Monotone MachineState.memCost := by
 
 theorem gasSteps_pad_cost (input : ByteArray) (hfit : CalldataFits input) :
     (PaddingTrace.gasSteps_pad input hfit).cost =
-      979 + 3 * ((input.size + 31) / 32) +
+      955 + 3 * ((input.size + 31) / 32) +
         MachineState.memCost (89 + 2 * Driver.blockCount input) := by
   simpa [Driver.blockCount, Padding.paddedLength] using
     PaddingGas.gasSteps_pad_cost input hfit
@@ -43,17 +43,17 @@ theorem gasSteps_blockLoop_cost_of_iterations
       (Driver.gasSteps_blockLoopIteration input hfit i hi).cost +
           MachineState.memCost
             (Driver.blockLoopState input i).activeWords.toNat =
-        48496 + MachineState.memCost
+        47744 + MachineState.memCost
           (Driver.blockLoopState input (i + 1)).activeWords.toNat) :
     (Driver.gasSteps_blockLoop input hfit).cost +
         MachineState.memCost
           (Driver.blockLoopState input 0).activeWords.toNat =
-      Driver.blockCount input * 48496 + MachineState.memCost
+      Driver.blockCount input * 47744 + MachineState.memCost
         (Driver.blockLoopState input
           (Driver.blockCount input)).activeWords.toNat := by
   rw [Driver.gasSteps_blockLoop_cost]
   exact Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
-    (Driver.blockCount input) 48496
+    (Driver.blockCount input) 47744
     (Driver.gasSteps_blockLoopIteration input hfit) hiteration
 
 theorem gasSteps_iteration_cost_of_compress
@@ -66,11 +66,11 @@ theorem gasSteps_iteration_cost_of_compress
     (hcompress :
       (Driver.gasSteps_iterationCompress s input i hcode hfork hrun hnp).cost +
           MachineState.memCost (Driver.loopAt s input i).activeWords.toNat =
-        48421 + MachineState.memCost
+        47677 + MachineState.memCost
           (Driver.afterCompression s input i).activeWords.toNat) :
     (Driver.gasSteps_iteration s input hfit i hi hcode hfork hrun hnp).cost +
         MachineState.memCost (Driver.loopAt s input i).activeWords.toNat =
-      48496 + MachineState.memCost
+      47744 + MachineState.memCost
         (Driver.afterIteration s input i).activeWords.toNat := by
   have hConditionPotential := CompressionGas.blockCost_potential_of_static
     Driver.conditionPath 26
@@ -83,7 +83,7 @@ theorem gasSteps_iteration_cost_of_compress
     (by simpa [Driver.afterCondition, Driver.loopAt, State.fork] using hfork)
     (by simp [Driver.callPath, CompressionGas.CopyFree]) (by rfl)
   have hIncrementPotential := CompressionGas.blockCost_potential_of_static
-    Driver.incrementPath 26
+    Driver.incrementPath 18
     (Driver.run_increment s input hfit i hi hcode hrun)
     (by simpa [State.fork] using hfork)
     (by simp [Driver.incrementPath, CompressionGas.CopyFree]) (by rfl)
@@ -102,7 +102,7 @@ theorem gasSteps_iteration_cost_of_compress
     rw [haw] at hCallPotential
     omega
   have hIncrement : Challenge.EvmProof.Stepper.runLocatedBlockCost
-      Driver.incrementPath (Driver.afterCompression s input i) = 26 := by
+      Driver.incrementPath (Driver.afterCompression s input i) = 18 := by
     have haw : (Driver.afterIteration s input i).activeWords =
         (Driver.afterCompression s input i).activeWords := by rfl
     rw [haw] at hIncrementPotential
@@ -127,12 +127,12 @@ theorem gasSteps_blockLoop_cost_of_compressions
       (Driver.gasSteps_iterationCompress s input i
           hcode hfork hrun hnp).cost +
         MachineState.memCost (Driver.loopAt s input i).activeWords.toNat =
-      48421 + MachineState.memCost
+      47677 + MachineState.memCost
         (Driver.afterCompression s input i).activeWords.toNat) :
     (Driver.gasSteps_blockLoop input hfit).cost +
         MachineState.memCost
           (Driver.blockLoopState input 0).activeWords.toNat =
-      Driver.blockCount input * 48496 + MachineState.memCost
+      Driver.blockCount input * 47744 + MachineState.memCost
         (Driver.blockLoopState input
           (Driver.blockCount input)).activeWords.toNat := by
   apply gasSteps_blockLoop_cost_of_iterations input hfit
@@ -182,7 +182,7 @@ telescoping is discharged here. -/
 theorem gasSteps_reference_cost_of_components
     (input : ByteArray) (hfit : CalldataFits input)
     (hloop : (Driver.gasSteps_blockLoop input hfit).cost =
-      48496 * Driver.blockCount input +
+      47744 * Driver.blockCount input +
         (MachineState.memCost (90 + 2 * Driver.blockCount input) -
           MachineState.memCost (89 + 2 * Driver.blockCount input)))
     (hactive : 17 ≤ (Driver.blockLoopState input
@@ -194,7 +194,7 @@ theorem gasSteps_reference_cost_of_components
       [Padding.paddedWord input] (by simp) (by simp) (by simp [State.fork])
       (by simp) (by
         simpa [State.fork] using PaddingTrace.padReturned_noPrecompile input)
-      ).cost = 491 := by
+      ).cost = 135 := by
     apply OutputGas.gasSteps_output_cost_of_activeWords_ge
     exact hactive
   unfold Driver.gasSteps_reference
@@ -219,7 +219,7 @@ theorem gasSteps_reference_cost (input : ByteArray)
       (Driver.gasSteps_iterationCompress s input i
           hcode hfork hrun hnp).cost +
         MachineState.memCost (Driver.loopAt s input i).activeWords.toNat =
-      48421 + MachineState.memCost
+      47677 + MachineState.memCost
         (Driver.afterCompression s input i).activeWords.toNat := by
     intro s i hcode hfork hrun hnp
     rw [Driver.gasSteps_iterationCompress_cost]
@@ -238,7 +238,7 @@ theorem gasSteps_reference_cost (input : ByteArray)
       MachineState.memCost (90 + 2 * Driver.blockCount input) :=
     memCost_monotone (by omega)
   have hloop : (Driver.gasSteps_blockLoop input hfit).cost =
-      48496 * Driver.blockCount input +
+      47744 * Driver.blockCount input +
         (MachineState.memCost (90 + 2 * Driver.blockCount input) -
           MachineState.memCost (89 + 2 * Driver.blockCount input)) := by
     omega
