@@ -179,20 +179,23 @@ suite.
 The BSIG1 helper is now specialized for its only compression-round caller as
 well. It computes the raw chained rotates, adds `Ch(e,f,g) + K[j]` and `W[j]`,
 loads `h7` directly from memory offset 512, performs the final addition and
-32-bit mask, and jumps to the existing T1 boundary. Five fall-through
-`JUMPDEST`s preserve the downstream PC layout; unreachable padding keeps the
-artifact at 1,524 bytes and 810 structural instructions. This saves 11 gas per
-round, 704 gas per padded block, and 45,760 gas over the suite.
+32-bit mask, and jumps to the existing T1 boundary. The helper targets the
+last byte of the five-byte landing pad: four preceding `STOP`s are unreachable
+and the final `JUMPDEST` falls through to T2. This preserves every downstream
+PC and structural index while avoiding four no-op destinations per round.
+Unreachable helper padding keeps the artifact at 1,524 bytes and 810
+structural instructions. The complete T1 specialization saves 15 gas per
+round, 960 gas per padded block, and 62,400 gas over the suite.
 
-Fresh local scoring of the exact submission bytes is 3,708,207 versus the
-10,179,119 reference, a combined reduction of 6,470,912 gas. All 19 vectors
+Fresh local scoring of the exact submission bytes is 3,691,567 versus the
+10,179,119 reference, a combined reduction of 6,487,552 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 58,307 gas.
+vector costs 58,051 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 56,516
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 56,260
 gas per padded block, plus calldata copying and memory expansion.

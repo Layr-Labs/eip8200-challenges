@@ -162,11 +162,7 @@ def setupH7Path :
 
 def finishT1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨498, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨499, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨500, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨501, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨502, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨502, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupT2H2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=

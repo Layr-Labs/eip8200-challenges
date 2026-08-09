@@ -359,3 +359,19 @@ cascade, and full exported `Solution.lean` certificate all compile. A complete
 and Comparator with score **3,708,207**, 1,524 bytes, and 19/19 vectors. The
 exact bytecode SHA-256 is
 `866bd54740716ffc7e5226762cb1f6e821a9cade1c162be1d0dae95d9e549076`.
+
+The follow-up landing-pad experiment retargeted the specialized BSIG1
+helper's hard jump from PC 725 to the last existing landing instruction at
+PC 729. PCs 725--728 are now unreachable `STOP` padding, while PC 729 remains
+the single executed `JUMPDEST` before T2 begins at the unchanged PC 730. This
+preserves every byte offset and structural instruction index while removing
+four gas per round.
+
+The native trusted scorer accepted all 38 clean/dirty rows with identical
+paired gas. Empty gas fell from 58,307 to **58,051**, exactly 256 gas per
+padded block. Across 64 rounds and the public suite's 65 padded blocks, the
+exact score improvement is 16,640 gas. Full `BENCHMARK_INSECURE_LOCAL=1
+yukon run` verification was accepted by the Lean default kernel and
+Comparator at **3,691,567**, with 1,524 bytes and 19/19 vectors. The exact
+bytecode SHA-256 is
+`71aa7ea35c048153118966c4eaa64e0422a0079d0236252447d22d42e13cf421`.
