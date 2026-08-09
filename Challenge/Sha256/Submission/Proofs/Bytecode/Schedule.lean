@@ -54,25 +54,15 @@ def firstLoadPath :
 def firstStorePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨342, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨343, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨344, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨345, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨346, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨347, .push ⟨2, by decide⟩ (UInt256.ofNat 800), by rfl, by decide⟩,
-   ⟨348, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨349, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨350, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨351, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
-
-def firstIncrementPath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨352, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨353, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨354, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨355, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨356, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨357, .push ⟨2, by decide⟩ (UInt256.ofNat 448), by rfl, by decide⟩,
-   ⟨358, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨343, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨344, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨345, .push ⟨2, by decide⟩ (UInt256.ofNat 800), by rfl, by decide⟩,
+   ⟨346, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨347, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨348, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨349, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨350, .push ⟨2, by decide⟩ (UInt256.ofNat 448), by rfl, by decide⟩,
+   ⟨351, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def loadOffset (msgOff : UInt256) (j : Nat) : Nat :=
   (UInt256.shiftLeft (UInt256.ofNat j) (UInt256.ofNat 2) + msgOff).toNat
@@ -174,8 +164,8 @@ def afterFirstIteration (s : State) (msgOff returnDest : UInt256)
 @[simp] private theorem firstPC (i : Nat) (hlo : 327 ≤ i) (hhi : i ≤ 358) :
     Artifact.referenceArtifact.instructionPC i =
       [448, 449, 451, 452, 453, 454, 457, 458, 459, 461, 462,
-       463, 464, 465, 467, 468, 469, 470, 471, 473, 474, 477,
-       478, 479, 480, 481, 483, 484, 485, 486, 487, 490][i - 327]! := by
+       463, 464, 465, 467, 468, 469, 471, 472, 475, 476, 477,
+       479, 480, 483, 484, 485, 486, 487, 488, 489, 490][i - 327]! := by
   interval_cases i <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -222,47 +212,34 @@ theorem run_firstLoad (s : State) (msgOff returnDest : UInt256)
 
 set_option linter.unusedSimpArgs false in
 theorem run_firstStore (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (j : Nat) (hstack : rest.length < 1016)
+    (rest : List UInt256) (j : Nat) (hj : j < 16)
+    (hstack : rest.length < 1016)
+    (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock firstStorePath
       (afterFirstLoad s msgOff returnDest rest j) =
-        some (afterFirstStore s msgOff returnDest rest j) := by
+        some (afterFirstIteration s msgOff returnDest rest j) := by
+  have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
-  have hoff : UInt256.ofNat 800 +
-        UInt256.shiftLeft (UInt256.ofNat j) (UInt256.ofNat 5) =
-      UInt256.shiftLeft (UInt256.ofNat j) (UInt256.ofNat 5) +
-        UInt256.ofNat 800 := Challenge.EvmProof.Word.word_add_comm _ _
-  simp [firstStorePath, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    afterFirstLoad, afterFirstStore, scheduleSlot, Accessors.slotOffset,
-    List.exchange, hc4, hc5, hc6, hc7, hc8, hrun, hoff,
-    State.activeWordsAfterUInt256]
-
-set_option linter.unusedSimpArgs false in
-theorem run_firstIncrement (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (j : Nat) (hj : j < 16)
-    (hstack : rest.length < 1019)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock firstIncrementPath
-      (afterFirstStore s msgOff returnDest rest j) =
-        some (afterFirstIteration s msgOff returnDest rest j) := by
-  have hc3 : rest.length + 3 < 1024 := by omega
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have hc5 : rest.length + 5 < 1024 := by omega
   have hadd : UInt256.ofNat 1 + UInt256.ofNat j =
       UInt256.ofNat (j + 1) := by
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
+  have hoff : UInt256.ofNat 800 +
+        UInt256.shiftLeft (UInt256.ofNat j) (UInt256.ofNat 5) =
+      UInt256.shiftLeft (UInt256.ofNat j) (UInt256.ofNat 5) +
+      UInt256.ofNat 800 := Challenge.EvmProof.Word.word_add_comm _ _
   have hdest : Decode.isValidJumpDest submissionBytecode 448 = true := by decide
-  simp [firstIncrementPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+  simp [firstStorePath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    afterFirstStore, afterFirstIteration, afterFirstLoad,
-    hc3, hc4, hc5, hcode, hrun, hadd, hdest]
+    afterFirstLoad, afterFirstStore, afterFirstIteration, scheduleSlot,
+    Accessors.slotOffset,
+    List.exchange, hc3, hc4, hc5, hc6, hc7, hc8, hrun, hoff,
+    hcode, hadd, hdest, State.activeWordsAfterUInt256]
 
 def gasSteps_firstIteration (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj : j < 16)
@@ -295,26 +272,15 @@ def gasSteps_firstIteration (s : State) (msgOff returnDest : UInt256)
     · exact hnp
   have gStore : Challenge.EvmProof.GasSteps
       (afterFirstLoad s msgOff returnDest rest j)
-      (afterFirstStore s msgOff returnDest rest j) := by
+      (afterFirstIteration s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka firstStorePath
     · exact hcode
     · exact hfork
-    · exact run_firstStore s msgOff returnDest rest j hstack hrun
+    · exact run_firstStore s msgOff returnDest rest j hj hstack hcode hrun
     · exact hrun
     · exact hnp
-  have gIncrement : Challenge.EvmProof.GasSteps
-      (afterFirstStore s msgOff returnDest rest j)
-      (afterFirstIteration s msgOff returnDest rest j) := by
-    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.referenceArtifact .Osaka firstIncrementPath
-    · exact hcode
-    · exact hfork
-    · exact run_firstIncrement s msgOff returnDest rest j hj (by omega)
-        hcode hrun
-    · exact hrun
-    · exact hnp
-  exact gCondition.trans (gLoad.trans (gStore.trans gIncrement))
+  exact gCondition.trans (gLoad.trans gStore)
 
 def firstLoopState (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) : Nat → State

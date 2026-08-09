@@ -155,15 +155,22 @@ PC, and increments the loop counter in the same 20-byte, 15-instruction span.
 This saves 22 gas per recurrence, 1,056 gas per padded block, and 68,640 gas
 over the suite without moving any downstream PC or structural index.
 
-Fresh local scoring of the exact submission bytes is 3,838,727 versus the
-10,179,119 reference, a combined reduction of 6,340,392 gas. All 19 vectors
+The initial 16-word schedule loop now fuses each direct `MSTORE` with its loop
+increment and back-edge. A single `DUP2` preserves the index across the store;
+the old cleanup pair and separate increment scaffolding disappear into dead
+`STOP` padding, preserving the 23-byte span and all 810 instruction indices.
+This saves 13 gas per iteration, 208 gas per padded block, and 13,520 gas over
+the suite.
+
+Fresh local scoring of the exact submission bytes is 3,825,207 versus the
+10,179,119 reference, a combined reduction of 6,353,912 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 60,315 gas.
+vector costs 60,107 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 58,524
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 58,316
 gas per padded block, plus calldata copying and memory expansion.
