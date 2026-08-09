@@ -180,7 +180,7 @@ theorem reference_first_target_is_jumpdest :
     Decode.isValidJumpDest submissionBytecode mainPC = true := by
   apply reference_entryTarget_isValid
   simp [entryTargets, Challenge.Sha256.Submission.Proofs.Bytecode.Artifact.entryTargets,
-    Challenge.Sha256.Submission.Proofs.Bytecode.Artifact.entryTrampolines, mainPC]
+    mainPC]
 
 theorem initialState_decoded_entry_push (calldata : ByteArray) (gas : Nat) :
     (initialState submissionBytecode calldata gas).decoded =
@@ -300,45 +300,12 @@ def gasSteps_to_firstTarget (calldata : ByteArray) :
 def gasSteps_entryTrampoline (calldata : ByteArray)
     (t : Artifact.EntryTrampoline) (ht : t ∈ Artifact.entryTrampolines) :
     Challenge.EvmProof.GasSteps (atPC calldata t.src) (atPC calldata t.dest) := by
-  have hv := Challenge.Sha256.Submission.Proofs.Bytecode.Artifact.entryTrampoline_valid t ht
-  have hb : t.src + 5 < 2 ^ 256 ∧ t.dest < 2 ^ 256 := by
-    simp only [Challenge.Sha256.Submission.Proofs.Bytecode.Artifact.entryTrampolines,
-      List.mem_cons, List.not_mem_nil, or_false] at ht
-    rcases ht with h | h | h | h | h | h | h | h | h | h | h | h | h | h <;>
-      simp_all
-  apply gasSteps_trampoline calldata t.src t.dest hb.1 hb.2
-  · simpa [hv.1] using
-      Challenge.Sha256.Submission.Proofs.Bytecode.Artifact.decodeAt_op_index t.srcIndex .JUMPDEST
-        hv.2.1 (by decide) trivial
-  · have hfit : (UInt256.ofNat t.dest).toNat < 256 ^ 2 := by
-      rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hb.2]
-      simp only [Challenge.Sha256.Submission.Proofs.Bytecode.Artifact.entryTrampolines,
-        List.mem_cons, List.not_mem_nil, or_false] at ht
-      rcases ht with h | h | h | h | h | h | h | h | h | h | h | h | h | h <;>
-        simp_all
-    simpa [hv.2.2.1] using
-      Challenge.Sha256.Submission.Proofs.Bytecode.Artifact.decodeAt_push_index (t.srcIndex + 1)
-        ⟨2, by decide⟩ (UInt256.ofNat t.dest) hv.2.2.2.1 hfit
-  · simpa [hv.2.2.2.2.1] using
-      Challenge.Sha256.Submission.Proofs.Bytecode.Artifact.decodeAt_op_index (t.srcIndex + 2) .JUMP
-        hv.2.2.2.2.2.1 (by decide) trivial
-  · simpa [hv.2.2.2.2.2.2.1] using
-      Challenge.Sha256.Submission.Proofs.Bytecode.Artifact.isValidJumpDest_index t.destIndex
-        hv.2.2.2.2.2.2.2
+  simp [Artifact.entryTrampolines] at ht
 
 noncomputable def gasSteps_entryLink (calldata : ByteArray) (src dest : Nat)
     (hlink : (src, dest) ∈ entryLinks) :
     Challenge.EvmProof.GasSteps (atPC calldata src) (atPC calldata dest) := by
-  rw [entryLinks] at hlink
-  let t := Classical.choose (List.mem_map.mp hlink)
-  have ht : t ∈ Artifact.entryTrampolines :=
-    (Classical.choose_spec (List.mem_map.mp hlink)).1
-  have hp : (t.src, t.dest) = (src, dest) :=
-    (Classical.choose_spec (List.mem_map.mp hlink)).2
-  have hsrc : t.src = src := congrArg Prod.fst hp
-  have hdest : t.dest = dest := congrArg Prod.snd hp
-  rw [← hsrc, ← hdest]
-  exact gasSteps_entryTrampoline calldata t ht
+  simp [entryLinks, Artifact.entryTrampolines] at hlink
 
 /-- The complete compiler-generated entry chain lands at the SHA body. -/
 def gasSteps_to_main (calldata : ByteArray) :

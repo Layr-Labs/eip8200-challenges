@@ -436,29 +436,25 @@ private theorem compressionAfterT1_activeWords_eq (s : State)
     unfold Compression.gotK
     exact (kAtReturned_activeWords_eq (Compression.gotW s msgOff returnDest rest j)
       j _ _ hj (by rw [hw]; omega)).trans hw
-  have hh6 : (Compression.gotH6 s msgOff returnDest rest j).activeWords =
-      s.activeWords := by
-    unfold Compression.gotH6
-    exact (loadReturned_activeWords_eq (Compression.gotK s msgOff returnDest rest j)
-      288 6 _ _ (by omega) (by omega) (by rw [hk]; omega)).trans hk
-  have hh5 : (Compression.gotH5 s msgOff returnDest rest j).activeWords =
-      s.activeWords := by
-    unfold Compression.gotH5
-    exact (loadReturned_activeWords_eq (Compression.gotH6 s msgOff returnDest rest j)
-      288 5 _ _ (by omega) (by omega) (by rw [hh6]; omega)).trans hh6
-  have hch : (Compression.gotCh s msgOff returnDest rest j).activeWords =
-      s.activeWords := by
-    simpa [Compression.gotCh, Functions.unaryReturned] using hh5
-  have hs1 : (Compression.gotBigSigma1 s msgOff returnDest rest j).activeWords =
-      s.activeWords := by
-    simpa [Compression.gotBigSigma1, Functions.unaryReturned] using hch
-  have hh7 : (Compression.gotH7 s msgOff returnDest rest j).activeWords =
-      s.activeWords := by
-    unfold Compression.gotH7
-    exact (loadReturned_activeWords_eq
-      (Compression.gotBigSigma1 s msgOff returnDest rest j) 288 7 _ _
-      (by omega) (by omega) (by rw [hs1]; omega)).trans hs1
-  simpa [Compression.afterT1] using hh7
+  have hl :
+      (Compression.loadedT1Inputs s msgOff returnDest rest j).activeWords =
+        s.activeWords := by
+    have h480 :
+        (Compression.gotK s msgOff returnDest rest j).activeWordsAfterUInt256
+            480 32 = s.activeWords := by
+      rw [activeWordsAfterUInt256_eq _ 480 32 (by rw [hk]; omega)]
+      exact hk
+    simp only [Compression.loadedT1Inputs]
+    rw [activeWordsAfterUInt256_eq _ 448 32 (by
+      change 448 + 32 ≤
+        ((Compression.gotK s msgOff returnDest rest j).activeWordsAfterUInt256
+          480 32).toNat * 32
+      rw [h480]
+      omega)]
+    exact h480
+  unfold Compression.afterT1 Compression.gotIntegratedT1 BigSigma.t1Returned
+  rw [activeWordsAfterUInt256_eq _ 512 32 (by rw [hl]; omega)]
+  exact hl
 
 private theorem compressionAfterT2_activeWords_eq (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (j : Nat)
@@ -466,29 +462,36 @@ private theorem compressionAfterT2_activeWords_eq (s : State)
     (Compression.afterT2 s msgOff returnDest rest j).activeWords =
       s.activeWords := by
   have ht1 := compressionAfterT1_activeWords_eq s msgOff returnDest rest j hj haw
-  have ha : (Compression.loadedA s msgOff returnDest rest j).activeWords =
-      s.activeWords := by
-    unfold Compression.loadedA
-    rw [activeWordsAfterUInt256_eq _ 288 32 (by rw [ht1]; omega), ht1]
-  have hh2 : (Compression.gotT2H2 s msgOff returnDest rest j).activeWords =
-      s.activeWords := by
-    unfold Compression.gotT2H2
-    exact (loadReturned_activeWords_eq
-      (Compression.loadedA s msgOff returnDest rest j) 288 2 _ _
-      (by omega) (by omega) (by rw [ha]; omega)).trans ha
-  have hh1 : (Compression.gotT2H1 s msgOff returnDest rest j).activeWords =
-      s.activeWords := by
-    unfold Compression.gotT2H1
-    exact (loadReturned_activeWords_eq
-      (Compression.gotT2H2 s msgOff returnDest rest j) 288 1 _ _
-      (by omega) (by omega) (by rw [hh2]; omega)).trans hh2
-  have hmaj : (Compression.gotMaj s msgOff returnDest rest j).activeWords =
-      s.activeWords := by
-    simpa [Compression.gotMaj, Functions.unaryReturned] using hh1
-  have hs0 : (Compression.gotBigSigma0 s msgOff returnDest rest j).activeWords =
-      s.activeWords := by
-    simpa [Compression.gotBigSigma0, Functions.unaryReturned] using hmaj
-  simpa [Compression.afterT2] using hs0
+  have hl :
+      (Compression.loadedT2Inputs s msgOff returnDest rest j).activeWords =
+        s.activeWords := by
+    have h288 :
+        (Compression.afterT1 s msgOff returnDest rest j).activeWordsAfterUInt256
+            288 32 = s.activeWords := by
+      rw [activeWordsAfterUInt256_eq _ 288 32 (by rw [ht1]; omega)]
+      exact ht1
+    have h352 :
+        ({ Compression.afterT1 s msgOff returnDest rest j with
+          activeWords := (Compression.afterT1 s msgOff returnDest rest j).activeWordsAfterUInt256
+            288 32 } : State).activeWordsAfterUInt256 352 32 = s.activeWords := by
+      rw [activeWordsAfterUInt256_eq _ 352 32 (by
+        change 352 + 32 ≤
+          ((Compression.afterT1 s msgOff returnDest rest j).activeWordsAfterUInt256
+            288 32).toNat * 32
+        rw [h288]
+        omega)]
+      exact h288
+    simp only [Compression.loadedT2Inputs]
+    rw [activeWordsAfterUInt256_eq _ 320 32 (by
+      change 320 + 32 ≤
+        (({ Compression.afterT1 s msgOff returnDest rest j with
+          activeWords := (Compression.afterT1 s msgOff returnDest rest j).activeWordsAfterUInt256
+            288 32 } : State).activeWordsAfterUInt256 352 32).toNat * 32
+      rw [h352]
+      omega)]
+    exact h352
+  unfold Compression.afterT2 BigSigma.t2Returned
+  exact hl
 
 private theorem directStored_activeWords_eq (s : State) (offset : Nat)
     (value : UInt256) (nextPC : Nat) (context : List UInt256)

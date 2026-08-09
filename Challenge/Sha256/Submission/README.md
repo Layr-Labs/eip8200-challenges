@@ -202,23 +202,25 @@ indices directly with 64 and 8. On the proved loop invariants, `j == 64` and
 `ISZERO`, saving two gas for every iteration and exit check. Across the public
 suite this saves another 9,620 gas.
 
-The BSIG1 helper now returns directly to the start of the following T2 setup
-at PC 714. That setup performs the fixed `h0`, `h2`, and `h1` loads in one
-packed fall-through sequence and enters `Maj` without the old landing pads or
-dead load cleanup. The 56-byte region and its 30 structural instructions are
-preserved with unreachable padding, while every following PC and instruction
-index remains unchanged. This saves 14 gas per round, 896 gas per padded block,
-and 58,240 gas over the suite.
+The two round halves are now fully integrated. The T1 helper consumes the
+directly loaded `e`, `f`, and `g` words, computes `Ch` and the chained `BSIG1`,
+adds `K[j]`, `W[j]`, and `h7`, masks once, and jumps to the existing T1
+boundary. The T2 helper similarly combines `Maj` with chained `BSIG0` and
+lands at the existing post-T2 boundary. Removing the standalone helper ABIs,
+return words, and intermediate cleanup saves 75 gas per round, 4,800 gas per
+padded block, and 312,000 gas over the public suite. Unreachable padding and
+the now-dead first forwarding trampoline keep the artifact at exactly 1,524
+bytes and 810 structural instructions.
 
-Fresh local scoring of the exact submission bytes is 3,498,907 versus the
-10,179,119 reference, a combined reduction of 6,680,212 gas. All 19 vectors
+Fresh local scoring of the exact submission bytes is 3,186,907 versus the
+10,179,119 reference, a combined reduction of 6,992,212 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 55,087 gas.
+vector costs 50,287 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 53,296
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 48,496
 gas per padded block, plus calldata copying and memory expansion.

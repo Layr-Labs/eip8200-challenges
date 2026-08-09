@@ -210,6 +210,8 @@ def gasSteps_condition (s : State) (msgOff returnDest : UInt256)
   · exact hrun
   · exact hnp
 
+/- Superseded standalone Ch/Maj composition. -/
+/-
 /-- Execute the round condition and the complete `t1` half of one compression
 round.  The result is the exact stack expected by the compiler's `t2` code. -/
 def gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
@@ -535,29 +537,183 @@ def gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
   exact gSetupH2.trans (gSetupH1.trans
     (gSetupMaj.trans (gMaj.trans (gSetupB0.trans gB0))))
 
+-/
+
+/-- Execute the round condition and the integrated Ch+BSIG1+T1 half. -/
+def gasSteps_t1 (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (j : Nat) (hj : j < 64)
+    (hcap : rest.length < 988)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (roundAt s msgOff returnDest rest j)
+      (afterT1 s msgOff returnDest rest j) := by
+  have gCond := gasSteps_condition s msgOff returnDest rest j hj (by omega)
+    hcode hfork hrun hnp
+  have gSetupW : Challenge.EvmProof.GasSteps
+      (afterCondition s msgOff returnDest rest j)
+      (gotW s msgOff returnDest rest j) := by
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka setupWPath
+    · exact hcode
+    · exact hfork
+    · exact run_setupW s msgOff returnDest rest j (by omega) hrun
+    · exact hrun
+    · exact hnp
+  have qWcode : (gotW s msgOff returnDest rest j).executionEnv.code =
+      submissionBytecode := by
+    simpa [gotW, loadedE, Accessors.loadReturned] using hcode
+  have qWfork : (gotW s msgOff returnDest rest j).fork = .Osaka := by
+    simpa [gotW, loadedE, Accessors.loadReturned, State.fork] using hfork
+  have qWrun : (gotW s msgOff returnDest rest j).halt = .Running := by
+    simpa [gotW, loadedE, Accessors.loadReturned] using hrun
+  have qWnp : Precompile.isPrecompileWithConfig
+      (gotW s msgOff returnDest rest j).executionEnv.precompileConfig
+      (gotW s msgOff returnDest rest j).executionEnv.fork
+      (gotW s msgOff returnDest rest j).executionEnv.codeAddr = false := by
+    simpa [gotW, loadedE, Accessors.loadReturned] using hnp
+  have gSetupK : Challenge.EvmProof.GasSteps
+      (gotW s msgOff returnDest rest j) (gotK s msgOff returnDest rest j) := by
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka setupKPath
+    · exact qWcode
+    · exact qWfork
+    · exact run_setupK s msgOff returnDest rest j hj (by omega) hrun
+    · exact qWrun
+    · exact qWnp
+  have qKcode : (gotK s msgOff returnDest rest j).executionEnv.code =
+      submissionBytecode := by
+    simpa [gotK, gotW, loadedE, Accessors.kAtReturned,
+      Accessors.loadReturned] using hcode
+  have qKfork : (gotK s msgOff returnDest rest j).fork = .Osaka := by
+    simpa [gotK, gotW, loadedE, Accessors.kAtReturned,
+      Accessors.loadReturned, State.fork] using hfork
+  have qKrun : (gotK s msgOff returnDest rest j).halt = .Running := by
+    simpa [gotK, gotW, loadedE, Accessors.kAtReturned,
+      Accessors.loadReturned] using hrun
+  have qKnp : Precompile.isPrecompileWithConfig
+      (gotK s msgOff returnDest rest j).executionEnv.precompileConfig
+      (gotK s msgOff returnDest rest j).executionEnv.fork
+      (gotK s msgOff returnDest rest j).executionEnv.codeAddr = false := by
+    simpa [gotK, gotW, loadedE, Accessors.kAtReturned,
+      Accessors.loadReturned] using hnp
+  have gSetupT1 : Challenge.EvmProof.GasSteps
+      (gotK s msgOff returnDest rest j)
+      (callIntegratedT1 s msgOff returnDest rest j) := by
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka setupT1Path
+    · exact qKcode
+    · exact qKfork
+    · exact run_setupT1 s msgOff returnDest rest j (by omega) hcode hrun
+    · exact qKrun
+    · exact qKnp
+  have qLcode : (loadedT1Inputs s msgOff returnDest rest j).executionEnv.code =
+      submissionBytecode := by
+    simpa [loadedT1Inputs] using qKcode
+  have qLfork : (loadedT1Inputs s msgOff returnDest rest j).fork = .Osaka := by
+    simpa [loadedT1Inputs, State.fork] using qKfork
+  have qLrun : (loadedT1Inputs s msgOff returnDest rest j).halt = .Running := by
+    simpa [loadedT1Inputs] using qKrun
+  have qLnp : Precompile.isPrecompileWithConfig
+      (loadedT1Inputs s msgOff returnDest rest j).executionEnv.precompileConfig
+      (loadedT1Inputs s msgOff returnDest rest j).executionEnv.fork
+      (loadedT1Inputs s msgOff returnDest rest j).executionEnv.codeAddr = false := by
+    simpa [loadedT1Inputs] using qKnp
+  have gB1 : Challenge.EvmProof.GasSteps
+      (callIntegratedT1 s msgOff returnDest rest j)
+      (afterT1 s msgOff returnDest rest j) := by
+    simpa [callIntegratedT1, afterT1, gotIntegratedT1] using
+      (BigSigma.gasSteps_bigSigma1
+        (loadedT1Inputs s msgOff returnDest rest j)
+        (hValue s 4) (hValue s 5) (hValue s 6) (kValue s j) (wValue s j)
+        ([hValue s 4, UInt256.ofNat j, msgOff, returnDest] ++ rest)
+        (by simp; omega) qLcode qLfork qLrun qLnp)
+  exact gCond.trans (gSetupW.trans (gSetupK.trans (gSetupT1.trans gB1)))
+
+/-- Execute the integrated Maj+BSIG0+T2 half. -/
+def gasSteps_t2 (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (j : Nat) (hcap : rest.length < 988)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (afterT1 s msgOff returnDest rest j)
+      (afterT2 s msgOff returnDest rest j) := by
+  have qT1code : (afterT1 s msgOff returnDest rest j).executionEnv.code =
+      submissionBytecode := by
+    simpa [afterT1, gotIntegratedT1, BigSigma.t1Returned, loadedT1Inputs,
+      gotK, gotW, loadedE, Accessors.loadReturned, Accessors.kAtReturned]
+      using hcode
+  have qT1fork : (afterT1 s msgOff returnDest rest j).fork = .Osaka := by
+    simpa [afterT1, gotIntegratedT1, BigSigma.t1Returned, loadedT1Inputs,
+      gotK, gotW, loadedE, Accessors.loadReturned, Accessors.kAtReturned,
+      State.fork] using hfork
+  have qT1run : (afterT1 s msgOff returnDest rest j).halt = .Running := by
+    simpa [afterT1, gotIntegratedT1, BigSigma.t1Returned, loadedT1Inputs,
+      gotK, gotW, loadedE, Accessors.loadReturned, Accessors.kAtReturned]
+      using hrun
+  have qT1np : Precompile.isPrecompileWithConfig
+      (afterT1 s msgOff returnDest rest j).executionEnv.precompileConfig
+      (afterT1 s msgOff returnDest rest j).executionEnv.fork
+      (afterT1 s msgOff returnDest rest j).executionEnv.codeAddr = false := by
+    simpa [afterT1, gotIntegratedT1, BigSigma.t1Returned, loadedT1Inputs,
+      gotK, gotW, loadedE, Accessors.loadReturned, Accessors.kAtReturned]
+      using hnp
+  have gSetupT2 : Challenge.EvmProof.GasSteps
+      (afterT1 s msgOff returnDest rest j)
+      (callIntegratedT2 s msgOff returnDest rest j) := by
+    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.referenceArtifact .Osaka setupT2Path
+    · exact qT1code
+    · exact qT1fork
+    · exact run_setupT2 s msgOff returnDest rest j (by omega) hcode hrun
+    · exact qT1run
+    · exact qT1np
+  have qLcode : (loadedT2Inputs s msgOff returnDest rest j).executionEnv.code =
+      submissionBytecode := by
+    simpa [loadedT2Inputs] using qT1code
+  have qLfork : (loadedT2Inputs s msgOff returnDest rest j).fork = .Osaka := by
+    simpa [loadedT2Inputs, State.fork] using qT1fork
+  have qLrun : (loadedT2Inputs s msgOff returnDest rest j).halt = .Running := by
+    simpa [loadedT2Inputs] using qT1run
+  have qLnp : Precompile.isPrecompileWithConfig
+      (loadedT2Inputs s msgOff returnDest rest j).executionEnv.precompileConfig
+      (loadedT2Inputs s msgOff returnDest rest j).executionEnv.fork
+      (loadedT2Inputs s msgOff returnDest rest j).executionEnv.codeAddr = false := by
+    simpa [loadedT2Inputs] using qT1np
+  have gB0 : Challenge.EvmProof.GasSteps
+      (callIntegratedT2 s msgOff returnDest rest j)
+      (afterT2 s msgOff returnDest rest j) := by
+    simpa [callIntegratedT2, afterT2] using
+      (BigSigma.gasSteps_bigSigma0
+        (loadedT2Inputs s msgOff returnDest rest j)
+        (hValue s 0) (hValue s 1) (hValue s 2)
+        ([hValue s 0, t1 s j, hValue s 4, UInt256.ofNat j,
+          msgOff, returnDest] ++ rest)
+        (by simp; omega) qLcode qLfork qLrun qLnp)
+  exact gSetupT2.trans gB0
+
 @[simp] theorem afterT2_executionEnv (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (j : Nat) :
+  (rest : List UInt256) (j : Nat) :
     (afterT2 s msgOff returnDest rest j).executionEnv = s.executionEnv := by
-  simp [afterT2, gotBigSigma0, gotMaj, gotT2H1, gotT2H2, loadedA,
-    afterT1, gotH7, gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW,
-    loadedE, Functions.unaryReturned, Accessors.loadReturned,
-    Accessors.kAtReturned]
+  simp [afterT2, loadedT2Inputs, BigSigma.t2Returned, afterT1,
+    gotIntegratedT1, BigSigma.t1Returned, loadedT1Inputs, gotK, gotW,
+    loadedE, Accessors.loadReturned, Accessors.kAtReturned]
 
 @[simp] theorem afterT2_halt (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (j : Nat) :
+  (rest : List UInt256) (j : Nat) :
     (afterT2 s msgOff returnDest rest j).halt = s.halt := by
-  simp [afterT2, gotBigSigma0, gotMaj, gotT2H1, gotT2H2, loadedA,
-    afterT1, gotH7, gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW,
-    loadedE, Functions.unaryReturned, Accessors.loadReturned,
-    Accessors.kAtReturned]
+  simp [afterT2, loadedT2Inputs, BigSigma.t2Returned, afterT1,
+    gotIntegratedT1, BigSigma.t1Returned, loadedT1Inputs, gotK, gotW,
+    loadedE, Accessors.loadReturned, Accessors.kAtReturned]
 
 @[simp] theorem afterT2_callStack (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (j : Nat) :
+  (rest : List UInt256) (j : Nat) :
     (afterT2 s msgOff returnDest rest j).callStack = s.callStack := by
-  simp [afterT2, gotBigSigma0, gotMaj, gotT2H1, gotT2H2, loadedA,
-    afterT1, gotH7, gotBigSigma1, gotCh, gotH5, gotH6, gotK, gotW,
-    loadedE, Functions.unaryReturned, Accessors.loadReturned,
-    Accessors.kAtReturned]
+  simp [afterT2, loadedT2Inputs, BigSigma.t2Returned, afterT1,
+    gotIntegratedT1, BigSigma.t1Returned, loadedT1Inputs, gotK, gotW,
+    loadedE, Accessors.loadReturned, Accessors.kAtReturned]
 
 def gasSteps_shift (path : List
     (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka))

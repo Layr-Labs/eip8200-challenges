@@ -13,6 +13,8 @@ open EvmSemantics.EVM
 open YulEvmCompiler
 
 
+/- Superseded standalone Maj composition. -/
+/-
 theorem t2_cost_potential (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hcap : rest.length < 988)
     (hcode : s.executionEnv.code = submissionBytecode)
@@ -139,6 +141,62 @@ theorem t2_cost_potential (s : State) (msgOff returnDest : UInt256)
   change _ = 50 + MachineState.memCost
     (Compression.gotMaj s msgOff returnDest rest j).activeWords.toNat at hmaj
   change _ = 60 + MachineState.memCost
+    (Compression.afterT2 s msgOff returnDest rest j).activeWords.toNat at hb0
+  omega
+-/
+
+theorem t2_cost_potential (s : State) (msgOff returnDest : UInt256)
+    (rest : List UInt256) (j : Nat) (hcap : rest.length < 988)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    (Compression.gasSteps_t2 s msgOff returnDest rest j hcap hcode hfork
+      hrun hnp).cost + MachineState.memCost
+        (Compression.afterT1 s msgOff returnDest rest j).activeWords.toNat =
+      135 + MachineState.memCost
+        (Compression.afterT2 s msgOff returnDest rest j).activeWords.toNat := by
+  have hsetupT2 := blockCost_potential_of_static Compression.setupT2Path 36
+    (Compression.run_setupT2 s msgOff returnDest rest j (by omega) hcode hrun)
+    (by simpa [Compression.afterT1, Compression.gotIntegratedT1,
+      BigSigma.t1Returned, Compression.loadedT1Inputs, Compression.gotK,
+      Compression.gotW, Compression.loadedE, Accessors.kAtReturned,
+      Accessors.loadReturned, State.fork] using hfork)
+    (by simp [Compression.setupT2Path, CopyFree]) (by rfl)
+  have hb0 := ArithmeticGas.gasSteps_bigSigma0_cost_potential
+    (Compression.loadedT2Inputs s msgOff returnDest rest j)
+    (Compression.hValue s 0) (Compression.hValue s 1) (Compression.hValue s 2)
+    ([Compression.hValue s 0, Compression.t1 s j, Compression.hValue s 4,
+      UInt256.ofNat j, msgOff, returnDest] ++ rest) (by simp; omega)
+    (by simpa [Compression.loadedT2Inputs, Compression.afterT1,
+      Compression.gotIntegratedT1, BigSigma.t1Returned,
+      Compression.loadedT1Inputs, Compression.gotK, Compression.gotW,
+      Compression.loadedE, Accessors.kAtReturned, Accessors.loadReturned]
+      using hcode)
+    (by simpa [Compression.loadedT2Inputs, Compression.afterT1,
+      Compression.gotIntegratedT1, BigSigma.t1Returned,
+      Compression.loadedT1Inputs, Compression.gotK, Compression.gotW,
+      Compression.loadedE, Accessors.kAtReturned, Accessors.loadReturned,
+      State.fork] using hfork)
+    (by simpa [Compression.loadedT2Inputs, Compression.afterT1,
+      Compression.gotIntegratedT1, BigSigma.t1Returned,
+      Compression.loadedT1Inputs, Compression.gotK, Compression.gotW,
+      Compression.loadedE, Accessors.kAtReturned, Accessors.loadReturned]
+      using hrun)
+    (by simpa [Compression.loadedT2Inputs, Compression.afterT1,
+      Compression.gotIntegratedT1, BigSigma.t1Returned,
+      Compression.loadedT1Inputs, Compression.gotK, Compression.gotW,
+      Compression.loadedE, Accessors.kAtReturned, Accessors.loadReturned]
+      using hnp)
+  have haw :
+      (Compression.callIntegratedT2 s msgOff returnDest rest j).activeWords =
+        (Compression.loadedT2Inputs s msgOff returnDest rest j).activeWords := by
+    rfl
+  simp only [Compression.gasSteps_t2,
+    Challenge.EvmProof.GasSteps.trans_cost,
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost, id_eq]
+  rw [haw] at hsetupT2
+  change _ = 99 + MachineState.memCost
     (Compression.afterT2 s msgOff returnDest rest j).activeWords.toNat at hb0
   omega
 

@@ -129,6 +129,8 @@ theorem gasSteps_rotr_cost (s : State) (x : UInt256) (n : Nat)
   simp [Functions.unaryReturned] at hpotential
   exact hpotential
 
+/- Standalone Ch/Maj helpers are dead in the integrated kernel. -/
+/-
 private theorem ch_static :
     Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.chPath = 44 := by
   rfl
@@ -152,7 +154,9 @@ theorem gasSteps_ch_cost_potential (s : State) (x y z output returnDest : UInt25
   unfold Functions.gasSteps_ch
   simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
   simpa [Functions.ternaryEntry] using hmeter
+-/
 
+/-
 private theorem maj_static :
     Challenge.EvmProof.Meter.runLocatedBlockStaticCost Functions.majPath = 50 := by
   rfl
@@ -176,6 +180,7 @@ theorem gasSteps_maj_cost_potential (s : State) (x y z output returnDest : UInt2
   unfold Functions.gasSteps_maj
   simp only [Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
   simpa [Functions.ternaryEntry] using hmeter
+-/
 
 /-
 private theorem ssig0_setup_static :
@@ -330,21 +335,21 @@ theorem gasSteps_ssig1_cost_potential (s : State) (x returnDest : UInt256)
   simpa [Functions.smallSigmaEntry] using hmeter
 
 private theorem bigSigma0_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma0Path = 60 := by
+    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma0Path = 99 := by
   rfl
 
 theorem gasSteps_bigSigma0_cost_potential (s : State)
-    (x addend : UInt256) (rest : List UInt256)
+    (x y z : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1011)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    (BigSigma.gasSteps_bigSigma0 s x addend rest hcap hcode hfork
+    (BigSigma.gasSteps_bigSigma0 s x y z rest hcap hcode hfork
       hrun hnp).cost + MachineState.memCost s.activeWords.toNat =
-      60 + MachineState.memCost
-        (BigSigma.t2Returned s x addend rest).activeWords.toNat := by
-  have hresult := BigSigma.run_bigSigma0 s x addend rest hcap hcode hrun
+      99 + MachineState.memCost
+        (BigSigma.t2Returned s x y z rest).activeWords.toNat := by
+  have hresult := BigSigma.run_bigSigma0 s x y z rest hcap hcode hrun
   have hmeter := block_cost_potential BigSigma.bigSigma0Path hresult hfork
     (by simp [BigSigma.bigSigma0Path, CopyFree])
   rw [bigSigma0_static] at hmeter
@@ -353,21 +358,21 @@ theorem gasSteps_bigSigma0_cost_potential (s : State)
   simpa [BigSigma.t2Entry] using hmeter
 
 private theorem bigSigma1_static :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma1Path = 72 := by
+    Challenge.EvmProof.Meter.runLocatedBlockStaticCost BigSigma.bigSigma1Path = 108 := by
   rfl
 
 theorem gasSteps_bigSigma1_cost_potential (s : State)
-    (x addend1 addend2 : UInt256) (rest : List UInt256)
+    (x y z addend1 addend2 : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1011)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    (BigSigma.gasSteps_bigSigma1 s x addend1 addend2 rest hcap hcode hfork
+    (BigSigma.gasSteps_bigSigma1 s x y z addend1 addend2 rest hcap hcode hfork
       hrun hnp).cost + MachineState.memCost s.activeWords.toNat =
-      72 + MachineState.memCost
-        (BigSigma.t1Returned s x addend1 addend2 rest).activeWords.toNat := by
-  have hresult := BigSigma.run_bigSigma1 s x addend1 addend2 rest hcap hcode hrun
+      108 + MachineState.memCost
+        (BigSigma.t1Returned s x y z addend1 addend2 rest).activeWords.toNat := by
+  have hresult := BigSigma.run_bigSigma1 s x y z addend1 addend2 rest hcap hcode hrun
   have hmeter := block_cost_potential BigSigma.bigSigma1Path hresult hfork
     (by simp [BigSigma.bigSigma1Path, CopyFree])
   rw [bigSigma1_static] at hmeter

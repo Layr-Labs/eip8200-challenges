@@ -89,7 +89,7 @@ theorem t1_eq (s : State) (j : Nat) (x : Working) (k w : UInt32)
     Compression.t1 s j = Challenge.EvmProof.Word.ofUInt32
       (x.h + Sha256.bigSigma1 x.e + Sha256.Ch x.e x.f x.g + k + w) := by
   rcases hx with ⟨ha, hb, hc, hd, he, hf, hg, hh⟩
-  unfold Compression.t1 Compression.chPlusK
+  unfold Compression.t1
   rw [he, hf, hg, hh, hk, hw, Word.evmBigSigma1_ofUInt32,
     Word.evmCh_ofUInt32]
   rw [Challenge.EvmProof.Word.mask32_eq_ofUInt32]
