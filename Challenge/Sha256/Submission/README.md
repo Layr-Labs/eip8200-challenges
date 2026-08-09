@@ -162,15 +162,22 @@ the old cleanup pair and separate increment scaffolding disappear into dead
 This saves 13 gas per iteration, 208 gas per padded block, and 13,520 gas over
 the suite.
 
-Fresh local scoring of the exact submission bytes is 3,825,207 versus the
-10,179,119 reference, a combined reduction of 6,353,912 gas. All 19 vectors
+The eight-word feed-forward loop now reuses one computed `32*i` offset for
+both the saved-state and working-state loads, adds and masks the words, and
+stores the result directly. This replaces both generic accessor calls and
+their return scaffolding in the same 35-byte, 20-instruction span, preserving
+every downstream PC and artifact index. It saves 65 gas per iteration, 520
+gas per padded block, and 33,800 gas over the suite.
+
+Fresh local scoring of the exact submission bytes is 3,791,407 versus the
+10,179,119 reference, a combined reduction of 6,387,712 gas. All 19 vectors
 passed from both clean and dirty initial states with identical gas. The empty
-vector costs 60,107 gas.
+vector costs 59,587 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 58,316
+accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 57,796
 gas per padded block, plus calldata copying and memory expansion.

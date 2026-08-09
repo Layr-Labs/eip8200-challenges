@@ -64,6 +64,11 @@ private def wfOp {op : Operation}
     Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
   ⟨hopcode, hplain, havailable⟩
 
+private theorem word_land_comm (a b : UInt256) : a.land b = b.land a := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_land,
+    Challenge.EvmProof.Word.word_toNat_land, Nat.land_comm]
+
 def entryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
   [⟨435, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -352,28 +357,25 @@ def foldConditionPath :
 
 def foldSetupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨627, .push ⟨2, by decide⟩ (UInt256.ofNat 982), by rfl, by decide⟩,
-   ⟨628, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨629, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨630, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨631, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨632, .push ⟨2, by decide⟩ (UInt256.ofNat 544), by rfl, by decide⟩,
-   ⟨633, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨634, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨635, .push ⟨2, by decide⟩ (UInt256.ofNat 974), by rfl, by decide⟩,
-   ⟨636, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨637, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨638, .push ⟨2, by decide⟩ (UInt256.ofNat 318), by rfl, by decide⟩,
-   ⟨639, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
-
-def foldStorePath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨640, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨641, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨642, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨643, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨644, .push ⟨2, by decide⟩ (UInt256.ofNat 338), by rfl, by decide⟩,
-   ⟨645, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨627, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨628, .push ⟨3, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨629, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨630, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨631, .push ⟨3, by decide⟩ (UInt256.ofNat 544), by rfl, by decide⟩,
+   ⟨632, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨633, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨634, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨635, .push ⟨3, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
+   ⟨636, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨637, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨638, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨639, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨640, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨641, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨642, .push ⟨2, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
+   ⟨643, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨644, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨645, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def foldIncrementPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -852,8 +854,8 @@ def compressReturned (s : State) (returnDest : UInt256)
 @[simp] private theorem foldPC (i : Nat) (hlo : 617 ≤ i) (hhi : i ≤ 657) :
     Artifact.referenceArtifact.instructionPC i =
       [935, 936, 937, 938, 939, 941, 942, 943, 944, 947,
-       948, 951, 956, 957, 959, 960, 963, 964, 965, 968,
-       969, 970, 973, 974, 975, 976, 977, 978, 981, 982,
+       948, 949, 953, 954, 955, 959, 960, 961, 962, 966,
+       967, 968, 969, 974, 975, 976, 979, 980, 981, 982,
        983, 985, 986, 987, 988, 989, 992, 993, 994, 995,
        996][i - 617]! := by
   interval_cases i <;> decide
@@ -1522,56 +1524,33 @@ theorem run_foldCondition (s : State) (msgOff returnDest : UInt256)
 set_option linter.unusedSimpArgs false in
 theorem run_foldSetup (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (i : Nat) (hcap : rest.length < 1011)
-    (hcode : s.executionEnv.code = submissionBytecode)
+    (_hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock foldSetupPath
       (afterFoldCondition s msgOff returnDest rest i) =
-        some (foldCallH s msgOff returnDest rest i) := by
+        some (foldGotSet s msgOff returnDest rest i) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
-  have hc8 : rest.length + 8 < 1024 := by omega
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
-  have hoff : UInt256.ofNat 544 +
+  have hoff544 : UInt256.ofNat 544 +
         UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5) =
       UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5) +
         UInt256.ofNat 544 := Challenge.EvmProof.Word.word_add_comm _ _
-  have hdest : Decode.isValidJumpDest submissionBytecode 318 = true := by decide
+  have hoff288 : UInt256.ofNat 288 +
+        UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5) =
+      UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5) +
+        UInt256.ofNat 288 := Challenge.EvmProof.Word.word_add_comm _ _
   simp [foldSetupPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    afterFoldCondition, foldCallH, loadedSaved, savedValue, savedOffset,
-    Accessors.loadEntry, List.exchange, hc3, hc4, hc5, hc6, hc7, hc8,
-    hc9, hc10, hc11, hc12, hoff, hcode, hrun, hdest,
+    afterFoldCondition, foldGotSet, foldGotH, foldedValue, hValue,
+    loadedSaved, savedValue, savedOffset, Accessors.loadReturned,
+    Accessors.storeReturned, Accessors.slotOffset, List.exchange,
+    hc3, hc4, hc5, hc6, hc7, hoff544, hoff288, hrun,
+    Challenge.EvmProof.Word.mask32,
     State.activeWordsAfterUInt256]
-
-set_option linter.unusedSimpArgs false in
-theorem run_foldStore (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (i : Nat) (hcap : rest.length < 1012)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock foldStorePath
-      (foldGotH s msgOff returnDest rest i) =
-        some (foldCallSet s msgOff returnDest rest i) := by
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have hc5 : rest.length + 5 < 1024 := by omega
-  have hc6 : rest.length + 6 < 1024 := by omega
-  have hc7 : rest.length + 7 < 1024 := by omega
-  have hc8 : rest.length + 8 < 1024 := by omega
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 338 = true := by decide
-  simp [foldStorePath, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    foldGotH, foldCallSet, foldedValue, hValue, loadedSaved,
-    Challenge.EvmProof.Word.mask32, Accessors.loadReturned,
-    Accessors.storeEntry, List.exchange, hc4, hc5, hc6, hc7, hc8, hc9,
-    hc10, hc11, hcode, hrun, hdest]
+  rw [word_land_comm (UInt256.ofNat 0xffffffff)]
   rfl
 
 set_option linter.unusedSimpArgs false in

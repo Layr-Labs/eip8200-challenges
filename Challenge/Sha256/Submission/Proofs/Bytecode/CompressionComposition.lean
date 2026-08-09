@@ -947,7 +947,7 @@ def gasSteps_foldIteration (s : State) (msgOff returnDest : UInt256)
     · exact hnp
   have gSetup : Challenge.EvmProof.GasSteps
       (afterFoldCondition s msgOff returnDest rest i)
-      (foldCallH s msgOff returnDest rest i) := by
+      (foldGotSet s msgOff returnDest rest i) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka foldSetupPath
     · exact hcode
@@ -955,45 +955,6 @@ def gasSteps_foldIteration (s : State) (msgOff returnDest : UInt256)
     · exact run_foldSetup s msgOff returnDest rest i (by omega) hcode hrun
     · exact hrun
     · exact hnp
-  have qSavedCode : (loadedSaved s i).executionEnv.code =
-      submissionBytecode := by simpa [loadedSaved] using hcode
-  have qSavedFork : (loadedSaved s i).fork = .Osaka := by
-    simpa [loadedSaved, State.fork] using hfork
-  have qSavedRun : (loadedSaved s i).halt = .Running := by
-    simpa [loadedSaved] using hrun
-  have qSavedNp : Precompile.isPrecompileWithConfig (loadedSaved s i).executionEnv.precompileConfig (loadedSaved s i).executionEnv.fork
-      (loadedSaved s i).executionEnv.codeAddr = false := by
-    simpa [loadedSaved] using hnp
-  have gH := Accessors.gasSteps_hAt (loadedSaved s i) (UInt256.ofNat i) 0
-    (UInt256.ofNat 974)
-    ([savedValue s i, UInt256.ofNat 0xffffffff, UInt256.ofNat 982,
-      UInt256.ofNat i, msgOff, returnDest] ++ rest)
-    (by simp; omega) qSavedCode qSavedFork qSavedRun qSavedNp (by decide)
-  have qHCode : (foldGotH s msgOff returnDest rest i).executionEnv.code =
-      submissionBytecode := by
-    simpa [foldGotH, loadedSaved, Accessors.loadReturned] using hcode
-  have qHFork : (foldGotH s msgOff returnDest rest i).fork = .Osaka := by
-    simpa [foldGotH, loadedSaved, Accessors.loadReturned, State.fork] using hfork
-  have qHRun : (foldGotH s msgOff returnDest rest i).halt = .Running := by
-    simpa [foldGotH, loadedSaved, Accessors.loadReturned] using hrun
-  have qHNp : Precompile.isPrecompileWithConfig (foldGotH s msgOff returnDest rest i).executionEnv.precompileConfig (foldGotH s msgOff returnDest rest i).executionEnv.fork
-      (foldGotH s msgOff returnDest rest i).executionEnv.codeAddr = false := by
-    simpa [foldGotH, loadedSaved, Accessors.loadReturned] using hnp
-  have gStoreSetup : Challenge.EvmProof.GasSteps
-      (foldGotH s msgOff returnDest rest i)
-      (foldCallSet s msgOff returnDest rest i) := by
-    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.referenceArtifact .Osaka foldStorePath
-    · exact qHCode
-    · exact qHFork
-    · exact run_foldStore s msgOff returnDest rest i (by omega) hcode hrun
-    · exact qHRun
-    · exact qHNp
-  have gSet := Accessors.gasSteps_hSet
-    (foldGotH s msgOff returnDest rest i) (UInt256.ofNat i)
-    (foldedValue s msgOff returnDest rest i) (UInt256.ofNat 982)
-    ([UInt256.ofNat i, msgOff, returnDest] ++ rest)
-    (by simp; omega) qHCode qHFork qHRun qHNp (by decide)
   have qSetCode : (foldGotSet s msgOff returnDest rest i).executionEnv.code =
       submissionBytecode := by
     simpa [foldGotSet, foldGotH, loadedSaved, Accessors.storeReturned,
@@ -1019,8 +980,7 @@ def gasSteps_foldIteration (s : State) (msgOff returnDest : UInt256)
         hcode hrun
     · exact qSetRun
     · exact qSetNp
-  exact gCond.trans (gSetup.trans (gH.trans
-    (gStoreSetup.trans (gSet.trans gInc))))
+  exact gCond.trans (gSetup.trans gInc)
 
 def foldLoopState (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) : Nat → State
