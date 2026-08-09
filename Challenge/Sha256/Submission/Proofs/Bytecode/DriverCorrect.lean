@@ -477,7 +477,7 @@ private theorem readWord_afterFoldIteration (s : State)
     readWord_storeReturnedH
       (Compression.foldGotH s msgOff returnDest rest i) i
       (Compression.foldedValue s msgOff returnDest rest i)
-      (UInt256.ofNat 981) ([UInt256.ofNat i, msgOff, returnDest] ++ rest)
+      (UInt256.ofNat 982) ([UInt256.ofNat i, msgOff, returnDest] ++ rest)
       addr hi hout
 
 private theorem readWord_foldLoop (s : State) (msgOff returnDest : UInt256)

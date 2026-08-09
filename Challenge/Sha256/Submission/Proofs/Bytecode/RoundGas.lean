@@ -24,7 +24,7 @@ theorem pairIteration_cost_potential (s : State)
     (PairCompositionTest.gasStepsPair s msgOff returnDest rest j hj hcap
       hcode hfork hrun hnp).cost + MachineState.memCost
         (Compression.pairAt s msgOff returnDest rest j).activeWords.toNat =
-      894 + MachineState.memCost
+      868 + MachineState.memCost
         (Compression.afterPair s msgOff returnDest rest j).activeWords.toNat := by
   have hj64 : j < 64 := by omega
   have hj1 : j + 1 < 64 := by omega
@@ -34,7 +34,7 @@ theorem pairIteration_cost_potential (s : State)
     (by simpa [Compression.pairAt, State.fork] using hfork)
     (by simp [Compression.pairConditionPath, CopyFree]) (by rfl)
   have hsetup10 := blockCost_potential_of_static
-    Compression.pairFirstSetupPath 128
+    Compression.pairFirstSetupPath 111
     (PairSegmentTest.runFirstSetup s msgOff returnDest rest j hj64 (by omega)
       hcode hrun)
     (by simpa [Compression.afterPairCondition, Compression.pairAt, State.fork]
@@ -51,7 +51,8 @@ theorem pairIteration_cost_potential (s : State)
       Compression.hValue s 5, Compression.hValue s 6,
       Compression.hValue s 7, Compression.hValue s 1,
       Compression.hValue s 2, Compression.hValue s 3,
-      UInt256.ofNat j, msgOff, returnDest] ++ rest)
+      Compression.pairWPtr j, Compression.pairKPtr j,
+      msgOff, returnDest] ++ rest)
     (by simp; omega) hcode
     (by simpa [Compression.firstPairInputsLoaded,
       Compression.afterPairCondition, Compression.pairAt, State.fork]
@@ -77,7 +78,8 @@ theorem pairIteration_cost_potential (s : State)
       Compression.hValue s 4, Compression.hValue s 5,
       Compression.hValue s 6, Compression.hValue s 7,
       Compression.hValue s 1, Compression.hValue s 2,
-      Compression.hValue s 3, UInt256.ofNat j, msgOff, returnDest] ++ rest)
+      Compression.hValue s 3, Compression.pairWPtr j,
+      Compression.pairKPtr j, msgOff, returnDest] ++ rest)
     (by simp; omega) hcode
     (by simpa [Compression.afterPairT10, Compression.firstPairInputsLoaded,
       Compression.afterPairCondition, Compression.pairAt,
@@ -90,7 +92,7 @@ theorem pairIteration_cost_potential (s : State)
       BigSigma.t1Returned] using hnp)
     (by decide)
   have hsetup11 := blockCost_potential_of_static
-    Compression.pairSecondT1SetupPath 127
+    Compression.pairSecondT1SetupPath 106
     (PairSegmentTest.runSecondT1Setup s msgOff returnDest rest j hj1
       (by omega) hcode hrun)
     (by simpa [Compression.afterPairT20, Compression.afterPairT10,
@@ -110,7 +112,8 @@ theorem pairIteration_cost_potential (s : State)
       Compression.hValue s 5, Compression.hValue s 6,
       Compression.hValue s 7, Compression.hValue s 1,
       Compression.hValue s 2, Compression.hValue s 3,
-      UInt256.ofNat (j + 1), msgOff, returnDest] ++ rest)
+      Compression.pairWPtr j, Compression.pairKPtr j,
+      msgOff, returnDest] ++ rest)
     (by simp; omega) hcode
     (by simpa [Compression.secondPairInputsLoaded, Compression.afterPairT20,
       Compression.afterPairT10, Compression.firstPairInputsLoaded,
@@ -144,8 +147,8 @@ theorem pairIteration_cost_potential (s : State)
       Compression.hValue s 4, Compression.hValue s 5,
       Compression.hValue s 6, Compression.hValue s 7,
       Compression.hValue s 1, Compression.hValue s 2,
-      Compression.hValue s 3, UInt256.ofNat (j + 1), msgOff,
-      returnDest] ++ rest)
+      Compression.hValue s 3, Compression.pairWPtr j,
+      Compression.pairKPtr j, msgOff, returnDest] ++ rest)
     (by simp; omega) hcode
     (by simpa [Compression.afterPairT11, Compression.secondPairInputsLoaded,
       Compression.afterPairT20, Compression.afterPairT10,
@@ -163,7 +166,7 @@ theorem pairIteration_cost_potential (s : State)
       Compression.pairAt, BigSigma.t2Returned,
       BigSigma.t1Returned] using hnp)
     (by decide)
-  have hcommit := blockCost_potential_of_static Compression.pairCommitPath 146
+  have hcommit := blockCost_potential_of_static Compression.pairCommitPath 158
     (PairSegmentTest.runCommit s msgOff returnDest rest j (by omega)
       (by omega) hcode hrun)
     (by simpa [Compression.afterPairT21, Compression.afterPairT11,
@@ -177,7 +180,7 @@ theorem pairIteration_cost_potential (s : State)
   change (_ + (_ + (_ + (_ + (_ + (_ + (_ + (_ + (_ + _))))))))) +
       MachineState.memCost
         (Compression.pairAt s msgOff returnDest rest j).activeWords.toNat =
-    894 + MachineState.memCost
+    868 + MachineState.memCost
       (Compression.afterPair s msgOff returnDest rest j).activeWords.toNat
   omega
 
@@ -191,10 +194,10 @@ theorem roundLoop_cost_potential (s : State)
     (Compression.gasSteps_roundLoop s msgOff returnDest rest hcap hcode hfork
       hrun hnp).cost + MachineState.memCost
         (Compression.roundLoopState s msgOff returnDest rest 0).activeWords.toNat =
-      32 * 894 + MachineState.memCost
+      32 * 868 + MachineState.memCost
         (Compression.roundLoopState s msgOff returnDest rest 64).activeWords.toNat := by
   unfold Compression.gasSteps_roundLoop
-  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add 32 894
+  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add 32 868
   intro n hn
   let q := PairCompositionTest.pairLoopState s msgOff returnDest rest n
   have qcode : q.executionEnv.code = submissionBytecode := by simpa [q] using hcode
@@ -212,7 +215,7 @@ theorem roundLoop_cost_potential (s : State)
         msgOff returnDest rest (2 * n) (by omega) hcap qcode qfork qrun qnp).cost +
           MachineState.memCost
             (PairCompositionTest.pairLoopState s msgOff returnDest rest n).activeWords.toNat =
-        894 + MachineState.memCost
+        868 + MachineState.memCost
           (PairCompositionTest.pairLoopState s msgOff returnDest rest (n + 1)).activeWords.toNat := by
     simpa [Compression.pairAt, PairCompositionTest.pairLoopState] using h
   simpa only [Challenge.EvmProof.GasSteps.cast_cost] using h'

@@ -61,7 +61,8 @@ def gasStepsPair (s : State) (msgOff returnDest : UInt256)
           Compression.hValue s 5, Compression.hValue s 6,
           Compression.hValue s 7, Compression.hValue s 1,
           Compression.hValue s 2, Compression.hValue s 3,
-          UInt256.ofNat j, msgOff, returnDest] ++ rest)
+          Compression.pairWPtr j, Compression.pairKPtr j,
+          msgOff, returnDest] ++ rest)
         (by simp; omega) hcode hfork hrun hnp valid717)
   have gSetup20 : Challenge.EvmProof.GasSteps
       (Compression.afterPairT10 s msgOff returnDest rest j)
@@ -89,7 +90,8 @@ def gasStepsPair (s : State) (msgOff returnDest : UInt256)
           Compression.hValue s 4, Compression.hValue s 5,
           Compression.hValue s 6, Compression.hValue s 7,
           Compression.hValue s 1, Compression.hValue s 2,
-          Compression.hValue s 3, UInt256.ofNat j, msgOff, returnDest] ++ rest)
+          Compression.hValue s 3, Compression.pairWPtr j,
+          Compression.pairKPtr j, msgOff, returnDest] ++ rest)
         (by simp; omega) hcode hfork hrun hnp valid737)
   have gSetup11 : Challenge.EvmProof.GasSteps
       (Compression.afterPairT20 s msgOff returnDest rest j)
@@ -121,7 +123,8 @@ def gasStepsPair (s : State) (msgOff returnDest : UInt256)
           Compression.hValue s 5, Compression.hValue s 6,
           Compression.hValue s 7, Compression.hValue s 1,
           Compression.hValue s 2, Compression.hValue s 3,
-          UInt256.ofNat (j + 1), msgOff, returnDest] ++ rest)
+          Compression.pairWPtr j, Compression.pairKPtr j,
+          msgOff, returnDest] ++ rest)
         (by simp; omega) hcode hfork hrun hnp valid805)
   have gSetup21 : Challenge.EvmProof.GasSteps
       (Compression.afterPairT11 s msgOff returnDest rest j)
@@ -150,8 +153,8 @@ def gasStepsPair (s : State) (msgOff returnDest : UInt256)
           Compression.hValue s 4, Compression.hValue s 5,
           Compression.hValue s 6, Compression.hValue s 7,
           Compression.hValue s 1, Compression.hValue s 2,
-          Compression.hValue s 3, UInt256.ofNat (j + 1), msgOff,
-          returnDest] ++ rest)
+          Compression.hValue s 3, Compression.pairWPtr j,
+          Compression.pairKPtr j, msgOff, returnDest] ++ rest)
         (by simp; omega) hcode hfork hrun hnp valid825)
   have gCommit : Challenge.EvmProof.GasSteps
       (Compression.afterPairT21 s msgOff returnDest rest j)

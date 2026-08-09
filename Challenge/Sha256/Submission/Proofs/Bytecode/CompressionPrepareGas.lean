@@ -17,8 +17,8 @@ open YulEvmCompiler
 private theorem prepare_chain (cEntry cSchedule cCopy p₀ p₁ p₂ p₃ : Nat)
     (hentry : cEntry + p₀ = 18 + p₁)
     (hschedule : cSchedule + p₁ = 15690 + p₂)
-    (hcopy : cCopy + p₂ = 39 + p₃) :
-    (cEntry + (cSchedule + cCopy)) + p₀ = 15747 + p₃ := by
+    (hcopy : cCopy + p₂ = 43 + p₃) :
+    (cEntry + (cSchedule + cCopy)) + p₀ = 15751 + p₃ := by
   omega
 
 theorem prepare_parts_cost_potential (s : State)
@@ -44,7 +44,7 @@ theorem prepare_parts_cost_potential (s : State)
           stack := [msgOff, returnDest] ++ rest })) +
       MachineState.memCost
         (Compression.compressEntry s msgOff returnDest rest).activeWords.toNat =
-    15747 + MachineState.memCost
+    15751 + MachineState.memCost
       (Compression.roundAt
         (Compression.copyHashState
           (Compression.afterSchedule s msgOff returnDest rest))
@@ -88,7 +88,7 @@ theorem prepare_cost_potential (s : State) (msgOff returnDest : UInt256)
       (Compression.gasSteps_toRoundLoop s msgOff returnDest rest hcap hcode
         hfork hrun hnp) + MachineState.memCost
           (Compression.compressEntry s msgOff returnDest rest).activeWords.toNat =
-      15747 + MachineState.memCost
+      15751 + MachineState.memCost
         (Compression.roundAt
           (Compression.copyHashState
             (Compression.afterSchedule s msgOff returnDest rest))

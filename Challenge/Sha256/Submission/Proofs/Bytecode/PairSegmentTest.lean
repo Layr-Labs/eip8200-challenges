@@ -53,6 +53,7 @@ theorem runFirstSetup (s : State) (msgOff returnDest : UInt256)
   have hc21 : rest.length + 21 < 1024 := by omega
   have hc22 : rest.length + 22 < 1024 := by omega
   have hc23 : rest.length + 23 < 1024 := by omega
+  have hc24 : rest.length + 24 < 1024 := by omega
   have hdest : Decode.isValidJumpDest submissionBytecode 163 = true := by decide
   have h163 : (163 : UInt256).toNat = 163 := by decide
   have h288 : (288 : UInt256).toNat = 288 := by decide
@@ -177,6 +178,51 @@ theorem runFirstSetup (s : State) (msgOff returnDest : UInt256)
           ((4 : UInt256) +
             (UInt256.ofNat j).shiftLeft (2 : UInt256)).toNat = _
     exact hmaskGoal
+  have hwPtrNat :
+      (Compression.pairWPtr j).toNat =
+        Accessors.slotOffset 800 (UInt256.ofNat j) := by
+    have hshift5 :
+        (UInt256.ofNat j).shiftLeft (UInt256.ofNat 5) =
+          UInt256.ofNat (j * 32) := by
+      simpa using Challenge.EvmProof.Word.shiftLeft_ofNat
+        (value := j) (shift := 5) (by omega) (by decide) (by omega)
+    unfold Compression.pairWPtr Accessors.slotOffset
+    rw [hshift5, Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)]
+    simp only [Challenge.EvmProof.Word.word_toNat_ofNat]
+    repeat' rw [Nat.mod_eq_of_lt (by omega)]
+    omega
+  have hkPtrNat : (Compression.pairKPtr j).toNat = j * 4 + 4 := by
+    unfold Compression.pairKPtr
+    simp only [Challenge.EvmProof.Word.word_toNat_ofNat]
+    rw [Nat.mod_eq_of_lt (by omega)]
+    omega
+  have hreadWPtr :
+      MachineState.readWord s.memory (Compression.pairWPtr j).toNat =
+        Compression.wValue s j := by
+    unfold Compression.wValue
+    rw [hwPtrNat]
+  have hmaskKPtr :
+      UInt256.land (UInt256.ofNat 0xffffffff)
+          (MachineState.readWord s.memory (Compression.pairKPtr j).toNat) =
+        Compression.kValue s j := by
+    rw [hkPtrNat]
+    change UInt256.ofNat 0xffffffff &&&
+      MachineState.readWord s.memory (j * 4 + 4) = _
+    exact hmask'
+  have hkPlusH :
+      UInt256.land (UInt256.ofNat 0xffffffff)
+          (MachineState.readWord s.memory (Compression.pairKPtr j).toNat) +
+        Compression.hValue s 7 =
+      Compression.hValue s 7 + Compression.kValue s j := by
+    rw [hmaskKPtr]
+    exact Challenge.EvmProof.Word.word_add_comm _ _
+  have hmaskKNat :
+      UInt256.land (UInt256.ofNat 0xffffffff)
+          (MachineState.readWord s.memory (j * 4 + 4)) =
+        Compression.kValue s j := by
+    change UInt256.ofNat 0xffffffff &&&
+      MachineState.readWord s.memory (j * 4 + 4) = _
+    exact hmask'
   simp [Compression.pairFirstSetupPath,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -189,26 +235,12 @@ theorem runFirstSetup (s : State) (msgOff returnDest : UInt256)
     hdest, h163, h288, h320, h352, h384, h416, h448, h480, h512, h800,
     h2, h4, h5, hdirect, hmask', haddr800, hadd4, hmaskRev,
     hoff0, hoff1, hoff2, hoff3, hoff4, hoff5, hoff6, hoff7,
-    h163Eq, h717Eq, hmaskEq, State.activeWordsAfterUInt256]
-  constructor
-  · simp only [h2Eq, h4Eq, h5Eq, h800Eq]
-    rw [haddr800, hadd4, hdirect]
-  constructor
-  · calc
-      UInt256.land (UInt256.ofNat 0xffffffff)
-            (MachineState.readWord s.memory
-              ((4 : UInt256) +
-                (UInt256.ofNat j).shiftLeft (2 : UInt256)).toNat) +
-          MachineState.readWord s.memory 512 =
-          Compression.kValue s j + MachineState.readWord s.memory 512 :=
-            congrArg (fun x => x + MachineState.readWord s.memory 512) hmaskLandGoal
-      _ = MachineState.readWord s.memory 512 + Compression.kValue s j :=
-        Challenge.EvmProof.Word.word_add_comm _ _
-  constructor
-  · rw [h5Eq, h800Eq, haddr800]
-  constructor
-  · exact hmaskLandGoal
-  · rw [h5Eq, h800Eq, haddr800]
+    h163Eq, h717Eq, hmaskEq, hwPtrNat, hkPtrNat, hreadWPtr, hmaskKPtr,
+    hmaskLandGoal, hkPlusH,
+    State.activeWordsAfterUInt256]
+  exact ⟨by
+    rw [hmaskKNat]
+    exact Challenge.EvmProof.Word.word_add_comm _ _, hmaskKNat⟩
 
 set_option linter.unusedSimpArgs false in
 theorem runFirstT2Setup (s : State) (msgOff returnDest : UInt256)
@@ -234,6 +266,7 @@ theorem runFirstT2Setup (s : State) (msgOff returnDest : UInt256)
   have hc16 : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
+  have hc19 : rest.length + 19 < 1024 := by omega
   have hdest : Decode.isValidJumpDest submissionBytecode 114 = true := by decide
   have h736 : (736 : UInt256).toNat = 736 := by decide
   have h114 : (114 : UInt256).toNat = 114 := by decide
@@ -256,7 +289,7 @@ theorem runFirstT2Setup (s : State) (msgOff returnDest : UInt256)
     Compression.afterPairT10, Compression.callPairT20,
     Compression.t10, BigSigma.t1Returned, BigSigma.t2Entry,
     List.exchange, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11,
-    hc12, hc13, hc14, hc15, hc16, hc17, hc18, hcode, hrun, qrun, qcode,
+    hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19, hcode, hrun, qrun, qcode,
     h736, h114, h114Eq, h737Eq, hmaskEq, hdest]
 
 set_option linter.unusedSimpArgs false in
@@ -289,6 +322,7 @@ theorem runSecondT1Setup (s : State) (msgOff returnDest : UInt256)
   have hc21 : rest.length + 21 < 1024 := by omega
   have hc22 : rest.length + 22 < 1024 := by omega
   have hc23 : rest.length + 23 < 1024 := by omega
+  have hc24 : rest.length + 24 < 1024 := by omega
   have hdest : Decode.isValidJumpDest submissionBytecode 163 = true := by decide
   have hadd : UInt256.ofNat 1 + UInt256.ofNat j =
       UInt256.ofNat (j + 1) := by
@@ -395,6 +429,78 @@ theorem runSecondT1Setup (s : State) (msgOff returnDest : UInt256)
         Compression.wValue s (j + 1) := by
     unfold Compression.wValue Accessors.slotOffset
     rw [haddrW]
+  have hwNext :
+      Compression.pairWPtr j + UInt256.ofNat 32 =
+        Compression.pairWPtr (j + 1) := by
+    unfold Compression.pairWPtr
+    rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)]
+    congr 1
+    omega
+  have hkNext :
+      Compression.pairKPtr j + UInt256.ofNat 4 =
+        Compression.pairKPtr (j + 1) := by
+    unfold Compression.pairKPtr
+    rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)]
+    congr 1
+    omega
+  have hwPtrNextNat :
+      (Compression.pairWPtr (j + 1)).toNat =
+        Accessors.slotOffset 800 (UInt256.ofNat (j + 1)) := by
+    have hshift5 :
+        (UInt256.ofNat (j + 1)).shiftLeft (UInt256.ofNat 5) =
+          UInt256.ofNat ((j + 1) * 32) := by
+      simpa using Challenge.EvmProof.Word.shiftLeft_ofNat
+        (value := j + 1) (shift := 5) (by omega) (by decide) (by omega)
+    unfold Compression.pairWPtr Accessors.slotOffset
+    rw [hshift5, Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)]
+    simp only [Challenge.EvmProof.Word.word_toNat_ofNat]
+    repeat' rw [Nat.mod_eq_of_lt (by omega)]
+    omega
+  have hkPtrNextNat :
+      (Compression.pairKPtr (j + 1)).toNat = (j + 1) * 4 + 4 := by
+    unfold Compression.pairKPtr
+    simp only [Challenge.EvmProof.Word.word_toNat_ofNat]
+    rw [Nat.mod_eq_of_lt (by omega)]
+    omega
+  have hwComm :
+      UInt256.ofNat 32 + Compression.pairWPtr j =
+        Compression.pairWPtr j + UInt256.ofNat 32 :=
+    Challenge.EvmProof.Word.word_add_comm _ _
+  have hkComm :
+      UInt256.ofNat 4 + Compression.pairKPtr j =
+        Compression.pairKPtr j + UInt256.ofNat 4 :=
+    Challenge.EvmProof.Word.word_add_comm _ _
+  have hreadWPtr :
+      MachineState.readWord s.memory
+          (UInt256.ofNat 32 + Compression.pairWPtr j).toNat =
+        Compression.wValue s (j + 1) := by
+    rw [hwComm, hwNext, hwPtrNextNat]
+    rfl
+  have hmaskKPtr :
+      UInt256.land (UInt256.ofNat 0xffffffff)
+          (MachineState.readWord s.memory
+            (UInt256.ofNat 4 + Compression.pairKPtr j).toNat) =
+        Compression.kValue s (j + 1) := by
+    rw [hkComm, hkNext, hkPtrNextNat]
+    change UInt256.ofNat 0xffffffff &&&
+      MachineState.readWord s.memory ((j + 1) * 4 + 4) = _
+    rw [hand]
+    simpa [Challenge.EvmProof.Word.mask32] using hmaskK
+  have hWAddr :
+      (UInt256.ofNat 32 + Compression.pairWPtr j).toNat =
+        ((UInt256.ofNat (j + 1)).shiftLeft (UInt256.ofNat 5) +
+          UInt256.ofNat 800).toNat := by
+    rw [hwComm, hwNext]
+    simpa [Accessors.slotOffset] using hwPtrNextNat
+  have hmaskKNat :
+      UInt256.land (UInt256.ofNat 0xffffffff)
+          (MachineState.readWord s.memory ((j + 1) * 4 + 4)) =
+        Compression.kValue s (j + 1) := by
+    change UInt256.ofNat 0xffffffff &&&
+      MachineState.readWord s.memory ((j + 1) * 4 + 4) = _
+    rw [hand]
+    simpa [Challenge.EvmProof.Word.mask32] using hmaskK
+  have h32Eq : (32 : UInt256) = UInt256.ofNat 32 := by decide
   simp [Compression.pairSecondT1SetupPath,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -403,20 +509,22 @@ theorem runSecondT1Setup (s : State) (msgOff returnDest : UInt256)
     BigSigma.t2Returned, BigSigma.t1Entry, Accessors.slotOffset,
     List.exchange, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11,
     hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19, hc20, hc21,
-    hc22, hc23, hcode, hrun, qrun, qcode, qrun0, qcode0, hdest, hadd,
+    hc22, hc23, hc24, hcode, hrun, qrun, qcode, qrun0, qcode0, hdest, hadd,
     h163, h163Eq, h805Eq, hmaskEq, h1Eq, h2Eq, h4Eq, h5Eq, h800Eq,
-    qmem, hadd, hpairE, hpairA, State.activeWordsAfterUInt256]
+    qmem, hadd, hpairE, hpairA, hwNext, hkNext, hwPtrNextNat,
+    hkPtrNextNat, hwComm, hkComm, hreadWPtr, hmaskKPtr, hmaskKLand,
+    hreadW, State.activeWordsAfterUInt256]
   constructor
-  · rw [haddrW, haddrK]
+  · rw [h32Eq, hWAddr]
   constructor
-  · rw [hmaskKLand]
+  · rw [hmaskKNat]
     exact Challenge.EvmProof.Word.word_add_comm _ _
   constructor
-  · exact hreadW
+  · simpa [h32Eq] using hreadWPtr
   constructor
-  · exact hmaskKLand
+  · exact hmaskKNat
   constructor
-  · exact hreadW
+  · simpa [h32Eq] using hreadWPtr
   · simpa [Compression.t20] using hpairA
 
 set_option linter.unusedSimpArgs false in
@@ -445,6 +553,7 @@ theorem runSecondT2Setup (s : State) (msgOff returnDest : UInt256)
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
   have hc20 : rest.length + 20 < 1024 := by omega
+  have hc21 : rest.length + 21 < 1024 := by omega
   have hdest : Decode.isValidJumpDest submissionBytecode 114 = true := by decide
   have h824 : (824 : UInt256).toNat = 824 := by decide
   have h114 : (114 : UInt256).toNat = 114 := by decide
@@ -476,7 +585,7 @@ theorem runSecondT2Setup (s : State) (msgOff returnDest : UInt256)
     Compression.afterPairT11, Compression.callPairT21,
     Compression.t11, BigSigma.t1Returned, BigSigma.t2Entry,
     List.exchange, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11,
-    hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19, hc20,
+    hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19, hc20, hc21,
     hcode, hrun, qrun, qcode, h824, h114, h114Eq, h825Eq, hmaskEq,
     hdest]
 
@@ -508,7 +617,7 @@ theorem runCommit (s : State) (msgOff returnDest : UInt256)
   have hc19 : rest.length + 19 < 1024 := by omega
   have hc20 : rest.length + 20 < 1024 := by omega
   have hc21 : rest.length + 21 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 633 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 637 = true := by decide
   have hadd : UInt256.ofNat 1 + UInt256.ofNat (j + 1) =
       UInt256.ofNat (j + 2) := by
     rw [Challenge.EvmProof.Word.word_add_comm]
@@ -571,9 +680,27 @@ theorem runCommit (s : State) (msgOff returnDest : UInt256)
   have h448 : (448 : UInt256).toNat = 448 := by decide
   have h480 : (480 : UInt256).toNat = 480 := by decide
   have h512 : (512 : UInt256).toNat = 512 := by decide
-  have h633 : (633 : UInt256).toNat = 633 := by decide
-  have h633Eq : (633 : UInt256) = UInt256.ofNat 633 := by decide
+  have h637 : (637 : UInt256).toNat = 637 := by decide
+  have h637Eq : (637 : UInt256) = UInt256.ofNat 637 := by decide
   have hmaskEq : (4294967295 : UInt256) = UInt256.ofNat 4294967295 := by decide
+  have hwInc :
+      UInt256.ofNat 64 + Compression.pairWPtr j =
+        Compression.pairWPtr (j + 2) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    unfold Compression.pairWPtr
+    rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)]
+    congr 1
+    omega
+  have hkInc :
+      UInt256.ofNat 8 + Compression.pairKPtr j =
+        Compression.pairKPtr (j + 2) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    unfold Compression.pairKPtr
+    rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)]
+    congr 1
+    omega
+  have h64Eq : (64 : UInt256) = UInt256.ofNat 64 := by decide
+  have h8Eq : (8 : UInt256) = UInt256.ofNat 8 := by decide
   have qrun :
       (Compression.secondPairInputsLoaded s msgOff returnDest rest j).halt =
         .Running := by
@@ -603,7 +730,8 @@ theorem runCommit (s : State) (msgOff returnDest : UInt256)
     hc14, hc15, hc16, hc17, hc18, hc19, hc20, hc21,
     hcode, hrun, qrun, qcode, qrun1, qcode1, hdest, hadd, hpairA, hpairE,
     hpairARaw, hpairERaw, h1Eq, h288, h320, h352, h384, h416, h448,
-    h480, h512, h633, h633Eq, hmaskEq,
+    h480, h512, h637, h637Eq, hmaskEq, hwInc, hkInc,
     State.activeWordsAfterUInt256]
+  exact ⟨by rw [h64Eq]; exact hwInc, by rw [h8Eq]; exact hkInc⟩
 
 end Challenge.Sha256.Submission.Proofs.Bytecode.PairSegmentTest

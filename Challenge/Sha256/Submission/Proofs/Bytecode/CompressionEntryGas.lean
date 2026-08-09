@@ -47,7 +47,7 @@ private theorem copyWork (s : State) (msgOff returnDest : UInt256)
     Challenge.EvmProof.Meter.runLocatedBlockCostWithoutMemory
       Compression.copyAndLoopStartPath
       { s with pc := UInt256.ofNat 621
-               stack := [msgOff, returnDest] ++ rest } = 39 := by
+               stack := [msgOff, returnDest] ++ rest } = 43 := by
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
@@ -67,7 +67,7 @@ theorem copy_cost_potential (s : State) (msgOff returnDest : UInt256)
         { s with pc := UInt256.ofNat 621
                  stack := [msgOff, returnDest] ++ rest } +
       MachineState.memCost s.activeWords.toNat =
-      39 + MachineState.memCost
+      43 + MachineState.memCost
         (Compression.roundAt (Compression.copyHashState s)
           msgOff returnDest rest 0).activeWords.toNat := by
   have hresult := Compression.run_copyAndLoopStart s msgOff returnDest rest
