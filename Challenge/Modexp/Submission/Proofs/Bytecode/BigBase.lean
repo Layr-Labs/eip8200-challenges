@@ -1,8 +1,22 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigModulus
+import Challenge.Modexp.Submission.Proofs.Bytecode.BigLoad
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 3000000
-/-! # Certified base-conversion path -/
+/-!
+# Certified base-conversion path
+
+The emitted base-conversion loop streams every base byte through two masked
+modular additions.  This artifact replaces it with a direct load of a *prefix*
+of the base followed by the same bitwise loop over the remaining bytes.
+
+If the modulus's top limb (index `count - 1`) is nonzero then
+`modulus ≥ 2 ^ (256 * (count - 1))`, so the leading `32 * (count - 1)` bytes of
+the base already form a residue and can be moved into place with the certified
+`loadBigEndian` helper instead of being reduced bit by bit.  When the top limb
+is zero, or the base is shorter than that prefix, the computed prefix length is
+`0` and every byte still goes through the reducing loop.
+-/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.BigBase
 
@@ -33,84 +47,298 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨index, .push width value, hget, hwf⟩
 
+/-! ## Basic blocks -/
+
+def stubPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 632 .JUMPDEST,
+   pushAt 633 2 1627,
+   opAt 634 .JUMP]
+
 def toClearDoublePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 632 .JUMPDEST, pushAt 633 2 823, opAt 634 (.Dup ⟨2, by decide⟩),
-   pushAt 635 2 3072, pushAt 636 2 19, opAt 637 .JUMP]
+  [opAt 1185 .JUMPDEST,
+   pushAt 1186 2 1639,
+   opAt 1187 (.Dup ⟨2, by decide⟩),
+   pushAt 1188 2 3072,
+   pushAt 1189 2 19,
+   opAt 1190 .JUMP]
 
 def startBaseLoopPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 638 .JUMPDEST, pushAt 639 1 1, pushAt 640 2 3072,
-   opAt 641 .MSTORE, pushAt 642 0 0]
+  [opAt 1191 .JUMPDEST,
+   pushAt 1192 1 1,
+   pushAt 1193 2 3072,
+   opAt 1194 .MSTORE]
+
+def directComputePath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [pushAt 1195 1 1,
+   opAt 1196 (.Dup ⟨2, by decide⟩),
+   opAt 1197 .SUB,
+   pushAt 1198 1 5,
+   opAt 1199 .SHL,
+   opAt 1200 (.Dup ⟨0, by decide⟩),
+   opAt 1201 .MLOAD,
+   opAt 1202 .ISZERO,
+   opAt 1203 .ISZERO,
+   opAt 1204 (.Dup ⟨1, by decide⟩),
+   opAt 1205 (.Dup ⟨5, by decide⟩),
+   opAt 1206 .LT,
+   opAt 1207 .ISZERO,
+   opAt 1208 .AND,
+   pushAt 1209 0 0,
+   opAt 1210 .SUB,
+   opAt 1211 .AND]
+
+def loadCallPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [pushAt 1212 2 1677,
+   pushAt 1213 2 1024,
+   opAt 1214 (.Dup ⟨2, by decide⟩),
+   opAt 1215 (.Dup ⟨9, by decide⟩),
+   pushAt 1216 2 439,
+   opAt 1217 .JUMP]
 
 def outerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 643 .JUMPDEST, opAt 644 (.Dup ⟨3, by decide⟩),
-   opAt 645 (.Dup ⟨1, by decide⟩), opAt 646 .LT, opAt 647 .ISZERO,
-   pushAt 648 2 925, opAt 649 .JUMPI]
+  [opAt 1218 .JUMPDEST,
+   opAt 1219 (.Dup ⟨3, by decide⟩),
+   opAt 1220 (.Dup ⟨1, by decide⟩),
+   opAt 1221 .LT,
+   opAt 1222 .ISZERO,
+   pushAt 1223 2 1765,
+   opAt 1224 .JUMPI]
 
 def outerToInnerPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 650 (.Dup ⟨0, by decide⟩), opAt 651 (.Dup ⟨7, by decide⟩),
-   opAt 652 .ADD, opAt 653 (.Dup ⟨0, by decide⟩),
-   opAt 654 .CALLDATALOAD, pushAt 655 0 0, opAt 656 .BYTE,
-   pushAt 657 0 0]
+  [opAt 1225 (.Dup ⟨0, by decide⟩),
+   opAt 1226 (.Dup ⟨7, by decide⟩),
+   opAt 1227 .ADD,
+   opAt 1228 (.Dup ⟨0, by decide⟩),
+   opAt 1229 .CALLDATALOAD,
+   pushAt 1230 0 0,
+   opAt 1231 .BYTE,
+   pushAt 1232 0 0]
 
 def innerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 658 .JUMPDEST, pushAt 659 1 8, opAt 660 (.Dup ⟨1, by decide⟩),
-   opAt 661 .LT, opAt 662 .ISZERO, pushAt 663 2 911, opAt 664 .JUMPI]
+  [opAt 1233 .JUMPDEST,
+   pushAt 1234 1 8,
+   opAt 1235 (.Dup ⟨1, by decide⟩),
+   opAt 1236 .LT,
+   opAt 1237 .ISZERO,
+   pushAt 1238 2 1754,
+   opAt 1239 .JUMPI]
 
 def innerToDoublePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 665 2 875, opAt 666 (.Dup ⟨6, by decide⟩), pushAt 667 0 0,
-   pushAt 668 1 1, pushAt 669 2 1024, pushAt 670 2 1024,
-   pushAt 671 2 104, opAt 672 .JUMP]
+  [pushAt 1240 2 1721,
+   opAt 1241 (.Dup ⟨6, by decide⟩),
+   pushAt 1242 0 0,
+   pushAt 1243 1 1,
+   pushAt 1244 2 1024,
+   pushAt 1245 2 1024,
+   pushAt 1246 2 104,
+   opAt 1247 .JUMP]
 
 def innerToAddBitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 673 .JUMPDEST, pushAt 674 2 900, opAt 675 (.Dup ⟨6, by decide⟩),
-   pushAt 676 0 0, pushAt 677 1 1, opAt 678 (.Dup ⟨5, by decide⟩),
-   opAt 679 (.Dup ⟨5, by decide⟩), pushAt 680 1 7, opAt 681 .SUB,
-   opAt 682 .SHR, opAt 683 .AND, pushAt 684 2 3072, pushAt 685 2 1024,
-   pushAt 686 2 104, opAt 687 .JUMP]
+  [opAt 1248 .JUMPDEST,
+   pushAt 1249 2 1746,
+   opAt 1250 (.Dup ⟨6, by decide⟩),
+   pushAt 1251 0 0,
+   pushAt 1252 1 1,
+   opAt 1253 (.Dup ⟨5, by decide⟩),
+   opAt 1254 (.Dup ⟨5, by decide⟩),
+   pushAt 1255 1 7,
+   opAt 1256 .SUB,
+   opAt 1257 .SHR,
+   opAt 1258 .AND,
+   pushAt 1259 2 3072,
+   pushAt 1260 2 1024,
+   pushAt 1261 2 104,
+   opAt 1262 .JUMP]
 
 def innerAfterBitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 688 .JUMPDEST, pushAt 689 1 1, opAt 690 .ADD, pushAt 691 2 848,
-   opAt 692 .JUMP]
+  [opAt 1263 .JUMPDEST,
+   pushAt 1264 1 1,
+   opAt 1265 .ADD,
+   pushAt 1266 2 1694,
+   opAt 1267 .JUMP]
 
 def innerFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 696 .JUMPDEST, opAt 697 .POP, opAt 698 .POP, opAt 699 .POP,
-   pushAt 700 1 1, opAt 701 .ADD, pushAt 702 2 831, opAt 703 .JUMP]
+  [opAt 1268 .JUMPDEST,
+   opAt 1269 .POP,
+   opAt 1270 .POP,
+   opAt 1271 .POP,
+   pushAt 1272 1 1,
+   opAt 1273 .ADD,
+   pushAt 1274 2 1677,
+   opAt 1275 .JUMP]
 
 def outerFinishToAccumulatorPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 707 .JUMPDEST, opAt 708 .POP, pushAt 709 2 944,
-   opAt 710 (.Dup ⟨2, by decide⟩), pushAt 711 0 0, pushAt 712 1 1,
-   pushAt 713 2 3072, pushAt 714 2 2048, pushAt 715 2 104,
-   opAt 716 .JUMP]
+  [opAt 1276 .JUMPDEST,
+   opAt 1277 .POP,
+   pushAt 1278 2 944,
+   opAt 1279 (.Dup ⟨2, by decide⟩),
+   pushAt 1280 0 0,
+   pushAt 1281 1 1,
+   pushAt 1282 2 3072,
+   pushAt 1283 2 2048,
+   pushAt 1284 2 104,
+   opAt 1285 .JUMP]
+
+/-! ## The directly loaded prefix -/
+
+/-- Byte offset of the modulus's top limb, exactly as the bytecode computes it
+(`shl(5, sub(n, 1))`).  Left as a machine word so the definition is total. -/
+def topOffsetWord (count : Nat) : UInt256 :=
+  UInt256.shiftLeft (UInt256.ofNat count - 1) 5
+
+def topOffset (count : Nat) : Nat := (topOffsetWord count).toNat
+
+/-- `1` when the top modulus limb is nonzero *and* the prefix fits in the base,
+`0` otherwise -- the branchless condition the bytecode forms. -/
+def directTake (memory : ByteArray) (count baseSize : Nat) : Nat :=
+  if (MachineState.readWord memory (topOffset count)).toNat = 0 then 0
+  else if baseSize < topOffset count then 0
+  else 1
+
+/-- Number of leading base bytes moved into place by `loadBigEndian`. -/
+def directValue (memory : ByteArray) (count baseSize : Nat) : Nat :=
+  directTake memory count baseSize * topOffset count
+
+theorem directTake_le_one (memory : ByteArray) (count baseSize : Nat) :
+    directTake memory count baseSize ≤ 1 := by
+  unfold directTake
+  split
+  · omega
+  · split <;> omega
+
+/-- The cap makes the prefix length unconditionally bounded by the base length,
+so no new range hypothesis has to propagate downstream. -/
+theorem directValue_le (memory : ByteArray) (count baseSize : Nat) :
+    directValue memory count baseSize ≤ baseSize := by
+  unfold directValue directTake
+  split
+  · omega
+  · split
+    · omega
+    · omega
+
+private theorem land_comm (a b : UInt256) :
+    UInt256.land a b = UInt256.land b a := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_land,
+    Challenge.EvmProof.Word.word_toNat_land, Nat.land_comm]
+
+/-- The word the bytecode leaves on the stack is exactly `directValue`. -/
+theorem directWord_eq (memory : ByteArray) (count baseSize : Nat)
+    (hbase : baseSize < 2 ^ 256) :
+    UInt256.land
+        (0 - UInt256.land
+          (UInt256.lt (UInt256.ofNat baseSize) (topOffsetWord count)).isZero
+          (MachineState.readWord memory (topOffset count)).isZero.isZero)
+        (topOffsetWord count) =
+      UInt256.ofNat (directValue memory count baseSize) := by
+  have htopdef : (topOffsetWord count).toNat = topOffset count := rfl
+  have hbaseNat : (UInt256.ofNat baseSize).toNat = baseSize := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hbase]
+  have hcond :
+      (UInt256.land
+        (UInt256.lt (UInt256.ofNat baseSize) (topOffsetWord count)).isZero
+        (MachineState.readWord memory (topOffset count)).isZero.isZero).toNat =
+      directTake memory count baseSize := by
+    unfold directTake
+    by_cases hzero : (MachineState.readWord memory (topOffset count)).toNat = 0
+    · simp [Challenge.EvmProof.Word.word_toNat_land,
+        Challenge.EvmProof.Word.word_toNat_isZero,
+        Challenge.EvmProof.Word.word_toNat_lt, hbaseNat, htopdef, hzero]
+    · by_cases hlt : baseSize < topOffset count
+      · simp [Challenge.EvmProof.Word.word_toNat_land,
+          Challenge.EvmProof.Word.word_toNat_isZero,
+          Challenge.EvmProof.Word.word_toNat_lt, hbaseNat, htopdef, hzero, hlt]
+      · simp [Challenge.EvmProof.Word.word_toNat_land,
+          Challenge.EvmProof.Word.word_toNat_isZero,
+          Challenge.EvmProof.Word.word_toNat_lt, hbaseNat, htopdef, hzero, hlt]
+  have hle1 :
+      (UInt256.land
+        (UInt256.lt (UInt256.ofNat baseSize) (topOffsetWord count)).isZero
+        (MachineState.readWord memory (topOffset count)).isZero.isZero).toNat
+      ≤ 1 := by
+    rw [hcond]; exact directTake_le_one memory count baseSize
+  have hmask := BigHelpers.land_sub_zero_take_toNat (topOffsetWord count) hle1
+  rw [← Challenge.EvmProof.Word.word_eq_ofNat_toNat] at hmask
+  rw [land_comm]
+  apply Challenge.EvmProof.Word.word_ext
+  rw [hmask, Challenge.EvmProof.Word.word_toNat_ofNat, hcond]
+  have hbound : directValue memory count baseSize < 2 ^ 256 := by
+    have := Nat.mul_le_mul_right (topOffset count)
+      (directTake_le_one memory count baseSize)
+    have htop : topOffset count < 2 ^ 256 := (topOffsetWord count).val.isLt
+    simp only [directValue]
+    omega
+  rw [Nat.mod_eq_of_lt hbound]
+  rfl
+
+/-! ## States -/
 
 def frame (accumulator : UInt256) (count : Nat)
     (rest : List UInt256) : List UInt256 :=
   [accumulator, UInt256.ofNat count] ++ rest
 
+/-- The stack below the limb count: base length, exponent length, modulus
+length and the base offset. -/
+def baseTail (baseSize e m baseOff : Nat) (rest : List UInt256) : List UInt256 :=
+  [UInt256.ofNat baseSize, UInt256.ofNat e, UInt256.ofNat m,
+    UInt256.ofNat baseOff] ++ rest
+
+/-- The in-place stub hands control to the appended body. -/
+def stubbed (s : State) (count : Nat) (rest : List UInt256) : State :=
+  { BigModulus.scanNonzero s count rest with pc := UInt256.ofNat 1627 }
+
 def afterClearDouble (s : State) (accumulator : UInt256) (count : Nat)
     (rest : List UInt256) : State :=
-  BigHelpers.clearReturned (BigModulus.scanNonzero s count rest) 3072 count
-    823 (frame accumulator count rest)
+  BigHelpers.clearReturned (stubbed s count rest) 3072 count 1639
+    (frame accumulator count rest)
 
-def baseLoopEntry (s : State) (accumulator : UInt256) (count : Nat)
-    (rest : List UInt256) : State :=
-  let cleared := afterClearDouble s accumulator count rest
-  { cleared with
-    pc := UInt256.ofNat 831
-    stack := [0, accumulator, UInt256.ofNat count] ++ rest
-    memory := MachineState.writeBytes cleared.memory
-      (Data.Bytes.natToBytesPadded 1 32) 3072
-    activeWords := UInt256.ofNat (MachineState.activeWordsAfter
-      cleared.activeWords.toNat 3072 32) }
+/-- After `mstore(0x0c00, 1)`. -/
+def baseWritten (t : State) : State :=
+  { t with pc := UInt256.ofNat 1646
+           memory := MachineState.writeBytes t.memory
+             (Data.Bytes.natToBytesPadded 1 32) 3072
+           activeWords := UInt256.ofNat (MachineState.activeWordsAfter
+             t.activeWords.toNat 3072 32) }
+
+/-- After the branchless prefix-length computation. -/
+def baseDirectOf (t : State) (count baseSize : Nat) : State :=
+  { t with pc := UInt256.ofNat 1665
+           stack := UInt256.ofNat (directValue t.memory count baseSize) :: t.stack
+           activeWords := UInt256.ofNat (MachineState.activeWordsAfter
+             t.activeWords.toNat (topOffset count) 32) }
+
+/-- Prefix length actually used from a given region-entry state. -/
+def basePrefix (s : State) (accumulator : UInt256) (count baseSize : Nat)
+    (rest : List UInt256) : Nat :=
+  directValue (baseWritten (afterClearDouble s accumulator count rest)).memory
+    count baseSize
+
+def baseLoopEntry (s : State) (accumulator : UInt256)
+    (count baseSize e m baseOff : Nat) (rest : List UInt256) : State :=
+  BigLoad.loadReturned
+    (baseDirectOf (baseWritten (afterClearDouble s accumulator count
+      (baseTail baseSize e m baseOff rest))) count baseSize)
+    (UInt256.ofNat baseOff)
+    (UInt256.ofNat (basePrefix s accumulator count baseSize
+      (baseTail baseSize e m baseOff rest)))
+    (UInt256.ofNat 1024) (UInt256.ofNat 1677)
+    (UInt256.ofNat (basePrefix s accumulator count baseSize
+        (baseTail baseSize e m baseOff rest)) ::
+      frame accumulator count (baseTail baseSize e m baseOff rest))
 
 def baseBit (byte : UInt256) (j : Nat) : UInt256 :=
   UInt256.land (UInt256.shiftRight byte (UInt256.ofNat (7 - j))) 1
@@ -122,8 +350,8 @@ def bitProgress (count : Nat) (byte : UInt256) : Nat → State → State
   | 0, s => s
   | j + 1, s =>
       let before := bitProgress count byte j s
-      let doubled := BigHelpers.addReturned before 1024 1024 1 0 count 875 []
-      BigHelpers.addReturned doubled 1024 3072 (baseBit byte j) 0 count 900 []
+      let doubled := BigHelpers.addReturned before 1024 1024 1 0 count 1721 []
+      BigHelpers.addReturned doubled 1024 3072 (baseBit byte j) 0 count 1746 []
 
 def baseProgress (count baseOff : Nat) : Nat → State → State
   | 0, s => s
@@ -175,37 +403,37 @@ def baseProgress (count baseOff : Nat) : Nat → State → State
 
 def outerLoop (s : State) (accumulator : UInt256) (count baseSize : Nat)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 831
+  { s with pc := UInt256.ofNat 1677
            stack := [UInt256.ofNat i, accumulator, UInt256.ofNat count,
              UInt256.ofNat baseSize] ++ rest }
 
 def outerBody (s : State) (accumulator : UInt256) (count baseSize : Nat)
     (rest : List UInt256) (i : Nat) : State :=
   { outerLoop s accumulator count baseSize rest i with
-      pc := UInt256.ofNat 840 }
+      pc := UInt256.ofNat 1686 }
 
 def innerLoop (s : State) (accumulator : UInt256) (count baseSize i : Nat)
     (offset byte : UInt256) (rest : List UInt256) (j : Nat) : State :=
   let progress := bitProgress count byte j s
   { progress with
-    pc := UInt256.ofNat 848
+    pc := UInt256.ofNat 1694
     stack := [UInt256.ofNat j, byte, offset, UInt256.ofNat i, accumulator,
       UInt256.ofNat count, UInt256.ofNat baseSize] ++ rest }
 
 def innerBody (s : State) (accumulator : UInt256) (count baseSize i : Nat)
     (offset byte : UInt256) (rest : List UInt256) (j : Nat) : State :=
   { innerLoop s accumulator count baseSize i offset byte rest j with
-      pc := UInt256.ofNat 858 }
+      pc := UInt256.ofNat 1704 }
 
 def innerExit (s : State) (accumulator : UInt256) (count baseSize i : Nat)
     (offset byte : UInt256) (rest : List UInt256) : State :=
   { innerLoop s accumulator count baseSize i offset byte rest 8 with
-      pc := UInt256.ofNat 911 }
+      pc := UInt256.ofNat 1754 }
 
 def outerExit (s : State) (accumulator : UInt256) (count baseSize : Nat)
-    (rest : List UInt256) : State :=
-  { outerLoop s accumulator count baseSize rest baseSize with
-      pc := UInt256.ofNat 925 }
+    (rest : List UInt256) (i : Nat) : State :=
+  { outerLoop s accumulator count baseSize rest i with
+      pc := UInt256.ofNat 1765 }
 
 def innerFrame (accumulator : UInt256) (count baseSize i j : Nat)
     (offset byte : UInt256) (rest : List UInt256) : List UInt256 :=
@@ -217,7 +445,7 @@ def doubledReturned (s : State) (accumulator : UInt256)
     (rest : List UInt256) : State :=
   BigHelpers.addReturned
     (innerBody s accumulator count baseSize i offset byte rest j)
-    1024 1024 1 0 count 875
+    1024 1024 1 0 count 1721
     (innerFrame accumulator count baseSize i j offset byte rest)
 
 def bitReturned (s : State) (accumulator : UInt256)
@@ -225,65 +453,93 @@ def bitReturned (s : State) (accumulator : UInt256)
     (rest : List UInt256) : State :=
   BigHelpers.addReturned
     (doubledReturned s accumulator count baseSize i j offset byte rest)
-    1024 3072 (baseBit byte j) 0 count 900
+    1024 3072 (baseBit byte j) 0 count 1746
     (innerFrame accumulator count baseSize i j offset byte rest)
 
-@[simp] private theorem baseSetupPCs (i : Nat) (hi : 632 ≤ i)
-    (hii : i ≤ 642) :
+/-! ## Program-counter tables and jump destinations -/
+
+@[simp] private theorem stubPCs (i : Nat) (hi : 632 ≤ i)
+    (hii : i ≤ 634) :
     Artifact.submissionArtifact.instructionPC i =
-      ([811,812,815,816,819,822,823,824,826,829,830])[i - 632]! := by
+      ([811,812,815])[i - 632]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem baseLoopPCs (i : Nat) (hi : 643 ≤ i)
-    (hii : i ≤ 716) :
+@[simp] private theorem appendedPCs (i : Nat) (hi : 1185 ≤ i)
+    (hii : i ≤ 1285) :
     Artifact.submissionArtifact.instructionPC i =
-      ([831,832,833,834,835,836,839,840,841,842,843,844,845,846,847,
-        848,849,851,852,853,854,857,858,861,862,863,865,868,871,874,
-        875,876,879,880,881,883,884,885,887,888,889,890,893,896,899,
-        900,901,903,904,907,908,909,910,911,912,913,914,915,917,918,
-        921,922,923,924,925,926,927,930,931,932,934,937,940,943])[
-          i - 643]! := by
+      ([1627,1628,1631,1632,1635,1638,1639,1640,1642,1645,1646,1648,1649,1650,1652,
+        1653,1654,1655,1656,1657,1658,1659,1660,1661,1662,1663,1664,1665,1668,1671,
+        1672,1673,1676,1677,1678,1679,1680,1681,1682,1685,1686,1687,1688,1689,1690,
+        1691,1692,1693,1694,1695,1697,1698,1699,1700,1703,1704,1707,1708,1709,1711,
+        1714,1717,1720,1721,1722,1725,1726,1727,1729,1730,1731,1733,1734,1735,1736,
+        1739,1742,1745,1746,1747,1749,1750,1753,1754,1755,1756,1757,1758,1760,1761,
+        1764,1765,1766,1767,1770,1771,1772,1774,1777,1780,1783])[i - 1185]! := by
   interval_cases i <;> decide
-
-private theorem jump104 :
-    Decode.isValidJumpDest submissionBytecode 104 = true :=
-  Artifact.isValidJumpDest_index 83 (by rfl)
-
-private theorem jump831 :
-    Decode.isValidJumpDest submissionBytecode 831 = true :=
-  Artifact.isValidJumpDest_index 643 (by rfl)
-
-private theorem jump848 :
-    Decode.isValidJumpDest submissionBytecode 848 = true :=
-  Artifact.isValidJumpDest_index 658 (by rfl)
-
-private theorem jump875 :
-    Decode.isValidJumpDest submissionBytecode 875 = true :=
-  Artifact.isValidJumpDest_index 673 (by rfl)
-
-private theorem jump900 :
-    Decode.isValidJumpDest submissionBytecode 900 = true :=
-  Artifact.isValidJumpDest_index 688 (by rfl)
-
-private theorem jump911 :
-    Decode.isValidJumpDest submissionBytecode 911 = true :=
-  Artifact.isValidJumpDest_index 696 (by rfl)
-
-private theorem jump925 :
-    Decode.isValidJumpDest submissionBytecode 925 = true :=
-  Artifact.isValidJumpDest_index 707 (by rfl)
-
-private theorem jump944 :
-    Decode.isValidJumpDest submissionBytecode 944 = true :=
-  Artifact.isValidJumpDest_index 717 (by rfl)
 
 private theorem jump19 :
     Decode.isValidJumpDest submissionBytecode 19 = true :=
   Artifact.isValidJumpDest_index 15 (by rfl)
 
-private theorem jump823 :
-    Decode.isValidJumpDest submissionBytecode 823 = true :=
-  Artifact.isValidJumpDest_index 638 (by rfl)
+private theorem jump104 :
+    Decode.isValidJumpDest submissionBytecode 104 = true :=
+  Artifact.isValidJumpDest_index 83 (by rfl)
+
+private theorem jump439 :
+    Decode.isValidJumpDest submissionBytecode 439 = true :=
+  Artifact.isValidJumpDest_index 353 (by rfl)
+
+private theorem jump1627 :
+    Decode.isValidJumpDest submissionBytecode 1627 = true :=
+  Artifact.isValidJumpDest_index 1185 (by rfl)
+
+private theorem jump1639 :
+    Decode.isValidJumpDest submissionBytecode 1639 = true :=
+  Artifact.isValidJumpDest_index 1191 (by rfl)
+
+private theorem jump1677 :
+    Decode.isValidJumpDest submissionBytecode 1677 = true :=
+  Artifact.isValidJumpDest_index 1218 (by rfl)
+
+private theorem jump1694 :
+    Decode.isValidJumpDest submissionBytecode 1694 = true :=
+  Artifact.isValidJumpDest_index 1233 (by rfl)
+
+private theorem jump1721 :
+    Decode.isValidJumpDest submissionBytecode 1721 = true :=
+  Artifact.isValidJumpDest_index 1248 (by rfl)
+
+private theorem jump1746 :
+    Decode.isValidJumpDest submissionBytecode 1746 = true :=
+  Artifact.isValidJumpDest_index 1263 (by rfl)
+
+private theorem jump1754 :
+    Decode.isValidJumpDest submissionBytecode 1754 = true :=
+  Artifact.isValidJumpDest_index 1268 (by rfl)
+
+private theorem jump1765 :
+    Decode.isValidJumpDest submissionBytecode 1765 = true :=
+  Artifact.isValidJumpDest_index 1276 (by rfl)
+
+/-! ## Block semantics -/
+
+set_option linter.unusedSimpArgs false in
+theorem run_stub (s : State) (count : Nat) (rest : List UInt256)
+    (hcap : rest.length < 1016)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock stubPath
+      (BigModulus.scanNonzero s count rest) =
+      some (stubbed s count rest) := by
+  have hc : ∀ n ≤ 8, rest.length + n < 1024 := by omega
+  have h1627 : (1627 : UInt256).toNat = 1627 := by decide
+  have h1627Word : (1627 : UInt256) = UInt256.ofNat 1627 := by decide
+  simp (disch := omega) [stubPath, opAt, pushAt, wfOp, stubbed,
+    BigModulus.scanNonzero, stubPCs, hcode, hrun, jump1627, h1627, h1627Word,
+    hc, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
 
 set_option linter.unusedSimpArgs false in
 theorem run_toClearDouble (s : State) (accumulator : UInt256)
@@ -292,20 +548,16 @@ theorem run_toClearDouble (s : State) (accumulator : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock toClearDoublePath
-      (BigModulus.scanNonzero s count rest) =
-      some (BigHelpers.clearEntry (BigModulus.scanNonzero s count rest)
-        3072 count 823
-        (frame accumulator count rest)) := by
-  have hc2 : rest.length + 2 < 1024 := by omega
-  have hc3 : rest.length + 3 < 1024 := by omega
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have hc5 : rest.length + 5 < 1024 := by omega
-  have hc6 : rest.length + 6 < 1024 := by omega
+      (stubbed s count rest) =
+      some (BigHelpers.clearEntry (stubbed s count rest)
+        3072 count 1639 (frame accumulator count rest)) := by
+  have hc : ∀ n ≤ 8, rest.length + n < 1024 := by omega
   have h19 : (19 : UInt256).toNat = 19 := by decide
   have h19Word : (19 : UInt256) = UInt256.ofNat 19 := by decide
-  simp [toClearDoublePath, opAt, pushAt, wfOp, BigModulus.scanNonzero,
-    BigHelpers.clearEntry, frame, baseSetupPCs, hacc, hcode, hrun, jump19,
-    h19, h19Word, hc2, hc3, hc4, hc5, hc6,
+  have h1627 : (UInt256.ofNat 1627).toNat = 1627 := by decide
+  simp (disch := omega) [toClearDoublePath, opAt, pushAt, wfOp, stubbed,
+    BigModulus.scanNonzero, BigHelpers.clearEntry, frame, appendedPCs, hacc,
+    hcode, hrun, jump19, h19, h19Word, h1627, hc,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -313,26 +565,72 @@ theorem run_toClearDouble (s : State) (accumulator : UInt256)
     Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
 
 set_option linter.unusedSimpArgs false in
-theorem run_startBaseLoop (s : State) (accumulator : UInt256)
-    (count : Nat) (rest : List UInt256) (hcap : rest.length < 1016)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock startBaseLoopPath
-      (afterClearDouble s accumulator count rest) =
-      some (baseLoopEntry s accumulator count rest) := by
-  have hc2 : rest.length + 2 < 1024 := by omega
-  have hc3 : rest.length + 3 < 1024 := by omega
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have h823 : (823 : UInt256).toNat = 823 := by decide
-  have h823Word : (823 : UInt256) = UInt256.ofNat 823 := by decide
-  have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
-  have h0Word : (0 : UInt256) = UInt256.ofNat 0 := by decide
+theorem run_startBaseLoop (t : State) (hcap : t.stack.length < 1016)
+    (hpc : t.pc = 1639) (hrun : t.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock startBaseLoopPath t =
+      some (baseWritten t) := by
+  have hc : ∀ n ≤ 8, t.stack.length + n < 1024 := by omega
+  have hlen : t.stack.length < 1024 := by omega
+  have h1639 : (1639 : UInt256).toNat = 1639 := by decide
+  have h1639Word : (1639 : UInt256) = UInt256.ofNat 1639 := by decide
+  have h1639Nat : (UInt256.ofNat 1639).toNat = 1639 := by decide
   have h1Nat : (1 : UInt256).toNat = 1 := by decide
   have h3072Nat : (3072 : UInt256).toNat = 3072 := by decide
-  simp [startBaseLoopPath, opAt, pushAt, wfOp, afterClearDouble,
-    BigModulus.scanNonzero, BigHelpers.clearReturned, baseLoopEntry, frame,
-    baseSetupPCs, hrun, h823, h823Word, hzero, h0Word, h1Nat, h3072Nat,
-    hc2, hc3, hc4,
+  simp (disch := omega) [startBaseLoopPath, opAt, pushAt, wfOp, baseWritten,
+    appendedPCs, hpc, hrun, h1639, h1639Word, h1639Nat, h1Nat, h3072Nat, hc, hlen,
     State.activeWordsAfterUInt256,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_directCompute (t : State) (accumulator : UInt256)
+    (count baseSize e m baseOff : Nat) (rest : List UInt256)
+    (hcap : rest.length < 1010) (hbase : baseSize < 2 ^ 256)
+    (hstack : t.stack = frame accumulator count
+      (baseTail baseSize e m baseOff rest))
+    (hpc : t.pc = UInt256.ofNat 1646) (hrun : t.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock directComputePath t =
+      some (baseDirectOf t count baseSize) := by
+  have hc : ∀ n ≤ 12, rest.length + n < 1024 := by omega
+  have h1646 : (UInt256.ofNat 1646).toNat = 1646 := by decide
+  have hzero : ({ val := 0 } : UInt256) = 0 := by decide
+  have hdirect := directWord_eq t.memory count baseSize hbase
+  simp only [topOffsetWord, topOffset] at hdirect
+  simp (disch := omega) [directComputePath, opAt, pushAt, wfOp, baseDirectOf,
+    frame, baseTail, appendedPCs, hpc, hstack, hrun, h1646, hc, hzero,
+    topOffsetWord, topOffset, hdirect,
+    State.activeWordsAfterUInt256,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_loadCall (t : State) (accumulator : UInt256)
+    (count baseSize e m baseOff direct : Nat) (rest : List UInt256)
+    (hcap : rest.length < 1010)
+    (hstack : t.stack = UInt256.ofNat direct ::
+      frame accumulator count (baseTail baseSize e m baseOff rest))
+    (hpc : t.pc = UInt256.ofNat 1665)
+    (hcode : t.executionEnv.code = submissionBytecode)
+    (hrun : t.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock loadCallPath t =
+      some (BigLoad.loadEntry t (UInt256.ofNat baseOff)
+        (UInt256.ofNat direct) (UInt256.ofNat 1024) (UInt256.ofNat 1677)
+        t.stack) := by
+  have hc : ∀ n ≤ 14, rest.length + n < 1024 := by omega
+  have h1665 : (UInt256.ofNat 1665).toNat = 1665 := by decide
+  have h439 : (439 : UInt256).toNat = 439 := by decide
+  have h439Word : (439 : UInt256) = UInt256.ofNat 439 := by decide
+  have h1024Word : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
+  have h1677Word : (1677 : UInt256) = UInt256.ofNat 1677 := by decide
+  simp (disch := omega) [loadCallPath, opAt, pushAt, wfOp, BigLoad.loadEntry,
+    frame, baseTail, appendedPCs, hpc, hstack, hcode, hrun, jump439,
+    h1665, h439, h439Word, h1024Word, h1677Word, hc,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -358,7 +656,7 @@ theorem run_outerGuard (s : State) (accumulator : UInt256)
     decide
   have honeNat : (1 : UInt256).toNat = 1 := by decide
   simp [outerGuardPath, opAt, pushAt, wfOp, outerLoop, outerBody,
-    baseLoopPCs, hrun, hlt, honeNat, hc4, hc5, hc6, UInt256.isTrue,
+    appendedPCs, hrun, hlt, honeNat, hc4, hc5, hc6, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -390,7 +688,7 @@ theorem run_outerToInner (s : State) (accumulator : UInt256)
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have h0Word : (0 : UInt256) = UInt256.ofNat 0 := by decide
   simp [outerToInnerPath, opAt, pushAt, wfOp, outerBody, outerLoop,
-    innerLoop, bitProgress, loadedBaseByte, baseLoopPCs, hrun, hadd,
+    innerLoop, bitProgress, loadedBaseByte, appendedPCs, hrun, hadd,
     hoffNat, hzero, h0Word, hc7, hc8, hc9, hc10,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -418,7 +716,7 @@ theorem run_innerGuard (s : State) (accumulator : UInt256)
     decide
   have honeNat : (1 : UInt256).toNat = 1 := by decide
   simp [innerGuardPath, opAt, pushAt, wfOp, innerLoop, innerBody,
-    baseLoopPCs, hrun, hlt, honeNat, hc7, hc8, hc9, UInt256.isTrue,
+    appendedPCs, hrun, hlt, honeNat, hc7, hc8, hc9, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -435,22 +733,15 @@ theorem run_innerToDouble (s : State) (accumulator : UInt256)
       (innerBody s accumulator count baseSize i offset byte rest j) =
       some (BigHelpers.addEntry
         (innerBody s accumulator count baseSize i offset byte rest j)
-        1024 1024 1 0 count 875
+        1024 1024 1 0 count 1721
         (innerFrame accumulator count baseSize i j offset byte rest)) := by
-  have hc7 : rest.length + 7 < 1024 := by omega
-  have hc8 : rest.length + 8 < 1024 := by omega
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
-  have hc13 : rest.length + 13 < 1024 := by omega
-  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc : ∀ n ≤ 14, rest.length + n < 1024 := by omega
   have h104 : (104 : UInt256).toNat = 104 := by decide
   have h104Word : (104 : UInt256) = UInt256.ofNat 104 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
-  simp [innerToDoublePath, opAt, pushAt, wfOp, innerBody, innerLoop,
-    BigHelpers.addEntry, innerFrame, baseLoopPCs, hcode, hrun, jump104,
-    h104, h104Word, hzero, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14,
+  simp (disch := omega) [innerToDoublePath, opAt, pushAt, wfOp, innerBody,
+    innerLoop, BigHelpers.addEntry, innerFrame, appendedPCs, hcode, hrun,
+    jump104, h104, h104Word, hzero, hc,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -467,31 +758,23 @@ theorem run_innerToAddBit (s : State) (accumulator : UInt256)
       (doubledReturned s accumulator count baseSize i j offset byte rest) =
       some (BigHelpers.addEntry
         (doubledReturned s accumulator count baseSize i j offset byte rest)
-        1024 3072 (baseBit byte j) 0 count 900
+        1024 3072 (baseBit byte j) 0 count 1746
         (innerFrame accumulator count baseSize i j offset byte rest)) := by
   have hj7 : j ≤ 7 := by omega
   have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat hj7
     (by norm_num : 7 < 2 ^ 256)
-  have hc7 : rest.length + 7 < 1024 := by omega
-  have hc8 : rest.length + 8 < 1024 := by omega
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
-  have hc13 : rest.length + 13 < 1024 := by omega
-  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc : ∀ n ≤ 14, rest.length + n < 1024 := by omega
   have h104 : (104 : UInt256).toNat = 104 := by decide
   have h104Word : (104 : UInt256) = UInt256.ofNat 104 := by decide
-  have h875 : (875 : UInt256).toNat = 875 := by decide
-  have h875Word : (875 : UInt256) = UInt256.ofNat 875 := by decide
+  have h1721 : (1721 : UInt256).toNat = 1721 := by decide
+  have h1721Word : (1721 : UInt256) = UInt256.ofNat 1721 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   have hseven : (7 : UInt256) = UInt256.ofNat 7 := by decide
-  simp [innerToAddBitPath, opAt, pushAt, wfOp, doubledReturned,
-    innerBody, innerLoop, BigHelpers.addReturned, BigHelpers.addEntry,
-    innerFrame, baseBit, baseLoopPCs, hcode, hrun, jump104, hsub,
-    h104, h104Word, h875, h875Word, hzero, hone, hseven,
-    hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14,
+  simp (disch := omega) [innerToAddBitPath, opAt, pushAt, wfOp,
+    doubledReturned, innerBody, innerLoop, BigHelpers.addReturned,
+    BigHelpers.addEntry, innerFrame, baseBit, appendedPCs, hcode, hrun,
+    jump104, hsub, h104, h104Word, h1721, h1721Word, hzero, hone, hseven, hc,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -512,15 +795,15 @@ theorem run_innerAfterBit (s : State) (accumulator : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
-  have h848 : (848 : UInt256).toNat = 848 := by decide
-  have h848Word : (848 : UInt256) = UInt256.ofNat 848 := by decide
-  have h900 : (900 : UInt256).toNat = 900 := by decide
-  have h900Word : (900 : UInt256) = UInt256.ofNat 900 := by decide
+  have h1694 : (1694 : UInt256).toNat = 1694 := by decide
+  have h1694Word : (1694 : UInt256) = UInt256.ofNat 1694 := by decide
+  have h1746 : (1746 : UInt256).toNat = 1746 := by decide
+  have h1746Word : (1746 : UInt256) = UInt256.ofNat 1746 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   simp [innerAfterBitPath, opAt, pushAt, wfOp, bitReturned,
     doubledReturned, innerBody, innerLoop, innerFrame, bitProgress,
-    BigHelpers.addReturned, baseLoopPCs, hcode, hrun, jump848,
-    hinc, h848, h848Word, h900, h900Word, hone, hc7, hc8, hc9,
+    BigHelpers.addReturned, appendedPCs, hcode, hrun, jump1694,
+    hinc, h1694, h1694Word, h1746, h1746Word, hone, hc7, hc8, hc9,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -539,11 +822,11 @@ theorem run_innerFinishGuard (s : State) (accumulator : UInt256)
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
-  have h911 : (911 : UInt256).toNat = 911 := by decide
-  have h911Word : (911 : UInt256) = UInt256.ofNat 911 := by decide
+  have h1754 : (1754 : UInt256).toNat = 1754 := by decide
+  have h1754Word : (1754 : UInt256) = UInt256.ofNat 1754 := by decide
   have h8Nat : (8 : UInt256).toNat = 8 := by decide
   simp [innerGuardPath, opAt, pushAt, wfOp, innerLoop, innerExit,
-    baseLoopPCs, hcode, hrun, jump911, hzeroFalse, h911, h911Word,
+    appendedPCs, hcode, hrun, jump1754, hzeroFalse, h1754, h1754Word,
     h8Nat, hc7, hc8, hc9, UInt256.lt, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -568,14 +851,14 @@ theorem run_innerFinish (s : State) (accumulator : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
-  have h831 : (831 : UInt256).toNat = 831 := by decide
-  have h831Word : (831 : UInt256) = UInt256.ofNat 831 := by decide
-  have h911 : (911 : UInt256).toNat = 911 := by decide
-  have h911Word : (911 : UInt256) = UInt256.ofNat 911 := by decide
+  have h1677 : (1677 : UInt256).toNat = 1677 := by decide
+  have h1677Word : (1677 : UInt256) = UInt256.ofNat 1677 := by decide
+  have h1754 : (1754 : UInt256).toNat = 1754 := by decide
+  have h1754Word : (1754 : UInt256) = UInt256.ofNat 1754 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   simp [innerFinishPath, opAt, pushAt, wfOp, innerExit, innerLoop,
-    outerLoop, baseLoopPCs, hcode, hrun, jump831, hinc,
-    h831, h831Word, h911, h911Word, hone, hc4, hc5, hc6, hc7, hc8,
+    outerLoop, appendedPCs, hcode, hrun, jump1677, hinc,
+    h1677, h1677Word, h1754, h1754Word, hone, hc4, hc5, hc6, hc7, hc8,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -590,15 +873,15 @@ theorem run_outerFinishGuard (s : State) (accumulator : UInt256)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock outerGuardPath
       (outerLoop s accumulator count baseSize rest baseSize) =
-      some (outerExit s accumulator count baseSize rest) := by
+      some (outerExit s accumulator count baseSize rest baseSize) := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
-  have h925 : (925 : UInt256).toNat = 925 := by decide
-  have h925Word : (925 : UInt256) = UInt256.ofNat 925 := by decide
+  have h1765 : (1765 : UInt256).toNat = 1765 := by decide
+  have h1765Word : (1765 : UInt256) = UInt256.ofNat 1765 := by decide
   simp [outerGuardPath, opAt, pushAt, wfOp, outerLoop, outerExit,
-    baseLoopPCs, hcode, hrun, jump925, hzeroFalse, h925, h925Word,
+    appendedPCs, hcode, hrun, jump1765, hzeroFalse, h1765, h1765Word,
     hc4, hc5, hc6, UInt256.lt, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -608,37 +891,31 @@ theorem run_outerFinishGuard (s : State) (accumulator : UInt256)
 
 set_option linter.unusedSimpArgs false in
 theorem run_outerFinishToAccumulator (s : State) (accumulator : UInt256)
-    (count baseSize : Nat) (rest : List UInt256)
+    (count baseSize i : Nat) (rest : List UInt256)
     (hcap : rest.length < 1009) (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock outerFinishToAccumulatorPath
-      (outerExit s accumulator count baseSize rest) =
-      some (BigHelpers.addEntry (outerExit s accumulator count baseSize rest)
+      (outerExit s accumulator count baseSize rest i) =
+      some (BigHelpers.addEntry (outerExit s accumulator count baseSize rest i)
         2048 3072 1 0 count 944
         ([accumulator, UInt256.ofNat count, UInt256.ofNat baseSize] ++ rest)) := by
-  have hc3 : rest.length + 3 < 1024 := by omega
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have hc5 : rest.length + 5 < 1024 := by omega
-  have hc6 : rest.length + 6 < 1024 := by omega
-  have hc7 : rest.length + 7 < 1024 := by omega
-  have hc8 : rest.length + 8 < 1024 := by omega
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc : ∀ n ≤ 12, rest.length + n < 1024 := by omega
   have h104 : (104 : UInt256).toNat = 104 := by decide
   have h104Word : (104 : UInt256) = UInt256.ofNat 104 := by decide
-  have h925 : (925 : UInt256).toNat = 925 := by decide
-  have h925Word : (925 : UInt256) = UInt256.ofNat 925 := by decide
+  have h1765 : (1765 : UInt256).toNat = 1765 := by decide
+  have h1765Word : (1765 : UInt256) = UInt256.ofNat 1765 := by decide
   have h944Word : (944 : UInt256) = UInt256.ofNat 944 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
-  simp [outerFinishToAccumulatorPath, opAt, pushAt, wfOp, outerExit,
-    outerLoop, BigHelpers.addEntry, baseLoopPCs, hcode, hrun, jump104,
-    h104, h104Word, h925, h925Word, h944Word, hzero,
-    hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10,
+  simp (disch := omega) [outerFinishToAccumulatorPath, opAt, pushAt, wfOp,
+    outerExit, outerLoop, BigHelpers.addEntry, appendedPCs, hcode, hrun,
+    jump104, h104, h104Word, h1765, h1765Word, h944Word, hzero, hc,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+/-! ## Gas traces -/
 
 def gasSteps_innerIteration (s : State) (accumulator : UInt256)
     (count baseSize i j : Nat) (offset byte : UInt256) (rest : List UInt256)
@@ -672,12 +949,12 @@ def gasSteps_innerIteration (s : State) (accumulator : UInt256)
       (by simpa [innerBody, innerLoop, State.fork] using hnp)
   have hdouble := BigHelpers.gasSteps_addMaskedMod
     (innerBody s accumulator count baseSize i offset byte rest j)
-    1024 1024 1 0 count 875
+    1024 1024 1 0 count 1721
     (innerFrame accumulator count baseSize i j offset byte rest) hframe hcount
     (by simpa [innerBody, innerLoop] using hcode)
     (by simpa [innerBody, innerLoop, State.fork] using hfork)
     (by simpa [innerBody, innerLoop] using hrun)
-    (by simpa [innerBody, innerLoop, State.fork] using hnp) jump875
+    (by simpa [innerBody, innerLoop, State.fork] using hnp) jump1721
   have htoBit := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka innerToAddBitPath
       (by simpa [doubledReturned, BigHelpers.addReturned, innerBody,
@@ -692,7 +969,7 @@ def gasSteps_innerIteration (s : State) (accumulator : UInt256)
         innerLoop, State.fork] using hnp)
   have hbit := BigHelpers.gasSteps_addMaskedMod
     (doubledReturned s accumulator count baseSize i j offset byte rest)
-    1024 3072 (baseBit byte j) 0 count 900
+    1024 3072 (baseBit byte j) 0 count 1746
     (innerFrame accumulator count baseSize i j offset byte rest) hframe hcount
     (by simpa [doubledReturned, BigHelpers.addReturned, innerBody,
       innerLoop] using hcode)
@@ -701,7 +978,7 @@ def gasSteps_innerIteration (s : State) (accumulator : UInt256)
     (by simpa [doubledReturned, BigHelpers.addReturned, innerBody,
       innerLoop] using hrun)
     (by simpa [doubledReturned, BigHelpers.addReturned, innerBody,
-      innerLoop, State.fork] using hnp) jump900
+      innerLoop, State.fork] using hnp) jump1746
   have hafter := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka innerAfterBitPath
       (by simpa [bitReturned, doubledReturned, BigHelpers.addReturned,
@@ -792,50 +1069,216 @@ def gasSteps_baseByte (s : State) (accumulator : UInt256)
     (by simp [fullRest]) (by simp [byte, fullRest])
 
 set_option linter.unusedSimpArgs false in
-def gasSteps_baseSetup (s : State) (accumulator : UInt256) (count : Nat)
-    (rest : List UInt256) (hcap : rest.length < 998)
+def gasSteps_baseSetup (s : State) (accumulator : UInt256)
+    (count baseSize e m baseOff : Nat) (rest : List UInt256)
+    (hcap : rest.length < 990)
     (hacc : accumulator = BigModulus.scanOr s.memory count)
-    (hcount : count < 2 ^ 256)
+    (hcount : count < 2 ^ 256) (hbase : baseSize < 2 ^ 256)
+    (hoff : baseOff < 2 ^ 256)
+    (hoffFit : baseOff + baseSize ≤ 2 ^ 256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (BigModulus.scanNonzero s count rest)
-      (baseLoopEntry s accumulator count rest) := by
-  have hcapRaw : rest.length < 1016 := by omega
-  have hframe : (frame accumulator count rest).length < 1017 := by
-    simp [frame]
+    Challenge.EvmProof.GasSteps
+      (BigModulus.scanNonzero s count (baseTail baseSize e m baseOff rest))
+      (baseLoopEntry s accumulator count baseSize e m baseOff rest) := by
+  have htail : (baseTail baseSize e m baseOff rest).length = rest.length + 4 := by
+    simp [baseTail]
+  have hframe : (frame accumulator count
+      (baseTail baseSize e m baseOff rest)).length < 1017 := by
+    simp [frame, htail]
     omega
-  have hcodeScan : (BigModulus.scanNonzero s count rest).executionEnv.code =
-      submissionBytecode := by
-    simpa [BigModulus.scanNonzero] using hcode
-  have hforkScan : (BigModulus.scanNonzero s count rest).fork = .Osaka := by
-    simpa [BigModulus.scanNonzero, State.fork] using hfork
-  have hrunScan : (BigModulus.scanNonzero s count rest).halt = .Running := by
-    simpa [BigModulus.scanNonzero] using hrun
-  have hnpScan : Precompile.isPrecompileWithConfig (BigModulus.scanNonzero s count rest).executionEnv.precompileConfig (BigModulus.scanNonzero s count rest).executionEnv.fork
-      (BigModulus.scanNonzero s count rest).executionEnv.codeAddr = false := by
-    simpa [BigModulus.scanNonzero, State.fork] using hnp
-  exact (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka toClearDoublePath
+  have hcodeStub :
+      (stubbed s count (baseTail baseSize e m baseOff rest)).executionEnv.code =
+        submissionBytecode := by
+    simpa [stubbed, BigModulus.scanNonzero] using hcode
+  have hforkStub :
+      (stubbed s count (baseTail baseSize e m baseOff rest)).fork = .Osaka := by
+    simpa [stubbed, BigModulus.scanNonzero, State.fork] using hfork
+  have hrunStub :
+      (stubbed s count (baseTail baseSize e m baseOff rest)).halt = .Running := by
+    simpa [stubbed, BigModulus.scanNonzero] using hrun
+  have hnpStub : Precompile.isPrecompileWithConfig
+      (stubbed s count (baseTail baseSize e m baseOff rest)).executionEnv.precompileConfig
+      (stubbed s count (baseTail baseSize e m baseOff rest)).executionEnv.fork
+      (stubbed s count (baseTail baseSize e m baseOff rest)).executionEnv.codeAddr
+      = false := by
+    simpa [stubbed, BigModulus.scanNonzero, State.fork] using hnp
+  have hstub := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka stubPath
       (by simpa [BigModulus.scanNonzero, Artifact.submissionArtifact] using hcode)
       (by simpa [BigModulus.scanNonzero, State.fork] using hfork)
-      (run_toClearDouble s accumulator count rest hcapRaw hacc hcode hrun)
+      (run_stub s count (baseTail baseSize e m baseOff rest) (by omega) hcode hrun)
       (by simpa [BigModulus.scanNonzero] using hrun)
-      (by simpa [BigModulus.scanNonzero, State.fork] using hnp)).trans <|
-    (BigHelpers.gasSteps_clear (BigModulus.scanNonzero s count rest) 3072
-      count 823 (frame accumulator count rest) hframe hcount hcodeScan
-      hforkScan hrunScan hnpScan jump823).trans <|
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka startBaseLoopPath
-        (by simpa [afterClearDouble, BigHelpers.clearReturned,
-          BigModulus.scanNonzero, Artifact.submissionArtifact] using hcode)
-        (by simpa [afterClearDouble, BigHelpers.clearReturned,
-          BigModulus.scanNonzero, State.fork] using hfork)
-        (run_startBaseLoop s accumulator count rest hcapRaw hrun)
-        (by simpa [afterClearDouble, BigHelpers.clearReturned,
-          BigModulus.scanNonzero] using hrun)
-        (by simpa [afterClearDouble, BigHelpers.clearReturned,
-          BigModulus.scanNonzero, State.fork] using hnp)
+      (by simpa [BigModulus.scanNonzero, State.fork] using hnp)
+  have htoClear := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka toClearDoublePath
+      (by simpa [Artifact.submissionArtifact] using hcodeStub)
+      hforkStub
+      (run_toClearDouble s accumulator count (baseTail baseSize e m baseOff rest)
+        (by omega) hacc hcode hrun)
+      hrunStub hnpStub
+  have hclear := BigHelpers.gasSteps_clear
+    (stubbed s count (baseTail baseSize e m baseOff rest)) 3072 count 1639
+    (frame accumulator count (baseTail baseSize e m baseOff rest)) hframe hcount
+    hcodeStub hforkStub hrunStub hnpStub jump1639
+  have hcodeCleared :
+      (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest)).executionEnv.code =
+        submissionBytecode := by
+    simpa [afterClearDouble, BigHelpers.clearReturned, stubbed,
+      BigModulus.scanNonzero] using hcode
+  have hforkCleared :
+      (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest)).fork = .Osaka := by
+    simpa [afterClearDouble, BigHelpers.clearReturned, stubbed,
+      BigModulus.scanNonzero, State.fork] using hfork
+  have hrunCleared :
+      (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest)).halt = .Running := by
+    simpa [afterClearDouble, BigHelpers.clearReturned, stubbed,
+      BigModulus.scanNonzero] using hrun
+  have hnpCleared : Precompile.isPrecompileWithConfig
+      (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest)).executionEnv.precompileConfig
+      (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest)).executionEnv.fork
+      (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest)).executionEnv.codeAddr = false := by
+    simpa [afterClearDouble, BigHelpers.clearReturned, stubbed,
+      BigModulus.scanNonzero, State.fork] using hnp
+  have hstackCleared :
+      (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest)).stack =
+        frame accumulator count (baseTail baseSize e m baseOff rest) := by
+    simp [afterClearDouble, BigHelpers.clearReturned]
+  have hpcCleared :
+      (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest)).pc = 1639 := by
+    simp [afterClearDouble, BigHelpers.clearReturned]
+  have hmstore := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka startBaseLoopPath
+      (by simpa [Artifact.submissionArtifact] using hcodeCleared)
+      hforkCleared
+      (run_startBaseLoop (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))
+        (by rw [hstackCleared]; simp [frame, htail]; omega)
+        hpcCleared hrunCleared)
+      hrunCleared hnpCleared
+  have hstackWritten :
+      (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))).stack =
+        frame accumulator count (baseTail baseSize e m baseOff rest) := by
+    simpa [baseWritten] using hstackCleared
+  have hpcWritten :
+      (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))).pc = UInt256.ofNat 1646 := by
+    simp [baseWritten]
+  have hcodeWritten :
+      (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))).executionEnv.code =
+        submissionBytecode := by
+    simpa [baseWritten] using hcodeCleared
+  have hforkWritten :
+      (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))).fork = .Osaka := by
+    simpa [baseWritten, State.fork] using hforkCleared
+  have hrunWritten :
+      (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))).halt = .Running := by
+    simpa [baseWritten] using hrunCleared
+  have hnpWritten : Precompile.isPrecompileWithConfig
+      (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))).executionEnv.precompileConfig
+      (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))).executionEnv.fork
+      (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))).executionEnv.codeAddr
+      = false := by
+    simpa [baseWritten, State.fork] using hnpCleared
+  have hdirect := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka directComputePath
+      (by simpa [Artifact.submissionArtifact] using hcodeWritten)
+      hforkWritten
+      (run_directCompute (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))) accumulator count baseSize
+        e m baseOff rest (by omega) hbase hstackWritten hpcWritten hrunWritten)
+      hrunWritten hnpWritten
+  have hstackComputed :
+      (baseDirectOf (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))) count baseSize).stack =
+        UInt256.ofNat (basePrefix s accumulator count baseSize
+          (baseTail baseSize e m baseOff rest)) ::
+          frame accumulator count (baseTail baseSize e m baseOff rest) := by
+    simp [baseDirectOf, basePrefix, hstackWritten]
+  have hpcComputed :
+      (baseDirectOf (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))) count baseSize).pc =
+        UInt256.ofNat 1665 := by
+    simp [baseDirectOf]
+  have hcodeComputed :
+      (baseDirectOf (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))) count baseSize).executionEnv.code =
+        submissionBytecode := by
+    simpa [baseDirectOf] using hcodeWritten
+  have hforkComputed :
+      (baseDirectOf (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))) count baseSize).fork = .Osaka := by
+    simpa [baseDirectOf, State.fork] using hforkWritten
+  have hrunComputed :
+      (baseDirectOf (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))) count baseSize).halt =
+        .Running := by
+    simpa [baseDirectOf] using hrunWritten
+  have hnpComputed : Precompile.isPrecompileWithConfig
+      (baseDirectOf (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))) count baseSize).executionEnv.precompileConfig
+      (baseDirectOf (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))) count baseSize).executionEnv.fork
+      (baseDirectOf (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))) count baseSize).executionEnv.codeAddr
+      = false := by
+    simpa [baseDirectOf, State.fork] using hnpWritten
+  have hcall := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka loadCallPath
+      (by simpa [Artifact.submissionArtifact] using hcodeComputed)
+      hforkComputed
+      (run_loadCall (baseDirectOf (baseWritten (afterClearDouble s accumulator
+        count (baseTail baseSize e m baseOff rest))) count baseSize)
+        accumulator count baseSize e m baseOff
+        (basePrefix s accumulator count baseSize
+          (baseTail baseSize e m baseOff rest)) rest
+        (by omega) hstackComputed hpcComputed hcodeComputed hrunComputed)
+      hrunComputed hnpComputed
+  have hdirectLe : basePrefix s accumulator count baseSize
+      (baseTail baseSize e m baseOff rest) ≤ baseSize :=
+    directValue_le _ count baseSize
+  have hcapLoad :
+      ((baseDirectOf (baseWritten (afterClearDouble s accumulator count
+        (baseTail baseSize e m baseOff rest))) count baseSize).stack).length
+      < 1000 := by
+    rw [hstackComputed]
+    simp [frame, htail]
+    omega
+  have hload := BigLoad.gasSteps_loadBigEndian
+    (baseDirectOf (baseWritten (afterClearDouble s accumulator count
+      (baseTail baseSize e m baseOff rest))) count baseSize)
+    baseOff
+    (basePrefix s accumulator count baseSize
+      (baseTail baseSize e m baseOff rest))
+    (UInt256.ofNat 1024) (UInt256.ofNat 1677)
+    ((baseDirectOf (baseWritten (afterClearDouble s accumulator count
+      (baseTail baseSize e m baseOff rest))) count baseSize).stack)
+    hcapLoad hoff (by omega) (by omega)
+    hcodeComputed hforkComputed hrunComputed hnpComputed
+    (by
+      have h : (UInt256.ofNat 1677).toNat = 1677 := by decide
+      rw [h]; exact jump1677)
+  exact Challenge.EvmProof.GasSteps.cast
+    (hstub.trans (htoClear.trans (hclear.trans (hmstore.trans
+      (hdirect.trans (hcall.trans hload))))))
+    rfl
+    (by rw [baseLoopEntry]; rw [hstackComputed])
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigBase

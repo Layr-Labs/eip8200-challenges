@@ -1,9 +1,21 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigExponentCorrect
+import Challenge.Modexp.Submission.Proofs.Bytecode.BigBaseLoop
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 3000000
 set_option linter.unusedSimpArgs false
-/-! # Functional correctness of multi-limb base conversion -/
+/-!
+# Functional correctness of multi-limb base conversion
+
+Base conversion runs in two phases.  A prefix of `direct` base bytes is loaded
+straight into the reduced-base register by the certified `loadBigEndian`
+helper; the remaining bytes go through the original bitwise Horner loop.
+
+Soundness of the first phase is an *inequality*: `256 ^ direct ≤ modulus`,
+which holds because `direct` is either `0` or `32 * (count - 1)` with the
+modulus's top limb nonzero.  Nothing here has to characterise `direct` exactly;
+a smaller `direct` would only be slower.
+-/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.BigBaseCorrect
 
@@ -11,6 +23,163 @@ open EvmSemantics
 open EvmSemantics.EVM
 
 open BigBase
+
+/-! ## Limb-representation glue -/
+
+theorem limbDigits_zero (count : Nat) :
+    Limbs.limbDigits count 0 = List.replicate count 0 := by
+  simp [Limbs.limbDigits, Nat.digitsAppend]
+
+theorem memoryLimbs_split (memory : ByteArray) (ptr k d : Nat) :
+    Limbs.memoryLimbs memory ptr (k + d) =
+      Limbs.memoryLimbs memory ptr k ++
+        (List.range d).map
+          (fun i => (MachineState.readWord memory (ptr + 32 * (k + i))).toNat) := by
+  simp only [Limbs.memoryLimbs, List.range_add, List.map_append, List.map_map]
+  rfl
+
+theorem ofDigits_map_range_zero (b d : Nat) (f : Nat → Nat)
+    (h : ∀ i, i < d → f i = 0) :
+    Nat.ofDigits b ((List.range d).map f) = 0 := by
+  induction d with
+  | zero => simp
+  | succ d ih =>
+      rw [List.range_succ, List.map_append, Nat.ofDigits_append,
+        ih (fun i hi => h i (by omega))]
+      simp [h d (by omega)]
+
+theorem represents_zero_read (memory : ByteArray) (ptr count j : Nat)
+    (hj : j < count) (hrep : Limbs.Represents memory ptr count 0) :
+    (MachineState.readWord memory (ptr + 32 * j)).toNat = 0 := by
+  have h := hrep.2
+  rw [limbDigits_zero] at h
+  have hmem : (MachineState.readWord memory (ptr + 32 * j)).toNat ∈
+      Limbs.memoryLimbs memory ptr count := by
+    simp only [Limbs.memoryLimbs, List.mem_map]
+    exact ⟨j, by simpa using hj, rfl⟩
+  rw [h] at hmem
+  exact List.eq_of_mem_replicate hmem
+
+theorem radix_pow_pos (count : Nat) : (0 : Nat) < Limbs.radix ^ count := by
+  induction count with
+  | zero => simp
+  | succ k ih => rw [pow_succ]; exact Nat.mul_pos ih Limbs.radix_pos
+
+theorem represents_zero_of_reads (memory : ByteArray) (ptr count : Nat)
+    (h : ∀ j, j < count → (MachineState.readWord memory (ptr + 32 * j)).toNat = 0) :
+    Limbs.Represents memory ptr count 0 := by
+  refine (Limbs.represents_iff_value (radix_pow_pos count)).2 ?_
+  simp only [Limbs.memoryLimbs]
+  exact ofDigits_map_range_zero _ _ _ h
+
+theorem represents_zero_truncate (memory : ByteArray) (ptr k count : Nat)
+    (hk : k ≤ count) (hrep : Limbs.Represents memory ptr count 0) :
+    Limbs.Represents memory ptr k 0 :=
+  represents_zero_of_reads memory ptr k
+    fun j hj => represents_zero_read memory ptr count j (by omega) hrep
+
+theorem represents_extend (memory : ByteArray) (ptr k d value : Nat)
+    (hvalue : value < Limbs.radix ^ (k + d))
+    (hlow : Limbs.Represents memory ptr k value)
+    (hhigh : ∀ i, i < d →
+      (MachineState.readWord memory (ptr + 32 * (k + i))).toNat = 0) :
+    Limbs.Represents memory ptr (k + d) value := by
+  refine (Limbs.represents_iff_value hvalue).2 ?_
+  rw [memoryLimbs_split, Nat.ofDigits_append,
+    ofDigits_map_range_zero _ _ _ hhigh, Nat.mul_zero, Nat.add_zero]
+  exact Limbs.value_of_represents hlow
+
+/-- A nonzero top limb forces the represented value above `radix ^ (count-1)`. -/
+theorem radix_pow_le_of_top_limb (memory : ByteArray) (ptr count value : Nat)
+    (hcount : 0 < count)
+    (hrep : Limbs.Represents memory ptr count value)
+    (hnz : (MachineState.readWord memory (ptr + 32 * (count - 1))).toNat ≠ 0) :
+    Limbs.radix ^ (count - 1) ≤ value := by
+  obtain ⟨k, rfl⟩ : ∃ k, count = k + 1 := ⟨count - 1, by omega⟩
+  have hvalue := Limbs.value_of_represents hrep
+  rw [memoryLimbs_split memory ptr k 1, Nat.ofDigits_append] at hvalue
+  simp only [Limbs.length_memoryLimbs] at hvalue
+  have hone : Nat.ofDigits Limbs.radix ((List.range 1).map
+      (fun i => (MachineState.readWord memory (ptr + 32 * (k + i))).toNat)) =
+      (MachineState.readWord memory (ptr + 32 * k)).toNat := by
+    simp
+  rw [hone] at hvalue
+  have hnz' : 1 ≤ (MachineState.readWord memory (ptr + 32 * k)).toNat := by
+    simp only [Nat.add_sub_cancel] at hnz
+    omega
+  have hmul : Limbs.radix ^ k * 1 ≤
+      Limbs.radix ^ k * (MachineState.readWord memory (ptr + 32 * k)).toNat :=
+    Nat.mul_le_mul_left _ hnz'
+  simp only [Nat.add_sub_cancel]
+  omega
+
+/-! ## The directly loaded prefix -/
+
+theorem topOffset_eq (count : Nat) (hpos : 0 < count) (hle : count ≤ 32) :
+    topOffset count = 32 * (count - 1) := by
+  have h1 : (1 : UInt256) = UInt256.ofNat 1 := by decide
+  have h5 : (5 : UInt256) = UInt256.ofNat 5 := by decide
+  have hsub : UInt256.ofNat count - UInt256.ofNat 1 = UInt256.ofNat (count - 1) :=
+    Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)
+  unfold topOffset topOffsetWord
+  rw [h1, hsub, h5,
+    Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by omega) (by
+      have : count - 1 ≤ 31 := by omega
+      calc (count - 1) * 2 ^ 5 ≤ 31 * 2 ^ 5 := Nat.mul_le_mul_right _ this
+        _ < 2 ^ 256 := by norm_num),
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by
+      have : count - 1 ≤ 31 := by omega
+      calc (count - 1) * 2 ^ 5 ≤ 31 * 2 ^ 5 := Nat.mul_le_mul_right _ this
+        _ < 2 ^ 256 := by norm_num)]
+  omega
+
+theorem directValue_le_topOffset (memory : ByteArray) (count baseSize : Nat) :
+    directValue memory count baseSize ≤ topOffset count := by
+  unfold directValue
+  have h := directTake_le_one memory count baseSize
+  calc directTake memory count baseSize * topOffset count
+      ≤ 1 * topOffset count := Nat.mul_le_mul_right _ h
+    _ = topOffset count := Nat.one_mul _
+
+theorem readWord_ne_zero_of_directValue_pos (memory : ByteArray)
+    (count baseSize : Nat) (h : 0 < directValue memory count baseSize) :
+    (MachineState.readWord memory (topOffset count)).toNat ≠ 0 := by
+  intro hz
+  unfold directValue directTake at h
+  rw [if_pos hz] at h
+  simp at h
+
+/-- The directly loaded prefix is a residue.  This is the whole soundness
+argument for the optimisation, and it is an inequality. -/
+theorem pow_directValue_le (memory : ByteArray) (count baseSize modulus : Nat)
+    (hpos : 0 < count) (hle : count ≤ 32) (hmod : 0 < modulus)
+    (hrep : Limbs.Represents memory 0 count modulus) :
+    256 ^ (directValue memory count baseSize) ≤ modulus := by
+  rcases Nat.eq_zero_or_pos (directValue memory count baseSize) with h | h
+  · rw [h, show (256 : Nat) ^ 0 = 1 by norm_num]
+    omega
+  · have hnz := readWord_ne_zero_of_directValue_pos memory count baseSize h
+    rw [topOffset_eq count hpos hle] at hnz
+    have hkey := radix_pow_le_of_top_limb memory 0 count modulus hpos hrep
+      (by simpa using hnz)
+    have hd : directValue memory count baseSize ≤ 32 * (count - 1) := by
+      have hle' := directValue_le_topOffset memory count baseSize
+      rwa [topOffset_eq count hpos hle] at hle'
+    calc 256 ^ (directValue memory count baseSize)
+        ≤ 256 ^ (32 * (count - 1)) := Nat.pow_le_pow_right (by omega) hd
+      _ = Limbs.radix ^ (count - 1) := (Limbs.pow_radix (count - 1)).symm
+      _ ≤ modulus := hkey
+
+theorem limbCount_directValue_le (memory : ByteArray) (count baseSize : Nat)
+    (hpos : 0 < count) (hle : count ≤ 32) :
+    Limbs.limbCount (directValue memory count baseSize) ≤ count := by
+  have hd : directValue memory count baseSize ≤ 32 * (count - 1) := by
+    have hle' := directValue_le_topOffset memory count baseSize
+    rwa [topOffset_eq count hpos hle] at hle'
+  unfold Limbs.limbCount
+  omega
+
+/-! ## Bit-level progress (unchanged apart from the new return addresses) -/
 
 theorem baseBit_toNat_le_one (byte : UInt256) (j : Nat) :
     (baseBit byte j).toNat ≤ 1 := by
@@ -59,54 +228,54 @@ theorem bitProgress_represents (s : State) (count : Nat) (byte : UInt256)
   | succ steps ih =>
       let before := bitProgress count byte steps s
       let beforeValue := baseBitAfter modulus byte steps acc
-      let doubled := BigHelpers.addReturned before 1024 1024 1 0 count 875 []
+      let doubled := BigHelpers.addReturned before 1024 1024 1 0 count 1721 []
       let bit := (baseBit byte steps).toNat
       have h0 : (0 : UInt256) = UInt256.ofNat 0 := by decide
       have h1 : (1 : UInt256) = UInt256.ofNat 1 := by decide
       have h1024 : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
       have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
-      have h875 : (875 : UInt256) = UInt256.ofNat 875 := by decide
-      have h900 : (900 : UInt256) = UInt256.ofNat 900 := by decide
+      have h1721 : (1721 : UInt256) = UInt256.ofNat 1721 := by decide
+      have h1746 : (1746 : UInt256) = UInt256.ofNat 1746 := by decide
       have hbefore := ih (by omega)
       have hbeforeReduced : beforeValue < modulus :=
         baseBitAfter_lt modulus byte steps acc hmodulusPos haccReduced
       have hdoubled : Limbs.Represents doubled.memory 1024 count
           ((beforeValue + beforeValue) % modulus) := by
-        simpa [doubled, h0, h1, h1024, h875] using
+        simpa [doubled, h0, h1, h1024, h1721] using
           BigHelpers.addReturned_represents_mod before 1024 1024 0 count 1
-            beforeValue beforeValue modulus 875 [] (by omega) (by omega)
+            beforeValue beforeValue modulus 1721 [] (by omega) (by omega)
             (by omega) (by omega) (by omega) (Or.inl rfl) (Or.inr (by omega))
             (Or.inl (by omega)) (Or.inl (by omega)) hbefore.1 hbefore.1
             hbefore.2.2 hbeforeReduced hbeforeReduced.le hbefore.2.2.1
       have hdoubledOne : Limbs.Represents doubled.memory 3072 count 1 := by
-        simpa [doubled, h0, h1, h1024, h875] using
+        simpa [doubled, h0, h1, h1024, h1721] using
           BigHelpers.addReturned_preserves_region before 1024 1024 1 0 3072
-            count 1 875 [] (by omega) (by omega) (Or.inl (by omega))
+            count 1 1721 [] (by omega) (by omega) (Or.inl (by omega))
             (Or.inl (by omega)) hbefore.2.1
       have hdoubledModulus : Limbs.Represents doubled.memory 0 count modulus := by
-        simpa [doubled, h0, h1, h1024, h875] using
+        simpa [doubled, h0, h1, h1024, h1721] using
           BigHelpers.addReturned_preserves_region before 1024 1024 1 0 0
-            count modulus 875 [] (by omega) (by omega) (Or.inr (by omega))
+            count modulus 1721 [] (by omega) (by omega) (Or.inr (by omega))
             (Or.inl (by omega)) hbefore.2.2
       have hdoubleReduced : (beforeValue + beforeValue) % modulus < modulus :=
         Nat.mod_lt _ hmodulusPos
       have hbitLe : bit ≤ 1 := baseBit_toNat_le_one byte steps
       let after := BigHelpers.addReturned doubled 1024 3072
-        (baseBit byte steps) 0 count 900 []
+        (baseBit byte steps) 0 count 1746 []
       have hbitWord : baseBit byte steps = UInt256.ofNat bit :=
         Challenge.EvmProof.Word.word_eq_ofNat_toNat _
       have hafterEq : after = BigHelpers.addReturned doubled
           (UInt256.ofNat 1024) (UInt256.ofNat 3072) (UInt256.ofNat bit)
-          (UInt256.ofNat 0) count (UInt256.ofNat 900) [] := by
+          (UInt256.ofNat 0) count (UInt256.ofNat 1746) [] := by
         simp only [after]
-        rw [hbitWord, h0, h1024, h3072, h900]
+        rw [hbitWord, h0, h1024, h3072, h1746]
       have hafter : Limbs.Represents after.memory 1024 count
           ((((beforeValue + beforeValue) % modulus) + bit) % modulus) := by
         rw [hafterEq]
         simpa only [Nat.mul_one] using
           BigHelpers.addReturned_represents_mod doubled 1024 3072 0 count bit
             ((beforeValue + beforeValue) % modulus) 1 modulus
-            (UInt256.ofNat 900) [] hbitLe
+            (UInt256.ofNat 1746) [] hbitLe
             (by omega) (by omega) (by omega) (by omega) (Or.inr (by omega))
             (Or.inr (by omega)) (Or.inl (by omega)) (Or.inl (by omega))
             hdoubled hdoubledOne hdoubledModulus hdoubleReduced
@@ -115,14 +284,14 @@ theorem bitProgress_represents (s : State) (count : Nat) (byte : UInt256)
         rw [hafterEq]
         exact
           BigHelpers.addReturned_preserves_region doubled 1024 3072 bit 0 3072
-            count 1 (UInt256.ofNat 900) [] (by omega) (by omega)
+            count 1 (UInt256.ofNat 1746) [] (by omega) (by omega)
             (Or.inl (by omega))
             (Or.inl (by omega)) hdoubledOne
       have hafterModulus : Limbs.Represents after.memory 0 count modulus := by
         rw [hafterEq]
         exact
           BigHelpers.addReturned_preserves_region doubled 1024 3072 bit 0 0
-            count modulus (UInt256.ofNat 900) [] (by omega) (by omega)
+            count modulus (UInt256.ofNat 1746) [] (by omega) (by omega)
             (Or.inr (by omega))
             (Or.inl (by omega)) hdoubledModulus
       have hvalue :
@@ -149,33 +318,33 @@ theorem bitProgress_preserves_2048 (s : State) (count : Nat)
   | zero => exact hrep
   | succ steps ih =>
       let before := bitProgress count byte steps s
-      let doubled := BigHelpers.addReturned before 1024 1024 1 0 count 875 []
+      let doubled := BigHelpers.addReturned before 1024 1024 1 0 count 1721 []
       let bit := (baseBit byte steps).toNat
       let after := BigHelpers.addReturned doubled 1024 3072
-        (baseBit byte steps) 0 count 900 []
+        (baseBit byte steps) 0 count 1746 []
       have hbefore := ih (by omega)
       have h0 : (0 : UInt256) = UInt256.ofNat 0 := by decide
       have h1 : (1 : UInt256) = UInt256.ofNat 1 := by decide
       have h1024 : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
       have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
-      have h875 : (875 : UInt256) = UInt256.ofNat 875 := by decide
-      have h900 : (900 : UInt256) = UInt256.ofNat 900 := by decide
+      have h1721 : (1721 : UInt256) = UInt256.ofNat 1721 := by decide
+      have h1746 : (1746 : UInt256) = UInt256.ofNat 1746 := by decide
       have hdoubled : Limbs.Represents doubled.memory 2048 count value := by
-        simpa [doubled, h0, h1, h1024, h875] using
+        simpa [doubled, h0, h1, h1024, h1721] using
           BigHelpers.addReturned_preserves_region before 1024 1024 1 0 2048
-            count value (UInt256.ofNat 875) [] (by omega) (by omega)
+            count value (UInt256.ofNat 1721) [] (by omega) (by omega)
             (Or.inl (by omega)) (Or.inl (by omega)) hbefore
       have hbitWord : baseBit byte steps = UInt256.ofNat bit :=
         Challenge.EvmProof.Word.word_eq_ofNat_toNat _
       have hafterEq : after = BigHelpers.addReturned doubled
           (UInt256.ofNat 1024) (UInt256.ofNat 3072) (UInt256.ofNat bit)
-          (UInt256.ofNat 0) count (UInt256.ofNat 900) [] := by
+          (UInt256.ofNat 0) count (UInt256.ofNat 1746) [] := by
         simp only [after]
-        rw [hbitWord, h0, h1024, h3072, h900]
+        rw [hbitWord, h0, h1024, h3072, h1746]
       have hafter : Limbs.Represents after.memory 2048 count value := by
         rw [hafterEq]
         exact BigHelpers.addReturned_preserves_region doubled 1024 3072
-          bit 0 2048 count value (UInt256.ofNat 900) [] (by omega) (by omega)
+          bit 0 2048 count value (UInt256.ofNat 1746) [] (by omega) (by omega)
           (Or.inl (by omega)) (Or.inl (by omega)) hdoubled
       simpa [bitProgress, before, doubled, after] using hafter
 
@@ -225,94 +394,129 @@ theorem loadedBaseByte_lt (s : State) (baseOff i : Nat) :
   change (ExpCore.loadedExponentByte s baseOff i).toNat < 256
   exact BigExponentCorrect.loadedExponentByte_lt s baseOff i
 
-def baseValueAfter (s : State) (modulus baseOff : Nat) : Nat → Nat
-  | 0 => 0
+/-! ## Byte-level progress from an arbitrary start index -/
+
+def baseValueSeq (s : State) (modulus baseOff start acc : Nat) : Nat → Nat
+  | 0 => acc
   | i + 1 =>
-      (baseValueAfter s modulus baseOff i * 256 +
-        (loadedBaseByte s baseOff i).toNat) % modulus
+      (baseValueSeq s modulus baseOff start acc i * 256 +
+        (loadedBaseByte s baseOff (start + i)).toNat) % modulus
+
+def baseValueAfter (s : State) (modulus baseOff steps : Nat) : Nat :=
+  baseValueSeq s modulus baseOff 0 0 steps
+
+theorem baseValueSeq_lt (s : State) (modulus baseOff start acc steps : Nat)
+    (hmodulusPos : 0 < modulus) (hacc : acc < modulus) :
+    baseValueSeq s modulus baseOff start acc steps < modulus := by
+  cases steps with
+  | zero => simpa [baseValueSeq] using hacc
+  | succ steps =>
+      rw [baseValueSeq]
+      exact Nat.mod_lt _ hmodulusPos
 
 theorem baseValueAfter_lt (s : State) (modulus baseOff steps : Nat)
     (hmodulusPos : 0 < modulus) :
-    baseValueAfter s modulus baseOff steps < modulus := by
-  cases steps with
-  | zero => simpa [baseValueAfter] using hmodulusPos
-  | succ steps =>
-      rw [baseValueAfter]
-      exact Nat.mod_lt _ hmodulusPos
+    baseValueAfter s modulus baseOff steps < modulus :=
+  baseValueSeq_lt s modulus baseOff 0 0 steps hmodulusPos hmodulusPos
 
-theorem baseProgress_represents (s : State) (count baseOff steps modulus : Nat)
-    (hcount : count ≤ 32) (hmodulusPos : 0 < modulus)
-    (hzero : Limbs.Represents s.memory 1024 count 0)
+/-- Restarting the Horner fold at index `d` with the value produced by the first
+`d` bytes agrees with running it straight through. -/
+theorem baseValueSeq_shift (s : State) (modulus baseOff d acc k : Nat) :
+    baseValueSeq s modulus baseOff d
+        (baseValueSeq s modulus baseOff 0 acc d) k =
+      baseValueSeq s modulus baseOff 0 acc (d + k) := by
+  induction k with
+  | zero => rfl
+  | succ k ih =>
+      rw [baseValueSeq, ih, show d + (k + 1) = (d + k) + 1 by omega,
+        baseValueSeq, Nat.zero_add]
+
+theorem baseProgressFrom_represents (s : State)
+    (count baseOff start steps modulus acc : Nat)
+    (hcount : count ≤ 32) (hmodulusPos : 0 < modulus) (haccReduced : acc < modulus)
+    (hacc : Limbs.Represents s.memory 1024 count acc)
     (hone : Limbs.Represents s.memory 3072 count 1)
     (hmodulus : Limbs.Represents s.memory 0 count modulus) :
-    let progress := baseProgress count baseOff steps s
+    let progress := BigBaseLoop.baseProgressFrom count baseOff start steps s
     Limbs.Represents progress.memory 1024 count
-        (baseValueAfter s modulus baseOff steps) ∧
+        (baseValueSeq s modulus baseOff start acc steps) ∧
       Limbs.Represents progress.memory 3072 count 1 ∧
       Limbs.Represents progress.memory 0 count modulus := by
   induction steps with
-  | zero => exact ⟨hzero, hone, hmodulus⟩
+  | zero => exact ⟨hacc, hone, hmodulus⟩
   | succ steps ih =>
-      let before := baseProgress count baseOff steps s
-      let beforeValue := baseValueAfter s modulus baseOff steps
-      let byte := loadedBaseByte before baseOff steps
+      let before := BigBaseLoop.baseProgressFrom count baseOff start steps s
+      let beforeValue := baseValueSeq s modulus baseOff start acc steps
+      let byte := loadedBaseByte before baseOff (start + steps)
       have hbefore := ih
       have hbeforeReduced : beforeValue < modulus :=
-        baseValueAfter_lt s modulus baseOff steps hmodulusPos
-      have hbyte : byte = loadedBaseByte s baseOff steps := by
-        exact BigBase.loadedBaseByte_baseProgress count baseOff steps steps s
+        baseValueSeq_lt s modulus baseOff start acc steps hmodulusPos haccReduced
+      have hbyte : byte = loadedBaseByte s baseOff (start + steps) := by
+        exact BigBaseLoop.loadedBaseByte_baseProgressFrom count baseOff start
+          (start + steps) steps s
       have hbits := bitProgress_represents before count byte 8 beforeValue
         modulus (by omega) hcount hmodulusPos hbeforeReduced hbefore.1
         hbefore.2.1 hbefore.2.2
       have hbyteLt : byte.toNat < 256 := by
         rw [hbyte]
-        exact loadedBaseByte_lt s baseOff steps
+        exact loadedBaseByte_lt s baseOff (start + steps)
       have heq := baseBitAfter_eight modulus byte beforeValue hbeforeReduced
         hbyteLt
       rw [heq] at hbits
-      simpa [baseProgress, baseValueAfter, before, beforeValue, byte, hbyte]
-        using hbits
+      simpa [BigBaseLoop.baseProgressFrom, baseValueSeq, before, beforeValue,
+        byte, hbyte] using hbits
 
-theorem baseProgress_preserves_2048 (s : State) (count baseOff steps value : Nat)
-    (hcount : count ≤ 32)
+theorem baseProgressFrom_preserves_2048 (s : State)
+    (count baseOff start steps value : Nat) (hcount : count ≤ 32)
     (hrep : Limbs.Represents s.memory 2048 count value) :
-    Limbs.Represents (baseProgress count baseOff steps s).memory 2048 count
-      value := by
+    Limbs.Represents
+      (BigBaseLoop.baseProgressFrom count baseOff start steps s).memory 2048
+      count value := by
   induction steps with
   | zero => exact hrep
   | succ steps ih =>
-      let before := baseProgress count baseOff steps s
-      let byte := loadedBaseByte before baseOff steps
+      let before := BigBaseLoop.baseProgressFrom count baseOff start steps s
+      let byte := loadedBaseByte before baseOff (start + steps)
       have hbits := bitProgress_preserves_2048 before count byte 8 value
         (by omega) hcount ih
-      simpa [baseProgress, before, byte] using hbits
+      simpa [BigBaseLoop.baseProgressFrom, before, byte] using hbits
 
-theorem loadedBaseByte_header_toNat (input : ByteArray) (baseOff i : Nat)
-    (_hfit : baseOff + i < 2 ^ 256) :
-    (loadedBaseByte (Main.headerState input) baseOff i).toNat =
-      (YulSemantics.EVM.byteFrom input.toList (baseOff + i)).toNat := by
+/-! ## Bridging the Horner fold to the calldata bytes -/
+
+theorem loadedBaseByte_toNat (s : State) (baseOff i : Nat) :
+    (loadedBaseByte s baseOff i).toNat =
+      (YulSemantics.EVM.byteFrom s.executionEnv.calldata.toList
+        (baseOff + i)).toNat := by
   have h := congrArg UInt256.toNat
-    (Challenge.EvmProof.Bytes.byteAt_zero_readWord input (baseOff + i))
+    (Challenge.EvmProof.Bytes.byteAt_zero_readWord s.executionEnv.calldata
+      (baseOff + i))
   rw [Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt
-      ((YulSemantics.EVM.byteFrom input.toList (baseOff + i)).toNat_lt.trans
-        (by norm_num : 256 < 2 ^ 256))] at h
+      ((YulSemantics.EVM.byteFrom s.executionEnv.calldata.toList
+        (baseOff + i)).toNat_lt.trans (by norm_num : 256 < 2 ^ 256))] at h
   change (UInt256.byteAt ⟨0⟩
-    (MachineState.readWord input (baseOff + i))).toNat = _
+    (MachineState.readWord s.executionEnv.calldata (baseOff + i))).toNat = _
   exact h
 
-theorem baseValueAfter_header_eq (input : ByteArray) (modulus steps : Nat)
-    (hfit : 96 + steps < 2 ^ 256) :
-    baseValueAfter (Main.headerState input) modulus 96 steps =
-      Precompile.bytesToNatPadded input 96 steps % modulus := by
+theorem baseValueAfter_eq (s : State) (modulus baseOff steps : Nat) :
+    baseValueAfter s modulus baseOff steps =
+      Precompile.bytesToNatPadded s.executionEnv.calldata baseOff steps %
+        modulus := by
+  unfold baseValueAfter
   induction steps with
-  | zero => simp [baseValueAfter,
-      Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width]
+  | zero => simp [baseValueSeq]
   | succ steps ih =>
-      rw [baseValueAfter, ih (by omega),
-        loadedBaseByte_header_toNat input 96 steps (by omega),
+      rw [baseValueSeq, ih, loadedBaseByte_toNat s baseOff (0 + steps),
         Challenge.EvmProof.Bytes.bytesToNatPadded_succ]
       simp [Nat.add_mod, Nat.mul_mod]
+
+theorem baseValueAfter_executionEnv (s t : State)
+    (modulus baseOff steps : Nat) (henv : s.executionEnv = t.executionEnv) :
+    baseValueAfter s modulus baseOff steps =
+      baseValueAfter t modulus baseOff steps := by
+  rw [baseValueAfter_eq, baseValueAfter_eq, henv]
+
+/-! ## Preservation across the direct load -/
 
 theorem represents_writeWord_disjoint_region (memory : ByteArray)
     (dst ptr count value word : Nat)
@@ -340,7 +544,7 @@ theorem loadMemory_preserves_region (calldata : ByteArray) (memory : ByteArray)
     (offset dst length iter ptr count value : Nat) (hiter : iter ≤ length)
     (hlength : length < 2 ^ 256)
     (hdstFit : dst + 32 * Limbs.limbCount length < 2 ^ 256)
-    (hbefore : dst + 32 * Limbs.limbCount length ≤ ptr)
+    (hdisjoint : dst + 32 * Limbs.limbCount length ≤ ptr ∨ ptr + 32 * count ≤ dst)
     (hrep : Limbs.Represents memory ptr count value) :
     Limbs.Represents
       (BigLoad.loadMemory calldata offset (UInt256.ofNat dst) length iter memory)
@@ -356,15 +560,17 @@ theorem loadMemory_preserves_region (calldata : ByteArray) (memory : ByteArray)
       let word := UInt256.lor (MachineState.readWord before addr.toNat) shifted
       have haddr := BigLoadCorrect.loadAt_ofNat dst length iter hlength
         (by omega) hdstFit
-      have haddrBefore : addr.toNat + 32 ≤ ptr := by
-        rw [haddr]
-        have hlimb : BigLoad.loadLimb length iter < Limbs.limbCount length := by
-          unfold BigLoad.loadLimb BigLoad.loadReverse Limbs.limbCount
-          omega
+      have hlimb : BigLoad.loadLimb length iter < Limbs.limbCount length := by
+        unfold BigLoad.loadLimb BigLoad.loadReverse Limbs.limbCount
         omega
+      have hdisj : addr.toNat + 32 ≤ ptr ∨ ptr + 32 * count ≤ addr.toNat := by
+        rw [haddr]
+        rcases hdisjoint with h | h
+        · left; omega
+        · right; omega
       simpa [BigLoad.loadMemory, before, addr, shifted, word] using
         represents_writeWord_disjoint_region before addr.toNat ptr count value
-          word.toNat (Or.inl haddrBefore) (ih (by omega))
+          word.toNat hdisj (ih (by omega))
 
 theorem setupReturned_base_buffers_zero (s : State)
     (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
@@ -410,146 +616,326 @@ theorem setupReturned_base_buffers_zero (s : State)
       BigHelpers.represents_clearMemory_disjoint_region s2.memory 6144 2048 n
         0 (by omega) (Or.inr (by omega)) hz2048s2
   have hz1024 := loadMemory_preserves_region s3.executionEnv.calldata
-    s3.memory modOff 0 m m 1024 n 0 (by omega) hm (by omega) (by omega)
-    hz1024s3
+    s3.memory modOff 0 m m 1024 n 0 (by omega) hm (by omega)
+    (Or.inl (by omega)) hz1024s3
   have hz2048 := loadMemory_preserves_region s3.executionEnv.calldata
-    s3.memory modOff 0 m m 2048 n 0 (by omega) hm (by omega) (by omega)
-    hz2048s3
+    s3.memory modOff 0 m m 2048 n 0 (by omega) hm (by omega)
+    (Or.inl (by omega)) hz2048s3
   exact ⟨by
     simpa [BigSetup.setupReturned, s3, BigLoad.loadReturned,
       BigLoad.loadLoop, h0, hmNat, hmodOffNat, n] using hz1024,
     by simpa [BigSetup.setupReturned, s3, BigLoad.loadReturned,
       BigLoad.loadLoop, h0, hmNat, hmodOffNat, n] using hz2048⟩
 
+/-! ## The state entering the reducing loop -/
+
 theorem baseLoopEntry_initial (s : State) (accumulator : UInt256)
-    (count modulusValue : Nat) (rest : List UInt256) (hcountPos : 0 < count)
-    (hcount : count ≤ 32)
+    (count baseSize e m baseOff modulusValue : Nat) (rest : List UInt256)
+    (hcountPos : 0 < count) (hcount : count ≤ 32)
+    (hmodulusPos : 0 < modulusValue) (hbase : baseSize < 2 ^ 256)
+    (hoff : baseOff < 2 ^ 256)
     (hzero : Limbs.Represents s.memory 1024 count 0)
     (hzero2048 : Limbs.Represents s.memory 2048 count 0)
     (hmodulus : Limbs.Represents s.memory 0 count modulusValue) :
-    let entry := BigBase.baseLoopEntry s accumulator count rest
-    Limbs.Represents entry.memory 1024 count 0 ∧
+    let tail := baseTail baseSize e m baseOff rest
+    let direct := basePrefix s accumulator count baseSize tail
+    let entry := baseLoopEntry s accumulator count baseSize e m baseOff rest
+    direct ≤ baseSize ∧
+      Limbs.Represents entry.memory 1024 count
+        (baseValueAfter s modulusValue baseOff direct) ∧
       Limbs.Represents entry.memory 3072 count 1 ∧
       Limbs.Represents entry.memory 2048 count 0 ∧
       Limbs.Represents entry.memory 0 count modulusValue := by
-  let scanned := BigModulus.scanNonzero s count rest
-  let cleared := BigBase.afterClearDouble s accumulator count rest
-  let written := MachineState.writeBytes cleared.memory
-    (Data.Bytes.natToBytesPadded 1 32) 3072
+  let tail := baseTail baseSize e m baseOff rest
+  let scanned := BigModulus.scanNonzero s count tail
+  let stub := stubbed s count tail
+  let cleared := afterClearDouble s accumulator count tail
+  let written := baseWritten cleared
+  let direct := basePrefix s accumulator count baseSize tail
+  let computed := baseDirectOf written count baseSize
+  have hdd : direct = directValue written.memory count baseSize := rfl
   have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
-  have hscannedZero : Limbs.Represents scanned.memory 1024 count 0 := by
-    simpa [scanned, BigModulus.scanNonzero] using hzero
-  have hscannedModulus : Limbs.Represents scanned.memory 0 count modulusValue := by
-    simpa [scanned, BigModulus.scanNonzero] using hmodulus
-  have hscannedZero2048 : Limbs.Represents scanned.memory 2048 count 0 := by
-    simpa [scanned, BigModulus.scanNonzero] using hzero2048
+  -- the modulus scan and the stub touch no memory
+  have hscannedZero : Limbs.Represents stub.memory 1024 count 0 := by
+    simpa [stub, stubbed, BigModulus.scanNonzero] using hzero
+  have hscannedModulus : Limbs.Represents stub.memory 0 count modulusValue := by
+    simpa [stub, stubbed, BigModulus.scanNonzero] using hmodulus
+  have hscannedZero2048 : Limbs.Represents stub.memory 2048 count 0 := by
+    simpa [stub, stubbed, BigModulus.scanNonzero] using hzero2048
+  -- clearLimbs(0x0c00, n)
   have hcleared3072 : Limbs.Represents cleared.memory 3072 count 0 := by
-    simpa [cleared, BigBase.afterClearDouble, BigHelpers.clearReturned,
-      scanned, h3072] using
-      BigHelpers.clearMemory_represents_zero scanned.memory 3072 count
+    simpa [cleared, afterClearDouble, BigHelpers.clearReturned, stub, h3072]
+      using BigHelpers.clearMemory_represents_zero stub.memory 3072 count
         (by omega)
   have hclearedZero : Limbs.Represents cleared.memory 1024 count 0 := by
-    simpa [cleared, BigBase.afterClearDouble, BigHelpers.clearReturned,
-      scanned, h3072] using
-      BigHelpers.represents_clearMemory_disjoint_region scanned.memory 3072
+    simpa [cleared, afterClearDouble, BigHelpers.clearReturned, stub, h3072]
+      using BigHelpers.represents_clearMemory_disjoint_region stub.memory 3072
         1024 count 0 (by omega) (Or.inr (by omega)) hscannedZero
   have hclearedModulus : Limbs.Represents cleared.memory 0 count modulusValue := by
-    simpa [cleared, BigBase.afterClearDouble, BigHelpers.clearReturned,
-      scanned, h3072] using
-      BigHelpers.represents_clearMemory_disjoint_region scanned.memory 3072 0
+    simpa [cleared, afterClearDouble, BigHelpers.clearReturned, stub, h3072]
+      using BigHelpers.represents_clearMemory_disjoint_region stub.memory 3072 0
         count modulusValue (by omega) (Or.inr (by omega)) hscannedModulus
   have hclearedZero2048 : Limbs.Represents cleared.memory 2048 count 0 := by
-    simpa [cleared, BigBase.afterClearDouble, BigHelpers.clearReturned,
-      scanned, h3072] using
-      BigHelpers.represents_clearMemory_disjoint_region scanned.memory 3072
+    simpa [cleared, afterClearDouble, BigHelpers.clearReturned, stub, h3072]
+      using BigHelpers.represents_clearMemory_disjoint_region stub.memory 3072
         2048 count 0 (by omega) (Or.inr (by omega)) hscannedZero2048
+  -- mstore(0x0c00, 1)
   have hreadZero :
-      (MachineState.readWord cleared.memory (3072 + 32 * 0)).toNat = 0 := by
-    simpa [cleared, BigBase.afterClearDouble, BigHelpers.clearReturned,
-      scanned, h3072] using
-      BigHelpers.readWord_clearMemory scanned.memory 3072 count 0 (by omega)
-        (by omega)
-  have hvalue := BigLoadCorrect.value_memoryLimbs_write_add cleared.memory 3072 count
-    0 1 hcountPos (by rw [hreadZero]; norm_num)
+      (MachineState.readWord cleared.memory (3072 + 32 * 0)).toNat = 0 :=
+    represents_zero_read cleared.memory 3072 count 0 (by omega) hcleared3072
+  have hvalue := BigLoadCorrect.value_memoryLimbs_write_add cleared.memory 3072
+    count 0 1 hcountPos (by rw [hreadZero]; norm_num)
   have hclearedValue := Limbs.value_of_represents hcleared3072
   rw [hclearedValue, Nat.zero_add, Nat.pow_zero, Nat.mul_one] at hvalue
-  have hwrittenOne : Limbs.Represents written 3072 count 1 := by
-    apply (Limbs.represents_iff_value (by
-      exact Nat.one_lt_pow (by omega) Limbs.radix_gt_one)).2
-    simpa [written, hreadZero] using hvalue
-  have hwrittenZero : Limbs.Represents written 1024 count 0 := by
-    exact represents_writeWord_disjoint_region cleared.memory 3072 1024 count
-      0 1 (Or.inr (by omega)) hclearedZero
-  have hwrittenModulus : Limbs.Represents written 0 count modulusValue := by
-    exact represents_writeWord_disjoint_region cleared.memory 3072 0 count
-      modulusValue 1 (Or.inr (by omega)) hclearedModulus
-  have hwrittenZero2048 : Limbs.Represents written 2048 count 0 := by
-    exact represents_writeWord_disjoint_region cleared.memory 3072 2048 count
-      0 1 (Or.inr (by omega)) hclearedZero2048
-  exact ⟨by simpa [BigBase.baseLoopEntry, written, cleared] using hwrittenZero,
-    by simpa [BigBase.baseLoopEntry, written, cleared] using hwrittenOne,
-    by simpa [BigBase.baseLoopEntry, written, cleared] using hwrittenZero2048,
-    by simpa [BigBase.baseLoopEntry, written, cleared] using
-      hwrittenModulus⟩
+  have hwrittenOne : Limbs.Represents written.memory 3072 count 1 := by
+    have : Limbs.Represents (MachineState.writeBytes cleared.memory
+        (Data.Bytes.natToBytesPadded 1 32) 3072) 3072 count 1 := by
+      apply (Limbs.represents_iff_value (by
+        exact Nat.one_lt_pow (by omega) Limbs.radix_gt_one)).2
+      simpa [hreadZero] using hvalue
+    simpa [written, baseWritten] using this
+  have hwrittenZero : Limbs.Represents written.memory 1024 count 0 := by
+    simpa [written, baseWritten] using
+      represents_writeWord_disjoint_region cleared.memory 3072 1024 count
+        0 1 (Or.inr (by omega)) hclearedZero
+  have hwrittenModulus : Limbs.Represents written.memory 0 count modulusValue := by
+    simpa [written, baseWritten] using
+      represents_writeWord_disjoint_region cleared.memory 3072 0 count
+        modulusValue 1 (Or.inr (by omega)) hclearedModulus
+  have hwrittenZero2048 : Limbs.Represents written.memory 2048 count 0 := by
+    simpa [written, baseWritten] using
+      represents_writeWord_disjoint_region cleared.memory 3072 2048 count
+        0 1 (Or.inr (by omega)) hclearedZero2048
+  -- the prefix length is bounded and its value is already a residue
+  have hdirectLe : direct ≤ baseSize := by
+    rw [hdd]; exact directValue_le _ count baseSize
+  have hlimbLe : Limbs.limbCount direct ≤ count := by
+    rw [hdd]
+    exact limbCount_directValue_le written.memory count baseSize hcountPos hcount
+  have hdirectMod : direct % 2 ^ 256 = direct := Nat.mod_eq_of_lt (by omega)
+  have hbaseOffMod : baseOff % 2 ^ 256 = baseOff := Nat.mod_eq_of_lt hoff
+  have hprefixLt : Precompile.bytesToNatPadded written.executionEnv.calldata
+      baseOff direct < modulusValue := by
+    have h1 := Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow
+      written.executionEnv.calldata baseOff direct
+    have h2 : (256 : Nat) ^ direct ≤ modulusValue := by
+      rw [hdd]
+      exact pow_directValue_le written.memory count baseSize modulusValue
+        hcountPos hcount hmodulusPos hwrittenModulus
+    omega
+  -- run the certified loadBigEndian
+  have hzeroPrefix : Limbs.Represents computed.memory 1024
+      (Limbs.limbCount direct) 0 := by
+    have : Limbs.Represents written.memory 1024 (Limbs.limbCount direct) 0 :=
+      represents_zero_truncate written.memory 1024 (Limbs.limbCount direct)
+        count hlimbLe hwrittenZero
+    simpa [computed, baseDirectOf] using this
+  have hloaded := BigLoadCorrect.loadReturned_represents computed baseOff 1024
+    direct (UInt256.ofNat 1677)
+    (UInt256.ofNat direct :: frame accumulator count tail) hoff (by omega)
+    (by
+      have : Limbs.limbCount direct ≤ 32 := by omega
+      omega)
+    hzeroPrefix
+  -- extend the loaded prefix to the full limb count
+  have hhigh : ∀ i, i < count - Limbs.limbCount direct →
+      (MachineState.readWord
+        (BigLoad.loadReturned computed (UInt256.ofNat baseOff)
+          (UInt256.ofNat direct) (UInt256.ofNat 1024) (UInt256.ofNat 1677)
+          (UInt256.ofNat direct :: frame accumulator count tail)).memory
+        (1024 + 32 * (Limbs.limbCount direct + i))).toNat = 0 := by
+    intro i hi
+    have hsingle : Limbs.Represents computed.memory
+        (1024 + 32 * (Limbs.limbCount direct + i)) 1 0 := by
+      apply represents_zero_of_reads
+      intro j hj
+      have hj0 : j = 0 := by omega
+      subst hj0
+      have := represents_zero_read written.memory 1024 count
+        (Limbs.limbCount direct + i) (by omega) hwrittenZero
+      simpa [computed, baseDirectOf] using this
+    have hpres := loadMemory_preserves_region computed.executionEnv.calldata
+      computed.memory baseOff 1024 direct direct
+      (1024 + 32 * (Limbs.limbCount direct + i)) 1 0 (by omega) (by omega)
+      (by
+        have : Limbs.limbCount direct ≤ 32 := by omega
+        omega)
+      (Or.inl (by omega)) hsingle
+    have hbaseOffNat : (UInt256.ofNat baseOff).toNat = baseOff := by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hoff]
+    have hdirectNat : (UInt256.ofNat direct).toNat = direct := by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    have := represents_zero_read _ (1024 + 32 * (Limbs.limbCount direct + i)) 1 0
+      (by omega) hpres
+    simpa [BigLoad.loadReturned, BigLoad.loadLoop, hbaseOffNat, hdirectNat,
+      hbaseOffMod, hdirectMod] using this
+  have hentryBase : Limbs.Represents
+      (baseLoopEntry s accumulator count baseSize e m baseOff rest).memory 1024
+      count (Precompile.bytesToNatPadded written.executionEnv.calldata baseOff
+        direct) := by
+    have hsplit : Limbs.limbCount direct + (count - Limbs.limbCount direct)
+        = count := by omega
+    have hcalldata : computed.executionEnv.calldata =
+        written.executionEnv.calldata := by
+      simp [computed, baseDirectOf]
+    have hext := represents_extend
+      (BigLoad.loadReturned computed (UInt256.ofNat baseOff)
+        (UInt256.ofNat direct) (UInt256.ofNat 1024) (UInt256.ofNat 1677)
+        (UInt256.ofNat direct :: frame accumulator count tail)).memory
+      1024 (Limbs.limbCount direct) (count - Limbs.limbCount direct)
+      (Precompile.bytesToNatPadded computed.executionEnv.calldata baseOff direct)
+      (by
+        rw [hsplit]
+        have h1 := Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow
+          computed.executionEnv.calldata baseOff direct
+        have h2 : (256 : Nat) ^ direct ≤ Limbs.radix ^ count := by
+          rw [Limbs.pow_radix]
+          exact Nat.pow_le_pow_right (by omega) (by
+            have := Limbs.width_le_limbs direct
+            omega)
+        omega)
+      hloaded hhigh
+    rw [hsplit] at hext
+    rw [hcalldata] at hext
+    simpa [baseLoopEntry, computed, written, cleared, tail, direct] using hext
+  have hentryOne : Limbs.Represents
+      (baseLoopEntry s accumulator count baseSize e m baseOff rest).memory 3072
+      count 1 := by
+    have hpres := loadMemory_preserves_region computed.executionEnv.calldata
+      computed.memory baseOff 1024 direct direct 3072 count 1 (by omega)
+      (by omega)
+      (by
+        have : Limbs.limbCount direct ≤ 32 := by omega
+        omega)
+      (Or.inl (by
+        have : Limbs.limbCount direct ≤ 32 := by omega
+        omega))
+      (by simpa [computed, baseDirectOf] using hwrittenOne)
+    have hbaseOffNat : (UInt256.ofNat baseOff).toNat = baseOff := by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hoff]
+    have hdirectNat : (UInt256.ofNat direct).toNat = direct := by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    simpa [baseLoopEntry, computed, written, cleared, tail, direct,
+      BigLoad.loadReturned, BigLoad.loadLoop, hbaseOffNat, hdirectNat,
+      hbaseOffMod, hdirectMod]
+      using hpres
+  have hentry2048 : Limbs.Represents
+      (baseLoopEntry s accumulator count baseSize e m baseOff rest).memory 2048
+      count 0 := by
+    have hpres := loadMemory_preserves_region computed.executionEnv.calldata
+      computed.memory baseOff 1024 direct direct 2048 count 0 (by omega)
+      (by omega)
+      (by
+        have : Limbs.limbCount direct ≤ 32 := by omega
+        omega)
+      (Or.inl (by
+        have : Limbs.limbCount direct ≤ 32 := by omega
+        omega))
+      (by simpa [computed, baseDirectOf] using hwrittenZero2048)
+    have hbaseOffNat : (UInt256.ofNat baseOff).toNat = baseOff := by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hoff]
+    have hdirectNat : (UInt256.ofNat direct).toNat = direct := by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    simpa [baseLoopEntry, computed, written, cleared, tail, direct,
+      BigLoad.loadReturned, BigLoad.loadLoop, hbaseOffNat, hdirectNat,
+      hbaseOffMod, hdirectMod]
+      using hpres
+  have hentryModulus : Limbs.Represents
+      (baseLoopEntry s accumulator count baseSize e m baseOff rest).memory 0
+      count modulusValue := by
+    have hpres := loadMemory_preserves_region computed.executionEnv.calldata
+      computed.memory baseOff 1024 direct direct 0 count modulusValue
+      (by omega) (by omega)
+      (by
+        have : Limbs.limbCount direct ≤ 32 := by omega
+        omega)
+      (Or.inr (by omega))
+      (by simpa [computed, baseDirectOf] using hwrittenModulus)
+    have hbaseOffNat : (UInt256.ofNat baseOff).toNat = baseOff := by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hoff]
+    have hdirectNat : (UInt256.ofNat direct).toNat = direct := by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    simpa [baseLoopEntry, computed, written, cleared, tail, direct,
+      BigLoad.loadReturned, BigLoad.loadLoop, hbaseOffNat, hdirectNat,
+      hbaseOffMod, hdirectMod]
+      using hpres
+  -- the loaded prefix already equals the Horner value after `direct` bytes
+  have henvWritten : written.executionEnv = s.executionEnv := by
+    simp [written, baseWritten, cleared, afterClearDouble,
+      BigHelpers.clearReturned, stub, stubbed, BigModulus.scanNonzero]
+  have hvalueEq : baseValueAfter s modulusValue baseOff direct =
+      Precompile.bytesToNatPadded written.executionEnv.calldata baseOff direct := by
+    rw [baseValueAfter_eq, henvWritten, Nat.mod_eq_of_lt (by
+      rw [henvWritten] at hprefixLt
+      exact hprefixLt)]
+  refine ⟨hdirectLe, ?_, hentryOne, hentry2048, hentryModulus⟩
+  rw [hvalueEq]
+  exact hentryBase
 
-theorem baseValueAfter_executionEnv (s t : State)
-    (modulus baseOff steps : Nat) (henv : s.executionEnv = t.executionEnv) :
-    baseValueAfter s modulus baseOff steps =
-      baseValueAfter t modulus baseOff steps := by
+
+theorem baseValueSeq_executionEnv (s t : State)
+    (modulus baseOff start acc steps : Nat)
+    (henv : s.executionEnv = t.executionEnv) :
+    baseValueSeq s modulus baseOff start acc steps =
+      baseValueSeq t modulus baseOff start acc steps := by
+  have hbyte : ∀ i, loadedBaseByte s baseOff i = loadedBaseByte t baseOff i := by
+    intro i
+    unfold loadedBaseByte
+    rw [henv]
   induction steps with
   | zero => rfl
-  | succ steps ih =>
-      have hbyte : loadedBaseByte s baseOff steps =
-          loadedBaseByte t baseOff steps := by
-        unfold loadedBaseByte
-        rw [henv]
-      rw [baseValueAfter, baseValueAfter, ih, hbyte]
+  | succ steps ih => rw [baseValueSeq, baseValueSeq, ih, hbyte]
 
-theorem initialAccumulator_represents (s : State) (accumulator : UInt256)
-    (count baseSize e m baseOff : Nat) (rest : List UInt256)
-    (modulusValue : Nat) (hcountPos : 0 < count) (hcount : count ≤ 32)
-    (hmodulusPos : 0 < modulusValue)
-    (hzero : Limbs.Represents s.memory 1024 count 0)
-    (hone : Limbs.Represents s.memory 3072 count 1)
-    (hzero2048 : Limbs.Represents s.memory 2048 count 0)
-    (hmodulus : Limbs.Represents s.memory 0 count modulusValue) :
-    let returned := BigBaseLoop.initialAccumulator s accumulator count baseSize
-      e m baseOff rest
+/-! ## The state entering the exponent phase -/
+
+theorem initialAccumulator_represents (entry : State) (accumulator : UInt256)
+    (count baseSize baseOff direct prefixValue modulusValue : Nat)
+    (tail : List UInt256) (hcountPos : 0 < count) (hcount : count ≤ 32)
+    (hmodulusPos : 0 < modulusValue) (hprefix : prefixValue < modulusValue)
+    (hbase : Limbs.Represents entry.memory 1024 count prefixValue)
+    (hone : Limbs.Represents entry.memory 3072 count 1)
+    (hzero2048 : Limbs.Represents entry.memory 2048 count 0)
+    (hmodulus : Limbs.Represents entry.memory 0 count modulusValue) :
+    let returned := BigBaseLoop.initialAccumulator entry accumulator count
+      baseSize baseOff direct tail
     Limbs.Represents returned.memory 2048 count (1 % modulusValue) ∧
       Limbs.Represents returned.memory 1024 count
-        (baseValueAfter s modulusValue baseOff baseSize) ∧
+        (baseValueSeq entry modulusValue baseOff direct prefixValue
+          (baseSize - direct)) ∧
       Limbs.Represents returned.memory 0 count modulusValue := by
-  let progress := baseProgress count baseOff baseSize s
-  let baseValue := baseValueAfter s modulusValue baseOff baseSize
-  let exit := BigBaseLoop.baseConvertedExit s accumulator count baseSize e m
-    baseOff rest
+  let progress := BigBaseLoop.baseProgressFrom count baseOff direct
+    (baseSize - direct) entry
+  let baseValue := baseValueSeq entry modulusValue baseOff direct prefixValue
+    (baseSize - direct)
+  let exit := BigBaseLoop.convertedExit entry accumulator count baseSize baseOff
+    direct tail
   let helperRest := [accumulator, UInt256.ofNat count,
-    UInt256.ofNat baseSize] ++ [UInt256.ofNat e, UInt256.ofNat m,
-      UInt256.ofNat baseOff] ++ rest
+    UInt256.ofNat baseSize] ++ tail
   have h0 : (0 : UInt256) = UInt256.ofNat 0 := by decide
   have h1 : (1 : UInt256) = UInt256.ofNat 1 := by decide
   have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
   have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
   have h944 : (944 : UInt256) = UInt256.ofNat 944 := by decide
-  have hprogress := baseProgress_represents s count baseOff baseSize
-    modulusValue hcount hmodulusPos hzero hone hmodulus
-  have hprogressZero := baseProgress_preserves_2048 s count baseOff baseSize 0
-    hcount hzero2048
+  have hprogress := baseProgressFrom_represents entry count baseOff direct
+    (baseSize - direct) modulusValue prefixValue hcount hmodulusPos hprefix
+    hbase hone hmodulus
+  have hprogressZero := baseProgressFrom_preserves_2048 entry count baseOff
+    direct (baseSize - direct) 0 hcount hzero2048
   have hexitBase : Limbs.Represents exit.memory 1024 count baseValue := by
-    simpa [exit, BigBaseLoop.baseConvertedExit, BigBase.outerExit,
+    simpa [exit, BigBaseLoop.convertedExit, BigBase.outerExit,
       BigBase.outerLoop, progress, baseValue] using hprogress.1
   have hexitOne : Limbs.Represents exit.memory 3072 count 1 := by
-    simpa [exit, BigBaseLoop.baseConvertedExit, BigBase.outerExit,
+    simpa [exit, BigBaseLoop.convertedExit, BigBase.outerExit,
       BigBase.outerLoop, progress] using hprogress.2.1
   have hexitZero : Limbs.Represents exit.memory 2048 count 0 := by
-    simpa [exit, BigBaseLoop.baseConvertedExit, BigBase.outerExit,
+    simpa [exit, BigBaseLoop.convertedExit, BigBase.outerExit,
       BigBase.outerLoop, progress] using hprogressZero
   have hexitModulus : Limbs.Represents exit.memory 0 count modulusValue := by
-    simpa [exit, BigBaseLoop.baseConvertedExit, BigBase.outerExit,
+    simpa [exit, BigBaseLoop.convertedExit, BigBase.outerExit,
       BigBase.outerLoop, progress] using hprogress.2.2
   have hacc : Limbs.Represents
-      (BigBaseLoop.initialAccumulator s accumulator count baseSize e m baseOff
-        rest).memory 2048 count (1 % modulusValue) := by
+      (BigBaseLoop.initialAccumulator entry accumulator count baseSize baseOff
+        direct tail).memory 2048 count (1 % modulusValue) := by
     simpa [BigBaseLoop.initialAccumulator, helperRest, exit, h0, h1, h2048,
       h3072, h944] using
       BigHelpers.addReturned_represents_mod exit 2048 3072 0 count 1 0 1
@@ -557,23 +943,23 @@ theorem initialAccumulator_represents (s : State) (accumulator : UInt256)
         (by omega) (by omega) (by omega) (Or.inr (by omega))
         (Or.inr (by omega)) (Or.inl (by omega)) (Or.inl (by omega))
         hexitZero hexitOne hexitModulus (by omega) (by omega) hexitModulus.1
-  have hbase : Limbs.Represents
-      (BigBaseLoop.initialAccumulator s accumulator count baseSize e m baseOff
-        rest).memory 1024 count baseValue := by
+  have hbaseRep : Limbs.Represents
+      (BigBaseLoop.initialAccumulator entry accumulator count baseSize baseOff
+        direct tail).memory 1024 count baseValue := by
     simpa [BigBaseLoop.initialAccumulator, helperRest, exit, h0, h1, h2048,
       h3072, h944] using
       BigHelpers.addReturned_preserves_region exit 2048 3072 1 0 1024 count
         baseValue (UInt256.ofNat 944) helperRest (by omega) (by omega)
         (Or.inr (by omega)) (Or.inl (by omega)) hexitBase
   have hmod : Limbs.Represents
-      (BigBaseLoop.initialAccumulator s accumulator count baseSize e m baseOff
-        rest).memory 0 count modulusValue := by
+      (BigBaseLoop.initialAccumulator entry accumulator count baseSize baseOff
+        direct tail).memory 0 count modulusValue := by
     simpa [BigBaseLoop.initialAccumulator, helperRest, exit, h0, h1, h2048,
       h3072, h944] using
       BigHelpers.addReturned_preserves_region exit 2048 3072 1 0 0 count
         modulusValue (UInt256.ofNat 944) helperRest (by omega) (by omega)
         (Or.inr (by omega)) (Or.inl (by omega)) hexitModulus
-  exact ⟨hacc, by simpa [baseValue] using hbase, hmod⟩
+  exact ⟨hacc, by simpa [baseValue] using hbaseRep, hmod⟩
 
 theorem exponentState_initial (input : ByteArray) (returnDest : UInt256)
     (rest : List UInt256) (hvalid : ValidInput input)
@@ -601,12 +987,13 @@ theorem exponentState_initial (input : ByteArray) (returnDest : UInt256)
   let header := Main.headerState input
   let loaded := BigComplete.setupState header b e m 96 expOff modOff returnDest
     rest
-  let scanTail := BigComplete.scanRest b e m 96 expOff modOff returnDest rest
   let accumulator := BigComplete.modulusOr header b e m 96 expOff modOff
+    returnDest rest
+  let baseTailList := BigComplete.baseRest expOff modOff returnDest rest
+  let direct := BigComplete.basePrefixLen header b e m 96 expOff modOff
     returnDest rest
   let base := BigComplete.baseState header b e m 96 expOff modOff returnDest
     rest
-  let baseTail := BigComplete.baseRest expOff modOff returnDest rest
   have hb : b ≤ 1024 := by simpa [b] using hvalid.2.1
   have hm : m ≤ 1024 := by simpa [m] using hvalid.2.2.2
   have hn : n ≤ 32 := Limbs.limbCount_le_32 m hm
@@ -624,40 +1011,51 @@ theorem exponentState_initial (input : ByteArray) (returnDest : UInt256)
       modOff, Word.modulusValue, Word.modulusOffset] using hraw
   have hzeros := setupReturned_base_buffers_zero header b e m 96 expOff modOff
     returnDest rest hm hmodOff
-  have hinitial := baseLoopEntry_initial loaded accumulator n
-    (Word.modulusValue input) scanTail hnPos hn hzeros.1 hzeros.2 hmodulus
-  have hbaseZero : Limbs.Represents base.memory 1024 n 0 := by
-    simpa [base, BigComplete.baseState, BigComplete.limbCount, loaded,
-      accumulator, scanTail, n] using
-      hinitial.1
-  have hbaseOne : Limbs.Represents base.memory 3072 n 1 := by
-    simpa [base, BigComplete.baseState, BigComplete.limbCount, loaded,
-      accumulator, scanTail, n] using
-      hinitial.2.1
-  have hbaseZero2048 : Limbs.Represents base.memory 2048 n 0 := by
-    simpa [base, BigComplete.baseState, BigComplete.limbCount, loaded,
-      accumulator, scanTail, n] using
-      hinitial.2.2.1
-  have hbaseModulus : Limbs.Represents base.memory 0 n
-      (Word.modulusValue input) := by
-    simpa [base, BigComplete.baseState, BigComplete.limbCount, loaded,
-      accumulator, scanTail, n] using
-      hinitial.2.2.2
-  have hreturned := initialAccumulator_represents base accumulator n b e m 96
-    baseTail (Word.modulusValue input) hnPos hn hmodulusPos hbaseZero hbaseOne
-    hbaseZero2048 hbaseModulus
-  have hbaseEnv : base.executionEnv = header.executionEnv := by
+  have hentry := baseLoopEntry_initial loaded accumulator n b e m 96
+    (Word.modulusValue input) baseTailList hnPos hn hmodulusPos (by omega)
+    (by norm_num) hzeros.1 hzeros.2 hmodulus
+  have hdirectEq : direct = BigBase.basePrefix loaded accumulator n b
+      (BigBase.baseTail b e m 96 baseTailList) := by
     rfl
-  have hvalueEnv := baseValueAfter_executionEnv base header
-    (Word.modulusValue input) 96 b hbaseEnv
-  have hvalueHeader := baseValueAfter_header_eq input (Word.modulusValue input)
-    b (by omega)
-  have hvalue : baseValueAfter base (Word.modulusValue input) 96 b =
-      WordCorrect.baseNat input % Word.modulusValue input := by
-    rw [hvalueEnv, hvalueHeader]
+  have hbaseEq : base = BigBase.baseLoopEntry loaded accumulator n b e m 96
+      baseTailList := by
     rfl
-  rw [hvalue] at hreturned
+  have hprefixLt : baseValueAfter loaded (Word.modulusValue input) 96 direct <
+      Word.modulusValue input :=
+    baseValueAfter_lt loaded (Word.modulusValue input) 96 direct hmodulusPos
+  have hbaseEnv : base.executionEnv = loaded.executionEnv := by
+    simp [hbaseEq, BigBase.baseLoopEntry, BigLoad.loadReturned,
+      BigLoad.loadLoop, BigBase.baseDirectOf, BigBase.baseWritten,
+      BigBase.afterClearDouble, BigHelpers.clearReturned, BigBase.stubbed,
+      BigModulus.scanNonzero]
+  have hresult := initialAccumulator_represents base accumulator n b 96 direct
+    (baseValueAfter loaded (Word.modulusValue input) 96 direct)
+    (Word.modulusValue input)
+    ([UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat 96] ++ baseTailList)
+    hnPos hn hmodulusPos hprefixLt
+    (by rw [hbaseEq, hdirectEq]; exact hentry.2.1)
+    (by rw [hbaseEq]; exact hentry.2.2.1)
+    (by rw [hbaseEq]; exact hentry.2.2.2.1)
+    (by rw [hbaseEq]; exact hentry.2.2.2.2)
+  have hshift : baseValueSeq base (Word.modulusValue input) 96 direct
+      (baseValueAfter loaded (Word.modulusValue input) 96 direct)
+      (b - direct) = WordCorrect.baseNat input % Word.modulusValue input := by
+    rw [baseValueSeq_executionEnv base loaded _ _ _ _ _ hbaseEnv]
+    have hsplit := baseValueSeq_shift loaded (Word.modulusValue input) 96
+      direct 0 (b - direct)
+    have hdirectLe : direct ≤ b := by
+      have := hentry.1
+      rw [hdirectEq]
+      exact this
+    rw [show baseValueAfter loaded (Word.modulusValue input) 96 direct =
+      baseValueSeq loaded (Word.modulusValue input) 96 0 0 direct from rfl,
+      hsplit, show direct + (b - direct) = b by omega]
+    change baseValueAfter loaded (Word.modulusValue input) 96 b = _
+    rw [baseValueAfter_eq]
+    rfl
+  rw [hshift] at hresult
   simpa [BigComplete.exponentState, BigComplete.limbCount, base, accumulator,
-    n, b, e, m, expOff, modOff, baseTail, header] using hreturned
+    direct, n, b, e, m, expOff, modOff, baseTailList, header, loaded]
+    using hresult
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigBaseCorrect

@@ -44,17 +44,25 @@ def modulusOr (s : State) (b e m baseOff expOff modOff : Nat)
 
 def baseState (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
-  let loaded := setupState s b e m baseOff expOff modOff returnDest rest
-  BigBase.baseLoopEntry loaded
+  BigBase.baseLoopEntry (setupState s b e m baseOff expOff modOff returnDest rest)
     (modulusOr s b e m baseOff expOff modOff returnDest rest) (limbCount m)
-    (scanRest b e m baseOff expOff modOff returnDest rest)
+    b e m baseOff (baseRest expOff modOff returnDest rest)
+
+/-- Number of leading base bytes the artifact loads directly. -/
+def basePrefixLen (s : State) (b e m baseOff expOff modOff : Nat)
+    (returnDest : UInt256) (rest : List UInt256) : Nat :=
+  BigBase.basePrefix (setupState s b e m baseOff expOff modOff returnDest rest)
+    (modulusOr s b e m baseOff expOff modOff returnDest rest) (limbCount m) b
+    (BigBase.baseTail b e m baseOff (baseRest expOff modOff returnDest rest))
 
 def exponentState (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
-  let accumulator := modulusOr s b e m baseOff expOff modOff returnDest rest
-  let base := baseState s b e m baseOff expOff modOff returnDest rest
-  BigBaseLoop.initialAccumulator base accumulator (limbCount m) b e m baseOff
-    (baseRest expOff modOff returnDest rest)
+  BigBaseLoop.initialAccumulator
+    (baseState s b e m baseOff expOff modOff returnDest rest)
+    (modulusOr s b e m baseOff expOff modOff returnDest rest) (limbCount m) b
+    baseOff (basePrefixLen s b e m baseOff expOff modOff returnDest rest)
+    ([UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff] ++
+      baseRest expOff modOff returnDest rest)
 
 def exponentProgressState (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
@@ -108,17 +116,9 @@ def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
       change Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
         s.executionEnv.codeAddr = false
       exact hnp)
-  have hbaseSetup := BigBase.gasSteps_baseSetup loaded accumulator n scanTail
-    (by simp [scanTail, scanRest]; omega) rfl hn
-    (by change s.executionEnv.code = submissionBytecode; exact hcode)
-    (by change s.fork = .Osaka; exact hfork)
-    (by change s.halt = .Running; exact hrun)
-    (by
-      change Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-        s.executionEnv.codeAddr = false
-      exact hnp)
-  have hconversion := BigBaseLoop.gasSteps_baseConversion base accumulator n b e
-    m baseOff baseTail (by simp [baseTail, baseRest]; omega) hn hbase hbaseFit
+  have hconversion := BigBaseLoop.gasSteps_baseConversion loaded accumulator n
+    b e m baseOff baseTail (by simp [baseTail, baseRest]; omega) rfl hn hbase
+    (by omega) hbaseFit
     (by change s.executionEnv.code = submissionBytecode; exact hcode)
     (by change s.fork = .Osaka; exact hfork)
     (by change s.halt = .Running; exact hrun)
@@ -130,18 +130,22 @@ def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
     calc
       expEntry.executionEnv = loaded.executionEnv := by
         simp [expEntry, exponentState, BigBaseLoop.initialAccumulator,
-          BigBaseLoop.baseConvertedExit, BigBase.outerExit, BigBase.outerLoop,
+          BigBaseLoop.convertedExit, BigBase.outerExit, BigBase.outerLoop,
           BigHelpers.addReturned, base, baseState, BigBase.baseLoopEntry,
-          BigBase.afterClearDouble, BigHelpers.clearReturned,
+          BigLoad.loadReturned, BigLoad.loadLoop, BigBase.baseDirectOf,
+          BigBase.baseWritten, BigBase.afterClearDouble,
+          BigHelpers.clearReturned, BigBase.stubbed,
           BigModulus.scanNonzero, loaded]
       _ = s.executionEnv := by rfl
   have hExpHalt : expEntry.halt = s.halt := by
     calc
       expEntry.halt = loaded.halt := by
         simp [expEntry, exponentState, BigBaseLoop.initialAccumulator,
-          BigBaseLoop.baseConvertedExit, BigBase.outerExit, BigBase.outerLoop,
+          BigBaseLoop.convertedExit, BigBase.outerExit, BigBase.outerLoop,
           BigHelpers.addReturned, base, baseState, BigBase.baseLoopEntry,
-          BigBase.afterClearDouble, BigHelpers.clearReturned,
+          BigLoad.loadReturned, BigLoad.loadLoop, BigBase.baseDirectOf,
+          BigBase.baseWritten, BigBase.afterClearDouble,
+          BigHelpers.clearReturned, BigBase.stubbed,
           BigModulus.scanNonzero, loaded]
       _ = s.halt := by rfl
   have hProgressEnv : expProgress.executionEnv = s.executionEnv := by
@@ -175,8 +179,10 @@ def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
       rw [hProgressEnv]
       exact hnp)
   exact Challenge.EvmProof.GasSteps.cast
-    (hsetup.trans (hscan.trans (hbaseSetup.trans
-      (hconversion.trans (hphase.trans hserialize)))))
+    (hsetup.trans ((Challenge.EvmProof.GasSteps.cast hscan rfl
+        (by simp [scanTail, scanRest, BigBase.baseTail, baseTail,
+          baseRest])).trans
+      (hconversion.trans (hphase.trans hserialize))))
     rfl
     (by simp [completedState, expProgress, exponentProgressState, accumulator,
       n, expTail])

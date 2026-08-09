@@ -66,10 +66,12 @@ theorem exponentProgress_represents_result (input : ByteArray)
           (BigComplete.setupState header b e m 96 expOff modOff returnDest
             rest).executionEnv := by
         simp [entry, BigComplete.exponentState, BigComplete.baseState,
-          BigBaseLoop.initialAccumulator, BigBaseLoop.baseConvertedExit,
+          BigBaseLoop.initialAccumulator, BigBaseLoop.convertedExit,
           BigBase.outerExit, BigBase.outerLoop, BigHelpers.addReturned,
-          BigBase.baseLoopEntry, BigBase.afterClearDouble,
-          BigHelpers.clearReturned, BigModulus.scanNonzero]
+          BigBase.baseLoopEntry, BigLoad.loadReturned, BigLoad.loadLoop,
+          BigBase.baseDirectOf, BigBase.baseWritten,
+          BigBase.afterClearDouble, BigHelpers.clearReturned,
+          BigBase.stubbed, BigModulus.scanNonzero]
       _ = header.executionEnv := by rfl
   have hvalueEnv := BigExponentCorrect.exponentValueAfter_executionEnv entry
     header (Word.modulusValue input)

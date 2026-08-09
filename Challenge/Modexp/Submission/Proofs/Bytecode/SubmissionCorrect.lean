@@ -26,6 +26,14 @@ open EvmSemantics.EVM
   | zero => rfl
   | succ i ih => simp [BigBase.baseProgress, ih]
 
+@[simp] theorem baseProgressFrom_callStack (count baseOff start i : Nat)
+    (s : State) :
+    (BigBaseLoop.baseProgressFrom count baseOff start i s).callStack =
+      s.callStack := by
+  induction i with
+  | zero => rfl
+  | succ i ih => simp [BigBaseLoop.baseProgressFrom, ih]
+
 @[simp] theorem setupState_callStack (s : State)
     (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
     (rest : List UInt256) :
@@ -42,8 +50,9 @@ open EvmSemantics.EVM
     (rest : List UInt256) :
     (BigComplete.baseState s b e m baseOff expOff modOff returnDest
       rest).callStack = s.callStack := by
-  simp [BigComplete.baseState, BigBase.baseLoopEntry,
-    BigBase.afterClearDouble, BigHelpers.clearReturned,
+  simp [BigComplete.baseState, BigBase.baseLoopEntry, BigLoad.loadReturned,
+    BigLoad.loadLoop, BigBase.baseDirectOf, BigBase.baseWritten,
+    BigBase.afterClearDouble, BigHelpers.clearReturned, BigBase.stubbed,
     BigModulus.scanNonzero]
 
 @[simp] theorem exponentState_callStack (s : State)
@@ -52,7 +61,7 @@ open EvmSemantics.EVM
     (BigComplete.exponentState s b e m baseOff expOff modOff returnDest
       rest).callStack = s.callStack := by
   simp [BigComplete.exponentState, BigBaseLoop.initialAccumulator,
-    BigBaseLoop.baseConvertedExit, BigBase.outerExit, BigBase.outerLoop,
+    BigBaseLoop.convertedExit, BigBase.outerExit, BigBase.outerLoop,
     BigHelpers.addReturned]
 
 @[simp] theorem exponentProgressState_callStack (s : State)
