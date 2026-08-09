@@ -109,6 +109,31 @@ private theorem directScheduleSlot (j delta base : Nat)
     Nat.mod_eq_of_lt (by omega), Nat.mod_eq_of_lt (by omega)]
   omega
 
+private theorem directStoreSlot (j : Nat) (hj : j < 64) :
+    (UInt256.shiftLeft (UInt256.ofNat 25 + UInt256.ofNat j)
+      (UInt256.ofNat 5)).toNat = scheduleSlot j := by
+  have hadd : UInt256.ofNat 25 + UInt256.ofNat j =
+      UInt256.ofNat (j + 25) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
+  have hshift :
+      UInt256.shiftLeft (UInt256.ofNat (j + 25)) (UInt256.ofNat 5) =
+        UInt256.ofNat ((j + 25) * 32) := by
+    simpa using Challenge.EvmProof.Word.shiftLeft_ofNat
+      (value := j + 25) (shift := 5) (by omega) (by decide) (by omega)
+  have hjshift :
+      UInt256.shiftLeft (UInt256.ofNat j) (UInt256.ofNat 5) =
+        UInt256.ofNat (j * 32) := by
+    simpa using Challenge.EvmProof.Word.shiftLeft_ofNat
+      (value := j) (shift := 5) (by omega) (by decide) (by omega)
+  unfold scheduleSlot Accessors.slotOffset
+  rw [hadd, hshift, hjshift,
+    Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by omega), Nat.mod_eq_of_lt (by omega)]
+  omega
+
 def firstAt (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   { s with
@@ -471,17 +496,14 @@ def finishRecurrencePath :
    ⟨415, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨416, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨417, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨418, .push ⟨2, by decide⟩ (UInt256.ofNat 299), by rfl, by decide⟩,
-   ⟨419, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
-
-def secondIncrementPath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨420, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨421, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨422, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨423, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨424, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨425, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨418, .push ⟨1, by decide⟩ (UInt256.ofNat 25), by rfl, by decide⟩,
+   ⟨419, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨420, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨421, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨422, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨423, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨424, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨425, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨426, .push ⟨2, by decide⟩ (UInt256.ofNat 495), by rfl, by decide⟩,
    ⟨427, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -490,7 +512,7 @@ def secondIncrementPath :
       [495,496,498,499,500,501,504,505,508,513,514,516,517,522,523,524,
        525,526,529,530,532,533,538,539,540,543,544,545,546,547,548,549,
        550,552,553,558,559,560,561,562,565,566,568,569,574,575,576,579,
-       580,581,582,583,584,585,586,587,588,591,592,593,595,596,597,598,
+       580,581,582,583,584,585,586,587,588,590,591,593,594,595,596,598,
        599,602][i - 362]! := by
   interval_cases i <;> decide
 
@@ -790,12 +812,13 @@ theorem run_setupW2 (s : State) (msgOff returnDest : UInt256)
 
 set_option linter.unusedSimpArgs false in
 theorem run_finishRecurrence (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (j : Nat) (hstack : rest.length < 1010)
+    (rest : List UInt256) (j : Nat) (hj64 : j < 64)
+    (hstack : rest.length < 1010)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock finishRecurrencePath
       (gotSsig1 s msgOff returnDest rest j) =
-        some (callWSet s msgOff returnDest rest j) := by
+        some (afterSecondIteration s msgOff returnDest rest j) := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
@@ -808,40 +831,37 @@ theorem run_finishRecurrence (s : State) (msgOff returnDest : UInt256)
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 299 = true := by decide
-  simp [finishRecurrencePath, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotSsig1, gotW2, gotW7, gotSsig0, gotW15, gotW16, callWSet,
-    recurrenceWord, firstSum, rawFirstSum, wValue, scheduleSlot,
-    Challenge.EvmProof.Word.mask32,
-    Functions.unaryReturned, Accessors.storeEntry, Accessors.loadReturned,
-    List.exchange, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10,
-    hc11, hc12, hcode, hrun, hdest]
-  exact rawRecurrence_eq _ _ _ _
-
-set_option linter.unusedSimpArgs false in
-theorem run_secondIncrement (s : State) (msgOff returnDest : UInt256)
-    (rest : List UInt256) (j : Nat) (hj64 : j < 64)
-    (hstack : rest.length < 1019)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock secondIncrementPath
-      (gotWSet s msgOff returnDest rest j) =
-        some (afterSecondIteration s msgOff returnDest rest j) := by
-  have hc3 : rest.length + 3 < 1024 := by omega
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have hc5 : rest.length + 5 < 1024 := by omega
   have hadd : UInt256.ofNat 1 + UInt256.ofNat j =
       UInt256.ofNat (j + 1) := by
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
+  have hoff := directStoreSlot j hj64
   have hdest : Decode.isValidJumpDest submissionBytecode 495 = true := by decide
-  simp [secondIncrementPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+  simp [finishRecurrencePath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    gotWSet, gotSsig1, gotW2, gotW7, gotSsig0, gotW15, gotW16,
-    afterSecondIteration, secondAt, Accessors.storeReturned,
-    Functions.unaryReturned, Accessors.loadReturned,
-    hc3, hc4, hc5, hcode, hrun, hadd, hdest]
+    gotSsig1, gotW2, gotW7, gotSsig0, gotW15, gotW16, gotWSet,
+    afterSecondIteration, secondAt,
+    recurrenceWord, firstSum, rawFirstSum, wValue, scheduleSlot,
+    Challenge.EvmProof.Word.mask32,
+    Functions.unaryReturned, Accessors.storeReturned, Accessors.loadReturned,
+    List.exchange, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10,
+    hc11, hc12, hcode, hrun, hadd, hoff, hdest,
+    State.activeWordsAfterUInt256]
+  let a := MachineState.readWord s.memory
+    (Accessors.slotOffset 800 (UInt256.ofNat (j - 2)))
+  let b := MachineState.readWord s.memory
+    (Accessors.slotOffset 800 (UInt256.ofNat (j - 7)))
+  let c := MachineState.readWord s.memory
+    (Accessors.slotOffset 800 (UInt256.ofNat (j - 15)))
+  let d := MachineState.readWord s.memory
+    (Accessors.slotOffset 800 (UInt256.ofNat (j - 16)))
+  have hwrite := congrArg
+    (fun x : UInt256 => MachineState.writeBytes s.memory
+      (Data.Bytes.natToBytesPadded x.toNat 32)
+      (Accessors.slotOffset 800 (UInt256.ofNat j)))
+    (rawRecurrence_eq a b c d)
+  dsimp [a, b, c, d, Challenge.EvmProof.Word.mask32] at hwrite
+  exact hwrite
 
 def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (j : Nat) (hj16 : 16 ≤ j) (hj64 : j < 64)
@@ -986,43 +1006,15 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
     simpa [qs1, gotSsig1, q2, Functions.unaryReturned] using q2np
   have rawFinish : Challenge.EvmProof.GasSteps
       (gotSsig1 s msgOff returnDest rest j)
-      (callWSet s msgOff returnDest rest j) := by
+      (afterSecondIteration s msgOff returnDest rest j) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.referenceArtifact .Osaka finishRecurrencePath
     · exact qs1code
     · exact qs1fork
-    · exact run_finishRecurrence s msgOff returnDest rest j (by omega)
+    · exact run_finishRecurrence s msgOff returnDest rest j hj64 (by omega)
         hcode hrun
     · exact qs1run
     · exact qs1np
-  have callSet : Challenge.EvmProof.GasSteps
-      (callWSet s msgOff returnDest rest j)
-      (gotWSet s msgOff returnDest rest j) := by
-    exact Accessors.gasSteps_wSet qs1 (UInt256.ofNat j)
-      (recurrenceWord s msgOff returnDest rest j) (UInt256.ofNat 592)
-      ([UInt256.ofNat j, msgOff, returnDest] ++ rest)
-      (by simp; omega) qs1code qs1fork qs1run qs1np (by decide)
-  let qset := gotWSet s msgOff returnDest rest j
-  have qsetcode : qset.executionEnv.code = submissionBytecode := by
-    simpa [qset, gotWSet, qs1, Accessors.storeReturned] using qs1code
-  have qsetfork : qset.fork = .Osaka := by
-    simpa [qset, gotWSet, qs1, Accessors.storeReturned, State.fork] using qs1fork
-  have qsetrun : qset.halt = .Running := by
-    simpa [qset, gotWSet, qs1, Accessors.storeReturned] using qs1run
-  have qsetnp : Precompile.isPrecompileWithConfig qset.executionEnv.precompileConfig qset.executionEnv.fork
-      qset.executionEnv.codeAddr = false := by
-    simpa [qset, gotWSet, qs1, Accessors.storeReturned] using qs1np
-  have rawIncrement : Challenge.EvmProof.GasSteps
-      (gotWSet s msgOff returnDest rest j)
-      (afterSecondIteration s msgOff returnDest rest j) := by
-    apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.referenceArtifact .Osaka secondIncrementPath
-    · exact qsetcode
-    · exact qsetfork
-    · exact run_secondIncrement s msgOff returnDest rest j hj64
-        (by omega) hcode hrun
-    · exact qsetrun
-    · exact qsetnp
   exact rawCondition
     |>.trans rawW16
     |>.trans rawW15
@@ -1031,8 +1023,6 @@ def gasSteps_secondIteration (s : State) (msgOff returnDest : UInt256)
     |>.trans rawW2
     |>.trans callS1
     |>.trans rawFinish
-    |>.trans callSet
-    |>.trans rawIncrement
 
 def secondLoopState (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) : Nat → State
