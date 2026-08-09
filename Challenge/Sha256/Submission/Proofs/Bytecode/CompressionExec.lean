@@ -327,167 +327,167 @@ def pairConditionPath :
    ⟨480, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨481, YulEvmCompiler.Instr.push 1 64, by rfl, by decide⟩,
    ⟨482, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨483, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨484, YulEvmCompiler.Instr.push 2 935, by rfl, by decide⟩,
-   ⟨485, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)), by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨483, YulEvmCompiler.Instr.push 3 935, by rfl, by decide⟩,
+   ⟨484, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)), by rfl, wfOp (by decide) trivial rfl⟩]
 
 def pairFirstSetupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨486, YulEvmCompiler.Instr.push 2 384, by rfl, by decide⟩,
-   ⟨487, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨488, YulEvmCompiler.Instr.push 2 352, by rfl, by decide⟩,
-   ⟨489, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨490, YulEvmCompiler.Instr.push 2 320, by rfl, by decide⟩,
-   ⟨491, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨492, YulEvmCompiler.Instr.push 2 512, by rfl, by decide⟩,
-   ⟨493, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨494, YulEvmCompiler.Instr.push 2 480, by rfl, by decide⟩,
-   ⟨495, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨496, YulEvmCompiler.Instr.push 2 448, by rfl, by decide⟩,
-   ⟨497, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨498, YulEvmCompiler.Instr.push 2 416, by rfl, by decide⟩,
-   ⟨499, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨500, YulEvmCompiler.Instr.push 2 288, by rfl, by decide⟩,
-   ⟨501, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨502, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 8 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨503, YulEvmCompiler.Instr.push 1 5, by rfl, by decide⟩,
-   ⟨504, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨505, YulEvmCompiler.Instr.push 2 800, by rfl, by decide⟩,
-   ⟨506, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨507, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨508, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨509, YulEvmCompiler.Instr.push 1 2, by rfl, by decide⟩,
-   ⟨510, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨511, YulEvmCompiler.Instr.push 1 4, by rfl, by decide⟩,
-   ⟨512, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨513, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨514, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
-   ⟨515, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.AND)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨516, YulEvmCompiler.Instr.push 2 717, by rfl, by decide⟩,
-   ⟨517, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
-   ⟨518, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 3 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨519, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨520, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 4 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨521, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨485, YulEvmCompiler.Instr.push 2 384, by rfl, by decide⟩,
+   ⟨486, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨487, YulEvmCompiler.Instr.push 2 352, by rfl, by decide⟩,
+   ⟨488, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨489, YulEvmCompiler.Instr.push 2 320, by rfl, by decide⟩,
+   ⟨490, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨491, YulEvmCompiler.Instr.push 2 512, by rfl, by decide⟩,
+   ⟨492, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨493, YulEvmCompiler.Instr.push 2 480, by rfl, by decide⟩,
+   ⟨494, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨495, YulEvmCompiler.Instr.push 2 448, by rfl, by decide⟩,
+   ⟨496, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨497, YulEvmCompiler.Instr.push 2 416, by rfl, by decide⟩,
+   ⟨498, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨499, YulEvmCompiler.Instr.push 2 288, by rfl, by decide⟩,
+   ⟨500, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨501, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 8 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨502, YulEvmCompiler.Instr.push 1 5, by rfl, by decide⟩,
+   ⟨503, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨504, YulEvmCompiler.Instr.push 2 800, by rfl, by decide⟩,
+   ⟨505, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨506, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨507, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨508, YulEvmCompiler.Instr.push 1 2, by rfl, by decide⟩,
+   ⟨509, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨510, YulEvmCompiler.Instr.push 1 4, by rfl, by decide⟩,
+   ⟨511, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨512, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨513, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
+   ⟨514, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.AND)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨515, YulEvmCompiler.Instr.push 2 717, by rfl, by decide⟩,
+   ⟨516, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
+   ⟨517, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 3 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨518, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨519, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 4 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨520, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨521, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨522, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨523, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨524, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨525, YulEvmCompiler.Instr.push 2 163, by rfl, by decide⟩,
-   ⟨526, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)), by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨524, YulEvmCompiler.Instr.push 2 163, by rfl, by decide⟩,
+   ⟨525, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)), by rfl, wfOp (by decide) trivial rfl⟩]
 
 def pairFirstT2SetupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨527, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨528, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨529, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨530, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨531, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨532, YulEvmCompiler.Instr.push 2 737, by rfl, by decide⟩,
-   ⟨533, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
+  [⟨526, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨527, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨528, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨529, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨530, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨531, YulEvmCompiler.Instr.push 2 737, by rfl, by decide⟩,
+   ⟨532, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
+   ⟨533, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨534, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨535, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨536, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 5 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨537, YulEvmCompiler.Instr.push 2 114, by rfl, by decide⟩,
-   ⟨538, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)), by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨535, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 5 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨536, YulEvmCompiler.Instr.push 2 114, by rfl, by decide⟩,
+   ⟨537, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)), by rfl, wfOp (by decide) trivial rfl⟩]
 
 def pairSecondT1SetupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨539, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨540, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨541, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨542, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
-   ⟨543, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.AND)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨544, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨545, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨546, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨547, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
-   ⟨548, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.AND)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨549, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 1 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨550, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨551, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨552, YulEvmCompiler.Instr.push 1 1, by rfl, by decide⟩,
-   ⟨553, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨554, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨555, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨556, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨557, YulEvmCompiler.Instr.push 1 5, by rfl, by decide⟩,
-   ⟨558, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨559, YulEvmCompiler.Instr.push 2 800, by rfl, by decide⟩,
-   ⟨560, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨561, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨562, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 11 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨563, YulEvmCompiler.Instr.push 1 2, by rfl, by decide⟩,
-   ⟨564, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨565, YulEvmCompiler.Instr.push 1 4, by rfl, by decide⟩,
-   ⟨566, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨567, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨568, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
-   ⟨569, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.AND)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨570, YulEvmCompiler.Instr.push 2 805, by rfl, by decide⟩,
-   ⟨571, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
-   ⟨572, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 3 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨573, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨574, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 4 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨575, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨538, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨539, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨540, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨541, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
+   ⟨542, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.AND)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨543, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨544, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨545, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨546, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
+   ⟨547, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.AND)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨548, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 1 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨549, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨550, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨551, YulEvmCompiler.Instr.push 1 1, by rfl, by decide⟩,
+   ⟨552, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨553, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨554, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨555, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨556, YulEvmCompiler.Instr.push 1 5, by rfl, by decide⟩,
+   ⟨557, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨558, YulEvmCompiler.Instr.push 2 800, by rfl, by decide⟩,
+   ⟨559, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨560, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨561, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 11 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨562, YulEvmCompiler.Instr.push 1 2, by rfl, by decide⟩,
+   ⟨563, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨564, YulEvmCompiler.Instr.push 1 4, by rfl, by decide⟩,
+   ⟨565, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨566, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨567, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
+   ⟨568, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.AND)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨569, YulEvmCompiler.Instr.push 2 805, by rfl, by decide⟩,
+   ⟨570, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
+   ⟨571, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 3 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨572, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨573, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 4 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨574, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨575, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨576, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨577, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨578, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨579, YulEvmCompiler.Instr.push 2 163, by rfl, by decide⟩,
-   ⟨580, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)), by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨577, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨578, YulEvmCompiler.Instr.push 2 163, by rfl, by decide⟩,
+   ⟨579, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)), by rfl, wfOp (by decide) trivial rfl⟩]
 
 def pairSecondT2SetupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨581, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨582, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨583, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨584, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨585, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨586, YulEvmCompiler.Instr.push 2 825, by rfl, by decide⟩,
-   ⟨587, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
-   ⟨588, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨589, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 6 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨590, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 5 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨591, YulEvmCompiler.Instr.push 2 114, by rfl, by decide⟩,
-   ⟨592, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)), by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨580, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨581, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨582, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨583, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨584, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨585, YulEvmCompiler.Instr.push 2 825, by rfl, by decide⟩,
+   ⟨586, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
+   ⟨587, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨588, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 6 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨589, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 5 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨590, YulEvmCompiler.Instr.push 2 114, by rfl, by decide⟩,
+   ⟨591, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)), by rfl, wfOp (by decide) trivial rfl⟩]
 
 def pairCommitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨593, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨594, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨595, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨596, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
-   ⟨597, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.AND)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨598, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨599, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨600, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨601, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
-   ⟨602, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.AND)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨603, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 1 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨604, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨605, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨606, YulEvmCompiler.Instr.push 2 288, by rfl, by decide⟩,
-   ⟨607, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨608, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨609, YulEvmCompiler.Instr.push 2 320, by rfl, by decide⟩,
-   ⟨610, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨611, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 4 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨612, YulEvmCompiler.Instr.push 2 352, by rfl, by decide⟩,
-   ⟨613, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨614, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨615, YulEvmCompiler.Instr.push 2 384, by rfl, by decide⟩,
-   ⟨616, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨617, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨618, YulEvmCompiler.Instr.push 2 416, by rfl, by decide⟩,
-   ⟨619, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨620, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 3 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨621, YulEvmCompiler.Instr.push 2 448, by rfl, by decide⟩,
-   ⟨622, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨623, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 5 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨624, YulEvmCompiler.Instr.push 2 480, by rfl, by decide⟩,
-   ⟨625, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨626, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 6 }), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨627, YulEvmCompiler.Instr.push 2 512, by rfl, by decide⟩,
-   ⟨628, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨592, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨593, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨594, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨595, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
+   ⟨596, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.AND)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨597, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 10 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨598, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨599, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨600, YulEvmCompiler.Instr.push 4 4294967295, by rfl, by decide⟩,
+   ⟨601, YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.AND)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨602, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 1 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨603, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨604, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨605, YulEvmCompiler.Instr.push 2 288, by rfl, by decide⟩,
+   ⟨606, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨607, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨608, YulEvmCompiler.Instr.push 2 320, by rfl, by decide⟩,
+   ⟨609, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨610, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 4 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨611, YulEvmCompiler.Instr.push 2 352, by rfl, by decide⟩,
+   ⟨612, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨613, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨614, YulEvmCompiler.Instr.push 2 384, by rfl, by decide⟩,
+   ⟨615, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨616, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨617, YulEvmCompiler.Instr.push 2 416, by rfl, by decide⟩,
+   ⟨618, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨619, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 3 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨620, YulEvmCompiler.Instr.push 2 448, by rfl, by decide⟩,
+   ⟨621, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨622, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 5 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨623, YulEvmCompiler.Instr.push 2 480, by rfl, by decide⟩,
+   ⟨624, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨625, YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 6 }), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨626, YulEvmCompiler.Instr.push 2 512, by rfl, by decide⟩,
+   ⟨627, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨628, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨629, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨630, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨631, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
@@ -499,11 +499,10 @@ def pairCommitPath :
    ⟨637, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨638, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨639, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨640, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨641, YulEvmCompiler.Instr.push 1 1, by rfl, by decide⟩,
-   ⟨642, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨643, YulEvmCompiler.Instr.push 2 633, by rfl, by decide⟩,
-   ⟨644, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)), by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨640, YulEvmCompiler.Instr.push 1 1, by rfl, by decide⟩,
+   ⟨641, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨642, YulEvmCompiler.Instr.push 2 633, by rfl, by decide⟩,
+   ⟨643, YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)), by rfl, wfOp (by decide) trivial rfl⟩]
 
 def pairExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -518,37 +517,36 @@ def foldConditionPath :
    ⟨650, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨651, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
    ⟨652, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨653, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨654, .push ⟨2, by decide⟩ (UInt256.ofNat 993), by rfl, by decide⟩,
-   ⟨655, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨653, .push ⟨3, by decide⟩ (UInt256.ofNat 993), by rfl, by decide⟩,
+   ⟨654, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def foldSetupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨656, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨657, .push ⟨3, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨658, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨659, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨660, .push ⟨3, by decide⟩ (UInt256.ofNat 544), by rfl, by decide⟩,
-   ⟨661, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨662, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨663, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨664, .push ⟨3, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
-   ⟨665, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨666, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨667, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨668, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨669, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨670, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨671, .push ⟨2, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
-   ⟨672, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨673, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨655, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨656, .push ⟨3, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨657, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨658, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨659, .push ⟨3, by decide⟩ (UInt256.ofNat 544), by rfl, by decide⟩,
+   ⟨660, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨661, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨662, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨663, .push ⟨3, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
+   ⟨664, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨665, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨666, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨667, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨668, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨669, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨670, .push ⟨2, by decide⟩ (UInt256.ofNat 288), by rfl, by decide⟩,
+   ⟨671, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨672, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def foldIncrementPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨674, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨675, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨676, .push ⟨7, by decide⟩ (UInt256.ofNat 938), by rfl, by decide⟩,
-   ⟨677, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨673, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨674, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨675, .push ⟨6, by decide⟩ (UInt256.ofNat 938), by rfl, by decide⟩,
+   ⟨676, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def foldExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
@@ -1197,10 +1195,10 @@ def compressReturned (s : State) (returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := returnDest, stack := rest }
 
-@[simp] private theorem entryPC (i : Nat) (hlo : 468 ≤ i) (hhi : i ≤ 485) :
+@[simp] private theorem entryPC (i : Nat) (hlo : 468 ≤ i) (hhi : i ≤ 484) :
     Artifact.referenceArtifact.instructionPC i =
-      [612, 613, 616, 617, 620, 621, 622, 625, 628, 631, 632, 633,
-       634, 635, 637, 638, 639, 642][i - 468]! := by
+    [612, 613, 616, 617, 620, 621, 622, 625, 628, 631, 632, 633,
+       634, 635, 637, 638, 642][i - 468]! := by
   interval_cases i <;> decide
 
 /- Superseded single-round PC tables. -/
@@ -1234,61 +1232,61 @@ def compressReturned (s : State) (returnDest : UInt256)
 
 @[simp] private theorem foldPC (i : Nat) (hlo : 646 ≤ i) (hhi : i ≤ 681) :
     Artifact.referenceArtifact.instructionPC i =
-      [935, 936, 937, 938, 939, 940, 942, 943, 944, 947,
-       948, 949, 953, 954, 955, 959, 960, 961, 962, 966,
-       967, 968, 969, 974, 975, 976, 979, 980, 981, 983,
-       984, 992, 993, 994, 995, 996][i - 646]! := by
+      [935, 936, 937, 938, 939, 940, 942, 943, 947, 948,
+       949, 953, 954, 955, 959, 960, 961, 962, 966, 967,
+       968, 969, 974, 975, 976, 979, 980, 981, 983, 984,
+       991, 992, 993, 994, 995, 996][i - 646]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem pairConditionPC (i : Nat)
-    (hlo : 479 ≤ i) (hhi : i ≤ 485) :
+    (hlo : 479 ≤ i) (hhi : i ≤ 484) :
     Artifact.referenceArtifact.instructionPC i =
-      [633, 634, 635, 637, 638, 639, 642][i - 479]! := by
+      [633, 634, 635, 637, 638, 642][i - 479]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem pairFirstSetupPC (i : Nat)
-    (hlo : 486 ≤ i) (hhi : i ≤ 526) :
+    (hlo : 485 ≤ i) (hhi : i ≤ 525) :
     Artifact.referenceArtifact.instructionPC i =
       [643, 646, 647, 650, 651, 654, 655, 658, 659, 662,
        663, 666, 667, 670, 671, 674, 675, 676, 678, 679,
        682, 683, 684, 685, 687, 688, 690, 691, 692, 697,
        698, 701, 706, 707, 708, 709, 710, 711, 712, 713,
-       716][i - 486]! := by
+       716][i - 485]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem pairFirstT2SetupPC (i : Nat)
-    (hlo : 527 ≤ i) (hhi : i ≤ 538) :
+    (hlo : 526 ≤ i) (hhi : i ≤ 537) :
     Artifact.referenceArtifact.instructionPC i =
       [717, 718, 719, 720, 721, 722, 725, 730, 731, 732,
-       733, 736][i - 527]! := by
+       733, 736][i - 526]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem pairSecondT1SetupPC (i : Nat)
-    (hlo : 539 ≤ i) (hhi : i ≤ 580) :
+    (hlo : 538 ≤ i) (hhi : i ≤ 579) :
     Artifact.referenceArtifact.instructionPC i =
       [737, 738, 739, 740, 745, 746, 747, 748, 749, 754,
        755, 756, 757, 758, 760, 761, 762, 763, 764, 766,
        767, 770, 771, 772, 773, 775, 776, 778, 779, 780,
        785, 786, 789, 794, 795, 796, 797, 798, 799, 800,
-       801, 804][i - 539]! := by
+       801, 804][i - 538]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem pairSecondT2SetupPC (i : Nat)
-    (hlo : 581 ≤ i) (hhi : i ≤ 592) :
+    (hlo : 580 ≤ i) (hhi : i ≤ 591) :
     Artifact.referenceArtifact.instructionPC i =
       [805, 806, 807, 808, 809, 810, 813, 818, 819, 820,
-       821, 824][i - 581]! := by
+       821, 824][i - 580]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem pairCommitPC (i : Nat)
-    (hlo : 593 ≤ i) (hhi : i ≤ 644) :
+    (hlo : 592 ≤ i) (hhi : i ≤ 643) :
     Artifact.referenceArtifact.instructionPC i =
       [825, 826, 827, 828, 833, 834, 835, 836, 837, 842,
        843, 844, 845, 846, 849, 850, 851, 854, 855, 856,
        859, 860, 861, 864, 865, 866, 869, 870, 871, 874,
        875, 876, 879, 880, 881, 884, 885, 886, 887, 888,
        889, 890, 891, 892, 893, 894, 895, 896, 897, 899,
-       900, 903][i - 593]! := by
+       900, 903][i - 592]! := by
   interval_cases i <;> decide
 
 

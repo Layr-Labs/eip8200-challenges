@@ -366,8 +366,9 @@ def referenceInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE8)),
  YulEvmCompiler.Instr.push 1 1,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)),
- YulEvmCompiler.Instr.push 5 398,
+ YulEvmCompiler.Instr.push 4 398,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.STOP)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)),
@@ -383,10 +384,9 @@ def referenceInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
  YulEvmCompiler.Instr.push 0 0,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
- YulEvmCompiler.Instr.push 1 16,
+ YulEvmCompiler.Instr.push 2 16,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
- YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.LT)),
- YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.ISZERO)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)),
  YulEvmCompiler.Instr.push 2 491,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
@@ -503,8 +503,7 @@ def referenceInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
  YulEvmCompiler.Instr.push 1 64,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)),
- YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
- YulEvmCompiler.Instr.push 2 935,
+ YulEvmCompiler.Instr.push 3 935,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)),
  YulEvmCompiler.Instr.push 2 384,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)),
@@ -665,7 +664,8 @@ def referenceInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)),
  YulEvmCompiler.Instr.push 2 633,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)),
- YulEvmCompiler.Instr.push 30 0,
+ YulEvmCompiler.Instr.push 29 0,
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.STOP)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)),
  YulEvmCompiler.Instr.push 0 0,
@@ -673,8 +673,7 @@ def referenceInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
  YulEvmCompiler.Instr.push 1 8,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)),
- YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
- YulEvmCompiler.Instr.push 2 993,
+ YulEvmCompiler.Instr.push 3 993,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
  YulEvmCompiler.Instr.push 3 5,
@@ -696,8 +695,9 @@ def referenceInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
  YulEvmCompiler.Instr.push 1 1,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)),
- YulEvmCompiler.Instr.push 7 938,
+ YulEvmCompiler.Instr.push 6 938,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.STOP)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)),
@@ -836,11 +836,7 @@ theorem referenceInstructions_count : referenceInstructions.length = 810 := by
 
 theorem assemble_referenceInstructions :
     assemble referenceInstructions = submissionBytecode := by
-  apply ByteArray.ext
-  simp [assemble, assembleBytes, referenceInstructions, submissionBytecode,
-    submissionBytes, Instr.bytes, natToBE]
-  repeat' apply And.intro
-  all_goals decide
+  rfl
 
 /-- The reference bytes packaged through the submission-generic structural
 artifact interface. -/

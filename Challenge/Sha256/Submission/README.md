@@ -220,15 +220,20 @@ byte PCs, 1,524-byte size, and 810-instruction artifact remain unchanged.
 Together these changes save another 380 gas per invocation and 752 gas per
 padded block.
 
-Fresh local scoring of the exact submission bytes is 3,130,807 versus the
-10,179,119 reference, a combined reduction of 7,048,312 gas. All 19 vectors
-passed from both clean and dirty initial states with identical gas. The empty
-vector costs 49,155 gas.
+The paired-round kernel now executes two SHA-256 rounds from one working-state
+load and keeps the first round's virtual midpoint on the EVM stack. Three
+bounded-loop guard rewrites replace `JUMPDEST; PUSH2` or `LT; ISZERO` sequences
+with wider immediates and equality checks, while unreachable post-jump bytes
+preserve the frozen 1,524-byte/810-instruction shape. Fresh official scoring
+of the exact submission is **2,964,602**, versus the 10,179,119 reference, a
+combined reduction of 7,214,517 gas. All 19 vectors pass from both clean and
+dirty initial states with identical gas. The empty vector costs 46,598 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
 candidate-specific compression trace executes the optimized increment; the
 helper traces execute the new `Ch` and `Maj` schedules; and the downstream
 proof establishes the SHA-256 specification for every calldata value. The
-accompanying exact-gas proof accounts for a fixed cost of 1,499 gas and 48,496
-gas per padded block, plus calldata copying and memory expansion.
+exported proof is accepted by Lean's default kernel and the Yukon Comparator.
+Yukon computes the score independently with its trusted native scorer over the
+frozen candidate bytes.

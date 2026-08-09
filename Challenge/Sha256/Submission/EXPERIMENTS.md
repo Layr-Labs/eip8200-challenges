@@ -6,6 +6,106 @@ keep proof cost proportional to measured runtime value.
 
 Development context: GPT 5.6 Sol, xhigh effort, Codex agent.
 
+## 2026-08-09: bounded loop guards after paired-round promotion
+
+The preceding paired-round candidate was submitted as
+`e92b37f8-807a-4330-8f0d-9c39f18130b4` and subsequently passed remote
+validation. Yukon promoted it at score 2,970,647, so the two-round
+virtual-midpoint architecture is now a confirmed frontier checkpoint rather
+than only a local result.
+
+This follow-up deliberately kept that architecture and its semantic
+boundaries unchanged. It targets three loop guards and uses three unreachable
+post-jump locations as structural-instruction reservoirs. The candidate file
+is still exactly 1,524 bytes and its decoded artifact is still exactly 810
+instructions. The ASCII hex file SHA-256 is
+`430db430149e11663b4c13ba357dedb1a19d970347249edcd32bb7a5445fb3a6`;
+the SHA-256 of the 1,524 raw bytes is
+`813ac641bd57eb252c3097db2cadbdc07b6bee493bc88b205c28c2c4259dd7ab`.
+
+### Exact byte changes
+
+Six length-preserving edits were made:
+
+1. At PC `0x1ab`, `64000000018e56` became `630000018e5600`.
+   The live value 398 is encoded by `PUSH4` instead of `PUSH5`; the freed byte
+   becomes an unreachable `STOP` after the unconditional `JUMP`. This adds one
+   decoded reservoir instruction without changing live gas.
+2. At PC `0x1c1`, `6010811015` became `6100108114`. The initializer condition
+   `(j < 16) == 0` becomes `j == 16`. Its induction invariant proves
+   `0 <= j <= 16`, so equality is equivalent at every reachable check. The
+   new condition saves three gas and one instruction on each of 17 checks.
+3. At PC `0x27e`, `5b6103a7` became `620003a7`. A sequential `JUMPDEST` and
+   `PUSH2 935` become one `PUSH3 935`, saving one gas and one instruction on
+   all 32 live pair iterations plus the exit check.
+4. At PC `0x388`, the unreachable `PUSH30 0` filler becomes `PUSH29 0; STOP`.
+   This restores one structural instruction with no live execution.
+5. At PC `0x3af`, `5b6103e1` became `620003e1`. The same coalescing turns the
+   feed-forward guard's sequential `JUMPDEST; PUSH2 993` into `PUSH3 993`,
+   saving one gas across eight iterations plus the exit check.
+6. At PC `0x3d8`, `66000000000003aa56` became `650000000003aa5600`.
+   `PUSH7 938` narrows to `PUSH6 938`; the final byte is an unreachable
+   `STOP` after the unconditional `JUMP`, balancing the last removed live
+   instruction.
+
+The arithmetic is exact. The initializer change saves `3 * 17 = 51` gas per
+padded block, the paired-round guard saves 33, and the feed-forward guard
+saves 9. Total improvement is therefore 93 gas per block. The public suite
+contains 65 padded blocks, so the measured suite improvement is
+`93 * 65 = 6,045`: 2,970,647 becomes **2,964,602**. Empty-input gas falls from
+46,691 to 46,598.
+
+### Verification and proof changes
+
+Native falsification was run before proof work. The trusted scorer reported
+all 19 clean rows and all 19 dirty-frame rows `ok`, with identical gas for
+each clean/dirty pair. The clean total was exactly 2,964,602.
+
+`Bytes.lean` was regenerated to the exact hex and `Artifact.lean` was updated
+at the six spans. Its assembly theorem reduces by `rfl`, certifying that the
+810 located instructions assemble to the current byte string. The initializer
+trace now proves the bounded equality guard. The compression pair paths and
+feed-forward paths were reindexed around the removed sequential jump
+destinations and added unreachable stops. Direct block proofs, pair
+composition, compression composition, pair correctness, driver correctness,
+and the final `ReferenceCorrect` theorem were all rebuilt from source.
+
+One build-system trap was recorded: invoking `lake env lean` on an individual
+file can consume stale dependency oleans, whereas `lake build <module>` first
+refreshes `Bytes`, `Bytecode`, and the artifact. The apparent assembly failure
+disappeared once the dependency graph was rebuilt normally. Optional internal
+gas-summary modules are not part of the exported comparator theorem; Yukon
+uses its trusted scorer for ranking. Time was therefore spent on the actual
+`ReferenceCorrect` acceptance path rather than delaying submission on an
+unused duplicate gas model.
+
+The full official local command was:
+
+```text
+BENCHMARK_INSECURE_LOCAL=1 yukon run
+```
+
+It reported:
+
+| Check | Result |
+|---|---:|
+| Lean submission build | accepted |
+| Lean default kernel | accepted |
+| Comparator | accepted |
+| Correctness vectors | 19/19 |
+| Verified score | **2,964,602** |
+| Bytecode size | 1,524 bytes |
+| Structural instructions | 810 |
+
+The next architectural investigation should preserve this proof-complete
+checkpoint while testing whether a four-round superstep, a phase-rotated H
+layout, or a schedule/compression fusion produces a larger native win without
+exceeding standard `DUP16`/`SWAP16` reach. Any candidate should first be
+tested in a temporary byte artifact against all clean and dirty vectors before
+its proof surface is promoted into the workspace.
+
+Development context: GPT 5.6 Sol, xhigh effort, Codex agent.
+
 ## 2026-08-08: four direct recurrence schedule loads — native verified
 
 The four hot recurrence reads of `W[j-16]`, `W[j-15]`, `W[j-7]`, and

@@ -32,11 +32,10 @@ private def wfOp {op : Operation}
 
 def firstConditionPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨362, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨363, .push ⟨1, by decide⟩ (UInt256.ofNat 16), by rfl, by decide⟩,
-   ⟨364, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨365, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨366, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨363, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨364, .push ⟨2, by decide⟩ (UInt256.ofNat 16), by rfl, by decide⟩,
+   ⟨365, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨366, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨367, .push ⟨2, by decide⟩ (UInt256.ofNat 491), by rfl, by decide⟩,
    ⟨368, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -161,11 +160,11 @@ def afterFirstIteration (s : State) (msgOff returnDest : UInt256)
     pc := UInt256.ofNat 448
     stack := [UInt256.ofNat (j + 1), msgOff, returnDest] ++ rest }
 
-@[simp] private theorem firstPC (i : Nat) (hlo : 362 ≤ i) (hhi : i ≤ 393) :
+@[simp] private theorem firstPC (i : Nat) (hlo : 363 ≤ i) (hhi : i ≤ 393) :
     Artifact.referenceArtifact.instructionPC i =
-      [448, 449, 451, 452, 453, 454, 457, 458, 459, 461, 462,
+      [448, 449, 452, 453, 454, 457, 458, 459, 461, 462,
        463, 464, 465, 467, 468, 469, 471, 472, 475, 476, 477,
-       479, 480, 483, 484, 485, 486, 487, 488, 489, 490][i - 362]! := by
+       479, 480, 483, 484, 485, 486, 487, 488, 489, 490][i - 363]! := by
   interval_cases i <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -181,15 +180,13 @@ theorem run_firstCondition (s : State) (msgOff returnDest : UInt256)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hjWord : (UInt256.ofNat j).toNat = j := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  have hlt : UInt256.lt (UInt256.ofNat j) (UInt256.ofNat 16) =
-      UInt256.ofNat 1 := by
-    simp [UInt256.lt, hjWord, Challenge.EvmProof.Word.word_toNat_ofNat, hj]
-  have hzero : UInt256.isZero (UInt256.ofNat 1) = 0 := by decide
-  have htrue : UInt256.isTrue (0 : UInt256) = false := by decide
+  have h16 : (16 : UInt256).toNat = 16 := by decide
+  have h0 : (0 : UInt256).toNat = 0 := by decide
   simp [firstConditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    firstAt, afterFirstCondition, hc3, hc4, hc5, hrun, hlt, hzero,
-    htrue]
+    firstAt, afterFirstCondition, hc3, hc4, hc5, hrun, UInt256.eq,
+    UInt256.isTrue, hjWord, h16, h0, Challenge.EvmProof.Word.word_toNat_ofNat,
+    show (16 : Nat) ≠ j by omega, show j ≠ 16 by omega]
 
 set_option linter.unusedSimpArgs false in
 theorem run_firstLoad (s : State) (msgOff returnDest : UInt256)
@@ -359,11 +356,11 @@ def scheduleEntry (s : State) (msgOff returnDest : UInt256)
 
 def scheduleStartPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.referenceArtifact .Osaka) :=
-  [⟨360, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨361, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩]
+  [⟨361, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨362, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩]
 
-@[simp] private theorem pc325 : Artifact.referenceArtifact.instructionPC 360 = 446 := by decide
-@[simp] private theorem pc326 : Artifact.referenceArtifact.instructionPC 361 = 447 := by decide
+@[simp] private theorem pc325 : Artifact.referenceArtifact.instructionPC 361 = 446 := by decide
+@[simp] private theorem pc326 : Artifact.referenceArtifact.instructionPC 362 = 447 := by decide
 
 theorem run_scheduleStart (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1021)
@@ -1108,14 +1105,14 @@ theorem run_firstExit (s : State) (msgOff returnDest : UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hlt : UInt256.lt (UInt256.ofNat 16) (UInt256.ofNat 16) = 0 := by decide
-  have hzero : UInt256.isZero (0 : UInt256) = UInt256.ofNat 1 := by decide
+  have heq : UInt256.eq (UInt256.ofNat 16) (UInt256.ofNat 16) =
+      UInt256.ofNat 1 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat 1) = true := by decide
   have hdest : Decode.isValidJumpDest submissionBytecode 491 = true := by decide
   simp [firstExitPath, firstConditionPath,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    firstAt, secondAt, hc2, hc3, hc4, hc5, hcode, hrun, hlt, hzero, htrue, hdest]
+    firstAt, secondAt, hc2, hc3, hc4, hc5, hcode, hrun, heq, htrue, hdest]
 
 def gasSteps_firstExit (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1019)
