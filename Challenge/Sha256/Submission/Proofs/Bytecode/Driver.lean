@@ -36,8 +36,8 @@ def conditionPath :
   [⟨737, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨738, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨739, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨740, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨741, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨740, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨741, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨742, .push ⟨2, by decide⟩ (UInt256.ofNat 1401), by rfl, by decide⟩,
    ⟨743, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -258,17 +258,34 @@ def gasSteps_setup (input : ByteArray) :
   · rfl
   · rfl
 
+set_option linter.unusedSimpArgs false in
 theorem run_condition_continue (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock conditionPath (loopAt s input i) =
       some (afterCondition s input i) := by
-  have hlt := offset_lt_total input hfit i hi
-  have hzero : UInt256.isZero (UInt256.ofNat 1) = 0 := by decide
-  have hfalse : UInt256.isTrue (0 : UInt256) = false := by decide
+  have hoff := blockOffset_lt_uint256 input hfit i (Nat.le_of_lt hi)
+  have hpad := paddedLength_lt_uint256 input hfit
+  have hnat : blockOffset i < Padding.paddedLength input.size := by
+    rw [paddedLength_eq_blockCount input]
+    unfold blockOffset
+    omega
+  have heq : UInt256.eq (blockOffsetWord i) (Padding.paddedWord input) = 0 := by
+    rw [Padding.paddedWord_eq input hfit]
+    simp [UInt256.eq, blockOffsetWord,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hoff, Nat.mod_eq_of_lt hpad]
+    omega
+  have heq' : UInt256.eq (Padding.paddedWord input) (blockOffsetWord i) = 0 := by
+    rw [Padding.paddedWord_eq input hfit]
+    simp [UInt256.eq, blockOffsetWord,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hoff, Nat.mod_eq_of_lt hpad]
+    omega
+  have hzeroToNat : (0 : UInt256).toNat = 0 := rfl
   simp [conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    loopAt, afterCondition, hrun, hlt, hzero, hfalse]
+    loopAt, afterCondition, hrun, UInt256.isTrue, heq, heq', hzeroToNat]
 
 theorem run_call (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < blockCount input)
@@ -511,21 +528,33 @@ def gasSteps_blockLoop (input : ByteArray) (hfit : CalldataFits input) :
       (Challenge.EvmProof.GasSteps.iterateBounded (count := blockCount input)
         (gasSteps_blockLoopIteration input hfit)).cost := rfl
 
+set_option linter.unusedSimpArgs false in
 private theorem run_condition_exit (input : ByteArray)
     (hfit : CalldataFits input) :
     Challenge.EvmProof.Stepper.runLocatedBlock conditionPath
       (blockLoopState input (blockCount input)) =
       some (Output.outputEntry (blockLoopState input (blockCount input))
         (blockOffsetWord (blockCount input)) [Padding.paddedWord input]) := by
-  have hlt := offset_not_lt_total input hfit
-  have hzero : UInt256.isZero (0 : UInt256) = UInt256.ofNat 1 := by decide
+  have hoffset : blockOffset (blockCount input) =
+      Padding.paddedLength input.size := by
+    rw [paddedLength_eq_blockCount input]
+    rfl
+  have hword : blockOffsetWord (blockCount input) =
+      Padding.paddedWord input := by
+    rw [Padding.paddedWord_eq input hfit]
+    exact congrArg UInt256.ofNat hoffset
+  have heq : UInt256.eq (blockOffsetWord (blockCount input))
+      (Padding.paddedWord input) = UInt256.ofNat 1 := by
+    rw [hword]
+    unfold UInt256.eq
+    simp
   have htrue : UInt256.isTrue (UInt256.ofNat 1) = true := by decide
   have hdest : Decode.isValidJumpDest submissionBytecode 1401 = true := by decide
   conv_lhs =>
     rw [← loopAt_blockLoopState input (blockCount input)]
   simp [conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    loopAt, Output.outputEntry, hlt, hzero, htrue, hdest]
+    loopAt, Output.outputEntry, heq, htrue, hdest]
 
 def gasSteps_exit (input : ByteArray) (hfit : CalldataFits input) :
     Challenge.EvmProof.GasSteps (blockLoopState input (blockCount input))

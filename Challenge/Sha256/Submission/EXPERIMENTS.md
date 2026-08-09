@@ -6,6 +6,63 @@ keep proof cost proportional to measured runtime value.
 
 Development context: GPT 5.6 Sol, xhigh effort, Codex agent.
 
+## 2026-08-09: equality guards for length, schedule, and block loops
+
+This proof-bounded follow-up keeps the paired-round kernel and every
+cryptographic data-path instruction unchanged. It specializes three more loop
+conditions whose reachable counters are already bounded by their induction
+invariants. The candidate remains exactly 1,524 bytes and 810 decoded
+instructions. The ASCII hex file SHA-256 is
+`7177fe0da40ef5e50097807c87461892bf506eb02e846182579eb53c7cff030f`;
+the SHA-256 of the 1,524 raw bytes is
+`7f4591340ed4e3bf218bf91f630cdb284c4f9a84ca0293250c851b6870617bd2`.
+
+### Exact byte changes
+
+Five length-preserving local edits were made relative to the 2,964,602
+candidate:
+
+1. At PC `0x0c8`, `65000000000000` became `64000000000000`.
+   An unreachable `PUSH6 0` narrows to `PUSH5 0; STOP`, adding one reservoir
+   instruction before the padding code without changing live execution.
+2. At PC `0x18f`, `6008811015` became `6100088114`. The fixed eight-iteration
+   bit-length loop changes `(i < 8) == 0` to `i == 8`, saving three gas on all
+   nine condition checks and removing one live instruction.
+3. At PC `0x1ab`, `630000018e5600` became `6200018e560000`. The backedge's
+   `PUSH3 398` narrows to `PUSH2 398`; two unreachable `STOP` bytes follow the
+   unconditional jump. This restores the structural instruction consumed by
+   the preceding equality guard without live gas cost.
+4. At PC `0x1f0`, `6040811015` became `6100408114`. The schedule recurrence
+   guard changes `(j < 64) == 0` to `j == 64`. The proof invariant has
+   `16 <= j <= 64`, so the tests are equivalent at every reachable check.
+5. At PC `0x559`, `5b8181101561057957` became
+   `5b8181145b61057957`. The outer block loop changes the negated less-than
+   test to equality; a sequential `JUMPDEST` keeps the span at ten bytes and
+   seven instructions.
+
+The length loop saves `3 * 9 * 19 = 513` suite gas. The schedule recurrence
+saves `3 * 49 * 65 = 9,555`. The block loop saves two gas over 65 live blocks
+plus 19 exit checks, or 168. The exact combined improvement is therefore
+**10,236 gas**, taking the verified score from 2,964,602 to **2,954,366**.
+Empty-input gas falls from 46,598 to 46,420.
+
+### Falsification and proof transport
+
+The trusted native scorer returned `ok` for all 19 clean and all 19
+dirty-frame rows, with identical gas for every pair. `Bytes.lean` and
+`Artifact.lean` assemble exactly to the candidate and retain the 810-entry
+artifact. `PaddingTrace.lean` proves the eight-bound equality and transports
+the one-instruction reservoir across the padding entry. `Schedule.lean`
+proves the 64-bound equality and rejoins the existing recurrence body at the
+same byte PC. `Driver.lean` proves block-offset equality is false before the
+last block and true exactly at the output boundary. No hash algebra or paired
+round semantics changed.
+
+The complete official local command
+`BENCHMARK_INSECURE_LOCAL=1 yukon run` then rebuilt the exported solution,
+passed Lean's default kernel, and was accepted by Comparator. The protected
+scorer reported **2,954,366**, 1,524 bytes, and 19/19 correctness vectors.
+
 ## 2026-08-09: bounded loop guards after paired-round promotion
 
 The preceding paired-round candidate was submitted as

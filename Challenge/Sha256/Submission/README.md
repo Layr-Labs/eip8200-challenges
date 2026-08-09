@@ -225,9 +225,17 @@ load and keeps the first round's virtual midpoint on the EVM stack. Three
 bounded-loop guard rewrites replace `JUMPDEST; PUSH2` or `LT; ISZERO` sequences
 with wider immediates and equality checks, while unreachable post-jump bytes
 preserve the frozen 1,524-byte/810-instruction shape. Fresh official scoring
-of the exact submission is **2,964,602**, versus the 10,179,119 reference, a
-combined reduction of 7,214,517 gas. All 19 vectors pass from both clean and
-dirty initial states with identical gas. The empty vector costs 46,598 gas.
+of that promoted checkpoint is 2,964,602.
+
+The newest proof-bounded pass specializes three additional loop guards: the
+eight-byte length writer, the 48-iteration message-schedule recurrence, and
+the outer block loop. Their induction bounds make equality with the terminal
+counter equivalent to the former negated less-than test. Local unreachable
+`STOP` and sequential `JUMPDEST` reservoirs preserve the frozen artifact
+shape. Trusted native scoring of the exact candidate is **2,954,366**, versus
+the 10,179,119 reference, a combined reduction of 7,224,753 gas. All 19
+vectors pass from both clean and dirty initial states with identical gas. The
+empty vector costs 46,420 gas.
 
 `Solution.lean` imports a candidate-specific raw-EVM proof under this editable
 directory. Its entry trace executes the direct `PUSH2 0x03e5; JUMP`; the
