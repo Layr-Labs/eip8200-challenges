@@ -1,0 +1,19 @@
+name: EIP-8200 RIPEMD-160 Benchmark
+run-name: EIP-8200 RIPEMD-160 benchmark
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: eip8200-ripemd160-benchmark-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark:
+    uses: ./.github/workflows/_benchmark-track.yml
+    with:
+      track: ripemd160

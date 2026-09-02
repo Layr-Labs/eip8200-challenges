@@ -1,0 +1,379 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Build and check the direct-EVM proof layer once. Every challenge imports
+  # this layer, so challenge jobs restore this exact cache instead of racing to
+  # compile and save two copies of it.
+  shared-lean:
+    name: Shared Lean proof infrastructure
+    runs-on: blacksmith-32vcpu-ubuntu-2404
+    timeout-minutes: 30
+    outputs:
+      package-key: ${{ steps.cache-keys.outputs.package-key }}
+      shared-key: ${{ steps.cache-keys.outputs.shared-key }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Compute shared cache keys
+        id: cache-keys
+        env:
+          DEPENDENCY_HASH: ${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+          SHARED_HASH: ${{ hashFiles('lakefile.toml', 'Challenge/EvmProof.lean', 'Challenge/EvmProof/**/*.lean', 'Checks/EvmProof.lean') }}
+        run: |
+          package_key="lake-packages-v3-${{ runner.os }}-${{ runner.arch }}-${DEPENDENCY_HASH}"
+          shared_key="project-shared-v2-${{ runner.os }}-${{ runner.arch }}-${DEPENDENCY_HASH}-${SHARED_HASH}"
+          echo "package-key=$package_key" >> "$GITHUB_OUTPUT"
+          echo "shared-key=$shared_key" >> "$GITHUB_OUTPUT"
+
+      # Preserve complete package workspaces, including Git metadata. Caching
+      # only package build directories makes Lake discard restored artifacts as
+      # invalid checkouts.
+      - name: Cache pinned packages
+        id: package-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .lake/packages
+          key: ${{ steps.cache-keys.outputs.package-key }}
+          restore-keys: |
+            lake-packages-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+
+      - name: Cache shared project build
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          # Native module traces include native dependency artifacts. Preserve
+          # package IR alongside root build output so restoring one without
+          # the other cannot invalidate otherwise unchanged proofs.
+          path: |
+            .lake/build
+            .lake/packages/*/.lake/build/ir
+          key: ${{ steps.cache-keys.outputs.shared-key }}
+          restore-keys: |
+            project-shared-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+            project-shared-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+
+      - name: Set up Lean
+        shell: bash
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSfL \
+            https://raw.githubusercontent.com/leanprover/elan/464c9d28395000a2a0128e07081e4956d50eced2/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "${HOME}/.elan/bin" >> "${GITHUB_PATH}"
+          toolchain="$(tr -d '[:space:]' < lean-toolchain)"
+          "${HOME}/.elan/bin/elan" toolchain install "${toolchain}"
+          # `cache-hit` is empty only for a total miss; it is `false` for a
+          # restore-prefix hit whose complete workspace already has Mathlib.
+          if [[ "${{ steps.package-cache.outputs.cache-hit }}" == "" ]]; then
+            "${HOME}/.elan/bin/lake" exe cache get
+          fi
+
+      - name: Build shared EVM proof support
+        run: lake build +Challenge.EvmProof:c.o
+
+      - name: Verify shared soundness
+        run: |
+          if grep -rn --include='*.lean' -w 'sorry' Challenge/EvmProof Challenge/EvmProof.lean; then
+            echo "::error::found an unfinished proof in shared EVM support"
+            exit 1
+          fi
+          lake build +Checks.EvmProof
+
+  # Each matrix entry has its own job and source-keyed project cache. A RIPEMD
+  # submission therefore neither rebuilds nor invalidates the other tracks.
+  challenge:
+    name: ${{ matrix.name }} proofs, submissions, and gas
+    needs: shared-lean
+    runs-on: blacksmith-32vcpu-ubuntu-2404
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: RIPEMD-160
+            directory: Ripemd160
+            slug: ripemd160
+            executable: ripemd160challenge
+            main: Ripemd160Main.lean
+            target: +Challenge.Ripemd160 ripemd160challenge
+            has_submission_checks: true
+          - name: MODEXP
+            directory: Modexp
+            slug: modexp
+            executable: modexpchallenge
+            main: ModexpMain.lean
+            target: +Challenge.Modexp modexpchallenge
+            has_submission_checks: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Restore pinned packages
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .lake/packages
+          key: ${{ needs.shared-lean.outputs.package-key }}
+          fail-on-cache-miss: true
+
+      - name: Restore shared project build
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .lake/build
+            .lake/packages/*/.lake/build/ir
+          key: ${{ needs.shared-lean.outputs.shared-key }}
+          fail-on-cache-miss: true
+
+      - name: Restore ${{ matrix.name }} project checkpoint
+        id: track-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          # These outputs form one Lake trace graph and must be restored as a
+          # unit; caching only the root outputs forces native dependencies cold.
+          path: |
+            .lake/build
+            .lake/packages/*/.lake/build/ir
+          # Every run writes a fresh checkpoint. A retry restores the newest
+          # compatible prefix, so a killed cold build does not start over.
+          key: project-${{ matrix.slug }}-v3-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-${{ hashFiles(format('Challenge/{0}.lean', matrix.directory), format('Challenge/{0}/**', matrix.directory), matrix.main, format('Checks/{0}.lean', matrix.directory)) }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            project-${{ matrix.slug }}-v3-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-${{ hashFiles(format('Challenge/{0}.lean', matrix.directory), format('Challenge/{0}/**', matrix.directory), matrix.main, format('Checks/{0}.lean', matrix.directory)) }}-
+            project-${{ matrix.slug }}-v3-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-
+            project-${{ matrix.slug }}-v2-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-
+            project-${{ matrix.slug }}-v1-${{ runner.os }}-${{ runner.arch }}-
+            project-lake-build-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+
+      - name: Restore compiler dependency checkpoint
+        id: compiler-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .lake/packages/evm_semantics/.lake/build
+            .lake/packages/yul-semantics/.lake/build
+            .lake/packages/yul-evm-compiler/.lake/build
+          key: project-compiler-v1-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.slug }}
+          restore-keys: |
+            project-compiler-v1-${{ runner.os }}-${{ runner.arch }}-${{ needs.shared-lean.outputs.shared-key }}-
+            project-compiler-v1-${{ runner.os }}-${{ runner.arch }}-
+
+      - name: Set up Lean
+        shell: bash
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSfL \
+            https://raw.githubusercontent.com/leanprover/elan/464c9d28395000a2a0128e07081e4956d50eced2/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "${HOME}/.elan/bin" >> "${GITHUB_PATH}"
+          toolchain="$(tr -d '[:space:]' < lean-toolchain)"
+          "${HOME}/.elan/bin/elan" toolchain install "${toolchain}"
+
+      # MODEXP's compiler trampoline is the longest single proof phase. Save it
+      # before entering later proofs so a hard runner shutdown cannot discard
+      # a completed 30-minute elaboration.
+      - name: Build MODEXP entry trampoline
+        if: matrix.slug == 'modexp'
+        run: |
+          scripts/build-lean-serial.sh Challenge.Modexp.Reference.Proofs.Bytecode.MainTrampolinesHigh
+
+      - name: Save MODEXP entry checkpoint
+        if: always() && matrix.slug == 'modexp' && steps.track-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .lake/build
+            .lake/packages/*/.lake/build/ir
+          key: ${{ steps.track-cache.outputs.cache-primary-key }}-entry
+
+      - name: Build MODEXP header checks
+        if: matrix.slug == 'modexp'
+        run: |
+          scripts/build-lean-serial.sh Challenge.Modexp.Reference.Proofs.Bytecode.MainHeaderCheck
+
+      - name: Save MODEXP header checkpoint
+        if: always() && matrix.slug == 'modexp' && steps.track-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .lake/build
+            .lake/packages/*/.lake/build/ir
+          key: ${{ steps.track-cache.outputs.cache-primary-key }}-header
+
+      - name: Build MODEXP dispatcher prelude
+        if: matrix.slug == 'modexp'
+        run: |
+          scripts/build-lean-serial.sh Challenge.Modexp.Reference Challenge.Modexp.Reference.Proofs.Bytecode.Dispatch
+
+      - name: Save MODEXP dispatcher checkpoint
+        if: always() && matrix.slug == 'modexp' && steps.track-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .lake/build
+            .lake/packages/*/.lake/build/ir
+          key: ${{ steps.track-cache.outputs.cache-primary-key }}-dispatcher
+
+      - name: Save MODEXP compiler dependency checkpoint
+        if: always() && matrix.slug == 'modexp' && steps.compiler-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .lake/packages/evm_semantics/.lake/build
+            .lake/packages/yul-semantics/.lake/build
+            .lake/packages/yul-evm-compiler/.lake/build
+          key: ${{ steps.compiler-cache.outputs.cache-primary-key }}
+
+      - name: Build MODEXP big dispatcher checks
+        if: matrix.slug == 'modexp'
+        run: |
+          scripts/build-lean-serial.sh Challenge.Modexp.Reference.Proofs.Bytecode.BigDispatchCheck
+
+      - name: Save MODEXP big-check checkpoint
+        if: always() && matrix.slug == 'modexp' && steps.track-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .lake/build
+            .lake/packages/*/.lake/build/ir
+          key: ${{ steps.track-cache.outputs.cache-primary-key }}-big-check
+
+      - name: Build MODEXP big dispatcher tail and gas proof
+        if: matrix.slug == 'modexp'
+        run: |
+          scripts/build-lean-serial.sh Challenge.Modexp.Reference.Proofs.Bytecode.BigDispatch
+
+      - name: Save MODEXP big dispatcher checkpoint
+        if: always() && matrix.slug == 'modexp' && steps.track-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .lake/build
+            .lake/packages/*/.lake/build/ir
+          key: ${{ steps.track-cache.outputs.cache-primary-key }}-big-dispatcher
+
+      - name: Build ${{ matrix.name }} proofs and scorer
+        run: |
+          scorer_module="${{ matrix.main }}"
+          scripts/build-lean-serial.sh "Challenge.${{ matrix.directory }}" \
+            "Checks.${{ matrix.directory }}" "${scorer_module%.lean}"
+          lake build "${{ matrix.executable }}"
+
+      - name: Save compiler dependency checkpoint
+        if: always() && matrix.slug != 'modexp' && steps.compiler-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .lake/packages/evm_semantics/.lake/build
+            .lake/packages/yul-semantics/.lake/build
+            .lake/packages/yul-evm-compiler/.lake/build
+          key: ${{ steps.compiler-cache.outputs.cache-primary-key }}
+
+      - name: Save ${{ matrix.name }} project checkpoint
+        if: always() && steps.track-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .lake/build
+            .lake/packages/*/.lake/build/ir
+          key: ${{ steps.track-cache.outputs.cache-primary-key }}-complete
+
+      # A proof is only a proof if its axiom footprint is the standard one.
+      # The textual scan catches an unfinished proof that an umbrella misses.
+      - name: Verify ${{ matrix.name }} soundness
+        run: |
+          if grep -rn --include='*.lean' -w 'sorry' \
+              "Challenge/${{ matrix.directory }}" \
+              "Challenge/${{ matrix.directory }}.lean" \
+              "${{ matrix.main }}"; then
+            echo "::error::found an unfinished ${{ matrix.name }} proof"
+            exit 1
+          fi
+          lake build "+Checks.${{ matrix.directory }}"
+
+      # Keep each statement auditable in isolation. Proof support and bundled
+      # implementations may depend on the spec, never the reverse.
+      - name: Verify ${{ matrix.name }} specification boundary
+        run: |
+          imports="$(grep '^import ' "Challenge/${{ matrix.directory }}/Spec.lean")"
+          if [ "$imports" != 'import EvmSemantics.EVM.BigStep' ]; then
+            echo "::error::${{ matrix.name }} Spec.lean must depend only on the pinned EVM semantics"
+            printf '%s\n' "$imports"
+            exit 1
+          fi
+
+      # The Yul compiler is only the reproducible generator for the frozen
+      # artifact; direct-bytecode proofs target the literal bytes themselves.
+      - name: Verify frozen ${{ matrix.name }} reference bytecode
+        run: |
+          reference="Challenge/${{ matrix.directory }}/Reference"
+          compiled="$(lake exe yulc "$reference/reference.yul")"
+          frozen="$(tr -d '[:space:]' < "$reference/reference.hex")"
+          literal="$(lake exe ${{ matrix.executable }} --print-reference-hex)"
+          if [ "$compiled" != "$frozen" ] || [ "$literal" != "$frozen" ]; then
+            echo "::error::${{ matrix.name }} reference.hex is stale"
+            exit 1
+          fi
+
+      # Candidate PRs follow a fixed module/declaration convention. These
+      # checks validate theorem type, bytecode identity, transitive axioms,
+      # executable vectors, and optional proved gas schedules.
+      - name: Verify ${{ matrix.name }} submissions and gas report
+        if: matrix.has_submission_checks
+        run: |
+          scripts/check-${{ matrix.slug }}-submissions.sh --self-test
+          scripts/check-${{ matrix.slug }}-submissions.sh
+          scripts/report-${{ matrix.slug }}-gas.sh --self-test
+          scripts/check-${{ matrix.slug }}-gas-report.sh
+
+      - name: Run ${{ matrix.name }} scorer controls
+        run: |
+          case "${{ matrix.slug }}" in
+            ripemd160)
+              lake exe ripemd160challenge --hex=Challenge/Ripemd160/Reference/reference.hex
+              printf '60206000f3' > /tmp/ripemd160-zeros.hex
+              if lake exe ripemd160challenge --hex=/tmp/ripemd160-zeros.hex; then
+                echo "::error::the RIPEMD-160 scorer accepted a candidate returning 32 zero bytes"
+                exit 1
+              fi
+              ;;
+            modexp)
+              lake exe modexpchallenge
+              ;;
+          esac
+
+  # Independent gas re-measurement under revm. This deliberately shares no
+  # Lean code with the proof jobs, so disagreement between the EVMs is visible.
+  crosscheck:
+    name: Cross-check published gas under revm
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: foundry
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          # lib/forge-std and the pinned eth-act/evmification implementations.
+          # Not recursive: evmification's own libraries are not imported here.
+          submodules: true
+
+      # Pinned rather than floating: exact gas equality is reproducible only
+      # against a fixed revm, so a toolchain bump remains a deliberate change.
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1
+        with:
+          version: v1.5.1
+
+      - name: Check formatting
+        run: forge fmt --check
+
+      - name: Cross-check reference gas against the published numbers
+        run: forge test -vv
