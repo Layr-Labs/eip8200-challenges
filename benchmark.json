@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 2,
+  "name": "EIP-8200 Precompile Challenges",
+  "tracks": [
+    {
+      "name": "modexp",
+      "description": "Minimize measured EVM gas for a Lean-verified MODEXP precompile replacement.",
+      "category": "lean",
+      "direction": "-",
+      "editablePaths": ["Challenge/Modexp/Submission"],
+      "setupCommand": ["bash", "-lc", "./setup.sh modexp"],
+      "benchmarkCommand": ["bash", "-lc", "./benchmark.sh modexp"],
+      "scorePath": "benchmark-results/modexp/score.json",
+      "maxSubmissionBytes": 8388608,
+      "runner": {
+        "provider": "github-actions",
+        "workflow": "benchmark-modexp.yml"
+      }
+    },
+    {
+      "name": "ripemd160",
+      "description": "Minimize measured EVM gas for a Lean-verified RIPEMD-160 precompile replacement.",
+      "category": "lean",
+      "direction": "-",
+      "editablePaths": ["Challenge/Ripemd160/Submission"],
+      "setupCommand": ["bash", "-lc", "./setup.sh ripemd160"],
+      "benchmarkCommand": ["bash", "-lc", "./benchmark.sh ripemd160"],
+      "scorePath": "benchmark-results/ripemd160/score.json",
+      "maxSubmissionBytes": 8388608,
+      "runner": {
+        "provider": "github-actions",
+        "workflow": "benchmark-ripemd160.yml"
+      }
+    }
+  ]
+}
