@@ -53,3 +53,24 @@ Bytecode size remains 1,830 bytes. Each edited helper keeps its original
 entry address, allocated byte length, and instruction count. Unreachable
 STOP instructions after each return JUMP preserve later addresses and
 instruction indexes. All caller-visible helper contracts remain unchanged.
+
+## Current candidate: unaligned table windows and hAt
+
+The current candidate also uses the table-window idea from submission
+`80dacb5` by `ercumentyildirim`. The logical table bases remain unchanged.
+Four calls push `base - 31`. The helper loads a word at `base - 31 + i`
+and selects byte 31. It consumes its arguments and the zero result slot.
+This reduces tableAt from 48 to 27 gas. The same argument-consumption
+change reduces hAt from 37 to 30 gas.
+
+The byte correspondence proof requires `31 ≤ base` and `i < 80`.
+All four actual table bases meet that condition. Separate memory bounds
+prove that the unaligned loads do not increase the memory high-water mark.
+The public correctness theorem and its calldata domain are unchanged.
+
+The native suite passes all 17 clean and dirty vectors at 8,241,311 gas.
+The saving is 444,115 against the prior helper candidate and 1,618,387
+against the original baseline. The current closed gas formula is
+`3698 + 123852 * B + 3 * C + memCost(65 + 2 * B)`, where
+`B = (inputSize + 72) / 64` and `C = (inputSize + 31) / 32`.
+The full exact-bytecode Comparator remains the acceptance condition.

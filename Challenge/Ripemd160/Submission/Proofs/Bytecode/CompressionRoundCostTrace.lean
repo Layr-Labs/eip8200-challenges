@@ -37,7 +37,7 @@ def roundWork (j : Nat) : Nat :=
   Meter.runLocatedBlockStaticCost RoundTrace.prefixPath + xAtWork +
     roundBodyWork j
 
-theorem hAtWork_eq : hAtWork = 37 := by rfl
+theorem hAtWork_eq : hAtWork = 30 := by rfl
 theorem hSetWork_eq : hSetWork = 36 := by rfl
 theorem rotlWork_eq : rotlWork = 45 := by rfl
 

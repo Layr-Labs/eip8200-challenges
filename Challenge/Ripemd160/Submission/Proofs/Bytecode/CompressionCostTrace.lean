@@ -124,7 +124,7 @@ def tableAtWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.tableAtPath
 def xAtWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.xAtPath
 def wordSetWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.hSetPath
 
-theorem tableAtWork_eq : tableAtWork = 48 := by rfl
+theorem tableAtWork_eq : tableAtWork = 27 := by rfl
 theorem xAtWork_eq : xAtWork = 30 := by rfl
 theorem wordSetWork_eq : wordSetWork = 36 := by rfl
 
