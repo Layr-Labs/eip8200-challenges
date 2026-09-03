@@ -57,19 +57,19 @@ contract ModexpGasTest is GasCrossCheck {
     /// @dev `Scorer.eipExample1`.
     function _eipExample1() private pure returns (bytes memory) {
         return hex"0000000000000000000000000000000000000000000000000000000000000001"
-        hex"0000000000000000000000000000000000000000000000000000000000000020"
-        hex"0000000000000000000000000000000000000000000000000000000000000020" hex"03"
-        hex"fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e"
-        hex"fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f";
+            hex"0000000000000000000000000000000000000000000000000000000000000020"
+            hex"0000000000000000000000000000000000000000000000000000000000000020" hex"03"
+            hex"fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e"
+            hex"fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f";
     }
 
     /// @dev `Scorer.eipExample2`.
     function _eipExample2() private pure returns (bytes memory) {
         return hex"0000000000000000000000000000000000000000000000000000000000000000"
-        hex"0000000000000000000000000000000000000000000000000000000000000020"
-        hex"0000000000000000000000000000000000000000000000000000000000000020"
-        hex"fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e"
-        hex"fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f";
+            hex"0000000000000000000000000000000000000000000000000000000000000020"
+            hex"0000000000000000000000000000000000000000000000000000000000000020"
+            hex"fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2e"
+            hex"fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f";
     }
 
     /// @dev `Scorer.truncatedModulus`: EIP-198's truncated-input example, where
@@ -77,8 +77,8 @@ contract ModexpGasTest is GasCrossCheck {
     ///      zero bytes.
     function _truncatedModulus() private pure returns (bytes memory) {
         return hex"0000000000000000000000000000000000000000000000000000000000000001"
-        hex"0000000000000000000000000000000000000000000000000000000000000002"
-        hex"0000000000000000000000000000000000000000000000000000000000000020" hex"03ffff80";
+            hex"0000000000000000000000000000000000000000000000000000000000000002"
+            hex"0000000000000000000000000000000000000000000000000000000000000020" hex"03ffff80";
     }
 
     /// @dev `Scorer`'s 257-bit tuple: `makeInput (2^256 + 5) 3 (2^256 + 7) 33 1 33`.
