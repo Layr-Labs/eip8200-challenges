@@ -112,9 +112,9 @@ private theorem increment_cost_potential (s : State) (input : ByteArray)
 
 /-- Non-memory work of the compression call itself.  The enclosing driver
 adds `26 + 23 + 26 = 75`, producing the schedule's `138476` per block. -/
-def compressionWork : Nat := 138401
+def compressionWork : Nat := 132641
 
-def blockWork : Nat := 138476
+def blockWork : Nat := 132716
 
 theorem blockWork_eq : blockWork = 26 + 23 + compressionWork + 26 := by
   rfl
