@@ -1,6 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Trace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Word
 import YulEvmCompiler.LowerDefs
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.BooleanSelect
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 4000000
@@ -13,8 +14,9 @@ constant-time jump table: the dispatch block computes `caseBase + (j <<< 5)`
 and jumps straight to the arm for `j`.  Each arm carries its own inlined
 return sequence, so no shared cleanup block is entered.
 
-The arms use the reference's exact operand order, so every arm produces the
-same `Word.evmF` term the reference produced.
+The dispatcher consumes the case index. The arms consume their arguments
+and the zero result slot. Two selection arms use proved XOR identities;
+explicit commutativity steps recover the same full-width `Word.evmF` result.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.BooleanFunctionTrace
@@ -33,18 +35,18 @@ private abbrev Located :=
   Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka
 
 private def helperPCs : List Nat :=
-  [1671, 1672, 1673, 1675, 1676, 1679, 1680, 1681, 1682, 1683, 1684, 1685,
+  [1671, 1672, 1674, 1675, 1678, 1679, 1680, 1681, 1682, 1683, 1684, 1685,
    1686, 1687, 1688, 1689, 1690, 1691, 1692, 1693, 1694, 1695, 1696, 1697,
    1698, 1699, 1700, 1701, 1702, 1703, 1704, 1705, 1706, 1707, 1708, 1709,
    1710, 1711, 1712, 1713, 1714, 1715, 1716, 1717, 1718, 1719, 1720, 1721,
    1722, 1723, 1724, 1725, 1726, 1727, 1728, 1729, 1730, 1731, 1732, 1733,
    1734, 1735, 1736, 1737, 1738, 1739, 1740, 1741, 1742, 1743, 1744, 1745,
-   1746, 1751, 1752, 1753, 1754, 1755, 1756, 1757, 1758, 1759, 1760, 1761,
+   1746, 1747, 1748, 1749, 1750, 1755, 1756, 1757, 1758, 1759, 1760, 1761,
    1762, 1763, 1764, 1765, 1766, 1767, 1768, 1769, 1770, 1771, 1772, 1773,
    1774, 1775, 1776, 1777, 1778, 1779, 1780, 1781, 1782, 1783, 1784, 1785,
    1786, 1787, 1788, 1789, 1790, 1791, 1792, 1793, 1794, 1795, 1796, 1797,
    1798, 1799, 1800, 1801, 1802, 1803, 1804, 1805, 1806, 1807, 1808, 1809,
-   1810, 1815, 1816, 1817, 1818, 1819, 1820, 1821, 1822, 1823, 1824, 1825,
+   1810, 1811, 1812, 1813, 1814, 1819, 1820, 1821, 1822, 1823, 1824, 1825,
    1826, 1827, 1828, 1829]
 
 @[simp] private theorem helperPC (i : Nat) (hlo : 831 ≤ i) (hhi : i ≤ 978) :
@@ -83,104 +85,66 @@ private def helperPCs : List Nat :=
 
 def dispatchPath : List Located :=
   [⟨831, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨832, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨833, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨834, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨835, .push ⟨2, by decide⟩ (UInt256.ofNat 1681), by rfl, by decide⟩,
-   ⟨836, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨837, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨832, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨833, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨834, .push ⟨2, by decide⟩ (UInt256.ofNat 1681), by rfl, by decide⟩,
+   ⟨835, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨836, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def arm0 : List Located :=
   [⟨838, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨839, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨840, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨841, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨842, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨843, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨844, .op (.Swap ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨845, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨846, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨847, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨848, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨849, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨850, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨851, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨839, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨840, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨841, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨842, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨843, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def arm1 : List Located :=
   [⟨870, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨871, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨871, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨872, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨873, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨873, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨874, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨875, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨876, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨877, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨878, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨879, .op (.Swap ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨880, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨881, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨882, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨883, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨884, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨885, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨886, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨875, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨876, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨877, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨878, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def arm2 : List Located :=
   [⟨902, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨903, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
-   ⟨904, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨905, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨906, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨907, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨908, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨909, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨910, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨911, .op (.Swap ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨912, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨913, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨914, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨915, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨916, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨917, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨918, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨903, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨904, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨905, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨906, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨907, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
+   ⟨908, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨909, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨910, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨911, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def arm3 : List Located :=
   [⟨930, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨931, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨932, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨933, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨934, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨935, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨936, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨937, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨938, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨939, .op (.Swap ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨940, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨941, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨942, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨943, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨944, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨945, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨946, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨931, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨932, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨933, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨934, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨935, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨936, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨937, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨938, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨939, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def arm4 : List Located :=
   [⟨962, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨963, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
-   ⟨964, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨965, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨966, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨967, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨968, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨969, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨970, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨971, .op (.Swap ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨972, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨973, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨974, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨975, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨976, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨977, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨978, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨963, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨964, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨965, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨966, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨967, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
+   ⟨968, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨969, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨970, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨971, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def casePath : Nat → List Located
   | 0 => dispatchPath ++ arm0
@@ -294,10 +258,27 @@ theorem run_fCase (s : State) (j : Nat) (hj : j < 5)
         helperPCs, Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
         fEntry, fReturned, Word.evmF, Challenge.EvmProof.Word.mask32,
+        BooleanSelect.select1, BooleanSelect.select3, BooleanSelect.xor_comm,
+        Word.land_comm, Word.lor_comm, List.exchange,
         hrun, hcode, hvalid, hcap, hswap6, hswap2, Nat.add_assoc,
         UInt256.eq, UInt256.isZero, UInt256.isTrue,
         Challenge.EvmProof.Word.word_toNat_ofNat,
-        Challenge.EvmProof.Word.succ_ofNat] <;> rfl
+        Challenge.EvmProof.Word.succ_ofNat]
+  · exact BooleanSelect.xor_comm _ _
+  · change (x &&& (z ^^^ y)) ^^^ z = z ^^^ ((y ^^^ z) &&& x)
+    rw [BooleanSelect.xor_comm z y,
+      show x &&& (y ^^^ z) = (y ^^^ z) &&& x from Word.land_comm _ _]
+    exact BooleanSelect.xor_comm _ _
+  · change UInt256.ofNat 4294967295 &&& ((x ||| ~~~y) ^^^ z) = _
+    rw [BooleanSelect.xor_comm (x ||| ~~~y) z]
+    exact Word.land_comm _ _
+  · change (z &&& (y ^^^ x)) ^^^ y = y ^^^ ((x ^^^ y) &&& z)
+    rw [BooleanSelect.xor_comm y x,
+      show z &&& (x ^^^ y) = (x ^^^ y) &&& z from Word.land_comm _ _]
+    exact BooleanSelect.xor_comm _ _
+  · change UInt256.ofNat 4294967295 &&& ((y ||| ~~~z) ^^^ x) = _
+    rw [BooleanSelect.xor_comm (y ||| ~~~z) x]
+    exact Word.land_comm _ _
 
 def gasSteps_fCase (s : State) (j : Nat) (hj : j < 5)
     (x y z returnDest : UInt256) (rest : List UInt256)
