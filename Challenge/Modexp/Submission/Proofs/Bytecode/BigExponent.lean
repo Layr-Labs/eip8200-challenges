@@ -42,7 +42,7 @@ def startExponentPath :
 def outerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 719 .JUMPDEST, opAt 720 (.Dup ⟨4, by decide⟩),
-   opAt 721 (.Dup ⟨1, by decide⟩), opAt 722 .LT, opAt 723 .ISZERO,
+   opAt 721 (.Dup ⟨1, by decide⟩), opAt 722 .EQ, opAt 723 .JUMPDEST,
    pushAt 724 2 1118, opAt 725 .JUMPI]
 
 def outerToInnerPath :
@@ -55,7 +55,7 @@ def outerToInnerPath :
 def innerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 734 .JUMPDEST, pushAt 735 1 8, opAt 736 (.Dup ⟨1, by decide⟩),
-   opAt 737 .LT, opAt 738 .ISZERO, pushAt 739 2 1104,
+   opAt 737 .EQ, opAt 738 .JUMPDEST, pushAt 739 2 1104,
    opAt 740 .JUMPI]
 
 def innerToSquarePath :
@@ -104,7 +104,7 @@ def productToSelectPath :
 def selectGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 777 .JUMPDEST, opAt 778 (.Dup ⟨8, by decide⟩),
-   opAt 779 (.Dup ⟨1, by decide⟩), opAt 780 .LT, opAt 781 .ISZERO,
+   opAt 779 (.Dup ⟨1, by decide⟩), opAt 780 .EQ, opAt 781 .JUMPDEST,
    pushAt 782 2 1090, opAt 783 .JUMPI]
 
 def selectBodyPath :
@@ -591,14 +591,14 @@ theorem run_outerGuard (s : State) (accumulatorWord : UInt256)
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
-  have hlt : UInt256.lt (UInt256.ofNat i) (UInt256.ofNat e) = 1 := by
-    rw [UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
+  have hne : UInt256.eq (UInt256.ofNat i) (UInt256.ofNat e) = 0 := by
+    rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt hi256, Nat.mod_eq_of_lt he, if_pos hi]
+      Nat.mod_eq_of_lt hi256, Nat.mod_eq_of_lt he, if_neg (by omega)]
     decide
-  have honeNat : (1 : UInt256).toNat = 1 := by decide
+  have hzeroNat : (0 : UInt256).toNat = 0 := by decide
   simp [outerGuardPath, opAt, pushAt, wfOp, outerLoop, outerBody,
-    exponentPCs, hrun, hlt, honeNat, hc8, hc9, hc10, UInt256.isTrue,
+    exponentPCs, hrun, hne, hzeroNat, hc8, hc9, hc10, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -645,15 +645,15 @@ theorem run_innerGuard (s : State) (accumulatorWord : UInt256)
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
-  have hlt : UInt256.lt (UInt256.ofNat j) 8 = 1 := by
+  have hne : UInt256.eq (UInt256.ofNat j) 8 = 0 := by
     have hj256 : j < 2 ^ 256 := by omega
     have h8 : (8 : UInt256).toNat = 8 := by decide
-    rw [UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt hj256, h8, if_pos hj]
+    rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hj256, h8, if_neg (by omega)]
     decide
-  have honeNat : (1 : UInt256).toNat = 1 := by decide
+  have hzeroNat : (0 : UInt256).toNat = 0 := by decide
   simp [innerGuardPath, opAt, pushAt, wfOp, innerLoop, innerBody,
-    exponentPCs, hrun, hlt, honeNat, hc11, hc12, hc13, UInt256.isTrue,
+    exponentPCs, hrun, hne, hzeroNat, hc11, hc12, hc13, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -1018,14 +1018,14 @@ theorem run_selectGuard (s : State) (accumulatorWord : UInt256)
   have hc14 : rest.length + 14 < 1024 := by omega
   have hc15 : rest.length + 15 < 1024 := by omega
   have hc16 : rest.length + 16 < 1024 := by omega
-  have hlt : UInt256.lt (UInt256.ofNat k) (UInt256.ofNat count) = 1 := by
-    rw [UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
+  have hne : UInt256.eq (UInt256.ofNat k) (UInt256.ofNat count) = 0 := by
+    rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt hk256, Nat.mod_eq_of_lt hcount, if_pos hk]
+      Nat.mod_eq_of_lt hk256, Nat.mod_eq_of_lt hcount, if_neg (by omega)]
     decide
-  have honeNat : (1 : UInt256).toNat = 1 := by decide
+  have hzeroNat : (0 : UInt256).toNat = 0 := by decide
   simp [selectGuardPath, opAt, pushAt, wfOp, selectLoop, selectBody,
-    selectPCs, hrun, hlt, honeNat, hc14, hc15, hc16, UInt256.isTrue,
+    selectPCs, hrun, hne, hzeroNat, hc14, hc15, hc16, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -1084,12 +1084,11 @@ theorem run_selectFinishGuard (s : State) (accumulatorWord : UInt256)
   have hc14 : rest.length + 14 < 1024 := by omega
   have hc15 : rest.length + 15 < 1024 := by omega
   have hc16 : rest.length + 16 < 1024 := by omega
-  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   have h1090 : (1090 : UInt256).toNat = 1090 := by decide
   have h1090Word : (1090 : UInt256) = UInt256.ofNat 1090 := by decide
   simp [selectGuardPath, opAt, pushAt, wfOp, selectLoop, selectExit,
-    selectPCs, hcode, hrun, hzeroFalse, h1090, h1090Word, jump1090,
-    hc14, hc15, hc16, UInt256.lt, UInt256.isTrue,
+    selectPCs, hcode, hrun, h1090, h1090Word, jump1090,
+    hc14, hc15, hc16, UInt256.eq, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -1142,13 +1141,12 @@ theorem run_innerFinishGuard (s : State) (accumulatorWord : UInt256)
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
-  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   have h8Nat : (8 : UInt256).toNat = 8 := by decide
   have h1104 : (1104 : UInt256).toNat = 1104 := by decide
   have h1104Word : (1104 : UInt256) = UInt256.ofNat 1104 := by decide
   simp [innerGuardPath, opAt, pushAt, wfOp, innerLoop, innerExit,
-    exponentPCs, hcode, hrun, hzeroFalse, h8Nat, h1104, h1104Word, jump1104,
-    hc11, hc12, hc13, UInt256.lt, UInt256.isTrue,
+    exponentPCs, hcode, hrun, h8Nat, h1104, h1104Word, jump1104,
+    hc11, hc12, hc13, UInt256.eq, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
