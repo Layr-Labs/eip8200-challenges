@@ -58,8 +58,8 @@ def exponentProgressState (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   let accumulator := modulusOr s b e m baseOff expOff modOff returnDest rest
   let entry := exponentState s b e m baseOff expOff modOff returnDest rest
-  BigExponent.exponentByteProgress entry accumulator (limbCount m) b e m
-    baseOff expOff (exponentRest modOff returnDest rest) e
+  BigExponent.exponentPhaseState entry accumulator (limbCount m) b e m
+    baseOff expOff (exponentRest modOff returnDest rest)
 
 def completedState (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
@@ -68,47 +68,6 @@ def completedState (s : State) (b e m baseOff expOff modOff : Nat)
     returnDest rest
   BigSerialize.bigReturned progress accumulator (limbCount m) b e m baseOff
     expOff (exponentRest modOff returnDest rest)
-
-def gasSteps_startExponent (s : State) (accumulatorWord : UInt256)
-    (count b e m baseOff expOff : Nat) (rest : List UInt256)
-    (hcap : rest.length < 1017)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps
-      (exponentEntry s accumulatorWord count b e m baseOff expOff rest)
-      (outerLoop s accumulatorWord count b e m baseOff expOff rest 0) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka startExponentPath
-      (by simpa [exponentEntry, Artifact.submissionArtifact] using hcode)
-      (by simpa [exponentEntry, State.fork] using hfork)
-      (run_startExponent s accumulatorWord count b e m baseOff expOff rest
-        hcap hrun)
-      (by simpa [exponentEntry] using hrun)
-      (by simpa [exponentEntry, State.fork] using hnp)
-
-theorem gasSteps_startExponent_cost_potential (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff : Nat)
-    (rest : List UInt256) (hcap : rest.length < 1017)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_startExponent s accumulatorWord count b e m baseOff expOff rest
-      hcap hcode hfork hrun hnp).cost +
-        MachineState.memCost
-          (exponentEntry s accumulatorWord count b e m baseOff expOff rest).activeWords.toNat =
-      3 + MachineState.memCost
-        (outerLoop s accumulatorWord count b e m baseOff expOff rest 0).activeWords.toNat := by
-  have hmeter :=
-    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      startExponentPath 3
-        (run_startExponent s accumulatorWord count b e m baseOff expOff rest
-          hcap hrun)
-        (by simpa [exponentEntry, State.fork] using hfork)
-        (by decide) (by decide)
-  simpa [gasSteps_startExponent] using hmeter
 
 def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256)
@@ -184,24 +143,16 @@ def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
           BigModulus.scanNonzero, loaded]
       _ = s.halt := by rfl
   have hProgressEnv : expProgress.executionEnv = s.executionEnv := by
-    rw [show expProgress = BigExponent.exponentByteProgress expEntry accumulator
-      n b e m baseOff expOff expTail e by rfl]
-    rw [BigExponent.exponentByteProgress_executionEnv]
+    rw [show expProgress = BigExponent.exponentPhaseState expEntry accumulator
+      n b e m baseOff expOff expTail by rfl]
+    rw [BigExponent.exponentPhaseState_executionEnv]
     exact hExpEnv
   have hProgressHalt : expProgress.halt = s.halt := by
-    rw [show expProgress = BigExponent.exponentByteProgress expEntry accumulator
-      n b e m baseOff expOff expTail e by rfl]
-    rw [BigExponent.exponentByteProgress_halt]
+    rw [show expProgress = BigExponent.exponentPhaseState expEntry accumulator
+      n b e m baseOff expOff expTail by rfl]
+    rw [BigExponent.exponentPhaseState_halt]
     exact hExpHalt
-  have hstart := gasSteps_startExponent expEntry accumulator n b e m baseOff
-    expOff expTail (by simp [expTail, exponentRest]; omega)
-    (by rw [hExpEnv]; exact hcode)
-    (by change expEntry.executionEnv.fork = .Osaka; rw [hExpEnv]; exact hfork)
-    (by rw [hExpHalt]; exact hrun)
-    (by
-      rw [hExpEnv]
-      exact hnp)
-  have hexponent := BigExponent.gasSteps_exponentLoop expEntry accumulator n b e
+  have hphase := BigExponent.gasSteps_exponentPhase expEntry accumulator n b e
     m baseOff expOff expTail (by simp [expTail, exponentRest]; omega) hn hexp
     hexpFit
     (by rw [hExpEnv]; exact hcode)
@@ -210,9 +161,9 @@ def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
     (by
       rw [hExpEnv]
       exact hnp)
-  have hserialize := BigSerialize.gasSteps_serializeResult expProgress accumulator
+  have hserialize := BigSerialize.gasSteps_serializeFromEntry expProgress accumulator
     n b e m baseOff expOff expTail (by simp [expTail, exponentRest]; omega)
-    hexp (by omega)
+    (by omega)
     (by rw [hProgressEnv]; exact hcode)
     (by change expProgress.executionEnv.fork = .Osaka
         rw [hProgressEnv]
@@ -223,21 +174,10 @@ def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
       exact hnp)
   exact Challenge.EvmProof.GasSteps.cast
     (hsetup.trans (hscan.trans (hbaseSetup.trans
-      (hconversion.trans (hstart.trans (hexponent.trans hserialize))))))
+      (hconversion.trans (hphase.trans hserialize)))))
     rfl
     (by simp [completedState, expProgress, exponentProgressState, accumulator,
       n, expTail])
 
-/-- Length-only work estimate. Conditional products and additions have exact
-costs in their `GasSteps` certificates, not in this expression. -/
-def nonzeroWork (n b e m : Nat) : Nat :=
-  (343 + n * 284 + m * 190) +
-  (50 + n * 74) +
-  (77 + n * 71) +
-  (b * (3506 + n * 6656) + (206 + n * 416)) +
-  3 +
-  e * (106 + 8 * (613 + n * 526 +
-    2 * (n * (102 + 256 * (457 + n * 832))))) +
-  (66 + m * 138)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigComplete
