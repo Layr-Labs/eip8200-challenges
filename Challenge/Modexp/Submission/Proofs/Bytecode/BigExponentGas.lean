@@ -17,228 +17,13 @@ private theorem jump1015 :
     Decode.isValidJumpDest submissionBytecode 1015 = true :=
   Artifact.isValidJumpDest_index 763 (by rfl)
 
-private theorem jump1034 :
-    Decode.isValidJumpDest submissionBytecode 1034 = true :=
-  Artifact.isValidJumpDest_index 772 (by rfl)
+private theorem jump1289 :
+    Decode.isValidJumpDest submissionBytecode 1289 = true :=
+  Artifact.isValidJumpDest_index 964 (by rfl)
 
-def gasSteps_selectIteration (s : State) (accumulatorWord : UInt256)
-    (count b e m baseOff expOff i j k : Nat) (offset byte : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 980)
-    (hcount : count < 2 ^ 256) (hk : k < count)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps
-      (selectLoop s accumulatorWord count b e m baseOff expOff i j k offset
-        byte rest)
-      (selectLoop s accumulatorWord count b e m baseOff expOff i j (k + 1)
-        offset byte rest) := by
-  have hguard := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka selectGuardPath
-      (by simpa [selectLoop, Artifact.submissionArtifact] using hcode)
-      (by simpa [selectLoop, State.fork] using hfork)
-      (run_selectGuard s accumulatorWord count b e m baseOff expOff i j k
-        offset byte rest (by omega) hcount hk hrun)
-      (by simpa [selectLoop] using hrun)
-      (by simpa [selectLoop, State.fork] using hnp)
-  have hbody := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka selectBodyPath
-      (by simpa [selectBody, selectLoop, Artifact.submissionArtifact] using hcode)
-      (by simpa [selectBody, selectLoop, State.fork] using hfork)
-      (run_selectBody s accumulatorWord count b e m baseOff expOff i j k
-        offset byte rest (by omega) (by omega) hcode hrun)
-      (by simpa [selectBody, selectLoop] using hrun)
-      (by simpa [selectBody, selectLoop, State.fork] using hnp)
-  exact hguard.trans hbody
-
-theorem gasSteps_selectIteration_cost_potential (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff i j k : Nat)
-    (offset byte : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 980) (hcount : count < 2 ^ 256)
-    (hk : k < count) (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_selectIteration s accumulatorWord count b e m baseOff expOff i j
-      k offset byte rest hcap hcount hk hcode hfork hrun hnp).cost +
-        MachineState.memCost
-          (selectLoop s accumulatorWord count b e m baseOff expOff i j k
-            offset byte rest).activeWords.toNat =
-      123 + MachineState.memCost
-        (selectLoop s accumulatorWord count b e m baseOff expOff i j (k + 1)
-          offset byte rest).activeWords.toNat := by
-  have hguard :=
-    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      selectGuardPath 26
-        (run_selectGuard s accumulatorWord count b e m baseOff expOff i j k
-          offset byte rest (by omega) hcount hk hrun)
-        (by simpa [selectLoop, State.fork] using hfork)
-        (by decide) (by decide)
-  have hbody :=
-    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      selectBodyPath 97
-        (run_selectBody s accumulatorWord count b e m baseOff expOff i j k
-          offset byte rest (by omega) (by omega) hcode hrun)
-        (by simpa [selectBody, selectLoop, State.fork] using hfork)
-        (by decide) (by decide)
-  unfold gasSteps_selectIteration
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp only [selectLoop, selectBody] at hguard hbody ⊢
-  omega
-
-def gasSteps_selectLoop (s : State) (accumulatorWord : UInt256)
-    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 980)
-    (hcount : count < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps
-      (selectLoop s accumulatorWord count b e m baseOff expOff i j 0 offset
-        byte rest)
-      (selectLoop s accumulatorWord count b e m baseOff expOff i j count offset
-        byte rest) :=
-  Challenge.EvmProof.GasSteps.iterateBounded count fun k hk =>
-    gasSteps_selectIteration s accumulatorWord count b e m baseOff expOff i j
-      k offset byte rest hcap hcount hk hcode hfork hrun hnp
-
-theorem gasSteps_selectLoop_cost_potential (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
-    (offset byte : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 980) (hcount : count < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_selectLoop s accumulatorWord count b e m baseOff expOff i j
-      offset byte rest hcap hcount hcode hfork hrun hnp).cost +
-        MachineState.memCost
-          (selectLoop s accumulatorWord count b e m baseOff expOff i j 0
-            offset byte rest).activeWords.toNat =
-      count * 123 + MachineState.memCost
-        (selectLoop s accumulatorWord count b e m baseOff expOff i j count
-          offset byte rest).activeWords.toNat := by
-  unfold gasSteps_selectLoop
-  apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
-  intro k hk
-  simpa [Nat.mul_comm] using
-    gasSteps_selectIteration_cost_potential s accumulatorWord count b e m
-      baseOff expOff i j k offset byte rest hcap hcount hk hcode hfork hrun hnp
-
-def gasSteps_selectFinish (s : State) (accumulatorWord : UInt256)
-    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 980)
-    (hcount : count < 2 ^ 256) (hj : j < 8)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps
-      (selectLoop s accumulatorWord count b e m baseOff expOff i j count offset
-        byte rest)
-      (afterSelectedBit s accumulatorWord count b e m baseOff expOff i j
-        offset byte rest) := by
-  have hguard := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka selectGuardPath
-      (by simpa [selectLoop, Artifact.submissionArtifact] using hcode)
-      (by simpa [selectLoop, State.fork] using hfork)
-      (run_selectFinishGuard s accumulatorWord count b e m baseOff expOff i j
-        offset byte rest (by omega) hcount hcode hrun)
-      (by simpa [selectLoop] using hrun)
-      (by simpa [selectLoop, State.fork] using hnp)
-  have hfinish := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka selectFinishPath
-      (by simpa [selectExit, selectLoop, Artifact.submissionArtifact] using hcode)
-      (by simpa [selectExit, selectLoop, State.fork] using hfork)
-      (run_selectFinish s accumulatorWord count b e m baseOff expOff i j offset
-        byte rest (by omega) hj hcode hrun)
-      (by simpa [selectExit, selectLoop] using hrun)
-      (by simpa [selectExit, selectLoop, State.fork] using hnp)
-  exact hguard.trans hfinish
-
-theorem gasSteps_selectFinish_cost_potential (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
-    (offset byte : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 980) (hcount : count < 2 ^ 256) (hj : j < 8)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_selectFinish s accumulatorWord count b e m baseOff expOff i j
-      offset byte rest hcap hcount hj hcode hfork hrun hnp).cost +
-        MachineState.memCost
-          (selectLoop s accumulatorWord count b e m baseOff expOff i j count
-            offset byte rest).activeWords.toNat =
-      58 + MachineState.memCost
-        (afterSelectedBit s accumulatorWord count b e m baseOff expOff i j
-          offset byte rest).activeWords.toNat := by
-  have hguard :=
-    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      selectGuardPath 26
-        (run_selectFinishGuard s accumulatorWord count b e m baseOff expOff i j
-          offset byte rest (by omega) hcount hcode hrun)
-        (by simpa [selectLoop, State.fork] using hfork)
-        (by decide) (by decide)
-  have hfinish :=
-    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      selectFinishPath 32
-        (run_selectFinish s accumulatorWord count b e m baseOff expOff i j
-          offset byte rest (by omega) hj hcode hrun)
-        (by simpa [selectExit, selectLoop, State.fork] using hfork)
-        (by decide) (by decide)
-  unfold gasSteps_selectFinish
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp only [selectLoop, selectExit, afterSelectedBit, innerLoop] at hguard hfinish ⊢
-  omega
-
-def gasSteps_selection (s : State) (accumulatorWord : UInt256)
-    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
-    (rest : List UInt256) (hcap : rest.length < 980)
-    (hcount : count < 2 ^ 256) (hj : j < 8)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps
-      (selectLoop s accumulatorWord count b e m baseOff expOff i j 0 offset
-        byte rest)
-      (afterSelectedBit s accumulatorWord count b e m baseOff expOff i j
-        offset byte rest) :=
-  (gasSteps_selectLoop s accumulatorWord count b e m baseOff expOff i j offset
-    byte rest hcap hcount hcode hfork hrun hnp).trans
-  (gasSteps_selectFinish s accumulatorWord count b e m baseOff expOff i j
-    offset byte rest hcap hcount hj hcode hfork hrun hnp)
-
-theorem gasSteps_selection_cost_potential (s : State)
-    (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
-    (offset byte : UInt256) (rest : List UInt256)
-    (hcap : rest.length < 980) (hcount : count < 2 ^ 256) (hj : j < 8)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_selection s accumulatorWord count b e m baseOff expOff i j offset
-      byte rest hcap hcount hj hcode hfork hrun hnp).cost +
-        MachineState.memCost
-          (selectLoop s accumulatorWord count b e m baseOff expOff i j 0
-            offset byte rest).activeWords.toNat =
-      (count * 123 + 58) + MachineState.memCost
-        (afterSelectedBit s accumulatorWord count b e m baseOff expOff i j
-          offset byte rest).activeWords.toNat := by
-  exact Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    (gasSteps_selectLoop s accumulatorWord count b e m baseOff expOff i j
-      offset byte rest hcap hcount hcode hfork hrun hnp)
-    (gasSteps_selectFinish s accumulatorWord count b e m baseOff expOff i j
-      offset byte rest hcap hcount hj hcode hfork hrun hnp)
-    (count * 123) 58
-    (gasSteps_selectLoop_cost_potential s accumulatorWord count b e m baseOff
-      expOff i j offset byte rest hcap hcount hcode hfork hrun hnp)
-    (gasSteps_selectFinish_cost_potential s accumulatorWord count b e m baseOff
-      expOff i j offset byte rest hcap hcount hj hcode hfork hrun hnp)
+private theorem jump1316 :
+    Decode.isValidJumpDest submissionBytecode 1316 = true :=
+  Artifact.isValidJumpDest_index 978 (by rfl)
 
 def gasSteps_exponentBit (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
@@ -251,11 +36,14 @@ def gasSteps_exponentBit (s : State) (accumulatorWord : UInt256)
     Challenge.EvmProof.GasSteps
       (innerLoop s accumulatorWord count b e m baseOff expOff i offset byte
         rest j)
-      (afterSelectedBit s accumulatorWord count b e m baseOff expOff i j
+      (afterBitStep s accumulatorWord count b e m baseOff expOff i j
         offset byte rest) := by
   let frame := bitFrame accumulatorWord count b e m baseOff expOff i j offset
     byte (exponentBit byte j) rest
+  let tail := bitTailFrame accumulatorWord count b e m baseOff expOff i j
+    offset byte rest
   have hframe : frame.length < 980 := by simp [frame, bitFrame]; omega
+  have htail : tail.length < 980 := by simp [tail, bitTailFrame]; omega
   have hguard := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka innerGuardPath
       (by simpa [innerLoop, Artifact.submissionArtifact] using hcode)
@@ -306,90 +94,156 @@ def gasSteps_exponentBit (s : State) (accumulatorWord : UInt256)
       (copiedSquare s accumulatorWord count b e m baseOff expOff i j offset byte
         rest) := by
     simpa [copiedSquare, frame] using hcopyRaw
-  have htoBranch := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka copyToBranchPath
+  have hredirect := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka redirectPath
       (by simpa [Artifact.submissionArtifact] using hcode)
       (by simpa [State.fork] using hfork)
-      (run_copyToBranch s accumulatorWord count b e m baseOff expOff i j offset
+      (run_redirect s accumulatorWord count b e m baseOff expOff i j offset
         byte rest (by omega) hcode hrun)
       (by simpa using hrun)
       (by simpa [State.fork] using hnp)
-  have hproduct : Challenge.EvmProof.GasSteps
-      (branchEntry s accumulatorWord count b e m baseOff expOff i j offset
-        byte rest)
-      (productReturned s accumulatorWord count b e m baseOff expOff i j offset
-        byte rest) := by
-    by_cases hbit : (exponentBit byte j).toNat = 0
-    · have hguardZero := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-        Artifact.submissionArtifact .Osaka branchGuardPath
-          (by simpa [Artifact.submissionArtifact] using hcode)
-          (by simpa [State.fork] using hfork)
-          (run_branchGuardZero s accumulatorWord count b e m baseOff expOff i j
-            offset byte rest (by omega) hcode hrun hbit)
-          (by simpa using hrun)
-          (by simpa [State.fork] using hnp)
-      have hskip := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-        Artifact.submissionArtifact .Osaka branchSkipPath
-          (by simpa [Artifact.submissionArtifact] using hcode)
-          (by simpa [State.fork] using hfork)
-          (run_branchSkip s accumulatorWord count b e m baseOff expOff i j
-            offset byte rest (by omega) hcode hrun hbit)
-          (by simpa using hrun)
-          (by simpa [State.fork] using hnp)
-      exact hguardZero.trans hskip
-    · have hguardSet := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-        Artifact.submissionArtifact .Osaka branchGuardPath
-          (by simpa [Artifact.submissionArtifact] using hcode)
-          (by simpa [State.fork] using hfork)
-          (run_branchGuardSet s accumulatorWord count b e m baseOff expOff i j
-            offset byte rest (by omega) hcode hrun hbit)
-          (by simpa using hrun)
-          (by simpa [State.fork] using hnp)
-      have hcall := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-        Artifact.submissionArtifact .Osaka branchCallPath
-          (by simpa [Artifact.submissionArtifact] using hcode)
-          (by simpa [State.fork] using hfork)
-          (run_branchCall s accumulatorWord count b e m baseOff expOff i j
-            offset byte rest (by omega) hcode hrun)
-          (by simpa using hrun)
-          (by simpa [State.fork] using hnp)
-      have hmulRaw := BigMul.gasSteps_mulModBig
-        (copiedSquare s accumulatorWord count b e m baseOff expOff i j offset
+  by_cases hbit : (exponentBit byte j).toNat = 0
+  · have hbranch : Challenge.EvmProof.GasSteps
+        (bitBranch s accumulatorWord count b e m baseOff expOff i j offset byte
+          rest)
+        (bitZeroTail s accumulatorWord count b e m baseOff expOff i j offset
+          byte rest) :=
+      Challenge.EvmProof.Stepper.runLocatedBlock_sound
+        Artifact.submissionArtifact .Osaka branchPath
+          (by simpa [bitBranch, Artifact.submissionArtifact] using hcode)
+          (by simpa [bitBranch, State.fork] using hfork)
+          (run_branchZero s accumulatorWord count b e m baseOff expOff i j
+            offset byte rest (by omega) hbit hrun)
+          (by simpa [bitBranch] using hrun)
+          (by simpa [bitBranch, State.fork] using hnp)
+    have hstep : Challenge.EvmProof.GasSteps
+        (bitZeroTail s accumulatorWord count b e m baseOff expOff i j offset
           byte rest)
-        2048 1024 3072 0 count 1034 frame hframe hcount
-        (by simpa using hcode) (by simpa [State.fork] using hfork)
-        (by simpa using hrun) (by simpa [State.fork] using hnp) jump1034
-      have hmul : Challenge.EvmProof.GasSteps
-          (BigMul.mulEntry
-            (copiedSquare s accumulatorWord count b e m baseOff expOff i j
-              offset byte rest) 2048 1024 3072 0 count 1034 frame)
-          (productReturned s accumulatorWord count b e m baseOff expOff i j
-            offset byte rest) := by
-        simpa [productReturned, mulResult, frame, hbit] using hmulRaw
-      exact hguardSet.trans (hcall.trans hmul)
-  have htoSelect := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka productToSelectPath
-      (by simpa [Artifact.submissionArtifact] using hcode)
-      (by simpa [State.fork] using hfork)
-      (run_productToSelect s accumulatorWord count b e m baseOff expOff i j
-        offset byte rest (by omega) hrun)
-      (by simpa using hrun)
-      (by simpa [State.fork] using hnp)
-  have hselect := gasSteps_selection s accumulatorWord count b e m baseOff
-    expOff i j offset byte rest (by omega) hcount hj hcode hfork hrun hnp
-  exact hguard.trans <| htoSquare.trans <| hsquare.trans <|
-    htoCopy.trans <| hcopy.trans <| htoBranch.trans <| hproduct.trans <|
-    htoSelect.trans hselect
+        (innerLoop
+          (copiedSquare s accumulatorWord count b e m baseOff expOff i j offset
+            byte rest)
+          accumulatorWord count b e m baseOff expOff i offset byte rest
+          (j + 1)) :=
+      Challenge.EvmProof.Stepper.runLocatedBlock_sound
+        Artifact.submissionArtifact .Osaka tailPath
+          (by simpa [bitZeroTail, Artifact.submissionArtifact] using hcode)
+          (by simpa [bitZeroTail, State.fork] using hfork)
+          (run_tail
+            (bitZeroTail s accumulatorWord count b e m baseOff expOff i j offset
+              byte rest)
+            accumulatorWord count b e m baseOff expOff i j offset byte rest
+            (by omega) rfl rfl
+            (by simpa [bitZeroTail] using hcode)
+            (by simpa [bitZeroTail] using hrun))
+          (by simpa [bitZeroTail] using hrun)
+          (by simpa [bitZeroTail, State.fork] using hnp)
+    exact Challenge.EvmProof.GasSteps.cast
+      (hguard.trans <| htoSquare.trans <| hsquare.trans <| htoCopy.trans <|
+        hcopy.trans <| hredirect.trans <| hbranch.trans hstep) rfl
+      (by simp [afterBitStep, bitStepProgress, hbit])
+  · have hbranch : Challenge.EvmProof.GasSteps
+        (bitBranch s accumulatorWord count b e m baseOff expOff i j offset byte
+          rest)
+        (bitProductEntry s accumulatorWord count b e m baseOff expOff i j offset
+          byte rest) :=
+      Challenge.EvmProof.Stepper.runLocatedBlock_sound
+        Artifact.submissionArtifact .Osaka branchPath
+          (by simpa [bitBranch, Artifact.submissionArtifact] using hcode)
+          (by simpa [bitBranch, State.fork] using hfork)
+          (run_branchOne s accumulatorWord count b e m baseOff expOff i j
+            offset byte rest (by omega) hbit hcode hrun)
+          (by simpa [bitBranch] using hrun)
+          (by simpa [bitBranch, State.fork] using hnp)
+    have hcall := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka productCallPath
+        (by simpa [bitProductEntry, Artifact.submissionArtifact] using hcode)
+        (by simpa [bitProductEntry, State.fork] using hfork)
+        (run_productCall s accumulatorWord count b e m baseOff expOff i j
+          offset byte rest (by omega) hcode hrun)
+        (by simpa [bitProductEntry] using hrun)
+        (by simpa [bitProductEntry, State.fork] using hnp)
+    have hproductRaw := BigMul.gasSteps_mulModBig
+      (copiedSquare s accumulatorWord count b e m baseOff expOff i j offset byte
+        rest)
+      2048 1024 3072 0 count 1316 tail htail hcount
+      (by simpa using hcode) (by simpa [State.fork] using hfork)
+      (by simpa using hrun) (by simpa [State.fork] using hnp) jump1316
+    have hproduct : Challenge.EvmProof.GasSteps
+        (BigMul.mulEntry
+          (copiedSquare s accumulatorWord count b e m baseOff expOff i j offset
+            byte rest) 2048 1024 3072 0 count 1316 tail)
+        (bitProductReturned s accumulatorWord count b e m baseOff expOff i j
+          offset byte rest) := by
+      simpa [bitProductReturned, mulResult, tail] using hproductRaw
+    have hcopyBack := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka copyBackPath
+        (by simpa [Artifact.submissionArtifact] using hcode)
+        (by simpa [State.fork] using hfork)
+        (run_copyBack s accumulatorWord count b e m baseOff expOff i j offset
+          byte rest (by omega) hcode hrun)
+        (by simpa using hrun)
+        (by simpa [State.fork] using hnp)
+    have hcopyBackRaw := BigHelpers.gasSteps_copy
+      (bitProductReturned s accumulatorWord count b e m baseOff expOff i j
+        offset byte rest)
+      2048 3072 count 1289 tail (by omega) hcount
+      (by simpa using hcode) (by simpa [State.fork] using hfork)
+      (by simpa using hrun) (by simpa [State.fork] using hnp) jump1289
+    have hcopy2 : Challenge.EvmProof.GasSteps
+        (BigHelpers.copyEntry
+          (bitProductReturned s accumulatorWord count b e m baseOff expOff i j
+            offset byte rest) 2048 3072 count 1289 tail)
+        (bitCopyBack s accumulatorWord count b e m baseOff expOff i j offset
+          byte rest) := by
+      simpa [bitCopyBack, tail] using hcopyBackRaw
+    have hpc : (bitCopyBack s accumulatorWord count b e m baseOff expOff i j
+        offset byte rest).pc = UInt256.ofNat 1289 := by
+      have h1289 : (1289 : UInt256) = UInt256.ofNat 1289 := by decide
+      exact h1289
+    have hstackEq : (bitCopyBack s accumulatorWord count b e m baseOff expOff i j
+        offset byte rest).stack =
+        bitTailFrame accumulatorWord count b e m baseOff expOff i j offset byte
+          rest := by
+      simp [bitCopyBack, BigHelpers.copyReturned]
+    have hstep : Challenge.EvmProof.GasSteps
+        (bitCopyBack s accumulatorWord count b e m baseOff expOff i j offset
+          byte rest)
+        (innerLoop
+          (bitCopyBack s accumulatorWord count b e m baseOff expOff i j offset
+            byte rest)
+          accumulatorWord count b e m baseOff expOff i offset byte rest
+          (j + 1)) :=
+      Challenge.EvmProof.Stepper.runLocatedBlock_sound
+        Artifact.submissionArtifact .Osaka tailPath
+          (by simpa [bitCopyBack, BigHelpers.copyReturned,
+            Artifact.submissionArtifact] using hcode)
+          (by simpa [bitCopyBack, BigHelpers.copyReturned, State.fork]
+            using hfork)
+          (run_tail
+            (bitCopyBack s accumulatorWord count b e m baseOff expOff i j offset
+              byte rest)
+            accumulatorWord count b e m baseOff expOff i j offset byte rest
+            (by omega) hpc hstackEq
+            (by simpa [bitCopyBack, BigHelpers.copyReturned] using hcode)
+            (by simpa [bitCopyBack, BigHelpers.copyReturned] using hrun))
+          (by simpa [bitCopyBack, BigHelpers.copyReturned] using hrun)
+          (by simpa [bitCopyBack, BigHelpers.copyReturned, State.fork]
+            using hnp)
+    exact Challenge.EvmProof.GasSteps.cast
+      (hguard.trans <| htoSquare.trans <| hsquare.trans <| htoCopy.trans <|
+        hcopy.trans <| hredirect.trans <| hbranch.trans <| hcall.trans <|
+        hproduct.trans <| hcopyBack.trans <| hcopy2.trans hstep) rfl
+      (by simp [afterBitStep, bitStepProgress, hbit])
 
 def exponentBitProgress (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
     (rest : List UInt256) : Nat → State
   | 0 => s
   | j + 1 =>
-      selectProgress
+      bitStepProgress
         (exponentBitProgress s accumulatorWord count b e m baseOff expOff i
           offset byte rest j)
-        accumulatorWord count b e m baseOff expOff i j offset byte rest count
+        accumulatorWord count b e m baseOff expOff i j offset byte rest
 
 @[simp] theorem exponentBitProgress_executionEnv (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
@@ -438,7 +292,7 @@ def gasSteps_exponentBitAt (s : State) (accumulatorWord : UInt256)
     (by simpa [current, State.fork] using hfork)
     (by simpa [current] using hrun)
     (by simpa [current, State.fork] using hnp)
-  simpa [exponentBitLoopState, afterSelectedBit, exponentBitProgress, current]
+  simpa [exponentBitLoopState, afterBitStep, exponentBitProgress, current]
     using hstep
 
 def gasSteps_exponentBits (s : State) (accumulatorWord : UInt256)
