@@ -344,7 +344,7 @@ def gasSteps_zeroSize_total (input : ByteArray) (hvalid : ValidInput input)
 
 theorem gasSteps_zeroSize_total_cost (input : ByteArray)
     (hvalid : ValidInput input) (hzero : modulusSize input = 0) :
-    (gasSteps_zeroSize_total input hvalid hzero).cost = 61 := by
+    (gasSteps_zeroSize_total input hvalid hzero).cost = 99 := by
   simp [gasSteps_zeroSize_total, Main.gasSteps_header_cost,
     gasSteps_zeroSize_cost]
 

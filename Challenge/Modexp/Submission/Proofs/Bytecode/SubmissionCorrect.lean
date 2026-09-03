@@ -245,7 +245,7 @@ private def certifiedBigZeroTotal (input : ByteArray) (hvalid : ValidInput input
     (hbig : 32 < modulusSize input) (hmodulus : Word.modulusValue input = 0) :
     {g : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
         (bigZeroFinalState input) //
-      g.cost = 131 + BigZeroCorrect.zeroWork
+      g.cost = 169 + BigZeroCorrect.zeroWork
         (Limbs.limbCount (modulusSize input)) (modulusSize input) +
         MachineState.memCost (bigZeroFinalState input).activeWords.toNat} := by
   have hb := hvalid.2.1
@@ -312,7 +312,7 @@ theorem gasSteps_bigZeroTotal_cost (input : ByteArray)
     (hvalid : ValidInput input) (hbig : 32 < modulusSize input)
     (hmodulus : Word.modulusValue input = 0) :
     (gasSteps_bigZeroTotal input hvalid hbig hmodulus).cost =
-      131 + BigZeroCorrect.zeroWork (Limbs.limbCount (modulusSize input))
+      169 + BigZeroCorrect.zeroWork (Limbs.limbCount (modulusSize input))
         (modulusSize input) +
         MachineState.memCost (bigZeroFinalState input).activeWords.toNat :=
   (certifiedBigZeroTotal input hvalid hbig hmodulus).2
@@ -327,15 +327,15 @@ def finalState (input : ByteArray) : State :=
   else bigCompletedState input
 
 def submissionGas (input : ByteArray) : Nat :=
-  if modulusSize input = 0 then 61
+  if modulusSize input = 0 then 99
   else if modulusSize input ≤ 32 then
-    if Word.modulusValue input = 0 then 828 else WordGas.wordGas input
+    if Word.modulusValue input = 0 then 218 else WordGas.wordGas input
   else if Word.modulusValue input = 0 then
-    131 + BigZeroCorrect.zeroWork (Limbs.limbCount (modulusSize input))
+    169 + BigZeroCorrect.zeroWork (Limbs.limbCount (modulusSize input))
       (modulusSize input) +
       MachineState.memCost (bigZeroFinalState input).activeWords.toNat
   else
-    131 + BigComplete.nonzeroWork (Limbs.limbCount (modulusSize input))
+    169 + BigComplete.nonzeroWork (Limbs.limbCount (modulusSize input))
       (baseSize input) (exponentSize input) (modulusSize input) +
       MachineState.memCost (bigCompletedState input).activeWords.toNat
 

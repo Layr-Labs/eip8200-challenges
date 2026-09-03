@@ -1922,7 +1922,7 @@ theorem gasSteps_mulBitIteration_cost_potential (current : State)
         hcap hcount hj hcode hfork hrun hnp).cost +
         MachineState.memCost
           (mulInnerLoop current a b out modulus count i j returnDest rest).activeWords.toNat =
-      (426 + count * 906) + MachineState.memCost
+      (426 + count * 876) + MachineState.memCost
         (mulInnerNext current a b out modulus count i j returnDest rest).activeWords.toNat := by
   let inner := mulInnerLoop current a b out modulus count i j returnDest rest
   let bit := mulBit current b i j
@@ -2011,7 +2011,7 @@ theorem gasSteps_mulWordBitIteration_cost_potential (current : State)
         MachineState.memCost
           (mulInnerState current word a b out modulus count i j
             returnDest rest).activeWords.toNat =
-      (426 + count * 906) + MachineState.memCost
+      (426 + count * 876) + MachineState.memCost
         (mulWordInnerNext current word a b out modulus count i j
           returnDest rest).activeWords.toNat := by
   let inner := mulInnerState current word a b out modulus count i j
@@ -2101,7 +2101,7 @@ theorem gasSteps_mulWordLoop_cost_potential (current : State)
       hcap hcount hcode hfork hrun hnp).cost + MachineState.memCost
         (mulInnerState current word a b out modulus count i 0
           returnDest rest).activeWords.toNat =
-      256 * (426 + count * 906) + MachineState.memCost
+      256 * (426 + count * 876) + MachineState.memCost
         (mulInnerState
           (mulWordProgress current word a b out modulus count i returnDest rest 256)
           word a b out modulus count i 256 returnDest rest).activeWords.toNat := by
@@ -2143,7 +2143,7 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
         hcap hcount hi hcode hfork hrun hnp).cost +
         MachineState.memCost
           (mulOuterState before a b out modulus count i returnDest rest).activeWords.toNat =
-      (102 + 256 * (426 + count * 906)) + MachineState.memCost
+      (102 + 256 * (426 + count * 876)) + MachineState.memCost
         (mulOuterState after a b out modulus count (i + 1) returnDest rest).activeWords.toNat := by
   dsimp only
   let before := mulOuterProgress current a b out modulus count returnDest rest i
@@ -2212,7 +2212,7 @@ theorem gasSteps_mulOuterLoop_cost_potential (current : State)
     (gasSteps_mulOuterLoop current a b out modulus count returnDest rest hcap
         hcount hcode hfork hrun hnp).cost + MachineState.memCost
           (mulOuterState current a b out modulus count 0 returnDest rest).activeWords.toNat =
-      count * (102 + 256 * (426 + count * 906)) + MachineState.memCost
+      count * (102 + 256 * (426 + count * 876)) + MachineState.memCost
         (mulOuterState
           (mulOuterProgress current a b out modulus count returnDest rest count)
           a b out modulus count count returnDest rest).activeWords.toNat := by
@@ -2531,7 +2531,7 @@ theorem gasSteps_mulModBig_cost_potential (s : State)
         hcode hfork hrun hnp hvalid).cost +
         MachineState.memCost s.activeWords.toNat =
       (185 + count * 158 +
-          count * (102 + 256 * (426 + count * 906))) +
+          count * (102 + 256 * (426 + count * 876))) +
         MachineState.memCost (mulReturned progress returnDest rest).activeWords.toNat := by
   dsimp only
   let copied := mulAfterCopy s a b out modulus count returnDest rest
