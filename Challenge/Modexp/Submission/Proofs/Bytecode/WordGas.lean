@@ -244,13 +244,13 @@ theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)
   omega
 
 def wordGas (input : ByteArray) : Nat :=
-  969 + 140 * baseSize input + 1210 * exponentSize input
+  931 + 140 * baseSize input + 1210 * exponentSize input
 
 theorem gasSteps_zeroModulusTotal_cost (input : ByteArray)
     (hvalid : ValidInput input) (hmsize : 0 < modulusSize input)
     (hword : modulusSize input ≤ 32) (hmodulus : modulusValue input = 0) :
     (gasSteps_zeroModulus_total input hvalid hmsize hword hmodulus).cost =
-      866 := by
+      828 := by
   have hload := blockCost_of_static startLoadPath 31
     (run_startLoad input hvalid hmsize hword) (by rfl)
     (by decide) (by rfl) (by rfl)

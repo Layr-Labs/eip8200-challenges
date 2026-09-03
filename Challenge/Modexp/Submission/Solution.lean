@@ -9,10 +9,12 @@ namespace Challenge.Modexp.Benchmark
 
 /-- Correctness of the submitted MODEXP bytecode.
 
-The artifact is the verified-compiler reference output with two edits: the
+The artifact is the verified-compiler reference output with three edits: the
 entry `PUSH2` is retargeted from the first compiler trampoline (pc 14) straight
 at the program body's `JUMPDEST` (pc 1196), collapsing the eight-hop trampoline
-chain to a single hop; and the multi-limb exponent loop's second `mulModBig`
+chain to a single hop; the EIP-7823 bound-check block is bypassed after loading
+the three length words because `Correct` already assumes `ValidInput`; and the
+multi-limb exponent loop's second `mulModBig`
 call site (pc 1016) is replaced by a hop to an appended guard at pc 1284 that
 performs the call only when the exponent bit is set.  The branchless selector
 that follows already discards that product on a zero bit. -/

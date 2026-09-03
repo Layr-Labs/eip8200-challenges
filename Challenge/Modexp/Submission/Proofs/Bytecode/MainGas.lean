@@ -86,27 +86,11 @@ private def gasSteps_headerLoad (input : ByteArray) :
     Artifact.submissionArtifact .Osaka headerLoadPath rfl rfl (run_headerLoad input)
       rfl deployAddress_not_precompile
 
-private def gasSteps_headerCheck (input : ByteArray) (hvalid : ValidInput input) :
-    Challenge.EvmProof.GasSteps (headerLoadedState input) (headerState input) := by
-  exact
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka headerModulusCheckPath rfl rfl
-      (run_headerModulusCheck input hvalid) rfl deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka headerExponentCheckPath rfl rfl
-      (run_headerExponentCheck input hvalid) rfl deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka headerBaseCheckPath rfl rfl
-      (run_headerBaseCheck input hvalid) rfl deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka headerCheckOrPath rfl rfl
-      (run_headerCheckOr input) rfl deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka headerCheckIsZeroPath rfl rfl
-      (run_headerCheckIsZero input) rfl deployAddress_not_precompile).trans <|
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka headerCheckJumpPath rfl rfl
-      (run_headerCheckJump input) rfl deployAddress_not_precompile
+private def gasSteps_headerCheck (input : ByteArray) :
+    Challenge.EvmProof.GasSteps (headerLoadedState input) (headerState input) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka headerCheckPath rfl rfl
+      (run_headerCheck input) rfl deployAddress_not_precompile
 
 @[simp] private theorem gasSteps_tramp0_cost (input : ByteArray) :
     (gasSteps_tramp0 input).cost = 11 := by rfl
@@ -138,22 +122,21 @@ private def gasSteps_headerCheck (input : ByteArray) (hvalid : ValidInput input)
 @[simp] private theorem gasSteps_headerLoad_cost (input : ByteArray) :
     (gasSteps_headerLoad input).cost = 17 := by rfl
 
-@[simp] private theorem gasSteps_headerCheck_cost
-    (input : ByteArray) (hvalid : ValidInput input) :
-    (gasSteps_headerCheck input hvalid).cost = 49 := by rfl
+@[simp] private theorem gasSteps_headerCheck_cost (input : ByteArray) :
+    (gasSteps_headerCheck input).cost = 11 := by rfl
 
 /-- Header parsing as a gas-parametric relational trace. -/
-def gasSteps_header (input : ByteArray) (hvalid : ValidInput input) :
+def gasSteps_header (input : ByteArray) (_hvalid : ValidInput input) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (headerState input) := by
   exact (gasSteps_tramp0 input).trans <|
     (gasSteps_tramp7Dest input).trans <|
-    (gasSteps_headerLoad input).trans (gasSteps_headerCheck input hvalid)
+    (gasSteps_headerLoad input).trans (gasSteps_headerCheck input)
 
-/-- Exact, input-independent gas used by the single retargeted entry hop and
-the three successful EIP-7823 size checks. -/
+/-- Exact, input-independent gas used by the retargeted entry hop, three header
+loads, and the direct jump over checks redundant on the valid-input domain. -/
 theorem gasSteps_header_cost (input : ByteArray) (hvalid : ValidInput input) :
-    (gasSteps_header input hvalid).cost = 78 := by
+    (gasSteps_header input hvalid).cost = 40 := by
   simp [gasSteps_header]
 
 
