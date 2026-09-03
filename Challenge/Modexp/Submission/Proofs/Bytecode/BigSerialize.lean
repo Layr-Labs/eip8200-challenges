@@ -36,7 +36,7 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 def outerFinishGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 719 .JUMPDEST, opAt 720 (.Dup ⟨4, by decide⟩),
-   opAt 721 (.Dup ⟨1, by decide⟩), opAt 722 .EQ, opAt 723 .JUMPDEST,
+   opAt 721 (.Dup ⟨1, by decide⟩), opAt 722 .LT, opAt 723 .ISZERO,
    pushAt 724 2 1118, opAt 725 .JUMPI]
 
 def serializerEntryPath :
@@ -46,7 +46,7 @@ def serializerEntryPath :
 def serializerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 841 .JUMPDEST, opAt 842 (.Dup ⟨5, by decide⟩),
-   opAt 843 (.Dup ⟨1, by decide⟩), opAt 844 .EQ, opAt 845 .JUMPDEST,
+   opAt 843 (.Dup ⟨1, by decide⟩), opAt 844 .LT, opAt 845 .ISZERO,
    pushAt 846 2 1180, opAt 847 .JUMPI]
 
 def serializerBodyPath :
@@ -199,12 +199,13 @@ theorem run_outerFinishGuard (s : State) (accumulatorWord : UInt256)
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
+  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   have h1118 : (1118 : UInt256).toNat = 1118 := by decide
   have h1118Word : (1118 : UInt256) = UInt256.ofNat 1118 := by decide
   simp [outerFinishGuardPath, opAt, pushAt, wfOp, outerLoop,
     exponentOuterExit, outerFinishPCs,
-    hcode, hrun, h1118, h1118Word, jump1118,
-    hc8, hc9, hc10, UInt256.eq, UInt256.isTrue,
+    hcode, hrun, hzeroFalse, h1118, h1118Word, jump1118,
+    hc8, hc9, hc10, UInt256.lt, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -244,14 +245,14 @@ theorem run_serializerGuard (s : State) (accumulatorWord : UInt256)
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
-  have hne : UInt256.eq (UInt256.ofNat k) (UInt256.ofNat m) = 0 := by
-    rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
+  have hlt : UInt256.lt (UInt256.ofNat k) (UInt256.ofNat m) = 1 := by
+    rw [UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt hk256, Nat.mod_eq_of_lt hm, if_neg (by omega)]
+      Nat.mod_eq_of_lt hk256, Nat.mod_eq_of_lt hm, if_pos hk]
     decide
-  have hzeroNat : (0 : UInt256).toNat = 0 := by decide
+  have honeNat : (1 : UInt256).toNat = 1 := by decide
   simp [serializerGuardPath, opAt, pushAt, wfOp, serializerLoop,
-    serializerBody, serializerPCs, hrun, hne, hzeroNat, hc8, hc9, hc10,
+    serializerBody, serializerPCs, hrun, hlt, honeNat, hc8, hc9, hc10,
     UInt256.isTrue, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -320,12 +321,13 @@ theorem run_serializerFinishGuard (s : State) (accumulatorWord : UInt256)
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
+  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   have h1180 : (1180 : UInt256).toNat = 1180 := by decide
   have h1180Word : (1180 : UInt256) = UInt256.ofNat 1180 := by decide
   simp [serializerGuardPath, opAt, pushAt, wfOp, serializerLoop,
-    serializerExit, serializerPCs, hcode, hrun,
+    serializerExit, serializerPCs, hcode, hrun, hzeroFalse,
     h1180, h1180Word, jump1180, hc8, hc9, hc10,
-    UInt256.eq, UInt256.isTrue,
+    UInt256.lt, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -398,12 +400,12 @@ theorem gasSteps_serializerIteration_cost_potential (s : State)
         MachineState.memCost
           (serializerLoop s accumulatorWord count b e m baseOff expOff rest
             k).activeWords.toNat =
-      136 + MachineState.memCost
+      138 + MachineState.memCost
         (serializerLoop s accumulatorWord count b e m baseOff expOff rest
           (k + 1)).activeWords.toNat := by
   have hguard :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      serializerGuardPath 24
+      serializerGuardPath 26
         (run_serializerGuard s accumulatorWord count b e m baseOff expOff k
           rest (by omega) hm hk hrun)
         (by simpa [serializerLoop, State.fork] using hfork)
@@ -447,7 +449,7 @@ theorem gasSteps_serializerLoop_cost_potential (s : State)
         MachineState.memCost
           (serializerLoop s accumulatorWord count b e m baseOff expOff rest
             0).activeWords.toNat =
-      m * 136 + MachineState.memCost
+      m * 138 + MachineState.memCost
         (serializerLoop s accumulatorWord count b e m baseOff expOff rest
           m).activeWords.toNat := by
   unfold gasSteps_serializerLoop
@@ -498,11 +500,11 @@ theorem gasSteps_serializerFinish_cost_potential (s : State)
         MachineState.memCost
           (serializerLoop s accumulatorWord count b e m baseOff expOff rest
             m).activeWords.toNat =
-      33 + MachineState.memCost
+      35 + MachineState.memCost
         (bigReturned s accumulatorWord count b e m baseOff expOff rest).activeWords.toNat := by
   have hguard :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      serializerGuardPath 24
+      serializerGuardPath 26
         (run_serializerFinishGuard s accumulatorWord count b e m baseOff expOff
           rest (by omega) hm hcode hrun)
         (by simpa [serializerLoop, State.fork] using hfork)
@@ -566,11 +568,11 @@ theorem gasSteps_serializeResult_cost_potential (s : State)
         MachineState.memCost
           (outerLoop s accumulatorWord count b e m baseOff expOff rest
             e).activeWords.toNat =
-      (62 + m * 136) + MachineState.memCost
+      (66 + m * 138) + MachineState.memCost
         (bigReturned s accumulatorWord count b e m baseOff expOff rest).activeWords.toNat := by
   have hguard :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      outerFinishGuardPath 24
+      outerFinishGuardPath 26
         (run_outerFinishGuard s accumulatorWord count b e m baseOff expOff rest
           (by omega) he hcode hrun)
         (by simpa [outerLoop, State.fork] using hfork)

@@ -47,7 +47,7 @@ def startBaseLoopPath :
 def outerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 643 .JUMPDEST, opAt 644 (.Dup ⟨3, by decide⟩),
-   opAt 645 (.Dup ⟨1, by decide⟩), opAt 646 .EQ, opAt 647 .JUMPDEST,
+   opAt 645 (.Dup ⟨1, by decide⟩), opAt 646 .LT, opAt 647 .ISZERO,
    pushAt 648 2 925, opAt 649 .JUMPI]
 
 def outerToInnerPath :
@@ -60,7 +60,7 @@ def outerToInnerPath :
 def innerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 658 .JUMPDEST, pushAt 659 1 8, opAt 660 (.Dup ⟨1, by decide⟩),
-   opAt 661 .EQ, opAt 662 .JUMPDEST, pushAt 663 2 911,
+   opAt 661 .LT, opAt 662 .ISZERO, pushAt 663 2 911,
    opAt 664 .JUMPI]
 
 def innerToDoublePath :
@@ -359,14 +359,14 @@ theorem run_outerGuard (s : State) (accumulator : UInt256)
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
-  have hne : UInt256.eq (UInt256.ofNat i) (UInt256.ofNat baseSize) = 0 := by
-    rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
+  have hlt : UInt256.lt (UInt256.ofNat i) (UInt256.ofNat baseSize) = 1 := by
+    rw [UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt hi256, Nat.mod_eq_of_lt hbase, if_neg (by omega)]
+      Nat.mod_eq_of_lt hi256, Nat.mod_eq_of_lt hbase, if_pos hi]
     decide
-  have hzeroNat : (0 : UInt256).toNat = 0 := by decide
+  have honeNat : (1 : UInt256).toNat = 1 := by decide
   simp [outerGuardPath, opAt, pushAt, wfOp, outerLoop, outerBody,
-    baseLoopPCs, hrun, hne, hzeroNat, hc4, hc5, hc6, UInt256.isTrue,
+    baseLoopPCs, hrun, hlt, honeNat, hc4, hc5, hc6, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -418,15 +418,15 @@ theorem run_innerGuard (s : State) (accumulator : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
-  have hne : UInt256.eq (UInt256.ofNat j) 8 = 0 := by
+  have hlt : UInt256.lt (UInt256.ofNat j) 8 = 1 := by
     have hj256 : j < 2 ^ 256 := by omega
     have h8 : (8 : UInt256).toNat = 8 := by decide
-    rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt hj256, h8, if_neg (by omega)]
+    rw [UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hj256, h8, if_pos hj]
     decide
-  have hzeroNat : (0 : UInt256).toNat = 0 := by decide
+  have honeNat : (1 : UInt256).toNat = 1 := by decide
   simp [innerGuardPath, opAt, pushAt, wfOp, innerLoop, innerBody,
-    baseLoopPCs, hrun, hne, hzeroNat, hc7, hc8, hc9, UInt256.isTrue,
+    baseLoopPCs, hrun, hlt, honeNat, hc7, hc8, hc9, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -546,12 +546,13 @@ theorem run_innerFinishGuard (s : State) (accumulator : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
+  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   have h911 : (911 : UInt256).toNat = 911 := by decide
   have h911Word : (911 : UInt256) = UInt256.ofNat 911 := by decide
   have h8Nat : (8 : UInt256).toNat = 8 := by decide
   simp [innerGuardPath, opAt, pushAt, wfOp, innerLoop, innerExit,
-    baseLoopPCs, hcode, hrun, jump911, h911, h911Word,
-    h8Nat, hc7, hc8, hc9, UInt256.eq, UInt256.isTrue,
+    baseLoopPCs, hcode, hrun, jump911, hzeroFalse, h911, h911Word,
+    h8Nat, hc7, hc8, hc9, UInt256.lt, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -601,11 +602,12 @@ theorem run_outerFinishGuard (s : State) (accumulator : UInt256)
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
+  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   have h925 : (925 : UInt256).toNat = 925 := by decide
   have h925Word : (925 : UInt256) = UInt256.ofNat 925 := by decide
   simp [outerGuardPath, opAt, pushAt, wfOp, outerLoop, outerExit,
-    baseLoopPCs, hcode, hrun, jump925, h925, h925Word,
-    hc4, hc5, hc6, UInt256.eq, UInt256.isTrue,
+    baseLoopPCs, hcode, hrun, jump925, hzeroFalse, h925, h925Word,
+    hc4, hc5, hc6, UInt256.lt, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -735,13 +737,13 @@ theorem gasSteps_innerIteration_cost_potential (s : State)
       hcap hcount hj hcode hfork hrun hnp).cost +
         MachineState.memCost
           (innerLoop s accumulator count baseSize i offset byte rest j).activeWords.toNat =
-      (411 + count * 820) + MachineState.memCost
+      (425 + count * 832) + MachineState.memCost
         (innerLoop s accumulator count baseSize i offset byte rest
           (j + 1)).activeWords.toNat := by
   have hframe : (innerFrame accumulator count baseSize i j offset byte rest).length <
       1000 := by simp [innerFrame]; omega
   have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    innerGuardPath 24
+    innerGuardPath 26
       (run_innerGuard s accumulator count baseSize i j offset byte rest
         (by omega) hj hrun)
       (by simpa [innerLoop, State.fork] using hfork)
@@ -791,7 +793,7 @@ theorem gasSteps_innerIteration_cost_potential (s : State)
           (innerLoop s accumulator count baseSize i offset byte rest j) +
         MachineState.memCost
           (innerLoop s accumulator count baseSize i offset byte rest j).activeWords.toNat =
-      24 + MachineState.memCost
+      26 + MachineState.memCost
         (innerBody s accumulator count baseSize i offset byte rest j).activeWords.toNat := by
     simpa [innerLoop, innerBody] using hguard
   have htoDouble' :
@@ -813,7 +815,7 @@ theorem gasSteps_innerIteration_cost_potential (s : State)
         (by simpa [innerBody, innerLoop, State.fork] using hnp) jump875).cost +
           MachineState.memCost
             (innerBody s accumulator count baseSize i offset byte rest j).activeWords.toNat =
-      (143 + count * 410) + MachineState.memCost
+      (149 + count * 416) + MachineState.memCost
         (doubledReturned s accumulator count baseSize i j offset byte rest).activeWords.toNat := by
     simpa [doubledReturned] using hdouble
   have htoBit' :
@@ -839,7 +841,7 @@ theorem gasSteps_innerIteration_cost_potential (s : State)
           innerLoop, State.fork] using hnp) jump900).cost +
           MachineState.memCost
             (doubledReturned s accumulator count baseSize i j offset byte rest).activeWords.toNat =
-      (143 + count * 410) + MachineState.memCost
+      (149 + count * 416) + MachineState.memCost
         (bitReturned s accumulator count baseSize i j offset byte rest).activeWords.toNat := by
     simpa [bitReturned] using hbit
   unfold gasSteps_innerIteration
@@ -872,7 +874,7 @@ theorem gasSteps_innerLoop_cost_potential (s : State)
     (gasSteps_innerLoop s accumulator count baseSize i offset byte rest hcap
       hcount hcode hfork hrun hnp).cost + MachineState.memCost
         (innerLoop s accumulator count baseSize i offset byte rest 0).activeWords.toNat =
-      8 * (411 + count * 820) + MachineState.memCost
+      8 * (425 + count * 832) + MachineState.memCost
         (innerLoop s accumulator count baseSize i offset byte rest 8).activeWords.toNat := by
   unfold gasSteps_innerLoop
   apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
@@ -955,7 +957,7 @@ theorem gasSteps_baseByte_cost_potential (s : State)
         (outerLoop s accumulator count baseSize
           ([UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff] ++ rest)
           i).activeWords.toNat =
-      (3390 + count * 6560) + MachineState.memCost
+      (3506 + count * 6656) + MachineState.memCost
         (outerLoop (bitProgress count (loadedBaseByte s baseOff i) 8 s)
           accumulator count baseSize
           ([UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff] ++ rest)
@@ -965,7 +967,7 @@ theorem gasSteps_baseByte_cost_potential (s : State)
     UInt256.ofNat baseOff] ++ rest
   have hfull : fullRest.length < 993 := by simp [fullRest]; omega
   have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    outerGuardPath 24
+    outerGuardPath 26
       (run_outerGuard s accumulator count baseSize i fullRest
         (by simp [fullRest]; omega) hbase hi hrun)
       (by simpa [outerLoop, State.fork] using hfork)
@@ -979,7 +981,7 @@ theorem gasSteps_baseByte_cost_potential (s : State)
   have hinner := gasSteps_innerLoop_cost_potential s accumulator count baseSize i
     (UInt256.ofNat (baseOff + i)) byte fullRest hfull hcount hcode hfork hrun hnp
   have hfinishGuard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    innerGuardPath 24
+    innerGuardPath 26
       (run_innerFinishGuard s accumulator count baseSize i
         (UInt256.ofNat (baseOff + i)) byte fullRest
         (by simp [fullRest]; omega) hcode hrun)
@@ -1058,7 +1060,7 @@ theorem gasSteps_baseSetup_cost_potential (s : State)
     (gasSteps_baseSetup s accumulator count rest hcap hacc hcount hcode hfork
         hrun hnp).cost + MachineState.memCost
           (BigModulus.scanNonzero s count rest).activeWords.toNat =
-      (75 + count * 69) + MachineState.memCost
+      (77 + count * 71) + MachineState.memCost
         (baseLoopEntry s accumulator count rest).activeWords.toNat := by
   have hcapRaw : rest.length < 1016 := by omega
   have hframe : (frame accumulator count rest).length < 1017 := by

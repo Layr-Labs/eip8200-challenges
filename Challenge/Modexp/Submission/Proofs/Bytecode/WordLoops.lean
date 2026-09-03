@@ -74,6 +74,7 @@ theorem run_bitFinishGuard (input : ByteArray) (outer : Nat)
         some (bitFinishDispatchState input outer byte offset acc base) := by
   have h8 : (8 : UInt256).toNat = 8 := by decide
   have h8mod : 8 % 2 ^ 256 = 8 := by norm_num
+  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   have h655 : (655 : UInt256).toNat = 655 := by decide
   have h655Word : (655 : UInt256) = UInt256.ofNat 655 := by decide
   simp (config := { maxSteps := 150000 })
@@ -82,8 +83,8 @@ theorem run_bitFinishGuard (input : ByteArray) (outer : Nat)
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       bitLoopState, bitFinishDispatchState, nonzeroState, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState,
-      UInt256.isTrue, UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
-      h8, h8mod, h655, h655Word, jump655]
+      UInt256.isTrue, UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
+      h8, h8mod, hzeroFalse, h655, h655Word, jump655]
 
 set_option linter.unusedSimpArgs false in
 theorem run_bitFinishTail (input : ByteArray) (outer : Nat)
