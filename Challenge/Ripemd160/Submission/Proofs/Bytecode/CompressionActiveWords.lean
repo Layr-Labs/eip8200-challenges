@@ -405,25 +405,31 @@ private theorem slotAddress_toNat (base : Nat) (i : UInt256)
   omega
 
 private theorem tableAddress_toNat (base i : Nat) (hi : i < 80)
-    (hbase31 : 31 ≤ base) (hbase : base < 2 ^ 64) :
+    (hbase : base + 32 * (i / 32) < 2 ^ 256) :
     (TableTrace.tableAddress (UInt256.ofNat base) (UInt256.ofNat i)).toNat =
-      base - 31 + i := by
+      base + 32 * (i / 32) := by
   unfold TableTrace.tableAddress
-  rw [Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega),
-    Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
-    Challenge.EvmProof.Word.word_toNat_ofNat,
+  rw [Challenge.EvmProof.Word.shiftRight_ofNat (by omega) (by decide)]
+  rw [Nat.shiftRight_eq_div_pow]
+  norm_num
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide)
+      (by omega : (i / 32) * 2 ^ 5 < 2 ^ 256)]
+  rw [show (i / 32) * 2 ^ 5 = 32 * (i / 32) by omega]
+  rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)]
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt (by omega)]
+  omega
 
 private theorem tableAtReturned_activeWords (s : State) (base i : Nat)
     (hi : i < 80) (hactive : 67 ≤ s.activeWords.toNat)
-    (hbase31 : 31 ≤ base)
     (hbase : base + 96 + 32 ≤ 67 * 32) (returnDest : UInt256)
     (rest : List UInt256) :
     (TableTrace.tableAtReturned s (UInt256.ofNat base) (UInt256.ofNat i)
       returnDest rest).activeWords = s.activeWords := by
   unfold TableTrace.tableAtReturned
   apply activeWordsAfterUInt256_eq
-  rw [tableAddress_toNat base i hi hbase31 (by omega)]
+  rw [tableAddress_toNat base i hi (by omega)]
+  have hdiv : i / 32 ≤ 2 := by omega
   omega
 
 private theorem afterConstantLoad_activeWords (s : State) (base i : Nat)
@@ -560,16 +566,16 @@ private theorem leftRoundState_activeWords (s : State)
   have h₁ : q₁.activeWords = s.activeWords := by
     unfold q₁ leftFirstReturned
     exact (tableAtReturned_activeWords q₀ 1376 i hi
-      (by rw [h₀]; exact hactive) (by omega) (by omega) _ _).trans h₀
+      (by rw [h₀]; exact hactive) (by omega) _ _).trans h₀
   let q₂ := leftSecondReturned s messageOffset returnDest rest i
   have h₂ : q₂.activeWords = s.activeWords := by
     unfold q₂ leftSecondReturned
     exact (tableAtReturned_activeWords q₁ 1184 i hi
-      (by rw [h₁]; exact hactive) (by omega) (by omega) _ _).trans h₁
+      (by rw [h₁]; exact hactive) (by omega) _ _).trans h₁
   have hword :
       (TableTrace.tableValue q₁ (UInt256.ofNat 1184)
         (UInt256.ofNat i)).toNat < 16 := by
-    rw [TableTrace.tableValue_tableByte q₁ 1184 i (by omega) (by omega) hi]
+    rw [TableTrace.tableValue_tableByte q₁ 1184 i (by omega) hi]
     change (InitializationCorrect.tableByte s.memory 1184 i).toNat < 16
     rw [htables.1 i hi, Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (lt_trans (leftSelector_lt i hi) (by norm_num))]
@@ -640,16 +646,16 @@ private theorem rightRoundState_activeWords (s : State)
   have h₁ : q₁.activeWords = s.activeWords := by
     unfold q₁ rightFirstReturned
     exact (tableAtReturned_activeWords q₀ 1472 i hi
-      (by rw [h₀]; exact hactive) (by omega) (by omega) _ _).trans h₀
+      (by rw [h₀]; exact hactive) (by omega) _ _).trans h₀
   let q₂ := rightSecondReturned s messageOffset returnDest rest i
   have h₂ : q₂.activeWords = s.activeWords := by
     unfold q₂ rightSecondReturned
     exact (tableAtReturned_activeWords q₁ 1280 i hi
-      (by rw [h₁]; exact hactive) (by omega) (by omega) _ _).trans h₁
+      (by rw [h₁]; exact hactive) (by omega) _ _).trans h₁
   have hword :
       (TableTrace.tableValue q₁ (UInt256.ofNat 1280)
         (UInt256.ofNat i)).toNat < 16 := by
-    rw [TableTrace.tableValue_tableByte q₁ 1280 i (by omega) (by omega) hi]
+    rw [TableTrace.tableValue_tableByte q₁ 1280 i (by omega) hi]
     change (InitializationCorrect.tableByte s.memory 1280 i).toNat < 16
     rw [htables.2.1 i hi, Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (lt_trans (rightSelector_lt i hi) (by norm_num))]

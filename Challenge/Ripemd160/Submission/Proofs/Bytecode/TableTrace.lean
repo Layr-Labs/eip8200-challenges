@@ -3,7 +3,6 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.Word
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Schedule
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduleCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.InitializationCorrect
-import Challenge.EvmProof.Bytes
 import YulEvmCompiler.BytesLemmas
 
 set_option warningAsError true
@@ -49,50 +48,46 @@ def hAtPath : List Located :=
 
 def hSetPath : List Located :=
   [⟨38, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨39, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨40, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨41, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨42, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨43, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨44, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨45, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨46, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨39, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨40, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨41, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨42, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨43, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨44, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
+   ⟨45, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨46, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨47, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨48, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨49, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨50, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨51, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨48, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def xAtPath : List Located :=
   [⟨55, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨56, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨57, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨58, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨59, .push ⟨2, by decide⟩ (UInt256.ofNat 0x2a0), by rfl, by decide⟩,
-   ⟨60, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨61, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨62, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨63, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨64, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨65, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨66, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨56, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨57, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨58, .push ⟨2, by decide⟩ (UInt256.ofNat 672), by rfl, by decide⟩,
+   ⟨59, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨60, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨61, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨62, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨63, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def xSetPath : List Located := Schedule.xSetPath
 
 def tableAtPath : List Located :=
   [⟨86, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨87, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨88, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨89, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨90, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨91, .push ⟨1, by decide⟩ (UInt256.ofNat 31), by rfl, by decide⟩,
-   ⟨92, .op .BYTE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨93, .op (.Swap ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨94, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨95, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨96, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨97, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨98, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨88, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨89, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨90, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨91, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨92, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨93, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨94, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨95, .push ⟨1, by decide⟩ (UInt256.ofNat 31), by rfl, by decide⟩,
+   ⟨96, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨97, .op .BYTE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨98, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨99, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨100, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem hAtPC (j : Nat) (hlo : 23 ≤ j) (hhi : j ≤ 34) :
     Artifact.submissionArtifact.instructionPC j =
@@ -102,26 +97,22 @@ def tableAtPath : List Located :=
 
 @[simp] private theorem hSetPC (j : Nat) (hlo : 38 ≤ j) (hhi : j ≤ 51) :
     Artifact.submissionArtifact.instructionPC j =
-      [0x33, 0x34, 0x39, 0x3a, 0x3b, 0x3c, 0x3e,
-        0x3f, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45][j - 38]! := by
+      [51, 52, 53, 55, 56, 57, 58, 63, 64, 65, 66, 67, 68, 69][j - 38]! := by
   interval_cases j <;> rfl
 
 @[simp] private theorem xAtPC (j : Nat) (hlo : 55 ≤ j) (hhi : j ≤ 66) :
     Artifact.submissionArtifact.instructionPC j =
-      [0x4b, 0x4c, 0x4d, 0x4f, 0x50, 0x53,
-        0x54, 0x55, 0x56, 0x57, 0x58, 0x59][j - 55]! := by
+      [75, 76, 78, 79, 82, 83, 84, 85, 86, 87, 88, 89][j - 55]! := by
   interval_cases j <;> rfl
 
 @[simp] private theorem xSetPC (j : Nat) (hlo : 70 ≤ j) (hhi : j ≤ 82) :
     Artifact.submissionArtifact.instructionPC j =
-      [0x5f, 0x60, 0x65, 0x66, 0x67, 0x68, 0x6a,
-        0x6b, 0x6e, 0x6f, 0x70, 0x71, 0x72][j - 70]! := by
+      [95, 96, 98, 99, 102, 103, 104, 109, 110, 111, 112, 113, 114][j - 70]! := by
   interval_cases j <;> rfl
 
-@[simp] private theorem tableAtPC (j : Nat) (hlo : 86 ≤ j) (hhi : j ≤ 98) :
+@[simp] private theorem tableAtPC (j : Nat) (hlo : 86 ≤ j) (hhi : j ≤ 104) :
     Artifact.submissionArtifact.instructionPC j =
-      [0x78, 0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7f,
-        0x80, 0x81, 0x82, 0x83, 0x84, 0x85][j - 86]! := by
+      [120, 121, 122, 124, 125, 127, 128, 129, 130, 131, 133, 134, 135, 136, 137, 138, 139, 140, 141][j - 86]! := by
   interval_cases j <;> rfl
 
 def slotAddress (base i : UInt256) : UInt256 :=
@@ -138,15 +129,12 @@ def storedWord (s : State) (base i value : UInt256) : State :=
       (Data.Bytes.natToBytesPadded masked.toNat 32) address.toNat
     activeWords := s.activeWordsAfterUInt256 address.toNat 32 }
 
-/-- The compiled helper is now called with `base - 31` and reads the 32-byte
-window *ending* at `base + i`, so only the window's final byte is significant.
-The argument `base` remains the logical table base, keeping every caller and
-the `tableByte` bridge below unchanged. -/
 def tableAddress (base i : UInt256) : UInt256 :=
-  (base - UInt256.ofNat 31) + i
+  UInt256.shiftLeft (UInt256.shiftRight i (UInt256.ofNat 5))
+    (UInt256.ofNat 5) + base
 
 def tableValue (s : State) (base i : UInt256) : UInt256 :=
-  UInt256.byteAt (UInt256.ofNat 31)
+  UInt256.byteAt (UInt256.land i (UInt256.ofNat 31))
     (MachineState.readWord s.memory (tableAddress base i).toNat)
 
 def atEntry (s : State) (pc i returnDest : UInt256)
@@ -193,33 +181,7 @@ def xSetReturned (s : State) (i value returnDest : UInt256)
 def tableAtEntry (s : State) (base i returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 0x78
-           stack := [base - UInt256.ofNat 31, i, 0, returnDest] ++ rest }
-
-/-- The four RIPEMD table bases as they are actually pushed by the compiled
-call sites, which now supply `base - 31`. -/
-@[simp] theorem shiftedBase_1184 :
-    (UInt256.ofNat 1184) - UInt256.ofNat 31 = UInt256.ofNat 1153 := by
-  have h := Challenge.EvmProof.Word.ofNat_sub_ofNat
-    (a := 1184) (b := 31) (by omega) (by omega)
-  simpa using h
-
-@[simp] theorem shiftedBase_1280 :
-    (UInt256.ofNat 1280) - UInt256.ofNat 31 = UInt256.ofNat 1249 := by
-  have h := Challenge.EvmProof.Word.ofNat_sub_ofNat
-    (a := 1280) (b := 31) (by omega) (by omega)
-  simpa using h
-
-@[simp] theorem shiftedBase_1376 :
-    (UInt256.ofNat 1376) - UInt256.ofNat 31 = UInt256.ofNat 1345 := by
-  have h := Challenge.EvmProof.Word.ofNat_sub_ofNat
-    (a := 1376) (b := 31) (by omega) (by omega)
-  simpa using h
-
-@[simp] theorem shiftedBase_1472 :
-    (UInt256.ofNat 1472) - UInt256.ofNat 31 = UInt256.ofNat 1441 := by
-  have h := Challenge.EvmProof.Word.ofNat_sub_ofNat
-    (a := 1472) (b := 31) (by omega) (by omega)
-  simpa using h
+           stack := [base, i, 0, returnDest] ++ rest }
 
 def tableAtReturned (s : State) (base i returnDest : UInt256)
     (rest : List UInt256) : State :=
@@ -267,7 +229,8 @@ theorem run_xAt (s : State) (i returnDest : UInt256)
       UInt256.shiftLeft i (UInt256.ofNat 5) =
         slotAddress (UInt256.ofNat 0x2a0) i := by
     rw [slotAddress, Challenge.EvmProof.Word.word_add_comm]
-  simp [xAtPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+  simp [xAtPath, Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     atEntry, atReturned, loadedWord, hc2, hc3, hc4, hc5, hrun, hcode, hvalid,
     haddr, List.exchange, State.activeWordsAfterUInt256]
@@ -292,9 +255,11 @@ theorem run_wordSet (s : State) (base i value returnDest : UInt256)
   have haddr : base + UInt256.shiftLeft i (UInt256.ofNat 5) =
       slotAddress base i := by
     rw [slotAddress, Challenge.EvmProof.Word.word_add_comm]
-  simp [hSetPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+  simp [hSetPath, Word.land_comm, List.exchange,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    setEntry, setReturned, storedWord, Challenge.EvmProof.Word.mask32,
+    setEntry, setReturned, storedWord, slotAddress, Challenge.EvmProof.Word.mask32,
     hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hrun, hcode, hvalid, haddr,
     State.activeWordsAfterUInt256]
 
@@ -329,7 +294,8 @@ theorem run_xSet (s : State) (i value returnDest : UInt256)
       UInt256.shiftLeft i (UInt256.ofNat 5) =
         slotAddress (UInt256.ofNat 0x2a0) i := by
     rw [slotAddress, Challenge.EvmProof.Word.word_add_comm]
-  simp [xSetPath, Schedule.xSetPath,
+  simp [xSetPath, Schedule.xSetPath, Word.land_comm, List.exchange,
+    Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     xSetEntry, xSetReturned, storedWord, Challenge.EvmProof.Word.mask32,
@@ -353,10 +319,14 @@ theorem run_tableAt (s : State) (base i returnDest : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
-  have haddr : (base - UInt256.ofNat 31) + i = tableAddress base i := rfl
-  simp [tableAtPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+  have haddr : base + UInt256.shiftLeft
+      (UInt256.shiftRight i (UInt256.ofNat 5)) (UInt256.ofNat 5) =
+        tableAddress base i := by
+    rw [tableAddress, Challenge.EvmProof.Word.word_add_comm]
+  simp [tableAtPath, Word.land_comm, Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    tableAtEntry, tableAtReturned, tableValue,
+    tableAtEntry, tableAtReturned, tableValue, tableAddress,
     hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hrun, hcode, hvalid, haddr,
     List.exchange, State.activeWordsAfterUInt256]
 
@@ -537,28 +507,35 @@ private theorem land31_ofNat (i : Nat) (hi : i < 2 ^ 256) :
   rw [Nat.mod_eq_of_lt (lt_trans (Nat.mod_lt i (by omega)) (by norm_num))]
 
 private theorem tableAddress_ofNat (base i : Nat)
-    (hbase31 : 31 ≤ base) (hbase : base < 2 ^ 64) (hi : i < 80) :
+    (hbase : base < 2 ^ 64) (hi : i < 80) :
     tableAddress (UInt256.ofNat base) (UInt256.ofNat i) =
-      UInt256.ofNat (base - 31 + i) := by
+      UInt256.ofNat (base + 32 * (i / 32)) := by
+  have hi256 : i < 2 ^ 256 := by omega
+  have hshift : i >>> 5 < 2 ^ 256 :=
+    Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) hi256
+  have hresult : (i >>> 5) * 2 ^ 5 < 2 ^ 256 := by omega
+  have haddr : (i >>> 5) * 2 ^ 5 + base < 2 ^ 256 := by
+    have : base + 96 < 2 ^ 64 + 96 := by omega
+    omega
   unfold tableAddress
-  rw [Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega),
-    Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)]
+  rw [Challenge.EvmProof.Word.shiftRight_ofNat hi256 (by omega),
+    Challenge.EvmProof.Word.shiftLeft_ofNat hshift (by omega) hresult,
+    Challenge.EvmProof.Word.ofNat_add_ofNat haddr]
+  congr 1
+  rw [Nat.shiftRight_eq_div_pow]
+  norm_num
+  omega
 
 /-- The executed packed-table helper is exactly the initialization proof's
 `tableByte` accessor on every RIPEMD table index. -/
 theorem tableValue_tableByte (s : State) (base i : Nat)
-    (hbase31 : 31 ≤ base) (hbase : base < 2 ^ 64) (hi : i < 80) :
+    (hbase : base < 2 ^ 64) (hi : i < 80) :
     tableValue s (UInt256.ofNat base) (UInt256.ofNat i) =
       InitializationCorrect.tableByte s.memory base i := by
   unfold tableValue InitializationCorrect.tableByte
-  rw [tableAddress_ofNat base i hbase31 hbase hi,
-    Challenge.EvmProof.Word.word_toNat_ofNat,
-    Nat.mod_eq_of_lt (show base - 31 + i < 2 ^ 256 by omega)]
-  have hL := Challenge.EvmProof.Bytes.byteAt_readWord
-    s.memory (base - 31 + i) 31 (by norm_num)
-  have hR := Challenge.EvmProof.Bytes.byteAt_readWord
-    s.memory (base + 32 * (i / 32)) (i % 32) (by omega)
-  have hidx : base - 31 + i + 31 = base + 32 * (i / 32) + i % 32 := by omega
-  rw [hL, hR, hidx]
+  rw [land31_ofNat i (by omega), tableAddress_ofNat base i hbase hi,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  congr 3
+  omega
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.TableTrace
