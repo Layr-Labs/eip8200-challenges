@@ -284,45 +284,70 @@ theorem selectProgress_represents_bitStep (s : State)
       BigHelpers.represents_copyMemory_disjoint_region squared.memory 2048
         3072 0 count modulus (by omega) (Or.inr (by omega)) hsquaredModulus
   have hsquareReduced : squareValue < modulus := Nat.mod_lt _ hmodulusPos
-  have hproduct : Limbs.Represents product.memory 3072 count productValue := by
-    simpa [product, productReturned, mulResult, squareValue, productValue,
-      frame, h0, h1024, h2048, h3072, h1034] using
-      BigMul.mulReturned_represents_product copied 1024 count squareValue base
-        modulus (UInt256.ofNat 1034) frame hcount (by omega) hmodulusPos
-        hsquareReduced hcopiedSquare hcopiedBase hcopiedModulus
-  have hproductBase : Limbs.Represents product.memory 1024 count base := by
-    simpa [product, productReturned, mulResult, squareValue, frame, h0, h1024,
-      h2048, h3072, h1034, BigMul.mulReturned] using
-      (BigMul.mulOuterProgress_afterCopy_represents_product copied 1024 count
-        squareValue base modulus (UInt256.ofNat 1034) frame hcount (by omega)
-        hmodulusPos hsquareReduced hcopiedSquare hcopiedBase
-        hcopiedModulus).2.1
-  have hproductModulus : Limbs.Represents product.memory 0 count modulus := by
-    simpa [product, productReturned, mulResult, squareValue, frame, h0, h1024,
-      h2048, h3072, h1034, BigMul.mulReturned] using
-      (BigMul.mulOuterProgress_afterCopy_represents_product copied 1024 count
-        squareValue base modulus (UInt256.ofNat 1034) frame hcount (by omega)
-        hmodulusPos hsquareReduced hcopiedSquare hcopiedBase
-        hcopiedModulus).2.2
-  have hselected := selectMemory_represents product.memory byte j count
-    squareValue productValue hcount
-    (by
-      simpa [product, productReturned, squareValue, frame, h0, h1024, h2048,
-        h3072, h1034] using
-        mulResult_preserves_region copied (UInt256.ofNat 2048)
-          (UInt256.ofNat 1024) count 2048 squareValue (UInt256.ofNat 1034)
-          frame hcount (Or.inr (by omega)) (Or.inr (by omega))
-          (Or.inl (by omega)) hcopiedSquare)
-    hproduct
-  have hselectedBase := selectMemory_preserves_region product.memory byte j
-    count 1024 base hcount (Or.inr (by omega)) hproductBase
-  have hselectedModulus := selectMemory_preserves_region product.memory byte j
-    count 0 modulus hcount (Or.inr (by omega)) hproductModulus
-  exact ⟨by
-    simpa [selectProgress, product, bitStepValue, squareValue, productValue]
-      using hselected,
-    by simpa [selectProgress, product] using hselectedBase,
-    by simpa [selectProgress, product] using hselectedModulus⟩
+  by_cases hbit : (exponentBit byte j).toNat = 0
+  · have hbitNat : (exponentBit byte j).toNat = 0 := hbit
+    have hprodMem : product.memory = copied.memory := by
+      simp [product, copied, productReturned, hbit]
+    have hcopiedProduct :
+        Limbs.Represents copied.memory 3072 count squareValue := by
+      simpa [copied, copiedSquare, BigHelpers.copyReturned, h2048, h3072,
+        h1015] using
+        BigHelpers.represents_copyMemory_disjoint_region squared.memory 2048
+          3072 3072 count squareValue (by omega) (Or.inl (by omega)) hsquare
+    have hselected := selectMemory_represents product.memory byte j count
+      squareValue squareValue hcount
+      (by rw [hprodMem]; exact hcopiedSquare)
+      (by rw [hprodMem]; exact hcopiedProduct)
+    have hselectedBase := selectMemory_preserves_region product.memory byte j
+      count 1024 base hcount (Or.inr (by omega))
+      (by rw [hprodMem]; exact hcopiedBase)
+    have hselectedModulus := selectMemory_preserves_region product.memory byte j
+      count 0 modulus hcount (Or.inr (by omega))
+      (by rw [hprodMem]; exact hcopiedModulus)
+    exact ⟨by
+      simpa [selectProgress, product, bitStepValue, squareValue, hbitNat]
+        using hselected,
+      by simpa [selectProgress, product] using hselectedBase,
+      by simpa [selectProgress, product] using hselectedModulus⟩
+  · have hproduct : Limbs.Represents product.memory 3072 count productValue := by
+      simpa [product, productReturned, mulResult, squareValue, productValue,
+        frame, h0, h1024, h2048, h3072, h1034, hbit] using
+        BigMul.mulReturned_represents_product copied 1024 count squareValue base
+          modulus (UInt256.ofNat 1034) frame hcount (by omega) hmodulusPos
+          hsquareReduced hcopiedSquare hcopiedBase hcopiedModulus
+    have hproductBase : Limbs.Represents product.memory 1024 count base := by
+      simpa [product, productReturned, mulResult, squareValue, frame, h0, h1024,
+        h2048, h3072, h1034, hbit, BigMul.mulReturned] using
+        (BigMul.mulOuterProgress_afterCopy_represents_product copied 1024 count
+          squareValue base modulus (UInt256.ofNat 1034) frame hcount (by omega)
+          hmodulusPos hsquareReduced hcopiedSquare hcopiedBase
+          hcopiedModulus).2.1
+    have hproductModulus : Limbs.Represents product.memory 0 count modulus := by
+      simpa [product, productReturned, mulResult, squareValue, frame, h0, h1024,
+        h2048, h3072, h1034, hbit, BigMul.mulReturned] using
+        (BigMul.mulOuterProgress_afterCopy_represents_product copied 1024 count
+          squareValue base modulus (UInt256.ofNat 1034) frame hcount (by omega)
+          hmodulusPos hsquareReduced hcopiedSquare hcopiedBase
+          hcopiedModulus).2.2
+    have hselected := selectMemory_represents product.memory byte j count
+      squareValue productValue hcount
+      (by
+        simpa [product, productReturned, squareValue, frame, h0, h1024, h2048,
+          h3072, h1034, hbit] using
+          mulResult_preserves_region copied (UInt256.ofNat 2048)
+            (UInt256.ofNat 1024) count 2048 squareValue (UInt256.ofNat 1034)
+            frame hcount (Or.inr (by omega)) (Or.inr (by omega))
+            (Or.inl (by omega)) hcopiedSquare)
+      hproduct
+    have hselectedBase := selectMemory_preserves_region product.memory byte j
+      count 1024 base hcount (Or.inr (by omega)) hproductBase
+    have hselectedModulus := selectMemory_preserves_region product.memory byte j
+      count 0 modulus hcount (Or.inr (by omega)) hproductModulus
+    exact ⟨by
+      simpa [selectProgress, product, bitStepValue, squareValue, productValue]
+        using hselected,
+      by simpa [selectProgress, product] using hselectedBase,
+      by simpa [selectProgress, product] using hselectedModulus⟩
 
 theorem exponentBit_toNat_eq (byte : UInt256) (j : Nat) (hj : j < 8) :
     (exponentBit byte j).toNat = WordCorrect.exponentBitNat byte j := by

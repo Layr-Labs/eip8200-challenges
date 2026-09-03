@@ -73,12 +73,28 @@ def squareToCopyPath :
    opAt 758 (.Dup ⟨7, by decide⟩), pushAt 759 2 3072,
    pushAt 760 2 2048, pushAt 761 2 58, opAt 762 .JUMP]
 
-def copyToProductPath :
+/-- Hop from the copy return into the appended exponent-bit guard. -/
+def copyToBranchPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 763 .JUMPDEST, pushAt 764 2 1034,
-   opAt 765 (.Dup ⟨7, by decide⟩), pushAt 766 0 0,
-   pushAt 767 2 3072, pushAt 768 2 1024, pushAt 769 2 2048,
-   pushAt 770 2 310, opAt 771 .JUMP]
+  [opAt 763 .JUMPDEST, pushAt 764 2 1284, opAt 765 .JUMP]
+
+/-- The guard: a zero exponent bit jumps past the discarded product. -/
+def branchGuardPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 961 .JUMPDEST, opAt 962 (.Dup ⟨0, by decide⟩), opAt 963 .ISZERO,
+   pushAt 964 2 1309, opAt 965 .JUMPI]
+
+/-- Set-bit continuation: the original `mulModBig` call frame. -/
+def branchCallPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [pushAt 966 2 1034, opAt 967 (.Dup ⟨7, by decide⟩), pushAt 968 0 0,
+   pushAt 969 2 3072, pushAt 970 2 1024, pushAt 971 2 2048,
+   pushAt 972 2 310, opAt 973 .JUMP]
+
+/-- Zero-bit continuation: return straight to the selector. -/
+def branchSkipPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 974 .JUMPDEST, pushAt 975 2 1034, opAt 976 .JUMP]
 
 def productToSelectPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -242,15 +258,43 @@ def copiedSquare (s : State) (accumulatorWord : UInt256)
           (exponentBit byte j) rest := by
   simp [squareReturned]
 
+/-- Entry to the appended exponent-bit guard. -/
+def branchEntry (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) : State :=
+  { copiedSquare s accumulatorWord count b e m baseOff expOff i j offset byte
+      rest with pc := UInt256.ofNat 1284 }
+
+/-- Guard outcome for a zero exponent bit. -/
+def branchTaken (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) : State :=
+  { copiedSquare s accumulatorWord count b e m baseOff expOff i j offset byte
+      rest with pc := UInt256.ofNat 1309 }
+
+/-- Guard outcome for a set exponent bit. -/
+def branchFall (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) : State :=
+  { copiedSquare s accumulatorWord count b e m baseOff expOff i j offset byte
+      rest with pc := UInt256.ofNat 1291 }
+
+/-- State handed to the selector.  On a zero bit the selector reads the
+untouched product region and the mask discards it, so the multiplication is
+not performed at all. -/
 def productReturned (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) : State :=
-  mulResult
-    (copiedSquare s accumulatorWord count b e m baseOff expOff i j
-      offset byte rest)
-    2048 1024 3072 0 count 1034
-    (bitFrame accumulatorWord count b e m baseOff expOff i j offset byte
-      (exponentBit byte j) rest)
+  if (exponentBit byte j).toNat = 0 then
+    { copiedSquare s accumulatorWord count b e m baseOff expOff i j offset byte
+        rest with pc := UInt256.ofNat 1034 }
+  else
+    mulResult
+      (copiedSquare s accumulatorWord count b e m baseOff expOff i j
+        offset byte rest)
+      2048 1024 3072 0 count 1034
+      (bitFrame accumulatorWord count b e m baseOff expOff i j offset byte
+        (exponentBit byte j) rest)
 
 @[simp] theorem squareReturned_halt (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
@@ -280,19 +324,63 @@ def productReturned (s : State) (accumulatorWord : UInt256)
       offset byte rest).executionEnv = s.executionEnv := by
   simp [copiedSquare, BigHelpers.copyReturned]
 
+@[simp] theorem branchEntry_halt (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) :
+    (branchEntry s accumulatorWord count b e m baseOff expOff i j
+      offset byte rest).halt = s.halt := by
+  simp [branchEntry]
+
+@[simp] theorem branchEntry_executionEnv (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) :
+    (branchEntry s accumulatorWord count b e m baseOff expOff i j
+      offset byte rest).executionEnv = s.executionEnv := by
+  simp [branchEntry]
+
+@[simp] theorem branchTaken_halt (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) :
+    (branchTaken s accumulatorWord count b e m baseOff expOff i j
+      offset byte rest).halt = s.halt := by
+  simp [branchTaken]
+
+@[simp] theorem branchTaken_executionEnv (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) :
+    (branchTaken s accumulatorWord count b e m baseOff expOff i j
+      offset byte rest).executionEnv = s.executionEnv := by
+  simp [branchTaken]
+
+@[simp] theorem branchFall_halt (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) :
+    (branchFall s accumulatorWord count b e m baseOff expOff i j
+      offset byte rest).halt = s.halt := by
+  simp [branchFall]
+
+@[simp] theorem branchFall_executionEnv (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) :
+    (branchFall s accumulatorWord count b e m baseOff expOff i j
+      offset byte rest).executionEnv = s.executionEnv := by
+  simp [branchFall]
+
 @[simp] theorem productReturned_halt (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) :
     (productReturned s accumulatorWord count b e m baseOff expOff i j
       offset byte rest).halt = s.halt := by
-  simp [productReturned]
+  unfold productReturned
+  split <;> simp
 
 @[simp] theorem productReturned_executionEnv (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
     (offset byte : UInt256) (rest : List UInt256) :
     (productReturned s accumulatorWord count b e m baseOff expOff i j
       offset byte rest).executionEnv = s.executionEnv := by
-  simp [productReturned]
+  unfold productReturned
+  split <;> simp
 
 def selectMask (byte : UInt256) (j : Nat) : UInt256 :=
   0 - exponentBit byte j
@@ -412,9 +500,27 @@ private theorem jump310 :
 @[simp] private theorem exponentMidPCs (i : Nat) (hi : 756 ≤ i)
     (hii : i ≤ 776) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1000,1001,1004,1005,1008,1011,1014,1015,1016,1019,1020,1021,
-        1024,1027,1030,1033,1034,1035,1036,1037,1038])[i - 756]! := by
+      ([1000,1001,1004,1005,1008,1011,1014,1015,1016,1019,1020,1023,
+        1026,1029,1032,1033,1034,1035,1036,1037,1038])[i - 756]! := by
   interval_cases i <;> decide
+
+@[simp] private theorem branchPCs (i : Nat) (hi : 961 ≤ i) (hii : i ≤ 976) :
+    Artifact.submissionArtifact.instructionPC i =
+      ([1284,1285,1286,1287,1290,1291,1294,1295,1296,1299,1302,1305,1308,
+        1309,1310,1313])[i - 961]! := by
+  interval_cases i <;> decide
+
+private theorem jump1284 :
+    Decode.isValidJumpDest submissionBytecode 1284 = true :=
+  Artifact.isValidJumpDest_index 961 (by rfl)
+
+private theorem jump1309 :
+    Decode.isValidJumpDest submissionBytecode 1309 = true :=
+  Artifact.isValidJumpDest_index 974 (by rfl)
+
+private theorem jump1034 :
+    Decode.isValidJumpDest submissionBytecode 1034 = true :=
+  Artifact.isValidJumpDest_index 772 (by rfl)
 
 private theorem jump58 :
     Decode.isValidJumpDest submissionBytecode 58 = true :=
@@ -631,17 +737,202 @@ theorem run_squareToCopy (s : State) (accumulatorWord : UInt256)
     Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
 
 set_option linter.unusedSimpArgs false in
-theorem run_copyToProduct (s : State) (accumulatorWord : UInt256)
+theorem run_copyToBranch (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1005)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock copyToProductPath
+    Challenge.EvmProof.Stepper.runLocatedBlock copyToBranchPath
       (copiedSquare s accumulatorWord count b e m baseOff expOff i j
+        offset byte rest) =
+      some (branchEntry s accumulatorWord count b e m baseOff expOff i j
+        offset byte rest) := by
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  have hc19 : rest.length + 19 < 1024 := by omega
+  have hframe : (bitFrame accumulatorWord count b e m baseOff expOff i j
+      offset byte (exponentBit byte j) rest).length < 1024 := by
+    simp [bitFrame]
+    omega
+  have h310 : (310 : UInt256).toNat = 310 := by decide
+  have h310Word : (310 : UInt256) = UInt256.ofNat 310 := by decide
+  have h1015 : (1015 : UInt256).toNat = 1015 := by decide
+  have h1015Word : (1015 : UInt256) = UInt256.ofNat 1015 := by decide
+  have h1034 : (1034 : UInt256).toNat = 1034 := by decide
+  have h1034Word : (1034 : UInt256) = UInt256.ofNat 1034 := by decide
+  have h1284 : (1284 : UInt256).toNat = 1284 := by decide
+  have h1284Word : (1284 : UInt256) = UInt256.ofNat 1284 := by decide
+  have h1309 : (1309 : UInt256).toNat = 1309 := by decide
+  have h1309Word : (1309 : UInt256) = UInt256.ofNat 1309 := by decide
+  have hzero : ({ val := 0 } : UInt256) = 0 := by decide
+  simp [copyToBranchPath, opAt, pushAt, wfOp, copiedSquare, branchEntry,
+    BigHelpers.copyReturned, bitFrame, exponentMidPCs, hcode, hrun,
+    jump1284, h1284, h1284Word, h1015, h1015Word, hzero,
+    hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19, hframe,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_branchGuardZero (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1005)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running)
+    (hbit : (exponentBit byte j).toNat = 0) :
+    Challenge.EvmProof.Stepper.runLocatedBlock branchGuardPath
+      (branchEntry s accumulatorWord count b e m baseOff expOff i j
+        offset byte rest) =
+      some (branchTaken s accumulatorWord count b e m baseOff expOff i j
+        offset byte rest) := by
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  have hc19 : rest.length + 19 < 1024 := by omega
+  have hframe : (bitFrame accumulatorWord count b e m baseOff expOff i j
+      offset byte (exponentBit byte j) rest).length < 1024 := by
+    simp [bitFrame]
+    omega
+  have h310 : (310 : UInt256).toNat = 310 := by decide
+  have h310Word : (310 : UInt256) = UInt256.ofNat 310 := by decide
+  have h1015 : (1015 : UInt256).toNat = 1015 := by decide
+  have h1015Word : (1015 : UInt256) = UInt256.ofNat 1015 := by decide
+  have h1034 : (1034 : UInt256).toNat = 1034 := by decide
+  have h1034Word : (1034 : UInt256) = UInt256.ofNat 1034 := by decide
+  have h1284 : (1284 : UInt256).toNat = 1284 := by decide
+  have h1284Word : (1284 : UInt256) = UInt256.ofNat 1284 := by decide
+  have h1309 : (1309 : UInt256).toNat = 1309 := by decide
+  have h1309Word : (1309 : UInt256) = UInt256.ofNat 1309 := by decide
+  have hzero : ({ val := 0 } : UInt256) = 0 := by decide
+  have hz : (UInt256.isZero (exponentBit byte j)).toNat = 1 := by
+    rw [Challenge.EvmProof.Word.word_toNat_isZero, if_pos hbit]
+  simp [branchGuardPath, opAt, pushAt, wfOp, copiedSquare, branchEntry,
+    branchTaken, BigHelpers.copyReturned, bitFrame, branchPCs, hcode, hrun,
+    hbit, hz, UInt256.isTrue, jump1309, h1309, h1309Word, h1284, h1284Word,
+    hzero,
+    hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19, hframe,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_branchGuardSet (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1005)
+    (_hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running)
+    (hbit : (exponentBit byte j).toNat ≠ 0) :
+    Challenge.EvmProof.Stepper.runLocatedBlock branchGuardPath
+      (branchEntry s accumulatorWord count b e m baseOff expOff i j
+        offset byte rest) =
+      some (branchFall s accumulatorWord count b e m baseOff expOff i j
+        offset byte rest) := by
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  have hc19 : rest.length + 19 < 1024 := by omega
+  have hframe : (bitFrame accumulatorWord count b e m baseOff expOff i j
+      offset byte (exponentBit byte j) rest).length < 1024 := by
+    simp [bitFrame]
+    omega
+  have h310 : (310 : UInt256).toNat = 310 := by decide
+  have h310Word : (310 : UInt256) = UInt256.ofNat 310 := by decide
+  have h1015 : (1015 : UInt256).toNat = 1015 := by decide
+  have h1015Word : (1015 : UInt256) = UInt256.ofNat 1015 := by decide
+  have h1034 : (1034 : UInt256).toNat = 1034 := by decide
+  have h1034Word : (1034 : UInt256) = UInt256.ofNat 1034 := by decide
+  have h1284 : (1284 : UInt256).toNat = 1284 := by decide
+  have h1284Word : (1284 : UInt256) = UInt256.ofNat 1284 := by decide
+  have h1309 : (1309 : UInt256).toNat = 1309 := by decide
+  have h1309Word : (1309 : UInt256) = UInt256.ofNat 1309 := by decide
+  have hzero : ({ val := 0 } : UInt256) = 0 := by decide
+  have hz : (UInt256.isZero (exponentBit byte j)).toNat = 0 := by
+    rw [Challenge.EvmProof.Word.word_toNat_isZero, if_neg hbit]
+  simp [branchGuardPath, opAt, pushAt, wfOp, copiedSquare, branchEntry,
+    branchFall, BigHelpers.copyReturned, bitFrame, branchPCs, _hcode, hrun,
+    hbit, hz, UInt256.isTrue, jump1309, h1309, h1309Word, h1284, h1284Word,
+    hzero,
+    hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19, hframe,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_branchSkip (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1005)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running)
+    (hbit : (exponentBit byte j).toNat = 0) :
+    Challenge.EvmProof.Stepper.runLocatedBlock branchSkipPath
+      (branchTaken s accumulatorWord count b e m baseOff expOff i j
+        offset byte rest) =
+      some (productReturned s accumulatorWord count b e m baseOff expOff i j
+        offset byte rest) := by
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  have hc19 : rest.length + 19 < 1024 := by omega
+  have hframe : (bitFrame accumulatorWord count b e m baseOff expOff i j
+      offset byte (exponentBit byte j) rest).length < 1024 := by
+    simp [bitFrame]
+    omega
+  have h310 : (310 : UInt256).toNat = 310 := by decide
+  have h310Word : (310 : UInt256) = UInt256.ofNat 310 := by decide
+  have h1015 : (1015 : UInt256).toNat = 1015 := by decide
+  have h1015Word : (1015 : UInt256) = UInt256.ofNat 1015 := by decide
+  have h1034 : (1034 : UInt256).toNat = 1034 := by decide
+  have h1034Word : (1034 : UInt256) = UInt256.ofNat 1034 := by decide
+  have h1284 : (1284 : UInt256).toNat = 1284 := by decide
+  have h1284Word : (1284 : UInt256) = UInt256.ofNat 1284 := by decide
+  have h1309 : (1309 : UInt256).toNat = 1309 := by decide
+  have h1309Word : (1309 : UInt256) = UInt256.ofNat 1309 := by decide
+  have hzero : ({ val := 0 } : UInt256) = 0 := by decide
+  simp [branchSkipPath, opAt, pushAt, wfOp, copiedSquare, branchTaken,
+    productReturned, BigHelpers.copyReturned, bitFrame, branchPCs, hcode, hrun,
+    hbit, jump1034, h1034, h1034Word, h1309, h1309Word, hzero,
+    hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19, hframe,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_branchCall (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1005)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock branchCallPath
+      (branchFall s accumulatorWord count b e m baseOff expOff i j
         offset byte rest) =
       some (BigMul.mulEntry
         (copiedSquare s accumulatorWord count b e m baseOff expOff i j
-          offset byte rest)
+        offset byte rest)
         2048 1024 3072 0 count 1034
         (bitFrame accumulatorWord count b e m baseOff expOff i j offset byte
           (exponentBit byte j) rest)) := by
@@ -661,11 +952,17 @@ theorem run_copyToProduct (s : State) (accumulatorWord : UInt256)
   have h310Word : (310 : UInt256) = UInt256.ofNat 310 := by decide
   have h1015 : (1015 : UInt256).toNat = 1015 := by decide
   have h1015Word : (1015 : UInt256) = UInt256.ofNat 1015 := by decide
+  have h1034 : (1034 : UInt256).toNat = 1034 := by decide
+  have h1034Word : (1034 : UInt256) = UInt256.ofNat 1034 := by decide
+  have h1284 : (1284 : UInt256).toNat = 1284 := by decide
+  have h1284Word : (1284 : UInt256) = UInt256.ofNat 1284 := by decide
+  have h1309 : (1309 : UInt256).toNat = 1309 := by decide
+  have h1309Word : (1309 : UInt256) = UInt256.ofNat 1309 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
-  simp [copyToProductPath, opAt, pushAt, wfOp, copiedSquare,
-    BigHelpers.copyReturned, BigMul.mulEntry, bitFrame, exponentMidPCs,
+  simp [branchCallPath, opAt, pushAt, wfOp, copiedSquare, branchFall,
+    BigHelpers.copyReturned, BigMul.mulEntry, bitFrame, branchPCs,
     hcode, hrun,
-    jump310, h310, h310Word, h1015, h1015Word, hzero,
+    jump310, h310, h310Word, h1034, h1034Word, hzero,
     hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19, hframe,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -694,8 +991,10 @@ theorem run_productToSelect (s : State) (accumulatorWord : UInt256)
   have h1034Word : (1034 : UInt256) = UInt256.ofNat 1034 := by decide
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have h0Word : (0 : UInt256) = UInt256.ofNat 0 := by decide
+  by_cases hbit : (exponentBit byte j).toNat = 0 <;>
   simp [productToSelectPath, opAt, pushAt, wfOp, productReturned,
-    selectLoop, selectMask,
+    copiedSquare, BigHelpers.copyReturned,
+    selectLoop, selectMask, hbit,
     bitFrame, exponentMidPCs,
     hrun, h1034, h1034Word, hzero, h0Word, hc12, hc13, hc14, hframe,
     Challenge.EvmProof.Stepper.runLocatedBlock,
