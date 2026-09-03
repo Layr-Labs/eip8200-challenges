@@ -45,7 +45,7 @@ theorem gasSteps_baseByteAt_cost_potential (s : State)
     (gasSteps_baseByteAt s accumulator count baseSize e m baseOff i rest hcap
       hcount hbase hi hoff hcode hfork hrun hnp).cost + MachineState.memCost
         (baseLoopState s accumulator count baseSize e m baseOff rest i).activeWords.toNat =
-      (3506 + count * 7008) + MachineState.memCost
+      (3390 + count * 7152) + MachineState.memCost
         (baseLoopState s accumulator count baseSize e m baseOff rest
           (i + 1)).activeWords.toNat := by
   have hstep := gasSteps_baseByte_cost_potential
@@ -83,7 +83,7 @@ theorem gasSteps_baseLoop_cost_potential (s : State)
       hcount hbase hoff hcode hfork hrun hnp).cost + MachineState.memCost
         (baseLoopState s accumulator count baseSize e m baseOff rest
           0).activeWords.toNat =
-      baseSize * (3506 + count * 7008) + MachineState.memCost
+      baseSize * (3390 + count * 7152) + MachineState.memCost
         (baseLoopState s accumulator count baseSize e m baseOff rest
           baseSize).activeWords.toNat := by
   unfold gasSteps_baseLoop
@@ -173,7 +173,7 @@ theorem gasSteps_baseFinish_cost_potential (s : State)
       hcount hbase hcode hfork hrun hnp).cost + MachineState.memCost
         (baseLoopState s accumulator count baseSize e m baseOff rest
           baseSize).activeWords.toNat =
-      (206 + count * 438) + MachineState.memCost
+      (198 + count * 447) + MachineState.memCost
         (initialAccumulator s accumulator count baseSize e m baseOff
           rest).activeWords.toNat := by
   let progress := baseProgress count baseOff baseSize s
@@ -185,7 +185,7 @@ theorem gasSteps_baseFinish_cost_potential (s : State)
     simp [helperRest, fullRest]
     omega
   have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    outerGuardPath 26
+    outerGuardPath 24
       (run_outerFinishGuard progress accumulator count baseSize fullRest
         (by simp [fullRest]; omega) hbase (by simpa [progress] using hcode)
         (by simpa [progress] using hrun))
@@ -244,7 +244,7 @@ theorem gasSteps_baseConversion_cost_potential (s : State)
       hcount hbase hoff hcode hfork hrun hnp).cost + MachineState.memCost
         (baseLoopState s accumulator count baseSize e m baseOff rest
           0).activeWords.toNat =
-      (baseSize * (3506 + count * 7008) + (206 + count * 438)) +
+      (baseSize * (3390 + count * 7152) + (198 + count * 447)) +
         MachineState.memCost
           (initialAccumulator s accumulator count baseSize e m baseOff
             rest).activeWords.toNat := by
@@ -253,7 +253,7 @@ theorem gasSteps_baseConversion_cost_potential (s : State)
       hcount hbase hoff hcode hfork hrun hnp)
     (gasSteps_baseFinish s accumulator count baseSize e m baseOff rest hcap
       hcount hbase hcode hfork hrun hnp)
-    (baseSize * (3506 + count * 7008)) (206 + count * 438)
+    (baseSize * (3390 + count * 7152)) (198 + count * 447)
     (gasSteps_baseLoop_cost_potential s accumulator count baseSize e m baseOff
       rest hcap hcount hbase hoff hcode hfork hrun hnp)
     (gasSteps_baseFinish_cost_potential s accumulator count baseSize e m baseOff

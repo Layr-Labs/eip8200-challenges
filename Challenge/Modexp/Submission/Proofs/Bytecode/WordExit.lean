@@ -7,7 +7,7 @@ set_option maxHeartbeats 1000000
 # One-word MODEXP exit
 
 The completed exponent residue is left-padded into one EVM word, stored at
-memory offset `0`, and returned with the declared modulus width.  This module
+memory `0x1800`, and returned with the declared modulus width.  This module
 certifies that final control-flow and memory transition.
 -/
 
@@ -47,8 +47,8 @@ def expFinishTailPath :
   [opAt 536 .JUMPDEST, opAt 537 .POP, opAt 538 (.Dup ⟨0, by decide⟩),
    opAt 539 (.Dup ⟨6, by decide⟩), pushAt 540 1 32, opAt 541 .SUB,
    pushAt 542 1 3, opAt 543 .SHL, opAt 544 .SHL,
-   pushAt 545 2 0, opAt 546 .MSTORE,
-   opAt 547 (.Dup ⟨5, by decide⟩), pushAt 548 2 0, opAt 549 .RETURN]
+   pushAt 545 2 6144, opAt 546 .MSTORE,
+   opAt 547 (.Dup ⟨5, by decide⟩), pushAt 548 2 6144, opAt 549 .RETURN]
 
 def expFinishDispatchState (input : ByteArray) (acc base : UInt256) : State :=
   { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 669 }
@@ -62,11 +62,11 @@ def outputWord (input : ByteArray) (acc : UInt256) : UInt256 :=
 
 def outputMemory (input : ByteArray) (acc : UInt256) : ByteArray :=
   MachineState.writeBytes ByteArray.empty
-    (Data.Bytes.natToBytesPadded (outputWord input acc).toNat 32) 0
+    (Data.Bytes.natToBytesPadded (outputWord input acc).toNat 32) 6144
 
 def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
   let start := expLoopState input (exponentSize input) acc base
-  let storedWords := start.activeWordsAfterUInt256 0 32
+  let storedWords := start.activeWordsAfterUInt256 6144 32
   { start with
     pc := UInt256.ofNat 688
     stack := [acc, base, UInt256.ofNat (modulusValue input),
@@ -76,9 +76,9 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
       UInt256.ofNat 1267] ++ callerRest input
     memory := outputMemory input acc
     activeWords := UInt256.ofNat (MachineState.activeWordsAfter storedWords.toNat
-      0 (modulusSize input))
+      6144 (modulusSize input))
     halt := .Returned
-    hReturn := MachineState.readPadded (outputMemory input acc) 0
+    hReturn := MachineState.readPadded (outputMemory input acc) 6144
       (modulusSize input) }
 
 @[simp] private theorem exitPCs (i : Nat) (hi : 536 ≤ i) (hii : i ≤ 549) :
@@ -100,7 +100,6 @@ theorem run_expFinishGuard (input : ByteArray) (acc base : UInt256)
   have he256 : exponentSize input < 2 ^ 256 := by omega
   have hemod : exponentSize input % 2 ^ 256 = exponentSize input :=
     Nat.mod_eq_of_lt he256
-  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   have h669 : (669 : UInt256).toNat = 669 := by decide
   have h669Word : (669 : UInt256) = UInt256.ofNat 669 := by decide
   simp (config := { maxSteps := 150000 })
@@ -109,8 +108,8 @@ theorem run_expFinishGuard (input : ByteArray) (acc base : UInt256)
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       expLoopState, expFinishDispatchState, nonzeroState, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState,
-      UInt256.isTrue, UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
-      he256, hemod, hzeroFalse, h669, h669Word, jump669]
+      UInt256.isTrue, UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
+      he256, hemod, h669, h669Word, jump669]
 
 set_option linter.unusedSimpArgs false in
 theorem run_expFinishTail (input : ByteArray) (acc base : UInt256)
@@ -127,7 +126,7 @@ theorem run_expFinishTail (input : ByteArray) (acc base : UInt256)
         UInt256.ofNat ((32 - modulusSize input) * 8) := by
     rw [Challenge.EvmProof.Word.shiftLeft_ofNat] <;>
       norm_num [Nat.shiftLeft_eq] <;> omega
-  have h0 : (0 : UInt256).toNat = 0 := by decide
+  have h6144 : (6144 : UInt256).toNat = 6144 := by decide
   have h32 : (32 : UInt256).toNat = 32 := by decide
   have h3Word : (3 : UInt256) = UInt256.ofNat 3 := by decide
   have hm256 : modulusSize input < 2 ^ 256 := by omega
@@ -145,7 +144,7 @@ theorem run_expFinishTail (input : ByteArray) (acc base : UInt256)
       expFinishDispatchState, expLoopState, wordFinalState, outputMemory,
       outputWord, outputShift, nonzeroState, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState, exitPCs,
-      List.exchange, hsub, hshift, h0, h32, h3Word, hm256, hmmod,
+      List.exchange, hsub, hshift, h6144, h32, h3Word, hm256, hmmod,
       hmmodLiteral, State.activeWordsAfterUInt256,
       MachineState.activeWordsAfter,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
