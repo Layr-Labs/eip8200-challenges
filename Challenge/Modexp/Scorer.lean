@@ -7,8 +7,9 @@ set_option warningAsError true
 # MODEXP executable falsification checks
 
 The scorer compares candidate returndata with the pinned precompile-level
-`spec`.  It includes the EIP-198 examples, edge cases, trailing-zero input
-normalization, and a >256-bit modulus that exercises the multi-limb path.
+`spec`. It includes the EIP-198 examples, edge cases, trailing-zero input
+normalization, BN254 inversion, full-width 256-bit arithmetic, and large RSA
+operations that exercise the multi-limb path.
 -/
 
 namespace Challenge.Modexp.Scorer
@@ -39,6 +40,7 @@ def makeInput (base exponent modulus bsize esize msize : Nat) : ByteArray :=
   word bsize ++ word esize ++ word msize ++
     operand base bsize ++ operand exponent esize ++ operand modulus msize
 
+/-- Build a MODEXP tuple from already encoded, full-width operands. -/
 def makeInputBytes (base exponent modulus : ByteArray) : ByteArray :=
   word base.size ++ word exponent.size ++ word modulus.size ++
     base ++ exponent ++ modulus
@@ -80,8 +82,8 @@ def truncatedModulus : ByteArray := fromHex
    "03ffff80")
 
 /-- Inversion of a fixed nonzero element in the BN254 base field, computed as
-`x^(p - 2) mod p`. The element is derived from the SHA-256 domain
-`eip8200-challenges/modexp/bn254-inversion/base`. -/
+`x^(p - 2) mod p`. The element is SHA-256-derived from the domain
+`eip8200-challenges/modexp/bn254-inversion/base` and reduced modulo `p`. -/
 def bn254ModularInversion : ByteArray := makeHexInput
   "0d2fb5ffb5b07c344bcf7640e3908737f96cce132e7e9110de36377b5d5c6289"
   "30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd45"
@@ -96,7 +98,8 @@ def random256 : ByteArray := makeHexInput
   "afea24ccce325d471af2371241676b55270044423156c0904bb50225867f93a5"
 
 /-- A full-width RSA-1024 operation with public exponent 3. The modulus is
-RFC 9500's `testRSA1024`; the base is a fixed SHAKE256-derived representative. -/
+RFC 9500's `testRSA1024`; the base is SHAKE256-derived from the domain
+`eip8200-challenges/modexp/rsa-1024/base`. -/
 def rsa1024e3 : ByteArray := makeHexInput
   ("1370d5cf7cd3f80baf7ae9fddfdfcc0253d7d1f00fa2985f14456e44cb16bcdf" ++
    "6269d1ed3f20cfd7a7e421752a77c1b47db96367c224e660a706bbceff1e8bae" ++
@@ -109,7 +112,8 @@ def rsa1024e3 : ByteArray := makeHexInput
    "702d474b2900817f2866249bec12a2b19b8278416808f81ae1fcf9b7778a623f")
 
 /-- A full-width RSA-2048 operation with public exponent 65537. The modulus is
-RFC 9500's `testRSA2048`; the base is a fixed SHAKE256-derived representative. -/
+RFC 9500's `testRSA2048`; the base is SHAKE256-derived from the domain
+`eip8200-challenges/modexp/rsa-2048/base`. -/
 def rsa2048e65537 : ByteArray := makeHexInput
   ("0b81c9d16a35da3debeb1e95032d1a2c1793b3179d8a5fda6baa3372d44b8e89" ++
    "8be842be71bd691a8969b83040ea9ab769c000aee702af762e164d8cfaf4599b" ++
