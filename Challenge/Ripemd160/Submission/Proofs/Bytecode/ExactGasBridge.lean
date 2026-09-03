@@ -111,10 +111,10 @@ private theorem increment_cost_potential (s : State) (input : ByteArray)
     DriverTrace.afterIteration, DriverTrace.loopAt] using hmeter
 
 /-- Non-memory work of the compression call itself.  The enclosing driver
-adds `26 + 23 + 26 = 75`, producing the schedule's `148364` per block. -/
-def compressionWork : Nat := 148289
+adds `26 + 23 + 26 = 75`, producing the schedule's `138476` per block. -/
+def compressionWork : Nat := 138401
 
-def blockWork : Nat := 148364
+def blockWork : Nat := 138476
 
 theorem blockWork_eq : blockWork = 26 + 23 + compressionWork + 26 := by
   rfl
