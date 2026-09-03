@@ -56,7 +56,7 @@ def prefixPath : List Located :=
    ⟨229, .push ⟨2, by decide⟩ (UInt256.ofNat 0x13a), by rfl, by decide⟩,
    ⟨230, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
    ⟨231, .op (.Dup ⟨11, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨232, .push ⟨2, by decide⟩ (UInt256.ofNat 0x4b), by rfl, by decide⟩,
+   ⟨232, .push ⟨2, by decide⟩ (UInt256.ofNat 0x74b), by rfl, by decide⟩,
    ⟨233, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def afterXPath : List Located :=
@@ -116,7 +116,7 @@ def afterRot2Path : List Located :=
   [⟨281, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨282, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
    ⟨283, .op (.Dup ⟨9, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨284, .push ⟨2, by decide⟩ (UInt256.ofNat 0x33), by rfl, by decide⟩,
+   ⟨284, .push ⟨2, by decide⟩ (UInt256.ofNat 0x758), by rfl, by decide⟩,
    ⟨285, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def suffixPath : List Located :=
@@ -167,19 +167,23 @@ private def roundPCs : List Nat :=
 
 def rotlPath : List Located :=
   [⟨2, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨6, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨7, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨8, .op .SUB, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨9, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨10, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨11, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
-   ⟨12, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨13, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨14, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨15, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨3, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨4, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨7, .op .SUB, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨8, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨9, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨10, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨11, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨12, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨13, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨14, .op (.Swap ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨15, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨16, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨17, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨18, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨19, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Complete dynamic instruction path through one `round` invocation. -/
 def roundTracePath (j : Nat) : List Located :=
@@ -206,7 +210,8 @@ def rotlReturned (s : State) (x n returnDest : UInt256)
 
 @[simp] private theorem rotlRefPC (i : Nat) (hlo : 2 ≤ i) (hhi : i ≤ 19) :
     Artifact.submissionArtifact.instructionPC i =
-      [4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 19, 20, 21, 22, 23, 24, 25, 26][i - 2]! := by
+      [4, 5, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+        25, 26][i - 2]! := by
   interval_cases i <;> rfl
 
 set_option linter.unusedSimpArgs false in
@@ -227,9 +232,7 @@ theorem run_rotl (s : State) (x n returnDest : UInt256)
       (a :: b :: rho).exchange 0 1 = some (b :: a :: rho) := by
     simpa using YulEvmCompiler.exchange_swap a b ([] : List UInt256) rho
   simp (config := { maxSteps := 200000 })
-    [rotlPath, Word.land_comm, Word.lor_comm, List.exchange,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
+    [rotlPath, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       rotlEntry, rotlReturned, rotlValue, Challenge.EvmProof.Word.mask32,
       hrun, hcode, hvalid, hcap, hswap4, hswap2, Nat.add_assoc,
@@ -297,7 +300,7 @@ private def roundTail (s : State) (base : UInt256) (j : Nat)
 
 def xCallState (s : State) (base : UInt256) (j : Nat)
     (wordIndex rotation k returnDest : UInt256) (rest : List UInt256) : State :=
-  TableTrace.atEntry (afterLoads s base) (UInt256.ofNat 0x4b) wordIndex
+  TableTrace.atEntry (afterLoads s base) (UInt256.ofNat 0x74b) wordIndex
     (UInt256.ofNat 0x13a)
     (roundTail s base j wordIndex rotation k returnDest rest)
 
@@ -380,12 +383,12 @@ def setCallState (s : State) (base : UInt256) (j : Nat)
   exact Artifact.submissionArtifact.isValidJumpDest_index 2 (by rfl)
 
 @[simp] private theorem valid33 :
-    Decode.isValidJumpDest submissionBytecode 0x33 = true := by
-  exact Artifact.submissionArtifact.isValidJumpDest_index 38 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 0x758 = true := by
+  exact Artifact.submissionArtifact.isValidJumpDest_index 1011 (by rfl)
 
 @[simp] private theorem valid4B :
-    Decode.isValidJumpDest submissionBytecode 0x4b = true := by
-  exact Artifact.submissionArtifact.isValidJumpDest_index 55 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 0x74b = true := by
+  exact Artifact.submissionArtifact.isValidJumpDest_index 1001 (by rfl)
 
 @[simp] private theorem valid687 :
     Decode.isValidJumpDest submissionBytecode 0x687 = true := by
@@ -811,7 +814,7 @@ def gasSteps_round (s : State) (base : UInt256) (j : Nat) (hj : j < 5)
     (roundWord s base wordIndex) (loadedA s base) (loadedB s base) (loadedC s base)
     (loadedD s base) (loadedE s base) rest hstack hcodeQ hforkQ hrunQ hnpQ hvalid
   have hxStart : xCallState s base j wordIndex rotation k returnDest rest =
-      TableTrace.atEntry q0 (UInt256.ofNat 0x4b) wordIndex
+      TableTrace.atEntry q0 (UInt256.ofNat 0x74b) wordIndex
         (UInt256.ofNat 0x13a)
         (roundTail s base j wordIndex rotation k returnDest rest) := by
     rfl

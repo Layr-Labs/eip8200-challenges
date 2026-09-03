@@ -278,7 +278,7 @@ theorem iterateBounded_cost_potential_sum {I : Nat → State}
 def leftLoopWork : Nat :=
   (List.range 80).foldl (fun total i => total + leftIterationWork i) 0
 
-theorem leftLoopWork_eq : leftLoopWork = 62976 := by rfl
+theorem leftLoopWork_eq : leftLoopWork = 61536 := by rfl
 
 def rightRoundSetupWork (i : Nat) : Nat :=
   Meter.runLocatedBlockStaticCost rightRoundPrefixLocated + tableAtWork +
@@ -433,6 +433,6 @@ theorem rightIteration_cost_potential (s : State)
 def rightLoopWork : Nat :=
   (List.range 80).foldl (fun total i => total + rightIterationWork i) 0
 
-theorem rightLoopWork_eq : rightLoopWork = 63456 := by rfl
+theorem rightLoopWork_eq : rightLoopWork = 62016 := by rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionGasIntegration

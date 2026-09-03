@@ -24,7 +24,7 @@ def submissionHex : String := (include_str "bytecode.hex").trimAscii.copy
 
 def submissionBytecode : ByteArray := submissionBytes
 
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 1830 := by
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 1896 := by
   simp [submissionBytecode]
 
 @[simp] theorem referenceBytecode_get_zero : submissionBytecode[0] = 0x61 := by

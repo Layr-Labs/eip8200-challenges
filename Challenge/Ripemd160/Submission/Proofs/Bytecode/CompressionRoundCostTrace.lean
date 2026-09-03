@@ -39,14 +39,14 @@ def roundWork (j : Nat) : Nat :=
 
 theorem hAtWork_eq : hAtWork = 37 := by rfl
 theorem hSetWork_eq : hSetWork = 36 := by rfl
-theorem rotlWork_eq : rotlWork = 45 := by rfl
+theorem rotlWork_eq : rotlWork = 54 := by rfl
 
 theorem fCaseWork_eq (j : Nat) (hj : j < 5) :
     fCaseWork j = [64, 73, 73, 73, 73][j]! := by
   interval_cases j <;> rfl
 
 theorem roundWork_eq (j : Nat) (hj : j < 5) :
-    roundWork j = [537, 546, 546, 546, 546][j]! := by
+    roundWork j = [557, 566, 566, 566, 566][j]! := by
   interval_cases j <;> rfl
 
 theorem rotl_cost_potential (s : State) (x n returnDest : UInt256)

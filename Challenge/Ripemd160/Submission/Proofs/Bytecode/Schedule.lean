@@ -1,5 +1,4 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Word
 import Challenge.EvmProof.Meter
 
 set_option warningAsError true
@@ -106,16 +105,18 @@ def setupXSetPath : List Located :=
 
 def xSetPath : List Located :=
   [⟨70, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨71, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨72, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨73, .push ⟨2, by decide⟩ (UInt256.ofNat 672), by rfl, by decide⟩,
-   ⟨74, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨75, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨76, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
-   ⟨77, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨78, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨71, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨72, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨73, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨74, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨75, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨76, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨77, .push ⟨2, by decide⟩ (UInt256.ofNat 0x2a0), by rfl, by decide⟩,
+   ⟨78, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨79, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨80, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨80, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨81, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨82, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def incrementPath : List Located :=
   [⟨436, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -152,7 +153,8 @@ def exitPath : List Located :=
 
 @[simp] private theorem xSetPC (i : Nat) (hlo : 70 ≤ i) (hhi : i ≤ 82) :
     Artifact.submissionArtifact.instructionPC i =
-      [95, 96, 98, 99, 102, 103, 104, 109, 110, 111, 112, 113, 114][i - 70]! := by
+      [0x5f, 0x60, 0x65, 0x66, 0x67, 0x68, 0x6a,
+       0x6b, 0x6e, 0x6f, 0x70, 0x71, 0x72][i - 70]! := by
   interval_cases i <;> rfl
 
 def loadOffsetWord (msgOff : UInt256) (i : Nat) : UInt256 :=
@@ -375,9 +377,7 @@ theorem run_xSet (s : State) (msgOff returnDest : UInt256)
         UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5) = xSlotWord i := by
     rw [xSlotWord]
     exact Challenge.EvmProof.Word.word_add_comm _ _
-  simp [xSetPath, Word.land_comm, List.exchange,
-    Challenge.EvmProof.Word.ofNat_add_mod,
-    Challenge.EvmProof.Stepper.runLocatedBlock,
+  simp [xSetPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     xSetEntry, afterStore, afterRead, List.exchange,
     hc4, hc5, hc6, hc7, hc8, hc9, hrun, hcode, hdest, hslot,
