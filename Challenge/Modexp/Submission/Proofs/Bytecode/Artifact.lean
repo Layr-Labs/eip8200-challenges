@@ -457,7 +457,7 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.push 2 538,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 3 }),
- YulEvmCompiler.Instr.push 2 6144,
+ YulEvmCompiler.Instr.push 2 0,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
  YulEvmCompiler.Instr.push 0 0,
