@@ -198,6 +198,31 @@ def packedBytes (value : UInt256) : ByteArray :=
 def writePacked (memory : ByteArray) (value : UInt256) (start : Nat) : ByteArray :=
   MachineState.writeBytes memory (packedBytes value) start
 
+theorem writePacked_comm_672_704 (bs : ByteArray) (first second : UInt256) :
+    writePacked (writePacked bs second 704) first 672 =
+      writePacked (writePacked bs first 672) second 704 := by
+  have hfirstSize : (packedBytes first).size = 32 := by
+    simp only [packedBytes,
+      YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+  have hsecondSize : (packedBytes second).size = 32 := by
+    simp only [packedBytes,
+      YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+  apply ByteArray.ext_getElem
+  · simp only [writePacked, MachineState.writeBytes_size]
+    simp only [hfirstSize, hsecondSize]
+    norm_num [Nat.max_assoc, Nat.max_comm, Nat.max_left_comm]
+  · intro i hleft hright
+    rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hleft,
+      ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hright]
+    simp only [writePacked, packedBytes,
+      MachineState.writeBytes_getElem?_getD,
+      YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+    by_cases hfirst : 672 ≤ i ∧ i < 704
+    · rw [if_pos hfirst, if_neg (by omega), if_pos hfirst]
+    · by_cases hsecond : 704 ≤ i ∧ i < 736
+      · rw [if_neg hfirst, if_pos hsecond, if_pos hsecond]
+      · rw [if_neg hfirst, if_neg hsecond, if_neg hsecond, if_neg hfirst]
+
 def denseMemory (bs : ByteArray) (p : Nat) : ByteArray :=
   let first := DensePacked.packed (MachineState.readWord bs p)
   let second := DensePacked.packed (MachineState.readWord bs (p + 32))

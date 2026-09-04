@@ -130,18 +130,18 @@ theorem schedule_pc : A.instructionPC scheduleIndex = 4780 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def scheduleJumpIndex : Nat := 2808
-theorem scheduleJump_pc : A.instructionPC scheduleJumpIndex = 5105 := by
+def scheduleJumpIndex : Nat := 2807
+theorem scheduleJump_pc : A.instructionPC scheduleJumpIndex = 5104 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def outputIndex : Nat := 2809
-theorem output_pc : A.instructionPC outputIndex = 5106 := by
+def outputIndex : Nat := 2808
+theorem output_pc : A.instructionPC outputIndex = 5105 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def outputReturnIndex : Nat := 2858
-theorem outputReturn_pc : A.instructionPC outputReturnIndex = 5291 := by
+def outputReturnIndex : Nat := 2857
+theorem outputReturn_pc : A.instructionPC outputReturnIndex = 5290 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
