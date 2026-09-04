@@ -173,4 +173,8 @@ theorem gasSchedule_correct_of_trace
     exact hresult input hfit
   simpa [hfinal] using heval
 
+theorem referenceGas_eq_self (input : ByteArray) :
+    referenceGas input = referenceGas input := by
+  rfl
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.GasCost
