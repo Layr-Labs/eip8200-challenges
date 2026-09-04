@@ -2,7 +2,7 @@ import Challenge.EvmProof.Bytecode
 import Challenge.Ripemd160.Submission.Bytes
 import EvmSemantics.Data.Hex
 set_option warningAsError true
-set_option maxRecDepth 50000
+set_option maxRecDepth 10000
 /-!
 # The frozen raw-EVM RIPEMD-160 artifact
 
@@ -22,18 +22,24 @@ open EvmSemantics
 
 def submissionHex : String := (include_str "bytecode.hex").trimAscii.copy
 
+set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
 
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5133 := by
+set_option maxRecDepth 50000 in
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 12906 := by
   simp [submissionBytecode]
 
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 2000000 in
 @[simp] theorem referenceBytecode_get_zero : submissionBytecode[0] = 0x61 := by
-  change submissionBytes[0] = 0x61
+  simp only [submissionBytecode]
   exact referenceBytes_get_zero
 
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 2000000 in
 @[simp] theorem referenceBytecode_extract_entry :
     submissionBytecode.extract 1 3 = ByteArray.mk #[0x03, 0xee] := by
-  change submissionBytes.extract 1 3 = ByteArray.mk #[0x03, 0xee]
+  simp only [submissionBytecode]
   exact referenceBytes_extract_entry
 
 @[simp] theorem bytesToBigEndianNat_entry_literal :

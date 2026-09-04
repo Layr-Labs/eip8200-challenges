@@ -259,14 +259,22 @@ def zeroOutput (s : State) : State :=
       (Data.Bytes.natToBytesPadded 0 32) 0
     activeWords := s.activeWordsAfterUInt256 0 32 }
 
-private theorem valid20 : Decode.isValidJumpDest submissionBytecode 0x20 = true := by decide
-private theorem valid3c6 : Decode.isValidJumpDest submissionBytecode 0x3c6 = true := by decide
-private theorem valid3c8 : Decode.isValidJumpDest submissionBytecode 0x3c8 = true := by decide
-private theorem valid3e9 : Decode.isValidJumpDest submissionBytecode 0x3e9 = true := by decide
-private theorem valid654 : Decode.isValidJumpDest submissionBytecode 0x654 = true := by decide
-private theorem valid66a : Decode.isValidJumpDest submissionBytecode 0x66a = true := by decide
-private theorem valid676 : Decode.isValidJumpDest submissionBytecode 0x676 = true := by decide
-private theorem valid681 : Decode.isValidJumpDest submissionBytecode 0x681 = true := by decide
+private theorem valid20 : Decode.isValidJumpDest submissionBytecode 0x20 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 23 (by rfl)
+private theorem valid3c6 : Decode.isValidJumpDest submissionBytecode 0x3c6 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 650 (by rfl)
+private theorem valid3c8 : Decode.isValidJumpDest submissionBytecode 0x3c8 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 652 (by rfl)
+private theorem valid3e9 : Decode.isValidJumpDest submissionBytecode 0x3e9 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 677 (by rfl)
+private theorem valid654 : Decode.isValidJumpDest submissionBytecode 0x654 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 797 (by rfl)
+private theorem valid66a : Decode.isValidJumpDest submissionBytecode 0x66a = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 810 (by rfl)
+private theorem valid676 : Decode.isValidJumpDest submissionBytecode 0x676 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 818 (by rfl)
+private theorem valid681 : Decode.isValidJumpDest submissionBytecode 0x681 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 826 (by rfl)
 
 theorem run_prelude (s : State) (offset : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1022) (hrun : s.halt = .Running) :
