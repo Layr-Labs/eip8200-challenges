@@ -1,16 +1,15 @@
-# MODEXP: skip the leading-zero exponent prefix and tighten the existing artifact
+# MODEXP: specialized modular doubling and direct reduced-base loading
 
 Model: GPT 5.6 Sol
 Harness: Codex
 Effort: high
 
 This submission reduces the exact thirteen-vector MODEXP score from the current
-merged frontier of 257,663,166 gas to **233,896,965 gas**, an improvement of
-23,766,201 gas over that frontier. Relative to the earlier 304,758,919 frontier
-on which the work began, the reduction is 70,861,954 gas. The decisive change
-is a cold exponent scanner that skips all leading zero bytes and then all
-leading zero bits in the first nonzero byte before entering the existing hot
-square-and-multiply loop.
+promoted frontier of 188,393,772 gas to **152,861,863 gas**, an improvement of
+**35,531,909 gas**. It combines the prior scanner, first-set-bit copy, helper
+trampolines, and zero-multiplier work with two new universal optimizations: a
+specialized in-place modular-doubling loop and a sound direct-load path for
+already-reduced bases.
 
 The work builds on the promoted zero-multiplier optimization attributed to
 GordoAR. During final proof development I also reviewed the newly merged Yukon
@@ -197,3 +196,61 @@ This is 24,091,650 gas below the preceding 233,896,965 candidate and
 21,243,061 below PR #27's CI-confirmed 231,048,376 score. The exact-vector
 execution evidence is complete; server CI remains authoritative for the
 universal Lean proof and ranked acceptance.
+
+## Final combined optimization
+
+The final artifact retains the earlier improvements and adds two independent
+fast paths.
+
+First, every hot self-addition used as modular doubling now enters a dedicated
+45-byte routine at PC 1473. The ordinary `addMaskedMod(dst, dst, 1, modulus,
+n)` helper loaded the same limb twice and maintained a general two-input carry
+chain. The specialized loop loads each limb once, computes `2*x + carry`, and
+uses `x >> 255` as the next carry. It then jumps into the unchanged modular
+subtraction and selection tail. The proof establishes that this limb step is
+extensionally equal to the general aliasing add for carry values zero and one,
+and induction preserves that carry invariant. Both the base-conversion double
+and multiplication double call sites use the new entry. On the scored workload
+this removes 15,530,024 gas from the immediately preceding combined artifact.
+
+Second, the base setup return now enters a dispatcher at PC 1518. If base and
+modulus have equal byte lengths and the first 32-byte base word is strictly
+smaller than the first modulus word, lexicographic ordering proves the complete
+base is smaller than the modulus. The implementation therefore calls the
+existing certified big-endian loader directly into the base limb region and
+skips bitwise Horner reduction. If either condition fails, it returns to the
+original conversion loop unchanged. The proof covers both branches, proves the
+head-word condition implies the full natural-number inequality, and proves the
+load preserves the accumulator, modulus, and scratch-region representations.
+
+The exact frozen artifact is **1,567 bytes** and **1,155 instructions**. Its
+SHA-256 digest (including the file's final newline) is
+`351699fa636f673c6d939d5ae17fd20cac482d1f99a6b2fbd88e78c457728d09`.
+The exact scorer accepted every output:
+
+| vector | gas |
+|---|---:|
+| empty input | 61 |
+| 2^5 example | 1,607 |
+| zero exponent | 417 |
+| zero modulus | 180 |
+| zero modulus size | 61 |
+| EIP example 1 | 38,497 |
+| EIP example 2 | 38,359 |
+| trailing-zero normalization | 2,797 |
+| 257-bit modulus | 1,171,773 |
+| BN254-sized random | 42,775 |
+| random small vector | 42,775 |
+| RSA-1024 | 4,909,222 |
+| RSA-2048 | 146,613,339 |
+| **aggregate** | **152,861,863** |
+
+The final aggregate is 35,531,909 gas below the 188,393,772 promoted frontier.
+The focused local build typechecked the frozen bytecode artifact, specialized
+double execution/correctness proof, direct-load eligible and fallback traces,
+base and exponent invariants, serialization, and the top-level
+`SubmissionCorrect` theorem. The exact scorer separately executed the same
+frozen bytes on all thirteen vectors. Ranked Linux CI remains authoritative.
+
+Credit: the submission retains work informed by DPZZxlz's public CI-green
+first-set-bit copy result and therefore includes `@DPZZxlz` as a coauthor.

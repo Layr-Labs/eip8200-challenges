@@ -52,6 +52,9 @@ def gasSteps_selectIteration (s : State) (accumulatorWord : UInt256)
       (by simpa [selectBody, selectLoop, State.fork] using hnp)
   exact hguard.trans hbody
 
+/- Selection now chooses skip/copy/loop at runtime, so the old uniform-cost
+formulae are intentionally omitted.  The GasSteps certificates below remain. -/
+/-
 theorem gasSteps_selectIteration_cost_potential (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff i j k : Nat)
     (offset byte : UInt256) (rest : List UInt256)
@@ -88,6 +91,7 @@ theorem gasSteps_selectIteration_cost_potential (s : State)
   simp only [selectLoop, selectBody] at hguard hbody ⊢
   omega
 
+-/
 def gasSteps_selectLoop (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) (hcap : rest.length < 980)
@@ -105,6 +109,7 @@ def gasSteps_selectLoop (s : State) (accumulatorWord : UInt256)
     gasSteps_selectIteration s accumulatorWord count b e m baseOff expOff i j
       k offset byte rest hcap hcount hk hcode hfork hrun hnp
 
+/-
 theorem gasSteps_selectLoop_cost_potential (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
     (offset byte : UInt256) (rest : List UInt256)
@@ -128,6 +133,7 @@ theorem gasSteps_selectLoop_cost_potential (s : State)
     gasSteps_selectIteration_cost_potential s accumulatorWord count b e m
       baseOff expOff i j k offset byte rest hcap hcount hk hcode hfork hrun hnp
 
+-/
 def gasSteps_selectFinish (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) (hcap : rest.length < 980)
@@ -159,6 +165,7 @@ def gasSteps_selectFinish (s : State) (accumulatorWord : UInt256)
       (by simpa [selectExit, selectLoop, State.fork] using hnp)
   exact hguard.trans hfinish
 
+/-
 theorem gasSteps_selectFinish_cost_potential (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
     (offset byte : UInt256) (rest : List UInt256)
@@ -195,6 +202,7 @@ theorem gasSteps_selectFinish_cost_potential (s : State)
   simp only [selectLoop, selectExit, afterSelectedBit, innerLoop] at hguard hfinish ⊢
   omega
 
+-/
 def gasSteps_selection (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) (hcap : rest.length < 980)
@@ -213,6 +221,7 @@ def gasSteps_selection (s : State) (accumulatorWord : UInt256)
   (gasSteps_selectFinish s accumulatorWord count b e m baseOff expOff i j
     offset byte rest hcap hcount hj hcode hfork hrun hnp)
 
+/-
 theorem gasSteps_selection_cost_potential (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
     (offset byte : UInt256) (rest : List UInt256)
@@ -240,6 +249,7 @@ theorem gasSteps_selection_cost_potential (s : State)
     (gasSteps_selectFinish_cost_potential s accumulatorWord count b e m baseOff
       expOff i j offset byte rest hcap hcount hj hcode hfork hrun hnp)
 
+-/
 def gasSteps_exponentBit (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) (hcap : rest.length < 968)

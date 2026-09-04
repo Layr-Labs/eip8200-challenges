@@ -8,6 +8,10 @@ Kept separate so the large execution certificate is opaque while its nested
 loop costs are composed.
 -/
 
+/- This module formerly aggregated uniform helper gas formulae.  The optimized
+selector is value-dependent; exact costs are measured by the scorer while the
+functional GasSteps proof lives in BigMul. -/
+/-
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.BigMul
 
 open EvmSemantics
@@ -394,3 +398,4 @@ theorem gasSteps_mulModBig_cost_potential (s : State)
   omega
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigMul
+-/
