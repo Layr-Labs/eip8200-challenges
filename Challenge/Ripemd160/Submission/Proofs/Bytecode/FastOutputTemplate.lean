@@ -72,8 +72,7 @@ def fastEndianStage16 : List Instr :=
    DenseScheduleTemplate.op .OR]
 
 def fastStoreAndSetup : List Instr :=
-  [push0, DenseScheduleTemplate.op .MSTORE,
-   DenseScheduleTemplate.push1 (UInt256.ofNat 32), push0]
+  [DenseScheduleTemplate.push1 (UInt256.ofNat 32), push0]
 
 def fastOutputBeforeReturnTemplate : List Instr :=
   fastPackTemplate ++ fastEndianStage8 ++ fastEndianStage16 ++ fastStoreAndSetup
