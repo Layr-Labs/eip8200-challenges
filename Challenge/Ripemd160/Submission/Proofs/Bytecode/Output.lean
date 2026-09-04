@@ -143,4 +143,8 @@ def gasSteps_finish (s : State) (rest : List UInt256)
   gasSteps_block OutputTrace.finishPath _ _ hcode hfork
     (OutputTrace.run_finish s rest hcap hrun) hrun hnp
 
+/-! Named boundary for the fixed four-byte writer iteration. -/
+theorem writeBody_index_bound (j : Nat) (hj : j < 4) : j ≤ 3 := by
+  omega
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Output
