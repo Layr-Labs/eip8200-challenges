@@ -4,6 +4,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleSite
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTemplate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Schedule
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackBlockModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackLoadTrace
@@ -15,7 +16,7 @@ set_option maxRecDepth 50000
 set_option maxHeartbeats 3000000
 
 /-!
-# H24 compression frame
+# H30b compression frame
 
 This module certifies the frame around the scheduled compression body.  The
 compression body itself starts at the load-entry seam.
@@ -45,35 +46,36 @@ def prefixPath : List Located :=
   [⟨979, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨980, .push ⟨2, by decide⟩ (UInt256.ofNat 0x72f), by rfl, by decide⟩,
    ⟨981, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨982, .push ⟨2, by decide⟩ (UInt256.ofNat 0x1164), by rfl, by decide⟩,
+   ⟨982, .push ⟨2, by decide⟩ (UInt256.ofNat 0x12ac), by rfl, by decide⟩,
    ⟨983, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def exitPath : List Located :=
   [⟨984, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨985, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨985, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨986, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
 
-def loadSite986 : GenericRoundSite Artifact.submissionArtifact .Osaka
+def loadSite987 : GenericRoundSite Artifact.submissionArtifact .Osaka
     StackLoadTrace.loadTemplate :=
   StackSiteBuilder.ofSlice (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    StackLoadTrace.loadTemplate 986 (by rfl) (by decide)
-    StackRoundData.artifact_code_bound
+    StackLoadTrace.loadTemplate 987 (by rfl) (by decide)
+    QuadLayout.code_bound
     (StackRoundData.templateWellFormed_mem
       (instructions := StackLoadTrace.loadTemplate) (by decide))
     (by simp [StackLoadTrace.loadTemplate])
 
-def loadSite1476 : GenericRoundSite Artifact.submissionArtifact .Osaka
+def loadSite1238 : GenericRoundSite Artifact.submissionArtifact .Osaka
     StackLoadTrace.loadTemplate :=
   StackSiteBuilder.ofSlice (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    StackLoadTrace.loadTemplate 1316 (by rfl) (by decide)
-    StackRoundData.artifact_code_bound
+    StackLoadTrace.loadTemplate 1238 (by rfl) (by decide)
+    QuadLayout.code_bound
     (StackRoundData.templateWellFormed_mem
       (instructions := StackLoadTrace.loadTemplate) (by decide))
     (by simp [StackLoadTrace.loadTemplate])
 
-@[simp] theorem loadSite986_startPC : loadSite986.startPC = UInt256.ofNat 0x731 := by
+@[simp] theorem loadSite987_startPC : loadSite987.startPC = UInt256.ofNat 0x737 := by
   rfl
 
-@[simp] theorem loadSite1476_startPC : loadSite1476.startPC = UInt256.ofNat 0xa10 := by
+@[simp] theorem loadSite1238_startPC : loadSite1238.startPC = UInt256.ofNat 0x977 := by
   rfl
 
 def frameRest (input : ByteArray) (i : Nat) : List UInt256 :=
@@ -81,12 +83,12 @@ def frameRest (input : ByteArray) (i : Nat) : List UInt256 :=
 
 def frameLoadEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   StackLoadTrace.loadEntry (StackBlockModel.scheduledState s input i)
-    (UInt256.ofNat 0x731) (frameRest input i)
+    (UInt256.ofNat 0x737) (QuadRoundTemplate.factor :: frameRest input i)
 
-theorem frameLoadEntry_eq_loadSite986 (s : State) (input : ByteArray) (i : Nat) :
+theorem frameLoadEntry_eq_loadSite987 (s : State) (input : ByteArray) (i : Nat) :
     frameLoadEntry s input i =
       StackLoadTrace.loadEntry (StackBlockModel.scheduledState s input i)
-        loadSite986.startPC (frameRest input i) := by
+        loadSite987.startPC (QuadRoundTemplate.factor :: frameRest input i) := by
   simp [frameLoadEntry]
 
 theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
@@ -102,13 +104,13 @@ theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
   have hpc981 : Artifact.submissionArtifact.instructionPC 981 = 0x72a := by rfl
   have hpc982 : Artifact.submissionArtifact.instructionPC 982 = 0x72b := by rfl
   have hpc983 : Artifact.submissionArtifact.instructionPC 983 = 0x72e := by rfl
-  have hdest1164 : Decode.isValidJumpDest submissionBytecode 0x1164 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2313 (by rfl)
+  have hdest12ac : Decode.isValidJumpDest submissionBytecode 0x12ac = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2752 (by rfl)
   simp [prefixPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     DriverTrace.compressEntry, DenseScheduleTemplate.scheduleEntry,
     PackedScheduleSite.packedScheduleSite_startPC, StackBlockModel.scheduleRest,
     StackBlockModel.driverRest, hcode, hrun, hpc979, hpc980, hpc981, hpc982, hpc983,
-    hdest1164]
+    hdest12ac]
 
 theorem run_exit (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
@@ -118,11 +120,12 @@ theorem run_exit (s : State) (input : ByteArray) (i : Nat)
       some (frameLoadEntry s input i) := by
   have hpc984 : Artifact.submissionArtifact.instructionPC 984 = 0x72f := by rfl
   have hpc985 : Artifact.submissionArtifact.instructionPC 985 = 0x730 := by rfl
+  have hpc986 : Artifact.submissionArtifact.instructionPC 986 = 0x731 := by rfl
   simp [exitPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     frameLoadEntry, Schedule.scheduleReturned, StackBlockModel.scheduledState,
     StackBlockModel.scheduleRest, StackBlockModel.driverRest, frameRest,
-    StackLoadTrace.loadEntry,
-    hrun, hpc984, hpc985]
+    StackLoadTrace.loadEntry, QuadRoundTemplate.factor,
+    hrun, hpc984, hpc985, hpc986]
 
 def gasSteps_prefix (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
@@ -261,5 +264,54 @@ def gasSteps_frame (s : State) (input : ByteArray) (i : Nat)
   (gasSteps_prefix s input i hcode hfork hrun hnp).trans <|
     (gasSteps_schedule s input i hfit hi hcode hfork hrun hnp).trans <|
       gasSteps_exit s input i hcode hfork hrun hnp
+
+def savedLeft (left : Compression.EvmWorking) : List UInt256 :=
+  [left.b, left.c, left.d, left.e, left.a]
+
+def routeEntry (s : State) (left : Compression.EvmWorking)
+    (rest : List UInt256) : State :=
+  StackRoundTrace.roundEntry s (UInt256.ofNat 0x976)
+    left.a left.b left.c left.d left.e (QuadRoundTemplate.factor :: rest)
+
+def routeReturned (s : State) (left : Compression.EvmWorking)
+    (rest : List UInt256) : State :=
+  StackLoadTrace.loadEntry s (UInt256.ofNat 0x977)
+    (QuadRoundTemplate.factor :: (savedLeft left ++ rest))
+
+def routePath : List Located :=
+  [⟨1237, .op (.Swap ⟨4, by decide⟩), by rfl,
+    wfOp (by decide) trivial rfl⟩]
+
+theorem run_route (s : State) (left : Compression.EvmWorking)
+    (rest : List UInt256) (hstack : rest.length < 1007)
+    (hrun : s.halt = .Running) :
+    Stepper.runLocatedBlock routePath (routeEntry s left rest) =
+      some (routeReturned s left rest) := by
+  have hpc : Artifact.submissionArtifact.instructionPC 1237 = 0x976 := by rfl
+  have hcap : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hswap :
+      (left.a :: left.b :: left.c :: left.d :: left.e ::
+        QuadRoundTemplate.factor :: rest).exchange 0 5 =
+      some (QuadRoundTemplate.factor :: left.b :: left.c :: left.d :: left.e ::
+        left.a :: rest) := by
+    simpa using YulEvmCompiler.exchange_swap left.a QuadRoundTemplate.factor
+      [left.b, left.c, left.d, left.e] rest
+  simp [routePath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
+    routeEntry, routeReturned, StackRoundTrace.roundEntry,
+    StackLoadTrace.loadEntry, savedLeft, hpc, hrun, hcap, hswap]
+
+def gasSteps_route (s : State) (left : Compression.EvmWorking)
+    (rest : List UInt256) (hstack : rest.length < 1007)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps (routeEntry s left rest) (routeReturned s left rest) := by
+  apply Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka routePath
+  · exact hcode
+  · exact hfork
+  · exact run_route s left rest hstack hrun
+  · exact hrun
+  · exact hnp
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackFrame

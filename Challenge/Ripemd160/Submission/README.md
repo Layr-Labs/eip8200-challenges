@@ -80,7 +80,7 @@ The full exact-bytecode Comparator remains the acceptance condition.
 This candidate also consumes the Boolean case index and helper arguments.
 Two selection arms use bitwise XOR identities proved for all UInt256
 inputs. The per-bit proof uses only the permitted axiom set; the earlier
-bit-blasting decision-procedure probe is not part of this source.
+bv_decide probe is not part of this source.
 
 Boolean case costs are [42,51,54,54,54]. The native score is 8,027,999,
 with all seventeen clean and dirty cases passing. The formula is
@@ -676,3 +676,71 @@ The final CLI metadata is supplied outside the note body with the
 exact underlying model `GPT 5.6 Sol`, harness `Codex`, and coauthors
 `ercumentyildirim` and `terrapinelf`; the note does not duplicate canonical
 metadata fields.
+
+## H30b + H31b combined checkpoint
+
+The native tests, component proofs, and full `Correct` build passed. Local
+Comparator and server acceptance are still pending at this checkpoint.
+This section describes the current 5,298-byte candidate. Earlier sections
+are records of the separate candidates and do not describe its current PCs.
+
+H31b was promoted at 1,220,289 gas as
+`f7212717-583e-4839-a39e-d04c3989f862`, landed source
+`4670b4ab52cf404c84db183e5f7d484b3e08b71f`.
+The combined native candidate uses 1,165,377 gas: a further saving of 54,912.
+All 17 clean and 17 dirty rows passed. The dirty sum equals the clean sum;
+only the clean sum is the score. The unchanged 186-byte direct output helper
+contributes the earlier H31b saving of 41,786 gas relative to H23.
+
+The compression path uses 20 four-round calls per lane. Each call retains
+`F = 2^32 + 1` below its five working words. The generic proof accepts arbitrary
+UInt256 working words and an arbitrary ordered suffix of length less than
+1007. The semantic bridge uses only the low 32 bits of overlapping dense
+message reads. A SWAP5 preserves the left result below the right lane. The
+62-instruction tail removes the factor and uses the existing hash-combination
+result. The schedule and mathematical block model are unchanged.
+
+Exact identity:
+
+```text
+bytecode.hex SHA-256:
+2714189b259bd782517ba2f485bf6301cd8d709852c3dc20f9e28cbe97be346a
+decoded bytecode SHA-256:
+9c0271153f45c8d8c0c0a8b75145861ff11d6944b779300aa4cef3c785e9c7fe
+bytes: 5298
+instructions: 2864
+```
+
+The first left call is index997 at PC0x746. The route is index1237 at0x976.
+The first right call is index1248 at0x986. The tail starts at index1488 at0xbb6.
+The dense schedule starts at index2752 at0x12ac. Output starts at index2814
+at0x13f8 and returns at index2863 at0x14b1. Code ends at0x14b2.
+
+Proper builds and fresh audits passed for Artifact, QuadLayout, generic quad
+execution, call/helper lifting, semantic four-round results, generic tail,
+both concrete quad sites, the relocated output and schedule, the driver,
+frame, route, and load connections. The lane build passed 1,054 jobs. The
+actual tail build passed 1,025 jobs in 25 seconds; its fresh audit passed.
+The full correctness build passed 1,104 jobs in two seconds. A fresh root
+checked the exact contract, 5,298 bytes, 2,864 instructions, and 17 axiom
+lists. Only `propext`, `Classical.choice`, and `Quot.sound` occur.
+No protected source or resource limit changed. The theorem preserves the
+original `Correct submissionBytecode` contract for every fitting input and
+all sufficient gas amounts.
+
+Public reproduction uses only files in the editable submission and the
+protected setup tools:
+
+```sh
+yukon setup --track ripemd160
+shasum -a 256 Challenge/Ripemd160/Submission/bytecode.hex
+./.benchmark-tools/trusted/ripemd160challenge --hex=Challenge/Ripemd160/Submission/bytecode.hex --csv
+lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
+BENCHMARK_INSECURE_LOCAL=1 yukon run --track ripemd160
+```
+
+Local native output, fresh audit roots, generators, and the append-only
+hypothesis log are ignored working records. They are not required public
+inputs and are not in the submitted directory. Inlining, specialization, and
+warm-up removal are separate tests; none of their proposed gains is included
+in this candidate's score.

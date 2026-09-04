@@ -1,7 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackBlockModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTail
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairSites
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackPC
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadLayout
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailTemplate
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -34,7 +34,13 @@ theorem tailResult_eq_resultState (s : State) (input : ByteArray) (i : Nat) :
     resultState, resultHash, StackCompression.compress, leftWorking, rightWorking,
     initialWorking, scheduledState_hash]
 
-theorem rightPC_last : PairSites.rightPC 40 = UInt256.ofNat 0xcef := by
-  exact PairSites.rightPC_end
+theorem quadTailResult_eq_resultState (s : State) (input : ByteArray) (i : Nat) :
+    QuadTailTemplate.finalResult (scheduledState s input i)
+      (leftWorking s input i) (rightWorking s input i)
+      (UInt256.ofNat 0x643) (driverRest input i) = resultState s input i :=
+  tailResult_eq_resultState s input i
+
+theorem rightPC_last : QuadLayout.rightPC 20 = UInt256.ofNat 0xbb6 := by
+  rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackEndpoint
