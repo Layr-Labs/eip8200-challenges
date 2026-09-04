@@ -4,7 +4,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RoundTrace
 
 set_option warningAsError true
-set_option maxRecDepth 50000
+set_option maxRecDepth 20000
 set_option maxHeartbeats 3000000
 
 /-!

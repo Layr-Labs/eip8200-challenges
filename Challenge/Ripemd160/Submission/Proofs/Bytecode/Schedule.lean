@@ -288,7 +288,8 @@ theorem run_setupRead (s : State) (msgOff returnDest : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x1b7 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x1b7 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 316 (by rfl)
   have hoff : msgOff + UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 2) =
       loadOffsetWord msgOff i := by
     rw [loadOffsetWord]
@@ -332,7 +333,8 @@ theorem run_readLE (s : State) (msgOff returnDest : UInt256)
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x253 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x253 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 432 (by rfl)
   simp [readLEPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     readEntry, afterRead, readLEWord, List.exchange,
@@ -350,7 +352,8 @@ theorem run_setupXSet (s : State) (msgOff returnDest : UInt256)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x5f = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x5f = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 70 (by rfl)
   simp [setupXSetPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     afterRead, xSetEntry, hc5, hc6, hc7, hrun, hcode, hdest]
@@ -370,7 +373,8 @@ theorem run_xSet (s : State) (msgOff returnDest : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x259 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x259 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 436 (by rfl)
   have hslot : UInt256.ofNat 0x2a0 +
         UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5) = xSlotWord i := by
     rw [xSlotWord]
@@ -397,7 +401,8 @@ theorem run_increment (s : State) (msgOff returnDest : UInt256)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hadd : UInt256.ofNat i + UInt256.ofNat 1 = UInt256.ofNat (i + 1) :=
     Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x238 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x238 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 415 (by rfl)
   simp [incrementPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     afterStore, afterIteration, afterRead, List.exchange,
@@ -584,7 +589,8 @@ theorem run_condition_exit (s : State) (msgOff returnDest : UInt256)
   have hlt : UInt256.lt (UInt256.ofNat 16) (UInt256.ofNat 16) = 0 := by decide
   have hzero : UInt256.isZero (0 : UInt256) = UInt256.ofNat 1 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat 1) = true := by decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x264 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x264 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 444 (by rfl)
   simp [conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopAt, afterExitCondition, hc3, hc4, hc5, hrun, hcode,

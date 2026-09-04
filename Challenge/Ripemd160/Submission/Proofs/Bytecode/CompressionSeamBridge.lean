@@ -1,7 +1,4 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectCorrect
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RoundTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Schedule
 
 set_option warningAsError true
 

@@ -90,26 +90,52 @@ passed. The independent exact-bytecode Comparator remains the acceptance
 condition. Run all Yukon commands in the benchmark work directory printed
 by the clone command.
 
-## Current candidate: immediate round calls (H09)
+## Prior candidate: direct stack-resident rounds (H10)
 
-This candidate starts from the accepted 8,027,999-gas H08 implementation.
-It appends 160 fixed round-call wrappers and points the block driver to the
-new compressor at 0x726. Each wrapper supplies the known Boolean case,
-message-word index, rotation, constant, and working-memory base. The existing
-round helper, message schedule, three memory copies, and final hash combination
-remain in use. The fixed calls remove runtime round-loop and parameter-load
-work. Bytecode size is 5,133 bytes.
+H10 retains the message schedule and replaces the compressor with two fully
+unrolled 80-round lanes. Five working words stay on the EVM stack through each
+lane. The right lane runs above the saved left result. Round templates use
+immediate message-slot addresses, constants, and rotations, with inline Boolean
+operations and 32-bit rotation. The three old working-state memory copies and
+the round helper calls are no longer on the active compression path.
 
-The native suite reports 6,181,847 gas with all 17 clean and 17 dirty cases
-correct and equal clean/dirty gas. This is 1,846,152 gas below H08. The measured
-formula is `3698 + 92648 * B + 3 * C + memCost(65 + 2 * B)`, with B and C as
-defined above. This formula is not a separate proved gas schedule.
+The exact artifact is 12,906 bytes. Native tests report 1,743,479 gas over all
+17 clean vectors. All 17 dirty vectors also pass with the same gas total.
+The measured formula is `3698 + 25400 * B + 3 * C + memCost(65 + 2 * B)`.
+It is not a separate proved gas schedule. H09, the prior immediate-wrapper
+candidate, passed local Comparator at 6,181,847 gas and 5,133 bytes.
 
-`ImmediateCorrect.correct` proves the required universal `Correct` contract.
-Its proof checks the exact instruction artifact, all 160 call sites, both lane
-recurrences, the final right-round zero slot, and the actual block entry and
-exit states. Table and K/KP values persist across blocks; current hash words
-are not assumed to equal the initial hash. The output bridge uses the actual
-finite execution cost as a sufficient gas witness. It does not require the
-old implementation's closed gas formula. Comparator must independently check
-this theorem for the same bytes before the benchmark result is accepted.
+The proof uses 42 instruction-aligned assembly chunks, five generic round
+traces, and exact indexed certificates for all 160 sites. The scheduled words
+match the pinned RIPEMD-160 message schedule. Both complete lane traces use
+actual machine states with unchanged memory and active-word count. The final
+61-instruction tail stores the five combined hash words in the exact program
+order. `StackCorrect` connects these components to the outer block model and
+the unchanged public Correct contract. `Solution.lean` is the benchmark entry.
+
+Only the protected Comparator and scorer determine benchmark acceptance.
+The final theorem must pass that check for the exact submitted bytecode.
+
+## Current candidate: compact shared stack rounds (H12)
+
+H12 retains the stack-resident working words, schedule, and final combination.
+It replaces H10's inline round bodies with 160 six-instruction wrappers and
+ten shared helpers. Each wrapper supplies a return PC, rotation, message-slot
+address, and helper PC. Each helper embeds its group constant. Both the helper
+return JUMP and the wrapper's return JUMPDEST are executed and proved.
+
+The exact artifact is 4,796 bytes and 2,583 instructions. The native suite
+reports 2,292,599 gas over all 17 clean vectors. All 17 dirty vectors pass with
+the same individual gas results. The measured formula is
+`3698 + 33720 * B + 3 * C + memCost(65 + 2 * B)`.
+This is a native measurement, not a separate proved gas schedule.
+
+H09 was promoted at 6,181,847 gas. H10 failed before proof replay because the
+protected generated-byte module exceeded its recursion limit. H12's smaller
+byte array passes that isolated generator check without a harness change.
+
+The proof uses 13 instruction-aligned assembly chunks, five generic helper
+traces, exact call/helper/return locations, bounded 80-round lane composition,
+and the final storage tail with its nonempty helper suffix. StackCorrect and
+Solution retain the exact universal Correct contract. Acceptance still
+requires the full protected Comparator and scorer.
