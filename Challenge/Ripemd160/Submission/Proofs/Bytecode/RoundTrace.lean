@@ -54,8 +54,8 @@ def prefixPath : List Located :=
    ⟨227, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
    ⟨228, .op (.Dup ⟨10, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨229, .push ⟨2, by decide⟩ (UInt256.ofNat 0x13a), by rfl, by decide⟩,
-   ⟨230, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨231, .op (.Dup ⟨11, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨230, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨231, .op (.Dup ⟨10, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨232, .push ⟨2, by decide⟩ (UInt256.ofNat 0x4b), by rfl, by decide⟩,
    ⟨233, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -297,8 +297,7 @@ private def roundTail (s : State) (base : UInt256) (j : Nat)
 
 def xCallState (s : State) (base : UInt256) (j : Nat)
     (wordIndex rotation k returnDest : UInt256) (rest : List UInt256) : State :=
-  TableTrace.atEntry (afterLoads s base) (UInt256.ofNat 0x4b) wordIndex
-    (UInt256.ofNat 0x13a)
+  TableTrace.xAtEntry (afterLoads s base) wordIndex (UInt256.ofNat 0x13a)
     (roundTail s base j wordIndex rotation k returnDest rest)
 
 private def xReturnedState (s : State) (base : UInt256) (j : Nat)
@@ -489,7 +488,7 @@ theorem run_prefix (s : State) (base : UInt256) (j : Nat)
   simp (config := { maxSteps := 300000 })
     [prefixPath, roundPCs, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      roundEntry, xCallState, TableTrace.atEntry, afterLoads, roundTail,
+      roundEntry, xCallState, TableTrace.xAtEntry, afterLoads, roundTail,
       loadedA, loadedB, loadedC, loadedD, loadedE,
       hrun, hcode, cap rest hstack, Nat.add_assoc,
       State.activeWordsAfterUInt256,
@@ -811,7 +810,7 @@ def gasSteps_round (s : State) (base : UInt256) (j : Nat) (hj : j < 5)
     (roundWord s base wordIndex) (loadedA s base) (loadedB s base) (loadedC s base)
     (loadedD s base) (loadedE s base) rest hstack hcodeQ hforkQ hrunQ hnpQ hvalid
   have hxStart : xCallState s base j wordIndex rotation k returnDest rest =
-      TableTrace.atEntry q0 (UInt256.ofNat 0x4b) wordIndex
+      TableTrace.xAtEntry q0 wordIndex
         (UInt256.ofNat 0x13a)
         (roundTail s base j wordIndex rotation k returnDest rest) := by
     rfl
