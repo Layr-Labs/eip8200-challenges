@@ -118,7 +118,7 @@ def tailWork : Nat :=
   Meter.runLocatedBlockStaticCost combinationPopsLocated +
   Meter.runLocatedBlockStaticCost combinationJumpLocated
 
-theorem tailWork_eq : tailWork = 245 := by rfl
+theorem tailWork_eq : tailWork = 241 := by rfl
 
 def tableAtWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.tableAtPath
 def xAtWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.xAtPath

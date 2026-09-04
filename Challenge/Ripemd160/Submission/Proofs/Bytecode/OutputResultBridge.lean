@@ -288,34 +288,4 @@ theorem correct_of_compression
     Correct submissionBytecode :=
   GasCost.correct_of_schedule (correctWithSchedule_of_compression seam hcost)
 
-/- The closed schedule is not needed for the minimal challenge contract. -/
-theorem correct_of_compression_trace
-    (seam : ∀ (input : ByteArray), CalldataFits input → CompressionSeam input) :
-    Correct submissionBytecode := by
-  intro input hfit
-  let trace := fullTrace input hfit (seam input hfit)
-  let q := outputLoopState ((seam input hfit).states
-    (DriverTrace.blockCount input)) input 5
-  have hcall : q.callStack = [] := by
-    simp [q, outputLoopState, afterWrittenWord, loadedH, writeLoopState,
-      OutputTrace.writeByte, OutputTrace.zeroOutput,
-      (seam input hfit).callStack (DriverTrace.blockCount input) (by omega)]
-  refine ⟨trace.cost, fun gas hgas => ?_⟩
-  have heval := Challenge.EvmProof.eval_of_steps (trace.trace gas hgas) (by
-    change (withGas
-      { q with
-        pc := UInt256.ofNat 0x686
-        stack := [Padding.paddedWord input]
-        halt := .Returned
-        hReturn := MachineState.readPadded q.memory 0 32
-        activeWords := (State.activeWordsAfterUInt256 q 0 32) }
-      (gas - trace.cost)).isDone = true
-    simp [withGas, hcall, State.isDone, State.isHalted, State.isRunning])
-  rw [State.toResult_returned _ (by rfl)] at heval
-  change Eval (withGas (initialState submissionBytecode input 0) gas)
-    (.returned (MachineState.readPadded
-      q.memory 0 32)) at heval
-  rw [readOutput_eq, outputBytes_eq_spec input (seam input hfit)] at heval
-  simpa [GasCost.withGas_initialState_zero] using heval
-
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.OutputResultBridge
