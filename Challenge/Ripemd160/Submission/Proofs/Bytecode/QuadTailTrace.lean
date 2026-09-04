@@ -84,7 +84,7 @@ theorem quadTail_runTail_of_old_raw
 theorem runTail_quadTail_beforeJump
     (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256)
-    (hactive : 67 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1007) :
     StackTail.runTailInstrs QuadTailTemplate.quadTailBeforeJumpTemplate
       (QuadTailTemplate.tailEntry s left right ret rest) =
@@ -117,7 +117,7 @@ private theorem runTailInstrs_append {xs ys : List Instr} {s t u : State}
 theorem runTail_quadTail
     (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256)
-    (hactive : 67 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1007)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     StackTail.runTailInstrs QuadTailTemplate.quadTailTemplate

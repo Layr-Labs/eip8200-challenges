@@ -16,7 +16,7 @@ def driverRest (input : ByteArray) : List UInt256 :=
   [DriverTrace.blockOffsetWord (DriverTrace.blockCount input), Padding.paddedWord input]
 
 def outputState (s : State) (input : ByteArray) : State :=
-  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x13f8) (driverRest input)
+  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x13f2) (driverRest input)
 
 def outputBytes (s : State) : ByteArray :=
   MachineState.readPadded (FastOutputTrace.outputMemory s) 0 32

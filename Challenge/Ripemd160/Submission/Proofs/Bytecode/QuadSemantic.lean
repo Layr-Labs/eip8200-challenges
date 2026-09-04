@@ -252,21 +252,21 @@ theorem quadActiveWordsAfterUInt256_4_eq_of_end_le (s : State)
     _ = s.activeWords := h1
 
 theorem quadLeftAddress_end_le (s : State) (k : Fin 20) (offset : Fin 4)
-    (hactive : 67 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     (quadLeftAddress k offset).toNat + 32 ≤ s.activeWords.toNat * 32 := by
   rw [quadLeftAddress_toNat k offset]
   have hi := leftScheduleIndex_lt k offset
   omega
 
 theorem quadRightAddress_end_le (s : State) (k : Fin 20) (offset : Fin 4)
-    (hactive : 67 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     (quadRightAddress k offset).toNat + 32 ≤ s.activeWords.toNat * 32 := by
   rw [quadRightAddress_toNat k offset]
   have hi := rightScheduleIndex_lt k offset
   omega
 
 theorem quadLeftActiveWords_unchanged (s : State) (k : Fin 20)
-    (hactive : 67 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     QuadRoundState.quadActiveWordsAfterUInt256_4 s
         (quadLeftAddress k 0).toNat (quadLeftAddress k 1).toNat
         (quadLeftAddress k 2).toNat (quadLeftAddress k 3).toNat =
@@ -278,7 +278,7 @@ theorem quadLeftActiveWords_unchanged (s : State) (k : Fin 20)
   · exact quadLeftAddress_end_le s k 3 hactive
 
 theorem quadRightActiveWords_unchanged (s : State) (k : Fin 20)
-    (hactive : 67 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     QuadRoundState.quadActiveWordsAfterUInt256_4 s
         (quadRightAddress k 0).toNat (quadRightAddress k 1).toNat
         (quadRightAddress k 2).toNat (quadRightAddress k 3).toNat =
