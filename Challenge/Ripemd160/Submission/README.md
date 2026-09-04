@@ -744,3 +744,43 @@ hypothesis log are ignored working records. They are not required public
 inputs and are not in the submitted directory. Inlining, specialization, and
 warm-up removal are separate tests; none of their proposed gains is included
 in this candidate's score.
+
+## D01: `DIV` rotation fold (operand-order swap removal)
+
+This candidate starts from the promoted base at 1,157,731 gas (4,766 bytes)
+and changes one instruction pattern in the four-round helpers.
+
+The rotation fold read `MUL; SWAP1; SHR`. The `SWAP1` existed only because
+`SHR` wants its shift amount on top while the wrapper had pushed `32 - r`
+below the product. `DIV` pops numerator then denominator, which is the order
+the stack already holds, so passing `2 ^ (32 - r)` instead of `32 - r` makes
+the sequence `MUL; DIV` and removes the swap.
+
+| | base | D01 |
+| --- | ---: | ---: |
+| gas | 1,157,731 | 1,147,171 |
+| bytes | 4,766 | 5,206 |
+| instructions | 2,792 | 2,752 |
+
+`SWAP1` (3) + `SHR` (3) = 6 becomes `DIV` (5). The wrapper push stays at 3 gas
+because `PUSH1` and `PUSH4` cost the same. The saving is 1 gas per rotation
+site: 40 sites x 264 executions = 10,560.
+
+All rotation payloads use `PUSH4` so every wrapper keeps a uniform width; the
+stride grows from 28 to 40 bytes (left `1337 + 40k`, right `2153 + 40k`).
+Bytecode size is not scored.
+
+Correctness rests on `x / 2^k = x >>> k` for `k < 256`, proved in
+`Proofs/Bytecode/DivShift.lean` and composed with the existing
+`RotationMultiply.rawRot_mul` in `Proofs/Bytecode/RotationDiv.lean`. The
+rotation specification `stackRawRot` is unchanged, so the round, lane, block
+and digest arguments are untouched. `PairMultiplyLift.Advances` gained a `DIV`
+case beside its `MUL` case.
+
+`StackCorrect` builds (1,105 jobs) and
+`#print axioms StackCorrect.correct` reports only `propext`,
+`Classical.choice` and `Quot.sound`. The trusted scorer passes 34 rows with
+equal clean and dirty gas; the clean total is 1,147,171.
+
+The C-line fold is deliberately unchanged: its shift is the in-helper constant
+22, already in `SHR` order, and `PUSH1 22; SHR` (6) beats `PUSH3 2^22; DIV` (8).

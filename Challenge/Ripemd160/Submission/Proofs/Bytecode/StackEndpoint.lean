@@ -40,7 +40,7 @@ theorem quadTailResult_eq_resultState (s : State) (input : ByteArray) (i : Nat) 
       (UInt256.ofNat 0x436) (driverRest input i) = resultState s input i :=
   tailResult_eq_resultState s input i
 
-theorem rightPC_last : QuadLayout.rightPC 20 = UInt256.ofNat 0x9a9 := by
+theorem rightPC_last : QuadLayout.rightPC 20 = UInt256.ofNat 0xb89 := by
   rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackEndpoint

@@ -26,13 +26,18 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTemplate
 
 /-- Instructions push `s3, p3, s2, p2, s1, p1, s0, return-PC, p0,
-helper-PC`.  The resulting top-first stack has the quad helper-entry shape. -/
+helper-PC`.  The resulting top-first stack has the quad helper-entry shape.
+
+Each rotation payload is `2 ^ (32 - r)` rather than `32 - r`: the helper
+extracts the rotated word with `DIV`, whose operand order matches the stack
+without a `SWAP1`.  `PUSH4` costs the same three gas as `PUSH1`, and using it
+for every payload keeps each wrapper the same width. -/
 def quadCallPushes (returnPC p0 p1 p2 p3 helperPC : UInt256)
     (r0 r1 r2 r3 : Nat) : List Instr :=
-  [push1 (UInt256.ofNat (32 - r3)), push2 p3,
-    push1 (UInt256.ofNat (32 - r2)), push2 p2,
-    push1 (UInt256.ofNat (32 - r1)), push2 p1,
-    push1 (UInt256.ofNat (32 - r0)), push2 returnPC,
+  [push4 (rotPayload r3), push2 p3,
+    push4 (rotPayload r2), push2 p2,
+    push4 (rotPayload r1), push2 p1,
+    push4 (rotPayload r0), push2 returnPC,
     push2 p0, push2 helperPC]
 
 /-- State after the quad wrapper has pushed its ten values. -/
@@ -41,9 +46,9 @@ def quadCallPushed (s : State) (pc returnPC p0 p1 p2 p3 helperPC : UInt256)
     (rho : List UInt256) : State :=
   { s with
     pc := pc
-    stack := [helperPC, p0, returnPC, UInt256.ofNat (32 - r0), p1,
-      UInt256.ofNat (32 - r1), p2, UInt256.ofNat (32 - r2), p3,
-      UInt256.ofNat (32 - r3)] ++ roundWords working ++
+    stack := [helperPC, p0, returnPC, rotPayload r0, p1,
+      rotPayload r1, p2, rotPayload r2, p3,
+      rotPayload r3] ++ roundWords working ++
       [QuadRoundTemplate.factor] ++ rho }
 
 theorem quadCallPushes_advances (returnPC p0 p1 p2 p3 helperPC : UInt256)
@@ -71,7 +76,7 @@ theorem runInstrSeq_quadCallPushes (s : State)
     omega
   simp (discharger := omega)
     [quadCallPushes, quadCallPushed, roundEntry, runInstrSeq,
-      Stepper.runInstr, pcAfter, push1, push2, hrun, hcap,
+      Stepper.runInstr, pcAfter, push1, push2, push4, hrun, hcap,
       Nat.add_assoc, Instr.size_push, roundWords,
       QuadRoundTemplate.factor]
 
@@ -135,17 +140,17 @@ theorem runLocatedBlock_call {artifact : ProgramArtifact} {fork : Fork}
       r0 r1 r2 r3 site.pushes s working rho hstack hrun
   · exact hrun
   · have hcap :
-        ([p0, returnPC, UInt256.ofNat (32 - r0), p1,
-          UInt256.ofNat (32 - r1), p2, UInt256.ofNat (32 - r2), p3,
-          UInt256.ofNat (32 - r3)] ++ roundWords working ++
+        ([p0, returnPC, rotPayload r0, p1,
+          rotPayload r1, p2, rotPayload r2, p3,
+          rotPayload r3] ++ roundWords working ++
           [QuadRoundTemplate.factor] ++ rho).length < 1023 := by
       simp [roundWords]
       omega
     have h := SharedCallTrace.runLocated_jump site.jump site.jump_instr s
       helperPC
-      ([p0, returnPC, UInt256.ofNat (32 - r0), p1,
-        UInt256.ofNat (32 - r1), p2, UInt256.ofNat (32 - r2), p3,
-        UInt256.ofNat (32 - r3)] ++ roundWords working ++
+      ([p0, returnPC, rotPayload r0, p1,
+        rotPayload r1, p2, rotPayload r2, p3,
+        rotPayload r3] ++ roundWords working ++
         [QuadRoundTemplate.factor] ++ rho) hcap hvalid
     have hlocated : Stepper.runLocated site.jump.located
         (quadCallPushed s site.pushes.endPC returnPC p0 p1 p2 p3 helperPC

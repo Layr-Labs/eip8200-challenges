@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRound
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DivShift
 import Challenge.EvmProof.Stepper
 import YulEvmCompiler.Instr
 
@@ -36,6 +37,28 @@ def push2 (value : UInt256) : Instr :=
 
 def push4 (value : UInt256) : Instr :=
   .push ⟨4, by decide⟩ value
+
+/-- The rotation payload a wrapper passes to a round helper.
+
+The helper extracts the rotated word from the factor product with `DIV`, whose
+operands are already in stack order, so the caller supplies the divisor
+`2 ^ (32 - r)` instead of the shift amount `32 - r`.  Keeping this an opaque
+definition stops `simp` from expanding the power while `r` is still symbolic;
+`RotationDiv.rawRot_mul_div` relates it back to the rotation specification. -/
+def rotPayload (r : Nat) : UInt256 := UInt256.ofNat (2 ^ (32 - r))
+
+/-- Dividing by a rotation payload is the shift the old `SWAP1; SHR` pair
+performed, so every downstream round proof can keep reasoning about `SHR`. -/
+@[simp] theorem div_rotPayload (x : UInt256) (r : Nat) :
+    UInt256.div x (rotPayload r) =
+      UInt256.shiftRight x (UInt256.ofNat (32 - r)) :=
+  Challenge.Ripemd160.Submission.Proofs.Bytecode.DivShift.div_two_pow_eq_shiftRight
+    x (show 32 - r < 256 by omega)
+
+/-- The same rewrite for the `Div` instance form the `DIV` step produces. -/
+@[simp] theorem hdiv_rotPayload (x : UInt256) (r : Nat) :
+    x / rotPayload r = UInt256.shiftRight x (UInt256.ofNat (32 - r)) :=
+  div_rotPayload x r
 
 def dup1 : Instr := .op (.Dup ⟨0, by decide⟩)
 def dup2 : Instr := .op (.Dup ⟨1, by decide⟩)

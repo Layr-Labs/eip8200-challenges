@@ -33,24 +33,24 @@ def firstFTemplate (j : Nat) (constant : UInt256) : List Instr :=
   [op .JUMPDEST, op .MLOAD] ++ firstBoolean j ++
     [op .ADD, w 0, w 8, op .ADD] ++
     (if j = 0 then [] else [push4 constant, op .ADD]) ++
-    [push4 mask, op .AND, d 13, op .MUL, w 0, op .SHR,
+    [push4 mask, op .AND, d 13, op .MUL, op .DIV,
      d 11, op .ADD, push4 mask, op .AND, w 8,
      d 12, op .MUL, push1 c22, op .SHR, w 0, op .MLOAD] ++
     secondBoolean j ++ [op .ADD, w 0, w 10, op .ADD] ++
     (if j = 0 then [] else [push4 constant, op .ADD]) ++
-    [push4 mask, op .AND, d 11, op .MUL, w 0, op .SHR,
+    [push4 mask, op .AND, d 11, op .MUL, op .DIV,
      d 8, op .ADD, push4 mask, op .AND, w 5,
      d 10, op .MUL, push1 c22, op .SHR, w 7, w 4]
 
 @[simp] theorem firstFTemplate_length_0 (constant : UInt256) :
-    (firstFTemplate 0 constant).length = 54 := by rfl
+    (firstFTemplate 0 constant).length = 52 := by rfl
 @[simp] theorem firstFTemplate_length_1 (constant : UInt256) :
-    (firstFTemplate 1 constant).length = 62 := by rfl
+    (firstFTemplate 1 constant).length = 60 := by rfl
 @[simp] theorem firstFTemplate_length_2 (constant : UInt256) :
-    (firstFTemplate 2 constant).length = 60 := by rfl
+    (firstFTemplate 2 constant).length = 58 := by rfl
 @[simp] theorem firstFTemplate_length_3 (constant : UInt256) :
-    (firstFTemplate 3 constant).length = 62 := by rfl
+    (firstFTemplate 3 constant).length = 60 := by rfl
 @[simp] theorem firstFTemplate_length_4 (constant : UInt256) :
-    (firstFTemplate 4 constant).length = 60 := by rfl
+    (firstFTemplate 4 constant).length = 58 := by rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadGapTemplate

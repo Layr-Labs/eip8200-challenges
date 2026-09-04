@@ -39,7 +39,7 @@ def conditionPath : List Located :=
    ⟨705, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨706, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨707, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨708, .push ⟨2, by decide⟩ (UInt256.ofNat 0x11e4), by rfl, by decide⟩,
+   ⟨708, .push ⟨2, by decide⟩ (UInt256.ofNat 0x139c), by rfl, by decide⟩,
    ⟨709, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def callPath : List Located :=
@@ -127,7 +127,7 @@ def afterIteration (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def afterExit (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 0x11e4
+    pc := UInt256.ofNat 0x139c
     stack := [blockOffsetWord (blockCount input), Padding.paddedWord input] }
 
 theorem paddedLength_eq_blockCount (input : ByteArray) :
@@ -246,8 +246,8 @@ theorem run_condition_exit (s : State) (input : ByteArray)
   have heq := offset_eq_total input hfit
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x11e4 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2742 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x139c = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2702 (by rfl)
   simp [conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopAt, afterExit, hrun, hcode, heq,

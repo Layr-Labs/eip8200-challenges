@@ -25,17 +25,38 @@ theorem runInstr_pc_mul {s t : State}
             rfl
   · simp [Stepper.runInstr, hcap] at hresult
 
+/-- `DIV` advances the program counter exactly like `MUL`: it pops two words
+and pushes one, leaving the next instruction's PC. -/
+theorem runInstr_pc_div {s t : State}
+    (hresult : Stepper.runInstr (.op .DIV) s = some t) :
+    t.pc = s.pc + UInt256.ofNat (Instr.op .DIV).size := by
+  by_cases hcap : s.stack.length < 1024
+  · rw [Stepper.runInstr, if_pos hcap] at hresult
+    cases hs : s.stack with
+    | nil => simp [hs] at hresult
+    | cons a tail =>
+        cases ht : tail with
+        | nil => simp [hs, ht] at hresult
+        | cons b rest =>
+            simp [hs, ht] at hresult
+            subst t
+            rfl
+  · simp [Stepper.runInstr, hcap] at hresult
+
 def Advances (instruction : Instr) : Prop :=
-  SharedCallTrace.Advances instruction ∨ instruction = .op .MUL
+  SharedCallTrace.Advances instruction ∨ instruction = .op .MUL ∨
+    instruction = .op .DIV
 
 theorem runInstr_pc_of_advances {instruction : Instr} {s t : State}
     (hform : Advances instruction)
     (hresult : Stepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
-  rcases hform with hshared | hmul
+  rcases hform with hshared | hmul | hdiv
   · exact SharedCallTrace.runInstr_pc_of_advances hshared hresult
   · subst instruction
     exact runInstr_pc_mul hresult
+  · subst instruction
+    exact runInstr_pc_div hresult
 
 theorem runLocatedBlock_eq_raw {artifact : ProgramArtifact} {fork : Fork}
     {template : List Instr} (site : GenericRoundSite artifact fork template)

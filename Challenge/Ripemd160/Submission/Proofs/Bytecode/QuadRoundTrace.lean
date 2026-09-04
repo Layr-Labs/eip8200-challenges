@@ -55,7 +55,7 @@ theorem runInstrSeq_quad (j : Nat) (hj : j < 5)
   let afterFirstPair : State := quadFirstState s p0 p1
   let gapState : State :=
     insertState 1
-      [p2, UInt256.ofNat (32 - r2), p3, UInt256.ofNat (32 - r3)]
+      [p2, rotPayload r2, p3, rotPayload r3]
       firstPC
       (pairAfterHelperBeforeJump s
         (pcAfter 0 (pairBeforeJumpTemplate j constant))
@@ -66,7 +66,7 @@ theorem runInstrSeq_quad (j : Nat) (hj : j < 5)
       r2 r3 firstWorking (QuadRoundTemplate.factor :: rho)
 
   have hgap := QuadGapTrace.run_firstF j hj constant s startPC p0 p1
-    returnPC p2 (UInt256.ofNat (32 - r2)) p3 (UInt256.ofNat (32 - r3))
+    returnPC p2 (rotPayload r2) p3 (rotPayload r3)
     r0 r1 working rho hstack hrun hzero hrot0 hrot1
   have hfirst :
       runInstrSeq (firstFTemplate j constant)

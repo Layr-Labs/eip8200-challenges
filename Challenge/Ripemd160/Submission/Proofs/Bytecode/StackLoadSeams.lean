@@ -12,7 +12,7 @@ open StackBlockModel StackEndpoint
 
 theorem firstLoad_end : StackFrame.loadSite987.endPC = QuadLayout.leftPC 0 := rfl
 
-theorem secondLoad_start : StackFrame.loadSite1238.startPC = UInt256.ofNat 0x76a := rfl
+theorem secondLoad_start : StackFrame.loadSite1238.startPC = UInt256.ofNat 0x85a := rfl
 
 theorem secondLoad_end : StackFrame.loadSite1238.endPC = QuadLayout.rightPC 0 := rfl
 
@@ -29,7 +29,7 @@ theorem loadEntry_eq_roundEntry (s : State) (pc : UInt256)
 theorem tailEntry_eq_roundEntry (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) :
     QuadTailTemplate.tailEntry s left right ret rest =
-      StackRoundTrace.roundEntry s (UInt256.ofNat 0x9a9)
+      StackRoundTrace.roundEntry s (UInt256.ofNat 0xb89)
         right.a right.b right.c right.d right.e
         (QuadRoundTemplate.factor :: (StackFrame.savedLeft left ++ ret :: rest)) := rfl
 

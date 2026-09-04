@@ -310,20 +310,20 @@ theorem rightRotation3_le32 (k : Fin 20) :
     rightRotation3 k ≤ 32 := by
   fin_cases k <;> decide
 
-@[simp] theorem rightPC_zero : rightPC 0 = UInt256.ofNat 0x779 := by
+@[simp] theorem rightPC_zero : rightPC 0 = UInt256.ofNat 0x869 := by
   rfl
 
-@[simp] theorem rightPC_end : rightPC 20 = UInt256.ofNat 0x9a9 := by
+@[simp] theorem rightPC_end : rightPC 20 = UInt256.ofNat 0xb89 := by
   rfl
 
-@[simp] theorem rightStartPC_eq : rightStartPC = UInt256.ofNat 0x779 := by
+@[simp] theorem rightStartPC_eq : rightStartPC = UInt256.ofNat 0x869 := by
   rfl
 
-@[simp] theorem rightEndPC_eq : rightEndPC = UInt256.ofNat 0x9a9 := by
+@[simp] theorem rightEndPC_eq : rightEndPC = UInt256.ofNat 0xb89 := by
   rfl
 
 theorem rightPC_succ (k : Fin 20) :
-    rightPC (k.val + 1) = rightPC k.val + UInt256.ofNat 28 := by
+    rightPC (k.val + 1) = rightPC k.val + UInt256.ofNat 40 := by
   fin_cases k <;> rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites

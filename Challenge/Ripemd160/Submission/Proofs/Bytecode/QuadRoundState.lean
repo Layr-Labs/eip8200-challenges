@@ -34,9 +34,9 @@ def quadHelperEntry (s : State) (startPC p0 p1 p2 p3 returnPC : UInt256)
     (rho : List UInt256) : State :=
   { s with
     pc := startPC
-    stack := [p0, returnPC, UInt256.ofNat (32 - r0), p1,
-      UInt256.ofNat (32 - r1), p2, UInt256.ofNat (32 - r2), p3,
-      UInt256.ofNat (32 - r3)] ++ roundWords working ++
+    stack := [p0, returnPC, rotPayload r0, p1,
+      rotPayload r1, p2, rotPayload r2, p3,
+      rotPayload r3] ++ roundWords working ++
       [QuadRoundTemplate.factor] ++ rho }
 
 def quadFirstWorking (s : State) (working : Compression.EvmWorking)

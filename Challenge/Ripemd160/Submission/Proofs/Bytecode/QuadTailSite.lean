@@ -108,23 +108,23 @@ private theorem tail_instruction_at (i : Nat)
 private theorem tail_instruction_pc (i : Nat)
     (hi : i ≤ QuadTailTemplate.quadTailTemplate.length) :
     Artifact.submissionArtifact.instructionPC (1422 + i) =
-      0x9a9 + ArtifactByteLength.byteLength (QuadTailTemplate.quadTailTemplate.take i) := by
+      0xb89 + ArtifactByteLength.byteLength (QuadTailTemplate.quadTailTemplate.take i) := by
   have hzero := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     tailBefore QuadTailTemplate.quadTailTemplate tailAfter artifact_tail_split 0 (by omega)
   have hzero' : Artifact.submissionArtifact.instructionPC 1422 =
       (assembleBytes tailBefore).length := by
     simpa [tailBefore_length] using hzero
-  have hbefore : (assembleBytes tailBefore).length = 0x9a9 :=
+  have hbefore : (assembleBytes tailBefore).length = 0xb89 :=
     hzero'.symm.trans QuadLayout.tail_pc
   have h := ArtifactSegment.instructionPC_segment_of_bounds Artifact.submissionArtifact
-    tailBefore QuadTailTemplate.quadTailTemplate tailAfter 1422 0x9a9
+    tailBefore QuadTailTemplate.quadTailTemplate tailAfter 1422 0xb89
     artifact_tail_split tailBefore_length hbefore i hi
   simpa only [ArtifactByteLength.byteLength_eq_assemble] using h
 
 private theorem tail_instruction_pc_global (index : Nat)
     (hlo : 1422 ≤ index) (hhi : index ≤ 1484) :
     Artifact.submissionArtifact.instructionPC index =
-      0x9a9 + ArtifactByteLength.byteLength
+      0xb89 + ArtifactByteLength.byteLength
         (QuadTailTemplate.quadTailTemplate.take (index - 1422)) := by
   have hi : index - 1422 ≤ QuadTailTemplate.quadTailTemplate.length := by
     rw [tailInstructions_length]

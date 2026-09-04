@@ -29,14 +29,18 @@ def cachedDup9 : Instr := .op (.Dup ⟨8, by decide⟩)
 def cachedDup8 : Instr := .op (.Dup ⟨7, by decide⟩)
 def cachedDup7 : Instr := .op (.Dup ⟨6, by decide⟩)
 
+/-- The caller supplies `2 ^ (32 - r)` below the product, which is exactly the
+operand order `DIV` wants, so the old `SWAP1; SHR` pair becomes a single
+`DIV`.  Division by a power of two is the same operation as the shift; see
+`RotationDiv.rawRot_mul_div`. -/
 def cachedQrot10 : List Instr :=
-  [cachedDup10, op .MUL, swap1, op .SHR]
+  [cachedDup10, op .MUL, op .DIV]
 
 def cachedCfold9 : List Instr :=
   [cachedDup9, op .MUL, push1 c22, op .SHR]
 
 def cachedQrot8 : List Instr :=
-  [cachedDup8, op .MUL, swap1, op .SHR]
+  [cachedDup8, op .MUL, op .DIV]
 
 def cachedCfold7 : List Instr :=
   [cachedDup7, op .MUL, push1 c22, op .SHR]
