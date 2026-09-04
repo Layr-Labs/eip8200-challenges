@@ -63,7 +63,7 @@ def withActiveWords (s : State) (activeWords : UInt256) : State :=
 def scheduledState (s : State) (input : ByteArray) (i : Nat) : State :=
   withActiveWords
     (withMemory
-      (Schedule.loopState s (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x522)
+      (Schedule.loopState s (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523)
         (scheduleRest input i) 16)
       (DenseScheduleTemplate.denseExpectedMemory s (DriverTrace.messageOffsetWord i)))
     (DenseScheduleTemplate.denseExpectedActiveWords s

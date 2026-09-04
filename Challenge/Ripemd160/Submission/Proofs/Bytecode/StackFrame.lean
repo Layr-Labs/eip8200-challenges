@@ -44,14 +44,13 @@ private def wfOp {op : Operation}
 
 def prefixPath : List Located :=
   [⟨913, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨914, .push ⟨2, by decide⟩ (UInt256.ofNat 0x522), by rfl, by decide⟩,
-   ⟨915, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨914, .push ⟨2, by decide⟩ (UInt256.ofNat 0x523), by rfl, by decide⟩,
+   ⟨915, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨916, .push ⟨2, by decide⟩ (UInt256.ofNat 0x109f), by rfl, by decide⟩,
    ⟨917, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def exitPath : List Located :=
-  [⟨918, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨919, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨919, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨920, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
 
 def loadSite987 : GenericRoundSite Artifact.submissionArtifact .Osaka
@@ -97,7 +96,7 @@ theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
     Stepper.runLocatedBlock prefixPath (DriverTrace.compressEntry s input i) =
       some (DenseScheduleTemplate.scheduleEntry s
         PackedScheduleSite.packedScheduleSite.startPC
-        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x522)
+        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523)
         (StackBlockModel.scheduleRest input i)) := by
   have hpc979 : Artifact.submissionArtifact.instructionPC 913 = 0x519 := by rfl
   have hpc980 : Artifact.submissionArtifact.instructionPC 914 = 0x51a := by rfl
@@ -116,16 +115,15 @@ theorem run_exit (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock exitPath
         (Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
-          (UInt256.ofNat 0x522) (StackBlockModel.scheduleRest input i)) =
+          (UInt256.ofNat 0x523) (StackBlockModel.scheduleRest input i)) =
       some (frameLoadEntry s input i) := by
-  have hpc984 : Artifact.submissionArtifact.instructionPC 918 = 0x522 := by rfl
   have hpc985 : Artifact.submissionArtifact.instructionPC 919 = 0x523 := by rfl
   have hpc986 : Artifact.submissionArtifact.instructionPC 920 = 0x524 := by rfl
   simp [exitPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     frameLoadEntry, Schedule.scheduleReturned, StackBlockModel.scheduledState,
     StackBlockModel.scheduleRest, StackBlockModel.driverRest, frameRest,
     StackLoadTrace.loadEntry, QuadRoundTemplate.factor,
-    hrun, hpc984, hpc985, hpc986]
+    hrun, hpc985, hpc986]
 
 def gasSteps_prefix (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
@@ -135,7 +133,7 @@ def gasSteps_prefix (s : State) (input : ByteArray) (i : Nat)
     GasSteps (DriverTrace.compressEntry s input i) 
       (DenseScheduleTemplate.scheduleEntry s
         PackedScheduleSite.packedScheduleSite.startPC
-        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x522)
+        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523)
         (StackBlockModel.scheduleRest input i)) := by
   apply Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka prefixPath
   · exact hcode
@@ -154,24 +152,23 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
     GasSteps
         (DenseScheduleTemplate.scheduleEntry s
           PackedScheduleSite.packedScheduleSite.startPC
-          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x522)
+          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523)
           (StackBlockModel.scheduleRest input i))
         (Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
-          (UInt256.ofNat 0x522) (StackBlockModel.scheduleRest input i)) := by
+          (UInt256.ofNat 0x523) (StackBlockModel.scheduleRest input i)) := by
   let rest := StackBlockModel.scheduleRest input i
   have hstate :
       Schedule.scheduleReturned
           (DenseScheduleTemplate.denseExpectedState s
             PackedScheduleSite.packedScheduleSite.startPC
-            (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x522) rest)
-          (UInt256.ofNat 0x522) rest =
+            (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523) rest)
+          (UInt256.ofNat 0x523) rest =
         Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
-          (UInt256.ofNat 0x522) rest := by
-    simpa [StackBlockModel.scheduledState, StackBlockModel.withMemory,
+          (UInt256.ofNat 0x523) rest := by
       StackBlockModel.withActiveWords] using
       (DenseScheduleState.returned_eq_schedule_with_memory_active s
         PackedScheduleSite.packedScheduleSite.startPC
-        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x522) rest
+        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523) rest
         (DenseScheduleTemplate.denseExpectedMemory s
           (DriverTrace.messageOffsetWord i)) rfl)
   have hstack1023 : rest.length < 1023 := by
@@ -184,25 +181,24 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
       StackRoundTrace.runInstrSeq DenseScheduleTemplate.denseBeforeJumpTemplate
         (DenseScheduleTemplate.scheduleEntry s
           PackedScheduleSite.packedScheduleSite.startPC
-          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x522) rest) =
+          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523) rest) =
         some (DenseScheduleTemplate.denseExpectedState s
           PackedScheduleSite.packedScheduleSite.startPC
-          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x522) rest) := by
+          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523) rest) := by
     exact DenseScheduleTrace.runInstrSeq_denseBeforeJump s
       PackedScheduleSite.packedScheduleSite.startPC
-      (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x522) rest
+      (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523) rest
       hstack1017 hrun
   have hartifactCode : s.executionEnv.code = Artifact.submissionArtifact.code := by
     change s.executionEnv.code = submissionBytecode
     exact hcode
   have hvalid :
       Decode.isValidJumpDest s.executionEnv.code
-        (UInt256.ofNat 0x522).toNat = true := by
+        (UInt256.ofNat 0x523).toNat = true := by
     rw [hcode]
-    exact Artifact.submissionArtifact.isValidJumpDest_index 918 (by rfl)
+    exact Artifact.submissionArtifact.isValidJumpDest_index 919 (by rfl)
   have hpacked := PackedScheduleSite.gasSteps_packedSchedule s
-    (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x522) rest
-    hartifactCode hfork hrun hnp hstack1023 hvalid
+    (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523) rest
     hraw
   exact hpacked.cast rfl hstate
 
@@ -213,29 +209,29 @@ def gasSteps_exit (s : State) (input : ByteArray) (i : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
         (Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
-          (UInt256.ofNat 0x522) (StackBlockModel.scheduleRest input i))
+          (UInt256.ofNat 0x523) (StackBlockModel.scheduleRest input i))
         (frameLoadEntry s input i) := by
   have hqcode :
       (Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
-        (UInt256.ofNat 0x522) (StackBlockModel.scheduleRest input i)).executionEnv.code =
+        (UInt256.ofNat 0x523) (StackBlockModel.scheduleRest input i)).executionEnv.code =
         submissionBytecode := by
     simp [StackBlockModel.scheduledState, Schedule.scheduleReturned, hcode]
   have hqfork :
       (Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
-        (UInt256.ofNat 0x522) (StackBlockModel.scheduleRest input i)).fork = .Osaka := by
+        (UInt256.ofNat 0x523) (StackBlockModel.scheduleRest input i)).fork = .Osaka := by
     simpa [StackBlockModel.scheduledState, Schedule.scheduleReturned, State.fork] using hfork
   have hqrun :
       (Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
-        (UInt256.ofNat 0x522) (StackBlockModel.scheduleRest input i)).halt = .Running := by
+        (UInt256.ofNat 0x523) (StackBlockModel.scheduleRest input i)).halt = .Running := by
     simp [StackBlockModel.scheduledState, Schedule.scheduleReturned, hrun]
   have hqnp :
       Precompile.isPrecompileWithConfig
           (Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
-            (UInt256.ofNat 0x522) (StackBlockModel.scheduleRest input i)).executionEnv.precompileConfig
+            (UInt256.ofNat 0x523) (StackBlockModel.scheduleRest input i)).executionEnv.precompileConfig
           (Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
-            (UInt256.ofNat 0x522) (StackBlockModel.scheduleRest input i)).executionEnv.fork
+            (UInt256.ofNat 0x523) (StackBlockModel.scheduleRest input i)).executionEnv.fork
           (Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
-            (UInt256.ofNat 0x522) (StackBlockModel.scheduleRest input i)).executionEnv.codeAddr = false := by
+            (UInt256.ofNat 0x523) (StackBlockModel.scheduleRest input i)).executionEnv.codeAddr = false := by
     simpa [StackBlockModel.scheduledState, Schedule.scheduleReturned] using hnp
   apply Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka exitPath
   · exact hqcode
