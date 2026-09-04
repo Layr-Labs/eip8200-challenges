@@ -454,3 +454,225 @@ bytecode, assumptions, or proof limits.
 Credit goes to @ercumentyildirim and @terrapinelf for the inherited compiler,
 proof, and low32 foundations, including terrapinelf PR 69. Final H23 status
 belongs to the later integration and gate review.
+
+## H31b: direct output on the frozen H23 packed base
+
+H31b has passed the full `Correct` proof build and a fresh axiom audit.
+The original benchmark directory also passed `StackCorrect` and `Solution`.
+The local macOS export/Comparator run is active at the time of this record.
+Local Comparator and server acceptance are not yet claimed. The candidate is the
+H23 dense packed base plus the H31b output helper. It is not the separate
+H30b-combined candidate.
+
+### Exact candidate and score
+
+H31b starts from the frozen H23 dense packed bytecode. The base is 4,784 bytes
+and 2,375 instructions. H31b appends the exact 186-byte, 50-instruction
+primary output helper. The resulting bytecode is 4,970 bytes and 2,425
+instructions.
+
+| candidate | base | bytes | instructions | clean gas | dirty gas | result |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| H23 dense packed | H23 | 4,784 | 2,375 | 1,262,075 | 1,262,075 | 34-row base PASS |
+| H31b direct output | H23 dense packed | 4,970 | 2,425 | 1,220,289 | 1,220,289 | 34-row native PASS |
+
+The trusted native run has 34 passing rows: 17 clean rows and 17 dirty rows.
+The reported score is the clean 17-row sum, `1,220,289`. The dirty rows are a
+separate correctness and memory-state check and are not added to that score.
+The H31b saving against H23 is `41,786 = 2,458 × 17`. It is not a clean-plus-
+dirty double count.
+
+The H23 local Comparator and server run `33874014497` passed. Yukon promoted
+`4fe6451d-dabd-46b1-b982-66acf37edc71` at 1,262,075 from source `9fcca978`.
+This is the verified current frontier. Those facts do not make H31b accepted.
+
+### Prefix patch and exact layout
+
+The decoded prefix instruction at index 775 has PC `0x633` and is
+`PUSH2 0x64e`. H31b changes only the two original immediate bytes at byte
+indices `0x634` and `0x635`, changing the target to `0x12b0`. The old six-byte
+driver prelude at `[0x64e, 0x654)` is preserved byte-for-byte as
+`5b505f5f525f`. All other prefix bytes, instruction boundaries, and old
+instruction indices remain unchanged.
+
+The appended helper starts at PC `0x12b0`, instruction index 2,375, and ends
+at PC `0x1369`, instruction index 2,424. Its final four bytes are
+`60205ff3`, which are `PUSH1 32; PUSH0; RETURN`. The H23 dense packed segment
+still occupies instruction indices 2,313 through 2,374. The unchanged main
+tail suffix contains 718 instructions. The actual output suffix is exactly
+the new 50-instruction helper. These fixed boundaries are used by the
+artifact import and extraction logic. They avoid treating an old H23 output
+path as the H31b output path.
+
+The H23 base identities are:
+
+```text
+ASCII hex SHA-256: 2c1151282e43abc6b8636e60fb7353c1c666a958785b38e9af64c1580d16679d
+decoded bytes SHA-256: f196b33a6dd4a4edcd406a136712c0d1cf12a0289ef31c323a08264e2c7aac50
+```
+
+The H31b identities are:
+
+```text
+bytecode.hex SHA-256: 8a1b5a0ad70db1b1243f118cfe02b99c361159720a31617ac2bfb9c11fa2162f
+decoded bytes SHA-256: 55ffc569b7c60cbb748cb265ad947696d08417a12be45c3b24446c582f4e4a20
+layout JSON SHA-256: 572ecfbb5ce5a817fbb7bd3e09e05571a626d452d80da6d65379fdd035c179c0
+helper raw SHA-256: 8d6d6855642748a68aee9da119ce239c14fbd5d57fb4199a3c58bc4d7031c1a7
+```
+
+The branch generator reads the frozen H23 base and the frozen H31b helper
+identity. It changes the branch operand only. It does not use the H30b base,
+reapply the old B01 transform, or infer the helper from a stale output path.
+The generated certificate chunks are 12 chunks of 200 instructions, one
+chunk of 25 instructions, and one empty chunk. The native 64-byte chunk count
+is 78.
+
+### Helper operation
+
+The helper receives five full-width words at memory addresses 32, 64, 96,
+128, and 160. It reads them once, before the only write. It packs the words
+with four `SHL 32; OR` steps, applies the byte-order stages, writes 32 bytes
+at memory offset zero, and returns 32 bytes.
+
+The two byte-order stages use the minimal immediate widths. The 8-bit stage
+uses `PUSH31 mask8`; the 16-bit stage uses `PUSH30 mask16`. The helper has 143
+static gas in the template calculation. Its final sequence is
+`PUSH0 MSTORE PUSH1 32 PUSH0 RETURN`.
+
+The direct branch saves 12 runtime gas per invocation compared with the
+earlier H31 forwarding-stub variant. That variant overwrote the old six-byte
+driver region with a forwarding sequence. H31b jumps directly to `0x12b0`, so
+the 17-row saving is `12 × 17 = 204` gas. H31b has 2,425 instructions while
+the stub variant had 2,423 because H31b preserves the old six-byte prelude;
+the lower runtime gas comes from skipping the forwarding instructions.
+
+### Formal boundary and proof status
+
+The generic raw proof is in `FastOutputTemplate.lean` and
+`FastOutputTrace.lean`. It proves a 49-operation state before `RETURN` and a
+50-operation returned state. Its premises are a running state and
+`rest.length < 1021`. Memory, stack words, suffix values, shared state, and
+all UInt256 inputs are arbitrary. The proof records the PC, stack, memory,
+active-word, halt, and return-state changes. `RETURN` consumes offset zero and
+size 32, sets the returned state, and does not advance the PC.
+
+The raw theorem has no canonical 32-bit premise. The canonical packing
+specification is proved in a separate math layer. It is not used to justify
+the raw execution. The raw-to-math bridge also fixes the
+`OR` operand order: the EVM stack evaluator pops the operands in the reverse
+of the displayed mathematical expression, and bitwise OR commutativity proves
+the exact full-width equality. No low-word assumption is used for this step.
+
+The following H31b component results are recorded:
+
+| component | result |
+| --- | --- |
+| Artifact proper | PASS, 1,010 jobs, 160 seconds |
+| fresh Artifact audit | PASS, 18 checks |
+| Driver proof | PASS, 47 seconds |
+| Schedule site | PASS, 3 seconds |
+| Tail proof | PASS, 34 seconds |
+| Pair-site left proof | PASS, 312 seconds |
+| Pair-site right proof | PASS, 383 seconds |
+| Interface | PASS, 1.6 seconds |
+| Compression bridge | PASS, 1.1 seconds |
+| shared formal build | PASS, 1,059 jobs; this is a job count, not a check count |
+| canonical output math | PASS, proper 1,026-job build and four fresh axiom checks |
+| full StackCorrect | PASS, proper 1,094-job build and fresh 13-theorem audit |
+| original-directory proof | PASS, StackCorrect 1,094 jobs and fresh 13-theorem audit |
+| original-directory Solution | PASS, 1,097 jobs, 18 seconds |
+
+The generic output Main proper build passed with 1,017 jobs, and its fresh
+two-theorem audit passed with explicit `-j1`. The actual output Site proper
+build passed with 1,028 jobs and its fresh ten-check audit passed. Independent
+review passed for both. Only the allowed foundational axioms are used.
+The canonical theorem `PackedOutputMath.packedOutput_eq_prefix_emitDigest`
+proves the exact 12-zero-byte prefix and 20 digest bytes for arbitrary five
+UInt32 values. `PackedOutputDigits.extract` provides the packed digit proof.
+`FastOutputResultBridge` combines the byte theorem, the existing compression
+seam, and the actual full trace cost. The completed `Correct` theorem keeps
+the original input and gas quantifiers. It has no extra output hypothesis.
+`Solution` still exports `StackCorrect.correct`.
+
+The selected 78-module submission closure excludes the old output execution
+and result bridge. It uses only `propext`, `Classical.choice`, and `Quot.sound`.
+No protected file, resource limit, or theorem contract changed. Local
+Comparator and H31b server validation remain pending.
+
+### Public source manifest
+
+The relevant public source and reproduction files are:
+
+```text
+Challenge/Ripemd160/Submission/README.md
+Challenge/Ripemd160/Submission/bytecode.hex
+Challenge/Ripemd160/Submission/Bytes.lean
+Challenge/Ripemd160/Submission/Bytecode.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/Artifact.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/FastOutputTemplate.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/FastOutputTrace.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/FastOutputSite.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/PackedOutputDigits.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/PackedOutputMath.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/FastOutputResultBridge.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/OutputModel.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/CompressionInterface.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/CompressionSeamBridge.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/DriverTrace.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/PackedScheduleSite.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/StackTailTrace.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/StackRunBridge.lean
+Challenge/Ripemd160/Submission/Proofs/Bytecode/StackCorrect.lean
+Challenge/Ripemd160/Submission/Solution.lean
+```
+
+These are relevant files, not a claim that every listed file changed. The
+submission contains the exact bytes and their assembly certificates. Local
+generators, native inputs, root audits, and logs are ignored working records,
+not public source files. The commands below do not require those records.
+
+### Reproduction commands
+
+Run these commands from the benchmark work directory after obtaining this
+candidate's public submission files. The exact bytecode is already included.
+
+```sh
+yukon setup --track ripemd160
+sha256sum Challenge/Ripemd160/Submission/bytecode.hex
+./.benchmark-tools/trusted/ripemd160challenge --hex=Challenge/Ripemd160/Submission/bytecode.hex --csv
+lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
+lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
+BENCHMARK_INSECURE_LOCAL=1 yukon run --track ripemd160
+```
+
+Build the generic raw output and exact output site with the project targets:
+
+```sh
+lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputTrace Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputSite
+```
+
+The protected scorer is the authority for the 34-row native check. The Yukon
+run is the normal local macOS workflow. A local PASS does not replace the
+formal proof or server validation.
+
+### Known failure and future work
+
+The only recorded initial native test failures were a missing
+`SparseMemory.snapshot` method and use of `branch_instruction_index` before
+the layout key was emitted. Both were test and layout bookkeeping errors and
+were fixed. The final math proof also needed three explicit UInt8 zero-array
+annotations and removal of one extra conditional rewrite. The corrected math
+and complete proof builds passed without changing bytecode or the contract.
+
+The separate H30b-combined native candidate measures 1,165,377 gas, but it is
+unproved and unsubmitted. It is not the current H31b candidate and is not
+combined with the H23-base score above. Future H30b/H31b work must keep its
+native result separate from this H31b proof and score.
+
+Main, using GPT 5.6 Sol, handled coordination, integration, final proof work,
+and review. GPT 5.6 Luna at maximum effort prepared component proofs and the
+initial note. GPT 5.6 Sol at high effort provided independent review.
+The final CLI metadata is supplied outside the note body with the
+exact underlying model `GPT 5.6 Sol`, harness `Codex`, and coauthors
+`ercumentyildirim` and `terrapinelf`; the note does not duplicate canonical
+metadata fields.
