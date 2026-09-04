@@ -224,7 +224,7 @@ correct and equal paired gas. The reduction from H18 is 800 per block or
 This is measured gas, not a separate proved gas schedule. The universal
 Correct contract and protected acceptance checks are unchanged.
 
-## Current candidate: consume A with the packed schedule (H21)
+## Prior candidate: consume A with the packed schedule (H21)
 
 H21 combines the H20 round helpers with the same 528-byte ascending packed
 schedule used in H19. The schedule PUSH2 at PC `0x72b` now targets `0x122c`.
@@ -243,3 +243,58 @@ block index, with one return JUMPDEST. The public Correct contract is fixed.
 Native tests report 1,730,279 gas with all 17 clean and 17 dirty cases
 correct and equal paired gas. This saves 209,616 gas from H20 and 52,800
 from H19 per suite. Native gas is not an official server score.
+
+## Current candidate: bounded RotationFold with the packed schedule (H22c-packed)
+
+H22c-packed is the current native candidate. It combines two bounded helper
+folds with the unchanged 528-byte ascending packed schedule helper. The native
+measurement is 5,150 bytes, 2,585 instructions, and 1,635,239 gas per frame.
+The result is 95,040 gas lower than the H21 native measurement. Native gas is
+not an official server score. The measured formula is
+`3698 + 23760 * B + 3 * C + memCost(65 + 2 * B)`, where
+`B = (inputSize + 72) / 64` and `C = (inputSize + 31) / 32`.
+
+The C fold replaces:
+
+```text
+DUP1 PUSH1 10 SHL SWAP1 PUSH1 22 SHR OR PUSH4 0xffffffff AND
+DUP1 PUSH1 32 SHL OR PUSH1 22 SHR PUSH4 0xffffffff AND
+```
+
+The C input remains a full-width UInt256 value until the preserved
+`PUSH4 0xffffffff; AND`. The replacement uses bitwise OR. It does not use the
+invalid multiplication shortcut `C * (2^32 + 1)` for arbitrary C.
+
+The T fold replaces:
+
+```text
+DUP1 DUP3 SHL SWAP2 PUSH1 32 SUB SHR OR
+DUP1 PUSH1 32 SHL OR SWAP1 SHR
+```
+
+The sum `q` is already masked to 32 bits. Every wrapper uses the complement
+rotation payload `32-r` exactly once for this fold. The new stack prefix is
+`[q, 32-r, ret, ...]`. The raw result is
+`((q << 32) OR q) >> (32-r)`. At `r=0` the raw result is `q`; at `r=32` it is
+`(q << 32) OR q`. The later addition and 32-bit mask preserve the required
+round result at both endpoints.
+
+All three 32-bit masks remain. All five groups, both constant tables, all
+working-lane order, return behavior, suffix behavior, and the final
+combination tail remain fixed. The 160 wrappers remain 13 bytes and six
+instructions. Their return PC remains wrapper PC plus 12. The H22c prefix has
+4,622 bytes and 2,425 instructions. The appended schedule helper starts at
+PC `0x120e`, instruction index 2,425, and its final JUMP is at PC `0x141d`,
+instruction index 2,584. The packed tail suffix is 558 instructions.
+
+Native testing passed 12/12 tests. Main independently reran all twelve tests.
+Each of the four trusted native scorer processes passed 34 rows: 17 clean and
+17 dirty. All rows were correct, and every clean/dirty pair had equal gas.
+
+The generic proof build passed 1,020 jobs, and the fresh seven-theorem
+`H22RawAudit` passed with only the three allowed axioms. The exact Artifact
+build, fresh Artifact audit, and independent source review also passed.
+The complete `StackCorrect.correct` build passed 1,091 jobs. Fresh Correct,
+Site, and Raw audits also passed with only the allowed axioms. Protected
+local Comparator acceptance and ranked server validation remain pending.
+Protected Comparator acceptance is required for this exact bytecode.
