@@ -44,10 +44,10 @@ def rightNextPC (i : Nat) : UInt256 :=
   rightWrapperPC i + UInt256.ofNat 13
 
 def leftAddress (i : Nat) : UInt256 :=
-  UInt256.ofNat (672 + 32 * Crypto.Ripemd160.r[i]!)
+  UInt256.ofNat (644 + 4 * Crypto.Ripemd160.r[i]!)
 
 def rightAddress (i : Nat) : UInt256 :=
-  UInt256.ofNat (672 + 32 * Crypto.Ripemd160.rP[i]!)
+  UInt256.ofNat (644 + 4 * Crypto.Ripemd160.rP[i]!)
 
 def leftRotation (i : Nat) : Nat := Crypto.Ripemd160.s[i]!
 def rightRotation (i : Nat) : Nat := Crypto.Ripemd160.sP[i]!

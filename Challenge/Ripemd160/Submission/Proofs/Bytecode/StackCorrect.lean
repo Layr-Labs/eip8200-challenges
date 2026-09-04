@@ -34,14 +34,13 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
   have qactive : 67 ≤ q.activeWords.toNat := by
     rw [scheduledState_activeWords s input hfit i hi]
     omega
-  have qwords : WordsAt q word := scheduled_words_memory s input i h ctx
+  have qwords : WordsAt q word := scheduled_words_memory s input i h ctx hfit hi
   have qenv : q.executionEnv = s.executionEnv := by
-    exact Schedule.loopState_executionEnv s _ _ _ 16
+    simp only [q, scheduledState, withMemory_executionEnv, Schedule.loopState_executionEnv]
   have qcode : q.executionEnv.code = submissionBytecode := by rw [qenv]; exact hcode
   have qfork : q.fork = .Osaka := by rw [State.fork, qenv]; exact hfork
   have qrun : q.halt = .Running := by
-    exact (Schedule.loopState_halt s (DriverTrace.messageOffsetWord i)
-      (UInt256.ofNat 0x72f) (scheduleRest input i) 16).trans hrun
+    simp only [q, scheduledState, withMemory_halt, Schedule.loopState_halt, hrun]
   have qnp : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig
       q.executionEnv.fork q.executionEnv.codeAddr = false := by rw [qenv]; exact hnp
   have restBound : rest.length < 1012 := by

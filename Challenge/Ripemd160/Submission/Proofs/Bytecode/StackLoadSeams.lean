@@ -85,12 +85,11 @@ theorem resultState_returned (s : State) (input : ByteArray) (i : Nat) :
 
 theorem scheduled_words_memory (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (ctx : StackRunBridge.BlockContext s input i h)
+    (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input)
     (k : Nat) (hk : k < 16) :
-    MachineState.readWord (scheduledState s input i).memory (672 + 32 * k) =
-      Challenge.EvmProof.Word.ofUInt32 (blockWords input i k) := by
-  have hw := scheduledState_words s input i h ctx k hk
-  unfold ScheduleCorrect.xValue at hw
-  rw [ScheduleCorrect.xSlotWord_toNat k hk] at hw
-  simpa only [Nat.mul_comm] using hw
+    Challenge.EvmProof.Word.toUInt32
+      (MachineState.readWord (scheduledState s input i).memory (644 + 4 * k)) =
+      blockWords input i k :=
+  scheduledState_words s input i h ctx hfit hi k hk
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackLoadSeams
