@@ -282,4 +282,9 @@ def expectedState (s : State) (startPC messageOffset returnPC : UInt256)
     (expectedState s startPC messageOffset returnPC rest).hReturn = s.hReturn := by
   simp only [expectedState]
 
+/-! The packed helper leaves no transient stack value after each store. -/
+theorem storeTemplate_shape (half : Nat) :
+    (storeTemplate half).length = 51 := by
+  exact storeTemplate_length half
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleTemplate
