@@ -1,13 +1,12 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairRoundState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RotationMultiply
 
 set_option warningAsError true
 set_option maxRecDepth 30000
 set_option maxHeartbeats 4000000
 
 /-!
-# H25 paired-round evaluator trace
+# H27 paired-round evaluator trace
 
 The theorem below proves the f0 pair helper on arbitrary 256-bit stack and
 memory words.  The stack-capacity premise is strict and accounts for the
@@ -145,12 +144,6 @@ theorem runInstrSeq_f0 (s : State) (startPC p0 p1 returnPC : UInt256)
             working.e)
           mask :=
     raw_rotate_or_fold q0 working.e r0 (mask_land_toNat_lt _) hrot0
-  have hfirstC10 :
-      UInt256.land mask
-          (UInt256.shiftRight
-            (working.c.lor (working.c.shiftLeft (UInt256.ofNat 32)))
-            (UInt256.ofNat 22)) =
-        stackC10 working.c := c10_or_fold working.c
   have hT0 :
       UInt256.land mask
           (UInt256.add working.e
@@ -199,8 +192,6 @@ theorem runInstrSeq_f0 (s : State) (startPC p0 p1 returnPC : UInt256)
   simp only [word0, f0] at hT0_eval
   have hT0_eval' := hT0_eval
   simp only [mask] at hT0_eval'
-  have hfirstC10' := hfirstC10
-  simp only [mask] at hfirstC10'
   let t0 : UInt256 :=
     UInt256.land
       (UInt256.add working.e
@@ -208,26 +199,28 @@ theorem runInstrSeq_f0 (s : State) (startPC p0 p1 returnPC : UInt256)
           ((q0.land mask).shiftRight (UInt256.ofNat (32 - r0)))))
       mask
   let q1c : UInt256 :=
-    (working.e.add ((stackC10 working.c).xor (working.b.xor t0))).add word1
+    word1.add (working.e.add ((working.b.xor t0).xor
+      (ScratchLow.rawC10 working.c)))
   have hq1c :
-      working.e.add (word1.add ((stackC10 working.c).xor
+      working.e.add (word1.add ((ScratchLow.rawC10 working.c).xor
         (working.b.xor t0))) = q1c := by
     calc
       working.e.add
-          (word1.add ((stackC10 working.c).xor (working.b.xor t0))) =
-          (working.e.add word1).add
-            ((stackC10 working.c).xor (working.b.xor t0)) := by
-              rw [word_add_assoc]
+          (word1.add ((ScratchLow.rawC10 working.c).xor (working.b.xor t0))) =
+          working.e.add (word1.add ((working.b.xor t0).xor
+            (ScratchLow.rawC10 working.c))) := by
+              rw [hxorcomm]
+      _ = (working.e.add word1).add
+            ((working.b.xor t0).xor (ScratchLow.rawC10 working.c)) := by
+              exact (word_add_assoc working.e word1
+                ((working.b.xor t0).xor (ScratchLow.rawC10 working.c))).symm
       _ = (word1.add working.e).add
-            ((stackC10 working.c).xor (working.b.xor t0)) := by
+            ((working.b.xor t0).xor (ScratchLow.rawC10 working.c)) := by
               rw [hcomm working.e word1]
-      _ = word1.add
-            (working.e.add ((stackC10 working.c).xor (working.b.xor t0))) := by
-              rw [word_add_assoc word1 working.e]
-      _ = (working.e.add ((stackC10 working.c).xor
-            (working.b.xor t0))).add word1 := by
-              rw [hcomm word1 (working.e.add
-                ((stackC10 working.c).xor (working.b.xor t0)))]
+      _ = word1.add (working.e.add ((working.b.xor t0).xor
+            (ScratchLow.rawC10 working.c))) := by
+              exact word_add_assoc word1 working.e
+                ((working.b.xor t0).xor (ScratchLow.rawC10 working.c))
       _ = q1c := rfl
   have hsecondRotC :
       UInt256.land mask
@@ -288,7 +281,7 @@ theorem runInstrSeq_f0 (s : State) (startPC p0 p1 returnPC : UInt256)
     simpa only [HOr.hOr, OrOp.or, EvmSemantics.UInt256.instOrOp] using
       (RotationMultiply.factor_mul_mask32_eq_or_shift q)
   have hq1c' := hq1c
-  simp only [word1, t0, mask] at hq1c'
+  simp only [word1, t0, mask, ScratchLow.rawC10] at hq1c'
   simp (config := { maxSteps := 3000000 })
     [pairBeforeJumpTemplate, pairFirstBooleanOps, pairSecondBooleanOps,
       pairDup7, pairDup8, pairDup9, pairDup10, pairSwap5, pairSwap7,
@@ -298,7 +291,8 @@ theorem runInstrSeq_f0 (s : State) (startPC p0 p1 returnPC : UInt256)
       HMul.hMul, Mul.mul,
       pairHelperEntry, pairAfterHelperBeforeJump, pairWorking, roundWords,
       pcAfter, StackRound.stackRound, StackRound.stackF,
-      StackRound.stackSum, StackRound.stackRawRot, StackRound.stackC10,
+      StackRound.stackSum, StackRound.stackRawRot,
+      ScratchLow.rawRound,
       Word.mask32, List.exchange, hrun, hcap, hswap1, hswap2, hswap3,
       hswap4, hswap5, hswap6, hswap7, UInt256.succ, Instr.size,
       Instr.size_push, Instr.size_op, Nat.add_assoc,
@@ -312,11 +306,11 @@ theorem runInstrSeq_f0 (s : State) (startPC p0 p1 returnPC : UInt256)
   constructor
   · simpa [UInt256.size] using congrArg UInt256.ofNat hactivePair
   · constructor
-    · rw [hT0_eval', hfirstC10']
+    · rw [hT0_eval']
       rw [hcomm working.d]
       rw [hq1c']
       simpa [mask, q1c, t0, q0, word0, word1, f0,
-        StackRound.stackC10, Word.mask32, UInt256.xor, HXor.hXor,
+        ScratchLow.rawC10, Word.mask32, UInt256.xor, HXor.hXor,
         HAnd.hAnd, AndOp.and,
         EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
         EvmSemantics.UInt256.instOrOp, BooleanSelect.xor_comm] using
@@ -327,11 +321,7 @@ theorem runInstrSeq_f0 (s : State) (startPC p0 p1 returnPC : UInt256)
           EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
           EvmSemantics.UInt256.instOrOp] using hT0_eval'
       · constructor
-        · simpa [mask, StackRound.stackC10, Word.mask32, HAnd.hAnd, AndOp.and,
-            EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
-            EvmSemantics.UInt256.instOrOp] using c10_or_fold working.b
-        · simpa [mask, StackRound.stackC10, Word.mask32, HAnd.hAnd, AndOp.and,
-            EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
-            EvmSemantics.UInt256.instOrOp] using c10_or_fold working.c
+        · rfl
+        · rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PairRoundTrace

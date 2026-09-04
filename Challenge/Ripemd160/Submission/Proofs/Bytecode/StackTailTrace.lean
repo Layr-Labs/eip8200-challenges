@@ -12,7 +12,7 @@ set_option maxHeartbeats 2000000
 # Located H25 final-combination trace
 
 The raw tail theorem is lifted through the exact H25 artifact.  The path starts
-at instruction 1646 and ends at instruction 1706.  The 846 helper instructions
+at instruction 1646 and ends at instruction 1706.  The 787 helper instructions
 after the tail remain in the artifact suffix.
 -/
 
@@ -71,7 +71,7 @@ private theorem artifactPrefix_length : artifactPrefix.length = 1600 := by
 private theorem tailBefore_length : tailBefore.length = 1646 := by
   simp [tailBefore, artifactPrefix_length]
 
-private theorem tailAfter_length : tailAfter.length = 846 := by
+private theorem tailAfter_length : tailAfter.length = 787 := by
   simp [tailAfter]
 
 private theorem tailAfter_nonempty : tailAfter ≠ [] := by

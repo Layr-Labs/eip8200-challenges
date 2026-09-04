@@ -299,34 +299,77 @@ Site, and Raw audits also passed with only the allowed axioms. The local
 Comparator accepted H22. The server promoted its exact artifact at
 1,635,239 gas. Each later candidate requires its own protected checks.
 
-## Current candidate: masked multiplication folds in paired helpers (H25)
+## H27: full-width paired rounds and the exact C-fold
 
-H25 starts from the verified H24 paired-round candidate. Each lane uses
-40 helper calls for the same 80 semantic rounds. The entry is
-`[p0, returnPC, 32-r0, p1, 32-r1, A, B, C, D, E] ++ rest`.
-The pure endpoint is two unchanged `StackRound.stackRound` applications.
-Message reads, memory, active-word count, suffix, and returns are preserved.
+H27 is the current locally verified candidate after H25. The native
+measurement is from the trusted binary on macOS, not the ranked server.
+The public files are `Challenge/Ripemd160/Submission/bytecode.hex`
+and `Challenge/Ripemd160/Submission/Proofs/Bytecode/StackCorrect.lean`.
 
-For each masked sum q, replace `DUP1; PUSH1 32; SHL; OR` with
-`PUSH5 0x0100000001; MUL`. The identity is valid because `q < 2^32`:
-`q * (2^32+1) = q OR (q << 32)`, with a product below `2^64`.
-The following `SWAP1; SHR` is unchanged. Rotation endpoints 0 and 32
-are covered. All six masks remain. The full-width C/B folds still use OR;
-the multiplication identity is not applied to an unbounded C/B value.
+| candidate | status | gas | bytes | instructions |
+| --- | --- | ---: | ---: | ---: |
+| H24 `c6ac2fcc` | promoted | 1,429,319 | 5,020 | 2,593 |
+| H25 `044d5a48` | promoted | 1,387,079 | 5,060 | 2,553 |
+| H26 | dominated; not submitted | 1,323,719 | 4,940 | 2,513 |
+| H27 | local native candidate | 1,281,479 | 4,980 | 2,473 |
 
-The artifact is 5,060 bytes and 2,553 instructions. The fourteen chunks
-contain twelve groups of 200 instructions, one of 153, and an empty group.
-Before-JUMP helper lengths are 62, 70, 68, 70, 68 for groups 0 through 4.
-The packed schedule starts at index 2393, PC `0x11b4`; its final JUMP is
-index 2552, PC `0x13c3`. The unchanged tail ends at index 1706, PC `0xd49`.
+H25 source SHA-1 is `576dbe880abd933fe853367e0434f42b99879410`. H27 saves
+105,600 gas versus H25 and 147,840 versus H24, at 1,600 gas per 512-bit
+block. H26 removed a mask; H27 also changes the C-fold.
 
-All 18 native tests pass. The trusted scorer passes all 17 clean and 17
-dirty vectors with equal paired gas: 1,387,079 gas. H25 saves 640 gas per
-block, or 42,240 per suite, against H24. The measured formula is
-`3698 + 20000 * B + 3 * C + memCost(65 + 2 * B)`.
-This is a native measurement, not an official server score.
+The C-fold changes from `DUP1 PUSH1 32 SHL OR PUSH1 22 SHR` to
+`PUSH5 0x100000001 MUL PUSH1 22 SHR`. The exact pure raw operation is
+`((UInt256.ofNat 0x100000001).mul C).shiftRight (UInt256.ofNat 22)`.
+The exact raw evaluator theorem preserves all five full-256-bit output words,
+equal to two pure raw rounds, and preserves full memory. It proves ordered
+`activeWords` for the two MLOADs; the production `activeWords ≥ 67` bound
+makes the count unchanged.
 
-The complete `StackCorrect.correct` build passes 1,086 jobs. A fresh full
-audit passes 22 axiom checks with only `propext`, `Classical.choice`, and
-`Quot.sound`. The universal public contract and protected sources are
-unchanged. Local Comparator and server validation are separate gates.
+The generic raw premises include a running state, `rest.length < 1012`,
+`r0 ≤ 32`, `r1 ≤ 32`, f0 constant `0`, and the memory, stack, and suffix conditions.
+Each helper executes two rounds; the lane composes 40 pair calls. The generic
+rotation proof is universal for rotations at most 32. Only semantic
+`WorkingRepresents` identifies canonical 32-bit B/C with `embeddedUInt32` and
+uses low A/D/E; the generic raw theorem remains full width. The bound
+`C < 2^32` is used only for that semantic bridge. At `C = 2^32 + 1`, MUL
+gives low result 2,048 and the old OR gives 1,024.
+
+The packed bytecode uses 64-byte chunks: 4,980 bytes require 78 chunks. The
+nonpacked main uses 70 chunks. The exact Lean Artifact has 14 instruction
+chunks: 12×200, 73, and empty. Its ASCII hex SHA-256 is
+`3f9a9f23df70cf8ec172e2840caf20e86ea415047224fcd97b996e9152519a08`; its
+decoded-byte SHA-256 is
+`ec8d3612bcf4240063117b7176d36bcac57fd1f11be37d718a076b50cb1cb9c0`.
+
+The trusted scorer has 34 rows: 17 clean and 17 dirty, all PASS with equal
+clean/dirty gas. The 1,281,479 score is the total for the 17 clean rows. A
+separate native test oracle ran 21,780 cases across H26 and H27 in seven tests:
+2 variants × 10 helpers × 33 × 33 rotations. All seven tests passed. Empty
+costs 22,307 gas; 1,000 bytes cost 298,503 gas.
+
+Main reports proper `StackCorrect.correct` 1,087 PASS and fresh
+`H27CorrectAudit` PASS with only the three allowed axioms. Negative proper
+1,020 plus fresh 2, Lane fresh 5, Sites fresh 10, Endpoint/Seams proper 1,077,
+and outer fresh 7 all PASS. The independent review and fresh 26-check full
+audit also passed. Local H27 Comparator and server validation are pending.
+
+The actual f0 change is q1 XOR/add grouping and C-fold MUL. Negative failures
+were a missing fold-to-two-shift equality, f2 fixed by
+`hsecondRotC'.trans hT1_sem.symm`, and an f4 broad `simp` hitting the
+4-million heartbeat limit after 84 seconds. The final direct fix was
+`raw_rotate_target.trans hT1_sem.symm`. Premises and limits did not change.
+
+Reproduce from a public checkout with:
+
+```text
+./.benchmark-tools/trusted/ripemd160challenge --hex=Challenge/Ripemd160/Submission/bytecode.hex --csv
+lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
+```
+
+Root audits and generator logs are ignored and are not uploaded. H23 dense
+packing and the H28 cache are research only; H28 had worse gas. Credit public
+terrapinelf ScratchLow/StackCompression PR 69, commit
+`6e97b9236cdf63c69e9e558828eee92ea3146ec9`, and ercumentyildirim for the
+inherited compiler/proof base. GPT 5.6 Sol coordinated verification; GPT 5.6
+Luna at maximum effort prepared the text. Local Comparator and server status
+remain pending; submission is the next step after final review.
