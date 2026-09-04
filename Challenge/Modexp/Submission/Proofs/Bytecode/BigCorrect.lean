@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigBaseCorrect
+import Challenge.Modexp.Submission.Proofs.Bytecode.BigExponentCorrect
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 3000000
@@ -36,28 +37,34 @@ theorem exponentProgress_represents_result (input : ByteArray)
   let accumulator := BigComplete.modulusOr header b e m 96 expOff modOff
     returnDest rest
   let expTail := BigComplete.exponentRest modOff returnDest rest
+  let beta := WordCorrect.baseNat input % Word.modulusValue input
+  let phase := BigExponent.exponentPhaseState entry accumulator n b e m 96
+    expOff expTail
+  let decodeTail := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
+    UInt256.ofNat 96, UInt256.ofNat expOff] ++ expTail
   have hm : m ≤ 1024 := by simpa [m] using hvalid.2.2.2
   have hn : n ≤ 32 := Limbs.limbCount_le_32 m hm
   have hinitial := BigBaseCorrect.exponentState_initial input returnDest rest
     hvalid hbig hmodulusPos
   have haccReduced : 1 % Word.modulusValue input < Word.modulusValue input :=
     Nat.mod_lt _ hmodulusPos
-  have hprogress := BigExponentCorrect.exponentByteProgress_represents entry
-    accumulator n b e m 96 expOff expTail e (1 % Word.modulusValue input)
-    (WordCorrect.baseNat input % Word.modulusValue input)
-    (Word.modulusValue input) (by omega) hn hmodulusPos haccReduced
-    hinitial.1 hinitial.2.1 hinitial.2.2
-  have hentryEnv : entry.executionEnv = header.executionEnv := by
-    calc
-      entry.executionEnv =
-          (BigComplete.setupState header b e m 96 expOff modOff returnDest
-            rest).executionEnv := by
-        simp [entry, BigComplete.exponentState, BigComplete.baseState,
-          BigBaseLoop.initialAccumulator, BigBaseLoop.baseConvertedExit,
-          BigBase.outerExit, BigBase.outerLoop, BigHelpers.addReturned,
-          BigBase.baseLoopEntry, BigBase.afterClearDouble,
-          BigHelpers.clearReturned, BigModulus.scanNonzero]
-      _ = header.executionEnv := by rfl
+  have hprogress := BigExponentCorrect.exponentPhase_represents entry
+    accumulator n b e m 96 expOff expTail beta
+    (Word.modulusValue input) hn hmodulusPos
+    (Nat.mod_lt _ hmodulusPos) hinitial.1 hinitial.2.1 hinitial.2.2.1
+    hinitial.2.2.2
+  have hvalueReduced := BigExponentCorrect.exponentValueAfter_lt entry
+    (Word.modulusValue input) beta expOff e (1 % Word.modulusValue input)
+    hmodulusPos haccReduced
+  have hdecoded := MontgomeryDecodeBlock.decodeReturned_correct phase
+    (UInt256.ofNat e) accumulator n
+    (BigExponentCorrect.exponentValueAfter entry (Word.modulusValue input)
+      beta expOff e (1 % Word.modulusValue input))
+    (Word.modulusValue input) decodeTail hn hmodulusPos hvalueReduced
+    hprogress.2.1 hprogress.1 hprogress.2.2
+  have hentryEnv : entry.executionEnv = header.executionEnv :=
+    BigComplete.exponentState_executionEnv header b e m 96 expOff modOff
+      returnDest rest
   have hvalueEnv := BigExponentCorrect.exponentValueAfter_executionEnv entry
     header (Word.modulusValue input)
     (WordCorrect.baseNat input % Word.modulusValue input) expOff e
@@ -78,8 +85,10 @@ theorem exponentProgress_represents_result (input : ByteArray)
         (WordCorrect.residue_power_eq_modPow (WordCorrect.baseNat input)
           (WordCorrect.exponentNat input) (Word.modulusValue input) e
           hmodulusPos)
-  rw [hvalue] at hprogress
-  simpa [BigComplete.exponentProgressState, entry, accumulator, n, b, e, m,
-    expOff, modOff, expTail, header, BigComplete.limbCount] using hprogress.1
+  rw [hvalue] at hdecoded
+  simpa only [BigComplete.exponentProgressState,
+    BigComplete.encodedExponentProgressState, BigComplete.limbCount,
+    phase, decodeTail, entry, accumulator, n, b, e, m, expOff, modOff,
+    expTail, header] using hdecoded
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigCorrect
