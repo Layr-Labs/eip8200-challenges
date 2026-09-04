@@ -32,7 +32,7 @@ def pushedReturn (input : ByteArray) : State :=
 def pushedOutput (input : ByteArray) : State :=
   { pushedReturn input with
     pc := (pushedReturn input).pc.succ
-    stack := (pushedReturn input).stack }
+    stack := ⟨0⟩ :: (pushedReturn input).stack }
 
 def pushedPad (input : ByteArray) : State :=
   { pushedOutput input with
@@ -42,7 +42,7 @@ def pushedPad (input : ByteArray) : State :=
 def padEntry (input : ByteArray) : State :=
   { pushedPad input with
     pc := UInt256.ofNat 0x1e0
-    stack := [UInt256.ofNat 0x41f] }
+    stack := [⟨0⟩, UInt256.ofNat 0x41f] }
 
 @[simp] private theorem padEntry_halt (input : ByteArray) :
     (padEntry input).halt = .Running := by rfl
