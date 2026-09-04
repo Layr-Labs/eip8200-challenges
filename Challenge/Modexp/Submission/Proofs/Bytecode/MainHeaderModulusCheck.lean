@@ -18,11 +18,11 @@ theorem run_headerModulusCheck (input : ByteArray) (hvalid : ValidInput input) :
     Nat.mod_eq_of_lt hm'
   have hgtm := boundedSize_gt_1024_eq_zero hm
   have ha1205 := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1205) (b := 3) (by norm_num : 1205 + 3 < 2 ^ 256)
+    (a := 1211) (b := 3) (by norm_num : 1211 + 3 < 2 ^ 256)
   have hs1208 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1208) (by norm_num : 1208 + 1 < 2 ^ 256)
+    (n := 1214) (by norm_num : 1214 + 1 < 2 ^ 256)
   have hs1209 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1209) (by norm_num : 1209 + 1 < 2 ^ 256)
+    (n := 1215) (by norm_num : 1215 + 1 < 2 ^ 256)
   simp (config := { maxSteps := 80000 })
     [headerModulusCheckPath, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,

@@ -45,7 +45,7 @@ theorem gasSteps_baseByteAt_cost_potential (s : State)
     (gasSteps_baseByteAt s accumulator count baseSize e m baseOff i rest hcap
       hcount hbase hi hoff hcode hfork hrun hnp).cost + MachineState.memCost
         (baseLoopState s accumulator count baseSize e m baseOff rest i).activeWords.toNat =
-      (3506 + count * 6656) + MachineState.memCost
+      (3506 + count * 7248) + MachineState.memCost
         (baseLoopState s accumulator count baseSize e m baseOff rest
           (i + 1)).activeWords.toNat := by
   have hstep := gasSteps_baseByte_cost_potential
@@ -83,7 +83,7 @@ theorem gasSteps_baseLoop_cost_potential (s : State)
       hcount hbase hoff hcode hfork hrun hnp).cost + MachineState.memCost
         (baseLoopState s accumulator count baseSize e m baseOff rest
           0).activeWords.toNat =
-      baseSize * (3506 + count * 6656) + MachineState.memCost
+      baseSize * (3506 + count * 7248) + MachineState.memCost
         (baseLoopState s accumulator count baseSize e m baseOff rest
           baseSize).activeWords.toNat := by
   unfold gasSteps_baseLoop
@@ -92,9 +92,9 @@ theorem gasSteps_baseLoop_cost_potential (s : State)
   exact gasSteps_baseByteAt_cost_potential s accumulator count baseSize e m
     baseOff i rest hcap hcount hbase hi hoff hcode hfork hrun hnp
 
-private theorem jumpColdEntry :
-    Decode.isValidJumpDest submissionBytecode 1343 = true :=
-  Artifact.isValidJumpDest_index 995 (by rfl)
+private theorem jump944 :
+    Decode.isValidJumpDest submissionBytecode 944 = true :=
+  Artifact.isValidJumpDest_index 717 (by rfl)
 
 def baseConvertedExit (s : State) (accumulator : UInt256)
     (count baseSize e m baseOff : Nat) (rest : List UInt256) : State :=
@@ -105,7 +105,7 @@ def initialAccumulator (s : State) (accumulator : UInt256)
     (count baseSize e m baseOff : Nat) (rest : List UInt256) : State :=
   BigHelpers.addReturned
     (baseConvertedExit s accumulator count baseSize e m baseOff rest)
-    2048 3072 1 0 count 1343
+    2048 3072 1 0 count 944
     ([accumulator, UInt256.ofNat count, UInt256.ofNat baseSize] ++
       ([UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff] ++ rest))
 
@@ -149,12 +149,12 @@ def gasSteps_baseFinish (s : State) (accumulator : UInt256)
       (by simpa [outerExit, outerLoop, progress, State.fork] using hnp)
   have hadd := BigHelpers.gasSteps_addMaskedMod
     (baseConvertedExit s accumulator count baseSize e m baseOff rest)
-    2048 3072 1 0 count 1343 helperRest hhelper hcount
+    2048 3072 1 0 count 944 helperRest hhelper hcount
     (by simpa [baseConvertedExit, outerExit, outerLoop] using hcode)
     (by simpa [baseConvertedExit, outerExit, outerLoop, State.fork] using hfork)
     (by simpa [baseConvertedExit, outerExit, outerLoop] using hrun)
     (by simpa [baseConvertedExit, outerExit, outerLoop, State.fork] using hnp)
-    jumpColdEntry
+    jump944
   exact Challenge.EvmProof.GasSteps.cast
     (hguard.trans (htoAccumulator.trans hadd))
     (by simp [baseLoopState, progress, fullRest])
@@ -173,7 +173,7 @@ theorem gasSteps_baseFinish_cost_potential (s : State)
       hcount hbase hcode hfork hrun hnp).cost + MachineState.memCost
         (baseLoopState s accumulator count baseSize e m baseOff rest
           baseSize).activeWords.toNat =
-      (206 + count * 416) + MachineState.memCost
+      (206 + count * 453) + MachineState.memCost
         (initialAccumulator s accumulator count baseSize e m baseOff
           rest).activeWords.toNat := by
   let progress := baseProgress count baseOff baseSize s
@@ -201,12 +201,12 @@ theorem gasSteps_baseFinish_cost_potential (s : State)
         (by decide) (by decide)
   have hadd := BigHelpers.gasSteps_addMaskedMod_cost_potential
     (baseConvertedExit s accumulator count baseSize e m baseOff rest)
-    2048 3072 1 0 count 1343 helperRest hhelper hcount
+    2048 3072 1 0 count 944 helperRest hhelper hcount
     (by simpa [baseConvertedExit, outerExit, outerLoop] using hcode)
     (by simpa [baseConvertedExit, outerExit, outerLoop, State.fork] using hfork)
     (by simpa [baseConvertedExit, outerExit, outerLoop] using hrun)
     (by simpa [baseConvertedExit, outerExit, outerLoop, State.fork] using hnp)
-    jumpColdEntry
+    jump944
   unfold gasSteps_baseFinish
   simp only [Challenge.EvmProof.GasSteps.cast_cost,
     Challenge.EvmProof.GasSteps.trans_cost,
@@ -244,7 +244,7 @@ theorem gasSteps_baseConversion_cost_potential (s : State)
       hcount hbase hoff hcode hfork hrun hnp).cost + MachineState.memCost
         (baseLoopState s accumulator count baseSize e m baseOff rest
           0).activeWords.toNat =
-      (baseSize * (3506 + count * 6656) + (206 + count * 416)) +
+      (baseSize * (3506 + count * 7248) + (206 + count * 453)) +
         MachineState.memCost
           (initialAccumulator s accumulator count baseSize e m baseOff
             rest).activeWords.toNat := by
@@ -253,7 +253,7 @@ theorem gasSteps_baseConversion_cost_potential (s : State)
       hcount hbase hoff hcode hfork hrun hnp)
     (gasSteps_baseFinish s accumulator count baseSize e m baseOff rest hcap
       hcount hbase hcode hfork hrun hnp)
-    (baseSize * (3506 + count * 6656)) (206 + count * 416)
+    (baseSize * (3506 + count * 7248)) (206 + count * 453)
     (gasSteps_baseLoop_cost_potential s accumulator count baseSize e m baseOff
       rest hcap hcount hbase hoff hcode hfork hrun hnp)
     (gasSteps_baseFinish_cost_potential s accumulator count baseSize e m baseOff

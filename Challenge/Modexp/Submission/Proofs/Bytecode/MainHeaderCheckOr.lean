@@ -14,9 +14,9 @@ theorem run_headerCheckOr (input : ByteArray) :
       (headerBaseCheckedState input) = some (headerChecksCombinedState input) := by
   have hlor : UInt256.lor 0 0 = 0 := by decide
   have hs1220 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1220) (by norm_num : 1220 + 1 < 2 ^ 256)
+    (n := 1226) (by norm_num : 1226 + 1 < 2 ^ 256)
   have hs1221 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1221) (by norm_num : 1221 + 1 < 2 ^ 256)
+    (n := 1227) (by norm_num : 1227 + 1 < 2 ^ 256)
   simp (config := { maxSteps := 40000 })
     [headerCheckOrPath, opAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,

@@ -14,7 +14,7 @@ theorem run_headerCheckIsZero (input : ByteArray) :
       (headerChecksCombinedState input) = some (headerCheckPassedState input) := by
   have hiz : UInt256.isZero 0 = 1 := by decide
   have hs1222 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1222) (by norm_num : 1222 + 1 < 2 ^ 256)
+    (n := 1228) (by norm_num : 1228 + 1 < 2 ^ 256)
   simp (config := { maxSteps := 20000 })
     [headerCheckIsZeroPath, opAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,

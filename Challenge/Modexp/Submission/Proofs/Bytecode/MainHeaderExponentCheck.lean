@@ -19,11 +19,11 @@ theorem run_headerExponentCheck (input : ByteArray) (hvalid : ValidInput input) 
     Nat.mod_eq_of_lt he'
   have hgte := boundedSize_gt_1024_eq_zero he
   have ha1210 := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1210) (b := 3) (by norm_num : 1210 + 3 < 2 ^ 256)
+    (a := 1216) (b := 3) (by norm_num : 1216 + 3 < 2 ^ 256)
   have hs1213 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1213) (by norm_num : 1213 + 1 < 2 ^ 256)
+    (n := 1219) (by norm_num : 1219 + 1 < 2 ^ 256)
   have hs1214 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1214) (by norm_num : 1214 + 1 < 2 ^ 256)
+    (n := 1220) (by norm_num : 1220 + 1 < 2 ^ 256)
   simp (config := { maxSteps := 80000 })
     [headerExponentCheckPath, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,

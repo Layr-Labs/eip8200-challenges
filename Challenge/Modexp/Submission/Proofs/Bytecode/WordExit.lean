@@ -73,7 +73,7 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1267] ++ callerRest input
+      UInt256.ofNat 1273] ++ callerRest input
     memory := outputMemory input acc
     activeWords := UInt256.ofNat (MachineState.activeWordsAfter storedWords.toNat
       6144 (modulusSize input))
