@@ -253,10 +253,10 @@ private theorem outputIteration_cost_potential (s : State) (input : ByteArray)
   have qnp : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig q.executionEnv.fork
       q.executionEnv.codeAddr = false := by simpa [q] using hnp
   let conditionStart : State := { q with
-    pc := UInt256.ofNat 0x654
+    pc := UInt256.ofNat 0x447
     stack := [UInt256.ofNat i, Padding.paddedWord input] }
   let conditionEnd : State := { q with
-    pc := UInt256.ofNat 0x65e
+    pc := UInt256.ofNat 0x451
     stack := [UInt256.ofNat i, Padding.paddedWord input] }
   have hconditionRun : Challenge.EvmProof.Stepper.runLocatedBlock
       OutputTrace.outerTestPath conditionStart = some conditionEnd := by
@@ -280,8 +280,8 @@ private theorem outputIteration_cost_potential (s : State) (input : ByteArray)
     simpa [gcondition, gconditionRaw, conditionStart, conditionEnd] using hraw
   let callEnd : State := { q with
     pc := UInt256.ofNat 0x20
-    stack := [UInt256.ofNat i, ⟨0⟩, UInt256.ofNat 0x66a,
-      UInt256.ofNat 0x676, UInt256.ofNat i, Padding.paddedWord input] }
+    stack := [UInt256.ofNat i, ⟨0⟩, UInt256.ofNat 0x45d,
+      UInt256.ofNat 0x469, UInt256.ofNat i, Padding.paddedWord input] }
   have hcallRun : Challenge.EvmProof.Stepper.runLocatedBlock
       OutputTrace.hAtCallPath conditionEnd = some callEnd := by
     simpa [conditionEnd, callEnd] using OutputTrace.run_hAtCall q i
@@ -300,13 +300,13 @@ private theorem outputIteration_cost_potential (s : State) (input : ByteArray)
             Challenge.EvmProof.Meter.instrStaticCost, hz])
       (by decide)
   let hEnd : State := { loadedH q i with
-    pc := UInt256.ofNat 0x66a
-    stack := [OutputTrace.hWord q i, UInt256.ofNat 0x676,
+    pc := UInt256.ofNat 0x45d
+    stack := [OutputTrace.hWord q i, UInt256.ofNat 0x469,
       UInt256.ofNat i, Padding.paddedWord input] }
   have hhRun : Challenge.EvmProof.Stepper.runLocatedBlock
       OutputTrace.hAtPath callEnd = some hEnd := by
     simpa [callEnd, hEnd, loadedH] using OutputTrace.run_hAt q i
-      [UInt256.ofNat 0x676, UInt256.ofNat i, Padding.paddedWord input]
+      [UInt256.ofNat 0x469, UInt256.ofNat i, Padding.paddedWord input]
       hi (by simp) qcode qrun
   let gh := Output.gasSteps_block OutputTrace.hAtPath callEnd hEnd
     qcode qfork hhRun qrun qnp
@@ -331,7 +331,7 @@ private theorem outputIteration_cost_potential (s : State) (input : ByteArray)
   let writeStart : State := { loaded with
     pc := UInt256.ofNat 0x3c6
     stack := [UInt256.ofNat (12 + 4 * i), OutputTrace.hWord q i,
-      UInt256.ofNat 0x676, UInt256.ofNat i, Padding.paddedWord input] }
+      UInt256.ofNat 0x469, UInt256.ofNat i, Padding.paddedWord input] }
   have hwcallRun : Challenge.EvmProof.Stepper.runLocatedBlock
       OutputTrace.writeCallPath hEnd = some writeStart := by
     simpa [hEnd, writeStart, loaded] using OutputTrace.run_writeCall loaded i
@@ -351,15 +351,15 @@ private theorem outputIteration_cost_potential (s : State) (input : ByteArray)
             Challenge.EvmProof.Meter.instrStaticCost, hz])
       (by decide)
   let gwrite := gasSteps_writeWord loaded (12 + 4 * i)
-    (OutputTrace.hWord q i) (UInt256.ofNat 0x676)
+    (OutputTrace.hWord q i) (UInt256.ofNat 0x469)
     [UInt256.ofNat i, Padding.paddedWord input] (by simp) (by omega)
     loadedCode loadedFork loadedRun loadedNp (by decide)
   let written := writeLoopState loaded (12 + 4 * i) (OutputTrace.hWord q i)
-    (UInt256.ofNat 0x676) [UInt256.ofNat i, Padding.paddedWord input] 4
+    (UInt256.ofNat 0x469) [UInt256.ofNat i, Padding.paddedWord input] 4
   have hwrite : gwrite.cost + MachineState.memCost writeStart.activeWords.toNat =
       380 + MachineState.memCost written.activeWords.toNat := by
     simpa [gwrite, writeStart, written] using writeWord_cost_potential loaded
-      (12 + 4 * i) (OutputTrace.hWord q i) (UInt256.ofNat 0x676)
+      (12 + 4 * i) (OutputTrace.hWord q i) (UInt256.ofNat 0x469)
       [UInt256.ofNat i, Padding.paddedWord input] (by simp) (by omega)
       loadedCode loadedFork loadedRun loadedNp (by decide)
   have writtenCode : written.executionEnv.code = submissionBytecode := by
@@ -370,7 +370,7 @@ private theorem outputIteration_cost_potential (s : State) (input : ByteArray)
   have writtenNp : Precompile.isPrecompileWithConfig written.executionEnv.precompileConfig written.executionEnv.fork
       written.executionEnv.codeAddr = false := by simpa [written] using loadedNp
   let writtenReturned : State := { written with
-    pc := UInt256.ofNat 0x676
+    pc := UInt256.ofNat 0x469
     stack := [UInt256.ofNat i, Padding.paddedWord input] }
   let next := afterWrittenWord q input i
   have hnextRun : Challenge.EvmProof.Stepper.runLocatedBlock
@@ -487,7 +487,7 @@ private theorem outputLoopState_activeWords_eq (s : State) (input : ByteArray)
       have hwrite := writeLoopState_activeWords_eq
         { prev with activeWords := (prev.activeWordsAfterUInt256
             (OutputTrace.hOffset i) 32) }
-        (12 + 4 * i) (OutputTrace.hWord prev i) (UInt256.ofNat 0x676)
+        (12 + 4 * i) (OutputTrace.hWord prev i) (UInt256.ofNat 0x469)
         [UInt256.ofNat i, Padding.paddedWord input] 4 (by omega)
         (by simp [hloaded]; omega)
       simpa [prev, hloaded] using hwrite
@@ -515,7 +515,7 @@ private theorem output_cost_potential (s : State) (input : ByteArray)
       2601 + MachineState.memCost (outputResult s input).activeWords.toNat := by
   let preStart := DriverTrace.afterExit s input
   let preEnd : State := { OutputTrace.zeroOutput s with
-    pc := UInt256.ofNat 0x654, stack := [⟨0⟩, Padding.paddedWord input] }
+    pc := UInt256.ofNat 0x447, stack := [⟨0⟩, Padding.paddedWord input] }
   have hpreRun : Challenge.EvmProof.Stepper.runLocatedBlock
       OutputTrace.preludePath preStart = some preEnd := by
     simpa [preStart, preEnd, DriverTrace.afterExit] using OutputTrace.run_prelude s
@@ -544,10 +544,10 @@ private theorem output_cost_potential (s : State) (input : ByteArray)
   have qnp : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig q.executionEnv.fork
       q.executionEnv.codeAddr = false := by simpa [q] using hnp
   let exitStart : State := { q with
-    pc := UInt256.ofNat 0x654
+    pc := UInt256.ofNat 0x447
     stack := [UInt256.ofNat 5, Padding.paddedWord input] }
   let exitEnd : State := { q with
-    pc := UInt256.ofNat 0x681
+    pc := UInt256.ofNat 0x474
     stack := [UInt256.ofNat 5, Padding.paddedWord input] }
   have hexitRun : Challenge.EvmProof.Stepper.runLocatedBlock
       OutputTrace.outerTestPath exitStart = some exitEnd := by

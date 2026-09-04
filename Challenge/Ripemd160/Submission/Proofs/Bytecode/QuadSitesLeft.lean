@@ -25,7 +25,7 @@ private theorem leftWrapper_slice (k : Fin 20) :
 private theorem leftWrapper_fits (k : Fin 20) :
     leftWrapperIndex k.val + (leftWrapperTemplate k).length ≤
       Artifact.instructions.length := by
-  change 997 + 12 * k.val + 12 ≤ Artifact.submissionInstructions.length
+  change 931 + 12 * k.val + 12 ≤ Artifact.submissionInstructions.length
   rw [Artifact.referenceInstructions_count]
   omega
 
@@ -69,7 +69,7 @@ private theorem leftCall_fits (k : Fin 20) :
           (leftHelperPC k.val) (leftRotation0 k) (leftRotation1 k)
           (leftRotation2 k) (leftRotation3 k)).length ≤
       Artifact.instructions.length := by
-  change 997 + 12 * k.val + 10 ≤ Artifact.submissionInstructions.length
+  change 931 + 12 * k.val + 10 ≤ Artifact.submissionInstructions.length
   rw [Artifact.referenceInstructions_count]
   omega
 
@@ -304,13 +304,13 @@ theorem leftRotation2_le32 (k : Fin 20) : leftRotation2 k ≤ 32 := by
 theorem leftRotation3_le32 (k : Fin 20) : leftRotation3 k ≤ 32 := by
   fin_cases k <;> decide
 
-@[simp] theorem leftPC_zero : leftPC 0 = UInt256.ofNat 0x746 := by rfl
+@[simp] theorem leftPC_zero : leftPC 0 = UInt256.ofNat 0x539 := by rfl
 
-@[simp] theorem leftPC_end : leftPC 20 = UInt256.ofNat 0x976 := by rfl
+@[simp] theorem leftPC_end : leftPC 20 = UInt256.ofNat 0x769 := by rfl
 
-@[simp] theorem leftStartPC_eq : leftStartPC = UInt256.ofNat 0x746 := by rfl
+@[simp] theorem leftStartPC_eq : leftStartPC = UInt256.ofNat 0x539 := by rfl
 
-@[simp] theorem leftEndPC_eq : leftEndPC = UInt256.ofNat 0x976 := by rfl
+@[simp] theorem leftEndPC_eq : leftEndPC = UInt256.ofNat 0x769 := by rfl
 
 theorem leftPC_succ (k : Fin 20) :
     leftPC (k.val + 1) = leftPC k.val + UInt256.ofNat 28 := by

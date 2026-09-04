@@ -160,7 +160,7 @@ private theorem tail_instruction_pc_global (index : Nat)
   simpa only [Nat.add_sub_of_le hlo] using h
 
 private theorem finalJumpPC :
-    Artifact.submissionArtifact.instructionPC 1706 = 0xd49 := by
+    Artifact.submissionArtifact.instructionPC 1640 = 0xd49 := by
   have h := tail_instruction_pc 60 (by decide)
   simpa [StackTail.tailInstructions, StackTail.tail60Instructions,
     StackTail.c0Instructions, StackTail.c1Instructions,

@@ -26,7 +26,7 @@ def driverRest (input : ByteArray) (i : Nat) : List UInt256 :=
   [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
 
 def scheduleRest (input : ByteArray) (i : Nat) : List UInt256 :=
-  [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x643] ++ driverRest input i
+  [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x436] ++ driverRest input i
 
 def withMemory (s : State) (memory : ByteArray) : State :=
   {s with memory := memory}
@@ -63,7 +63,7 @@ def withActiveWords (s : State) (activeWords : UInt256) : State :=
 def scheduledState (s : State) (input : ByteArray) (i : Nat) : State :=
   withActiveWords
     (withMemory
-      (Schedule.loopState s (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f)
+      (Schedule.loopState s (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x522)
         (scheduleRest input i) 16)
       (DenseScheduleTemplate.denseExpectedMemory s (DriverTrace.messageOffsetWord i)))
     (DenseScheduleTemplate.denseExpectedActiveWords s
@@ -83,7 +83,7 @@ def resultHash (s : State) (input : ByteArray) (i : Nat) : Compression.EvmHashSt
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   {scheduledState s input i with
-    pc := UInt256.ofNat 0x643
+    pc := UInt256.ofNat 0x436
     stack := driverRest input i
     memory := StackMemory.storeHash (scheduledState s input i).memory (resultHash s input i)}
 
@@ -157,13 +157,13 @@ private theorem denseExpectedMemory_readWord_outside (s : State)
   rw [DenseScheduleTemplate.denseExpectedMemory, denseStoreOffset_zero,
     denseStoreOffset_one]
   unfold DenseScheduleTemplate.writeDenseWord
-  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 704 (by
+  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 672 (by
     rcases houtside with hbefore | hafter
-    · exact Or.inl (by omega)
+    · exact Or.inl hbefore
     · exact Or.inr (by rw [denseWordBytes_size]; omega)),
-    Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 672 (by
+    Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 704 (by
       rcases houtside with hbefore | hafter
-      · exact Or.inl hbefore
+      · exact Or.inl (by omega)
       · exact Or.inr (by rw [denseWordBytes_size]; omega))]
 
 private theorem densePacked_stage_eq_template (value : UInt256)
@@ -215,6 +215,7 @@ private theorem denseExpectedMemory_eq_denseMemory (s : State) (p : Nat)
     DenseScheduleMemory.packedBytes]
   rw [densePacked_packedWord_eq_template,
     densePacked_packedWord_eq_template]
+  exact DenseScheduleMemory.writePacked_comm_672_704 _ _ _
 
 private theorem denseExpectedMemory_word_low32 (s : State) (p k : Nat)
     (hk : k < 16) (hbound : p + 64 < 2 ^ 256) :

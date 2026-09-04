@@ -24,7 +24,7 @@ private theorem rightWrapper_slice (k : Fin 20) :
 private theorem rightWrapper_fits (k : Fin 20) :
     rightWrapperIndex k.val + (rightWrapperTemplate k).length ≤
       Artifact.instructions.length := by
-  change 1248 + 12 * k.val + 12 ≤ Artifact.submissionInstructions.length
+  change 1182 + 12 * k.val + 12 ≤ Artifact.submissionInstructions.length
   rw [Artifact.referenceInstructions_count]
   omega
 
@@ -70,7 +70,7 @@ private theorem rightCall_fits (k : Fin 20) :
           (rightAddress3 k) (rightHelperPC k.val) (rightRotation0 k)
           (rightRotation1 k) (rightRotation2 k) (rightRotation3 k)).length ≤
       Artifact.instructions.length := by
-  change 1248 + 12 * k.val + 10 ≤ Artifact.submissionInstructions.length
+  change 1182 + 12 * k.val + 10 ≤ Artifact.submissionInstructions.length
   rw [Artifact.referenceInstructions_count]
   omega
 
@@ -310,16 +310,16 @@ theorem rightRotation3_le32 (k : Fin 20) :
     rightRotation3 k ≤ 32 := by
   fin_cases k <;> decide
 
-@[simp] theorem rightPC_zero : rightPC 0 = UInt256.ofNat 0x986 := by
+@[simp] theorem rightPC_zero : rightPC 0 = UInt256.ofNat 0x779 := by
   rfl
 
-@[simp] theorem rightPC_end : rightPC 20 = UInt256.ofNat 0xbb6 := by
+@[simp] theorem rightPC_end : rightPC 20 = UInt256.ofNat 0x9a9 := by
   rfl
 
-@[simp] theorem rightStartPC_eq : rightStartPC = UInt256.ofNat 0x986 := by
+@[simp] theorem rightStartPC_eq : rightStartPC = UInt256.ofNat 0x779 := by
   rfl
 
-@[simp] theorem rightEndPC_eq : rightEndPC = UInt256.ofNat 0xbb6 := by
+@[simp] theorem rightEndPC_eq : rightEndPC = UInt256.ofNat 0x9a9 := by
   rfl
 
 theorem rightPC_succ (k : Fin 20) :

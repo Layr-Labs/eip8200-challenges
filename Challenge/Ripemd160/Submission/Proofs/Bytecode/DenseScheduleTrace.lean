@@ -314,50 +314,50 @@ theorem runInstrSeq_denseBeforeJump
       some (denseExpectedState s startPC messageOffset returnPC rest) := by
   have hinitial := runInstrSeq_initial s startPC messageOffset returnPC rest
     (by omega) hrun
-  let t0 : State :=
+  let t1 : State :=
     afterDenseHalf (afterInitial s startPC messageOffset returnPC rest)
-      (pcAfter startPC initialTemplate) 0
-      (packedWord (inputWord0 s messageOffset))
-      (inputWord1 s messageOffset :: returnPC :: rest)
-  have h0raw := runInstrSeq_denseHalf
+      (pcAfter startPC initialTemplate) 1
+      (packedWord (inputWord1 s messageOffset))
+      (inputWord0 s messageOffset :: returnPC :: rest)
+  have h1raw := runInstrSeq_denseHalf
     (afterInitial s startPC messageOffset returnPC rest)
     (pcAfter startPC initialTemplate)
-    0 (inputWord0 s messageOffset) (inputWord1 s messageOffset)
+    1 (inputWord1 s messageOffset) (inputWord0 s messageOffset)
     (returnPC :: rest) (by simp; omega) (by simpa using hrun)
-  have h0 :
-      runInstrSeq (denseHalfTemplate 0)
-        (afterInitial s startPC messageOffset returnPC rest) =
-      some t0 := by
-    simpa only [t0, afterInitial, List.cons_append, List.nil_append] using h0raw
-  have hinit0 :
-      runInstrSeq (initialTemplate ++ denseHalfTemplate 0)
-        (scheduleEntry s startPC messageOffset returnPC rest) =
-      some t0 := by
-    have h := runInstrSeq_append_running hinitial
-      (by simpa using hrun) h0
-    simpa only [t0] using h
-  have h1raw := runInstrSeq_denseHalf t0 t0.pc 1
-    (inputWord1 s messageOffset) returnPC rest
-    (by omega) (by simpa [t0] using hrun)
   have h1 :
-      runInstrSeq (denseHalfTemplate 1) t0 =
-        some (afterDenseHalf t0 t0.pc 1
-          (packedWord (inputWord1 s messageOffset)) (returnPC :: rest)) := by
-    convert h1raw using 1
-    all_goals simp [t0, afterDenseHalf]
-  have hfull :
-      runInstrSeq ((initialTemplate ++ denseHalfTemplate 0) ++
-        denseHalfTemplate 1)
+      runInstrSeq (denseHalfTemplate 1)
+        (afterInitial s startPC messageOffset returnPC rest) =
+      some t1 := by
+    simpa only [t1, afterInitial, List.cons_append, List.nil_append] using h1raw
+  have hinit1 :
+      runInstrSeq (initialTemplate ++ denseHalfTemplate 1)
         (scheduleEntry s startPC messageOffset returnPC rest) =
-      some (afterDenseHalf t0 t0.pc 1
-        (packedWord (inputWord1 s messageOffset)) (returnPC :: rest)) := by
-    exact runInstrSeq_append_running hinit0
-      (by simp [afterDenseHalf_halt, t0, afterInitial_halt, hrun]) h1
+      some t1 := by
+    have h := runInstrSeq_append_running hinitial
+      (by simpa using hrun) h1
+    simpa only [t1] using h
+  have h0raw := runInstrSeq_denseHalf t1 t1.pc 0
+    (inputWord0 s messageOffset) returnPC rest
+    (by omega) (by simpa [t1] using hrun)
+  have h0 :
+      runInstrSeq (denseHalfTemplate 0) t1 =
+        some (afterDenseHalf t1 t1.pc 0
+          (packedWord (inputWord0 s messageOffset)) (returnPC :: rest)) := by
+    convert h0raw using 1
+    all_goals simp [t1, afterDenseHalf]
+  have hfull :
+      runInstrSeq ((initialTemplate ++ denseHalfTemplate 1) ++
+        denseHalfTemplate 0)
+        (scheduleEntry s startPC messageOffset returnPC rest) =
+      some (afterDenseHalf t1 t1.pc 0
+        (packedWord (inputWord0 s messageOffset)) (returnPC :: rest)) := by
+    exact runInstrSeq_append_running hinit1
+      (by simp [afterDenseHalf_halt, t1, afterInitial_halt, hrun]) h0
   have hend :
-      afterDenseHalf t0 t0.pc 1
-          (packedWord (inputWord1 s messageOffset)) (returnPC :: rest) =
+      afterDenseHalf t1 t1.pc 0
+          (packedWord (inputWord0 s messageOffset)) (returnPC :: rest) =
         denseExpectedState s startPC messageOffset returnPC rest := by
-    simp only [t0, afterInitial, afterDenseHalf, denseExpectedState,
+    simp only [t1, afterInitial, afterDenseHalf, denseExpectedState,
       denseExpectedMemory, denseExpectedActiveWords,
       denseStoreActiveWords, denseStoreAddresses, denseStoreOffset,
       denseStoreAddress,
