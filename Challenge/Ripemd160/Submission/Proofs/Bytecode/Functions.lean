@@ -37,9 +37,8 @@ def rotlPath : List
    ⟨10, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨11, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
    ⟨12, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨13, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨14, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨15, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨13, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨14, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def rotlValue (x n : UInt256) : UInt256 :=
   Challenge.EvmProof.Word.mask32
@@ -49,7 +48,7 @@ def rotlValue (x n : UInt256) : UInt256 :=
 def rotlEntry (s : State) (x n returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 4
-           stack := [x, n, 0, returnDest] ++ rest }
+           stack := [x, n, returnDest] ++ rest }
 
 def rotlReturned (s : State) (x n returnDest : UInt256)
     (rest : List UInt256) : State :=
@@ -58,11 +57,11 @@ def rotlReturned (s : State) (x n returnDest : UInt256)
 
 def rotlReady (s : State) (x n returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 21
+  { s with pc := UInt256.ofNat 20
            stack := [rotlValue x n, returnDest] ++ rest }
 
-def rotlBodyPath := rotlPath.take 12
-def rotlReturnPath := rotlPath.drop 12
+def rotlBodyPath := rotlPath.take 11
+def rotlReturnPath := rotlPath.drop 11
 
 @[simp] private theorem rotlPC (i : Nat) (hlo : 2 ≤ i) (hhi : i ≤ 19) :
     Artifact.instructionPC i =
@@ -82,6 +81,8 @@ theorem run_rotlBody (s : State) (x n returnDest : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock rotlBodyPath
       (rotlEntry s x n returnDest rest) =
         some (rotlReady s x n returnDest rest) := by
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -96,7 +97,7 @@ theorem run_rotlBody (s : State) (x n returnDest : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     rotlEntry, rotlReady, rotlValue, Challenge.EvmProof.Word.mask32,
-    hc3, hc4, hc5, hc6, hc7, hc8, hrun,
+    hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hrun,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat,
     Challenge.EvmProof.Word.ofNat_add_mod, hswap3]

@@ -54,9 +54,9 @@ entry address, allocated byte length, and instruction count. Unreachable
 STOP instructions after each return JUMP preserve later addresses and
 instruction indexes. All caller-visible helper contracts remain unchanged.
 
-## Prior candidate: unaligned table windows and hAt
+## Current candidate: unaligned table windows and hAt
 
-That candidate added the table-window idea from submission
+The current candidate also uses the table-window idea from submission
 `80dacb5` by `ercumentyildirim`. The logical table bases remain unchanged.
 Four calls push `base - 31`. The helper loads a word at `base - 31 + i`
 and selects byte 31. It consumes its arguments and the zero result slot.
@@ -70,22 +70,33 @@ The public correctness theorem and its calldata domain are unchanged.
 
 The native suite passes all 17 clean and dirty vectors at 8,241,311 gas.
 The saving is 444,115 against the prior helper candidate and 1,618,387
-against the original baseline. Its closed gas formula is
+against the original baseline. The current closed gas formula is
 `3698 + 123852 * B + 3 * C + memCost(65 + 2 * B)`, where
 `B = (inputSize + 72) / 64` and `C = (inputSize + 31) / 32`.
 The full exact-bytecode Comparator remains the acceptance condition.
 
-## Current candidate: stack-consuming Boolean helpers
+## Current candidate: zero-slot elimination and shorter loop increments
 
-This candidate also consumes the Boolean case index and helper arguments.
-Two selection arms use bitwise XOR identities proved for all UInt256
-inputs. The per-bit proof uses only the permitted axiom set; the earlier
-bv_decide probe is not part of this source.
+This candidate removes the compiler's zero result slot from the five hot
+helpers that already consumed their other arguments in place (`xAt`,
+`tableAt`, and `rotl`, called 1, 2, and 2 times per round). Each call site
+replaces its `PUSH0` with a `JUMPDEST` and decrements the `DUP` depths that
+reached past the slot; each helper body drops its consuming `ADD` and gains
+one unreachable trailing `STOP`. Every edited region keeps its byte length,
+instruction count, entry address, and all downstream program counters, and
+every post-call stack is identical to before, so downstream `DUP` depths are
+unchanged. The Boolean-function dispatch path is untouched.
 
-Boolean case costs are [42,51,54,54,54]. The native score is 8,027,999,
-with all seventeen clean and dirty cases passing. The formula is
-`3698 + 120620 * B + 3 * C + memCost(65 + 2 * B)`.
-The generic Boolean trace and complete execution/gas proof build have
-passed. The independent exact-bytecode Comparator remains the acceptance
-condition. Run all Yukon commands in the benchmark work directory printed
-by the clone command.
+The two 80-iteration line loops additionally replace
+`POP; PUSH1 1; DUP2; ADD; SWAP1; POP; PUSH2; JUMP` with
+`POP; PUSH1 1; ADD; PUSH2; JUMP` plus three unreachable `STOP`s, saving the
+duplicated counter copy and its cleanup.
+
+Per round this saves 4 gas in `xAt` (body plus call prologue), 8 in the two
+`tableAt` calls, 8 in the two `rotl` calls, and 8 in the line-loop
+increment: 28 gas per round, 4,480 gas per padded block, or 295,680 across
+the 66-block public suite. The native
+suite passes all 17 clean and dirty vectors at 7,945,631 gas. The closed gas
+formula is `3698 + 119372 * B + 3 * C + memCost(65 + 2 * B)` with `B` and `C`
+as above. The full exact-bytecode Comparator remains the acceptance
+condition.

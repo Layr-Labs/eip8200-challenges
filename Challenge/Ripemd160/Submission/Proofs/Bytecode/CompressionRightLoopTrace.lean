@@ -267,7 +267,8 @@ theorem run_rightIncrement (s : State)
     Challenge.EvmProof.Stepper.runLocatedBlock rightIncrementLocated
       (rightRoundReturned s messageOffset returnDest discard rest i) =
         some (rightLoopAt s messageOffset returnDest rest (i + 1)) := by
-  have hadd : UInt256.ofNat i + UInt256.ofNat 1 = UInt256.ofNat (i + 1) := by
+  have hadd : UInt256.ofNat 1 + UInt256.ofNat i = UInt256.ofNat (i + 1) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
     exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
   have hdest : Decode.isValidJumpDest submissionBytecode 729 = true := by decide
   have hc3 : rest.length + 3 < 1024 := by omega

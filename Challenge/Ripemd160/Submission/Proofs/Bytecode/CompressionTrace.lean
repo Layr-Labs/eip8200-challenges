@@ -107,14 +107,9 @@ def leftIncrementLocated : List Located :=
   [⟨505, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨506, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨507, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨508, .op (.Dup ⟨1, by decide⟩), by rfl,
-      wfOp (by decide) trivial rfl⟩,
-   ⟨509, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨510, .op (.Swap ⟨0, by decide⟩), by rfl,
-      wfOp (by decide) trivial rfl⟩,
-   ⟨511, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨512, .push ⟨2, by decide⟩ (UInt256.ofNat 655), by rfl, by decide⟩,
-   ⟨513, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨508, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨509, .push ⟨2, by decide⟩ (UInt256.ofNat 655), by rfl, by decide⟩,
+   ⟨510, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def leftInitLocated : List Located :=
   [⟨469, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩]
@@ -131,8 +126,8 @@ def leftRoundPrefixLocated : List Located :=
    ⟨485, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨486, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨487, .push ⟨2, by decide⟩ (UInt256.ofNat 693), by rfl, by decide⟩,
-   ⟨488, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨489, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨488, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨489, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨490, .push ⟨2, by decide⟩ (UInt256.ofNat 1345), by rfl, by decide⟩,
    ⟨491, .push ⟨2, by decide⟩ (UInt256.ofNat 120), by rfl, by decide⟩,
    ⟨492, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
@@ -140,8 +135,8 @@ def leftRoundPrefixLocated : List Located :=
 def leftRoundMiddleLocated : List Located :=
   [⟨493, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨494, .push ⟨2, by decide⟩ (UInt256.ofNat 706), by rfl, by decide⟩,
-   ⟨495, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨496, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨495, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨496, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨497, .push ⟨2, by decide⟩ (UInt256.ofNat 1153), by rfl, by decide⟩,
    ⟨498, .push ⟨2, by decide⟩ (UInt256.ofNat 120), by rfl, by decide⟩,
    ⟨499, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
@@ -197,8 +192,8 @@ def rightRoundPrefixLocated : List Located :=
    ⟨532, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨533, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨534, .push ⟨2, by decide⟩ (UInt256.ofNat 767), by rfl, by decide⟩,
-   ⟨535, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨536, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨535, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨536, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨537, .push ⟨2, by decide⟩ (UInt256.ofNat 1441), by rfl, by decide⟩,
    ⟨538, .push ⟨2, by decide⟩ (UInt256.ofNat 120), by rfl, by decide⟩,
    ⟨539, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
@@ -206,8 +201,8 @@ def rightRoundPrefixLocated : List Located :=
 def rightRoundMiddleLocated : List Located :=
   [⟨540, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨541, .push ⟨2, by decide⟩ (UInt256.ofNat 780), by rfl, by decide⟩,
-   ⟨542, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨543, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨542, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨543, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨544, .push ⟨2, by decide⟩ (UInt256.ofNat 1249), by rfl, by decide⟩,
    ⟨545, .push ⟨2, by decide⟩ (UInt256.ofNat 120), by rfl, by decide⟩,
    ⟨546, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
@@ -225,12 +220,9 @@ def rightIncrementLocated : List Located :=
   [⟨554, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨555, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨556, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨557, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨558, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨559, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨560, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨561, .push ⟨2, by decide⟩ (UInt256.ofNat 729), by rfl, by decide⟩,
-   ⟨562, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨557, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨558, .push ⟨2, by decide⟩ (UInt256.ofNat 729), by rfl, by decide⟩,
+   ⟨559, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def rightExitLocated : List Located :=
   [⟨563, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -323,7 +315,7 @@ def combinationLocated : List Located :=
 @[simp] private theorem leftIncrementPC (j : Nat)
     (hlo : 505 ≤ j) (hhi : j ≤ 513) :
     Artifact.submissionArtifact.instructionPC j =
-      [714, 715, 716, 718, 719, 720, 721, 722, 725][j - 505]! := by
+      [714, 715, 716, 718, 719, 722, 723, 724, 725][j - 505]! := by
   interval_cases j <;> rfl
 
 def compressEntry (s : State) (messageOffset returnDest : UInt256)
@@ -802,7 +794,8 @@ theorem run_leftIncrement (s : State) (messageOffset returnDest discard : UInt25
     Challenge.EvmProof.Stepper.runLocatedBlock leftIncrementLocated
       (leftRoundReturned s messageOffset returnDest discard rest i) =
         some (leftLoopAt s messageOffset returnDest rest (i + 1)) := by
-  have hadd : UInt256.ofNat i + UInt256.ofNat 1 = UInt256.ofNat (i + 1) := by
+  have hadd : UInt256.ofNat 1 + UInt256.ofNat i = UInt256.ofNat (i + 1) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
     exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
   have hdest : Decode.isValidJumpDest submissionBytecode 655 = true := by decide
   have hc3 : rest.length + 3 < 1024 := by omega

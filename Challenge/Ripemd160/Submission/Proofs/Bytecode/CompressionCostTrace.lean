@@ -124,8 +124,8 @@ def tableAtWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.tableAtPath
 def xAtWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.xAtPath
 def wordSetWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.hSetPath
 
-theorem tableAtWork_eq : tableAtWork = 27 := by rfl
-theorem xAtWork_eq : xAtWork = 30 := by rfl
+theorem tableAtWork_eq : tableAtWork = 24 := by rfl
+theorem xAtWork_eq : xAtWork = 27 := by rfl
 theorem wordSetWork_eq : wordSetWork = 36 := by rfl
 
 theorem tableAt_cost_potential (s : State) (base i returnDest : UInt256)
@@ -160,12 +160,12 @@ theorem xAt_cost_potential (s : State) (i returnDest : UInt256)
       xAtWork + MachineState.memCost
         (TableTrace.atReturned s (UInt256.ofNat 0x2a0) i returnDest rest).activeWords.toNat := by
   have hraw := blockCost_potential TableTrace.xAtPath
-    (TableTrace.atEntry s (UInt256.ofNat 0x4b) i returnDest rest)
+    (TableTrace.xAtEntry s i returnDest rest)
     (TableTrace.atReturned s (UInt256.ofNat 0x2a0) i returnDest rest)
     (TableTrace.run_xAt s i returnDest rest hstack hcode hrun hvalid)
-    (by simpa [TableTrace.atEntry] using hfork)
+    (by simpa [TableTrace.xAtEntry] using hfork)
     (by simp [TableTrace.xAtPath, CopyFree])
-  simpa [TableTrace.gasSteps_xAt, TableTrace.atEntry, xAtWork] using hraw
+  simpa [TableTrace.gasSteps_xAt, TableTrace.xAtEntry, xAtWork] using hraw
 
 theorem wordSet_cost_potential (s : State)
     (base i value returnDest : UInt256) (rest : List UInt256)

@@ -50,7 +50,7 @@ open CompressionTrace
 @[simp] private theorem rightIncrementPC (j : Nat) (hlo : 554 ≤ j)
     (hhi : j ≤ 562) :
     Artifact.submissionArtifact.instructionPC j =
-      [792, 793, 794, 796, 797, 798, 799, 800, 803][j - 554]! := by
+      [792, 793, 794, 796, 797, 800, 801, 802, 803][j - 554]! := by
   interval_cases j <;> rfl
 
 @[simp] private theorem rightExitPC (j : Nat) (hlo : 563 ≤ j) (hhi : j ≤ 564) :
