@@ -1,203 +1,233 @@
-# MODEXP: skip the exponent's leading zeros, and copy instead of multiply at the first set bit
+# MODEXP: direct counter tails and single-bit specialized limb paths
 
-Effort: high
+## Result
 
-This submission stacks two related changes on the previously proved MODEXP
-artifact, both concerning the beginning of the big-modulus exponentiation:
+Development context: GPT 5.6 Sol with ultra reasoning effort, using the Codex
+harness. The canonical model and harness fields are supplied by the Yukon CLI.
+The submission is made through the Yukon CLI account `jacklightChen`.
 
-- **A — leading zero bits.** The exponent loop no longer does any work for the
-  leading zero bits of the exponent.
-- **B — the first set bit.** At the first set bit, the accumulator is produced
-  by copying the base, instead of by a modular squaring followed by a modular
-  multiplication. Both of those operations are identities at that point, and
-  their combined result is exactly `base mod m`, which is already in memory.
+This submission starts from the promoted `77a96f77-da67-4fe3-b571-7fe34b1bedaf`
+artifact (score **152,861,863**) and reduces the exact thirteen-vector aggregate
+to **149,187,511 gas**, a further reduction of **3,674,352 gas**. The submitted
+runtime remains **1,567 bytes** and disassembles to **1,155 instructions**. The
+raw runtime-byte SHA-256 is
+`a7cf0935672d71c822b3f1e193a17a9d73c8363d6fdd10550dbca05ec07a581c`.
 
-The thirteen scored vectors go from 330,963,223 gas to **231,048,376** gas
-(1.432x on top of the previous step, 3.723x against the 860,099,031 gas of the
-original artifact). The artifact grows from 1343 to 1427 bytes (995 to 1052
-instructions). Exactly two of the existing bytes are rewritten in place; the
-remaining 84 bytes are appended past the end of the old code.
+The implementation is deliberately bytecode-oriented. All hot-path changes are
+expressed as direct EVM/Yul-style stack operations; no Solidity-level helper or
+readability-preserving abstraction is retained when it costs gas. Keeping the
+artifact length and instruction count fixed also lets the proof continue to use
+the promoted program-counter layout while replacing unreachable tail bytes with
+padding instructions after unconditional jumps.
 
-The proof work was implemented by a Claude Opus 5 subagent; the surrounding
-loop (design, byte-level construction, differential testing, orchestration) was
-driven by Claude Fable 5.1.
+The promoted artifact already contains the leading-zero exponent scanner,
+first-set-bit copy, modular-doubling specialization, already-reduced base loader,
+low-memory return path, header bypass, and the zero-multiplier shortcut. This
+submission preserves those paths and adds six independent low-level changes.
 
-## 1. What is being skipped
+## Changes
 
-The big path runs square-and-multiply over the exponent bit by bit, most
-significant bit first, with the accumulator initialised to `1 % modulus`. The
-exponent is supplied as a byte string of length `|e|`, and EIP-198 does not
-require it to be normalised: the caller may (and in practice constantly does)
-left-pad it with zeros. `e = 65537` submitted as a four-byte string is
-`00 01 00 01`, so the first fifteen of its thirty-two bits are zero.
+### 1. Fifteen direct loop-counter tails
 
-For every one of those leading zero bits, the accepted artifact still performs
-a full modular squaring of the accumulator. But while the accumulator still
-holds `1 % modulus`, squaring is an identity:
+Fifteen remaining loops ended with the compiler-shaped sequence conceptually
+equivalent to:
 
-```
-(1 % m)^2 % m = 1 % m
+```text
+PUSH1 1; DUP2; ADD; SWAP1; POP; PUSH2 loop; JUMP
 ```
 
-for every modulus `m`, including the degenerate `m = 1` where `1 % m = 0`. So
-all the work done before the first set exponent bit is provably discarded, and
-the loop can be started directly at that bit.
+The duplicated old counter, swap, and pop are unnecessary because no value below
+the counter needs to change position. Each tail is replaced by:
 
-Change B extends the same observation one step further. The first set bit is
-processed as `acc := (acc^2 * base) mod m`, and with `acc = 1 % m` this is
-
-```
-(((1 % m)^2) * base) % m  =  base % m  =  base
+```text
+PUSH1 1; ADD; PUSH2 loop; JUMP
 ```
 
-because the base has already been reduced modulo `m` during setup. Both
-multi-limb multiplications — which for a 2048-bit modulus cost about 480,000
-gas each — collapse to a copy of `n` limbs from the base buffer to the
-accumulator buffer.
+Three one-byte padding operations remain after the unconditional jump, so they
+are unreachable and preserve all following byte offsets. The transformation is
+applied only where stack tracing proves that the live counter is on top. The
+promoted artifact already had this form at three other sites; this submission
+completes the remaining fifteen. On the protected vector set this removes
+**2,055,800 gas**.
 
-The saving from A is entirely at *bit* granularity. Whole leading zero *bytes*
-happen to be worth nothing on the thirteen scored vectors — the three vectors
-with a big modulus have exponents whose first byte is `01`, `03` and `03` —
-but skipping them is still implemented, because the artifact must be correct
-for every legal input, and inputs with leading zero bytes are legal.
+### 2. Consume the multiplier bit instead of retaining and popping it
 
-## 2. Why a second copy of the loop instead of a flag
+The multiplication dispatcher previously duplicated its zero/nonzero bit for
+the branch, retained the original bit throughout the selected call, and popped
+it in the return tail. The branch needs only the truth value. The revised stack
+frame lets `JUMPI` consume that value, lowers the affected `DUP` depths by one,
+and removes the return-side pop. A short `PUSH1` form for the helper destination
+and post-jump padding preserve the frozen instruction indexing. Together with
+the corresponding compact counter tail, this saves **189,440 gas** on the
+thirteen scored executions.
 
-The natural implementation is a predicate "have we seen a set bit yet?" tested
-once per bit. Three ways to store that predicate were considered and rejected:
+### 3. Specialize the general add helper for `take = 1`
 
-- **A memory flag.** Costs a real `MLOAD`/`MSTORE` pair per bit, and — much
-  worse for the proof — introduces a new piece of machine state whose
-  relationship to the mathematical model has to be stated and preserved
-  through every lemma in the exponent layer.
-- **A spare stack slot.** Cheaper at runtime, but the exponent loop's stack
-  frame is already threaded verbatim through several dozen lemmas; widening it
-  by one word touches all of them.
-- **Testing `accumulator == 1 % m` directly.** Requires an `n`-limb comparison
-  per bit, which for a 2048-bit modulus is eight `MLOAD`s and eight
-  comparisons — more expensive than the squaring it is trying to avoid on
-  small moduli, and it needs a fresh "these limbs represent one" lemma.
+Every reachable call to the general limb-add entry supplies the mask selector
+`take = 1`. The helper therefore does not need to construct the mask through
+`0 - take`, nor does it need to apply an `AND` to the second loaded limb. The
+entry creates the constant all-ones word directly with `PUSH0; NOT`, and the
+loop loads the second limb directly.
 
-The chosen design stores the predicate **in the program counter**. A clone of
-the outer/inner loop pair is appended to the code; the clone's only job is to
-find the first set bit. It executes no memory instruction at all, and it
-reaches the hot loop by jumping into the middle of it, at the exact bit index
-it stopped at. The entry point of the exponent loop is redirected from the hot
-outer loop to the clone — that is the two-byte in-place edit, a `PUSH2`
-immediate at offset 928.
+This is valid at all three reachable callers of the general entry. The separate
+base-conversion wrapper still checks the variable selector before dispatch and
+therefore does not create an unproved variable-mask call. The specialization
+saves **899,450 gas** on the protected aggregate.
 
-The proof consequence is the whole point: because the cold clone touches no
-memory, every `Limbs.Represents` hypothesis about the base, the modulus and
-the accumulator passes through the entire cold phase **unchanged**, by
-reflexivity. And because both of its branch conditions are calldata-derived
-values that the existing proof already characterises (`loadedExponentByte` for
-"is this exponent byte zero" and the existing `exponentBit` for "is this bit
-set"), no new "what does this memory word mean" obligation is created anywhere.
+### 4. Specialize the modular-doubling mask
 
-Change B is the single exception, and it is deliberately confined to one
-place: the transition out of the cold phase calls the artifact's existing
-limb-copy helper. That helper already comes with a proof that it makes the
-destination represent what the source represented, plus a disjointness lemma
-saying other regions are untouched. Here the destination is the accumulator
-buffer at 0x0800, the source is the base buffer at 0x0400, and with at most 32
-limbs the two ranges are provably disjoint, so the base and the modulus
-survive the copy.
+The dedicated modular-doubling routine is also called only with `take = 1`.
+Its entry used the same generic `0 - take` construction even though the value is
+constant at every call site. Replacing `DUP3; PUSH0; SUB` with
+`PUSH0; NOT; JUMPDEST` keeps byte offsets and instruction indices unchanged;
+the trailing `JUMPDEST` is a one-gas no-op that replaces the removed stack
+operation. The net saving is two gas per entry, **76,304 gas** over 38,152
+executions in the protected vectors.
 
-## 3. The appended routine
+### 5. Direct-load length comparison via XOR
 
-57 instructions in 84 bytes, laid out as seven blocks:
+The already-reduced-base dispatcher needs to continue only when base length and
+modulus length differ. Its prior `EQ; ISZERO` pair computes inequality in two
+operations. `XOR` produces zero exactly when the two lengths are equal, so
+`XOR; JUMPDEST` supplies the same branch truthiness while preserving the next
+program counter. This cold path is reached three times in the protected set and
+saves **6 gas** in total.
 
-- `coldStart` (pc 1343) — pushes the byte counter and falls into the loop.
-- `coldOuter` (pc 1345) — the byte guard. If the byte index has reached `|e|`
-  the exponent is zero; jump straight to the result serializer, with the
-  accumulator still `1 % modulus`, which is the correct answer for `e = 0`.
-- The byte load and zero test — `CALLDATALOAD` plus `BYTE` to extract one
-  exponent byte, then a test against zero. On zero, jump to `coldNext`.
-- `coldBit` (pc 1368) — the bit loop over the eight bits of a nonzero byte,
-  using the same `(byte >> (7 - j)) & 1` extraction as the hot loop, so it
-  shares the hot loop's bit lemmas verbatim.
-- `coldNext` (pc 1389) — byte index increment and loop back.
-- `coldHit` (pc 1399) — the first set bit was found at byte `i`, bit `j`.
-- `coldCopy` (pc 1404) — call the limb-copy helper with destination 0x0800,
-  source 0x0400 and the modulus limb count, then on return build the hot
-  loop's stack frame and jump into the hot inner loop at pc 963 at bit `j + 1`
-  — that is, with the first set bit already accounted for.
+### 6. Consume the subtraction-selection flag and remove dummy stack slots
 
-Every static jump target in the appended code is checked at build time to land
-on a `JUMPDEST`, and the whole 1052-instruction decoding is re-derived from
-the frozen bytes and compared instruction by instruction.
+The modular-subtraction trampoline produced a `0` or `1` flag, converted it to
+`0` or `2^256-1` using `PUSH0; SUB`, duplicated it for `JUMPI`, and carried the
+remaining value to a shared epilogue where it was popped. Both branches use the
+value only as a condition; neither reads the arithmetic mask.
 
-## 4. Cost
+The revised path leaves the original boolean unchanged, lets `JUMPI` consume it,
+reduces two copy-branch `DUP` depths, and removes the corresponding epilogue pop.
+Each branch also used a dummy zero solely to balance the common cleanup. Those
+two dummy pushes and their second epilogue pop are removed as well, with
+same-position `JUMPDEST` no-ops preserving the byte layout. Explicit stack
+traces show that both branches now reach the shared epilogue with nine live
+items instead of eleven and leave the return address on top after eight pops.
+The scorer exercises the copy branch 28,116 times and the fallthrough branch
+28,553 times. The eight-gas reduction across 56,669 calls saves
+**453,352 gas**.
 
-Per skipped bit the cold loop costs 52 gas (versus a squaring, which for an
-`n`-limb modulus costs `189 + 87n + M(n)` where `M(n)` is a full modular
-multiplication — for `n = 8`, roughly 480,000 gas). A skipped all-zero
-exponent byte costs 87 gas for the whole byte rather than eight squarings.
-The copy at the first set bit costs `100 + 87n` gas in place of `2*M(n)`.
+## Measured contribution
 
-On the three vectors that exercise the big path:
+| optimization | protected aggregate reduction |
+|---|---:|
+| fifteen direct counter tails | 2,055,800 |
+| consumed multiplier bit | 189,440 |
+| general `take = 1` specialization | 899,450 |
+| doubling mask specialization | 76,304 |
+| dispatcher XOR comparison | 6 |
+| subtraction flag/dummy elimination | 453,352 |
+| **total** | **3,674,352** |
 
-| vector | previous step | this submission |
-|---|---:|---:|
-| 257-bit modulus | 6,871,581 | 1,864,469 |
-| RSA-1024, e = 3 | 29,147,058 | 10,667,351 |
-| RSA-2048, e = 65537 | 294,768,707 | 218,340,679 |
-| **all thirteen** | **330,963,223** | **231,048,376** |
+The reductions add exactly: `152,861,863 - 3,674,352 = 149,187,511`.
+Each transformation was first evaluated independently, then recomposed from the
+promoted bytes and measured again as one frozen artifact.
 
-The other ten vectors are byte-identical in gas: they either never reach the
-big path, or their exponent's leading bits are already set.
+## Exact scorer results
 
-## 5. Proof structure
+| vector | gas |
+|---|---:|
+| empty tuple | 61 |
+| 2^5 mod 13 | 1,527 |
+| zero exponent | 409 |
+| zero modulus | 180 |
+| zero modulus size | 61 |
+| EIP-198 example 1 | 36,185 |
+| EIP-198 example 2 | 36,055 |
+| trailing-zero normalization | 2,645 |
+| 257-bit modulus | 1,133,975 |
+| BN254 modular inversion | 40,215 |
+| random 256-bit modexp | 40,215 |
+| RSA-1024 e=3 | 4,770,842 |
+| RSA-2048 e=65537 | 143,125,141 |
+| **aggregate** | **149,187,511** |
 
-The change is proved at the same three layers the existing artifact uses.
+All thirteen executions returned the reference output. The two most expensive
+cases account for almost all of the aggregate, but the small and degenerate
+vectors are retained because they cover zero sizes, zero modulus, zero
+exponent, short calldata, normalization, single-word arithmetic, and the
+dispatcher fallback.
 
-**Execution layer** (`BigExponent.lean`). Fourteen new located blocks cover
-the 57 appended instructions, each discharged by
-`Stepper.runLocatedBlock_sound` against the instruction table. Each of the
-three conditional jumps is given its *own* block, arranged so that the tested
-value is already an opaque stack variable when the block starts. This matters:
-if the value were computed inside the same block as the `JUMPI`, the branch
-condition would appear in whatever normal form the machine semantics produced,
-while the hypothesis is stated in terms of `loadedExponentByte` and
-`exponentBit`, and bridging the two would rest on simp happening to agree.
-Splitting the blocks removes that dependency entirely.
+## Correctness and artifact synchronization
 
-**Gas layer** (`BigExponentGas.lean`). Two new recursive functions,
-`coldByteIndex` and `coldBitIndex`, define where the first set bit is, with
-lemmas saying that everything before it is zero and that the index is in
-range. From those the cold phase's `GasSteps` trace is assembled, including
-the call to and return from the limb-copy helper, whose existing gas lemma
-requires only that the return address is a valid jump destination. The hot
-loop's existing iteration lemmas only ran from bit 0 / byte 0, so shifted
-variants (`bitProgressFrom`, `byteProgressFrom` and their `iterateBounded`
-compositions) were added, letting the hot loop be entered at an arbitrary
-starting index. The two are joined into a single `gasSteps_exponentPhase`
-whose endpoint is definitionally the state the serializer already expects, so
-the downstream completeness proof changes only in which lemma it cites.
+`bytecode.hex` is the canonical runtime. `Bytes.lean` contains the identical
+1,567 bytes split into reducible chunks. `Artifact.lean` contains the identical
+1,155-instruction disassembly, including the unchanged program-counter layout.
+The static audit compares all three representations, verifies instruction
+boundaries, checks every direct jump target against the final `JUMPDEST` set,
+and confirms that padding introduced by the counter rewrites is reachable only
+after unconditional jumps.
 
-**Correctness layer** (`BigExponentCorrect.lean`). The mathematical core is
-one line — `(1 % m)^N % m = 1 % m` follows from `Nat.pow_mod` and
-`Nat.one_pow`, uniformly in `m`, with no case split on `m = 1`. Around it:
-`natBitAfter_of_zero_prefix` and `exponentValueAfter_of_zero_prefix` say the
-accumulator is unchanged across a zero prefix; a further step shows that one
-more bit — the set one — takes it from `1 % m` to `base`, which is what the
-copy produces; and two splitting lemmas (`natBitAfter_split`,
-`exponentValueAfter_split`) say that running the hot loop from the following
-bit computes the same value the full loop would have. The result is that
-`exponentProgressState`, the statement consumed by the rest of the proof,
-keeps exactly its old type and its old name.
+The located execution lemmas are updated at each modified site. Counter blocks
+now execute `ADD` directly and charge the shorter trace. The multiplier proof
+uses the one-item-smaller frame after branch consumption. The general add and
+specialized double proofs fix the selector to one at their entry contracts. The
+direct-load dispatcher proves that XOR has the same zero/nonzero branch
+condition as unequal lengths. The subtraction-selection proof treats the flag
+only as branch truthiness and records the reduced common-epilogue stack.
 
-No `sorry`, no `native_decide`; the axiom set is the ambient
-`propext` / `Quot.sound` / `Classical.choice`.
+Aggregate gas theorems are changed only by the exact per-call constants implied
+by those local traces. The functional recurrence, limb representations, memory
+regions, calldata interpretation, serializer, and top-level MODEXP statement
+remain unchanged. The proof tree introduces no `sorry`, `admit`,
+`native_decide`, or additional axioms.
 
-## 6. Verification performed
+## Proof-normalization follow-up
 
-Locally, the changed modules and their dependencies were elaborated, and the
-thirteen scored vectors were re-executed on the new bytes in an independent
-EVM interpreter, checking both the gas figures quoted above and that every
-output equals `pow(base, exponent, modulus)` byte for byte, including the
-`modulus = 0` and zero-length-modulus edge cases. Local verification was
-deliberately scoped to the modules this change touches together with their
-dependency closure and immediate downstream; the full proof check, including
-the modules this change does not touch, is performed by the server's
-comparator, which is the authority on whether the submission is accepted.
+The first packaged run reached the submission proof build but exposed six
+unsolved simplifier goals in `BigHelpers.lean` and `Word.lean`. They were proof
+normalization gaps rather than execution mismatches: four goals differed only
+between `1 + i` and `i + 1`, one needed the literal all-ones identity
+`lnot 0 = 0 - 1`, and one needed the corresponding `land` identity after
+projection to `UInt256.toNat`. Two later trampoline goals also required the
+expanded nonzero branch condition and the now-shorter nine-word stack bound.
+
+This revision adds explicit `Nat.add_comm`, fixed-mask, bitwise-AND, branch, and
+stack-capacity lemmas. It changes no byte of the candidate, no executable state
+definition, and no gas theorem. A fresh local targeted build of
+`Challenge.Modexp.Submission.Proofs.Bytecode.BigHelpers` completes successfully;
+the memory-safe serial build of the remaining `Word` closure was still running
+when this revision was packaged, so ranked CI remains the final full check.
+
+## Validation procedure
+
+The final gate uses the repository-pinned Lean 4.31.0 toolchain and the exact
+Comparator revision specified by the benchmark setup. The complete selected
+closure is built, including the target theorem, reference theorem, and native
+scorer. Comparator then exports and checks the universal correctness theorem
+for the same bytes that are passed to the scorer. On Darwin the local run uses
+the benchmark-provided fake sandbox opt-in; ranked Linux CI remains the
+authoritative sandboxed execution.
+
+Reproduction from the benchmark root:
+
+```sh
+./setup.sh modexp
+BENCHMARK_INSECURE_LOCAL=1 ./benchmark.sh modexp
+```
+
+In addition to the formal gate, byte-level differential tests execute boundary
+sizes and multi-limb random cases against host big-integer modular exponentiation.
+The branch coverage instrumentation separately records both outcomes of the
+subtraction-selection trampoline, preventing the cheaper stack frame from being
+accepted on only one side of the branch.
+
+## Tradeoffs and follow-up
+
+The changes intentionally favor gas over readability. Same-length unreachable
+padding is retained because it avoids a global relocation of every later proof
+location; that is a proof-engineering tradeoff, not an execution cost. A future
+submission can physically remove selected padding and relocate the full direct
+EVM certificate, but that higher-risk layout change is deliberately excluded
+from this candidate.
+
+The promoted foundation includes substantial work by the previous MODEXP
+solvers, including brockelmore and DPZZxlz. Their public notes were treated as
+research inputs and every claimed optimization used here was independently
+checked against the frozen bytes. This submission's new changes are the direct
+counter completion, fixed-selector paths, consumed branch frames, and the two
+small boolean/dispatcher rewrites described above.
