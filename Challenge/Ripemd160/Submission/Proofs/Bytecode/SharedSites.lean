@@ -33,50 +33,50 @@ private theorem getElem_of_slice {artifact : Challenge.EvmProof.ProgramArtifact}
 def leftHelperStartIndex (group : Nat) : Nat :=
   match group with
   | 0 => 2027
-  | 1 => 2064
-  | 2 => 2105
-  | 3 => 2145
-  | _ => 2186
+  | 1 => 2067
+  | 2 => 2111
+  | 3 => 2154
+  | _ => 2198
 
 def rightHelperStartIndex (group : Nat) : Nat :=
   match group with
-  | 0 => 2226
-  | 1 => 2266
-  | 2 => 2307
-  | 3 => 2347
-  | _ => 2388
+  | 0 => 2241
+  | 1 => 2284
+  | 2 => 2328
+  | 3 => 2371
+  | _ => 2415
 
 def leftHelperJumpIndex (group : Nat) : Nat :=
   match group with
-  | 0 => 2063
-  | 1 => 2104
-  | 2 => 2144
-  | 3 => 2185
-  | _ => 2225
+  | 0 => 2064
+  | 1 => 2108
+  | 2 => 2151
+  | 3 => 2195
+  | _ => 2238
 
 def rightHelperJumpIndex (group : Nat) : Nat :=
   match group with
-  | 0 => 2265
-  | 1 => 2306
-  | 2 => 2346
-  | 3 => 2387
-  | _ => 2424
+  | 0 => 2281
+  | 1 => 2325
+  | 2 => 2368
+  | 3 => 2412
+  | _ => 2452
 
 def leftHelperWholeLength (group : Nat) : Nat :=
   match group with
-  | 0 => 37
-  | 1 => 41
-  | 2 => 40
-  | 3 => 41
-  | _ => 40
+  | 0 => 38
+  | 1 => 42
+  | 2 => 41
+  | 3 => 42
+  | _ => 41
 
 def rightHelperWholeLength (group : Nat) : Nat :=
   match group with
-  | 0 => 40
-  | 1 => 41
-  | 2 => 40
-  | 3 => 41
-  | _ => 37
+  | 0 => 41
+  | 1 => 42
+  | 2 => 41
+  | 3 => 42
+  | _ => 38
 
 theorem leftHelperEndIndex (group : Fin 5) :
     leftHelperStartIndex group.val +
