@@ -5,7 +5,7 @@ set_option maxHeartbeats 2000000
 /-!
 # Direct execution of the RIPEMD-160 main-body initialization
 
-The compact entry emits five consecutive `PUSH; PUSH; MSTORE` triples. A located
+The compiler emits 27 consecutive `PUSH; PUSH; MSTORE` triples.  A located
 path certifies those exact instructions against the frozen artifact; it also
 handles the two `PUSH0` values without a special semantic assumption.
 -/
@@ -35,13 +35,17 @@ private theorem valueFits (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores) :
     w.value.toNat < 256 ^ w.valueWidth.val := by
   simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
-  rcases hw with rfl | rfl | rfl | rfl | rfl <;> decide
+  rcases hw with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> decide
 
 private theorem offsetFits (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores) :
     w.offset.toNat < 256 ^ w.offsetWidth.val := by
   simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
-  rcases hw with rfl | rfl | rfl | rfl | rfl <;> decide
+  rcases hw with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> decide
 
 private theorem pushAvailable (width : Fin 33) :
     (Operation.Push ⟨width⟩).availableInFork .Osaka = true := by
@@ -71,7 +75,7 @@ def initializedState (input : ByteArray) : State :=
   Artifact.initStores.foldl applyInitStore (Execution.mainStart input)
 
 @[simp] theorem initializedState_pc (input : ByteArray) :
-    (initializedState input).pc = UInt256.ofNat (Artifact.instructionPC 698) := by
+    (initializedState input).pc = UInt256.ofNat (Artifact.instructionPC 764) := by
   rfl
 
 @[simp] theorem initializedState_stack (input : ByteArray) :
@@ -97,7 +101,9 @@ theorem run_initStore (s : State) (w : Artifact.InitStore)
     Challenge.EvmProof.Stepper.runLocatedBlock (locatedInitStore w hw) s =
       some (applyInitStore s w) := by
   simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
-  rcases hw with rfl | rfl | rfl | rfl | rfl
+  rcases hw with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals
     simp (config := { maxSteps := 200000 })
       [locatedInitStore, applyInitStore, hpc, hstack, hrun,
@@ -105,7 +111,7 @@ theorem run_initStore (s : State) (w : Artifact.InitStore)
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
-        State.activeWordsAfterUInt256,
+        State.activeWordsAfterUInt256, pushZeroWord,
         Challenge.EvmProof.Word.word_toNat_ofNat]
 
 def gasSteps_initStore (s : State) (w : Artifact.InitStore)

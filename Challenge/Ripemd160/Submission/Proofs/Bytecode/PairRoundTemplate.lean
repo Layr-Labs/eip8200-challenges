@@ -8,7 +8,7 @@ set_option maxRecDepth 30000
 # H27 paired round helper templates
 
 The pair helper receives
-`[p0, return-PC, 2 ^ (32 - r0), p1, 2 ^ (32 - r1), A, B, C, D, E]`.
+`[p0, return-PC, 32 - r0, p1, 32 - r1, A, B, C, D, E]`.
 The final `JUMP` is outside the before-jump template.
 -/
 
@@ -29,10 +29,8 @@ def pairSwap5 : Instr := .op (.Swap ⟨4, by decide⟩)
 def pairSwap6 : Instr := .op (.Swap ⟨5, by decide⟩)
 def pairSwap7 : Instr := .op (.Swap ⟨6, by decide⟩)
 
-/-- The rotation payload on the stack is `2 ^ (32 - r)`, so `DIV` replaces the
-old `SWAP1; SHR` pair.  See `RotationDiv.rawRot_mul_div`. -/
 def qrot : List Instr :=
-  [.push ⟨5, by decide⟩ (UInt256.ofNat 0x0100000001), op .MUL, op .DIV]
+  [.push ⟨5, by decide⟩ (UInt256.ofNat 0x0100000001), op .MUL, swap1, op .SHR]
 
 def cfold : List Instr :=
   [.push ⟨5, by decide⟩ (UInt256.ofNat 0x0100000001), op .MUL,
@@ -75,51 +73,51 @@ def pairTemplate (j : Nat) (constant : UInt256) : List Instr :=
   pairBeforeJumpTemplate j constant ++ [op .JUMP]
 
 @[simp] theorem pairBeforeJumpTemplate_length_0 (constant : UInt256) :
-    (pairBeforeJumpTemplate 0 constant).length = 52 := by
+    (pairBeforeJumpTemplate 0 constant).length = 54 := by
   rfl
 
 @[simp] theorem pairBeforeJumpTemplate_length_1 (constant : UInt256) :
-    (pairBeforeJumpTemplate 1 constant).length = 60 := by
+    (pairBeforeJumpTemplate 1 constant).length = 62 := by
   rfl
 
 @[simp] theorem pairBeforeJumpTemplate_length_2 (constant : UInt256) :
-    (pairBeforeJumpTemplate 2 constant).length = 58 := by
+    (pairBeforeJumpTemplate 2 constant).length = 60 := by
   rfl
 
 @[simp] theorem pairBeforeJumpTemplate_length_3 (constant : UInt256) :
-    (pairBeforeJumpTemplate 3 constant).length = 60 := by
+    (pairBeforeJumpTemplate 3 constant).length = 62 := by
   rfl
 
 @[simp] theorem pairBeforeJumpTemplate_length_4 (constant : UInt256) :
-    (pairBeforeJumpTemplate 4 constant).length = 58 := by
+    (pairBeforeJumpTemplate 4 constant).length = 60 := by
   rfl
 
 @[simp] theorem pairTemplate_length_0 (constant : UInt256) :
-    (pairTemplate 0 constant).length = 53 := by
+    (pairTemplate 0 constant).length = 55 := by
   rw [pairTemplate, List.length_append,
     pairBeforeJumpTemplate_length_0]
   rfl
 
 @[simp] theorem pairTemplate_length_1 (constant : UInt256) :
-    (pairTemplate 1 constant).length = 61 := by
+    (pairTemplate 1 constant).length = 63 := by
   rw [pairTemplate, List.length_append,
     pairBeforeJumpTemplate_length_1]
   rfl
 
 @[simp] theorem pairTemplate_length_2 (constant : UInt256) :
-    (pairTemplate 2 constant).length = 59 := by
+    (pairTemplate 2 constant).length = 61 := by
   rw [pairTemplate, List.length_append,
     pairBeforeJumpTemplate_length_2]
   rfl
 
 @[simp] theorem pairTemplate_length_3 (constant : UInt256) :
-    (pairTemplate 3 constant).length = 61 := by
+    (pairTemplate 3 constant).length = 63 := by
   rw [pairTemplate, List.length_append,
     pairBeforeJumpTemplate_length_3]
   rfl
 
 @[simp] theorem pairTemplate_length_4 (constant : UInt256) :
-    (pairTemplate 4 constant).length = 59 := by
+    (pairTemplate 4 constant).length = 61 := by
   rw [pairTemplate, List.length_append,
     pairBeforeJumpTemplate_length_4]
   rfl
