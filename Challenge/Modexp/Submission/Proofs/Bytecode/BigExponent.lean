@@ -1,6 +1,6 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.BigHelpers
+import Challenge.Modexp.Submission.Proofs.Bytecode.BigBaseLoop
+import Challenge.Modexp.Submission.Proofs.Bytecode.BigMul
 import Challenge.Modexp.Submission.Proofs.Bytecode.MontgomeryWrapperBlock
-import Challenge.Modexp.Submission.Proofs.Bytecode.MontgomeryHotValue
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 3000000
@@ -11,6 +11,8 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.BigExponent
 open EvmSemantics
 open EvmSemantics.EVM
 open YulEvmCompiler
+open BigBase
+open BigBaseLoop
 
 private def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
@@ -38,7 +40,7 @@ def outerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 719 .JUMPDEST, opAt 720 (.Dup ⟨4, by decide⟩),
    opAt 721 (.Dup ⟨1, by decide⟩), opAt 722 .LT, opAt 723 .ISZERO,
-   pushAt 724 2 2298, opAt 725 .JUMPI]
+   pushAt 724 2 1118, opAt 725 .JUMPI]
 
 def outerToInnerPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -60,7 +62,7 @@ def innerToSquarePath :
    opAt 745 .SUB, opAt 746 .SHR, opAt 747 .AND,
    pushAt 748 2 1000, opAt 749 (.Dup ⟨7, by decide⟩),
    pushAt 750 0 0, pushAt 751 2 3072, pushAt 752 2 2048,
-   pushAt 753 2 2048, pushAt 754 2 2254, opAt 755 .JUMP]
+   pushAt 753 2 2048, pushAt 754 2 2019, opAt 755 .JUMP]
 
 def squareToCopyPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -85,7 +87,7 @@ def productCallPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 969 .JUMPDEST, pushAt 970 2 1316, opAt 971 (.Dup ⟨6, by decide⟩),
    pushAt 972 0 0, pushAt 973 2 3072, pushAt 974 2 1024,
-   pushAt 975 2 2048, pushAt 976 2 2254, opAt 977 .JUMP]
+   pushAt 975 2 2048, pushAt 976 2 2019, opAt 977 .JUMP]
 
 def copyBackPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -149,40 +151,40 @@ def bitFrame (accumulatorWord : UInt256)
 def squareEntry (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) : State :=
-  MontgomeryWrapperBlock.wrapperEntryAt 2254
+  MontgomeryWrapperBlock.normalEntry
     (innerBody s accumulatorWord count b e m baseOff expOff i offset byte rest j)
-    2048 2048 3072 0 count 1000
+    2048 count 1000
     (bitFrame accumulatorWord count b e m baseOff expOff i j offset byte
       (exponentBit byte j) rest)
 
 def mulResult (s : State) (bPtr : UInt256) (count : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
-  MontgomeryHotValue.hotReturned s bPtr count returnDest rest
+  MontgomeryWrapperBlock.normalReturned s bPtr count returnDest rest
 
 @[simp] theorem mulResult_pc (s : State) (bPtr : UInt256)
     (count : Nat) (returnDest : UInt256) (rest : List UInt256) :
-    (mulResult s bPtr count returnDest rest).pc = returnDest := by
-  rfl
+    (mulResult s bPtr count returnDest rest).pc = returnDest :=
+  MontgomeryWrapperBlock.normalReturned_pc s bPtr count returnDest rest
 
 @[simp] theorem mulResult_stack (s : State) (bPtr : UInt256)
     (count : Nat) (returnDest : UInt256) (rest : List UInt256) :
-    (mulResult s bPtr count returnDest rest).stack = rest := by
-  rfl
+    (mulResult s bPtr count returnDest rest).stack = rest :=
+  MontgomeryWrapperBlock.normalReturned_stack s bPtr count returnDest rest
 
 @[simp] theorem mulResult_halt (s : State) (bPtr : UInt256)
     (count : Nat) (returnDest : UInt256) (rest : List UInt256) :
-    (mulResult s bPtr count returnDest rest).halt = s.halt := by
-  rfl
+    (mulResult s bPtr count returnDest rest).halt = s.halt :=
+  MontgomeryWrapperBlock.normalReturned_halt s bPtr count returnDest rest
 
 @[simp] theorem mulResult_executionEnv (s : State) (bPtr : UInt256)
     (count : Nat) (returnDest : UInt256) (rest : List UInt256) :
-    (mulResult s bPtr count returnDest rest).executionEnv = s.executionEnv := by
-  rfl
+    (mulResult s bPtr count returnDest rest).executionEnv = s.executionEnv :=
+  MontgomeryWrapperBlock.normalReturned_executionEnv s bPtr count returnDest rest
 
 @[simp] theorem mulResult_fork (s : State) (bPtr : UInt256)
     (count : Nat) (returnDest : UInt256) (rest : List UInt256) :
-    (mulResult s bPtr count returnDest rest).fork = s.fork := by
-  rfl
+    (mulResult s bPtr count returnDest rest).fork = s.fork :=
+  MontgomeryWrapperBlock.normalReturned_fork s bPtr count returnDest rest
 
 def squareReturned (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
@@ -381,9 +383,9 @@ def innerExit (s : State) (accumulatorWord : UInt256)
         985,986,987,990,993,996,999])[i - 717]! := by
   interval_cases i <;> decide
 
-private theorem jump2254 :
-    Decode.isValidJumpDest submissionBytecode 2254 = true :=
-  Artifact.isValidJumpDest_index 1621 (by rfl)
+private theorem jump2019 :
+    Decode.isValidJumpDest submissionBytecode 2019 = true :=
+  Artifact.isValidJumpDest_index 1476 (by rfl)
 
 @[simp] private theorem exponentMidPCs (i : Nat) (hi : 756 ≤ i)
     (hii : i ≤ 776) :
@@ -533,14 +535,15 @@ theorem run_innerToSquare (s : State) (accumulatorWord : UInt256)
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
-  have h2254 : (2254 : UInt256).toNat = 2254 := by decide
-  have h2254Word : (2254 : UInt256) = UInt256.ofNat 2254 := by decide
+  have h2019 : (2019 : UInt256).toNat = 2019 := by decide
+  have h2019Word : (2019 : UInt256) = UInt256.ofNat 2019 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   have hseven : (7 : UInt256) = UInt256.ofNat 7 := by decide
   simp [innerToSquarePath, opAt, pushAt, wfOp, innerBody, innerLoop,
-    squareEntry, MontgomeryWrapperBlock.wrapperEntryAt, MontgomeryWrapperBlock.oldFrame, bitFrame, exponentBit, exponentPCs,
-    hcode, hrun, jump2254, hsub, h2254, h2254Word, hzero, hone, hseven,
+    squareEntry, MontgomeryWrapperBlock.normalEntry, MontgomeryWrapperBlock.oldAt,
+    MontgomeryWrapperBlock.wrapperEntryAt, MontgomeryWrapperBlock.oldFrame, bitFrame, exponentBit, exponentPCs,
+    hcode, hrun, jump2019, hsub, h2019, h2019Word, hzero, hone, hseven,
     hc11, hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -676,10 +679,10 @@ theorem run_productCall (s : State) (accumulatorWord : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock productCallPath
       (bitProductEntry s accumulatorWord count b e m baseOff expOff i j
         offset byte rest) =
-      some (MontgomeryWrapperBlock.wrapperEntryAt 2254
+      some (MontgomeryWrapperBlock.normalEntry
         (copiedSquare s accumulatorWord count b e m baseOff expOff i j
           offset byte rest)
-        2048 1024 3072 0 count 1316
+        1024 count 1316
         (bitTailFrame accumulatorWord count b e m baseOff expOff i j offset
           byte rest)) := by
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -694,12 +697,13 @@ theorem run_productCall (s : State) (accumulatorWord : UInt256)
       offset byte rest).length < 1024 := by
     simp [bitTailFrame]
     omega
-  have h2254 : (2254 : UInt256).toNat = 2254 := by decide
-  have h2254Word : (2254 : UInt256) = UInt256.ofNat 2254 := by decide
+  have h2019 : (2019 : UInt256).toNat = 2019 := by decide
+  have h2019Word : (2019 : UInt256) = UInt256.ofNat 2019 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
   simp [productCallPath, opAt, pushAt, wfOp, bitProductEntry, copiedSquare,
-    BigHelpers.copyReturned, MontgomeryWrapperBlock.wrapperEntryAt, MontgomeryWrapperBlock.oldFrame, bitFrame, bitTailFrame,
-    bitRoutinePCs, hcode, hrun, jump2254, h2254, h2254Word, hzero,
+    BigHelpers.copyReturned, MontgomeryWrapperBlock.normalEntry, MontgomeryWrapperBlock.oldAt,
+    MontgomeryWrapperBlock.wrapperEntryAt, MontgomeryWrapperBlock.oldFrame, bitFrame, bitTailFrame,
+    bitRoutinePCs, hcode, hrun, jump2019, h2019, h2019Word, hzero,
     hc11, hc12, hc13, hc14, hc15, hc16, hc17, hc18, htail,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -850,7 +854,7 @@ def coldStartPath : List (Challenge.EvmProof.Stepper.Located Artifact.submission
 def coldGuardPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 997 .JUMPDEST, opAt 998 (.Dup ⟨4, by decide⟩),
    opAt 999 (.Dup ⟨1, by decide⟩), opAt 1000 .LT, opAt 1001 .ISZERO,
-   pushAt 1002 2 2298, opAt 1003 .JUMPI]
+   pushAt 1002 2 1118, opAt 1003 .JUMPI]
 
 def coldLoadPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1004 (.Dup ⟨0, by decide⟩), opAt 1005 (.Dup ⟨8, by decide⟩),
@@ -917,9 +921,9 @@ private theorem jumpColdHit :
     Decode.isValidJumpDest submissionBytecode 1399 = true :=
   Artifact.isValidJumpDest_index 1037 (by rfl)
 
-private theorem jumpDecodeEntry :
-    Decode.isValidJumpDest submissionBytecode 2298 = true :=
-  Artifact.isValidJumpDest_index 1651 (by rfl)
+private theorem jumpSerializerEntry :
+    Decode.isValidJumpDest submissionBytecode 1118 = true :=
+  Artifact.isValidJumpDest_index 838 (by rfl)
 
 private theorem jumpColdCopy :
     Decode.isValidJumpDest submissionBytecode 1404 = true :=
@@ -943,11 +947,11 @@ def coldOuterBody (s : State) (accumulatorWord : UInt256)
   { coldOuter s accumulatorWord count b e m baseOff expOff rest i with
       pc := UInt256.ofNat 1354 }
 
-/-- Cold path exit for an all-zero exponent: identical to the decode
+/-- Cold path exit for an all-zero exponent: identical to the serializer
 entry state reached by the hot loop. -/
 def coldExit (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2298
+  { s with pc := UInt256.ofNat 1118
            stack := [UInt256.ofNat e, accumulatorWord, UInt256.ofNat count,
              UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
              UInt256.ofNat baseOff, UInt256.ofNat expOff] ++ rest }
@@ -1076,10 +1080,10 @@ theorem run_coldGuardExit (s : State) (accumulatorWord : UInt256)
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
-  have h2298 : (2298 : UInt256).toNat = 2298 := by decide
-  have h2298Word : (2298 : UInt256) = UInt256.ofNat 2298 := by decide
+  have h1118 : (1118 : UInt256).toNat = 1118 := by decide
+  have h1118Word : (1118 : UInt256) = UInt256.ofNat 1118 := by decide
   simp [coldGuardPath, opAt, pushAt, wfOp, coldOuter, coldExit, coldPCs,
-    hcode, hrun, hzeroFalse, h2298, h2298Word, jumpDecodeEntry,
+    hcode, hrun, hzeroFalse, h1118, h1118Word, jumpSerializerEntry,
     hc8, hc9, hc10, UInt256.lt, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1375,11 +1379,11 @@ theorem run_outerGuardExit (s : State) (accumulatorWord : UInt256)
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
-  have h2298 : (2298 : UInt256).toNat = 2298 := by decide
-  have h2298Word : (2298 : UInt256) = UInt256.ofNat 2298 := by decide
+  have h1118 : (1118 : UInt256).toNat = 1118 := by decide
+  have h1118Word : (1118 : UInt256) = UInt256.ofNat 1118 := by decide
   simp [outerGuardPath, opAt, pushAt, wfOp, outerLoop, coldExit,
-    exponentPCs, hcode, hrun, hzeroFalse, h2298, h2298Word,
-    jumpDecodeEntry, hc8, hc9, hc10, UInt256.lt, UInt256.isTrue,
+    exponentPCs, hcode, hrun, hzeroFalse, h1118, h1118Word,
+    jumpSerializerEntry, hc8, hc9, hc10, UInt256.lt, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,

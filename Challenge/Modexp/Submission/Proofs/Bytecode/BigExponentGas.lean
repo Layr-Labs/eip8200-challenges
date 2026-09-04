@@ -1,6 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigExponentModels
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordCorrect
-import Challenge.Modexp.Submission.Proofs.Bytecode.MontgomeryHotBlock
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 3000000
@@ -62,7 +61,7 @@ def gasSteps_exponentBit (s : State) (accumulatorWord : UInt256)
         byte rest (by omega) hj hcode hrun)
       (by simpa [innerBody, innerLoop] using hrun)
       (by simpa [innerBody, innerLoop, State.fork] using hnp)
-  have hsquareRaw := MontgomeryHotBlock.gasSteps_hot
+  have hsquareRaw := MontgomeryWrapperBlock.gasSteps_normal
     (innerBody s accumulatorWord count b e m baseOff expOff i offset byte rest j)
     (UInt256.ofNat 2048) count (UInt256.ofNat 1000) frame hframe hcount
     (by simp)
@@ -76,7 +75,7 @@ def gasSteps_exponentBit (s : State) (accumulatorWord : UInt256)
         rest)
       (squareReturned s accumulatorWord count b e m baseOff expOff i j offset
         byte rest) := by
-    simpa [squareEntry, squareReturned, mulResult, frame, MontgomeryHotBlock.hotEntry,
+    simpa [squareEntry, squareReturned, mulResult, frame,
       Challenge.EvmProof.Word.literal_eq_ofNat] using hsquareRaw
   have htoCopy := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka squareToCopyPath
@@ -167,7 +166,7 @@ def gasSteps_exponentBit (s : State) (accumulatorWord : UInt256)
           offset byte rest (by omega) hcode hrun)
         (by simpa [bitProductEntry] using hrun)
         (by simpa [bitProductEntry, State.fork] using hnp)
-    have hproductRaw := MontgomeryHotBlock.gasSteps_hot
+    have hproductRaw := MontgomeryWrapperBlock.gasSteps_normal
       (copiedSquare s accumulatorWord count b e m baseOff expOff i j offset byte
         rest)
       (UInt256.ofNat 1024) count (UInt256.ofNat 1316) tail htail hcount
@@ -176,7 +175,7 @@ def gasSteps_exponentBit (s : State) (accumulatorWord : UInt256)
       (by simpa using hrun) (by simpa [State.fork] using hnp)
       (by simpa using jump1316)
     have hproduct : Challenge.EvmProof.GasSteps
-        (MontgomeryHotBlock.hotEntry
+        (MontgomeryWrapperBlock.normalEntry
           (copiedSquare s accumulatorWord count b e m baseOff expOff i j offset
             byte rest) (UInt256.ofNat 1024) count (UInt256.ofNat 1316) tail)
         (bitProductReturned s accumulatorWord count b e m baseOff expOff i j

@@ -110,14 +110,6 @@ open EvmSemantics.EVM
       rest).callStack = s.callStack := by
   rfl
 
-private theorem fastReturned_callStack (s : State) (A : UInt256)
-    (n b : Nat) (eWord mWord : UInt256) (baseOff : Nat)
-    (expWord : UInt256) (rest : List UInt256) :
-    (MontgomeryFastBaseBlock.fastReturned s A n b eWord mWord baseOff
-      expWord rest).callStack = s.callStack := by
-  unfold MontgomeryFastBaseBlock.fastReturned
-  split_ifs <;> rfl
-
 @[simp] theorem serializeProgress_callStack (s : State) (m k : Nat) :
     (BigSerialize.serializeProgress s m k).callStack = s.callStack := by
   rfl
@@ -136,28 +128,27 @@ private theorem fastReturned_callStack (s : State) (A : UInt256)
     (rest : List UInt256) :
     (BigComplete.exponentState s b e m baseOff expOff modOff returnDest
       rest).callStack = s.callStack := by
-  by_cases hd : BigComplete.directEligible s b e m baseOff expOff modOff
-      returnDest rest
-  · simp [BigComplete.exponentState, BigComplete.initializedState,
-      BigComplete.selectedReady, hd, MontgomeryFastBaseBlock.initialized,
-      MontgomeryPrepareBlock.setupReturned,
-      MontgomeryWrapperBlock.returnedState,
-      MontgomeryReadyValue.initialize, fastReturned_callStack,
-      BigModulus.scanRouted, BigComplete.baseState, BigBase.baseLoopEntry,
-      BigBase.afterClearDouble, BigHelpers.clearReturned,
-      BigModulus.scanNonzero,
-      BigBaseLoop.baseConvertedExit, BigBase.outerExit, BigBase.outerLoop,
-      BigBase.baseProgress, BigBase.bitProgress, BigHelpers.addReturned]
-  · simp [BigComplete.exponentState, BigComplete.initializedState,
-      BigComplete.selectedReady, hd, MontgomeryFastBaseBlock.initialized,
-      MontgomeryPrepareBlock.setupReturned,
-      MontgomeryWrapperBlock.returnedState,
-      MontgomeryReadyValue.initialize, fastReturned_callStack,
-      BigModulus.scanRouted, BigComplete.baseState, BigBase.baseLoopEntry,
-      BigBase.afterClearDouble, BigHelpers.clearReturned,
-      BigModulus.scanNonzero,
-      BigBaseLoop.baseConvertedExit, BigBase.outerExit, BigBase.outerLoop,
-      BigBase.baseProgress, BigBase.bitProgress, BigHelpers.addReturned]
+  let loaded := BigComplete.setupState s b e m baseOff expOff modOff
+    returnDest rest
+  let accumulator := BigComplete.modulusOr s b e m baseOff expOff modOff
+    returnDest rest
+  let base := BigComplete.baseState s b e m baseOff expOff modOff returnDest rest
+  let baseTail := BigComplete.baseRest expOff modOff returnDest rest
+  have hentry : BigComplete.exponentState s b e m baseOff expOff modOff
+      returnDest rest =
+      if BigBaseDirect.Eligible loaded b m baseOff modOff then
+        BigBaseDirect.directInitialAccumulator loaded accumulator
+          (BigComplete.limbCount m) b e m baseOff expOff modOff returnDest rest
+      else
+        BigBaseLoop.initialAccumulator base accumulator
+          (BigComplete.limbCount m) b e m baseOff baseTail := by
+    rfl
+  by_cases heligible : BigBaseDirect.Eligible loaded b m baseOff modOff
+  · rw [hentry, if_pos heligible]
+    rfl
+  · rw [hentry, if_neg heligible]
+    simp [BigBaseLoop.initialAccumulator, BigBaseLoop.baseConvertedExit,
+      BigBase.outerExit, BigBase.outerLoop, BigHelpers.addReturned, base]
 
 @[simp] theorem bitProgressFrom_callStack (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff i start t : Nat)
@@ -199,11 +190,7 @@ private theorem fastReturned_callStack (s : State) (A : UInt256)
     (rest : List UInt256) :
     (BigComplete.exponentProgressState s b e m baseOff expOff modOff returnDest
       rest).callStack = s.callStack := by
-  simp [BigComplete.exponentProgressState,
-    BigComplete.encodedExponentProgressState,
-    MontgomeryDecodeBlock.decodeReturned,
-    MontgomeryWrapperBlock.returnedState,
-    exponentPhaseState_callStack', exponentState_callStack]
+  simp [BigComplete.exponentProgressState]
 
 @[simp] theorem completedState_callStack (s : State)
     (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
