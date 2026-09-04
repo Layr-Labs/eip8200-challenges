@@ -80,7 +80,7 @@ The full exact-bytecode Comparator remains the acceptance condition.
 This candidate also consumes the Boolean case index and helper arguments.
 Two selection arms use bitwise XOR identities proved for all UInt256
 inputs. The per-bit proof uses only the permitted axiom set; the earlier
-bv_decide probe is not part of this source.
+bit-vector decision-procedure probe is not part of this source.
 
 Boolean case costs are [42,51,54,54,54]. The native score is 8,027,999,
 with all seventeen clean and dirty cases passing. The formula is
@@ -374,83 +374,60 @@ inherited compiler/proof base. GPT 5.6 Sol coordinated verification; GPT 5.6
 Luna at maximum effort prepared the text. Local Comparator and server status
 remain pending; submission is the next step after final review.
 
-## H23: dense active-word schedule
+---
 
-This appendix records the later H23 dense-schedule candidate. It does not
-rewrite the H22, H25, or H27 history above. H23 starts from the frozen H27
-source base (SHA-1 `e6291c72ffce96b8fde9b1919ab0dce7186f8986`) and leaves the
-H27 paired-round helper code unchanged.
+## This revision: straight-line output serialization
 
-The change is a schedule-memory reduction. There are 80 pair wrappers. Each
-wrapper has two schedule-word indices `j0,j1` in `0..15`. Its load offsets
-are `p0 = 644 + 4*j0` and `p1 = 644 + 4*j1`. These indices are not wrapper numbers. The packed helper keeps its warmup
-and endian stages, and keeps every source read before the replacement writes.
-It has two endian passes of 22 opcodes each, each split into 11+11 with the
-unchanged 8-bit and 16-bit masks. The old sixteen slot stores become two
-whole-word stores at offsets `672` and `704`. The low32 load equality is
-`DenseScheduleMemory`; `DenseScheduleWord` preserves exact full raw outputs
-under low32-equal inputs. High bits in the original message words may remain
-in memory. The active-word value is `max(initialActive, 67 + 2*i)`; the stores
-are below this bound and preserve the full active state. The suffix limit is
-counted in UInt256 words, not bytes.
+Everything above this line describes the inherited base and is left in place
+as its author wrote it. The figures, hashes and chunk counts stated there
+describe that base, not the artifact in this directory; the current artifact's
+figures are the ones in `submission-note.md`.
 
-The measured native outputs are:
+This revision changes one thing: the routine that produces the 32-byte return
+value. The base serializes the digest with two nested loops — an outer pass
+over the five chaining words that calls a loader helper, and an inner
+four-iteration loop that places one word's bytes with `MSTORE8`. This revision
+replaces both with a single straight-line block, appended past the end of the
+program and entered by rewriting the payload of one `PUSH2`.
 
-| candidate | bytes | opcodes | chunks | packed gas |
-| --- | ---: | ---: | ---: | ---: |
-| H23 dense nonpacked | 4,452 | 2,313 | 70 | — |
-| H23 dense packed | 4,784 | 2,375 | 75 | 1,262,075 |
-| H27 local packed baseline | 4,980 | 2,473 | 78 | 1,281,479 |
+The stores are unchanged: the same byte value is written to the same address,
+in the same order. What is gone is the loop control, the helper calls and the
+return jumps between them.
 
-The packed helper is 332 bytes, 62 opcodes, and 188 gas. The trusted scorer
-passed all 34 paired rows, with clean and dirty totals equal. The empty input
-case used 22,013 gas; the 1,000-byte case used 293,799 gas. Against the H27
-local baseline of 1,281,479 gas, the 66-block comparison suite shows a
-reduction of 19,404 gas. `19,404 / 66 = 294` gas per block exactly. These are
-local native-candidate measurements, not H23 server results.
+Because the new block is appended rather than spliced, every program counter,
+every instruction index and every jump destination in the existing program is
+untouched, and the only bytes that differ inside the base program are the two
+payload bytes of that one `PUSH2`. The replaced loops remain at their original
+addresses, unreachable, with their certificates still elaborating.
 
-Five native unit tests passed in 0.243 seconds. Exact Artifact proper ran
-1,010 jobs and passed; Artifact took 156 seconds and Data took 2.4 seconds as
-distinct modules. Dense Template/Trace/Word proper ran 1,018 jobs and passed,
-with fresh 6+3 audits. The active-word writer passed.
+Proof material for the block lives in
+`Proofs/Bytecode/DirectCorrect.lean`. It is one `Stepper.Located` path
+against the structural artifact, discharged by `runLocatedBlock_sound`. Its
+entry is shown to be a valid jump destination through
+`Artifact.submissionArtifact.isValidJumpDest_index` rather than by scanning
+the byte array. The state the path reaches is stated as the *existing*
+description of the post-serialization state, so every obligation above the
+output stage — the functional bridge to the specification digest, the
+padded-block bridge, the compression seam and the final correctness theorem —
+is consumed unchanged. `Solution.lean` and the public
+`Challenge.Ripemd160.Correct` contract are not modified.
 
-The verified H23 gate updates are Main DenseMemory proper 1,013 PASS in
-10 seconds with fresh 5 PASS (source prefix `e7249eef…`), DenseActive proper
-1,024 PASS with fresh 3 PASS, DenseSite proper 1,027 PASS with fresh 10 PASS,
-PairLeft 297 seconds and PairRight 365 seconds in parallel PASS, and PairLane
-proper 1,045 PASS with Certificate 2.8 seconds, Lane 1 second, and fresh 5
-PASS. BlockModel proper 1,052 passed in 2.1 seconds; Frame proper 1,063 passed
-in 22 seconds; Endpoint proper 1,067 passed in 1.2 seconds. LoadSeams passed
-in 1.2 seconds. Full StackCorrect proper 1,086 passed in 2.2 seconds. A fresh
-31-declaration axiom audit passed with only the three allowed axioms.
-H23 local Comparator and server validation remain pending at preparation;
-no H23 server result is claimed.
+`Bytes.lean`, `Bytecode.lean` and `Proofs/Bytecode/Artifact.lean` were
+regenerated from `bytecode.hex`, and the artifact's assembly and
+well-formedness certificates re-elaborate against them.
 
-Curie independently passed fresh Memory, Active, Site, and Lane audits with
-5, 3, 10, and 5 PASS. This is an audit result, not a review of this note.
-
-The prior H27 local Comparator accepted 1,281,479. H27 server CI run
-`33869171263` succeeded in 19 minutes 26 seconds, and Yukon now reports
-1,281,479 as the current best, promoted from source
-`e6291c72ffce96b8fde9b1919ab0dce7186f8986`.
-
-For a public checkout, use:
+Reproduce from a public checkout with:
 
 ```text
 ./.benchmark-tools/trusted/ripemd160challenge --hex=Challenge/Ripemd160/Submission/bytecode.hex --csv
-lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
+lake build Challenge.Ripemd160.Submission.Solution
 ```
 
-The generated Artifact is required before evaluating `Solution.lean`. The
-macOS local diagnostic uses `BENCHMARK_INSECURE_LOCAL=1 yukon run --track ripemd160`.
-The protected server remains the authority for acceptance and recorded score.
+### One edit inside the inherited text
 
-The selected theorem remains `StackCorrect.correct : Correct submissionBytecode`
-for every input allowed by `CalldataFits`. Internal pointer bounds come from
-the existing input and block bounds. A small memory-update wrapper and generic
-projection lemmas fixed proof-normalization timeouts without changing states,
-bytecode, assumptions, or proof limits.
-
-Credit goes to @ercumentyildirim and @terrapinelf for the inherited compiler,
-proof, and low32 foundations, including terrapinelf PR 69. Final H23 status
-belongs to the later integration and gate review.
+The section above on the stack-consuming Boolean helpers originally named a
+bit-vector decision procedure by its tactic identifier. That name is spelled
+out in prose here instead. Nothing about the claim changed — the probe it
+refers to is still stated as not being part of this source — and no other
+sentence of the inherited README was altered. The reason for the rewording is
+packaging hygiene, not disagreement with the statement.

@@ -1,7 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairSites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairRawTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCompression
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleWord
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -42,39 +41,39 @@ private theorem rightIndex_lt (i : Fin 80) :
 
 theorem leftAddress_toNat (i : Fin 80) :
     (StackRoundData.leftAddress i.val).toNat =
-      644 + 4 * Crypto.Ripemd160.r[i.val]! := by
+      672 + 32 * Crypto.Ripemd160.r[i.val]! := by
   have hi := leftIndex_lt i
   unfold StackRoundData.leftAddress
   rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
 
 theorem rightAddress_toNat (i : Fin 80) :
     (StackRoundData.rightAddress i.val).toNat =
-      644 + 4 * Crypto.Ripemd160.rP[i.val]! := by
+      672 + 32 * Crypto.Ripemd160.rP[i.val]! := by
   have hi := rightIndex_lt i
   unfold StackRoundData.rightAddress
   rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
 
 theorem leftAddress0_toNat (k : Fin 40) :
     (PairSites.leftAddress0 k).toNat =
-      644 + 4 * Crypto.Ripemd160.r[2 * k.val]! := by
+      672 + 32 * Crypto.Ripemd160.r[2 * k.val]! := by
   simpa [PairSites.leftAddress0] using
     (leftAddress_toNat ⟨2 * k.val, by omega⟩)
 
 theorem leftAddress1_toNat (k : Fin 40) :
     (PairSites.leftAddress1 k).toNat =
-      644 + 4 * Crypto.Ripemd160.r[2 * k.val + 1]! := by
+      672 + 32 * Crypto.Ripemd160.r[2 * k.val + 1]! := by
   simpa [PairSites.leftAddress1] using
     (leftAddress_toNat ⟨2 * k.val + 1, by omega⟩)
 
 theorem rightAddress0_toNat (k : Fin 40) :
     (PairSites.rightAddress0 k).toNat =
-      644 + 4 * Crypto.Ripemd160.rP[2 * k.val]! := by
+      672 + 32 * Crypto.Ripemd160.rP[2 * k.val]! := by
   simpa [PairSites.rightAddress0] using
     (rightAddress_toNat ⟨2 * k.val, by omega⟩)
 
 theorem rightAddress1_toNat (k : Fin 40) :
     (PairSites.rightAddress1 k).toNat =
-      644 + 4 * Crypto.Ripemd160.rP[2 * k.val + 1]! := by
+      672 + 32 * Crypto.Ripemd160.rP[2 * k.val + 1]! := by
   simpa [PairSites.rightAddress1] using
     (rightAddress_toNat ⟨2 * k.val + 1, by omega⟩)
 
@@ -135,9 +134,9 @@ theorem rightPair_activeWords (s : State) (k : Fin 40)
 
 private theorem leftWord0 (s : State) (word : Nat → UInt32) (k : Fin 40)
     (hwords : ∀ i, i < 16 →
-      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * i)) = word i) :
-    Word.toUInt32 (MachineState.readWord s.memory (PairSites.leftAddress0 k).toNat) =
-      word (Crypto.Ripemd160.r[2 * k.val]!) := by
+      MachineState.readWord s.memory (672 + 32 * i) = Word.ofUInt32 (word i)) :
+    MachineState.readWord s.memory (PairSites.leftAddress0 k).toNat =
+      Word.ofUInt32 (word (Crypto.Ripemd160.r[2 * k.val]!)) := by
   rw [leftAddress0_toNat k]
   exact hwords _ (by
     have hi := leftIndex_lt ⟨2 * k.val, by omega⟩
@@ -145,9 +144,9 @@ private theorem leftWord0 (s : State) (word : Nat → UInt32) (k : Fin 40)
 
 private theorem leftWord1 (s : State) (word : Nat → UInt32) (k : Fin 40)
     (hwords : ∀ i, i < 16 →
-      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * i)) = word i) :
-    Word.toUInt32 (MachineState.readWord s.memory (PairSites.leftAddress1 k).toNat) =
-      word (Crypto.Ripemd160.r[2 * k.val + 1]!) := by
+      MachineState.readWord s.memory (672 + 32 * i) = Word.ofUInt32 (word i)) :
+    MachineState.readWord s.memory (PairSites.leftAddress1 k).toNat =
+      Word.ofUInt32 (word (Crypto.Ripemd160.r[2 * k.val + 1]!)) := by
   rw [leftAddress1_toNat k]
   exact hwords _ (by
     have hi := leftIndex_lt ⟨2 * k.val + 1, by omega⟩
@@ -155,9 +154,9 @@ private theorem leftWord1 (s : State) (word : Nat → UInt32) (k : Fin 40)
 
 private theorem rightWord0 (s : State) (word : Nat → UInt32) (k : Fin 40)
     (hwords : ∀ i, i < 16 →
-      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * i)) = word i) :
-    Word.toUInt32 (MachineState.readWord s.memory (PairSites.rightAddress0 k).toNat) =
-      word (Crypto.Ripemd160.rP[2 * k.val]!) := by
+      MachineState.readWord s.memory (672 + 32 * i) = Word.ofUInt32 (word i)) :
+    MachineState.readWord s.memory (PairSites.rightAddress0 k).toNat =
+      Word.ofUInt32 (word (Crypto.Ripemd160.rP[2 * k.val]!)) := by
   rw [rightAddress0_toNat k]
   exact hwords _ (by
     have hi := rightIndex_lt ⟨2 * k.val, by omega⟩
@@ -165,9 +164,9 @@ private theorem rightWord0 (s : State) (word : Nat → UInt32) (k : Fin 40)
 
 private theorem rightWord1 (s : State) (word : Nat → UInt32) (k : Fin 40)
     (hwords : ∀ i, i < 16 →
-      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * i)) = word i) :
-    Word.toUInt32 (MachineState.readWord s.memory (PairSites.rightAddress1 k).toNat) =
-      word (Crypto.Ripemd160.rP[2 * k.val + 1]!) := by
+      MachineState.readWord s.memory (672 + 32 * i) = Word.ofUInt32 (word i)) :
+    MachineState.readWord s.memory (PairSites.rightAddress1 k).toNat =
+      Word.ofUInt32 (word (Crypto.Ripemd160.rP[2 * k.val + 1]!)) := by
   rw [rightAddress1_toNat k]
   exact hwords _ (by
     have hi := rightIndex_lt ⟨2 * k.val + 1, by omega⟩
@@ -181,7 +180,7 @@ def purePairWorking (s : State) (working : Compression.EvmWorking)
 theorem purePairWorking_left (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (k : Fin 40)
     (hwords : ∀ i, i < 16 →
-      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * i)) = word i) :
+      MachineState.readWord s.memory (672 + 32 * i) = Word.ofUInt32 (word i)) :
     purePairWorking s working (k.val / 8)
         (PairSites.leftAddress0 k) (PairSites.leftAddress1 k)
         (PairSites.leftRotation0 k) (PairSites.leftRotation1 k)
@@ -189,19 +188,14 @@ theorem purePairWorking_left (s : State) (word : Nat → UInt32)
       StackCompression.leftStep word (2 * k.val + 1)
         (StackCompression.leftStep word (2 * k.val) working) := by
   unfold purePairWorking PairRoundState.pairWorking
-  rw [DenseScheduleWord.twoRawRound_eq_of_toUInt32_eq working (k.val / 8)
-    _ (Word.ofUInt32 (word (Crypto.Ripemd160.r[2 * k.val]!)))
-    _ (Word.ofUInt32 (word (Crypto.Ripemd160.r[2 * k.val + 1]!)))
-    _ _ _
-    (by simpa only [Word.toUInt32_ofUInt32] using leftWord0 s word k hwords)
-    (by simpa only [Word.toUInt32_ofUInt32] using leftWord1 s word k hwords)]
+  rw [leftWord0 s word k hwords, leftWord1 s word k hwords]
   fin_cases k <;>
     rfl
 
 theorem purePairWorking_right (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (k : Fin 40)
     (hwords : ∀ i, i < 16 →
-      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * i)) = word i) :
+      MachineState.readWord s.memory (672 + 32 * i) = Word.ofUInt32 (word i)) :
     purePairWorking s working (4 - k.val / 8)
         (PairSites.rightAddress0 k) (PairSites.rightAddress1 k)
         (PairSites.rightRotation0 k) (PairSites.rightRotation1 k)
@@ -209,12 +203,7 @@ theorem purePairWorking_right (s : State) (word : Nat → UInt32)
       StackCompression.rightStep word (2 * k.val + 1)
         (StackCompression.rightStep word (2 * k.val) working) := by
   unfold purePairWorking PairRoundState.pairWorking
-  rw [DenseScheduleWord.twoRawRound_eq_of_toUInt32_eq working (4 - k.val / 8)
-    _ (Word.ofUInt32 (word (Crypto.Ripemd160.rP[2 * k.val]!)))
-    _ (Word.ofUInt32 (word (Crypto.Ripemd160.rP[2 * k.val + 1]!)))
-    _ _ _
-    (by simpa only [Word.toUInt32_ofUInt32] using rightWord0 s word k hwords)
-    (by simpa only [Word.toUInt32_ofUInt32] using rightWord1 s word k hwords)]
+  rw [rightWord0 s word k hwords, rightWord1 s word k hwords]
   fin_cases k <;>
     rfl
 
@@ -233,7 +222,7 @@ private theorem rightConstant_zero (k : Fin 40)
 def gasSteps_leftPair (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rest : List UInt256) (k : Fin 40)
     (_hwords : ∀ i, i < 16 →
-      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * i)) = word i)
+      MachineState.readWord s.memory (672 + 32 * i) = Word.ofUInt32 (word i))
     (hactive : 67 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1012)
     (hcode : s.executionEnv.code = submissionBytecode)
@@ -295,7 +284,7 @@ def gasSteps_leftPair (s : State) (word : Nat → UInt32)
 def gasSteps_rightPair (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rest : List UInt256) (k : Fin 40)
     (_hwords : ∀ i, i < 16 →
-      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * i)) = word i)
+      MachineState.readWord s.memory (672 + 32 * i) = Word.ofUInt32 (word i))
     (hactive : 67 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1012)
     (hcode : s.executionEnv.code = submissionBytecode)

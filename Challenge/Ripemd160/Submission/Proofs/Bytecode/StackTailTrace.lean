@@ -12,8 +12,10 @@ set_option maxHeartbeats 2000000
 # Located H25 final-combination trace
 
 The raw tail theorem is lifted through the exact H25 artifact.  The path starts
-at instruction 1646 and ends at instruction 1706.  The 668 helper instructions
-after the tail remain in the artifact suffix.
+at instruction 1646 and ends at instruction 1706.  The 879 instructions after
+the tail remain in the artifact suffix; that suffix now also carries the
+appended straight-line output serializer, which is why the count is larger
+than the artifact this module was first written against.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTailTrace
@@ -71,7 +73,7 @@ private theorem artifactPrefix_length : artifactPrefix.length = 1600 := by
 private theorem tailBefore_length : tailBefore.length = 1646 := by
   simp [tailBefore, artifactPrefix_length]
 
-private theorem tailAfter_length : tailAfter.length = 668 := by
+private theorem tailAfter_length : tailAfter.length = 879 := by
   simp [tailAfter]
 
 private theorem tailAfter_nonempty : tailAfter ≠ [] := by

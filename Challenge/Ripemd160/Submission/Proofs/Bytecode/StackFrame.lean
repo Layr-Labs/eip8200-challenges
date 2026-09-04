@@ -1,9 +1,9 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DriverTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleActiveWords
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleState
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleActiveWords
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleMemoryBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleSite
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleState
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Schedule
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackBlockModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackLoadTrace
@@ -93,7 +93,7 @@ theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock prefixPath (DriverTrace.compressEntry s input i) =
-      some (DenseScheduleTemplate.scheduleEntry s
+      some (PackedScheduleTemplate.scheduleEntry s
         PackedScheduleSite.packedScheduleSite.startPC
         (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f)
         (StackBlockModel.scheduleRest input i)) := by
@@ -105,7 +105,7 @@ theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
   have hdest1164 : Decode.isValidJumpDest submissionBytecode 0x1164 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 2313 (by rfl)
   simp [prefixPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
-    DriverTrace.compressEntry, DenseScheduleTemplate.scheduleEntry,
+    DriverTrace.compressEntry, PackedScheduleTemplate.scheduleEntry,
     PackedScheduleSite.packedScheduleSite_startPC, StackBlockModel.scheduleRest,
     StackBlockModel.driverRest, hcode, hrun, hpc979, hpc980, hpc981, hpc982, hpc983,
     hdest1164]
@@ -129,8 +129,8 @@ def gasSteps_prefix (s : State) (input : ByteArray) (i : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps (DriverTrace.compressEntry s input i) 
-      (DenseScheduleTemplate.scheduleEntry s
+    GasSteps (DriverTrace.compressEntry s input i)
+      (PackedScheduleTemplate.scheduleEntry s
         PackedScheduleSite.packedScheduleSite.startPC
         (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f)
         (StackBlockModel.scheduleRest input i)) := by
@@ -149,37 +149,48 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
-        (DenseScheduleTemplate.scheduleEntry s
+        (PackedScheduleTemplate.scheduleEntry s
           PackedScheduleSite.packedScheduleSite.startPC
           (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f)
           (StackBlockModel.scheduleRest input i))
         (Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
           (UInt256.ofNat 0x72f) (StackBlockModel.scheduleRest input i)) := by
   let rest := StackBlockModel.scheduleRest input i
-  have hactive :
-      DenseScheduleTemplate.denseExpectedActiveWords s
+  have hmemory :
+      PackedScheduleTemplate.expectedMemory s
           (DriverTrace.messageOffsetWord i) =
-        (Schedule.loopState s (DriverTrace.messageOffsetWord i)
-          (UInt256.ofNat 0x72f) rest 16).activeWords := by
-    exact DenseScheduleActiveWords.expectedActiveWords_eq_schedule s input hfit i hi
-        (UInt256.ofNat 0x72f) rest
-  have hstate :
-      Schedule.scheduleReturned
-          (DenseScheduleTemplate.denseExpectedState s
-            PackedScheduleSite.packedScheduleSite.startPC
-            (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest)
-          (UInt256.ofNat 0x72f) rest =
-        Schedule.scheduleReturned
-          ({ Schedule.loopState s (DriverTrace.messageOffsetWord i)
-              (UInt256.ofNat 0x72f) rest 16 with
-            memory := DenseScheduleTemplate.denseExpectedMemory s
-              (DriverTrace.messageOffsetWord i) })
-          (UInt256.ofNat 0x72f) rest := by
-    exact DenseScheduleState.returned_eq_schedule_of_memory_active s
-      PackedScheduleSite.packedScheduleSite.startPC
-      (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest
-      (DenseScheduleTemplate.denseExpectedMemory s
-        (DriverTrace.messageOffsetWord i)) rfl hactive
+        (StackBlockModel.scheduledState s input i).memory := by
+    let p := Padding.messageOffset + 64 * i
+    have hp : 0x4a0 ≤ p := by
+      dsimp [p, Padding.messageOffset]
+      omega
+    have hsize : input.size < 2 ^ 64 := by
+      simpa [CalldataFits] using hfit
+    have hpadded := Padding.paddedLength_lt input.size
+    have hblocks : Padding.paddedLength input.size =
+        (Padding.paddedLength input.size / 64) * 64 := by
+      simpa [DriverTrace.blockCount] using
+        (DriverTrace.paddedLength_eq_blockCount input)
+    have hipadded : 64 * i + 64 ≤ Padding.paddedLength input.size := by
+      have hi' : i < Padding.paddedLength input.size / 64 := by
+        simpa [DriverTrace.blockCount] using hi
+      omega
+    have hbound : p + 64 < 2 ^ 256 := by
+      norm_num [p, Padding.messageOffset] at hsize ⊢
+      omega
+    have hmsg : DriverTrace.messageOffsetWord i = UInt256.ofNat p := by
+      simp [DriverTrace.messageOffsetWord, DriverTrace.blockOffset, p,
+        Nat.mul_comm]
+    simpa [StackBlockModel.scheduledState, rest, hmsg] using
+      (PackedScheduleMemoryBridge.expectedMemory_eq_loopState_memory s p
+        (UInt256.ofNat 0x72f) rest hp hbound)
+  have hactive :
+      PackedScheduleTemplate.expectedActiveWords s
+          (DriverTrace.messageOffsetWord i) =
+        (StackBlockModel.scheduledState s input i).activeWords := by
+    simpa [StackBlockModel.scheduledState, rest] using
+      (PackedScheduleActiveWords.expectedActiveWords_eq_schedule s input hfit i hi
+        (UInt256.ofNat 0x72f) rest)
   have hstack1023 : rest.length < 1023 := by
     change 4 < 1023
     norm_num
@@ -187,14 +198,14 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
     change 4 < 1017
     norm_num
   have hraw :
-      StackRoundTrace.runInstrSeq DenseScheduleTemplate.denseBeforeJumpTemplate
-        (DenseScheduleTemplate.scheduleEntry s
+      StackRoundTrace.runInstrSeq PackedScheduleTemplate.ascendingPackedTemplate
+        (PackedScheduleTemplate.scheduleEntry s
           PackedScheduleSite.packedScheduleSite.startPC
           (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest) =
-        some (DenseScheduleTemplate.denseExpectedState s
+        some (PackedScheduleTemplate.expectedState s
           PackedScheduleSite.packedScheduleSite.startPC
           (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest) := by
-    exact DenseScheduleTrace.runInstrSeq_denseBeforeJump s
+    exact PackedScheduleTrace.runInstrSeq_ascendingPacked s
       PackedScheduleSite.packedScheduleSite.startPC
       (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest
       hstack1017 hrun
@@ -210,7 +221,10 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
     (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest
     hartifactCode hfork hrun hnp hstack1023 hvalid
     hraw
-  exact hpacked.cast rfl hstate
+  exact hpacked.cast rfl
+    (PackedScheduleState.returned_eq_schedule_of_memory_active s
+      PackedScheduleSite.packedScheduleSite.startPC
+      (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest hmemory hactive)
 
 def gasSteps_exit (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
