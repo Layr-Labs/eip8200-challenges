@@ -10,6 +10,7 @@ namespace Challenge.Modexp.Benchmark
 
 /-- Correctness of the submitted MODEXP bytecode.
 
+The candidate is based on parent crown `1d4f19358da07c847900298e8cb02057a02ddfd4`.
 Instruction 0 is `PUSH2 1314; JUMP`, so every execution enters the code appended
 at byte 1314.  That code returns the result itself for an odd modulus wider than
 32 bytes, and otherwise reaches the reference program body's `JUMPDEST` at
