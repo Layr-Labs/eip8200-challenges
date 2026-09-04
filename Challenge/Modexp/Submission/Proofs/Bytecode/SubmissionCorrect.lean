@@ -303,7 +303,7 @@ def finalState (input : ByteArray) : State :=
 def submissionGas (input : ByteArray) : Nat :=
   if modulusSize input = 0 then 61
   else if modulusSize input ≤ 32 then
-    if Word.modulusValue input = 0 then 828 else WordGas.wordGas input
+    if Word.modulusValue input = 0 then 180 else WordGas.wordGas input
   else if Word.modulusValue input = 0 then
     131 + BigZeroCorrect.zeroWork (Limbs.limbCount (modulusSize input))
       (modulusSize input) +

@@ -53,7 +53,7 @@ def startPath :
 
 def zeroTailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 427 (.Dup ⟨3, by decide⟩), pushAt 428 2 6144,
+  [opAt 427 (.Dup ⟨3, by decide⟩), pushAt 428 2 0,
    opAt 429 .RETURN]
 
 def zeroModulusPath :
@@ -84,9 +84,7 @@ def baseTailPath :
   [opAt 448 .JUMPDEST, opAt 449 (.Dup ⟨4, by decide⟩), pushAt 450 2 256,
    opAt 451 (.Dup ⟨5, by decide⟩), opAt 452 .MULMOD, opAt 453 .ADDMOD,
    opAt 454 (.Swap ⟨1, by decide⟩), opAt 455 .POP, pushAt 456 1 1,
-   opAt 457 (.Dup ⟨1, by decide⟩), opAt 458 .ADD,
-   opAt 459 (.Swap ⟨0, by decide⟩), opAt 460 .POP,
-   pushAt 461 2 541, opAt 462 .JUMP]
+   opAt 457 .ADD, pushAt 458 2 541, opAt 459 .JUMP]
 
 def baseFinishTailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -138,9 +136,8 @@ def bitChoosePath :
 def bitAdvancePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 514 (.Swap ⟨6, by decide⟩), opAt 515 .POP, opAt 516 .POP,
-   opAt 517 .POP, pushAt 518 1 1, opAt 519 (.Dup ⟨1, by decide⟩),
-   opAt 520 .ADD, opAt 521 (.Swap ⟨0, by decide⟩), opAt 522 .POP,
-   pushAt 523 2 606, opAt 524 .JUMP]
+   opAt 517 .POP, pushAt 518 1 1, opAt 519 .ADD,
+   pushAt 520 2 606, opAt 521 .JUMP]
 
 def expOffset (input : ByteArray) : Nat := 96 + baseSize input
 def modulusOffset (input : ByteArray) : Nat := expOffset input + exponentSize input
@@ -179,9 +176,9 @@ def zeroModulusFinalState (input : ByteArray) : State :=
       UInt256.ofNat 96, UInt256.ofNat (expOffset input),
       UInt256.ofNat (modulusOffset input), UInt256.ofNat 1267] ++ callerRest input
     halt := .Returned
-    hReturn := MachineState.readPadded ByteArray.empty 6144 (modulusSize input)
+    hReturn := MachineState.readPadded ByteArray.empty 0 (modulusSize input)
     activeWords := (Dispatch.wordEntryState input).activeWordsAfterUInt256
-      6144 (modulusSize input) }
+      0 (modulusSize input) }
 
 def byteWord (input : ByteArray) (offset : Nat) : UInt256 :=
   Accessors.calldataByteValue (Dispatch.wordEntryState input) (UInt256.ofNat offset)
@@ -405,7 +402,7 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
     Artifact.submissionArtifact.instructionPC i =
       [538, 539, 540, 541, 542, 543, 544, 545, 546, 549, 550,
        551, 554, 555, 556, 557, 558, 561, 562, 563, 564, 567,
-       568, 569, 570, 571, 572, 574, 575, 576, 577, 578, 581][i - 430]! := by
+       568, 569, 570, 571, 572, 574, 575, 578, 579, 580, 581][i - 430]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump582 :
@@ -434,8 +431,8 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
       [589,590,591,592,593,594,597,598,599,600,601,602,603,604,605,
        606,607,609,610,611,612,615,616,618,619,620,622,623,624,625,
        626,627,628,629,630,631,632,633,634,635,636,637,638,639,640,
-       641,642,643,644,645,647,648,649,650,651,654,655,656,657,658,
-       659,661,662,663,664,665,668][i - 469]! := by
+       641,642,643,644,645,647,648,651,652,653,654,655,656,657,658,
+       659,661,662,665,666,667,668][i - 469]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump669 :
@@ -546,7 +543,6 @@ theorem run_zeroTail (input : ByteArray) (hvalid : ValidInput input)
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
         modulusSize input := by
     exact Nat.mod_eq_of_lt (by norm_num at hm'; exact hm')
-  have h6144 : (6144 : UInt256).toNat = 6144 := by decide
   have h0 : (0 : UInt256).toNat = 0 := by decide
   simp [zeroTailPath, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -554,7 +550,7 @@ theorem run_zeroTail (input : ByteArray) (hvalid : ValidInput input)
     zeroDispatchState, zeroModulusFinalState, nonzeroState, callerRest,
     Dispatch.wordEntryState, Main.headerState, initialState, startPCs,
     Challenge.EvmProof.Word.word_toNat_ofNat, hmmod, hmmodLiteral,
-    Nat.mod_eq_of_lt hm', h6144, h0, hmodulus]
+    Nat.mod_eq_of_lt hm', h0, hmodulus]
   simp_all [State.activeWordsAfterUInt256, MachineState.activeWordsAfter]
 
 set_option linter.unusedSimpArgs false in
@@ -644,6 +640,10 @@ theorem run_baseTail (input : ByteArray) (i : Nat) (base : UInt256)
   have h541Word : (541 : UInt256) = UInt256.ofNat 541 := by decide
   have hisucc' := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := i) (b := 1) (by omega : i + 1 < 2 ^ 256)
+  have hincLeft : UInt256.ofNat 1 + UInt256.ofNat i =
+      UInt256.ofNat (i + 1) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    exact hisucc'
   have h256Word : (256 : UInt256) = UInt256.ofNat 256 := by decide
   have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
   simp (config := { maxSteps := 250000 })
@@ -656,7 +656,7 @@ theorem run_baseTail (input : ByteArray) (i : Nat) (base : UInt256)
       initialState, wordPCs, List.exchange,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       hi256, h562, h562Word, h541, h541Word, h256Word, honeWord, jump541,
-      hisucc']
+      hisucc', hincLeft]
 
 set_option linter.unusedSimpArgs false in
 theorem run_baseFinishGuard (input : ByteArray) (base : UInt256)
@@ -903,6 +903,10 @@ theorem run_bitAdvance (input : ByteArray) (outer j : Nat)
           (bitStep input byte j acc base) base) := by
   have hsucc' := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := j) (b := 1) (by omega : j + 1 < 2 ^ 256)
+  have hincLeft : UInt256.ofNat 1 + UInt256.ofNat j =
+      UInt256.ofNat (j + 1) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    exact hsucc'
   have h606 : (606 : UInt256).toNat = 606 := by decide
   have h606Word : (606 : UInt256) = UInt256.ofNat 606 := by decide
   have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
@@ -914,7 +918,7 @@ theorem run_bitAdvance (input : ByteArray) (outer j : Nat)
       Dispatch.wordEntryState, Main.headerState, initialState,
       expPCs, List.exchange,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
-      hj, hsucc', h606, h606Word, honeWord, jump606]
+      hj, hsucc', hincLeft, h606, h606Word, honeWord, jump606]
 
 def gasSteps_start (input : ByteArray) (hvalid : ValidInput input)
     (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
