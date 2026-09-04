@@ -6,14 +6,14 @@ set_option maxRecDepth 10000
 
 namespace Challenge.Modexp
 
-/-- Canonical hexadecimal form of the frozen artifact. -/
+/-- Canonical hexadecimal form of the frozen private Task51 artifact. -/
 def submissionHex : String := (include_str "bytecode.hex").trimAscii.copy
 
 /-- Frozen verified-compiler output targeted by the direct EVM proof. -/
 def submissionBytecode : ByteArray := submissionBytes
 
-@[simp] theorem submissionBytecode_size : submissionBytecode.size = 2974 := by
-  change submissionBytes.size = 2974
+@[simp] theorem submissionBytecode_size : submissionBytecode.size = 2566 := by
+  change submissionBytes.size = 2566
   exact submissionBytes_size
 
 /-- Generic disassembly round-trip for the exact submitted bytes. -/
