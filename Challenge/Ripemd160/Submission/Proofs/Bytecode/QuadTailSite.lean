@@ -215,7 +215,7 @@ private theorem runLocatedBlock_tail_raw (s : State)
 
 theorem runLocatedBlock_tail (s : State)
     (left right : Compression.EvmWorking) (ret : UInt256) (rest : List UInt256)
-    (hactive : 67 ≤ s.activeWords.toNat) (hstack : rest.length < 1007)
+    (hactive : 66 ≤ s.activeWords.toNat) (hstack : rest.length < 1007)
     (hrun : s.halt = .Running)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock tailPath
@@ -226,7 +226,7 @@ theorem runLocatedBlock_tail (s : State)
 
 def actualTailGasSteps (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256)
-    (hactive : 67 ≤ s.activeWords.toNat) (hstack : rest.length < 1007)
+    (hactive : 66 ≤ s.activeWords.toNat) (hstack : rest.length < 1007)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
