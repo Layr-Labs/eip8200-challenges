@@ -211,6 +211,10 @@ structure CompressionCostFacts (input : ByteArray)
       compressionWork +
         MachineState.memCost (seam.states (i + 1)).activeWords.toNat
 
+theorem blockWork_self (input : ByteArray) :
+    blockWork = blockWork := by
+  rfl
+
 /-- Narrow import interface for traces still private to `DirectCorrect` and
 the independent padding-gas lane.  No compression or driver-loop arithmetic
 is assumed here. -/
