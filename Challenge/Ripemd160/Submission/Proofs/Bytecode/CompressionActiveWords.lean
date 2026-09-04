@@ -125,7 +125,7 @@ private theorem scheduleIteration_activeWords_le (s : State)
     (hblock : block < DriverTrace.blockCount input) (hk : k < 16)
     (returnDest : UInt256) (rest : List UInt256) (bound : Nat)
     (hs : s.activeWords.toNat ≤ bound)
-    (hbound : 67 + 2 * block ≤ bound) (hlt : bound < 2 ^ 256) :
+    (hbound : 66 + 2 * block ≤ bound) (hlt : bound < 2 ^ 256) :
     (Schedule.afterIteration s (DriverTrace.messageOffsetWord block)
       returnDest rest k).activeWords.toNat ≤ bound := by
   have hload := messageLoadOffset input hfit block k hblock hk
@@ -162,8 +162,8 @@ private theorem scheduleLoopPrefix_activeWords_le (s : State)
     (returnDest : UInt256) (rest : List UInt256) (n : Nat) (hn : n ≤ 16) :
     (Schedule.loopState s (DriverTrace.messageOffsetWord block)
       returnDest rest n).activeWords.toNat ≤
-      max s.activeWords.toNat (67 + 2 * block) := by
-  let bound := max s.activeWords.toNat (67 + 2 * block)
+      max s.activeWords.toNat (66 + 2 * block) := by
+  let bound := max s.activeWords.toNat (66 + 2 * block)
   have hlt : bound < 2 ^ 256 := by
     unfold bound
     exact (Nat.max_lt).2 ⟨s.activeWords.val.isLt, by
@@ -195,7 +195,7 @@ private theorem scheduleLoop_activeWords_le (s : State)
     (returnDest : UInt256) (rest : List UInt256) :
     (Schedule.loopState s (DriverTrace.messageOffsetWord block)
       returnDest rest 16).activeWords.toNat ≤
-      max s.activeWords.toNat (67 + 2 * block) :=
+      max s.activeWords.toNat (66 + 2 * block) :=
   scheduleLoopPrefix_activeWords_le s input hfit block hblock returnDest rest
     16 (by omega)
 
@@ -204,7 +204,7 @@ private theorem scheduleIteration_activeWords_ge (s : State)
     (hblock : block < DriverTrace.blockCount input) (hk : k < 16)
     (returnDest : UInt256) (rest : List UInt256) (bound : Nat)
     (hs : s.activeWords.toNat ≤ bound)
-    (hbound : 67 + 2 * block ≤ bound) (hlt : bound < 2 ^ 256) :
+    (hbound : 66 + 2 * block ≤ bound) (hlt : bound < 2 ^ 256) :
     s.activeWords.toNat ≤
       (Schedule.afterIteration s (DriverTrace.messageOffsetWord block)
         returnDest rest k).activeWords.toNat := by
@@ -245,7 +245,7 @@ private theorem scheduleLoopPrefix_activeWords_ge (s : State)
     s.activeWords.toNat ≤
       (Schedule.loopState s (DriverTrace.messageOffsetWord block)
         returnDest rest n).activeWords.toNat := by
-  let bound := max s.activeWords.toNat (67 + 2 * block)
+  let bound := max s.activeWords.toNat (66 + 2 * block)
   have hlt : bound < 2 ^ 256 := by
     exact (Nat.max_lt).2 ⟨s.activeWords.val.isLt, by
       have hpadded := Padding.paddedLength_lt input.size
@@ -293,10 +293,10 @@ theorem scheduledState_activeWords (s : State) (input : ByteArray)
     (returnDest : UInt256) (rest : List UInt256) :
     (Schedule.loopState s (DriverTrace.messageOffsetWord block)
       returnDest rest 16).activeWords.toNat =
-      max s.activeWords.toNat (67 + 2 * block) := by
+      max s.activeWords.toNat (66 + 2 * block) := by
   let prev := Schedule.loopState s (DriverTrace.messageOffsetWord block)
     returnDest rest 15
-  let target := 67 + 2 * block
+  let target := 66 + 2 * block
   let bound := max s.activeWords.toNat target
   have hprevLe : prev.activeWords.toNat ≤ bound :=
     scheduleLoopPrefix_activeWords_le s input hfit block hblock returnDest rest
@@ -414,8 +414,8 @@ private theorem tableAddress_toNat (base i : Nat) (hi : i < 80)
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
 
 private theorem tableAtReturned_activeWords (s : State) (base i : Nat)
-    (hi : i < 80) (hlo : 31 ≤ base) (hactive : 67 ≤ s.activeWords.toNat)
-    (hbase : base + 96 + 32 ≤ 67 * 32) (returnDest : UInt256)
+    (hi : i < 80) (hlo : 31 ≤ base) (hactive : 66 ≤ s.activeWords.toNat)
+    (hbase : base + 96 + 32 ≤ 66 * 32) (returnDest : UInt256)
     (rest : List UInt256) :
     (TableTrace.tableAtReturned s (UInt256.ofNat base) (UInt256.ofNat i)
       returnDest rest).activeWords = s.activeWords := by
@@ -425,8 +425,8 @@ private theorem tableAtReturned_activeWords (s : State) (base i : Nat)
   omega
 
 private theorem afterConstantLoad_activeWords (s : State) (base i : Nat)
-    (hi : i < 80) (hactive : 67 ≤ s.activeWords.toNat)
-    (hbase : base + 4 * 32 + 32 ≤ 67 * 32) :
+    (hi : i < 80) (hactive : 66 ≤ s.activeWords.toNat)
+    (hbase : base + 4 * 32 + 32 ≤ 66 * 32) :
     (afterConstantLoad s base i).activeWords = s.activeWords := by
   unfold afterConstantLoad roundIndex
   apply activeWordsAfterUInt256_eq
@@ -440,8 +440,8 @@ private theorem addWord_toNat (base off : Nat)
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlt]
 
 private theorem afterLoads_activeWords (s : State) (base : Nat)
-    (hactive : 67 ≤ s.activeWords.toNat)
-    (hbase : base + 0x80 + 32 ≤ 67 * 32) :
+    (hactive : 66 ≤ s.activeWords.toNat)
+    (hbase : base + 0x80 + 32 ≤ 66 * 32) :
     (afterLoads s (UInt256.ofNat base)).activeWords = s.activeWords := by
   let q₀ := { s with activeWords :=
     s.activeWordsAfterUInt256 (UInt256.ofNat base).toNat 32 }
@@ -476,8 +476,8 @@ private theorem afterLoads_activeWords (s : State) (base : Nat)
     omega)).trans h₃
 
 private theorem storedWord_activeWords (s : State) (base index : Nat)
-    (hindex : index < 16) (hactive : 67 ≤ s.activeWords.toNat)
-    (hbase : base + 32 * index + 32 ≤ 67 * 32) (value : UInt256) :
+    (hindex : index < 16) (hactive : 66 ≤ s.activeWords.toNat)
+    (hbase : base + 32 * index + 32 ≤ 66 * 32) (value : UInt256) :
     (TableTrace.storedWord s (UInt256.ofNat base) (UInt256.ofNat index)
       value).activeWords = s.activeWords := by
   unfold TableTrace.storedWord
@@ -498,9 +498,9 @@ private theorem storedWord_activeWords (s : State) (base index : Nat)
 /-- A compiled round only touches fixed scratch words, provided its X selector
 is one of the sixteen schedule entries. -/
 theorem roundReturned_activeWords (s : State) (base : Nat)
-    (hbase : base + 0x80 + 32 ≤ 67 * 32) (j : Nat)
+    (hbase : base + 0x80 + 32 ≤ 66 * 32) (j : Nat)
     (wordIndex rotation k returnDest : UInt256) (hword : wordIndex.toNat < 16)
-    (rest : List UInt256) (hactive : 67 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hactive : 66 ≤ s.activeWords.toNat) :
     (RoundTrace.roundReturned s (UInt256.ofNat base) j wordIndex rotation k
       returnDest rest).activeWords = s.activeWords := by
   let loaded := afterLoads s (UInt256.ofNat base)
@@ -548,7 +548,7 @@ private theorem leftRoundState_activeWords (s : State)
     (messageOffset returnDest : UInt256) (rest : List UInt256)
     (i : Nat) (hi : i < 80)
     (htables : InitializationCorrect.TablesCorrect s.memory)
-    (hactive : 67 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     (leftRoundState s messageOffset returnDest rest i).activeWords =
       s.activeWords := by
   let q₀ := afterConstantLoad s 1568 i
@@ -606,7 +606,7 @@ private theorem leftStates_tables_preserved (s : State)
 theorem leftStates_activeWords (s : State)
     (messageOffset returnDest : UInt256) (rest : List UInt256)
     (htables : InitializationCorrect.TablesCorrect s.memory)
-    (hactive : 67 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     (leftStates s messageOffset returnDest rest 80).activeWords =
       s.activeWords := by
   have hloop : ∀ n, n ≤ 80 →
@@ -628,7 +628,7 @@ private theorem rightRoundState_activeWords (s : State)
     (messageOffset returnDest : UInt256) (rest : List UInt256)
     (i : Nat) (hi : i < 80)
     (htables : InitializationCorrect.TablesCorrect s.memory)
-    (hactive : 67 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     (rightRoundState s messageOffset returnDest rest i).activeWords =
       s.activeWords := by
   let q₀ := afterConstantLoad s 1728 i
@@ -686,7 +686,7 @@ private theorem rightStates_tables_preserved (s : State)
 theorem rightStates_activeWords (s : State)
     (messageOffset returnDest : UInt256) (rest : List UInt256)
     (htables : InitializationCorrect.TablesCorrect s.memory)
-    (hactive : 67 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     (rightStates s messageOffset returnDest rest 80).activeWords =
       s.activeWords := by
   have hloop : ∀ n, n ≤ 80 →
@@ -726,7 +726,7 @@ private theorem touchWords_activeWords (s : State) (offsets : List Nat)
         htouch
 
 private theorem touched4_activeWords (s : State)
-    (hactive : 67 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     (touched4 s).activeWords = s.activeWords := by
   change (touchWords s
     [448, 256, 544, 480, 288, 576, 64, 352, 320, 608, 96,
@@ -753,7 +753,7 @@ private theorem rightTailResult_outer_activeWords (s : State)
 private theorem rightTailResult_activeWords (s : State)
     (messageOffset returnDest : UInt256) (rest : List UInt256)
     (htables : InitializationCorrect.TablesCorrect s.memory)
-    (hactive : 67 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     (rightTailResult s messageOffset returnDest rest).activeWords =
       s.activeWords := by
   have hrounded :
@@ -814,27 +814,27 @@ theorem resultState_activeWords (s : State) (input : ByteArray)
     (hblock : block < DriverTrace.blockCount input)
     (htables : InitializationCorrect.TablesCorrect s.memory) :
     (CompressionFullTrace.resultState s input block).activeWords.toNat =
-      max s.activeWords.toNat (67 + 2 * block) := by
+      max s.activeWords.toNat (66 + 2 * block) := by
   let messageOffset := DriverTrace.messageOffsetWord block
-  let returnDest := UInt256.ofNat 0x436
+  let returnDest := UInt256.ofNat 0x643
   let rest := CompressionFullTrace.driverRest input block
   let scheduled := scheduledState s messageOffset returnDest rest
   have hscheduled : scheduled.activeWords.toNat =
-      max s.activeWords.toNat (67 + 2 * block) := by
+      max s.activeWords.toNat (66 + 2 * block) := by
     unfold scheduled messageOffset
     simpa [scheduledState] using
       scheduledState_activeWords s input hfit block hblock
         (UInt256.ofNat 630) (DriverTrace.messageOffsetWord block ::
           returnDest :: rest)
-  have hscheduledActive : 67 ≤ scheduled.activeWords.toNat := by
+  have hscheduledActive : 66 ≤ scheduled.activeWords.toNat := by
     rw [hscheduled]
-    exact le_trans (by omega : 67 ≤ 67 + 2 * block)
+    exact le_trans (by omega : 66 ≤ 66 + 2 * block)
       (Nat.le_max_right _ _)
   let initial := leftInitialState s messageOffset returnDest rest
   have hinitial : initial.activeWords = scheduled.activeWords := by
     unfold initial leftInitialState
     exact copiedWorkingState_activeWords scheduled (by omega)
-  have hinitialActive : 67 ≤ initial.activeWords.toNat := by
+  have hinitialActive : 66 ≤ initial.activeWords.toNat := by
     rw [hinitial]
     exact hscheduledActive
   have hinitialTables : InitializationCorrect.TablesCorrect initial.memory := by
@@ -845,7 +845,7 @@ theorem resultState_activeWords (s : State) (input : ByteArray)
     unfold leftFinal initial
     exact leftStates_activeWords _ messageOffset returnDest rest hinitialTables
       hinitialActive
-  have hleftActive : 67 ≤ leftFinal.activeWords.toNat := by
+  have hleftActive : 66 ≤ leftFinal.activeWords.toNat := by
     rw [hleft]
     exact hinitialActive
   have hleftTables : InitializationCorrect.TablesCorrect leftFinal.memory := by
@@ -861,6 +861,6 @@ theorem resultState_activeWords (s : State) (input : ByteArray)
     _ = leftFinal.activeWords.toNat := congrArg UInt256.toNat htail
     _ = initial.activeWords.toNat := congrArg UInt256.toNat hleft
     _ = scheduled.activeWords.toNat := congrArg UInt256.toNat hinitial
-    _ = max s.activeWords.toNat (67 + 2 * block) := hscheduled
+    _ = max s.activeWords.toNat (66 + 2 * block) := hscheduled
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionActiveWords

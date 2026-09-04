@@ -11,7 +11,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open StackBlockModel StackEndpoint QuadLane StackLoadSeams
 
-private theorem returnPC : Artifact.submissionArtifact.instructionPC 717 = 0x436 := by
+private theorem returnPC : Artifact.submissionArtifact.instructionPC 783 = 0x643 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -37,13 +37,11 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
   have qwords : QuadSemantic.DenseWordsAt q word :=
     scheduled_words_memory s input i h ctx hfit hi
   have qenv : q.executionEnv = s.executionEnv := by
-    simp only [q, scheduledState, withActiveWords_executionEnv,
-      withMemory_executionEnv, Schedule.loopState_executionEnv]
+    simp only [q, scheduledState, Schedule.loopState_executionEnv]
   have qcode : q.executionEnv.code = submissionBytecode := by rw [qenv]; exact hcode
   have qfork : q.fork = .Osaka := by rw [State.fork, qenv]; exact hfork
   have qrun : q.halt = .Running := by
-    simp only [q, scheduledState, withActiveWords_halt, withMemory_halt,
-      Schedule.loopState_halt, hrun]
+    simp only [q, scheduledState, Schedule.loopState_halt, hrun]
   have qnp : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig
       q.executionEnv.fork q.executionEnv.codeAddr = false := by rw [qenv]; exact hnp
   have restBound : rest.length < 1007 := by
@@ -74,29 +72,29 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
   have gright := gasSteps_right80 q word w rightRest qwords qactive rightRestBound
     qcode qfork qrun qnp
   have hvalid : Decode.isValidJumpDest q.executionEnv.code
-      (UInt256.ofNat 0x436).toNat = true := by
-    have hdest := Artifact.submissionArtifact.isValidJumpDest_index 717 (by rfl)
+      (UInt256.ofNat 0x643).toNat = true := by
+    have hdest := Artifact.submissionArtifact.isValidJumpDest_index 783 (by rfl)
     rw [returnPC] at hdest
-    change Decode.isValidJumpDest q.executionEnv.code 0x436 = true
+    change Decode.isValidJumpDest q.executionEnv.code 0x643 = true
     rw [qcode]
     exact hdest
-  have gtail := QuadTailSite.actualTailGasSteps q left right (UInt256.ofNat 0x436)
+  have gtail := QuadTailSite.actualTailGasSteps q left right (UInt256.ofNat 0x643)
     (driverRest input i) qactive (by simp [driverRest]) qcode qfork qrun qnp hvalid
   have tailSeam : stateAt q (QuadLayout.rightPC 20) right rightRest =
-      QuadTailTemplate.tailEntry q left right (UInt256.ofNat 0x436) (driverRest input i) := by
-    exact (tailEntry_atLanePC q left right (UInt256.ofNat 0x436) (driverRest input i)).symm
+      QuadTailTemplate.tailEntry q left right (UInt256.ofNat 0x643) (driverRest input i) := by
+    exact (tailEntry_atLanePC q left right (UInt256.ofNat 0x643) (driverRest input i)).symm
   have hleft : left = leftWorking s input i := by
     exact congrArg (StackCompression.leftRounds (blockWords input i) 80)
       (initialWorking_scheduled s input i)
   have hright : right = rightWorking s input i := by
     exact congrArg (StackCompression.rightRounds (blockWords input i) 80)
       (initialWorking_scheduled s input i)
-  have tailEnd : QuadTailTemplate.finalResult q left right (UInt256.ofNat 0x436)
+  have tailEnd : QuadTailTemplate.finalResult q left right (UInt256.ofNat 0x643)
       (driverRest input i) =
       DriverTrace.compressReturned (resultState s input i) input i := by
-    change StackTail.tailResult q left right (UInt256.ofNat 0x436)
+    change StackTail.tailResult q left right (UInt256.ofNat 0x643)
       (driverRest input i) = _
-    exact (congrArg₂ (fun l r => StackTail.tailResult q l r (UInt256.ofNat 0x436)
+    exact (congrArg₂ (fun l r => StackTail.tailResult q l r (UInt256.ofNat 0x643)
       (driverRest input i)) hleft hright).trans
       ((tailResult_eq_resultState s input i).trans (resultState_returned s input i))
   exact gframe.trans (gload1'.trans (gleft.trans (groute'.trans (gload2'.trans

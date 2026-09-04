@@ -61,65 +61,31 @@ private theorem state_frame_of_components (s q : State)
                       | mk qGas qActive qMemory qReturnData qHReturn =>
                           simp_all
 
-private theorem loopState_frame_memory_override (s : State)
-    (msgOff returnDest : UInt256) (rest : List UInt256) (i : Nat)
-    (memory : ByteArray) (newPC : UInt256) (newStack : List UInt256) :
-    { s with
-      pc := newPC
-      stack := newStack
-      memory := memory
-      activeWords := (Schedule.loopState s msgOff returnDest rest i).activeWords } =
-      { { Schedule.loopState s msgOff returnDest rest i with memory := memory } with
-        pc := newPC
-        stack := newStack } := by
-  rcases loopState_unchanged s msgOff returnDest rest i with
-    ⟨hgas, hreturnData, hhReturn, haccountMap, hsubstate, hexecutionEnv,
-      hexecLength, hhalt, hcallStack⟩
-  exact state_frame_of_components s
-    { Schedule.loopState s msgOff returnDest rest i with memory := memory }
-    newPC newStack hgas hreturnData hhReturn haccountMap hsubstate hexecutionEnv
-    hexecLength hhalt hcallStack
-
 private theorem loopState_frame_memory_active_override (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256) (i : Nat)
-    (memory : ByteArray) (newPC : UInt256) (newStack : List UInt256)
-    (newActive : UInt256) :
+    (memory : ByteArray) (activeWords : UInt256)
+    (newPC : UInt256) (newStack : List UInt256) :
     { s with
       pc := newPC
       stack := newStack
       memory := memory
-      activeWords := newActive } =
-      { { { Schedule.loopState s msgOff returnDest rest i with memory := memory } with
-          activeWords := newActive } with
+      activeWords := activeWords } =
+      { { Schedule.loopState s msgOff returnDest rest i with
+            memory := memory
+            activeWords := activeWords } with
         pc := newPC
         stack := newStack } := by
   rcases loopState_unchanged s msgOff returnDest rest i with
     ⟨hgas, hreturnData, hhReturn, haccountMap, hsubstate, hexecutionEnv,
       hexecLength, hhalt, hcallStack⟩
   exact state_frame_of_components s
-    { { Schedule.loopState s msgOff returnDest rest i with memory := memory } with
-      activeWords := newActive }
+    { Schedule.loopState s msgOff returnDest rest i with
+      memory := memory
+      activeWords := activeWords }
     newPC newStack hgas hreturnData hhReturn haccountMap hsubstate hexecutionEnv
     hexecLength hhalt hcallStack
 
 theorem returned_eq_schedule_of_memory_active (s : State)
-    (startPC messageOffset returnDest : UInt256) (rest : List UInt256)
-    (memory : ByteArray)
-    (hmemory : DenseScheduleTemplate.denseExpectedMemory s messageOffset = memory)
-    (hactive : DenseScheduleTemplate.denseExpectedActiveWords s messageOffset =
-      (Schedule.loopState s messageOffset returnDest rest 16).activeWords) :
-    Schedule.scheduleReturned
-        (DenseScheduleTemplate.denseExpectedState s startPC messageOffset
-          returnDest rest) returnDest rest =
-      Schedule.scheduleReturned
-        ({ Schedule.loopState s messageOffset returnDest rest 16 with memory := memory })
-        returnDest rest := by
-  unfold Schedule.scheduleReturned DenseScheduleTemplate.denseExpectedState
-  rw [hmemory, hactive]
-  exact loopState_frame_memory_override s messageOffset returnDest rest 16 memory
-    returnDest rest
-
-theorem returned_eq_schedule_with_memory_active (s : State)
     (startPC messageOffset returnDest : UInt256) (rest : List UInt256)
     (memory : ByteArray)
     (hmemory : DenseScheduleTemplate.denseExpectedMemory s messageOffset = memory) :
@@ -127,14 +93,15 @@ theorem returned_eq_schedule_with_memory_active (s : State)
         (DenseScheduleTemplate.denseExpectedState s startPC messageOffset
           returnDest rest) returnDest rest =
       Schedule.scheduleReturned
-        { { Schedule.loopState s messageOffset returnDest rest 16 with
-            memory := memory } with
-          activeWords := DenseScheduleTemplate.denseExpectedActiveWords s messageOffset }
+        ({ Schedule.loopState s messageOffset returnDest rest 16 with
+          memory := memory
+          activeWords :=
+            DenseScheduleTemplate.denseExpectedActiveWords s messageOffset })
         returnDest rest := by
   unfold Schedule.scheduleReturned DenseScheduleTemplate.denseExpectedState
   rw [hmemory]
   exact loopState_frame_memory_active_override s messageOffset returnDest rest 16
-    memory returnDest rest
-    (DenseScheduleTemplate.denseExpectedActiveWords s messageOffset)
+    memory (DenseScheduleTemplate.denseExpectedActiveWords s messageOffset)
+    returnDest rest
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleState
