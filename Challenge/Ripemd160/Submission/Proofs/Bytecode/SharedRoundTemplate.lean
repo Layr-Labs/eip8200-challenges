@@ -5,7 +5,7 @@ set_option warningAsError true
 set_option maxRecDepth 30000
 
 /-!
-# H12 shared round helper templates
+# H14 shared round helper templates
 
 These templates describe the straight-line helper before its final `JUMP`.
 The helper receives `[X-address, rotation, return-PC, A, B, C, D, E]` in
@@ -42,12 +42,12 @@ def helperBeforeJumpTemplate (j : Nat) (_xAddress : UInt256)
     [op .ADD, dup4, op .ADD] ++
     (if j = 0 then [] else [push4 constant, op .ADD]) ++
     [push4 mask, op .AND, swap3, op .POP,
-      dup3, dup2, op .SHL, dup4, dup3, push1 (UInt256.ofNat 32), op .SUB,
-      op .SHR, op .OR, dup8, op .ADD, push4 mask, op .AND,
-      swap1, op .POP, swap2, op .POP,
-      dup4, dup1, push1 c10, op .SHL, dup2, push1 c22, op .SHR,
-      op .OR, swap1, op .POP, push4 mask, op .AND,
-      swap4, op .POP, swap1, swap2, swap3, swap4, swap5, swap1]
+      swap1, swap2, dup1, dup3, op .SHL, swap2,
+      push1 (UInt256.ofNat 32), op .SUB, op .SHR, op .OR,
+      dup6, op .ADD, push4 mask, op .AND, swap1,
+      swap3, dup1, push1 c10, op .SHL, swap1, push1 c22,
+      op .SHR, op .OR, push4 mask, op .AND,
+      swap4, swap5, swap1, swap2, swap3]
 
 def template (j : Nat) (xAddress : UInt256)
     (rotation : Nat) (constant : UInt256) : List Instr :=
@@ -88,27 +88,27 @@ def f4Template (xAddress : UInt256) (rotation : Nat)
     (booleanOps 4).length = 8 := by rfl
 
 @[simp] theorem f0Template_length (xAddress : UInt256) (rotation : Nat) :
-    (f0Template xAddress rotation).length = 51 := by
+    (f0Template xAddress rotation).length = 44 := by
   rfl
 
 @[simp] theorem f1Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f1Template xAddress rotation constant).length = 55 := by
+    (f1Template xAddress rotation constant).length = 48 := by
   rfl
 
 @[simp] theorem f2Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f2Template xAddress rotation constant).length = 56 := by
+    (f2Template xAddress rotation constant).length = 49 := by
   rfl
 
 @[simp] theorem f3Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f3Template xAddress rotation constant).length = 55 := by
+    (f3Template xAddress rotation constant).length = 48 := by
   rfl
 
 @[simp] theorem f4Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f4Template xAddress rotation constant).length = 56 := by
+    (f4Template xAddress rotation constant).length = 49 := by
   rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTemplate

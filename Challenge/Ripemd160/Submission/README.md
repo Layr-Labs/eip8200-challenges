@@ -116,7 +116,7 @@ the unchanged public Correct contract. `Solution.lean` is the benchmark entry.
 Only the protected Comparator and scorer determine benchmark acceptance.
 The final theorem must pass that check for the exact submitted bytecode.
 
-## Current candidate: compact shared stack rounds (H12)
+## Prior candidate: compact shared stack rounds (H12)
 
 H12 retains the stack-resident working words, schedule, and final combination.
 It replaces H10's inline round bodies with 160 six-instruction wrappers and
@@ -139,3 +139,24 @@ traces, exact call/helper/return locations, bounded 80-round lane composition,
 and the final storage tail with its nonempty helper suffix. StackCorrect and
 Solution retain the exact universal Correct contract. Acceptance still
 requires the full protected Comparator and scorer.
+
+## Current candidate: compact rotation and return sequence (H14)
+
+H14 keeps H12's shared helper design and changes only the common stack
+permutations. It consumes the C input directly during its ten-bit rotation.
+It also consumes the sum and rotation inputs directly when it computes T.
+All masks, arithmetic, memory accesses, and call/return steps remain.
+
+The artifact is 4,726 bytes and 2,513 instructions. The native suite reports
+2,113,079 gas for all 17 clean vectors. All 17 dirty vectors pass with equal
+paired gas. This saves 179,520 per frame suite, or 2,720 per compression block,
+against H12. The measured formula is
+`3698 + 31000 * B + 3 * C + memCost(65 + 2 * B)`.
+It is not a separate proved gas schedule.
+
+The five before-JUMP templates have lengths 44, 48, 49, 48, and 49.
+The wrappers and final storage tail keep their previous positions. Each
+helper has seven fewer instructions and bytes. All ten helper addresses,
+160 wrapper targets, and the tail's 486-instruction suffix are updated.
+The unchanged public Correct contract and protected Comparator remain the
+acceptance conditions for these exact bytes.
