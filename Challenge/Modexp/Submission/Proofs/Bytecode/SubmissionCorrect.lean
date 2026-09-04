@@ -128,9 +128,27 @@ open EvmSemantics.EVM
     (rest : List UInt256) :
     (BigComplete.exponentState s b e m baseOff expOff modOff returnDest
       rest).callStack = s.callStack := by
-  simp [BigComplete.exponentState, BigBaseLoop.initialAccumulator,
-    BigBaseLoop.baseConvertedExit, BigBase.outerExit, BigBase.outerLoop,
-    BigHelpers.addReturned]
+  let loaded := BigComplete.setupState s b e m baseOff expOff modOff
+    returnDest rest
+  let accumulator := BigComplete.modulusOr s b e m baseOff expOff modOff
+    returnDest rest
+  let base := BigComplete.baseState s b e m baseOff expOff modOff returnDest rest
+  let baseTail := BigComplete.baseRest expOff modOff returnDest rest
+  have hentry : BigComplete.exponentState s b e m baseOff expOff modOff
+      returnDest rest =
+      if BigBaseDirect.Eligible loaded b m baseOff modOff then
+        BigBaseDirect.directInitialAccumulator loaded accumulator
+          (BigComplete.limbCount m) b e m baseOff expOff modOff returnDest rest
+      else
+        BigBaseLoop.initialAccumulator base accumulator
+          (BigComplete.limbCount m) b e m baseOff baseTail := by
+    rfl
+  by_cases heligible : BigBaseDirect.Eligible loaded b m baseOff modOff
+  · rw [hentry, if_pos heligible]
+    rfl
+  · rw [hentry, if_neg heligible]
+    simp [BigBaseLoop.initialAccumulator, BigBaseLoop.baseConvertedExit,
+      BigBase.outerExit, BigBase.outerLoop, BigHelpers.addReturned, base]
 
 @[simp] theorem bitProgressFrom_callStack (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff i start t : Nat)

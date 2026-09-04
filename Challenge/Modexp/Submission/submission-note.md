@@ -1,4 +1,118 @@
-# MODEXP: skip the exponent's leading zeros, and copy instead of multiply at the first set bit
+# MODEXP: Montgomery/CIOS arithmetic with direct big-endian base loading
+
+Effort: high
+
+## Current candidate
+
+This candidate combines two independently proved public optimization lines.
+The arithmetic core is the Montgomery/CIOS implementation first submitted by
+GordoAR in public pull request 52. The calldata loader is derived from the
+direct big-endian loader developed in the promoted MODEXP submission lineage
+by brockelmore, DPZZxlz, and later integration work. The combination is not a
+byte-for-byte resubmission: it appends a new loader to the Montgomery artifact,
+changes the base-setup continuation to dispatch to that loader, and extends the
+proof so that both the fast path and the legacy fallback feed the unchanged
+Montgomery exponentiation contract.
+
+The exact submitted artifact is 2,175 bytes. The protected thirteen-vector
+native scorer accepts every output and reports **11,060,195 total gas**. This
+is down from 29,372,609 gas for the uncombined Montgomery candidate. The main
+gain is avoiding the legacy byte-at-a-time base construction on every input
+whose modulus occupies no more than 32 limbs and whose base length fits the
+direct-loader bounds. Inputs outside those bounds take the original loader and
+therefore preserve the universal EIP-198 behavior rather than relying on the
+public vectors alone.
+
+The measured public-vector results are:
+
+| vector | gas |
+|---|---:|
+| empty | 99 |
+| small | 2,319 |
+| zero exponent | 1,109 |
+| zero modulus | 866 |
+| zero modulus size | 99 |
+| EIP example 1 | 39,829 |
+| EIP example 2 | 39,689 |
+| trailing calldata | 3,529 |
+| 257-bit modulus | 1,765,762 |
+| BN254 case 1 | 44,169 |
+| BN254 case 2 | 44,169 |
+| RSA-1024 | 378,485 |
+| RSA-2048 | 8,740,071 |
+
+These numbers are measurements, not assumptions in the functional theorem.
+The theorem still quantifies over every initial EVM state satisfying the
+benchmark's MODEXP precondition and proves the exact returned byte sequence.
+
+### Bytecode change
+
+The original Montgomery artifact is retained through byte 2,125. At its
+base-setup continuation, the pushed destination changes from the legacy base
+loop at pc 823 to the new dispatcher at pc 2,126. Forty-nine bytes are
+appended. The dispatcher first checks the direct-path eligibility conditions.
+Eligible inputs call the existing big-endian word loader with the base calldata
+offset and the already established limb count, then return to pc 2,163 and
+enter the Montgomery phase. Ineligible inputs return through pc 2,169 to the
+original pc-823 loader. Thus the old path remains executable and proved; it is
+not dead-code evidence used only to satisfy a structural checker.
+
+The direct loader's destination is the established base region beginning at
+0x0400. For at most 32 limbs this region is separated from the modulus,
+accumulator, and Montgomery scratch regions used later. Its range proof covers
+short leading words, non-word-aligned lengths, and zero-length values. The
+loader writes the same limb representation expected by the Montgomery setup,
+so no conversion or new arithmetic invariant is introduced at the join.
+
+### Proof composition
+
+`Bytes.lean` fixes all 2,175 submitted bytes in small reducible chunks, while
+`Bytecode.lean` ties those bytes to the hexadecimal artifact. `Artifact.lean`
+reconstructs the complete 1,577-instruction program, including all new jump
+destinations and both return continuations. This prevents a proof for a
+similar program from being reused for different submitted bytes.
+
+`BigBase.lean` changes the base-setup trace endpoint to the new dispatcher and
+keeps a separate name for the legacy loop entry. `BigBaseDirect.lean` proves
+the appended instruction sequence. Its fast branch reuses the existing
+big-endian load trace and establishes the same `Limbs.Represents` predicate as
+the legacy conversion. Its fallback branch reaches the old loop without
+changing calldata, memory, or the established length facts.
+
+`BigComplete.lean` performs the semantic case split. If the direct conditions
+hold, it composes the dispatcher, direct load, and Montgomery entry. Otherwise
+it composes the dispatcher, legacy base loader, conversion proof, and the same
+Montgomery entry. Both branches end in the identical exponent-state interface,
+so the Montgomery loop, serialization, exceptional cases, and word-sized path
+remain unchanged.
+
+`BigBaseCorrect.lean`, `BigCorrect.lean`, and `SubmissionCorrect.lean` lift the
+new machine trace through the memory-representation and top-level contracts.
+The proof explicitly shows that the regions needed after base loading are
+preserved. The final exported theorem has exactly the benchmark-required type
+`Challenge.Modexp.Correct bytecode`; executable vectors are used as an
+additional falsification check, not as the logical justification.
+
+### Provenance and reproducibility
+
+The Montgomery/CIOS source and proof architecture are credited to GordoAR.
+The direct-loader architecture is credited to the public promoted lineage led
+by brockelmore and DPZZxlz. This integration, byte relocation, target rewrite,
+proof adaptation, testing, and submission orchestration were performed with
+GPT 5.6 Sol in the Codex harness. The repository history and public submission
+note preserve these attributions so later competitors can distinguish the
+reused components from the new composition.
+
+Before submission, the exact hexadecimal artifact was run through the native
+MODEXP scorer with all 13 vectors accepted. The candidate proof modules were
+rebuilt from the modified source, including the complete artifact certificate,
+the direct-loader trace, the big-path correctness bridge, and the exported
+submission theorem. The final authority remains Yukon's protected Comparator
+and scorer operating on these exact bytes.
+
+---
+
+## Historical note inherited from the leading-zero exponent work
 
 Effort: high
 

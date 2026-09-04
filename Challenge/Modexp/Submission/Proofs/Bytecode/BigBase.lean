@@ -35,7 +35,7 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def toClearDoublePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 632 .JUMPDEST, pushAt 633 2 823,
+  [opAt 632 .JUMPDEST, pushAt 633 2 2126,
    opAt 634 (.Dup ⟨2, by decide⟩), pushAt 635 2 3072,
    pushAt 636 2 19, opAt 637 .JUMP]
 
@@ -107,7 +107,11 @@ def frame (accumulator : UInt256) (count : Nat)
 def afterClearDouble (s : State) (accumulator : UInt256) (count : Nat)
     (rest : List UInt256) : State :=
   BigHelpers.clearReturned (BigModulus.scanNonzero s count rest) 3072 count
-    823 (frame accumulator count rest)
+    2126 (frame accumulator count rest)
+
+def legacyBaseLoopStart (s : State) (accumulator : UInt256) (count : Nat)
+    (rest : List UInt256) : State :=
+  { afterClearDouble s accumulator count rest with pc := UInt256.ofNat 823 }
 
 def baseLoopEntry (s : State) (accumulator : UInt256) (count : Nat)
     (rest : List UInt256) : State :=
@@ -293,6 +297,10 @@ private theorem jump823 :
     Decode.isValidJumpDest submissionBytecode 823 = true :=
   Artifact.isValidJumpDest_index 638 (by rfl)
 
+private theorem jump2126 :
+    Decode.isValidJumpDest submissionBytecode 2126 = true :=
+  Artifact.isValidJumpDest_index 1545 (by rfl)
+
 set_option linter.unusedSimpArgs false in
 theorem run_toClearDouble (s : State) (accumulator : UInt256)
     (count : Nat) (rest : List UInt256) (hcap : rest.length < 1016)
@@ -302,7 +310,7 @@ theorem run_toClearDouble (s : State) (accumulator : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock toClearDoublePath
       (BigModulus.scanNonzero s count rest) =
       some (BigHelpers.clearEntry (BigModulus.scanNonzero s count rest)
-        3072 count 823
+        3072 count 2126
         (frame accumulator count rest)) := by
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
@@ -325,7 +333,7 @@ theorem run_startBaseLoop (s : State) (accumulator : UInt256)
     (count : Nat) (rest : List UInt256) (hcap : rest.length < 1016)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock startBaseLoopPath
-      (afterClearDouble s accumulator count rest) =
+      (legacyBaseLoopStart s accumulator count rest) =
       some (baseLoopEntry s accumulator count rest) := by
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
@@ -336,7 +344,8 @@ theorem run_startBaseLoop (s : State) (accumulator : UInt256)
   have h0Word : (0 : UInt256) = UInt256.ofNat 0 := by decide
   have h1Nat : (1 : UInt256).toNat = 1 := by decide
   have h3072Nat : (3072 : UInt256).toNat = 3072 := by decide
-  simp [startBaseLoopPath, opAt, pushAt, wfOp, afterClearDouble,
+  simp [startBaseLoopPath, opAt, pushAt, wfOp, legacyBaseLoopStart,
+    afterClearDouble,
     BigModulus.scanNonzero, BigHelpers.clearReturned, baseLoopEntry, frame,
     baseSetupPCs, hrun, h823, h823Word, hzero, h0Word, h1Nat, h3072Nat,
     hc2, hc3, hc4,
@@ -1011,7 +1020,7 @@ def gasSteps_baseSetup (s : State) (accumulator : UInt256) (count : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (BigModulus.scanNonzero s count rest)
-      (baseLoopEntry s accumulator count rest) := by
+      (afterClearDouble s accumulator count rest) := by
   have hcapRaw : rest.length < 1016 := by omega
   have hframe : (frame accumulator count rest).length < 1017 := by
     simp [frame]
@@ -1033,20 +1042,9 @@ def gasSteps_baseSetup (s : State) (accumulator : UInt256) (count : Nat)
       (run_toClearDouble s accumulator count rest hcapRaw hacc hcode hrun)
       (by simpa [BigModulus.scanNonzero] using hrun)
       (by simpa [BigModulus.scanNonzero, State.fork] using hnp)).trans <|
-    (BigHelpers.gasSteps_clear (BigModulus.scanNonzero s count rest) 3072
-      count 823 (frame accumulator count rest) hframe hcount hcodeScan
-      hforkScan hrunScan hnpScan jump823).trans <|
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka startBaseLoopPath
-        (by simpa [afterClearDouble, BigHelpers.clearReturned,
-          BigModulus.scanNonzero, Artifact.submissionArtifact] using hcode)
-        (by simpa [afterClearDouble, BigHelpers.clearReturned,
-          BigModulus.scanNonzero, State.fork] using hfork)
-        (run_startBaseLoop s accumulator count rest hcapRaw hrun)
-        (by simpa [afterClearDouble, BigHelpers.clearReturned,
-          BigModulus.scanNonzero] using hrun)
-        (by simpa [afterClearDouble, BigHelpers.clearReturned,
-          BigModulus.scanNonzero, State.fork] using hnp)
+    BigHelpers.gasSteps_clear (BigModulus.scanNonzero s count rest) 3072
+      count 2126 (frame accumulator count rest) hframe hcount hcodeScan
+      hforkScan hrunScan hnpScan jump2126
 
 theorem gasSteps_baseSetup_cost_potential (s : State)
     (accumulator : UInt256) (count : Nat) (rest : List UInt256)
@@ -1060,8 +1058,8 @@ theorem gasSteps_baseSetup_cost_potential (s : State)
     (gasSteps_baseSetup s accumulator count rest hcap hacc hcount hcode hfork
         hrun hnp).cost + MachineState.memCost
           (BigModulus.scanNonzero s count rest).activeWords.toNat =
-      (77 + count * 71) + MachineState.memCost
-        (baseLoopEntry s accumulator count rest).activeWords.toNat := by
+      (65 + count * 71) + MachineState.memCost
+        (afterClearDouble s accumulator count rest).activeWords.toNat := by
   have hcapRaw : rest.length < 1016 := by omega
   have hframe : (frame accumulator count rest).length < 1017 := by
     simp [frame]
@@ -1081,20 +1079,14 @@ theorem gasSteps_baseSetup_cost_potential (s : State)
       (by simpa [BigModulus.scanNonzero, State.fork] using hfork)
       (by decide) (by decide)
   have hclear := BigHelpers.gasSteps_clear_cost_potential
-    (BigModulus.scanNonzero s count rest) 3072 count 823
+    (BigModulus.scanNonzero s count rest) 3072 count 2126
       (frame accumulator count rest) hframe hcount hcodeScan hforkScan
-      hrunScan hnpScan jump823
-  have htail := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    startBaseLoopPath 12
-      (run_startBaseLoop s accumulator count rest hcapRaw hrun)
-      (by simpa [afterClearDouble, BigHelpers.clearReturned,
-        BigModulus.scanNonzero, State.fork] using hfork)
-      (by decide) (by decide)
+      hrunScan hnpScan jump2126
   unfold gasSteps_baseSetup
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp only [BigModulus.scanNonzero, afterClearDouble, baseLoopEntry,
-    BigHelpers.clearEntry, BigHelpers.clearReturned] at hraw hclear htail ⊢
+  simp only [BigModulus.scanNonzero, afterClearDouble,
+    BigHelpers.clearEntry, BigHelpers.clearReturned] at hraw hclear ⊢
   omega
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigBase
