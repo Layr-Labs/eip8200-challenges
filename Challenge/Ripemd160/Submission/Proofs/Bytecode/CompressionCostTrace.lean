@@ -124,7 +124,7 @@ def tableAtWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.tableAtPath
 def xAtWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.xAtPath
 def wordSetWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.hSetPath
 
-theorem tableAtWork_eq : tableAtWork = 27 := by rfl
+theorem tableAtWork_eq : tableAtWork = 48 := by rfl
 theorem xAtWork_eq : xAtWork = 30 := by rfl
 theorem wordSetWork_eq : wordSetWork = 36 := by rfl
 
@@ -160,7 +160,7 @@ theorem xAt_cost_potential (s : State) (i returnDest : UInt256)
       xAtWork + MachineState.memCost
         (TableTrace.atReturned s (UInt256.ofNat 0x2a0) i returnDest rest).activeWords.toNat := by
   have hraw := blockCost_potential TableTrace.xAtPath
-    (TableTrace.atEntry s (UInt256.ofNat 0x4b) i returnDest rest)
+    (TableTrace.atEntry s (UInt256.ofNat 0x42) i returnDest rest)
     (TableTrace.atReturned s (UInt256.ofNat 0x2a0) i returnDest rest)
     (TableTrace.run_xAt s i returnDest rest hstack hcode hrun hvalid)
     (by simpa [TableTrace.atEntry] using hfork)

@@ -101,21 +101,21 @@ def readLEPrefixPath : List Located := readLEPath.take 5
 def setupXSetPath : List Located :=
   [⟨432, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨433, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨434, .push ⟨2, by decide⟩ (UInt256.ofNat 0x5f), by rfl, by decide⟩,
+   ⟨434, .push ⟨2, by decide⟩ (UInt256.ofNat 0x53), by rfl, by decide⟩,
    ⟨435, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def xSetPath : List Located :=
-  [⟨70, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨71, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨72, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨73, .push ⟨2, by decide⟩ (UInt256.ofNat 672), by rfl, by decide⟩,
-   ⟨74, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨75, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨76, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
-   ⟨77, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨78, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨79, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨80, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨60, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨61, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨62, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨63, .push ⟨2, by decide⟩ (UInt256.ofNat 672), by rfl, by decide⟩,
+   ⟨64, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨65, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨66, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
+   ⟨67, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨68, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨69, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨70, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def incrementPath : List Located :=
   [⟨436, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -150,9 +150,9 @@ def exitPath : List Located :=
        0x1d5, 0x1d6, 0x1d7, 0x1d8, 0x1d9, 0x1da][i - 316]! := by
   interval_cases i <;> rfl
 
-@[simp] private theorem xSetPC (i : Nat) (hlo : 70 ≤ i) (hhi : i ≤ 82) :
+@[simp] private theorem xSetPC (i : Nat) (hlo : 60 ≤ i) (hhi : i ≤ 70) :
     Artifact.submissionArtifact.instructionPC i =
-      [95, 96, 98, 99, 102, 103, 104, 109, 110, 111, 112, 113, 114][i - 70]! := by
+      [83, 84, 86, 87, 90, 91, 92, 97, 98, 99, 100][i - 60]! := by
   interval_cases i <;> rfl
 
 def loadOffsetWord (msgOff : UInt256) (i : Nat) : UInt256 :=
@@ -216,7 +216,7 @@ def xSetEntry (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
   let loaded := afterRead s msgOff returnDest rest i
   { loaded with
-    pc := UInt256.ofNat 0x5f
+    pc := UInt256.ofNat 0x53
     stack := [UInt256.ofNat i,
         readLEWord s.memory (loadOffsetWord msgOff i), UInt256.ofNat 0x259,
         UInt256.ofNat i, msgOff, returnDest] ++ rest }
@@ -350,7 +350,7 @@ theorem run_setupXSet (s : State) (msgOff returnDest : UInt256)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x5f = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x53 = true := by decide
   simp [setupXSetPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     afterRead, xSetEntry, hc5, hc6, hc7, hrun, hcode, hdest]

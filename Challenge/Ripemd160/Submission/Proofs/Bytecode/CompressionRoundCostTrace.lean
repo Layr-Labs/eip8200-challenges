@@ -15,7 +15,7 @@ open YulEvmCompiler
 open CompressionCostTrace
 
 open private afterLoads roundTail xReturnedState genericFTail genericT0
-  genericRot1Tail genericAfterFirstStores genericRot2Tail genericSetTail
+  genericRot1Tail genericAfterF genericAfterFirstStores genericRot2Tail genericSetTail
   genericReturned bodyEntry rotlValue from
   Challenge.Ripemd160.Submission.Proofs.Bytecode.RoundTrace
 
@@ -28,16 +28,15 @@ def rotlWork : Nat := Meter.runLocatedBlockStaticCost RoundTrace.rotlPath
 
 def roundBodyWork (j : Nat) : Nat :=
   Meter.runLocatedBlockStaticCost RoundTrace.afterXPath + fCaseWork j +
-  Meter.runLocatedBlockStaticCost RoundTrace.afterFPath + rotlWork +
-  Meter.runLocatedBlockStaticCost RoundTrace.afterRot1Path + rotlWork +
-  Meter.runLocatedBlockStaticCost RoundTrace.afterRot2Path + wordSetWork +
+  Meter.runLocatedBlockStaticCost RoundTrace.afterFPath +
+  Meter.runLocatedBlockStaticCost RoundTrace.afterRot1Path +
+  Meter.runLocatedBlockStaticCost RoundTrace.afterRot2Path +
   Meter.runLocatedBlockStaticCost RoundTrace.suffixPath
 
 def roundWork (j : Nat) : Nat :=
-  Meter.runLocatedBlockStaticCost RoundTrace.prefixPath + xAtWork +
-    roundBodyWork j
+  Meter.runLocatedBlockStaticCost RoundTrace.prefixPath + roundBodyWork j
 
-theorem hAtWork_eq : hAtWork = 30 := by rfl
+theorem hAtWork_eq : hAtWork = 37 := by rfl
 theorem hSetWork_eq : hSetWork = 36 := by rfl
 theorem rotlWork_eq : rotlWork = 45 := by rfl
 
@@ -46,7 +45,7 @@ theorem fCaseWork_eq (j : Nat) (hj : j < 5) :
   interval_cases j <;> rfl
 
 theorem roundWork_eq (j : Nat) (hj : j < 5) :
-    roundWork j = [515, 524, 527, 527, 527][j]! := by
+    roundWork j = [395, 404, 407, 407, 407][j]! := by
   interval_cases j <;> rfl
 
 theorem rotl_cost_potential (s : State) (x n returnDest : UInt256)
@@ -80,7 +79,7 @@ theorem hAt_cost_potential (s : State) (i returnDest : UInt256)
       hAtWork + MachineState.memCost
         (TableTrace.atReturned s (UInt256.ofNat 0x20) i returnDest rest).activeWords.toNat := by
   have hraw := blockCost_potential TableTrace.hAtPath
-    (TableTrace.atEntry s (UInt256.ofNat 0x20) i returnDest rest)
+    (TableTrace.atEntry s (UInt256.ofNat 0x1b) i returnDest rest)
     (TableTrace.atReturned s (UInt256.ofNat 0x20) i returnDest rest)
     (TableTrace.run_hAt s i returnDest rest hstack hcode hrun hvalid)
     (by simpa [TableTrace.atEntry] using hfork)
@@ -184,77 +183,46 @@ theorem roundBody_cost_potential (q : State) (base : UInt256)
     simpa [q2, genericAfterFirstStores, TableTrace.storedWord] using hnp
   have h0 := blockCost_potential RoundTrace.afterXPath
     (bodyEntry q base j wordIndex rotation k returnDest word a b c d e rest)
-    (BooleanFunctionTrace.fEntry q j b c d (UInt256.ofNat 0x147)
+    (BooleanFunctionTrace.fEntry q j b c d (UInt256.ofNat 0x135)
       (genericFTail base j wordIndex rotation k returnDest word a b c d e rest))
     (RoundTrace.run_afterX q base j wordIndex rotation k returnDest word
       a b c d e rest hstack hcode hrun)
     (by simpa [bodyEntry] using hfork)
     (by simp [RoundTrace.afterXPath, CopyFree])
-  have h1 := fCase_cost_potential q j hj b c d (UInt256.ofNat 0x147)
+  have h1 := fCase_cost_potential q j hj b c d (UInt256.ofNat 0x135)
     (genericFTail base j wordIndex rotation k returnDest word a b c d e rest)
     (by simp [genericFTail]; omega) hcode hfork hrun hnp
-    (by
-      exact Artifact.submissionArtifact.isValidJumpDest_index 243 (by rfl))
+    (by exact Artifact.submissionArtifact.isValidJumpDest_index 228 (by rfl))
   have h2 := blockCost_potential RoundTrace.afterFPath
-    (BooleanFunctionTrace.fReturned q j b c d (UInt256.ofNat 0x147)
+    (BooleanFunctionTrace.fReturned q j b c d (UInt256.ofNat 0x135)
       (genericFTail base j wordIndex rotation k returnDest word a b c d e rest))
-    (RoundTrace.rotlEntry q (genericT0 j word k a b c d) rotation
-      (UInt256.ofNat 0x15d)
-      (genericRot1Tail base j wordIndex rotation k returnDest word
-        a b c d e rest))
+    (genericAfterF q base j wordIndex rotation k returnDest word a b c d e rest)
     (RoundTrace.run_afterF q base j wordIndex rotation k returnDest word
       a b c d e rest hstack hcode hrun)
     (by simpa [BooleanFunctionTrace.fReturned] using hfork)
     (by simp [RoundTrace.afterFPath, CopyFree])
-  have h3 := rotl_cost_potential q (genericT0 j word k a b c d) rotation
-    (UInt256.ofNat 0x15d)
-    (genericRot1Tail base j wordIndex rotation k returnDest word
-      a b c d e rest)
-    (by simp [genericRot1Tail]; omega) hcode hfork hrun hnp
-    (by
-      exact Artifact.submissionArtifact.isValidJumpDest_index 257 (by rfl))
-  have h4 := blockCost_potential RoundTrace.afterRot1Path
-    (RoundTrace.rotlReturned q (genericT0 j word k a b c d) rotation
-      (UInt256.ofNat 0x15d)
-      (genericRot1Tail base j wordIndex rotation k returnDest word
-        a b c d e rest))
-    (RoundTrace.rotlEntry q2 c (UInt256.ofNat 10) (UInt256.ofNat 0x185)
-      (genericRot2Tail base j wordIndex rotation k returnDest word
-        a b c d e rest))
+  have h3 := blockCost_potential RoundTrace.afterRot1Path
+    (genericAfterF q base j wordIndex rotation k returnDest word a b c d e rest)
+    (RoundTrace.rotlReturned q2 c (UInt256.ofNat 10) (UInt256.ofNat 0x17d)
+      (genericRot2Tail base j wordIndex rotation k returnDest word a b c d e rest))
     (RoundTrace.run_afterRot1 q base j wordIndex rotation k returnDest word
       a b c d e rest hstack hcode hrun)
-    (by simpa [RoundTrace.rotlReturned] using hfork)
+    (by simpa [genericAfterF] using hfork)
     (by simp [RoundTrace.afterRot1Path, CopyFree])
-  have h5 := rotl_cost_potential q2 c (UInt256.ofNat 10) (UInt256.ofNat 0x185)
-    (genericRot2Tail base j wordIndex rotation k returnDest word
-      a b c d e rest)
-    (by simp [genericRot2Tail]; omega) hcode2 hfork2 hrun2 hnp2
-    (by
-      exact Artifact.submissionArtifact.isValidJumpDest_index 281 (by rfl))
-  have h6 := blockCost_potential RoundTrace.afterRot2Path
-    (RoundTrace.rotlReturned q2 c (UInt256.ofNat 10) (UInt256.ofNat 0x185)
-      (genericRot2Tail base j wordIndex rotation k returnDest word
-        a b c d e rest))
-    (TableTrace.setEntry q2 base (UInt256.ofNat 3)
-      (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18d)
-      (genericSetTail base j wordIndex rotation k returnDest word
-        a b c d e rest))
+  have h4 := blockCost_potential RoundTrace.afterRot2Path
+    (RoundTrace.rotlReturned q2 c (UInt256.ofNat 10) (UInt256.ofNat 0x17d)
+      (genericRot2Tail base j wordIndex rotation k returnDest word a b c d e rest))
+    (TableTrace.setReturned q2 base (UInt256.ofNat 3)
+      (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18e)
+      (genericSetTail base j wordIndex rotation k returnDest word a b c d e rest))
     (RoundTrace.run_afterRot2 q2 base j wordIndex rotation k returnDest word
       a b c d e rest hstack hcode2 hrun2)
     (by simpa [RoundTrace.rotlReturned] using hfork2)
     (by simp [RoundTrace.afterRot2Path, CopyFree])
-  have h7 := wordSet_cost_potential q2 base (UInt256.ofNat 3)
-    (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18d)
-    (genericSetTail base j wordIndex rotation k returnDest word
-      a b c d e rest)
-    (by simp [genericSetTail]; omega) hcode2 hfork2 hrun2 hnp2
-    (by
-      exact Artifact.submissionArtifact.isValidJumpDest_index 286 (by rfl))
-  have h8 := blockCost_potential RoundTrace.suffixPath
+  have h5 := blockCost_potential RoundTrace.suffixPath
     (TableTrace.setReturned q2 base (UInt256.ofNat 3)
-      (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18d)
-      (genericSetTail base j wordIndex rotation k returnDest word
-        a b c d e rest))
+      (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18e)
+      (genericSetTail base j wordIndex rotation k returnDest word a b c d e rest))
     (genericReturned q2 base j word rotation k returnDest a b c d e rest)
     (RoundTrace.run_suffix q2 base j wordIndex rotation k returnDest word
       a b c d e rest hstack hcode2 hrun2 hvalid)
@@ -264,13 +232,10 @@ theorem roundBody_cost_potential (q : State) (base : UInt256)
   have h012 := potential_trans _ _ _ _ _ _ _ h01 h2
   have h0123 := potential_trans _ _ _ _ _ _ _ h012 h3
   have h01234 := potential_trans _ _ _ _ _ _ _ h0123 h4
-  have h012345 := potential_trans _ _ _ _ _ _ _ h01234 h5
-  have h0123456 := potential_trans _ _ _ _ _ _ _ h012345 h6
-  have h01234567 := potential_trans _ _ _ _ _ _ _ h0123456 h7
-  have hall := potential_trans _ _ _ _ _ _ _ h01234567 h8
+  have hall := potential_trans _ _ _ _ _ _ _ h01234 h5
   simpa [RoundTrace.gasSteps_roundBody, roundBodyWork, bodyEntry, q2,
-    RoundTrace.gasSteps_rotl, BooleanFunctionTrace.gasSteps_fCase,
-    TableTrace.gasSteps_wordSet, GasSteps.trans_cost, Nat.add_assoc] using hall
+    BooleanFunctionTrace.gasSteps_fCase, GasSteps.trans_cost,
+    Nat.add_assoc] using hall
 
 theorem round_cost_potential (s : State) (base : UInt256)
     (j : Nat) (hj : j < 5) (wordIndex rotation k returnDest : UInt256)
@@ -285,23 +250,20 @@ theorem round_cost_potential (s : State) (base : UInt256)
         MachineState.memCost s.activeWords.toNat =
       roundWork j + MachineState.memCost
         (RoundTrace.roundReturned s base j wordIndex rotation k returnDest rest).activeWords.toNat := by
-  let q0 := afterLoads s base
   let q := xReturnedState s base j wordIndex rotation k returnDest rest
-  have hcode0 : q0.executionEnv.code = submissionBytecode := by
-    simpa [q0, afterLoads] using hcode
-  have hfork0 : q0.fork = .Osaka := by simpa [q0, afterLoads] using hfork
-  have hrun0 : q0.halt = .Running := by simpa [q0, afterLoads] using hrun
-  have hnp0 : Precompile.isPrecompileWithConfig q0.executionEnv.precompileConfig q0.executionEnv.fork
-      q0.executionEnv.codeAddr = false := by simpa [q0, afterLoads] using hnp
   have hcodeQ : q.executionEnv.code = submissionBytecode := by
-    simpa [q, xReturnedState, TableTrace.atReturned, q0, afterLoads] using hcode
+    simpa [q, xReturnedState, RoundTrace.xCallState, TableTrace.atReturned,
+      afterLoads] using hcode
   have hforkQ : q.fork = .Osaka := by
-    simpa [q, xReturnedState, TableTrace.atReturned, q0, afterLoads] using hfork
+    simpa [q, xReturnedState, RoundTrace.xCallState, TableTrace.atReturned,
+      afterLoads] using hfork
   have hrunQ : q.halt = .Running := by
-    simpa [q, xReturnedState, TableTrace.atReturned, q0, afterLoads] using hrun
+    simpa [q, xReturnedState, RoundTrace.xCallState, TableTrace.atReturned,
+      afterLoads] using hrun
   have hnpQ : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig q.executionEnv.fork
       q.executionEnv.codeAddr = false := by
-    simpa [q, xReturnedState, TableTrace.atReturned, q0, afterLoads] using hnp
+    simpa [q, xReturnedState, RoundTrace.xCallState, TableTrace.atReturned,
+      afterLoads] using hnp
   have h0 := blockCost_potential RoundTrace.prefixPath
     (RoundTrace.roundEntry s base j wordIndex rotation k returnDest rest)
     (RoundTrace.xCallState s base j wordIndex rotation k returnDest rest)
@@ -309,21 +271,15 @@ theorem round_cost_potential (s : State) (base : UInt256)
       hstack hcode hrun)
     (by simpa [RoundTrace.roundEntry] using hfork)
     (by simp [RoundTrace.prefixPath, CopyFree])
-  have h1 := xAt_cost_potential q0 wordIndex (UInt256.ofNat 0x13a)
-    (roundTail s base j wordIndex rotation k returnDest rest)
-    (by simp [roundTail]; omega) hcode0 hfork0 hrun0 hnp0
-    (by
-      exact Artifact.submissionArtifact.isValidJumpDest_index 234 (by rfl))
-  have h2 := roundBody_cost_potential q base j hj wordIndex rotation k returnDest
+  have h1 := roundBody_cost_potential q base j hj wordIndex rotation k returnDest
     (RoundTrace.roundWord s base wordIndex) (RoundTrace.loadedA s base)
     (RoundTrace.loadedB s base) (RoundTrace.loadedC s base)
     (RoundTrace.loadedD s base) (RoundTrace.loadedE s base) rest hstack
     hcodeQ hforkQ hrunQ hnpQ hvalid
-  have h01 := potential_trans _ _ _ _ _ _ _ h0 h1
-  have hall := potential_trans _ _ _ _ _ _ _ h01 h2
+  have hall := potential_trans _ _ _ _ _ _ _ h0 h1
   simpa [RoundTrace.gasSteps_round, RoundTrace.roundReturned, roundWork,
-    RoundTrace.roundEntry, RoundTrace.xCallState, q0, q, xReturnedState,
-    RoundTrace.gasSteps_roundBody, TableTrace.gasSteps_xAt,
-    GasSteps.trans_cost, Nat.add_assoc] using hall
+    RoundTrace.roundEntry, RoundTrace.xCallState, q, xReturnedState,
+    RoundTrace.gasSteps_roundBody, GasSteps.trans_cost,
+    Nat.add_assoc] using hall
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionRoundCostTrace
