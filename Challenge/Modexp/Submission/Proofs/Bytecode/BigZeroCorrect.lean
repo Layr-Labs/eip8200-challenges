@@ -237,7 +237,7 @@ def gasSteps_zero (s : State) (b e m baseOff expOff modOff : Nat)
       BigComplete.scanRest])
 
 def zeroWork (n m : Nat) : Nat :=
-  (333 + n * 276 + m * 188) + (54 + n * 72)
+  (343 + n * 284 + m * 190) + (56 + n * 74)
 
 theorem gasSteps_zero_cost_potential (s : State)
     (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
