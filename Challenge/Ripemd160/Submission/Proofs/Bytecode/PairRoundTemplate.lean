@@ -5,7 +5,7 @@ set_option warningAsError true
 set_option maxRecDepth 30000
 
 /-!
-# H25 paired round helper templates
+# H27 paired round helper templates
 
 The pair helper receives
 `[p0, return-PC, 32 - r0, p1, 32 - r1, A, B, C, D, E]`.
@@ -33,8 +33,8 @@ def qrot : List Instr :=
   [.push ⟨5, by decide⟩ (UInt256.ofNat 0x0100000001), op .MUL, swap1, op .SHR]
 
 def cfold : List Instr :=
-  [dup1, push1 (UInt256.ofNat 32), op .SHL, op .OR,
-    push1 c22, op .SHR, push4 mask, op .AND]
+  [.push ⟨5, by decide⟩ (UInt256.ofNat 0x0100000001), op .MUL,
+    push1 c22, op .SHR]
 
 /-! The first round has the H22 Boolean depths increased by two. -/
 def pairFirstBooleanOps (j : Nat) : List Instr :=
@@ -73,51 +73,51 @@ def pairTemplate (j : Nat) (constant : UInt256) : List Instr :=
   pairBeforeJumpTemplate j constant ++ [op .JUMP]
 
 @[simp] theorem pairBeforeJumpTemplate_length_0 (constant : UInt256) :
-    (pairBeforeJumpTemplate 0 constant).length = 62 := by
+    (pairBeforeJumpTemplate 0 constant).length = 54 := by
   rfl
 
 @[simp] theorem pairBeforeJumpTemplate_length_1 (constant : UInt256) :
-    (pairBeforeJumpTemplate 1 constant).length = 70 := by
+    (pairBeforeJumpTemplate 1 constant).length = 62 := by
   rfl
 
 @[simp] theorem pairBeforeJumpTemplate_length_2 (constant : UInt256) :
-    (pairBeforeJumpTemplate 2 constant).length = 68 := by
+    (pairBeforeJumpTemplate 2 constant).length = 60 := by
   rfl
 
 @[simp] theorem pairBeforeJumpTemplate_length_3 (constant : UInt256) :
-    (pairBeforeJumpTemplate 3 constant).length = 70 := by
+    (pairBeforeJumpTemplate 3 constant).length = 62 := by
   rfl
 
 @[simp] theorem pairBeforeJumpTemplate_length_4 (constant : UInt256) :
-    (pairBeforeJumpTemplate 4 constant).length = 68 := by
+    (pairBeforeJumpTemplate 4 constant).length = 60 := by
   rfl
 
 @[simp] theorem pairTemplate_length_0 (constant : UInt256) :
-    (pairTemplate 0 constant).length = 63 := by
+    (pairTemplate 0 constant).length = 55 := by
   rw [pairTemplate, List.length_append,
     pairBeforeJumpTemplate_length_0]
   rfl
 
 @[simp] theorem pairTemplate_length_1 (constant : UInt256) :
-    (pairTemplate 1 constant).length = 71 := by
+    (pairTemplate 1 constant).length = 63 := by
   rw [pairTemplate, List.length_append,
     pairBeforeJumpTemplate_length_1]
   rfl
 
 @[simp] theorem pairTemplate_length_2 (constant : UInt256) :
-    (pairTemplate 2 constant).length = 69 := by
+    (pairTemplate 2 constant).length = 61 := by
   rw [pairTemplate, List.length_append,
     pairBeforeJumpTemplate_length_2]
   rfl
 
 @[simp] theorem pairTemplate_length_3 (constant : UInt256) :
-    (pairTemplate 3 constant).length = 71 := by
+    (pairTemplate 3 constant).length = 63 := by
   rw [pairTemplate, List.length_append,
     pairBeforeJumpTemplate_length_3]
   rfl
 
 @[simp] theorem pairTemplate_length_4 (constant : UInt256) :
-    (pairTemplate 4 constant).length = 69 := by
+    (pairTemplate 4 constant).length = 61 := by
   rw [pairTemplate, List.length_append,
     pairBeforeJumpTemplate_length_4]
   rfl

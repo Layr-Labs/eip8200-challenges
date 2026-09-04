@@ -45,7 +45,7 @@ def prefixPath : List Located :=
   [⟨979, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨980, .push ⟨2, by decide⟩ (UInt256.ofNat 0x72f), by rfl, by decide⟩,
    ⟨981, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨982, .push ⟨2, by decide⟩ (UInt256.ofNat 0x11b4), by rfl, by decide⟩,
+   ⟨982, .push ⟨2, by decide⟩ (UInt256.ofNat 0x1164), by rfl, by decide⟩,
    ⟨983, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def exitPath : List Located :=
@@ -102,13 +102,13 @@ theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
   have hpc981 : Artifact.submissionArtifact.instructionPC 981 = 0x72a := by rfl
   have hpc982 : Artifact.submissionArtifact.instructionPC 982 = 0x72b := by rfl
   have hpc983 : Artifact.submissionArtifact.instructionPC 983 = 0x72e := by rfl
-  have hdest11b4 : Decode.isValidJumpDest submissionBytecode 0x11b4 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2393 (by rfl)
+  have hdest1164 : Decode.isValidJumpDest submissionBytecode 0x1164 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2313 (by rfl)
   simp [prefixPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     DriverTrace.compressEntry, PackedScheduleTemplate.scheduleEntry,
     PackedScheduleSite.packedScheduleSite_startPC, StackBlockModel.scheduleRest,
     StackBlockModel.driverRest, hcode, hrun, hpc979, hpc980, hpc981, hpc982, hpc983,
-    hdest11b4]
+    hdest1164]
 
 theorem run_exit (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :

@@ -51,7 +51,7 @@ theorem template_advances (j : Nat) (hj : j < 5) (constant : UInt256) :
     simp [pairBeforeJumpTemplate, pairFirstBooleanOps, pairSecondBooleanOps,
       pairDup7, pairDup8, pairDup9, pairDup10, pairSwap5, pairSwap7,
       qrot, cfold] at hmem <;>
-    simp_all [PairMultiplyLift.Advances, SharedCallTrace.Advances, op, push1, push4, dup1, dup2,
+    simp_all [PairMultiplyLift.Advances, SharedCallTrace.Advances, op, push1, push4, dup2,
       dup3, dup5, dup6, swap1, swap2, swap4] <;>
     aesop (add safe constructors StraightLine)
 

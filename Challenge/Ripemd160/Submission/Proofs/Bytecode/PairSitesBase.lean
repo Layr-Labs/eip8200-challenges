@@ -9,9 +9,9 @@ set_option maxRecDepth 50000
 set_option maxHeartbeats 8000000
 
 /-!
-# H25 paired-round site certificate base
+# H27 paired-round site certificate base
 
-This module contains the exact H25 pair metadata and the generic builders used
+This module contains the exact H27 pair metadata and the generic builders used
 by the independent left and right certificate modules.
 -/
 
@@ -69,17 +69,17 @@ def rightReturnPC (k : Nat) : UInt256 :=
 
 def leftHelperPCOfGroup : Nat → UInt256
   | 0 => UInt256.ofNat 0xd4a
-  | 1 => UInt256.ofNat 0xdaf
-  | 2 => UInt256.ofNat 0xe24
-  | 3 => UInt256.ofNat 0xe97
-  | _ => UInt256.ofNat 0xf0c
+  | 1 => UInt256.ofNat 0xda7
+  | 2 => UInt256.ofNat 0xe14
+  | 3 => UInt256.ofNat 0xe7f
+  | _ => UInt256.ofNat 0xeec
 
 def rightHelperPCOfGroup : Nat → UInt256
-  | 0 => UInt256.ofNat 0xf7f
-  | 1 => UInt256.ofNat 0xff2
-  | 2 => UInt256.ofNat 0x1067
-  | 3 => UInt256.ofNat 0x10da
-  | _ => UInt256.ofNat 0x114f
+  | 0 => UInt256.ofNat 0xf57
+  | 1 => UInt256.ofNat 0xfc2
+  | 2 => UInt256.ofNat 0x102f
+  | 3 => UInt256.ofNat 0x109a
+  | _ => UInt256.ofNat 0x1107
 
 def leftHelperPC (k : Nat) : UInt256 := leftHelperPCOfGroup (k / 8)
 
@@ -87,31 +87,31 @@ def rightHelperPC (k : Nat) : UInt256 := rightHelperPCOfGroup (k / 8)
 
 def leftHelperStartIndex : Nat → Nat
   | 0 => 1707
-  | 1 => 1770
-  | 2 => 1841
-  | 3 => 1910
-  | _ => 1981
+  | 1 => 1762
+  | 2 => 1825
+  | 3 => 1886
+  | _ => 1949
 
 def rightHelperStartIndex : Nat → Nat
-  | 0 => 2050
-  | 1 => 2119
-  | 2 => 2190
-  | 3 => 2259
-  | _ => 2330
+  | 0 => 2010
+  | 1 => 2071
+  | 2 => 2134
+  | 3 => 2195
+  | _ => 2258
 
 def leftHelperJumpIndex : Nat → Nat
-  | 0 => 1769
-  | 1 => 1840
-  | 2 => 1909
-  | 3 => 1980
-  | _ => 2049
+  | 0 => 1761
+  | 1 => 1824
+  | 2 => 1885
+  | 3 => 1948
+  | _ => 2009
 
 def rightHelperJumpIndex : Nat → Nat
-  | 0 => 2118
-  | 1 => 2189
-  | 2 => 2258
-  | 3 => 2329
-  | _ => 2392
+  | 0 => 2070
+  | 1 => 2133
+  | 2 => 2194
+  | 3 => 2257
+  | _ => 2312
 
 def leftAddress0 (k : Fin 40) : UInt256 :=
   StackRoundData.leftAddress (2 * k.val)

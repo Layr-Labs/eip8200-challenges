@@ -1,11 +1,12 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairRoundTemplate
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScratchLow
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 
 set_option warningAsError true
 set_option maxRecDepth 30000
 
 /-!
-# H24 paired-round common states
+# H27 paired-round common states
 
 This file contains only the shared call-stack states and the pure two-round
 endpoint.  The evaluator proof is in `PairRoundTrace`.
@@ -20,6 +21,7 @@ open Challenge.EvmProof
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRound
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
+open Challenge.Ripemd160.Submission.Proofs.Bytecode.ScratchLow
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.PairRoundTemplate
 
 /-- Instructions push `s1, p1, s0, return-PC, p0, helper-PC` in that order.
@@ -51,8 +53,8 @@ def pairHelperEntry (s : State) (startPC p0 p1 returnPC : UInt256)
 def pairWorking (s : State) (working : Compression.EvmWorking) (j : Nat)
     (p0 p1 : UInt256) (r0 r1 : Nat) (constant : UInt256) :
     Compression.EvmWorking :=
-  stackRound
-    (stackRound working j (MachineState.readWord s.memory p0.toNat) r0 constant)
+  ScratchLow.rawRound
+    (ScratchLow.rawRound working j (MachineState.readWord s.memory p0.toNat) r0 constant)
     j (MachineState.readWord s.memory p1.toNat) r1 constant
 
 /-- State immediately before the helper's final `JUMP`. -/
