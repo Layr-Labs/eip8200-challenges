@@ -228,4 +228,7 @@ def denseExpectedState (s : State) (startPC messageOffset returnPC : UInt256)
 
 def denseStaticGas : Nat := 188
 
+theorem denseStaticGas_eq : denseStaticGas = 188 := by
+  rfl
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
