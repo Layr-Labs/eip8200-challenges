@@ -19,7 +19,7 @@ namespace Challenge.Ripemd160
 
 open EvmSemantics
 
-def submissionHex : String := (include_str "bytecode.hex").trimAscii.copy
+def submissionHex : String := (include_str "bytecode.hex").trimAscii
 
 set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
