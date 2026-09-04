@@ -1,7 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionRightTrace
 
 set_option warningAsError true
-set_option maxRecDepth 20000
+set_option maxRecDepth 50000
 set_option maxHeartbeats 3000000
 
 /-!
@@ -267,8 +267,7 @@ theorem run_rightIncrement (s : State)
     Challenge.EvmProof.Stepper.runLocatedBlock rightIncrementLocated
       (rightRoundReturned s messageOffset returnDest discard rest i) =
         some (rightLoopAt s messageOffset returnDest rest (i + 1)) := by
-  have hadd : UInt256.ofNat 1 + UInt256.ofNat i = UInt256.ofNat (i + 1) := by
-    rw [Challenge.EvmProof.Word.word_add_comm]
+  have hadd : UInt256.ofNat i + UInt256.ofNat 1 = UInt256.ofNat (i + 1) := by
     exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
   have hdest : Decode.isValidJumpDest submissionBytecode 729 = true := by decide
   have hc3 : rest.length + 3 < 1024 := by omega

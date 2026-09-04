@@ -2,7 +2,7 @@ import Challenge.EvmProof.Bytecode
 import Challenge.Ripemd160.Submission.Bytes
 import EvmSemantics.Data.Hex
 set_option warningAsError true
-set_option maxRecDepth 10000
+set_option maxRecDepth 50000
 /-!
 # The frozen raw-EVM RIPEMD-160 artifact
 
@@ -24,7 +24,7 @@ def submissionHex : String := (include_str "bytecode.hex").trimAscii.copy
 
 def submissionBytecode : ByteArray := submissionBytes
 
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 1830 := by
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5133 := by
   simp [submissionBytecode]
 
 @[simp] theorem referenceBytecode_get_zero : submissionBytecode[0] = 0x61 := by

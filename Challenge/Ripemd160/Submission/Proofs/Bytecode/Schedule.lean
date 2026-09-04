@@ -3,8 +3,8 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.Word
 import Challenge.EvmProof.Meter
 
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 2000000
+set_option maxRecDepth 50000
+set_option maxHeartbeats 8000000
 
 /-!
 # Direct bytecode trace for the RIPEMD-160 message schedule

@@ -54,8 +54,8 @@ def prefixPath : List Located :=
    ⟨227, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
    ⟨228, .op (.Dup ⟨10, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨229, .push ⟨2, by decide⟩ (UInt256.ofNat 0x13a), by rfl, by decide⟩,
-   ⟨230, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨231, .op (.Dup ⟨10, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨230, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨231, .op (.Dup ⟨11, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨232, .push ⟨2, by decide⟩ (UInt256.ofNat 0x4b), by rfl, by decide⟩,
    ⟨233, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -80,9 +80,9 @@ def afterFPath : List Located :=
    ⟨249, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
    ⟨250, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨251, .push ⟨2, by decide⟩ (UInt256.ofNat 0x15d), by rfl, by decide⟩,
-   ⟨252, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨253, .op (.Dup ⟨12, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨254, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨252, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨253, .op (.Dup ⟨13, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨254, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨255, .push ⟨2, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
    ⟨256, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -106,9 +106,9 @@ def afterRot1Path : List Located :=
    ⟨273, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨274, .push ⟨2, by decide⟩ (UInt256.ofNat 0x18d), by rfl, by decide⟩,
    ⟨275, .push ⟨2, by decide⟩ (UInt256.ofNat 0x185), by rfl, by decide⟩,
-   ⟨276, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨276, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
    ⟨277, .push ⟨1, by decide⟩ (UInt256.ofNat 10), by rfl, by decide⟩,
-   ⟨278, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨278, .op (.Dup ⟨7, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨279, .push ⟨2, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
    ⟨280, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -177,8 +177,9 @@ def rotlPath : List Located :=
    ⟨10, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨11, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
    ⟨12, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨13, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨14, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨13, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨14, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨15, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Complete dynamic instruction path through one `round` invocation. -/
 def roundTracePath (j : Nat) : List Located :=
@@ -196,7 +197,7 @@ private def rotlValue (x n : UInt256) : UInt256 :=
 def rotlEntry (s : State) (x n returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 4
-           stack := [x, n, returnDest] ++ rest }
+           stack := [x, n, 0, returnDest] ++ rest }
 
 def rotlReturned (s : State) (x n returnDest : UInt256)
     (rest : List UInt256) : State :=
@@ -296,7 +297,7 @@ private def roundTail (s : State) (base : UInt256) (j : Nat)
 
 def xCallState (s : State) (base : UInt256) (j : Nat)
     (wordIndex rotation k returnDest : UInt256) (rest : List UInt256) : State :=
-  TableTrace.xAtEntry (afterLoads s base) wordIndex
+  TableTrace.atEntry (afterLoads s base) (UInt256.ofNat 0x4b) wordIndex
     (UInt256.ofNat 0x13a)
     (roundTail s base j wordIndex rotation k returnDest rest)
 
@@ -488,7 +489,7 @@ theorem run_prefix (s : State) (base : UInt256) (j : Nat)
   simp (config := { maxSteps := 300000 })
     [prefixPath, roundPCs, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      roundEntry, xCallState, TableTrace.xAtEntry, afterLoads, roundTail,
+      roundEntry, xCallState, TableTrace.atEntry, afterLoads, roundTail,
       loadedA, loadedB, loadedC, loadedD, loadedE,
       hrun, hcode, cap rest hstack, Nat.add_assoc,
       State.activeWordsAfterUInt256,
@@ -810,7 +811,7 @@ def gasSteps_round (s : State) (base : UInt256) (j : Nat) (hj : j < 5)
     (roundWord s base wordIndex) (loadedA s base) (loadedB s base) (loadedC s base)
     (loadedD s base) (loadedE s base) rest hstack hcodeQ hforkQ hrunQ hnpQ hvalid
   have hxStart : xCallState s base j wordIndex rotation k returnDest rest =
-      TableTrace.xAtEntry q0 wordIndex
+      TableTrace.atEntry q0 (UInt256.ofNat 0x4b) wordIndex
         (UInt256.ofNat 0x13a)
         (roundTail s base j wordIndex rotation k returnDest rest) := by
     rfl

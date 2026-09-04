@@ -64,8 +64,9 @@ def xAtPath : List Located :=
    ⟨58, .push ⟨2, by decide⟩ (UInt256.ofNat 672), by rfl, by decide⟩,
    ⟨59, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨60, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨61, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨62, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨61, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨62, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨63, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def xSetPath : List Located := Schedule.xSetPath
 
@@ -75,8 +76,9 @@ def tableAtPath : List Located :=
    ⟨88, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨89, .push ⟨1, by decide⟩ (UInt256.ofNat 31), by rfl, by decide⟩,
    ⟨90, .op .BYTE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨91, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨92, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨91, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨92, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨93, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem hAtPC (j : Nat) (hlo : 23 ≤ j) (hhi : j ≤ 34) :
     Artifact.submissionArtifact.instructionPC j =
@@ -130,13 +132,6 @@ def atEntry (s : State) (pc i returnDest : UInt256)
   { s with pc := pc
            stack := [i, 0, returnDest] ++ rest }
 
-/-- `xAt` consumes its index argument directly: the caller no longer threads
-the compiler's zero result slot through this helper. -/
-def xAtEntry (s : State) (i returnDest : UInt256)
-    (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 0x4b
-           stack := [i, returnDest] ++ rest }
-
 def atReturned (s : State) (base i returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := returnDest
@@ -176,7 +171,7 @@ def xSetReturned (s : State) (i value returnDest : UInt256)
 def tableAtEntry (s : State) (base i returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 0x78
-           stack := [base - UInt256.ofNat 31, i, returnDest] ++ rest }
+           stack := [base - UInt256.ofNat 31, i, 0, returnDest] ++ rest }
 
 def tableAtReturned (s : State) (base i returnDest : UInt256)
     (rest : List UInt256) : State :=
@@ -215,7 +210,7 @@ theorem run_xAt (s : State) (i returnDest : UInt256)
     (hrun : s.halt = .Running)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock xAtPath
-      (xAtEntry s i returnDest rest) =
+      (atEntry s (UInt256.ofNat 0x4b) i returnDest rest) =
         some (atReturned s (UInt256.ofNat 0x2a0) i returnDest rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -228,7 +223,7 @@ theorem run_xAt (s : State) (i returnDest : UInt256)
   simp [xAtPath, Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    xAtEntry, atReturned, loadedWord, hc2, hc3, hc4, hc5, hrun, hcode, hvalid,
+    atEntry, atReturned, loadedWord, hc2, hc3, hc4, hc5, hrun, hcode, hvalid,
     haddr, List.exchange, State.activeWordsAfterUInt256]
 
 set_option linter.unusedSimpArgs false in
@@ -379,11 +374,11 @@ def gasSteps_xAt (s : State) (i returnDest : UInt256)
       s.executionEnv.codeAddr = false)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     Challenge.EvmProof.GasSteps
-      (xAtEntry s i returnDest rest)
+      (atEntry s (UInt256.ofNat 0x4b) i returnDest rest)
       (atReturned s (UInt256.ofNat 0x2a0) i returnDest rest) := by
   apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka xAtPath
-      (s := xAtEntry s i returnDest rest)
+      (s := atEntry s (UInt256.ofNat 0x4b) i returnDest rest)
   · exact hcode
   · exact hfork
   · exact run_xAt s i returnDest rest hstack hcode hrun hvalid

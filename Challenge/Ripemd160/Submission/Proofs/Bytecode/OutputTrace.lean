@@ -4,7 +4,7 @@ import Challenge.EvmProof.Word
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Word
 
 set_option warningAsError true
-set_option maxRecDepth 20000
+set_option maxRecDepth 50000
 set_option maxHeartbeats 2000000
 set_option linter.unusedSimpArgs false
 
