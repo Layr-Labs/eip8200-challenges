@@ -6,8 +6,8 @@ set_option maxHeartbeats 4000000
 /-!
 # Located-instruction helpers for the appended fast path
 
-The appended Montgomery path occupies instruction indices 977..1822
-(pc 1314..2994).  This module fixes the `Located` constructors, the
+The appended Montgomery path occupies instruction indices 977..1837
+(pc 1314..3022).  This module fixes the `Located` constructors, the
 program-counter table and the jump-destination facts those blocks need.
 -/
 
@@ -150,12 +150,13 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
       [2901,2902,2903,2904,2906,2907,2908,2911,2912,2914,2917,2918,2921][i - 1768]! := by
   interval_cases i <;> decide
 
-@[simp] theorem fastPC22 (i : Nat) (hi : 1781 ≤ i) (hii : i ≤ 1822) :
+@[simp] theorem fastPC22 (i : Nat) (hi : 1781 ≤ i) (hii : i ≤ 1837) :
     Artifact.submissionArtifact.instructionPC i =
       [2922,2923,2924,2925,2928,2929,2932,2933,2934,2935,2936,2937,
-       2939,2940,2943,2944,2946,2947,2950,2951,2954,2955,2956,2957,
-       2960,2961,2964,2967,2968,2970,2973,2974,2975,2978,2979,2982,
-       2985,2986,2987,2989,2991,2994][i - 1781]! := by
+       2939,2940,2943,2944,2946,2947,2950,2951,2953,2954,2957,2958,
+       2961,2962,2963,2964,2967,2968,2971,2974,2975,2977,2980,2981,
+       2982,2985,2986,2989,2992,2993,2994,2996,2998,3001,3002,3003,
+       3006,3007,3010,3013,3014,3015,3017,3019,3022][i - 1781]! := by
   interval_cases i <;> decide
 
 theorem jumpDest1196 :
@@ -318,12 +319,16 @@ theorem jumpDest2922 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2922 = true :=
   Artifact.isValidJumpDest_index 1781 (by rfl)
 
-theorem jumpDest2955 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2955 = true :=
-  Artifact.isValidJumpDest_index 1802 (by rfl)
+theorem jumpDest2962 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2962 = true :=
+  Artifact.isValidJumpDest_index 1806 (by rfl)
 
-theorem jumpDest2974 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2974 = true :=
-  Artifact.isValidJumpDest_index 1812 (by rfl)
+theorem jumpDest2981 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2981 = true :=
+  Artifact.isValidJumpDest_index 1816 (by rfl)
+
+theorem jumpDest3002 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3002 = true :=
+  Artifact.isValidJumpDest_index 1827 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

@@ -312,12 +312,17 @@ def expOptHead (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State
            memory := mem }
 
 def expOptCopy (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2955
+  { s with pc := UInt256.ofNat 2962
            stack := UInt256.ofNat 1 :: outer n bsize esize msize
            memory := mem }
 
 def expOptThree (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2974
+  { s with pc := UInt256.ofNat 2981
+           stack := outer n bsize esize msize
+           memory := mem }
+
+def expOptFive (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat 3002
            stack := outer n bsize esize msize
            memory := mem }
 
@@ -1157,6 +1162,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_expOpt_other (s : State) (mem input : ByteArray)
     (n bsize esize msize : Nat) (hepos : 0 < esize)
     (hw : expByte input bsize 0 ≠ 1) (hw3 : expByte input bsize 0 ≠ 3)
+    (hw5 : expByte input bsize 0 ≠ 5)
     (hdata : s.executionEnv.calldata = input)
     (hb : bsize ≤ 1024) (he : esize ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
     (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
@@ -1186,6 +1192,11 @@ theorem run_expOpt_other (s : State) (mem input : ByteArray)
     rw [UInt256.eq, toNat_ofNat_self (show (3 : Nat) < 2 ^ 256 by norm_num),
       toNat_ofNat_self (Nat.lt_trans hwlt (by norm_num : 256 < 2 ^ 256))]
     simp [Ne.symm hw3]
+  have heq5 : UInt256.eq (UInt256.ofNat 5) (UInt256.ofNat (expByte input bsize 0)) =
+      UInt256.ofNat 0 := by
+    rw [UInt256.eq, toNat_ofNat_self (show (5 : Nat) < 2 ^ 256 by norm_num),
+      toNat_ofNat_self (Nat.lt_trans hwlt (by norm_num : 256 < 2 ^ 256))]
+    simp [Ne.symm hw5]
   have hoff : (96 + bsize) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936
       = 96 + bsize :=
@@ -1196,7 +1207,7 @@ theorem run_expOpt_other (s : State) (mem input : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     expOptHead, bDone, outer, hdata, hcode, hrun, hez, heoff, hoff, hfix, hbyte, heq,
-    heq3,
+    heq3, heq5,
     h1756, jumpDest1756, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -1234,12 +1245,12 @@ theorem run_expOpt_one (s : State) (mem input : ByteArray)
       = 96 + bsize :=
     mod_word_self (Nat.lt_of_le_of_lt (show 96 + bsize ≤ 1120 by omega)
       (show 1120 < 2 ^ 256 by norm_num))
-  have h2955 : (UInt256.ofNat 2955).toNat = 2955 := by decide
+  have h2962 : (UInt256.ofNat 2962).toNat = 2962 := by decide
   simp (config := { maxSteps := 600000 }) [blk1781one, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     expOptHead, expOptCopy, outer, hdata, hcode, hrun, hez, heoff, hoff, hfix, hbyte,
-    heq, hword, heqOne, h2955, jumpDest2955, State.activeWordsAfterUInt256,
+    heq, hword, heqOne, h2962, jumpDest2962, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, not_isTrue_zero, isTrue_one,
@@ -1319,12 +1330,64 @@ theorem run_expOpt_three (s : State) (mem input : ByteArray)
       = 96 + bsize :=
     mod_word_self (Nat.lt_of_le_of_lt (show 96 + bsize ≤ 1120 by omega)
       (show 1120 < 2 ^ 256 by norm_num))
-  have h2974 : (UInt256.ofNat 2974).toNat = 2974 := by decide
+  have h2981 : (UInt256.ofNat 2981).toNat = 2981 := by decide
   simp (config := { maxSteps := 600000 }) [blk1781three, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     expOptHead, expOptThree, outer, hdata, hcode, hrun, hez, heoff, hoff, hfix, hbyte,
-    heq1, heq3, h2974, jumpDest2974, State.activeWordsAfterUInt256,
+    heq1, heq3, h2981, jumpDest2981, State.activeWordsAfterUInt256,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod, not_isTrue_zero, isTrue_one,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_expOpt_five (s : State) (mem input : ByteArray)
+    (n bsize esize msize : Nat) (hepos : 0 < esize)
+    (hw1 : expByte input bsize 0 ≠ 1) (hw3 : expByte input bsize 0 ≠ 3)
+    (hw : expByte input bsize 0 = 5)
+    (hdata : s.executionEnv.calldata = input)
+    (hb : bsize ≤ 1024) (he : esize ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1781five
+      (expOptHead s mem n bsize esize msize) =
+      some (expOptFive s mem n bsize esize msize) := by
+  have hez : UInt256.isZero (UInt256.ofNat esize) = UInt256.ofNat 0 :=
+    isZero_ofNat_of_ne
+      (Nat.lt_of_le_of_lt he (show 1024 < 2 ^ 256 by norm_num))
+      (Nat.ne_of_gt hepos)
+  have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9472 32) =
+      s.activeWords := activeWords_fix s 9472 32 (by omega) (by omega) hact
+  have hbyte : UInt256.byteAt { val := 0 } (MachineState.readWord input (96 + bsize)) =
+      UInt256.ofNat (expByte input bsize 0) :=
+    Challenge.EvmProof.Bytes.byteAt_zero_readWord input (96 + bsize)
+  have hwlt : expByte input bsize 0 < 256 :=
+    (YulSemantics.EVM.byteFrom input.toList (96 + bsize)).toNat_lt
+  have heq1 : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat (expByte input bsize 0)) =
+      UInt256.ofNat 0 := by
+    rw [UInt256.eq, toNat_ofNat_self (show (1 : Nat) < 2 ^ 256 by norm_num),
+      toNat_ofNat_self (Nat.lt_trans hwlt (by norm_num : 256 < 2 ^ 256))]
+    simp [Ne.symm hw1]
+  have heq3 : UInt256.eq (UInt256.ofNat 3) (UInt256.ofNat (expByte input bsize 0)) =
+      UInt256.ofNat 0 := by
+    rw [UInt256.eq, toNat_ofNat_self (show (3 : Nat) < 2 ^ 256 by norm_num),
+      toNat_ofNat_self (Nat.lt_trans hwlt (by norm_num : 256 < 2 ^ 256))]
+    simp [Ne.symm hw3]
+  have heq5 : UInt256.eq (UInt256.ofNat 5) (UInt256.ofNat (expByte input bsize 0)) =
+      UInt256.ofNat 1 := by simp [UInt256.eq, hw]
+  have hoff : (96 + bsize) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936
+      = 96 + bsize :=
+    mod_word_self (Nat.lt_of_le_of_lt (show 96 + bsize ≤ 1120 by omega)
+      (show 1120 < 2 ^ 256 by norm_num))
+  have h3002 : (UInt256.ofNat 3002).toNat = 3002 := by decide
+  simp (config := { maxSteps := 600000 }) [blk1781five, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    expOptHead, expOptFive, outer, hdata, hcode, hrun, hez, heoff, hoff, hfix, hbyte,
+    heq1, heq3, heq5, h3002, jumpDest3002, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, not_isTrue_zero, isTrue_one,
@@ -1387,6 +1450,53 @@ theorem run_expOpt_three_start (s : State) (mem : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     expOptThree, ebitHead, bitStack, mcopyMem, outer, hcode, hrun, hs32, hmod, haw,
+    hfix, hfix2, h1789, jumpDest1789, State.activeWordsAfterUInt256,
+    State.activeWordsAfterUInt256_2,
+    push0_word,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+/-- Copy Montgomery one (`R1`) to the accumulator and start with bit mask four. -/
+theorem run_expOpt_five_start (s : State) (mem : ByteArray)
+    (n bsize esize msize : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hact : 298 ≤ s.activeWords.toNat)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1827
+      (expOptFive s mem n bsize esize msize) =
+      some (ebitHead s (mcopyMem mem 1024 4096 (32 * n))
+        n bsize esize msize 0 5 4) := by
+  have hmod : (32 * n) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936
+      = 32 * n :=
+    mod_word_self (Nat.lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by norm_num))
+  have haw : (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936
+      = s.activeWords.toNat := by
+    rw [activeWordsAfter_fix _ 9344 32 (by omega) (by omega) hact]
+    exact Nat.mod_eq_of_lt s.activeWords.val.isLt
+  have hfix : UInt256.ofNat (MachineState.activeWordsAfter
+      (MachineState.activeWordsAfter
+        (MachineState.activeWordsAfter s.activeWords.toNat 9344 32)
+        4096 (32 * n)) 1024 (32 * n)) = s.activeWords := by
+    rw [activeWordsAfter_fix _ 9344 32 (by omega) (by omega) hact,
+      activeWordsAfter_fix _ 4096 (32 * n) (by omega) (by omega) hact,
+      activeWordsAfter_fix _ 1024 (32 * n) (by omega) (by omega) hact]
+    exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
+  have hfix2 : UInt256.ofNat (MachineState.activeWordsAfter
+      (MachineState.activeWordsAfter s.activeWords.toNat 1024 (32 * n)) 4096
+        (32 * n)) = s.activeWords :=
+    activeWords_fix2 s 1024 (32 * n) 4096 (32 * n)
+      (by omega) (by omega) (by omega) (by omega) hact
+  have h1789 : (UInt256.ofNat 1789).toNat = 1789 := by decide
+  simp (config := { maxSteps := 600000 }) [blk1827, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    expOptFive, ebitHead, bitStack, mcopyMem, outer, hcode, hrun, hs32, hmod, haw,
     hfix, hfix2, h1789, jumpDest1789, State.activeWordsAfterUInt256,
     State.activeWordsAfterUInt256_2,
     push0_word,
@@ -1802,6 +1912,7 @@ def gasSteps_expOptEmpty (s : State) (mem : ByteArray) (n bsize msize : Nat)
 def gasSteps_expOptOther (s : State) (mem input : ByteArray)
     (n bsize esize msize : Nat) (hepos : 0 < esize)
     (hw : expByte input bsize 0 ≠ 1) (hw3 : expByte input bsize 0 ≠ 3)
+    (hw5 : expByte input bsize 0 ≠ 5)
     (hdata : s.executionEnv.calldata = input)
     (hb : bsize ≤ 1024) (he : esize ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
     (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
@@ -1813,7 +1924,7 @@ def gasSteps_expOptOther (s : State) (mem input : ByteArray)
       (bDone s mem n bsize esize msize) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1781 hcode hfork
-      (run_expOpt_other s mem input n bsize esize msize hepos hw hw3 hdata hb he hact heoff
+      (run_expOpt_other s mem input n bsize esize msize hepos hw hw3 hw5 hdata hb he hact heoff
         hcode hrun) hrun hnp
 
 def gasSteps_expOptOne (s : State) (mem input : ByteArray)
@@ -1875,6 +1986,38 @@ def gasSteps_expOptThreeStart (s : State) (mem : ByteArray)
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1812 hcode hfork
       (run_expOpt_three_start s mem n bsize esize msize hn hn32 hact hs32 hcode hrun)
+      hrun hnp
+
+def gasSteps_expOptFive (s : State) (mem input : ByteArray)
+    (n bsize esize msize : Nat) (hepos : 0 < esize)
+    (hw1 : expByte input bsize 0 ≠ 1) (hw3 : expByte input bsize 0 ≠ 3)
+    (hw : expByte input bsize 0 = 5) (hdata : s.executionEnv.calldata = input)
+    (hb : bsize ≤ 1024) (he : esize ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (expOptHead s mem n bsize esize msize)
+      (expOptFive s mem n bsize esize msize) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk1781five hcode hfork
+      (run_expOpt_five s mem input n bsize esize msize hepos hw1 hw3 hw hdata hb he hact
+        heoff hcode hrun) hrun hnp
+
+def gasSteps_expOptFiveStart (s : State) (mem : ByteArray)
+    (n bsize esize msize : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hact : 298 ≤ s.activeWords.toNat)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (expOptFive s mem n bsize esize msize)
+      (ebitHead s (mcopyMem mem 1024 4096 (32 * n)) n bsize esize msize 0 5 4) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk1827 hcode hfork
+      (run_expOpt_five_start s mem n bsize esize msize hn hn32 hact hs32 hcode hrun)
       hrun hnp
 def gasSteps_bDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 298 ≤ s.activeWords.toNat)
@@ -2115,6 +2258,12 @@ def byteMem (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (w : Nat)
 def lastTwoMem (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (w : Nat)
     (mem : ByteArray) : ByteArray :=
   bitStep mpMem (bitStep mpMem mem (bitAt w 1)) (bitAt w 0)
+
+/-- Memory after processing only bit positions two, one and zero of `w`. -/
+def lastThreeMem (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (w : Nat)
+    (mem : ByteArray) : ByteArray :=
+  bitStep mpMem (bitStep mpMem (bitStep mpMem mem (bitAt w 2)) (bitAt w 1))
+    (bitAt w 0)
 
 /-- The memory after `i` exponent bytes. -/
 def ebMems (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (input : ByteArray)
@@ -3268,6 +3417,24 @@ theorem expAcc_firstSix_three {mm R b bM : Nat} (hm : 0 < mm)
   rw [hE, pow_zero, one_mul] at hform
   exact (hform.trans (Nat.mod_modEq R mm).symm).eq_of_lt_of_lt
     (expAcc_lt hm (expBits input bsize) 6) (Nat.mod_lt _ hm)
+
+/-- The five leading zero bits of byte `0x05` leave Montgomery one unchanged. -/
+theorem expAcc_firstFive_five {mm R b bM : Nat} (hm : 0 < mm)
+    (hcop : Nat.Coprime R mm) (hbMform : bM ≡ b * R [MOD mm])
+    (input : ByteArray) (bsize : Nat) (hw : expByte input bsize 0 = 5) :
+    expAcc mm R bM (expBits input bsize) 5 = R % mm := by
+  have hbits : ∀ t, t < 5 → expBits input bsize t = 0 := by
+    intro t ht
+    rw [show t = 8 * 0 + t by omega, expBits_eq input bsize 0 t (by omega), hw]
+    unfold bitAt
+    interval_cases t <;> norm_num
+  have hE : expExp (expBits input bsize) 5 = 0 := by
+    simp [expExp, hbits]
+  have hform := expAcc_form hm hcop hbMform (expBits input bsize)
+    (fun t => bitAt_le_one _ _) 5
+  rw [hE, pow_zero, one_mul] at hform
+  exact (hform.trans (Nat.mod_modEq R mm).symm).eq_of_lt_of_lt
+    (expAcc_lt hm (expBits input bsize) 5) (Nat.mod_lt _ hm)
 /-- The blocks the exponent loop reads and writes: the modulus, `ACC`, `BASE`
 and `ONE` (untouched, and still one limb wide). -/
 structure EbInv (mem : ByteArray) (n mm bM acc : Nat) : Prop where
@@ -3976,6 +4143,48 @@ theorem lastTwoMem_inv {s : State} {n bsize mm minv R : Nat}
   exact h2
 
 
+theorem lastThreeMem_frame {s : State} {n bsize mm minv : Nat}
+    (sub : Subroutines s n bsize mm minv) (mem : ByteArray) (w : Nat)
+    (hf : Frame mem n bsize minv) :
+    Frame (lastThreeMem sub.mpMem w mem) n bsize minv := by
+  exact bitStep_frame sub _ (bitAt w 0)
+    (bitStep_frame sub _ (bitAt w 1)
+      (bitStep_frame sub mem (bitAt w 2) hf))
+
+theorem lastThreeMem_inv {s : State} {n bsize mm minv R : Nat}
+    (sub : Subroutines s n bsize mm minv)
+    (spec : SubSpec sub.mpMem sub.amMem n mm R minv) (hm : 0 < mm)
+    (hn32 : n ≤ 32) (mem : ByteArray) (bM w t0 : Nat) (bits : Nat → Nat)
+    (hbM : bM < mm) (hbit2 : bits t0 = bitAt w 2)
+    (hbit1 : bits (t0 + 1) = bitAt w 1)
+    (hbit0 : bits (t0 + 2) = bitAt w 0)
+    (hf : Frame mem n bsize minv)
+    (hinv : EbInv mem n mm bM (expAcc mm R bM bits t0)) :
+    EbInv (lastThreeMem sub.mpMem w mem) n mm bM
+      (expAcc mm R bM bits (t0 + 3)) := by
+  have h1 := bitStep_inv spec hm hn32 mem bM (expAcc mm R bM bits t0)
+    (bitAt w 2) (bitAt_le_one w 2) hbM (expAcc_lt hm bits t0) hf.minvW hinv
+  have hi1 : EbInv (bitStep sub.mpMem mem (bitAt w 2)) n mm bM
+      (expAcc mm R bM bits (t0 + 1)) := by
+    rw [expAcc_succ, hbit2]
+    exact h1
+  have hf1 := bitStep_frame sub mem (bitAt w 2) hf
+  have h2 := bitStep_inv spec hm hn32 (bitStep sub.mpMem mem (bitAt w 2)) bM
+    (expAcc mm R bM bits (t0 + 1)) (bitAt w 1) (bitAt_le_one w 1) hbM
+    (expAcc_lt hm bits (t0 + 1)) hf1.minvW hi1
+  have hi2 : EbInv (bitStep sub.mpMem (bitStep sub.mpMem mem (bitAt w 2))
+      (bitAt w 1)) n mm bM (expAcc mm R bM bits (t0 + 2)) := by
+    rw [show t0 + 2 = (t0 + 1) + 1 by omega, expAcc_succ, hbit1]
+    exact h2
+  have hf2 := bitStep_frame sub (bitStep sub.mpMem mem (bitAt w 2)) (bitAt w 1) hf1
+  have h3 := bitStep_inv spec hm hn32
+    (bitStep sub.mpMem (bitStep sub.mpMem mem (bitAt w 2)) (bitAt w 1)) bM
+    (expAcc mm R bM bits (t0 + 2)) (bitAt w 0) (bitAt_le_one w 0) hbM
+    (expAcc_lt hm bits (t0 + 2)) hf2.minvW hi2
+  rw [show t0 + 3 = (t0 + 2) + 1 by omega, expAcc_succ, hbit0]
+  exact h3
+
+
 theorem bitMems_frame {s : State} {n bsize mm minv : Nat}
     (sub : Subroutines s n bsize mm minv) (w : Nat)
     (mem : ByteArray) (hf : Frame mem n bsize minv) :
@@ -4106,6 +4315,55 @@ def gasSteps_lastTwo (s : State) {n bsize mm minv R : Nat}
     (gasSteps_ebitNextExit s (bitStep sub.mpMem mem1 (bitAt w 0))
       n bsize esize msize i w hcode hfork hrun hnp)).trans
     (gasSteps_ebTail s (bitStep sub.mpMem mem1 (bitAt w 0))
+      n bsize esize msize i w hcode hfork hrun hnp))
+
+/-- Process bit positions two, one and zero, beginning directly at mask four. -/
+def gasSteps_lastThree (s : State) {n bsize mm minv R : Nat}
+    (sub : Subroutines s n bsize mm minv)
+    (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
+    (mem : ByteArray) (esize msize i w bM t0 : Nat) (bits : Nat → Nat)
+    (hm : 0 < mm) (hn32 : n ≤ 32) (hw : w < 256) (hbM : bM < mm)
+    (hbit2 : bits t0 = bitAt w 2)
+    (hbit1 : bits (t0 + 1) = bitAt w 1)
+    (hframe : Frame mem n bsize minv)
+    (hinv : EbInv mem n mm bM (expAcc mm R bM bits t0))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (ebitHead s mem n bsize esize msize i w 4)
+      (ebHead s (lastThreeMem sub.mpMem w mem) n bsize esize msize (i + 1)) := by
+  let mem1 := bitStep sub.mpMem mem (bitAt w 2)
+  let mem2 := bitStep sub.mpMem mem1 (bitAt w 1)
+  have hframe1 : Frame mem1 n bsize minv := bitStep_frame sub mem (bitAt w 2) hframe
+  have hframe2 : Frame mem2 n bsize minv := bitStep_frame sub mem1 (bitAt w 1) hframe1
+  have hinv1 : EbInv mem1 n mm bM (expAcc mm R bM bits (t0 + 1)) := by
+    have h := bitStep_inv spec hm hn32 mem bM (expAcc mm R bM bits t0)
+      (bitAt w 2) (bitAt_le_one w 2) hbM (expAcc_lt hm bits t0) hframe.minvW hinv
+    rw [expAcc_succ, hbit2]
+    exact h
+  have hinv2 : EbInv mem2 n mm bM (expAcc mm R bM bits (t0 + 2)) := by
+    have h := bitStep_inv spec hm hn32 mem1 bM (expAcc mm R bM bits (t0 + 1))
+      (bitAt w 1) (bitAt_le_one w 1) hbM (expAcc_lt hm bits (t0 + 1)) hframe1.minvW
+      hinv1
+    rw [show t0 + 2 = (t0 + 1) + 1 by omega, expAcc_succ, hbit1]
+    exact h
+  exact (((((((gasSteps_bitStep s sub spec mem esize msize i w 2 bM
+      (expAcc mm R bM bits t0) hm hn32 hw (by omega) hbM (expAcc_lt hm bits t0)
+      hframe hinv hcode hfork hrun hnp).trans
+    (gasSteps_ebitNextLoop s mem1 n bsize esize msize i w 4 (by omega) (by omega)
+      hcode hfork hrun hnp)).trans
+    (gasSteps_bitStep s sub spec mem1 esize msize i w 1 bM
+      (expAcc mm R bM bits (t0 + 1)) hm hn32 hw (by omega) hbM
+      (expAcc_lt hm bits (t0 + 1)) hframe1 hinv1 hcode hfork hrun hnp)).trans
+    (gasSteps_ebitNextLoop s mem2 n bsize esize msize i w 2 (by omega) (by omega)
+      hcode hfork hrun hnp)).trans
+    (gasSteps_bitStep s sub spec mem2 esize msize i w 0 bM
+      (expAcc mm R bM bits (t0 + 2)) hm hn32 hw (by omega) hbM
+      (expAcc_lt hm bits (t0 + 2)) hframe2 hinv2 hcode hfork hrun hnp)).trans
+    (gasSteps_ebitNextExit s (bitStep sub.mpMem mem2 (bitAt w 0))
+      n bsize esize msize i w hcode hfork hrun hnp)).trans
+    (gasSteps_ebTail s (bitStep sub.mpMem mem2 (bitAt w 0))
       n bsize esize msize i w hcode hfork hrun hnp))
 def gasSteps_bitBody (s : State) {n bsize mm minv R : Nat}
     (sub : Subroutines s n bsize mm minv)
@@ -4626,13 +4884,55 @@ theorem handled_of_expOptHead (input : ByteArray) (s : State) (mem : ByteArray)
           esize msize _ hstack (tr0.trans (tr1.trans (tr2.trans tr3))) hn hm32 (by omega)
           hbsize hesize hmsz hfinal ?_
         rw [hmm, hbval]
-      · obtain ⟨final, ⟨tr⟩, hdone, hres⟩ := handled_of_bDone input s mem n
-          bsize esize msize mm minv bM sub spec hcode hfork hrun hnp hdata hstack hact hn
-          hn32 hb he hmz hm32 hbsize hesize hmsz hmm hodd hradix hbMlt
-          (by simpa [hbval] using hbMform) hframe hEbOld
-        exact ⟨final,
-          ⟨(gasSteps_expOptOther s mem input n bsize esize msize hepos hw hw3 hdata hb he
-            hact hframe.eoff hcode hfork hrun hnp).trans tr⟩, hdone, hres⟩
+      · by_cases hw5 : expByte input bsize 0 = 5
+        · have hmpos : 0 < mm := lt_of_lt_of_le Limbs.radix_pos hradix
+          have hcop : Nat.Coprime (Limbs.radix ^ n) mm :=
+            Model.coprime_radix_pow_of_odd hodd n
+          let cmem := mcopyMem mem 1024 4096 (32 * n)
+          have hframeC : Frame cmem n bsize minv := frame_mcopyMem (by omega) hframe
+          have hfive : expAcc mm (Limbs.radix ^ n) bM (expBits input bsize) 5 =
+              (Limbs.radix ^ n) % mm :=
+            expAcc_firstFive_five hmpos hcop hbMform input bsize hw5
+          have hInv5 : EbInv cmem n mm bM
+              (expAcc mm (Limbs.radix ^ n) bM (expBits input bsize) 5) := by
+            rw [hfive]
+            simpa [expAcc] using hEbOld
+          have hbit2 : expBits input bsize 5 = bitAt 5 2 := by
+            rw [show 5 = 8 * 0 + 5 by omega, expBits_eq input bsize 0 5 (by omega), hw5]
+          have hbit1 : expBits input bsize 6 = bitAt 5 1 := by
+            rw [show 6 = 8 * 0 + 6 by omega, expBits_eq input bsize 0 6 (by omega), hw5]
+          have hbit0 : expBits input bsize 7 = bitAt 5 0 := by
+            rw [show 7 = 8 * 0 + 7 by omega, expBits_eq input bsize 0 7 (by omega), hw5]
+          let cmem2 := lastThreeMem sub.mpMem 5 cmem
+          have hframeC2 : Frame cmem2 n bsize minv :=
+            lastThreeMem_frame sub cmem 5 hframeC
+          have hInv8 : EbInv cmem2 n mm bM
+              (expAcc mm (Limbs.radix ^ n) bM (expBits input bsize) 8) := by
+            exact lastThreeMem_inv sub spec hmpos hn32 cmem bM 5 5 (expBits input bsize)
+              hbMlt hbit2 hbit1 hbit0 hframeC hInv5
+          have tr0 := gasSteps_expOptFive s mem input n bsize esize msize hepos hw hw3
+            hw5 hdata hb he hact hframe.eoff hcode hfork hrun hnp
+          have tr1 := gasSteps_expOptFiveStart s mem n bsize esize msize hn hn32 hact
+            hframe.s32 hcode hfork hrun hnp
+          have tr2 := gasSteps_lastThree s sub spec cmem esize msize 0 5 bM 5
+            (expBits input bsize) hmpos hn32 (by omega) hbMlt hbit2 hbit1 hframeC hInv5
+            hcode hfork hrun hnp
+          have tr3 := gasSteps_expChainFrom s sub spec cmem2 input esize msize 1 bM hdata
+            hmpos hn hn32 hb he (by omega) hmz hm32 hbMlt hact hframeC2 hInv8
+            hcode hfork hrun hnp
+          have hfinal := ebMemFrom_final spec hmpos hn hn32 hcop hradix hbMlt hbMform
+            input bsize esize 1 (by omega) rfl cmem2 hframeC2.minvW hInv8
+          refine handled_of_trace input (expOptHead s mem n bsize esize msize) s _ n bsize
+            esize msize _ hstack (tr0.trans (tr1.trans (tr2.trans tr3))) hn hm32 (by omega)
+            hbsize hesize hmsz hfinal ?_
+          rw [hmm, hbval]
+        · obtain ⟨final, ⟨tr⟩, hdone, hres⟩ := handled_of_bDone input s mem n
+            bsize esize msize mm minv bM sub spec hcode hfork hrun hnp hdata hstack hact hn
+            hn32 hb he hmz hm32 hbsize hesize hmsz hmm hodd hradix hbMlt
+            (by simpa [hbval] using hbMform) hframe hEbOld
+          exact ⟨final,
+            ⟨(gasSteps_expOptOther s mem input n bsize esize msize hepos hw hw3 hw5 hdata
+              hb he hact hframe.eoff hcode hfork hrun hnp).trans tr⟩, hdone, hres⟩
 /-! ## The base loop -/
 
 theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
