@@ -133,8 +133,8 @@ def leftRoundPrefixLocated : List Located :=
    ⟨487, .push ⟨2, by decide⟩ (UInt256.ofNat 693), by rfl, by decide⟩,
    ⟨488, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
    ⟨489, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨490, .push ⟨2, by decide⟩ (UInt256.ofNat 1345), by rfl, by decide⟩,
-   ⟨491, .push ⟨2, by decide⟩ (UInt256.ofNat 120), by rfl, by decide⟩,
+   ⟨490, .push ⟨2, by decide⟩ (UInt256.ofNat 1376), by rfl, by decide⟩,
+   ⟨491, .push ⟨2, by decide⟩ (UInt256.ofNat 106), by rfl, by decide⟩,
    ⟨492, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def leftRoundMiddleLocated : List Located :=
@@ -142,15 +142,15 @@ def leftRoundMiddleLocated : List Located :=
    ⟨494, .push ⟨2, by decide⟩ (UInt256.ofNat 706), by rfl, by decide⟩,
    ⟨495, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
    ⟨496, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨497, .push ⟨2, by decide⟩ (UInt256.ofNat 1153), by rfl, by decide⟩,
-   ⟨498, .push ⟨2, by decide⟩ (UInt256.ofNat 120), by rfl, by decide⟩,
+   ⟨497, .push ⟨2, by decide⟩ (UInt256.ofNat 1184), by rfl, by decide⟩,
+   ⟨498, .push ⟨2, by decide⟩ (UInt256.ofNat 106), by rfl, by decide⟩,
    ⟨499, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def leftRoundSuffixLocated : List Located :=
   [⟨500, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨501, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨502, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
-   ⟨503, .push ⟨2, by decide⟩ (UInt256.ofNat 276), by rfl, by decide⟩,
+   ⟨503, .push ⟨2, by decide⟩ (UInt256.ofNat 259), by rfl, by decide⟩,
    ⟨504, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem leftInitPC :
@@ -199,8 +199,8 @@ def rightRoundPrefixLocated : List Located :=
    ⟨534, .push ⟨2, by decide⟩ (UInt256.ofNat 767), by rfl, by decide⟩,
    ⟨535, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
    ⟨536, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨537, .push ⟨2, by decide⟩ (UInt256.ofNat 1441), by rfl, by decide⟩,
-   ⟨538, .push ⟨2, by decide⟩ (UInt256.ofNat 120), by rfl, by decide⟩,
+   ⟨537, .push ⟨2, by decide⟩ (UInt256.ofNat 1472), by rfl, by decide⟩,
+   ⟨538, .push ⟨2, by decide⟩ (UInt256.ofNat 106), by rfl, by decide⟩,
    ⟨539, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def rightRoundMiddleLocated : List Located :=
@@ -208,8 +208,8 @@ def rightRoundMiddleLocated : List Located :=
    ⟨541, .push ⟨2, by decide⟩ (UInt256.ofNat 780), by rfl, by decide⟩,
    ⟨542, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
    ⟨543, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨544, .push ⟨2, by decide⟩ (UInt256.ofNat 1249), by rfl, by decide⟩,
-   ⟨545, .push ⟨2, by decide⟩ (UInt256.ofNat 120), by rfl, by decide⟩,
+   ⟨544, .push ⟨2, by decide⟩ (UInt256.ofNat 1280), by rfl, by decide⟩,
+   ⟨545, .push ⟨2, by decide⟩ (UInt256.ofNat 106), by rfl, by decide⟩,
    ⟨546, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def rightRoundSuffixLocated : List Located :=
@@ -218,7 +218,7 @@ def rightRoundSuffixLocated : List Located :=
    ⟨549, .push ⟨1, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
    ⟨550, .op .SUB, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨551, .push ⟨2, by decide⟩ (UInt256.ofNat 352), by rfl, by decide⟩,
-   ⟨552, .push ⟨2, by decide⟩ (UInt256.ofNat 276), by rfl, by decide⟩,
+   ⟨552, .push ⟨2, by decide⟩ (UInt256.ofNat 259), by rfl, by decide⟩,
    ⟨553, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def rightIncrementLocated : List Located :=
@@ -473,7 +473,7 @@ theorem run_leftRoundPrefix (s : State) (messageOffset returnDest : UInt256)
     apply Nat.mod_eq_of_lt
     change 1568 + roundIndex i * 32 < 2 ^ 256
     exact hsmall
-  have hdest : Decode.isValidJumpDest submissionBytecode 120 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 106 = true := by decide
   have hcap (m : Nat) (hm : m ≤ 12) : rest.length + m < 1024 := by omega
   simp (config := { maxSteps := 300000 })
     [leftRoundPrefixLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -498,7 +498,7 @@ theorem run_leftRoundMiddle (s : State) (messageOffset returnDest : UInt256)
           constantAt s 1568 i, UInt256.ofNat 714,
           UInt256.ofNat (roundIndex i), UInt256.ofNat i,
           messageOffset, returnDest] ++ rest)) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 120 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 106 = true := by decide
   have hcap (m : Nat) (hm : m ≤ 12) : rest.length + m < 1024 := by omega
   simp (config := { maxSteps := 200000 })
     [leftRoundMiddleLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -524,7 +524,7 @@ theorem run_leftRoundSuffix (s : State) (messageOffset returnDest : UInt256)
         (constantAt s 1568 i) (UInt256.ofNat 714)
         (UInt256.ofNat (roundIndex i) :: UInt256.ofNat i ::
           messageOffset :: returnDest :: rest)) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 276 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 259 = true := by decide
   have hcap (m : Nat) (hm : m ≤ 12) : rest.length + m < 1024 := by omega
   simp (config := { maxSteps := 200000 })
     [leftRoundSuffixLocated, Challenge.EvmProof.Stepper.runLocatedBlock,

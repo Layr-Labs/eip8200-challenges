@@ -40,27 +40,23 @@ def submissionInstructions : List Instr :=
   op 0x01,
   op 0x90,
   op 0x56,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
   op 0x5b,
-  .push 2 46,
+  .push 1 41,
   op 0x56,
   op 0x5b,
+  op 0x80,
   .push 1 5,
   op 0x1b,
   .push 1 32,
   op 0x01,
   op 0x51,
-  op 0x01,
+  op 0x91,
+  op 0x50,
+  op 0x50,
   op 0x90,
   op 0x56,
-  op 0x00,
-  op 0x00,
-  op 0x00,
   op 0x5b,
-  .push 2 70,
+  .push 1 61,
   op 0x56,
   op 0x5b,
   op 0x90,
@@ -73,11 +69,8 @@ def submissionInstructions : List Instr :=
   op 0x90,
   op 0x52,
   op 0x56,
-  op 0x00,
-  op 0x00,
-  op 0x00,
   op 0x5b,
-  .push 2 90,
+  .push 2 78,
   op 0x56,
   op 0x5b,
   .push 1 5,
@@ -88,11 +81,8 @@ def submissionInstructions : List Instr :=
   op 0x01,
   op 0x90,
   op 0x56,
-  op 0x00,
-  op 0x00,
-  op 0x00,
   op 0x5b,
-  .push 2 115,
+  .push 2 101,
   op 0x56,
   op 0x5b,
   .push 1 5,
@@ -105,32 +95,27 @@ def submissionInstructions : List Instr :=
   op 0x90,
   op 0x52,
   op 0x56,
-  op 0x00,
-  op 0x00,
   op 0x5b,
-  .push 2 142,
+  .push 2 125,
   op 0x56,
   op 0x5b,
+  op 0x81,
+  .push 1 5,
+  op 0x1c,
+  .push 1 5,
+  op 0x1b,
   op 0x01,
   op 0x51,
+  op 0x90,
   .push 1 31,
+  op 0x16,
   op 0x1a,
   op 0x01,
   op 0x90,
   op 0x56,
-  .push 2 0,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
   op 0x00,
   op 0x5b,
-  .push 2 271,
+  .push 2 254,
   op 0x56,
   op 0x5b,
   op 0x80,
@@ -138,7 +123,7 @@ def submissionInstructions : List Instr :=
   .push 0 0,
   op 0x14,
   op 0x15,
-  .push 2 169,
+  .push 2 152,
   op 0x57,
   op 0x50,
   op 0x83,
@@ -148,14 +133,14 @@ def submissionInstructions : List Instr :=
   op 0x18,
   op 0x94,
   op 0x50,
-  .push 2 264,
+  .push 2 247,
   op 0x56,
   op 0x5b,
   op 0x80,
   .push 1 1,
   op 0x14,
   op 0x15,
-  .push 2 194,
+  .push 2 177,
   op 0x57,
   op 0x50,
   op 0x83,
@@ -168,14 +153,14 @@ def submissionInstructions : List Instr :=
   op 0x17,
   op 0x94,
   op 0x50,
-  .push 2 264,
+  .push 2 247,
   op 0x56,
   op 0x5b,
   op 0x80,
   .push 1 2,
   op 0x14,
   op 0x15,
-  .push 2 223,
+  .push 2 206,
   op 0x57,
   op 0x50,
   .push 4 4294967295,
@@ -188,14 +173,14 @@ def submissionInstructions : List Instr :=
   op 0x16,
   op 0x94,
   op 0x50,
-  .push 2 264,
+  .push 2 247,
   op 0x56,
   op 0x5b,
   op 0x80,
   .push 1 3,
   op 0x14,
   op 0x15,
-  .push 2 248,
+  .push 2 231,
   op 0x57,
   op 0x50,
   op 0x83,
@@ -208,7 +193,7 @@ def submissionInstructions : List Instr :=
   op 0x17,
   op 0x94,
   op 0x50,
-  .push 2 264,
+  .push 2 247,
   op 0x56,
   op 0x5b,
   op 0x50,
@@ -253,13 +238,13 @@ def submissionInstructions : List Instr :=
   op 0x51,
   .push 4 4294967295,
   op 0x8a,
-  .push 2 314,
-  .push 0 0,
-  op 0x8b,
-  .push 2 75,
-  op 0x56,
-  op 0x5b,
-  .push 2 327,
+  op 0x89,
+  .push 1 5,
+  op 0x1b,
+  .push 2 672,
+  op 0x01,
+  op 0x51,
+  .push 2 309,
   .push 0 0,
   op 0x86,
   op 0x88,
@@ -275,13 +260,18 @@ def submissionInstructions : List Instr :=
   op 0x16,
   .push 4 4294967295,
   op 0x82,
-  .push 2 349,
-  .push 0 0,
-  op 0x8d,
-  op 0x85,
-  .push 2 4,
-  op 0x56,
-  op 0x5b,
+  op 0x8b,
+  op 0x83,
+  op 0x80,
+  op 0x82,
+  op 0x1b,
+  op 0x91,
+  .push 1 32,
+  op 0x03,
+  op 0x1c,
+  op 0x17,
+  .push 4 4294967295,
+  op 0x16,
   op 0x01,
   op 0x16,
   op 0x90,
@@ -298,19 +288,29 @@ def submissionInstructions : List Instr :=
   op 0x88,
   op 0x01,
   op 0x52,
-  .push 2 397,
-  .push 2 389,
-  .push 0 0,
   .push 1 10,
-  op 0x87,
-  .push 2 4,
-  op 0x56,
-  op 0x5b,
+  op 0x84,
+  op 0x80,
+  op 0x82,
+  op 0x1b,
+  op 0x91,
+  .push 1 32,
+  op 0x03,
+  op 0x1c,
+  op 0x17,
+  .push 4 4294967295,
+  op 0x16,
   .push 1 3,
-  op 0x89,
-  .push 2 51,
-  op 0x56,
-  op 0x5b,
+  op 0x88,
+  op 0x90,
+  .push 1 5,
+  op 0x1b,
+  op 0x01,
+  op 0x90,
+  .push 4 4294967295,
+  op 0x16,
+  op 0x90,
+  op 0x52,
   .push 4 4294967295,
   op 0x85,
   op 0x16,
@@ -458,7 +458,7 @@ def submissionInstructions : List Instr :=
   op 0x56,
   op 0x5b,
   op 0x82,
-  .push 2 95,
+  .push 2 83,
   op 0x56,
   op 0x5b,
   .push 1 1,
@@ -514,20 +514,20 @@ def submissionInstructions : List Instr :=
   .push 2 693,
   .push 0 0,
   op 0x85,
-  .push 2 1345,
-  .push 2 120,
+  .push 2 1376,
+  .push 2 106,
   op 0x56,
   op 0x5b,
   .push 2 706,
   .push 0 0,
   op 0x86,
-  .push 2 1153,
-  .push 2 120,
+  .push 2 1184,
+  .push 2 106,
   op 0x56,
   op 0x5b,
   op 0x84,
   .push 1 192,
-  .push 2 276,
+  .push 2 259,
   op 0x56,
   op 0x5b,
   op 0x50,
@@ -561,22 +561,22 @@ def submissionInstructions : List Instr :=
   .push 2 767,
   .push 0 0,
   op 0x85,
-  .push 2 1441,
-  .push 2 120,
+  .push 2 1472,
+  .push 2 106,
   op 0x56,
   op 0x5b,
   .push 2 780,
   .push 0 0,
   op 0x86,
-  .push 2 1249,
-  .push 2 120,
+  .push 2 1280,
+  .push 2 106,
   op 0x56,
   op 0x5b,
   op 0x84,
   .push 1 4,
   op 0x03,
   .push 2 352,
-  .push 2 276,
+  .push 2 259,
   op 0x56,
   op 0x5b,
   op 0x50,
@@ -832,7 +832,7 @@ def submissionInstructions : List Instr :=
   .push 2 1642,
   .push 0 0,
   op 0x83,
-  .push 2 32,
+  .push 2 27,
   op 0x56,
   op 0x5b,
   op 0x82,
@@ -856,16 +856,24 @@ def submissionInstructions : List Instr :=
   .push 0 0,
   op 0xf3,
   op 0x5b,
+  op 0x80,
   .push 1 5,
   op 0x1b,
   .push 2 1681,
   op 0x01,
   op 0x56,
-  op 0x00,
   op 0x5b,
+  op 0x83,
+  op 0x83,
+  op 0x83,
   op 0x18,
   op 0x18,
-  op 0x01,
+  op 0x94,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x50,
   op 0x90,
   op 0x56,
   op 0x00,
@@ -886,21 +894,21 @@ def submissionInstructions : List Instr :=
   op 0x00,
   op 0x00,
   op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
   op 0x5b,
-  op 0x90,
+  op 0x83,
   op 0x82,
-  op 0x18,
+  op 0x19,
   op 0x16,
-  op 0x18,
-  op 0x01,
+  op 0x83,
+  op 0x83,
+  op 0x16,
+  op 0x17,
+  op 0x94,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x50,
   op 0x90,
   op 0x56,
   op 0x00,
@@ -918,22 +926,21 @@ def submissionInstructions : List Instr :=
   op 0x00,
   op 0x00,
   op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
   op 0x5b,
-  op 0x90,
+  .push 4 4294967295,
+  op 0x84,
+  op 0x84,
   op 0x19,
+  op 0x84,
   op 0x17,
   op 0x18,
-  .push 4 4294967295,
   op 0x16,
-  op 0x01,
+  op 0x94,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x50,
   op 0x90,
   op 0x56,
   op 0x00,
@@ -947,53 +954,21 @@ def submissionInstructions : List Instr :=
   op 0x00,
   op 0x00,
   op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
   op 0x5b,
-  op 0x81,
-  op 0x18,
-  op 0x90,
-  op 0x91,
-  op 0x16,
-  op 0x18,
-  op 0x01,
-  op 0x90,
-  op 0x56,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x5b,
-  op 0x91,
+  op 0x83,
   op 0x19,
-  op 0x17,
-  op 0x18,
-  .push 4 4294967295,
+  op 0x83,
   op 0x16,
-  op 0x01,
+  op 0x84,
+  op 0x83,
+  op 0x16,
+  op 0x17,
+  op 0x94,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x50,
   op 0x90,
   op 0x56,
   op 0x00,
@@ -1002,7 +977,32 @@ def submissionInstructions : List Instr :=
   op 0x00,
   op 0x00,
   op 0x00,
-  op 0x00
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push 4 4294967295,
+  op 0x84,
+  op 0x19,
+  op 0x84,
+  op 0x17,
+  op 0x83,
+  op 0x18,
+  op 0x16,
+  op 0x94,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x90,
+  op 0x56,
 ]
 
 theorem referenceInstructions_count : submissionInstructions.length = 979 := by
@@ -1340,10 +1340,10 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
     submissionArtifact.instructionPC 1 = 0x3 := by rfl
 
 @[simp] theorem referenceArtifact_pc_20 :
-    submissionArtifact.instructionPC 20 = 0x1b := by rfl
+    submissionArtifact.instructionPC 20 = 0x1c := by rfl
 
 @[simp] theorem referenceArtifact_pc_21 :
-    submissionArtifact.instructionPC 21 = 0x1c := by rfl
+    submissionArtifact.instructionPC 21 = 0x1d := by rfl
 
 @[simp] theorem referenceArtifact_pc_22 :
     submissionArtifact.instructionPC 22 = 0x1f := by rfl
@@ -1355,52 +1355,52 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
     submissionArtifact.instructionPC 36 = 0x2f := by rfl
 
 @[simp] theorem referenceArtifact_pc_37 :
-    submissionArtifact.instructionPC 37 = 0x32 := by rfl
+    submissionArtifact.instructionPC 37 = 0x31 := by rfl
 
 @[simp] theorem referenceArtifact_pc_52 :
-    submissionArtifact.instructionPC 52 = 0x46 := by rfl
+    submissionArtifact.instructionPC 52 = 0x49 := by rfl
 
 @[simp] theorem referenceArtifact_pc_53 :
-    submissionArtifact.instructionPC 53 = 0x47 := by rfl
+    submissionArtifact.instructionPC 53 = 0x4a := by rfl
 
 @[simp] theorem referenceArtifact_pc_54 :
-    submissionArtifact.instructionPC 54 = 0x4a := by rfl
+    submissionArtifact.instructionPC 54 = 0x4b := by rfl
 
 @[simp] theorem referenceArtifact_pc_67 :
-    submissionArtifact.instructionPC 67 = 0x5a := by rfl
+    submissionArtifact.instructionPC 67 = 0x61 := by rfl
 
 @[simp] theorem referenceArtifact_pc_68 :
-    submissionArtifact.instructionPC 68 = 0x5b := by rfl
+    submissionArtifact.instructionPC 68 = 0x62 := by rfl
 
 @[simp] theorem referenceArtifact_pc_69 :
-    submissionArtifact.instructionPC 69 = 0x5e := by rfl
+    submissionArtifact.instructionPC 69 = 0x63 := by rfl
 
 @[simp] theorem referenceArtifact_pc_83 :
-    submissionArtifact.instructionPC 83 = 0x73 := by rfl
+    submissionArtifact.instructionPC 83 = 0x75 := by rfl
 
 @[simp] theorem referenceArtifact_pc_84 :
-    submissionArtifact.instructionPC 84 = 0x74 := by rfl
+    submissionArtifact.instructionPC 84 = 0x77 := by rfl
 
 @[simp] theorem referenceArtifact_pc_85 :
-    submissionArtifact.instructionPC 85 = 0x77 := by rfl
+    submissionArtifact.instructionPC 85 = 0x78 := by rfl
 
 @[simp] theorem referenceArtifact_pc_105 :
-    submissionArtifact.instructionPC 105 = 0x8e := by rfl
+    submissionArtifact.instructionPC 105 = 0x90 := by rfl
 
 @[simp] theorem referenceArtifact_pc_106 :
-    submissionArtifact.instructionPC 106 = 0x8f := by rfl
+    submissionArtifact.instructionPC 106 = 0x91 := by rfl
 
 @[simp] theorem referenceArtifact_pc_107 :
     submissionArtifact.instructionPC 107 = 0x92 := by rfl
 
 @[simp] theorem referenceArtifact_pc_205 :
-    submissionArtifact.instructionPC 205 = 0x10f := by rfl
+    submissionArtifact.instructionPC 205 = 0x112 := by rfl
 
 @[simp] theorem referenceArtifact_pc_206 :
-    submissionArtifact.instructionPC 206 = 0x110 := by rfl
+    submissionArtifact.instructionPC 206 = 0x113 := by rfl
 
 @[simp] theorem referenceArtifact_pc_207 :
-    submissionArtifact.instructionPC 207 = 0x113 := by rfl
+    submissionArtifact.instructionPC 207 = 0x114 := by rfl
 
 @[simp] theorem referenceArtifact_pc_313 :
     submissionArtifact.instructionPC 313 = 0x1b2 := by rfl
@@ -1450,96 +1450,96 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
 @[simp] theorem referenceArtifact_pc_682 :
     submissionArtifact.instructionPC 682 = 0x3ee := by rfl
 
-@[simp] theorem validJumpDest_1b :
-    Decode.isValidJumpDest submissionBytecode 0x1b = true := by
-  have h := submissionArtifact.isValidJumpDest_index 20 (by rfl)
+@[simp] theorem validJumpDest_17 :
+    Decode.isValidJumpDest submissionBytecode 0x17 = true := by
+  have h := submissionArtifact.isValidJumpDest_index 16 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 20) = true at h
-  simpa using h
+    (submissionArtifact.instructionPC 16) = true
+  exact h
 
-@[simp] theorem validJumpDest_2e :
-    Decode.isValidJumpDest submissionBytecode 0x2e = true := by
-  have h := submissionArtifact.isValidJumpDest_index 35 (by rfl)
+@[simp] theorem validJumpDest_29 :
+    Decode.isValidJumpDest submissionBytecode 0x29 = true := by
+  have h := submissionArtifact.isValidJumpDest_index 31 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 35) = true at h
-  simpa using h
+    (submissionArtifact.instructionPC 31) = true
+  exact h
 
-@[simp] theorem validJumpDest_46 :
-    Decode.isValidJumpDest submissionBytecode 0x46 = true := by
-  have h := submissionArtifact.isValidJumpDest_index 52 (by rfl)
+@[simp] theorem validJumpDest_3d :
+    Decode.isValidJumpDest submissionBytecode 0x3d = true := by
+  have h := submissionArtifact.isValidJumpDest_index 45 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 52) = true at h
-  simpa using h
+    (submissionArtifact.instructionPC 45) = true
+  exact h
 
-@[simp] theorem validJumpDest_5a :
-    Decode.isValidJumpDest submissionBytecode 0x5a = true := by
-  have h := submissionArtifact.isValidJumpDest_index 67 (by rfl)
+@[simp] theorem validJumpDest_4e :
+    Decode.isValidJumpDest submissionBytecode 0x4e = true := by
+  have h := submissionArtifact.isValidJumpDest_index 57 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 67) = true at h
-  simpa using h
+    (submissionArtifact.instructionPC 57) = true
+  exact h
 
-@[simp] theorem validJumpDest_73 :
-    Decode.isValidJumpDest submissionBytecode 0x73 = true := by
-  have h := submissionArtifact.isValidJumpDest_index 83 (by rfl)
+@[simp] theorem validJumpDest_65 :
+    Decode.isValidJumpDest submissionBytecode 0x65 = true := by
+  have h := submissionArtifact.isValidJumpDest_index 71 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 83) = true at h
-  simpa using h
+    (submissionArtifact.instructionPC 71) = true
+  exact h
 
-@[simp] theorem validJumpDest_8e :
-    Decode.isValidJumpDest submissionBytecode 0x8e = true := by
-  have h := submissionArtifact.isValidJumpDest_index 105 (by rfl)
+@[simp] theorem validJumpDest_7d :
+    Decode.isValidJumpDest submissionBytecode 0x7d = true := by
+  have h := submissionArtifact.isValidJumpDest_index 90 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 105) = true at h
-  simpa using h
+    (submissionArtifact.instructionPC 90) = true
+  exact h
 
-@[simp] theorem validJumpDest_10f :
-    Decode.isValidJumpDest submissionBytecode 0x10f = true := by
-  have h := submissionArtifact.isValidJumpDest_index 205 (by rfl)
+@[simp] theorem validJumpDest_fe :
+    Decode.isValidJumpDest submissionBytecode 0xfe = true := by
+  have h := submissionArtifact.isValidJumpDest_index 190 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 205) = true at h
-  simpa using h
+    (submissionArtifact.instructionPC 190) = true
+  exact h
 
 @[simp] theorem validJumpDest_1b2 :
     Decode.isValidJumpDest submissionBytecode 0x1b2 = true := by
   have h := submissionArtifact.isValidJumpDest_index 313 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 313) = true at h
-  simpa using h
+    (submissionArtifact.instructionPC 313) = true
+  exact h
 
 @[simp] theorem validJumpDest_1db :
     Decode.isValidJumpDest submissionBytecode 0x1db = true := by
   have h := submissionArtifact.isValidJumpDest_index 346 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 346) = true at h
-  simpa using h
+    (submissionArtifact.instructionPC 346) = true
+  exact h
 
 @[simp] theorem validJumpDest_231 :
     Decode.isValidJumpDest submissionBytecode 0x231 = true := by
   have h := submissionArtifact.isValidJumpDest_index 410 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 410) = true at h
-  simpa using h
+    (submissionArtifact.instructionPC 410) = true
+  exact h
 
 @[simp] theorem validJumpDest_268 :
     Decode.isValidJumpDest submissionBytecode 0x268 = true := by
   have h := submissionArtifact.isValidJumpDest_index 448 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 448) = true at h
-  simpa using h
+    (submissionArtifact.instructionPC 448) = true
+  exact h
 
 @[simp] theorem validJumpDest_3c1 :
     Decode.isValidJumpDest submissionBytecode 0x3c1 = true := by
   have h := submissionArtifact.isValidJumpDest_index 647 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 647) = true at h
-  simpa using h
+    (submissionArtifact.instructionPC 647) = true
+  exact h
 
 @[simp] theorem validJumpDest_3ee :
     Decode.isValidJumpDest submissionBytecode 0x3ee = true := by
   have h := submissionArtifact.isValidJumpDest_index 682 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 682) = true at h
-  simpa using h
+    (submissionArtifact.instructionPC 682) = true
+  exact h
 
 @[simp] theorem refPc349 :
     submissionArtifact.instructionPC 349 = 0x1e0 := by rfl

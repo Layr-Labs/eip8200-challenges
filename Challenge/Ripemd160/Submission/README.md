@@ -53,39 +53,3 @@ Bytecode size remains 1,830 bytes. Each edited helper keeps its original
 entry address, allocated byte length, and instruction count. Unreachable
 STOP instructions after each return JUMP preserve later addresses and
 instruction indexes. All caller-visible helper contracts remain unchanged.
-
-## Prior candidate: unaligned table windows and hAt
-
-That candidate added the table-window idea from submission
-`80dacb5` by `ercumentyildirim`. The logical table bases remain unchanged.
-Four calls push `base - 31`. The helper loads a word at `base - 31 + i`
-and selects byte 31. It consumes its arguments and the zero result slot.
-This reduces tableAt from 48 to 27 gas. The same argument-consumption
-change reduces hAt from 37 to 30 gas.
-
-The byte correspondence proof requires `31 ≤ base` and `i < 80`.
-All four actual table bases meet that condition. Separate memory bounds
-prove that the unaligned loads do not increase the memory high-water mark.
-The public correctness theorem and its calldata domain are unchanged.
-
-The native suite passes all 17 clean and dirty vectors at 8,241,311 gas.
-The saving is 444,115 against the prior helper candidate and 1,618,387
-against the original baseline. Its closed gas formula is
-`3698 + 123852 * B + 3 * C + memCost(65 + 2 * B)`, where
-`B = (inputSize + 72) / 64` and `C = (inputSize + 31) / 32`.
-The full exact-bytecode Comparator remains the acceptance condition.
-
-## Current candidate: stack-consuming Boolean helpers
-
-This candidate also consumes the Boolean case index and helper arguments.
-Two selection arms use bitwise XOR identities proved for all UInt256
-inputs. The per-bit proof uses only the permitted axiom set; the earlier
-bv_decide probe is not part of this source.
-
-Boolean case costs are [42,51,54,54,54]. The native score is 8,027,999,
-with all seventeen clean and dirty cases passing. The formula is
-`3698 + 120620 * B + 3 * C + memCost(65 + 2 * B)`.
-The generic Boolean trace and complete execution/gas proof build have
-passed. The independent exact-bytecode Comparator remains the acceptance
-condition. Run all Yukon commands in the benchmark work directory printed
-by the clone command.

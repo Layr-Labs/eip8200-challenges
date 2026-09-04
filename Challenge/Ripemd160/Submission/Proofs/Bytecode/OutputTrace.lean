@@ -1,7 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 import Challenge.EvmProof.Memory
 import Challenge.EvmProof.Word
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Word
 
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -62,20 +61,23 @@ def hAtCallPath : List
    ⟨805, .push ⟨2, by decide⟩ (UInt256.ofNat 0x66a), by rfl, by decide⟩,
    ⟨806, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
    ⟨807, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨808, .push ⟨2, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
+   ⟨808, .push ⟨2, by decide⟩ (UInt256.ofNat 0x1b), by rfl, by decide⟩,
    ⟨809, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def hAtPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨23, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨24, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨25, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨26, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
-   ⟨27, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨28, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨29, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨30, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨31, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨19, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨20, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨21, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨22, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨23, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
+   ⟨24, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨25, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨26, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨27, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨28, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨29, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨30, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def writeCallPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -151,18 +153,18 @@ def finishPath : List
    ⟨829, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
    ⟨830, .op .RETURN, by rfl, wfOp (by decide) trivial rfl⟩]
 
+@[simp] private theorem pc19 : Artifact.submissionArtifact.instructionPC 19 = 0x1b := by rfl
+@[simp] private theorem pc20 : Artifact.submissionArtifact.instructionPC 20 = 0x1c := by rfl
+@[simp] private theorem pc21 : Artifact.submissionArtifact.instructionPC 21 = 0x1d := by rfl
+@[simp] private theorem pc22 : Artifact.submissionArtifact.instructionPC 22 = 0x1f := by rfl
 @[simp] private theorem pc23 : Artifact.submissionArtifact.instructionPC 23 = 0x20 := by rfl
-@[simp] private theorem pc24 : Artifact.submissionArtifact.instructionPC 24 = 0x21 := by rfl
+@[simp] private theorem pc24 : Artifact.submissionArtifact.instructionPC 24 = 0x22 := by rfl
 @[simp] private theorem pc25 : Artifact.submissionArtifact.instructionPC 25 = 0x23 := by rfl
 @[simp] private theorem pc26 : Artifact.submissionArtifact.instructionPC 26 = 0x24 := by rfl
-@[simp] private theorem pc27 : Artifact.submissionArtifact.instructionPC 27 = 0x26 := by rfl
-@[simp] private theorem pc28 : Artifact.submissionArtifact.instructionPC 28 = 0x27 := by rfl
-@[simp] private theorem pc29 : Artifact.submissionArtifact.instructionPC 29 = 0x28 := by rfl
-@[simp] private theorem pc30 : Artifact.submissionArtifact.instructionPC 30 = 0x29 := by rfl
-@[simp] private theorem pc31 : Artifact.submissionArtifact.instructionPC 31 = 0x2a := by rfl
-@[simp] private theorem pc32 : Artifact.submissionArtifact.instructionPC 32 = 0x2b := by rfl
-@[simp] private theorem pc33 : Artifact.submissionArtifact.instructionPC 33 = 0x2c := by rfl
-@[simp] private theorem pc34 : Artifact.submissionArtifact.instructionPC 34 = 0x2d := by rfl
+@[simp] private theorem pc27 : Artifact.submissionArtifact.instructionPC 27 = 0x25 := by rfl
+@[simp] private theorem pc28 : Artifact.submissionArtifact.instructionPC 28 = 0x26 := by rfl
+@[simp] private theorem pc29 : Artifact.submissionArtifact.instructionPC 29 = 0x27 := by rfl
+@[simp] private theorem pc30 : Artifact.submissionArtifact.instructionPC 30 = 0x28 := by rfl
 
 @[simp] private theorem pc650 : Artifact.submissionArtifact.instructionPC 650 = 0x3c6 := by rfl
 @[simp] private theorem pc651 : Artifact.submissionArtifact.instructionPC 651 = 0x3c7 := by rfl
@@ -259,7 +261,7 @@ def zeroOutput (s : State) : State :=
       (Data.Bytes.natToBytesPadded 0 32) 0
     activeWords := s.activeWordsAfterUInt256 0 32 }
 
-private theorem valid20 : Decode.isValidJumpDest submissionBytecode 0x20 = true := by decide
+private theorem valid1b : Decode.isValidJumpDest submissionBytecode 0x1b = true := by decide
 private theorem valid3c6 : Decode.isValidJumpDest submissionBytecode 0x3c6 = true := by decide
 private theorem valid3c8 : Decode.isValidJumpDest submissionBytecode 0x3c8 = true := by decide
 private theorem valid3e9 : Decode.isValidJumpDest submissionBytecode 0x3e9 = true := by decide
@@ -326,7 +328,7 @@ theorem run_hAtCall (s : State) (i : Nat) (rest : List UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock hAtCallPath
       { s with pc := UInt256.ofNat 0x65e, stack := UInt256.ofNat i :: rest } =
     some { s with
-      pc := UInt256.ofNat 0x20
+      pc := UInt256.ofNat 0x1b
       stack := [UInt256.ofNat i, ⟨0⟩, UInt256.ofNat 0x66a,
         UInt256.ofNat 0x676, UInt256.ofNat i] ++ rest } := by
   have hc1 : rest.length + 1 < 1024 := by omega
@@ -337,14 +339,14 @@ theorem run_hAtCall (s : State) (i : Nat) (rest : List UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   simp [hAtCallPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    hcap, hc1, hc2, hc3, hc4, hc5, hc6, hrun, hcode, valid20]
+    hcap, hc1, hc2, hc3, hc4, hc5, hc6, hrun, hcode, valid1b]
 
 theorem run_hAt (s : State) (i : Nat) (rest : List UInt256)
     (hi : i < 5) (hcap : rest.length < 1019)
     (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock hAtPath
       { s with
-        pc := UInt256.ofNat 0x20
+        pc := UInt256.ofNat 0x1b
         stack := [UInt256.ofNat i, ⟨0⟩, UInt256.ofNat 0x66a] ++ rest } =
     some { s with
       pc := UInt256.ofNat 0x66a
@@ -366,11 +368,10 @@ theorem run_hAt (s : State) (i : Nat) (rest : List UInt256)
       UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5)).toNat = hOffset i := by
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact hoff
-  simp [hAtPath, Challenge.EvmProof.Word.ofNat_add_mod, hWord, Challenge.EvmProof.Stepper.runLocatedBlock,
+  simp [hAtPath, hWord, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     hcap, hc2, hc3, hc4, hc5, hrun, hcode, valid66a, hoff, hoff', List.exchange,
     State.activeWordsAfterUInt256]
-  exact Word.add_zero _
 
 theorem run_writeCall (s : State) (i : Nat) (word : UInt256)
     (rest : List UInt256) (hi : i < 5) (hcap : rest.length < 1019)

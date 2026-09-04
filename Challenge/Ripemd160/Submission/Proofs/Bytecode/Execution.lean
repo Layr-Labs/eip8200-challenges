@@ -11,6 +11,28 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
 open EvmSemantics
 open EvmSemantics.EVM
 
+@[simp] theorem helperPrefixPC16 : Artifact.submissionArtifact.instructionPC 16 = 23 := by rfl
+@[simp] theorem helperPrefixPC17 : Artifact.submissionArtifact.instructionPC 17 = 24 := by rfl
+@[simp] theorem helperPrefixPC18 : Artifact.submissionArtifact.instructionPC 18 = 26 := by rfl
+@[simp] theorem helperPrefixPC31 : Artifact.submissionArtifact.instructionPC 31 = 41 := by rfl
+@[simp] theorem helperPrefixPC32 : Artifact.submissionArtifact.instructionPC 32 = 42 := by rfl
+@[simp] theorem helperPrefixPC33 : Artifact.submissionArtifact.instructionPC 33 = 44 := by rfl
+@[simp] theorem helperPrefixPC45 : Artifact.submissionArtifact.instructionPC 45 = 61 := by rfl
+@[simp] theorem helperPrefixPC46 : Artifact.submissionArtifact.instructionPC 46 = 62 := by rfl
+@[simp] theorem helperPrefixPC47 : Artifact.submissionArtifact.instructionPC 47 = 65 := by rfl
+@[simp] theorem helperPrefixPC57 : Artifact.submissionArtifact.instructionPC 57 = 78 := by rfl
+@[simp] theorem helperPrefixPC58 : Artifact.submissionArtifact.instructionPC 58 = 79 := by rfl
+@[simp] theorem helperPrefixPC59 : Artifact.submissionArtifact.instructionPC 59 = 82 := by rfl
+@[simp] theorem helperPrefixPC71 : Artifact.submissionArtifact.instructionPC 71 = 101 := by rfl
+@[simp] theorem helperPrefixPC72 : Artifact.submissionArtifact.instructionPC 72 = 102 := by rfl
+@[simp] theorem helperPrefixPC73 : Artifact.submissionArtifact.instructionPC 73 = 105 := by rfl
+@[simp] theorem helperPrefixPC90 : Artifact.submissionArtifact.instructionPC 90 = 125 := by rfl
+@[simp] theorem helperPrefixPC91 : Artifact.submissionArtifact.instructionPC 91 = 126 := by rfl
+@[simp] theorem helperPrefixPC92 : Artifact.submissionArtifact.instructionPC 92 = 129 := by rfl
+@[simp] theorem helperPrefixPC190 : Artifact.submissionArtifact.instructionPC 190 = 254 := by rfl
+@[simp] theorem helperPrefixPC191 : Artifact.submissionArtifact.instructionPC 191 = 255 := by rfl
+@[simp] theorem helperPrefixPC192 : Artifact.submissionArtifact.instructionPC 192 = 258 := by rfl
+
 private def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
@@ -38,45 +60,45 @@ def path_start : List
 
 def path_1b : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨20, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨21, .push ⟨2, by decide⟩ (UInt256.ofNat 0x2e), by rfl, by decide⟩,
-   ⟨22, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨16, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨17, .push ⟨1, by decide⟩ (UInt256.ofNat 0x29), by rfl, by decide⟩,
+   ⟨18, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def path_2e : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨35, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨36, .push ⟨2, by decide⟩ (UInt256.ofNat 0x46), by rfl, by decide⟩,
-   ⟨37, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨31, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨32, .push ⟨1, by decide⟩ (UInt256.ofNat 0x3d), by rfl, by decide⟩,
+   ⟨33, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def path_46 : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨52, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨53, .push ⟨2, by decide⟩ (UInt256.ofNat 0x5a), by rfl, by decide⟩,
-   ⟨54, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨45, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨46, .push ⟨2, by decide⟩ (UInt256.ofNat 0x4e), by rfl, by decide⟩,
+   ⟨47, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def path_5a : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨67, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨68, .push ⟨2, by decide⟩ (UInt256.ofNat 0x73), by rfl, by decide⟩,
-   ⟨69, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨57, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨58, .push ⟨2, by decide⟩ (UInt256.ofNat 0x65), by rfl, by decide⟩,
+   ⟨59, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def path_73 : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨83, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨84, .push ⟨2, by decide⟩ (UInt256.ofNat 0x8e), by rfl, by decide⟩,
-   ⟨85, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨71, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨72, .push ⟨2, by decide⟩ (UInt256.ofNat 0x7d), by rfl, by decide⟩,
+   ⟨73, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def path_8e : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨105, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨106, .push ⟨2, by decide⟩ (UInt256.ofNat 0x10f), by rfl, by decide⟩,
-   ⟨107, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨90, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨91, .push ⟨2, by decide⟩ (UInt256.ofNat 0xfe), by rfl, by decide⟩,
+   ⟨92, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def path_10f : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨205, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨206, .push ⟨2, by decide⟩ (UInt256.ofNat 0x1b2), by rfl, by decide⟩,
-   ⟨207, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨190, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨191, .push ⟨2, by decide⟩ (UInt256.ofNat 0x1b2), by rfl, by decide⟩,
+   ⟨192, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def path_1b2 : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -130,9 +152,9 @@ def gasSteps_start (input : ByteArray) :
   exact Challenge.EvmProof.GasSteps.cast g rfl rfl
 
 def gasSteps_1b (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 0x1b) (atPC input 0x2e) := by
+    Challenge.EvmProof.GasSteps (atPC input 0x17) (atPC input 0x29) := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_1b
-      (atPC input 0x1b) = some (atPC input 0x2e) := by
+      (atPC input 0x17) = some (atPC input 0x29) := by
     simp [path_1b, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, initialState]
@@ -145,9 +167,9 @@ def gasSteps_1b (input : ByteArray) :
   · exact deployAddress_not_precompile
 
 def gasSteps_2e (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 0x2e) (atPC input 0x46) := by
+    Challenge.EvmProof.GasSteps (atPC input 0x29) (atPC input 0x3d) := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_2e
-      (atPC input 0x2e) = some (atPC input 0x46) := by
+      (atPC input 0x29) = some (atPC input 0x3d) := by
     simp [path_2e, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, initialState]
@@ -160,9 +182,9 @@ def gasSteps_2e (input : ByteArray) :
   · exact deployAddress_not_precompile
 
 def gasSteps_46 (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 0x46) (atPC input 0x5a) := by
+    Challenge.EvmProof.GasSteps (atPC input 0x3d) (atPC input 0x4e) := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_46
-      (atPC input 0x46) = some (atPC input 0x5a) := by
+      (atPC input 0x3d) = some (atPC input 0x4e) := by
     simp [path_46, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, initialState]
@@ -175,9 +197,9 @@ def gasSteps_46 (input : ByteArray) :
   · exact deployAddress_not_precompile
 
 def gasSteps_5a (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 0x5a) (atPC input 0x73) := by
+    Challenge.EvmProof.GasSteps (atPC input 0x4e) (atPC input 0x65) := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_5a
-      (atPC input 0x5a) = some (atPC input 0x73) := by
+      (atPC input 0x4e) = some (atPC input 0x65) := by
     simp [path_5a, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, initialState]
@@ -190,9 +212,9 @@ def gasSteps_5a (input : ByteArray) :
   · exact deployAddress_not_precompile
 
 def gasSteps_73 (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 0x73) (atPC input 0x8e) := by
+    Challenge.EvmProof.GasSteps (atPC input 0x65) (atPC input 0x7d) := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_73
-      (atPC input 0x73) = some (atPC input 0x8e) := by
+      (atPC input 0x65) = some (atPC input 0x7d) := by
     simp [path_73, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, initialState]
@@ -205,9 +227,9 @@ def gasSteps_73 (input : ByteArray) :
   · exact deployAddress_not_precompile
 
 def gasSteps_8e (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 0x8e) (atPC input 0x10f) := by
+    Challenge.EvmProof.GasSteps (atPC input 0x7d) (atPC input 0xfe) := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_8e
-      (atPC input 0x8e) = some (atPC input 0x10f) := by
+      (atPC input 0x7d) = some (atPC input 0xfe) := by
     simp [path_8e, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, initialState]
@@ -220,9 +242,9 @@ def gasSteps_8e (input : ByteArray) :
   · exact deployAddress_not_precompile
 
 def gasSteps_10f (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 0x10f) (atPC input 0x1b2) := by
+    Challenge.EvmProof.GasSteps (atPC input 0xfe) (atPC input 0x1b2) := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_10f
-      (atPC input 0x10f) = some (atPC input 0x1b2) := by
+      (atPC input 0xfe) = some (atPC input 0x1b2) := by
     simp [path_10f, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, initialState]

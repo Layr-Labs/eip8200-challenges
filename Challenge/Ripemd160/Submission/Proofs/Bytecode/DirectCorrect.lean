@@ -288,7 +288,7 @@ private def gasSteps_outputIteration (s : State) (input : ByteArray)
         pc := UInt256.ofNat 0x65e
         stack := [UInt256.ofNat i, Padding.paddedWord input] }
       { q with
-        pc := UInt256.ofNat 0x20
+        pc := UInt256.ofNat 0x1b
         stack := [UInt256.ofNat i, ⟨0⟩, UInt256.ofNat 0x66a,
           UInt256.ofNat 0x676, UInt256.ofNat i, Padding.paddedWord input] } := by
     apply Output.gasSteps_block OutputTrace.hAtCallPath
@@ -300,7 +300,7 @@ private def gasSteps_outputIteration (s : State) (input : ByteArray)
     · exact qnp
   have gh : GasSteps
       { q with
-        pc := UInt256.ofNat 0x20
+        pc := UInt256.ofNat 0x1b
         stack := [UInt256.ofNat i, ⟨0⟩, UInt256.ofNat 0x66a,
           UInt256.ofNat 0x676, UInt256.ofNat i, Padding.paddedWord input] }
       { loadedH q i with
