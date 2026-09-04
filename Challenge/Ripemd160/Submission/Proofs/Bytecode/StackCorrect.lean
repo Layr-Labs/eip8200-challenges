@@ -48,7 +48,7 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     simp [rest, StackFrame.frameRest, driverRest]
   have rightRestBound : rightRest.length < 1013 := by
     simp [rightRest, StackRoundTrace.roundWords, rest, StackFrame.frameRest, driverRest]
-  have gframe := StackFrame.gasSteps_frame s input i hcode hfork hrun hnp
+  have gframe := StackFrame.gasSteps_frame s input i hfit hi hcode hfork hrun hnp
   have gload1 := StackLoadTrace.gasSteps_load StackFrame.loadSite986 q rest qactive
     (by omega) qcode qfork qrun qnp
   have gload1' : GasSteps (StackFrame.frameLoadEntry s input i)
