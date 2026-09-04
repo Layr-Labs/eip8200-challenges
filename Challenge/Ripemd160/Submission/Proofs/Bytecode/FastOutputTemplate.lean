@@ -137,4 +137,8 @@ theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 143 := by
     DenseScheduleTemplate.swap1,
     Challenge.EvmProof.Meter.instrStaticCost, Gas.baseCost]
 
+def fastStaticGas : Nat := 143
+
+@[simp] theorem fastStaticGas_eq : staticGas fastOutputTemplate = fastStaticGas :=
+  fastOutputTemplate_staticGas
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputTemplate
