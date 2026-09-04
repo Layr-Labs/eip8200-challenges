@@ -31,6 +31,11 @@ private theorem word_add_assoc (u v w : UInt256) :
     (u.val + (v.val + w.val)).val
   simp [Fin.add_def, Nat.add_assoc]
 
+private theorem h16_masked_sum (a x f k : UInt256) :
+    mask32 (k + (a + (x + f))) =
+      mask32 (k + (a + (x + mask32 f))) := by
+  simp only [mask32_eq_ofUInt32, toUInt32_add, toUInt32_ofUInt32]
+
 private theorem maskedRotateAdd (q e r r' : UInt256) :
     UInt256.land mask
         (UInt256.add
@@ -82,10 +87,6 @@ theorem runInstrSeq_f2 (s : State) (startPC xAddress returnPC : UInt256)
     rfl
   have hcomm (u v : UInt256) : u.add v = v.add u := by
     exact word_add_comm u v
-  have hmask : mask.land (working.d.xor
-      (working.b.lor working.c.lnot)) =
-      (working.d.xor (working.b.lor working.c.lnot)).land mask := by
-    exact Word.land_comm mask (working.d.xor (working.b.lor working.c.lnot))
   have hbase : constant.add
       (working.a.add ((MachineState.readWord s.memory xAddress.toNat).add
         ((working.d.xor (working.b.lor working.c.lnot)).land mask))) =
@@ -96,10 +97,33 @@ theorem runInstrSeq_f2 (s : State) (startPC xAddress returnPC : UInt256)
       ((working.d.xor (working.b.lor working.c.lnot)).land mask)]
     exact (word_add_assoc working.a ((working.d.xor (working.b.lor working.c.lnot)).land mask)
       (MachineState.readWord s.memory xAddress.toNat)).symm
+  have hsum : mask.land
+      (constant.add (working.a.add
+        ((MachineState.readWord s.memory xAddress.toNat).add
+          (working.d.xor (working.b.lor working.c.lnot))))) =
+      mask.land (constant.add (working.a.add
+        ((MachineState.readWord s.memory xAddress.toNat).add
+          ((working.d.xor (working.b.lor working.c.lnot)).land mask)))) := by
+    calc
+      mask.land (constant.add (working.a.add
+          ((MachineState.readWord s.memory xAddress.toNat).add
+            (working.d.xor (working.b.lor working.c.lnot))))) =
+          (constant.add (working.a.add
+            ((MachineState.readWord s.memory xAddress.toNat).add
+              (working.d.xor (working.b.lor working.c.lnot))))).land mask := by
+            exact Word.land_comm _ _
+      _ = (constant.add (working.a.add
+            ((MachineState.readWord s.memory xAddress.toNat).add
+              ((working.d.xor (working.b.lor working.c.lnot)).land mask)))).land mask := by
+            exact h16_masked_sum _ _ _ _
+      _ = mask.land (constant.add (working.a.add
+          ((MachineState.readWord s.memory xAddress.toNat).add
+            ((working.d.xor (working.b.lor working.c.lnot)).land mask)))) := by
+            exact (Word.land_comm _ _).symm
   have hsub : (UInt256.ofNat 32) - (UInt256.ofNat rotation) =
       UInt256.ofNat (32 - rotation) := by
     exact ofNat_sub_ofNat hrot (by norm_num)
-  simp only [mask] at hmask hbase
+  simp only [mask] at hbase hsum
   simp (config := { maxSteps := 3000000 })
     [helperBeforeJumpTemplate, booleanOps, op, push1, push4, dup1, dup2,
       dup3, dup4, dup5, dup6, dup7, dup8, swap1, swap2, swap3, swap4, swap5,
@@ -115,7 +139,7 @@ theorem runInstrSeq_f2 (s : State) (startPC xAddress returnPC : UInt256)
       Word.lor_comm, BooleanSelect.xor_comm,
       State.activeWordsAfterUInt256, hadd, hcomm, hsub]
   constructor
-  · rw [hcomm working.e, hmask, hbase, hcomm working.e]
+  · rw [hcomm working.e, hsum, hbase, hcomm working.e]
     exact maskedRotateAdd _ _ _ _
   · exact Word.land_comm _ _
 
@@ -158,10 +182,6 @@ theorem runInstrSeq_f4 (s : State) (startPC xAddress returnPC : UInt256)
     rfl
   have hcomm (u v : UInt256) : u.add v = v.add u := by
     exact word_add_comm u v
-  have hmask : mask.land (working.b.xor
-      (working.c.lor working.d.lnot)) =
-      (working.b.xor (working.c.lor working.d.lnot)).land mask := by
-    exact Word.land_comm mask (working.b.xor (working.c.lor working.d.lnot))
   have hbase : constant.add
       (working.a.add ((MachineState.readWord s.memory xAddress.toNat).add
         ((working.b.xor (working.c.lor working.d.lnot)).land mask))) =
@@ -172,10 +192,33 @@ theorem runInstrSeq_f4 (s : State) (startPC xAddress returnPC : UInt256)
       ((working.b.xor (working.c.lor working.d.lnot)).land mask)]
     exact (word_add_assoc working.a ((working.b.xor (working.c.lor working.d.lnot)).land mask)
       (MachineState.readWord s.memory xAddress.toNat)).symm
+  have hsum : mask.land
+      (constant.add (working.a.add
+        ((MachineState.readWord s.memory xAddress.toNat).add
+          (working.b.xor (working.c.lor working.d.lnot))))) =
+      mask.land (constant.add (working.a.add
+        ((MachineState.readWord s.memory xAddress.toNat).add
+          ((working.b.xor (working.c.lor working.d.lnot)).land mask)))) := by
+    calc
+      mask.land (constant.add (working.a.add
+          ((MachineState.readWord s.memory xAddress.toNat).add
+            (working.b.xor (working.c.lor working.d.lnot))))) =
+          (constant.add (working.a.add
+            ((MachineState.readWord s.memory xAddress.toNat).add
+              (working.b.xor (working.c.lor working.d.lnot))))).land mask := by
+            exact Word.land_comm _ _
+      _ = (constant.add (working.a.add
+            ((MachineState.readWord s.memory xAddress.toNat).add
+              ((working.b.xor (working.c.lor working.d.lnot)).land mask)))).land mask := by
+            exact h16_masked_sum _ _ _ _
+      _ = mask.land (constant.add (working.a.add
+          ((MachineState.readWord s.memory xAddress.toNat).add
+            ((working.b.xor (working.c.lor working.d.lnot)).land mask)))) := by
+            exact (Word.land_comm _ _).symm
   have hsub : (UInt256.ofNat 32) - (UInt256.ofNat rotation) =
       UInt256.ofNat (32 - rotation) := by
     exact ofNat_sub_ofNat hrot (by norm_num)
-  simp only [mask] at hmask hbase
+  simp only [mask] at hbase hsum
   simp (config := { maxSteps := 3000000 })
     [helperBeforeJumpTemplate, booleanOps, op, push1, push4, dup1, dup2,
       dup3, dup4, dup5, dup6, dup7, dup8, swap1, swap2, swap3, swap4, swap5,
@@ -191,7 +234,7 @@ theorem runInstrSeq_f4 (s : State) (startPC xAddress returnPC : UInt256)
       Word.lor_comm, BooleanSelect.xor_comm,
       State.activeWordsAfterUInt256, hadd, hcomm, hsub]
   constructor
-  · rw [hcomm working.e, hmask, hbase, hcomm working.e]
+  · rw [hcomm working.e, hsum, hbase, hcomm working.e]
     exact maskedRotateAdd _ _ _ _
   · exact Word.land_comm _ _
 
