@@ -120,10 +120,10 @@ def xSetPath : List Located :=
 def incrementPath : List Located :=
   [⟨436, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨437, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨438, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨438, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨439, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨440, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨441, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨440, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨441, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨442, .push ⟨2, by decide⟩ (UInt256.ofNat 0x238), by rfl, by decide⟩,
    ⟨443, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
