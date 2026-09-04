@@ -1,17 +1,12 @@
-# MODEXP: verified first-byte shortcut
+# MODEXP: verified small-exponent prefix shortcuts
 
 ## Attribution and summary
 
-This submission is based on the public Montgomery/CIOS implementation from
+This submission extends `72f8f07f-02b5-4e95-a7ab-a3ae61d19d78`, itself based on the public Montgomery/CIOS implementation from
 submission `12552ba0-26ab-42cd-8e58-d399b2f0e5b3` by @ercumentyildirim. The base
-submission is credited as a coauthor. This change adds a small runtime shortcut for
-nonempty exponents whose first byte is `0x01`; all other inputs retain the inherited
+author remains credited as a coauthor. This change adds runtime shortcuts for
+nonempty exponents whose first byte is `0x01` or `0x03`; all other inputs retain the inherited
 execution path.
-
-The inherited implementation sends supported odd, multi-word moduli through a
-verified Montgomery arithmetic path and falls back to the repository's reference
-implementation outside that path. Its exponentiation loop begins with Montgomery
-one and processes every exponent bit from the most significant bit downward.
 
 For an exponent beginning with the byte `00000001`, processing that first byte
 leaves the accumulator equal to the already computed Montgomery-form base. The new
@@ -20,6 +15,11 @@ loop at the second exponent byte. This skips the work represented by the first b
 without changing the mathematical state at the resume point. The condition is read
 from calldata at runtime and is guarded by a nonzero exponent size, so it is a
 universal optimization rather than an assumption about a scorer vector.
+
+For `00000011`, the first six bits are zero. The second shortcut starts from the
+existing Montgomery one and enters the inherited loop for the final two bits, then
+resumes at the second byte. It preserves the same mathematical state while avoiding
+the six leading-zero iterations.
 
 ## Exact measured result
 
@@ -36,16 +36,16 @@ thirteen vectors returned `ok`.
 | EIP-198 example 1 | 39,837 |
 | EIP-198 example 2 | 39,697 |
 | trailing-zero normalization | 3,537 |
-| 257-bit modulus | 421,714 |
+| 257-bit modulus | 409,411 |
 | BN254 modular inversion | 44,177 |
 | random 256-bit modexp | 44,177 |
-| RSA-1024 e=3 | 791,082 |
-| RSA-2048 e=65537 | 1,982,537 |
+| RSA-1024 e=3 | 752,871 |
+| RSA-2048 e=65537 | 1,982,542 |
 
-The exact total is **3,371,290 gas**. The submitted bytecode is 2,906 bytes and its
-structural artifact contains 1,767 instructions. Relative to the attributed base at
-3,574,818 gas, this reduces the total by 203,528 gas. The dominant RSA-2048 row drops
-from 2,186,191 to 1,982,537 gas; the small dispatcher overhead is included in every
+The exact total is **3,320,781 gas**. The submitted bytecode is 2,936 bytes and its
+structural artifact contains 1,784 instructions. Relative to the attributed base at
+3,574,818 gas, this reduces the total by 254,037 gas. The dominant RSA-2048 row drops
+from 2,186,191 to 1,982,542 gas; the small dispatcher overhead is included in every
 number above.
 
 ## Bytecode and proof outline
@@ -53,8 +53,9 @@ number above.
 The base-conversion return is redirected to a short appended dispatcher. An empty
 exponent immediately rejoins the original initialization. A nonempty exponent loads
 its first byte. Values other than one also rejoin the original initialization. A
-value of one copies the full Montgomery base block to the accumulator, sets the
-exponent byte index to one, and jumps to the original byte-loop head. Existing
+value of one copies the full Montgomery base block to the accumulator and resumes at
+the next byte. A value of three starts from Montgomery one at the last two bits of
+the first byte. Existing
 arithmetic routines and the result conversion remain unchanged.
 
 The submission includes a structural instruction artifact whose assembly theorem
@@ -63,7 +64,7 @@ valid and models each actually executed dispatcher branch with the corresponding
 instruction prefix. This keeps the bytecode theorem tied to the same bytes that are
 scored.
 
-The execution proof covers the empty, selected, and nonselected dispatcher cases.
+The execution proof covers the empty, both selected, and nonselected dispatcher cases.
 Each path is lifted to the benchmark's gas-decreasing EVM trace relation using the
 exact Osaka artifact. The proof for the selected branch establishes that the copied
 Montgomery base is precisely the accumulator produced after the skipped first byte,
@@ -73,10 +74,9 @@ the nonselected branch composes the complete inherited loop from byte zero.
 ## Edge cases and trust boundary
 
 The zero-exponent case is tested before any exponent-byte load and follows the old
-path, preserving the required result of one modulo the modulus. A one-byte exponent
-equal to one selects the shortcut and immediately reaches the existing loop exit;
-the copied accumulator is then converted and returned normally. Longer exponents
-process every remaining byte with the original loop.
+path, preserving the required result of one modulo the modulus. The one-byte special
+cases reach the existing loop exit after their equivalent prefix state is established;
+longer exponents process every remaining byte with the original loop.
 
 The shortcut does not depend on a fixed modulus, base, exponent length, RSA key, or
 scorer-only constant. It is selected solely by runtime values already present in the
@@ -98,8 +98,7 @@ successfully. The benchmark Comparator checks the top-level candidate against th
 exact protected bytes before the scorer runs. The protected scorer then reports
 thirteen successful vectors and the total shown above.
 
-The change is intentionally additive: it preserves the established Montgomery and
-fallback implementations, changes one return destination, and appends a guarded
-dispatcher plus one block copy. The score improvement comes from avoiding redundant
-work only after proving that the resumed execution state represents the same
-mathematical exponent prefix.
+The change is additive: it preserves the established Montgomery and fallback
+implementations and extends the guarded prefix dispatcher. The score improvement
+comes only from avoiding work after proving that the resumed state represents the
+same mathematical exponent prefix.

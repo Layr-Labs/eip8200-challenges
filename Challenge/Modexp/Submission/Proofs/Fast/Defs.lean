@@ -228,14 +228,20 @@ theorem jumpDest2863 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2863 = true :=
   Artifact.isValidJumpDest_index 1742 (by rfl)
 
-theorem jumpDest2888 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2888 = true :=
-  Artifact.isValidJumpDest_index 1758 (by rfl)
+theorem jumpDest2896 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2896 = true :=
+  Artifact.isValidJumpDest_index 1763 (by rfl)
 
-@[simp] theorem fastPC20 (i : Nat) (hi : 1742 ≤ i) (hii : i ≤ 1766) :
+theorem jumpDest2915 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2915 = true :=
+  Artifact.isValidJumpDest_index 1773 (by rfl)
+
+@[simp] theorem fastPC20 (i : Nat) (hi : 1742 ≤ i) (hii : i ≤ 1783) :
     Artifact.submissionArtifact.instructionPC i =
-      [2863,2864,2865,2866,2869,2870,2873,2874,2875,2876,2877,2879,2880,
-       2883,2884,2887,2888,2889,2892,2893,2896,2899,2900,2902,2905][i - 1742]! := by
+      [2863,2864,2865,2866,2869,2870,2873,2874,2875,2876,2877,2878,2880,
+       2881,2884,2885,2887,2888,2891,2892,2895,2896,2897,2898,2901,2902,
+       2905,2908,2909,2911,2914,2915,2916,2919,2920,2923,2926,2927,2928,
+       2930,2932,2935][i - 1742]! := by
   interval_cases i <;> decide
 
 theorem jumpDest1892 :
