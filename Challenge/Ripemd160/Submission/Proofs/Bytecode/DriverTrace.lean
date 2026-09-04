@@ -55,12 +55,9 @@ def callPath : List Located :=
 def incrementPath : List Located :=
   [⟨783, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨784, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
-   ⟨785, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨786, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨787, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨788, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨789, .push ⟨2, by decide⟩ (UInt256.ofNat 0x62e), by rfl, by decide⟩,
-   ⟨790, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨785, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨786, .push ⟨2, by decide⟩ (UInt256.ofNat 0x62e), by rfl, by decide⟩,
+   ⟨787, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem pc768 : Artifact.submissionArtifact.instructionPC 768 = 0x62c := by decide
 @[simp] private theorem pc769 : Artifact.submissionArtifact.instructionPC 769 = 0x62d := by decide
@@ -81,9 +78,9 @@ def incrementPath : List Located :=
 @[simp] private theorem pc784 : Artifact.submissionArtifact.instructionPC 784 = 0x644 := by decide
 @[simp] private theorem pc785 : Artifact.submissionArtifact.instructionPC 785 = 0x646 := by decide
 @[simp] private theorem pc786 : Artifact.submissionArtifact.instructionPC 786 = 0x647 := by decide
-@[simp] private theorem pc787 : Artifact.submissionArtifact.instructionPC 787 = 0x648 := by decide
-@[simp] private theorem pc788 : Artifact.submissionArtifact.instructionPC 788 = 0x649 := by decide
-@[simp] private theorem pc789 : Artifact.submissionArtifact.instructionPC 789 = 0x64a := by decide
+@[simp] private theorem pc787 : Artifact.submissionArtifact.instructionPC 787 = 0x64a := by decide
+@[simp] private theorem pc788 : Artifact.submissionArtifact.instructionPC 788 = 0x64b := by decide
+@[simp] private theorem pc789 : Artifact.submissionArtifact.instructionPC 789 = 0x64c := by decide
 @[simp] private theorem pc790 : Artifact.submissionArtifact.instructionPC 790 = 0x64d := by decide
 
 def blockCount (input : ByteArray) : Nat :=
@@ -288,12 +285,18 @@ theorem run_increment (s : State) (input : ByteArray) (i : Nat)
     simpa [blockOffsetWord, blockOffset, Nat.add_mul] using
       Challenge.EvmProof.Word.ofNat_add_ofNat
         (a := i * 64) (b := 64) haddBound
+  have hadd2 : UInt256.ofNat 64 + blockOffsetWord i =
+      blockOffsetWord (i + 1) := by
+    rw [show UInt256.ofNat 64 + blockOffsetWord i =
+      blockOffsetWord i + UInt256.ofNat 64 from
+        Challenge.EvmProof.Word.word_add_comm _ _]
+    exact hadd
   have hdest : Decode.isValidJumpDest submissionBytecode 0x62e = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 770 (by rfl)
   simp [incrementPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     compressReturned, afterIteration, loopAt,
-    hcode, hrun, hadd, hdest, List.exchange]
+    hcode, hrun, hadd2, hdest]
 
 private def gasStepsBlock (path : List Located) (s t : State)
     (hcode : s.executionEnv.code = submissionBytecode)

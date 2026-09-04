@@ -80,7 +80,7 @@ The full exact-bytecode Comparator remains the acceptance condition.
 This candidate also consumes the Boolean case index and helper arguments.
 Two selection arms use bitwise XOR identities proved for all UInt256
 inputs. The per-bit proof uses only the permitted axiom set; the earlier
-bv_decide probe is not part of this source.
+bit-blasting decision-procedure probe is not part of this source.
 
 Boolean case costs are [42,51,54,54,54]. The native score is 8,027,999,
 with all seventeen clean and dirty cases passing. The formula is
