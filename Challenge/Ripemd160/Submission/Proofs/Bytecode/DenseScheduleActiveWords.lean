@@ -65,11 +65,11 @@ def storeActiveWords (current : UInt256) (addresses : List Nat) : UInt256 :=
     (fun current address => activeAfterWord current (UInt256.ofNat address)) current
 
 def expectedActiveWords (s : State) (messageOffset : UInt256) : UInt256 :=
-  storeActiveWords (loadedActiveWords s messageOffset) [672, 704]
+  storeActiveWords (loadedActiveWords s messageOffset) [704, 672]
 
-theorem storeActiveWords_672_704 (current : UInt256)
+theorem storeActiveWords_704_672 (current : UInt256)
     (hcurrent : 23 ≤ current.toNat) :
-    storeActiveWords current [672, 704] = current := by
+    storeActiveWords current [704, 672] = current := by
   have h672 : (UInt256.ofNat 672).toNat + 32 ≤ current.toNat * 32 := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (by norm_num : (672 : Nat) < 2 ^ 256)]
@@ -79,14 +79,14 @@ theorem storeActiveWords_672_704 (current : UInt256)
       Nat.mod_eq_of_lt (by norm_num : (704 : Nat) < 2 ^ 256)]
     omega
   simp only [storeActiveWords, List.foldl]
-  rw [activeAfterWord_eq current (UInt256.ofNat 672) h672]
   rw [activeAfterWord_eq current (UInt256.ofNat 704) h704]
+  rw [activeAfterWord_eq current (UInt256.ofNat 672) h672]
 
 theorem storeActiveWords_loaded_eq (s : State) (messageOffset : UInt256)
     (hcurrent : 23 ≤ (loadedActiveWords s messageOffset).toNat) :
-    storeActiveWords (loadedActiveWords s messageOffset) [672, 704] =
+    storeActiveWords (loadedActiveWords s messageOffset) [704, 672] =
       loadedActiveWords s messageOffset :=
-  storeActiveWords_672_704 _ hcurrent
+  storeActiveWords_704_672 _ hcurrent
 
 private theorem message_bounds (input : ByteArray) (hfit : CalldataFits input)
     (i : Nat) (hi : i < DriverTrace.blockCount input) :
@@ -228,7 +228,7 @@ theorem expectedActiveWords_toNat (s : State) (input : ByteArray)
     rw [hloaded]
     exact (by omega : 23 ≤ 66 + 2 * i).trans (Nat.le_max_right _ _)
   unfold expectedActiveWords
-  rw [storeActiveWords_672_704 _ hloaded23, hloaded]
+  rw [storeActiveWords_704_672 _ hloaded23, hloaded]
 
 theorem expectedActiveWords_ge_66 (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat)

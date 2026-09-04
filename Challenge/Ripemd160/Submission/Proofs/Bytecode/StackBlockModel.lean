@@ -157,13 +157,13 @@ private theorem denseExpectedMemory_readWord_outside (s : State)
   rw [DenseScheduleTemplate.denseExpectedMemory, denseStoreOffset_zero,
     denseStoreOffset_one]
   unfold DenseScheduleTemplate.writeDenseWord
-  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 704 (by
+  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 672 (by
     rcases houtside with hbefore | hafter
-    · exact Or.inl (by omega)
+    · exact Or.inl hbefore
     · exact Or.inr (by rw [denseWordBytes_size]; omega)),
-    Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 672 (by
+    Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 704 (by
       rcases houtside with hbefore | hafter
-      · exact Or.inl hbefore
+      · exact Or.inl (by omega)
       · exact Or.inr (by rw [denseWordBytes_size]; omega))]
 
 private theorem densePacked_stage_eq_template (value : UInt256)
@@ -215,6 +215,7 @@ private theorem denseExpectedMemory_eq_denseMemory (s : State) (p : Nat)
     DenseScheduleMemory.packedBytes]
   rw [densePacked_packedWord_eq_template,
     densePacked_packedWord_eq_template]
+  exact DenseScheduleMemory.writePacked_comm_672_704 _ _ _
 
 private theorem denseExpectedMemory_word_low32 (s : State) (p k : Nat)
     (hk : k < 16) (hbound : p + 64 < 2 ^ 256) :

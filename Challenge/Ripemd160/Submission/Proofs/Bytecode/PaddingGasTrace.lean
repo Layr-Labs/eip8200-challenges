@@ -62,7 +62,7 @@ private theorem paddingTargetWords_lt (input : ByteArray)
   omega
 
 theorem padLengthReady_activeWords (input : ByteArray) :
-    (PaddingTrace.padLengthReady input).activeWords.toNat = 59 := by
+    (PaddingTrace.padLengthReady input).activeWords.toNat = 6 := by
   have h1184 : (1184 : UInt256).toNat = 1184 := by
     change (UInt256.ofNat 1184).toNat = 1184
     norm_num
@@ -160,7 +160,7 @@ private theorem padSentinel_activeWords_le (input : ByteArray)
       paddingTargetWords input := by
   have hfooter := Padding.input_and_footer_fit input.size
   have hmul := paddingTargetWords_mul input
-  have hstart : 59 ≤ paddingTargetWords input := by
+  have hstart : 6 ≤ paddingTargetWords input := by
     unfold paddingTargetWords
     omega
   let aw₁ := MachineState.activeWordsAfter 59 Padding.messageOffset input.size
@@ -609,9 +609,9 @@ private theorem lengthLoop_cost_potential (input : ByteArray) :
     (fun i hi => lengthIteration_cost_potential input i hi)
 
 private theorem initialize_cost (input : ByteArray) :
-    (Main.gasSteps_initialize input).cost = 436 := by
+    (Main.gasSteps_initialize input).cost = 75 := by
   have hactive := padLengthReady_activeWords input
-  change (Main.initializedState input).activeWords.toNat = 59 at hactive
+  change (Main.initializedState input).activeWords.toNat = 6 at hactive
   exact InitializationGasTrace.initialize_cost_of_active input hactive
 
 private theorem enterPad_cost (input : ByteArray) :

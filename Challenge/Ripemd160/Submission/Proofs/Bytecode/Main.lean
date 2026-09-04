@@ -35,17 +35,13 @@ private theorem valueFits (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores) :
     w.value.toNat < 256 ^ w.valueWidth.val := by
   simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
-  rcases hw with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> decide
+  rcases hw with rfl | rfl | rfl | rfl | rfl <;> decide
 
 private theorem offsetFits (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores) :
     w.offset.toNat < 256 ^ w.offsetWidth.val := by
   simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
-  rcases hw with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> decide
+  rcases hw with rfl | rfl | rfl | rfl | rfl <;> decide
 
 private theorem pushAvailable (width : Fin 33) :
     (Operation.Push ⟨width⟩).availableInFork .Osaka = true := by
@@ -101,9 +97,7 @@ theorem run_initStore (s : State) (w : Artifact.InitStore)
     Challenge.EvmProof.Stepper.runLocatedBlock (locatedInitStore w hw) s =
       some (applyInitStore s w) := by
   simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
-  rcases hw with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  rcases hw with rfl | rfl | rfl | rfl | rfl
   all_goals
     simp (config := { maxSteps := 200000 })
       [locatedInitStore, applyInitStore, hpc, hstack, hrun,
@@ -111,7 +105,7 @@ theorem run_initStore (s : State) (w : Artifact.InitStore)
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
-        State.activeWordsAfterUInt256, pushZeroWord,
+        State.activeWordsAfterUInt256,
         Challenge.EvmProof.Word.word_toNat_ofNat]
 
 def gasSteps_initStore (s : State) (w : Artifact.InitStore)

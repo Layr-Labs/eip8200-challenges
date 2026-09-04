@@ -36,14 +36,14 @@ private theorem entry_268_cost (input : ByteArray) :
     (Execution.gasSteps_268 input).cost = 12 := by rfl
 private theorem entry_3c1_cost (input : ByteArray) :
     (Execution.gasSteps_3c1 input).cost = 12 := by rfl
-private theorem entry_3ee_cost (input : ByteArray) :
-    (Execution.gasSteps_3ee input).cost = 1 := by rfl
+private theorem entry_5fb_cost (input : ByteArray) :
+    (Execution.gasSteps_5fb input).cost = 1 := by rfl
 
 theorem entry_cost (input : ByteArray) :
     (Execution.gasSteps_entry input).cost = 12 := by
   unfold Execution.gasSteps_entry
   simp only [Challenge.EvmProof.GasSteps.trans_cost]
-  rw [entry_start_cost input, entry_3ee_cost input]
+  rw [entry_start_cost input, entry_5fb_cost input]
 
 private def initStoreWork (w : Artifact.InitStore) : Nat :=
   Challenge.EvmProof.Meter.instrStaticCost .Osaka
@@ -134,7 +134,7 @@ private theorem initStores_cost_potential (s : State)
 theorem bodyInitialization_cost_potential (input : ByteArray) :
     (Main.gasSteps_bodyInitialization input).cost +
         MachineState.memCost (Execution.mainStart input).activeWords.toNat =
-      241 + MachineState.memCost (Main.initializedState input).activeWords.toNat := by
+      45 + MachineState.memCost (Main.initializedState input).activeWords.toNat := by
   have h := initStores_cost_potential (Execution.mainStart input)
     Artifact.initStores (fun _ hw => hw)
     (by norm_num [Main.InitChain, Artifact.initStores])
@@ -149,20 +149,20 @@ theorem bodyInitialization_cost_potential (input : ByteArray) :
     (by simp [Execution.mainStart, Execution.atPC, initialState])
     (by simp [Execution.mainStart, Execution.atPC, initialState,
       deployAddress_not_precompile])
-  have hwork : (Artifact.initStores.map initStoreWork).sum = 241 := by
+  have hwork : (Artifact.initStores.map initStoreWork).sum = 45 := by
     norm_num [Artifact.initStores, initStoreWork,
       Challenge.EvmProof.Meter.instrStaticCost, Gas.baseCost]
   rw [hwork] at h
   unfold Main.gasSteps_bodyInitialization
   rw [Challenge.EvmProof.GasSteps.cast_cost]
-  change _ = 241 + MachineState.memCost
+  change _ = 45 + MachineState.memCost
     (Artifact.initStores.foldl Main.applyInitStore
       (Execution.mainStart input)).activeWords.toNat
   convert h using 1
 
 theorem initialize_cost_of_active (input : ByteArray)
-    (hactive : (Main.initializedState input).activeWords.toNat = 59) :
-    (Main.gasSteps_initialize input).cost = 436 := by
+    (hactive : (Main.initializedState input).activeWords.toNat = 6) :
+    (Main.gasSteps_initialize input).cost = 75 := by
   have hbody := bodyInitialization_cost_potential input
   rw [hactive] at hbody
   norm_num [MachineState.memCost, Execution.mainStart, Execution.atPC,

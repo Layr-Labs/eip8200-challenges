@@ -202,7 +202,7 @@ private theorem initialHashWords (kernel : BlockKernel) (input : ByteArray)
     CompressionSeamBridge.HashWordsAt input 0 (states kernel input 0) := by
   intro i
   change OutputTrace.hWord (PaddingTrace.padReturned input) i = _
-  have hh := (InitializationCorrect.initializedState_constants input).2.2
+  have hh := InitializationCorrect.initializedState_constants input
     i i.isLt
   unfold OutputTrace.hWord
   rw [show MachineState.readWord (PaddingTrace.padReturned input).memory
