@@ -432,7 +432,7 @@ private abbrev submissionChunk46 : ByteArray := ByteArray.mk #[
   0x06, 0xfd, 0x56
 ]
 
-/-- The submitted artifact. -/
+/-- Concrete reducible bytes of the submitted artifact. -/
 def submissionBytes : ByteArray :=
   submissionChunk0 ++
     submissionChunk1 ++

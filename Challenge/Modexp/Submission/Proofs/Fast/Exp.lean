@@ -3,6 +3,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.Paths.P3
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P4
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P5
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P6
+import Challenge.Modexp.Submission.Proofs.Fast.Paths.P16
 import Challenge.EvmProof.Bytes
 import Challenge.EvmProof.Memory
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
@@ -10,7 +11,6 @@ import Challenge.Modexp.Submission.Proofs.Fast.Setup
 import Challenge.Modexp.Submission.Proofs.Fast.Double
 import Challenge.Modexp.Submission.Proofs.Fast.Ccb
 import Challenge.Modexp.Submission.Proofs.Fast.R1
-import Challenge.Modexp.Submission.Proofs.Fast.Paths.P16
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
@@ -305,22 +305,6 @@ theorem bitAt_le_one (v k : Nat) : bitAt v k ≤ 1 := by
 when it is set. -/
 def selOf (n k : Nat) : Nat := 4096 + 1024 * bitAt n k
 
-/-- Entry of the appended exponent-prefix dispatcher at pc 2922. -/
-def expOptHead (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2922
-           stack := outer n bsize esize msize
-           memory := mem }
-
-def expOptCopy (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2955
-           stack := UInt256.ofNat 1 :: outer n bsize esize msize
-           memory := mem }
-
-def expOptThree (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2974
-           stack := outer n bsize esize msize
-           memory := mem }
-
 /-- `RRL`, pc 1569, at the top of iteration `k`. -/
 def rrHead (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   { s with pc := UInt256.ofNat 1569
@@ -361,6 +345,24 @@ def baseHead (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :
 /-- `BDONE`, pc 1756, where the base chain rejoins. -/
 def bDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 1756
+           stack := outer n bsize esize msize
+           memory := mem }
+
+/-- The exponent-prefix dispatcher entry at pc 2922 (relocated). -/
+def expOptHead (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat 2922
+           stack := outer n bsize esize msize
+           memory := mem }
+
+/-- The copy block used when the first exponent byte is exactly one. -/
+def expOptCopy (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat 2955
+           stack := UInt256.ofNat 1 :: outer n bsize esize msize
+           memory := mem }
+
+/-- The entry used when the first exponent byte is exactly three. -/
+def expOptThree (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat 2974
            stack := outer n bsize esize msize
            memory := mem }
 
@@ -1135,7 +1137,7 @@ def ebHead (s : State) (mem : ByteArray) (n bsize esize msize i : Nat) : State :
            memory := mem }
 
 set_option linter.unusedSimpArgs false in
-/-- An empty exponent returns to the ordinary `bDone` initialization path. -/
+/-- An empty exponent takes the original initialization path. -/
 theorem run_expOpt_empty (s : State) (mem : ByteArray)
     (n bsize msize : Nat) (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -1154,6 +1156,7 @@ theorem run_expOpt_empty (s : State) (mem : ByteArray)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
+/-- A nonempty exponent whose first byte is not one takes the original path. -/
 theorem run_expOpt_other (s : State) (mem input : ByteArray)
     (n bsize esize msize : Nat) (hepos : 0 < esize)
     (hw : expByte input bsize 0 ≠ 1) (hw3 : expByte input bsize 0 ≠ 3)
@@ -1204,6 +1207,7 @@ theorem run_expOpt_other (s : State) (mem input : ByteArray)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
+/-- A nonempty exponent whose first byte is one enters the direct-copy block. -/
 theorem run_expOpt_one (s : State) (mem input : ByteArray)
     (n bsize esize msize : Nat) (hepos : 0 < esize)
     (hw : expByte input bsize 0 = 1)
@@ -1246,6 +1250,49 @@ theorem run_expOpt_one (s : State) (mem input : ByteArray)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
+/-- A nonempty exponent whose first byte is three enters the two-bit block. -/
+theorem run_expOpt_three (s : State) (mem input : ByteArray)
+    (n bsize esize msize : Nat) (hepos : 0 < esize)
+    (hw : expByte input bsize 0 = 3)
+    (hdata : s.executionEnv.calldata = input)
+    (hb : bsize ≤ 1024) (he : esize ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1781three
+      (expOptHead s mem n bsize esize msize) =
+      some (expOptThree s mem n bsize esize msize) := by
+  have hez : UInt256.isZero (UInt256.ofNat esize) = UInt256.ofNat 0 :=
+    isZero_ofNat_of_ne
+      (Nat.lt_of_le_of_lt he (show 1024 < 2 ^ 256 by norm_num))
+      (Nat.ne_of_gt hepos)
+  have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9472 32) =
+      s.activeWords := activeWords_fix s 9472 32 (by omega) (by omega) hact
+  have hbyte : UInt256.byteAt { val := 0 } (MachineState.readWord input (96 + bsize)) =
+      UInt256.ofNat (expByte input bsize 0) :=
+    Challenge.EvmProof.Bytes.byteAt_zero_readWord input (96 + bsize)
+  have heq1 : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat (expByte input bsize 0)) =
+      UInt256.ofNat 0 := by simp [UInt256.eq, hw]
+  have heq3 : UInt256.eq (UInt256.ofNat 3) (UInt256.ofNat (expByte input bsize 0)) =
+      UInt256.ofNat 1 := by simp [UInt256.eq, hw]
+  have hoff : (96 + bsize) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936
+      = 96 + bsize :=
+    mod_word_self (Nat.lt_of_le_of_lt (show 96 + bsize ≤ 1120 by omega)
+      (show 1120 < 2 ^ 256 by norm_num))
+  have h2974 : (UInt256.ofNat 2974).toNat = 2974 := by decide
+  simp (config := { maxSteps := 600000 }) [blk1781three, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    expOptHead, expOptThree, outer, hdata, hcode, hrun, hez, heoff, hoff, hfix, hbyte,
+    heq1, heq3, h2974, jumpDest2974, State.activeWordsAfterUInt256,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod, not_isTrue_zero, isTrue_one,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+/-- Copy the Montgomery base to the accumulator and resume at byte one. -/
 theorem run_expOpt_copy (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hact : 298 ≤ s.activeWords.toNat)
@@ -1289,47 +1336,6 @@ theorem run_expOpt_copy (s : State) (mem : ByteArray)
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
-set_option linter.unusedSimpArgs false in
-theorem run_expOpt_three (s : State) (mem input : ByteArray)
-    (n bsize esize msize : Nat) (hepos : 0 < esize)
-    (hw : expByte input bsize 0 = 3)
-    (hdata : s.executionEnv.calldata = input)
-    (hb : bsize ≤ 1024) (he : esize ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1781three
-      (expOptHead s mem n bsize esize msize) =
-      some (expOptThree s mem n bsize esize msize) := by
-  have hez : UInt256.isZero (UInt256.ofNat esize) = UInt256.ofNat 0 :=
-    isZero_ofNat_of_ne
-      (Nat.lt_of_le_of_lt he (show 1024 < 2 ^ 256 by norm_num))
-      (Nat.ne_of_gt hepos)
-  have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9472 32) =
-      s.activeWords := activeWords_fix s 9472 32 (by omega) (by omega) hact
-  have hbyte : UInt256.byteAt { val := 0 } (MachineState.readWord input (96 + bsize)) =
-      UInt256.ofNat (expByte input bsize 0) :=
-    Challenge.EvmProof.Bytes.byteAt_zero_readWord input (96 + bsize)
-  have heq1 : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat (expByte input bsize 0)) =
-      UInt256.ofNat 0 := by simp [UInt256.eq, hw]
-  have heq3 : UInt256.eq (UInt256.ofNat 3) (UInt256.ofNat (expByte input bsize 0)) =
-      UInt256.ofNat 1 := by simp [UInt256.eq, hw]
-  have hoff : (96 + bsize) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936
-      = 96 + bsize :=
-    mod_word_self (Nat.lt_of_le_of_lt (show 96 + bsize ≤ 1120 by omega)
-      (show 1120 < 2 ^ 256 by norm_num))
-  have h2974 : (UInt256.ofNat 2974).toNat = 2974 := by decide
-  simp (config := { maxSteps := 600000 }) [blk1781three, opAt, pushAt, wfOp,
-    Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    expOptHead, expOptThree, outer, hdata, hcode, hrun, hez, heoff, hoff, hfix, hbyte,
-    heq1, heq3, h2974, jumpDest2974, State.activeWordsAfterUInt256,
-    Challenge.EvmProof.Word.literal_eq_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod,
-    Challenge.EvmProof.Word.ofNat_add_mod, not_isTrue_zero, isTrue_one,
-    Challenge.EvmProof.Word.word_toNat_ofNat]
-
 /-- pc 1778, which loads exponent byte `i`. -/
 def ebLoad (s : State) (mem : ByteArray) (n bsize esize msize i : Nat) : State :=
   { s with pc := UInt256.ofNat 1778
@@ -1349,7 +1355,7 @@ def ebitHead (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) 
            memory := mem }
 
 set_option linter.unusedSimpArgs false in
-/-- Copy Montgomery one (`R1`) to the accumulator and start with bit mask two. -/
+/-- Copy Montgomery one to the accumulator and start with bit mask two. -/
 theorem run_expOpt_three_start (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hact : 298 ≤ s.activeWords.toNat)
@@ -1876,6 +1882,7 @@ def gasSteps_expOptThreeStart (s : State) (mem : ByteArray)
     Artifact.submissionArtifact .Osaka blk1812 hcode hfork
       (run_expOpt_three_start s mem n bsize esize msize hn hn32 hact hs32 hcode hrun)
       hrun hnp
+
 def gasSteps_bDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 298 ≤ s.activeWords.toNat)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
@@ -2111,7 +2118,6 @@ def bitMems (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (w : Nat)
 def byteMem (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (w : Nat)
     (mem : ByteArray) : ByteArray := bitMems mpMem w mem 8
 
-/-- Memory after processing only bit positions one and zero of `w`. -/
 def lastTwoMem (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (w : Nat)
     (mem : ByteArray) : ByteArray :=
   bitStep mpMem (bitStep mpMem mem (bitAt w 1)) (bitAt w 0)
@@ -2122,6 +2128,8 @@ def ebMems (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (input : By
   | 0 => mem
   | i + 1 => byteMem mpMem (expByte input bsize i) (ebMems mpMem input bsize mem i)
 
+/-- Memory after `count` exponent bytes beginning at the absolute byte index
+`start`.  The prefix optimization uses `start = 1`. -/
 def ebMemsFrom (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (input : ByteArray) (bsize start : Nat) (mem : ByteArray) : Nat → ByteArray
   | 0 => mem
@@ -2186,7 +2194,6 @@ theorem readWord_ebMems (mpMem : Nat → Nat → Nat → ByteArray → ByteArray
         (ebMems mpMem input bsize mem i)) addr = _
       rw [byteMem, readWord_bitMems mpMem addr hkeep, ih]
 
-/-- The indexed byte-loop family. -/
 theorem readWord_ebMemsFrom (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (addr : Nat)
     (hkeep : ∀ (pa pb : Nat) (mem' : ByteArray),
@@ -2202,6 +2209,7 @@ theorem readWord_ebMemsFrom (mpMem : Nat → Nat → Nat → ByteArray → ByteA
         (ebMemsFrom mpMem input bsize start mem count)) addr = _
       rw [byteMem, readWord_bitMems mpMem addr hkeep, ih]
 
+/-- The indexed byte-loop family. -/
 def ebFamily (s : State) (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (input mem : ByteArray) (n bsize esize msize i : Nat) : State :=
   ebHead s (ebMems mpMem input bsize mem i) n bsize esize msize i
@@ -3250,7 +3258,6 @@ theorem expAcc_firstByte_one {mm R b bM : Nat} (hm : 0 < mm)
   exact (hform.trans hbMform.symm).eq_of_lt_of_lt
     (expAcc_lt hm (expBits input bsize) 8) hbMlt
 
-
 /-- The six leading zero bits of byte `0x03` leave Montgomery one unchanged. -/
 theorem expAcc_firstSix_three {mm R b bM : Nat} (hm : 0 < mm)
     (hcop : Nat.Coprime R mm) (hbMform : bM ≡ b * R [MOD mm])
@@ -3268,6 +3275,7 @@ theorem expAcc_firstSix_three {mm R b bM : Nat} (hm : 0 < mm)
   rw [hE, pow_zero, one_mul] at hform
   exact (hform.trans (Nat.mod_modEq R mm).symm).eq_of_lt_of_lt
     (expAcc_lt hm (expBits input bsize) 6) (Nat.mod_lt _ hm)
+
 /-- The blocks the exponent loop reads and writes: the modulus, `ACC`, `BASE`
 and `ONE` (untouched, and still one limb wide). -/
 structure EbInv (mem : ByteArray) (n mm bM acc : Nat) : Prop where
@@ -3365,9 +3373,7 @@ theorem ebMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
       rw [show 8 * (i + 1) = 8 * i + 8 from by ring]
       exact h
 
-/-- **The exponent-loop postcondition, at the level of memory.**  After the
-`8 * esize` bits, `MSTORE ONE 1` and the closing `MonPro(ACC, ONE)`, the `ACC`
-block holds the precompile's answer. -/
+/-- Exponent-loop invariant for a suffix beginning at byte `start`. -/
 theorem ebMemsFrom_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn32 : n ≤ 32) (bM : Nat) (hbM : bM < mm) (input : ByteArray) (bsize : Nat)
@@ -3398,6 +3404,9 @@ theorem ebMemsFrom_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → Byte
       rw [show 8 * (start + (count + 1)) = 8 * (start + count) + 8 by ring]
       exact h
 
+/-- **The exponent-loop postcondition, at the level of memory.**  After the
+`8 * esize` bits, `MSTORE ONE 1` and the closing `MonPro(ACC, ONE)`, the `ACC`
+block holds the precompile's answer. -/
 theorem ebMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R bM b e minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hcop : Nat.Coprime R mm)
@@ -3450,8 +3459,7 @@ theorem ebMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
   rwa [expAcc_out hm hcop hbMform (expBits input bsize)
     (fun t => bitAt_le_one _ _) helt hbit] at hout
 
-/-! ### The shape `Fast.Correct.FastPath.handled` consumes -/
-
+/-- Final Montgomery conversion after a suffix of the exponent loop. -/
 theorem ebMemFrom_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R bM b e minv : Nat} (spec : SubSpec mpMem amMem n mm R minv)
     (hm : 0 < mm) (hn : 2 ≤ n) (hn32 : n ≤ 32) (hcop : Nat.Coprime R mm)
@@ -3505,6 +3513,8 @@ theorem ebMemFrom_final {mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
       8 * esize - t - 1 from by omega]
   rwa [expAcc_out hm hcop hbMform (expBits input bsize)
     (fun t => bitAt_le_one _ _) helt hbit] at hout
+
+/-! ### The shape `Fast.Correct.FastPath.handled` consumes -/
 
 theorem returnedState_isDone (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) (hstack : s.callStack = []) :
@@ -3943,8 +3953,6 @@ theorem bitStep_frame {s : State} {n bsize mm minv : Nat}
       exact sub.mpFrame 1024 2048 1024 _ (by omega)
         (sub.mpFrame 1024 1024 1024 mem (by omega) hf)
 
-
-
 theorem lastTwoMem_frame {s : State} {n bsize mm minv : Nat}
     (sub : Subroutines s n bsize mm minv) (mem : ByteArray) (w : Nat)
     (hf : Frame mem n bsize minv) :
@@ -3975,7 +3983,6 @@ theorem lastTwoMem_inv {s : State} {n bsize mm minv R : Nat}
   rw [show t0 + 2 = (t0 + 1) + 1 by omega, expAcc_succ, hbit0]
   exact h2
 
-
 theorem bitMems_frame {s : State} {n bsize mm minv : Nat}
     (sub : Subroutines s n bsize mm minv) (w : Nat)
     (mem : ByteArray) (hf : Frame mem n bsize minv) :
@@ -3994,10 +4001,6 @@ theorem ebMems_frame {s : State} {n bsize mm minv : Nat}
   | zero => exact hf
   | succ i ih => exact bitMems_frame sub (expByte input bsize i) _ ih 8
 
-
-/-! ### The exponent loop, re-threaded -/
-
-/-- One exponent bit: square `ACC`, and multiply by `BASE` when the bit is set. -/
 theorem ebMemsFrom_frame {s : State} {n bsize mm minv : Nat}
     (sub : Subroutines s n bsize mm minv) (input mem : ByteArray)
     (start : Nat) (hf : Frame mem n bsize minv) :
@@ -4008,6 +4011,10 @@ theorem ebMemsFrom_frame {s : State} {n bsize mm minv : Nat}
   | succ count ih =>
       exact bitMems_frame sub (expByte input bsize (start + count)) _ ih 8
 
+
+/-! ### The exponent loop, re-threaded -/
+
+/-- One exponent bit: square `ACC`, and multiply by `BASE` when the bit is set. -/
 def gasSteps_bitStep (s : State) {n bsize mm minv R : Nat}
     (sub : Subroutines s n bsize mm minv)
     (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
@@ -4107,6 +4114,7 @@ def gasSteps_lastTwo (s : State) {n bsize mm minv R : Nat}
       n bsize esize msize i w hcode hfork hrun hnp)).trans
     (gasSteps_ebTail s (bitStep sub.mpMem mem1 (bitAt w 0))
       n bsize esize msize i w hcode hfork hrun hnp))
+
 def gasSteps_bitBody (s : State) {n bsize mm minv R : Nat}
     (sub : Subroutines s n bsize mm minv)
     (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
@@ -4200,7 +4208,7 @@ def gasSteps_byteBody (s : State) {n bsize mm minv R : Nat}
             n bsize esize msize i (expByte input bsize i) hcode hfork hrun hnp)))
       (by norm_num) (by simp [byteMem, bitMems]))
 
-/-- **The exponent loop.**  All `8 * esize` bits. -/
+/-- A suffix of the exponent-byte loop, beginning at absolute byte `start`. -/
 def gasSteps_ebLoopFrom (s : State) {n bsize mm minv R : Nat}
     (sub : Subroutines s n bsize mm minv)
     (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
@@ -4228,6 +4236,7 @@ def gasSteps_ebLoopFrom (s : State) {n bsize mm minv R : Nat}
       (ebMemsFrom_inv spec hm hn32 bM hbM input bsize start mem hframe.minvW hinv t)
       hcode hfork hrun hnp)
 
+/-- **The exponent loop.**  All `8 * esize` bits. -/
 def gasSteps_ebLoop (s : State) {n bsize mm minv R : Nat}
     (sub : Subroutines s n bsize mm minv)
     (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
@@ -4327,12 +4336,7 @@ def gasSteps_expChain (s : State) {n bsize mm minv R : Nat}
           (3040 + 32 * n) (UInt256.ofNat 1)))
       n bsize esize msize hn hn32 hmz hm32 hact hcode hfork hrun hnp)
 
-
-/-! ### The hand-over from `Fast.Setup`, re-threaded -/
-
-/-- **From `Fast.Setup`'s hand-over state to the `RR` chain.**  `dbl` is the
-`DOUBLE256` contract `Fast.Double.gasSteps_double256_addmod` provides, and
-`dblFrame` its configuration-word preservation. -/
+/-- Finalize an exponent suffix beginning at byte `start`. -/
 def gasSteps_expChainFrom (s : State) {n bsize mm minv R : Nat}
     (sub : Subroutines s n bsize mm minv)
     (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
@@ -4391,6 +4395,12 @@ def gasSteps_expChainFrom (s : State) {n bsize mm minv R : Nat}
         (storeWord emem (3040 + 32 * n) (UInt256.ofNat 1)))
       n bsize esize msize hn hn32 hmz hm32 hact hcode hfork hrun hnp)
 
+
+/-! ### The hand-over from `Fast.Setup`, re-threaded -/
+
+/-- **From `Fast.Setup`'s hand-over state to the `RR` chain.**  `dbl` is the
+`DOUBLE256` contract `Fast.Double.gasSteps_double256_addmod` provides, and
+`dblFrame` its configuration-word preservation. -/
 def gasSteps_setupToRR (s : State) {n bsize mm minv : Nat}
     (_sub : Subroutines s n bsize mm minv) (mem : ByteArray) (esize msize : Nat)
     (dblF ccF : Nat → ByteArray → ByteArray)
@@ -4633,6 +4643,7 @@ theorem handled_of_expOptHead (input : ByteArray) (s : State) (mem : ByteArray)
         exact ⟨final,
           ⟨(gasSteps_expOptOther s mem input n bsize esize msize hepos hw hw3 hdata hb he
             hact hframe.eoff hcode hfork hrun hnp).trans tr⟩, hdone, hres⟩
+
 /-! ## The base loop -/
 
 theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)

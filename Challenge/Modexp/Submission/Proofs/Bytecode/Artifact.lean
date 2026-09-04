@@ -1851,7 +1851,8 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.push 1 3,
  YulEvmCompiler.Instr.push 1 2,
  YulEvmCompiler.Instr.push 2 1789,
- YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))]
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))
+]
 theorem submissionInstructions_count : submissionInstructions.length = 1823 := by
   decide
 

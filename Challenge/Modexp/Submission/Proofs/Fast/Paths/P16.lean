@@ -2,6 +2,13 @@ import Challenge.Modexp.Submission.Proofs.Fast.Defs
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
+/-! Basic-block instruction paths, group 16 (instructions 1781..1822).
+
+The exponent prefix dispatcher handles the first exponent byte directly:
+* `0x01`: copies Montgomery BASE to ACC and jumps to byte index 1.
+* `0x03`: copies Montgomery ONE to ACC and jumps to bit 1 of byte index 0.
+* other / empty: jumps to `bDone` (pc 1756).
+-/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
 
