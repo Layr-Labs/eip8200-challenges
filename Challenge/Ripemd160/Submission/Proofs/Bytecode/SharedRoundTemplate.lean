@@ -45,7 +45,7 @@ def helperBeforeJumpTemplate (j : Nat) (_xAddress : UInt256)
       swap1, op .SHR,
       dup6, op .ADD, push4 mask, op .AND, swap2, swap3,
       dup1, push1 (UInt256.ofNat 32), op .SHL, op .OR, push1 c22,
-      op .SHR, push4 mask, op .AND,
+      op .SHR,
       swap4, swap5, swap1]
 
 def template (j : Nat) (xAddress : UInt256)
@@ -87,27 +87,27 @@ def f4Template (xAddress : UInt256) (rotation : Nat)
     (booleanOps 4).length = 6 := by rfl
 
 @[simp] theorem f0Template_length (xAddress : UInt256) (rotation : Nat) :
-    (f0Template xAddress rotation).length = 36 := by
+    (f0Template xAddress rotation).length = 34 := by
   rfl
 
 @[simp] theorem f1Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f1Template xAddress rotation constant).length = 40 := by
+    (f1Template xAddress rotation constant).length = 38 := by
   rfl
 
 @[simp] theorem f2Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f2Template xAddress rotation constant).length = 39 := by
+    (f2Template xAddress rotation constant).length = 37 := by
   rfl
 
 @[simp] theorem f3Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f3Template xAddress rotation constant).length = 40 := by
+    (f3Template xAddress rotation constant).length = 38 := by
   rfl
 
 @[simp] theorem f4Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f4Template xAddress rotation constant).length = 39 := by
+    (f4Template xAddress rotation constant).length = 37 := by
   rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTemplate

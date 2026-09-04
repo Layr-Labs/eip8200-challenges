@@ -110,7 +110,7 @@ def gasSteps_leftRound (s : State) (working : Compression.EvmWorking)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
       (roundEntry s (StackSites.leftPC i.val) working.a working.b working.c working.d working.e rest)
-      (roundReturned s (StackSites.leftPC (i.val + 1)) (i.val / 16)
+      (SharedRoundTrace.rawRoundReturned s (StackSites.leftPC (i.val + 1)) (i.val / 16)
         working.a working.b working.c working.d working.e
         (leftAddress i.val) (leftRotation i.val) (leftConstant i.val) rest) := by
   have hz : i.val / 16 = 0 → leftConstant i.val = 0 := by
@@ -130,7 +130,7 @@ def gasSteps_rightRound (s : State) (working : Compression.EvmWorking)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
       (roundEntry s (StackSites.rightPC i.val) working.a working.b working.c working.d working.e rest)
-      (roundReturned s (StackSites.rightPC (i.val + 1)) (4 - i.val / 16)
+      (SharedRoundTrace.rawRoundReturned s (StackSites.rightPC (i.val + 1)) (4 - i.val / 16)
         working.a working.b working.c working.d working.e
         (rightAddress i.val) (rightRotation i.val) (rightConstant i.val) rest) := by
   have hz : 4 - i.val / 16 = 0 → rightConstant i.val = 0 := by

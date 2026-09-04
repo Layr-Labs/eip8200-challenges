@@ -1,6 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTemplate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RotationFold
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScratchLow
 import Challenge.EvmProof.Meter
 
 set_option warningAsError true
@@ -42,13 +43,24 @@ def afterHelperBeforeJump (s : State) (endPC returnPC : UInt256)
   { s with
     pc := endPC
     stack := returnPC ::
-      roundWords (StackRound.stackRound working j
+      roundWords (ScratchLow.rawRound working j
         (MachineState.readWord s.memory xAddress.toNat) rotation constant) ++ rest
     memory := s.memory
     activeWords := s.activeWordsAfterUInt256 xAddress.toNat 32 }
 
 def rawEntry := helperEntry
 def rawAfterHelperBeforeJump := afterHelperBeforeJump
+
+def rawRoundReturned (s : State) (endPC : UInt256) (j : Nat)
+    (a b c d e xAddress : UInt256) (rotation : Nat) (constant : UInt256)
+    (rest : List UInt256) : State :=
+  { s with
+    pc := endPC
+    stack := roundWords
+      (ScratchLow.rawRound (roundWorking a b c d e) j (roundWord s xAddress)
+        rotation constant) ++ rest
+    memory := s.memory
+    activeWords := s.activeWordsAfterUInt256 xAddress.toNat 32 }
 
 theorem mask_land_toNat_lt (x : UInt256) :
     (UInt256.land mask x).toNat < 2 ^ 32 := by
@@ -176,8 +188,8 @@ theorem runInstrSeq_f0 (s : State) (startPC xAddress returnPC : UInt256)
       dup3, dup4, dup5, dup6, dup7, dup8, swap1, swap2, swap3, swap4, swap5,
       mask, c10, c22, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
       helperEntry, afterHelperBeforeJump, roundWords,
-      pcAfter, StackRound.stackRound, StackRound.stackF,
-      StackRound.stackSum, StackRound.stackRawRot, StackRound.stackC10,
+      pcAfter, ScratchLow.rawRound, ScratchLow.rawC10, StackRound.stackF,
+      StackRound.stackSum, StackRound.stackRawRot,
       Word.mask32, List.exchange, hrun, hcap, hswap1, hswap2, hswap3,
       hswap4, hswap5, UInt256.succ, Instr.size, Instr.size_push,
       Instr.size_op, Nat.add_assoc, Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -191,6 +203,6 @@ theorem runInstrSeq_f0 (s : State) (startPC xAddress returnPC : UInt256)
     rw [hcomm (MachineState.readWord s.memory xAddress.toNat)]
     exact raw_rotate_or_fold _ working.e rotation
       (mask_land_toNat_lt _) hrot
-  · exact c10_or_fold working.c
+  · rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTrace
