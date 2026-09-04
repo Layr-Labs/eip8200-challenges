@@ -23,7 +23,8 @@ def gasSteps_baseByteAt (s : State) (accumulator : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
+      s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (baseLoopState s accumulator count baseSize e m baseOff rest i)
       (baseLoopState s accumulator count baseSize e m baseOff rest (i + 1)) := by
@@ -40,7 +41,8 @@ def gasSteps_baseLoop (s : State) (accumulator : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
+      s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (baseLoopState s accumulator count baseSize e m baseOff rest 0)
       (baseLoopState s accumulator count baseSize e m baseOff rest baseSize) :=
@@ -72,7 +74,8 @@ def gasSteps_baseFinish (s : State) (accumulator : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
+      s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (baseLoopState s accumulator count baseSize e m baseOff rest baseSize)
       (initialAccumulator s accumulator count baseSize e m baseOff rest) := by
@@ -123,7 +126,8 @@ def gasSteps_baseConversion (s : State) (accumulator : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
+      s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (baseLoopState s accumulator count baseSize e m baseOff rest 0)
       (initialAccumulator s accumulator count baseSize e m baseOff rest) :=

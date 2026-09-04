@@ -52,9 +52,6 @@ def gasSteps_selectIteration (s : State) (accumulatorWord : UInt256)
       (by simpa [selectBody, selectLoop, State.fork] using hnp)
   exact hguard.trans hbody
 
-/- Selection now chooses skip/copy/loop at runtime, so the old uniform-cost
-formulae are intentionally omitted.  The GasSteps certificates below remain. -/
-/-
 theorem gasSteps_selectIteration_cost_potential (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff i j k : Nat)
     (offset byte : UInt256) (rest : List UInt256)
@@ -91,7 +88,6 @@ theorem gasSteps_selectIteration_cost_potential (s : State)
   simp only [selectLoop, selectBody] at hguard hbody ⊢
   omega
 
--/
 def gasSteps_selectLoop (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) (hcap : rest.length < 980)
@@ -109,7 +105,6 @@ def gasSteps_selectLoop (s : State) (accumulatorWord : UInt256)
     gasSteps_selectIteration s accumulatorWord count b e m baseOff expOff i j
       k offset byte rest hcap hcount hk hcode hfork hrun hnp
 
-/-
 theorem gasSteps_selectLoop_cost_potential (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
     (offset byte : UInt256) (rest : List UInt256)
@@ -133,7 +128,6 @@ theorem gasSteps_selectLoop_cost_potential (s : State)
     gasSteps_selectIteration_cost_potential s accumulatorWord count b e m
       baseOff expOff i j k offset byte rest hcap hcount hk hcode hfork hrun hnp
 
--/
 def gasSteps_selectFinish (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) (hcap : rest.length < 980)
@@ -165,7 +159,6 @@ def gasSteps_selectFinish (s : State) (accumulatorWord : UInt256)
       (by simpa [selectExit, selectLoop, State.fork] using hnp)
   exact hguard.trans hfinish
 
-/-
 theorem gasSteps_selectFinish_cost_potential (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
     (offset byte : UInt256) (rest : List UInt256)
@@ -202,7 +195,6 @@ theorem gasSteps_selectFinish_cost_potential (s : State)
   simp only [selectLoop, selectExit, afterSelectedBit, innerLoop] at hguard hfinish ⊢
   omega
 
--/
 def gasSteps_selection (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) (hcap : rest.length < 980)
@@ -221,7 +213,6 @@ def gasSteps_selection (s : State) (accumulatorWord : UInt256)
   (gasSteps_selectFinish s accumulatorWord count b e m baseOff expOff i j
     offset byte rest hcap hcount hj hcode hfork hrun hnp)
 
-/-
 theorem gasSteps_selection_cost_potential (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
     (offset byte : UInt256) (rest : List UInt256)
@@ -249,7 +240,6 @@ theorem gasSteps_selection_cost_potential (s : State)
     (gasSteps_selectFinish_cost_potential s accumulatorWord count b e m baseOff
       expOff i j offset byte rest hcap hcount hj hcode hfork hrun hnp)
 
--/
 def gasSteps_exponentBit (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) (hcap : rest.length < 968)
@@ -257,7 +247,8 @@ def gasSteps_exponentBit (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
+      s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (innerLoop s accumulatorWord count b e m baseOff expOff i offset byte
         rest j)
@@ -434,7 +425,8 @@ def gasSteps_exponentBitAt (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
+      s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
         offset byte rest j)
@@ -458,7 +450,8 @@ def gasSteps_exponentBits (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
+      s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
         offset byte rest 0)
@@ -483,7 +476,8 @@ def gasSteps_exponentByteFinish (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
+      s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
         offset byte rest 8)
@@ -522,7 +516,8 @@ def gasSteps_exponentByte (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
+      s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (outerLoop s accumulatorWord count b e m baseOff expOff rest i)
       (afterExponentByte s accumulatorWord count b e m baseOff expOff i
@@ -595,7 +590,8 @@ def gasSteps_exponentByteAt (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
+      s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (exponentOuterState s accumulatorWord count b e m baseOff expOff rest i)
       (exponentOuterState s accumulatorWord count b e m baseOff expOff rest
@@ -618,7 +614,8 @@ def gasSteps_exponentLoop (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
+      s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (exponentOuterState s accumulatorWord count b e m baseOff expOff rest 0)
       (exponentOuterState s accumulatorWord count b e m baseOff expOff rest e) :=

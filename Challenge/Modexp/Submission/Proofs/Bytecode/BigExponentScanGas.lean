@@ -301,7 +301,8 @@ def gasSteps_scanFound (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (scanEntry s accumulatorWord count b e m baseOff expOff rest)
       (BigExponent.innerLoop
@@ -427,7 +428,8 @@ def gasSteps_scanAllZero (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (scanEntry s accumulatorWord count b e m baseOff expOff rest)
       (BigExponent.outerLoop s accumulatorWord count b e m baseOff expOff rest
@@ -497,7 +499,8 @@ def gasSteps_exponentBitsFrom (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (bitLoopFromState s accumulatorWord count b e m baseOff expOff i start
         offset byte rest 0)
@@ -528,7 +531,8 @@ def gasSteps_finishFirstByte (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (BigExponent.innerLoop s accumulatorWord count b e m baseOff expOff i
         (loadedOffset expOff i) (loadedByte s expOff i) rest j)
@@ -629,7 +633,8 @@ def gasSteps_exponentBytesFrom (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (outerLoopFromState s accumulatorWord count b e m baseOff expOff start
         rest 0)
@@ -664,7 +669,8 @@ def gasSteps_finishFound (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (BigExponent.innerLoop
         (copiedState s accumulatorWord count b e m baseOff expOff i j rest)
@@ -733,7 +739,8 @@ def gasSteps_exponentPhase (s : State) (accumulatorWord : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (_hcountFit : 32 * count + 8192 < 2 ^ 256 := by omega) :
     Challenge.EvmProof.GasSteps
       (scanEntry s accumulatorWord count b e m baseOff expOff rest)
       (BigExponent.outerLoop

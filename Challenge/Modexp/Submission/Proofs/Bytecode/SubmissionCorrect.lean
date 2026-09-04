@@ -126,8 +126,7 @@ open EvmSemantics.EVM
   induction j with
   | zero => rfl
   | succ j ih =>
-      simp [BigBase.bitProgress, BigBase.bitAfterAdd, BigBase.bitChoice,
-        BigHelpers.addReturned, ih]
+      simp [BigBase.bitProgress, BigHelpers.addReturned, ih]
 
 @[simp] theorem baseProgress_callStack (count baseOff i : Nat) (s : State) :
     (BigBase.baseProgress count baseOff i s).callStack = s.callStack := by
@@ -160,27 +159,9 @@ open EvmSemantics.EVM
     (rest : List UInt256) :
     (BigComplete.exponentState s b e m baseOff expOff modOff returnDest
       rest).callStack = s.callStack := by
-  let loaded := BigComplete.setupState s b e m baseOff expOff modOff
-    returnDest rest
-  let accumulator := BigComplete.modulusOr s b e m baseOff expOff modOff
-    returnDest rest
-  let base := BigComplete.baseState s b e m baseOff expOff modOff returnDest rest
-  let baseTail := BigComplete.baseRest expOff modOff returnDest rest
-  have hentry : BigComplete.exponentState s b e m baseOff expOff modOff
-      returnDest rest =
-      if BigBaseDirect.Eligible loaded b m baseOff modOff then
-        BigBaseDirect.directInitialAccumulator loaded accumulator
-          (BigComplete.limbCount m) b e m baseOff expOff modOff returnDest rest
-      else
-        BigBaseLoop.initialAccumulator base accumulator
-          (BigComplete.limbCount m) b e m baseOff baseTail := by
-    rfl
-  by_cases heligible : BigBaseDirect.Eligible loaded b m baseOff modOff
-  · rw [hentry, if_pos heligible]
-    rfl
-  · rw [hentry, if_neg heligible]
-    simp [BigBaseLoop.initialAccumulator, BigBaseLoop.baseConvertedExit,
-      BigBase.outerExit, BigBase.outerLoop, BigHelpers.addReturned, base]
+  simp [BigComplete.exponentState, BigBaseLoop.initialAccumulator,
+    BigBaseLoop.baseConvertedExit, BigBase.outerExit, BigBase.outerLoop,
+    BigHelpers.addReturned]
 
 @[simp] theorem exponentProgressState_callStack (s : State)
     (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
