@@ -1,12 +1,13 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairRoundState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RotationMultiply
 
 set_option warningAsError true
 set_option maxRecDepth 30000
 set_option maxHeartbeats 4000000
 
 /-!
-# H24 paired-round raw traces for the negated Boolean forms
+# H25 paired-round raw traces for the negated Boolean forms
 
 The f2 and f4 helpers execute two unchanged stack rounds.  This file stops
 immediately before the helper's final `JUMP`.
@@ -27,6 +28,7 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.PairRoundTemplate
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.PairRoundState
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTrace
+open Challenge.Ripemd160.Submission.Proofs.Bytecode.RotationMultiply
 
 private theorem word_add_assoc (u v w : UInt256) :
     (u + v) + w = u + (v + w) := by
@@ -192,6 +194,24 @@ private theorem negated4_sum_absorption (x : EvmWorking)
     _ = mask.land (constant.add (x.a.add (word.add
         ((x.b.xor (x.c.lor x.d.lnot)).land mask)))) := by
             exact (Word.land_comm _ _).symm
+
+private theorem or_eq_lor (a b : UInt256) :
+    a ||| b = UInt256.lor a b := by
+  rfl
+
+private theorem factor_mul_mask_land (q : UInt256) :
+    UInt256.mul (UInt256.ofNat 4294967297)
+        ((UInt256.ofNat 4294967295).land q) =
+      ((UInt256.ofNat 4294967295).land q).lor
+        (UInt256.shiftLeft ((UInt256.ofNat 4294967295).land q)
+          (UInt256.ofNat 32)) := by
+  have hq : ((UInt256.ofNat 4294967295).land q).toNat < 2 ^ 32 := by
+    simpa [mask] using (mask_land_toNat_lt q)
+  simpa only [or_eq_lor] using (factor_mul_eq_or_shift
+    ((UInt256.ofNat 4294967295).land q) hq)
+
+private theorem mul_op (u v : UInt256) : u * v = UInt256.mul u v := by
+  rfl
 
 set_option linter.unusedSimpArgs false in
 theorem runInstrSeq_f2 (s : State) (startPC p0 p1 returnPC : UInt256)
@@ -441,7 +461,8 @@ theorem runInstrSeq_f2 (s : State) (startPC p0 p1 returnPC : UInt256)
   simp (config := { maxSteps := 3000000 })
     [pairBeforeJumpTemplate, pairFirstBooleanOps, pairSecondBooleanOps,
       pairDup7, pairDup8, pairDup9, pairDup10, pairSwap5, pairSwap7,
-      qrot, cfold, op, push1, push2, push4, dup1, dup2, dup3, dup4,
+      qrot, mul_op, factor_mul_mask_land, cfold, op, push1, push2, push4, dup1,
+      dup2, dup3, dup4,
       dup5, dup6, swap1, swap2, swap3, swap4, mask, c10, c22,
       runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
       pairHelperEntry, pairAfterHelperBeforeJump, pairWorking, roundWords,
@@ -734,7 +755,8 @@ theorem runInstrSeq_f4 (s : State) (startPC p0 p1 returnPC : UInt256)
   simp (config := { maxSteps := 3000000 })
     [pairBeforeJumpTemplate, pairFirstBooleanOps, pairSecondBooleanOps,
       pairDup7, pairDup8, pairDup9, pairDup10, pairSwap5, pairSwap7,
-      qrot, cfold, op, push1, push2, push4, dup1, dup2, dup3, dup4,
+      qrot, mul_op, factor_mul_mask_land, cfold, op, push1, push2, push4, dup1,
+      dup2, dup3, dup4,
       dup5, dup6, swap1, swap2, swap3, swap4, mask, c10, c22,
       runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
       pairHelperEntry, pairAfterHelperBeforeJump, pairWorking, roundWords,

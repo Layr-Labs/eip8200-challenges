@@ -9,10 +9,10 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 
 /-!
-# Located H24 final-combination trace
+# Located H25 final-combination trace
 
-The raw tail theorem is lifted through the exact H24 artifact.  The path starts
-at instruction 1646 and ends at instruction 1706.  The 886 helper instructions
+The raw tail theorem is lifted through the exact H25 artifact.  The path starts
+at instruction 1646 and ends at instruction 1706.  The 846 helper instructions
 after the tail remain in the artifact suffix.
 -/
 
@@ -71,7 +71,7 @@ private theorem artifactPrefix_length : artifactPrefix.length = 1600 := by
 private theorem tailBefore_length : tailBefore.length = 1646 := by
   simp [tailBefore, artifactPrefix_length]
 
-private theorem tailAfter_length : tailAfter.length = 886 := by
+private theorem tailAfter_length : tailAfter.length = 846 := by
   simp [tailAfter]
 
 private theorem tailAfter_nonempty : tailAfter ≠ [] := by

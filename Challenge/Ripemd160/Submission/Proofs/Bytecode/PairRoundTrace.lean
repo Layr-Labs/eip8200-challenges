@@ -1,12 +1,13 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairRoundState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RotationMultiply
 
 set_option warningAsError true
 set_option maxRecDepth 30000
 set_option maxHeartbeats 4000000
 
 /-!
-# H24 paired-round evaluator trace
+# H25 paired-round evaluator trace
 
 The theorem below proves the f0 pair helper on arbitrary 256-bit stack and
 memory words.  The stack-capacity premise is strict and accounts for the
@@ -273,6 +274,19 @@ theorem runInstrSeq_f0 (s : State) (startPC p0 p1 returnPC : UInt256)
                 ((q1c.land mask).shiftRight (UInt256.ofNat (32 - r1)))))
             mask := by
               rw [hcomm]
+  have hmul_mask (q : UInt256) :
+      UInt256.mul (UInt256.ofNat (0x100000001 : Nat))
+          (UInt256.land (UInt256.ofNat 0xffffffff) q) =
+        UInt256.lor (UInt256.land (UInt256.ofNat 0xffffffff) q)
+          (UInt256.shiftLeft (UInt256.land (UInt256.ofNat 0xffffffff) q)
+            (UInt256.ofNat 32)) := by
+    have hmask : UInt256.land (UInt256.ofNat 0xffffffff) q =
+        _root_.Challenge.EvmProof.Word.mask32 q := by
+      unfold _root_.Challenge.EvmProof.Word.mask32
+      exact Challenge.Ripemd160.Submission.Proofs.Bytecode.Word.land_comm _ _
+    rw [hmask]
+    simpa only [HOr.hOr, OrOp.or, EvmSemantics.UInt256.instOrOp] using
+      (RotationMultiply.factor_mul_mask32_eq_or_shift q)
   have hq1c' := hq1c
   simp only [word1, t0, mask] at hq1c'
   simp (config := { maxSteps := 3000000 })
@@ -281,6 +295,7 @@ theorem runInstrSeq_f0 (s : State) (startPC p0 p1 returnPC : UInt256)
       qrot, cfold, op, push1, push2, push4, dup1, dup2, dup3, dup4,
       dup5, dup6, swap1, swap2, swap3, swap4, mask, c10, c22,
       runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
+      HMul.hMul, Mul.mul,
       pairHelperEntry, pairAfterHelperBeforeJump, pairWorking, roundWords,
       pcAfter, StackRound.stackRound, StackRound.stackF,
       StackRound.stackSum, StackRound.stackRawRot, StackRound.stackC10,
@@ -292,7 +307,8 @@ theorem runInstrSeq_f0 (s : State) (startPC p0 p1 returnPC : UInt256)
       Challenge.EvmProof.Word.succ_ofNat, Word.land_comm, Word.lor_comm,
       BooleanSelect.xor_comm, State.activeWordsAfterUInt256,
       State.activeWordsAfterUInt256_2,
-      hadd, hzero, hcomm, hxorcomm, hbase, hactive0, hactive0mod]
+      hadd, hzero, hcomm, hxorcomm, hbase, hactive0, hactive0mod,
+      hmul_mask]
   constructor
   · simpa [UInt256.size] using congrArg UInt256.ofNat hactivePair
   · constructor

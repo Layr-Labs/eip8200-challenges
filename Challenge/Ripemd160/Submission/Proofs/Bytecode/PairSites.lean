@@ -5,7 +5,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairSitesRight
 set_option warningAsError true
 
 /-!
-# H24 paired-round concrete site certificates
+# H25 paired-round concrete site certificates
 
 The public PairSites namespace is split into independent base, left-lane, and
 right-lane modules. This facade preserves the original import path and API.
