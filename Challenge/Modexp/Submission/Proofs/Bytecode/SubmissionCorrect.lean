@@ -95,7 +95,8 @@ open EvmSemantics.EVM
   induction j with
   | zero => rfl
   | succ j ih =>
-      simp [BigBase.bitProgress, BigHelpers.addReturned, ih]
+      simp [BigBase.bitProgress, BigBase.bitAfterAdd, BigBase.bitChoice,
+        BigHelpers.addReturned, ih]
 
 @[simp] theorem baseProgress_callStack (count baseOff i : Nat) (s : State) :
     (BigBase.baseProgress count baseOff i s).callStack = s.callStack := by

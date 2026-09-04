@@ -138,8 +138,21 @@ theorem bitProgress_represents (s : State) (count : Nat) (byte : UInt256)
             congr 2
             omega
       rw [hvalue] at hafter
-      simpa [bitProgress, before, doubled, after, beforeValue,
-        baseBitAfter] using ⟨hafter, hafterOne, hafterModulus⟩
+      by_cases hbit0 : (baseBit byte steps).toNat = 0
+      · -- zero base bit: `T2` skipped the masked add, the destination still
+        -- holds the doubled value, which is exactly `baseBitStep` here.
+        have htwice : 2 * beforeValue = beforeValue + beforeValue := by omega
+        have hvalue0 : baseBitStep modulus byte steps beforeValue =
+            (beforeValue + beforeValue) % modulus := by
+          rw [baseBitStep, hbit0, Nat.add_zero, htwice]
+        have hres : Limbs.Represents doubled.memory 1024 count
+            (baseBitStep modulus byte steps beforeValue) := by
+          rw [hvalue0]
+          exact hdoubled
+        simpa [bitProgress, bitAfterAdd, bitChoice, before, doubled, beforeValue,
+          baseBitAfter, hbit0] using ⟨hres, hdoubledOne, hdoubledModulus⟩
+      · simpa [bitProgress, bitAfterAdd, bitChoice, before, doubled, after, beforeValue,
+          baseBitAfter, hbit0] using ⟨hafter, hafterOne, hafterModulus⟩
 
 theorem bitProgress_preserves_2048 (s : State) (count : Nat)
     (byte : UInt256) (steps value : Nat) (hsteps : steps ≤ 8)
@@ -178,7 +191,11 @@ theorem bitProgress_preserves_2048 (s : State) (count : Nat)
         exact BigHelpers.addReturned_preserves_region doubled 1024 3072
           bit 0 2048 count value (UInt256.ofNat 900) [] (by omega) (by omega)
           (Or.inl (by omega)) (Or.inl (by omega)) hdoubled
-      simpa [bitProgress, before, doubled, after] using hafter
+      by_cases hbit0 : (baseBit byte steps).toNat = 0
+      · simpa [bitProgress, bitAfterAdd, bitChoice, before, doubled,
+          hbit0] using hdoubled
+      · simpa [bitProgress, bitAfterAdd, bitChoice, before, doubled, after,
+          hbit0] using hafter
 
 theorem baseBitAfter_eq (modulus : Nat) (byte : UInt256) (steps acc : Nat)
     (hsteps : steps ≤ 8) (hacc : acc < modulus) :
