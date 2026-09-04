@@ -15,7 +15,7 @@ set_option maxRecDepth 50000
 set_option maxHeartbeats 3000000
 
 /-!
-# H22 compression frame
+# H24 compression frame
 
 This module certifies the frame around the scheduled compression body.  The
 compression body itself starts at the load-entry seam.
@@ -45,7 +45,7 @@ def prefixPath : List Located :=
   [⟨979, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨980, .push ⟨2, by decide⟩ (UInt256.ofNat 0x72f), by rfl, by decide⟩,
    ⟨981, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨982, .push ⟨2, by decide⟩ (UInt256.ofNat 0x11d2), by rfl, by decide⟩,
+   ⟨982, .push ⟨2, by decide⟩ (UInt256.ofNat 0x118c), by rfl, by decide⟩,
    ⟨983, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def exitPath : List Located :=
@@ -64,7 +64,7 @@ def loadSite986 : GenericRoundSite Artifact.submissionArtifact .Osaka
 def loadSite1476 : GenericRoundSite Artifact.submissionArtifact .Osaka
     StackLoadTrace.loadTemplate :=
   StackSiteBuilder.ofSlice (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    StackLoadTrace.loadTemplate 1476 (by rfl) (by decide)
+    StackLoadTrace.loadTemplate 1316 (by rfl) (by decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem
       (instructions := StackLoadTrace.loadTemplate) (by decide))
@@ -73,7 +73,7 @@ def loadSite1476 : GenericRoundSite Artifact.submissionArtifact .Osaka
 @[simp] theorem loadSite986_startPC : loadSite986.startPC = UInt256.ofNat 0x731 := by
   rfl
 
-@[simp] theorem loadSite1476_startPC : loadSite1476.startPC = UInt256.ofNat 0xb50 := by
+@[simp] theorem loadSite1476_startPC : loadSite1476.startPC = UInt256.ofNat 0xa10 := by
   rfl
 
 def frameRest (input : ByteArray) (i : Nat) : List UInt256 :=
@@ -102,13 +102,13 @@ theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
   have hpc981 : Artifact.submissionArtifact.instructionPC 981 = 0x72a := by rfl
   have hpc982 : Artifact.submissionArtifact.instructionPC 982 = 0x72b := by rfl
   have hpc983 : Artifact.submissionArtifact.instructionPC 983 = 0x72e := by rfl
-  have hdest11d2 : Decode.isValidJumpDest submissionBytecode 0x11d2 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2405 (by rfl)
+  have hdest118c : Decode.isValidJumpDest submissionBytecode 0x118c = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2433 (by rfl)
   simp [prefixPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     DriverTrace.compressEntry, PackedScheduleTemplate.scheduleEntry,
     PackedScheduleSite.packedScheduleSite_startPC, StackBlockModel.scheduleRest,
     StackBlockModel.driverRest, hcode, hrun, hpc979, hpc980, hpc981, hpc982, hpc983,
-    hdest11d2]
+    hdest118c]
 
 theorem run_exit (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
