@@ -16,6 +16,30 @@ The same bytes must also return the correct result from the dirty state.
 Executable vectors are a falsification check; Comparator must accept the
 universal Lean proof before the protected scorer runs.
 
+## Current candidate: H22 folds with the redundant C mask removed
+
+This candidate starts from GordoAR's public H22c-packed artifact (submission
+`d3674f07-3391-40b6-ad39-6f65284613f3`, public PR 62). H22 folds both round
+rotations and uses the packed two-word message schedule. The only arithmetic
+change here removes the final `PUSH4 0xffffffff; AND` from each of the ten
+shared helper bodies. The value left by the H22 C fold may carry high bits,
+but its low 32 bits are exactly `rotl(C, 10)`. Later Boolean and addition
+operations depend on those low bits, and the final chaining-value combination
+performs the required 32-bit truncation.
+
+Removing the two operations saves six gas on each of 160 helper calls per
+compression block. Across the public suite's 66 blocks this is 63,360 gas.
+The exact artifact is 5,090 bytes and 2,565 instructions; the trusted scorer
+passes all 17 clean and 17 dirty cases at 1,571,879 clean-state gas.
+
+The proof represents intermediate EVM working words by their low 32-bit
+projections while retaining exactness for the two fields needed by the folded
+rotation. `RotationFold.C10_or_fold` establishes the projection of the raw H22
+fold. The lane induction carries that relation through all 80 rounds and the
+final combination restores exact embedded hash words. Artifact, wrapper-site,
+helper-site, packed-schedule, and tail certificates bind the proof to the
+shortened bytecode and its relocated jump destinations.
+
 ## Earlier direct-entry candidate
 
 The initial `PUSH2; JUMP` now targets the existing main-body `JUMPDEST` at
