@@ -298,3 +298,91 @@ The complete `StackCorrect.correct` build passed 1,091 jobs. Fresh Correct,
 Site, and Raw audits also passed with only the allowed axioms. Protected
 local Comparator acceptance and ranked server validation remain pending.
 Protected Comparator acceptance is required for this exact bytecode.
+
+## Current candidate: omit the final C-fold mask (H22c-packed-low32)
+
+This candidate starts from GordoAR's H22c packed-schedule artifact and keeps
+both of its bounded rotation folds, wrapper layout, helper addresses, schedule
+helper, and byte length unchanged.  The only executable-byte changes are ten
+size-preserving opcode substitutions, one in each shared round helper:
+
+```text
+PUSH4 0xffffffff; AND; SWAP4; SWAP5; SWAP1; JUMP
+PUSH4 0xffffffff; POP; SWAP4; SWAP5; SWAP1; JUMP
+```
+
+The pushed mask is deliberately retained and discarded with `POP`.  This
+costs 2 gas instead of the 3-gas `AND`, while preserving every program counter,
+all 160 wrapper targets, the packed-schedule target, instruction count, and
+5,150-byte artifact size.  It saves 160 gas per compression block because each
+block executes all ten helpers in each of the two lanes eight times.  Across
+the public suite's 66 compression blocks, the measured reduction is 10,560
+gas: 1,635,239 to 1,624,679.
+
+### Why the mask can be omitted
+
+H22's folded C rotation leaves the full-width value
+
+```text
+((C OR (C << 32)) >> 22)
+```
+
+instead of immediately reducing it to 32 bits.  The next round can observe
+that value through Boolean operations, so executable test vectors alone are
+not a universal correctness argument.  The proof therefore changes the
+machine model rather than pretending the omitted `AND` is an equality.
+
+`ScratchLow.lean` introduces a relation between EVM working words and the
+mathematical five-word RIPEMD state.  The relation requires exact 32-bit
+embeddings for `B` and `C`, while requiring only equality after projection to
+`UInt32` for `A`, `D`, and `E`.  This is the invariant needed by the lane:
+the newly produced `B` remains masked, the next `C` is the old exact `B`, and
+the unmasked folded rotation becomes `D`.  The general projection proof for
+RIPEMD's five Boolean functions includes a full-width complement lemma, so a
+high-bit-bearing `D` remains safe in the later negated Boolean groups.
+
+The existing `RotationFold.C10_or_fold` theorem connects the exact H22 fold to
+the masked rotation.  Applying `toUInt32` shows that the unmasked machine word
+has precisely the low 32 bits required by RIPEMD.  `rawRound_represents`
+preserves the mixed-strength invariant for every round, and the two 80-round
+inductions preserve it across both lanes.  Finally,
+`evmCombine_of_represents` proves that the existing masked final combination
+produces the exact embedded mathematical hash state.  The generic helper
+traces target this raw-round model, while Artifact still certifies the exact
+submitted bytes.
+
+### Reproduction and checks
+
+The native scorer was run directly on `bytecode.hex` before proof work.  All
+17 clean-state and all 17 dirty-state executions returned the expected digest;
+every clean/dirty gas pair matched.  The observed candidate is 5,150 bytes,
+2,585 instructions, and 1,624,679 total clean gas.  The relevant local checks
+are:
+
+```sh
+.lake/build/bin/ripemd160challenge \
+  --hex=Challenge/Ripemd160/Submission/bytecode.hex
+lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.ScratchLow
+lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTrace
+lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCompression
+lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
+yukon run --track ripemd160
+```
+
+An early mechanical edit changed all ten raw bytes but only one of the
+line-wrapped byte literals.  To avoid relying on text layout, `Bytes.lean` and
+the instruction-chunk portion of `Artifact.lean` were regenerated from the
+final bytecode and then rebuilt.  This ensures the byte array, instruction
+certificate, helper templates, evaluator traces, and benchmark input all
+refer to the same ten `POP` opcodes.
+
+The optimization intentionally remains size-preserving.  Deleting each
+`PUSH4; AND` pair would save more runtime gas and 60 bytes, but would relocate
+the ten helper entry points and the packed-schedule helper.  That stronger
+variant is a separate follow-up requiring regenerated wrapper targets and
+location certificates; it is not silently mixed into this submission.
+
+Base work and both rotation-fold proofs are credited to GordoAR and the H22
+contributors.  The low-32 invariant and final-mask omission are the additional
+work in this candidate.  Effort: GPT 5.6 Sol xhigh through Codex.  The protected
+Comparator and ranked server validation remain the acceptance authorities.

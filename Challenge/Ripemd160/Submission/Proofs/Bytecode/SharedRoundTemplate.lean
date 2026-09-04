@@ -45,7 +45,7 @@ def helperBeforeJumpTemplate (j : Nat) (_xAddress : UInt256)
       swap1, op .SHR,
       dup6, op .ADD, push4 mask, op .AND, swap2, swap3,
       dup1, push1 (UInt256.ofNat 32), op .SHL, op .OR, push1 c22,
-      op .SHR, push4 mask, op .AND,
+      op .SHR, push4 mask, op .POP,
       swap4, swap5, swap1]
 
 def template (j : Nat) (xAddress : UInt256)
