@@ -120,10 +120,10 @@ def xSetPath : List Located :=
 def incrementPath : List Located :=
   [⟨436, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨437, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨438, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨438, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨439, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨440, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨441, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨440, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨441, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨442, .push ⟨2, by decide⟩ (UInt256.ofNat 0x238), by rfl, by decide⟩,
    ⟨443, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -399,8 +399,9 @@ theorem run_increment (s : State) (msgOff returnDest : UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hadd : UInt256.ofNat i + UInt256.ofNat 1 = UInt256.ofNat (i + 1) :=
-    Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
+  have hadd : UInt256.ofNat 1 + UInt256.ofNat i = UInt256.ofNat (i + 1) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
   have hdest : Decode.isValidJumpDest submissionBytecode 0x238 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 415 (by rfl)
   simp [incrementPath, Challenge.EvmProof.Stepper.runLocatedBlock,
