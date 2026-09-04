@@ -111,10 +111,10 @@ private theorem increment_cost_potential (s : State) (input : ByteArray)
     DriverTrace.afterIteration, DriverTrace.loopAt] using hmeter
 
 /-- Non-memory work of the compression call itself.  The enclosing driver
-adds `26 + 23 + 26 = 75`, producing the schedule's `120620` per block. -/
-def compressionWork : Nat := 120545
+adds `26 + 23 + 26 = 75`, producing the schedule's `116780` per block. -/
+def compressionWork : Nat := 116705
 
-def blockWork : Nat := 120620
+def blockWork : Nat := 116780
 
 theorem blockWork_eq : blockWork = 26 + 23 + compressionWork + 26 := by
   rfl
@@ -248,6 +248,7 @@ theorem fullTrace_cost (input : ByteArray) (hfit : CalldataFits input)
   rw [← driverBlockCount_eq_gasBlockCount input] at hloop ⊢
   unfold paddingWork framingWork
   unfold blockWork at hloop
+  rw [Nat.mul_comm (DriverTrace.blockCount input)] at hloop
   omega
 
 /-- With concrete compression and outer cost facts installed, this discharges

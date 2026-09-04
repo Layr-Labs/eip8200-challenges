@@ -92,25 +92,21 @@ def afterRot1Path : List Located :=
    ⟨259, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨260, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨261, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨262, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨263, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨264, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨265, .op (.Dup ⟨7, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨266, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨267, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨268, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨269, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨270, .push ⟨1, by decide⟩ (UInt256.ofNat 0x80), by rfl, by decide⟩,
-   ⟨271, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨272, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨273, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨274, .push ⟨2, by decide⟩ (UInt256.ofNat 0x18d), by rfl, by decide⟩,
-   ⟨275, .push ⟨2, by decide⟩ (UInt256.ofNat 0x185), by rfl, by decide⟩,
-   ⟨276, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨277, .push ⟨1, by decide⟩ (UInt256.ofNat 10), by rfl, by decide⟩,
-   ⟨278, .op (.Dup ⟨7, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨279, .push ⟨2, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
-   ⟨280, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨262, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨263, .op (.Dup ⟨7, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨264, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨265, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨266, .push ⟨1, by decide⟩ (UInt256.ofNat 0x80), by rfl, by decide⟩,
+   ⟨267, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨268, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨269, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨270, .push ⟨2, by decide⟩ (UInt256.ofNat 0x18d), by rfl, by decide⟩,
+   ⟨271, .push ⟨2, by decide⟩ (UInt256.ofNat 0x185), by rfl, by decide⟩,
+   ⟨272, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨273, .push ⟨1, by decide⟩ (UInt256.ofNat 10), by rfl, by decide⟩,
+   ⟨274, .op (.Dup ⟨7, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨275, .push ⟨2, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
+   ⟨276, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def afterRot2Path : List Located :=
   [⟨281, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -121,20 +117,20 @@ def afterRot2Path : List Located :=
 
 def suffixPath : List Located :=
   [⟨286, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨287, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨288, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨289, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨290, .push ⟨1, by decide⟩ (UInt256.ofNat 0x40), by rfl, by decide⟩,
-   ⟨291, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨292, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨293, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨294, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨295, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨296, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨297, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
-   ⟨298, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨299, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨300, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨287, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨288, .push ⟨1, by decide⟩ (UInt256.ofNat 0x40), by rfl, by decide⟩,
+   ⟨289, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨290, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨291, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨292, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨293, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
+   ⟨294, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨295, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨296, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨297, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨298, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨299, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨300, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨301, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨302, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨303, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -142,22 +138,18 @@ def suffixPath : List Located :=
    ⟨305, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨306, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨307, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨308, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨309, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨310, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨311, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨312, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨308, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 private def roundPCs : List Nat :=
   [276, 277, 278, 279, 281, 282, 283, 284, 286, 287, 288, 289,
    291, 292, 293, 294, 296, 297, 298, 299, 304, 305, 308, 309,
    310, 313, 314, 315, 318, 319, 320, 321, 322, 323, 326, 327,
    328, 329, 330, 331, 332, 333, 338, 339, 342, 343, 344, 345,
-   348, 349, 350, 351, 352, 353, 354, 359, 360, 361, 362, 363,
-   368, 369, 370, 372, 373, 374, 375, 378, 381, 382, 384, 385,
-   388, 389, 390, 392, 393, 396, 397, 398, 403, 404, 405, 407,
-   408, 409, 410, 415, 416, 417, 419, 420, 421, 422, 423, 424,
-   425, 426, 427, 428, 429, 430, 431, 432, 433]
+   348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 360,
+   361, 362, 363, 366, 369, 370, 372, 373, 376, 377, 386, 387,
+   388, 389, 390, 392, 393, 396, 397, 398, 399, 401, 402, 403,
+   404, 405, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416,
+   417, 418, 419, 420, 421, 422, 431, 432, 433]
 
 @[simp] private theorem roundRefPC (i : Nat) (hlo : 208 ≤ i) (hhi : i ≤ 312) :
     Artifact.submissionArtifact.instructionPC i = roundPCs[i - 208]! := by
@@ -344,9 +336,16 @@ private def nextB (s : State) (base : UInt256) (j : Nat)
   UInt256.land (rotlValue (t0 s base j word k) rotation + loadedE s base)
     (UInt256.ofNat 0xffffffff)
 
+def storedRawWord (s : State) (base i value : UInt256) : State :=
+  let address := TableTrace.slotAddress base i
+  { s with
+    memory := MachineState.writeBytes s.memory
+      (Data.Bytes.natToBytesPadded value.toNat 32) address.toNat
+    activeWords := s.activeWordsAfterUInt256 address.toNat 32 }
+
 private def afterFirstStores (s : State) (base : UInt256) : State :=
-  TableTrace.storedWord
-    (TableTrace.storedWord s base (UInt256.ofNat 0) (loadedE s base))
+  storedRawWord
+    (storedRawWord s base (UInt256.ofNat 0) (loadedE s base))
     base (UInt256.ofNat 4) (loadedD s base)
 
 private def rot2Tail (s : State) (base : UInt256) (j : Nat)
@@ -567,8 +566,8 @@ private def genericNextB (j : Nat) (word rotation k a b c d e : UInt256) :
     (UInt256.ofNat 0xffffffff)
 
 private def genericAfterFirstStores (q : State) (base e d : UInt256) : State :=
-  TableTrace.storedWord
-    (TableTrace.storedWord q base (UInt256.ofNat 0) e)
+  storedRawWord
+    (storedRawWord q base (UInt256.ofNat 0) e)
     base (UInt256.ofNat 4) d
 
 private def genericRot2Tail (base : UInt256) (j : Nat)
@@ -597,7 +596,7 @@ theorem run_afterRot1 (q : State) (base : UInt256) (j : Nat)
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       rotlReturned, rotlValue, genericT0, genericRot1Tail, genericNextB,
       genericAfterFirstStores, genericRot2Tail, rotlEntry,
-      TableTrace.storedWord,
+      storedRawWord,
       Challenge.EvmProof.Word.mask32, UInt256.instAndOp, UInt256.instOrOp,
       hrun, hcode, cap rest hstack, swap2, Nat.add_assoc,
       State.activeWordsAfterUInt256,
@@ -639,9 +638,9 @@ private def genericAfterThirdStore (q : State) (base c : UInt256) : State :=
 private def genericReturned (q : State) (base : UInt256) (j : Nat)
     (word rotation k returnDest : UInt256) (a b c d e : UInt256)
     (rest : List UInt256) : State :=
-  let q' := TableTrace.storedWord (genericAfterThirdStore q base c) base
+  let q' := storedRawWord (genericAfterThirdStore q base c) base
     (UInt256.ofNat 2) b
-  let q'' := TableTrace.storedWord q' base (UInt256.ofNat 1)
+  let q'' := storedRawWord q' base (UInt256.ofNat 1)
     (genericNextB j word rotation k a b c d e)
   { q'' with pc := returnDest, stack := rest }
 
@@ -664,6 +663,7 @@ theorem run_suffix (q : State) (base : UInt256) (j : Nat)
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       TableTrace.setReturned, genericSetTail, genericReturned,
       genericAfterThirdStore, genericNextB, TableTrace.storedWord,
+      storedRawWord,
       Challenge.EvmProof.Word.mask32,
       UInt256.instAndOp, UInt256.instOrOp,
       hrun, hcode, hvalid, cap rest hstack, Nat.add_assoc,
@@ -713,14 +713,14 @@ def gasSteps_roundBody (q : State) (base : UInt256) (j : Nat) (hj : j < 5)
     (by simp [genericRot1Tail]; omega) hcode hfork hrun hnp valid15D
   let q2 := genericAfterFirstStores q base e d
   have hcode2 : q2.executionEnv.code = submissionBytecode := by
-    simpa [q2, genericAfterFirstStores, TableTrace.storedWord] using hcode
+    simpa [q2, genericAfterFirstStores, storedRawWord] using hcode
   have hfork2 : q2.fork = .Osaka := by
-    simpa [q2, genericAfterFirstStores, TableTrace.storedWord] using hfork
+    simpa [q2, genericAfterFirstStores, storedRawWord] using hfork
   have hrun2 : q2.halt = .Running := by
-    simpa [q2, genericAfterFirstStores, TableTrace.storedWord] using hrun
+    simpa [q2, genericAfterFirstStores, storedRawWord] using hrun
   have hnp2 : Precompile.isPrecompileWithConfig q2.executionEnv.precompileConfig q2.executionEnv.fork
       q2.executionEnv.codeAddr = false := by
-    simpa [q2, genericAfterFirstStores, TableTrace.storedWord] using hnp
+    simpa [q2, genericAfterFirstStores, storedRawWord] using hnp
   have gAfterRot1 := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka afterRot1Path
       (s := rotlReturned q (genericT0 j word k a b c d) rotation
@@ -832,13 +832,13 @@ def gasSteps_round (s : State) (base : UInt256) (j : Nat) (hj : j < 5)
 each store boundary. -/
 def roundResult (x : Compression.EvmWorking) (j : Nat) (word : UInt256)
     (rotation : Nat) (k : UInt256) : Compression.EvmWorking :=
-  { a := UInt256.land x.e (UInt256.ofNat 0xffffffff)
+  { a := x.e
     b := genericNextB j word (UInt256.ofNat rotation) k
       x.a x.b x.c x.d x.e
-    c := UInt256.land x.b (UInt256.ofNat 0xffffffff)
+    c := x.b
     d := UInt256.land (rotlValue x.c (UInt256.ofNat 10))
       (UInt256.ofNat 0xffffffff)
-    e := UInt256.land x.d (UInt256.ofNat 0xffffffff) }
+    e := x.d }
 
 /-- The five contiguous words at a non-wrapping natural-number base. -/
 def workingAtNat (s : State) (base : Nat) : Compression.EvmWorking :=
@@ -880,7 +880,7 @@ theorem roundReturned_workingAtNat (s : State) (base : Nat)
       roundResult (workingAtNat s base) j
         (roundWord s (UInt256.ofNat base) wordIndex) rotation.toNat k := by
   have hslot (n : Nat) (hn : n ≤ 4) :
-      TableTrace.slotAddress (UInt256.ofNat base) (UInt256.ofNat n) =
+    TableTrace.slotAddress (UInt256.ofNat base) (UInt256.ofNat n) =
         UInt256.ofNat (base + n * 32) := by
     exact TableTrace.slotAddress_ofNat base n (by omega) (by omega)
   have htoNat (n : Nat) (hn : n ≤ 160) :
@@ -901,7 +901,7 @@ theorem roundReturned_workingAtNat (s : State) (base : Nat)
     [workingAtNat, roundReturned, genericReturned, genericAfterThirdStore,
       genericAfterFirstStores, genericNextB, genericT0, xReturnedState,
       afterLoads, roundResult, roundWord, loadedA, loadedB, loadedC, loadedD,
-      loadedE, TableTrace.atReturned, TableTrace.storedWord,
+      loadedE, TableTrace.atReturned, TableTrace.storedWord, storedRawWord,
       hslot, hadd, htoNat, hbaseToNat, hrotation,
       Challenge.EvmProof.Memory.readWord_writeWord,
       readWord_writePadded32_disjoint,
@@ -939,7 +939,7 @@ theorem roundReturned_word_outside (s : State) (base address : Nat)
     simp (config := { maxSteps := 500000 }) (discharger := omega)
       [roundReturned, genericReturned, genericAfterThirdStore,
         genericAfterFirstStores, xReturnedState, afterLoads,
-        TableTrace.atReturned, TableTrace.storedWord,
+        TableTrace.atReturned, TableTrace.storedWord, storedRawWord,
         hslot, hadd, htoNat, hbaseToNat,
         readWord_writePadded32_disjoint]
 

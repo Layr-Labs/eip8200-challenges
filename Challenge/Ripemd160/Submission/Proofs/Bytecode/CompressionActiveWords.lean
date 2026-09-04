@@ -26,7 +26,7 @@ open CompressionRightTrace
 open CompressionTailTrace
 
 open private afterLoads xReturnedState afterFirstStores genericAfterThirdStore
-  genericReturned from
+  genericAfterFirstStores genericNextB genericReturned from
   Challenge.Ripemd160.Submission.Proofs.Bytecode.RoundTrace
 
 open private leftSelector_lt rightSelector_lt leftStates_tableByte
@@ -495,6 +495,26 @@ private theorem storedWord_activeWords (s : State) (base index : Nat)
     Nat.mod_eq_of_lt (by omega : index < 2 ^ 256)]
   omega
 
+private theorem storedRawWord_activeWords (s : State) (base index : Nat)
+    (hindex : index < 16) (hactive : 67 ≤ s.activeWords.toNat)
+    (hbase : base + 32 * index + 32 ≤ 67 * 32) (value : UInt256) :
+    (RoundTrace.storedRawWord s (UInt256.ofNat base) (UInt256.ofNat index)
+      value).activeWords = s.activeWords := by
+  unfold RoundTrace.storedRawWord
+  apply activeWordsAfterUInt256_eq
+  rw [slotAddress_toNat base (UInt256.ofNat index)
+    (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt (by omega : index < 2 ^ 256)]
+      exact hindex)
+    (by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt (by omega : index < 2 ^ 256)]
+      omega)]
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by omega : index < 2 ^ 256)]
+  omega
+
 /-- A compiled round only touches fixed scratch words, provided its X selector
 is one of the sixteen schedule entries. -/
 theorem roundReturned_activeWords (s : State) (base : Nat)
@@ -513,16 +533,18 @@ theorem roundReturned_activeWords (s : State) (base : Nat)
     apply Eq.trans (activeWordsAfterUInt256_eq loaded _ 32 (by
       rw [slotAddress_toNat 0x2a0 wordIndex hword (by omega), hloaded]
       omega)) hloaded
-  let first := afterFirstStores xret (UInt256.ofNat base)
+  let first := genericAfterFirstStores xret (UInt256.ofNat base)
+    (RoundTrace.loadedE s (UInt256.ofNat base))
+    (RoundTrace.loadedD s (UInt256.ofNat base))
   have hfirst : first.activeWords = s.activeWords := by
-    unfold first afterFirstStores
-    have h₀ := storedWord_activeWords xret base 0 (by omega)
-      (by rw [hx]; exact hactive) (by omega) (RoundTrace.loadedE xret (UInt256.ofNat base))
-    exact (storedWord_activeWords
-      (TableTrace.storedWord xret (UInt256.ofNat base) (UInt256.ofNat 0)
-        (RoundTrace.loadedE xret (UInt256.ofNat base)))
+    unfold first genericAfterFirstStores
+    have h₀ := storedRawWord_activeWords xret base 0 (by omega)
+      (by rw [hx]; exact hactive) (by omega) (RoundTrace.loadedE s (UInt256.ofNat base))
+    exact (storedRawWord_activeWords
+      (RoundTrace.storedRawWord xret (UInt256.ofNat base) (UInt256.ofNat 0)
+        (RoundTrace.loadedE s (UInt256.ofNat base)))
       base 4 (by omega) (by rw [h₀, hx]; exact hactive) (by omega)
-      (RoundTrace.loadedD xret (UInt256.ofNat base))).trans (h₀.trans hx)
+      (RoundTrace.loadedD s (UInt256.ofNat base))).trans (h₀.trans hx)
   have hthird : (genericAfterThirdStore first (UInt256.ofNat base)
       (RoundTrace.loadedC s (UInt256.ofNat base))).activeWords = s.activeWords := by
     unfold genericAfterThirdStore
@@ -530,18 +552,24 @@ theorem roundReturned_activeWords (s : State) (base : Nat)
       (by rw [hfirst]; exact hactive) (by omega) _).trans hfirst
   unfold RoundTrace.roundReturned genericReturned
   dsimp only
-  have h₂ := storedWord_activeWords
+  have h₂ := storedRawWord_activeWords
     (genericAfterThirdStore first (UInt256.ofNat base)
       (RoundTrace.loadedC s (UInt256.ofNat base)))
     base 2 (by omega) (by rw [hthird]; exact hactive) (by omega)
     (RoundTrace.loadedB s (UInt256.ofNat base))
-  exact (storedWord_activeWords
-    (TableTrace.storedWord
+  exact (storedRawWord_activeWords
+    (RoundTrace.storedRawWord
       (genericAfterThirdStore first (UInt256.ofNat base)
         (RoundTrace.loadedC s (UInt256.ofNat base)))
       (UInt256.ofNat base) (UInt256.ofNat 2)
       (RoundTrace.loadedB s (UInt256.ofNat base)))
-    base 1 (by omega) (by rw [h₂, hthird]; exact hactive) (by omega) _).trans
+    base 1 (by omega) (by rw [h₂, hthird]; exact hactive) (by omega)
+    (genericNextB j (RoundTrace.roundWord s (UInt256.ofNat base) wordIndex)
+      rotation k (RoundTrace.loadedA s (UInt256.ofNat base))
+      (RoundTrace.loadedB s (UInt256.ofNat base))
+      (RoundTrace.loadedC s (UInt256.ofNat base))
+      (RoundTrace.loadedD s (UInt256.ofNat base))
+      (RoundTrace.loadedE s (UInt256.ofNat base)))).trans
       (h₂.trans hthird)
 
 private theorem leftRoundState_activeWords (s : State)

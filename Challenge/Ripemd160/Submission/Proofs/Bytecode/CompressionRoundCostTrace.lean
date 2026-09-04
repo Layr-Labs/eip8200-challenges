@@ -46,7 +46,7 @@ theorem fCaseWork_eq (j : Nat) (hj : j < 5) :
   interval_cases j <;> rfl
 
 theorem roundWork_eq (j : Nat) (hj : j < 5) :
-    roundWork j = [515, 524, 527, 527, 527][j]! := by
+    roundWork j = [491, 500, 503, 503, 503][j]! := by
   interval_cases j <;> rfl
 
 theorem rotl_cost_potential (s : State) (x n returnDest : UInt256)
@@ -174,14 +174,14 @@ theorem roundBody_cost_potential (q : State) (base : UInt256)
           word rotation k returnDest a b c d e rest).activeWords.toNat := by
   let q2 := genericAfterFirstStores q base e d
   have hcode2 : q2.executionEnv.code = submissionBytecode := by
-    simpa [q2, genericAfterFirstStores, TableTrace.storedWord] using hcode
+    simpa [q2, genericAfterFirstStores, TableTrace.storedWord, RoundTrace.storedRawWord] using hcode
   have hfork2 : q2.fork = .Osaka := by
-    simpa [q2, genericAfterFirstStores, TableTrace.storedWord] using hfork
+    simpa [q2, genericAfterFirstStores, TableTrace.storedWord, RoundTrace.storedRawWord] using hfork
   have hrun2 : q2.halt = .Running := by
-    simpa [q2, genericAfterFirstStores, TableTrace.storedWord] using hrun
+    simpa [q2, genericAfterFirstStores, TableTrace.storedWord, RoundTrace.storedRawWord] using hrun
   have hnp2 : Precompile.isPrecompileWithConfig q2.executionEnv.precompileConfig q2.executionEnv.fork
       q2.executionEnv.codeAddr = false := by
-    simpa [q2, genericAfterFirstStores, TableTrace.storedWord] using hnp
+    simpa [q2, genericAfterFirstStores, TableTrace.storedWord, RoundTrace.storedRawWord] using hnp
   have h0 := blockCost_potential RoundTrace.afterXPath
     (bodyEntry q base j wordIndex rotation k returnDest word a b c d e rest)
     (BooleanFunctionTrace.fEntry q j b c d (UInt256.ofNat 0x147)

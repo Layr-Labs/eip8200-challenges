@@ -350,7 +350,7 @@ private def gasSteps_outputIteration (s : State) (input : ByteArray)
     (OutputTrace.hWord q i) (UInt256.ofNat 0x676)
     [UInt256.ofNat i, Padding.paddedWord input] (by simp) (by omega)
     loadedCode loadedFork loadedRun
-    loadedNp (by exact Artifact.submissionArtifact.isValidJumpDest_index 818 (by rfl))
+    loadedNp (by decide)
   let written := writeLoopState loaded (12 + 4 * i) (OutputTrace.hWord q i)
     (UInt256.ofNat 0x676) [UInt256.ofNat i, Padding.paddedWord input] 4
   have writtenCode : written.executionEnv.code = submissionBytecode := by
