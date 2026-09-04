@@ -334,8 +334,7 @@ def topByteAddr (input : ByteArray) : UInt256 :=
 
 def topByteMemory (input : ByteArray) : ByteArray :=
   MachineState.writeBytes (padSentinel input).memory
-    (ByteArray.mk #[UInt8.ofNat ((topByteWord input).toNat % 256)])
-    (topByteAddr input).toNat
+    (ByteArray.mk #[0]) (topByteAddr input).toNat
 
 def topByteActiveWords (input : ByteArray) : UInt256 :=
   UInt256.ofNat (MachineState.activeWordsAfter
@@ -916,13 +915,12 @@ theorem lengthLoopMemory_getD (input : ByteArray) (hfit : CalldataFits input)
       if (Padding.messageOffset + Padding.paddedLength input.size - 8) ≤ a ∧ a < (Padding.messageOffset + Padding.paddedLength input.size - 8) + i then
         (Padding.lengthBytes input)[a - (Padding.messageOffset + Padding.paddedLength input.size - 8)]?.getD 0
       else if a = (Padding.messageOffset + Padding.paddedLength input.size - 8) + 7 then
-        (Padding.lengthBytes input)[7]?.getD 0
+        0
       else (padSentinel input).memory[a]?.getD 0 := by
   induction i with
   | zero =>
       rw [lengthLoopMemory, topByteMemory,
-        MachineState.writeBytes_getElem?_getD, topByteAddr_toNat input hfit,
-        topByte_eq input hfit]
+        MachineState.writeBytes_getElem?_getD, topByteAddr_toNat input hfit]
       simp only [oneByte_size]
       by_cases h : a = (Padding.messageOffset + Padding.paddedLength input.size - 8) + 7
       · rw [if_pos (by omega), if_neg (by omega), if_pos h, h, Nat.sub_self]
@@ -1005,7 +1003,8 @@ theorem lengthLoopMemory_final (input : ByteArray) (hfit : CalldataFits input)
       · rw [if_pos htop, if_pos (by omega)]
         have h7 : a - (Padding.messageOffset + Padding.paddedLength input.size - 8) = 7 := by
           omega
-        rw [h7]
+        rw [h7, lengthBytes_of_shift_zero input hfit i 7 (by omega)
+          (by norm_num) hz]
       · rw [if_neg htop]
         by_cases hwin : (Padding.messageOffset + Padding.paddedLength input.size - 8) ≤ a ∧ a < (Padding.messageOffset + Padding.paddedLength input.size - 8) + 8
         · rw [if_pos hwin]
@@ -1082,7 +1081,7 @@ private theorem run_lengthFooterSetup (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     lengthLoopState, lengthLoopMemory, topByteMemory, topByteActiveWords,
-    topByteWord, topByteAddr, lengthAddr, lengthShift,
+    topByteAddr, lengthAddr, lengthShift,
     lengthOffsetWord, bitLengthWord, State.activeWordsAfterUInt256]
 
 def gasSteps_lengthSetup (input : ByteArray) (hfit : CalldataFits input) :

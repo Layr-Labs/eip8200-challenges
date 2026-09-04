@@ -407,13 +407,13 @@ private def submissionInstructionsChunk1 : List Instr :=
   .push 2 2040,
   op 0x82,
   op 0x01,
-  op 0x81,
-  .push 1 56,
-  op 0x1c,
+  .push 1 0,
   op 0x81,
   .push 1 7,
   op 0x01,
   op 0x53,
+  op 0x5b,
+  op 0x5b,
   op 0x5b,
   op 0x81,
   op 0x81,
@@ -2967,7 +2967,7 @@ private theorem submissionInstructionsChunk1_assemble : assembleBytes submission
   0x60, 0x48, 0x81, 0x01, 0x60, 0x06, 0x1c, 0x60, 0x06, 0x1b, 0x90, 0x5b,
   0x80, 0x5f, 0x61, 0x08, 0x00, 0x37, 0x60, 0x80, 0x81, 0x61, 0x08, 0x00,
   0x01, 0x53, 0x5b, 0x60, 0xc3, 0x1b, 0x60, 0xc0, 0x1c, 0x61, 0x07, 0xf8,
-  0x82, 0x01, 0x81, 0x60, 0x38, 0x1c, 0x81, 0x60, 0x07, 0x01, 0x53, 0x5b,
+  0x82, 0x01, 0x60, 0x00, 0x81, 0x60, 0x07, 0x01, 0x53, 0x5b, 0x5b, 0x5b,
   0x81, 0x81, 0x53, 0x60, 0x01, 0x01, 0x90, 0x60, 0x08, 0x1c, 0x90, 0x81,
   0x61, 0x02, 0x11, 0x57, 0x50, 0x50, 0x90
 ] := by decide
@@ -4008,9 +4008,9 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
     instructionPC 377 = 0x208 := by rfl
 
 @[simp] theorem refPc378 :
-    submissionArtifact.instructionPC 378 = 0x209 := by rfl
+    submissionArtifact.instructionPC 378 = 0x20a := by rfl
 @[simp] theorem pc378 :
-    instructionPC 378 = 0x209 := by rfl
+    instructionPC 378 = 0x20a := by rfl
 
 @[simp] theorem refPc379 :
     submissionArtifact.instructionPC 379 = 0x20b := by rfl
@@ -4018,14 +4018,14 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
     instructionPC 379 = 0x20b := by rfl
 
 @[simp] theorem refPc380 :
-    submissionArtifact.instructionPC 380 = 0x20c := by rfl
+    submissionArtifact.instructionPC 380 = 0x20d := by rfl
 @[simp] theorem pc380 :
-    instructionPC 380 = 0x20c := by rfl
+    instructionPC 380 = 0x20d := by rfl
 
 @[simp] theorem refPc381 :
-    submissionArtifact.instructionPC 381 = 0x20d := by rfl
+    submissionArtifact.instructionPC 381 = 0x20e := by rfl
 @[simp] theorem pc381 :
-    instructionPC 381 = 0x20d := by rfl
+    instructionPC 381 = 0x20e := by rfl
 
 @[simp] theorem refPc382 :
     submissionArtifact.instructionPC 382 = 0x20f := by rfl
@@ -4217,13 +4217,13 @@ def padSetupPath : List
    ⟨374, .push ⟨2, by decide⟩ (UInt256.ofNat 0x7f8), by rfl, by decide⟩,
    ⟨375, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨376, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨377, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨378, .push ⟨1, by decide⟩ (UInt256.ofNat 0x38), by rfl, by decide⟩,
-   ⟨379, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨380, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨381, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
-   ⟨382, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨383, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨377, .push ⟨1, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨378, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨379, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
+   ⟨380, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨381, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨382, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨383, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨384, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 
