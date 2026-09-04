@@ -61,18 +61,18 @@ def rightConstant (i : Nat) : UInt256 :=
 def leftHelperPCOfGroup (group : Nat) : UInt256 :=
   match group with
   | 0 => UInt256.ofNat 0xfca
-  | 1 => UInt256.ofNat 0x1004
-  | 2 => UInt256.ofNat 0x1046
-  | 3 => UInt256.ofNat 0x1087
-  | _ => UInt256.ofNat 0x10c9
+  | 1 => UInt256.ofNat 0x1003
+  | 2 => UInt256.ofNat 0x1044
+  | 3 => UInt256.ofNat 0x1084
+  | _ => UInt256.ofNat 0x10c5
 
 def rightHelperPCOfGroup (group : Nat) : UInt256 :=
   match group with
-  | 0 => UInt256.ofNat 0x110a
-  | 1 => UInt256.ofNat 0x114b
-  | 2 => UInt256.ofNat 0x118d
-  | 3 => UInt256.ofNat 0x11ce
-  | _ => UInt256.ofNat 0x1210
+  | 0 => UInt256.ofNat 0x1105
+  | 1 => UInt256.ofNat 0x1145
+  | 2 => UInt256.ofNat 0x1186
+  | 3 => UInt256.ofNat 0x11c6
+  | _ => UInt256.ofNat 0x1207
 
 def leftHelperPC (i : Nat) : UInt256 :=
   leftHelperPCOfGroup (i / 16)
@@ -82,7 +82,7 @@ def rightHelperPC (i : Nat) : UInt256 :=
 
 def wrapperTemplate (returnPC xAddress helperPC : UInt256)
     (rotation : Nat) : List Instr :=
-  [push2 returnPC, push1 (UInt256.ofNat rotation), push2 xAddress,
+  [push1 (UInt256.ofNat rotation), push2 returnPC, push2 xAddress,
     push2 helperPC, op .JUMP, op .JUMPDEST]
 
 def leftTemplate (i : Nat) : List Instr :=
