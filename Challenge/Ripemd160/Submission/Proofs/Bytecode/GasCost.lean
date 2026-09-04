@@ -173,4 +173,8 @@ theorem gasSchedule_correct_of_trace
     exact hresult input hfit
   simpa [hfinal] using heval
 
+theorem referenceGas_nonnegative (input : ByteArray) :
+    0 ≤ referenceGas input := by
+  exact Nat.zero_le _
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.GasCost
