@@ -184,13 +184,6 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
     simpa [StackBlockModel.scheduledState, rest, hmsg] using
       (PackedScheduleMemoryBridge.expectedMemory_eq_loopState_memory s p
         (UInt256.ofNat 0x72f) rest hp hbound)
-  have hactive :
-      PackedScheduleTemplate.expectedActiveWords s
-          (DriverTrace.messageOffsetWord i) =
-        (StackBlockModel.scheduledState s input i).activeWords := by
-    simpa [StackBlockModel.scheduledState, rest] using
-      (PackedScheduleActiveWords.expectedActiveWords_eq_schedule s input hfit i hi
-        (UInt256.ofNat 0x72f) rest)
   have hstack1023 : rest.length < 1023 := by
     change 4 < 1023
     norm_num
@@ -222,9 +215,9 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
     hartifactCode hfork hrun hnp hstack1023 hvalid
     hraw
   exact hpacked.cast rfl
-    (PackedScheduleState.returned_eq_schedule_of_memory_active s
+    (PackedScheduleState.returned_eq_schedule_with_active_of_memory s
       PackedScheduleSite.packedScheduleSite.startPC
-      (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest hmemory hactive)
+      (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest hmemory)
 
 def gasSteps_exit (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)

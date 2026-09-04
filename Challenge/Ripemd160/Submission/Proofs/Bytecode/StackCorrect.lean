@@ -31,15 +31,17 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
   let left := StackCompression.leftRounds word 80 w
   let right := StackCompression.rightRounds word 80 w
   let rightRest := StackRoundTrace.roundWords left ++ rest
-  have qactive : 67 ≤ q.activeWords.toNat := by
+  have qactive : 66 ≤ q.activeWords.toNat := by
     rw [scheduledState_activeWords s input hfit i hi]
     omega
   have qwords : WordsAt q word := scheduled_words_memory s input i h ctx
   have qenv : q.executionEnv = s.executionEnv := by
+    dsimp [q, scheduledState]
     exact Schedule.loopState_executionEnv s _ _ _ 16
   have qcode : q.executionEnv.code = submissionBytecode := by rw [qenv]; exact hcode
   have qfork : q.fork = .Osaka := by rw [State.fork, qenv]; exact hfork
   have qrun : q.halt = .Running := by
+    dsimp [q, scheduledState]
     exact (Schedule.loopState_halt s (DriverTrace.messageOffsetWord i)
       (UInt256.ofNat 0x72f) (scheduleRest input i) 16).trans hrun
   have qnp : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig

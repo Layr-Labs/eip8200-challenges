@@ -16,7 +16,7 @@ The same bytes must also return the correct result from the dirty state.
 Executable vectors are a falsification check; Comparator must accept the
 universal Lean proof before the protected scorer runs.
 
-## Current candidate: H22 folds with the redundant C mask removed
+## Current candidate: H23 C-mask deletion plus schedule warm-up deletion
 
 This candidate starts from GordoAR's public H22c-packed artifact (submission
 `d3674f07-3391-40b6-ad39-6f65284613f3`, public PR 62). H22 folds both round
@@ -29,8 +29,11 @@ performs the required 32-bit truncation.
 
 Removing the two operations saves six gas on each of 160 helper calls per
 compression block. Across the public suite's 66 blocks this is 63,360 gas.
-The exact artifact is 5,090 bytes and 2,565 instructions; the trusted scorer
-passes all 17 clean and 17 dirty cases at 1,571,879 clean-state gas.
+The packed schedule previously performed an unaligned `MLOAD` solely to expand
+memory, then immediately discarded its value. Removing its
+`DUP1 PUSH1 60 ADD MLOAD POP` warm-up saves another 976 gas across the suite.
+The exact artifact is 5,084 bytes and 2,560 instructions; the trusted scorer
+passes all 17 clean and 17 dirty cases at 1,570,903 clean-state gas.
 
 The proof represents intermediate EVM working words by their low 32-bit
 projections while retaining exactness for the two fields needed by the folded
@@ -38,7 +41,10 @@ rotation. `RotationFold.C10_or_fold` establishes the projection of the raw H22
 fold. The lane induction carries that relation through all 80 rounds and the
 final combination restores exact embedded hash words. Artifact, wrapper-site,
 helper-site, packed-schedule, and tail certificates bind the proof to the
-shortened bytecode and its relocated jump destinations.
+shortened bytecode and its relocated jump destinations. The active-memory
+proof now records the exact aligned-load high-water mark
+`max(previous, 66 + 2 * blockIndex)` and shows every later access stays within
+that allocation.
 
 ## Earlier direct-entry candidate
 
