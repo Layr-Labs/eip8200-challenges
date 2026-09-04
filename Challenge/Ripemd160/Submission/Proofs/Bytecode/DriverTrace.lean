@@ -38,19 +38,18 @@ def conditionPath : List Located :=
   [⟨770, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨771, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨772, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨773, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨774, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨775, .push ⟨2, by decide⟩ (UInt256.ofNat 0x13f1), by rfl, by decide⟩,
-   ⟨776, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨773, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨774, .push ⟨2, by decide⟩ (UInt256.ofNat 0x13f2), by rfl, by decide⟩,
+   ⟨775, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def callPath : List Located :=
-  [⟨777, .push ⟨2, by decide⟩ (UInt256.ofNat 0x643), by rfl, by decide⟩,
-   ⟨778, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨779, .push ⟨2, by decide⟩ (UInt256.ofNat Padding.messageOffset),
+  [⟨776, .push ⟨2, by decide⟩ (UInt256.ofNat 0x643), by rfl, by decide⟩,
+   ⟨777, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨778, .push ⟨2, by decide⟩ (UInt256.ofNat Padding.messageOffset),
       by rfl, by decide⟩,
-   ⟨780, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨781, .push ⟨2, by decide⟩ (UInt256.ofNat 0x726), by rfl, by decide⟩,
-   ⟨782, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨779, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨780, .push ⟨2, by decide⟩ (UInt256.ofNat 0x726), by rfl, by decide⟩,
+   ⟨781, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def incrementPath : List Located :=
   [⟨783, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -66,13 +65,13 @@ def incrementPath : List Located :=
 @[simp] private theorem pc772 : Artifact.submissionArtifact.instructionPC 772 = 0x630 := by decide
 @[simp] private theorem pc773 : Artifact.submissionArtifact.instructionPC 773 = 0x631 := by decide
 @[simp] private theorem pc774 : Artifact.submissionArtifact.instructionPC 774 = 0x632 := by decide
-@[simp] private theorem pc775 : Artifact.submissionArtifact.instructionPC 775 = 0x633 := by decide
+@[simp] private theorem pc775 : Artifact.submissionArtifact.instructionPC 775 = 0x635 := by decide
 @[simp] private theorem pc776 : Artifact.submissionArtifact.instructionPC 776 = 0x636 := by decide
-@[simp] private theorem pc777 : Artifact.submissionArtifact.instructionPC 777 = 0x637 := by decide
+@[simp] private theorem pc777 : Artifact.submissionArtifact.instructionPC 777 = 0x639 := by decide
 @[simp] private theorem pc778 : Artifact.submissionArtifact.instructionPC 778 = 0x63a := by decide
-@[simp] private theorem pc779 : Artifact.submissionArtifact.instructionPC 779 = 0x63b := by decide
+@[simp] private theorem pc779 : Artifact.submissionArtifact.instructionPC 779 = 0x63d := by decide
 @[simp] private theorem pc780 : Artifact.submissionArtifact.instructionPC 780 = 0x63e := by decide
-@[simp] private theorem pc781 : Artifact.submissionArtifact.instructionPC 781 = 0x63f := by decide
+@[simp] private theorem pc781 : Artifact.submissionArtifact.instructionPC 781 = 0x641 := by decide
 @[simp] private theorem pc782 : Artifact.submissionArtifact.instructionPC 782 = 0x642 := by decide
 @[simp] private theorem pc783 : Artifact.submissionArtifact.instructionPC 783 = 0x643 := by decide
 @[simp] private theorem pc784 : Artifact.submissionArtifact.instructionPC 784 = 0x644 := by decide
@@ -105,7 +104,7 @@ def loopAt (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def afterCondition (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x637
+    pc := UInt256.ofNat 0x636
     stack := [blockOffsetWord i, Padding.paddedWord input] }
 
 /-- State at the compression entry point. The helper receives the concrete
@@ -128,7 +127,7 @@ def afterIteration (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def afterExit (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 0x13f1
+    pc := UInt256.ofNat 0x13f2
     stack := [blockOffsetWord (blockCount input), Padding.paddedWord input] }
 
 theorem paddedLength_eq_blockCount (input : ByteArray) :
@@ -164,28 +163,28 @@ private theorem messageOffset_lt_uint256 (input : ByteArray)
   norm_num [Padding.messageOffset] at hfit ⊢
   omega
 
-private theorem offset_lt_total (input : ByteArray)
+private theorem offset_ne_total (input : ByteArray)
     (hfit : Challenge.Ripemd160.CalldataFits input) (i : Nat)
     (hi : i < blockCount input) :
-    UInt256.lt (blockOffsetWord i) (Padding.paddedWord input) =
-      UInt256.ofNat 1 := by
+    UInt256.eq (blockOffsetWord i) (Padding.paddedWord input) = 0 := by
   have hoff := blockOffset_lt_uint256 input hfit i (Nat.le_of_lt hi)
   have hpad := paddedLength_lt_uint256 input hfit
-  have hnat : blockOffset i < Padding.paddedLength input.size := by
+  have hnat : blockOffset i ≠ Padding.paddedLength input.size := by
     rw [paddedLength_eq_blockCount input]
     unfold blockOffset
     omega
   rw [Padding.paddedWord_eq input hfit]
-  unfold UInt256.lt blockOffsetWord
+  unfold UInt256.eq blockOffsetWord
   rw [Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt hoff, Nat.mod_eq_of_lt hpad]
-  simp only [if_pos hnat]
+  simp only [if_neg hnat]
+  rfl
 
-private theorem offset_not_lt_total (input : ByteArray)
+private theorem offset_eq_total (input : ByteArray)
     (hfit : Challenge.Ripemd160.CalldataFits input) :
-    UInt256.lt (blockOffsetWord (blockCount input))
-      (Padding.paddedWord input) = 0 := by
+    UInt256.eq (blockOffsetWord (blockCount input))
+      (Padding.paddedWord input) = UInt256.ofNat 1 := by
   have hoff := blockOffset_lt_uint256 input hfit (blockCount input) (by omega)
   have hpad := paddedLength_lt_uint256 input hfit
   have heq : blockOffset (blockCount input) =
@@ -193,11 +192,11 @@ private theorem offset_not_lt_total (input : ByteArray)
     rw [paddedLength_eq_blockCount input]
     rfl
   rw [Padding.paddedWord_eq input hfit]
-  unfold UInt256.lt blockOffsetWord
+  unfold UInt256.eq blockOffsetWord
   rw [Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt hoff, Nat.mod_eq_of_lt hpad, heq]
-  simp only [Nat.lt_irrefl, if_false]
+  simp only [if_pos rfl]
   rfl
 
 /-- The driver's concrete pointer selects block `i` of the padded message. -/
@@ -232,12 +231,11 @@ theorem run_condition_continue (s : State) (input : ByteArray)
     (hi : i < blockCount input) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock conditionPath (loopAt s input i) =
       some (afterCondition s input i) := by
-  have hlt := offset_lt_total input hfit i hi
-  have hzero : UInt256.isZero (UInt256.ofNat 1) = 0 := by decide
+  have heq := offset_ne_total input hfit i hi
   have hfalse : UInt256.isTrue (0 : UInt256) = false := by decide
   simp [conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    loopAt, afterCondition, hrun, hlt, hzero, hfalse]
+    loopAt, afterCondition, hrun, heq, hfalse]
 
 theorem run_condition_exit (s : State) (input : ByteArray)
     (hfit : Challenge.Ripemd160.CalldataFits input)
@@ -245,15 +243,14 @@ theorem run_condition_exit (s : State) (input : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock conditionPath
       (loopAt s input (blockCount input)) = some (afterExit s input) := by
-  have hlt := offset_not_lt_total input hfit
-  have hzero : UInt256.isZero (0 : UInt256) = UInt256.ofNat 1 := by decide
+  have heq := offset_eq_total input hfit
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x13f1 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2808 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x13f2 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2809 (by rfl)
   simp [conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    loopAt, afterExit, hrun, hcode, hlt, hzero,
+    loopAt, afterExit, hrun, hcode, heq,
     htrue, honeNat, UInt256.isTrue, hdest]
 
 theorem run_call (s : State) (input : ByteArray)
