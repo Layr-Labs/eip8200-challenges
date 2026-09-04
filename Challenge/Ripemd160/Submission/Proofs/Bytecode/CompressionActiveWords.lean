@@ -816,7 +816,7 @@ theorem resultState_activeWords (s : State) (input : ByteArray)
     (CompressionFullTrace.resultState s input block).activeWords.toNat =
       max s.activeWords.toNat (67 + 2 * block) := by
   let messageOffset := DriverTrace.messageOffsetWord block
-  let returnDest := UInt256.ofNat 0x643
+  let returnDest := UInt256.ofNat 0x436
   let rest := CompressionFullTrace.driverRest input block
   let scheduled := scheduledState s messageOffset returnDest rest
   have hscheduled : scheduled.activeWords.toNat =

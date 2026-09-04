@@ -3,7 +3,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCompression
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackMemory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleMemory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduleActiveWords
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleActiveWords
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -26,7 +26,7 @@ def driverRest (input : ByteArray) (i : Nat) : List UInt256 :=
   [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
 
 def scheduleRest (input : ByteArray) (i : Nat) : List UInt256 :=
-  [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x643] ++ driverRest input i
+  [UInt256.ofNat 0x436] ++ driverRest input i
 
 def withMemory (s : State) (memory : ByteArray) : State :=
   {s with memory := memory}
@@ -46,11 +46,28 @@ def withMemory (s : State) (memory : ByteArray) : State :=
 @[simp] theorem withMemory_stack (s : State) (memory : ByteArray) :
     (withMemory s memory).stack = s.stack := by rfl
 
+def withActiveWords (s : State) (activeWords : UInt256) : State :=
+  {s with activeWords := activeWords}
+
+@[simp] theorem withActiveWords_memory (s : State) (activeWords : UInt256) :
+    (withActiveWords s activeWords).memory = s.memory := by rfl
+@[simp] theorem withActiveWords_activeWords (s : State) (activeWords : UInt256) :
+    (withActiveWords s activeWords).activeWords = activeWords := by rfl
+@[simp] theorem withActiveWords_executionEnv (s : State) (activeWords : UInt256) :
+    (withActiveWords s activeWords).executionEnv = s.executionEnv := by rfl
+@[simp] theorem withActiveWords_halt (s : State) (activeWords : UInt256) :
+    (withActiveWords s activeWords).halt = s.halt := by rfl
+@[simp] theorem withActiveWords_callStack (s : State) (activeWords : UInt256) :
+    (withActiveWords s activeWords).callStack = s.callStack := by rfl
+
 def scheduledState (s : State) (input : ByteArray) (i : Nat) : State :=
-  withMemory
-    (Schedule.loopState s (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x711)
-      (scheduleRest input i) 16)
-    (DenseScheduleTemplate.denseExpectedMemory s (DriverTrace.messageOffsetWord i))
+  withActiveWords
+    (withMemory
+      (Schedule.loopState s (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523)
+        (scheduleRest input i) 16)
+      (DenseScheduleTemplate.denseExpectedMemory s (DriverTrace.messageOffsetWord i)))
+    (DenseScheduleTemplate.denseExpectedActiveWords s
+      (DriverTrace.messageOffsetWord i))
 
 def blockWords (input : ByteArray) (i : Nat) : Nat → UInt32 :=
   fun k => (CompressionCorrect.schedule (Padding.paddedMessage input)
@@ -66,18 +83,20 @@ def resultHash (s : State) (input : ByteArray) (i : Nat) : Compression.EvmHashSt
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   {scheduledState s input i with
-    pc := UInt256.ofNat 0x643
+    pc := UInt256.ofNat 0x436
     stack := driverRest input i
     memory := StackMemory.storeHash (scheduledState s input i).memory (resultHash s input i)}
 
 @[simp] theorem resultState_executionEnv (s : State) (input : ByteArray) (i : Nat) :
     (resultState s input i).executionEnv = s.executionEnv := by
-  simp only [resultState, scheduledState, withMemory_executionEnv,
+  simp only [resultState, scheduledState, withActiveWords_executionEnv,
+    withMemory_executionEnv,
     Schedule.loopState_executionEnv]
 
 @[simp] theorem resultState_halt (s : State) (input : ByteArray) (i : Nat) :
     (resultState s input i).halt = s.halt := by
-  simp only [resultState, scheduledState, withMemory_halt, Schedule.loopState_halt]
+  simp only [resultState, scheduledState, withActiveWords_halt, withMemory_halt,
+    Schedule.loopState_halt]
 
 private theorem scheduleLoop_callStack (s : State)
     (messageOffset returnDest : UInt256) (rest : List UInt256) (n : Nat) :
@@ -90,7 +109,8 @@ private theorem scheduleLoop_callStack (s : State)
 
 @[simp] theorem resultState_callStack (s : State) (input : ByteArray) (i : Nat) :
     (resultState s input i).callStack = s.callStack := by
-  simp only [resultState, scheduledState, withMemory_callStack, scheduleLoop_callStack]
+  simp only [resultState, scheduledState, withActiveWords_callStack,
+    withMemory_callStack, scheduleLoop_callStack]
 
 theorem scheduleLoop_word_outsideX (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) (n address : Nat) (hn : n ≤ 16)
@@ -137,13 +157,13 @@ private theorem denseExpectedMemory_readWord_outside (s : State)
   rw [DenseScheduleTemplate.denseExpectedMemory, denseStoreOffset_zero,
     denseStoreOffset_one]
   unfold DenseScheduleTemplate.writeDenseWord
-  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 704 (by
+  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 672 (by
     rcases houtside with hbefore | hafter
-    · exact Or.inl (by omega)
+    · exact Or.inl hbefore
     · exact Or.inr (by rw [denseWordBytes_size]; omega)),
-    Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 672 (by
+    Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 704 (by
       rcases houtside with hbefore | hafter
-      · exact Or.inl hbefore
+      · exact Or.inl (by omega)
       · exact Or.inr (by rw [denseWordBytes_size]; omega))]
 
 private theorem densePacked_stage_eq_template (value : UInt256)
@@ -195,6 +215,7 @@ private theorem denseExpectedMemory_eq_denseMemory (s : State) (p : Nat)
     DenseScheduleMemory.packedBytes]
   rw [densePacked_packedWord_eq_template,
     densePacked_packedWord_eq_template]
+  exact DenseScheduleMemory.writePacked_comm_672_704 _ _ _
 
 private theorem denseExpectedMemory_word_low32 (s : State) (p k : Nat)
     (hk : k < 16) (hbound : p + 64 < 2 ^ 256) :
@@ -220,7 +241,8 @@ theorem resultState_word_above (s : State) (input : ByteArray) (i address : Nat)
 
 theorem scheduledState_hash (s : State) (input : ByteArray) (i : Nat) :
     StackMemory.hashAt (scheduledState s input i).memory = StackMemory.hashAt s.memory := by
-  simp only [StackMemory.hashAt, scheduledState, withMemory_memory]
+  simp only [StackMemory.hashAt, scheduledState, withActiveWords_memory,
+    withMemory_memory]
   rw [denseExpectedMemory_readWord_outside s _ 32 (Or.inl (by omega)),
     denseExpectedMemory_readWord_outside s _ 64 (Or.inl (by omega)),
     denseExpectedMemory_readWord_outside s _ 96 (Or.inl (by omega)),
@@ -229,10 +251,9 @@ theorem scheduledState_hash (s : State) (input : ByteArray) (i : Nat) :
 
 theorem scheduledState_activeWords (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < DriverTrace.blockCount input) :
-    (scheduledState s input i).activeWords.toNat = max s.activeWords.toNat (67 + 2 * i) := by
-  rw [scheduledState, withMemory_activeWords]
-  exact ScheduleActiveWords.scheduledState_activeWords s input hfit i hi
-    (UInt256.ofNat 0x711) (scheduleRest input i)
+    (scheduledState s input i).activeWords.toNat = max s.activeWords.toNat (66 + 2 * i) := by
+  rw [scheduledState, withActiveWords_activeWords]
+  exact DenseScheduleActiveWords.expectedActiveWords_toNat s input hfit i hi
 
 theorem scheduledState_words (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (ctx : StackRunBridge.BlockContext s input i h)
