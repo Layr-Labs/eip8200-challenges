@@ -10,13 +10,13 @@ just `radix ^ n - m` — one borrow-propagating subtraction.  `CSUB` already
 computes `t[n] * radix ^ n + t_low - m` selected against `m`, so storing
 `t[n] := 1` over the still-zero `t` block and entering `CSUB` with `pd = R1`
 produces `R mod m` in a single pass over the limbs instead of the 256 modular
-doublings `DOUBLE256` performs.  Every other modulus falls through to
-`DOUBLE256` unchanged.
+doublings `DOUBLE256` performs.  A modulus with a clear top bit reaches the
+`R1C` small-top guard (pc 2995) instead.
 
 The two basic blocks are
 
 * `blk1768` (idx 1768..1775, pc 2901..2911) — `JUMPDEST`, the top-bit test
-  `MLOAD 0; PUSH1 255; SHR; ISZERO` and the `JUMPI` back to `DOUBLE256`;
+   `MLOAD 0; PUSH1 255; SHR; ISZERO` and the `JUMPI` to the `R1C` guard;
 * `blk1776` (idx 1776..1780, pc 2912..2921) — `MSTORE TN 1` and the tail call
   into `CSUB` (pc 2642).
 
@@ -39,7 +39,7 @@ def blk1768 :
    pushAt 1771 1 255,
    opAt 1772 .SHR,
    opAt 1773 .ISZERO,
-   pushAt 1774 2 1911,
+   pushAt 1774 2 2995,
    opAt 1775 .JUMPI]
 
 /-- Instructions 1776..1780, pc 2912..2921: `t[n] := 1` and the tail call into

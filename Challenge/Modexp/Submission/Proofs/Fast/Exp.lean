@@ -5055,11 +5055,14 @@ just `radix ^ n - m`.  `CSUB` already reduces `t[n] * radix ^ n + t_low`
 against `m`, and at this point in the setup the `t` block is still zero, so
 storing `t[n] := 1` turns a single `CSUB` pass into the whole of `R mod m`,
 in place of the 256 modular doublings `DOUBLE256` performs.  A modulus whose
-top bit is clear keeps the `DOUBLE256` path unchanged. -/
+top bit is clear reaches the `R1C` guard (pc 2995), which computes `R mod m`
+as `lo ^ 2` for the two-limb small-top family and only then falls through to
+`DOUBLE256`. -/
 
 /-- The memory one `R1B` call produces. -/
 def r1Mem (n px : Nat) (mem : ByteArray) : ByteArray :=
   if R1.TopBitSet mem then Csub.csResultMemory (R1.tnMem mem) n px
+  else if R1.SmallTop n mem then R1.smallMem px mem
   else dbl256Mem n px mem
 
 theorem readWord_tnMem_high (mem : ByteArray) (addr : Nat) (haddr : 8256 ≤ addr) :
@@ -5088,8 +5091,8 @@ theorem r1Mem_represents {n mm : Nat} (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 
     (htz : Model.FastRepresents mem 8256 n 0) :
     Model.FastRepresents (r1Mem n 4096 mem) 4096 n (Limbs.radix ^ n % mm) := by
   unfold r1Mem
-  split
-  · rename_i htop
+  by_cases htop : R1.TopBitSet mem
+  · rw [if_pos htop]
     have hbound : 1 * Limbs.radix ^ n + 0 < 2 * mm := by
       have h := R1.radix_pow_lt_two_mul (n := n) (mm := mm) (by omega) hodd hmod htop
       omega
@@ -5098,12 +5101,20 @@ theorem r1Mem_represents {n mm : Nat} (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 
       (tnMem_disjoint mem 0 n mm (Or.inr (by omega)) hmod)
       (by rw [tnMem_readWord]; decide) (by omega) hmpos hbound
     simpa using h
-  · have h := Double.double256_addmod_represents mem 4096 n mm (Limbs.radix ^ (n - 1))
-      hn hn32 (by omega) (by omega) hmpos hmod hr1 hxlt
-    have hM : Limbs.radix ^ (n - 1) * Limbs.radix = Limbs.radix ^ n := by
-      rw [← pow_succ]; congr 1; omega
-    rw [dbl256Mem_eq]
-    rwa [hM] at h
+  · rw [if_neg htop]
+    by_cases hsmall : R1.SmallTop n mem
+    · rw [if_pos hsmall]
+      unfold R1.SmallTop at hsmall
+      obtain ⟨hn2, htop1, hlo256⟩ := hsmall
+      subst hn2
+      exact R1.smallMem_represents hmod htop1 rfl hlo256
+    · rw [if_neg hsmall]
+      have h := Double.double256_addmod_represents mem 4096 n mm (Limbs.radix ^ (n - 1))
+        hn hn32 (by omega) (by omega) hmpos hmod hr1 hxlt
+      have hM : Limbs.radix ^ (n - 1) * Limbs.radix = Limbs.radix ^ n := by
+        rw [← pow_succ]; congr 1; omega
+      rw [dbl256Mem_eq]
+      rwa [hM] at h
 
 /-- The modulus survives either branch. -/
 theorem r1Mem_modulus {n mm : Nat} (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm)
@@ -5113,13 +5124,28 @@ theorem r1Mem_modulus {n mm : Nat} (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 <
     (hxlt : Limbs.radix ^ (n - 1) < mm) :
     Model.FastRepresents (r1Mem n 4096 mem) 0 n mm := by
   unfold r1Mem
-  split
-  · exact Csub.csub_preserves_region (R1.tnMem mem) n 4096 0 n mm hn
+  by_cases htop : R1.TopBitSet mem
+  · rw [if_pos htop]
+    exact Csub.csub_preserves_region (R1.tnMem mem) n 4096 0 n mm hn
       (Or.inl (by omega)) (Or.inr (by omega))
       (tnMem_disjoint mem 0 n mm (Or.inr (by omega)) hmod)
-  · rw [dbl256Mem_eq]
-    exact Double.double256_addmod_modulus mem 4096 n mm (Limbs.radix ^ (n - 1)) hn hn32
-      (by omega) (by omega) hmpos hmod hr1 hxlt
+  · rw [if_neg htop]
+    by_cases hsmall : R1.SmallTop n mem
+    · rw [if_pos hsmall]
+      have step0 : Model.FastRepresents
+          (MachineState.writeBytes mem
+            (Data.Bytes.natToBytesPadded (0 : UInt256).toNat 32) 4096) 0 n mm :=
+        Model.fastRepresents_writeWord_disjoint mem 4096 0 n mm
+          (0 : UInt256).toNat (Or.inr (by omega)) hmod
+      have step1 : Model.FastRepresents (R1.smallMem 4096 mem) 0 n mm :=
+        Model.fastRepresents_writeWord_disjoint _ (4096 + 32) 0 n mm
+          (MachineState.readWord mem 32 * MachineState.readWord mem 32).toNat
+          (Or.inr (by omega)) step0
+      exact step1
+    · rw [if_neg hsmall]
+      rw [dbl256Mem_eq]
+      exact Double.double256_addmod_modulus mem 4096 n mm (Limbs.radix ^ (n - 1)) hn hn32
+        (by omega) (by omega) hmpos hmod hr1 hxlt
 
 /-- Blocks strictly between the modulus and `R1` survive either branch. -/
 theorem r1Mem_preserves {n ptr v : Nat} (hn : 2 ≤ n) (_hn32 : n ≤ 32)
@@ -5127,27 +5153,51 @@ theorem r1Mem_preserves {n ptr v : Nat} (hn : 2 ≤ n) (_hn32 : n ≤ 32)
     (hrep : Model.FastRepresents mem ptr n v) :
     Model.FastRepresents (r1Mem n 4096 mem) ptr n v := by
   unfold r1Mem
-  split
-  · exact Csub.csub_preserves_region (R1.tnMem mem) n 4096 ptr n v hn
+  by_cases htop : R1.TopBitSet mem
+  · rw [if_pos htop]
+    exact Csub.csub_preserves_region (R1.tnMem mem) n 4096 ptr n v hn
       (Or.inl (by omega)) (Or.inr (by omega))
       (tnMem_disjoint mem ptr n v (Or.inr (by omega)) hrep)
-  · rw [dbl256Mem_eq]
-    exact Double.double256_addmod_preserves mem 4096 n ptr n v hn (Or.inl (by omega))
-      (Or.inl (by omega)) (Or.inr (by omega)) hrep 256
+  · rw [if_neg htop]
+    by_cases hsmall : R1.SmallTop n mem
+    · rw [if_pos hsmall]
+      have step0 : Model.FastRepresents
+          (MachineState.writeBytes mem
+            (Data.Bytes.natToBytesPadded (0 : UInt256).toNat 32) 4096) ptr n v :=
+        Model.fastRepresents_writeWord_disjoint mem 4096 ptr n v
+          (0 : UInt256).toNat (Or.inr (by omega)) hrep
+      have step1 : Model.FastRepresents (R1.smallMem 4096 mem) ptr n v :=
+        Model.fastRepresents_writeWord_disjoint _ (4096 + 32) ptr n v
+          (MachineState.readWord mem 32 * MachineState.readWord mem 32).toNat
+          (Or.inr (by omega)) step0
+      exact step1
+    · rw [if_neg hsmall]
+      rw [dbl256Mem_eq]
+      exact Double.double256_addmod_preserves mem 4096 n ptr n v hn (Or.inl (by omega))
+        (Or.inl (by omega)) (Or.inr (by omega)) hrep 256
 
 /-- The variable block survives either branch. -/
 theorem r1Mem_frame {n bsize minv : Nat} (hn : 2 ≤ n) (hn32 : n ≤ 32)
     {mem : ByteArray} (hf : Frame mem n bsize minv) :
     Frame (r1Mem n 4096 mem) n bsize minv := by
   unfold r1Mem
-  split
-  · refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;>
+  by_cases htop : R1.TopBitSet mem
+  · rw [if_pos htop]
+    refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;>
     · rw [Double.readWord_csResultMemory_high _ n 4096 _ (by omega) hn32 (by omega)
             (by omega),
         readWord_tnMem_high _ _ (by omega)]
       first
       | exact hf.s32 | exact hf.minvW | exact hf.ml | exact hf.tl | exact hf.eoff
-  · exact dbl256Mem_frame 4096 (by omega) hn32 (by omega) hf
+  · rw [if_neg htop]
+    by_cases hsmall : R1.SmallTop n mem
+    · rw [if_pos hsmall]
+      refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;>
+      · rw [R1.readWord_smallMem_high_addr _ _ _ (by omega)]
+        first
+        | exact hf.s32 | exact hf.minvW | exact hf.ml | exact hf.tl | exact hf.eoff
+    · rw [if_neg hsmall]
+      exact dbl256Mem_frame 4096 (by omega) hn32 (by omega) hf
 
 /-- **The guarded `R1` block against the real `CSUB`.**  Entering pc 2901 with
 `[4096, ret]` returns to `ret` with `R mod m` in the block at `R1`, by one
@@ -5211,18 +5261,140 @@ def gasSteps_r1Block (s : State) {n bsize minv : Nat} (esize msize : Nat)
       (by simp only [Csub.csReturnedState, retTo, r1Mem, if_pos htop,
             Csub.csResultMemory, show (UInt256.ofNat 4096).toNat = 4096 by decide])
   else
-    have g1 : Challenge.EvmProof.GasSteps
+    have gR1B : Challenge.EvmProof.GasSteps
         (R1.entryState s mem 4096 ret (outer n bsize esize msize))
-        (R1.dblState s mem 4096 ret (outer n bsize esize msize)) :=
+        (R1.guardEntryState s mem 4096 ret (outer n bsize esize msize)) :=
       Challenge.EvmProof.Stepper.runLocatedBlock_sound
         Artifact.submissionArtifact .Osaka blk1768 hcode hfork
         (R1.run_test_fallback s mem 4096 ret (outer n bsize esize msize) (by omega)
           hcode hrun hact htop) hrun hnp
-    Challenge.EvmProof.GasSteps.cast
-      (g1.trans (gasSteps_dbl256 s esize msize hcode hfork hrun hnp hact hn hn32 4096
-        ret mem (Or.inl rfl) hjump hf))
-      rfl
-      (by simp only [r1Mem, if_neg htop])
+    by_cases h2 : n = 2
+    · have hs32pass : MachineState.readWord mem 9344 = UInt256.ofNat 64 := by
+        rw [hf.s32, h2]
+      by_cases htop1 : (MachineState.readWord mem 0).toNat = 1
+      · by_cases hlo : (MachineState.readWord mem 32).toNat < 256
+        · have hsmall : R1.SmallTop n mem := ⟨h2, htop1, hlo⟩
+          have g0 : Challenge.EvmProof.GasSteps
+              (R1.guardEntryState s mem 4096 ret (outer n bsize esize msize))
+              (R1.topState s mem 4096 ret (outer n bsize esize msize)) :=
+            Challenge.EvmProof.Stepper.runLocatedBlock_sound
+              Artifact.submissionArtifact .Osaka blk1823 hcode hfork
+              (R1.run_g0_pass s mem 4096 ret (outer n bsize esize msize) (by omega)
+                hrun hact hs32pass) hrun hnp
+          have g1 : Challenge.EvmProof.GasSteps
+              (R1.topState s mem 4096 ret (outer n bsize esize msize))
+              (R1.loState s mem 4096 ret (outer n bsize esize msize)) :=
+            Challenge.EvmProof.Stepper.runLocatedBlock_sound
+              Artifact.submissionArtifact .Osaka blk1831pass hcode hfork
+              (R1.run_g1_pass s mem 4096 ret (outer n bsize esize msize) (by omega)
+                hcode hrun hact htop1) hrun hnp
+          have g2 : Challenge.EvmProof.GasSteps
+              (R1.loState s mem 4096 ret (outer n bsize esize msize))
+              (R1.compEntryState s mem 4096 ret (outer n bsize esize msize)) :=
+            Challenge.EvmProof.Stepper.runLocatedBlock_sound
+              Artifact.submissionArtifact .Osaka blk1840pass hcode hfork
+              (R1.run_g2_pass s mem 4096 ret (outer n bsize esize msize) (by omega)
+                hcode hrun hact hlo) hrun hnp
+          have g3 : Challenge.EvmProof.GasSteps
+              (R1.compEntryState s mem 4096 ret (outer n bsize esize msize))
+              (R1.smallDoneState s mem 4096 ret (outer n bsize esize msize)) :=
+            Challenge.EvmProof.Stepper.runLocatedBlock_sound
+              Artifact.submissionArtifact .Osaka blk1849 hcode hfork
+              (R1.run_compute s mem 4096 ret (outer n bsize esize msize) (by omega)
+                hcode hrun hact (by decide) (by decide) hjump) hrun hnp
+          Challenge.EvmProof.GasSteps.cast
+            ((((gR1B.trans g0).trans g1).trans g2).trans g3)
+            rfl
+            (by simp only [R1.smallDoneState, retTo, r1Mem, if_neg htop,
+              if_pos hsmall])
+        · have hlo256n : (256 : Nat) ≤ (MachineState.readWord mem 32).toNat := by
+            omega
+          have hnsmall : ¬ R1.SmallTop n mem := by
+            unfold R1.SmallTop
+            omega
+          have g0 : Challenge.EvmProof.GasSteps
+              (R1.guardEntryState s mem 4096 ret (outer n bsize esize msize))
+              (R1.topState s mem 4096 ret (outer n bsize esize msize)) :=
+            Challenge.EvmProof.Stepper.runLocatedBlock_sound
+              Artifact.submissionArtifact .Osaka blk1823 hcode hfork
+              (R1.run_g0_pass s mem 4096 ret (outer n bsize esize msize) (by omega)
+                hrun hact hs32pass) hrun hnp
+          have g1 : Challenge.EvmProof.GasSteps
+              (R1.topState s mem 4096 ret (outer n bsize esize msize))
+              (R1.loState s mem 4096 ret (outer n bsize esize msize)) :=
+            Challenge.EvmProof.Stepper.runLocatedBlock_sound
+              Artifact.submissionArtifact .Osaka blk1831pass hcode hfork
+              (R1.run_g1_pass s mem 4096 ret (outer n bsize esize msize) (by omega)
+                hcode hrun hact htop1) hrun hnp
+          have g2 : Challenge.EvmProof.GasSteps
+              (R1.loState s mem 4096 ret (outer n bsize esize msize))
+              (R1.dblState s mem 4096 ret (outer n bsize esize msize)) :=
+            Challenge.EvmProof.Stepper.runLocatedBlock_sound
+              Artifact.submissionArtifact .Osaka blk1840bail hcode hfork
+              (R1.run_g2_bail s mem 4096 ret (outer n bsize esize msize) (by omega)
+                hcode hrun hact hlo256n) hrun hnp
+          Challenge.EvmProof.GasSteps.cast
+            ((((gR1B.trans g0).trans g1).trans g2).trans
+              (gasSteps_dbl256 s esize msize hcode hfork hrun hnp hact hn hn32 4096
+                ret mem (Or.inl rfl) hjump hf))
+            rfl
+            (by simp only [r1Mem, if_neg htop, if_neg hnsmall])
+      · have htopne : MachineState.readWord mem 0 ≠ UInt256.ofNat 1 := by
+          intro hcon
+          apply htop1
+          rw [hcon]; decide
+        have hnsmall : ¬ R1.SmallTop n mem := by
+          unfold R1.SmallTop
+          intro h
+          obtain ⟨-, h1, -⟩ := h
+          exact htop1 h1
+        have g0 : Challenge.EvmProof.GasSteps
+            (R1.guardEntryState s mem 4096 ret (outer n bsize esize msize))
+            (R1.topState s mem 4096 ret (outer n bsize esize msize)) :=
+          Challenge.EvmProof.Stepper.runLocatedBlock_sound
+            Artifact.submissionArtifact .Osaka blk1823 hcode hfork
+            (R1.run_g0_pass s mem 4096 ret (outer n bsize esize msize) (by omega)
+              hrun hact hs32pass) hrun hnp
+        have g1 : Challenge.EvmProof.GasSteps
+            (R1.topState s mem 4096 ret (outer n bsize esize msize))
+            (R1.dblState s mem 4096 ret (outer n bsize esize msize)) :=
+          Challenge.EvmProof.Stepper.runLocatedBlock_sound
+            Artifact.submissionArtifact .Osaka blk1831bail hcode hfork
+            (R1.run_g1_bail s mem 4096 ret (outer n bsize esize msize) (by omega)
+              hcode hrun hact htop1) hrun hnp
+        Challenge.EvmProof.GasSteps.cast
+          (((gR1B.trans g0).trans g1).trans
+            (gasSteps_dbl256 s esize msize hcode hfork hrun hnp hact hn hn32 4096
+              ret mem (Or.inl rfl) hjump hf))
+          rfl
+          (by simp only [r1Mem, if_neg htop, if_neg hnsmall])
+    · have hs32ne : MachineState.readWord mem 9344 ≠ UInt256.ofNat 64 := by
+        intro hcon
+        apply h2
+        have e := hf.s32.symm.trans hcon
+        have e2 := congrArg UInt256.toNat e
+        rw [Challenge.EvmProof.Word.word_toNat_ofNat] at e2
+        have hm1 : 32 * n % 2 ^ 256 = 32 * n :=
+          Nat.mod_eq_of_lt (by omega)
+        have hm2 : 64 % 2 ^ 256 = 64 := by decide
+        rw [hm1, hm2] at e2
+        omega
+      have hnsmall : ¬ R1.SmallTop n mem := by
+        unfold R1.SmallTop
+        omega
+      have g0 : Challenge.EvmProof.GasSteps
+          (R1.guardEntryState s mem 4096 ret (outer n bsize esize msize))
+          (R1.dblState s mem 4096 ret (outer n bsize esize msize)) :=
+        Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka blk1823 hcode hfork
+          (R1.run_g0_bail s mem 4096 ret (outer n bsize esize msize) (by omega)
+            hcode hrun hact hs32ne) hrun hnp
+      Challenge.EvmProof.GasSteps.cast
+        ((gR1B.trans g0).trans
+          (gasSteps_dbl256 s esize msize hcode hfork hrun hnp hact hn hn32 4096
+            ret mem (Or.inl rfl) hjump hf))
+        rfl
+        (by simp only [r1Mem, if_neg htop, if_neg hnsmall])
 
 /-! ## The `CCB` call of the setup hand-over
 
