@@ -19,14 +19,14 @@ private theorem telescope_outer_costs
     (hload : load + p₁ = 20 + p₂)
     (hword : word + p₂ = work + p₃)
     (hfinish : finish + p₃ = 26 + p₄)
-    (hexit : exit + p₄ = 30 + p₅) :
+    (hexit : exit + p₄ = 22 + p₅) :
     guard + (load + (word + (finish + exit))) + p₀ =
-      (102 + work) + p₅ := by
+      (94 + work) + p₅ := by
   omega
 
 private theorem normalize_outer_cost (cost start finish work : Nat)
-    (h : cost + start = 26 + (20 + (work + 56)) + finish) :
-    cost + start = (102 + work) + finish := by
+    (h : cost + start = 26 + (20 + (work + 48)) + finish) :
+    cost + start = (94 + work) + finish := by
   omega
 
 theorem gasSteps_mulOuterGuardSegment_cost_potential (current : State)
@@ -107,12 +107,12 @@ theorem gasSteps_mulInnerExitSegment_cost_potential (current : State)
     (gasSteps_mulInnerExitSegment current word a b out modulus count i
       returnDest rest hcap hcount hi hcode hfork hrun hnp).cost +
         MachineState.memCost ({ inner with pc := UInt256.ofNat 413 }).activeWords.toNat =
-      30 + MachineState.memCost
+      22 + MachineState.memCost
         (mulOuterNext inner a b out modulus count i returnDest rest).activeWords.toNat := by
   dsimp only
   unfold gasSteps_mulInnerExitSegment
   exact Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    mulInnerToOuterPath 30
+    mulInnerToOuterPath 22
       (run_mulWordInnerToOuter current word a b out modulus count i returnDest
         rest (by omega) (by omega) hcode hrun)
       (by simpa [mulInnerState, State.fork] using hfork)
@@ -134,7 +134,7 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
         hcap hcount hi hcode hfork hrun hnp).cost +
         MachineState.memCost
           (mulOuterState before a b out modulus count i returnDest rest).activeWords.toNat =
-      (102 + 256 * (426 + count * 906)) + MachineState.memCost
+      (94 + 256 * (418 + count * 906)) + MachineState.memCost
         (mulOuterState after a b out modulus count (i + 1) returnDest rest).activeWords.toNat := by
   dsimp only
   let before := mulOuterProgress current a b out modulus count returnDest rest i
@@ -170,7 +170,7 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
         State.fork] using hfork)
       (by decide) (by decide)
   have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    mulInnerToOuterPath 30
+    mulInnerToOuterPath 22
       (run_mulWordInnerToOuter afterWord word a b out modulus count i
         returnDest rest (by omega) (by omega)
         (by simpa [afterWord, loaded, mulLoadedState, before] using hcode)
@@ -206,7 +206,7 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
     (gasSteps_mulOuterIteration current a b out modulus count i returnDest rest
         hcap hcount hi hcode hfork hrun hnp).cost + MachineState.memCost
           (mulOuterState before a b out modulus count i returnDest rest).activeWords.toNat =
-      (102 + 256 * (426 + count * 906)) + MachineState.memCost
+      (94 + 256 * (418 + count * 906)) + MachineState.memCost
         (mulOuterState after a b out modulus count (i + 1) returnDest rest).activeWords.toNat := by
   dsimp only
   let before := mulOuterProgress current a b out modulus count returnDest rest i
@@ -278,15 +278,15 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
     (by simpa [afterWord, loaded, mulLoadedState, before] using hrun)
     (by simpa [afterWord, loaded, mulLoadedState, before, State.fork] using hnp)
   have hfe := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential gfinish
-    gexit 26 30 hf he
+    gexit 26 22 hf he
   have hwfe := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential gword
-    (gfinish.trans gexit) (256 * (426 + count * 906)) 56 hw hfe
+    (gfinish.trans gexit) (256 * (418 + count * 906)) 48 hw hfe
   have hlwfe := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential gload
     (gword.trans (gfinish.trans gexit)) 20
-    (256 * (426 + count * 906) + 56) hl hwfe
+    (256 * (418 + count * 906) + 48) hl hwfe
   have hall := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential gguard
     (gload.trans (gword.trans (gfinish.trans gexit))) 26
-    (20 + (256 * (426 + count * 906) + 56)) hg hlwfe
+    (20 + (256 * (418 + count * 906) + 48)) hg hlwfe
   unfold gasSteps_mulOuterIteration
   simp only [id_eq, Challenge.EvmProof.GasSteps.cast_cost,
     Challenge.EvmProof.GasSteps.trans_cost]
@@ -308,7 +308,7 @@ theorem gasSteps_mulOuterLoop_cost_potential (current : State)
     (gasSteps_mulOuterLoop current a b out modulus count returnDest rest hcap
         hcount hcode hfork hrun hnp).cost + MachineState.memCost
           (mulOuterState current a b out modulus count 0 returnDest rest).activeWords.toNat =
-      count * (102 + 256 * (426 + count * 906)) + MachineState.memCost
+      count * (94 + 256 * (418 + count * 906)) + MachineState.memCost
         (mulOuterState
           (mulOuterProgress current a b out modulus count returnDest rest count)
           a b out modulus count count returnDest rest).activeWords.toNat := by
@@ -366,7 +366,7 @@ theorem gasSteps_mulModBig_cost_potential (s : State)
     (gasSteps_mulModBig s a b out modulus count returnDest rest hcap hcount
         hcode hfork hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
       (185 + count * 158 +
-          count * (102 + 256 * (426 + count * 906))) +
+          count * (94 + 256 * (418 + count * 906))) +
         MachineState.memCost (mulReturned progress returnDest rest).activeWords.toNat := by
   dsimp only
   let copied := mulAfterCopy s a b out modulus count returnDest rest

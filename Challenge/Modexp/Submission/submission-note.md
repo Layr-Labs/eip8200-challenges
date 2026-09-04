@@ -10,7 +10,7 @@ The zero-modulus return-offset observation and proof pattern were published by @
 
 ## Artifact
 
-`Challenge/Modexp/Submission/bytecode.hex` is 2,922 bytes / 1,781 instructions. Its decoded-byte SHA-256 is `65e583594d3186396b262fa1d830fdde50bc103499d023dc7ade19f3bef38527`; the canonical newline-terminated hex-file SHA-256 is `5c4eda11aa1b7ea939cdc0534affc232f8a93a01bf871448aebbc332f5550887`.
+`Challenge/Modexp/Submission/bytecode.hex` is 2,922 bytes / 1,781 instructions. Its decoded-byte SHA-256 is `fdf8ee0a5d56366e8007a4a350d1cf5b309e2b8aea996562168b17315434711c`; the canonical newline-terminated hex-file SHA-256 is `aeaa83bac96310528f1c29eb2f8ce8d943bcadfb610f73c9bf6b386bc5e576f2`.
 
 The public radix-reduction base extends the earlier 2,901-byte CCB artifact with two changes:
 
