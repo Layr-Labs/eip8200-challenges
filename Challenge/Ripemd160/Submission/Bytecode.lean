@@ -6,10 +6,9 @@ set_option maxRecDepth 10000
 /-!
 # The frozen raw-EVM RIPEMD-160 artifact
 
-`submissionBytecode` is the exact combined H30b+H31b bytecode from the frozen native
-checkpoint. It preserves the H30b prefix except for the driver's PUSH2 immediate and
-appends the unchanged 186-byte H31b packed-output helper. The existing B01 transform
-is not reapplied.
+`submissionBytecode` preserves the promoted compact program as a certified prefix,
+retargets the block driver, and appends a straight-line compressor whose four-round
+helpers are specialized at each call site.
 
 Correctness proofs target these bytes directly; the compiler is used to
 reproduce the artifact, not as an assumption in the bytecode proof.
@@ -25,7 +24,7 @@ set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 4766 := by
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 12465 := by
   simp [submissionBytecode]
 
 set_option maxRecDepth 100000 in

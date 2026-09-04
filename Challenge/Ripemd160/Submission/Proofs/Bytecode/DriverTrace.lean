@@ -48,7 +48,7 @@ def callPath : List Located :=
    ⟨712, .push ⟨2, by decide⟩ (UInt256.ofNat Padding.messageOffset),
       by rfl, by decide⟩,
    ⟨713, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨714, .push ⟨2, by decide⟩ (UInt256.ofNat 0x519), by rfl, by decide⟩,
+   ⟨714, .push ⟨2, by decide⟩ (UInt256.ofNat 0x129e), by rfl, by decide⟩,
    ⟨715, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def incrementPath : List Located :=
@@ -112,7 +112,7 @@ padded-message pointer, its return destination, and the driver invariant
 stack underneath. -/
 def compressEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x519
+    pc := UInt256.ofNat 0x129e
     stack := [messageOffsetWord i, UInt256.ofNat 0x436,
       blockOffsetWord i, Padding.paddedWord input] }
 
@@ -262,8 +262,8 @@ theorem run_call (s : State) (input : ByteArray)
       (afterCondition s input i) = some (compressEntry s input i) := by
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (messageOffset_lt_uint256 input hfit i hi)
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x519 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 913 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x129e = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2792 (by rfl)
   simp [callPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     afterCondition, compressEntry, messageOffsetWord, blockOffsetWord,
