@@ -260,12 +260,12 @@ def packedScheduleSite :
     (by decide)
 
 private theorem packedScheduleFull_byteLength :
-    StackPC.byteLength PackedScheduleTemplate.ascendingPackedFullTemplate = 528 := by
+    StackPC.byteLength PackedScheduleTemplate.ascendingPackedFullTemplate = 522 := by
   rw [StackPC.byteLength_eq_assemble]
   exact PackedScheduleTemplate.ascendingPackedFullTemplate_byteLength
 
 private theorem packedScheduleTemplate_byteLength :
-    StackPC.byteLength PackedScheduleTemplate.ascendingPackedTemplate = 527 := by
+    StackPC.byteLength PackedScheduleTemplate.ascendingPackedTemplate = 521 := by
   rw [StackPC.byteLength_eq_assemble]
   exact PackedScheduleTemplate.ascendingPackedTemplate_byteLength
 
@@ -275,20 +275,20 @@ private theorem packedSchedule_start_instructionPC :
     packedScheduleBefore PackedScheduleTemplate.ascendingPackedFullTemplate
     artifact_packed_split
   rw [packedScheduleBefore_length, packedScheduleFull_byteLength] at h
-  have hsize : Artifact.submissionArtifact.code.size = 4980 := by
-    change Challenge.Ripemd160.submissionBytecode.size = 4980
+  have hsize : Artifact.submissionArtifact.code.size = 4974 := by
+    change Challenge.Ripemd160.submissionBytecode.size = 4974
     exact Challenge.Ripemd160.referenceBytecode_size
   rw [hsize] at h
   omega
 
 private theorem packedSchedule_end_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2472 = 0x1373 := by
+    Artifact.submissionArtifact.instructionPC 2467 = 0x136d := by
   have h := instructionPC_segment_byteLength Artifact.submissionArtifact
     packedScheduleBefore PackedScheduleTemplate.ascendingPackedTemplate
-    PackedScheduleTemplate.finalJumpTemplate artifact_packed_split_prejump 159
+    PackedScheduleTemplate.finalJumpTemplate artifact_packed_split_prejump 154
     (by decide)
   have htake :
-      PackedScheduleTemplate.ascendingPackedTemplate.take 159 =
+      PackedScheduleTemplate.ascendingPackedTemplate.take 154 =
         PackedScheduleTemplate.ascendingPackedTemplate := by
     apply List.take_of_length_le
     rw [PackedScheduleTemplate.ascendingPackedTemplate_length]
@@ -304,9 +304,9 @@ private theorem packedSchedule_end_instructionPC :
   rw [packedSchedule_start_instructionPC]
 
 @[simp] theorem packedScheduleSite_endPC :
-    packedScheduleSite.endPC = UInt256.ofNat 0x1373 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2472) =
-    UInt256.ofNat 0x1373
+    packedScheduleSite.endPC = UInt256.ofNat 0x136d := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2467) =
+    UInt256.ofNat 0x136d
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleSite_end_eq_pcAfter :
@@ -330,12 +330,12 @@ private theorem pc_toNat_instructionPC (index : Nat) :
 def packedScheduleFinalJump :
     LocatedSite Artifact.submissionArtifact .Osaka where
   located :=
-    { index := 2472
+    { index := 2467
       instruction := .op .JUMP
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2472)
-  pc_eq := pc_toNat_instructionPC 2472
+  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2467)
+  pc_eq := pc_toNat_instructionPC 2467
 
 def packedScheduleFinalJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -351,15 +351,15 @@ private theorem runLocatedBlock_singleton
   | some t => simp [Challenge.EvmProof.Stepper.runLocatedBlock, h]
 
 @[simp] theorem packedScheduleFinalJump_pc :
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x1373 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2472) =
-    UInt256.ofNat 0x1373
+    packedScheduleFinalJump.pc = UInt256.ofNat 0x136d := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2467) =
+    UInt256.ofNat 0x136d
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleFinalJump_site_end :
     packedScheduleFinalJump.pc = packedScheduleSite.endPC := by
   calc
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x1373 := packedScheduleFinalJump_pc
+    packedScheduleFinalJump.pc = UInt256.ofNat 0x136d := packedScheduleFinalJump_pc
     _ = packedScheduleSite.endPC := packedScheduleSite_endPC.symm
 
 theorem packedScheduleFinalJump_pc_eq_expected

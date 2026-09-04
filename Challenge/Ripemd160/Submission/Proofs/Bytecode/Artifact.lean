@@ -2385,11 +2385,6 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x56,
   op 0x5b,
   op 0x80,
-  .push 1 60,
-  op 0x01,
-  op 0x51,
-  op 0x50,
-  op 0x80,
   op 0x51,
   op 0x90,
   .push 1 32,
@@ -2565,7 +2560,7 @@ private def submissionInstructionsChunk13 : List Instr :=
 @[simp] private theorem submissionInstructionsChunk8_length : submissionInstructionsChunk8.length = 200 := by rfl
 @[simp] private theorem submissionInstructionsChunk9_length : submissionInstructionsChunk9.length = 200 := by rfl
 @[simp] private theorem submissionInstructionsChunk10_length : submissionInstructionsChunk10.length = 200 := by rfl
-@[simp] private theorem submissionInstructionsChunk11_length : submissionInstructionsChunk11.length = 200 := by rfl
+@[simp] private theorem submissionInstructionsChunk11_length : submissionInstructionsChunk11.length = 195 := by rfl
 @[simp] private theorem submissionInstructionsChunk12_length : submissionInstructionsChunk12.length = 73 := by rfl
 @[simp] private theorem submissionInstructionsChunk13_length : submissionInstructionsChunk13.length = 0 := by rfl
 
@@ -2585,7 +2580,7 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk12
  ++ submissionInstructionsChunk13
 
-theorem referenceInstructions_count : submissionInstructions.length = 2473 := by
+theorem referenceInstructions_count : submissionInstructions.length = 2468 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length]
 
 private theorem submissionInstructionsChunk0_assemble : assembleBytes submissionInstructionsChunk0 = [
@@ -2998,7 +2993,7 @@ private theorem submissionInstructionsChunk11_assemble : assembleBytes submissio
   0x01, 0x90, 0x96, 0x01, 0x63, 0xff, 0xff, 0xff, 0xff, 0x16, 0x64, 0x01,
   0x00, 0x00, 0x00, 0x01, 0x02, 0x90, 0x1c, 0x84, 0x01, 0x63, 0xff, 0xff,
   0xff, 0xff, 0x16, 0x91, 0x64, 0x01, 0x00, 0x00, 0x00, 0x01, 0x02, 0x60,
-  0x16, 0x1c, 0x93, 0x90, 0x56, 0x5b, 0x80, 0x60, 0x3c, 0x01, 0x51, 0x50,
+  0x16, 0x1c, 0x93, 0x90, 0x56, 0x5b,
   0x80, 0x51, 0x90, 0x60, 0x20, 0x01, 0x51, 0x90, 0x80, 0x60, 0x08, 0x1c,
   0x7f, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00,
   0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00,
