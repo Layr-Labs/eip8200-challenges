@@ -104,7 +104,7 @@ theorem activeWordsAfterUInt256_2_eq_of_end_le (s : State)
     activeWordsAfter_eq_of_end_le _ _ _ hend₂, ofNat_toNat]
 
 theorem leftPair_activeWords (s : State) (k : Fin 40)
-    (hactive : 67 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     s.activeWordsAfterUInt256_2
         (PairSites.leftAddress0 k).toNat 32
         (PairSites.leftAddress1 k).toNat 32 = s.activeWords := by
@@ -119,7 +119,7 @@ theorem leftPair_activeWords (s : State) (k : Fin 40)
     omega
 
 theorem rightPair_activeWords (s : State) (k : Fin 40)
-    (hactive : 67 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     s.activeWordsAfterUInt256_2
         (PairSites.rightAddress0 k).toNat 32
         (PairSites.rightAddress1 k).toNat 32 = s.activeWords := by
@@ -234,7 +234,7 @@ def gasSteps_leftPair (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rest : List UInt256) (k : Fin 40)
     (_hwords : ∀ i, i < 16 →
       Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * i)) = word i)
-    (hactive : 67 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1012)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -296,7 +296,7 @@ def gasSteps_rightPair (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rest : List UInt256) (k : Fin 40)
     (_hwords : ∀ i, i < 16 →
       Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * i)) = word i)
-    (hactive : 67 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1012)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
