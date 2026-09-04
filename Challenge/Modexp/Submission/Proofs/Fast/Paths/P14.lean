@@ -99,18 +99,18 @@ def blk1763 :
    pushAt 1771 2 1769,
    opAt 1772 .JUMP]
 
-/-- Copy Montgomery one to `ACC` and enter the last two bits of byte zero. -/
+/-- Copy the Montgomery base to `ACC` and enter the final bit of byte zero. -/
 def blk1773 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1773 .JUMPDEST,
    pushAt 1774 2 9344,
    opAt 1775 .MLOAD,
-   pushAt 1776 2 4096,
+   pushAt 1776 2 2048,
    pushAt 1777 2 1024,
    opAt 1778 .MCOPY,
    pushAt 1779 0 0,
    pushAt 1780 1 3,
-   pushAt 1781 1 2,
+   pushAt 1781 1 1,
    pushAt 1782 2 1789,
    opAt 1783 .JUMP]
 

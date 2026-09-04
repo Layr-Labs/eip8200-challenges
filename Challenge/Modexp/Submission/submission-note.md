@@ -1,4 +1,4 @@
-# MODEXP: composition of the CCB radix conversion and small-exponent prefix paths
+# MODEXP: CCB radix conversion with first-byte exponent-prefix shortcuts
 
 ## Attribution
 
@@ -13,13 +13,15 @@ This submission composes two public, independently developed MODEXP optimization
 
 Those public branches were treated as untrusted research inputs. Their exact bytes were rescored locally. Their proof closures and public CI status were inspected. This submission then relocates and rebinds the `CCB` path against the prefix-path artifact, rather than assuming that two separately verified byte strings can be concatenated without a new proof.
 
+The final same-width `0x03` refinement is new integration work in this submission: it recognizes that the first seven MSB-first bits of `0x03` already encode exponent prefix one, copies the Montgomery base as that exact accumulator state, and executes only the final set bit.
+
 ## Result
 
 The exact submitted artifact is 2,974 bytes and decodes to 1,810 instructions. Its byte-array SHA-256 is:
 
-`0c6b5e8a7f5a2228921d96e947d44435baafcb9e97b004bc56eb5fa1fc340f27`
+`2052816fb8564617fdff18d931a970f5d8427ab9bd1ac511ee2f41037c9e926e`
 
-The trusted MODEXP scorer accepts all thirteen protected vectors with a total of **2,528,876 gas**:
+The trusted MODEXP scorer accepts all thirteen public scorer vectors with a total of **2,512,150 gas**:
 
 | Vector | Gas |
 | --- | ---: |
@@ -31,15 +33,16 @@ The trusted MODEXP scorer accepts all thirteen protected vectors with a total of
 | EIP-198 example 1 | 39,837 |
 | EIP-198 example 2 | 39,697 |
 | trailing-zero normalization | 3,537 |
-| 257-bit modulus | 242,232 |
+| 257-bit modulus | 238,187 |
 | BN254 modular inversion | 44,177 |
 | random 256-bit modexp | 44,177 |
-| RSA-1024 e=3 | 497,836 |
+| RSA-1024 e=3 | 485,155 |
 | RSA-2048 e=65537 | 1,612,851 |
-| **Total** | **2,528,876** |
+| **Total** | **2,512,150** |
 
-This is 842,414 gas below the promoted 3,371,290-gas frontier visible when the work began. It is also 254,037 gas below the 2,782,913-gas standalone CCB validation candidate.
-A later public validation candidate reported 2,559,245 gas from a different Montgomery implementation; the exact artifact here is 30,369 gas lower in total.
+This is 859,140 gas below the promoted 3,371,290-gas frontier visible when the work began. It is also 270,763 gas below the 2,782,913-gas standalone CCB candidate.
+
+An earlier version of this composition was promoted as submission `5977036c-f3a8-4a47-a0f7-e8f138d2f617` at 2,528,876 gas. The exact artifact here strengthens its `0x03` path and is 16,726 gas lower. It is 47,095 gas below the earlier 2,559,245-gas Montgomery frontier.
 
 ## Optimization
 
@@ -50,7 +53,7 @@ The original fast-path setup produced two related radix constants with fixed 256
 The exponent prefix dispatcher is independent of that setup change. It reads the first exponent byte only when the exponent length is nonzero.
 
 - For byte `0x01`, processing all eight bits from Montgomery one must end at the already-computed Montgomery base. The path copies the base to the accumulator and resumes at exponent byte one.
-- For byte `0x03`, the first six bits are zero. The guarded path skips those six iterations, initializes the accumulator from Montgomery one, and enters the inherited bit loop for the final two bits before resuming at exponent byte one.
+- For byte `0x03`, the first seven bits encode the prefix value one. The guarded path copies the already-computed Montgomery base into the accumulator, enters the inherited bit loop only for the final set bit, and then resumes at exponent byte one. This strengthens the public six-zero-bit shortcut by avoiding one square-and-multiply pair as well.
 - Empty exponents and every other first byte follow the inherited control flow.
 
 No scorer value is assumed by the final theorem. The byte checks are runtime branches and the fallback remains live.
@@ -61,11 +64,13 @@ The carrier is the exact 2,936-byte public prefix-path artifact. Its dispatcher 
 
 The second conversion call at PC `0x060f` is retargeted from `0x0777` to `0x0b78`. Three internal `CCB` destinations are relocated:
 
-- prologue return: `0x0b3a -> 0x0b83`;
+- `ADDMOD` return: `0x0b3a -> 0x0b83`;
 - squaring return: `0x0b48 -> 0x0b91`;
 - loop head: `0x0b3d -> 0x0b86`.
 
-The existing external helper entries at `0x09a3` (`ADDMOD`) and `0x0793` (`MONPRO`) do not move. The dispatcher entry at `0x0b2f` and its existing external returns also do not move. This layout keeps the two appended components disjoint and limits changed immediate operands to the call and the three local relocation sites.
+The existing external helper entries at `0x09a3` (`ADDMOD`) and `0x0793` (`MONPRO`) do not move. The dispatcher entry at `0x0b2f` and its existing continuation targets also do not move. This layout keeps the two appended components disjoint. For the CCB relocation, changed immediate operands are limited to the call and the three local relocation sites.
+
+The strengthened `0x03` block keeps the same width and control-flow layout. At PC `0x0b68`, its MCOPY source changes from Montgomery one at `0x1000` to the Montgomery base at `0x0800`. At PC `0x0b72`, its starting bit mask changes from two to one. Instruction count, later PCs, and all jump destinations remain unchanged.
 
 The concrete instruction certificate was rebuilt for all 1,810 instructions. The instruction-PC table has a separate range for the relocated `CCB` block. All relocated entry and return PCs have new valid-jump-destination theorems tied to their exact instruction indices.
 
@@ -89,7 +94,7 @@ The direct execution layer proves the actual blocks selected by the exact submit
 
 The value layer proves that the first addition maps the Montgomery residue of one to the residue of two. Repeated Montgomery squaring then doubles the logical exponent on each iteration. After eight squares the logical value is `2^256`, equal to the limb radix, so the stored result is exactly the conversion constant required by the existing setup-to-exponent proof.
 
-The dispatcher proof separately covers empty, `0x01`, `0x03`, and other-byte paths. Its memory-copy lemmas preserve the modulus, base, constant, inverse, and active-word frame invariants. The `0x01` proof reconnects at global exponent bit eight. The `0x03` proof reconnects after the two remaining bits of byte zero. The general exponent loop and final Montgomery decode are inherited without weakening their domains.
+The dispatcher proof separately covers empty, `0x01`, `0x03`, and other-byte paths. Its memory-copy lemmas preserve the modulus, base, constant, inverse, and active-word frame invariants. The `0x01` proof reconnects at global exponent bit eight. For `0x03`, a new seven-bit prefix lemma proves that the accumulator is exactly the Montgomery base at global bit seven; a one-bit execution and invariant certificate processes the final bit and reconnects at global bit eight. The general exponent loop and final Montgomery decode are inherited without weakening their domains.
 
 The artifact identity is reducible and checked against `bytecode.hex`. The structural certificate proves assembly equality and well-formedness. The exact merged proof closure was rebuilt serially. The final candidate, artifact theorem, and transitive axiom audit use only the allowed foundational axioms: `propext`, `Quot.sound`, and `Classical.choice`. No `sorry`, `admit`, `native_decide`, unsafe declaration, new axiom, or protected test import is used.
 
