@@ -40,8 +40,8 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def setupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1085 .JUMPDEST, opAt 1086 (.Dup ⟨2, by decide⟩), pushAt 1087 0 0,
-   opAt 1088 .SUB, pushAt 1089 0 0, pushAt 1090 0 0]
+  [opAt 1085 .JUMPDEST, pushAt 1086 0 0, opAt 1087 .NOT,
+   opAt 1088 .JUMPDEST, pushAt 1089 0 0, pushAt 1090 0 0]
 
 def guardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -224,11 +224,12 @@ theorem run_setup (s : State) (dst modulus : UInt256) (count : Nat)
   have hc9 : rest.length + 9 < 1024 := by omega
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzero' : UInt256.ofNat 0 = (0 : UInt256) := by decide
+  have hmask : UInt256.lnot (UInt256.ofNat 0) = 0 - (1 : UInt256) := by decide
   simp [setupPath, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     entry, loop, BigHelpers.addProgress, doublePCs, hc6, hc7, hc8, hc9,
-    hrun, hzero, hzero',
+    hrun, hzero, hzero', hmask,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
 

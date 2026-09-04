@@ -87,41 +87,37 @@ def mulInnerSkipAddPath :
   [pushAt 301 1 1, opAt 302 (.Dup ⟨2, by decide⟩),
    opAt 303 (.Dup ⟨2, by decide⟩), opAt 304 .SHR, opAt 305 .AND,
    pushAt 306 2 1314, opAt 307 .JUMP,
-   opAt 977 .JUMPDEST, opAt 978 (.Dup ⟨0, by decide⟩), opAt 979 .ISZERO,
-   pushAt 980 2 383, opAt 981 .JUMPI]
+   opAt 977 .JUMPDEST, opAt 978 .ISZERO,
+   pushAt 979 2 383, opAt 980 .JUMPI]
 
 def mulInnerToAddPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
   mulInnerSkipAddPath ++
-  [pushAt 982 2 383, opAt 983 (.Dup ⟨9, by decide⟩),
-   opAt 984 (.Dup ⟨9, by decide⟩), opAt 985 (.Dup ⟨3, by decide⟩),
-   pushAt 986 2 4096, opAt 987 (.Dup ⟨11, by decide⟩),
-   pushAt 988 2 104, opAt 989 .JUMP]
+  [pushAt 981 2 383, opAt 982 (.Dup ⟨8, by decide⟩),
+   opAt 983 (.Dup ⟨8, by decide⟩), pushAt 984 1 1,
+   pushAt 985 2 4096, opAt 986 (.Dup ⟨10, by decide⟩),
+   pushAt 987 1 104, opAt 988 .JUMP]
 
 def mulAddToDoublePath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
   [opAt 314 .JUMPDEST, pushAt 315 2 401,
-   opAt 316 (.Dup ⟨9, by decide⟩), opAt 317 (.Dup ⟨9, by decide⟩),
+   opAt 316 (.Dup ⟨8, by decide⟩), opAt 317 (.Dup ⟨8, by decide⟩),
    pushAt 318 1 1, pushAt 319 2 4096, pushAt 320 2 4096,
    pushAt 321 2 1473, opAt 322 .JUMP]
 
 def mulDoubleToNextPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
-  [opAt 323 .JUMPDEST, opAt 324 .POP, pushAt 325 1 1,
-   opAt 326 (.Dup ⟨1, by decide⟩), opAt 327 .ADD,
-   opAt 328 (.Swap ⟨0, by decide⟩), opAt 329 .POP,
-   pushAt 330 2 352, opAt 331 .JUMP]
+  [opAt 323 .JUMPDEST, pushAt 324 1 1, opAt 325 .ADD,
+   pushAt 326 2 352, opAt 327 .JUMP]
 
 def mulInnerToOuterPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
   [opAt 332 .JUMPDEST, opAt 333 .POP, opAt 334 .POP,
-   pushAt 335 1 1, opAt 336 (.Dup ⟨1, by decide⟩), opAt 337 .ADD,
-   opAt 338 (.Swap ⟨0, by decide⟩), opAt 339 .POP,
-   pushAt 340 2 335, opAt 341 .JUMP]
+   pushAt 335 1 1, opAt 336 .ADD, pushAt 337 2 335, opAt 338 .JUMP]
 
 def mulOuterExitPath :
     List (Challenge.EvmProof.Stepper.Located
@@ -187,7 +183,7 @@ def mulWordWork (word : UInt256) (count steps : Nat) : Nat :=
 
 def mulWordRest (word a b out modulus : UInt256) (count i j : Nat)
     (returnDest : UInt256) (rest : List UInt256) : List UInt256 :=
-  [mulWordBit word j, UInt256.ofNat j, word, UInt256.ofNat i, a, b, out,
+  [UInt256.ofNat j, word, UInt256.ofNat i, a, b, out,
     modulus, UInt256.ofNat count, returnDest] ++ rest
 
 def mulWordAfterAdd (current : State) (word a b out modulus : UInt256)
@@ -342,8 +338,7 @@ theorem value_mulWordBits (word : UInt256) :
 def mulBitRest (current : State) (a b out modulus : UInt256)
     (count i j : Nat) (returnDest : UInt256) (rest : List UInt256) :
     List UInt256 :=
-  [mulBit current b i j, UInt256.ofNat j,
-    MachineState.readWord current.memory
+  [UInt256.ofNat j, MachineState.readWord current.memory
       (b + UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5)).toNat,
     UInt256.ofNat i, a, b, out, modulus, UInt256.ofNat count,
     returnDest] ++ rest
@@ -516,12 +511,12 @@ theorem readWord_eq_of_represents (left right : ByteArray)
 
 @[simp] private theorem mulNextPCs (i : Nat) (hi : 323 ≤ i) (hii : i ≤ 331) :
     Artifact.submissionArtifact.instructionPC i =
-      [401,402,403,405,406,407,408,409,412][i - 323]! := by
+      [401,402,404,405,408,409,410,411,412][i - 323]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem mulBranchPCs (i : Nat) (hi : 977 ≤ i) (hii : i ≤ 989) :
     Artifact.submissionArtifact.instructionPC i =
-      [1314,1315,1316,1317,1320,1321,1324,1325,1326,1327,1330,1331,
+      [1314,1315,1316,1319,1320,1323,1324,1325,1327,1330,1331,1333,
        1334][i - 977]! := by
   interval_cases i <;> decide
 
@@ -532,7 +527,7 @@ private theorem jump1314 :
 @[simp] private theorem mulInnerExitPCs (i : Nat) (hi : 332 ≤ i)
     (hii : i ≤ 341) :
     Artifact.submissionArtifact.instructionPC i =
-      [413,414,415,416,418,419,420,421,422,425][i - 332]! := by
+      [413,414,415,416,418,419,422,423,424,425][i - 332]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem mulReturnPCs (i : Nat) (hi : 342 ≤ i)
@@ -919,6 +914,13 @@ theorem run_mulInnerToAdd (current : State) (a b out modulus : UInt256)
   have h1314Nat : (1314 : UInt256).toNat = 1314 := by decide
   have hz : (UInt256.isZero (mulBit current b i j)).toNat = 0 := by
     rw [Challenge.EvmProof.Word.word_toNat_isZero, if_neg hbit]
+  have hbitOneNat : (mulBit current b i j).toNat = 1 := by
+    have hle := mulBit_toNat_le_one current b i j
+    omega
+  have hbitOne : mulBit current b i j = UInt256.ofNat 1 := by
+    apply Challenge.EvmProof.Word.word_ext
+    rw [hbitOneNat, Challenge.EvmProof.Word.word_toNat_ofNat]
+    norm_num
   simp [mulBit] at hbit
   have hc : ∀ n ≤ 17, rest.length + n < 1024 := by omega
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
@@ -931,7 +933,7 @@ theorem run_mulInnerToAdd (current : State) (a b out modulus : UInt256)
     exact jump104
   simp (config := { maxSteps := 500000 }) (disch := omega)
     [mulInnerToAddPath, mulInnerSkipAddPath, opAt, pushAt, wfOp,
-      mulBranchPCs, jump1314, h1314, h1314Nat, hz, hbit, UInt256.isTrue,
+      mulBranchPCs, jump1314, h1314, h1314Nat, hz, hbit, hbitOne, UInt256.isTrue,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       mulInnerLoop, mulBit, mulBitRest, BigHelpers.addEntry, mulInnerPCs,
@@ -960,6 +962,13 @@ theorem run_mulWordInnerToAdd (current : State) (word a b out modulus : UInt256)
   have h1314Nat : (1314 : UInt256).toNat = 1314 := by decide
   have hz : (UInt256.isZero (mulWordBit word j)).toNat = 0 := by
     rw [Challenge.EvmProof.Word.word_toNat_isZero, if_neg hbit]
+  have hbitOneNat : (mulWordBit word j).toNat = 1 := by
+    have hle := mulWordBit_toNat_le_one word j
+    omega
+  have hbitOne : mulWordBit word j = UInt256.ofNat 1 := by
+    apply Challenge.EvmProof.Word.word_ext
+    rw [hbitOneNat, Challenge.EvmProof.Word.word_toNat_ofNat]
+    norm_num
   simp [mulWordBit] at hbit
   have hc : ∀ n ≤ 17, rest.length + n < 1024 := by omega
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
@@ -972,7 +981,7 @@ theorem run_mulWordInnerToAdd (current : State) (word a b out modulus : UInt256)
     exact jump104
   simp (config := { maxSteps := 500000 }) (disch := omega)
     [mulInnerToAddPath, mulInnerSkipAddPath, opAt, pushAt, wfOp,
-      mulBranchPCs, jump1314, h1314, h1314Nat, hz, hbit, UInt256.isTrue,
+      mulBranchPCs, jump1314, h1314, h1314Nat, hz, hbit, hbitOne, UInt256.isTrue,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       mulInnerState, mulWordBit, mulWordRest, BigHelpers.addEntry,
@@ -1196,6 +1205,10 @@ def gasSteps_mulBitAdd (current : State) (a b out modulus : UInt256)
       (by simpa [inner, mulInnerLoop] using hrun)
       (by simpa [inner, mulInnerLoop, State.fork] using hnp)
   ·
+    have htake : bit.toNat = 1 := by
+      dsimp only [bit]
+      have hle := mulBit_toNat_le_one current b i j
+      omega
     have htoAdd := Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.submissionArtifact .Osaka mulInnerToAddPath
         (by simpa [inner, mulInnerLoop,
@@ -1208,7 +1221,7 @@ def gasSteps_mulBitAdd (current : State) (a b out modulus : UInt256)
     have hadd := BigHelpers.gasSteps_addMaskedMod inner out (UInt256.ofNat 4096)
       bit modulus count (UInt256.ofNat 383) saved
       (by simp [saved, mulBitRest]; omega)
-      hcount (by simpa [inner, mulInnerLoop] using hcode)
+      hcount htake (by simpa [inner, mulInnerLoop] using hcode)
       (by simpa [inner, mulInnerLoop, State.fork] using hfork)
       (by simpa [inner, mulInnerLoop] using hrun)
       (by simpa [inner, mulInnerLoop, State.fork] using hnp) (by
@@ -1246,6 +1259,10 @@ def gasSteps_mulWordAdd (current : State) (word a b out modulus : UInt256)
       (by simpa [inner, mulInnerState] using hrun)
       (by simpa [inner, mulInnerState, State.fork] using hnp)
   ·
+    have htake : bit.toNat = 1 := by
+      dsimp only [bit]
+      have hle := mulWordBit_toNat_le_one word j
+      omega
     have htoAdd := Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.submissionArtifact .Osaka mulInnerToAddPath
         (by simpa [inner, mulInnerState,
@@ -1258,7 +1275,7 @@ def gasSteps_mulWordAdd (current : State) (word a b out modulus : UInt256)
     have hadd := BigHelpers.gasSteps_addMaskedMod inner out (UInt256.ofNat 4096)
       bit modulus count (UInt256.ofNat 383) saved
       (by simp [saved, mulWordRest]; omega)
-      hcount (by simpa [inner, mulInnerState] using hcode)
+      hcount htake (by simpa [inner, mulInnerState] using hcode)
       (by simpa [inner, mulInnerState, State.fork] using hfork)
       (by simpa [inner, mulInnerState] using hrun)
       (by simpa [inner, mulInnerState, State.fork] using hnp) (by

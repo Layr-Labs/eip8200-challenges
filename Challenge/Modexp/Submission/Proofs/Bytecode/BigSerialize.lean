@@ -61,9 +61,8 @@ def serializerBodyPath :
    opAt 868 (.Dup ⟨2, by decide⟩), opAt 869 .SHR, opAt 870 .AND,
    opAt 871 (.Dup ⟨4, by decide⟩), pushAt 872 2 6144,
    opAt 873 .ADD, opAt 874 .MSTORE8, opAt 875 .POP, opAt 876 .POP,
-   opAt 877 .POP, pushAt 878 1 1, opAt 879 (.Dup ⟨1, by decide⟩),
-   opAt 880 .ADD, opAt 881 (.Swap ⟨0, by decide⟩), opAt 882 .POP,
-   pushAt 883 2 1121, opAt 884 .JUMP]
+   opAt 877 .POP, pushAt 878 1 1, opAt 879 .ADD,
+   pushAt 880 2 1121, opAt 881 .JUMP]
 
 def serializerReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -170,7 +169,7 @@ def bigReturned (s : State) (accumulatorWord : UInt256)
       ([1118,1119,1120,1121,1122,1123,1124,1125,1126,1129,1130,1131,
         1133,1134,1135,1136,1137,1139,1140,1142,1143,1144,1146,1147,
         1149,1150,1152,1153,1156,1157,1158,1159,1160,1161,1162,1165,
-        1166,1167,1168,1169,1170,1172,1173,1174,1175,1176,1179,1180,
+        1166,1167,1168,1169,1170,1172,1173,1176,1177,1178,1179,1180,
         1181,1182,1183,1186])[i - 838]! := by
   interval_cases i <;> decide
 
@@ -398,7 +397,7 @@ theorem gasSteps_serializerIteration_cost_potential (s : State)
         MachineState.memCost
           (serializerLoop s accumulatorWord count b e m baseOff expOff rest
             k).activeWords.toNat =
-      136 + MachineState.memCost
+      128 + MachineState.memCost
         (serializerLoop s accumulatorWord count b e m baseOff expOff rest
           (k + 1)).activeWords.toNat := by
   have hguard :=
@@ -410,7 +409,7 @@ theorem gasSteps_serializerIteration_cost_potential (s : State)
         (by decide) (by decide)
   have hbody :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      serializerBodyPath 112
+      serializerBodyPath 104
         (run_serializerBody s accumulatorWord count b e m baseOff expOff k
           rest (by omega) hm hk hcode hrun)
         (by simpa [serializerBody, serializerLoop, State.fork] using hfork)
@@ -447,7 +446,7 @@ theorem gasSteps_serializerLoop_cost_potential (s : State)
         MachineState.memCost
           (serializerLoop s accumulatorWord count b e m baseOff expOff rest
             0).activeWords.toNat =
-      m * 136 + MachineState.memCost
+      m * 128 + MachineState.memCost
         (serializerLoop s accumulatorWord count b e m baseOff expOff rest
           m).activeWords.toNat := by
   unfold gasSteps_serializerLoop
@@ -566,7 +565,7 @@ theorem gasSteps_serializeResult_cost_potential (s : State)
         MachineState.memCost
           (outerLoop s accumulatorWord count b e m baseOff expOff rest
             e).activeWords.toNat =
-      (62 + m * 136) + MachineState.memCost
+      (62 + m * 128) + MachineState.memCost
         (bigReturned s accumulatorWord count b e m baseOff expOff rest).activeWords.toNat := by
   have hguard :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree

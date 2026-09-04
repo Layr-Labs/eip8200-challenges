@@ -98,16 +98,12 @@ def baseT2SkipPath :
 def innerAfterBitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 688 .JUMPDEST, pushAt 689 1 1,
-   opAt 690 (.Dup ⟨1, by decide⟩), opAt 691 .ADD,
-   opAt 692 (.Swap ⟨0, by decide⟩), opAt 693 .POP,
-   pushAt 694 2 848, opAt 695 .JUMP]
+   opAt 690 .ADD, pushAt 691 2 848, opAt 692 .JUMP]
 
 def innerFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 696 .JUMPDEST, opAt 697 .POP, opAt 698 .POP, opAt 699 .POP,
-   pushAt 700 1 1, opAt 701 (.Dup ⟨1, by decide⟩), opAt 702 .ADD,
-   opAt 703 (.Swap ⟨0, by decide⟩), opAt 704 .POP,
-   pushAt 705 2 831, opAt 706 .JUMP]
+   pushAt 700 1 1, opAt 701 .ADD, pushAt 702 2 831, opAt 703 .JUMP]
 
 def outerFinishToAccumulatorPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -339,8 +335,8 @@ theorem bitReturned_of_pos (s : State) (accumulator : UInt256)
       ([831,832,833,834,835,836,839,840,841,842,843,844,845,846,847,
         848,849,851,852,853,854,857,858,861,862,863,865,868,871,874,
         875,876,879,880,881,883,884,885,887,888,889,890,893,896,899,
-        900,901,903,904,905,906,907,910,911,912,913,914,915,917,918,
-        919,920,921,924,925,926,927,930,931,932,934,937,940,943])[
+        900,901,903,904,907,908,909,910,911,912,913,914,915,917,918,
+        921,922,923,924,925,926,927,930,931,932,934,937,940,943])[
           i - 643]! := by
   interval_cases i <;> decide
 
@@ -935,10 +931,16 @@ def gasSteps_bitT2Segment (s : State) (accumulator : UInt256)
           BigHelpers.addReturned, innerBody, innerLoop] using hrun)
         (by simpa [bitT2Entry, BigHelpers.addEntry, doubledReturned,
           BigHelpers.addReturned, innerBody, innerLoop, State.fork] using hnp)
+    have htakeLe : (baseBit byte j).toNat ≤ 1 := by
+      rw [baseBit, Challenge.EvmProof.Word.word_toNat_land,
+        show (1 : UInt256).toNat = 1 by decide]
+      exact Nat.and_le_right
+    have htake : (baseBit byte j).toNat = 1 := by omega
     have hadd := BigHelpers.gasSteps_addMaskedMod
       (doubledReturned s accumulator count baseSize i j offset byte rest)
       1024 3072 (baseBit byte j) 0 count 900
       (innerFrame accumulator count baseSize i j offset byte rest) hframe hcount
+      htake
       (by simpa [doubledReturned, BigHelpers.addReturned, innerBody,
         innerLoop] using hcode)
       (by simpa [doubledReturned, BigHelpers.addReturned, innerBody,

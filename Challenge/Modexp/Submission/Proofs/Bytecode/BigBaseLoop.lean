@@ -106,6 +106,7 @@ def gasSteps_baseFinish (s : State) (accumulator : UInt256)
   have hadd := BigHelpers.gasSteps_addMaskedMod
     (baseConvertedExit s accumulator count baseSize e m baseOff rest)
     2048 3072 1 0 count 1335 helperRest hhelper hcount
+    (by decide)
     (by simpa [baseConvertedExit, outerExit, outerLoop] using hcode)
     (by simpa [baseConvertedExit, outerExit, outerLoop, State.fork] using hfork)
     (by simpa [baseConvertedExit, outerExit, outerLoop] using hrun)

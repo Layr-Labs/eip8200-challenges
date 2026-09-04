@@ -69,9 +69,7 @@ def loadAfterBytePath :
    opAt 390 (.Dup ⟨1, by decide⟩), opAt 391 .MLOAD, opAt 392 .OR,
    opAt 393 (.Dup ⟨1, by decide⟩), opAt 394 .MSTORE, opAt 395 .POP,
    opAt 396 .POP, opAt 397 .POP, opAt 398 .POP, pushAt 399 1 1,
-   opAt 400 (.Dup ⟨1, by decide⟩), opAt 401 .ADD,
-   opAt 402 (.Swap ⟨0, by decide⟩), opAt 403 .POP,
-   pushAt 404 2 441, opAt 405 .JUMP]
+   opAt 400 .ADD, pushAt 401 2 441, opAt 402 .JUMP]
 
 def loadExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -193,7 +191,7 @@ def loadReturned (s : State) (offset length dst returnDest : UInt256)
     (hii : i ≤ 405) :
     Artifact.submissionArtifact.instructionPC i =
       [484,485,486,487,488,489,490,491,492,493,494,495,496,498,499,
-       500,501,502,505][i - 387]! := by
+       502,503,504,505][i - 387]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem loadExitPCs (i : Nat) (hi : 406 ≤ i)
@@ -405,7 +403,7 @@ theorem loadToByte_staticCost :
   decide
 
 theorem loadAfterByte_staticCost :
-    Challenge.EvmProof.Meter.runLocatedBlockStaticCost loadAfterBytePath = 55 := by
+    Challenge.EvmProof.Meter.runLocatedBlockStaticCost loadAfterBytePath = 47 := by
   decide
 
 theorem loadExit_staticCost :
@@ -496,7 +494,7 @@ theorem gasSteps_loadIteration_cost_potential (s : State)
         MachineState.memCost
           (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst i
             returnDest rest).activeWords.toNat =
-      188 + MachineState.memCost
+      180 + MachineState.memCost
         (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst (i + 1)
           returnDest rest).activeWords.toNat := by
   let loop := loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst i
@@ -533,7 +531,7 @@ theorem gasSteps_loadIteration_cost_potential (s : State)
         Nat.mod_eq_of_lt (by norm_num : 484 < 2 ^ 256)]
       exact jump484)
   have hafter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    loadAfterBytePath 55
+    loadAfterBytePath 47
       (run_loadAfterByte s offset length dst returnDest i rest hcap hoffset
         hlength hi hcode hrun)
       (by simpa [afterByte, loadAfterByte, body, loadBody, loadLoop,
@@ -580,7 +578,7 @@ theorem gasSteps_loadLoop_cost_potential (s : State) (offset length : Nat)
         MachineState.memCost
           (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst 0
             returnDest rest).activeWords.toNat =
-      length * 188 + MachineState.memCost
+      length * 180 + MachineState.memCost
         (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst length
           returnDest rest).activeWords.toNat := by
   let body := fun i (hi : i < length) => gasSteps_loadIteration s offset
@@ -589,14 +587,14 @@ theorem gasSteps_loadLoop_cost_potential (s : State) (offset length : Nat)
       (body i hi).cost + MachineState.memCost
           (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst i
             returnDest rest).activeWords.toNat =
-        188 + MachineState.memCost
+        180 + MachineState.memCost
           (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst (i + 1)
             returnDest rest).activeWords.toNat := by
     intro i hi
     exact gasSteps_loadIteration_cost_potential s offset length dst returnDest
       i rest hcap (by omega) hlength hi hcode hfork hrun hnp
   have htelescope := Challenge.EvmProof.GasSteps.iterateBounded_cost_potential_eq
-    length 188 (fun i => MachineState.memCost
+    length 180 (fun i => MachineState.memCost
       (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst i
         returnDest rest).activeWords.toNat) body hcost
   unfold gasSteps_loadLoop
@@ -659,7 +657,7 @@ theorem gasSteps_loadBigEndian_cost_potential (s : State)
     (gasSteps_loadBigEndian s offset length dst returnDest rest hcap
         hoffsetWord hoffset hlength hcode hfork hrun hnp hvalid).cost +
         MachineState.memCost s.activeWords.toNat =
-      (44 + length * 188) + MachineState.memCost
+      (44 + length * 180) + MachineState.memCost
         (loadReturned s (UInt256.ofNat offset) (UInt256.ofNat length) dst
           returnDest rest).activeWords.toNat := by
   have hsetup := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree

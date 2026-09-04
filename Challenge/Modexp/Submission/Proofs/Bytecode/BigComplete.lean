@@ -319,13 +319,13 @@ def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
 /-- Length-only work estimate. Conditional products and additions have exact
 costs in their `GasSteps` certificates, not in this expression. -/
 def nonzeroWork (n b e m : Nat) : Nat :=
-  (333 + n * 276 + m * 188) +
-  (48 + n * 72) +
-  (75 + n * 69) +
+  (333 + n * 244 + m * 180) +
+  (48 + n * 64) +
+  (75 + n * 61) +
   (b * (3390 + n * 6560) + (198 + n * 410)) +
   3 +
   e * (102 + 8 * (595 + n * 514 +
     2 * (n * (98 + 256 * (443 + n * 820))))) +
-  (62 + m * 136)
+  (62 + m * 128)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigComplete

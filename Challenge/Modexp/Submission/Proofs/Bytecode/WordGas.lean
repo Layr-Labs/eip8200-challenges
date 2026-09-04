@@ -68,7 +68,7 @@ theorem gasSteps_start_cost (input : ByteArray) (hvalid : ValidInput input)
 
 theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
     (base : UInt256) (hvalid : ValidInput input) (hi : i < baseSize input) :
-    (gasSteps_baseIteration input i base hvalid hi).cost = 138 := by
+    (gasSteps_baseIteration input i base hvalid hi).cost = 130 := by
   have hguard := blockCost_of_static baseGuardPath 24
     (run_baseGuard input i base hvalid hi) (by rfl)
     (by decide) (by rfl) (by rfl)
@@ -82,12 +82,12 @@ theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
       (UInt256.ofNat (96 + i)) 0 562 (baseRest input i base) hcap rfl rfl
       (by decide)) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have htail := blockCost_of_static baseTailPath 56
+  have htail := blockCost_of_static baseTailPath 48
     (run_baseTail input i base hvalid hi) (by rfl)
     (by decide) (by rfl) (by rfl)
   have htail' : Challenge.EvmProof.Stepper.runLocatedBlockCost baseTailPath
       (Accessors.calldataByteReturned (baseLoopState input i base)
-        (UInt256.ofNat (96 + i)) 562 (baseRest input i base)) = 56 := by
+        (UInt256.ofNat (96 + i)) 562 (baseRest input i base)) = 48 := by
     simpa [baseReturnedState, Accessors.calldataByteReturned] using htail
   unfold gasSteps_baseIteration
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
@@ -96,10 +96,10 @@ theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
   omega
 
 theorem gasSteps_baseLoop_cost (input : ByteArray) (hvalid : ValidInput input) :
-    (gasSteps_baseLoop input hvalid).cost = 138 * baseSize input := by
+    (gasSteps_baseLoop input hvalid).cost = 130 * baseSize input := by
   unfold gasSteps_baseLoop
   have h := Challenge.EvmProof.GasSteps.iterateBounded_cost_of_const
-    (count := baseSize input) (cost := 138) (body := fun i hi =>
+    (count := baseSize input) (cost := 130) (body := fun i hi =>
       gasSteps_baseIteration input i (baseAfter input i) hvalid hi) (by
         intro i hi
         exact gasSteps_baseIteration_cost input i (baseAfter input i) hvalid hi)
@@ -136,7 +136,7 @@ theorem gasSteps_expEnter_cost (input : ByteArray) (i : Nat)
 
 theorem gasSteps_bitIteration_cost (input : ByteArray) (outer j : Nat)
     (byte offset acc base : UInt256) (hj : j < 8) :
-    (gasSteps_bitIteration input outer j byte offset acc base hj).cost = 136 := by
+    (gasSteps_bitIteration input outer j byte offset acc base hj).cost = 128 := by
   have hguard := blockCost_of_static bitGuardPath 24
     (run_bitGuard input outer j byte offset acc base hj) (by rfl)
     (by decide) (by rfl) (by rfl)
@@ -155,7 +155,7 @@ theorem gasSteps_bitIteration_cost (input : ByteArray) (outer j : Nat)
   have hchoose := blockCost_of_static bitChoosePath 15
     (run_bitChoose input outer j byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static bitAdvancePath 34
+  have hadvance := blockCost_of_static bitAdvancePath 26
     (run_bitAdvance input outer j byte offset acc base hj) (by rfl)
     (by decide) (by rfl) (by rfl)
   unfold gasSteps_bitIteration
@@ -165,9 +165,9 @@ theorem gasSteps_bitIteration_cost (input : ByteArray) (outer j : Nat)
 
 theorem gasSteps_bitLoop_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitLoop input outer byte offset acc base).cost = 1088 := by
+    (gasSteps_bitLoop input outer byte offset acc base).cost = 1024 := by
   unfold gasSteps_bitLoop
-  rw [show (1088 : Nat) = 8 * 136 by norm_num]
+  rw [show (1024 : Nat) = 8 * 128 by norm_num]
   apply Challenge.EvmProof.GasSteps.iterateBounded_cost_of_const
   intro j hj
   exact gasSteps_bitIteration_cost input outer j byte offset
@@ -176,11 +176,11 @@ theorem gasSteps_bitLoop_cost (input : ByteArray) (outer : Nat)
 theorem gasSteps_bitFinish_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) (hvalid : ValidInput input)
     (houter : outer < exponentSize input) :
-    (gasSteps_bitFinish input outer byte offset acc base hvalid houter).cost = 56 := by
+    (gasSteps_bitFinish input outer byte offset acc base hvalid houter).cost = 48 := by
   have hguard := blockCost_of_static bitGuardPath 24
     (run_bitFinishGuard input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have htail := blockCost_of_static bitFinishTailPath 32
+  have htail := blockCost_of_static bitFinishTailPath 24
     (run_bitFinishTail input outer byte offset acc base hvalid houter) (by rfl)
     (by decide) (by rfl) (by rfl)
   unfold gasSteps_bitFinish
@@ -191,16 +191,16 @@ theorem gasSteps_bitFinish_cost (input : ByteArray) (outer : Nat)
 theorem gasSteps_expIteration_cost (input : ByteArray) (i : Nat)
     (acc base : UInt256) (hvalid : ValidInput input)
     (hi : i < exponentSize input) :
-    (gasSteps_expIteration input i acc base hvalid hi).cost = 1190 := by
+    (gasSteps_expIteration input i acc base hvalid hi).cost = 1118 := by
   simp [gasSteps_expIteration, gasSteps_expEnter_cost, gasSteps_bitLoop_cost,
     gasSteps_bitFinish_cost]
 
 theorem gasSteps_expLoop_cost (input : ByteArray) (acc base : UInt256)
     (hvalid : ValidInput input) :
-    (gasSteps_expLoop input acc base hvalid).cost = 1190 * exponentSize input := by
+    (gasSteps_expLoop input acc base hvalid).cost = 1118 * exponentSize input := by
   unfold gasSteps_expLoop
   have h := Challenge.EvmProof.GasSteps.iterateBounded_cost_of_const
-    (count := exponentSize input) (cost := 1190) (body := fun i hi =>
+    (count := exponentSize input) (cost := 1118) (body := fun i hi =>
       gasSteps_expIteration input i (expAfter input base i acc) base hvalid hi) (by
         intro i hi
         exact gasSteps_expIteration_cost input i (expAfter input base i acc)
@@ -243,7 +243,7 @@ theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)
   omega
 
 def wordGas (input : ByteArray) : Nat :=
-  279 + 138 * baseSize input + 1190 * exponentSize input
+  279 + 130 * baseSize input + 1118 * exponentSize input
 
 theorem gasSteps_zeroModulusTotal_cost (input : ByteArray)
     (hvalid : ValidInput input) (hmsize : 0 < modulusSize input)

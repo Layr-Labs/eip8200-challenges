@@ -50,7 +50,7 @@ def initializePath :
 def sizeGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1127 (.Dup ⟨2, by decide⟩), opAt 1128 (.Dup ⟨5, by decide⟩),
-   opAt 1129 .EQ, opAt 1130 .ISZERO, pushAt 1131 2 1561,
+   opAt 1129 .XOR, opAt 1130 .JUMPDEST, pushAt 1131 2 1561,
    opAt 1132 .JUMPI]
 
 def headGuardPath :
@@ -601,7 +601,7 @@ def gasSteps_eligible (s : State) (accumulator : UInt256)
       returnDest rest)
     2048 3072 1 0 count 1335
     (stack accumulator count b e m baseOff expOff modOff returnDest rest)
-    hstack hcount
+    hstack hcount (by decide)
     (by simpa [directOuterExit] using hcode)
     (by simpa [directOuterExit, State.fork] using hfork)
     (by simpa [directOuterExit] using hrun)
