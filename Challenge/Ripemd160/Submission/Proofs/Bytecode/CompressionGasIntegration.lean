@@ -261,6 +261,7 @@ theorem iterateBounded_cost_potential_sum {I : Nat → State}
       (body i hi).cost + MachineState.memCost (I i).activeWords.toNat =
         work i + MachineState.memCost (I (i + 1)).activeWords.toNat) :
     (GasSteps.iterateBounded count body).cost +
+
         MachineState.memCost (I 0).activeWords.toNat =
       (List.range count).foldl (fun total i => total + work i) 0 +
         MachineState.memCost (I count).activeWords.toNat := by
@@ -434,5 +435,8 @@ def rightLoopWork : Nat :=
   (List.range 80).foldl (fun total i => total + rightIterationWork i) 0
 
 theorem rightLoopWork_eq : rightLoopWork = 58480 := by rfl
+
+theorem rightLoopWork_self : rightLoopWork = rightLoopWork := by
+  rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionGasIntegration
