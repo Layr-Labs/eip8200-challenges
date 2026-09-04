@@ -466,9 +466,11 @@ def gasSteps_doubleMod (s : State) (dst modulus : UInt256) (count : Nat)
     hcap hcount hcode hfork hrun hnp).trans <|
   (BigHelpers.gasSteps_subtractFinish s dst dst 1 modulus count returnDest rest
     hcap hcode hfork hrun hnp).trans <|
-  (BigHelpers.gasSteps_addMaskSegment s dst dst 1 modulus count returnDest rest
-    hcap hcount hcode hfork hrun hnp).trans <|
-  BigHelpers.gasSteps_addExit s dst dst 1 modulus count returnDest rest hcap
-    hcode hfork hrun hnp hvalid
+  (BigHelpers.gasSteps_selectEntry s dst dst 1 modulus count returnDest rest
+    hcap hcode hfork hrun hnp).trans <|
+  (BigHelpers.gasSteps_selectBranch s dst dst 1 modulus count returnDest rest
+    hcap hcode hfork hrun hnp).trans <|
+  BigHelpers.gasSteps_selectReturn s dst dst 1 modulus count returnDest rest
+    hcap hcode hfork hrun hnp hvalid
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigDouble

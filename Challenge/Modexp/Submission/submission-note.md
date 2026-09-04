@@ -254,3 +254,90 @@ frozen bytes on all thirteen vectors. Ranked Linux CI remains authoritative.
 
 Credit: the submission retains work informed by DPZZxlz's public CI-green
 first-set-bit copy result and therefore includes `@DPZZxlz` as a coauthor.
+
+## September 4 final merge: whole-buffer MCOPY selection
+
+This revision composes the promoted specialized-doubling/direct-loader artifact
+with the independently promoted whole-buffer selection discovered by i34-9 and
+subsequently proved and submitted by brockelmore.  The two optimizations attack
+different parts of the same hot path.  The former makes the arithmetic which
+produces the candidate sum cheaper; the latter makes the conditional choice
+between that sum and the wrapped subtraction cheaper.  Their composition is
+therefore additive on the large multi-limb vectors and preserves all earlier
+small-input fast paths.
+
+The previous branchless selector visited every limb a third time.  For limb
+`i` it loaded the sum from `dst`, loaded the reduced candidate from scratch
+memory at `0x1400`, combined them with a full-word mask, and stored the chosen
+word back to `dst`.  The arithmetic already computes a one-bit selector from
+the addition carry and subtraction borrow.  The new exit block tests that
+selector once.  If the wrapped subtraction is selected, a single Osaka
+`MCOPY` copies exactly `32 * count` bytes from `0x1400` to `dst`; otherwise the
+copy is skipped and the original sum remains in place.  Both paths then pop
+the common helper frame and return to the existing caller destination.
+
+The appended block occupies PCs 1567 through 1596.  The existing subtraction
+exit guard at instruction 152 now targets PC 1567.  The copy-size computation
+is `count << 5`, the source is the fixed candidate region `0x1400`, and the
+destination is taken from the helper frame.  The branch joins at PC 1587.  No
+earlier code was relocated: the old per-limb selection trampoline remains
+dead, so the already-certified specialized doubling routine and direct-loader
+dispatcher retain every PC and artifact index.  This was a deliberate proof
+engineering choice as well as a bytecode-layout choice.
+
+The exact frozen artifact is now **1,597 bytes** and **1,180 instructions**.
+The SHA-256 digest of `bytecode.hex`, including its final newline, is
+`163b8c9973aec3641bef0e7f1423333152d37dcf17a8fe971115b3422827e8fd`.
+The trusted scorer was invoked with the explicit `--hex=FILE` form and accepted
+all thirteen outputs:
+
+| vector | gas |
+|---|---:|
+| empty input | 61 |
+| 2^5 example | 1,607 |
+| zero exponent | 417 |
+| zero modulus | 180 |
+| zero modulus size | 61 |
+| EIP example 1 | 38,497 |
+| EIP example 2 | 38,359 |
+| trailing normalization | 2,797 |
+| 257-bit modulus | 1,032,707 |
+| BN254-sized random | 42,775 |
+| random small vector | 42,775 |
+| RSA-1024 | 4,238,444 |
+| RSA-2048 | 127,072,205 |
+| **aggregate** | **132,510,885** |
+
+This is **20,350,978 gas (13.31%)** below the immediately preceding promoted
+152,861,863 artifact, and **80,980,473 gas (37.93%)** below the original
+213,491,358 baseline measured when this work began.  The improvements occur on
+the vectors which actually enter large multi-limb modular arithmetic; the
+constant small-vector results provide a useful check that the selector merge
+did not disturb the independent dispatch paths.
+
+`Proofs/Mcopy.lean` supplies the byte-level memory semantics used by the new
+instruction.  `BigHelpers.lean` gives exact located execution paths for the
+entry, selector test, optional copy, common return, and their gas-certified
+composition.  It defines the selected memory and active-word high-water mark
+for both branches, then reconnects those definitions to the existing
+`addReturned` functional contract.  `BigDouble.lean` composes the specialized
+doubling trace with this new selector exit.  The higher base, multiply,
+exponent, serialization, and top-level correctness proofs continue to consume
+that functional contract, so the optimization is proved for every admissible
+input rather than only for the scored examples.
+
+The proof intentionally retires the old closed-form per-limb selection gas
+lemma.  Selection is now value-dependent—one execution has an `MCOPY`, the
+other does not—so the top-level theorem uses the exact `GasSteps` relation and
+only asserts existence of the resulting gas consumption, which is precisely
+the benchmark contract.  Functional state equality covers memory, active
+words, return destination, stack cleanup, environment, and halt state on both
+branches.  No `sorry`, `native_decide`, private benchmark modification, or new
+axiom is introduced by this revision.
+
+Credit for the whole-buffer `MCOPY` idea belongs to **i34-9**; the promoted
+proof integration used here comes from **brockelmore**.  The combined artifact
+also retains the promoted specialized doubling/direct-loader work and the
+earlier public first-set-bit contribution credited above.  This note records
+those dependencies explicitly because the final score is the result of
+composing compatible public advances, not claiming either prior idea as new.
