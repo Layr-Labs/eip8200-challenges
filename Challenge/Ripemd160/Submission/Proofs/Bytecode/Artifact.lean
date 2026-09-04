@@ -225,7 +225,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x00,
   op 0x00,
   op 0x00,
-  op 0x00
+  op 0x00,
 ]
 
 private def submissionInstructionsChunk1 : List Instr :=
@@ -427,14 +427,14 @@ private def submissionInstructionsChunk1 : List Instr :=
   op 0x01,
   op 0x53,
   .push 1 1,
-  op 0x81,
+  op 0x5b,
   op 0x01,
-  op 0x90
+  op 0x5b,
 ]
 
 private def submissionInstructionsChunk2 : List Instr :=
 [
-  op 0x50,
+  op 0x5b,
   .push 2 521,
   op 0x56,
   op 0x5b,
@@ -633,7 +633,7 @@ private def submissionInstructionsChunk2 : List Instr :=
   .push 4 2840853838,
   op 0x01,
   .push 4 4294967295,
-  op 0x16
+  op 0x16,
 ]
 
 private def submissionInstructionsChunk3 : List Instr :=
@@ -837,7 +837,7 @@ private def submissionInstructionsChunk3 : List Instr :=
   .push 1 64,
   op 0x51,
   op 0x17,
-  .push 1 32
+  .push 1 32,
 ]
 
 private def submissionInstructionsChunk4 : List Instr :=
@@ -1041,7 +1041,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   .push 5 137438953504,
   .push 2 2386,
   .push 2 696,
-  .push 2 566
+  .push 2 566,
 ]
 
 private def submissionInstructionsChunk5 : List Instr :=
@@ -1245,7 +1245,7 @@ private def submissionInstructionsChunk5 : List Instr :=
   .push 6 140737488388096,
   .push 2 680,
   .push 5 274877907008,
-  .push 2 3151
+  .push 2 3151,
 ]
 
 private def submissionInstructionsChunk6 : List Instr :=
@@ -1389,7 +1389,7 @@ private def submissionInstructionsChunk6 : List Instr :=
   .push 6 8796093024256,
   .push 2 688,
   .push 6 8796093024256,
-  .push 2 680
+  .push 2 680,
 ]
 
 private def submissionInstructionsChunk7 : List Instr :=
@@ -1593,7 +1593,7 @@ private def submissionInstructionsChunk7 : List Instr :=
   op 0x98,
   .push 5 4294967297,
   op 0x02,
-  .push 1 22
+  .push 1 22,
 ]
 
 private def submissionInstructionsChunk8 : List Instr :=
@@ -1797,7 +1797,7 @@ private def submissionInstructionsChunk8 : List Instr :=
   .push 4 4294967295,
   op 0x16,
   op 0x91,
-  .push 5 4294967297
+  .push 5 4294967297,
 ]
 
 private def submissionInstructionsChunk9 : List Instr :=
@@ -2001,7 +2001,7 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x16,
   op 0x02,
   .push 1 32,
-  op 0x1c
+  op 0x1c,
 ]
 
 private def submissionInstructionsChunk10 : List Instr :=
@@ -2226,7 +2226,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x17,
   .push 2 704,
   op 0x52,
-  op 0x56
+  op 0x56,
 ]
 
 @[simp] private theorem submissionInstructionsChunk0_length : submissionInstructionsChunk0.length = 200 := by rfl
@@ -2306,11 +2306,11 @@ private theorem submissionInstructionsChunk1_assemble : assembleBytes submission
   0x80, 0x81, 0x61, 0x08, 0x00, 0x01, 0x53, 0x80, 0x60, 0x03, 0x1b, 0x60,
   0x08, 0x83, 0x03, 0x61, 0x08, 0x00, 0x01, 0x5f, 0x5b, 0x60, 0x08, 0x81,
   0x10, 0x15, 0x61, 0x02, 0x2a, 0x57, 0x60, 0xff, 0x83, 0x82, 0x60, 0x03,
-  0x1b, 0x1c, 0x16, 0x81, 0x83, 0x01, 0x53, 0x60, 0x01, 0x81, 0x01, 0x90
+  0x1b, 0x1c, 0x16, 0x81, 0x83, 0x01, 0x53, 0x60, 0x01, 0x5b, 0x01, 0x5b
 ] := by decide
 
 private theorem submissionInstructionsChunk2_assemble : assembleBytes submissionInstructionsChunk2 = [
-  0x50, 0x61, 0x02, 0x09, 0x56, 0x5b, 0x50, 0x50, 0x50, 0x50, 0x90, 0x56,
+  0x5b, 0x61, 0x02, 0x09, 0x56, 0x5b, 0x50, 0x50, 0x50, 0x50, 0x90, 0x56,
   0x5b, 0x61, 0x02, 0x68, 0x56, 0x5b, 0x51, 0x8c, 0x8c, 0x19, 0x8c, 0x17,
   0x18, 0x01, 0x90, 0x98, 0x01, 0x63, 0x6e, 0xd9, 0xeb, 0xa1, 0x01, 0x63,
   0xff, 0xff, 0xff, 0xff, 0x16, 0x02, 0x60, 0x20, 0x1c, 0x8b, 0x01, 0x63,

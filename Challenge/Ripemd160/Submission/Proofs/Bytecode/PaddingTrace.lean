@@ -395,10 +395,10 @@ def lengthIterationPath : List
    ⟨394, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨395, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨396, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨397, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨397, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨398, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨399, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨400, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨399, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨400, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨401, .push ⟨2, by decide⟩ (UInt256.ofNat 0x209), by rfl, by decide⟩,
    ⟨402, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -572,12 +572,15 @@ private theorem run_lengthIncrement (input : ByteArray) (i : Nat) (hi : i < 8) :
     Challenge.EvmProof.Stepper.runLocatedBlock lengthIncrementPath
       (lengthStoredState input i) = some (lengthIncrementedState input i) := by
   have hiSucc : i + 1 < 2 ^ 256 := by omega
-  have hadd : UInt256.ofNat i + UInt256.ofNat 1 = UInt256.ofNat (i + 1) :=
+  have haddRight : UInt256.ofNat i + UInt256.ofNat 1 = UInt256.ofNat (i + 1) :=
     Challenge.EvmProof.Word.ofNat_add_ofNat hiSucc
+  have hadd : UInt256.ofNat 1 + UInt256.ofNat i = UInt256.ofNat (i + 1) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    exact haddRight
   simp [lengthIncrementPath, lengthIterationPath,
     Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr, lengthStoredState, lengthIncrementedState,
-    hadd, List.exchange]
+    hadd]
 
 set_option maxHeartbeats 200000 in
 private theorem run_lengthBackPush (input : ByteArray) (i : Nat) :
