@@ -11,7 +11,7 @@ set_option maxHeartbeats 4000000
 
 The dense helper keeps both packed message words on the stack only until the
 two endian stages finish.  It then stores one packed word at each dense
-address, so each half has 24 instructions and the helper has 62.
+address, so each half has 24 instructions and the helper has 57.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
@@ -48,8 +48,7 @@ def denseStoreOffset (half : Nat) : Nat :=
   (UInt256.ofNat (denseStoreAddress half)).toNat
 
 def initialTemplate : List Instr :=
-  [ op .JUMPDEST, dup1, push1 (UInt256.ofNat 60), op .ADD, op .MLOAD,
-    op .POP, dup1, op .MLOAD, swap1, push1 (UInt256.ofNat 32), op .ADD,
+  [ op .JUMPDEST, dup1, op .MLOAD, swap1, push1 (UInt256.ofNat 32), op .ADD,
     op .MLOAD, swap1 ]
 
 def endianStage (shift : Nat) (mask : UInt256) : List Instr :=
@@ -73,7 +72,7 @@ def finalJumpTemplate : List Instr := [op .JUMP]
 def denseFullTemplate : List Instr :=
   denseBeforeJumpTemplate ++ finalJumpTemplate
 
-@[simp] theorem initialTemplate_length : initialTemplate.length = 13 := by
+@[simp] theorem initialTemplate_length : initialTemplate.length = 8 := by
   rfl
 
 @[simp] theorem endianStage_length (shift : Nat) (mask : UInt256) :
@@ -85,11 +84,11 @@ def denseFullTemplate : List Instr :=
   rfl
 
 @[simp] theorem denseBeforeJumpTemplate_length :
-    denseBeforeJumpTemplate.length = 61 := by
+    denseBeforeJumpTemplate.length = 56 := by
   rfl
 
 @[simp] theorem denseFullTemplate_length :
-    denseFullTemplate.length = 62 := by
+    denseFullTemplate.length = 57 := by
   rfl
 
 theorem assembleBytes_length (instructions : List Instr) :
@@ -111,14 +110,14 @@ theorem denseHalfTemplate_byteLength (half : Nat) :
     op, push1, push2, push32, dup1, swap1, denseStoreAddress]
 
 theorem denseBeforeJumpTemplate_byteLength :
-    (assembleBytes denseBeforeJumpTemplate).length = 331 := by
+    (assembleBytes denseBeforeJumpTemplate).length = 325 := by
   rw [denseBeforeJumpTemplate, assembleBytes_append, List.length_append,
     assembleBytes_length]
   simp [denseHalfTemplate, initialTemplate, endianStage8, endianStage16,
     endianStage, op, push1, push2, push32, dup1, swap1, denseStoreAddress]
 
 theorem denseFullTemplate_byteLength :
-    (assembleBytes denseFullTemplate).length = 332 := by
+    (assembleBytes denseFullTemplate).length = 326 := by
   rw [denseFullTemplate, assembleBytes_append, List.length_append,
     denseBeforeJumpTemplate_byteLength]
   rfl
@@ -128,7 +127,7 @@ def staticGas (instructions : List Instr) : Nat :=
     (Challenge.EvmProof.Meter.instrStaticCost .Osaka)).sum
 
 theorem denseFullTemplate_staticGas :
-    staticGas denseFullTemplate = 188 := by
+    staticGas denseFullTemplate = 174 := by
   norm_num [staticGas, denseFullTemplate, denseBeforeJumpTemplate,
     denseHalfTemplate, initialTemplate, endianStage8, endianStage16,
     endianStage, op, push1, push2, push32, dup1, swap1,
@@ -174,11 +173,9 @@ def activeAfterWord (current : UInt256) (offset : UInt256) : UInt256 :=
   UInt256.ofNat
     (MachineState.activeWordsAfter current.toNat offset.toNat 32)
 
-def warmupActiveWords (s : State) (messageOffset : UInt256) : UInt256 :=
-  let a0 := activeAfterWord s.activeWords
-    (messageOffset + UInt256.ofNat 60)
-  let a1 := activeAfterWord a0 messageOffset
-  activeAfterWord a1 (messageOffset + UInt256.ofNat 32)
+def loadedActiveWords (s : State) (messageOffset : UInt256) : UInt256 :=
+  let a0 := activeAfterWord s.activeWords messageOffset
+  activeAfterWord a0 (messageOffset + UInt256.ofNat 32)
 
 def denseStoreAddresses : List Nat := [denseStoreOffset 0, denseStoreOffset 1]
 
@@ -189,7 +186,7 @@ def denseStoreActiveWords (current : UInt256) (addresses : List Nat) : UInt256 :
 
 def denseExpectedActiveWords (s : State) (messageOffset : UInt256) : UInt256 :=
   denseStoreActiveWords
-    (denseStoreActiveWords (warmupActiveWords s messageOffset)
+    (denseStoreActiveWords (loadedActiveWords s messageOffset)
       [denseStoreOffset 0]) [denseStoreOffset 1]
 
 def scheduleEntry (s : State) (startPC messageOffset returnPC : UInt256)
@@ -202,7 +199,7 @@ def afterInitial (s : State) (startPC messageOffset returnPC : UInt256)
     pc := Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace.pcAfter
       startPC initialTemplate
     stack := [inputWord0 s messageOffset, inputWord1 s messageOffset, returnPC] ++ rest
-    activeWords := warmupActiveWords s messageOffset }
+    activeWords := loadedActiveWords s messageOffset }
 
 def afterDenseHalf (s : State) (startPC : UInt256) (half : Nat)
     (value : UInt256) (rest : List UInt256) : State :=
@@ -226,6 +223,6 @@ def denseExpectedState (s : State) (startPC messageOffset returnPC : UInt256)
     memory := denseExpectedMemory s messageOffset
     activeWords := denseExpectedActiveWords s messageOffset }
 
-def denseStaticGas : Nat := 188
+def denseStaticGas : Nat := 174
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
