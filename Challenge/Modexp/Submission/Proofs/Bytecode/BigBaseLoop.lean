@@ -33,6 +33,7 @@ def gasSteps_baseByteAt (s : State) (accumulator : UInt256)
     (by simpa using hrun) (by simpa [State.fork] using hnp)
   exact hstep
 
+
 def gasSteps_baseLoop (s : State) (accumulator : UInt256)
     (count baseSize e m baseOff : Nat) (rest : List UInt256)
     (hcap : rest.length < 990) (hcount : count < 2 ^ 256)
@@ -48,9 +49,10 @@ def gasSteps_baseLoop (s : State) (accumulator : UInt256)
     gasSteps_baseByteAt s accumulator count baseSize e m baseOff i rest hcap
       hcount hbase hi hoff hcode hfork hrun hnp
 
-private theorem jumpColdEntry :
-    Decode.isValidJumpDest submissionBytecode 1343 = true :=
-  Artifact.isValidJumpDest_index 995 (by rfl)
+
+private theorem jump944 :
+    Decode.isValidJumpDest submissionBytecode 944 = true :=
+  Artifact.isValidJumpDest_index 717 (by rfl)
 
 def baseConvertedExit (s : State) (accumulator : UInt256)
     (count baseSize e m baseOff : Nat) (rest : List UInt256) : State :=
@@ -61,7 +63,7 @@ def initialAccumulator (s : State) (accumulator : UInt256)
     (count baseSize e m baseOff : Nat) (rest : List UInt256) : State :=
   BigHelpers.addReturned
     (baseConvertedExit s accumulator count baseSize e m baseOff rest)
-    2048 3072 1 0 count 1343
+    2048 3072 1 0 count 944
     ([accumulator, UInt256.ofNat count, UInt256.ofNat baseSize] ++
       ([UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff] ++ rest))
 
@@ -105,16 +107,18 @@ def gasSteps_baseFinish (s : State) (accumulator : UInt256)
       (by simpa [outerExit, outerLoop, progress, State.fork] using hnp)
   have hadd := BigHelpers.gasSteps_addMaskedMod
     (baseConvertedExit s accumulator count baseSize e m baseOff rest)
-    2048 3072 1 0 count 1343 helperRest hhelper hcount
+    2048 3072 1 0 count 944 helperRest hhelper hcount
     (by simpa [baseConvertedExit, outerExit, outerLoop] using hcode)
     (by simpa [baseConvertedExit, outerExit, outerLoop, State.fork] using hfork)
     (by simpa [baseConvertedExit, outerExit, outerLoop] using hrun)
     (by simpa [baseConvertedExit, outerExit, outerLoop, State.fork] using hnp)
-    jumpColdEntry
+    jump944
   exact Challenge.EvmProof.GasSteps.cast
     (hguard.trans (htoAccumulator.trans hadd))
     (by simp [baseLoopState, progress, fullRest])
     (by simp [initialAccumulator, helperRest, fullRest])
+
+set_option linter.unusedSimpArgs false in
 
 def gasSteps_baseConversion (s : State) (accumulator : UInt256)
     (count baseSize e m baseOff : Nat) (rest : List UInt256)
@@ -131,5 +135,6 @@ def gasSteps_baseConversion (s : State) (accumulator : UInt256)
     hbase hoff hcode hfork hrun hnp).trans
   (gasSteps_baseFinish s accumulator count baseSize e m baseOff rest hcap hcount
     hbase hcode hfork hrun hnp)
+
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigBaseLoop

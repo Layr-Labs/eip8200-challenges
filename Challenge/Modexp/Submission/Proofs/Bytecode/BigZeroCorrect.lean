@@ -239,43 +239,5 @@ def gasSteps_zero (s : State) (b e m baseOff expOff modOff : Nat)
 def zeroWork (n m : Nat) : Nat :=
   (343 + n * 284 + m * 190) + (56 + n * 74)
 
-theorem gasSteps_zero_cost_potential (s : State)
-    (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
-    (rest : List UInt256) (hmBound : m ≤ 1024)
-    (hmodOff : modOff < 2 ^ 256) (hinputFit : modOff + m ≤ 2 ^ 256)
-    (hcap : rest.length < 992)
-    (hor : BigComplete.modulusOr s b e m baseOff expOff modOff returnDest
-      rest = 0)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    (gasSteps_zero s b e m baseOff expOff modOff returnDest rest hmBound
-        hmodOff hinputFit hcap hor hcode hfork hrun hnp).cost +
-        MachineState.memCost s.activeWords.toNat =
-      zeroWork (Limbs.limbCount m) m + MachineState.memCost
-        (zeroFinalState s b e m baseOff expOff modOff returnDest rest).activeWords.toNat := by
-  let n := Limbs.limbCount m
-  let loaded := BigComplete.setupState s b e m baseOff expOff modOff
-    returnDest rest
-  have hn : n ≤ 32 := Limbs.limbCount_le_32 m hmBound
-  have hs := BigSetup.gasSteps_setup_cost_potential s b e m baseOff expOff
-    modOff returnDest rest hmBound hmodOff hinputFit hcap hcode hfork hrun hnp
-  have hz := BigModulus.gasSteps_scanZeroTotal_cost_potential loaded n b e m
-    baseOff expOff modOff returnDest rest (by omega) hn (by omega)
-    (by simpa [BigComplete.modulusOr, BigComplete.limbCount, loaded,
-      BigComplete.setupState] using hor)
-    (by change s.executionEnv.code = submissionBytecode; exact hcode)
-    (by change s.fork = .Osaka; exact hfork)
-    (by change s.halt = .Running; exact hrun)
-    (by
-      change Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-        s.executionEnv.codeAddr = false
-      exact hnp)
-  unfold gasSteps_zero
-  simp only [Challenge.EvmProof.GasSteps.cast_cost,
-    Challenge.EvmProof.GasSteps.trans_cost]
-  simp only [zeroWork, zeroFinalState, n, loaded, BigComplete.setupState] at hs hz ⊢
-  omega
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigZeroCorrect
