@@ -10,7 +10,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1369..1375, pc 1926..1935. -/
+ /-- Instructions 1028..1038, pc 1385..1399; the cold-hit successor is modeled without a semantic trampoline. -/
 def blk1369 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1369 .JUMPDEST,
