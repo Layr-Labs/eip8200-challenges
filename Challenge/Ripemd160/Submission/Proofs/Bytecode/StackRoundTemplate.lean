@@ -61,12 +61,12 @@ def f0Template (xAddress : UInt256) (rotation : Nat) : List Instr :=
     op .ADD, push2 xAddress, op .MLOAD, op .ADD,
     push4 mask, op .AND,
     dup1, push1 (UInt256.ofNat rotation), op .SHL,
-    dup2, push1 (UInt256.ofNat (32 - rotation)), op .SHR,
+    dup1, push1 (UInt256.ofNat 32), op .SHR,
     op .OR, dup6, op .ADD, push4 mask, op .AND,
     swap1, op .POP,
-    dup3, dup1, push1 c10, op .SHL,
-    dup2, push1 c22, op .SHR, op .OR,
-    swap1, op .POP, push4 mask, op .AND,
+    dup3, push1 c10, op .SHL,
+    dup1, push1 (UInt256.ofNat 32), op .SHR, op .OR,
+    push4 mask, op .AND,
     swap1, swap2, swap3, op .POP, swap3, swap4 ]
 
 def f1Template (xAddress : UInt256) (rotation : Nat) (constant : UInt256) : List Instr :=
@@ -74,12 +74,12 @@ def f1Template (xAddress : UInt256) (rotation : Nat) (constant : UInt256) : List
     op .ADD, push2 xAddress, op .MLOAD, op .ADD, push4 constant, op .ADD,
     push4 mask, op .AND,
     dup1, push1 (UInt256.ofNat rotation), op .SHL,
-    dup2, push1 (UInt256.ofNat (32 - rotation)), op .SHR,
+    dup1, push1 (UInt256.ofNat 32), op .SHR,
     op .OR, dup6, op .ADD, push4 mask, op .AND,
     swap1, op .POP,
-    dup3, dup1, push1 c10, op .SHL,
-    dup2, push1 c22, op .SHR, op .OR,
-    swap1, op .POP, push4 mask, op .AND,
+    dup3, push1 c10, op .SHL,
+    dup1, push1 (UInt256.ofNat 32), op .SHR, op .OR,
+    push4 mask, op .AND,
     swap1, swap2, swap3, op .POP, swap3, swap4 ]
 
 def f2Template (xAddress : UInt256) (rotation : Nat) (constant : UInt256) : List Instr :=
@@ -88,12 +88,12 @@ def f2Template (xAddress : UInt256) (rotation : Nat) (constant : UInt256) : List
     op .ADD, push2 xAddress, op .MLOAD, op .ADD, push4 constant, op .ADD,
     push4 mask, op .AND,
     dup1, push1 (UInt256.ofNat rotation), op .SHL,
-    dup2, push1 (UInt256.ofNat (32 - rotation)), op .SHR,
+    dup1, push1 (UInt256.ofNat 32), op .SHR,
     op .OR, dup6, op .ADD, push4 mask, op .AND,
     swap1, op .POP,
-    dup3, dup1, push1 c10, op .SHL,
-    dup2, push1 c22, op .SHR, op .OR,
-    swap1, op .POP, push4 mask, op .AND,
+    dup3, push1 c10, op .SHL,
+    dup1, push1 (UInt256.ofNat 32), op .SHR, op .OR,
+    push4 mask, op .AND,
     swap1, swap2, swap3, op .POP, swap3, swap4 ]
 
 def f3Template (xAddress : UInt256) (rotation : Nat) (constant : UInt256) : List Instr :=
@@ -101,12 +101,12 @@ def f3Template (xAddress : UInt256) (rotation : Nat) (constant : UInt256) : List
     op .ADD, push2 xAddress, op .MLOAD, op .ADD, push4 constant, op .ADD,
     push4 mask, op .AND,
     dup1, push1 (UInt256.ofNat rotation), op .SHL,
-    dup2, push1 (UInt256.ofNat (32 - rotation)), op .SHR,
+    dup1, push1 (UInt256.ofNat 32), op .SHR,
     op .OR, dup6, op .ADD, push4 mask, op .AND,
     swap1, op .POP,
-    dup3, dup1, push1 c10, op .SHL,
-    dup2, push1 c22, op .SHR, op .OR,
-    swap1, op .POP, push4 mask, op .AND,
+    dup3, push1 c10, op .SHL,
+    dup1, push1 (UInt256.ofNat 32), op .SHR, op .OR,
+    push4 mask, op .AND,
     swap1, swap2, swap3, op .POP, swap3, swap4 ]
 
 def f4Template (xAddress : UInt256) (rotation : Nat) (constant : UInt256) : List Instr :=
@@ -115,12 +115,12 @@ def f4Template (xAddress : UInt256) (rotation : Nat) (constant : UInt256) : List
     op .ADD, push2 xAddress, op .MLOAD, op .ADD, push4 constant, op .ADD,
     push4 mask, op .AND,
     dup1, push1 (UInt256.ofNat rotation), op .SHL,
-    dup2, push1 (UInt256.ofNat (32 - rotation)), op .SHR,
+    dup1, push1 (UInt256.ofNat 32), op .SHR,
     op .OR, dup6, op .ADD, push4 mask, op .AND,
     swap1, op .POP,
-    dup3, dup1, push1 c10, op .SHL,
-    dup2, push1 c22, op .SHR, op .OR,
-    swap1, op .POP, push4 mask, op .AND,
+    dup3, push1 c10, op .SHL,
+    dup1, push1 (UInt256.ofNat 32), op .SHR, op .OR,
+    push4 mask, op .AND,
     swap1, swap2, swap3, op .POP, swap3, swap4 ]
 
 inductive StraightLine : Instr → Prop where
@@ -158,7 +158,7 @@ theorem f1Template_straight (xAddress : UInt256) (rotation : Nat)
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | hnil
+    rfl | rfl | rfl | hnil
   all_goals first | constructor | contradiction
 
 theorem f2Template_straight (xAddress : UInt256) (rotation : Nat)
@@ -171,7 +171,7 @@ theorem f2Template_straight (xAddress : UInt256) (rotation : Nat)
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | rfl | hnil
+    rfl | rfl | rfl | rfl | hnil
   all_goals first | constructor | contradiction
 
 theorem f3Template_straight (xAddress : UInt256) (rotation : Nat)
@@ -184,7 +184,7 @@ theorem f3Template_straight (xAddress : UInt256) (rotation : Nat)
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | hnil
+    rfl | rfl | rfl | hnil
   all_goals first | constructor | contradiction
 
 theorem f4Template_straight (xAddress : UInt256) (rotation : Nat)
@@ -197,31 +197,31 @@ theorem f4Template_straight (xAddress : UInt256) (rotation : Nat)
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | rfl | hnil
+    rfl | rfl | rfl | rfl | hnil
   all_goals first | constructor | contradiction
 
 @[simp] theorem f0Template_length (xAddress : UInt256) (rotation : Nat) :
-    (f0Template xAddress rotation).length = 42 := by
+    (f0Template xAddress rotation).length = 39 := by
   rfl
 
 @[simp] theorem f1Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f1Template xAddress rotation constant).length = 46 := by
+    (f1Template xAddress rotation constant).length = 43 := by
   rfl
 
 @[simp] theorem f2Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f2Template xAddress rotation constant).length = 47 := by
+    (f2Template xAddress rotation constant).length = 44 := by
   rfl
 
 @[simp] theorem f3Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f3Template xAddress rotation constant).length = 46 := by
+    (f3Template xAddress rotation constant).length = 43 := by
   rfl
 
 @[simp] theorem f4Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f4Template xAddress rotation constant).length = 47 := by
+    (f4Template xAddress rotation constant).length = 44 := by
   rfl
 
 /-! ## Artifact locations and PCs -/

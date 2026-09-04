@@ -377,15 +377,16 @@ theorem runLocatedBlock_eq_runInstrSeq_site
 
 /-! ## Direct f0 evaluator trace -/
 
-private theorem maskedRotateAdd (q e r r' : UInt256) :
+private theorem maskedRotateAdd (q e r : UInt256) :
     UInt256.land mask
         (UInt256.add
           (((mask.land q).shiftLeft r).lor
-            ((mask.land q).shiftRight r')) e) =
+            (((mask.land q).shiftLeft r).shiftRight (UInt256.ofNat 32))) e) =
       UInt256.land
         (UInt256.add
           (((q.land mask).shiftLeft r).lor
-            ((q.land mask).shiftRight r')) e) mask := by
+            (((q.land mask).shiftLeft r).shiftRight (UInt256.ofNat 32))) e)
+        mask := by
   rw [Word.land_comm mask q]
   exact Word.land_comm _ _
 
@@ -457,8 +458,10 @@ theorem runInstrSeq_f0 (s : State) (startPC : UInt256)
                 (UInt256.land (UInt256.ofNat 4294967295) q)
                 (UInt256.ofNat rotation))
               (UInt256.shiftRight
-                (UInt256.land (UInt256.ofNat 4294967295) q)
-                (UInt256.ofNat (32 - rotation)))) e) =
+                (UInt256.shiftLeft
+                  (UInt256.land (UInt256.ofNat 4294967295) q)
+                  (UInt256.ofNat rotation))
+                (UInt256.ofNat 32))) e) =
         UInt256.land
           (UInt256.add
             (UInt256.lor
@@ -466,8 +469,10 @@ theorem runInstrSeq_f0 (s : State) (startPC : UInt256)
                 (UInt256.land q (UInt256.ofNat 4294967295))
                 (UInt256.ofNat rotation))
               (UInt256.shiftRight
-                (UInt256.land q (UInt256.ofNat 4294967295))
-                (UInt256.ofNat (32 - rotation)))) e)
+                (UInt256.shiftLeft
+                  (UInt256.land q (UInt256.ofNat 4294967295))
+                  (UInt256.ofNat rotation))
+                (UInt256.ofNat 32))) e)
           (UInt256.ofNat 4294967295)
     rw [Word.land_comm (UInt256.ofNat 4294967295) q]
     exact Word.land_comm _ _

@@ -36,15 +36,16 @@ private theorem h16_masked_sum (a x f k : UInt256) :
       mask32 (k + (a + (x + mask32 f))) := by
   simp only [mask32_eq_ofUInt32, toUInt32_add, toUInt32_ofUInt32]
 
-private theorem maskedRotateAdd (q e r r' : UInt256) :
+private theorem maskedRotateAdd (q e r : UInt256) :
     UInt256.land mask
         (UInt256.add
           (((mask.land q).shiftLeft r).lor
-            ((mask.land q).shiftRight r')) e) =
+            (((mask.land q).shiftLeft r).shiftRight (UInt256.ofNat 32))) e) =
       UInt256.land
         (UInt256.add
           (((q.land mask).shiftLeft r).lor
-            ((q.land mask).shiftRight r')) e) mask := by
+            (((q.land mask).shiftLeft r).shiftRight (UInt256.ofNat 32))) e)
+        mask := by
   rw [Word.land_comm mask q]
   exact Word.land_comm _ _
 
@@ -140,7 +141,7 @@ theorem runInstrSeq_f2 (s : State) (startPC xAddress returnPC : UInt256)
       State.activeWordsAfterUInt256, hadd, hcomm, hsub]
   constructor
   · rw [hcomm working.e, hsum, hbase, hcomm working.e]
-    exact maskedRotateAdd _ _ _ _
+    exact maskedRotateAdd _ _ _
   · exact Word.land_comm _ _
 
 /-! ## Direct group 4 evaluator trace -/
@@ -235,7 +236,7 @@ theorem runInstrSeq_f4 (s : State) (startPC xAddress returnPC : UInt256)
       State.activeWordsAfterUInt256, hadd, hcomm, hsub]
   constructor
   · rw [hcomm working.e, hsum, hbase, hcomm working.e]
-    exact maskedRotateAdd _ _ _ _
+    exact maskedRotateAdd _ _ _
   · exact Word.land_comm _ _
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedNegatedRoundTrace

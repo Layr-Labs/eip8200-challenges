@@ -51,7 +51,8 @@ words. The caller applies the final `T` mask after adding `E`.
 -/
 def stackRawRot (s : UInt256) (r : Nat) : UInt256 :=
   UInt256.shiftLeft s (UInt256.ofNat r) |||
-    UInt256.shiftRight s (UInt256.ofNat (32 - r))
+    UInt256.shiftRight (UInt256.shiftLeft s (UInt256.ofNat r))
+      (UInt256.ofNat 32)
 
 /-- Inline `rotl(C, 10)` with its final mask.
 
@@ -60,7 +61,8 @@ Mirrors `ops_for_c10_shuffle`: `SHL(C, 10) OR SHR(C, 22)` then
 -/
 def stackC10 (c : UInt256) : UInt256 :=
   mask32 (UInt256.shiftLeft c (UInt256.ofNat 10) |||
-    UInt256.shiftRight c (UInt256.ofNat 22))
+    UInt256.shiftRight (UInt256.shiftLeft c (UInt256.ofNat 10))
+      (UInt256.ofNat 32))
 
 /-- Masked H10 sum with stack order `f + A` first.
 
@@ -126,9 +128,56 @@ theorem mask_add_omitted (raw e : UInt256) :
     rw [mask32_eq_ofUInt32, toUInt32_add, toUInt32_mask32]
   rw [h1, h2]
 
+theorem shiftLeft_toNat (value : UInt256) {shift : Nat} (hshift : shift < 256) :
+    (UInt256.shiftLeft value (UInt256.ofNat shift)).toNat =
+      (value.toNat * 2 ^ shift) % 2 ^ 256 := by
+  have hshift256 : shift < 2 ^ 256 := Nat.lt_trans hshift (by norm_num)
+  have hshiftWord : (UInt256.ofNat shift).toNat = shift := by
+    rw [word_toNat_ofNat, Nat.mod_eq_of_lt hshift256]
+  unfold UInt256.shiftLeft
+  rw [if_neg (by omega)]
+  change ((UInt256.ofNat
+    (value.toNat <<< (UInt256.ofNat shift).toNat % UInt256.size)).toNat) = _
+  rw [hshiftWord, word_toNat_ofNat, Nat.shiftLeft_eq,
+    show UInt256.size = 2 ^ 256 by rfl, Nat.mod_mod_of_dvd _ (dvd_refl _)]
+
+/-- For an embedded 32-bit word, shifting left by `r` and then right by 32 is
+the same word as shifting right by `32 - r`. This is what lets the helper feed
+the shifted sum back into its own high half instead of re-deriving `32 - r`. -/
+theorem shiftLeft_shiftRight_32 (s : UInt256) (r : Nat)
+    (hs : s.toNat < 2 ^ 32) (hr : r ≤ 32) :
+    UInt256.shiftRight (UInt256.shiftLeft s (UInt256.ofNat r))
+        (UInt256.ofNat 32) =
+      UInt256.shiftRight s (UInt256.ofNat (32 - r)) := by
+  apply word_ext
+  rw [shiftRight_toNat _ (by norm_num), shiftRight_toNat _ (by omega),
+    shiftLeft_toNat _ (by omega)]
+  have hprod : s.toNat * 2 ^ r < 2 ^ 256 := by
+    have h1 : (2 : Nat) ^ r ≤ 2 ^ 32 := Nat.pow_le_pow_right (by norm_num) hr
+    calc s.toNat * 2 ^ r < 2 ^ 32 * 2 ^ 32 :=
+          Nat.mul_lt_mul_of_lt_of_le hs h1 (by positivity)
+      _ ≤ 2 ^ 256 := by norm_num
+  rw [Nat.mod_eq_of_lt hprod, Nat.shiftRight_eq_div_pow,
+    Nat.shiftRight_eq_div_pow]
+  have hsplit : (2 : Nat) ^ 32 = 2 ^ r * 2 ^ (32 - r) := by
+    rw [← Nat.pow_add]; congr 1; omega
+  rw [hsplit, ← Nat.div_div_eq_div_mul,
+    Nat.mul_div_cancel _ (show 0 < 2 ^ r by positivity)]
+
+theorem mask32_toNat_lt (x : UInt256) : (mask32 x).toNat < 2 ^ 32 := by
+  rw [mask32_toNat, show (0xffffffff : Nat) = 2 ^ 32 - 1 by norm_num,
+    Nat.and_two_pow_sub_one_eq_mod]
+  exact Nat.mod_lt _ (by norm_num)
+
+theorem ofUInt32_toNat_lt (x : UInt32) : (ofUInt32 x).toNat < 2 ^ 32 := by
+  rw [ofUInt32_toNat]
+  exact x.toNat_lt_size
+
 /-- `Word.evmRotl32` is exactly the masked inline raw rotate. -/
-theorem evmRotl_eq_mask_raw (s : UInt256) (r : Nat) :
+theorem evmRotl_eq_mask_raw (s : UInt256) (r : Nat)
+    (hs : s.toNat < 2 ^ 32) (hr : r ≤ 32) :
     Word.evmRotl32 s r = mask32 (stackRawRot s r) := by
+  rw [stackRawRot, shiftLeft_shiftRight_32 s r hs hr]
   rfl
 
 /-- Masked inline raw rotate implements the specification rotate. -/
@@ -136,19 +185,21 @@ theorem stackRawRot_embed (x : UInt32) (n : Nat)
     (hn0 : 0 < n) (hn : n < 32) :
     mask32 (stackRawRot (ofUInt32 x) n) =
       ofUInt32 (Crypto.Ripemd160.rotl32 x n) := by
-  rw [← evmRotl_eq_mask_raw]
+  rw [← evmRotl_eq_mask_raw _ _ (ofUInt32_toNat_lt x) (by omega)]
   exact Word.evmRotl32_ofUInt32 x n hn0 hn
 
 /-- Inline rotate without a separate mask agrees with the masked
 `Word.evmRotl32` form once `E` is added under the final mask. -/
-theorem stackT_omitted (s e : UInt256) (r : Nat) :
+theorem stackT_omitted (s e : UInt256) (r : Nat)
+    (hs : s.toNat < 2 ^ 32) (hr : r ≤ 32) :
     mask32 (stackRawRot s r + e) =
       mask32 (Word.evmRotl32 s r + e) := by
-  rw [evmRotl_eq_mask_raw, mask_add_omitted]
+  rw [evmRotl_eq_mask_raw s r hs hr, mask_add_omitted]
 
 /-- Inline `rotl(C, 10)` agrees with `Word.evmRotl32` at `10`. -/
-theorem stackC10_eq (c : UInt256) :
+theorem stackC10_eq (c : UInt256) (hc : c.toNat < 2 ^ 32) :
     stackC10 c = Word.evmRotl32 c 10 := by
+  rw [stackC10, shiftLeft_shiftRight_32 c 10 hc (by norm_num)]
   rfl
 
 /-- Direct H10 stack round equals the reference `Compression.evmRound`
@@ -172,7 +223,8 @@ theorem stackRound_eq_evmRound (x : Compression.Working)
   rw [hf]
   rw [word_add_comm (Word.evmF j (ofUInt32 x.b)
     (ofUInt32 x.c) (ofUInt32 x.d)) (ofUInt32 x.a)]
-  rw [stackT_omitted, stackC10_eq]
+  rw [stackT_omitted _ _ _ (mask32_toNat_lt _) (by omega),
+    stackC10_eq _ (ofUInt32_toNat_lt _)]
 
 /-- Direct H10 stack round implements the specification `round` under
 embedding, via `Compression.evmRound_embed`. -/

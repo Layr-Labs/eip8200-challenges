@@ -22,15 +22,16 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRound
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 
-private theorem maskedRotateAdd (q e r r' : UInt256) :
+private theorem maskedRotateAdd (q e r : UInt256) :
     UInt256.land mask
         (UInt256.add
           (((mask.land q).shiftLeft r).lor
-            ((mask.land q).shiftRight r')) e) =
+            (((mask.land q).shiftLeft r).shiftRight (UInt256.ofNat 32))) e) =
       UInt256.land
         (UInt256.add
           (((q.land mask).shiftLeft r).lor
-            ((q.land mask).shiftRight r')) e) mask := by
+            (((q.land mask).shiftLeft r).shiftRight (UInt256.ofNat 32))) e)
+        mask := by
   rw [Word.land_comm mask q]
   exact Word.land_comm _ _
 
@@ -97,7 +98,7 @@ theorem runInstrSeq_f1 (s : State) (startPC : UInt256)
       hxorcomm]
   constructor
   · rw [hbase, hcomm e]
-    exact maskedRotateAdd _ _ _ _
+    exact maskedRotateAdd _ _ _
   · exact Word.land_comm _ _
 
 theorem runLocatedBlock_f1
@@ -234,7 +235,7 @@ theorem runInstrSeq_f3 (s : State) (startPC : UInt256)
       hxorcomm]
   constructor
   · rw [hbase, hcomm e]
-    exact maskedRotateAdd _ _ _ _
+    exact maskedRotateAdd _ _ _
   · exact Word.land_comm _ _
 
 theorem runLocatedBlock_f3

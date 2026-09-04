@@ -100,8 +100,10 @@ theorem runInstrSeq_f2 (s : State) (startPC : UInt256)
                 (UInt256.land (UInt256.ofNat 4294967295) q)
                 (UInt256.ofNat rotation))
               (UInt256.shiftRight
-                (UInt256.land (UInt256.ofNat 4294967295) q)
-                (UInt256.ofNat (32 - rotation)))) e) =
+                (UInt256.shiftLeft
+                  (UInt256.land (UInt256.ofNat 4294967295) q)
+                  (UInt256.ofNat rotation))
+                (UInt256.ofNat 32))) e) =
         UInt256.land
           (UInt256.add
             (UInt256.lor
@@ -109,8 +111,10 @@ theorem runInstrSeq_f2 (s : State) (startPC : UInt256)
                 (UInt256.land q (UInt256.ofNat 4294967295))
                 (UInt256.ofNat rotation))
               (UInt256.shiftRight
-                (UInt256.land q (UInt256.ofNat 4294967295))
-                (UInt256.ofNat (32 - rotation)))) e)
+                (UInt256.shiftLeft
+                  (UInt256.land q (UInt256.ofNat 4294967295))
+                  (UInt256.ofNat rotation))
+                (UInt256.ofNat 32))) e)
           (UInt256.ofNat 4294967295)
     rw [Word.land_comm (UInt256.ofNat 4294967295) q]
     exact Word.land_comm _ _
@@ -265,8 +269,10 @@ theorem runInstrSeq_f4 (s : State) (startPC : UInt256)
                 (UInt256.land (UInt256.ofNat 4294967295) q)
                 (UInt256.ofNat rotation))
               (UInt256.shiftRight
-                (UInt256.land (UInt256.ofNat 4294967295) q)
-                (UInt256.ofNat (32 - rotation)))) e) =
+                (UInt256.shiftLeft
+                  (UInt256.land (UInt256.ofNat 4294967295) q)
+                  (UInt256.ofNat rotation))
+                (UInt256.ofNat 32))) e) =
         UInt256.land
           (UInt256.add
             (UInt256.lor
@@ -274,8 +280,10 @@ theorem runInstrSeq_f4 (s : State) (startPC : UInt256)
                 (UInt256.land q (UInt256.ofNat 4294967295))
                 (UInt256.ofNat rotation))
               (UInt256.shiftRight
-                (UInt256.land q (UInt256.ofNat 4294967295))
-                (UInt256.ofNat (32 - rotation)))) e)
+                (UInt256.shiftLeft
+                  (UInt256.land q (UInt256.ofNat 4294967295))
+                  (UInt256.ofNat rotation))
+                (UInt256.ofNat 32))) e)
           (UInt256.ofNat 4294967295)
     rw [Word.land_comm (UInt256.ofNat 4294967295) q]
     exact Word.land_comm _ _

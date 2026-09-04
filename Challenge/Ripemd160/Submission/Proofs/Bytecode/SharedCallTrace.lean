@@ -57,19 +57,19 @@ theorem runLocatedBlock_eq_raw {artifact : ProgramArtifact} {fork : Fork}
   exact List.mem_map_of_mem hmem
 
 def callPushes (returnPC xAddress helperPC : UInt256) (rotation : Nat) : List Instr :=
-  [push1 (UInt256.ofNat rotation), push2 returnPC, push2 xAddress, push2 helperPC]
+  [push2 returnPC, push1 (UInt256.ofNat rotation), push2 xAddress, push2 helperPC]
 
 def callPushed (s : State) (pc returnPC xAddress helperPC : UInt256)
     (rotation : Nat) (a b c d e : UInt256) (rest : List UInt256) : State :=
   { s with
     pc := pc
-    stack := [helperPC, xAddress, returnPC, UInt256.ofNat rotation, a, b, c, d, e] ++ rest }
+    stack := [helperPC, xAddress, UInt256.ofNat rotation, returnPC, a, b, c, d, e] ++ rest }
 
 def helperEntry (s : State) (helperPC returnPC xAddress : UInt256)
     (rotation : Nat) (a b c d e : UInt256) (rest : List UInt256) : State :=
   { s with
     pc := helperPC
-    stack := [xAddress, returnPC, UInt256.ofNat rotation, a, b, c, d, e] ++ rest }
+    stack := [xAddress, UInt256.ofNat rotation, returnPC, a, b, c, d, e] ++ rest }
 
 theorem callPushes_advances (returnPC xAddress helperPC : UInt256) (rotation : Nat) :
     ∀ instruction ∈ callPushes returnPC xAddress helperPC rotation, Advances instruction := by
@@ -150,10 +150,10 @@ theorem runLocatedBlock_call {artifact : ProgramArtifact} {fork : Fork}
     _ (callPushed s site.pushes.endPC returnPC xAddress helperPC rotation a b c d e rest)
   · exact runLocatedBlock_callPushes _ _ _ _ _ _ _ _ _ _ _ _ hstack hrun
   · exact hrun
-  · have hcap : ([xAddress, returnPC, UInt256.ofNat rotation, a, b, c, d, e] ++ rest).length < 1023 := by
+  · have hcap : ([xAddress, UInt256.ofNat rotation, returnPC, a, b, c, d, e] ++ rest).length < 1023 := by
       simp; omega
     have h := runLocated_jump site.jump site.jump_instr s helperPC
-      ([xAddress, returnPC, UInt256.ofNat rotation, a, b, c, d, e] ++ rest) hcap hvalid
+      ([xAddress, UInt256.ofNat rotation, returnPC, a, b, c, d, e] ++ rest) hcap hvalid
     have hlocated : Stepper.runLocated site.jump.located
         (callPushed s site.pushes.endPC returnPC xAddress helperPC rotation a b c d e rest) =
         some (helperEntry s helperPC returnPC xAddress rotation a b c d e rest) := by
