@@ -49,7 +49,7 @@ def callPath : List Located :=
    ⟨779, .push ⟨2, by decide⟩ (UInt256.ofNat Padding.messageOffset),
       by rfl, by decide⟩,
    ⟨780, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨781, .push ⟨2, by decide⟩ (UInt256.ofNat 0x726), by rfl, by decide⟩,
+   ⟨781, .push ⟨2, by decide⟩ (UInt256.ofNat 0x13c4), by rfl, by decide⟩,
    ⟨782, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def incrementPath : List Located :=
@@ -110,6 +110,14 @@ def afterCondition (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
     pc := UInt256.ofNat 0x637
     stack := [blockOffsetWord i, Padding.paddedWord input] }
+
+/-- State at the appended empty-input dispatcher. Its stack is identical to
+the legacy compressor entry stack. -/
+def dispatchEntry (s : State) (input : ByteArray) (i : Nat) : State :=
+  { s with
+    pc := UInt256.ofNat 0x13c4
+    stack := [messageOffsetWord i, UInt256.ofNat 0x643,
+      blockOffsetWord i, Padding.paddedWord input] }
 
 /-- State at the compression entry point. The helper receives the concrete
 padded-message pointer, its return destination, and the driver invariant
@@ -265,14 +273,14 @@ theorem run_call (s : State) (input : ByteArray)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock callPath
-      (afterCondition s input i) = some (compressEntry s input i) := by
+      (afterCondition s input i) = some (dispatchEntry s input i) := by
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (messageOffset_lt_uint256 input hfit i hi)
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x726 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 979 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x13c4 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2553 (by rfl)
   simp [callPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    afterCondition, compressEntry, messageOffsetWord, blockOffsetWord,
+    afterCondition, dispatchEntry, messageOffsetWord, blockOffsetWord,
     hcode, hrun, hadd, hdest]
 
 theorem run_increment (s : State) (input : ByteArray) (i : Nat)
@@ -343,7 +351,7 @@ def gasSteps_call (s : State) (input : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (afterCondition s input i)
-      (compressEntry s input i) :=
+      (dispatchEntry s input i) :=
   gasStepsBlock callPath _ _ hcode hfork
     (run_call s input hfit i hi hcode hrun) hrun hnp
 
@@ -370,7 +378,7 @@ def gasSteps_iteration_of_compress (s next : State) (input : ByteArray)
     (hforkNext : next.fork = .Osaka) (hrunNext : next.halt = .Running)
     (hnpNext : Precompile.isPrecompileWithConfig next.executionEnv.precompileConfig next.executionEnv.fork
       next.executionEnv.codeAddr = false)
-    (hcompress : Challenge.EvmProof.GasSteps (compressEntry s input i)
+    (hcompress : Challenge.EvmProof.GasSteps (dispatchEntry s input i)
       (compressReturned next input i)) :
     Challenge.EvmProof.GasSteps (loopAt s input i)
       (afterIteration next input i) := by
@@ -394,7 +402,7 @@ def gasSteps_loop_of_compress (states : Nat → State) (input : ByteArray)
       Precompile.isPrecompileWithConfig (states i).executionEnv.precompileConfig (states i).executionEnv.fork
         (states i).executionEnv.codeAddr = false)
     (hcompress : ∀ i, i < blockCount input →
-      Challenge.EvmProof.GasSteps (compressEntry (states i) input i)
+      Challenge.EvmProof.GasSteps (dispatchEntry (states i) input i)
         (compressReturned (states (i + 1)) input i)) :
     Challenge.EvmProof.GasSteps (loopAt (states 0) input 0)
       (loopAt (states (blockCount input)) input (blockCount input)) := by

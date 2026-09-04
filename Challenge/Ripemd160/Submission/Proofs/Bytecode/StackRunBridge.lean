@@ -42,6 +42,7 @@ def embedHashArray (a : Array UInt32) : Compression.EvmHashState :=
 /-- Incoming-memory facts for one concrete compression call. -/
 structure BlockContext (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) where
+  calldata : s.executionEnv.calldata = input
   messageBlock : ScheduleCorrect.MessageBlockAt s.memory
     (DriverTrace.messageOffsetWord i) (Padding.paddedMessage input)
     (DriverTrace.blockOffset i)
@@ -59,7 +60,9 @@ structure BlockKernel where
     wordAt (nextState s input i) address = wordAt s address
   hashResult : ∀ (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (_hfit : CalldataFits input)
-    (_hi : i < DriverTrace.blockCount input) (_ctx : BlockContext s input i h),
+    (_hi : i < DriverTrace.blockCount input) (_ctx : BlockContext s input i h)
+    (_hmodel : CompressionCorrect.hashArray h =
+      CompressionSeamBridge.hashAfter input i),
     hashAt32 (nextState s input i) =
       embedHashArray
         (Crypto.Ripemd160.compressBlock (CompressionCorrect.hashArray h)
@@ -71,7 +74,7 @@ structure BlockKernel where
     (_hfork : s.fork = .Osaka) (_hrun : s.halt = .Running)
     (_hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false),
-    GasSteps (DriverTrace.compressEntry s input i)
+    GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i)
 
 def states (kernel : BlockKernel) (input : ByteArray) : Nat → State
@@ -100,6 +103,11 @@ theorem states_halt (kernel : BlockKernel) (input : ByteArray) (n : Nat) :
   | zero => exact PaddingTrace.padReturned_halt input
   | succ n ih =>
       rw [states, BlockKernel.halt, ih]
+
+theorem states_calldata (kernel : BlockKernel) (input : ByteArray) (n : Nat) :
+    (states kernel input n).executionEnv.calldata = input := by
+  rw [states_executionEnv kernel input n]
+  exact PaddingTrace.padReturned_calldata input
 
 theorem states_callStack (kernel : BlockKernel) (input : ByteArray) (n : Nat) :
     (states kernel input n).callStack = [] := by
@@ -270,11 +278,12 @@ private theorem hashWords_succ (kernel : BlockKernel) (input : ByteArray)
       (states kernel input (n + 1)) := by
   let h := hashStateAfter input n
   let ctx : BlockContext (states kernel input n) input n h := {
+    calldata := states_calldata kernel input n
     messageBlock := messageBlockAt kernel input hfit n hn
     separated := blockSeparated input hfit n hn
     hash := hashAt32_of_hashWords hw }
   have hout := BlockKernel.hashResult kernel (states kernel input n)
-    input n h hfit hn ctx
+    input n h hfit hn ctx (hashArray_hashStateAfter input n)
   have harray := hashArray_hashStateAfter input n
   rw [harray] at hout
   rw [states]
@@ -309,6 +318,7 @@ def compressionRun (kernel : BlockKernel) (input : ByteArray)
     intro i hi
     let h := hashStateAfter input i
     let ctx : BlockContext (states kernel input i) input i h := {
+      calldata := states_calldata kernel input i
       messageBlock := messageBlockAt kernel input hfit i hi
       separated := blockSeparated input hfit i hi
       hash := hashAt32_of_hashWords

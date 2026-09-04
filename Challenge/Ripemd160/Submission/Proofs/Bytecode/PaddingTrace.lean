@@ -657,6 +657,9 @@ def padReturned (input : ByteArray) : State :=
 @[simp] theorem padReturned_fork (input : ByteArray) :
     (padReturned input).fork = .Osaka := by rfl
 
+@[simp] theorem padReturned_calldata (input : ByteArray) :
+    (padReturned input).executionEnv.calldata = input := by rfl
+
 @[simp] theorem padReturned_codeAddr (input : ByteArray) :
     (padReturned input).executionEnv.codeAddr = deployAddress := by rfl
 

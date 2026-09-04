@@ -174,9 +174,10 @@ private theorem artifact_tail_split :
     submissionInstructionsChunk11 ++ submissionInstructionsChunk12 ++
         submissionInstructionsChunk13 =
       submissionInstructionsChunk11.take 193 ++
-        PackedScheduleTemplate.ascendingPackedFullTemplate := by
+        (PackedScheduleTemplate.ascendingPackedFullTemplate ++
+          submissionInstructionsChunk13) := by
   have hdrop : submissionInstructionsChunk11.drop 193 ++
-      submissionInstructionsChunk12 ++ submissionInstructionsChunk13 =
+      submissionInstructionsChunk12 =
       PackedScheduleTemplate.ascendingPackedFullTemplate := by
     rfl
   calc
@@ -191,18 +192,22 @@ private theorem artifact_tail_split :
           submissionInstructionsChunk12 ++ submissionInstructionsChunk13) := by
       simp only [List.append_assoc]
     _ = submissionInstructionsChunk11.take 193 ++
-        PackedScheduleTemplate.ascendingPackedFullTemplate := by rw [hdrop]
+        (PackedScheduleTemplate.ascendingPackedFullTemplate ++
+          submissionInstructionsChunk13) := by rw [hdrop]
 
 private theorem artifact_packed_split :
     Artifact.submissionArtifact.instructions =
-      packedScheduleBefore ++ PackedScheduleTemplate.ascendingPackedFullTemplate := by
+      packedScheduleBefore ++
+        (PackedScheduleTemplate.ascendingPackedFullTemplate ++
+          submissionInstructionsChunk13) := by
   rw [artifact_prefix_split, artifact_tail_split]
   simp [packedScheduleBefore, List.append_assoc]
 
 private theorem artifact_packed_split_prejump :
     Artifact.submissionArtifact.instructions =
       packedScheduleBefore ++ PackedScheduleTemplate.ascendingPackedTemplate ++
-        PackedScheduleTemplate.finalJumpTemplate := by
+        (PackedScheduleTemplate.finalJumpTemplate ++
+          submissionInstructionsChunk13) := by
   simpa [PackedScheduleTemplate.ascendingPackedFullTemplate, List.append_assoc] using
     artifact_packed_split
 
@@ -269,14 +274,22 @@ private theorem packedScheduleTemplate_byteLength :
   rw [StackPC.byteLength_eq_assemble]
   exact PackedScheduleTemplate.ascendingPackedTemplate_byteLength
 
+private theorem packedScheduleAndSuffix_byteLength :
+    StackPC.byteLength
+      (PackedScheduleTemplate.ascendingPackedFullTemplate ++
+        submissionInstructionsChunk13) = 576 := by
+  decide
+
 private theorem packedSchedule_start_instructionPC :
     Artifact.submissionArtifact.instructionPC 2393 = 0x11b4 := by
   have h := instructionPC_prefix_plus_segment Artifact.submissionArtifact
-    packedScheduleBefore PackedScheduleTemplate.ascendingPackedFullTemplate
+    packedScheduleBefore
+    (PackedScheduleTemplate.ascendingPackedFullTemplate ++
+      submissionInstructionsChunk13)
     artifact_packed_split
-  rw [packedScheduleBefore_length, packedScheduleFull_byteLength] at h
-  have hsize : Artifact.submissionArtifact.code.size = 5060 := by
-    change Challenge.Ripemd160.submissionBytecode.size = 5060
+  rw [packedScheduleBefore_length, packedScheduleAndSuffix_byteLength] at h
+  have hsize : Artifact.submissionArtifact.code.size = 5108 := by
+    change Challenge.Ripemd160.submissionBytecode.size = 5108
     exact Challenge.Ripemd160.referenceBytecode_size
   rw [hsize] at h
   omega
@@ -285,7 +298,8 @@ private theorem packedSchedule_end_instructionPC :
     Artifact.submissionArtifact.instructionPC 2552 = 0x13c3 := by
   have h := instructionPC_segment_byteLength Artifact.submissionArtifact
     packedScheduleBefore PackedScheduleTemplate.ascendingPackedTemplate
-    PackedScheduleTemplate.finalJumpTemplate artifact_packed_split_prejump 159
+    (PackedScheduleTemplate.finalJumpTemplate ++ submissionInstructionsChunk13)
+    artifact_packed_split_prejump 159
     (by decide)
   have htake :
       PackedScheduleTemplate.ascendingPackedTemplate.take 159 =
