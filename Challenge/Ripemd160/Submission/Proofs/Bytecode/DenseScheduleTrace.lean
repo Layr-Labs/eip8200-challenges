@@ -202,9 +202,6 @@ theorem runInstrSeq_initial
   have hswap1 (u v : UInt256) (rho : List UInt256) :
       (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
     simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
-  have h60 : UInt256.ofNat 60 + messageOffset =
-      messageOffset + UInt256.ofNat 60 :=
-    word_add_comm _ _
   have h32 : UInt256.ofNat 32 + messageOffset =
       messageOffset + UInt256.ofNat 32 :=
     word_add_comm _ _
@@ -212,7 +209,7 @@ theorem runInstrSeq_initial
     [initialTemplate, scheduleEntry, afterInitial, inputWord0, inputWord1,
       warmupActiveWords, activeAfterWord, op, push1, dup1, swap1,
       runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap,
-      hcap2, hcap3, hcap4, hswap1, h60, h32, word_add_assoc,
+      hcap2, hcap3, hcap4, hswap1, h32, word_add_assoc,
       word_add_ofNat_assoc, Nat.add_assoc,
       Word.land_comm, Word.lor_comm, State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.word_toNat_ofNat,

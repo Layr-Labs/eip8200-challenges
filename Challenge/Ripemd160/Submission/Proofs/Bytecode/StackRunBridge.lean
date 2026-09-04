@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputResultBridge
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.OutputResultBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionSeamBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PaddedBlockBridge
@@ -328,6 +328,6 @@ def compressionSeam (kernel : BlockKernel) :
 /-- Correctness remains conditional on the genuine block kernel. -/
 theorem correct_of_block_kernel (kernel : BlockKernel) :
     Correct submissionBytecode := by
-  exact FastOutputResultBridge.correct_of_compression_trace (compressionSeam kernel)
+  exact OutputResultBridge.correct_of_compression_trace (compressionSeam kernel)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRunBridge

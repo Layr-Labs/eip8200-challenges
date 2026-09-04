@@ -3,6 +3,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCompression
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackMemory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleMemory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleActiveWords
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduleActiveWords
 
 set_option warningAsError true
@@ -47,10 +48,9 @@ def withMemory (s : State) (memory : ByteArray) : State :=
     (withMemory s memory).stack = s.stack := by rfl
 
 def scheduledState (s : State) (input : ByteArray) (i : Nat) : State :=
-  withMemory
-    (Schedule.loopState s (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f)
-      (scheduleRest input i) 16)
-    (DenseScheduleTemplate.denseExpectedMemory s (DriverTrace.messageOffsetWord i))
+  { s with
+    memory := DenseScheduleTemplate.denseExpectedMemory s (DriverTrace.messageOffsetWord i)
+    activeWords := DenseScheduleTemplate.denseExpectedActiveWords s (DriverTrace.messageOffsetWord i) }
 
 def blockWords (input : ByteArray) (i : Nat) : Nat → UInt32 :=
   fun k => (CompressionCorrect.schedule (Padding.paddedMessage input)
@@ -72,25 +72,15 @@ def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
 
 @[simp] theorem resultState_executionEnv (s : State) (input : ByteArray) (i : Nat) :
     (resultState s input i).executionEnv = s.executionEnv := by
-  simp only [resultState, scheduledState, withMemory_executionEnv,
-    Schedule.loopState_executionEnv]
+  simp only [resultState, scheduledState]
 
 @[simp] theorem resultState_halt (s : State) (input : ByteArray) (i : Nat) :
     (resultState s input i).halt = s.halt := by
-  simp only [resultState, scheduledState, withMemory_halt, Schedule.loopState_halt]
-
-private theorem scheduleLoop_callStack (s : State)
-    (messageOffset returnDest : UInt256) (rest : List UInt256) (n : Nat) :
-    (Schedule.loopState s messageOffset returnDest rest n).callStack = s.callStack := by
-  induction n with
-  | zero => rfl
-  | succ n ih =>
-    simp only [Schedule.loopState, Schedule.afterIteration, Schedule.afterStore,
-      Schedule.afterRead, ih]
+  simp only [resultState, scheduledState]
 
 @[simp] theorem resultState_callStack (s : State) (input : ByteArray) (i : Nat) :
     (resultState s input i).callStack = s.callStack := by
-  simp only [resultState, scheduledState, withMemory_callStack, scheduleLoop_callStack]
+  simp only [resultState, scheduledState]
 
 theorem scheduleLoop_word_outsideX (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) (n address : Nat) (hn : n ≤ 16)
@@ -220,7 +210,7 @@ theorem resultState_word_above (s : State) (input : ByteArray) (i address : Nat)
 
 theorem scheduledState_hash (s : State) (input : ByteArray) (i : Nat) :
     StackMemory.hashAt (scheduledState s input i).memory = StackMemory.hashAt s.memory := by
-  simp only [StackMemory.hashAt, scheduledState, withMemory_memory]
+  simp only [StackMemory.hashAt, scheduledState]
   rw [denseExpectedMemory_readWord_outside s _ 32 (Or.inl (by omega)),
     denseExpectedMemory_readWord_outside s _ 64 (Or.inl (by omega)),
     denseExpectedMemory_readWord_outside s _ 96 (Or.inl (by omega)),
@@ -229,10 +219,9 @@ theorem scheduledState_hash (s : State) (input : ByteArray) (i : Nat) :
 
 theorem scheduledState_activeWords (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < DriverTrace.blockCount input) :
-    (scheduledState s input i).activeWords.toNat = max s.activeWords.toNat (67 + 2 * i) := by
-  rw [scheduledState, withMemory_activeWords]
-  exact ScheduleActiveWords.scheduledState_activeWords s input hfit i hi
-    (UInt256.ofNat 0x72f) (scheduleRest input i)
+    (scheduledState s input i).activeWords.toNat = max s.activeWords.toNat (66 + 2 * i) := by
+  dsimp [scheduledState]
+  exact DenseScheduleActiveWords.expectedActiveWords_toNat s input hfit i hi
 
 theorem scheduledState_words (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (ctx : StackRunBridge.BlockContext s input i h)

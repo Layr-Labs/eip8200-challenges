@@ -156,30 +156,14 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
         (Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
           (UInt256.ofNat 0x72f) (StackBlockModel.scheduleRest input i)) := by
   let rest := StackBlockModel.scheduleRest input i
-  have hactive :
-      DenseScheduleTemplate.denseExpectedActiveWords s
-          (DriverTrace.messageOffsetWord i) =
-        (Schedule.loopState s (DriverTrace.messageOffsetWord i)
-          (UInt256.ofNat 0x72f) rest 16).activeWords := by
-    exact DenseScheduleActiveWords.expectedActiveWords_eq_schedule s input hfit i hi
-        (UInt256.ofNat 0x72f) rest
   have hstate :
       Schedule.scheduleReturned
           (DenseScheduleTemplate.denseExpectedState s
             PackedScheduleSite.packedScheduleSite.startPC
             (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest)
           (UInt256.ofNat 0x72f) rest =
-        Schedule.scheduleReturned
-          ({ Schedule.loopState s (DriverTrace.messageOffsetWord i)
-              (UInt256.ofNat 0x72f) rest 16 with
-            memory := DenseScheduleTemplate.denseExpectedMemory s
-              (DriverTrace.messageOffsetWord i) })
-          (UInt256.ofNat 0x72f) rest := by
-    exact DenseScheduleState.returned_eq_schedule_of_memory_active s
-      PackedScheduleSite.packedScheduleSite.startPC
-      (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest
-      (DenseScheduleTemplate.denseExpectedMemory s
-        (DriverTrace.messageOffsetWord i)) rfl hactive
+        Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
+          (UInt256.ofNat 0x72f) rest := rfl
   have hstack1023 : rest.length < 1023 := by
     change 4 < 1023
     norm_num

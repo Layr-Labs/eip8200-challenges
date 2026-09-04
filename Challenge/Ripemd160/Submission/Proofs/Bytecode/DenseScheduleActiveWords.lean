@@ -8,10 +8,9 @@ set_option maxHeartbeats 4000000
 /-!
 # Active-memory endpoint for the dense schedule
 
-The dense schedule keeps the three-word warmup and replaces the sixteen
-schedule-slot stores by the two stores at byte offsets 672 and 704.  This
-module proves the active-word result from those direct lists.  It does not
-claim that the corresponding memory bytes are equal.
+The dense schedule replaces the sixteen schedule-slot stores by the two stores
+at byte offsets 672 and 704, and performs two word loads at messageOffset and
+messageOffset + 32.  This bounds the active words to 66 + 2 * i.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleActiveWords
@@ -57,10 +56,8 @@ private theorem activeAfterWord_eq (current offset : UInt256)
   exact ofNat_toNat current
 
 def warmupActiveWords (s : State) (messageOffset : UInt256) : UInt256 :=
-  let a0 := activeAfterWord s.activeWords
-    (messageOffset + UInt256.ofNat 60)
-  let a1 := activeAfterWord a0 messageOffset
-  activeAfterWord a1 (messageOffset + UInt256.ofNat 32)
+  let a0 := activeAfterWord s.activeWords messageOffset
+  activeAfterWord a0 (messageOffset + UInt256.ofNat 32)
 
 def storeActiveWords (current : UInt256) (addresses : List Nat) : UInt256 :=
   addresses.foldl
@@ -94,12 +91,11 @@ private theorem message_bounds (input : ByteArray) (hfit : CalldataFits input)
     (i : Nat) (hi : i < DriverTrace.blockCount input) :
     Padding.messageOffset + 64 * i < 2 ^ 256 ∧
     Padding.messageOffset + 64 * i + 32 < 2 ^ 256 ∧
-    Padding.messageOffset + 64 * i + 60 < 2 ^ 256 ∧
-    67 + 2 * i < 2 ^ 256 ∧
-    (Padding.messageOffset + 64 * i + 60 + 32 - 1) / 32 + 1 =
-      67 + 2 * i ∧
-    Padding.messageOffset + 64 * i + 32 ≤ (67 + 2 * i) * 32 ∧
-    Padding.messageOffset + 64 * i + 64 ≤ (67 + 2 * i) * 32 := by
+    66 + 2 * i < 2 ^ 256 ∧
+    (Padding.messageOffset + 64 * i + 32 + 32 - 1) / 32 + 1 =
+      66 + 2 * i ∧
+    Padding.messageOffset + 64 * i + 32 ≤ (66 + 2 * i) * 32 ∧
+    Padding.messageOffset + 64 * i + 64 ≤ (66 + 2 * i) * 32 := by
   have hpadded := Padding.paddedLength_lt input.size
   have hoff : 64 * i < Padding.paddedLength input.size := by
     rw [DriverTrace.paddedLength_eq_blockCount input]
@@ -112,37 +108,31 @@ private theorem message_bounds (input : ByteArray) (hfit : CalldataFits input)
   have hp32 : Padding.messageOffset + 64 * i + 32 < 2 ^ 256 := by
     change 2048 + 64 * i + 32 < 2 ^ 256
     omega
-  have hp60 : Padding.messageOffset + 64 * i + 60 < 2 ^ 256 := by
-    change 2048 + 64 * i + 60 < 2 ^ 256
-    omega
-  have htarget : 67 + 2 * i < 2 ^ 256 := by
+  have htarget : 66 + 2 * i < 2 ^ 256 := by
     norm_num [Padding.messageOffset] at hsize ⊢
     omega
   have hlast :
-      (Padding.messageOffset + 64 * i + 60 + 32 - 1) / 32 + 1 =
-        67 + 2 * i := by
+      (Padding.messageOffset + 64 * i + 32 + 32 - 1) / 32 + 1 =
+        66 + 2 * i := by
     norm_num [Padding.messageOffset]
     omega
   have hread0 : Padding.messageOffset + 64 * i + 32 ≤
-      (67 + 2 * i) * 32 := by
+      (66 + 2 * i) * 32 := by
     norm_num [Padding.messageOffset]
     omega
   have hread1 : Padding.messageOffset + 64 * i + 64 ≤
-      (67 + 2 * i) * 32 := by
+      (66 + 2 * i) * 32 := by
     norm_num [Padding.messageOffset]
     omega
-  exact ⟨hp, hp32, hp60, htarget, hlast, hread0, hread1⟩
+  exact ⟨hp, hp32, htarget, hlast, hread0, hread1⟩
 
 private theorem message_words (i : Nat)
     (hp : Padding.messageOffset + 64 * i < 2 ^ 256)
-    (hp32 : Padding.messageOffset + 64 * i + 32 < 2 ^ 256)
-    (hp60 : Padding.messageOffset + 64 * i + 60 < 2 ^ 256) :
+    (hp32 : Padding.messageOffset + 64 * i + 32 < 2 ^ 256) :
     DriverTrace.messageOffsetWord i =
         UInt256.ofNat (Padding.messageOffset + 64 * i) ∧
     (DriverTrace.messageOffsetWord i).toNat =
         Padding.messageOffset + 64 * i ∧
-    (DriverTrace.messageOffsetWord i + UInt256.ofNat 60).toNat =
-        Padding.messageOffset + 64 * i + 60 ∧
     (DriverTrace.messageOffsetWord i + UInt256.ofNat 32).toNat =
         Padding.messageOffset + 64 * i + 32 := by
   have hmsgWord : DriverTrace.messageOffsetWord i =
@@ -152,102 +142,81 @@ private theorem message_words (i : Nat)
       Padding.messageOffset + 64 * i := by
     rw [hmsgWord, Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt hp]
-  have hmsg60 :
-      (DriverTrace.messageOffsetWord i + UInt256.ofNat 60).toNat =
-        Padding.messageOffset + 64 * i + 60 := by
-    rw [hmsgWord, Challenge.EvmProof.Word.ofNat_add_ofNat hp60,
-      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hp60]
   have hmsg32 :
       (DriverTrace.messageOffsetWord i + UInt256.ofNat 32).toNat =
         Padding.messageOffset + 64 * i + 32 := by
     rw [hmsgWord, Challenge.EvmProof.Word.ofNat_add_ofNat hp32,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hp32]
-  exact ⟨hmsgWord, hmsg, hmsg60, hmsg32⟩
+  exact ⟨hmsgWord, hmsg, hmsg32⟩
 
 private theorem warmupActiveWords_toNat_of_bounds (s : State)
     (messageOffset : UInt256) (p target : Nat)
     (hmessage : messageOffset.toNat = p)
-    (hmessage60 : (messageOffset + UInt256.ofNat 60).toNat = p + 60)
     (hmessage32 : (messageOffset + UInt256.ofNat 32).toNat = p + 32)
     (htarget : target < 2 ^ 256)
-    (hhigh : (p + 60 + 32 - 1) / 32 + 1 = target)
+    (hhigh : (p + 32 + 32 - 1) / 32 + 1 = target)
     (hread0 : p + 32 ≤ target * 32)
     (hread1 : p + 64 ≤ target * 32) :
     (warmupActiveWords s messageOffset).toNat =
       max s.activeWords.toNat target := by
-  have hfirstRaw :
-      MachineState.activeWordsAfter s.activeWords.toNat
-          (messageOffset + UInt256.ofNat 60).toNat 32 =
-        max s.activeWords.toNat target := by
-    rw [hmessage60]
+  have hread0_le : (p + 32 - 1) / 32 < target := by
+    omega
+  let a0 := activeAfterWord s.activeWords messageOffset
+  have ha0_raw :
+      MachineState.activeWordsAfter s.activeWords.toNat messageOffset.toNat 32 =
+        max s.activeWords.toNat ((p + 32 - 1) / 32 + 1) := by
+    rw [hmessage]
     simp only [MachineState.activeWordsAfter, if_neg (by omega : (32 : Nat) ≠ 0)]
-    rw [hhigh]
-  have hfirstLt :
-      MachineState.activeWordsAfter s.activeWords.toNat
-          (messageOffset + UInt256.ofNat 60).toNat 32 < 2 ^ 256 := by
-    rw [hfirstRaw]
-    exact (Nat.max_lt).2 ⟨s.activeWords.val.isLt, htarget⟩
-  have hfirst :
-      (activeAfterWord s.activeWords
-          (messageOffset + UInt256.ofNat 60)).toNat =
-        max s.activeWords.toNat target := by
-    rw [activeAfterWord_toNat _ _ hfirstLt]
-    exact hfirstRaw
-  let a0 := activeAfterWord s.activeWords
-    (messageOffset + UInt256.ofNat 60)
-  have ha0 : a0.toNat = max s.activeWords.toNat target := by
+  have ha0_le : ((p + 32 - 1) / 32 + 1) ≤ target := by
+    omega
+  have ha0_lt : MachineState.activeWordsAfter s.activeWords.toNat messageOffset.toNat 32 < 2 ^ 256 := by
+    rw [ha0_raw]
+    exact Nat.max_lt.2 ⟨s.activeWords.val.isLt, by omega⟩
+  have ha0 : a0.toNat = max s.activeWords.toNat ((p + 32 - 1) / 32 + 1) := by
     dsimp [a0]
-    exact hfirst
-  have hread0' : activeAfterWord a0 messageOffset = a0 := by
-    apply activeAfterWord_eq a0 messageOffset
-    rw [hmessage, ha0]
-    exact hread0.trans (Nat.mul_le_mul_right 32 (Nat.le_max_right _ _))
-  have hread1' :
-      activeAfterWord a0 (messageOffset + UInt256.ofNat 32) = a0 := by
-    apply activeAfterWord_eq a0
-    rw [hmessage32, ha0]
-    exact hread1.trans (Nat.mul_le_mul_right 32 (Nat.le_max_right _ _))
-  change (activeAfterWord
-    (activeAfterWord a0 messageOffset)
-      (messageOffset + UInt256.ofNat 32)).toNat = _
-  rw [hread0', hread1', ha0]
+    rw [activeAfterWord_toNat _ _ ha0_lt]
+    exact ha0_raw
+  have hsecondRaw :
+      MachineState.activeWordsAfter a0.toNat
+          (messageOffset + UInt256.ofNat 32).toNat 32 =
+        max s.activeWords.toNat target := by
+    rw [hmessage32]
+    simp only [MachineState.activeWordsAfter, if_neg (by omega : (32 : Nat) ≠ 0)]
+    rw [hhigh, ha0]
+    omega
+  have hsecondLt :
+      MachineState.activeWordsAfter a0.toNat
+          (messageOffset + UInt256.ofNat 32).toNat 32 < 2 ^ 256 := by
+    rw [hsecondRaw]
+    exact Nat.max_lt.2 ⟨s.activeWords.val.isLt, htarget⟩
+  change (activeAfterWord a0 (messageOffset + UInt256.ofNat 32)).toNat = _
+  rw [activeAfterWord_toNat _ _ hsecondLt]
+  exact hsecondRaw
 
 private theorem warmupActiveWords_toNat (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat)
     (hi : i < DriverTrace.blockCount input) :
     (warmupActiveWords s (DriverTrace.messageOffsetWord i)).toNat =
-      max s.activeWords.toNat (67 + 2 * i) := by
+      max s.activeWords.toNat (66 + 2 * i) := by
   rcases message_bounds input hfit i hi with
-    ⟨hp, hp32, hp60, htarget, hhigh, hread0, hread1⟩
-  rcases message_words i hp hp32 hp60 with
-    ⟨_, hmsg, hmsg60, hmsg32⟩
+    ⟨hp, hp32, htarget, hhigh, hread0, hread1⟩
+  rcases message_words i hp hp32 with
+    ⟨_, hmsg, hmsg32⟩
   exact warmupActiveWords_toNat_of_bounds s
     (DriverTrace.messageOffsetWord i) (Padding.messageOffset + 64 * i)
-    (67 + 2 * i) hmsg hmsg60 hmsg32 htarget hhigh hread0 hread1
+    (66 + 2 * i) hmsg hmsg32 htarget hhigh hread0 hread1
 
-private theorem expectedActiveWords_toNat (s : State) (input : ByteArray)
+theorem expectedActiveWords_toNat (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat)
     (hi : i < DriverTrace.blockCount input) :
     (expectedActiveWords s (DriverTrace.messageOffsetWord i)).toNat =
-      max s.activeWords.toNat (67 + 2 * i) := by
+      max s.activeWords.toNat (66 + 2 * i) := by
   have hwarm := warmupActiveWords_toNat s input hfit i hi
   have hwarm23 : 23 ≤
       (warmupActiveWords s (DriverTrace.messageOffsetWord i)).toNat := by
     rw [hwarm]
-    exact (by omega : 23 ≤ 67 + 2 * i).trans (Nat.le_max_right _ _)
+    exact (by omega : 23 ≤ 66 + 2 * i).trans (Nat.le_max_right _ _)
   unfold expectedActiveWords
   rw [storeActiveWords_672_704 _ hwarm23, hwarm]
-
-theorem expectedActiveWords_eq_schedule (s : State) (input : ByteArray)
-    (hfit : CalldataFits input) (i : Nat)
-    (hi : i < DriverTrace.blockCount input) (ret : UInt256)
-    (rest : List UInt256) :
-    expectedActiveWords s (DriverTrace.messageOffsetWord i) =
-      (Schedule.loopState s (DriverTrace.messageOffsetWord i)
-        ret rest 16).activeWords := by
-  apply Challenge.EvmProof.Word.word_ext
-  rw [expectedActiveWords_toNat s input hfit i hi]
-  exact (ScheduleActiveWords.scheduledState_activeWords s input hfit i hi
-    ret rest).symm
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleActiveWords

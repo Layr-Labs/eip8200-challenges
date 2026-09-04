@@ -9,10 +9,10 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 
 /-!
-# Located H31b final-combination trace
+# Located H25 final-combination trace
 
-The raw tail theorem is lifted through the exact H31b artifact.  The path starts
-at instruction 1646 and ends at instruction 1706.  The 718 helper instructions
+The raw tail theorem is lifted through the exact H25 artifact.  The path starts
+at instruction 1646 and ends at instruction 1706.  The 668 helper instructions
 after the tail remain in the artifact suffix.
 -/
 
@@ -71,7 +71,7 @@ private theorem artifactPrefix_length : artifactPrefix.length = 1600 := by
 private theorem tailBefore_length : tailBefore.length = 1646 := by
   simp [tailBefore, artifactPrefix_length]
 
-private theorem tailAfter_length : tailAfter.length = 718 := by
+private theorem tailAfter_length : tailAfter.length = 668 := by
   simp [tailAfter]
 
 private theorem tailAfter_nonempty : tailAfter ≠ [] := by
@@ -307,7 +307,7 @@ private theorem runTailInstrs_append {xs ys : List Instr} {s t u : State}
 set_option linter.unusedSimpArgs false in
 private theorem runLocatedBlock_tail (s : State)
     (left right : Compression.EvmWorking) (ret : UInt256) (rest : List UInt256)
-    (hactive : 67 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1009)
     (hrun : s.halt = .Running)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
@@ -322,7 +322,7 @@ private theorem runLocatedBlock_tail (s : State)
 
 def actualTailGasSteps (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256)
-    (hactive : 67 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1009)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code)
     (hfork : s.fork = .Osaka)
