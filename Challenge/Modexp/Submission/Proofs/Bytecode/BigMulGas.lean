@@ -369,7 +369,7 @@ theorem gasSteps_mulModBig_cost_potential (s : State)
     let progress := mulOuterProgress copied a b out modulus count returnDest rest count
     (gasSteps_mulModBig s a b out modulus count returnDest rest hcap hcount
         hcode hfork hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      (179 + count * 154 +
+      (179 + count * 146 +
           mulOuterWork copied a b out modulus count returnDest rest count) +
         MachineState.memCost (mulReturned progress returnDest rest).activeWords.toNat := by
   dsimp only
