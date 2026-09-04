@@ -1,5 +1,4 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigBaseCorrect
-import Challenge.Modexp.Submission.Proofs.Bytecode.BigExponentScanCorrect
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 3000000
@@ -43,12 +42,11 @@ theorem exponentProgress_represents_result (input : ByteArray)
     hvalid hbig hmodulusPos
   have haccReduced : 1 % Word.modulusValue input < Word.modulusValue input :=
     Nat.mod_lt _ hmodulusPos
-  have hprogress := BigExponentScanCorrect.exponentPhase_represents entry
+  have hprogress := BigExponentCorrect.exponentPhase_represents entry
     accumulator n b e m 96 expOff expTail
     (WordCorrect.baseNat input % Word.modulusValue input)
     (Word.modulusValue input) hn hmodulusPos
-    (Nat.mod_lt _ hmodulusPos)
-    hinitial.1 hinitial.2.1 hinitial.2.2
+    (Nat.mod_lt _ hmodulusPos) hinitial.1 hinitial.2.1 hinitial.2.2
   have hentryEnv : entry.executionEnv = header.executionEnv := by
     calc
       entry.executionEnv =
@@ -74,18 +72,12 @@ theorem exponentProgress_represents_result (input : ByteArray)
       (1 % Word.modulusValue input) =
       Precompile.modPow (WordCorrect.baseNat input)
         (WordCorrect.exponentNat input) (Word.modulusValue input) := by
-    calc
-      _ = BigExponentCorrect.exponentValueAfter header
-          (Word.modulusValue input)
-          (WordCorrect.baseNat input % Word.modulusValue input) expOff e
-          (1 % Word.modulusValue input) := hvalueEnv
-      _ = Precompile.modPow (WordCorrect.baseNat input)
-          (WordCorrect.exponentNat input) (Word.modulusValue input) := by
-            simpa [b, e, expOff, WordCorrect.exponentNat] using
-              hvalueHeader.trans
-                (WordCorrect.residue_power_eq_modPow
-                  (WordCorrect.baseNat input) (WordCorrect.exponentNat input)
-                  (Word.modulusValue input) e hmodulusPos)
+    rw [hvalueEnv]
+    simpa [b, e, expOff, WordCorrect.exponentNat] using
+      hvalueHeader.trans
+        (WordCorrect.residue_power_eq_modPow (WordCorrect.baseNat input)
+          (WordCorrect.exponentNat input) (Word.modulusValue input) e
+          hmodulusPos)
   rw [hvalue] at hprogress
   simpa [BigComplete.exponentProgressState, entry, accumulator, n, b, e, m,
     expOff, modOff, expTail, header, BigComplete.limbCount] using hprogress
