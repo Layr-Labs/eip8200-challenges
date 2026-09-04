@@ -26,7 +26,7 @@ def driverRest (input : ByteArray) (i : Nat) : List UInt256 :=
   [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
 
 def scheduleRest (input : ByteArray) (i : Nat) : List UInt256 :=
-  [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x436] ++ driverRest input i
+  [UInt256.ofNat 0x436] ++ driverRest input i
 
 def withMemory (s : State) (memory : ByteArray) : State :=
   {s with memory := memory}
