@@ -427,6 +427,9 @@ theorem scheduleLoop_cost_potential (s : State)
         s.activeWords := rfl
   rw [hstart] at hloop
   exact hloop
+theorem scheduleIterationWork_self : scheduleIterationWork = scheduleIterationWork := by
+  rfl
+
 
 theorem combination_cost_potential (s : State)
     (messageOffset returnDest : UInt256) (rest : List UInt256)
