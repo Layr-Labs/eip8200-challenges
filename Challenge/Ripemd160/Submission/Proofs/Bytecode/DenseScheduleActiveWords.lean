@@ -250,4 +250,8 @@ theorem expectedActiveWords_eq_schedule (s : State) (input : ByteArray)
   exact (ScheduleActiveWords.scheduledState_activeWords s input hfit i hi
     ret rest).symm
 
+theorem expectedActiveWords_self (s : State) (offset : UInt256) :
+    expectedActiveWords s offset = expectedActiveWords s offset := by
+  rfl
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleActiveWords
