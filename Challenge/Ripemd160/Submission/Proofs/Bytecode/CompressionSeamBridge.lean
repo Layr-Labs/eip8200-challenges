@@ -11,8 +11,8 @@ invariant after *every* padded block.  Consequently its final-word field is a
 theorem, not an additional hypothesis.
 
 The committed `CompressionTrace` currently exposes schedule setup/copy and an
-abstract left/right 80-round fold, but no executable theorem from
-`compressEntry` through the right loop and final combination.  Thus the
+abstract left/right 80-round fold, but no executable theorem from the legacy
+compressor entry through the right loop and final combination.  Thus the
 uniform `blockTrace` field below cannot yet be constructed from its public
 API without adding those missing paths.  Once such a theorem is exported,
 `toCompressionSeam` closes the end-to-end functional seam directly.
@@ -57,7 +57,7 @@ structure CompressionRun (input : ByteArray) where
   callStack : ∀ i, i ≤ DriverTrace.blockCount input →
     (states i).callStack = []
   blockTrace : ∀ i, i < DriverTrace.blockCount input →
-    GasSteps (DriverTrace.compressEntry (states i) input i)
+    GasSteps (DriverTrace.dispatchEntry (states i) input i)
       (DriverTrace.compressReturned (states (i + 1)) input i)
   hashWords : ∀ i, i ≤ DriverTrace.blockCount input →
     HashWordsAt input i (states i)

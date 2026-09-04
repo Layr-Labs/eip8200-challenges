@@ -114,8 +114,8 @@ theorem runInstrSeq_f2 (s : State) (startPC xAddress returnPC : UInt256)
       dup3, dup4, dup5, dup6, dup7, dup8, swap1, swap2, swap3, swap4, swap5,
       mask, c10, c22, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
       helperEntry, afterHelperBeforeJump, roundWords,
-      pcAfter, StackRound.stackRound, StackRound.stackF,
-      StackRound.stackSum, StackRound.stackRawRot, StackRound.stackC10,
+      pcAfter, ScratchLow.rawRound, ScratchLow.rawC10, StackRound.stackF,
+      StackRound.stackSum, StackRound.stackRawRot,
       Word.mask32, List.exchange, hrun, hcap, hswap1, hswap2, hswap3,
       hswap4, hswap5, UInt256.succ, Instr.size, Instr.size_push,
       Instr.size_op, Nat.add_assoc, Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -127,7 +127,7 @@ theorem runInstrSeq_f2 (s : State) (startPC xAddress returnPC : UInt256)
   · rw [hcomm working.e, hsum, hbase, hcomm working.e]
     exact SharedRoundTrace.raw_rotate_or_fold _ working.e rotation
       (SharedRoundTrace.mask_land_toNat_lt _) hrot
-  · exact SharedRoundTrace.c10_or_fold working.c
+  · rfl
 
 /-! ## Direct group 4 evaluator trace -/
 
@@ -207,8 +207,8 @@ theorem runInstrSeq_f4 (s : State) (startPC xAddress returnPC : UInt256)
       dup3, dup4, dup5, dup6, dup7, dup8, swap1, swap2, swap3, swap4, swap5,
       mask, c10, c22, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
       helperEntry, afterHelperBeforeJump, roundWords,
-      pcAfter, StackRound.stackRound, StackRound.stackF,
-      StackRound.stackSum, StackRound.stackRawRot, StackRound.stackC10,
+      pcAfter, ScratchLow.rawRound, ScratchLow.rawC10, StackRound.stackF,
+      StackRound.stackSum, StackRound.stackRawRot,
       Word.mask32, List.exchange, hrun, hcap, hswap1, hswap2, hswap3,
       hswap4, hswap5, UInt256.succ, Instr.size, Instr.size_push,
       Instr.size_op, Nat.add_assoc, Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -220,6 +220,6 @@ theorem runInstrSeq_f4 (s : State) (startPC xAddress returnPC : UInt256)
   · rw [hcomm working.e, hsum, hbase, hcomm working.e]
     exact SharedRoundTrace.raw_rotate_or_fold _ working.e rotation
       (SharedRoundTrace.mask_land_toNat_lt _) hrot
-  · exact SharedRoundTrace.c10_or_fold working.c
+  · rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedNegatedRoundTrace

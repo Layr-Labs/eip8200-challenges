@@ -16,6 +16,30 @@ The same bytes must also return the correct result from the dirty state.
 Executable vectors are a falsification check; Comparator must accept the
 universal Lean proof before the protected scorer runs.
 
+## Current candidate: H22 folds with the redundant C mask removed
+
+This candidate starts from GordoAR's public H22c-packed artifact (submission
+`d3674f07-3391-40b6-ad39-6f65284613f3`, public PR 62). H22 folds both round
+rotations and uses the packed two-word message schedule. The only arithmetic
+change here removes the final `PUSH4 0xffffffff; AND` from each of the ten
+shared helper bodies. The value left by the H22 C fold may carry high bits,
+but its low 32 bits are exactly `rotl(C, 10)`. Later Boolean and addition
+operations depend on those low bits, and the final chaining-value combination
+performs the required 32-bit truncation.
+
+Removing the two operations saves six gas on each of 160 helper calls per
+compression block. Across the public suite's 66 blocks this is 63,360 gas.
+The exact artifact is 5,090 bytes and 2,565 instructions; the trusted scorer
+passes all 17 clean and 17 dirty cases at 1,571,879 clean-state gas.
+
+The proof represents intermediate EVM working words by their low 32-bit
+projections while retaining exactness for the two fields needed by the folded
+rotation. `RotationFold.C10_or_fold` establishes the projection of the raw H22
+fold. The lane induction carries that relation through all 80 rounds and the
+final combination restores exact embedded hash words. Artifact, wrapper-site,
+helper-site, packed-schedule, and tail certificates bind the proof to the
+shortened bytecode and its relocated jump destinations.
+
 ## Earlier direct-entry candidate
 
 The initial `PUSH2; JUMP` now targets the existing main-body `JUMPDEST` at
@@ -244,9 +268,9 @@ Native tests report 1,730,279 gas with all 17 clean and 17 dirty cases
 correct and equal paired gas. This saves 209,616 gas from H20 and 52,800
 from H19 per suite. Native gas is not an official server score.
 
-## Prior candidate: bounded RotationFold with the packed schedule (H22c-packed)
+## Current candidate: bounded RotationFold with the packed schedule (H22c-packed)
 
-H22c-packed combines two bounded helper
+H22c-packed is the current native candidate. It combines two bounded helper
 folds with the unchanged 528-byte ascending packed schedule helper. The native
 measurement is 5,150 bytes, 2,585 instructions, and 1,635,239 gas per frame.
 The result is 95,040 gas lower than the H21 native measurement. Native gas is
@@ -295,46 +319,6 @@ The generic proof build passed 1,020 jobs, and the fresh seven-theorem
 `H22RawAudit` passed with only the three allowed axioms. The exact Artifact
 build, fresh Artifact audit, and independent source review also passed.
 The complete `StackCorrect.correct` build passed 1,091 jobs. Fresh Correct,
-Site, and Raw audits also passed with only the allowed axioms. The local
-Comparator accepted H22. The server promoted its exact 5,150-byte artifact
-at 1,635,239 gas after a successful 19-minute, 36-second run.
-
-## Current candidate: two rounds per helper call (H24)
-
-H24 retains the H22 rotations, all masks, and the 528-byte packed schedule.
-Each shared helper performs two rounds of the same Boolean group. Each lane
-uses 40 calls to perform the same 80 semantic rounds. The helper does not
-return to its wrapper between those two rounds.
-
-The wrapper pushes `s1, p1, s0, returnPC, p0, helperPC`, where `s = 32-r`.
-The helper entry is `[p0, returnPC, s0, p1, s1, A, B, C, D, E] ++ rest`.
-Its pure result is two unchanged `StackRound.stackRound` applications.
-Both message reads keep their order. Memory is unchanged. The active-word
-count includes both reads. The generic trace requires `rest.length < 1012`
-because the frozen Stepper checks the stack bound before each operation.
-The actual program suffixes meet that bound.
-
-All six 32-bit masks remain. The C and B rotation inputs remain full-width
-UInt256 values. The round output is `[D, T1, T0, B10, C10] ++ rest`.
-The helper executes its final JUMP and the wrapper's return JUMPDEST.
-
-The exact artifact has 5,020 bytes and 2,593 instructions. The bytecode
-certificate has 14 bounded chunks: twelve of 200 instructions, one of 193,
-and an empty last chunk. The tail spans instructions 1646 through 1706,
-at PCs `0xcef` through `0xd49`. The packed schedule starts at instruction
-2433, PC `0x118c`; its final JUMP is instruction 2592, PC `0x139b`.
-
-Native tests report 1,429,319 gas. All 17 clean and 17 dirty cases pass with
-equal per-vector gas. The reduction from H22 is 39 gas per pair, 3,120 per
-block, or 205,920 per suite. The measured formula is
-`3698 + 20640 * B + 3 * C + memCost(65 + 2 * B)`.
-This is a native measurement, not a separate proved gas schedule or an
-official H24 server score.
-
-Current local verification: all 15 native tests pass. The exact-bytecode,
-five paired-round body proofs, concrete sites, common call/helper, lane,
-packed-schedule, frame, and tail proofs pass proper builds and fresh audits.
-The complete `StackCorrect.correct` build passes 1,084 jobs. Its fresh audit
-uses only `propext`, `Classical.choice`, and `Quot.sound`. Independent reviews
-of the completed raw, site, and outer components found no issue. This local
-proof result is not a claim of local Comparator or protected server acceptance.
+Site, and Raw audits also passed with only the allowed axioms. Protected
+local Comparator acceptance and ranked server validation remain pending.
+Protected Comparator acceptance is required for this exact bytecode.

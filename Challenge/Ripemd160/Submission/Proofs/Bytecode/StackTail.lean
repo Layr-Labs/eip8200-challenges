@@ -30,7 +30,7 @@ def workingStack (left right : Compression.EvmWorking)
 def tailEntry (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 0xcef
+    pc := UInt256.ofNat 0xf6f
     stack := workingStack left right ret rest }
 
 def combined (s : State) (left right : Compression.EvmWorking) :
@@ -115,13 +115,13 @@ def tailInstructions : List Instr := tail60Instructions ++ finalJumpInstructions
 def c0Result (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 0xcfc
+    pc := UInt256.ofNat 0xf7c
     stack := (combined s left right).h0 :: workingStack left right ret rest }
 
 def preJumpResult (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 0xd49
+    pc := UInt256.ofNat 0xfc9
     memory := StackMemory.storeHash s.memory (combined s left right)
     stack := ret :: rest }
 

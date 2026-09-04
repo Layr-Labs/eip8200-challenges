@@ -91,7 +91,7 @@ def gasSteps_round_of_helper {artifact : ProgramArtifact} {fork : Fork}
       (SharedRoundTrace.afterHelperBeforeJump s site.helper.endPC site.returnPC j
         working xAddress rotation constant rest)) :
     GasSteps (roundEntry s site.call.pushes.startPC working.a working.b working.c working.d working.e rest)
-      (roundReturned s site.returnSite.pc.succ j working.a working.b working.c working.d working.e
+      (SharedRoundTrace.rawRoundReturned s site.returnSite.pc.succ j working.a working.b working.c working.d working.e
         xAddress rotation constant rest) := by
   have helperValid : Decode.isValidJumpDest s.executionEnv.code site.helperPC.toNat = true := by
     rw [hcode]
@@ -106,7 +106,7 @@ def gasSteps_round_of_helper {artifact : ProgramArtifact} {fork : Fork}
     rw [site.helper_start]
     rfl
   let t : State := {s with activeWords := s.activeWordsAfterUInt256 xAddress.toNat 32}
-  let words := roundWords (StackRound.stackRound working j
+  let words := roundWords (ScratchLow.rawRound working j
     (MachineState.readWord s.memory xAddress.toNat) rotation constant) ++ rest
   have wordsBound : words.length < 1023 := by
     simp [words, roundWords]
@@ -123,7 +123,7 @@ def gasSteps_round_of_helper {artifact : ProgramArtifact} {fork : Fork}
     rw [site.helper_end, site.return_at]
     rfl
   have after : {t with pc := site.returnSite.pc.succ, stack := words} =
-      roundReturned s site.returnSite.pc.succ j working.a working.b working.c working.d working.e
+      SharedRoundTrace.rawRoundReturned s site.returnSite.pc.succ j working.a working.b working.c working.d working.e
         xAddress rotation constant rest := by
     rfl
   exact gc'.trans (ghelper.trans (gr.cast before.symm after))
@@ -137,7 +137,7 @@ def gasSteps_round_f0 {artifact : ProgramArtifact} {fork : Fork}
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (roundEntry s site.call.pushes.startPC working.a working.b working.c working.d working.e rest)
-      (roundReturned s site.returnSite.pc.succ 0 working.a working.b working.c working.d working.e
+      (SharedRoundTrace.rawRoundReturned s site.returnSite.pc.succ 0 working.a working.b working.c working.d working.e
         xAddress rotation 0 rest) :=
   gasSteps_round_of_helper 0 xAddress rotation 0 site s working rest hstack hrun hcode hfork hnp
     (gasSteps_f0 xAddress rotation site.helper s site.returnPC working rest hstack hrun hrot hcode hfork hnp)
@@ -193,7 +193,7 @@ def gasSteps_round {artifact : ProgramArtifact} {fork : Fork}
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (roundEntry s site.call.pushes.startPC working.a working.b working.c working.d working.e rest)
-      (roundReturned s site.returnSite.pc.succ j working.a working.b working.c working.d working.e
+      (SharedRoundTrace.rawRoundReturned s site.returnSite.pc.succ j working.a working.b working.c working.d working.e
         xAddress rotation constant rest) :=
   gasSteps_round_of_helper j xAddress rotation constant site s working rest hstack hrun hcode hfork hnp
     (gasSteps_helper j hj xAddress rotation constant hzero site.helper s site.returnPC working rest
