@@ -140,6 +140,11 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
       [2858,2859,2860,2861,2862][i - 1737]! := by
   interval_cases i <;> decide
 
+@[simp] theorem fastPC20 (i : Nat) (hi : 1742 ≤ i) (hii : i ≤ 1767) :
+    Artifact.submissionArtifact.instructionPC i =
+      [2863,2864,2867,2868,2869,2870,2873,2874,2875,2877,2878,2881,2882,2883,2884,2887,2888,2889,2891,2892,2893,2894,2897,2898,2899,2900][i - 1742]! := by
+  interval_cases i <;> decide
+
 theorem jumpDest1196 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1196 = true :=
   Artifact.isValidJumpDest_index 899 (by rfl)
@@ -224,20 +229,6 @@ theorem jumpDest1886 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1886 = true :=
   Artifact.isValidJumpDest_index 1341 (by rfl)
 
-theorem jumpDest2863 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2863 = true :=
-  Artifact.isValidJumpDest_index 1742 (by rfl)
-
-theorem jumpDest2888 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2888 = true :=
-  Artifact.isValidJumpDest_index 1758 (by rfl)
-
-@[simp] theorem fastPC20 (i : Nat) (hi : 1742 ≤ i) (hii : i ≤ 1766) :
-    Artifact.submissionArtifact.instructionPC i =
-      [2863,2864,2865,2866,2869,2870,2873,2874,2875,2876,2877,2879,2880,
-       2883,2884,2887,2888,2889,2892,2893,2896,2899,2900,2902,2905][i - 1742]! := by
-  interval_cases i <;> decide
-
 theorem jumpDest1892 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1892 = true :=
   Artifact.isValidJumpDest_index 1345 (by rfl)
@@ -289,5 +280,21 @@ theorem jumpDest2642 :
 theorem jumpDest2666 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2666 = true :=
   Artifact.isValidJumpDest_index 1683 (by rfl)
+
+theorem jumpDest2863 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2863 = true :=
+  Artifact.isValidJumpDest_index 1742 (by rfl)
+
+theorem jumpDest2874 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2874 = true :=
+  Artifact.isValidJumpDest_index 1749 (by rfl)
+
+theorem jumpDest2877 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2877 = true :=
+  Artifact.isValidJumpDest_index 1751 (by rfl)
+
+theorem jumpDest2888 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2888 = true :=
+  Artifact.isValidJumpDest_index 1758 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

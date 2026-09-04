@@ -1,10 +1,20 @@
 # Fast-path proof conventions (read before writing any Lean)
 
 Repository: /home/ubuntu/eip8200-challenges
-Artifact:   Challenge/Modexp/Submission/bytecode.hex  (2863 bytes, 1742 instructions)
+Artifact:   Challenge/Modexp/Submission/bytecode.hex  (2901 bytes, 1768 instructions)
 Disassembly of the appended region: /home/ubuntu/work/fastdis.txt
   columns: `index  pc  mnemonic  operand`, index 0 = first instruction of the whole image.
-Appended fast path: instruction indices 977..1741, pc 1314..2862.
+Appended fast path: instruction indices 977..1767, pc 1314..2900.
+  Indices 1742..1767 (pc 2863..2900) are `CCB`, which replaced the second
+  `DOUBLE256` call; the only edit to the pre-existing bytes was the PUSH2
+  operand at pc 1552..1553 (0x0777 -> 0x0B2F), so every earlier index and pc
+  is unchanged.
+
+DO NOT BUILD `Challenge.Modexp.Submission.Proofs.Fast.Paths` or
+`...Fast.Paths.P2`.  Nothing imports the `Paths` aggregator, and `P2.lean`
+(`blk1039`, a 99-instruction block) has never compiled.  Build the leaf
+modules by name instead: `...Fast.Setup`, `...Fast.Exp`, `...Fast.Ccb`,
+`...Fast.Correct`.
 
 The design notes are /home/ubuntu/work-mont/PROOF_PLAN.md (section `## Simple variant`)
 and /home/ubuntu/work-mont/simple/BLOCKS_simple.md.  THOSE USE A DIFFERENT BASE:
