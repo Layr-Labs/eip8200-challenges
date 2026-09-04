@@ -642,13 +642,6 @@ def gasSteps_coldHit (s : State) (accumulatorWord : UInt256)
       (run_coldBitHit s accumulatorWord count b e m baseOff expOff i j offset byte (exponentBit byte j) rest hcap hbit hcode hrun)
       (by simpa [coldBitTest, coldBitLoop, bitFrame] using hrun)
       (by simpa [coldBitTest, coldBitLoop, bitFrame, State.fork] using hnp)
-  have hstep2 := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka coldHitPath
-      (by simpa [coldHitState, coldBitLoop, Artifact.submissionArtifact] using hcode)
-      (by simpa [coldHitState, coldBitLoop, State.fork] using hfork)
-      (run_coldHit s accumulatorWord count b e m baseOff expOff i j offset byte rest hcap hcode hrun)
-      (by simpa [coldHitState, coldBitLoop] using hrun)
-      (by simpa [coldHitState, coldBitLoop, State.fork] using hnp)
   have hstep3 := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka coldCopyCallPath
       (by simpa [coldCopyState, coldBitLoop, Artifact.submissionArtifact] using hcode)
@@ -690,7 +683,7 @@ def gasSteps_coldHit (s : State) (accumulatorWord : UInt256)
       (by simpa [coldCopied, coldCopyState, coldBitLoop,
         BigHelpers.copyReturned, State.fork] using hnp)
   exact Challenge.EvmProof.GasSteps.cast
-    (hstep0.trans (hstep1.trans (hstep2.trans (hstep3.trans (hcopy.trans hret)))))
+    (hstep0.trans (hstep1.trans (hstep3.trans (hcopy.trans hret)))))
     rfl rfl
 
 /-! ### Shifted hot iterators (`gasSteps_exponentBit` / `gasSteps_exponentByte`

@@ -872,10 +872,10 @@ def coldBitComputePath : List (Challenge.EvmProof.Stepper.Located Artifact.submi
    opAt 1023 .AND]
 
 def coldBitHitPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1024 2 1399, opAt 1025 .JUMPI]
+  [pushAt 1024 2 1404, opAt 1025 .JUMPI]
 
 def coldBitZeroPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1024 2 1399, opAt 1025 .JUMPI,
+  [pushAt 1024 2 1404, opAt 1025 .JUMPI,
    pushAt 1026 1 1, opAt 1027 .ADD, pushAt 1028 2 1368,
    opAt 1029 .JUMP]
 
@@ -1262,16 +1262,16 @@ theorem run_coldBitHit (s : State) (accumulatorWord : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock coldBitHitPath
       (coldBitTest s accumulatorWord count b e m baseOff expOff i j offset byte
         bit rest) =
-      some (coldHitState s accumulatorWord count b e m baseOff expOff i offset
+      some (coldCopyState s accumulatorWord count b e m baseOff expOff i offset
         byte rest j) := by
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
-  have hch : (1399 : UInt256).toNat = 1399 := by decide
-  have hchWord : (1399 : UInt256) = UInt256.ofNat 1399 := by decide
-  simp [coldBitHitPath, opAt, pushAt, wfOp, coldBitTest, coldHitState,
-    coldBitLoop, bitFrame, coldPCs, hcode, hrun, hbit, hch, hchWord,
-    jumpColdHit, UInt256.isTrue, hc11, hc12, hc13,
+  have hcc : (1404 : UInt256).toNat = 1404 := by decide
+  have hccWord : (1404 : UInt256) = UInt256.ofNat 1404 := by decide
+  simp [coldBitHitPath, opAt, pushAt, wfOp, coldBitTest, coldCopyState,
+    coldBitLoop, bitFrame, coldPCs, hcode, hrun, hbit, hcc, hccWord,
+    jumpColdCopy, UInt256.isTrue, hc11, hc12, hc13,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
