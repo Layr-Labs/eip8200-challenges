@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigSetup
+import Challenge.Modexp.Submission.Proofs.Bytecode.MontgomeryWrapperBlock
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 3000000
@@ -61,7 +62,7 @@ def scanBodyPath :
 def scanNonzeroPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 624 .JUMPDEST, opAt 625 .POP, opAt 626 (.Dup ⟨0, by decide⟩),
-   pushAt 627 2 811, opAt 628 .JUMPI]
+   pushAt 627 2 2393, opAt 628 .JUMPI]
 
 def scanZeroPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -78,6 +79,30 @@ def scanWords (active : UInt256) : Nat → UInt256
   | 0 => active
   | i + 1 => UInt256.ofNat (MachineState.activeWordsAfter
       (scanWords active i).toNat (32 * i) 32)
+
+theorem scanWords_count_le (active : UInt256) (n : Nat) (hN : n ≤ 32) :
+    n ≤ (scanWords active n).toNat := by
+  cases n with
+  | zero => simp [scanWords]
+  | succ n =>
+      have hn : n ≤ 31 := by omega
+      have hround : (32 * n + 31) / 32 + 1 = n + 1 := by omega
+      have hmax : max (scanWords active n).toNat (n + 1) < 2 ^ 256 := by
+        have hw : (scanWords active n).toNat < 2 ^ 256 := by
+          exact (scanWords active n).val.isLt
+        omega
+      have hafter :
+          MachineState.activeWordsAfter (scanWords active n).toNat (32 * n) 32 =
+            max (scanWords active n).toNat (n + 1) := by
+        rw [MachineState.activeWordsAfter]
+        norm_num
+        rw [hround]
+      change n + 1 ≤
+        (UInt256.ofNat (MachineState.activeWordsAfter
+          (scanWords active n).toNat (32 * n) 32)).toNat
+      rw [hafter, Challenge.EvmProof.Word.word_toNat_ofNat,
+        Nat.mod_eq_of_lt hmax]
+      exact Nat.le_max_right _ _
 
 def scanEntry (s : State) (count : Nat) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 768
@@ -99,6 +124,46 @@ def scanNonzero (s : State) (count : Nat) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 811
            stack := [scanOr s.memory count, UInt256.ofNat count] ++ rest
            activeWords := scanWords s.activeWords count }
+
+def scanRouted (s : State) (count : Nat) (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 2393
+           stack := [scanOr s.memory count, UInt256.ofNat count] ++ rest
+           activeWords := scanWords s.activeWords count }
+
+theorem loadLowLeaf_zero_eq (t : State) (hwords : 1 ≤ t.activeWords.toNat) :
+    MontgomeryWrapperBlock.loadLowLeaf t 0 = t := by
+  have hactive : UInt256.ofNat t.activeWords.toNat = t.activeWords :=
+    (Challenge.EvmProof.Word.word_eq_ofNat_toNat t.activeWords).symm
+  have hafter : MachineState.activeWordsAfter t.activeWords.toNat 0 32 =
+      t.activeWords.toNat := by
+    change max t.activeWords.toNat 1 = t.activeWords.toNat
+    exact Nat.max_eq_left hwords
+  have hzero : (0 : UInt256).toNat = 0 := by decide
+  rw [MontgomeryWrapperBlock.loadLowLeaf, hzero, hafter, hactive]
+
+theorem scanRouted_loadLowLeaf_zero_eq (s : State) (count : Nat)
+    (rest : List UInt256) (hcount : count ≤ 32)
+    (hor : scanOr s.memory count ≠ 0) :
+    MontgomeryWrapperBlock.loadLowLeaf (scanRouted s count rest) 0 =
+      scanRouted s count rest := by
+  have hpositive : 1 ≤ count := by
+    by_contra hnot
+    have hzero : count = 0 := by omega
+    subst count
+    apply hor
+    rfl
+  apply loadLowLeaf_zero_eq
+  have hwords := scanWords_count_le s.activeWords count hcount
+  simpa [scanRouted] using hpositive.trans hwords
+
+theorem scanRouted_fallback_eq (s : State) (count : Nat)
+    (rest : List UInt256) (hcount : count ≤ 32)
+    (hor : scanOr s.memory count ≠ 0) :
+    { MontgomeryWrapperBlock.loadLowLeaf (scanRouted s count rest) 0 with
+        pc := UInt256.ofNat 811 } =
+      scanNonzero s count rest := by
+  rw [scanRouted_loadLowLeaf_zero_eq s count rest hcount hor]
+  simp [scanRouted, scanNonzero]
 
 def scanZeroFinal (s : State) (count b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
@@ -128,9 +193,9 @@ private theorem jump799 :
     Decode.isValidJumpDest submissionBytecode 799 = true :=
   Artifact.isValidJumpDest_index 624 (by rfl)
 
-private theorem jump811 :
-    Decode.isValidJumpDest submissionBytecode 811 = true :=
-  Artifact.isValidJumpDest_index 632 (by rfl)
+private theorem jump2393 :
+    Decode.isValidJumpDest submissionBytecode 2393 = true :=
+  Artifact.isValidJumpDest_index 1705 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_scanSetup (s : State) (count : Nat) (rest : List UInt256)
@@ -242,12 +307,12 @@ theorem run_scanNonzero (s : State) (count : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock scanNonzeroPath
-      (scanExit s count rest) = some (scanNonzero s count rest) := by
+      (scanExit s count rest) = some (scanRouted s count rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
-  have h811 : (811 : UInt256).toNat = 811 := by decide
-  have h811Word : (811 : UInt256) = UInt256.ofNat 811 := by decide
+  have h2393 : (2393 : UInt256).toNat = 2393 := by decide
+  have h2393Word : (2393 : UInt256) = UInt256.ofNat 2393 := by decide
   have horNat : (scanOr s.memory count).toNat ≠ 0 := by
     intro hz
     apply hor
@@ -255,8 +320,8 @@ theorem run_scanNonzero (s : State) (count : Nat) (rest : List UInt256)
     rw [hz]
     rfl
   simp [scanNonzeroPath, opAt, pushAt, wfOp, scanExit, scanLoop,
-    scanNonzero, scanPCs, hrun, hcode, hc2, hc3, hc4, h811, h811Word,
-    horNat, jump811, UInt256.isTrue,
+    scanRouted, scanPCs, hrun, hcode, hc2, hc3, hc4, h2393, h2393Word,
+    horNat, jump2393, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -353,7 +418,7 @@ def gasSteps_scanFinishNonzero (s : State) (count : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (scanLoop s count count rest)
-      (scanNonzero s count rest) :=
+      (scanRouted s count rest) :=
   (Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka scanGuardPath
       (by simpa [scanLoop, Artifact.submissionArtifact] using hcode)
@@ -377,7 +442,7 @@ def gasSteps_scanNonzeroTotal (s : State) (count : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (scanEntry s count rest)
-      (scanNonzero s count rest) :=
+      (scanRouted s count rest) :=
   (gasSteps_scanSetup s count rest hcap hcode hfork hrun hnp).trans <|
     (gasSteps_scanLoop s count rest hcap hcount hcode hfork hrun hnp).trans <|
       gasSteps_scanFinishNonzero s count rest hcap hcount hor hcode hfork
@@ -449,7 +514,7 @@ theorem gasSteps_scanNonzeroTotal_cost_potential (s : State) (count : Nat)
     (gasSteps_scanNonzeroTotal s count rest hcap hcount hor hcode hfork hrun
         hnp).cost + MachineState.memCost s.activeWords.toNat =
       (50 + count * 74) + MachineState.memCost
-        (scanNonzero s count rest).activeWords.toNat := by
+        (scanRouted s count rest).activeWords.toNat := by
   have hs := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     scanSetupPath 5 (run_scanSetup s count rest hcap hrun)
       (by simpa [scanEntry, State.fork] using hfork)
@@ -469,7 +534,7 @@ theorem gasSteps_scanNonzeroTotal_cost_potential (s : State) (count : Nat)
     gasSteps_scanFinishNonzero
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp only [scanEntry, scanLoop, scanExit, scanNonzero, scanWords,
+  simp only [scanEntry, scanLoop, scanExit, scanRouted, scanWords,
     scanOr] at hs hl hg hn ⊢
   omega
 

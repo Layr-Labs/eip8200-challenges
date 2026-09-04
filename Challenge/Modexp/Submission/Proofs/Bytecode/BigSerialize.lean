@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigExponentGas
+import Challenge.Modexp.Submission.Proofs.Bytecode.MontgomeryDecodeBlock
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 3000000
@@ -37,7 +38,7 @@ def outerFinishGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 719 .JUMPDEST, opAt 720 (.Dup ⟨4, by decide⟩),
    opAt 721 (.Dup ⟨1, by decide⟩), opAt 722 .LT, opAt 723 .ISZERO,
-   pushAt 724 2 1118, opAt 725 .JUMPI]
+   pushAt 724 2 2298, opAt 725 .JUMPI]
 
 def serializerEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -73,7 +74,7 @@ def serializerReturnPath :
 def exponentOuterExit (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
   { outerLoop s accumulatorWord count b e m baseOff expOff rest e with
-    pc := UInt256.ofNat 1118 }
+    pc := UInt256.ofNat 2298 }
 
 def serializerEntry (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
@@ -174,9 +175,9 @@ def bigReturned (s : State) (accumulatorWord : UInt256)
         1181,1182,1183,1186])[i - 838]! := by
   interval_cases i <;> decide
 
-private theorem jump1118 :
-    Decode.isValidJumpDest submissionBytecode 1118 = true :=
-  Artifact.isValidJumpDest_index 838 (by rfl)
+private theorem jump2298 :
+    Decode.isValidJumpDest submissionBytecode 2298 = true :=
+  Artifact.isValidJumpDest_index 1651 (by rfl)
 
 private theorem jump1121 :
     Decode.isValidJumpDest submissionBytecode 1121 = true :=
@@ -200,11 +201,11 @@ theorem run_outerFinishGuard (s : State) (accumulatorWord : UInt256)
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
-  have h1118 : (1118 : UInt256).toNat = 1118 := by decide
-  have h1118Word : (1118 : UInt256) = UInt256.ofNat 1118 := by decide
+  have h2298 : (2298 : UInt256).toNat = 2298 := by decide
+  have h2298Word : (2298 : UInt256) = UInt256.ofNat 2298 := by decide
   simp [outerFinishGuardPath, opAt, pushAt, wfOp, outerLoop,
     exponentOuterExit, outerFinishPCs,
-    hcode, hrun, hzeroFalse, h1118, h1118Word, jump1118,
+    hcode, hrun, hzeroFalse, h2298, h2298Word, jump2298,
     hc8, hc9, hc10, UInt256.lt, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -522,24 +523,17 @@ theorem gasSteps_serializerFinish_cost_potential (s : State)
   simp only [serializerLoop, serializerExit, bigReturned] at hguard hreturn ⊢
   omega
 
-def gasSteps_serializeResult (s : State) (accumulatorWord : UInt256)
+/-- Serialization from the shared `pc = 1118` entry after decode. -/
+def gasSteps_serializeFromEntry (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
-    (hcap : rest.length < 968) (he : e < 2 ^ 256) (hm : m < 2 ^ 256)
+    (hcap : rest.length < 968) (hm : m < 2 ^ 256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (outerLoop s accumulatorWord count b e m baseOff expOff rest e)
+      (serializerEntry s accumulatorWord count b e m baseOff expOff rest)
       (bigReturned s accumulatorWord count b e m baseOff expOff rest) := by
-  have hguard := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka outerFinishGuardPath
-      (by simpa [outerLoop, Artifact.submissionArtifact] using hcode)
-      (by simpa [outerLoop, State.fork] using hfork)
-      (run_outerFinishGuard s accumulatorWord count b e m baseOff expOff rest
-        (by omega) he hcode hrun)
-      (by simpa [outerLoop] using hrun)
-      (by simpa [outerLoop, State.fork] using hnp)
   have hentry := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka serializerEntryPath
       (by simpa [serializerEntry, Artifact.submissionArtifact] using hcode)
@@ -552,31 +546,22 @@ def gasSteps_serializeResult (s : State) (accumulatorWord : UInt256)
     expOff rest hcap hm hcode hfork hrun hnp
   have hfinish := gasSteps_serializerFinish s accumulatorWord count b e m
     baseOff expOff rest hcap hm hcode hfork hrun hnp
-  exact Challenge.EvmProof.GasSteps.cast
-    (hguard.trans (hentry.trans (hloop.trans hfinish))) rfl rfl
+  exact hentry.trans (hloop.trans hfinish)
 
-theorem gasSteps_serializeResult_cost_potential (s : State)
+theorem gasSteps_serializeFromEntry_cost_potential (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff : Nat)
     (rest : List UInt256) (hcap : rest.length < 968)
-    (he : e < 2 ^ 256) (hm : m < 2 ^ 256)
-    (hcode : s.executionEnv.code = submissionBytecode)
+    (hm : m < 2 ^ 256) (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    (gasSteps_serializeResult s accumulatorWord count b e m baseOff expOff rest
-      hcap he hm hcode hfork hrun hnp).cost +
+    (gasSteps_serializeFromEntry s accumulatorWord count b e m baseOff expOff
+      rest hcap hm hcode hfork hrun hnp).cost +
         MachineState.memCost
-          (outerLoop s accumulatorWord count b e m baseOff expOff rest
-            e).activeWords.toNat =
-      (66 + m * 138) + MachineState.memCost
+          (serializerEntry s accumulatorWord count b e m baseOff expOff
+            rest).activeWords.toNat =
+      (40 + 138 * m) + MachineState.memCost
         (bigReturned s accumulatorWord count b e m baseOff expOff rest).activeWords.toNat := by
-  have hguard :=
-    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      outerFinishGuardPath 26
-        (run_outerFinishGuard s accumulatorWord count b e m baseOff expOff rest
-          (by omega) he hcode hrun)
-        (by simpa [outerLoop, State.fork] using hfork)
-        (by decide) (by decide)
   have hentry :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
       serializerEntryPath 5
@@ -588,12 +573,107 @@ theorem gasSteps_serializeResult_cost_potential (s : State)
     e m baseOff expOff rest hcap hm hcode hfork hrun hnp
   have hfinish := gasSteps_serializerFinish_cost_potential s accumulatorWord
     count b e m baseOff expOff rest hcap hm hcode hfork hrun hnp
-  unfold gasSteps_serializeResult
-  simp only [Challenge.EvmProof.GasSteps.cast_cost,
-    Challenge.EvmProof.GasSteps.trans_cost,
+  unfold gasSteps_serializeFromEntry
+  simp only [Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  simp only [outerLoop, exponentOuterExit, serializerEntry, serializerLoop,
-    bigReturned] at hguard hentry hloop hfinish ⊢
+  simp only [serializerEntry, serializerLoop, bigReturned] at hentry hloop hfinish ⊢
+  omega
+
+def serializerDecoded (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
+  MontgomeryDecodeBlock.decodeReturned s (UInt256.ofNat e) accumulatorWord count
+    ([UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
+      UInt256.ofNat baseOff, UInt256.ofNat expOff] ++ rest)
+
+def gasSteps_serializeResult (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff : Nat) (rest : List UInt256)
+    (hcap : rest.length < 968) (hcount : count < 2 ^ 256)
+    (he : e < 2 ^ 256) (hm : m < 2 ^ 256)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (outerLoop s accumulatorWord count b e m baseOff expOff rest e)
+      (bigReturned
+        (serializerDecoded s accumulatorWord count b e m baseOff expOff rest)
+        accumulatorWord count b e m baseOff expOff rest) := by
+  let D := serializerDecoded s accumulatorWord count b e m baseOff expOff rest
+  let tail := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
+    UInt256.ofNat baseOff, UInt256.ofNat expOff] ++ rest
+  have htail : tail.length < 977 := by
+    simp [tail]
+    omega
+  have hguard := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka outerFinishGuardPath
+      (by simpa [outerLoop, Artifact.submissionArtifact] using hcode)
+      (by simpa [outerLoop, State.fork] using hfork)
+      (run_outerFinishGuard s accumulatorWord count b e m baseOff expOff rest
+        (by omega) he hcode hrun)
+      (by simpa [outerLoop] using hrun)
+      (by simpa [outerLoop, State.fork] using hnp)
+  have hdecode : Challenge.EvmProof.GasSteps
+      (exponentOuterExit s accumulatorWord count b e m baseOff expOff rest) D :=
+    Challenge.EvmProof.GasSteps.cast
+      (MontgomeryDecodeBlock.gasSteps_decode s (UInt256.ofNat e) accumulatorWord
+        count tail htail hcount hcode hfork hrun hnp) rfl rfl
+  have hserializeRaw := gasSteps_serializeFromEntry D accumulatorWord count b e m
+    baseOff expOff rest hcap hm
+    (by simpa [D, serializerDecoded, MontgomeryDecodeBlock.decodeReturned] using hcode)
+    (by simpa [D, serializerDecoded, MontgomeryDecodeBlock.decodeReturned] using hfork)
+    (by simpa [D, serializerDecoded, MontgomeryDecodeBlock.decodeReturned] using hrun)
+    (by simpa [D, serializerDecoded, MontgomeryDecodeBlock.decodeReturned] using hnp)
+  have hserialize : Challenge.EvmProof.GasSteps D
+      (bigReturned D accumulatorWord count b e m baseOff expOff rest) :=
+    Challenge.EvmProof.GasSteps.cast hserializeRaw (by rfl) rfl
+  exact hguard.trans (hdecode.trans hserialize)
+
+theorem gasSteps_serializeResult_cost_potential (s : State)
+    (accumulatorWord : UInt256) (count b e m baseOff expOff : Nat)
+    (rest : List UInt256) (hcap : rest.length < 968) (hcount : count < 2 ^ 256)
+    (he : e < 2 ^ 256) (hm : m < 2 ^ 256)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    let D := serializerDecoded s accumulatorWord count b e m baseOff expOff rest
+    let C := MontgomeryDecodeBlock.gasSteps_decode s (UInt256.ofNat e) accumulatorWord
+      count ([UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
+        UInt256.ofNat baseOff, UInt256.ofNat expOff] ++ rest)
+      (by simp; omega) hcount hcode hfork hrun hnp
+    (gasSteps_serializeResult s accumulatorWord count b e m baseOff expOff rest
+      hcap hcount he hm hcode hfork hrun hnp).cost +
+        MachineState.memCost
+          (outerLoop s accumulatorWord count b e m baseOff expOff rest
+            e).activeWords.toNat +
+        MachineState.memCost D.activeWords.toNat =
+      (66 + 138 * m) + C.cost +
+        MachineState.memCost
+          (exponentOuterExit s accumulatorWord count b e m baseOff expOff
+            rest).activeWords.toNat +
+        MachineState.memCost
+          (bigReturned D accumulatorWord count b e m baseOff expOff rest).activeWords.toNat := by
+  dsimp only
+  let D := serializerDecoded s accumulatorWord count b e m baseOff expOff rest
+  have hguard :=
+    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+      outerFinishGuardPath 26
+        (run_outerFinishGuard s accumulatorWord count b e m baseOff expOff rest
+          (by omega) he hcode hrun)
+        (by simpa [outerLoop, State.fork] using hfork)
+        (by decide) (by decide)
+  have hserialize := gasSteps_serializeFromEntry_cost_potential D accumulatorWord
+    count b e m baseOff expOff rest hcap hm
+    (by simpa [D, serializerDecoded, MontgomeryDecodeBlock.decodeReturned] using hcode)
+    (by simpa [D, serializerDecoded, MontgomeryDecodeBlock.decodeReturned] using hfork)
+    (by simpa [D, serializerDecoded, MontgomeryDecodeBlock.decodeReturned] using hrun)
+    (by simpa [D, serializerDecoded, MontgomeryDecodeBlock.decodeReturned] using hnp)
+  unfold gasSteps_serializeResult
+  simp only [Challenge.EvmProof.GasSteps.trans_cost,
+    Challenge.EvmProof.GasSteps.cast_cost,
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+  dsimp only [D] at hserialize
+  simp only [outerLoop, exponentOuterExit, serializerEntry] at hguard hserialize ⊢
   omega
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigSerialize
