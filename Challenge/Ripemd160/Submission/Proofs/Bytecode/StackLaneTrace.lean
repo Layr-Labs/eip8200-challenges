@@ -49,14 +49,14 @@ def gasSteps_template (j : Nat) (hj : j < 5)
   · exact StackNegatedRoundTrace.gasSteps_f4 address rotation constant site s
       w.a w.b w.c w.d w.e rest hstack hcode hfork hrun hnp
 
-theorem returned_eq_stateAt (s : State) (pc : UInt256)
+theorem rawReturned_eq_stateAt (s : State) (pc : UInt256)
     (w : Compression.EvmWorking) (j : Nat) (address word constant : UInt256)
     (rotation : Nat) (rest : List UInt256)
     (hword : MachineState.readWord s.memory address.toNat = word)
     (hactive : s.activeWordsAfterUInt256 address.toNat 32 = s.activeWords) :
-    roundReturned s pc j w.a w.b w.c w.d w.e address rotation constant rest =
-      stateAt s pc (StackRound.stackRound w j word rotation constant) rest := by
-  simp only [roundReturned, roundResult, roundWorking, roundWord, hword, hactive,
+    SharedRoundTrace.rawRoundReturned s pc j w.a w.b w.c w.d w.e address rotation constant rest =
+      stateAt s pc (ScratchLow.rawRound w j word rotation constant) rest := by
+  simp only [SharedRoundTrace.rawRoundReturned, roundWorking, roundWord, hword, hactive,
     stateAt, roundEntry, roundWords]
 
 private theorem leftIndex_lt (i : Fin 80) : Crypto.Ripemd160.r[i.val]! < 16 := by
@@ -70,7 +70,7 @@ theorem leftAddress_toNat (i : Fin 80) :
 
 def gasSteps_leftStep (s : State) (word : Nat → UInt32)
     (w : Compression.EvmWorking) (rest : List UInt256) (i : Fin 80)
-    (hwords : WordsAt s word) (hactive : 67 ≤ s.activeWords.toNat)
+    (hwords : WordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1013)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -89,12 +89,12 @@ def gasSteps_leftStep (s : State) (word : Nat → UInt32)
     have hk := leftIndex_lt i
     omega
   have g := SharedRoundCertificates.gasSteps_leftRound s w rest i hstack hcode hfork hrun hnp
-  rw [returned_eq_stateAt s _ w _ _ _ _ _ rest hw ha] at g
+  rw [rawReturned_eq_stateAt s _ w _ _ _ _ _ rest hw ha] at g
   simpa only [stateAt, StackCompression.leftStep, leftRotation, leftConstant] using g
 
 def gasSteps_left80 (s : State) (word : Nat → UInt32)
     (w : Compression.EvmWorking) (rest : List UInt256)
-    (hwords : WordsAt s word) (hactive : 67 ≤ s.activeWords.toNat)
+    (hwords : WordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1013)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -120,7 +120,7 @@ theorem rightAddress_toNat (i : Fin 80) :
 
 def gasSteps_rightStep (s : State) (word : Nat → UInt32)
     (w : Compression.EvmWorking) (rest : List UInt256) (i : Fin 80)
-    (hwords : WordsAt s word) (hactive : 67 ≤ s.activeWords.toNat)
+    (hwords : WordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1013)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -139,12 +139,12 @@ def gasSteps_rightStep (s : State) (word : Nat → UInt32)
     have hk := rightIndex_lt i
     omega
   have g := SharedRoundCertificates.gasSteps_rightRound s w rest i hstack hcode hfork hrun hnp
-  rw [returned_eq_stateAt s _ w _ _ _ _ _ rest hw ha] at g
+  rw [rawReturned_eq_stateAt s _ w _ _ _ _ _ rest hw ha] at g
   simpa only [stateAt, StackCompression.rightStep, rightRotation, rightConstant] using g
 
 def gasSteps_right80 (s : State) (word : Nat → UInt32)
     (w : Compression.EvmWorking) (rest : List UInt256)
-    (hwords : WordsAt s word) (hactive : 67 ≤ s.activeWords.toNat)
+    (hwords : WordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1013)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
