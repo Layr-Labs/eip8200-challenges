@@ -42,22 +42,13 @@ theorem exponentProgress_represents_result (input : ByteArray)
     hvalid hbig hmodulusPos
   have haccReduced : 1 % Word.modulusValue input < Word.modulusValue input :=
     Nat.mod_lt _ hmodulusPos
-  have hprogress := BigExponentCorrect.exponentByteProgress_represents entry
-    accumulator n b e m 96 expOff expTail e (1 % Word.modulusValue input)
+  have hprogress := BigExponentCorrect.exponentPhase_represents entry
+    accumulator n b e m 96 expOff expTail
     (WordCorrect.baseNat input % Word.modulusValue input)
-    (Word.modulusValue input) (by omega) hn hmodulusPos haccReduced
-    hinitial.1 hinitial.2.1 hinitial.2.2
+    (Word.modulusValue input) hn hmodulusPos
+    (Nat.mod_lt _ hmodulusPos) hinitial.1 hinitial.2.1 hinitial.2.2
   have hentryEnv : entry.executionEnv = header.executionEnv := by
-    calc
-      entry.executionEnv =
-          (BigComplete.setupState header b e m 96 expOff modOff returnDest
-            rest).executionEnv := by
-        simp [entry, BigComplete.exponentState, BigComplete.baseState,
-          BigBaseLoop.initialAccumulator, BigBaseLoop.baseConvertedExit,
-          BigBase.outerExit, BigBase.outerLoop, BigHelpers.addReturned,
-          BigBase.baseLoopEntry, BigBase.afterClearDouble,
-          BigHelpers.clearReturned, BigModulus.scanNonzero]
-      _ = header.executionEnv := by rfl
+    simp [entry]
   have hvalueEnv := BigExponentCorrect.exponentValueAfter_executionEnv entry
     header (Word.modulusValue input)
     (WordCorrect.baseNat input % Word.modulusValue input) expOff e
@@ -80,6 +71,6 @@ theorem exponentProgress_represents_result (input : ByteArray)
           hmodulusPos)
   rw [hvalue] at hprogress
   simpa [BigComplete.exponentProgressState, entry, accumulator, n, b, e, m,
-    expOff, modOff, expTail, header, BigComplete.limbCount] using hprogress.1
+    expOff, modOff, expTail, header, BigComplete.limbCount] using hprogress
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigCorrect
