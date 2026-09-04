@@ -44,41 +44,41 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def initializePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1545 .JUMPDEST, pushAt 1546 1 1, pushAt 1547 2 3072,
-   opAt 1548 .MSTORE]
+  [opAt 1123 .JUMPDEST, pushAt 1124 1 1, pushAt 1125 2 3072,
+   opAt 1126 .MSTORE]
 
 def sizeGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1549 (.Dup ⟨2, by decide⟩), opAt 1550 (.Dup ⟨5, by decide⟩),
-   opAt 1551 .EQ, opAt 1552 .ISZERO, pushAt 1553 2 2169,
-   opAt 1554 .JUMPI]
+  [opAt 1127 (.Dup ⟨2, by decide⟩), opAt 1128 (.Dup ⟨5, by decide⟩),
+   opAt 1129 .EQ, opAt 1130 .ISZERO, pushAt 1131 2 1561,
+   opAt 1132 .JUMPI]
 
 def headGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1555 (.Dup ⟨7, by decide⟩), opAt 1556 .CALLDATALOAD,
-   opAt 1557 (.Dup ⟨6, by decide⟩), opAt 1558 .CALLDATALOAD,
-   opAt 1559 .LT, opAt 1560 .ISZERO, pushAt 1561 2 2169,
-   opAt 1562 .JUMPI]
+  [opAt 1133 (.Dup ⟨7, by decide⟩), opAt 1134 .CALLDATALOAD,
+   opAt 1135 (.Dup ⟨6, by decide⟩), opAt 1136 .CALLDATALOAD,
+   opAt 1137 .LT, opAt 1138 .ISZERO, pushAt 1139 2 1561,
+   opAt 1140 .JUMPI]
 
 def directLoadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1563 2 2163, pushAt 1564 2 1024,
-   opAt 1565 (.Dup ⟨4, by decide⟩), opAt 1566 (.Dup ⟨8, by decide⟩),
-   pushAt 1567 2 439, opAt 1568 .JUMP]
+  [pushAt 1141 2 1555, pushAt 1142 2 1024,
+   opAt 1143 (.Dup ⟨4, by decide⟩), opAt 1144 (.Dup ⟨8, by decide⟩),
+   pushAt 1145 2 439, opAt 1146 .JUMP]
 
 def fastReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1569 .JUMPDEST, pushAt 1570 0 0, pushAt 1571 2 925,
-   opAt 1572 .JUMP]
+  [opAt 1147 .JUMPDEST, pushAt 1148 0 0, pushAt 1149 2 925,
+   opAt 1150 .JUMP]
 
 def fallbackPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1573 .JUMPDEST, pushAt 1574 0 0, pushAt 1575 2 831,
-   opAt 1576 .JUMP]
+  [opAt 1151 .JUMPDEST, pushAt 1152 0 0, pushAt 1153 2 831,
+   opAt 1154 .JUMP]
 
 def outerFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 707 .JUMPDEST, opAt 708 .POP, pushAt 709 2 1343,
+  [opAt 707 .JUMPDEST, opAt 708 .POP, pushAt 709 2 1335,
    opAt 710 (.Dup ⟨2, by decide⟩), pushAt 711 0 0,
    pushAt 712 1 1, pushAt 713 2 3072, pushAt 714 2 2048,
    pushAt 715 2 104, opAt 716 .JUMP]
@@ -100,7 +100,7 @@ def initialized (s : State) (accumulator : UInt256)
   let cleared := BigBase.afterClearDouble s accumulator count
     (fullRest b e m baseOff expOff modOff returnDest rest)
   { cleared with
-    pc := UInt256.ofNat 2133
+    pc := UInt256.ofNat 1525
     memory := MachineState.writeBytes cleared.memory
       (Data.Bytes.natToBytesPadded 1 32) 3072
     activeWords := UInt256.ofNat (MachineState.activeWordsAfter
@@ -110,26 +110,26 @@ def sizePassed (s : State) (accumulator : UInt256)
     (count b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
     (rest : List UInt256) : State :=
   { initialized s accumulator count b e m baseOff expOff modOff returnDest rest
-      with pc := UInt256.ofNat 2141 }
+      with pc := UInt256.ofNat 1533 }
 
 def fallbackEntry (s : State) (accumulator : UInt256)
     (count b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
     (rest : List UInt256) : State :=
   { initialized s accumulator count b e m baseOff expOff modOff returnDest rest
-      with pc := UInt256.ofNat 2169 }
+      with pc := UInt256.ofNat 1561 }
 
 def headPassed (s : State) (accumulator : UInt256)
     (count b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
     (rest : List UInt256) : State :=
   { initialized s accumulator count b e m baseOff expOff modOff returnDest rest
-      with pc := UInt256.ofNat 2151 }
+      with pc := UInt256.ofNat 1543 }
 
 def loaded (s : State) (accumulator : UInt256)
     (count b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
     (rest : List UInt256) : State :=
   BigLoad.loadReturned
     (initialized s accumulator count b e m baseOff expOff modOff returnDest rest)
-    (UInt256.ofNat baseOff) (UInt256.ofNat b) 1024 2163
+    (UInt256.ofNat baseOff) (UInt256.ofNat b) 1024 1555
     (stack accumulator count b e m baseOff expOff modOff returnDest rest)
 
 def directOuterExit (s : State) (accumulator : UInt256)
@@ -146,7 +146,7 @@ def directInitialAccumulator (s : State) (accumulator : UInt256)
   BigHelpers.addReturned
     (directOuterExit s accumulator count b e m baseOff expOff modOff
       returnDest rest)
-    2048 3072 1 0 count 1343
+    2048 3072 1 0 count 1335
     (stack accumulator count b e m baseOff expOff modOff returnDest rest)
 
 def headBase (s : State) (baseOff : Nat) : Nat :=
@@ -214,13 +214,13 @@ def Eligible (s : State) (b m baseOff modOff : Nat) : Prop :=
       rest).halt = s.halt := by
   simp [loaded, BigLoad.loadReturned, BigLoad.loadLoop]
 
-@[simp] private theorem directPCs (i : Nat) (hi : 1545 ≤ i)
-    (hii : i ≤ 1576) :
+@[simp] private theorem directPCs (i : Nat) (hi : 1123 ≤ i)
+    (hii : i ≤ 1154) :
     Artifact.submissionArtifact.instructionPC i =
-      [2126, 2127, 2129, 2132, 2133, 2134, 2135, 2136,
-       2137, 2140, 2141, 2142, 2143, 2144, 2145, 2146,
-       2147, 2150, 2151, 2154, 2157, 2158, 2159, 2162,
-       2163, 2164, 2165, 2168, 2169, 2170, 2171, 2174][i - 1545]! := by
+      [1518, 1519, 1521, 1524, 1525, 1526, 1527, 1528,
+       1529, 1532, 1533, 1534, 1535, 1536, 1537, 1538,
+       1539, 1542, 1543, 1546, 1549, 1550, 1551, 1554,
+       1555, 1556, 1557, 1560, 1561, 1562, 1563, 1566][i - 1123]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem outerFinishPCs (i : Nat) (hi : 707 ≤ i)
@@ -246,16 +246,16 @@ private theorem jump925 :
   Artifact.isValidJumpDest_index 707 (by rfl)
 
 private theorem jump1335 :
-    Decode.isValidJumpDest submissionBytecode 1343 = true :=
-  Artifact.isValidJumpDest_index 995 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1335 = true :=
+  Artifact.isValidJumpDest_index 990 (by rfl)
 
 private theorem jump1555 :
-    Decode.isValidJumpDest submissionBytecode 2163 = true :=
-  Artifact.isValidJumpDest_index 1569 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1555 = true :=
+  Artifact.isValidJumpDest_index 1147 (by rfl)
 
 private theorem jump1561 :
-    Decode.isValidJumpDest submissionBytecode 2169 = true :=
-  Artifact.isValidJumpDest_index 1573 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1561 = true :=
+  Artifact.isValidJumpDest_index 1151 (by rfl)
 
 theorem run_initialize (s : State) (accumulator : UInt256)
     (count b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
@@ -267,16 +267,16 @@ theorem run_initialize (s : State) (accumulator : UInt256)
       some (initialized s accumulator count b e m baseOff expOff modOff
         returnDest rest) := by
   have hc : ∀ n ≤ 11, rest.length + n < 1024 := by omega
-  have h1518 : (2126 : UInt256).toNat = 2126 := by decide
-  have h1518Word : (2126 : UInt256) = UInt256.ofNat 2126 := by decide
-  have h1519 : (2127 : UInt256).toNat = 2127 := by decide
-  have h1521 : (2129 : UInt256).toNat = 2129 := by decide
-  have h1524 : (2132 : UInt256).toNat = 2132 := by decide
-  have h1525Word : (2133 : UInt256) = UInt256.ofNat 2133 := by decide
+  have h1518 : (1518 : UInt256).toNat = 1518 := by decide
+  have h1518Word : (1518 : UInt256) = UInt256.ofNat 1518 := by decide
+  have h1519 : (1519 : UInt256).toNat = 1519 := by decide
+  have h1521 : (1521 : UInt256).toNat = 1521 := by decide
+  have h1524 : (1524 : UInt256).toNat = 1524 := by decide
+  have h1525Word : (1525 : UInt256) = UInt256.ofNat 1525 := by decide
   have h1Nat : (1 : UInt256).toNat = 1 := by decide
   have h3072Nat : (3072 : UInt256).toNat = 3072 := by decide
-  have hpc : (UInt256.ofNat 2127 + UInt256.ofNat 2 + UInt256.ofNat 3).succ =
-      UInt256.ofNat 2133 := by decide
+  have hpc : (UInt256.ofNat 1519 + UInt256.ofNat 2 + UInt256.ofNat 3).succ =
+      UInt256.ofNat 1525 := by decide
   simp (disch := omega) [initializePath, opAt, pushAt, wfOp, initialized,
     BigBase.afterClearDouble, BigHelpers.clearReturned, BigModulus.scanNonzero,
     BigBase.frame, fullRest, hrun, directPCs, hc, h1518, h1518Word,
@@ -297,15 +297,15 @@ theorem run_sizePassed (s : State) (accumulator : UInt256)
       some (sizePassed s accumulator count b e m baseOff expOff modOff
         returnDest rest) := by
   have hc : ∀ n ≤ 13, rest.length + n < 1024 := by omega
-  have h1525 : (2133 : UInt256).toNat = 2133 := by decide
-  have h1526 : (2134 : UInt256).toNat = 2134 := by decide
-  have h1527 : (2135 : UInt256).toNat = 2135 := by decide
-  have h1528 : (2136 : UInt256).toNat = 2136 := by decide
-  have h1529 : (2137 : UInt256).toNat = 2137 := by decide
-  have h1532 : (2140 : UInt256).toNat = 2140 := by decide
-  have h1533Word : (2141 : UInt256) = UInt256.ofNat 2141 := by decide
-  have hpc : (UInt256.ofNat 2137 + UInt256.ofNat 3).succ =
-      UInt256.ofNat 2141 := by decide
+  have h1525 : (1525 : UInt256).toNat = 1525 := by decide
+  have h1526 : (1526 : UInt256).toNat = 1526 := by decide
+  have h1527 : (1527 : UInt256).toNat = 1527 := by decide
+  have h1528 : (1528 : UInt256).toNat = 1528 := by decide
+  have h1529 : (1529 : UInt256).toNat = 1529 := by decide
+  have h1532 : (1532 : UInt256).toNat = 1532 := by decide
+  have h1533Word : (1533 : UInt256) = UInt256.ofNat 1533 := by decide
+  have hpc : (UInt256.ofNat 1529 + UInt256.ofNat 3).succ =
+      UInt256.ofNat 1533 := by decide
   simp (disch := omega) [sizeGuardPath, opAt, pushAt, wfOp, initialized,
     sizePassed, stack, BigBase.afterClearDouble, BigHelpers.clearReturned,
     BigModulus.scanNonzero, BigBase.frame, fullRest, hrun, directPCs, hc,
@@ -327,8 +327,8 @@ theorem run_sizeFallback (s : State) (accumulator : UInt256)
       some (fallbackEntry s accumulator count b e m baseOff expOff modOff
         returnDest rest) := by
   have hc : ∀ n ≤ 13, rest.length + n < 1024 := by omega
-  have h1561 : (2169 : UInt256).toNat = 2169 := by decide
-  have h1561Word : (2169 : UInt256) = UInt256.ofNat 2169 := by decide
+  have h1561 : (1561 : UInt256).toNat = 1561 := by decide
+  have h1561Word : (1561 : UInt256) = UInt256.ofNat 1561 := by decide
   have hne' : m ≠ b := Ne.symm hne
   simp (disch := omega) [sizeGuardPath, opAt, pushAt, wfOp, initialized,
     fallbackEntry, stack, BigBase.afterClearDouble, BigHelpers.clearReturned,
@@ -356,8 +356,8 @@ theorem run_headPassed (s : State) (accumulator : UInt256)
         (MachineState.readWord s.executionEnv.calldata modOff) = 1 := by
     rw [UInt256.lt, if_pos (by simpa [headBase, headModulus] using hlt)]
     exact hone
-  have hpc : (UInt256.ofNat 2147 + UInt256.ofNat 3).succ =
-      UInt256.ofNat 2151 := by decide
+  have hpc : (UInt256.ofNat 1539 + UInt256.ofNat 3).succ =
+      UInt256.ofNat 1543 := by decide
   have honeNat : (UInt256.ofNat 1).toNat = 1 := by decide
   have honeLitNat : (1 : UInt256).toNat = 1 := by decide
   simp (disch := omega) [headGuardPath, opAt, pushAt, wfOp, sizePassed,
@@ -389,8 +389,8 @@ theorem run_headFallback (s : State) (accumulator : UInt256)
         (MachineState.readWord s.executionEnv.calldata modOff) = 0 := by
     rw [UInt256.lt, if_neg (by simpa [headBase, headModulus] using hnlt)]
     exact hzero
-  have h1561 : (2169 : UInt256).toNat = 2169 := by decide
-  have h1561Word : (2169 : UInt256) = UInt256.ofNat 2169 := by decide
+  have h1561 : (1561 : UInt256).toNat = 1561 := by decide
+  have h1561Word : (1561 : UInt256) = UInt256.ofNat 1561 := by decide
   have hzeroNat : (UInt256.ofNat 0).toNat = 0 := by decide
   have hzeroLitNat : (0 : UInt256).toNat = 0 := by decide
   simp (disch := omega) [headGuardPath, opAt, pushAt, wfOp, sizePassed,
@@ -413,15 +413,15 @@ theorem run_directLoad (s : State) (accumulator : UInt256)
       some (BigLoad.loadEntry
         (initialized s accumulator count b e m baseOff expOff modOff
           returnDest rest)
-        (UInt256.ofNat baseOff) (UInt256.ofNat b) 1024 2163
+        (UInt256.ofNat baseOff) (UInt256.ofNat b) 1024 1555
         (stack accumulator count b e m baseOff expOff modOff returnDest rest)) := by
   have hc : ∀ n ≤ 15, rest.length + n < 1024 := by omega
   have h439 : (439 : UInt256).toNat = 439 := by decide
   have h439Word : (439 : UInt256) = UInt256.ofNat 439 := by decide
-  have hpc1 : (UInt256.ofNat 2151 + UInt256.ofNat 3 + UInt256.ofNat 3).succ.toNat =
-      2158 := by decide
-  have hpc2 : (UInt256.ofNat 2151 + UInt256.ofNat 3 + UInt256.ofNat 3).succ.succ.toNat =
-      2159 := by decide
+  have hpc1 : (UInt256.ofNat 1543 + UInt256.ofNat 3 + UInt256.ofNat 3).succ.toNat =
+      1550 := by decide
+  have hpc2 : (UInt256.ofNat 1543 + UInt256.ofNat 3 + UInt256.ofNat 3).succ.succ.toNat =
+      1551 := by decide
   simp (disch := omega) [directLoadPath, opAt, pushAt, wfOp, headPassed,
     initialized, stack, BigBase.frame, fullRest, BigLoad.loadEntry,
     hrun, hcode, directPCs, hc, jump439, h439, h439Word, hpc1, hpc2,
@@ -440,11 +440,11 @@ theorem run_fastReturn (s : State) (accumulator : UInt256)
       some (directOuterExit s accumulator count b e m baseOff expOff modOff
         returnDest rest) := by
   have hc : ∀ n ≤ 13, rest.length + n < 1024 := by omega
-  have h1555 : (2163 : UInt256).toNat = 2163 := by decide
+  have h1555 : (1555 : UInt256).toNat = 1555 := by decide
   have h925 : (925 : UInt256).toNat = 925 := by decide
   have h925Word : (925 : UInt256) = UInt256.ofNat 925 := by decide
-  have h1556 : (UInt256.succ 2163).toNat = 2164 := by decide
-  have h1557 : (UInt256.succ 2163).succ.toNat = 2165 := by decide
+  have h1556 : (UInt256.succ 1555).toNat = 1556 := by decide
+  have h1557 : (UInt256.succ 1555).succ.toNat = 1557 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
   simp (disch := omega) [fastReturnPath, opAt, pushAt, wfOp, loaded,
     directOuterExit, BigLoad.loadReturned, BigLoad.loadLoop, stack,
@@ -465,7 +465,7 @@ theorem run_fallback (s : State) (accumulator : UInt256)
       some (BigBase.baseLoopEntry s accumulator count
         (fullRest b e m baseOff expOff modOff returnDest rest)) := by
   have hc : ∀ n ≤ 13, rest.length + n < 1024 := by omega
-  have h1561 : (2169 : UInt256).toNat = 2169 := by decide
+  have h1561 : (1561 : UInt256).toNat = 1561 := by decide
   have h831 : (831 : UInt256).toNat = 831 := by decide
   have h831Word : (831 : UInt256) = UInt256.ofNat 831 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
@@ -489,14 +489,14 @@ theorem run_directOuterFinish (s : State) (accumulator : UInt256)
       some (BigHelpers.addEntry
         (directOuterExit s accumulator count b e m baseOff expOff modOff
           returnDest rest)
-        2048 3072 1 0 count 1343
+        2048 3072 1 0 count 1335
         (stack accumulator count b e m baseOff expOff modOff returnDest rest)) := by
   have hc : ∀ n ≤ 18, rest.length + n < 1024 := by omega
   have h104 : (104 : UInt256).toNat = 104 := by decide
   have h104Word : (104 : UInt256) = UInt256.ofNat 104 := by decide
   have h925 : (925 : UInt256).toNat = 925 := by decide
   have h925Word : (925 : UInt256) = UInt256.ofNat 925 := by decide
-  have h1335Word : (1343 : UInt256) = UInt256.ofNat 1343 := by decide
+  have h1335Word : (1335 : UInt256) = UInt256.ofNat 1335 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
   have hpc : (UInt256.ofNat 932 + UInt256.ofNat 2 + UInt256.ofNat 3 +
       UInt256.ofNat 3 + UInt256.ofNat 3).succ = UInt256.ofNat 944 := by decide
@@ -573,7 +573,7 @@ def gasSteps_eligible (s : State) (accumulator : UInt256)
       (by simpa [headPassed, initialized, State.fork] using hnp)
   have hload := BigLoad.gasSteps_loadBigEndian
     (initialized s accumulator count b e m baseOff expOff modOff returnDest rest)
-    baseOff b 1024 2163
+    baseOff b 1024 1555
     (stack accumulator count b e m baseOff expOff modOff returnDest rest)
     hstack hbaseOff hoff hb
     (by simpa [initialized] using hcode)
@@ -599,7 +599,7 @@ def gasSteps_eligible (s : State) (accumulator : UInt256)
   have hadd := BigHelpers.gasSteps_addMaskedMod
     (directOuterExit s accumulator count b e m baseOff expOff modOff
       returnDest rest)
-    2048 3072 1 0 count 1343
+    2048 3072 1 0 count 1335
     (stack accumulator count b e m baseOff expOff modOff returnDest rest)
     hstack hcount
     (by simpa [directOuterExit] using hcode)
@@ -736,7 +736,7 @@ theorem loaded_represents_base (s : State) (accumulator : UInt256)
     BigLoadCorrect.loadReturned_represents
       (initialized s accumulator count b e m baseOff expOff modOff
         returnDest rest)
-      baseOff 1024 b 2163
+      baseOff 1024 b 1555
       (stack accumulator count b e m baseOff expOff modOff returnDest rest)
       hbaseOff hb hfit hzero
 
@@ -771,7 +771,7 @@ theorem directInitialAccumulator_represents (s : State)
   have h1024 : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
   have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
   have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
-  have h1335 : (1343 : UInt256) = UInt256.ofNat 1343 := by decide
+  have h1335 : (1335 : UInt256) = UInt256.ofNat 1335 := by decide
   have hexitBase : Limbs.Represents exit.memory 1024 count baseValue := by
     simpa [exit, directOuterExit] using hbase
   have hexitOne : Limbs.Represents exit.memory 3072 count 1 := by
@@ -786,7 +786,7 @@ theorem directInitialAccumulator_represents (s : State)
     simpa [directInitialAccumulator, exit, helperRest, h0, h1, h2048,
       h3072, h1335] using
       BigHelpers.addReturned_represents_mod exit 2048 3072 0 count 1 0 1
-        modulusValue (UInt256.ofNat 1343) helperRest (by omega) (by omega)
+        modulusValue (UInt256.ofNat 1335) helperRest (by omega) (by omega)
         (by omega) (by omega) (by omega) (Or.inr (by omega))
         (Or.inr (by omega)) (Or.inl (by omega)) (Or.inl (by omega))
         hexitZero hexitOne hexitModulus (by omega) (by omega)
@@ -797,7 +797,7 @@ theorem directInitialAccumulator_represents (s : State)
     simpa [directInitialAccumulator, exit, helperRest, h0, h1, h2048,
       h3072, h1335] using
       BigHelpers.addReturned_preserves_region exit 2048 3072 1 0 1024 count
-        baseValue (UInt256.ofNat 1343) helperRest (by omega) (by omega)
+        baseValue (UInt256.ofNat 1335) helperRest (by omega) (by omega)
         (Or.inr (by omega)) (Or.inl (by omega)) hexitBase
   have hmodAfter : Limbs.Represents
       (directInitialAccumulator s accumulator count b e m baseOff expOff modOff
@@ -805,7 +805,7 @@ theorem directInitialAccumulator_represents (s : State)
     simpa [directInitialAccumulator, exit, helperRest, h0, h1, h2048,
       h3072, h1335] using
       BigHelpers.addReturned_preserves_region exit 2048 3072 1 0 0 count
-        modulusValue (UInt256.ofNat 1343) helperRest (by omega) (by omega)
+        modulusValue (UInt256.ofNat 1335) helperRest (by omega) (by omega)
         (Or.inr (by omega)) (Or.inl (by omega)) hexitModulus
   exact ⟨hacc, hbaseAfter, hmodAfter⟩
 
