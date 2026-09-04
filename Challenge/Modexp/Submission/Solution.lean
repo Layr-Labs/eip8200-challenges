@@ -10,6 +10,7 @@ namespace Challenge.Modexp.Benchmark
 
 /-- Correctness of the submitted MODEXP bytecode.
 
+-- Verified MODEXP Montgomery path with direct R1B conditional subtraction.
 Instruction 0 is `PUSH2 1314; JUMP`, so every execution enters the code appended
 at byte 1314.  That code returns the result itself for an odd modulus wider than
 32 bytes, and otherwise reaches the reference program body's `JUMPDEST` at

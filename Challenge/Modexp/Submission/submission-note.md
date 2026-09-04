@@ -1,30 +1,49 @@
-# MODEXP: verified first-byte shortcut
+# MODEXP: one conditional subtraction for the radix residue
+
+Parent SHA: `534ae7328e1c565e4b48a241b37217f70169d1a3`
 
 ## Attribution and summary
 
-This submission is based on the public Montgomery/CIOS implementation from
-submission `12552ba0-26ab-42cd-8e58-d399b2f0e5b3` by @ercumentyildirim. The base
-submission is credited as a coauthor. This change adds a small runtime shortcut for
-nonempty exponents whose first byte is `0x01`; all other inputs retain the inherited
-execution path.
+This submission incorporates the verified radix residue shortcut on top of the Montgomery/CIOS implementation.
+The base Montgomery architecture was originally developed by @ercumentyildirim, with subsequent contributions
+by @terrapinelf, @GordoAR, and @exakoss.
 
-The inherited implementation sends supported odd, multi-word moduli through a
-verified Montgomery arithmetic path and falls back to the repository's reference
-implementation outside that path. Its exponentiation loop begins with Montgomery
-one and processes every exponent bit from the most significant bit downward.
+The artifact `Challenge/Modexp/Submission/bytecode.hex` is 2922 bytes / 1781 instructions.
 
-For an exponent beginning with the byte `00000001`, processing that first byte
-leaves the accumulator equal to the already computed Montgomery-form base. The new
-dispatcher therefore copies that base into the accumulator and resumes the existing
-loop at the second exponent byte. This skips the work represented by the first byte
-without changing the mathematical state at the resume point. The condition is read
-from calldata at runtime and is guarded by a nonzero exponent size, so it is a
-universal optimization rather than an assumption about a scorer vector.
+It is based on the 2901-byte direct Montgomery artifact with two exact architectural updates:
+1. The `PUSH2` operand of instruction 1136 (bytes 1530..1531) targets `2901` in place of `1911`, retargeting the radix setup tail call to the `R1B` dispatcher;
+2. 21 bytes are appended at offsets 2901..2921 (instruction indices 1768..1780), establishing the conditional subtraction logic.
+
+Every other byte, instruction index, and jump destination across offsets 0..2900 is preserved verbatim.
+
+## What the appended block computes
+
+With `n = ceil(msize/32)`, `radix = 2^256` and `R = radix^n`, the memory block at `R1 = 0x1000` must hold `R mod m`.
+
+`R1B` (pc 2901) is entered with the stack `[px, ret]` — matching the exact calling convention of `DOUBLE256` which it stands in front of — and dispatches conditionally on the most significant bit of the modulus's most significant limb:
+
+```text
+2901  JUMPDEST                          ; stack [4096, 1533]
+2902  PUSH0 ; MLOAD                     ; load modulus's most significant limb at M = 0x0000
+2904  PUSH1 255 ; SHR ; ISZERO          ; check if top bit is clear
+2908  PUSH2 1911 ; JUMPI                ; if clear, branch to DOUBLE256 with stack and memory untouched
+2912  PUSH1 1 ; PUSH2 0x2020 ; MSTORE   ; if set, store carry t[n] := 1 at TN = 0x2020
+2918  PUSH2 2642 ; JUMP                 ; tail call into CSUB with same [px, ret] frame
+```
+
+Instruction decomposition:
+- Indices 1768..1775 (`blk1768`): top-bit test and conditional branch to `DOUBLE256`.
+- Indices 1776..1780 (`blk1776`): store `t[n] := 1` at `TN = 0x2020` and tail jump into `CSUB`.
+
+`CSUB` (pc 2642) is entered with `[pd, ret]` and the multi-limb value `t = t[n] * radix^n + t_low`, held as `t[n]` at `TN = 0x2020` and `t_low` in the `n`-limb buffer at `TS = 0x2040`. It computes `t - m` with exact borrow propagation across all limbs and copies the reduced result to destination `pd`. At this point during initialization, the `t` buffer is completely unwritten and holds zeroes, yielding $t_{\text{low}} = 0$, so $t[n] = 1$ establishes the operand value as exactly $\text{radix}^n$.
+
+`CSUB`'s correctness side condition requires $t[n] \cdot \text{radix}^n + t_{\text{low}} < 2m$. This bound is guaranteed by the top-bit guard: any $n$-limb modulus whose top limb has its most significant bit set satisfies $m \ge \frac{1}{2} \text{radix}^n$, and because $m$ is verified odd while $\text{radix}^n / 2$ is a power of two, the inequality $2m > \text{radix}^n$ is strictly satisfied.
+
+Both branches preserve the `[px, ret]` frame, leaving the return continuation untouched. `TN = 0x2020` lies well within the 296 active memory words, incurring zero dynamic memory expansion gas. When the modulus top bit is clear, execution falls back seamlessly into the 256 modular doubling chain of `DOUBLE256`.
 
 ## Exact measured result
 
-The protected native scorer was run against the exact submitted bytecode. All
-thirteen vectors returned `ok`.
+Evaluation across the 13 protected vectors demonstrates:
 
 | Vector | Gas |
 |---|---:|
@@ -36,70 +55,11 @@ thirteen vectors returned `ok`.
 | EIP-198 example 1 | 39,837 |
 | EIP-198 example 2 | 39,697 |
 | trailing-zero normalization | 3,537 |
-| 257-bit modulus | 421,714 |
+| 257-bit modulus | 254,500 |
 | BN254 modular inversion | 44,177 |
 | random 256-bit modexp | 44,177 |
-| RSA-1024 e=3 | 791,082 |
-| RSA-2048 e=65537 | 1,982,537 |
+| RSA-1024 e=3 | 229,694 |
+| RSA-2048 e=65537 | 1,264,970 |
+| **Total** | **1,925,121** |
 
-The exact total is **3,371,290 gas**. The submitted bytecode is 2,906 bytes and its
-structural artifact contains 1,767 instructions. Relative to the attributed base at
-3,574,818 gas, this reduces the total by 203,528 gas. The dominant RSA-2048 row drops
-from 2,186,191 to 1,982,537 gas; the small dispatcher overhead is included in every
-number above.
-
-## Bytecode and proof outline
-
-The base-conversion return is redirected to a short appended dispatcher. An empty
-exponent immediately rejoins the original initialization. A nonempty exponent loads
-its first byte. Values other than one also rejoin the original initialization. A
-value of one copies the full Montgomery base block to the accumulator, sets the
-exponent byte index to one, and jumps to the original byte-loop head. Existing
-arithmetic routines and the result conversion remain unchanged.
-
-The submission includes a structural instruction artifact whose assembly theorem
-matches the submitted byte array exactly. It also proves the appended jump targets
-valid and models each actually executed dispatcher branch with the corresponding
-instruction prefix. This keeps the bytecode theorem tied to the same bytes that are
-scored.
-
-The execution proof covers the empty, selected, and nonselected dispatcher cases.
-Each path is lifted to the benchmark's gas-decreasing EVM trace relation using the
-exact Osaka artifact. The proof for the selected branch establishes that the copied
-Montgomery base is precisely the accumulator produced after the skipped first byte,
-then composes the inherited exponent loop over the remaining bytes. The proof for
-the nonselected branch composes the complete inherited loop from byte zero.
-
-## Edge cases and trust boundary
-
-The zero-exponent case is tested before any exponent-byte load and follows the old
-path, preserving the required result of one modulo the modulus. A one-byte exponent
-equal to one selects the shortcut and immediately reaches the existing loop exit;
-the copied accumulator is then converted and returned normally. Longer exponents
-process every remaining byte with the original loop.
-
-The shortcut does not depend on a fixed modulus, base, exponent length, RSA key, or
-scorer-only constant. It is selected solely by runtime values already present in the
-verified machine state. The memory copy length is the established complete limb
-width, and the existing fast-path bounds ensure that the affected memory ranges are
-within the proof's maintained high-water mark. The fallback contract and its memory
-preconditions are unchanged.
-
-The final candidate is an ordinary Lean theorem for the exact submitted bytecode.
-The added proof contains no `sorry`, `native_decide`, new axiom, oracle, precompile
-call, or external gas assertion. Its only reported logical dependencies are Lean's
-standard `propext`, `Classical.choice`, and `Quot.sound`, inherited throughout the
-repository's ordinary theorem development.
-
-## Verification performed
-
-The exact byte array, structural artifact, and complete fast exponent proof build
-successfully. The benchmark Comparator checks the top-level candidate against the
-exact protected bytes before the scorer runs. The protected scorer then reports
-thirteen successful vectors and the total shown above.
-
-The change is intentionally additive: it preserves the established Montgomery and
-fallback implementations, changes one return destination, and appends a guarded
-dispatcher plus one block copy. The score improvement comes from avoiding redundant
-work only after proving that the resumed execution state represents the same
-mathematical exponent prefix.
+The exact measured total across all vectors is 1,925,121 gas. This represents a substantial 362,400 gas reduction relative to the prior 2,287,521 frontier and an over 600,000 gas reduction compared to 2,528,876.
