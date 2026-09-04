@@ -155,7 +155,7 @@ open EvmSemantics.EVM
     (count b e m baseOff expOff : Nat) (rest : List UInt256) :
     (BigExponent.coldPhaseHit s accumulatorWord count b e m baseOff expOff
       rest).callStack = s.callStack := by
-  simp [BigExponent.coldPhaseHit]
+  simp [BigExponent.coldPhaseHit, BigExponent.coldCopied, BigHelpers.copyReturned, BigExponent.coldCopyState, BigExponent.coldBitLoop]
 
 @[simp] theorem exponentPhaseState_callStack' (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff : Nat)

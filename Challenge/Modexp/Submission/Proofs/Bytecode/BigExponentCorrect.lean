@@ -421,6 +421,28 @@ theorem natBitAfter_of_zero_prefix (modulus : Nat) (byte : UInt256)
     BigExponent.bitPrefix_eq_zero byte j0 hz, Nat.pow_zero, Nat.mul_one,
     oneMod_pow]
 
+/-- With `acc = 1 % modulus` and a set bit at `j`, one step yields `base`. -/
+theorem natBitAfter_succ_of_zero_prefix (modulus : Nat) (byte : UInt256)
+    (base j : Nat) (hmodulusPos : 0 < modulus) (hbaseReduced : base < modulus)
+    (hj : j < 8)
+    (hzeros : ∀ t, t < j → (BigExponent.exponentBit byte t).toNat = 0)
+    (hhit : ¬ (BigExponent.exponentBit byte j).toNat = 0) :
+    WordCorrect.natBitAfter modulus byte base (j + 1) (1 % modulus) = base := by
+  have hzero := natBitAfter_of_zero_prefix modulus byte base j hmodulusPos
+    (by
+      intro t ht
+      rw [← BigExponent.exponentBit_toNat_eq_bitNat _ t (by omega)]
+      exact hzeros t ht)
+  rw [WordCorrect.natBitAfter, hzero, WordCorrect.natBitStep]
+  have hbit : ¬ WordCorrect.exponentBitNat byte j = 0 := by
+    rw [← BigExponent.exponentBit_toNat_eq_bitNat byte j hj]
+    exact hhit
+  rw [if_neg hbit]
+  have hsq : (1 % modulus) * (1 % modulus) % modulus = 1 % modulus := by
+    rw [← Nat.mul_mod, Nat.one_mul]
+  rw [hsq, WordCorrect.left_mod_mul, Nat.one_mul,
+    Nat.mod_eq_of_lt hbaseReduced]
+
 /-- A zero exponent byte leaves the accumulator at `1 % modulus`. -/
 theorem natExpStep_of_zero_byte (modulus : Nat) (byte : UInt256) (base : Nat)
     (hmodulusPos : 0 < modulus) (hbyte : byte.toNat = 0) :
@@ -591,13 +613,13 @@ theorem byteProgressFrom_represents (s : State) (accumulatorWord : UInt256)
       rw [hstepEq] at hbits
       simpa [BigExponent.byteProgressFrom, before, beforeValue, offset, byte,
         expValueFrom, hbyte] using hbits
-/-- S2a: the cold search leaves memory untouched, so all three regions pass
-through unchanged and the accumulator still holds `1 % modulus`. -/
+/-- S2b: the first set bit copies `base` into the accumulator, which is exactly
+the value the two skipped multiplications would have produced. -/
 theorem coldPhaseHit_represents (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256)
-    (base modulus : Nat) (_hcount : count ≤ 32) (hmodulusPos : 0 < modulus)
-    (_hbaseReduced : base < modulus)
-    (_hklt : BigExponent.coldByteIndex s expOff e < e)
+    (base modulus : Nat) (hcount : count ≤ 32) (hmodulusPos : 0 < modulus)
+    (hbaseReduced : base < modulus)
+    (hklt' : BigExponent.coldByteIndex s expOff e < e)
     (hacc : Limbs.Represents s.memory 2048 count (1 % modulus))
     (hbase : Limbs.Represents s.memory 1024 count base)
     (hmodulus : Limbs.Represents s.memory 0 count modulus) :
@@ -612,23 +634,46 @@ theorem coldPhaseHit_represents (s : State) (accumulatorWord : UInt256)
     Limbs.Represents
       (BigExponent.coldPhaseHit s accumulatorWord count b e m baseOff expOff
         rest).memory 0 count modulus := by
-  have hzero := natBitAfter_of_zero_prefix modulus
+  have h1024 : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
+  have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
+  have hj0 : BigExponent.coldPhaseBit s expOff e < 8 :=
+    BigExponent.coldBitIndex_lt (BigExponent.coldPhaseByte s expOff e)
+      (by
+        simpa [BigExponent.coldPhaseByte] using
+          BigExponent.loadedExponentByte_lt256 s expOff
+            (BigExponent.coldByteIndex s expOff e))
+      (by
+        simpa [BigExponent.coldPhaseByte] using
+          BigExponent.coldByteIndex_hit s expOff e hklt')
+  have hvalue := natBitAfter_succ_of_zero_prefix modulus
     (BigExponent.coldPhaseByte s expOff e) base
-    (BigExponent.coldPhaseStart s expOff e) hmodulusPos
+    (BigExponent.coldPhaseBit s expOff e) hmodulusPos hbaseReduced hj0
+    (fun t ht =>
+      BigExponent.coldBitIndex_zeros (BigExponent.coldPhaseByte s expOff e) t
+        (by simpa [BigExponent.coldPhaseBit] using ht))
     (by
-      intro t ht
-      have ht8 : t < 8 :=
-        Nat.lt_of_lt_of_le ht
-          (by
-            simpa [BigExponent.coldPhaseStart, BigExponent.coldPhaseBit] using
-              BigExponent.coldBitIndex_le (BigExponent.coldPhaseByte s expOff e))
-      rw [← BigExponent.exponentBit_toNat_eq_bitNat _ t ht8]
-      exact BigExponent.coldBitIndex_zeros _ t
-        (by simpa [BigExponent.coldPhaseStart, BigExponent.coldPhaseBit] using ht))
-  rw [hzero]
-  exact ⟨by simpa [BigExponent.coldPhaseHit] using hacc,
-    by simpa [BigExponent.coldPhaseHit] using hbase,
-    by simpa [BigExponent.coldPhaseHit] using hmodulus⟩
+      have hne := BigExponent.coldBitIndex_hit
+        (BigExponent.coldPhaseByte s expOff e)
+        (by simpa [BigExponent.coldPhaseBit] using hj0)
+      simpa [BigExponent.coldPhaseBit] using hne)
+  refine ⟨?_, ?_, ?_⟩
+  · rw [show BigExponent.coldPhaseStart s expOff e =
+        BigExponent.coldPhaseBit s expOff e + 1 from rfl, hvalue]
+    simpa [BigExponent.coldPhaseHit, BigExponent.coldCopied,
+      BigHelpers.copyReturned, BigExponent.coldCopyState,
+      BigExponent.coldBitLoop, h1024, h2048] using
+      BigHelpers.copyMemory_represents s.memory 2048 1024 count base hbase
+        (by omega) (by omega) (Or.inr (by omega))
+  · simpa [BigExponent.coldPhaseHit, BigExponent.coldCopied,
+      BigHelpers.copyReturned, BigExponent.coldCopyState,
+      BigExponent.coldBitLoop, h1024, h2048] using
+      BigHelpers.represents_copyMemory_disjoint_region s.memory 2048 1024 1024
+        count base (by omega) (Or.inr (by omega)) hbase
+  · simpa [BigExponent.coldPhaseHit, BigExponent.coldCopied,
+      BigHelpers.copyReturned, BigExponent.coldCopyState,
+      BigExponent.coldBitLoop, h1024, h2048] using
+      BigHelpers.represents_copyMemory_disjoint_region s.memory 2048 1024 0
+        count modulus (by omega) (Or.inr (by omega)) hmodulus
 
 /-- End-to-end value of the exponent phase, cold prefix included. -/
 theorem exponentPhase_represents (s : State) (accumulatorWord : UInt256)
