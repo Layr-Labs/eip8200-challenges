@@ -6,10 +6,8 @@ set_option maxRecDepth 10000
 /-!
 # The frozen raw-EVM RIPEMD-160 artifact
 
-`submissionBytecode` is the exact combined H30b+H31b bytecode from the frozen native
-checkpoint. It preserves the H30b prefix except for the driver's PUSH2 immediate and
-appends the unchanged 186-byte H31b packed-output helper. The existing B01 transform
-is not reapplied.
+`submissionBytecode` is the exact H23 bytecode from the frozen native checkpoint. It
+retains the original 1830-byte prefix; the existing B01 transform is not reapplied.
 
 Correctness proofs target these bytes directly; the compiler is used to
 reproduce the artifact, not as an assumption in the bytecode proof.
@@ -25,7 +23,7 @@ set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5293 := by
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5411 := by
   simp [submissionBytecode]
 
 set_option maxRecDepth 100000 in
@@ -37,19 +35,19 @@ set_option maxHeartbeats 2000000 in
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 2000000 in
 @[simp] theorem referenceBytecode_extract_entry :
-    submissionBytecode.extract 1 3 = ByteArray.mk #[0x03, 0xee] := by
+    submissionBytecode.extract 1 3 = ByteArray.mk #[0x14, 0x92] := by
   simp only [submissionBytecode]
   exact referenceBytes_extract_entry
 
 @[simp] theorem bytesToBigEndianNat_entry_literal :
     EvmSemantics.Data.Bytes.bytesToBigEndianNat
-      (ByteArray.mk #[0x03, 0xee]) = 0x03ee := by
+      (ByteArray.mk #[0x14, 0x92]) = 0x1492 := by
   simp [EvmSemantics.Data.Bytes.bytesToBigEndianNat,
     Challenge.EvmProof.Bytecode.toList_eq_data, UInt8.toNat_ofNat]
 
 @[simp] theorem referenceBytecode_entry_value :
     EvmSemantics.Data.Bytes.bytesToBigEndianNat
-      (submissionBytecode.extract 1 3) = 0x03ee := by
+      (submissionBytecode.extract 1 3) = 0x1492 := by
   rw [referenceBytecode_extract_entry]
   exact bytesToBigEndianNat_entry_literal
 
