@@ -355,7 +355,7 @@ theorem gasSteps_exponentBit_cost_potential (s : State)
           (innerLoop s accumulatorWord count b e m baseOff expOff i offset byte
             rest j).activeWords.toNat =
       (613 + count * 526 +
-          2 * (count * (94 + 256 * (418 + count * 906)))) +
+          2 * (count * (102 + 256 * (426 + count * 906)))) +
         MachineState.memCost
           (afterSelectedBit s accumulatorWord count b e m baseOff expOff i j
             offset byte rest).activeWords.toNat := by
@@ -503,7 +503,7 @@ theorem gasSteps_exponentBitAt_cost_potential (s : State)
           (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
             offset byte rest j).activeWords.toNat =
       (613 + count * 526 +
-          2 * (count * (94 + 256 * (418 + count * 906)))) +
+          2 * (count * (102 + 256 * (426 + count * 906)))) +
         MachineState.memCost
           (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
             offset byte rest (j + 1)).activeWords.toNat := by
@@ -549,7 +549,7 @@ theorem gasSteps_exponentBits_cost_potential (s : State)
           (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
             offset byte rest 0).activeWords.toNat =
       8 * (613 + count * 526 +
-          2 * (count * (94 + 256 * (418 + count * 906)))) +
+          2 * (count * (102 + 256 * (426 + count * 906)))) +
         MachineState.memCost
           (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
             offset byte rest 8).activeWords.toNat := by
@@ -702,7 +702,7 @@ theorem gasSteps_exponentByte_cost_potential (s : State)
         MachineState.memCost
           (outerLoop s accumulatorWord count b e m baseOff expOff rest i).activeWords.toNat =
       (106 + 8 * (613 + count * 526 +
-          2 * (count * (94 + 256 * (418 + count * 906))))) +
+          2 * (count * (102 + 256 * (426 + count * 906))))) +
         MachineState.memCost
           (afterExponentByte s accumulatorWord count b e m baseOff expOff i
             (UInt256.ofNat (expOff + i)) (loadedExponentByte s expOff i)
@@ -809,7 +809,7 @@ theorem gasSteps_exponentByteAt_cost_potential (s : State)
           (exponentOuterState s accumulatorWord count b e m baseOff expOff rest
             i).activeWords.toNat =
       (106 + 8 * (613 + count * 526 +
-          2 * (count * (94 + 256 * (418 + count * 906))))) +
+          2 * (count * (102 + 256 * (426 + count * 906))))) +
         MachineState.memCost
           (exponentOuterState s accumulatorWord count b e m baseOff expOff rest
             (i + 1)).activeWords.toNat := by
@@ -854,7 +854,7 @@ theorem gasSteps_exponentLoop_cost_potential (s : State)
           (exponentOuterState s accumulatorWord count b e m baseOff expOff rest
             0).activeWords.toNat =
       e * (106 + 8 * (613 + count * 526 +
-          2 * (count * (94 + 256 * (418 + count * 906))))) +
+          2 * (count * (102 + 256 * (426 + count * 906))))) +
         MachineState.memCost
           (exponentOuterState s accumulatorWord count b e m baseOff expOff rest
             e).activeWords.toNat := by

@@ -16,7 +16,7 @@ def blk1255 :
   [opAt 1255 .JUMPDEST,
    opAt 1256 .POP,
    opAt 1257 .POP,
-   pushAt 1258 2 1755,
+   pushAt 1258 2 2922,
    pushAt 1259 2 2048,
    pushAt 1260 2 6144,
    pushAt 1261 2 1024,

@@ -102,13 +102,17 @@ def mulDoubleToNextPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
   [opAt 323 .JUMPDEST, opAt 324 .POP, pushAt 325 1 1,
-   opAt 326 .ADD, pushAt 327 2 352, opAt 328 .JUMP]
+   opAt 326 (.Dup ⟨1, by decide⟩), opAt 327 .ADD,
+   opAt 328 (.Swap ⟨0, by decide⟩), opAt 329 .POP,
+   pushAt 330 2 352, opAt 331 .JUMP]
 
 def mulInnerToOuterPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
   [opAt 332 .JUMPDEST, opAt 333 .POP, opAt 334 .POP,
-   pushAt 335 1 1, opAt 336 .ADD, pushAt 337 2 335, opAt 338 .JUMP]
+   pushAt 335 1 1, opAt 336 (.Dup ⟨1, by decide⟩), opAt 337 .ADD,
+   opAt 338 (.Swap ⟨0, by decide⟩), opAt 339 .POP,
+   pushAt 340 2 335, opAt 341 .JUMP]
 
 def mulOuterExitPath :
     List (Challenge.EvmProof.Stepper.Located
@@ -484,13 +488,13 @@ theorem readWord_eq_of_represents (left right : ByteArray)
 
 @[simp] private theorem mulNextPCs (i : Nat) (hi : 323 ≤ i) (hii : i ≤ 331) :
     Artifact.submissionArtifact.instructionPC i =
-      [401,402,403,405,406,409,410,411,412][i - 323]! := by
+      [401,402,403,405,406,407,408,409,412][i - 323]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem mulInnerExitPCs (i : Nat) (hi : 332 ≤ i)
     (hii : i ≤ 341) :
     Artifact.submissionArtifact.instructionPC i =
-      [413,414,415,416,418,419,422,423,424,425][i - 332]! := by
+      [413,414,415,416,418,419,420,421,422,425][i - 332]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem mulReturnPCs (i : Nat) (hi : 342 ≤ i)
@@ -828,15 +832,11 @@ theorem run_mulInnerToOuter (current : State) (a b out modulus : UInt256)
     rw [show (335 : UInt256).toNat = 335 by decide]
     exact jump335
   have hinc := Challenge.EvmProof.Word.ofNat_add_ofNat (a := i) (b := 1) hi
-  have hincLeft : UInt256.ofNat 1 + UInt256.ofNat i =
-      UInt256.ofNat (i + 1) := by
-    rw [Challenge.EvmProof.Word.word_add_comm]
-    exact hinc
   simp (disch := omega) [mulInnerToOuterPath, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     mulInnerLoop, mulOuterNext, mulInnerExitPCs, hcode, hrun, hvalid,
-    jump335, hinc, hincLeft, Challenge.EvmProof.Word.succ_ofNat_mod,
+    jump335, hinc, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
     List.exchange, Nat.add_assoc, hc, h335, hone]
@@ -862,15 +862,11 @@ theorem run_mulWordInnerToOuter (current : State)
     rw [show (335 : UInt256).toNat = 335 by decide]
     exact jump335
   have hinc := Challenge.EvmProof.Word.ofNat_add_ofNat (a := i) (b := 1) hi
-  have hincLeft : UInt256.ofNat 1 + UInt256.ofNat i =
-      UInt256.ofNat (i + 1) := by
-    rw [Challenge.EvmProof.Word.word_add_comm]
-    exact hinc
   simp (disch := omega) [mulInnerToOuterPath, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     mulInnerState, mulOuterNext, mulInnerExitPCs, hcode, hrun, hvalid,
-    jump335, hinc, hincLeft, Challenge.EvmProof.Word.succ_ofNat_mod,
+    jump335, hinc, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
     List.exchange, Nat.add_assoc, hc, h335, hone]
@@ -1033,17 +1029,12 @@ theorem run_mulDoubleToNext (current : State) (a b out modulus : UInt256)
     exact jump352
   have hinc := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := j) (b := 1) hj
-  have hincLeft : UInt256.ofNat 1 + UInt256.ofNat j =
-      UInt256.ofNat (j + 1) := by
-    rw [Challenge.EvmProof.Word.word_add_comm]
-    exact hinc
   simp (config := { maxSteps := 400000 }) (disch := omega)
     [mulDoubleToNextPath, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       mulAfterBitDouble, mulAfterBitAdd, mulInnerNext, mulInnerLoop, mulBitRest,
       BigHelpers.addReturned, mulNextPCs, hcode, hrun, hvalid, jump352, hinc,
-      hincLeft,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
@@ -1069,17 +1060,13 @@ theorem run_mulWordDoubleToNext (current : State) (word a b out modulus : UInt25
     exact jump352
   have hinc := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := j) (b := 1) hj
-  have hincLeft : UInt256.ofNat 1 + UInt256.ofNat j =
-      UInt256.ofNat (j + 1) := by
-    rw [Challenge.EvmProof.Word.word_add_comm]
-    exact hinc
   simp (config := { maxSteps := 400000 }) (disch := omega)
     [mulDoubleToNextPath, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       mulWordAfterDouble, mulWordAfterAdd, mulWordInnerNext, mulWordRest,
       mulInnerState, BigHelpers.addReturned, mulNextPCs, hcode, hrun,
-      hvalid, jump352, hinc, hincLeft,
+      hvalid, jump352, hinc,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
@@ -1935,7 +1922,7 @@ theorem gasSteps_mulBitIteration_cost_potential (current : State)
         hcap hcount hj hcode hfork hrun hnp).cost +
         MachineState.memCost
           (mulInnerLoop current a b out modulus count i j returnDest rest).activeWords.toNat =
-      (418 + count * 906) + MachineState.memCost
+      (426 + count * 906) + MachineState.memCost
         (mulInnerNext current a b out modulus count i j returnDest rest).activeWords.toNat := by
   let inner := mulInnerLoop current a b out modulus count i j returnDest rest
   let bit := mulBit current b i j
@@ -1997,7 +1984,7 @@ theorem gasSteps_mulBitIteration_cost_potential (current : State)
         Nat.mod_eq_of_lt (by norm_num : 401 < 2 ^ 256)]
       exact jump401)
   have hnext := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    mulDoubleToNextPath 20
+    mulDoubleToNextPath 28
       (by simpa [afterDouble] using hrunNext)
       (by simpa [afterDouble, mulAfterBitDouble, mulAfterBitAdd, inner,
         mulInnerLoop, BigHelpers.addReturned, State.fork] using hfork)
@@ -2024,7 +2011,7 @@ theorem gasSteps_mulWordBitIteration_cost_potential (current : State)
         MachineState.memCost
           (mulInnerState current word a b out modulus count i j
             returnDest rest).activeWords.toNat =
-      (418 + count * 906) + MachineState.memCost
+      (426 + count * 906) + MachineState.memCost
         (mulWordInnerNext current word a b out modulus count i j
           returnDest rest).activeWords.toNat := by
   let inner := mulInnerState current word a b out modulus count i j
@@ -2088,7 +2075,7 @@ theorem gasSteps_mulWordBitIteration_cost_potential (current : State)
         Nat.mod_eq_of_lt (by norm_num : 401 < 2 ^ 256)]
       exact jump401)
   have hnext := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    mulDoubleToNextPath 20
+    mulDoubleToNextPath 28
       (by simpa [afterDouble] using hrunNext)
       (by simpa [afterDouble, mulWordAfterDouble, mulWordAfterAdd, inner,
         mulInnerState, BigHelpers.addReturned, State.fork] using hfork)
@@ -2114,7 +2101,7 @@ theorem gasSteps_mulWordLoop_cost_potential (current : State)
       hcap hcount hcode hfork hrun hnp).cost + MachineState.memCost
         (mulInnerState current word a b out modulus count i 0
           returnDest rest).activeWords.toNat =
-      256 * (418 + count * 906) + MachineState.memCost
+      256 * (426 + count * 906) + MachineState.memCost
         (mulInnerState
           (mulWordProgress current word a b out modulus count i returnDest rest 256)
           word a b out modulus count i 256 returnDest rest).activeWords.toNat := by
@@ -2137,9 +2124,9 @@ private theorem telescope_outer_costs
     (hload : load + p₁ = 20 + p₂)
     (hword : word + p₂ = work + p₃)
     (hfinish : finish + p₃ = 26 + p₄)
-    (hexit : exit + p₄ = 22 + p₅) :
+    (hexit : exit + p₄ = 30 + p₅) :
     guard + (load + (word + (finish + exit))) + p₀ =
-      (94 + work) + p₅ := by
+      (102 + work) + p₅ := by
   omega
 
 theorem gasSteps_mulOuterIteration_cost_potential (current : State)
@@ -2156,7 +2143,7 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
         hcap hcount hi hcode hfork hrun hnp).cost +
         MachineState.memCost
           (mulOuterState before a b out modulus count i returnDest rest).activeWords.toNat =
-      (94 + 256 * (418 + count * 906)) + MachineState.memCost
+      (102 + 256 * (426 + count * 906)) + MachineState.memCost
         (mulOuterState after a b out modulus count (i + 1) returnDest rest).activeWords.toNat := by
   dsimp only
   let before := mulOuterProgress current a b out modulus count returnDest rest i
@@ -2192,7 +2179,7 @@ theorem gasSteps_mulOuterIteration_cost_potential (current : State)
         State.fork] using hfork)
       (by decide) (by decide)
   have hexit := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    mulInnerToOuterPath 22
+    mulInnerToOuterPath 30
       (run_mulWordInnerToOuter afterWord word a b out modulus count i
         returnDest rest (by omega) (by omega)
         (by simpa [afterWord, loaded, mulLoadedState, before] using hcode)
@@ -2225,7 +2212,7 @@ theorem gasSteps_mulOuterLoop_cost_potential (current : State)
     (gasSteps_mulOuterLoop current a b out modulus count returnDest rest hcap
         hcount hcode hfork hrun hnp).cost + MachineState.memCost
           (mulOuterState current a b out modulus count 0 returnDest rest).activeWords.toNat =
-      count * (94 + 256 * (418 + count * 906)) + MachineState.memCost
+      count * (102 + 256 * (426 + count * 906)) + MachineState.memCost
         (mulOuterState
           (mulOuterProgress current a b out modulus count returnDest rest count)
           a b out modulus count count returnDest rest).activeWords.toNat := by
@@ -2544,7 +2531,7 @@ theorem gasSteps_mulModBig_cost_potential (s : State)
         hcode hfork hrun hnp hvalid).cost +
         MachineState.memCost s.activeWords.toNat =
       (185 + count * 158 +
-          count * (94 + 256 * (418 + count * 906))) +
+          count * (102 + 256 * (426 + count * 906))) +
         MachineState.memCost (mulReturned progress returnDest rest).activeWords.toNat := by
   dsimp only
   let copied := mulAfterCopy s a b out modulus count returnDest rest
