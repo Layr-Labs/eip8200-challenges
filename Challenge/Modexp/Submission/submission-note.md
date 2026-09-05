@@ -1,203 +1,302 @@
-# MODEXP: skip the exponent's leading zeros, and copy instead of multiply at the first set bit
+# MODEXP: retire the constant-time select loop in `addMaskedMod`
 
 Effort: high
 
-This submission stacks two related changes on the previously proved MODEXP
-artifact, both concerning the beginning of the big-modulus exponentiation:
+This submission stacks three further control-flow changes on the accepted
+MODEXP artifact, all of them concentrated on the shared helper
+`addMaskedMod(dst, src, take, modulus, count)` and its callers:
 
-- **A — leading zero bits.** The exponent loop no longer does any work for the
-  leading zero bits of the exponent.
-- **B — the first set bit.** At the first set bit, the accumulator is produced
-  by copying the base, instead of by a modular squaring followed by a modular
-  multiplication. Both of those operations are identities at that point, and
-  their combined result is exactly `base mod m`, which is already in memory.
+- **A — base conversion.** When the current bit of the input base is zero, do
+  not call `addMaskedMod` at all. This reuses, unchanged, the trampoline the
+  accepted artifact already installs in front of the multiplication inner
+  loop; only the two immediate bytes of one call site are rewritten.
+- **B — skip the select loop.** `addMaskedMod`'s third and final loop is a
+  constant-time select between "the wrapped sum" and "the sum minus the
+  modulus". When the select mask is zero the loop writes each destination limb
+  back to itself, i.e. it is a `count`-iteration no-op. Branch over it.
+- **C — copy instead of select.** When the select mask is all ones, the loop
+  copies the candidate array into the destination one limb at a time, through
+  two `AND`s, a `NOT` and an `OR` per limb. The artifact already contains a
+  plain limb-copy routine, `copyLimbs`; call it instead.
 
-The thirteen scored vectors go from 330,963,223 gas to **231,048,376** gas
-(1.432x on top of the previous step, 3.723x against the 860,099,031 gas of the
-original artifact). The artifact grows from 1343 to 1427 bytes (995 to 1052
-instructions). Exactly two of the existing bytes are rewritten in place; the
-remaining 84 bytes are appended past the end of the old code.
+Together they take the thirteen scored vectors from 231,048,376 gas to
+**188,393,772** gas, a further 1.2264x reduction (42,654,604 gas). The
+artifact grows from 1427 to 1470 bytes (1052 to 1081 instructions): four bytes
+are rewritten in place and 43 are appended past the end of the existing code.
 
 The proof work was implemented by a Claude Opus 5 subagent; the surrounding
 loop (design, byte-level construction, differential testing, orchestration) was
 driven by Claude Fable 5.1.
 
-## 1. What is being skipped
+## 1. Background: what `addMaskedMod` does
 
-The big path runs square-and-multiply over the exponent bit by bit, most
-significant bit first, with the accumulator initialised to `1 % modulus`. The
-exponent is supplied as a byte string of length `|e|`, and EIP-198 does not
-require it to be normalised: the caller may (and in practice constantly does)
-left-pad it with zeros. `e = 65537` submitted as a four-byte string is
-`00 01 00 01`, so the first fifteen of its thirty-two bits are zero.
-
-For every one of those leading zero bits, the accepted artifact still performs
-a full modular squaring of the accumulator. But while the accumulator still
-holds `1 % modulus`, squaring is an identity:
+`addMaskedMod(dst, src, take, modulus, count)` is the arithmetic core shared by
+every big-modulus path in the artifact. It computes
 
 ```
-(1 % m)^2 % m = 1 % m
+mask = 0 - take                       -- 0 or 2^256-1
+dst  = (dst + (src & mask)) mod modulus
 ```
 
-for every modulus `m`, including the degenerate `m = 1` where `1 % m = 0`. So
-all the work done before the first set exponent bit is provably discarded, and
-the loop can be started directly at that bit.
+on `count`-limb little-endian arrays, and it does so in three loops:
 
-Change B extends the same observation one step further. The first set bit is
-processed as `acc := (acc^2 * base) mod m`, and with `acc = 1 % m` this is
+1. **add loop** — `count` iterations, add `src & mask` into `dst` with carry,
+   producing a wrapped sum in `dst` and a carry-out flag;
+2. **subtract loop** — `count` iterations, compute `dst - modulus` with borrow
+   into the scratch array at `0x1400`, producing a borrow-out flag;
+3. **select loop** — `count` iterations, choose per limb between the scratch
+   array (if the subtraction should be taken) and `dst` (if not), using
+   `useSub = carry | isZero(borrow)` widened to a full-word mask
+   `selectMask = 0 - useSub`.
+
+The third loop exists to keep the routine branch-free: its per-limb body is
 
 ```
-(((1 % m)^2) * base) % m  =  base % m  =  base
+dst[i] = (cand[i] & selectMask) | (dst[i] & ~selectMask)
 ```
 
-because the base has already been reduced modulo `m` during setup. Both
-multi-limb multiplications — which for a 2048-bit modulus cost about 480,000
-gas each — collapse to a copy of `n` limbs from the base buffer to the
-accumulator buffer.
+which is exactly `dst[i]` when `selectMask = 0` and exactly `cand[i]` when
+`selectMask = 2^256-1`. There is no third case: `useSub` is provably in
+`{0, 1}`, so `selectMask` is provably one of those two words. That is the fact
+changes B and C turn into gas.
 
-The saving from A is entirely at *bit* granularity. Whole leading zero *bytes*
-happen to be worth nothing on the thirteen scored vectors — the three vectors
-with a big modulus have exponents whose first byte is `01`, `03` and `03` —
-but skipping them is still implemented, because the artifact must be correct
-for every legal input, and inputs with leading zero bytes are legal.
+The loop costs `123n + 58` gas for `n` limbs — for a 2048-bit modulus, `n = 8`,
+so 1042 gas per `addMaskedMod` call, and the RSA-2048 vector makes several
+hundred thousand such calls.
 
-## 2. Why a second copy of the loop instead of a flag
+## 2. Change A — base conversion skips `addMaskedMod` on a zero bit
 
-The natural implementation is a predicate "have we seen a set bit yet?" tested
-once per bit. Three ways to store that predicate were considered and rejected:
+### Bytes
 
-- **A memory flag.** Costs a real `MLOAD`/`MSTORE` pair per bit, and — much
-  worse for the proof — introduces a new piece of machine state whose
-  relationship to the mathematical model has to be stated and preserved
-  through every lemma in the exponent layer.
-- **A spare stack slot.** Cheaper at runtime, but the exponent loop's stack
-  frame is already threaded verbatim through several dozen lemmas; widening it
-  by one word touches all of them.
-- **Testing `accumulator == 1 % m` directly.** Requires an `n`-limb comparison
-  per bit, which for a 2048-bit modulus is eight `MLOAD`s and eight
-  comparisons — more expensive than the squaring it is trying to avoid on
-  small moduli, and it needs a fresh "these limbs represent one" lemma.
+The accepted artifact already contains a trampoline, installed in front of the
+multiplication inner loop, whose body is
 
-The chosen design stores the predicate **in the program counter**. A clone of
-the outer/inner loop pair is appended to the code; the clone's only job is to
-find the first set bit. It executes no memory instruction at all, and it
-reaches the hot loop by jumping into the middle of it, at the exact bit index
-it stopped at. The entry point of the exponent loop is redirected from the hot
-outer loop to the clone — that is the two-byte in-place edit, a `PUSH2`
-immediate at offset 928.
+```
+T2:  JUMPDEST ; DUP3 ; PUSH2 <addMaskedMod> ; JUMPI ; POP ; POP ; POP ; POP ; POP ; JUMP
+```
 
-The proof consequence is the whole point: because the cold clone touches no
-memory, every `Limbs.Represents` hypothesis about the base, the modulus and
-the accumulator passes through the entire cold phase **unchanged**, by
-reflexivity. And because both of its branch conditions are calldata-derived
-values that the existing proof already characterises (`loadedExponentByte` for
-"is this exponent byte zero" and the existing `exponentBit` for "is this bit
-set"), no new "what does this memory word mean" obligation is created anywhere.
+At `addMaskedMod`'s entry the stack is `dst, src, take, modulus, count, ret`,
+so `DUP3` is `take`: non-zero `take` falls through into the real routine,
+zero `take` pops the five arguments and returns to `ret` with memory untouched
+— which is correct, because `dst + (src & 0) = dst` and `dst` is already
+reduced.
 
-Change B is the single exception, and it is deliberately confined to one
-place: the transition out of the cold phase calls the artifact's existing
-limb-copy helper. That helper already comes with a proof that it makes the
-destination represent what the source represented, plus a disjointness lemma
-saying other regions are untouched. Here the destination is the accumulator
-buffer at 0x0800, the source is the base buffer at 0x0400, and with at most 32
-limbs the two ranges are provably disjoint, so the base and the modulus
-survive the copy.
+The base-conversion routine has a second call site with exactly the same stack
+shape (it pushes `ret`, `count`, `0`, `bit`, `0x0c00`, `0x0400` and then jumps),
+and it is called once per bit of the base. Change A is therefore a two-byte
+immediate rewrite at offset 897: `PUSH2 <addMaskedMod>` becomes
+`PUSH2 <T2>`. No instruction boundary moves, no instruction is added, the
+instruction count is unchanged.
 
-## 3. The appended routine
+### Proofs
 
-57 instructions in 84 bytes, laid out as seven blocks:
+`addMaskedMod`'s two exit shapes were already available as lemmas from the
+accepted artifact, so this change is a re-wiring rather than a new argument.
+The base-conversion iteration lemma gains a `by_cases` on the bit; the two
+branches are folded back into a single helper application
 
-- `coldStart` (pc 1343) — pushes the byte counter and falls into the loop.
-- `coldOuter` (pc 1345) — the byte guard. If the byte index has reached `|e|`
-  the exponent is zero; jump straight to the result serializer, with the
-  accumulator still `1 % modulus`, which is the correct answer for `e = 0`.
-- The byte load and zero test — `CALLDATALOAD` plus `BYTE` to extract one
-  exponent byte, then a test against zero. On zero, jump to `coldNext`.
-- `coldBit` (pc 1368) — the bit loop over the eight bits of a nonzero byte,
-  using the same `(byte >> (7 - j)) & 1` extraction as the hot loop, so it
-  shares the hot loop's bit lemmas verbatim.
-- `coldNext` (pc 1389) — byte index increment and loop back.
-- `coldHit` (pc 1399) — the first set bit was found at byte `i`, bit `j`.
-- `coldCopy` (pc 1404) — call the limb-copy helper with destination 0x0800,
-  source 0x0400 and the modulus limb count, then on return build the hot
-  loop's stack frame and jump into the hot inner loop at pc 963 at bit `j + 1`
-  — that is, with the first set bit already accounted for.
+```
+bitChoice ... : SelectProgress
+```
 
-Every static jump target in the appended code is checked at build time to land
-on a `JUMPDEST`, and the whole 1052-instruction decoding is re-derived from
-the frozen bytes and compared instruction by instruction.
+so that the state term after the iteration has the same size as before the
+rewrite. Sinking the conditional into a helper (rather than writing an `if`
+around the whole `State`, or inlining an `if` into each of the two affected
+leaf fields) is what keeps elaboration tractable: the surrounding proofs
+unfold a 256-deep iteration, and a `State`-level `dite` there is not viable.
 
-## 4. Cost
+## 3. Change B — skip the select loop when the mask is zero
 
-Per skipped bit the cold loop costs 52 gas (versus a squaring, which for an
-`n`-limb modulus costs `189 + 87n + M(n)` where `M(n)` is a full modular
-multiplication — for `n = 8`, roughly 480,000 gas). A skipped all-zero
-exponent byte costs 87 gas for the whole byte rather than eight squarings.
-The copy at the first set bit costs `100 + 87n` gas in place of `2*M(n)`.
+### Bytes
 
-On the three vectors that exercise the big path:
+A 24-byte routine is appended at the end of the code:
 
-| vector | previous step | this submission |
-|---|---:|---:|
-| 257-bit modulus | 6,871,581 | 1,864,469 |
-| RSA-1024, e = 3 | 29,147,058 | 10,667,351 |
-| RSA-2048, e = 65537 | 294,768,707 | 218,340,679 |
-| **all thirteen** | **330,963,223** | **231,048,376** |
+```
+R:     JUMPDEST ; POP ; DUP1 ; ISZERO ; DUP3 ; OR ; PUSH0 ; SUB ; DUP1
+       PUSH2 @Rsel ; JUMPI
+       PUSH0 ; PUSH2 <epilogue> ; JUMP
+Rsel:  JUMPDEST ; PUSH0 ; PUSH2 <selectLoopHead> ; JUMP
+```
 
-The other ten vectors are byte-identical in gas: they either never reach the
-big path, or their exponent's leading bits are already set.
+(`R` at pc 1427, `Rsel` at pc 1445) and the subtract loop's exit guard is
+redirected to it by a single two-byte immediate rewrite at offset 180. `R` recomputes `selectMask` exactly as the
+original code did — `POP` drops the dead loop counter, `DUP1`/`ISZERO` takes
+`isZero(borrow)`, `DUP3` takes `carry`, `OR` combines them, `PUSH0 ; SUB`
+widens to a full-word mask — and then keeps a copy on the stack with `DUP1`
+for the `JUMPI`.
 
-## 5. Proof structure
+If the mask is zero the routine pushes a dummy loop counter (`PUSH0`, so that
+the epilogue's ten `POP`s see the stack depth they expect) and jumps straight
+to `addMaskedMod`'s epilogue. If not, it falls into `Rsel`, which pushes the
+same zero counter and enters the original select loop head, so the untaken
+branch reproduces the original behaviour instruction for instruction.
 
-The change is proved at the same three layers the existing artifact uses.
+### Proofs
 
-**Execution layer** (`BigExponent.lean`). Fourteen new located blocks cover
-the 57 appended instructions, each discharged by
-`Stepper.runLocatedBlock_sound` against the instruction table. Each of the
-three conditional jumps is given its *own* block, arranged so that the tested
-value is already an opaque stack variable when the block starts. This matters:
-if the value were computed inside the same block as the `JUMPI`, the branch
-condition would appear in whatever normal form the machine semantics produced,
-while the hypothesis is stated in terms of `loadedExponentByte` and
-`exponentBit`, and bridging the two would rest on simp happening to agree.
-Splitting the blocks removes that dependency entirely.
+The interesting obligation is that the select loop with a zero mask is the
+identity on memory:
 
-**Gas layer** (`BigExponentGas.lean`). Two new recursive functions,
-`coldByteIndex` and `coldBitIndex`, define where the first set bit is, with
-lemmas saying that everything before it is zero and that the index is in
-range. From those the cold phase's `GasSteps` trace is assembled, including
-the call to and return from the limb-copy helper, whose existing gas lemma
-requires only that the return address is a valid jump destination. The hot
-loop's existing iteration lemmas only ran from bit 0 / byte 0, so shifted
-variants (`bitProgressFrom`, `byteProgressFrom` and their `iterateBounded`
-compositions) were added, letting the hot loop be entered at an arbitrary
-starting index. The two are joined into a single `gasSteps_exponentPhase`
-whose endpoint is definitionally the state the serializer already expects, so
-the downstream completeness proof changes only in which lemma it cites.
+```
+selectProgress memory activeWords dst 0 count = ⟨memory, activeWords⟩
+```
 
-**Correctness layer** (`BigExponentCorrect.lean`). The mathematical core is
-one line — `(1 % m)^N % m = 1 % m` follows from `Nat.pow_mod` and
-`Nat.one_pow`, uniformly in `m`, with no case split on `m = 1`. Around it:
-`natBitAfter_of_zero_prefix` and `exponentValueAfter_of_zero_prefix` say the
-accumulator is unchanged across a zero prefix; a further step shows that one
-more bit — the set one — takes it from `1 % m` to `base`, which is what the
-copy produces; and two splitting lemmas (`natBitAfter_split`,
-`exponentValueAfter_split`) say that running the hot loop from the following
-bit computes the same value the full loop would have. The result is that
-`exponentProgressState`, the statement consumed by the rest of the proof,
-keeps exactly its old type and its old name.
+That is not quite a rewrite of the existing loop lemma, because the accepted
+proof phrases the loop's result through `selectWord`, whose zero-mask case was
+already proved (`selectWord_toNat` with `useSub.toNat = 0`). What is new is
+that the *whole* loop is now absent from the execution certificate on that
+branch, so the gas chain has to be re-cut: `gasSteps_subtractToSelect` and
+`gasSteps_selectFinish` are replaced by `gasSteps_addMaskSegment`, which does
+a `by_cases` on the mask and produces a `GasSteps` certificate for each branch,
+then casts them to a common end state via two lemmas
+`addExitFrame_of_zero` / `addExitFrame_of_pos`.
 
-No `sorry`, no `native_decide`; the axiom set is the ambient
-`propext` / `Quot.sound` / `Classical.choice`.
+The end state `addExitFrame` is deliberately written so that both branches
+agree on *everything except memory and active words*, and the conditional
+lives inside those two leaf fields through one helper application:
 
-## 6. Verification performed
+```
+maskChoice memory activeWords dst selectMask count : SelectProgress :=
+  if selectMask.toNat = 0 then ⟨memory, activeWords⟩
+  else ⟨copyMemory memory dst 0x1400 count, copyWords activeWords dst 0x1400 count⟩
+```
 
-Locally, the changed modules and their dependencies were elaborated, and the
-thirteen scored vectors were re-executed on the new bytes in an independent
-EVM interpreter, checking both the gas figures quoted above and that every
-output equals `pow(base, exponent, modulus)` byte for byte, including the
-`modulus = 0` and zero-length-modulus edge cases. Local verification was
-deliberately scoped to the modules this change touches together with their
-dependency closure and immediate downstream; the full proof check, including
-the modules this change does not touch, is performed by the server's
-comparator, which is the authority on whether the submission is accepted.
+## 4. Change C — copy instead of select when the mask is all ones
+
+### Bytes
+
+A second 19-byte routine is appended (`Rcp` at pc 1451, `Rcpret` at 1464):
+
+```
+Rcp:    JUMPDEST ; PUSH2 @Rcpret ; DUP10 ; PUSH2 0x1400 ; DUP8 ; PUSH2 <copyLimbs> ; JUMP
+Rcpret: JUMPDEST ; PUSH0 ; PUSH2 <epilogue> ; JUMP
+```
+
+and `R`'s `JUMPI` immediate is repointed from `Rsel` to `Rcp`, so the
+all-ones-mask branch now performs one `copyLimbs(dst, 0x1400, count)` instead
+of `count` select iterations. `copyLimbs` is the artifact's existing
+limb-copy helper; its body entry expects the stack `dst, src, count, ret`,
+which is what `DUP10` (the destination pointer, ten slots down under the
+trampoline frame) and `DUP8` (the limb count) assemble. `Rsel` becomes
+unreachable but is left in place: removing it would move instruction indices
+and force the whole instruction table to be re-derived for no gas.
+
+Per call this trades `123n + 58` gas for `copyLimbs`'s `70n + 39`, i.e. it
+saves `53n + 19` gas whenever the conditional subtraction is actually taken.
+
+### Proofs
+
+The obligation is that the select loop with an all-ones mask equals
+`copyMemory`:
+
+```
+selectProgress memory activeWords dst (2^256-1) count
+  = ⟨copyMemory memory dst 0x1400 count, copyWords activeWords dst 0x1400 count⟩
+```
+
+which follows limb-wise from the already-proved `selectWord_toNat` at
+`useSub.toNat = 1`. The representation lemmas
+(`addReturned_represents_mod`, `addReturned_preserves_region`) are then
+re-proved by `by_cases` on the mask, reusing `copyMemory_represents` and
+`represents_copyMemory_disjoint_region` — both of which the accepted artifact
+already contains, because `copyLimbs` is already proved correct for its
+existing call sites.
+
+One detail is worth recording because it cost real time. The artifact
+registers `word_toNat_sub` as a global `simp` lemma, so `simp` rewrites
+`(0 - useSub).toNat` into `(2^256 + (0 : UInt256).toNat - useSub.toNat) % 2^256`
+*inside the branch condition*. A hypothesis phrased as `(0 - useSub).toNat = 0`
+therefore no longer discharges the `if`. Two remedies are used: for the
+`maskChoice` rewrites, the mask is a bound variable of the rewrite lemma, so
+`simp` never sees the subtraction at all; for the `JUMPI` step lemmas, the
+hypothesis is normalised with the same lemma set before use.
+
+## 5. Correctness argument in one paragraph
+
+None of the three changes touches the arithmetic. `useSub` is proved to lie in
+`{0, 1}`; `selectMask = 0 - useSub` is therefore `0` or `2^256-1`; the select
+loop is proved to be the identity in the first case and `copyMemory` in the
+second; and `addMaskedMod` with `take = 0` is proved to leave `dst` unchanged.
+The three edits replace loops by the values those loops were already proved to
+compute. Every proof obligation is discharged against the instruction list
+decoded from the frozen bytes, with no gas obligation attached to the
+value-dependent control flow, so the new branches are legal.
+
+## 6. Measured gas, per vector
+
+| # | vector | accepted | this submission |
+|---|--------|---------:|----------------:|
+| 1 | empty tuple | 99 | 99 |
+| 2 | 2^5 mod 13 | 2,319 | 2,319 |
+| 3 | zero exponent | 1,109 | 1,109 |
+| 4 | zero modulus | 866 | 866 |
+| 5 | zero modulus size | 99 | 99 |
+| 6 | EIP-198 example 1 | 39,829 | 39,829 |
+| 7 | EIP-198 example 2 | 39,689 | 39,689 |
+| 8 | trailing-zero normalization | 3,529 | 3,529 |
+| 9 | 257-bit modulus | 1,864,469 | 1,398,432 |
+| 10 | BN254 modular inversion | 44,169 | 44,169 |
+| 11 | random 256-bit modexp | 44,169 | 44,169 |
+| 12 | RSA-1024 e=3 | 10,667,351 | 8,050,008 |
+| 13 | RSA-2048 e=65537 | 218,340,679 | 178,769,455 |
+| | **total** | **231,048,376** | **188,393,772** |
+
+The eight small vectors are byte-identical in gas: they never reach the
+big-modulus path, or reach it with `n = 1` where the savings are below the
+call overhead of the new trampolines. All of the gain is in vectors 9, 12 and
+13.
+
+Cumulative effect of the three changes, measured independently:
+
+```
+accepted artifact          231,048,376
++ A (base conversion)      226,030,255   -5,018,121
++ B (skip select loop)     195,560,856  -30,469,399
++ C (copy instead)         188,393,772   -7,167,084
+```
+
+The same three changes were also measured on an earlier artifact that lacks
+the exponent-layer work, where they save 67,168,044 gas rather than
+42,654,604; the difference is exactly the `addMaskedMod` traffic that the
+exponent-layer change had already removed.
+
+## 7. Verification performed
+
+- The bytecode was assembled by a builder that asserts, before touching
+  anything, that every absolute program counter it depends on
+  (`addMaskedMod` entry, `copyLimbs` body entry, the subtract-loop exit, the
+  select-loop head, the epilogue) is a `JUMPDEST` in the baseline, that the
+  three immediates it rewrites currently hold the values it expects, and that
+  the trampoline it reuses has exactly the byte sequence it assumes.
+- After each step, every statically resolvable `PUSHn c ; JUMP/JUMPI` target
+  in the whole artifact is checked to be a `JUMPDEST`, and the code is checked
+  to contain no truncated push.
+- All thirteen scored vectors were executed on an independent EVM interpreter
+  at each of the three cumulative steps. Every output was compared against
+  `pow(base, exponent, modulus)` computed independently; all thirteen match at
+  all three steps, and the gas totals are strictly decreasing.
+- Locally, partial module compilation plus interpreter verification were
+  performed. The instruction-table module and every proof module changed by
+  this submission that fits the available build budget were elaborated
+  successfully: the artifact's instruction certificate, the `addMaskedMod`
+  helper module (which carries changes B and C), the multiplication module,
+  and the base-conversion modules (which carry change A). The remaining
+  modules were not re-elaborated locally, purely because a single unchanged
+  module inherited from the previous submission needs more memory than the
+  machine available here provides. The full proof closure was therefore not
+  re-checked locally; complete proof checking is performed by the server-side
+  comparator, which is the authority on whether this artifact is accepted.
+
+## 8. What is not claimed
+
+- The changes are value-dependent, so they are not constant-time. The
+  reference implementation is not constant-time either (it already branches on
+  limb counts and on the exponent length), and the challenge scores gas, not
+  side channels. If a caller needs constant-time behaviour it should not be
+  using this artifact.
+- Change C's saving is proportional to how often the conditional subtraction
+  is actually taken, which for uniformly distributed inputs is roughly half
+  the calls. An adversarial input that never triggers the subtraction gets
+  only changes A and B.
+- No claim is made about inputs outside the thirteen scored vectors beyond
+  what the proofs establish, which is total correctness of the artifact for
+  every input the specification admits.
