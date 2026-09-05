@@ -225,7 +225,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x94,
   op 0x50,
   op 0x5b,
-  op 0x50,
+  op 0x50
 ]
 
 private def submissionInstructionsChunk1 : List Instr :=
@@ -384,10 +384,10 @@ private def submissionInstructionsChunk1 : List Instr :=
   .push 1 72,
   op 0x81,
   op 0x01,
-  .push 1 6,
-  op 0x1c,
-  .push 1 6,
-  op 0x1b,
+  .push 2 63,
+  op 0x19,
+  op 0x16,
+  op 0x5b,
   op 0x90,
   op 0x5b,
   op 0x80,
@@ -429,7 +429,7 @@ private def submissionInstructionsChunk1 : List Instr :=
   op 0x1c,
   op 0x90,
   .push 2 529,
-  op 0x56,
+  op 0x56
 ]
 
 private def submissionInstructionsChunk2 : List Instr :=
@@ -633,7 +633,7 @@ private def submissionInstructionsChunk2 : List Instr :=
   op 0x51,
   op 0x01,
   op 0x01,
-  op 0x16,
+  op 0x16
 ]
 
 private def submissionInstructionsChunk3 : List Instr :=
@@ -837,7 +837,7 @@ private def submissionInstructionsChunk3 : List Instr :=
   op 0x00,
   op 0x00,
   op 0x00,
-  op 0x00,
+  op 0x00
 ]
 
 private def submissionInstructionsChunk4 : List Instr :=
@@ -1041,7 +1041,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   .push 2 668,
   .push 1 21,
   .push 2 1504,
-  .push 2 684,
+  .push 2 684
 ]
 
 private def submissionInstructionsChunk5 : List Instr :=
@@ -1245,7 +1245,7 @@ private def submissionInstructionsChunk5 : List Instr :=
   .push 1 17,
   .push 2 688,
   .push 1 17,
-  .push 2 652,
+  .push 2 652
 ]
 
 private def submissionInstructionsChunk6 : List Instr :=
@@ -1449,7 +1449,7 @@ private def submissionInstructionsChunk6 : List Instr :=
   op 0x56,
   op 0x5b,
   .push 1 27,
-  .push 2 700,
+  .push 2 700
 ]
 
 private def submissionInstructionsChunk7 : List Instr :=
@@ -1653,7 +1653,7 @@ private def submissionInstructionsChunk7 : List Instr :=
   op 0x8d,
   op 0x18,
   op 0x8b,
-  op 0x16,
+  op 0x16
 ]
 
 private def submissionInstructionsChunk8 : List Instr :=
@@ -1857,7 +1857,7 @@ private def submissionInstructionsChunk8 : List Instr :=
   op 0x90,
   op 0x1c,
   op 0x87,
-  op 0x01,
+  op 0x01
 ]
 
 private def submissionInstructionsChunk9 : List Instr :=
@@ -2061,7 +2061,7 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x19,
   op 0x89,
   op 0x17,
-  op 0x8a,
+  op 0x8a
 ]
 
 private def submissionInstructionsChunk10 : List Instr :=
@@ -2265,7 +2265,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   .push 4 4294967295,
   op 0x16,
   op 0x91,
-  op 0x86,
+  op 0x86
 ]
 
 private def submissionInstructionsChunk11 : List Instr :=
@@ -2469,7 +2469,7 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x17,
   op 0x89,
   op 0x18,
-  op 0x01,
+  op 0x01
 ]
 
 private def submissionInstructionsChunk12 : List Instr :=
@@ -2673,7 +2673,7 @@ private def submissionInstructionsChunk12 : List Instr :=
   .push 4 4294967295,
   op 0x16,
   op 0x98,
-  op 0x8c,
+  op 0x8c
 ]
 
 private def submissionInstructionsChunk13 : List Instr :=
@@ -2877,7 +2877,7 @@ private def submissionInstructionsChunk13 : List Instr :=
   .push 4 2776961436,
   .push 1 32,
   op 0x52,
-  .push 4 1425861061,
+  .push 4 1425861061
 ]
 
 private def submissionInstructionsChunk14 : List Instr :=
@@ -3006,7 +3006,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   .push 20 969790037575643286502250849617007371096092181353,
   .push 20 1270211753201201788432201193746692834737737749964,
   .push 20 138559454226032970007072483307246955713194201180,
-  .push 20 1363699773838062268562005463539624613899609407987,
+  .push 20 1363699773838062268562005463539624613899609407987
 ]
 
 /- Compatibility suffixes retained for the site proofs that split the original
@@ -3099,7 +3099,7 @@ private theorem submissionInstructionsChunk1_assemble : assembleBytes submission
   0x60, 0x18, 0x1b, 0x81, 0x60, 0x02, 0x1a, 0x60, 0x10, 0x1b, 0x17, 0x81,
   0x60, 0x01, 0x1a, 0x60, 0x08, 0x1b, 0x82, 0x5f, 0x1a, 0x17, 0x17, 0x92,
   0x50, 0x50, 0x50, 0x90, 0x56, 0x5b, 0x61, 0x02, 0x31, 0x56, 0x5b, 0x36,
-  0x60, 0x48, 0x81, 0x01, 0x60, 0x06, 0x1c, 0x60, 0x06, 0x1b, 0x90, 0x5b,
+  0x60, 0x48, 0x81, 0x01, 0x61, 0x00, 0x3f, 0x19, 0x16, 0x5b, 0x90, 0x5b,
   0x80, 0x5f, 0x61, 0x08, 0x00, 0x37, 0x60, 0x80, 0x81, 0x61, 0x08, 0x00,
   0x01, 0x53, 0x80, 0x60, 0xc3, 0x1b, 0x60, 0xc0, 0x1c, 0x61, 0x07, 0xf8,
   0x83, 0x01, 0x81, 0x60, 0x38, 0x1c, 0x81, 0x60, 0x07, 0x01, 0x53, 0x5b,
@@ -4064,14 +4064,14 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
     instructionPC 354 = 0x1e6 := by rfl
 
 @[simp] theorem refPc355 :
-    submissionArtifact.instructionPC 355 = 0x1e8 := by rfl
+    submissionArtifact.instructionPC 355 = 0x1e9 := by rfl
 @[simp] theorem pc355 :
-    instructionPC 355 = 0x1e8 := by rfl
+    instructionPC 355 = 0x1e9 := by rfl
 
 @[simp] theorem refPc356 :
-    submissionArtifact.instructionPC 356 = 0x1e9 := by rfl
+    submissionArtifact.instructionPC 356 = 0x1ea := by rfl
 @[simp] theorem pc356 :
-    instructionPC 356 = 0x1e9 := by rfl
+    instructionPC 356 = 0x1ea := by rfl
 
 @[simp] theorem refPc357 :
     submissionArtifact.instructionPC 357 = 0x1eb := by rfl
@@ -4361,10 +4361,10 @@ def padLengthPath : List
    ⟨351, .push ⟨1, by decide⟩ (UInt256.ofNat 72), by rfl, by decide⟩,
    ⟨352, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨353, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨354, .push ⟨1, by decide⟩ (UInt256.ofNat 6), by rfl, by decide⟩,
-   ⟨355, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨356, .push ⟨1, by decide⟩ (UInt256.ofNat 6), by rfl, by decide⟩,
-   ⟨357, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨354, .push ⟨2, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
+   ⟨355, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨356, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨357, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨358, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨359, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -4373,23 +4373,23 @@ def padSetupPath : List
     (Challenge.EvmProof.Stepper.Located submissionArtifact .Osaka) :=
   [⟨360, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨361, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
-   ⟨362, .push ⟨2, by decide⟩ (UInt256.ofNat 0x800), by rfl, by decide⟩,
+   ⟨362, .push ⟨2, by decide⟩ (UInt256.ofNat 2048), by rfl, by decide⟩,
    ⟨363, .op .CALLDATACOPY, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨364, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
    ⟨365, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨366, .push ⟨2, by decide⟩ (UInt256.ofNat 0x800), by rfl, by decide⟩,
+   ⟨366, .push ⟨2, by decide⟩ (UInt256.ofNat 2048), by rfl, by decide⟩,
    ⟨367, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨368, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨369, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨370, .push ⟨1, by decide⟩ (UInt256.ofNat 0xc3), by rfl, by decide⟩,
+   ⟨370, .push ⟨1, by decide⟩ (UInt256.ofNat 195), by rfl, by decide⟩,
    ⟨371, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨372, .push ⟨1, by decide⟩ (UInt256.ofNat 0xc0), by rfl, by decide⟩,
+   ⟨372, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
    ⟨373, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨374, .push ⟨2, by decide⟩ (UInt256.ofNat 0x7f8), by rfl, by decide⟩,
+   ⟨374, .push ⟨2, by decide⟩ (UInt256.ofNat 2040), by rfl, by decide⟩,
    ⟨375, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨376, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨377, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨378, .push ⟨1, by decide⟩ (UInt256.ofNat 0x38), by rfl, by decide⟩,
+   ⟨378, .push ⟨1, by decide⟩ (UInt256.ofNat 56), by rfl, by decide⟩,
    ⟨379, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨380, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨381, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
