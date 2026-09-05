@@ -132,42 +132,42 @@ def gasSteps_miss3 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : inpu
 def gasSteps_hit6 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 4) (h : Hit6 input) :
     Challenge.EvmProof.GasSteps (init input) (V6.State.returnedState input) :=
   (gasSteps_bucket input 4 59 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1250 (by rfl))).trans (V6.gasSteps_match input h)
+      (Artifact.isValidJumpDest_index 1253 (by rfl))).trans (V6.gasSteps_match input h)
 
 def gasSteps_miss4 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 4) (hk : ¬ Hit6 input) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
   (gasSteps_bucket input 4 59 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1250 (by rfl))).trans (V6.gasSteps_fallback input hk)
+      (Artifact.isValidJumpDest_index 1253 (by rfl))).trans (V6.gasSteps_fallback input hk)
 
 def gasSteps_hit5 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 5) (h : Hit5 input) :
     Challenge.EvmProof.GasSteps (init input) (V5.State.returnedState input) :=
   (gasSteps_bucket input 5 54 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1195 (by rfl))).trans (V5.gasSteps_match input h)
+      (Artifact.isValidJumpDest_index 1198 (by rfl))).trans (V5.gasSteps_match input h)
 
 def gasSteps_miss5 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 5) (hk : ¬ Hit5 input) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
   (gasSteps_bucket input 5 54 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1195 (by rfl))).trans (V5.gasSteps_fallback input hk)
+      (Artifact.isValidJumpDest_index 1198 (by rfl))).trans (V5.gasSteps_fallback input hk)
 
 def gasSteps_hit4 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 6) (h : Hit4 input) :
     Challenge.EvmProof.GasSteps (init input) (V4.State.returnedState input) :=
   (gasSteps_bucket input 6 52 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1170 (by rfl))).trans (V4.gasSteps_match input h)
+      (Artifact.isValidJumpDest_index 1173 (by rfl))).trans (V4.gasSteps_match input h)
 
 def gasSteps_miss6 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 6) (hk : ¬ Hit4 input) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
   (gasSteps_bucket input 6 52 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1170 (by rfl))).trans (V4.gasSteps_fallback input hk)
+      (Artifact.isValidJumpDest_index 1173 (by rfl))).trans (V4.gasSteps_fallback input hk)
 
 def gasSteps_hit8 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 7) (h : Hit8 input) :
     Challenge.EvmProof.GasSteps (init input) (V8.State.returnedState input) :=
   (gasSteps_bucket input 7 68 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1364 (by rfl))).trans (V8.gasSteps_match input h)
+      (Artifact.isValidJumpDest_index 1367 (by rfl))).trans (V8.gasSteps_match input h)
 
 def gasSteps_miss7 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 7) (hk : ¬ Hit8 input) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
   (gasSteps_bucket input 7 68 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1364 (by rfl))).trans (V8.gasSteps_fallback input hk)
+      (Artifact.isValidJumpDest_index 1367 (by rfl))).trans (V8.gasSteps_fallback input hk)
 
 def gasSteps_miss8 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 8) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
@@ -182,22 +182,22 @@ def gasSteps_miss9 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : inpu
 def gasSteps_hit9 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 10) (hw : MachineState.readWord input 94 ≠ UInt256.ofNat 57656776381785232221288722070333642129877090746803087510479986983448338273) (h : Hit9 input) :
     Challenge.EvmProof.GasSteps (init input) (V9.State.returnedState input) :=
   ((gasSteps_bucket input 10 74 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1424 (by rfl))).trans (V9.gasSteps_pretest_notTaken input hw)).trans (V9.gasSteps_match input h)
+      (Artifact.isValidJumpDest_index 1427 (by rfl))).trans (V9.gasSteps_pretest_notTaken input hw)).trans (V9.gasSteps_match input h)
 
 def gasSteps_miss10a (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 10) (hw : MachineState.readWord input 94 ≠ UInt256.ofNat 57656776381785232221288722070333642129877090746803087510479986983448338273) (hk : ¬ Hit9 input) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
   ((gasSteps_bucket input 10 74 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1424 (by rfl))).trans (V9.gasSteps_pretest_notTaken input hw)).trans (V9.gasSteps_fallback input hk)
+      (Artifact.isValidJumpDest_index 1427 (by rfl))).trans (V9.gasSteps_pretest_notTaken input hw)).trans (V9.gasSteps_fallback input hk)
 
 def gasSteps_hit10 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 10) (hw : MachineState.readWord input 94 = UInt256.ofNat 57656776381785232221288722070333642129877090746803087510479986983448338273) (h : Hit10 input) :
     Challenge.EvmProof.GasSteps (init input) (V10.State.returnedState input) :=
   ((gasSteps_bucket input 10 74 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1424 (by rfl))).trans (V9.gasSteps_pretest_taken input hw)).trans (V10.gasSteps_match input h)
+      (Artifact.isValidJumpDest_index 1427 (by rfl))).trans (V9.gasSteps_pretest_taken input hw)).trans (V10.gasSteps_match input h)
 
 def gasSteps_miss10b (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 10) (hw : MachineState.readWord input 94 = UInt256.ofNat 57656776381785232221288722070333642129877090746803087510479986983448338273) (hs : ¬ Hit10 input) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
   ((gasSteps_bucket input 10 74 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1424 (by rfl))).trans (V9.gasSteps_pretest_taken input hw)).trans (V10.gasSteps_fallback input hs)
+      (Artifact.isValidJumpDest_index 1427 (by rfl))).trans (V9.gasSteps_pretest_taken input hw)).trans (V10.gasSteps_fallback input hs)
 
 def gasSteps_miss11 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 11) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
@@ -212,12 +212,12 @@ def gasSteps_miss12 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : inp
 def gasSteps_hit12 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 13) (h : Hit12 input) :
     Challenge.EvmProof.GasSteps (init input) (V12.State.returnedState input) :=
   (gasSteps_bucket input 13 105 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1608 (by rfl))).trans (V12.gasSteps_match input h)
+      (Artifact.isValidJumpDest_index 1611 (by rfl))).trans (V12.gasSteps_match input h)
 
 def gasSteps_miss13 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 13) (hk : ¬ Hit12 input) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
   (gasSteps_bucket input 13 105 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1608 (by rfl))).trans (V12.gasSteps_fallback input hk)
+      (Artifact.isValidJumpDest_index 1611 (by rfl))).trans (V12.gasSteps_fallback input hk)
 
 def gasSteps_miss14 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 14) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
@@ -227,12 +227,12 @@ def gasSteps_miss14 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : inp
 def gasSteps_hit11 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 15) (h : Hit11 input) :
     Challenge.EvmProof.GasSteps (init input) (V11.State.returnedState input) :=
   (gasSteps_bucket input 15 89 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1532 (by rfl))).trans (V11.gasSteps_match input h)
+      (Artifact.isValidJumpDest_index 1535 (by rfl))).trans (V11.gasSteps_match input h)
 
 def gasSteps_miss15 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 15) (hk : ¬ Hit11 input) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
   (gasSteps_bucket input 15 89 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1532 (by rfl))).trans (V11.gasSteps_fallback input hk)
+      (Artifact.isValidJumpDest_index 1535 (by rfl))).trans (V11.gasSteps_fallback input hk)
 
 def gasSteps_miss16 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 16) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
@@ -254,22 +254,22 @@ def gasSteps_miss19 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : inp
   (gasSteps_bucket input 19 43 hsize hr (by decide +kernel) (by norm_num)
       (Artifact.isValidJumpDest_index 1005 (by rfl))).trans (gasSteps_stub input)
 
-def gasSteps_hit2 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 20) (hw : MachineState.readWord input 32 = UInt256.ofNat 0) (h : Hit2 input) :
+def gasSteps_hit2 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 20) (hw : MachineState.readWord input 32 ≠ UInt256.ofNat 1) (h : Hit2 input) :
     Challenge.EvmProof.GasSteps (init input) (V2.State.returnedState input) :=
   ((gasSteps_bucket input 20 47 hsize hr (by decide +kernel) (by norm_num)
       (Artifact.isValidJumpDest_index 1089 (by rfl))).trans (V2.gasSteps_pretest_notTaken input hw)).trans (V2.gasSteps_match input h)
 
-def gasSteps_miss20a (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 20) (hw : MachineState.readWord input 32 = UInt256.ofNat 0) (hk : ¬ Hit2 input) :
+def gasSteps_miss20a (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 20) (hw : MachineState.readWord input 32 ≠ UInt256.ofNat 1) (hk : ¬ Hit2 input) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
   ((gasSteps_bucket input 20 47 hsize hr (by decide +kernel) (by norm_num)
       (Artifact.isValidJumpDest_index 1089 (by rfl))).trans (V2.gasSteps_pretest_notTaken input hw)).trans (V2.gasSteps_fallback input hk)
 
-def gasSteps_hit3 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 20) (hw : MachineState.readWord input 32 ≠ UInt256.ofNat 0) (h : Hit3 input) :
+def gasSteps_hit3 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 20) (hw : MachineState.readWord input 32 = UInt256.ofNat 1) (h : Hit3 input) :
     Challenge.EvmProof.GasSteps (init input) (V3.State.returnedState input) :=
   ((gasSteps_bucket input 20 47 hsize hr (by decide +kernel) (by norm_num)
       (Artifact.isValidJumpDest_index 1089 (by rfl))).trans (V2.gasSteps_pretest_taken input hw)).trans (V3.gasSteps_match input h)
 
-def gasSteps_miss20b (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 20) (hw : MachineState.readWord input 32 ≠ UInt256.ofNat 0) (hs : ¬ Hit3 input) :
+def gasSteps_miss20b (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 20) (hw : MachineState.readWord input 32 = UInt256.ofNat 1) (hs : ¬ Hit3 input) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
   ((gasSteps_bucket input 20 47 hsize hr (by decide +kernel) (by norm_num)
       (Artifact.isValidJumpDest_index 1089 (by rfl))).trans (V2.gasSteps_pretest_taken input hw)).trans (V3.gasSteps_fallback input hs)
@@ -287,12 +287,12 @@ def gasSteps_miss21 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : inp
 def gasSteps_hit7 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 22) (h : Hit7 input) :
     Challenge.EvmProof.GasSteps (init input) (V7.State.returnedState input) :=
   (gasSteps_bucket input 22 64 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1307 (by rfl))).trans (V7.gasSteps_match input h)
+      (Artifact.isValidJumpDest_index 1310 (by rfl))).trans (V7.gasSteps_match input h)
 
 def gasSteps_miss22 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 22) (hk : ¬ Hit7 input) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=
   (gasSteps_bucket input 22 64 hsize hr (by decide +kernel) (by norm_num)
-      (Artifact.isValidJumpDest_index 1307 (by rfl))).trans (V7.gasSteps_fallback input hk)
+      (Artifact.isValidJumpDest_index 1310 (by rfl))).trans (V7.gasSteps_fallback input hk)
 
 def gasSteps_miss23 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hr : input.size % 26 = 23) :
     Challenge.EvmProof.GasSteps (init input) (Bytecode.Main.trampolineState input 1196) :=

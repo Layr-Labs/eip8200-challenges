@@ -20,7 +20,7 @@ open Logic Dispatch State Paths
 def pretestJumpState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
       pc := UInt256.ofNat 1514
-      stack := [UInt256.ofNat 1600, MachineState.readWord input 32] }
+      stack := [UInt256.ofNat 1600, UInt256.eq (UInt256.ofNat 1) (MachineState.readWord input 32)] }
 
 def pretestJumpLocated : Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   Main.opAt 1095 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
@@ -40,25 +40,27 @@ theorem run_pretest_prefix (input : ByteArray) :
     Challenge.EvmProof.Word.word_toNat_ofNat, hzeroWord, hzeroNat]
 
 theorem run_pretest_taken (input : ByteArray)
-    (hw : MachineState.readWord input 32 ≠ UInt256.ofNat 0) :
+    (hw : MachineState.readWord input 32 = UInt256.ofNat 1) :
     Challenge.EvmProof.Stepper.runLocated pretestJumpLocated (pretestJumpState input) =
       some (Main.trampolineState input 1600) := by
-  have hcond : UInt256.isTrue (MachineState.readWord input 32) :=
-    Cover.isTrue_of_ne_zero _ hw
+  have hcond : UInt256.isTrue (UInt256.eq (UInt256.ofNat 1) (MachineState.readWord input 32)) := by
+    rw [hw, Logic.eq_self_word]; exact Logic.isTrue_one
   have hjump : Decode.isValidJumpDest submissionBytecode 1600 = true :=
     Artifact.isValidJumpDest_index 1142 (by rfl)
   have hpc : (pretestJumpState input).pc.toNat = Artifact.submissionArtifact.instructionPC 1095 := by
     simp [pretestJumpState, initialState, PCs.pc3, Challenge.EvmProof.Word.word_toNat_ofNat]
   exact (Step.runLocated_jumpi_taken pretestJumpLocated rfl (pretestJumpState input) 1600
-    (MachineState.readWord input 32) [] hpc rfl (by simp) hcond rfl (by norm_num) hjump).trans rfl
+    (UInt256.eq (UInt256.ofNat 1) (MachineState.readWord input 32)) [] hpc rfl (by simp) hcond rfl (by norm_num) hjump).trans rfl
 
 theorem run_pretest_notTaken (input : ByteArray)
-    (hw : MachineState.readWord input 32 = UInt256.ofNat 0) :
+    (hw : MachineState.readWord input 32 ≠ UInt256.ofNat 1) :
     Challenge.EvmProof.Stepper.runLocatedBlock pretestJumpPath (pretestJumpState input) =
       some (Main.trampolineState input 1515) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
-  simp [pretestJumpPath, pretestJumpState, hw, Logic.not_isTrue_zero, Main.opAt, Main.pushAt, Main.wfOp,
+  have heq : UInt256.eq (UInt256.ofNat 1) (MachineState.readWord input 32) = UInt256.ofNat 0 :=
+    Logic.eq_of_ne_word _ _ (fun h => hw h.symm)
+  simp [pretestJumpPath, pretestJumpState, heq, Logic.not_isTrue_zero, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     initialState, Main.trampolineState, PCs.pc3, PCs.pc4,

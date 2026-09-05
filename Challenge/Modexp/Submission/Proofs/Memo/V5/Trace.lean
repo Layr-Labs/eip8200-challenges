@@ -67,7 +67,7 @@ def branchJumpState (input : ByteArray) : State :=
       stack := [UInt256.ofNat 1196, acc1 input] }
 
 def branchJumpLocated : Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  Main.opAt 1221 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
+  Main.opAt 1224 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
 
 theorem run_branch_prefix (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock branchPrefixPath (accState input 1854 (acc1 input)) =
@@ -90,8 +90,8 @@ theorem run_branch_miss (input : ByteArray) (h : guardDiff Data.checks input ≠
     Cover.isTrue_of_ne_zero _ (by rw [acc1_eq_guardDiff]; exact h)
   have hjump : Decode.isValidJumpDest submissionBytecode 1196 = true :=
     Artifact.isValidJumpDest_index 899 (by rfl)
-  have hpc : (branchJumpState input).pc.toNat = Artifact.submissionArtifact.instructionPC 1221 := by
-    simp [branchJumpState, initialState, PCs.pc6, Challenge.EvmProof.Word.word_toNat_ofNat]
+  have hpc : (branchJumpState input).pc.toNat = Artifact.submissionArtifact.instructionPC 1224 := by
+    simp [branchJumpState, initialState, PCs.pc7, Challenge.EvmProof.Word.word_toNat_ofNat]
   exact (Step.runLocated_jumpi_taken branchJumpLocated rfl (branchJumpState input) 1196
     (acc1 input) [] hpc rfl (by simp) hcond rfl (by norm_num) hjump).trans rfl
 
