@@ -183,7 +183,7 @@ theorem branchPath_eq : branchPath = branchIsZeroPath ++ branchJumpPath := by rf
 def fallbackPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.pushAt 2022 2 1314,
+   Main.pushAt 2022 2 4214,
    Main.opAt 2023 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))
   ]
 
