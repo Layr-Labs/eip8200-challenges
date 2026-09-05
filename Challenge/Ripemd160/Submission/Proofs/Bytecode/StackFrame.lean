@@ -45,13 +45,13 @@ private def wfOp {op : Operation}
 def prefixPath : List Located :=
   [⟨913, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨914, .push ⟨2, by decide⟩ (UInt256.ofNat 0x522), by rfl, by decide⟩,
-   ⟨915, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨915, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨916, .push ⟨2, by decide⟩ (UInt256.ofNat 0x109f), by rfl, by decide⟩,
    ⟨917, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def exitPath : List Located :=
   [⟨918, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨919, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨919, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨920, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
 
 def loadSite987 : GenericRoundSite Artifact.submissionArtifact .Osaka
@@ -106,11 +106,14 @@ theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
   have hpc983 : Artifact.submissionArtifact.instructionPC 917 = 0x521 := by rfl
   have hdest12ac : Decode.isValidJumpDest submissionBytecode 0x109f = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 2686 (by rfl)
+  have hswap1 (u v : UInt256) (rho : List UInt256) :
+      (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
+    simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
   simp [prefixPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     DriverTrace.compressEntry, DenseScheduleTemplate.scheduleEntry,
     PackedScheduleSite.packedScheduleSite_startPC, StackBlockModel.scheduleRest,
     StackBlockModel.driverRest, hcode, hrun, hpc979, hpc980, hpc981, hpc982, hpc983,
-    hdest12ac]
+    hdest12ac, hswap1]
 
 theorem run_exit (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
@@ -175,11 +178,9 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
         (DenseScheduleTemplate.denseExpectedMemory s
           (DriverTrace.messageOffsetWord i)) rfl)
   have hstack1023 : rest.length < 1023 := by
-    change 4 < 1023
-    norm_num
+    simp [rest, StackBlockModel.scheduleRest, StackBlockModel.driverRest]
   have hstack1017 : rest.length < 1017 := by
-    change 4 < 1017
-    norm_num
+    simp [rest, StackBlockModel.scheduleRest, StackBlockModel.driverRest]
   have hraw :
       StackRoundTrace.runInstrSeq DenseScheduleTemplate.denseBeforeJumpTemplate
         (DenseScheduleTemplate.scheduleEntry s
