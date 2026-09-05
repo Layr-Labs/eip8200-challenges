@@ -191,10 +191,11 @@ def gasSteps_bodyInitialization (input : ByteArray) :
   exact Challenge.EvmProof.GasSteps.cast body rfl
     (by simp [initializedState])
 
-def gasSteps_initialize (input : ByteArray) (hfit : CalldataFits input)
-    (hnonempty : input.size ≠ 0) :
+def gasSteps_initialize (input : ByteArray)
+    (guardSteps : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
+      (Execution.atPC input 0x3ee)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (initializedState input) :=
-  (Execution.gasSteps_entry input hfit hnonempty).trans (gasSteps_bodyInitialization input)
+  (Execution.gasSteps_entry input guardSteps).trans (gasSteps_bodyInitialization input)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Main

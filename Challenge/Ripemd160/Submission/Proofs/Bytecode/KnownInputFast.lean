@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputDirectTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactBodyTrace0
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactGuardTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactLoopTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactTailTargetTrace
@@ -57,14 +57,14 @@ private def gasSteps_loop (s : State) (input : ByteArray) (i : Nat)
     (KnownInputCompactLoopTrace.run_loop_last s input i hcalldata hrun) hrun hnp
   exact gprefix.trans last
 
-def gasSteps_target (s : State) (i : Nat) (_hi : i < 16)
+def gasSteps_target (s : State) (i : Nat) (hi : i < 16)
     (hcalldata : s.executionEnv.calldata = KnownInputData.targetInput)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (DriverTrace.dispatchEntry s KnownInputData.targetInput i)
-      (KnownInputDirectTrace.resultState s KnownInputData.targetInput i) := by
+      (KnownInputCompactBodyState.resultState s KnownInputData.targetInput i) := by
   have g0 := soundFrom sizePath _ _ s hcode hfork
     (KnownInputCompactGuardTrace.run_size_target s i hcalldata hcode hrun)
     hrun hnp
@@ -76,7 +76,7 @@ def gasSteps_target (s : State) (i : Nat) (_hi : i < 16)
   have g3 := soundFrom tailPath _ _ s hcode hfork
     (KnownInputCompactTailTargetTrace.run_tail_target s i hcalldata hrun)
     hrun hnp
-  have g4 := KnownInputDirectTrace.gasSteps_direct s i hcode hfork
+  have g4 := KnownInputCompactBodyTrace0.gasSteps_body_at s i hi hcode hfork
     hrun hnp
   exact g0.trans (g1.trans (g2.trans (g3.trans g4)))
 
