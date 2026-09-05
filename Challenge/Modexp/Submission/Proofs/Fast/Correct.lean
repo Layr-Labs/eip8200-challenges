@@ -2,6 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.SubmissionCorrect
 import Challenge.Modexp.Submission.Proofs.Fast.Setup
 import Challenge.Modexp.Submission.Proofs.Fast.GuardTrace
 import Challenge.Modexp.Submission.Proofs.Fast.GuardResult
+import Challenge.Modexp.Submission.Proofs.Fast.Guard1024Trace
+import Challenge.Modexp.Submission.Proofs.Fast.Guard1024Result
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 2000000
@@ -73,18 +75,27 @@ private noncomputable def chosenData (F : FastPath) (input : ByteArray) (hvalid 
           (GuardTrace.gasSteps_match input hg)⟩,
         GuardResult.returnedState_isDone input,
         GuardResult.returnedState_result input hvalid hg⟩⟩
-  else if h : F.Handles input then
-    ⟨Classical.choose (F.handled input hvalid h),
+  else if hg1024 : Guard1024Logic.guardDiff input = 0 then
+    ⟨Guard1024State.returnedState input,
       ⟨⟨((Main.gasSteps_entryHop input).trans
           (GuardTrace.gasSteps_fallback input hg)).trans
+          (Guard1024Trace.gasSteps_match input hg1024)⟩,
+        Guard1024Result.returnedState_isDone input,
+        Guard1024Result.returnedState_result input hvalid hg1024⟩⟩
+  else if h : F.Handles input then
+    ⟨Classical.choose (F.handled input hvalid h),
+      ⟨⟨(((Main.gasSteps_entryHop input).trans
+          (GuardTrace.gasSteps_fallback input hg)).trans
+          (Guard1024Trace.gasSteps_fallback input hg1024)).trans
           (Classical.choice (Classical.choose_spec (F.handled input hvalid h)).1)⟩,
         (Classical.choose_spec (F.handled input hvalid h)).2.1,
         (Classical.choose_spec (F.handled input hvalid h)).2.2⟩⟩
   else
     ⟨SubmissionCorrect.finalState input,
       ⟨⟨SubmissionCorrect.gasSteps_submission input hvalid
-          (((Main.gasSteps_entryHop input).trans
+          ((((Main.gasSteps_entryHop input).trans
             (GuardTrace.gasSteps_fallback input hg)).trans
+            (Guard1024Trace.gasSteps_fallback input hg1024)).trans
             (F.bail input hvalid h))⟩,
         SubmissionCorrect.finalState_isDone input,
         SubmissionCorrect.finalState_result input hvalid⟩⟩
