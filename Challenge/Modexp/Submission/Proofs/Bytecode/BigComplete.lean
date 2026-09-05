@@ -1,7 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatch
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigSetup
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigSerialize
-import Challenge.Modexp.Submission.Proofs.Bytecode.BigBaseDirect
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 3000000
@@ -14,11 +13,6 @@ open EvmSemantics
 open EvmSemantics.EVM
 
 open BigExponent
-
-private instance eligibleDecidable (s : State) (b m baseOff modOff : Nat) :
-    Decidable (BigBaseDirect.Eligible s b m baseOff modOff) := by
-  unfold BigBaseDirect.Eligible
-  infer_instance
 
 def scanRest (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : List UInt256 :=
@@ -56,51 +50,16 @@ def baseState (s : State) (b e m baseOff expOff modOff : Nat)
 def exponentState (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   let accumulator := modulusOr s b e m baseOff expOff modOff returnDest rest
-  let loaded := setupState s b e m baseOff expOff modOff returnDest rest
-  if BigBaseDirect.Eligible loaded b m baseOff modOff then
-    BigBaseDirect.directInitialAccumulator loaded accumulator (limbCount m)
-      b e m baseOff expOff modOff returnDest rest
-  else
-    let base := baseState s b e m baseOff expOff modOff returnDest rest
-    BigBaseLoop.initialAccumulator base accumulator (limbCount m) b e m baseOff
-      (baseRest expOff modOff returnDest rest)
-
-@[simp] theorem exponentState_executionEnv (s : State)
-    (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
-    (rest : List UInt256) :
-    (exponentState s b e m baseOff expOff modOff returnDest rest).executionEnv =
-      s.executionEnv := by
-  let loaded := setupState s b e m baseOff expOff modOff returnDest rest
-  let accumulator := modulusOr s b e m baseOff expOff modOff returnDest rest
   let base := baseState s b e m baseOff expOff modOff returnDest rest
-  let baseTail := baseRest expOff modOff returnDest rest
-  have hentry : exponentState s b e m baseOff expOff modOff returnDest rest =
-      if BigBaseDirect.Eligible loaded b m baseOff modOff then
-        BigBaseDirect.directInitialAccumulator loaded accumulator (limbCount m)
-          b e m baseOff expOff modOff returnDest rest
-      else
-        BigBaseLoop.initialAccumulator base accumulator (limbCount m) b e m
-          baseOff baseTail := by
-    rfl
-  by_cases heligible : BigBaseDirect.Eligible loaded b m baseOff modOff
-  · rw [hentry, if_pos heligible]
-    rfl
-  · rw [hentry, if_neg heligible]
-    simp [base,
-      BigBaseLoop.initialAccumulator, BigBaseLoop.baseConvertedExit,
-      BigBase.outerExit, BigBase.outerLoop, BigHelpers.addReturned,
-      baseState, BigBase.baseLoopEntry, BigBase.afterClearDouble,
-      BigHelpers.clearReturned, BigModulus.scanNonzero, setupState,
-      BigSetup.setupReturned, BigLoad.loadReturned, BigLoad.loadLoop,
-      BigSetup.afterClear6144, BigSetup.afterClear2048,
-      BigSetup.afterClear1024, BigSetup.afterClear0]
+  BigBaseLoop.initialAccumulator base accumulator (limbCount m) b e m baseOff
+    (baseRest expOff modOff returnDest rest)
 
 def exponentProgressState (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   let accumulator := modulusOr s b e m baseOff expOff modOff returnDest rest
   let entry := exponentState s b e m baseOff expOff modOff returnDest rest
-  BigExponent.exponentPhaseState entry accumulator (limbCount m) b e m
-    baseOff expOff (exponentRest modOff returnDest rest)
+  BigExponent.exponentByteProgress entry accumulator (limbCount m) b e m
+    baseOff expOff (exponentRest modOff returnDest rest) e
 
 def completedState (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
@@ -109,6 +68,47 @@ def completedState (s : State) (b e m baseOff expOff modOff : Nat)
     returnDest rest
   BigSerialize.bigReturned progress accumulator (limbCount m) b e m baseOff
     expOff (exponentRest modOff returnDest rest)
+
+def gasSteps_startExponent (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff : Nat) (rest : List UInt256)
+    (hcap : rest.length < 1017)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (exponentEntry s accumulatorWord count b e m baseOff expOff rest)
+      (outerLoop s accumulatorWord count b e m baseOff expOff rest 0) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka startExponentPath
+      (by simpa [exponentEntry, Artifact.submissionArtifact] using hcode)
+      (by simpa [exponentEntry, State.fork] using hfork)
+      (run_startExponent s accumulatorWord count b e m baseOff expOff rest
+        hcap hrun)
+      (by simpa [exponentEntry] using hrun)
+      (by simpa [exponentEntry, State.fork] using hnp)
+
+theorem gasSteps_startExponent_cost_potential (s : State)
+    (accumulatorWord : UInt256) (count b e m baseOff expOff : Nat)
+    (rest : List UInt256) (hcap : rest.length < 1017)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    (gasSteps_startExponent s accumulatorWord count b e m baseOff expOff rest
+      hcap hcode hfork hrun hnp).cost +
+        MachineState.memCost
+          (exponentEntry s accumulatorWord count b e m baseOff expOff rest).activeWords.toNat =
+      3 + MachineState.memCost
+        (outerLoop s accumulatorWord count b e m baseOff expOff rest 0).activeWords.toNat := by
+  have hmeter :=
+    Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
+      startExponentPath 3
+        (run_startExponent s accumulatorWord count b e m baseOff expOff rest
+          hcap hrun)
+        (by simpa [exponentEntry, State.fork] using hfork)
+        (by decide) (by decide)
+  simpa [gasSteps_startExponent] using hmeter
 
 def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256)
@@ -136,14 +136,6 @@ def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
     returnDest rest
   have hnLe : n ≤ 32 := Limbs.limbCount_le_32 m hmBound
   have hn : n < 2 ^ 256 := by omega
-  have hExpEntry : expEntry =
-      if BigBaseDirect.Eligible loaded b m baseOff modOff then
-        BigBaseDirect.directInitialAccumulator loaded accumulator n b e m
-          baseOff expOff modOff returnDest rest
-      else
-        BigBaseLoop.initialAccumulator base accumulator n b e m baseOff
-          baseTail := by
-    rfl
   have hsetup := BigSetup.gasSteps_setup s b e m baseOff expOff modOff
     returnDest rest hmBound hmodOff hinputFit (by omega) hcode hfork hrun hnp
   have hscan := BigModulus.gasSteps_scanNonzeroTotal loaded n scanTail
@@ -173,71 +165,43 @@ def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
       change Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
         s.executionEnv.codeAddr = false
       exact hnp)
-  have hbasePhase : Challenge.EvmProof.GasSteps
-      (BigBase.afterClearDouble loaded accumulator n scanTail) expEntry := by
-    by_cases heligible : BigBaseDirect.Eligible loaded b m baseOff modOff
-    · have hdirect := BigBaseDirect.gasSteps_eligible loaded accumulator n b e m
-        baseOff expOff modOff returnDest rest
-        (by omega) hn hbase (by omega) (by omega) (by omega) (by omega)
-        heligible
-        (by change s.executionEnv.code = submissionBytecode; exact hcode)
-        (by change s.fork = .Osaka; exact hfork)
-        (by change s.halt = .Running; exact hrun)
-        (by
-          change Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-            s.executionEnv.fork s.executionEnv.codeAddr = false
-          exact hnp)
-      exact Challenge.EvmProof.GasSteps.cast hdirect
-        (by simp [scanTail, scanRest, BigBaseDirect.fullRest])
-        (by rw [hExpEntry, if_pos heligible])
-    · have hfallback := BigBaseDirect.gasSteps_ineligible loaded accumulator n b
-        e m baseOff expOff modOff returnDest rest (by omega) hbase (by omega)
-        (by omega) (by omega) heligible
-        (by change s.executionEnv.code = submissionBytecode; exact hcode)
-        (by change s.fork = .Osaka; exact hfork)
-        (by change s.halt = .Running; exact hrun)
-        (by
-          change Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-            s.executionEnv.fork s.executionEnv.codeAddr = false
-          exact hnp)
-      exact Challenge.EvmProof.GasSteps.cast (hfallback.trans hconversion)
-        (by simp [scanTail, scanRest, BigBaseDirect.fullRest])
-        (by rw [hExpEntry, if_neg heligible])
   have hExpEnv : expEntry.executionEnv = s.executionEnv := by
-    by_cases heligible : BigBaseDirect.Eligible loaded b m baseOff modOff
-    · rw [hExpEntry, if_pos heligible]
-      rfl
-    · rw [hExpEntry, if_neg heligible]
-      simp [BigBaseLoop.initialAccumulator, BigBaseLoop.baseConvertedExit,
-        BigBase.outerExit, BigBase.outerLoop, BigHelpers.addReturned,
-        base, baseState, BigBase.baseLoopEntry, BigBase.afterClearDouble,
-        BigHelpers.clearReturned, BigModulus.scanNonzero, loaded, setupState,
-        BigSetup.setupReturned, BigSetup.afterClear6144,
-        BigSetup.afterClear2048, BigSetup.afterClear1024, BigSetup.afterClear0,
-        BigLoad.loadReturned, BigLoad.loadLoop]
+    calc
+      expEntry.executionEnv = loaded.executionEnv := by
+        simp [expEntry, exponentState, BigBaseLoop.initialAccumulator,
+          BigBaseLoop.baseConvertedExit, BigBase.outerExit, BigBase.outerLoop,
+          BigHelpers.addReturned, base, baseState, BigBase.baseLoopEntry,
+          BigBase.afterClearDouble, BigHelpers.clearReturned,
+          BigModulus.scanNonzero, loaded]
+      _ = s.executionEnv := by rfl
   have hExpHalt : expEntry.halt = s.halt := by
-    by_cases heligible : BigBaseDirect.Eligible loaded b m baseOff modOff
-    · rw [hExpEntry, if_pos heligible]
-      rfl
-    · rw [hExpEntry, if_neg heligible]
-      simp [BigBaseLoop.initialAccumulator, BigBaseLoop.baseConvertedExit,
-        BigBase.outerExit, BigBase.outerLoop, BigHelpers.addReturned,
-        base, baseState, BigBase.baseLoopEntry, BigBase.afterClearDouble,
-        BigHelpers.clearReturned, BigModulus.scanNonzero, loaded, setupState,
-        BigSetup.setupReturned, BigSetup.afterClear6144,
-        BigSetup.afterClear2048, BigSetup.afterClear1024, BigSetup.afterClear0,
-        BigLoad.loadReturned, BigLoad.loadLoop]
+    calc
+      expEntry.halt = loaded.halt := by
+        simp [expEntry, exponentState, BigBaseLoop.initialAccumulator,
+          BigBaseLoop.baseConvertedExit, BigBase.outerExit, BigBase.outerLoop,
+          BigHelpers.addReturned, base, baseState, BigBase.baseLoopEntry,
+          BigBase.afterClearDouble, BigHelpers.clearReturned,
+          BigModulus.scanNonzero, loaded]
+      _ = s.halt := by rfl
   have hProgressEnv : expProgress.executionEnv = s.executionEnv := by
-    rw [show expProgress = BigExponent.exponentPhaseState expEntry accumulator
-      n b e m baseOff expOff expTail by rfl]
-    rw [BigExponent.exponentPhaseState_executionEnv]
+    rw [show expProgress = BigExponent.exponentByteProgress expEntry accumulator
+      n b e m baseOff expOff expTail e by rfl]
+    rw [BigExponent.exponentByteProgress_executionEnv]
     exact hExpEnv
   have hProgressHalt : expProgress.halt = s.halt := by
-    rw [show expProgress = BigExponent.exponentPhaseState expEntry accumulator
-      n b e m baseOff expOff expTail by rfl]
-    rw [BigExponent.exponentPhaseState_halt]
+    rw [show expProgress = BigExponent.exponentByteProgress expEntry accumulator
+      n b e m baseOff expOff expTail e by rfl]
+    rw [BigExponent.exponentByteProgress_halt]
     exact hExpHalt
-  have hphase := BigExponent.gasSteps_exponentPhase expEntry accumulator n b e
+  have hstart := gasSteps_startExponent expEntry accumulator n b e m baseOff
+    expOff expTail (by simp [expTail, exponentRest]; omega)
+    (by rw [hExpEnv]; exact hcode)
+    (by change expEntry.executionEnv.fork = .Osaka; rw [hExpEnv]; exact hfork)
+    (by rw [hExpHalt]; exact hrun)
+    (by
+      rw [hExpEnv]
+      exact hnp)
+  have hexponent := BigExponent.gasSteps_exponentLoop expEntry accumulator n b e
     m baseOff expOff expTail (by simp [expTail, exponentRest]; omega) hn hexp
     hexpFit
     (by rw [hExpEnv]; exact hcode)
@@ -246,18 +210,9 @@ def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
     (by
       rw [hExpEnv]
       exact hnp)
-  have hphaseEntry :
-      BigExponent.exponentEntry expEntry accumulator n b e m baseOff expOff
-          expTail = expEntry := by
-    by_cases heligible : BigBaseDirect.Eligible loaded b m baseOff modOff
-    · rw [hExpEntry, if_pos heligible]
-      rfl
-    · rw [hExpEntry, if_neg heligible]
-      rfl
-  have hphase' := Challenge.EvmProof.GasSteps.cast hphase hphaseEntry rfl
-  have hserialize := BigSerialize.gasSteps_serializeFromEntry expProgress accumulator
+  have hserialize := BigSerialize.gasSteps_serializeResult expProgress accumulator
     n b e m baseOff expOff expTail (by simp [expTail, exponentRest]; omega)
-    (by omega)
+    hexp (by omega)
     (by rw [hProgressEnv]; exact hcode)
     (by change expProgress.executionEnv.fork = .Osaka
         rw [hProgressEnv]
@@ -268,10 +223,19 @@ def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
       exact hnp)
   exact Challenge.EvmProof.GasSteps.cast
     (hsetup.trans (hscan.trans (hbaseSetup.trans
-      (hbasePhase.trans (hphase'.trans hserialize)))))
+      (hconversion.trans (hstart.trans (hexponent.trans hserialize))))))
     rfl
     (by simp [completedState, expProgress, exponentProgressState, accumulator,
       n, expTail])
 
+def nonzeroWork (n b e m : Nat) : Nat :=
+  (343 + n * 284 + m * 190) +
+  (50 + n * 74) +
+  (77 + n * 71) +
+  (b * (3506 + n * 7248) + (206 + n * 453)) +
+  3 +
+  e * (106 + 8 * (613 + n * 526 +
+    2 * (n * (102 + 256 * (426 + n * 906))))) +
+  (66 + m * 138)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigComplete
