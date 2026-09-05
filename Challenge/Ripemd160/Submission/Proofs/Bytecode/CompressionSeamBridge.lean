@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectCorrect
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionInterface
 
 set_option warningAsError true
 

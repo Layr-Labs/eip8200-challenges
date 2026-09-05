@@ -37,9 +37,9 @@ theorem pc_toNat_instructionPC (index : Nat) :
   have hcode := StackRoundData.artifact_code_bound
   exact Nat.lt_of_le_of_lt hle hcode
 
-def leftWrapperIndex (k : Nat) : Nat := 996 + 8 * k
+def leftWrapperIndex (k : Nat) : Nat := 930 + 8 * k
 
-def rightWrapperIndex (k : Nat) : Nat := 1326 + 8 * k
+def rightWrapperIndex (k : Nat) : Nat := 1260 + 8 * k
 
 def leftPC (k : Nat) : UInt256 :=
   UInt256.ofNat (Artifact.instructionPC (leftWrapperIndex k))
@@ -68,50 +68,50 @@ def rightReturnPC (k : Nat) : UInt256 :=
   UInt256.ofNat (Artifact.instructionPC (rightWrapperIndex k + 7))
 
 def leftHelperPCOfGroup : Nat → UInt256
-  | 0 => UInt256.ofNat 0xd4a
-  | 1 => UInt256.ofNat 0xda7
-  | 2 => UInt256.ofNat 0xe14
-  | 3 => UInt256.ofNat 0xe7f
-  | _ => UInt256.ofNat 0xeec
+  | 0 => UInt256.ofNat 0xb3d
+  | 1 => UInt256.ofNat 0xb9a
+  | 2 => UInt256.ofNat 0xc07
+  | 3 => UInt256.ofNat 0xc72
+  | _ => UInt256.ofNat 0xcdf
 
 def rightHelperPCOfGroup : Nat → UInt256
-  | 0 => UInt256.ofNat 0xf57
-  | 1 => UInt256.ofNat 0xfc2
-  | 2 => UInt256.ofNat 0x102f
-  | 3 => UInt256.ofNat 0x109a
-  | _ => UInt256.ofNat 0x1107
+  | 0 => UInt256.ofNat 0xd4a
+  | 1 => UInt256.ofNat 0xdb5
+  | 2 => UInt256.ofNat 0xe22
+  | 3 => UInt256.ofNat 0xe8d
+  | _ => UInt256.ofNat 0xefa
 
 def leftHelperPC (k : Nat) : UInt256 := leftHelperPCOfGroup (k / 8)
 
 def rightHelperPC (k : Nat) : UInt256 := rightHelperPCOfGroup (k / 8)
 
 def leftHelperStartIndex : Nat → Nat
-  | 0 => 1707
-  | 1 => 1762
-  | 2 => 1825
-  | 3 => 1886
-  | _ => 1949
+  | 0 => 1641
+  | 1 => 1696
+  | 2 => 1759
+  | 3 => 1820
+  | _ => 1883
 
 def rightHelperStartIndex : Nat → Nat
-  | 0 => 2010
-  | 1 => 2071
-  | 2 => 2134
-  | 3 => 2195
-  | _ => 2258
+  | 0 => 1944
+  | 1 => 2005
+  | 2 => 2068
+  | 3 => 2129
+  | _ => 2192
 
 def leftHelperJumpIndex : Nat → Nat
-  | 0 => 1761
-  | 1 => 1824
-  | 2 => 1885
-  | 3 => 1948
-  | _ => 2009
+  | 0 => 1695
+  | 1 => 1758
+  | 2 => 1819
+  | 3 => 1882
+  | _ => 1943
 
 def rightHelperJumpIndex : Nat → Nat
-  | 0 => 2070
-  | 1 => 2133
-  | 2 => 2194
-  | 3 => 2257
-  | _ => 2312
+  | 0 => 2004
+  | 1 => 2067
+  | 2 => 2128
+  | 3 => 2191
+  | _ => 2246
 
 def leftAddress0 (k : Fin 40) : UInt256 :=
   StackRoundData.leftAddress (2 * k.val)

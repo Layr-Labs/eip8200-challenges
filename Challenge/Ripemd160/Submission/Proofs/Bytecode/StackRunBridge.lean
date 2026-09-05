@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.OutputResultBridge
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputResultBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionSeamBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PaddedBlockBridge
@@ -202,8 +202,7 @@ private theorem initialHashWords (kernel : BlockKernel) (input : ByteArray)
     CompressionSeamBridge.HashWordsAt input 0 (states kernel input 0) := by
   intro i
   change OutputTrace.hWord (PaddingTrace.padReturned input) i = _
-  have hh := (InitializationCorrect.initializedState_constants input).2.2
-    i i.isLt
+  have hh := InitializationCorrect.initializedState_hash input i i.isLt
   unfold OutputTrace.hWord
   rw [show MachineState.readWord (PaddingTrace.padReturned input).memory
         (OutputTrace.hOffset i) =
@@ -328,6 +327,6 @@ def compressionSeam (kernel : BlockKernel) :
 /-- Correctness remains conditional on the genuine block kernel. -/
 theorem correct_of_block_kernel (kernel : BlockKernel) :
     Correct submissionBytecode := by
-  exact OutputResultBridge.correct_of_compression_trace (compressionSeam kernel)
+  exact FastOutputResultBridge.correct_of_compression_trace (compressionSeam kernel)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRunBridge

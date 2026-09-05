@@ -24,8 +24,8 @@ def stateAt (s : State) (pc : UInt256) (w : Compression.EvmWorking)
   roundEntry s pc w.a w.b w.c w.d w.e rest
 
 def WordsAt (s : State) (word : Nat → UInt32) : Prop :=
-  ∀ k, k < 16 → MachineState.readWord s.memory (672 + 32 * k) =
-    Challenge.EvmProof.Word.ofUInt32 (word k)
+  ∀ k, k < 16 → Challenge.EvmProof.Word.toUInt32
+    (MachineState.readWord s.memory (644 + 4 * k)) = word k
 
 theorem stateAt_words (s : State) (pc : UInt256) (w : Compression.EvmWorking)
     (rest : List UInt256) (word : Nat → UInt32) (hwords : WordsAt s word) :

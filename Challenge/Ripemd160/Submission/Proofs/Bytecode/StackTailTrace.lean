@@ -9,10 +9,10 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 
 /-!
-# Located H25 final-combination trace
+# Located H31b final-combination trace
 
-The raw tail theorem is lifted through the exact H25 artifact.  The path starts
-at instruction 1646 and ends at instruction 1706.  The 766 helper instructions
+The raw tail theorem is lifted through the exact H31b artifact.  The path starts
+at instruction 1646 and ends at instruction 1706.  The 713 helper instructions
 after the tail remain in the artifact suffix.
 -/
 
@@ -71,7 +71,7 @@ private theorem artifactPrefix_length : artifactPrefix.length = 1600 := by
 private theorem tailBefore_length : tailBefore.length = 1646 := by
   simp [tailBefore, artifactPrefix_length]
 
-private theorem tailAfter_length : tailAfter.length = 766 := by
+private theorem tailAfter_length : tailAfter.length = 713 := by
   simp [tailAfter]
 
 private theorem tailAfter_nonempty : tailAfter ≠ [] := by
@@ -160,7 +160,7 @@ private theorem tail_instruction_pc_global (index : Nat)
   simpa only [Nat.add_sub_of_le hlo] using h
 
 private theorem finalJumpPC :
-    Artifact.submissionArtifact.instructionPC 1706 = 0xd49 := by
+    Artifact.submissionArtifact.instructionPC 1640 = 0xd49 := by
   have h := tail_instruction_pc 60 (by decide)
   simpa [StackTail.tailInstructions, StackTail.tail60Instructions,
     StackTail.c0Instructions, StackTail.c1Instructions,
