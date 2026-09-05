@@ -96,26 +96,29 @@ private theorem outputBytes_eq_spec (input : ByteArray) (seam : CompressionSeam 
   rfl
 
 noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
-    (seam : CompressionSeam input) :
+    (seam : CompressionSeam input)
+    (prefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x3ee)) :
     GasSteps (initialState submissionBytecode input 0)
       (outputState (seam.states (DriverTrace.blockCount input)) input) := by
   let final := seam.states (DriverTrace.blockCount input)
   have gout := FastOutputSite.gasSteps_fastOutput final (driverRest input)
     (by simp [driverRest]) (seam.code _ (by omega)) (seam.fork _ (by omega))
     (seam.running _ (by omega)) (seam.noPrecompile _ (by omega))
-  exact (PaddingTrace.gasSteps_pad input hfit).trans
+  exact (PaddingTrace.gasSteps_pad input hfit prefix).trans
     ((DirectCorrect.gasSteps_driver input hfit seam).trans
       (by simpa only [DriverTrace.afterExit, outputState, driverRest, final] using gout))
 
-/-- Correctness for one fixed input needs only its compression seam. -/
-theorem correct_input (input : ByteArray) (hfit : CalldataFits input)
-    (seam : CompressionSeam input) :
-    ∃ g₀ : Nat, ∀ g : Nat, g₀ ≤ g →
-      Eval (initialState submissionBytecode input g) (.returned (spec input)) := by
-  let trace := fullTrace input hfit seam
-  let final := seam.states (DriverTrace.blockCount input)
+/-- The output proof needs only the existing compression seam. -/
+theorem correct_of_compression_trace
+    (seam : ∀ input : ByteArray, CalldataFits input → CompressionSeam input)
+    (input : ByteArray) (hfit : CalldataFits input)
+    (prefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x3ee)) :
+    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  let trace := fullTrace input hfit (seam input hfit) prefix
+  let final := (seam input hfit).states (DriverTrace.blockCount input)
   have hcall : (outputState final input).callStack = [] :=
-    seam.callStack _ (by omega)
+    (seam input hfit).callStack _ (by omega)
   have hreturned : (outputState final input).halt = .Returned := by rfl
   refine ⟨trace.cost, fun gas hgas => ?_⟩
   have heval := Challenge.EvmProof.eval_of_steps (trace.trace gas hgas) (by
@@ -124,14 +127,7 @@ theorem correct_input (input : ByteArray) (hfit : CalldataFits input)
   rw [State.toResult_returned _ (by rfl)] at heval
   change Eval (withGas (initialState submissionBytecode input 0) gas)
     (.returned (outputBytes final)) at heval
-  rw [outputBytes_eq_spec input seam] at heval
+  rw [outputBytes_eq_spec input (seam input hfit)] at heval
   simpa [GasCost.withGas_initialState_zero] using heval
-
-/-- The output proof needs only the existing compression seam. -/
-theorem correct_of_compression_trace
-    (seam : ∀ input : ByteArray, CalldataFits input → CompressionSeam input) :
-    Correct submissionBytecode := by
-  intro input hfit
-  exact correct_input input hfit (seam input hfit)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputResultBridge

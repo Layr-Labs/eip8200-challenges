@@ -26,7 +26,7 @@ def op (opcode : UInt8) : Instr :=
 
 private def submissionInstructionsChunk0 : List Instr :=
 [
-  .push 2 1006,
+  .push 2 4814,
   op 0x56,
   op 0x5b,
   op 0x80,
@@ -752,7 +752,7 @@ private def submissionInstructionsChunk3 : List Instr :=
   op 0x81,
   .push 2 2048,
   op 0x01,
-  .push 2 4814,
+  .push 2 4766,
   op 0x56,
   op 0x00,
   op 0x5b,
@@ -2901,7 +2901,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x14,
   .push 2 4828,
   op 0x57,
-  .push 2 4766,
+  .push 2 1006,
   op 0x56,
   op 0x5b,
   .push 0 0,
@@ -2946,7 +2946,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x17,
   op 0x90,
   op 0x50,
-  .push 2 4766,
+  .push 2 1006,
   op 0x57,
   .push 20 972889429405991776604892044862621566948497025487,
   .push 0 0,
