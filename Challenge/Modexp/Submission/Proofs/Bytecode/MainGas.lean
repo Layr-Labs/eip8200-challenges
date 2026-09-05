@@ -3,7 +3,7 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.MainTrampolinesHigh
 import Challenge.Modexp.Submission.Proofs.Bytecode.MainHeaderLoad
 import Challenge.Modexp.Submission.Proofs.Bytecode.MainHeaderCheck
 set_option warningAsError true
-set_option maxRecDepth 10000
+set_option maxRecDepth 200000
 set_option maxHeartbeats 2000000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Main

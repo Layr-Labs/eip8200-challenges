@@ -2,7 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatchCheck
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatchTail
 import Challenge.EvmProof.Meter
 set_option warningAsError true
-set_option maxRecDepth 10000
+set_option maxRecDepth 200000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatch
 

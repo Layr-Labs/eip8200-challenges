@@ -3,7 +3,7 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.Accessors
 import Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
 import Challenge.EvmProof.Bytes
 set_option warningAsError true
-set_option maxRecDepth 10000
+set_option maxRecDepth 200000
 set_option maxHeartbeats 1000000
 set_option maxErrors 1
 /-!

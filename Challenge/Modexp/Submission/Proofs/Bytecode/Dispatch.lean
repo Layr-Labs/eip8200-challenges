@@ -1,6 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.Main
 set_option warningAsError true
-set_option maxRecDepth 10000
+set_option maxRecDepth 200000
 set_option maxHeartbeats 1000000
 /-!
 # MODEXP output dispatcher
