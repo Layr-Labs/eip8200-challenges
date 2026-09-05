@@ -1,6 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairRoundState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairCallTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedCallTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairMultiplyLift
 
 set_option warningAsError true
 set_option maxRecDepth 30000
@@ -44,13 +45,13 @@ structure RoundSite (artifact : ProgramArtifact) (fork : Fork)
 
 theorem template_advances (j : Nat) (hj : j < 5) (constant : UInt256) :
     ∀ instruction ∈ pairBeforeJumpTemplate j constant,
-      SharedCallTrace.Advances instruction := by
+      PairMultiplyLift.Advances instruction := by
   intro instruction hmem
   interval_cases j <;>
     simp [pairBeforeJumpTemplate, pairFirstBooleanOps, pairSecondBooleanOps,
       pairDup7, pairDup8, pairDup9, pairDup10, pairSwap5, pairSwap7,
       qrot, cfold] at hmem <;>
-    simp_all [SharedCallTrace.Advances, op, push1, push4, dup1, dup2,
+    simp_all [PairMultiplyLift.Advances, SharedCallTrace.Advances, op, push1, push4, dup1, dup2,
       dup3, dup5, dup6, swap1, swap2, swap4] <;>
     aesop (add safe constructors StraightLine)
 
@@ -77,7 +78,7 @@ theorem runLocatedBlock_pair_of_raw {artifact : ProgramArtifact} {fork : Fork}
     have h := endPC_eq_pcAfter_sites site.sites site.startPC site.endPC
       site.head_eq site.end_eq site.contiguous
     rwa [site.instruction_eq] at h
-  rw [SharedCallTrace.runLocatedBlock_eq_raw site
+  rw [PairMultiplyLift.runLocatedBlock_eq_raw site
     (template_advances j hj constant)
     (PairRoundState.pairHelperEntry s site.startPC p0 p1 returnPC
       r0 r1 working rest) rfl]
