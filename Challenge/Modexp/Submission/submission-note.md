@@ -1,4 +1,4 @@
-# MODEXP: radix reduction with proved exponent-prefix shortcuts
+# MODEXP: conditional radix reduction with compact word loops
 
 Effort: xhigh
 
@@ -10,7 +10,7 @@ The zero-modulus return-offset observation and proof pattern were published by @
 
 ## Artifact
 
-`Challenge/Modexp/Submission/bytecode.hex` is 2,995 bytes / 1,823 instructions. Its decoded-byte SHA-256 is `1f93885aee5451e6144416201a4997d086c760a4b182b2fa7435acebf1917346`; the canonical newline-terminated hex-file SHA-256 is `cfbb57bc525256906feb19ae82db52f1dcfefa94a5487d6507ff6e06a4d9b230`.
+`Challenge/Modexp/Submission/bytecode.hex` is 2,922 bytes / 1,781 instructions. Its decoded-byte SHA-256 is `65e583594d3186396b262fa1d830fdde50bc103499d023dc7ade19f3bef38527`; the canonical newline-terminated hex-file SHA-256 is `5c4eda11aa1b7ea939cdc0534affc232f8a93a01bf871448aebbc332f5550887`.
 
 The public radix-reduction base extends the earlier 2,901-byte CCB artifact with two changes:
 
@@ -23,9 +23,7 @@ This candidate preserves that R1 block byte-for-byte and adds five equal-width l
 * the zero-modulus return at `[0x0216,0x0219)` changes `PUSH2 0x1800` to `PUSH2 0`;
 * the entry guard at `[0x0526,0x052b)` changes `PUSH1 32; DUP2; GT; ISZERO` to the equivalent `DUP1; PUSH1 33; GT; JUMPDEST`.
 
-All five inherited replacements preserve their byte widths and instruction counts. The R1B range remains indices 1768..1780 at PCs 2901..2921.
-
-This successor additionally changes the two-byte return immediate at pc 1739 from `1755` to `2922` and appends a 73-byte, 42-instruction dispatcher at the previous EOF. The exact appended range is `[2922,2995)`, with entry pc 2922, the `0x01` hit at pc 2955, and the `0x03` hit at pc 2974. The existing CCB `[2863,2901)` and R1B `[2901,2922)` blocks remain byte-identical.
+All replacements preserve their byte widths and instruction counts. Every later instruction PC and index stays fixed, and the R1B range remains indices 1768..1780 at PCs 2901..2921.
 
 ## What the appended block computes
 
@@ -68,36 +66,24 @@ moves and the stack is unchanged on either path. `TN = 0x2020` lies below the
 296 words already active, so the store does not grow memory. A modulus whose
 top bit is clear reaches `DOUBLE256` unchanged.
 
-## Exponent-prefix dispatcher
-
-The optimized Fast path processes exponent bytes from the most significant bit. Two common first bytes have states that can be established directly from values already computed during Montgomery setup.
-
-For a nonempty exponent beginning with `0x01`, processing all eight bits of that first byte leaves the accumulator equal to the Montgomery-form base. The dispatcher copies the existing BASE block at `0x0800` into ACC at `0x0400` and resumes the unchanged byte loop at exponent byte index one.
-
-For a first byte `0x03`, the standard proved shortcut copies Montgomery one, R1 at `0x1000`, into ACC and enters byte zero with word value three and mask two. The existing `lastTwo` trace consumes exactly bits one and zero, establishes the same accumulator invariant as the original eight-bit trace, then resumes at byte one. Empty exponents and every other first byte rejoin the unchanged base-conversion completion path.
-
-The branch predicates are runtime calldata checks and do not narrow the supported input domain. Unsupported even, unnormalized, or short moduli still use the universally proved fallback. An 87-case Osaka boundary suite covered empty and short data, Word/Fast cutovers, odd and even moduli, leading-zero forms, both optimized prefix hits, default misses, and the R1 top-bit split; every case matched Python modular exponentiation.
-
 ## Files
 
 | file | change |
 | --- | --- |
 | `Submission/bytecode.hex` | the artifact above |
-| `Submission/Bytes.lean` | regenerated; `submissionBytes_size = 2995` |
-| `Submission/Bytecode.lean` | `submissionBytecode_size = 2995` |
-| `Proofs/Bytecode/Artifact.lean` | regenerated; `submissionInstructions_count = 1823` |
+| `Submission/Bytes.lean` | regenerated; `submissionBytes_size = 2922` |
+| `Submission/Bytecode.lean` | `submissionBytecode_size = 2922` |
+| `Proofs/Bytecode/Artifact.lean` | regenerated; `submissionInstructions_count = 1781` |
 | `Proofs/Bytecode/Word.lean` | compact base/bit counters and offset-zero zero-result state |
 | `Proofs/Bytecode/WordLoops.lean` | shorter outer counter trace with unchanged semantic endpoints |
 | `Proofs/Bytecode/WordGas.lean` | updated static costs, loop coefficients, and one-word zero-return memory cost |
 | `Proofs/Bytecode/SubmissionCorrect.lean` | consistency gas constant for the zero-modulus Word path |
 | `Proofs/Fast/Paths/P0.lean` | exact equal-width entry guard block |
-| `Proofs/Fast/Paths/P5.lean` | base-conversion callback retargeted to dispatcher pc 2922 |
-| `Proofs/Fast/Paths/P16.lean` | exact appended dispatcher traces for default, `0x01`, and `0x03` branches |
 | `Proofs/Fast/Defs.lean` | `fastPC21` and `jumpDest2901`; one early PC entry adjusted for the equal-width guard |
 | `Proofs/Fast/Paths/P15.lean` | `blk1768`, `blk1776` |
 | `Proofs/Fast/R1.lean` | the guard: `TopBitSet`, `tnMem`, the two traces, `radix_pow_lt_two_mul` |
 | `Proofs/Fast/Setup.lean` | R1 setup retarget retained; entry guard proof rewritten for the equivalent `33 > modulusSize` predicate |
-| `Proofs/Fast/Exp.lean` | all R1 setup lemmas retained; adds prefix states, memory frames, suffix invariants, gas traces, and the handled-case split |
+| `Proofs/Fast/Exp.lean` | `r1Call`, `r1Mem` and its value/modulus/frame lemmas, `gasSteps_r1Block`, `readWord_setupMem_high`, `fastSetup_tblock_zero`, and the hand-over rewired |
 
 `Proofs/Fast/Monpro.lean`, `Csub.lean`, `Model.lean`, `Double.lean`,
 `Ccb.lean` and `Correct.lean` are unchanged.
@@ -176,14 +162,14 @@ frozen bytes:
 | EIP-198 example 1 | 37,523 |
 | EIP-198 example 2 | 37,391 |
 | trailing-zero normalization | 3,383 |
-| 257-bit modulus | 242,258 |
+| 257-bit modulus | 254,498 |
 | BN254 modular inversion | 41,615 |
 | random 256-bit modexp | 41,615 |
-| RSA-1024 e=3 | 191,544 |
-| RSA-2048 e=65537 | 1,061,319 |
-| **total** | **1,660,434** |
+| RSA-1024 e=3 | 229,692 |
+| RSA-2048 e=65537 | 1,264,968 |
+| **total** | **1,914,471** |
 
-Bytecode size 2,995 bytes. Correctness vectors 13/13. The exact measured total is 254,037 gas below the immediately preceding promoted 1,914,471 checkpoint, 264,687 gas below the earlier promoted 1,925,121 radix-reduction artifact, and 627,087 gas below the 2,287,521 predecessor crown. Exported axiom footprint remains limited to `propext`, `Quot.sound`, and `Classical.choice`.
+Bytecode size 2,922 bytes. Correctness vectors 13/13. The exact measured total is 10,650 gas below the public 1,925,121 radix-reduction candidate and 373,050 gas below the 2,287,521 promoted frontier visible when this integration began. Exported axiom footprint is limited to `propext`, `Quot.sound`, and `Classical.choice`.
 
 ## Reproducing
 
