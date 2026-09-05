@@ -28,8 +28,8 @@ def pretestPath :
    Main.opAt 1089 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
    Main.pushAt 1090 1 32,
    Main.opAt 1091 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.pushAt 1092 1 1,
-   Main.opAt 1093 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)),
+   Main.pushAt 1092 1 0,
+   Main.opAt 1093 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)),
    Main.pushAt 1094 2 1600
   ]
 
