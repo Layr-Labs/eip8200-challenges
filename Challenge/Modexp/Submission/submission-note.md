@@ -1,165 +1,204 @@
-# MODEXP: radix reduction with proved exponent-prefix shortcuts
+# MODEXP: start the exponent bit loop at the exponent's leading one, and take the `RR` multiply only when the selector is `CC`
 
 Effort: xhigh
 
-## Attribution
+## Context and credit
 
-This submission builds directly on public submission `e8fb9e22-d4f2-4799-babf-2d90fa2cdf9c` by @ercumentyildirim, which introduced the conditional single-subtraction construction for `R mod m` and supplied the Fast/CCB proof carrier used here. The inherited Montgomery and CIOS lineage from that submission is retained and credited. The underlying universal MODEXP and fallback proof lineage also retains work by @GordoAR.
-
-The zero-modulus return-offset observation and proof pattern were published by @rube-de in submission `e1679e36-9568-446b-b615-80dc3ac2d91c`. This candidate ports that local argument to the Fast carrier. The three compact Word counters and the equivalent entry guard are same-width integration changes developed and re-proved against the exact combined artifact.
+The repository base is the promoted submission `a1b994f` by **exakoss**, at
+1,914,471 gas and 2,922 bytes. Its peephole rewrites of the reference loop
+bodies are entirely theirs and are untouched here. This candidate changes the
+head of the exponent-byte loop and the multiply step of the `RR` chain.
+exakoss is credited as the base author.
 
 ## Artifact
 
-`Challenge/Modexp/Submission/bytecode.hex` is 2,995 bytes / 1,823 instructions. Its decoded-byte SHA-256 is `1f93885aee5451e6144416201a4997d086c760a4b182b2fa7435acebf1917346`; the canonical newline-terminated hex-file SHA-256 is `cfbb57bc525256906feb19ae82db52f1dcfefa94a5487d6507ff6e06a4d9b230`.
+`Challenge/Modexp/Submission/bytecode.hex` is 3,000 bytes / 1,831
+instructions.
 
-The public radix-reduction base extends the earlier 2,901-byte CCB artifact with two changes:
+It is the 2,922-byte base with two in-place windows and two appended blocks:
 
-* the `PUSH2` operand of instruction 1136 (bytes 1530..1531) becomes `2901` in place of `1911`, retargeting one tail call;
-* 21 bytes are appended at the half-open range `[2901,2922)` (instruction indices 1768..1780).
+* instructions 1172..1177 (`PUSH2 0x064f; PUSH2 0x1800; DUP3; PUSH2 0x1800;
+  PUSH2 0x0793; JUMP`, fourteen bytes at pc 0x641) become
+  `PUSH2 0x0b9b; JUMP; POP; PUSH2 0; PUSH2 0; PUSH2 0` — fourteen bytes and
+  six instructions again, the trailing five unreachable;
+* instructions 1279..1281 (`DUP1; PUSH2 0x2500; MLOAD`, five bytes at pc
+  0x6f2) become `PUSH2 0x0b6a; JUMP; POP` — five bytes and three instructions
+  again, the trailing `POP` unreachable;
+* 49 bytes are appended at 2922..2970 (instruction indices 1781..1815);
+* 29 bytes are appended at 2971..2999 (instruction indices 1816..1830).
 
-This candidate preserves that R1 block byte-for-byte and adds five equal-width local replacements before it:
+Both windows preserve their byte length and their instruction count, so no
+program counter, instruction index or jump destination in 0..2921 moves.
+Outside the two windows every byte of the base is unchanged.
 
-* three Word counter tails at byte ranges `[0x023c,0x0246)`, `[0x0285,0x028f)`, and `[0x0293,0x029d)` remove redundant stack shuffles and leave unreachable `PUSH0` padding after their unconditional jumps;
-* the zero-modulus return at `[0x0216,0x0219)` changes `PUSH2 0x1800` to `PUSH2 0`;
-* the entry guard at `[0x0526,0x052b)` changes `PUSH1 32; DUP2; GT; ISZERO` to the equivalent `DUP1; PUSH1 33; GT; JUMPDEST`.
+## What the appended blocks compute
 
-All five inherited replacements preserve their byte widths and instruction counts. The R1B range remains indices 1768..1780 at PCs 2901..2921.
+### `LZ` at pc 2922, instruction indices 1781..1815
 
-This successor additionally changes the two-byte return immediate at pc 1739 from `1755` to `2922` and appends a 73-byte, 42-instruction dispatcher at the previous EOF. The exact appended range is `[2922,2995)`, with entry pc 2922, the `0x01` hit at pc 2955, and the `0x03` hit at pc 2974. The existing CCB `[2863,2901)` and R1B `[2901,2922)` blocks remain byte-identical.
+The bit loop is driven by a mask that starts at `0x80` for each exponent byte
+and is shifted right until it reaches zero; each iteration squares `ACC` and
+multiplies by `BASE` when `mask & byte` is nonzero.
 
-## What the appended block computes
-
-With `n = ceil(msize/32)`, `radix = 2^256` and `R = radix^n`, the block at
-`R1 = 0x1000` must hold `R mod m`.
-
-`R1B` (pc 2901) is entered with the stack `[px, ret]` — the calling convention
-of `DOUBLE256`, which it stands in front of — and dispatches on the most
-significant bit of the modulus's most significant limb:
+`LZ` is entered with the byte index `i` on top of the driver frame. It loads
+exponent byte `i` exactly as the code it replaces did, and then chooses that
+starting mask:
 
 ```text
-2901  JUMPDEST                          ; stack [4096, 1533]
-2902  PUSH0 ; MLOAD                      ; the modulus's top limb, at M = 0x0000
-2904  PUSH1 255 ; SHR ; ISZERO           ; top bit clear?
-2908  PUSH2 1911 ; JUMPI                 ; -> DOUBLE256, stack and memory as they arrived
-2912  PUSH1 1 ; PUSH2 0x2020 ; MSTORE    ; t[n] := 1
-2918  PUSH2 2642 ; JUMP                  ; -> CSUB, same [px, ret] frame
+2922  JUMPDEST                                  ; stack [i, ...]
+2923  DUP1 ; PUSH2 0x2500 ; MLOAD ; ADD         ; V_EOFF + i
+2929  CALLDATALOAD ; PUSH0 ; BYTE               ; w = exponent byte i
+2932  DUP2 ; ISZERO ; PUSH2 2944 ; JUMPI        ; i = 0?
+2938  PUSH1 128 ; PUSH2 1789 ; JUMP             ; no  -> mask 0x80
+2944  JUMPDEST ; DUP1                           ; yes:
+      DUP1 ; PUSH1 1 ; SHR ; OR                 ;   w |= w >> 1
+      DUP1 ; PUSH1 2 ; SHR ; OR                 ;   w |= w >> 2
+      DUP1 ; PUSH1 4 ; SHR ; OR                 ;   w |= w >> 4
+      PUSH1 1 ; SHR ; PUSH1 1 ; ADD             ;   mask = highest set bit
+      PUSH2 1789 ; JUMP
 ```
-
-Structure, by instruction index:
 
 | indices | block |
 |---|---|
-| 1768..1775 | `blk1768`: the top-bit test and the branch to `DOUBLE256` |
-| 1776..1780 | `blk1776`: `MSTORE TN 1` and the tail call into `CSUB` |
+| 1781..1792 | `blk1781`: the byte load and the `i = 0` test |
+| 1793..1795 | `blk1793`: `PUSH1 128` and the jump back into the bit loop |
+| 1796..1815 | `blk1796`: the smear, `>>> 1`, `+ 1`, and the jump back |
 
-`CSUB` (pc 2642) is entered with `[pd, ret]` and the value
-`t = t[n] * radix^n + t_low`, held as `t[n]` at `TN = 0x2020` and `t_low` in
-the `n`-limb block at `TS = 0x2040`; it computes `t - m` with borrow
-propagation and copies the result to `pd`. The `t` block is untouched at this
-point in the setup, so `t_low = 0`, and `t[n] = 1` makes the value `radix^n`.
+Both arms rejoin the bit loop at pc 1789 with the stack `[mask, w, i]` the
+loop expects, so no call site moves. For a byte whose top bit is set the smear
+yields `0x80` and the loop is the one that was there before; for `w = 0` it
+yields `1`.
 
-`CSUB`'s side condition is `t[n] * radix^n + t_low < 2 * m`, which the guard
-supplies: a modulus whose top limb has its top bit set satisfies
-`m >= radix^n / 2`, and the inequality is strict because `m` is odd while
-`radix^n / 2` is a power of two.
+For byte `0` the bits above the mask are leading zeros of the whole exponent,
+and the accumulator at that point is the Montgomery form of `1`, which is a
+fixed point of Montgomery squaring. Bytes after the first keep the `0x80`
+start, where those bits are significant.
 
-Both branch targets take the same `[px, ret]` frame, so neither call site
-moves and the stack is unchanged on either path. `TN = 0x2020` lies below the
-296 words already active, so the store does not grow memory. A modulus whose
-top bit is clear reaches `DOUBLE256` unchanged.
+### `RRSEL` at pc 2971, instruction indices 1816..1830
 
-## Exponent-prefix dispatcher
+`RRL` (pc 1569) is entered with `[k] ++ OUTER` for `k = 5, 4, …, 0`. Each
+round squares `RR` in place and then multiplies it by the operand selected by
+bit `k` of the limb count: the selector is `R1` (`0x1000`) when the bit is
+clear and `CC` (`0x1400`) when it is set. The replaced window was that
+multiply's unconditional call frame.
 
-The optimized Fast path processes exponent bytes from the most significant bit. Two common first bytes have states that can be established directly from values already computed during Montgomery setup.
+`RRSEL` is entered with the computed selector on top of `[k] ++ OUTER` and
+tests it:
 
-For a nonempty exponent beginning with `0x01`, processing all eight bits of that first byte leaves the accumulator equal to the Montgomery-form base. The dispatcher copies the existing BASE block at `0x0800` into ACC at `0x0400` and resumes the unchanged byte loop at exponent byte index one.
+```text
+2971  JUMPDEST                                  ; stack [sel, k, ...]
+2972  DUP1 ; PUSH2 0x1000 ; EQ                  ; sel = R1?
+2977  PUSH2 2995 ; JUMPI                        ; yes -> skip
+2981  PUSH2 0x064f ; PUSH2 0x1800 ; DUP3        ; no: [RR, sel, ret=1615]
+      PUSH2 0x1800 ; PUSH2 0x0793 ; JUMP        ;     call MONPRO -> RR
+2995  JUMPDEST ; PUSH2 0x064f ; JUMP            ; skip: straight to pc 1615
+```
 
-For a first byte `0x03`, the standard proved shortcut copies Montgomery one, R1 at `0x1000`, into ACC and enters byte zero with word value three and mask two. The existing `lastTwo` trace consumes exactly bits one and zero, establishes the same accumulator invariant as the original eight-bit trace, then resumes at byte one. Empty exponents and every other first byte rejoin the unchanged base-conversion completion path.
+| indices | block |
+|---|---|
+| 1816..1821 | `blk1816`: the selector test |
+| 1822..1827 | `blk1822`: the `MonPro(RR, sel) → RR` call frame |
+| 1828..1830 | `blk1828`: the skip |
 
-The branch predicates are runtime calldata checks and do not narrow the supported input domain. Unsupported even, unnormalized, or short moduli still use the universally proved fallback. An 87-case Osaka boundary suite covered empty and short data, Word/Fast cutovers, odd and even moduli, leading-zero forms, both optimized prefix hits, default misses, and the R1 top-bit split; every case matched Python modular exponentiation.
+Both arms arrive at pc 1615 with the stack `[sel, k] ++ OUTER`, which is the
+stack the round's tail already expected, so the loop counter, the exit test
+and every later block are untouched.
+
+`R1` holds the Montgomery form of one, so `MonPro(RR, R1) → RR` is the
+identity on the value in `RR` and on every other named block; taking the skip
+therefore leaves the same memory the call would have left.
 
 ## Files
 
 | file | change |
 | --- | --- |
 | `Submission/bytecode.hex` | the artifact above |
-| `Submission/Bytes.lean` | regenerated; `submissionBytes_size = 2995` |
-| `Submission/Bytecode.lean` | `submissionBytecode_size = 2995` |
-| `Proofs/Bytecode/Artifact.lean` | regenerated; `submissionInstructions_count = 1823` |
-| `Proofs/Bytecode/Word.lean` | compact base/bit counters and offset-zero zero-result state |
-| `Proofs/Bytecode/WordLoops.lean` | shorter outer counter trace with unchanged semantic endpoints |
-| `Proofs/Bytecode/WordGas.lean` | updated static costs, loop coefficients, and one-word zero-return memory cost |
-| `Proofs/Bytecode/SubmissionCorrect.lean` | consistency gas constant for the zero-modulus Word path |
-| `Proofs/Fast/Paths/P0.lean` | exact equal-width entry guard block |
-| `Proofs/Fast/Paths/P5.lean` | base-conversion callback retargeted to dispatcher pc 2922 |
-| `Proofs/Fast/Paths/P16.lean` | exact appended dispatcher traces for default, `0x01`, and `0x03` branches |
-| `Proofs/Fast/Defs.lean` | `fastPC21` and `jumpDest2901`; one early PC entry adjusted for the equal-width guard |
-| `Proofs/Fast/Paths/P15.lean` | `blk1768`, `blk1776` |
-| `Proofs/Fast/R1.lean` | the guard: `TopBitSet`, `tnMem`, the two traces, `radix_pow_lt_two_mul` |
-| `Proofs/Fast/Setup.lean` | R1 setup retarget retained; entry guard proof rewritten for the equivalent `33 > modulusSize` predicate |
-| `Proofs/Fast/Exp.lean` | all R1 setup lemmas retained; adds prefix states, memory frames, suffix invariants, gas traces, and the handled-case split |
+| `Submission/Bytes.lean` | regenerated; `submissionBytes_size = 3000` |
+| `Submission/Bytecode.lean` | `submissionBytecode_size = 3000` |
+| `Proofs/Bytecode/Artifact.lean` | regenerated; `submissionInstructions_count = 1831` |
+| `Proofs/Fast/Defs.lean` | `fastPC22` for indices 1781..1815 and `fastPC23` for 1816..1830; `jumpDest2922`, `jumpDest2944`, `jumpDest2971`, `jumpDest2995`; the program-counter tables covering indices 1172..1177 and 1280 |
+| `Proofs/Fast/Paths/P16.lean` | `blk1781`, `blk1793`, `blk1796` |
+| `Proofs/Fast/Paths/P17.lean` | `blk1816`, `blk1822`, `blk1828` |
+| `Proofs/Fast/Paths/P3.lean` | `blk1162` now ends with the tail call into `RRSEL` at index 1172..1173 |
+| `Proofs/Fast/Paths/P5.lean` | `blk1279` is now the tail call into `LZ` |
+| `Proofs/Fast/Lz.lean` | `topBit`, `topExp`, `topBit_spec`, the four block traces |
+| `Proofs/Fast/Exp.lean` | `lzMask`, `lzSkip`, `byteMemAt`, `bitMemsFrom` and its frame/invariant lemmas, `bitFamilyFrom`, `gasSteps_bitBodyFrom`, `gasSteps_bitLoopFrom`, `expAcc_of_zeros`, `ebInv_shift`, the byte loop re-threaded; `rrSel`, `rrCallSel`, `rrSkipSel`, `rrStep`, `montMul_by_one`, `rrMem`/`rrMem_inv` and the `RR` chain re-threaded |
 
 `Proofs/Fast/Monpro.lean`, `Csub.lean`, `Model.lean`, `Double.lean`,
-`Ccb.lean` and `Correct.lean` are unchanged.
+`Ccb.lean`, `R1.lean`, `Setup.lean` and `Correct.lean` are unchanged, as is
+every module under `Proofs/Bytecode` apart from the regenerated artifact.
 
 ## Proof shape
 
-`R1.lean` states the guard as
+`Lz.lean` defines the mask as the block computes it,
 
 ```lean
-def TopBitSet (mem : ByteArray) : Prop :=
-  2 ^ 255 ≤ (MachineState.readWord mem 0).toNat
+def sm1 (w : Nat) : Nat := (w >>> 1) ||| w
+def sm2 (w : Nat) : Nat := (sm1 w >>> 2) ||| sm1 w
+def sm3 (w : Nat) : Nat := (sm2 w >>> 4) ||| sm2 w
+def topBit (w : Nat) : Nat := (sm3 w >>> 1) + 1
 ```
 
-— exactly what `MLOAD 0; PUSH1 255; SHR` computes — and proves the two
-straight-line traces `run_test_fast` (the `JUMPI` falls through) and
-`run_test_fallback` (it is taken), together with
+and proves `topBit_spec`: for every byte, `topBit w = 2 ^ topExp w`,
+`topExp w ≤ 7` and `w < 2 ^ (topExp w + 1)`. It then proves the four block
+traces — the two arms of the `i = 0` test and the two rejoining arms.
+
+`Exp.lean` re-threads the byte loop. The inner-bit machinery was already
+generic in the mask, taking it as `2 ^ r` with `r ≤ 7`; what is new is the
+memory chain started at an arbitrary bit index,
 
 ```lean
-theorem radix_pow_lt_two_mul (hn : 1 ≤ n) (hodd : mm % 2 = 1)
-    (hmod : Model.FastRepresents mem 0 n mm) (htop : TopBitSet mem) :
-    Limbs.radix ^ n < 2 * mm
+def bitMemsFrom (mpMem) (w mem j0) : Nat → ByteArray
+  | 0 => mem
+  | k + 1 => bitStep mpMem (bitMemsFrom mpMem w mem j0 k) (bitAt w (7 - (j0 + k)))
 ```
 
-whose proof reads the top limb off `FastRepresents`, bounds `mm` below by
-`2 ^ 255 * radix ^ (n - 1)`, and closes the strict inequality by parity.
+with `bitMemsFrom_frame` and `bitMemsFrom_inv` beside it, and
+`gasSteps_bitLoopFrom`, which iterates `7 - j0` times from mask `2 ^ (7 - j0)`
+down to `1`. The accumulator is indexed by the absolute bit position
+`t0 + j0 + k` throughout, so the loop ends at exactly the index the unskipped
+loop reached and nothing downstream moves.
 
-`Exp.lean` defines the memory transformer
+Two arithmetic lemmas close the `LZ` skip. `montMul_mont_one` states that
+`R mod m` is a fixed point of Montgomery squaring, and `expAcc_of_zeros`
+lifts it: an accumulator that has only seen zero bits is still `R mod m`.
+`ebInv_shift` applies that to byte `0`, using `topBit_spec`'s
+`w < 2 ^ (topExp w + 1)` and `bitAt_zero_of_lt` to see that the skipped bits
+are zero; for every later byte `lzSkip` is `0` and the shift is the identity.
+`lzMask_eq` connects the two descriptions, `lzMask = 2 ^ (7 - lzSkip)`.
+
+`P17.lean` carries the three `RRSEL` block definitions; `Exp.lean` proves
+their traces, split on the selector test: `run_rrSel_call` and
+`run_rrSel_skip` for `blk1816`, then `run_rrCallSel` and `run_rrSkipSel` for
+the two arms.
+
+`Exp.lean` carries the round's memory effect as
 
 ```lean
-def r1Mem (n px : Nat) (mem : ByteArray) : ByteArray :=
-  if R1.TopBitSet mem then Csub.csResultMemory (R1.tnMem mem) n px
-  else dbl256Mem n px mem
+def rrStep (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (n k : Nat)
+    (mem : ByteArray) : ByteArray :=
+  if bitAt n k = 0 then mpMem 6144 6144 6144 mem
+  else mpMem 6144 5120 6144 (mpMem 6144 6144 6144 mem)
 ```
 
-and discharges the three facts the hand-over needs of it by case split:
-`r1Mem_represents` (the block at `R1` holds `radix ^ n % mm`),
-`r1Mem_modulus` and `r1Mem_frame`, with `r1Mem_preserves` for the blocks
-between. On the guarded branch the value is an instance of the existing
-`Csub.csub_correct` at `t[n] = 1`, `t_low = 0`; on the other branch it is the
-existing `Double.double256_addmod_represents`. `setupToRRMem` was already
-abstract over its transformer, so substituting `r1Mem n` leaves the `RR`
-chain and everything downstream unchanged.
+with `rrMem` iterating it six times and `rrValue` the matching value chain.
+`gasSteps_rrBody` and `gasSteps_rrLastBody` case on the same test as the
+block, so the two arms of each are discharged against the two arms of
+`rrStep`. The identity is
 
-`gasSteps_r1Block` is the execution certificate: `blk1768` then `blk1776` then
-`Csub.gasSteps_csub` on the guarded branch, `blk1768` then the unchanged
-`gasSteps_dbl256` on the other, cast along `r1Mem`'s two cases.
+```lean
+theorem montMul_by_one {mm R x : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
+    (hx : x < mm) : Model.montMul mm R x (R % mm) = x :=
+  Model.montMul_eq_of_modEq hm hcop
+    (Nat.ModEq.mul_left x (Nat.mod_modEq R mm).symm) hx
+```
 
-`fastSetup_tblock_zero` supplies the remaining side condition, that the `t`
-block is zero at the hand-over: the setup writes only the modulus block,
-`V_MINV`, the five variable words and the `R1` seed, none of which lie in
-`[0x2040, 0x2040 + 32n)`. It rests on a new `readWord_setupMem_high`, the
-companion of the existing `readWord_setupMem_mid`.
+and `rrMem_inv` uses it on the skipped arm, so both arms re-establish the same
+`RrInv` — `MOD`, `R1`, `CC` framed and `RR` holding `rrValue`. `rrValue_final`
+is therefore unchanged and the chain still ends holding the Montgomery form of
+`radix ^ n`.
 
 `#print axioms gasSteps_handled` reports `propext`, `Classical.choice` and
 `Quot.sound` only.
-
-
-### Word-path and entry proofs
-
-Each shorter counter trace has the same source and target machine states as the inherited block. Since the immediate one is now the top stack operand, the proof uses commutativity of `UInt256` addition to orient `1 + i` as the inherited `i + 1` state. Unreachable padding is deliberately excluded from each located execution path. The loop certificates retain the same invariants and change only their static costs: the base coefficient falls from 140 to 132 and the exponent-byte coefficient from 1210 to 1138.
-
-For zero modulus, empty initialized memory contains the same padded zero result at offset zero as at `0x1800`. The return-state proof therefore keeps the mathematical result but reduces final active memory from 193 words to one; its exact cost falls by 648 gas. The entry guard proof uses the bounded size fact to show `33 > modulusSize` is equivalent to the old inversion of `modulusSize > 32`. The new `JUMPDEST` is a one-gas no-op, so the block saves two gas on every call without changing either branch target.
 
 ## Measured result
 
@@ -176,14 +215,15 @@ frozen bytes:
 | EIP-198 example 1 | 37,523 |
 | EIP-198 example 2 | 37,391 |
 | trailing-zero normalization | 3,383 |
-| 257-bit modulus | 242,258 |
+| 257-bit modulus | 232,586 |
 | BN254 modular inversion | 41,615 |
 | random 256-bit modexp | 41,615 |
-| RSA-1024 e=3 | 191,544 |
-| RSA-2048 e=65537 | 1,061,319 |
-| **total** | **1,660,434** |
+| RSA-1024 e=3 | 160,282 |
+| RSA-2048 e=65537 | 994,061 |
+| **total** | **1,552,242** |
 
-Bytecode size 2,995 bytes. Correctness vectors 13/13. The exact measured total is 254,037 gas below the immediately preceding promoted 1,914,471 checkpoint, 264,687 gas below the earlier promoted 1,925,121 radix-reduction artifact, and 627,087 gas below the 2,287,521 predecessor crown. Exported axiom footprint remains limited to `propext`, `Quot.sound`, and `Classical.choice`.
+Bytecode size 3,000 bytes. Correctness vectors 13/13. Exported axiom
+footprint `propext`, `Quot.sound`, `Classical.choice` only.
 
 ## Reproducing
 

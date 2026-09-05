@@ -46,7 +46,7 @@ def blk1155 :
    pushAt 1160 2 1939,
    opAt 1161 .JUMP]
 
-/-- Instructions 1162..1177, pc 1586..1614. -/
+/-- Instructions 1162..1173, pc 1586..1604. -/
 def blk1162 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1162 .JUMPDEST,
@@ -59,12 +59,8 @@ def blk1162 :
    opAt 1169 .MUL,
    pushAt 1170 2 4096,
    opAt 1171 .ADD,
-   pushAt 1172 2 1615,
-   pushAt 1173 2 6144,
-   opAt 1174 (.Dup ⟨2, by decide⟩),
-   pushAt 1175 2 6144,
-   pushAt 1176 2 1939,
-   opAt 1177 .JUMP]
+   pushAt 1172 2 2971,
+   opAt 1173 .JUMP]
 
 /-- Instructions 1178..1183, pc 1615..1622. -/
 def blk1178 :
