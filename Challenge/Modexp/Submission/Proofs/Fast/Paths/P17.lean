@@ -2,6 +2,16 @@ import Challenge.Modexp.Submission.Proofs.Fast.Defs
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
+/-! Basic-block instruction paths, group 17 (instructions 1816..1830).
+
+`RRSEL` (pc 2971) sits between the `RR` chain's selector and its multiply.
+The selector is `R1` when the corresponding bit of `n` is clear, and `R1` is
+the Montgomery form of one, so that multiply is the identity; this block skips
+the call in that case and rejoins at pc 1615 with the stack untouched.
+
+* `blk1816` (idx 1816..1821, pc 2971..2980) — the `selOf = R1` test;
+* `blk1822` (idx 1822..1827, pc 2981..2994) — the `MONPRO` call frame;
+* `blk1828` (idx 1828..1830, pc 2995..2999) — the skip, straight to pc 1615. -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
 
@@ -9,37 +19,31 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-def ccbCallBlock (i : Nat) :
+/-- Instructions 1816..1821, pc 2971..2980. -/
+def blk1816 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  match i with
-  | 0 => [opAt 1824 .JUMPDEST, pushAt 1825 2 3006,
-          opAt 1826 (.Dup ⟨1, by decide⟩), opAt 1827 (.Dup ⟨0, by decide⟩),
-          opAt 1828 (.Dup ⟨0, by decide⟩), pushAt 1829 2 1939, opAt 1830 .JUMP]
-  | 1 => [opAt 1831 .JUMPDEST, pushAt 1832 2 3017,
-          opAt 1833 (.Dup ⟨1, by decide⟩), opAt 1834 (.Dup ⟨0, by decide⟩),
-          opAt 1835 (.Dup ⟨0, by decide⟩), pushAt 1836 2 1939, opAt 1837 .JUMP]
-  | 2 => [opAt 1838 .JUMPDEST, pushAt 1839 2 3028,
-          opAt 1840 (.Dup ⟨1, by decide⟩), opAt 1841 (.Dup ⟨0, by decide⟩),
-          opAt 1842 (.Dup ⟨0, by decide⟩), pushAt 1843 2 1939, opAt 1844 .JUMP]
-  | 3 => [opAt 1845 .JUMPDEST, pushAt 1846 2 3039,
-          opAt 1847 (.Dup ⟨1, by decide⟩), opAt 1848 (.Dup ⟨0, by decide⟩),
-          opAt 1849 (.Dup ⟨0, by decide⟩), pushAt 1850 2 1939, opAt 1851 .JUMP]
-  | 4 => [opAt 1852 .JUMPDEST, pushAt 1853 2 3050,
-          opAt 1854 (.Dup ⟨1, by decide⟩), opAt 1855 (.Dup ⟨0, by decide⟩),
-          opAt 1856 (.Dup ⟨0, by decide⟩), pushAt 1857 2 1939, opAt 1858 .JUMP]
-  | 5 => [opAt 1859 .JUMPDEST, pushAt 1860 2 3061,
-          opAt 1861 (.Dup ⟨1, by decide⟩), opAt 1862 (.Dup ⟨0, by decide⟩),
-          opAt 1863 (.Dup ⟨0, by decide⟩), pushAt 1864 2 1939, opAt 1865 .JUMP]
-  | 6 => [opAt 1866 .JUMPDEST, pushAt 1867 2 3072,
-          opAt 1868 (.Dup ⟨1, by decide⟩), opAt 1869 (.Dup ⟨0, by decide⟩),
-          opAt 1870 (.Dup ⟨0, by decide⟩), pushAt 1871 2 1939, opAt 1872 .JUMP]
-  | 7 => [opAt 1873 .JUMPDEST, pushAt 1874 2 3083,
-          opAt 1875 (.Dup ⟨1, by decide⟩), opAt 1876 (.Dup ⟨0, by decide⟩),
-          opAt 1877 (.Dup ⟨0, by decide⟩), pushAt 1878 2 1939, opAt 1879 .JUMP]
-  | _ => []
+  [opAt 1816 .JUMPDEST,
+   opAt 1817 (.Dup ⟨0, by decide⟩),
+   pushAt 1818 2 4096,
+   opAt 1819 .EQ,
+   pushAt 1820 2 2995,
+   opAt 1821 .JUMPI]
 
-def blkCcbExit :
+/-- Instructions 1822..1827, pc 2981..2994: the multiply's call frame. -/
+def blk1822 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1880 .JUMPDEST, opAt 1881 .POP, opAt 1882 .JUMP]
+  [pushAt 1822 2 1615,
+   pushAt 1823 2 6144,
+   opAt 1824 (.Dup ⟨2, by decide⟩),
+   pushAt 1825 2 6144,
+   pushAt 1826 2 1939,
+   opAt 1827 .JUMP]
+
+/-- Instructions 1828..1830, pc 2995..2999: the skip. -/
+def blk1828 :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 1828 .JUMPDEST,
+   pushAt 1829 2 1615,
+   opAt 1830 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

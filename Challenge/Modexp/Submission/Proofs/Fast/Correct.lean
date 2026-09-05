@@ -1,7 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.SubmissionCorrect
 import Challenge.Modexp.Submission.Proofs.Fast.Setup
-import Challenge.Modexp.Submission.Proofs.Fast.GuardTrace
-import Challenge.Modexp.Submission.Proofs.Fast.GuardResult
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 2000000
@@ -67,25 +65,16 @@ private noncomputable def chosenData (F : FastPath) (input : ByteArray) (hvalid 
         Nonempty (Challenge.EvmProof.GasSteps
           (initialState submissionBytecode input 0) final) ∧
           final.isDone = true ∧ final.toResult = .returned (spec input) } :=
-  if hg : GuardLogic.guardDiff input = 0 then
-    ⟨GuardState.returnedState input,
-      ⟨⟨(Main.gasSteps_entryHop input).trans
-          (GuardTrace.gasSteps_match input hg)⟩,
-        GuardResult.returnedState_isDone input,
-        GuardResult.returnedState_result input hvalid hg⟩⟩
-  else if h : F.Handles input then
+  if h : F.Handles input then
     ⟨Classical.choose (F.handled input hvalid h),
-      ⟨⟨((Main.gasSteps_entryHop input).trans
-          (GuardTrace.gasSteps_fallback input hg)).trans
+      ⟨⟨(Main.gasSteps_entryHop input).trans
           (Classical.choice (Classical.choose_spec (F.handled input hvalid h)).1)⟩,
         (Classical.choose_spec (F.handled input hvalid h)).2.1,
         (Classical.choose_spec (F.handled input hvalid h)).2.2⟩⟩
   else
     ⟨SubmissionCorrect.finalState input,
       ⟨⟨SubmissionCorrect.gasSteps_submission input hvalid
-          (((Main.gasSteps_entryHop input).trans
-            (GuardTrace.gasSteps_fallback input hg)).trans
-            (F.bail input hvalid h))⟩,
+          ((Main.gasSteps_entryHop input).trans (F.bail input hvalid h))⟩,
         SubmissionCorrect.finalState_isDone input,
         SubmissionCorrect.finalState_result input hvalid⟩⟩
 

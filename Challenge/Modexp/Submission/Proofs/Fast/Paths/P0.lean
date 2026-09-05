@@ -16,10 +16,10 @@ def blk977 :
   [opAt 977 .JUMPDEST,
    pushAt 978 1 64,
    opAt 979 .CALLDATALOAD,
-   pushAt 980 1 32,
-   opAt 981 (.Dup ⟨1, by decide⟩),
+   opAt 980 (.Dup ⟨0, by decide⟩),
+   pushAt 981 1 33,
    opAt 982 .GT,
-   opAt 983 .ISZERO,
+   opAt 983 .JUMPDEST,
    pushAt 984 2 1886,
    opAt 985 .JUMPI]
 

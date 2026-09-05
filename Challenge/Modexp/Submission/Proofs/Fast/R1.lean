@@ -1,6 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P15
-import Challenge.Modexp.Submission.Proofs.Fast.Wide7
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
@@ -100,14 +99,6 @@ def dblState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- Entry of the exact two-limb guard.  Its failed branches reach
-`DOUBLE256`; its successful branch returns directly. -/
-def guardState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
-    (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3086
-           stack := [UInt256.ofNat px, ret] ++ rest
-           memory := mem }
-
 /-- Between the test and the store, pc 2912. -/
 def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
@@ -180,7 +171,7 @@ theorem run_test_fallback (s : State) (mem : ByteArray) (px : Nat) (ret : UInt25
     (htop : ¬ TopBitSet mem) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1768
       (entryState s mem px ret rest) =
-      some (guardState s mem px ret rest) := by
+      some (dblState s mem px ret rest) := by
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
@@ -207,9 +198,9 @@ theorem run_test_fallback (s : State) (mem : ByteArray) (px : Nat) (ret : UInt25
   simp (config := { maxSteps := 400000 }) [blk1768, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    entryState, guardState, fastPC21, hc2, hc3, hc4, hcode, hrun, hcond, htrue,
+    entryState, dblState, fastPC21, hc2, hc3, hc4, hcode, hrun, hcond, htrue,
     hzeroNat, hawL,
-    jumpDest3086,
+    jumpDest1911,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,

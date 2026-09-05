@@ -41,8 +41,8 @@ def blk1216 :
   [opAt 1216 .JUMPDEST,
    opAt 1217 (.Dup ⟨1, by decide⟩),
    opAt 1218 (.Dup ⟨1, by decide⟩),
-   opAt 1219 .EQ,
-   opAt 1220 .JUMPDEST,
+   opAt 1219 .LT,
+   opAt 1220 .ISZERO,
    pushAt 1221 2 1736,
    opAt 1222 .JUMPI]
 

@@ -16,7 +16,7 @@ def blk1255 :
   [opAt 1255 .JUMPDEST,
    opAt 1256 .POP,
    opAt 1257 .POP,
-   pushAt 1258 2 2922,
+   pushAt 1258 2 1755,
    pushAt 1259 2 2048,
    pushAt 1260 2 6144,
    pushAt 1261 2 1024,
@@ -45,22 +45,16 @@ def blk1272 :
   [opAt 1272 .JUMPDEST,
    opAt 1273 (.Dup ⟨4, by decide⟩),
    opAt 1274 (.Dup ⟨1, by decide⟩),
-   opAt 1275 .EQ,
-   opAt 1276 .JUMPDEST,
+   opAt 1275 .LT,
+   opAt 1276 .ISZERO,
    pushAt 1277 2 1850,
    opAt 1278 .JUMPI]
 
 /-- Instructions 1279..1286, pc 1778..1787. -/
 def blk1279 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1279 (.Dup ⟨0, by decide⟩),
-   pushAt 1280 2 9472,
-   opAt 1281 .MLOAD,
-   opAt 1282 .ADD,
-   opAt 1283 .CALLDATALOAD,
-   pushAt 1284 0 0,
-   opAt 1285 .BYTE,
-   pushAt 1286 1 128]
+  [pushAt 1279 2 2922,
+   opAt 1280 .JUMP]
 
 /-- Instructions 1287..1293, pc 1789..1805. -/
 def blk1287 :
