@@ -887,11 +887,20 @@ def coldNextPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
    opAt 1036 .JUMP]
 
 def coldHitPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1037 .JUMPDEST, pushAt 1038 2 963, opAt 1039 .JUMP]
+  [opAt 1037 .JUMPDEST, pushAt 1038 2 1404, opAt 1039 .JUMP]
 
-@[simp] private theorem coldPCs (i : Nat) (_hi : 995 ≤ i) (_hii : i ≤ 1039) :
+def coldCopyCallPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 1040 .JUMPDEST, pushAt 1041 2 1419,
+   opAt 1042 (.Dup ⟨6, by decide⟩), pushAt 1043 2 1024,
+   pushAt 1044 2 2048, pushAt 1045 2 58, opAt 1046 .JUMP]
+
+def coldCopyRetPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 1047 .JUMPDEST, pushAt 1048 1 1, opAt 1049 .ADD,
+   pushAt 1050 2 963, opAt 1051 .JUMP]
+
+@[simp] private theorem coldPCs (i : Nat) (_hi : 995 ≤ i) (_hii : i ≤ 1051) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1343,1344,1345,1346,1347,1348,1349,1350,1353,1354,1355,1356,1357,1358,1359,1360,1361,1362,1363,1366,1367,1368,1369,1371,1372,1373,1375,1376,1377,1378,1381,1382,1384,1385,1388,1389,1390,1391,1392,1394,1395,1398,1399,1400,1403])[i - 995]! := by
+      ([1343,1344,1345,1346,1347,1348,1349,1350,1353,1354,1355,1356,1357,1358,1359,1360,1361,1362,1363,1366,1367,1368,1369,1371,1372,1373,1375,1376,1377,1378,1381,1382,1384,1385,1388,1389,1390,1391,1392,1394,1395,1398,1399,1400,1403,1404,1405,1408,1409,1412,1415,1418,1419,1420,1422,1423,1426])[i - 995]! := by
   interval_cases i <;> decide
 
 private theorem jumpColdOuter :
@@ -913,6 +922,14 @@ private theorem jumpColdHit :
 private theorem jumpSerializerEntry :
     Decode.isValidJumpDest submissionBytecode 1118 = true :=
   Artifact.isValidJumpDest_index 838 (by rfl)
+
+private theorem jumpColdCopy :
+    Decode.isValidJumpDest submissionBytecode 1404 = true :=
+  Artifact.isValidJumpDest_index 1040 (by rfl)
+
+theorem jumpColdCopyRet :
+    Decode.isValidJumpDest submissionBytecode 1419 = true :=
+  Artifact.isValidJumpDest_index 1047 (by rfl)
 
 /-- Cold clone of `outerLoop`: same stack shape, pc in the appended routine. -/
 def coldOuter (s : State) (accumulatorWord : UInt256)
@@ -985,6 +1002,25 @@ def coldHitState (s : State) (accumulatorWord : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   { coldBitLoop s accumulatorWord count b e m baseOff expOff i offset byte
       rest j with pc := UInt256.ofNat 1399 }
+
+/-- S2b: the first set bit copies `base` into the accumulator instead of
+running a square and a product. -/
+def coldCopyState (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (j : Nat) : State :=
+  { coldBitLoop s accumulatorWord count b e m baseOff expOff i offset byte
+      rest j with pc := UInt256.ofNat 1404 }
+
+/-- State after the S2b `copyLimbs(0x0800 ← 0x0400)` call returns. -/
+def coldCopied (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (j : Nat) : State :=
+  BigHelpers.copyReturned
+    (coldCopyState s accumulatorWord count b e m baseOff expOff i offset byte
+      rest j)
+    2048 1024 count 1419
+    (bitTailFrame accumulatorWord count b e m baseOff expOff i j offset byte
+      rest)
 
 set_option linter.unusedSimpArgs false in
 theorem run_coldStart (s : State) (accumulatorWord : UInt256)
@@ -1253,14 +1289,75 @@ theorem run_coldHit (s : State) (accumulatorWord : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock coldHitPath
       (coldHitState s accumulatorWord count b e m baseOff expOff i offset byte
         rest j) =
-      some (innerLoop s accumulatorWord count b e m baseOff expOff i offset
+      some (coldCopyState s accumulatorWord count b e m baseOff expOff i offset
         byte rest j) := by
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
+  have hcc : (1404 : UInt256).toNat = 1404 := by decide
+  have hccWord : (1404 : UInt256) = UInt256.ofNat 1404 := by decide
+  simp [coldHitPath, opAt, pushAt, wfOp, coldHitState, coldCopyState,
+    coldBitLoop, coldPCs, hcode, hrun, jumpColdCopy, hcc, hccWord, hc11, hc12,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_coldCopyCall (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1005)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock coldCopyCallPath
+      (coldCopyState s accumulatorWord count b e m baseOff expOff i offset byte
+        rest j) =
+      some (BigHelpers.copyEntry
+        (coldCopyState s accumulatorWord count b e m baseOff expOff i offset
+          byte rest j)
+        2048 1024 count 1419
+        (bitTailFrame accumulatorWord count b e m baseOff expOff i j offset
+          byte rest)) := by
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have h58 : (58 : UInt256).toNat = 58 := by decide
+  have h58Word : (58 : UInt256) = UInt256.ofNat 58 := by decide
+  have hccr : (1419 : UInt256) = UInt256.ofNat 1419 := by decide
+  simp [coldCopyCallPath, opAt, pushAt, wfOp, coldCopyState, coldBitLoop,
+    BigHelpers.copyEntry, bitTailFrame, coldPCs, hcode, hrun, jump58,
+    h58, h58Word, hccr, hc11, hc12, hc13, hc14, hc15, hc16,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_coldCopyRet (t : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1005)
+    (hpc : t.pc = UInt256.ofNat 1419)
+    (hstack : t.stack = bitTailFrame accumulatorWord count b e m baseOff expOff
+      i j offset byte rest)
+    (hcode : t.executionEnv.code = submissionBytecode)
+    (hrun : t.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock coldCopyRetPath t =
+      some (innerLoop t accumulatorWord count b e m baseOff expOff i offset
+        byte rest (j + 1)) := by
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hinc : (1 : UInt256) + UInt256.ofNat j = UInt256.ofNat (j + 1) := by
+    rw [show (1 : UInt256) = UInt256.ofNat 1 from by decide,
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_comm 1 j]
   have h963 : (963 : UInt256).toNat = 963 := by decide
   have h963Word : (963 : UInt256) = UInt256.ofNat 963 := by decide
-  simp [coldHitPath, opAt, pushAt, wfOp, coldHitState, coldBitLoop, innerLoop,
-    coldPCs, hcode, hrun, jump963, h963, h963Word, hc11, hc12,
+  simp [coldCopyRetPath, opAt, pushAt, wfOp, bitTailFrame, innerLoop,
+    coldPCs, hpc, hstack, hcode, hrun, jump963, h963, h963Word, hinc,
+    hc11, hc12,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,

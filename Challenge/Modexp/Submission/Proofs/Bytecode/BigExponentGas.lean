@@ -842,6 +842,7 @@ def gasSteps_coldBits (s : State) (accumulatorWord : UInt256)
 def gasSteps_coldHit (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1005) (hj : j < 8)
+    (hcount : count < 2 ^ 256)
     (hbit : ¬ (exponentBit byte j).toNat = 0)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -850,34 +851,83 @@ def gasSteps_coldHit (s : State) (accumulatorWord : UInt256)
     Challenge.EvmProof.GasSteps
       (coldBitLoop s accumulatorWord count b e m baseOff expOff i offset byte
         rest j)
-      (innerLoop s accumulatorWord count b e m baseOff expOff i offset byte
-        rest j) :=
-  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      (innerLoop
+        (coldCopied s accumulatorWord count b e m baseOff expOff i offset byte
+          rest j)
+        accumulatorWord count b e m baseOff expOff i offset byte rest
+        (j + 1)) := by
+  have hframe : (bitTailFrame accumulatorWord count b e m baseOff expOff i j
+      offset byte rest).length < 1016 := by
+    simp [bitTailFrame]
+    omega
+  have hvalid : Decode.isValidJumpDest submissionBytecode
+      ((1419 : UInt256)).toNat = true := by
+    rw [show ((1419 : UInt256)).toNat = 1419 from by decide]
+    exact jumpColdCopyRet
+  have hstep0 := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka coldBitComputePath
       (by simpa [coldBitLoop, Artifact.submissionArtifact] using hcode)
       (by simpa [coldBitLoop, State.fork] using hfork)
       (run_coldBitCompute s accumulatorWord count b e m baseOff expOff i j offset byte rest hcap hj hrun)
       (by simpa [coldBitLoop] using hrun)
-      (by simpa [coldBitLoop, State.fork] using hnp)).trans
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      (by simpa [coldBitLoop, State.fork] using hnp)
+  have hstep1 := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka coldBitHitPath
       (by simpa [coldBitTest, coldBitLoop, bitFrame, Artifact.submissionArtifact] using hcode)
       (by simpa [coldBitTest, coldBitLoop, bitFrame, State.fork] using hfork)
       (run_coldBitHit s accumulatorWord count b e m baseOff expOff i j offset byte (exponentBit byte j) rest hcap hbit hcode hrun)
       (by simpa [coldBitTest, coldBitLoop, bitFrame] using hrun)
-      (by simpa [coldBitTest, coldBitLoop, bitFrame, State.fork] using hnp)).trans
-      (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      (by simpa [coldBitTest, coldBitLoop, bitFrame, State.fork] using hnp)
+  have hstep2 := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka coldHitPath
       (by simpa [coldHitState, coldBitLoop, Artifact.submissionArtifact] using hcode)
       (by simpa [coldHitState, coldBitLoop, State.fork] using hfork)
       (run_coldHit s accumulatorWord count b e m baseOff expOff i j offset byte rest hcap hcode hrun)
       (by simpa [coldHitState, coldBitLoop] using hrun)
-      (by simpa [coldHitState, coldBitLoop, State.fork] using hnp)))
-
-/-- S2a: the hot inner loop resumes at the bit that was found. -/
-abbrev coldHitTarget (s : State) (_accumulatorWord : UInt256)
-    (_count _b _e _m _baseOff _expOff _i : Nat) (_offset _byte : UInt256)
-    (_rest : List UInt256) (_j : Nat) : State := s
+      (by simpa [coldHitState, coldBitLoop, State.fork] using hnp)
+  have hstep3 := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka coldCopyCallPath
+      (by simpa [coldCopyState, coldBitLoop, Artifact.submissionArtifact] using hcode)
+      (by simpa [coldCopyState, coldBitLoop, State.fork] using hfork)
+      (run_coldCopyCall s accumulatorWord count b e m baseOff expOff i j offset byte rest hcap hcode hrun)
+      (by simpa [coldCopyState, coldBitLoop] using hrun)
+      (by simpa [coldCopyState, coldBitLoop, State.fork] using hnp)
+  have hcopy := BigHelpers.gasSteps_copy
+    (coldCopyState s accumulatorWord count b e m baseOff expOff i offset byte
+      rest j)
+    2048 1024 count 1419
+    (bitTailFrame accumulatorWord count b e m baseOff expOff i j offset byte
+      rest) hframe hcount
+    (by simpa [coldCopyState, coldBitLoop] using hcode)
+    (by simpa [coldCopyState, coldBitLoop, State.fork] using hfork)
+    (by simpa [coldCopyState, coldBitLoop] using hrun)
+    (by simpa [coldCopyState, coldBitLoop, State.fork] using hnp)
+    hvalid
+  have hret := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka coldCopyRetPath
+      (by simpa [coldCopied, coldCopyState, coldBitLoop,
+        BigHelpers.copyReturned, Artifact.submissionArtifact] using hcode)
+      (by simpa [coldCopied, coldCopyState, coldBitLoop,
+        BigHelpers.copyReturned, State.fork] using hfork)
+      (run_coldCopyRet
+        (coldCopied s accumulatorWord count b e m baseOff expOff i offset byte
+          rest j)
+        accumulatorWord count b e m baseOff expOff i j offset byte rest hcap
+        (by
+          simp [coldCopied, BigHelpers.copyReturned,
+            show ((1419 : UInt256)) = UInt256.ofNat 1419 from by decide])
+        (by simp [coldCopied, BigHelpers.copyReturned])
+        (by simpa [coldCopied, coldCopyState, coldBitLoop,
+          BigHelpers.copyReturned] using hcode)
+        (by simpa [coldCopied, coldCopyState, coldBitLoop,
+          BigHelpers.copyReturned] using hrun))
+      (by simpa [coldCopied, coldCopyState, coldBitLoop,
+        BigHelpers.copyReturned] using hrun)
+      (by simpa [coldCopied, coldCopyState, coldBitLoop,
+        BigHelpers.copyReturned, State.fork] using hnp)
+  exact Challenge.EvmProof.GasSteps.cast
+    (hstep0.trans (hstep1.trans (hstep2.trans (hstep3.trans (hcopy.trans hret)))))
+    rfl rfl
 
 /-! ### Shifted hot iterators (`gasSteps_exponentBit` / `gasSteps_exponentByte`
 are already generic in the bit / byte index, so only the indexing wrapper is
@@ -1166,13 +1216,16 @@ def coldPhaseBit (s : State) (expOff e : Nat) : Nat :=
 def coldPhaseOffset (s : State) (expOff e : Nat) : UInt256 :=
   UInt256.ofNat (expOff + coldByteIndex s expOff e)
 
-/-- S2a: the cold search writes no memory, so the hot loop resumes from the
-entry state. -/
-def coldPhaseHit (s : State) (_accumulatorWord : UInt256)
-    (_count _b _e _m _baseOff _expOff : Nat) (_rest : List UInt256) : State := s
+/-- S2b: the first set bit copies `base` into the accumulator instead of
+running a square and a product. -/
+def coldPhaseHit (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
+  coldCopied s accumulatorWord count b e m baseOff expOff
+    (coldByteIndex s expOff e) (coldPhaseOffset s expOff e)
+    (coldPhaseByte s expOff e) rest (coldPhaseBit s expOff e)
 
-/-- S2a resumes the hot inner loop at the bit that was found. -/
-def coldPhaseStart (s : State) (expOff e : Nat) : Nat := coldPhaseBit s expOff e
+/-- S2b resumes the hot inner loop one bit past the one that was found. -/
+def coldPhaseStart (s : State) (expOff e : Nat) : Nat := coldPhaseBit s expOff e + 1
 
 /-- Memory state after finishing the byte the cold search stopped on. -/
 def coldPhaseBits (s : State) (accumulatorWord : UInt256)
@@ -1200,13 +1253,13 @@ def exponentPhaseState (s : State) (accumulatorWord : UInt256)
     (rest : List UInt256) :
     (coldPhaseHit s accumulatorWord count b e m baseOff expOff
       rest).executionEnv = s.executionEnv := by
-  simp [coldPhaseHit]
+  simp [coldPhaseHit, coldCopied, BigHelpers.copyReturned, coldCopyState, coldBitLoop]
 
 @[simp] theorem coldPhaseHit_halt (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) :
     (coldPhaseHit s accumulatorWord count b e m baseOff expOff rest).halt =
       s.halt := by
-  simp [coldPhaseHit]
+  simp [coldPhaseHit, coldCopied, BigHelpers.copyReturned, coldCopyState, coldBitLoop]
 
 @[simp] theorem coldPhaseBits_executionEnv (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff : Nat)
@@ -1316,7 +1369,7 @@ def gasSteps_exponentPhase (s : State) (accumulatorWord : UInt256)
     have hhit := gasSteps_coldHit s accumulatorWord count b e m baseOff expOff
       (coldByteIndex s expOff e) (coldPhaseBit s expOff e)
       (coldPhaseOffset s expOff e) (coldPhaseByte s expOff e) rest (by omega)
-      hj0lt hbitnz hcode hfork hrun hnp
+      hj0lt hcount hbitnz hcode hfork hrun hnp
     have hhotbits := gasSteps_bitsFromTo8
       (coldPhaseHit s accumulatorWord count b e m baseOff expOff rest)
       accumulatorWord count b e m baseOff expOff (coldByteIndex s expOff e)
