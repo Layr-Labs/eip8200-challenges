@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Benchmark.Artifact
-import Challenge.Ripemd160.Reference.Proofs.Bytecode.ReferenceCorrect
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ImmediateCorrect
 
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -7,9 +7,9 @@ set_option maxHeartbeats 5000000
 
 namespace Challenge.Ripemd160.Benchmark
 
-/-- Baseline proof for the bundled RIPEMD-160 reference bytecode. -/
+/-- Exact-bytecode correctness for the immediate-round compressor. -/
 theorem candidate : Challenge.Ripemd160.Correct bytecode := by
-  change Challenge.Ripemd160.Correct Challenge.Ripemd160.referenceBytecode
-  exact Challenge.Ripemd160.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correct
+  change Challenge.Ripemd160.Correct Challenge.Ripemd160.submissionBytecode
+  exact Challenge.Ripemd160.Submission.Proofs.Bytecode.ImmediateCorrect.correct
 
 end Challenge.Ripemd160.Benchmark
