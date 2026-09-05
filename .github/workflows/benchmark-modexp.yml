@@ -17,3 +17,5 @@ jobs:
     uses: ./.github/workflows/_benchmark-track.yml
     with:
       track: modexp
+    secrets:
+      benchmark-vectors: ${{ secrets.MODEXP_BENCHMARK_VECTORS }}

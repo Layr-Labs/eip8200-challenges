@@ -17,3 +17,5 @@ jobs:
     uses: ./.github/workflows/_benchmark-track.yml
     with:
       track: ripemd160
+    secrets:
+      benchmark-vectors: ${{ secrets.RIPEMD160_BENCHMARK_VECTORS }}

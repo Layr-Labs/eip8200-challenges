@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import csv
 from dataclasses import dataclass
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -19,14 +20,27 @@ HEX_RE = re.compile(r"(?:[0-9a-f]{2})+")
 class Track:
     lean_name: str
     display_name: str
-    vector_count: int
     framed: bool
 
 
 TRACKS = {
-    "modexp": Track("Modexp", "MODEXP", 13, False),
-    "ripemd160": Track("Ripemd160", "RIPEMD-160", 17, True),
+    "modexp": Track("Modexp", "MODEXP", False),
+    "ripemd160": Track("Ripemd160", "RIPEMD-160", True),
 }
+
+
+def read_vectors(path: Path) -> tuple[dict[str, int], str]:
+    # The scorer has already validated this file and its expected outputs.
+    raw = path.read_bytes()
+    document = json.loads(raw)
+    rows = document["vectors"]
+    expected = {row["label"]: len(bytes.fromhex(row["input"].removeprefix("0x"))) for row in rows}
+    return expected, hashlib.sha256(raw).hexdigest()
+
+
+def validate_csv_identity(row: dict[str, str], expected: dict[str, int]) -> None:
+    if row["vector"] not in expected or int(row["bytes"]) != expected[row["vector"]]:
+        raise ValueError("scorer output does not match the selected suite")
 
 
 def track_config(name: str) -> Track:
@@ -123,7 +137,7 @@ def prepare(
 
 def parse_framed_csv(
     path: Path,
-    expected_count: int,
+    expected: dict[str, int],
     expected_fields: list[str] | None = None,
 ) -> tuple[int, dict[str, object]]:
     clean: dict[str, int] = {}
@@ -134,6 +148,7 @@ def parse_framed_csv(
         if reader.fieldnames != expected_fields:
             raise ValueError(f"unexpected scorer CSV header: {reader.fieldnames}")
         for row in reader:
+            validate_csv_identity(row, expected)
             label = row["vector"]
             frame = row["frame"]
             status = row["status"]
@@ -152,9 +167,9 @@ def parse_framed_csv(
                 raise ValueError(f"duplicate scorer row: {label}/{frame}")
             target[label] = gas
 
-    if len(clean) != expected_count or clean.keys() != dirty.keys():
+    if clean.keys() != expected.keys() or clean.keys() != dirty.keys():
         raise ValueError(
-            f"expected {expected_count} paired vectors, got "
+            f"expected {len(expected)} paired vectors, got "
             f"{len(clean)} clean and {len(dirty)} dirty"
         )
     clean_total = sum(clean.values())
@@ -167,13 +182,14 @@ def parse_framed_csv(
     }
 
 
-def parse_modexp_csv(path: Path, expected_count: int) -> tuple[int, dict[str, object]]:
+def parse_modexp_csv(path: Path, expected: dict[str, int]) -> tuple[int, dict[str, object]]:
     rows: dict[str, tuple[int, int]] = {}
     with path.open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
         if reader.fieldnames != ["vector", "bytes", "status", "gas", "precompile"]:
             raise ValueError(f"unexpected scorer CSV header: {reader.fieldnames}")
         for row in reader:
+            validate_csv_identity(row, expected)
             label = row["vector"]
             if row["status"] != "ok":
                 raise ValueError(f"scorer rejected {label}: {row['status']}")
@@ -188,8 +204,8 @@ def parse_modexp_csv(path: Path, expected_count: int) -> tuple[int, dict[str, ob
                 raise ValueError(f"negative gas for {label}")
             rows[label] = (gas, precompile)
 
-    if len(rows) != expected_count:
-        raise ValueError(f"expected {expected_count} vectors, got {len(rows)}")
+    if rows.keys() != expected.keys():
+        raise ValueError(f"expected {len(expected)} vectors, got {len(rows)}")
     total = sum(gas for gas, _ in rows.values())
     return total, {
         "vectors": len(rows),
@@ -204,20 +220,23 @@ def write_score(
     csv_path: Path,
     score_path: Path,
     summary_path: Path,
+    vectors_path: Path,
 ) -> None:
     track = track_config(track_name)
     _, artifact = read_artifact(artifact_path)
+    expected, suite_hash = read_vectors(vectors_path)
     try:
         if track.framed:
-            score, metrics = parse_framed_csv(csv_path, track.vector_count)
+            score, metrics = parse_framed_csv(csv_path, expected)
         else:
-            score, metrics = parse_modexp_csv(csv_path, track.vector_count)
+            score, metrics = parse_modexp_csv(csv_path, expected)
     except OSError as error:
         raise ValueError(f"could not read scorer output {csv_path}: {error}") from error
 
     metrics = {
         "verified": True,
         "bytecodeBytes": len(artifact) // 2,
+        "vectorSuiteSha256": suite_hash,
         **metrics,
     }
     atomic_write(
@@ -229,7 +248,8 @@ def write_score(
         f"## EIP-8200 {track.display_name} benchmark\n\n"
         f"- Verified gas score: **{score:,}**\n"
         f"- Bytecode size: **{len(artifact) // 2:,} bytes**\n"
-        f"- Correctness vectors: **{track.vector_count}/{track.vector_count}**\n"
+        f"- Correctness vectors: **{len(expected)}/{len(expected)}**\n"
+        f"- Vector suite SHA-256: `{suite_hash}`\n"
         "- Lean Comparator: **accepted**\n"
     )
     atomic_write(summary_path, summary)
@@ -240,7 +260,7 @@ def usage() -> str:
         "usage:\n"
         "  yukon_benchmark.py prepare TRACK SUBMITTED_HEX TRUSTED_HEX "
         "ARTIFACT_MODULE CHALLENGE\n"
-        "  yukon_benchmark.py score TRACK TRUSTED_HEX SCORER_CSV SCORE_JSON SUMMARY"
+        "  yukon_benchmark.py score TRACK TRUSTED_HEX SCORER_CSV SCORE_JSON SUMMARY VECTORS"
     )
 
 
@@ -255,12 +275,12 @@ def main() -> None:
         if command == "prepare" and len(arguments) == 5:
             track_name, *paths = arguments
             prepare(track_name, *(Path(argument) for argument in paths))
-        elif command == "score" and len(arguments) == 5:
+        elif command == "score" and len(arguments) == 6:
             track_name, *paths = arguments
             write_score(track_name, *(Path(argument) for argument in paths))
         else:
             raise SystemExit(usage())
-    except ValueError as error:
+    except (ValueError, OSError, KeyError, TypeError) as error:
         raise SystemExit(str(error)) from error
 
 

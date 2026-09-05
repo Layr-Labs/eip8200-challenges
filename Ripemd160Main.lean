@@ -1,6 +1,7 @@
 import Challenge.Ripemd160.Reference
 import Challenge.Ripemd160.Scorer
 import YulParser.Compile
+import Challenge.TestVectors
 set_option warningAsError true
 
 open EvmSemantics
@@ -26,6 +27,14 @@ def main (args : List String) : IO UInt32 := do
     args.findSome? fun arg =>
       if arg.startsWith s!"--{name}=" then some (arg.drop (name.length + 3)).copy else none
   let csv := args.contains "--csv"
+  if args.contains "--help" then
+    IO.println "usage: ripemd160challenge [--yul=FILE | --hex=FILE] [--vectors=FILE] [--csv]"
+    return 0
+  let selected : List Vector ← match flag "vectors" with
+    | none => pure vectors
+    | some path => do
+        let loaded ← Challenge.TestVectors.load path "ripemd160" Challenge.Ripemd160.spec
+        pure (loaded.map fun v => { label := v.label, input := v.input })
   for (input, expected) in oracleChecks do
     if Hex.bytesToHex (Challenge.Ripemd160.spec input) != expected then
       IO.eprintln "ripemd160challenge: pinned semantics disagrees with published vectors"
@@ -49,15 +58,15 @@ def main (args : List String) : IO UInt32 := do
     IO.println s!"{pad "vector" 18}{pad "bytes" 7}{pad "clean gas" 12}{pad "dirty gas" 12}status"
   let mut failures := 0
   let mut totalGas := 0
-  for v in vectors do
+  for v in selected do
     let (clean, dirty, status) := verdict code v
     if !status.startsWith "ok" then failures := failures + 1
     match clean with | .ok gas => totalGas := totalGas + gas | _ => pure ()
     let gasText (o : Outcome) : String :=
       match o.gas? with | some g => toString g | none => "-"
     if csv then
-      IO.println s!"{v.label},{v.input.size},clean,{status},{gasText clean}"
-      IO.println s!"{v.label},{v.input.size},dirty,{status},{gasText dirty}"
+      IO.println s!"{Challenge.TestVectors.csvLabel v.label},{v.input.size},clean,{status},{gasText clean}"
+      IO.println s!"{Challenge.TestVectors.csvLabel v.label},{v.input.size},dirty,{status},{gasText dirty}"
     else
       IO.println s!"{pad v.label 18}{pad (toString v.input.size) 7}{pad (gasText clean) 12}{pad (gasText dirty) 12}{status}"
   if !csv then

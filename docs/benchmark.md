@@ -5,11 +5,42 @@ scored tracks on a shared branch:
 
 | track | editable path | score |
 | --- | --- | --- |
-| `modexp` | `Challenge/Modexp/Submission` | gas over 13 vectors |
-| `ripemd160` | `Challenge/Ripemd160/Submission` | clean-state gas over 17 vectors |
+| `modexp` | `Challenge/Modexp/Submission` | total gas over the benchmark vectors |
+| `ripemd160` | `Challenge/Ripemd160/Submission` | clean-state gas over the benchmark vectors |
 
 Lower is better in every track. The editable paths are deliberately disjoint,
 so Yukon can promote one track without replacing a sibling track's solution.
+
+## Public and benchmark vectors
+
+Public vectors live in `test-vectors/modexp.json` and
+`test-vectors/ripemd160.json`. Anyone can run them locally:
+
+```sh
+lake exe modexpchallenge --vectors=test-vectors/modexp.json
+lake exe ripemd160challenge --vectors=test-vectors/ripemd160.json
+```
+
+The actual benchmark uses separate JSON stored in two GitHub Actions repository
+secrets: `MODEXP_BENCHMARK_VECTORS` and `RIPEMD160_BENCHMARK_VECTORS`.
+Each secret contains a complete vector file in the [same format](../test-vectors/README.md).
+An administrator can set them from files kept outside the public repository:
+
+```sh
+gh secret set MODEXP_BENCHMARK_VECTORS < /path/to/private-modexp.json
+gh secret set RIPEMD160_BENCHMARK_VECTORS < /path/to/private-ripemd160.json
+```
+
+Keep each JSON secret below GitHub's [48 KB limit](https://docs.github.com/en/actions/reference/security/secrets).
+The workflow passes the selected secret to `benchmark.sh`, which writes it to a
+temporary file after proof verification and gives that file to the existing
+scorer. Missing secrets fail the benchmark. Private vectors and per-case results
+are not uploaded; the score includes the vector count and SHA-256 of the suite.
+Keep the secrets fixed while comparing scores; changing a suite changes the benchmark.
+
+Non-ranked local `benchmark.sh` runs use the public JSON when no secret is set.
+The CLI runners without `--vectors` still use the original built-in gas-report
+vectors.
 
 ## Selecting a track
 
