@@ -55,14 +55,14 @@ def fallbackJumpDestPath : List Located :=
 def guardPath : List Located :=
   [ opAt 831 .JUMPDEST
   , opAt 832 .CALLDATASIZE
-  , opAt 833 (.Dup ⟨0, by decide⟩)
+  , opAt 833 .CALLDATASIZE
   , opAt 834 .ISZERO
   , pushAt 835 2 (UInt256.ofNat 3264)
   , opAt 836 .JUMPI ]
 
 def guardAbcPath : List Located :=
   guardPath ++
-  [ opAt 837 (.Dup ⟨0, by decide⟩)
+  [ opAt 837 .CALLDATASIZE
   , pushAt 838 1 (UInt256.ofNat 3)
   , opAt 839 .EQ
   , pushAt 840 2 (UInt256.ofNat 3293)
@@ -70,7 +70,7 @@ def guardAbcPath : List Located :=
 
 def guardToPattern1Path : List Located :=
   guardAbcPath ++
-  [ opAt 842 (.Dup ⟨0, by decide⟩)
+  [ opAt 842 .CALLDATASIZE
   , pushAt 843 2 (UInt256.ofNat 1000)
   , opAt 844 .EQ
   , pushAt 845 2 (UInt256.ofNat 3115)
@@ -84,7 +84,7 @@ def guardToPattern1Path : List Located :=
 
 def guardToA1000Path : List Located :=
   guardAbcPath ++
-  [ opAt 842 (.Dup ⟨0, by decide⟩)
+  [ opAt 842 .CALLDATASIZE
   , pushAt 843 2 (UInt256.ofNat 1000)
   , opAt 844 .EQ
   , pushAt 845 2 (UInt256.ofNat 3115)
