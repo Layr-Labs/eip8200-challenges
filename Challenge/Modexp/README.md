@@ -50,6 +50,10 @@ The generated corpus contains 32 256-bit cases, 10 RSA-1024 cases, and 6
 RSA-2048 cases. The 256-bit cases use full-width exponents, including
 `BN254_p - 1`. Tests are evidence, not the correctness proof.
 
+The public generated corpus uses `corpusSeed := 0` in `Scorer.lean`. A private
+evaluator can replace that one value before building to derive a different
+corpus while keeping the same size buckets and RSA exponent schedule.
+
 <!-- BEGIN GENERATED MODEXP GAS REPORT -->
 ## Gas report
 

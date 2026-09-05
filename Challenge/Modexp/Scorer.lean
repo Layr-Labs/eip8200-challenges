@@ -48,6 +48,14 @@ def makeInputBytes (base exponent modulus : ByteArray) : ByteArray :=
 private def makeHexInput (base exponent modulus : String) : ByteArray :=
   makeInputBytes (fromHex base) (fromHex exponent) (fromHex modulus)
 
+/-- Public default seed for the generated corpus. A private evaluator can
+replace this single value before building to produce a different corpus. -/
+def corpusSeed : Nat := 0
+
+/-- Derive an independent 64-bit seed for a bucket and one-based case index. -/
+private def vectorSeed (domain index : Nat) : Nat :=
+  (corpusSeed + domain + index) % (2 ^ 64)
+
 /-- Reproducible bytes produced by a 64-bit linear congruential generator.
 This is test data generation, not a cryptographic random-number generator. -/
 private def generatedBytes (seed size : Nat) : ByteArray :=
@@ -198,23 +206,24 @@ private def rsa2048Exponent (index : Nat) : Nat × Nat :=
   else if index = 5 then (257, 2)
   else (65537, 3)
 
-/-- Generate an RSA-sized bucket from one fixed seed and an exponent schedule. -/
-private def generatedRsaVectors (bits width seed count : Nat)
+/-- Generate an RSA-sized bucket from one domain and an exponent schedule. -/
+private def generatedRsaVectors (bits width domain count : Nat)
     (exponentAt : Nat → Nat × Nat) : List Vector :=
   (List.range count).map fun offset =>
     let index := offset + 1
     let (exponent, exponentWidth) := exponentAt index
     { label := s!"generated RSA-{bits} #{paddedIndex index} e={exponent}"
-    , input := generatedInput (seed + index) width exponent exponentWidth }
+    , input := generatedInput (vectorSeed domain index) width exponent exponentWidth }
 
 /-- Forty-eight deterministic public inputs. Operand bytes come from the PRNG
-above. Fixed bucket seeds make the corpus reproducible. The BN254 case remains
-fixed because it deliberately exercises the exponent `p - 1`. -/
+above. A fixed public seed and separate bucket domains make the corpus
+reproducible. The BN254 case remains fixed because it deliberately exercises
+the exponent `p - 1`. -/
 def generatedVectors : List Vector :=
   let generated256 := (List.range 31).map fun offset =>
     let index := offset + 2
     { label := s!"generated 256-bit #{paddedIndex index} full exponent"
-    , input := generatedWideExponentInput (0x1000 + index) 32 32 }
+    , input := generatedWideExponentInput (vectorSeed 0x1000 index) 32 32 }
   [ { label := "generated 256-bit #01 BN254 p-1", input := bn254Fermat } ] ++
     generated256 ++
     generatedRsaVectors 1024 128 0x3000 10 rsa1024Exponent ++
