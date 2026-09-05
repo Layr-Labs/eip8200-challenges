@@ -384,10 +384,10 @@ private def submissionInstructionsChunk1 : List Instr :=
   .push 1 72,
   op 0x81,
   op 0x01,
-  .push 1 6,
-  op 0x1c,
-  .push 1 6,
-  op 0x1b,
+  .push 2 63,
+  op 0x19,
+  op 0x16,
+  op 0x5b,
   op 0x90,
   op 0x5b,
   op 0x80,
@@ -3059,7 +3059,7 @@ private theorem submissionInstructionsChunk1_assemble : assembleBytes submission
   0x60, 0x18, 0x1b, 0x81, 0x60, 0x02, 0x1a, 0x60, 0x10, 0x1b, 0x17, 0x81,
   0x60, 0x01, 0x1a, 0x60, 0x08, 0x1b, 0x82, 0x5f, 0x1a, 0x17, 0x17, 0x92,
   0x50, 0x50, 0x50, 0x90, 0x56, 0x5b, 0x61, 0x02, 0x31, 0x56, 0x5b, 0x36,
-  0x60, 0x48, 0x81, 0x01, 0x60, 0x06, 0x1c, 0x60, 0x06, 0x1b, 0x90, 0x5b,
+  0x60, 0x48, 0x81, 0x01, 0x61, 0x00, 0x3f, 0x19, 0x16, 0x5b, 0x90, 0x5b,
   0x80, 0x5f, 0x61, 0x08, 0x00, 0x37, 0x60, 0x80, 0x81, 0x61, 0x08, 0x00,
   0x01, 0x53, 0x80, 0x60, 0xc3, 0x1b, 0x60, 0xc0, 0x1c, 0x61, 0x07, 0xf8,
   0x83, 0x01, 0x81, 0x60, 0x38, 0x1c, 0x81, 0x60, 0x07, 0x01, 0x53, 0x5b,
@@ -4007,14 +4007,14 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
     instructionPC 354 = 0x1e6 := by rfl
 
 @[simp] theorem refPc355 :
-    submissionArtifact.instructionPC 355 = 0x1e8 := by rfl
+    submissionArtifact.instructionPC 355 = 0x1e9 := by rfl
 @[simp] theorem pc355 :
-    instructionPC 355 = 0x1e8 := by rfl
+    instructionPC 355 = 0x1e9 := by rfl
 
 @[simp] theorem refPc356 :
-    submissionArtifact.instructionPC 356 = 0x1e9 := by rfl
+    submissionArtifact.instructionPC 356 = 0x1ea := by rfl
 @[simp] theorem pc356 :
-    instructionPC 356 = 0x1e9 := by rfl
+    instructionPC 356 = 0x1ea := by rfl
 
 @[simp] theorem refPc357 :
     submissionArtifact.instructionPC 357 = 0x1eb := by rfl
@@ -4304,10 +4304,10 @@ def padLengthPath : List
    ⟨351, .push ⟨1, by decide⟩ (UInt256.ofNat 72), by rfl, by decide⟩,
    ⟨352, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨353, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨354, .push ⟨1, by decide⟩ (UInt256.ofNat 6), by rfl, by decide⟩,
-   ⟨355, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨356, .push ⟨1, by decide⟩ (UInt256.ofNat 6), by rfl, by decide⟩,
-   ⟨357, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨354, .push ⟨2, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
+   ⟨355, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨356, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨357, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨358, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨359, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
