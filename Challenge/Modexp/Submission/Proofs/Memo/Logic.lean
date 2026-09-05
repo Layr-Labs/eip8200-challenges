@@ -66,6 +66,13 @@ private theorem word_toNat_xor (a b : UInt256) :
   exact Nat.lt_of_lt_of_le
     (Nat.xor_lt_two_pow a.val.isLt b.val.isLt) (by rfl)
 
+/-- `x XOR 0 = x`. Used when an expected-zero guard word is compared by
+`OR (CALLDATALOAD off)` instead of `OR (XOR (CALLDATALOAD off) 0)`. -/
+@[simp] theorem xor_zero (a : UInt256) : UInt256.xor a 0 = a := by
+  apply Challenge.EvmProof.Word.word_ext
+  have h0 : (0 : UInt256).toNat = 0 := by decide
+  rw [word_toNat_xor, h0, Nat.xor_zero]
+
 theorem wordXor_eq_zero_iff (a b : UInt256) :
     UInt256.xor a b = 0 ↔ a = b := by
   constructor

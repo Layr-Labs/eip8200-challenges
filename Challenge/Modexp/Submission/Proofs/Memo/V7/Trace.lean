@@ -42,7 +42,7 @@ theorem run_chunk0 (input : ByteArray) :
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
-    Challenge.EvmProof.Word.word_toNat_ofNat, hzeroWord, hzeroNat]
+    Challenge.EvmProof.Word.word_toNat_ofNat, Logic.xor_zero, hzeroWord, hzeroNat]
 
 def branchJumpState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
