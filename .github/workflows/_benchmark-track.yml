@@ -106,6 +106,29 @@ jobs:
           path: .benchmark-tools
           key: eip8200-benchmark-tools-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('setup.sh') }}
 
+      - name: Randomize benchmark corpus
+        env:
+          TRACK: ${{ inputs.track }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import secrets
+          from pathlib import Path
+
+          track = os.environ["TRACK"]
+          name = {"modexp": "Modexp", "ripemd160": "Ripemd160"}[track]
+          path = Path(f"Challenge/{name}/Scorer.lean")
+          source = path.read_text()
+          marker = "def corpusSeed : Nat := 0"
+          assert source.count(marker) == 1
+          seed = secrets.randbits(64)
+          path.write_text(source.replace(marker, f"def corpusSeed : Nat := {seed}"))
+
+          results = Path(f"benchmark-results/{track}")
+          results.mkdir(parents=True, exist_ok=True)
+          (results / "corpus-seed.txt").write_text(f"{seed}\n")
+          PY
+
       - name: Setup benchmark
         run: ./setup.sh "${{ inputs.track }}"
         env:

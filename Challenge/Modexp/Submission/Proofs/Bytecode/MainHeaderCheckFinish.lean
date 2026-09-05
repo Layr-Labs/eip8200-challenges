@@ -1,3 +1,0 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.MainHeaderCheckOr
-import Challenge.Modexp.Submission.Proofs.Bytecode.MainHeaderCheckIsZero
-import Challenge.Modexp.Submission.Proofs.Bytecode.MainHeaderCheckJump

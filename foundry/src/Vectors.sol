@@ -10,6 +10,24 @@ pragma solidity ^0.8.20;
 ///      of every vector it builds, which catches a drifted generator before it
 ///      can silently change a gas number.
 library Vectors {
+    uint256 private constant PRNG_MODULUS = 2 ** 64;
+
+    function _nextState(uint256 state) private pure returns (uint256) {
+        return (state * 6364136223846793005 + 1442695040888963407) % PRNG_MODULUS;
+    }
+
+    /// @notice Rebuilds one seed-derived RIPEMD-160 scorer input.
+    function ripemdGenerated(uint256 corpusSeed, uint256 index) internal pure returns (bytes memory out) {
+        uint256 seed = (corpusSeed + 0x524950454d44 + index) % PRNG_MODULUS;
+        uint256 lengthState = _nextState(seed);
+        out = new bytes(1 + lengthState % 1024);
+        uint256 state = _nextState(lengthState);
+        for (uint256 i = 0; i < out.length; i++) {
+            state = _nextState(state);
+            out[i] = bytes1(uint8(state / (2 ** 56)));
+        }
+    }
+
     /// @notice `Scorer.patterned`: byte `i` is `(i * 37 + (i / 251) * 11 + 7) % 256`.
     /// @dev The `i / 251` term makes the sequence non-periodic in 256, so a
     ///      block-boundary bug cannot be masked by a repeating pattern.
