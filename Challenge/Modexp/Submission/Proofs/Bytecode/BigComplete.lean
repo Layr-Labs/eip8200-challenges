@@ -228,14 +228,5 @@ def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
     (by simp [completedState, expProgress, exponentProgressState, accumulator,
       n, expTail])
 
-def nonzeroWork (n b e m : Nat) : Nat :=
-  (343 + n * 284 + m * 190) +
-  (50 + n * 74) +
-  (77 + n * 71) +
-  (b * (3506 + n * 6656) + (206 + n * 416)) +
-  3 +
-  e * (106 + 8 * (613 + n * 526 +
-    2 * (n * (102 + 256 * (426 + n * 832))))) +
-  (66 + m * 138)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigComplete

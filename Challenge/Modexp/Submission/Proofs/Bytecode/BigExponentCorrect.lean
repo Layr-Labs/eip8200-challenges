@@ -19,131 +19,6 @@ theorem exponentBit_toNat_le_one (byte : UInt256) (j : Nat) :
     show (1 : UInt256).toNat = 1 by decide]
   exact Nat.and_le_right
 
-theorem selectOffset_eq (ptr k : Nat) (hfit : ptr + 32 * k < 2 ^ 256) :
-    (UInt256.ofNat ptr + selectOffset k).toNat = ptr + 32 * k := by
-  rw [selectOffset]
-  have hcomm : UInt256.ofNat ptr +
-      UInt256.shiftLeft (UInt256.ofNat k) (UInt256.ofNat 5) =
-      BigHelpers.clearOffset (UInt256.ofNat ptr) k := by
-    simpa only [BigHelpers.clearOffset] using
-      (Challenge.EvmProof.Word.word_add_comm (UInt256.ofNat ptr)
-        (UInt256.shiftLeft (UInt256.ofNat k) (UInt256.ofNat 5)))
-  rw [hcomm, BigHelpers.clearOffset_toNat ptr k hfit]
-
-theorem selectMemory_zero (memory : ByteArray) (count : Nat)
-    (hcount : count ≤ 32) :
-    selectMemory memory (0 - UInt256.ofNat 0) count =
-      BigHelpers.copyMemory memory (UInt256.ofNat 2048) (UInt256.ofNat 2048)
-        count := by
-  induction count with
-  | zero => rfl
-  | succ count ih =>
-      rw [selectMemory, BigHelpers.copyMemory, ih (by omega)]
-      simp only [selectedWord]
-      have hz : (0 : UInt256) = UInt256.ofNat 0 := by decide
-      rw [hz]
-      rw [WordCorrect.select_zero]
-      have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
-      rw [h2048]
-      rw [selectOffset_eq 2048 count (by omega),
-        BigHelpers.clearOffset_toNat 2048 count (by omega)]
-
-theorem selectMemory_one (memory : ByteArray) (count : Nat)
-    (hcount : count ≤ 32) :
-    selectMemory memory (0 - UInt256.ofNat 1) count =
-      BigHelpers.copyMemory memory (UInt256.ofNat 2048) (UInt256.ofNat 3072)
-        count := by
-  induction count with
-  | zero => rfl
-  | succ count ih =>
-      rw [selectMemory, BigHelpers.copyMemory, ih (by omega)]
-      simp only [selectedWord]
-      have hz : (0 : UInt256) = UInt256.ofNat 0 := by decide
-      rw [hz]
-      rw [WordCorrect.select_one]
-      have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
-      have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
-      rw [h2048, h3072]
-      rw [selectOffset_eq 3072 count (by omega),
-        BigHelpers.clearOffset_toNat 3072 count (by omega),
-        selectOffset_eq 2048 count (by omega),
-        BigHelpers.clearOffset_toNat 2048 count (by omega)]
-
-theorem readWord_copyMemory_self (memory : ByteArray) (ptr count j : Nat)
-    (hj : j < count) (hfit : ptr + 32 * count < 2 ^ 256) :
-    MachineState.readWord
-        (BigHelpers.copyMemory memory (UInt256.ofNat ptr)
-          (UInt256.ofNat ptr) count) (ptr + 32 * j) =
-      MachineState.readWord memory (ptr + 32 * j) := by
-  induction count with
-  | zero => omega
-  | succ count ih =>
-      rw [BigHelpers.copyMemory]
-      by_cases hjlast : j = count
-      · subst j
-        rw [BigHelpers.clearOffset_toNat ptr count (by omega),
-          Challenge.EvmProof.Memory.readWord_writeWord]
-        by_cases hzero : count = 0
-        · subst count
-          rfl
-        · exact BigHelpers.readWord_copyMemory_disjoint_region memory ptr ptr
-            (ptr + 32 * count) count count 0 (by omega) (by omega)
-            (by omega) (Or.inl (by omega))
-      · rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
-        · exact ih (by omega) (by omega)
-        · left
-          rw [BigHelpers.clearOffset_toNat ptr count (by omega)]
-          omega
-
-theorem copyMemory_self_represents (memory : ByteArray) (ptr count value : Nat)
-    (hfit : ptr + 32 * count < 2 ^ 256)
-    (hrep : Limbs.Represents memory ptr count value) :
-    Limbs.Represents
-      (BigHelpers.copyMemory memory (UInt256.ofNat ptr) (UInt256.ofNat ptr)
-        count) ptr count value := by
-  refine ⟨hrep.1, ?_⟩
-  rw [← hrep.2]
-  unfold Limbs.memoryLimbs
-  apply List.map_congr_left
-  intro j hj
-  exact congrArg UInt256.toNat
-    (readWord_copyMemory_self memory ptr count j (by simpa using hj) hfit)
-
-theorem selectMemory_represents (memory : ByteArray) (byte : UInt256)
-    (j count square product : Nat) (hcount : count ≤ 32)
-    (hsquare : Limbs.Represents memory 2048 count square)
-    (hproduct : Limbs.Represents memory 3072 count product) :
-    Limbs.Represents
-      (selectMemory memory (selectMask byte j) count) 2048 count
-      (if (exponentBit byte j).toNat = 0 then square else product) := by
-  have hbit := exponentBit_toNat_le_one byte j
-  have hword : UInt256.ofNat (exponentBit byte j).toNat =
-      exponentBit byte j := WordCorrect.ofNat_toNat _
-  interval_cases h : (exponentBit byte j).toNat
-  · simp only [if_pos rfl]
-    rw [selectMask, ← hword, selectMemory_zero memory count hcount]
-    exact copyMemory_self_represents memory 2048 count square (by omega) hsquare
-  · rw [selectMask, ← hword, selectMemory_one memory count hcount]
-    exact BigHelpers.copyMemory_represents memory 2048 3072 count product
-      hproduct (by omega) (by omega) (Or.inl (by omega))
-
-theorem selectMemory_preserves_region (memory : ByteArray) (byte : UInt256)
-    (j count ptr value : Nat) (hcount : count ≤ 32)
-    (hptr : 2048 + 32 * count ≤ ptr ∨ ptr + 32 * count ≤ 2048)
-    (hrep : Limbs.Represents memory ptr count value) :
-    Limbs.Represents (selectMemory memory (selectMask byte j) count)
-      ptr count value := by
-  have hbit := exponentBit_toNat_le_one byte j
-  have hword : UInt256.ofNat (exponentBit byte j).toNat =
-      exponentBit byte j := WordCorrect.ofNat_toNat _
-  interval_cases h : (exponentBit byte j).toNat
-  · rw [selectMask, ← hword, selectMemory_zero memory count hcount]
-    exact BigHelpers.represents_copyMemory_disjoint_region memory 2048 2048
-      ptr count value (by omega) hptr hrep
-  · rw [selectMask, ← hword, selectMemory_one memory count hcount]
-    exact BigHelpers.represents_copyMemory_disjoint_region memory 2048 3072
-      ptr count value (by omega) hptr hrep
-
 theorem mulOuterProgress_preserves_region (current : State) (a b : UInt256)
     (count steps ptr value : Nat) (returnDest : UInt256)
     (rest : List UInt256) (hsteps : steps ≤ count) (hcount : count ≤ 32)
@@ -206,7 +81,7 @@ def bitStepValue (modulus : Nat) (byte : UInt256) (j acc base : Nat) : Nat :=
   if (exponentBit byte j).toNat = 0 then square
   else (square * base) % modulus
 
-theorem selectProgress_represents_bitStep (s : State)
+theorem bitStepProgress_represents_bitStep (s : State)
     (accumulatorWord : UInt256) (count b e m baseOff expOff i j : Nat)
     (offset byte : UInt256) (rest : List UInt256) (acc base modulus : Nat)
     (hcount : count ≤ 32) (hmodulusPos : 0 < modulus)
@@ -215,15 +90,15 @@ theorem selectProgress_represents_bitStep (s : State)
     (hbase : Limbs.Represents s.memory 1024 count base)
     (hmodulus : Limbs.Represents s.memory 0 count modulus) :
     Limbs.Represents
-        (selectProgress s accumulatorWord count b e m baseOff expOff i j offset
-          byte rest count).memory 2048 count
+        (bitStepProgress s accumulatorWord count b e m baseOff expOff i j offset
+          byte rest).memory 2048 count
         (bitStepValue modulus byte j acc base) ∧
       Limbs.Represents
-        (selectProgress s accumulatorWord count b e m baseOff expOff i j offset
-          byte rest count).memory 1024 count base ∧
+        (bitStepProgress s accumulatorWord count b e m baseOff expOff i j offset
+          byte rest).memory 1024 count base ∧
       Limbs.Represents
-        (selectProgress s accumulatorWord count b e m baseOff expOff i j offset
-          byte rest count).memory 0 count modulus := by
+        (bitStepProgress s accumulatorWord count b e m baseOff expOff i j offset
+          byte rest).memory 0 count modulus := by
   let body := innerBody s accumulatorWord count b e m baseOff expOff i offset
     byte rest j
   let frame := bitFrame accumulatorWord count b e m baseOff expOff i j offset
@@ -232,17 +107,12 @@ theorem selectProgress_represents_bitStep (s : State)
     j offset byte rest
   let copied := copiedSquare s accumulatorWord count b e m baseOff expOff i j
     offset byte rest
-  let product := productReturned s accumulatorWord count b e m baseOff expOff i
-    j offset byte rest
   let squareValue := (acc * acc) % modulus
-  let productValue := (squareValue * base) % modulus
   have h0 : (0 : UInt256) = UInt256.ofNat 0 := by decide
-  have h1024 : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
   have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
   have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
   have h1000 : (1000 : UInt256) = UInt256.ofNat 1000 := by decide
   have h1015 : (1015 : UInt256) = UInt256.ofNat 1015 := by decide
-  have h1034 : (1034 : UInt256) = UInt256.ofNat 1034 := by decide
   have hbodyAcc : Limbs.Represents body.memory 2048 count acc := by
     simpa [body, innerBody, innerLoop] using hacc
   have hbodyBase : Limbs.Represents body.memory 1024 count base := by
@@ -283,71 +153,67 @@ theorem selectProgress_represents_bitStep (s : State)
       h1015] using
       BigHelpers.represents_copyMemory_disjoint_region squared.memory 2048
         3072 0 count modulus (by omega) (Or.inr (by omega)) hsquaredModulus
-  have hsquareReduced : squareValue < modulus := Nat.mod_lt _ hmodulusPos
   by_cases hbit : (exponentBit byte j).toNat = 0
-  · have hbitNat : (exponentBit byte j).toNat = 0 := hbit
-    have hprodMem : product.memory = copied.memory := by
-      simp [product, copied, productReturned, hbit]
-    have hcopiedProduct :
-        Limbs.Represents copied.memory 3072 count squareValue := by
-      simpa [copied, copiedSquare, BigHelpers.copyReturned, h2048, h3072,
-        h1015] using
-        BigHelpers.represents_copyMemory_disjoint_region squared.memory 2048
-          3072 3072 count squareValue (by omega) (Or.inl (by omega)) hsquare
-    have hselected := selectMemory_represents product.memory byte j count
-      squareValue squareValue hcount
-      (by rw [hprodMem]; exact hcopiedSquare)
-      (by rw [hprodMem]; exact hcopiedProduct)
-    have hselectedBase := selectMemory_preserves_region product.memory byte j
-      count 1024 base hcount (Or.inr (by omega))
-      (by rw [hprodMem]; exact hcopiedBase)
-    have hselectedModulus := selectMemory_preserves_region product.memory byte j
-      count 0 modulus hcount (Or.inr (by omega))
-      (by rw [hprodMem]; exact hcopiedModulus)
-    exact ⟨by
-      simpa [selectProgress, product, bitStepValue, squareValue, hbitNat]
-        using hselected,
-      by simpa [selectProgress, product] using hselectedBase,
-      by simpa [selectProgress, product] using hselectedModulus⟩
-  · have hproduct : Limbs.Represents product.memory 3072 count productValue := by
-      simpa [product, productReturned, mulResult, squareValue, productValue,
-        frame, h0, h1024, h2048, h3072, h1034, hbit] using
+  · refine ⟨?_, ?_, ?_⟩
+    · simpa [bitStepProgress, hbit, copied, bitStepValue, squareValue] using
+        hcopiedSquare
+    · simpa [bitStepProgress, hbit, copied] using hcopiedBase
+    · simpa [bitStepProgress, hbit, copied] using hcopiedModulus
+  · let tail := bitTailFrame accumulatorWord count b e m baseOff expOff i j
+      offset byte rest
+    let product := bitProductReturned s accumulatorWord count b e m baseOff
+      expOff i j offset byte rest
+    let productValue := (squareValue * base) % modulus
+    have h1024 : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
+    have h1289 : (1289 : UInt256) = UInt256.ofNat 1289 := by decide
+    have h1316 : (1316 : UInt256) = UInt256.ofNat 1316 := by decide
+    have hsquareReduced : squareValue < modulus := Nat.mod_lt _ hmodulusPos
+    have hproduct : Limbs.Represents product.memory 3072 count productValue := by
+      simpa [product, bitProductReturned, mulResult, squareValue, productValue,
+        tail, h0, h1024, h2048, h3072, h1316] using
         BigMul.mulReturned_represents_product copied 1024 count squareValue base
-          modulus (UInt256.ofNat 1034) frame hcount (by omega) hmodulusPos
+          modulus (UInt256.ofNat 1316) tail hcount (by omega) hmodulusPos
           hsquareReduced hcopiedSquare hcopiedBase hcopiedModulus
     have hproductBase : Limbs.Represents product.memory 1024 count base := by
-      simpa [product, productReturned, mulResult, squareValue, frame, h0, h1024,
-        h2048, h3072, h1034, hbit, BigMul.mulReturned] using
+      simpa [product, bitProductReturned, mulResult, squareValue, tail, h0,
+        h1024, h2048, h3072, h1316, BigMul.mulReturned] using
         (BigMul.mulOuterProgress_afterCopy_represents_product copied 1024 count
-          squareValue base modulus (UInt256.ofNat 1034) frame hcount (by omega)
+          squareValue base modulus (UInt256.ofNat 1316) tail hcount (by omega)
           hmodulusPos hsquareReduced hcopiedSquare hcopiedBase
           hcopiedModulus).2.1
     have hproductModulus : Limbs.Represents product.memory 0 count modulus := by
-      simpa [product, productReturned, mulResult, squareValue, frame, h0, h1024,
-        h2048, h3072, h1034, hbit, BigMul.mulReturned] using
+      simpa [product, bitProductReturned, mulResult, squareValue, tail, h0,
+        h1024, h2048, h3072, h1316, BigMul.mulReturned] using
         (BigMul.mulOuterProgress_afterCopy_represents_product copied 1024 count
-          squareValue base modulus (UInt256.ofNat 1034) frame hcount (by omega)
+          squareValue base modulus (UInt256.ofNat 1316) tail hcount (by omega)
           hmodulusPos hsquareReduced hcopiedSquare hcopiedBase
           hcopiedModulus).2.2
-    have hselected := selectMemory_represents product.memory byte j count
-      squareValue productValue hcount
-      (by
-        simpa [product, productReturned, squareValue, frame, h0, h1024, h2048,
-          h3072, h1034, hbit] using
-          mulResult_preserves_region copied (UInt256.ofNat 2048)
-            (UInt256.ofNat 1024) count 2048 squareValue (UInt256.ofNat 1034)
-            frame hcount (Or.inr (by omega)) (Or.inr (by omega))
-            (Or.inl (by omega)) hcopiedSquare)
-      hproduct
-    have hselectedBase := selectMemory_preserves_region product.memory byte j
-      count 1024 base hcount (Or.inr (by omega)) hproductBase
-    have hselectedModulus := selectMemory_preserves_region product.memory byte j
-      count 0 modulus hcount (Or.inr (by omega)) hproductModulus
-    exact ⟨by
-      simpa [selectProgress, product, bitStepValue, squareValue, productValue]
-        using hselected,
-      by simpa [selectProgress, product] using hselectedBase,
-      by simpa [selectProgress, product] using hselectedModulus⟩
+    have hfinalAcc : Limbs.Represents
+        (bitCopyBack s accumulatorWord count b e m baseOff expOff i j offset
+          byte rest).memory 2048 count productValue := by
+      simpa [bitCopyBack, BigHelpers.copyReturned, product, tail, h2048, h3072,
+        h1289] using
+        BigHelpers.copyMemory_represents product.memory 2048 3072 count
+          productValue hproduct (by omega) (by omega) (Or.inl (by omega))
+    have hfinalBase : Limbs.Represents
+        (bitCopyBack s accumulatorWord count b e m baseOff expOff i j offset
+          byte rest).memory 1024 count base := by
+      simpa [bitCopyBack, BigHelpers.copyReturned, product, tail, h2048, h3072,
+        h1289] using
+        BigHelpers.represents_copyMemory_disjoint_region product.memory 2048
+          3072 1024 count base (by omega) (Or.inr (by omega)) hproductBase
+    have hfinalModulus : Limbs.Represents
+        (bitCopyBack s accumulatorWord count b e m baseOff expOff i j offset
+          byte rest).memory 0 count modulus := by
+      simpa [bitCopyBack, BigHelpers.copyReturned, product, tail, h2048, h3072,
+        h1289] using
+        BigHelpers.represents_copyMemory_disjoint_region product.memory 2048
+          3072 0 count modulus (by omega) (Or.inr (by omega)) hproductModulus
+    refine ⟨?_, ?_, ?_⟩
+    · simpa [bitStepProgress, hbit, bitStepValue, squareValue, productValue]
+        using hfinalAcc
+    · simpa [bitStepProgress, hbit] using hfinalBase
+    · simpa [bitStepProgress, hbit] using hfinalModulus
 
 theorem exponentBit_toNat_eq (byte : UInt256) (j : Nat) (hj : j < 8) :
     (exponentBit byte j).toNat = WordCorrect.exponentBitNat byte j := by
@@ -389,7 +255,7 @@ theorem exponentBitProgress_represents (s : State)
       have hbeforeReduced : beforeValue < modulus :=
         WordCorrect.natBitAfter_lt modulus byte base acc steps hmodulusPos
           haccReduced
-      have hstep := selectProgress_represents_bitStep before accumulatorWord
+      have hstep := bitStepProgress_represents_bitStep before accumulatorWord
         count b e m baseOff expOff i steps offset byte rest beforeValue base
         modulus hcount hmodulusPos hbeforeReduced hbefore.1 hbefore.2.1
         hbefore.2.2
