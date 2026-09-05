@@ -2,7 +2,7 @@ import Challenge.EvmProof.Bytecode
 import Challenge.Modexp.Submission.Bytes
 import EvmSemantics.Data.Hex
 set_option warningAsError true
-set_option maxRecDepth 10000
+set_option maxRecDepth 200000
 
 namespace Challenge.Modexp
 
@@ -12,8 +12,8 @@ def submissionHex : String := (include_str "bytecode.hex").trimAscii.copy
 /-- Frozen verified-compiler output targeted by the direct EVM proof. -/
 def submissionBytecode : ByteArray := submissionBytes
 
-@[simp] theorem submissionBytecode_size : submissionBytecode.size = 5032 := by
-  change submissionBytes.size = 5032
+@[simp] theorem submissionBytecode_size : submissionBytecode.size = 5151 := by
+  change submissionBytes.size = 5151
   exact submissionBytes_size
 
 /-- Generic disassembly round-trip for the exact submitted bytes. -/

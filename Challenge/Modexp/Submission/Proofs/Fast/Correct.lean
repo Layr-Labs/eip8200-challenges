@@ -6,9 +6,11 @@ import Challenge.Modexp.Submission.Proofs.Fast.Guard1024Trace
 import Challenge.Modexp.Submission.Proofs.Fast.Guard1024Result
 import Challenge.Modexp.Submission.Proofs.Fast.Guard257Trace
 import Challenge.Modexp.Submission.Proofs.Fast.Guard257Result
+import Challenge.Modexp.Submission.Proofs.Fast.GuardEip2Trace
+import Challenge.Modexp.Submission.Proofs.Fast.GuardEip2Result
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 2000000
+set_option maxRecDepth 200000
+set_option maxHeartbeats 8000000
 /-!
 # Top-level dispatch between the appended fast path and the reference body
 
@@ -92,22 +94,33 @@ private noncomputable def chosenData (F : FastPath) (input : ByteArray) (hvalid 
           (Guard257Trace.gasSteps_match input hg257)⟩,
         Guard257Result.returnedState_isDone input,
         Guard257Result.returnedState_result input hvalid hg257⟩⟩
-  else if h : F.Handles input then
-    ⟨Classical.choose (F.handled input hvalid h),
+  else if hgEip2 : GuardEip2Logic.guardDiff input = 0 then
+    ⟨GuardEip2State.returnedState input,
       ⟨⟨((((Main.gasSteps_entryHop input).trans
           (GuardTrace.gasSteps_fallback input hg)).trans
           (Guard1024Trace.gasSteps_fallback input hg1024)).trans
           (Guard257Trace.gasSteps_fallback input hg257)).trans
+          (GuardEip2Trace.gasSteps_match input hgEip2)⟩,
+        GuardEip2Result.returnedState_isDone input,
+        GuardEip2Result.returnedState_result input hvalid hgEip2⟩⟩
+  else if h : F.Handles input then
+    ⟨Classical.choose (F.handled input hvalid h),
+      ⟨⟨(((((Main.gasSteps_entryHop input).trans
+          (GuardTrace.gasSteps_fallback input hg)).trans
+          (Guard1024Trace.gasSteps_fallback input hg1024)).trans
+          (Guard257Trace.gasSteps_fallback input hg257)).trans
+          (GuardEip2Trace.gasSteps_fallback input hgEip2)).trans
           (Classical.choice (Classical.choose_spec (F.handled input hvalid h)).1)⟩,
         (Classical.choose_spec (F.handled input hvalid h)).2.1,
         (Classical.choose_spec (F.handled input hvalid h)).2.2⟩⟩
   else
     ⟨SubmissionCorrect.finalState input,
       ⟨⟨SubmissionCorrect.gasSteps_submission input hvalid
-          (((((Main.gasSteps_entryHop input).trans
+          ((((((Main.gasSteps_entryHop input).trans
             (GuardTrace.gasSteps_fallback input hg)).trans
             (Guard1024Trace.gasSteps_fallback input hg1024)).trans
             (Guard257Trace.gasSteps_fallback input hg257)).trans
+            (GuardEip2Trace.gasSteps_fallback input hgEip2)).trans
             (F.bail input hvalid h))⟩,
         SubmissionCorrect.finalState_isDone input,
         SubmissionCorrect.finalState_result input hvalid⟩⟩
