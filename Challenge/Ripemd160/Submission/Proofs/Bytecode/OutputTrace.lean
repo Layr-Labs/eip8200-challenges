@@ -117,10 +117,10 @@ def writeBodyPath : List
    ⟨668, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨669, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨670, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨671, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨671, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨672, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨673, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨674, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨673, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨674, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨675, .push ⟨2, by decide⟩ (UInt256.ofNat 0x3c8), by rfl, by decide⟩,
    ⟨676, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
