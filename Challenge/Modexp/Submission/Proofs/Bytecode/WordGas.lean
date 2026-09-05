@@ -209,7 +209,7 @@ theorem gasSteps_expLoop_cost (input : ByteArray) (acc base : UInt256)
 
 theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)
     (hvalid : ValidInput input) (hword : modulusSize input ≤ 32) :
-    (gasSteps_expFinish input acc base hvalid hword).cost = 713 := by
+    (gasSteps_expFinish input acc base hvalid hword).cost = 65 := by
   have hguard := blockCost_of_static expGuardPath 26
     (run_expFinishGuard input acc base hvalid) (by rfl)
     (by decide) (by rfl) (by rfl)
@@ -217,22 +217,21 @@ theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)
     expFinishTailPath 36
     (run_expFinishTail input acc base hvalid hword) (by rfl)
     (by decide) (by rfl)
-  have hreturned : MachineState.activeWordsAfter 193 6144
-      (modulusSize input) = 193 := by
+  have hreturned : MachineState.activeWordsAfter 1 0
+      (modulusSize input) = 1 := by
     unfold MachineState.activeWordsAfter
     split
     · rfl
-    · have hdiv : (6143 + modulusSize input) / 32 = 192 := by omega
+    · have hdiv : (modulusSize input - 1) / 32 = 0 := by omega
       dsimp
-      have hoff : 6144 + modulusSize input - 1 = 6143 + modulusSize input := by
-        omega
-      rw [hoff, hdiv]
+      rw [show 0 + modulusSize input - 1 = modulusSize input - 1 by omega,
+        hdiv]
       decide
-  have hstored : MachineState.activeWordsAfter 0 6144 32 = 193 := by decide
-  have hfinal : (wordFinalState input acc base).activeWords.toNat = 193 := by
+  have hstored : MachineState.activeWordsAfter 0 0 32 = 1 := by decide
+  have hfinal : (wordFinalState input acc base).activeWords.toNat = 1 := by
     change (UInt256.ofNat (MachineState.activeWordsAfter
-      (MachineState.activeWordsAfter 0 6144 32) 6144
-        (modulusSize input))).toNat = 193
+      (MachineState.activeWordsAfter 0 0 32) 0
+        (modulusSize input))).toNat = 1
     rw [hstored, hreturned]
     decide
   rw [show (expFinishDispatchState input acc base).activeWords.toNat = 0 by rfl,
@@ -244,13 +243,13 @@ theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)
   omega
 
 def wordGas (input : ByteArray) : Nat :=
-  969 + 140 * baseSize input + 1210 * exponentSize input
+  283 + 140 * baseSize input + 1210 * exponentSize input
 
 theorem gasSteps_zeroModulusTotal_cost (input : ByteArray)
     (hvalid : ValidInput input) (hmsize : 0 < modulusSize input)
     (hword : modulusSize input ≤ 32) (hmodulus : modulusValue input = 0) :
     (gasSteps_zeroModulus_total input hvalid hmsize hword hmodulus).cost =
-      866 := by
+      180 := by
   have hload := blockCost_of_static startLoadPath 31
     (run_startLoad input hvalid hmsize hword) (by rfl)
     (by decide) (by rfl) (by rfl)
@@ -260,19 +259,19 @@ theorem gasSteps_zeroModulusTotal_cost (input : ByteArray)
   have htail := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     zeroTailPath 6 (run_zeroTail input hvalid hmodulus) (by rfl)
       (by decide) (by decide)
-  have hfinal : (zeroModulusFinalState input).activeWords.toNat = 193 := by
+  have hfinal : (zeroModulusFinalState input).activeWords.toNat = 1 := by
     change (UInt256.ofNat
-      (MachineState.activeWordsAfter 0 6144 (modulusSize input))).toNat = 193
-    have hactive : MachineState.activeWordsAfter 0 6144
-        (modulusSize input) = 193 := by
+      (MachineState.activeWordsAfter 0 0 (modulusSize input))).toNat = 1
+    have hactive : MachineState.activeWordsAfter 0 0
+        (modulusSize input) = 1 := by
       unfold MachineState.activeWordsAfter
       split
       · next hzero => omega
       · next hnonzero =>
-        have hdiv : (6143 + modulusSize input) / 32 = 192 := by omega
+        have hdiv : (modulusSize input - 1) / 32 = 0 := by omega
         dsimp
-        rw [show 6144 + modulusSize input - 1 =
-          6143 + modulusSize input by omega, hdiv]
+        rw [show 0 + modulusSize input - 1 =
+          modulusSize input - 1 by omega, hdiv]
         decide
     rw [hactive]
     decide
