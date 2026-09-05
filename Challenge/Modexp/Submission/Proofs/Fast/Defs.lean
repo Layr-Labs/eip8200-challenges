@@ -224,6 +224,20 @@ theorem jumpDest1886 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1886 = true :=
   Artifact.isValidJumpDest_index 1341 (by rfl)
 
+theorem jumpDest2863 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2863 = true :=
+  Artifact.isValidJumpDest_index 1742 (by rfl)
+
+theorem jumpDest2888 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2888 = true :=
+  Artifact.isValidJumpDest_index 1758 (by rfl)
+
+@[simp] theorem fastPC20 (i : Nat) (hi : 1742 ≤ i) (hii : i ≤ 1766) :
+    Artifact.submissionArtifact.instructionPC i =
+      [2863,2864,2865,2866,2869,2870,2873,2874,2875,2876,2877,2879,2880,
+       2883,2884,2887,2888,2889,2892,2893,2896,2899,2900,2902,2905][i - 1742]! := by
+  interval_cases i <;> decide
+
 theorem jumpDest1892 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1892 = true :=
   Artifact.isValidJumpDest_index 1345 (by rfl)
