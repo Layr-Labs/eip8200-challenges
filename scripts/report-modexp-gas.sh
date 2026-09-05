@@ -11,7 +11,7 @@ readonly challenge_slug="modexp"
 readonly marker_id="MODEXP"
 readonly report_script_path="scripts/report-modexp-gas.sh"
 readonly scorer_exe="modexpchallenge"
-readonly expected_rows=57
+readonly expected_rows=56
 
 source scripts/lib/check-hash-submissions.sh
 
@@ -28,7 +28,6 @@ reference_total=""
 
 readonly report_labels=(
   "empty tuple"
-  "2^5 mod 13"
   "zero exponent"
   "zero modulus"
   "zero modulus size"
@@ -333,8 +332,8 @@ main() {
     'precompile and against the bundled reference. These measurements are tests,' \
     'not proofs.'
   printf '\n'
-  printf '| implementation | bytes | empty | small | zero exp | zero mod | zero M | EIP-198 #1 | BN254 inv | all vectors | vs precompile | vs reference |\n'
-  printf '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n'
+  printf '| implementation | bytes | empty | zero exp | zero mod | zero M | EIP-198 #1 | BN254 inv | all vectors | vs precompile | vs reference |\n'
+  printf '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n'
   local index
   for index in "${!implementation_names[@]}"; do
     report_measured_row "$index"

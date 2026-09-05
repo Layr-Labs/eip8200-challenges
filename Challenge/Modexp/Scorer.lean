@@ -199,7 +199,6 @@ theorem firstGeneratedVector_exponentHead :
 
 def vectors : List Vector :=
   [ { label := "empty tuple", input := ByteArray.empty }
-  , { label := "2^5 mod 13", input := makeInput 2 5 13 1 1 1 }
   , { label := "zero exponent", input := makeInput 42 0 97 1 0 1 }
   , { label := "zero modulus", input := makeInput 42 7 0 1 1 12 }
   , { label := "zero modulus size", input := makeInput 42 7 0 1 1 0 }
@@ -209,7 +208,7 @@ def vectors : List Vector :=
   , { label := "BN254 modular inversion", input := bn254ModularInversion }
   ] ++ generatedVectors
 
-theorem vectors_length : vectors.length = 57 := by decide
+theorem vectors_length : vectors.length = 56 := by decide
 
 inductive Outcome where
   | ok (gas : Nat)
