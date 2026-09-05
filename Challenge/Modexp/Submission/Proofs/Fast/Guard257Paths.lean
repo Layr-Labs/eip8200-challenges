@@ -44,82 +44,77 @@ def check1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) := [
    Main.pushAt 2160 1 96,
    Main.opAt 2161 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.pushAt 2162 32 452312848583266388373324160190187140051835877600158453279131187530910662656,
-   Main.opAt 2163 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 2164 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
-   Main.pushAt 2165 1 128,
-   Main.opAt 2166 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.pushAt 2167 32 2266871685857013885419158128209026732832114290800391293656575918782654971904,
-   Main.opAt 2168 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 2169 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
-   Main.pushAt 2170 1 160,
-   Main.opAt 2171 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.pushAt 2172 32 48312224427533946512043291035939178167157762805192705886137669566595072,
-   Main.opAt 2173 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 2174 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR))
+   Main.pushAt 2162 1 1,
+   Main.pushAt 2163 1 248,
+   Main.opAt 2164 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)),
+   Main.opAt 2165 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 2166 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+   Main.pushAt 2167 1 128,
+   Main.opAt 2168 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.pushAt 2169 3 328449,
+   Main.pushAt 2170 1 232,
+   Main.opAt 2171 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)),
+   Main.opAt 2172 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 2173 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+   Main.pushAt 2174 1 160,
+   Main.opAt 2175 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.pushAt 2176 1 7,
+   Main.pushAt 2177 1 232,
+   Main.opAt 2178 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)),
+   Main.opAt 2179 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 2180 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR))
   ]
 
 def branchIsZeroLocated :
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  Main.opAt 2175 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.ISZERO))
+  Main.opAt 2181 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.ISZERO))
 
 def branchPushLocated :
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  Main.pushAt 2176 2 4988
+  Main.pushAt 2182 2 4906
 
 def branchJumpLocated :
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  Main.opAt 2177 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
-
-def branchPath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [
-   branchIsZeroLocated,
-   branchPushLocated,
-   branchJumpLocated
-  ]
+  Main.opAt 2183 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
 
 def branchIsZeroPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [branchIsZeroLocated]
 
-def branchJumpPath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [
-   branchPushLocated,
-   branchJumpLocated
-  ]
-
-theorem branchPath_eq : branchPath = branchIsZeroPath ++ branchJumpPath := by rfl
-
 def fallbackPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) := [
-   Main.pushAt 2178 2 1314,
-   Main.opAt 2179 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))
+   Main.pushAt 2184 2 4919,
+   Main.opAt 2185 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))
   ]
 
 def returnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) := [
-   Main.opAt 2180 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
-   Main.pushAt 2181 0 0,
-   Main.pushAt 2182 0 0,
-   Main.opAt 2183 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
-   Main.pushAt 2184 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   Main.pushAt 2185 1 1,
-   Main.opAt 2186 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
-   Main.pushAt 2187 1 33,
+   Main.opAt 2186 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+   Main.pushAt 2187 0 0,
    Main.pushAt 2188 0 0,
-   Main.opAt 2189 (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN))
+   Main.opAt 2189 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
+   Main.pushAt 2190 0 0,
+   Main.opAt 2191 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.NOT)),
+   Main.pushAt 2192 1 1,
+   Main.opAt 2193 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
+   Main.pushAt 2194 1 33,
+   Main.pushAt 2195 0 0,
+   Main.opAt 2196 (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN))
   ]
 
-@[simp] theorem guard257PC0 (i : Nat) (hlo : 2139 ≤ i) (hhi : i ≤ 2159) :
+@[simp] theorem g257PC0 (i : Nat) (hlo : 2139 ≤ i) (hhi : i ≤ 2159) :
     Artifact.submissionArtifact.instructionPC i =
       [4838, 4839, 4840, 4842, 4843, 4844, 4845, 4846, 4847, 4849, 4850, 4851, 4853, 4854, 4856, 4857, 4858, 4860, 4861, 4863, 4864][i - 2139]! := by
   interval_cases i <;> decide
 
-@[simp] theorem guard257PC1 (i : Nat) (hlo : 2160 ≤ i) (hhi : i ≤ 2189) :
+@[simp] theorem g257PC1 (i : Nat) (hlo : 2160 ≤ i) (hhi : i ≤ 2180) :
     Artifact.submissionArtifact.instructionPC i =
-      [4865, 4867, 4868, 4901, 4902, 4903, 4905, 4906, 4939, 4940, 4941, 4943, 4944, 4977, 4978, 4979, 4980, 4983, 4984, 4987, 4988, 4989, 4990, 4991, 4992, 5025, 5027, 5028, 5030, 5031][i - 2160]! := by
+      [4865, 4867, 4868, 4870, 4872, 4873, 4874, 4875, 4877, 4878, 4882, 4884, 4885, 4886, 4887, 4889, 4890, 4892, 4894, 4895, 4896][i - 2160]! := by
+  interval_cases i <;> decide
+
+@[simp] theorem g257PC2 (i : Nat) (hlo : 2181 ≤ i) (hhi : i ≤ 2196) :
+    Artifact.submissionArtifact.instructionPC i =
+      [4897, 4898, 4901, 4902, 4905, 4906, 4907, 4908, 4909, 4910, 4911, 4912, 4914, 4915, 4917, 4918][i - 2181]! := by
   interval_cases i <;> decide
 
 end Challenge.Modexp.Submission.Proofs.Fast.Guard257Paths

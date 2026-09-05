@@ -12,8 +12,8 @@ attribute [simp]
   Challenge.EvmProof.Word.word_toNat_land
 
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 2000000
+set_option maxRecDepth 200000
+set_option maxHeartbeats 8000000
 /-!
 # Structural certificate for the frozen MODEXP artifact
 
@@ -2192,21 +2192,76 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
   YulEvmCompiler.Instr.push 1 96,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-  YulEvmCompiler.Instr.push 32 452312848583266388373324160190187140051835877600158453279131187530910662656,
+  YulEvmCompiler.Instr.push 1 1,
+  YulEvmCompiler.Instr.push 1 248,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
   YulEvmCompiler.Instr.push 1 128,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-  YulEvmCompiler.Instr.push 32 2266871685857013885419158128209026732832114290800391293656575918782654971904,
+  YulEvmCompiler.Instr.push 3 328449,
+  YulEvmCompiler.Instr.push 1 232,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
   YulEvmCompiler.Instr.push 1 160,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-  YulEvmCompiler.Instr.push 32 48312224427533946512043291035939178167157762805192705886137669566595072,
+  YulEvmCompiler.Instr.push 1 7,
+  YulEvmCompiler.Instr.push 1 232,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.ISZERO)),
-  YulEvmCompiler.Instr.push 2 4988,
+  YulEvmCompiler.Instr.push 2 4906,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)),
+  YulEvmCompiler.Instr.push 2 4919,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)),
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+  YulEvmCompiler.Instr.push 0 0,
+  YulEvmCompiler.Instr.push 0 0,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
+  YulEvmCompiler.Instr.push 0 0,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.NOT)),
+  YulEvmCompiler.Instr.push 1 1,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
+  YulEvmCompiler.Instr.push 1 33,
+  YulEvmCompiler.Instr.push 0 0,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN)),
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATASIZE)),
+  YulEvmCompiler.Instr.push 1 160,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+  YulEvmCompiler.Instr.push 0 0,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+  YulEvmCompiler.Instr.push 0 0,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+  YulEvmCompiler.Instr.push 0 0,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+  YulEvmCompiler.Instr.push 1 32,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+  YulEvmCompiler.Instr.push 1 32,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+  YulEvmCompiler.Instr.push 1 64,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+  YulEvmCompiler.Instr.push 1 32,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+  YulEvmCompiler.Instr.push 1 96,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+  YulEvmCompiler.Instr.push 5 4294968273,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.NOT)),
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+  YulEvmCompiler.Instr.push 1 128,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+  YulEvmCompiler.Instr.push 5 4294968272,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.NOT)),
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.ISZERO)),
+  YulEvmCompiler.Instr.push 2 4978,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)),
   YulEvmCompiler.Instr.push 2 1314,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)),
@@ -2214,21 +2269,17 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 0 0,
   YulEvmCompiler.Instr.push 0 0,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
-  YulEvmCompiler.Instr.push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-  YulEvmCompiler.Instr.push 1 1,
-  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
-  YulEvmCompiler.Instr.push 1 33,
+  YulEvmCompiler.Instr.push 1 32,
   YulEvmCompiler.Instr.push 0 0,
-  YulEvmCompiler.Instr.op (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN))
-]
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN))]
 
-theorem submissionInstructions_count : submissionInstructions.length = 2190 := by
+theorem submissionInstructions_count : submissionInstructions.length = 2242 := by
   decide
 
 theorem assemble_submissionInstructions :
     assemble submissionInstructions = submissionBytecode := by
   apply ByteArray.ext
-  simp (config := { maxSteps := 4000000 })
+  simp (config := { maxSteps := 8000000 })
     [assemble, assembleBytes, submissionInstructions, submissionBytecode,
     submissionBytes, Instr.bytes, natToBE]
   repeat' apply And.intro
@@ -2241,7 +2292,7 @@ def submissionArtifact : Challenge.EvmProof.ProgramArtifact where
 
 theorem allWellFormed :
     Challenge.EvmProof.Stepper.AllWellFormed submissionArtifact .Osaka := by
-  simp (config := { maxSteps := 4000000 })
+  simp (config := { maxSteps := 8000000 })
     [Challenge.EvmProof.Stepper.AllWellFormed, submissionArtifact,
     submissionInstructions, Challenge.EvmProof.Stepper.WellFormed,
     YulEvmCompiler.plainOp]

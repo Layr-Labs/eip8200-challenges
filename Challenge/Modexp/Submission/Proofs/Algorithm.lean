@@ -152,6 +152,12 @@ theorem mulBits_snd (modulus acc addend : Nat) (bits : List Nat) :
       rw [heq] at hcongr
       exact hcongr
 
+theorem modPow_zero_base {exponent modulus : Nat}
+    (hpos : 0 < exponent) (hmod : modulus ≠ 0) :
+    Precompile.modPow 0 exponent modulus = 0 := by
+  rw [modPow_eq, if_neg hmod, Nat.zero_pow hpos]
+  exact Nat.zero_mod modulus
+
 theorem zeroBytes (offset width : Nat) :
     MachineState.readPadded ByteArray.empty offset width =
       Precompile.natToBytes 0 width := by

@@ -1,29 +1,29 @@
-import Challenge.Modexp.Submission.Proofs.Fast.Guard257BranchPush
+import Challenge.Modexp.Submission.Proofs.Fast.GuardEip2BranchPush
 
 set_option warningAsError true
 set_option maxRecDepth 50000
-namespace Challenge.Modexp.Submission.Proofs.Fast.Guard257Branch
+namespace Challenge.Modexp.Submission.Proofs.Fast.GuardEip2Branch
 
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
-open Guard257State Guard257Paths
+open GuardEip2State GuardEip2Paths
 
 theorem run_jump_notTaken (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocated branchJumpLocated
-      (jumpStackState input (UInt256.ofNat 0)) = some (branchState input 4902) := by
+      (jumpStackState input (UInt256.ofNat 0)) = some (branchState input 4974) := by
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   have hpc : (jumpStackState input (UInt256.ofNat 0)).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 2183 := by
-    simp [jumpStackState, initialState, g257PC0, g257PC1, g257PC2, Challenge.EvmProof.Word.word_toNat_ofNat]
+      Artifact.submissionArtifact.instructionPC 2232 := by
+    simp [jumpStackState, initialState, gEip2PC0, gEip2PC1, gEip2PC2, Challenge.EvmProof.Word.word_toNat_ofNat]
   unfold Challenge.EvmProof.Stepper.runLocated
   change (if (jumpStackState input (UInt256.ofNat 0)).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 2183 then
+      Artifact.submissionArtifact.instructionPC 2232 then
       Challenge.EvmProof.Stepper.runInstr (.op .JUMPI)
         (jumpStackState input (UInt256.ofNat 0)) else none) = _
   rw [if_pos hpc]
   have hcap : (jumpStackState input (UInt256.ofNat 0)).stack.length < 1024 := by
     simp [jumpStackState]
-  have hsucc : (UInt256.ofNat 4901).succ = UInt256.ofNat 4902 :=
+  have hsucc : (UInt256.ofNat 4973).succ = UInt256.ofNat 4974 :=
     Challenge.EvmProof.Word.succ_ofNat (by norm_num)
   unfold Challenge.EvmProof.Stepper.runInstr
   rw [if_pos hcap]
@@ -33,4 +33,4 @@ theorem run_jump_notTaken (input : ByteArray) :
   simp only [branchState, hsucc]
   rw [show (initialState submissionBytecode input 0).stack = [] by rfl]
 
-end Challenge.Modexp.Submission.Proofs.Fast.Guard257Branch
+end Challenge.Modexp.Submission.Proofs.Fast.GuardEip2Branch
