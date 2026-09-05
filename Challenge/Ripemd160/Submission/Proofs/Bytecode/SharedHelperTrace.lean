@@ -18,7 +18,7 @@ theorem template_advances (j : Nat) (hj : j < 5) (xAddress : UInt256)
   intro instruction hmem
   interval_cases j <;>
     simp [helperBeforeJumpTemplate, booleanOps] at hmem <;>
-    simp_all [SharedCallTrace.Advances, op, push1, push4, dup1, dup2, dup3, dup4,
+    simp_all [SharedCallTrace.Advances, op, push1, push4, dup1, dup3, dup4,
       dup5, dup6, dup7, dup8, swap1, swap2, swap3, swap4, swap5] <;>
     aesop (add safe constructors StraightLine)
 

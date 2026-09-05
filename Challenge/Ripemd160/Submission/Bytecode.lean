@@ -6,7 +6,7 @@ set_option maxRecDepth 10000
 /-!
 # The frozen raw-EVM RIPEMD-160 artifact
 
-`submissionBytecode` is the exact H12 wrapper/helper artifact. It retains the
+`submissionBytecode` is the exact H14 wrapper/helper artifact. It retains the
 1830-byte H10 prefix and appends the bounded native compressor.
 
 Correctness proofs target these bytes directly; the compiler is used to
@@ -23,7 +23,7 @@ set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 4796 := by
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 4726 := by
   simp [submissionBytecode]
 
 set_option maxRecDepth 100000 in
