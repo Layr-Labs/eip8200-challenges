@@ -25,7 +25,7 @@ set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5293 := by
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5376 := by
   simp [submissionBytecode]
 
 set_option maxRecDepth 100000 in
@@ -37,19 +37,19 @@ set_option maxHeartbeats 2000000 in
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 2000000 in
 @[simp] theorem referenceBytecode_extract_entry :
-    submissionBytecode.extract 1 3 = ByteArray.mk #[0x03, 0xee] := by
+    submissionBytecode.extract 1 3 = ByteArray.mk #[0x14, 0xad] := by
   simp only [submissionBytecode]
   exact referenceBytes_extract_entry
 
 @[simp] theorem bytesToBigEndianNat_entry_literal :
     EvmSemantics.Data.Bytes.bytesToBigEndianNat
-      (ByteArray.mk #[0x03, 0xee]) = 0x03ee := by
+      (ByteArray.mk #[0x14, 0xad]) = 0x14ad := by
   simp [EvmSemantics.Data.Bytes.bytesToBigEndianNat,
     Challenge.EvmProof.Bytecode.toList_eq_data, UInt8.toNat_ofNat]
 
 @[simp] theorem referenceBytecode_entry_value :
     EvmSemantics.Data.Bytes.bytesToBigEndianNat
-      (submissionBytecode.extract 1 3) = 0x03ee := by
+      (submissionBytecode.extract 1 3) = 0x14ad := by
   rw [referenceBytecode_extract_entry]
   exact bytesToBigEndianNat_entry_literal
 

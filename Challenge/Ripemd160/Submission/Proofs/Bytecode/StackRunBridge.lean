@@ -335,8 +335,11 @@ def compressionSeam (kernel : BlockKernel) :
     (compressionRun kernel input hfit)
 
 /-- Correctness remains conditional on the genuine block kernel. -/
-theorem correct_of_block_kernel (kernel : BlockKernel) :
-    Correct submissionBytecode := by
-  exact FastOutputResultBridge.correct_of_compression_trace (compressionSeam kernel)
+theorem correct_of_block_kernel (kernel : BlockKernel)
+    (input : ByteArray) (hfit : CalldataFits input)
+    (prefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x3ee)) :
+    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  exact FastOutputResultBridge.correct_of_compression_trace (compressionSeam kernel) input hfit prefix
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRunBridge
