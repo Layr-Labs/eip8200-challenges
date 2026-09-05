@@ -1,3 +1,4 @@
+/- Modified September 5, 2026: semantic-bucket candidate; Apache-2.0. -/
 import Challenge.EvmProof.Program
 import Challenge.EvmProof.Stepper
 import Challenge.EvmProof.Word
@@ -1147,11 +1148,11 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
- YulEvmCompiler.Instr.push 1 32,
+ YulEvmCompiler.Instr.push 1 64,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
- YulEvmCompiler.Instr.push 1 1,
+ YulEvmCompiler.Instr.push 1 0,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)),
- YulEvmCompiler.Instr.push 2 1632,
+ YulEvmCompiler.Instr.push 2 1698,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)),
  YulEvmCompiler.Instr.push 1 1,
  YulEvmCompiler.Instr.push 0 0,

@@ -1,3 +1,4 @@
+/- Modified September 5, 2026: semantic-bucket candidate; Apache-2.0. -/
 import Challenge.Modexp.Submission.Proofs.Memo.V2.Trace
 import Challenge.Modexp.Submission.Proofs.Memo.V2.Spec
 
@@ -54,12 +55,12 @@ def gasSteps_fallback (input : ByteArray) (h : guardDiff Data.checks input ≠ 0
     (sound fallbackPrefixPath rfl (run_fallback_prefix input) rfl rfl deployAddress_not_precompile)).trans
     (soundOne rfl (run_fallback_jump input) rfl rfl deployAddress_not_precompile))
 
-def gasSteps_pretest_taken (input : ByteArray) (hw : MachineState.readWord input 32 = UInt256.ofNat 1) :
-    Challenge.EvmProof.GasSteps (Main.trampolineState input 1536) (Main.trampolineState input 1632) :=
+def gasSteps_pretest_taken (input : ByteArray) (hw : MachineState.readWord input 64 = UInt256.ofNat 0) :
+    Challenge.EvmProof.GasSteps (Main.trampolineState input 1536) (Main.trampolineState input 1698) :=
   (sound pretestPath rfl (run_pretest_prefix input) rfl rfl deployAddress_not_precompile).trans
     (soundOne rfl (run_pretest_taken input hw) rfl rfl deployAddress_not_precompile)
 
-def gasSteps_pretest_notTaken (input : ByteArray) (hw : MachineState.readWord input 32 ≠ UInt256.ofNat 1) :
+def gasSteps_pretest_notTaken (input : ByteArray) (hw : MachineState.readWord input 64 ≠ UInt256.ofNat 0) :
     Challenge.EvmProof.GasSteps (Main.trampolineState input 1536) (Main.trampolineState input 1547) :=
   (sound pretestPath rfl (run_pretest_prefix input) rfl rfl deployAddress_not_precompile).trans
     (sound pretestJumpPath rfl (run_pretest_notTaken input hw) rfl rfl deployAddress_not_precompile)

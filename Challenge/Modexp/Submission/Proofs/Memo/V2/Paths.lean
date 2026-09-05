@@ -1,3 +1,4 @@
+/- Modified September 5, 2026: semantic-bucket candidate; Apache-2.0. -/
 import Challenge.Modexp.Submission.Proofs.Memo.PCs
 
 set_option warningAsError true
@@ -26,11 +27,11 @@ def pretestPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
    Main.opAt 1116 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
-   Main.pushAt 1117 1 32,
+   Main.pushAt 1117 1 64,
    Main.opAt 1118 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.pushAt 1119 1 1,
+   Main.pushAt 1119 1 0,
    Main.opAt 1120 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)),
-   Main.pushAt 1121 2 1632
+   Main.pushAt 1121 2 1698
   ]
 
 def pretestJumpPath :

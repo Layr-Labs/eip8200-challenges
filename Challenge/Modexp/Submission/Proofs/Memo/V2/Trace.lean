@@ -1,3 +1,4 @@
+/- Modified September 5, 2026: semantic-bucket candidate; Apache-2.0. -/
 import Challenge.Modexp.Submission.Proofs.Memo.V2.State
 import Challenge.Modexp.Submission.Proofs.Memo.V2.Paths
 import Challenge.Modexp.Submission.Proofs.Memo.Step
@@ -19,7 +20,7 @@ open Logic Dispatch State Paths
 def pretestJumpState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
       pc := UInt256.ofNat 1546
-      stack := [UInt256.ofNat 1632, UInt256.eq (UInt256.ofNat 1) (MachineState.readWord input 32)] }
+      stack := [UInt256.ofNat 1698, UInt256.eq (UInt256.ofNat 0) (MachineState.readWord input 64)] }
 
 def pretestJumpLocated : Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   Main.opAt 1122 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
@@ -39,25 +40,25 @@ theorem run_pretest_prefix (input : ByteArray) :
     Challenge.EvmProof.Word.word_toNat_ofNat, hzeroWord, hzeroNat]
 
 theorem run_pretest_taken (input : ByteArray)
-    (hw : MachineState.readWord input 32 = UInt256.ofNat 1) :
+    (hw : MachineState.readWord input 64 = UInt256.ofNat 0) :
     Challenge.EvmProof.Stepper.runLocated pretestJumpLocated (pretestJumpState input) =
-      some (Main.trampolineState input 1632) := by
-  have hcond : UInt256.isTrue (UInt256.eq (UInt256.ofNat 1) (MachineState.readWord input 32)) := by
+      some (Main.trampolineState input 1698) := by
+  have hcond : UInt256.isTrue (UInt256.eq (UInt256.ofNat 0) (MachineState.readWord input 64)) := by
     rw [hw, Logic.eq_self_word]; exact Logic.isTrue_one
-  have hjump : Decode.isValidJumpDest submissionBytecode 1632 = true :=
-    Artifact.isValidJumpDest_index 1164 (by rfl)
+  have hjump : Decode.isValidJumpDest submissionBytecode 1698 = true :=
+    Artifact.isValidJumpDest_index 1189 (by rfl)
   have hpc : (pretestJumpState input).pc.toNat = Artifact.submissionArtifact.instructionPC 1122 := by
     simp [pretestJumpState, initialState, PCs.pc4, Challenge.EvmProof.Word.word_toNat_ofNat]
-  exact (Step.runLocated_jumpi_taken pretestJumpLocated rfl (pretestJumpState input) 1632
-    (UInt256.eq (UInt256.ofNat 1) (MachineState.readWord input 32)) [] hpc rfl (by simp) hcond rfl (by norm_num) hjump).trans rfl
+  exact (Step.runLocated_jumpi_taken pretestJumpLocated rfl (pretestJumpState input) 1698
+    (UInt256.eq (UInt256.ofNat 0) (MachineState.readWord input 64)) [] hpc rfl (by simp) hcond rfl (by norm_num) hjump).trans rfl
 
 theorem run_pretest_notTaken (input : ByteArray)
-    (hw : MachineState.readWord input 32 ≠ UInt256.ofNat 1) :
+    (hw : MachineState.readWord input 64 ≠ UInt256.ofNat 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock pretestJumpPath (pretestJumpState input) =
       some (Main.trampolineState input 1547) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
-  have heq : UInt256.eq (UInt256.ofNat 1) (MachineState.readWord input 32) = UInt256.ofNat 0 :=
+  have heq : UInt256.eq (UInt256.ofNat 0) (MachineState.readWord input 64) = UInt256.ofNat 0 :=
     Logic.eq_of_ne_word _ _ (fun h => hw h.symm)
   simp [pretestJumpPath, pretestJumpState, heq, Logic.not_isTrue_zero, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
