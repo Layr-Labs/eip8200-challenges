@@ -182,7 +182,7 @@ helper PCs, 160 wrapper targets, and the tail's 458-instruction suffix match
 the new artifact. The public Correct contract is unchanged. Protected
 Comparator acceptance is still required for the exact submitted bytes.
 
-## Current candidate: reordered helper parameters (H18)
+## Prior candidate: reordered helper parameters (H18)
 
 H18 pushes the rotation before the return PC. The helper entry is
 `[xAddress, returnPC, rotation, A, B, C, D, E] ++ rest`.
@@ -201,3 +201,25 @@ The five before-JUMP lengths are 41, 45, 44, 45, and 44 instructions.
 Wrapper lengths stay at 13 bytes and six instructions. The second PUSH
 starts at wrapper PC + 2; the return stays at PC + 12. The tail has a
 448-instruction suffix. The universal Correct contract is unchanged.
+
+## Current candidate: consume A in the shared sum (H20)
+
+H20 consumes A instead of copying it and later discarding it. After the
+Boolean and X addition, the stack is `[s, ret, r, A, B, C, D, E] ++ rest`.
+`SWAP1; SWAP3; ADD` gives `[A+s, r, ret, B, C, D, E] ++ rest`.
+The unchanged group constant and sum mask then produce H18's exact
+pre-rotation stack. All later T/C operations, three masks, memory accesses,
+and return semantics stay fixed. Full-width working inputs remain valid.
+
+Each helper is two bytes and two instructions shorter and costs five less
+gas. The exact artifact has 4,652 bytes and 2,455 instructions; the helper
+block has 610 bytes. The five before-JUMP lengths are 39, 43, 42, 43, and 42.
+All 160 wrapper targets are correct; 144 changed. Their lengths and return PCs are fixed.
+The final tail has a 428-instruction suffix.
+
+The native suite reports 1,939,895 gas, with all 17 clean and 17 dirty cases
+correct and equal paired gas. The reduction from H18 is 800 per block or
+52,800 per suite. The measured formula is
+`3698 + 28376 * B + 3 * C + memCost(65 + 2 * B)`.
+This is measured gas, not a separate proved gas schedule. The universal
+Correct contract and protected acceptance checks are unchanged.
