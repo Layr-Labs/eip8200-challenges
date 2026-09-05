@@ -1008,7 +1008,7 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.push 2 1034,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
- YulEvmCompiler.Instr.push 32 452312851962337609802976808287413630715170385286963942230417620837272125440,
+ YulEvmCompiler.Instr.push 32 452312851962337609803021705617712436052817602537946923124231457836929908736,
  YulEvmCompiler.Instr.push 1 26,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATASIZE)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.MOD)),
@@ -1702,10 +1702,40 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
  YulEvmCompiler.Instr.push 2 256,
  YulEvmCompiler.Instr.push 0 0,
- YulEvmCompiler.Instr.op (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN))
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.push 1 32,
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.ISZERO)),
+ YulEvmCompiler.Instr.push 2 1473,
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)),
+ YulEvmCompiler.Instr.push 2 1553,
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.push 1 96,
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+ YulEvmCompiler.Instr.push 32 5964364953636342908918930162962566239787286640968493902593843747347131818633,
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)),
+ YulEvmCompiler.Instr.push 2 2305,
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)),
+ YulEvmCompiler.Instr.push 2 2497,
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))
 ]
 
-theorem submissionInstructions_count : submissionInstructions.length = 1673 := by
+theorem submissionInstructions_count : submissionInstructions.length = 1703 := by
   decide
 
 theorem assemble_submissionInstructions :
