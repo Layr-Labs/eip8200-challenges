@@ -15,3 +15,374 @@ The lower-is-better score is clean-state gas summed over all 17 public vectors.
 The same bytes must also return the correct result from the dirty state.
 Executable vectors are a falsification check; Comparator must accept the
 universal Lean proof before the protected scorer runs.
+
+## Earlier direct-entry candidate
+
+The initial `PUSH2; JUMP` now targets the existing main-body `JUMPDEST` at
+`0x03ee` directly. This skips twelve compiler-generated
+`JUMPDEST; PUSH2; JUMP` forwarding stubs while preserving the 1,671-byte code
+length and every downstream program counter. The expected saving is 144 gas
+per invocation, or 2,448 gas across the 17-vector score suite.
+
+The candidate-specific proof under this directory changes the structural
+artifact and entry execution trace to the direct jump. The downstream
+RIPEMD-160 functional proof is unchanged, and its exact-gas bridge accounts
+for the reduced entry cost.
+
+## Stack-consuming helper candidate
+
+This candidate starts from promoted submission
+`943c3303-c540-44c3-8049-73aee90390f3`. It keeps that submission's Boolean
+jump table and the direct entry jump. It consumes helper arguments directly
+and uses the caller's zero result slot to remove stack cleanup work.
+
+| Helper | Previous base gas | New base gas |
+| --- | ---: | ---: |
+| xAt | 37 | 30 |
+| wordSet | 42 | 36 |
+| xSet | 40 | 36 |
+| tableAt | 57 | 48 |
+| rotl | 54 | 45 |
+
+Memory expansion is unchanged. The changes save 7,904 gas per padded block,
+or 521,664 across the 66-block public suite. The native scorer reports
+8,685,426 gas with all 17 clean and dirty vectors correct. The exact-bytecode
+Lean proof is the acceptance condition, not the executable vectors alone.
+
+Bytecode size remains 1,830 bytes. Each edited helper keeps its original
+entry address, allocated byte length, and instruction count. Unreachable
+STOP instructions after each return JUMP preserve later addresses and
+instruction indexes. All caller-visible helper contracts remain unchanged.
+
+## Prior candidate: unaligned table windows and hAt
+
+That candidate added the table-window idea from submission
+`80dacb5` by `ercumentyildirim`. The logical table bases remain unchanged.
+Four calls push `base - 31`. The helper loads a word at `base - 31 + i`
+and selects byte 31. It consumes its arguments and the zero result slot.
+This reduces tableAt from 48 to 27 gas. The same argument-consumption
+change reduces hAt from 37 to 30 gas.
+
+The byte correspondence proof requires `31 ≤ base` and `i < 80`.
+All four actual table bases meet that condition. Separate memory bounds
+prove that the unaligned loads do not increase the memory high-water mark.
+The public correctness theorem and its calldata domain are unchanged.
+
+The native suite passes all 17 clean and dirty vectors at 8,241,311 gas.
+The saving is 444,115 against the prior helper candidate and 1,618,387
+against the original baseline. Its closed gas formula is
+`3698 + 123852 * B + 3 * C + memCost(65 + 2 * B)`, where
+`B = (inputSize + 72) / 64` and `C = (inputSize + 31) / 32`.
+The full exact-bytecode Comparator remains the acceptance condition.
+
+## Prior candidate: stack-consuming Boolean helpers
+
+This candidate also consumes the Boolean case index and helper arguments.
+Two selection arms use bitwise XOR identities proved for all UInt256
+inputs. The per-bit proof uses only the permitted axiom set; the earlier
+bv_decide probe is not part of this source.
+
+Boolean case costs are [42,51,54,54,54]. The native score is 8,027,999,
+with all seventeen clean and dirty cases passing. The formula is
+`3698 + 120620 * B + 3 * C + memCost(65 + 2 * B)`.
+The generic Boolean trace and complete execution/gas proof build have
+passed. The independent exact-bytecode Comparator remains the acceptance
+condition. Run all Yukon commands in the benchmark work directory printed
+by the clone command.
+
+## Prior candidate: direct stack-resident rounds (H10)
+
+H10 retains the message schedule and replaces the compressor with two fully
+unrolled 80-round lanes. Five working words stay on the EVM stack through each
+lane. The right lane runs above the saved left result. Round templates use
+immediate message-slot addresses, constants, and rotations, with inline Boolean
+operations and 32-bit rotation. The three old working-state memory copies and
+the round helper calls are no longer on the active compression path.
+
+The exact artifact is 12,906 bytes. Native tests report 1,743,479 gas over all
+17 clean vectors. All 17 dirty vectors also pass with the same gas total.
+The measured formula is `3698 + 25400 * B + 3 * C + memCost(65 + 2 * B)`.
+It is not a separate proved gas schedule. H09, the prior immediate-wrapper
+candidate, passed local Comparator at 6,181,847 gas and 5,133 bytes.
+
+The proof uses 42 instruction-aligned assembly chunks, five generic round
+traces, and exact indexed certificates for all 160 sites. The scheduled words
+match the pinned RIPEMD-160 message schedule. Both complete lane traces use
+actual machine states with unchanged memory and active-word count. The final
+61-instruction tail stores the five combined hash words in the exact program
+order. `StackCorrect` connects these components to the outer block model and
+the unchanged public Correct contract. `Solution.lean` is the benchmark entry.
+
+Only the protected Comparator and scorer determine benchmark acceptance.
+The final theorem must pass that check for the exact submitted bytecode.
+
+## Prior candidate: compact shared stack rounds (H12)
+
+H12 retains the stack-resident working words, schedule, and final combination.
+It replaces H10's inline round bodies with 160 six-instruction wrappers and
+ten shared helpers. Each wrapper supplies a return PC, rotation, message-slot
+address, and helper PC. Each helper embeds its group constant. Both the helper
+return JUMP and the wrapper's return JUMPDEST are executed and proved.
+
+The exact artifact is 4,796 bytes and 2,583 instructions. The native suite
+reports 2,292,599 gas over all 17 clean vectors. All 17 dirty vectors pass with
+the same individual gas results. The measured formula is
+`3698 + 33720 * B + 3 * C + memCost(65 + 2 * B)`.
+This is a native measurement, not a separate proved gas schedule.
+
+H09 was promoted at 6,181,847 gas. H10 failed before proof replay because the
+protected generated-byte module exceeded its recursion limit. H12's smaller
+byte array passes that isolated generator check without a harness change.
+
+The proof uses 13 instruction-aligned assembly chunks, five generic helper
+traces, exact call/helper/return locations, bounded 80-round lane composition,
+and the final storage tail with its nonempty helper suffix. StackCorrect and
+Solution retain the exact universal Correct contract. Acceptance still
+requires the full protected Comparator and scorer.
+
+## Prior candidate: compact rotation and return sequence (H14)
+
+H14 keeps H12's shared helper design and changes only the common stack
+permutations. It consumes the C input directly during its ten-bit rotation.
+It also consumes the sum and rotation inputs directly when it computes T.
+All masks, arithmetic, memory accesses, and call/return steps remain.
+
+The artifact is 4,726 bytes and 2,513 instructions. The native suite reports
+2,113,079 gas for all 17 clean vectors. All 17 dirty vectors pass with equal
+paired gas. This saves 179,520 per frame suite, or 2,720 per compression block,
+against H12. The measured formula is
+`3698 + 31000 * B + 3 * C + memCost(65 + 2 * B)`.
+It is not a separate proved gas schedule.
+
+The five before-JUMP templates have lengths 44, 48, 49, 48, and 49.
+The wrappers and final storage tail keep their previous positions. Each
+helper has seven fewer instructions and bytes. All ten helper addresses,
+160 wrapper targets, and the tail's 486-instruction suffix are updated.
+The unchanged public Correct contract and protected Comparator remain the
+acceptance conditions for these exact bytes.
+
+## H16: merged permutations and deferred Boolean masks
+
+H16 includes H15's merged T/C permutation, which removes two SWAPs per
+helper. It also removes the early Boolean-result mask from groups 2 and 4.
+The later sum mask, T mask, and C mask remain. The ordinary-kernel identity
+`mask32 (K + (A + (X + F))) = mask32 (K + (A + (X + mask32 F)))`
+justifies the change for all UInt256 inputs, including arithmetic wrap.
+The equality applies after the sum mask; unmasked sums need not be equal.
+
+The native suite reports 2,024,375 gas for each frame. All 17 clean and 17
+dirty vectors pass with equal paired gas. The artifact is 4,682 bytes and
+2,485 instructions. H16 saves 25,344 gas against H15, or 384 per block.
+The measured formula is
+`3698 + 29656 * B + 3 * C + memCost(65 + 2 * B)`.
+This is not a separate proved gas schedule.
+
+The five before-JUMP template lengths are 42, 46, 45, 46, and 45. All ten
+helper PCs, 160 wrapper targets, and the tail's 458-instruction suffix match
+the new artifact. The public Correct contract is unchanged. Protected
+Comparator acceptance is still required for the exact submitted bytes.
+
+## Prior candidate: reordered helper parameters (H18)
+
+H18 pushes the rotation before the return PC. The helper entry is
+`[xAddress, returnPC, rotation, A, B, C, D, E] ++ rest`.
+After the sum mask, `SWAP3; POP; SWAP2` reaches the same state that H16
+reached with one more `SWAP1`. All later operations and masks stay fixed.
+The change applies to all ten helpers and all 160 wrappers.
+
+The native suite reports 1,992,695 gas per frame suite. All 17 clean and
+17 dirty vectors pass with equal paired gas. The artifact has 4,672 bytes
+and 2,475 instructions. The saving against H16 is 480 per compression
+block, or 31,680 per suite. The measured formula is
+`3698 + 29176 * B + 3 * C + memCost(65 + 2 * B)`.
+This is not a separate proved gas schedule.
+
+The five before-JUMP lengths are 41, 45, 44, 45, and 44 instructions.
+Wrapper lengths stay at 13 bytes and six instructions. The second PUSH
+starts at wrapper PC + 2; the return stays at PC + 12. The tail has a
+448-instruction suffix. The universal Correct contract is unchanged.
+
+## Prior candidate: consume A in the shared sum (H20)
+
+H20 consumes A instead of copying it and later discarding it. After the
+Boolean and X addition, the stack is `[s, ret, r, A, B, C, D, E] ++ rest`.
+`SWAP1; SWAP3; ADD` gives `[A+s, r, ret, B, C, D, E] ++ rest`.
+The unchanged group constant and sum mask then produce H18's exact
+pre-rotation stack. All later T/C operations, three masks, memory accesses,
+and return semantics stay fixed. Full-width working inputs remain valid.
+
+Each helper is two bytes and two instructions shorter and costs five less
+gas. The exact artifact has 4,652 bytes and 2,455 instructions; the helper
+block has 610 bytes. The five before-JUMP lengths are 39, 43, 42, 43, and 42.
+All 160 wrapper targets are correct; 144 changed. Their lengths and return PCs are fixed.
+The final tail has a 428-instruction suffix.
+
+The native suite reports 1,939,895 gas, with all 17 clean and 17 dirty cases
+correct and equal paired gas. The reduction from H18 is 800 per block or
+52,800 per suite. The measured formula is
+`3698 + 28376 * B + 3 * C + memCost(65 + 2 * B)`.
+This is measured gas, not a separate proved gas schedule. The universal
+Correct contract and protected acceptance checks are unchanged.
+
+## Prior candidate: consume A with the packed schedule (H21)
+
+H21 combines the H20 round helpers with the same 528-byte ascending packed
+schedule used in H19. The schedule PUSH2 at PC `0x72b` now targets `0x122c`.
+Only its two immediate bytes change in the 4,652-byte H20 prefix. The new
+helper starts at instruction 2455. Its final JUMP is instruction 2614 at
+PC `0x143b`. The full candidate has 5,180 bytes and 2,615 instructions.
+The unchanged final combination tail has a 588-instruction suffix.
+
+The helper reads +60 decimal, +0, and +32 before all 16 ascending X stores.
+Two byte-swap stages per input word produce the little-endian values.
+The warm-up preserves the old active-word count. Separate raw, byte-order,
+full-memory, active-word, state, and located-step proofs connect the helper
+to the old scheduled-state model. The frame uses CalldataFits and a valid
+block index, with one return JUMPDEST. The public Correct contract is fixed.
+
+Native tests report 1,730,279 gas with all 17 clean and 17 dirty cases
+correct and equal paired gas. This saves 209,616 gas from H20 and 52,800
+from H19 per suite. Native gas is not an official server score.
+
+## Current candidate: bounded RotationFold with the packed schedule (H22c-packed)
+
+H22c-packed is the current native candidate. It combines two bounded helper
+folds with the unchanged 528-byte ascending packed schedule helper. The native
+measurement is 5,150 bytes, 2,585 instructions, and 1,635,239 gas per frame.
+The result is 95,040 gas lower than the H21 native measurement. Native gas is
+not an official server score. The measured formula is
+`3698 + 23760 * B + 3 * C + memCost(65 + 2 * B)`, where
+`B = (inputSize + 72) / 64` and `C = (inputSize + 31) / 32`.
+
+The C fold replaces:
+
+```text
+DUP1 PUSH1 10 SHL SWAP1 PUSH1 22 SHR OR PUSH4 0xffffffff AND
+DUP1 PUSH1 32 SHL OR PUSH1 22 SHR PUSH4 0xffffffff AND
+```
+
+The C input remains a full-width UInt256 value until the preserved
+`PUSH4 0xffffffff; AND`. The replacement uses bitwise OR. It does not use the
+invalid multiplication shortcut `C * (2^32 + 1)` for arbitrary C.
+
+The T fold replaces:
+
+```text
+DUP1 DUP3 SHL SWAP2 PUSH1 32 SUB SHR OR
+DUP1 PUSH1 32 SHL OR SWAP1 SHR
+```
+
+The sum `q` is already masked to 32 bits. Every wrapper uses the complement
+rotation payload `32-r` exactly once for this fold. The new stack prefix is
+`[q, 32-r, ret, ...]`. The raw result is
+`((q << 32) OR q) >> (32-r)`. At `r=0` the raw result is `q`; at `r=32` it is
+`(q << 32) OR q`. The later addition and 32-bit mask preserve the required
+round result at both endpoints.
+
+All three 32-bit masks remain. All five groups, both constant tables, all
+working-lane order, return behavior, suffix behavior, and the final
+combination tail remain fixed. The 160 wrappers remain 13 bytes and six
+instructions. Their return PC remains wrapper PC plus 12. The H22c prefix has
+4,622 bytes and 2,425 instructions. The appended schedule helper starts at
+PC `0x120e`, instruction index 2,425, and its final JUMP is at PC `0x141d`,
+instruction index 2,584. The packed tail suffix is 558 instructions.
+
+Native testing passed 12/12 tests. Main independently reran all twelve tests.
+Each of the four trusted native scorer processes passed 34 rows: 17 clean and
+17 dirty. All rows were correct, and every clean/dirty pair had equal gas.
+
+The generic proof build passed 1,020 jobs, and the fresh seven-theorem
+`H22RawAudit` passed with only the three allowed axioms. The exact Artifact
+build, fresh Artifact audit, and independent source review also passed.
+The complete `StackCorrect.correct` build passed 1,091 jobs. Fresh Correct,
+Site, and Raw audits also passed with only the allowed axioms. Protected
+local Comparator acceptance and ranked server validation remain pending.
+Protected Comparator acceptance is required for this exact bytecode.
+
+## Current candidate: omit the final C-fold mask (H22c-packed-low32)
+
+This candidate starts from GordoAR's H22c packed-schedule artifact and keeps
+both of its bounded rotation folds, wrapper layout, helper addresses, schedule
+helper, and byte length unchanged.  The only executable-byte changes are ten
+size-preserving opcode substitutions, one in each shared round helper:
+
+```text
+PUSH4 0xffffffff; AND; SWAP4; SWAP5; SWAP1; JUMP
+PUSH4 0xffffffff; POP; SWAP4; SWAP5; SWAP1; JUMP
+```
+
+The pushed mask is deliberately retained and discarded with `POP`.  This
+costs 2 gas instead of the 3-gas `AND`, while preserving every program counter,
+all 160 wrapper targets, the packed-schedule target, instruction count, and
+5,150-byte artifact size.  It saves 160 gas per compression block because each
+block executes all ten helpers in each of the two lanes eight times.  Across
+the public suite's 66 compression blocks, the measured reduction is 10,560
+gas: 1,635,239 to 1,624,679.
+
+### Why the mask can be omitted
+
+H22's folded C rotation leaves the full-width value
+
+```text
+((C OR (C << 32)) >> 22)
+```
+
+instead of immediately reducing it to 32 bits.  The next round can observe
+that value through Boolean operations, so executable test vectors alone are
+not a universal correctness argument.  The proof therefore changes the
+machine model rather than pretending the omitted `AND` is an equality.
+
+`ScratchLow.lean` introduces a relation between EVM working words and the
+mathematical five-word RIPEMD state.  The relation requires exact 32-bit
+embeddings for `B` and `C`, while requiring only equality after projection to
+`UInt32` for `A`, `D`, and `E`.  This is the invariant needed by the lane:
+the newly produced `B` remains masked, the next `C` is the old exact `B`, and
+the unmasked folded rotation becomes `D`.  The general projection proof for
+RIPEMD's five Boolean functions includes a full-width complement lemma, so a
+high-bit-bearing `D` remains safe in the later negated Boolean groups.
+
+The existing `RotationFold.C10_or_fold` theorem connects the exact H22 fold to
+the masked rotation.  Applying `toUInt32` shows that the unmasked machine word
+has precisely the low 32 bits required by RIPEMD.  `rawRound_represents`
+preserves the mixed-strength invariant for every round, and the two 80-round
+inductions preserve it across both lanes.  Finally,
+`evmCombine_of_represents` proves that the existing masked final combination
+produces the exact embedded mathematical hash state.  The generic helper
+traces target this raw-round model, while Artifact still certifies the exact
+submitted bytes.
+
+### Reproduction and checks
+
+The native scorer was run directly on `bytecode.hex` before proof work.  All
+17 clean-state and all 17 dirty-state executions returned the expected digest;
+every clean/dirty gas pair matched.  The observed candidate is 5,150 bytes,
+2,585 instructions, and 1,624,679 total clean gas.  The relevant local checks
+are:
+
+```sh
+.lake/build/bin/ripemd160challenge \
+  --hex=Challenge/Ripemd160/Submission/bytecode.hex
+lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.ScratchLow
+lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTrace
+lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCompression
+lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
+yukon run --track ripemd160
+```
+
+An early mechanical edit changed all ten raw bytes but only one of the
+line-wrapped byte literals.  To avoid relying on text layout, `Bytes.lean` and
+the instruction-chunk portion of `Artifact.lean` were regenerated from the
+final bytecode and then rebuilt.  This ensures the byte array, instruction
+certificate, helper templates, evaluator traces, and benchmark input all
+refer to the same ten `POP` opcodes.
+
+The optimization intentionally remains size-preserving.  Deleting each
+`PUSH4; AND` pair would save more runtime gas and 60 bytes, but would relocate
+the ten helper entry points and the packed-schedule helper.  That stronger
+variant is a separate follow-up requiring regenerated wrapper targets and
+location certificates; it is not silently mixed into this submission.
+
+Base work and both rotation-fold proofs are credited to GordoAR and the H22
+contributors.  The low-32 invariant and final-mask omission are the additional
+work in this candidate.  Effort: GPT 5.6 Sol xhigh through Codex.  The protected
+Comparator and ranked server validation remain the acceptance authorities.
