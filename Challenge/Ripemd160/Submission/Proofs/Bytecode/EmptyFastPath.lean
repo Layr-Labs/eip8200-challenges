@@ -24,7 +24,7 @@ theorem empty_fits : CalldataFits emptyInput := by
   simp [emptyInput]
 
 def emptyFinal : State :=
-  { Execution.atPC emptyInput 0x135a with
+  { Execution.atPC emptyInput 0x1361 with
     stack := []
     halt := .Returned
     hReturn :=
@@ -56,12 +56,12 @@ private theorem hmod_empty :
   decide
 
 def gasSteps_dispatch_empty :
-    Challenge.EvmProof.GasSteps (Execution.atPC emptyInput 0x133a)
-      (Execution.atPC emptyInput 0x1340) := by
+    Challenge.EvmProof.GasSteps (Execution.atPC emptyInput 0x1341)
+      (Execution.atPC emptyInput 0x1347) := by
   have hfalse : (UInt256.ofNat 0).isTrue = false := hfalse_empty
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock Execution.path_dispatch
-      (Execution.atPC emptyInput 0x133a) =
-      some (Execution.atPC emptyInput 0x1340) := by
+      (Execution.atPC emptyInput 0x1341) =
+      some (Execution.atPC emptyInput 0x1347) := by
     simp [Execution.path_dispatch,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -76,27 +76,27 @@ def gasSteps_dispatch_empty :
   · exact deployAddress_not_precompile
 
 def s1_push20 : State :=
-  { Execution.atPC emptyInput 0x1355 with
+  { Execution.atPC emptyInput 0x135c with
     stack := [UInt256.ofNat Execution.emptyDigestNat] }
 
 def s2_push0 : State :=
-  { Execution.atPC emptyInput 0x1356 with
+  { Execution.atPC emptyInput 0x135d with
     stack := [UInt256.ofNat 0, UInt256.ofNat Execution.emptyDigestNat] }
 
 def mstoreState : State :=
-  { Execution.atPC emptyInput 0x1357 with
+  { Execution.atPC emptyInput 0x135e with
     stack := []
     memory := MachineState.writeBytes ByteArray.empty EmptySpec.emptyOutput 0
     activeWords := UInt256.ofNat 1 }
 
 def s4_push1 : State :=
   { mstoreState with
-    pc := UInt256.ofNat 0x1359
+    pc := UInt256.ofNat 0x1360
     stack := [UInt256.ofNat 32] }
 
 def s5_push0 : State :=
   { s4_push1 with
-    pc := UInt256.ofNat 0x135a
+    pc := UInt256.ofNat 0x1361
     stack := [UInt256.ofNat 0, UInt256.ofNat 32] }
 
 private def path_2876 :
@@ -129,9 +129,9 @@ private theorem path_tail_single_split :
   rfl
 
 def gasSteps_2876 :
-    Challenge.EvmProof.GasSteps (Execution.atPC emptyInput 0x1340) s1_push20 := by
+    Challenge.EvmProof.GasSteps (Execution.atPC emptyInput 0x1347) s1_push20 := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_2876
-      (Execution.atPC emptyInput 0x1340) = some s1_push20 := by
+      (Execution.atPC emptyInput 0x1347) = some s1_push20 := by
     simp [path_2876, Execution.path_empty_tail,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -233,12 +233,12 @@ def gasSteps_2881 :
   · exact deployAddress_not_precompile
 
 def gasSteps_empty_tail :
-    Challenge.EvmProof.GasSteps (Execution.atPC emptyInput 0x1340) emptyFinal :=
+    Challenge.EvmProof.GasSteps (Execution.atPC emptyInput 0x1347) emptyFinal :=
   (((((gasSteps_2876.trans gasSteps_2877).trans gasSteps_2878).trans
     gasSteps_2879).trans gasSteps_2880).trans gasSteps_2881)
 
 def gasSteps_empty_dispatch :
-    Challenge.EvmProof.GasSteps (Execution.atPC emptyInput 0x133a) emptyFinal :=
+    Challenge.EvmProof.GasSteps (Execution.atPC emptyInput 0x1341) emptyFinal :=
   gasSteps_dispatch_empty.trans gasSteps_empty_tail
 
 def gasSteps_empty :

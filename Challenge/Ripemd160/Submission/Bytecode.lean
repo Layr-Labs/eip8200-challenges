@@ -6,10 +6,9 @@ set_option maxRecDepth 10000
 /-!
 # The frozen raw-EVM RIPEMD-160 artifact
 
-`submissionBytecode` is the exact combined H30b+H31b bytecode from the frozen native
-checkpoint. It preserves the H30b prefix except for the driver's PUSH2 immediate and
-appends the unchanged 186-byte H31b packed-output helper. The existing B01 transform
-is not reapplied.
+`submissionBytecode` is the exact candidate bytecode. It retains the accepted
+dispatch and compression layout while using a packed `PUSH16` construction
+for the known-input comparison, with fall-through `JUMPDEST` padding.
 
 Correctness proofs target these bytes directly; the compiler is used to
 reproduce the artifact, not as an assumption in the bytecode proof.
@@ -25,7 +24,7 @@ set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 4955 := by
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 4962 := by
   simp [submissionBytecode]
 
 set_option maxRecDepth 100000 in
@@ -37,19 +36,19 @@ set_option maxHeartbeats 2000000 in
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 2000000 in
 @[simp] theorem referenceBytecode_extract_entry :
-    submissionBytecode.extract 1 3 = ByteArray.mk #[0x13, 0x3a] := by
+    submissionBytecode.extract 1 3 = ByteArray.mk #[0x13, 0x41] := by
   simp only [submissionBytecode]
   exact referenceBytes_extract_entry
 
 @[simp] theorem bytesToBigEndianNat_entry_literal :
     EvmSemantics.Data.Bytes.bytesToBigEndianNat
-      (ByteArray.mk #[0x13, 0x3a]) = 0x133a := by
+      (ByteArray.mk #[0x13, 0x41]) = 0x1341 := by
   simp [EvmSemantics.Data.Bytes.bytesToBigEndianNat,
     Challenge.EvmProof.Bytecode.toList_eq_data, UInt8.toNat_ofNat]
 
 @[simp] theorem referenceBytecode_entry_value :
     EvmSemantics.Data.Bytes.bytesToBigEndianNat
-      (submissionBytecode.extract 1 3) = 0x133a := by
+      (submissionBytecode.extract 1 3) = 0x1341 := by
   rw [referenceBytecode_extract_entry]
   exact bytesToBigEndianNat_entry_literal
 

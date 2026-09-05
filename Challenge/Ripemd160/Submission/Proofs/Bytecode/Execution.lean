@@ -33,9 +33,9 @@ def atPC (input : ByteArray) (pc : Nat) : State :=
 
 def mainStart (input : ByteArray) : State := atPC input 0x03ef
 
-/-! ## Empty dispatcher PCs (frozen 4955-byte / 2882-instruction artifact).
+/-! ## Empty dispatcher PCs (frozen 4962-byte / 2882-instruction artifact).
 
-The new tail appends ten instructions at `0x133a` (indices `2872..2881`).
+The new tail appends ten instructions at `0x1341` (indices `2872..2881`).
 Bounds use the 33-byte suffix certificate; no whole-prefix `decide` over
 2872+ instructions. Fixed prefix bytes preserved. -/
 
@@ -176,17 +176,17 @@ private theorem dispatch_instr_2881 :
   simpa [dispatchSuffix_eq, submissionInstructionsChunk15, hop] using h
 
 private theorem dispatch_code_bytes :
-    (YulEvmCompiler.assembleBytes Artifact.submissionInstructions).length = 4955 := by
+    (YulEvmCompiler.assembleBytes Artifact.submissionInstructions).length = 4962 := by
   have h := congrArg ByteArray.size Artifact.submissionArtifact.assembly_eq
   change (YulEvmCompiler.assembleBytes Artifact.submissionInstructions).toArray.size =
     Artifact.submissionArtifact.code.size at h
-  have hsize : Artifact.submissionArtifact.code.size = 4955 := by
-    change Challenge.Ripemd160.submissionBytecode.size = 4955
+  have hsize : Artifact.submissionArtifact.code.size = 4962 := by
+    change Challenge.Ripemd160.submissionBytecode.size = 4962
     exact Challenge.Ripemd160.referenceBytecode_size
   simpa only [List.size_toArray, hsize] using h
 
 private theorem dispatch_prefix_bytes :
-    (YulEvmCompiler.assembleBytes dispatchPrefix).length = 0x133a := by
+    (YulEvmCompiler.assembleBytes dispatchPrefix).length = 0x1341 := by
   have hbytes : YulEvmCompiler.assembleBytes Artifact.submissionInstructions =
       YulEvmCompiler.assembleBytes dispatchPrefix ++
         YulEvmCompiler.assembleBytes dispatchSuffix := by
@@ -196,7 +196,7 @@ private theorem dispatch_prefix_bytes :
   omega
 
 private theorem dispatch_pc_base :
-    Artifact.submissionArtifact.instructionPC 2872 = 0x133a := by
+    Artifact.submissionArtifact.instructionPC 2872 = 0x1341 := by
   have hseg := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     dispatchPrefix dispatchSuffix [] artifact_dispatch_split3 0
     (by simp [dispatchSuffix_length])
@@ -210,11 +210,11 @@ section DispatchPCs
 set_option maxRecDepth 50000
 
 @[simp] theorem pc_dispatch_2872 :
-    Artifact.submissionArtifact.instructionPC 2872 = 0x133a :=
+    Artifact.submissionArtifact.instructionPC 2872 = 0x1341 :=
   dispatch_pc_base
 
 @[simp] theorem pc_dispatch_2873 :
-    Artifact.submissionArtifact.instructionPC 2873 = 0x133b := by
+    Artifact.submissionArtifact.instructionPC 2873 = 0x1342 := by
   have hseg := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     dispatchPrefix dispatchSuffix [] artifact_dispatch_split3 1
     (by simp [dispatchSuffix_length])
@@ -225,7 +225,7 @@ set_option maxRecDepth 50000
   exact hseg
 
 @[simp] theorem pc_dispatch_2874 :
-    Artifact.submissionArtifact.instructionPC 2874 = 0x133c := by
+    Artifact.submissionArtifact.instructionPC 2874 = 0x1343 := by
   have hseg := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     dispatchPrefix dispatchSuffix [] artifact_dispatch_split3 2
     (by simp [dispatchSuffix_length])
@@ -236,7 +236,7 @@ set_option maxRecDepth 50000
   exact hseg
 
 @[simp] theorem pc_dispatch_2875 :
-    Artifact.submissionArtifact.instructionPC 2875 = 0x133f := by
+    Artifact.submissionArtifact.instructionPC 2875 = 0x1346 := by
   have hseg := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     dispatchPrefix dispatchSuffix [] artifact_dispatch_split3 3
     (by simp [dispatchSuffix_length])
@@ -247,7 +247,7 @@ set_option maxRecDepth 50000
   exact hseg
 
 @[simp] theorem pc_dispatch_2876 :
-    Artifact.submissionArtifact.instructionPC 2876 = 0x1340 := by
+    Artifact.submissionArtifact.instructionPC 2876 = 0x1347 := by
   have hseg := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     dispatchPrefix dispatchSuffix [] artifact_dispatch_split3 4
     (by simp [dispatchSuffix_length])
@@ -258,7 +258,7 @@ set_option maxRecDepth 50000
   exact hseg
 
 @[simp] theorem pc_dispatch_2877 :
-    Artifact.submissionArtifact.instructionPC 2877 = 0x1355 := by
+    Artifact.submissionArtifact.instructionPC 2877 = 0x135c := by
   have hseg := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     dispatchPrefix dispatchSuffix [] artifact_dispatch_split3 5
     (by simp [dispatchSuffix_length])
@@ -269,7 +269,7 @@ set_option maxRecDepth 50000
   exact hseg
 
 @[simp] theorem pc_dispatch_2878 :
-    Artifact.submissionArtifact.instructionPC 2878 = 0x1356 := by
+    Artifact.submissionArtifact.instructionPC 2878 = 0x135d := by
   have hseg := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     dispatchPrefix dispatchSuffix [] artifact_dispatch_split3 6
     (by simp [dispatchSuffix_length])
@@ -280,7 +280,7 @@ set_option maxRecDepth 50000
   exact hseg
 
 @[simp] theorem pc_dispatch_2879 :
-    Artifact.submissionArtifact.instructionPC 2879 = 0x1357 := by
+    Artifact.submissionArtifact.instructionPC 2879 = 0x135e := by
   have hseg := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     dispatchPrefix dispatchSuffix [] artifact_dispatch_split3 7
     (by simp [dispatchSuffix_length])
@@ -291,7 +291,7 @@ set_option maxRecDepth 50000
   exact hseg
 
 @[simp] theorem pc_dispatch_2880 :
-    Artifact.submissionArtifact.instructionPC 2880 = 0x1359 := by
+    Artifact.submissionArtifact.instructionPC 2880 = 0x1360 := by
   have hseg := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     dispatchPrefix dispatchSuffix [] artifact_dispatch_split3 8
     (by simp [dispatchSuffix_length])
@@ -302,7 +302,7 @@ set_option maxRecDepth 50000
   exact hseg
 
 @[simp] theorem pc_dispatch_2881 :
-    Artifact.submissionArtifact.instructionPC 2881 = 0x135a := by
+    Artifact.submissionArtifact.instructionPC 2881 = 0x1361 := by
   have hseg := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     dispatchPrefix dispatchSuffix [] artifact_dispatch_split3 9
     (by simp [dispatchSuffix_length])
@@ -316,7 +316,7 @@ end DispatchPCs
 
 def path_start : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨0, .push ⟨2, by decide⟩ (UInt256.ofNat 0x133a), by rfl, by decide⟩,
+  [⟨0, .push ⟨2, by decide⟩ (UInt256.ofNat 0x1341), by rfl, by decide⟩,
    ⟨1, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def path_1b : List
@@ -440,21 +440,21 @@ def path_empty : List
   rfl
 
 private theorem empty_entry_jumpdest :
-    Decode.isValidJumpDest submissionBytecode 0x133a = true := by
+    Decode.isValidJumpDest submissionBytecode 0x1341 = true := by
   have hcode : Artifact.submissionArtifact.code = submissionBytecode := rfl
   have h := Artifact.submissionArtifact.isValidJumpDest_index 2872 dispatch_instr_2872
   simpa only [hcode, pc_dispatch_2872] using h
 
 def gasSteps_start (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0x133a) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x133a = true :=
+    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0x1341) := by
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x1341 = true :=
     empty_entry_jumpdest
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_start
-      (atPC input 0) = some (atPC input 0x133a) := by
+      (atPC input 0) = some (atPC input 0x1341) := by
     simp [path_start, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, initialState, hdest]
-  have g : Challenge.EvmProof.GasSteps (atPC input 0) (atPC input 0x133a) := by
+  have g : Challenge.EvmProof.GasSteps (atPC input 0) (atPC input 0x1341) := by
     apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.submissionArtifact .Osaka path_start
     · rfl
@@ -661,7 +661,7 @@ def gasSteps_3ee (input : ByteArray) :
 
 def gasSteps_dispatch_nonempty (input : ByteArray) (hfit : CalldataFits input)
     (hnonempty : input.size ≠ 0) :
-    Challenge.EvmProof.GasSteps (atPC input 0x133a) (atPC input 0x3ee) := by
+    Challenge.EvmProof.GasSteps (atPC input 0x1341) (atPC input 0x3ee) := by
   have hbound : input.size < 2 ^ 256 := by
     unfold CalldataFits at hfit
     exact lt_trans hfit (by norm_num)
@@ -672,7 +672,7 @@ def gasSteps_dispatch_nonempty (input : ByteArray) (hfit : CalldataFits input)
   have hdest : Decode.isValidJumpDest submissionBytecode 0x3ee = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 682 (by rfl)
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_dispatch
-      (atPC input 0x133a) = some (atPC input 0x3ee) := by
+      (atPC input 0x1341) = some (atPC input 0x3ee) := by
     simp [path_dispatch, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, initialState, htrue, hdest]

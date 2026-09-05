@@ -238,7 +238,7 @@ private theorem packedSchedule_start_instructionPC :
   rw [packedScheduleBefore_length, hlength] at h
   have hsize : Artifact.submissionArtifact.code.size =
       Challenge.Ripemd160.submissionBytecode.size := rfl
-  have hsize' : Challenge.Ripemd160.submissionBytecode.size = 4955 :=
+  have hsize' : Challenge.Ripemd160.submissionBytecode.size = 4962 :=
     Challenge.Ripemd160.referenceBytecode_size
   rw [hsize, hsize'] at h
   omega

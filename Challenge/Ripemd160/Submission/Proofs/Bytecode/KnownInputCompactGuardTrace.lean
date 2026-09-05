@@ -26,15 +26,10 @@ private theorem size1000Nonzero :
 private theorem expandedFullWord :
     UInt256.lor
       (UInt256.shiftLeft
-        (UInt256.lor
-          (UInt256.shiftLeft (UInt256.ofNat 7016996765293437281)
-            (UInt256.ofNat 64))
-          (UInt256.ofNat 7016996765293437281))
+        (UInt256.ofNat 129440743495415807670381713415221633377)
         (UInt256.ofNat 128))
-      (UInt256.lor
-        (UInt256.shiftLeft (UInt256.ofNat 7016996765293437281)
-          (UInt256.ofNat 64))
-        (UInt256.ofNat 7016996765293437281)) = KnownInputData.fullWord := by
+      (UInt256.ofNat 129440743495415807670381713415221633377) =
+      KnownInputData.fullWord := by
   decide
 
 theorem run_size_target (s : State) (i : Nat)
