@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTemplate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RotationFold
 import Challenge.EvmProof.Meter
 
 set_option warningAsError true
@@ -31,7 +32,7 @@ def helperEntry (s : State) (startPC xAddress : UInt256)
     (working : Compression.EvmWorking) (rest : List UInt256) : State :=
   { s with
     pc := startPC
-    stack := [xAddress, returnPC, UInt256.ofNat rotation] ++
+    stack := [xAddress, returnPC, UInt256.ofNat (32 - rotation)] ++
       roundWords working ++ rest }
 
 def afterHelperBeforeJump (s : State) (endPC returnPC : UInt256)
@@ -48,6 +49,13 @@ def afterHelperBeforeJump (s : State) (endPC returnPC : UInt256)
 
 def rawEntry := helperEntry
 def rawAfterHelperBeforeJump := afterHelperBeforeJump
+
+theorem mask_land_toNat_lt (x : UInt256) :
+    (UInt256.land mask x).toNat < 2 ^ 32 := by
+  rw [Word.land_comm mask x]
+  change (Word.mask32 x).toNat < 2 ^ 32
+  rw [Word.mask32_eq_ofUInt32, Word.ofUInt32_toNat]
+  exact (Word.toUInt32 x).toNat_lt
 
 private theorem word_add_assoc (u v w : UInt256) :
     (u + v) + w = u + (v + w) := by
@@ -67,6 +75,48 @@ private theorem maskedRotateAdd (q e r r' : UInt256) :
             ((q.land mask).shiftRight r')) e) mask := by
   rw [Word.land_comm mask q]
   exact Word.land_comm _ _
+
+theorem raw_rotate_or_fold (q e : UInt256) (rotation : Nat)
+    (hq : (mask.land q).toNat < 2 ^ 32) (hrot : rotation ≤ 32) :
+    UInt256.land mask
+        (UInt256.add
+          (UInt256.shiftRight
+            ((mask.land q).lor
+              ((mask.land q).shiftLeft (UInt256.ofNat 32)))
+            (UInt256.ofNat (32 - rotation)))
+          e) =
+      UInt256.land
+        (UInt256.add
+          (((q.land mask).shiftLeft (UInt256.ofNat rotation)).lor
+            ((q.land mask).shiftRight (UInt256.ofNat (32 - rotation))))
+          e)
+        mask := by
+  have hfold :
+      UInt256.shiftRight
+          ((mask.land q).lor
+            ((mask.land q).shiftLeft (UInt256.ofNat 32)))
+          (UInt256.ofNat (32 - rotation)) =
+        StackRound.stackRawRot (mask.land q) rotation := by
+    simpa [HOr.hOr, OrOp.or, EvmSemantics.UInt256.instOrOp] using
+      (RotationFold.rawRot_or_fold (q := mask.land q)
+        (r := rotation) hq hrot)
+  rw [hfold]
+  simpa [StackRound.stackRawRot, HOr.hOr, OrOp.or,
+    EvmSemantics.UInt256.instOrOp] using
+    (maskedRotateAdd q e (UInt256.ofNat rotation)
+      (UInt256.ofNat (32 - rotation)))
+
+theorem c10_or_fold (c : UInt256) :
+    UInt256.land mask
+        (UInt256.shiftRight
+          (c.lor (c.shiftLeft (UInt256.ofNat 32)))
+          (UInt256.ofNat 22)) =
+      StackRound.stackC10 c := by
+  rw [Word.land_comm mask]
+  simpa [StackRound.stackC10, Word.mask32, mask, HAnd.hAnd, AndOp.and,
+    EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
+    EvmSemantics.UInt256.instOrOp] using
+    (RotationFold.C10_or_fold c)
 
 set_option linter.unusedSimpArgs false in
 theorem runInstrSeq_f0 (s : State) (startPC xAddress returnPC : UInt256)
@@ -121,9 +171,6 @@ theorem runInstrSeq_f0 (s : State) (startPC xAddress returnPC : UInt256)
     exact (word_add_assoc working.a
       (working.d.xor (working.b.xor working.c))
       (MachineState.readWord s.memory xAddress.toNat)).symm
-  have hsub : (UInt256.ofNat 32) - (UInt256.ofNat rotation) =
-      UInt256.ofNat (32 - rotation) := by
-    exact ofNat_sub_ofNat hrot (by norm_num)
   simp (config := { maxSteps := 3000000 })
     [helperBeforeJumpTemplate, booleanOps, op, push1, push4, dup1, dup2,
       dup3, dup4, dup5, dup6, dup7, dup8, swap1, swap2, swap3, swap4, swap5,
@@ -137,12 +184,13 @@ theorem runInstrSeq_f0 (s : State) (startPC xAddress returnPC : UInt256)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.succ_ofNat, Word.land_comm,
       Word.lor_comm, BooleanSelect.xor_comm, State.activeWordsAfterUInt256,
-      hadd, hzero, hcomm, hxorcomm, hbase, hsub]
+      hadd, hzero, hcomm, hxorcomm, hbase]
   constructor
   · rw [hcomm working.e]
     rw [hcomm working.e]
     rw [hcomm (MachineState.readWord s.memory xAddress.toNat)]
-    exact maskedRotateAdd _ _ _ _
-  · exact Word.land_comm _ _
+    exact raw_rotate_or_fold _ working.e rotation
+      (mask_land_toNat_lt _) hrot
+  · exact c10_or_fold working.c
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTrace

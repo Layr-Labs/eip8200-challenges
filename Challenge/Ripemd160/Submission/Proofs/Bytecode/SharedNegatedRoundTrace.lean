@@ -36,18 +36,6 @@ private theorem h16_masked_sum (a x f k : UInt256) :
       mask32 (k + (a + (x + mask32 f))) := by
   simp only [mask32_eq_ofUInt32, toUInt32_add, toUInt32_ofUInt32]
 
-private theorem maskedRotateAdd (q e r r' : UInt256) :
-    UInt256.land mask
-        (UInt256.add
-          (((mask.land q).shiftLeft r).lor
-            ((mask.land q).shiftRight r')) e) =
-      UInt256.land
-        (UInt256.add
-          (((q.land mask).shiftLeft r).lor
-            ((q.land mask).shiftRight r')) e) mask := by
-  rw [Word.land_comm mask q]
-  exact Word.land_comm _ _
-
 /-! ## Direct group 2 evaluator trace -/
 
 set_option linter.unusedSimpArgs false in
@@ -120,9 +108,6 @@ theorem runInstrSeq_f2 (s : State) (startPC xAddress returnPC : UInt256)
           ((MachineState.readWord s.memory xAddress.toNat).add
             ((working.d.xor (working.b.lor working.c.lnot)).land mask)))) := by
             exact (Word.land_comm _ _).symm
-  have hsub : (UInt256.ofNat 32) - (UInt256.ofNat rotation) =
-      UInt256.ofNat (32 - rotation) := by
-    exact ofNat_sub_ofNat hrot (by norm_num)
   simp only [mask] at hbase hsum
   simp (config := { maxSteps := 3000000 })
     [helperBeforeJumpTemplate, booleanOps, op, push1, push4, dup1, dup2,
@@ -137,11 +122,12 @@ theorem runInstrSeq_f2 (s : State) (startPC xAddress returnPC : UInt256)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.succ_ofNat, Word.land_comm,
       Word.lor_comm, BooleanSelect.xor_comm,
-      State.activeWordsAfterUInt256, hadd, hcomm, hsub]
+      State.activeWordsAfterUInt256, hadd, hcomm]
   constructor
   · rw [hcomm working.e, hsum, hbase, hcomm working.e]
-    exact maskedRotateAdd _ _ _ _
-  · exact Word.land_comm _ _
+    exact SharedRoundTrace.raw_rotate_or_fold _ working.e rotation
+      (SharedRoundTrace.mask_land_toNat_lt _) hrot
+  · exact SharedRoundTrace.c10_or_fold working.c
 
 /-! ## Direct group 4 evaluator trace -/
 
@@ -215,9 +201,6 @@ theorem runInstrSeq_f4 (s : State) (startPC xAddress returnPC : UInt256)
           ((MachineState.readWord s.memory xAddress.toNat).add
             ((working.b.xor (working.c.lor working.d.lnot)).land mask)))) := by
             exact (Word.land_comm _ _).symm
-  have hsub : (UInt256.ofNat 32) - (UInt256.ofNat rotation) =
-      UInt256.ofNat (32 - rotation) := by
-    exact ofNat_sub_ofNat hrot (by norm_num)
   simp only [mask] at hbase hsum
   simp (config := { maxSteps := 3000000 })
     [helperBeforeJumpTemplate, booleanOps, op, push1, push4, dup1, dup2,
@@ -232,10 +215,11 @@ theorem runInstrSeq_f4 (s : State) (startPC xAddress returnPC : UInt256)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.succ_ofNat, Word.land_comm,
       Word.lor_comm, BooleanSelect.xor_comm,
-      State.activeWordsAfterUInt256, hadd, hcomm, hsub]
+      State.activeWordsAfterUInt256, hadd, hcomm]
   constructor
   · rw [hcomm working.e, hsum, hbase, hcomm working.e]
-    exact maskedRotateAdd _ _ _ _
-  · exact Word.land_comm _ _
+    exact SharedRoundTrace.raw_rotate_or_fold _ working.e rotation
+      (SharedRoundTrace.mask_land_toNat_lt _) hrot
+  · exact SharedRoundTrace.c10_or_fold working.c
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedNegatedRoundTrace
