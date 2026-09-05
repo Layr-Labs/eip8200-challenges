@@ -8,10 +8,10 @@ import {ModexpDeployed} from "evmification/modexp/ModexpDeployed.sol";
 
 /// @notice Cross-checks the MODEXP challenge's published gas against a real EVM.
 ///
-/// @dev The `leanGas` column is what `Challenge/Modexp/Scorer.lean` reports for
-///      the frozen reference, as printed by `lake exe modexpchallenge` and
-///      summarized in that challenge's README gas table. The original 13-vector
-///      subset runs here against the same bytecode under revm.
+/// @dev The `leanGas` column was measured with the frozen reference under the
+///      pinned Lean EVM semantics. The original 13-vector regression corpus
+///      runs here against the same bytecode under revm, independently of the
+///      current scorer corpus.
 ///
 ///      MODEXP is the sharpest of the three cross-checks. Its cost is
 ///      branch-sensitive rather than a function of calldata length alone, the

@@ -3,8 +3,8 @@
 The gas numbers in the challenge READMEs are produced by concrete execution in
 the pinned Lean EVM semantics. This directory re-derives them with a completely
 separate EVM — the revm implementation inside Foundry — running the same frozen
-bytecode. The MODEXP tests use the original 13-vector subset of the 61-vector
-scoring corpus.
+bytecode. The MODEXP tests retain the original 13-vector regression corpus;
+this is independent of the current scorer corpus.
 
 Nothing here is part of any proof, and nothing here feeds the generated README
 gas tables. It is a falsification check on the published measurements: if the
