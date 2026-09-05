@@ -574,9 +574,9 @@ private theorem output_cost_potential (s : State) (input : ByteArray)
   have hfinishRun := OutputTrace.run_finish q [Padding.paddedWord input]
     (by simp) qrun
   have hfinish : gfinish.cost + MachineState.memCost exitEnd.activeWords.toNat =
-      8 + MachineState.memCost (outputResult s input).activeWords.toNat := by
+      7 + MachineState.memCost (outputResult s input).activeWords.toNat := by
     have hraw := block_cost_potential OutputTrace.finishPath exitEnd
-      (outputResult s input) 8 qcode qfork
+      (outputResult s input) 7 qcode qfork
       (by simpa [exitEnd, outputResult, q] using hfinishRun) qrun qnp
       (by
         intro located hmem z hz
@@ -590,7 +590,7 @@ private theorem output_cost_potential (s : State) (input : ByteArray)
   have hleft := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     gpre (gasSteps_outputLoop s input hcode hfork hrun hnp) 12 2555 hpre hloop
   have hright := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    gexit gfinish 26 8 hexit hfinish
+    gexit gfinish 26 7 hexit hfinish
   have hall := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     (gpre.trans (gasSteps_outputLoop s input hcode hfork hrun hnp))
     (gexit.trans gfinish) 2567 34 hleft hright

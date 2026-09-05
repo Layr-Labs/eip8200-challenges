@@ -36,6 +36,6 @@ def pathBaseCost {artifact : Challenge.EvmProof.ProgramArtifact}
 @[simp] theorem writeBody_base : pathBaseCost OutputTrace.writeBodyPath = 58 := by rfl
 @[simp] theorem writeExit_base : pathBaseCost OutputTrace.writeExitPath = 15 := by rfl
 @[simp] theorem outerNext_base : pathBaseCost OutputTrace.outerNextPath = 26 := by rfl
-@[simp] theorem finish_base : pathBaseCost OutputTrace.finishPath = 8 := by rfl
+@[simp] theorem finish_base : pathBaseCost OutputTrace.finishPath = 7 := by rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.OutputGas

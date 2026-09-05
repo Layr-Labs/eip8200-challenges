@@ -135,7 +135,7 @@ private def outputResult (s : State) (input : ByteArray) : State :=
   let q := outputLoopState s input 5
   { q with
     pc := UInt256.ofNat 0x479
-    stack := [Padding.paddedWord input]
+    stack := [UInt256.ofNat 5, Padding.paddedWord input]
     halt := .Returned
     hReturn := MachineState.readPadded q.memory 0 32
     activeWords := q.activeWordsAfterUInt256 0 32 }

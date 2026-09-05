@@ -146,7 +146,7 @@ def outerNextPath : List
 def finishPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [⟨760, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨761, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨761, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨762, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
    ⟨763, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
    ⟨764, .op .RETURN, by rfl, wfOp (by decide) trivial rfl⟩]
@@ -546,7 +546,7 @@ theorem run_finish (s : State) (rest : List UInt256)
       { s with pc := UInt256.ofNat 0x474, stack := UInt256.ofNat 5 :: rest } =
     some { s with
       pc := UInt256.ofNat 0x479
-      stack := rest
+      stack := UInt256.ofNat 5 :: rest
       halt := .Returned
       hReturn := MachineState.readPadded s.memory 0 32
       activeWords := s.activeWordsAfterUInt256 0 32 } := by
