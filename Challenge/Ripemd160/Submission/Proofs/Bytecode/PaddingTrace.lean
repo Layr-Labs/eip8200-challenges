@@ -377,10 +377,10 @@ def lengthLoopState (input : ByteArray) (i : Nat) : State :=
 def lengthIterationPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [⟨378, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨379, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
-   ⟨380, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨381, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨382, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨379, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨380, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨381, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨382, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨383, .push ⟨2, by decide⟩ (UInt256.ofNat 0x22a), by rfl, by decide⟩,
    ⟨384, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨385, .push ⟨1, by decide⟩ (UInt256.ofNat 255), by rfl, by decide⟩,
@@ -540,13 +540,13 @@ private theorem run_lengthCondition (input : ByteArray) (i : Nat) (hi : i < 8) :
   have hi256 : i < 2 ^ 256 := by omega
   have hiWord : (UInt256.ofNat i).toNat = i := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hi256]
-  have hlt : UInt256.lt (UInt256.ofNat i) (UInt256.ofNat 8) = UInt256.ofNat 1 := by
-    simp [UInt256.lt, hiWord, Challenge.EvmProof.Word.word_toNat_ofNat, hi]
-  have hzero : UInt256.isZero (UInt256.ofNat 1) = (⟨0⟩ : UInt256) := by decide
+  have hne : 8 ≠ i := by omega
+  have heq : UInt256.eq (UInt256.ofNat 8) (UInt256.ofNat i) = (⟨0⟩ : UInt256) := by
+    simp [UInt256.eq, hiWord, Challenge.EvmProof.Word.word_toNat_ofNat, hne]
   simp [lengthConditionPath, lengthIterationPath,
     Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr, lengthLoopState, lengthBodyState,
-    UInt256.isTrue, hlt, hzero]
+    UInt256.isTrue, heq]
 
 set_option maxHeartbeats 300000 in
 private theorem run_lengthByte (input : ByteArray) (i : Nat) :
@@ -671,10 +671,10 @@ def padReturned (input : ByteArray) : State :=
 def lengthExitPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [⟨378, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨379, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
-   ⟨380, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨381, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨382, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨379, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨380, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨381, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨382, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨383, .push ⟨2, by decide⟩ (UInt256.ofNat 0x22a), by rfl, by decide⟩,
    ⟨384, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨403, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -709,7 +709,7 @@ def lengthExitJumpPath := lengthExitReturnPath.drop 1
 def lengthExitComparedState (input : ByteArray) : State :=
   { lengthLoopState input 8 with
     pc := UInt256.ofNat (Artifact.instructionPC 382)
-    stack := [⟨0⟩, UInt256.ofNat 8, lengthOffsetWord input,
+    stack := [UInt256.ofNat 1, UInt256.ofNat 8, lengthOffsetWord input,
       bitLengthWord input, UInt256.ofNat input.size, Padding.paddedWord input,
       UInt256.ofNat 0x62c] }
 
@@ -770,7 +770,7 @@ private theorem padReturnedFromExit_eq (input : ByteArray) :
 
 @[simp] private theorem lengthExitComparedState_stack (input : ByteArray) :
     (lengthExitComparedState input).stack =
-      [⟨0⟩, UInt256.ofNat 8, lengthOffsetWord input, bitLengthWord input,
+      [UInt256.ofNat 1, UInt256.ofNat 8, lengthOffsetWord input, bitLengthWord input,
         UInt256.ofNat input.size, Padding.paddedWord input, UInt256.ofNat 0x62c] := by
   rfl
 
@@ -825,22 +825,21 @@ set_option maxHeartbeats 300000 in
 private theorem run_lengthExitCompare (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock lengthExitComparePath
       (lengthLoopState input 8) = some (lengthExitComparedState input) := by
-  have hlt : UInt256.lt (UInt256.ofNat 8) (UInt256.ofNat 8) = (⟨0⟩ : UInt256) := by
+  have heq : UInt256.eq (UInt256.ofNat 8) (UInt256.ofNat 8) = UInt256.ofNat 1 := by
     decide
   simp [lengthExitComparePath, lengthExitPath,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lengthExitComparedState, hlt]
+    lengthExitComparedState, heq]
 
 set_option maxHeartbeats 100000 in
 private theorem run_lengthExitZero (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock lengthExitZeroPath
       (lengthExitComparedState input) = some (lengthExitZeroState input) := by
-  have hzero : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by decide
   simp [lengthExitZeroPath, lengthExitBranchPath, lengthExitPath,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lengthExitZeroState, hzero]
+    lengthExitZeroState]
 
 set_option maxHeartbeats 100000 in
 private theorem run_lengthExitDest (input : ByteArray) :
