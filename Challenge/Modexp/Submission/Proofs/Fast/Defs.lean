@@ -62,12 +62,12 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 @[simp] theorem fastPC4 (i : Nat) (hi : 1137 ≤ i) (hii : i ≤ 1176) :
     Artifact.submissionArtifact.instructionPC i =
-      [1532,1533,1534,1537,1538,1541,1544,1545,1548,1551,1554,1555,1556,1559,1560,1563,1566,1567,1569,1570,1573,1576,1579,1582,1585,1586,1587,1588,1589,1590,1592,1593,1596,1597,1600,1601,1604,1607,1608,1611][i - 1137]! := by
+      [1532,1533,1534,1537,1538,1541,1544,1545,1548,1551,1554,1555,1556,1559,1560,1563,1566,1567,1569,1570,1573,1576,1579,1582,1585,1586,1587,1588,1589,1590,1592,1593,1596,1597,1600,1601,1604,1605,1606,1609][i - 1137]! := by
   interval_cases i <;> decide
 
 @[simp] theorem fastPC5 (i : Nat) (hi : 1177 ≤ i) (hii : i ≤ 1216) :
     Artifact.submissionArtifact.instructionPC i =
-      [1614,1615,1616,1617,1618,1619,1622,1623,1625,1626,1627,1630,1631,1632,1633,1634,1635,1638,1639,1640,1642,1643,1645,1646,1647,1648,1650,1651,1652,1654,1655,1657,1658,1659,1660,1661,1664,1665,1666,1668][i - 1177]! := by
+      [1612,1615,1616,1617,1618,1619,1622,1623,1625,1626,1627,1630,1631,1632,1633,1634,1635,1638,1639,1640,1642,1643,1645,1646,1647,1648,1650,1651,1652,1654,1655,1657,1658,1659,1660,1661,1664,1665,1666,1668][i - 1177]! := by
   interval_cases i <;> decide
 
 @[simp] theorem fastPC6 (i : Nat) (hi : 1217 ≤ i) (hii : i ≤ 1256) :
@@ -77,7 +77,7 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 @[simp] theorem fastPC7 (i : Nat) (hi : 1257 ≤ i) (hii : i ≤ 1296) :
     Artifact.submissionArtifact.instructionPC i =
-      [1738,1739,1742,1745,1748,1751,1754,1755,1756,1757,1760,1761,1763,1765,1767,1769,1770,1771,1772,1773,1774,1777,1778,1779,1782,1783,1784,1785,1786,1787,1789,1790,1793,1796,1799,1802,1805,1806,1807,1808][i - 1257]! := by
+      [1738,1739,1742,1745,1748,1751,1754,1755,1756,1757,1760,1761,1764,1767,1768,1769,1770,1771,1772,1773,1774,1777,1778,1781,1782,1783,1784,1785,1786,1787,1789,1790,1793,1796,1799,1802,1805,1806,1807,1808][i - 1257]! := by
   interval_cases i <;> decide
 
 @[simp] theorem fastPC8 (i : Nat) (hi : 1297 ≤ i) (hii : i ≤ 1336) :
@@ -148,6 +148,16 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 @[simp] theorem fastPC21 (i : Nat) (hi : 1768 ≤ i) (hii : i ≤ 1780) :
     Artifact.submissionArtifact.instructionPC i =
       [2901,2902,2903,2904,2906,2907,2908,2911,2912,2914,2917,2918,2921][i - 1768]! := by
+  interval_cases i <;> decide
+
+@[simp] theorem fastPC22 (i : Nat) (hi : 1781 ≤ i) (hii : i ≤ 1815) :
+    Artifact.submissionArtifact.instructionPC i =
+      [2922,2923,2924,2927,2928,2929,2930,2931,2932,2933,2934,2937,2938,2940,2943,2944,2945,2946,2947,2949,2950,2951,2952,2954,2955,2956,2957,2959,2960,2961,2963,2964,2966,2967,2970][i - 1781]! := by
+  interval_cases i <;> decide
+
+@[simp] theorem fastPC23 (i : Nat) (hi : 1816 ≤ i) (hii : i ≤ 1830) :
+    Artifact.submissionArtifact.instructionPC i =
+      [2971,2972,2973,2976,2977,2980,2981,2984,2987,2988,2991,2994,2995,2996,2999][i - 1816]! := by
   interval_cases i <;> decide
 
 theorem jumpDest1196 :
@@ -305,5 +315,21 @@ theorem jumpDest2888 :
 theorem jumpDest2901 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2901 = true :=
   Artifact.isValidJumpDest_index 1768 (by rfl)
+
+theorem jumpDest2922 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2922 = true :=
+  Artifact.isValidJumpDest_index 1781 (by rfl)
+
+theorem jumpDest2944 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2944 = true :=
+  Artifact.isValidJumpDest_index 1796 (by rfl)
+
+theorem jumpDest2971 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2971 = true :=
+  Artifact.isValidJumpDest_index 1816 (by rfl)
+
+theorem jumpDest2995 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2995 = true :=
+  Artifact.isValidJumpDest_index 1828 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

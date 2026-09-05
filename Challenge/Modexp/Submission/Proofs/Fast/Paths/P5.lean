@@ -28,14 +28,16 @@ def blk1264 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1264 .JUMPDEST]
 
-/-- Executed instructions 1265..1267, pc 1756..1760: jump to the exponent
-shortcut dispatcher.  The following padding is unreachable and therefore is
-not part of this located execution block. -/
+/-- Instructions 1265..1271, pc 1756..1768. -/
 def blk1265 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1265 .JUMPDEST,
-   pushAt 1266 2 2922,
-   opAt 1267 .JUMP]
+   pushAt 1266 2 9344,
+   opAt 1267 .MLOAD,
+   pushAt 1268 2 4096,
+   pushAt 1269 2 1024,
+   opAt 1270 .MCOPY,
+   pushAt 1271 0 0]
 
 /-- Instructions 1272..1278, pc 1769..1777. -/
 def blk1272 :
@@ -51,14 +53,8 @@ def blk1272 :
 /-- Instructions 1279..1286, pc 1778..1787. -/
 def blk1279 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1279 (.Dup ⟨0, by decide⟩),
-   pushAt 1280 2 9472,
-   opAt 1281 .MLOAD,
-   opAt 1282 .ADD,
-   opAt 1283 .CALLDATALOAD,
-   pushAt 1284 0 0,
-   opAt 1285 .BYTE,
-   pushAt 1286 1 128]
+  [pushAt 1279 2 2922,
+   opAt 1280 .JUMP]
 
 /-- Instructions 1287..1293, pc 1789..1805. -/
 def blk1287 :
