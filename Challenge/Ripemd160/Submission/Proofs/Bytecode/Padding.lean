@@ -1,5 +1,8 @@
 import Challenge.EvmProof.Memory
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Main
+import Challenge.EvmProof.Word
+import Batteries.Data.ByteArray
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Data.Nat.ModEq
 set_option warningAsError true
 set_option maxHeartbeats 1000000
 set_option maxRecDepth 10000
