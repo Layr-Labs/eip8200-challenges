@@ -3,8 +3,8 @@ import Challenge.Modexp.Submission.Proofs.Fast.Correct
 import Challenge.Modexp.Submission.Proofs.Fast.Exp
 
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 5000000
+set_option maxRecDepth 200000
+set_option maxHeartbeats 8000000
 
 namespace Challenge.Modexp.Benchmark
 

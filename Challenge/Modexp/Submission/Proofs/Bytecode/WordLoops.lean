@@ -1,6 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.Word
 set_option warningAsError true
-set_option maxRecDepth 10000
+set_option maxRecDepth 200000
 set_option maxHeartbeats 1000000
 /-!
 # One-word MODEXP loop composition

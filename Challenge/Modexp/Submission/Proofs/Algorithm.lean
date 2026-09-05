@@ -88,6 +88,11 @@ theorem modPow_lt {base exponent modulus : Nat} (hmodulus : 0 < modulus) :
   rw [modPow_eq, if_neg (Nat.ne_of_gt hmodulus)]
   exact Nat.mod_lt _ hmodulus
 
+theorem modPow_zero_base {exponent modulus : Nat}
+    (hexponent : 0 < exponent) (hmodulus : modulus ≠ 0) :
+    Precompile.modPow 0 exponent modulus = 0 := by
+  rw [modPow_eq, if_neg hmodulus, Nat.zero_pow hexponent, Nat.zero_mod]
+
 /-! ## Constant-shape double-and-add multiplication -/
 
 /-- Process an LSB-first list of selector bits.  The first component is the

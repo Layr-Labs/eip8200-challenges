@@ -2,7 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 import Challenge.EvmProof.Meter
 import Challenge.EvmProof.Word
 set_option warningAsError true
-set_option maxRecDepth 10000
+set_option maxRecDepth 200000
 set_option maxHeartbeats 1000000
 /-!
 # Certified calldata-byte helper

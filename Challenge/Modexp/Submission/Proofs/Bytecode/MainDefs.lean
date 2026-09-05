@@ -2,8 +2,8 @@ import Challenge.Modexp.ProofSupport
 import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 import Challenge.EvmProof.Word
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 2000000
+set_option maxRecDepth 200000
+set_option maxHeartbeats 8000000
 /-!
 # MODEXP bytecode entry and header parsing
 
