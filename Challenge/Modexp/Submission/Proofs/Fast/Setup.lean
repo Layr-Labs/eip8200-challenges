@@ -226,13 +226,12 @@ theorem run_entry_pass (s : State) (input : ByteArray)
     (h : 32 < modulusSize input) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk977 (entryState s) =
       some (sizeCheckState s input) := by
-  have hgt := gt_ofNat_of_le (by norm_num : (33 : Nat) < 2 ^ 256)
-    (modulusSize_lt input) (by omega : 33 ≤ modulusSize input)
+  have hgt := gt_ofNat_of_lt (modulusSize_lt input) (by norm_num : (32:Nat) < 2 ^ 256) h
   simp (config := { maxSteps := 400000 })
     [blk977, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     entryState, sizeCheckState, hdata, hrun, read_modulus, hgt,
+     entryState, sizeCheckState, hdata, hrun, read_modulus, hgt, isZero_ofNat_one,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -245,14 +244,13 @@ theorem run_entry_bail (s : State) (input : ByteArray)
     (h : modulusSize input ≤ 32) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk977 (entryState s) =
       some (bail1State s input) := by
-  have hgt := gt_ofNat_of_lt (by norm_num : (33 : Nat) < 2 ^ 256)
-    (modulusSize_lt input) (by omega : modulusSize input < 33)
+  have hgt := gt_ofNat_of_le (modulusSize_lt input) (by norm_num : (32:Nat) < 2 ^ 256) h
   simp (config := { maxSteps := 400000 })
     [blk977, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
      entryState, bail1State, hdata, hcode, hrun, read_modulus, hgt,
-     jumpDest1886,
+     isZero_ofNat_zero, jumpDest1886,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,

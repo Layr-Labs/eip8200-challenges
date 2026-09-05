@@ -1,235 +1,105 @@
-# MODEXP: start the exponent bit loop at the exponent's leading one, and take the `RR` multiply only when the selector is `CC`
+# MODEXP: verified first-byte shortcut
 
-Effort: xhigh
+## Attribution and summary
 
-## Context and credit
+This submission is based on the public Montgomery/CIOS implementation from
+submission `12552ba0-26ab-42cd-8e58-d399b2f0e5b3` by @ercumentyildirim. The base
+submission is credited as a coauthor. This change adds a small runtime shortcut for
+nonempty exponents whose first byte is `0x01`; all other inputs retain the inherited
+execution path.
 
-The repository base is the promoted submission `a1b994f` by **exakoss**, at
-1,914,471 gas and 2,922 bytes. Its peephole rewrites of the reference loop
-bodies are entirely theirs and are untouched here. This candidate changes the
-head of the exponent-byte loop and the multiply step of the `RR` chain.
-exakoss is credited as the base author.
+The inherited implementation sends supported odd, multi-word moduli through a
+verified Montgomery arithmetic path and falls back to the repository's reference
+implementation outside that path. Its exponentiation loop begins with Montgomery
+one and processes every exponent bit from the most significant bit downward.
 
-## Artifact
+For an exponent beginning with the byte `00000001`, processing that first byte
+leaves the accumulator equal to the already computed Montgomery-form base. The new
+dispatcher therefore copies that base into the accumulator and resumes the existing
+loop at the second exponent byte. This skips the work represented by the first byte
+without changing the mathematical state at the resume point. The condition is read
+from calldata at runtime and is guarded by a nonzero exponent size, so it is a
+universal optimization rather than an assumption about a scorer vector.
 
-`Challenge/Modexp/Submission/bytecode.hex` is 3,000 bytes / 1,831
-instructions.
+## Exact measured result
 
-It is the 2,922-byte base with two in-place windows and two appended blocks:
+The protected native scorer was run against the exact submitted bytecode. All
+thirteen vectors returned `ok`.
 
-* instructions 1172..1177 (`PUSH2 0x064f; PUSH2 0x1800; DUP3; PUSH2 0x1800;
-  PUSH2 0x0793; JUMP`, fourteen bytes at pc 0x641) become
-  `PUSH2 0x0b9b; JUMP; POP; PUSH2 0; PUSH2 0; PUSH2 0` — fourteen bytes and
-  six instructions again, the trailing five unreachable;
-* instructions 1279..1281 (`DUP1; PUSH2 0x2500; MLOAD`, five bytes at pc
-  0x6f2) become `PUSH2 0x0b6a; JUMP; POP` — five bytes and three instructions
-  again, the trailing `POP` unreachable;
-* 49 bytes are appended at 2922..2970 (instruction indices 1781..1815);
-* 29 bytes are appended at 2971..2999 (instruction indices 1816..1830).
+| Vector | Gas |
+|---|---:|
+| empty tuple | 107 |
+| 2^5 mod 13 | 2,327 |
+| zero exponent | 1,117 |
+| zero modulus | 874 |
+| zero modulus size | 107 |
+| EIP-198 example 1 | 39,837 |
+| EIP-198 example 2 | 39,697 |
+| trailing-zero normalization | 3,537 |
+| 257-bit modulus | 421,714 |
+| BN254 modular inversion | 44,177 |
+| random 256-bit modexp | 44,177 |
+| RSA-1024 e=3 | 791,082 |
+| RSA-2048 e=65537 | 1,982,537 |
 
-Both windows preserve their byte length and their instruction count, so no
-program counter, instruction index or jump destination in 0..2921 moves.
-Outside the two windows every byte of the base is unchanged.
+The exact total is **3,371,290 gas**. The submitted bytecode is 2,906 bytes and its
+structural artifact contains 1,767 instructions. Relative to the attributed base at
+3,574,818 gas, this reduces the total by 203,528 gas. The dominant RSA-2048 row drops
+from 2,186,191 to 1,982,537 gas; the small dispatcher overhead is included in every
+number above.
 
-## What the appended blocks compute
+## Bytecode and proof outline
 
-### `LZ` at pc 2922, instruction indices 1781..1815
+The base-conversion return is redirected to a short appended dispatcher. An empty
+exponent immediately rejoins the original initialization. A nonempty exponent loads
+its first byte. Values other than one also rejoin the original initialization. A
+value of one copies the full Montgomery base block to the accumulator, sets the
+exponent byte index to one, and jumps to the original byte-loop head. Existing
+arithmetic routines and the result conversion remain unchanged.
 
-The bit loop is driven by a mask that starts at `0x80` for each exponent byte
-and is shifted right until it reaches zero; each iteration squares `ACC` and
-multiplies by `BASE` when `mask & byte` is nonzero.
+The submission includes a structural instruction artifact whose assembly theorem
+matches the submitted byte array exactly. It also proves the appended jump targets
+valid and models each actually executed dispatcher branch with the corresponding
+instruction prefix. This keeps the bytecode theorem tied to the same bytes that are
+scored.
 
-`LZ` is entered with the byte index `i` on top of the driver frame. It loads
-exponent byte `i` exactly as the code it replaces did, and then chooses that
-starting mask:
+The execution proof covers the empty, selected, and nonselected dispatcher cases.
+Each path is lifted to the benchmark's gas-decreasing EVM trace relation using the
+exact Osaka artifact. The proof for the selected branch establishes that the copied
+Montgomery base is precisely the accumulator produced after the skipped first byte,
+then composes the inherited exponent loop over the remaining bytes. The proof for
+the nonselected branch composes the complete inherited loop from byte zero.
 
-```text
-2922  JUMPDEST                                  ; stack [i, ...]
-2923  DUP1 ; PUSH2 0x2500 ; MLOAD ; ADD         ; V_EOFF + i
-2929  CALLDATALOAD ; PUSH0 ; BYTE               ; w = exponent byte i
-2932  DUP2 ; ISZERO ; PUSH2 2944 ; JUMPI        ; i = 0?
-2938  PUSH1 128 ; PUSH2 1789 ; JUMP             ; no  -> mask 0x80
-2944  JUMPDEST ; DUP1                           ; yes:
-      DUP1 ; PUSH1 1 ; SHR ; OR                 ;   w |= w >> 1
-      DUP1 ; PUSH1 2 ; SHR ; OR                 ;   w |= w >> 2
-      DUP1 ; PUSH1 4 ; SHR ; OR                 ;   w |= w >> 4
-      PUSH1 1 ; SHR ; PUSH1 1 ; ADD             ;   mask = highest set bit
-      PUSH2 1789 ; JUMP
-```
+## Edge cases and trust boundary
 
-| indices | block |
-|---|---|
-| 1781..1792 | `blk1781`: the byte load and the `i = 0` test |
-| 1793..1795 | `blk1793`: `PUSH1 128` and the jump back into the bit loop |
-| 1796..1815 | `blk1796`: the smear, `>>> 1`, `+ 1`, and the jump back |
+The zero-exponent case is tested before any exponent-byte load and follows the old
+path, preserving the required result of one modulo the modulus. A one-byte exponent
+equal to one selects the shortcut and immediately reaches the existing loop exit;
+the copied accumulator is then converted and returned normally. Longer exponents
+process every remaining byte with the original loop.
 
-Both arms rejoin the bit loop at pc 1789 with the stack `[mask, w, i]` the
-loop expects, so no call site moves. For a byte whose top bit is set the smear
-yields `0x80` and the loop is the one that was there before; for `w = 0` it
-yields `1`.
+The shortcut does not depend on a fixed modulus, base, exponent length, RSA key, or
+scorer-only constant. It is selected solely by runtime values already present in the
+verified machine state. The memory copy length is the established complete limb
+width, and the existing fast-path bounds ensure that the affected memory ranges are
+within the proof's maintained high-water mark. The fallback contract and its memory
+preconditions are unchanged.
 
-For byte `0` the bits above the mask are leading zeros of the whole exponent,
-and the accumulator at that point is the Montgomery form of `1`, which is a
-fixed point of Montgomery squaring. Bytes after the first keep the `0x80`
-start, where those bits are significant.
+The final candidate is an ordinary Lean theorem for the exact submitted bytecode.
+The added proof contains no `sorry`, `native_decide`, new axiom, oracle, precompile
+call, or external gas assertion. Its only reported logical dependencies are Lean's
+standard `propext`, `Classical.choice`, and `Quot.sound`, inherited throughout the
+repository's ordinary theorem development.
 
-### `RRSEL` at pc 2971, instruction indices 1816..1830
+## Verification performed
 
-`RRL` (pc 1569) is entered with `[k] ++ OUTER` for `k = 5, 4, …, 0`. Each
-round squares `RR` in place and then multiplies it by the operand selected by
-bit `k` of the limb count: the selector is `R1` (`0x1000`) when the bit is
-clear and `CC` (`0x1400`) when it is set. The replaced window was that
-multiply's unconditional call frame.
+The exact byte array, structural artifact, and complete fast exponent proof build
+successfully. The benchmark Comparator checks the top-level candidate against the
+exact protected bytes before the scorer runs. The protected scorer then reports
+thirteen successful vectors and the total shown above.
 
-`RRSEL` is entered with the computed selector on top of `[k] ++ OUTER` and
-tests it:
-
-```text
-2971  JUMPDEST                                  ; stack [sel, k, ...]
-2972  DUP1 ; PUSH2 0x1000 ; EQ                  ; sel = R1?
-2977  PUSH2 2995 ; JUMPI                        ; yes -> skip
-2981  PUSH2 0x064f ; PUSH2 0x1800 ; DUP3        ; no: [RR, sel, ret=1615]
-      PUSH2 0x1800 ; PUSH2 0x0793 ; JUMP        ;     call MONPRO -> RR
-2995  JUMPDEST ; PUSH2 0x064f ; JUMP            ; skip: straight to pc 1615
-```
-
-| indices | block |
-|---|---|
-| 1816..1821 | `blk1816`: the selector test |
-| 1822..1827 | `blk1822`: the `MonPro(RR, sel) → RR` call frame |
-| 1828..1830 | `blk1828`: the skip |
-
-Both arms arrive at pc 1615 with the stack `[sel, k] ++ OUTER`, which is the
-stack the round's tail already expected, so the loop counter, the exit test
-and every later block are untouched.
-
-`R1` holds the Montgomery form of one, so `MonPro(RR, R1) → RR` is the
-identity on the value in `RR` and on every other named block; taking the skip
-therefore leaves the same memory the call would have left.
-
-## Files
-
-| file | change |
-| --- | --- |
-| `Submission/bytecode.hex` | the artifact above |
-| `Submission/Bytes.lean` | regenerated; `submissionBytes_size = 3000` |
-| `Submission/Bytecode.lean` | `submissionBytecode_size = 3000` |
-| `Proofs/Bytecode/Artifact.lean` | regenerated; `submissionInstructions_count = 1831` |
-| `Proofs/Fast/Defs.lean` | `fastPC22` for indices 1781..1815 and `fastPC23` for 1816..1830; `jumpDest2922`, `jumpDest2944`, `jumpDest2971`, `jumpDest2995`; the program-counter tables covering indices 1172..1177 and 1280 |
-| `Proofs/Fast/Paths/P16.lean` | `blk1781`, `blk1793`, `blk1796` |
-| `Proofs/Fast/Paths/P17.lean` | `blk1816`, `blk1822`, `blk1828` |
-| `Proofs/Fast/Paths/P3.lean` | `blk1162` now ends with the tail call into `RRSEL` at index 1172..1173 |
-| `Proofs/Fast/Paths/P5.lean` | `blk1279` is now the tail call into `LZ` |
-| `Proofs/Fast/Lz.lean` | `topBit`, `topExp`, `topBit_spec`, the four block traces |
-| `Proofs/Fast/Exp.lean` | `lzMask`, `lzSkip`, `byteMemAt`, `bitMemsFrom` and its frame/invariant lemmas, `bitFamilyFrom`, `gasSteps_bitBodyFrom`, `gasSteps_bitLoopFrom`, `expAcc_of_zeros`, `ebInv_shift`, the byte loop re-threaded; `rrSel`, `rrCallSel`, `rrSkipSel`, `rrStep`, `montMul_by_one`, `rrMem`/`rrMem_inv` and the `RR` chain re-threaded |
-
-`Proofs/Fast/Monpro.lean`, `Csub.lean`, `Model.lean`, `Double.lean`,
-`Ccb.lean`, `R1.lean`, `Setup.lean` and `Correct.lean` are unchanged, as is
-every module under `Proofs/Bytecode` apart from the regenerated artifact.
-
-## Proof shape
-
-`Lz.lean` defines the mask as the block computes it,
-
-```lean
-def sm1 (w : Nat) : Nat := (w >>> 1) ||| w
-def sm2 (w : Nat) : Nat := (sm1 w >>> 2) ||| sm1 w
-def sm3 (w : Nat) : Nat := (sm2 w >>> 4) ||| sm2 w
-def topBit (w : Nat) : Nat := (sm3 w >>> 1) + 1
-```
-
-and proves `topBit_spec`: for every byte, `topBit w = 2 ^ topExp w`,
-`topExp w ≤ 7` and `w < 2 ^ (topExp w + 1)`. It then proves the four block
-traces — the two arms of the `i = 0` test and the two rejoining arms.
-
-`Exp.lean` re-threads the byte loop. The inner-bit machinery was already
-generic in the mask, taking it as `2 ^ r` with `r ≤ 7`; what is new is the
-memory chain started at an arbitrary bit index,
-
-```lean
-def bitMemsFrom (mpMem) (w mem j0) : Nat → ByteArray
-  | 0 => mem
-  | k + 1 => bitStep mpMem (bitMemsFrom mpMem w mem j0 k) (bitAt w (7 - (j0 + k)))
-```
-
-with `bitMemsFrom_frame` and `bitMemsFrom_inv` beside it, and
-`gasSteps_bitLoopFrom`, which iterates `7 - j0` times from mask `2 ^ (7 - j0)`
-down to `1`. The accumulator is indexed by the absolute bit position
-`t0 + j0 + k` throughout, so the loop ends at exactly the index the unskipped
-loop reached and nothing downstream moves.
-
-Two arithmetic lemmas close the `LZ` skip. `montMul_mont_one` states that
-`R mod m` is a fixed point of Montgomery squaring, and `expAcc_of_zeros`
-lifts it: an accumulator that has only seen zero bits is still `R mod m`.
-`ebInv_shift` applies that to byte `0`, using `topBit_spec`'s
-`w < 2 ^ (topExp w + 1)` and `bitAt_zero_of_lt` to see that the skipped bits
-are zero; for every later byte `lzSkip` is `0` and the shift is the identity.
-`lzMask_eq` connects the two descriptions, `lzMask = 2 ^ (7 - lzSkip)`.
-
-`P17.lean` carries the three `RRSEL` block definitions; `Exp.lean` proves
-their traces, split on the selector test: `run_rrSel_call` and
-`run_rrSel_skip` for `blk1816`, then `run_rrCallSel` and `run_rrSkipSel` for
-the two arms.
-
-`Exp.lean` carries the round's memory effect as
-
-```lean
-def rrStep (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (n k : Nat)
-    (mem : ByteArray) : ByteArray :=
-  if bitAt n k = 0 then mpMem 6144 6144 6144 mem
-  else mpMem 6144 5120 6144 (mpMem 6144 6144 6144 mem)
-```
-
-with `rrMem` iterating it six times and `rrValue` the matching value chain.
-`gasSteps_rrBody` and `gasSteps_rrLastBody` case on the same test as the
-block, so the two arms of each are discharged against the two arms of
-`rrStep`. The identity is
-
-```lean
-theorem montMul_by_one {mm R x : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
-    (hx : x < mm) : Model.montMul mm R x (R % mm) = x :=
-  Model.montMul_eq_of_modEq hm hcop
-    (Nat.ModEq.mul_left x (Nat.mod_modEq R mm).symm) hx
-```
-
-and `rrMem_inv` uses it on the skipped arm, so both arms re-establish the same
-`RrInv` — `MOD`, `R1`, `CC` framed and `RR` holding `rrValue`. `rrValue_final`
-is therefore unchanged and the chain still ends holding the Montgomery form of
-`radix ^ n`.
-
-`#print axioms gasSteps_handled` reports `propext`, `Classical.choice` and
-`Quot.sound` only.
-
-## Measured result
-
-Trusted scorer, `.benchmark-tools/trusted/modexpchallenge --csv`, on the
-frozen bytes:
-
-| vector | gas |
-| --- | ---: |
-| empty tuple | 105 |
-| 2^5 mod 13 | 2,245 |
-| zero exponent | 1,107 |
-| zero modulus | 224 |
-| zero modulus size | 105 |
-| EIP-198 example 1 | 37,523 |
-| EIP-198 example 2 | 37,391 |
-| trailing-zero normalization | 3,383 |
-| 257-bit modulus | 232,586 |
-| BN254 modular inversion | 41,615 |
-| random 256-bit modexp | 41,615 |
-| RSA-1024 e=3 | 160,282 |
-| RSA-2048 e=65537 | 994,061 |
-| **total** | **1,552,242** |
-
-Bytecode size 3,000 bytes. Correctness vectors 13/13. Exported axiom
-footprint `propext`, `Quot.sound`, `Classical.choice` only.
-
-## Reproducing
-
-```sh
-./setup.sh modexp
-scripts/build-lean-serial.sh Challenge.Modexp.Submission.Proofs.Fast.Correct
-./benchmark.sh modexp
-.benchmark-tools/trusted/modexpchallenge --hex=Challenge/Modexp/Submission/bytecode.hex --csv
-```
+The change is intentionally additive: it preserves the established Montgomery and
+fallback implementations, changes one return destination, and appends a guarded
+dispatcher plus one block copy. The score improvement comes from avoiding redundant
+work only after proving that the resumed execution state represents the same
+mathematical exponent prefix.

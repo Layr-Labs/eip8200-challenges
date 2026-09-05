@@ -334,6 +334,15 @@ def rowC0 (mem : ByteArray) (n : Nat) : UInt256 :=
       (UInt256.isZero (MachineState.readWord mem (32 * n - 32) * rowMu mem n)) +
     mulHi (MachineState.readWord mem (32 * n - 32)) (rowMu mem n)
 
+theorem zero_lt_eq_double_isZero (x : UInt256) :
+    UInt256.lt ({ val := 0 } : UInt256) x = UInt256.isZero (UInt256.isZero x) := by
+  unfold UInt256.lt UInt256.isZero
+  have hzero : ({ val := 0 } : UInt256).toNat = 0 := rfl
+  by_cases h : x.toNat = 0
+  · simp [h, hzero]
+  · have hp : 0 < x.toNat := Nat.pos_of_ne_zero h
+    simp [h, hzero, Nat.not_le_of_gt hp]
+
 /-- Memory and carry after `k` steps of the second limb loop.  Step `k`
 accumulates `m[k+1] * mu` into `t[k+1]` and stores the result one limb down. -/
 def l2Step (mem : ByteArray) (mu c0 : UInt256) (n : Nat) : Nat → MacState
@@ -803,6 +812,7 @@ theorem run_mpMid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpMidState, mpL2State, l2Step, midMem, midMem1, rowMu, rowC0, mulHi,
+      zero_lt_eq_double_isZero,
       maxWord_literal, fastPC12, fastPC13, readWord_midMem_peel,
       hc6, hc7, hc8, hc9, hc10, hc11, hrun, h32, h8192, h8224, h9376, h9408, h9440,
       hml, htl, hTLN, hMLN, hsubTL, hsubML, hsc1, hsc2, hsc3,

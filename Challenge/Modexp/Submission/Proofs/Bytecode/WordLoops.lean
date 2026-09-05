@@ -44,7 +44,9 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 def bitFinishTailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 525 .JUMPDEST, opAt 526 .POP, opAt 527 .POP, opAt 528 .POP,
-   pushAt 529 1 1, opAt 530 .ADD, pushAt 531 2 589, opAt 532 .JUMP]
+   pushAt 529 1 1, opAt 530 (.Dup ⟨1, by decide⟩), opAt 531 .ADD,
+   opAt 532 (.Swap ⟨0, by decide⟩), opAt 533 .POP,
+   pushAt 534 2 589, opAt 535 .JUMP]
 
 def bitFinishDispatchState (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) : State :=
@@ -52,7 +54,7 @@ def bitFinishDispatchState (input : ByteArray) (outer : Nat)
 
 @[simp] private theorem exitPCs (i : Nat) (hi : 525 ≤ i) (hii : i ≤ 549) :
     Artifact.submissionArtifact.instructionPC i =
-      [655,656,657,658,659,661,662,665,666,667,668,669,670,671,672,
+      [655,656,657,658,659,661,662,663,664,665,668,669,670,671,672,
        673,675,676,678,679,680,683,684,685,688][i - 525]! := by
   interval_cases i <;> decide
 
@@ -94,10 +96,6 @@ theorem run_bitFinishTail (input : ByteArray) (outer : Nat)
   rcases hvalid with ⟨_, hb, he, hm⟩
   have hsucc := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := outer) (b := 1) (by omega : outer + 1 < 2 ^ 256)
-  have hincLeft : UInt256.ofNat 1 + UInt256.ofNat outer =
-      UInt256.ofNat (outer + 1) := by
-    rw [Challenge.EvmProof.Word.word_add_comm]
-    exact hsucc
   have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
   have h589 : (589 : UInt256).toNat = 589 := by decide
   have h589Word : (589 : UInt256) = UInt256.ofNat 589 := by decide
@@ -108,7 +106,7 @@ theorem run_bitFinishTail (input : ByteArray) (outer : Nat)
       bitFinishDispatchState, bitLoopState, expLoopState, nonzeroState,
       callerRest, Dispatch.wordEntryState, Main.headerState, initialState,
       exitPCs, List.exchange, Challenge.EvmProof.Word.word_toNat_ofNat,
-      hsucc, hincLeft, honeWord, h589, h589Word, jump589]
+      hsucc, honeWord, h589, h589Word, jump589]
 
 def gasSteps_expEnter (input : ByteArray) (i : Nat) (acc base : UInt256)
     (hvalid : ValidInput input) (hi : i < exponentSize input) :
