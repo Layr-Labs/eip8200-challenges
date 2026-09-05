@@ -6,11 +6,10 @@ set_option maxRecDepth 30000
 set_option maxHeartbeats 2000000
 
 /-!
-# H30b four-round call trace
+# Q4M quad-round call trace
 
-This module proves the ten-push quad wrapper and its helper jump.  The fixed
-factor remains below the wrapper arguments and is exposed only through the
-quad helper-entry state.
+The ten-push wrapper prefix and its helper jump.  The multiplier pushes have
+symbolic widths (`PUSH5` or `PUSH6` in the artifact); only `width ≠ 0` matters.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadCallTrace
@@ -23,160 +22,123 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.Compression
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
-open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTemplate
 
-/-- Instructions push `s3, p3, s2, p2, s1, p1, s0, return-PC, p0,
-helper-PC`.  The resulting top-first stack has the quad helper-entry shape. -/
-def quadCallPushes (returnPC p0 p1 p2 p3 helperPC : UInt256)
-    (r0 r1 r2 r3 : Nat) : List Instr :=
-  [push1 (UInt256.ofNat (32 - r3)), push2 p3,
-    push1 (UInt256.ofNat (32 - r2)), push2 p2,
-    push1 (UInt256.ofNat (32 - r1)), push2 p1,
-    push1 (UInt256.ofNat (32 - r0)), push2 returnPC,
-    push2 p0, push2 helperPC]
-
-/-- State after the quad wrapper has pushed its ten values. -/
-def quadCallPushed (s : State) (pc returnPC p0 p1 p2 p3 helperPC : UInt256)
-    (r0 r1 r2 r3 : Nat) (working : Compression.EvmWorking)
-    (rho : List UInt256) : State :=
-  { s with
-    pc := pc
-    stack := [helperPC, p0, returnPC, UInt256.ofNat (32 - r0), p1,
-      UInt256.ofNat (32 - r1), p2, UInt256.ofNat (32 - r2), p3,
-      UInt256.ofNat (32 - r3)] ++ roundWords working ++
-      [QuadRoundTemplate.factor] ++ rho }
-
-theorem quadCallPushes_advances (returnPC p0 p1 p2 p3 helperPC : UInt256)
-    (r0 r1 r2 r3 : Nat) :
-    ∀ instruction ∈ quadCallPushes returnPC p0 p1 p2 p3 helperPC r0 r1 r2 r3,
+theorem quadCallPushes_advances (returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 : UInt256)
+    (w0 w1 w2 w3 : Fin 33) :
+    ∀ instruction ∈ quadCallPushes returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 w0 w1 w2 w3,
       SharedCallTrace.Advances instruction := by
   intro instruction hmem
   simp only [quadCallPushes, List.mem_cons, List.not_mem_nil, or_false] at hmem
   rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals exact Or.inl (StraightLine.push _ _)
 
+private theorem one_add_val (w : Fin 33) : 1 + w.val = w.val + 1 := Nat.add_comm 1 w.val
+
 set_option linter.unusedSimpArgs false in
 theorem runInstrSeq_quadCallPushes (s : State)
-    (pc returnPC p0 p1 p2 p3 helperPC : UInt256)
-    (r0 r1 r2 r3 : Nat) (working : Compression.EvmWorking)
-    (rho : List UInt256) (hstack : rho.length < 1007)
-    (hrun : s.halt = .Running) :
-    runInstrSeq (quadCallPushes returnPC p0 p1 p2 p3 helperPC r0 r1 r2 r3)
-      (roundEntry s pc working.a working.b working.c working.d working.e
-        (QuadRoundTemplate.factor :: rho)) =
+    (pc returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 : UInt256) (w0 w1 w2 w3 : Fin 33)
+    (hw0 : w0.val ≠ 0) (hw1 : w1.val ≠ 0) (hw2 : w2.val ≠ 0) (hw3 : w3.val ≠ 0)
+    (working : EvmWorking) (rest : List UInt256)
+    (hstack : rest.length < 1000) (hrun : s.halt = .Running) :
+    runInstrSeq (quadCallPushes returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 w0 w1 w2 w3)
+      (roundEntry s pc working.a working.b working.c working.d working.e rest) =
     some (quadCallPushed s
-      (pcAfter pc (quadCallPushes returnPC p0 p1 p2 p3 helperPC r0 r1 r2 r3))
-      returnPC p0 p1 p2 p3 helperPC r0 r1 r2 r3 working rho) := by
-  have hcap (n : Nat) (hn : n ≤ 16) : rho.length + n < 1024 := by
+      (pcAfter pc (quadCallPushes returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 w0 w1 w2 w3))
+      returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 working rest) := by
+  have hcap (n : Nat) (hn : n ≤ 15) : rest.length + n < 1024 := by
     omega
   simp (discharger := omega)
     [quadCallPushes, quadCallPushed, roundEntry, runInstrSeq,
-      Stepper.runInstr, pcAfter, push1, push2, hrun, hcap,
-      Nat.add_assoc, Instr.size_push, roundWords,
-      QuadRoundTemplate.factor]
+      Stepper.runInstr, pcAfter, push2, hrun, hcap, hw0, hw1, hw2, hw3,
+      Nat.add_assoc, one_add_val, Instr.size_push, roundWords]
 
 theorem runLocatedBlock_quadCallPushes {artifact : ProgramArtifact} {fork : Fork}
-    (returnPC p0 p1 p2 p3 helperPC : UInt256)
-    (r0 r1 r2 r3 : Nat)
+    (returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 : UInt256) (w0 w1 w2 w3 : Fin 33)
+    (hw0 : w0.val ≠ 0) (hw1 : w1.val ≠ 0) (hw2 : w2.val ≠ 0) (hw3 : w3.val ≠ 0)
     (site : GenericRoundSite artifact fork
-      (quadCallPushes returnPC p0 p1 p2 p3 helperPC r0 r1 r2 r3))
-    (s : State) (working : Compression.EvmWorking) (rho : List UInt256)
-    (hstack : rho.length < 1007) (hrun : s.halt = .Running) :
+      (quadCallPushes returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 w0 w1 w2 w3))
+    (s : State) (working : EvmWorking) (rest : List UInt256)
+    (hstack : rest.length < 1000) (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock site.path
-      (roundEntry s site.startPC working.a working.b working.c working.d
-        working.e (QuadRoundTemplate.factor :: rho)) =
-      some (quadCallPushed s site.endPC returnPC p0 p1 p2 p3 helperPC
-        r0 r1 r2 r3 working rho) := by
+      (roundEntry s site.startPC working.a working.b working.c working.d working.e rest) =
+      some (quadCallPushed s site.endPC
+        returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 working rest) := by
   have hend : site.endPC = pcAfter site.startPC
-      (quadCallPushes returnPC p0 p1 p2 p3 helperPC r0 r1 r2 r3) := by
+      (quadCallPushes returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 w0 w1 w2 w3) := by
     have h := endPC_eq_pcAfter_sites site.sites site.startPC site.endPC
       site.head_eq site.end_eq site.contiguous
     rwa [site.instruction_eq] at h
   rw [SharedCallTrace.runLocatedBlock_eq_raw site
-    (quadCallPushes_advances _ _ _ _ _ _ _ _ _ _)
-    (roundEntry s site.startPC working.a working.b working.c working.d
-      working.e (QuadRoundTemplate.factor :: rho)) rfl]
-  rw [runInstrSeq_quadCallPushes s site.startPC returnPC p0 p1 p2 p3 helperPC
-    r0 r1 r2 r3 working rho hstack hrun, ← hend]
+    (quadCallPushes_advances _ _ _ _ _ _ _ _ _ _ _ _ _ _)
+    (roundEntry s site.startPC working.a working.b working.c working.d working.e rest) rfl]
+  rw [runInstrSeq_quadCallPushes s site.startPC returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3
+    w0 w1 w2 w3 hw0 hw1 hw2 hw3 working rest hstack hrun, ← hend]
 
 structure CallSite (artifact : ProgramArtifact) (fork : Fork)
-    (returnPC p0 p1 p2 p3 helperPC : UInt256)
-    (r0 r1 r2 r3 : Nat) where
+    (returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 : UInt256) (w0 w1 w2 w3 : Fin 33) where
   pushes : GenericRoundSite artifact fork
-    (quadCallPushes returnPC p0 p1 p2 p3 helperPC r0 r1 r2 r3)
+    (quadCallPushes returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 w0 w1 w2 w3)
   jump : LocatedSite artifact fork
   jump_instr : jump.located.instruction = .op .JUMP
   jump_pc : jump.pc = pushes.endPC
+  w0_ne : w0.val ≠ 0
+  w1_ne : w1.val ≠ 0
+  w2_ne : w2.val ≠ 0
+  w3_ne : w3.val ≠ 0
 
 def CallSite.path {artifact : ProgramArtifact} {fork : Fork}
-    {returnPC p0 p1 p2 p3 helperPC : UInt256}
-    {r0 r1 r2 r3 : Nat}
-    (site : CallSite artifact fork returnPC p0 p1 p2 p3 helperPC
-      r0 r1 r2 r3) : List (Stepper.Located artifact fork) :=
+    {returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 : UInt256} {w0 w1 w2 w3 : Fin 33}
+    (site : CallSite artifact fork returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 w0 w1 w2 w3) :
+    List (Stepper.Located artifact fork) :=
   site.pushes.path ++ [site.jump.located]
 
 theorem runLocatedBlock_call {artifact : ProgramArtifact} {fork : Fork}
-    (returnPC p0 p1 p2 p3 helperPC : UInt256)
-    (r0 r1 r2 r3 : Nat)
-    (site : CallSite artifact fork returnPC p0 p1 p2 p3 helperPC
-      r0 r1 r2 r3)
-    (s : State) (working : Compression.EvmWorking) (rho : List UInt256)
-    (hstack : rho.length < 1007) (hrun : s.halt = .Running)
+    (returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 : UInt256) (w0 w1 w2 w3 : Fin 33)
+    (site : CallSite artifact fork returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 w0 w1 w2 w3)
+    (s : State) (working : EvmWorking) (rest : List UInt256)
+    (hstack : rest.length < 1000) (hrun : s.halt = .Running)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code helperPC.toNat = true) :
     Stepper.runLocatedBlock site.path
-      (roundEntry s site.pushes.startPC working.a working.b working.c
-        working.d working.e (QuadRoundTemplate.factor :: rho)) =
-      some (QuadRoundState.quadHelperEntry s helperPC p0 p1 p2 p3 returnPC
-        r0 r1 r2 r3 working rho) := by
+      (roundEntry s site.pushes.startPC working.a working.b working.c working.d working.e rest) =
+      some (quadHelperEntry s helperPC p0 p1 p2 p3 returnPC M0 M1 M2 M3 working rest) := by
   apply Stepper.runLocatedBlock_append site.pushes.path [site.jump.located] _
-    (quadCallPushed s site.pushes.endPC returnPC p0 p1 p2 p3 helperPC
-      r0 r1 r2 r3 working rho)
-  · exact runLocatedBlock_quadCallPushes returnPC p0 p1 p2 p3 helperPC
-      r0 r1 r2 r3 site.pushes s working rho hstack hrun
+    (quadCallPushed s site.pushes.endPC returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3
+      working rest)
+  · exact runLocatedBlock_quadCallPushes returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3
+      w0 w1 w2 w3 site.w0_ne site.w1_ne site.w2_ne site.w3_ne site.pushes
+      s working rest hstack hrun
   · exact hrun
   · have hcap :
-        ([p0, returnPC, UInt256.ofNat (32 - r0), p1,
-          UInt256.ofNat (32 - r1), p2, UInt256.ofNat (32 - r2), p3,
-          UInt256.ofNat (32 - r3)] ++ roundWords working ++
-          [QuadRoundTemplate.factor] ++ rho).length < 1023 := by
+        ([p0, returnPC, M0, p1, M1, p2, M2, p3, M3] ++ roundWords working ++ rest).length
+          < 1023 := by
       simp [roundWords]
       omega
-    have h := SharedCallTrace.runLocated_jump site.jump site.jump_instr s
-      helperPC
-      ([p0, returnPC, UInt256.ofNat (32 - r0), p1,
-        UInt256.ofNat (32 - r1), p2, UInt256.ofNat (32 - r2), p3,
-        UInt256.ofNat (32 - r3)] ++ roundWords working ++
-        [QuadRoundTemplate.factor] ++ rho) hcap hvalid
+    have h := SharedCallTrace.runLocated_jump site.jump site.jump_instr s helperPC
+      ([p0, returnPC, M0, p1, M1, p2, M2, p3, M3] ++ roundWords working ++ rest) hcap hvalid
     have hlocated : Stepper.runLocated site.jump.located
-        (quadCallPushed s site.pushes.endPC returnPC p0 p1 p2 p3 helperPC
-          r0 r1 r2 r3 working rho) =
-        some (QuadRoundState.quadHelperEntry s helperPC p0 p1 p2 p3 returnPC
-          r0 r1 r2 r3 working rho) := by
-      simpa [quadCallPushed, QuadRoundState.quadHelperEntry, roundWords,
-        site.jump_pc, QuadRoundTemplate.factor] using h
+        (quadCallPushed s site.pushes.endPC returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3
+          working rest) =
+        some (quadHelperEntry s helperPC p0 p1 p2 p3 returnPC M0 M1 M2 M3 working rest) := by
+      simpa [quadCallPushed, quadHelperEntry, roundWords, site.jump_pc] using h
     simp only [Stepper.runLocatedBlock, hlocated]
 
 def gasSteps_call {artifact : ProgramArtifact} {fork : Fork}
-    (returnPC p0 p1 p2 p3 helperPC : UInt256)
-    (r0 r1 r2 r3 : Nat)
-    (site : CallSite artifact fork returnPC p0 p1 p2 p3 helperPC
-      r0 r1 r2 r3)
-    (s : State) (working : Compression.EvmWorking) (rho : List UInt256)
-    (hstack : rho.length < 1007) (hrun : s.halt = .Running)
+    (returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 : UInt256) (w0 w1 w2 w3 : Fin 33)
+    (site : CallSite artifact fork returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 w0 w1 w2 w3)
+    (s : State) (working : EvmWorking) (rest : List UInt256)
+    (hstack : rest.length < 1000) (hrun : s.halt = .Running)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code helperPC.toNat = true)
     (hcode : s.executionEnv.code = artifact.code) (hfork : s.fork = fork)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps
-      (roundEntry s site.pushes.startPC working.a working.b working.c
-        working.d working.e (QuadRoundTemplate.factor :: rho))
-      (QuadRoundState.quadHelperEntry s helperPC p0 p1 p2 p3 returnPC
-        r0 r1 r2 r3 working rho) := by
+    GasSteps (roundEntry s site.pushes.startPC working.a working.b working.c working.d
+      working.e rest)
+      (quadHelperEntry s helperPC p0 p1 p2 p3 returnPC M0 M1 M2 M3 working rest) := by
   apply Stepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode
   · exact hfork
-  · exact runLocatedBlock_call returnPC p0 p1 p2 p3 helperPC
-      r0 r1 r2 r3 site s working rho hstack hrun hvalid
+  · exact runLocatedBlock_call returnPC p0 p1 p2 p3 helperPC M0 M1 M2 M3 w0 w1 w2 w3 site
+      s working rest hstack hrun hvalid
   · exact hrun
   · exact hnp
 

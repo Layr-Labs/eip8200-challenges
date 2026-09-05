@@ -2,8 +2,8 @@ import Batteries.Tactic.OpenPrivate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadLayout
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Schedule
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackPC
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 
@@ -19,34 +19,19 @@ open YulEvmCompiler
 open Challenge.EvmProof
 open StackRoundTemplate
 
-private def byteLength : List Instr → Nat
-  | [] => 0
-  | .op _ :: rest => 1 + byteLength rest
-  | .push width _ :: rest => (1 + width.val) + byteLength rest
-
-private theorem byteLength_eq_assemble (instructions : List Instr) :
-    byteLength instructions = (assembleBytes instructions).length := by
-  induction instructions with
-  | nil => rfl
-  | cons instruction rest ih =>
-    cases instruction <;> simp [byteLength, assembleBytes_cons, ih, Nat.add_comm]
-
-open private submissionInstructionsChunk0 submissionInstructionsChunk1
+open private
+  submissionInstructionsChunk0 submissionInstructionsChunk1
   submissionInstructionsChunk2 submissionInstructionsChunk3
   submissionInstructionsChunk4 submissionInstructionsChunk5
   submissionInstructionsChunk6 submissionInstructionsChunk7
   submissionInstructionsChunk8 submissionInstructionsChunk9
-  submissionInstructionsChunk10 submissionInstructionsChunk11
-  submissionInstructionsChunk12 submissionInstructionsChunk13
-  submissionInstructionsChunk14 submissionInstructionsChunk15
+  submissionInstructionsChunk10
   submissionInstructionsChunk0_length submissionInstructionsChunk1_length
   submissionInstructionsChunk2_length submissionInstructionsChunk3_length
   submissionInstructionsChunk4_length submissionInstructionsChunk5_length
   submissionInstructionsChunk6_length submissionInstructionsChunk7_length
   submissionInstructionsChunk8_length submissionInstructionsChunk9_length
-  submissionInstructionsChunk10_length submissionInstructionsChunk11_length
-  submissionInstructionsChunk12_length submissionInstructionsChunk13_length
-  submissionInstructionsChunk14_length submissionInstructionsChunk15_length
+  submissionInstructionsChunk10_length
   from Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 
 private theorem advances_straight {instruction : Instr}
@@ -67,7 +52,8 @@ private theorem initialTemplate_advances :
   intro instruction hmem
   simp only [DenseScheduleTemplate.initialTemplate, List.mem_cons,
     List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl
   · exact advances_jumpdest
   all_goals exact advances_straight (by constructor)
 
@@ -107,70 +93,67 @@ private theorem denseBeforeJumpTemplate_advances :
       DenseScheduleLift.Advances instruction := by
   intro instruction hmem
   simp only [DenseScheduleTemplate.denseBeforeJumpTemplate, List.mem_append] at hmem
-  rcases hmem with (hinitial | h1) | h0
+  rcases hmem with (hinitial | h0) | h1
   · exact initialTemplate_advances instruction hinitial
-  · exact denseHalfTemplate_advances 1 instruction h1
   · exact denseHalfTemplate_advances 0 instruction h0
+  · exact denseHalfTemplate_advances 1 instruction h1
 
 private def packedSchedulePrefix : List Instr :=
   submissionInstructionsChunk0 ++ submissionInstructionsChunk1 ++
     submissionInstructionsChunk2 ++ submissionInstructionsChunk3 ++
     submissionInstructionsChunk4 ++ submissionInstructionsChunk5 ++
     submissionInstructionsChunk6 ++ submissionInstructionsChunk7 ++
-    submissionInstructionsChunk8 ++ submissionInstructionsChunk9 ++
-    submissionInstructionsChunk10 ++ submissionInstructionsChunk11 ++
-    submissionInstructionsChunk12 ++ []
+    submissionInstructionsChunk8 ++ submissionInstructionsChunk9 ++ []
 
-private theorem packedSchedulePrefix_length : packedSchedulePrefix.length = 2600 := by
+private theorem packedSchedulePrefix_length : packedSchedulePrefix.length = 1940 := by
   simp [packedSchedulePrefix]
 
 private def packedScheduleBefore : List Instr :=
-  packedSchedulePrefix ++ submissionInstructionsChunk13.take 86
+  packedSchedulePrefix ++ submissionInstructionsChunk10.take 159
 
-private theorem packedScheduleBefore_length : packedScheduleBefore.length = 2686 := by
+private theorem packedScheduleBefore_length : packedScheduleBefore.length = 2099 := by
   simp [packedScheduleBefore, packedSchedulePrefix_length]
-
-private def packedScheduleAfter : List Instr :=
-  submissionInstructionsChunk13.drop 142 ++ submissionInstructionsChunk14 ++
-    submissionInstructionsChunk15
 
 private theorem artifact_prefix_split :
     Artifact.submissionArtifact.instructions =
-      packedSchedulePrefix ++
-        (submissionInstructionsChunk13 ++ submissionInstructionsChunk14 ++
-          submissionInstructionsChunk15) := by
+      packedSchedulePrefix ++ submissionInstructionsChunk10 := by
   change Artifact.submissionInstructions =
-    packedSchedulePrefix ++
-      (submissionInstructionsChunk13 ++ submissionInstructionsChunk14 ++
-        submissionInstructionsChunk15)
+    packedSchedulePrefix ++ submissionInstructionsChunk10
   simp only [Artifact.submissionInstructions, packedSchedulePrefix, List.append_assoc,
     List.nil_append]
 
 private theorem artifact_tail_split :
-    submissionInstructionsChunk13 ++ submissionInstructionsChunk14 ++
-        submissionInstructionsChunk15 =
-      submissionInstructionsChunk13.take 86 ++
-        DenseScheduleTemplate.denseFullTemplate ++ packedScheduleAfter := by
-  rfl
+    submissionInstructionsChunk10 =
+      submissionInstructionsChunk10.take 159 ++
+        DenseScheduleTemplate.denseFullTemplate := by
+  have hdrop : submissionInstructionsChunk10.drop 159 =
+      DenseScheduleTemplate.denseFullTemplate := by
+    rfl
+  calc
+    submissionInstructionsChunk10 =
+        submissionInstructionsChunk10.take 159 ++
+          submissionInstructionsChunk10.drop 159 := by
+      rw [List.take_append_drop]
+    _ = submissionInstructionsChunk10.take 159 ++
+        DenseScheduleTemplate.denseFullTemplate := by rw [hdrop]
 
 private theorem artifact_dense_split :
     Artifact.submissionArtifact.instructions =
-      packedScheduleBefore ++ DenseScheduleTemplate.denseFullTemplate ++
-        packedScheduleAfter := by
+      packedScheduleBefore ++ DenseScheduleTemplate.denseFullTemplate := by
   rw [artifact_prefix_split, artifact_tail_split]
   simp [packedScheduleBefore, List.append_assoc]
 
 private theorem artifact_dense_split_prejump :
     Artifact.submissionArtifact.instructions =
       packedScheduleBefore ++ DenseScheduleTemplate.denseBeforeJumpTemplate ++
-        (DenseScheduleTemplate.finalJumpTemplate ++ packedScheduleAfter) := by
+        DenseScheduleTemplate.finalJumpTemplate := by
   simpa [DenseScheduleTemplate.denseFullTemplate, List.append_assoc] using
     artifact_dense_split
 
 private theorem instructionPC_prefix_plus_segment
     (p : ProgramArtifact) (before segment : List Instr)
     (hsplit : p.instructions = before ++ segment) :
-    p.instructionPC before.length + byteLength segment = p.code.size := by
+    p.instructionPC before.length + StackPC.byteLength segment = p.code.size := by
   have hassembly : (assembleBytes p.instructions).length = p.code.size := by
     have h := congrArg ByteArray.size p.assembly_eq
     change (assembleBytes p.instructions).toArray.size = p.code.size at h
@@ -178,7 +161,7 @@ private theorem instructionPC_prefix_plus_segment
   have htake : (before ++ segment).take before.length = before := by
     simp
   unfold ProgramArtifact.instructionPC
-  rw [hsplit, htake, byteLength_eq_assemble]
+  rw [hsplit, htake, StackPC.byteLength_eq_assemble]
   rw [hsplit, assembleBytes_append] at hassembly
   simpa only [List.length_append] using hassembly
 
@@ -187,17 +170,17 @@ private theorem instructionPC_segment_byteLength
     (hsplit : p.instructions = before ++ segment ++ after)
     (i : Nat) (hi : i ≤ segment.length) :
     p.instructionPC (before.length + i) =
-      p.instructionPC before.length + byteLength (segment.take i) := by
+      p.instructionPC before.length + StackPC.byteLength (segment.take i) := by
   have hzero := ArtifactSegment.instructionPC_segment p before segment after hsplit 0
     (by omega : 0 ≤ segment.length)
   have hzero' : p.instructionPC before.length = (assembleBytes before).length := by
     simpa using hzero
   have hi' := ArtifactSegment.instructionPC_segment p before segment after hsplit i hi
-  rw [byteLength_eq_assemble, hzero']
+  rw [StackPC.byteLength_eq_assemble, hzero']
   exact hi'
 
 private theorem packedSchedule_slice :
-    (Artifact.submissionArtifact.instructions.drop 2686).take
+    (Artifact.submissionArtifact.instructions.drop 2099).take
         DenseScheduleTemplate.denseBeforeJumpTemplate.length =
       DenseScheduleTemplate.denseBeforeJumpTemplate := by
   rfl
@@ -207,48 +190,49 @@ def packedScheduleSite :
       DenseScheduleTemplate.denseBeforeJumpTemplate :=
   StackSiteBuilder.ofSlice
     (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    DenseScheduleTemplate.denseBeforeJumpTemplate 2686
+    DenseScheduleTemplate.denseBeforeJumpTemplate 2099
     packedSchedule_slice
     (by
-      change 2686 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
+      change 2099 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
         Artifact.submissionInstructions.length
       rw [DenseScheduleTemplate.denseBeforeJumpTemplate_length,
         Artifact.referenceInstructions_count]
       decide)
-    QuadLayout.code_bound
+    StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem
       (instructions := DenseScheduleTemplate.denseBeforeJumpTemplate) (by decide))
     (by decide)
 
+private theorem denseScheduleFull_byteLength :
+    StackPC.byteLength DenseScheduleTemplate.denseFullTemplate = 332 := by
+  rw [StackPC.byteLength_eq_assemble]
+  exact DenseScheduleTemplate.denseFullTemplate_byteLength
+
 private theorem denseScheduleTemplate_byteLength :
-    byteLength DenseScheduleTemplate.denseBeforeJumpTemplate = 324 := by
-  rw [byteLength_eq_assemble]
+    StackPC.byteLength DenseScheduleTemplate.denseBeforeJumpTemplate = 331 := by
+  rw [StackPC.byteLength_eq_assemble]
   exact DenseScheduleTemplate.denseBeforeJumpTemplate_byteLength
 
 private theorem packedSchedule_start_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2686 = 0x109f := by
+    Artifact.submissionArtifact.instructionPC 2099 = 0x1346 := by
   have h := instructionPC_prefix_plus_segment Artifact.submissionArtifact
-    packedScheduleBefore (DenseScheduleTemplate.denseFullTemplate ++ packedScheduleAfter)
-    (by simpa only [List.append_assoc] using artifact_dense_split)
-  have hlength : byteLength
-      (DenseScheduleTemplate.denseFullTemplate ++ packedScheduleAfter) = 511 := by
-    decide
-  rw [packedScheduleBefore_length, hlength] at h
-  have hsize : Artifact.submissionArtifact.code.size = 4766 := by
-    change Challenge.Ripemd160.submissionBytecode.size = 4766
+    packedScheduleBefore DenseScheduleTemplate.denseFullTemplate
+    artifact_dense_split
+  rw [packedScheduleBefore_length, denseScheduleFull_byteLength] at h
+  have hsize : Artifact.submissionArtifact.code.size = 5266 := by
+    change Challenge.Ripemd160.submissionBytecode.size = 5266
     exact Challenge.Ripemd160.referenceBytecode_size
   rw [hsize] at h
   omega
 
 private theorem packedSchedule_end_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2741 = 0x11e3 := by
+    Artifact.submissionArtifact.instructionPC 2160 = 0x1491 := by
   have h := instructionPC_segment_byteLength Artifact.submissionArtifact
     packedScheduleBefore DenseScheduleTemplate.denseBeforeJumpTemplate
-    (DenseScheduleTemplate.finalJumpTemplate ++ packedScheduleAfter)
-    artifact_dense_split_prejump 55
+    DenseScheduleTemplate.finalJumpTemplate artifact_dense_split_prejump 61
     (by decide)
   have htake :
-      DenseScheduleTemplate.denseBeforeJumpTemplate.take 55 =
+      DenseScheduleTemplate.denseBeforeJumpTemplate.take 61 =
         DenseScheduleTemplate.denseBeforeJumpTemplate := by
     apply List.take_of_length_le
     rw [DenseScheduleTemplate.denseBeforeJumpTemplate_length]
@@ -258,15 +242,15 @@ private theorem packedSchedule_end_instructionPC :
   exact h
 
 @[simp] theorem packedScheduleSite_startPC :
-    packedScheduleSite.startPC = UInt256.ofNat 0x109f := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2686) =
-    UInt256.ofNat 0x109f
+    packedScheduleSite.startPC = UInt256.ofNat 0x1346 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2099) =
+    UInt256.ofNat 0x1346
   rw [packedSchedule_start_instructionPC]
 
 @[simp] theorem packedScheduleSite_endPC :
-    packedScheduleSite.endPC = UInt256.ofNat 0x11e3 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2741) =
-    UInt256.ofNat 0x11e3
+    packedScheduleSite.endPC = UInt256.ofNat 0x1491 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2160) =
+    UInt256.ofNat 0x1491
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleSite_end_eq_pcAfter :
@@ -284,18 +268,18 @@ private theorem pc_toNat_instructionPC (index : Nat) :
   rw [Challenge.EvmProof.Word.word_toNat_ofNat]
   apply Nat.mod_eq_of_lt
   have hle := Artifact.submissionArtifact.instructionPC_le_code_size index
-  have hcode := QuadLayout.code_bound
+  have hcode := StackRoundData.artifact_code_bound
   exact Nat.lt_of_le_of_lt hle hcode
 
 def packedScheduleFinalJump :
     LocatedSite Artifact.submissionArtifact .Osaka where
   located :=
-    { index := 2741
+    { index := 2160
       instruction := .op .JUMP
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2741)
-  pc_eq := pc_toNat_instructionPC 2741
+  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2160)
+  pc_eq := pc_toNat_instructionPC 2160
 
 def packedScheduleFinalJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -311,15 +295,15 @@ private theorem runLocatedBlock_singleton
   | some t => simp [Challenge.EvmProof.Stepper.runLocatedBlock, h]
 
 @[simp] theorem packedScheduleFinalJump_pc :
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x11e3 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2741) =
-    UInt256.ofNat 0x11e3
+    packedScheduleFinalJump.pc = UInt256.ofNat 0x1491 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2160) =
+    UInt256.ofNat 0x1491
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleFinalJump_site_end :
     packedScheduleFinalJump.pc = packedScheduleSite.endPC := by
   calc
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x11e3 := packedScheduleFinalJump_pc
+    packedScheduleFinalJump.pc = UInt256.ofNat 0x1491 := packedScheduleFinalJump_pc
     _ = packedScheduleSite.endPC := packedScheduleSite_endPC.symm
 
 theorem packedScheduleFinalJump_pc_eq_expected

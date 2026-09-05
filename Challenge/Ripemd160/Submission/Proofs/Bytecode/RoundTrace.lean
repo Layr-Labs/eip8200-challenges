@@ -67,7 +67,7 @@ def afterXPath : List Located :=
    ⟨238, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨239, .op (.Dup ⟨10, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨240, .op (.Dup ⟨14, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨241, .push ⟨2, by decide⟩ (UInt256.ofNat 0x47a), by rfl, by decide⟩,
+   ⟨241, .push ⟨2, by decide⟩ (UInt256.ofNat 0x687), by rfl, by decide⟩,
    ⟨242, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def afterFPath : List Located :=
@@ -388,8 +388,8 @@ def setCallState (s : State) (base : UInt256) (j : Nat)
   exact Artifact.submissionArtifact.isValidJumpDest_index 55 (by rfl)
 
 @[simp] private theorem valid687 :
-    Decode.isValidJumpDest submissionBytecode 0x47a = true := by
-  exact Artifact.submissionArtifact.isValidJumpDest_index 765 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 0x687 = true := by
+  exact Artifact.submissionArtifact.isValidJumpDest_index 831 (by rfl)
 
 @[simp] private theorem valid13A :
     Decode.isValidJumpDest submissionBytecode 0x13a = true := by
