@@ -92,9 +92,9 @@ theorem gasSteps_baseLoop_cost_potential (s : State)
   exact gasSteps_baseByteAt_cost_potential s accumulator count baseSize e m
     baseOff i rest hcap hcount hbase hi hoff hcode hfork hrun hnp
 
-private theorem jump944 :
-    Decode.isValidJumpDest submissionBytecode 944 = true :=
-  Artifact.isValidJumpDest_index 717 (by rfl)
+private theorem jumpColdEntry :
+    Decode.isValidJumpDest submissionBytecode 1343 = true :=
+  Artifact.isValidJumpDest_index 995 (by rfl)
 
 def baseConvertedExit (s : State) (accumulator : UInt256)
     (count baseSize e m baseOff : Nat) (rest : List UInt256) : State :=
@@ -105,7 +105,7 @@ def initialAccumulator (s : State) (accumulator : UInt256)
     (count baseSize e m baseOff : Nat) (rest : List UInt256) : State :=
   BigHelpers.addReturned
     (baseConvertedExit s accumulator count baseSize e m baseOff rest)
-    2048 3072 1 0 count 944
+    2048 3072 1 0 count 1343
     ([accumulator, UInt256.ofNat count, UInt256.ofNat baseSize] ++
       ([UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff] ++ rest))
 
@@ -149,12 +149,12 @@ def gasSteps_baseFinish (s : State) (accumulator : UInt256)
       (by simpa [outerExit, outerLoop, progress, State.fork] using hnp)
   have hadd := BigHelpers.gasSteps_addMaskedMod
     (baseConvertedExit s accumulator count baseSize e m baseOff rest)
-    2048 3072 1 0 count 944 helperRest hhelper hcount
+    2048 3072 1 0 count 1343 helperRest hhelper hcount
     (by simpa [baseConvertedExit, outerExit, outerLoop] using hcode)
     (by simpa [baseConvertedExit, outerExit, outerLoop, State.fork] using hfork)
     (by simpa [baseConvertedExit, outerExit, outerLoop] using hrun)
     (by simpa [baseConvertedExit, outerExit, outerLoop, State.fork] using hnp)
-    jump944
+    jumpColdEntry
   exact Challenge.EvmProof.GasSteps.cast
     (hguard.trans (htoAccumulator.trans hadd))
     (by simp [baseLoopState, progress, fullRest])
@@ -201,12 +201,12 @@ theorem gasSteps_baseFinish_cost_potential (s : State)
         (by decide) (by decide)
   have hadd := BigHelpers.gasSteps_addMaskedMod_cost_potential
     (baseConvertedExit s accumulator count baseSize e m baseOff rest)
-    2048 3072 1 0 count 944 helperRest hhelper hcount
+    2048 3072 1 0 count 1343 helperRest hhelper hcount
     (by simpa [baseConvertedExit, outerExit, outerLoop] using hcode)
     (by simpa [baseConvertedExit, outerExit, outerLoop, State.fork] using hfork)
     (by simpa [baseConvertedExit, outerExit, outerLoop] using hrun)
     (by simpa [baseConvertedExit, outerExit, outerLoop, State.fork] using hnp)
-    jump944
+    jumpColdEntry
   unfold gasSteps_baseFinish
   simp only [Challenge.EvmProof.GasSteps.cast_cost,
     Challenge.EvmProof.GasSteps.trans_cost,

@@ -35,10 +35,6 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨index, .push width value, hget, hwf⟩
 
-def startExponentPath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 717 .JUMPDEST, pushAt 718 0 0]
-
 def outerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 719 .JUMPDEST, opAt 720 (.Dup ⟨4, by decide⟩),
@@ -106,7 +102,7 @@ def innerFinishPath :
 
 def exponentEntry (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 944
+  { s with pc := UInt256.ofNat 1343
            stack := [accumulatorWord, UInt256.ofNat count, UInt256.ofNat b,
              UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff,
              UInt256.ofNat expOff] ++ rest }
@@ -435,23 +431,6 @@ private theorem jump1104 :
 private theorem jump946 :
     Decode.isValidJumpDest submissionBytecode 946 = true :=
   Artifact.isValidJumpDest_index 719 (by rfl)
-
-set_option linter.unusedSimpArgs false in
-theorem run_startExponent (s : State) (accumulatorWord : UInt256)
-    (count b e m baseOff expOff : Nat) (rest : List UInt256)
-    (hcap : rest.length < 1017) (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock startExponentPath
-      (exponentEntry s accumulatorWord count b e m baseOff expOff rest) =
-      some (outerLoop s accumulatorWord count b e m baseOff expOff rest 0) := by
-  have hc7 : rest.length + 7 < 1024 := by omega
-  have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
-  simp [startExponentPath, opAt, pushAt, wfOp, exponentEntry, outerLoop,
-    exponentPCs, hrun, hzero, hc7,
-    Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.ofNat_add_mod,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
 
 set_option linter.unusedSimpArgs false in
 theorem run_outerGuard (s : State) (accumulatorWord : UInt256)
@@ -849,5 +828,469 @@ theorem run_innerFinish (s : State) (accumulatorWord : UInt256)
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, List.exchange]
+
+
+section ColdPath
+set_option linter.unusedVariables false
+
+/-! ## S2 cold path (design-S2 C7/C8)
+
+The exponent loop entry is redirected to a clone of the outer/inner loop that
+only searches for the first set exponent bit.  The clone executes no memory
+instruction, so every `Limbs.Represents` hypothesis passes through unchanged,
+and every branch condition is a calldata-derived value already characterised by
+`loadedExponentByte` / `exponentBit`.
+
+Each conditional jump gets its own located block, with the tested value already
+an opaque stack entry, so the branch lemmas never have to match against a
+machine-normalised form of the expression that computed it.
+-/
+
+def coldStartPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 995 .JUMPDEST, pushAt 996 0 0]
+
+def coldGuardPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 997 .JUMPDEST, opAt 998 (.Dup ⟨4, by decide⟩),
+   opAt 999 (.Dup ⟨1, by decide⟩), opAt 1000 .LT, opAt 1001 .ISZERO,
+   pushAt 1002 2 1118, opAt 1003 .JUMPI]
+
+def coldLoadPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 1004 (.Dup ⟨0, by decide⟩), opAt 1005 (.Dup ⟨8, by decide⟩),
+   opAt 1006 .ADD, opAt 1007 (.Dup ⟨0, by decide⟩),
+   opAt 1008 .CALLDATALOAD, pushAt 1009 0 0, opAt 1010 .BYTE]
+
+def coldTestZeroPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 1011 (.Dup ⟨0, by decide⟩), opAt 1012 .ISZERO,
+   pushAt 1013 2 1389, opAt 1014 .JUMPI]
+
+def coldTestPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 1011 (.Dup ⟨0, by decide⟩), opAt 1012 .ISZERO,
+   pushAt 1013 2 1389, opAt 1014 .JUMPI, pushAt 1015 0 0]
+
+def coldBitComputePath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 1016 .JUMPDEST, pushAt 1017 1 1,
+   opAt 1018 (.Dup ⟨2, by decide⟩), opAt 1019 (.Dup ⟨2, by decide⟩),
+   pushAt 1020 1 7, opAt 1021 .SUB, opAt 1022 .SHR,
+   opAt 1023 .AND]
+
+def coldBitHitPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [pushAt 1024 2 1399, opAt 1025 .JUMPI]
+
+def coldBitZeroPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [pushAt 1024 2 1399, opAt 1025 .JUMPI,
+   pushAt 1026 1 1, opAt 1027 .ADD, pushAt 1028 2 1368,
+   opAt 1029 .JUMP]
+
+def coldNextPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 1030 .JUMPDEST, opAt 1031 .POP, opAt 1032 .POP,
+   pushAt 1033 1 1, opAt 1034 .ADD, pushAt 1035 2 1345,
+   opAt 1036 .JUMP]
+
+def coldHitPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 1037 .JUMPDEST, pushAt 1038 2 963, opAt 1039 .JUMP]
+
+@[simp] private theorem coldPCs (i : Nat) (_hi : 995 ≤ i) (_hii : i ≤ 1039) :
+    Artifact.submissionArtifact.instructionPC i =
+      ([1343,1344,1345,1346,1347,1348,1349,1350,1353,1354,1355,1356,1357,1358,1359,1360,1361,1362,1363,1366,1367,1368,1369,1371,1372,1373,1375,1376,1377,1378,1381,1382,1384,1385,1388,1389,1390,1391,1392,1394,1395,1398,1399,1400,1403])[i - 995]! := by
+  interval_cases i <;> decide
+
+private theorem jumpColdOuter :
+    Decode.isValidJumpDest submissionBytecode 1345 = true :=
+  Artifact.isValidJumpDest_index 997 (by rfl)
+
+private theorem jumpColdBit :
+    Decode.isValidJumpDest submissionBytecode 1368 = true :=
+  Artifact.isValidJumpDest_index 1016 (by rfl)
+
+private theorem jumpColdNext :
+    Decode.isValidJumpDest submissionBytecode 1389 = true :=
+  Artifact.isValidJumpDest_index 1030 (by rfl)
+
+private theorem jumpColdHit :
+    Decode.isValidJumpDest submissionBytecode 1399 = true :=
+  Artifact.isValidJumpDest_index 1037 (by rfl)
+
+private theorem jumpSerializerEntry :
+    Decode.isValidJumpDest submissionBytecode 1118 = true :=
+  Artifact.isValidJumpDest_index 838 (by rfl)
+
+/-- Cold clone of `outerLoop`: same stack shape, pc in the appended routine. -/
+def coldOuter (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff : Nat) (rest : List UInt256) (i : Nat) : State :=
+  { s with pc := UInt256.ofNat 1345
+           stack := [UInt256.ofNat i, accumulatorWord, UInt256.ofNat count,
+             UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
+             UInt256.ofNat baseOff, UInt256.ofNat expOff] ++ rest }
+
+/-- Cold outer loop past its bound check. -/
+def coldOuterBody (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff : Nat) (rest : List UInt256) (i : Nat) : State :=
+  { coldOuter s accumulatorWord count b e m baseOff expOff rest i with
+      pc := UInt256.ofNat 1354 }
+
+/-- Cold path exit for an all-zero exponent: identical to the serializer
+entry state reached by the hot loop. -/
+def coldExit (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 1118
+           stack := [UInt256.ofNat e, accumulatorWord, UInt256.ofNat count,
+             UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
+             UInt256.ofNat baseOff, UInt256.ofNat expOff] ++ rest }
+
+/-- Cold byte frame: the loaded exponent byte sits on top of the stack. -/
+def coldByteFrame (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) : List UInt256 :=
+  [byte, offset, UInt256.ofNat i, accumulatorWord, UInt256.ofNat count,
+    UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff,
+    UInt256.ofNat expOff] ++ rest
+
+/-- Cold outer loop with the exponent byte loaded, before the zero test. -/
+def coldLoaded (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 1361
+           stack := coldByteFrame accumulatorWord count b e m baseOff expOff i
+             offset byte rest }
+
+/-- Cold byte skip: the loaded byte is zero, drop it and advance `i`. -/
+def coldNextState (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 1389
+           stack := coldByteFrame accumulatorWord count b e m baseOff expOff i
+             offset byte rest }
+
+/-- Cold bit search loop; stack shape matches `innerLoop`. -/
+def coldBitLoop (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (j : Nat) : State :=
+  { s with pc := UInt256.ofNat 1368
+           stack := [UInt256.ofNat j, byte, offset, UInt256.ofNat i,
+             accumulatorWord, UInt256.ofNat count, UInt256.ofNat b,
+             UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff,
+             UInt256.ofNat expOff] ++ rest }
+
+/-- Cold bit search with the extracted bit on top of the stack. -/
+def coldBitTest (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte bit : UInt256)
+    (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 1378
+           stack := bitFrame accumulatorWord count b e m baseOff expOff i j
+             offset byte bit rest }
+
+/-- First set bit found at index `j`. -/
+def coldHitState (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (j : Nat) : State :=
+  { coldBitLoop s accumulatorWord count b e m baseOff expOff i offset byte
+      rest j with pc := UInt256.ofNat 1399 }
+
+set_option linter.unusedSimpArgs false in
+theorem run_coldStart (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff : Nat) (rest : List UInt256)
+    (hcap : rest.length < 1005) (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock coldStartPath
+      (exponentEntry s accumulatorWord count b e m baseOff expOff rest) =
+      some (coldOuter s accumulatorWord count b e m baseOff expOff rest 0) := by
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
+  simp [coldStartPath, opAt, pushAt, wfOp, exponentEntry, coldOuter,
+    coldPCs, hrun, hzero, hc7,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_coldGuard (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (rest : List UInt256)
+    (hcap : rest.length < 1005) (he : e < 2 ^ 256) (hi : i < e)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock coldGuardPath
+      (coldOuter s accumulatorWord count b e m baseOff expOff rest i) =
+      some (coldOuterBody s accumulatorWord count b e m baseOff expOff rest i) := by
+  have hi256 : i < 2 ^ 256 := hi.trans he
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hlt : UInt256.lt (UInt256.ofNat i) (UInt256.ofNat e) = 1 := by
+    rw [UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hi256, Nat.mod_eq_of_lt he, if_pos hi]
+    decide
+  have honeNat : (1 : UInt256).toNat = 1 := by decide
+  simp [coldGuardPath, opAt, pushAt, wfOp, coldOuter, coldOuterBody,
+    coldPCs, hrun, hlt, honeNat, hc8, hc9, hc10, UInt256.isTrue,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_coldGuardExit (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff : Nat) (rest : List UInt256)
+    (hcap : rest.length < 1005) (_he : e < 2 ^ 256)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock coldGuardPath
+      (coldOuter s accumulatorWord count b e m baseOff expOff rest e) =
+      some (coldExit s accumulatorWord count b e m baseOff expOff rest) := by
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
+  have h1118 : (1118 : UInt256).toNat = 1118 := by decide
+  have h1118Word : (1118 : UInt256) = UInt256.ofNat 1118 := by decide
+  simp [coldGuardPath, opAt, pushAt, wfOp, coldOuter, coldExit, coldPCs,
+    hcode, hrun, hzeroFalse, h1118, h1118Word, jumpSerializerEntry,
+    hc8, hc9, hc10, UInt256.lt, UInt256.isTrue,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_coldLoad (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (rest : List UInt256)
+    (hcap : rest.length < 1005) (hoff : expOff + i < 2 ^ 256)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock coldLoadPath
+      (coldOuterBody s accumulatorWord count b e m baseOff expOff rest i) =
+      some (coldLoaded s accumulatorWord count b e m baseOff expOff i
+        (UInt256.ofNat (expOff + i)) (loadedExponentByte s expOff i) rest) := by
+  have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
+    (a := i) (b := expOff) (by omega)
+  have hoffNat : (UInt256.ofNat (expOff + i)).toNat = expOff + i := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hoff]
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
+  have h0Word : (0 : UInt256) = UInt256.ofNat 0 := by decide
+  simp [coldLoadPath, opAt, pushAt, wfOp, coldOuterBody, coldOuter,
+    coldLoaded, coldByteFrame, loadedExponentByte, coldPCs, hrun, hadd,
+    hoffNat, hzero, h0Word, hc8, hc9, hc10, hc11,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, Nat.add_comm,
+    Nat.add_left_comm]
+
+set_option linter.unusedSimpArgs false in
+theorem run_coldTestZero (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1005)
+    (hbyte : byte.toNat = 0)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock coldTestZeroPath
+      (coldLoaded s accumulatorWord count b e m baseOff expOff i offset byte
+        rest) =
+      some (coldNextState s accumulatorWord count b e m baseOff expOff i offset
+        byte rest) := by
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hcn : (1389 : UInt256).toNat = 1389 := by decide
+  have hcnWord : (1389 : UInt256) = UInt256.ofNat 1389 := by decide
+  simp [coldTestZeroPath, opAt, pushAt, wfOp, coldLoaded, coldNextState,
+    coldByteFrame, coldPCs, hcode, hrun, hbyte, hcn, hcnWord, jumpColdNext,
+    UInt256.isTrue, hc10, hc11, hc12,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_coldTest (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1005)
+    (hbyte : ¬ byte.toNat = 0) (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock coldTestPath
+      (coldLoaded s accumulatorWord count b e m baseOff expOff i offset byte
+        rest) =
+      some (coldBitLoop s accumulatorWord count b e m baseOff expOff i offset
+        byte rest 0) := by
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
+  simp [coldTestPath, opAt, pushAt, wfOp, coldLoaded, coldBitLoop,
+    coldByteFrame, coldPCs, hrun, hbyte, hzero, UInt256.isTrue,
+    hc10, hc11, hc12,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_coldNext (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1005)
+    (hi : i + 1 < 2 ^ 256)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock coldNextPath
+      (coldNextState s accumulatorWord count b e m baseOff expOff i offset byte
+        rest) =
+      some (coldOuter s accumulatorWord count b e m baseOff expOff rest
+        (i + 1)) := by
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hinc : (1 : UInt256) + UInt256.ofNat i = UInt256.ofNat (i + 1) := by
+    rw [show (1 : UInt256) = UInt256.ofNat 1 from by decide,
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_comm 1 i]
+  have hco : (1345 : UInt256).toNat = 1345 := by decide
+  have hcoWord : (1345 : UInt256) = UInt256.ofNat 1345 := by decide
+  simp [coldNextPath, opAt, pushAt, wfOp, coldNextState, coldByteFrame,
+    coldOuter, coldPCs, hcode, hrun, hinc, hco, hcoWord, jumpColdOuter,
+    hc8, hc9, hc10,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_coldBitCompute (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1005) (hj : j < 8)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock coldBitComputePath
+      (coldBitLoop s accumulatorWord count b e m baseOff expOff i offset byte
+        rest j) =
+      some (coldBitTest s accumulatorWord count b e m baseOff expOff i j offset
+        byte (exponentBit byte j) rest) := by
+  have hj7 : j ≤ 7 := by omega
+  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat hj7
+    (by norm_num : 7 < 2 ^ 256)
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
+  have hseven : (7 : UInt256) = UInt256.ofNat 7 := by decide
+  simp [coldBitComputePath, opAt, pushAt, wfOp, coldBitLoop, coldBitTest,
+    bitFrame, exponentBit, coldPCs, hrun, hsub, hone, hseven,
+    hc11, hc12, hc13, hc14, hc15,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_coldBitZero (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte bit : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1005)
+    (hbit : bit.toNat = 0)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock coldBitZeroPath
+      (coldBitTest s accumulatorWord count b e m baseOff expOff i j offset byte
+        bit rest) =
+      some (coldBitLoop s accumulatorWord count b e m baseOff expOff i offset
+        byte rest (j + 1)) := by
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hinc : (1 : UInt256) + UInt256.ofNat j = UInt256.ofNat (j + 1) := by
+    rw [show (1 : UInt256) = UInt256.ofNat 1 from by decide,
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_comm 1 j]
+  have hcb : (1368 : UInt256).toNat = 1368 := by decide
+  have hcbWord : (1368 : UInt256) = UInt256.ofNat 1368 := by decide
+  simp [coldBitZeroPath, opAt, pushAt, wfOp, coldBitTest, coldBitLoop,
+    bitFrame, coldPCs, hcode, hrun, hbit, hinc, hcb, hcbWord, jumpColdBit,
+    UInt256.isTrue, hc11, hc12, hc13,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_coldBitHit (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte bit : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1005)
+    (hbit : ¬ bit.toNat = 0)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock coldBitHitPath
+      (coldBitTest s accumulatorWord count b e m baseOff expOff i j offset byte
+        bit rest) =
+      some (coldHitState s accumulatorWord count b e m baseOff expOff i offset
+        byte rest j) := by
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hch : (1399 : UInt256).toNat = 1399 := by decide
+  have hchWord : (1399 : UInt256) = UInt256.ofNat 1399 := by decide
+  simp [coldBitHitPath, opAt, pushAt, wfOp, coldBitTest, coldHitState,
+    coldBitLoop, bitFrame, coldPCs, hcode, hrun, hbit, hch, hchWord,
+    jumpColdHit, UInt256.isTrue, hc11, hc12, hc13,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_coldHit (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
+    (rest : List UInt256) (hcap : rest.length < 1005)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock coldHitPath
+      (coldHitState s accumulatorWord count b e m baseOff expOff i offset byte
+        rest j) =
+      some (innerLoop s accumulatorWord count b e m baseOff expOff i offset
+        byte rest j) := by
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have h963 : (963 : UInt256).toNat = 963 := by decide
+  have h963Word : (963 : UInt256) = UInt256.ofNat 963 := by decide
+  simp [coldHitPath, opAt, pushAt, wfOp, coldHitState, coldBitLoop, innerLoop,
+    coldPCs, hcode, hrun, jump963, h963, h963Word, hc11, hc12,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+set_option linter.unusedSimpArgs false in
+theorem run_outerGuardExit (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff : Nat) (rest : List UInt256)
+    (hcap : rest.length < 1005) (_he : e < 2 ^ 256)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock outerGuardPath
+      (outerLoop s accumulatorWord count b e m baseOff expOff rest e) =
+      some (coldExit s accumulatorWord count b e m baseOff expOff rest) := by
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
+  have h1118 : (1118 : UInt256).toNat = 1118 := by decide
+  have h1118Word : (1118 : UInt256) = UInt256.ofNat 1118 := by decide
+  simp [outerGuardPath, opAt, pushAt, wfOp, outerLoop, coldExit,
+    exponentPCs, hcode, hrun, hzeroFalse, h1118, h1118Word,
+    jumpSerializerEntry, hc8, hc9, hc10, UInt256.lt, UInt256.isTrue,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+end ColdPath
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigExponent

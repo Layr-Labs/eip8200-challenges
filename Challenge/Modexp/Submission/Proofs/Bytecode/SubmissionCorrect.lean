@@ -133,6 +133,41 @@ open EvmSemantics.EVM
     BigBaseLoop.baseConvertedExit, BigBase.outerExit, BigBase.outerLoop,
     BigHelpers.addReturned]
 
+@[simp] theorem bitProgressFrom_callStack (s : State)
+    (accumulatorWord : UInt256) (count b e m baseOff expOff i start t : Nat)
+    (offset byte : UInt256) (rest : List UInt256) :
+    (BigExponent.bitProgressFrom s accumulatorWord count b e m baseOff expOff i
+      offset byte rest start t).callStack = s.callStack := by
+  induction t with
+  | zero => rfl
+  | succ t ih => simp [BigExponent.bitProgressFrom, ih]
+
+@[simp] theorem byteProgressFrom_callStack (s : State)
+    (accumulatorWord : UInt256) (count b e m baseOff expOff start t : Nat)
+    (rest : List UInt256) :
+    (BigExponent.byteProgressFrom s accumulatorWord count b e m baseOff expOff
+      rest start t).callStack = s.callStack := by
+  induction t with
+  | zero => rfl
+  | succ t ih => simp [BigExponent.byteProgressFrom, ih]
+
+@[simp] theorem coldPhaseHit_callStack (s : State) (accumulatorWord : UInt256)
+    (count b e m baseOff expOff : Nat) (rest : List UInt256) :
+    (BigExponent.coldPhaseHit s accumulatorWord count b e m baseOff expOff
+      rest).callStack = s.callStack := by
+  simp [BigExponent.coldPhaseHit]
+
+@[simp] theorem exponentPhaseState_callStack' (s : State)
+    (accumulatorWord : UInt256) (count b e m baseOff expOff : Nat)
+    (rest : List UInt256) :
+    (BigExponent.exponentPhaseState s accumulatorWord count b e m baseOff
+      expOff rest).callStack = s.callStack := by
+  unfold BigExponent.exponentPhaseState
+  split
+  · rfl
+  · simp [BigExponent.coldPhaseTail, BigExponent.byteFinalFrom,
+      BigExponent.coldPhaseBits, BigExponent.bitFinalFrom]
+
 @[simp] theorem exponentProgressState_callStack (s : State)
     (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
     (rest : List UInt256) :
