@@ -1231,8 +1231,8 @@ def addBodyPath :
    opAt 126 (.Dup ⟨3, by decide⟩), opAt 127 .OR,
    opAt 128 (.Swap ⟨7, by decide⟩), opAt 129 .POP, opAt 130 .POP,
    opAt 131 .POP, opAt 132 .POP, opAt 133 .POP, opAt 134 .POP,
-   opAt 135 .POP, pushAt 136 1 1, opAt 137 (.Dup ⟨1, by decide⟩),
-   opAt 138 .ADD, opAt 139 (.Swap ⟨0, by decide⟩), opAt 140 .POP,
+   opAt 135 .POP, pushAt 136 1 1, opAt 137 .ADD,
+   opAt 138 .JUMPDEST, opAt 139 .JUMPDEST, opAt 140 .JUMPDEST,
    pushAt 141 2 110, opAt 142 .JUMP]
 
 def addToSubtractPath :
@@ -1752,8 +1752,10 @@ theorem run_addBody (s : State) (dst src take modulus : UInt256)
       (110 : UInt256).toNat = true := by
     rw [honeTenNat]
     exact jump110
-  have hinc := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := i) (b := 1) hi
+  have hinc : UInt256.ofNat 1 + UInt256.ofNat i =
+      UInt256.ofNat (i + 1) := by
+    simpa [Nat.add_comm] using (Challenge.EvmProof.Word.ofNat_add_ofNat
+      (a := 1) (b := i) (by omega))
   simp (config := { maxSteps := 800000 })
     [addBodyPath, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -1844,8 +1846,8 @@ def subtractBodyPath :
    opAt 184 .OR, opAt 185 (.Swap ⟨8, by decide⟩), opAt 186 .POP,
    opAt 187 .POP, opAt 188 .POP, opAt 189 .POP, opAt 190 .POP,
    opAt 191 .POP, opAt 192 .POP, opAt 193 .POP,
-   pushAt 194 1 1, opAt 195 (.Dup ⟨1, by decide⟩), opAt 196 .ADD,
-   opAt 197 (.Swap ⟨0, by decide⟩), opAt 198 .POP,
+   pushAt 194 1 1, opAt 195 .ADD, opAt 196 .JUMPDEST,
+   opAt 197 .JUMPDEST, opAt 198 .JUMPDEST,
    pushAt 199 2 174, opAt 200 .JUMP]
 
 def subtractToSelectPath :
@@ -2236,8 +2238,10 @@ theorem run_subtractBody (s : State) (dst src take modulus : UInt256)
       (174 : UInt256).toNat = true := by
     rw [hloopNat]
     exact jump174
-  have hinc := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := i) (b := 1) hi
+  have hinc : UInt256.ofNat 1 + UInt256.ofNat i =
+      UInt256.ofNat (i + 1) := by
+    simpa [Nat.add_comm] using (Challenge.EvmProof.Word.ofNat_add_ofNat
+      (a := 1) (b := i) (by omega))
   simp (config := { maxSteps := 1000000 })
     [subtractBodyPath, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -2322,9 +2326,8 @@ def selectBodyPath :
    opAt 234 .AND, opAt 235 .OR, opAt 236 (.Dup ⟨3, by decide⟩),
    opAt 237 (.Dup ⟨10, by decide⟩), opAt 238 .ADD, opAt 239 .MSTORE,
    opAt 240 .POP, opAt 241 .POP, opAt 242 .POP, pushAt 243 1 1,
-   opAt 244 (.Dup ⟨1, by decide⟩), opAt 245 .ADD,
-   opAt 246 (.Swap ⟨0, by decide⟩), opAt 247 .POP,
-   pushAt 248 2 245, opAt 249 .JUMP]
+   opAt 244 .ADD, opAt 245 .JUMPDEST, opAt 246 .JUMPDEST,
+   opAt 247 .JUMPDEST, pushAt 248 2 245, opAt 249 .JUMP]
 
 def selectExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -2791,8 +2794,10 @@ theorem run_selectBody (s : State) (dst src take modulus : UInt256)
       (245 : UInt256).toNat = true := by
     rw [hloopNat]
     exact jump245
-  have hinc := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := i) (b := 1) hi
+  have hinc : UInt256.ofNat 1 + UInt256.ofNat i =
+      UInt256.ofNat (i + 1) := by
+    simpa [Nat.add_comm] using (Challenge.EvmProof.Word.ofNat_add_ofNat
+      (a := 1) (b := i) (by omega))
   simp (config := { maxSteps := 800000 })
     [selectBodyPath, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -3152,7 +3157,7 @@ theorem gasSteps_addIteration_cost_potential (s : State)
     (gasSteps_addIteration s dst src take modulus count i returnDest rest hcap
         hcount hi hcode hfork hrun hnp).cost + MachineState.memCost
           (addLoop s dst src take modulus count i returnDest rest).activeWords.toNat =
-      164 + MachineState.memCost
+      159 + MachineState.memCost
         (addLoop s dst src take modulus count (i + 1) returnDest rest).activeWords.toNat := by
   have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     addGuardPath 26
@@ -3161,7 +3166,7 @@ theorem gasSteps_addIteration_cost_potential (s : State)
       (by simpa [addLoop, State.fork] using hfork)
       (by decide) (by rfl)
   have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    addBodyPath 138
+    addBodyPath 133
       (run_addBody s dst src take modulus count i returnDest rest (by omega)
         (by omega) hcode hrun)
       (by simpa [addBodyEntry, addLoop, State.fork] using hfork)
@@ -3183,7 +3188,7 @@ theorem gasSteps_addIteration_cost_potential (s : State)
           (by omega) hcode hrun)
         (by simpa [addBodyEntry, addLoop] using hrun)
         (by simpa [addBodyEntry, addLoop, State.fork] using hnp)))
-    26 138 hguard hbody
+    26 133 hguard hbody
   simpa [gasSteps_addIteration] using htrans
 
 theorem gasSteps_addLoop_cost_potential (s : State)
@@ -3197,7 +3202,7 @@ theorem gasSteps_addLoop_cost_potential (s : State)
     (gasSteps_addLoop s dst src take modulus count returnDest rest hcap hcount
         hcode hfork hrun hnp).cost + MachineState.memCost
           (addLoop s dst src take modulus count 0 returnDest rest).activeWords.toNat =
-      count * 164 + MachineState.memCost
+      count * 159 + MachineState.memCost
         (addLoop s dst src take modulus count count returnDest rest).activeWords.toNat := by
   unfold gasSteps_addLoop
   apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
@@ -3262,7 +3267,7 @@ theorem gasSteps_subtractIteration_cost_potential (s : State)
     (gasSteps_subtractIteration s dst src take modulus count i returnDest rest
         hcap hcount hi hcode hfork hrun hnp).cost + MachineState.memCost
           (subtractLoop s dst src take modulus count i returnDest rest).activeWords.toNat =
-      163 + MachineState.memCost
+      158 + MachineState.memCost
         (subtractLoop s dst src take modulus count (i + 1) returnDest rest).activeWords.toNat := by
   have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     subtractGuardPath 26
@@ -3271,7 +3276,7 @@ theorem gasSteps_subtractIteration_cost_potential (s : State)
       (by simpa [subtractLoop, State.fork] using hfork)
       (by decide) (by rfl)
   have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    subtractBodyPath 137
+    subtractBodyPath 132
       (run_subtractBody s dst src take modulus count i returnDest rest hcap
         (by omega) hcode hrun)
       (by simpa [subtractBodyEntry, subtractLoop, State.fork] using hfork)
@@ -3294,7 +3299,7 @@ theorem gasSteps_subtractIteration_cost_potential (s : State)
           (by omega) hcode hrun)
         (by simpa [subtractBodyEntry, subtractLoop] using hrun)
         (by simpa [subtractBodyEntry, subtractLoop, State.fork] using hnp)))
-    26 137 hguard hbody
+    26 132 hguard hbody
   simpa [gasSteps_subtractIteration] using htrans
 
 theorem gasSteps_subtractLoop_cost_potential (s : State)
@@ -3308,7 +3313,7 @@ theorem gasSteps_subtractLoop_cost_potential (s : State)
     (gasSteps_subtractLoop s dst src take modulus count returnDest rest hcap
         hcount hcode hfork hrun hnp).cost + MachineState.memCost
           (subtractLoop s dst src take modulus count 0 returnDest rest).activeWords.toNat =
-      count * 163 + MachineState.memCost
+      count * 158 + MachineState.memCost
         (subtractLoop s dst src take modulus count count returnDest rest).activeWords.toNat := by
   unfold gasSteps_subtractLoop
   apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
@@ -3371,7 +3376,7 @@ theorem gasSteps_selectIteration_cost_potential (s : State)
     (gasSteps_selectIteration s dst src take modulus count i returnDest rest
         hcap hcount hi hcode hfork hrun hnp).cost + MachineState.memCost
           (selectLoop s dst src take modulus count i returnDest rest).activeWords.toNat =
-      126 + MachineState.memCost
+      121 + MachineState.memCost
         (selectLoop s dst src take modulus count (i + 1) returnDest rest).activeWords.toNat := by
   have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     selectGuardPath 26
@@ -3380,7 +3385,7 @@ theorem gasSteps_selectIteration_cost_potential (s : State)
       (by simpa [selectLoop, State.fork] using hfork)
       (by decide) (by rfl)
   have hbody := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    selectBodyPath 100
+    selectBodyPath 95
       (run_selectBody s dst src take modulus count i returnDest rest hcap
         (by omega) hcode hrun)
       (by simpa [selectBodyEntry, selectLoop, State.fork] using hfork)
@@ -3403,7 +3408,7 @@ theorem gasSteps_selectIteration_cost_potential (s : State)
           (by omega) hcode hrun)
         (by simpa [selectBodyEntry, selectLoop] using hrun)
         (by simpa [selectBodyEntry, selectLoop, State.fork] using hnp)))
-    26 100 hguard hbody
+    26 95 hguard hbody
   simpa [gasSteps_selectIteration] using htrans
 
 theorem gasSteps_selectLoop_cost_potential (s : State)
@@ -3417,7 +3422,7 @@ theorem gasSteps_selectLoop_cost_potential (s : State)
     (gasSteps_selectLoop s dst src take modulus count returnDest rest hcap hcount
         hcode hfork hrun hnp).cost + MachineState.memCost
           (selectLoop s dst src take modulus count 0 returnDest rest).activeWords.toNat =
-      count * 126 + MachineState.memCost
+      count * 121 + MachineState.memCost
         (selectLoop s dst src take modulus count count returnDest rest).activeWords.toNat := by
   unfold gasSteps_selectLoop
   apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
@@ -3482,7 +3487,7 @@ theorem gasSteps_addMaskedMod_cost_potential (s : State)
     (gasSteps_addMaskedMod s dst src take modulus count returnDest rest hcap
         hcount hcode hfork hrun hnp hvalid).cost +
         MachineState.memCost s.activeWords.toNat =
-      (149 + count * 453) + MachineState.memCost
+      (149 + count * 438) + MachineState.memCost
         (addReturned s dst src take modulus count returnDest rest).activeWords.toNat := by
   have hsetup := gasSteps_addSetup_cost_potential s dst src take modulus count
     returnDest rest hcap hcode hfork hrun hnp

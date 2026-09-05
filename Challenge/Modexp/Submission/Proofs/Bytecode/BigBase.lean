@@ -737,7 +737,7 @@ theorem gasSteps_innerIteration_cost_potential (s : State)
       hcap hcount hj hcode hfork hrun hnp).cost +
         MachineState.memCost
           (innerLoop s accumulator count baseSize i offset byte rest j).activeWords.toNat =
-      (425 + count * 906) + MachineState.memCost
+      (425 + count * 876) + MachineState.memCost
         (innerLoop s accumulator count baseSize i offset byte rest
           (j + 1)).activeWords.toNat := by
   have hframe : (innerFrame accumulator count baseSize i j offset byte rest).length <
@@ -815,7 +815,7 @@ theorem gasSteps_innerIteration_cost_potential (s : State)
         (by simpa [innerBody, innerLoop, State.fork] using hnp) jump875).cost +
           MachineState.memCost
             (innerBody s accumulator count baseSize i offset byte rest j).activeWords.toNat =
-      (149 + count * 453) + MachineState.memCost
+      (149 + count * 438) + MachineState.memCost
         (doubledReturned s accumulator count baseSize i j offset byte rest).activeWords.toNat := by
     simpa [doubledReturned] using hdouble
   have htoBit' :
@@ -841,7 +841,7 @@ theorem gasSteps_innerIteration_cost_potential (s : State)
           innerLoop, State.fork] using hnp) jump900).cost +
           MachineState.memCost
             (doubledReturned s accumulator count baseSize i j offset byte rest).activeWords.toNat =
-      (149 + count * 453) + MachineState.memCost
+      (149 + count * 438) + MachineState.memCost
         (bitReturned s accumulator count baseSize i j offset byte rest).activeWords.toNat := by
     simpa [bitReturned] using hbit
   unfold gasSteps_innerIteration
@@ -874,7 +874,7 @@ theorem gasSteps_innerLoop_cost_potential (s : State)
     (gasSteps_innerLoop s accumulator count baseSize i offset byte rest hcap
       hcount hcode hfork hrun hnp).cost + MachineState.memCost
         (innerLoop s accumulator count baseSize i offset byte rest 0).activeWords.toNat =
-      8 * (425 + count * 906) + MachineState.memCost
+      8 * (425 + count * 876) + MachineState.memCost
         (innerLoop s accumulator count baseSize i offset byte rest 8).activeWords.toNat := by
   unfold gasSteps_innerLoop
   apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
@@ -957,7 +957,7 @@ theorem gasSteps_baseByte_cost_potential (s : State)
         (outerLoop s accumulator count baseSize
           ([UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff] ++ rest)
           i).activeWords.toNat =
-      (3506 + count * 7248) + MachineState.memCost
+      (3506 + count * 7008) + MachineState.memCost
         (outerLoop (bitProgress count (loadedBaseByte s baseOff i) 8 s)
           accumulator count baseSize
           ([UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff] ++ rest)
