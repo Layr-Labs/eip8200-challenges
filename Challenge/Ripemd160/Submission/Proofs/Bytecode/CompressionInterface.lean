@@ -37,7 +37,7 @@ structure CompressionSeam (input : ByteArray) where
   callStack : ∀ i, i ≤ DriverTrace.blockCount input →
     (states i).callStack = []
   compress : ∀ i, i < DriverTrace.blockCount input →
-    GasSteps (DriverTrace.compressEntry (states i) input i)
+    GasSteps (DriverTrace.dispatchEntry (states i) input i)
       (DriverTrace.compressReturned (states (i + 1)) input i)
   finalWords : ∀ i : Fin 5,
     OutputTrace.hWord (states (DriverTrace.blockCount input)) i =
