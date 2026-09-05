@@ -592,10 +592,7 @@ private theorem applyInitStore_size_le (s : State) (w : Artifact.InitStore)
   have hoff : w.offset.toNat + 32 ≤ messageOffset := by
     simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil,
       or_false] at hw
-    rcases hw with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-      rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-      rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
-      decide
+    rcases hw with rfl | rfl | rfl | rfl | rfl | rfl <;> decide
   simp only [Main.applyInitStore]
   rw [MachineState.writeBytes_size, if_neg]
   · rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
@@ -621,10 +618,11 @@ private theorem padBase_size (input : ByteArray) :
         · intro x hx
           exact hmem x (List.mem_cons_of_mem w hx)
         · exact applyInitStore_size_le s w hs (hmem w (by simp))
-  apply hfold Artifact.initStores (Execution.mainStart input)
+  apply hfold Artifact.initStores (Main.skippedState input)
   · intro w hw
     exact hw
-  · simp [Execution.mainStart, Execution.atPC, initialState, messageOffset]
+  · simp [Main.skippedState, Execution.mainStart, Execution.atPC,
+      initialState, messageOffset]
 
 /-- The certified padding trace establishes the schedule's mathematical
 message-block precondition for every complete padded block. -/
