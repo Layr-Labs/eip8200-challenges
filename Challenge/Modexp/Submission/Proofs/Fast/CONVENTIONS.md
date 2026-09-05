@@ -67,8 +67,8 @@ Follow `Challenge/Modexp/Submission/Proofs/Bytecode/BigHelpers.lean` exactly:
    exactly as `BigHelpers.gasSteps_addLoop` does.
 
 Do NOT write any `_cost_potential` / closed-form gas theorem.  Only the existence of a
-`GasSteps` trace is needed.  Never use `sorry`, `native_decide`, or any axiom beyond
-`propext`, `Quot.sound`, `Classical.choice`.
+`GasSteps` trace is needed.  Never use unproved placeholders, runtime-only proof
+shortcuts, or any axiom beyond `propext`, `Quot.sound`, `Classical.choice`.
 
 ## Memory map (absolute byte addresses, independent of the code offset)
 

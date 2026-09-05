@@ -104,7 +104,7 @@ def branchJumpPath := [branchPushLocated, branchJumpLocated]
 def fallbackPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.pushAt 2121 2 1314,
+   Main.pushAt 2121 2 4838,
    Main.opAt 2122 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))
   ]
 
