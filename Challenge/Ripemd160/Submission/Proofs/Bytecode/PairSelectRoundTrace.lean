@@ -7,7 +7,7 @@ set_option maxRecDepth 30000
 set_option maxHeartbeats 4000000
 
 /-!
-# H25 paired selecting-round evaluator traces
+# H27 paired selecting-round evaluator traces
 
 These theorems evaluate the pure paired helper body for forms `f1` and `f3`.
 The proof is generic in the surrounding state, memory, and stack words.  The
@@ -185,10 +185,7 @@ theorem runInstrSeq_f1 (s : State) (startPC p0 p1 returnPC : UInt256)
         ((mask.land q0e).lor
           ((mask.land q0e).shiftLeft (UInt256.ofNat 32)))
         (UInt256.ofNat (32 - r0))))
-  let c1e : UInt256 := UInt256.land mask
-    ((working.c.lor (working.c.shiftLeft (UInt256.ofNat 32))).shiftRight
-      (UInt256.ofNat 22))
-  let c1t : UInt256 := StackRound.stackC10 working.c
+  let c1t : UInt256 := ScratchLow.rawC10 working.c
   let t0 : UInt256 := UInt256.land
     (working.e.add
       (((q0t.land mask).shiftLeft (UInt256.ofNat r0)).lor
@@ -201,8 +198,6 @@ theorem runInstrSeq_f1 (s : State) (startPC p0 p1 returnPC : UInt256)
     rw [pair_hcomm working.e]
     exact raw_rotate_or_fold q0t working.e r0
       (mask_land_toNat_lt _) hrot0
-  have hC0 : c1e = c1t := by
-    simpa [c1e, c1t] using c10_or_fold working.c
   let q1c : UInt256 := constant.add
     ((working.e.add
       (c1t.xor ((working.b.xor c1t).land t0))).add word1)
@@ -261,12 +256,9 @@ theorem runInstrSeq_f1 (s : State) (startPC p0 p1 returnPC : UInt256)
   simp only [b1e, t0, q0e, q0t, word0, f0e, f0t] at hT0_eval
   have hT0_eval' := hT0_eval
   simp only [mask] at hT0_eval'
-  have hC0_eval := hC0
-  simp only [c1e, c1t] at hC0_eval
-  have hC0_eval' := hC0_eval
-  simp only [mask] at hC0_eval'
   have hq1c' := hq1c
-  simp only [word1, t0, c1t, q0t, word0, f0t, mask] at hq1c'
+  simp only [word1, t0, c1t, q0t, word0, f0t, mask,
+    ScratchLow.rawC10] at hq1c'
   simp (config := { maxSteps := 3000000 })
     [pairBeforeJumpTemplate, pairFirstBooleanOps, pairSecondBooleanOps,
       pairDup7, pairDup8, pairDup9, pairDup10, pairSwap5, pairSwap6,
@@ -275,8 +267,9 @@ theorem runInstrSeq_f1 (s : State) (startPC p0 p1 returnPC : UInt256)
       dup4, dup5, dup6, swap1, swap2, swap3, swap4, mask, c10, c22,
       runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
       pairHelperEntry, pairAfterHelperBeforeJump, pairWorking, roundWords,
-      pcAfter, StackRound.stackRound, StackRound.stackF,
-      StackRound.stackSum, StackRound.stackRawRot, StackRound.stackC10,
+      pcAfter, ScratchLow.rawRound, StackRound.stackF,
+      StackRound.stackSum, StackRound.stackRawRot,
+      HMul.hMul, Mul.mul, ScratchLow.rawC10,
       Word.mask32, List.exchange, hrun, hcap, pair_hswap1, pair_hswap2,
       pair_hswap3, pair_hswap4, pair_hswap5, pair_hswap6, pair_hswap7,
       UInt256.succ, Instr.size, Instr.size_push, Instr.size_op,
@@ -288,27 +281,19 @@ theorem runInstrSeq_f1 (s : State) (startPC p0 p1 returnPC : UInt256)
   constructor
   · simpa [State.activeWordsAfterUInt256] using pair_activeWords s p0 p1
   · constructor
-    · rw [hT0_eval', hC0_eval']
+    · rw [hT0_eval']
       rw [pair_hcomm working.d]
       rw [hq1c']
       simpa [mask, q1c, t0, c1t, q0e, q0t, word0, word1, f0e, f0t,
-        StackRound.stackC10, Word.mask32, Word.land_comm, UInt256.xor,
+        ScratchLow.rawC10, Word.mask32, Word.land_comm, UInt256.xor,
         HXor.hXor,
         HAnd.hAnd, AndOp.and, EvmSemantics.UInt256.instAndOp,
         HOr.hOr, OrOp.or, EvmSemantics.UInt256.instOrOp,
         BooleanSelect.xor_comm] using hsecondRotC'
-    · constructor
-      · simpa [q0e, q0t, word0, f0e, f0t, mask, UInt256.xor,
-          HXor.hXor, HAnd.hAnd, AndOp.and,
-          EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
-          EvmSemantics.UInt256.instOrOp] using hT0_eval'
-      · constructor
-        · simpa [mask, StackRound.stackC10, Word.mask32, HAnd.hAnd,
-            AndOp.and, EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
-            EvmSemantics.UInt256.instOrOp] using c10_or_fold working.b
-        · simpa [mask, StackRound.stackC10, Word.mask32, HAnd.hAnd,
-            AndOp.and, EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
-            EvmSemantics.UInt256.instOrOp] using c10_or_fold working.c
+    · simpa [q0e, q0t, word0, f0e, f0t, mask, UInt256.xor,
+        HXor.hXor, HAnd.hAnd, AndOp.and,
+        EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
+        EvmSemantics.UInt256.instOrOp] using hT0_eval'
 
 set_option linter.unusedSimpArgs false in
 theorem runInstrSeq_f3 (s : State) (startPC p0 p1 returnPC : UInt256)
@@ -339,10 +324,7 @@ theorem runInstrSeq_f3 (s : State) (startPC p0 p1 returnPC : UInt256)
         ((mask.land q0e).lor
           ((mask.land q0e).shiftLeft (UInt256.ofNat 32)))
         (UInt256.ofNat (32 - r0))))
-  let c1e : UInt256 := UInt256.land mask
-    ((working.c.lor (working.c.shiftLeft (UInt256.ofNat 32))).shiftRight
-      (UInt256.ofNat 22))
-  let c1t : UInt256 := StackRound.stackC10 working.c
+  let c1t : UInt256 := ScratchLow.rawC10 working.c
   let t0 : UInt256 := UInt256.land
     (working.e.add
       (((q0t.land mask).shiftLeft (UInt256.ofNat r0)).lor
@@ -355,8 +337,6 @@ theorem runInstrSeq_f3 (s : State) (startPC p0 p1 returnPC : UInt256)
     rw [pair_hcomm working.e]
     exact raw_rotate_or_fold q0t working.e r0
       (mask_land_toNat_lt _) hrot0
-  have hC0 : c1e = c1t := by
-    simpa [c1e, c1t] using c10_or_fold working.c
   let q1c : UInt256 := constant.add
     ((working.e.add
       (working.b.xor (c1t.land (working.b.xor t0)))).add word1)
@@ -415,12 +395,9 @@ theorem runInstrSeq_f3 (s : State) (startPC p0 p1 returnPC : UInt256)
   simp only [b1e, t0, q0e, q0t, word0, f0e, f0t] at hT0_eval
   have hT0_eval' := hT0_eval
   simp only [mask] at hT0_eval'
-  have hC0_eval := hC0
-  simp only [c1e, c1t] at hC0_eval
-  have hC0_eval' := hC0_eval
-  simp only [mask] at hC0_eval'
   have hq1c' := hq1c
-  simp only [word1, t0, c1t, q0t, word0, f0t, mask] at hq1c'
+  simp only [word1, t0, c1t, q0t, word0, f0t, mask,
+    ScratchLow.rawC10] at hq1c'
   simp (config := { maxSteps := 3000000 })
     [pairBeforeJumpTemplate, pairFirstBooleanOps, pairSecondBooleanOps,
       pairDup7, pairDup8, pairDup9, pairDup10, pairSwap5, pairSwap6,
@@ -429,8 +406,9 @@ theorem runInstrSeq_f3 (s : State) (startPC p0 p1 returnPC : UInt256)
       dup4, dup5, dup6, swap1, swap2, swap3, swap4, mask, c10, c22,
       runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
       pairHelperEntry, pairAfterHelperBeforeJump, pairWorking, roundWords,
-      pcAfter, StackRound.stackRound, StackRound.stackF,
-      StackRound.stackSum, StackRound.stackRawRot, StackRound.stackC10,
+      pcAfter, ScratchLow.rawRound, StackRound.stackF,
+      StackRound.stackSum, StackRound.stackRawRot,
+      HMul.hMul, Mul.mul, ScratchLow.rawC10,
       Word.mask32, List.exchange, hrun, hcap, pair_hswap1, pair_hswap2,
       pair_hswap3, pair_hswap4, pair_hswap5, pair_hswap6, pair_hswap7,
       UInt256.succ, Instr.size, Instr.size_push, Instr.size_op,
@@ -442,26 +420,18 @@ theorem runInstrSeq_f3 (s : State) (startPC p0 p1 returnPC : UInt256)
   constructor
   · simpa [State.activeWordsAfterUInt256] using pair_activeWords s p0 p1
   · constructor
-    · rw [hT0_eval', hC0_eval']
+    · rw [hT0_eval']
       rw [pair_hcomm working.d]
       rw [hq1c']
       simpa [mask, q1c, t0, c1t, q0e, q0t, word0, word1, f0e, f0t,
-        StackRound.stackC10, Word.mask32, Word.land_comm, UInt256.xor,
+        ScratchLow.rawC10, Word.mask32, Word.land_comm, UInt256.xor,
         HXor.hXor,
         HAnd.hAnd, AndOp.and, EvmSemantics.UInt256.instAndOp,
         HOr.hOr, OrOp.or, EvmSemantics.UInt256.instOrOp,
         BooleanSelect.xor_comm] using hsecondRotC'
-    · constructor
-      · simpa [q0e, q0t, word0, f0e, f0t, mask, UInt256.xor,
-          HXor.hXor, HAnd.hAnd, AndOp.and,
-          EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
-          EvmSemantics.UInt256.instOrOp] using hT0_eval'
-      · constructor
-        · simpa [mask, StackRound.stackC10, Word.mask32, HAnd.hAnd,
-            AndOp.and, EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
-            EvmSemantics.UInt256.instOrOp] using c10_or_fold working.b
-        · simpa [mask, StackRound.stackC10, Word.mask32, HAnd.hAnd,
-            AndOp.and, EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
-            EvmSemantics.UInt256.instOrOp] using c10_or_fold working.c
+    · simpa [q0e, q0t, word0, f0e, f0t, mask, UInt256.xor,
+        HXor.hXor, HAnd.hAnd, AndOp.and,
+        EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
+        EvmSemantics.UInt256.instOrOp] using hT0_eval'
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PairSelectRoundTrace

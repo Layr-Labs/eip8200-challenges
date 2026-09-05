@@ -7,9 +7,9 @@ set_option maxRecDepth 30000
 set_option maxHeartbeats 4000000
 
 /-!
-# H25 paired-round raw traces for the negated Boolean forms
+# H27 paired-round raw traces for the negated Boolean forms
 
-The f2 and f4 helpers execute two unchanged stack rounds.  This file stops
+The f2 and f4 helpers execute two full-width scratch rounds. This file stops
 immediately before the helper's final `JUMP`.
 -/
 
@@ -286,9 +286,6 @@ theorem runInstrSeq_f2 (s : State) (startPC p0 p1 returnPC : UInt256)
   simp only [word0, f0] at hT0_eval
   have hT0_eval' := hT0_eval
   simp only [mask] at hT0_eval'
-  have hfirstC10 := c10_or_fold working.c
-  have hfirstC10' := hfirstC10
-  simp only [mask] at hfirstC10'
   let t0 : UInt256 :=
     UInt256.land
       (UInt256.add working.e
@@ -296,13 +293,13 @@ theorem runInstrSeq_f2 (s : State) (startPC p0 p1 returnPC : UInt256)
           ((q0.land mask).shiftRight (UInt256.ofNat (32 - r0)))))
       mask
   let f1 : UInt256 :=
-    (stackC10 working.c).xor (working.b.lnot.lor t0)
+    (ScratchLow.rawC10 working.c).xor (working.b.lnot.lor t0)
   let q1c : UInt256 :=
     constant.add ((working.e.add (f1.land mask)).add word1)
   have hq1c :
       mask.land (constant.add
         (working.e.add (word1.add
-          ((stackC10 working.c).xor (working.b.lnot.lor t0))))) =
+          ((ScratchLow.rawC10 working.c).xor (working.b.lnot.lor t0))))) =
       mask.land q1c := by
     have hperm : working.e.add (word1.add f1) =
         word1.add (working.e.add f1) := by
@@ -313,7 +310,7 @@ theorem runInstrSeq_f2 (s : State) (startPC p0 p1 returnPC : UInt256)
     calc
       mask.land (constant.add
           (working.e.add (word1.add
-            ((stackC10 working.c).xor (working.b.lnot.lor t0))))) =
+            ((ScratchLow.rawC10 working.c).xor (working.b.lnot.lor t0))))) =
           mask.land (constant.add (word1.add (working.e.add f1))) := by
             exact congrArg (fun z : UInt256 => mask.land (constant.add z))
               (by simpa [f1] using hperm)
@@ -322,26 +319,37 @@ theorem runInstrSeq_f2 (s : State) (startPC p0 p1 returnPC : UInt256)
             sum_code_equiv working.e word1 f1 constant
       _ = mask.land q1c := by rfl
   have hq1c' := hq1c
-  simp only [word1, t0, mask] at hq1c'
+  simp only [word1, t0, mask, ScratchLow.rawC10] at hq1c'
   have hbool1 :
-      (t0.lor working.b.lnot).xor (stackC10 working.c) = f1 := by
+      (t0.lor working.b.lnot).xor (ScratchLow.rawC10 working.c) = f1 := by
     calc
-      (t0.lor working.b.lnot).xor (stackC10 working.c) =
-          (working.b.lnot.lor t0).xor (stackC10 working.c) := by
-            exact congrArg (fun z : UInt256 => z.xor (stackC10 working.c))
+      (t0.lor working.b.lnot).xor (ScratchLow.rawC10 working.c) =
+          (working.b.lnot.lor t0).xor (ScratchLow.rawC10 working.c) := by
+            exact congrArg (fun z : UInt256 => z.xor (ScratchLow.rawC10 working.c))
               (Word.lor_comm t0 working.b.lnot)
-      _ = (stackC10 working.c).xor (working.b.lnot.lor t0) :=
+      _ = (ScratchLow.rawC10 working.c).xor (working.b.lnot.lor t0) :=
         BooleanSelect.xor_comm _ _
       _ = f1 := by rfl
+  have hbool1' :
+      (ScratchLow.rawC10 working.c).xor (working.b.lnot.lor t0) = f1 := by
+    calc
+      (ScratchLow.rawC10 working.c).xor (working.b.lnot.lor t0) =
+          (working.b.lnot.lor t0).xor (ScratchLow.rawC10 working.c) :=
+        hxorcomm _ _
+      _ = (t0.lor working.b.lnot).xor (ScratchLow.rawC10 working.c) := by
+            exact congrArg (fun z : UInt256 =>
+              z.xor (ScratchLow.rawC10 working.c))
+              (Word.lor_comm working.b.lnot t0)
+      _ = f1 := hbool1
   have hsecondQ :
       mask.land (constant.add
           (word1.add (working.e.add
-          (((t0.lor working.b.lnot).xor (stackC10 working.c)).land mask)))) =
+          (((t0.lor working.b.lnot).xor (ScratchLow.rawC10 working.c)).land mask)))) =
       mask.land q1c := by
     calc
       mask.land (constant.add
             (word1.add (working.e.add
-            (((t0.lor working.b.lnot).xor (stackC10 working.c)).land mask)))) =
+            (((t0.lor working.b.lnot).xor (ScratchLow.rawC10 working.c)).land mask)))) =
           mask.land (constant.add
             (word1.add (working.e.add (f1.land mask)))) := by
               rw [hbool1]
@@ -353,7 +361,47 @@ theorem runInstrSeq_f2 (s : State) (startPC p0 p1 returnPC : UInt256)
   let q1sem : UInt256 :=
     constant.add
       (word1.add (working.e.add
-        (((t0.lor working.b.lnot).xor (stackC10 working.c)).land mask)))
+        (((t0.lor working.b.lnot).xor (ScratchLow.rawC10 working.c)).land mask)))
+  have hq1pure :
+      mask.land (constant.add
+        ((working.e.add
+          (((ScratchLow.rawC10 working.c).xor
+            (working.b.lnot.lor t0)).land mask)).add word1)) =
+      mask.land q1sem := by
+    calc
+      mask.land (constant.add
+          ((working.e.add
+            (((ScratchLow.rawC10 working.c).xor
+              (working.b.lnot.lor t0)).land mask)).add word1)) =
+          mask.land (constant.add
+            (word1.add (working.e.add
+              ((ScratchLow.rawC10 working.c).xor
+                (working.b.lnot.lor t0))))) := by
+            exact (sum_code_equiv working.e word1
+              ((ScratchLow.rawC10 working.c).xor
+                (working.b.lnot.lor t0)) constant).symm
+      _ = mask.land q1sem := by
+        dsimp [q1sem]
+        rw [hbool1', hbool1]
+        exact sum_absorption word1 working.e f1 constant
+  have hq1pure' :
+      (constant.add
+        ((working.e.add
+          (((ScratchLow.rawC10 working.c).xor
+            (working.b.lnot.lor t0)).land mask)).add word1)).land mask =
+      q1sem.land mask := by
+    calc
+      (constant.add
+          ((working.e.add
+            (((ScratchLow.rawC10 working.c).xor
+              (working.b.lnot.lor t0)).land mask)).add word1)).land mask =
+          mask.land (constant.add
+            ((working.e.add
+              (((ScratchLow.rawC10 working.c).xor
+                (working.b.lnot.lor t0)).land mask)).add word1)) :=
+        Word.land_comm _ _
+      _ = mask.land q1sem := hq1pure
+      _ = q1sem.land mask := (Word.land_comm _ _).symm
   have hq1sem : q1sem.land mask = q1c.land mask := by
     calc
       q1sem.land mask = mask.land q1sem := Word.land_comm _ _
@@ -465,9 +513,11 @@ theorem runInstrSeq_f2 (s : State) (startPC p0 p1 returnPC : UInt256)
       dup2, dup3, dup4,
       dup5, dup6, swap1, swap2, swap3, swap4, mask, c10, c22,
       runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
+      HMul.hMul, Mul.mul,
       pairHelperEntry, pairAfterHelperBeforeJump, pairWorking, roundWords,
       pcAfter, StackRound.stackRound, StackRound.stackF,
       StackRound.stackSum, StackRound.stackRawRot,
+      ScratchLow.rawRound,
       Word.mask32, List.exchange, hrun, hcap, hswap1, hswap2, hswap3,
       hswap4, hswap5, hswap6, hswap7, UInt256.succ, Instr.size,
       Instr.size_push, Instr.size_op, Nat.add_assoc,
@@ -477,42 +527,27 @@ theorem runInstrSeq_f2 (s : State) (startPC p0 p1 returnPC : UInt256)
       BooleanSelect.xor_comm, State.activeWordsAfterUInt256,
       State.activeWordsAfterUInt256_2, hadd, hcomm, hxorcomm,
       hbase0, hsum0, hbase1, hsum1, hcode0, hactive0,
-      hactive0mod, hactivePair, hactivePairUInt]
+      hactive0mod, hactivePair, hactivePairUInt, hq1pure']
   constructor
   · simpa only [UInt256.size] using hactivePairUInt
   · constructor
-    · rw [hT0_eval', hfirstC10']
+    · rw [hT0_eval']
       simp only [hnot]
       rw [hq1c']
-      change
-        (UInt256.ofNat 4294967295).land
-            (working.d.add
-              ((((UInt256.ofNat 4294967295).land q1c).lor
-                    (((UInt256.ofNat 4294967295).land q1c).shiftLeft
-                      (UInt256.ofNat 32))).shiftRight
-                (UInt256.ofNat (32 - r1)))) =
-          UInt256.land
-            (UInt256.add working.d
-              (((q1sem.land (UInt256.ofNat 4294967295)).shiftLeft
-                  (UInt256.ofNat r1)).lor
-                ((q1sem.land (UInt256.ofNat 4294967295)).shiftRight
-                  (UInt256.ofNat (32 - r1)))))
-            (UInt256.ofNat 4294967295)
-      rw [hT1_sem']
-      rw [hcomm working.d]
-      simpa only [mask] using hsecondRotC'
+      simpa [ScratchLow.rawC10, mask, word0, f0, q0, word1, q1sem, t0,
+        HMul.hMul, Mul.mul, UInt256.xor, HXor.hXor, HAnd.hAnd,
+        AndOp.and, EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
+        EvmSemantics.UInt256.instOrOp, hbool1, hbool1', hq1pure, hq1pure',
+        Word.lor_comm,
+        BooleanSelect.xor_comm, hcomm] using hsecondRotC'.trans hT1_sem.symm
     · constructor
       · rw [hnot]
         simpa [mask, word0, f0, q0, UInt256.xor, HXor.hXor,
           HAnd.hAnd, AndOp.and, EvmSemantics.UInt256.instAndOp,
           HOr.hOr, OrOp.or, EvmSemantics.UInt256.instOrOp] using hT0_eval'
       · constructor
-        · simpa [mask, StackRound.stackC10, Word.mask32, HAnd.hAnd,
-            AndOp.and, EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
-            EvmSemantics.UInt256.instOrOp] using c10_or_fold working.b
-        · simpa [mask, StackRound.stackC10, Word.mask32, HAnd.hAnd,
-            AndOp.and, EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
-            EvmSemantics.UInt256.instOrOp] using c10_or_fold working.c
+        · rfl
+        · rfl
 
 set_option linter.unusedSimpArgs false in
 theorem runInstrSeq_f4 (s : State) (startPC p0 p1 returnPC : UInt256)
@@ -587,9 +622,6 @@ theorem runInstrSeq_f4 (s : State) (startPC p0 p1 returnPC : UInt256)
   simp only [word0, f0] at hT0_eval
   have hT0_eval' := hT0_eval
   simp only [mask] at hT0_eval'
-  have hfirstC10 := c10_or_fold working.c
-  have hfirstC10' := hfirstC10
-  simp only [mask] at hfirstC10'
   let t0 : UInt256 :=
     UInt256.land
       (UInt256.add working.e
@@ -597,20 +629,20 @@ theorem runInstrSeq_f4 (s : State) (startPC p0 p1 returnPC : UInt256)
           ((q0.land mask).shiftRight (UInt256.ofNat (32 - r0)))))
       mask
   let f1 : UInt256 :=
-    t0.xor (working.b.lor (stackC10 working.c).lnot)
+    t0.xor (working.b.lor (ScratchLow.rawC10 working.c).lnot)
   let q1c : UInt256 :=
     constant.add ((working.e.add (f1.land mask)).add word1)
   have hbool1 :
-      (working.b.lor (stackC10 working.c).lnot).xor t0 = f1 := by
+      (working.b.lor (ScratchLow.rawC10 working.c).lnot).xor t0 = f1 := by
     calc
-      (working.b.lor (stackC10 working.c).lnot).xor t0 =
-          t0.xor (working.b.lor (stackC10 working.c).lnot) :=
+      (working.b.lor (ScratchLow.rawC10 working.c).lnot).xor t0 =
+          t0.xor (working.b.lor (ScratchLow.rawC10 working.c).lnot) :=
         BooleanSelect.xor_comm _ _
       _ = f1 := by rfl
   have hq1c :
       mask.land (constant.add
         (working.e.add (word1.add
-          ((working.b.lor (stackC10 working.c).lnot).xor t0)))) =
+          ((working.b.lor (ScratchLow.rawC10 working.c).lnot).xor t0)))) =
       mask.land q1c := by
     have hperm : working.e.add (word1.add f1) =
         word1.add (working.e.add f1) := by
@@ -621,7 +653,7 @@ theorem runInstrSeq_f4 (s : State) (startPC p0 p1 returnPC : UInt256)
     calc
       mask.land (constant.add
           (working.e.add (word1.add
-            ((working.b.lor (stackC10 working.c).lnot).xor t0)))) =
+            ((working.b.lor (ScratchLow.rawC10 working.c).lnot).xor t0)))) =
           mask.land (constant.add
             (working.e.add (word1.add f1))) := by
             rw [hbool1]
@@ -633,7 +665,7 @@ theorem runInstrSeq_f4 (s : State) (startPC p0 p1 returnPC : UInt256)
             sum_code_equiv working.e word1 f1 constant
       _ = mask.land q1c := by rfl
   have hq1c' := hq1c
-  simp only [word1, t0, mask] at hq1c'
+  simp only [word1, t0, mask, ScratchLow.rawC10] at hq1c'
   have hsecondQ :
       mask.land (constant.add
           (word1.add (working.e.add (f1.land mask)))) =
@@ -648,6 +680,46 @@ theorem runInstrSeq_f4 (s : State) (startPC p0 p1 returnPC : UInt256)
       _ = mask.land q1c := by rfl
   let q1sem : UInt256 :=
     constant.add (word1.add (working.e.add (f1.land mask)))
+  have hq1pure :
+      mask.land (constant.add
+        ((working.e.add
+          (((working.b.lor (ScratchLow.rawC10 working.c).lnot).xor
+            t0).land mask)).add word1)) =
+      mask.land q1sem := by
+    calc
+      mask.land (constant.add
+          ((working.e.add
+            (((working.b.lor (ScratchLow.rawC10 working.c).lnot).xor
+              t0).land mask)).add word1)) =
+          mask.land (constant.add
+            (word1.add (working.e.add
+              ((working.b.lor (ScratchLow.rawC10 working.c).lnot).xor
+                t0)))) := by
+            exact (sum_code_equiv working.e word1
+              ((working.b.lor (ScratchLow.rawC10 working.c).lnot).xor
+                t0) constant).symm
+      _ = mask.land q1sem := by
+        dsimp [q1sem]
+        rw [hbool1]
+        exact sum_absorption word1 working.e f1 constant
+  have hq1pure' :
+      (constant.add
+        ((working.e.add
+          (((working.b.lor (ScratchLow.rawC10 working.c).lnot).xor
+            t0).land mask)).add word1)).land mask =
+      q1sem.land mask := by
+    calc
+      (constant.add
+          ((working.e.add
+            (((working.b.lor (ScratchLow.rawC10 working.c).lnot).xor
+              t0).land mask)).add word1)).land mask =
+          mask.land (constant.add
+            ((working.e.add
+              (((working.b.lor (ScratchLow.rawC10 working.c).lnot).xor
+                t0).land mask)).add word1)) :=
+        Word.land_comm _ _
+      _ = mask.land q1sem := hq1pure
+      _ = q1sem.land mask := (Word.land_comm _ _).symm
   have hq1sem : q1sem.land mask = q1c.land mask := by
     calc
       q1sem.land mask = mask.land q1sem := Word.land_comm _ _
@@ -759,9 +831,11 @@ theorem runInstrSeq_f4 (s : State) (startPC p0 p1 returnPC : UInt256)
       dup2, dup3, dup4,
       dup5, dup6, swap1, swap2, swap3, swap4, mask, c10, c22,
       runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
+      HMul.hMul, Mul.mul,
       pairHelperEntry, pairAfterHelperBeforeJump, pairWorking, roundWords,
       pcAfter, StackRound.stackRound, StackRound.stackF,
       StackRound.stackSum, StackRound.stackRawRot,
+      ScratchLow.rawRound,
       Word.mask32, List.exchange, hrun, hcap, hswap1, hswap2, hswap3,
       hswap4, hswap5, hswap6, hswap7, UInt256.succ, Instr.size,
       Instr.size_push, Instr.size_op, Nat.add_assoc,
@@ -771,41 +845,22 @@ theorem runInstrSeq_f4 (s : State) (startPC p0 p1 returnPC : UInt256)
       BooleanSelect.xor_comm, State.activeWordsAfterUInt256,
       State.activeWordsAfterUInt256_2, hadd, hcomm, hxorcomm,
       hbase0, hsum0, hbase1, hsum1, hcode0, hactive0,
-      hactive0mod, hactivePair, hactivePairUInt]
+      hactive0mod, hactivePair, hactivePairUInt, hq1pure']
   constructor
   · simpa only [UInt256.size] using hactivePairUInt
   · constructor
-    · rw [hT0_eval', hfirstC10']
+    · rw [hT0_eval']
       simp only [hnot]
       rw [hq1c']
-      change
-        (UInt256.ofNat 4294967295).land
-            (working.d.add
-              ((((UInt256.ofNat 4294967295).land q1c).lor
-                    (((UInt256.ofNat 4294967295).land q1c).shiftLeft
-                      (UInt256.ofNat 32))).shiftRight
-                (UInt256.ofNat (32 - r1)))) =
-          UInt256.land
-            (UInt256.add working.d
-              (((q1sem.land (UInt256.ofNat 4294967295)).shiftLeft
-                  (UInt256.ofNat r1)).lor
-                ((q1sem.land (UInt256.ofNat 4294967295)).shiftRight
-                  (UInt256.ofNat (32 - r1)))))
-            (UInt256.ofNat 4294967295)
-      rw [hT1_sem']
-      rw [hcomm working.d]
-      simpa only [mask] using hsecondRotC'
+      exact (raw_rotate_target q1c q1c working.d r1 rfl
+        (mask_land_toNat_lt _) hrot1).trans hT1_sem.symm
     · constructor
       · rw [hnot]
         simpa [mask, word0, f0, q0, UInt256.xor, HXor.hXor,
           HAnd.hAnd, AndOp.and, EvmSemantics.UInt256.instAndOp,
           HOr.hOr, OrOp.or, EvmSemantics.UInt256.instOrOp] using hT0_eval'
       · constructor
-        · simpa [mask, StackRound.stackC10, Word.mask32, HAnd.hAnd,
-            AndOp.and, EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
-            EvmSemantics.UInt256.instOrOp] using c10_or_fold working.b
-        · simpa [mask, StackRound.stackC10, Word.mask32, HAnd.hAnd,
-            AndOp.and, EvmSemantics.UInt256.instAndOp, HOr.hOr, OrOp.or,
-            EvmSemantics.UInt256.instOrOp] using c10_or_fold working.c
+        · rfl
+        · rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PairNegatedRoundTrace
