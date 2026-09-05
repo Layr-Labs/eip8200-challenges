@@ -55,10 +55,10 @@ def callPath : List Located :=
 def incrementPath : List Located :=
   [⟨783, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨784, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
-   ⟨785, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨785, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨786, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨787, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨788, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨787, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨788, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨789, .push ⟨2, by decide⟩ (UInt256.ofNat 0x62e), by rfl, by decide⟩,
    ⟨790, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -283,11 +283,11 @@ theorem run_increment (s : State) (input : ByteArray) (i : Nat)
       (compressReturned s input i) = some (afterIteration s input i) := by
   have haddBound : i * 64 + 64 < 2 ^ 256 := by
     simpa [blockOffset, Nat.add_mul] using hoff
-  have hadd : blockOffsetWord i + UInt256.ofNat 64 =
+  have hadd : UInt256.ofNat 64 + blockOffsetWord i =
       blockOffsetWord (i + 1) := by
-    simpa [blockOffsetWord, blockOffset, Nat.add_mul] using
+    simpa [blockOffsetWord, blockOffset, Nat.add_mul, Nat.add_comm] using
       Challenge.EvmProof.Word.ofNat_add_ofNat
-        (a := i * 64) (b := 64) haddBound
+        (a := 64) (b := i * 64) (by omega)
   have hdest : Decode.isValidJumpDest submissionBytecode 0x62e = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 770 (by rfl)
   simp [incrementPath, Challenge.EvmProof.Stepper.runLocatedBlock,
