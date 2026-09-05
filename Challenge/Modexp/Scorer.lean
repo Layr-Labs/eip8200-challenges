@@ -181,58 +181,44 @@ def rsa2048e65537 : ByteArray := makeHexInput
    "afc49123ef4d8abba93d3905e4028d7ba91484a27596e07b4b6ed992f077b524" ++
    "d3dcfe7ddd5549be7cce8da035cfa0b3fb8f9e46f732b2a86b460165c08f5313")
 
-/-- Forty-eight deterministic public inputs. Repeated operand widths make
-exact-input dispatch increasingly costly while retaining reproducibility. -/
+/-- Format the one-based corpus index used in scorer output. -/
+private def paddedIndex (index : Nat) : String :=
+  if index < 10 then s!"0{index}" else toString index
+
+/-- The selected RSA public exponent and its minimal byte width. -/
+private def rsa1024Exponent (index : Nat) : Nat × Nat :=
+  if index ≤ 3 then (3, 1)
+  else if index ≤ 6 then (17, 1)
+  else if index ≤ 8 then (257, 2)
+  else (65537, 3)
+
+private def rsa2048Exponent (index : Nat) : Nat × Nat :=
+  if index ≤ 2 then (3, 1)
+  else if index ≤ 4 then (17, 1)
+  else if index = 5 then (257, 2)
+  else (65537, 3)
+
+/-- Generate an RSA-sized bucket from one fixed seed and an exponent schedule. -/
+private def generatedRsaVectors (bits width seed count : Nat)
+    (exponentAt : Nat → Nat × Nat) : List Vector :=
+  (List.range count).map fun offset =>
+    let index := offset + 1
+    let (exponent, exponentWidth) := exponentAt index
+    { label := s!"generated RSA-{bits} #{paddedIndex index} e={exponent}"
+    , input := generatedInput (seed + index) width exponent exponentWidth }
+
+/-- Forty-eight deterministic public inputs. Operand bytes come from the PRNG
+above. Fixed bucket seeds make the corpus reproducible. The BN254 case remains
+fixed because it deliberately exercises the exponent `p - 1`. -/
 def generatedVectors : List Vector :=
-  [ { label := "generated 256-bit #01 BN254 p-1", input := bn254Fermat }
-  , { label := "generated 256-bit #02 full exponent", input := generatedWideExponentInput 0x1002 32 32 }
-  , { label := "generated 256-bit #03 full exponent", input := generatedWideExponentInput 0x1003 32 32 }
-  , { label := "generated 256-bit #04 full exponent", input := generatedWideExponentInput 0x1004 32 32 }
-  , { label := "generated 256-bit #05 full exponent", input := generatedWideExponentInput 0x1005 32 32 }
-  , { label := "generated 256-bit #06 full exponent", input := generatedWideExponentInput 0x1006 32 32 }
-  , { label := "generated 256-bit #07 full exponent", input := generatedWideExponentInput 0x1007 32 32 }
-  , { label := "generated 256-bit #08 full exponent", input := generatedWideExponentInput 0x1008 32 32 }
-  , { label := "generated 256-bit #09 full exponent", input := generatedWideExponentInput 0x1009 32 32 }
-  , { label := "generated 256-bit #10 full exponent", input := generatedWideExponentInput 0x100a 32 32 }
-  , { label := "generated 256-bit #11 full exponent", input := generatedWideExponentInput 0x100b 32 32 }
-  , { label := "generated 256-bit #12 full exponent", input := generatedWideExponentInput 0x100c 32 32 }
-  , { label := "generated 256-bit #13 full exponent", input := generatedWideExponentInput 0x100d 32 32 }
-  , { label := "generated 256-bit #14 full exponent", input := generatedWideExponentInput 0x100e 32 32 }
-  , { label := "generated 256-bit #15 full exponent", input := generatedWideExponentInput 0x100f 32 32 }
-  , { label := "generated 256-bit #16 full exponent", input := generatedWideExponentInput 0x1010 32 32 }
-  , { label := "generated 256-bit #17 full exponent", input := generatedWideExponentInput 0x1011 32 32 }
-  , { label := "generated 256-bit #18 full exponent", input := generatedWideExponentInput 0x1012 32 32 }
-  , { label := "generated 256-bit #19 full exponent", input := generatedWideExponentInput 0x1013 32 32 }
-  , { label := "generated 256-bit #20 full exponent", input := generatedWideExponentInput 0x1014 32 32 }
-  , { label := "generated 256-bit #21 full exponent", input := generatedWideExponentInput 0x1015 32 32 }
-  , { label := "generated 256-bit #22 full exponent", input := generatedWideExponentInput 0x1016 32 32 }
-  , { label := "generated 256-bit #23 full exponent", input := generatedWideExponentInput 0x1017 32 32 }
-  , { label := "generated 256-bit #24 full exponent", input := generatedWideExponentInput 0x1018 32 32 }
-  , { label := "generated 256-bit #25 full exponent", input := generatedWideExponentInput 0x1019 32 32 }
-  , { label := "generated 256-bit #26 full exponent", input := generatedWideExponentInput 0x101a 32 32 }
-  , { label := "generated 256-bit #27 full exponent", input := generatedWideExponentInput 0x101b 32 32 }
-  , { label := "generated 256-bit #28 full exponent", input := generatedWideExponentInput 0x101c 32 32 }
-  , { label := "generated 256-bit #29 full exponent", input := generatedWideExponentInput 0x101d 32 32 }
-  , { label := "generated 256-bit #30 full exponent", input := generatedWideExponentInput 0x101e 32 32 }
-  , { label := "generated 256-bit #31 full exponent", input := generatedWideExponentInput 0x101f 32 32 }
-  , { label := "generated 256-bit #32 full exponent", input := generatedWideExponentInput 0x1020 32 32 }
-  , { label := "generated RSA-1024 #01 e=3", input := generatedInput 0x3001 128 3 1 }
-  , { label := "generated RSA-1024 #02 e=3", input := generatedInput 0x3002 128 3 1 }
-  , { label := "generated RSA-1024 #03 e=3", input := generatedInput 0x3003 128 3 1 }
-  , { label := "generated RSA-1024 #04 e=17", input := generatedInput 0x3004 128 17 1 }
-  , { label := "generated RSA-1024 #05 e=17", input := generatedInput 0x3005 128 17 1 }
-  , { label := "generated RSA-1024 #06 e=17", input := generatedInput 0x3006 128 17 1 }
-  , { label := "generated RSA-1024 #07 e=257", input := generatedInput 0x3007 128 257 2 }
-  , { label := "generated RSA-1024 #08 e=257", input := generatedInput 0x3008 128 257 2 }
-  , { label := "generated RSA-1024 #09 e=65537", input := generatedInput 0x3009 128 65537 3 }
-  , { label := "generated RSA-1024 #10 e=65537", input := generatedInput 0x300a 128 65537 3 }
-  , { label := "generated RSA-2048 #01 e=3", input := generatedInput 0x4001 256 3 1 }
-  , { label := "generated RSA-2048 #02 e=3", input := generatedInput 0x4002 256 3 1 }
-  , { label := "generated RSA-2048 #03 e=17", input := generatedInput 0x4003 256 17 1 }
-  , { label := "generated RSA-2048 #04 e=17", input := generatedInput 0x4004 256 17 1 }
-  , { label := "generated RSA-2048 #05 e=257", input := generatedInput 0x4005 256 257 2 }
-  , { label := "generated RSA-2048 #06 e=65537", input := generatedInput 0x4006 256 65537 3 }
-  ]
+  let generated256 := (List.range 31).map fun offset =>
+    let index := offset + 2
+    { label := s!"generated 256-bit #{paddedIndex index} full exponent"
+    , input := generatedWideExponentInput (0x1000 + index) 32 32 }
+  [ { label := "generated 256-bit #01 BN254 p-1", input := bn254Fermat } ] ++
+    generated256 ++
+    generatedRsaVectors 1024 128 0x3000 10 rsa1024Exponent ++
+    generatedRsaVectors 2048 256 0x4000 6 rsa2048Exponent
 
 theorem generatedVectors_length : generatedVectors.length = 48 := by decide
 
