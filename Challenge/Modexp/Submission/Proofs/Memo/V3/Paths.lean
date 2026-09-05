@@ -26,11 +26,11 @@ def preludePath :
 def chunk0Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.pushAt 1169 1 1,
-   Main.pushAt 1170 1 32,
-   Main.opAt 1171 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1172 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1173 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+   Main.opAt 1169 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+   Main.pushAt 1170 2 0,
+   Main.opAt 1171 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)),
+   Main.opAt 1172 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+   Main.opAt 1173 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
    Main.pushAt 1174 0 0,
    Main.pushAt 1175 1 64,
    Main.opAt 1176 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),

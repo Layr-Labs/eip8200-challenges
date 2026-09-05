@@ -23,12 +23,15 @@ def accState (input : ByteArray) (pc : Nat) (acc : UInt256) : State :=
 def acc0 (input : ByteArray) : UInt256 :=
   UInt256.xor (MachineState.readWord input 0) (1 : UInt256)
 
-def chunk0 : List (Nat × UInt256) := (Data.checks.drop 1).take 3
+def chunk0 : List (Nat × UInt256) := (Data.checks.drop 2).take 2
 def acc1 (input : ByteArray) : UInt256 := scanDiff input chunk0 (acc0 input)
 
-theorem acc1_eq_guardDiff (input : ByteArray) :
-    acc1 input = guardDiff Data.checks input := by rfl
-
+theorem acc1_eq_guardDiff (input : ByteArray)
+    (hw : MachineState.readWord input 32 = UInt256.ofNat 1) :
+    acc1 input = guardDiff Data.checks input := by
+  have hz : UInt256.xor (MachineState.readWord input 32) (UInt256.ofNat 1) = 0 :=
+    (Logic.wordXor_eq_zero_iff _ _).2 hw
+  simp [acc1, chunk0, acc0, guardDiff, scanDiff, Data.checks, hw, hz]
 def storeWord (mem : ByteArray) (addr w : Nat) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded w 32) addr
 

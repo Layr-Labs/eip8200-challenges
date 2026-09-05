@@ -61,13 +61,15 @@ theorem run_branch_jump (input : ByteArray) :
     simp [branchJumpState, initialState, PCs.pc5, Challenge.EvmProof.Word.word_toNat_ofNat]
   exact (Step.runLocated_jumpi_taken branch_jumpLocated rfl (branchJumpState input) 1698 (UInt256.ofNat 1) [] hpc rfl (by simp) Logic.isTrue_one rfl (by norm_num) hjump).trans rfl
 
-theorem run_branch_match_prefix (input : ByteArray) (h : guardDiff Data.checks input = 0) :
+theorem run_branch_match_prefix (input : ByteArray)
+    (hw : MachineState.readWord input 32 = UInt256.ofNat 1)
+    (h : guardDiff Data.checks input = 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock branchPrefixPath (accState input 1689 (acc1 input)) =
       some (branchJumpState input) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   have hz : UInt256.isZero (acc1 input) = UInt256.ofNat 1 := by
-    rw [acc1_eq_guardDiff]; exact Logic.isZero_of_eq _ h
+    rw [acc1_eq_guardDiff input hw]; exact Logic.isZero_of_eq _ h
   simp [branchPrefixPath, branchJumpState, accState, hz, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -77,13 +79,15 @@ theorem run_branch_match_prefix (input : ByteArray) (h : guardDiff Data.checks i
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat, hzeroWord, hzeroNat]
 
-theorem run_branch_mismatch (input : ByteArray) (h : guardDiff Data.checks input ≠ 0) :
+theorem run_branch_mismatch (input : ByteArray)
+    (hw : MachineState.readWord input 32 = UInt256.ofNat 1)
+    (h : guardDiff Data.checks input ≠ 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock branchPath (accState input 1689 (acc1 input)) =
       some (Main.trampolineState input 1694) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   have hz : UInt256.isZero (acc1 input) = UInt256.ofNat 0 := by
-    rw [acc1_eq_guardDiff]; exact Logic.isZero_of_ne _ h
+    rw [acc1_eq_guardDiff input hw]; exact Logic.isZero_of_ne _ h
   simp [branchPath, accState, hz, Logic.not_isTrue_zero, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
