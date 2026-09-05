@@ -46,7 +46,8 @@ def repeated (n : Nat) (b : UInt8) : ByteArray := Id.run do
 /-! ## Seeded corpus
 
 The public seed makes the default corpus reproducible. A private evaluator can
-replace this value before building to produce different inputs and lengths. -/
+replace this value before building to produce different input bytes. Lengths
+stay fixed so each seed measures the same amount of hashing work. -/
 
 def corpusSeed : Nat := 0
 
@@ -71,16 +72,24 @@ private def paddedIndex (index : Nat) : String :=
 
 private def generatedVector (index : Nat) : Vector :=
   let seed := (corpusSeed + 0x524950454d44 + index) % prngModulus
-  let lengthState := nextState seed
-  let length := 1 + lengthState % 1024
+  -- For indices 1..32, spread lengths evenly from 1 to 1024 bytes and
+  -- exercise every remainder modulo 32 exactly once. The focused vectors
+  -- separately cover the padding boundaries. Keep lengths seed-independent
+  -- so compression, copying, and memory costs have the same distribution.
+  let length := 33 * (index - 1) + 1
   { label := s!"generated #{paddedIndex index}"
-  , input := generatedBytes (nextState lengthState) length }
+  , input := generatedBytes (nextState (nextState seed)) length }
 
-/-- Thirty-two deterministic inputs with seed-derived bytes and lengths. -/
+/-- Thirty-two fixed, evenly spaced lengths with seed-derived bytes. -/
 def generatedVectors : List Vector :=
   (List.range 32).map fun offset => generatedVector (offset + 1)
 
 theorem generatedVectors_length : generatedVectors.length = 32 := by decide
+
+theorem generatedVectors_sizes :
+    generatedVectors.map (fun vector => vector.input.size) =
+      (List.range 32).map (fun offset => 33 * offset + 1) := by
+  native_decide
 
 theorem generatedVectors_size_bounds :
     generatedVectors.all (fun vector =>
