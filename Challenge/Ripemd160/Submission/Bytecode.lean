@@ -6,11 +6,8 @@ set_option maxRecDepth 10000
 /-!
 # The frozen raw-EVM RIPEMD-160 artifact
 
-`submissionBytecode` is the byte-for-byte output of:
-
-```sh
-lake exe yulc Challenge/Ripemd160/Reference/reference.yul
-```
+`submissionBytecode` is the exact H12 wrapper/helper artifact. It retains the
+1830-byte H10 prefix and appends the bounded native compressor.
 
 Correctness proofs target these bytes directly; the compiler is used to
 reproduce the artifact, not as an assumption in the bytecode proof.
@@ -22,18 +19,24 @@ open EvmSemantics
 
 def submissionHex : String := (include_str "bytecode.hex").trimAscii.copy
 
+set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
 
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 1830 := by
+set_option maxRecDepth 50000 in
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 4796 := by
   simp [submissionBytecode]
 
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 2000000 in
 @[simp] theorem referenceBytecode_get_zero : submissionBytecode[0] = 0x61 := by
-  change submissionBytes[0] = 0x61
+  simp only [submissionBytecode]
   exact referenceBytes_get_zero
 
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 2000000 in
 @[simp] theorem referenceBytecode_extract_entry :
     submissionBytecode.extract 1 3 = ByteArray.mk #[0x03, 0xee] := by
-  change submissionBytes.extract 1 3 = ByteArray.mk #[0x03, 0xee]
+  simp only [submissionBytecode]
   exact referenceBytes_extract_entry
 
 @[simp] theorem bytesToBigEndianNat_entry_literal :

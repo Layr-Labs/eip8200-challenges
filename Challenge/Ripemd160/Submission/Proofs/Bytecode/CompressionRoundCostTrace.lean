@@ -42,11 +42,11 @@ theorem hSetWork_eq : hSetWork = 36 := by rfl
 theorem rotlWork_eq : rotlWork = 45 := by rfl
 
 theorem fCaseWork_eq (j : Nat) (hj : j < 5) :
-    fCaseWork j = [64, 73, 73, 73, 73][j]! := by
+    fCaseWork j = [42, 51, 54, 54, 54][j]! := by
   interval_cases j <;> rfl
 
 theorem roundWork_eq (j : Nat) (hj : j < 5) :
-    roundWork j = [537, 546, 546, 546, 546][j]! := by
+    roundWork j = [515, 524, 527, 527, 527][j]! := by
   interval_cases j <;> rfl
 
 theorem rotl_cost_potential (s : State) (x n returnDest : UInt256)

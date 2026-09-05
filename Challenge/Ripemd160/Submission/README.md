@@ -54,9 +54,9 @@ entry address, allocated byte length, and instruction count. Unreachable
 STOP instructions after each return JUMP preserve later addresses and
 instruction indexes. All caller-visible helper contracts remain unchanged.
 
-## Current candidate: unaligned table windows and hAt
+## Prior candidate: unaligned table windows and hAt
 
-The current candidate also uses the table-window idea from submission
+That candidate added the table-window idea from submission
 `80dacb5` by `ercumentyildirim`. The logical table bases remain unchanged.
 Four calls push `base - 31`. The helper loads a word at `base - 31 + i`
 and selects byte 31. It consumes its arguments and the zero result slot.
@@ -70,7 +70,72 @@ The public correctness theorem and its calldata domain are unchanged.
 
 The native suite passes all 17 clean and dirty vectors at 8,241,311 gas.
 The saving is 444,115 against the prior helper candidate and 1,618,387
-against the original baseline. The current closed gas formula is
+against the original baseline. Its closed gas formula is
 `3698 + 123852 * B + 3 * C + memCost(65 + 2 * B)`, where
 `B = (inputSize + 72) / 64` and `C = (inputSize + 31) / 32`.
 The full exact-bytecode Comparator remains the acceptance condition.
+
+## Prior candidate: stack-consuming Boolean helpers
+
+This candidate also consumes the Boolean case index and helper arguments.
+Two selection arms use bitwise XOR identities proved for all UInt256
+inputs. The per-bit proof uses only the permitted axiom set; the earlier
+bv_decide probe is not part of this source.
+
+Boolean case costs are [42,51,54,54,54]. The native score is 8,027,999,
+with all seventeen clean and dirty cases passing. The formula is
+`3698 + 120620 * B + 3 * C + memCost(65 + 2 * B)`.
+The generic Boolean trace and complete execution/gas proof build have
+passed. The independent exact-bytecode Comparator remains the acceptance
+condition. Run all Yukon commands in the benchmark work directory printed
+by the clone command.
+
+## Prior candidate: direct stack-resident rounds (H10)
+
+H10 retains the message schedule and replaces the compressor with two fully
+unrolled 80-round lanes. Five working words stay on the EVM stack through each
+lane. The right lane runs above the saved left result. Round templates use
+immediate message-slot addresses, constants, and rotations, with inline Boolean
+operations and 32-bit rotation. The three old working-state memory copies and
+the round helper calls are no longer on the active compression path.
+
+The exact artifact is 12,906 bytes. Native tests report 1,743,479 gas over all
+17 clean vectors. All 17 dirty vectors also pass with the same gas total.
+The measured formula is `3698 + 25400 * B + 3 * C + memCost(65 + 2 * B)`.
+It is not a separate proved gas schedule. H09, the prior immediate-wrapper
+candidate, passed local Comparator at 6,181,847 gas and 5,133 bytes.
+
+The proof uses 42 instruction-aligned assembly chunks, five generic round
+traces, and exact indexed certificates for all 160 sites. The scheduled words
+match the pinned RIPEMD-160 message schedule. Both complete lane traces use
+actual machine states with unchanged memory and active-word count. The final
+61-instruction tail stores the five combined hash words in the exact program
+order. `StackCorrect` connects these components to the outer block model and
+the unchanged public Correct contract. `Solution.lean` is the benchmark entry.
+
+Only the protected Comparator and scorer determine benchmark acceptance.
+The final theorem must pass that check for the exact submitted bytecode.
+
+## Current candidate: compact shared stack rounds (H12)
+
+H12 retains the stack-resident working words, schedule, and final combination.
+It replaces H10's inline round bodies with 160 six-instruction wrappers and
+ten shared helpers. Each wrapper supplies a return PC, rotation, message-slot
+address, and helper PC. Each helper embeds its group constant. Both the helper
+return JUMP and the wrapper's return JUMPDEST are executed and proved.
+
+The exact artifact is 4,796 bytes and 2,583 instructions. The native suite
+reports 2,292,599 gas over all 17 clean vectors. All 17 dirty vectors pass with
+the same individual gas results. The measured formula is
+`3698 + 33720 * B + 3 * C + memCost(65 + 2 * B)`.
+This is a native measurement, not a separate proved gas schedule.
+
+H09 was promoted at 6,181,847 gas. H10 failed before proof replay because the
+protected generated-byte module exceeded its recursion limit. H12's smaller
+byte array passes that isolated generator check without a harness change.
+
+The proof uses 13 instruction-aligned assembly chunks, five generic helper
+traces, exact call/helper/return locations, bounded 80-round lane composition,
+and the final storage tail with its nonempty helper suffix. StackCorrect and
+Solution retain the exact universal Correct contract. Acceptance still
+requires the full protected Comparator and scorer.
