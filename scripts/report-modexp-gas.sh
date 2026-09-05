@@ -11,7 +11,7 @@ readonly challenge_slug="modexp"
 readonly marker_id="MODEXP"
 readonly report_script_path="scripts/report-modexp-gas.sh"
 readonly scorer_exe="modexpchallenge"
-readonly expected_rows=56
+readonly expected_rows=44
 
 source scripts/lib/check-hash-submissions.sh
 

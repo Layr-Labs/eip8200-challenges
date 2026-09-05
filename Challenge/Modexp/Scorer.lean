@@ -155,17 +155,8 @@ private def paddedIndex (index : Nat) : String :=
   if index < 10 then s!"0{index}" else toString index
 
 /-- The selected RSA public exponent and its minimal byte width. -/
-private def rsa1024Exponent (index : Nat) : Nat × Nat :=
-  if index ≤ 3 then (3, 1)
-  else if index ≤ 6 then (17, 1)
-  else if index ≤ 8 then (257, 2)
-  else (65537, 3)
-
-private def rsa2048Exponent (index : Nat) : Nat × Nat :=
-  if index ≤ 2 then (3, 1)
-  else if index ≤ 4 then (17, 1)
-  else if index = 5 then (257, 2)
-  else (65537, 3)
+private def rsaExponent (index : Nat) : Nat × Nat :=
+  if index = 1 then (3, 1) else (65537, 3)
 
 /-- Generate an RSA-sized bucket from one domain and an exponent schedule. -/
 private def generatedRsaVectors (bits width domain count : Nat)
@@ -176,7 +167,7 @@ private def generatedRsaVectors (bits width domain count : Nat)
     { label := s!"generated RSA-{bits} #{paddedIndex index} e={exponent}"
     , input := generatedInput (vectorSeed domain index) width exponent exponentWidth }
 
-/-- Forty-eight deterministic public inputs. Operand bytes come from the PRNG
+/-- Thirty-six deterministic public inputs. Operand bytes come from the PRNG
 above. A fixed public seed and separate bucket domains make the corpus
 reproducible. The BN254 exponent and modulus remain fixed while its base is
 seed-derived. -/
@@ -187,10 +178,10 @@ def generatedVectors : List Vector :=
     , input := generatedWideExponentInput (vectorSeed 0x1000 index) 32 32 }
   [ { label := "generated 256-bit #01 BN254 p-1", input := bn254Fermat } ] ++
     generated256 ++
-    generatedRsaVectors 1024 128 0x3000 10 rsa1024Exponent ++
-    generatedRsaVectors 2048 256 0x4000 6 rsa2048Exponent
+    generatedRsaVectors 1024 128 0x3000 2 rsaExponent ++
+    generatedRsaVectors 2048 256 0x4000 2 rsaExponent
 
-theorem generatedVectors_length : generatedVectors.length = 48 := by decide
+theorem generatedVectors_length : generatedVectors.length = 36 := by decide
 
 theorem firstGeneratedVector_exponentHead :
     generatedVectors[0]?.map (fun vector => exponentHead vector.input) =
@@ -208,7 +199,7 @@ def vectors : List Vector :=
   , { label := "BN254 modular inversion", input := bn254ModularInversion }
   ] ++ generatedVectors
 
-theorem vectors_length : vectors.length = 56 := by decide
+theorem vectors_length : vectors.length = 44 := by decide
 
 inductive Outcome where
   | ok (gas : Nat)

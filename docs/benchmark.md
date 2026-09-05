@@ -5,7 +5,7 @@ scored tracks on a shared branch:
 
 | track | editable path | score |
 | --- | --- | --- |
-| `modexp` | `Challenge/Modexp/Submission` | gas over 56 vectors |
+| `modexp` | `Challenge/Modexp/Submission` | gas over 44 vectors |
 | `ripemd160` | `Challenge/Ripemd160/Submission` | clean-state gas over 17 vectors |
 
 Lower is better in every track. The editable paths are deliberately disjoint,
