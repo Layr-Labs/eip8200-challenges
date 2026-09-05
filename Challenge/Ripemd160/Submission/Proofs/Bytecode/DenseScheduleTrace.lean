@@ -9,7 +9,7 @@ set_option linter.unusedSimpArgs false
 /-!
 # Raw evaluator trace for the dense two-word schedule helper
 
-This file proves the 56 instructions before the final return `JUMP`.  The
+This file proves the 61 instructions before the final return `JUMP`.  The
 result is generic in the surrounding state, memory, words, return address,
 and suffix stack.
 -/
@@ -202,14 +202,17 @@ theorem runInstrSeq_initial
   have hswap1 (u v : UInt256) (rho : List UInt256) :
       (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
     simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
+  have h60 : UInt256.ofNat 60 + messageOffset =
+      messageOffset + UInt256.ofNat 60 :=
+    word_add_comm _ _
   have h32 : UInt256.ofNat 32 + messageOffset =
       messageOffset + UInt256.ofNat 32 :=
     word_add_comm _ _
   simp (config := { maxSteps := 2000000 })
     [initialTemplate, scheduleEntry, afterInitial, inputWord0, inputWord1,
-      loadedActiveWords, activeAfterWord, op, push1, dup1, swap1,
+      warmupActiveWords, activeAfterWord, op, push1, dup1, swap1,
       runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap,
-      hcap2, hcap3, hcap4, hswap1, h32, word_add_assoc,
+      hcap2, hcap3, hcap4, hswap1, h60, h32, word_add_assoc,
       word_add_ofNat_assoc, Nat.add_assoc,
       Word.land_comm, Word.lor_comm, State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -221,6 +224,9 @@ theorem runInstrSeq_initial
     | rw [add_ofNat_assoc_hAdd]
     | rw [add_ofNat_assoc_add]
     | rw [add_ofNat_assoc]
+  simp only [add_assoc_explicit, add_assoc_explicit_hAdd,
+    add_assoc_hAdd_explicit, word_add_assoc]
+  simp [Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc]
 
 theorem runInstrSeq_denseStore
     (s : State) (startPC : UInt256) (half : Nat)
@@ -314,50 +320,50 @@ theorem runInstrSeq_denseBeforeJump
       some (denseExpectedState s startPC messageOffset returnPC rest) := by
   have hinitial := runInstrSeq_initial s startPC messageOffset returnPC rest
     (by omega) hrun
-  let t1 : State :=
+  let t0 : State :=
     afterDenseHalf (afterInitial s startPC messageOffset returnPC rest)
-      (pcAfter startPC initialTemplate) 1
-      (packedWord (inputWord1 s messageOffset))
-      (inputWord0 s messageOffset :: returnPC :: rest)
-  have h1raw := runInstrSeq_denseHalf
+      (pcAfter startPC initialTemplate) 0
+      (packedWord (inputWord0 s messageOffset))
+      (inputWord1 s messageOffset :: returnPC :: rest)
+  have h0raw := runInstrSeq_denseHalf
     (afterInitial s startPC messageOffset returnPC rest)
     (pcAfter startPC initialTemplate)
-    1 (inputWord1 s messageOffset) (inputWord0 s messageOffset)
+    0 (inputWord0 s messageOffset) (inputWord1 s messageOffset)
     (returnPC :: rest) (by simp; omega) (by simpa using hrun)
-  have h1 :
-      runInstrSeq (denseHalfTemplate 1)
-        (afterInitial s startPC messageOffset returnPC rest) =
-      some t1 := by
-    simpa only [t1, afterInitial, List.cons_append, List.nil_append] using h1raw
-  have hinit1 :
-      runInstrSeq (initialTemplate ++ denseHalfTemplate 1)
-        (scheduleEntry s startPC messageOffset returnPC rest) =
-      some t1 := by
-    have h := runInstrSeq_append_running hinitial
-      (by simpa using hrun) h1
-    simpa only [t1] using h
-  have h0raw := runInstrSeq_denseHalf t1 t1.pc 0
-    (inputWord0 s messageOffset) returnPC rest
-    (by omega) (by simpa [t1] using hrun)
   have h0 :
-      runInstrSeq (denseHalfTemplate 0) t1 =
-        some (afterDenseHalf t1 t1.pc 0
-          (packedWord (inputWord0 s messageOffset)) (returnPC :: rest)) := by
-    convert h0raw using 1
-    all_goals simp [t1, afterDenseHalf]
-  have hfull :
-      runInstrSeq ((initialTemplate ++ denseHalfTemplate 1) ++
-        denseHalfTemplate 0)
+      runInstrSeq (denseHalfTemplate 0)
+        (afterInitial s startPC messageOffset returnPC rest) =
+      some t0 := by
+    simpa only [t0, afterInitial, List.cons_append, List.nil_append] using h0raw
+  have hinit0 :
+      runInstrSeq (initialTemplate ++ denseHalfTemplate 0)
         (scheduleEntry s startPC messageOffset returnPC rest) =
-      some (afterDenseHalf t1 t1.pc 0
-        (packedWord (inputWord0 s messageOffset)) (returnPC :: rest)) := by
-    exact runInstrSeq_append_running hinit1
-      (by simp [afterDenseHalf_halt, t1, afterInitial_halt, hrun]) h0
+      some t0 := by
+    have h := runInstrSeq_append_running hinitial
+      (by simpa using hrun) h0
+    simpa only [t0] using h
+  have h1raw := runInstrSeq_denseHalf t0 t0.pc 1
+    (inputWord1 s messageOffset) returnPC rest
+    (by omega) (by simpa [t0] using hrun)
+  have h1 :
+      runInstrSeq (denseHalfTemplate 1) t0 =
+        some (afterDenseHalf t0 t0.pc 1
+          (packedWord (inputWord1 s messageOffset)) (returnPC :: rest)) := by
+    convert h1raw using 1
+    all_goals simp [t0, afterDenseHalf]
+  have hfull :
+      runInstrSeq ((initialTemplate ++ denseHalfTemplate 0) ++
+        denseHalfTemplate 1)
+        (scheduleEntry s startPC messageOffset returnPC rest) =
+      some (afterDenseHalf t0 t0.pc 1
+        (packedWord (inputWord1 s messageOffset)) (returnPC :: rest)) := by
+    exact runInstrSeq_append_running hinit0
+      (by simp [afterDenseHalf_halt, t0, afterInitial_halt, hrun]) h1
   have hend :
-      afterDenseHalf t1 t1.pc 0
-          (packedWord (inputWord0 s messageOffset)) (returnPC :: rest) =
+      afterDenseHalf t0 t0.pc 1
+          (packedWord (inputWord1 s messageOffset)) (returnPC :: rest) =
         denseExpectedState s startPC messageOffset returnPC rest := by
-    simp only [t1, afterInitial, afterDenseHalf, denseExpectedState,
+    simp only [t0, afterInitial, afterDenseHalf, denseExpectedState,
       denseExpectedMemory, denseExpectedActiveWords,
       denseStoreActiveWords, denseStoreAddresses, denseStoreOffset,
       denseStoreAddress,

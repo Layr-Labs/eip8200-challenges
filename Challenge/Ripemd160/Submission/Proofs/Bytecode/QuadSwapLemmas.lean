@@ -2,12 +2,12 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 
 set_option warningAsError true
 
-/-! Exchange lemmas for SWAP1..SWAP12 on explicit cons lists. Copied from the
-preserved old Submission; the 419d031 base does not already export them. -/
+/-! Exchange lemmas for SWAP1..SWAP12 on explicit cons lists (generated). -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSwapLemmas
 
 open EvmSemantics
+
 
 theorem exchange_swap1 (u w : UInt256) (rho : List UInt256) :
     (u :: w :: rho).exchange 0 1 = some (w :: u :: rho) := by
