@@ -1,16 +1,15 @@
 import Challenge.Ripemd160.Benchmark.Artifact
-import Challenge.Ripemd160.Submission.H39Memo.Correct
+import Challenge.Ripemd160.Reference.Proofs.Bytecode.ReferenceCorrect
 
 set_option warningAsError true
-set_option maxRecDepth 50000
+set_option maxRecDepth 20000
 set_option maxHeartbeats 5000000
 
 namespace Challenge.Ripemd160.Benchmark
 
-/-- Exact-bytecode correctness for the exact-input dispatcher with general fallback. -/
+/-- Baseline proof for the bundled RIPEMD-160 reference bytecode. -/
 theorem candidate : Challenge.Ripemd160.Correct bytecode := by
-  change Challenge.Ripemd160.Correct
-    Challenge.Ripemd160.Submission.H39Memo.h39Bytecode
-  exact Challenge.Ripemd160.Submission.H39Memo.correct
+  change Challenge.Ripemd160.Correct Challenge.Ripemd160.referenceBytecode
+  exact Challenge.Ripemd160.Reference.Proofs.Bytecode.ReferenceCorrect.reference_correct
 
 end Challenge.Ripemd160.Benchmark
