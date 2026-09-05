@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionInterface
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.EmptyFastPath
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputSite
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedOutputMath
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.GasCost
@@ -96,23 +97,24 @@ private theorem outputBytes_eq_spec (input : ByteArray) (seam : CompressionSeam 
   rfl
 
 noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
-    (seam : CompressionSeam input) :
+    (hnonempty : input.size ≠ 0) (seam : CompressionSeam input) :
     GasSteps (initialState submissionBytecode input 0)
       (outputState (seam.states (DriverTrace.blockCount input)) input) := by
   let final := seam.states (DriverTrace.blockCount input)
   have gout := FastOutputSite.gasSteps_fastOutput final (driverRest input)
     (by simp [driverRest]) (seam.code _ (by omega)) (seam.fork _ (by omega))
     (seam.running _ (by omega)) (seam.noPrecompile _ (by omega))
-  exact (PaddingTrace.gasSteps_pad input hfit).trans
+  exact (PaddingTrace.gasSteps_pad input hfit hnonempty).trans
     ((DirectCorrect.gasSteps_driver input hfit seam).trans
       (by simpa only [DriverTrace.afterExit, outputState, driverRest, final] using gout))
 
-/-- Correctness for one fixed input needs only its compression seam. -/
+/-- Correctness for one nonempty input needs only its compression seam. -/
 theorem correct_input (input : ByteArray) (hfit : CalldataFits input)
+    (hnonempty : input.size ≠ 0)
     (seam : CompressionSeam input) :
     ∃ g₀ : Nat, ∀ g : Nat, g₀ ≤ g →
       Eval (initialState submissionBytecode input g) (.returned (spec input)) := by
-  let trace := fullTrace input hfit seam
+  let trace := fullTrace input hfit hnonempty seam
   let final := seam.states (DriverTrace.blockCount input)
   have hcall : (outputState final input).callStack = [] :=
     seam.callStack _ (by omega)
@@ -127,11 +129,18 @@ theorem correct_input (input : ByteArray) (hfit : CalldataFits input)
   rw [outputBytes_eq_spec input seam] at heval
   simpa [GasCost.withGas_initialState_zero] using heval
 
-/-- The output proof needs only the existing compression seam. -/
+/-- The output proof needs only the existing compression seam for nonempty
+inputs; empty inputs use the dispatcher fast path. -/
 theorem correct_of_compression_trace
     (seam : ∀ input : ByteArray, CalldataFits input → CompressionSeam input) :
     Correct submissionBytecode := by
   intro input hfit
-  exact correct_input input hfit (seam input hfit)
+  by_cases hempty : input.size = 0
+  · have hinput : input = EmptyFastPath.emptyInput := by
+      have h := ByteArray.size_eq_zero_iff.mp hempty
+      simpa [EmptyFastPath.emptyInput] using h
+    rw [hinput]
+    exact EmptyFastPath.correct_empty
+  · exact correct_input input hfit hempty (seam input hfit)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputResultBridge

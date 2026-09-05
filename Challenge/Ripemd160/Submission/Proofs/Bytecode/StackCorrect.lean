@@ -2,6 +2,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackLoadSeams
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadLane
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailSite
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastEmptyBlock
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.EmptyFastPath
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputFast
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputDirectTrace
 
@@ -235,6 +236,7 @@ noncomputable def targetTrace (hfit : CalldataFits KnownInputData.targetInput) :
     simp [DriverTrace.blockCount, Padding.paddedLength,
       KnownInputData.targetInput_size]
   have gpad := PaddingTrace.gasSteps_pad KnownInputData.targetInput hfit
+    (by simp [KnownInputData.targetInput_size])
   have gsetup := DriverTrace.gasSteps_setup s KnownInputData.targetInput
     (PaddingTrace.padReturned_code _) (PaddingTrace.padReturned_fork _)
     (PaddingTrace.padReturned_halt _) (PaddingTrace.padReturned_noPrecompile _)
@@ -282,11 +284,17 @@ theorem correct_target (hfit : CalldataFits KnownInputData.targetInput) :
 
 theorem correct : Correct submissionBytecode := by
   intro input hfit
-  by_cases htarget : input = KnownInputData.targetInput
-  · subst input
-    exact correct_target hfit
-  · exact FastOutputResultBridge.correct_input input hfit
-      (CompressionSeamBridge.toCompressionSeam
-        (StackRunBridge.compressionRun kernel input hfit htarget))
+  by_cases hempty : input.size = 0
+  · have hinput : input = EmptyFastPath.emptyInput := by
+      have h := ByteArray.size_eq_zero_iff.mp hempty
+      simpa [EmptyFastPath.emptyInput] using h
+    rw [hinput]
+    exact EmptyFastPath.correct_empty
+  · by_cases htarget : input = KnownInputData.targetInput
+    · subst input
+      exact correct_target hfit
+    · exact FastOutputResultBridge.correct_input input hfit hempty
+        (CompressionSeamBridge.toCompressionSeam
+          (StackRunBridge.compressionRun kernel input hfit htarget))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
