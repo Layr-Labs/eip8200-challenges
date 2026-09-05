@@ -1,7 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionInterface
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.EmptyFastPath
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputSite
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedOutputMath
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.GasCost
 
 set_option warningAsError true
 set_option maxRecDepth 30000
@@ -96,35 +96,46 @@ private theorem outputBytes_eq_spec (input : ByteArray) (seam : CompressionSeam 
   rfl
 
 noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
-    (seam : CompressionSeam input) :
+    (hnonempty : input.size ≠ 0) (seam : CompressionSeam input) :
     GasSteps (initialState submissionBytecode input 0)
       (outputState (seam.states (DriverTrace.blockCount input)) input) := by
   let final := seam.states (DriverTrace.blockCount input)
   have gout := FastOutputSite.gasSteps_fastOutput final (driverRest input)
     (by simp [driverRest]) (seam.code _ (by omega)) (seam.fork _ (by omega))
     (seam.running _ (by omega)) (seam.noPrecompile _ (by omega))
-  exact (PaddingTrace.gasSteps_pad input hfit).trans
+  exact (PaddingTrace.gasSteps_pad input hfit hnonempty).trans
     ((DirectCorrect.gasSteps_driver input hfit seam).trans
       (by simpa only [DriverTrace.afterExit, outputState, driverRest, final] using gout))
 
-/-- The output proof needs only the existing compression seam. -/
+/-- The output proof needs only the existing compression seam for nonempty inputs;
+empty inputs go through the dispatcher fast path. -/
 theorem correct_of_compression_trace
     (seam : ∀ input : ByteArray, CalldataFits input → CompressionSeam input) :
     Correct submissionBytecode := by
   intro input hfit
-  let trace := fullTrace input hfit (seam input hfit)
-  let final := (seam input hfit).states (DriverTrace.blockCount input)
-  have hcall : (outputState final input).callStack = [] :=
-    (seam input hfit).callStack _ (by omega)
-  have hreturned : (outputState final input).halt = .Returned := by rfl
-  refine ⟨trace.cost, fun gas hgas => ?_⟩
-  have heval := Challenge.EvmProof.eval_of_steps (trace.trace gas hgas) (by
-    change (withGas (outputState final input) (gas - trace.cost)).isDone = true
-    simp [withGas, State.isDone, State.isHalted, State.isRunning, hcall, hreturned])
-  rw [State.toResult_returned _ (by rfl)] at heval
-  change Eval (withGas (initialState submissionBytecode input 0) gas)
-    (.returned (outputBytes final)) at heval
-  rw [outputBytes_eq_spec input (seam input hfit)] at heval
-  simpa [GasCost.withGas_initialState_zero] using heval
+  by_cases hempty : input.size = 0
+  · have hempty_eq : input = EmptyFastPath.emptyInput := by
+      have h : input = ByteArray.empty := ByteArray.size_eq_zero_iff.mp hempty
+      simpa [EmptyFastPath.emptyInput] using h
+    rw [hempty_eq]
+    exact EmptyFastPath.correct_empty
+  · have hnonempty : input.size ≠ 0 := hempty
+    let trace := fullTrace input hfit hnonempty (seam input hfit)
+    let final := (seam input hfit).states (DriverTrace.blockCount input)
+    have hcall : (outputState final input).callStack = [] :=
+      (seam input hfit).callStack _ (by omega)
+    have hreturned : (outputState final input).halt = .Returned := by rfl
+    refine ⟨trace.cost, fun gas hgas => ?_⟩
+    have heval := Challenge.EvmProof.eval_of_steps (trace.trace gas hgas) (by
+      change (withGas (outputState final input) (gas - trace.cost)).isDone = true
+      simp [withGas, State.isDone, State.isHalted, State.isRunning, hcall, hreturned])
+    rw [State.toResult_returned _ (by rfl)] at heval
+    change Eval (withGas (initialState submissionBytecode input 0) gas)
+      (.returned (outputBytes final)) at heval
+    rw [outputBytes_eq_spec input (seam input hfit)] at heval
+    have hwith : withGas (initialState submissionBytecode input 0) gas =
+        initialState submissionBytecode input gas := by
+      rfl
+    simpa [hwith] using heval
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputResultBridge

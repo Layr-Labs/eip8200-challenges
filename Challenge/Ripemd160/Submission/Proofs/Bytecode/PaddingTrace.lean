@@ -1082,10 +1082,11 @@ theorem lengthLoopMemory_eight (input : ByteArray) (hfit : CalldataFits input) :
 
 /-- Complete certified execution from the challenge initial state through the
 RIPEMD-160 padding function. -/
-private def gasSteps_padPrefix (input : ByteArray) :
+private def gasSteps_padPrefix (input : ByteArray) (hfit : CalldataFits input)
+    (hnonempty : input.size ≠ 0) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (padLengthReady input) :=
-  (Main.gasSteps_initialize input).trans
+  (Main.gasSteps_initialize input hfit hnonempty).trans
     ((gasSteps_enterPad input).trans (gasSteps_paddedLength input))
 
 noncomputable def gasSteps_padBody (input : ByteArray) (hfit : CalldataFits input) :
@@ -1095,10 +1096,11 @@ noncomputable def gasSteps_padBody (input : ByteArray) (hfit : CalldataFits inpu
         (gasSteps_lengthSetup input hfit) rfl (lengthLoopState_zero input).symm
   setup.trans (gasSteps_lengthLoop input)
 
-noncomputable def gasSteps_pad (input : ByteArray) (hfit : CalldataFits input) :
+noncomputable def gasSteps_pad (input : ByteArray) (hfit : CalldataFits input)
+    (hnonempty : input.size ≠ 0) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (padReturned input) :=
-  (gasSteps_padPrefix input).trans
+  (gasSteps_padPrefix input hfit hnonempty).trans
     ((gasSteps_padBody input hfit).trans (gasSteps_lengthExit input))
 
 theorem padReturned_memory (input : ByteArray) (hfit : CalldataFits input) :

@@ -114,6 +114,13 @@ private def packedScheduleBefore : List Instr :=
 private theorem packedScheduleBefore_length : packedScheduleBefore.length = 2099 := by
   simp [packedScheduleBefore, packedSchedulePrefix_length]
 
+private def packedScheduleSuffix : List Instr :=
+  submissionInstructionsChunk10.drop 221
+
+private theorem packedScheduleSuffix_byteLength :
+    StackPC.byteLength packedScheduleSuffix = 33 := by
+  rfl
+
 private theorem artifact_prefix_split :
     Artifact.submissionArtifact.instructions =
       packedSchedulePrefix ++ submissionInstructionsChunk10 := by
@@ -125,9 +132,9 @@ private theorem artifact_prefix_split :
 private theorem artifact_tail_split :
     submissionInstructionsChunk10 =
       submissionInstructionsChunk10.take 159 ++
-        DenseScheduleTemplate.denseFullTemplate := by
+        DenseScheduleTemplate.denseFullTemplate ++ packedScheduleSuffix := by
   have hdrop : submissionInstructionsChunk10.drop 159 =
-      DenseScheduleTemplate.denseFullTemplate := by
+      DenseScheduleTemplate.denseFullTemplate ++ packedScheduleSuffix := by
     rfl
   calc
     submissionInstructionsChunk10 =
@@ -135,18 +142,23 @@ private theorem artifact_tail_split :
           submissionInstructionsChunk10.drop 159 := by
       rw [List.take_append_drop]
     _ = submissionInstructionsChunk10.take 159 ++
-        DenseScheduleTemplate.denseFullTemplate := by rw [hdrop]
+        (DenseScheduleTemplate.denseFullTemplate ++ packedScheduleSuffix) := by
+      rw [hdrop]
+    _ = submissionInstructionsChunk10.take 159 ++
+        DenseScheduleTemplate.denseFullTemplate ++ packedScheduleSuffix := by
+      rw [List.append_assoc]
 
 private theorem artifact_dense_split :
     Artifact.submissionArtifact.instructions =
-      packedScheduleBefore ++ DenseScheduleTemplate.denseFullTemplate := by
+      packedScheduleBefore ++ DenseScheduleTemplate.denseFullTemplate ++
+        packedScheduleSuffix := by
   rw [artifact_prefix_split, artifact_tail_split]
   simp [packedScheduleBefore, List.append_assoc]
 
 private theorem artifact_dense_split_prejump :
     Artifact.submissionArtifact.instructions =
       packedScheduleBefore ++ DenseScheduleTemplate.denseBeforeJumpTemplate ++
-        DenseScheduleTemplate.finalJumpTemplate := by
+        (DenseScheduleTemplate.finalJumpTemplate ++ packedScheduleSuffix) := by
   simpa [DenseScheduleTemplate.denseFullTemplate, List.append_assoc] using
     artifact_dense_split
 
@@ -164,6 +176,23 @@ private theorem instructionPC_prefix_plus_segment
   rw [hsplit, htake, StackPC.byteLength_eq_assemble]
   rw [hsplit, assembleBytes_append] at hassembly
   simpa only [List.length_append] using hassembly
+
+private theorem instructionPC_prefix_plus_segment_suffix
+    (p : ProgramArtifact) (before segment suffix : List Instr)
+    (hsplit : p.instructions = before ++ segment ++ suffix) :
+    p.instructionPC before.length + StackPC.byteLength segment +
+      StackPC.byteLength suffix = p.code.size := by
+  have hassembly : (assembleBytes p.instructions).length = p.code.size := by
+    have h := congrArg ByteArray.size p.assembly_eq
+    change (assembleBytes p.instructions).toArray.size = p.code.size at h
+    simpa only [List.size_toArray] using h
+  have htake : (before ++ segment ++ suffix).take before.length = before := by
+    simp
+  unfold ProgramArtifact.instructionPC
+  rw [hsplit, htake, StackPC.byteLength_eq_assemble]
+  rw [hsplit, assembleBytes_append, assembleBytes_append] at hassembly
+  simp only [List.length_append, StackPC.byteLength_eq_assemble] at hassembly ⊢
+  omega
 
 private theorem instructionPC_segment_byteLength
     (p : ProgramArtifact) (before segment after : List Instr)
@@ -215,12 +244,13 @@ private theorem denseScheduleTemplate_byteLength :
 
 private theorem packedSchedule_start_instructionPC :
     Artifact.submissionArtifact.instructionPC 2099 = 0x1346 := by
-  have h := instructionPC_prefix_plus_segment Artifact.submissionArtifact
+  have h := instructionPC_prefix_plus_segment_suffix Artifact.submissionArtifact
     packedScheduleBefore DenseScheduleTemplate.denseFullTemplate
-    artifact_dense_split
-  rw [packedScheduleBefore_length, denseScheduleFull_byteLength] at h
-  have hsize : Artifact.submissionArtifact.code.size = 5266 := by
-    change Challenge.Ripemd160.submissionBytecode.size = 5266
+    packedScheduleSuffix artifact_dense_split
+  rw [packedScheduleBefore_length, denseScheduleFull_byteLength,
+    packedScheduleSuffix_byteLength] at h
+  have hsize : Artifact.submissionArtifact.code.size = 5299 := by
+    change Challenge.Ripemd160.submissionBytecode.size = 5299
     exact Challenge.Ripemd160.referenceBytecode_size
   rw [hsize] at h
   omega
@@ -229,7 +259,8 @@ private theorem packedSchedule_end_instructionPC :
     Artifact.submissionArtifact.instructionPC 2160 = 0x1491 := by
   have h := instructionPC_segment_byteLength Artifact.submissionArtifact
     packedScheduleBefore DenseScheduleTemplate.denseBeforeJumpTemplate
-    DenseScheduleTemplate.finalJumpTemplate artifact_dense_split_prejump 61
+    (DenseScheduleTemplate.finalJumpTemplate ++ packedScheduleSuffix)
+    artifact_dense_split_prejump 61
     (by decide)
   have htake :
       DenseScheduleTemplate.denseBeforeJumpTemplate.take 61 =

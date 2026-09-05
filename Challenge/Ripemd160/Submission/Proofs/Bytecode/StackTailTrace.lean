@@ -12,8 +12,8 @@ set_option maxHeartbeats 2000000
 # Located Q4MC final-combination trace
 
 The raw tail theorem is lifted through the exact Q4MC artifact.  The path starts
-at instruction 1348 and ends at instruction 1408.  The 752 helper and schedule instructions
-after the tail remain in the artifact suffix.
+at instruction 1348 and ends at instruction 1408.  The 762 helper, schedule, and
+dispatcher instructions after the tail remain in the artifact suffix.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTailTrace
@@ -69,7 +69,7 @@ private theorem artifactPrefix_length : artifactPrefix.length = 1340 := by
 private theorem tailBefore_length : tailBefore.length = 1348 := by
   simp [tailBefore, artifactPrefix_length]
 
-private theorem tailAfter_length : tailAfter.length = 752 := by
+private theorem tailAfter_length : tailAfter.length = 762 := by
   simp [tailAfter]
 
 private theorem tailAfter_nonempty : tailAfter ≠ [] := by
