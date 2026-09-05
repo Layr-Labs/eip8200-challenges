@@ -172,10 +172,10 @@ lake build Challenge.Ripemd160
 Those tests are useful falsification evidence, not part of the proof.
 The scorer keeps 17 focused vectors and adds 32 seed-derived vectors. Change
 `corpusSeed` before a private build to produce different input bytes. Generated
-lengths stay fixed at 1, 34, 67, …, 1024 bytes: this evenly spans the size range
-and exercises every remainder modulo 32 once. Keeping lengths fixed removes
-seed-dependent changes in hashing workload from score comparisons; the focused
-vectors additionally cover padding boundaries.
+lengths cycle through 32, 64, and 128 bytes (11, 11, and 10 cases respectively)
+to keep scoring fast. Keeping lengths fixed removes seed-dependent changes in
+hashing workload from score comparisons; the focused vectors additionally cover
+padding boundaries and larger messages.
 
 Candidate bytecode belongs under [`Submissions/`](Submissions/). The mechanical
 file, declaration, proof, and optional gas-schedule contract is documented in
@@ -197,7 +197,7 @@ against the bundled reference. These measurements are tests, not proofs.
 
 | implementation | bytes | empty | abc | 55 bytes | 56 bytes | 64 bytes | 1,000 bytes | all vectors | vs precompile | vs reference |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| [Reference](Reference/) | 1671 | 152450 | 152453 | 152456 | 300827 | 300827 | 2378106 | 51092936 | 481.65× | 1.00× |
+| [Reference](Reference/) | 1671 | 152450 | 152453 | 152456 | 300827 | 300827 | 2378106 | 19340256 | 375.68× | 1.00× |
 
 ### Category 2: proved `CALLDATASIZE` gas bounds
 

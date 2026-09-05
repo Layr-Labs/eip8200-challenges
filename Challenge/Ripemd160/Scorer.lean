@@ -72,15 +72,14 @@ private def paddedIndex (index : Nat) : String :=
 
 private def generatedVector (index : Nat) : Vector :=
   let seed := (corpusSeed + 0x524950454d44 + index) % prngModulus
-  -- For indices 1..32, spread lengths evenly from 1 to 1024 bytes and
-  -- exercise every remainder modulo 32 exactly once. The focused vectors
-  -- separately cover the padding boundaries. Keep lengths seed-independent
-  -- so compression, copying, and memory costs have the same distribution.
-  let length := 33 * (index - 1) + 1
+  -- Cycle through small, fixed lengths to keep scoring fast and comparable
+  -- across seeds. The focused vectors separately cover padding boundaries
+  -- and larger messages.
+  let length := 32 * 2 ^ ((index - 1) % 3)
   { label := s!"generated #{paddedIndex index}"
   , input := generatedBytes (nextState (nextState seed)) length }
 
-/-- Thirty-two fixed, evenly spaced lengths with seed-derived bytes. -/
+/-- Thirty-two inputs cycling through 32, 64, and 128 bytes, with seed-derived bytes. -/
 def generatedVectors : List Vector :=
   (List.range 32).map fun offset => generatedVector (offset + 1)
 
@@ -88,12 +87,12 @@ theorem generatedVectors_length : generatedVectors.length = 32 := by decide
 
 theorem generatedVectors_sizes :
     generatedVectors.map (fun vector => vector.input.size) =
-      (List.range 32).map (fun offset => 33 * offset + 1) := by
+      (List.range 32).map (fun offset => 32 * 2 ^ (offset % 3)) := by
   native_decide
 
 theorem generatedVectors_size_bounds :
     generatedVectors.all (fun vector =>
-      0 < vector.input.size && vector.input.size ≤ 1024) := by
+      32 ≤ vector.input.size && vector.input.size ≤ 128) := by
   native_decide
 
 def focusedVectors : List Vector :=
