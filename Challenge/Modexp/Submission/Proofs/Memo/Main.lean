@@ -117,25 +117,24 @@ def gasSteps_hit0 (input : ByteArray) (h0 : input.size = 0) :
 
 def gasSteps_hit1 (input : ByteArray) (hsize : input.size < 2 ^ 256) (h : Hit1 input) :
     Challenge.EvmProof.GasSteps (init input) (V1.State.returnedState input) :=
-  ((gasSteps_entry input hsize (by rw [h.1]; decide)).trans
-    ((sound check0PrefixPath rfl (run_check0_taken_prefix input h.1) rfl rfl deployAddress_not_precompile).trans
-    (soundOne rfl (run_check0_jump input) rfl rfl deployAddress_not_precompile))).trans
-    (V1.gasSteps_match input h.2)
-
-def gasSteps_hit2 (input : ByteArray) (hsize : input.size < 2 ^ 256) (h : Hit2 input) :
-    Challenge.EvmProof.GasSteps (init input) (V2.State.returnedState input) :=
   (((gasSteps_entry input hsize (by rw [h.1]; decide)).trans
     (sound check0Path rfl (run_check0_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
     ((sound check1PrefixPath rfl (run_check1_taken_prefix input h.1) rfl rfl deployAddress_not_precompile).trans
     (soundOne rfl (run_check1_jump input) rfl rfl deployAddress_not_precompile))).trans
+    (V1.gasSteps_match input h.2)
+
+def gasSteps_hit2 (input : ByteArray) (hsize : input.size < 2 ^ 256) (h : Hit2 input) :
+    Challenge.EvmProof.GasSteps (init input) (V2.State.returnedState input) :=
+  ((gasSteps_entry input hsize (by rw [h.1]; decide)).trans
+    ((sound check0PrefixPath rfl (run_check0_taken_prefix input h.1) rfl rfl deployAddress_not_precompile).trans
+    (soundOne rfl (run_check0_jump input) rfl rfl deployAddress_not_precompile))).trans
     (V2.gasSteps_match input h.2)
 
 def gasSteps_hit3 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hk : ¬ Hit2 input) (h : Hit3 input) :
     Challenge.EvmProof.GasSteps (init input) (V3.State.returnedState input) :=
-  ((((gasSteps_entry input hsize (by rw [h.1]; decide)).trans
-    (sound check0Path rfl (run_check0_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
-    ((sound check1PrefixPath rfl (run_check1_taken_prefix input h.1) rfl rfl deployAddress_not_precompile).trans
-    (soundOne rfl (run_check1_jump input) rfl rfl deployAddress_not_precompile))).trans
+  (((gasSteps_entry input hsize (by rw [h.1]; decide)).trans
+    ((sound check0PrefixPath rfl (run_check0_taken_prefix input h.1) rfl rfl deployAddress_not_precompile).trans
+    (soundOne rfl (run_check0_jump input) rfl rfl deployAddress_not_precompile))).trans
     (V2.gasSteps_fallback input (fun hz => hk ⟨h.1, hz⟩))).trans
     (V3.gasSteps_match input h.2)
 
@@ -261,20 +260,20 @@ noncomputable def gasSteps_toGuards (input : ByteArray) (hsize : input.size < 2 
 where
   rest0 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hno : NoHit input) :
       Challenge.EvmProof.GasSteps (sizeState input 1322) (Bytecode.Main.trampolineState input 1196) :=
-    if hs : input.size = 99 then
-      ((sound check0PrefixPath rfl (run_check0_taken_prefix input hs) rfl rfl deployAddress_not_precompile).trans
+    if hs : input.size = 98 then
+      (((sound check0PrefixPath rfl (run_check0_taken_prefix input hs) rfl rfl deployAddress_not_precompile).trans
     (soundOne rfl (run_check0_jump input) rfl rfl deployAddress_not_precompile)).trans
-        (V1.gasSteps_fallback input (fun hz => hno.h1 ⟨hs, hz⟩))
+        (V2.gasSteps_fallback input (fun hz => hno.h2 ⟨hs, hz⟩))).trans
+        (V3.gasSteps_fallback input (fun hz => hno.h3 ⟨hs, hz⟩))
     else
       (sound check0Path rfl (run_check0_skip input hsize hs) rfl rfl deployAddress_not_precompile).trans
         (rest1 input hsize hno)
   rest1 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hno : NoHit input) :
       Challenge.EvmProof.GasSteps (sizeState input 1330) (Bytecode.Main.trampolineState input 1196) :=
-    if hs : input.size = 98 then
-      (((sound check1PrefixPath rfl (run_check1_taken_prefix input hs) rfl rfl deployAddress_not_precompile).trans
+    if hs : input.size = 99 then
+      ((sound check1PrefixPath rfl (run_check1_taken_prefix input hs) rfl rfl deployAddress_not_precompile).trans
     (soundOne rfl (run_check1_jump input) rfl rfl deployAddress_not_precompile)).trans
-        (V2.gasSteps_fallback input (fun hz => hno.h2 ⟨hs, hz⟩))).trans
-        (V3.gasSteps_fallback input (fun hz => hno.h3 ⟨hs, hz⟩))
+        (V1.gasSteps_fallback input (fun hz => hno.h1 ⟨hs, hz⟩))
     else
       (sound check1Path rfl (run_check1_skip input hsize hs) rfl rfl deployAddress_not_precompile).trans
         (rest2 input hsize hno)

@@ -45,9 +45,9 @@ def check0Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
    Main.opAt 983 (EvmSemantics.Operation.Dup { idx := 0 }),
-   Main.pushAt 984 1 99,
+   Main.pushAt 984 1 98,
    Main.opAt 985 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)),
-   Main.pushAt 986 2 1413,
+   Main.pushAt 986 2 1491,
    Main.opAt 987 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
   ]
 
@@ -55,18 +55,18 @@ def check0PrefixPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
    Main.opAt 983 (EvmSemantics.Operation.Dup { idx := 0 }),
-   Main.pushAt 984 1 99,
+   Main.pushAt 984 1 98,
    Main.opAt 985 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)),
-   Main.pushAt 986 2 1413
+   Main.pushAt 986 2 1491
   ]
 
 def check1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
    Main.opAt 988 (EvmSemantics.Operation.Dup { idx := 0 }),
-   Main.pushAt 989 1 98,
+   Main.pushAt 989 1 99,
    Main.opAt 990 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)),
-   Main.pushAt 991 2 1491,
+   Main.pushAt 991 2 1413,
    Main.opAt 992 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
   ]
 
@@ -74,9 +74,9 @@ def check1PrefixPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
    Main.opAt 988 (EvmSemantics.Operation.Dup { idx := 0 }),
-   Main.pushAt 989 1 98,
+   Main.pushAt 989 1 99,
    Main.opAt 990 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)),
-   Main.pushAt 991 2 1491
+   Main.pushAt 991 2 1413
   ]
 
 def check2Path :
@@ -292,26 +292,26 @@ theorem run_entry_empty_prefix (input : ByteArray) (h : input.size = 0) :
 def check0JumpState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
       pc := UInt256.ofNat 1329
-      stack := [UInt256.ofNat 1413, UInt256.ofNat 1, UInt256.ofNat input.size] }
+      stack := [UInt256.ofNat 1491, UInt256.ofNat 1, UInt256.ofNat input.size] }
 
 def check0_jumpLocated : Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   Main.opAt 987 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
 
 theorem run_check0_jump (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocated check0_jumpLocated (check0JumpState input) =
-      some (sizeState input 1413) := by
-  have hjump : Decode.isValidJumpDest submissionBytecode 1413 = true :=
-    Artifact.isValidJumpDest_index 1040 (by rfl)
+      some (sizeState input 1491) := by
+  have hjump : Decode.isValidJumpDest submissionBytecode 1491 = true :=
+    Artifact.isValidJumpDest_index 1073 (by rfl)
   have hpc : (check0JumpState input).pc.toNat = Artifact.submissionArtifact.instructionPC 987 := by
     simp [check0JumpState, initialState, PCs.pc0, Challenge.EvmProof.Word.word_toNat_ofNat]
-  exact (Step.runLocated_jumpi_taken check0_jumpLocated rfl (check0JumpState input) 1413 (UInt256.ofNat 1) [UInt256.ofNat input.size] hpc rfl (by simp) Logic.isTrue_one rfl (by norm_num) hjump).trans rfl
+  exact (Step.runLocated_jumpi_taken check0_jumpLocated rfl (check0JumpState input) 1491 (UInt256.ofNat 1) [UInt256.ofNat input.size] hpc rfl (by simp) Logic.isTrue_one rfl (by norm_num) hjump).trans rfl
 
-theorem run_check0_taken_prefix (input : ByteArray) (h : input.size = 99) :
+theorem run_check0_taken_prefix (input : ByteArray) (h : input.size = 98) :
     Challenge.EvmProof.Stepper.runLocatedBlock check0PrefixPath (sizeState input 1322) =
       some (check0JumpState input) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
-  have heq : UInt256.eq (UInt256.ofNat 99) (UInt256.ofNat input.size) = UInt256.ofNat 1 :=
+  have heq : UInt256.eq (UInt256.ofNat 98) (UInt256.ofNat input.size) = UInt256.ofNat 1 :=
     Logic.eq_ofNat_of_eq h
   simp [check0PrefixPath, sizeState, check0JumpState, heq, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -323,12 +323,12 @@ theorem run_check0_taken_prefix (input : ByteArray) (h : input.size = 99) :
     Challenge.EvmProof.Word.word_toNat_ofNat, hzeroWord, hzeroNat]
 
 theorem run_check0_skip (input : ByteArray) (hsize : input.size < 2 ^ 256)
-    (h : input.size ≠ 99) :
+    (h : input.size ≠ 98) :
     Challenge.EvmProof.Stepper.runLocatedBlock check0Path (sizeState input 1322) =
       some (sizeState input 1330) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
-  have heq : UInt256.eq (UInt256.ofNat 99) (UInt256.ofNat input.size) = UInt256.ofNat 0 :=
+  have heq : UInt256.eq (UInt256.ofNat 98) (UInt256.ofNat input.size) = UInt256.ofNat 0 :=
     Logic.eq_ofNat_of_ne (by norm_num) hsize h
   simp [check0Path, sizeState, heq, Logic.not_isTrue_zero, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -342,26 +342,26 @@ theorem run_check0_skip (input : ByteArray) (hsize : input.size < 2 ^ 256)
 def check1JumpState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
       pc := UInt256.ofNat 1337
-      stack := [UInt256.ofNat 1491, UInt256.ofNat 1, UInt256.ofNat input.size] }
+      stack := [UInt256.ofNat 1413, UInt256.ofNat 1, UInt256.ofNat input.size] }
 
 def check1_jumpLocated : Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   Main.opAt 992 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
 
 theorem run_check1_jump (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocated check1_jumpLocated (check1JumpState input) =
-      some (sizeState input 1491) := by
-  have hjump : Decode.isValidJumpDest submissionBytecode 1491 = true :=
-    Artifact.isValidJumpDest_index 1073 (by rfl)
+      some (sizeState input 1413) := by
+  have hjump : Decode.isValidJumpDest submissionBytecode 1413 = true :=
+    Artifact.isValidJumpDest_index 1040 (by rfl)
   have hpc : (check1JumpState input).pc.toNat = Artifact.submissionArtifact.instructionPC 992 := by
     simp [check1JumpState, initialState, PCs.pc0, Challenge.EvmProof.Word.word_toNat_ofNat]
-  exact (Step.runLocated_jumpi_taken check1_jumpLocated rfl (check1JumpState input) 1491 (UInt256.ofNat 1) [UInt256.ofNat input.size] hpc rfl (by simp) Logic.isTrue_one rfl (by norm_num) hjump).trans rfl
+  exact (Step.runLocated_jumpi_taken check1_jumpLocated rfl (check1JumpState input) 1413 (UInt256.ofNat 1) [UInt256.ofNat input.size] hpc rfl (by simp) Logic.isTrue_one rfl (by norm_num) hjump).trans rfl
 
-theorem run_check1_taken_prefix (input : ByteArray) (h : input.size = 98) :
+theorem run_check1_taken_prefix (input : ByteArray) (h : input.size = 99) :
     Challenge.EvmProof.Stepper.runLocatedBlock check1PrefixPath (sizeState input 1330) =
       some (check1JumpState input) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
-  have heq : UInt256.eq (UInt256.ofNat 98) (UInt256.ofNat input.size) = UInt256.ofNat 1 :=
+  have heq : UInt256.eq (UInt256.ofNat 99) (UInt256.ofNat input.size) = UInt256.ofNat 1 :=
     Logic.eq_ofNat_of_eq h
   simp [check1PrefixPath, sizeState, check1JumpState, heq, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -373,12 +373,12 @@ theorem run_check1_taken_prefix (input : ByteArray) (h : input.size = 98) :
     Challenge.EvmProof.Word.word_toNat_ofNat, hzeroWord, hzeroNat]
 
 theorem run_check1_skip (input : ByteArray) (hsize : input.size < 2 ^ 256)
-    (h : input.size ≠ 98) :
+    (h : input.size ≠ 99) :
     Challenge.EvmProof.Stepper.runLocatedBlock check1Path (sizeState input 1330) =
       some (sizeState input 1338) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
-  have heq : UInt256.eq (UInt256.ofNat 98) (UInt256.ofNat input.size) = UInt256.ofNat 0 :=
+  have heq : UInt256.eq (UInt256.ofNat 99) (UInt256.ofNat input.size) = UInt256.ofNat 0 :=
     Logic.eq_ofNat_of_ne (by norm_num) hsize h
   simp [check1Path, sizeState, heq, Logic.not_isTrue_zero, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
