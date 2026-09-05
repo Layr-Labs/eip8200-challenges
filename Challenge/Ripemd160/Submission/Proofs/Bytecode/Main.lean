@@ -5,9 +5,9 @@ set_option maxHeartbeats 2000000
 /-!
 # Direct execution of the RIPEMD-160 main-body initialization
 
-The entry path jumps over obsolete table and round-constant stores, then warms
-memory and initializes the five chaining words. Located paths certify the skip
-and the remaining `PUSH; PUSH; MSTORE` triples against the frozen artifact.
+The compact entry emits five consecutive `PUSH; PUSH; MSTORE` triples. A located
+path certifies those exact instructions against the frozen artifact; it also
+handles the two `PUSH0` values without a special semantic assumption.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Main
@@ -35,13 +35,13 @@ private theorem valueFits (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores) :
     w.value.toNat < 256 ^ w.valueWidth.val := by
   simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
-  rcases hw with rfl | rfl | rfl | rfl | rfl | rfl <;> decide
+  rcases hw with rfl | rfl | rfl | rfl | rfl <;> decide
 
 private theorem offsetFits (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores) :
     w.offset.toNat < 256 ^ w.offsetWidth.val := by
   simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
-  rcases hw with rfl | rfl | rfl | rfl | rfl | rfl <;> decide
+  rcases hw with rfl | rfl | rfl | rfl | rfl <;> decide
 
 private theorem pushAvailable (width : Fin 33) :
     (Operation.Push ⟨width⟩).availableInFork .Osaka = true := by
@@ -67,44 +67,11 @@ def locatedInitStore (w : Artifact.InitStore) (hw : w ∈ Artifact.initStores) :
    ⟨w.index + 2, .op .MSTORE, hv.2.2.2.2.1,
       wfOp (by decide) trivial rfl⟩]
 
-/-- State immediately after jumping over the obsolete initialization region. -/
-def skippedState (input : ByteArray) : State :=
-  { Execution.mainStart input with pc := UInt256.ofNat 0x5f7 }
-
-def locatedSkip : List
-    (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨683, .push ⟨2, by decide⟩ (UInt256.ofNat 0x5f6), by rfl,
-      ⟨by decide, pushAvailable ⟨2, by decide⟩⟩⟩,
-   ⟨684, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨745, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
-
-theorem run_skip (input : ByteArray) :
-    Challenge.EvmProof.Stepper.runLocatedBlock locatedSkip
-      (Execution.mainStart input) = some (skippedState input) := by
-  have hvalid : Decode.isValidJumpDest submissionBytecode 0x5f6 = true := by
-    have hdest := Artifact.submissionArtifact.isValidJumpDest_index 745 (by rfl)
-    rw [Artifact.referenceArtifact_pc_745] at hdest
-    simpa [Artifact.submissionArtifact] using hdest
-  simp [locatedSkip, skippedState, Execution.mainStart, Execution.atPC, initialState,
-    Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated,
-    Challenge.EvmProof.Stepper.runInstr, hvalid]
-
-def gasSteps_skip (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (Execution.mainStart input) (skippedState input) := by
-  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka locatedSkip
-  · rfl
-  · rfl
-  · exact run_skip input
-  · rfl
-  · exact deployAddress_not_precompile
-
 def initializedState (input : ByteArray) : State :=
-  Artifact.initStores.foldl applyInitStore (skippedState input)
+  Artifact.initStores.foldl applyInitStore (Execution.mainStart input)
 
 @[simp] theorem initializedState_pc (input : ByteArray) :
-    (initializedState input).pc = UInt256.ofNat (Artifact.instructionPC 764) := by
+    (initializedState input).pc = UInt256.ofNat (Artifact.instructionPC 698) := by
   rfl
 
 @[simp] theorem initializedState_stack (input : ByteArray) :
@@ -130,7 +97,7 @@ theorem run_initStore (s : State) (w : Artifact.InitStore)
     Challenge.EvmProof.Stepper.runLocatedBlock (locatedInitStore w hw) s =
       some (applyInitStore s w) := by
   simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
-  rcases hw with rfl | rfl | rfl | rfl | rfl | rfl
+  rcases hw with rfl | rfl | rfl | rfl | rfl
   all_goals
     simp (config := { maxSteps := 200000 })
       [locatedInitStore, applyInitStore, hpc, hstack, hrun,
@@ -138,7 +105,7 @@ theorem run_initStore (s : State) (w : Artifact.InitStore)
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
-        State.activeWordsAfterUInt256, pushZeroWord,
+        State.activeWordsAfterUInt256,
         Challenge.EvmProof.Word.word_toNat_ofNat]
 
 def gasSteps_initStore (s : State) (w : Artifact.InitStore)
@@ -207,7 +174,7 @@ def gasSteps_initStores (s : State) :
 def gasSteps_bodyInitialization (input : ByteArray) :
     Challenge.EvmProof.GasSteps (Execution.mainStart input)
       (initializedState input) := by
-  have body := gasSteps_initStores (skippedState input)
+  have body := gasSteps_initStores (Execution.mainStart input)
     Artifact.initStores (fun _ h => h)
     (by norm_num [InitChain, Artifact.initStores])
     (by
@@ -215,13 +182,13 @@ def gasSteps_bodyInitialization (input : ByteArray) :
       simp only [Artifact.initStores, List.head?_cons, Option.some.injEq] at hw
       subst w
       rfl)
-    (by simp [skippedState, Execution.mainStart, Execution.atPC, initialState])
-    (by simp [skippedState, Execution.mainStart, Execution.atPC, initialState])
-    (by simp [skippedState, Execution.mainStart, Execution.atPC, initialState])
-    (by simp [skippedState, Execution.mainStart, Execution.atPC, initialState])
-    (by simp [skippedState, Execution.mainStart, Execution.atPC, initialState,
+    (by simp [Execution.mainStart, Execution.atPC, initialState])
+    (by simp [Execution.mainStart, Execution.atPC, initialState])
+    (by simp [Execution.mainStart, Execution.atPC, initialState])
+    (by simp [Execution.mainStart, Execution.atPC, initialState])
+    (by simp [Execution.mainStart, Execution.atPC, initialState,
       deployAddress_not_precompile])
-  exact Challenge.EvmProof.GasSteps.cast ((gasSteps_skip input).trans body) rfl
+  exact Challenge.EvmProof.GasSteps.cast body rfl
     (by simp [initializedState])
 
 def gasSteps_initialize (input : ByteArray) :
