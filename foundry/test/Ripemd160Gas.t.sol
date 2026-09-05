@@ -11,7 +11,7 @@ import {Ripemd160Deployed} from "evmification/ripemd160/Ripemd160Deployed.sol";
 /// @dev The `leanGas` column below is what
 ///      `Challenge/Ripemd160/Scorer.lean` reports for the frozen reference, as
 ///      printed by `lake exe ripemd160challenge` and summarized in that
-///      challenge's README gas table. This suite re-measures the same 17
+///      challenge's README gas table. This suite re-measures the same 49
 ///      vectors against the same bytecode under revm and asserts agreement, so
 ///      the README's numbers are checked by an EVM that shares no code with the
 ///      one that produced them.
@@ -54,20 +54,66 @@ contract Ripemd160GasTest is GasCrossCheck {
         cases.push(Case("376-byte", Vectors.patterned(376), 1042710));
         cases.push(Case("1000-byte", Vectors.patterned(1000), 2378106));
         cases.push(Case("1000 a's", Vectors.repeated(1000, "a"), 2378106));
+        cases.push(Case("generated #01", Vectors.ripemdGenerated(0, 1), 894339));
+        cases.push(Case("generated #02", Vectors.ripemdGenerated(0, 2), 449206));
+        cases.push(Case("generated #03", Vectors.ripemdGenerated(0, 3), 2378103));
+        cases.push(Case("generated #04", Vectors.ripemdGenerated(0, 4), 1932970));
+        cases.push(Case("generated #05", Vectors.ripemdGenerated(0, 5), 1339469));
+        cases.push(Case("generated #06", Vectors.ripemdGenerated(0, 6), 894336));
+        cases.push(Case("generated #07", Vectors.ripemdGenerated(0, 7), 449203));
+        cases.push(Case("generated #08", Vectors.ripemdGenerated(0, 8), 2229729));
+        cases.push(Case("generated #09", Vectors.ripemdGenerated(0, 9), 1784596));
+        cases.push(Case("generated #10", Vectors.ripemdGenerated(0, 10), 1339466));
+        cases.push(Case("generated #11", Vectors.ripemdGenerated(0, 11), 745962));
+        cases.push(Case("generated #12", Vectors.ripemdGenerated(0, 12), 300830));
+        cases.push(Case("generated #13", Vectors.ripemdGenerated(0, 13), 2229726));
+        cases.push(Case("generated #14", Vectors.ripemdGenerated(0, 14), 1784593));
+        cases.push(Case("generated #15", Vectors.ripemdGenerated(0, 15), 1191092));
+        cases.push(Case("generated #16", Vectors.ripemdGenerated(0, 16), 745959));
+        cases.push(Case("generated #17", Vectors.ripemdGenerated(0, 17), 300830));
+        cases.push(Case("generated #18", Vectors.ripemdGenerated(0, 18), 2081352));
+        cases.push(Case("generated #19", Vectors.ripemdGenerated(0, 19), 1636219));
+        cases.push(Case("generated #20", Vectors.ripemdGenerated(0, 20), 1191089));
+        cases.push(Case("generated #21", Vectors.ripemdGenerated(0, 21), 597586));
+        cases.push(Case("generated #22", Vectors.ripemdGenerated(0, 22), 152456));
+        cases.push(Case("generated #23", Vectors.ripemdGenerated(0, 23), 2081349));
+        cases.push(Case("generated #24", Vectors.ripemdGenerated(0, 24), 1636216));
+        cases.push(Case("generated #25", Vectors.ripemdGenerated(0, 25), 1042716));
+        cases.push(Case("generated #26", Vectors.ripemdGenerated(0, 26), 597583));
+        cases.push(Case("generated #27", Vectors.ripemdGenerated(0, 27), 152453));
+        cases.push(Case("generated #28", Vectors.ripemdGenerated(0, 28), 1932976));
+        cases.push(Case("generated #29", Vectors.ripemdGenerated(0, 29), 1487843));
+        cases.push(Case("generated #30", Vectors.ripemdGenerated(0, 30), 1042713));
+        cases.push(Case("generated #31", Vectors.ripemdGenerated(0, 31), 449209));
+        cases.push(Case("generated #32", Vectors.ripemdGenerated(0, 32), 2378106));
     }
 
     /// @dev The vector set must stay the one the Lean scorer scores; a dropped
     ///      or added vector would silently change the suite total.
     function test_vectors_match_scorer() public view {
-        assertEq(cases.length, 17, "vector count");
+        assertEq(cases.length, 49, "vector count");
         assertEq(pin.provedSize, 1671, "reference bytecode size");
         assertEq(refAddr.code.length, 1671, "etched code size");
 
         uint256[17] memory sizes =
             [uint256(0), 3, 1, 31, 32, 55, 56, 63, 64, 65, 119, 120, 128, 256, 376, 1000, 1000];
-        for (uint256 i = 0; i < cases.length; i++) {
+        for (uint256 i = 0; i < sizes.length; i++) {
             assertEq(cases[i].input.length, sizes[i], cases[i].label);
         }
+        for (uint256 i = sizes.length; i < cases.length; i++) {
+            assertGt(cases[i].input.length, 0, cases[i].label);
+            assertLe(cases[i].input.length, 1024, cases[i].label);
+        }
+        assertEq(
+            keccak256(cases[17].input),
+            0x3055be676918ef30f4e9a28e5e6415ef6ea1906843a1cc90d16d7f01e37aba09,
+            "generated #01 bytes"
+        );
+        assertEq(
+            keccak256(cases[48].input),
+            0x20d91b839f85c790b0d3d9244d499f1b3e736e346d5885ec6e95f9e9579474bc,
+            "generated #32 bytes"
+        );
     }
 
     /// @dev A gas comparison is only meaningful if both sides compute the same
@@ -93,7 +139,7 @@ contract Ripemd160GasTest is GasCrossCheck {
             forgeTotal += gasUsed;
         }
         _row("all vectors", 0, leanTotal, forgeTotal);
-        assertEq(forgeTotal, 9862146, "README suite total");
+        assertEq(forgeTotal, 49312421, "README suite total");
     }
 
     /// @dev The scorers score every vector from a clean and a dirty initial
@@ -119,10 +165,10 @@ contract Ripemd160GasTest is GasCrossCheck {
         }
         console2.log(
             string.concat(
-                "reference vs precompile: ", _ratio(referenceTotal, precompileTotal), " (README: 419.31x)"
+                "reference vs precompile: ", _ratio(referenceTotal, precompileTotal), " (README: 476.72x)"
             )
         );
-        assertEq(_ratio(referenceTotal, precompileTotal), "419.31x", "vs precompile ratio");
+        assertEq(_ratio(referenceTotal, precompileTotal), "476.72x", "vs precompile ratio");
     }
 
     /// @notice Measures eth-act/evmification's Solidity implementation on the

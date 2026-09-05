@@ -5,8 +5,8 @@ scored tracks on a shared branch:
 
 | track | editable path | score |
 | --- | --- | --- |
-| `modexp` | `Challenge/Modexp/Submission` | gas over 13 vectors |
-| `ripemd160` | `Challenge/Ripemd160/Submission` | clean-state gas over 17 vectors |
+| `modexp` | `Challenge/Modexp/Submission` | gas over 44 vectors |
+| `ripemd160` | `Challenge/Ripemd160/Submission` | clean-state gas over 49 vectors |
 
 Lower is better in every track. The editable paths are deliberately disjoint,
 so Yukon can promote one track without replacing a sibling track's solution.
