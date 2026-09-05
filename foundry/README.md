@@ -3,7 +3,8 @@
 The gas numbers in the challenge READMEs are produced by concrete execution in
 the pinned Lean EVM semantics. This directory re-derives them with a completely
 separate EVM — the revm implementation inside Foundry — running the same frozen
-bytecode over the same vectors, and asserts exact agreement.
+bytecode. The MODEXP tests use the original 13-vector subset of the 61-vector
+scoring corpus.
 
 Nothing here is part of any proof, and nothing here feeds the generated README
 gas tables. It is a falsification check on the published measurements: if the
@@ -26,13 +27,13 @@ Every successful scored vector agrees to the gas. Suite totals:
 | RIPEMD-160 | 17 | 9,862,146 | 9,862,146 | 0 |
 | MODEXP | 13 | 860,100,123 | 860,100,123 | 0 |
 
-The `vs precompile` ratios the READMEs publish reproduce exactly as well:
-419.31× for RIPEMD-160 and 16207.51× for MODEXP. For MODEXP
+The RIPEMD-160 `vs precompile` ratio reproduces exactly. The MODEXP subset
+ratio is 16207.51×. For MODEXP,
 the check goes one step further and compares the pinned semantics' own
 Osaka/EIP-7883 precompile pricing against revm's, tuple by tuple; those agree
 too, including the 500-gas floor and the 4,080 charged for the EIP-198 examples.
 
-So the published gas measurements hold up. What was worth checking is the
+So the selected gas measurements hold up. What was worth checking is the
 methodology, and it survived: see [Measurement](#measurement) for why the
 naive way of measuring this is off by a small constant, and
 [`test/GasProbe.t.sol`](test/GasProbe.t.sol) for the controls that catch it.
@@ -47,7 +48,7 @@ through the identical probe on the identical vectors. Suite totals:
 | challenge | reference | evmification | precompile | reference ÷ evmification | reference ÷ precompile | evmification ÷ precompile |
 |---|---:|---:|---:|---:|---:|---:|
 | RIPEMD-160 | 9,862,146 | 6,597,217 | 23,520 | 1.49× | 419.31× | 280.49× |
-| MODEXP | 860,100,123 | 759,619 | 53,068 | 1132.28× | 16207.51× | 14.31× |
+| MODEXP 13-vector subset | 860,100,123 | 759,619 | 53,068 | 1132.28× | 16207.51× | 14.31× |
 
 For RIPEMD-160 the bundled reference costs about 1.5× the hand-optimized
 Solidity, which is the expected price of a deliberately regular, proof-friendly

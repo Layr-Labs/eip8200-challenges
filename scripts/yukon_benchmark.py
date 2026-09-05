@@ -24,7 +24,7 @@ class Track:
 
 
 TRACKS = {
-    "modexp": Track("Modexp", "MODEXP", 13, False),
+    "modexp": Track("Modexp", "MODEXP", 61, False),
     "ripemd160": Track("Ripemd160", "RIPEMD-160", 17, True),
 }
 

@@ -10,8 +10,8 @@ import {ModexpDeployed} from "evmification/modexp/ModexpDeployed.sol";
 ///
 /// @dev The `leanGas` column is what `Challenge/Modexp/Scorer.lean` reports for
 ///      the frozen reference, as printed by `lake exe modexpchallenge` and
-///      summarized in that challenge's README gas table. The same 13 vectors run
-///      here against the same bytecode under revm.
+///      summarized in that challenge's README gas table. The original 13-vector
+///      subset runs here against the same bytecode under revm.
 ///
 ///      MODEXP is the sharpest of the three cross-checks. Its cost is
 ///      branch-sensitive rather than a function of calldata length alone, the
@@ -180,7 +180,7 @@ contract ModexpGasTest is GasCrossCheck {
             forgeTotal += gasUsed;
         }
         _row("all vectors", 0, leanTotal, forgeTotal);
-        assertEq(forgeTotal, 860100123, "README suite total");
+        assertEq(forgeTotal, 860100123, "13-vector subset total");
     }
 
     /// @dev The scorer's `precompile` column comes from the pinned semantics'
@@ -208,8 +208,8 @@ contract ModexpGasTest is GasCrossCheck {
         _assertGasIsStateIndependent(refAddr, cases[8].input, "257-bit modulus");
     }
 
-    /// @dev Recomputes the README's `vs precompile` ratio from measured gas.
-    function test_precompile_ratio_matches_readme() public view {
+    /// @dev Computes the `vs precompile` ratio for the 13-vector subset.
+    function test_subset_precompile_ratio() public view {
         uint256 referenceTotal;
         uint256 precompileTotal;
         for (uint256 i = 0; i < cases.length; i++) {
@@ -220,7 +220,7 @@ contract ModexpGasTest is GasCrossCheck {
         }
         console2.log(
             string.concat(
-                "reference vs precompile: ", _ratio(referenceTotal, precompileTotal), " (README: 16207.51x)"
+                "reference vs precompile: ", _ratio(referenceTotal, precompileTotal), " (subset: 16207.51x)"
             )
         );
         assertEq(_ratio(referenceTotal, precompileTotal), "16207.51x", "vs precompile ratio");
