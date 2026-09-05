@@ -189,8 +189,9 @@ def gasSteps_hit8 (input : ByteArray) (hsize : input.size < 2 ^ 256) (h : Hit8 i
     (sound check3Path rfl (run_check3_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
     (sound check4Path rfl (run_check4_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
     (sound check5Path rfl (run_check5_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
-    ((sound check6PrefixPath rfl (run_check6_taken_prefix input h.1) rfl rfl deployAddress_not_precompile).trans
-    (soundOne rfl (run_check6_jump input) rfl rfl deployAddress_not_precompile))).trans
+    (sound check6Path rfl (run_check6_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
+    ((sound check7PrefixPath rfl (run_check7_taken_prefix input h.1) rfl rfl deployAddress_not_precompile).trans
+    (soundOne rfl (run_check7_jump input) rfl rfl deployAddress_not_precompile))).trans
     (V8.gasSteps_match input h.2)
 
 def gasSteps_hit9 (input : ByteArray) (hsize : input.size < 2 ^ 256) (h : Hit9 input) :
@@ -202,9 +203,8 @@ def gasSteps_hit9 (input : ByteArray) (hsize : input.size < 2 ^ 256) (h : Hit9 i
     (sound check3Path rfl (run_check3_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
     (sound check4Path rfl (run_check4_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
     (sound check5Path rfl (run_check5_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
-    (sound check6Path rfl (run_check6_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
-    ((sound check7PrefixPath rfl (run_check7_taken_prefix input h.1) rfl rfl deployAddress_not_precompile).trans
-    (soundOne rfl (run_check7_jump input) rfl rfl deployAddress_not_precompile))).trans
+    ((sound check6PrefixPath rfl (run_check6_taken_prefix input h.1) rfl rfl deployAddress_not_precompile).trans
+    (soundOne rfl (run_check6_jump input) rfl rfl deployAddress_not_precompile))).trans
     (V9.gasSteps_match input h.2)
 
 def gasSteps_hit10 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hk : ¬ Hit9 input) (h : Hit10 input) :
@@ -216,9 +216,8 @@ def gasSteps_hit10 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hk : ¬ H
     (sound check3Path rfl (run_check3_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
     (sound check4Path rfl (run_check4_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
     (sound check5Path rfl (run_check5_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
-    (sound check6Path rfl (run_check6_skip input hsize (by rw [h.1]; decide)) rfl rfl deployAddress_not_precompile)).trans
-    ((sound check7PrefixPath rfl (run_check7_taken_prefix input h.1) rfl rfl deployAddress_not_precompile).trans
-    (soundOne rfl (run_check7_jump input) rfl rfl deployAddress_not_precompile))).trans
+    ((sound check6PrefixPath rfl (run_check6_taken_prefix input h.1) rfl rfl deployAddress_not_precompile).trans
+    (soundOne rfl (run_check6_jump input) rfl rfl deployAddress_not_precompile))).trans
     (V9.gasSteps_fallback input (fun hz => hk ⟨h.1, hz⟩))).trans
     (V10.gasSteps_match input h.2)
 
@@ -315,20 +314,20 @@ where
         (rest6 input hsize hno)
   rest6 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hno : NoHit input) :
       Challenge.EvmProof.GasSteps (sizeState input 1370) (Bytecode.Main.trampolineState input 1196) :=
-    if hs : input.size = 163 then
-      ((sound check6PrefixPath rfl (run_check6_taken_prefix input hs) rfl rfl deployAddress_not_precompile).trans
+    if hs : input.size = 192 then
+      (((sound check6PrefixPath rfl (run_check6_taken_prefix input hs) rfl rfl deployAddress_not_precompile).trans
     (soundOne rfl (run_check6_jump input) rfl rfl deployAddress_not_precompile)).trans
-        (V8.gasSteps_fallback input (fun hz => hno.h8 ⟨hs, hz⟩))
+        (V9.gasSteps_fallback input (fun hz => hno.h9 ⟨hs, hz⟩))).trans
+        (V10.gasSteps_fallback input (fun hz => hno.h10 ⟨hs, hz⟩))
     else
       (sound check6Path rfl (run_check6_skip input hsize hs) rfl rfl deployAddress_not_precompile).trans
         (rest7 input hsize hno)
   rest7 (input : ByteArray) (hsize : input.size < 2 ^ 256) (hno : NoHit input) :
       Challenge.EvmProof.GasSteps (sizeState input 1378) (Bytecode.Main.trampolineState input 1196) :=
-    if hs : input.size = 192 then
-      (((sound check7PrefixPath rfl (run_check7_taken_prefix input hs) rfl rfl deployAddress_not_precompile).trans
+    if hs : input.size = 163 then
+      ((sound check7PrefixPath rfl (run_check7_taken_prefix input hs) rfl rfl deployAddress_not_precompile).trans
     (soundOne rfl (run_check7_jump input) rfl rfl deployAddress_not_precompile)).trans
-        (V9.gasSteps_fallback input (fun hz => hno.h9 ⟨hs, hz⟩))).trans
-        (V10.gasSteps_fallback input (fun hz => hno.h10 ⟨hs, hz⟩))
+        (V8.gasSteps_fallback input (fun hz => hno.h8 ⟨hs, hz⟩))
     else
       (sound check7Path rfl (run_check7_skip input hsize hs) rfl rfl deployAddress_not_precompile).trans
         (rest8 input hsize hno)
