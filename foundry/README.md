@@ -24,7 +24,7 @@ Every successful scored vector agrees to the gas. Suite totals:
 
 | challenge | vectors | reference (Lean scorer) | reference (revm) | delta |
 |---|---:|---:|---:|---:|
-| RIPEMD-160 | 17 | 9,862,146 | 9,862,146 | 0 |
+| RIPEMD-160 | 49 | 49,312,421 | 49,312,421 | 0 |
 | MODEXP | 13 | 860,100,123 | 860,100,123 | 0 |
 
 The RIPEMD-160 `vs precompile` ratio reproduces exactly. The MODEXP subset
@@ -47,7 +47,7 @@ through the identical probe on the identical vectors. Suite totals:
 
 | challenge | reference | evmification | precompile | reference ÷ evmification | reference ÷ precompile | evmification ÷ precompile |
 |---|---:|---:|---:|---:|---:|---:|
-| RIPEMD-160 | 9,862,146 | 6,597,217 | 23,520 | 1.49× | 419.31× | 280.49× |
+| RIPEMD-160 | 49,312,421 | 33,039,904 | 103,440 | 1.49× | 476.72× | 319.41× |
 | MODEXP 13-vector subset | 860,100,123 | 759,619 | 53,068 | 1132.28× | 16207.51× | 14.31× |
 
 For RIPEMD-160 the bundled reference costs about 1.5× the hand-optimized
@@ -66,7 +66,7 @@ directly:
 
 ```
 evmification at or below the precompile's price on 4 of 13 vectors   (MODEXP)
-evmification at or below the precompile's price on 0 of 17 vectors   (RIPEMD-160)
+evmification at or below the precompile's price on 0 of 49 vectors   (RIPEMD-160)
 ```
 
 MODEXP is a different story, and the gap is concentrated in the wide-modulus

@@ -43,7 +43,51 @@ def repeated (n : Nat) (b : UInt8) : ByteArray := Id.run do
   for _ in [:n] do bs := bs.push b
   return bs
 
-def vectors : List Vector :=
+/-! ## Seeded corpus
+
+The public seed makes the default corpus reproducible. A private evaluator can
+replace this value before building to produce different inputs and lengths. -/
+
+def corpusSeed : Nat := 0
+
+private def prngModulus : Nat := 2 ^ 64
+
+private def nextState (state : Nat) : Nat :=
+  (state * 6364136223846793005 + 1442695040888963407) % prngModulus
+
+/-- Reproducible bytes from a 64-bit linear congruential generator.
+This generator produces test data. It is not a cryptographic PRNG. -/
+private def generatedBytes (seed size : Nat) : ByteArray :=
+  let rec go (remaining state : Nat) (bytes : Array UInt8) : ByteArray :=
+    match remaining with
+    | 0 => ByteArray.mk bytes
+    | n + 1 =>
+        let next := nextState state
+        go n next (bytes.push (UInt8.ofNat (next / (2 ^ 56))))
+  go size (seed % prngModulus) #[]
+
+private def paddedIndex (index : Nat) : String :=
+  if index < 10 then s!"0{index}" else toString index
+
+private def generatedVector (index : Nat) : Vector :=
+  let seed := (corpusSeed + 0x524950454d44 + index) % prngModulus
+  let lengthState := nextState seed
+  let length := 1 + lengthState % 1024
+  { label := s!"generated #{paddedIndex index}"
+  , input := generatedBytes (nextState lengthState) length }
+
+/-- Thirty-two deterministic inputs with seed-derived bytes and lengths. -/
+def generatedVectors : List Vector :=
+  (List.range 32).map fun offset => generatedVector (offset + 1)
+
+theorem generatedVectors_length : generatedVectors.length = 32 := by decide
+
+theorem generatedVectors_size_bounds :
+    generatedVectors.all (fun vector =>
+      0 < vector.input.size && vector.input.size ≤ 1024) := by
+  native_decide
+
+def focusedVectors : List Vector :=
   [ { label := "empty", input := ByteArray.empty }
   , { label := "abc", input := "abc".toUTF8 }
   , { label := "1-byte", input := patterned 1 }
@@ -63,6 +107,10 @@ def vectors : List Vector :=
   , { label := "376-byte", input := patterned 376 }
   , { label := "1000-byte", input := patterned 1000 }
   , { label := "1000 a's", input := repeated 1000 0x61 } ]
+
+def vectors : List Vector := focusedVectors ++ generatedVectors
+
+theorem vectors_length : vectors.length = 49 := by decide
 
 /-- Published RIPEMD-160 vectors, including Ethereum's 12-byte left padding. -/
 def oracleChecks : List (ByteArray × String) :=
