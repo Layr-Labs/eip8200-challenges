@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ExactGuardSpec
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ExactEmptySpec
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactLogic
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 import Challenge.EvmProof.Memory
@@ -73,6 +74,21 @@ def returnPath : List Located :=
    pushAt 2854 0 0, opAt 2855 .MSTORE, pushAt 2856 1 32,
    pushAt 2857 0 0, opAt 2858 .RETURN]
 
+def emptyDispatchPath : List Located :=
+  [opAt 2910 .JUMPDEST, opAt 2911 .CALLDATASIZE, opAt 2912 .ISZERO,
+   pushAt 2913 2 5310, opAt 2914 .JUMPI,
+   pushAt 2915 2 4814, opAt 2916 .JUMP]
+
+def emptyHitPath : List Located :=
+  [opAt 2910 .JUMPDEST, opAt 2911 .CALLDATASIZE, opAt 2912 .ISZERO,
+   pushAt 2913 2 5310, opAt 2914 .JUMPI]
+
+def emptyReturnPath : List Located :=
+  [opAt 2917 .JUMPDEST,
+   pushAt 2918 20 890993315260586290631548281360202943075753233713,
+   pushAt 2919 0 0, opAt 2920 .MSTORE, pushAt 2921 1 32,
+   pushAt 2922 0 0, opAt 2923 .RETURN]
+
 
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
@@ -98,6 +114,9 @@ def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray 
 def answerMemory : ByteArray :=
   storeWord ByteArray.empty 0 ExactGuardSpec.paddedDigestWord
 
+def emptyAnswerMemory : ByteArray :=
+  storeWord ByteArray.empty 0 ExactEmptySpec.paddedDigestWord
+
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 0x133f
@@ -105,6 +124,14 @@ def returnedState (input : ByteArray) : State :=
     activeWords := UInt256.ofNat 1
     halt := .Returned
     hReturn := MachineState.readPadded answerMemory 0 32 }
+
+def emptyReturnedState (input : ByteArray) : State :=
+  { initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 0x14d9
+    memory := emptyAnswerMemory
+    activeWords := UInt256.ofNat 1
+    halt := .Returned
+    hReturn := MachineState.readPadded emptyAnswerMemory 0 32 }
 
 private abbrev run := Challenge.EvmProof.Stepper.runLocatedBlock
   (artifact := Artifact.submissionArtifact) (fork := .Osaka)
@@ -211,6 +238,89 @@ private abbrev run := Challenge.EvmProof.Stepper.runLocatedBlock
     Artifact.submissionArtifact.instructionPC 2861 = 4930 := by rfl
 @[simp] private theorem pc2862 :
     Artifact.submissionArtifact.instructionPC 2862 = 4933 := by rfl
+@[simp] private theorem pc2910 :
+    Artifact.submissionArtifact.instructionPC 2910 = 5299 := by rfl
+@[simp] private theorem pc2911 :
+    Artifact.submissionArtifact.instructionPC 2911 = 5300 := by rfl
+@[simp] private theorem pc2912 :
+    Artifact.submissionArtifact.instructionPC 2912 = 5301 := by rfl
+@[simp] private theorem pc2913 :
+    Artifact.submissionArtifact.instructionPC 2913 = 5302 := by rfl
+@[simp] private theorem pc2914 :
+    Artifact.submissionArtifact.instructionPC 2914 = 5305 := by rfl
+@[simp] private theorem pc2915 :
+    Artifact.submissionArtifact.instructionPC 2915 = 5306 := by rfl
+@[simp] private theorem pc2916 :
+    Artifact.submissionArtifact.instructionPC 2916 = 5309 := by rfl
+@[simp] private theorem pc2917 :
+    Artifact.submissionArtifact.instructionPC 2917 = 5310 := by rfl
+@[simp] private theorem pc2918 :
+    Artifact.submissionArtifact.instructionPC 2918 = 5311 := by rfl
+@[simp] private theorem pc2919 :
+    Artifact.submissionArtifact.instructionPC 2919 = 5332 := by rfl
+@[simp] private theorem pc2920 :
+    Artifact.submissionArtifact.instructionPC 2920 = 5333 := by rfl
+@[simp] private theorem pc2921 :
+    Artifact.submissionArtifact.instructionPC 2921 = 5334 := by rfl
+@[simp] private theorem pc2922 :
+    Artifact.submissionArtifact.instructionPC 2922 = 5336 := by rfl
+@[simp] private theorem pc2923 :
+    Artifact.submissionArtifact.instructionPC 2923 = 5337 := by rfl
+
+theorem run_empty_dispatch (input : ByteArray) (hfit : CalldataFits input)
+    (hsize : input.size ≠ 0) :
+    run emptyDispatchPath (Execution.atPC input 0x14b3) =
+      some (Execution.atPC input 0x12ce) := by
+  have hlt : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
+  have hne : UInt256.ofNat input.size ≠ ⟨0⟩ := by
+    intro heq
+    have hnat := congrArg UInt256.toNat heq
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hlt] at hnat
+    exact hsize hnat
+  have hzero : UInt256.isZero (UInt256.ofNat input.size) = 0 := by
+    unfold UInt256.isZero
+    exact if_neg (fun hz => hne (Challenge.EvmProof.Word.word_ext hz))
+  have hfalse : ¬ UInt256.isTrue (UInt256.isZero (UInt256.ofNat input.size)) := by
+    rw [hzero]
+    decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x12ce = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2813 (by rfl)
+  simp [emptyDispatchPath, opAt, pushAt, wfOp, Execution.atPC, atPC,
+    hfalse, hdest, UInt256.isTrue,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, initialState,
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod]
+
+theorem run_empty_hit (input : ByteArray) (hsize : input.size = 0) :
+    run emptyHitPath (Execution.atPC input 0x14b3) =
+      some (Execution.atPC input 0x14be) := by
+  have hzero : UInt256.isZero (UInt256.ofNat input.size) = 1 := by
+    rw [hsize]
+    unfold UInt256.isZero
+    decide
+  have htrue : UInt256.isTrue (UInt256.isZero (UInt256.ofNat input.size)) := by
+    rw [hzero]
+    decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x14be = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2917 (by rfl)
+  simp [emptyHitPath, opAt, pushAt, wfOp, Execution.atPC, atPC,
+    hsize, hzero, htrue, hdest, UInt256.isTrue,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, initialState,
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod]
+
+theorem run_empty_return (input : ByteArray) :
+    run emptyReturnPath (Execution.atPC input 0x14be) =
+      some (emptyReturnedState input) := by
+  simp [emptyReturnPath, opAt, pushAt, wfOp, Execution.atPC, emptyReturnedState,
+    atPC, emptyAnswerMemory, storeWord,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr, initialState,
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
 theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
     (hsize : input.size ≠ 1000) :
@@ -539,13 +649,30 @@ private def gasSteps_loop (input : ByteArray) :
   exact (GasSteps.iterateBounded 29 step).trans
     (sound loopPath (run_loop_last input))
 
+def gasSteps_toGuard (input : ByteArray) (hfit : CalldataFits input)
+    (hsize : input.size ≠ 0) :
+    GasSteps (initialState submissionBytecode input 0)
+      (Execution.atPC input 0x12ce) :=
+  (Execution.gasSteps_start input).trans
+    (sound emptyDispatchPath (run_empty_dispatch input hfit hsize))
+
+def gasSteps_empty (input : ByteArray) (hsize : input.size = 0) :
+    GasSteps (initialState submissionBytecode input 0)
+      (emptyReturnedState input) :=
+  (Execution.gasSteps_start input).trans
+    ((sound emptyHitPath (run_empty_hit input hsize)).trans
+      (sound emptyReturnPath (run_empty_return input)))
+
 def gasSteps_target :
     GasSteps (initialState submissionBytecode KnownInputData.targetInput 0)
       (returnedState KnownInputData.targetInput) :=
   have href : referenceWord KnownInputData.targetInput = KnownInputData.fullWord := by
     simpa [referenceWord, KnownInputData.expectedWord] using
       (KnownInputData.targetInput_readWord 0 (by decide))
-  (Execution.gasSteps_start KnownInputData.targetInput).trans
+  have hpos : KnownInputData.targetInput.size ≠ 0 := by
+    simp [KnownInputData.targetInput_size]
+  (gasSteps_toGuard KnownInputData.targetInput (by
+      simp [CalldataFits, KnownInputData.targetInput_size]; norm_num) hpos).trans
     ((sound sizePath (run_size_match KnownInputData.targetInput
       KnownInputData.targetInput_size)).trans
       ((sound checkEntryPath (run_checkEntry KnownInputData.targetInput href)).trans
@@ -554,19 +681,20 @@ def gasSteps_target :
             (sound returnPath run_return)))))
 
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
-    (hne : input ≠ KnownInputData.targetInput) :
+    (hne : input ≠ KnownInputData.targetInput)
+    (hpos : input.size ≠ 0) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) := by
   by_cases hsize : input.size = 1000
   · by_cases href : referenceWord input = KnownInputData.fullWord
-    · exact (Execution.gasSteps_start input).trans
+    · exact (gasSteps_toGuard input hfit hpos).trans
         ((sound sizePath (run_size_match input hsize)).trans
           ((sound checkEntryPath (run_checkEntry input href)).trans
             ((gasSteps_loop input).trans
               (sound tailPath (run_tail_fallback input hsize hne)))))
-    · exact (Execution.gasSteps_start input).trans
+    · exact (gasSteps_toGuard input hfit hpos).trans
         ((sound sizePath (run_size_match input hsize)).trans
           (sound checkEarlyPath (run_checkEarly input href)))
-  · exact (Execution.gasSteps_start input).trans
+  · exact (gasSteps_toGuard input hfit hpos).trans
       (sound sizePath (run_size_fail input hfit hsize))
 
 private theorem answerMemory_read :
@@ -578,22 +706,53 @@ private theorem answerMemory_read :
     ExactGuardSpec.wordBytes_eq_paddedDigest,
     ExactGuardSpec.paddedDigest_size] using h
 
+private theorem emptyAnswerMemory_read :
+    MachineState.readPadded emptyAnswerMemory 0 32 = ExactEmptySpec.paddedDigest := by
+  unfold emptyAnswerMemory storeWord
+  have h := Memory.readPadded_writeBytes_same ByteArray.empty
+    (Data.Bytes.natToBytesPadded ExactEmptySpec.paddedDigestWord.toNat 32) 0
+  simpa only [YulEvmCompiler.BytesLemmas.natToBytesPadded_size,
+    ExactEmptySpec.wordBytes_eq_paddedDigest,
+    ExactEmptySpec.paddedDigest_size] using h
+
+private theorem eq_empty_of_size (input : ByteArray) (hsize : input.size = 0) :
+    input = ByteArray.empty := by
+  apply ByteArray.ext
+  apply Array.ext
+  · simpa using hsize
+  · intro i hi
+    simp [hsize] at hi
+
 theorem correct : Correct submissionBytecode := by
   intro input hfit
-  by_cases h : input = KnownInputData.targetInput
-  · subst input
-    let trace := gasSteps_target
+  by_cases hempty : input.size = 0
+  · have hinput := eq_empty_of_size input hempty
+    subst input
+    let trace := gasSteps_empty ByteArray.empty (by decide)
     refine ⟨trace.cost, fun gas hgas => ?_⟩
     have heval := eval_of_steps (trace.trace gas hgas) (by
-      simp [withGas, returnedState, initialState,
+      simp [withGas, emptyReturnedState, initialState,
         State.isDone, State.isHalted, State.isRunning])
     rw [State.toResult_returned _ (by rfl)] at heval
     change Eval (withGas
-      (initialState submissionBytecode KnownInputData.targetInput 0) gas)
-      (.returned (MachineState.readPadded answerMemory 0 32)) at heval
-    rw [answerMemory_read, ← ExactGuardSpec.spec_targetInput_eq] at heval
-    rw [show ExactGuardData.targetInput = KnownInputData.targetInput by rfl] at heval
+      (initialState submissionBytecode ByteArray.empty 0) gas)
+      (.returned (MachineState.readPadded emptyAnswerMemory 0 32)) at heval
+    rw [emptyAnswerMemory_read, ← ExactEmptySpec.spec_empty] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (gasSteps_fallback input hfit h)
+  · by_cases h : input = KnownInputData.targetInput
+    · subst input
+      let trace := gasSteps_target
+      refine ⟨trace.cost, fun gas hgas => ?_⟩
+      have heval := eval_of_steps (trace.trace gas hgas) (by
+        simp [withGas, returnedState, initialState,
+          State.isDone, State.isHalted, State.isRunning])
+      rw [State.toResult_returned _ (by rfl)] at heval
+      change Eval (withGas
+        (initialState submissionBytecode KnownInputData.targetInput 0) gas)
+        (.returned (MachineState.readPadded answerMemory 0 32)) at heval
+      rw [answerMemory_read, ← ExactGuardSpec.spec_targetInput_eq] at heval
+      rw [show ExactGuardData.targetInput = KnownInputData.targetInput by rfl] at heval
+      simpa [GasCost.withGas_initialState_zero] using heval
+    · exact StackCorrect.correct input hfit (gasSteps_fallback input hfit h hempty)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
