@@ -1,5 +1,9 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ExactGuardSpec
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactLogic
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedInputData
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedGuardSpec
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanGas
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 import Challenge.EvmProof.Memory
 
@@ -52,7 +56,7 @@ def checkEarlyPath : List Located :=
    pushAt 2822 32 KnownInputData.fullWord, opAt 2823 .XOR,
    pushAt 2824 2 4928, opAt 2825 .JUMPI,
    opAt 2859 .JUMPDEST, opAt 2860 .POP,
-   pushAt 2861 2 1006, opAt 2862 .JUMP]
+   pushAt 2861 0 0, pushAt 2862 0 0]
 
 def loopPath : List Located :=
   [opAt 2828 .JUMPDEST, opAt 2829 (.Swap ⟨0, by decide⟩),
@@ -306,7 +310,8 @@ theorem run_checkEntry (input : ByteArray)
 
 theorem run_checkEarly (input : ByteArray)
     (href : referenceWord input ≠ KnownInputData.fullWord) :
-    run checkEarlyPath (sizeMatched input) = some (fallbackState input) := by
+    run checkEarlyPath (sizeMatched input) =
+      some (PatternedScan.patternedEntry input) := by
   have hxor : UInt256.xor KnownInputData.fullWord (referenceWord input) ≠ 0 := by
     intro hz
     exact href ((KnownInputLogic.wordXor_eq_zero_iff
@@ -325,7 +330,8 @@ theorem run_checkEarly (input : ByteArray)
   have hfallback : Decode.isValidJumpDest submissionBytecode 0x3ee = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 682 (by rfl)
   simp (config := { maxSteps := 1000000 })
-    [checkEarlyPath, opAt, pushAt, wfOp, sizeMatched, fallbackState, atPC,
+    [checkEarlyPath, opAt, pushAt, wfOp, sizeMatched, PatternedScan.patternedEntry,
+    PatternedScan.loopState,
     referenceWord, htrue, hcond, hcleanup, hfallback, BooleanSelect.xor_comm,
     Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr, initialState,
@@ -554,7 +560,8 @@ def gasSteps_target :
             (sound returnPath run_return)))))
 
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
-    (hne : input ≠ KnownInputData.targetInput) :
+    (hne : input ≠ KnownInputData.targetInput)
+    (hpne : input ≠ PatternedInputData.patternedInput) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) := by
   by_cases hsize : input.size = 1000
   · by_cases href : referenceWord input = KnownInputData.fullWord
@@ -565,7 +572,14 @@ def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
               (sound tailPath (run_tail_fallback input hsize hne)))))
     · exact (Execution.gasSteps_start input).trans
         ((sound sizePath (run_size_match input hsize)).trans
-          (sound checkEarlyPath (run_checkEarly input href)))
+          ((sound checkEarlyPath (run_checkEarly input href)).trans
+            (PatternedScan.gasSteps_patterned_miss input hsize (by
+              intro heq
+              exact href (by
+                have : referenceWord PatternedInputData.patternedInput ≠
+                    KnownInputData.fullWord :=
+                  PatternedInputData.patterned_reference_ne
+                simpa [heq] using this)))))
   · exact (Execution.gasSteps_start input).trans
       (sound sizePath (run_size_fail input hfit hsize))
 
@@ -594,6 +608,24 @@ theorem correct : Correct submissionBytecode := by
     rw [answerMemory_read, ← ExactGuardSpec.spec_targetInput_eq] at heval
     rw [show ExactGuardData.targetInput = KnownInputData.targetInput by rfl] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (gasSteps_fallback input hfit h)
+  · by_cases hp : input = PatternedInputData.patternedInput
+    · subst input
+      have href : referenceWord PatternedInputData.patternedInput ≠
+          KnownInputData.fullWord := PatternedInputData.patterned_reference_ne
+      have hsize := PatternedInputData.patternedInput_size
+      let trace :=
+        (Execution.gasSteps_start PatternedInputData.patternedInput).trans
+          ((sound sizePath (run_size_match PatternedInputData.patternedInput hsize)).trans
+            ((sound checkEarlyPath
+              (run_checkEarly PatternedInputData.patternedInput href)).trans
+              PatternedScan.gasSteps_patterned))
+      refine ⟨trace.cost, fun gas hgas => ?_⟩
+      have heval := eval_of_steps (trace.trace gas hgas) (by
+        simp [withGas, PatternedScan.returnedState, initialState,
+          State.isDone, State.isHalted, State.isRunning])
+      rw [State.toResult_returned _ (by rfl)] at heval
+      rw [PatternedScan.answerMemory_read, ← PatternedGuardSpec.spec_patternedInput_eq] at heval
+      simpa [GasCost.withGas_initialState_zero] using heval
+    · exact StackCorrect.correct input hfit (gasSteps_fallback input hfit h hp)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
