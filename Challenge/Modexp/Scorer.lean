@@ -45,9 +45,6 @@ def makeInputBytes (base exponent modulus : ByteArray) : ByteArray :=
   word base.size ++ word exponent.size ++ word modulus.size ++
     base ++ exponent ++ modulus
 
-private def makeHexInput (base exponent modulus : String) : ByteArray :=
-  makeInputBytes (fromHex base) (fromHex exponent) (fromHex modulus)
-
 /-- Public default seed for the generated corpus. A private evaluator can
 replace this single value before building to produce a different corpus. -/
 def corpusSeed : Nat := 0
@@ -131,27 +128,27 @@ def truncatedModulus : ByteArray := fromHex
    "0000000000000000000000000000000000000000000000000000000000000020" ++
    "03ffff80")
 
-/-- Inversion of a fixed nonzero element in the BN254 base field, computed as
-`x^(p - 2) mod p`. The element is SHA-256-derived from the domain
-`eip8200-challenges/modexp/bn254-inversion/base` and reduced modulo `p`. -/
-def bn254ModularInversion : ByteArray := makeHexInput
-  "0d2fb5ffb5b07c344bcf7640e3908737f96cce132e7e9110de36377b5d5c6289"
-  "30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd45"
-  "30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47"
+def bn254Modulus : Nat :=
+  0x30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47
 
-/-- Fermat exponentiation of the fixed BN254 field element: `x^(p - 1) mod p`. -/
-def bn254Fermat : ByteArray := makeHexInput
-  "0d2fb5ffb5b07c344bcf7640e3908737f96cce132e7e9110de36377b5d5c6289"
-  "30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd46"
-  "30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47"
+/-- A seed-derived nonzero element of the BN254 base field. -/
+private def generatedBn254Base (index : Nat) : Nat :=
+  let bytes := generatedBytes (vectorSeed 0x2000 index) 32
+  EVM.Precompile.bytesToNatPadded bytes 0 bytes.size % (bn254Modulus - 1) + 1
 
-/-- A reproducible full-width 256-bit tuple. Each operand is derived from a
-SHA-256 domain below `eip8200-challenges/modexp/random-256/`; the modulus is
-forced to be odd and every operand has its high bit set. -/
-def random256 : ByteArray := makeHexInput
-  "a1f0b222a74b403a5a84d341cdd90fc26bf8769225b24557b64d01d7df61d9fd"
-  "eca0f5ed5862646d6dc22650707a487c3436d99d7dbbba56b2f630cb682e1941"
-  "afea24ccce325d471af2371241676b55270044423156c0904bb50225867f93a5"
+/-- Inversion of a seed-derived nonzero BN254 field element: `x^(p - 2) mod p`. -/
+def bn254ModularInversion : ByteArray :=
+  makeInput (generatedBn254Base 1) (bn254Modulus - 2) bn254Modulus 32 32 32
+
+/-- Fermat exponentiation of another seed-derived nonzero BN254 field element:
+`x^(p - 1) mod p`. -/
+def bn254Fermat : ByteArray :=
+  makeInput (generatedBn254Base 2) (bn254Modulus - 1) bn254Modulus 32 32 32
+
+theorem generatedBn254Bases_valid :
+    0 < generatedBn254Base 1 ∧ generatedBn254Base 1 < bn254Modulus ∧
+    0 < generatedBn254Base 2 ∧ generatedBn254Base 2 < bn254Modulus := by
+  native_decide
 
 /-- Format the one-based corpus index used in scorer output. -/
 private def paddedIndex (index : Nat) : String :=
@@ -181,8 +178,8 @@ private def generatedRsaVectors (bits width domain count : Nat)
 
 /-- Forty-eight deterministic public inputs. Operand bytes come from the PRNG
 above. A fixed public seed and separate bucket domains make the corpus
-reproducible. The BN254 case remains fixed because it deliberately exercises
-the exponent `p - 1`. -/
+reproducible. The BN254 exponent and modulus remain fixed while its base is
+seed-derived. -/
 def generatedVectors : List Vector :=
   let generated256 := (List.range 31).map fun offset =>
     let index := offset + 2
@@ -210,10 +207,9 @@ def vectors : List Vector :=
   , { label := "EIP-198 example 2", input := eipExample2 }
   , { label := "trailing-zero normalization", input := truncatedModulus }
   , { label := "BN254 modular inversion", input := bn254ModularInversion }
-  , { label := "random 256-bit modexp", input := random256 }
   ] ++ generatedVectors
 
-theorem vectors_length : vectors.length = 58 := by decide
+theorem vectors_length : vectors.length = 57 := by decide
 
 inductive Outcome where
   | ok (gas : Nat)
