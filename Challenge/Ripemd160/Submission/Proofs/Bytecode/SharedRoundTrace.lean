@@ -197,10 +197,12 @@ theorem runInstrSeq_f0 (s : State) (startPC xAddress returnPC : UInt256)
       Challenge.EvmProof.Word.succ_ofNat, Word.land_comm,
       Word.lor_comm, BooleanSelect.xor_comm, State.activeWordsAfterUInt256,
       hadd, hzero, hcomm, hxorcomm, hbase]
-  rw [hcomm working.e]
-  rw [hcomm working.e]
-  rw [hcomm (MachineState.readWord s.memory xAddress.toNat)]
-  exact raw_rotate_or_fold _ working.e rotation
-    (mask_land_toNat_lt _) hrot
+  constructor
+  · rw [hcomm working.e]
+    rw [hcomm working.e]
+    rw [hcomm (MachineState.readWord s.memory xAddress.toNat)]
+    exact raw_rotate_or_fold _ working.e rotation
+      (mask_land_toNat_lt _) hrot
+  · rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTrace

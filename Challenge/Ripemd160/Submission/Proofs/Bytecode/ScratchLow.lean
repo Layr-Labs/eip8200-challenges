@@ -62,10 +62,9 @@ theorem stackF_project (j : Nat) (b c d : UInt256) (hj : j < 5) :
       rw [StackRound.stackF_embed j (toUInt32 b) (toUInt32 c)
         (toUInt32 d) hj, toUInt32_ofUInt32]
 
-/-- H22's unmasked folded C rotation, exactly as left by the helper. -/
 def rawC10 (c : UInt256) : UInt256 :=
   UInt256.shiftRight
-    (UInt256.lor c (UInt256.shiftLeft c (UInt256.ofNat 32)))
+    (c ||| UInt256.shiftLeft c (UInt256.ofNat 32))
     (UInt256.ofNat 22)
 
 def rawRound (x : Compression.EvmWorking) (j : Nat)
@@ -114,25 +113,20 @@ theorem rawRound_represents (x : Compression.EvmWorking)
     rotation hr0 hr
   have hrot32 := congrArg toUInt32 hrot
   simp only [toUInt32_mask32, toUInt32_ofUInt32] at hrot32
-  have hcrot := StackRound.stackRawRot_embed y.c 10 (by decide) (by decide)
-  have hfold := RotationFold.C10_or_fold (ofUInt32 y.c)
-  have hfold' : mask32 (rawC10 (ofUInt32 y.c)) =
-      ofUInt32 (Crypto.Ripemd160.rotl32 y.c 10) := by
-    rw [show mask32 (rawC10 (ofUInt32 y.c)) =
-      StackRound.stackC10 (ofUInt32 y.c) by
-        simpa [rawC10, HOr.hOr, OrOp.or,
-          EvmSemantics.UInt256.instOrOp] using hfold]
-    change mask32 (StackRound.stackRawRot (ofUInt32 y.c) 10) = _
-    exact hcrot
-  have hcrot32 := congrArg toUInt32 hfold'
-  simp only [toUInt32_mask32, toUInt32_ofUInt32] at hcrot32
+  have hfold := RotationFold.C10_or_fold x.c
+  have hfold32 := congrArg toUInt32 hfold
+  simp only [toUInt32_mask32] at hfold32
   constructor
   · exact hxy.e
   · simp only [rawRound, Compression.round, mask32_eq_ofUInt32]
     apply congrArg ofUInt32
     simp only [hsum, toUInt32_add, hrot32, hxy.e]
   · simpa [rawRound, Compression.round] using hxy.b
-  · simp only [rawRound, Compression.round, hxy.c, hcrot32]
+  · simp only [rawRound, rawC10, Compression.round]
+    rw [hfold32, hxy.c, StackRound.stackC10_eq,
+      Challenge.Ripemd160.Submission.Proofs.Bytecode.Word.evmRotl32_ofUInt32
+        y.c 10 (by decide) (by decide),
+      toUInt32_ofUInt32]
   · exact hxy.d
 
 theorem evmCombine_of_represents (h : Compression.HashState)

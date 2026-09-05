@@ -71,7 +71,7 @@ private theorem artifactPrefix_length : artifactPrefix.length = 1800 := by
 private theorem tailBefore_length : tailBefore.length = 1966 := by
   simp [tailBefore, artifactPrefix_length]
 
-private theorem tailAfter_length : tailAfter.length = 558 := by
+private theorem tailAfter_length : tailAfter.length = 538 := by
   simp [tailAfter]
 
 private theorem tailAfter_nonempty : tailAfter ≠ [] := by

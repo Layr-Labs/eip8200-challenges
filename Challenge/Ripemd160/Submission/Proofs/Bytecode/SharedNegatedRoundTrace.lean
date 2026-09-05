@@ -123,9 +123,11 @@ theorem runInstrSeq_f2 (s : State) (startPC xAddress returnPC : UInt256)
       Challenge.EvmProof.Word.succ_ofNat, Word.land_comm,
       Word.lor_comm, BooleanSelect.xor_comm,
       State.activeWordsAfterUInt256, hadd, hcomm]
-  rw [hcomm working.e, hsum, hbase, hcomm working.e]
-  exact SharedRoundTrace.raw_rotate_or_fold _ working.e rotation
-    (SharedRoundTrace.mask_land_toNat_lt _) hrot
+  constructor
+  · rw [hcomm working.e, hsum, hbase, hcomm working.e]
+    exact SharedRoundTrace.raw_rotate_or_fold _ working.e rotation
+      (SharedRoundTrace.mask_land_toNat_lt _) hrot
+  · rfl
 
 /-! ## Direct group 4 evaluator trace -/
 
@@ -214,8 +216,10 @@ theorem runInstrSeq_f4 (s : State) (startPC xAddress returnPC : UInt256)
       Challenge.EvmProof.Word.succ_ofNat, Word.land_comm,
       Word.lor_comm, BooleanSelect.xor_comm,
       State.activeWordsAfterUInt256, hadd, hcomm]
-  rw [hcomm working.e, hsum, hbase, hcomm working.e]
-  exact SharedRoundTrace.raw_rotate_or_fold _ working.e rotation
-    (SharedRoundTrace.mask_land_toNat_lt _) hrot
+  constructor
+  · rw [hcomm working.e, hsum, hbase, hcomm working.e]
+    exact SharedRoundTrace.raw_rotate_or_fold _ working.e rotation
+      (SharedRoundTrace.mask_land_toNat_lt _) hrot
+  · rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedNegatedRoundTrace
