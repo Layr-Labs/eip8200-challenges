@@ -39,7 +39,7 @@ private def soundOne {s t : State}
   Challenge.EvmProof.Stepper.runLocated_sound hcode hfork h hrun hnp
 
 def gasSteps_match (input : ByteArray) (h : guardDiff Data.checks input = 0) :
-    Challenge.EvmProof.GasSteps (Main.trampolineState input 1713) (returnedState input) :=
+    Challenge.EvmProof.GasSteps (Main.trampolineState input 1824) (returnedState input) :=
   ((((((sound preludePath rfl (run_prelude input) rfl rfl deployAddress_not_precompile).trans
     (sound chunk0Path rfl (run_chunk0 input) rfl rfl deployAddress_not_precompile)).trans
     (sound chunk1Path rfl (run_chunk1 input) rfl rfl deployAddress_not_precompile)).trans
@@ -48,7 +48,7 @@ def gasSteps_match (input : ByteArray) (h : guardDiff Data.checks input = 0) :
     (sound returnPath rfl (run_return input) rfl rfl deployAddress_not_precompile))
 
 def gasSteps_fallback (input : ByteArray) (h : guardDiff Data.checks input ≠ 0) :
-    Challenge.EvmProof.GasSteps (Main.trampolineState input 1713) (Main.trampolineState input 1196) :=
+    Challenge.EvmProof.GasSteps (Main.trampolineState input 1824) (Main.trampolineState input 1196) :=
   ((((((sound preludePath rfl (run_prelude input) rfl rfl deployAddress_not_precompile).trans
     (sound chunk0Path rfl (run_chunk0 input) rfl rfl deployAddress_not_precompile)).trans
     (sound chunk1Path rfl (run_chunk1 input) rfl rfl deployAddress_not_precompile)).trans

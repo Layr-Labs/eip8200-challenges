@@ -40,7 +40,7 @@ def answerMemory : ByteArray :=
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-      pc := UInt256.ofNat 2295
+      pc := UInt256.ofNat 2422
       stack := []
       memory := answerMemory
       activeWords := UInt256.ofNat 2

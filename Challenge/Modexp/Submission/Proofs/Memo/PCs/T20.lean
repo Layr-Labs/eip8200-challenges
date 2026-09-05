@@ -7,9 +7,9 @@ namespace Challenge.Modexp.Submission.Proofs.Memo.PCs
 
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-@[simp] theorem pc3 (i : Nat) (hlo : 1082 ≤ i) (hhi : i ≤ 1116) :
+@[simp] theorem pc20 (i : Nat) (hlo : 1677 ≤ i) (hhi : i ≤ 1711) :
     Artifact.submissionArtifact.instructionPC i =
-      [1495,1496,1497,1498,1499,1502,1503,1506,1507,1508,1510,1511,1512,1514,1516,1517,1518,1519,1520,1521,1522,1523,1524,1525,1526,1527,1528,1529,1530,1531,1532,1533,1534,1535,1536][i - 1082]! := by
+      [3391,3392,3393,3396,3397,3398,3399,3401,3403,3404,3405,3406,3409,3411,3412,3413,3414,3447,3449,3450,3451,3452,3485,3487,3488,3489,3490,3523,3525,3526,3527,3528,3561,3563,3564][i - 1677]! := by
   interval_cases i <;> decide +kernel
 
 end Challenge.Modexp.Submission.Proofs.Memo.PCs

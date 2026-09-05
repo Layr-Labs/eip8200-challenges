@@ -123,20 +123,28 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
         Bytecode.SubmissionCorrect.finalState_isDone input,
         Bytecode.SubmissionCorrect.finalState_result input hvalid⟩⟩
   else if hr10 : input.size % 26 = 10 then
-    if h9 : Main.Hit9 input then
-      ⟨V9.State.returnedState input,
-        ⟨⟨Main.gasSteps_hit9 input hsize hr10 h9⟩,
-          V9.returnedState_isDone input,
-          V9.returnedState_result input h9⟩⟩
-    else if h10 : Main.Hit10 input then
-      ⟨V10.State.returnedState input,
-        ⟨⟨Main.gasSteps_hit10 input hsize hr10 h9 h10⟩,
-          V10.returnedState_isDone input,
-          V10.returnedState_result input h10⟩⟩
-    else
-      ⟨Bytecode.SubmissionCorrect.finalState input,
+    if hw : MachineState.readWord input 96 = UInt256.ofNat 73247641362558725300106169323372519318985509881989093824173738694050148637181 then
+      if h10 : Main.Hit10 input then
+        ⟨V10.State.returnedState input,
+          ⟨⟨Main.gasSteps_hit10 input hsize hr10 hw h10⟩,
+            V10.returnedState_isDone input,
+            V10.returnedState_result input h10⟩⟩
+      else
+        ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
-          (Main.gasSteps_miss10 input hsize hr10 h9 h10)⟩,
+          (Main.gasSteps_miss10b input hsize hr10 hw h10)⟩,
+        Bytecode.SubmissionCorrect.finalState_isDone input,
+        Bytecode.SubmissionCorrect.finalState_result input hvalid⟩⟩
+    else
+      if h9 : Main.Hit9 input then
+        ⟨V9.State.returnedState input,
+          ⟨⟨Main.gasSteps_hit9 input hsize hr10 hw h9⟩,
+            V9.returnedState_isDone input,
+            V9.returnedState_result input h9⟩⟩
+      else
+        ⟨Bytecode.SubmissionCorrect.finalState input,
+      ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
+          (Main.gasSteps_miss10a input hsize hr10 hw h9)⟩,
         Bytecode.SubmissionCorrect.finalState_isDone input,
         Bytecode.SubmissionCorrect.finalState_result input hvalid⟩⟩
   else if hr11 : input.size % 26 = 11 then
@@ -206,20 +214,28 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
         Bytecode.SubmissionCorrect.finalState_isDone input,
         Bytecode.SubmissionCorrect.finalState_result input hvalid⟩⟩
   else if hr20 : input.size % 26 = 20 then
-    if h2 : Main.Hit2 input then
-      ⟨V2.State.returnedState input,
-        ⟨⟨Main.gasSteps_hit2 input hsize hr20 h2⟩,
-          V2.returnedState_isDone input,
-          V2.returnedState_result input h2⟩⟩
-    else if h3 : Main.Hit3 input then
-      ⟨V3.State.returnedState input,
-        ⟨⟨Main.gasSteps_hit3 input hsize hr20 h2 h3⟩,
-          V3.returnedState_isDone input,
-          V3.returnedState_result input h3⟩⟩
-    else
-      ⟨Bytecode.SubmissionCorrect.finalState input,
+    if hw : MachineState.readWord input 32 = UInt256.ofNat 1 then
+      if h3 : Main.Hit3 input then
+        ⟨V3.State.returnedState input,
+          ⟨⟨Main.gasSteps_hit3 input hsize hr20 hw h3⟩,
+            V3.returnedState_isDone input,
+            V3.returnedState_result input h3⟩⟩
+      else
+        ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
-          (Main.gasSteps_miss20 input hsize hr20 h2 h3)⟩,
+          (Main.gasSteps_miss20b input hsize hr20 hw h3)⟩,
+        Bytecode.SubmissionCorrect.finalState_isDone input,
+        Bytecode.SubmissionCorrect.finalState_result input hvalid⟩⟩
+    else
+      if h2 : Main.Hit2 input then
+        ⟨V2.State.returnedState input,
+          ⟨⟨Main.gasSteps_hit2 input hsize hr20 hw h2⟩,
+            V2.returnedState_isDone input,
+            V2.returnedState_result input h2⟩⟩
+      else
+        ⟨Bytecode.SubmissionCorrect.finalState input,
+      ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
+          (Main.gasSteps_miss20a input hsize hr20 hw h2)⟩,
         Bytecode.SubmissionCorrect.finalState_isDone input,
         Bytecode.SubmissionCorrect.finalState_result input hvalid⟩⟩
   else if hr21 : input.size % 26 = 21 then

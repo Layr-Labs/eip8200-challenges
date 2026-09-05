@@ -242,3 +242,25 @@ theorem isTrue_ofNat {a : Nat} (ha : a < 2 ^ 256) (h : a ≠ 0) :
   exact h
 
 end Challenge.Modexp.Submission.Proofs.Memo.Logic
+
+namespace Challenge.Modexp.Submission.Proofs.Memo.Logic
+
+open EvmSemantics
+
+theorem shl5_ofNat {e : Nat} (he : e < 2 ^ 251) :
+    UInt256.shiftLeft (UInt256.ofNat e) (UInt256.ofNat 5) = UInt256.ofNat (32 * e) := by
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (Nat.lt_trans he (by norm_num)) (by norm_num)
+    (by norm_num; omega)]
+  congr 1
+  norm_num
+  omega
+
+theorem eq_self_word (a : UInt256) : UInt256.eq a a = UInt256.ofNat 1 := by
+  rw [UInt256.eq, if_pos rfl]
+
+theorem eq_of_ne_word (a b : UInt256) (h : a ≠ b) : UInt256.eq a b = UInt256.ofNat 0 := by
+  rw [UInt256.eq, if_neg]
+  intro hab
+  exact h (Challenge.EvmProof.Word.word_ext hab)
+
+end Challenge.Modexp.Submission.Proofs.Memo.Logic

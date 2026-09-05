@@ -17,42 +17,42 @@ open Challenge.Modexp.Submission.Proofs.Memo
 open Logic Dispatch State Paths
 
 theorem run_prelude (input : ByteArray) :
-    Challenge.EvmProof.Stepper.runLocatedBlock preludePath (Main.trampolineState input 1713) =
-      some (accState input 1719 (acc0 input)) := by
+    Challenge.EvmProof.Stepper.runLocatedBlock preludePath (Main.trampolineState input 1824) =
+      some (accState input 1830 (acc0 input)) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp [preludePath, accState, acc0, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    initialState, Main.trampolineState, PCs.pc5, PCs.pc6,
+    initialState, Main.trampolineState, PCs.pc8, PCs.pc9,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat, hzeroWord, hzeroNat]
 
 theorem run_chunk0 (input : ByteArray) :
-    Challenge.EvmProof.Stepper.runLocatedBlock chunk0Path (accState input 1719 (acc0 input)) =
-      some (accState input 1809 (acc1 input)) := by
+    Challenge.EvmProof.Stepper.runLocatedBlock chunk0Path (accState input 1830 (acc0 input)) =
+      some (accState input 1920 (acc1 input)) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp [chunk0Path, accState, acc1, chunk0, scanDiff, Data.checks, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    initialState, Main.trampolineState, PCs.pc5, PCs.pc6,
+    initialState, Main.trampolineState, PCs.pc8, PCs.pc9,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat, hzeroWord, hzeroNat]
 
 theorem run_chunk1 (input : ByteArray) :
-    Challenge.EvmProof.Stepper.runLocatedBlock chunk1Path (accState input 1809 (acc1 input)) =
-      some (accState input 1847 (acc2 input)) := by
+    Challenge.EvmProof.Stepper.runLocatedBlock chunk1Path (accState input 1920 (acc1 input)) =
+      some (accState input 1958 (acc2 input)) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp [chunk1Path, accState, acc2, chunk1, scanDiff, Data.checks, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    initialState, Main.trampolineState, PCs.pc5, PCs.pc6,
+    initialState, Main.trampolineState, PCs.pc8, PCs.pc9,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -60,23 +60,23 @@ theorem run_chunk1 (input : ByteArray) :
 
 def branchJumpState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-      pc := UInt256.ofNat 1851
-      stack := [UInt256.ofNat 1856, UInt256.ofNat 1] }
+      pc := UInt256.ofNat 1962
+      stack := [UInt256.ofNat 1967, UInt256.ofNat 1] }
 
 def branch_jumpLocated : Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  Main.opAt 1194 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
+  Main.opAt 1303 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
 
 theorem run_branch_jump (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocated branch_jumpLocated (branchJumpState input) =
-      some (Main.trampolineState input 1856) := by
-  have hjump : Decode.isValidJumpDest submissionBytecode 1856 = true :=
-    Artifact.isValidJumpDest_index 1197 (by rfl)
-  have hpc : (branchJumpState input).pc.toNat = Artifact.submissionArtifact.instructionPC 1194 := by
-    simp [branchJumpState, initialState, PCs.pc6, Challenge.EvmProof.Word.word_toNat_ofNat]
-  exact (Step.runLocated_jumpi_taken branch_jumpLocated rfl (branchJumpState input) 1856 (UInt256.ofNat 1) [] hpc rfl (by simp) Logic.isTrue_one rfl (by norm_num) hjump).trans rfl
+      some (Main.trampolineState input 1967) := by
+  have hjump : Decode.isValidJumpDest submissionBytecode 1967 = true :=
+    Artifact.isValidJumpDest_index 1306 (by rfl)
+  have hpc : (branchJumpState input).pc.toNat = Artifact.submissionArtifact.instructionPC 1303 := by
+    simp [branchJumpState, initialState, PCs.pc9, Challenge.EvmProof.Word.word_toNat_ofNat]
+  exact (Step.runLocated_jumpi_taken branch_jumpLocated rfl (branchJumpState input) 1967 (UInt256.ofNat 1) [] hpc rfl (by simp) Logic.isTrue_one rfl (by norm_num) hjump).trans rfl
 
 theorem run_branch_match_prefix (input : ByteArray) (h : guardDiff Data.checks input = 0) :
-    Challenge.EvmProof.Stepper.runLocatedBlock branchPrefixPath (accState input 1847 (acc2 input)) =
+    Challenge.EvmProof.Stepper.runLocatedBlock branchPrefixPath (accState input 1958 (acc2 input)) =
       some (branchJumpState input) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
@@ -85,15 +85,15 @@ theorem run_branch_match_prefix (input : ByteArray) (h : guardDiff Data.checks i
   simp [branchPrefixPath, branchJumpState, accState, hz, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    initialState, Main.trampolineState, PCs.pc5, PCs.pc6,
+    initialState, Main.trampolineState, PCs.pc8, PCs.pc9,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat, hzeroWord, hzeroNat]
 
 theorem run_branch_mismatch (input : ByteArray) (h : guardDiff Data.checks input ≠ 0) :
-    Challenge.EvmProof.Stepper.runLocatedBlock branchPath (accState input 1847 (acc2 input)) =
-      some (Main.trampolineState input 1852) := by
+    Challenge.EvmProof.Stepper.runLocatedBlock branchPath (accState input 1958 (acc2 input)) =
+      some (Main.trampolineState input 1963) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   have hz : UInt256.isZero (acc2 input) = UInt256.ofNat 0 := by
@@ -101,7 +101,7 @@ theorem run_branch_mismatch (input : ByteArray) (h : guardDiff Data.checks input
   simp [branchPath, accState, hz, Logic.not_isTrue_zero, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    initialState, Main.trampolineState, PCs.pc5, PCs.pc6,
+    initialState, Main.trampolineState, PCs.pc8, PCs.pc9,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -109,37 +109,37 @@ theorem run_branch_mismatch (input : ByteArray) (h : guardDiff Data.checks input
 
 def fallbackJumpState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-      pc := UInt256.ofNat 1855
+      pc := UInt256.ofNat 1966
       stack := [UInt256.ofNat 1196] }
 
 def fallback_jumpLocated : Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  Main.opAt 1196 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))
+  Main.opAt 1305 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))
 
 theorem run_fallback_jump (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocated fallback_jumpLocated (fallbackJumpState input) =
       some (Main.trampolineState input 1196) := by
   have hjump : Decode.isValidJumpDest submissionBytecode 1196 = true :=
     Artifact.isValidJumpDest_index 899 (by rfl)
-  have hpc : (fallbackJumpState input).pc.toNat = Artifact.submissionArtifact.instructionPC 1196 := by
-    simp [fallbackJumpState, initialState, PCs.pc6, Challenge.EvmProof.Word.word_toNat_ofNat]
+  have hpc : (fallbackJumpState input).pc.toNat = Artifact.submissionArtifact.instructionPC 1305 := by
+    simp [fallbackJumpState, initialState, PCs.pc9, Challenge.EvmProof.Word.word_toNat_ofNat]
   exact (Step.runLocated_jump fallback_jumpLocated rfl (fallbackJumpState input) 1196 [] hpc rfl (by simp) rfl (by norm_num) hjump).trans rfl
 
 theorem run_fallback_prefix (input : ByteArray) :
-    Challenge.EvmProof.Stepper.runLocatedBlock fallbackPrefixPath (Main.trampolineState input 1852) =
+    Challenge.EvmProof.Stepper.runLocatedBlock fallbackPrefixPath (Main.trampolineState input 1963) =
       some (fallbackJumpState input) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp [fallbackPrefixPath, fallbackJumpState, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    initialState, Main.trampolineState, PCs.pc5, PCs.pc6,
+    initialState, Main.trampolineState, PCs.pc8, PCs.pc9,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat, hzeroWord, hzeroNat]
 
 theorem run_return (input : ByteArray) :
-    Challenge.EvmProof.Stepper.runLocatedBlock returnPath (Main.trampolineState input 1856) =
+    Challenge.EvmProof.Stepper.runLocatedBlock returnPath (Main.trampolineState input 1967) =
       some (returnedState input) := by
   have hzeroWord : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
@@ -147,7 +147,7 @@ theorem run_return (input : ByteArray) :
     State.activeWordsAfterUInt256, MachineState.activeWordsAfter, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    initialState, Main.trampolineState, PCs.pc5, PCs.pc6,
+    initialState, Main.trampolineState, PCs.pc8, PCs.pc9,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
