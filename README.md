@@ -49,6 +49,14 @@ lake build
 lake env lean Checks.lean
 ```
 
+For fixed inputs and expected outputs loaded from JSON, see
+[`test-vectors/`](test-vectors/README.md):
+
+```sh
+lake exe modexpchallenge --vectors=test-vectors/modexp.json
+lake exe ripemd160challenge --vectors=test-vectors/ripemd160.json
+```
+
 ## Yukon benchmark
 
 The repository is also a schema-v2 Yukon challenge with independent `modexp`

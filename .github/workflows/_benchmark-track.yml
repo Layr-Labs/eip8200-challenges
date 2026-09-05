@@ -6,6 +6,10 @@ on:
       track:
         required: true
         type: string
+    secrets:
+      benchmark-vectors:
+        description: Fixed benchmark vector suite as JSON
+        required: true
 
 permissions:
   contents: read
@@ -147,6 +151,8 @@ jobs:
           key: ${{ steps.benchmark-tools-cache.outputs.cache-primary-key }}
 
       - name: Benchmark submission
+        env:
+          BENCHMARK_VECTORS: ${{ secrets.benchmark-vectors }}
         run: ./benchmark.sh "${{ inputs.track }}"
 
       - name: Publish summary
@@ -173,5 +179,7 @@ jobs:
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: benchmark-diagnostics-${{ inputs.track }}-${{ github.run_id }}
-          path: benchmark-results/${{ inputs.track }}/
+          path: |
+            benchmark-results/${{ inputs.track }}/summary.md
+            benchmark-results/${{ inputs.track }}/verified-bytecode.hex
           if-no-files-found: warn

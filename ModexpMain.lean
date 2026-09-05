@@ -1,6 +1,7 @@
 import Challenge.Modexp.Reference
 import Challenge.Modexp.Scorer
 import YulParser.Compile
+import Challenge.TestVectors
 set_option warningAsError true
 
 open EvmSemantics
@@ -19,7 +20,7 @@ private def pad (text : String) (width : Nat) : String :=
   text ++ String.ofList (List.replicate (width - text.length) ' ')
 
 private def usage : String :=
-  "usage: modexpchallenge [--yul=FILE | --hex=FILE] [--csv]\n" ++
+  "usage: modexpchallenge [--yul=FILE | --hex=FILE] [--vectors=FILE] [--csv]\n" ++
   s!"  default: {referenceSourcePath}"
 
 def main (args : List String) : IO UInt32 := do
@@ -34,7 +35,15 @@ def main (args : List String) : IO UInt32 := do
   if args.contains "--help" then
     IO.println usage
     return 0
-  let (name, code) : System.FilePath × ByteArray ← match hexPath, yulPath with
+  let vectorPath := args.findSome? fun arg =>
+    if arg.startsWith "--vectors=" then some (arg.drop 10).copy else none
+  let selected : List Vector ← match vectorPath with
+    | none => pure vectors
+    | some path => do
+        let loaded ← Challenge.TestVectors.load path "modexp" spec (fun input =>
+          baseSize input ≤ 1024 && exponentSize input ≤ 1024 && modulusSize input ≤ 1024)
+        pure (loaded.map fun v => { label := v.label, input := v.input })
+  let (name, code) : String × ByteArray ← match hexPath, yulPath with
     | some _, some _ => do IO.eprintln usage; return 64
     | some path, none =>
         match hexToBytes? (← IO.FS.readFile path) with
@@ -43,7 +52,7 @@ def main (args : List String) : IO UInt32 := do
     | none, maybePath =>
         let path := maybePath.getD referenceSourcePath
         match YulParser.compileSource (← IO.FS.readFile path) with
-        | some bytes => pure (System.FilePath.mk path, bytes)
+        | some bytes => pure (path, bytes)
         | none => do IO.eprintln s!"{path}: compiler rejected source"; return 2
 
   if csv then
@@ -55,7 +64,7 @@ def main (args : List String) : IO UInt32 := do
   let mut failures := 0
   let mut totalGas := 0
   let mut totalPrecompile := 0
-  for vector in vectors do
+  for vector in selected do
     let outcome := score code vector.input
     let expectedGas := precompileGas vector.input
     let gasText := match outcome.gas? with | some gas => toString gas | none => "-"
@@ -74,7 +83,7 @@ def main (args : List String) : IO UInt32 := do
         failures := failures + 1
     totalPrecompile := totalPrecompile + expectedGas
     if csv then
-      IO.println s!"{vector.label},{vector.input.size},{status},{gasText},{expectedGas}"
+      IO.println s!"{Challenge.TestVectors.csvLabel vector.label},{vector.input.size},{status},{gasText},{expectedGas}"
     else
       IO.println s!"{pad vector.label 30}{pad (toString vector.input.size) 7}\
         {pad gasText 12}{pad (toString expectedGas) 12}{status}"

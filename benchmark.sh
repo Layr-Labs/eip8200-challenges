@@ -22,6 +22,10 @@ case "${track}" in
     ;;
 esac
 
+# Keep the secret out of child-process environments during proof verification.
+benchmark_vectors="${BENCHMARK_VECTORS:-}"
+unset BENCHMARK_VECTORS
+
 readonly result_dir="${root}/benchmark-results/${track}"
 readonly submitted_hex="${root}/Challenge/${challenge_dir}/Submission/bytecode.hex"
 readonly trusted_hex="${result_dir}/verified-bytecode.hex"
@@ -39,6 +43,11 @@ readonly comparator_config="${root}/benchmark/comparator-${track}.json"
 rm -f "${score_path}" "${summary_path}" "${trusted_hex}" "${scorer_csv}" \
   "${artifact_path}" "${challenge_path}"
 
+if [[ -z "${benchmark_vectors}" && "${BENCHMARK_INSECURE_LOCAL:-0}" != 1 ]]; then
+  echo "missing benchmark vectors secret for ${track}" >&2
+  exit 1
+fi
+
 [[ -f "${submitted_hex}" ]] || {
   echo "missing ${submitted_hex}" >&2
   exit 1
@@ -46,7 +55,8 @@ rm -f "${score_path}" "${summary_path}" "${trusted_hex}" "${scorer_csv}" \
 
 python3 scripts/yukon_benchmark.py prepare "${track}" \
   "${submitted_hex}" "${trusted_hex}" "${artifact_path}" "${challenge_path}"
-trap 'rm -f "${artifact_path}" "${challenge_path}"' EXIT
+readonly vectors_tmp="$(mktemp -d)"
+trap 'rm -f "${artifact_path}" "${challenge_path}" "${scorer_csv}"; rm -rf "${vectors_tmp}"' EXIT
 
 [[ -x "${comparator_bin}" && -x "${lean4export_bin}" ]] || {
   echo "benchmark tools are missing; run ./setup.sh ${track} first" >&2
@@ -90,7 +100,20 @@ fi
 
 # Score only the protected bytes, and only after Comparator accepts the
 # universal correctness theorem for those same bytes.
-"${scorer_bin}" --hex="${trusted_hex}" --csv > "${scorer_csv}"
+if [[ -n "${benchmark_vectors}" ]]; then
+  printf '%s' "${benchmark_vectors}" > "${vectors_tmp}/vectors.json"
+else
+  cp "test-vectors/${track}.json" "${vectors_tmp}/vectors.json"
+fi
+unset benchmark_vectors
+
+# Do not expose private labels, expected values, or per-case gas in artifacts.
+if ! "${scorer_bin}" --hex="${trusted_hex}" --vectors="${vectors_tmp}/vectors.json" \
+    --csv > "${scorer_csv}" 2> "${vectors_tmp}/errors.log"; then
+  echo "benchmark scorer rejected the candidate or vector file" >&2
+  exit 1
+fi
 python3 scripts/yukon_benchmark.py score "${track}" \
-  "${trusted_hex}" "${scorer_csv}" "${score_path}" "${summary_path}"
+  "${trusted_hex}" "${scorer_csv}" "${score_path}" "${summary_path}" \
+  "${vectors_tmp}/vectors.json" 2> "${vectors_tmp}/errors.log"
 cat "${summary_path}"
