@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Benchmark.Artifact
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ExactGuardCorrect
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -10,6 +10,6 @@ namespace Challenge.Ripemd160.Benchmark
 /-- Exact-bytecode correctness for the direct stack-resident compressor. -/
 theorem candidate : Challenge.Ripemd160.Correct bytecode := by
   change Challenge.Ripemd160.Correct Challenge.Ripemd160.submissionBytecode
-  exact Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect.correct
+  exact Challenge.Ripemd160.Submission.Proofs.Bytecode.ExactGuardCorrect.correct
 
 end Challenge.Ripemd160.Benchmark

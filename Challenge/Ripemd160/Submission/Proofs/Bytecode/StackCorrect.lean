@@ -258,6 +258,10 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
     nextState_hash s input i h hfit hi ctx hmodel
   gasSteps := gasSteps_block
 
-theorem correct : Correct submissionBytecode := StackRunBridge.correct_of_block_kernel kernel
+theorem correct (input : ByteArray) (hfit : CalldataFits input)
+    (prefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x3ee)) :
+    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) :=
+  StackRunBridge.correct_of_block_kernel kernel input hfit prefix
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
