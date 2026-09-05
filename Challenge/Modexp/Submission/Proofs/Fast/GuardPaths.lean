@@ -180,7 +180,7 @@ def branchJumpPath :
 
 theorem branchPath_eq : branchPath = branchIsZeroPath ++ branchJumpPath := by rfl
 
-def fallbackPushLocated := Main.pushAt 2022 2 4214
+def fallbackPushLocated := Main.pushAt 2022 2 1314
 def fallbackJumpLocated := Main.opAt 2023
   (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))
 
@@ -190,7 +190,7 @@ def fallbackPath :
 
 @[simp] theorem fallbackPush_index : fallbackPushLocated.index = 2022 := rfl
 @[simp] theorem fallbackPush_instruction :
-    fallbackPushLocated.instruction = .push 2 (UInt256.ofNat 4214) := rfl
+    fallbackPushLocated.instruction = .push 2 (UInt256.ofNat 1314) := rfl
 @[simp] theorem fallbackJump_index : fallbackJumpLocated.index = 2023 := rfl
 @[simp] theorem fallbackJump_instruction : fallbackJumpLocated.instruction = .op .JUMP := rfl
 

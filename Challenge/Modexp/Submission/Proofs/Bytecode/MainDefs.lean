@@ -43,7 +43,7 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 /-- First half of the compiler trampoline chain. -/
 def trampoline1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 0 2 3133, opAt 1 .JUMP]
+  [pushAt 0 2 4214, opAt 1 .JUMP]
 
 /-- Second half of the compiler trampoline chain. -/
 def trampoline2Path :
@@ -68,7 +68,7 @@ retained as a single audit-friendly path. -/
 def headerPath := trampoline1Path ++ trampoline2Path ++
   headerLoadPath ++ headerCheckPath
 
-def tramp0PushLocated := pushAt 0 2 3133
+def tramp0PushLocated := pushAt 0 2 4214
 def tramp0JumpLocated := opAt 1 .JUMP
 def tramp0Path := [tramp0PushLocated, tramp0JumpLocated]
 def tramp1Path := [opAt 12 .JUMPDEST, pushAt 13 2 53, opAt 14 .JUMP]

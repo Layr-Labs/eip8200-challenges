@@ -14,8 +14,8 @@ set_option linter.unusedSimpArgs false in
 theorem run_fallback (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock fallbackPath (branchState input 4686) =
       some (fallbackState input) := by
-  have hjump : Decode.isValidJumpDest submissionBytecode 1314 = true :=
-    Artifact.isValidJumpDest_index 977 (by rfl)
+  have hjump : Decode.isValidJumpDest submissionBytecode 3133 = true :=
+    Artifact.isValidJumpDest_index 1913 (by rfl)
   simp [fallbackPath, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,

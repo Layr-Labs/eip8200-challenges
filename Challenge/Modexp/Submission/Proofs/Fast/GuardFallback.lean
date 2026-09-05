@@ -13,7 +13,7 @@ open GuardState GuardPaths
 private def fallbackMidState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
       pc := UInt256.ofNat 3920
-      stack := [UInt256.ofNat 4214] }
+      stack := [UInt256.ofNat 1314] }
 
 theorem run_fallback_push (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocated fallbackPushLocated
@@ -47,14 +47,14 @@ theorem run_fallback_jump (input : ByteArray) :
       Challenge.EvmProof.Word.word_toNat_ofNat]
   have hcap : (fallbackMidState input).stack.length < 1024 := by
     simp [fallbackMidState]
-  have hjump : Decode.isValidJumpDest submissionBytecode 4214 = true :=
-    Artifact.isValidJumpDest_index 2052 (by rfl)
+  have hjump : Decode.isValidJumpDest submissionBytecode 1314 = true :=
+    Artifact.isValidJumpDest_index 977 (by rfl)
   unfold Challenge.EvmProof.Stepper.runLocated
   rw [fallbackJump_index, fallbackJump_instruction, if_pos hpc]
   unfold Challenge.EvmProof.Stepper.runInstr
   rw [if_pos hcap]
   simp only [fallbackMidState]
-  rw [show (UInt256.ofNat 4214).toNat = 4214 by decide,
+  rw [show (UInt256.ofNat 1314).toNat = 1314 by decide,
     show (initialState submissionBytecode input 0).executionEnv.code =
       submissionBytecode by rfl, hjump]
   simp only [if_true, fallbackState, Main.trampolineState]

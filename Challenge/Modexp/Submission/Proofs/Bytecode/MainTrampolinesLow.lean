@@ -11,7 +11,7 @@ open EvmSemantics.EVM
 private def tramp0MidState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
       pc := UInt256.ofNat 3
-      stack := [UInt256.ofNat 3133] }
+      stack := [UInt256.ofNat 4214] }
 
 theorem run_tramp0_push (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocated tramp0PushLocated
@@ -21,7 +21,7 @@ theorem run_tramp0_push (input : ByteArray) :
   unfold Challenge.EvmProof.Stepper.runLocated
   change (if (initialState submissionBytecode input 0).pc.toNat =
       Artifact.submissionArtifact.instructionPC 0 then
-      Challenge.EvmProof.Stepper.runInstr (.push 2 (UInt256.ofNat 3133))
+      Challenge.EvmProof.Stepper.runInstr (.push 2 (UInt256.ofNat 4214))
         (initialState submissionBytecode input 0) else none) = _
   rw [if_pos hpc]
   have hcap : (initialState submissionBytecode input 0).stack.length < 1024 := by
@@ -41,15 +41,15 @@ theorem run_tramp0_push (input : ByteArray) :
 
 theorem run_tramp0_jump (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocated tramp0JumpLocated
-      (tramp0MidState input) = some (trampolineState input 3133) := by
+      (tramp0MidState input) = some (trampolineState input 4214) := by
   have hpc : (tramp0MidState input).pc.toNat =
       Artifact.submissionArtifact.instructionPC 1 := by
     simp [tramp0MidState, initialState,
       Challenge.EvmProof.Word.word_toNat_ofNat]
   have hcap : (tramp0MidState input).stack.length < 1024 := by
     simp [tramp0MidState]
-  have hjump : Decode.isValidJumpDest submissionBytecode 3133 = true :=
-    Artifact.isValidJumpDest_index 1913 (by rfl)
+  have hjump : Decode.isValidJumpDest submissionBytecode 4214 = true :=
+    Artifact.isValidJumpDest_index 2052 (by rfl)
   unfold Challenge.EvmProof.Stepper.runLocated
   change (if (tramp0MidState input).pc.toNat =
       Artifact.submissionArtifact.instructionPC 1 then
@@ -59,7 +59,7 @@ theorem run_tramp0_jump (input : ByteArray) :
   unfold Challenge.EvmProof.Stepper.runInstr
   rw [if_pos hcap]
   simp only [tramp0MidState]
-  rw [show (UInt256.ofNat 3133).toNat = 3133 by decide,
+  rw [show (UInt256.ofNat 4214).toNat = 4214 by decide,
     show (initialState submissionBytecode input 0).executionEnv.code =
       submissionBytecode by rfl, hjump]
   simp only [if_true, trampolineState]
@@ -67,7 +67,7 @@ theorem run_tramp0_jump (input : ByteArray) :
 
 theorem run_tramp0 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path
-      (initialState submissionBytecode input 0) = some (trampolineState input 3133) := by
+      (initialState submissionBytecode input 0) = some (trampolineState input 4214) := by
   unfold tramp0Path Challenge.EvmProof.Stepper.runLocatedBlock
   rw [run_tramp0_push]
   change (match (tramp0MidState input).halt with

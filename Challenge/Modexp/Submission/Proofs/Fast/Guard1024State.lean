@@ -11,7 +11,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Guard1024Logic
 
 abbrev entryState (input : ByteArray) : State := Main.trampolineState input 4214
-abbrev fallbackState (input : ByteArray) : State := Main.trampolineState input 1314
+abbrev fallbackState (input : ByteArray) : State := Main.trampolineState input 3133
 
 def branchState (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
