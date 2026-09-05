@@ -202,7 +202,7 @@ Wrapper lengths stay at 13 bytes and six instructions. The second PUSH
 starts at wrapper PC + 2; the return stays at PC + 12. The tail has a
 448-instruction suffix. The universal Correct contract is unchanged.
 
-## Current candidate: consume A in the shared sum (H20)
+## Prior candidate: consume A in the shared sum (H20)
 
 H20 consumes A instead of copying it and later discarding it. After the
 Boolean and X addition, the stack is `[s, ret, r, A, B, C, D, E] ++ rest`.
@@ -223,3 +223,23 @@ correct and equal paired gas. The reduction from H18 is 800 per block or
 `3698 + 28376 * B + 3 * C + memCost(65 + 2 * B)`.
 This is measured gas, not a separate proved gas schedule. The universal
 Correct contract and protected acceptance checks are unchanged.
+
+## Current candidate: consume A with the packed schedule (H21)
+
+H21 combines the H20 round helpers with the same 528-byte ascending packed
+schedule used in H19. The schedule PUSH2 at PC `0x72b` now targets `0x122c`.
+Only its two immediate bytes change in the 4,652-byte H20 prefix. The new
+helper starts at instruction 2455. Its final JUMP is instruction 2614 at
+PC `0x143b`. The full candidate has 5,180 bytes and 2,615 instructions.
+The unchanged final combination tail has a 588-instruction suffix.
+
+The helper reads +60 decimal, +0, and +32 before all 16 ascending X stores.
+Two byte-swap stages per input word produce the little-endian values.
+The warm-up preserves the old active-word count. Separate raw, byte-order,
+full-memory, active-word, state, and located-step proofs connect the helper
+to the old scheduled-state model. The frame uses CalldataFits and a valid
+block index, with one return JUMPDEST. The public Correct contract is fixed.
+
+Native tests report 1,730,279 gas with all 17 clean and 17 dirty cases
+correct and equal paired gas. This saves 209,616 gas from H20 and 52,800
+from H19 per suite. Native gas is not an official server score.

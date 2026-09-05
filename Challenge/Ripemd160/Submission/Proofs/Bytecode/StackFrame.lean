@@ -1,4 +1,9 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DriverTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleActiveWords
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleMemoryBridge
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleSite
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleState
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Schedule
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackBlockModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackLoadTrace
@@ -10,7 +15,7 @@ set_option maxRecDepth 50000
 set_option maxHeartbeats 3000000
 
 /-!
-# H12 compression frame
+# H21 compression frame
 
 This module certifies the frame around the scheduled compression body.  The
 compression body itself starts at the load-entry seam.
@@ -40,7 +45,7 @@ def prefixPath : List Located :=
   [⟨979, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨980, .push ⟨2, by decide⟩ (UInt256.ofNat 0x72f), by rfl, by decide⟩,
    ⟨981, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨982, .push ⟨2, by decide⟩ (UInt256.ofNat 0x236), by rfl, by decide⟩,
+   ⟨982, .push ⟨2, by decide⟩ (UInt256.ofNat 0x122c), by rfl, by decide⟩,
    ⟨983, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def exitPath : List Located :=
@@ -88,19 +93,22 @@ theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock prefixPath (DriverTrace.compressEntry s input i) =
-      some (Schedule.scheduleEntry s (DriverTrace.messageOffsetWord i)
-        (UInt256.ofNat 0x72f) (StackBlockModel.scheduleRest input i)) := by
+      some (PackedScheduleTemplate.scheduleEntry s
+        PackedScheduleSite.packedScheduleSite.startPC
+        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f)
+        (StackBlockModel.scheduleRest input i)) := by
   have hpc979 : Artifact.submissionArtifact.instructionPC 979 = 0x726 := by rfl
   have hpc980 : Artifact.submissionArtifact.instructionPC 980 = 0x727 := by rfl
   have hpc981 : Artifact.submissionArtifact.instructionPC 981 = 0x72a := by rfl
   have hpc982 : Artifact.submissionArtifact.instructionPC 982 = 0x72b := by rfl
   have hpc983 : Artifact.submissionArtifact.instructionPC 983 = 0x72e := by rfl
-  have hdest236 : Decode.isValidJumpDest submissionBytecode 0x236 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 413 (by rfl)
+  have hdest122c : Decode.isValidJumpDest submissionBytecode 0x122c = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2455 (by rfl)
   simp [prefixPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
-    DriverTrace.compressEntry, Schedule.scheduleEntry, StackBlockModel.scheduleRest,
+    DriverTrace.compressEntry, PackedScheduleTemplate.scheduleEntry,
+    PackedScheduleSite.packedScheduleSite_startPC, StackBlockModel.scheduleRest,
     StackBlockModel.driverRest, hcode, hrun, hpc979, hpc980, hpc981, hpc982, hpc983,
-    hdest236]
+    hdest122c]
 
 theorem run_exit (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
@@ -122,8 +130,10 @@ def gasSteps_prefix (s : State) (input : ByteArray) (i : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (DriverTrace.compressEntry s input i)
-      (Schedule.scheduleEntry s (DriverTrace.messageOffsetWord i)
-        (UInt256.ofNat 0x72f) (StackBlockModel.scheduleRest input i)) := by
+      (PackedScheduleTemplate.scheduleEntry s
+        PackedScheduleSite.packedScheduleSite.startPC
+        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f)
+        (StackBlockModel.scheduleRest input i)) := by
   apply Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka prefixPath
   · exact hcode
   · exact hfork
@@ -132,23 +142,89 @@ def gasSteps_prefix (s : State) (input : ByteArray) (i : Nat)
   · exact hnp
 
 def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
+    (hfit : CalldataFits input)
+    (hi : i < DriverTrace.blockCount input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
-        (Schedule.scheduleEntry s (DriverTrace.messageOffsetWord i)
-          (UInt256.ofNat 0x72f) (StackBlockModel.scheduleRest input i))
+        (PackedScheduleTemplate.scheduleEntry s
+          PackedScheduleSite.packedScheduleSite.startPC
+          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f)
+          (StackBlockModel.scheduleRest input i))
         (Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
           (UInt256.ofNat 0x72f) (StackBlockModel.scheduleRest input i)) := by
-  apply Schedule.gasSteps_schedule s (DriverTrace.messageOffsetWord i)
-    (UInt256.ofNat 0x72f) (StackBlockModel.scheduleRest input i)
-  · simp [StackBlockModel.scheduleRest, StackBlockModel.driverRest]
-  · exact hcode
-  · exact hfork
-  · exact hrun
-  · exact hnp
-  · exact Artifact.submissionArtifact.isValidJumpDest_index 984 (by rfl)
+  let rest := StackBlockModel.scheduleRest input i
+  have hmemory :
+      PackedScheduleTemplate.expectedMemory s
+          (DriverTrace.messageOffsetWord i) =
+        (StackBlockModel.scheduledState s input i).memory := by
+    let p := Padding.messageOffset + 64 * i
+    have hp : 0x4a0 ≤ p := by
+      dsimp [p, Padding.messageOffset]
+      omega
+    have hsize : input.size < 2 ^ 64 := by
+      simpa [CalldataFits] using hfit
+    have hpadded := Padding.paddedLength_lt input.size
+    have hblocks : Padding.paddedLength input.size =
+        (Padding.paddedLength input.size / 64) * 64 := by
+      simpa [DriverTrace.blockCount] using
+        (DriverTrace.paddedLength_eq_blockCount input)
+    have hipadded : 64 * i + 64 ≤ Padding.paddedLength input.size := by
+      have hi' : i < Padding.paddedLength input.size / 64 := by
+        simpa [DriverTrace.blockCount] using hi
+      omega
+    have hbound : p + 64 < 2 ^ 256 := by
+      norm_num [p, Padding.messageOffset] at hsize ⊢
+      omega
+    have hmsg : DriverTrace.messageOffsetWord i = UInt256.ofNat p := by
+      simp [DriverTrace.messageOffsetWord, DriverTrace.blockOffset, p,
+        Nat.mul_comm]
+    simpa [StackBlockModel.scheduledState, rest, hmsg] using
+      (PackedScheduleMemoryBridge.expectedMemory_eq_loopState_memory s p
+        (UInt256.ofNat 0x72f) rest hp hbound)
+  have hactive :
+      PackedScheduleTemplate.expectedActiveWords s
+          (DriverTrace.messageOffsetWord i) =
+        (StackBlockModel.scheduledState s input i).activeWords := by
+    simpa [StackBlockModel.scheduledState, rest] using
+      (PackedScheduleActiveWords.expectedActiveWords_eq_schedule s input hfit i hi
+        (UInt256.ofNat 0x72f) rest)
+  have hstack1023 : rest.length < 1023 := by
+    change 4 < 1023
+    norm_num
+  have hstack1017 : rest.length < 1017 := by
+    change 4 < 1017
+    norm_num
+  have hraw :
+      StackRoundTrace.runInstrSeq PackedScheduleTemplate.ascendingPackedTemplate
+        (PackedScheduleTemplate.scheduleEntry s
+          PackedScheduleSite.packedScheduleSite.startPC
+          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest) =
+        some (PackedScheduleTemplate.expectedState s
+          PackedScheduleSite.packedScheduleSite.startPC
+          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest) := by
+    exact PackedScheduleTrace.runInstrSeq_ascendingPacked s
+      PackedScheduleSite.packedScheduleSite.startPC
+      (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest
+      hstack1017 hrun
+  have hartifactCode : s.executionEnv.code = Artifact.submissionArtifact.code := by
+    change s.executionEnv.code = submissionBytecode
+    exact hcode
+  have hvalid :
+      Decode.isValidJumpDest s.executionEnv.code
+        (UInt256.ofNat 0x72f).toNat = true := by
+    rw [hcode]
+    exact Artifact.submissionArtifact.isValidJumpDest_index 984 (by rfl)
+  have hpacked := PackedScheduleSite.gasSteps_packedSchedule s
+    (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest
+    hartifactCode hfork hrun hnp hstack1023 hvalid
+    hraw
+  exact hpacked.cast rfl
+    (PackedScheduleState.returned_eq_schedule_of_memory_active s
+      PackedScheduleSite.packedScheduleSite.startPC
+      (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x72f) rest hmemory hactive)
 
 def gasSteps_exit (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
@@ -189,13 +265,15 @@ def gasSteps_exit (s : State) (input : ByteArray) (i : Nat)
   · exact hqnp
 
 def gasSteps_frame (s : State) (input : ByteArray) (i : Nat)
+    (hfit : CalldataFits input)
+    (hi : i < DriverTrace.blockCount input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (DriverTrace.compressEntry s input i) (frameLoadEntry s input i) :=
   (gasSteps_prefix s input i hcode hfork hrun hnp).trans <|
-    (gasSteps_schedule s input i hcode hfork hrun hnp).trans <|
+    (gasSteps_schedule s input i hfit hi hcode hfork hrun hnp).trans <|
       gasSteps_exit s input i hcode hfork hrun hnp
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackFrame

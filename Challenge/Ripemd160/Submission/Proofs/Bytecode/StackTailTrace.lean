@@ -9,10 +9,10 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 
 /-!
-# Located H20 final-combination trace
+# Located H21 final-combination trace
 
-The raw tail theorem is lifted through the exact H20 artifact.  The path starts
-at instruction 1966 and ends at instruction 2026.  The 428 helper instructions
+The raw tail theorem is lifted through the exact H21 artifact.  The path starts
+at instruction 1966 and ends at instruction 2026.  The 588 helper instructions
 after the tail remain in the artifact suffix.
 -/
 
@@ -40,14 +40,14 @@ open private submissionInstructionsChunk0 submissionInstructionsChunk1
   submissionInstructionsChunk6 submissionInstructionsChunk7
   submissionInstructionsChunk8 submissionInstructionsChunk9
   submissionInstructionsChunk10 submissionInstructionsChunk11
-  submissionInstructionsChunk12
+  submissionInstructionsChunk12 submissionInstructionsChunk13
   submissionInstructionsChunk0_length submissionInstructionsChunk1_length
   submissionInstructionsChunk2_length submissionInstructionsChunk3_length
   submissionInstructionsChunk4_length submissionInstructionsChunk5_length
   submissionInstructionsChunk6_length submissionInstructionsChunk7_length
   submissionInstructionsChunk8_length submissionInstructionsChunk9_length
   submissionInstructionsChunk10_length submissionInstructionsChunk11_length
-  submissionInstructionsChunk12_length
+  submissionInstructionsChunk12_length submissionInstructionsChunk13_length
   wfOp
   from Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 
@@ -63,7 +63,7 @@ def tailBefore : List Instr :=
 
 def tailAfter : List Instr :=
   submissionInstructionsChunk10.drop 27 ++ submissionInstructionsChunk11 ++
-    submissionInstructionsChunk12
+    submissionInstructionsChunk12 ++ submissionInstructionsChunk13
 
 private theorem artifactPrefix_length : artifactPrefix.length = 1800 := by
   simp [artifactPrefix]
@@ -71,7 +71,7 @@ private theorem artifactPrefix_length : artifactPrefix.length = 1800 := by
 private theorem tailBefore_length : tailBefore.length = 1966 := by
   simp [tailBefore, artifactPrefix_length]
 
-private theorem tailAfter_length : tailAfter.length = 428 := by
+private theorem tailAfter_length : tailAfter.length = 588 := by
   simp [tailAfter]
 
 private theorem tailAfter_nonempty : tailAfter ≠ [] := by
@@ -110,31 +110,32 @@ private theorem artifact_tail_split :
     (artifactPrefix ++ submissionInstructionsChunk9.take 166) ++
       StackTail.tailInstructions ++
       (submissionInstructionsChunk10.drop 27 ++ submissionInstructionsChunk11 ++
-        submissionInstructionsChunk12)
+        submissionInstructionsChunk12 ++ submissionInstructionsChunk13)
   have hprefix : Artifact.submissionInstructions =
       artifactPrefix ++ submissionInstructionsChunk9 ++
         submissionInstructionsChunk10 ++ submissionInstructionsChunk11 ++
-        submissionInstructionsChunk12 := by
+        submissionInstructionsChunk12 ++ submissionInstructionsChunk13 := by
     simp only [Artifact.submissionInstructions, artifactPrefix,
       List.append_assoc]
   calc
     Artifact.submissionInstructions =
         artifactPrefix ++ submissionInstructionsChunk9 ++
           submissionInstructionsChunk10 ++ submissionInstructionsChunk11 ++
-          submissionInstructionsChunk12 := hprefix
+          submissionInstructionsChunk12 ++ submissionInstructionsChunk13 := hprefix
     _ = artifactPrefix ++ (submissionInstructionsChunk9 ++
           submissionInstructionsChunk10) ++ submissionInstructionsChunk11 ++
-          submissionInstructionsChunk12 := by
+          submissionInstructionsChunk12 ++ submissionInstructionsChunk13 := by
       simp only [List.append_assoc]
     _ = artifactPrefix ++
         (submissionInstructionsChunk9.take 166 ++
           StackTail.tailInstructions ++ submissionInstructionsChunk10.drop 27) ++
-        submissionInstructionsChunk11 ++ submissionInstructionsChunk12 := by
+        submissionInstructionsChunk11 ++ submissionInstructionsChunk12 ++
+          submissionInstructionsChunk13 := by
       rw [artifactChunks9_10_tail]
     _ = (artifactPrefix ++ submissionInstructionsChunk9.take 166) ++
         StackTail.tailInstructions ++
         (submissionInstructionsChunk10.drop 27 ++ submissionInstructionsChunk11 ++
-          submissionInstructionsChunk12) := by
+          submissionInstructionsChunk12 ++ submissionInstructionsChunk13) := by
       simp only [List.append_assoc]
 
 private theorem tailInstructions_length : StackTail.tailInstructions.length = 61 := by
