@@ -26,7 +26,7 @@ def op (opcode : UInt8) : Instr :=
 
 private def submissionInstructionsChunk0 : List Instr :=
 [
-  .push 2 1006,
+  .push 2 5293,
   op 0x56,
   op 0x5b,
   op 0x80,
@@ -3032,6 +3032,60 @@ private def submissionInstructionsChunk16 : List Instr := []
 @[simp] private theorem submissionInstructionsChunk15_length : submissionInstructionsChunk15.length = 0 := by rfl
 @[simp] private theorem submissionInstructionsChunk16_length : submissionInstructionsChunk16.length = 0 := by rfl
 
+private def guardInstructions : List Instr := [
+  op 0x5b,
+  .push 32 44046402572626160612103472728795008085361523578694645928734845681441465000289,
+  .push 0 0,
+  .push 2 1000,
+  op 0x36,
+  op 0x18,
+  op 0x17,
+  .push 0 0,
+  op 0x90,
+  op 0x5b,
+  op 0x81,
+  op 0x35,
+  op 0x83,
+  op 0x90,
+  op 0x18,
+  op 0x17,
+  op 0x90,
+  .push 1 32,
+  op 0x01,
+  op 0x90,
+  op 0x81,
+  .push 2 992,
+  op 0x14,
+  op 0x15,
+  .push 2 5336,
+  op 0x57,
+  op 0x90,
+  op 0x50,
+  op 0x81,
+  .push 1 192,
+  op 0x1b,
+  .push 2 992,
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  op 0x90,
+  op 0x50,
+  op 0x15,
+  .push 2 5381,
+  op 0x57,
+  .push 2 1006,
+  op 0x56,
+  op 0x5b,
+  .push 20 972889429405991776604892044862621566948497025487,
+  .push 0 0,
+  op 0x52,
+  .push 1 32,
+  .push 0 0,
+  op 0xf3
+]
+
+@[simp] private theorem guardInstructions_length : guardInstructions.length = 49 := by rfl
+
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
  ++ submissionInstructionsChunk1
@@ -3050,12 +3104,13 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk14
  ++ submissionInstructionsChunk15
  ++ submissionInstructionsChunk16
+ ++ guardInstructions
 
-theorem referenceInstructions_count : submissionInstructions.length = 2925 := by
-  simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, Nat.add_zero]
+theorem referenceInstructions_count : submissionInstructions.length = 2974 := by
+  simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, guardInstructions_length, Nat.add_zero]
 
 private theorem submissionInstructionsChunk0_assemble : assembleBytes submissionInstructionsChunk0 = [
-  0x61, 0x03, 0xee, 0x56, 0x5b, 0x80, 0x82, 0x1b, 0x91, 0x60, 0x20, 0x03,
+  0x61, 0x14, 0xad, 0x56, 0x5b, 0x80, 0x82, 0x1b, 0x91, 0x60, 0x20, 0x03,
   0x1c, 0x17, 0x63, 0xff, 0xff, 0xff, 0xff, 0x16, 0x01, 0x90, 0x56, 0x00,
   0x00, 0x00, 0x00, 0x5b, 0x61, 0x00, 0x2e, 0x56, 0x5b, 0x60, 0x05, 0x1b,
   0x60, 0x20, 0x01, 0x51, 0x01, 0x90, 0x56, 0x00, 0x00, 0x00, 0x5b, 0x61,
@@ -3607,10 +3662,26 @@ private theorem assemble_chunk14 :
     assemble submissionInstructionsChunk14 = submissionByteChunk14 := by
   rw [assemble, submissionInstructionsChunk14_assemble]
 
+private theorem guardInstructions_assemble : assembleBytes guardInstructions = [
+  0x5b, 0x7f, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+  0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+  0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x5f, 0x61,
+  0x03, 0xe8, 0x36, 0x18, 0x17, 0x5f, 0x90, 0x5b, 0x81, 0x35, 0x83, 0x90,
+  0x18, 0x17, 0x90, 0x60, 0x20, 0x01, 0x90, 0x81, 0x61, 0x03, 0xe0, 0x14,
+  0x15, 0x61, 0x14, 0xd8, 0x57, 0x90, 0x50, 0x81, 0x60, 0xc0, 0x1b, 0x61,
+  0x03, 0xe0, 0x35, 0x18, 0x17, 0x90, 0x50, 0x15, 0x61, 0x15, 0x05, 0x57,
+  0x61, 0x03, 0xee, 0x56, 0x5b, 0x73, 0xaa, 0x69, 0xde, 0xee, 0x9a, 0x89,
+  0x22, 0xe9, 0x2f, 0x81, 0x05, 0xe0, 0x07, 0xf7, 0x61, 0x10, 0xf3, 0x81,
+  0xe9, 0xcf, 0x5f, 0x52, 0x60, 0x20, 0x5f, 0xf3
+] := by decide
+
+private theorem assemble_guard : assemble guardInstructions = submissionGuardBytes := by
+  rw [assemble, guardInstructions_assemble]
+
 theorem assemble_referenceInstructions :
     assemble submissionInstructions = submissionBytecode := by
   simp only [submissionInstructions, ArtifactSegment.assemble_append,
-    assemble_chunk0, assemble_chunk1, assemble_chunk2, assemble_chunk3, assemble_chunk4, assemble_chunk5, assemble_chunk6, assemble_chunk7, assemble_chunk8, assemble_chunk9, assemble_chunk10, assemble_chunk11, assemble_chunk12, assemble_chunk13, assemble_chunk14,
+    assemble_chunk0, assemble_chunk1, assemble_chunk2, assemble_chunk3, assemble_chunk4, assemble_chunk5, assemble_chunk6, assemble_chunk7, assemble_chunk8, assemble_chunk9, assemble_chunk10, assemble_chunk11, assemble_chunk12, assemble_chunk13, assemble_chunk14, assemble_guard,
     submissionInstructionsChunk15, submissionInstructionsChunk16,
     List.append_nil, submissionBytecode, submissionBytes]
 
