@@ -28,8 +28,8 @@ theorem answerMemory_read :
   rw [← answerChunks_eq]
   change MachineState.readPadded
     (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes
-      (MachineState.writeBytes ByteArray.empty b0 0) b1 32) b2 64) b3 96) 0 128 =
-      answerChunks
+      (MachineState.writeBytes ByteArray.empty b0 0) b1 32)
+        b2 64) b3 96) 0 128 = answerChunks
   have h0 : b0.size = 32 := by
     simp only [b0, YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
   have h1 : b1.size = 32 := by

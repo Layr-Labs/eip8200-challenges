@@ -15,7 +15,7 @@ theorem run_push (input : ByteArray) (condition : UInt256) :
       some (jumpStackState input condition) := by
   have hpc : (conditionState input 4682 condition).pc.toNat =
       Artifact.submissionArtifact.instructionPC 2119 := by
-    simp [conditionState, initialState, guardPC1,
+    simp [conditionState, initialState, guard1024PC3,
       Challenge.EvmProof.Word.word_toNat_ofNat]
   have hop : Challenge.EvmProof.Stepper.runLocated branchPushLocated
       (conditionState input 4682 condition) =

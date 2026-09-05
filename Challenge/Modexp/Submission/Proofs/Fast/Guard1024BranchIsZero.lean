@@ -18,7 +18,7 @@ theorem run_iszero_match (input : ByteArray) (h : guardDiff input = 0) :
     exact diff_isZero_one input h
   have hpc : (accState input 4681 (acc3 input)).pc.toNat =
       Artifact.submissionArtifact.instructionPC 2118 := by
-    simp [accState, initialState, guardPC1,
+    simp [accState, initialState, guard1024PC3,
       Challenge.EvmProof.Word.word_toNat_ofNat]
   have hop : Challenge.EvmProof.Stepper.runLocated branchIsZeroLocated
       (accState input 4681 (acc3 input)) =
@@ -45,7 +45,7 @@ theorem run_iszero_mismatch (input : ByteArray) (h : guardDiff input ≠ 0) :
     exact diff_isZero_zero input h
   have hpc : (accState input 4681 (acc3 input)).pc.toNat =
       Artifact.submissionArtifact.instructionPC 2118 := by
-    simp [accState, initialState, guardPC1,
+    simp [accState, initialState, guard1024PC3,
       Challenge.EvmProof.Word.word_toNat_ofNat]
   have hop : Challenge.EvmProof.Stepper.runLocated branchIsZeroLocated
       (accState input 4681 (acc3 input)) =
