@@ -12,8 +12,8 @@ def submissionHex : String := (include_str "bytecode.hex").trimAscii.copy
 /-- Frozen verified-compiler output targeted by the direct EVM proof. -/
 def submissionBytecode : ByteArray := submissionBytes
 
-@[simp] theorem submissionBytecode_size : submissionBytecode.size = 2126 := by
-  change submissionBytes.size = 2126
+@[simp] theorem submissionBytecode_size : submissionBytecode.size = 2175 := by
+  change submissionBytes.size = 2175
   exact submissionBytes_size
 
 /-- Generic disassembly round-trip for the exact submitted bytes. -/

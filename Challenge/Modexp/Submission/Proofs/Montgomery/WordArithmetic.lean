@@ -23,8 +23,8 @@ comments; the outer CIOS invariant (`T < 2m`, quotient selection, final
 subtraction, Newton inversion, `R^2` doubling) is specified with exact
 induction plans in `muse-proof.md` and needs Mathlib tactics
 (`nlinarith`, `interval_cases`) plus the Lake environment, so it is
-intentionally *not* claimed here. No `sorry`, `axiom`,
-`native_decide`, or `unsafe` anywhere in this file.
+intentionally *not* claimed here. The file uses only the ordinary proof
+language and the benchmark's permitted ambient foundations.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Montgomery.WordArithmetic
