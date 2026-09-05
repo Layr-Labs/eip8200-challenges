@@ -18,7 +18,7 @@ def returnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
    Main.opAt 1036 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
-   Main.pushAt 1037 0 0,
+   Main.opAt 1037 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
    Main.pushAt 1038 0 0,
    Main.opAt 1039 (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN))
   ]
