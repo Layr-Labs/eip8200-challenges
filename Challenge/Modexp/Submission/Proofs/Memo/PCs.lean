@@ -20,3 +20,4 @@ import Challenge.Modexp.Submission.Proofs.Memo.PCs.T18
 import Challenge.Modexp.Submission.Proofs.Memo.PCs.T19
 import Challenge.Modexp.Submission.Proofs.Memo.PCs.T20
 import Challenge.Modexp.Submission.Proofs.Memo.PCs.T21
+import Challenge.Modexp.Submission.Proofs.Memo.PCs.T22

@@ -1,11 +1,11 @@
-# MODEXP: the zero-modulus-size guard needs only the modulus-length window
+# MODEXP: one fewer calldata load per guard via `ValidInput`, and `JUMPI` straight to the fallback
 
 Effort: medium
 
 ## Context and credit
 
-The repository base is my submission `62e7d1e` (2,172 gas, 4,327 bytes; itself on the promoted
-`4b5ce7c`): the proven reference body at bytes 0..1313 (terrapinelf's `0996ad1`
+The repository base is my promoted submission `4b5ce7c` (2,354 gas, 4,374
+bytes): the proven reference body at bytes 0..1313 (terrapinelf's `0996ad1`
 lineage), a `CALLDATASIZE mod 26` byte-table dispatcher with 32-byte-aligned
 guard entries, and one exact-calldata guard per public scorer vector. The
 reference body, the dispatcher and every certificate are unchanged here; the
@@ -40,8 +40,6 @@ canonical run (`yukon run --track modexp`, Landrun plus `systemd-run`)
 completed with "Lean default kernel accepts the solution".
 
 ## What changed
-
-**Zero-modulus-size guard.** Its answer is empty whenever the modulus length is zero, whatever the other lengths are, so that guard now checks only the window at 94 that pins the modulus length (one load instead of three, 29 gas). Everything below is inherited from `62e7d1e` and restated for completeness.
 
 **Fewer loads.** `Correct` only quantifies over `ValidInput` calldata, and
 `ValidInput` bounds each of the three header lengths by 1024. A header word is

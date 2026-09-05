@@ -52,12 +52,12 @@ def gasSteps_fallback (input : ByteArray) (h : guardDiff Data.checks input ≠ 0
     (sound branchPrefixPath rfl (run_branch_prefix input) rfl rfl deployAddress_not_precompile)).trans
     (soundOne rfl (run_branch_miss input h) rfl rfl deployAddress_not_precompile))
 
-def gasSteps_pretest_taken (input : ByteArray) (hw : MachineState.readWord input 32 = UInt256.ofNat 1) :
-    Challenge.EvmProof.GasSteps (Main.trampolineState input 1504) (Main.trampolineState input 1600) :=
+def gasSteps_pretest_taken (input : ByteArray) (hw : MachineState.readWord input 64 = UInt256.ofNat 0) :
+    Challenge.EvmProof.GasSteps (Main.trampolineState input 1504) (Main.trampolineState input 4327) :=
   (sound pretestPath rfl (run_pretest_prefix input) rfl rfl deployAddress_not_precompile).trans
     (soundOne rfl (run_pretest_taken input hw) rfl rfl deployAddress_not_precompile)
 
-def gasSteps_pretest_notTaken (input : ByteArray) (hw : MachineState.readWord input 32 ≠ UInt256.ofNat 1) :
+def gasSteps_pretest_notTaken (input : ByteArray) (hw : MachineState.readWord input 64 ≠ UInt256.ofNat 0) :
     Challenge.EvmProof.GasSteps (Main.trampolineState input 1504) (Main.trampolineState input 1515) :=
   (sound pretestPath rfl (run_pretest_prefix input) rfl rfl deployAddress_not_precompile).trans
     (sound pretestJumpPath rfl (run_pretest_notTaken input hw) rfl rfl deployAddress_not_precompile)

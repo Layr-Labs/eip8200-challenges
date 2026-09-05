@@ -214,18 +214,11 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
         Bytecode.SubmissionCorrect.finalState_isDone input,
         Bytecode.SubmissionCorrect.finalState_result input hvalid⟩⟩
   else if hr20 : input.size % 26 = 20 then
-    if hw : MachineState.readWord input 32 = UInt256.ofNat 1 then
-      if h3 : Main.Hit3 input then
-        ⟨V3.State.returnedState input,
-          ⟨⟨Main.gasSteps_hit3 input hsize hr20 hw h3⟩,
-            V3.returnedState_isDone input,
-            V3.returnedState_result input hvalid h3⟩⟩
-      else
-        ⟨Bytecode.SubmissionCorrect.finalState input,
-      ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
-          (Main.gasSteps_miss20b input hsize hr20 hw h3)⟩,
-        Bytecode.SubmissionCorrect.finalState_isDone input,
-        Bytecode.SubmissionCorrect.finalState_result input hvalid⟩⟩
+    if hw : MachineState.readWord input 64 = UInt256.ofNat 0 then
+      ⟨EmptyReturn.returnedState input,
+        ⟨⟨Main.gasSteps_empty input hsize hr20 hw⟩,
+          EmptyReturn.returnedState_isDone input,
+          EmptyReturn.returnedState_result input hw⟩⟩
     else
       if h2 : Main.Hit2 input then
         ⟨V2.State.returnedState input,

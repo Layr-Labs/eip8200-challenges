@@ -26,11 +26,11 @@ def pretestPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
    Main.opAt 1089 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
-   Main.pushAt 1090 1 32,
+   Main.pushAt 1090 1 64,
    Main.opAt 1091 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.pushAt 1092 1 1,
+   Main.pushAt 1092 1 0,
    Main.opAt 1093 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.EQ)),
-   Main.pushAt 1094 2 1600
+   Main.pushAt 1094 2 4327
   ]
 
 def pretestJumpPath :
