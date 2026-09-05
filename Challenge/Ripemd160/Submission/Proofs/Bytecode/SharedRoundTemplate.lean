@@ -8,7 +8,7 @@ set_option maxRecDepth 30000
 # H14 shared round helper templates
 
 These templates describe the straight-line helper before its final `JUMP`.
-The helper receives `[X-address, rotation, return-PC, A, B, C, D, E]` in
+The helper receives `[X-address, return-PC, rotation, A, B, C, D, E]` in
 top-first order.  The final `JUMP` is deliberately not part of a template.
 -/
 
@@ -30,11 +30,9 @@ def booleanOps (j : Nat) : List Instr :=
   match j with
   | 0 => [dup5, dup7, op .XOR, dup8, op .XOR]
   | 1 => [dup6, dup8, op .XOR, dup6, op .AND, dup8, op .XOR]
-  | 2 => [dup6, op .NOT, dup6, op .OR, dup8, op .XOR,
-      push4 mask, op .AND]
+  | 2 => [dup6, op .NOT, dup6, op .OR, dup8, op .XOR]
   | 3 => [dup5, dup7, op .XOR, dup8, op .AND, dup7, op .XOR]
-  | _ => [dup7, op .NOT, dup7, op .OR, dup6, op .XOR,
-      push4 mask, op .AND]
+  | _ => [dup7, op .NOT, dup7, op .OR, dup6, op .XOR]
 
 def helperBeforeJumpTemplate (j : Nat) (_xAddress : UInt256)
     (_rotation : Nat) (constant : UInt256) : List Instr :=
@@ -42,12 +40,12 @@ def helperBeforeJumpTemplate (j : Nat) (_xAddress : UInt256)
     [op .ADD, dup4, op .ADD] ++
     (if j = 0 then [] else [push4 constant, op .ADD]) ++
     [push4 mask, op .AND, swap3, op .POP,
-      swap1, swap2, dup1, dup3, op .SHL, swap2,
+      swap2, dup1, dup3, op .SHL, swap2,
       push1 (UInt256.ofNat 32), op .SUB, op .SHR, op .OR,
-      dup6, op .ADD, push4 mask, op .AND, swap1,
-      swap3, dup1, push1 c10, op .SHL, swap1, push1 c22,
+      dup6, op .ADD, push4 mask, op .AND, swap2, swap3,
+      dup1, push1 c10, op .SHL, swap1, push1 c22,
       op .SHR, op .OR, push4 mask, op .AND,
-      swap4, swap5, swap1, swap2, swap3]
+      swap4, swap5, swap1]
 
 def template (j : Nat) (xAddress : UInt256)
     (rotation : Nat) (constant : UInt256) : List Instr :=
@@ -79,36 +77,36 @@ def f4Template (xAddress : UInt256) (rotation : Nat)
     (booleanOps 1).length = 7 := by rfl
 
 @[simp] theorem booleanOps_length_two :
-    (booleanOps 2).length = 8 := by rfl
+    (booleanOps 2).length = 6 := by rfl
 
 @[simp] theorem booleanOps_length_three :
     (booleanOps 3).length = 7 := by rfl
 
 @[simp] theorem booleanOps_length_four :
-    (booleanOps 4).length = 8 := by rfl
+    (booleanOps 4).length = 6 := by rfl
 
 @[simp] theorem f0Template_length (xAddress : UInt256) (rotation : Nat) :
-    (f0Template xAddress rotation).length = 44 := by
+    (f0Template xAddress rotation).length = 41 := by
   rfl
 
 @[simp] theorem f1Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f1Template xAddress rotation constant).length = 48 := by
+    (f1Template xAddress rotation constant).length = 45 := by
   rfl
 
 @[simp] theorem f2Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f2Template xAddress rotation constant).length = 49 := by
+    (f2Template xAddress rotation constant).length = 44 := by
   rfl
 
 @[simp] theorem f3Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f3Template xAddress rotation constant).length = 48 := by
+    (f3Template xAddress rotation constant).length = 45 := by
   rfl
 
 @[simp] theorem f4Template_length (xAddress : UInt256) (rotation : Nat)
     (constant : UInt256) :
-    (f4Template xAddress rotation constant).length = 49 := by
+    (f4Template xAddress rotation constant).length = 44 := by
   rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTemplate

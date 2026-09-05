@@ -31,7 +31,7 @@ def helperEntry (s : State) (startPC xAddress : UInt256)
     (working : Compression.EvmWorking) (rest : List UInt256) : State :=
   { s with
     pc := startPC
-    stack := [xAddress, UInt256.ofNat rotation, returnPC] ++
+    stack := [xAddress, returnPC, UInt256.ofNat rotation] ++
       roundWords working ++ rest }
 
 def afterHelperBeforeJump (s : State) (endPC returnPC : UInt256)

@@ -140,7 +140,7 @@ and the final storage tail with its nonempty helper suffix. StackCorrect and
 Solution retain the exact universal Correct contract. Acceptance still
 requires the full protected Comparator and scorer.
 
-## Current candidate: compact rotation and return sequence (H14)
+## Prior candidate: compact rotation and return sequence (H14)
 
 H14 keeps H12's shared helper design and changes only the common stack
 permutations. It consumes the C input directly during its ten-bit rotation.
@@ -160,3 +160,44 @@ helper has seven fewer instructions and bytes. All ten helper addresses,
 160 wrapper targets, and the tail's 486-instruction suffix are updated.
 The unchanged public Correct contract and protected Comparator remain the
 acceptance conditions for these exact bytes.
+
+## H16: merged permutations and deferred Boolean masks
+
+H16 includes H15's merged T/C permutation, which removes two SWAPs per
+helper. It also removes the early Boolean-result mask from groups 2 and 4.
+The later sum mask, T mask, and C mask remain. The ordinary-kernel identity
+`mask32 (K + (A + (X + F))) = mask32 (K + (A + (X + mask32 F)))`
+justifies the change for all UInt256 inputs, including arithmetic wrap.
+The equality applies after the sum mask; unmasked sums need not be equal.
+
+The native suite reports 2,024,375 gas for each frame. All 17 clean and 17
+dirty vectors pass with equal paired gas. The artifact is 4,682 bytes and
+2,485 instructions. H16 saves 25,344 gas against H15, or 384 per block.
+The measured formula is
+`3698 + 29656 * B + 3 * C + memCost(65 + 2 * B)`.
+This is not a separate proved gas schedule.
+
+The five before-JUMP template lengths are 42, 46, 45, 46, and 45. All ten
+helper PCs, 160 wrapper targets, and the tail's 458-instruction suffix match
+the new artifact. The public Correct contract is unchanged. Protected
+Comparator acceptance is still required for the exact submitted bytes.
+
+## Current candidate: reordered helper parameters (H18)
+
+H18 pushes the rotation before the return PC. The helper entry is
+`[xAddress, returnPC, rotation, A, B, C, D, E] ++ rest`.
+After the sum mask, `SWAP3; POP; SWAP2` reaches the same state that H16
+reached with one more `SWAP1`. All later operations and masks stay fixed.
+The change applies to all ten helpers and all 160 wrappers.
+
+The native suite reports 1,992,695 gas per frame suite. All 17 clean and
+17 dirty vectors pass with equal paired gas. The artifact has 4,672 bytes
+and 2,475 instructions. The saving against H16 is 480 per compression
+block, or 31,680 per suite. The measured formula is
+`3698 + 29176 * B + 3 * C + memCost(65 + 2 * B)`.
+This is not a separate proved gas schedule.
+
+The five before-JUMP lengths are 41, 45, 44, 45, and 44 instructions.
+Wrapper lengths stay at 13 bytes and six instructions. The second PUSH
+starts at wrapper PC + 2; the return stays at PC + 12. The tail has a
+448-instruction suffix. The universal Correct contract is unchanged.
