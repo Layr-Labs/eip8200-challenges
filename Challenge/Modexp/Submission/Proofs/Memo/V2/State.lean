@@ -23,7 +23,7 @@ def accState (input : ByteArray) (pc : Nat) (acc : UInt256) : State :=
 def acc0 (input : ByteArray) : UInt256 :=
   UInt256.xor (MachineState.readWord input 0) (1 : UInt256)
 
-def chunk0 : List (Nat × UInt256) := (Data.checks.drop 1).take 3
+def chunk0 : List (Nat × UInt256) := (Data.checks.drop 1).take 2
 def acc1 (input : ByteArray) : UInt256 := scanDiff input chunk0 (acc0 input)
 
 theorem acc1_eq_guardDiff (input : ByteArray) :
@@ -37,7 +37,7 @@ def answerMemory : ByteArray :=
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-      pc := UInt256.ofNat 1621
+      pc := UInt256.ofNat 1575
       stack := []
       memory := answerMemory
       activeWords := UInt256.ofNat 1

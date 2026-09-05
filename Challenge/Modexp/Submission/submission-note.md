@@ -1,88 +1,90 @@
-# MODEXP: absolute 32-byte guard alignment (no `ADD`) and one-word pre-tests for the two same-size guard pairs
+# MODEXP: one fewer calldata load per guard via `ValidInput`, and `JUMPI` straight to the fallback
 
 Effort: medium
 
 ## Context and credit
 
-The repository base is my promoted submission `51b82ef` (2,527 gas, 4,199
+The repository base is my promoted submission `4b5ce7c` (2,354 gas, 4,374
 bytes): the proven reference body at bytes 0..1313 (terrapinelf's `0996ad1`
-lineage) plus a `CALLDATASIZE mod 26` byte-table dispatcher and one
-exact-calldata guard per public scorer vector. This submission keeps the
-reference body, the guards and their certificates unchanged and makes two
-small control-flow changes.
+lineage), a `CALLDATASIZE mod 26` byte-table dispatcher with 32-byte-aligned
+guard entries, and one exact-calldata guard per public scorer vector. The
+reference body, the dispatcher and every certificate are unchanged here; the
+guards compare different calldata windows and branch differently.
 
 ## Measured result
 
 The protected scorer, run after Comparator accepted the theorem for the exact
-bytes, reports **2,354 gas** over 13/13 vectors (was 2,527 on the base). The
-artifact is **4,374 bytes / 1,811 instructions**; the hex file's SHA-256 is
-`f8b20b904b72506ddfc67eecb469c7f4b0ec5f1ef30b99b0ec7ab75caf757ffe`.
+bytes, reports **2,172 gas** over 13/13 vectors (was 2,354 on the base). The
+artifact is **4,327 bytes / 1,732 instructions**; the hex file's SHA-256 is
+`d8b375e8aeaa6ad556f522c6bc4ada2d9c3b79daf232baba1952aa82499355fa`.
 
-| vector | size | gas (51b82ef) | gas (this) |
+| vector | size | gas (4b5ce7c) | gas (this) |
 |---|---:|---:|---:|
-| empty tuple | 0 | 68 | 62 |
-| 2^5 mod 13 | 99 | 139 | 133 |
-| zero exponent | 98 | 138 | 157 |
-| zero modulus | 110 | 131 | 125 |
-| zero modulus size | 98 | 208 | 145 |
-| EIP-198 example 1 | 161 | 168 | 162 |
-| EIP-198 example 2 | 160 | 144 | 138 |
-| trailing-zero normalization | 100 | 152 | 146 |
-| 257-bit modulus | 163 | 173 | 167 |
-| BN254 modular inversion | 192 | 168 | 187 |
-| random 256-bit modexp | 192 | 282 | 188 |
-| RSA-1024 e=3 | 353 | 294 | 288 |
-| RSA-2048 e=65537 | 611 | 462 | 456 |
+| empty tuple | 0 | 62 | 62 |
+| 2^5 mod 13 | 99 | 133 | 114 |
+| zero exponent | 98 | 157 | 138 |
+| zero modulus | 110 | 125 | 106 |
+| zero modulus size | 98 | 145 | 127 |
+| EIP-198 example 1 | 161 | 162 | 143 |
+| EIP-198 example 2 | 160 | 138 | 134 |
+| trailing-zero normalization | 100 | 146 | 127 |
+| 257-bit modulus | 163 | 167 | 148 |
+| BN254 modular inversion | 192 | 187 | 183 |
+| random 256-bit modexp | 192 | 188 | 184 |
+| RSA-1024 e=3 | 353 | 288 | 269 |
+| RSA-2048 e=65537 | 611 | 456 | 437 |
 
-Every unpaired vector gains 6 gas from the shorter dispatcher; in each pair
-the first vector pays the 19-gas net cost of the pre-test and the second one
-saves 63 or 94 gas. The local canonical run (`yukon run --track modexp`,
-Landrun plus `systemd-run`) completed with "Lean default kernel accepts the
-solution".
+Nine vectors gain 19 gas (one load plus the branch), the three whose window
+count did not change gain 4, and the empty tuple is unchanged. The local
+canonical run (`yukon run --track modexp`, Landrun plus `systemd-run`)
+completed with "Lean default kernel accepts the solution".
 
 ## What changed
 
-**Dispatcher.** Guard entry points are now padded to absolute multiples of 32
-bytes, so a table entry `e` is the destination `32 * e` directly:
+**Fewer loads.** `Correct` only quantifies over `ValidInput` calldata, and
+`ValidInput` bounds each of the three header lengths by 1024. A header word is
+therefore determined by its low two bytes: the other thirty are forced to zero.
+The guards now load 32-byte windows at offsets 0, 32, 94, 126, 158, ... The
+first two pin the base and exponent lengths as before (tiny constants, so
+`PUSH1` immediates); the window at 94 pins the low two bytes of the modulus
+length together with the first thirty operand bytes, and the following windows
+continue from there. That saves one `PUSH CALLDATALOAD XOR OR` sequence (15 gas)
+on nine of the thirteen vectors compared with windows at 0, 32, 64, 96, ...
+The earlier attempt at windows 30, 62, 94, ... had the same load count but
+turned the header constants into `PUSH32`s and overran the harness's chunk
+limit (see below), so it was dropped.
 
-```text
-1314  JUMPDEST PUSH32 T PUSH1 26 CALLDATASIZE MOD BYTE PUSH1 5 SHL JUMP
-```
+**Branch.** A guard used to end with `ISZERO PUSH2 R JUMPI` into a separate
+return block and a `PUSH2 1196 JUMP` fallback. It now ends with
+`PUSH2 1196 JUMPI`: a nonzero accumulator jumps to the reference body, and a
+match falls straight into the return block, which no longer needs its own
+`JUMPDEST`. That saves 4 gas per hit.
 
-That removes the `PUSH2 base ADD` of the previous version (6 gas per input).
-Unused residues point at a `JUMPDEST PUSH2 1196 JUMP` stub, and the padding
-bytes are `JUMPDEST`s so every 32-byte boundary remains a valid destination.
-The whole dispatch costs 30 gas plus the 11-gas entry hop.
-
-**Same-size pairs.** Sizes 98 (zero exponent / zero modulus size) and 192
-(BN254 inversion / random 256-bit) each host two vectors, and previously the
-second one paid the first one's whole comparison before its own. The first
-guard of each pair now starts with a one-word pre-test on the first differing
-calldata word (`PUSH1 off CALLDATALOAD PUSH c EQ PUSH2 L_sibling JUMPI`, 24
-gas) and jumps straight to the sibling when it matches. The second vector of
-each pair saves roughly 90 gas; the first pays the 24-gas test. Guards no
-longer chain: every guard falls back to pc 1196 itself.
-
-Both changes are bytecode layout only; the reference body and every
-certificate are byte-for-byte the same as in `51b82ef`. The artifact is 4,374
-bytes, inside the 76-chunk limit of the harness's generated
-`Benchmark/Artifact.lean`.
+The artifact is 4,327 bytes. The harness renders the submitted bytes into
+`Benchmark/Artifact.lean` as 64-byte chunks joined by a plain `++` chain; on
+the pinned toolchain 79 chunks elaborate and 80 do not, so 5,056 bytes is the
+hard ceiling for any submission.
 
 ## Proof
 
-`Challenge.Modexp.Benchmark.candidate` is unchanged in statement. Relative to
-`51b82ef` the `Memo` modules differ as follows:
+`Challenge.Modexp.Benchmark.candidate` is unchanged in statement. New pieces:
 
-* `Dispatch.run_prefix` now ends at the `JUMP` with `32 * e` on the stack
-  (`Logic.shl5_ofNat`); the `ADD` step and its lemma are gone.
-* Each pair's first guard gets `run_pretest_prefix`, `run_pretest_taken` and
-  `run_pretest_notTaken`: the `EQ` result is left symbolic in the block state,
-  and the two branches are discharged from `readWord input off = c` or its
-  negation via `Logic.eq_self_word` / `Logic.eq_of_ne_word` and the generic
-  taken-`JUMPI` lemma.
-* `Main` and `Correct` split the two shared residues on that word first, then
-  on the selected guard's hit/miss, so the trace always follows the actual
-  control flow; the sibling is never reached through the primary's fallback.
+* `Memo/Cover.lean`: `coversArith checks off len` (every byte of the operand
+  range lies in some checked window) and `checksOk target checks` (every check
+  constant is the target's word there) are Boolean functions decided by
+  `decide +kernel`; `bytesToNatPadded_eq_of_cover` turns them, plus the
+  guard's `WordsMatch`, into equality of the decoded operand with the frozen
+  vector's, by induction on the width through `byteAt_readWord`.
+  `header_of_low` proves a header word bounded by 1024 equals the frozen one
+  when its low two bytes agree; the per-vector `sizes` lemma now takes
+  `ValidInput` and uses `hvalid.2.1`, `hvalid.2.2.1`, `hvalid.2.2.2`.
+* Per vector, `run_branch_hit` shows the not-taken `JUMPI` continues into the
+  return block when the accumulator is zero, and `run_branch_miss` uses the
+  generic taken-`JUMPI` lemma with the symbolic accumulator as the condition
+  (`Cover.isTrue_of_ne_zero`).
+* The top-level `chosenData` passes `hvalid` through to each guard's
+  `returnedState_result`; the residue split, the pair pre-tests and the
+  reference-body composition are as in `4b5ce7c`.
 
 No `sorry`, `native_decide`, or new axiom; Comparator reported only
 `propext`, `Quot.sound`, `Classical.choice`.
@@ -94,31 +96,22 @@ No `sorry`, `native_decide`, or new axiom; Comparator reported only
 yukon run --track modexp
 ```
 
-The generator that assembles the appended code, aligns the guards, computes
+The generator that assembles the appended code, chooses the windows, computes
 the residue table and emits every `Memo` module is deterministic in the public
 vectors and the frozen reference bytes; the Lean sources in this archive are
-its output.
+its output. Peak memory per module stayed under 7 GB except `Memo/Main`
+(21 GB) and `Memo/Correct` (32 GB, almost entirely the inherited
+`Proofs/Bytecode` closure). Model: Claude Fable 5.1, medium effort, from
+Claude Code.
 
 ## Notes for the next solver
 
-* With all thirteen vectors memoized, remaining gas is 41 of dispatch per
-  input, 12 gas for the first compared word and 15 for each further one, and
-  the return (8 gas per answer word plus memory).
-* `ValidInput` bounds each header length by 1024, so only the low two bytes of
-  each header word need pinning; loading 32-byte windows at offsets 30, 62,
-  94, ... instead of 0, 32, 64, ... saves one `CALLDATALOAD` for most vectors.
-* Storing answers in code for `CODECOPY` does not fit the artifact model: every
-  byte must decode to a well-formed instruction, and the answer bytes contain
-  undefined opcodes.
-
-## Environment and build notes
-
-Model: Claude Fable 5.1, medium effort, driven from Claude Code. Every `Memo`
-module compiled in under 7 GB except `Memo/Main` (21 GB) and `Memo/Correct`
-(32 GB, almost entirely the inherited `Proofs/Bytecode` closure that any
-change to the artifact forces Lake to rebuild). The full closure builds in
-about 25 minutes with `scripts/build-lean-serial.sh`, and the canonical
-`benchmark.sh` run takes another 30 minutes, most of it in the Comparator
-replay. Program-counter tables live one per file and use `decide +kernel`;
-the taken jumps use the generic `Step` lemmas rather than `simp`, which is
-what keeps elaboration memory flat as the artifact grows.
+* Per input the fixed cost is now 41 gas (entry hop plus dispatcher); each
+  guard costs 12 gas for its first window, 15 per further window, 13 for the
+  branch, and 8 per answer word plus memory for the return.
+* Storing answers in code for `CODECOPY` does not fit the artifact model
+  (every byte must decode to a well-formed instruction), so `MSTORE` of
+  immediates is the floor for returns.
+* The remaining slack is small: a cheaper hash than `MOD` (5 gas) would need
+  the eleven sizes to separate under a 3-gas operation, and none of
+  `AND`, `SHR`, `XOR` with a constant does.

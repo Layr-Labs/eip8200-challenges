@@ -16,123 +16,109 @@ open Challenge.Modexp.Submission.Proofs.Memo
 def preludePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.opAt 1576 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
-   Main.pushAt 1577 1 128,
-   Main.pushAt 1578 0 0,
-   Main.opAt 1579 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1580 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR))
+   Main.opAt 1532 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+   Main.pushAt 1533 1 128,
+   Main.pushAt 1534 0 0,
+   Main.opAt 1535 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1536 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR))
   ]
 
 def chunk0Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.pushAt 1581 1 1,
-   Main.pushAt 1582 1 32,
-   Main.opAt 1583 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1584 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1585 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
-   Main.pushAt 1586 1 128,
-   Main.pushAt 1587 1 64,
-   Main.opAt 1588 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1589 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1590 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
-   Main.pushAt 1591 32 8793306660163990040561289890486148164325486782586370684446629828706317024479,
-   Main.pushAt 1592 1 96,
-   Main.opAt 1593 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1594 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1595 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
-   Main.pushAt 1596 32 44513626964103848159171604930358580559684327884685485523541937090475774086062,
-   Main.pushAt 1597 1 128,
-   Main.opAt 1598 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1599 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1600 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR))
+   Main.pushAt 1537 1 1,
+   Main.pushAt 1538 1 32,
+   Main.opAt 1539 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1540 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 1541 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+   Main.pushAt 1542 31 226290599503122512882349355636635411886335502990487343868026998639550581526,
+   Main.pushAt 1543 1 94,
+   Main.opAt 1544 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1545 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 1546 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+   Main.pushAt 1547 32 85429501653143912792560422786865225085357921034183831746785540562495395004190,
+   Main.pushAt 1548 1 126,
+   Main.opAt 1549 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1550 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 1551 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+   Main.pushAt 1552 32 63179126930236619761510706694698274883957780346810784215659364400686850917562,
+   Main.pushAt 1553 1 158,
+   Main.opAt 1554 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1555 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 1556 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR))
   ]
 
 def chunk1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.pushAt 1601 32 13735552034596734314392003083933777828981134616265434527816408455772068535085,
-   Main.pushAt 1602 1 160,
-   Main.opAt 1603 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1604 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1605 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
-   Main.pushAt 1606 32 20741756277002281002578156983727958327059860011036567020672535493562176622834,
-   Main.pushAt 1607 1 192,
-   Main.opAt 1608 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1609 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1610 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
-   Main.pushAt 1611 32 1669349634595236858291517537149291117455193199261270936918514663252800326893,
-   Main.pushAt 1612 1 224,
-   Main.opAt 1613 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1614 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1615 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
-   Main.pushAt 1616 32 99117046946972186913022966043064609353311784182601608842001214174495081049617,
-   Main.pushAt 1617 2 256,
-   Main.opAt 1618 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1619 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1620 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR))
+   Main.pushAt 1557 32 41240293833076085199929396655956545794090298033763541287414552930667021501195,
+   Main.pushAt 1558 1 190,
+   Main.opAt 1559 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1560 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 1561 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+   Main.pushAt 1562 32 94508674967249723639582371210208943792152846297581680782188767808501229205940,
+   Main.pushAt 1563 1 222,
+   Main.opAt 1564 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1565 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 1566 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+   Main.pushAt 1567 32 34796031652792584360707037822603363555355821530222201984220584153473018754277,
+   Main.pushAt 1568 1 254,
+   Main.opAt 1569 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1570 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 1571 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+   Main.pushAt 1572 32 20836937387722970197930823282831538734838579858423695201568126209866444371082,
+   Main.pushAt 1573 2 286,
+   Main.opAt 1574 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1575 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 1576 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR))
   ]
 
 def chunk2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.pushAt 1621 32 33420266142682261421808456191225212768240439756117012645431084487760459509359,
-   Main.pushAt 1622 2 288,
-   Main.opAt 1623 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1624 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1625 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
-   Main.pushAt 1626 32 63069685324986315081589603195175474010237415761785462502555456014205811395170,
-   Main.pushAt 1627 2 320,
-   Main.opAt 1628 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1629 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1630 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
-   Main.pushAt 1631 32 28495709460745782467519422091981789823265660288809982556585264814447371747328,
-   Main.pushAt 1632 2 352,
-   Main.opAt 1633 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1634 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1635 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR))
+   Main.pushAt 1577 32 78899518044703364455484679033907374582851889078673418772041030415792465360759,
+   Main.pushAt 1578 2 318,
+   Main.opAt 1579 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1580 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 1581 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+   Main.pushAt 1582 32 62592758926858891065336505650937954794307948950580923944768996526018447540224,
+   Main.pushAt 1583 2 350,
+   Main.opAt 1584 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1585 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 1586 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR))
   ]
 
 def branchPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.opAt 1636 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.ISZERO)),
-   Main.pushAt 1637 2 3223,
-   Main.opAt 1638 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
+   Main.pushAt 1587 2 1196,
+   Main.opAt 1588 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
   ]
 
 def branchPrefixPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.opAt 1636 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.ISZERO)),
-   Main.pushAt 1637 2 3223
-  ]
-
-def fallbackPrefixPath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [
-   Main.pushAt 1639 2 1196
+   Main.pushAt 1587 2 1196
   ]
 
 def returnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.opAt 1641 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
-   Main.pushAt 1642 32 15311000363910303241540621865409679537502595890653539278795210471371740305479,
-   Main.pushAt 1643 0 0,
-   Main.opAt 1644 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
-   Main.pushAt 1645 32 108131171086235498843144070769070390205391711722934919355131028315980221287783,
-   Main.pushAt 1646 1 32,
-   Main.opAt 1647 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
-   Main.pushAt 1648 32 30211351789909815513928503188859640991933128769084385520359151767836288201668,
-   Main.pushAt 1649 1 64,
-   Main.opAt 1650 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
-   Main.pushAt 1651 32 19240783075872300903671752229116273808210541663683986574655295206487138977467,
-   Main.pushAt 1652 1 96,
-   Main.opAt 1653 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
-   Main.pushAt 1654 1 128,
-   Main.pushAt 1655 0 0,
-   Main.opAt 1656 (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN))
+   Main.pushAt 1589 32 15311000363910303241540621865409679537502595890653539278795210471371740305479,
+   Main.pushAt 1590 0 0,
+   Main.opAt 1591 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
+   Main.pushAt 1592 32 108131171086235498843144070769070390205391711722934919355131028315980221287783,
+   Main.pushAt 1593 1 32,
+   Main.opAt 1594 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
+   Main.pushAt 1595 32 30211351789909815513928503188859640991933128769084385520359151767836288201668,
+   Main.pushAt 1596 1 64,
+   Main.opAt 1597 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
+   Main.pushAt 1598 32 19240783075872300903671752229116273808210541663683986574655295206487138977467,
+   Main.pushAt 1599 1 96,
+   Main.opAt 1600 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MSTORE)),
+   Main.pushAt 1601 1 128,
+   Main.pushAt 1602 0 0,
+   Main.opAt 1603 (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN))
   ]
 
 end Challenge.Modexp.Submission.Proofs.Memo.V11.Paths

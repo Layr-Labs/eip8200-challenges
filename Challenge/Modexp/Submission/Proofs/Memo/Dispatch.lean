@@ -17,13 +17,13 @@ open Challenge.Modexp.Submission.Proofs.Memo
 
 /-- The residue table: byte `r` is the 32-byte entry index of the guard for calldata sizes
 congruent to `r` modulo 26; unused residues select the fallback stub at pc 1376. -/
-def table : Nat := 19978037702372708034821103941948154258537848763203913937270760471517377276715
+def table : Nat := 19978037702055533804967148740280010722836663273717868341649456475336210066219
 
 def prefixPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
    Main.opAt 977 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
-   Main.pushAt 978 32 19978037702372708034821103941948154258537848763203913937270760471517377276715,
+   Main.pushAt 978 32 19978037702055533804967148740280010722836663273717868341649456475336210066219,
    Main.pushAt 979 1 26,
    Main.opAt 980 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATASIZE)),
    Main.opAt 981 (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.MOD)),
@@ -42,7 +42,7 @@ def jumpState (input : ByteArray) (dest : Nat) : State :=
 
 theorem run_prefix (input : ByteArray) (r e : Nat) (hsize : input.size < 2 ^ 256)
     (hr : input.size % 26 = r)
-    (he : UInt256.byteAt (UInt256.ofNat r) (UInt256.ofNat 19978037702372708034821103941948154258537848763203913937270760471517377276715) = UInt256.ofNat e)
+    (he : UInt256.byteAt (UInt256.ofNat r) (UInt256.ofNat 19978037702055533804967148740280010722836663273717868341649456475336210066219) = UInt256.ofNat e)
     (he255 : e ≤ 255) :
     Challenge.EvmProof.Stepper.runLocatedBlock prefixPath (Main.trampolineState input 1314) =
       some (jumpState input (32 * e)) := by

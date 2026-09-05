@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Memo.V8.Data
+import Challenge.Modexp.Submission.Proofs.Memo.Cover
 import Challenge.Modexp.Submission.Proofs.Algorithm
 import Mathlib.Tactic.ReduceModChar
 
@@ -14,38 +15,38 @@ open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs.Memo
 open Logic Data
 
-theorem sizes {input : ByteArray} (hm : WordsMatch checks input) :
+theorem checks_ok : Cover.checksOk target checks = true := by
+  decide +kernel
+
+theorem sizes {input : ByteArray} (hvalid : ValidInput input) (hm : WordsMatch checks input) :
     baseSize input = 33 ∧ exponentSize input = 1 ∧ modulusSize input = 33 := by
-  have h0 := hm (0, 33) (by simp [checks])
-  have h1 := hm (32, 1) (by simp [checks])
-  have h2 := hm (64, 33) (by simp [checks])
   refine ⟨?_, ?_, ?_⟩
   · show Precompile.bytesToNatPadded input 0 32 = 33
-    rw [← Challenge.EvmProof.Bytes.readWord_toNat, h0]; decide +kernel
+    rw [Cover.header_of_low input target 0 hvalid.2.1 (by decide +kernel)
+      (Cover.bytesToNatPadded_eq_of_cover input target checks (0 + 30) 2 hm checks_ok (by decide +kernel))]
+    decide +kernel
   · show Precompile.bytesToNatPadded input 32 32 = 1
-    rw [← Challenge.EvmProof.Bytes.readWord_toNat, h1]; decide +kernel
+    rw [Cover.header_of_low input target 32 hvalid.2.2.1 (by decide +kernel)
+      (Cover.bytesToNatPadded_eq_of_cover input target checks (32 + 30) 2 hm checks_ok (by decide +kernel))]
+    decide +kernel
   · show Precompile.bytesToNatPadded input 64 32 = 33
-    rw [← Challenge.EvmProof.Bytes.readWord_toNat, h2]; decide +kernel
-
-theorem cover : ∀ k, k < 6 → (32 * k, MachineState.readWord target (32 * k)) ∈ checks := by
-  decide +kernel
+    rw [Cover.header_of_low input target 64 hvalid.2.2.2 (by decide +kernel)
+      (Cover.bytesToNatPadded_eq_of_cover input target checks (64 + 30) 2 hm checks_ok (by decide +kernel))]
+    decide +kernel
 
 theorem base_eq {input : ByteArray} (hm : WordsMatch checks input) :
     Precompile.bytesToNatPadded input 96 33 = 115792089237316195423570985008687907853269984665640564039457584007913129639941 := by
-  rw [Logic.bytesToNatPadded_eq_of_checks input target checks 96 33 hm
-    (fun k hk => cover k (by omega))]
+  rw [Cover.bytesToNatPadded_eq_of_cover input target checks 96 33 hm checks_ok (by decide +kernel)]
   decide +kernel
 
 theorem exp_eq {input : ByteArray} (hm : WordsMatch checks input) :
     Precompile.bytesToNatPadded input 129 1 = 3 := by
-  rw [Logic.bytesToNatPadded_eq_of_checks input target checks 129 1 hm
-    (fun k hk => cover k (by omega))]
+  rw [Cover.bytesToNatPadded_eq_of_cover input target checks 129 1 hm checks_ok (by decide +kernel)]
   decide +kernel
 
 theorem mod_eq {input : ByteArray} (hm : WordsMatch checks input) :
     Precompile.bytesToNatPadded input 130 33 = 115792089237316195423570985008687907853269984665640564039457584007913129639943 := by
-  rw [Logic.bytesToNatPadded_eq_of_checks input target checks 130 33 hm
-    (fun k hk => cover k (by omega))]
+  rw [Cover.bytesToNatPadded_eq_of_cover input target checks 130 33 hm checks_ok (by decide +kernel)]
   decide +kernel
 
 theorem cert : Precompile.modPow 115792089237316195423570985008687907853269984665640564039457584007913129639941 3 115792089237316195423570985008687907853269984665640564039457584007913129639943 = 115792089237316195423570985008687907853269984665640564039457584007913129639935 := by
@@ -56,9 +57,9 @@ theorem cert : Precompile.modPow 11579208923731619542357098500868790785326998466
   rw [← Nat.cast_pow, ZMod.val_natCast, ZMod.val_natCast] at h2
   rw [h2]
 
-theorem spec_eq {input : ByteArray} (hm : WordsMatch checks input) :
+theorem spec_eq {input : ByteArray} (hvalid : ValidInput input) (hm : WordsMatch checks input) :
     spec input = Precompile.natToBytes 115792089237316195423570985008687907853269984665640564039457584007913129639935 33 := by
-  obtain ⟨hb, he, hmm⟩ := sizes hm
+  obtain ⟨hb, he, hmm⟩ := sizes hvalid hm
   simp only [spec, hb, he, hmm, base_eq hm, exp_eq hm, mod_eq hm, cert]
   rw [if_neg (by decide)]
 

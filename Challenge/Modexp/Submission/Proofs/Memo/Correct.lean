@@ -67,7 +67,7 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
       ⟨V6.State.returnedState input,
         ⟨⟨Main.gasSteps_hit6 input hsize hr4 h6⟩,
           V6.returnedState_isDone input,
-          V6.returnedState_result input h6⟩⟩
+          V6.returnedState_result input hvalid h6⟩⟩
     else
       ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
@@ -79,7 +79,7 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
       ⟨V5.State.returnedState input,
         ⟨⟨Main.gasSteps_hit5 input hsize hr5 h5⟩,
           V5.returnedState_isDone input,
-          V5.returnedState_result input h5⟩⟩
+          V5.returnedState_result input hvalid h5⟩⟩
     else
       ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
@@ -91,7 +91,7 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
       ⟨V4.State.returnedState input,
         ⟨⟨Main.gasSteps_hit4 input hsize hr6 h4⟩,
           V4.returnedState_isDone input,
-          V4.returnedState_result input h4⟩⟩
+          V4.returnedState_result input hvalid h4⟩⟩
     else
       ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
@@ -103,7 +103,7 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
       ⟨V8.State.returnedState input,
         ⟨⟨Main.gasSteps_hit8 input hsize hr7 h8⟩,
           V8.returnedState_isDone input,
-          V8.returnedState_result input h8⟩⟩
+          V8.returnedState_result input hvalid h8⟩⟩
     else
       ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
@@ -123,12 +123,12 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
         Bytecode.SubmissionCorrect.finalState_isDone input,
         Bytecode.SubmissionCorrect.finalState_result input hvalid⟩⟩
   else if hr10 : input.size % 26 = 10 then
-    if hw : MachineState.readWord input 96 = UInt256.ofNat 73247641362558725300106169323372519318985509881989093824173738694050148637181 then
+    if hw : MachineState.readWord input 94 = UInt256.ofNat 57656776381785232221288722070333642129877090746803087510479986983448338273 then
       if h10 : Main.Hit10 input then
         ⟨V10.State.returnedState input,
           ⟨⟨Main.gasSteps_hit10 input hsize hr10 hw h10⟩,
             V10.returnedState_isDone input,
-            V10.returnedState_result input h10⟩⟩
+            V10.returnedState_result input hvalid h10⟩⟩
       else
         ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
@@ -140,7 +140,7 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
         ⟨V9.State.returnedState input,
           ⟨⟨Main.gasSteps_hit9 input hsize hr10 hw h9⟩,
             V9.returnedState_isDone input,
-            V9.returnedState_result input h9⟩⟩
+            V9.returnedState_result input hvalid h9⟩⟩
       else
         ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
@@ -164,7 +164,7 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
       ⟨V12.State.returnedState input,
         ⟨⟨Main.gasSteps_hit12 input hsize hr13 h12⟩,
           V12.returnedState_isDone input,
-          V12.returnedState_result input h12⟩⟩
+          V12.returnedState_result input hvalid h12⟩⟩
     else
       ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
@@ -182,7 +182,7 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
       ⟨V11.State.returnedState input,
         ⟨⟨Main.gasSteps_hit11 input hsize hr15 h11⟩,
           V11.returnedState_isDone input,
-          V11.returnedState_result input h11⟩⟩
+          V11.returnedState_result input hvalid h11⟩⟩
     else
       ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
@@ -219,7 +219,7 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
         ⟨V3.State.returnedState input,
           ⟨⟨Main.gasSteps_hit3 input hsize hr20 hw h3⟩,
             V3.returnedState_isDone input,
-            V3.returnedState_result input h3⟩⟩
+            V3.returnedState_result input hvalid h3⟩⟩
       else
         ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
@@ -231,7 +231,7 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
         ⟨V2.State.returnedState input,
           ⟨⟨Main.gasSteps_hit2 input hsize hr20 hw h2⟩,
             V2.returnedState_isDone input,
-            V2.returnedState_result input h2⟩⟩
+            V2.returnedState_result input hvalid h2⟩⟩
       else
         ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
@@ -243,7 +243,7 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
       ⟨V1.State.returnedState input,
         ⟨⟨Main.gasSteps_hit1 input hsize hr21 h1⟩,
           V1.returnedState_isDone input,
-          V1.returnedState_result input h1⟩⟩
+          V1.returnedState_result input hvalid h1⟩⟩
     else
       ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
@@ -255,7 +255,7 @@ private noncomputable def chosenData (input : ByteArray) (hvalid : ValidInput in
       ⟨V7.State.returnedState input,
         ⟨⟨Main.gasSteps_hit7 input hsize hr22 h7⟩,
           V7.returnedState_isDone input,
-          V7.returnedState_result input h7⟩⟩
+          V7.returnedState_result input hvalid h7⟩⟩
     else
       ⟨Bytecode.SubmissionCorrect.finalState input,
       ⟨⟨Bytecode.SubmissionCorrect.gasSteps_submission input hvalid
