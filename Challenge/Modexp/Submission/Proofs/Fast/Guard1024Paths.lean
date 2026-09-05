@@ -101,12 +101,18 @@ def branchJumpLocated := Main.opAt 2120 (EvmSemantics.Operation.StackMemFlow (Ev
 def branchIsZeroPath := [branchIsZeroLocated]
 def branchJumpPath := [branchPushLocated, branchJumpLocated]
 
+def fallbackPushLocated := Main.pushAt 2121 2 4838
+def fallbackJumpLocated := Main.opAt 2122 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))
+
 def fallbackPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [
-   Main.pushAt 2121 2 1314,
-   Main.opAt 2122 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))
-  ]
+  [fallbackPushLocated, fallbackJumpLocated]
+
+@[simp] theorem fallbackPush_index : fallbackPushLocated.index = 2121 := rfl
+@[simp] theorem fallbackPush_instruction :
+    fallbackPushLocated.instruction = .push 2 (UInt256.ofNat 4838) := rfl
+@[simp] theorem fallbackJump_index : fallbackJumpLocated.index = 2122 := rfl
+@[simp] theorem fallbackJump_instruction : fallbackJumpLocated.instruction = .op .JUMP := rfl
 
 def returnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
