@@ -30,7 +30,7 @@ def workingStack (left right : Compression.EvmWorking)
 def tailEntry (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 0xf6f
+    pc := UInt256.ofNat 0xcef
     stack := workingStack left right ret rest }
 
 def combined (s : State) (left right : Compression.EvmWorking) :
@@ -115,13 +115,13 @@ def tailInstructions : List Instr := tail60Instructions ++ finalJumpInstructions
 def c0Result (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 0xf7c
+    pc := UInt256.ofNat 0xcfc
     stack := (combined s left right).h0 :: workingStack left right ret rest }
 
 def preJumpResult (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 0xfc9
+    pc := UInt256.ofNat 0xd49
     memory := StackMemory.storeHash s.memory (combined s left right)
     stack := ret :: rest }
 
@@ -139,8 +139,8 @@ def runTailInstrs : List Instr → State → Option State
       | none => none
 
 private theorem activeWordsAfter_tail (s : State) (offset : Nat)
-    (hoff : offset + 32 ≤ 66 * 32)
-    (hactive : 66 ≤ s.activeWords.toNat) :
+    (hoff : offset + 32 ≤ 67 * 32)
+    (hactive : 67 ≤ s.activeWords.toNat) :
     s.activeWordsAfterUInt256 offset 32 = s.activeWords := by
   unfold State.activeWordsAfterUInt256
   have haw : MachineState.activeWordsAfter s.activeWords.toNat offset 32 =
@@ -246,7 +246,7 @@ private theorem mask32_push (value : UInt256) :
 set_option linter.unusedSimpArgs false in
 theorem run_c0 (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256)
-    (hactive : 66 ≤ s.activeWords.toNat)
+    (hactive : 67 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1009) :
     runTailInstrs c0Instructions (tailEntry s left right ret rest) =
       some (c0Result s left right ret rest) := by
@@ -270,7 +270,7 @@ theorem run_c0 (s : State) (left right : Compression.EvmWorking)
 set_option linter.unusedSimpArgs false in
 theorem run_tail60 (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256)
-    (hactive : 66 ≤ s.activeWords.toNat)
+    (hactive : 67 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1009) :
     runTailInstrs tail60Instructions (tailEntry s left right ret rest) =
       some (preJumpResult s left right ret rest) := by
@@ -308,7 +308,7 @@ theorem run_tail60 (s : State) (left right : Compression.EvmWorking)
 
 theorem run_tail_jump (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256)
-    (_hactive : 66 ≤ s.activeWords.toNat)
+    (_hactive : 67 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1009)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     runTailInstrs finalJumpInstructions (preJumpResult s left right ret rest) =

@@ -1,6 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackBlockModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTail
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSites
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairSites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackPC
 
 set_option warningAsError true
@@ -34,8 +34,7 @@ theorem tailResult_eq_resultState (s : State) (input : ByteArray) (i : Nat) :
     resultState, resultHash, StackCompression.compress, leftWorking, rightWorking,
     initialWorking, scheduledState_hash]
 
-theorem rightPC_last : StackSites.rightPC 80 = UInt256.ofNat 0xf6f := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1966) = _
-  rw [StackPC.tailPC]
+theorem rightPC_last : PairSites.rightPC 40 = UInt256.ofNat 0xcef := by
+  exact PairSites.rightPC_end
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackEndpoint

@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackLoadSeams
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackLaneTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairLane
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTailTrace
 
 set_option warningAsError true
@@ -9,7 +9,7 @@ set_option maxHeartbeats 1000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
-open StackBlockModel StackEndpoint StackLaneTrace StackLoadSeams
+open StackBlockModel StackEndpoint PairLane StackLoadSeams
 
 private theorem returnPC : Artifact.submissionArtifact.instructionPC 783 = 0x643 := by
   rw [StackPC.instructionPC_eq_byteLength]
@@ -31,36 +31,34 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
   let left := StackCompression.leftRounds word 80 w
   let right := StackCompression.rightRounds word 80 w
   let rightRest := StackRoundTrace.roundWords left ++ rest
-  have qactive : 66 ≤ q.activeWords.toNat := by
+  have qactive : 67 ≤ q.activeWords.toNat := by
     rw [scheduledState_activeWords s input hfit i hi]
     omega
   have qwords : WordsAt q word := scheduled_words_memory s input i h ctx
   have qenv : q.executionEnv = s.executionEnv := by
-    dsimp [q, scheduledState]
     exact Schedule.loopState_executionEnv s _ _ _ 16
   have qcode : q.executionEnv.code = submissionBytecode := by rw [qenv]; exact hcode
   have qfork : q.fork = .Osaka := by rw [State.fork, qenv]; exact hfork
   have qrun : q.halt = .Running := by
-    dsimp [q, scheduledState]
     exact (Schedule.loopState_halt s (DriverTrace.messageOffsetWord i)
       (UInt256.ofNat 0x72f) (scheduleRest input i) 16).trans hrun
   have qnp : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig
       q.executionEnv.fork q.executionEnv.codeAddr = false := by rw [qenv]; exact hnp
-  have restBound : rest.length < 1013 := by
+  have restBound : rest.length < 1012 := by
     simp [rest, StackFrame.frameRest, driverRest]
-  have rightRestBound : rightRest.length < 1013 := by
+  have rightRestBound : rightRest.length < 1012 := by
     simp [rightRest, StackRoundTrace.roundWords, rest, StackFrame.frameRest, driverRest]
   have gframe := StackFrame.gasSteps_frame s input i hfit hi hcode hfork hrun hnp
   have gload1 := StackLoadTrace.gasSteps_load StackFrame.loadSite986 q rest qactive
     (by omega) qcode qfork qrun qnp
   have gload1' : GasSteps (StackFrame.frameLoadEntry s input i)
-      (stateAt q (StackSites.leftPC 0) w rest) := by
+      (stateAt q (PairSites.leftPC 0) w rest) := by
     exact gload1.cast (firstLoad_entry s input i) (firstLoad_returned q rest)
   have gleft := gasSteps_left80 q word w rest qwords qactive restBound qcode qfork qrun qnp
   have gload2 := StackLoadTrace.gasSteps_load StackFrame.loadSite1476 q rightRest qactive
     (by omega) qcode qfork qrun qnp
-  have gload2' : GasSteps (stateAt q (StackSites.leftPC 80) left rest)
-      (stateAt q (StackSites.rightPC 0) w rightRest) := by
+  have gload2' : GasSteps (stateAt q (PairSites.leftPC 40) left rest)
+      (stateAt q (PairSites.rightPC 0) w rightRest) := by
     exact gload2.cast (secondLoad_entry q left rest) (secondLoad_returned q rightRest)
   have gright := gasSteps_right80 q word w rightRest qwords qactive rightRestBound
     qcode qfork qrun qnp
@@ -73,7 +71,7 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     exact hdest
   have gtail := StackTailTrace.actualTailGasSteps q left right (UInt256.ofNat 0x643)
     (driverRest input i) qactive (by simp [driverRest]) qcode qfork qrun qnp hvalid
-  have tailSeam : stateAt q (StackSites.rightPC 80) right rightRest =
+  have tailSeam : stateAt q (PairSites.rightPC 40) right rightRest =
       StackTail.tailEntry q left right (UInt256.ofNat 0x643) (driverRest input i) := by
     exact (tailEntry_atLanePC q left right (UInt256.ofNat 0x643) (driverRest input i)).symm
   have hleft : left = leftWorking s input i := by

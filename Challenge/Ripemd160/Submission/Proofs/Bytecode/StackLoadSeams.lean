@@ -10,11 +10,11 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackLoadSeams
 open Challenge.Ripemd160 EvmSemantics EvmSemantics.EVM
 open StackBlockModel StackEndpoint
 
-theorem firstLoad_end : StackFrame.loadSite986.endPC = StackSites.leftPC 0 := rfl
+theorem firstLoad_end : StackFrame.loadSite986.endPC = PairSites.leftPC 0 := rfl
 
-theorem secondLoad_start : StackFrame.loadSite1476.startPC = StackSites.leftPC 80 := rfl
+theorem secondLoad_start : StackFrame.loadSite1476.startPC = PairSites.leftPC 40 := rfl
 
-theorem secondLoad_end : StackFrame.loadSite1476.endPC = StackSites.rightPC 0 := rfl
+theorem secondLoad_end : StackFrame.loadSite1476.endPC = PairSites.rightPC 0 := rfl
 
 theorem loadReturned_eq_roundEntry (s : State) (pc : UInt256) (rest : List UInt256) :
     StackLoadTrace.loadReturned s pc rest =
@@ -29,7 +29,7 @@ theorem loadEntry_eq_roundEntry (s : State) (pc : UInt256)
 theorem tailEntry_eq_roundEntry (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) :
     StackTail.tailEntry s left right ret rest =
-      StackRoundTrace.roundEntry s (UInt256.ofNat 0xf6f)
+      StackRoundTrace.roundEntry s (UInt256.ofNat 0xcef)
         right.a right.b right.c right.d right.e
         (StackRoundTrace.roundWords left ++ ret :: rest) := rfl
 
@@ -41,7 +41,7 @@ theorem firstLoad_entry (s : State) (input : ByteArray) (i : Nat) :
 
 theorem firstLoad_returned (s : State) (rest : List UInt256) :
     StackLoadTrace.loadReturned s StackFrame.loadSite986.endPC rest =
-      StackRoundTrace.roundEntry s (StackSites.leftPC 0)
+      StackRoundTrace.roundEntry s (PairSites.leftPC 0)
         (initialWorking s).a (initialWorking s).b (initialWorking s).c
         (initialWorking s).d (initialWorking s).e rest := by
   rw [firstLoad_end]
@@ -51,14 +51,14 @@ theorem secondLoad_entry (s : State) (left : Compression.EvmWorking)
     (rest : List UInt256) :
     StackLoadTrace.loadEntry s StackFrame.loadSite1476.startPC
       (StackRoundTrace.roundWords left ++ rest) =
-      StackRoundTrace.roundEntry s (StackSites.leftPC 80)
+      StackRoundTrace.roundEntry s (PairSites.leftPC 40)
         left.a left.b left.c left.d left.e rest := by
   rw [secondLoad_start]
   exact loadEntry_eq_roundEntry s _ left rest
 
 theorem secondLoad_returned (s : State) (rest : List UInt256) :
     StackLoadTrace.loadReturned s StackFrame.loadSite1476.endPC rest =
-      StackRoundTrace.roundEntry s (StackSites.rightPC 0)
+      StackRoundTrace.roundEntry s (PairSites.rightPC 0)
         (initialWorking s).a (initialWorking s).b (initialWorking s).c
         (initialWorking s).d (initialWorking s).e rest := by
   rw [secondLoad_end]
@@ -67,7 +67,7 @@ theorem secondLoad_returned (s : State) (rest : List UInt256) :
 theorem tailEntry_atLanePC (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) :
     StackTail.tailEntry s left right ret rest =
-      StackRoundTrace.roundEntry s (StackSites.rightPC 80)
+      StackRoundTrace.roundEntry s (PairSites.rightPC 40)
         right.a right.b right.c right.d right.e
         (StackRoundTrace.roundWords left ++ ret :: rest) := by
   rw [StackEndpoint.rightPC_last]

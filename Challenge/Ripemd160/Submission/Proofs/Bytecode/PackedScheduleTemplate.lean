@@ -54,7 +54,8 @@ def storeAddress (half index : Nat) : Nat :=
 /-! ## The exact instruction plan -/
 
 def initialTemplate : List Instr :=
-  [ op .JUMPDEST, dup1, op .MLOAD, swap1, push1 (UInt256.ofNat 32), op .ADD,
+  [ op .JUMPDEST, dup1, push1 (UInt256.ofNat 60), op .ADD, op .MLOAD,
+    op .POP, dup1, op .MLOAD, swap1, push1 (UInt256.ofNat 32), op .ADD,
     op .MLOAD, swap1 ]
 
 def endianStage (shift : Nat) (mask : UInt256) : List Instr :=
@@ -114,15 +115,15 @@ def ascendingPackedFullTemplate : List Instr :=
     (halfTemplate half).length = 73 := by
   rfl
 
-@[simp] theorem initialTemplate_length : initialTemplate.length = 8 := by
+@[simp] theorem initialTemplate_length : initialTemplate.length = 13 := by
   rfl
 
 @[simp] theorem ascendingPackedTemplate_length :
-    ascendingPackedTemplate.length = 154 := by
+    ascendingPackedTemplate.length = 159 := by
   rfl
 
 @[simp] theorem ascendingPackedFullTemplate_length :
-    ascendingPackedFullTemplate.length = 155 := by
+    ascendingPackedFullTemplate.length = 160 := by
   rfl
 
 theorem assembleBytes_length (instructions : List Instr) :
@@ -138,14 +139,14 @@ theorem assembleBytes_length (instructions : List Instr) :
       rw [ih]
 
 theorem ascendingPackedTemplate_byteLength :
-    (assembleBytes ascendingPackedTemplate).length = 521 := by
+    (assembleBytes ascendingPackedTemplate).length = 527 := by
   rw [assembleBytes_length]
   simp [ascendingPackedTemplate, initialTemplate, halfTemplate, endianStage,
     storeTemplate, storeJ0, storeJ, storeJ7, op, push1, push2, push4, push32,
     dup1, swap1]
 
 theorem ascendingPackedFullTemplate_byteLength :
-    (assembleBytes ascendingPackedFullTemplate).length = 522 := by
+    (assembleBytes ascendingPackedFullTemplate).length = 528 := by
   rw [ascendingPackedFullTemplate, assembleBytes_append,
     List.length_append, ascendingPackedTemplate_byteLength]
   rfl
@@ -209,9 +210,11 @@ def activeAfterWord (current : UInt256) (offset : UInt256) : UInt256 :=
   UInt256.ofNat
     (MachineState.activeWordsAfter current.toNat offset.toNat 32)
 
-def loadedActiveWords (s : State) (messageOffset : UInt256) : UInt256 :=
-  let a0 := activeAfterWord s.activeWords messageOffset
-  activeAfterWord a0 (messageOffset + UInt256.ofNat 32)
+def warmupActiveWords (s : State) (messageOffset : UInt256) : UInt256 :=
+  let a0 := activeAfterWord s.activeWords
+    (messageOffset + UInt256.ofNat 60)
+  let a1 := activeAfterWord a0 messageOffset
+  activeAfterWord a1 (messageOffset + UInt256.ofNat 32)
 
 def storeAddresses (half : Nat) : List Nat :=
   (List.range 8).map (storeAddress half)
@@ -222,7 +225,7 @@ def storeActiveWords (current : UInt256) (addresses : List Nat) : UInt256 :=
 
 def expectedActiveWords (s : State) (messageOffset : UInt256) : UInt256 :=
   storeActiveWords
-    (storeActiveWords (loadedActiveWords s messageOffset) (storeAddresses 0))
+    (storeActiveWords (warmupActiveWords s messageOffset) (storeAddresses 0))
     (storeAddresses 1)
 
 def scheduleEntry (s : State) (startPC messageOffset returnPC : UInt256)

@@ -30,7 +30,7 @@ def afterInitial (s : State) (startPC messageOffset returnPC : UInt256)
   { s with
     pc := pcAfter startPC initialTemplate
     stack := [inputWord0 s messageOffset, inputWord1 s messageOffset, returnPC] ++ rest
-    activeWords := loadedActiveWords s messageOffset }
+    activeWords := warmupActiveWords s messageOffset }
 
 def afterHalf (s : State) (startPC : UInt256) (half : Nat)
     (value : UInt256) (rest : List UInt256) : State :=
@@ -257,14 +257,17 @@ theorem runInstrSeq_initial
   have hswap1 (u v : UInt256) (rho : List UInt256) :
       (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
     simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
+  have h60 : UInt256.ofNat 60 + messageOffset =
+      messageOffset + UInt256.ofNat 60 :=
+    word_add_comm _ _
   have h32 : UInt256.ofNat 32 + messageOffset =
       messageOffset + UInt256.ofNat 32 :=
     word_add_comm _ _
   simp (config := { maxSteps := 2000000 })
     [initialTemplate, scheduleEntry, afterInitial, inputWord0, inputWord1,
-      loadedActiveWords, activeAfterWord, op, push1, dup1, swap1,
+      warmupActiveWords, activeAfterWord, op, push1, dup1, swap1,
       runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap,
-      hcap2, hcap3, hcap4, hswap1, h32, word_add_assoc,
+      hcap2, hcap3, hcap4, hswap1, h60, h32, word_add_assoc,
       word_add_ofNat_assoc, Nat.add_assoc,
       Word.land_comm, Word.lor_comm, State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -276,6 +279,9 @@ theorem runInstrSeq_initial
     | rw [add_ofNat_assoc_hAdd]
     | rw [add_ofNat_assoc_add]
     | rw [add_ofNat_assoc]
+  simp only [add_assoc_explicit, add_assoc_explicit_hAdd,
+    add_assoc_hAdd_explicit, word_add_assoc]
+  simp [Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc]
 
 theorem runInstrSeq_store0
     (s : State) (startPC value : UInt256) (rest : List UInt256)
