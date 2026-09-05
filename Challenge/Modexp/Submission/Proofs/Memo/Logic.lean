@@ -203,3 +203,42 @@ theorem eq_empty_of_size_eq_zero (input : ByteArray) (h : input.size = 0) :
       rfl
 
 end Challenge.Modexp.Submission.Proofs.Memo.Logic
+
+namespace Challenge.Modexp.Submission.Proofs.Memo.Logic
+
+open EvmSemantics
+
+theorem mod_ofNat {a b : Nat} (ha : a < 2 ^ 256) (hb : b < 2 ^ 256) (hb0 : b ≠ 0) :
+    UInt256.ofNat a % UInt256.ofNat b = UInt256.ofNat (a % b) := by
+  change UInt256.mod _ _ = _
+  unfold UInt256.mod
+  have hbv : (UInt256.ofNat b).val.val = b := toNat_ofNat_self hb
+  rw [if_neg (by rw [hbv]; exact hb0)]
+  apply Challenge.EvmProof.Word.word_ext
+  change ((UInt256.ofNat a).val % (UInt256.ofNat b).val).val = _
+  rw [Fin.mod_val]
+  change (UInt256.ofNat a).toNat % (UInt256.ofNat b).toNat = _
+  rw [toNat_ofNat_self ha, toNat_ofNat_self hb, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (Nat.lt_of_lt_of_le (Nat.mod_lt a (Nat.pos_of_ne_zero hb0)) (le_of_lt hb))]
+
+theorem shl4_ofNat {e : Nat} (he : e < 2 ^ 252) :
+    UInt256.shiftLeft (UInt256.ofNat e) (UInt256.ofNat 4) = UInt256.ofNat (16 * e) := by
+  rw [Challenge.EvmProof.Word.shiftLeft_ofNat (Nat.lt_trans he (by norm_num)) (by norm_num)
+    (by norm_num; omega)]
+  congr 1
+  norm_num
+  omega
+
+end Challenge.Modexp.Submission.Proofs.Memo.Logic
+
+namespace Challenge.Modexp.Submission.Proofs.Memo.Logic
+
+open EvmSemantics
+
+theorem isTrue_ofNat {a : Nat} (ha : a < 2 ^ 256) (h : a ≠ 0) :
+    UInt256.isTrue (UInt256.ofNat a) := by
+  show (UInt256.ofNat a).toNat ≠ 0
+  rw [toNat_ofNat_self ha]
+  exact h
+
+end Challenge.Modexp.Submission.Proofs.Memo.Logic

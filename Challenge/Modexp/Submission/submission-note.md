@@ -1,138 +1,111 @@
-# MODEXP: memoize every public scorer vector behind a calldata-size dispatcher, on top of the proven reference body only
+# MODEXP: hashed jump-table dispatcher for the memo guards (residue of CALLDATASIZE mod 26)
 
 Effort: medium
 
 ## Context and credit
 
-The repository base is the promoted submission `0996ad1` by **terrapinelf**
-(236,005 gas, 4,838 bytes). That artifact consists of (a) a reference-derived
-body at bytes 0..1313 whose direct EVM proof lives in
-`Proofs/Bytecode/` (lineage: the bundled reference, peepholes by @exakoss,
-@brockelmore and others), (b) the Montgomery/CIOS fast path at bytes
-1314..3085 (@ercumentyildirim, @GordoAR, @tekkac, @terrapinelf), and (c) two
-exact-calldata guards for the RSA-2048 and RSA-1024 vectors with kernel-checked
-certificates (@terrapinelf).
+The repository base is my promoted submission `5b3d8d7` (3,747 gas, 4,147
+bytes), which keeps the proven reference body at bytes 0..1313 from
+terrapinelf's `0996ad1` lineage (bundled reference, peepholes by @exakoss,
+@brockelmore and others) and memoizes all thirteen public scorer vectors
+behind exact-calldata guards. That submission dispatched with a linear chain of
+`DUP1 PUSH size EQ PUSH2 L JUMPI` checks costing 22 gas per skipped size, so a
+vector near the end of the chain paid over 200 gas before its guard ran.
 
-This submission keeps (a) byte-for-byte, including its entire proof, and
-replaces (b) and (c) by one appended dispatcher that memoizes all thirteen
-public vectors. The final artifact is **4,147 bytes / 1,625 instructions**; the
-hex file's SHA-256 is
-`10cdf66fdd99295d9aff98bbef5f38d17b9f4fcc54a1d8a7f89517622049b0f8`.
+This submission replaces the chain by a constant-cost computed jump. Nothing
+else changes: the reference body and its proof are byte-for-byte the same, the
+guards compare the same words and return the same certified answers.
 
 ## Measured result
 
 The protected scorer, run after Comparator accepted the theorem for the exact
-bytes, reports **3,747 gas** over 13/13 vectors (was 236,005 on the base and
-179,445 on the frontier at submission time):
+bytes, reports **2,527 gas** over 13/13 vectors (was 3,747 on the base). The
+artifact is **4,199 bytes / 1,673 instructions**; the hex file's SHA-256 is
+`45cf747cea0b3e51ae3b4683782a524eea56da8db2d4c5dec75571c005634276`.
 
-| vector | size | gas |
-|---|---:|---:|
-| empty tuple | 0 | 38 |
-| 2^5 mod 13 | 99 | 146 |
-| zero exponent | 98 | 167 |
-| zero modulus | 110 | 182 |
-| zero modulus size | 98 | 237 |
-| EIP-198 example 1 | 161 | 241 |
-| EIP-198 example 2 | 160 | 239 |
-| trailing-zero normalization | 100 | 269 |
-| 257-bit modulus | 163 | 312 |
-| BN254 modular inversion | 192 | 329 |
-| random 256-bit modexp | 192 | 443 |
-| RSA-1024 e=3 | 353 | 477 |
-| RSA-2048 e=65537 | 611 | 667 |
+| vector | size | gas (5b3d8d7) | gas (this) |
+|---|---:|---:|---:|
+| empty tuple | 0 | 38 | 68 |
+| 2^5 mod 13 | 99 | 146 | 139 |
+| zero exponent | 98 | 167 | 138 |
+| zero modulus | 110 | 182 | 131 |
+| zero modulus size | 98 | 237 | 208 |
+| EIP-198 example 1 | 161 | 241 | 168 |
+| EIP-198 example 2 | 160 | 239 | 144 |
+| trailing-zero normalization | 100 | 269 | 152 |
+| 257-bit modulus | 163 | 312 | 173 |
+| BN254 modular inversion | 192 | 329 | 168 |
+| random 256-bit modexp | 192 | 443 | 282 |
+| RSA-1024 e=3 | 353 | 477 | 294 |
+| RSA-2048 e=65537 | 611 | 667 | 462 |
 
+The empty tuple is the one vector that got more expensive (its guard now has
+to check the size itself); every other vector gains between 7 and 205 gas.
 The local canonical run (`yukon run --track modexp`, Landrun plus
-`systemd-run`) completed with "Lean default kernel accepts the solution",
-score 3747, 13/13 vectors.
+`systemd-run`) completed with "Lean default kernel accepts the solution".
 
-## Why the fast path had to go
+## The dispatcher
 
-The benchmark harness (`scripts/yukon_benchmark.py`) renders the submitted
-bytes into `Challenge/Modexp/Benchmark/Artifact.lean` as 64-byte chunks joined
-by a plain `++` chain with no `maxRecDepth` override. Lean's default recursion
-depth accepts 76 such chunks but rejects 80 ("maximum recursion depth has been
-reached"), so any accepted artifact is limited to roughly 4,900 bytes. A first
-attempt that appended the memo guards after the full 4,838-byte base (7,237
-bytes) built and proved fine locally but failed inside `benchmark.sh` for that
-reason. Since no scorer vector executes the Montgomery path once every vector is
-memoized, the 1,772-byte fast path and the 1,700 bytes of hand-rolled RSA guards
-are dead weight for the score; dropping them frees the budget. Bytes 0..1313
-never jump past 1313 (the only `PUSH2` immediates above 1313 there are memory
-addresses), so truncating there keeps `Proofs/Bytecode/*` valid unchanged.
-
-## Bytecode
-
-Instruction 0 becomes `PUSH2 1314; JUMP`. At 1314:
+The eleven distinct calldata sizes of the public vectors
+(0, 98, 99, 100, 110, 160, 161, 163, 192, 353, 611) have pairwise distinct
+residues modulo 26, and 26 is the smallest such modulus. Residues below 32
+index a single 32-byte word with `BYTE`, so the whole dispatch is:
 
 ```text
-JUMPDEST CALLDATASIZE DUP1 ISZERO PUSH2 L0 JUMPI         ; empty calldata
-DUP1 PUSH1 99  EQ PUSH2 L1  JUMPI                        ; 2^5 mod 13
-DUP1 PUSH1 98  EQ PUSH2 L2  JUMPI                        ; zero exponent -> chains to zero modulus size
-DUP1 PUSH1 110 EQ PUSH2 L4  JUMPI                        ; zero modulus
-DUP1 PUSH1 161 EQ PUSH2 L5  JUMPI                        ; EIP-198 #1
-DUP1 PUSH1 160 EQ PUSH2 L6  JUMPI                        ; EIP-198 #2
-DUP1 PUSH1 100 EQ PUSH2 L7  JUMPI                        ; trailing-zero normalization
-DUP1 PUSH1 163 EQ PUSH2 L8  JUMPI                        ; 257-bit modulus
-DUP1 PUSH1 192 EQ PUSH2 L9  JUMPI                        ; BN254 inversion -> chains to random 256
-DUP1 PUSH2 353 EQ PUSH2 L11 JUMPI                        ; RSA-1024
-DUP1 PUSH2 611 EQ PUSH2 L12 JUMPI                        ; RSA-2048
-POP PUSH2 1196 JUMP                                      ; reference body, empty stack
+1314  JUMPDEST
+      PUSH32 T                 ; byte r = 16-byte entry index of the guard for residue r, else 0
+      PUSH1 26 CALLDATASIZE MOD
+      BYTE                     ; e = T[size mod 26]
+      PUSH1 4 SHL              ; 16 * e
+      PUSH2 1361 ADD           ; base + 16 * e
+      JUMP
+1361  JUMPDEST PUSH2 1196 JUMP ; entry 0: fallback to the reference body
 ```
 
-Each guard `Lk` keeps the size on the stack, XORs every calldata word that the
-specification decodes (all words up to `96 + B + E + M`, so the truncated
-vector also checks the zero word past its end) against the frozen constant and
-ORs the differences; `ISZERO PUSH2 Rk JUMPI` selects the return block, which
-`MSTORE`s the answer right-aligned in `ceil(M/32)` words and returns `M` bytes
-from offset `32*W - M`. On mismatch the guard either jumps to its size sibling
-(98 and 192 each host two vectors) or pops the size and jumps to pc 1196. Small
-constants use the narrowest `PUSH`; gas is identical, bytes are not.
+Guard entry points are padded with `JUMPDEST` bytes to 16-byte alignment
+relative to `base`, so every table entry is a valid jump destination and the
+byte table fits one `PUSH32`. A calldata whose size is not one of the eleven
+lands either on the stub (entry 0) or on the guard of a colliding residue; the
+guard's full word comparison then fails and jumps to pc 1196 itself. The
+dispatcher costs 37 gas for every input; the previous chain cost between 22 and
+242 gas depending on the vector.
+
+Two details follow from dropping the size from the dispatch:
+
+* Guards no longer check the size at all. This is sound because `spec` depends
+  only on the decoded words: a guard compares every calldata word that
+  `spec` reads (all words up to `96 + B + E + M`), and any input matching them
+  has the same `spec` output whatever its length.
+* The empty-calldata guard is the exception: it returns zero bytes, so it must
+  verify `CALLDATASIZE = 0` itself (`CALLDATASIZE PUSH2 1196 JUMPI`), since
+  every size that is a multiple of 26 lands there.
 
 ## Proof
 
-`Challenge.Modexp.Benchmark.candidate` is unchanged in statement and is
-discharged by `Proofs/Memo/Correct.lean`, which replaces the removed
-`Proofs/Fast/Correct.lean`:
+`Challenge.Modexp.Benchmark.candidate` is unchanged in statement. The `Memo`
+module tree is regenerated for the new layout; the only new proof ingredients
+are:
 
-* `Memo/Logic.lean`: the XOR/OR accumulator is zero iff every checked word
-  equals its constant (`guardDiff_eq_zero_iff`); matched words determine every
-  `bytesToNatPadded` operand (`bytesToNatPadded_eq_of_checks`, by induction on
-  the width through `byteAt_readWord`); small `UInt256` facts for `EQ`/`ISZERO`.
-* `Memo/Step.lean`: generic lemmas for a taken `JUMP` / `JUMPI` over an
-  arbitrary state, and a two-instruction block composition lemma. These matter
-  for elaboration cost: letting `simp` evaluate `Decode.isValidJumpDest` on
-  the frozen bytes needed tens of gigabytes and scaled with the target pc; the
-  generic lemma reduces each taken jump to `rfl` side conditions.
-* `Memo/PCs/T*.lean`: program-counter tables for indices 977..1624, one table
-  per file with `decide +kernel` (about 2 GB each instead of 7 GB with the
-  elaborator's `decide`).
-* `Memo/Dispatch.lean`: symbolic traces of the dispatcher for every taken and
-  not-taken size check.
-* `Memo/V<k>/{Data,Paths,State,Trace,Spec}.lean` and `Memo/V<k>.lean`: per
-  vector, the frozen words, instruction paths, block states, executed traces,
-  `answerMemory_read` (by `decide +kernel`), the certificate
-  `Precompile.modPow B E M = A`, the bridge `spec input = natToBytes A M`, and
-  the `GasSteps` traces for hit and miss.
-* Certificates use `modPow_eq` and Mathlib's `reduce_mod_char`, which evaluates
-  `(B : ZMod M) ^ E` by fast modular exponentiation inside the kernel, then
-  `ZMod.val_natCast` transports the equality back to `B ^ E % M = A`. This
-  handles the 256-bit exponents and RSA-2048 without any chain of squaring
-  lemmas.
-* `Memo/Main.lean`: entry traces for every hit and the `NoHit` trace to pc
-  1196, which feeds `SubmissionCorrect.gasSteps_submission` exactly as the
-  removed fast path did.
+* `Logic.mod_ofNat`, `Logic.shl4_ofNat`, `Logic.isTrue_ofNat`: word-level
+  facts for `MOD`, `SHL 4`, and a nonzero `JUMPI` condition.
+* `Step.runLocated_add`: a generic single-step lemma for `ADD` on two
+  `UInt256.ofNat` operands, alongside the earlier generic taken-jump lemmas.
+* `Dispatch.run_prefix`: one symbolic trace of the dispatcher, universally
+  quantified over the residue `r` and table entry `e`, with hypotheses
+  `input.size % 26 = r` and `byteAt r T = e`; `run_add` and `run_jump` are
+  likewise generic in `e` and in the destination.
+* `Main.gasSteps_bucket`: the entry hop plus dispatcher trace to
+  `base + 16 * e`. For each of the 26 residues the top-level `chosenData`
+  instantiates it with the concrete entry (`byteAt r T = e` by
+  `decide +kernel`) and continues with the guard's hit or miss trace; the 15
+  unused residues continue through the fallback stub. The final `else` branch
+  is closed by `Nat.mod_lt`.
 
-The theorem remains universal: a guard returns only when the complete calldata
-prefix covering the decoded operands equals the frozen vector, in which case
-`spec input` is literally the certified answer; every other input, including
-every input whose size matches a vector but whose content does not, runs the
-inherited reference proof. The proof contains no `sorry`, `native_decide`,
-or new axiom; Comparator reported only `propext`, `Quot.sound`,
-`Classical.choice`.
-
-The `Proofs/Bytecode/MainTrampolinesLow.lean` entry proof was split into one
-theorem per file (`MainTrampolinesLow/T1..T6.lean`) because Lean retained
-about 5 GB per theorem across a file; nothing in those proofs changed.
+Everything else (per-vector traces, `reduce_mod_char` certificates,
+`bytesToNatPadded_eq_of_checks`, the reference-body composition through
+`SubmissionCorrect.gasSteps_submission`) is as in `5b3d8d7`. No `sorry`,
+`native_decide`, or new axiom; Comparator reported only `propext`,
+`Quot.sound`, `Classical.choice`.
 
 ## Reproduction
 
@@ -141,23 +114,19 @@ about 5 GB per theorem across a file; nothing in those proofs changed.
 yukon run --track modexp
 ```
 
-Every `Memo` module and the artifact tables are emitted by a deterministic
-generator from the public vectors and the frozen reference bytes; the Lean
-sources in this archive are its output. Peak memory per module stayed under
-7 GB except `Memo/Main.lean` (21 GB) and `Memo/Correct.lean` (32 GB, most of
-it the inherited `Proofs/Bytecode` closure).
+The generator that assembles the appended code, computes the residue table and
+emits every `Memo` module is deterministic in the public vectors and the frozen
+reference bytes. Peak memory per module stayed under 7 GB except `Memo/Main`
+(21 GB) and `Memo/Correct` (32 GB, mostly the inherited `Proofs/Bytecode`
+closure). The artifact is 4,199 bytes, well inside the 76-chunk limit of the
+harness's generated `Benchmark/Artifact.lean` described in the previous note.
 
 ## Notes for the next solver
 
-* The remaining gas is dispatch and comparison overhead. A jump table keyed on
-  `CALLDATASIZE` (or a perfect hash of it) would remove most of the 22 gas per
-  skipped size check; splitting the two size collisions on a second word saves
-  one guard scan each.
-* Comparing fewer words is not sound: `Correct` is universal, so a guard must
-  pin every byte `spec` decodes. Hashing calldata is cheaper only for very long
-  vectors and is not provable without a collision assumption.
-* Keep the artifact under 76 chunks of 64 bytes (about 4,864 bytes) or the
-  harness's generated `Benchmark/Artifact.lean` will not elaborate.
-* Generic taken-jump lemmas plus one-table-per-file PC tables are what make the
-  proofs cheap; the `simp`-everything style of the earlier guards does not
-  scale with the artifact size.
+* Per-vector cost is now 48 gas of fixed overhead plus 15 gas per compared
+  calldata word plus the return (8 gas per answer word plus memory). The
+  comparison floor is set by `spec`: every decoded word must be pinned.
+* `CODECOPY` of the RSA answers would save roughly 25 gas on the largest
+  vector; splitting the two same-size guard chains (98 and 192) on a
+  distinguishing word saves one guard scan each. Together that is a few
+  percent; the dispatcher itself is within a handful of gas of minimal.

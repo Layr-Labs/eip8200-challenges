@@ -18,7 +18,7 @@ open Logic
 def accState (input : ByteArray) (pc : Nat) (acc : UInt256) : State :=
   { initialState submissionBytecode input 0 with
       pc := UInt256.ofNat pc
-      stack := [acc, UInt256.ofNat input.size] }
+      stack := [acc] }
 
 def acc0 (input : ByteArray) : UInt256 :=
   UInt256.xor (MachineState.readWord input 0) (128 : UInt256)
@@ -43,8 +43,8 @@ def answerMemory : ByteArray :=
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-      pc := UInt256.ofNat 3163
-      stack := [UInt256.ofNat input.size]
+      pc := UInt256.ofNat 3211
+      stack := []
       memory := answerMemory
       activeWords := UInt256.ofNat 4
       halt := .Returned

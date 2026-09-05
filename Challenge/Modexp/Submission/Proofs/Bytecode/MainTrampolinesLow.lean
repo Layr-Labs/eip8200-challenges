@@ -56,7 +56,7 @@ theorem run_tramp0_jump (input : ByteArray) :
     simp [tramp0MidState, initialState, headerPCs0,
       Challenge.EvmProof.Word.word_toNat_ofNat]
   exact (Challenge.Modexp.Submission.Proofs.Memo.Step.runLocated_jump tramp0JumpLocated rfl
-    (tramp0MidState input) 1314 [] hpc rfl (by decide) rfl (by norm_num) hjump).trans rfl
+    (tramp0MidState input) 1314 [] hpc rfl (by simp) rfl (by norm_num) hjump).trans rfl
 
 theorem run_tramp0 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path

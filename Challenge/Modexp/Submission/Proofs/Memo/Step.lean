@@ -65,3 +65,29 @@ theorem runLocatedBlock_two {artifact : Challenge.EvmProof.ProgramArtifact} {for
   simp [Challenge.EvmProof.Stepper.runLocatedBlock, h1, ht, h2]
 
 end Challenge.Modexp.Submission.Proofs.Memo.Step
+
+namespace Challenge.Modexp.Submission.Proofs.Memo.Step
+
+open EvmSemantics
+open EvmSemantics.EVM
+open Challenge.Modexp
+open Challenge.Modexp.Submission.Proofs.Bytecode
+
+theorem runLocated_add (loc : Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka)
+    (hins : loc.instruction = .op .ADD)
+    (s : State) (a b p : Nat) (rest : List UInt256)
+    (hpc : s.pc.toNat = Artifact.submissionArtifact.instructionPC loc.index)
+    (hpcv : s.pc = UInt256.ofNat p) (hp : p + 1 < 2 ^ 256)
+    (hstack : s.stack = UInt256.ofNat a :: UInt256.ofNat b :: rest) (hlen : rest.length < 1022)
+    (hsum : a + b < 2 ^ 256) :
+    Challenge.EvmProof.Stepper.runLocated loc s =
+      some { s with stack := UInt256.ofNat (a + b) :: rest, pc := UInt256.ofNat (p + 1) } := by
+  unfold Challenge.EvmProof.Stepper.runLocated
+  rw [if_pos hpc, hins]
+  unfold Challenge.EvmProof.Stepper.runInstr
+  have hcap : s.stack.length < 1024 := by rw [hstack]; simp; omega
+  rw [if_pos hcap]
+  simp only [hstack, hpcv, Challenge.EvmProof.Word.ofNat_add_ofNat hsum,
+    Challenge.EvmProof.Word.succ_ofNat hp]
+
+end Challenge.Modexp.Submission.Proofs.Memo.Step

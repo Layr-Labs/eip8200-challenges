@@ -16,70 +16,61 @@ open Challenge.Modexp.Submission.Proofs.Memo
 def preludePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.opAt 1105 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
-   Main.pushAt 1106 1 1,
-   Main.pushAt 1107 0 0,
-   Main.opAt 1108 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1109 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR))
+   Main.opAt 1087 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+   Main.pushAt 1088 1 1,
+   Main.pushAt 1089 0 0,
+   Main.opAt 1090 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1091 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR))
   ]
 
 def chunk0Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.pushAt 1110 1 1,
-   Main.pushAt 1111 1 32,
-   Main.opAt 1112 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1113 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1114 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
-   Main.pushAt 1115 0 0,
-   Main.pushAt 1116 1 64,
-   Main.opAt 1117 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1118 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1119 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
-   Main.pushAt 1120 32 19009507569950637001986697810493060311787899246484784370430361119707296169984,
-   Main.pushAt 1121 1 96,
-   Main.opAt 1122 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
-   Main.opAt 1123 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
-   Main.opAt 1124 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR))
+   Main.pushAt 1092 1 1,
+   Main.pushAt 1093 1 32,
+   Main.opAt 1094 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1095 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 1096 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+   Main.pushAt 1097 0 0,
+   Main.pushAt 1098 1 64,
+   Main.opAt 1099 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1100 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 1101 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR)),
+   Main.pushAt 1102 32 19009507569950637001986697810493060311787899246484784370430361119707296169984,
+   Main.pushAt 1103 1 96,
+   Main.opAt 1104 (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
+   Main.opAt 1105 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
+   Main.opAt 1106 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.OR))
   ]
 
 def branchPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.opAt 1125 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.ISZERO)),
-   Main.pushAt 1126 2 1634,
-   Main.opAt 1127 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
+   Main.opAt 1107 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.ISZERO)),
+   Main.pushAt 1108 2 1619,
+   Main.opAt 1109 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI))
   ]
 
 def branchPrefixPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.opAt 1125 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.ISZERO)),
-   Main.pushAt 1126 2 1634
-  ]
-
-def fallbackPath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [
-   Main.opAt 1128 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)),
-   Main.pushAt 1129 2 1196,
-   Main.opAt 1130 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))
+   Main.opAt 1107 (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.ISZERO)),
+   Main.pushAt 1108 2 1619
   ]
 
 def fallbackPrefixPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.opAt 1128 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)),
-   Main.pushAt 1129 2 1196
+   Main.pushAt 1110 2 1196
   ]
 
 def returnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   Main.opAt 1131 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
-   Main.pushAt 1132 0 0,
-   Main.pushAt 1133 0 0,
-   Main.opAt 1134 (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN))
+   Main.opAt 1112 (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+   Main.pushAt 1113 0 0,
+   Main.pushAt 1114 0 0,
+   Main.opAt 1115 (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN))
   ]
 
 end Challenge.Modexp.Submission.Proofs.Memo.V3.Paths
