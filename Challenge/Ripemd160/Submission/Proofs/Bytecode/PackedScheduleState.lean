@@ -79,6 +79,26 @@ private theorem loopState_frame_override (s : State)
     newPC newStack hgas hreturnData hhReturn haccountMap hsubstate hexecutionEnv
     hexecLength hhalt hcallStack
 
+private theorem loopState_frame_override_active (s : State)
+    (msgOff returnDest : UInt256) (rest : List UInt256) (i : Nat)
+    (newPC : UInt256) (newStack : List UInt256) (newActive : UInt256) :
+    { s with
+      pc := newPC
+      stack := newStack
+      memory := (Schedule.loopState s msgOff returnDest rest i).memory
+      activeWords := newActive } =
+      { { Schedule.loopState s msgOff returnDest rest i with
+          activeWords := newActive } with
+        pc := newPC
+        stack := newStack } := by
+  rcases loopState_unchanged s msgOff returnDest rest i with
+    ⟨hgas, hreturnData, hhReturn, haccountMap, hsubstate, hexecutionEnv,
+      hexecLength, hhalt, hcallStack⟩
+  exact state_frame_of_components s
+    { Schedule.loopState s msgOff returnDest rest i with activeWords := newActive }
+    newPC newStack hgas hreturnData hhReturn haccountMap hsubstate hexecutionEnv
+    hexecLength hhalt hcallStack
+
 theorem returned_eq_schedule_of_memory_active (s : State)
     (startPC p ret : UInt256) (rest : List UInt256)
     (hmemory :
@@ -94,5 +114,21 @@ theorem returned_eq_schedule_of_memory_active (s : State)
   unfold Schedule.scheduleReturned PackedScheduleTemplate.expectedState
   rw [hmemory, hactive]
   exact loopState_frame_override s p ret rest 16 ret rest
+
+theorem returned_eq_schedule_with_active_of_memory (s : State)
+    (startPC p ret : UInt256) (rest : List UInt256)
+    (hmemory :
+      PackedScheduleTemplate.expectedMemory s p =
+        (Schedule.loopState s p ret rest 16).memory) :
+    Schedule.scheduleReturned
+        (PackedScheduleTemplate.expectedState s startPC p ret rest) ret rest =
+      Schedule.scheduleReturned
+        { Schedule.loopState s p ret rest 16 with
+          activeWords := PackedScheduleTemplate.expectedActiveWords s p }
+        ret rest := by
+  unfold Schedule.scheduleReturned PackedScheduleTemplate.expectedState
+  rw [hmemory]
+  exact loopState_frame_override_active s p ret rest 16 ret rest
+    (PackedScheduleTemplate.expectedActiveWords s p)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleState
