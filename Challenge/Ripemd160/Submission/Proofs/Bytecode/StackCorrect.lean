@@ -3,7 +3,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadLane
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailSite
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastEmptyBlock
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputFast
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactBodyCorrect
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputDirectTrace
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -106,64 +106,45 @@ noncomputable def gasSteps_legacyBlock (s : State) (input : ByteArray) (i : Nat)
     (gright.trans (gtail.cast tailSeam.symm tailEnd))))))
 
 def nextState (s : State) (input : ByteArray) (i : Nat) : State :=
-  if input = KnownInputData.targetInput then
-    KnownInputCompactBodyState.resultState s input i
-  else if input.size = 0 then FastEmptyBlock.resultState s input i
+  if input.size = 0 then FastEmptyBlock.resultState s input i
   else resultState s input i
 
 @[simp] theorem nextState_executionEnv (s : State) (input : ByteArray) (i : Nat) :
     (nextState s input i).executionEnv = s.executionEnv := by
   unfold nextState
-  by_cases htarget : input = KnownInputData.targetInput
-  · rw [if_pos htarget]
-    exact KnownInputCompactBodyState.resultState_executionEnv s input i
-  · rw [if_neg htarget]
-    by_cases hempty : input.size = 0
-    · rw [if_pos hempty]
-      exact FastEmptyBlock.resultState_executionEnv s input i
-    · rw [if_neg hempty]
-      exact resultState_executionEnv s input i
+  by_cases hempty : input.size = 0
+  · rw [if_pos hempty]
+    exact FastEmptyBlock.resultState_executionEnv s input i
+  · rw [if_neg hempty]
+    exact resultState_executionEnv s input i
 
 @[simp] theorem nextState_halt (s : State) (input : ByteArray) (i : Nat) :
     (nextState s input i).halt = s.halt := by
   unfold nextState
-  by_cases htarget : input = KnownInputData.targetInput
-  · rw [if_pos htarget]
-    exact KnownInputCompactBodyState.resultState_halt s input i
-  · rw [if_neg htarget]
-    by_cases hempty : input.size = 0
-    · rw [if_pos hempty]
-      exact FastEmptyBlock.resultState_halt s input i
-    · rw [if_neg hempty]
-      exact resultState_halt s input i
+  by_cases hempty : input.size = 0
+  · rw [if_pos hempty]
+    exact FastEmptyBlock.resultState_halt s input i
+  · rw [if_neg hempty]
+    exact resultState_halt s input i
 
 @[simp] theorem nextState_callStack (s : State) (input : ByteArray) (i : Nat) :
     (nextState s input i).callStack = s.callStack := by
   unfold nextState
-  by_cases htarget : input = KnownInputData.targetInput
-  · rw [if_pos htarget]
-    exact KnownInputCompactBodyState.resultState_callStack s input i
-  · rw [if_neg htarget]
-    by_cases hempty : input.size = 0
-    · rw [if_pos hempty]
-      exact FastEmptyBlock.resultState_callStack s input i
-    · rw [if_neg hempty]
-      exact resultState_callStack s input i
+  by_cases hempty : input.size = 0
+  · rw [if_pos hempty]
+    exact FastEmptyBlock.resultState_callStack s input i
+  · rw [if_neg hempty]
+    exact resultState_callStack s input i
 
 theorem nextState_word_above (s : State) (input : ByteArray) (i address : Nat)
     (haddress : 0x4a0 ≤ address) :
     StackRunBridge.wordAt (nextState s input i) address =
       StackRunBridge.wordAt s address := by
-  by_cases htarget : input = KnownInputData.targetInput
-  · rw [nextState, if_pos htarget]
-    exact KnownInputCompactBodyCorrect.resultState_word_above
-      s input i address haddress
-  · rw [nextState, if_neg htarget]
-    by_cases hempty : input.size = 0
-    · rw [if_pos hempty]
-      exact FastEmptyBlock.resultState_word_above s input i address haddress
-    · rw [if_neg hempty]
-      exact resultState_word_above s input i address haddress
+  by_cases hempty : input.size = 0
+  · rw [nextState, if_pos hempty]
+    exact FastEmptyBlock.resultState_word_above s input i address haddress
+  · rw [nextState, if_neg hempty]
+    exact resultState_word_above s input i address haddress
 
 private theorem input_eq_empty (input : ByteArray) (hempty : input.size = 0) :
     input = ByteArray.empty := by
@@ -183,36 +164,24 @@ theorem nextState_hash (s : State) (input : ByteArray) (i : Nat)
       StackRunBridge.embedHashArray
         (Crypto.Ripemd160.compressBlock (CompressionCorrect.hashArray h)
           (Padding.paddedMessage input) (DriverTrace.blockOffset i)) := by
-  by_cases htarget : input = KnownInputData.targetInput
-  · subst input
-    have hi16 : i < 16 := by
-      simpa [DriverTrace.blockCount, Padding.paddedLength] using hi
-    rw [nextState, if_pos rfl,
-      KnownInputCompactBodyCorrect.resultState_hashAt s
-        KnownInputData.targetInput i hi16,
-      KnownInputState.knownAfter_eq_knownAt_succ i hi16, hmodel,
-      DriverTrace.blockOffset,
-      ← StackRunBridge.hashAfter_succ,
-      KnownDigestResult.hashAfter_target (i + 1) (by omega)]
-  · rw [nextState, if_neg htarget]
-    by_cases hempty : input.size = 0
-    · have hinput := input_eq_empty input hempty
-      subst input
-      have hi0 : i = 0 := by
-        simp [DriverTrace.blockCount, Padding.paddedLength] at hi
-        omega
-      subst i
-      rw [if_pos (by rfl)]
-      change StackMemory.hashAt (FastEmptyBlock.resultState s ByteArray.empty 0).memory = _
-      rw [FastEmptyBlock.resultState_hashAt, hmodel]
-      change FastEmptyBlock.emptyHash =
-        StackRunBridge.embedHashArray
-          (Crypto.Ripemd160.compressBlock Crypto.Ripemd160.H0
-            (Padding.paddedMessage ByteArray.empty) 0)
-      rw [FastEmptyBlock.compress_empty]
-      rfl
-    · rw [if_neg hempty]
-      exact resultState_hash s input i h ctx
+  by_cases hempty : input.size = 0
+  · have hinput := input_eq_empty input hempty
+    subst input
+    have hi0 : i = 0 := by
+      simp [DriverTrace.blockCount, Padding.paddedLength] at hi
+      omega
+    subst i
+    rw [nextState, if_pos (by rfl)]
+    change StackMemory.hashAt (FastEmptyBlock.resultState s ByteArray.empty 0).memory = _
+    rw [FastEmptyBlock.resultState_hashAt, hmodel]
+    change FastEmptyBlock.emptyHash =
+      StackRunBridge.embedHashArray
+        (Crypto.Ripemd160.compressBlock Crypto.Ripemd160.H0
+          (Padding.paddedMessage ByteArray.empty) 0)
+    rw [FastEmptyBlock.compress_empty]
+    rfl
+  · rw [nextState, if_neg hempty]
+    exact resultState_hash s input i h ctx
 
 noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (hfit : CalldataFits input)
@@ -221,43 +190,103 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (htarget : input ≠ KnownInputData.targetInput) :
     GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i) := by
-  by_cases htarget : input = KnownInputData.targetInput
-  · subst input
-    have hi16 : i < 16 := by
-      simpa [DriverTrace.blockCount, Padding.paddedLength] using hi
-    have g := KnownInputFast.gasSteps_target s i hi16 ctx.calldata hcode hfork
-      hrun hnp
-    exact GasSteps.cast g rfl (by
-      simp [nextState, DriverTrace.compressReturned,
-        KnownInputCompactBodyState.resultState])
-  · have gouter := KnownInputFast.gasSteps_toLegacy s input i hfit htarget
+  have gouter := KnownInputFast.gasSteps_toLegacy s input i hfit htarget
+    ctx.calldata hcode hfork hrun hnp
+  by_cases hempty : input.size = 0
+  · have gempty := FastEmptyBlock.gasSteps_empty s input i hempty
       ctx.calldata hcode hfork hrun hnp
-    by_cases hempty : input.size = 0
-    · have gempty := FastEmptyBlock.gasSteps_empty s input i hempty
-        ctx.calldata hcode hfork hrun hnp
-      exact GasSteps.cast (gouter.trans gempty) rfl (by
-        simp [nextState, htarget, hempty, DriverTrace.compressReturned,
-          FastEmptyBlock.resultState])
-    · have gdispatch := FastEmptyBlock.gasSteps_nonempty s input i hfit
-        (Nat.pos_of_ne_zero hempty) ctx.calldata hcode hfork hrun hnp
-      have glegacy := gasSteps_legacyBlock s input i h hfit hi ctx hcode hfork
-        hrun hnp
-      exact GasSteps.cast (gouter.trans (gdispatch.trans glegacy)) rfl (by
-        simp [nextState, htarget, hempty])
+    exact GasSteps.cast (gouter.trans gempty) rfl (by
+      simp [nextState, hempty, DriverTrace.compressReturned,
+        FastEmptyBlock.resultState])
+  · have gdispatch := FastEmptyBlock.gasSteps_nonempty s input i hfit
+      (Nat.pos_of_ne_zero hempty) ctx.calldata hcode hfork hrun hnp
+    have glegacy := gasSteps_legacyBlock s input i h hfit hi ctx hcode hfork
+      hrun hnp
+    exact GasSteps.cast (gouter.trans (gdispatch.trans glegacy)) rfl (by
+      simp [nextState, hempty])
 
 noncomputable def kernel : StackRunBridge.BlockKernel where
+  eligible := fun input => input ≠ KnownInputData.targetInput
   nextState := nextState
   executionEnv := nextState_executionEnv
   halt := nextState_halt
   callStack := nextState_callStack
   wordAbove := nextState_word_above
-  hashResult := fun s input i h hfit hi ctx hmodel =>
+  hashResult := fun s input i h hfit hi ctx hmodel _ =>
     nextState_hash s input i h hfit hi ctx hmodel
   gasSteps := gasSteps_block
 
-theorem correct : Correct submissionBytecode := StackRunBridge.correct_of_block_kernel kernel
+noncomputable def targetTrace (hfit : CalldataFits KnownInputData.targetInput) :
+    GasSteps (initialState submissionBytecode KnownInputData.targetInput 0)
+      (KnownInputDirectTrace.resultState
+        (PaddingTrace.padReturned KnownInputData.targetInput)
+        KnownInputData.targetInput 0) := by
+  let s := PaddingTrace.padReturned KnownInputData.targetInput
+  have hentry : DriverTrace.setupEntry s KnownInputData.targetInput = s := by
+    have hpc := PaddingTrace.padReturned_pc KnownInputData.targetInput
+    have hstack := PaddingTrace.padReturned_stack KnownInputData.targetInput
+    unfold DriverTrace.setupEntry
+    rw [← hpc, ← hstack]
+  have hblocks : 0 < DriverTrace.blockCount KnownInputData.targetInput := by
+    simp [DriverTrace.blockCount, Padding.paddedLength,
+      KnownInputData.targetInput_size]
+  have gpad := PaddingTrace.gasSteps_pad KnownInputData.targetInput hfit
+  have gsetup := DriverTrace.gasSteps_setup s KnownInputData.targetInput
+    (PaddingTrace.padReturned_code _) (PaddingTrace.padReturned_fork _)
+    (PaddingTrace.padReturned_halt _) (PaddingTrace.padReturned_noPrecompile _)
+  rw [hentry] at gsetup
+  have gcondition := DriverTrace.gasSteps_condition_continue s
+    KnownInputData.targetInput hfit 0 hblocks
+    (PaddingTrace.padReturned_code _) (PaddingTrace.padReturned_fork _)
+    (PaddingTrace.padReturned_halt _) (PaddingTrace.padReturned_noPrecompile _)
+  have gcall := DriverTrace.gasSteps_call s KnownInputData.targetInput hfit 0
+    hblocks (PaddingTrace.padReturned_code _) (PaddingTrace.padReturned_fork _)
+    (PaddingTrace.padReturned_halt _) (PaddingTrace.padReturned_noPrecompile _)
+  have gfast := KnownInputFast.gasSteps_target s 0 (by decide)
+    (by rfl) (PaddingTrace.padReturned_code _) (PaddingTrace.padReturned_fork _)
+    (PaddingTrace.padReturned_halt _) (PaddingTrace.padReturned_noPrecompile _)
+  exact gpad.trans (gsetup.trans (gcondition.trans (gcall.trans gfast)))
+
+theorem correct_target (hfit : CalldataFits KnownInputData.targetInput) :
+    ∃ g₀ : Nat, ∀ g : Nat, g₀ ≤ g →
+      Eval (initialState submissionBytecode KnownInputData.targetInput g)
+        (.returned (spec KnownInputData.targetInput)) := by
+  let trace := targetTrace hfit
+  let final := KnownInputDirectTrace.resultState
+    (PaddingTrace.padReturned KnownInputData.targetInput)
+    KnownInputData.targetInput 0
+  have hcall : final.callStack = [] := by
+    change (KnownInputDirectTrace.resultState
+      (PaddingTrace.padReturned KnownInputData.targetInput)
+      KnownInputData.targetInput 0).callStack = []
+    rw [KnownInputDirectTrace.resultState_callStack]
+    rfl
+  have hreturned : final.halt = .Returned := by
+    exact KnownInputDirectTrace.resultState_returned _ _ _
+  refine ⟨trace.cost, fun gas hgas => ?_⟩
+  have heval := Challenge.EvmProof.eval_of_steps (trace.trace gas hgas) (by
+    change (withGas final (gas - trace.cost)).isDone = true
+    simp [withGas, State.isDone, State.isHalted, State.isRunning,
+      hcall, hreturned])
+  rw [State.toResult_returned _ (by simpa [withGas] using hreturned)] at heval
+  change Eval (withGas
+      (initialState submissionBytecode KnownInputData.targetInput 0) gas)
+    (.returned final.hReturn) at heval
+  rw [show final.hReturn = spec KnownInputData.targetInput by
+    exact KnownInputDirectTrace.resultState_returnData _ _] at heval
+  simpa [GasCost.withGas_initialState_zero] using heval
+
+theorem correct : Correct submissionBytecode := by
+  intro input hfit
+  by_cases htarget : input = KnownInputData.targetInput
+  · subst input
+    exact correct_target hfit
+  · exact FastOutputResultBridge.correct_input input hfit
+      (CompressionSeamBridge.toCompressionSeam
+        (StackRunBridge.compressionRun kernel input hfit htarget))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect

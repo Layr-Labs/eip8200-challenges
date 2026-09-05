@@ -52,6 +52,7 @@ structure BlockContext (s : State) (input : ByteArray) (i : Nat)
 
 /-- A genuine compression endpoint and its exact one-block certificate. -/
 structure BlockKernel where
+  eligible : ByteArray → Prop
   nextState : State → ByteArray → Nat → State
   executionEnv : ∀ s input i, (nextState s input i).executionEnv = s.executionEnv
   halt : ∀ s input i, (nextState s input i).halt = s.halt
@@ -62,7 +63,7 @@ structure BlockKernel where
     (h : Compression.HashState) (_hfit : CalldataFits input)
     (_hi : i < DriverTrace.blockCount input) (_ctx : BlockContext s input i h)
     (_hmodel : CompressionCorrect.hashArray h =
-      CompressionSeamBridge.hashAfter input i),
+      CompressionSeamBridge.hashAfter input i) (_heligible : eligible input),
     hashAt32 (nextState s input i) =
       embedHashArray
         (Crypto.Ripemd160.compressBlock (CompressionCorrect.hashArray h)
@@ -73,7 +74,8 @@ structure BlockKernel where
     (_hcode : s.executionEnv.code = submissionBytecode)
     (_hfork : s.fork = .Osaka) (_hrun : s.halt = .Running)
     (_hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false),
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (_heligible : eligible input),
     GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i)
 
@@ -272,6 +274,7 @@ private theorem hashAt32_of_hashWords
 private theorem hashWords_succ (kernel : BlockKernel) (input : ByteArray)
     (hfit : CalldataFits input) (n : Nat)
     (hn : n < DriverTrace.blockCount input)
+    (heligible : kernel.eligible input)
     (hw : CompressionSeamBridge.HashWordsAt input n (states kernel input n)) :
     CompressionSeamBridge.HashWordsAt input (n + 1)
       (states kernel input (n + 1)) := by
@@ -282,7 +285,7 @@ private theorem hashWords_succ (kernel : BlockKernel) (input : ByteArray)
     separated := blockSeparated input hfit n hn
     hash := hashAt32_of_hashWords hw }
   have hout := BlockKernel.hashResult kernel (states kernel input n)
-    input n h hfit hn ctx (hashArray_hashStateAfter input n)
+    input n h hfit hn ctx (hashArray_hashStateAfter input n) heligible
   have harray := hashArray_hashStateAfter input n
   rw [harray] at hout
   rw [states]
@@ -296,16 +299,19 @@ private theorem hashWords_succ (kernel : BlockKernel) (input : ByteArray)
   · exact congrArg Compression.EvmHashState.h4 hout
 
 theorem hashWords (kernel : BlockKernel) (input : ByteArray)
-    (hfit : CalldataFits input) :
+    (hfit : CalldataFits input) (heligible : kernel.eligible input) :
     ∀ n, n ≤ DriverTrace.blockCount input →
       CompressionSeamBridge.HashWordsAt input n (states kernel input n) := by
   intro n hn
   induction n with
   | zero => exact initialHashWords kernel input hfit
-  | succ n ih => exact hashWords_succ kernel input hfit n (by omega) (ih (by omega))
+  | succ n ih =>
+      exact hashWords_succ kernel input hfit n (by omega) heligible
+        (ih (by omega))
 
 def compressionRun (kernel : BlockKernel) (input : ByteArray)
-    (hfit : CalldataFits input) : CompressionSeamBridge.CompressionRun input where
+    (hfit : CalldataFits input) (heligible : kernel.eligible input) :
+    CompressionSeamBridge.CompressionRun input where
   states := states kernel input
   initial := states_initial kernel input
   code := fun i _ => states_code kernel input i
@@ -321,22 +327,27 @@ def compressionRun (kernel : BlockKernel) (input : ByteArray)
       messageBlock := messageBlockAt kernel input hfit i hi
       separated := blockSeparated input hfit i hi
       hash := hashAt32_of_hashWords
-        (hashWords kernel input hfit i (by omega)) }
+        (hashWords kernel input hfit heligible i (by omega)) }
     have hgas := BlockKernel.gasSteps kernel (states kernel input i)
       input i h hfit hi ctx
       (states_code kernel input i) (states_fork kernel input i)
       (states_halt kernel input i) (states_noPrecompile kernel input i)
+      heligible
     simpa [states] using hgas
-  hashWords := fun i hi => hashWords kernel input hfit i hi
+  hashWords := fun i hi => hashWords kernel input hfit heligible i hi
 
 def compressionSeam (kernel : BlockKernel) :
+    (∀ input : ByteArray, kernel.eligible input) →
     ∀ input : ByteArray, CalldataFits input → DirectCorrect.CompressionSeam input :=
-  fun input hfit => CompressionSeamBridge.toCompressionSeam
-    (compressionRun kernel input hfit)
+  fun hall input hfit => CompressionSeamBridge.toCompressionSeam
+    (compressionRun kernel input hfit (hall input))
 
 /-- Correctness remains conditional on the genuine block kernel. -/
 theorem correct_of_block_kernel (kernel : BlockKernel) :
+    (∀ input : ByteArray, kernel.eligible input) →
     Correct submissionBytecode := by
-  exact FastOutputResultBridge.correct_of_compression_trace (compressionSeam kernel)
+  intro hall
+  exact FastOutputResultBridge.correct_of_compression_trace
+    (compressionSeam kernel hall)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRunBridge
