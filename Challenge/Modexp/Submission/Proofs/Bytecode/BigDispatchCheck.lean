@@ -1,0 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatchCheckExp
+import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatchCheckMod
+import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatchCheckCompare
+import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatchCheckJump
