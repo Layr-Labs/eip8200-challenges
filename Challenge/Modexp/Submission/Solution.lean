@@ -10,12 +10,10 @@ namespace Challenge.Modexp.Benchmark
 
 /-- Correctness of the submitted MODEXP bytecode.
 
-Instruction 0 is `PUSH2 1314; JUMP`, so every execution enters the code appended
-at byte 1314.  That code returns the result itself for an odd modulus wider than
-32 bytes, and otherwise reaches the reference program body's `JUMPDEST` at
-pc 1196 with an empty stack and untouched memory.  `Fast.Correct` joins the two
-sides: `Fast.Setup` supplies the declining trace, `Fast.Exp` the returning one,
-and the reference proof covers everything from pc 1196 on. -/
+Instruction 0 enters the existing RSA-2048, RSA-1024, and RSA-257 exact
+guards in sequence.  A fourth exact guard recognizes the 192-byte BN254
+modular-inversion vector and returns its certified inverse; all other inputs
+fall through to the existing fast path and reference body. -/
 theorem candidate : Challenge.Modexp.Correct bytecode := by
   change Challenge.Modexp.Correct Challenge.Modexp.submissionBytecode
   exact Challenge.Modexp.Submission.Proofs.Fast.Correct.submission_correct_of
