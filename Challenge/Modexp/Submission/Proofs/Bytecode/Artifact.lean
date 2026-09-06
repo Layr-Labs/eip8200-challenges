@@ -448,7 +448,7 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 5 }),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Env (EvmSemantics.Operation.EnvOps.CALLDATALOAD)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 3 }),
- YulEvmCompiler.Instr.push 1 32,
+YulEvmCompiler.Instr.push 3 32
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.SUB)),
  YulEvmCompiler.Instr.push 1 3,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHL)),
@@ -457,7 +457,7 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.push 2 538,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 3 }),
- YulEvmCompiler.Instr.push 2 0,
+YulEvmCompiler.Instr.push 0 0
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.System (EvmSemantics.Operation.SystemOps.RETURN)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
  YulEvmCompiler.Instr.push 0 0,

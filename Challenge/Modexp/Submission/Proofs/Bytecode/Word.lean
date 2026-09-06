@@ -65,13 +65,13 @@ def startPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 415 .JUMPDEST, opAt 416 (.Dup ⟨5, by decide⟩),
    opAt 417 .CALLDATALOAD, opAt 418 (.Dup ⟨3, by decide⟩),
-   pushAt 419 1 32, opAt 420 .SUB, pushAt 421 1 3,
+   pushAt 419 3 32, opAt 420 .SUB, pushAt 421 1 3,
    opAt 422 .SHL, opAt 423 .SHR, opAt 424 (.Dup ⟨0, by decide⟩),
    pushAt 425 2 538, opAt 426 .JUMPI]
 
 def zeroTailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 427 (.Dup ⟨3, by decide⟩), pushAt 428 2 0,
+  [opAt 427 (.Dup ⟨3, by decide⟩), pushAt 428 0 0,
    opAt 429 .RETURN]
 
 def zeroModulusPath :
@@ -402,8 +402,8 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
 
 @[simp] private theorem startPCs (i : Nat) (hi : 415 ≤ i) (hii : i ≤ 429) :
     Artifact.submissionArtifact.instructionPC i =
-      [517, 518, 519, 520, 521, 523, 524, 526, 527, 528, 529, 532,
-       533, 534, 537][i - 415]! := by
+      [517, 518, 519, 520, 521, 525, 526, 528, 529, 530, 531, 534,
+       535, 536, 537][i - 415]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump538 :

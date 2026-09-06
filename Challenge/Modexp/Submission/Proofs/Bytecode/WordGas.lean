@@ -447,7 +447,7 @@ theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)
 theorem gasSteps_zeroModulus_cost (input : ByteArray)
     (hvalid : ValidInput input) (hmsize : 0 < modulusSize input)
     (hword : modulusSize input ≤ 32) (hmodulus : modulusValue input = 0) :
-    (gasSteps_zeroModulus input hvalid hmsize hword hmodulus).cost = 50 := by
+    (gasSteps_zeroModulus input hvalid hmsize hword hmodulus).cost = 49 := by
   have hload := blockCost_of_static startLoadPath 31
     (run_startLoad input hvalid hmsize hword) (by rfl)
     (by decide) (by rfl) (by rfl)
@@ -455,7 +455,7 @@ theorem gasSteps_zeroModulus_cost (input : ByteArray)
     (run_startJump_zero input hmodulus) (by rfl)
     (by decide) (by rfl) (by rfl)
   have htail := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    zeroTailPath 6 (run_zeroTail input hvalid hmodulus) (by rfl)
+    zeroTailPath 5 (run_zeroTail input hvalid hmodulus) (by rfl)
       (by decide) (by decide)
   have hfinal : (zeroModulusFinalState input).activeWords.toNat = 1 := by
     change (UInt256.ofNat
@@ -488,7 +488,7 @@ theorem gasSteps_zeroModulus_total_cost_after_header (input : ByteArray)
     (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (Main.trampolineState input 1196)) :
     (gasSteps_zeroModulus_total input hvalid hmsize hword hmodulus entry).cost =
-      (Main.gasSteps_header input hvalid entry).cost + 140 := by
+      (Main.gasSteps_header input hvalid entry).cost + 139 := by
   unfold gasSteps_zeroModulus_total
   simp only [Challenge.EvmProof.GasSteps.trans_cost]
   rw [Dispatch.gasSteps_wordEntry_cost input hvalid hmsize hword,
