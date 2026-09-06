@@ -23,7 +23,7 @@ theorem run_bitMask (input : ByteArray) (outer j : Nat)
     [bitMaskPath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitSquaredState, bitMaskedState, bitLoopState,
+      bitSquaredState, bitMaskedState, bitLoopState, bitTail,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expPCs, hzeroRaw]
 
@@ -37,7 +37,7 @@ theorem run_bitProduct (input : ByteArray) (outer j : Nat)
     [bitProductPath, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitMaskedState, bitProductState, bitLoopState,
+      bitMaskedState, bitProductState, bitLoopState, bitTail,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expPCs]
 

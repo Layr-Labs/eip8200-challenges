@@ -9,8 +9,8 @@ namespace Challenge.Modexp
 def submissionHex : String := (include_str "bytecode.hex").trimAscii.copy
 def submissionBytecode : ByteArray := submissionBytes
 
-@[simp] theorem submissionBytecode_size : submissionBytecode.size = 3571 := by
-  change submissionBytes.size = 3571
+@[simp] theorem submissionBytecode_size : submissionBytecode.size = 3741 := by
+  change submissionBytes.size = 3741
   exact submissionBytes_size
 
 theorem submissionBytecode_roundtrip :
