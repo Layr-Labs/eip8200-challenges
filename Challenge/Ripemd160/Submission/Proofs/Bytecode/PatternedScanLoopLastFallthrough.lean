@@ -8,12 +8,12 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
-def loopJumpPath : List Located := [opAt 2893 .JUMPI]
+def loopJumpPath : List Located := [opAt 2892 .JUMPI]
 
 def loopBranchState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4972
-    stack := [UInt256.ofNat 4933, 0, UInt256.ofNat 1000, scanAcc input 1000] }
+    pc := UInt256.ofNat 4971
+    stack := [UInt256.ofNat 4933, 0, scanAcc input 1000, UInt256.ofNat 1000] }
 
 theorem run_loop_fallthrough (input : ByteArray) :
     run loopJumpPath (loopBranchState input) = some (loopExitState input) := by

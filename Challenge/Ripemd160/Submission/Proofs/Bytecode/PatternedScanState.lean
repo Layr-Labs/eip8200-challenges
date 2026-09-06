@@ -40,28 +40,27 @@ def entryPath : List Located := []
 def loopPath : List Located :=
   [opAt 2864 .JUMPDEST,
    pushAt 2865 1 251,
-   opAt 2866 (.Dup ⟨1, by decide⟩), opAt 2867 .DIV,
+   opAt 2866 (.Dup ⟨2, by decide⟩), opAt 2867 .DIV,
    pushAt 2868 1 11, opAt 2869 .MUL,
-   opAt 2870 (.Dup ⟨1, by decide⟩),
+   opAt 2870 (.Dup ⟨2, by decide⟩),
    pushAt 2871 1 37, opAt 2872 .MUL,
    opAt 2873 .ADD, pushAt 2874 1 7, opAt 2875 .ADD,
    pushAt 2876 1 255, opAt 2877 .AND,
-   opAt 2878 (.Dup ⟨1, by decide⟩),
+   opAt 2878 (.Dup ⟨2, by decide⟩),
    opAt 2879 .CALLDATALOAD,
    pushAt 2880 0 0, opAt 2881 .BYTE,
    opAt 2882 .XOR,
-   opAt 2883 (.Swap ⟨0, by decide⟩),
-   opAt 2884 (.Swap ⟨1, by decide⟩),
-   opAt 2885 .OR,
-   opAt 2886 (.Swap ⟨0, by decide⟩),
-   pushAt 2887 1 1, opAt 2888 .ADD,
-   pushAt 2889 2 1000,
-   opAt 2890 (.Dup ⟨1, by decide⟩), opAt 2891 .LT,
-   pushAt 2892 2 4933, opAt 2893 .JUMPI]
+   opAt 2883 .OR,
+   opAt 2884 (.Swap ⟨0, by decide⟩),
+   pushAt 2885 1 1, opAt 2886 .ADD,
+   opAt 2887 (.Swap ⟨0, by decide⟩),
+   pushAt 2888 2 1000,
+   opAt 2889 (.Dup ⟨2, by decide⟩), opAt 2890 .LT,
+   pushAt 2891 2 4933, opAt 2892 .JUMPI]
 
 def exitPath : List Located :=
-  [opAt 2894 .POP, pushAt 2895 2 1006, opAt 2896 .JUMPI]
-
+  [opAt 2893 (.Swap ⟨0, by decide⟩),
+   opAt 2894 .POP, pushAt 2895 2 1006, opAt 2896 .JUMPI]
 def returnPath : List Located :=
   [pushAt 2897 20 766350606435067737561421097975693824639675460820,
    pushAt 2898 0 0, opAt 2899 .MSTORE,
@@ -77,14 +76,14 @@ abbrev scanAcc := PatternedScanLogic.scanAcc
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 4933
-    stack := [UInt256.ofNat n, scanAcc input n] }
+    stack := [scanAcc input n, UInt256.ofNat n] }
 
 def patternedEntry (input : ByteArray) : State := loopState input 0
 
 def loopExitState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4973
-    stack := [UInt256.ofNat 1000, scanAcc input 1000] }
+    pc := UInt256.ofNat 4972
+    stack := [scanAcc input 1000, UInt256.ofNat 1000] }
 
 def hitEntry (input : ByteArray) : State := atPC input 4978
 def fallbackState (input : ByteArray) : State := atPC input 1006
@@ -127,13 +126,13 @@ abbrev run := Challenge.EvmProof.Stepper.runLocatedBlock
 @[simp] theorem pc2883 : Artifact.submissionArtifact.instructionPC 2883 = 4957 := by rfl
 @[simp] theorem pc2884 : Artifact.submissionArtifact.instructionPC 2884 = 4958 := by rfl
 @[simp] theorem pc2885 : Artifact.submissionArtifact.instructionPC 2885 = 4959 := by rfl
-@[simp] theorem pc2886 : Artifact.submissionArtifact.instructionPC 2886 = 4960 := by rfl
-@[simp] theorem pc2887 : Artifact.submissionArtifact.instructionPC 2887 = 4961 := by rfl
+@[simp] theorem pc2886 : Artifact.submissionArtifact.instructionPC 2886 = 4961 := by rfl
+@[simp] theorem pc2887 : Artifact.submissionArtifact.instructionPC 2887 = 4962 := by rfl
 @[simp] theorem pc2888 : Artifact.submissionArtifact.instructionPC 2888 = 4963 := by rfl
-@[simp] theorem pc2889 : Artifact.submissionArtifact.instructionPC 2889 = 4964 := by rfl
+@[simp] theorem pc2889 : Artifact.submissionArtifact.instructionPC 2889 = 4966 := by rfl
 @[simp] theorem pc2890 : Artifact.submissionArtifact.instructionPC 2890 = 4967 := by rfl
 @[simp] theorem pc2891 : Artifact.submissionArtifact.instructionPC 2891 = 4968 := by rfl
-@[simp] theorem pc2892 : Artifact.submissionArtifact.instructionPC 2892 = 4969 := by rfl
+@[simp] theorem pc2892 : Artifact.submissionArtifact.instructionPC 2892 = 4971 := by rfl
 @[simp] theorem pc2893 : Artifact.submissionArtifact.instructionPC 2893 = 4972 := by rfl
 @[simp] theorem pc2894 : Artifact.submissionArtifact.instructionPC 2894 = 4973 := by rfl
 @[simp] theorem pc2895 : Artifact.submissionArtifact.instructionPC 2895 = 4974 := by rfl

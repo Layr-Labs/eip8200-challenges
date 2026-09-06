@@ -10,7 +10,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
-def loopBodyPath : List Located := loopPath.take 29
+def loopBodyPath : List Located := loopPath.take 28
 
 theorem loopPath_eq_body_jump : loopPath = loopBodyPath ++ loopJumpPath := by rfl
 
