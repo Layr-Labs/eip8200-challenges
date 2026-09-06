@@ -112,7 +112,7 @@ def xSetPath : List Located :=
    ⟨74, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨75, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨76, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
-   ⟨77, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨77, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨78, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨79, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨80, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
@@ -172,6 +172,102 @@ def readLEWord (memory : ByteArray) (off : UInt256) : UInt256 :=
         (UInt256.ofNat 16))
       (UInt256.shiftLeft (UInt256.byteAt (UInt256.ofNat 3) w)
         (UInt256.ofNat 24)))
+
+private theorem byteAt_lt_256 (i : Nat) (hi : i < 32) (w : UInt256) :
+    (UInt256.byteAt (UInt256.ofNat i) w).toNat < 256 := by
+  unfold UInt256.byteAt
+  have hi256 : (UInt256.ofNat i).toNat = i := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat]
+    exact Nat.mod_eq_of_lt (Nat.lt_trans hi (by norm_num))
+  rw [hi256, if_neg (by omega),
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  have hlow :
+      (w.toNat >>> (8 * (31 - i))) &&& 0xff ≤ 0xff := Nat.and_le_right
+  omega
+
+private theorem shiftLeft_byte_lt_2pow32 (b : UInt256) (hb : b.toNat < 256)
+    (n : Nat) (hn : n ≤ 24) :
+    (UInt256.shiftLeft b (UInt256.ofNat n)).toNat < 2 ^ 32 := by
+  have hprod : b.toNat * 2 ^ n < 2 ^ 32 := by
+    calc
+      b.toNat * 2 ^ n < 256 * 2 ^ n :=
+        Nat.mul_lt_mul_of_pos_right hb (Nat.pow_pos (by decide) n)
+      _ ≤ 256 * 2 ^ 24 :=
+        Nat.mul_le_mul_left 256 (Nat.pow_le_pow_right (by decide) hn)
+      _ = 2 ^ 32 := by norm_num
+  have hprod256 : b.toNat * 2 ^ n < 2 ^ 256 := by
+    exact hprod.trans (by norm_num)
+  have hn256 : n < 2 ^ 256 := by omega
+  have hnword : (UInt256.ofNat n).toNat = n := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hn256]
+  unfold UInt256.shiftLeft
+  rw [if_neg (by omega), hnword,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  rw [show UInt256.size = 2 ^ 256 by rfl, Nat.mod_mod,
+    Nat.shiftLeft_eq, Nat.mod_eq_of_lt hprod256]
+  exact hprod
+
+private theorem readLEWord_bound (memory : ByteArray) (off : UInt256) :
+    (readLEWord memory off).toNat < 2 ^ 32 := by
+  let w := MachineState.readWord memory off.toNat
+  have h0 : (UInt256.byteAt ⟨0⟩ w).toNat < 256 := by
+    simpa using byteAt_lt_256 0 (by omega) w
+  have h1 : (UInt256.byteAt (UInt256.ofNat 1) w).toNat < 256 :=
+    byteAt_lt_256 1 (by omega) w
+  have h2 : (UInt256.byteAt (UInt256.ofNat 2) w).toNat < 256 :=
+    byteAt_lt_256 2 (by omega) w
+  have h3 : (UInt256.byteAt (UInt256.ofNat 3) w).toNat < 256 :=
+    byteAt_lt_256 3 (by omega) w
+  have hs1 :
+      (UInt256.shiftLeft (UInt256.byteAt (UInt256.ofNat 1) w)
+        (UInt256.ofNat 8)).toNat < 2 ^ 32 :=
+    shiftLeft_byte_lt_2pow32 _ h1 8 (by omega)
+  have hs2 :
+      (UInt256.shiftLeft (UInt256.byteAt (UInt256.ofNat 2) w)
+        (UInt256.ofNat 16)).toNat < 2 ^ 32 :=
+    shiftLeft_byte_lt_2pow32 _ h2 16 (by omega)
+  have hs3 :
+      (UInt256.shiftLeft (UInt256.byteAt (UInt256.ofNat 3) w)
+        (UInt256.ofNat 24)).toNat < 2 ^ 32 :=
+    shiftLeft_byte_lt_2pow32 _ h3 24 (by omega)
+  have hleft :
+      (UInt256.lor (UInt256.byteAt ⟨0⟩ w)
+        (UInt256.shiftLeft (UInt256.byteAt (UInt256.ofNat 1) w)
+          (UInt256.ofNat 8))).toNat < 2 ^ 32 := by
+    rw [Challenge.EvmProof.Word.word_toNat_lor]
+    exact Nat.or_lt_two_pow h0 hs1
+  have hright :
+      (UInt256.lor
+        (UInt256.shiftLeft (UInt256.byteAt (UInt256.ofNat 2) w)
+          (UInt256.ofNat 16))
+        (UInt256.shiftLeft (UInt256.byteAt (UInt256.ofNat 3) w)
+          (UInt256.ofNat 24))).toNat < 2 ^ 32 := by
+    rw [Challenge.EvmProof.Word.word_toNat_lor]
+    exact Nat.or_lt_two_pow hs2 hs3
+  have hfinal :
+      (UInt256.lor
+        (UInt256.lor (UInt256.byteAt ⟨0⟩ w)
+          (UInt256.shiftLeft (UInt256.byteAt (UInt256.ofNat 1) w)
+            (UInt256.ofNat 8)))
+        (UInt256.lor
+          (UInt256.shiftLeft (UInt256.byteAt (UInt256.ofNat 2) w)
+            (UInt256.ofNat 16))
+          (UInt256.shiftLeft (UInt256.byteAt (UInt256.ofNat 3) w)
+            (UInt256.ofNat 24)))).toNat < 2 ^ 32 := by
+    rw [Challenge.EvmProof.Word.word_toNat_lor]
+    exact Nat.or_lt_two_pow hleft hright
+  simpa [readLEWord, w] using hfinal
+
+private theorem readLEWord_mask (memory : ByteArray) (off : UInt256) :
+    UInt256.land (readLEWord memory off) (UInt256.ofNat 0xffffffff) =
+      readLEWord memory off := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_land,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by norm_num : 0xffffffff < 2 ^ 256)]
+  rw [show 0xffffffff = 2 ^ 32 - 1 by norm_num,
+    Nat.and_two_pow_sub_one_eq_mod]
+  exact Nat.mod_eq_of_lt (readLEWord_bound memory off)
 
 def scheduleEntry (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) : State :=
@@ -379,12 +475,13 @@ theorem run_xSet (s : State) (msgOff returnDest : UInt256)
         UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5) = xSlotWord i := by
     rw [xSlotWord]
     exact Challenge.EvmProof.Word.word_add_comm _ _
+  have hmask := readLEWord_mask s.memory (loadOffsetWord msgOff i)
   simp [xSetPath, Word.land_comm, List.exchange,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     xSetEntry, afterStore, afterRead, List.exchange,
-    hc4, hc5, hc6, hc7, hc8, hc9, hrun, hcode, hdest, hslot,
+    hc4, hc5, hc6, hc7, hc8, hc9, hrun, hcode, hdest, hslot, hmask,
     State.activeWordsAfterUInt256]
 
 set_option linter.unusedSimpArgs false in

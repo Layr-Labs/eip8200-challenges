@@ -250,10 +250,10 @@ def scheduleWork : Nat :=
   Meter.runLocatedBlockStaticCost Schedule.conditionPath +
   Meter.runLocatedBlockStaticCost Schedule.exitPath
 
-theorem scheduleIterationWork_eq : scheduleIterationWork = 226 := by
+theorem scheduleIterationWork_eq : scheduleIterationWork = 225 := by
   rfl
 
-theorem scheduleWork_eq : scheduleWork = 3658 := by rfl
+theorem scheduleWork_eq : scheduleWork = 3642 := by rfl
 
 theorem readLE_cost_potential (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (i : Nat) (hstack : rest.length < 1012)
