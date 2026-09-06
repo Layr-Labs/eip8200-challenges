@@ -117,10 +117,10 @@ def writeBodyPath : List
    ⟨668, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨669, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨670, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨671, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨672, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨673, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨674, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨671, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨672, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
+   ⟨673, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨674, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨675, .push ⟨2, by decide⟩ (UInt256.ofNat 0x3c8), by rfl, by decide⟩,
    ⟨676, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -487,6 +487,9 @@ theorem run_writeBody (s : State) (offset : Nat) (word : UInt256) (j : Nat)
     omega
   have hnext : UInt256.ofNat j + UInt256.ofNat 1 = UInt256.ofNat (j + 1) :=
     Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
+  have hnext' : UInt256.ofNat 1 + UInt256.ofNat j = UInt256.ofNat (j + 1) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    exact hnext
   have hmod : (offset + j) % UInt256.size = offset + j := by
     apply Nat.mod_eq_of_lt
     exact hoff256
@@ -500,7 +503,7 @@ theorem run_writeBody (s : State) (offset : Nat) (word : UInt256) (j : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     hcap, hc4, hc5, hc6, hc7, hc8, hrun, hcode, valid3c8, hj, hj256, hoff256,
-    hoffWord, hoffWord', hshift, hnext,
+    hoffWord, hoffWord', hshift, hnext, hnext',
     Challenge.EvmProof.Word.word_toNat_ofNat, hmod,
     List.exchange, State.activeWordsAfterUInt256]
 
