@@ -313,37 +313,6 @@ def submissionGas (input : ByteArray) : Nat :=
       (baseSize input) (exponentSize input) (modulusSize input) +
       MachineState.memCost (bigCompletedState input).activeWords.toNat
 
-def gasSteps_submission (input : ByteArray) (hvalid : ValidInput input)
-    (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 1196)) :
-    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (finalState input) := by
-  by_cases hzeroSize : modulusSize input = 0
-  · exact Challenge.EvmProof.GasSteps.cast
-      (Dispatch.gasSteps_zeroSize_total input hvalid hzeroSize entry) rfl
-      (by simp [finalState, hzeroSize])
-  have hpositive : 0 < modulusSize input := by omega
-  by_cases hword : modulusSize input ≤ 32
-  · by_cases hzeroModulus : Word.modulusValue input = 0
-    · exact Challenge.EvmProof.GasSteps.cast
-        (Word.gasSteps_zeroModulus_total input hvalid hpositive hword
-          hzeroModulus entry) rfl
-        (by simp [finalState, hzeroSize, hword, hzeroModulus])
-    · have hmodulusPos : 0 < Word.modulusValue input := by omega
-      exact Challenge.EvmProof.GasSteps.cast
-        (WordCorrect.gasSteps_wordNonzeroTotal input hvalid hpositive hword
-          hmodulusPos entry) rfl
-        (by simp [finalState, hzeroSize, hword, hzeroModulus])
-  · have hbig : 32 < modulusSize input := by omega
-    by_cases hzeroModulus : Word.modulusValue input = 0
-    · exact Challenge.EvmProof.GasSteps.cast
-        (gasSteps_bigZeroTotal input hvalid hbig hzeroModulus entry) rfl
-        (by simp [finalState, hzeroSize, hword, hzeroModulus])
-    · have hmodulusPos : 0 < Word.modulusValue input := by omega
-      exact Challenge.EvmProof.GasSteps.cast
-        (gasSteps_bigNonzeroTotal input hvalid hbig hmodulusPos entry) rfl
-        (by simp [finalState, hzeroSize, hword, hzeroModulus])
-
 @[simp] theorem finalState_isDone (input : ByteArray) :
     (finalState input).isDone = true := by
   by_cases hzeroSize : modulusSize input = 0

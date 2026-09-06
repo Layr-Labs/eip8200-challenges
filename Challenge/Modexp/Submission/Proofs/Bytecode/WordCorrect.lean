@@ -582,32 +582,4 @@ theorem wordFinalState_result (input : ByteArray) (hvalid : ValidInput input)
   simp [spec, Nat.ne_of_gt hmsize, result, baseNat, exponentNat,
     modulusValue, modulusOffset, expOffset, Nat.add_assoc]
 
-def gasSteps_wordNonzeroTotal (input : ByteArray) (hvalid : ValidInput input)
-    (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
-    (hmodpos : 0 < modulusValue input)
-    (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 1196)) :
-    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (wordFinalState input (wordResult input) (wordBase input)) := by
-  let header := Main.gasSteps_header input hvalid entry
-  let dispatch := Dispatch.gasSteps_wordEntry input hvalid hmsize hword
-  let start := gasSteps_start input hvalid hmsize hword hmodpos
-  let setup := gasSteps_baseSetup input
-  let baseLoop := gasSteps_baseLoop input hvalid
-  let baseFinish : Challenge.EvmProof.GasSteps
-      (baseLoopState input (baseSize input) (wordBase input))
-      (expLoopState input 0 (wordInitialAcc input) (wordBase input)) := by
-    simpa [wordBase, wordInitialAcc] using
-      gasSteps_baseFinish input (wordBase input) hvalid hword
-  let exponentLoop : Challenge.EvmProof.GasSteps
-      (expLoopState input 0 (wordInitialAcc input) (wordBase input))
-      (expLoopState input (exponentSize input) (wordResult input)
-        (wordBase input)) := by
-    simpa [wordResult] using
-      gasSteps_expLoop input (wordInitialAcc input) (wordBase input) hvalid
-  let finish := gasSteps_expFinish input (wordResult input) (wordBase input)
-    hvalid hword
-  exact ((((((header.trans dispatch).trans start).trans setup).trans baseLoop).trans
-    baseFinish).trans exponentLoop).trans finish
-
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordCorrect

@@ -45,8 +45,8 @@ def blk1272 :
   [opAt 1272 .JUMPDEST,
    opAt 1273 (.Dup ⟨4, by decide⟩),
    opAt 1274 (.Dup ⟨1, by decide⟩),
-   opAt 1275 .LT,
-   opAt 1276 .ISZERO,
+   opAt 1275 .EQ,
+   opAt 1276 .JUMPDEST,
    pushAt 1277 2 1850,
    opAt 1278 .JUMPI]
 
