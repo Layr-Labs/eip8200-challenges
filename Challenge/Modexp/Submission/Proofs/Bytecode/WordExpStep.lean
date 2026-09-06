@@ -27,7 +27,7 @@ theorem run_bitSquare (input : ByteArray) (outer j : Nat)
     [bitSquarePath, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitDecodedState, bitSquaredState, bitLoopState,
+      bitDecodedState, bitSquaredState, bitLoopState, bitTail,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, stepPCs, List.exchange]
 
@@ -46,7 +46,7 @@ theorem run_bitMask (input : ByteArray) (outer j : Nat)
     [bitMaskPath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitSquaredState, bitMaskedState, bitLoopState,
+      bitSquaredState, bitMaskedState, bitLoopState, bitTail,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expPCs, hzeroRaw]
 
@@ -60,7 +60,7 @@ theorem run_bitProduct (input : ByteArray) (outer j : Nat)
     [bitProductPath, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitMaskedState, bitProductState, bitLoopState,
+      bitMaskedState, bitProductState, bitLoopState, bitTail,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expPCs]
 
@@ -74,7 +74,7 @@ theorem run_bitChoose (input : ByteArray) (outer j : Nat)
     [bitChoosePath, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitProductState, bitSelectedState, bitLoopState, bitStep,
+      bitProductState, bitSelectedState, bitLoopState, bitTail, bitStep,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expPCs]
 
@@ -98,7 +98,7 @@ theorem run_bitAdvance (input : ByteArray) (outer j : Nat)
     [bitAdvancePath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitSelectedState, bitLoopState, nonzeroState, callerRest,
+      bitSelectedState, bitLoopState, bitTail, nonzeroState, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState,
       expPCs, List.exchange,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
