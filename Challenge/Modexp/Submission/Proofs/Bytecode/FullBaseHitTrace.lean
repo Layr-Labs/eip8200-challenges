@@ -27,12 +27,12 @@ theorem run_redirect (s : State) (memory : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1195
       (redirectState s memory n bsize esize msize) =
-      some (entryState s memory n bsize esize msize) := by
+      some (rawDispatchState s memory n bsize esize msize) := by
   simp [blk1195, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr,
-    redirectState, entryState, outer, hcode, hrun, jumpDest3606,
+    redirectState, rawDispatchState, outer, hcode, hrun, jumpDest3695,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
@@ -46,7 +46,7 @@ theorem run_guard (s : State) (memory : ByteArray)
       (entryState s memory n bsize esize msize) =
       some (if Matches memory n bsize
         then copyState s memory n bsize esize msize
-        else fallbackState s memory n bsize esize msize) := by
+        else rawDispatchState s memory n bsize esize msize) := by
   have hzeroNat : (⟨0⟩ : UInt256).toNat = 0 := rfl
   have haw : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 0 32) = s.activeWords := by
@@ -70,7 +70,7 @@ theorem run_guard (s : State) (memory : ByteArray)
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
         entryState, copyState, outer, hcode, hrun, hactive, hzeroNat, haw,
-        fullBasePC, jumpDest3661, hm, guardWord, hc,
+        fullBasePC, jumpDest3695, hm, guardWord, hc,
         State.activeWordsAfterUInt256,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -87,8 +87,8 @@ theorem run_guard (s : State) (memory : ByteArray)
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
-        entryState, fallbackState, outer, hcode, hrun, hactive, hzeroNat, haw,
-        fullBasePC, jumpDest3661, hm, guardWord, hc,
+        entryState, rawDispatchState, outer, hcode, hrun, hactive, hzeroNat, haw,
+        fullBasePC, jumpDest3695, hm, guardWord, hc,
         State.activeWordsAfterUInt256,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -166,7 +166,7 @@ def gasSteps_redirect (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (redirectState s memory n bsize esize msize)
-      (entryState s memory n bsize esize msize) :=
+      (rawDispatchState s memory n bsize esize msize) :=
   sound blk1195 (run_redirect s memory n bsize esize msize hcode hrun)
     hcode hfork hrun hnp
 
@@ -181,7 +181,7 @@ def gasSteps_guard (s : State) (memory : ByteArray)
       (entryState s memory n bsize esize msize)
       (if Matches memory n bsize
         then copyState s memory n bsize esize msize
-        else fallbackState s memory n bsize esize msize) :=
+        else rawDispatchState s memory n bsize esize msize) :=
   sound blkFullBaseGuard
     (run_guard s memory n bsize esize msize hn32 hb hactive hcode hrun)
     hcode hfork hrun hnp
