@@ -101,13 +101,13 @@ private theorem writeIteration_cost_potential (s : State) (offset : Nat)
   have hbodyRun := OutputTrace.run_writeBody q offset word j ret tail hj
     (by omega) htail qcode qrun
   have hbody : gbody.cost + MachineState.memCost testEnd.activeWords.toNat =
-      58 + MachineState.memCost
+      54 + MachineState.memCost
         (writeLoopState s offset word ret tail (j + 1)).activeWords.toNat := by
     have hraw := block_cost_potential OutputTrace.writeBodyPath testEnd
       { OutputTrace.writeByte q offset word j with
         pc := UInt256.ofNat 0x3c8
         stack := UInt256.ofNat (j + 1) :: UInt256.ofNat offset ::
-          word :: ret :: tail } 58 qcode qfork (by simpa [testEnd] using hbodyRun)
+          word :: ret :: tail } 54 qcode qfork (by simpa [testEnd] using hbodyRun)
       qrun qnp
       (by
         intro located hmem z hz
@@ -119,7 +119,7 @@ private theorem writeIteration_cost_potential (s : State) (offset : Nat)
       (by decide)
     simpa [gbody, Output.gasSteps_writeBody, testEnd, q, writeLoopState] using hraw
   have hjoined := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    gtest gbody 26 58 htest hbody
+    gtest gbody 26 54 htest hbody
   simpa [gasSteps_writeIteration, gtest, gtestRaw, gbody,
     Output.gasSteps_writeBody, q, testStart, testEnd, writeLoopState,
     Nat.add_assoc] using hjoined

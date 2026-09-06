@@ -105,13 +105,13 @@ def writeTestPath : List
 
 def writeBodyPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨659, .push ⟨1, by decide⟩ (UInt256.ofNat 0xff), by rfl, by decide⟩,
-   ⟨660, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨661, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨662, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
-   ⟨663, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨664, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨665, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨659, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨660, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨661, .push ⟨2, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
+   ⟨662, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨663, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨664, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨665, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨666, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨667, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨668, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -174,9 +174,9 @@ def finishPath : List
 @[simp] private theorem pc657 : Artifact.submissionArtifact.instructionPC 657 = 0x3ce := by rfl
 @[simp] private theorem pc658 : Artifact.submissionArtifact.instructionPC 658 = 0x3d1 := by rfl
 @[simp] private theorem pc659 : Artifact.submissionArtifact.instructionPC 659 = 0x3d2 := by rfl
-@[simp] private theorem pc660 : Artifact.submissionArtifact.instructionPC 660 = 0x3d4 := by rfl
-@[simp] private theorem pc661 : Artifact.submissionArtifact.instructionPC 661 = 0x3d5 := by rfl
-@[simp] private theorem pc662 : Artifact.submissionArtifact.instructionPC 662 = 0x3d6 := by rfl
+@[simp] private theorem pc660 : Artifact.submissionArtifact.instructionPC 660 = 0x3d3 := by rfl
+@[simp] private theorem pc661 : Artifact.submissionArtifact.instructionPC 661 = 0x3d4 := by rfl
+@[simp] private theorem pc662 : Artifact.submissionArtifact.instructionPC 662 = 0x3d7 := by rfl
 @[simp] private theorem pc663 : Artifact.submissionArtifact.instructionPC 663 = 0x3d8 := by rfl
 @[simp] private theorem pc664 : Artifact.submissionArtifact.instructionPC 664 = 0x3d9 := by rfl
 @[simp] private theorem pc665 : Artifact.submissionArtifact.instructionPC 665 = 0x3da := by rfl
@@ -247,6 +247,26 @@ def wordByte (word : UInt256) (j : Nat) : UInt8 :=
   UInt8.ofNat
     ((UInt256.land (UInt256.shiftRight word (UInt256.ofNat (8 * j)))
       (UInt256.ofNat 0xff)).toNat % 256)
+
+private theorem lowByte_mask (x : UInt256) :
+    (UInt256.land x (UInt256.ofNat 0xff)).toNat % 256 =
+      x.toNat % 256 := by
+  rw [Challenge.EvmProof.Word.word_toNat_land,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    show 255 % 2 ^ 256 = 255 by norm_num,
+    show (255 : Nat) = 2 ^ 8 - 1 by norm_num,
+    Nat.and_two_pow_sub_one_eq_mod]
+  have hsmall : x.toNat % 2 ^ 8 < 2 ^ 8 :=
+    Nat.mod_lt _ (by norm_num)
+  have hpow : (2 : Nat) ^ 8 = 256 := by norm_num
+  simpa [hpow] using (Nat.mod_eq_of_lt (hsmall.trans (by norm_num)))
+
+private theorem wordByte_eq_shiftByte (word : UInt256) (j : Nat) :
+    wordByte word j =
+      UInt8.ofNat
+        ((UInt256.shiftRight word (UInt256.ofNat (8 * j))).toNat % 256) := by
+  unfold wordByte
+  rw [lowByte_mask]
 
 def writeByte (s : State) (offset : Nat) (word : UInt256) (j : Nat) : State :=
   { s with
@@ -496,7 +516,7 @@ theorem run_writeBody (s : State) (offset : Nat) (word : UInt256) (j : Nat)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
-  simp [writeBodyPath, writeByte, wordByte,
+  simp [writeBodyPath, writeByte, wordByte_eq_shiftByte, lowByte_mask,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     hcap, hc4, hc5, hc6, hc7, hc8, hrun, hcode, valid3c8, hj, hj256, hoff256,

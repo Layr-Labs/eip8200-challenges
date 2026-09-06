@@ -84,8 +84,9 @@ def gasSteps_writeBody (s : State) (offset : Nat) (word : UInt256) (j : Nat)
 def ripemdByte (w : UInt32) (j : Nat) : UInt8 :=
   ((w >>> UInt32.ofNat (8 * j)) &&& 0xff).toUInt8
 
-/-- For each of the four byte indices, the EVM `SHR; AND 0xff; MSTORE8`
-expression is the corresponding byte of RIPEMD-160's `writeLE32`. -/
+/- For each of the four byte indices, the EVM `SHR; MSTORE8` sequence uses
+MSTORE8's low-byte truncation to emit the corresponding byte of RIPEMD-160's
+`writeLE32`. -/
 theorem wordByte_ofUInt32 (w : UInt32) (j : Nat) (hj : j < 4) :
     OutputTrace.wordByte (Challenge.EvmProof.Word.ofUInt32 w) j =
       ripemdByte w j := by
