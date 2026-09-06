@@ -16,7 +16,7 @@ def blk1255 :
   [opAt 1255 .JUMPDEST,
    opAt 1256 .POP,
    opAt 1257 .POP,
-   pushAt 1258 2 1756,
+   pushAt 1258 2 1755,
    pushAt 1259 2 2048,
    pushAt 1260 2 6144,
    pushAt 1261 2 1024,
@@ -81,7 +81,7 @@ def blk1294 :
 /-- Instructions 1301..1306, pc 1815..1830. -/
 def blk1301 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1301 2 1832,
+  [pushAt 1301 2 1831,
    pushAt 1302 2 1024,
    pushAt 1303 2 2048,
    pushAt 1304 2 1024,

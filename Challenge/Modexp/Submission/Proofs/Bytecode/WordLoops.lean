@@ -1,4 +1,11 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.Word
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll0
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll1
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll2
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll3
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll4
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll5
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll6
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll7
 set_option warningAsError true
 set_option maxRecDepth 10000
 set_option maxHeartbeats 1000000
@@ -65,24 +72,21 @@ def bitFinishDispatchState (input : ByteArray) (outer : Nat)
   Artifact.isValidJumpDest_index 469 (by rfl)
 
 set_option linter.unusedSimpArgs false in
-theorem run_bitFinishGuard (input : ByteArray) (outer : Nat)
+theorem run_bitExit (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    Challenge.EvmProof.Stepper.runLocatedBlock bitGuardPath
-      (bitLoopState input outer 8 byte offset acc base) =
+    Challenge.EvmProof.Stepper.runLocatedBlock bitExitPath
+      (bitUnrollState input outer 8 byte offset acc base) =
         some (bitFinishDispatchState input outer byte offset acc base) := by
-  have h8 : (8 : UInt256).toNat = 8 := by decide
-  have h8mod : 8 % 2 ^ 256 = 8 := by norm_num
-  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   have h655 : (655 : UInt256).toNat = 655 := by decide
   have h655Word : (655 : UInt256) = UInt256.ofNat 655 := by decide
   simp (config := { maxSteps := 150000 })
-    [bitGuardPath, Word.opAt, Word.pushAt, Word.wfOp,
+    [bitExitPath, Word.opAt, Word.pushAt, Word.wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitLoopState, bitFinishDispatchState, nonzeroState, callerRest,
-      Dispatch.wordEntryState, Main.headerState, initialState,
-      UInt256.isTrue, UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
-      h8, h8mod, hzeroFalse, h655, h655Word, jump655]
+      bitUnrollState, bitLoopState, bitPC, bitFinishDispatchState, nonzeroState,
+      callerRest, Dispatch.wordEntryState, Main.headerState, initialState,
+      UnrollPCs.exitPC, Challenge.EvmProof.Word.word_toNat_ofNat,
+      h655, h655Word, jump655]
 
 set_option linter.unusedSimpArgs false in
 theorem run_bitFinishTail (input : ByteArray) (outer : Nat)
@@ -124,40 +128,253 @@ def gasSteps_expEnter (input : ByteArray) (i : Nat) (acc base : UInt256)
         (run_expLoad input i acc base hvalid hi) rfl
         deployAddress_not_precompile)
 
-def gasSteps_bitIteration (input : ByteArray) (outer j : Nat)
-    (byte offset acc base : UInt256) (hj : j < 8) :
+def gasSteps_bitCopy0 (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps
-      (bitLoopState input outer j byte offset acc base)
-      (bitLoopState input outer (j + 1) byte offset
-        (bitStep input byte j acc base) base) :=
+      (bitUnrollState input outer 0 byte offset acc base)
+      (bitUnrollState input outer 1 byte offset
+        (bitStep input byte 0 acc base) base) :=
   (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitGuardPath rfl rfl
-        (run_bitGuard input outer j byte offset acc base hj) rfl
+      Artifact.submissionArtifact .Osaka Unroll0.bitDecodePath0 rfl rfl
+        (Unroll0.run_bitDecode input outer byte offset acc base) rfl
         deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitDecodePath rfl rfl
-        (run_bitDecode input outer j byte offset acc base hj) rfl
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll0.bitSquarePath0 rfl rfl
+        (Unroll0.run_bitSquare input outer byte offset acc base) rfl
         deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitSquarePath rfl rfl
-        (run_bitSquare input outer j byte offset acc base) rfl
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll0.bitMaskPath0 rfl rfl
+        (Unroll0.run_bitMask input outer byte offset acc base) rfl
         deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitMaskPath rfl rfl
-        (run_bitMask input outer j byte offset acc base) rfl
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll0.bitProductPath0 rfl rfl
+        (Unroll0.run_bitProduct input outer byte offset acc base) rfl
         deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitProductPath rfl rfl
-        (run_bitProduct input outer j byte offset acc base) rfl
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll0.bitChoosePath0 rfl rfl
+        (Unroll0.run_bitChoose input outer byte offset acc base) rfl
         deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitChoosePath rfl rfl
-        (run_bitChoose input outer j byte offset acc base) rfl
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll0.bitAdvancePath0 rfl rfl
+        (Unroll0.run_bitAdvance input outer byte offset acc base) rfl
+        deployAddress_not_precompile)
+
+def gasSteps_bitCopy1 (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) :
+    Challenge.EvmProof.GasSteps
+      (bitUnrollState input outer 1 byte offset acc base)
+      (bitUnrollState input outer 2 byte offset
+        (bitStep input byte 1 acc base) base) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll1.bitDecodePath1 rfl rfl
+        (Unroll1.run_bitDecode input outer byte offset acc base) rfl
         deployAddress_not_precompile).trans <|
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitAdvancePath rfl rfl
-        (run_bitAdvance input outer j byte offset acc base hj) rfl
-        deployAddress_not_precompile
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll1.bitSquarePath1 rfl rfl
+        (Unroll1.run_bitSquare input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll1.bitMaskPath1 rfl rfl
+        (Unroll1.run_bitMask input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll1.bitProductPath1 rfl rfl
+        (Unroll1.run_bitProduct input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll1.bitChoosePath1 rfl rfl
+        (Unroll1.run_bitChoose input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll1.bitAdvancePath1 rfl rfl
+        (Unroll1.run_bitAdvance input outer byte offset acc base) rfl
+        deployAddress_not_precompile)
+
+def gasSteps_bitCopy2 (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) :
+    Challenge.EvmProof.GasSteps
+      (bitUnrollState input outer 2 byte offset acc base)
+      (bitUnrollState input outer 3 byte offset
+        (bitStep input byte 2 acc base) base) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll2.bitDecodePath2 rfl rfl
+        (Unroll2.run_bitDecode input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll2.bitSquarePath2 rfl rfl
+        (Unroll2.run_bitSquare input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll2.bitMaskPath2 rfl rfl
+        (Unroll2.run_bitMask input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll2.bitProductPath2 rfl rfl
+        (Unroll2.run_bitProduct input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll2.bitChoosePath2 rfl rfl
+        (Unroll2.run_bitChoose input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll2.bitAdvancePath2 rfl rfl
+        (Unroll2.run_bitAdvance input outer byte offset acc base) rfl
+        deployAddress_not_precompile)
+
+def gasSteps_bitCopy3 (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) :
+    Challenge.EvmProof.GasSteps
+      (bitUnrollState input outer 3 byte offset acc base)
+      (bitUnrollState input outer 4 byte offset
+        (bitStep input byte 3 acc base) base) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll3.bitDecodePath3 rfl rfl
+        (Unroll3.run_bitDecode input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll3.bitSquarePath3 rfl rfl
+        (Unroll3.run_bitSquare input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll3.bitMaskPath3 rfl rfl
+        (Unroll3.run_bitMask input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll3.bitProductPath3 rfl rfl
+        (Unroll3.run_bitProduct input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll3.bitChoosePath3 rfl rfl
+        (Unroll3.run_bitChoose input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll3.bitAdvancePath3 rfl rfl
+        (Unroll3.run_bitAdvance input outer byte offset acc base) rfl
+        deployAddress_not_precompile)
+
+def gasSteps_bitCopy4 (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) :
+    Challenge.EvmProof.GasSteps
+      (bitUnrollState input outer 4 byte offset acc base)
+      (bitUnrollState input outer 5 byte offset
+        (bitStep input byte 4 acc base) base) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll4.bitDecodePath4 rfl rfl
+        (Unroll4.run_bitDecode input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll4.bitSquarePath4 rfl rfl
+        (Unroll4.run_bitSquare input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll4.bitMaskPath4 rfl rfl
+        (Unroll4.run_bitMask input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll4.bitProductPath4 rfl rfl
+        (Unroll4.run_bitProduct input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll4.bitChoosePath4 rfl rfl
+        (Unroll4.run_bitChoose input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll4.bitAdvancePath4 rfl rfl
+        (Unroll4.run_bitAdvance input outer byte offset acc base) rfl
+        deployAddress_not_precompile)
+
+def gasSteps_bitCopy5 (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) :
+    Challenge.EvmProof.GasSteps
+      (bitUnrollState input outer 5 byte offset acc base)
+      (bitUnrollState input outer 6 byte offset
+        (bitStep input byte 5 acc base) base) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll5.bitDecodePath5 rfl rfl
+        (Unroll5.run_bitDecode input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll5.bitSquarePath5 rfl rfl
+        (Unroll5.run_bitSquare input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll5.bitMaskPath5 rfl rfl
+        (Unroll5.run_bitMask input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll5.bitProductPath5 rfl rfl
+        (Unroll5.run_bitProduct input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll5.bitChoosePath5 rfl rfl
+        (Unroll5.run_bitChoose input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll5.bitAdvancePath5 rfl rfl
+        (Unroll5.run_bitAdvance input outer byte offset acc base) rfl
+        deployAddress_not_precompile)
+
+def gasSteps_bitCopy6 (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) :
+    Challenge.EvmProof.GasSteps
+      (bitUnrollState input outer 6 byte offset acc base)
+      (bitUnrollState input outer 7 byte offset
+        (bitStep input byte 6 acc base) base) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll6.bitDecodePath6 rfl rfl
+        (Unroll6.run_bitDecode input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll6.bitSquarePath6 rfl rfl
+        (Unroll6.run_bitSquare input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll6.bitMaskPath6 rfl rfl
+        (Unroll6.run_bitMask input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll6.bitProductPath6 rfl rfl
+        (Unroll6.run_bitProduct input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll6.bitChoosePath6 rfl rfl
+        (Unroll6.run_bitChoose input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll6.bitAdvancePath6 rfl rfl
+        (Unroll6.run_bitAdvance input outer byte offset acc base) rfl
+        deployAddress_not_precompile)
+
+def gasSteps_bitCopy7 (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) :
+    Challenge.EvmProof.GasSteps
+      (bitUnrollState input outer 7 byte offset acc base)
+      (bitUnrollState input outer 8 byte offset
+        (bitStep input byte 7 acc base) base) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll7.bitDecodePath7 rfl rfl
+        (Unroll7.run_bitDecode input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll7.bitSquarePath7 rfl rfl
+        (Unroll7.run_bitSquare input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll7.bitMaskPath7 rfl rfl
+        (Unroll7.run_bitMask input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll7.bitProductPath7 rfl rfl
+        (Unroll7.run_bitProduct input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll7.bitChoosePath7 rfl rfl
+        (Unroll7.run_bitChoose input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka Unroll7.bitAdvancePath7 rfl rfl
+        (Unroll7.run_bitAdvance input outer byte offset acc base) rfl
+        deployAddress_not_precompile)
 
 def bitAfter (input : ByteArray) (byte : UInt256) (base : UInt256) :
     Nat → UInt256 → UInt256
@@ -168,21 +385,46 @@ def gasSteps_bitLoop (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps
       (bitLoopState input outer 0 byte offset acc base)
-      (bitLoopState input outer 8 byte offset (bitAfter input byte base 8 acc) base) := by
-  exact Challenge.EvmProof.GasSteps.iterateBounded (I := fun j =>
-      bitLoopState input outer j byte offset (bitAfter input byte base j acc) base) 8
-    (fun j hj => gasSteps_bitIteration input outer j byte offset
-      (bitAfter input byte base j acc) base hj)
+      (bitUnrollState input outer 8 byte offset
+        (bitAfter input byte base 8 acc) base) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka bitEntryPath rfl rfl
+        (run_bitEntry input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka bitJumpPath rfl rfl
+        (run_bitJump input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka bitHeadPath rfl rfl
+        (run_bitHead input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+    (gasSteps_bitCopy0 input outer byte offset
+      (bitAfter input byte base 0 acc) base).trans <|
+    (gasSteps_bitCopy1 input outer byte offset
+      (bitAfter input byte base 1 acc) base).trans <|
+    (gasSteps_bitCopy2 input outer byte offset
+      (bitAfter input byte base 2 acc) base).trans <|
+    (gasSteps_bitCopy3 input outer byte offset
+      (bitAfter input byte base 3 acc) base).trans <|
+    (gasSteps_bitCopy4 input outer byte offset
+      (bitAfter input byte base 4 acc) base).trans <|
+    (gasSteps_bitCopy5 input outer byte offset
+      (bitAfter input byte base 5 acc) base).trans <|
+    (gasSteps_bitCopy6 input outer byte offset
+      (bitAfter input byte base 6 acc) base).trans <|
+    gasSteps_bitCopy7 input outer byte offset
+      (bitAfter input byte base 7 acc) base
 
 def gasSteps_bitFinish (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) (hvalid : ValidInput input)
     (houter : outer < exponentSize input) :
     Challenge.EvmProof.GasSteps
-      (bitLoopState input outer 8 byte offset acc base)
+      (bitUnrollState input outer 8 byte offset acc base)
       (expLoopState input (outer + 1) acc base) :=
   (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitGuardPath rfl rfl
-        (run_bitFinishGuard input outer byte offset acc base) rfl
+      Artifact.submissionArtifact .Osaka bitExitPath rfl rfl
+        (run_bitExit input outer byte offset acc base) rfl
         deployAddress_not_precompile).trans
     (Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.submissionArtifact .Osaka bitFinishTailPath rfl rfl
