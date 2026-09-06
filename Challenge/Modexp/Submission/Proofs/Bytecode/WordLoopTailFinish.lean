@@ -43,7 +43,7 @@ theorem run_bitFinishTailFinish (input : ByteArray) (outer : Nat)
     [bitFinishTailFinishPath, Word.opAt, Word.pushAt, Word.wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitFinishTailMidState, bitLoopState, expLoopState, nonzeroState,
+      bitFinishTailMidState, bitLoopState, bitTail, expLoopState, nonzeroState,
       callerRest, Dispatch.wordEntryState, Main.headerState, initialState,
       exitPCs, Challenge.EvmProof.Word.word_toNat_ofNat,
       hsucc, hincLeft, honeWord, h589, h589Word, jump589]
