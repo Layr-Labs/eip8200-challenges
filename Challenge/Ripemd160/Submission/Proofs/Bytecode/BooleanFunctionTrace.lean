@@ -8,15 +8,15 @@ set_option maxHeartbeats 4000000
 /-!
 # Direct trace of the RIPEMD-160 Boolean helper
 
-The compiler frame for `f(j,x,y,z)` is `[j,x,y,z,0,returnDest]`.  This
+The optimized frame for `f(j,x,y,z)` is `[j,x,y,z,returnDest]`. This
 candidate replaces the reference's four sequential switch tests with a
 constant-time jump table: the dispatch block computes `caseBase + (j <<< 5)`
-and jumps straight to the arm for `j`.  Each arm carries its own inlined
+and jumps straight to the arm for `j`. Each arm carries its own inlined
 return sequence, so no shared cleanup block is entered.
 
-The dispatcher consumes the case index. The arms consume their arguments
-and the zero result slot. Two selection arms use proved XOR identities;
-explicit commutativity steps recover the same full-width `Word.evmF` result.
+The dispatcher consumes the case index. The arms consume only their
+arguments; the fixed-width return neutralizer is now a `JUMPDEST`.
+Explicit commutativity steps recover the same full-width `Word.evmF` result.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.BooleanFunctionTrace
@@ -95,7 +95,7 @@ def arm0 : List Located :=
   [⟨772, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨773, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨774, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨775, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨775, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨776, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨777, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -106,7 +106,7 @@ def arm1 : List Located :=
    ⟨807, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨808, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨809, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨810, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨810, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨811, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨812, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -118,7 +118,7 @@ def arm2 : List Located :=
    ⟨840, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨841, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
    ⟨842, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨843, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨843, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨844, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨845, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -130,7 +130,7 @@ def arm3 : List Located :=
    ⟨868, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨869, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨870, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨871, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨871, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨872, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨873, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -142,7 +142,7 @@ def arm4 : List Located :=
    ⟨900, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨901, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
    ⟨902, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨903, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨903, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨904, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨905, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -157,7 +157,7 @@ def fEntry (s : State) (j : Nat) (x y z returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with
     pc := UInt256.ofNat 0x47a
-    stack := [UInt256.ofNat j, x, y, z, 0, returnDest] ++ rest }
+    stack := [UInt256.ofNat j, x, y, z, returnDest] ++ rest }
 
 def fReturned (s : State) (j : Nat) (x y z returnDest : UInt256)
     (rest : List UInt256) : State :=

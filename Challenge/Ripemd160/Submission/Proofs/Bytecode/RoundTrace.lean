@@ -62,7 +62,7 @@ def prefixPath : List Located :=
 def afterXPath : List Located :=
   [⟨234, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨235, .push ⟨2, by decide⟩ (UInt256.ofNat 0x147), by rfl, by decide⟩,
-   ⟨236, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨236, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨237, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨238, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨239, .op (.Dup ⟨10, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
