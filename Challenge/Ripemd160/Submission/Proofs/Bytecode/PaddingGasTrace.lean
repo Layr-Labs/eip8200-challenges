@@ -332,7 +332,7 @@ private theorem lengthFooterSetup_cost_potential (input : ByteArray) :
       (by rfl) (by rfl) (run_lengthFooterSetup input) (by rfl)
       deployAddress_not_precompile).cost +
         MachineState.memCost (PaddingTrace.padSentinel input).activeWords.toNat =
-      26 + MachineState.memCost
+      25 + MachineState.memCost
         (PaddingTrace.lengthLoopStart input).activeWords.toNat := by
   rw [Output.gasSteps_block_cost,
     Challenge.EvmProof.Meter.runLocatedBlock_cost_static_potential
@@ -366,7 +366,7 @@ private theorem lengthSetup_cost_potential (input : ByteArray)
     (hfit : CalldataFits input) :
     (PaddingTrace.gasSteps_lengthSetup input hfit).cost +
         MachineState.memCost 5 =
-      52 + 3 * ((input.size + 31) / 32) +
+      51 + 3 * ((input.size + 31) / 32) +
         MachineState.memCost (PaddingTrace.padSentinel input).activeWords.toNat := by
   have hcopy := lengthCopy_cost_potential input hfit
   rw [Output.gasSteps_block_cost, padLengthReady_activeWords input] at hcopy
@@ -392,7 +392,7 @@ private theorem lengthSetup_cost_potential (input : ByteArray)
   change Challenge.EvmProof.Stepper.runLocatedBlockCost
       PaddingTrace.lengthFooterSetupPath (PaddingTrace.padSentinel input) +
       MachineState.memCost (PaddingTrace.padSentinel input).activeWords.toNat =
-    26 + MachineState.memCost
+    25 + MachineState.memCost
       (PaddingTrace.padSentinel input).activeWords.toNat at hfooter
   rw [lengthSetup_cost_decomp input hfit]
   omega
@@ -628,7 +628,7 @@ private theorem lengthExit_cost (input : ByteArray) :
 
 theorem padding_cost (input : ByteArray) (hfit : CalldataFits input) :
     (PaddingTrace.gasSteps_pad input hfit).cost =
-      872 + 3 * GasCost.calldataWords input.size +
+      871 + 3 * GasCost.calldataWords input.size +
         MachineState.memCost (64 + 2 * DriverTrace.blockCount input) := by
   have hsetup := lengthSetup_cost_potential input hfit
   have hloop := lengthLoop_cost_potential input
@@ -646,7 +646,7 @@ theorem padding_cost (input : ByteArray) (hfit : CalldataFits input) :
   have hbody :
       (PaddingTrace.gasSteps_lengthSetup input hfit).cost +
           (PaddingTrace.gasSteps_lengthLoop input).cost =
-        709 + 3 * ((input.size + 31) / 32) +
+        708 + 3 * ((input.size + 31) / 32) +
           MachineState.memCost
             (64 + 2 * DriverTrace.blockCount input) := by
     omega
