@@ -414,7 +414,6 @@ private def submissionInstructionsChunk1 : List Instr :=
   op 0x53,
   op 0x5b,
   op 0x5b,
-  op 0x5b,
   op 0x81,
   op 0x81,
   op 0x53,
@@ -425,7 +424,7 @@ private def submissionInstructionsChunk1 : List Instr :=
   op 0x1c,
   op 0x90,
   op 0x81,
-  .push 2 529,
+  .push 2 528,
   op 0x57,
   op 0x50,
   op 0x50,
@@ -435,6 +434,7 @@ private def submissionInstructionsChunk1 : List Instr :=
 private def submissionInstructionsChunk2 : List Instr :=
 [
   op 0x56,
+  op 0x00,
   .push 2 0,
   op 0x00,
   op 0x00,
@@ -3107,8 +3107,8 @@ private def submissionInstructionsChunk14 : List Instr :=
 ]
 
 @[simp] private theorem submissionInstructionsChunk0_length : submissionInstructionsChunk0.length = 200 := by rfl
-@[simp] private theorem submissionInstructionsChunk1_length : submissionInstructionsChunk1.length = 200 := by rfl
-@[simp] private theorem submissionInstructionsChunk2_length : submissionInstructionsChunk2.length = 200 := by rfl
+@[simp] private theorem submissionInstructionsChunk1_length : submissionInstructionsChunk1.length = 199 := by rfl
+@[simp] private theorem submissionInstructionsChunk2_length : submissionInstructionsChunk2.length = 201 := by rfl
 @[simp] private theorem submissionInstructionsChunk3_length : submissionInstructionsChunk3.length = 200 := by rfl
 @[simp] private theorem submissionInstructionsChunk4_length : submissionInstructionsChunk4.length = 200 := by rfl
 @[simp] private theorem submissionInstructionsChunk5_length : submissionInstructionsChunk5.length = 200 := by rfl
@@ -3190,13 +3190,13 @@ private theorem submissionInstructionsChunk1_assemble : assembleBytes submission
   0x60, 0x48, 0x81, 0x01, 0x61, 0x00, 0x3f, 0x19, 0x16, 0x5b, 0x90, 0x5b,
   0x80, 0x5f, 0x61, 0x08, 0x00, 0x37, 0x60, 0x80, 0x81, 0x61, 0x08, 0x00,
   0x01, 0x53, 0x5b, 0x60, 0xc3, 0x1b, 0x60, 0xc0, 0x1c, 0x62, 0x00, 0x07,
-  0xf8, 0x82, 0x01, 0x5f, 0x81, 0x60, 0x07, 0x01, 0x53, 0x5b, 0x5b, 0x5b,
+  0xf8, 0x82, 0x01, 0x5f, 0x81, 0x60, 0x07, 0x01, 0x53, 0x5b, 0x5b,
   0x81, 0x81, 0x53, 0x60, 0x01, 0x01, 0x90, 0x60, 0x08, 0x1c, 0x90, 0x81,
-  0x61, 0x02, 0x11, 0x57, 0x50, 0x50, 0x90
+  0x61, 0x02, 0x10, 0x57, 0x50, 0x50, 0x90
 ] := by decide
 
 private theorem submissionInstructionsChunk2_assemble : assembleBytes submissionInstructionsChunk2 = [
-  0x56, 0x61, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x56, 0x00, 0x61, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x5b, 0x61, 0x02, 0x68, 0x56, 0x5b, 0x5f, 0x5b, 0x60, 0x10, 0x81, 0x10,
   0x15, 0x61, 0x02, 0x64, 0x57, 0x61, 0x02, 0x59, 0x61, 0x02, 0x53, 0x5f,
   0x83, 0x60, 0x02, 0x1b, 0x85, 0x01, 0x61, 0x01, 0xb7, 0x56, 0x5b, 0x82,
@@ -4317,9 +4317,9 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
     instructionPC 387 = 0x214 := by rfl
 
 @[simp] theorem refPc388 :
-    submissionArtifact.instructionPC 388 = 0x215 := by rfl
+    submissionArtifact.instructionPC 388 = 0x216 := by rfl
 @[simp] theorem pc388 :
-    instructionPC 388 = 0x215 := by rfl
+    instructionPC 388 = 0x216 := by rfl
 
 @[simp] theorem refPc389 :
     submissionArtifact.instructionPC 389 = 0x217 := by rfl
@@ -4332,9 +4332,9 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
     instructionPC 390 = 0x218 := by rfl
 
 @[simp] theorem refPc391 :
-    submissionArtifact.instructionPC 391 = 0x219 := by rfl
+    submissionArtifact.instructionPC 391 = 0x21a := by rfl
 @[simp] theorem pc391 :
-    instructionPC 391 = 0x219 := by rfl
+    instructionPC 391 = 0x21a := by rfl
 
 @[simp] theorem refPc392 :
     submissionArtifact.instructionPC 392 = 0x21b := by rfl
@@ -4352,9 +4352,9 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
     instructionPC 394 = 0x21d := by rfl
 
 @[simp] theorem refPc395 :
-    submissionArtifact.instructionPC 395 = 0x21e := by rfl
+    submissionArtifact.instructionPC 395 = 0x220 := by rfl
 @[simp] theorem pc395 :
-    instructionPC 395 = 0x21e := by rfl
+    instructionPC 395 = 0x220 := by rfl
 
 @[simp] theorem refPc396 :
     submissionArtifact.instructionPC 396 = 0x221 := by rfl
@@ -4482,8 +4482,7 @@ def padSetupPath : List
    ⟨380, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨381, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨382, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨383, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨384, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨383, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
