@@ -104,7 +104,7 @@ theorem run_copyAdd (s : State) (memory input : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkFullBaseCopyAdd
       (copyState s memory n bsize esize msize) =
-      some (addCallState s memory input n bsize esize msize) := by
+      some (dispatchState s memory input n bsize esize msize) := by
   rw [show Challenge.EvmProof.Stepper.runLocatedBlock blkFullBaseCopyAdd
       (copyState s memory n bsize esize msize) =
       runInstructions copyAddProgram (copyState s memory n bsize esize msize) by
@@ -113,14 +113,62 @@ theorem run_copyAdd (s : State) (memory input : ByteArray)
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
-        copyState, outer, hcode, hrun, fullBasePC, jumpDest2467,
+        copyState, dispatchState, outer, hcode, hrun, fullBasePC, jumpDest3695,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
         Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Word.ofNat_add_mod]]
   exact Challenge.Modexp.Submission.Proofs.Fast.FullBase.run_copyAdd
     s memory input n bsize esize msize hn32 hactive hdata
+      (by simpa [hcode] using jumpDest3695)
+
+set_option linter.unusedSimpArgs false in
+theorem run_dispatch_hit (s : State) (memory input : ByteArray)
+    (n bsize esize msize : Nat)
+    (htop : BaseTopBitSet (copyBaseMem memory input n))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blkFullBaseDispatch
+      (dispatchState s memory input n bsize esize msize) =
+      some (addCallState s memory input n bsize esize msize) := by
+  rw [show Challenge.EvmProof.Stepper.runLocatedBlock blkFullBaseDispatch
+      (dispatchState s memory input n bsize esize msize) =
+      runInstructions dispatchProgram
+        (dispatchState s memory input n bsize esize msize) by
+    simp [blkFullBaseDispatch, dispatchProgram, runInstructions, opAt, pushAt,
+      wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr, dispatchState, outer, hcode, hrun,
+      fullBasePC, jumpDest2467, Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat]]
+  exact Challenge.Modexp.Submission.Proofs.Fast.FullBase.run_dispatch_hit
+    s memory input n bsize esize msize htop
       (by simpa [hcode] using jumpDest2467)
+
+set_option linter.unusedSimpArgs false in
+theorem run_dispatch_skip (s : State) (memory input : ByteArray)
+    (n bsize esize msize : Nat)
+    (htop : ¬ BaseTopBitSet (copyBaseMem memory input n))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blkFullBaseSkip
+      (dispatchState s memory input n bsize esize msize) =
+      some (afterAddState s (copyBaseMem memory input n)
+        n bsize esize msize) := by
+  rw [show Challenge.EvmProof.Stepper.runLocatedBlock blkFullBaseSkip
+      (dispatchState s memory input n bsize esize msize) =
+      runInstructions dispatchSkipProgram
+        (dispatchState s memory input n bsize esize msize) by
+    simp [blkFullBaseSkip, dispatchSkipProgram, runInstructions, opAt, pushAt,
+      wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr, dispatchState, afterAddState, outer,
+      hcode, hrun, fullBasePC, jumpDest3712, jumpDest3644,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat]]
+  exact Challenge.Modexp.Submission.Proofs.Fast.FullBase.run_dispatch_skip
+    s memory input n bsize esize msize htop
+      (by simpa [hcode] using jumpDest3644)
 
 set_option linter.unusedSimpArgs false in
 theorem run_afterAdd (s : State) (memory : ByteArray)
@@ -196,10 +244,40 @@ def gasSteps_copyAdd (s : State) (memory input : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (copyState s memory n bsize esize msize)
-      (addCallState s memory input n bsize esize msize) :=
+      (dispatchState s memory input n bsize esize msize) :=
   sound blkFullBaseCopyAdd
     (run_copyAdd s memory input n bsize esize msize hn32 hactive hdata hcode hrun)
     hcode hfork hrun hnp
+
+def gasSteps_dispatch_hit (s : State) (memory input : ByteArray)
+    (n bsize esize msize : Nat)
+    (htop : BaseTopBitSet (copyBaseMem memory input n))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (dispatchState s memory input n bsize esize msize)
+      (addCallState s memory input n bsize esize msize) :=
+  sound blkFullBaseDispatch
+    (run_dispatch_hit s memory input n bsize esize msize htop hcode hrun)
+    hcode hfork hrun hnp
+
+def gasSteps_dispatch_skip (s : State) (memory input : ByteArray)
+    (n bsize esize msize : Nat)
+    (htop : ¬ BaseTopBitSet (copyBaseMem memory input n))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (dispatchState s memory input n bsize esize msize)
+      (afterAddState s (copyBaseMem memory input n)
+        n bsize esize msize) :=
+  sound blkFullBaseSkip
+    (run_dispatch_skip s memory input n bsize esize msize htop hcode hrun)
+    hcode hfork hrun hnp
+
 
 def gasSteps_afterAdd (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat)

@@ -40,6 +40,15 @@ def copyState (s : State) (memory : ByteArray)
            stack := outer n bsize esize msize
            memory := memory }
 
+/-! The copy result enters the appended base-top-bit dispatcher. -/
+def dispatchState (s : State) (memory input : ByteArray)
+    (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat 3695
+           stack := [UInt256.ofNat 1024, UInt256.ofNat 3072,
+             UInt256.ofNat 1024, UInt256.ofNat 3644] ++
+             outer n bsize esize msize
+           memory := copyBaseMem memory input n }
+
 /-- Existing ADDMOD entry after copying calldata to ACC. -/
 def addCallState (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) : State :=

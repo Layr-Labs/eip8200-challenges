@@ -24,6 +24,32 @@ theorem copyBaseMem_frame {memory input : ByteArray} {n bsize minv : Nat}
      by rw [key 9440 (by omega)]; exact hf.tl,
      by rw [key 9472 (by omega)]; exact hf.eoff⟩
 
+/-! The copy alone already carries every frame block needed by MonPro. -/
+theorem copyBaseReady {memory input : ByteArray} {n bsize minv mm R rr : Nat}
+    (hn32 : n ≤ 32) (hframe : Exp.Frame memory n bsize minv)
+    (hmod : Model.FastRepresents memory 0 n mm)
+    (hr1 : Model.FastRepresents memory 4096 n (R % mm))
+    (hone : Model.FastRepresents memory 3072 n 0)
+    (hrrb : Model.FastRepresents memory 6144 n rr) :
+    let copied := copyBaseMem memory input n
+    Model.FastRepresents copied 1024 n
+        (Precompile.bytesToNatPadded input 96 (32 * n)) ∧
+      Exp.Frame copied n bsize minv ∧
+      Model.FastRepresents copied 0 n mm ∧
+      Model.FastRepresents copied 6144 n rr ∧
+      Model.FastRepresents copied 4096 n (R % mm) ∧
+      Model.FastRepresents copied 3072 n 0 := by
+  dsimp only
+  refine ⟨copyBaseMem_represents memory input n,
+    copyBaseMem_frame hn32 hframe,
+    copyBaseMem_modulus hn32 hmod, ?_, ?_, ?_⟩
+  · exact copyBaseMem_preserves memory input n 6144 n rr
+      (Or.inl (by omega)) hrrb
+  · exact copyBaseMem_preserves memory input n 4096 n (R % mm)
+      (Or.inl (by omega)) hr1
+  · exact copyBaseMem_preserves memory input n 3072 n 0
+      (Or.inl (by omega)) hone
+
 /-- The shortcut copy, reduction, and Montgomery conversion meet the inherited
 `bDone` value and frame boundary. -/
 theorem reduceThenMonpro

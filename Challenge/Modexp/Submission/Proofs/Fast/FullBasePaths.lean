@@ -44,7 +44,7 @@ def blkFullBaseCopyAdd :
    pushAt 2378 2 1024,
    pushAt 2379 2 3072,
    pushAt 2380 2 1024,
-   pushAt 2381 2 2467,
+   pushAt 2381 2 3695,
    opAt 2382 .JUMP]
 
 /-- pc 3644..3660, indices 2383..2389: after add-mod, convert ACC to the
@@ -58,6 +58,38 @@ def blkFullBaseAfterAdd :
    pushAt 2387 2 1024,
    pushAt 2388 2 1939,
    opAt 2389 .JUMP]
+
+/-! The appended base-top-bit dispatcher. -/
+def blkFullBaseDispatch :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 2414 .JUMPDEST,
+   pushAt 2415 2 1024,
+   opAt 2416 .MLOAD,
+   pushAt 2417 1 255,
+   opAt 2418 .SHR,
+   opAt 2419 .ISZERO,
+   pushAt 2420 2 3712,
+   opAt 2421 .JUMPI,
+   pushAt 2422 2 2467,
+   opAt 2423 .JUMP]
+
+def blkFullBaseSkip :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 2414 .JUMPDEST,
+   pushAt 2415 2 1024,
+   opAt 2416 .MLOAD,
+   pushAt 2417 1 255,
+   opAt 2418 .SHR,
+   opAt 2419 .ISZERO,
+   pushAt 2420 2 3712,
+   opAt 2421 .JUMPI,
+   opAt 2424 .JUMPDEST,
+   opAt 2425 .POP,
+   opAt 2426 .POP,
+   opAt 2427 .POP,
+   opAt 2428 .POP,
+   pushAt 2429 2 3644,
+   opAt 2430 .JUMP]
 
 /-- pc 3661..3694, indices 2390..2413: relocated original base-head
 computation and the jump to the unchanged loop head. -/

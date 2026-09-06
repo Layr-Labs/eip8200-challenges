@@ -20,6 +20,11 @@ open Challenge.Modexp.Submission.Proofs
 def Matches (memory : ByteArray) (n bsize : Nat) : Prop :=
   bsize = 32 * n ∧ R1.TopBitSet memory
 
+/-! The top-bit predicate for the copied full-width base. -/
+def BaseTopBitSet (memory : ByteArray) : Prop :=
+  2 ^ 255 ≤ (MachineState.readWord memory 1024).toNat
+
+
 instance (memory : ByteArray) (n bsize : Nat) : Decidable (Matches memory n bsize) := by
   unfold Matches
   infer_instance
@@ -142,6 +147,50 @@ theorem baseValue_lt_two_mul {memory input : ByteArray} {n mm : Nat}
     Precompile.bytesToNatPadded input 96 (32 * n) < 2 * mm :=
   (baseValue_lt_radix input n).trans
     (R1.radix_pow_lt_two_mul hn hodd hmod htop)
+
+/-! A clear top bit makes the copied base strictly smaller than the guarded
+modulus, so the modular reduction is an identity. -/
+theorem baseValue_lt_modulus_of_not_top
+    {memory input : ByteArray} {n mm : Nat}
+    (hn : 1 ≤ n) (hmod : Model.FastRepresents memory 0 n mm)
+    (hmodTop : R1.TopBitSet memory)
+    (hbase : Model.FastRepresents (copyBaseMem memory input n) 1024 n
+      (Precompile.bytesToNatPadded input 96 (32 * n)))
+    (hbaseTop : ¬ BaseTopBitSet (copyBaseMem memory input n)) :
+    Precompile.bytesToNatPadded input 96 (32 * n) < mm := by
+  let base := Precompile.bytesToNatPadded input 96 (32 * n)
+  have hbaseBound : base < Limbs.radix ^ n := by
+    simpa [base] using baseValue_lt_radix input n
+  have hpow : 0 < Limbs.radix ^ (n - 1) := pow_pos Limbs.radix_pos _
+  have hquotLt : base / Limbs.radix ^ (n - 1) < Limbs.radix := by
+    rw [Nat.div_lt_iff_lt_mul hpow]
+    calc
+      base < Limbs.radix ^ n := hbaseBound
+      _ = Limbs.radix * Limbs.radix ^ (n - 1) := by
+        rw [← pow_succ']
+        congr 1
+        omega
+  have hlimb : (MachineState.readWord
+      (copyBaseMem memory input n) 1024).toNat =
+      base / Limbs.radix ^ (n - 1) % Limbs.radix := by
+    simpa [base] using
+      Model.readWord_of_fastRepresents hbase (j := 0) (by omega)
+  have hwordLt : (MachineState.readWord
+      (copyBaseMem memory input n) 1024).toNat < 2 ^ 255 :=
+    Nat.lt_of_not_ge (by simpa [BaseTopBitSet] using hbaseTop)
+  have hquot : base / Limbs.radix ^ (n - 1) < 2 ^ 255 := by
+    rw [Nat.mod_eq_of_lt hquotLt] at hlimb
+    exact hlimb ▸ hwordLt
+  have hbaseHalf : base < 2 ^ 255 * Limbs.radix ^ (n - 1) :=
+    (Nat.div_lt_iff_lt_mul hpow).mp hquot
+  have hmodLimb : (MachineState.readWord memory 0).toNat =
+      mm / Limbs.radix ^ (n - 1) % Limbs.radix := by
+    simpa using Model.readWord_of_fastRepresents hmod (j := 0) (by omega)
+  have hmodGe : 2 ^ 255 ≤ mm / Limbs.radix ^ (n - 1) :=
+    le_trans (hmodLimb ▸ hmodTop) (Nat.mod_le _ _)
+  have hmul : 2 ^ 255 * Limbs.radix ^ (n - 1) ≤ mm :=
+    le_trans (Nat.mul_le_mul_right _ hmodGe) (Nat.div_mul_le_self _ _)
+  exact hbaseHalf.trans_le hmul
 
 end Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
