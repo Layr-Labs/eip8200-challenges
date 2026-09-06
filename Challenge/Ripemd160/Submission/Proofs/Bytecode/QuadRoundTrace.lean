@@ -1,6 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadGapTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadCachedTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSeamTrace
 
 set_option warningAsError true
 set_option maxRecDepth 30000
@@ -34,7 +35,7 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadCachedTrace
 
 set_option linter.unusedSimpArgs false in
-theorem runInstrSeq_quad (j : Nat) (hj : j < 5)
+theorem runInstrSeq_old_quad (j : Nat) (hj : j < 5)
     (s : State) (startPC p0 p1 p2 p3 returnPC : UInt256)
     (r0 r1 r2 r3 : Nat) (working : Compression.EvmWorking)
     (constant : UInt256) (rho : List UInt256)
@@ -42,11 +43,11 @@ theorem runInstrSeq_quad (j : Nat) (hj : j < 5)
     (hstack : rho.length < 1007) (hrun : s.halt = .Running)
     (hrot0 : r0 ≤ 32) (hrot1 : r1 ≤ 32)
     (hrot2 : r2 ≤ 32) (hrot3 : r3 ≤ 32) :
-    runInstrSeq (quadBeforeJumpTemplate j constant)
+    runInstrSeq (oldQuadBeforeJumpTemplate j constant)
       (quadHelperEntry s startPC p0 p1 p2 p3 returnPC
         r0 r1 r2 r3 working rho) =
       some (quadAfterHelperBeforeJump s
-        (pcAfter startPC (quadBeforeJumpTemplate j constant))
+        (pcAfter startPC (oldQuadBeforeJumpTemplate j constant))
         returnPC j working p0 p1 p2 p3 r0 r1 r2 r3 constant rho) := by
   let firstPC : UInt256 := pcAfter startPC (firstFTemplate j constant)
   let secondPC : UInt256 := pcAfter firstPC [swap1]
@@ -116,14 +117,14 @@ theorem runInstrSeq_quad (j : Nat) (hj : j < 5)
 
   have hswapTail := runInstrSeq_append hswap hpairRunning hsecond
   have hpc :
-      pcAfter startPC (quadBeforeJumpTemplate j constant) =
+      pcAfter startPC (oldQuadBeforeJumpTemplate j constant) =
         pcAfter secondPC (cachedTailFTemplate j constant) := by
     calc
-      pcAfter startPC (quadBeforeJumpTemplate j constant) =
+      pcAfter startPC (oldQuadBeforeJumpTemplate j constant) =
           pcAfter (pcAfter startPC
             (firstFTemplate j constant ++ [swap1]))
             (cachedTailFTemplate j constant) := by
-              rw [quadBeforeJumpTemplate, QuadRoundState.pcAfter_append]
+              rw [oldQuadBeforeJumpTemplate, QuadRoundState.pcAfter_append]
       _ = pcAfter
             (pcAfter (pcAfter startPC (firstFTemplate j constant)) [swap1])
             (cachedTailFTemplate j constant) := by
@@ -135,9 +136,51 @@ theorem runInstrSeq_quad (j : Nat) (hj : j < 5)
             rfl
   rw [← hpc] at hswapTail
   have hall := runInstrSeq_append hfirst hgapRunning hswapTail
-  simpa [quadBeforeJumpTemplate, List.append_assoc,
+  simpa [oldQuadBeforeJumpTemplate, List.append_assoc,
     quadAfterHelperBeforeJump, quadWorking, quadFirstState,
     quadFirstWorking, firstWorking, afterFirstPair,
     QuadRoundTemplate.factor] using hall
+
+set_option linter.unusedSimpArgs false in
+theorem runInstrSeq_quad (j : Nat) (hj : j < 5)
+    (s : State) (startPC p0 p1 p2 p3 returnPC : UInt256)
+    (r0 r1 r2 r3 : Nat) (working : Compression.EvmWorking)
+    (constant : UInt256) (rho : List UInt256)
+    (hzero : j = 0 → constant = 0)
+    (hstack : rho.length < 1007) (hrun : s.halt = .Running)
+    (hrot0 : r0 ≤ 32) (hrot1 : r1 ≤ 32)
+    (hrot2 : r2 ≤ 32) (hrot3 : r3 ≤ 32) :
+    runInstrSeq (quadBeforeJumpTemplate j constant)
+      (quadHelperEntry s startPC p0 p1 p2 p3 returnPC
+        r0 r1 r2 r3 working rho) =
+      some (quadAfterHelperBeforeJump s
+        (pcAfter startPC (quadBeforeJumpTemplate j constant))
+        returnPC j working p0 p1 p2 p3 r0 r1 r2 r3 constant rho) := by
+  have hraw := runInstrSeq_old_quad j hj s startPC p0 p1 p2 p3 returnPC
+    r0 r1 r2 r3 working constant rho hzero hstack hrun hrot0 hrot1 hrot2 hrot3
+  have hrelation :
+      runInstrSeq (quadBeforeJumpTemplate j constant)
+        (quadHelperEntry s startPC p0 p1 p2 p3 returnPC r0 r1 r2 r3 working rho) =
+      Option.map (fun out => {out with pc := pcAfter startPC (quadBeforeJumpTemplate j constant)})
+        (runInstrSeq (oldQuadBeforeJumpTemplate j constant)
+          (quadHelperEntry s startPC p0 p1 p2 p3 returnPC r0 r1 r2 r3 working rho)) := by
+    have hcap (m : Nat) (hm : m ≤ 17) : rho.length + m < 1024 := by omega
+    have hadd (u v : UInt256) : u.add v = u + v := rfl
+    interval_cases j <;>
+      simp (config := { maxSteps := 3000000 })
+        [quadBeforeJumpTemplate, oldQuadBeforeJumpTemplate, firstFTemplate,
+         cachedTailFTemplate, firstBoolean, secondBoolean, d, w,
+         cachedQrot10, cachedCfold9, cachedQrot8, cachedCfold7,
+         cachedDup10, cachedDup9, cachedDup8, cachedDup7,
+         PairRoundTemplate.pairFirstBooleanOps, PairRoundTemplate.pairSecondBooleanOps,
+         pairDup7, pairDup8, pairDup9, pairDup10, pairSwap5, pairSwap7,
+         quadHelperEntry, roundWords, op, push1, push4,
+         dup1, dup2, dup3, dup4, dup5, dup6, swap1, swap2, swap3, swap4,
+         runInstrSeq, Stepper.runInstr, pcAfter, List.exchange,
+         hrun, hcap, UInt256.succ, Instr.size, Instr.size_op, Instr.size_push,
+         State.activeWordsAfterUInt256, hadd, Word.word_add_comm,
+         Word.ofNat_add_mod, Word.word_toNat_ofNat, Nat.add_assoc]
+  rw [hraw] at hrelation
+  simpa [quadAfterHelperBeforeJump, pairAfterHelperBeforeJump] using hrelation
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTrace

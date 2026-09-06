@@ -26,8 +26,14 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.PairRoundState
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadGapTemplate
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTemplate
 
-def quadBeforeJumpTemplate (j : Nat) (constant : UInt256) : List Instr :=
+def oldQuadBeforeJumpTemplate (j : Nat) (constant : UInt256) : List Instr :=
   firstFTemplate j constant ++ [swap1] ++ cachedTailFTemplate j constant
+
+/-- Seam-fused helper: omit the trailing SWAP5 and the tail's two shuffles. -/
+def quadBeforeJumpTemplate (j : Nat) (constant : UInt256) : List Instr :=
+  (firstFTemplate j constant).dropLast ++ [swap1] ++
+    ([op .MLOAD] ++ PairRoundTemplate.pairFirstBooleanOps j ++ [op .ADD, op .ADD] ++
+      (cachedTailFTemplate j constant).drop (1 + (PairRoundTemplate.pairFirstBooleanOps j).length + 4))
 
 def quadHelperEntry (s : State) (startPC p0 p1 p2 p3 returnPC : UInt256)
     (r0 r1 r2 r3 : Nat) (working : Compression.EvmWorking)
