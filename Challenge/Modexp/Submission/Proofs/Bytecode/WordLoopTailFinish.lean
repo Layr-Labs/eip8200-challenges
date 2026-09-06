@@ -12,10 +12,10 @@ open Word
 attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
 
-@[simp] private theorem exitPCs (i : Nat) (hi : 525 ≤ i) (hii : i ≤ 549) :
+@[simp] private theorem exitPCs (i : Nat) (hi : 523 ≤ i) (hii : i ≤ 547) :
     Artifact.submissionArtifact.instructionPC i =
       [655,656,657,658,659,661,662,665,666,667,668,669,670,671,672,
-       673,675,676,678,679,680,681,682,683,688][i - 525]! := by
+       673,675,676,678,679,680,681,682,683,685][i - 523]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump589 :

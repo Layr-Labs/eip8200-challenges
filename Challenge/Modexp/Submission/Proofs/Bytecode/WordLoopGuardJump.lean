@@ -11,7 +11,7 @@ open Word
 
 @[simp] private theorem jump655 :
     Decode.isValidJumpDest submissionBytecode 655 = true :=
-  Artifact.isValidJumpDest_index 525 (by rfl)
+  Artifact.isValidJumpDest_index 523 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_bitFinishGuardJump (input : ByteArray) (outer : Nat)

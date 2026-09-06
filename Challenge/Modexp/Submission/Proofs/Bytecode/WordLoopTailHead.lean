@@ -11,13 +11,13 @@ open Word
 
 def bitFinishTailHeadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Word.opAt 525 .JUMPDEST, Word.opAt 526 .POP,
-   Word.opAt 527 .POP, Word.opAt 528 .POP]
+  [Word.opAt 523 .JUMPDEST, Word.opAt 524 .POP,
+   Word.opAt 525 .POP, Word.opAt 526 .POP]
 
 def bitFinishTailFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Word.pushAt 529 1 1, Word.opAt 530 .ADD,
-   Word.pushAt 531 2 589, Word.opAt 532 .JUMP]
+  [Word.pushAt 527 1 1, Word.opAt 528 .ADD,
+   Word.pushAt 529 2 589, Word.opAt 530 .JUMP]
 
 def bitFinishTailMidState (input : ByteArray) (outer : Nat)
     (acc base : UInt256) : State :=
@@ -29,10 +29,10 @@ def bitFinishTailMidState (input : ByteArray) (outer : Nat)
       UInt256.ofNat 96, UInt256.ofNat (expOffset input),
       UInt256.ofNat (modulusOffset input), UInt256.ofNat 1267] ++ callerRest input }
 
-@[simp] private theorem exitPCs (i : Nat) (hi : 525 ≤ i) (hii : i ≤ 549) :
+@[simp] private theorem exitPCs (i : Nat) (hi : 523 ≤ i) (hii : i ≤ 547) :
     Artifact.submissionArtifact.instructionPC i =
       [655,656,657,658,659,661,662,665,666,667,668,669,670,671,672,
-       673,675,676,678,679,680,681,682,683,688][i - 525]! := by
+       673,675,676,678,679,680,681,682,683,685][i - 523]! := by
   interval_cases i <;> decide
 
 set_option linter.unusedSimpArgs false in

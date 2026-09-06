@@ -38,6 +38,23 @@ private theorem blockCost_of_static
   rw [hactive] at hmeter
   omega
 
+private theorem iterateBounded_cost_le {I : Nat → State} (count bound : Nat)
+    (body : ∀ i, i < count → Challenge.EvmProof.GasSteps (I i) (I (i + 1)))
+    (hcost : ∀ i (hi : i < count), (body i hi).cost ≤ bound) :
+    (Challenge.EvmProof.GasSteps.iterateBounded count body).cost ≤ count * bound := by
+  induction count with
+  | zero =>
+      rw [Challenge.EvmProof.GasSteps.iterateBounded_zero_cost]
+      simp
+  | succ count ih =>
+      rw [Challenge.EvmProof.GasSteps.iterateBounded_succ_cost]
+      have hprefix := ih
+        (body := fun i hi => body i (Nat.lt_succ_of_lt hi))
+        (hcost := fun i hi => hcost i (Nat.lt_succ_of_lt hi))
+      have hlast := hcost count (Nat.lt_succ_self count)
+      rw [Nat.succ_mul]
+      exact Nat.add_le_add hprefix hlast
+
 theorem gasSteps_start_cost (input : ByteArray) (hvalid : ValidInput input)
     (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
     (hmodpos : 0 < modulusValue input) :
@@ -137,7 +154,7 @@ theorem gasSteps_expEnter_cost (input : ByteArray) (i : Nat)
 
 theorem gasSteps_bitIteration_cost (input : ByteArray) (outer j : Nat)
     (byte offset acc base : UInt256) (hj : j < 8) :
-    (gasSteps_bitIteration input outer j byte offset acc base hj).cost = 128 := by
+    (gasSteps_bitIteration input outer j byte offset acc base hj).cost ≤ 128 := by
   have hguard := blockCost_of_static bitGuardPath 24
     (run_bitGuard input outer j byte offset acc base hj) (by rfl)
     (by decide) (by rfl) (by rfl)
@@ -147,32 +164,56 @@ theorem gasSteps_bitIteration_cost (input : ByteArray) (outer j : Nat)
   have hsquare := blockCost_of_static bitSquarePath 17
     (run_bitSquare input outer j byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have hmask := blockCost_of_static bitMaskPath 8
-    (run_bitMask input outer j byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hproduct := blockCost_of_static bitProductPath 17
-    (run_bitProduct input outer j byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hchoose := blockCost_of_static bitChoosePath 15
-    (run_bitChoose input outer j byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static bitAdvancePath 26
-    (run_bitAdvance input outer j byte offset acc base hj) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  unfold gasSteps_bitIteration
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  omega
+  by_cases hzero : exponentBit byte j = UInt256.ofNat 0
+  · have hdispatch := blockCost_of_static bitDispatchPath 19
+      (run_bitDispatch_zero input outer j byte offset acc base hzero) (by rfl)
+      (by decide) (by rfl) (by rfl)
+    have hjoin := blockCost_of_static bitJoinPath 6
+      (run_bitJoin_zero input outer j byte offset acc base hzero) (by rfl)
+      (by decide) (by rfl) (by rfl)
+    have hadvance := blockCost_of_static bitAdvancePath 17
+      (run_bitAdvance input outer j byte offset acc base hj) (by rfl)
+      (by decide) (by rfl) (by rfl)
+    unfold gasSteps_bitIteration
+    simp only [dif_pos hzero, Challenge.EvmProof.GasSteps.trans_cost,
+      Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+    omega
+  · have hone : exponentBit byte j = UInt256.ofNat 1 := by
+      rcases exponentBit_zero_or_one byte j with h | h
+      · exact False.elim (hzero h)
+      · exact h
+    have hdispatch := blockCost_of_static bitDispatchPath 19
+      (run_bitDispatch_one input outer j byte offset acc base hone) (by rfl)
+      (by decide) (by rfl) (by rfl)
+    have hproduct := blockCost_of_static bitProductPath 22
+      (run_bitProduct input outer j byte offset acc base) (by rfl)
+      (by decide) (by rfl) (by rfl)
+    have hjoin := blockCost_of_static bitJoinPath 6
+      (run_bitJoin_one input outer j byte offset acc base hone) (by rfl)
+      (by decide) (by rfl) (by rfl)
+    have hadvance := blockCost_of_static bitAdvancePath 17
+      (run_bitAdvance input outer j byte offset acc base hj) (by rfl)
+      (by decide) (by rfl) (by rfl)
+    unfold gasSteps_bitIteration
+    simp only [dif_neg hzero, Challenge.EvmProof.GasSteps.trans_cost,
+      Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
+    omega
 
 theorem gasSteps_bitLoop_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitLoop input outer byte offset acc base).cost = 1024 := by
+    (gasSteps_bitLoop input outer byte offset acc base).cost ≤ 1024 := by
   unfold gasSteps_bitLoop
-  rw [show (1024 : Nat) = 8 * 128 by norm_num]
-  apply Challenge.EvmProof.GasSteps.iterateBounded_cost_of_const
-  intro j hj
-  exact gasSteps_bitIteration_cost input outer j byte offset
-    (bitAfter input byte base j acc) base hj
+  have h := iterateBounded_cost_le
+    (I := fun j =>
+      bitLoopState input outer j byte offset (bitAfter input byte base j acc) base)
+    (count := 8) (bound := 128)
+    (body := fun j hj => gasSteps_bitIteration input outer j byte offset
+      (bitAfter input byte base j acc) base hj)
+    (hcost := by
+      intro j hj
+      exact gasSteps_bitIteration_cost input outer j byte offset
+        (bitAfter input byte base j acc) base hj)
+  exact h.trans (by norm_num)
 
 theorem gasSteps_bitFinish_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) (hvalid : ValidInput input)
@@ -192,20 +233,32 @@ theorem gasSteps_bitFinish_cost (input : ByteArray) (outer : Nat)
 theorem gasSteps_expIteration_cost (input : ByteArray) (i : Nat)
     (acc base : UInt256) (hvalid : ValidInput input)
     (hi : i < exponentSize input) :
-    (gasSteps_expIteration input i acc base hvalid hi).cost = 1118 := by
-  simp [gasSteps_expIteration, gasSteps_expEnter_cost, gasSteps_bitLoop_cost,
-    gasSteps_bitFinish_cost]
+    (gasSteps_expIteration input i acc base hvalid hi).cost ≤ 1118 := by
+  have hbitLoop := gasSteps_bitLoop_cost input i
+    (byteWord input (expOffset input + i))
+    (UInt256.ofNat (expOffset input + i)) acc base
+  have hbitFinish := gasSteps_bitFinish_cost input i
+    (byteWord input (expOffset input + i))
+    (UInt256.ofNat (expOffset input + i))
+    (bitAfter input (byteWord input (expOffset input + i)) base 8 acc)
+    base hvalid hi
+  simp only [gasSteps_expIteration, Challenge.EvmProof.GasSteps.trans_cost]
+  rw [gasSteps_expEnter_cost input i acc base hvalid hi, hbitFinish]
+  omega
 
 theorem gasSteps_expLoop_cost (input : ByteArray) (acc base : UInt256)
     (hvalid : ValidInput input) :
-    (gasSteps_expLoop input acc base hvalid).cost = 1118 * exponentSize input := by
+    (gasSteps_expLoop input acc base hvalid).cost ≤ 1118 * exponentSize input := by
   unfold gasSteps_expLoop
-  have h := Challenge.EvmProof.GasSteps.iterateBounded_cost_of_const
-    (count := exponentSize input) (cost := 1118) (body := fun i hi =>
-      gasSteps_expIteration input i (expAfter input base i acc) base hvalid hi) (by
-        intro i hi
-        exact gasSteps_expIteration_cost input i (expAfter input base i acc)
-          base hvalid hi)
+  have h := iterateBounded_cost_le
+    (I := fun i => expLoopState input i (expAfter input base i acc) base)
+    (count := exponentSize input) (bound := 1118)
+    (body := fun i hi => gasSteps_expIteration input i
+      (expAfter input base i acc) base hvalid hi)
+    (hcost := by
+      intro i hi
+      exact gasSteps_expIteration_cost input i (expAfter input base i acc)
+        base hvalid hi)
   simpa [Nat.mul_comm] using h
 
 theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)

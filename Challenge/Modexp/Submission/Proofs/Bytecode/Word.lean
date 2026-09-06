@@ -135,36 +135,24 @@ def bitSquarePath :
   [opAt 498 (.Dup ⟨7, by decide⟩), opAt 499 (.Dup ⟨6, by decide⟩),
    opAt 500 (.Dup ⟨7, by decide⟩), opAt 501 .MULMOD]
 
-def bitMaskPath :
+def bitDispatchPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 502 (.Dup ⟨1, by decide⟩), pushAt 503 0 0, opAt 504 .SUB]
+  [opAt 502 (.Swap ⟨0, by decide⟩), opAt 503 .ISZERO,
+   pushAt 504 2 641, opAt 505 .JUMPI]
 
 def bitProductPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 505 (.Dup ⟨9, by decide⟩), opAt 506 (.Dup ⟨9, by decide⟩),
-   opAt 507 (.Dup ⟨3, by decide⟩), opAt 508 .MULMOD]
+  [opAt 506 (.Dup ⟨7, by decide⟩), opAt 507 (.Dup ⟨7, by decide⟩),
+   opAt 508 (.Dup ⟨2, by decide⟩), opAt 509 .MULMOD,
+   opAt 510 (.Swap ⟨0, by decide⟩), opAt 511 .POP]
 
-def bitChoosePath :
+def bitJoinPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 509 (.Dup ⟨2, by decide⟩), opAt 510 .XOR, opAt 511 .AND,
-   opAt 512 (.Dup ⟨1, by decide⟩), opAt 513 .XOR]
-
-def bitAdvanceSwapPath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 514 (.Swap ⟨6, by decide⟩)]
-
-def bitAdvanceDropPath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 515 .POP, opAt 516 .POP, opAt 517 .POP]
-
-def bitAdvanceFinishPath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 518 1 1, opAt 519 .ADD,
-   pushAt 520 2 606, opAt 521 .JUMP]
+  [opAt 512 .JUMPDEST, opAt 513 (.Swap ⟨4, by decide⟩), opAt 514 .POP]
 
 def bitAdvancePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  bitAdvanceSwapPath ++ bitAdvanceDropPath ++ bitAdvanceFinishPath
+  [pushAt 515 1 1, opAt 516 .ADD, pushAt 517 2 606, opAt 518 .JUMP]
 
 def expOffset (input : ByteArray) : Nat := 96 + baseSize input
 def modulusOffset (input : ByteArray) : Nat := expOffset input + exponentSize input
@@ -318,48 +306,83 @@ def bitStep (input : ByteArray) (byte : UInt256) (j : Nat)
   let mask := UInt256.ofNat 0 - bit
   UInt256.xor square (UInt256.land (UInt256.xor square product) mask)
 
+private theorem xor_toNat (a b : UInt256) :
+    (UInt256.xor a b).toNat = (a.toNat ^^^ b.toNat) := by
+  cases a with | mk a =>
+  cases b with | mk b =>
+  simp only [UInt256.xor, UInt256.toNat]
+  unfold Fin.xor
+  simp only
+  exact Nat.mod_eq_of_lt (Nat.xor_lt_two_pow a.isLt b.isLt)
+
+private theorem select_zero (x y : UInt256) :
+    UInt256.xor x (UInt256.land (UInt256.xor x y)
+      (UInt256.ofNat 0 - UInt256.ofNat 0)) = x := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [xor_toNat, Challenge.EvmProof.Word.word_toNat_land, xor_toNat]
+  have hmask : UInt256.ofNat 0 - UInt256.ofNat 0 = UInt256.ofNat 0 := by
+    decide
+  rw [hmask, Challenge.EvmProof.Word.word_toNat_ofNat]
+  norm_num
+
+private theorem select_one (x y : UInt256) :
+    UInt256.xor x (UInt256.land (UInt256.xor x y)
+      (UInt256.ofNat 0 - UInt256.ofNat 1)) = y := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [xor_toNat, Challenge.EvmProof.Word.word_toNat_land, xor_toNat]
+  have hmask : UInt256.ofNat 0 - UInt256.ofNat 1 =
+      UInt256.ofNat (2 ^ 256 - 1) := by decide
+  rw [hmask, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by omega : 2 ^ 256 - 1 < 2 ^ 256),
+    Nat.and_two_pow_sub_one_eq_mod]
+  have hxor : (x.toNat ^^^ y.toNat) % 2 ^ 256 = x.toNat ^^^ y.toNat :=
+    Nat.mod_eq_of_lt (Nat.xor_lt_two_pow x.val.isLt y.val.isLt)
+  rw [hxor, ← Nat.xor_assoc, Nat.xor_self, Nat.zero_xor]
+
+theorem bitStep_of_zero (input : ByteArray) (byte : UInt256) (j : Nat)
+    (acc base : UInt256)
+    (hbit : exponentBit byte j = UInt256.ofNat 0) :
+    bitStep input byte j acc base =
+      UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)) := by
+  unfold bitStep
+  rw [hbit]
+  exact select_zero _ _
+
+theorem bitStep_of_one (input : ByteArray) (byte : UInt256) (j : Nat)
+    (acc base : UInt256)
+    (hbit : exponentBit byte j = UInt256.ofNat 1) :
+    bitStep input byte j acc base =
+      UInt256.mulMod
+        (UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input))) base
+        (UInt256.ofNat (modulusValue input)) := by
+  unfold bitStep
+  rw [hbit]
+  exact select_one _ _
+
+theorem exponentBit_zero_or_one (byte : UInt256) (j : Nat) :
+    exponentBit byte j = UInt256.ofNat 0 ∨
+      exponentBit byte j = UInt256.ofNat 1 := by
+  have hbound : (exponentBit byte j).toNat ≤ 1 := by
+    rw [exponentBit, Challenge.EvmProof.Word.word_toNat_land,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by norm_num : 1 < 2 ^ 256)]
+    exact Nat.and_le_right
+  have hcases : (exponentBit byte j).toNat = 0 ∨
+      (exponentBit byte j).toNat = 1 := by omega
+  rcases hcases with hzero | hone
+  · left
+    apply Challenge.EvmProof.Word.word_ext
+    simpa using hzero
+  · right
+    apply Challenge.EvmProof.Word.word_ext
+    simpa using hone
+
 def bitDecodedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
   { bitLoopState input outer j byte offset acc base with
     pc := UInt256.ofNat 625
     stack := [exponentBit byte j, UInt256.ofNat j, byte, offset,
       UInt256.ofNat outer, acc, base, UInt256.ofNat (modulusValue input),
-      UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
-      UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
-      UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1267] ++ callerRest input }
-
-def bitSelectedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
-    (acc base : UInt256) : State :=
-  { bitLoopState input outer j byte offset acc base with
-    pc := UInt256.ofNat 641
-    stack := [bitStep input byte j acc base,
-      UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
-      exponentBit byte j, UInt256.ofNat j, byte, offset, UInt256.ofNat outer,
-      acc, base, UInt256.ofNat (modulusValue input),
-      UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
-      UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
-      UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1267] ++ callerRest input }
-
-def bitAdvanceSwappedState (input : ByteArray) (outer j : Nat)
-    (byte offset acc base : UInt256) : State :=
-  { bitLoopState input outer j byte offset acc base with
-    pc := UInt256.ofNat 642
-    stack := [acc, UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
-      exponentBit byte j, UInt256.ofNat j, byte, offset, UInt256.ofNat outer,
-      bitStep input byte j acc base, base, UInt256.ofNat (modulusValue input),
-      UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
-      UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
-      UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1267] ++ callerRest input }
-
-def bitAdvanceDroppedState (input : ByteArray) (outer j : Nat)
-    (byte offset acc base : UInt256) : State :=
-  { bitLoopState input outer j byte offset acc base with
-    pc := UInt256.ofNat 645
-    stack := [UInt256.ofNat j, byte, offset, UInt256.ofNat outer,
-      bitStep input byte j acc base, base, UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
@@ -377,34 +400,50 @@ def bitSquaredState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
       UInt256.ofNat 1267] ++ callerRest input }
 
-def bitMaskedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
+def bitDispatchState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
   { bitLoopState input outer j byte offset acc base with
-    pc := UInt256.ofNat 632
-    stack := [UInt256.ofNat 0 - exponentBit byte j,
-      UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
-      exponentBit byte j, UInt256.ofNat j, byte, offset, UInt256.ofNat outer,
-      acc, base, UInt256.ofNat (modulusValue input),
-      UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
-      UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
-      UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1267] ++ callerRest input }
+    pc := UInt256.ofNat 641
+    stack := [UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
+      UInt256.ofNat j, byte, offset, UInt256.ofNat outer, acc, base,
+      UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
+      UInt256.ofNat 96, UInt256.ofNat (expOffset input),
+      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1267] ++ callerRest input }
+
+def bitProductEntryState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
+    (acc base : UInt256) : State :=
+  { bitLoopState input outer j byte offset acc base with
+    pc := UInt256.ofNat 635
+    stack := [UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
+      UInt256.ofNat j, byte, offset, UInt256.ofNat outer, acc, base,
+      UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
+      UInt256.ofNat 96, UInt256.ofNat (expOffset input),
+      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1267] ++ callerRest input }
 
 def bitProductState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
   { bitLoopState input outer j byte offset acc base with
-    pc := UInt256.ofNat 636
+    pc := UInt256.ofNat 641
     stack := [UInt256.mulMod
         (UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input))) base
         (UInt256.ofNat (modulusValue input)),
-      UInt256.ofNat 0 - exponentBit byte j,
-      UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
-      exponentBit byte j, UInt256.ofNat j, byte, offset, UInt256.ofNat outer,
-      acc, base, UInt256.ofNat (modulusValue input),
-      UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
-      UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
-      UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1267] ++ callerRest input }
+      UInt256.ofNat j, byte, offset, UInt256.ofNat outer, acc, base,
+      UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
+      UInt256.ofNat 96, UInt256.ofNat (expOffset input),
+      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1267] ++ callerRest input }
+
+def bitJoinState (input : ByteArray) (outer j : Nat) (byte offset result base : UInt256)
+    : State :=
+  { bitLoopState input outer j byte offset result base with
+    pc := UInt256.ofNat 644
+    stack := [UInt256.ofNat j, byte, offset, UInt256.ofNat outer, result, base,
+      UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
+      UInt256.ofNat 96, UInt256.ofNat (expOffset input),
+      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1267] ++ callerRest input }
 
 theorem byteWord_eq (input : ByteArray) (offset : Nat)
     (hoffset : offset < 2 ^ 256) :
@@ -510,18 +549,18 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
     Artifact.submissionArtifact.instructionPC i =
       [589,590,591,592,593,594,597,598,599,600,601,602,603,604,605,
        606,607,608,610,611,612,615,616,618,619,620,622,623,624,625,
-       626,627,628,629,630,631,632,633,634,635,636,637,638,639,640,
-       641,642,643,644,645,647,648,651,652,653,654,655,656,657,658,
-       659,661,662,665,666,667,668][i - 469]! := by
+       626,627,628,629,630,631,634,635,636,637,638,639,640,641,642,643,
+       644,646,647,650,651,652,653,654,655,656,657,658,659,661,662,665,
+       666,667,668,669,670][i - 469]! := by
   interval_cases i <;> decide
 
 @[simp] theorem jump669 :
     Decode.isValidJumpDest submissionBytecode 669 = true :=
-  Artifact.isValidJumpDest_index 536 (by rfl)
+  Artifact.isValidJumpDest_index 534 (by rfl)
 
 @[simp] theorem jump655 :
     Decode.isValidJumpDest submissionBytecode 655 = true :=
-  Artifact.isValidJumpDest_index 525 (by rfl)
+  Artifact.isValidJumpDest_index 523 (by rfl)
 
 @[simp] theorem jump606 :
     Decode.isValidJumpDest submissionBytecode 606 = true :=
