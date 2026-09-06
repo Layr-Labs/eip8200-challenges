@@ -73,6 +73,14 @@ theorem topBit_spec (w : Nat) (hw : w < 256) :
     topBit w = 2 ^ topExp w ∧ topExp w ≤ 7 ∧ w < 2 ^ (topExp w + 1) := by
   interval_cases w <;> exact ⟨by decide, by decide, by decide⟩
 
+theorem topBit_eq_128_of_ge (w : Nat) (hw : w < 256) (hge : 128 ≤ w) :
+    topBit w = 128 := by
+  obtain ⟨hs, _, _⟩ := topBit_spec w hw
+  have he : topExp w = 7 := by
+    simp [topExp, hge]
+  rw [hs, he]
+  norm_num
+
 /-! ## States at the block boundaries -/
 
 /-- The `LZ` entry, pc 2922.  The driver frame below the byte index is left
@@ -91,6 +99,13 @@ def lzOther (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : St
 /-- pc 2944, the arm byte `0` takes. -/
 def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 2944
+           stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
+           memory := mem }
+
+/-- The appended dispatch for the first exponent byte. -/
+def lzDispatch (s : State) (mem : ByteArray) (i w : Nat)
+    (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 3695
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -117,7 +132,7 @@ theorem run_lzHead_first (s : State) (mem input : ByteArray) (bsize i w : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) (hzero : i = 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1781
-      (lzEntry s mem i rest) = some (lzFirst s mem i w rest) := by
+      (lzEntry s mem i rest) = some (lzDispatch s mem i w rest) := by
   subst hzero
   have hmod : (96 + bsize + 0) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936
@@ -137,8 +152,62 @@ theorem run_lzHead_first (s : State) (mem input : ByteArray) (bsize i w : Nat)
   simp (config := { maxSteps := 600000 }) [blk1781, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lzEntry, lzFirst, hdata, hrun, hcode, heoff, hmod, hfix, hbyte, hiz, htrue,
-    hc1, hc2, hc3, hc4, jumpDest2944, State.activeWordsAfterUInt256,
+    lzEntry, lzDispatch, hdata, hrun, hcode, heoff, hmod, hfix, hbyte, hiz, htrue,
+    hc1, hc2, hc3, hc4, jumpDest3695,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+/-- The dispatch falls through to the old highest-bit block below 128. -/
+theorem run_lzDispatch_lt (s : State) (mem : ByteArray) (i w : Nat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1008)
+    (hw : w < 256) (hlt : w < 128)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blkLzDispatch
+      (lzDispatch s mem i w rest) =
+      some (lzFirst s mem i w rest) := by
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hlt' : UInt256.lt (UInt256.ofNat w) (UInt256.ofNat 128) =
+      UInt256.ofNat 1 :=
+    Setup.lt_ofNat_of_lt (by omega) (by norm_num) hlt
+  simp (config := { maxSteps := 300000 }) [blkLzDispatch, opAt, pushAt,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    lzDispatch, lzFirst, hcode, hrun, hlt', isTrue_one, jumpDest2944,
+    hc1, hc2, hc3, hc4,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+/-- The dispatch jumps directly to the ordinary `0x80` mask at or above
+`0x80`, avoiding the smear sequence. -/
+theorem run_lzDispatch_top (s : State) (mem : ByteArray) (i w : Nat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1008)
+    (hw : w < 256) (hge : 128 ≤ w)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blkLzDispatch
+      (lzDispatch s mem i w rest) =
+      some (lzJoin s mem i w 128 rest) := by
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hlt' : UInt256.lt (UInt256.ofNat w) (UInt256.ofNat 128) =
+      UInt256.ofNat 0 :=
+    Setup.lt_ofNat_of_le (by omega) (by norm_num) (by omega)
+  have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
+  simp (config := { maxSteps := 300000 }) [blkLzDispatch, opAt, pushAt,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    lzDispatch, lzJoin, hcode, hrun, hlt', hfalse, jumpDest1789,
+    hc1, hc2, hc3, hc4,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -178,6 +247,7 @@ theorem run_lzHead_other (s : State) (mem input : ByteArray) (bsize i w : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     lzEntry, lzOther, hdata, hrun, heoff, hmod, hfix, hbyte, hiz, hfalse,
+    jumpDest3695,
     hc1, hc2, hc3, hc4, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,

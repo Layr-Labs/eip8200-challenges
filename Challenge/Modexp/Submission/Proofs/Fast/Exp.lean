@@ -1748,22 +1748,49 @@ def gasSteps_ebLoad (s : State) (mem input : ByteArray)
   if h : i = 0 then
     have g1 : Challenge.EvmProof.GasSteps
         (Lz.lzEntry s mem i (outer n bsize esize msize))
-        (Lz.lzFirst s mem i (expByte input bsize i) (outer n bsize esize msize)) :=
+        (Lz.lzDispatch s mem i (expByte input bsize i)
+          (outer n bsize esize msize)) :=
       Challenge.EvmProof.Stepper.runLocatedBlock_sound
         Artifact.submissionArtifact .Osaka blk1781 hcode hfork
         (Lz.run_lzHead_first s mem input bsize i (expByte input bsize i)
           (outer n bsize esize msize) hlen hdata hb hi hact heoff hbyte hcode hrun h)
         hrun hnp
-    have g2 : Challenge.EvmProof.GasSteps
-        (Lz.lzFirst s mem i (expByte input bsize i) (outer n bsize esize msize))
-        (Lz.lzJoin s mem i (expByte input bsize i)
-          (Lz.topBit (expByte input bsize i)) (outer n bsize esize msize)) :=
-      Challenge.EvmProof.Stepper.runLocatedBlock_sound
-        Artifact.submissionArtifact .Osaka blk1796 hcode hfork
-        (Lz.run_lzFirst s mem i (expByte input bsize i) (outer n bsize esize msize)
-          hlen hw hcode hrun) hrun hnp
-    Challenge.EvmProof.GasSteps.cast ((g0.trans g1).trans g2) rfl
-      (by simp only [lzMask, if_pos h, ebitHead, Lz.lzJoin, bitStack])
+    by_cases htop : 128 ≤ expByte input bsize i
+    · have hmask : Lz.topBit (expByte input bsize i) = 128 :=
+        Lz.topBit_eq_128_of_ge _ hw htop
+      have g2 : Challenge.EvmProof.GasSteps
+          (Lz.lzDispatch s mem i (expByte input bsize i)
+            (outer n bsize esize msize))
+          (Lz.lzJoin s mem i (expByte input bsize i) 128
+            (outer n bsize esize msize)) :=
+        Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka blkLzDispatch hcode hfork
+          (Lz.run_lzDispatch_top s mem i (expByte input bsize i)
+            (outer n bsize esize msize) hlen hw htop hcode hrun) hrun hnp
+      Challenge.EvmProof.GasSteps.cast ((g0.trans g1).trans g2) rfl
+        (by simp only [lzMask, if_pos h, hmask, ebitHead, Lz.lzJoin, bitStack])
+    · have hlt : expByte input bsize i < 128 := by omega
+      have g2 : Challenge.EvmProof.GasSteps
+          (Lz.lzDispatch s mem i (expByte input bsize i)
+            (outer n bsize esize msize))
+          (Lz.lzFirst s mem i (expByte input bsize i)
+            (outer n bsize esize msize)) :=
+        Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka blkLzDispatch hcode hfork
+          (Lz.run_lzDispatch_lt s mem i (expByte input bsize i)
+            (outer n bsize esize msize) hlen hw hlt hcode hrun) hrun hnp
+      have g3 : Challenge.EvmProof.GasSteps
+          (Lz.lzFirst s mem i (expByte input bsize i)
+            (outer n bsize esize msize))
+          (Lz.lzJoin s mem i (expByte input bsize i)
+            (Lz.topBit (expByte input bsize i))
+            (outer n bsize esize msize)) :=
+        Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka blk1796 hcode hfork
+          (Lz.run_lzFirst s mem i (expByte input bsize i)
+            (outer n bsize esize msize) hlen hw hcode hrun) hrun hnp
+      Challenge.EvmProof.GasSteps.cast ((g0.trans g1).trans (g2.trans g3)) rfl
+        (by simp only [lzMask, if_pos h, ebitHead, Lz.lzJoin, bitStack])
   else
     have g1 : Challenge.EvmProof.GasSteps
         (Lz.lzEntry s mem i (outer n bsize esize msize))

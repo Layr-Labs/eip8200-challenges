@@ -37,7 +37,7 @@ def blk1781 :
    opAt 1788 .BYTE,
    opAt 1789 (.Dup ⟨1, by decide⟩),
    opAt 1790 .ISZERO,
-   pushAt 1791 2 2944,
+   pushAt 1791 2 3695,
    opAt 1792 .JUMPI]
 
 /-- Instructions 1793..1795, pc 2938..2943: every byte after the first. -/
@@ -70,5 +70,19 @@ def blk1796 :
    opAt 1813 .ADD,
    pushAt 1814 2 1789,
    opAt 1815 .JUMP]
+
+/-- The first-byte top-bit dispatch appended after the Montgomery body.
+It avoids the smear when the byte already has its high bit set. -/
+def blkLzDispatch :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 2414 .JUMPDEST,
+   pushAt 2415 1 128,
+   opAt 2416 (.Dup ⟨1, by decide⟩),
+   opAt 2417 .LT,
+   pushAt 2418 2 2944,
+   opAt 2419 .JUMPI,
+   pushAt 2420 1 128,
+   pushAt 2421 2 1789,
+   opAt 2422 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
