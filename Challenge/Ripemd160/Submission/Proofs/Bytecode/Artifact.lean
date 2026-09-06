@@ -87,7 +87,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   .push 2 672,
   op 0x01,
   op 0x51,
-  op 0x01,
+  op 0x5b,
   op 0x90,
   op 0x56,
   op 0x00,

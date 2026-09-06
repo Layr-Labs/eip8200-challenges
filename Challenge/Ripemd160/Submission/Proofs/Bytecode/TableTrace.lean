@@ -64,7 +64,7 @@ def xAtPath : List Located :=
    ⟨58, .push ⟨2, by decide⟩ (UInt256.ofNat 672), by rfl, by decide⟩,
    ⟨59, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨60, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨61, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨61, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨62, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨63, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -130,7 +130,7 @@ def tableValue (s : State) (base i : UInt256) : UInt256 :=
 def atEntry (s : State) (pc i returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := pc
-           stack := [i, 0, returnDest] ++ rest }
+           stack := [i, returnDest] ++ rest }
 def hAtEntry (s : State) (pc i returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := pc
