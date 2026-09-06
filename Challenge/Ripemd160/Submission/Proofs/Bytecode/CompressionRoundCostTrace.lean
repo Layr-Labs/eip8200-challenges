@@ -38,7 +38,7 @@ def roundWork (j : Nat) : Nat :=
     roundBodyWork j
 
 theorem hAtWork_eq : hAtWork = 30 := by rfl
-theorem hSetWork_eq : hSetWork = 36 := by rfl
+theorem hSetWork_eq : hSetWork = 35 := by rfl
 theorem rotlWork_eq : rotlWork = 45 := by rfl
 
 theorem fCaseWork_eq (j : Nat) (hj : j < 5) :
@@ -46,7 +46,7 @@ theorem fCaseWork_eq (j : Nat) (hj : j < 5) :
   interval_cases j <;> rfl
 
 theorem roundWork_eq (j : Nat) (hj : j < 5) :
-    roundWork j = [515, 524, 527, 527, 527][j]! := by
+    roundWork j = [514, 523, 526, 526, 526][j]! := by
   interval_cases j <;> rfl
 
 theorem rotl_cost_potential (s : State) (x n returnDest : UInt256)
@@ -93,15 +93,16 @@ theorem hSet_cost_potential (s : State) (i value returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true)
+    (hmask : Challenge.EvmProof.Word.mask32 value = value) :
     (TableTrace.gasSteps_hSet s i value returnDest rest hstack hcode hfork
-      hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
+      hrun hnp hvalid hmask).cost + MachineState.memCost s.activeWords.toNat =
       hSetWork + MachineState.memCost
         (TableTrace.hSetReturned s i value returnDest rest).activeWords.toNat := by
   simpa [TableTrace.gasSteps_hSet, TableTrace.hSetEntry,
     TableTrace.hSetReturned, hSetWork, CompressionCostTrace.wordSetWork] using
     CompressionCostTrace.wordSet_cost_potential s (UInt256.ofNat 0x20) i value
-      returnDest rest hstack hcode hfork hrun hnp hvalid
+      returnDest rest hstack hcode hfork hrun hnp hvalid hmask
 
 theorem xSet_cost_potential (s : State) (i value returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1017)
@@ -243,6 +244,10 @@ theorem roundBody_cost_potential (q : State) (base : UInt256)
       a b c d e rest hstack hcode2 hrun2)
     (by simpa [RoundTrace.rotlReturned] using hfork2)
     (by simp [RoundTrace.afterRot2Path, CopyFree])
+  have hmask :
+      Challenge.EvmProof.Word.mask32 (rotlValue c (UInt256.ofNat 10)) =
+        rotlValue c (UInt256.ofNat 10) := by
+    exact Challenge.EvmProof.Word.mask32_idem _
   have h7 := wordSet_cost_potential q2 base (UInt256.ofNat 3)
     (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18d)
     (genericSetTail base j wordIndex rotation k returnDest word
@@ -250,6 +255,7 @@ theorem roundBody_cost_potential (q : State) (base : UInt256)
     (by simp [genericSetTail]; omega) hcode2 hfork2 hrun2 hnp2
     (by
       exact Artifact.submissionArtifact.isValidJumpDest_index 286 (by rfl))
+    hmask
   have h8 := blockCost_potential RoundTrace.suffixPath
     (TableTrace.setReturned q2 base (UInt256.ofNat 3)
       (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18d)

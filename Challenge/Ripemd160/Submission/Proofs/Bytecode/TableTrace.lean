@@ -52,7 +52,7 @@ def hSetPath : List Located :=
    ⟨42, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨43, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨44, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
-   ⟨45, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨45, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨46, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨47, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨48, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
@@ -231,7 +231,8 @@ theorem run_wordSet (s : State) (base i value returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1016)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true)
+    (hmask : Challenge.EvmProof.Word.mask32 value = value) :
     Challenge.EvmProof.Stepper.runLocatedBlock hSetPath
       (setEntry s base i value returnDest rest) =
         some (setReturned s base i value returnDest rest) := by
@@ -252,18 +253,19 @@ theorem run_wordSet (s : State) (base i value returnDest : UInt256)
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     setEntry, setReturned, storedWord, slotAddress, Challenge.EvmProof.Word.mask32,
     hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hrun, hcode, hvalid, haddr,
-    State.activeWordsAfterUInt256]
+    hmask, State.activeWordsAfterUInt256]
 
 theorem run_hSet (s : State) (i value returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1016)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true)
+    (hmask : Challenge.EvmProof.Word.mask32 value = value) :
     Challenge.EvmProof.Stepper.runLocatedBlock hSetPath
       (hSetEntry s i value returnDest rest) =
         some (hSetReturned s i value returnDest rest) := by
   exact run_wordSet s (UInt256.ofNat 0x20) i value returnDest rest
-    hstack hcode hrun hvalid
+    hstack hcode hrun hvalid hmask
 
 set_option linter.unusedSimpArgs false in
 theorem run_xSet (s : State) (i value returnDest : UInt256)
@@ -342,7 +344,8 @@ def gasSteps_wordSet (s : State) (base i value returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true)
+    (hmask : Challenge.EvmProof.Word.mask32 value = value) :
     Challenge.EvmProof.GasSteps (setEntry s base i value returnDest rest)
       (setReturned s base i value returnDest rest) := by
   apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
@@ -350,7 +353,7 @@ def gasSteps_wordSet (s : State) (base i value returnDest : UInt256)
       (s := setEntry s base i value returnDest rest)
   · exact hcode
   · exact hfork
-  · exact run_wordSet s base i value returnDest rest hstack hcode hrun hvalid
+  · exact run_wordSet s base i value returnDest rest hstack hcode hrun hvalid hmask
   · exact hrun
   · exact hnp
 
@@ -360,11 +363,12 @@ def gasSteps_hSet (s : State) (i value returnDest : UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true)
+    (hmask : Challenge.EvmProof.Word.mask32 value = value) :
     Challenge.EvmProof.GasSteps (hSetEntry s i value returnDest rest)
       (hSetReturned s i value returnDest rest) :=
   gasSteps_wordSet s (UInt256.ofNat 0x20) i value returnDest rest
-    hstack hcode hfork hrun hnp hvalid
+    hstack hcode hfork hrun hnp hvalid hmask
 
 def gasSteps_xAt (s : State) (i returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1018)

@@ -126,7 +126,7 @@ def wordSetWork : Nat := Meter.runLocatedBlockStaticCost TableTrace.hSetPath
 
 theorem tableAtWork_eq : tableAtWork = 27 := by rfl
 theorem xAtWork_eq : xAtWork = 30 := by rfl
-theorem wordSetWork_eq : wordSetWork = 36 := by rfl
+theorem wordSetWork_eq : wordSetWork = 35 := by rfl
 
 theorem tableAt_cost_potential (s : State) (base i returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1016)
@@ -174,15 +174,16 @@ theorem wordSet_cost_potential (s : State)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false)
-    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
+    (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true)
+    (hmask : Challenge.EvmProof.Word.mask32 value = value) :
     (TableTrace.gasSteps_wordSet s base i value returnDest rest hstack hcode
-      hfork hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
+      hfork hrun hnp hvalid hmask).cost + MachineState.memCost s.activeWords.toNat =
       wordSetWork + MachineState.memCost
         (TableTrace.setReturned s base i value returnDest rest).activeWords.toNat := by
   have hraw := blockCost_potential TableTrace.hSetPath
     (TableTrace.setEntry s base i value returnDest rest)
     (TableTrace.setReturned s base i value returnDest rest)
-    (TableTrace.run_wordSet s base i value returnDest rest hstack hcode hrun hvalid)
+    (TableTrace.run_wordSet s base i value returnDest rest hstack hcode hrun hvalid hmask)
     (by simpa [TableTrace.setEntry] using hfork)
     (by simp [TableTrace.hSetPath, CopyFree])
   simpa [TableTrace.gasSteps_wordSet, TableTrace.setEntry, wordSetWork] using hraw

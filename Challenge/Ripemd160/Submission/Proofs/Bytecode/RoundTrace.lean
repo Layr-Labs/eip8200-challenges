@@ -741,10 +741,14 @@ def gasSteps_roundBody (q : State) (base : UInt256) (j : Nat) (hj : j < 5)
       hcode2 hfork2
       (run_afterRot2 q2 base j wordIndex rotation k returnDest word a b c d e rest
         hstack hcode2 hrun2) hrun2 hnp2
+  have hsetmask :
+      Challenge.EvmProof.Word.mask32 (rotlValue c (UInt256.ofNat 10)) =
+        rotlValue c (UInt256.ofNat 10) := by
+    exact Challenge.EvmProof.Word.mask32_idem _
   have gSet := TableTrace.gasSteps_wordSet q2 base (UInt256.ofNat 3)
     (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18d)
     (genericSetTail base j wordIndex rotation k returnDest word a b c d e rest)
-    (by simp [genericSetTail]; omega) hcode2 hfork2 hrun2 hnp2 valid18D
+    (by simp [genericSetTail]; omega) hcode2 hfork2 hrun2 hnp2 valid18D hsetmask
   have gSuffix := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka suffixPath
       (s := TableTrace.setReturned q2 base (UInt256.ofNat 3)
