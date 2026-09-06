@@ -1,4 +1,6 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.newMaskHelperTemplates
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHoistBaseline
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHoistTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.newMaskHoistBaseline
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.newMaskProjection
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTrace
 
@@ -146,12 +148,12 @@ def leftLift (j : Nat) (constant : UInt256) : List Instr :=
   | _ => edited
 
 theorem leftTemplate_eq_lift (group : Fin 5) :
-    MaskHelperTemplates.leftTemplate group (leftConstant (16 * group.val)) =
+    MaskHoistBaseline.leftTemplate group (leftConstant (16 * group.val)) =
       leftLift group.val (leftConstant (16 * group.val)) := by
   fin_cases group <;> rfl
 
 theorem maskLeft0Template_eq_leftTemplate (constant : UInt256) :
-    maskLeft0Template constant = MaskHelperTemplates.leftTemplate ⟨0, by decide⟩ 0 := by
+    maskLeft0Template constant = MaskHoistBaseline.leftTemplate ⟨0, by decide⟩ 0 := by
   rfl
 
 set_option linter.unusedSimpArgs false in
@@ -168,14 +170,14 @@ theorem left_relation
     (hrot2 : 0 < r2) (hrot2' : r2 < 32)
     (hrot3 : 0 < r3) (hrot3' : r3 < 32) :
     runInstrSeq
-        (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates.leftTemplate
+        (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHoistBaseline.leftTemplate
           group (leftConstant (16 * group.val)))
         (maskQuadHelperEntry s startPC p0 p1 p2 p3 returnPC
           (shiftedFactor r0) (shiftedFactor r1)
           (shiftedFactor r2) (shiftedFactor r3) working rho) =
       Option.map (fun out => {out with
         pc := pcAfter startPC
-          (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates.leftTemplate
+          (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHoistBaseline.leftTemplate
             group (leftConstant (16 * group.val))),
         stack := out.stack.take 6 ++ [MaskProjection.mask] ++ out.stack.drop 6})
         (runInstrSeq (quadBeforeJumpTemplate group.val
@@ -356,7 +358,7 @@ theorem left_relation
      add_assoc_hAdd_explicit]
 
 set_option linter.unusedSimpArgs false in
-theorem runInstrSeq_maskLeft
+theorem baseline_runInstrSeq_maskLeft
     (group : Fin 5)
     (s : State) (startPC p0 p1 p2 p3 returnPC : UInt256)
     (r0 r1 r2 r3 : Nat)
@@ -368,14 +370,14 @@ theorem runInstrSeq_maskLeft
     (hrot2 : 0 < r2) (hrot2' : r2 < 32)
     (hrot3 : 0 < r3) (hrot3' : r3 < 32) :
     runInstrSeq
-        (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates.leftTemplate
+        (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHoistBaseline.leftTemplate
           group (leftConstant (16 * group.val)))
         (maskQuadHelperEntry s startPC p0 p1 p2 p3 returnPC
           (shiftedFactor r0) (shiftedFactor r1)
           (shiftedFactor r2) (shiftedFactor r3) working rho) =
       some (maskQuadAfterHelperBeforeJump s
         (pcAfter startPC
-          (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates.leftTemplate
+          (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHoistBaseline.leftTemplate
             group (leftConstant (16 * group.val))))
         returnPC group.val working
         p0 p1 p2 p3 r0 r1 r2 r3
@@ -412,12 +414,45 @@ theorem runInstrSeq_maskLeft0
       some (maskQuadAfterHelperBeforeJump s
         (pcAfter startPC (maskLeft0Template 0)) returnPC 0 working
         p0 p1 p2 p3 r0 r1 r2 r3 0 rho) := by
-  have h := runInstrSeq_maskLeft ⟨0, by decide⟩
+  have h := baseline_runInstrSeq_maskLeft ⟨0, by decide⟩
     s startPC p0 p1 p2 p3 returnPC r0 r1 r2 r3 working rho hstack hrun
     hrot0 hrot0' hrot1 hrot1' hrot2 hrot2' hrot3 hrot3'
   have hconstant : leftConstant (16 * (⟨0, by decide⟩ : Fin 5).val) = 0 := by rfl
   rw [hconstant] at h
   rw [maskLeft0Template_eq_leftTemplate]
   exact h
+
+set_option linter.unusedSimpArgs false in
+theorem runInstrSeq_maskLeft
+    (group : Fin 5)
+    (s : State) (startPC p0 p1 p2 p3 returnPC : UInt256)
+    (r0 r1 r2 r3 : Nat)
+    (working : Challenge.Ripemd160.Submission.Proofs.Bytecode.Compression.EvmWorking)
+    (rho : List UInt256)
+    (hstack : rho.length < 1006) (hrun : s.halt = .Running)
+    (hrot0 : 0 < r0) (hrot0' : r0 < 32)
+    (hrot1 : 0 < r1) (hrot1' : r1 < 32)
+    (hrot2 : 0 < r2) (hrot2' : r2 < 32)
+    (hrot3 : 0 < r3) (hrot3' : r3 < 32) :
+    runInstrSeq
+        (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates.leftTemplate
+          group (leftConstant (16 * group.val)))
+        (maskQuadHelperEntry s startPC p0 p1 p2 p3 returnPC
+          (shiftedFactor r0) (shiftedFactor r1)
+          (shiftedFactor r2) (shiftedFactor r3) working rho) =
+      some (maskQuadAfterHelperBeforeJump s
+        (pcAfter startPC
+          (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates.leftTemplate
+            group (leftConstant (16 * group.val))))
+        returnPC group.val working
+        p0 p1 p2 p3 r0 r1 r2 r3
+        (leftConstant (16 * group.val)) rho) := by
+  have h := MaskHoistTrace.left_equivalent group (leftConstant (16 * group.val))
+    s startPC p0 p1 p2 p3 returnPC (shiftedFactor r0) (shiftedFactor r1) (shiftedFactor r2) (shiftedFactor r3) working rho hstack hrun
+  have hold := baseline_runInstrSeq_maskLeft group s startPC p0 p1 p2 p3 returnPC
+    r0 r1 r2 r3 working rho hstack hrun
+    hrot0 hrot0' hrot1 hrot1' hrot2 hrot2' hrot3 hrot3'
+  rw [hold] at h
+  simpa only [Option.map_some, maskQuadAfterHelperBeforeJump] using h
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTrace
