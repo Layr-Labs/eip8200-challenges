@@ -50,13 +50,13 @@ def c2Instructions : List Instr :=
     push1 (UInt256.ofNat 0x60), op .MSTORE ]
 
 def c3Instructions : List Instr :=
-  [ swap2, swap1, swap5H,
+  [ swap5H, swap1, swap2,
     push1 (UInt256.ofNat 0xa0), op .MLOAD, op .ADD, op .ADD,
     push4 mask, op .AND,
     push1 (UInt256.ofNat 0x80), op .MSTORE ]
 
 def c4Instructions : List Instr :=
-  [ swap3,
+  [ op .JUMPDEST,
     push1 (UInt256.ofNat 0x20), op .MLOAD, op .ADD, op .ADD,
     push4 mask, op .AND,
     push1 (UInt256.ofNat 0xa0), op .MSTORE ]
