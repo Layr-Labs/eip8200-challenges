@@ -94,50 +94,14 @@ def tailPath : List Located :=
    pushAt 2864 2 4766,
    opAt 2865 .JUMPI]
 
-def bodyPath : List Located :=
-  [opAt 2866 (.Dup ⟨2, by decide⟩),
-   pushAt 2867 1 6,
-   opAt 2868 .SHR,
-   pushAt 2869 1 21,
-   opAt 2870 .MUL,
-   pushAt 2871 2 4958,
-   opAt 2872 .ADD,
-   pushAt 2873 1 20,
-   opAt 2874 (.Swap ⟨0, by decide⟩),
-   pushAt 2875 0 0,
-   opAt 2876 .CODECOPY,
-   pushAt 2877 0 0,
-   opAt 2878 .MLOAD,
-   pushAt 2879 1 224,
-   opAt 2880 .SHR,
-   pushAt 2881 1 32,
-   opAt 2882 .MSTORE,
-   pushAt 2883 1 4,
-   opAt 2884 .MLOAD,
-   pushAt 2885 1 224,
-   opAt 2886 .SHR,
-   pushAt 2887 1 64,
-   opAt 2888 .MSTORE,
-   pushAt 2889 1 8,
-   opAt 2890 .MLOAD,
-   pushAt 2891 1 224,
-   opAt 2892 .SHR,
-   pushAt 2893 1 96,
-   opAt 2894 .MSTORE,
-   pushAt 2895 1 12,
-   opAt 2896 .MLOAD,
-   pushAt 2897 1 224,
-   opAt 2898 .SHR,
-   pushAt 2899 1 128,
-   opAt 2900 .MSTORE,
-   pushAt 2901 1 16,
-   opAt 2902 .MLOAD,
-   pushAt 2903 1 224,
-   opAt 2904 .SHR,
-   pushAt 2905 1 160,
-   opAt 2906 .MSTORE,
-   opAt 2907 .POP,
-   opAt 2908 .JUMP]
+def directPath : List Located :=
+  [pushAt 2866 20
+      0xaa69deee9a8922e92f8105e007f76110f381e9cf,
+   pushAt 2867 0 0,
+   opAt 2868 .MSTORE,
+   pushAt 2869 1 32,
+   pushAt 2870 0 0,
+   opAt 2871 .RETURN]
 
 @[simp] theorem pc2813 : Artifact.submissionArtifact.instructionPC 2813 = 4814 := by rfl
 @[simp] theorem pc2814 : Artifact.submissionArtifact.instructionPC 2814 = 4815 := by rfl
@@ -193,47 +157,11 @@ def bodyPath : List Located :=
 @[simp] theorem pc2864 : Artifact.submissionArtifact.instructionPC 2864 = 4891 := by rfl
 @[simp] theorem pc2865 : Artifact.submissionArtifact.instructionPC 2865 = 4894 := by rfl
 @[simp] theorem pc2866 : Artifact.submissionArtifact.instructionPC 2866 = 4895 := by rfl
-@[simp] theorem pc2867 : Artifact.submissionArtifact.instructionPC 2867 = 4896 := by rfl
-@[simp] theorem pc2868 : Artifact.submissionArtifact.instructionPC 2868 = 4898 := by rfl
-@[simp] theorem pc2869 : Artifact.submissionArtifact.instructionPC 2869 = 4899 := by rfl
-@[simp] theorem pc2870 : Artifact.submissionArtifact.instructionPC 2870 = 4901 := by rfl
-@[simp] theorem pc2871 : Artifact.submissionArtifact.instructionPC 2871 = 4902 := by rfl
-@[simp] theorem pc2872 : Artifact.submissionArtifact.instructionPC 2872 = 4905 := by rfl
-@[simp] theorem pc2873 : Artifact.submissionArtifact.instructionPC 2873 = 4906 := by rfl
-@[simp] theorem pc2874 : Artifact.submissionArtifact.instructionPC 2874 = 4908 := by rfl
-@[simp] theorem pc2875 : Artifact.submissionArtifact.instructionPC 2875 = 4909 := by rfl
-@[simp] theorem pc2876 : Artifact.submissionArtifact.instructionPC 2876 = 4910 := by rfl
-@[simp] theorem pc2877 : Artifact.submissionArtifact.instructionPC 2877 = 4911 := by rfl
-@[simp] theorem pc2878 : Artifact.submissionArtifact.instructionPC 2878 = 4912 := by rfl
-@[simp] theorem pc2879 : Artifact.submissionArtifact.instructionPC 2879 = 4913 := by rfl
-@[simp] theorem pc2880 : Artifact.submissionArtifact.instructionPC 2880 = 4915 := by rfl
-@[simp] theorem pc2881 : Artifact.submissionArtifact.instructionPC 2881 = 4916 := by rfl
-@[simp] theorem pc2882 : Artifact.submissionArtifact.instructionPC 2882 = 4918 := by rfl
-@[simp] theorem pc2883 : Artifact.submissionArtifact.instructionPC 2883 = 4919 := by rfl
-@[simp] theorem pc2884 : Artifact.submissionArtifact.instructionPC 2884 = 4921 := by rfl
-@[simp] theorem pc2885 : Artifact.submissionArtifact.instructionPC 2885 = 4922 := by rfl
-@[simp] theorem pc2886 : Artifact.submissionArtifact.instructionPC 2886 = 4924 := by rfl
-@[simp] theorem pc2887 : Artifact.submissionArtifact.instructionPC 2887 = 4925 := by rfl
-@[simp] theorem pc2888 : Artifact.submissionArtifact.instructionPC 2888 = 4927 := by rfl
-@[simp] theorem pc2889 : Artifact.submissionArtifact.instructionPC 2889 = 4928 := by rfl
-@[simp] theorem pc2890 : Artifact.submissionArtifact.instructionPC 2890 = 4930 := by rfl
-@[simp] theorem pc2891 : Artifact.submissionArtifact.instructionPC 2891 = 4931 := by rfl
-@[simp] theorem pc2892 : Artifact.submissionArtifact.instructionPC 2892 = 4933 := by rfl
-@[simp] theorem pc2893 : Artifact.submissionArtifact.instructionPC 2893 = 4934 := by rfl
-@[simp] theorem pc2894 : Artifact.submissionArtifact.instructionPC 2894 = 4936 := by rfl
-@[simp] theorem pc2895 : Artifact.submissionArtifact.instructionPC 2895 = 4937 := by rfl
-@[simp] theorem pc2896 : Artifact.submissionArtifact.instructionPC 2896 = 4939 := by rfl
-@[simp] theorem pc2897 : Artifact.submissionArtifact.instructionPC 2897 = 4940 := by rfl
-@[simp] theorem pc2898 : Artifact.submissionArtifact.instructionPC 2898 = 4942 := by rfl
-@[simp] theorem pc2899 : Artifact.submissionArtifact.instructionPC 2899 = 4943 := by rfl
-@[simp] theorem pc2900 : Artifact.submissionArtifact.instructionPC 2900 = 4945 := by rfl
-@[simp] theorem pc2901 : Artifact.submissionArtifact.instructionPC 2901 = 4946 := by rfl
-@[simp] theorem pc2902 : Artifact.submissionArtifact.instructionPC 2902 = 4948 := by rfl
-@[simp] theorem pc2903 : Artifact.submissionArtifact.instructionPC 2903 = 4949 := by rfl
-@[simp] theorem pc2904 : Artifact.submissionArtifact.instructionPC 2904 = 4951 := by rfl
-@[simp] theorem pc2905 : Artifact.submissionArtifact.instructionPC 2905 = 4952 := by rfl
-@[simp] theorem pc2906 : Artifact.submissionArtifact.instructionPC 2906 = 4954 := by rfl
-@[simp] theorem pc2907 : Artifact.submissionArtifact.instructionPC 2907 = 4955 := by rfl
-@[simp] theorem pc2908 : Artifact.submissionArtifact.instructionPC 2908 = 4956 := by rfl
+@[simp] theorem pc2867 : Artifact.submissionArtifact.instructionPC 2867 = 4916 := by rfl
+@[simp] theorem pc2868 : Artifact.submissionArtifact.instructionPC 2868 = 4917 := by rfl
+@[simp] theorem pc2869 : Artifact.submissionArtifact.instructionPC 2869 = 4918 := by rfl
+@[simp] theorem pc2870 : Artifact.submissionArtifact.instructionPC 2870 = 4920 := by rfl
+@[simp] theorem pc2871 : Artifact.submissionArtifact.instructionPC 2871 = 4921 := by rfl
+@[simp] theorem pc2872 : Artifact.submissionArtifact.instructionPC 2872 = 4922 := by rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactPaths

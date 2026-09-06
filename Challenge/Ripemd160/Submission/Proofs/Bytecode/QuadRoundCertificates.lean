@@ -1,18 +1,17 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSemantic
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSitesLeft
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSitesRight
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadHelperTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRawTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundModel
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCompression
 
 set_option warningAsError true
 set_option maxRecDepth 50000
-set_option maxHeartbeats 10000000
+set_option maxHeartbeats 8000000
 
 /-!
-# H30b four-round certificates
+# Q4M quad-round certificates
 
-This module composes the generic quad raw trace with the concrete combined
-artifact sites.  It contains no outer frame, schedule, tail, or correctness
-theorem.
+Each certificate composes one ten-push call, one quad helper, and one return
+jump, and identifies the result with four `StackCompression` steps.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundCertificates
@@ -22,345 +21,256 @@ open EvmSemantics.EVM
 open YulEvmCompiler
 open Challenge.EvmProof
 open Challenge.EvmProof.Word
+open Challenge.Ripemd160
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.Compression
-open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadCallTrace
-open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadHelperTrace
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTemplate
-open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTrace
-open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSemantic
+open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadHelperTrace
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites
+open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
-open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCompression
 
 abbrev Artifact := QuadSites.Artifact
-abbrev low32DenseWordsAt := QuadSemantic.DenseWordsAt
 
-def stateAt (s : State) (pc : UInt256) (working : Compression.EvmWorking)
-    (rho : List UInt256) : State :=
-  roundEntry s pc working.a working.b working.c working.d working.e
-    (QuadRoundTemplate.factor :: rho)
+private theorem leftIndex_lt (i : Fin 80) :
+    Crypto.Ripemd160.r[i.val]! < 16 := by
+  fin_cases i <;> decide
 
-def left4 (word : Nat → UInt32) (k : Fin 20)
-    (working : Compression.EvmWorking) : Compression.EvmWorking :=
-  StackCompression.leftStep word (quadIndex k 3)
-    (StackCompression.leftStep word (quadIndex k 2)
-      (StackCompression.leftStep word (quadIndex k 1)
-        (StackCompression.leftStep word (quadIndex k 0) working)))
+private theorem rightIndex_lt (i : Fin 80) :
+    Crypto.Ripemd160.rP[i.val]! < 16 := by
+  fin_cases i <;> decide
 
-def right4 (word : Nat → UInt32) (k : Fin 20)
-    (working : Compression.EvmWorking) : Compression.EvmWorking :=
-  StackCompression.rightStep word (quadIndex k 3)
-    (StackCompression.rightStep word (quadIndex k 2)
-      (StackCompression.rightStep word (quadIndex k 1)
-        (StackCompression.rightStep word (quadIndex k 0) working)))
+theorem leftAddress_toNat (i : Fin 80) :
+    (StackRoundData.leftAddress i.val).toNat =
+      644 + 4 * Crypto.Ripemd160.r[i.val]! := by
+  have hi := leftIndex_lt i
+  unfold StackRoundData.leftAddress
+  rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
 
-private theorem leftAddress0_eq (k : Fin 20) :
-    QuadSites.leftAddress0 k = quadLeftAddress k 0 := by
-  fin_cases k <;> rfl
+theorem rightAddress_toNat (i : Fin 80) :
+    (StackRoundData.rightAddress i.val).toNat =
+      644 + 4 * Crypto.Ripemd160.rP[i.val]! := by
+  have hi := rightIndex_lt i
+  unfold StackRoundData.rightAddress
+  rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
 
-private theorem leftAddress1_eq (k : Fin 20) :
-    QuadSites.leftAddress1 k = quadLeftAddress k 1 := by
-  fin_cases k <;> rfl
+theorem leftAddress_bound (i : Fin 80) :
+    (StackRoundData.leftAddress i.val).toNat + 32 ≤ 2144 := by
+  rw [leftAddress_toNat]
+  have := leftIndex_lt i
+  omega
 
-private theorem leftAddress2_eq (k : Fin 20) :
-    QuadSites.leftAddress2 k = quadLeftAddress k 2 := by
-  fin_cases k <;> rfl
+theorem rightAddress_bound (i : Fin 80) :
+    (StackRoundData.rightAddress i.val).toNat + 32 ≤ 2144 := by
+  rw [rightAddress_toNat]
+  have := rightIndex_lt i
+  omega
 
-private theorem leftAddress3_eq (k : Fin 20) :
-    QuadSites.leftAddress3 k = quadLeftAddress k 3 := by
-  fin_cases k <;> rfl
+private theorem leftWord (s : State) (word : Nat → UInt32) (i : Fin 80)
+    (hwords : ∀ n, n < 16 →
+      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * n)) = word n) :
+    Word.toUInt32 (MachineState.readWord s.memory
+      (StackRoundData.leftAddress i.val).toNat) =
+      word (Crypto.Ripemd160.r[i.val]!) := by
+  rw [leftAddress_toNat i]
+  exact hwords _ (leftIndex_lt i)
 
-private theorem rightAddress0_eq (k : Fin 20) :
-    QuadSites.rightAddress0 k = quadRightAddress k 0 := by
-  fin_cases k <;> rfl
+private theorem rightWord (s : State) (word : Nat → UInt32) (i : Fin 80)
+    (hwords : ∀ n, n < 16 →
+      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * n)) = word n) :
+    Word.toUInt32 (MachineState.readWord s.memory
+      (StackRoundData.rightAddress i.val).toNat) =
+      word (Crypto.Ripemd160.rP[i.val]!) := by
+  rw [rightAddress_toNat i]
+  exact hwords _ (rightIndex_lt i)
 
-private theorem rightAddress1_eq (k : Fin 20) :
-    QuadSites.rightAddress1 k = quadRightAddress k 1 := by
-  fin_cases k <;> rfl
+def pureQuadWorking (s : State) (working : EvmWorking) (j : Nat)
+    (p0 p1 p2 p3 M0 M1 M2 M3 constant : UInt256) : EvmWorking :=
+  QuadRoundState.quadWorking s working j p0 p1 p2 p3 M0 M1 M2 M3 constant
 
-private theorem rightAddress2_eq (k : Fin 20) :
-    QuadSites.rightAddress2 k = quadRightAddress k 2 := by
-  fin_cases k <;> rfl
-
-private theorem rightAddress3_eq (k : Fin 20) :
-    QuadSites.rightAddress3 k = quadRightAddress k 3 := by
-  fin_cases k <;> rfl
-
-private theorem leftRotation0_eq (k : Fin 20) :
-    QuadSites.leftRotation0 k = quadLeftRotation k 0 := by
-  fin_cases k <;> rfl
-
-private theorem leftRotation1_eq (k : Fin 20) :
-    QuadSites.leftRotation1 k = quadLeftRotation k 1 := by
-  fin_cases k <;> rfl
-
-private theorem leftRotation2_eq (k : Fin 20) :
-    QuadSites.leftRotation2 k = quadLeftRotation k 2 := by
-  fin_cases k <;> rfl
-
-private theorem leftRotation3_eq (k : Fin 20) :
-    QuadSites.leftRotation3 k = quadLeftRotation k 3 := by
-  fin_cases k <;> rfl
-
-private theorem rightRotation0_eq (k : Fin 20) :
-    QuadSites.rightRotation0 k = quadRightRotation k 0 := by
-  fin_cases k <;> rfl
-
-private theorem rightRotation1_eq (k : Fin 20) :
-    QuadSites.rightRotation1 k = quadRightRotation k 1 := by
-  fin_cases k <;> rfl
-
-private theorem rightRotation2_eq (k : Fin 20) :
-    QuadSites.rightRotation2 k = quadRightRotation k 2 := by
-  fin_cases k <;> rfl
-
-private theorem rightRotation3_eq (k : Fin 20) :
-    QuadSites.rightRotation3 k = quadRightRotation k 3 := by
-  fin_cases k <;> rfl
-
-private theorem leftConstant_eq (k : Fin 20) :
-    QuadSites.leftConstant k = quadLeftConstant k := by
-  fin_cases k <;> rfl
-
-private theorem rightConstant_eq (k : Fin 20) :
-    QuadSites.rightConstant k = quadRightConstant k := by
-  fin_cases k <;> rfl
-
-private theorem leftConstant_zero (k : Fin 20)
-    (hzero : k.val / 4 = 0) : QuadSites.leftConstant k = 0 := by
+private theorem leftConstant_zero (k : Fin 20) (hzero : k.val / 4 = 0) :
+    QuadSites.leftConstant k = 0 := by
   fin_cases k <;>
     simp_all [QuadSites.leftConstant, StackRoundData.leftConstant] <;>
     decide
 
-private theorem rightConstant_zero (k : Fin 20)
-    (hzero : 4 - k.val / 4 = 0) : QuadSites.rightConstant k = 0 := by
+private theorem rightConstant_zero (k : Fin 20) (hzero : 4 - k.val / 4 = 0) :
+    QuadSites.rightConstant k = 0 := by
   fin_cases k <;>
     simp_all [QuadSites.rightConstant, StackRoundData.rightConstant] <;>
     decide
 
-private theorem leftRotation0_le32 (k : Fin 20) :
-    QuadSites.leftRotation0 k ≤ 32 := by
-  rw [leftRotation0_eq k]
-  exact quadLeftRotation_le_32 k 0
+theorem pureQuadWorking_left (s : State) (word : Nat → UInt32)
+    (working : EvmWorking) (k : Fin 20)
+    (hwords : ∀ n, n < 16 →
+      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * n)) = word n) :
+    pureQuadWorking s working (k.val / 4)
+        (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
+        (leftM0 k) (leftM1 k) (leftM2 k) (leftM3 k) (QuadSites.leftConstant k) =
+      StackCompression.leftStep word (4 * k.val + 3)
+        (StackCompression.leftStep word (4 * k.val + 2)
+          (StackCompression.leftStep word (4 * k.val + 1)
+            (StackCompression.leftStep word (4 * k.val) working))) := by
+  unfold pureQuadWorking leftM0 leftM1 leftM2 leftM3
+  rw [QuadRoundModel.quadWorking_eq_rawRounds s working (k.val / 4)
+    (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
+    (leftRotation0 k) (leftRotation1 k) (leftRotation2 k) (leftRotation3 k)
+    (QuadSites.leftConstant k) (by omega) (leftRotation0_le32 k) (leftRotation1_le32 k)
+    (leftRotation2_le32 k) (leftRotation3_le32 k) (fun h => leftConstant_zero k h)]
+  rw [QuadRoundModel.fourRawRound_eq_of_toUInt32_eq working (k.val / 4)
+    _ (Word.ofUInt32 (word (Crypto.Ripemd160.r[4 * k.val]!)))
+    _ (Word.ofUInt32 (word (Crypto.Ripemd160.r[4 * k.val + 1]!)))
+    _ (Word.ofUInt32 (word (Crypto.Ripemd160.r[4 * k.val + 2]!)))
+    _ (Word.ofUInt32 (word (Crypto.Ripemd160.r[4 * k.val + 3]!)))
+    _ _ _ _ _
+    (by simpa only [Word.toUInt32_ofUInt32, leftAddress0] using leftWord s word ⟨4 * k.val, by omega⟩ hwords)
+    (by simpa only [Word.toUInt32_ofUInt32, leftAddress1] using
+      leftWord s word ⟨4 * k.val + 1, by omega⟩ hwords)
+    (by simpa only [Word.toUInt32_ofUInt32, leftAddress2] using
+      leftWord s word ⟨4 * k.val + 2, by omega⟩ hwords)
+    (by simpa only [Word.toUInt32_ofUInt32, leftAddress3] using
+      leftWord s word ⟨4 * k.val + 3, by omega⟩ hwords)]
+  fin_cases k <;> rfl
 
-private theorem leftRotation1_le32 (k : Fin 20) :
-    QuadSites.leftRotation1 k ≤ 32 := by
-  rw [leftRotation1_eq k]
-  exact quadLeftRotation_le_32 k 1
-
-private theorem leftRotation2_le32 (k : Fin 20) :
-    QuadSites.leftRotation2 k ≤ 32 := by
-  rw [leftRotation2_eq k]
-  exact quadLeftRotation_le_32 k 2
-
-private theorem leftRotation3_le32 (k : Fin 20) :
-    QuadSites.leftRotation3 k ≤ 32 := by
-  rw [leftRotation3_eq k]
-  exact quadLeftRotation_le_32 k 3
-
-private theorem rightRotation0_le32 (k : Fin 20) :
-    QuadSites.rightRotation0 k ≤ 32 := by
-  rw [rightRotation0_eq k]
-  exact quadRightRotation_le_32 k 0
-
-private theorem rightRotation1_le32 (k : Fin 20) :
-    QuadSites.rightRotation1 k ≤ 32 := by
-  rw [rightRotation1_eq k]
-  exact quadRightRotation_le_32 k 1
-
-private theorem rightRotation2_le32 (k : Fin 20) :
-    QuadSites.rightRotation2 k ≤ 32 := by
-  rw [rightRotation2_eq k]
-  exact quadRightRotation_le_32 k 2
-
-private theorem rightRotation3_le32 (k : Fin 20) :
-    QuadSites.rightRotation3 k ≤ 32 := by
-  rw [rightRotation3_eq k]
-  exact quadRightRotation_le_32 k 3
-
-private theorem leftWorking_eq (s : State) (word : Nat → UInt32)
-    (working : Compression.EvmWorking) (k : Fin 20)
-    (hwords : low32DenseWordsAt s word) :
-    QuadRoundState.quadWorking s working (k.val / 4)
-        (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k)
-        (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k)
-        (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k)
-        (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k)
-        (QuadSites.leftConstant k) = left4 word k working := by
-  have h := QuadSemantic.quadWorking_left s word working k hwords
-  rw [leftAddress0_eq k, leftAddress1_eq k, leftAddress2_eq k,
-    leftAddress3_eq k, leftRotation0_eq k, leftRotation1_eq k,
-    leftRotation2_eq k, leftRotation3_eq k, leftConstant_eq k]
-  simpa [left4] using h
-
-private theorem rightWorking_eq (s : State) (word : Nat → UInt32)
-    (working : Compression.EvmWorking) (k : Fin 20)
-    (hwords : low32DenseWordsAt s word) :
-    QuadRoundState.quadWorking s working (4 - k.val / 4)
-        (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k)
-        (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k)
-        (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k)
-        (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k)
-        (QuadSites.rightConstant k) = right4 word k working := by
-  have h := QuadSemantic.quadWorking_right s word working k hwords
-  rw [rightAddress0_eq k, rightAddress1_eq k, rightAddress2_eq k,
-    rightAddress3_eq k, rightRotation0_eq k, rightRotation1_eq k,
-    rightRotation2_eq k, rightRotation3_eq k, rightConstant_eq k]
-  simpa [right4] using h
-
-private theorem leftActiveWords_eq (s : State) (k : Fin 20)
-    (hactive : 66 ≤ s.activeWords.toNat) :
-    QuadRoundState.quadActiveWordsAfterUInt256_4 s
-        (QuadSites.leftAddress0 k).toNat (QuadSites.leftAddress1 k).toNat
-        (QuadSites.leftAddress2 k).toNat (QuadSites.leftAddress3 k).toNat =
-      s.activeWords := by
-  rw [leftAddress0_eq k, leftAddress1_eq k, leftAddress2_eq k,
-    leftAddress3_eq k]
-  exact QuadSemantic.quadLeftActiveWords_unchanged s k hactive
-
-private theorem rightActiveWords_eq (s : State) (k : Fin 20)
-    (hactive : 66 ≤ s.activeWords.toNat) :
-    QuadRoundState.quadActiveWordsAfterUInt256_4 s
-        (QuadSites.rightAddress0 k).toNat (QuadSites.rightAddress1 k).toNat
-        (QuadSites.rightAddress2 k).toNat (QuadSites.rightAddress3 k).toNat =
-      s.activeWords := by
-  rw [rightAddress0_eq k, rightAddress1_eq k, rightAddress2_eq k,
-    rightAddress3_eq k]
-  exact QuadSemantic.quadRightActiveWords_unchanged s k hactive
+theorem pureQuadWorking_right (s : State) (word : Nat → UInt32)
+    (working : EvmWorking) (k : Fin 20)
+    (hwords : ∀ n, n < 16 →
+      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * n)) = word n) :
+    pureQuadWorking s working (4 - k.val / 4)
+        (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
+        (rightM0 k) (rightM1 k) (rightM2 k) (rightM3 k) (QuadSites.rightConstant k) =
+      StackCompression.rightStep word (4 * k.val + 3)
+        (StackCompression.rightStep word (4 * k.val + 2)
+          (StackCompression.rightStep word (4 * k.val + 1)
+            (StackCompression.rightStep word (4 * k.val) working))) := by
+  unfold pureQuadWorking rightM0 rightM1 rightM2 rightM3
+  rw [QuadRoundModel.quadWorking_eq_rawRounds s working (4 - k.val / 4)
+    (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
+    (rightRotation0 k) (rightRotation1 k) (rightRotation2 k) (rightRotation3 k)
+    (QuadSites.rightConstant k) (by omega) (rightRotation0_le32 k) (rightRotation1_le32 k)
+    (rightRotation2_le32 k) (rightRotation3_le32 k) (fun h => rightConstant_zero k h)]
+  rw [QuadRoundModel.fourRawRound_eq_of_toUInt32_eq working (4 - k.val / 4)
+    _ (Word.ofUInt32 (word (Crypto.Ripemd160.rP[4 * k.val]!)))
+    _ (Word.ofUInt32 (word (Crypto.Ripemd160.rP[4 * k.val + 1]!)))
+    _ (Word.ofUInt32 (word (Crypto.Ripemd160.rP[4 * k.val + 2]!)))
+    _ (Word.ofUInt32 (word (Crypto.Ripemd160.rP[4 * k.val + 3]!)))
+    _ _ _ _ _
+    (by simpa only [Word.toUInt32_ofUInt32, rightAddress0] using rightWord s word ⟨4 * k.val, by omega⟩ hwords)
+    (by simpa only [Word.toUInt32_ofUInt32, rightAddress1] using
+      rightWord s word ⟨4 * k.val + 1, by omega⟩ hwords)
+    (by simpa only [Word.toUInt32_ofUInt32, rightAddress2] using
+      rightWord s word ⟨4 * k.val + 2, by omega⟩ hwords)
+    (by simpa only [Word.toUInt32_ofUInt32, rightAddress3] using
+      rightWord s word ⟨4 * k.val + 3, by omega⟩ hwords)]
+  fin_cases k <;> rfl
 
 def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
-    (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
-    (hwords : low32DenseWordsAt s word)
-    (hactive : 66 ≤ s.activeWords.toNat)
-    (hstack : rho.length < 1007)
-    (hcode : s.executionEnv.code = Artifact.code)
+    (working : EvmWorking) (rest : List UInt256) (k : Fin 20)
+    (_hwords : ∀ n, n < 16 →
+      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * n)) = word n)
+    (hactive : 67 ≤ s.activeWords.toNat)
+    (hstack : rest.length < 1000)
+    (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
-      (stateAt s (QuadSites.leftPC k.val) working rho)
-      (stateAt s (QuadSites.leftPC (k.val + 1)) (left4 word k working) rho) := by
+      (roundEntry s (QuadSites.leftPC k.val) working.a working.b working.c
+        working.d working.e rest)
+      {s with
+        pc := QuadSites.leftPC (k.val + 1)
+        stack := roundWords
+          (pureQuadWorking s working (k.val / 4)
+            (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
+            (leftM0 k) (leftM1 k) (leftM2 k) (leftM3 k) (QuadSites.leftConstant k)) ++ rest} := by
   let site := QuadSites.leftRoundSite k
   have hraw :
-      runInstrSeq
-          (quadBeforeJumpTemplate (k.val / 4) (QuadSites.leftConstant k))
-        (quadHelperEntry s site.helper.startPC
-          (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k)
-          (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k)
-          site.returnPC (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k)
-          (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k)
-          working rho) =
+      runInstrSeq (quadBeforeJumpTemplate (k.val / 4) (QuadSites.leftConstant k))
+        (quadHelperEntry s site.helper.startPC (leftAddress0 k) (leftAddress1 k)
+          (leftAddress2 k) (leftAddress3 k) site.returnPC
+          (leftM0 k) (leftM1 k) (leftM2 k) (leftM3 k) working rest) =
       some (quadAfterHelperBeforeJump s
-        (pcAfter site.helper.startPC
-          (quadBeforeJumpTemplate (k.val / 4) (QuadSites.leftConstant k)))
-        site.returnPC (k.val / 4) working
-        (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k)
-        (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k)
-        (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k)
-        (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k)
-        (QuadSites.leftConstant k) rho) := by
-    exact QuadRoundTrace.runInstrSeq_quad (k.val / 4) (by omega) s
-      site.helper.startPC (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k)
-      (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) site.returnPC
-      (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k)
-      (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) working
-      (QuadSites.leftConstant k) rho
-      (fun h => leftConstant_zero k h) hstack hrun
-      (leftRotation0_le32 k) (leftRotation1_le32 k)
-      (leftRotation2_le32 k) (leftRotation3_le32 k)
+        (pcAfter site.helper.startPC (quadBeforeJumpTemplate (k.val / 4) (QuadSites.leftConstant k)))
+        site.returnPC
+        (quadWorking s working (k.val / 4) (leftAddress0 k) (leftAddress1 k)
+          (leftAddress2 k) (leftAddress3 k)
+          (leftM0 k) (leftM1 k) (leftM2 k) (leftM3 k) (QuadSites.leftConstant k)) rest) := by
+    exact QuadRawTrace.runInstrSeq_template (k.val / 4) (by omega) s
+      site.helper.startPC (leftAddress0 k) (leftAddress1 k) (leftAddress2 k)
+      (leftAddress3 k) site.returnPC (leftM0 k) (leftM1 k) (leftM2 k) (leftM3 k)
+      (QuadSites.leftConstant k) working rest hstack hrun hactive
+      (leftAddress_bound ⟨4 * k.val, by omega⟩)
+      (leftAddress_bound ⟨4 * k.val + 1, by omega⟩)
+      (leftAddress_bound ⟨4 * k.val + 2, by omega⟩)
+      (leftAddress_bound ⟨4 * k.val + 3, by omega⟩)
   have ghelper := QuadHelperTrace.gasSteps_helper_of_raw
     (j := k.val / 4) (hj := by omega)
-    (p0 := QuadSites.leftAddress0 k) (p1 := QuadSites.leftAddress1 k)
-    (p2 := QuadSites.leftAddress2 k) (p3 := QuadSites.leftAddress3 k)
-    (r0 := QuadSites.leftRotation0 k) (r1 := QuadSites.leftRotation1 k)
-    (r2 := QuadSites.leftRotation2 k) (r3 := QuadSites.leftRotation3 k)
-    (constant := QuadSites.leftConstant k) site.helper s site.returnPC working rho
-    hraw hrun hcode hfork hnp
+    (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
+    (leftM0 k) (leftM1 k) (leftM2 k) (leftM3 k) (QuadSites.leftConstant k)
+    site.helper s site.returnPC working rest hraw hrun hcode hfork hnp
   have g := QuadHelperTrace.gasSteps_quad_of_helper
-    (j := k.val / 4) (p0 := QuadSites.leftAddress0 k)
-    (p1 := QuadSites.leftAddress1 k) (p2 := QuadSites.leftAddress2 k)
-    (p3 := QuadSites.leftAddress3 k)
-    (r0 := QuadSites.leftRotation0 k) (r1 := QuadSites.leftRotation1 k)
-    (r2 := QuadSites.leftRotation2 k) (r3 := QuadSites.leftRotation3 k)
-    (constant := QuadSites.leftConstant k) site s working rho hstack hrun hcode
-    hfork hnp ghelper
-  have hw := leftWorking_eq s word working k hwords
-  have ha := leftActiveWords_eq s k hactive
+    (j := k.val / 4)
+    (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
+    (leftM0 k) (leftM1 k) (leftM2 k) (leftM3 k)
+    (leftW0 k) (leftW1 k) (leftW2 k) (leftW3 k) (QuadSites.leftConstant k)
+    site s working rest hstack hrun hcode hfork hnp ghelper
   exact g.cast
-    (by
-      simp only [stateAt]
-      rw [QuadSites.leftRoundSite_start k])
-    (by
-      simp only [stateAt, StackRoundTrace.roundEntry, StackRoundTrace.roundWords]
-      rw [QuadSites.leftRoundSite_end k, hw, ha]
-      rfl)
+    (by rw [QuadSites.leftRoundSite_start k])
+    (by rw [QuadSites.leftRoundSite_end k]; rfl)
 
 def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
-    (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
-    (hwords : low32DenseWordsAt s word)
-    (hactive : 66 ≤ s.activeWords.toNat)
-    (hstack : rho.length < 1007)
-    (hcode : s.executionEnv.code = Artifact.code)
+    (working : EvmWorking) (rest : List UInt256) (k : Fin 20)
+    (_hwords : ∀ n, n < 16 →
+      Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * n)) = word n)
+    (hactive : 67 ≤ s.activeWords.toNat)
+    (hstack : rest.length < 1000)
+    (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
-      (stateAt s (QuadSites.rightPC k.val) working rho)
-      (stateAt s (QuadSites.rightPC (k.val + 1)) (right4 word k working) rho) := by
+      (roundEntry s (QuadSites.rightPC k.val) working.a working.b working.c
+        working.d working.e rest)
+      {s with
+        pc := QuadSites.rightPC (k.val + 1)
+        stack := roundWords
+          (pureQuadWorking s working (4 - k.val / 4)
+            (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
+            (rightM0 k) (rightM1 k) (rightM2 k) (rightM3 k) (QuadSites.rightConstant k)) ++ rest} := by
   let site := QuadSites.rightRoundSite k
   have hraw :
-      runInstrSeq
-          (quadBeforeJumpTemplate (4 - k.val / 4) (QuadSites.rightConstant k))
-        (quadHelperEntry s site.helper.startPC
-          (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k)
-          (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k)
-          site.returnPC (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k)
-          (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k)
-          working rho) =
+      runInstrSeq (quadBeforeJumpTemplate (4 - k.val / 4) (QuadSites.rightConstant k))
+        (quadHelperEntry s site.helper.startPC (rightAddress0 k) (rightAddress1 k)
+          (rightAddress2 k) (rightAddress3 k) site.returnPC
+          (rightM0 k) (rightM1 k) (rightM2 k) (rightM3 k) working rest) =
       some (quadAfterHelperBeforeJump s
         (pcAfter site.helper.startPC
           (quadBeforeJumpTemplate (4 - k.val / 4) (QuadSites.rightConstant k)))
-        site.returnPC (4 - k.val / 4) working
-        (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k)
-        (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k)
-        (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k)
-        (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k)
-        (QuadSites.rightConstant k) rho) := by
-    exact QuadRoundTrace.runInstrSeq_quad (4 - k.val / 4) (by omega) s
-      site.helper.startPC (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k)
-      (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) site.returnPC
-      (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k)
-      (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) working
-      (QuadSites.rightConstant k) rho
-      (fun h => rightConstant_zero k h) hstack hrun
-      (rightRotation0_le32 k) (rightRotation1_le32 k)
-      (rightRotation2_le32 k) (rightRotation3_le32 k)
+        site.returnPC
+        (quadWorking s working (4 - k.val / 4) (rightAddress0 k) (rightAddress1 k)
+          (rightAddress2 k) (rightAddress3 k)
+          (rightM0 k) (rightM1 k) (rightM2 k) (rightM3 k) (QuadSites.rightConstant k)) rest) := by
+    exact QuadRawTrace.runInstrSeq_template (4 - k.val / 4) (by omega) s
+      site.helper.startPC (rightAddress0 k) (rightAddress1 k) (rightAddress2 k)
+      (rightAddress3 k) site.returnPC (rightM0 k) (rightM1 k) (rightM2 k) (rightM3 k)
+      (QuadSites.rightConstant k) working rest hstack hrun hactive
+      (rightAddress_bound ⟨4 * k.val, by omega⟩)
+      (rightAddress_bound ⟨4 * k.val + 1, by omega⟩)
+      (rightAddress_bound ⟨4 * k.val + 2, by omega⟩)
+      (rightAddress_bound ⟨4 * k.val + 3, by omega⟩)
   have ghelper := QuadHelperTrace.gasSteps_helper_of_raw
     (j := 4 - k.val / 4) (hj := by omega)
-    (p0 := QuadSites.rightAddress0 k) (p1 := QuadSites.rightAddress1 k)
-    (p2 := QuadSites.rightAddress2 k) (p3 := QuadSites.rightAddress3 k)
-    (r0 := QuadSites.rightRotation0 k) (r1 := QuadSites.rightRotation1 k)
-    (r2 := QuadSites.rightRotation2 k) (r3 := QuadSites.rightRotation3 k)
-    (constant := QuadSites.rightConstant k) site.helper s site.returnPC working rho
-    hraw hrun hcode hfork hnp
+    (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
+    (rightM0 k) (rightM1 k) (rightM2 k) (rightM3 k) (QuadSites.rightConstant k)
+    site.helper s site.returnPC working rest hraw hrun hcode hfork hnp
   have g := QuadHelperTrace.gasSteps_quad_of_helper
-    (j := 4 - k.val / 4) (p0 := QuadSites.rightAddress0 k)
-    (p1 := QuadSites.rightAddress1 k) (p2 := QuadSites.rightAddress2 k)
-    (p3 := QuadSites.rightAddress3 k)
-    (r0 := QuadSites.rightRotation0 k) (r1 := QuadSites.rightRotation1 k)
-    (r2 := QuadSites.rightRotation2 k) (r3 := QuadSites.rightRotation3 k)
-    (constant := QuadSites.rightConstant k) site s working rho hstack hrun hcode
-    hfork hnp ghelper
-  have hw := rightWorking_eq s word working k hwords
-  have ha := rightActiveWords_eq s k hactive
+    (j := 4 - k.val / 4)
+    (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
+    (rightM0 k) (rightM1 k) (rightM2 k) (rightM3 k)
+    (rightW0 k) (rightW1 k) (rightW2 k) (rightW3 k) (QuadSites.rightConstant k)
+    site s working rest hstack hrun hcode hfork hnp ghelper
   exact g.cast
-    (by
-      simp only [stateAt]
-      rw [QuadSites.rightRoundSite_start k])
-    (by
-      simp only [stateAt, StackRoundTrace.roundEntry, StackRoundTrace.roundWords]
-      rw [QuadSites.rightRoundSite_end k, hw, ha]
-      rfl)
+    (by rw [QuadSites.rightRoundSite_start k])
+    (by rw [QuadSites.rightRoundSite_end k]; rfl)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundCertificates

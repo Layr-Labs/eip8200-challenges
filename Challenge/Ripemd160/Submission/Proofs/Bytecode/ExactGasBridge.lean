@@ -194,10 +194,10 @@ theorem loopTrace_cost_potential (input : ByteArray)
 def paddingWork : Nat := 1068
 
 /-- Driver setup/final test plus the complete five-word output routine:
-`3 + 26 + 2586`.  The last summand is exposed path-by-path in `OutputGas`. -/
-def framingWork : Nat := 2615
+`3 + 26 + 2601`.  The last summand is exposed path-by-path in `OutputGas`. -/
+def framingWork : Nat := 2630
 
-theorem fixedWork_eq : paddingWork + framingWork = 3683 := by
+theorem fixedWork_eq : paddingWork + framingWork = 3698 := by
   rfl
 
 /-- Cost facts delivered by the concrete schedule/round/compression trace.

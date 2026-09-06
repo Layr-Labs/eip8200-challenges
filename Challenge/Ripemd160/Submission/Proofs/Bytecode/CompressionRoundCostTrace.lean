@@ -37,7 +37,7 @@ def roundWork (j : Nat) : Nat :=
   Meter.runLocatedBlockStaticCost RoundTrace.prefixPath + xAtWork +
     roundBodyWork j
 
-theorem hAtWork_eq : hAtWork = 28 := by rfl
+theorem hAtWork_eq : hAtWork = 30 := by rfl
 theorem hSetWork_eq : hSetWork = 36 := by rfl
 theorem rotlWork_eq : rotlWork = 45 := by rfl
 
@@ -80,12 +80,12 @@ theorem hAt_cost_potential (s : State) (i returnDest : UInt256)
       hAtWork + MachineState.memCost
         (TableTrace.atReturned s (UInt256.ofNat 0x20) i returnDest rest).activeWords.toNat := by
   have hraw := blockCost_potential TableTrace.hAtPath
-    (TableTrace.hAtEntry s (UInt256.ofNat 0x20) i returnDest rest)
+    (TableTrace.atEntry s (UInt256.ofNat 0x20) i returnDest rest)
     (TableTrace.atReturned s (UInt256.ofNat 0x20) i returnDest rest)
     (TableTrace.run_hAt s i returnDest rest hstack hcode hrun hvalid)
-    (by simpa [TableTrace.hAtEntry] using hfork)
+    (by simpa [TableTrace.atEntry] using hfork)
     (by simp [TableTrace.hAtPath, CopyFree])
-  simpa [TableTrace.gasSteps_hAt, TableTrace.hAtEntry, hAtWork] using hraw
+  simpa [TableTrace.gasSteps_hAt, TableTrace.atEntry, hAtWork] using hraw
 
 theorem hSet_cost_potential (s : State) (i value returnDest : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1016)

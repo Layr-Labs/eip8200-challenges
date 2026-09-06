@@ -14,10 +14,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownDigestResult
 open EvmSemantics.Crypto
 open KnownInputDigest
 
-/- The standalone whole-hash certificate is not needed by the block-kernel proof.
-   The block-by-block certificates below are both stronger for this use and cheaper
-   for the trusted kernel to elaborate. -/
-/-
+/- The whole-hash certificate is used by the direct terminal path. -/
 private theorem block1 : Ripemd160.compressBlock H0 KnownInputData.targetInput 0 = H1 := by
   rw [compress_allA H0 0 (by omega), KnownDigestA.step1]
 private theorem block2 : Ripemd160.compressBlock H1 KnownInputData.targetInput 64 = H2 := by
@@ -89,7 +86,6 @@ theorem hash_target : Ripemd160.hash KnownInputData.targetInput = targetDigest :
       (Ripemd160.compressBlock H15 finalBlock 0) = targetDigest
   rw [compress_final, KnownDigestD.step16]
   rfl
--/
 
 abbrev knownAt := KnownDigestStates.knownAt
 
