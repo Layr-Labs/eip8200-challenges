@@ -13,7 +13,7 @@ def guardProgram : List Instr :=
    .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .MLOAD,
    .push ⟨1, by decide⟩ (UInt256.ofNat 255), .op .SHR,
    .op .AND, .op .ISZERO,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 3661), .op .JUMPI]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 3695), .op .JUMPI]
 
 def guardWord (memory : ByteArray) (n bsize : Nat) : UInt256 :=
   UInt256.isZero (UInt256.land
@@ -45,10 +45,10 @@ theorem guardWord_eq (memory : ByteArray) (n bsize : Nat)
 
 theorem run_guard_word (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hactive : 298 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3661 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3695 = true) :
     runInstructions guardProgram (entryState s memory n bsize esize msize) =
       some (if UInt256.isTrue (guardWord memory n bsize)
-        then fallbackState s memory n bsize esize msize
+        then rawDispatchState s memory n bsize esize msize
         else copyState s memory n bsize esize msize) := by
   have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
       s.activeWords := by
@@ -60,7 +60,7 @@ theorem run_guard_word (s : State) (memory : ByteArray)
     exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
   have hzeroNat : (⟨0⟩ : UInt256).toNat = 0 := rfl
   simp [guardProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    entryState, fallbackState, copyState, outer, guardWord, hjump,
+    entryState, rawDispatchState, copyState, outer, guardWord, hjump,
     State.activeWordsAfterUInt256, hzeroNat, haw,
     Challenge.EvmProof.Word.word_toNat_ofNat]
   split <;> rfl
@@ -68,11 +68,11 @@ theorem run_guard_word (s : State) (memory : ByteArray)
 theorem run_guard (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 32)
     (hb : bsize < 2 ^ 256) (hactive : 298 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3661 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3695 = true) :
     runInstructions guardProgram (entryState s memory n bsize esize msize) =
       some (if Matches memory n bsize
         then copyState s memory n bsize esize msize
-        else fallbackState s memory n bsize esize msize) := by
+        else rawDispatchState s memory n bsize esize msize) := by
   rw [run_guard_word s memory n bsize esize msize hactive hjump,
     guardWord_eq memory n bsize hn32 hb]
   split <;> simp [UInt256.isTrue, Challenge.EvmProof.Word.word_toNat_ofNat]
