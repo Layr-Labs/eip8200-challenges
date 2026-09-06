@@ -7,9 +7,9 @@ set_option maxHeartbeats 1000000
 /-!
 # Direct traces for RIPEMD-160 helper functions
 
-The Yul compiler gives value-returning helpers an explicit zero result slot
-and return destination.  These reusable traces expose that convention while
-remaining parametric in the caller's stack suffix.
+The shared `rotl` helper now carries only its value and return destination.
+The lowering's neutralizer slots are folded into fixed-width `JUMPDEST`s at
+the helper boundary and both round call sites.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Functions
@@ -37,7 +37,7 @@ def rotlPath : List
    ⟨10, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨11, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
    ⟨12, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨13, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨13, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨14, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨15, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -49,7 +49,7 @@ def rotlValue (x n : UInt256) : UInt256 :=
 def rotlEntry (s : State) (x n returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 4
-           stack := [x, n, 0, returnDest] ++ rest }
+           stack := [x, n, returnDest] ++ rest }
 
 def rotlReturned (s : State) (x n returnDest : UInt256)
     (rest : List UInt256) : State :=
