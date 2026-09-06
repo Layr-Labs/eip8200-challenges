@@ -8,8 +8,8 @@ set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 
-/-! Exact consume tail: instruction 1422 through the dynamic JUMP at 1474.
-Nine following STOP bytes occupy 1475..1483 and are not executed. -/
+/-! Exact consume tail: instruction 1428 through the dynamic JUMP at 1481.
+Nine following STOP bytes occupy 1482..1490 and are not executed. -/
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailSite
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
@@ -40,6 +40,7 @@ open private
   submissionInstructionsChunk12
   submissionInstructionsChunk13
   submissionInstructionsChunk14
+  submissionInstructionsChunk15
   submissionInstructionsChunk0_length
   submissionInstructionsChunk1_length
   submissionInstructionsChunk2_length
@@ -55,30 +56,31 @@ open private
   submissionInstructionsChunk12_length
   submissionInstructionsChunk13_length
   submissionInstructionsChunk14_length
+  submissionInstructionsChunk15_length
   from Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 
 private def artifactPrefix : List Instr :=
   submissionInstructionsChunk0 ++ submissionInstructionsChunk1 ++ submissionInstructionsChunk2 ++ submissionInstructionsChunk3 ++ submissionInstructionsChunk4 ++ submissionInstructionsChunk5 ++ submissionInstructionsChunk6
 
 private def tailBefore : List Instr :=
-  artifactPrefix ++ submissionInstructionsChunk7.take 22
+  artifactPrefix ++ submissionInstructionsChunk7.take 28
 
 private def tailAfter : List Instr :=
-  submissionInstructionsChunk7.drop 84 ++ submissionInstructionsChunk8 ++
+  submissionInstructionsChunk7.drop 91 ++ submissionInstructionsChunk8 ++
     submissionInstructionsChunk9 ++
     submissionInstructionsChunk10 ++
     submissionInstructionsChunk11 ++
     submissionInstructionsChunk12 ++
     submissionInstructionsChunk13 ++
-    submissionInstructionsChunk14
+    submissionInstructionsChunk14 ++ submissionInstructionsChunk15
 
-private theorem tailBefore_length : tailBefore.length = 1422 := by
+private theorem tailBefore_length : tailBefore.length = 1428 := by
   simp [tailBefore, artifactPrefix]
 
 private theorem artifactChunk7_tail :
     submissionInstructionsChunk7 =
-      submissionInstructionsChunk7.take 22 ++
-        QuadTailTemplate.quadTailWindow ++ submissionInstructionsChunk7.drop 84 := by
+      submissionInstructionsChunk7.take 28 ++
+        QuadTailTemplate.quadTailWindow ++ submissionInstructionsChunk7.drop 91 := by
   rfl
 
 private theorem artifact_tail_split :
@@ -88,7 +90,7 @@ private theorem artifact_tail_split :
   change Artifact.submissionInstructions = _
   have hprefix : Artifact.submissionInstructions =
       artifactPrefix ++ submissionInstructionsChunk7 ++
-        submissionInstructionsChunk8 ++ submissionInstructionsChunk9 ++ submissionInstructionsChunk10 ++ submissionInstructionsChunk11 ++ submissionInstructionsChunk12 ++ submissionInstructionsChunk13 ++ submissionInstructionsChunk14 := by
+        submissionInstructionsChunk8 ++ submissionInstructionsChunk9 ++ submissionInstructionsChunk10 ++ submissionInstructionsChunk11 ++ submissionInstructionsChunk12 ++ submissionInstructionsChunk13 ++ submissionInstructionsChunk14 ++ submissionInstructionsChunk15 := by
     simp only [Artifact.submissionInstructions, artifactPrefix, List.append_assoc]
   rw [hprefix]
   conv_lhs => rw [artifactChunk7_tail]
@@ -101,12 +103,12 @@ private theorem artifact_consume_split :
         (QuadTailTemplate.paddingStops ++ tailAfter) := by
   simpa [List.append_assoc] using artifact_tail_split
 
-private theorem tailInstructions_length : QuadTailTemplate.consumeBody.length = 53 := by
-  decide
+private theorem tailInstructions_length : QuadTailTemplate.consumeBody.length = 54 := by
+  rfl
 
 private theorem tail_instruction_at (i : Nat)
     (hi : i < QuadTailTemplate.consumeBody.length) :
-    Artifact.submissionArtifact.instructions[1422 + i]? =
+    Artifact.submissionArtifact.instructions[1428 + i]? =
       QuadTailTemplate.consumeBody[i]? := by
   have h := ArtifactSegment.getElem?_segment Artifact.submissionArtifact
     tailBefore QuadTailTemplate.consumeBody
@@ -116,39 +118,39 @@ private theorem tail_instruction_at (i : Nat)
 
 private theorem tail_instruction_pc (i : Nat)
     (hi : i ≤ QuadTailTemplate.consumeBody.length) :
-    Artifact.submissionArtifact.instructionPC (1422 + i) =
-      0x9a9 + ArtifactByteLength.byteLength (QuadTailTemplate.consumeBody.take i) := by
+    Artifact.submissionArtifact.instructionPC (1428 + i) =
+      0xb2b + ArtifactByteLength.byteLength (QuadTailTemplate.consumeBody.take i) := by
   have hzero := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     tailBefore QuadTailTemplate.consumeBody
     (QuadTailTemplate.paddingStops ++ tailAfter)
     artifact_consume_split 0 (by omega)
-  have hzero' : Artifact.submissionArtifact.instructionPC 1422 =
+  have hzero' : Artifact.submissionArtifact.instructionPC 1428 =
       (assembleBytes tailBefore).length := by
     simpa [tailBefore_length] using hzero
-  have hbefore : (assembleBytes tailBefore).length = 0x9a9 :=
+  have hbefore : (assembleBytes tailBefore).length = 0xb2b :=
     hzero'.symm.trans QuadLayout.tail_pc
   have h := ArtifactSegment.instructionPC_segment_of_bounds Artifact.submissionArtifact
     tailBefore QuadTailTemplate.consumeBody
-    (QuadTailTemplate.paddingStops ++ tailAfter) 1422 0x9a9
+    (QuadTailTemplate.paddingStops ++ tailAfter) 1428 0xb2b
     artifact_consume_split tailBefore_length hbefore i hi
   simpa only [ArtifactByteLength.byteLength_eq_assemble] using h
 
 private theorem tail_instruction_pc_global (index : Nat)
-    (hlo : 1422 ≤ index) (hhi : index ≤ 1475) :
+    (hlo : 1428 ≤ index) (hhi : index ≤ 1482) :
     Artifact.submissionArtifact.instructionPC index =
-      0x9a9 + ArtifactByteLength.byteLength
-        (QuadTailTemplate.consumeBody.take (index - 1422)) := by
-  have hi : index - 1422 ≤ QuadTailTemplate.consumeBody.length := by
+      0xb2b + ArtifactByteLength.byteLength
+        (QuadTailTemplate.consumeBody.take (index - 1428)) := by
+  have hi : index - 1428 ≤ QuadTailTemplate.consumeBody.length := by
     rw [tailInstructions_length]
     omega
-  have h := tail_instruction_pc (index - 1422) hi
+  have h := tail_instruction_pc (index - 1428) hi
   simpa only [Nat.add_sub_of_le hlo] using h
 
 private theorem tail_instruction_wellFormed (i : Nat)
     (hi : i < QuadTailTemplate.consumeBody.length) :
     Challenge.EvmProof.Stepper.WellFormed .Osaka
       ((QuadTailTemplate.consumeBody)[i]'hi) := by
-  have hle : i ≤ 52 := by
+  have hle : i ≤ 53 := by
     rw [tailInstructions_length] at hi
     omega
   interval_cases i <;>
@@ -157,14 +159,14 @@ private theorem tail_instruction_wellFormed (i : Nat)
       QuadTailTemplate.c2Instructions, QuadTailTemplate.c3Instructions,
       QuadTailTemplate.c4Instructions, QuadTailTemplate.storeH0Instructions,
       QuadTailTemplate.cleanupInstructions, QuadTailTemplate.swap5H,
-      QuadTailTemplate.swap6H, QuadTailTemplate.swap7H,
+      QuadTailTemplate.swap7H, QuadTailTemplate.swap8H,
       StackRoundTemplate.op, StackRoundTemplate.push1, StackRoundTemplate.push4,
       StackRoundTemplate.swap1, StackRoundTemplate.swap2, StackRoundTemplate.swap3,
       Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp] <;> decide
 
 def tailLocated (i : Nat) (hi : i < QuadTailTemplate.consumeBody.length) :
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka where
-  index := 1422 + i
+  index := 1428 + i
   instruction := ((QuadTailTemplate.consumeBody)[i]'hi)
   atIndex := by
     simpa [List.getElem?_eq_getElem hi] using tail_instruction_at i hi
@@ -175,7 +177,7 @@ def tailPath : List
   (List.finRange QuadTailTemplate.consumeBody.length).map
     (fun i => tailLocated i.val i.isLt)
 
-theorem tailPath_length : tailPath.length = 53 := by
+theorem tailPath_length : tailPath.length = 54 := by
   simp [tailPath]
 
 set_option linter.unusedSimpArgs false in
@@ -213,7 +215,7 @@ private theorem runLocatedBlock_tail_raw (s : State)
       QuadTailTemplate.c2Instructions, QuadTailTemplate.c3Instructions,
       QuadTailTemplate.c4Instructions, QuadTailTemplate.storeH0Instructions,
       QuadTailTemplate.cleanupInstructions, QuadTailTemplate.swap5H,
-      QuadTailTemplate.swap6H, QuadTailTemplate.swap7H,
+      QuadTailTemplate.swap7H, QuadTailTemplate.swap8H,
       StackRoundTemplate.op, StackRoundTemplate.push1, StackRoundTemplate.push4,
       StackRoundTemplate.swap1, StackRoundTemplate.swap2, StackRoundTemplate.swap3,
       QuadTailTemplate.tailEntry, QuadTailTemplate.workingStack,
@@ -223,6 +225,7 @@ private theorem runLocatedBlock_tail_raw (s : State)
       QuadSwapLemmas.exchange_swap1, QuadSwapLemmas.exchange_swap2,
       QuadSwapLemmas.exchange_swap3, QuadSwapLemmas.exchange_swap5,
       QuadSwapLemmas.exchange_swap6, QuadSwapLemmas.exchange_swap7,
+      QuadSwapLemmas.exchange_swap8,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.add_assoc, List.getElem?_cons_zero, List.getElem?_cons_succ,
       ArtifactByteLength.byteLength]

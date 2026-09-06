@@ -9,7 +9,7 @@ set_option maxHeartbeats 4000000
 /-!
 # The entry trampolines
 
-Instruction 0 jumps to the guard at pc 0x12ce, and the guard's fall-through
+Instruction 0 jumps to the guard at pc 0x1311, and the guard's fall-through
 walks a chain of `JUMPDEST; PUSH2; JUMP` blocks down to the program body at
 pc 0x3ef.  Every step is taken one instruction at a time with its program
 counter supplied from a named lemma, so nothing here ever asks `simp` to
@@ -161,8 +161,8 @@ def sound (path : List (Challenge.EvmProof.Stepper.Located
 @[simp] theorem pc649 : Artifact.submissionArtifact.instructionPC 649 = 0x3c5 := by rfl
 @[simp] theorem pc682 : Artifact.submissionArtifact.instructionPC 682 = 0x3ee := by rfl
 
-theorem jumpDest_12ce : Decode.isValidJumpDest submissionBytecode 0x12ce = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 2813 (by rfl)
+theorem jumpDest_12ce : Decode.isValidJumpDest submissionBytecode 0x1311 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 2800 (by rfl)
 theorem jumpDest_2e : Decode.isValidJumpDest submissionBytecode 0x2e = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 35 (by rfl)
 theorem jumpDest_46 : Decode.isValidJumpDest submissionBytecode 0x46 = true :=
@@ -190,14 +190,14 @@ theorem jumpDest_3ee : Decode.isValidJumpDest submissionBytecode 0x3ee = true :=
 
 def loc0 :
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  ⟨0, .push ⟨2, by decide⟩ (UInt256.ofNat 0x12ce), by rfl, by decide⟩
+  ⟨0, .push ⟨2, by decide⟩ (UInt256.ofNat 0x1311), by rfl, by decide⟩
 
 theorem step0 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock [loc0]
-      (st input 0x0 []) = some (st input 0x3 [UInt256.ofNat 0x12ce]) := by
+      (st input 0x0 []) = some (st input 0x3 [UInt256.ofNat 0x1311]) := by
   rw [runLocatedBlock_single,
     runLocated_of_pc loc0 (pcFact input 0 0x0 [] (by norm_num) pc0)]
-  exact runInstr_push input 0 2 0x12ce [] (by simp) (by decide) (by decide) (by norm_num)
+  exact runInstr_push input 0 2 0x1311 [] (by simp) (by decide) (by decide) (by norm_num)
 
 def loc1 :
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
@@ -205,13 +205,13 @@ def loc1 :
 
 theorem step1 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock [loc1]
-      (st input 0x3 [UInt256.ofNat 0x12ce]) = some (st input 0x12ce []) := by
+      (st input 0x3 [UInt256.ofNat 0x1311]) = some (st input 0x1311 []) := by
   rw [runLocatedBlock_single,
-    runLocated_of_pc loc1 (pcFact input 1 0x3 [UInt256.ofNat 0x12ce] (by norm_num) pc1)]
-  exact runInstr_jump input 3 0x12ce [] (by simp) (by norm_num) jumpDest_12ce
+    runLocated_of_pc loc1 (pcFact input 1 0x3 [UInt256.ofNat 0x1311] (by norm_num) pc1)]
+  exact runInstr_jump input 3 0x1311 [] (by simp) (by norm_num) jumpDest_12ce
 
 def gasSteps_start (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0x12ce) := by
+    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0x1311) := by
   rw [atPC_eq_st]
   exact
   (sound [loc0] (step0 input)).trans <|

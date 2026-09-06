@@ -39,7 +39,7 @@ def conditionPath : List Located :=
    ⟨705, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨706, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨707, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨708, .push ⟨2, by decide⟩ (UInt256.ofNat 0x11e4), by rfl, by decide⟩,
+   ⟨708, .push ⟨2, by decide⟩ (UInt256.ofNat 0x1227), by rfl, by decide⟩,
    ⟨709, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def callPath : List Located :=
@@ -48,7 +48,7 @@ def callPath : List Located :=
    ⟨712, .push ⟨2, by decide⟩ (UInt256.ofNat Padding.messageOffset),
       by rfl, by decide⟩,
    ⟨713, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨714, .push ⟨2, by decide⟩ (UInt256.ofNat 0x129e), by rfl, by decide⟩,
+   ⟨714, .push ⟨2, by decide⟩ (UInt256.ofNat 0x12e1), by rfl, by decide⟩,
    ⟨715, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def incrementPath : List Located :=
@@ -111,7 +111,7 @@ def afterCondition (s : State) (input : ByteArray) (i : Nat) : State :=
 ordinary compression entry stack. -/
 def dispatchEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x129e
+    pc := UInt256.ofNat 0x12e1
     stack := [messageOffsetWord i, UInt256.ofNat 0x436,
       blockOffsetWord i, Padding.paddedWord input] }
 
@@ -135,7 +135,7 @@ def afterIteration (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def afterExit (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 0x11e4
+    pc := UInt256.ofNat 0x1227
     stack := [blockOffsetWord (blockCount input), Padding.paddedWord input] }
 
 theorem paddedLength_eq_blockCount (input : ByteArray) :
@@ -254,8 +254,8 @@ theorem run_condition_exit (s : State) (input : ByteArray)
   have heq := offset_eq_total input hfit
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x11e4 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2742 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x1227 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2729 (by rfl)
   simp [conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopAt, afterExit, hrun, hcode, heq,
@@ -270,8 +270,8 @@ theorem run_call (s : State) (input : ByteArray)
       (afterCondition s input i) = some (dispatchEntry s input i) := by
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (messageOffset_lt_uint256 input hfit i hi)
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x129e = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2792 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x12e1 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2779 (by rfl)
   simp [callPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     afterCondition, dispatchEntry, messageOffsetWord, blockOffsetWord,
