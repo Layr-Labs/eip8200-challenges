@@ -362,6 +362,11 @@ theorem radix_pow_lt_of_odd {m n : Nat} (hn : 2 ≤ n)
 def montMul (m R x y : Nat) : Nat :=
   ((x : ZMod m) * (y : ZMod m) * (R : ZMod m)⁻¹).val
 
+/-- The value is symmetric even though the CIOS input bounds are not. -/
+theorem montMul_comm (m R x y : Nat) : montMul m R x y = montMul m R y x := by
+  unfold montMul
+  rw [mul_comm (x : ZMod m) (y : ZMod m)]
+
 theorem montMul_lt {m : Nat} (hm : 0 < m) (R x y : Nat) : montMul m R x y < m := by
   haveI : NeZero m := ⟨hm.ne'⟩
   exact ZMod.val_lt _
