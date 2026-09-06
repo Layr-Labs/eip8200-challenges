@@ -1,235 +1,137 @@
-# MODEXP: start the exponent bit loop at the exponent's leading one, and take the `RR` multiply only when the selector is `CC`
-
-Effort: xhigh
-
-## Context and credit
-
-The repository base is the promoted submission `a1b994f` by **exakoss**, at
-1,914,471 gas and 2,922 bytes. Its peephole rewrites of the reference loop
-bodies are entirely theirs and are untouched here. This candidate changes the
-head of the exponent-byte loop and the multiply step of the `RR` chain.
-exakoss is credited as the base author.
+# MODEXP: skip the exponent bit loop's first iteration by copying `BASE` onto `ACC`
 
 ## Artifact
 
-`Challenge/Modexp/Submission/bytecode.hex` is 3,000 bytes / 1,831
-instructions.
+`Challenge/Modexp/Submission/bytecode.hex` is 3,027 bytes / 1,846 instructions.
+It is the previous artifact (3,000 bytes / 1,831 instructions) with one in-place
+window, one retargeted jump immediate, and one appended block.
 
-It is the 2,922-byte base with two in-place windows and two appended blocks:
+### In-place window
 
-* instructions 1172..1177 (`PUSH2 0x064f; PUSH2 0x1800; DUP3; PUSH2 0x1800;
-  PUSH2 0x0793; JUMP`, fourteen bytes at pc 0x641) become
-  `PUSH2 0x0b9b; JUMP; POP; PUSH2 0; PUSH2 0; PUSH2 0` — fourteen bytes and
-  six instructions again, the trailing five unreachable;
-* instructions 1279..1281 (`DUP1; PUSH2 0x2500; MLOAD`, five bytes at pc
-  0x6f2) become `PUSH2 0x0b6a; JUMP; POP` — five bytes and three instructions
-  again, the trailing `POP` unreachable;
-* 49 bytes are appended at 2922..2970 (instruction indices 1781..1815);
-* 29 bytes are appended at 2971..2999 (instruction indices 1816..1830).
+Instructions 1623..1624 at pc 2496..2497 are `SWAP1; SWAP1`; they become
+`JUMPDEST; JUMPDEST`. Two bytes, two instructions, so neither the byte length
+nor the instruction count of the artifact moves, and pc 2496 and pc 2497 become
+jump destinations that nothing targets.
 
-Both windows preserve their byte length and their instruction count, so no
-program counter, instruction index or jump destination in 0..2921 moves.
-Outside the two windows every byte of the base is unchanged.
+### Retargeted immediate
 
-## What the appended blocks compute
+The `LZ` block's byte-zero arm ends with `PUSH2 0x06fd; JUMP` at pc 2968. The
+immediate alone is rewritten from `0x06fd` (1789) to `0x0bb8` (3000). The
+instruction stays a `PUSH2`, so every program counter, instruction index and
+existing jump destination in the artifact is unchanged.
 
-### `LZ` at pc 2922, instruction indices 1781..1815
+### Appended block, 27 bytes at pc 3000..3026, instruction indices 1831..1845
 
-The bit loop is driven by a mask that starts at `0x80` for each exponent byte
-and is shifted right until it reaches zero; each iteration squares `ACC` and
-multiplies by `BASE` when `mask & byte` is nonzero.
+    3000  5b        JUMPDEST
+    3001  81        DUP2
+    3002  15        ISZERO
+    3003  610bce    PUSH2 0x0bce      ; 3022
+    3006  57        JUMPI
+    3007  612480    PUSH2 0x2480      ; V_S32
+    3010  51        MLOAD
+    3011  610800    PUSH2 0x0800      ; BASE
+    3014  610400    PUSH2 0x0400      ; ACC
+    3017  5e        MCOPY
+    3018  610728    PUSH2 0x0728      ; 1832
+    3021  56        JUMP
+    3022  5b        JUMPDEST
+    3023  6106fd    PUSH2 0x06fd      ; 1789
+    3026  56        JUMP
 
-`LZ` is entered with the byte index `i` on top of the driver frame. It loads
-exponent byte `i` exactly as the code it replaces did, and then chooses that
-starting mask:
+The block is entered with `[mask, w, i]` on top of the exponent-loop frame,
+where `w` is the leading exponent byte. `DUP2; ISZERO` tests `w`. A zero byte
+takes the arm at pc 3022 and jumps to the bit-loop head at pc 1789, so that
+path is byte-for-byte the old behaviour. A nonzero byte falls through, reads
+`32 * n` from the word at `V_S32 = 0x2480`, copies that many bytes from
+`BASE = 0x0800` to `ACC = 0x0400` with `MCOPY`, and resumes the bit loop at its
+mask shift, pc 1832.
 
-```text
-2922  JUMPDEST                                  ; stack [i, ...]
-2923  DUP1 ; PUSH2 0x2500 ; MLOAD ; ADD         ; V_EOFF + i
-2929  CALLDATALOAD ; PUSH0 ; BYTE               ; w = exponent byte i
-2932  DUP2 ; ISZERO ; PUSH2 2944 ; JUMPI        ; i = 0?
-2938  PUSH1 128 ; PUSH2 1789 ; JUMP             ; no  -> mask 0x80
-2944  JUMPDEST ; DUP1                           ; yes:
-      DUP1 ; PUSH1 1 ; SHR ; OR                 ;   w |= w >> 1
-      DUP1 ; PUSH1 2 ; SHR ; OR                 ;   w |= w >> 2
-      DUP1 ; PUSH1 4 ; SHR ; OR                 ;   w |= w >> 4
-      PUSH1 1 ; SHR ; PUSH1 1 ; ADD             ;   mask = highest set bit
-      PUSH2 1789 ; JUMP
-```
+## Proof
 
-| indices | block |
-|---|---|
-| 1781..1792 | `blk1781`: the byte load and the `i = 0` test |
-| 1793..1795 | `blk1793`: `PUSH1 128` and the jump back into the bit loop |
-| 1796..1815 | `blk1796`: the smear, `>>> 1`, `+ 1`, and the jump back |
+### New module
 
-Both arms rejoin the bit loop at pc 1789 with the stack `[mask, w, i]` the
-loop expects, so no call site moves. For a byte whose top bit is set the smear
-yields `0x80` and the loop is the one that was there before; for `w = 0` it
-yields `1`.
+`Challenge/Modexp/Submission/Proofs/Fast/Paths/P18.lean` holds the three basic
+blocks of the appended code as located paths:
 
-For byte `0` the bits above the mask are leading zeros of the whole exponent,
-and the accumulator at that point is the Montgomery form of `1`, which is a
-fixed point of Montgomery squaring. Bytes after the first keep the `0x80`
-start, where those bits are significant.
+* `blk1831` — indices 1831..1835, pc 3000..3006, the zero test;
+* `blk1836` — indices 1836..1842, pc 3007..3021, the copy and the resume;
+* `blk1843` — indices 1843..1845, pc 3022..3026, the zero-byte arm.
 
-### `RRSEL` at pc 2971, instruction indices 1816..1830
+### `Proofs/Fast/Lz.lean`
 
-`RRL` (pc 1569) is entered with `[k] ++ OUTER` for `k = 5, 4, …, 0`. Each
-round squares `RR` in place and then multiplies it by the operand selected by
-bit `k` of the limb count: the selector is `R1` (`0x1000`) when the bit is
-clear and `CC` (`0x1400`) when it is set. The replaced window was that
-multiply's unconditional call frame.
+* `lzBase` — the state at pc 3000;
+* `run_lzFirst` — retargeted from `lzJoin` to `lzBase`;
+* `topExp_le` — `2 ^ topExp w ≤ w` for a nonzero byte.
 
-`RRSEL` is entered with the computed selector on top of `[k] ++ OUTER` and
-tests it:
+### `Proofs/Fast/Defs.lean`
 
-```text
-2971  JUMPDEST                                  ; stack [sel, k, ...]
-2972  DUP1 ; PUSH2 0x1000 ; EQ                  ; sel = R1?
-2977  PUSH2 2995 ; JUMPI                        ; yes -> skip
-2981  PUSH2 0x064f ; PUSH2 0x1800 ; DUP3        ; no: [RR, sel, ret=1615]
-      PUSH2 0x1800 ; PUSH2 0x0793 ; JUMP        ;     call MONPRO -> RR
-2995  JUMPDEST ; PUSH2 0x064f ; JUMP            ; skip: straight to pc 1615
-```
+* `jumpDest3000` and `jumpDest3022` — the two new destinations;
+* `fastPC24` — the program-counter table entry for the appended indices.
 
-| indices | block |
-|---|---|
-| 1816..1821 | `blk1816`: the selector test |
-| 1822..1827 | `blk1822`: the `MonPro(RR, sel) → RR` call frame |
-| 1828..1830 | `blk1828`: the skip |
+### `Proofs/Fast/Exp.lean`
 
-Both arms arrive at pc 1615 with the stack `[sel, k] ++ OUTER`, which is the
-stack the round's tail already expected, so the loop counter, the exit test
-and every later block are untouched.
+States: `lzBaseCopy` (pc 3007) and `lzBaseSkip` (pc 3022). The resume point at
+pc 1832 is the existing `ebitNext`.
 
-`R1` holds the Montgomery form of one, so `MonPro(RR, R1) → RR` is the
-identity on the value in `RR` and on every other named block; taking the skip
-therefore leaves the same memory the call would have left.
+Block traces: `run_lzBase_zero`, `run_lzBase_copy`, `run_lzBaseSkip` and
+`run_lzBaseCopy`.
 
-## Files
+Arithmetic: `bitAt_gt_topExp`, `bitAt_topExp`, `montMul_one_left`,
+`expAcc_of_zeros_then_one` and `expAcc_skipOne` give the accumulator the skipped
+iteration would have produced; `ebInv_accCopy` carries `EbInv` across the copy
+using `fastRepresents_mcopyMem` and `fastRepresents_mcopyMem_disjoint`.
 
-| file | change |
-| --- | --- |
-| `Submission/bytecode.hex` | the artifact above |
-| `Submission/Bytes.lean` | regenerated; `submissionBytes_size = 3000` |
-| `Submission/Bytecode.lean` | `submissionBytecode_size = 3000` |
-| `Proofs/Bytecode/Artifact.lean` | regenerated; `submissionInstructions_count = 1831` |
-| `Proofs/Fast/Defs.lean` | `fastPC22` for indices 1781..1815 and `fastPC23` for 1816..1830; `jumpDest2922`, `jumpDest2944`, `jumpDest2971`, `jumpDest2995`; the program-counter tables covering indices 1172..1177 and 1280 |
-| `Proofs/Fast/Paths/P16.lean` | `blk1781`, `blk1793`, `blk1796` |
-| `Proofs/Fast/Paths/P17.lean` | `blk1816`, `blk1822`, `blk1828` |
-| `Proofs/Fast/Paths/P3.lean` | `blk1162` now ends with the tail call into `RRSEL` at index 1172..1173 |
-| `Proofs/Fast/Paths/P5.lean` | `blk1279` is now the tail call into `LZ` |
-| `Proofs/Fast/Lz.lean` | `topBit`, `topExp`, `topBit_spec`, the four block traces |
-| `Proofs/Fast/Exp.lean` | `lzMask`, `lzSkip`, `byteMemAt`, `bitMemsFrom` and its frame/invariant lemmas, `bitFamilyFrom`, `gasSteps_bitBodyFrom`, `gasSteps_bitLoopFrom`, `expAcc_of_zeros`, `ebInv_shift`, the byte loop re-threaded; `rrSel`, `rrCallSel`, `rrSkipSel`, `rrStep`, `montMul_by_one`, `rrMem`/`rrMem_inv` and the `RR` chain re-threaded |
+Memory: `byteMemAt` now branches on `i = 0 ∧ expByte input bsize i ≠ 0` and, on
+that branch, starts from `mcopyMem mem 1024 2048 (32 * n)` at bit index
+`lzSkip input bsize i + 1`. `ebMems`, `readWord_ebMems`, `ebMems_frame` and
+`ebMems_inv` are threaded through the same branch; `readWord_mcopyMem_disjoint`,
+`frame_mcopyMem`, `fastRepresents_mcopyMem` and
+`fastRepresents_mcopyMem_disjoint` move above their first use.
 
-`Proofs/Fast/Monpro.lean`, `Csub.lean`, `Model.lean`, `Double.lean`,
-`Ccb.lean`, `R1.lean`, `Setup.lean` and `Correct.lean` are unchanged, as is
-every module under `Proofs/Bytecode` apart from the regenerated artifact.
+Gas: `gasSteps_ebLoad` takes the hypothesis
+`¬(i = 0 ∧ expByte input bsize i ≠ 0)` and reaches `ebitHead` through
+`blk1831` and `blk1843`; `gasSteps_ebLoadCopy` is new and reaches `ebitNext`
+through `blk1831` and `blk1836`; `gasSteps_byteFrom` factors the bit loop from
+an arbitrary starting bit; `gasSteps_byteBody` splits three ways on the branch
+condition and, in the copy case, on whether `lzSkip input bsize i = 7`.
 
-## Proof shape
+### Regenerated
 
-`Lz.lean` defines the mask as the block computes it,
+`Challenge/Modexp/Submission/Bytes.lean`,
+`Challenge/Modexp/Submission/Bytecode.lean` and
+`Challenge/Modexp/Submission/Proofs/Bytecode/Artifact.lean` are regenerated from
+the artifact; the byte and instruction chunk boundaries are unchanged and only
+the entries covering the edited windows and the appended block move.
 
-```lean
-def sm1 (w : Nat) : Nat := (w >>> 1) ||| w
-def sm2 (w : Nat) : Nat := (sm1 w >>> 2) ||| sm1 w
-def sm3 (w : Nat) : Nat := (sm2 w >>> 4) ||| sm2 w
-def topBit (w : Nat) : Nat := (sm3 w >>> 1) + 1
-```
+## Frame the appended block relies on
 
-and proves `topBit_spec`: for every byte, `topBit w = 2 ^ topExp w`,
-`topExp w ≤ 7` and `w < 2 ^ (topExp w + 1)`. It then proves the four block
-traces — the two arms of the `i = 0` test and the two rejoining arms.
+The copy is sized from the word at `V_S32 = 0x2480`, which the setup writes
+once and which `Frame` carries as its `s32` field alongside `minvW` at `0x24a0`,
+`ml` at `0x24c0`, `tl` at `0x24e0` and `eoff` at `0x2500`. `frame_mcopyMem`
+shows a copy into `ACC` preserves all five, since `0x0400 + 32 * n` stays below
+`0x2480` for every `n` the artifact accepts. The memory the copy touches is
+`[0x0400, 0x0400 + 32 * n)` for the destination and
+`[0x0800, 0x0800 + 32 * n)` for the source, both inside the region the setup has
+already made active, so `activeWords_fix2` shows the copy expands nothing and
+the block's gas is the sum of its opcode costs.
 
-`Exp.lean` re-threads the byte loop. The inner-bit machinery was already
-generic in the mask, taking it as `2 ^ r` with `r ≤ 7`; what is new is the
-memory chain started at an arbitrary bit index,
+## Block boundaries in the regenerated tables
 
-```lean
-def bitMemsFrom (mpMem) (w mem j0) : Nat → ByteArray
-  | 0 => mem
-  | k + 1 => bitStep mpMem (bitMemsFrom mpMem w mem j0 k) (bitAt w (7 - (j0 + k)))
-```
+`Proofs/Bytecode/Artifact.lean` keeps its existing chunk boundaries. The
+appended instructions extend the final instruction chunk by fifteen entries and
+the final byte chunk by twenty-seven bytes; every earlier chunk is byte- and
+entry-identical to the previous artifact. `Challenge/Modexp/Benchmark/Artifact.lean`
+is 48 chunks of 64 bytes.
 
-with `bitMemsFrom_frame` and `bitMemsFrom_inv` beside it, and
-`gasSteps_bitLoopFrom`, which iterates `7 - j0` times from mask `2 ^ (7 - j0)`
-down to `1`. The accumulator is indexed by the absolute bit position
-`t0 + j0 + k` throughout, so the loop ends at exactly the index the unskipped
-loop reached and nothing downstream moves.
+## Result
 
-Two arithmetic lemmas close the `LZ` skip. `montMul_mont_one` states that
-`R mod m` is a fixed point of Montgomery squaring, and `expAcc_of_zeros`
-lifts it: an accumulator that has only seen zero bits is still `R mod m`.
-`ebInv_shift` applies that to byte `0`, using `topBit_spec`'s
-`w < 2 ^ (topExp w + 1)` and `bitAt_zero_of_lt` to see that the skipped bits
-are zero; for every later byte `lzSkip` is `0` and the shift is the identity.
-`lzMask_eq` connects the two descriptions, `lzMask = 2 ^ (7 - lzSkip)`.
+44/44 vectors correct, 3,402,255 gas, Tier 1 PASS.
 
-`P17.lean` carries the three `RRSEL` block definitions; `Exp.lean` proves
-their traces, split on the selector test: `run_rrSel_call` and
-`run_rrSel_skip` for `blk1816`, then `run_rrCallSel` and `run_rrSkipSel` for
-the two arms.
+`Challenge.Modexp.Submission.Solution` builds with
+`propext`, `Classical.choice` and `Quot.sound` as its only axioms.
 
-`Exp.lean` carries the round's memory effect as
+## Reproduction
 
-```lean
-def rrStep (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (n k : Nat)
-    (mem : ByteArray) : ByteArray :=
-  if bitAt n k = 0 then mpMem 6144 6144 6144 mem
-  else mpMem 6144 5120 6144 (mpMem 6144 6144 6144 mem)
-```
-
-with `rrMem` iterating it six times and `rrValue` the matching value chain.
-`gasSteps_rrBody` and `gasSteps_rrLastBody` case on the same test as the
-block, so the two arms of each are discharged against the two arms of
-`rrStep`. The identity is
-
-```lean
-theorem montMul_by_one {mm R x : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
-    (hx : x < mm) : Model.montMul mm R x (R % mm) = x :=
-  Model.montMul_eq_of_modEq hm hcop
-    (Nat.ModEq.mul_left x (Nat.mod_modEq R mm).symm) hx
-```
-
-and `rrMem_inv` uses it on the skipped arm, so both arms re-establish the same
-`RrInv` — `MOD`, `R1`, `CC` framed and `RR` holding `rrValue`. `rrValue_final`
-is therefore unchanged and the chain still ends holding the Montgomery form of
-`radix ^ n`.
-
-`#print axioms gasSteps_handled` reports `propext`, `Classical.choice` and
-`Quot.sound` only.
-
-## Measured result
-
-Trusted scorer, `.benchmark-tools/trusted/modexpchallenge --csv`, on the
-frozen bytes:
-
-| vector | gas |
-| --- | ---: |
-| empty tuple | 105 |
-| 2^5 mod 13 | 2,245 |
-| zero exponent | 1,107 |
-| zero modulus | 224 |
-| zero modulus size | 105 |
-| EIP-198 example 1 | 37,523 |
-| EIP-198 example 2 | 37,391 |
-| trailing-zero normalization | 3,383 |
-| 257-bit modulus | 232,586 |
-| BN254 modular inversion | 41,615 |
-| random 256-bit modexp | 41,615 |
-| RSA-1024 e=3 | 160,282 |
-| RSA-2048 e=65537 | 994,061 |
-| **total** | **1,552,242** |
-
-Bytecode size 3,000 bytes. Correctness vectors 13/13. Exported axiom
-footprint `propext`, `Quot.sound`, `Classical.choice` only.
-
-## Reproducing
-
-```sh
-./setup.sh modexp
-scripts/build-lean-serial.sh Challenge.Modexp.Submission.Proofs.Fast.Correct
-./benchmark.sh modexp
-.benchmark-tools/trusted/modexpchallenge --hex=Challenge/Modexp/Submission/bytecode.hex --csv
-```
+    lake build Challenge.Modexp.Submission.Solution
+    lake build modexpchallenge
+    .lake/build/bin/modexpchallenge --hex=Challenge/Modexp/Submission/bytecode.hex

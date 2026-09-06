@@ -1843,7 +1843,7 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.SHR)),
  YulEvmCompiler.Instr.push 1 1,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.ADD)),
- YulEvmCompiler.Instr.push 2 1789,
+ YulEvmCompiler.Instr.push 2 3000,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
@@ -1859,8 +1859,23 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
  YulEvmCompiler.Instr.push 2 1615,
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.ISZERO)),
+ YulEvmCompiler.Instr.push 2 3022,
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPI)),
+ YulEvmCompiler.Instr.push 2 9344,
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MLOAD)),
+ YulEvmCompiler.Instr.push 2 2048,
+ YulEvmCompiler.Instr.push 2 1024,
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.MCOPY)),
+ YulEvmCompiler.Instr.push 2 1832,
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP)),
+ YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMPDEST)),
+ YulEvmCompiler.Instr.push 2 1789,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))]
-theorem submissionInstructions_count : submissionInstructions.length = 1831 := by
+theorem submissionInstructions_count : submissionInstructions.length = 1846 := by
   decide
 
 theorem assemble_submissionInstructions :

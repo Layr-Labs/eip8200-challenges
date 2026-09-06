@@ -160,6 +160,11 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
       [2971,2972,2973,2976,2977,2980,2981,2984,2987,2988,2991,2994,2995,2996,2999][i - 1816]! := by
   interval_cases i <;> decide
 
+@[simp] theorem fastPC24 (i : Nat) (hi : 1831 ≤ i) (hii : i ≤ 1845) :
+    Artifact.submissionArtifact.instructionPC i =
+      [3000,3001,3002,3003,3006,3007,3010,3011,3014,3017,3018,3021,3022,3023,3026][i - 1831]! := by
+  interval_cases i <;> decide
+
 theorem jumpDest1196 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1196 = true :=
   Artifact.isValidJumpDest_index 899 (by rfl)
@@ -331,5 +336,13 @@ theorem jumpDest2971 :
 theorem jumpDest2995 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2995 = true :=
   Artifact.isValidJumpDest_index 1828 (by rfl)
+
+theorem jumpDest3000 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3000 = true :=
+  Artifact.isValidJumpDest_index 1831 (by rfl)
+
+theorem jumpDest3022 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3022 = true :=
+  Artifact.isValidJumpDest_index 1843 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast
