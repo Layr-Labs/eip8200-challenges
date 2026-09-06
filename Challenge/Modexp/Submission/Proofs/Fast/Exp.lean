@@ -457,7 +457,7 @@ theorem run_rrSel_skip (s : State) (mem : ByteArray) (n bsize esize msize k : Na
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1816
       (rrSel s mem n bsize esize msize k) =
-      some (rrSkipSel s mem n bsize esize msize k) := by
+      some (rrPost s mem n bsize esize msize k) := by
   have hsel : selOf n k = 4096 := by unfold selOf; rw [hbit]
   have heq : UInt256.eq (UInt256.ofNat 4096) (UInt256.ofNat 4096) = UInt256.ofNat 1 := by
     decide
@@ -465,7 +465,7 @@ theorem run_rrSel_skip (s : State) (mem : ByteArray) (n bsize esize msize k : Na
   simp (config := { maxSteps := 400000 }) [blk1816, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    rrSel, rrSkipSel, outer, hsel, heq, htrue, hcode, hrun, fastPC23, jumpDest2995,
+    rrSel, rrPost, outer, hsel, heq, htrue, hcode, hrun, fastPC23, jumpDest1615,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -655,7 +655,7 @@ def gasSteps_rrSelSkip (s : State) (mem : ByteArray) (n bsize esize msize k : Na
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (rrSel s mem n bsize esize msize k)
-      (rrSkipSel s mem n bsize esize msize k) :=
+      (rrPost s mem n bsize esize msize k) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1816 hcode hfork
       (run_rrSel_skip s mem n bsize esize msize k hbit hcode hrun) hrun hnp
@@ -3874,10 +3874,8 @@ def gasSteps_rrBody (s : State) {n bsize mm minv R : Nat}
       (rrPost s (rrStep sub.mpMem n k mem) n bsize esize msize k) := by
     by_cases h0 : bitAt n k = 0
     · exact Challenge.EvmProof.GasSteps.cast
-        ((gasSteps_rrSelSkip s (sub.mpMem 6144 6144 6144 mem) n bsize esize msize k h0
-            hcode hfork hrun hnp).trans
-          (gasSteps_rrSkipSel s (sub.mpMem 6144 6144 6144 mem) n bsize esize msize k
-            hcode hfork hrun hnp))
+        (gasSteps_rrSelSkip s (sub.mpMem 6144 6144 6144 mem) n bsize esize msize k h0
+            hcode hfork hrun hnp)
         rfl (by simp only [rrStep, if_pos h0])
     · have h1 : selOf n k = 5120 := by
         have := bitAt_le_one n k
@@ -3949,10 +3947,8 @@ def gasSteps_rrLastBody (s : State) {n bsize mm minv R : Nat}
       (rrPost s (rrStep sub.mpMem n 0 mem) n bsize esize msize 0) := by
     by_cases h0 : bitAt n 0 = 0
     · exact Challenge.EvmProof.GasSteps.cast
-        ((gasSteps_rrSelSkip s (sub.mpMem 6144 6144 6144 mem) n bsize esize msize 0 h0
-            hcode hfork hrun hnp).trans
-          (gasSteps_rrSkipSel s (sub.mpMem 6144 6144 6144 mem) n bsize esize msize 0
-            hcode hfork hrun hnp))
+        (gasSteps_rrSelSkip s (sub.mpMem 6144 6144 6144 mem) n bsize esize msize 0 h0
+            hcode hfork hrun hnp)
         rfl (by simp only [rrStep, if_pos h0])
     · have h1 : selOf n 0 = 5120 := by
         have := bitAt_le_one n 0; unfold selOf; omega
