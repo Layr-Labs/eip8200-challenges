@@ -1,164 +1,140 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.Word
+import Challenge.Modexp.Submission.Proofs.Bytecode.WordStep
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 1000000
-set_option maxErrors 1
+set_option maxRecDepth 40000
+set_option maxHeartbeats 8000000
 /-!
 # Copy 5 of the unrolled exponent-bit body
 
-The copy handles exponent bit 5.  Its six straight-line segments are the same
-instructions as every other copy, at instruction indices 1972 .. 1996 and bytes
-3163 .. 3189.
+The copy handles exponent bit 5 at instruction indices 1935 .. 1951 and bytes
+3132 .. 3151.  Its seventeen instructions are taken one at a time.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Unroll5
 
 open EvmSemantics
 open EvmSemantics.EVM
-open Word
+open Challenge.EvmProof
+open Challenge.Modexp.Submission.Proofs.Bytecode.WordStep
+open Challenge.Modexp.Submission.Proofs.Bytecode.UnrollPCs
 
-attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
-  Challenge.EvmProof.Word.succ_ofNat_mod
+/-- Copy 5, with every stack slot left symbolic. -/
+def gasSteps_bitCopy5_sym (s : State) (rest : List UInt256)
+    (Bm1 zero byte offset outerW acc base m : UInt256)
+    (hs : Frame s) (hrest : rest.length < 1000) :
+    GasSteps (stW s 3132 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest))
+      (stW s 3152 ([Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest)) := by
+  have step1935 := soundW hs (opAt 1935 (.Dup ⟨7, by decide⟩))
+    (blockOfW _ (pcFactW s 1935 3132 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1935)
+      (stepW_dup s 3132 7 (by decide) ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (m) (by rfl) (by simp; omega) (by norm_num)))
+  have step1936 := soundW hs (pushAt 1936 1 1)
+    (blockOfW _ (pcFactW s 1936 3133 ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1936)
+      (stepW_push s 3133 1 (1 : UInt256) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
+  have step1937 := soundW hs (opAt 1937 (.Dup ⟨4, by decide⟩))
+    (blockOfW _ (pcFactW s 1937 3135 ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1937)
+      (stepW_dup s 3135 4 (by decide) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (byte) (by rfl) (by simp; omega) (by norm_num)))
+  have step1938 := soundW hs (pushAt 1938 1 2)
+    (blockOfW _ (pcFactW s 1938 3136 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1938)
+      (stepW_push s 3136 1 (2 : UInt256) ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
+  have step1939 := soundW hs (opAt 1939 .SHR)
+    (blockOfW _ (pcFactW s 1939 3138 ([(2 : UInt256), byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1939)
+      (stepW_shr s 3138 ((2 : UInt256)) (byte) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
+  have step1940 := soundW hs (opAt 1940 .AND)
+    (blockOfW _ (pcFactW s 1940 3139 ([(UInt256.shiftRight byte (2 : UInt256)), (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1940)
+      (stepW_and s 3139 ((UInt256.shiftRight byte (2 : UInt256))) ((1 : UInt256)) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
+  have step1941 := soundW hs (opAt 1941 (.Dup ⟨2, by decide⟩))
+    (blockOfW _ (pcFactW s 1941 3140 ([(UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1941)
+      (stepW_dup s 3140 2 (by decide) ([(UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (Bm1) (by rfl) (by simp; omega) (by norm_num)))
+  have step1942 := soundW hs (opAt 1942 .MUL)
+    (blockOfW _ (pcFactW s 1942 3141 ([Bm1, (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1942)
+      (stepW_mul s 3141 (Bm1) ((UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256))) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
+  have step1943 := soundW hs (pushAt 1943 1 1)
+    (blockOfW _ (pcFactW s 1943 3142 ([(Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1943)
+      (stepW_push s 3142 1 (1 : UInt256) ([(Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
+  have step1944 := soundW hs (opAt 1944 .ADD)
+    (blockOfW _ (pcFactW s 1944 3144 ([(1 : UInt256), (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1944)
+      (stepW_add s 3144 ((1 : UInt256)) ((Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
+  have step1945 := soundW hs (opAt 1945 (.Dup ⟨1, by decide⟩))
+    (blockOfW _ (pcFactW s 1945 3145 ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1945)
+      (stepW_dup s 3145 1 (by decide) ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (m) (by rfl) (by simp; omega) (by norm_num)))
+  have step1946 := soundW hs (opAt 1946 (.Dup ⟨8, by decide⟩))
+    (blockOfW _ (pcFactW s 1946 3146 ([m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1946)
+      (stepW_dup s 3146 8 (by decide) ([m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (acc) (by rfl) (by simp; omega) (by norm_num)))
+  have step1947 := soundW hs (opAt 1947 (.Dup ⟨0, by decide⟩))
+    (blockOfW _ (pcFactW s 1947 3147 ([acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1947)
+      (stepW_dup s 3147 0 (by decide) ([acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (acc) (by rfl) (by simp; omega) (by norm_num)))
+  have step1948 := soundW hs (opAt 1948 .MULMOD)
+    (blockOfW _ (pcFactW s 1948 3148 ([acc, acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1948)
+      (stepW_mulmod s 3148 (acc) (acc) (m) ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
+  have step1949 := soundW hs (opAt 1949 .MULMOD)
+    (blockOfW _ (pcFactW s 1949 3149 ([(UInt256.mulMod acc acc m), ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1949)
+      (stepW_mulmod s 3149 ((UInt256.mulMod acc acc m)) (((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256))))) (m) ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
+  have step1950 := soundW hs (opAt 1950 (.Swap ⟨5, by decide⟩))
+    (blockOfW _ (pcFactW s 1950 3150 ([(UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))) m), Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1950)
+      (stepW_swap s 3150 5 (by decide) ([(UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))) m), Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) ([acc, Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by rfl) (by simp; omega) (by norm_num)))
+  have step1951 := soundW hs (opAt 1951 .POP)
+    (blockOfW _ (pcFactW s 1951 3151 ([acc, Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by norm_num) pc1951)
+      (stepW_pop s 3151 (acc) ([Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by simp; omega) (by norm_num)))
+  exact step1935.trans (step1936.trans (step1937.trans (step1938.trans (step1939.trans (step1940.trans (step1941.trans (step1942.trans (step1943.trans (step1944.trans (step1945.trans (step1946.trans (step1947.trans (step1948.trans (step1949.trans (step1950.trans (step1951))))))))))))))))
 
-def bitDecodePath5 :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1972 1 1, opAt 1973 (.Dup ⟨2, by decide⟩), pushAt 1974 1 2,
-   opAt 1975 .SHR, opAt 1976 .AND]
-
-def bitSquarePath5 :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1977 (.Dup ⟨7, by decide⟩), opAt 1978 (.Dup ⟨6, by decide⟩),
-   opAt 1979 (.Dup ⟨7, by decide⟩), opAt 1980 .MULMOD]
-
-def bitMaskPath5 :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1981 (.Dup ⟨1, by decide⟩), pushAt 1982 0 0, opAt 1983 .SUB]
-
-def bitProductPath5 :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1984 (.Dup ⟨9, by decide⟩), opAt 1985 (.Dup ⟨9, by decide⟩),
-   opAt 1986 (.Dup ⟨3, by decide⟩), opAt 1987 .MULMOD]
-
-def bitChoosePath5 :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1988 (.Dup ⟨2, by decide⟩), opAt 1989 .XOR, opAt 1990 .AND,
-   opAt 1991 (.Dup ⟨1, by decide⟩), opAt 1992 .XOR]
-
-def bitAdvancePath5 :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1993 (.Swap ⟨6, by decide⟩), opAt 1994 .POP, opAt 1995 .POP,
-   opAt 1996 .POP]
-
-set_option linter.unusedSimpArgs false in
-theorem run_bitDecode (input : ByteArray) (outer : Nat)
-    (byte offset acc base : UInt256) :
-    Challenge.EvmProof.Stepper.runLocatedBlock bitDecodePath5
-      (bitUnrollState input outer 5 byte offset acc base) =
-        some (bitDecodedState input outer 5 byte offset acc base) := by
-  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega : 5 ≤ 7)
-    (by norm_num : 7 < 2 ^ 256)
-  have hshift := Challenge.EvmProof.Word.shiftRight_ofNat
-    (value := byte.toNat) (shift := 7 - 5) byte.val.isLt (by omega)
-  have hbyte : UInt256.ofNat byte.toNat = byte := by
-    apply Challenge.EvmProof.Word.word_ext
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat]
-    exact Nat.mod_eq_of_lt byte.val.isLt
-  have hshiftWord : (2 : UInt256) = UInt256.ofNat 2 := by decide
-  have h1Word : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  simp (config := { maxSteps := 175000 })
-    [bitDecodePath5, opAt, pushAt,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitUnrollState, bitDecodedState, bitLoopState, bitPC, exponentBit,
-      nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
-      initialState, UnrollPCs.copyPC5, Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt, hsub, hshift, hbyte, hshiftWord, h1Word]
-
-
-set_option linter.unusedSimpArgs false in
-theorem run_bitSquare (input : ByteArray) (outer : Nat)
-    (byte offset acc base : UInt256) :
-    Challenge.EvmProof.Stepper.runLocatedBlock bitSquarePath5
-      (bitDecodedState input outer 5 byte offset acc base) =
-        some (bitSquaredState input outer 5 byte offset acc base) := by
-  simp (config := { maxSteps := 125000 })
-    [bitSquarePath5, opAt,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitDecodedState, bitSquaredState, bitLoopState, bitPC,
-      nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
-      initialState, UnrollPCs.copyPC5, List.exchange]
-
-
-set_option linter.unusedSimpArgs false in
-theorem run_bitMask (input : ByteArray) (outer : Nat)
-    (byte offset acc base : UInt256) :
-    Challenge.EvmProof.Stepper.runLocatedBlock bitMaskPath5
-      (bitSquaredState input outer 5 byte offset acc base) =
-        some (bitMaskedState input outer 5 byte offset acc base) := by
-  have hzeroRaw : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
-  simp (config := { maxSteps := 125000 })
-    [bitMaskPath5, opAt, pushAt,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitSquaredState, bitMaskedState, bitLoopState, bitPC,
-      nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
-      initialState, UnrollPCs.copyPC5, hzeroRaw]
-
-
-set_option linter.unusedSimpArgs false in
-theorem run_bitProduct (input : ByteArray) (outer : Nat)
-    (byte offset acc base : UInt256) :
-    Challenge.EvmProof.Stepper.runLocatedBlock bitProductPath5
-      (bitMaskedState input outer 5 byte offset acc base) =
-        some (bitProductState input outer 5 byte offset acc base) := by
-  simp (config := { maxSteps := 125000 })
-    [bitProductPath5, opAt,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitMaskedState, bitProductState, bitLoopState, bitPC,
-      nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
-      initialState, UnrollPCs.copyPC5]
-
-
-set_option linter.unusedSimpArgs false in
-theorem run_bitChoose (input : ByteArray) (outer : Nat)
-    (byte offset acc base : UInt256) :
-    Challenge.EvmProof.Stepper.runLocatedBlock bitChoosePath5
-      (bitProductState input outer 5 byte offset acc base) =
-        some (bitSelectedState input outer 5 byte offset acc base) := by
-  simp (config := { maxSteps := 150000 })
-    [bitChoosePath5, opAt,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitProductState, bitSelectedState, bitLoopState, bitPC, bitStep,
-      nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
-      initialState, UnrollPCs.copyPC5]
-
-
-set_option linter.unusedSimpArgs false in
-theorem run_bitAdvance (input : ByteArray) (outer : Nat)
-    (byte offset acc base : UInt256) :
-    Challenge.EvmProof.Stepper.runLocatedBlock bitAdvancePath5
-      (bitSelectedState input outer 5 byte offset acc base) =
-        some (bitUnrollState input outer (5 + 1) byte offset
-          (bitStep input byte 5 acc base) base) := by
-  have hsucc' := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 5) (b := 1) (by omega : 5 + 1 < 2 ^ 256)
-  have hincLeft : UInt256.ofNat 1 + UInt256.ofNat 5 =
-      UInt256.ofNat (5 + 1) := by
-    rw [Challenge.EvmProof.Word.word_add_comm]
-    exact hsucc'
-  have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  simp (config := { maxSteps := 175000 })
-    [bitAdvancePath5, opAt, pushAt,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitSelectedState, bitUnrollState, bitLoopState, bitPC, nonzeroState, callerRest,
-      Dispatch.wordEntryState, Main.headerState, initialState,
-      UnrollPCs.copyPC5, List.exchange,
-      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
-      hsucc', hincLeft, honeWord]
-
+/-- The block is straight-line, so its cost is the sum of its opcodes. -/
+theorem gasSteps_bitCopy5_sym_cost (s : State) (rest : List UInt256)
+    (Bm1 zero byte offset outerW acc base m : UInt256)
+    (hs : Frame s) (hrest : rest.length < 1000) :
+    (gasSteps_bitCopy5_sym s rest Bm1 zero byte offset outerW acc base m hs hrest).cost = 62 := by
+  unfold gasSteps_bitCopy5_sym
+  have c1935 := blockCostW [opAt 1935 (.Dup ⟨7, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 1935 3132 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1935)
+      (stepW_dup s 3132 7 (by decide) ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (m) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1936 := blockCostW [pushAt 1936 1 1] 3
+    (blockOfW _ (pcFactW s 1936 3133 ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1936)
+      (stepW_push s 3133 1 (1 : UInt256) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1937 := blockCostW [opAt 1937 (.Dup ⟨4, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 1937 3135 ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1937)
+      (stepW_dup s 3135 4 (by decide) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (byte) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1938 := blockCostW [pushAt 1938 1 2] 3
+    (blockOfW _ (pcFactW s 1938 3136 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1938)
+      (stepW_push s 3136 1 (2 : UInt256) ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1939 := blockCostW [opAt 1939 .SHR] 3
+    (blockOfW _ (pcFactW s 1939 3138 ([(2 : UInt256), byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1939)
+      (stepW_shr s 3138 ((2 : UInt256)) (byte) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1940 := blockCostW [opAt 1940 .AND] 3
+    (blockOfW _ (pcFactW s 1940 3139 ([(UInt256.shiftRight byte (2 : UInt256)), (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1940)
+      (stepW_and s 3139 ((UInt256.shiftRight byte (2 : UInt256))) ((1 : UInt256)) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1941 := blockCostW [opAt 1941 (.Dup ⟨2, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 1941 3140 ([(UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1941)
+      (stepW_dup s 3140 2 (by decide) ([(UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (Bm1) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1942 := blockCostW [opAt 1942 .MUL] 5
+    (blockOfW _ (pcFactW s 1942 3141 ([Bm1, (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1942)
+      (stepW_mul s 3141 (Bm1) ((UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256))) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1943 := blockCostW [pushAt 1943 1 1] 3
+    (blockOfW _ (pcFactW s 1943 3142 ([(Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1943)
+      (stepW_push s 3142 1 (1 : UInt256) ([(Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1944 := blockCostW [opAt 1944 .ADD] 3
+    (blockOfW _ (pcFactW s 1944 3144 ([(1 : UInt256), (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1944)
+      (stepW_add s 3144 ((1 : UInt256)) ((Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1945 := blockCostW [opAt 1945 (.Dup ⟨1, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 1945 3145 ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1945)
+      (stepW_dup s 3145 1 (by decide) ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (m) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1946 := blockCostW [opAt 1946 (.Dup ⟨8, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 1946 3146 ([m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1946)
+      (stepW_dup s 3146 8 (by decide) ([m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (acc) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1947 := blockCostW [opAt 1947 (.Dup ⟨0, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 1947 3147 ([acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1947)
+      (stepW_dup s 3147 0 (by decide) ([acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (acc) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1948 := blockCostW [opAt 1948 .MULMOD] 8
+    (blockOfW _ (pcFactW s 1948 3148 ([acc, acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1948)
+      (stepW_mulmod s 3148 (acc) (acc) (m) ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1949 := blockCostW [opAt 1949 .MULMOD] 8
+    (blockOfW _ (pcFactW s 1949 3149 ([(UInt256.mulMod acc acc m), ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1949)
+      (stepW_mulmod s 3149 ((UInt256.mulMod acc acc m)) (((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256))))) (m) ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1950 := blockCostW [opAt 1950 (.Swap ⟨5, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 1950 3150 ([(UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))) m), Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc1950)
+      (stepW_swap s 3150 5 (by decide) ([(UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))) m), Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) ([acc, Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c1951 := blockCostW [opAt 1951 .POP] 2
+    (blockOfW _ (pcFactW s 1951 3151 ([acc, Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by norm_num) pc1951)
+      (stepW_pop s 3151 (acc) ([Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (2 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  simp only [soundW, Challenge.EvmProof.GasSteps.trans_cost,
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost, Nat.reduceAdd]
+  omega
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Unroll5

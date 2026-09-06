@@ -137,6 +137,71 @@ theorem mulMod_ofNat (a b modulus : Nat)
     Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt hb,
     Nat.mod_eq_of_lt ((Nat.mod_lt _ hmodpos).trans hmodlt)]
 
+theorem word_toNat_mul (a b : UInt256) :
+    (a * b).toNat = (a.toNat * b.toNat) % 2 ^ 256 := by
+  change (a.val * b.val).val = _
+  rw [Fin.val_mul]
+  rfl
+
+theorem word_mul_zero (a : UInt256) : a * UInt256.ofNat 0 = UInt256.ofNat 0 := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [word_toNat_mul, Challenge.EvmProof.Word.word_toNat_ofNat]
+  simp
+
+theorem word_mul_one (a : UInt256) : a * UInt256.ofNat 1 = a := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [word_toNat_mul, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by norm_num : 1 < 2 ^ 256), Nat.mul_one]
+  exact Nat.mod_eq_of_lt a.val.isLt
+
+theorem word_add_zero_one : UInt256.ofNat 1 + UInt256.ofNat 0 = UInt256.ofNat 1 := by
+  decide
+
+theorem word_one_add_sub_one (a : UInt256) :
+    UInt256.ofNat 1 + (a - UInt256.ofNat 1) = a := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_add,
+    Challenge.EvmProof.Word.word_toNat_sub,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by norm_num : 1 < 2 ^ 256)]
+  have ha : a.toNat < 2 ^ 256 := a.val.isLt
+  omega
+
+theorem mulMod_lt (a b m : UInt256) (hm : 0 < m.toNat) :
+    (UInt256.mulMod a b m).toNat < m.toNat := by
+  have hmne : m.val.val ≠ 0 := by
+    change m.toNat ≠ 0
+    omega
+  have h1 : a.toNat * b.toNat % m.toNat < m.toNat := Nat.mod_lt _ hm
+  have h2 : m.toNat < 2 ^ 256 := m.val.isLt
+  unfold UInt256.mulMod
+  rw [if_neg hmne, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (Nat.lt_trans h1 h2)]
+  exact h1
+
+theorem mulMod_one_right (x m : UInt256) (hx : x.toNat < m.toNat) :
+    UInt256.mulMod x (UInt256.ofNat 1) m = x := by
+  have hmne : m.val.val ≠ 0 := by
+    change m.toNat ≠ 0
+    omega
+  unfold UInt256.mulMod
+  rw [if_neg hmne]
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by norm_num : 1 < 2 ^ 256), Nat.mul_one,
+    Nat.mod_eq_of_lt hx]
+  exact Nat.mod_eq_of_lt x.val.isLt
+
+theorem mulMod_mulMod_one (a m : UInt256) :
+    UInt256.mulMod (UInt256.mulMod a a m) (UInt256.ofNat 1) m
+      = UInt256.mulMod a a m := by
+  by_cases hm : m.toNat = 0
+  · have h : m.val.val = 0 := hm
+    unfold UInt256.mulMod
+    simp [h]
+  · exact mulMod_one_right _ m (mulMod_lt a a m (by omega))
+
 theorem bitStep_eq_zero (input : ByteArray) (byte : UInt256) (j : Nat)
     (acc base : UInt256) (hbit : exponentBitNat byte j = 0)
     (hj : j < 8) :
@@ -144,7 +209,11 @@ theorem bitStep_eq_zero (input : ByteArray) (byte : UInt256) (j : Nat)
       UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)) := by
   unfold bitStep
   rw [exponentBit_eq byte j hj, hbit]
-  exact select_zero _ _
+  show UInt256.mulMod (UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)))
+      (UInt256.ofNat 1 + (base - UInt256.ofNat 1) * UInt256.ofNat 0)
+      (UInt256.ofNat (modulusValue input))
+    = UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input))
+  rw [word_mul_zero, word_add_zero_one, mulMod_mulMod_one]
 
 theorem bitStep_eq_one (input : ByteArray) (byte : UInt256) (j : Nat)
     (acc base : UInt256) (hbit : exponentBitNat byte j = 1)
@@ -155,7 +224,12 @@ theorem bitStep_eq_one (input : ByteArray) (byte : UInt256) (j : Nat)
         (UInt256.ofNat (modulusValue input)) := by
   unfold bitStep
   rw [exponentBit_eq byte j hj, hbit]
-  exact select_one _ _
+  show UInt256.mulMod (UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)))
+      (UInt256.ofNat 1 + (base - UInt256.ofNat 1) * UInt256.ofNat 1)
+      (UInt256.ofNat (modulusValue input))
+    = UInt256.mulMod (UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)))
+        base (UInt256.ofNat (modulusValue input))
+  rw [word_mul_one, word_one_add_sub_one]
 
 def natBitStep (modulus : Nat) (byte : UInt256) (j acc base : Nat) : Nat :=
   let square := (acc * acc) % modulus
@@ -525,7 +599,7 @@ theorem shifted_div (n width k : Nat) (hwidth : width ≤ 32) (hk : k < width) :
 theorem outputMemory_readPadded (input : ByteArray) (n : Nat)
     (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
     (hn : n < 256 ^ modulusSize input) :
-    MachineState.readPadded (outputMemory input (UInt256.ofNat n)) 0
+    MachineState.readPadded (outputMemory input (UInt256.ofNat n)) 6144
         (modulusSize input) =
       Precompile.natToBytes n (modulusSize input) := by
   apply ByteArray.ext_getElem
@@ -546,7 +620,7 @@ theorem outputMemory_readPadded (input : ByteArray) (n : Nat)
       · omega
       · simp [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
         omega)]
-    rw [show 0 + k - 0 = k by omega,
+    rw [show 6144 + k - 6144 = k by omega,
       YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ 32 k
         (by omega),
       Precompile.natToBytes,
@@ -576,7 +650,7 @@ theorem wordFinalState_result (input : ByteArray) (hvalid : ValidInput input)
     exact wordResult_correct input hvalid hmodpos hmodlt]
   change ExecutionResult.returned
       (MachineState.readPadded (outputMemory input (UInt256.ofNat result))
-        0 (modulusSize input)) = ExecutionResult.returned (spec input)
+        6144 (modulusSize input)) = ExecutionResult.returned (spec input)
   rw [outputMemory_readPadded input result hmsize hword hresult]
   congr 1
   simp [spec, Nat.ne_of_gt hmsize, result, baseNat, exponentNat,

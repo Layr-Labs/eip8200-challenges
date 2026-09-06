@@ -136,224 +136,82 @@ theorem gasSteps_expEnter_cost (input : ByteArray) (i : Nat)
 
 theorem gasSteps_bitCopy0_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy0 input outer byte offset acc base).cost = 81 := by
-  have hdecode := blockCost_of_static Unroll0.bitDecodePath0 15
-    (Unroll0.run_bitDecode input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hsquare := blockCost_of_static Unroll0.bitSquarePath0 17
-    (Unroll0.run_bitSquare input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hmask := blockCost_of_static Unroll0.bitMaskPath0 8
-    (Unroll0.run_bitMask input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hproduct := blockCost_of_static Unroll0.bitProductPath0 17
-    (Unroll0.run_bitProduct input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hchoose := blockCost_of_static Unroll0.bitChoosePath0 15
-    (Unroll0.run_bitChoose input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll0.bitAdvancePath0 9
-    (Unroll0.run_bitAdvance input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  unfold gasSteps_bitCopy0
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  omega
+    (gasSteps_bitCopy0 input outer byte offset acc base).cost = 62 :=
+  Unroll0.gasSteps_bitCopy0_sym_cost (bitLoopState input outer 0 byte offset acc base)
+    (bitTail input) (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset
+    (UInt256.ofNat outer) acc base (UInt256.ofNat (modulusValue input))
+    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
 theorem gasSteps_bitCopy1_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy1 input outer byte offset acc base).cost = 81 := by
-  have hdecode := blockCost_of_static Unroll1.bitDecodePath1 15
-    (Unroll1.run_bitDecode input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hsquare := blockCost_of_static Unroll1.bitSquarePath1 17
-    (Unroll1.run_bitSquare input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hmask := blockCost_of_static Unroll1.bitMaskPath1 8
-    (Unroll1.run_bitMask input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hproduct := blockCost_of_static Unroll1.bitProductPath1 17
-    (Unroll1.run_bitProduct input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hchoose := blockCost_of_static Unroll1.bitChoosePath1 15
-    (Unroll1.run_bitChoose input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll1.bitAdvancePath1 9
-    (Unroll1.run_bitAdvance input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  unfold gasSteps_bitCopy1
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  omega
+    (gasSteps_bitCopy1 input outer byte offset acc base).cost = 62 :=
+  Unroll1.gasSteps_bitCopy1_sym_cost (bitLoopState input outer 0 byte offset acc base)
+    (bitTail input) (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset
+    (UInt256.ofNat outer) acc base (UInt256.ofNat (modulusValue input))
+    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
 theorem gasSteps_bitCopy2_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy2 input outer byte offset acc base).cost = 81 := by
-  have hdecode := blockCost_of_static Unroll2.bitDecodePath2 15
-    (Unroll2.run_bitDecode input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hsquare := blockCost_of_static Unroll2.bitSquarePath2 17
-    (Unroll2.run_bitSquare input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hmask := blockCost_of_static Unroll2.bitMaskPath2 8
-    (Unroll2.run_bitMask input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hproduct := blockCost_of_static Unroll2.bitProductPath2 17
-    (Unroll2.run_bitProduct input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hchoose := blockCost_of_static Unroll2.bitChoosePath2 15
-    (Unroll2.run_bitChoose input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll2.bitAdvancePath2 9
-    (Unroll2.run_bitAdvance input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  unfold gasSteps_bitCopy2
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  omega
+    (gasSteps_bitCopy2 input outer byte offset acc base).cost = 62 :=
+  Unroll2.gasSteps_bitCopy2_sym_cost (bitLoopState input outer 0 byte offset acc base)
+    (bitTail input) (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset
+    (UInt256.ofNat outer) acc base (UInt256.ofNat (modulusValue input))
+    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
 theorem gasSteps_bitCopy3_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy3 input outer byte offset acc base).cost = 81 := by
-  have hdecode := blockCost_of_static Unroll3.bitDecodePath3 15
-    (Unroll3.run_bitDecode input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hsquare := blockCost_of_static Unroll3.bitSquarePath3 17
-    (Unroll3.run_bitSquare input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hmask := blockCost_of_static Unroll3.bitMaskPath3 8
-    (Unroll3.run_bitMask input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hproduct := blockCost_of_static Unroll3.bitProductPath3 17
-    (Unroll3.run_bitProduct input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hchoose := blockCost_of_static Unroll3.bitChoosePath3 15
-    (Unroll3.run_bitChoose input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll3.bitAdvancePath3 9
-    (Unroll3.run_bitAdvance input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  unfold gasSteps_bitCopy3
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  omega
+    (gasSteps_bitCopy3 input outer byte offset acc base).cost = 62 :=
+  Unroll3.gasSteps_bitCopy3_sym_cost (bitLoopState input outer 0 byte offset acc base)
+    (bitTail input) (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset
+    (UInt256.ofNat outer) acc base (UInt256.ofNat (modulusValue input))
+    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
 theorem gasSteps_bitCopy4_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy4 input outer byte offset acc base).cost = 81 := by
-  have hdecode := blockCost_of_static Unroll4.bitDecodePath4 15
-    (Unroll4.run_bitDecode input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hsquare := blockCost_of_static Unroll4.bitSquarePath4 17
-    (Unroll4.run_bitSquare input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hmask := blockCost_of_static Unroll4.bitMaskPath4 8
-    (Unroll4.run_bitMask input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hproduct := blockCost_of_static Unroll4.bitProductPath4 17
-    (Unroll4.run_bitProduct input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hchoose := blockCost_of_static Unroll4.bitChoosePath4 15
-    (Unroll4.run_bitChoose input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll4.bitAdvancePath4 9
-    (Unroll4.run_bitAdvance input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  unfold gasSteps_bitCopy4
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  omega
+    (gasSteps_bitCopy4 input outer byte offset acc base).cost = 62 :=
+  Unroll4.gasSteps_bitCopy4_sym_cost (bitLoopState input outer 0 byte offset acc base)
+    (bitTail input) (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset
+    (UInt256.ofNat outer) acc base (UInt256.ofNat (modulusValue input))
+    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
 theorem gasSteps_bitCopy5_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy5 input outer byte offset acc base).cost = 81 := by
-  have hdecode := blockCost_of_static Unroll5.bitDecodePath5 15
-    (Unroll5.run_bitDecode input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hsquare := blockCost_of_static Unroll5.bitSquarePath5 17
-    (Unroll5.run_bitSquare input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hmask := blockCost_of_static Unroll5.bitMaskPath5 8
-    (Unroll5.run_bitMask input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hproduct := blockCost_of_static Unroll5.bitProductPath5 17
-    (Unroll5.run_bitProduct input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hchoose := blockCost_of_static Unroll5.bitChoosePath5 15
-    (Unroll5.run_bitChoose input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll5.bitAdvancePath5 9
-    (Unroll5.run_bitAdvance input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  unfold gasSteps_bitCopy5
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  omega
+    (gasSteps_bitCopy5 input outer byte offset acc base).cost = 62 :=
+  Unroll5.gasSteps_bitCopy5_sym_cost (bitLoopState input outer 0 byte offset acc base)
+    (bitTail input) (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset
+    (UInt256.ofNat outer) acc base (UInt256.ofNat (modulusValue input))
+    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
 theorem gasSteps_bitCopy6_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy6 input outer byte offset acc base).cost = 81 := by
-  have hdecode := blockCost_of_static Unroll6.bitDecodePath6 15
-    (Unroll6.run_bitDecode input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hsquare := blockCost_of_static Unroll6.bitSquarePath6 17
-    (Unroll6.run_bitSquare input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hmask := blockCost_of_static Unroll6.bitMaskPath6 8
-    (Unroll6.run_bitMask input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hproduct := blockCost_of_static Unroll6.bitProductPath6 17
-    (Unroll6.run_bitProduct input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hchoose := blockCost_of_static Unroll6.bitChoosePath6 15
-    (Unroll6.run_bitChoose input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll6.bitAdvancePath6 9
-    (Unroll6.run_bitAdvance input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  unfold gasSteps_bitCopy6
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  omega
+    (gasSteps_bitCopy6 input outer byte offset acc base).cost = 62 :=
+  Unroll6.gasSteps_bitCopy6_sym_cost (bitLoopState input outer 0 byte offset acc base)
+    (bitTail input) (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset
+    (UInt256.ofNat outer) acc base (UInt256.ofNat (modulusValue input))
+    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
 theorem gasSteps_bitCopy7_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy7 input outer byte offset acc base).cost = 81 := by
-  have hdecode := blockCost_of_static Unroll7.bitDecodePath7 15
-    (Unroll7.run_bitDecode input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hsquare := blockCost_of_static Unroll7.bitSquarePath7 17
-    (Unroll7.run_bitSquare input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hmask := blockCost_of_static Unroll7.bitMaskPath7 8
-    (Unroll7.run_bitMask input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hproduct := blockCost_of_static Unroll7.bitProductPath7 17
-    (Unroll7.run_bitProduct input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hchoose := blockCost_of_static Unroll7.bitChoosePath7 15
-    (Unroll7.run_bitChoose input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll7.bitAdvancePath7 9
-    (Unroll7.run_bitAdvance input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
-  unfold gasSteps_bitCopy7
-  simp only [Challenge.EvmProof.GasSteps.trans_cost,
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost]
-  omega
+    (gasSteps_bitCopy7 input outer byte offset acc base).cost = 62 :=
+  Unroll7.gasSteps_bitCopy7_sym_cost (bitLoopState input outer 0 byte offset acc base)
+    (bitTail input) (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset
+    (UInt256.ofNat outer) acc base (UInt256.ofNat (modulusValue input))
+    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
 theorem gasSteps_bitLoop_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitLoop input outer byte offset acc base).cost = 661 := by
+    (gasSteps_bitLoop input outer byte offset acc base).cost = 518 := by
   have hentry := blockCost_of_static bitEntryPath 4
     (run_bitEntry input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   have hjump := blockCost_of_static bitJumpPath 8
     (run_bitJump input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have hhead := blockCost_of_static bitHeadPath 1
-    (run_bitHead input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
+  have hhead : (gasSteps_bitHead input outer byte offset acc base).cost = 10 :=
+    WordEnds.gasSteps_bitHead_sym_cost (bitLoopState input outer 0 byte offset acc base)
+      (bitTail input) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer) acc base
+      (UInt256.ofNat (modulusValue input))
+      (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
   have hcopy0 := gasSteps_bitCopy0_cost input outer byte offset
     (bitAfter input byte base 0 acc) base
   have hcopy1 := gasSteps_bitCopy1_cost input outer byte offset
@@ -378,10 +236,13 @@ theorem gasSteps_bitLoop_cost (input : ByteArray) (outer : Nat)
 theorem gasSteps_bitFinish_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) (hvalid : ValidInput input)
     (houter : outer < exponentSize input) :
-    (gasSteps_bitFinish input outer byte offset acc base hvalid houter).cost = 35 := by
-  have hexit := blockCost_of_static bitExitPath 11
-    (run_bitExit input outer byte offset acc base) (by rfl)
-    (by decide) (by rfl) (by rfl)
+    (gasSteps_bitFinish input outer byte offset acc base hvalid houter).cost = 37 := by
+  have hexit : (gasSteps_bitExit input outer byte offset acc base).cost = 13 :=
+    WordEnds.gasSteps_bitExit_sym_cost (bitLoopState input outer 0 byte offset acc base)
+      (bitTail input) (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset
+      (UInt256.ofNat outer) acc base (UInt256.ofNat (modulusValue input))
+      (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
+      (by exact Artifact.isValidJumpDest_index 525 (by rfl))
   have htail := blockCost_of_static bitFinishTailPath 24
     (run_bitFinishTail input outer byte offset acc base hvalid houter) (by rfl)
     (by decide) (by rfl) (by rfl)
@@ -393,16 +254,16 @@ theorem gasSteps_bitFinish_cost (input : ByteArray) (outer : Nat)
 theorem gasSteps_expIteration_cost (input : ByteArray) (i : Nat)
     (acc base : UInt256) (hvalid : ValidInput input)
     (hi : i < exponentSize input) :
-    (gasSteps_expIteration input i acc base hvalid hi).cost = 744 := by
+    (gasSteps_expIteration input i acc base hvalid hi).cost = 603 := by
   simp [gasSteps_expIteration, gasSteps_expEnter_cost, gasSteps_bitLoop_cost,
     gasSteps_bitFinish_cost]
 
 theorem gasSteps_expLoop_cost (input : ByteArray) (acc base : UInt256)
     (hvalid : ValidInput input) :
-    (gasSteps_expLoop input acc base hvalid).cost = 744 * exponentSize input := by
+    (gasSteps_expLoop input acc base hvalid).cost = 603 * exponentSize input := by
   unfold gasSteps_expLoop
   have h := Challenge.EvmProof.GasSteps.iterateBounded_cost_of_const
-    (count := exponentSize input) (cost := 744) (body := fun i hi =>
+    (count := exponentSize input) (cost := 603) (body := fun i hi =>
       gasSteps_expIteration input i (expAfter input base i acc) base hvalid hi) (by
         intro i hi
         exact gasSteps_expIteration_cost input i (expAfter input base i acc)
@@ -411,7 +272,7 @@ theorem gasSteps_expLoop_cost (input : ByteArray) (acc base : UInt256)
 
 theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)
     (hvalid : ValidInput input) (hword : modulusSize input ≤ 32) :
-    (gasSteps_expFinish input acc base hvalid hword).cost = 65 := by
+    (gasSteps_expFinish input acc base hvalid hword).cost = 713 := by
   have hguard := blockCost_of_static expGuardPath 26
     (run_expFinishGuard input acc base hvalid) (by rfl)
     (by decide) (by rfl) (by rfl)
@@ -419,21 +280,22 @@ theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)
     expFinishTailPath 36
     (run_expFinishTail input acc base hvalid hword) (by rfl)
     (by decide) (by rfl)
-  have hreturned : MachineState.activeWordsAfter 1 0
-      (modulusSize input) = 1 := by
+  have hreturned : MachineState.activeWordsAfter 193 6144
+      (modulusSize input) = 193 := by
     unfold MachineState.activeWordsAfter
     split
     · rfl
-    · have hdiv : (modulusSize input - 1) / 32 = 0 := by omega
+    · have hdiv : (6143 + modulusSize input) / 32 = 192 := by omega
       dsimp
-      rw [show 0 + modulusSize input - 1 = modulusSize input - 1 by omega,
-        hdiv]
+      have hoff : 6144 + modulusSize input - 1 = 6143 + modulusSize input := by
+        omega
+      rw [hoff, hdiv]
       decide
-  have hstored : MachineState.activeWordsAfter 0 0 32 = 1 := by decide
-  have hfinal : (wordFinalState input acc base).activeWords.toNat = 1 := by
+  have hstored : MachineState.activeWordsAfter 0 6144 32 = 193 := by decide
+  have hfinal : (wordFinalState input acc base).activeWords.toNat = 193 := by
     change (UInt256.ofNat (MachineState.activeWordsAfter
-      (MachineState.activeWordsAfter 0 0 32) 0
-        (modulusSize input))).toNat = 1
+      (MachineState.activeWordsAfter 0 6144 32) 6144
+        (modulusSize input))).toNat = 193
     rw [hstored, hreturned]
     decide
   rw [show (expFinishDispatchState input acc base).activeWords.toNat = 0 by rfl,
@@ -495,6 +357,6 @@ theorem gasSteps_zeroModulus_total_cost_after_header (input : ByteArray)
     gasSteps_zeroModulus_cost input hvalid hmsize hword hmodulus]
 
 def wordGas (input : ByteArray) : Nat :=
-  283 + 132 * baseSize input + 744 * exponentSize input
+  931 + 132 * baseSize input + 603 * exponentSize input
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordGas
