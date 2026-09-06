@@ -96,10 +96,10 @@ def writeInitPath : List
 def writeTestPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [⟨652, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨653, .push ⟨1, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
+   ⟨653, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
    ⟨654, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨655, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨656, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨655, .op .GT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨656, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨657, .push ⟨2, by decide⟩ (UInt256.ofNat 0x3e9), by rfl, by decide⟩,
    ⟨658, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -432,15 +432,16 @@ theorem run_writeTest_continue (s : State) (j : Nat) (tail : List UInt256)
   have hc3 : tail.length + 3 < 1024 := by omega
   have hjWord : (UInt256.ofNat j).toNat = j := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hj256]
-  have hlt : UInt256.lt (UInt256.ofNat j) (UInt256.ofNat 4) =
-      UInt256.ofNat 1 := by
-    simp [UInt256.lt, hjWord, Challenge.EvmProof.Word.word_toNat_ofNat, hj]
-  have hzero : UInt256.isZero (UInt256.ofNat 1) = 0 := by decide
+  have hgt : UInt256.gt (UInt256.ofNat j) (UInt256.ofNat 3) = 0 := by
+    rw [UInt256.gt, hjWord, show (UInt256.ofNat 3).toNat = 3 by decide]
+    rw [if_neg]
+    · rfl
+    · omega
   have hfalse : UInt256.isTrue (0 : UInt256) = false := by decide
   simp [writeTestPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     hcap, hc1, hc2, hc3, hrun, hj, hj256,
-    Challenge.EvmProof.Word.word_toNat_ofNat, hlt, hzero, hfalse]
+    Challenge.EvmProof.Word.word_toNat_ofNat, hgt, hfalse]
 
 theorem run_writeTest_exit (s : State) (tail : List UInt256)
     (hcap : tail.length < 1021) (hcode : s.executionEnv.code = submissionBytecode)
@@ -451,13 +452,12 @@ theorem run_writeTest_exit (s : State) (tail : List UInt256)
   have hc1 : tail.length + 1 < 1024 := by omega
   have hc2 : tail.length + 2 < 1024 := by omega
   have hc3 : tail.length + 3 < 1024 := by omega
-  have hlt : UInt256.lt (UInt256.ofNat 4) (UInt256.ofNat 4) = 0 := by decide
-  have hzero : UInt256.isZero (0 : UInt256) = 1 := by decide
+  have hgt : UInt256.gt (UInt256.ofNat 4) (UInt256.ofNat 3) = 1 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
   simp [writeTestPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    hcap, hc1, hc2, hc3, hrun, hcode, valid3e9, hlt, hzero, htrue, honeNat,
+    hcap, hc1, hc2, hc3, hrun, hcode, valid3e9, hgt, htrue, honeNat,
     UInt256.isTrue]
 
 theorem run_writeBody (s : State) (offset : Nat) (word : UInt256) (j : Nat)

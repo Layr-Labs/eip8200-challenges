@@ -61,7 +61,7 @@ private theorem writeIteration_cost_potential (s : State) (offset : Nat)
       hfork hrun hnp).cost +
         MachineState.memCost
           (writeLoopState s offset word ret tail j).activeWords.toNat =
-      84 + MachineState.memCost
+      82 + MachineState.memCost
         (writeLoopState s offset word ret tail (j + 1)).activeWords.toNat := by
   let q := writeLoopState s offset word ret tail j
   have qcode : q.executionEnv.code = submissionBytecode := by simpa [q] using hcode
@@ -85,9 +85,9 @@ private theorem writeIteration_cost_potential (s : State) (offset : Nat)
     (by simpa [q, testStart] using
       writeLoopState_normalized s offset word ret tail j) rfl
   have htest : gtest.cost + MachineState.memCost q.activeWords.toNat =
-      26 + MachineState.memCost testEnd.activeWords.toNat := by
+      24 + MachineState.memCost testEnd.activeWords.toNat := by
     have hraw := block_cost_potential OutputTrace.writeTestPath testStart testEnd
-      26 qcode qfork htestRun qrun qnp
+      24 qcode qfork htestRun qrun qnp
       (by
         intro located hmem z hz
         simp [OutputTrace.writeTestPath] at hmem
@@ -119,7 +119,7 @@ private theorem writeIteration_cost_potential (s : State) (offset : Nat)
       (by decide)
     simpa [gbody, Output.gasSteps_writeBody, testEnd, q, writeLoopState] using hraw
   have hjoined := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    gtest gbody 26 58 htest hbody
+    gtest gbody 24 58 htest hbody
   simpa [gasSteps_writeIteration, gtest, gtestRaw, gbody,
     Output.gasSteps_writeBody, q, testStart, testEnd, writeLoopState,
     Nat.add_assoc] using hjoined
@@ -134,11 +134,11 @@ private theorem writeLoop_cost_potential (s : State) (offset : Nat)
     (gasSteps_writeLoop s offset word ret tail htail hoff hcode hfork
       hrun hnp).cost + MachineState.memCost
         (writeLoopState s offset word ret tail 0).activeWords.toNat =
-      336 + MachineState.memCost
+      328 + MachineState.memCost
         (writeLoopState s offset word ret tail 4).activeWords.toNat := by
   unfold gasSteps_writeLoop
   simpa using Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
-    4 84
+    4 82
     (fun j hj => gasSteps_writeIteration s offset word ret tail j hj
       htail hoff hcode hfork hrun hnp)
     (fun j hj => writeIteration_cost_potential s offset word ret tail j hj
@@ -155,7 +155,7 @@ private theorem writeWord_cost_potential (s : State) (offset : Nat)
     (hvalid : Decode.isValidJumpDest submissionBytecode ret.toNat = true) :
     (gasSteps_writeWord s offset word ret tail htail hoff hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      380 + MachineState.memCost
+      370 + MachineState.memCost
         (writeLoopState s offset word ret tail 4).activeWords.toNat := by
   let start : State := { s with
     pc := UInt256.ofNat 0x3c6
@@ -194,8 +194,8 @@ private theorem writeWord_cost_potential (s : State) (offset : Nat)
   let gtest := Output.gasSteps_block OutputTrace.writeTestPath q testEnd
     qcode qfork htestRun qrun qnp
   have htest : gtest.cost + MachineState.memCost q.activeWords.toNat =
-      26 + MachineState.memCost testEnd.activeWords.toNat := by
-    exact block_cost_potential OutputTrace.writeTestPath q testEnd 26 qcode
+      24 + MachineState.memCost testEnd.activeWords.toNat := by
+    exact block_cost_potential OutputTrace.writeTestPath q testEnd 24 qcode
       qfork htestRun qrun qnp
       (by
         intro located hmem z hz
@@ -226,12 +226,12 @@ private theorem writeWord_cost_potential (s : State) (offset : Nat)
     hcode hfork hrun hnp
   have hfirst := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     ginit (gasSteps_writeLoop s offset word ret tail htail hoff hcode hfork
-      hrun hnp) 3 336 hinit (by simpa [loop0, q] using hloop)
+      hrun hnp) 3 328 hinit (by simpa [loop0, q] using hloop)
   have hlast := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    gtest gexit 26 15 htest hexit
+    gtest gexit 24 15 htest hexit
   have hall := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    (ginit.trans (gasSteps_writeLoop s offset word ret tail htail hoff hcode
-      hfork hrun hnp)) (gtest.trans gexit) 339 41 hfirst hlast
+    (ginit.trans (gasSteps_writeLoop s offset word ret tail htail hoff hcode hfork
+      hrun hnp)) (gtest.trans gexit) 331 39 hfirst hlast
   simpa [gasSteps_writeWord, ginit, gtest, gexit, start, loop0, q, testEnd,
     finish, Nat.add_assoc] using hall
 
@@ -244,7 +244,7 @@ private theorem outputIteration_cost_potential (s : State) (input : ByteArray)
       s.executionEnv.codeAddr = false) :
     (gasSteps_outputIteration s input i hi hcode hfork hrun hnp).cost +
         MachineState.memCost (outputLoopState s input i).activeWords.toNat =
-      511 + MachineState.memCost
+      501 + MachineState.memCost
         (outputLoopState s input (i + 1)).activeWords.toNat := by
   let q := outputLoopState s input i
   have qcode : q.executionEnv.code = submissionBytecode := by simpa [q] using hcode
@@ -357,7 +357,7 @@ private theorem outputIteration_cost_potential (s : State) (input : ByteArray)
   let written := writeLoopState loaded (12 + 4 * i) (OutputTrace.hWord q i)
     (UInt256.ofNat 0x469) [UInt256.ofNat i, Padding.paddedWord input] 4
   have hwrite : gwrite.cost + MachineState.memCost writeStart.activeWords.toNat =
-      380 + MachineState.memCost written.activeWords.toNat := by
+      370 + MachineState.memCost written.activeWords.toNat := by
     simpa [gwrite, writeStart, written] using writeWord_cost_potential loaded
       (12 + 4 * i) (OutputTrace.hWord q i) (UInt256.ofNat 0x469)
       [UInt256.ofNat i, Padding.paddedWord input] (by simp) (by omega)
@@ -396,12 +396,12 @@ private theorem outputIteration_cost_potential (s : State) (input : ByteArray)
   have h34 := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     gh gwcall 30 27 hh hwcall
   have h56 := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    gwrite gnext 380 26 hwrite (by simpa [writtenReturned] using hnext)
+    gwrite gnext 370 26 hwrite (by simpa [writtenReturned] using hnext)
   have h3456 := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    (gh.trans gwcall) (gwrite.trans gnext) 57 406 h34 h56
+    (gh.trans gwcall) (gwrite.trans gnext) 57 396 h34 h56
   have hall := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     (gcondition.trans gcall) ((gh.trans gwcall).trans (gwrite.trans gnext))
-    48 463 h12 h3456
+    48 453 h12 h3456
   simpa [gasSteps_outputIteration, gcondition, gconditionRaw, gcall, gh,
     gwcall, gwrite, gnext, q, conditionStart, conditionEnd, callEnd, hEnd,
     loaded, writeStart, written, writtenReturned, next, outputLoopState,
@@ -414,11 +414,11 @@ private theorem outputLoop_cost_potential (s : State) (input : ByteArray)
       s.executionEnv.codeAddr = false) :
     (gasSteps_outputLoop s input hcode hfork hrun hnp).cost +
         MachineState.memCost (outputLoopState s input 0).activeWords.toNat =
-      2555 + MachineState.memCost
+      2505 + MachineState.memCost
         (outputLoopState s input 5).activeWords.toNat := by
   unfold gasSteps_outputLoop
   simpa using Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
-    5 511
+    5 501
     (fun i hi => gasSteps_outputIteration s input i hi hcode hfork hrun hnp)
     (fun i hi => outputIteration_cost_potential s input i hi hcode hfork hrun hnp)
 
@@ -512,7 +512,7 @@ private theorem output_cost_potential (s : State) (input : ByteArray)
       s.executionEnv.codeAddr = false) :
     (gasSteps_output s input hcode hfork hrun hnp).cost +
         MachineState.memCost s.activeWords.toNat =
-      2601 + MachineState.memCost (outputResult s input).activeWords.toNat := by
+      2551 + MachineState.memCost (outputResult s input).activeWords.toNat := by
   let preStart := DriverTrace.afterExit s input
   let preEnd : State := { OutputTrace.zeroOutput s with
     pc := UInt256.ofNat 0x447, stack := [⟨0⟩, Padding.paddedWord input] }
@@ -588,12 +588,12 @@ private theorem output_cost_potential (s : State) (input : ByteArray)
     simpa [gfinish, Output.gasSteps_finish, exitEnd] using hraw
   have hloop := outputLoop_cost_potential s input hcode hfork hrun hnp
   have hleft := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
-    gpre (gasSteps_outputLoop s input hcode hfork hrun hnp) 12 2555 hpre hloop
+    gpre (gasSteps_outputLoop s input hcode hfork hrun hnp) 12 2505 hpre hloop
   have hright := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     gexit gfinish 26 8 hexit hfinish
   have hall := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     (gpre.trans (gasSteps_outputLoop s input hcode hfork hrun hnp))
-    (gexit.trans gfinish) 2567 34 hleft hright
+    (gexit.trans gfinish) 2517 34 hleft hright
   simpa [gasSteps_output, gpre, gexit, gexitRaw, gfinish, q, exitStart,
     exitEnd, outputResult, Nat.add_assoc] using hall
 
