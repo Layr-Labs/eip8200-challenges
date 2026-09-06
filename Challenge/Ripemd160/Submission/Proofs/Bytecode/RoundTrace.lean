@@ -745,6 +745,11 @@ def gasSteps_roundBody (q : State) (base : UInt256) (j : Nat) (hj : j < 5)
     (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18d)
     (genericSetTail base j wordIndex rotation k returnDest word a b c d e rest)
     (by simp [genericSetTail]; omega) hcode2 hfork2 hrun2 hnp2 valid18D
+    (by
+      simpa [rotlValue] using
+        land_mask32_idem
+          (UInt256.lor (UInt256.shiftLeft c (UInt256.ofNat 10))
+            (UInt256.shiftRight c (UInt256.ofNat 32 - UInt256.ofNat 10))))
   have gSuffix := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka suffixPath
       (s := TableTrace.setReturned q2 base (UInt256.ofNat 3)
