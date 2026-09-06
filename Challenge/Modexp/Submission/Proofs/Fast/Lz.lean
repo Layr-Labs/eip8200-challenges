@@ -73,6 +73,13 @@ theorem topBit_spec (w : Nat) (hw : w < 256) :
     topBit w = 2 ^ topExp w ∧ topExp w ≤ 7 ∧ w < 2 ^ (topExp w + 1) := by
   interval_cases w <;> exact ⟨by decide, by decide, by decide⟩
 
+/-- A nonzero byte has its `topExp` bit set: the smear really does find the
+leading one, so the loop's first iteration multiplies by `BASE`. -/
+theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w := by
+  interval_cases w
+  · exact absurd rfl hne
+  all_goals decide
+
 /-! ## States at the block boundaries -/
 
 /-- The `LZ` entry, pc 2922.  The driver frame below the byte index is left
@@ -98,6 +105,13 @@ def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : St
 def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 1789
+           stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
+           memory := mem }
+
+/- The first-byte arm hands to `LZBASE`, whose relocated entry is pc 3865. -/
+def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
+    (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 3865
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -236,7 +250,7 @@ theorem run_lzFirst (s : State) (mem : ByteArray) (i w : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1796
-      (lzFirst s mem i w rest) = some (lzJoin s mem i w (topBit w) rest) := by
+      (lzFirst s mem i w rest) = some (lzBase s mem i w (topBit w) rest) := by
   obtain ⟨h1, h2, h3⟩ := sm_lt w hw
   have b0 : w < 2 ^ 256 := by omega
   have b1 : sm1 w < 2 ^ 256 := by omega
@@ -265,10 +279,12 @@ theorem run_lzFirst (s : State) (mem : ByteArray) (i w : Nat)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hcomm : (1 : Nat) + (sm3 w >>> 1) = topBit w := by
     simp only [topBit]; omega
+  have h3865 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3865 = true :=
+    Artifact.isValidJumpDest_index 2557 (by rfl)
   simp (config := { maxSteps := 600000 }) [blk1796, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lzFirst, lzJoin, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, jumpDest1789,
+    lzFirst, lzBase, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, h3865,
     e1, e2, e3, e4, e5, e6, e7,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,

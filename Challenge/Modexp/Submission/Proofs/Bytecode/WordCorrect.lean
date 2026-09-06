@@ -213,7 +213,8 @@ theorem bitAfter_correct (input : ByteArray) (byte : UInt256)
   induction j with
   | zero => rfl
   | succ j ih =>
-      rw [bitAfter, ih (by omega)]
+      rw [bitAfter, ih (by omega),
+        WordBitSel.bitStepSel_eq input byte j _ (UInt256.ofNat base) (by omega)]
       apply bitStep_correct input byte j _ base modulus hmodulus
         hmodpos hmodlt
       · exact (natBitAfter_lt modulus byte base acc j hmodpos hacc).trans hmodlt
