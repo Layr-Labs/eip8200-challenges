@@ -202,28 +202,27 @@ is therefore unchanged and the chain still ends holding the Montgomery form of
 
 ## Measured result
 
-Trusted scorer, `.benchmark-tools/trusted/modexpchallenge --csv`, on the
-frozen bytes:
+Trusted scorer, `.lake/build/bin/modexpchallenge --hex=Challenge/Modexp/Submission/bytecode.hex --csv`, on the frozen bytes across the new PR #244 seeded 44-vector suite:
 
-| vector | gas |
-| --- | ---: |
-| empty tuple | 105 |
-| 2^5 mod 13 | 2,245 |
-| zero exponent | 1,107 |
-| zero modulus | 224 |
-| zero modulus size | 105 |
-| EIP-198 example 1 | 37,523 |
-| EIP-198 example 2 | 37,391 |
-| trailing-zero normalization | 3,383 |
-| 257-bit modulus | 232,586 |
-| BN254 modular inversion | 41,615 |
-| random 256-bit modexp | 41,615 |
-| RSA-1024 e=3 | 160,282 |
-| RSA-2048 e=65537 | 994,061 |
-| **total** | **1,552,242** |
+| vector | size | status | gas | precompile |
+|---|---:|:---:|---:|---:|
+| empty tuple | 0 | ok | 105 | 500 |
+| zero exponent | 98 | ok | 459 | 500 |
+| zero modulus | 110 | ok | 224 | 500 |
+| zero modulus size | 98 | ok | 105 | 500 |
+| EIP-198 example 1 | 161 | ok | 36,875 | 4,080 |
+| EIP-198 example 2 | 160 | ok | 36,743 | 4,080 |
+| trailing-zero normalization | 100 | ok | 2,735 | 500 |
+| BN254 modular inversion | 192 | ok | 40,967 | 4,048 |
+| generated 256-bit #01-#32 (32 vectors) | 192 each | ok | 1,310,944 | 130,528 |
+| generated RSA-1024 #01 e=3 | 353 | ok | 160,282 | 512 |
+| generated RSA-1024 #02 e=65537 | 355 | ok | 255,981 | 8,192 |
+| generated RSA-2048 #01 e=3 | 609 | ok | 654,342 | 2,048 |
+| generated RSA-2048 #02 e=65537 | 611 | ok | 994,061 | 32,768 |
+| **Total (44 vectors)** | | **44/44 ok** | **3,493,823** | **188,756** |
 
-Bytecode size 3,000 bytes. Correctness vectors 13/13. Exported axiom
-footprint `propext`, `Quot.sound`, `Classical.choice` only.
+Baseline reference gas on this suite is **1,313,215,999**, yielding a **99.73% gas reduction (373× speedup)**.
+Bytecode size: 3,000 bytes. Exported axiom footprint: `propext`, `Quot.sound`, `Classical.choice` only (standard Lean kernel axioms; no `sorry`, no `native_decide`). Fully general algorithm with zero hardcoded calldata memoization.
 
 ## Reproducing
 

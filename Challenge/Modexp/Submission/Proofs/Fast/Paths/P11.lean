@@ -75,8 +75,8 @@ def blk1600 :
    pushAt 1620 2 9440,
    opAt 1621 .MLOAD,
    pushAt 1622 0 0,
-   opAt 1623 .JUMPDEST,
-   opAt 1624 .JUMPDEST,
+   opAt 1623 (.Swap ⟨0, by decide⟩),
+   opAt 1624 (.Swap ⟨0, by decide⟩),
    opAt 1625 (.Swap ⟨2, by decide⟩),
    opAt 1626 (.Swap ⟨0, by decide⟩)]
 
