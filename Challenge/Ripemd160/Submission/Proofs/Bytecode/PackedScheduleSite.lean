@@ -230,8 +230,8 @@ private theorem packedSchedule_start_instructionPC :
       (DenseScheduleTemplate.denseFullTemplate ++ packedScheduleAfter) = 1045 := by
     decide
   rw [packedScheduleBefore_length, hlength] at h
-  have hsize : Artifact.submissionArtifact.code.size = 5300 := by
-    change Challenge.Ripemd160.submissionBytecode.size = 5300
+  have hsize : Artifact.submissionArtifact.code.size = 5695 := by
+    change Challenge.Ripemd160.submissionBytecode.size = 5695
     exact Challenge.Ripemd160.referenceBytecode_size
   rw [hsize] at h
   omega

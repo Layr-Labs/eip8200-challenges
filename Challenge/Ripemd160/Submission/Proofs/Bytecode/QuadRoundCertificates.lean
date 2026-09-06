@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.SmallInlineSites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSemantic
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSitesLeft
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSitesRight
@@ -230,7 +231,7 @@ private theorem rightActiveWords_eq (s : State) (k : Fin 20)
   exact QuadSemantic.quadRightActiveWords_unchanged s k hactive
 
 def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
-    (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
+    (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20) (hk : k.val < 18)
     (hwords : low32DenseWordsAt s word)
     (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1007)
@@ -241,7 +242,7 @@ def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
     GasSteps
       (stateAt s (QuadSites.leftPC k.val) working rho)
       (stateAt s (QuadSites.leftPC (k.val + 1)) (left4 word k working) rho) := by
-  let site := QuadSites.leftRoundSite k
+  let site := QuadSites.leftRoundSite k hk
   have hraw :
       runInstrSeq
           (quadBeforeJumpTemplate (k.val / 4) (QuadSites.leftConstant k))
@@ -290,10 +291,10 @@ def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
   exact g.cast
     (by
       simp only [stateAt]
-      rw [QuadSites.leftRoundSite_start k])
+      rw [QuadSites.leftRoundSite_start k hk])
     (by
       simp only [stateAt, StackRoundTrace.roundEntry, StackRoundTrace.roundWords]
-      rw [QuadSites.leftRoundSite_end k, hw, ha]
+      rw [QuadSites.leftRoundSite_end k hk, hw, ha]
       rfl)
 
 def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
@@ -362,5 +363,50 @@ def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
       simp only [stateAt, StackRoundTrace.roundEntry, StackRoundTrace.roundWords]
       rw [QuadSites.rightRoundSite_end k, hw, ha]
       rfl)
+
+def gasSteps_leftInlineQuad (s : State) (word : Nat → UInt32)
+    (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20) (hk : 18 ≤ k.val)
+    (hwords : low32DenseWordsAt s word)
+    (hactive : 66 ≤ s.activeWords.toNat)
+    (hstack : rho.length < 1007)
+    (hcode : s.executionEnv.code = Artifact.code)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps
+      (stateAt s (QuadSites.leftInlinePC k.val) working rho)
+      (stateAt s (QuadSites.leftInlinePC (k.val + 1)) (left4 word k working) rho) := by
+  let site := QuadSites.leftInlineSite k hk
+  have hraw := InlineQuadTrace.run_inline (k.val / 4) (by omega) s site.startPC
+    (UInt256.ofNat (QuadSites.leftGhostPCNat k.val))
+    (QuadSites.leftReturnPC k.val)
+    (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k)
+    (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k)
+    (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k)
+    (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k)
+    working (QuadSites.leftConstant k) rho (QuadSites.leftghost_pc k hk)
+    (leftConstant_zero k) hstack hrun
+    (leftRotation0_le32 k) (leftRotation1_le32 k)
+    (leftRotation2_le32 k) (leftRotation3_le32 k)
+  have hend : site.endPC = pcAfter site.startPC (QuadSites.leftInlineTemplate k) := by
+    have h := endPC_eq_pcAfter_sites site.sites site.startPC site.endPC
+      site.head_eq site.end_eq site.contiguous
+    rwa [site.instruction_eq] at h
+  have hlocated : Stepper.runLocatedBlock site.path
+      (stateAt s site.startPC working rho) =
+      some (stateAt s site.endPC (left4 word k working) rho) := by
+    rw [PairMultiplyLift.runLocatedBlock_eq_raw site
+      (InlineQuadTrace.advances (k.val / 4) (by omega) _ _ _ _ _ _ _ _ _ _)
+      (stateAt s site.startPC working rho) rfl]
+    rw [hraw]
+    rw [← hend]
+    have hw := leftWorking_eq s word working k hwords
+    have ha := leftActiveWords_eq s k hactive
+    simp only [InlineQuadTrace.result, stateAt, roundEntry, hw, ha]
+  have g := Stepper.runLocatedBlock_sound Artifact .Osaka site.path
+    hcode hfork hlocated hrun hnp
+  exact g.cast
+    (by rw [QuadSites.leftInlineSite_start k hk])
+    (by rw [QuadSites.leftInlineSite_end k hk])
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundCertificates
