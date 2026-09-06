@@ -89,11 +89,11 @@ def copyStateLocated : List Located :=
 
 def leftTestLocated : List Located :=
   [⟨470, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨471, .push ⟨1, by decide⟩ (UInt256.ofNat 80), by rfl, by decide⟩,
+   ⟨471, .push ⟨1, by decide⟩ (UInt256.ofNat 79), by rfl, by decide⟩,
    ⟨472, .op (.Dup ⟨1, by decide⟩), by rfl,
       wfOp (by decide) trivial rfl⟩,
-   ⟨473, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨474, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨473, .op .GT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨474, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨475, .push ⟨2, by decide⟩ (UInt256.ofNat 726), by rfl, by decide⟩,
    ⟨476, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -178,10 +178,10 @@ def rightInitLocated : List Located :=
 
 def rightTestLocated : List Located :=
   [⟨517, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨518, .push ⟨1, by decide⟩ (UInt256.ofNat 80), by rfl, by decide⟩,
+   ⟨518, .push ⟨1, by decide⟩ (UInt256.ofNat 79), by rfl, by decide⟩,
    ⟨519, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨520, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨521, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨520, .op .GT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨521, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨522, .push ⟨2, by decide⟩ (UInt256.ofNat 804), by rfl, by decide⟩,
    ⟨523, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -761,17 +761,18 @@ theorem run_leftTest_continue (s : State) (messageOffset returnDest : UInt256)
   have hiWord : (UInt256.ofNat i).toNat = i := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (by omega)]
-  have hlt : UInt256.lt (UInt256.ofNat i) (UInt256.ofNat 80) =
-      UInt256.ofNat 1 := by
-    simp [UInt256.lt, hiWord, Challenge.EvmProof.Word.word_toNat_ofNat, hi]
-  have hzero : UInt256.isZero (UInt256.ofNat 1) = 0 := by decide
+  have hle : i ≤ 79 := by omega
+  have hnot : ¬ (79 < i) := Nat.not_lt.mpr hle
+  have hgt : UInt256.gt (UInt256.ofNat i) (UInt256.ofNat 79) =
+      UInt256.ofNat 0 := by
+    simp [UInt256.gt, hiWord, Challenge.EvmProof.Word.word_toNat_ofNat, hnot]
   have hfalse : UInt256.isTrue (0 : UInt256) = false := by decide
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   simp [leftTestLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    leftLoopAt, leftBodyAt, hrun, hlt, hzero, hfalse,
+    leftLoopAt, leftBodyAt, hrun, hgt, hfalse,
     hc3, hc4, hc5]
 
 def gasSteps_leftTest_continue (s : State)
@@ -1019,13 +1020,13 @@ theorem run_leftTest_exit (s : State) (messageOffset returnDest : UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hlt : UInt256.lt (UInt256.ofNat 80) (UInt256.ofNat 80) = 0 := by decide
-  have hzero : UInt256.isZero (0 : UInt256) = UInt256.ofNat 1 := by decide
+  have hgt : UInt256.gt (UInt256.ofNat 80) (UInt256.ofNat 79) =
+      UInt256.ofNat 1 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat 1) = true := by decide
   have hdest : Decode.isValidJumpDest submissionBytecode 726 = true := by decide
   simp [leftTestLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    leftLoopAt, leftExitCompared, hrun, hcode, hlt, hzero, htrue, hdest,
+    leftLoopAt, leftExitCompared, hrun, hcode, hgt, htrue, hdest,
     hc3, hc4, hc5]
 
 def gasSteps_leftTest_exit (s : State) (messageOffset returnDest : UInt256)

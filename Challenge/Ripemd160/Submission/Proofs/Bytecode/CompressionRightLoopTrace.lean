@@ -146,17 +146,18 @@ theorem run_rightTest_continue (s : State) (messageOffset returnDest : UInt256)
   have hiWord : (UInt256.ofNat i).toNat = i := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (by omega)]
-  have hlt : UInt256.lt (UInt256.ofNat i) (UInt256.ofNat 80) =
-      UInt256.ofNat 1 := by
-    simp [UInt256.lt, hiWord, Challenge.EvmProof.Word.word_toNat_ofNat, hi]
-  have hzero : UInt256.isZero (UInt256.ofNat 1) = 0 := by decide
+  have hle : i ≤ 79 := by omega
+  have hnot : ¬ (79 < i) := Nat.not_lt.mpr hle
+  have hgt : UInt256.gt (UInt256.ofNat i) (UInt256.ofNat 79) =
+      UInt256.ofNat 0 := by
+    simp [UInt256.gt, hiWord, Challenge.EvmProof.Word.word_toNat_ofNat, hnot]
   have hfalse : UInt256.isTrue (0 : UInt256) = false := by decide
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   simp [rightTestLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    rightLoopAt, rightBodyAt, hrun, hlt, hzero, hfalse,
+    rightLoopAt, rightBodyAt, hrun, hgt, hfalse,
     hc3, hc4, hc5]
 
 def gasSteps_rightTest_continue (s : State)
@@ -196,16 +197,16 @@ theorem run_rightTest_exit (s : State) (messageOffset returnDest : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock rightTestLocated
       (rightLoopAt s messageOffset returnDest rest 80) =
         some (rightExitTested s messageOffset returnDest rest) := by
-  have hlt : UInt256.lt (UInt256.ofNat 80) (UInt256.ofNat 80) = 0 := by decide
-  have hzero : UInt256.isZero (0 : UInt256) = 1 := by decide
-  have htrue : UInt256.isTrue (1 : UInt256) = true := by decide
+  have hgt : UInt256.gt (UInt256.ofNat 80) (UInt256.ofNat 79) =
+      UInt256.ofNat 1 := by decide
+  have htrue : UInt256.isTrue (UInt256.ofNat 1) = true := by decide
   have hdest : Decode.isValidJumpDest submissionBytecode 804 = true := by decide
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   simp [rightTestLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    rightLoopAt, rightExitTested, hrun, hcode, hlt, hzero, htrue, hdest,
+    rightLoopAt, rightExitTested, hrun, hcode, hgt, htrue, hdest,
     hc3, hc4, hc5]
 
 def gasSteps_rightTest_exit (s : State)
