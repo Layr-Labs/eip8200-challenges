@@ -83,15 +83,15 @@ def tailState (input : ByteArray) (a : UInt256) : State :=
     pc := UInt256.ofNat 5203
     stack := UInt256.ofNat (scalarAt 31) :: UInt256.ofNat 992 :: a :: frame }
 
-/-- Scanner values retained below the branch condition on the hot hit path. -/
-def retainedStack (input : ByteArray) : List UInt256 :=
-  [UInt256.ofNat (scalarAt 31), UInt256.ofNat 992, scanAcc input 31, P7, M, m7, P, m8]
+/-! The frame remains below the branch condition; the tail consumes the
+offset and accumulator without retaining the scanner's final values. -/
+def retainedStack (_ : ByteArray) : List UInt256 := frame
 
 /-- The stub jumps here, and the guard answers or falls through.  -/
 def patternedEntry (input : ByteArray) : State := atPC input 5005
 
 def hitState (input : ByteArray) : State :=
-  { atPC input 5226 with stack := retainedStack input }
+  { atPC input 5224 with stack := retainedStack input }
 def fallbackState (input : ByteArray) : State := atPC input 1006
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
@@ -101,7 +101,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 5252
+    pc := UInt256.ofNat 5250
     stack := retainedStack input
     memory := answerMemory
     activeWords := UInt256.ofNat 1
@@ -188,7 +188,7 @@ theorem run_word_straddle (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 
         Nat.mod_eq_of_lt (by norm_num : 224 < 2 ^ 256), hval, h])]
     decide
   have hdest : Decode.isValidJumpDest submissionBytecode 5264 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2989 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 2991 (by rfl)
   have hdestN : Decode.isValidJumpDest submissionBytecode
       (UInt256.ofNat 5264).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,

@@ -32,122 +32,113 @@ def tailCondition (input : ByteArray) (acc : UInt256) : UInt256 :=
 
 private def gasSteps_tail_prefix_sym (input : ByteArray) (sv ov acc : UInt256) :
     GasSteps (stS input 5203 [sv, ov, acc, P7, M, m7, P, m8])
-      (stS input 5222 [tailCondition input acc, sv, ov, acc, P7, M, m7, P, m8]) := by
-  have step2962 := soundS (pushAt 2962 2 0x03e0)
+      (stS input 5220 [tailCondition input acc, P7, M, m7, P, m8]) := by
+  have step2962 := soundS (opAt 2962 (.Swap ⟨0, by decide⟩))
     (blockOfS _ (pcFactS input 2962 5203 [sv, ov, acc, P7, M, m7, P, m8]
       (by norm_num) pc2962)
-      (stepS_push input 5203 2 (992 : UInt256)
-        [sv, ov, acc, P7, M, m7, P, m8] (by simp) (by decide) (by decide)
-        (by norm_num)))
+      (stepS_swap input 5203 0 (by decide)
+        [sv, ov, acc, P7, M, m7, P, m8]
+        [ov, sv, acc, P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
   have step2963 := soundS (opAt 2963 .CALLDATALOAD)
-    (blockOfS _ (pcFactS input 2963 5206
-      [(992 : UInt256), sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2963)
-      (stepS_calldataload input 5206 (992 : UInt256)
-        [sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2964 := soundS (pushAt 2964 8 0x88add2f71c41668b)
-    (blockOfS _ (pcFactS input 2964 5207
-      [MachineState.readWord input ((992 : UInt256)).toNat,
-       sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2964)
-      (stepS_push input 5207 8 (0x88add2f71c41668b : UInt256)
-        [MachineState.readWord input ((992 : UInt256)).toNat,
-         sv, ov, acc, P7, M, m7, P, m8]
+    (blockOfS _ (pcFactS input 2963 5204
+      [ov, sv, acc, P7, M, m7, P, m8] (by norm_num) pc2963)
+      (stepS_calldataload input 5204 ov [sv, acc, P7, M, m7, P, m8]
+        (by simp) (by norm_num)))
+  have step2964 := soundS (opAt 2964 .POP)
+    (blockOfS _ (pcFactS input 2964 5205
+      [MachineState.readWord input (ov).toNat, sv, acc, P7, M, m7, P, m8]
+      (by norm_num) pc2964)
+      (stepS_pop input 5205 sv
+        [acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have step2965 := soundS (pushAt 2965 8 0x88add2f71c41668b)
+    (blockOfS _ (pcFactS input 2965 5206
+      [MachineState.readWord input (ov).toNat, acc, P7, M, m7, P, m8]
+      (by norm_num) pc2965)
+      (stepS_push input 5206 8 (0x88add2f71c41668b : UInt256)
+        [MachineState.readWord input (ov).toNat, acc, P7, M, m7, P, m8]
         (by simp) (by decide) (by decide) (by norm_num)))
-  have step2965 := soundS (pushAt 2965 1 0xc0)
-    (blockOfS _ (pcFactS input 2965 5216
+  have step2966 := soundS (pushAt 2966 1 0xc0)
+    (blockOfS _ (pcFactS input 2966 5215
       [(0x88add2f71c41668b : UInt256),
-       MachineState.readWord input ((992 : UInt256)).toNat,
-       sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2965)
-      (stepS_push input 5216 1 (192 : UInt256)
-        [(0x88add2f71c41668b : UInt256),
-         MachineState.readWord input ((992 : UInt256)).toNat,
-         sv, ov, acc, P7, M, m7, P, m8]
+       MachineState.readWord input (ov).toNat, acc, P7, M, m7, P, m8]
+      (by norm_num) pc2966)
+      (stepS_push input 5215 1 (192 : UInt256)
+        [MachineState.readWord input (ov).toNat, acc, P7, M, m7, P, m8]
         (by simp) (by decide) (by decide) (by norm_num)))
-  have step2966 := soundS (opAt 2966 .SHL)
-    (blockOfS _ (pcFactS input 2966 5218
+  have step2967 := soundS (opAt 2967 .SHL)
+    (blockOfS _ (pcFactS input 2967 5217
       [(192 : UInt256), (0x88add2f71c41668b : UInt256),
-       MachineState.readWord input ((992 : UInt256)).toNat,
-       sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2966)
-      (stepS_shl input 5218 (192 : UInt256)
+       MachineState.readWord input (ov).toNat, acc, P7, M, m7, P, m8]
+      (by norm_num) pc2967)
+      (stepS_shl input 5217 (192 : UInt256)
         (0x88add2f71c41668b : UInt256)
-        [MachineState.readWord input ((992 : UInt256)).toNat,
-         sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2967 := soundS (opAt 2967 .XOR)
-    (blockOfS _ (pcFactS input 2967 5219
-      [UInt256.shiftLeft (0x88add2f71c41668b : UInt256) (192 : UInt256),
-       MachineState.readWord input ((992 : UInt256)).toNat,
-       sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2967)
-      (stepS_xor input 5219
+        [MachineState.readWord input (ov).toNat, acc, P7, M, m7, P, m8]
+        (by simp) (by norm_num)))
+  have step2968 := soundS (opAt 2968 .XOR)
+    (blockOfS _ (pcFactS input 2968 5218
+      [(UInt256.shiftLeft (0x88add2f71c41668b : UInt256) (192 : UInt256)),
+       MachineState.readWord input (ov).toNat, acc, P7, M, m7, P, m8]
+      (by norm_num) pc2968)
+      (stepS_xor input 5218
         (UInt256.shiftLeft (0x88add2f71c41668b : UInt256) (192 : UInt256))
-        (MachineState.readWord input ((992 : UInt256)).toNat)
-        [sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2968 := soundS (opAt 2968 (.Dup ⟨3, by decide⟩))
-    (blockOfS _ (pcFactS input 2968 5220
-      [UInt256.xor
-        (UInt256.shiftLeft (0x88add2f71c41668b : UInt256) (192 : UInt256))
-        (MachineState.readWord input ((992 : UInt256)).toNat),
-       sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2968)
-      (stepS_dup input 5220 3 (by decide)
-        [UInt256.xor
-          (UInt256.shiftLeft (0x88add2f71c41668b : UInt256) (192 : UInt256))
-          (MachineState.readWord input ((992 : UInt256)).toNat),
-         sv, ov, acc, P7, M, m7, P, m8]
-        acc (by rfl) (by simp) (by norm_num)))
+        (MachineState.readWord input (ov).toNat)
+        [acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
   have step2969 := soundS (opAt 2969 .OR)
-    (blockOfS _ (pcFactS input 2969 5221
-      [acc,
-       UInt256.xor
+    (blockOfS _ (pcFactS input 2969 5219
+      [(UInt256.xor
         (UInt256.shiftLeft (0x88add2f71c41668b : UInt256) (192 : UInt256))
-        (MachineState.readWord input ((992 : UInt256)).toNat),
-       sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2969)
-      (stepS_or input 5221 acc
+        (MachineState.readWord input (ov).toNat)),
+       acc, P7, M, m7, P, m8] (by norm_num) pc2969)
+      (stepS_or input 5219
         (UInt256.xor
           (UInt256.shiftLeft (0x88add2f71c41668b : UInt256) (192 : UInt256))
-          (MachineState.readWord input ((992 : UInt256)).toNat))
-        [sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+          (MachineState.readWord input (ov).toNat))
+        acc [P7, M, m7, P, m8] (by simp) (by norm_num)))
   exact step2962.trans (step2963.trans (step2964.trans (step2965.trans
     (step2966.trans (step2967.trans (step2968.trans step2969))))))
 
-private def gasSteps_cleanup_sym (input : ByteArray) (sv ov acc : UInt256) :
-    GasSteps (stS input 4935 [sv, ov, acc, P7, M, m7, P, m8])
+private def gasSteps_cleanup_sym (input : ByteArray) :
+    GasSteps (stS input 4935 [P7, M, m7, P, m8])
       (stS input 1006 []) := by
   have step2864 := soundS (opAt 2864 .JUMPDEST)
     (blockOfS _ (pcFactS input 2864 4935
-      [sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2864)
-      (stepS_jumpdest input 4935 [sv, ov, acc, P7, M, m7, P, m8]
+      [P7, M, m7, P, m8] (by norm_num) pc2864)
+      (stepS_jumpdest input 4935 [P7, M, m7, P, m8]
         (by simp) (by norm_num)))
   have step2865 := soundS (opAt 2865 .POP)
     (blockOfS _ (pcFactS input 2865 4936
-      [sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2865)
-      (stepS_pop input 4936 sv [ov, acc, P7, M, m7, P, m8]
+      [P7, M, m7, P, m8] (by norm_num) pc2865)
+      (stepS_pop input 4936 P7 [M, m7, P, m8]
         (by simp) (by norm_num)))
   have step2866 := soundS (opAt 2866 .POP)
     (blockOfS _ (pcFactS input 2866 4937
-      [ov, acc, P7, M, m7, P, m8] (by norm_num) pc2866)
-      (stepS_pop input 4937 ov [acc, P7, M, m7, P, m8]
+      [M, m7, P, m8] (by norm_num) pc2866)
+      (stepS_pop input 4937 M [m7, P, m8]
         (by simp) (by norm_num)))
   have step2867 := soundS (opAt 2867 .POP)
     (blockOfS _ (pcFactS input 2867 4938
-      [acc, P7, M, m7, P, m8] (by norm_num) pc2867)
-      (stepS_pop input 4938 acc [P7, M, m7, P, m8]
+      [m7, P, m8] (by norm_num) pc2867)
+      (stepS_pop input 4938 m7 [P, m8]
         (by simp) (by norm_num)))
   have step2868 := soundS (opAt 2868 .POP)
     (blockOfS _ (pcFactS input 2868 4939
-      [P7, M, m7, P, m8] (by norm_num) pc2868)
-      (stepS_pop input 4939 P7 [M, m7, P, m8] (by simp) (by norm_num)))
+      [P, m8] (by norm_num) pc2868)
+      (stepS_pop input 4939 P [m8]
+        (by simp) (by norm_num)))
   have step2869 := soundS (opAt 2869 .POP)
     (blockOfS _ (pcFactS input 2869 4940
-      [M, m7, P, m8] (by norm_num) pc2869)
-      (stepS_pop input 4940 M [m7, P, m8] (by simp) (by norm_num)))
-  have step2870 := soundS (opAt 2870 .POP)
-    (blockOfS _ (pcFactS input 2870 4941
-      [m7, P, m8] (by norm_num) pc2870)
-      (stepS_pop input 4941 m7 [P, m8] (by simp) (by norm_num)))
-  have step2871 := soundS (opAt 2871 .POP)
-    (blockOfS _ (pcFactS input 2871 4942 [P, m8] (by norm_num) pc2871)
-      (stepS_pop input 4942 P [m8] (by simp) (by norm_num)))
-  have step2872 := soundS (opAt 2872 .POP)
-    (blockOfS _ (pcFactS input 2872 4943 [m8] (by norm_num) pc2872)
-      (stepS_pop input 4943 m8 [] (by simp) (by norm_num)))
+      [m8] (by norm_num) pc2869)
+      (stepS_pop input 4940 m8 []
+        (by simp) (by norm_num)))
+  have step2870 := soundS (opAt 2870 .JUMPDEST)
+    (blockOfS _ (pcFactS input 2870 4941 [] (by norm_num) pc2870)
+      (stepS_jumpdest input 4941 [] (by simp) (by norm_num)))
+  have step2871 := soundS (opAt 2871 .JUMPDEST)
+    (blockOfS _ (pcFactS input 2871 4942 [] (by norm_num) pc2871)
+      (stepS_jumpdest input 4942 [] (by simp) (by norm_num)))
+  have step2872 := soundS (opAt 2872 .JUMPDEST)
+    (blockOfS _ (pcFactS input 2872 4943 [] (by norm_num) pc2872)
+      (stepS_jumpdest input 4943 [] (by simp) (by norm_num)))
   have step2873 := soundS (pushAt 2873 2 0x03ee)
     (blockOfS _ (pcFactS input 2873 4944 [] (by norm_num) pc2873)
       (stepS_push input 4944 2 (1006 : UInt256) []
@@ -162,49 +153,49 @@ private def gasSteps_cleanup_sym (input : ByteArray) (sv ov acc : UInt256) :
     step2870.trans <| step2871.trans <| step2872.trans <|
     step2873.trans step2874
 
-/-- The accumulator is zero, so the guard falls directly into the return. -/
+/-! The accumulator is zero, so the guard falls directly into the return. -/
 def gasSteps_tail_hit_sym (input : ByteArray) (sv ov acc : UInt256)
     (hc : ¬ UInt256.isTrue (tailCondition input acc)) :
     GasSteps (stS input 5203 [sv, ov, acc, P7, M, m7, P, m8])
-      (stS input 5226 [sv, ov, acc, P7, M, m7, P, m8]) := by
+      (stS input 5224 [P7, M, m7, P, m8]) := by
   have step2970 := soundS (pushAt 2970 2 0x1347)
-    (blockOfS _ (pcFactS input 2970 5222
-      [tailCondition input acc, sv, ov, acc, P7, M, m7, P, m8]
+    (blockOfS _ (pcFactS input 2970 5220
+      [tailCondition input acc, P7, M, m7, P, m8]
       (by norm_num) pc2970)
-      (stepS_push input 5222 2 (4935 : UInt256)
-        [tailCondition input acc, sv, ov, acc, P7, M, m7, P, m8]
+      (stepS_push input 5220 2 (4935 : UInt256)
+        [tailCondition input acc, P7, M, m7, P, m8]
         (by simp) (by decide) (by decide) (by norm_num)))
   have step2971 := soundS (opAt 2971 .JUMPI)
-    (blockOfS _ (pcFactS input 2971 5225
+    (blockOfS _ (pcFactS input 2971 5223
       [(4935 : UInt256), tailCondition input acc,
-       sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2971)
-      (stepS_jumpi_fall input 5225 (4935 : UInt256)
-        (tailCondition input acc) [sv, ov, acc, P7, M, m7, P, m8]
+       P7, M, m7, P, m8] (by norm_num) pc2971)
+      (stepS_jumpi_fall input 5223 (4935 : UInt256)
+        (tailCondition input acc) [P7, M, m7, P, m8]
         (by simp) (by norm_num) hc))
   exact (gasSteps_tail_prefix_sym input sv ov acc).trans
     (step2970.trans step2971)
 
-/-- A nonzero accumulator branches to the cleanup before the generic program. -/
+/-! A nonzero accumulator branches to the cleanup before the generic program. -/
 def gasSteps_tail_miss_sym (input : ByteArray) (sv ov acc : UInt256)
     (hc : UInt256.isTrue (tailCondition input acc)) :
     GasSteps (stS input 5203 [sv, ov, acc, P7, M, m7, P, m8])
       (stS input 1006 []) := by
   have step2970 := soundS (pushAt 2970 2 0x1347)
-    (blockOfS _ (pcFactS input 2970 5222
-      [tailCondition input acc, sv, ov, acc, P7, M, m7, P, m8]
+    (blockOfS _ (pcFactS input 2970 5220
+      [tailCondition input acc, P7, M, m7, P, m8]
       (by norm_num) pc2970)
-      (stepS_push input 5222 2 (4935 : UInt256)
-        [tailCondition input acc, sv, ov, acc, P7, M, m7, P, m8]
+      (stepS_push input 5220 2 (4935 : UInt256)
+        [tailCondition input acc, P7, M, m7, P, m8]
         (by simp) (by decide) (by decide) (by norm_num)))
   have step2971 := soundS (opAt 2971 .JUMPI)
-    (blockOfS _ (pcFactS input 2971 5225
+    (blockOfS _ (pcFactS input 2971 5223
       [(4935 : UInt256), tailCondition input acc,
-       sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2971)
-      (stepS_jumpi_taken input 5225 4935 (4935 : UInt256)
-        (tailCondition input acc) [sv, ov, acc, P7, M, m7, P, m8]
+       P7, M, m7, P, m8] (by norm_num) pc2971)
+      (stepS_jumpi_taken input 5223 4935 (4935 : UInt256)
+        (tailCondition input acc) [P7, M, m7, P, m8]
         (by simp) (by norm_num) rfl hc hdest4935))
   exact (gasSteps_tail_prefix_sym input sv ov acc).trans
-    (step2970.trans (step2971.trans (gasSteps_cleanup_sym input sv ov acc)))
+    (step2970.trans (step2971.trans (gasSteps_cleanup_sym input)))
 
 /-- The accumulator once the padded tail word has been folded in. -/
 def scanAccFinal (input : ByteArray) : UInt256 :=
@@ -236,9 +227,8 @@ def gasSteps_tail_hit (input : ByteArray) (hz : scanAccFinal input = 0) :
         (MachineState.readWord input ((992 : UInt256)).toNat))) := by
     rw [tail_read, isTrue_iff]
     exact fun h => h hz
-  rw [tail_state_eq, show hitState input = stS input 5226
-    [UInt256.ofNat (scalarAt 31), UInt256.ofNat 992,
-      scanAcc input 31, P7, M, m7, P, m8] from rfl]
+  rw [tail_state_eq, show hitState input = stS input 5224
+    [P7, M, m7, P, m8] from rfl]
   exact gasSteps_tail_hit_sym input (UInt256.ofNat (scalarAt 31))
     (UInt256.ofNat 992) (scanAcc input 31) hc
 
