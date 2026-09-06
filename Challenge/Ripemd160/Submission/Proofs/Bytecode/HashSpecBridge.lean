@@ -1,4 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.SpecBridge
+import Mathlib.Data.Nat.ModEq
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.NormNum
 set_option warningAsError true
 set_option maxHeartbeats 1000000
 set_option maxRecDepth 10000

@@ -38,8 +38,7 @@ open private submissionInstructionsChunk0 submissionInstructionsChunk1
   submissionInstructionsChunk8 submissionInstructionsChunk9
   submissionInstructionsChunk10 submissionInstructionsChunk11
   submissionInstructionsChunk12 submissionInstructionsChunk13
-  submissionInstructionsChunk14 submissionInstructionsChunk15
-  submissionInstructionsChunk16
+  submissionInstructionsChunk14
   submissionInstructionsChunk0_length submissionInstructionsChunk1_length
   submissionInstructionsChunk2_length submissionInstructionsChunk3_length
   submissionInstructionsChunk4_length submissionInstructionsChunk5_length
@@ -47,8 +46,7 @@ open private submissionInstructionsChunk0 submissionInstructionsChunk1
   submissionInstructionsChunk8_length submissionInstructionsChunk9_length
   submissionInstructionsChunk10_length submissionInstructionsChunk11_length
   submissionInstructionsChunk12_length submissionInstructionsChunk13_length
-  submissionInstructionsChunk14_length submissionInstructionsChunk15_length
-  submissionInstructionsChunk16_length
+  submissionInstructionsChunk14_length
   from Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 
 private theorem advances_straight {instruction : Instr}
@@ -133,24 +131,20 @@ private theorem packedScheduleBefore_length : packedScheduleBefore.length = 2686
   simp [packedScheduleBefore, packedSchedulePrefix_length]
 
 private def packedScheduleAfter : List Instr :=
-  submissionInstructionsChunk13.drop 142 ++ submissionInstructionsChunk14 ++
-    submissionInstructionsChunk15 ++ submissionInstructionsChunk16
+  submissionInstructionsChunk13.drop 142 ++ submissionInstructionsChunk14
 
 private theorem artifact_prefix_split :
     Artifact.submissionArtifact.instructions =
       packedSchedulePrefix ++
-        (submissionInstructionsChunk13 ++ submissionInstructionsChunk14 ++
-          submissionInstructionsChunk15 ++ submissionInstructionsChunk16) := by
+        (submissionInstructionsChunk13 ++ submissionInstructionsChunk14) := by
   change Artifact.submissionInstructions =
     packedSchedulePrefix ++
-      (submissionInstructionsChunk13 ++ submissionInstructionsChunk14 ++
-        submissionInstructionsChunk15 ++ submissionInstructionsChunk16)
+      (submissionInstructionsChunk13 ++ submissionInstructionsChunk14)
   simp only [Artifact.submissionInstructions, packedSchedulePrefix, List.append_assoc,
     List.nil_append]
 
 private theorem artifact_tail_split :
-    submissionInstructionsChunk13 ++ submissionInstructionsChunk14 ++
-        submissionInstructionsChunk15 ++ submissionInstructionsChunk16 =
+    submissionInstructionsChunk13 ++ submissionInstructionsChunk14 =
       submissionInstructionsChunk13.take 86 ++
         DenseScheduleTemplate.denseFullTemplate ++ packedScheduleAfter := by
   rfl
@@ -233,11 +227,11 @@ private theorem packedSchedule_start_instructionPC :
     packedScheduleBefore (DenseScheduleTemplate.denseFullTemplate ++ packedScheduleAfter)
     (by simpa only [List.append_assoc] using artifact_dense_split)
   have hlength : byteLength
-      (DenseScheduleTemplate.denseFullTemplate ++ packedScheduleAfter) = 1044 := by
+      (DenseScheduleTemplate.denseFullTemplate ++ packedScheduleAfter) = 1045 := by
     decide
   rw [packedScheduleBefore_length, hlength] at h
-  have hsize : Artifact.submissionArtifact.code.size = 5299 := by
-    change Challenge.Ripemd160.submissionBytecode.size = 5299
+  have hsize : Artifact.submissionArtifact.code.size = 5300 := by
+    change Challenge.Ripemd160.submissionBytecode.size = 5300
     exact Challenge.Ripemd160.referenceBytecode_size
   rw [hsize] at h
   omega

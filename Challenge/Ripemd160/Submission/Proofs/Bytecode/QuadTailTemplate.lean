@@ -6,11 +6,12 @@ set_option maxRecDepth 30000
 set_option maxHeartbeats 4000000
 
 /-!
-# H30b cached-factor tail template
+# Cached-factor consume tail template
 
-H30b keeps one factor word below the five left working words.  The tail
-therefore uses the ten native DUP depths `4,9,6,11,2,12,3,13,4,9` and
-removes eleven words before the final dynamic `JUMP`.
+The 419d031 helper leaves `[right.a,b,c,d,e, factor, left.b,c,d,e,a, ret] ++ rest`.
+The consume tail permutes those live words onto the combine operands, writes the
+five `evmCombine` stores, pops the leftover factor, and `JUMP`s. Eight following
+`STOP` bytes are unreachable padding so later PCs and instruction indices stay.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailTemplate
@@ -25,42 +26,37 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTail
 def factor : UInt256 := UInt256.ofNat 0x100000001
 
 def tailStartPC : UInt256 := UInt256.ofNat 0x9a9
-def tailJumpPC : UInt256 := UInt256.ofNat 0xa04
+def tailJumpPC : UInt256 := UInt256.ofNat 0x9fc
 
-def dup4H : Instr := .op (.Dup ⟨3, by decide⟩)
-def dup9H : Instr := .op (.Dup ⟨8, by decide⟩)
-def dup6H : Instr := .op (.Dup ⟨5, by decide⟩)
-def dup11H : Instr := .op (.Dup ⟨10, by decide⟩)
-def dup2H : Instr := .op (.Dup ⟨1, by decide⟩)
-def dup12H : Instr := .op (.Dup ⟨11, by decide⟩)
-def dup3H : Instr := .op (.Dup ⟨2, by decide⟩)
-def dup13H : Instr := .op (.Dup ⟨12, by decide⟩)
+def swap5H : Instr := .op (.Swap ⟨4, by decide⟩)
+def swap6H : Instr := .op (.Swap ⟨5, by decide⟩)
+def swap7H : Instr := .op (.Swap ⟨6, by decide⟩)
 
 def c0Instructions : List Instr :=
-  [ dup4H, dup9H,
+  [ swap3, swap1, swap7H,
     push1 (UInt256.ofNat 0x40), op .MLOAD, op .ADD, op .ADD,
     push4 mask, op .AND ]
 
 def c1Instructions : List Instr :=
-  [ dup6H, dup11H,
+  [ swap3, swap1, swap7H,
     push1 (UInt256.ofNat 0x60), op .MLOAD, op .ADD, op .ADD,
     push4 mask, op .AND,
     push1 (UInt256.ofNat 0x40), op .MSTORE ]
 
 def c2Instructions : List Instr :=
-  [ dup2H, dup12H,
+  [ swap1, swap6H,
     push1 (UInt256.ofNat 0x80), op .MLOAD, op .ADD, op .ADD,
     push4 mask, op .AND,
     push1 (UInt256.ofNat 0x60), op .MSTORE ]
 
 def c3Instructions : List Instr :=
-  [ dup3H, dup13H,
+  [ swap2, swap1, swap5H,
     push1 (UInt256.ofNat 0xa0), op .MLOAD, op .ADD, op .ADD,
     push4 mask, op .AND,
     push1 (UInt256.ofNat 0x80), op .MSTORE ]
 
 def c4Instructions : List Instr :=
-  [ dup4H, dup9H,
+  [ swap3,
     push1 (UInt256.ofNat 0x20), op .MLOAD, op .ADD, op .ADD,
     push4 mask, op .AND,
     push1 (UInt256.ofNat 0xa0), op .MSTORE ]
@@ -69,15 +65,28 @@ def storeH0Instructions : List Instr :=
   [ push1 (UInt256.ofNat 0x20), op .MSTORE ]
 
 def cleanupInstructions : List Instr :=
-  [ op .POP, op .POP, op .POP, op .POP, op .POP,
-    op .POP, op .POP, op .POP, op .POP, op .POP, op .POP ]
+  [ op .POP ]
 
 def quadTailBeforeJumpTemplate : List Instr :=
   c0Instructions ++ c1Instructions ++ c2Instructions ++ c3Instructions ++
     c4Instructions ++ storeH0Instructions ++ cleanupInstructions
 
-def quadTailTemplate : List Instr :=
+/-- Reachable consume body, including the return `JUMP`. -/
+def consumeBody : List Instr :=
   quadTailBeforeJumpTemplate ++ [op .JUMP]
+
+/-- Unreachable padding after the return `JUMP`. Not executed. -/
+def paddingStops : List Instr :=
+  [op .STOP, op .STOP, op .STOP, op .STOP,
+   op .STOP, op .STOP, op .STOP, op .STOP]
+
+/-- 62-instruction window: 54 reachable + 8 `STOP`. Preserves later PCs. -/
+def quadTailWindow : List Instr :=
+  consumeBody ++ paddingStops
+
+/-- Executed template is the reachable body through `JUMP`. -/
+def quadTailTemplate : List Instr :=
+  consumeBody
 
 def workingStack (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : List UInt256 :=
@@ -100,5 +109,17 @@ def finalResult (s : State) (left right : Compression.EvmWorking)
   { beforeJumpResult s left right ret rest with
     pc := ret
     stack := rest }
+
+@[simp] theorem consumeBody_length : consumeBody.length = 54 := by
+  rfl
+
+@[simp] theorem paddingStops_length : paddingStops.length = 8 := by
+  rfl
+
+@[simp] theorem quadTailWindow_length : quadTailWindow.length = 62 := by
+  rfl
+
+@[simp] theorem quadTailTemplate_length : quadTailTemplate.length = 54 := by
+  rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailTemplate
