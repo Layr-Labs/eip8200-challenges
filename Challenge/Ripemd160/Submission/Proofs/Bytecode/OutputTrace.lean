@@ -60,8 +60,8 @@ def hAtCallPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [⟨738, .push ⟨2, by decide⟩ (UInt256.ofNat 0x469), by rfl, by decide⟩,
    ⟨739, .push ⟨2, by decide⟩ (UInt256.ofNat 0x45d), by rfl, by decide⟩,
-   ⟨740, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
-   ⟨741, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨740, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨741, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨742, .push ⟨2, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
    ⟨743, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -73,7 +73,7 @@ def hAtPath : List
    ⟨26, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
    ⟨27, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨28, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨29, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨29, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨30, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨31, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -335,7 +335,7 @@ theorem run_hAtCall (s : State) (i : Nat) (rest : List UInt256)
       { s with pc := UInt256.ofNat 0x451, stack := UInt256.ofNat i :: rest } =
     some { s with
       pc := UInt256.ofNat 0x20
-      stack := [UInt256.ofNat i, ⟨0⟩, UInt256.ofNat 0x45d,
+      stack := [UInt256.ofNat i, UInt256.ofNat 0x45d,
         UInt256.ofNat 0x469, UInt256.ofNat i] ++ rest } := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -353,7 +353,7 @@ theorem run_hAt (s : State) (i : Nat) (rest : List UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock hAtPath
       { s with
         pc := UInt256.ofNat 0x20
-        stack := [UInt256.ofNat i, ⟨0⟩, UInt256.ofNat 0x45d] ++ rest } =
+        stack := [UInt256.ofNat i, UInt256.ofNat 0x45d] ++ rest } =
     some { s with
       pc := UInt256.ofNat 0x45d
       stack := hWord s i :: rest
@@ -378,7 +378,6 @@ theorem run_hAt (s : State) (i : Nat) (rest : List UInt256)
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     hcap, hc2, hc3, hc4, hc5, hrun, hcode, valid66a, hoff, hoff', List.exchange,
     State.activeWordsAfterUInt256]
-  exact Word.add_zero _
 
 theorem run_writeCall (s : State) (i : Nat) (word : UInt256)
     (rest : List UInt256) (hi : i < 5) (hcap : rest.length < 1019)

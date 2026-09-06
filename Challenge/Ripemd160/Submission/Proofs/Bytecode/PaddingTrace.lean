@@ -1,6 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Padding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Trace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Main
 import Challenge.EvmProof.Stepper
 set_option warningAsError true
 set_option maxRecDepth 20000

@@ -1,6 +1,5 @@
-import Batteries.Data.ByteArray
 import Challenge.EvmProof.Memory
-import Challenge.EvmProof.Word
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Main
 set_option warningAsError true
 set_option maxHeartbeats 1000000
 set_option maxRecDepth 10000

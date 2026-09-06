@@ -40,7 +40,7 @@ def hAtPath : List Located :=
    ⟨26, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
    ⟨27, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨28, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨29, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨29, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨30, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨31, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -131,6 +131,10 @@ def atEntry (s : State) (pc i returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := pc
            stack := [i, 0, returnDest] ++ rest }
+def hAtEntry (s : State) (pc i returnDest : UInt256)
+    (rest : List UInt256) : State :=
+  { s with pc := pc
+           stack := [i, returnDest] ++ rest }
 
 def atReturned (s : State) (base i returnDest : UInt256)
     (rest : List UInt256) : State :=
@@ -185,8 +189,7 @@ theorem run_hAt (s : State) (i returnDest : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
-    Challenge.EvmProof.Stepper.runLocatedBlock hAtPath
-      (atEntry s (UInt256.ofNat 0x20) i returnDest rest) =
+      (hAtEntry s (UInt256.ofNat 0x20) i returnDest rest) =
         some (atReturned s (UInt256.ofNat 0x20) i returnDest rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -200,7 +203,7 @@ theorem run_hAt (s : State) (i returnDest : UInt256)
   simp [hAtPath, Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    atEntry, atReturned, loadedWord, hc2, hc3, hc4, hc5, hrun, hcode, hvalid,
+    hAtEntry, atReturned, loadedWord, hc2, hc3, hrun, hcode, hvalid,
     haddr, List.exchange, State.activeWordsAfterUInt256]
 
 set_option linter.unusedSimpArgs false in
@@ -325,11 +328,11 @@ def gasSteps_hAt (s : State) (i returnDest : UInt256)
       s.executionEnv.codeAddr = false)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     Challenge.EvmProof.GasSteps
-      (atEntry s (UInt256.ofNat 0x20) i returnDest rest)
+      (hAtEntry s (UInt256.ofNat 0x20) i returnDest rest)
       (atReturned s (UInt256.ofNat 0x20) i returnDest rest) := by
   apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka hAtPath
-      (s := atEntry s (UInt256.ofNat 0x20) i returnDest rest)
+      (s := hAtEntry s (UInt256.ofNat 0x20) i returnDest rest)
   · exact hcode
   · exact hfork
   · exact run_hAt s i returnDest rest hstack hcode hrun hvalid
