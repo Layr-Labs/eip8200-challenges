@@ -146,7 +146,7 @@ def outerNextPath : List
 def finishPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [⟨760, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨761, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨761, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨762, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
    ⟨763, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
    ⟨764, .op .RETURN, by rfl, wfOp (by decide) trivial rfl⟩]
@@ -541,21 +541,22 @@ theorem run_outerNext (s : State) (i : Nat) (rest : List UInt256)
     Challenge.EvmProof.Word.word_toNat_ofNat, List.exchange, hnext]
 
 theorem run_finish (s : State) (rest : List UInt256)
-    (hcap : rest.length < 1022) (hrun : s.halt = .Running) :
+    (hcap : rest.length < 1021) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock finishPath
       { s with pc := UInt256.ofNat 0x474, stack := UInt256.ofNat 5 :: rest } =
     some { s with
       pc := UInt256.ofNat 0x479
-      stack := rest
+      stack := UInt256.ofNat 5 :: rest
       halt := .Returned
       hReturn := MachineState.readPadded s.memory 0 32
       activeWords := s.activeWordsAfterUInt256 0 32 } := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc0 : rest.length < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
   have hzeroNat : (⟨0⟩ : UInt256).toNat = 0 := rfl
   simp [finishPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    hcap, hc0, hc1, hc2, hrun, hzeroNat, State.activeWordsAfterUInt256]
+    hcap, hc0, hc1, hc2, hc3, hrun, hzeroNat, State.activeWordsAfterUInt256]
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.OutputTrace

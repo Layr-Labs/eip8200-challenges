@@ -305,7 +305,7 @@ theorem correct_of_compression_trace
     change (withGas
       { q with
         pc := UInt256.ofNat 0x479
-        stack := [Padding.paddedWord input]
+        stack := [UInt256.ofNat 5, Padding.paddedWord input]
         halt := .Returned
         hReturn := MachineState.readPadded q.memory 0 32
         activeWords := (State.activeWordsAfterUInt256 q 0 32) }

@@ -127,7 +127,7 @@ theorem hWordByte_of_model (s : State) (H : Array UInt32) (i : Fin 5)
 
 /-- `RETURN(0, 32)` returns precisely the current 32-byte memory window. -/
 def gasSteps_finish (s : State) (rest : List UInt256)
-    (hcap : rest.length < 1022)
+    (hcap : rest.length < 1021)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
@@ -136,7 +136,7 @@ def gasSteps_finish (s : State) (rest : List UInt256)
       { s with pc := UInt256.ofNat 0x474, stack := UInt256.ofNat 5 :: rest }
       { s with
         pc := UInt256.ofNat 0x479
-        stack := rest
+        stack := UInt256.ofNat 5 :: rest
         halt := .Returned
         hReturn := MachineState.readPadded s.memory 0 32
         activeWords := s.activeWordsAfterUInt256 0 32 } :=
