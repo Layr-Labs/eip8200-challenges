@@ -44,11 +44,11 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def expFinishTailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 536 .JUMPDEST, opAt 537 .POP, opAt 538 (.Dup ⟨0, by decide⟩),
-   opAt 539 (.Dup ⟨6, by decide⟩), pushAt 540 1 32, opAt 541 .SUB,
-   pushAt 542 1 3, opAt 543 .SHL, opAt 544 .SHL,
-   pushAt 545 0 0, opAt 546 .MSTORE,
-   opAt 547 (.Dup ⟨5, by decide⟩), pushAt 548 4 0, opAt 549 .RETURN]
+  [opAt 534 .JUMPDEST, opAt 535 .POP, opAt 536 (.Dup ⟨0, by decide⟩),
+   opAt 537 (.Dup ⟨6, by decide⟩), pushAt 538 1 32, opAt 539 .SUB,
+   pushAt 540 1 3, opAt 541 .SHL, opAt 542 .SHL,
+   pushAt 543 0 0, opAt 544 .MSTORE,
+   opAt 545 (.Dup ⟨5, by decide⟩), pushAt 546 1 0, opAt 547 .RETURN]
 
 def expFinishDispatchState (input : ByteArray) (acc base : UInt256) : State :=
   { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 669 }
@@ -68,7 +68,7 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
   let start := expLoopState input (exponentSize input) acc base
   let storedWords := start.activeWordsAfterUInt256 0 32
   { start with
-    pc := UInt256.ofNat 688
+    pc := UInt256.ofNat 685
     stack := [acc, base, UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
@@ -81,9 +81,9 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
     hReturn := MachineState.readPadded (outputMemory input acc) 0
       (modulusSize input) }
 
-@[simp] private theorem exitPCs (i : Nat) (hi : 536 ≤ i) (hii : i ≤ 549) :
+@[simp] private theorem exitPCs (i : Nat) (hi : 534 ≤ i) (hii : i ≤ 547) :
     Artifact.submissionArtifact.instructionPC i =
-      [669,670,671,672,673,675,676,678,679,680,681,682,683,688][i - 536]! := by
+      [669,670,671,672,673,675,676,678,679,680,681,682,683,685][i - 534]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump669 :
