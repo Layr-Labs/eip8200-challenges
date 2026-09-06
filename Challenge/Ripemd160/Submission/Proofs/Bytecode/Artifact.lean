@@ -384,12 +384,10 @@ private def submissionInstructionsChunk1 : List Instr :=
   .push 1 72,
   op 0x81,
   op 0x01,
-  .push 2 63,
+  .push 4 63,
   op 0x19,
   op 0x16,
-  op 0x5b,
   op 0x90,
-  op 0x5b,
   op 0x80,
   .push 0 0,
   .push 2 1184,
@@ -430,12 +428,14 @@ private def submissionInstructionsChunk1 : List Instr :=
   op 0x50,
   op 0x50,
   op 0x90,
+  op 0x56,
+  op 0x00,
 ]
 
 private def submissionInstructionsChunk2 : List Instr :=
 [
-  op 0x56,
-  .push 2 0,
+  op 0x00,
+  op 0x00,
   op 0x00,
   op 0x00,
   op 0x00,
@@ -3180,43 +3180,43 @@ private theorem submissionInstructionsChunk1_assemble : assembleBytes submission
   0x60, 0x18, 0x1b, 0x81, 0x60, 0x02, 0x1a, 0x60, 0x10, 0x1b, 0x17, 0x81,
   0x60, 0x01, 0x1a, 0x60, 0x08, 0x1b, 0x82, 0x5f, 0x1a, 0x17, 0x17, 0x92,
   0x50, 0x50, 0x50, 0x90, 0x56, 0x5b, 0x61, 0x02, 0x31, 0x56, 0x5b, 0x36,
-  0x60, 0x48, 0x81, 0x01, 0x61, 0x00, 0x3f, 0x19, 0x16, 0x5b, 0x90, 0x5b,
+  0x60, 0x48, 0x81, 0x01, 0x63, 0x00, 0x00, 0x00, 0x3f, 0x19, 0x16, 0x90,
   0x80, 0x5f, 0x61, 0x04, 0xa0, 0x37, 0x60, 0x80, 0x81, 0x61, 0x04, 0xa0,
   0x01, 0x53, 0x5b, 0x60, 0xc3, 0x1b, 0x60, 0xc0, 0x1c, 0x61, 0x04, 0x98,
   0x82, 0x01, 0x60, 0x00, 0x81, 0x60, 0x07, 0x01, 0x53, 0x5b, 0x5b, 0x5b,
   0x81, 0x81, 0x53, 0x60, 0x01, 0x01, 0x90, 0x60, 0x08, 0x1c, 0x90, 0x81,
-  0x61, 0x02, 0x11, 0x57, 0x50, 0x50, 0x90
+  0x61, 0x02, 0x11, 0x57, 0x50, 0x50, 0x90, 0x56, 0x00
 ] := by decide
 
 private theorem submissionInstructionsChunk2_assemble : assembleBytes submissionInstructionsChunk2 = [
-  0x56, 0x61, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x5b, 0x61, 0x02, 0x68, 0x56, 0x5b, 0x5f, 0x5b, 0x60, 0x10, 0x81, 0x10,
-  0x15, 0x61, 0x02, 0x64, 0x57, 0x61, 0x02, 0x59, 0x61, 0x02, 0x53, 0x5f,
-  0x83, 0x60, 0x02, 0x1b, 0x85, 0x01, 0x61, 0x01, 0xb7, 0x56, 0x5b, 0x82,
-  0x61, 0x00, 0x5f, 0x56, 0x5b, 0x60, 0x01, 0x81, 0x01, 0x90, 0x50, 0x61,
-  0x02, 0x38, 0x56, 0x5b, 0x50, 0x50, 0x56, 0x5b, 0x61, 0x03, 0xc1, 0x56,
-  0x5b, 0x61, 0x02, 0x76, 0x81, 0x61, 0x02, 0x36, 0x56, 0x5b, 0x60, 0xa0,
-  0x60, 0x20, 0x60, 0xc0, 0x5e, 0x60, 0xa0, 0x60, 0x20, 0x61, 0x01, 0x60,
-  0x5e, 0x60, 0xa0, 0x60, 0x20, 0x61, 0x02, 0x00, 0x5e, 0x5f, 0x5b, 0x60,
-  0x50, 0x81, 0x10, 0x15, 0x61, 0x02, 0xd6, 0x57, 0x80, 0x60, 0x04, 0x1c,
-  0x61, 0x02, 0xca, 0x81, 0x60, 0x05, 0x1b, 0x61, 0x06, 0x20, 0x01, 0x51,
-  0x61, 0x02, 0xb5, 0x5f, 0x85, 0x61, 0x05, 0x41, 0x61, 0x00, 0x78, 0x56,
-  0x5b, 0x61, 0x02, 0xc2, 0x5f, 0x86, 0x61, 0x04, 0x81, 0x61, 0x00, 0x78,
-  0x56, 0x5b, 0x84, 0x60, 0xc0, 0x61, 0x01, 0x14, 0x56, 0x5b, 0x50, 0x60,
-  0x01, 0x81, 0x01, 0x90, 0x50, 0x61, 0x02, 0x8f, 0x56, 0x5b, 0x50, 0x5f,
-  0x5b, 0x60, 0x50, 0x81, 0x10, 0x15, 0x61, 0x03, 0x24, 0x57, 0x80, 0x60,
-  0x04, 0x1c, 0x61, 0x03, 0x18, 0x81, 0x60, 0x05, 0x1b, 0x61, 0x06, 0xc0,
-  0x01, 0x51, 0x61, 0x02, 0xff, 0x5f, 0x85, 0x61, 0x05, 0xa1, 0x61, 0x00,
-  0x78, 0x56, 0x5b, 0x61, 0x03, 0x0c, 0x5f, 0x86, 0x61, 0x04, 0xe1, 0x61,
-  0x00, 0x78, 0x56, 0x5b, 0x84, 0x60, 0x04, 0x03, 0x61, 0x01, 0x60, 0x61,
-  0x01, 0x14, 0x56, 0x5b, 0x50, 0x60, 0x01, 0x81, 0x01, 0x90, 0x50, 0x61,
-  0x02, 0xd9, 0x56, 0x5b, 0x50, 0x63, 0xff, 0xff, 0xff, 0xff, 0x61, 0x01,
-  0xc0, 0x51, 0x61, 0x01, 0x00, 0x51, 0x61, 0x02, 0x20, 0x51, 0x01, 0x01,
-  0x16, 0x63, 0xff, 0xff, 0xff, 0xff, 0x61, 0x01, 0xe0, 0x51, 0x61, 0x01,
-  0x20, 0x51, 0x61, 0x02, 0x40, 0x51, 0x01, 0x01, 0x16, 0x63, 0xff, 0xff,
-  0xff, 0xff, 0x81, 0x16, 0x60, 0x40, 0x52, 0x63, 0xff, 0xff, 0xff, 0xff,
-  0x61, 0x01, 0x60, 0x51, 0x61, 0x01, 0x40, 0x51, 0x61, 0x02, 0x60, 0x51,
-  0x01, 0x01, 0x16
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x5b, 0x61,
+  0x02, 0x68, 0x56, 0x5b, 0x5f, 0x5b, 0x60, 0x10, 0x81, 0x10, 0x15, 0x61,
+  0x02, 0x64, 0x57, 0x61, 0x02, 0x59, 0x61, 0x02, 0x53, 0x5f, 0x83, 0x60,
+  0x02, 0x1b, 0x85, 0x01, 0x61, 0x01, 0xb7, 0x56, 0x5b, 0x82, 0x61, 0x00,
+  0x5f, 0x56, 0x5b, 0x60, 0x01, 0x81, 0x01, 0x90, 0x50, 0x61, 0x02, 0x38,
+  0x56, 0x5b, 0x50, 0x50, 0x56, 0x5b, 0x61, 0x03, 0xc1, 0x56, 0x5b, 0x61,
+  0x02, 0x76, 0x81, 0x61, 0x02, 0x36, 0x56, 0x5b, 0x60, 0xa0, 0x60, 0x20,
+  0x60, 0xc0, 0x5e, 0x60, 0xa0, 0x60, 0x20, 0x61, 0x01, 0x60, 0x5e, 0x60,
+  0xa0, 0x60, 0x20, 0x61, 0x02, 0x00, 0x5e, 0x5f, 0x5b, 0x60, 0x50, 0x81,
+  0x10, 0x15, 0x61, 0x02, 0xd6, 0x57, 0x80, 0x60, 0x04, 0x1c, 0x61, 0x02,
+  0xca, 0x81, 0x60, 0x05, 0x1b, 0x61, 0x06, 0x20, 0x01, 0x51, 0x61, 0x02,
+  0xb5, 0x5f, 0x85, 0x61, 0x05, 0x41, 0x61, 0x00, 0x78, 0x56, 0x5b, 0x61,
+  0x02, 0xc2, 0x5f, 0x86, 0x61, 0x04, 0x81, 0x61, 0x00, 0x78, 0x56, 0x5b,
+  0x84, 0x60, 0xc0, 0x61, 0x01, 0x14, 0x56, 0x5b, 0x50, 0x60, 0x01, 0x81,
+  0x01, 0x90, 0x50, 0x61, 0x02, 0x8f, 0x56, 0x5b, 0x50, 0x5f, 0x5b, 0x60,
+  0x50, 0x81, 0x10, 0x15, 0x61, 0x03, 0x24, 0x57, 0x80, 0x60, 0x04, 0x1c,
+  0x61, 0x03, 0x18, 0x81, 0x60, 0x05, 0x1b, 0x61, 0x06, 0xc0, 0x01, 0x51,
+  0x61, 0x02, 0xff, 0x5f, 0x85, 0x61, 0x05, 0xa1, 0x61, 0x00, 0x78, 0x56,
+  0x5b, 0x61, 0x03, 0x0c, 0x5f, 0x86, 0x61, 0x04, 0xe1, 0x61, 0x00, 0x78,
+  0x56, 0x5b, 0x84, 0x60, 0x04, 0x03, 0x61, 0x01, 0x60, 0x61, 0x01, 0x14,
+  0x56, 0x5b, 0x50, 0x60, 0x01, 0x81, 0x01, 0x90, 0x50, 0x61, 0x02, 0xd9,
+  0x56, 0x5b, 0x50, 0x63, 0xff, 0xff, 0xff, 0xff, 0x61, 0x01, 0xc0, 0x51,
+  0x61, 0x01, 0x00, 0x51, 0x61, 0x02, 0x20, 0x51, 0x01, 0x01, 0x16, 0x63,
+  0xff, 0xff, 0xff, 0xff, 0x61, 0x01, 0xe0, 0x51, 0x61, 0x01, 0x20, 0x51,
+  0x61, 0x02, 0x40, 0x51, 0x01, 0x01, 0x16, 0x63, 0xff, 0xff, 0xff, 0xff,
+  0x81, 0x16, 0x60, 0x40, 0x52, 0x63, 0xff, 0xff, 0xff, 0xff, 0x61, 0x01,
+  0x60, 0x51, 0x61, 0x01, 0x40, 0x51, 0x61, 0x02, 0x60, 0x51, 0x01, 0x01,
+  0x16
 ] := by decide
 
 private theorem submissionInstructionsChunk3_assemble : assembleBytes submissionInstructionsChunk3 = [
@@ -4156,239 +4156,231 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
     instructionPC 354 = 0x1e6 := by rfl
 
 @[simp] theorem refPc355 :
-    submissionArtifact.instructionPC 355 = 0x1e9 := by rfl
+    submissionArtifact.instructionPC 355 = 0x1eb := by rfl
 @[simp] theorem pc355 :
-    instructionPC 355 = 0x1e9 := by rfl
+    instructionPC 355 = 0x1eb := by rfl
 
 @[simp] theorem refPc356 :
-    submissionArtifact.instructionPC 356 = 0x1ea := by rfl
+    submissionArtifact.instructionPC 356 = 0x1ec := by rfl
 @[simp] theorem pc356 :
-    instructionPC 356 = 0x1ea := by rfl
+    instructionPC 356 = 0x1ec := by rfl
 
-@[simp] theorem refPc357 :
-    submissionArtifact.instructionPC 357 = 0x1eb := by rfl
-@[simp] theorem pc357 :
-    instructionPC 357 = 0x1eb := by rfl
 
 @[simp] theorem refPc358 :
-    submissionArtifact.instructionPC 358 = 0x1ec := by rfl
+    submissionArtifact.instructionPC 357 = 0x1ed := by rfl
 @[simp] theorem pc358 :
-    instructionPC 358 = 0x1ec := by rfl
+    instructionPC 357 = 0x1ed := by rfl
 
-@[simp] theorem refPc359 :
-    submissionArtifact.instructionPC 359 = 0x1ed := by rfl
-@[simp] theorem pc359 :
-    instructionPC 359 = 0x1ed := by rfl
 
 @[simp] theorem refPc360 :
-    submissionArtifact.instructionPC 360 = 0x1ee := by rfl
+    submissionArtifact.instructionPC 358 = 0x1ee := by rfl
 @[simp] theorem pc360 :
-    instructionPC 360 = 0x1ee := by rfl
+    instructionPC 358 = 0x1ee := by rfl
 
 @[simp] theorem refPc361 :
-    submissionArtifact.instructionPC 361 = 0x1ef := by rfl
+    submissionArtifact.instructionPC 359 = 0x1ef := by rfl
 @[simp] theorem pc361 :
-    instructionPC 361 = 0x1ef := by rfl
+    instructionPC 359 = 0x1ef := by rfl
 
 @[simp] theorem refPc362 :
-    submissionArtifact.instructionPC 362 = 0x1f0 := by rfl
+    submissionArtifact.instructionPC 360 = 0x1f0 := by rfl
 @[simp] theorem pc362 :
-    instructionPC 362 = 0x1f0 := by rfl
+    instructionPC 360 = 0x1f0 := by rfl
 
 @[simp] theorem refPc363 :
-    submissionArtifact.instructionPC 363 = 0x1f3 := by rfl
+    submissionArtifact.instructionPC 361 = 0x1f3 := by rfl
 @[simp] theorem pc363 :
-    instructionPC 363 = 0x1f3 := by rfl
+    instructionPC 361 = 0x1f3 := by rfl
 
 @[simp] theorem refPc364 :
-    submissionArtifact.instructionPC 364 = 0x1f4 := by rfl
+    submissionArtifact.instructionPC 362 = 0x1f4 := by rfl
 @[simp] theorem pc364 :
-    instructionPC 364 = 0x1f4 := by rfl
+    instructionPC 362 = 0x1f4 := by rfl
 
 @[simp] theorem refPc365 :
-    submissionArtifact.instructionPC 365 = 0x1f6 := by rfl
+    submissionArtifact.instructionPC 363 = 0x1f6 := by rfl
 @[simp] theorem pc365 :
-    instructionPC 365 = 0x1f6 := by rfl
+    instructionPC 363 = 0x1f6 := by rfl
 
 @[simp] theorem refPc366 :
-    submissionArtifact.instructionPC 366 = 0x1f7 := by rfl
+    submissionArtifact.instructionPC 364 = 0x1f7 := by rfl
 @[simp] theorem pc366 :
-    instructionPC 366 = 0x1f7 := by rfl
+    instructionPC 364 = 0x1f7 := by rfl
 
 @[simp] theorem refPc367 :
-    submissionArtifact.instructionPC 367 = 0x1fa := by rfl
+    submissionArtifact.instructionPC 365 = 0x1fa := by rfl
 @[simp] theorem pc367 :
-    instructionPC 367 = 0x1fa := by rfl
+    instructionPC 365 = 0x1fa := by rfl
 
 @[simp] theorem refPc368 :
-    submissionArtifact.instructionPC 368 = 0x1fb := by rfl
+    submissionArtifact.instructionPC 366 = 0x1fb := by rfl
 @[simp] theorem pc368 :
-    instructionPC 368 = 0x1fb := by rfl
+    instructionPC 366 = 0x1fb := by rfl
 
 @[simp] theorem refPc369 :
-    submissionArtifact.instructionPC 369 = 0x1fc := by rfl
+    submissionArtifact.instructionPC 367 = 0x1fc := by rfl
 @[simp] theorem pc369 :
-    instructionPC 369 = 0x1fc := by rfl
+    instructionPC 367 = 0x1fc := by rfl
 
 @[simp] theorem refPc370 :
-    submissionArtifact.instructionPC 370 = 0x1fd := by rfl
+    submissionArtifact.instructionPC 368 = 0x1fd := by rfl
 @[simp] theorem pc370 :
-    instructionPC 370 = 0x1fd := by rfl
+    instructionPC 368 = 0x1fd := by rfl
 
 @[simp] theorem refPc371 :
-    submissionArtifact.instructionPC 371 = 0x1ff := by rfl
+    submissionArtifact.instructionPC 369 = 0x1ff := by rfl
 @[simp] theorem pc371 :
-    instructionPC 371 = 0x1ff := by rfl
+    instructionPC 369 = 0x1ff := by rfl
 
 @[simp] theorem refPc372 :
-    submissionArtifact.instructionPC 372 = 0x200 := by rfl
+    submissionArtifact.instructionPC 370 = 0x200 := by rfl
 @[simp] theorem pc372 :
-    instructionPC 372 = 0x200 := by rfl
+    instructionPC 370 = 0x200 := by rfl
 
 @[simp] theorem refPc373 :
-    submissionArtifact.instructionPC 373 = 0x202 := by rfl
+    submissionArtifact.instructionPC 371 = 0x202 := by rfl
 @[simp] theorem pc373 :
-    instructionPC 373 = 0x202 := by rfl
+    instructionPC 371 = 0x202 := by rfl
 
 @[simp] theorem refPc374 :
-    submissionArtifact.instructionPC 374 = 0x203 := by rfl
+    submissionArtifact.instructionPC 372 = 0x203 := by rfl
 @[simp] theorem pc374 :
-    instructionPC 374 = 0x203 := by rfl
+    instructionPC 372 = 0x203 := by rfl
 
 @[simp] theorem refPc375 :
-    submissionArtifact.instructionPC 375 = 0x206 := by rfl
+    submissionArtifact.instructionPC 373 = 0x206 := by rfl
 @[simp] theorem pc375 :
-    instructionPC 375 = 0x206 := by rfl
+    instructionPC 373 = 0x206 := by rfl
 
 @[simp] theorem refPc376 :
-    submissionArtifact.instructionPC 376 = 0x207 := by rfl
+    submissionArtifact.instructionPC 374 = 0x207 := by rfl
 @[simp] theorem pc376 :
-    instructionPC 376 = 0x207 := by rfl
+    instructionPC 374 = 0x207 := by rfl
 
 @[simp] theorem refPc377 :
-    submissionArtifact.instructionPC 377 = 0x208 := by rfl
+    submissionArtifact.instructionPC 375 = 0x208 := by rfl
 @[simp] theorem pc377 :
-    instructionPC 377 = 0x208 := by rfl
+    instructionPC 375 = 0x208 := by rfl
 
 @[simp] theorem refPc378 :
-    submissionArtifact.instructionPC 378 = 0x20a := by rfl
+    submissionArtifact.instructionPC 376 = 0x20a := by rfl
 @[simp] theorem pc378 :
-    instructionPC 378 = 0x20a := by rfl
+    instructionPC 376 = 0x20a := by rfl
 
 @[simp] theorem refPc379 :
-    submissionArtifact.instructionPC 379 = 0x20b := by rfl
+    submissionArtifact.instructionPC 377 = 0x20b := by rfl
 @[simp] theorem pc379 :
-    instructionPC 379 = 0x20b := by rfl
+    instructionPC 377 = 0x20b := by rfl
 
 @[simp] theorem refPc380 :
-    submissionArtifact.instructionPC 380 = 0x20d := by rfl
+    submissionArtifact.instructionPC 378 = 0x20d := by rfl
 @[simp] theorem pc380 :
-    instructionPC 380 = 0x20d := by rfl
+    instructionPC 378 = 0x20d := by rfl
 
 @[simp] theorem refPc381 :
-    submissionArtifact.instructionPC 381 = 0x20e := by rfl
+    submissionArtifact.instructionPC 379 = 0x20e := by rfl
 @[simp] theorem pc381 :
-    instructionPC 381 = 0x20e := by rfl
+    instructionPC 379 = 0x20e := by rfl
 
 @[simp] theorem refPc382 :
-    submissionArtifact.instructionPC 382 = 0x20f := by rfl
+    submissionArtifact.instructionPC 380 = 0x20f := by rfl
 @[simp] theorem pc382 :
-    instructionPC 382 = 0x20f := by rfl
+    instructionPC 380 = 0x20f := by rfl
 
 @[simp] theorem refPc383 :
-    submissionArtifact.instructionPC 383 = 0x210 := by rfl
+    submissionArtifact.instructionPC 381 = 0x210 := by rfl
 @[simp] theorem pc383 :
-    instructionPC 383 = 0x210 := by rfl
+    instructionPC 381 = 0x210 := by rfl
 
 @[simp] theorem refPc384 :
-    submissionArtifact.instructionPC 384 = 0x211 := by rfl
+    submissionArtifact.instructionPC 382 = 0x211 := by rfl
 @[simp] theorem pc384 :
-    instructionPC 384 = 0x211 := by rfl
+    instructionPC 382 = 0x211 := by rfl
 
 @[simp] theorem refPc385 :
-    submissionArtifact.instructionPC 385 = 0x212 := by rfl
+    submissionArtifact.instructionPC 383 = 0x212 := by rfl
 @[simp] theorem pc385 :
-    instructionPC 385 = 0x212 := by rfl
+    instructionPC 383 = 0x212 := by rfl
 
 @[simp] theorem refPc386 :
-    submissionArtifact.instructionPC 386 = 0x213 := by rfl
+    submissionArtifact.instructionPC 384 = 0x213 := by rfl
 @[simp] theorem pc386 :
-    instructionPC 386 = 0x213 := by rfl
+    instructionPC 384 = 0x213 := by rfl
 
 @[simp] theorem refPc387 :
-    submissionArtifact.instructionPC 387 = 0x214 := by rfl
+    submissionArtifact.instructionPC 385 = 0x214 := by rfl
 @[simp] theorem pc387 :
-    instructionPC 387 = 0x214 := by rfl
+    instructionPC 385 = 0x214 := by rfl
 
 @[simp] theorem refPc388 :
-    submissionArtifact.instructionPC 388 = 0x215 := by rfl
+    submissionArtifact.instructionPC 386 = 0x215 := by rfl
 @[simp] theorem pc388 :
-    instructionPC 388 = 0x215 := by rfl
+    instructionPC 386 = 0x215 := by rfl
 
 @[simp] theorem refPc389 :
-    submissionArtifact.instructionPC 389 = 0x217 := by rfl
+    submissionArtifact.instructionPC 387 = 0x217 := by rfl
 @[simp] theorem pc389 :
-    instructionPC 389 = 0x217 := by rfl
+    instructionPC 387 = 0x217 := by rfl
 
 @[simp] theorem refPc390 :
-    submissionArtifact.instructionPC 390 = 0x218 := by rfl
+    submissionArtifact.instructionPC 388 = 0x218 := by rfl
 @[simp] theorem pc390 :
-    instructionPC 390 = 0x218 := by rfl
+    instructionPC 388 = 0x218 := by rfl
 
 @[simp] theorem refPc391 :
-    submissionArtifact.instructionPC 391 = 0x219 := by rfl
+    submissionArtifact.instructionPC 389 = 0x219 := by rfl
 @[simp] theorem pc391 :
-    instructionPC 391 = 0x219 := by rfl
+    instructionPC 389 = 0x219 := by rfl
 
 @[simp] theorem refPc392 :
-    submissionArtifact.instructionPC 392 = 0x21b := by rfl
+    submissionArtifact.instructionPC 390 = 0x21b := by rfl
 @[simp] theorem pc392 :
-    instructionPC 392 = 0x21b := by rfl
+    instructionPC 390 = 0x21b := by rfl
 
 @[simp] theorem refPc393 :
-    submissionArtifact.instructionPC 393 = 0x21c := by rfl
+    submissionArtifact.instructionPC 391 = 0x21c := by rfl
 @[simp] theorem pc393 :
-    instructionPC 393 = 0x21c := by rfl
+    instructionPC 391 = 0x21c := by rfl
 
 @[simp] theorem refPc394 :
-    submissionArtifact.instructionPC 394 = 0x21d := by rfl
+    submissionArtifact.instructionPC 392 = 0x21d := by rfl
 @[simp] theorem pc394 :
-    instructionPC 394 = 0x21d := by rfl
+    instructionPC 392 = 0x21d := by rfl
 
 @[simp] theorem refPc395 :
-    submissionArtifact.instructionPC 395 = 0x21e := by rfl
+    submissionArtifact.instructionPC 393 = 0x21e := by rfl
 @[simp] theorem pc395 :
-    instructionPC 395 = 0x21e := by rfl
+    instructionPC 393 = 0x21e := by rfl
 
 @[simp] theorem refPc396 :
-    submissionArtifact.instructionPC 396 = 0x221 := by rfl
+    submissionArtifact.instructionPC 394 = 0x221 := by rfl
 @[simp] theorem pc396 :
-    instructionPC 396 = 0x221 := by rfl
+    instructionPC 394 = 0x221 := by rfl
 
 @[simp] theorem refPc397 :
-    submissionArtifact.instructionPC 397 = 0x222 := by rfl
+    submissionArtifact.instructionPC 395 = 0x222 := by rfl
 @[simp] theorem pc397 :
-    instructionPC 397 = 0x222 := by rfl
+    instructionPC 395 = 0x222 := by rfl
 
 @[simp] theorem refPc398 :
-    submissionArtifact.instructionPC 398 = 0x223 := by rfl
+    submissionArtifact.instructionPC 396 = 0x223 := by rfl
 @[simp] theorem pc398 :
-    instructionPC 398 = 0x223 := by rfl
+    instructionPC 396 = 0x223 := by rfl
 
 @[simp] theorem refPc399 :
-    submissionArtifact.instructionPC 399 = 0x224 := by rfl
+    submissionArtifact.instructionPC 397 = 0x224 := by rfl
 @[simp] theorem pc399 :
-    instructionPC 399 = 0x224 := by rfl
+    instructionPC 397 = 0x224 := by rfl
 
 @[simp] theorem refPc400 :
-    submissionArtifact.instructionPC 400 = 0x225 := by rfl
+    submissionArtifact.instructionPC 398 = 0x225 := by rfl
 @[simp] theorem pc400 :
-    instructionPC 400 = 0x225 := by rfl
+    instructionPC 398 = 0x225 := by rfl
 
 @[simp] theorem refPc401 :
-    submissionArtifact.instructionPC 401 = 0x226 := by rfl
+    submissionArtifact.instructionPC 399 = 0x226 := by rfl
 @[simp] theorem pc401 :
-    instructionPC 401 = 0x226 := by rfl
+    instructionPC 399 = 0x226 := by rfl
 
 @[simp] theorem refPc402 :
     submissionArtifact.instructionPC 402 = 0x229 := by rfl
@@ -4453,41 +4445,39 @@ def padLengthPath : List
    ⟨351, .push ⟨1, by decide⟩ (UInt256.ofNat 72), by rfl, by decide⟩,
    ⟨352, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨353, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨354, .push ⟨2, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
+   ⟨354, .push ⟨4, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
    ⟨355, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨356, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨357, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨358, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨359, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨357, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for copying calldata and setting up the footer loop. -/
 def padSetupPath : List
     (Challenge.EvmProof.Stepper.Located submissionArtifact .Osaka) :=
-  [⟨360, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨361, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
-   ⟨362, .push ⟨2, by decide⟩ (UInt256.ofNat 1184), by rfl, by decide⟩,
-   ⟨363, .op .CALLDATACOPY, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨364, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
-   ⟨365, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨366, .push ⟨2, by decide⟩ (UInt256.ofNat 1184), by rfl, by decide⟩,
-   ⟨367, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨368, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨369, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨370, .push ⟨1, by decide⟩ (UInt256.ofNat 195), by rfl, by decide⟩,
-   ⟨371, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨372, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
-   ⟨373, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨374, .push ⟨2, by decide⟩ (UInt256.ofNat 1176), by rfl, by decide⟩,
-   ⟨375, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨376, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨377, .push ⟨1, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨378, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨379, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
-   ⟨380, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨381, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨382, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨383, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨384, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨358, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨359, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
+   ⟨360, .push ⟨2, by decide⟩ (UInt256.ofNat 1184), by rfl, by decide⟩,
+   ⟨361, .op .CALLDATACOPY, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨362, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
+   ⟨363, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨364, .push ⟨2, by decide⟩ (UInt256.ofNat 1184), by rfl, by decide⟩,
+   ⟨365, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨366, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨367, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨368, .push ⟨1, by decide⟩ (UInt256.ofNat 195), by rfl, by decide⟩,
+   ⟨369, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨370, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
+   ⟨371, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨372, .push ⟨2, by decide⟩ (UInt256.ofNat 1176), by rfl, by decide⟩,
+   ⟨373, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨374, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨375, .push ⟨1, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨376, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨377, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
+   ⟨378, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨379, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨380, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨381, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨382, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
