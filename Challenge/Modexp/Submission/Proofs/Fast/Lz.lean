@@ -13,10 +13,11 @@ byte `i` exactly as the code it replaces did, and then chooses the mask the
 inner bit loop starts from:
 
 * for `i ≠ 0` it is `0x80`, as before;
-* for `i = 0` it is the highest set bit of the byte, so the bit loop starts at
-  the exponent's leading one instead of at bit 7.
+* for `i = 0` it is the highest set bit of the byte, and the byte-zero arm
+  then enters `LZBASE`, which copies `BASE` into `ACC` before the bit loop;
 
-Both arms rejoin the bit loop at pc 1789.
+The nonzero arm resumes at pc 1789; the byte-zero arm reaches `LZBASE` at
+pc 3571.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.Lz
@@ -72,6 +73,11 @@ skipped iterations of the bit loop would have tested is zero. -/
 theorem topBit_spec (w : Nat) (hw : w < 256) :
     topBit w = 2 ^ topExp w ∧ topExp w ≤ 7 ∧ w < 2 ^ (topExp w + 1) := by
   interval_cases w <;> exact ⟨by decide, by decide, by decide⟩
+theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w := by
+  interval_cases w
+  · exact absurd rfl hne
+  all_goals decide
+
 
 /-! ## States at the block boundaries -/
 
@@ -98,6 +104,13 @@ def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : St
 def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 1789
+           stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
+           memory := mem }
+
+/-! The byte-zero arm hands to the appended `LZBASE` block. -/
+def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
+    (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 3571
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -236,7 +249,7 @@ theorem run_lzFirst (s : State) (mem : ByteArray) (i w : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1796
-      (lzFirst s mem i w rest) = some (lzJoin s mem i w (topBit w) rest) := by
+      (lzFirst s mem i w rest) = some (lzBase s mem i w (topBit w) rest) := by
   obtain ⟨h1, h2, h3⟩ := sm_lt w hw
   have b0 : w < 2 ^ 256 := by omega
   have b1 : sm1 w < 2 ^ 256 := by omega
@@ -268,7 +281,7 @@ theorem run_lzFirst (s : State) (mem : ByteArray) (i w : Nat)
   simp (config := { maxSteps := 600000 }) [blk1796, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lzFirst, lzJoin, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, jumpDest1789,
+    lzFirst, lzBase, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, jumpDest3571,
     e1, e2, e3, e4, e5, e6, e7,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
