@@ -37,7 +37,7 @@ def blk1781 :
    opAt 1788 .BYTE,
    opAt 1789 (.Dup ⟨1, by decide⟩),
    opAt 1790 .ISZERO,
-   pushAt 1791 2 2944,
+   pushAt 1791 2 3027,
    opAt 1792 .JUMPI]
 
 /-- Instructions 1793..1795, pc 2938..2943: every byte after the first. -/

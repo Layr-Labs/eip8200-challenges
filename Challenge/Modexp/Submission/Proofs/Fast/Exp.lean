@@ -1347,6 +1347,20 @@ def lzBaseSkip (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
+/-- pc 3027, the zero-byte exponent guard after `LZBASE`. -/
+def lzBaseGuard (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
+    State :=
+  { s with pc := UInt256.ofNat 3027
+           stack := bitStack n bsize esize msize i w mask
+           memory := mem }
+
+/-- pc 3040, the one-byte zero-exponent tail before `EB`. -/
+def lzBaseDirect (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
+    State :=
+  { s with pc := UInt256.ofNat 3040
+           stack := bitStack n bsize esize msize i w mask
+           memory := mem }
+
 /-- pc 1806, back from the squaring. -/
 def ebitTest (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
     State :=
@@ -1569,18 +1583,80 @@ theorem run_lzBaseCopy (s : State) (mem : ByteArray)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- The zero-byte arm rejoins the loop head at pc 1789. -/
+/-- The zero-byte arm enters the one-byte guard at pc 3027. -/
 theorem run_lzBaseSkip (s : State) (mem : ByteArray)
     (n bsize esize msize i w mask : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1843
       (lzBaseSkip s mem n bsize esize msize i w mask) =
-      some (ebitHead s mem n bsize esize msize i w mask) := by
+      some (lzBaseGuard s mem n bsize esize msize i w mask) := by
   simp (config := { maxSteps := 400000 }) [blk1843, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lzBaseSkip, ebitHead, bitStack, hrun, hcode, jumpDest1789,
+    lzBaseSkip, lzBaseGuard, bitStack, hrun, hcode, jumpDest3027,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_lzBaseGuard_skip (s : State) (mem : ByteArray)
+    (n bsize esize msize i w mask : Nat) (he : esize = 1)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1846
+      (lzBaseGuard s mem n bsize esize msize i w mask) =
+      some (lzBaseDirect s mem n bsize esize msize i w mask) := by
+  subst esize
+  simp (config := { maxSteps := 400000 }) [blk1846, opAt, pushAt,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    lzBaseGuard, lzBaseDirect, bitStack, outer, hrun, hcode, jumpDest3040,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_lzBaseGuard_loop (s : State) (mem : ByteArray)
+    (n bsize esize msize i w mask : Nat) (heBound : esize ≤ 1024)
+    (he : esize ≠ 1)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1846
+      (lzBaseGuard s mem n bsize esize msize i w mask) =
+      some (ebitHead s mem n bsize esize msize i w mask) := by
+  have heq : UInt256.eq (UInt256.ofNat esize) (UInt256.ofNat 1) =
+      UInt256.ofNat 0 := by
+    have hlt : esize < 2 ^ 256 := by omega
+    unfold UInt256.eq
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by norm_num), Nat.mod_eq_of_lt hlt]
+    simp [he]
+  have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
+  simp (config := { maxSteps := 400000 }) [blk1846, opAt, pushAt,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    lzBaseGuard, ebitHead, bitStack, outer, hcode, hrun, heq, hfalse,
+    jumpDest1789, Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_lzBaseDirect (s : State) (mem : ByteArray)
+    (n bsize esize msize i w mask : Nat)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1854
+      (lzBaseDirect s mem n bsize esize msize i w mask) =
+      some (ebHead s mem n bsize esize msize (i + 1)) := by
+  simp (config := { maxSteps := 400000 }) [blk1854, opAt, pushAt,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    lzBaseDirect, ebHead, bitStack, outer, hrun, hcode, jumpDest1769,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1864,9 +1940,11 @@ def gasSteps_ebHeadExit (s : State) (mem : ByteArray)
 def gasSteps_ebLoad (s : State) (mem input : ByteArray)
     (n bsize esize msize i : Nat)
     (hdata : s.executionEnv.calldata = input)
-    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
+    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (he : esize ≤ 1024)
+    (hact : 298 ≤ s.activeWords.toNat)
     (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
     (hnc : ¬(i = 0 ∧ expByte input bsize i ≠ 0))
+    (hspecial : ¬(i = 0 ∧ esize = 1 ∧ expByte input bsize i = 0))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -1918,20 +1996,34 @@ def gasSteps_ebLoad (s : State) (mem input : ByteArray)
     have g4 : Challenge.EvmProof.GasSteps
         (lzBaseSkip s mem n bsize esize msize i (expByte input bsize i)
           (Lz.topBit (expByte input bsize i)))
-        (ebitHead s mem n bsize esize msize i (expByte input bsize i)
+        (lzBaseGuard s mem n bsize esize msize i (expByte input bsize i)
           (Lz.topBit (expByte input bsize i))) :=
       Challenge.EvmProof.Stepper.runLocatedBlock_sound
         Artifact.submissionArtifact .Osaka blk1843 hcode hfork
         (run_lzBaseSkip s mem n bsize esize msize i (expByte input bsize i)
           (Lz.topBit (expByte input bsize i)) hcode hrun) hrun hnp
-    Challenge.EvmProof.GasSteps.cast ((((g0.trans g1).trans g2).trans g3).trans g4)
-      rfl (by simp only [lzMask, if_pos h])
+    have hne : esize ≠ 1 := by
+      intro he
+      apply hspecial
+      exact ⟨h, he, hw0⟩
+    have g5 : Challenge.EvmProof.GasSteps
+        (lzBaseGuard s mem n bsize esize msize i (expByte input bsize i)
+          (Lz.topBit (expByte input bsize i)))
+        (ebitHead s mem n bsize esize msize i (expByte input bsize i)
+          (Lz.topBit (expByte input bsize i))) :=
+      Challenge.EvmProof.Stepper.runLocatedBlock_sound
+        Artifact.submissionArtifact .Osaka blk1846 hcode hfork
+        (run_lzBaseGuard_loop s mem n bsize esize msize i (expByte input bsize i)
+          (Lz.topBit (expByte input bsize i)) he hne hcode hrun) hrun hnp
+    Challenge.EvmProof.GasSteps.cast ((((g0.trans g1).trans g2).trans g3).trans
+      (g4.trans g5)) rfl (by simp only [lzMask, if_pos h])
   else
     have g1 : Challenge.EvmProof.GasSteps
         (Lz.lzEntry s mem i (outer n bsize esize msize))
         (Lz.lzOther s mem i (expByte input bsize i) (outer n bsize esize msize)) :=
       Challenge.EvmProof.Stepper.runLocatedBlock_sound
         Artifact.submissionArtifact .Osaka blk1781 hcode hfork
+
         (Lz.run_lzHead_other s mem input bsize i (expByte input bsize i)
           (outer n bsize esize msize) hlen hdata hb hi hact heoff hbyte hcode hrun h)
         hrun hnp
@@ -1945,6 +2037,85 @@ def gasSteps_ebLoad (s : State) (mem input : ByteArray)
           hlen hcode hrun) hrun hnp
     Challenge.EvmProof.GasSteps.cast ((g0.trans g1).trans g2) rfl
       (by simp only [lzMask, if_neg h, ebitHead, Lz.lzJoin, bitStack])
+def gasSteps_ebLoadZeroOne (s : State) (mem input : ByteArray)
+    (n bsize esize msize : Nat)
+    (hdata : s.executionEnv.calldata = input)
+    (hb : bsize ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
+    (he : esize = 1) (hw0 : expByte input bsize 0 = 0)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (ebLoad s mem n bsize esize msize 0)
+      (ebHead s mem n bsize esize msize 1) :=
+  have hlen : (outer n bsize esize msize).length ≤ 1008 := by
+    simp only [outer, List.length_cons, List.length_nil]; omega
+  have hbyte : UInt256.byteAt ⟨0⟩ (MachineState.readWord input (96 + bsize)) =
+      UInt256.ofNat (expByte input bsize 0) :=
+    Challenge.EvmProof.Bytes.byteAt_zero_readWord input (96 + bsize)
+  have hw : expByte input bsize 0 < 256 :=
+    (YulSemantics.EVM.byteFrom input.toList (96 + bsize)).toNat_lt
+  have g0 : Challenge.EvmProof.GasSteps
+      (ebLoad s mem n bsize esize msize 0)
+      (Lz.lzEntry s mem 0 (outer n bsize esize msize)) :=
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka blk1279 hcode hfork
+      (run_ebLoad s mem n bsize esize msize 0 hcode hrun) hrun hnp
+  have g1 : Challenge.EvmProof.GasSteps
+      (Lz.lzEntry s mem 0 (outer n bsize esize msize))
+      (Lz.lzFirst s mem 0 (expByte input bsize 0)
+        (outer n bsize esize msize)) :=
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka blk1781 hcode hfork
+      (Lz.run_lzHead_first s mem input bsize 0 (expByte input bsize 0)
+        (outer n bsize esize msize) hlen hdata hb (by omega) hact heoff hbyte
+        hcode hrun rfl) hrun hnp
+  have g2 : Challenge.EvmProof.GasSteps
+      (Lz.lzFirst s mem 0 (expByte input bsize 0)
+        (outer n bsize esize msize))
+      (Lz.lzBase s mem 0 (expByte input bsize 0)
+        (Lz.topBit (expByte input bsize 0)) (outer n bsize esize msize)) :=
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka blk1796 hcode hfork
+      (Lz.run_lzFirst s mem 0 (expByte input bsize 0)
+        (outer n bsize esize msize) hlen hw hcode hrun) hrun hnp
+  have g3 : Challenge.EvmProof.GasSteps
+      (Lz.lzBase s mem 0 (expByte input bsize 0)
+        (Lz.topBit (expByte input bsize 0)) (outer n bsize esize msize))
+      (lzBaseSkip s mem n bsize esize msize 0 (expByte input bsize 0)
+        (Lz.topBit (expByte input bsize 0))) :=
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka blk1831 hcode hfork
+      (run_lzBase_zero s mem n bsize esize msize 0 (expByte input bsize 0)
+        (Lz.topBit (expByte input bsize 0)) hw0 hcode hrun) hrun hnp
+  have g4 : Challenge.EvmProof.GasSteps
+      (lzBaseSkip s mem n bsize esize msize 0 (expByte input bsize 0)
+        (Lz.topBit (expByte input bsize 0)))
+      (lzBaseGuard s mem n bsize esize msize 0 (expByte input bsize 0)
+        (Lz.topBit (expByte input bsize 0))) :=
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka blk1843 hcode hfork
+      (run_lzBaseSkip s mem n bsize esize msize 0 (expByte input bsize 0)
+        (Lz.topBit (expByte input bsize 0)) hcode hrun) hrun hnp
+  have g5 : Challenge.EvmProof.GasSteps
+      (lzBaseGuard s mem n bsize esize msize 0 (expByte input bsize 0)
+        (Lz.topBit (expByte input bsize 0)))
+      (lzBaseDirect s mem n bsize esize msize 0 (expByte input bsize 0)
+        (Lz.topBit (expByte input bsize 0))) :=
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka blk1846 hcode hfork
+      (run_lzBaseGuard_skip s mem n bsize esize msize 0 (expByte input bsize 0)
+        (Lz.topBit (expByte input bsize 0)) he hcode hrun) hrun hnp
+  have g6 : Challenge.EvmProof.GasSteps
+      (lzBaseDirect s mem n bsize esize msize 0 (expByte input bsize 0)
+        (Lz.topBit (expByte input bsize 0)))
+      (ebHead s mem n bsize esize msize 1) :=
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka blk1854 hcode hfork
+      (run_lzBaseDirect s mem n bsize esize msize 0 (expByte input bsize 0)
+        (Lz.topBit (expByte input bsize 0)) hcode hrun) hrun hnp
+  (((((g0.trans g1).trans g2).trans g3).trans g4).trans g5).trans g6
 
 /-- `LZ`'s byte-0 arm with a nonzero byte: `LZBASE` copies `BASE` onto `ACC` and
 resumes inside the bit loop, skipping the first iteration entirely. -/
@@ -4557,25 +4728,32 @@ def gasSteps_byteBody (s : State) {n bsize mm minv R : Nat}
             hcode hfork hrun hnp))
         rfl
         (by
-          simp only [byteMemAt, if_pos hc]
+          simp only [byteMemAt, if_pos hc])
           rw [show 8 - (lzSkip input bsize i + 1)
-            = 7 - lzSkip input bsize i from by omega])
+            = 7 - lzSkip input bsize i from by omega]
   else
-    Challenge.EvmProof.GasSteps.cast
-      (hentry.trans
-        ((gasSteps_ebLoad s mem input n bsize esize msize i hdata hb (by omega) hact
-            hframe.eoff hc hcode hfork hrun hnp).trans
-          (Challenge.EvmProof.GasSteps.cast
-            (gasSteps_byteFrom s sub spec mem esize msize i (expByte input bsize i)
-              bM (8 * i) (lzSkip input bsize i) bits hm hn32 hwlt hbM hj0
-              (fun k hk => by
-                have h := hbits (lzSkip input bsize i + k) (by omega)
-                rwa [show 8 * i + (lzSkip input bsize i + k)
-                  = 8 * i + lzSkip input bsize i + k from by omega] at h)
-              hframe hshift hcode hfork hrun hnp)
-            (by rw [lzMask_eq]) rfl)))
-      rfl
-      (by simp only [byteMemAt, if_neg hc])
+    if hs : i = 0 ∧ esize = 1 ∧ expByte input bsize i = 0 then
+      rcases hs with ⟨rfl, heOne, hw0⟩
+      have hzero := gasSteps_ebLoadZeroOne s mem input n bsize esize msize
+        hdata hb hact hframe.eoff heOne hw0 hcode hfork hrun hnp
+      Challenge.EvmProof.GasSteps.cast
+        (hentry.trans hzero) rfl (by
+          simp [byteMemAt, hw0])
+    else
+      Challenge.EvmProof.GasSteps.cast
+        (hentry.trans
+          ((gasSteps_ebLoad s mem input n bsize esize msize i hdata hb (by omega) he
+              hact hframe.eoff hc hs hcode hfork hrun hnp).trans
+              (gasSteps_byteFrom s sub spec mem esize msize i (expByte input bsize i)
+                bM (8 * i) (lzSkip input bsize i) bits hm hn32 hwlt hbM hj0
+                (fun k hk => by
+                  have h := hbits (lzSkip input bsize i + k) (by omega)
+                  rwa [show 8 * i + (lzSkip input bsize i + k)
+                    = 8 * i + lzSkip input bsize i + k from by omega] at h)
+                hframe hshift hcode hfork hrun hnp)
+              (by rw [lzMask_eq]) rfl)))
+        rfl
+        (by simp only [byteMemAt, if_neg hc])
 
 /-- **The exponent loop.**  All `8 * esize` bits. -/
 def gasSteps_ebLoop (s : State) {n bsize mm minv R : Nat}

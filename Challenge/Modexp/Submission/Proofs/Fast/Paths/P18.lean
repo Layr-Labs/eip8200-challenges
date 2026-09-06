@@ -45,7 +45,33 @@ def blk1836 :
 def blk1843 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1843 .JUMPDEST,
-   pushAt 1844 2 1789,
+   pushAt 1844 2 3027,
    opAt 1845 .JUMP]
+
+/-- The zero-byte guard is reached only after the first exponent byte's
+    `LZBASE` zero arm.  It skips the eight square steps exactly when the
+    declared exponent has one byte; otherwise it rejoins `EBIT`. -/
+def blk1846 :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 1846 .JUMPDEST,
+   opAt 1847 (.Dup ⟨7, by decide⟩),
+   pushAt 1848 1 1,
+   opAt 1849 .EQ,
+   pushAt 1850 2 3040,
+   opAt 1851 .JUMPI,
+   pushAt 1852 2 1789,
+   opAt 1853 .JUMP]
+
+/- The guarded zero-exponent tail has the same stack transition as `EBTAIL`,
+   but is a separately reachable block because `pc 1841` is fall-through. -/
+def blk1854 :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 1854 .JUMPDEST,
+   opAt 1855 .POP,
+   opAt 1856 .POP,
+   pushAt 1857 1 1,
+   opAt 1858 .ADD,
+   pushAt 1859 2 1769,
+   opAt 1860 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
