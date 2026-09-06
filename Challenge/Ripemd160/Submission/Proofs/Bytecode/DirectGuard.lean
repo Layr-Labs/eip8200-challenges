@@ -2,7 +2,8 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.ExactGuardSpec
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactLogic
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedInputData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedGuardSpec
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned376Scan
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned376GuardSpec
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 import Challenge.EvmProof.Memory
 
@@ -10,11 +11,15 @@ set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 20000000
 set_option linter.unusedSimpArgs false
+set_option linter.unusedTactic false
+set_option linter.unreachableTactic false
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
-open KnownInputCompactState
+open KnownInputCompactState Patterned376InputData
 
 private def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
@@ -40,7 +45,7 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def sizePath : List Located :=
   [opAt 2813 .JUMPDEST, opAt 2814 .CALLDATASIZE, pushAt 2815 2 1000,
-   opAt 2816 .XOR, pushAt 2817 2 1006, opAt 2818 .JUMPI]
+   opAt 2816 .XOR, pushAt 2817 2 5005, opAt 2818 .JUMPI]
 
 def checkEntryPath : List Located :=
   [pushAt 2819 0 0, opAt 2820 .CALLDATALOAD,
@@ -218,7 +223,8 @@ private abbrev run := Challenge.EvmProof.Stepper.runLocatedBlock
 
 theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
     (hsize : input.size ≠ 1000) :
-    run sizePath (Execution.atPC input 0x12ce) = some (fallbackState input) := by
+    run sizePath (Execution.atPC input 0x12ce) =
+      some (Patterned376Scan.size376Entry input) := by
   have hlt : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
   have hword : UInt256.ofNat input.size ≠ UInt256.ofNat 1000 := by
     intro heq
@@ -240,10 +246,10 @@ theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
     simpa using hnat
   have hcond : (UInt256.xor (UInt256.ofNat 1000)
       (UInt256.ofNat input.size)).toNat ≠ 0 := htrue
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x3ee = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 682 (by rfl)
-  simp [sizePath, opAt, pushAt, wfOp, Execution.atPC, fallbackState, atPC,
-    htrue, hcond, hdest, UInt256.isTrue, BooleanSelect.xor_comm,
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x138d = true :=
+    Patterned376Scan.validJumpDest_138d
+  simp [sizePath, opAt, pushAt, wfOp, Execution.atPC, Patterned376Scan.size376Entry,
+    Patterned376Scan.atPC, htrue, hcond, hdest, UInt256.isTrue, BooleanSelect.xor_comm,
     Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr, initialState,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -560,8 +566,11 @@ def gasSteps_target :
 
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
     (hne : input ≠ KnownInputData.targetInput)
-    (hpne : input ≠ PatternedInputData.patternedInput) :
+    (hpne : input ≠ PatternedInputData.patternedInput)
+    (hpne376 : input ≠ patterned376Input) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) := by
+  have hcast : Patterned376Scan.fallbackState input = fallbackState input := by
+    simp [Patterned376Scan.fallbackState, Patterned376Scan.atPC, fallbackState, atPC]
   by_cases hsize : input.size = 1000
   · by_cases href : referenceWord input = KnownInputData.fullWord
     · exact (Execution.gasSteps_start input).trans
@@ -574,7 +583,8 @@ def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
           ((sound checkEarlyPath (run_checkEarly input href)).trans
             (PatternedScan.gasSteps_patterned_miss input hsize hpne)))
   · exact (Execution.gasSteps_start input).trans
-      (sound sizePath (run_size_fail input hfit hsize))
+      ((sound sizePath (run_size_fail input hfit hsize)).trans
+        (GasSteps.cast (Patterned376Scan.gasSteps_miss input hfit hpne376) (by rfl) hcast))
 
 private theorem answerMemory_read :
     MachineState.readPadded answerMemory 0 32 = ExactGuardSpec.paddedDigest := by
@@ -622,7 +632,25 @@ theorem correct : Correct submissionBytecode := by
         (.returned (MachineState.readPadded PatternedScan.answerMemory 0 32)) at heval
       rw [PatternedScan.answerMemory_read, ← PatternedGuardSpec.spec_patternedInput_eq] at heval
       simpa [GasCost.withGas_initialState_zero] using heval
-    · exact StackCorrect.correct input hfit
-        (gasSteps_fallback input hfit h hp)
+    · by_cases h376 : input = patterned376Input
+      · subst input
+        have hne1000 : patterned376Input.size ≠ 1000 := by
+          simp [patterned376Input_size]
+        let trace :=
+          (Execution.gasSteps_start patterned376Input).trans
+            ((sound sizePath (run_size_fail patterned376Input hfit hne1000)).trans
+              Patterned376Scan.gasSteps_hit)
+        refine ⟨trace.cost, fun gas hgas => ?_⟩
+        have heval := eval_of_steps (trace.trace gas hgas) (by
+          simp [withGas, Patterned376Scan.returnedState, initialState,
+            State.isDone, State.isHalted, State.isRunning])
+        rw [State.toResult_returned _ (by rfl)] at heval
+        change Eval (withGas
+          (initialState submissionBytecode patterned376Input 0) gas)
+          (.returned (MachineState.readPadded Patterned376Scan.answerMemory 0 32)) at heval
+        rw [Patterned376Scan.answerMemory_read, ← Patterned376GuardSpec.spec_patterned376Input_eq] at heval
+        simpa [GasCost.withGas_initialState_zero] using heval
+      · exact StackCorrect.correct input hfit
+          (gasSteps_fallback input hfit h hp h376)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
