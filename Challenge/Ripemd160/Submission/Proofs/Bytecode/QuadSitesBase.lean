@@ -1,6 +1,9 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadLayout
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.newMaskHelperTemplates
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadCallTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskCallTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.newMaskProjection
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 
@@ -19,6 +22,8 @@ open Challenge.EvmProof
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTemplate
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
+open Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskProjection
+open Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskCallTrace
 
 abbrev Artifact := Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadLayout.A
 
@@ -112,29 +117,55 @@ def leftConstant (k : Fin 20) : UInt256 :=
 def rightConstant (k : Fin 20) : UInt256 :=
   StackRoundData.rightConstant (16 * (k.val / 4))
 
-def quadWrapperTemplate (returnPC p0 p1 p2 p3 helperPC : UInt256)
-    (r0 r1 r2 r3 : Nat) : List Instr :=
-  QuadCallTrace.quadCallPushes returnPC p0 p1 p2 p3 helperPC r0 r1 r2 r3 ++
+def shiftedFactor (r : Nat) : UInt256 :=
+  UInt256.ofNat ((0x100000001 : Nat) <<< r)
+
+def shiftedFactorWidth (r : Nat) : Fin 32 :=
+  ⟨Nat.min 31 (((r + 40) / 8) - 1), by
+    exact Nat.lt_succ_of_le (Nat.min_le_left 31 (((r + 40) / 8) - 1))⟩
+
+def maskQuadWrapperTemplate
+    (w0 w1 w2 w3 : Fin 32)
+    (returnPC p0 p1 p2 p3 helperPC : UInt256)
+    (c0 c1 c2 c3 : UInt256) : List Instr :=
+  MaskCallTrace.maskQuadCallPushes w0 w1 w2 w3
+    returnPC p0 p1 p2 p3 helperPC c0 c1 c2 c3 ++
     [op .JUMP, op .JUMPDEST]
 
-def leftWrapperTemplate (k : Fin 20) : List Instr :=
-  quadWrapperTemplate (leftReturnPC k.val)
+def leftCallTemplate (k : Fin 20) : List Instr :=
+  MaskCallTrace.maskQuadCallPushes (shiftedFactorWidth (leftRotation0 k))
+    (shiftedFactorWidth (leftRotation1 k))
+    (shiftedFactorWidth (leftRotation2 k))
+    (shiftedFactorWidth (leftRotation3 k))
+    (leftReturnPC k.val)
     (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
-    (leftHelperPC k.val) (leftRotation0 k) (leftRotation1 k)
-    (leftRotation2 k) (leftRotation3 k)
+    (leftHelperPC k.val) (shiftedFactor (leftRotation0 k))
+    (shiftedFactor (leftRotation1 k)) (shiftedFactor (leftRotation2 k))
+    (shiftedFactor (leftRotation3 k))
+
+def rightCallTemplate (k : Fin 20) : List Instr :=
+  MaskCallTrace.maskQuadCallPushes ⟨0, by decide⟩ ⟨0, by decide⟩
+    ⟨0, by decide⟩ ⟨0, by decide⟩
+    (rightReturnPC k.val)
+    (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
+    (rightHelperPC k.val)
+    (UInt256.ofNat (32 - rightRotation0 k))
+    (UInt256.ofNat (32 - rightRotation1 k))
+    (UInt256.ofNat (32 - rightRotation2 k))
+    (UInt256.ofNat (32 - rightRotation3 k))
+
+def leftWrapperTemplate (k : Fin 20) : List Instr :=
+  leftCallTemplate k ++ [op .JUMP, op .JUMPDEST]
 
 def rightWrapperTemplate (k : Fin 20) : List Instr :=
-  quadWrapperTemplate (rightReturnPC k.val)
-    (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
-    (rightHelperPC k.val) (rightRotation0 k) (rightRotation1 k)
-    (rightRotation2 k) (rightRotation3 k)
+  rightCallTemplate k ++ [op .JUMP, op .JUMPDEST]
 
 def leftHelperTemplate (group : Fin 5) : List Instr :=
-  QuadRoundState.quadBeforeJumpTemplate group.val
+  MaskHelperTemplates.leftTemplate group
     (StackRoundData.leftConstant (16 * group.val))
 
 def rightHelperTemplate (group : Fin 5) : List Instr :=
-  QuadRoundState.quadBeforeJumpTemplate (4 - group.val)
+  MaskHelperTemplates.rightTemplate group
     (StackRoundData.rightConstant (16 * group.val))
 
 theorem getElem_of_slice {artifact : ProgramArtifact}
@@ -145,27 +176,5 @@ theorem getElem_of_slice {artifact : ProgramArtifact}
   have hs := congrArg (fun xs : List Instr => xs[offset]?) hslice
   rw [List.getElem?_take, if_pos hoffset, List.getElem?_drop] at hs
   simpa [Nat.add_comm] using hs.trans (List.getElem?_eq_getElem hoffset)
-
-def castTemplate {artifact : ProgramArtifact} {fork : Fork}
-    {first second : List Instr}
-    (site : GenericRoundSite artifact fork first) (h : first = second) :
-    GenericRoundSite artifact fork second where
-  startPC := site.startPC
-  endPC := site.endPC
-  sites := site.sites
-  head_eq := site.head_eq
-  end_eq := site.end_eq
-  instruction_eq := site.instruction_eq.trans h
-  contiguous := site.contiguous
-
-theorem castTemplate_start {artifact : ProgramArtifact} {fork : Fork}
-    {first second : List Instr}
-    (site : GenericRoundSite artifact fork first) (h : first = second) :
-    (castTemplate site h).startPC = site.startPC := rfl
-
-theorem castTemplate_end {artifact : ProgramArtifact} {fork : Fork}
-    {first second : List Instr}
-    (site : GenericRoundSite artifact fork first) (h : first = second) :
-    (castTemplate site h).endPC = site.endPC := rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites

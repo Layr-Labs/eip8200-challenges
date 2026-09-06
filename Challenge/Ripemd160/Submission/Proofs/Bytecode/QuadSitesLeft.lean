@@ -1,6 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSitesBase
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadCallTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadHelperTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskQuadHelperTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadLayout
 
 set_option warningAsError true
@@ -16,6 +16,8 @@ open Challenge.EvmProof
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTemplate
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
+open Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskCallTrace
+open Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates
 
 private theorem leftWrapper_slice (k : Fin 20) :
     (Artifact.instructions.drop (leftWrapperIndex k.val)).take
@@ -25,7 +27,7 @@ private theorem leftWrapper_slice (k : Fin 20) :
 private theorem leftWrapper_fits (k : Fin 20) :
     leftWrapperIndex k.val + (leftWrapperTemplate k).length ≤
       Artifact.instructions.length := by
-  change 931 + 12 * k.val + 12 ≤ Artifact.submissionInstructions.length
+  change 932 + 12 * k.val + 12 ≤ Artifact.submissionInstructions.length
   rw [Artifact.referenceInstructions_count]
   omega
 
@@ -40,7 +42,7 @@ def leftWrapperSite (k : Fin 20) :
     (leftWrapperIndex k.val) (leftWrapper_slice k) (leftWrapper_fits k)
     QuadLayout.code_bound
     (StackRoundData.templateWellFormed_mem (leftWrapper_wellFormed k))
-    (by simp [leftWrapperTemplate, quadWrapperTemplate])
+    (by simp [leftWrapperTemplate, leftCallTemplate])
 
 private theorem leftWrapperAt (k : Fin 20) (offset : Nat)
     (hoffset : offset < (leftWrapperTemplate k).length) :
@@ -50,71 +52,48 @@ private theorem leftWrapperAt (k : Fin 20) (offset : Nat)
 
 private theorem leftCall_slice (k : Fin 20) :
     (Artifact.instructions.drop (leftWrapperIndex k.val)).take
-        (QuadCallTrace.quadCallPushes (leftReturnPC k.val)
-          (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
-          (leftHelperPC k.val) (leftRotation0 k) (leftRotation1 k)
-          (leftRotation2 k) (leftRotation3 k)).length =
-      QuadCallTrace.quadCallPushes (leftReturnPC k.val)
-        (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
-        (leftHelperPC k.val) (leftRotation0 k) (leftRotation1 k)
-        (leftRotation2 k) (leftRotation3 k) := by
+        (leftCallTemplate k).length = leftCallTemplate k := by
   have h := congrArg (fun xs : List Instr => xs.take 10) (leftWrapper_slice k)
-  simpa [leftWrapperTemplate, quadWrapperTemplate,
-    QuadCallTrace.quadCallPushes, List.take_take] using h
+  have hlen : (leftCallTemplate k).length = 10 := by
+    rfl
+  rw [hlen]
+  simpa [leftWrapperTemplate, leftCallTemplate,
+    MaskCallTrace.maskQuadCallPushes, List.take_take] using h
 
 private theorem leftCall_fits (k : Fin 20) :
-    leftWrapperIndex k.val +
-        (QuadCallTrace.quadCallPushes (leftReturnPC k.val)
-          (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
-          (leftHelperPC k.val) (leftRotation0 k) (leftRotation1 k)
-          (leftRotation2 k) (leftRotation3 k)).length ≤
+    leftWrapperIndex k.val + (leftCallTemplate k).length ≤
       Artifact.instructions.length := by
-  change 931 + 12 * k.val + 10 ≤ Artifact.submissionInstructions.length
+  change 932 + 12 * k.val + 10 ≤ Artifact.submissionInstructions.length
   rw [Artifact.referenceInstructions_count]
   omega
 
 private theorem leftCall_wellFormed (k : Fin 20) :
-    ∀ instruction ∈
-        QuadCallTrace.quadCallPushes (leftReturnPC k.val)
-          (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
-          (leftHelperPC k.val) (leftRotation0 k) (leftRotation1 k)
-          (leftRotation2 k) (leftRotation3 k),
+    ∀ instruction ∈ leftCallTemplate k,
       Stepper.WellFormed .Osaka instruction := by
   intro instruction hmem
   apply StackRoundData.templateWellFormed_mem (leftWrapper_wellFormed k)
-  change instruction ∈
-    QuadCallTrace.quadCallPushes (leftReturnPC k.val)
-      (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
-      (leftHelperPC k.val) (leftRotation0 k) (leftRotation1 k)
-      (leftRotation2 k) (leftRotation3 k) ++ [op .JUMP, op .JUMPDEST]
+  change instruction ∈ leftCallTemplate k ++ [op .JUMP, op .JUMPDEST]
   exact List.mem_append_left _ hmem
 
 def leftCallPushes (k : Fin 20) :
-    GenericRoundSite Artifact .Osaka
-      (QuadCallTrace.quadCallPushes (leftReturnPC k.val)
-        (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
-        (leftHelperPC k.val) (leftRotation0 k) (leftRotation1 k)
-        (leftRotation2 k) (leftRotation3 k)) :=
+    GenericRoundSite Artifact .Osaka (leftCallTemplate k) :=
   StackSiteBuilder.ofSlice
     (artifact := Artifact) (fork := .Osaka)
-    (QuadCallTrace.quadCallPushes (leftReturnPC k.val)
-      (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
-      (leftHelperPC k.val) (leftRotation0 k) (leftRotation1 k)
-      (leftRotation2 k) (leftRotation3 k))
+    (leftCallTemplate k)
     (leftWrapperIndex k.val) (leftCall_slice k) (leftCall_fits k)
     QuadLayout.code_bound (leftCall_wellFormed k)
-    (by simp [QuadCallTrace.quadCallPushes])
+    (by simp [leftCallTemplate, MaskCallTrace.maskQuadCallPushes])
 
 def leftCallJump (k : Fin 20) : LocatedSite Artifact .Osaka where
   located :=
     { index := leftWrapperIndex k.val + 10
       instruction := .op .JUMP
       atIndex := by
-        simpa [leftWrapperTemplate, quadWrapperTemplate,
-          QuadCallTrace.quadCallPushes, op] using
+        simpa [leftWrapperTemplate, leftCallTemplate,
+          MaskCallTrace.maskQuadCallPushes, op] using
           leftWrapperAt k 10 (by
-            simp [leftWrapperTemplate, quadWrapperTemplate,
-              QuadCallTrace.quadCallPushes])
+            simp [leftWrapperTemplate, leftCallTemplate,
+              MaskCallTrace.maskQuadCallPushes])
       wellFormed := ⟨by decide, trivial, rfl⟩ }
   pc := leftJumpPC k.val
   pc_eq := QuadLayout.pc_toNat_instructionPC _
@@ -131,12 +110,8 @@ private theorem leftCallPushes_end_eq (k : Fin 20) :
   rw [hstart] at hend
   calc
     (leftCallJump k).pc = leftJumpPC k.val := by simp [leftCallJump]
-    _ = StackRoundTrace.pcAfter (leftPC k.val)
-        (QuadCallTrace.quadCallPushes (leftReturnPC k.val)
-          (leftAddress0 k) (leftAddress1 k) (leftAddress2 k) (leftAddress3 k)
-          (leftHelperPC k.val) (leftRotation0 k) (leftRotation1 k)
-          (leftRotation2 k) (leftRotation3 k)) := by
-      fin_cases k <;> rfl
+    _ = StackRoundTrace.pcAfter (leftPC k.val) (leftCallTemplate k) := by
+      fin_cases k <;> decide
     _ = (leftCallPushes k).endPC := hend.symm
 
 def leftReturnSite (k : Fin 20) : LocatedSite Artifact .Osaka where
@@ -144,20 +119,27 @@ def leftReturnSite (k : Fin 20) : LocatedSite Artifact .Osaka where
     { index := leftWrapperIndex k.val + 11
       instruction := .op .JUMPDEST
       atIndex := by
-        simpa [leftWrapperTemplate, quadWrapperTemplate,
-          QuadCallTrace.quadCallPushes, op] using
+        simpa [leftWrapperTemplate, leftCallTemplate,
+          MaskCallTrace.maskQuadCallPushes, op] using
           leftWrapperAt k 11 (by
-            simp [leftWrapperTemplate, quadWrapperTemplate,
-              QuadCallTrace.quadCallPushes])
+            simp [leftWrapperTemplate, leftCallTemplate,
+              MaskCallTrace.maskQuadCallPushes])
       wellFormed := ⟨by decide, trivial, rfl⟩ }
   pc := leftReturnPC k.val
   pc_eq := QuadLayout.pc_toNat_instructionPC _
 
 def leftCallSite (k : Fin 20) :
-    QuadCallTrace.CallSite Artifact .Osaka
+    MaskCallTrace.CallSite Artifact .Osaka
       (leftReturnPC k.val) (leftAddress0 k) (leftAddress1 k)
       (leftAddress2 k) (leftAddress3 k) (leftHelperPC k.val)
-      (leftRotation0 k) (leftRotation1 k) (leftRotation2 k) (leftRotation3 k) where
+      (shiftedFactorWidth (leftRotation0 k))
+      (shiftedFactorWidth (leftRotation1 k))
+      (shiftedFactorWidth (leftRotation2 k))
+      (shiftedFactorWidth (leftRotation3 k))
+      (shiftedFactor (leftRotation0 k))
+      (shiftedFactor (leftRotation1 k))
+      (shiftedFactor (leftRotation2 k))
+      (shiftedFactor (leftRotation3 k)) where
   pushes := leftCallPushes k
   jump := leftCallJump k
   jump_instr := by simp [leftCallJump]
@@ -178,21 +160,26 @@ theorem leftReturnSite_succ_next (k : Fin 20) :
 private theorem leftHelper_slice (group : Fin 5) :
     (Artifact.instructions.drop (leftHelperStartIndex group.val)).take
         (leftHelperTemplate group).length = leftHelperTemplate group := by
-  fin_cases group <;> rfl
+  simpa [leftHelperTemplate] using
+    (MaskHelperTemplates.leftTemplate_slice group
+      (StackRoundData.leftConstant (16 * group.val)))
 
 private theorem leftHelper_fits (group : Fin 5) :
     leftHelperStartIndex group.val + (leftHelperTemplate group).length ≤
       Artifact.instructions.length := by
   change leftHelperStartIndex group.val +
-      (quadBeforeJumpTemplate group.val
+      (MaskHelperTemplates.leftTemplate group
         (StackRoundData.leftConstant (16 * group.val))).length ≤
       Artifact.submissionInstructions.length
+  rw [MaskHelperTemplates.leftTemplate_length]
   rw [Artifact.referenceInstructions_count]
   fin_cases group <;> decide
 
 private theorem leftHelper_wellFormed (group : Fin 5) :
     StackRoundData.TemplateWellFormed (leftHelperTemplate group) := by
-  fin_cases group <;> decide
+  simpa [leftHelperTemplate] using
+    (MaskHelperTemplates.leftTemplate_wellFormed group
+      (StackRoundData.leftConstant (16 * group.val)))
 
 def leftHelperSite (group : Fin 5) :
     GenericRoundSite Artifact .Osaka (leftHelperTemplate group) :=
@@ -202,9 +189,10 @@ def leftHelperSite (group : Fin 5) :
     QuadLayout.code_bound
     (StackRoundData.templateWellFormed_mem (leftHelper_wellFormed group))
     (by
-      change quadBeforeJumpTemplate group.val
+      change MaskHelperTemplates.leftTemplate group
         (StackRoundData.leftConstant (16 * group.val)) ≠ []
-      fin_cases group <;> decide)
+      exact MaskHelperTemplates.leftTemplate_nonempty group
+        (StackRoundData.leftConstant (16 * group.val)))
 
 theorem leftHelperSite_start_eq (group : Fin 5) :
     (leftHelperSite group).startPC = leftHelperPCOfGroup group.val := by
@@ -213,6 +201,11 @@ theorem leftHelperSite_start_eq (group : Fin 5) :
 theorem leftHelperEndIndex (group : Fin 5) :
     leftHelperStartIndex group.val + (leftHelperTemplate group).length =
       leftHelperJumpIndex group.val := by
+  change leftHelperStartIndex group.val +
+      (MaskHelperTemplates.leftTemplate group
+        (StackRoundData.leftConstant (16 * group.val))).length =
+    leftHelperJumpIndex group.val
+  rw [MaskHelperTemplates.leftTemplate_length]
   fin_cases group <;> rfl
 
 def leftHelperJump (group : Fin 5) : LocatedSite Artifact .Osaka where
@@ -261,22 +254,27 @@ theorem leftReturn_valid (k : Fin 20) :
     (leftReturnSite k).located.atIndex
 
 def leftRoundSite (k : Fin 20) :
-    QuadHelperTrace.RoundSite Artifact .Osaka
-      (k.val / 4) (leftAddress0 k) (leftAddress1 k)
+    MaskQuadHelperTrace.RoundSite Artifact .Osaka
+      (leftHelperTemplate ⟨k.val / 4, by omega⟩)
+      (leftAddress0 k) (leftAddress1 k)
       (leftAddress2 k) (leftAddress3 k)
-      (leftRotation0 k) (leftRotation1 k) (leftRotation2 k) (leftRotation3 k)
-      (leftConstant k) where
+      (shiftedFactorWidth (leftRotation0 k))
+      (shiftedFactorWidth (leftRotation1 k))
+      (shiftedFactorWidth (leftRotation2 k))
+      (shiftedFactorWidth (leftRotation3 k))
+      (shiftedFactor (leftRotation0 k))
+      (shiftedFactor (leftRotation1 k))
+      (shiftedFactor (leftRotation2 k))
+      (shiftedFactor (leftRotation3 k)) where
   returnPC := leftReturnPC k.val
   helperPC := leftHelperPC k.val
   call := leftCallSite k
-  helper := castTemplate (leftHelperSite ⟨k.val / 4, by omega⟩) (by rfl)
+  helper := leftHelperSite ⟨k.val / 4, by omega⟩
   helper_start := by
-    rw [castTemplate_start]
     exact leftHelperSite_start_eq ⟨k.val / 4, by omega⟩
   helperJump := leftHelperJump ⟨k.val / 4, by omega⟩
   helper_jump_instr := by rfl
   helper_end := by
-    rw [castTemplate_end]
     exact leftHelperSite_end_eq ⟨k.val / 4, by omega⟩
   returnSite := leftReturnSite k
   return_instr := by rfl
@@ -304,16 +302,16 @@ theorem leftRotation2_le32 (k : Fin 20) : leftRotation2 k ≤ 32 := by
 theorem leftRotation3_le32 (k : Fin 20) : leftRotation3 k ≤ 32 := by
   fin_cases k <;> decide
 
-@[simp] theorem leftPC_zero : leftPC 0 = UInt256.ofNat 0x539 := by rfl
+@[simp] theorem leftPC_zero : leftPC 0 = UInt256.ofNat 0x53e := by rfl
 
-@[simp] theorem leftPC_end : leftPC 20 = UInt256.ofNat 0x769 := by rfl
+@[simp] theorem leftPC_end : leftPC 20 = UInt256.ofNat 0x8e6 := by
+  change UInt256.ofNat (Artifact.instructionPC (leftWrapperIndex 20)) =
+    UInt256.ofNat (QuadLayout.leftWrapperPCNat 20)
+  exact congrArg UInt256.ofNat (QuadLayout.leftWrapper_pc ⟨20, by decide⟩)
 
-@[simp] theorem leftStartPC_eq : leftStartPC = UInt256.ofNat 0x539 := by rfl
+@[simp] theorem leftStartPC_eq : leftStartPC = UInt256.ofNat 0x53e := by rfl
 
-@[simp] theorem leftEndPC_eq : leftEndPC = UInt256.ofNat 0x769 := by rfl
-
-theorem leftPC_succ (k : Fin 20) :
-    leftPC (k.val + 1) = leftPC k.val + UInt256.ofNat 28 := by
-  fin_cases k <;> rfl
+@[simp] theorem leftEndPC_eq : leftEndPC = UInt256.ofNat 0x8e6 := by
+  exact leftPC_end
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites

@@ -39,42 +39,42 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
   ⟨index, .push width value, hget, hwf⟩
 
 def sizePath : List Located :=
-  [opAt 2813 .JUMPDEST, opAt 2814 .CALLDATASIZE, pushAt 2815 2 1000,
-   opAt 2816 .XOR, pushAt 2817 2 1006, opAt 2818 .JUMPI]
+  [opAt 2800 .JUMPDEST, opAt 2801 .CALLDATASIZE, pushAt 2802 2 1000,
+   opAt 2803 .XOR, pushAt 2804 2 1006, opAt 2805 .JUMPI]
 
 def checkEntryPath : List Located :=
-  [pushAt 2819 0 0, opAt 2820 .CALLDATALOAD,
-   opAt 2821 (.Dup ⟨0, by decide⟩),
-   pushAt 2822 32 KnownInputData.fullWord, opAt 2823 .XOR,
-   pushAt 2824 2 4929, opAt 2825 .JUMPI,
-   pushAt 2826 0 0, pushAt 2827 1 32]
+  [pushAt 2806 0 0, opAt 2807 .CALLDATALOAD,
+   opAt 2808 (.Dup ⟨0, by decide⟩),
+   pushAt 2809 32 KnownInputData.fullWord, opAt 2810 .XOR,
+   pushAt 2811 2 4996, opAt 2812 .JUMPI,
+   pushAt 2813 0 0, pushAt 2814 1 32]
 
 def checkEarlyPath : List Located :=
-  [pushAt 2819 0 0, opAt 2820 .CALLDATALOAD,
-   opAt 2821 (.Dup ⟨0, by decide⟩),
-   pushAt 2822 32 KnownInputData.fullWord, opAt 2823 .XOR,
-   pushAt 2824 2 4929, opAt 2825 .JUMPI,
-   opAt 2860 .JUMPDEST, opAt 2861 .POP,
-   pushAt 2862 2 5005, opAt 2863 .JUMP]
+  [pushAt 2806 0 0, opAt 2807 .CALLDATALOAD,
+   opAt 2808 (.Dup ⟨0, by decide⟩),
+   pushAt 2809 32 KnownInputData.fullWord, opAt 2810 .XOR,
+   pushAt 2811 2 4996, opAt 2812 .JUMPI,
+   opAt 2847 .JUMPDEST, opAt 2848 .POP,
+   pushAt 2849 2 5072, opAt 2850 .JUMP]
 
 def loopPath : List Located :=
-  [opAt 2828 .JUMPDEST, opAt 2829 (.Swap ⟨0, by decide⟩),
-   opAt 2830 (.Dup ⟨1, by decide⟩), opAt 2831 .CALLDATALOAD,
-   opAt 2832 (.Dup ⟨3, by decide⟩), opAt 2833 .XOR, opAt 2834 .OR,
-   opAt 2835 (.Swap ⟨0, by decide⟩), pushAt 2836 1 32, opAt 2837 .ADD,
-   pushAt 2838 2 992, opAt 2839 (.Dup ⟨1, by decide⟩), opAt 2840 .LT,
-   pushAt 2841 2 4868, opAt 2842 .JUMPI]
+  [opAt 2815 .JUMPDEST, opAt 2816 (.Swap ⟨0, by decide⟩),
+   opAt 2817 (.Dup ⟨1, by decide⟩), opAt 2818 .CALLDATALOAD,
+   opAt 2819 (.Dup ⟨3, by decide⟩), opAt 2820 .XOR, opAt 2821 .OR,
+   opAt 2822 (.Swap ⟨0, by decide⟩), pushAt 2823 1 32, opAt 2824 .ADD,
+   pushAt 2825 2 992, opAt 2826 (.Dup ⟨1, by decide⟩), opAt 2827 .LT,
+   pushAt 2828 2 4935, opAt 2829 .JUMPI]
 
 def tailPath : List Located :=
-  [opAt 2843 .CALLDATALOAD, opAt 2844 (.Dup ⟨2, by decide⟩),
-   opAt 2845 .XOR, pushAt 2846 1 192, opAt 2847 .SHR, opAt 2848 .OR,
-   opAt 2849 .JUMPDEST, opAt 2850 (.Swap ⟨0, by decide⟩), opAt 2851 .POP,
-   pushAt 2852 2 1006, opAt 2853 .JUMPI]
+  [opAt 2830 .CALLDATALOAD, opAt 2831 (.Dup ⟨2, by decide⟩),
+   opAt 2832 .XOR, pushAt 2833 1 192, opAt 2834 .SHR, opAt 2835 .OR,
+   opAt 2836 .JUMPDEST, opAt 2837 (.Swap ⟨0, by decide⟩), opAt 2838 .POP,
+   pushAt 2839 2 1006, opAt 2840 .JUMPI]
 
 def returnPath : List Located :=
-  [pushAt 2854 20 972889429405991776604892044862621566948497025487,
-   pushAt 2855 0 0, opAt 2856 .MSTORE, pushAt 2857 1 32,
-   pushAt 2858 0 0, opAt 2859 .RETURN]
+  [pushAt 2841 20 972889429405991776604892044862621566948497025487,
+   pushAt 2842 0 0, opAt 2843 .MSTORE, pushAt 2844 1 32,
+   pushAt 2845 0 0, opAt 2846 .RETURN]
 
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
@@ -98,20 +98,20 @@ attribute [simp] Challenge.Ripemd160.initialState_stack
   Challenge.Ripemd160.initialState_pc
   Challenge.Ripemd160.initialState_calldata
 
-def sizeMatched (input : ByteArray) : State := atPC input 0x12d8
+def sizeMatched (input : ByteArray) : State := atPC input 0x131b
 def fallbackState (input : ByteArray) : State := atPC input 0x3ee
 
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x1304
+    pc := UInt256.ofNat 0x1347
     stack := [UInt256.ofNat (32 * (n + 1)), loopAcc input n, referenceWord input] }
 
 def loopExitState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x1318
+    pc := UInt256.ofNat 0x135b
     stack := [UInt256.ofNat 992, loopAcc input 30, referenceWord input] }
 
-def returnEntry (input : ByteArray) : State := atPC input 0x1326
+def returnEntry (input : ByteArray) : State := atPC input 0x1369
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded word.toNat 32) address
@@ -121,7 +121,7 @@ def answerMemory : ByteArray :=
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x1340
+    pc := UInt256.ofNat 0x1383
     memory := answerMemory
     activeWords := UInt256.ofNat 1
     halt := .Returned
@@ -133,106 +133,106 @@ abbrev run := Challenge.EvmProof.Stepper.runLocatedBlock
 /- Freeze the concrete direct-guard range so symbolic path reduction never
    unfolds the complete generated artifact merely to advance a program counter. -/
 @[simp] theorem pc2813 :
-    Artifact.submissionArtifact.instructionPC 2813 = 4814 := by rfl
+    Artifact.submissionArtifact.instructionPC 2800 = 4881 := by rfl
 @[simp] theorem pc2814 :
-    Artifact.submissionArtifact.instructionPC 2814 = 4815 := by rfl
+    Artifact.submissionArtifact.instructionPC 2801 = 4882 := by rfl
 @[simp] theorem pc2815 :
-    Artifact.submissionArtifact.instructionPC 2815 = 4816 := by rfl
+    Artifact.submissionArtifact.instructionPC 2802 = 4883 := by rfl
 @[simp] theorem pc2816 :
-    Artifact.submissionArtifact.instructionPC 2816 = 4819 := by rfl
+    Artifact.submissionArtifact.instructionPC 2803 = 4886 := by rfl
 @[simp] theorem pc2817 :
-    Artifact.submissionArtifact.instructionPC 2817 = 4820 := by rfl
+    Artifact.submissionArtifact.instructionPC 2804 = 4887 := by rfl
 @[simp] theorem pc2818 :
-    Artifact.submissionArtifact.instructionPC 2818 = 4823 := by rfl
+    Artifact.submissionArtifact.instructionPC 2805 = 4890 := by rfl
 @[simp] theorem pc2819 :
-    Artifact.submissionArtifact.instructionPC 2819 = 4824 := by rfl
+    Artifact.submissionArtifact.instructionPC 2806 = 4891 := by rfl
 @[simp] theorem pc2820 :
-    Artifact.submissionArtifact.instructionPC 2820 = 4825 := by rfl
+    Artifact.submissionArtifact.instructionPC 2807 = 4892 := by rfl
 @[simp] theorem pc2821 :
-    Artifact.submissionArtifact.instructionPC 2821 = 4826 := by rfl
+    Artifact.submissionArtifact.instructionPC 2808 = 4893 := by rfl
 @[simp] theorem pc2822 :
-    Artifact.submissionArtifact.instructionPC 2822 = 4827 := by rfl
+    Artifact.submissionArtifact.instructionPC 2809 = 4894 := by rfl
 @[simp] theorem pc2823 :
-    Artifact.submissionArtifact.instructionPC 2823 = 4860 := by rfl
+    Artifact.submissionArtifact.instructionPC 2810 = 4927 := by rfl
 @[simp] theorem pc2824 :
-    Artifact.submissionArtifact.instructionPC 2824 = 4861 := by rfl
+    Artifact.submissionArtifact.instructionPC 2811 = 4928 := by rfl
 @[simp] theorem pc2825 :
-    Artifact.submissionArtifact.instructionPC 2825 = 4864 := by rfl
+    Artifact.submissionArtifact.instructionPC 2812 = 4931 := by rfl
 @[simp] theorem pc2826 :
-    Artifact.submissionArtifact.instructionPC 2826 = 4865 := by rfl
+    Artifact.submissionArtifact.instructionPC 2813 = 4932 := by rfl
 @[simp] theorem pc2827 :
-    Artifact.submissionArtifact.instructionPC 2827 = 4866 := by rfl
+    Artifact.submissionArtifact.instructionPC 2814 = 4933 := by rfl
 @[simp] theorem pc2828 :
-    Artifact.submissionArtifact.instructionPC 2828 = 4868 := by rfl
+    Artifact.submissionArtifact.instructionPC 2815 = 4935 := by rfl
 @[simp] theorem pc2829 :
-    Artifact.submissionArtifact.instructionPC 2829 = 4869 := by rfl
+    Artifact.submissionArtifact.instructionPC 2816 = 4936 := by rfl
 @[simp] theorem pc2830 :
-    Artifact.submissionArtifact.instructionPC 2830 = 4870 := by rfl
+    Artifact.submissionArtifact.instructionPC 2817 = 4937 := by rfl
 @[simp] theorem pc2831 :
-    Artifact.submissionArtifact.instructionPC 2831 = 4871 := by rfl
+    Artifact.submissionArtifact.instructionPC 2818 = 4938 := by rfl
 @[simp] theorem pc2832 :
-    Artifact.submissionArtifact.instructionPC 2832 = 4872 := by rfl
+    Artifact.submissionArtifact.instructionPC 2819 = 4939 := by rfl
 @[simp] theorem pc2833 :
-    Artifact.submissionArtifact.instructionPC 2833 = 4873 := by rfl
+    Artifact.submissionArtifact.instructionPC 2820 = 4940 := by rfl
 @[simp] theorem pc2834 :
-    Artifact.submissionArtifact.instructionPC 2834 = 4874 := by rfl
+    Artifact.submissionArtifact.instructionPC 2821 = 4941 := by rfl
 @[simp] theorem pc2835 :
-    Artifact.submissionArtifact.instructionPC 2835 = 4875 := by rfl
+    Artifact.submissionArtifact.instructionPC 2822 = 4942 := by rfl
 @[simp] theorem pc2836 :
-    Artifact.submissionArtifact.instructionPC 2836 = 4876 := by rfl
+    Artifact.submissionArtifact.instructionPC 2823 = 4943 := by rfl
 @[simp] theorem pc2837 :
-    Artifact.submissionArtifact.instructionPC 2837 = 4878 := by rfl
+    Artifact.submissionArtifact.instructionPC 2824 = 4945 := by rfl
 @[simp] theorem pc2838 :
-    Artifact.submissionArtifact.instructionPC 2838 = 4879 := by rfl
+    Artifact.submissionArtifact.instructionPC 2825 = 4946 := by rfl
 @[simp] theorem pc2839 :
-    Artifact.submissionArtifact.instructionPC 2839 = 4882 := by rfl
+    Artifact.submissionArtifact.instructionPC 2826 = 4949 := by rfl
 @[simp] theorem pc2840 :
-    Artifact.submissionArtifact.instructionPC 2840 = 4883 := by rfl
+    Artifact.submissionArtifact.instructionPC 2827 = 4950 := by rfl
 @[simp] theorem pc2841 :
-    Artifact.submissionArtifact.instructionPC 2841 = 4884 := by rfl
+    Artifact.submissionArtifact.instructionPC 2828 = 4951 := by rfl
 @[simp] theorem pc2842 :
-    Artifact.submissionArtifact.instructionPC 2842 = 4887 := by rfl
+    Artifact.submissionArtifact.instructionPC 2829 = 4954 := by rfl
 @[simp] theorem pc2843 :
-    Artifact.submissionArtifact.instructionPC 2843 = 4888 := by rfl
+    Artifact.submissionArtifact.instructionPC 2830 = 4955 := by rfl
 @[simp] theorem pc2844 :
-    Artifact.submissionArtifact.instructionPC 2844 = 4889 := by rfl
+    Artifact.submissionArtifact.instructionPC 2831 = 4956 := by rfl
 @[simp] theorem pc2845 :
-    Artifact.submissionArtifact.instructionPC 2845 = 4890 := by rfl
+    Artifact.submissionArtifact.instructionPC 2832 = 4957 := by rfl
 @[simp] theorem pc2846 :
-    Artifact.submissionArtifact.instructionPC 2846 = 4891 := by rfl
+    Artifact.submissionArtifact.instructionPC 2833 = 4958 := by rfl
 @[simp] theorem pc2847 :
-    Artifact.submissionArtifact.instructionPC 2847 = 4893 := by rfl
+    Artifact.submissionArtifact.instructionPC 2834 = 4960 := by rfl
 @[simp] theorem pc2848 :
-    Artifact.submissionArtifact.instructionPC 2848 = 4894 := by rfl
+    Artifact.submissionArtifact.instructionPC 2835 = 4961 := by rfl
 @[simp] theorem pc2849 :
-    Artifact.submissionArtifact.instructionPC 2849 = 4895 := by rfl
+    Artifact.submissionArtifact.instructionPC 2836 = 4962 := by rfl
 @[simp] theorem pc2850 :
-    Artifact.submissionArtifact.instructionPC 2850 = 4896 := by rfl
+    Artifact.submissionArtifact.instructionPC 2837 = 4963 := by rfl
 @[simp] theorem pc2851 :
-    Artifact.submissionArtifact.instructionPC 2851 = 4897 := by rfl
+    Artifact.submissionArtifact.instructionPC 2838 = 4964 := by rfl
 @[simp] theorem pc2852 :
-    Artifact.submissionArtifact.instructionPC 2852 = 4898 := by rfl
+    Artifact.submissionArtifact.instructionPC 2839 = 4965 := by rfl
 @[simp] theorem pc2853 :
-    Artifact.submissionArtifact.instructionPC 2853 = 4901 := by rfl
+    Artifact.submissionArtifact.instructionPC 2840 = 4968 := by rfl
 @[simp] theorem pc2854 :
-    Artifact.submissionArtifact.instructionPC 2854 = 4902 := by rfl
+    Artifact.submissionArtifact.instructionPC 2841 = 4969 := by rfl
 @[simp] theorem pc2855 :
-    Artifact.submissionArtifact.instructionPC 2855 = 4923 := by rfl
+    Artifact.submissionArtifact.instructionPC 2842 = 4990 := by rfl
 @[simp] theorem pc2856 :
-    Artifact.submissionArtifact.instructionPC 2856 = 4924 := by rfl
+    Artifact.submissionArtifact.instructionPC 2843 = 4991 := by rfl
 @[simp] theorem pc2857 :
-    Artifact.submissionArtifact.instructionPC 2857 = 4925 := by rfl
+    Artifact.submissionArtifact.instructionPC 2844 = 4992 := by rfl
 @[simp] theorem pc2858 :
-    Artifact.submissionArtifact.instructionPC 2858 = 4927 := by rfl
+    Artifact.submissionArtifact.instructionPC 2845 = 4994 := by rfl
 @[simp] theorem pc2859 :
-    Artifact.submissionArtifact.instructionPC 2859 = 4928 := by rfl
+    Artifact.submissionArtifact.instructionPC 2846 = 4995 := by rfl
 @[simp] theorem pc2860 :
-    Artifact.submissionArtifact.instructionPC 2860 = 4929 := by rfl
+    Artifact.submissionArtifact.instructionPC 2847 = 4996 := by rfl
 @[simp] theorem pc2861 :
-    Artifact.submissionArtifact.instructionPC 2861 = 4930 := by rfl
+    Artifact.submissionArtifact.instructionPC 2848 = 4997 := by rfl
 @[simp] theorem pc2862 :
-    Artifact.submissionArtifact.instructionPC 2862 = 4931 := by rfl
+    Artifact.submissionArtifact.instructionPC 2849 = 4998 := by rfl
 @[simp] theorem pc2863 :
-    Artifact.submissionArtifact.instructionPC 2863 = 4934 := by rfl
+    Artifact.submissionArtifact.instructionPC 2850 = 5001 := by rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

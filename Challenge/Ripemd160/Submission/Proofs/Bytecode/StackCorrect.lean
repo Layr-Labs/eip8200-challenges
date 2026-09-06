@@ -50,29 +50,31 @@ noncomputable def gasSteps_legacyBlock (s : State) (input : ByteArray) (i : Nat)
       q.executionEnv.fork q.executionEnv.codeAddr = false := by rw [qenv]; exact hnp
   have restBound : rest.length < 1007 := by
     simp [rest, StackFrame.frameRest, driverRest]
-  have rightRestBound : rightRest.length < 1007 := by
+  have laneRestBound : rest.length < 1006 := by
+    simp [rest, StackFrame.frameRest, driverRest]
+  have rightRestBound : rightRest.length < 1006 := by
     simp [rightRest, StackFrame.savedLeft, rest, StackFrame.frameRest, driverRest]
   have gframe := StackFrame.gasSteps_frame s input i hfit hi hcode hfork hrun hnp
   have gload1 := StackLoadTrace.gasSteps_load StackFrame.loadSite987 q
-    (QuadRoundTemplate.factor :: rest) qactive
+    (MaskProjection.mask :: QuadRoundTemplate.factor :: rest) qactive
     (by simp [rest, StackFrame.frameRest, driverRest]) qcode qfork qrun qnp
   have gload1' : GasSteps (StackFrame.frameLoadEntry s input i)
       (stateAt q (QuadLayout.leftPC 0) w rest) := by
     exact gload1.cast (firstLoad_entry s input i)
-      (firstLoad_returned q (QuadRoundTemplate.factor :: rest))
-  have gleft := gasSteps_left80 q word w rest qwords qactive restBound qcode qfork qrun qnp
+      (firstLoad_returned q (MaskProjection.mask :: QuadRoundTemplate.factor :: rest))
+  have gleft := gasSteps_left80 q word w rest qwords qactive laneRestBound qcode qfork qrun qnp
   have groute := StackFrame.gasSteps_route q left rest restBound qcode qfork qrun qnp
   have groute' : GasSteps (stateAt q (QuadLayout.leftPC 20) left rest)
       (StackFrame.routeReturned q left rest) :=
     groute.cast (routeEntry_atLanePC q left rest) rfl
   have gload2 := StackLoadTrace.gasSteps_load StackFrame.loadSite1238 q
-    (QuadRoundTemplate.factor :: rightRest) qactive
+    (MaskProjection.mask :: QuadRoundTemplate.factor :: rightRest) qactive
     (by simp [rightRest, StackFrame.savedLeft, rest, StackFrame.frameRest, driverRest])
     qcode qfork qrun qnp
   have gload2' : GasSteps (StackFrame.routeReturned q left rest)
       (stateAt q (QuadLayout.rightPC 0) w rightRest) := by
     exact gload2.cast (secondLoad_entry q left rest)
-      (secondLoad_returned q (QuadRoundTemplate.factor :: rightRest))
+      (secondLoad_returned q (MaskProjection.mask :: QuadRoundTemplate.factor :: rightRest))
   have gright := gasSteps_right80 q word w rightRest qwords qactive rightRestBound
     qcode qfork qrun qnp
   have hvalid : Decode.isValidJumpDest q.executionEnv.code

@@ -27,10 +27,11 @@ theorem initialWorking_scheduled (s : State) (input : ByteArray) (i : Nat) :
   rw [scheduledState_hash]
 
 theorem tailResult_eq_resultState (s : State) (input : ByteArray) (i : Nat) :
-    StackTail.tailResult (scheduledState s input i)
+    QuadTailTemplate.finalResult (scheduledState s input i)
       (leftWorking s input i) (rightWorking s input i)
       (UInt256.ofNat 0x436) (driverRest input i) = resultState s input i := by
-  simp only [StackTail.tailResult, StackTail.preJumpResult, StackTail.combined,
+  simp only [QuadTailTemplate.finalResult, QuadTailTemplate.beforeJumpResult,
+    StackTail.preJumpResult, StackTail.combined,
     resultState, resultHash, StackCompression.compress, leftWorking, rightWorking,
     initialWorking, scheduledState_hash]
 
@@ -40,7 +41,7 @@ theorem quadTailResult_eq_resultState (s : State) (input : ByteArray) (i : Nat) 
       (UInt256.ofNat 0x436) (driverRest input i) = resultState s input i :=
   tailResult_eq_resultState s input i
 
-theorem rightPC_last : QuadLayout.rightPC 20 = UInt256.ofNat 0x9a9 := by
+theorem rightPC_last : QuadLayout.rightPC 20 = UInt256.ofNat 0xb2b := by
   rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackEndpoint
