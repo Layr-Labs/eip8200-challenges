@@ -22,3 +22,4 @@ theorem run_counter (template : State) (mem : ByteArray)
     copiedState, counterState, outer, counterWord n hn32, hpc]
 
 end Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
+
