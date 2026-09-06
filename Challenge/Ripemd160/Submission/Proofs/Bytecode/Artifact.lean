@@ -404,10 +404,10 @@ private def submissionInstructionsChunk1 : List Instr :=
   op 0x1b,
   .push 1 192,
   op 0x1c,
-  .push 2 2040,
+  .push 3 2040,
   op 0x82,
   op 0x01,
-  .push 1 0,
+  .push 0 0,
   op 0x81,
   .push 1 7,
   op 0x01,
@@ -4146,19 +4146,19 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
     instructionPC 374 = 0x203 := by rfl
 
 @[simp] theorem refPc375 :
-    submissionArtifact.instructionPC 375 = 0x206 := by rfl
+    submissionArtifact.instructionPC 375 = 0x207 := by rfl
 @[simp] theorem pc375 :
-    instructionPC 375 = 0x206 := by rfl
+    instructionPC 375 = 0x207 := by rfl
 
 @[simp] theorem refPc376 :
-    submissionArtifact.instructionPC 376 = 0x207 := by rfl
+    submissionArtifact.instructionPC 376 = 0x208 := by rfl
 @[simp] theorem pc376 :
-    instructionPC 376 = 0x207 := by rfl
+    instructionPC 376 = 0x208 := by rfl
 
 @[simp] theorem refPc377 :
-    submissionArtifact.instructionPC 377 = 0x208 := by rfl
+    submissionArtifact.instructionPC 377 = 0x209 := by rfl
 @[simp] theorem pc377 :
-    instructionPC 377 = 0x208 := by rfl
+    instructionPC 377 = 0x209 := by rfl
 
 @[simp] theorem refPc378 :
     submissionArtifact.instructionPC 378 = 0x20a := by rfl
@@ -4367,10 +4367,10 @@ def padSetupPath : List
    ⟨371, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨372, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
    ⟨373, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨374, .push ⟨2, by decide⟩ (UInt256.ofNat 2040), by rfl, by decide⟩,
+   ⟨374, .push ⟨3, by decide⟩ (UInt256.ofNat 2040), by rfl, by decide⟩,
    ⟨375, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨376, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨377, .push ⟨1, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨377, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
    ⟨378, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨379, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
    ⟨380, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
