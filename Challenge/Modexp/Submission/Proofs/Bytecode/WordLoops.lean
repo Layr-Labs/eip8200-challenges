@@ -40,34 +40,58 @@ def gasSteps_bitIteration (input : ByteArray) (outer j : Nat)
       (bitLoopState input outer j byte offset acc base)
       (bitLoopState input outer (j + 1) byte offset
         (bitStep input byte j acc base) base) :=
-  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitGuardPath rfl rfl
-        (run_bitGuard input outer j byte offset acc base hj) rfl
-        deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitDecodePath rfl rfl
-        (run_bitDecode input outer j byte offset acc base hj) rfl
-        deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitSquarePath rfl rfl
-        (run_bitSquare input outer j byte offset acc base) rfl
-        deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitMaskPath rfl rfl
-        (run_bitMask input outer j byte offset acc base) rfl
-        deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitProductPath rfl rfl
-        (run_bitProduct input outer j byte offset acc base) rfl
-        deployAddress_not_precompile).trans <|
-    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitChoosePath rfl rfl
-        (run_bitChoose input outer j byte offset acc base) rfl
-        deployAddress_not_precompile).trans <|
-    Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka bitAdvancePath rfl rfl
-        (run_bitAdvance input outer j byte offset acc base hj) rfl
-        deployAddress_not_precompile
+  by
+    have hprefix :
+        Challenge.EvmProof.GasSteps
+          (bitLoopState input outer j byte offset acc base)
+          (bitSquaredState input outer j byte offset acc base) := by
+      exact (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka bitGuardPath rfl rfl
+            (run_bitGuard input outer j byte offset acc base hj) rfl
+            deployAddress_not_precompile).trans <|
+        (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka bitDecodePath rfl rfl
+            (run_bitDecode input outer j byte offset acc base hj) rfl
+            deployAddress_not_precompile).trans <|
+        Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka bitSquarePath rfl rfl
+            (run_bitSquare input outer j byte offset acc base) rfl
+            deployAddress_not_precompile
+    by_cases hzero : exponentBit byte j = UInt256.ofNat 0
+    · exact hprefix.trans <|
+        (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka bitDispatchPath rfl rfl
+            (run_bitDispatch_zero input outer j byte offset acc base hzero) rfl
+            deployAddress_not_precompile).trans <|
+        (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka bitJoinPath rfl rfl
+            (run_bitJoin_zero input outer j byte offset acc base hzero) rfl
+            deployAddress_not_precompile).trans <|
+        Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka bitAdvancePath rfl rfl
+            (run_bitAdvance input outer j byte offset acc base hj) rfl
+            deployAddress_not_precompile
+    · have hone : exponentBit byte j = UInt256.ofNat 1 := by
+        rcases exponentBit_zero_or_one byte j with h | h
+        · exact False.elim (hzero h)
+        · exact h
+      exact hprefix.trans <|
+        (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka bitDispatchPath rfl rfl
+            (run_bitDispatch_one input outer j byte offset acc base hone) rfl
+            deployAddress_not_precompile).trans <|
+        (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka bitProductPath rfl rfl
+            (run_bitProduct input outer j byte offset acc base) rfl
+            deployAddress_not_precompile).trans <|
+        (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka bitJoinPath rfl rfl
+            (run_bitJoin_one input outer j byte offset acc base hone) rfl
+            deployAddress_not_precompile).trans <|
+        Challenge.EvmProof.Stepper.runLocatedBlock_sound
+          Artifact.submissionArtifact .Osaka bitAdvancePath rfl rfl
+            (run_bitAdvance input outer j byte offset acc base hj) rfl
+            deployAddress_not_precompile
 
 def bitAfter (input : ByteArray) (byte : UInt256) (base : UInt256) :
     Nat → UInt256 → UInt256
