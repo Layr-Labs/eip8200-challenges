@@ -40,7 +40,7 @@ def finalActiveWords (inputSize : Nat) : Nat := 65 + 2 * blockCount inputSize
 /-- Exact gas consumed by the frozen RIPEMD-160 reference for `inputSize`
 bytes of calldata. -/
 def referenceGasForSize (inputSize : Nat) : Nat :=
-  3683 + 120620 * blockCount inputSize + 3 * calldataWords inputSize +
+  3683 + 119660 * blockCount inputSize + 3 * calldataWords inputSize +
     MachineState.memCost (finalActiveWords inputSize)
 
 /-- Byte-array form of `referenceGasForSize`, convenient for execution traces. -/
@@ -58,7 +58,7 @@ def referenceGas (input : ByteArray) : Nat := referenceGasForSize input.size
 /-- The schedule with the EVM memory-cost definition made explicit. -/
 theorem referenceGasForSize_expanded (inputSize : Nat) :
     referenceGasForSize inputSize =
-      3683 + 120620 * ((inputSize + 72) / 64) +
+      3683 + 119660 * ((inputSize + 72) / 64) +
         3 * ((inputSize + 31) / 32) +
         (3 * (65 + 2 * ((inputSize + 72) / 64)) +
           (65 + 2 * ((inputSize + 72) / 64)) ^ 2 / 512) := by
@@ -83,7 +83,7 @@ theorem referenceGasForSize_monotone : Monotone referenceGasForSize := by
   exact Nat.add_le_add
     (Nat.add_le_add
       (Nat.add_le_add_left
-        (Nat.mul_le_mul_left 120620 (blockCount_monotone hle)) 3683)
+        (Nat.mul_le_mul_left 119660 (blockCount_monotone hle)) 3683)
       (Nat.mul_le_mul_left 3 (calldataWords_monotone hle)))
     (Challenge.EvmProof.Meter.memCost_monotone
       (finalActiveWords_monotone hle))
@@ -91,34 +91,34 @@ theorem referenceGasForSize_monotone : Monotone referenceGasForSize := by
 /-! The scorer checkpoints are kernel-checked consequences of the formula. -/
 
 @[simp] theorem referenceGasForSize_zero :
-    referenceGasForSize 0 = 124512 := by decide
+    referenceGasForSize 0 = 123552 := by decide
 
 @[simp] theorem referenceGasForSize_three :
-    referenceGasForSize 3 = 124515 := by decide
+    referenceGasForSize 3 = 123555 := by decide
 
 @[simp] theorem referenceGasForSize_55 :
-    referenceGasForSize 55 = 124518 := by decide
+    referenceGasForSize 55 = 123558 := by decide
 
 @[simp] theorem referenceGasForSize_56 :
-    referenceGasForSize 56 = 245145 := by decide
+    referenceGasForSize 56 = 243225 := by decide
 
 @[simp] theorem referenceGasForSize_64 :
-    referenceGasForSize 64 = 245145 := by decide
+    referenceGasForSize 64 = 243225 := by decide
 
 @[simp] theorem referenceGasForSize_120 :
-    referenceGasForSize 120 = 365777 := by decide
+    referenceGasForSize 120 = 362897 := by decide
 
 @[simp] theorem referenceGasForSize_256 :
-    referenceGasForSize 256 = 607042 := by decide
+    referenceGasForSize 256 = 602242 := by decide
 
 /-- Boundary regression: here the corrected final high-water mark crosses a
 memory-cost quotient boundary, so it distinguishes `65 + 2 * blocks` from
 the padded-memory endpoint `64 + 2 * blocks`. -/
 @[simp] theorem referenceGasForSize_376 :
-    referenceGasForSize 376 = 848308 := by decide
+    referenceGasForSize 376 = 841588 := by decide
 
 @[simp] theorem referenceGasForSize_1000 :
-    referenceGasForSize 1000 = 1934008 := by decide
+    referenceGasForSize 1000 = 1918648 := by decide
 
 /-- Schedule-level strengthening of the minimal challenge statement. -/
 def CorrectWithSchedule (code : ByteArray) (schedule : Nat → Nat) : Prop :=

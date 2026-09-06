@@ -76,7 +76,7 @@ def tableAtPath : List Located :=
    ⟨88, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨89, .push ⟨1, by decide⟩ (UInt256.ofNat 31), by rfl, by decide⟩,
    ⟨90, .op .BYTE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨91, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨91, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨92, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨93, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -175,7 +175,7 @@ def xSetReturned (s : State) (i value returnDest : UInt256)
 def tableAtEntry (s : State) (base i returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 0x78
-           stack := [base - UInt256.ofNat 31, i, 0, returnDest] ++ rest }
+           stack := [base - UInt256.ofNat 31, i, returnDest] ++ rest }
 
 def tableAtReturned (s : State) (base i returnDest : UInt256)
     (rest : List UInt256) : State :=
