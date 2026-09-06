@@ -136,8 +136,8 @@ theorem gasSteps_expEnter_cost (input : ByteArray) (i : Nat)
 
 theorem gasSteps_bitCopy0_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy0 input outer byte offset acc base).cost = 93 := by
-  have hdecode := blockCost_of_static Unroll0.bitDecodePath0 21
+    (gasSteps_bitCopy0 input outer byte offset acc base).cost = 81 := by
+  have hdecode := blockCost_of_static Unroll0.bitDecodePath0 15
     (Unroll0.run_bitDecode input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   have hsquare := blockCost_of_static Unroll0.bitSquarePath0 17
@@ -152,7 +152,7 @@ theorem gasSteps_bitCopy0_cost (input : ByteArray) (outer : Nat)
   have hchoose := blockCost_of_static Unroll0.bitChoosePath0 15
     (Unroll0.run_bitChoose input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll0.bitAdvancePath0 15
+  have hadvance := blockCost_of_static Unroll0.bitAdvancePath0 9
     (Unroll0.run_bitAdvance input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   unfold gasSteps_bitCopy0
@@ -162,8 +162,8 @@ theorem gasSteps_bitCopy0_cost (input : ByteArray) (outer : Nat)
 
 theorem gasSteps_bitCopy1_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy1 input outer byte offset acc base).cost = 93 := by
-  have hdecode := blockCost_of_static Unroll1.bitDecodePath1 21
+    (gasSteps_bitCopy1 input outer byte offset acc base).cost = 81 := by
+  have hdecode := blockCost_of_static Unroll1.bitDecodePath1 15
     (Unroll1.run_bitDecode input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   have hsquare := blockCost_of_static Unroll1.bitSquarePath1 17
@@ -178,7 +178,7 @@ theorem gasSteps_bitCopy1_cost (input : ByteArray) (outer : Nat)
   have hchoose := blockCost_of_static Unroll1.bitChoosePath1 15
     (Unroll1.run_bitChoose input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll1.bitAdvancePath1 15
+  have hadvance := blockCost_of_static Unroll1.bitAdvancePath1 9
     (Unroll1.run_bitAdvance input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   unfold gasSteps_bitCopy1
@@ -188,8 +188,8 @@ theorem gasSteps_bitCopy1_cost (input : ByteArray) (outer : Nat)
 
 theorem gasSteps_bitCopy2_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy2 input outer byte offset acc base).cost = 93 := by
-  have hdecode := blockCost_of_static Unroll2.bitDecodePath2 21
+    (gasSteps_bitCopy2 input outer byte offset acc base).cost = 81 := by
+  have hdecode := blockCost_of_static Unroll2.bitDecodePath2 15
     (Unroll2.run_bitDecode input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   have hsquare := blockCost_of_static Unroll2.bitSquarePath2 17
@@ -204,7 +204,7 @@ theorem gasSteps_bitCopy2_cost (input : ByteArray) (outer : Nat)
   have hchoose := blockCost_of_static Unroll2.bitChoosePath2 15
     (Unroll2.run_bitChoose input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll2.bitAdvancePath2 15
+  have hadvance := blockCost_of_static Unroll2.bitAdvancePath2 9
     (Unroll2.run_bitAdvance input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   unfold gasSteps_bitCopy2
@@ -214,8 +214,8 @@ theorem gasSteps_bitCopy2_cost (input : ByteArray) (outer : Nat)
 
 theorem gasSteps_bitCopy3_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy3 input outer byte offset acc base).cost = 93 := by
-  have hdecode := blockCost_of_static Unroll3.bitDecodePath3 21
+    (gasSteps_bitCopy3 input outer byte offset acc base).cost = 81 := by
+  have hdecode := blockCost_of_static Unroll3.bitDecodePath3 15
     (Unroll3.run_bitDecode input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   have hsquare := blockCost_of_static Unroll3.bitSquarePath3 17
@@ -230,7 +230,7 @@ theorem gasSteps_bitCopy3_cost (input : ByteArray) (outer : Nat)
   have hchoose := blockCost_of_static Unroll3.bitChoosePath3 15
     (Unroll3.run_bitChoose input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll3.bitAdvancePath3 15
+  have hadvance := blockCost_of_static Unroll3.bitAdvancePath3 9
     (Unroll3.run_bitAdvance input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   unfold gasSteps_bitCopy3
@@ -240,8 +240,8 @@ theorem gasSteps_bitCopy3_cost (input : ByteArray) (outer : Nat)
 
 theorem gasSteps_bitCopy4_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy4 input outer byte offset acc base).cost = 93 := by
-  have hdecode := blockCost_of_static Unroll4.bitDecodePath4 21
+    (gasSteps_bitCopy4 input outer byte offset acc base).cost = 81 := by
+  have hdecode := blockCost_of_static Unroll4.bitDecodePath4 15
     (Unroll4.run_bitDecode input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   have hsquare := blockCost_of_static Unroll4.bitSquarePath4 17
@@ -256,7 +256,7 @@ theorem gasSteps_bitCopy4_cost (input : ByteArray) (outer : Nat)
   have hchoose := blockCost_of_static Unroll4.bitChoosePath4 15
     (Unroll4.run_bitChoose input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll4.bitAdvancePath4 15
+  have hadvance := blockCost_of_static Unroll4.bitAdvancePath4 9
     (Unroll4.run_bitAdvance input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   unfold gasSteps_bitCopy4
@@ -266,8 +266,8 @@ theorem gasSteps_bitCopy4_cost (input : ByteArray) (outer : Nat)
 
 theorem gasSteps_bitCopy5_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy5 input outer byte offset acc base).cost = 93 := by
-  have hdecode := blockCost_of_static Unroll5.bitDecodePath5 21
+    (gasSteps_bitCopy5 input outer byte offset acc base).cost = 81 := by
+  have hdecode := blockCost_of_static Unroll5.bitDecodePath5 15
     (Unroll5.run_bitDecode input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   have hsquare := blockCost_of_static Unroll5.bitSquarePath5 17
@@ -282,7 +282,7 @@ theorem gasSteps_bitCopy5_cost (input : ByteArray) (outer : Nat)
   have hchoose := blockCost_of_static Unroll5.bitChoosePath5 15
     (Unroll5.run_bitChoose input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll5.bitAdvancePath5 15
+  have hadvance := blockCost_of_static Unroll5.bitAdvancePath5 9
     (Unroll5.run_bitAdvance input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   unfold gasSteps_bitCopy5
@@ -292,8 +292,8 @@ theorem gasSteps_bitCopy5_cost (input : ByteArray) (outer : Nat)
 
 theorem gasSteps_bitCopy6_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy6 input outer byte offset acc base).cost = 93 := by
-  have hdecode := blockCost_of_static Unroll6.bitDecodePath6 21
+    (gasSteps_bitCopy6 input outer byte offset acc base).cost = 81 := by
+  have hdecode := blockCost_of_static Unroll6.bitDecodePath6 15
     (Unroll6.run_bitDecode input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   have hsquare := blockCost_of_static Unroll6.bitSquarePath6 17
@@ -308,7 +308,7 @@ theorem gasSteps_bitCopy6_cost (input : ByteArray) (outer : Nat)
   have hchoose := blockCost_of_static Unroll6.bitChoosePath6 15
     (Unroll6.run_bitChoose input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll6.bitAdvancePath6 15
+  have hadvance := blockCost_of_static Unroll6.bitAdvancePath6 9
     (Unroll6.run_bitAdvance input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   unfold gasSteps_bitCopy6
@@ -318,8 +318,8 @@ theorem gasSteps_bitCopy6_cost (input : ByteArray) (outer : Nat)
 
 theorem gasSteps_bitCopy7_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy7 input outer byte offset acc base).cost = 93 := by
-  have hdecode := blockCost_of_static Unroll7.bitDecodePath7 21
+    (gasSteps_bitCopy7 input outer byte offset acc base).cost = 81 := by
+  have hdecode := blockCost_of_static Unroll7.bitDecodePath7 15
     (Unroll7.run_bitDecode input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   have hsquare := blockCost_of_static Unroll7.bitSquarePath7 17
@@ -334,7 +334,7 @@ theorem gasSteps_bitCopy7_cost (input : ByteArray) (outer : Nat)
   have hchoose := blockCost_of_static Unroll7.bitChoosePath7 15
     (Unroll7.run_bitChoose input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have hadvance := blockCost_of_static Unroll7.bitAdvancePath7 15
+  have hadvance := blockCost_of_static Unroll7.bitAdvancePath7 9
     (Unroll7.run_bitAdvance input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
   unfold gasSteps_bitCopy7
@@ -344,7 +344,7 @@ theorem gasSteps_bitCopy7_cost (input : ByteArray) (outer : Nat)
 
 theorem gasSteps_bitLoop_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitLoop input outer byte offset acc base).cost = 757 := by
+    (gasSteps_bitLoop input outer byte offset acc base).cost = 661 := by
   have hentry := blockCost_of_static bitEntryPath 4
     (run_bitEntry input outer byte offset acc base) (by rfl)
     (by decide) (by rfl) (by rfl)
@@ -393,16 +393,16 @@ theorem gasSteps_bitFinish_cost (input : ByteArray) (outer : Nat)
 theorem gasSteps_expIteration_cost (input : ByteArray) (i : Nat)
     (acc base : UInt256) (hvalid : ValidInput input)
     (hi : i < exponentSize input) :
-    (gasSteps_expIteration input i acc base hvalid hi).cost = 840 := by
+    (gasSteps_expIteration input i acc base hvalid hi).cost = 744 := by
   simp [gasSteps_expIteration, gasSteps_expEnter_cost, gasSteps_bitLoop_cost,
     gasSteps_bitFinish_cost]
 
 theorem gasSteps_expLoop_cost (input : ByteArray) (acc base : UInt256)
     (hvalid : ValidInput input) :
-    (gasSteps_expLoop input acc base hvalid).cost = 840 * exponentSize input := by
+    (gasSteps_expLoop input acc base hvalid).cost = 744 * exponentSize input := by
   unfold gasSteps_expLoop
   have h := Challenge.EvmProof.GasSteps.iterateBounded_cost_of_const
-    (count := exponentSize input) (cost := 840) (body := fun i hi =>
+    (count := exponentSize input) (cost := 744) (body := fun i hi =>
       gasSteps_expIteration input i (expAfter input base i acc) base hvalid hi) (by
         intro i hi
         exact gasSteps_expIteration_cost input i (expAfter input base i acc)
@@ -496,6 +496,6 @@ theorem gasSteps_zeroModulus_total_cost_after_header (input : ByteArray)
     gasSteps_zeroModulus_cost input hvalid hmsize hword hmodulus]
 
 def wordGas (input : ByteArray) : Nat :=
-  931 + 132 * baseSize input + 840 * exponentSize input
+  931 + 132 * baseSize input + 744 * exponentSize input
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordGas

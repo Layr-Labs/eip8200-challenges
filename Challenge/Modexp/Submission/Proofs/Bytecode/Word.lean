@@ -135,10 +135,10 @@ def bitHeadPath :
 
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2079 2 655, opAt 2080 .JUMP]
+  [pushAt 2047 2 655, opAt 2048 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
-def bitPC (j : Nat) : Nat := 3028 + 32 * j
+def bitPC (j : Nat) : Nat := 3028 + 27 * j
 
 def expOffset (input : ByteArray) : Nat := 96 + baseSize input
 def modulusOffset (input : ByteArray) : Nat := expOffset input + exponentSize input
@@ -247,7 +247,7 @@ def bitLoopState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
 
 def bitUnrollState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  { bitLoopState input outer j byte offset acc base with
+  { bitLoopState input outer 0 byte offset acc base with
     pc := UInt256.ofNat (bitPC j) }
 
 def bitPushState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
@@ -275,9 +275,9 @@ def bitStep (input : ByteArray) (byte : UInt256) (j : Nat)
 
 def bitDecodedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  { bitLoopState input outer j byte offset acc base with
-    pc := UInt256.ofNat (bitPC j + 9)
-    stack := [exponentBit byte j, UInt256.ofNat j, byte, offset,
+  { bitLoopState input outer 0 byte offset acc base with
+    pc := UInt256.ofNat (bitPC j + 7)
+    stack := [exponentBit byte j, UInt256.ofNat 0, byte, offset,
       UInt256.ofNat outer, acc, base, UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
@@ -286,11 +286,11 @@ def bitDecodedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
 
 def bitSelectedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  { bitLoopState input outer j byte offset acc base with
-    pc := UInt256.ofNat (bitPC j + 25)
+  { bitLoopState input outer 0 byte offset acc base with
+    pc := UInt256.ofNat (bitPC j + 23)
     stack := [bitStep input byte j acc base,
       UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
-      exponentBit byte j, UInt256.ofNat j, byte, offset, UInt256.ofNat outer,
+      exponentBit byte j, UInt256.ofNat 0, byte, offset, UInt256.ofNat outer,
       acc, base, UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
@@ -299,10 +299,10 @@ def bitSelectedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
 
 def bitSquaredState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  { bitLoopState input outer j byte offset acc base with
-    pc := UInt256.ofNat (bitPC j + 13)
+  { bitLoopState input outer 0 byte offset acc base with
+    pc := UInt256.ofNat (bitPC j + 11)
     stack := [UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
-      exponentBit byte j, UInt256.ofNat j, byte, offset, UInt256.ofNat outer,
+      exponentBit byte j, UInt256.ofNat 0, byte, offset, UInt256.ofNat outer,
       acc, base, UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
@@ -311,11 +311,11 @@ def bitSquaredState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
 
 def bitMaskedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  { bitLoopState input outer j byte offset acc base with
-    pc := UInt256.ofNat (bitPC j + 16)
+  { bitLoopState input outer 0 byte offset acc base with
+    pc := UInt256.ofNat (bitPC j + 14)
     stack := [UInt256.ofNat 0 - exponentBit byte j,
       UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
-      exponentBit byte j, UInt256.ofNat j, byte, offset, UInt256.ofNat outer,
+      exponentBit byte j, UInt256.ofNat 0, byte, offset, UInt256.ofNat outer,
       acc, base, UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
@@ -324,14 +324,14 @@ def bitMaskedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
 
 def bitProductState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  { bitLoopState input outer j byte offset acc base with
-    pc := UInt256.ofNat (bitPC j + 20)
+  { bitLoopState input outer 0 byte offset acc base with
+    pc := UInt256.ofNat (bitPC j + 18)
     stack := [UInt256.mulMod
         (UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input))) base
         (UInt256.ofNat (modulusValue input)),
       UInt256.ofNat 0 - exponentBit byte j,
       UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
-      exponentBit byte j, UInt256.ofNat j, byte, offset, UInt256.ofNat outer,
+      exponentBit byte j, UInt256.ofNat 0, byte, offset, UInt256.ofNat outer,
       acc, base, UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,

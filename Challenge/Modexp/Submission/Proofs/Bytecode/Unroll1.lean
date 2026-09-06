@@ -7,8 +7,8 @@ set_option maxErrors 1
 # Copy 1 of the unrolled exponent-bit body
 
 The copy handles exponent bit 1.  Its six straight-line segments are the same
-instructions as every other copy, at instruction indices 1876 .. 1904 and bytes
-3060 .. 3091.
+instructions as every other copy, at instruction indices 1872 .. 1896 and bytes
+3055 .. 3081.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Unroll1
@@ -22,33 +22,32 @@ attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
 
 def bitDecodePath1 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1876 1 1, opAt 1877 (.Dup ⟨2, by decide⟩),
-   opAt 1878 (.Dup ⟨2, by decide⟩), pushAt 1879 1 7, opAt 1880 .SUB,
-   opAt 1881 .SHR, opAt 1882 .AND]
+  [pushAt 1872 1 1, opAt 1873 (.Dup ⟨2, by decide⟩), pushAt 1874 1 6,
+   opAt 1875 .SHR, opAt 1876 .AND]
 
 def bitSquarePath1 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1883 (.Dup ⟨7, by decide⟩), opAt 1884 (.Dup ⟨6, by decide⟩),
-   opAt 1885 (.Dup ⟨7, by decide⟩), opAt 1886 .MULMOD]
+  [opAt 1877 (.Dup ⟨7, by decide⟩), opAt 1878 (.Dup ⟨6, by decide⟩),
+   opAt 1879 (.Dup ⟨7, by decide⟩), opAt 1880 .MULMOD]
 
 def bitMaskPath1 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1887 (.Dup ⟨1, by decide⟩), pushAt 1888 0 0, opAt 1889 .SUB]
+  [opAt 1881 (.Dup ⟨1, by decide⟩), pushAt 1882 0 0, opAt 1883 .SUB]
 
 def bitProductPath1 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1890 (.Dup ⟨9, by decide⟩), opAt 1891 (.Dup ⟨9, by decide⟩),
-   opAt 1892 (.Dup ⟨3, by decide⟩), opAt 1893 .MULMOD]
+  [opAt 1884 (.Dup ⟨9, by decide⟩), opAt 1885 (.Dup ⟨9, by decide⟩),
+   opAt 1886 (.Dup ⟨3, by decide⟩), opAt 1887 .MULMOD]
 
 def bitChoosePath1 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1894 (.Dup ⟨2, by decide⟩), opAt 1895 .XOR, opAt 1896 .AND,
-   opAt 1897 (.Dup ⟨1, by decide⟩), opAt 1898 .XOR]
+  [opAt 1888 (.Dup ⟨2, by decide⟩), opAt 1889 .XOR, opAt 1890 .AND,
+   opAt 1891 (.Dup ⟨1, by decide⟩), opAt 1892 .XOR]
 
 def bitAdvancePath1 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1899 (.Swap ⟨6, by decide⟩), opAt 1900 .POP, opAt 1901 .POP,
-   opAt 1902 .POP, pushAt 1903 1 1, opAt 1904 .ADD]
+  [opAt 1893 (.Swap ⟨6, by decide⟩), opAt 1894 .POP, opAt 1895 .POP,
+   opAt 1896 .POP]
 
 set_option linter.unusedSimpArgs false in
 theorem run_bitDecode (input : ByteArray) (outer : Nat)
@@ -64,7 +63,7 @@ theorem run_bitDecode (input : ByteArray) (outer : Nat)
     apply Challenge.EvmProof.Word.word_ext
     rw [Challenge.EvmProof.Word.word_toNat_ofNat]
     exact Nat.mod_eq_of_lt byte.val.isLt
-  have h7Word : (7 : UInt256) = UInt256.ofNat 7 := by decide
+  have hshiftWord : (6 : UInt256) = UInt256.ofNat 6 := by decide
   have h1Word : (1 : UInt256) = UInt256.ofNat 1 := by decide
   simp (config := { maxSteps := 175000 })
     [bitDecodePath1, opAt, pushAt,
@@ -73,7 +72,7 @@ theorem run_bitDecode (input : ByteArray) (outer : Nat)
       bitUnrollState, bitDecodedState, bitLoopState, bitPC, exponentBit,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, UnrollPCs.copyPC1, Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt, hsub, hshift, hbyte, h7Word, h1Word]
+      Nat.mod_eq_of_lt, hsub, hshift, hbyte, hshiftWord, h1Word]
 
 
 set_option linter.unusedSimpArgs false in

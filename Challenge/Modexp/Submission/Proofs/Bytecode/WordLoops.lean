@@ -53,9 +53,11 @@ def bitFinishTailPath :
   [opAt 525 .JUMPDEST, opAt 526 .POP, opAt 527 .POP, opAt 528 .POP,
    pushAt 529 1 1, opAt 530 .ADD, pushAt 531 2 589, opAt 532 .JUMP]
 
+/-- The copies leave the bit counter at the value the block was entered with;
+the tail block pops it. -/
 def bitFinishDispatchState (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) : State :=
-  { bitLoopState input outer 8 byte offset acc base with pc := UInt256.ofNat 655 }
+  { bitLoopState input outer 0 byte offset acc base with pc := UInt256.ofNat 655 }
 
 @[simp] private theorem exitPCs (i : Nat) (hi : 525 ≤ i) (hii : i ≤ 549) :
     Artifact.submissionArtifact.instructionPC i =
