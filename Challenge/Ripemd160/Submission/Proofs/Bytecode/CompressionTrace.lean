@@ -107,12 +107,10 @@ def leftIncrementLocated : List Located :=
   [⟨505, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨506, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨507, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨508, .op (.Dup ⟨1, by decide⟩), by rfl,
-      wfOp (by decide) trivial rfl⟩,
+   ⟨508, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨509, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨510, .op (.Swap ⟨0, by decide⟩), by rfl,
-      wfOp (by decide) trivial rfl⟩,
-   ⟨511, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨510, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨511, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨512, .push ⟨2, by decide⟩ (UInt256.ofNat 655), by rfl, by decide⟩,
    ⟨513, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 

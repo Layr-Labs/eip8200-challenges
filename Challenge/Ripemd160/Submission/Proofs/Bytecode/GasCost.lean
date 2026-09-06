@@ -40,7 +40,7 @@ def finalActiveWords (inputSize : Nat) : Nat := 65 + 2 * blockCount inputSize
 /-- Exact gas consumed by the frozen RIPEMD-160 reference for `inputSize`
 bytes of calldata. -/
 def referenceGasForSize (inputSize : Nat) : Nat :=
-  3698 + 120620 * blockCount inputSize + 3 * calldataWords inputSize +
+  3698 + 120220 * blockCount inputSize + 3 * calldataWords inputSize +
     MachineState.memCost (finalActiveWords inputSize)
 
 /-- Byte-array form of `referenceGasForSize`, convenient for execution traces. -/
@@ -58,7 +58,7 @@ def referenceGas (input : ByteArray) : Nat := referenceGasForSize input.size
 /-- The schedule with the EVM memory-cost definition made explicit. -/
 theorem referenceGasForSize_expanded (inputSize : Nat) :
     referenceGasForSize inputSize =
-      3698 + 120620 * ((inputSize + 72) / 64) +
+      3698 + 120220 * ((inputSize + 72) / 64) +
         3 * ((inputSize + 31) / 32) +
         (3 * (65 + 2 * ((inputSize + 72) / 64)) +
           (65 + 2 * ((inputSize + 72) / 64)) ^ 2 / 512) := by
@@ -83,7 +83,7 @@ theorem referenceGasForSize_monotone : Monotone referenceGasForSize := by
   exact Nat.add_le_add
     (Nat.add_le_add
       (Nat.add_le_add_left
-        (Nat.mul_le_mul_left 120620 (blockCount_monotone hle)) 3698)
+        (Nat.mul_le_mul_left 120220 (blockCount_monotone hle)) 3698)
       (Nat.mul_le_mul_left 3 (calldataWords_monotone hle)))
     (Challenge.EvmProof.Meter.memCost_monotone
       (finalActiveWords_monotone hle))
