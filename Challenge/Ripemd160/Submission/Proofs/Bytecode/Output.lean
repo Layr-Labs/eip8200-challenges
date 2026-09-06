@@ -136,7 +136,7 @@ def gasSteps_finish (s : State) (rest : List UInt256)
       { s with pc := UInt256.ofNat 0x474, stack := UInt256.ofNat 5 :: rest }
       { s with
         pc := UInt256.ofNat 0x479
-        stack := rest
+        stack := UInt256.ofNat 5 :: rest
         halt := .Returned
         hReturn := MachineState.readPadded s.memory 0 32
         activeWords := s.activeWordsAfterUInt256 0 32 } :=
