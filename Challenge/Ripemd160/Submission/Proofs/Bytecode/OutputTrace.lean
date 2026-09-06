@@ -49,10 +49,10 @@ def preludePath : List
 def outerTestPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [⟨731, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨732, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨732, .push ⟨1, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
    ⟨733, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨734, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨735, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨734, .op .GT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨735, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨736, .push ⟨2, by decide⟩ (UInt256.ofNat 0x474), by rfl, by decide⟩,
    ⟨737, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -300,15 +300,19 @@ theorem run_outerTest_continue (s : State) (i : Nat) (rest : List UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hiWord : (UInt256.ofNat i).toNat = i := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hi256]
-  have hlt : UInt256.lt (UInt256.ofNat i) (UInt256.ofNat 5) =
-      UInt256.ofNat 1 := by
-    simp [UInt256.lt, hiWord, Challenge.EvmProof.Word.word_toNat_ofNat, hi]
-  have hzero : UInt256.isZero (UInt256.ofNat 1) = 0 := by decide
+  have hgt : UInt256.gt (UInt256.ofNat i) (UInt256.ofNat 4) =
+      0 := by
+    rw [UInt256.gt, hiWord]
+    have hfour : (UInt256.ofNat 4).toNat = 4 := by decide
+    rw [hfour]
+    rw [if_neg]
+    · rfl
+    · omega
   have hfalse : UInt256.isTrue (0 : UInt256) = false := by decide
   simp [outerTestPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     hcap, hc1, hc2, hc3, hrun, hi, hi256,
-    Challenge.EvmProof.Word.word_toNat_ofNat, hlt, hzero, hfalse]
+    Challenge.EvmProof.Word.word_toNat_ofNat, hgt, hfalse]
 
 theorem run_outerTest_exit (s : State) (rest : List UInt256)
     (hcap : rest.length < 1021) (hcode : s.executionEnv.code = submissionBytecode)
@@ -319,13 +323,12 @@ theorem run_outerTest_exit (s : State) (rest : List UInt256)
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
-  have hlt : UInt256.lt (UInt256.ofNat 5) (UInt256.ofNat 5) = 0 := by decide
-  have hzero : UInt256.isZero (0 : UInt256) = 1 := by decide
+  have hgt : UInt256.gt (UInt256.ofNat 5) (UInt256.ofNat 4) = 1 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
   simp [outerTestPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    hcap, hc1, hc2, hc3, hrun, hcode, valid681, hlt, hzero, htrue, honeNat,
+    hcap, hc1, hc2, hc3, hrun, hcode, valid681, hgt, htrue, honeNat,
     UInt256.isTrue]
 
 theorem run_hAtCall (s : State) (i : Nat) (rest : List UInt256)
