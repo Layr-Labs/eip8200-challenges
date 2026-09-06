@@ -952,4 +952,17 @@ theorem jumpDest3661 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3661 = true :=
   Artifact.isValidJumpDest_index 2390 (by rfl)
 
+@[simp] theorem leadingBitPC (i : Nat) (hi : 2414 ≤ i) (hii : i ≤ 2428) :
+    Artifact.submissionArtifact.instructionPC i =
+      [3695,3696,3697,3698,3701,3702,3705,3706,3709,3712,3713,3716,3717,3718,3721][i - 2414]! := by
+  interval_cases i <;> decide
+
+theorem jumpDest3695 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3695 = true :=
+  Artifact.isValidJumpDest_index 2414 (by rfl)
+
+theorem jumpDest3717 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3717 = true :=
+  Artifact.isValidJumpDest_index 2426 (by rfl)
+
 end Challenge.Modexp.Submission.Proofs.Fast
