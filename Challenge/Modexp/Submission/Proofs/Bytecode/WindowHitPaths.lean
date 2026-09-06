@@ -47,17 +47,17 @@ def tablePreludePath :
 
 def updateAt (index offset : Nat)
     (h0 : Artifact.submissionInstructions[index]? =
-      some (.op (.Dup ⟨2, by decide⟩)) := by rfl)
+      some (.op (.Dup ⟨1, by decide⟩)) := by rfl)
     (h1 : Artifact.submissionInstructions[index + 1]? =
-      some (.op (.Dup ⟨2, by decide⟩)) := by rfl)
+      some (.op (.Dup ⟨3, by decide⟩)) := by rfl)
     (h2 : Artifact.submissionInstructions[index + 2]? =
-      some (.op (.Dup ⟨2, by decide⟩)) := by rfl)
+      some (.op (.Swap ⟨1, by decide⟩)) := by rfl)
     (h3 : Artifact.submissionInstructions[index + 3]? =
       some (.op .MULMOD) := by rfl)
     (h4 : Artifact.submissionInstructions[index + 4]? =
-      some (.op (.Swap ⟨0, by decide⟩)) := by rfl)
+      some (.op .JUMPDEST) := by rfl)
     (h5 : Artifact.submissionInstructions[index + 5]? =
-      some (.op .POP) := by rfl)
+      some (.op .JUMPDEST) := by rfl)
     (h6 : Artifact.submissionInstructions[index + 6]? =
       some (.op (.Dup ⟨0, by decide⟩)) := by rfl)
     (h7 : Artifact.submissionInstructions[index + 7]? =
@@ -66,12 +66,12 @@ def updateAt (index offset : Nat)
     (h8 : Artifact.submissionInstructions[index + 8]? =
       some (.op .MSTORE) := by rfl) :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt index (.Dup ⟨2, by decide⟩) h0,
-   Main.opAt (index + 1) (.Dup ⟨2, by decide⟩) h1,
-   Main.opAt (index + 2) (.Dup ⟨2, by decide⟩) h2,
+  [Main.opAt index (.Dup ⟨1, by decide⟩) h0,
+   Main.opAt (index + 1) (.Dup ⟨3, by decide⟩) h1,
+   Main.opAt (index + 2) (.Swap ⟨1, by decide⟩) h2,
    Main.opAt (index + 3) .MULMOD h3,
-   Main.opAt (index + 4) (.Swap ⟨0, by decide⟩) h4,
-   Main.opAt (index + 5) .POP h5,
+   Main.opAt (index + 4) .JUMPDEST h4,
+   Main.opAt (index + 5) .JUMPDEST h5,
    Main.opAt (index + 6) (.Dup ⟨0, by decide⟩) h6,
    Main.pushAt (index + 7) (if offset < 256 then 1 else 2)
      (UInt256.ofNat offset) h7
