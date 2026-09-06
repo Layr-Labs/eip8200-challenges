@@ -26,7 +26,7 @@ def blk1816 :
    opAt 1817 (.Dup ⟨0, by decide⟩),
    pushAt 1818 2 4096,
    opAt 1819 .EQ,
-   pushAt 1820 2 1615,
+   pushAt 1820 2 2995,
    opAt 1821 .JUMPI]
 
 /-- Instructions 1822..1827, pc 2981..2994: the multiply's call frame. -/

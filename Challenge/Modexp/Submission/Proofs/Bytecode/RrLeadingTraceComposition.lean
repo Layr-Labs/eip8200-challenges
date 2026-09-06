@@ -78,3 +78,4 @@ accounted `GasSteps.cost`. -/
       template.callStack := rfl
 
 end Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
+

@@ -14,9 +14,9 @@ theorem run_counter (template : State) (mem : ByteArray)
     runInstructions counterProgram (copiedState template mem n bsize esize msize) =
       some (counterState template mem n bsize esize msize) := by
   have hpc :
-      (((((UInt256.ofNat 3583).succ + UInt256.ofNat 2).succ.succ +
+      (((((UInt256.ofNat 3753).succ + UInt256.ofNat 2).succ.succ +
           UInt256.ofNat 2).succ.succ + UInt256.ofNat 2).succ.succ +
-          UInt256.ofNat 2).succ.succ.succ.succ = UInt256.ofNat 3602 := by
+          UInt256.ofNat 2).succ.succ.succ.succ = UInt256.ofNat 3772 := by
     decide
   simp [counterProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     copiedState, counterState, outer, counterWord n hn32, hpc]

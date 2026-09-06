@@ -91,3 +91,4 @@ theorem direct_rejoin_facts (template : State) (mem : ByteArray)
     Nat.le_trans (directCounter_le_four hn2 hn32) (by omega)⟩
 
 end Challenge.Modexp.Submission.Proofs.Fast.RrLeadingExpBridge
+

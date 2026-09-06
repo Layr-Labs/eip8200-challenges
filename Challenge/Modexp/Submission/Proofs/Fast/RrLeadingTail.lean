@@ -141,3 +141,4 @@ theorem handled_of_directRR (input : ByteArray) (s : State) (mem : ByteArray)
   exact ⟨final, ⟨hrr.trans tr⟩, hdone, hres⟩
 
 end Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTail
+

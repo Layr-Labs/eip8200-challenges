@@ -64,3 +64,4 @@ def gasSteps_helper (template : State) (mem : ByteArray)
         hcode hrun) hrun hnp
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.RrLeadingTrace
+
