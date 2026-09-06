@@ -81,7 +81,7 @@ def blk1294 :
 /-- Instructions 1301..1306, pc 1815..1830. -/
 def blk1301 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1301 2 1831,
+    pushAt 1301 2 1832,
    pushAt 1302 2 1024,
    pushAt 1303 2 2048,
    pushAt 1304 2 1024,
