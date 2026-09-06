@@ -220,7 +220,7 @@ private theorem rightWorking_eq (s : State) (word : Nat → UInt32)
   simpa [right4] using h
 
 private theorem leftActiveWords_eq (s : State) (k : Fin 20)
-    (hactive : 66 ≤ s.activeWords.toNat) :
+    (hactive : 39 ≤ s.activeWords.toNat) :
     QuadRoundState.quadActiveWordsAfterUInt256_4 s
         (QuadSites.leftAddress0 k).toNat (QuadSites.leftAddress1 k).toNat
         (QuadSites.leftAddress2 k).toNat (QuadSites.leftAddress3 k).toNat =
@@ -230,7 +230,7 @@ private theorem leftActiveWords_eq (s : State) (k : Fin 20)
   exact QuadSemantic.quadLeftActiveWords_unchanged s k hactive
 
 private theorem rightActiveWords_eq (s : State) (k : Fin 20)
-    (hactive : 66 ≤ s.activeWords.toNat) :
+    (hactive : 39 ≤ s.activeWords.toNat) :
     QuadRoundState.quadActiveWordsAfterUInt256_4 s
         (QuadSites.rightAddress0 k).toNat (QuadSites.rightAddress1 k).toNat
         (QuadSites.rightAddress2 k).toNat (QuadSites.rightAddress3 k).toNat =
@@ -242,7 +242,7 @@ private theorem rightActiveWords_eq (s : State) (k : Fin 20)
 def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
     (hwords : low32DenseWordsAt s word)
-    (hactive : 66 ≤ s.activeWords.toNat)
+    (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006)
     (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -329,7 +329,7 @@ def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
 def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
     (hwords : low32DenseWordsAt s word)
-    (hactive : 66 ≤ s.activeWords.toNat)
+    (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006)
     (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -414,7 +414,7 @@ def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
 def gasSteps_leftQuad_masked (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
     (hwords : low32DenseWordsAt s word)
-    (hactive : 66 ≤ s.activeWords.toNat)
+    (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006)
     (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -501,7 +501,7 @@ def gasSteps_leftQuad_masked (s : State) (word : Nat → UInt32)
 def gasSteps_rightQuad_masked (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
     (hwords : low32DenseWordsAt s word)
-    (hactive : 66 ≤ s.activeWords.toNat)
+    (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006)
     (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
