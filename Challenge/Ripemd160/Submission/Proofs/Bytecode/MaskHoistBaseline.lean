@@ -21,7 +21,7 @@ group, so semantic callers must use
 `StackRoundData.rightConstant (16 * group.val)`.
 -/
 
-namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates
+namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHoistBaseline
 
 open EvmSemantics
 open EvmSemantics.EVM
@@ -38,18 +38,18 @@ def op (opcode : UInt8) : Instr :=
   | none => .op .INVALID
 
 def leftLength : Fin 5 → Nat
-  | ⟨0, _⟩ => 99
-  | ⟨1, _⟩ => 115
-  | ⟨2, _⟩ => 111
-  | ⟨3, _⟩ => 115
-  | ⟨4, _⟩ => 111
+  | ⟨0, _⟩ => 101
+  | ⟨1, _⟩ => 117
+  | ⟨2, _⟩ => 113
+  | ⟨3, _⟩ => 117
+  | ⟨4, _⟩ => 113
 
 def rightLength : Fin 5 → Nat
-  | ⟨0, _⟩ => 115
-  | ⟨1, _⟩ => 119
-  | ⟨2, _⟩ => 115
-  | ⟨3, _⟩ => 119
-  | ⟨4, _⟩ => 103
+  | ⟨0, _⟩ => 117
+  | ⟨1, _⟩ => 121
+  | ⟨2, _⟩ => 117
+  | ⟨3, _⟩ => 121
+  | ⟨4, _⟩ => 105
 
 def leftTemplate0 : List Instr :=
 [
@@ -78,15 +78,16 @@ def leftTemplate0 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x9a,
   op 0x90,
   op 0x51,
   op 0x89,
   op 0x89,
   op 0x18,
-  op 0x8c,
+  op 0x82,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x9a,
   op 0x01,
   op 0x8b,
   op 0x16,
@@ -126,15 +127,16 @@ def leftTemplate0 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x96,
   op 0x90,
   op 0x51,
   op 0x85,
   op 0x85,
   op 0x18,
-  op 0x88,
+  op 0x82,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x96,
   op 0x01,
   op 0x87,
   op 0x16,
@@ -185,17 +187,18 @@ def leftTemplate1 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x9a,
   op 0x90,
   op 0x51,
   op 0x88,
-  op 0x8c,
+  op 0x82,
   op 0x18,
   op 0x8a,
   op 0x16,
-  op 0x8c,
+  op 0x82,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x9a,
   op 0x01,
   .push 4 1518500249,
   op 0x01,
@@ -241,17 +244,18 @@ def leftTemplate1 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x96,
   op 0x90,
   op 0x51,
   op 0x84,
-  op 0x88,
+  op 0x82,
   op 0x18,
   op 0x86,
   op 0x16,
-  op 0x88,
+  op 0x82,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x96,
   op 0x01,
   .push 4 1518500249,
   op 0x01,
@@ -303,16 +307,17 @@ def leftTemplate2 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x9a,
   op 0x90,
   op 0x51,
   op 0x88,
   op 0x19,
   op 0x8a,
   op 0x17,
-  op 0x8c,
+  op 0x82,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x9a,
   op 0x01,
   .push 4 1859775393,
   op 0x01,
@@ -357,16 +362,17 @@ def leftTemplate2 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x96,
   op 0x90,
   op 0x51,
   op 0x84,
   op 0x19,
   op 0x86,
   op 0x17,
-  op 0x88,
+  op 0x82,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x96,
   op 0x01,
   .push 4 1859775393,
   op 0x01,
@@ -419,17 +425,18 @@ def leftTemplate3 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x9a,
   op 0x90,
   op 0x51,
   op 0x89,
   op 0x89,
   op 0x18,
-  op 0x8c,
+  op 0x82,
   op 0x16,
   op 0x89,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x9a,
   op 0x01,
   .push 4 2400959708,
   op 0x01,
@@ -475,17 +482,18 @@ def leftTemplate3 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x96,
   op 0x90,
   op 0x51,
   op 0x85,
   op 0x85,
   op 0x18,
-  op 0x88,
+  op 0x82,
   op 0x16,
   op 0x85,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x96,
   op 0x01,
   .push 4 2400959708,
   op 0x01,
@@ -537,16 +545,17 @@ def leftTemplate4 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x9a,
   op 0x90,
   op 0x51,
-  op 0x8b,
+  op 0x81,
   op 0x19,
   op 0x89,
   op 0x17,
   op 0x8a,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x9a,
   op 0x01,
   .push 4 2840853838,
   op 0x01,
@@ -591,16 +600,17 @@ def leftTemplate4 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x96,
   op 0x90,
   op 0x51,
-  op 0x87,
+  op 0x81,
   op 0x19,
   op 0x85,
   op 0x17,
   op 0x86,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x96,
   op 0x01,
   .push 4 2840853838,
   op 0x01,
@@ -653,16 +663,17 @@ def rightTemplate0 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x9a,
   op 0x90,
   op 0x51,
-  op 0x8b,
+  op 0x81,
   op 0x19,
   op 0x89,
   op 0x17,
   op 0x8a,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x9a,
   op 0x01,
   .push 4 1352829926,
   op 0x01,
@@ -709,16 +720,17 @@ def rightTemplate0 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x96,
   op 0x90,
   op 0x51,
-  op 0x87,
+  op 0x81,
   op 0x19,
   op 0x85,
   op 0x17,
   op 0x86,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x96,
   op 0x01,
   .push 4 1352829926,
   op 0x01,
@@ -773,17 +785,18 @@ def rightTemplate1 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x9a,
   op 0x90,
   op 0x51,
   op 0x89,
   op 0x89,
   op 0x18,
-  op 0x8c,
+  op 0x82,
   op 0x16,
   op 0x89,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x9a,
   op 0x01,
   .push 4 1548603684,
   op 0x01,
@@ -831,17 +844,18 @@ def rightTemplate1 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x96,
   op 0x90,
   op 0x51,
   op 0x85,
   op 0x85,
   op 0x18,
-  op 0x88,
+  op 0x82,
   op 0x16,
   op 0x85,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x96,
   op 0x01,
   .push 4 1548603684,
   op 0x01,
@@ -895,16 +909,17 @@ def rightTemplate2 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x9a,
   op 0x90,
   op 0x51,
   op 0x88,
   op 0x19,
   op 0x8a,
   op 0x17,
-  op 0x8c,
+  op 0x82,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x9a,
   op 0x01,
   .push 4 1836072691,
   op 0x01,
@@ -951,16 +966,17 @@ def rightTemplate2 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x96,
   op 0x90,
   op 0x51,
   op 0x84,
   op 0x19,
   op 0x86,
   op 0x17,
-  op 0x88,
+  op 0x82,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x96,
   op 0x01,
   .push 4 1836072691,
   op 0x01,
@@ -1015,17 +1031,18 @@ def rightTemplate3 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x9a,
   op 0x90,
   op 0x51,
   op 0x88,
-  op 0x8c,
+  op 0x82,
   op 0x18,
   op 0x8a,
   op 0x16,
-  op 0x8c,
+  op 0x82,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x9a,
   op 0x01,
   .push 4 2053994217,
   op 0x01,
@@ -1073,17 +1090,18 @@ def rightTemplate3 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x96,
   op 0x90,
   op 0x51,
   op 0x84,
-  op 0x88,
+  op 0x82,
   op 0x18,
   op 0x86,
   op 0x16,
-  op 0x88,
+  op 0x82,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x96,
   op 0x01,
   .push 4 2053994217,
   op 0x01,
@@ -1134,15 +1152,16 @@ def rightTemplate4 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x9a,
   op 0x90,
   op 0x51,
   op 0x89,
   op 0x89,
   op 0x18,
-  op 0x8c,
+  op 0x82,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x9a,
   op 0x01,
   op 0x8b,
   op 0x16,
@@ -1184,15 +1203,16 @@ def rightTemplate4 : List Instr :=
   op 0x02,
   .push 1 22,
   op 0x1c,
-  op 0x96,
   op 0x90,
   op 0x51,
   op 0x85,
   op 0x85,
   op 0x18,
-  op 0x88,
+  op 0x82,
   op 0x18,
   op 0x01,
+  op 0x90,
+  op 0x96,
   op 0x01,
   op 0x87,
   op 0x16,
@@ -1229,88 +1249,5 @@ def rightTemplate (group : Fin 5) (_constant : UInt256) : List Instr :=
   | ⟨3, _⟩ => rightTemplate3
   | ⟨4, _⟩ => rightTemplate4
 
-set_option linter.unusedSimpArgs false in
-theorem leftTemplate_advances (group : Fin 5) (constant : UInt256) :
-    ∀ instruction ∈ leftTemplate group constant,
-      PairMultiplyLift.Advances instruction := by
-  intro instruction hmem
-  fin_cases group <;>
-    simp only [leftTemplate, leftTemplate0, leftTemplate1, leftTemplate2,
-      leftTemplate3, leftTemplate4, List.mem_cons, List.not_mem_nil,
-      or_false] at hmem
-  all_goals repeat' rcases hmem with rfl | hmem
-  all_goals
-    simp [PairMultiplyLift.Advances, SharedCallTrace.Advances, op,
-      Decode.opcodeOf] <;>
-    constructor
 
-set_option linter.unusedSimpArgs false in
-theorem rightTemplate_advances (group : Fin 5) (constant : UInt256) :
-    ∀ instruction ∈ rightTemplate group constant,
-      PairMultiplyLift.Advances instruction := by
-  intro instruction hmem
-  fin_cases group <;>
-    simp only [rightTemplate, rightTemplate0, rightTemplate1, rightTemplate2,
-      rightTemplate3, rightTemplate4, List.mem_cons, List.not_mem_nil,
-      or_false] at hmem
-  all_goals repeat' rcases hmem with rfl | hmem
-  all_goals
-    simp [PairMultiplyLift.Advances, SharedCallTrace.Advances, op,
-      Decode.opcodeOf] <;>
-    constructor
-
-theorem leftLength_eq (group : Fin 5) :
-    leftLength group =
-      QuadLayout.leftHelperJumpIndex group.val -
-        QuadLayout.leftHelperStartIndex group.val := by
-  fin_cases group <;> rfl
-
-theorem rightLength_eq (group : Fin 5) :
-    rightLength group =
-      QuadLayout.rightHelperJumpIndex group.val -
-        QuadLayout.rightHelperStartIndex group.val := by
-  fin_cases group <;> rfl
-
-theorem leftTemplate_length (group : Fin 5) (constant : UInt256) :
-    (leftTemplate group constant).length = leftLength group := by
-  fin_cases group <;> rfl
-
-theorem rightTemplate_length (group : Fin 5) (constant : UInt256) :
-    (rightTemplate group constant).length = rightLength group := by
-  fin_cases group <;> rfl
-
-theorem leftTemplate_nonempty (group : Fin 5) (constant : UInt256) :
-    leftTemplate group constant ≠ [] := by
-  fin_cases group <;> intro h <;>
-    have hlen := congrArg List.length h <;>
-    rw [leftTemplate_length] at hlen <;>
-    norm_num [leftLength] at hlen
-
-theorem rightTemplate_nonempty (group : Fin 5) (constant : UInt256) :
-    rightTemplate group constant ≠ [] := by
-  fin_cases group <;> intro h <;>
-    have hlen := congrArg List.length h <;>
-    rw [rightTemplate_length] at hlen <;>
-    norm_num [rightLength] at hlen
-
-theorem leftTemplate_wellFormed (group : Fin 5) (constant : UInt256) :
-    StackRoundData.TemplateWellFormed (leftTemplate group constant) := by
-  fin_cases group <;> dsimp [leftTemplate] <;> decide
-
-theorem rightTemplate_wellFormed (group : Fin 5) (constant : UInt256) :
-    StackRoundData.TemplateWellFormed (rightTemplate group constant) := by
-  fin_cases group <;> dsimp [rightTemplate] <;> decide
-
-theorem leftTemplate_slice (group : Fin 5) (constant : UInt256) :
-    (Artifact.instructions.drop (QuadLayout.leftHelperStartIndex group.val)).take
-        (leftTemplate group constant).length = leftTemplate group constant := by
-  rw [leftTemplate_length]
-  fin_cases group <;> rfl
-
-theorem rightTemplate_slice (group : Fin 5) (constant : UInt256) :
-    (Artifact.instructions.drop (QuadLayout.rightHelperStartIndex group.val)).take
-        (rightTemplate group constant).length = rightTemplate group constant := by
-  rw [rightTemplate_length]
-  fin_cases group <;> rfl
-
-end Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates
+end Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHoistBaseline
