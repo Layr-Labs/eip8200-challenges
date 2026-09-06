@@ -1,5 +1,5 @@
 import Challenge.Modexp.Benchmark.Artifact
-import Challenge.Modexp.Submission.Proofs.Fast.Exp
+import Challenge.Modexp.Submission.Proofs.Fast.RrLeadingCorrect
 import Challenge.Modexp.Submission.Proofs.Fast.WindowCorrect
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitCorrect
 

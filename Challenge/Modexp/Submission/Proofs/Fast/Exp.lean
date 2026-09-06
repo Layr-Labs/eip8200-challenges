@@ -12,6 +12,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.Ccb
 import Challenge.Modexp.Submission.Proofs.Fast.R1
 import Challenge.Modexp.Submission.Proofs.Fast.Lz
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P17
+import Challenge.Modexp.Submission.Proofs.Bytecode.RrLeadingTraceCore
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
@@ -2727,7 +2728,7 @@ theorem run_r0 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1138
       (r0State s mem n bsize esize msize) =
-      some (ccCall s (mcopyMem mem 5120 4096 (32 * n)) 5120 (UInt256.ofNat 1555)
+      some (ccCall s (mcopyMem mem 5120 4096 (32 * n)) 5120 (UInt256.ofNat 3571)
         n bsize esize msize) := by
   have hmod : (32 * n) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936
@@ -2793,7 +2794,7 @@ def gasSteps_r0 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (r0State s mem n bsize esize msize)
-      (ccCall s (mcopyMem mem 5120 4096 (32 * n)) 5120 (UInt256.ofNat 1555)
+      (ccCall s (mcopyMem mem 5120 4096 (32 * n)) 5120 (UInt256.ofNat 3571)
         n bsize esize msize) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1138 hcode hfork
@@ -2818,6 +2819,12 @@ def setupToRRMem (dblF ccF : Nat → ByteArray → ByteArray) (n : Nat)
     (mem : ByteArray) : ByteArray :=
   mcopyMem (ccF 5120 (mcopyMem (dblF 4096 mem) 5120 4096 (32 * n))) 6144 4096
     (32 * n)
+
+/-- Memory at the direct RR-leading helper entry. The helper itself performs
+the final CC-to-RR copy. -/
+def setupToDirectMem (dblF ccF : Nat → ByteArray → ByteArray) (n : Nat)
+    (mem : ByteArray) : ByteArray :=
+  ccF 5120 (mcopyMem (dblF 4096 mem) 5120 4096 (32 * n))
 
 
 
@@ -3468,6 +3475,9 @@ theorem jumpD1533 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
 
 theorem jumpD1555 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 1555).toNat = true := jumpD 1555 (by decide) jumpDest1555
+
+theorem jumpD3571 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
+    (UInt256.ofNat 3571).toNat = true := jumpD 3571 (by decide) jumpDest3571
 
 theorem jumpD1876 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 1876).toNat = true := jumpD 1876 (by decide) jumpDest1876
@@ -4240,7 +4250,7 @@ def gasSteps_expChain (s : State) {n bsize mm minv R : Nat}
 
 /-! ### The hand-over from `Fast.Setup`, re-threaded -/
 
-/-- **From `Fast.Setup`'s hand-over state to the `RR` chain.**  `dbl` is the
+/-- **From `Fast.Setup`'s hand-over state to the direct RR helper.** `dbl` is the
 `DOUBLE256` contract `Fast.Double.gasSteps_double256_addmod` provides, and
 `dblFrame` its configuration-word preservation. -/
 def gasSteps_setupToRR (s : State) {n bsize mm minv : Nat}
@@ -4260,8 +4270,6 @@ def gasSteps_setupToRR (s : State) {n bsize mm minv : Nat}
         (retTo s (ccF 5120 mem') ret (outer n bsize esize msize)))
     (dblFrame : ∀ mem' : ByteArray,
       Frame mem' n bsize minv → Frame (dblF 4096 mem') n bsize minv)
-    (ccFrame : ∀ mem' : ByteArray,
-      Frame mem' n bsize minv → Frame (ccF 5120 mem') n bsize minv)
     (y : Nat)
     (hmod2 : Model.FastRepresents (mcopyMem (dblF 4096 mem) 5120 4096 (32 * n)) 0 n mm)
     (hy2 : Model.FastRepresents (mcopyMem (dblF 4096 mem) 5120 4096 (32 * n)) 5120 n y)
@@ -4274,20 +4282,17 @@ def gasSteps_setupToRR (s : State) {n bsize mm minv : Nat}
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (r1Call s mem 4096 (UInt256.ofNat 1533) n bsize esize msize)
-      (rrHead s (setupToRRMem dblF ccF n mem) n bsize esize msize 5) :=
+      (RrLeadingTraceCore.entryState s (setupToDirectMem dblF ccF n mem)
+        n bsize esize msize) :=
   have hf1 : Frame (dblF 4096 mem) n bsize minv := dblFrame mem hframe
   have hf2 : Frame (mcopyMem (dblF 4096 mem) 5120 4096 (32 * n)) n bsize minv :=
     frame_mcopyMem (by omega) hf1
-  have hf3 : Frame (ccF 5120 (mcopyMem (dblF 4096 mem) 5120 4096 (32 * n)))
-      n bsize minv := ccFrame _ hf2
   (((dbl (UInt256.ofNat 1533) mem jumpD1533 hframe).trans
     (gasSteps_r0 s (dblF 4096 mem) n bsize esize msize hn hn32 hact hf1.s32 hcode
       hfork hrun hnp)).trans
-      (cc (UInt256.ofNat 1555)
-        (mcopyMem (dblF 4096 mem) 5120 4096 (32 * n)) y jumpD1555 hf2 hmod2 hy2
-        hylt)).trans
-    (gasSteps_r1 s (ccF 5120 (mcopyMem (dblF 4096 mem) 5120 4096 (32 * n)))
-      n bsize esize msize hn hn32 hact hf3.s32 hcode hfork hrun hnp)
+      (cc (UInt256.ofNat 3571)
+        (mcopyMem (dblF 4096 mem) 5120 4096 (32 * n)) y jumpD3571 hf2 hmod2 hy2
+        hylt))
 
 
 /-! ## Blocks the loops leave untouched
@@ -5199,6 +5204,69 @@ theorem setupToCC_facts (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0
     fastRepresents_mcopyMem (r1Mem n 4096 mem) 5120 4096 n (Limbs.radix ^ n % mm)
       (by omega) h1r⟩
 
+theorem setupToDirect_frame {s : State} {n bsize mm minv : Nat}
+    (sub : Subroutines s n bsize mm minv) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    {mem : ByteArray} (hf : Frame mem n bsize minv) :
+    Frame (setupToDirectMem (r1Mem n) (ccbMem sub.mpMem sub.amMem) n mem)
+      n bsize minv :=
+  ccbMem_frame sub 5120 (by omega) _
+    (frame_mcopyMem (by omega) (r1Mem_frame hn hn32 hf))
+
+theorem setupToDirect_preserves {s : State} {n bsize mm minv R : Nat}
+    (sub : Subroutines s n bsize mm minv)
+    (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
+    (ptr v : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hlo : 1024 ≤ ptr) (hhi : ptr + 32 * n ≤ 4096) (mem : ByteArray)
+    (hrep : Model.FastRepresents mem ptr n v) :
+    Model.FastRepresents
+      (setupToDirectMem (r1Mem n) (ccbMem sub.mpMem sub.amMem) n mem) ptr n v := by
+  have h1 : Model.FastRepresents (r1Mem n 4096 mem) ptr n v :=
+    r1Mem_preserves hn hn32 hlo hhi mem hrep
+  have h2 : Model.FastRepresents (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n))
+      ptr n v :=
+    fastRepresents_mcopyMem_disjoint (r1Mem n 4096 mem) 5120 4096 (32 * n) ptr n v
+      (by omega) h1
+  exact ccbMem_preserves spec 5120 ptr v (by omega) (Or.inr (by omega)) _ h2
+
+/-- Before the direct helper copies CC to RR, modulus, R1 and CC already have
+their complete semantic values. No fact about the old RR block is needed. -/
+theorem setupToDirect_facts {s : State} {bsize minv : Nat} (n mm : Nat)
+    (sub : Subroutines s n bsize mm minv)
+    (spec : SubSpec sub.mpMem sub.amMem n mm (Limbs.radix ^ n) minv)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hodd : mm % 2 = 1)
+    (mem : ByteArray) (hframe : Frame mem n bsize minv)
+    (hmod : Model.FastRepresents mem 0 n mm)
+    (hr1 : Model.FastRepresents mem 4096 n (Limbs.radix ^ (n - 1)))
+    (hxlt : Limbs.radix ^ (n - 1) < mm)
+    (htz : Model.FastRepresents mem 8256 n 0) :
+    Model.FastRepresents
+        (setupToDirectMem (r1Mem n) (ccbMem sub.mpMem sub.amMem) n mem) 0 n mm ∧
+      Model.FastRepresents
+        (setupToDirectMem (r1Mem n) (ccbMem sub.mpMem sub.amMem) n mem) 4096 n
+        (Limbs.radix ^ n % mm) ∧
+      Model.FastRepresents
+        (setupToDirectMem (r1Mem n) (ccbMem sub.mpMem sub.amMem) n mem) 5120 n
+        (Limbs.radix * Limbs.radix ^ n % mm) := by
+  have hcop : Nat.Coprime (Limbs.radix ^ n) mm :=
+    Model.coprime_radix_pow_of_odd hodd n
+  have hf1 : Frame (r1Mem n 4096 mem) n bsize minv :=
+    r1Mem_frame hn hn32 hframe
+  have hf2 : Frame (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n)) n bsize minv :=
+    frame_mcopyMem (by omega) hf1
+  have h1r : Model.FastRepresents (r1Mem n 4096 mem) 4096 n
+      (Limbs.radix ^ n % mm) :=
+    r1Mem_represents hn hn32 hmpos hodd mem hmod hr1 hxlt htz
+  have h2r : Model.FastRepresents (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n))
+      4096 n (Limbs.radix ^ n % mm) :=
+    fastRepresents_mcopyMem_disjoint (r1Mem n 4096 mem) 5120 4096 (32 * n) 4096 n
+      (Limbs.radix ^ n % mm) (by omega) h1r
+  obtain ⟨h2m, h2c⟩ := setupToCC_facts n mm hn hn32 hmpos hodd mem hmod hr1 hxlt htz
+  exact ⟨ccbMem_modulus spec hn32 5120 (by omega) (by omega) _ h2m,
+    ccbMem_preserves spec 5120 4096 (Limbs.radix ^ n % mm) (by omega)
+      (Or.inr (by omega)) _ h2r,
+    ccbMem_represents spec hmpos hcop hn32 5120 (by omega) (by omega) _ hf2.minvW
+      h2m h2c⟩
+
 theorem setupToRR_frame {s : State} {n bsize mm minv : Nat}
     (sub : Subroutines s n bsize mm minv) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     {mem : ByteArray} (hf : Frame mem n bsize minv) :
@@ -5477,8 +5545,9 @@ def gasSteps_handover (s : State) (mem : ByteArray) (n bsize esize msize mm minv
     (hframe0 : Frame mem n bsize minv) :
     Challenge.EvmProof.GasSteps
       (r1Call s mem 4096 (UInt256.ofNat 1533) n bsize esize msize)
-      (rrHead s (setupToRRMem (r1Mem n) (ccbMem sub.mpMem sub.amMem) n mem)
-        n bsize esize msize 5) :=
+      (RrLeadingTraceCore.entryState s
+        (setupToDirectMem (r1Mem n) (ccbMem sub.mpMem sub.amMem) n mem)
+        n bsize esize msize) :=
   gasSteps_setupToRR s sub mem esize msize (r1Mem n) (ccbMem sub.mpMem sub.amMem)
     (fun ret mem' hjump hf =>
       gasSteps_r1Block s esize msize hcode hfork hrun hnp
@@ -5487,14 +5556,17 @@ def gasSteps_handover (s : State) (mem : ByteArray) (n bsize esize msize mm minv
       gasSteps_ccbFull s sub spec esize msize hmpos hn hn32 5120 (by omega) (by omega)
         ret mem' y' hjump hf hmod' hy' hylt' hcode hfork hrun hnp)
     (fun mem' hf => r1Mem_frame (by omega) hn32 hf)
-    (fun mem' hf => ccbMem_frame sub 5120 (by omega) mem' hf)
     (Limbs.radix ^ n % mm)
     (setupToCC_facts n mm hn hn32 hmpos hodd mem hmod0 hr10 hxlt htz).1
     (setupToCC_facts n mm hn hn32 hmpos hodd mem hmod0 hr10 hxlt htz).2
     (Nat.mod_lt _ hmpos)
     hn hn32 hact hframe0 hcode hfork hrun hnp
 
-/-- Everything after `Fast.Setup`: the hand-over, the three loops and the
+/- Disabled parent-candidate closure. The RR-leading closure with the same
+public theorem signature lives in `Fast.RrLeadingCorrect`; retaining this
+source block documents the unchanged legacy argument without introducing an
+assumption into the new proof. -/
+/- /-- Everything after `Fast.Setup`: the hand-over, the three loops and the
 `RETURN`.  Stated over an abstract hand-over state so that every `subs`
 projection is a projection at variables. -/
 theorem handled_of_handover (input : ByteArray) (s : State) (mem : ByteArray)
@@ -5631,6 +5703,8 @@ theorem gasSteps_handled (input : ByteArray)
     tr⟩, hdone, hres⟩
 
 #print axioms gasSteps_handled
+
+-/
 
 
 end Challenge.Modexp.Submission.Proofs.Fast.Exp

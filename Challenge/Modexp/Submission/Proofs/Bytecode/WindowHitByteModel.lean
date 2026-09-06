@@ -2,6 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitStates
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowByteKernel
 
 set_option warningAsError true
+set_option maxRecDepth 40000
 
 /-!
 # Fixed-width loop byte model
