@@ -165,6 +165,36 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
       [3000,3001,3002,3003,3006,3007,3010,3011,3014,3017,3018,3021,3022,3023,3026][i - 1831]! := by
   interval_cases i <;> decide
 
+@[simp] theorem fastPC25 (i : Nat) (hi : 2049 ≤ i) (hii : i ≤ 2067) :
+    Artifact.submissionArtifact.instructionPC i =
+      [3248,3249,3250,3251,3252,3254,3255,3258,3259,3262,3263,3264,3265,3268,3269,3272,3275,3276,3279][i - 2049]! := by
+  interval_cases i <;> decide
+
+def blk2049 :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 2049 .JUMPDEST,
+   opAt 2050 (.Dup ⟨0, by decide⟩),
+   opAt 2051 (.Dup ⟨6, by decide⟩),
+   opAt 2052 .MUL,
+   pushAt 2053 1 1,
+   opAt 2054 .EQ,
+   pushAt 2055 2 3263,
+   opAt 2056 .JUMPI,
+   pushAt 2057 2 2944,
+   opAt 2058 .JUMP]
+
+def blk2059 :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 2059 .JUMPDEST,
+   opAt 2060 .POP,
+   pushAt 2061 2 9344,
+   opAt 2062 .MLOAD,
+   pushAt 2063 2 2048,
+   pushAt 2064 2 1024,
+   opAt 2065 .MCOPY,
+   pushAt 2066 2 1850,
+   opAt 2067 .JUMP]
+
 theorem jumpDest1196 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1196 = true :=
   Artifact.isValidJumpDest_index 899 (by rfl)
@@ -344,5 +374,13 @@ theorem jumpDest3000 :
 theorem jumpDest3022 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3022 = true :=
   Artifact.isValidJumpDest_index 1843 (by rfl)
+
+theorem jumpDest3248 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3248 = true :=
+  Artifact.isValidJumpDest_index 2049 (by rfl)
+
+theorem jumpDest3263 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3263 = true :=
+  Artifact.isValidJumpDest_index 2059 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

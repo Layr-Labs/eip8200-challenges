@@ -100,6 +100,20 @@ def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : St
   { s with pc := UInt256.ofNat 2944
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
+/-- pc 3248, the first-byte product guard. -/
+def lzGuard (s : State) (mem : ByteArray) (i w : Nat)
+    (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 3248
+           stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
+           memory := mem }
+
+/-- pc 3263, the direct exponent-one handoff. -/
+def lzGuardDirect (s : State) (mem : ByteArray) (i w : Nat)
+    (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 3263
+           stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
+           memory := mem }
+
 
 /-- The bit-loop head both arms rejoin, pc 1789. -/
 def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
@@ -133,7 +147,7 @@ theorem run_lzHead_first (s : State) (mem input : ByteArray) (bsize i w : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) (hzero : i = 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1781
-      (lzEntry s mem i rest) = some (lzFirst s mem i w rest) := by
+      (lzEntry s mem i rest) = some (lzGuard s mem i w rest) := by
   subst hzero
   have hmod : (96 + bsize + 0) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936
@@ -153,8 +167,8 @@ theorem run_lzHead_first (s : State) (mem input : ByteArray) (bsize i w : Nat)
   simp (config := { maxSteps := 600000 }) [blk1781, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lzEntry, lzFirst, hdata, hrun, hcode, heoff, hmod, hfix, hbyte, hiz, htrue,
-    hc1, hc2, hc3, hc4, jumpDest2944, State.activeWordsAfterUInt256,
+    lzEntry, lzGuard, hdata, hrun, hcode, heoff, hmod, hfix, hbyte, hiz, htrue,
+    hc1, hc2, hc3, hc4, jumpDest3248, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,

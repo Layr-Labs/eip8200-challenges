@@ -1555,6 +1555,116 @@ theorem run_lzBaseCopy (s : State) (mem : ByteArray)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
+/-- The first-byte guard falls through to the existing leading-zero arm. -/
+theorem run_lzGuard_fallback (s : State) (mem : ByteArray)
+    (n bsize esize msize i w : Nat) (hw : w < 256) (he : esize ≤ 1024)
+    (hprod : w * esize ≠ 1)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk2049
+      (Lz.lzGuard s mem i w (outer n bsize esize msize)) =
+      some (Lz.lzFirst s mem i w (outer n bsize esize msize)) := by
+  have hprod' : esize * w ≠ 1 := by
+    intro h
+    have h' := h
+    rw [Nat.mul_comm esize w] at h'
+    exact hprod h'
+  have hwle : w ≤ 255 := by omega
+  have hprodlt : esize * w < 2 ^ 256 :=
+    lt_of_le_of_lt (Nat.mul_le_mul he hwle) (by norm_num)
+  have hto : (UInt256.ofNat (esize * w)).toNat = esize * w := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hprodlt]
+  have hprod_rev : 1 ≠ esize * w := Ne.symm hprod'
+  have hmul : UInt256.ofNat esize * UInt256.ofNat w =
+      UInt256.ofNat (esize * w) := ofNat_mul_mod _ _
+  have hmul' : UInt256.ofNat w * UInt256.ofNat esize =
+      UInt256.ofNat (w * esize) := ofNat_mul_mod _ _
+  have heq : UInt256.eq (UInt256.ofNat (esize * w)) (UInt256.ofNat 1) =
+      UInt256.ofNat 0 := by
+    simp [UInt256.eq, hto, hprod', hprod_rev]
+  have heq' : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat (esize * w)) =
+      UInt256.ofNat 0 := by
+    simp [UInt256.eq, hto, hprod', hprod_rev]
+  have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
+  simp (config := { maxSteps := 400000 }) [blk2049, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Lz.lzGuard, Lz.lzFirst, outer, hrun, hcode, hmul, hmul', heq, heq',
+    hfalse, fastPC25, jumpDest2944,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+/-- The first-byte guard recognizes `w = 1` and `esize = 1`. -/
+theorem run_lzGuard_direct (s : State) (mem : ByteArray)
+    (n bsize esize msize i w : Nat) (hprod : w * esize = 1)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk2049
+      (Lz.lzGuard s mem i w (outer n bsize esize msize)) =
+      some (Lz.lzGuardDirect s mem i w (outer n bsize esize msize)) := by
+  have hprod' := hprod
+  rw [Nat.mul_comm w esize] at hprod'
+  have hmul : UInt256.ofNat esize * UInt256.ofNat w =
+      UInt256.ofNat (esize * w) := ofNat_mul_mod _ _
+  have hmul' : UInt256.ofNat w * UInt256.ofNat esize =
+      UInt256.ofNat (w * esize) := ofNat_mul_mod _ _
+  have heq : UInt256.eq (UInt256.ofNat (esize * w)) (UInt256.ofNat 1) =
+      UInt256.ofNat 1 := by
+    rw [hprod']; decide
+  have heq' : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat (esize * w)) =
+      UInt256.ofNat 1 := by
+    rw [hprod']; decide
+  have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
+  simp (config := { maxSteps := 400000 }) [blk2049, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Lz.lzGuard, Lz.lzGuardDirect, outer, hrun, hcode, hmul, hmul', heq, heq',
+    htrue, fastPC25, jumpDest3263,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+/-- The direct handoff copies `BASE` to `ACC` and enters `EBE`. -/
+theorem run_lzGuardDirect (s : State) (mem : ByteArray)
+    (n bsize esize msize i w : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hact : 298 ≤ s.activeWords.toNat)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk2059
+      (Lz.lzGuardDirect s mem i w (outer n bsize esize msize)) =
+      some (ebEnd s (mcopyMem mem 1024 2048 (32 * n))
+        n bsize esize msize i) := by
+  have hmod : (32 * n) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936
+      = 32 * n :=
+    mod_word_self (Nat.lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by norm_num))
+  have hfix1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      9344 32) = s.activeWords :=
+    activeWords_fix s 9344 32 (by omega) (by omega) hact
+  have hfix2 : UInt256.ofNat (MachineState.activeWordsAfter
+      (MachineState.activeWordsAfter s.activeWords.toNat 1024 (32 * n)) 2048
+      (32 * n)) = s.activeWords :=
+    activeWords_fix2 s 1024 (32 * n) 2048 (32 * n) (by omega) (by omega) (by omega)
+      (by omega) hact
+  have h1850Nat : (UInt256.ofNat 1850).toNat = 1850 := by decide
+  simp (config := { maxSteps := 600000 }) [blk2059, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    Lz.lzGuardDirect, ebEnd, mcopyMem, outer, hrun, hcode, hs32, hmod, hfix1,
+    hfix2, h1850Nat, jumpDest1850, State.activeWordsAfterUInt256,
+    State.activeWordsAfterUInt256_2,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
 /-- The zero-byte arm rejoins the loop head at pc 1789. -/
 theorem run_lzBaseSkip (s : State) (mem : ByteArray)
     (n bsize esize msize i w mask : Nat)
@@ -1847,8 +1957,54 @@ def gasSteps_ebHeadExit (s : State) (mem : ByteArray)
     Artifact.submissionArtifact .Osaka blk1272 hcode hfork
       (run_ebHead_exit s mem n bsize esize msize i he hi hie hcode hrun) hrun hnp
 
+def gasSteps_lzGuard_fallback (s : State) (mem : ByteArray)
+    (n bsize esize msize i w : Nat) (hw : w < 256) (he : esize ≤ 1024)
+    (hprod : w * esize ≠ 1)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (Lz.lzGuard s mem i w (outer n bsize esize msize))
+      (Lz.lzFirst s mem i w (outer n bsize esize msize)) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk2049 hcode hfork
+      (run_lzGuard_fallback s mem n bsize esize msize i w hw he hprod hcode hrun)
+      hrun hnp
+
+def gasSteps_lzGuard_direct (s : State) (mem : ByteArray)
+    (n bsize esize msize i w : Nat) (hprod : w * esize = 1)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (Lz.lzGuard s mem i w (outer n bsize esize msize))
+      (Lz.lzGuardDirect s mem i w (outer n bsize esize msize)) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk2049 hcode hfork
+      (run_lzGuard_direct s mem n bsize esize msize i w hprod hcode hrun)
+      hrun hnp
+
+def gasSteps_lzGuardDirect (s : State) (mem : ByteArray)
+    (n bsize esize msize i w : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hact : 298 ≤ s.activeWords.toNat)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (Lz.lzGuardDirect s mem i w (outer n bsize esize msize))
+      (ebEnd s (mcopyMem mem 1024 2048 (32 * n))
+        n bsize esize msize i) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk2059 hcode hfork
+      (run_lzGuardDirect s mem n bsize esize msize i w hn hn32 hact hs32 hcode hrun)
+      hrun hnp
+
 def gasSteps_ebLoad (s : State) (mem input : ByteArray)
-    (n bsize esize msize i : Nat)
+    (n bsize esize msize i : Nat) (he : esize ≤ 1024)
     (hdata : s.executionEnv.calldata = input)
     (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
     (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
@@ -1875,7 +2031,7 @@ def gasSteps_ebLoad (s : State) (mem input : ByteArray)
   if h : i = 0 then
     have g1 : Challenge.EvmProof.GasSteps
         (Lz.lzEntry s mem i (outer n bsize esize msize))
-        (Lz.lzFirst s mem i (expByte input bsize i) (outer n bsize esize msize)) :=
+        (Lz.lzGuard s mem i (expByte input bsize i) (outer n bsize esize msize)) :=
       Challenge.EvmProof.Stepper.runLocatedBlock_sound
         Artifact.submissionArtifact .Osaka blk1781 hcode hfork
         (Lz.run_lzHead_first s mem input bsize i (expByte input bsize i)
@@ -1884,6 +2040,15 @@ def gasSteps_ebLoad (s : State) (mem input : ByteArray)
     have hw0 : expByte input bsize i = 0 := by
       by_contra hne
       exact hnc ⟨h, hne⟩
+    have hprod0 : expByte input bsize i * esize ≠ 1 := by
+      simp [hw0]
+    have gg : Challenge.EvmProof.GasSteps
+        (Lz.lzGuard s mem i (expByte input bsize i)
+          (outer n bsize esize msize))
+        (Lz.lzFirst s mem i (expByte input bsize i)
+          (outer n bsize esize msize)) :=
+      gasSteps_lzGuard_fallback s mem n bsize esize msize i
+        (expByte input bsize i) hw he hprod0 hcode hfork hrun hnp
     have g2 : Challenge.EvmProof.GasSteps
         (Lz.lzFirst s mem i (expByte input bsize i) (outer n bsize esize msize))
         (Lz.lzBase s mem i (expByte input bsize i)
@@ -1910,7 +2075,7 @@ def gasSteps_ebLoad (s : State) (mem input : ByteArray)
         Artifact.submissionArtifact .Osaka blk1843 hcode hfork
         (run_lzBaseSkip s mem n bsize esize msize i (expByte input bsize i)
           (Lz.topBit (expByte input bsize i)) hcode hrun) hrun hnp
-    Challenge.EvmProof.GasSteps.cast ((((g0.trans g1).trans g2).trans g3).trans g4)
+    Challenge.EvmProof.GasSteps.cast (((((g0.trans g1).trans gg).trans g2).trans g3).trans g4)
       rfl (by simp only [lzMask, if_pos h])
   else
     have g1 : Challenge.EvmProof.GasSteps
@@ -1935,13 +2100,14 @@ def gasSteps_ebLoad (s : State) (mem input : ByteArray)
 /-- `LZ`'s byte-0 arm with a nonzero byte: `LZBASE` copies `BASE` onto `ACC` and
 resumes inside the bit loop, skipping the first iteration entirely. -/
 def gasSteps_ebLoadCopy (s : State) (mem input : ByteArray)
-    (n bsize esize msize i : Nat)
+    (n bsize esize msize i : Nat) (he : esize ≤ 1024)
     (hdata : s.executionEnv.calldata = input)
     (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
     (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
     (h : i = 0) (hwne : expByte input bsize i ≠ 0)
+    (hprod : expByte input bsize i * esize ≠ 1)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -1963,12 +2129,19 @@ def gasSteps_ebLoadCopy (s : State) (mem input : ByteArray)
       (run_ebLoad s mem n bsize esize msize i hcode hrun) hrun hnp
   have g1 : Challenge.EvmProof.GasSteps
       (Lz.lzEntry s mem i (outer n bsize esize msize))
-      (Lz.lzFirst s mem i (expByte input bsize i) (outer n bsize esize msize)) :=
+      (Lz.lzGuard s mem i (expByte input bsize i) (outer n bsize esize msize)) :=
     Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.submissionArtifact .Osaka blk1781 hcode hfork
       (Lz.run_lzHead_first s mem input bsize i (expByte input bsize i)
         (outer n bsize esize msize) hlen hdata hb hi hact heoff hbyte hcode hrun h)
       hrun hnp
+  have gg : Challenge.EvmProof.GasSteps
+      (Lz.lzGuard s mem i (expByte input bsize i)
+        (outer n bsize esize msize))
+      (Lz.lzFirst s mem i (expByte input bsize i)
+        (outer n bsize esize msize)) :=
+    gasSteps_lzGuard_fallback s mem n bsize esize msize i
+      (expByte input bsize i) hw he hprod hcode hfork hrun hnp
   have g2 : Challenge.EvmProof.GasSteps
       (Lz.lzFirst s mem i (expByte input bsize i) (outer n bsize esize msize))
       (Lz.lzBase s mem i (expByte input bsize i)
@@ -1995,7 +2168,59 @@ def gasSteps_ebLoadCopy (s : State) (mem input : ByteArray)
       Artifact.submissionArtifact .Osaka blk1836 hcode hfork
       (run_lzBaseCopy s mem n bsize esize msize i (expByte input bsize i)
         (Lz.topBit (expByte input bsize i)) hn hn32 hact hs32 hcode hrun) hrun hnp
-  (((g0.trans g1).trans g2).trans g3).trans g4
+  (((((g0.trans g1).trans gg).trans g2).trans g3).trans g4)
+
+def gasSteps_ebLoadDirect (s : State) (mem input : ByteArray)
+    (n bsize esize msize i : Nat) (he : esize ≤ 1024)
+    (hdata : s.executionEnv.calldata = input)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
+    (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
+    (h : i = 0) (hprod : expByte input bsize i * esize = 1)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (ebLoad s mem n bsize esize msize i)
+      (ebEnd s (mcopyMem mem 1024 2048 (32 * n))
+        n bsize esize msize i) := by
+  have hlen : (outer n bsize esize msize).length ≤ 1008 := by
+    simp only [outer, List.length_cons, List.length_nil]; omega
+  have hbyte : UInt256.byteAt ⟨0⟩ (MachineState.readWord input (96 + bsize + i)) =
+      UInt256.ofNat (expByte input bsize i) :=
+    Challenge.EvmProof.Bytes.byteAt_zero_readWord input (96 + bsize + i)
+  have hw : expByte input bsize i < 256 :=
+    (YulSemantics.EVM.byteFrom input.toList (96 + bsize + i)).toNat_lt
+  have g0 : Challenge.EvmProof.GasSteps (ebLoad s mem n bsize esize msize i)
+      (Lz.lzEntry s mem i (outer n bsize esize msize)) :=
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka blk1279 hcode hfork
+      (run_ebLoad s mem n bsize esize msize i hcode hrun) hrun hnp
+  have g1 : Challenge.EvmProof.GasSteps
+      (Lz.lzEntry s mem i (outer n bsize esize msize))
+      (Lz.lzGuard s mem i (expByte input bsize i)
+        (outer n bsize esize msize)) :=
+    Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka blk1781 hcode hfork
+      (Lz.run_lzHead_first s mem input bsize i (expByte input bsize i)
+        (outer n bsize esize msize) hlen hdata hb hi hact heoff hbyte hcode hrun h)
+      hrun hnp
+  have g2 : Challenge.EvmProof.GasSteps
+      (Lz.lzGuard s mem i (expByte input bsize i)
+        (outer n bsize esize msize))
+      (Lz.lzGuardDirect s mem i (expByte input bsize i)
+        (outer n bsize esize msize)) :=
+    gasSteps_lzGuard_direct s mem n bsize esize msize i
+      (expByte input bsize i) hprod hcode hfork hrun hnp
+  have g3 : Challenge.EvmProof.GasSteps
+      (Lz.lzGuardDirect s mem i (expByte input bsize i)
+        (outer n bsize esize msize))
+      (ebEnd s (mcopyMem mem 1024 2048 (32 * n))
+        n bsize esize msize i) :=
+    gasSteps_lzGuardDirect s mem n bsize esize msize i
+      (expByte input bsize i) hn hn32 hact hs32 hcode hfork hrun hnp
+  exact (((g0.trans g1).trans g2).trans g3)
 
 def gasSteps_ebitHead (s : State) (mem : ByteArray)
     (n bsize esize msize i w mask : Nat)
@@ -4463,6 +4688,7 @@ def gasSteps_byteBody (s : State) {n bsize mm minv R : Nat}
     (hframe : Frame mem n bsize minv)
     (hshift : EbInv mem n mm bM
       (expAcc mm R bM bits (8 * i + lzSkip input bsize i)))
+    (hprod0 : expByte input bsize 0 * esize ≠ 1)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -4493,12 +4719,17 @@ def gasSteps_byteBody (s : State) {n bsize mm minv R : Nat}
         (fun j hj => by
           have h := hbits j hj
           rwa [Nat.mul_zero, Nat.zero_add] at h)
+    have hprod : expByte input bsize i * esize ≠ 1 := by
+      intro hp
+      apply hprod0
+      simpa [hc.1] using hp
+
     have hcopy : Challenge.EvmProof.GasSteps (ebHead s mem n bsize esize msize i)
         (ebitNext s (mcopyMem mem 1024 2048 (32 * n)) n bsize esize msize i
           (expByte input bsize i) (Lz.topBit (expByte input bsize i))) :=
       hentry.trans
-        (gasSteps_ebLoadCopy s mem input n bsize esize msize i hdata hn hn32 hb
-          (by omega) hact hframe.s32 hframe.eoff hc.1 hc.2 hcode hfork hrun hnp)
+        (gasSteps_ebLoadCopy s mem input n bsize esize msize i he hdata hn hn32 hb
+          (by omega) hact hframe.s32 hframe.eoff hc.1 hc.2 hprod hcode hfork hrun hnp)
     if h7 : lzSkip input bsize i = 7 then
       Challenge.EvmProof.GasSteps.cast
         ((Challenge.EvmProof.GasSteps.cast hcopy rfl
@@ -4558,7 +4789,7 @@ def gasSteps_byteBody (s : State) {n bsize mm minv R : Nat}
   else
     Challenge.EvmProof.GasSteps.cast
       (hentry.trans
-        ((gasSteps_ebLoad s mem input n bsize esize msize i hdata hb (by omega) hact
+        ((gasSteps_ebLoad s mem input n bsize esize msize i he hdata hb (by omega) hact
             hframe.eoff hc hcode hfork hrun hnp).trans
           (Challenge.EvmProof.GasSteps.cast
             (gasSteps_byteFrom s sub spec mem esize msize i (expByte input bsize i)
@@ -4583,6 +4814,7 @@ def gasSteps_ebLoop (s : State) {n bsize mm minv R : Nat}
     (hbM : bM < mm) (hact : 298 ≤ s.activeWords.toNat)
     (hframe : Frame mem n bsize minv)
     (hinv : EbInv mem n mm bM (expAcc mm R bM (expBits input bsize) 0))
+    (hprod0 : expByte input bsize 0 * esize ≠ 1)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -4599,10 +4831,118 @@ def gasSteps_ebLoop (s : State) {n bsize mm minv R : Nat}
       (ebInv_shift (n := n) (bM := bM) hm hcop input bsize i
         (ebMems sub.mpMem input bsize n mem i)
         (ebMems_inv spec hm hcop hn hn32 bM hbM input bsize mem hframe.minvW hinv i))
+      hprod0
       hcode hfork hrun hnp)
 
+def gasSteps_expOne (s : State) {n bsize mm minv R : Nat}
+    (sub : Subroutines s n bsize mm minv)
+    (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
+    (mem input : ByteArray) (esize msize bM : Nat)
+    (hdata : s.executionEnv.calldata = input)
+    (hm : 0 < mm) (hcop : Nat.Coprime R mm) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hb : bsize ≤ 1024) (he : esize ≤ 1024) (hmz : 32 < msize)
+    (hm32 : msize ≤ 32 * n) (_hradix : Limbs.radix ≤ mm)
+    (hbM : bM < mm) (hact : 298 ≤ s.activeWords.toNat)
+    (hframe : Frame mem n bsize minv)
+    (hinv : EbInv (mcopyMem mem 1024 4096 (32 * n)) n mm bM
+      (expAcc mm R bM (expBits input bsize) 0))
+    (hprod : expByte input bsize 0 * esize = 1)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (bDone s mem n bsize esize msize)
+      (returnedState s
+        (sub.mpMem 1024 3072 1024
+          (storeWord
+            (ebMems sub.mpMem input bsize n
+              (mcopyMem mem 1024 4096 (32 * n))) esize
+            (3040 + 32 * n) (UInt256.ofNat 1)))
+        n bsize esize msize) := by
+  obtain ⟨hw1, he1⟩ := Nat.mul_eq_one.mp hprod
+  have hframe0 : Frame (mcopyMem mem 1024 4096 (32 * n)) n bsize minv :=
+    frame_mcopyMem (by omega) hframe
+  have hframeD : Frame
+      (mcopyMem (mcopyMem mem 1024 4096 (32 * n)) 1024 2048 (32 * n))
+      n bsize minv :=
+    frame_mcopyMem (by omega) hframe0
+  have hcopyInv : EbInv
+      (mcopyMem (mcopyMem mem 1024 4096 (32 * n)) 1024 2048 (32 * n))
+      n mm bM bM :=
+    ebInv_accCopy hn hn32 (mcopyMem mem 1024 4096 (32 * n)) hinv
+  have hmem :
+      mcopyMem (mcopyMem mem 1024 4096 (32 * n)) 1024 2048 (32 * n) =
+        ebMems sub.mpMem input bsize n
+          (mcopyMem mem 1024 4096 (32 * n)) esize := by
+    simp [ebMems, byteMemAt, lzSkip, Lz.topExp, bitMemsFrom, hw1, he1]
+  have hframeS : Frame
+      (storeWord
+        (mcopyMem (mcopyMem mem 1024 4096 (32 * n)) 1024 2048 (32 * n))
+        (3040 + 32 * n) (UInt256.ofNat 1)) n bsize minv :=
+    frame_storeWord (UInt256.ofNat 1) (by omega) hframeD
+  have hone : Model.FastRepresents
+      (storeWord
+        (mcopyMem (mcopyMem mem 1024 4096 (32 * n)) 1024 2048 (32 * n))
+        (3040 + 32 * n) (UInt256.ofNat 1)) 3072 n 1 := by
+    obtain ⟨one, honelt, honerep⟩ := hcopyInv.oneBlock
+    have h := write_low_limb (UInt256.ofNat 1) (by omega) honerep honelt
+    rwa [show (UInt256.ofNat 1).toNat = 1 from by decide] at h
+  have hmodS := storeWord_frame
+    (mcopyMem (mcopyMem mem 1024 4096 (32 * n)) 1024 2048 (32 * n))
+    (3040 + 32 * n) 0 n mm (UInt256.ofNat 1) (Or.inr (by omega))
+    hcopyInv.modulus
+  have haccS := storeWord_frame
+    (mcopyMem (mcopyMem mem 1024 4096 (32 * n)) 1024 2048 (32 * n))
+    (3040 + 32 * n) 1024 n bM (UInt256.ofNat 1) (Or.inr (by omega))
+    hcopyInv.accBlock
+  have gb : Challenge.EvmProof.GasSteps
+      (bDone s mem n bsize esize msize)
+      (ebHead s (mcopyMem mem 1024 4096 (32 * n)) n bsize esize msize 0) :=
+    gasSteps_bDone s mem n bsize esize msize hn hn32 hact hframe.s32 hcode hfork
+      hrun hnp
+  have gh : Challenge.EvmProof.GasSteps
+      (ebHead s (mcopyMem mem 1024 4096 (32 * n)) n bsize esize msize 0)
+      (ebLoad s (mcopyMem mem 1024 4096 (32 * n)) n bsize esize msize 0) :=
+    gasSteps_ebHeadBody s (mcopyMem mem 1024 4096 (32 * n))
+      n bsize esize msize 0 he (by omega) hcode hfork hrun hnp
+  have gl : Challenge.EvmProof.GasSteps
+      (ebLoad s (mcopyMem mem 1024 4096 (32 * n))
+        n bsize esize msize 0)
+      (ebEnd s (mcopyMem (mcopyMem mem 1024 4096 (32 * n))
+          1024 2048 (32 * n)) n bsize esize msize 0) :=
+    gasSteps_ebLoadDirect s (mcopyMem mem 1024 4096 (32 * n)) input
+      n bsize esize msize 0 he hdata hn hn32 hb (by omega) hact hframe0.s32
+      hframe0.eoff (by rfl) hprod hcode hfork hrun hnp
+  have ge : Challenge.EvmProof.GasSteps
+      (ebEnd s (mcopyMem (mcopyMem mem 1024 4096 (32 * n))
+          1024 2048 (32 * n)) n bsize esize msize 0)
+      (mpCall s
+        (storeWord
+          (mcopyMem (mcopyMem mem 1024 4096 (32 * n)) 1024 2048 (32 * n))
+          (3040 + 32 * n) (UInt256.ofNat 1))
+        1024 3072 1024 (UInt256.ofNat 1876)
+        (outer n bsize esize msize)) :=
+    gasSteps_ebEnd s
+      (mcopyMem (mcopyMem mem 1024 4096 (32 * n)) 1024 2048 (32 * n))
+      n bsize esize msize 0 hn hn32 hact hcode hfork hrun hnp
+  have gm := sub.monpro 1024 3072 1024 (UInt256.ofNat 1876)
+    (outer n bsize esize msize)
+    (storeWord
+      (mcopyMem (mcopyMem mem 1024 4096 (32 * n)) 1024 2048 (32 * n))
+      (3040 + 32 * n) (UInt256.ofNat 1))
+    bM 1 (by simp) (by omega) (by omega) (by omega) (by omega) (by omega)
+    jumpD1876 hframeS hmodS haccS hone hbM
+  have gr := gasSteps_return s
+    (sub.mpMem 1024 3072 1024
+      (storeWord
+        (mcopyMem (mcopyMem mem 1024 4096 (32 * n)) 1024 2048 (32 * n))
+        (3040 + 32 * n) (UInt256.ofNat 1)))
+    n bsize esize msize hn hn32 hmz hm32 hact hcode hfork hrun hnp
+  have htrace := (((((gb.trans gh).trans gl).trans ge).trans gm).trans gr)
+  exact Challenge.EvmProof.GasSteps.cast htrace rfl (by rw [hmem])
+
 /-- **The exponent chain.**  From `BDONE` (pc 1756) to the `RETURN` at pc 1885. -/
-def gasSteps_expChain (s : State) {n bsize mm minv R : Nat}
+def gasSteps_expChain_normal (s : State) {n bsize mm minv R : Nat}
     (sub : Subroutines s n bsize mm minv)
     (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
     (mem input : ByteArray) (esize msize bM : Nat)
@@ -4613,6 +4953,7 @@ def gasSteps_expChain (s : State) {n bsize mm minv R : Nat}
     (hact : 298 ≤ s.activeWords.toNat) (hframe : Frame mem n bsize minv)
     (hinv : EbInv (mcopyMem mem 1024 4096 (32 * n)) n mm bM
       (expAcc mm R bM (expBits input bsize) 0))
+    (hprod0 : expByte input bsize 0 * esize ≠ 1)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -4654,7 +4995,7 @@ def gasSteps_expChain (s : State) {n bsize mm minv R : Nat}
   ((((gasSteps_bDone s mem n bsize esize msize hn hn32 hact hframe.s32 hcode hfork
       hrun hnp).trans
     (gasSteps_ebLoop s sub spec (mcopyMem mem 1024 4096 (32 * n)) input esize msize
-      bM hdata hm hcop hn hn32 hb he hbM hact hframe0 hinv hcode hfork hrun hnp)).trans
+      bM hdata hm hcop hn hn32 hb he hbM hact hframe0 hinv hprod0 hcode hfork hrun hnp)).trans
       (gasSteps_ebHeadExit s
         (ebMems sub.mpMem input bsize n (mcopyMem mem 1024 4096 (32 * n)) esize)
         n bsize esize msize esize he (by omega) le_rfl hcode hfork hrun hnp)).trans
@@ -4675,6 +5016,38 @@ def gasSteps_expChain (s : State) {n bsize mm minv R : Nat}
           (3040 + 32 * n) (UInt256.ofNat 1)))
       n bsize esize msize hn hn32 hmz hm32 hact hcode hfork hrun hnp)
 
+
+/-- The exponent chain's guarded entry.  A one-byte value of one has exactly
+one exponent byte, so its bit loop is replaced by the equivalent base copy. -/
+def gasSteps_expChain (s : State) {n bsize mm minv R : Nat}
+    (sub : Subroutines s n bsize mm minv)
+    (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
+    (mem input : ByteArray) (esize msize bM : Nat)
+    (hdata : s.executionEnv.calldata = input)
+    (hm : 0 < mm) (hcop : Nat.Coprime R mm) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hb : bsize ≤ 1024) (he : esize ≤ 1024) (hmz : 32 < msize)
+    (hm32 : msize ≤ 32 * n) (_hradix : Limbs.radix ≤ mm)
+    (hbM : bM < mm) (hact : 298 ≤ s.activeWords.toNat)
+    (hframe : Frame mem n bsize minv)
+    (hinv : EbInv (mcopyMem mem 1024 4096 (32 * n)) n mm bM
+      (expAcc mm R bM (expBits input bsize) 0))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (bDone s mem n bsize esize msize)
+      (returnedState s
+        (sub.mpMem 1024 3072 1024
+          (storeWord
+            (ebMems sub.mpMem input bsize n
+              (mcopyMem mem 1024 4096 (32 * n))) esize
+            (3040 + 32 * n) (UInt256.ofNat 1)))
+        n bsize esize msize) := by
+  by_cases hprod0 : expByte input bsize 0 * esize = 1
+  · exact gasSteps_expOne s sub spec mem input esize msize bM hdata hm hcop hn hn32
+      hb he hmz hm32 _hradix hbM hact hframe hinv hprod0 hcode hfork hrun hnp
+  · exact gasSteps_expChain_normal s sub spec mem input esize msize bM hdata hm hcop
+      hn hn32 hb he hmz hm32 _hradix hbM hact hframe hinv hprod0 hcode hfork hrun hnp
 
 /-! ### The hand-over from `Fast.Setup`, re-threaded -/
 
