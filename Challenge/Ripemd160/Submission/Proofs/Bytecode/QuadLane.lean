@@ -36,7 +36,7 @@ def stateAt (s : State) (pc : UInt256) (working : Compression.EvmWorking)
     (QuadRoundTemplate.factor :: rho)
 
 def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
-    (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
+    (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20) (hk : k.val < 16)
     (hwords : low32DenseWordsAt s word)
     (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1007)
@@ -49,7 +49,7 @@ def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
       (stateAt s (QuadSites.leftPC (k.val + 1))
         (QuadRoundCertificates.left4 word k working) rho) := by
   simpa only [stateAt, QuadRoundCertificates.stateAt] using
-    (QuadRoundCertificates.gasSteps_leftQuad s word working rho k
+    (QuadRoundCertificates.gasSteps_leftQuad s word working rho k hk
       hwords hactive hstack hcode hfork hrun hnp)
 
 def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
@@ -82,26 +82,51 @@ def gasSteps_left80 (s : State) (word : Nat → UInt32)
       (stateAt s (QuadSites.leftPC 0) working rho)
       (stateAt s (QuadSites.leftPC 20)
         (StackCompression.leftRounds word 80 working) rho) := by
-  let states := fun n => stateAt s (QuadSites.leftPC n)
+  let firstStates := fun n => stateAt s (QuadSites.leftPC n)
     (StackCompression.leftRounds word (4 * n) working) rho
-  have step (i : Nat) (hi : i < 20) :
-      GasSteps (states i) (states (i + 1)) := by
-    let k : Fin 20 := ⟨i, hi⟩
+  have firstStep (i : Nat) (hi : i < 16) :
+      GasSteps (firstStates i) (firstStates (i + 1)) := by
+    let k : Fin 20 := ⟨i, by omega⟩
     have g := gasSteps_leftQuad s word
-      (StackCompression.leftRounds word (4 * i) working) rho k
+      (StackCompression.leftRounds word (4 * i) working) rho k hi
       hwords hactive hstack hcode hfork hrun hnp
-    have hnext :
-        StackCompression.leftRounds word (4 * (i + 1)) working =
-          QuadRoundCertificates.left4 word k
-            (StackCompression.leftRounds word (4 * i) working) := by
+    have hnext : StackCompression.leftRounds word (4 * (i + 1)) working =
+        QuadRoundCertificates.left4 word k
+          (StackCompression.leftRounds word (4 * i) working) := by
       rw [QuadSemantic.leftRounds_quad word i working]
       rfl
     apply g.cast
     · rfl
-    · simp only [states, stateAt, StackRoundTrace.roundEntry, k]
+    · simp only [firstStates, stateAt, StackRoundTrace.roundEntry, k]
       rw [hnext]
-  have g := GasSteps.iterateBounded 20 step
-  simpa only [states, Nat.mul_zero, StackCompression.leftRounds] using g
+  have gf := GasSteps.iterateBounded 16 firstStep
+  let lastStates := fun n => stateAt s (QuadSites.leftInlinePC (16 + n))
+    (StackCompression.leftRounds word (4 * (16 + n)) working) rho
+  have lastStep (i : Nat) (hi : i < 4) :
+      GasSteps (lastStates i) (lastStates (i + 1)) := by
+    let k : Fin 20 := ⟨16 + i, by omega⟩
+    have g := QuadRoundCertificates.gasSteps_leftInlineQuad s word
+      (StackCompression.leftRounds word (4 * (16 + i)) working) rho k (by omega)
+      hwords hactive hstack hcode hfork hrun hnp
+    have hnext : StackCompression.leftRounds word (4 * ((16 + i) + 1)) working =
+        QuadRoundCertificates.left4 word k
+          (StackCompression.leftRounds word (4 * (16 + i)) working) := by
+      rw [QuadSemantic.leftRounds_quad word (16 + i) working]
+      rfl
+    apply g.cast
+    · rfl
+    · simp only [lastStates, stateAt, QuadRoundCertificates.stateAt,
+        StackRoundTrace.roundEntry, k]
+      rw [show 16 + (i + 1) = (16 + i) + 1 by omega, hnext]
+  have gl := GasSteps.iterateBounded 4 lastStep
+  have ge := QuadSites.left_enter
+    (stateAt s 0 (StackCompression.leftRounds word 64 working) rho)
+    (by simp [stateAt, roundEntry]; omega) hcode hfork hrun hnp
+  have gx := QuadSites.left_exit
+    (stateAt s 0 (StackCompression.leftRounds word 80 working) rho)
+    (by simp [stateAt, roundEntry]; omega) hcode hfork hrun hnp
+  have g := gf.trans (ge.trans (gl.trans gx))
+  simpa only [firstStates, lastStates, Nat.mul_zero, StackCompression.leftRounds] using g
 
 def gasSteps_right80 (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256)
