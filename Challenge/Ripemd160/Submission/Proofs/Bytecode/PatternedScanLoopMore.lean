@@ -18,7 +18,7 @@ theorem run_loop_more (input : ByteArray) (n : Nat) (hn : n < 999)
     (_hfit : n < input.size) :
     run loopPath (loopState input n) = some (loopState input (n + 1)) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 4933 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2864 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 2866 (by rfl)
   have hexp := PatternedScanLogic.expected_evm n (by omega)
   have hexp' :
       UInt256.land (UInt256.ofNat 255)

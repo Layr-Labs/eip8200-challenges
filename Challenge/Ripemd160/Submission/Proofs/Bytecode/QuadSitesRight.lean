@@ -1,329 +1,168 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSitesBase
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadCallTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadHelperTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.InlineQuadTrace
 
 set_option warningAsError true
-set_option maxRecDepth 50000
-set_option maxHeartbeats 8000000
+set_option maxRecDepth 100000
+set_option maxHeartbeats 10000000
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites
+open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
+open StackRoundTemplate StackRoundTrace QuadRoundState QuadRoundTemplate
 
-open EvmSemantics
-open EvmSemantics.EVM
-open YulEvmCompiler
-open Challenge.EvmProof
-open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
-open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTemplate
-open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
+-- Exact decode of the measured append-only candidate; public PR342 mechanism.
+def rightInlineIndex : Nat → Nat
+  | 0 => 5488
+  | 1 => 5617
+  | 2 => 5746
+  | 3 => 5875
+  | 4 => 6004
+  | 5 => 6137
+  | 6 => 6270
+  | 7 => 6403
+  | 8 => 6536
+  | 9 => 6665
+  | 10 => 6794
+  | 11 => 6923
+  | 12 => 7052
+  | 13 => 7185
+  | 14 => 7318
+  | 15 => 7451
+  | 16 => 7584
+  | 17 => 7701
+  | 18 => 7818
+  | 19 => 7935
+  | _ => 8052
 
-private theorem rightWrapper_slice (k : Fin 20) :
-    (Artifact.instructions.drop (rightWrapperIndex k.val)).take
-        (rightWrapperTemplate k).length = rightWrapperTemplate k := by
-  fin_cases k <;> rfl
+def rightInlinePCNat : Nat → Nat
+  | 0 => 9126
+  | 1 => 9321
+  | 2 => 9516
+  | 3 => 9711
+  | 4 => 9906
+  | 5 => 10105
+  | 6 => 10304
+  | 7 => 10503
+  | 8 => 10702
+  | 9 => 10897
+  | 10 => 11092
+  | 11 => 11287
+  | 12 => 11482
+  | 13 => 11681
+  | 14 => 11880
+  | 15 => 12079
+  | 16 => 12278
+  | 17 => 12445
+  | 18 => 12612
+  | 19 => 12779
+  | _ => 12946
 
-private theorem rightWrapper_fits (k : Fin 20) :
-    rightWrapperIndex k.val + (rightWrapperTemplate k).length ≤
-      Artifact.instructions.length := by
-  change 1182 + 12 * k.val + 12 ≤ Artifact.submissionInstructions.length
-  rw [Artifact.referenceInstructions_count]
-  omega
+def rightGhostPCNat : Nat → Nat
+  | 0 => 9148
+  | 1 => 9343
+  | 2 => 9538
+  | 3 => 9733
+  | 4 => 9928
+  | 5 => 10127
+  | 6 => 10326
+  | 7 => 10525
+  | 8 => 10724
+  | 9 => 10919
+  | 10 => 11114
+  | 11 => 11309
+  | 12 => 11504
+  | 13 => 11703
+  | 14 => 11902
+  | 15 => 12101
+  | 16 => 12300
+  | 17 => 12467
+  | 18 => 12634
+  | 19 => 12801
+  | _ => 12801
 
-private theorem rightWrapper_wellFormed (k : Fin 20) :
-    StackRoundData.TemplateWellFormed (rightWrapperTemplate k) := by
-  fin_cases k <;> decide
+def rightInlinePC (k : Nat) : UInt256 := UInt256.ofNat (rightInlinePCNat k)
 
-def rightWrapperSite (k : Fin 20) :
-    GenericRoundSite Artifact .Osaka (rightWrapperTemplate k) :=
-  StackSiteBuilder.ofSlice
-    (artifact := Artifact) (fork := .Osaka) (rightWrapperTemplate k)
-    (rightWrapperIndex k.val) (rightWrapper_slice k) (rightWrapper_fits k)
+def rightInlineTemplate (k : Fin 20) : List Instr :=
+  InlineQuadTrace.template (4 - k.val / 4) (rightConstant k) (rightReturnPC k.val)
+    (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
+    (rightRotation0 k) (rightRotation1 k) (rightRotation2 k) (rightRotation3 k)
+
+def rightInlineSite (k : Fin 20) :
+    GenericRoundSite Artifact .Osaka (rightInlineTemplate k) :=
+  StackSiteBuilder.ofSlice (rightInlineTemplate k) (rightInlineIndex k.val)
+    (by fin_cases k <;> rfl)
+    (by fin_cases k <;> decide)
     QuadLayout.code_bound
-    (StackRoundData.templateWellFormed_mem (rightWrapper_wellFormed k))
-    (by simp [rightWrapperTemplate, quadWrapperTemplate,
-      QuadCallTrace.quadCallPushes])
+    (StackRoundData.templateWellFormed_mem (by fin_cases k <;> decide))
+    (by fin_cases k <;> decide)
 
-private theorem rightWrapperAt (k : Fin 20) (offset : Nat)
-    (hoffset : offset < (rightWrapperTemplate k).length) :
-    Artifact.instructions[rightWrapperIndex k.val + offset]? =
-      some (rightWrapperTemplate k)[offset] :=
-  getElem_of_slice _ _ (rightWrapper_slice k) _ hoffset
-
-private theorem rightCall_slice (k : Fin 20) :
-    (Artifact.instructions.drop (rightWrapperIndex k.val)).take
-        (QuadCallTrace.quadCallPushes (rightReturnPC k.val)
-          (rightAddress0 k) (rightAddress1 k) (rightAddress2 k)
-          (rightAddress3 k) (rightHelperPC k.val) (rightRotation0 k)
-          (rightRotation1 k) (rightRotation2 k) (rightRotation3 k)).length =
-      QuadCallTrace.quadCallPushes (rightReturnPC k.val)
-        (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
-        (rightHelperPC k.val) (rightRotation0 k) (rightRotation1 k)
-        (rightRotation2 k) (rightRotation3 k) := by
-  have h := congrArg (fun xs : List Instr => xs.take 10)
-    (rightWrapper_slice k)
-  simpa [rightWrapperTemplate, quadWrapperTemplate,
-    QuadCallTrace.quadCallPushes, List.take_take] using h
-
-private theorem rightCall_fits (k : Fin 20) :
-    rightWrapperIndex k.val +
-        (QuadCallTrace.quadCallPushes (rightReturnPC k.val)
-          (rightAddress0 k) (rightAddress1 k) (rightAddress2 k)
-          (rightAddress3 k) (rightHelperPC k.val) (rightRotation0 k)
-          (rightRotation1 k) (rightRotation2 k) (rightRotation3 k)).length ≤
-      Artifact.instructions.length := by
-  change 1182 + 12 * k.val + 10 ≤ Artifact.submissionInstructions.length
-  rw [Artifact.referenceInstructions_count]
-  omega
-
-private theorem rightCall_wellFormed (k : Fin 20) :
-    ∀ instruction ∈
-        QuadCallTrace.quadCallPushes (rightReturnPC k.val)
-          (rightAddress0 k) (rightAddress1 k) (rightAddress2 k)
-          (rightAddress3 k) (rightHelperPC k.val) (rightRotation0 k)
-          (rightRotation1 k) (rightRotation2 k) (rightRotation3 k),
-      Stepper.WellFormed .Osaka instruction := by
-  intro instruction hmem
-  apply StackRoundData.templateWellFormed_mem (rightWrapper_wellFormed k)
-  change instruction ∈
-    QuadCallTrace.quadCallPushes (rightReturnPC k.val)
-      (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
-      (rightHelperPC k.val) (rightRotation0 k) (rightRotation1 k)
-      (rightRotation2 k) (rightRotation3 k) ++ [op .JUMP, op .JUMPDEST]
-  exact List.mem_append_left _ hmem
-
-def rightCallPushes (k : Fin 20) :
-    GenericRoundSite Artifact .Osaka
-      (QuadCallTrace.quadCallPushes (rightReturnPC k.val)
-        (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
-        (rightHelperPC k.val) (rightRotation0 k) (rightRotation1 k)
-        (rightRotation2 k) (rightRotation3 k)) :=
-  StackSiteBuilder.ofSlice
-    (artifact := Artifact) (fork := .Osaka)
-    (QuadCallTrace.quadCallPushes (rightReturnPC k.val)
-      (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
-      (rightHelperPC k.val) (rightRotation0 k) (rightRotation1 k)
-      (rightRotation2 k) (rightRotation3 k))
-    (rightWrapperIndex k.val) (rightCall_slice k) (rightCall_fits k)
-    QuadLayout.code_bound (rightCall_wellFormed k)
-    (by simp [QuadCallTrace.quadCallPushes])
-
-def rightCallJump (k : Fin 20) : LocatedSite Artifact .Osaka where
-  located :=
-    { index := rightWrapperIndex k.val + 10
-      instruction := .op .JUMP
-      atIndex := by
-        simpa [rightWrapperTemplate, quadWrapperTemplate,
-          QuadCallTrace.quadCallPushes, op] using
-          rightWrapperAt k 10 (by
-            simp [rightWrapperTemplate, quadWrapperTemplate,
-              QuadCallTrace.quadCallPushes])
-      wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := rightJumpPC k.val
-  pc_eq := pc_toNat_instructionPC _
-
-private theorem rightCallPushes_end_eq (k : Fin 20) :
-    (rightCallJump k).pc = (rightCallPushes k).endPC := by
-  have hend := StackRoundTrace.endPC_eq_pcAfter_sites
-    (rightCallPushes k).sites (rightCallPushes k).startPC
-    (rightCallPushes k).endPC (rightCallPushes k).head_eq
-    (rightCallPushes k).end_eq (rightCallPushes k).contiguous
-  rw [(rightCallPushes k).instruction_eq] at hend
-  have hstart : (rightCallPushes k).startPC = rightPC k.val := by
-    rfl
-  rw [hstart] at hend
-  calc
-    (rightCallJump k).pc = rightJumpPC k.val := by simp [rightCallJump]
-    _ = StackRoundTrace.pcAfter (rightPC k.val)
-        (QuadCallTrace.quadCallPushes (rightReturnPC k.val)
-          (rightAddress0 k) (rightAddress1 k) (rightAddress2 k)
-          (rightAddress3 k) (rightHelperPC k.val) (rightRotation0 k)
-          (rightRotation1 k) (rightRotation2 k) (rightRotation3 k)) := by
-      fin_cases k <;> rfl
-    _ = (rightCallPushes k).endPC := hend.symm
-
-def rightReturnSite (k : Fin 20) : LocatedSite Artifact .Osaka where
-  located :=
-    { index := rightWrapperIndex k.val + 11
-      instruction := .op .JUMPDEST
-      atIndex := by
-        simpa [rightWrapperTemplate, quadWrapperTemplate,
-          QuadCallTrace.quadCallPushes, op] using
-          rightWrapperAt k 11 (by
-            simp [rightWrapperTemplate, quadWrapperTemplate,
-              QuadCallTrace.quadCallPushes])
-      wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := rightReturnPC k.val
-  pc_eq := pc_toNat_instructionPC _
-
-def rightCallSite (k : Fin 20) :
-    QuadCallTrace.CallSite Artifact .Osaka
-      (rightReturnPC k.val) (rightAddress0 k) (rightAddress1 k)
-      (rightAddress2 k) (rightAddress3 k) (rightHelperPC k.val)
-      (rightRotation0 k) (rightRotation1 k) (rightRotation2 k)
-      (rightRotation3 k) where
-  pushes := rightCallPushes k
-  jump := rightCallJump k
-  jump_instr := by simp [rightCallJump]
-  jump_pc := rightCallPushes_end_eq k
-
-theorem rightCallSite_start (k : Fin 20) :
-    (rightCallSite k).pushes.startPC = rightPC k.val := by
-  rfl
-
-theorem rightReturnSite_at (k : Fin 20) :
-    (rightReturnSite k).pc = rightReturnPC k.val := by
-  simp [rightReturnSite]
-
-theorem rightReturnSite_succ_next (k : Fin 20) :
-    (rightReturnSite k).pc.succ = rightPC (k.val + 1) := by
-  fin_cases k <;> decide
-
-private theorem rightHelper_slice (group : Fin 5) :
-    (Artifact.instructions.drop (rightHelperStartIndex group.val)).take
-        (rightHelperTemplate group).length = rightHelperTemplate group := by
-  fin_cases group <;> rfl
-
-private theorem rightHelper_fits (group : Fin 5) :
-    rightHelperStartIndex group.val + (rightHelperTemplate group).length ≤
-      Artifact.instructions.length := by
-  change rightHelperStartIndex group.val +
-      (QuadRoundState.quadBeforeJumpTemplate (4 - group.val)
-        (StackRoundData.rightConstant (16 * group.val))).length ≤
-      Artifact.submissionInstructions.length
-  rw [Artifact.referenceInstructions_count]
-  fin_cases group <;> decide
-
-private theorem rightHelper_wellFormed (group : Fin 5) :
-    StackRoundData.TemplateWellFormed (rightHelperTemplate group) := by
-  fin_cases group <;> decide
-
-def rightHelperSite (group : Fin 5) :
-    GenericRoundSite Artifact .Osaka (rightHelperTemplate group) :=
-  StackSiteBuilder.ofSlice
-    (artifact := Artifact) (fork := .Osaka) (rightHelperTemplate group)
-    (rightHelperStartIndex group.val) (rightHelper_slice group)
-    (rightHelper_fits group) QuadLayout.code_bound
-    (StackRoundData.templateWellFormed_mem (rightHelper_wellFormed group))
-    (by
-      change QuadRoundState.quadBeforeJumpTemplate (4 - group.val)
-        (StackRoundData.rightConstant (16 * group.val)) ≠ []
-      fin_cases group <;> decide)
-
-theorem rightHelperSite_start_eq (group : Fin 5) :
-    (rightHelperSite group).startPC = rightHelperPCOfGroup group.val := by
-  fin_cases group <;> rfl
-
-theorem rightHelperEndIndex (group : Fin 5) :
-    rightHelperStartIndex group.val + (rightHelperTemplate group).length =
-      rightHelperJumpIndex group.val := by
-  fin_cases group <;> rfl
-
-def rightHelperJump (group : Fin 5) : LocatedSite Artifact .Osaka where
-  located :=
-    { index := rightHelperJumpIndex group.val
-      instruction := .op .JUMP
-      atIndex := by fin_cases group <;> rfl
-      wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.instructionPC (rightHelperJumpIndex group.val))
-  pc_eq := pc_toNat_instructionPC _
-
-theorem rightHelperSite_end_eq (group : Fin 5) :
-    (rightHelperJump group).pc = (rightHelperSite group).endPC := by
-  have hend := StackRoundTrace.endPC_eq_pcAfter_sites
-    (rightHelperSite group).sites (rightHelperSite group).startPC
-    (rightHelperSite group).endPC (rightHelperSite group).head_eq
-    (rightHelperSite group).end_eq (rightHelperSite group).contiguous
-  rw [(rightHelperSite group).instruction_eq] at hend
-  rw [rightHelperSite_start_eq group] at hend
-  calc
-    (rightHelperJump group).pc =
-        UInt256.ofNat (Artifact.instructionPC (rightHelperJumpIndex group.val)) := by
-          simp [rightHelperJump]
-    _ = StackRoundTrace.pcAfter (rightHelperPCOfGroup group.val)
-        (rightHelperTemplate group) := by
-          fin_cases group <;> rfl
-    _ = (rightHelperSite group).endPC := hend.symm
-
-theorem rightHelper_valid (group : Fin 5) :
-    Decode.isValidJumpDest Artifact.code
-      (rightHelperPCOfGroup group.val).toNat = true := by
-  have hpc : (rightHelperPCOfGroup group.val).toNat =
-      Artifact.instructionPC (rightHelperStartIndex group.val) := by
-    fin_cases group <;> rfl
-  rw [hpc]
-  exact Artifact.isValidJumpDest_index (rightHelperStartIndex group.val)
-    (by fin_cases group <;> rfl)
-
-theorem rightReturn_valid (k : Fin 20) :
-    Decode.isValidJumpDest Artifact.code (rightReturnPC k.val).toNat = true := by
-  have hpc : (rightReturnPC k.val).toNat =
-      Artifact.instructionPC (rightWrapperIndex k.val + 11) := by
-    exact (rightReturnSite k).pc_eq
-  rw [hpc]
-  exact Artifact.isValidJumpDest_index (rightWrapperIndex k.val + 11)
-    (rightReturnSite k).located.atIndex
-
-def rightRoundSite (k : Fin 20) :
-    QuadHelperTrace.RoundSite Artifact .Osaka
-      (4 - k.val / 4) (rightAddress0 k) (rightAddress1 k)
-      (rightAddress2 k) (rightAddress3 k)
-      (rightRotation0 k) (rightRotation1 k) (rightRotation2 k)
-      (rightRotation3 k) (rightConstant k) where
-  returnPC := rightReturnPC k.val
-  helperPC := rightHelperPC k.val
-  call := rightCallSite k
-  helper := castTemplate (rightHelperSite ⟨k.val / 4, by omega⟩) (by rfl)
-  helper_start := by
-    rw [castTemplate_start]
-    exact rightHelperSite_start_eq ⟨k.val / 4, by omega⟩
-  helperJump := rightHelperJump ⟨k.val / 4, by omega⟩
-  helper_jump_instr := by rfl
-  helper_end := by
-    rw [castTemplate_end]
-    exact rightHelperSite_end_eq ⟨k.val / 4, by omega⟩
-  returnSite := rightReturnSite k
-  return_instr := by rfl
-  return_at := by rfl
-  helper_valid := rightHelper_valid ⟨k.val / 4, by omega⟩
-  return_valid := rightReturn_valid k
-
-theorem rightRoundSite_start (k : Fin 20) :
-    (rightRoundSite k).call.pushes.startPC = rightPC k.val := by
-  exact rightCallSite_start k
-
-theorem rightRoundSite_end (k : Fin 20) :
-    (rightRoundSite k).returnSite.pc.succ = rightPC (k.val + 1) := by
-  exact rightReturnSite_succ_next k
-
-theorem rightRotation0_le32 (k : Fin 20) :
-    rightRotation0 k ≤ 32 := by
-  fin_cases k <;> decide
-
-theorem rightRotation1_le32 (k : Fin 20) :
-    rightRotation1 k ≤ 32 := by
-  fin_cases k <;> decide
-
-theorem rightRotation2_le32 (k : Fin 20) :
-    rightRotation2 k ≤ 32 := by
-  fin_cases k <;> decide
-
-theorem rightRotation3_le32 (k : Fin 20) :
-    rightRotation3 k ≤ 32 := by
-  fin_cases k <;> decide
-
-@[simp] theorem rightPC_zero : rightPC 0 = UInt256.ofNat 0x779 := by
-  rfl
-
-@[simp] theorem rightPC_end : rightPC 20 = UInt256.ofNat 0x9a9 := by
-  rfl
-
-@[simp] theorem rightStartPC_eq : rightStartPC = UInt256.ofNat 0x779 := by
-  rfl
-
-@[simp] theorem rightEndPC_eq : rightEndPC = UInt256.ofNat 0x9a9 := by
-  rfl
-
-theorem rightPC_succ (k : Fin 20) :
-    rightPC (k.val + 1) = rightPC k.val + UInt256.ofNat 28 := by
+theorem rightInlineSite_start (k : Fin 20) :
+    (rightInlineSite k).startPC = rightInlinePC k.val := by
   fin_cases k <;> rfl
+
+theorem rightInlineSite_end (k : Fin 20) :
+    (rightInlineSite k).endPC = rightInlinePC (k.val + 1) := by
+  fin_cases k <;> rfl
+
+theorem rightghost_pc (k : Fin 20) :
+    (UInt256.ofNat (rightGhostPCNat k.val)).succ =
+      pcAfter (rightInlineSite k).startPC
+        (InlineQuadTrace.args (rightReturnPC k.val)
+          (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
+          (rightRotation0 k) (rightRotation1 k) (rightRotation2 k) (rightRotation3 k)) := by
+  fin_cases k <;> rfl
+
+def rightenterPath : List (Stepper.Located Artifact .Osaka) :=
+  [⟨1183, .push 2 9125, by rfl, by decide⟩,
+   ⟨1184, .op .JUMP, by rfl, by decide⟩,
+   ⟨5487, .op .JUMPDEST, by rfl, by decide⟩]
+
+def right_enter (s : State)
+    (hstack : s.stack.length < 1023)
+    (hcode : s.executionEnv.code = Artifact.code)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps {s with pc := UInt256.ofNat 1913}
+      {s with pc := UInt256.ofNat 9126} := by
+  have hv : Decode.isValidJumpDest s.executionEnv.code 9125 = true := by
+    rw [hcode]
+    exact Artifact.isValidJumpDest_index 5487 (by rfl)
+  have hp1183 : Artifact.instructionPC 1183 = 1913 := by rfl
+  have hp1184 : Artifact.instructionPC 1184 = 1916 := by rfl
+  have hp5487 : Artifact.instructionPC 5487 = 9125 := by rfl
+  apply Stepper.runLocatedBlock_sound Artifact .Osaka rightenterPath
+  · exact hcode
+  · exact hfork
+  · simp [Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
+      rightenterPath, hp1183, hp1184, hp5487, hrun, hstack, hv]
+  · exact hrun
+  · exact hnp
+
+def rightexitPath : List (Stepper.Located Artifact .Osaka) :=
+  [⟨8052, .push 2 2472, by rfl, by decide⟩,
+   ⟨8053, .op .JUMP, by rfl, by decide⟩,
+   ⟨1423, .op .JUMPDEST, by rfl, by decide⟩]
+
+def right_exit (s : State)
+    (hstack : s.stack.length < 1023)
+    (hcode : s.executionEnv.code = Artifact.code)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps {s with pc := UInt256.ofNat 12946}
+      {s with pc := UInt256.ofNat 2473} := by
+  have hv : Decode.isValidJumpDest s.executionEnv.code 2472 = true := by
+    rw [hcode]
+    exact Artifact.isValidJumpDest_index 1423 (by rfl)
+  have hp8052 : Artifact.instructionPC 8052 = 12946 := by rfl
+  have hp8053 : Artifact.instructionPC 8053 = 12949 := by rfl
+  have hp1423 : Artifact.instructionPC 1423 = 2472 := by rfl
+  apply Stepper.runLocatedBlock_sound Artifact .Osaka rightexitPath
+  · exact hcode
+  · exact hfork
+  · simp [Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
+      rightexitPath, hp8052, hp8053, hp1423, hrun, hstack, hv]
+  · exact hrun
+  · exact hnp
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites

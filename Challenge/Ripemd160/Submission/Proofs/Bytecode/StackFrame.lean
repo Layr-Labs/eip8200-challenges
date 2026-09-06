@@ -65,7 +65,7 @@ def loadSite987 : GenericRoundSite Artifact.submissionArtifact .Osaka
 def loadSite1238 : GenericRoundSite Artifact.submissionArtifact .Osaka
     StackLoadTrace.loadTemplate :=
   StackSiteBuilder.ofSlice (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    StackLoadTrace.loadTemplate 1172 (by rfl) (by decide)
+    StackLoadTrace.loadTemplate 1173 (by rfl) (by decide)
     QuadLayout.code_bound
     (StackRoundData.templateWellFormed_mem
       (instructions := StackLoadTrace.loadTemplate) (by decide))
@@ -104,7 +104,7 @@ theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
   have hpc982 : Artifact.submissionArtifact.instructionPC 916 = 0x51e := by rfl
   have hpc983 : Artifact.submissionArtifact.instructionPC 917 = 0x521 := by rfl
   have hdest12ac : Decode.isValidJumpDest submissionBytecode 0x109f = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2686 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 2688 (by rfl)
   have hswap1 (u v : UInt256) (rho : List UInt256) :
       (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
     simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
@@ -269,7 +269,7 @@ def routeReturned (s : State) (left : Compression.EvmWorking)
     (QuadRoundTemplate.factor :: (savedLeft left ++ rest))
 
 def routePath : List Located :=
-  [⟨1171, .op (.Swap ⟨4, by decide⟩), by rfl,
+  [⟨1172, .op (.Swap ⟨4, by decide⟩), by rfl,
     wfOp (by decide) trivial rfl⟩]
 
 theorem run_route (s : State) (left : Compression.EvmWorking)
@@ -277,7 +277,7 @@ theorem run_route (s : State) (left : Compression.EvmWorking)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock routePath (routeEntry s left rest) =
       some (routeReturned s left rest) := by
-  have hpc : Artifact.submissionArtifact.instructionPC 1171 = 0x769 := by rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 1172 = 0x769 := by rfl
   have hcap : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hswap :
       (left.a :: left.b :: left.c :: left.d :: left.e ::

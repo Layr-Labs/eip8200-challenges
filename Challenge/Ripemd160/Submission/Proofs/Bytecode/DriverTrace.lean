@@ -255,7 +255,7 @@ theorem run_condition_exit (s : State) (input : ByteArray)
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
   have hdest : Decode.isValidJumpDest submissionBytecode 0x11e4 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2742 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 2744 (by rfl)
   simp [conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopAt, afterExit, hrun, hcode, heq,
@@ -271,7 +271,7 @@ theorem run_call (s : State) (input : ByteArray)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (messageOffset_lt_uint256 input hfit i hi)
   have hdest : Decode.isValidJumpDest submissionBytecode 0x129e = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2792 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 2794 (by rfl)
   simp [callPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     afterCondition, dispatchEntry, messageOffsetWord, blockOffsetWord,

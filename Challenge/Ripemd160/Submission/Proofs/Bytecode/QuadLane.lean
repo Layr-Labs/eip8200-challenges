@@ -45,8 +45,8 @@ def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
-      (stateAt s (QuadSites.leftPC k.val) working rho)
-      (stateAt s (QuadSites.leftPC (k.val + 1))
+      (stateAt s (QuadSites.leftInlinePC k.val) working rho)
+      (stateAt s (QuadSites.leftInlinePC (k.val + 1))
         (QuadRoundCertificates.left4 word k working) rho) := by
   simpa only [stateAt, QuadRoundCertificates.stateAt] using
     (QuadRoundCertificates.gasSteps_leftQuad s word working rho k
@@ -62,14 +62,14 @@ def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
-      (stateAt s (QuadSites.rightPC k.val) working rho)
-      (stateAt s (QuadSites.rightPC (k.val + 1))
+      (stateAt s (QuadSites.rightInlinePC k.val) working rho)
+      (stateAt s (QuadSites.rightInlinePC (k.val + 1))
         (QuadRoundCertificates.right4 word k working) rho) := by
   simpa only [stateAt, QuadRoundCertificates.stateAt] using
     (QuadRoundCertificates.gasSteps_rightQuad s word working rho k
       hwords hactive hstack hcode hfork hrun hnp)
 
-def gasSteps_left80 (s : State) (word : Nat → UInt32)
+def gasSteps_left80_inline (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256)
     (hwords : low32DenseWordsAt s word)
     (hactive : 66 ≤ s.activeWords.toNat)
@@ -79,10 +79,10 @@ def gasSteps_left80 (s : State) (word : Nat → UInt32)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
-      (stateAt s (QuadSites.leftPC 0) working rho)
-      (stateAt s (QuadSites.leftPC 20)
+      (stateAt s (QuadSites.leftInlinePC 0) working rho)
+      (stateAt s (QuadSites.leftInlinePC 20)
         (StackCompression.leftRounds word 80 working) rho) := by
-  let states := fun n => stateAt s (QuadSites.leftPC n)
+  let states := fun n => stateAt s (QuadSites.leftInlinePC n)
     (StackCompression.leftRounds word (4 * n) working) rho
   have step (i : Nat) (hi : i < 20) :
       GasSteps (states i) (states (i + 1)) := by
@@ -103,7 +103,7 @@ def gasSteps_left80 (s : State) (word : Nat → UInt32)
   have g := GasSteps.iterateBounded 20 step
   simpa only [states, Nat.mul_zero, StackCompression.leftRounds] using g
 
-def gasSteps_right80 (s : State) (word : Nat → UInt32)
+def gasSteps_right80_inline (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256)
     (hwords : low32DenseWordsAt s word)
     (hactive : 66 ≤ s.activeWords.toNat)
@@ -113,10 +113,10 @@ def gasSteps_right80 (s : State) (word : Nat → UInt32)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
-      (stateAt s (QuadSites.rightPC 0) working rho)
-      (stateAt s (QuadSites.rightPC 20)
+      (stateAt s (QuadSites.rightInlinePC 0) working rho)
+      (stateAt s (QuadSites.rightInlinePC 20)
         (StackCompression.rightRounds word 80 working) rho) := by
-  let states := fun n => stateAt s (QuadSites.rightPC n)
+  let states := fun n => stateAt s (QuadSites.rightInlinePC n)
     (StackCompression.rightRounds word (4 * n) working) rho
   have step (i : Nat) (hi : i < 20) :
       GasSteps (states i) (states (i + 1)) := by
@@ -136,5 +136,49 @@ def gasSteps_right80 (s : State) (word : Nat → UInt32)
       rw [hnext]
   have g := GasSteps.iterateBounded 20 step
   simpa only [states, Nat.mul_zero, StackCompression.rightRounds] using g
+
+-- Bridge into the appended lane, compose twenty quads, return to the old frame.
+def gasSteps_left80 (s : State) (word : Nat → UInt32)
+    (working : Compression.EvmWorking) (rho : List UInt256)
+    (hwords : low32DenseWordsAt s word)
+    (hactive : 66 ≤ s.activeWords.toNat)
+    (hstack : rho.length < 1007)
+    (hcode : s.executionEnv.code = Artifact.code)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps (stateAt s (QuadSites.leftPC 0) working rho)
+      (stateAt s (QuadSites.leftPC 20)
+        (StackCompression.leftRounds word 80 working) rho) := by
+  have ge := QuadSites.left_enter (stateAt s 0 working rho)
+    (by simp [stateAt, roundEntry]; omega) hcode hfork hrun hnp
+  have gi := gasSteps_left80_inline s word working rho
+    hwords hactive hstack hcode hfork hrun hnp
+  have gx := QuadSites.left_exit
+    (stateAt s 0 (StackCompression.leftRounds word 80 working) rho)
+    (by simp [stateAt, roundEntry]; omega) hcode hfork hrun hnp
+  exact ge.trans (gi.trans gx)
+
+-- Bridge into the appended lane, compose twenty quads, return to the old frame.
+def gasSteps_right80 (s : State) (word : Nat → UInt32)
+    (working : Compression.EvmWorking) (rho : List UInt256)
+    (hwords : low32DenseWordsAt s word)
+    (hactive : 66 ≤ s.activeWords.toNat)
+    (hstack : rho.length < 1007)
+    (hcode : s.executionEnv.code = Artifact.code)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps (stateAt s (QuadSites.rightPC 0) working rho)
+      (stateAt s (QuadSites.rightPC 20)
+        (StackCompression.rightRounds word 80 working) rho) := by
+  have ge := QuadSites.right_enter (stateAt s 0 working rho)
+    (by simp [stateAt, roundEntry]; omega) hcode hfork hrun hnp
+  have gi := gasSteps_right80_inline s word working rho
+    hwords hactive hstack hcode hfork hrun hnp
+  have gx := QuadSites.right_exit
+    (stateAt s 0 (StackCompression.rightRounds word 80 working) rho)
+    (by simp [stateAt, roundEntry]; omega) hcode hfork hrun hnp
+  exact ge.trans (gi.trans gx)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadLane

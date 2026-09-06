@@ -115,7 +115,7 @@ def path_3ee : List
 def gasSteps_start (input : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0x12ce) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 0x12ce = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2813 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 2815 (by rfl)
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_start
       (atPC input 0) = some (atPC input 0x12ce) := by
     simp [path_start, Challenge.EvmProof.Stepper.runLocatedBlock,
