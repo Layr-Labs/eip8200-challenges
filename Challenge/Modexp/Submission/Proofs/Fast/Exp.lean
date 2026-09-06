@@ -1295,10 +1295,10 @@ def lzBaseCopy (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
-/-- pc 3887, `LZBASE`'s zero-byte arm. -/
+/- pc 3884, `LZBASE`'s zero-byte arm. -/
 def lzBaseSkip (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 3887
+  { s with pc := UInt256.ofNat 3884
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
@@ -1461,13 +1461,13 @@ theorem run_lzBase_zero (s : State) (mem : ByteArray)
       some (lzBaseSkip s mem n bsize esize msize i w mask) := by
   subst hw
   have hz : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by decide
-  have h3887 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3887 = true :=
-    Artifact.isValidJumpDest_index 2569 (by rfl)
+  have h3884 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3884 = true :=
+    Artifact.isValidJumpDest_index 2568 (by rfl)
   have hpc3865 : Artifact.submissionArtifact.instructionPC 2557 = 3865 := by rfl
   simp (config := { maxSteps := 400000 }) [blk2504, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    Lz.lzBase, lzBaseSkip, bitStack, hrun, hcode, hz, h3887, hpc3865,
+    Lz.lzBase, lzBaseSkip, bitStack, hrun, hcode, hz, h3884, hpc3865,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1541,11 +1541,11 @@ theorem run_lzBaseSkip (s : State) (mem : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock blk2516
       (lzBaseSkip s mem n bsize esize msize i w mask) =
       some (ebitHead s mem n bsize esize msize i w mask) := by
-  have hpc3887 : Artifact.submissionArtifact.instructionPC 2569 = 3887 := by rfl
+  have hpc3884 : Artifact.submissionArtifact.instructionPC 2568 = 3884 := by rfl
   simp (config := { maxSteps := 400000 }) [blk2516, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lzBaseSkip, ebitHead, bitStack, hrun, hcode, hpc3887, jumpDest1789,
+    lzBaseSkip, ebitHead, bitStack, hrun, hcode, hpc3884, jumpDest1789,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
