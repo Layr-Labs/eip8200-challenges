@@ -16,7 +16,7 @@ def driverRest (input : ByteArray) : List UInt256 :=
   [DriverTrace.blockOffsetWord (DriverTrace.blockCount input), Padding.paddedWord input]
 
 def outputState (s : State) (input : ByteArray) : State :=
-  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x11e4) (driverRest input)
+  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x64e) (driverRest input)
 
 def outputBytes (s : State) : ByteArray :=
   MachineState.readPadded (FastOutputTrace.outputMemory s) 0 32
@@ -96,26 +96,23 @@ private theorem outputBytes_eq_spec (input : ByteArray) (seam : CompressionSeam 
   rfl
 
 noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
-    (seam : CompressionSeam input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x3ee)) :
+    (seam : CompressionSeam input) :
     GasSteps (initialState submissionBytecode input 0)
       (outputState (seam.states (DriverTrace.blockCount input)) input) := by
   let final := seam.states (DriverTrace.blockCount input)
   have gout := FastOutputSite.gasSteps_fastOutput final (driverRest input)
     (by simp [driverRest]) (seam.code _ (by omega)) (seam.fork _ (by omega))
     (seam.running _ (by omega)) (seam.noPrecompile _ (by omega))
-  exact (PaddingTrace.gasSteps_pad input hfit entryPrefix).trans
+  exact (PaddingTrace.gasSteps_pad input hfit).trans
     ((DirectCorrect.gasSteps_driver input hfit seam).trans
       (by simpa only [DriverTrace.afterExit, outputState, driverRest, final] using gout))
 
 /-- The output proof needs only the existing compression seam. -/
 theorem correct_of_compression_trace
-    (seam : ∀ input : ByteArray, CalldataFits input → CompressionSeam input)
-    (input : ByteArray) (hfit : CalldataFits input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x3ee)) :
-    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
-      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  let trace := fullTrace input hfit (seam input hfit) entryPrefix
+    (seam : ∀ input : ByteArray, CalldataFits input → CompressionSeam input) :
+    Correct submissionBytecode := by
+  intro input hfit
+  let trace := fullTrace input hfit (seam input hfit)
   let final := (seam input hfit).states (DriverTrace.blockCount input)
   have hcall : (outputState final input).callStack = [] :=
     (seam input hfit).callStack _ (by omega)

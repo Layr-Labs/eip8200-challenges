@@ -62,7 +62,7 @@ private theorem paddingTargetWords_lt (input : ByteArray)
   omega
 
 theorem padLengthReady_activeWords (input : ByteArray) :
-    (PaddingTrace.padLengthReady input).activeWords.toNat = 5 := by
+    (PaddingTrace.padLengthReady input).activeWords.toNat = 59 := by
   have h1184 : (1184 : UInt256).toNat = 1184 := by
     change (UInt256.ofNat 1184).toNat = 1184
     norm_num
@@ -160,10 +160,10 @@ private theorem padSentinel_activeWords_le (input : ByteArray)
       paddingTargetWords input := by
   have hfooter := Padding.input_and_footer_fit input.size
   have hmul := paddingTargetWords_mul input
-  have hstart : 5 ≤ paddingTargetWords input := by
+  have hstart : 59 ≤ paddingTargetWords input := by
     unfold paddingTargetWords
     omega
-  let aw₁ := MachineState.activeWordsAfter 5 Padding.messageOffset input.size
+  let aw₁ := MachineState.activeWordsAfter 59 Padding.messageOffset input.size
   let aw₂ := MachineState.activeWordsAfter aw₁
     (Padding.messageOffset + input.size) 1
   have haw₁ : aw₁ ≤ paddingTargetWords input := by
@@ -365,7 +365,7 @@ private theorem lengthSetup_cost_decomp (input : ByteArray)
 private theorem lengthSetup_cost_potential (input : ByteArray)
     (hfit : CalldataFits input) :
     (PaddingTrace.gasSteps_lengthSetup input hfit).cost +
-        MachineState.memCost 5 =
+        MachineState.memCost 59 =
       52 + 3 * ((input.size + 31) / 32) +
         MachineState.memCost (PaddingTrace.padSentinel input).activeWords.toNat := by
   have hcopy := lengthCopy_cost_potential input hfit
@@ -542,7 +542,7 @@ private theorem lengthIteration_cost_potential (input : ByteArray)
     (PaddingTrace.gasSteps_lengthIteration input i hi).cost +
         MachineState.memCost
           (PaddingTrace.lengthLoopActiveWords input i).toNat =
-      84 + MachineState.memCost
+      79 + MachineState.memCost
         (PaddingTrace.lengthLoopActiveWords input (i + 1)).toNat := by
   have hcondition := lengthCondition_cost_potential input i hi
   have hbyte := lengthByte_cost_potential input i
@@ -595,23 +595,23 @@ private theorem lengthLoop_cost_potential (input : ByteArray) :
     (PaddingTrace.gasSteps_lengthLoop input).cost +
         MachineState.memCost
           (PaddingTrace.lengthLoopActiveWords input 0).toNat =
-      672 + MachineState.memCost
+      632 + MachineState.memCost
         (PaddingTrace.lengthLoopActiveWords input 8).toNat := by
   unfold PaddingTrace.gasSteps_lengthLoop
   change (Challenge.EvmProof.GasSteps.iterateBounded 8
       (PaddingTrace.gasSteps_lengthIteration input)).cost +
       MachineState.memCost
         (PaddingTrace.lengthLoopState input 0).activeWords.toNat =
-    672 + MachineState.memCost
+    632 + MachineState.memCost
       (PaddingTrace.lengthLoopState input 8).activeWords.toNat
   exact Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
-    8 84 (PaddingTrace.gasSteps_lengthIteration input)
+    8 79 (PaddingTrace.gasSteps_lengthIteration input)
     (fun i hi => lengthIteration_cost_potential input i hi)
 
 private theorem initialize_cost (input : ByteArray) :
-    (Main.gasSteps_initialize input).cost = 72 := by
+    (Main.gasSteps_initialize input).cost = 260 := by
   have hactive := padLengthReady_activeWords input
-  change (Main.initializedState input).activeWords.toNat = 5 at hactive
+  change (Main.initializedState input).activeWords.toNat = 59 at hactive
   exact InitializationGasTrace.initialize_cost_of_active input hactive
 
 private theorem enterPad_cost (input : ByteArray) :
@@ -628,7 +628,7 @@ private theorem lengthExit_cost (input : ByteArray) :
 
 theorem padding_cost (input : ByteArray) (hfit : CalldataFits input) :
     (PaddingTrace.gasSteps_pad input hfit).cost =
-      872 + 3 * GasCost.calldataWords input.size +
+      852 + 3 * GasCost.calldataWords input.size +
         MachineState.memCost (64 + 2 * DriverTrace.blockCount input) := by
   have hsetup := lengthSetup_cost_potential input hfit
   have hloop := lengthLoop_cost_potential input
@@ -636,17 +636,17 @@ theorem padding_cost (input : ByteArray) (hfit : CalldataFits input) :
       (PaddingTrace.padSentinel input).activeWords.toNat by rfl] at hloop
   change (PaddingTrace.gasSteps_lengthLoop input).cost +
       MachineState.memCost (PaddingTrace.padSentinel input).activeWords.toNat =
-    672 + MachineState.memCost
+    632 + MachineState.memCost
       (PaddingTrace.padReturned input).activeWords.toNat at hloop
   rw [padReturned_activeWords input hfit] at hloop
   unfold GasCost.calldataWords
-  have hmem5 : MachineState.memCost 5 = 15 := by
+  have hmem59 : MachineState.memCost 59 = 183 := by
     norm_num [MachineState.memCost]
-  rw [hmem5] at hsetup
+  rw [hmem59] at hsetup
   have hbody :
       (PaddingTrace.gasSteps_lengthSetup input hfit).cost +
           (PaddingTrace.gasSteps_lengthLoop input).cost =
-        709 + 3 * ((input.size + 31) / 32) +
+        501 + 3 * ((input.size + 31) / 32) +
           MachineState.memCost
             (64 + 2 * DriverTrace.blockCount input) := by
     omega

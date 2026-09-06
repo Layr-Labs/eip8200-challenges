@@ -57,7 +57,7 @@ structure CompressionRun (input : ByteArray) where
   callStack : ∀ i, i ≤ DriverTrace.blockCount input →
     (states i).callStack = []
   blockTrace : ∀ i, i < DriverTrace.blockCount input →
-    GasSteps (DriverTrace.dispatchEntry (states i) input i)
+    GasSteps (DriverTrace.compressEntry (states i) input i)
       (DriverTrace.compressReturned (states (i + 1)) input i)
   hashWords : ∀ i, i ≤ DriverTrace.blockCount input →
     HashWordsAt input i (states i)
