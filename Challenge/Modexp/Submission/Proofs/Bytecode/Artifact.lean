@@ -2060,11 +2060,11 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 6 }),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 7 }),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.MULMOD)),
- YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
+YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }),
  YulEvmCompiler.Instr.push 0 0,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.SUB)),
- YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }),
- YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }),
+YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 8 }),
+YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 8 }),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 3 }),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StopArith (EvmSemantics.Operation.StopArithOps.MULMOD)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
@@ -2072,13 +2072,12 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.AND)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.CompBit (EvmSemantics.Operation.CompareBitwiseOps.XOR)),
- YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 6 }),
- YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)),
+YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 5 }),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.POP)),
  YulEvmCompiler.Instr.push 2 655,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.StackMemFlow (EvmSemantics.Operation.StackMemFlowOps.JUMP))]
-theorem submissionInstructions_count : submissionInstructions.length = 2049 := by
+theorem submissionInstructions_count : submissionInstructions.length = 2048 := by
   decide
 
 theorem assemble_submissionInstructions :

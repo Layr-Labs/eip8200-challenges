@@ -7,8 +7,8 @@ set_option maxErrors 1
 # Copy 7 of the unrolled exponent-bit body
 
 The copy handles exponent bit 7.  Its six straight-line segments are the same
-instructions as every other copy, at instruction indices 2022 .. 2046 and bytes
-3217 .. 3243.
+instructions as every other copy, at instruction indices 2022 .. 2045 and bytes
+3217 .. 3242; the exit push begins at byte 3243.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Unroll7
@@ -19,6 +19,44 @@ open Word
 
 attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
+def bitMaskedState7 (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) : State :=
+  { bitLoopState input outer 0 byte offset acc base with
+    pc := UInt256.ofNat (bitPC 7 + 14)
+    stack := [UInt256.ofNat 0 - exponentBit byte 7,
+      UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
+      UInt256.ofNat 0, byte, offset, UInt256.ofNat outer, acc, base,
+      UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
+      UInt256.ofNat 96, UInt256.ofNat (expOffset input),
+      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1267] ++ callerRest input
+
+def bitProductState7 (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) : State :=
+  { bitLoopState input outer 0 byte offset acc base with
+    pc := UInt256.ofNat (bitPC 7 + 18)
+    stack := [UInt256.mulMod
+        (UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input))) base
+        (UInt256.ofNat (modulusValue input)),
+      UInt256.ofNat 0 - exponentBit byte 7,
+      UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
+      UInt256.ofNat 0, byte, offset, UInt256.ofNat outer, acc, base,
+      UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
+      UInt256.ofNat 96, UInt256.ofNat (expOffset input),
+      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1267] ++ callerRest input
+
+def bitSelectedState7 (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) : State :=
+  { bitLoopState input outer 0 byte offset acc base with
+    pc := UInt256.ofNat (bitPC 7 + 23)
+    stack := [bitStep input byte 7 acc base,
+      UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
+      UInt256.ofNat 0, byte, offset, UInt256.ofNat outer, acc, base,
+      UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
+      UInt256.ofNat 96, UInt256.ofNat (expOffset input),
+      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1267] ++ callerRest input
 
 def bitDecodePath7 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -32,11 +70,11 @@ def bitSquarePath7 :
 
 def bitMaskPath7 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2031 (.Dup ⟨1, by decide⟩), pushAt 2032 0 0, opAt 2033 .SUB]
+  [opAt 2031 (.Swap ⟨0, by decide⟩), pushAt 2032 0 0, opAt 2033 .SUB]
 
 def bitProductPath7 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2034 (.Dup ⟨9, by decide⟩), opAt 2035 (.Dup ⟨9, by decide⟩),
+  [opAt 2034 (.Dup ⟨8, by decide⟩), opAt 2035 (.Dup ⟨8, by decide⟩),
    opAt 2036 (.Dup ⟨3, by decide⟩), opAt 2037 .MULMOD]
 
 def bitChoosePath7 :
@@ -46,8 +84,7 @@ def bitChoosePath7 :
 
 def bitAdvancePath7 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2043 (.Swap ⟨6, by decide⟩), opAt 2044 .POP, opAt 2045 .POP,
-   opAt 2046 .POP]
+  [opAt 2043 (.Swap ⟨5, by decide⟩), opAt 2044 .POP, opAt 2045 .POP]
 
 set_option linter.unusedSimpArgs false in
 theorem run_bitDecode (input : ByteArray) (outer : Nat)
@@ -95,28 +132,28 @@ theorem run_bitMask (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.Stepper.runLocatedBlock bitMaskPath7
       (bitSquaredState input outer 7 byte offset acc base) =
-        some (bitMaskedState input outer 7 byte offset acc base) := by
+        some (bitMaskedState7 input outer byte offset acc base) := by
   have hzeroRaw : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   simp (config := { maxSteps := 125000 })
     [bitMaskPath7, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitSquaredState, bitMaskedState, bitLoopState, bitPC,
+      bitSquaredState, bitMaskedState7, bitLoopState, bitPC,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
-      initialState, UnrollPCs.copyPC7, hzeroRaw]
+      initialState, UnrollPCs.copyPC7, hzeroRaw, List.exchange]
 
 
 set_option linter.unusedSimpArgs false in
 theorem run_bitProduct (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.Stepper.runLocatedBlock bitProductPath7
-      (bitMaskedState input outer 7 byte offset acc base) =
-        some (bitProductState input outer 7 byte offset acc base) := by
+      (bitMaskedState7 input outer byte offset acc base) =
+        some (bitProductState7 input outer byte offset acc base) := by
   simp (config := { maxSteps := 125000 })
     [bitProductPath7, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitMaskedState, bitProductState, bitLoopState, bitPC,
+      bitMaskedState7, bitProductState7, bitLoopState, bitPC,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, UnrollPCs.copyPC7]
 
@@ -125,13 +162,13 @@ set_option linter.unusedSimpArgs false in
 theorem run_bitChoose (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.Stepper.runLocatedBlock bitChoosePath7
-      (bitProductState input outer 7 byte offset acc base) =
-        some (bitSelectedState input outer 7 byte offset acc base) := by
+      (bitProductState7 input outer byte offset acc base) =
+        some (bitSelectedState7 input outer byte offset acc base) := by
   simp (config := { maxSteps := 150000 })
     [bitChoosePath7, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitProductState, bitSelectedState, bitLoopState, bitPC, bitStep,
+      bitProductState7, bitSelectedState7, bitLoopState, bitPC, bitStep,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, UnrollPCs.copyPC7]
 
@@ -140,7 +177,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_bitAdvance (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.Stepper.runLocatedBlock bitAdvancePath7
-      (bitSelectedState input outer 7 byte offset acc base) =
+      (bitSelectedState7 input outer byte offset acc base) =
         some (bitUnrollState input outer (7 + 1) byte offset
           (bitStep input byte 7 acc base) base) := by
   have hsucc' := Challenge.EvmProof.Word.ofNat_add_ofNat
@@ -154,8 +191,8 @@ theorem run_bitAdvance (input : ByteArray) (outer : Nat)
     [bitAdvancePath7, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitSelectedState, bitUnrollState, bitLoopState, bitPC, nonzeroState, callerRest,
-      Dispatch.wordEntryState, Main.headerState, initialState,
+      bitSelectedState7, bitUnrollState, bitLoopState, bitPC, nonzeroState,
+      callerRest, Dispatch.wordEntryState, Main.headerState, initialState,
       UnrollPCs.copyPC7, List.exchange,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       hsucc', hincLeft, honeWord]

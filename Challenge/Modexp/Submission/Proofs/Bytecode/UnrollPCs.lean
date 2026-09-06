@@ -60,14 +60,14 @@ open EvmSemantics.EVM
        3205,3206,3207,3208,3209,3210,3211,3212,3213,3214,3215,3216][i - 1997]! := by
   interval_cases i <;> decide
 
-@[simp] theorem copyPC7 (i : Nat) (hi : 2022 ≤ i) (hii : i ≤ 2046) :
+@[simp] theorem copyPC7 (i : Nat) (hi : 2022 ≤ i) (hii : i ≤ 2045) :
     Artifact.submissionArtifact.instructionPC i =
       [3217,3219,3220,3222,3223,3224,3225,3226,3227,3228,3229,3230,3231,
-       3232,3233,3234,3235,3236,3237,3238,3239,3240,3241,3242,3243][i - 2022]! := by
+       3232,3233,3234,3235,3236,3237,3238,3239,3240,3241,3242][i - 2022]! := by
   interval_cases i <;> decide
 
-@[simp] theorem exitPC (i : Nat) (hi : 2047 ≤ i) (hii : i ≤ 2048) :
-    Artifact.submissionArtifact.instructionPC i = [3244, 3247][i - 2047]! := by
+@[simp] theorem exitPC (i : Nat) (hi : 2046 ≤ i) (hii : i ≤ 2047) :
+    Artifact.submissionArtifact.instructionPC i = [3243,3246][i - 2046]! := by
   interval_cases i <;> decide
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.UnrollPCs

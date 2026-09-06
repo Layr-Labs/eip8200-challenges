@@ -135,10 +135,11 @@ def bitHeadPath :
 
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2047 2 655, opAt 2048 .JUMP]
+  [pushAt 2046 2 655, opAt 2047 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
-def bitPC (j : Nat) : Nat := 3028 + 27 * j
+def bitPC (j : Nat) : Nat :=
+  if j < 8 then 3028 + 27 * j else 3243
 
 def expOffset (input : ByteArray) : Nat := 96 + baseSize input
 def modulusOffset (input : ByteArray) : Nat := expOffset input + exponentSize input
