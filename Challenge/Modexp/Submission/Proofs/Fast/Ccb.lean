@@ -202,13 +202,13 @@ theorem run_ret (s : State) (mem : ByteArray) (px k k' : Nat) (ret : UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
+  have hzero : (0 : UInt256) = UInt256.ofNat 0 := by decide
   have h2877 : (2877 : UInt256) = UInt256.ofNat 2877 := by decide
   have h2877Nat : (UInt256.ofNat 2877).toNat = 2877 := by decide
-  have hsub : UInt256.ofNat (k' + 1) - UInt256.ofNat 1 = UInt256.ofNat k' := by
-    have h := Challenge.EvmProof.Word.ofNat_sub_ofNat
-      (a := k' + 1) (b := 1) (by omega) (by omega)
-    rwa [Nat.add_sub_cancel] at h
+  have hk7 : k' ≤ 7 := by omega
+  have hdec : UInt256.lnot ({ val := 0 } : UInt256) + UInt256.ofNat (k' + 1) =
+      UInt256.ofNat k' := by
+    interval_cases k' <;> decide
   have htrue : UInt256.isTrue (UInt256.ofNat k') := by
     show (UInt256.ofNat k').toNat ≠ 0
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
@@ -217,7 +217,7 @@ theorem run_ret (s : State) (mem : ByteArray) (px k k' : Nat) (ret : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     retState, loopState, loopStack, fastPC20, hc3, hc4, hc5, hcode, hrun,
-    hone, h2877, h2877Nat, hsub, htrue, jumpDest2877, List.exchange,
+    hzero, h2877, h2877Nat, hdec, htrue, jumpDest2877, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -233,15 +233,16 @@ theorem run_retLast (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
+  have hzero : (0 : UInt256) = UInt256.ofNat 0 := by decide
   have h2877 : (2877 : UInt256) = UInt256.ofNat 2877 := by decide
-  have hsub : UInt256.ofNat 1 - UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
+  have hdec : UInt256.lnot ({ val := 0 } : UInt256) + UInt256.ofNat 1 =
+      UInt256.ofNat 0 := by decide
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   simp (config := { maxSteps := 400000 }) [blk1758, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     retState, exitState, loopStack, fastPC20, hc3, hc4, hc5, hrun,
-    hone, h2877, hsub, hfalse, List.exchange,
+    hzero, h2877, hdec, hfalse, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,

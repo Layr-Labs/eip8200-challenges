@@ -53,7 +53,7 @@ def bitFinishDispatchState (input : ByteArray) (outer : Nat)
 @[simp] private theorem exitPCs (i : Nat) (hi : 525 ≤ i) (hii : i ≤ 549) :
     Artifact.submissionArtifact.instructionPC i =
       [655,656,657,658,659,661,662,665,666,667,668,669,670,671,672,
-       673,675,676,678,679,680,683,684,685,688][i - 525]! := by
+       673,675,676,678,679,680,681,682,683,688][i - 525]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump655 :
@@ -70,9 +70,11 @@ theorem run_bitFinishGuard (input : ByteArray) (outer : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock bitGuardPath
       (bitLoopState input outer 8 byte offset acc base) =
         some (bitFinishDispatchState input outer byte offset acc base) := by
+  have h7 : (7 : UInt256).toNat = 7 := by decide
   have h8 : (8 : UInt256).toNat = 8 := by decide
+  have h7mod : 7 % 2 ^ 256 = 7 := by norm_num
   have h8mod : 8 % 2 ^ 256 = 8 := by norm_num
-  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
+  have hlt : 7 % 2 ^ 256 < 8 % 2 ^ 256 := by norm_num
   have h655 : (655 : UInt256).toNat = 655 := by decide
   have h655Word : (655 : UInt256) = UInt256.ofNat 655 := by decide
   simp (config := { maxSteps := 150000 })
@@ -82,7 +84,7 @@ theorem run_bitFinishGuard (input : ByteArray) (outer : Nat)
       bitLoopState, bitFinishDispatchState, nonzeroState, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState,
       UInt256.isTrue, UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
-      h8, h8mod, hzeroFalse, h655, h655Word, jump655]
+      h7, h8, h7mod, h8mod, hlt, h655, h655Word, jump655]
 
 set_option linter.unusedSimpArgs false in
 theorem run_bitFinishTail (input : ByteArray) (outer : Nat)
