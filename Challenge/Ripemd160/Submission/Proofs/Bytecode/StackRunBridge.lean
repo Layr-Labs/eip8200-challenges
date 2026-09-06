@@ -42,7 +42,6 @@ def embedHashArray (a : Array UInt32) : Compression.EvmHashState :=
 /-- Incoming-memory facts for one concrete compression call. -/
 structure BlockContext (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) where
-  calldata : s.executionEnv.calldata = input
   messageBlock : ScheduleCorrect.MessageBlockAt s.memory
     (DriverTrace.messageOffsetWord i) (Padding.paddedMessage input)
     (DriverTrace.blockOffset i)
@@ -60,9 +59,7 @@ structure BlockKernel where
     wordAt (nextState s input i) address = wordAt s address
   hashResult : ∀ (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (_hfit : CalldataFits input)
-    (_hi : i < DriverTrace.blockCount input) (_ctx : BlockContext s input i h)
-    (_hmodel : CompressionCorrect.hashArray h =
-      CompressionSeamBridge.hashAfter input i),
+    (_hi : i < DriverTrace.blockCount input) (_ctx : BlockContext s input i h),
     hashAt32 (nextState s input i) =
       embedHashArray
         (Crypto.Ripemd160.compressBlock (CompressionCorrect.hashArray h)
@@ -74,7 +71,7 @@ structure BlockKernel where
     (_hfork : s.fork = .Osaka) (_hrun : s.halt = .Running)
     (_hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false),
-    GasSteps (DriverTrace.dispatchEntry s input i)
+    GasSteps (DriverTrace.compressEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i)
 
 def states (kernel : BlockKernel) (input : ByteArray) : Nat → State
@@ -103,11 +100,6 @@ theorem states_halt (kernel : BlockKernel) (input : ByteArray) (n : Nat) :
   | zero => exact PaddingTrace.padReturned_halt input
   | succ n ih =>
       rw [states, BlockKernel.halt, ih]
-
-theorem states_calldata (kernel : BlockKernel) (input : ByteArray) (n : Nat) :
-    (states kernel input n).executionEnv.calldata = input := by
-  rw [states_executionEnv kernel input n]
-  rfl
 
 theorem states_callStack (kernel : BlockKernel) (input : ByteArray) (n : Nat) :
     (states kernel input n).callStack = [] := by
@@ -210,7 +202,8 @@ private theorem initialHashWords (kernel : BlockKernel) (input : ByteArray)
     CompressionSeamBridge.HashWordsAt input 0 (states kernel input 0) := by
   intro i
   change OutputTrace.hWord (PaddingTrace.padReturned input) i = _
-  have hh := InitializationCorrect.initializedState_hash input i i.isLt
+  have hh := (InitializationCorrect.initializedState_constants input).2.2
+    i i.isLt
   unfold OutputTrace.hWord
   rw [show MachineState.readWord (PaddingTrace.padReturned input).memory
         (OutputTrace.hOffset i) =
@@ -277,12 +270,11 @@ private theorem hashWords_succ (kernel : BlockKernel) (input : ByteArray)
       (states kernel input (n + 1)) := by
   let h := hashStateAfter input n
   let ctx : BlockContext (states kernel input n) input n h := {
-    calldata := states_calldata kernel input n
     messageBlock := messageBlockAt kernel input hfit n hn
     separated := blockSeparated input hfit n hn
     hash := hashAt32_of_hashWords hw }
   have hout := BlockKernel.hashResult kernel (states kernel input n)
-    input n h hfit hn ctx (hashArray_hashStateAfter input n)
+    input n h hfit hn ctx
   have harray := hashArray_hashStateAfter input n
   rw [harray] at hout
   rw [states]
@@ -317,7 +309,6 @@ def compressionRun (kernel : BlockKernel) (input : ByteArray)
     intro i hi
     let h := hashStateAfter input i
     let ctx : BlockContext (states kernel input i) input i h := {
-      calldata := states_calldata kernel input i
       messageBlock := messageBlockAt kernel input hfit i hi
       separated := blockSeparated input hfit i hi
       hash := hashAt32_of_hashWords
@@ -335,11 +326,8 @@ def compressionSeam (kernel : BlockKernel) :
     (compressionRun kernel input hfit)
 
 /-- Correctness remains conditional on the genuine block kernel. -/
-theorem correct_of_block_kernel (kernel : BlockKernel)
-    (input : ByteArray) (hfit : CalldataFits input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x3ee)) :
-    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
-      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  exact FastOutputResultBridge.correct_of_compression_trace (compressionSeam kernel) input hfit entryPrefix
+theorem correct_of_block_kernel (kernel : BlockKernel) :
+    Correct submissionBytecode := by
+  exact FastOutputResultBridge.correct_of_compression_trace (compressionSeam kernel)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRunBridge

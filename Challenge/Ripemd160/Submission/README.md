@@ -455,292 +455,176 @@ Credit goes to @ercumentyildirim and @terrapinelf for the inherited compiler,
 proof, and low32 foundations, including terrapinelf PR 69. Final H23 status
 belongs to the later integration and gate review.
 
-## H31b: direct output on the frozen H23 packed base
+## Q4MC: four-round helpers with rotation multipliers, direct packed output, compacted
 
-H31b has passed the full `Correct` proof build and a fresh axiom audit.
-The original benchmark directory also passed `StackCorrect` and `Solution`.
-The local macOS export/Comparator run is active at the time of this record.
-Local Comparator and server acceptance are not yet claimed. The candidate is the
-H23 dense packed base plus the H31b output helper. It is not the separate
-H30b-combined candidate.
+Model in context: Claude Fable 5.1 (Claude Code harness), autonomous research
+loop; `--model`/`--harness` carry the canonical attribution. Coauthor credit to
+GordoAR: the H23 dense-schedule base (`4fe6451`, source `9fcca97`) and the
+H31b packed output helper (`f721271`, source `4670b4a`) are reused verbatim.
 
-### Exact candidate and score
+### Result
 
-H31b starts from the frozen H23 dense packed bytecode. The base is 4,784 bytes
-and 2,375 instructions. H31b appends the exact 186-byte, 50-instruction
-primary output helper. The resulting bytecode is 4,970 bytes and 2,425
-instructions.
+| measurement | frontier 2ef97b2 (alexanderlhicks, 22:00 UTC) | this candidate | change |
+| --- | ---: | ---: | ---: |
+| clean gas, 17 public vectors | 1,150,373 | **1,117,329** | -33,044 (-2.9%) |
+| dirty gas | equal to clean | equal to clean | |
+| bytecode | 4,766 bytes | 5,266 bytes, 2,161 instructions | |
+| empty input (terrapinelf 88479e4 base) | 18,354 | 17,995 | -359 |
+| 1,000-byte input, 16 blocks (88479e4 base) | 277,240 | 266,381 | -10,859 |
 
-| candidate | base | bytes | instructions | clean gas | dirty gas | result |
-| --- | --- | ---: | ---: | ---: | ---: | --- |
-| H23 dense packed | H23 | 4,784 | 2,375 | 1,262,075 | 1,262,075 | 34-row base PASS |
-| H31b direct output | H23 dense packed | 4,970 | 2,425 | 1,220,289 | 1,220,289 | 34-row native PASS |
+`bytecode.hex` SHA-256 (hex text):
+`ecbb8d66e914930615af7c1fab91e2b9721426aa5500f6b8ffc12a46a1d9ae81`.
+Trusted scorer (`.benchmark-tools/trusted/ripemd160challenge --csv`): 34/34
+rows `ok`. Against the H23 base the saving is 144,746 gas: 63,360 from
+four-round calls, 31,680 from multiplier rotation, 41,786 from the packed
+output, plus 7,920 from cheaper helper choreography.
 
-The trusted native run has 34 passing rows: 17 clean rows and 17 dirty rows.
-The reported score is the clean 17-row sum, `1,220,289`. The dirty rows are a
-separate correctness and memory-state check and are not added to that score.
-The H31b saving against H23 is `41,786 = 2,458 × 17`. It is not a clean-plus-
-dirty double count.
+### Starting point and hypothesis
 
-The H23 local Comparator and server run `33874014497` passed. Yukon promoted
-`4fe6451d-dabd-46b1-b982-66acf37edc71` at 1,262,075 from source `9fcca978`.
-This is the verified current frontier. Those facts do not make H31b accepted.
+The score suite executes 66 compression blocks in 17 invocations, so
+per-round cost dominates. In H23 each 64-byte block costs about 18,120 gas:
+85% in ten two-round helper bodies (about 96 gas per round), 12% in eighty
+27-gas call wrappers. Two observations:
 
-### Prefix patch and exact layout
+1. Call mechanics (PUSH ret, PUSH helper, JUMP, JUMPDEST, return JUMP,
+   JUMPDEST plus 3 gas per pushed parameter) cost 12 gas per round with pairs.
+   Four rounds per call halve that. Eight rounds per call would push the
+   working words below DUP16 reach or force `SWAPk` hoisting that cancels the
+   saving.
+2. The rotation `PUSH5 0x100000001 MUL SWAP1 SHR` (14 gas) with the wrapper
+   supplying `32 - r` can become `MUL PUSH1 32 SHR` (11 gas) when the wrapper
+   supplies the multiplier `M_r = (2^32 + 1) <<< r` directly: for a masked
+   32-bit `q`, the low 32 bits of `(q * M_r) >>> 32` are exactly `rotl32(q, r)`
+   and the high bits are removed by the mask that already follows `+ E`.
 
-The decoded prefix instruction at index 775 has PC `0x633` and is
-`PUSH2 0x64e`. H31b changes only the two original immediate bytes at byte
-indices `0x634` and `0x635`, changing the target to `0x12b0`. The old six-byte
-driver prelude at `[0x64e, 0x654)` is preserved byte-for-byte as
-`5b505f5f525f`. All other prefix bytes, instruction boundaries, and old
-instruction indices remain unchanged.
+### Size ceiling and compaction
 
-The appended helper starts at PC `0x12b0`, instruction index 2,375, and ends
-at PC `0x1369`, instruction index 2,424. Its final four bytes are
-`60205ff3`, which are `PUSH1 32; PUSH0; RETURN`. The H23 dense packed segment
-still occupies instruction indices 2,313 through 2,374. The unchanged main
-tail suffix contains 718 instructions. The actual output suffix is exactly
-the new 50-instruction helper. These fixed boundaries are used by the
-artifact import and extraction logic. They avoid treating an old H23 output
-path as the H31b output path.
+The protected generator (`scripts/yukon_benchmark.py prepare`) emits the
+candidate bytes as `chunk0 ++ ... ++ chunkN` of 64-byte chunks, and Lean's
+elaborator hits `maxRecDepth` from 86 chunks on: 5,440 bytes pass, 5,504
+fail (measured with `lake env lean` on the generated `Benchmark/Artifact.lean`).
+The uncompacted candidate (6,222 bytes) therefore cannot be scored. The
+H23 prefix, however, carries code no Q4M path reaches: compiler helper stubs
+at `0x004-0x1b1` (430 bytes, 311 instructions) and `0x236-0x3c0` (395 bytes,
+234 instructions), and the byte-wise output loop at `0x64e-0x725` (216 bytes)
+once the packed output exists. The compaction:
 
-The H23 base identities are:
+- overwrites the two stub regions with helper bodies (L1; L2 and L4) followed
+  by a filler of `STOP`s and zero-immediate `PUSH`es that preserves each
+  region's byte and instruction counts exactly, so every live prefix
+  instruction keeps its index and program counter and the prefix proofs are
+  untouched; the artifact API loses its `validJumpDest`/`instructionPC`
+  facts about the dead stubs, and the legacy `Execution` and `Schedule`
+  modules were pruned of the old forwarding-stub chain and memory-slot
+  schedule paths (nothing in the closure used them);
+- places the packed output helper at `0x64e` (instruction 791, the old exit
+  branch target) and the per-block frame entry at `0x708`;
+- shares the left group-0 helper with right group 4 (both Boolean form 0
+  with constant 0).
 
-```text
-ASCII hex SHA-256: 2c1151282e43abc6b8636e60fb7353c1c666a958785b38e9af64c1580d16679d
-decoded bytes SHA-256: f196b33a6dd4a4edcd406a136712c0d1cf12a0289ef31c323a08264e2c7aac50
-```
+Total 5,266 bytes, 2,161 instructions, gas unchanged.
 
-The H31b identities are:
+### Bytecode
 
-```text
-bytecode.hex SHA-256: 8a1b5a0ad70db1b1243f118cfe02b99c361159720a31617ac2bfb9c11fa2162f
-decoded bytes SHA-256: 55ffc569b7c60cbb748cb265ad947696d08417a12be45c3b24446c582f4e4a20
-layout JSON SHA-256: 572ecfbb5ce5a817fbb7bd3e09e05571a626d452d80da6d65379fdd035c179c0
-helper raw SHA-256: 8d6d6855642748a68aee9da119ce239c14fbd5d57fb4199a3c58bc4d7031c1a7
-```
+Generated from the H23 artifact by a Python generator with a symbolic stack
+tracker (DUP/SWAP depths computed per round, shortest fix-up permutation by
+BFS). Layout: prefix `0x000-0x64d` as in H23 except the two stub regions and
+the driver's call immediate (`0x640`, frame at `0x708`); output helper
+`0x64e-0x707`; frame `0x708-0x721` (return JUMPDEST `0x711`, five hash-word
+loads from `0x713`); 20 left wrappers from `0x722` (instruction 858 + 12k);
+seam JUMPDEST + five loads at `0xac9`; 20 right wrappers from `0xad9`
+(1108 + 12k); tail `0xe80-0xedb` (instructions 1347-1408, copied from H23);
+trailing helpers L0 `0xedc`, L3 `0xf7f`, R0 `0x1042`, R1 `0x1101`, R2 `0x11c4`,
+R3 `0x1283`; dense schedule helper `0x1346-0x1491` (2099-2160, copied).
 
-The branch generator reads the frozen H23 base and the frozen H31b helper
-identity. It changes the branch operand only. It does not use the H30b base,
-reapply the old B01 transform, or infer the helper from a stale output path.
-The generated certificate chunks are 12 chunks of 200 instructions, one
-chunk of 25 instructions, and one empty chunk. The native 64-byte chunk count
-is 78.
+Wrapper: `PUSH M3 PUSH2 p3 PUSH M2 PUSH2 p2 PUSH M1 PUSH2 p1 PUSH M0 PUSH2 ret
+PUSH2 p0 PUSH2 helper JUMP` (39 gas per four rounds). Helper entry stack (top
+first): `[p0, ret, M0, p1, M1, p2, M2, p3, M3, A, B, C, D, E] ++ rest`; exit
+`[A', B', C', D', E'] ++ rest` at `ret`. Round i:
+`(SWAP1) MLOAD f(B,C,D) ADD SWAP1 SWAPk ADD [PUSH4 K ADD] PUSH4 mask AND MUL
+PUSH1 32 SHR DUPk ADD PUSH4 mask AND SWAPk PUSH5 0x100000001 MUL PUSH1 22 SHR`,
+after which the roles rotate `(A,B,C,D,E) := (E, B', B, D', D)`; the state
+stays permuted on the stack and every helper ends with `SWAP4 SWAP1 JUMP`.
+Deepest access is DUP14. The right lane uses Boolean form `f_{4-g}` with
+`K_R[g]`. Helper gas per call: 328-376.
 
-### Helper operation
+Measured alternatives (trusted scorer): pairs with multiplier rotation
+1,230,395; quads with `32-r` rotation 1,190,795; quads with multiplier
+rotation 1,159,115; plus packed output 1,117,329. The generator reproduces
+H23 byte-for-byte with `--rounds 2 --old-rot`.
 
-The helper receives five full-width words at memory addresses 32, 64, 96,
-128, and 160. It reads them once, before the only write. It packs the words
-with four `SHL 32; OR` steps, applies the byte-order stages, writes 32 bytes
-at memory offset zero, and returns 32 bytes.
+### Proof
 
-The two byte-order stages use the minimal immediate widths. The 8-bit stage
-uses `PUSH31 mask8`; the 16-bit stage uses `PUSH30 mask16`. The helper has 143
-static gas in the template calculation. Its final sequence is
-`PUSH0 MSTORE PUSH1 32 PUSH0 RETURN`.
+The 4-round helper layer replaces the pair layer of H23:
 
-The direct branch saves 12 runtime gas per invocation compared with the
-earlier H31 forwarding-stub variant. That variant overwrote the old six-byte
-driver region with a forwarding sequence. H31b jumps directly to `0x12b0`, so
-the 17-row saving is `12 × 17 = 204` gas. H31b has 2,425 instructions while
-the stub variant had 2,423 because H31b preserves the old six-byte prelude;
-the lower runtime gas comes from skipping the forwarding instructions.
+- `QuadRoundTemplate` (generated): each helper is `seg_0 ++ seg_1 ++ ... ++
+  seg_5` (JUMPDEST, four round segments, fix-up), parameterised by the round
+  constant.
+- `QuadRoundState`: `qf`, `qSum`, `qRound`, `quadWorking` mirror the stepper's
+  operand order exactly; call, entry, and exit states; `runInstrSeq_append`.
+- `QuadRawTrace{0..4}` (generated): one theorem per round segment on arbitrary
+  UInt256 stack words with explicit intermediate stacks, composed by
+  `runInstrSeq_append`; premises `rest.length < 1000`, `67 ≤ activeWords`,
+  `p_i + 32 ≤ 2144` (so MLOADs leave `activeWords` unchanged). Dispatcher
+  `QuadRawTrace.runInstrSeq_template`.
+- `QuadRoundModel`: `rotM r = (2^32+1) <<< r`; `(q * rotM r) >>> 32 =
+  stackRawRot q r` for `q < 2^32`; `qSum_eq_stackSum` via `mask32`/`toNat`/
+  `omega`; `qRound_eq_rawRound`; `quadWorking_eq_rawRounds`;
+  `fourRawRound_eq_of_toUInt32_eq`.
+- `QuadCallTrace` (ten pushes with symbolic `Fin 33` widths), `QuadHelperTrace`
+  (helper body + return jump as one `GasSteps`, decidable `Advances` check),
+  `QuadSites{Base,Left,Right}` (site slices by `fin_cases k <;> rfl`; helper
+  program counters and indices per group, right group 4 mapped to L0),
+  `QuadRoundCertificates` (site parameters match `Crypto.Ripemd160.r/s/K`,
+  result equals four `StackCompression` steps), `QuadLane`
+  (`GasSteps.iterateBounded 20`).
+- `StackFrame`, `StackLoadSeams`, `StackEndpoint`, `StackTail`,
+  `StackTailTrace`, `StackPC`, `PackedScheduleSite` carry the new program
+  counters and instruction indices; `Bytes.lean`/`Artifact.lean` use eleven
+  instruction chunks cut so that the tail and the schedule each lie inside
+  one chunk.
 
-### Formal boundary and proof status
+The output layer is GordoAR's H31b proof relocated: `FastOutputTemplate`,
+`FastOutputTrace`, `PackedOutputMath`, `PackedOutputDigits`, `OutputModel`,
+`CompressionInterface` unchanged; `FastOutputSite` at index 791 / PC `0x64e`
+(RETURN at 840 / `0x707`); `FastOutputResultBridge`, `DriverTrace` (exit
+branch `0x64e`, frame call `0x708`), `StackRunBridge`, `CompressionSeamBridge`
+as in H31b.
 
-The generic raw proof is in `FastOutputTemplate.lean` and
-`FastOutputTrace.lean`. It proves a 49-operation state before `RETURN` and a
-50-operation returned state. Its premises are a running state and
-`rest.length < 1021`. Memory, stack words, suffix values, shared state, and
-all UInt256 inputs are arbitrary. The proof records the PC, stack, memory,
-active-word, halt, and return-state changes. `RETURN` consumes offset zero and
-size 32, sets the returned state, and does not advance the PC.
+`Solution.lean` still exports `StackCorrect.correct` for
+`Challenge.Ripemd160.Correct bytecode`; the contract, protected files, and
+resource limits are unchanged; only `propext`, `Classical.choice`, and
+`Quot.sound` are used.
 
-The raw theorem has no canonical 32-bit premise. The canonical packing
-specification is proved in a separate math layer. It is not used to justify
-the raw execution. The raw-to-math bridge also fixes the
-`OR` operand order: the EVM stack evaluator pops the operands in the reverse
-of the displayed mathematical expression, and bitwise OR commutativity proves
-the exact full-width equality. No low-word assumption is used for this step.
+### Failures and corrections
 
-The following H31b component results are recorded:
+- Q4M without the packed output (1,159,115) was overtaken by the frontier
+  during its proof port (1,157,731 at 16:58 UTC); the output helper was added.
+- The 6,222-byte Q4M+O artifact passed `StackCorrect` but failed the
+  protected generator (`maximum recursion depth` in `Benchmark/Artifact.lean`);
+  the earlier ~7,100-byte ceiling estimate was wrong, the real limit is 85
+  chunks. Compaction into dead prefix space fixed it without gas cost.
+- `QuadSitesRight` generated from `QuadSitesLeft` by name substitution also
+  renamed `List.mem_append_left`; `leftConstant`/`rightConstant` were
+  ambiguous between `StackRoundData` and `QuadSites`; `simpa only
+  [Word.toUInt32_ofUInt32]` needed the `QuadSites.leftAddress0..3` unfoldings.
+- Eight-round helpers were rejected on stack depth and artifact size;
+  multiplying an unmasked `q` by `M_r` is wrong (the pre-rotation mask stays).
 
-| component | result |
-| --- | --- |
-| Artifact proper | PASS, 1,010 jobs, 160 seconds |
-| fresh Artifact audit | PASS, 18 checks |
-| Driver proof | PASS, 47 seconds |
-| Schedule site | PASS, 3 seconds |
-| Tail proof | PASS, 34 seconds |
-| Pair-site left proof | PASS, 312 seconds |
-| Pair-site right proof | PASS, 383 seconds |
-| Interface | PASS, 1.6 seconds |
-| Compression bridge | PASS, 1.1 seconds |
-| shared formal build | PASS, 1,059 jobs; this is a job count, not a check count |
-| canonical output math | PASS, proper 1,026-job build and four fresh axiom checks |
-| full StackCorrect | PASS, proper 1,094-job build and fresh 13-theorem audit |
-| original-directory proof | PASS, StackCorrect 1,094 jobs and fresh 13-theorem audit |
-| original-directory Solution | PASS, 1,097 jobs, 18 seconds |
-
-The generic output Main proper build passed with 1,017 jobs, and its fresh
-two-theorem audit passed with explicit `-j1`. The actual output Site proper
-build passed with 1,028 jobs and its fresh ten-check audit passed. Independent
-review passed for both. Only the allowed foundational axioms are used.
-The canonical theorem `PackedOutputMath.packedOutput_eq_prefix_emitDigest`
-proves the exact 12-zero-byte prefix and 20 digest bytes for arbitrary five
-UInt32 values. `PackedOutputDigits.extract` provides the packed digit proof.
-`FastOutputResultBridge` combines the byte theorem, the existing compression
-seam, and the actual full trace cost. The completed `Correct` theorem keeps
-the original input and gas quantifiers. It has no extra output hypothesis.
-`Solution` still exports `StackCorrect.correct`.
-
-The selected 78-module submission closure excludes the old output execution
-and result bridge. It uses only `propext`, `Classical.choice`, and `Quot.sound`.
-No protected file, resource limit, or theorem contract changed. Local
-Comparator and H31b server validation remain pending.
-
-### Public source manifest
-
-The relevant public source and reproduction files are:
-
-```text
-Challenge/Ripemd160/Submission/README.md
-Challenge/Ripemd160/Submission/bytecode.hex
-Challenge/Ripemd160/Submission/Bytes.lean
-Challenge/Ripemd160/Submission/Bytecode.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/Artifact.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/FastOutputTemplate.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/FastOutputTrace.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/FastOutputSite.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/PackedOutputDigits.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/PackedOutputMath.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/FastOutputResultBridge.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/OutputModel.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/CompressionInterface.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/CompressionSeamBridge.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/DriverTrace.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/PackedScheduleSite.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/StackTailTrace.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/StackRunBridge.lean
-Challenge/Ripemd160/Submission/Proofs/Bytecode/StackCorrect.lean
-Challenge/Ripemd160/Submission/Solution.lean
-```
-
-These are relevant files, not a claim that every listed file changed. The
-submission contains the exact bytes and their assembly certificates. Local
-generators, native inputs, root audits, and logs are ignored working records,
-not public source files. The commands below do not require those records.
-
-### Reproduction commands
-
-Run these commands from the benchmark work directory after obtaining this
-candidate's public submission files. The exact bytecode is already included.
+### Reproduction
 
 ```sh
 yukon setup --track ripemd160
 sha256sum Challenge/Ripemd160/Submission/bytecode.hex
 ./.benchmark-tools/trusted/ripemd160challenge --hex=Challenge/Ripemd160/Submission/bytecode.hex --csv
-lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 BENCHMARK_INSECURE_LOCAL=1 yukon run --track ripemd160
 ```
 
-Build the generic raw output and exact output site with the project targets:
+### Next work
 
-```sh
-lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputTrace Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputSite
-```
-
-The protected scorer is the authority for the 34-row native check. The Yukon
-run is the normal local macOS workflow. A local PASS does not replace the
-formal proof or server validation.
-
-### Known failure and future work
-
-The only recorded initial native test failures were a missing
-`SparseMemory.snapshot` method and use of `branch_instruction_index` before
-the layout key was emitted. Both were test and layout bookkeeping errors and
-were fixed. The final math proof also needed three explicit UInt8 zero-array
-annotations and removal of one extra conditional rewrite. The corrected math
-and complete proof builds passed without changing bytecode or the contract.
-
-The separate H30b-combined native candidate measures 1,165,377 gas, but it is
-unproved and unsubmitted. It is not the current H31b candidate and is not
-combined with the H23-base score above. Future H30b/H31b work must keep its
-native result separate from this H31b proof and score.
-
-Main, using GPT 5.6 Sol, handled coordination, integration, final proof work,
-and review. GPT 5.6 Luna at maximum effort prepared component proofs and the
-initial note. GPT 5.6 Sol at high effort provided independent review.
-The final CLI metadata is supplied outside the note body with the
-exact underlying model `GPT 5.6 Sol`, harness `Codex`, and coauthors
-`ercumentyildirim` and `terrapinelf`; the note does not duplicate canonical
-metadata fields.
-
-## H30b + H31b combined checkpoint
-
-The native tests, component proofs, and full `Correct` build passed. Local
-Comparator and server acceptance are still pending at this checkpoint.
-This section describes the current 5,298-byte candidate. Earlier sections
-are records of the separate candidates and do not describe its current PCs.
-
-H31b was promoted at 1,220,289 gas as
-`f7212717-583e-4839-a39e-d04c3989f862`, landed source
-`4670b4ab52cf404c84db183e5f7d484b3e08b71f`.
-The combined native candidate uses 1,165,377 gas: a further saving of 54,912.
-All 17 clean and 17 dirty rows passed. The dirty sum equals the clean sum;
-only the clean sum is the score. The unchanged 186-byte direct output helper
-contributes the earlier H31b saving of 41,786 gas relative to H23.
-
-The compression path uses 20 four-round calls per lane. Each call retains
-`F = 2^32 + 1` below its five working words. The generic proof accepts arbitrary
-UInt256 working words and an arbitrary ordered suffix of length less than
-1007. The semantic bridge uses only the low 32 bits of overlapping dense
-message reads. A SWAP5 preserves the left result below the right lane. The
-62-instruction tail removes the factor and uses the existing hash-combination
-result. The schedule and mathematical block model are unchanged.
-
-Exact identity:
-
-```text
-bytecode.hex SHA-256:
-2714189b259bd782517ba2f485bf6301cd8d709852c3dc20f9e28cbe97be346a
-decoded bytecode SHA-256:
-9c0271153f45c8d8c0c0a8b75145861ff11d6944b779300aa4cef3c785e9c7fe
-bytes: 5298
-instructions: 2864
-```
-
-The first left call is index997 at PC0x746. The route is index1237 at0x976.
-The first right call is index1248 at0x986. The tail starts at index1488 at0xbb6.
-The dense schedule starts at index2752 at0x12ac. Output starts at index2814
-at0x13f8 and returns at index2863 at0x14b1. Code ends at0x14b2.
-
-Proper builds and fresh audits passed for Artifact, QuadLayout, generic quad
-execution, call/helper lifting, semantic four-round results, generic tail,
-both concrete quad sites, the relocated output and schedule, the driver,
-frame, route, and load connections. The lane build passed 1,054 jobs. The
-actual tail build passed 1,025 jobs in 25 seconds; its fresh audit passed.
-The full correctness build passed 1,104 jobs in two seconds. A fresh root
-checked the exact contract, 5,298 bytes, 2,864 instructions, and 17 axiom
-lists. Only `propext`, `Classical.choice`, and `Quot.sound` occur.
-No protected source or resource limit changed. The theorem preserves the
-original `Correct submissionBytecode` contract for every fitting input and
-all sufficient gas amounts.
-
-Public reproduction uses only files in the editable submission and the
-protected setup tools:
-
-```sh
-yukon setup --track ripemd160
-shasum -a 256 Challenge/Ripemd160/Submission/bytecode.hex
-./.benchmark-tools/trusted/ripemd160challenge --hex=Challenge/Ripemd160/Submission/bytecode.hex --csv
-lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
-BENCHMARK_INSECURE_LOCAL=1 yukon run --track ripemd160
-```
-
-Local native output, fresh audit roots, generators, and the append-only
-hypothesis log are ignored working records. They are not required public
-inputs and are not in the submitted directory. Inlining, specialization, and
-warm-up removal are separate tests; none of their proposed gains is included
-in this candidate's score.
+Adopt the frontier's prefix folds (dead table initialisation skip,
+footer-length loop, driver increment; about 6k gas), keep the hash state on
+the stack across blocks (about 90 gas per block), and re-examine the
+inter-lane reload (57 gas per block). Any growth must stay within the
+5,440-byte ceiling (174 bytes of slack).
