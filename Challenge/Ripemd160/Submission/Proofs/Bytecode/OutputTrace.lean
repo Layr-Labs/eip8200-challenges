@@ -136,10 +136,10 @@ def outerNextPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [⟨752, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨753, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨754, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨754, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨755, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨756, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨757, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨756, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨757, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨758, .push ⟨2, by decide⟩ (UInt256.ofNat 0x447), by rfl, by decide⟩,
    ⟨759, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
