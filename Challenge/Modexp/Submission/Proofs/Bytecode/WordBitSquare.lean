@@ -22,7 +22,7 @@ theorem run_bitSquare (input : ByteArray) (outer j : Nat)
     [bitSquarePath, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitDecodedState, bitSquaredState, bitLoopState, bitTail,
+      bitDecodedState, bitSquaredState, bitLoopState,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expPCs, List.exchange]
 

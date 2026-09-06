@@ -450,7 +450,7 @@ private theorem fastPCAnchor23 :
 
 @[simp] theorem fastPC5 (i : Nat) (hi : 1177 ≤ i) (hii : i ≤ 1216) :
     Artifact.submissionArtifact.instructionPC i =
-      [1612,1615,1616,1617,1618,1619,1622,1623,1624,1625,1626,1630,1631,1632,1633,1634,1635,1638,1639,1640,1642,1643,1645,1646,1647,1648,1650,1651,1652,1654,1655,1657,1658,1659,1660,1661,1664,1665,1666,1668][i - 1177]! := by
+      [1612,1615,1616,1617,1618,1619,1622,1623,1624,1625,1626,1630,1631,1632,1633,1634,1635,1638,1639,1642,1643,1645,1647,1649,1651,1653,1655,1656,1657,1658,1659,1660,1661,1662,1663,1664,1665,1666,1667,1668][i - 1177]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (1177 + (i - 1177)) := by
@@ -752,10 +752,16 @@ private theorem fastPCAnchor23 :
       rw [fastPCAnchor23]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC24 (i : Nat) (hi : 2504 ≤ i) (hii : i ≤ 2518) :
+/-- PC table for the appended full-width-base helper. The intervening window
+and direct-RR helpers occupy indices 1831..2360 and receive their own tables in
+their proof modules. -/
+@[simp] theorem fullBasePC (i : Nat) (hi : 2361 ≤ i) (hii : i ≤ 2413) :
     Artifact.submissionArtifact.instructionPC i =
-      [3776,3777,3778,3779,3782,3783,3786,3787,3790,3793,3794,3797,3798,
-       3799,3802][i - 2504]! := by
+      [3606,3607,3608,3609,3610,3611,3612,3614,3615,3616,3617,3620,
+       3621,3622,3624,3627,3628,3631,3634,3637,3640,3643,3644,3645,
+       3648,3651,3654,3657,3660,3661,3662,3663,3665,3666,3668,3669,
+       3670,3671,3673,3674,3675,3677,3678,3680,3681,3682,3683,3684,
+       3687,3688,3689,3691,3694][i - 2361]! := by
   interval_cases i <;> decide
 
 theorem jumpDest1196 :
@@ -934,12 +940,16 @@ theorem jumpDest3571 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3571 = true :=
   Artifact.isValidJumpDest_index 2338 (by rfl)
 
-theorem jumpDest3776 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3776 = true :=
-  Artifact.isValidJumpDest_index 2504 (by rfl)
+theorem jumpDest3606 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3606 = true :=
+  Artifact.isValidJumpDest_index 2361 (by rfl)
 
-theorem jumpDest3798 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3798 = true :=
-  Artifact.isValidJumpDest_index 2516 (by rfl)
+theorem jumpDest3644 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3644 = true :=
+  Artifact.isValidJumpDest_index 2383 (by rfl)
+
+theorem jumpDest3661 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3661 = true :=
+  Artifact.isValidJumpDest_index 2390 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

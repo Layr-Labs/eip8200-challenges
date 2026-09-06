@@ -22,7 +22,7 @@ theorem run_bitAdvance_swap (input : ByteArray) (outer j : Nat)
     [bitAdvanceSwapPath, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitSelectedState, bitAdvanceSwappedState, bitLoopState, bitTail, nonzeroState,
+      bitSelectedState, bitAdvanceSwappedState, bitLoopState, nonzeroState,
       callerRest, Dispatch.wordEntryState, Main.headerState, initialState,
       expPCs, List.exchange]
 
@@ -36,7 +36,7 @@ theorem run_bitAdvance_drop (input : ByteArray) (outer j : Nat)
     [bitAdvanceDropPath, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitAdvanceSwappedState, bitAdvanceDroppedState, bitLoopState, bitTail, nonzeroState,
+      bitAdvanceSwappedState, bitAdvanceDroppedState, bitLoopState, nonzeroState,
       callerRest, Dispatch.wordEntryState, Main.headerState, initialState,
       expPCs]
 
@@ -60,7 +60,7 @@ theorem run_bitAdvance_finish (input : ByteArray) (outer j : Nat)
     [bitAdvanceFinishPath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitAdvanceDroppedState, bitLoopState, bitTail, nonzeroState, callerRest,
+      bitAdvanceDroppedState, bitLoopState, nonzeroState, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState,
       expPCs,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,

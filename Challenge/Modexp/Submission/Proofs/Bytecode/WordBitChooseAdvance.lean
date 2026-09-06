@@ -26,7 +26,7 @@ theorem run_bitChoose (input : ByteArray) (outer j : Nat)
     [bitChoosePath, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitProductState, bitSelectedState, bitLoopState, bitTail, bitStep,
+      bitProductState, bitSelectedState, bitLoopState, bitStep,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expPCs]
 
@@ -50,7 +50,7 @@ theorem run_bitAdvance (input : ByteArray) (outer j : Nat)
     [bitAdvancePath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitSelectedState, bitLoopState, bitTail, nonzeroState, callerRest,
+      bitSelectedState, bitLoopState, nonzeroState, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState,
       expPCs, List.exchange,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,

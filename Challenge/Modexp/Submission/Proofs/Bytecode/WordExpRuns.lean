@@ -59,11 +59,41 @@ theorem run_expLoad (input : ByteArray) (i : Nat) (acc base : UInt256)
     [expLoadPath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      expGuardState, expLoopState, bitLoopState, bitTail, byteWord,
+      expGuardState, expLoopState, bitLoopState, byteWord,
       Accessors.calldataByteValue,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expPCs, Challenge.EvmProof.Word.word_toNat_ofNat,
       hoff, hadd, hzeroWord, hzeroRaw]
+
+set_option linter.unusedSimpArgs false in
+theorem run_bitGuard (input : ByteArray) (outer j : Nat)
+    (byte offset acc base : UInt256) (hj : j < 8) :
+    Challenge.EvmProof.Stepper.runLocatedBlock bitGuardPath
+      (bitLoopState input outer j byte offset acc base) =
+        some (bitGuardState input outer j byte offset acc base) := by
+  have hj256 : j < 2 ^ 256 := by omega
+  have hjmod : j % 2 ^ 256 = j := Nat.mod_eq_of_lt hj256
+  have h7mod : 7 % 2 ^ 256 = 7 := by norm_num
+  have hnlt : ¬ 7 % 2 ^ 256 < j % 2 ^ 256 := by
+    rw [hjmod, h7mod]
+    omega
+  have hnltLiteral :
+      ¬ 7 %
+          115792089237316195423570985008687907853269984665640564039457584007913129639936 <
+        j %
+          115792089237316195423570985008687907853269984665640564039457584007913129639936 := by
+    norm_num at hnlt ⊢
+    exact hnlt
+  have h616 : (616 : UInt256).toNat = 616 := by decide
+  have h7 : (7 : UInt256).toNat = 7 := by decide
+  simp (config := { maxSteps := 150000 })
+    [bitGuardPath, opAt, pushAt,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      bitLoopState, bitGuardState, nonzeroState, callerRest,
+      Dispatch.wordEntryState, Main.headerState, initialState, expPCs,
+      UInt256.isTrue, UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
+      hj, hj256, hjmod, h7mod, hnlt, hnltLiteral, h7, h616]
 
 set_option linter.unusedSimpArgs false in
 theorem run_bitDecode (input : ByteArray) (outer j : Nat)
@@ -85,7 +115,7 @@ theorem run_bitDecode (input : ByteArray) (outer j : Nat)
     [bitDecodePath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitGuardState, bitDecodedState, bitLoopState, bitTail, exponentBit,
+      bitGuardState, bitDecodedState, bitLoopState, exponentBit,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expPCs, Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt, hj, hsub, hshift, hbyte, h7Word, h1Word]
@@ -103,7 +133,7 @@ theorem run_bitSquare (input : ByteArray) (outer j : Nat)
     [bitSquarePath, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitDecodedState, bitSquaredState, bitLoopState, bitTail,
+      bitDecodedState, bitSquaredState, bitLoopState,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expRunPCs, List.exchange]
 
@@ -118,7 +148,7 @@ theorem run_bitMask (input : ByteArray) (outer j : Nat)
     [bitMaskPath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitSquaredState, bitMaskedState, bitLoopState, bitTail,
+      bitSquaredState, bitMaskedState, bitLoopState,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expRunPCs, hzeroRaw]
 
@@ -132,7 +162,7 @@ theorem run_bitProduct (input : ByteArray) (outer j : Nat)
     [bitProductPath, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitMaskedState, bitProductState, bitLoopState, bitTail,
+      bitMaskedState, bitProductState, bitLoopState,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expRunPCs]
 
@@ -146,7 +176,7 @@ theorem run_bitChoose (input : ByteArray) (outer j : Nat)
     [bitChoosePath, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitProductState, bitSelectedState, bitLoopState, bitTail, bitStep,
+      bitProductState, bitSelectedState, bitLoopState, bitStep,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expRunPCs]
 
@@ -170,7 +200,7 @@ theorem run_bitAdvance (input : ByteArray) (outer j : Nat)
     [bitAdvancePath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitSelectedState, bitLoopState, bitTail, nonzeroState, callerRest,
+      bitSelectedState, bitLoopState, nonzeroState, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState,
       expRunPCs, List.exchange,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
