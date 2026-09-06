@@ -70,6 +70,11 @@ theorem shr_ofNat (v k : Nat) (hv : v < 2 ^ 256) (hk : k < 256) :
     UInt256.shiftRight (UInt256.ofNat v) (UInt256.ofNat k) =
       UInt256.ofNat (v / 2 ^ k) := by
   rw [Challenge.EvmProof.Word.shiftRight_ofNat hv hk, Nat.shiftRight_eq_div_pow]
+theorem shl_ofNat (v k : Nat) (hv : v < 2 ^ 256) (hk : k < 256)
+    (hresult : v * 2 ^ k < 2 ^ 256) :
+    UInt256.shiftLeft (UInt256.ofNat v) (UInt256.ofNat k) =
+      UInt256.ofNat (v * 2 ^ k) := by
+  exact Challenge.EvmProof.Word.shiftLeft_ofNat hv hk hresult
 
 theorem and_one (v : Nat) : 1 &&& v = v % 2 := by
   rw [Nat.and_comm, Nat.and_one_is_mod]
@@ -402,11 +407,20 @@ theorem run_rrMid (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     shr_ofNat n k (Nat.lt_of_le_of_lt hn (by norm_num)) (by omega)
   have hand : UInt256.land (UInt256.ofNat 1) (UInt256.ofNat (n / 2 ^ k)) =
       UInt256.ofNat (n / 2 ^ k % 2) := land_one _
+  have hbit : n / 2 ^ k % 2 ≤ 1 := by
+    exact bitAt_le_one n k
+  have hshl :
+      UInt256.shiftLeft (UInt256.ofNat (n / 2 ^ k % 2)) (UInt256.ofNat 10) =
+        UInt256.ofNat (1024 * (n / 2 ^ k % 2)) := by
+    rw [shl_ofNat (n / 2 ^ k % 2) 10 (by omega) (by norm_num)
+      (by norm_num; omega)]
+    congr 1
+    norm_num [Nat.mul_comm]
   simp (config := { maxSteps := 600000 }) [blk1162, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     rrMid, rrSel, outer, selOf, bitAt, fastPC4, fastPC5, hcode, hrun,
-    hshr, hand, ofNat_mul_mod, jumpDest2971,
+    hshr, hand, hshl, ofNat_mul_mod, jumpDest2971,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
