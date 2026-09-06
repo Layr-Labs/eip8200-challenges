@@ -155,3 +155,4 @@ theorem rrSuffixValue_direct_final {mm R n : Nat}
   simpa using h
 
 end Challenge.Modexp.Submission.Proofs.Fast.RrLeadingLogic
+

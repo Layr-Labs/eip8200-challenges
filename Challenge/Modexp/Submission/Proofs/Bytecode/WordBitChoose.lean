@@ -22,7 +22,7 @@ theorem run_bitChoose (input : ByteArray) (outer j : Nat)
     [bitChoosePath, opAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitProductState, bitSelectedState, bitLoopState, bitStep,
+      bitProductState, bitSelectedState, bitLoopState, bitTail, bitStep,
       nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
       initialState, expPCs]
 

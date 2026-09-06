@@ -219,3 +219,4 @@ theorem rrCopyInv_after_copy (mem : ByteArray) (n mm R : Nat)
   rr := fastRepresents_rr_of_cc mem n (Limbs.radix * R % mm) hn2 hcc
 
 end Challenge.Modexp.Submission.Proofs.Fast.RrLeadingMemory
+
