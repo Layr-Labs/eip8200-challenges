@@ -43,10 +43,10 @@ def scheduleStartPath : List Located :=
 
 def conditionPath : List Located :=
   [⟨415, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨416, .push ⟨1, by decide⟩ (UInt256.ofNat 16), by rfl, by decide⟩,
+   ⟨416, .push ⟨1, by decide⟩ (UInt256.ofNat 15), by rfl, by decide⟩,
    ⟨417, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨418, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨419, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨418, .op .GT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨419, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨420, .push ⟨2, by decide⟩ (UInt256.ofNat 0x264), by rfl, by decide⟩,
    ⟨421, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -262,16 +262,17 @@ theorem run_condition_continue (s : State) (msgOff returnDest : UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hiWord : (UInt256.ofNat i).toNat = i := by
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  have hlt : UInt256.lt (UInt256.ofNat i) (UInt256.ofNat 16) =
-      UInt256.ofNat 1 := by
-    simp [UInt256.lt, hiWord, Challenge.EvmProof.Word.word_toNat_ofNat, hi]
-  have hzero : UInt256.isZero (UInt256.ofNat 1) = 0 := by decide
+  have hgt : UInt256.gt (UInt256.ofNat i) (UInt256.ofNat 15) = 0 := by
+    rw [UInt256.gt, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by omega), Nat.mod_eq_of_lt (by omega)]
+    rw [if_neg]
+    · rfl
+    · omega
   have hfalse : UInt256.isTrue (0 : UInt256) = false := by decide
   simp [conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    loopAt, afterCondition, hc3, hc4, hc5, hrun, hlt, hzero, hfalse]
+    loopAt, afterCondition, hc3, hc4, hc5, hrun, hgt, hfalse]
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupRead (s : State) (msgOff returnDest : UInt256)
@@ -586,15 +587,15 @@ theorem run_condition_exit (s : State) (msgOff returnDest : UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hlt : UInt256.lt (UInt256.ofNat 16) (UInt256.ofNat 16) = 0 := by decide
-  have hzero : UInt256.isZero (0 : UInt256) = UInt256.ofNat 1 := by decide
+  have hgt : UInt256.gt (UInt256.ofNat 16) (UInt256.ofNat 15) =
+      UInt256.ofNat 1 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat 1) = true := by decide
   have hdest : Decode.isValidJumpDest submissionBytecode 0x264 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 444 (by rfl)
   simp [conditionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopAt, afterExitCondition, hc3, hc4, hc5, hrun, hcode,
-    hlt, hzero, htrue, hdest]
+    hgt, htrue, hdest]
 
 set_option linter.unusedSimpArgs false in
 theorem run_exit (s : State) (msgOff returnDest : UInt256)
