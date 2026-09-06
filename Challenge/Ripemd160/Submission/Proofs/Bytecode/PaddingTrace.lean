@@ -409,7 +409,7 @@ def lengthLoopMemory (input : ByteArray) : Nat → ByteArray
 already final when the loop starts and never moves again. -/
 def lengthLoopState (input : ByteArray) (i : Nat) : State :=
   { padSentinel input with
-    pc := UInt256.ofNat (Artifact.instructionPC 383)
+    pc := UInt256.ofNat (Artifact.instructionPC 384)
     stack := [lengthAddr input i, lengthShift input i,
       Padding.paddedWord input, UInt256.ofNat 0x41f]
     memory := lengthLoopMemory input i
@@ -417,19 +417,19 @@ def lengthLoopState (input : ByteArray) (i : Nat) : State :=
 
 def lengthIterationPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨383, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨384, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨384, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨385, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨386, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨387, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨388, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨389, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨390, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
-   ⟨391, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨392, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨393, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨394, .push ⟨2, by decide⟩ (UInt256.ofNat 0x210), by rfl, by decide⟩,
-   ⟨395, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨386, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨387, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨388, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨389, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨390, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨391, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨392, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨393, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨394, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨395, .push ⟨2, by decide⟩ (UInt256.ofNat 0x211), by rfl, by decide⟩,
+   ⟨396, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def lengthBodyPath := lengthIterationPath.take 10
 def lengthBranchPath := lengthIterationPath.drop 10
@@ -444,7 +444,7 @@ def lengthBranchPath := lengthIterationPath.drop 10
     (lengthLoopState input i).executionEnv.code = submissionBytecode := by rfl
 
 @[simp] private theorem lengthLoopState_pc (input : ByteArray) (i : Nat) :
-    (lengthLoopState input i).pc = UInt256.ofNat 0x210 := by rfl
+    (lengthLoopState input i).pc = UInt256.ofNat 0x211 := by rfl
 
 @[simp] private theorem lengthLoopState_stack (input : ByteArray) (i : Nat) :
     (lengthLoopState input i).stack =
@@ -457,25 +457,25 @@ def lengthBranchPath := lengthIterationPath.drop 10
 /-- State after one low-byte store and both register updates. -/
 def lengthSteppedState (input : ByteArray) (i : Nat) : State :=
   { lengthLoopState input i with
-    pc := UInt256.ofNat (Artifact.instructionPC 393)
+    pc := UInt256.ofNat (Artifact.instructionPC 394)
     stack := [lengthAddr input (i + 1), lengthShift input (i + 1),
       Padding.paddedWord input, UInt256.ofNat 0x41f]
     memory := lengthLoopMemory input (i + 1) }
 
 def lengthBranchReady (input : ByteArray) (i : Nat) : State :=
   { lengthSteppedState input i with
-    pc := UInt256.ofNat (Artifact.instructionPC 395)
-    stack := [UInt256.ofNat 0x210, lengthShift input (i + 1)] ++
+    pc := UInt256.ofNat (Artifact.instructionPC 396)
+    stack := [UInt256.ofNat 0x211, lengthShift input (i + 1)] ++
       (lengthSteppedState input i).stack }
 
 def lengthBackReturned (input : ByteArray) (i : Nat) : State :=
   { lengthBranchReady input i with
-    pc := UInt256.ofNat 0x210
+    pc := UInt256.ofNat 0x211
     stack := (lengthSteppedState input i).stack }
 
 def lengthExitPending (input : ByteArray) (i : Nat) : State :=
   { lengthBranchReady input i with
-    pc := UInt256.ofNat (Artifact.instructionPC 396)
+    pc := UInt256.ofNat (Artifact.instructionPC 397)
     stack := (lengthSteppedState input i).stack }
 
 private theorem lengthBackReturned_eq (input : ByteArray) (i : Nat) :
@@ -489,13 +489,13 @@ private theorem lengthBackReturned_eq (input : ByteArray) (i : Nat) :
     (lengthSteppedState input i).halt = .Running := by rfl
 
 @[simp] private theorem lengthSteppedState_pc (input : ByteArray) (i : Nat) :
-    (lengthSteppedState input i).pc = UInt256.ofNat 0x21c := by rfl
+    (lengthSteppedState input i).pc = UInt256.ofNat 0x21d := by rfl
 
 @[simp] private theorem lengthBranchReady_halt (input : ByteArray) (i : Nat) :
     (lengthBranchReady input i).halt = .Running := by rfl
 
 @[simp] private theorem lengthBranchReady_pc (input : ByteArray) (i : Nat) :
-    (lengthBranchReady input i).pc = UInt256.ofNat 0x220 := by rfl
+    (lengthBranchReady input i).pc = UInt256.ofNat 0x221 := by rfl
 
 @[simp] private theorem lengthSteppedState_code (input : ByteArray) (i : Nat) :
     (lengthSteppedState input i).executionEnv.code = submissionBytecode := by rfl
@@ -504,10 +504,10 @@ private theorem lengthBackReturned_eq (input : ByteArray) (i : Nat) :
     (lengthBranchReady input i).executionEnv.code = submissionBytecode := by rfl
 
 @[simp] private theorem validLengthLoopHead :
-    Decode.isValidJumpDest submissionBytecode 0x210 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 383 = 0x210 := by rfl
+    Decode.isValidJumpDest submissionBytecode 0x211 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 384 = 0x211 := by rfl
   rw [← hpc]
-  exact Artifact.submissionArtifact.isValidJumpDest_index 383 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 384 (by rfl)
 
 /-! ## Arithmetic bridge for the masked bit length -/
 
@@ -780,10 +780,10 @@ def padReturned (input : ByteArray) : State :=
 
 def lengthExitPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨396, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨397, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨398, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨399, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨397, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨398, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨399, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨400, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem validPadReturn :
     Decode.isValidJumpDest submissionBytecode 0x41f = true := by
@@ -795,7 +795,7 @@ def lengthExitPopPath := lengthExitPath.take 3
 def lengthExitJumpPath := lengthExitPath.drop 3
 
 def lengthExitEntered (input : ByteArray) (i : Nat) : State :=
-  { lengthLoopState input i with pc := UInt256.ofNat 0x221 }
+  { lengthLoopState input i with pc := UInt256.ofNat 0x222 }
 
 private theorem lengthExitPending_eq (input : ByteArray) (i : Nat) :
     lengthExitPending input i = lengthExitEntered input (i + 1) := by
@@ -807,7 +807,7 @@ private theorem lengthExitPending_eq (input : ByteArray) (i : Nat) :
 
 def lengthExitSwapped (input : ByteArray) (i : Nat) : State :=
   { lengthExitEntered input i with
-    pc := UInt256.ofNat (Artifact.instructionPC 399)
+    pc := UInt256.ofNat (Artifact.instructionPC 400)
     stack := [UInt256.ofNat 0x41f, Padding.paddedWord input] }
 
 def lengthExitReturned (input : ByteArray) (i : Nat) : State :=
@@ -819,7 +819,7 @@ def lengthExitReturned (input : ByteArray) (i : Nat) : State :=
     (lengthExitEntered input i).halt = .Running := by rfl
 
 @[simp] private theorem lengthExitEntered_pc (input : ByteArray) (i : Nat) :
-    (lengthExitEntered input i).pc = UInt256.ofNat 0x221 := by rfl
+    (lengthExitEntered input i).pc = UInt256.ofNat 0x222 := by rfl
 
 @[simp] private theorem lengthExitEntered_code (input : ByteArray) (i : Nat) :
     (lengthExitEntered input i).executionEnv.code = submissionBytecode := by rfl
@@ -828,7 +828,7 @@ def lengthExitReturned (input : ByteArray) (i : Nat) : State :=
     (lengthExitSwapped input i).halt = .Running := by rfl
 
 @[simp] private theorem lengthExitSwapped_pc (input : ByteArray) (i : Nat) :
-    (lengthExitSwapped input i).pc = UInt256.ofNat 0x224 := by rfl
+    (lengthExitSwapped input i).pc = UInt256.ofNat 0x225 := by rfl
 
 private theorem run_lengthExitPop (input : ByteArray) (i : Nat) :
     Challenge.EvmProof.Stepper.runLocatedBlock lengthExitPopPath

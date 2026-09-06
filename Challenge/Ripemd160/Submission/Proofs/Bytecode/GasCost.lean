@@ -33,7 +33,7 @@ def blockCount (inputSize : Nat) : Nat := (inputSize + 72) / 64
 def calldataWords (inputSize : Nat) : Nat := (inputSize + 31) / 32
 
 /-- Final memory high-water mark, in 32-byte words. Padding itself ends at
-`37 + 2 * blockCount`; the final block's last schedule `MLOAD` reaches one
+`64 + 2 * blockCount`; the final block's last schedule `MLOAD` reaches one
 additional word. -/
 def finalActiveWords (inputSize : Nat) : Nat := 38 + 2 * blockCount inputSize
 
@@ -113,7 +113,7 @@ theorem referenceGasForSize_monotone : Monotone referenceGasForSize := by
 
 /-- Boundary regression: here the corrected final high-water mark crosses a
 memory-cost quotient boundary, so it distinguishes `38 + 2 * blocks` from
-the padded-memory endpoint `37 + 2 * blocks`. -/
+the padded-memory endpoint `64 + 2 * blocks`. -/
 @[simp] theorem referenceGasForSize_376 :
     referenceGasForSize 376 = 848234 := by decide
 
