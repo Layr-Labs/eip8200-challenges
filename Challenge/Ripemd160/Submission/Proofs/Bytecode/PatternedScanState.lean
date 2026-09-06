@@ -74,11 +74,11 @@ def comparePath : List Located :=
   [opAt 2923 .JUMPDEST, opAt 2924 (.Dup ⟨3, by decide⟩),
    opAt 2925 .CALLDATALOAD, opAt 2926 .XOR, opAt 2927 (.Dup ⟨4, by decide⟩),
    opAt 2928 .OR, opAt 2929 (.Swap ⟨3, by decide⟩), opAt 2930 .POP,
-   opAt 2931 .POP, opAt 2932 (.Dup ⟨0, by decide⟩), pushAt 2933 1 0xa0,
+   opAt 2931 .POP, opAt 2932 .JUMPDEST, pushAt 2933 1 0xa0,
    opAt 2934 .ADD, pushAt 2935 1 0xff, opAt 2936 .AND,
-   opAt 2937 (.Swap ⟨0, by decide⟩), opAt 2938 .POP,
-   opAt 2939 (.Dup ⟨1, by decide⟩), pushAt 2940 1 0x20, opAt 2941 .ADD,
-   opAt 2942 (.Swap ⟨1, by decide⟩), opAt 2943 .POP,
+   opAt 2937 .JUMPDEST, opAt 2938 .JUMPDEST,
+   opAt 2939 (.Swap ⟨0, by decide⟩), pushAt 2940 1 0x20, opAt 2941 .ADD,
+   opAt 2942 (.Swap ⟨0, by decide⟩), opAt 2943 .JUMPDEST,
    opAt 2944 (.Dup ⟨1, by decide⟩), pushAt 2945 2 0x03e0, opAt 2946 .GT,
    pushAt 2947 2 0x145b, opAt 2948 .JUMPI]
 
