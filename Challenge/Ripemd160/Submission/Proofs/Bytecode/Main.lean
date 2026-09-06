@@ -89,6 +89,26 @@ def initializedState (input : ByteArray) : State :=
 @[simp] theorem initializedState_codeAddr (input : ByteArray) :
     (initializedState input).executionEnv.codeAddr = deployAddress := by rfl
 
+/-! The sixteen program counters of the initializing stores, named so that
+`simp` never normalizes the chunked instruction list to compute one. -/
+
+@[simp] private theorem initPC683 : Artifact.instructionPC 683 = 1007 := by rfl
+@[simp] private theorem initPC684 : Artifact.instructionPC 684 = 1012 := by rfl
+@[simp] private theorem initPC685 : Artifact.instructionPC 685 = 1014 := by rfl
+@[simp] private theorem initPC686 : Artifact.instructionPC 686 = 1015 := by rfl
+@[simp] private theorem initPC687 : Artifact.instructionPC 687 = 1020 := by rfl
+@[simp] private theorem initPC688 : Artifact.instructionPC 688 = 1022 := by rfl
+@[simp] private theorem initPC689 : Artifact.instructionPC 689 = 1023 := by rfl
+@[simp] private theorem initPC690 : Artifact.instructionPC 690 = 1028 := by rfl
+@[simp] private theorem initPC691 : Artifact.instructionPC 691 = 1030 := by rfl
+@[simp] private theorem initPC692 : Artifact.instructionPC 692 = 1031 := by rfl
+@[simp] private theorem initPC693 : Artifact.instructionPC 693 = 1036 := by rfl
+@[simp] private theorem initPC694 : Artifact.instructionPC 694 = 1038 := by rfl
+@[simp] private theorem initPC695 : Artifact.instructionPC 695 = 1039 := by rfl
+@[simp] private theorem initPC696 : Artifact.instructionPC 696 = 1044 := by rfl
+@[simp] private theorem initPC697 : Artifact.instructionPC 697 = 1046 := by rfl
+@[simp] private theorem initPC698 : Artifact.instructionPC 698 = 1047 := by rfl
+
 theorem run_initStore (s : State) (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores)
     (hpc : s.pc = UInt256.ofNat (Artifact.instructionPC w.index))
@@ -101,7 +121,8 @@ theorem run_initStore (s : State) (w : Artifact.InitStore)
   all_goals
     simp (config := { maxSteps := 200000 })
       [locatedInitStore, applyInitStore, hpc, hstack, hrun,
-        Artifact.instructionPC,
+        Challenge.EvmProof.Word.ofNat_add_mod,
+        Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,

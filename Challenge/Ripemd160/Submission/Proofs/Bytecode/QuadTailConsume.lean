@@ -13,7 +13,7 @@ set_option maxHeartbeats 4000000
 # Raw execution of the 419d031 consume tail
 
 Artifact-independent. `consumeBody` is the frozen candidate sequence from
-PC `0x9a9` through the earlier `JUMP` at `0x9fb`. Nine following `STOP`
+PC `0x9a9` through the earlier `JUMP` at `0x9fc`. Eight following `STOP`
 bytes are unreachable padding and are not executed.
 -/
 
@@ -34,12 +34,12 @@ def consumeBodyBytes : List UInt8 :=
   [0x92, 0x90, 0x96, 0x60, 0x40, 0x51, 0x01, 0x01, 0x63, 0xff, 0xff, 0xff, 0xff,
    0x16, 0x92, 0x90, 0x96, 0x60, 0x60, 0x51, 0x01, 0x01, 0x63, 0xff, 0xff, 0xff,
    0xff, 0x16, 0x60, 0x40, 0x52, 0x90, 0x95, 0x60, 0x80, 0x51, 0x01, 0x01, 0x63,
-   0xff, 0xff, 0xff, 0xff, 0x16, 0x60, 0x60, 0x52, 0x94, 0x90, 0x91, 0x60, 0xa0,
-   0x51, 0x01, 0x01, 0x63, 0xff, 0xff, 0xff, 0xff, 0x16, 0x60, 0x80, 0x52,
+   0xff, 0xff, 0xff, 0xff, 0x16, 0x60, 0x60, 0x52, 0x91, 0x90, 0x94, 0x60, 0xa0,
+   0x51, 0x01, 0x01, 0x63, 0xff, 0xff, 0xff, 0xff, 0x16, 0x60, 0x80, 0x52, 0x92,
    0x60, 0x20, 0x51, 0x01, 0x01, 0x63, 0xff, 0xff, 0xff, 0xff, 0x16, 0x60, 0xa0,
    0x52, 0x60, 0x20, 0x52, 0x50, 0x56]
 
-@[simp] theorem consumeBodyBytes_length : consumeBodyBytes.length = 83 := by
+@[simp] theorem consumeBodyBytes_length : consumeBodyBytes.length = 84 := by
   rfl
 
 set_option linter.unusedSimpArgs false in
@@ -242,12 +242,6 @@ theorem run_consumeBody (s : State)
       List.getElem?_cons_zero, List.getElem?_cons_succ,
       Challenge.EvmProof.Word.mask32_toNat, Compression.evmCombine,
       StackMemory.hashAt]
-  have horder (a : UInt256) : a + right.b + left.a = a + left.a + right.b := by
-    change UInt256.mk ((a.val + right.b.val) + left.a.val) =
-      UInt256.mk ((a.val + left.a.val) + right.b.val)
-    congr 1
-    exact add_right_comm _ _ _
-  simp only [horder]
 
 set_option linter.unusedSimpArgs false in
 theorem runTail_consumeBody (s : State)
@@ -294,11 +288,5 @@ theorem runTail_consumeBody (s : State)
       List.getElem?_cons_zero, List.getElem?_cons_succ,
       Challenge.EvmProof.Word.mask32_toNat, Compression.evmCombine,
       StackMemory.hashAt]
-  have horder (a : UInt256) : a + right.b + left.a = a + left.a + right.b := by
-    change UInt256.mk ((a.val + right.b.val) + left.a.val) =
-      UInt256.mk ((a.val + left.a.val) + right.b.val)
-    congr 1
-    exact add_right_comm _ _ _
-  simp only [horder]
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailConsume

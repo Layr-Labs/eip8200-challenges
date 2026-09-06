@@ -1,8 +1,8 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanState
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanTrace
 
 set_option warningAsError true
 set_option maxRecDepth 100000
-set_option maxHeartbeats 20000000
+set_option maxHeartbeats 40000000
 set_option linter.unusedSimpArgs false
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
@@ -11,10 +11,10 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedInputData PatternedDigest PatternedGuardSpec
 
 theorem run_return :
-    run returnPath (hitEntry patternedInput) = some (returnedState patternedInput) := by
+    run returnPath (hitState patternedInput) = some (returnedState patternedInput) := by
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
-  simp (config := { maxSteps := 1000000 })
-    [returnPath, opAt, pushAt, wfOp, hitEntry, atPC, returnedState,
+  simp (config := { maxSteps := 400000 })
+    [returnPath, opAt, pushAt, wfOp, hitState, atPC, returnedState,
     answerMemory, storeWord, paddedDigestWord,
     MachineState.mstore, State.activeWordsAfterUInt256,
     MachineState.activeWordsAfter, hzeroNat,
