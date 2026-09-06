@@ -52,6 +52,32 @@ def straddleCorrection (o : UInt256) : UInt256 :=
       (UInt256.mul (UInt256.ofNat 8)
         (UInt256.ofNat 27 -
           UInt256.mul (UInt256.ofNat 5) (UInt256.shiftRight o (UInt256.ofNat 8)))))
+/- The three-bit shift is the modular equivalent of multiplying by eight. -/
+theorem shiftLeft_three_eq_mul_eight (q : UInt256) :
+    UInt256.shiftLeft q (UInt256.ofNat 3) =
+      UInt256.mul (UInt256.ofNat 8) q := by
+  apply Challenge.EvmProof.Word.word_ext
+  have hshift :
+      (UInt256.shiftLeft q (UInt256.ofNat 3)).toNat =
+        (q.toNat <<< 3) % 2 ^ 256 := by
+    unfold UInt256.shiftLeft
+    have hshift3 : (UInt256.ofNat 3).toNat = 3 := by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat]
+      exact Nat.mod_eq_of_lt (by norm_num)
+    have hnot : ¬ (UInt256.ofNat 3).toNat ≥ 256 := by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat]
+      norm_num
+    rw [if_neg hnot, hshift3,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+    rw [show UInt256.size = 2 ^ 256 by rfl, Nat.mod_mod]
+  have hmul :
+      (UInt256.mul (UInt256.ofNat 8) q).toNat =
+        (8 * q.toNat) % 2 ^ 256 := by
+    change ((UInt256.ofNat 8).val * q.val).val = _
+    rw [Fin.val_mul]
+    rfl
+  rw [hshift, hmul, Nat.shiftLeft_eq]
+  norm_num
 
 /-- The correction add.  The constant's high bits are clear, so the guard masks
 `E` itself rather than `E ^^^ C`. -/
