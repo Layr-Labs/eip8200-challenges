@@ -135,10 +135,11 @@ def bitHeadPath :
 
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2047 2 655, opAt 2048 .JUMP]
+  [pushAt 2045 2 655, opAt 2046 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
-def bitPC (j : Nat) : Nat := 3028 + 27 * j
+def bitPC (j : Nat) : Nat :=
+  if j < 8 then 3028 + 27 * j else 3241
 
 def expOffset (input : ByteArray) : Nat := 96 + baseSize input
 def modulusOffset (input : ByteArray) : Nat := expOffset input + exponentSize input
@@ -337,6 +338,31 @@ def bitProductState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
       UInt256.ofNat 1267] ++ callerRest input }
+
+def bitDecodedState7 (input : ByteArray) (outer : Nat) (byte offset : UInt256)
+    (acc base : UInt256) : State :=
+  { bitDecodedState input outer 7 byte offset acc base with
+    pc := UInt256.ofNat (bitPC 7 + 4) }
+
+def bitSquaredState7 (input : ByteArray) (outer : Nat) (byte offset : UInt256)
+    (acc base : UInt256) : State :=
+  { bitSquaredState input outer 7 byte offset acc base with
+    pc := UInt256.ofNat (bitPC 7 + 8) }
+
+def bitMaskedState7 (input : ByteArray) (outer : Nat) (byte offset : UInt256)
+    (acc base : UInt256) : State :=
+  { bitMaskedState input outer 7 byte offset acc base with
+    pc := UInt256.ofNat (bitPC 7 + 11) }
+
+def bitProductState7 (input : ByteArray) (outer : Nat) (byte offset : UInt256)
+    (acc base : UInt256) : State :=
+  { bitProductState input outer 7 byte offset acc base with
+    pc := UInt256.ofNat (bitPC 7 + 15) }
+
+def bitSelectedState7 (input : ByteArray) (outer : Nat) (byte offset : UInt256)
+    (acc base : UInt256) : State :=
+  { bitSelectedState input outer 7 byte offset acc base with
+    pc := UInt256.ofNat (bitPC 7 + 20) }
 
 theorem byteWord_eq (input : ByteArray) (offset : Nat)
     (hoffset : offset < 2 ^ 256) :

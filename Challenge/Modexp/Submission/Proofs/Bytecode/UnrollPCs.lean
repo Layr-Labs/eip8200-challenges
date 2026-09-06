@@ -5,9 +5,9 @@ set_option maxHeartbeats 8000000
 /-!
 # Program counters for the unrolled exponent-bit block
 
-The block holds eight byte-identical copies of the bit body.  Copy `k` starts
-at instruction index `1847 + 25 * k` and at byte `3028 + 27 * k`; the entry
-`JUMPDEST` and the closing jump sit on either side of the eight copies.
+The block holds eight byte-identical copies of the bit body.  Copies `0` through
+`6` start at instruction index `1847 + 25 * k`; copy `7` uses a shortened
+fixed-shift decode and ends at instruction `2044` and byte `3240`.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.UnrollPCs
@@ -60,14 +60,14 @@ open EvmSemantics.EVM
        3205,3206,3207,3208,3209,3210,3211,3212,3213,3214,3215,3216][i - 1997]! := by
   interval_cases i <;> decide
 
-@[simp] theorem copyPC7 (i : Nat) (hi : 2022 ≤ i) (hii : i ≤ 2046) :
+@[simp] theorem copyPC7 (i : Nat) (hi : 2022 ≤ i) (hii : i ≤ 2044) :
     Artifact.submissionArtifact.instructionPC i =
-      [3217,3219,3220,3222,3223,3224,3225,3226,3227,3228,3229,3230,3231,
-       3232,3233,3234,3235,3236,3237,3238,3239,3240,3241,3242,3243][i - 2022]! := by
+      [3217,3218,3220,3221,3222,3223,3224,3225,3226,3227,3228,3229,3230,
+       3231,3232,3233,3234,3235,3236,3237,3238,3239,3240][i - 2022]! := by
   interval_cases i <;> decide
 
-@[simp] theorem exitPC (i : Nat) (hi : 2047 ≤ i) (hii : i ≤ 2048) :
-    Artifact.submissionArtifact.instructionPC i = [3244, 3247][i - 2047]! := by
+@[simp] theorem exitPC (i : Nat) (hi : 2045 ≤ i) (hii : i ≤ 2046) :
+    Artifact.submissionArtifact.instructionPC i = [3241, 3244][i - 2045]! := by
   interval_cases i <;> decide
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.UnrollPCs
