@@ -2583,7 +2583,7 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
  YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
- YulEvmCompiler.Instr.push 2 3887,
+ YulEvmCompiler.Instr.push 2 1789,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
  YulEvmCompiler.Instr.push 2 9344,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.MLOAD,
