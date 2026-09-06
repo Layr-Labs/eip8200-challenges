@@ -1,5 +1,4 @@
 import Challenge.Modexp.Submission.Proofs.Fast.RrLeadingSuffix
-import Challenge.Modexp.Submission.Proofs.Fast.FullBaseCorrect
 
 set_option warningAsError true
 set_option maxHeartbeats 16000000

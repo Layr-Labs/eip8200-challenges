@@ -10,13 +10,30 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1195..1196, pc 1639..1642: jump to the appended full-base
-dispatcher. The remaining decoded instructions through index 1215 are
-unreachable padding, preserving the old loop head at index 1216 / pc 1668. -/
+/-- Instructions 1195..1215, pc 1639..1666. -/
 def blk1195 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1195 2 3606,
-   opAt 1196 .JUMP]
+  [opAt 1195 (.Dup ⟨2, by decide⟩),
+   pushAt 1196 1 31,
+   opAt 1197 .ADD,
+   pushAt 1198 1 5,
+   opAt 1199 .SHR,
+   opAt 1200 (.Dup ⟨3, by decide⟩),
+   opAt 1201 (.Dup ⟨1, by decide⟩),
+   pushAt 1202 1 5,
+   opAt 1203 .SHL,
+   opAt 1204 .SUB,
+   pushAt 1205 1 3,
+   opAt 1206 .SHL,
+   pushAt 1207 1 96,
+   opAt 1208 .CALLDATALOAD,
+   opAt 1209 (.Swap ⟨0, by decide⟩),
+   opAt 1210 .SHR,
+   opAt 1211 (.Dup ⟨2, by decide⟩),
+   pushAt 1212 2 992,
+   opAt 1213 .ADD,
+   opAt 1214 .MSTORE,
+   pushAt 1215 1 1]
 
 /-- Instructions 1216..1222, pc 1668..1676. -/
 def blk1216 :

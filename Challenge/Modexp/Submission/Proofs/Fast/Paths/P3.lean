@@ -46,7 +46,8 @@ def blk1155 :
    pushAt 1160 2 1939,
    opAt 1161 .JUMP]
 
-/-- Instructions 1162..1173, pc 1586..1604. -/
+/-! The RR selector now dispatches on the bit directly. -/
+/-- Instructions 1162..1172, pc 1586..1603. -/
 def blk1162 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1162 .JUMPDEST,
@@ -55,12 +56,11 @@ def blk1162 :
    opAt 1165 .SHR,
    pushAt 1166 1 1,
    opAt 1167 .AND,
-   pushAt 1168 2 1024,
-   opAt 1169 .MUL,
-   pushAt 1170 2 4096,
-   opAt 1171 .ADD,
-   pushAt 1172 2 2971,
-   opAt 1173 .JUMP]
+   pushAt 1168 2 3803,
+   opAt 1169 .JUMPI,
+  pushAt 1170 2 4096,
+   pushAt 1171 2 2995,
+   opAt 1172 .JUMP]
 
 /-- Instructions 1178..1183, pc 1615..1622. -/
 def blk1178 :

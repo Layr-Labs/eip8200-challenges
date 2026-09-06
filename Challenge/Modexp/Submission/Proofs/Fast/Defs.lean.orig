@@ -752,12 +752,6 @@ private theorem fastPCAnchor23 :
       rw [fastPCAnchor23]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC24 (i : Nat) (hi : 2504 ≤ i) (hii : i ≤ 2518) :
-    Artifact.submissionArtifact.instructionPC i =
-      [3776,3777,3778,3779,3782,3783,3786,3787,3790,3793,3794,3797,3798,
-       3799,3802][i - 2504]! := by
-  interval_cases i <;> decide
-
 theorem jumpDest1196 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1196 = true :=
   Artifact.isValidJumpDest_index 899 (by rfl)
@@ -933,17 +927,5 @@ theorem jumpDest2995 :
 theorem jumpDest3571 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3571 = true :=
   Artifact.isValidJumpDest_index 2338 (by rfl)
-
-theorem jumpDest3776 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3776 = true :=
-  Artifact.isValidJumpDest_index 2504 (by rfl)
-
-theorem jumpDest3798 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3798 = true :=
-  Artifact.isValidJumpDest_index 2516 (by rfl)
-
-theorem jumpDest3803 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3803 = true :=
-  Artifact.isValidJumpDest_index 2519 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast
