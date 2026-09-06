@@ -88,15 +88,15 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
     have hcopy := Bytecode.FullBaseHitTrace.gasSteps_copyAdd
       s mem input n bsize esize msize hn32 hact hdata hcode hfork hrun hnp
     have hj3644 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-        (UInt256.ofNat 3644).toNat = true := by
+        (UInt256.ofNat 3673).toNat = true := by
       rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-        Nat.mod_eq_of_lt (show 3644 < 2 ^ 256 by norm_num)]
+        Nat.mod_eq_of_lt (show 3673 < 2 ^ 256 by norm_num)]
       exact jumpDest3644
     have hadd : Challenge.EvmProof.GasSteps
         (FullBase.addCallState s mem input n bsize esize msize)
         (FullBase.afterAddState s reduced n bsize esize msize) := by
       exact Challenge.EvmProof.GasSteps.cast
-        (sub.addmod 1024 3072 1024 (UInt256.ofNat 3644)
+        (sub.addmod 1024 3072 1024 (UInt256.ofNat 3673)
           (outer n bsize esize msize) copied (by simp [outer])
           (by omega) (by omega) (by omega) (by omega) (by omega) hj3644 hframeCopy)
         rfl rfl

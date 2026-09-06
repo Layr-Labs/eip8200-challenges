@@ -53,15 +53,21 @@ def copyProgram : List Instr :=
    .push ⟨2, by decide⟩ (UInt256.ofNat 5120),
    .push ⟨2, by decide⟩ (UInt256.ofNat 6144), .op .MCOPY]
 
-/-- pc 3583..3601: four threshold comparisons and their sum. -/
-def counterProgram : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 3), .op .LT,
-   .op (.Dup ⟨2, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 7), .op .LT,
-   .op (.Dup ⟨3, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 15), .op .LT,
-   .op (.Dup ⟨4, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 31), .op .LT,
-   .op .ADD, .op .ADD, .op .ADD]
+/- pc 3583..3630: table-lookup counter computation, followed by ten
+unreachable-width padding `JUMPDEST`s so the downstream artifact indices stay
+fixed.  The pushed word is aligned to the EVM's 32-byte `BYTE` view. -/
+def counterTable : Nat :=
+  6928917744019834342450304135053998847894257566608853226701611606212608
 
-/-- pc 3602..3605: rejoin the inherited RR head at pc 1569. -/
+def counterProgram : List Instr :=
+  [.push ⟨32, by decide⟩ (UInt256.ofNat counterTable),
+   .op (.Dup ⟨2, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 1),
+   .op .SHR, .op .BYTE,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST]
+
+/- pc 3631..3634: rejoin the inherited RR head at pc 1569. -/
 def jumpProgram : List Instr :=
   [.push ⟨2, by decide⟩ (UInt256.ofNat 1569), .op .JUMP]
 
@@ -97,7 +103,7 @@ def copiedState (template : State) (mem : ByteArray)
 def counterState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 3602
+    pc := UInt256.ofNat 3631
     stack := UInt256.ofNat (directCounter n) :: outer n bsize esize msize
     memory := copiedMemory mem n
     activeWords := copiedActiveWords template n }
@@ -145,6 +151,24 @@ theorem counterWord (n : Nat) (hn32 : n ≤ 32) :
   congr 1
   unfold directCounter
   omega
+
+theorem counterShift (n : Nat) (hn2 : 2 ≤ n) (hn32 : n ≤ 32) :
+    UInt256.shiftRight (UInt256.ofNat n) (UInt256.ofNat 1) =
+      UInt256.ofNat (n / 2) := by
+  interval_cases n <;> decide
+
+theorem counterTable_byte (n : Nat) (hn2 : 2 ≤ n) (hn32 : n ≤ 32) :
+    UInt256.byteAt (UInt256.ofNat (n / 2)) (UInt256.ofNat counterTable) =
+      UInt256.ofNat (directCounter n) := by
+  interval_cases n <;> decide
+
+theorem counterLookup (n : Nat) (hn2 : 2 ≤ n) (hn32 : n ≤ 32) :
+    UInt256.byteAt
+        (UInt256.shiftRight (UInt256.ofNat n) (UInt256.ofNat 1))
+        (UInt256.ofNat counterTable) =
+      UInt256.ofNat (directCounter n) := by
+  rw [counterShift n hn2 hn32]
+  exact counterTable_byte n hn2 hn32
 
 /-- Functional copy leaf.  Its only semantic input is the already-established
 size word `32*n` at memory address 9344. -/

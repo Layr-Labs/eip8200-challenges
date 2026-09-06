@@ -40,7 +40,7 @@ theorem run_helper (template : State) (mem : ByteArray)
       entryState, exitState, outer, copiedMemory, copiedActiveWords,
       loadActiveWords, State.activeWordsAfterUInt256,
       State.activeWordsAfterUInt256_2, hrun, hcode, hsize,
-      sizeWord_toNat hn32, counterWord n hn32, helperPC, jump1569,
+      sizeWord_toNat hn32, counterLookup n _hn2 hn32, helperPC, jump1569,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,

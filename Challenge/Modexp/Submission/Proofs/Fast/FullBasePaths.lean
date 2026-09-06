@@ -16,7 +16,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- pc 3606..3620, indices 2361..2372: size/top-bit guard. -/
+/- pc 3635..3649, indices 2361..2372: size/top-bit guard. -/
 def blkFullBaseGuard :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2361 .JUMPDEST,
@@ -29,10 +29,10 @@ def blkFullBaseGuard :
    opAt 2368 .SHR,
    opAt 2369 .AND,
    opAt 2370 .ISZERO,
-   pushAt 2371 2 3661,
+   pushAt 2371 2 3690,
    opAt 2372 .JUMPI]
 
-/-- pc 3621..3643, indices 2373..2382: copy the base to ACC and call
+/- pc 3650..3672, indices 2373..2382: copy the base to ACC and call
 the existing add-mod routine with ZERO as its second operand. -/
 def blkFullBaseCopyAdd :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -40,14 +40,14 @@ def blkFullBaseCopyAdd :
    pushAt 2374 1 96,
    pushAt 2375 2 1024,
    opAt 2376 .CALLDATACOPY,
-   pushAt 2377 2 3644,
+   pushAt 2377 2 3673,
    pushAt 2378 2 1024,
    pushAt 2379 2 3072,
    pushAt 2380 2 1024,
    pushAt 2381 2 2467,
    opAt 2382 .JUMP]
 
-/-- pc 3644..3660, indices 2383..2389: after add-mod, convert ACC to the
+/- pc 3673..3689, indices 2383..2389: after add-mod, convert ACC to the
 Montgomery BASE block and rejoin at pc 1755. -/
 def blkFullBaseAfterAdd :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -59,7 +59,7 @@ def blkFullBaseAfterAdd :
    pushAt 2388 2 1939,
    opAt 2389 .JUMP]
 
-/-- pc 3661..3694, indices 2390..2413: relocated original base-head
+/- pc 3690..3723, indices 2390..2413: relocated original base-head
 computation and the jump to the unchanged loop head. -/
 def blkFullBaseFallback :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=

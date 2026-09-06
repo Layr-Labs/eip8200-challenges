@@ -3783,7 +3783,7 @@ def gasSteps_blLoop (s : State) {n bsize mm minv R : Nat}
 
 /- The former base chain ran from `RRE`'s fallthrough at pc1639 to `BDONE`.
 The relocated wrapper below starts at the helper's miss state instead. -/
-/-- The relocated legacy base chain, from the full-base guard miss at pc3661
+/-- The relocated legacy base chain, from the full-base guard miss at pc3690
 to `BDONE` at pc1756. -/
 def gasSteps_baseChain_fallback (s : State) {n bsize mm minv R : Nat}
     (sub : Subroutines s n bsize mm minv)
