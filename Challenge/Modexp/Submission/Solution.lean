@@ -1,24 +1,48 @@
+import Init.Data.ByteArray.Lemmas
 import Challenge.Modexp.Benchmark.Artifact
-import Challenge.Modexp.Submission.Proofs.Fast.Correct
-import Challenge.Modexp.Submission.Proofs.Fast.Exp
+import Challenge.Modexp.Submission.Proof.Top
 
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 5000000
+set_option maxRecDepth 1000000
+set_option maxHeartbeats 20000000
 
 namespace Challenge.Modexp.Benchmark
+open Challenge.Modexp.Submission (correct_of_asm programAsm programInstrs)
+open YulEvmCompiler (assemble assembleBytes)
 
-/-- Correctness of the submitted MODEXP bytecode.
+open Challenge.Modexp.Submission.Proof.Top (hlow hsmall hcert hne program_correct)
 
-Instruction 0 is `PUSH2 1314; JUMP`, so every execution enters the code appended
-at byte 1314.  That code returns the result itself for an odd modulus wider than
-32 bytes, and otherwise reaches the reference program body's `JUMPDEST` at
-pc 1196 with an empty stack and untouched memory.  `Fast.Correct` joins the two
-sides: `Fast.Setup` supplies the declining trace, `Fast.Exp` the returning one,
-and the reference proof covers everything from pc 1196 on. -/
+/-!
+# The MODEXP submission
+
+`Proof.Top.program_correct` proves the full Asm-level run of `programAsm`
+from the challenge's fixed initial state for every valid input, and
+`Bridge.correct_of_asm` lifts that run — through the pinned compiler's
+simulation theorem and the kernel-checked stack certificate — to
+`Correct (assemble programInstrs)`.
+
+The benchmark's `bytecode` is the chunked literal regenerated from
+`Submission/bytecode.hex` by `scripts/yukon_benchmark.py prepare`; it is
+the same 2187 bytes as `assemble programInstrs`. `artifact_eq` checks this
+at the flat-list level (`Array.toList_inj` on `.data`, with core's
+`toList_data_append` unfolding the chunk concatenation into plain list
+appends), so the kernel never evaluates a byte-array append or an
+elementwise array comparison.
+-/
+
+/-- The submitted artifact is exactly the assembled program. -/
+theorem artifact_eq : bytecode = assemble programInstrs := by
+  have h1 : bytecode.data.toList = assembleBytes programInstrs := by
+    unfold bytecode
+    simp only [ByteArray.toList_data_append]
+    decide
+  have h2 : bytecode.data = (assembleBytes programInstrs).toArray :=
+    Array.toList_inj.mp (by rw [h1])
+  exact ByteArray.ext h2
+
+/-- Correctness of the submitted MODEXP bytecode. -/
 theorem candidate : Challenge.Modexp.Correct bytecode := by
-  change Challenge.Modexp.Correct Challenge.Modexp.submissionBytecode
-  exact Challenge.Modexp.Submission.Proofs.Fast.Correct.submission_correct_of
-    Challenge.Modexp.Submission.Proofs.Fast.Exp.gasSteps_handled
+  rw [artifact_eq]
+  exact correct_of_asm hlow hsmall hcert hne program_correct
 
 end Challenge.Modexp.Benchmark
