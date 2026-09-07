@@ -24,16 +24,16 @@ theorem run_squareLookup (template : State) (pc : UInt256)
     runInstructions squareLookupProgram
       (nibbleState template pc base modulus nibble byte word pointer
         accumulator rest) =
-      some (nibbleState template (advancePC 35 pc) base modulus nibble
+      some (nibbleState template (advancePC 28 pc) base modulus nibble
         byte word pointer
         (WindowMath.nibbleWordStep modulus base accumulator nibble) rest) := by
   rw [squareLookupProgram, runInstructions_append,
     run_fourSquares template pc base modulus nibble byte word pointer
       accumulator rest hrest]
   simp only [Option.bind_some]
-  rw [run_lookup template (advancePC 18 pc) base modulus nibble byte word
-    pointer (WindowMath.squareWordAfter modulus 4 accumulator) rest hnibble
-    hrest]
+  rw [run_fusedSquareLookup template (advancePC 16 pc) base modulus nibble
+    byte word pointer accumulator (WindowMath.squareWordAfter modulus 4
+      accumulator) rest hnibble hrest]
   rw [← advancePC_add]
   norm_num
   unfold WindowMath.nibbleWordStep

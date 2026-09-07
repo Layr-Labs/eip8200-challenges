@@ -20,12 +20,19 @@ def squareProgram : List Instr :=
    .op (.Dup ⟨0, by decide⟩), .op .MULMOD,
    .op (.Swap ⟨4, by decide⟩), .op .POP]
 
-/-- The lookup uses the same factor order and stack effect. A wide encoding
-of the constant five absorbs the removed square/lookup padding, preserving
-the complete nibble's 35-byte window without adding a stack slot. -/
+/-- The table lookup and multiply.  `DUP6 DUP6` lift the modulus and the
+accumulator into `MULMOD` order *before* the table word is loaded, so the
+`SWAP1` the load-first form needed to slide the modulus underneath is gone.
+The compact sequence has nine instructions and ten bytes.
+
+Note the operand order: `MULMOD` now pops the table word first and the
+accumulator second, so the machine produces `mulMod (tableWord ..) acc m` where
+the load-first form produced `mulMod acc (tableWord ..) m`.  Those are equal but
+NOT definitionally equal; `mulMod_comm` below is what bridges them, and every
+statement downstream keeps the accumulator-first spelling. -/
 def lookupProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .push 8 5, .op .SHL, .op .MLOAD,
+   .op (.Dup ⟨2, by decide⟩), .push 1 5, .op .SHL, .op .MLOAD,
    .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP]
 
 def beginSquareProgram : List Instr :=
@@ -36,15 +43,21 @@ def topSquareProgram : List Instr :=
   [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨0, by decide⟩),
    .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
 
-def finishSquareProgram : List Instr :=
-  [.op (.Swap ⟨4, by decide⟩), .op .POP]
+/-- Fuse the final square cleanup with the following table lookup.  The
+three-byte immediate is padding: it still pushes the value `5`, while keeping
+the compact artifact's twelve-byte block width and all later PCs fixed. -/
+def fusedSquareLookupProgram : List Instr :=
+  [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩), .push 3 5, .op .SHL, .op .MLOAD,
+   .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP]
 
-/-- Keep the accumulator at the top between squarings; no padding is executed. -/
+/-- Four pure squarings, ending in the seven-slot square state. -/
 def fourSquareProgram : List Instr :=
   beginSquareProgram ++ topSquareProgram ++ topSquareProgram ++
-    topSquareProgram ++ finishSquareProgram
+    topSquareProgram
 
-def squareLookupProgram : List Instr := fourSquareProgram ++ lookupProgram
+def squareLookupProgram : List Instr :=
+  fourSquareProgram ++ fusedSquareLookupProgram
 
 def advancePC : Nat → UInt256 → UInt256
   | 0, pc => pc

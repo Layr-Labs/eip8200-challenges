@@ -22,18 +22,18 @@ open Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
 private def fallbackCountPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2303 .JUMPDEST, opAt 2304 (.Dup ⟨2, by decide⟩),
-   pushAt 2305 1 31, opAt 2306 .ADD, pushAt 2307 1 5, opAt 2308 .SHR]
+  [opAt 2292 .JUMPDEST, opAt 2293 (.Dup ⟨2, by decide⟩),
+   pushAt 2294 1 31, opAt 2295 .ADD, pushAt 2296 1 5, opAt 2297 .SHR]
 private def fallbackWordPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2309 (.Dup ⟨3, by decide⟩), opAt 2310 (.Dup ⟨1, by decide⟩),
-   pushAt 2311 1 5, opAt 2312 .SHL, opAt 2313 .SUB, pushAt 2314 1 3,
-   opAt 2315 .SHL, pushAt 2316 1 96, opAt 2317 .CALLDATALOAD,
-   opAt 2318 (.Swap ⟨0, by decide⟩), opAt 2319 .SHR]
+  [opAt 2298 (.Dup ⟨3, by decide⟩), opAt 2299 (.Dup ⟨1, by decide⟩),
+   pushAt 2300 1 5, opAt 2301 .SHL, opAt 2302 .SUB, pushAt 2303 1 3,
+   opAt 2304 .SHL, pushAt 2305 1 96, opAt 2306 .CALLDATALOAD,
+   opAt 2307 (.Swap ⟨0, by decide⟩), opAt 2308 .SHR]
 private def fallbackStorePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2320 (.Dup ⟨2, by decide⟩), pushAt 2321 2 992, opAt 2322 .ADD,
-   opAt 2323 .MSTORE, pushAt 2324 1 1, pushAt 2325 2 1668, opAt 2326 .JUMP]
+  [opAt 2309 (.Dup ⟨2, by decide⟩), pushAt 2310 2 992, opAt 2311 .ADD,
+   opAt 2312 .MSTORE, pushAt 2313 1 1, pushAt 2314 2 1668, opAt 2315 .JUMP]
 
 private theorem shr_ofNat (value shift : Nat) (hv : value < 2 ^ 256)
     (hs : shift < 256) :

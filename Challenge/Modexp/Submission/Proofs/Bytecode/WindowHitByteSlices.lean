@@ -8,7 +8,7 @@ set_option maxRecDepth 40000
 # Generated-artifact byte slices
 
 This is the only module that binds the reusable four-byte loop model to the
-generated instruction list.  Each path has exactly sixty-six instruction
+generated instruction list.  Each path has exactly sixty-two instruction
 certificates.  Keeping the four equalities separate bounds regeneration
 failures to one concrete slice.
 -/
@@ -30,21 +30,21 @@ def locatedSlice (start count : Nat)
         omega⟩
 
 def byte0Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 1968 66 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 1973 62 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte1Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2034 66 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2035 62 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte2Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2100 66 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2097 62 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte3Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2166 66 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2159 62 (by rw [Artifact.submissionInstructions_count]; omega)
 
-def byteStartIndex (byte : Fin 4) : Nat := 1968 + 66 * byte.val
+def byteStartIndex (byte : Fin 4) : Nat := 1973 + 62 * byte.val
 
 def byteStartPC (byte : Fin 4) : Nat :=
-  [3208, 3292, 3377, 3462][byte.val]!
+  [3182, 3252, 3323, 3394][byte.val]!
 
 def highPrepPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
@@ -53,53 +53,38 @@ def highPrepPath (byte : Fin 4) :
     unfold byteStartIndex
     omega)
 
-def highSquarePath (byte : Fin 4) :
+def highSquareLookupPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + 6) 18 (by
-    rw [Artifact.submissionInstructions_count]
-    unfold byteStartIndex
-    omega)
-
-def highLookupPath (byte : Fin 4) :
-    List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + 24) 9 (by
+  locatedSlice (byteStartIndex byte + 6) 25 (by
     rw [Artifact.submissionInstructions_count]
     unfold byteStartIndex
     omega)
 
 def lowPrepPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + 33) 4 (by
+  locatedSlice (byteStartIndex byte + 31) 4 (by
     rw [Artifact.submissionInstructions_count]
     unfold byteStartIndex
     omega)
 
-def lowSquarePath (byte : Fin 4) :
+def lowSquareLookupPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + 37) 18 (by
-    rw [Artifact.submissionInstructions_count]
-    unfold byteStartIndex
-    omega)
-
-def lowLookupPath (byte : Fin 4) :
-    List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + 55) 9 (by
+  locatedSlice (byteStartIndex byte + 35) 25 (by
     rw [Artifact.submissionInstructions_count]
     unfold byteStartIndex
     omega)
 
 def finishPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + 64) 2 (by
+  locatedSlice (byteStartIndex byte + 60) 2 (by
     rw [Artifact.submissionInstructions_count]
     unfold byteStartIndex
     omega)
 
 def segmentedBytePath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  highPrepPath byte ++ highSquarePath byte ++ highLookupPath byte ++
-    lowPrepPath byte ++ lowSquarePath byte ++ lowLookupPath byte ++
-      finishPath byte
+  highPrepPath byte ++ highSquareLookupPath byte ++
+    lowPrepPath byte ++ lowSquareLookupPath byte ++ finishPath byte
 
 /-! These are the four regeneration-sensitive obligations. -/
 
