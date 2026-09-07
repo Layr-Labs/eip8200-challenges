@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 2866
+def startIndex : Nat := 2950
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
@@ -45,16 +45,16 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem startPC :
-    Artifact.submissionArtifact.instructionPC startIndex = 4520 := by
+    Artifact.submissionArtifact.instructionPC startIndex = 4796 := by
   rfl
 
 @[simp] theorem peelPC (index : Nat) (hlo : startIndex ≤ index)
-    (hhi : index ≤ 2910) :
+    (hhi : index ≤ 2994) :
     Artifact.submissionArtifact.instructionPC index =
-            [4520, 4521, 4522, 4523, 4556, 4557, 4558, 4559, 4560, 4561, 4562, 4563, 4564, 4565,
-       4566, 4567, 4568, 4569, 4570, 4571, 4572, 4573, 4574, 4575, 4576, 4577, 4578, 4579,
-       4580, 4581, 4582, 4583, 4585, 4586, 4619, 4620, 4621, 4622, 4623, 4656, 4657, 4658,
-       4659, 4660, 4661][index - startIndex]! := by
+            [4796, 4797, 4798, 4799, 4832, 4833, 4834, 4835, 4836, 4837, 4838, 4839, 4840, 4841,
+       4842, 4843, 4844, 4845, 4846, 4847, 4848, 4849, 4850, 4851, 4852, 4853, 4854, 4855,
+       4856, 4857, 4858, 4859, 4861, 4862, 4895, 4896, 4897, 4898, 4899, 4932, 4933, 4934,
+       4935, 4936, 4937][index - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -69,6 +69,7 @@ private theorem startPC :
     _ = _ := by
       rw [startPC]
       interval_cases index <;> rfl
+
 
 def opAt (offset : Nat) (op : Operation)
     (hget : template[offset]? = some (.op op) := by rfl)
@@ -87,7 +88,7 @@ def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨startIndex + offset, .push width value, (getElem_slice offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 2866..2910, pc 4520..4661. -/
+/-- Instructions 2950..2994, pc 4796..4937. -/
 def cios2L2Peel :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
     [opAt 0 .JUMPDEST, opAt 1 (.Dup ⟨0, by decide⟩), opAt 2 .MLOAD,

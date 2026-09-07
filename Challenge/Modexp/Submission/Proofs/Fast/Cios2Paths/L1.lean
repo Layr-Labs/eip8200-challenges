@@ -9,6 +9,13 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
+private theorem instructionPC_add
+    (p : Challenge.EvmProof.ProgramArtifact) (base count : Nat) :
+    p.instructionPC (base + count) = p.instructionPC base +
+      (assembleBytes ((p.instructions.drop base).take count)).length := by
+  simp only [Challenge.EvmProof.ProgramArtifact.instructionPC, List.take_add,
+    assembleBytes_append, List.length_append]
+
 def firstStartIndex : Nat := 2726
 
 private def firstTemplate : List Instr :=
@@ -39,13 +46,6 @@ private theorem firstGetElem (offset : Nat)
   rw [List.getElem?_take, if_pos hoffset, List.getElem?_drop] at hs
   simpa [Nat.add_comm] using hs
 
-private theorem instructionPC_add
-    (p : Challenge.EvmProof.ProgramArtifact) (base count : Nat) :
-    p.instructionPC (base + count) = p.instructionPC base +
-      (assembleBytes ((p.instructions.drop base).take count)).length := by
-  simp only [Challenge.EvmProof.ProgramArtifact.instructionPC, List.take_add,
-    assembleBytes_append, List.length_append]
-
 private theorem firstStartPC :
     Artifact.submissionArtifact.instructionPC firstStartIndex = 4136 := by
   rfl
@@ -70,6 +70,7 @@ private theorem firstStartPC :
     _ = _ := by
       rw [firstStartPC]
       interval_cases index <;> rfl
+
 
 def firstOpAt (offset : Nat) (op : Operation)
     (hget : firstTemplate[offset]? = some (.op op) := by rfl)
@@ -107,8 +108,197 @@ def firstMac :
    firstOpAt 33 .ADD, firstOpAt 34 (.Swap ⟨2, by decide⟩), firstOpAt 35 .MSTORE,
    firstPushAt 36 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    firstOpAt 37 .ADD]
+def middleOneStartIndex : Nat := 2764
 
-def secondStartIndex : Nat := 2764
+private def middleOneTemplate : List Instr :=
+    [.op (.Dup ⟨0, by decide⟩), .op .MLOAD,
+   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨5, by decide⟩),
+   .op .GT, .op .SUB, .op .SUB, .op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨3, by decide⟩),
+   .op .MLOAD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨4, by decide⟩), .op .GT,
+   .op .ADD, .op (.Swap ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩),
+   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MSTORE,
+   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   .op .ADD]
+
+private theorem middleOneSlice_eq :
+    (Artifact.submissionInstructions.drop middleOneStartIndex).take
+        middleOneTemplate.length = middleOneTemplate := by
+  rfl
+
+private theorem middleOneGetElem (offset : Nat)
+    (hoffset : offset < middleOneTemplate.length) :
+    Artifact.submissionInstructions[middleOneStartIndex + offset]? =
+      middleOneTemplate[offset]? := by
+  have hs := congrArg (fun xs : List Instr => xs[offset]?) middleOneSlice_eq
+  rw [List.getElem?_take, if_pos hoffset, List.getElem?_drop] at hs
+  simpa [Nat.add_comm] using hs
+
+private theorem middleOneStartPC :
+    Artifact.submissionArtifact.instructionPC middleOneStartIndex = 4270 := by
+  rfl
+
+@[simp] theorem middleOnePC (index : Nat) (hlo : middleOneStartIndex ≤ index)
+    (hhi : index ≤ 2800) :
+    Artifact.submissionArtifact.instructionPC index =
+            [4270, 4271, 4272, 4305, 4306, 4307, 4308, 4309, 4310, 4311, 4312, 4313, 4314, 4315,
+       4316, 4317, 4318, 4319, 4320, 4321, 4322, 4323, 4324, 4325, 4326, 4327, 4328, 4329,
+       4330, 4331, 4332, 4333, 4366, 4367, 4368, 4369, 4402][index - middleOneStartIndex]! := by
+  calc
+    Artifact.submissionArtifact.instructionPC index =
+        Artifact.submissionArtifact.instructionPC
+          (middleOneStartIndex + (index - middleOneStartIndex)) := by
+      rw [Nat.add_sub_of_le hlo]
+    _ = Artifact.submissionArtifact.instructionPC middleOneStartIndex +
+          (assembleBytes
+            ((Artifact.submissionArtifact.instructions.drop middleOneStartIndex).take
+              (index - middleOneStartIndex))).length :=
+      instructionPC_add Artifact.submissionArtifact middleOneStartIndex
+        (index - middleOneStartIndex)
+    _ = _ := by
+      rw [middleOneStartPC]
+      interval_cases index <;> rfl
+
+
+def middleOneOpAt (offset : Nat) (op : Operation)
+    (hget : middleOneTemplate[offset]? = some (.op op) := by rfl)
+    (hoffset : offset < middleOneTemplate.length := by decide)
+    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op := by decide)
+    (hplain : YulEvmCompiler.plainOp op := by trivial)
+    (havailable : op.availableInFork .Osaka = true := by rfl) :
+    Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
+  ⟨middleOneStartIndex + offset, .op op, (middleOneGetElem offset hoffset).trans hget,
+    wfOp hopcode hplain havailable⟩
+
+def middleOnePushAt (offset : Nat) (width : Fin 33) (value : UInt256)
+    (hget : middleOneTemplate[offset]? = some (.push width value) := by rfl)
+    (hoffset : offset < middleOneTemplate.length := by decide)
+    (hwf : Challenge.EvmProof.Stepper.WellFormed .Osaka (.push width value) := by decide) :
+    Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
+  ⟨middleOneStartIndex + offset, .push width value,
+    (middleOneGetElem offset hoffset).trans hget, hwf⟩
+
+/-- MiddleOne MAC: instructions 2769..2810, pc 4270..4412. -/
+def middleOneMac :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+    [middleOneOpAt 0 (.Dup ⟨0, by decide⟩), middleOneOpAt 1 .MLOAD,
+   middleOnePushAt 2 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   middleOneOpAt 3 (.Dup ⟨5, by decide⟩), middleOneOpAt 4 (.Dup ⟨2, by decide⟩),
+   middleOneOpAt 5 .MUL, middleOneOpAt 6 (.Swap ⟨1, by decide⟩),
+   middleOneOpAt 7 (.Dup ⟨6, by decide⟩), middleOneOpAt 8 .MULMOD,
+   middleOneOpAt 9 (.Dup ⟨1, by decide⟩), middleOneOpAt 10 (.Dup ⟨1, by decide⟩),
+   middleOneOpAt 11 .LT, middleOneOpAt 12 .SUB, middleOneOpAt 13 (.Dup ⟨4, by decide⟩),
+   middleOneOpAt 14 (.Dup ⟨2, by decide⟩), middleOneOpAt 15 .ADD,
+   middleOneOpAt 16 (.Dup ⟨0, by decide⟩), middleOneOpAt 17 (.Swap ⟨5, by decide⟩),
+   middleOneOpAt 18 .GT, middleOneOpAt 19 .SUB, middleOneOpAt 20 .SUB,
+   middleOneOpAt 21 (.Dup ⟨3, by decide⟩), middleOneOpAt 22 (.Dup ⟨3, by decide⟩),
+   middleOneOpAt 23 .MLOAD, middleOneOpAt 24 .ADD, middleOneOpAt 25 (.Dup ⟨0, by decide⟩),
+   middleOneOpAt 26 (.Swap ⟨4, by decide⟩), middleOneOpAt 27 .GT, middleOneOpAt 28 .ADD,
+   middleOneOpAt 29 (.Swap ⟨2, by decide⟩), middleOneOpAt 30 (.Dup ⟨2, by decide⟩),
+   middleOnePushAt 31 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   middleOneOpAt 32 .ADD, middleOneOpAt 33 (.Swap ⟨2, by decide⟩), middleOneOpAt 34 .MSTORE,
+   middleOnePushAt 35 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   middleOneOpAt 36 .ADD]
+def middleTwoStartIndex : Nat := 2801
+
+private def middleTwoTemplate : List Instr :=
+    [.op (.Dup ⟨0, by decide⟩), .op .MLOAD,
+   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨5, by decide⟩),
+   .op .GT, .op .SUB, .op .SUB, .op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨3, by decide⟩),
+   .op .MLOAD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨4, by decide⟩), .op .GT,
+   .op .ADD, .op (.Swap ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩),
+   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MSTORE,
+   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   .op .ADD]
+
+private theorem middleTwoSlice_eq :
+    (Artifact.submissionInstructions.drop middleTwoStartIndex).take
+        middleTwoTemplate.length = middleTwoTemplate := by
+  rfl
+
+private theorem middleTwoGetElem (offset : Nat)
+    (hoffset : offset < middleTwoTemplate.length) :
+    Artifact.submissionInstructions[middleTwoStartIndex + offset]? =
+      middleTwoTemplate[offset]? := by
+  have hs := congrArg (fun xs : List Instr => xs[offset]?) middleTwoSlice_eq
+  rw [List.getElem?_take, if_pos hoffset, List.getElem?_drop] at hs
+  simpa [Nat.add_comm] using hs
+
+private theorem middleTwoStartPC :
+    Artifact.submissionArtifact.instructionPC middleTwoStartIndex = 4403 := by
+  rfl
+
+@[simp] theorem middleTwoPC (index : Nat) (hlo : middleTwoStartIndex ≤ index)
+    (hhi : index ≤ 2837) :
+    Artifact.submissionArtifact.instructionPC index =
+            [4403, 4404, 4405, 4438, 4439, 4440, 4441, 4442, 4443, 4444, 4445, 4446, 4447, 4448,
+       4449, 4450, 4451, 4452, 4453, 4454, 4455, 4456, 4457, 4458, 4459, 4460, 4461, 4462,
+       4463, 4464, 4465, 4466, 4499, 4500, 4501, 4502, 4535][index - middleTwoStartIndex]! := by
+  calc
+    Artifact.submissionArtifact.instructionPC index =
+        Artifact.submissionArtifact.instructionPC
+          (middleTwoStartIndex + (index - middleTwoStartIndex)) := by
+      rw [Nat.add_sub_of_le hlo]
+    _ = Artifact.submissionArtifact.instructionPC middleTwoStartIndex +
+          (assembleBytes
+            ((Artifact.submissionArtifact.instructions.drop middleTwoStartIndex).take
+              (index - middleTwoStartIndex))).length :=
+      instructionPC_add Artifact.submissionArtifact middleTwoStartIndex
+        (index - middleTwoStartIndex)
+    _ = _ := by
+      rw [middleTwoStartPC]
+      interval_cases index <;> rfl
+
+
+def middleTwoOpAt (offset : Nat) (op : Operation)
+    (hget : middleTwoTemplate[offset]? = some (.op op) := by rfl)
+    (hoffset : offset < middleTwoTemplate.length := by decide)
+    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op := by decide)
+    (hplain : YulEvmCompiler.plainOp op := by trivial)
+    (havailable : op.availableInFork .Osaka = true := by rfl) :
+    Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
+  ⟨middleTwoStartIndex + offset, .op op, (middleTwoGetElem offset hoffset).trans hget,
+    wfOp hopcode hplain havailable⟩
+
+def middleTwoPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
+    (hget : middleTwoTemplate[offset]? = some (.push width value) := by rfl)
+    (hoffset : offset < middleTwoTemplate.length := by decide)
+    (hwf : Challenge.EvmProof.Stepper.WellFormed .Osaka (.push width value) := by decide) :
+    Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
+  ⟨middleTwoStartIndex + offset, .push width value,
+    (middleTwoGetElem offset hoffset).trans hget, hwf⟩
+
+/-- MiddleTwo MAC: instructions 2811..2852, pc 4403..4550. -/
+def middleTwoMac :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+    [middleTwoOpAt 0 (.Dup ⟨0, by decide⟩), middleTwoOpAt 1 .MLOAD,
+   middleTwoPushAt 2 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   middleTwoOpAt 3 (.Dup ⟨5, by decide⟩), middleTwoOpAt 4 (.Dup ⟨2, by decide⟩),
+   middleTwoOpAt 5 .MUL, middleTwoOpAt 6 (.Swap ⟨1, by decide⟩),
+   middleTwoOpAt 7 (.Dup ⟨6, by decide⟩), middleTwoOpAt 8 .MULMOD,
+   middleTwoOpAt 9 (.Dup ⟨1, by decide⟩), middleTwoOpAt 10 (.Dup ⟨1, by decide⟩),
+   middleTwoOpAt 11 .LT, middleTwoOpAt 12 .SUB, middleTwoOpAt 13 (.Dup ⟨4, by decide⟩),
+   middleTwoOpAt 14 (.Dup ⟨2, by decide⟩), middleTwoOpAt 15 .ADD,
+   middleTwoOpAt 16 (.Dup ⟨0, by decide⟩), middleTwoOpAt 17 (.Swap ⟨5, by decide⟩),
+   middleTwoOpAt 18 .GT, middleTwoOpAt 19 .SUB, middleTwoOpAt 20 .SUB,
+   middleTwoOpAt 21 (.Dup ⟨3, by decide⟩), middleTwoOpAt 22 (.Dup ⟨3, by decide⟩),
+   middleTwoOpAt 23 .MLOAD, middleTwoOpAt 24 .ADD, middleTwoOpAt 25 (.Dup ⟨0, by decide⟩),
+   middleTwoOpAt 26 (.Swap ⟨4, by decide⟩), middleTwoOpAt 27 .GT, middleTwoOpAt 28 .ADD,
+   middleTwoOpAt 29 (.Swap ⟨2, by decide⟩), middleTwoOpAt 30 (.Dup ⟨2, by decide⟩),
+   middleTwoPushAt 31 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   middleTwoOpAt 32 .ADD, middleTwoOpAt 33 (.Swap ⟨2, by decide⟩), middleTwoOpAt 34 .MSTORE,
+   middleTwoPushAt 35 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   middleTwoOpAt 36 .ADD]
+def secondStartIndex : Nat := 2838
 
 private def secondTemplate : List Instr :=
     [.op (.Dup ⟨0, by decide⟩), .op .MLOAD,
@@ -125,7 +315,9 @@ private def secondTemplate : List Instr :=
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    .op .ADD, .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .GT, .push 2 4136,
    .op .JUMPI, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
 
 private theorem secondSlice_eq :
     (Artifact.submissionInstructions.drop secondStartIndex).take
@@ -141,16 +333,17 @@ private theorem secondGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem secondStartPC :
-    Artifact.submissionArtifact.instructionPC secondStartIndex = 4270 := by
+    Artifact.submissionArtifact.instructionPC secondStartIndex = 4536 := by
   rfl
 
 @[simp] theorem secondPC (index : Nat) (hlo : secondStartIndex ≤ index)
-    (hhi : index ≤ 2815) :
+    (hhi : index ≤ 2899) :
     Artifact.submissionArtifact.instructionPC index =
-            [4270, 4271, 4272, 4305, 4306, 4307, 4308, 4309, 4310, 4311, 4312, 4313, 4314, 4315,
-       4316, 4317, 4318, 4319, 4320, 4321, 4322, 4323, 4324, 4325, 4326, 4327, 4328, 4329,
-       4330, 4331, 4332, 4333, 4366, 4367, 4368, 4369, 4402, 4403, 4404, 4405, 4406, 4409,
-       4410, 4411, 4412, 4413, 4414, 4415, 4416, 4417, 4418, 4419][index - secondStartIndex]! := by
+            [4536, 4537, 4538, 4571, 4572, 4573, 4574, 4575, 4576, 4577, 4578, 4579, 4580, 4581,
+       4582, 4583, 4584, 4585, 4586, 4587, 4588, 4589, 4590, 4591, 4592, 4593, 4594, 4595,
+       4596, 4597, 4598, 4599, 4632, 4633, 4634, 4635, 4668, 4669, 4670, 4671, 4672, 4675,
+       4676, 4677, 4678, 4679, 4680, 4681, 4682, 4683, 4684, 4685, 4686, 4687, 4688, 4689,
+       4690, 4691, 4692, 4693, 4694, 4695][index - secondStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -165,6 +358,7 @@ private theorem secondStartPC :
     _ = _ := by
       rw [secondStartPC]
       interval_cases index <;> rfl
+
 
 def secondOpAt (offset : Nat) (op : Operation)
     (hget : secondTemplate[offset]? = some (.op op) := by rfl)
@@ -184,7 +378,7 @@ def secondPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨secondStartIndex + offset, .push width value,
     (secondGetElem offset hoffset).trans hget, hwf⟩
 
-/-- Second MAC and pair test: instructions 2769..2815, pc 4270..4419. -/
+/-- Second MAC: instructions 2853..2899, pc 4536..4695. -/
 def secondMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
     [secondOpAt 0 (.Dup ⟨0, by decide⟩), secondOpAt 1 .MLOAD,
@@ -208,7 +402,7 @@ def secondMac :
    secondOpAt 38 (.Dup ⟨1, by decide⟩), secondOpAt 39 .GT, secondPushAt 40 2 4136,
    secondOpAt 41 .JUMPI]
 
-/-- Same trace plus the ten padding `JUMPDEST`s on the fall-through path. -/
+/-- Same trace plus the padding `JUMPDEST`s on the fall-through path. -/
 def secondMacExit :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   secondMac ++
@@ -221,10 +415,20 @@ def secondMacExit :
    secondOpAt 48 .JUMPDEST,
    secondOpAt 49 .JUMPDEST,
    secondOpAt 50 .JUMPDEST,
-   secondOpAt 51 .JUMPDEST]
+   secondOpAt 51 .JUMPDEST,
+   secondOpAt 52 .JUMPDEST,
+   secondOpAt 53 .JUMPDEST,
+   secondOpAt 54 .JUMPDEST,
+   secondOpAt 55 .JUMPDEST,
+   secondOpAt 56 .JUMPDEST,
+   secondOpAt 57 .JUMPDEST,
+   secondOpAt 58 .JUMPDEST,
+   secondOpAt 59 .JUMPDEST,
+   secondOpAt 60 .JUMPDEST,
+   secondOpAt 61 .JUMPDEST]
 
 
-/-- The complete pair block, retained for whole-block consumers. -/
-def cios2L1 := firstMac ++ secondMac
+/-- The complete four-MAC L1 block, retained for whole-block consumers. -/
+def cios2L1 := firstMac ++ middleOneMac ++ middleTwoMac ++ secondMac
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.L1
