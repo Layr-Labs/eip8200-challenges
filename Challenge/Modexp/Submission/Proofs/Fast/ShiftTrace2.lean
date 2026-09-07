@@ -143,7 +143,7 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
+      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, Monpro.zero_lt_eq_double_isZero]
 
 /-- `blk3069`: the limb-pass frame `[paj, ptj, 0, q]`. -/
 theorem run_macSetup (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)

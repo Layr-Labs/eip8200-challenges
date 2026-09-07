@@ -2998,8 +2998,8 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.op EvmSemantics.Operation.MLOAD,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.MUL,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
- YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
- YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
+ YulEvmCompiler.Instr.push 0 0,
+ YulEvmCompiler.Instr.op EvmSemantics.Operation.LT
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }),
  YulEvmCompiler.Instr.op EvmSemantics.Operation.SUB,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }),
