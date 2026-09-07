@@ -49,7 +49,7 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
   induction count generalizing memory bM with
   | zero => omega
   | succ k ih =>
-      have hcall := sub.monpro 2048 2048 2048 (UInt256.ofNat 3970)
+      have hcall := sub.monproCios2 2048 2048 2048 (UInt256.ofNat 3970)
         (UInt256.ofNat (k + 1) :: Exp.outer n bsize esize msize)
         memory bM bM (by simp [Exp.outer])
         (by omega) (by omega) (by omega) (by omega) (by omega)

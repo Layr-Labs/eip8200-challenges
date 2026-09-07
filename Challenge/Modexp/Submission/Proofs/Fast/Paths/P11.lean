@@ -53,7 +53,7 @@ def blk1595 :
 def blk1600 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1600 .JUMPDEST,
-   pushAt 1601 2 4643,
+   pushAt 1601 2 5029,
    opAt 1602 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
