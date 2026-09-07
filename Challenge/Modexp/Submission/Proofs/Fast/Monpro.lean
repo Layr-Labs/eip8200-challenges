@@ -427,7 +427,7 @@ def mpL1State (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Nat)
            stack := [UInt256.ofNat (ptrAt (pa + 32 * n - 32) j),
                      UInt256.ofNat (ptrAt (8224 + 32 * n) j),
                      (l1Step mem bi pa n j).carry, bi,
-                     UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
+                     UInt256.ofNat (8224 + 32 * n), UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := (l1Step mem bi pa n j).memory }
 
@@ -436,7 +436,7 @@ so they stay opaque. -/
 def mpMidState (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 2141
-           stack := [paj, ptj, c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
+           stack := [paj, ptj, c, bi, UInt256.ofNat (8224 + 32 * n), UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
 
@@ -447,7 +447,7 @@ def mpL2State (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
            stack := [UInt256.ofNat (ptrAt (32 * n - 64) k),
                      UInt256.ofNat (ptrAt (8192 + 32 * n) k),
                      (l2Step mid mu c0 n k).carry, mu, bi,
-                     UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
+                     UInt256.ofNat (8224 + 32 * n), UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := (l2Step mid mu c0 n k).memory }
 
@@ -455,7 +455,7 @@ def mpL2State (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
 def mpTailState (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 2392
-           stack := [pmj, ptj, c, mu, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
+           stack := [pmj, ptj, c, mu, bi, UInt256.ofNat (8224 + 32 * n), UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
 
@@ -550,6 +550,7 @@ theorem run_mpOut (s : State) (mem : ByteArray) (pa pb n i : Nat)
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
   have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have h9344 : (9344 : UInt256).toNat = 9344 := by decide
   have h9440 : (9440 : UInt256).toNat = 9440 := by decide
@@ -579,7 +580,7 @@ theorem run_mpOut (s : State) (mem : ByteArray) (pa pb n i : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpOutState, mpL1State, l1Step, rowBi, fastPC10, fastPC11,
-      hc5, hc6, hc7, hc8, hc9, hc10, hrun, h32, h9344, h9440, hzero,
+      hc5, hc6, hc7, hc8, hc9, hc10, hc11, hrun, h32, h9344, h9440, hzero,
       hs32, htl, hpbi, hpa32, hsuba, hsubaN, hactB, hactT, hactS,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -662,6 +663,7 @@ theorem run_mpL1Copy0 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
   have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
@@ -694,7 +696,7 @@ theorem run_mpL1Copy0 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpL1State, l1Step, macSum, macCarry, mulHi, maxWord_literal,
-      hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
+      hc9, hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -766,6 +768,7 @@ theorem run_mpL1Copy1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
   have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
@@ -798,7 +801,7 @@ theorem run_mpL1Copy1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpL1State, l1Step, macSum, macCarry, mulHi, maxWord_literal,
-      hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
+      hc9, hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -870,6 +873,7 @@ theorem run_mpL1Copy2 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
   have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
@@ -902,7 +906,7 @@ theorem run_mpL1Copy2 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpL1State, l1Step, macSum, macCarry, mulHi, maxWord_literal,
-      hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
+      hc9, hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -974,6 +978,7 @@ theorem run_mpL1Copy3 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
   have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
@@ -1006,7 +1011,7 @@ theorem run_mpL1Copy3 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpL1State, l1Step, macSum, macCarry, mulHi, maxWord_literal,
-      hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
+      hc9, hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -1026,7 +1031,7 @@ def blkStubL1 :
 /-- The unrolled block's loop test. -/
 def blkTestL1 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2855 (.Dup ⟨5, by decide⟩),
+  [opAt 2855 (.Dup ⟨6, by decide⟩),
    opAt 2856 (.Dup ⟨1, by decide⟩),
    opAt 2857 .GT,
    pushAt 2858 2 4076,
@@ -1062,6 +1067,7 @@ theorem run_stubL1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : N
       some (mpL1At 4057 s mem bi pa pb n i j pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
   have h3924 : (4057 : UInt256).toNat = 4057 := by decide
   have h3924' : (4057 : UInt256) = UInt256.ofNat 4057 := by decide
   simp (config := { maxSteps := 400000 })
@@ -1069,7 +1075,7 @@ theorem run_stubL1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : N
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      mpL1State, hc9, hc10, hrun, hcode, h3924, h3924', jumpDest3924,
+      mpL1State, hc9, hc10, hc11, hrun, hcode, h3924, h3924', jumpDest3924,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1121,7 +1127,7 @@ def blkUL1_3T :
    pushAt 2852 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    opAt 2853 .ADD,
    opAt 2854 (.Swap ⟨0, by decide⟩),
-   opAt 2855 (.Dup ⟨5, by decide⟩),
+   opAt 2855 (.Dup ⟨6, by decide⟩),
    opAt 2856 (.Dup ⟨1, by decide⟩),
    opAt 2857 .GT,
    pushAt 2858 2 4076,
@@ -1172,7 +1178,7 @@ def blkUL1_3X :
    pushAt 2852 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    opAt 2853 .ADD,
    opAt 2854 (.Swap ⟨0, by decide⟩),
-   opAt 2855 (.Dup ⟨5, by decide⟩),
+   opAt 2855 (.Dup ⟨6, by decide⟩),
    opAt 2856 (.Dup ⟨1, by decide⟩),
    opAt 2857 .GT,
    pushAt 2858 2 4076,
@@ -1198,6 +1204,7 @@ theorem run_mpL1Copy3T (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
   have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
@@ -1235,7 +1242,7 @@ theorem run_mpL1Copy3T (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpL1State, l1Step, macSum, macCarry, mulHi, maxWord_literal,
-      hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK, h1995, h1995', hjump,
+      hc9, hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, h1995, h1995', hjump,
       jumpDest3943, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
@@ -1270,6 +1277,7 @@ theorem run_mpL1Copy3X (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
   have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
@@ -1301,7 +1309,7 @@ theorem run_mpL1Copy3X (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpL1State, mpMidState, l1Step, macSum, macCarry, mulHi, maxWord_literal,
-      hc9, hc10, hc11, hc12, hc13, hrun, hcode, h2140, hs2140, hjumpX, jumpDest2140, hK,
+      hc9, hc10, hc11, hc12, hc13, hc14, hrun, hcode, h2140, hs2140, hjumpX, jumpDest2140, hK,
       hpaj, hptj, hnextA, hpamN, hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
@@ -1322,7 +1330,7 @@ def blkDispL1 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2670 .JUMPDEST,
    opAt 2671 (.Dup ⟨0, by decide⟩),
-   opAt 2672 (.Dup ⟨6, by decide⟩),
+   opAt 2672 (.Dup ⟨7, by decide⟩),
    opAt 2673 .SUB,
    pushAt 2674 1 5,
    opAt 2675 .SHR,
@@ -1365,6 +1373,7 @@ theorem run_dispatchL1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
   have p0 : (4076 : UInt256) + (139 : UInt256) * UInt256.ofNat 0 = UInt256.ofNat 4076 := by decide
   have p1 : (4076 : UInt256) + (139 : UInt256) * UInt256.ofNat 1 = UInt256.ofNat 4215 := by decide
   have p2 : (4076 : UInt256) + (139 : UInt256) * UInt256.ofNat 2 = UInt256.ofNat 4354 := by decide
@@ -1379,7 +1388,7 @@ theorem run_dispatchL1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
-        mpL1State, hc9, hc10, hc11, hc12, hrun, hcode, hval,
+        mpL1State, hc9, hc10, hc11, hc12, hc13, hrun, hcode, hval,
         p0, p1, p2, p3, q0, q1, q2, q3,
         jumpDest3943, jumpDest4082, jumpDest4221, jumpDest4360,
         State.activeWordsAfterUInt256,
@@ -1767,7 +1776,7 @@ theorem run_mpMid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * n - 32))
-    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
+    (_htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1469
       (mpMidState s mem paj ptj c bi pa pb n i pdst ret rest) =
       some (mpL2State s (midMem mem c) bi (rowMu mem n)
@@ -1778,6 +1787,7 @@ theorem run_mpMid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
   have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have h8192 : (8192 : UInt256).toNat = 8192 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
@@ -1830,8 +1840,8 @@ theorem run_mpMid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
       mpMidState, mpL2State, l2Step, midMem, midMem1, rowMu, rowC0, mulHi,
       zero_lt_eq_double_isZero,
       maxWord_literal, fastPC12, fastPC13, readWord_midMem_peel,
-      hc6, hc7, hc8, hc9, hc10, hc11, hrun, h32, h8192, h8224, h9376, h9408, h9440,
-      hml, htl, hTLN, hMLN, hsubTL, hsubML, hsc1, hsc2, hsc3,
+      hc6, hc7, hc8, hc9, hc10, hc11, hc12, hrun, h32, h8192, h8224, h9376, h9408, h9440,
+      hml, hTLN, hMLN, hsubTL, hsubML, hsc1, hsc2, hsc3,
       hactN, hactP, hactTL, hactT0, hactMI, hactML, hactM0,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -1861,6 +1871,7 @@ theorem run_mpL2Body (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
   have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
   have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
@@ -1905,7 +1916,7 @@ theorem run_mpL2Body (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       Challenge.EvmProof.Stepper.runInstr,
       mpL2State, l2Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC13, fastPC14,
-      hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, h32, h8224,
+      hc10, hc11, hc12, hc13, hc14, hc15, hrun, hcode, hK, h32, h8224,
       h2241, h2241', hjump, jumpDest2241,
       hpmj, hptj, hwr, hnextT, hgt, hactM, hactT, hactW, ptrAt_succ, ptrAt_shift32,
       UInt256.gt, UInt256.isTrue,
@@ -1933,6 +1944,7 @@ theorem run_mpL2Exit (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
   have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
   have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
@@ -1971,7 +1983,7 @@ theorem run_mpL2Exit (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       Challenge.EvmProof.Stepper.runInstr,
       mpL2State, mpTailState, l2Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC13, fastPC14,
-      hc10, hc11, hc12, hc13, hc14, hrun, hK, h32, h8224,
+      hc10, hc11, hc12, hc13, hc14, hc15, hrun, hK, h32, h8224,
       hpmj, hptj, hwr, hnextT, hactM, hactT, hactW, ptrAt_succ, ptrAt_shift32,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
@@ -1999,6 +2011,7 @@ theorem run_mpTailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
   have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
@@ -2034,7 +2047,7 @@ theorem run_mpTailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpTailState, mpOutState, tailMem, tailMem1, fastPC14, fastPC15,
-      hc5, hc6, hc7, hc8, hc9, hc10, hrun, hcode, hK, h8192, h8224, h8256,
+      hc5, hc6, hc7, hc8, hc9, hc10, hc11, hrun, hcode, hK, h8192, h8224, h8256,
       h1974, h1974', hjump, jumpDest1974, hnextB, hpbmN, hgt,
       hactN, hactS, hactP, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
@@ -2061,6 +2074,7 @@ theorem run_mpTailLast (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
   have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
@@ -2090,7 +2104,7 @@ theorem run_mpTailLast (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpTailState, mpExitState, tailMem, tailMem1, fastPC14, fastPC15,
-      hc5, hc6, hc7, hc8, hc9, hc10, hrun, hK, h8192, h8224, h8256,
+      hc5, hc6, hc7, hc8, hc9, hc10, hc11, hrun, hK, h8192, h8224, h8256,
       hnextB, hpbmN, hactN, hactS, hactP, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,

@@ -15,9 +15,9 @@ def blk1569 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1569 .POP,
    opAt 1570 .POP,
-   opAt 1571 (.Swap ⟨0, by decide⟩),
+   opAt 1571 (.Swap ⟨2, by decide⟩),
    opAt 1572 .POP,
-   opAt 1573 (.Swap ⟨0, by decide⟩),
+   opAt 1573 .POP,
    opAt 1574 .POP,
    opAt 1575 (.Dup ⟨0, by decide⟩),
    pushAt 1576 2 8224,
