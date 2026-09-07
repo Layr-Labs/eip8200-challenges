@@ -24,7 +24,7 @@ The five basic blocks are
   `[px, px, px, 2874]` and a jump to `ADDMOD` (pc 2467);
 * `blk1749` (idx 1749..1750, pc 2874..2876) — `JUMPDEST; PUSH1 8`;
 * `blk1751` (idx 1751..1757, pc 2877..2887) — the loop head `CCL`, which
-  pushes the call frame `[px, px, px, 2888]` and jumps to its width dispatcher;
+  pushes the call frame `[px, px, px, 2888]` and jumps to `MONPRO` (pc 1939);
 * `blk1758` (idx 1758..1764, pc 2888..2897) — the return point, which
   decrements the counter and jumps back to pc 2877 while it is nonzero;
 * `blk1765` (idx 1765..1767, pc 2898..2900) — `POP; POP; JUMP ret`.
@@ -83,10 +83,10 @@ def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The dispatched `MONPRO` call, pc 4057, with the frame pushed. -/
+/-- The `MONPRO` call, pc 1939, with the frame `[px, px, px, 2888]` pushed. -/
 def mpCallState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4057
+  { s with pc := UInt256.ofNat 1939
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
                      UInt256.ofNat 2888] ++ loopStack px k ret rest
            memory := mem }
@@ -161,7 +161,7 @@ theorem run_post (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1751` (pc 2877..2887): push the frame and jump to pc 4057. -/
+/-- `blk1751` (pc 2877..2887): push the `MONPRO` frame and jump to pc 1939. -/
 theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -176,15 +176,13 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have h2888 : (2888 : UInt256) = UInt256.ofNat 2888 := by decide
-  have h4057 : (4057 : UInt256) = UInt256.ofNat 4057 := by decide
-  have h4057Nat : (UInt256.ofNat 4057).toNat = 4057 := by decide
-  have hjump4057 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4057 =
-      true := Artifact.isValidJumpDest_index 2670 (by rfl)
+  have h1939 : (1939 : UInt256) = UInt256.ofNat 1939 := by decide
+  have h1939Nat : (UInt256.ofNat 1939).toNat = 1939 := by decide
   simp (config := { maxSteps := 400000 }) [blk1751, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopState, mpCallState, loopStack, fastPC20, hc3, hc4, hc5, hc6, hc7, hc8,
-    hcode, hrun, h2888, h4057, h4057Nat, hjump4057,
+    hcode, hrun, h2888, h1939, h1939Nat, jumpDest1939,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,

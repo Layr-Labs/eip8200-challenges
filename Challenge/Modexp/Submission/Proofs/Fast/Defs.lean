@@ -213,7 +213,7 @@ private theorem fastPCAnchor11 :
       rfl
 
 private theorem fastPCAnchor12 :
-    Artifact.submissionArtifact.instructionPC 1457 = 2063 := by
+    Artifact.submissionArtifact.instructionPC 1457 = 2128 := by
   calc
     Artifact.submissionArtifact.instructionPC 1457 =
         Artifact.submissionArtifact.instructionPC 1417 +
@@ -221,7 +221,7 @@ private theorem fastPCAnchor12 :
             ((Artifact.submissionArtifact.instructions.drop 1417).take
               40)).length :=
       instructionPC_add Artifact.submissionArtifact 1417 40
-    _ = 2063 := by
+    _ = 2128 := by
       rw [fastPCAnchor11]
       rfl
 
@@ -546,7 +546,10 @@ private theorem fastPCAnchor23 :
 
 @[simp] theorem fastPC11 (i : Nat) (hi : 1417 ≤ i) (hii : i ≤ 1456) :
     Artifact.submissionArtifact.instructionPC i =
-      [1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055,2056,2057,2058,2059,2060,2061,2062][i - 1417]! := by
+      [1991,1992,1993,1994,1995,1996,1999,2000,2033,2066,2068,2070,2072,
+       2074,2076,2078,2080,2082,2084,2086,2088,2090,2092,2094,
+       2096,2098,2100,2102,2104,2106,2108,2110,2112,2114,2116,
+       2118,2120,2122,2124,2126][i - 1417]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (1417 + (i - 1417)) := by
@@ -562,7 +565,10 @@ private theorem fastPCAnchor23 :
 
 @[simp] theorem fastPC12 (i : Nat) (hi : 1457 ≤ i) (hii : i ≤ 1496) :
     Artifact.submissionArtifact.instructionPC i =
-      [2063,2064,2097,2098,2099,2132,2133,2134,2135,2136,2137,2140,2141,2142,2143,2144,2147,2148,2149,2150,2153,2154,2155,2158,2159,2162,2163,2164,2167,2168,2169,2170,2173,2174,2175,2176,2177,2178,2179,2212][i - 1457]! := by
+      [2128,2130,2131,2132,2133,2134,2135,2136,2137,2138,2139,2140,2141,
+       2142,2143,2144,2147,2148,2149,2150,2153,2154,2155,2158,
+       2159,2162,2163,2164,2167,2168,2169,2170,2173,2174,2175,
+       2176,2177,2178,2179,2212][i - 1457]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (1457 + (i - 1457)) := by
@@ -764,28 +770,6 @@ their proof modules. -/
        3687,3688,3689,3691,3694][i - 2361]! := by
   interval_cases i <;> decide
 
-/-- PC table for the fused ADDMOD/CSUB entry appended after the CIOS2 helper. -/
-@[simp] theorem fusedCsubPC0 (i : Nat) (hi : 3398 ≤ i) (hii : i ≤ 3413) :
-    Artifact.submissionArtifact.instructionPC i =
-      [5299,5300,5305,5306,5307,5308,5309,5310,5311,5312,5313,5314,5315,5316,5317,5320][i - 3398]! := by
-  interval_cases i <;> decide
-
-/-- PC table for the fused limb loop. -/
-@[simp] theorem fusedCsubPC1 (i : Nat) (hi : 3414 ≤ i) (hii : i ≤ 3468) :
-    Artifact.submissionArtifact.instructionPC i =
-      [5321,5322,5323,5324,5325,5326,5327,5328,5329,5330,5331,5332,5333,
-       5334,5335,5336,5337,5338,5339,5340,5341,5342,5343,5344,5347,5348,
-       5349,5350,5351,5352,5353,5354,5355,5356,5357,5358,5359,5360,5361,
-       5362,5363,5364,5367,5368,5369,5370,5371,5372,5374,5375,5376,5379,
-       5380,5381,5384][i - 3414]! := by
-  interval_cases i <;> decide
-
-/-- PC table for the fused selection/return tail. -/
-@[simp] theorem fusedCsubPC2 (i : Nat) (hi : 3469 ≤ i) (hii : i ≤ 3491) :
-    Artifact.submissionArtifact.instructionPC i =
-      [5385,5386,5387,5390,5391,5392,5393,5394,5397,5398,5401,5402,5403,5404,5405,5408,5409,5410,5411,5412,5413,5414,5415][i - 3469]! := by
-  interval_cases i <;> decide
-
 theorem jumpDest1196 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1196 = true :=
   Artifact.isValidJumpDest_index 899 (by rfl)
@@ -973,13 +957,5 @@ theorem jumpDest3644 :
 theorem jumpDest3661 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3661 = true :=
   Artifact.isValidJumpDest_index 2390 (by rfl)
-
-theorem jumpDest5299 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5299 = true :=
-  Artifact.isValidJumpDest_index 3398 (by rfl)
-
-theorem jumpDest5321 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5321 = true :=
-  Artifact.isValidJumpDest_index 3414 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

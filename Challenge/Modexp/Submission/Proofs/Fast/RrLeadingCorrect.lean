@@ -109,62 +109,7 @@ theorem handled_of_handover (input : ByteArray) (s : State) (mem : ByteArray)
     hcode hfork hrun hnp hact hn hn32 hmpos hodd hmod0 hr10 hxlt htz hframe0).trans
       hhelper').trans trTail⟩, hdone, hres⟩
 
-/-- **Fast-path certificate.** Every `ValidInput` on the fast path runs from
-the retargeted entry to the MODEXP result. -/
-theorem gasSteps_handled (input : ByteArray)
-    (hvalid : Challenge.Modexp.ValidInput input)
-    (hpath : Challenge.Modexp.Submission.Proofs.Fast.Setup.FastPath input) :
-    ∃ final : State,
-      Nonempty (Challenge.EvmProof.GasSteps
-        (Main.trampolineState input 1314) final) ∧
-        final.isDone = true ∧
-        final.toResult = .returned (Challenge.Modexp.spec input) := by
-  have hsize : input.size < 2 ^ 256 := lt_trans hvalid.1 (by norm_num)
-  have hn : 2 ≤ Setup.limbs input := Setup.limbs_ge_two input hpath.1
-  have hn32 : Setup.limbs input ≤ 32 := Setup.fastSetup_limbs_le_32 input hpath
-  have hodd : Setup.modulus input % 2 = 1 := hpath.2.2.2
-  have hradix : Limbs.radix ≤ Setup.modulus input := by
-    have h1 : Limbs.radix ^ 1 ≤ Limbs.radix ^ (Setup.limbs input - 1) :=
-      Nat.pow_le_pow_right (le_of_lt Limbs.radix_gt_one) (by omega)
-    have h2 := hpath.2.2.1
-    rw [pow_one] at h1
-    omega
-  have hmpos : 0 < Setup.modulus input := lt_of_lt_of_le Limbs.radix_pos hradix
-  have hminvlt : Setup.minvValue input < 2 ^ 256 := Setup.negWord_lt _
-  have hminvA : (Setup.modulus input % Limbs.radix * Setup.minvValue input + 1)
-      % 2 ^ 256 = 0 := by
-    have h := Setup.fastSetup_minv input hpath
-    rw [Setup.fastSetup_lowLimb input hpath] at h
-    exact h
-  have hxlt : Limbs.radix ^ (Setup.limbs input - 1) < Setup.modulus input :=
-    Model.radix_pow_lt_of_odd hn hpath.2.2.1 hodd
-  have hact : 298 ≤ (Setup.fastSetupState input).activeWords.toNat := by
-    rw [Setup.fastSetup_activeWords input hpath, toNat_ofNat_self (by norm_num)]
-  have hcds : (Setup.fastSetupState input).executionEnv.calldata.size < 2 ^ 256 := by
-    rw [fastSetup_calldata input]
-    exact hsize
-  obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
-    handled_of_handover input (Setup.fastSetupState input) (Setup.fastSetupMemory input)
-      (Setup.limbs input) (Challenge.Modexp.baseSize input)
-      (Challenge.Modexp.exponentSize input) (Challenge.Modexp.modulusSize input)
-      (Setup.modulus input) (Setup.minvValue input)
-      (fastSetup_code input) (fastSetup_fork input) (fastSetup_halt input)
-      (fastSetup_notPrecompile input) (fastSetup_calldata input)
-      (fastSetup_callStack input) hact hcds hn hn32 hpath.2.1.1 hpath.2.1.2.1 hpath.1
-      (Setup.modulusSize_le_s32 input) rfl rfl rfl (Setup.fastSetup_modulus_eq input)
-      hodd hradix hmpos hminvlt hminvA hxlt
-      ⟨Setup.fastSetup_V_S32 input hpath, Setup.fastSetup_V_MINV input,
-       Setup.fastSetup_V_ML input hpath, Setup.fastSetup_V_TL input hpath,
-       Setup.fastSetup_V_EOFF input hpath⟩
-      (Setup.fastSetup_modulus input hpath) (Setup.fastSetup_R1 input hpath)
-      (fastSetup_zero_block input hpath 1024 (by omega) (by omega))
-      (fastSetup_zero_block input hpath 2048 (by omega) (by omega))
-      (fastSetup_zero_block input hpath 3072 (by omega) (by omega))
-      (fastSetup_tblock_zero input hpath hn32)
-  exact ⟨final, ⟨(Challenge.EvmProof.GasSteps.cast
-    (Setup.gasSteps_fastSetup input hsize hpath) rfl (fastSetup_entry_eq input)).trans
-    tr⟩, hdone, hres⟩
-
-#print axioms gasSteps_handled
+/- The fast-path certificate now lives in `Fast.ShiftCorrect`, which dispatches
+between the shift-reduce base conversion and this RR-leading chain. -/
 
 end Challenge.Modexp.Submission.Proofs.Fast.Exp

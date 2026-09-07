@@ -140,11 +140,6 @@ def amLoopState (s : State) (memory : ByteArray) (pa pb n j : Nat)
                      (amStep memory pa pb n j).flag, pd, ret] ++ rest
            memory := (amStep memory pa pb n j).memory }
 
-/- The old pc-2467 prologue was replaced by the fused-routine trampoline.
-The unchanged old limb body remains below because its functional definitions
-and memory lemmas are still useful; the live entry certificate is now in
-`Fast.FusedCsub`. -/
-/-
 set_option linter.unusedSimpArgs false in
 theorem run_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
     (pd ret : UInt256) (rest : List UInt256)
@@ -191,7 +186,6 @@ theorem run_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
--/
 
 
 
@@ -447,12 +441,18 @@ theorem run_csEntry (s : State) (memory : ByteArray) (n : Nat)
   have h9408 : (9408 : UInt256).toNat = 9408 := by decide
   have h9440 : (9440 : UInt256).toNat = 9440 := by decide
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
-  have hadd : (7168 : UInt256) + UInt256.ofNat (32 * n - 32) =
-      UInt256.ofNat (7136 + 32 * n) := by
+  have hadd : (7168 : UInt256) + UInt256.ofNat (8224 + 32 * n) =
+      UInt256.ofNat (15392 + 32 * n) := by
     rw [show (7168 : UInt256) = UInt256.ofNat 7168 from by decide,
       Challenge.EvmProof.Word.ofNat_add_mod]
     congr 1
     omega
+  have hsub : UInt256.ofNat (15392 + 32 * n) - (8256 : UInt256) =
+      UInt256.ofNat (7136 + 32 * n) := by
+    rw [show (8256 : UInt256) = UInt256.ofNat 8256 from by decide,
+      Challenge.EvmProof.Word.ofNat_sub_ofNat (a := 15392 + 32 * n) (b := 8256)
+        (by omega) (by omega)]
+    exact congrArg UInt256.ofNat (by omega)
   have hactA : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 9440 32) =
       s.activeWords := activeWords_fix s 9440 32 (by decide) (by omega) hact
@@ -466,7 +466,7 @@ theorem run_csEntry (s : State) (memory : ByteArray) (n : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       csEntryState, csLoopState, csStep, fastPC17,
       hc2, hc3, hc4, hc5, hc6, hc7, hrun, h9408, h9440, hzero,
-      hml, htl, hadd, hactA, hactB,
+      hml, htl, hadd, hsub, hactA, hactB,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1095,8 +1095,6 @@ theorem csSrc_toNat (memory : ByteArray) (n j : Nat)
 
 /-! ## Execution certificates -/
 
-/- The live replacement of this entry certificate is in `Fast.FusedCsub`. -/
-/-
 def gasSteps_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
     (pd ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008)
@@ -1119,7 +1117,6 @@ def gasSteps_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
       hs32 htl)
     (by simpa [amEntryState] using hrun)
     (by simpa [amEntryState, State.fork] using hnp)
--/
 
 def gasSteps_amIteration (s : State) (memory : ByteArray) (pa pb n j : Nat)
     (pd ret : UInt256) (rest : List UInt256)
@@ -1205,8 +1202,6 @@ def gasSteps_amTailStep (s : State) (memory : ByteArray) (pa pb n j : Nat)
 /-- Whole-subroutine trace for `ADDMOD`: from the entry `[pa, pb, pd, ret]` to
 the fall-through entry of `CSUB`, with the sum limbs in the `t` block and the
 carry stored at `TN`. -/
-/- Replaced by the full fused ADDMOD certificate in `Fast.FusedCsub`. -/
-/-
 def gasSteps_addmod (s : State) (memory : ByteArray) (pa pb n : Nat)
     (pd ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008)
@@ -1235,7 +1230,6 @@ def gasSteps_addmod (s : State) (memory : ByteArray) (pa pb n : Nat)
       (gasSteps_amTailStep s memory pa pb n (n - 1 + 1) pd ret rest hcap hcode hfork
         hrun hnp hact))
     rfl (by rw [hnn])
--/
 
 def gasSteps_csEntry (s : State) (memory : ByteArray) (n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)

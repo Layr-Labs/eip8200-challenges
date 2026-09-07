@@ -1,6 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.FullBaseGuardCore
 import Challenge.Modexp.Submission.Proofs.Fast.FullBasePaths
-import Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -66,8 +65,7 @@ theorem run_guard (s : State) (memory : ByteArray)
     change ¬(((UInt256.shiftRight (MachineState.readWord memory 0) (UInt256.ofNat 255)).land
       ((UInt256.ofNat bsize).eq (UInt256.ofNat (32 * n)))).isZero.isTrue) at hc
     simp (config := { maxSteps := 300000 })
-      [blkFullBaseGuard, FullBaseLocated.opAt, FullBaseLocated.pushAt,
-        FullBaseLocated.startIndex, wfOp,
+      [blkFullBaseGuard, opAt, pushAt, wfOp,
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
@@ -85,8 +83,7 @@ theorem run_guard (s : State) (memory : ByteArray)
     change (((UInt256.shiftRight (MachineState.readWord memory 0) (UInt256.ofNat 255)).land
       ((UInt256.ofNat bsize).eq (UInt256.ofNat (32 * n)))).isZero.isTrue) at hc
     simp (config := { maxSteps := 300000 })
-      [blkFullBaseGuard, FullBaseLocated.opAt, FullBaseLocated.pushAt,
-        FullBaseLocated.startIndex, wfOp,
+      [blkFullBaseGuard, opAt, pushAt, wfOp,
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
@@ -112,20 +109,18 @@ theorem run_copyAdd (s : State) (memory input : ByteArray)
       (copyState s memory n bsize esize msize) =
       runInstructions copyAddProgram (copyState s memory n bsize esize msize) by
     simp (config := { maxSteps := 300000 })
-      [blkFullBaseCopyAdd, copyAddProgram, runInstructions,
-        FullBaseLocated.opAt, FullBaseLocated.pushAt,
-        FullBaseLocated.startIndex, wfOp,
+      [blkFullBaseCopyAdd, copyAddProgram, runInstructions, opAt, pushAt, wfOp,
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
-        copyState, outer, hcode, hrun, fullBasePC, Cios2Dispatch.jumpDest4057,
+        copyState, outer, hcode, hrun, fullBasePC, jumpDest1939,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
         Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Word.ofNat_add_mod]]
   exact Challenge.Modexp.Submission.Proofs.Fast.FullBase.run_copyAdd
     s memory input n bsize esize msize hn32 hactive hdata
-      (by simpa [hcode] using Cios2Dispatch.jumpDest4057)
+      (by simpa [hcode] using jumpDest1939)
 
 set_option linter.unusedSimpArgs false in
 theorem run_afterAdd (s : State) (memory : ByteArray)
@@ -139,20 +134,17 @@ theorem run_afterAdd (s : State) (memory : ByteArray)
       (afterAddState s memory n bsize esize msize) =
       runInstructions afterAddProgram (afterAddState s memory n bsize esize msize) by
     simp (config := { maxSteps := 300000 })
-      [blkFullBaseAfterAdd, afterAddProgram, runInstructions,
-        FullBaseLocated.opAt, FullBaseLocated.pushAt,
-        FullBaseLocated.startIndex, wfOp,
+      [blkFullBaseAfterAdd, afterAddProgram, runInstructions, opAt, pushAt, wfOp,
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
-        afterAddState, outer, hcode, hrun, fullBasePC, Cios2Dispatch.jumpDest4057,
+        afterAddState, outer, hcode, hrun, fullBasePC, jumpDest1939,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
         Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Word.ofNat_add_mod]]
   exact Challenge.Modexp.Submission.Proofs.Fast.FullBase.run_afterAdd
-    s memory n bsize esize msize
-      (by simpa [hcode] using Cios2Dispatch.jumpDest4057)
+    s memory n bsize esize msize (by simpa [hcode] using jumpDest1939)
 
 private def sound {s t : State}
     (path : List (Challenge.EvmProof.Stepper.Located
