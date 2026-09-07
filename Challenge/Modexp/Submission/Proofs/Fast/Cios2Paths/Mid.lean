@@ -1,5 +1,4 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Defs
-
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
@@ -10,8 +9,9 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 3032
+def startIndex : Nat := 2898
 
+/-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
   [.op .POP,
    .op .POP,
@@ -82,23 +82,28 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem startPC :
-    Artifact.submissionArtifact.instructionPC startIndex = 4732 := by rfl
+    Artifact.submissionArtifact.instructionPC startIndex = 4696 := by
+  rfl
 
-@[simp] theorem midPC (i : Nat) (hi : startIndex ≤ i) (hii : i ≤ 3081) :
-    Artifact.submissionArtifact.instructionPC i =
-      [4732, 4733, 4734, 4735, 4738, 4739, 4740, 4741, 4744, 4745, 4746, 4749, 4750, 4753, 4754, 4755, 4758, 4759, 4760, 4761, 4764, 4765, 4766, 4767, 4768, 4769, 4770, 4803, 4804, 4805, 4806, 4807, 4808, 4809, 4810, 4811, 4812, 4813, 4814, 4815, 4816, 4819, 4820, 4822, 4823, 4824, 4827, 4828, 4830, 4831][i - startIndex]! := by
+@[simp] theorem midPC (index : Nat) (hlo : startIndex ≤ index)
+    (hhi : index ≤ 2947) :
+    Artifact.submissionArtifact.instructionPC index =
+      [4696,4697,4698,4699,4702,4703,4704,4705,4708,4709,4710,4713,4714,4717,4718,4719,4722,4723,4724,4725,4728,4729,4730,4731,4732,4733,4734,4767,4768,4769,4770,4771,4772,4773,4774,4775,4776,4777,4778,4779,4780,4783,4784,4786,4787,4788,4791,4792,4794,4795][index - startIndex]! := by
   calc
-    Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (startIndex + (i - startIndex)) := by
-      rw [Nat.add_sub_of_le hi]
+    Artifact.submissionArtifact.instructionPC index =
+        Artifact.submissionArtifact.instructionPC
+          (startIndex + (index - startIndex)) := by
+      rw [Nat.add_sub_of_le hlo]
     _ = Artifact.submissionArtifact.instructionPC startIndex +
           (assembleBytes
             ((Artifact.submissionArtifact.instructions.drop startIndex).take
-              (i - startIndex))).length :=
-      instructionPC_add Artifact.submissionArtifact startIndex (i - startIndex)
+              (index - startIndex))).length :=
+      instructionPC_add Artifact.submissionArtifact startIndex
+        (index - startIndex)
     _ = _ := by
       rw [startPC]
-      interval_cases i <;> rfl
+      interval_cases index <;> rfl
+
 
 def opAt (offset : Nat) (op : Operation)
     (hget : template[offset]? = some (.op op) := by rfl)
@@ -117,7 +122,7 @@ def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨startIndex + offset, .push width value, (getElem_slice offset hoffset).trans hget, hwf⟩
 
-/-- Exact live instruction slice 3032..3081, PCs 4732..4831. -/
+/- Instructions 2898..2947, pc 4696..4795. -/
 def cios2Mid :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 0 .POP,

@@ -1,5 +1,4 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Defs
-
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
@@ -12,11 +11,9 @@ open Challenge.Modexp.Submission.Proofs.Fast
 
 def startIndex : Nat := 2684
 
+/-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
   [.op .JUMPDEST,
-   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   .op (.Swap ⟨1, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
    .push 2 9344,
    .op .MLOAD,
    .op (.Dup ⟨0, by decide⟩),
@@ -62,23 +59,30 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem startPC :
-    Artifact.submissionArtifact.instructionPC startIndex = 4080 := by rfl
+    Artifact.submissionArtifact.instructionPC startIndex = 4080 := by
+  rfl
 
-@[simp] theorem entryPC (i : Nat) (hi : startIndex ≤ i) (hii : i ≤ 2713) :
-    Artifact.submissionArtifact.instructionPC i =
-      [4080, 4081, 4114, 4115, 4116, 4119, 4120, 4121, 4123, 4124, 4125, 4128, 4129, 4130, 4131, 4132, 4134, 4135, 4136, 4138, 4139, 4140, 4141, 4142, 4143, 4144, 4146, 4147, 4148, 4149][i - startIndex]! := by
+@[simp] theorem entryPC (index : Nat) (hlo : startIndex ≤ index)
+    (hhi : index ≤ 2710) :
+    Artifact.submissionArtifact.instructionPC index =
+      [4080, 4081, 4084, 4085, 4086, 4088, 4089, 4090, 4093,
+       4094, 4095, 4096, 4097, 4099, 4100, 4101, 4103, 4104,
+       4105, 4106, 4107, 4108, 4109, 4111, 4112, 4113,
+       4114][index - startIndex]! := by
   calc
-    Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (startIndex + (i - startIndex)) := by
-      rw [Nat.add_sub_of_le hi]
+    Artifact.submissionArtifact.instructionPC index =
+        Artifact.submissionArtifact.instructionPC
+          (startIndex + (index - startIndex)) := by
+      rw [Nat.add_sub_of_le hlo]
     _ = Artifact.submissionArtifact.instructionPC startIndex +
           (assembleBytes
             ((Artifact.submissionArtifact.instructions.drop startIndex).take
-              (i - startIndex))).length :=
-      instructionPC_add Artifact.submissionArtifact startIndex (i - startIndex)
+              (index - startIndex))).length :=
+      instructionPC_add Artifact.submissionArtifact startIndex
+        (index - startIndex)
     _ = _ := by
       rw [startPC]
-      interval_cases i <;> rfl
+      interval_cases index <;> rfl
 
 def opAt (offset : Nat) (op : Operation)
     (hget : template[offset]? = some (.op op) := by rfl)
@@ -97,38 +101,35 @@ def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨startIndex + offset, .push width value, (getElem_slice offset hoffset).trans hget, hwf⟩
 
-/-- Exact live instruction slice 2684..2713, PCs 4080..4149. -/
+/-- Instructions 2684..2710, pc 4080..4114. -/
 def cios2Entry :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 0 .JUMPDEST,
-   pushAt 1 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2 (.Swap ⟨1, by decide⟩),
-   opAt 3 (.Swap ⟨0, by decide⟩),
-   pushAt 4 2 9344,
-   opAt 5 .MLOAD,
-   opAt 6 (.Dup ⟨0, by decide⟩),
-   pushAt 7 1 64,
-   opAt 8 .ADD,
-   opAt 9 .CALLDATASIZE,
-   pushAt 10 2 8192,
-   opAt 11 .CALLDATACOPY,
-   opAt 12 (.Dup ⟨0, by decide⟩),
-   opAt 13 (.Dup ⟨3, by decide⟩),
-   opAt 14 .ADD,
+   pushAt 1 2 9344,
+   opAt 2 .MLOAD,
+   opAt 3 (.Dup ⟨0, by decide⟩),
+   pushAt 4 1 64,
+   opAt 5 .ADD,
+   opAt 6 .CALLDATASIZE,
+   pushAt 7 2 8192,
+   opAt 8 .CALLDATACOPY,
+   opAt 9 (.Dup ⟨0, by decide⟩),
+   opAt 10 (.Dup ⟨3, by decide⟩),
+   opAt 11 .ADD,
+   pushAt 12 1 32,
+   opAt 13 (.Swap ⟨0, by decide⟩),
+   opAt 14 .SUB,
    pushAt 15 1 32,
-   opAt 16 (.Swap ⟨0, by decide⟩),
+   opAt 16 (.Dup ⟨4, by decide⟩),
    opAt 17 .SUB,
-   pushAt 18 1 32,
-   opAt 19 (.Dup ⟨4, by decide⟩),
-   opAt 20 .SUB,
-   opAt 21 (.Swap ⟨3, by decide⟩),
-   opAt 22 .POP,
-   opAt 23 (.Swap ⟨0, by decide⟩),
-   opAt 24 .POP,
-   pushAt 25 1 32,
-   opAt 26 (.Dup ⟨2, by decide⟩),
-   opAt 27 .SUB,
-   opAt 28 (.Swap ⟨1, by decide⟩),
-   opAt 29 .POP]
+   opAt 18 (.Swap ⟨3, by decide⟩),
+   opAt 19 .POP,
+   opAt 20 (.Swap ⟨0, by decide⟩),
+   opAt 21 .POP,
+   pushAt 22 1 32,
+   opAt 23 (.Dup ⟨2, by decide⟩),
+   opAt 24 .SUB,
+   opAt 25 (.Swap ⟨1, by decide⟩),
+   opAt 26 .POP]
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Entry
