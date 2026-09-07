@@ -36,7 +36,7 @@ theorem run_mid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.Stepper.runLocatedBlock cios2Mid
       (midState s mem paj ptj c bi pa pb n i pdst ret rest) =
-      some (l2At 4796 s (midMem mem c) bi (rowMu mem n)
+      some (l2At 4520 s (midMem mem c) bi (rowMu mem n)
         (rowC0 mem n) pa pb n i 0 pdst ret rest) := by
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
@@ -118,7 +118,7 @@ def gasSteps_mid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.GasSteps
       (midState s mem paj ptj c bi pa pb n i pdst ret rest)
-      (l2At 4796 s (midMem mem c) bi (rowMu mem n)
+      (l2At 4520 s (midMem mem c) bi (rowMu mem n)
         (rowC0 mem n) pa pb n i 0 pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka cios2Mid hcode hfork

@@ -1,5 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.L1
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
+import Challenge.Modexp.Submission.Proofs.Fast.MacAlt
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -8,9 +9,9 @@ set_option maxHeartbeats 4000000
 /-!
 # One-MAC certificates for the two-limb CIOS L1 block
 
-The first copied MAC ends at pc 4275.  Two no-test middle copies follow, and
-the final copied MAC starts at pc 4551 and owns the shared four-way loop test.
-Keeping the traces separate bounds concrete instruction reduction.
+The first copied MAC ends at pc 4270.  The second copied MAC starts there and
+owns the shared pair-loop test.  Keeping the two traces separate bounds concrete
+instruction reduction and lets the pair trace be composed with `GasSteps.trans`.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.Cios2L1Mac
@@ -37,7 +38,7 @@ abbrev l1State := l1At 4136
 /-- Row middle reached after the final L1 MAC. -/
 def midState (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4696
+  { s with pc := UInt256.ofNat 4420
            stack := [paj, ptj, c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
@@ -57,7 +58,7 @@ theorem run_l1FirstMac (s : State) (mem : ByteArray) (bi : UInt256)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock firstMac
       (l1At 4136 s mem bi pa pb n i j pdst ret rest) =
-      some (l1At 4275 s mem bi pa pb n i (j + 1) pdst ret rest) := by
+      some (l1At 4270 s mem bi pa pb n i (j + 1) pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -107,6 +108,8 @@ theorem run_l1FirstMac (s : State) (mem : ByteArray) (bi : UInt256)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
+  refine ⟨?_, MacAlt.macCarryFix _ _ _ _⟩
+  rw [MacAlt.macSumNat]
 
 set_option linter.unusedVariables false in
 set_option linter.unusedSimpArgs false in
@@ -118,7 +121,7 @@ theorem run_l1SecondMacBody (s : State) (mem : ByteArray) (bi : UInt256)
     (hn32 : n ≤ 32) (hk : k + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock secondMac
-      (l1At 4551 s mem bi pa pb n i k pdst ret rest) =
+      (l1At 4270 s mem bi pa pb n i k pdst ret rest) =
       some (l1At 4136 s mem bi pa pb n i (k + 1) pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
@@ -175,6 +178,8 @@ theorem run_l1SecondMacBody (s : State) (mem : ByteArray) (bi : UInt256)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
+  refine ⟨?_, MacAlt.macCarryFix _ _ _ _⟩
+  rw [MacAlt.macSumNat]
 
 set_option linter.unusedVariables false in
 set_option linter.unusedSimpArgs false in
@@ -184,8 +189,8 @@ theorem run_l1SecondMacExit (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hk : k + 1 = n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
-    Challenge.EvmProof.Stepper.runLocatedBlock secondMac
-      (l1At 4551 s mem bi pa pb n i k pdst ret rest) =
+    Challenge.EvmProof.Stepper.runLocatedBlock secondMacExit
+      (l1At 4270 s mem bi pa pb n i k pdst ret rest) =
       some (midState s (l1Step mem bi pa n (k + 1)).memory
         (UInt256.ofNat (ptrAt (pa + 32 * n - 32) (k + 1)))
         (UInt256.ofNat (ptrAt (8224 + 32 * n) (k + 1)))
@@ -225,7 +230,7 @@ theorem run_l1SecondMacExit (s : State) (mem : ByteArray) (bi : UInt256)
       (8256 + 32 * (n - 1 - k)) 32) = s.activeWords :=
     activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 800000 })
-    [secondMac, Cios2Paths.L1.secondPC, Cios2Paths.L1.secondStartIndex,
+    [secondMacExit, secondMac, Cios2Paths.L1.secondPC, Cios2Paths.L1.secondStartIndex,
       Cios2Paths.L1.secondOpAt, Cios2Paths.L1.secondPushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
@@ -238,6 +243,8 @@ theorem run_l1SecondMacExit (s : State) (mem : ByteArray) (bi : UInt256)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
+  refine ⟨?_, MacAlt.macCarryFix _ _ _ _⟩
+  rw [MacAlt.macSumNat]
 
 def gasSteps_l1FirstMac (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
@@ -250,7 +257,7 @@ def gasSteps_l1FirstMac (s : State) (mem : ByteArray) (bi : UInt256)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
       (l1At 4136 s mem bi pa pb n i j pdst ret rest)
-      (l1At 4275 s mem bi pa pb n i (j + 1) pdst ret rest) :=
+      (l1At 4270 s mem bi pa pb n i (j + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka firstMac hcode hfork
     (run_l1FirstMac s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact hn32 hj
@@ -266,7 +273,7 @@ def gasSteps_l1SecondMacBody (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hk : k + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4551 s mem bi pa pb n i k pdst ret rest)
+      (l1At 4270 s mem bi pa pb n i k pdst ret rest)
       (l1At 4136 s mem bi pa pb n i (k + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka secondMac hcode hfork
@@ -283,14 +290,32 @@ def gasSteps_l1SecondMacExit (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hk : k + 1 = n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4551 s mem bi pa pb n i k pdst ret rest)
+      (l1At 4270 s mem bi pa pb n i k pdst ret rest)
       (midState s (l1Step mem bi pa n (k + 1)).memory
         (UInt256.ofNat (ptrAt (pa + 32 * n - 32) (k + 1)))
         (UInt256.ofNat (ptrAt (8224 + 32 * n) (k + 1)))
         (l1Step mem bi pa n (k + 1)).carry bi pa pb n i pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka secondMac hcode hfork
+    Artifact.submissionArtifact .Osaka secondMacExit hcode hfork
     (run_l1SecondMacExit s mem bi pa pb n i k pdst ret rest hcap hrun hact hn32
       hk hpa hpaFit) hrun hnp
+
+/-- One pair iteration is exactly two independently priced MAC traces. -/
+def gasSteps_l1Pair (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 2 < n)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
+    Challenge.EvmProof.GasSteps
+      (l1At 4136 s mem bi pa pb n i j pdst ret rest)
+      (l1At 4136 s mem bi pa pb n i (j + 2) pdst ret rest) :=
+  (gasSteps_l1FirstMac s mem bi pa pb n i j pdst ret rest hcap hrun hcode hfork
+      hnp hact hn32 (by omega) hpa hpaFit).trans
+    (gasSteps_l1SecondMacBody s mem bi pa pb n i (j + 1) pdst ret rest hcap hrun
+      hcode hfork hnp hact hn32 (by omega) hpa hpaFit)
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2L1Mac

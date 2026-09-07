@@ -20,8 +20,6 @@ abbrev cios2Tail := Tail.cios2Tail
 
 abbrev l1FirstMac := L1.firstMac
 abbrev l1SecondMac := L1.secondMac
-abbrev l1MiddleOneMac := L1.middleOneMac
-abbrev l1MiddleTwoMac := L1.middleTwoMac
 abbrev l2FirstMac := L2Pair.firstMac
 abbrev l2SecondMac := L2Pair.secondMac
 

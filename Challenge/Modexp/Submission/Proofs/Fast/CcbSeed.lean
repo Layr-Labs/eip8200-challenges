@@ -57,7 +57,7 @@ def loopState (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
 
 def amCallState (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5305
+  { s with pc := UInt256.ofNat 2467
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
                      UInt256.ofNat 4040] ++ loopStack px n k ret rest
            memory := mem }
@@ -132,13 +132,13 @@ theorem run_call (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
-  have h5305Nat : (UInt256.ofNat 5305).toNat = 5305 := by decide
+  have h2467Nat : (UInt256.ofNat 2467).toNat = 2467 := by decide
   simp (config := { maxSteps := 400000 })
     [callPath, opAt, pushAt, wfOp, seedPC,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
      loopState, amCallState, loopStack, hc4, hc5, hc6, hc7, hc8, hc9,
-     hcode, hrun, h5305Nat, jumpDest5305,
+     hcode, hrun, h2467Nat, jumpDest2467,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
