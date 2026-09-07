@@ -7,8 +7,8 @@ benchmark's RIPEMD-160 contract.
 
 - Byte length: 5,268
 - Decoded instructions: 3,167
-- Hex-file SHA-256: `498bea19bf2dffe508587a9eb979b3327cb2262da29da14b5f69483c778ceffe`
-- Raw-byte SHA-256: `6687bf3ba061e8c417993791b842de4054c585b93e5816fc44b76ff163f5ec91`
+- Hex-file SHA-256: `32cdef0d9da0ddab52b7d542ca56a0449e5c578d864d4c7e12e6d271d4181e16`
+- Raw-byte SHA-256: `a31d892161f740c794b216163206dac64eebd5396e1a20a3b711412ce62f424b`
 - Official evaluation and promotion status: recorded separately by the platform.
 
 ## Verification contract

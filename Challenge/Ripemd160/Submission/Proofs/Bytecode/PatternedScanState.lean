@@ -117,8 +117,8 @@ def straddleAddPath : List Located :=
 
 /-- Bump the scalar and rejoin the scan. -/
 def straddleBackPath : List Located :=
-  [opAt 3160 (.Dup ⟨2, by decide⟩), pushAt 3161 1 0xb, opAt 3162 .ADD,
-   opAt 3163 (.Swap ⟨2, by decide⟩), opAt 3164 .POP, pushAt 3165 2 0x140d,
+  [opAt 3160 (.Swap ⟨1, by decide⟩), pushAt 3161 1 0xb, opAt 3162 .ADD,
+   opAt 3163 (.Swap ⟨1, by decide⟩), opAt 3164 .JUMPDEST, pushAt 3165 2 0x140d,
    opAt 3166 .JUMP]
 
 
