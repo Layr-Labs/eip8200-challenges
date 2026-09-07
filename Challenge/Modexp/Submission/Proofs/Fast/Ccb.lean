@@ -346,50 +346,93 @@ def gasSteps_exit (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     Artifact.submissionArtifact .Osaka blk1765 hcode hfork
       (run_exit s mem px ret rest hcap hcode hjump hrun) hrun hnp
 
-/-! ## The squaring loop -/
+/-! ## The squaring loop
+
+The loop is written over a **counter parameter** `c` rather than the literal
+eight.  The block lemmas above were already stated over `k` (`run_ret` even
+carries `hk8 : k ≤ 8` and closes by `interval_cases`), so nothing below needs a
+new block reduction — only the composition had the literal baked in.
+
+`gasSteps_ccb` keeps its exact signature and is now `entry → addmod → post →
+gasSteps_tail 8`.  The appended R² ladder enters `gasSteps_tail` directly at
+pc 2877 with `c ∈ {4,5}`, having done its own doublings first. -/
 
 /-- The indexed loop-head family: after `i` `MONPRO` calls the counter stands
-at `8 - i`. -/
-def loopFamily (s : State) (px : Nat) (ret : UInt256) (rest : List UInt256)
+at `c - i`. -/
+def loopFamily (s : State) (px c : Nat) (ret : UInt256) (rest : List UInt256)
     (mems : Nat → ByteArray) (i : Nat) : State :=
-  loopState s (mems i) px (8 - i) ret rest
+  loopState s (mems i) px (c - i) ret rest
 
 /-- One loop iteration: call `MONPRO` and decrement the counter. -/
-def gasSteps_iteration (s : State) (px : Nat) (ret : UInt256)
-    (rest : List UInt256) (mems : Nat → ByteArray)
-    (monpro : ∀ i, i < 8 →
-      Challenge.EvmProof.GasSteps (mpCallState s (mems i) px (8 - i) ret rest)
-        (retState s (mems (i + 1)) px (8 - i) ret rest))
+def gasSteps_iteration (s : State) (px c : Nat) (ret : UInt256)
+    (rest : List UInt256) (mems : Nat → ByteArray) (hc8 : c ≤ 8)
+    (monpro : ∀ i, i < c →
+      Challenge.EvmProof.GasSteps (mpCallState s (mems i) px (c - i) ret rest)
+        (retState s (mems (i + 1)) px (c - i) ret rest))
     (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (i : Nat) (hi : i < 7) :
-    Challenge.EvmProof.GasSteps (loopFamily s px ret rest mems i)
-      (loopFamily s px ret rest mems (i + 1)) :=
-  ((gasSteps_call s (mems i) px (8 - i) ret rest hcap hcode hfork hrun hnp).trans
+    (i : Nat) (hi : i + 1 < c) :
+    Challenge.EvmProof.GasSteps (loopFamily s px c ret rest mems i)
+      (loopFamily s px c ret rest mems (i + 1)) :=
+  ((gasSteps_call s (mems i) px (c - i) ret rest hcap hcode hfork hrun hnp).trans
       (monpro i (by omega))).trans
-    (gasSteps_ret s (mems (i + 1)) px (8 - i) (8 - (i + 1)) ret rest hcap
+    (gasSteps_ret s (mems (i + 1)) px (c - i) (c - (i + 1)) ret rest hcap
       (by omega) (by omega) (by omega) hcode hfork hrun hnp)
 
-/-- The seven iterations that end at the loop head with the counter at one. -/
-def gasSteps_loop (s : State) (px : Nat) (ret : UInt256) (rest : List UInt256)
-    (mems : Nat → ByteArray)
-    (monpro : ∀ i, i < 8 →
-      Challenge.EvmProof.GasSteps (mpCallState s (mems i) px (8 - i) ret rest)
-        (retState s (mems (i + 1)) px (8 - i) ret rest))
+/-- The `c - 1` iterations that end at the loop head with the counter at one. -/
+def gasSteps_loop (s : State) (px c : Nat) (ret : UInt256) (rest : List UInt256)
+    (mems : Nat → ByteArray) (hc0 : 0 < c) (hc8 : c ≤ 8)
+    (monpro : ∀ i, i < c →
+      Challenge.EvmProof.GasSteps (mpCallState s (mems i) px (c - i) ret rest)
+        (retState s (mems (i + 1)) px (c - i) ret rest))
     (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (loopState s (mems 0) px 8 ret rest)
-      (loopState s (mems 7) px 1 ret rest) :=
-  Challenge.EvmProof.GasSteps.iterateBounded
-    (I := loopFamily s px ret rest mems) 7
-    (fun i hi => gasSteps_iteration s px ret rest mems monpro hcap hcode hfork hrun
-      hnp i hi)
+    Challenge.EvmProof.GasSteps (loopState s (mems 0) px c ret rest)
+      (loopState s (mems (c - 1)) px 1 ret rest) := by
+  have h := Challenge.EvmProof.GasSteps.iterateBounded
+    (I := loopFamily s px c ret rest mems) (c - 1)
+    (fun i hi => gasSteps_iteration s px c ret rest mems hc8 monpro hcap hcode
+      hfork hrun hnp i (by omega))
+  have h0 : loopFamily s px c ret rest mems 0 = loopState s (mems 0) px c ret rest := by
+    simp [loopFamily]
+  have h1 : loopFamily s px c ret rest mems (c - 1)
+      = loopState s (mems (c - 1)) px 1 ret rest := by
+    unfold loopFamily
+    rw [show c - (c - 1) = 1 by omega]
+  rw [h0, h1] at h
+  exact h
+
+/-- **The shared tail.**  From the loop head at pc 2877 with the counter at `c`,
+run `c` `MONPRO` calls and return to the caller.  Both `CCB`'s own head and the
+appended R² ladder hand over here; they differ only in how they arrive and with
+what counter. -/
+def gasSteps_tail (s : State) (px c : Nat) (ret : UInt256) (rest : List UInt256)
+    (mems : Nat → ByteArray) (hc0 : 0 < c) (hc8 : c ≤ 8)
+    (monpro : ∀ i, i < c →
+      Challenge.EvmProof.GasSteps (mpCallState s (mems i) px (c - i) ret rest)
+        (retState s (mems (i + 1)) px (c - i) ret rest))
+    (hcap : rest.length ≤ 1008)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps (loopState s (mems 0) px c ret rest)
+      (doneState s (mems c) ret rest) := by
+  have hmp := monpro (c - 1) (by omega)
+  rw [show c - (c - 1) = 1 by omega, show c - 1 + 1 = c by omega] at hmp
+  exact ((gasSteps_loop s px c ret rest mems hc0 hc8 monpro hcap hcode hfork hrun
+      hnp).trans
+    ((gasSteps_call s (mems (c - 1)) px 1 ret rest hcap hcode hfork hrun hnp).trans
+      hmp)).trans
+    ((gasSteps_retLast s (mems c) px ret rest hcap hcode hfork hrun hnp).trans
+      (gasSteps_exit s (mems c) px ret rest hcap hcode hjump hfork hrun hnp))
 
 /-- **Execution certificate for `CCB`.**  Entering pc 2863 with stack
 `[px, ret]` runs one `ADDMOD(px, px, px)` call and eight `MONPRO(px, px, px)`
@@ -409,13 +452,10 @@ def gasSteps_ccb (s : State) (px : Nat) (ret : UInt256) (rest : List UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (entryState s mem0 px ret rest)
       (doneState s (mems 8) ret rest) :=
-  (((((gasSteps_entry s mem0 px ret rest hcap hcode hfork hrun hnp).trans
+  (((gasSteps_entry s mem0 px ret rest hcap hcode hfork hrun hnp).trans
     addmod).trans
       (gasSteps_post s (mems 0) px ret rest hcap hcode hfork hrun hnp)).trans
-    (gasSteps_loop s px ret rest mems monpro hcap hcode hfork hrun hnp)).trans
-      ((gasSteps_call s (mems 7) px 1 ret rest hcap hcode hfork hrun hnp).trans
-        (monpro 7 (by omega)))).trans
-    ((gasSteps_retLast s (mems 8) px ret rest hcap hcode hfork hrun hnp).trans
-      (gasSteps_exit s (mems 8) px ret rest hcap hcode hjump hfork hrun hnp))
+    (gasSteps_tail s px 8 ret rest mems (by omega) (by omega) monpro hcap hcode
+      hjump hfork hrun hnp)
 
 end Challenge.Modexp.Submission.Proofs.Fast.Ccb
