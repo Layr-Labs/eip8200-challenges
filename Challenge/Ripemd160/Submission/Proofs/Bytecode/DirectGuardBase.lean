@@ -55,7 +55,7 @@ def checkEarlyPath : List Located :=
    pushAt 9 32 KnownInputData.fullWord, opAt 10 .XOR,
    pushAt 11 2 115, opAt 12 .JUMPI,
    opAt 47 .JUMPDEST, opAt 48 .POP,
-   pushAt 49 2 121, opAt 50 .JUMP]
+   pushAt 49 2 121, opAt 50 .POP]
 
 def loopPath : List Located :=
   [opAt 15 .JUMPDEST, opAt 16 (.Swap ⟨0, by decide⟩),
