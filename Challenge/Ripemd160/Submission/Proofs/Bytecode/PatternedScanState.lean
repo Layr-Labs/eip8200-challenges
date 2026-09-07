@@ -104,7 +104,7 @@ def straddleCorrPath : List Located :=
   [opAt 3095 .JUMPDEST, opAt 3096 (.Dup ⟨6, by decide⟩),
    opAt 3097 (.Dup ⟨4, by decide⟩), pushAt 3098 1 0x08, opAt 3099 .SHR,
    pushAt 3100 1 0x05, opAt 3101 .MUL, pushAt 3102 1 0x1b, opAt 3103 .SUB,
-   pushAt 3104 1 0x08, opAt 3105 .MUL, opAt 3106 .SHR, pushAt 3107 1 0x0b,
+   pushAt 3104 1 0x03, opAt 3105 .SHL, opAt 3106 .SHR, pushAt 3107 1 0x0b,
    opAt 3108 .MUL]
 
 /-- Apply the correction to the expected word. -/
