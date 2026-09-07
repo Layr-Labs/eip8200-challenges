@@ -18,7 +18,7 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedInputData PatternedDigest PatternedGuardSpec PatternedSwar
 
 theorem hdest1006 : Decode.isValidJumpDest submissionBytecode 1006 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 856 (by rfl)
+  Artifact.submissionArtifact.isValidJumpDest_index 843 (by rfl)
 
 /-- The accumulator is zero, so the guard answers. -/
 def gasSteps_tail_hit_sym (input : ByteArray) (sv ov acc : UInt256) (hc : ¬ UInt256.isTrue (UInt256.lor acc (UInt256.xor (UInt256.shiftLeft (0x88add2f71c41668b : UInt256) (192 : UInt256)) (MachineState.readWord input ((992 : UInt256)).toNat)))) :

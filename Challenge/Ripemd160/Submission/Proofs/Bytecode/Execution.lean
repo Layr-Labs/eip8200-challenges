@@ -40,7 +40,7 @@ def path_start : List
 
 def path_3ee : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨856, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨843, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def gasSteps_start (input : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0x12ce) :=

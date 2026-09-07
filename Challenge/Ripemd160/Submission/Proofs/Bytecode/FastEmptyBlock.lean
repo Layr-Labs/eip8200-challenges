@@ -245,10 +245,10 @@ theorem run_decision_nonempty (s : State) (input : ByteArray) (i : Nat)
   have htrue : UInt256.isTrue (UInt256.ofNat input.size) := by
     exact hmod
   have hdest : Decode.isValidJumpDest submissionBytecode 0x519 = true := by
-    have hpc : Artifact.submissionArtifact.instructionPC 1087 = 0x519 := by
+    have hpc : Artifact.submissionArtifact.instructionPC 1074 = 0x519 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]
       decide
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 1087 (by rfl)
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 1074 (by rfl)
     rw [hpc] at h
     exact h
   have hpc2792 : Artifact.submissionArtifact.instructionPC 3004 = 0x129e := by
@@ -303,10 +303,10 @@ theorem run_body (s : State) (input : ByteArray) (i : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock bodyPath (bodyEntry s input i) =
       some (resultState s input i) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 0x436 = true := by
-    have hpc : Artifact.submissionArtifact.instructionPC 893 = 0x436 := by
+    have hpc : Artifact.submissionArtifact.instructionPC 880 = 0x436 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]
       decide
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 893 (by rfl)
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 880 (by rfl)
     rw [hpc] at h
     exact h
   have hpc2796 : Artifact.submissionArtifact.instructionPC 3008 = 0x12a4 := by

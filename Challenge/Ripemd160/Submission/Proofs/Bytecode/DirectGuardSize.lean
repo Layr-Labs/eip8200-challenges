@@ -37,7 +37,7 @@ theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
   have hcond : (UInt256.xor (UInt256.ofNat 1000)
       (UInt256.ofNat input.size)).toNat ≠ 0 := htrue
   have hdest : Decode.isValidJumpDest submissionBytecode 0x3ee = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 856 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 843 (by rfl)
   simp [sizePath, opAt, pushAt, wfOp, Execution.atPC, fallbackState, atPC,
     htrue, hcond, hdest, UInt256.isTrue, BooleanSelect.xor_comm,
     Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
