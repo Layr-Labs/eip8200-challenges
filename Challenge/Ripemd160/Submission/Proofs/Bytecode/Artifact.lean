@@ -3413,7 +3413,7 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x5b,
   op 0x50,
   .push 2 5150,
-  op 0x56,
+  op 0x50,
   op 0x5b,
   .push 1 255,
   .push 0 0,
