@@ -236,21 +236,16 @@ def bitReturned (s : State) (accumulator : UInt256)
     1024 3072 (baseBit byte j) 0 count 900
     (innerFrame accumulator count baseSize i j offset byte rest)
 
-@[simp] private theorem baseSetupPCs (i : Nat) (hi : 632 ≤ i)
-    (hii : i ≤ 642) :
+@[simp] private theorem baseSetupPCs (i : Nat)
+    (hi : 632 ≤ i) (hii : i ≤ 642) :
     Artifact.submissionArtifact.instructionPC i =
-      ([811,812,815,816,819,822,823,824,826,829,830])[i - 632]! := by
+      ([811,812,815,816,819,822,823,824,826,829,830] : List Nat)[i - 632]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem baseLoopPCs (i : Nat) (hi : 643 ≤ i)
-    (hii : i ≤ 716) :
+@[simp] private theorem baseLoopPCs (i : Nat)
+    (hi : 643 ≤ i) (hii : i ≤ 716) :
     Artifact.submissionArtifact.instructionPC i =
-      ([831,832,833,834,835,836,839,840,841,842,843,844,845,846,847,
-        848,849,851,852,853,854,857,858,861,862,863,865,868,871,874,
-        875,876,879,880,881,883,884,885,887,888,889,890,893,896,899,
-        900,901,903,904,905,906,907,910,911,912,913,914,915,917,918,
-        919,920,921,924,925,926,927,930,931,932,934,937,940,943])[
-          i - 643]! := by
+      ([831,832,833,834,835,836,839,840,841,842,843,844,845,846,847,848,849,851,852,853,854,857,858,861,862,863,865,868,871,874,875,876,879,880,881,883,884,885,887,888,889,890,893,896,899,900,901,903,904,905,906,907,910,911,912,913,914,915,917,918,919,920,921,924,925,926,927,930,931,932,934,937,940,943] : List Nat)[i - 643]! := by
   interval_cases i <;> decide
 
 private theorem jump104 :

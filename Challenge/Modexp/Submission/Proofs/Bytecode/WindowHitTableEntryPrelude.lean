@@ -15,7 +15,7 @@ open WindowHitPaths
 private def startState (template : State) (modulus : UInt256)
     (rest : List UInt256) : State :=
   { template with
-    pc := UInt256.ofNat 3034
+    pc := UInt256.ofNat 3029
     stack := modulus :: rest
     memory := ByteArray.empty
     activeWords := UInt256.ofNat 0 }
@@ -23,16 +23,15 @@ private def startState (template : State) (modulus : UInt256)
 private def endState (template : State) (base modulus : UInt256)
     (rest : List UInt256) : State :=
   { template with
-    pc := UInt256.ofNat 3053
+    pc := UInt256.ofNat 3048
     stack := [WindowMath.tableWord base modulus 2, base, modulus] ++ rest
     memory := WindowTableMemory.tableMemoryThrough base modulus 3
     activeWords := UInt256.ofNat 3 }
 
 @[simp] private theorem preludePCs (index : Nat)
-    (hlo : 1855 ≤ index) (hhi : index ≤ 1869) :
+    (hlo : 1845 ≤ index) (hhi : index ≤ 1859) :
     Artifact.submissionArtifact.instructionPC index =
-      [3034, 3036, 3037, 3039, 3040, 3041, 3042, 3044,
-       3045, 3046, 3047, 3048, 3049, 3050, 3052][index - 1855]! := by
+      ([3029,3031,3032,3034,3035,3036,3037,3039,3040,3041,3042,3043,3044,3045,3047] : List Nat)[index - 1845]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -70,7 +69,7 @@ theorem run_generic (template : State) (modulus : UInt256)
 
 theorem run_tablePrelude (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tablePreludePath
-      (nonzeroState input) = some (tableState input 2 3053) := by
+      (nonzeroState input) = some (tableState input 2 3048) := by
   have h := run_generic (Dispatch.wordEntryState input) (modulusWord input)
     (routeStack input) (by simp [routeStack]) rfl
   have hcalldata :
@@ -80,7 +79,7 @@ theorem run_tablePrelude (input : ByteArray) :
       (routeStack input) = nonzeroState input := by rfl
   have hend : endState (Dispatch.wordEntryState input)
       (MachineState.readWord input 96)
-      (modulusWord input) (routeStack input) = tableState input 2 3053 := by rfl
+      (modulusWord input) (routeStack input) = tableState input 2 3048 := by rfl
   rw [hstart, hend] at h
   exact h
 

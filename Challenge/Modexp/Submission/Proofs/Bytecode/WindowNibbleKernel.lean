@@ -2,7 +2,6 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleSquare
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleLookup
 
 set_option warningAsError true
-set_option maxHeartbeats 3000000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 

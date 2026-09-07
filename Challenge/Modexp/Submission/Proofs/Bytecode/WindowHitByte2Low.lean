@@ -17,9 +17,9 @@ theorem run_prep (template : State) (base modulus : UInt256) (high : Nat)
     (word pointer accumulator : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (lowPrepPath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3420)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3415)
         base modulus high (byteValue 2 word) word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3425)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3420)
       base modulus (lowNibble 2 word) (byteValue 2 word) word pointer
       accumulator rest) := by
   have h5 : rest.length + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -51,9 +51,9 @@ theorem run_squareLookup (template : State) (base modulus : UInt256)
     (rest : List UInt256) (hnibble : nibble < 16)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (lowSquareLookupPath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3425)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3420)
         base modulus nibble byte word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3460)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3455)
       base modulus nibble byte word pointer
       (WindowMath.nibbleWordStep modulus base accumulator nibble) rest) := by
   have hshift := shift_nibble nibble hnibble
@@ -95,9 +95,9 @@ theorem run_finish (template : State) (base modulus : UInt256)
     (nibble : Nat) (byte word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (finishPath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3460)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3455)
         base modulus nibble byte word pointer accumulator rest) =
-    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3462)
+    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3457)
       base modulus word pointer accumulator rest) := by
   have h5 : rest.length + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega

@@ -9,7 +9,7 @@ set_option maxRecDepth 40000
 
 This module connects the reusable artifact-independent byte kernel to the
 four concrete semantic loop boundaries.  The remaining artifact obligation
-is deliberately separate: each 62-instruction slice must be identified with
+is deliberately separate: each 80-instruction slice must be identified with
 `byteProgram count` at its generated instruction indices.
 -/
 

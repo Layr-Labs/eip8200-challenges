@@ -119,12 +119,10 @@ def setupReturned (s : State) (b e m baseOff expOff modOff : Nat)
     (UInt256.ofNat modOff) (UInt256.ofNat m) 0 768
     (saved b e m baseOff expOff modOff returnDest rest)
 
-@[simp] private theorem setupPCs (i : Nat) (hi : 563 ≤ i)
-    (hii : i ≤ 598) :
+@[simp] private theorem setupPCs (i : Nat)
+    (hi : 563 ≤ i) (hii : i ≤ 598) :
     Artifact.submissionArtifact.instructionPC i =
-      [704,705,707,708,709,711,712,715,716,717,720,721,722,725,726,
-       729,732,733,734,737,738,741,744,745,746,749,750,753,756,757,
-       758,761,762,763,764,767][i - 563]! := by
+      ([704,705,707,708,709,711,712,715,716,717,720,721,722,725,726,729,732,733,734,737,738,741,744,745,746,749,750,753,756,757,758,761,762,763,764,767] : List Nat)[i - 563]! := by
   interval_cases i <;> decide
 
 private theorem jump19 :

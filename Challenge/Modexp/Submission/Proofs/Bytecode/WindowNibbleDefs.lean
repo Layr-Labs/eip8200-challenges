@@ -34,8 +34,8 @@ NOT definitionally equal; `mulMod_comm` below is what bridges them, and every
 statement downstream keeps the accumulator-first spelling. -/
 def lookupProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .push 1 5, .op .SHL, .op .MLOAD,
-   .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP, .op .JUMPDEST]
+   .op (.Dup ⟨2, by decide⟩), .push 8 5, .op .SHL, .op .MLOAD,
+   .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP]
 
 def beginSquareProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),

@@ -143,38 +143,52 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
     Artifact.submissionArtifact.instructionPC i = [0, 3][i]! := by
   interval_cases i <;> decide
 
-@[simp] theorem headerPCs12 (i : Nat) (hi : 12 ≤ i) (hii : i ≤ 14) :
-    Artifact.submissionArtifact.instructionPC i = [14, 15, 18][i - 12]! := by
-  interval_cases i <;> decide
-
-@[simp] theorem headerPCs43 (i : Nat) (hi : 43 ≤ i) (hii : i ≤ 45) :
-    Artifact.submissionArtifact.instructionPC i = [53, 54, 57][i - 43]! := by
-  interval_cases i <;> decide
-
-@[simp] theorem headerPCs80 (i : Nat) (hi : 80 ≤ i) (hii : i ≤ 82) :
-    Artifact.submissionArtifact.instructionPC i = [99, 100, 103][i - 80]! := by
-  interval_cases i <;> decide
-
-@[simp] theorem headerPCs262 (i : Nat) (hi : 262 ≤ i) (hii : i ≤ 264) :
-    Artifact.submissionArtifact.instructionPC i = [305, 306, 309][i - 262]! := by
-  interval_cases i <;> decide
-
-@[simp] theorem headerPCs350 (i : Nat) (hi : 350 ≤ i) (hii : i ≤ 352) :
-    Artifact.submissionArtifact.instructionPC i = [434, 435, 438][i - 350]! := by
-  interval_cases i <;> decide
-
-@[simp] theorem headerPCs412 (i : Nat) (hi : 412 ≤ i) (hii : i ≤ 414) :
-    Artifact.submissionArtifact.instructionPC i = [512, 513, 516][i - 412]! := by
-  interval_cases i <;> decide
-
-@[simp] theorem headerPCs560 (i : Nat) (hi : 560 ≤ i) (hii : i ≤ 562) :
-    Artifact.submissionArtifact.instructionPC i = [699, 700, 703][i - 560]! := by
-  interval_cases i <;> decide
-
-@[simp] theorem headerPCs899 (i : Nat) (hi : 899 ≤ i) (hii : i ≤ 919) :
+@[simp] theorem headerPCs12 (i : Nat)
+    (hi : 12 ≤ i) (hii : i ≤ 14) :
     Artifact.submissionArtifact.instructionPC i =
-      [1196,1197,1198,1199,1201,1202,1204,1205,1208,1209,1210,
-       1213,1214,1215,1218,1219,1220,1221,1222,1223,1226][i - 899]! := by
+      ([14,15,18] : List Nat)[i - 12]! := by
+  interval_cases i <;> decide
+
+@[simp] theorem headerPCs43 (i : Nat)
+    (hi : 43 ≤ i) (hii : i ≤ 45) :
+    Artifact.submissionArtifact.instructionPC i =
+      ([53,54,57] : List Nat)[i - 43]! := by
+  interval_cases i <;> decide
+
+@[simp] theorem headerPCs80 (i : Nat)
+    (hi : 80 ≤ i) (hii : i ≤ 82) :
+    Artifact.submissionArtifact.instructionPC i =
+      ([99,100,103] : List Nat)[i - 80]! := by
+  interval_cases i <;> decide
+
+@[simp] theorem headerPCs262 (i : Nat)
+    (hi : 262 ≤ i) (hii : i ≤ 264) :
+    Artifact.submissionArtifact.instructionPC i =
+      ([305,306,309] : List Nat)[i - 262]! := by
+  interval_cases i <;> decide
+
+@[simp] theorem headerPCs350 (i : Nat)
+    (hi : 350 ≤ i) (hii : i ≤ 352) :
+    Artifact.submissionArtifact.instructionPC i =
+      ([434,435,438] : List Nat)[i - 350]! := by
+  interval_cases i <;> decide
+
+@[simp] theorem headerPCs412 (i : Nat)
+    (hi : 412 ≤ i) (hii : i ≤ 414) :
+    Artifact.submissionArtifact.instructionPC i =
+      ([512,513,516] : List Nat)[i - 412]! := by
+  interval_cases i <;> decide
+
+@[simp] theorem headerPCs560 (i : Nat)
+    (hi : 560 ≤ i) (hii : i ≤ 562) :
+    Artifact.submissionArtifact.instructionPC i =
+      ([699,700,703] : List Nat)[i - 560]! := by
+  interval_cases i <;> decide
+
+@[simp] theorem headerPCs899 (i : Nat)
+    (hi : 899 ≤ i) (hii : i ≤ 919) :
+    Artifact.submissionArtifact.instructionPC i =
+      ([1196,1197,1198,1199,1201,1202,1204,1205,1208,1209,1210,1213,1214,1215,1218,1219,1220,1221,1222,1223,1226] : List Nat)[i - 899]! := by
   interval_cases i <;> decide
 
 @[simp] theorem jump14 :

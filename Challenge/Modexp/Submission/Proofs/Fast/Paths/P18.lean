@@ -11,9 +11,9 @@ the leading bit of a nonzero byte is set, so it always ends holding `BASE`.
 This block copies `BASE` into `ACC` and resumes at the mask shift, pc 1832.  A
 zero byte has no set bit, so it takes the untouched loop head at pc 1789.
 
-* `blk2557` (idx 2485..2489, pc 3865..3871) — the `w = 0` test;
-* `blk2562` (idx 2490..2496, pc 3872..3886) — the copy and the resume;
-* `blk2569` (idx 2497..2499, pc 3887..3891) — the zero-byte arm. -/
+* `blk2557` (idx 2557..2561, pc 3865..3871) — the `w = 0` test;
+* `blk2562` (idx 2562..2568, pc 3872..3886) — the copy and the resume;
+* `blk2569` (idx 2569..2571, pc 3887..3891) — the zero-byte arm. -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
 
@@ -21,49 +21,48 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 2485..2489, pc 3865..3871: the `w = 0` test. -/
+/-- Instructions 2557..2561, pc 3865..3871: the `w = 0` test. -/
 def blk2557 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2485 .JUMPDEST,
-   opAt 2486 (.Dup ⟨1, by decide⟩),
-   opAt 2487 .ISZERO,
-   pushAt 2488 2 3887,
-   opAt 2489 .JUMPI]
+  [opAt 2449 .JUMPDEST,
+   opAt 2450 (.Dup ⟨1, by decide⟩),
+   opAt 2451 .ISZERO,
+   pushAt 2452 2 3882,
+   opAt 2453 .JUMPI]
 
-/-- Instructions 2490..2496, pc 3872..3886: `ACC := BASE`, then the shift. -/
+/-- Instructions 2562..2568, pc 3872..3886: `ACC := BASE`, then the shift. -/
 def blk2562 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2490 2 9344,
-   opAt 2491 .MLOAD,
-   pushAt 2492 2 2048,
-   pushAt 2493 2 1024,
-   opAt 2494 .MCOPY,
-   pushAt 2495 2 1832,
-   opAt 2496 .JUMP]
+  [pushAt 2454 2 9344,
+   opAt 2455 .MLOAD,
+   pushAt 2456 2 2048,
+   pushAt 2457 2 1024,
+   opAt 2458 .MCOPY,
+   pushAt 2459 2 1832,
+   opAt 2460 .JUMP]
 
-/-- Instructions 2497..2499, pc 3887..3891: the zero-byte arm. -/
+/-- Instructions 2569..2571, pc 3887..3891: the zero-byte arm. -/
 def blk2569 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2497 .JUMPDEST,
-   pushAt 2498 2 1789,
-   opAt 2499 .JUMP]
+  [opAt 2461 .JUMPDEST,
+   pushAt 2462 2 1789,
+   opAt 2463 .JUMP]
 
 /-- PC table for the relocated leading-bit shortcut.  This range is outside
 the inherited `Fast.Defs` tables, so execution proofs need a local certificate
 instead of unfolding the complete bytecode prefix at every instruction. -/
-@[simp] theorem leadingBitPC (i : Nat) (hi : 2485 ≤ i) (hii : i ≤ 2499) :
+@[simp] theorem leadingBitPC (i : Nat)
+    (hi : 2449 ≤ i) (hii : i ≤ 2463) :
     Artifact.submissionArtifact.instructionPC i =
-      [3865, 3866, 3867, 3868, 3871,
-       3872, 3875, 3876, 3879, 3882, 3883, 3886,
-       3887, 3888, 3891][i - 2485]! := by
+      ([3860,3861,3862,3863,3866,3867,3870,3871,3874,3877,3878,3881,3882,3883,3886] : List Nat)[i - 2449]! := by
   interval_cases i <;> decide
 
 theorem jumpDest3865 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3865 = true :=
-  Artifact.isValidJumpDest_index 2485 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3860 = true :=
+  Artifact.isValidJumpDest_index 2449 (by rfl)
 
 theorem jumpDest3887 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3887 = true :=
-  Artifact.isValidJumpDest_index 2497 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3882 = true :=
+  Artifact.isValidJumpDest_index 2461 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast
