@@ -109,7 +109,7 @@ theorem run_shiftBody (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `blk3026`: quotient estimate with a branchless saturation mask. -/
+/-- `blk3026`: the quotient estimate. -/
 theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hact : 296 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -138,7 +138,7 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       estimateState, macSetupState, kState, pcEstimate, pcMacSetup, qhatOf,
       PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
-      outer, Exp.outer, hcode, hrun, hA, hB, hC, hD, hE, hF, hG, Exp.push0_word,
+      outer, Exp.outer, hcode, hrun, hA, hB, hC, hD, hE, hF, hG,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -209,14 +209,11 @@ theorem run_macBodyA (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
       pcMacLoop, pcMacTail, Monpro.l1Step, Monpro.macSum, Monpro.macCarry, Monpro.mulHi,
       Monpro.maxWord_literal, outer, Exp.outer,
       hrun, hcode, negK_literal, hpa, hpt, hpa', hpt', hactA, hactT,
-      UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
-  refine ⟨?_, Monpro.MacAlt.macCarryFix _ _ _ _⟩
-  rw [Monpro.MacAlt.macSumNat]
 
 /-- `blk3077b` with limbs to go: back to the loop head. -/
 theorem run_macTail_go (s : State) (mm : ByteArray) (pa pt c q : UInt256)

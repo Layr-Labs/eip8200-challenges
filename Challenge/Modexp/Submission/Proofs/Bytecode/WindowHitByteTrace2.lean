@@ -14,52 +14,11 @@ open WindowHitByteSlices
 open WindowByteKernel
 open WindowNibbleKernel
 
-/-! Concrete table lookup and multiply at the first high-nibble location. -/
-set_option linter.unusedSimpArgs false in
-theorem run_byte0_highLookup (template : State) (base modulus : UInt256)
-    (nibble : Nat) (byte word pointer accumulator : UInt256)
-    (rest : List UInt256) (hnibble : nibble < 16)
-    (hrest : rest.length ≤ 1000) :
-    runLocatedBlock (highLookupPath 0)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3233)
-        base modulus nibble byte word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3250)
-      base modulus nibble byte word pointer
-      (UInt256.mulMod accumulator (WindowMath.tableWord base modulus nibble)
-        modulus) rest) := by
-  have hshift := shift_nibble nibble hnibble
-  have hoffset : (UInt256.ofNat (32 * nibble)).toNat = 32 * nibble := by
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat]
-    apply Nat.mod_eq_of_lt
-    omega
-  have hread := WindowTableMemory.readWord_tableMemory base modulus nibble hnibble
-  have hactive := WindowTableMemory.activeWordsAfter_lookup nibble hnibble
-  have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
-  have h7 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
-  have h8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
-  have h9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by
-    omega
-  have h10 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by
-    omega
-  simp (config := { maxSteps := 2000000 }) (disch := omega)
-    [highLookupPath, byteStartIndex, locatedSlice,
-      Challenge.EvmProof.Stepper.Located.ofIndex,
-      Challenge.EvmProof.ProgramArtifact.instructionPC,
-      Artifact.submissionArtifact, Artifact.submissionInstructions,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated,
-      Challenge.EvmProof.Stepper.runInstr,
-      nibbleState,
-      List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
-      hrest, h6, h7, h8, h9, h10, hshift, hoffset, hread, hactive,
-      State.activeWordsAfterUInt256,
-      Challenge.EvmProof.Word.literal_eq_ofNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod]
-  -- The window loads the table word last, so `MULMOD` multiplies in the
-  -- opposite order from the spelling this statement uses.  Equal, but not
-  -- definitionally equal.
-  exact mulMod_comm _ _ _
+/-!
+Byte 0 has no standalone high-nibble lookup block. The four squares and the
+table multiply are fused in `WindowHitByteTrace1.run_byte0_highSquareLookup`
+(`3215 → 3250`); the low-nibble fusion lives in
+`WindowHitByteTrace3.run_byte0_lowSquareLookup` (`3255 → 3290`). This module
+is kept as an import-compatible placeholder. -/
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitByteTrace2

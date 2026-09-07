@@ -69,8 +69,13 @@ def blk1406 :
    pushAt 1410 4 9440,
    opAt 1411 .MLOAD,
    opAt 1412 (.Dup ⟨4, by decide⟩),
-   pushAt 1413 7 9344,
+   pushAt 1413 2 9344,
    opAt 1414 .MLOAD,
-   opAt 1415 .ADD]
+   opAt 1415 .ADD,
+   opAt 1416 .JUMPDEST,
+   opAt 1417 .JUMPDEST,
+   opAt 1418 .JUMPDEST,
+   opAt 1419 .JUMPDEST,
+   opAt 1420 .JUMPDEST]
 
 end Challenge.Modexp.Submission.Proofs.Fast

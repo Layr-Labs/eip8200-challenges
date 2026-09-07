@@ -63,10 +63,11 @@ def wordRestPath := wordEntryPath.drop 4
 def wordCheckPath := wordRestPath.take 12
 def wordTailPath := wordRestPath.drop 12
 
-@[simp] theorem dispatchPCs (i : Nat)
-    (hi : 921 ≤ i) (hii : i ≤ 948) :
+@[simp] theorem dispatchPCs (i : Nat) (hi : 921 ≤ i) (hii : i ≤ 948) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1228,1229,1230,1233,1234,1235,1236,1237,1238,1239,1241,1242,1243,1244,1245,1247,1248,1249,1252,1253,1256,1257,1258,1260,1261,1262,1263,1266] : List Nat)[i - 921]! := by
+      [1228,1229,1230,1233,1234,1235,1236,1237,1238,1239,1241,1242,
+       1243,1244,1245,1247,1248,1249,1252,1253,1256,1257,1258,1260,
+       1261,1262,1263,1266][i - 921]! := by
   interval_cases i <;> decide
 
 @[simp] theorem activeWordsAfterUInt256_zero (s : State) (offset : Nat) :
@@ -88,7 +89,7 @@ def wordTailPath := wordRestPath.drop 12
 
 @[simp] theorem jump3000 :
     Decode.isValidJumpDest submissionBytecode 3000 = true :=
-  Artifact.isValidJumpDest_index 1826 (by rfl)
+  Artifact.isValidJumpDest_index 1831 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with
@@ -159,3 +160,4 @@ abbrev WordRouteMiss (input : ByteArray) : Type :=
 
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
+

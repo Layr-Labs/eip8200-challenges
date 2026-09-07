@@ -36,25 +36,25 @@ def pcNewtonB : Nat := 4837
 def pcShiftLoop : Nat := 4874
 def pcShiftBody : Nat := 4881
 def pcEstimate : Nat := 4895
-def pcMacSetup : Nat := 4963
-def pcMacLoop : Nat := 4977
-def pcMid : Nat := 5125
+def pcMacSetup : Nat := 4954
+def pcMacLoop : Nat := 4968
+def pcMid : Nat := 5116
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 5116
-def pcAddLoop : Nat := 5159
-def pcAddInner : Nat := 5165
-def pcAddTail : Nat := 5238
+def pcMacTail : Nat := 5107
+def pcAddLoop : Nat := 5150
+def pcAddInner : Nat := 5156
+def pcAddTail : Nat := 5229
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 5194
-def pcSubCheck : Nat := 5256
-def pcSubEntry : Nat := 5266
-def pcSubInner : Nat := 5271
-def pcSubTail : Nat := 5341
+def pcAddMid : Nat := 5185
+def pcSubCheck : Nat := 5247
+def pcSubEntry : Nat := 5257
+def pcSubInner : Nat := 5262
+def pcSubTail : Nat := 5332
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 5296
-def pcCsubCall : Nat := 5355
-def pcAfterCsub : Nat := 5366
-def pcShiftDone : Nat := 5375
+def pcSubMid : Nat := 5287
+def pcCsubCall : Nat := 5346
+def pcAfterCsub : Nat := 5357
+def pcShiftDone : Nat := 5366
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=

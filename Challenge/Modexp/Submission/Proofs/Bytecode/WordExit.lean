@@ -81,10 +81,9 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
     hReturn := MachineState.readPadded (outputMemory input acc) 0
       (modulusSize input) }
 
-@[simp] private theorem exitPCs (i : Nat)
-    (hi : 536 ≤ i) (hii : i ≤ 549) :
+@[simp] private theorem exitPCs (i : Nat) (hi : 536 ≤ i) (hii : i ≤ 549) :
     Artifact.submissionArtifact.instructionPC i =
-      ([669,670,671,672,673,675,676,678,679,680,681,682,683,688] : List Nat)[i - 536]! := by
+      [669,670,671,672,673,675,676,678,679,680,681,682,683,688][i - 536]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump669 :

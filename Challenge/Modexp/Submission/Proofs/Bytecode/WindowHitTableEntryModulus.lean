@@ -16,9 +16,9 @@ private def framed (template : State) (pc : Nat) (stack : List UInt256) : State 
   { template with pc := UInt256.ofNat pc, stack := stack }
 
 @[simp] private theorem modulusPCs (index : Nat)
-    (hlo : 1843 ≤ index) (hhi : index ≤ 1849) :
+    (hlo : 1848 ≤ index) (hhi : index ≤ 1854) :
     Artifact.submissionArtifact.instructionPC index =
-      ([3024,3025,3027,3028,3029,3030,3033] : List Nat)[index - 1843]! := by
+      [3024, 3025, 3027, 3028, 3029, 3030, 3033][index - 1848]! := by
   interval_cases index <;> decide
 
 private theorem toNat_ne_zero {word : UInt256} (hword : word ≠ 0) :
