@@ -623,12 +623,12 @@ private theorem paddedLength_cost (input : ByteArray) :
   rfl
 
 private theorem lengthExit_cost (input : ByteArray) :
-    (PaddingTrace.gasSteps_lengthExit input).cost = 46 := by
+    (PaddingTrace.gasSteps_lengthExit input).cost = 42 := by
   rfl
 
 theorem padding_cost (input : ByteArray) (hfit : CalldataFits input) :
     (PaddingTrace.gasSteps_pad input hfit).cost =
-      868 + 3 * GasCost.calldataWords input.size +
+      864 + 3 * GasCost.calldataWords input.size +
         MachineState.memCost (37 + 2 * DriverTrace.blockCount input) := by
   have hsetup := lengthSetup_cost_potential input hfit
   have hloop := lengthLoop_cost_potential input
