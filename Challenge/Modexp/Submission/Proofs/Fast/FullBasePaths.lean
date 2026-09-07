@@ -29,7 +29,7 @@ def blkFullBaseGuard :
    opAt 2368 .SHR,
    opAt 2369 .AND,
    opAt 2370 .ISZERO,
-   pushAt 2371 2 3695,
+   pushAt 2371 2 3661,
    opAt 2372 .JUMPI]
 
 /-- pc 3621..3643, indices 2373..2382: copy the base to ACC and call
@@ -40,11 +40,11 @@ def blkFullBaseCopyAdd :
    pushAt 2374 1 96,
    pushAt 2375 2 1024,
    opAt 2376 .CALLDATACOPY,
-   pushAt 2377 2 3644,
-   pushAt 2378 2 1024,
-   pushAt 2379 2 3072,
-   pushAt 2380 2 1024,
-   pushAt 2381 2 2467,
+   pushAt 2377 2 1755,
+   pushAt 2378 2 2048,
+   pushAt 2379 2 1024,
+   pushAt 2380 2 6144,
+   pushAt 2381 2 1939,
    opAt 2382 .JUMP]
 
 /-- pc 3644..3660, indices 2383..2389: after add-mod, convert ACC to the
@@ -89,4 +89,3 @@ def blkFullBaseFallback :
    opAt 2413 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
-

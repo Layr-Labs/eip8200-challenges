@@ -13,4 +13,3 @@ import Challenge.Modexp.Submission.Proofs.Fast.Paths.P11
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P12
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P13
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P14
-import Challenge.Modexp.Submission.Proofs.Fast.Paths.P18

@@ -19,11 +19,11 @@ def copyAddProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 96),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1024), .op .CALLDATACOPY,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 3644),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1755),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 2048),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1024),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 3072),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1024),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 2467), .op .JUMP]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 6144),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1939), .op .JUMP]
 
 def afterAddProgram : List Instr :=
   [.op .JUMPDEST,
@@ -46,7 +46,7 @@ theorem run_copyAdd (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 32)
     (hactive : 298 ≤ s.activeWords.toNat)
     (hdata : s.executionEnv.calldata = input)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 2467 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 1939 = true) :
     runInstructions copyAddProgram (copyState s memory n bsize esize msize) =
       some (addCallState s memory input n bsize esize msize) := by
   have hsize : (UInt256.ofNat (32 * n)).toNat = 32 * n := by
@@ -60,4 +60,3 @@ theorem run_copyAdd (s : State) (memory input : ByteArray)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 end Challenge.Modexp.Submission.Proofs.Fast.FullBase
-

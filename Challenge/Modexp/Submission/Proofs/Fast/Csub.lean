@@ -534,13 +534,12 @@ theorem run_csLoopBody (s : State) (memory : ByteArray) (n j : Nat)
       csLoopState, csStep, fastPC17, fastPC18,
       hc6, hc7, hc8, hc9, hc10, hrun, hcode, hK, h8224, h2666, h2666', hjump,
       jumpDest2666, ht, hm, hd, hnext, hgt, hactT, hactM, hactD, ptrAt_succ,
-      UInt256.gt, UInt256.isTrue,
+      UInt256.gt, UInt256.lt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
-  simp [UInt256.lt, Challenge.EvmProof.Word.word_toNat_sub]
 
 set_option linter.unusedSimpArgs false in
 theorem run_csLoopExit (s : State) (memory : ByteArray) (n j : Nat)
@@ -594,13 +593,12 @@ theorem run_csLoopExit (s : State) (memory : ByteArray) (n j : Nat)
       csLoopState, csTailState, csStep, fastPC17, fastPC18,
       hc6, hc7, hc8, hc9, hc10, hrun, hK, h8224, hnj,
       ht, hm, hd, hnext, hactT, hactM, hactD, ptrAt_succ,
-      UInt256.gt, UInt256.isTrue,
+      UInt256.gt, UInt256.lt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
-  simp [UInt256.lt, Challenge.EvmProof.Word.word_toNat_sub]
 
 /-! ### The branchless selection and the return -/
 

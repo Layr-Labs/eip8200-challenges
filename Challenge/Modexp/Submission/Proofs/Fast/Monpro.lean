@@ -562,6 +562,7 @@ theorem run_mpOut (s : State) (mem : ByteArray) (pa pb n i : Nat)
       UInt256.ofNat (pa + 32 * n - 32) := by
     rw [Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)]
     exact congrArg UInt256.ofNat (by omega)
+  have hsubaN : 32 * n + (pa - 32) = pa + 32 * n - 32 := by omega
   have hactB : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (pb + 32 * (n - 1 - i)) 32) = s.activeWords :=
     activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -578,7 +579,7 @@ theorem run_mpOut (s : State) (mem : ByteArray) (pa pb n i : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       mpOutState, mpL1State, l1Step, rowBi, fastPC10, fastPC11,
       hc5, hc6, hc7, hc8, hc9, hc10, hrun, h32, h9344, h9440, hzero,
-      hs32, htl, hpbi, hpa32, hsuba, hactB, hactT, hactS,
+      hs32, htl, hpbi, hpa32, hsuba, hsubaN, hactB, hactT, hactS,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,

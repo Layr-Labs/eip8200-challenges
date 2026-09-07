@@ -200,7 +200,7 @@ private theorem fastPCAnchor10 :
       rfl
 
 private theorem fastPCAnchor11 :
-    Artifact.submissionArtifact.instructionPC 1417 = 1990 := by
+    Artifact.submissionArtifact.instructionPC 1417 = 1991 := by
   calc
     Artifact.submissionArtifact.instructionPC 1417 =
         Artifact.submissionArtifact.instructionPC 1377 +
@@ -208,7 +208,7 @@ private theorem fastPCAnchor11 :
             ((Artifact.submissionArtifact.instructions.drop 1377).take
               40)).length :=
       instructionPC_add Artifact.submissionArtifact 1377 40
-    _ = 1990 := by
+    _ = 1991 := by
       rw [fastPCAnchor10]
       rfl
 
@@ -482,7 +482,7 @@ private theorem fastPCAnchor23 :
 
 @[simp] theorem fastPC7 (i : Nat) (hi : 1257 ≤ i) (hii : i ≤ 1296) :
     Artifact.submissionArtifact.instructionPC i =
-      [1738,1739,1742,1745,1748,1751,1754,1755,1756,1757,1760,1761,1764,1767,1768,1769,1770,1771,1772,1773,1774,1777,1778,1781,1782,1783,1784,1785,1786,1787,1789,1790,1793,1796,1799,1802,1805,1806,1807,1808][i - 1257]! := by
+      [1738,1739,1742,1745,1748,1751,1754,1755,1756,1757,1760,1761,1763,1765,1767,1769,1770,1771,1772,1773,1774,1777,1778,1781,1782,1783,1784,1785,1786,1787,1789,1790,1793,1796,1799,1802,1805,1806,1807,1808][i - 1257]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (1257 + (i - 1257)) := by
@@ -530,7 +530,7 @@ private theorem fastPCAnchor23 :
 
 @[simp] theorem fastPC10 (i : Nat) (hi : 1377 ≤ i) (hii : i ≤ 1416) :
     Artifact.submissionArtifact.instructionPC i =
-      [1937,1938,1939,1940,1943,1944,1945,1947,1948,1949,1952,1953,1954,1955,1956,1958,1959,1960,1962,1963,1964,1965,1966,1967,1968,1970,1971,1972,1973,1974,1975,1976,1977,1978,1981,1982,1983,1985,1986,1989][i - 1377]! := by
+      [1937,1938,1939,1940,1943,1944,1945,1947,1948,1949,1952,1953,1954,1955,1956,1958,1959,1960,1962,1963,1964,1965,1966,1967,1968,1970,1971,1972,1973,1974,1975,1976,1977,1978,1983,1984,1985,1988,1989,1990][i - 1377]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (1377 + (i - 1377)) := by
@@ -546,7 +546,7 @@ private theorem fastPCAnchor23 :
 
 @[simp] theorem fastPC11 (i : Nat) (hi : 1417 ≤ i) (hii : i ≤ 1456) :
     Artifact.submissionArtifact.instructionPC i =
-      [1990,1991,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055,2056,2057,2058,2059,2060,2061,2062][i - 1417]! := by
+      [1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055,2056,2057,2058,2059,2060,2061,2062][i - 1417]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (1417 + (i - 1417)) := by
@@ -764,13 +764,6 @@ their proof modules. -/
        3687,3688,3689,3691,3694][i - 2361]! := by
   interval_cases i <;> decide
 
-/-- PC table for the leading-bit base copy appended after the unrolled block. -/
-@[simp] theorem fastPC24 (i : Nat) (hi : 2574 ≤ i) (hii : i ≤ 2588) :
-    Artifact.submissionArtifact.instructionPC i =
-      [3897,3898,3899,3900,3903,3904,3907,3908,3911,3914,3915,3918,3919,
-       3920,3923][i - 2574]! := by
-  interval_cases i <;> decide
-
 theorem jumpDest1196 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1196 = true :=
   Artifact.isValidJumpDest_index 899 (by rfl)
@@ -958,21 +951,5 @@ theorem jumpDest3644 :
 theorem jumpDest3661 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3661 = true :=
   Artifact.isValidJumpDest_index 2390 (by rfl)
-
-theorem jumpDest3695 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3695 = true :=
-  Artifact.isValidJumpDest_index 2414 (by rfl)
-
-theorem jumpDest3727 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3727 = true :=
-  Artifact.isValidJumpDest_index 2431 (by rfl)
-
-theorem jumpDest3897 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3897 = true :=
-  Artifact.isValidJumpDest_index 2574 (by rfl)
-
-theorem jumpDest3919 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3919 = true :=
-  Artifact.isValidJumpDest_index 2586 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

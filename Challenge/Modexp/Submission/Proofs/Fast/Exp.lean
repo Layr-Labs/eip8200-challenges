@@ -9,7 +9,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 import Challenge.Modexp.Submission.Proofs.Fast.Setup
 import Challenge.Modexp.Submission.Proofs.Fast.Double
 import Challenge.Modexp.Submission.Proofs.Fast.Ccb
-import Challenge.Modexp.Submission.Proofs.Fast.Ladder
+import Challenge.Modexp.Submission.Proofs.Fast.CcbSeed
 import Challenge.Modexp.Submission.Proofs.Fast.R1
 import Challenge.Modexp.Submission.Proofs.Fast.Lz
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P17
@@ -363,10 +363,6 @@ def baseHead (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :
            stack := outer n bsize esize msize
            memory := mem }
 
-/-- Exact CALLDATACOPY memory effect, including zero padding on short input. -/
-def rawBaseCopy (mem input : ByteArray) (n : Nat) : ByteArray :=
-  MachineState.writeBytes mem (MachineState.readPadded input 96 (32 * n)) 2048
-
 /-- `BDONE`, pc 1756, where the base chain rejoins. -/
 def bDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 1756
@@ -492,23 +488,6 @@ theorem run_rrCallSel (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     rrCallSel, mpCall, outer, hcode, hrun, fastPC23, jumpDest1939,
-    Challenge.EvmProof.Word.literal_eq_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod,
-    Challenge.EvmProof.Word.ofNat_add_mod,
-    Challenge.EvmProof.Word.word_toNat_ofNat]
-
-set_option linter.unusedSimpArgs false in
-/-- `blk1828`: the skip rejoins the round at pc 1615. -/
-theorem run_rrSkipSel (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1828
-      (rrSkipSel s mem n bsize esize msize k) =
-      some (rrPost s mem n bsize esize msize k) := by
-  simp (config := { maxSteps := 400000 }) [blk1828, opAt, pushAt, wfOp,
-    Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    rrSkipSel, rrPost, outer, hcode, hrun, fastPC23, jumpDest1615,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -679,17 +658,6 @@ def gasSteps_rrCallSel (s : State) (mem : ByteArray) (n bsize esize msize k : Na
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1822 hcode hfork
       (run_rrCallSel s mem n bsize esize msize k hcode hrun) hrun hnp
-
-def gasSteps_rrSkipSel (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (rrSkipSel s mem n bsize esize msize k)
-      (rrPost s mem n bsize esize msize k) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka blk1828 hcode hfork
-      (run_rrSkipSel s mem n bsize esize msize k hcode hrun) hrun hnp
 
 def gasSteps_rrPost_loop (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) (hk : k ≤ 5) (hk0 : k ≠ 0)
@@ -988,9 +956,7 @@ theorem readWord_mcopyMem_disjoint (mem : ByteArray) (dst src sz a : Nat)
   rw [Challenge.EvmProof.Memory.readPadded_size]
   exact hdisj
 
-/-- `Csub.fastRepresents_mcopy` in `mcopyMem` shape.  Stating it this way keeps
-the unifier from ever having to `whnf` a `writeBytes` whose byte argument is a
-256-fold `Double.iterMem`. -/
+/-- `Csub.fastRepresents_mcopy` in `mcopyMem` shape. -/
 theorem fastRepresents_mcopyMem (mem : ByteArray) (dst src n v : Nat) (hn : 1 ≤ n)
     (hrep : Model.FastRepresents mem src n v) :
     Model.FastRepresents (mcopyMem mem dst src (32 * n)) dst n v :=
@@ -1336,17 +1302,17 @@ def ebitHead (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) 
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
-/-- pc 3904, `LZBASE` past its zero test with the copy still to run. -/
+/-- pc 3872, `LZBASE` past its zero test with the copy still to run. -/
 def lzBaseCopy (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 3904
+  { s with pc := UInt256.ofNat 3872
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
-/-- pc 3919, `LZBASE`'s zero-byte arm. -/
+/-- pc 3887, `LZBASE`'s zero-byte arm. -/
 def lzBaseSkip (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 3919
+  { s with pc := UInt256.ofNat 3887
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
@@ -1404,37 +1370,6 @@ def returnedState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
            memory := mem
            halt := .Returned
            hReturn := MachineState.readPadded mem (1024 + 32 * n - msize) msize }
-
-set_option linter.unusedSimpArgs false in
-/-- `blk1265` (pc 1756..1768): `MCOPY(ACC, R1, s32)` and start the byte loop. -/
-theorem run_bDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 298 ≤ s.activeWords.toNat)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1265
-      (bDone s mem n bsize esize msize) =
-      some (ebHead s (mcopyMem mem 1024 4096 (32 * n)) n bsize esize msize 0) := by
-  have hmod : (32 * n) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936
-      = 32 * n :=
-    mod_word_self (Nat.lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by norm_num))
-  have hfix1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      9344 32) = s.activeWords :=
-    activeWords_fix s 9344 32 (by omega) (by omega) hact
-  have hfix2 : UInt256.ofNat (MachineState.activeWordsAfter
-      (MachineState.activeWordsAfter s.activeWords.toNat 1024 (32 * n)) 4096
-      (32 * n)) = s.activeWords :=
-    activeWords_fix2 s 1024 (32 * n) 4096 (32 * n) (by omega) (by omega) (by omega)
-      (by omega) hact
-  simp (config := { maxSteps := 600000 }) [blk1265, opAt, pushAt, wfOp,
-    Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    bDone, ebHead, mcopyMem, outer, hrun, hs32, hmod, hfix1, hfix2, push0_word,
-    State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2,
-    Challenge.EvmProof.Word.literal_eq_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod,
-    Challenge.EvmProof.Word.ofNat_add_mod,
-    Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
 /-- `blk1272` (pc 1769..1777) with `i < esize`: process byte `i`. -/
@@ -1499,20 +1434,20 @@ theorem run_ebLoad (s : State) (mem : ByteArray)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `LZBASE`'s test, pc 3897, with a zero leading byte: take the untouched arm. -/
+/-- `LZBASE`'s test, pc 3865, with a zero leading byte: take the untouched arm. -/
 theorem run_lzBase_zero (s : State) (mem : ByteArray)
     (n bsize esize msize i w mask : Nat) (hw : w = 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk2574
+    Challenge.EvmProof.Stepper.runLocatedBlock blk2557
       (Lz.lzBase s mem i w mask (outer n bsize esize msize)) =
       some (lzBaseSkip s mem n bsize esize msize i w mask) := by
   subst hw
   have hz : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by decide
-  simp (config := { maxSteps := 400000 }) [blk2574, opAt, pushAt,
+  simp (config := { maxSteps := 400000 }) [blk2557, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    Lz.lzBase, lzBaseSkip, bitStack, hrun, hcode, hz, jumpDest3919,
+    Lz.lzBase, lzBaseSkip, bitStack, hrun, hcode, hz, jumpDest3887,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1524,13 +1459,13 @@ theorem run_lzBase_copy (s : State) (mem : ByteArray)
     (n bsize esize msize i w mask : Nat) (hw : w ≠ 0) (hw256 : w < 256)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk2574
+    Challenge.EvmProof.Stepper.runLocatedBlock blk2557
       (Lz.lzBase s mem i w mask (outer n bsize esize msize)) =
       some (lzBaseCopy s mem n bsize esize msize i w mask) := by
   have hz : UInt256.isZero (UInt256.ofNat w) = UInt256.ofNat 0 :=
     isZero_ofNat_of_ne (by omega) hw
   have hf : UInt256.isTrue (UInt256.ofNat 0) = false := by decide
-  simp (config := { maxSteps := 400000 }) [blk2574, opAt, pushAt,
+  simp (config := { maxSteps := 400000 }) [blk2557, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Lz.lzBase, lzBaseCopy, bitStack, hrun, hz, hf,
@@ -1540,14 +1475,14 @@ theorem run_lzBase_copy (s : State) (mem : ByteArray)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `blk2579` (pc 3904..3918): `ACC := BASE`, then resume at the mask shift. -/
+/-- `blk2562` (pc 3872..3797): `ACC := BASE`, then resume at the mask shift. -/
 theorem run_lzBaseCopy (s : State) (mem : ByteArray)
     (n bsize esize msize i w mask : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hact : 298 ≤ s.activeWords.toNat)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk2579
+    Challenge.EvmProof.Stepper.runLocatedBlock blk2562
       (lzBaseCopy s mem n bsize esize msize i w mask) =
       some (ebitNext s (mcopyMem mem 1024 2048 (32 * n))
         n bsize esize msize i w mask) := by
@@ -1564,7 +1499,7 @@ theorem run_lzBaseCopy (s : State) (mem : ByteArray)
     activeWords_fix2 s 1024 (32 * n) 2048 (32 * n) (by omega) (by omega) (by omega)
       (by omega) hact
   have h1832Nat : (UInt256.ofNat 1832).toNat = 1832 := by decide
-  simp (config := { maxSteps := 600000 }) [blk2579, opAt, pushAt, wfOp,
+  simp (config := { maxSteps := 600000 }) [blk2562, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     lzBaseCopy, ebitNext, mcopyMem, bitStack, hrun, hcode, hs32, hmod, hfix1, hfix2,
@@ -1581,10 +1516,10 @@ theorem run_lzBaseSkip (s : State) (mem : ByteArray)
     (n bsize esize msize i w mask : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk2586
+    Challenge.EvmProof.Stepper.runLocatedBlock blk2569
       (lzBaseSkip s mem n bsize esize msize i w mask) =
       some (ebitHead s mem n bsize esize msize i w mask) := by
-  simp (config := { maxSteps := 400000 }) [blk2586, opAt, pushAt,
+  simp (config := { maxSteps := 400000 }) [blk2569, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     lzBaseSkip, ebitHead, bitStack, hrun, hcode, jumpDest1789,
@@ -1830,19 +1765,6 @@ theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 
 /-! ### Gas traces for the exponent blocks -/
 
-def gasSteps_bDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 298 ≤ s.activeWords.toNat)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (bDone s mem n bsize esize msize)
-      (ebHead s (mcopyMem mem 1024 4096 (32 * n)) n bsize esize msize 0) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka blk1265 hcode hfork
-      (run_bDone s mem n bsize esize msize hn hn32 hact hs32 hrun) hrun hnp
-
 def gasSteps_ebHeadBody (s : State) (mem : ByteArray)
     (n bsize esize msize i : Nat) (he : esize ≤ 1024) (hi : i < esize)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -1919,7 +1841,7 @@ def gasSteps_ebLoad (s : State) (mem input : ByteArray)
         (lzBaseSkip s mem n bsize esize msize i (expByte input bsize i)
           (Lz.topBit (expByte input bsize i))) :=
       Challenge.EvmProof.Stepper.runLocatedBlock_sound
-        Artifact.submissionArtifact .Osaka blk2574 hcode hfork
+        Artifact.submissionArtifact .Osaka blk2557 hcode hfork
         (run_lzBase_zero s mem n bsize esize msize i (expByte input bsize i)
           (Lz.topBit (expByte input bsize i)) hw0 hcode hrun) hrun hnp
     have g4 : Challenge.EvmProof.GasSteps
@@ -1928,7 +1850,7 @@ def gasSteps_ebLoad (s : State) (mem input : ByteArray)
         (ebitHead s mem n bsize esize msize i (expByte input bsize i)
           (Lz.topBit (expByte input bsize i))) :=
       Challenge.EvmProof.Stepper.runLocatedBlock_sound
-        Artifact.submissionArtifact .Osaka blk2586 hcode hfork
+        Artifact.submissionArtifact .Osaka blk2569 hcode hfork
         (run_lzBaseSkip s mem n bsize esize msize i (expByte input bsize i)
           (Lz.topBit (expByte input bsize i)) hcode hrun) hrun hnp
     Challenge.EvmProof.GasSteps.cast ((((g0.trans g1).trans g2).trans g3).trans g4)
@@ -2004,7 +1926,7 @@ def gasSteps_ebLoadCopy (s : State) (mem input : ByteArray)
       (lzBaseCopy s mem n bsize esize msize i (expByte input bsize i)
         (Lz.topBit (expByte input bsize i))) :=
     Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka blk2574 hcode hfork
+      Artifact.submissionArtifact .Osaka blk2557 hcode hfork
       (run_lzBase_copy s mem n bsize esize msize i (expByte input bsize i)
         (Lz.topBit (expByte input bsize i)) hwne hw hcode hrun) hrun hnp
   have g4 : Challenge.EvmProof.GasSteps
@@ -2013,7 +1935,7 @@ def gasSteps_ebLoadCopy (s : State) (mem input : ByteArray)
       (ebitNext s (mcopyMem mem 1024 2048 (32 * n)) n bsize esize msize i
         (expByte input bsize i) (Lz.topBit (expByte input bsize i))) :=
     Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka blk2579 hcode hfork
+      Artifact.submissionArtifact .Osaka blk2562 hcode hfork
       (run_lzBaseCopy s mem n bsize esize msize i (expByte input bsize i)
         (Lz.topBit (expByte input bsize i)) hn hn32 hact hs32 hcode hrun) hrun hnp
   (((g0.trans g1).trans g2).trans g3).trans g4
@@ -2718,8 +2640,7 @@ structure SubSpec (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
   and the `V_MINV` word are exactly the memory-dependent hypotheses
   `Fast.Monpro.monpro_represents` takes; its constant side conditions
   (`2 ≤ n ≤ 32`, `m` odd, and `m % radix * minv + 1 ≡ 0 [MOD 2 ^ 256]`) are
-  supplied once by whoever builds this record. Only the FIRST operand must
-  be reduced; the second operand's limb representation supplies its bound. -/
+  supplied once by whoever builds this record. -/
   mpValueRaw : ∀ (pa pb pd : Nat) (mem : ByteArray) (a b : Nat),
     pa + 32 * n ≤ 8192 → pb + 32 * n ≤ 8192 → pd + 32 * n ≤ 8192 →
     Model.FastRepresents mem 0 n mm →
@@ -2751,8 +2672,8 @@ structure SubSpec (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
   amMinv : ∀ (pa pb pd : Nat) (mem : ByteArray), pd ≤ 6144 →
     MachineState.readWord (amMem pa pb pd mem) 9376 = MachineState.readWord mem 9376
 
-/-- Backwards-compatible reduced-operand view. Existing callers retain their
-argument order; raw-base callers use `mpValueRaw` with reduced RR first. -/
+/-- Reduced-operand compatibility view of the stronger CIOS contract.
+The second operand need only fit its represented limb region. -/
 theorem SubSpec.mpValue {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv)
     (pa pb pd : Nat) (mem : ByteArray) (a b : Nat)
@@ -2961,31 +2882,13 @@ def r1Call (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
            stack := UInt256.ofNat px :: ret :: outer n bsize esize msize
            memory := mem }
 
-/-- The `CCB` entry, pc 2863, stack `[px, ret] ++ OUTER`.  `CCB` has the same
-calling convention as `DOUBLE256` and the same postcondition — the block at
-`px` is multiplied by `radix` modulo `m` — but reaches it with one `ADDMOD`
-and eight `MONPRO` calls instead of 256 `ADDMOD` calls. -/
+/-- The width-dependent `CCB` entry, pc 4016, stack `[px, ret] ++ OUTER`.
+Its seed doublings and Montgomery squarings produce the same residue target. -/
 def ccCall (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2863
+  { s with pc := UInt256.ofNat 4016
            stack := UInt256.ofNat px :: ret :: outer n bsize esize msize
            memory := mem }
-
-/-- The **ladder** entry, pc 3924, stack `[px, ret] ++ OUTER`.  Same calling
-convention and same postcondition as `ccCall`; it reaches them by `a` modular
-doublings and `sq` Montgomery squarings rather than one and eight.  `ccCall`
-stays: pc 2863 is byte-identical and still proved, it is simply no longer the
-entry the program uses. -/
-def ladderCall (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
-    (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3924
-           stack := UInt256.ofNat px :: ret :: outer n bsize esize msize
-           memory := mem }
-
-theorem ladderCall_eq (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
-    (n bsize esize msize : Nat) :
-    ladderCall s mem px ret n bsize esize msize =
-      Ladder.entryState s mem px ret (outer n bsize esize msize) := rfl
 
 /-- `r0`, pc 1533. -/
 def r0State (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
@@ -3008,7 +2911,7 @@ theorem run_r0 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1138
       (r0State s mem n bsize esize msize) =
-      some (ladderCall s (mcopyMem mem 5120 4096 (32 * n)) 5120 (UInt256.ofNat 3571)
+      some (ccCall s (mcopyMem mem 5120 4096 (32 * n)) 5120 (UInt256.ofNat 3571)
         n bsize esize msize) := by
   have hmod : (32 * n) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936
@@ -3022,13 +2925,13 @@ theorem run_r0 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       (32 * n)) = s.activeWords :=
     activeWords_fix2 s 5120 (32 * n) 4096 (32 * n) (by omega) (by omega) (by omega)
       (by omega) hact
-  have h3924 : (3924 : UInt256) = UInt256.ofNat 3924 := by decide
-  have h3924Nat : (UInt256.ofNat 3924).toNat = 3924 := by decide
+  have h4016 : (4016 : UInt256) = UInt256.ofNat 4016 := by decide
+  have h4016Nat : (UInt256.ofNat 4016).toNat = 4016 := by decide
   simp (config := { maxSteps := 600000 }) [blk1138, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    r0State, ladderCall, mcopyMem, outer, fastPC4, hcode, hrun, hs32, hmod, hfix1,
-    hfix2, h3924, h3924Nat, Ladder.jumpDest3924, State.activeWordsAfterUInt256,
+    r0State, ccCall, mcopyMem, outer, fastPC4, hcode, hrun, hs32, hmod, hfix1,
+    hfix2, h4016, h4016Nat, CcbSeed.jumpDest4016, State.activeWordsAfterUInt256,
     State.activeWordsAfterUInt256_2,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -3074,7 +2977,7 @@ def gasSteps_r0 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (r0State s mem n bsize esize msize)
-      (ladderCall s (mcopyMem mem 5120 4096 (32 * n)) 5120 (UInt256.ofNat 3571)
+      (ccCall s (mcopyMem mem 5120 4096 (32 * n)) 5120 (UInt256.ofNat 3571)
         n bsize esize msize) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1138 hcode hfork
@@ -3358,22 +3261,6 @@ theorem blMem_base {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
     show b % mm * R % mm = b * R % mm from ((Nat.mod_modEq b mm).mul_right R)] at h
 
 
-/-- Raw-base conversion: `BASE := MonPro(RR, BASE)`. The full-width calldata
-copy must first establish `hbase`; no reduction or `b < mm` premise is needed.
-The destination aliases the second input, as permitted by the concrete contract. -/
-theorem rawBaseMem_base {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
-    {n mm R rr b minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
-    (hn32 : n ≤ 32) (hcop : Nat.Coprime R mm) (hrr : rr ≡ R * R [MOD mm])
-    (hrrlt : rr < mm) (mem : ByteArray)
-    (hminv : MachineState.readWord mem 9376 = UInt256.ofNat minv)
-    (hmod : Model.FastRepresents mem 0 n mm)
-    (hbase : Model.FastRepresents mem 2048 n b)
-    (hrrb : Model.FastRepresents mem 6144 n rr) :
-    Model.FastRepresents (mpMem 6144 2048 2048 mem) 2048 n (b * R % mm) := by
-  have h := spec.mpValueRaw 6144 2048 2048 mem rr b (by omega) (by omega)
-    (by omega) hmod hminv hrrb hbase hrrlt
-  rwa [Model.montMul_comm mm R rr b, Model.montMul_const_form hm hcop hrr b] at h
-
 /-! ### The exponent loop, at the level of memory -/
 
 /-- The bit the loop consumes at global step `t`: bit `7 - t % 8` of exponent
@@ -3403,117 +3290,6 @@ structure EbInv (mem : ByteArray) (n mm bM acc : Nat) : Prop where
   accBlock : Model.FastRepresents mem 1024 n acc
   baseBlock : Model.FastRepresents mem 2048 n bM
   oneBlock : ∃ one, one < Limbs.radix ∧ Model.FastRepresents mem 3072 n one
-
-/-! ### Full-width raw calldata conversion -/
-
-/-- Every byte of BASE is overwritten, independently of its previous contents. -/
-theorem rawBaseCopy_byte (mem input : ByteArray) (n k : Nat) (hk : k < 32 * n) :
-    ((rawBaseCopy mem input n)[2048 + k]?).getD 0 = (input[96 + k]?).getD 0 := by
-  rw [rawBaseCopy, MachineState.writeBytes_getElem?_getD,
-    Challenge.EvmProof.Memory.readPadded_size,
-    if_pos (show 2048 ≤ 2048 + k ∧ 2048 + k < 2048 + 32 * n by omega),
-    show 2048 + k - 2048 = k by omega,
-    Challenge.EvmProof.Memory.readPadded_getElem?_getD, if_pos hk]
-
-/-- Word-aligned subreads of the padded calldata copy are exact. -/
-theorem rawBaseCopy_readWord (mem input : ByteArray) (n i : Nat) (hi : i < n) :
-    MachineState.readWord (rawBaseCopy mem input n) (2048 + 32 * i) =
-      MachineState.readWord input (96 + 32 * i) := by
-  have hpad : MachineState.readPadded (rawBaseCopy mem input n) (2048 + 32 * i) 32 =
-      MachineState.readPadded input (96 + 32 * i) 32 := by
-    apply ByteArray.ext_getElem
-    · simp
-    · intro k hk1 hk2
-      have hk : k < 32 := by simpa using hk1
-      rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hk1,
-        ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hk2,
-        Challenge.EvmProof.Memory.readPadded_getElem?_getD,
-        Challenge.EvmProof.Memory.readPadded_getElem?_getD, if_pos hk, if_pos hk,
-        show 2048 + 32 * i + k = 2048 + (32 * i + k) by omega,
-        rawBaseCopy_byte mem input n (32 * i + k) (by omega)]
-      simp only [Nat.add_assoc]
-  unfold MachineState.readWord
-  rw [hpad]
-
-/-- No reduction assumption on the raw full-width base. -/
-theorem rawBaseCopy_represents (mem input : ByteArray) (n : Nat) :
-    Model.FastRepresents (rawBaseCopy mem input n) 2048 n
-      (Precompile.bytesToNatPadded input 96 (32 * n)) := by
-  have hbound : Precompile.bytesToNatPadded input 96 (32 * n) < Limbs.radix ^ n := by
-    rw [Limbs.pow_radix]
-    exact Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow input 96 (32 * n)
-  apply (Model.fastRepresents_iff_value hbound).2
-  rw [bytesToNatPadded_block]
-  have hlimbs : Model.fastLimbs (rawBaseCopy mem input n) 2048 n =
-      Model.fastLimbs input 96 n := by
-    apply List.ext_getElem
-    · simp
-    · intro k hk _
-      have hkn : k < n := by simpa using hk
-      simp only [Model.fastLimbs_getElem]
-      rw [rawBaseCopy_readWord mem input n (n - 1 - k) (by omega)]
-  rw [hlimbs]
-
-/-- The copy preserves every disjoint limb block (modulus, ONE, R1, CC, RR). -/
-theorem rawBaseCopy_preserves (mem input : ByteArray) (n ptr cnt v : Nat)
-    (hdisj : 2048 + 32 * n ≤ ptr ∨ ptr + 32 * cnt ≤ 2048)
-    (hrep : Model.FastRepresents mem ptr cnt v) :
-    Model.FastRepresents (rawBaseCopy mem input n) ptr cnt v := by
-  apply Model.fastRepresents_writeBytes_disjoint
-  · rw [Challenge.EvmProof.Memory.readPadded_size]
-    exact hdisj
-  · exact hrep
-
-theorem rawBaseCopy_frame {mem input : ByteArray} {n bsize minv : Nat}
-    (hn32 : n ≤ 32) (hf : Frame mem n bsize minv) :
-    Frame (rawBaseCopy mem input n) n bsize minv := by
-  have key : ∀ addr, 9344 ≤ addr →
-      MachineState.readWord (rawBaseCopy mem input n) addr =
-        MachineState.readWord mem addr := by
-    intro addr haddr
-    apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
-    rw [Challenge.EvmProof.Memory.readPadded_size]
-    exact Or.inr (by omega)
-  exact ⟨by rw [key 9344 (by omega)]; exact hf.s32,
-    by rw [key 9376 (by omega)]; exact hf.minvW,
-    by rw [key 9408 (by omega)]; exact hf.ml,
-    by rw [key 9440 (by omega)]; exact hf.tl,
-    by rw [key 9472 (by omega)]; exact hf.eoff⟩
-
-/-- COPY; MonPro(RR,BASE); ACC := R1 establishes the existing exponent
-invariant without equating the new scratch memory to Horner's scratch memory. -/
-theorem rawBaseCopy_ebInv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
-    {n mm R rr minv : Nat} (spec : SubSpec mpMem amMem n mm R minv)
-    (mem input : ByteArray) (hn : 2 ≤ n) (hn32 : n ≤ 32) (hm : 0 < mm)
-    (hcop : Nat.Coprime R mm) (hrr : rr ≡ R * R [MOD mm]) (hrrlt : rr < mm)
-    (hminv : MachineState.readWord mem 9376 = UInt256.ofNat minv)
-    (hmod : Model.FastRepresents mem 0 n mm)
-    (hr1 : Model.FastRepresents mem 4096 n (R % mm))
-    (hrrb : Model.FastRepresents mem 6144 n rr)
-    (hone : Model.FastRepresents mem 3072 n 0) :
-    EbInv (mcopyMem (mpMem 6144 2048 2048 (rawBaseCopy mem input n))
-      1024 4096 (32 * n)) n mm
-      (Precompile.bytesToNatPadded input 96 (32 * n) * R % mm) (R % mm) := by
-  let copied := rawBaseCopy mem input n
-  have hmodC := rawBaseCopy_preserves mem input n 0 n mm (Or.inr (by omega)) hmod
-  have hr1C := rawBaseCopy_preserves mem input n 4096 n (R % mm) (Or.inl (by omega)) hr1
-  have hrrC := rawBaseCopy_preserves mem input n 6144 n rr (Or.inl (by omega)) hrrb
-  have honeC := rawBaseCopy_preserves mem input n 3072 n 0 (Or.inl (by omega)) hone
-  have hminvC : MachineState.readWord copied 9376 = UInt256.ofNat minv := by
-    change MachineState.readWord (MachineState.writeBytes mem _ 2048) 9376 = _
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint mem _ 9376 2048
-      (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega))]
-    exact hminv
-  have hbase := rawBaseMem_base spec hm hn32 hcop hrr hrrlt copied hminvC
-    hmodC (rawBaseCopy_represents mem input n) hrrC
-  refine ⟨?_, ?_, ?_, 0, Limbs.radix_pos, ?_⟩
-  · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 0 n mm (by omega)
-      (spec.mpFrame 6144 2048 2048 0 mm copied (by omega) (by omega) hmodC)
-  · exact Csub.fastRepresents_mcopy _ 4096 1024 n (R % mm) (by omega)
-      (spec.mpFrame 6144 2048 2048 4096 (R % mm) copied (by omega) (by omega) hr1C)
-  · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 2048 n _ (by omega) hbase
-  · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 3072 n 0 (by omega)
-      (spec.mpFrame 6144 2048 2048 3072 0 copied (by omega) (by omega) honeC)
 
 /-- One exponent bit: square `ACC`, and multiply by `BASE` when the bit is
 set. -/
@@ -4788,81 +4564,6 @@ def gasSteps_ebLoop (s : State) {n bsize mm minv R : Nat}
         (ebMems_inv spec hm hcop hn hn32 bM hbM input bsize mem hframe.minvW hinv i))
       hcode hfork hrun hnp)
 
-/-- **The exponent chain.**  From `BDONE` (pc 1756) to the `RETURN` at pc 1885. -/
-def gasSteps_expChain (s : State) {n bsize mm minv R : Nat}
-    (sub : Subroutines s n bsize mm minv)
-    (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
-    (mem input : ByteArray) (esize msize bM : Nat)
-    (hdata : s.executionEnv.calldata = input)
-    (hm : 0 < mm) (hcop : Nat.Coprime R mm) (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024)
-    (he : esize ≤ 1024) (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
-    (_hradix : Limbs.radix ≤ mm) (hbM : bM < mm)
-    (hact : 298 ≤ s.activeWords.toNat) (hframe : Frame mem n bsize minv)
-    (hinv : EbInv (mcopyMem mem 1024 4096 (32 * n)) n mm bM
-      (expAcc mm R bM (expBits input bsize) 0))
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (bDone s mem n bsize esize msize)
-      (returnedState s
-        (sub.mpMem 1024 3072 1024
-          (storeWord
-            (ebMems sub.mpMem input bsize n (mcopyMem mem 1024 4096 (32 * n)) esize)
-            (3040 + 32 * n) (UInt256.ofNat 1)))
-        n bsize esize msize) :=
-  have hframe0 : Frame (mcopyMem mem 1024 4096 (32 * n)) n bsize minv :=
-    frame_mcopyMem (by omega) hframe
-  have hloop := ebMems_inv spec hm hcop hn hn32 bM hbM input bsize
-    (mcopyMem mem 1024 4096 (32 * n)) hframe0.minvW hinv esize
-  have hframeE : Frame
-      (ebMems sub.mpMem input bsize n (mcopyMem mem 1024 4096 (32 * n)) esize)
-      n bsize minv :=
-    ebMems_frame sub input (mcopyMem mem 1024 4096 (32 * n)) hn32 hframe0 esize
-  have hframeS : Frame
-      (storeWord
-        (ebMems sub.mpMem input bsize n (mcopyMem mem 1024 4096 (32 * n)) esize)
-        (3040 + 32 * n) (UInt256.ofNat 1)) n bsize minv :=
-    frame_storeWord (UInt256.ofNat 1) (by omega) hframeE
-  have hone : Model.FastRepresents
-      (storeWord
-        (ebMems sub.mpMem input bsize n (mcopyMem mem 1024 4096 (32 * n)) esize)
-        (3040 + 32 * n) (UInt256.ofNat 1)) 3072 n 1 := by
-    obtain ⟨one, honelt, honerep⟩ := hloop.oneBlock
-    have h := write_low_limb (UInt256.ofNat 1) (by omega) honerep honelt
-    rwa [show (UInt256.ofNat 1).toNat = 1 from by decide] at h
-  have hmodS := storeWord_frame
-    (ebMems sub.mpMem input bsize n (mcopyMem mem 1024 4096 (32 * n)) esize)
-    (3040 + 32 * n) 0 n mm (UInt256.ofNat 1) (Or.inr (by omega)) hloop.modulus
-  have haccS := storeWord_frame
-    (ebMems sub.mpMem input bsize n (mcopyMem mem 1024 4096 (32 * n)) esize)
-    (3040 + 32 * n) 1024 n (expAcc mm R bM (expBits input bsize) (8 * esize))
-    (UInt256.ofNat 1) (Or.inr (by omega)) hloop.accBlock
-  ((((gasSteps_bDone s mem n bsize esize msize hn hn32 hact hframe.s32 hcode hfork
-      hrun hnp).trans
-    (gasSteps_ebLoop s sub spec (mcopyMem mem 1024 4096 (32 * n)) input esize msize
-      bM hdata hm hcop hn hn32 hb he hbM hact hframe0 hinv hcode hfork hrun hnp)).trans
-      (gasSteps_ebHeadExit s
-        (ebMems sub.mpMem input bsize n (mcopyMem mem 1024 4096 (32 * n)) esize)
-        n bsize esize msize esize he (by omega) rfl hcode hfork hrun hnp)).trans
-    ((gasSteps_ebEnd s
-        (ebMems sub.mpMem input bsize n (mcopyMem mem 1024 4096 (32 * n)) esize)
-        n bsize esize msize esize hn hn32 hact hcode hfork hrun hnp).trans
-      (sub.monpro 1024 3072 1024 (UInt256.ofNat 1876) (outer n bsize esize msize)
-        (storeWord
-          (ebMems sub.mpMem input bsize n (mcopyMem mem 1024 4096 (32 * n)) esize)
-          (3040 + 32 * n) (UInt256.ofNat 1))
-        (expAcc mm R bM (expBits input bsize) (8 * esize)) 1 (by simp) (by omega)
-        (by omega) (by omega) (by omega) (by omega) jumpD1876 hframeS hmodS haccS
-        hone (expAcc_lt hm _ _)))).trans
-    (gasSteps_return s
-      (sub.mpMem 1024 3072 1024
-        (storeWord
-          (ebMems sub.mpMem input bsize n (mcopyMem mem 1024 4096 (32 * n)) esize)
-          (3040 + 32 * n) (UInt256.ofNat 1)))
-      n bsize esize msize hn hn32 hmz hm32 hact hcode hfork hrun hnp)
-
-
 /-! ### The hand-over from `Fast.Setup`, re-threaded -/
 
 /-- **From `Fast.Setup`'s hand-over state to the direct RR helper.** `dbl` is the
@@ -4881,7 +4582,7 @@ def gasSteps_setupToRR (s : State) {n bsize mm minv : Nat}
       Frame mem' n bsize minv →
       Model.FastRepresents mem' 0 n mm →
       Model.FastRepresents mem' 5120 n y' → y' < mm →
-      Challenge.EvmProof.GasSteps (ladderCall s mem' 5120 ret n bsize esize msize)
+      Challenge.EvmProof.GasSteps (ccCall s mem' 5120 ret n bsize esize msize)
         (retTo s (ccF 5120 mem') ret (outer n bsize esize msize)))
     (dblFrame : ∀ mem' : ByteArray,
       Frame mem' n bsize minv → Frame (dblF 4096 mem') n bsize minv)
@@ -4946,54 +4647,20 @@ theorem blMems_preserves {mpMem amMem : Nat → Nat → Nat → ByteArray → By
         (storeWord_frame _ (3040 + 32 * n) ptr n v _ (Or.inl (by omega))
           (spec.mpFrame 1024 5120 1024 ptr v _ (by omega) (by omega) ih))
 
-/-! ## From `bDone` to the `RETURN`
-
-Both branches of the `bsize = 0` test reach `bDone` with `BASE` holding the
-Montgomery form of the base; from there the exponent loop and the packaging
-are shared. -/
-
-theorem handled_of_bDone (input : ByteArray) (s : State) (mem : ByteArray)
-    (n bsize esize msize mm minv bM : Nat)
-    (sub : Subroutines s n bsize mm minv)
-    (spec : SubSpec sub.mpMem sub.amMem n mm (Limbs.radix ^ n) minv)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
-    (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
-    (hbsize : bsize = Challenge.Modexp.baseSize input)
-    (hesize : esize = Challenge.Modexp.exponentSize input)
-    (hmsz : msize = Challenge.Modexp.modulusSize input)
-    (hmm : mm = Precompile.bytesToNatPadded input (96 + bsize + esize) msize)
-    (hodd : mm % 2 = 1) (hradix : Limbs.radix ≤ mm) (hbMlt : bM < mm)
-    (hbMform : bM ≡ Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n [MOD mm])
-    (hframe : Frame mem n bsize minv)
-    (hEb : EbInv (mcopyMem mem 1024 4096 (32 * n)) n mm bM
-      (expAcc mm (Limbs.radix ^ n) bM (expBits input bsize) 0)) :
-    ∃ final : State,
-      Nonempty (Challenge.EvmProof.GasSteps
-        (bDone s mem n bsize esize msize) final) ∧
-        final.isDone = true ∧
-        final.toResult = .returned (Challenge.Modexp.spec input) := by
-  have hmpos : 0 < mm := lt_of_lt_of_le Limbs.radix_pos hradix
-  have hcop : Nat.Coprime (Limbs.radix ^ n) mm := Model.coprime_radix_pow_of_odd hodd n
-  have hframeC : Frame (mcopyMem mem 1024 4096 (32 * n)) n bsize minv :=
-    frame_mcopyMem (by omega) hframe
-  have htrace := gasSteps_expChain s sub spec mem input esize msize bM hdata hmpos hcop hn hn32
-    hb he hmz hm32 hradix hbMlt hact hframe hEb hcode hfork hrun hnp
-  have hfinal := ebMem_final spec hmpos hn hn32 hcop hradix hbMlt hbMform input bsize esize
-    rfl (mcopyMem mem 1024 4096 (32 * n)) hframeC.minvW hEb
-  refine handled_of_trace input (bDone s mem n bsize esize msize) s _ n bsize esize msize
-    _ hstack htrace hn hm32 (by omega) hbsize hesize hmsz hfinal ?_
-  rw [hmm]
-
 /-! ## The base loop -/
 
+/-- Result contract shared by the legacy base fallback and its downstream
+exponent continuation.  It lives in `Exp` so the base proof does not import
+the fixed-exponent dispatcher and create an import cycle. -/
+abbrev TailHandled (input : ByteArray) (entry : State) : Prop :=
+  ∃ final : State,
+    Nonempty (Challenge.EvmProof.GasSteps entry final) ∧
+      final.isDone = true ∧
+      final.toResult = .returned (Challenge.Modexp.spec input)
+
 /-- The unchanged Horner/value proof starting from the relocated guard miss.
-The dispatcher-aware `handled_of_baseHead` is supplied downstream. -/
+The dispatcher-aware `handled_of_baseHead` and the exponent continuation are
+supplied downstream. -/
 theorem handled_of_baseFallback (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize mm minv rr : Nat)
     (sub : Subroutines s n bsize mm minv)
@@ -5002,14 +4669,14 @@ theorem handled_of_baseFallback (input : ByteArray) (s : State) (mem : ByteArray
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
+    (hdata : s.executionEnv.calldata = input) (_hstack : s.callStack = [])
     (hact : 298 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
-    (he : esize ≤ 1024) (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (_he : esize ≤ 1024) (_hmz : 32 < msize) (_hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
-    (hesize : esize = Challenge.Modexp.exponentSize input)
-    (hmsz : msize = Challenge.Modexp.modulusSize input)
-    (hmm : mm = Precompile.bytesToNatPadded input (96 + bsize + esize) msize)
+    (_hesize : esize = Challenge.Modexp.exponentSize input)
+    (_hmsz : msize = Challenge.Modexp.modulusSize input)
+    (_hmm : mm = Precompile.bytesToNatPadded input (96 + bsize + esize) msize)
     (hodd : mm % 2 = 1) (hradix : Limbs.radix ≤ mm)
     (hrrlt : rr < mm)
     (hrrmod : rr ≡ Limbs.radix ^ n * Limbs.radix ^ n [MOD mm])
@@ -5019,12 +4686,20 @@ theorem handled_of_baseFallback (input : ByteArray) (s : State) (mem : ByteArray
     (hcc : Model.FastRepresents mem 5120 n (Limbs.radix * Limbs.radix ^ n % mm))
     (hrrb : Model.FastRepresents mem 6144 n rr)
     (hacc : Model.FastRepresents mem 1024 n 0)
-    (hone : Model.FastRepresents mem 3072 n 0) :
-    ∃ final : State,
-      Nonempty (Challenge.EvmProof.GasSteps
-        (FullBase.fallbackState s mem n bsize esize msize) final) ∧
-        final.isDone = true ∧
-        final.toResult = .returned (Challenge.Modexp.spec input) := by
+    (hone : Model.FastRepresents mem 3072 n 0)
+    (hcontinue : ∀ (mem' : ByteArray) (bM : Nat),
+      Frame mem' n bsize minv →
+      Model.FastRepresents mem' 0 n mm →
+      Model.FastRepresents mem' 2048 n bM →
+      (∃ one, one < Limbs.radix ∧ Model.FastRepresents mem' 3072 n one) →
+      EbInv (mcopyMem mem' 1024 4096 (32 * n)) n mm bM
+        (expAcc mm (Limbs.radix ^ n) bM (expBits input bsize) 0) →
+      bM < mm →
+      bM ≡ Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n [MOD mm] →
+      Model.FastRepresents mem' 1024 n
+        (Precompile.bytesToNatPadded input 96 bsize % mm) →
+      TailHandled input (bDone s mem' n bsize esize msize)) :
+    TailHandled input (FullBase.fallbackState s mem n bsize esize msize) := by
   have hmpos : 0 < mm := lt_of_lt_of_le Limbs.radix_pos hradix
   have hcop : Nat.Coprime (Limbs.radix ^ n) mm := Model.coprime_radix_pow_of_odd hodd n
   have htlt : topLimbOf input bsize < Limbs.radix := by
@@ -5124,15 +4799,30 @@ theorem handled_of_baseFallback (input : ByteArray) (s : State) (mem : ByteArray
       exact ⟨one, honelt,
         Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 3072 n one (by omega)
           (spec.mpFrame 1024 6144 2048 3072 one _ (by omega) (by omega) honerep)⟩
-  obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
-    handled_of_bDone input s
-      (sub.mpMem 1024 6144 2048
-        (blMems sub.mpMem sub.amMem input n bsize (pbOf bsize)
-          (storeWord mem (992 + 32 * n) (UInt256.ofNat (topLimbOf input bsize)))
-          (pbOf bsize - 1))) n bsize esize msize mm minv
-      (Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n % mm) sub spec
-      hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32 hbsize hesize hmsz
-      hmm hodd hradix (Nat.mod_lt _ hmpos) (Nat.mod_modEq _ _) hframe7 hEb
+  let finalMem := sub.mpMem 1024 6144 2048
+    (blMems sub.mpMem sub.amMem input n bsize (pbOf bsize)
+      (storeWord mem (992 + 32 * n) (UInt256.ofNat (topLimbOf input bsize)))
+      (pbOf bsize - 1))
+  let baseM := Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n % mm
+  have hmod7 : Model.FastRepresents finalMem 0 n mm := by
+    dsimp only [finalMem]
+    exact spec.mpFrame 1024 6144 2048 0 mm _ (by omega) (by omega) hblInv.modulus
+  have hone7 : ∃ one, one < Limbs.radix ∧ Model.FastRepresents finalMem 3072 n one := by
+    obtain ⟨one, honelt, honerep⟩ := hblInv.oneBlock
+    exact ⟨one, honelt, by
+      dsimp only [finalMem]
+      exact spec.mpFrame 1024 6144 2048 3072 one _ (by omega) (by omega) honerep⟩
+  obtain ⟨final, ⟨tr⟩, hdone, hres⟩ := hcontinue finalMem baseM (by
+      simpa only [finalMem] using hframe7) hmod7 (by
+      simpa only [finalMem, baseM] using hbM) hone7 (by
+      simpa only [finalMem, baseM] using hEb)
+    (by dsimp only [baseM]; exact Nat.mod_lt _ hmpos)
+    (by dsimp only [baseM]; exact Nat.mod_modEq _ _)
+    (by
+      dsimp only [finalMem]
+      exact spec.mpFrame 1024 6144 2048 1024
+        (Precompile.bytesToNatPadded input 96 bsize % mm) _
+        (by omega) (Or.inr (by omega)) haccB)
   exact ⟨final, ⟨htrace.trans tr⟩, hdone, hres⟩
 
 /-! ## From the head of the `RR` loop to the `RETURN` -/
@@ -5575,10 +5265,20 @@ theorem ccSqMem_succ (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (
     (mem : ByteArray) (i : Nat) :
     ccSqMem mpMem px mem (i + 1) = mpMem px px px (ccSqMem mpMem px mem i) := rfl
 
-/-- The memory one whole `CCB` call leaves. -/
-def ccbMem (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray) (px : Nat)
+/-- The memory after a bounded chain of modular seed doublings. -/
+def ccSeedMem (amMem : Nat → Nat → Nat → ByteArray → ByteArray) (px : Nat)
+    (mem : ByteArray) : Nat → ByteArray
+  | 0 => mem
+  | i + 1 => amMem px px px (ccSeedMem amMem px mem i)
+
+theorem ccSeedMem_succ (amMem : Nat → Nat → Nat → ByteArray → ByteArray) (px : Nat)
+    (mem : ByteArray) (i : Nat) :
+    ccSeedMem amMem px mem (i + 1) = amMem px px px (ccSeedMem amMem px mem i) := rfl
+
+/-- The exact memory left by the width-dependent `CCB` implementation. -/
+def ccbMem (n : Nat) (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray) (px : Nat)
     (mem : ByteArray) : ByteArray :=
-  ccSqMem mpMem px (amMem px px px mem) 8
+  ccSqMem mpMem px (ccSeedMem amMem px mem (CcbSeed.doubles n)) (CcbSeed.squares n)
 
 /-- The value the block at `px` holds after `i` Montgomery squarings. -/
 def ccSq (mm R y : Nat) : Nat → Nat
@@ -5630,47 +5330,37 @@ theorem ccSq_eight {mm R : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm) :
   have hmodEq : ccSq mm R ((R % mm + R % mm) % mm) 8 % mm = Limbs.radix * R % mm := h
   rwa [Nat.mod_eq_of_lt hlt] at hmodEq
 
-/-- **The generalised `CCB` postcondition.**  `a` modular doublings followed by
-`sq` Montgomery squarings reach `radix * R mod m` whenever `a * 2 ^ sq = 256`.
+/-- Both width branches realize exactly 256 effective doublings. -/
+theorem ccSeed_counts (n : Nat) : CcbSeed.doubles n * 2 ^ CcbSeed.squares n = 256 := by
+  by_cases h : 128 < 32 * n <;> norm_num [CcbSeed.doubles, CcbSeed.squares, h]
 
-Each squaring *doubles* the exponent (`monpro u u = u²/R`, so `2^e·R ↦ 2^(2e)·R`)
-while each doubling *increments* it, so the exponent arrives at `a * 2 ^ sq`.
-`ccSq_eight` is the instance `a = 2`, `sq = 8` — one doubling from `R` to `2R`
-and eight squarings. -/
-theorem ccSq_pow {mm R a sq y : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
-    (hid : a * 2 ^ sq = 256) (hylt : y < mm)
-    (hy : y ≡ 2 ^ a * R [MOD mm]) :
-    ccSq mm R y sq = Limbs.radix * R % mm := by
-  have h := ccSq_form hm hcop hy sq
-  have hr : ((2 : Nat) ^ a) ^ 2 ^ sq = Limbs.radix := by
-    rw [← pow_mul, hid]; rfl
-  rw [hr] at h
-  have hlt : ccSq mm R y sq < mm := ccSq_lt hm hylt sq
-  have hmodEq : ccSq mm R y sq % mm = Limbs.radix * R % mm := h
+/-- The general seed/square identity does not restrict the modulus or input. -/
+theorem ccSq_seed {mm R : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
+    (d k : Nat) (hdk : d * 2 ^ k = 256) :
+    ccSq mm R (Model.doubleChain mm (R % mm) d) k = Limbs.radix * R % mm := by
+  have hy : Model.doubleChain mm (R % mm) d ≡ 2 ^ d * R [MOD mm] := by
+    rw [Model.doubleChain_eq (Nat.mod_lt R hm)]
+    calc (R % mm * 2 ^ d) % mm
+        ≡ R % mm * 2 ^ d [MOD mm] := Nat.mod_modEq _ mm
+      _ ≡ R * 2 ^ d [MOD mm] := (Nat.mod_modEq R mm).mul (Nat.ModEq.refl _)
+      _ = 2 ^ d * R := by ring
+  have h := ccSq_form hm hcop hy k
+  rw [← pow_mul, hdk] at h
+  have hlt := ccSq_lt (R := R) hm (Model.doubleChain_lt hm (Nat.mod_lt R hm) d) k
+  have hmodEq : ccSq mm R (Model.doubleChain mm (R % mm) d) k % mm =
+      Limbs.radix * R % mm := h
   rwa [Nat.mod_eq_of_lt hlt] at hmodEq
 
-/-- The memory after `i` modular doublings of the block at `px`. -/
-def dblMem (amMem : Nat → Nat → Nat → ByteArray → ByteArray) (px : Nat)
-    (mem : ByteArray) : Nat → ByteArray
-  | 0 => mem
-  | i + 1 => amMem px px px (dblMem amMem px mem i)
-
-theorem dblMem_succ (amMem : Nat → Nat → Nat → ByteArray → ByteArray) (px : Nat)
-    (mem : ByteArray) (i : Nat) :
-    dblMem amMem px mem (i + 1) = amMem px px px (dblMem amMem px mem i) := rfl
-
-/-- **The doubling chain, at the level of memory.**  The counterpart of
-`ccSqMem_inv`. -/
-theorem dblMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
+theorem ccSeedMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
-    (hn32 : n ≤ 32) (px : Nat) (hpxlo : 32 * n ≤ px) (hpxhi : px + 32 * n ≤ 6144)
+    (px : Nat) (hpxlo : 32 * n ≤ px) (hpxhi : px + 32 * n ≤ 6144)
     (mem : ByteArray) (y : Nat) (hylt : y < mm)
     (hminv : MachineState.readWord mem 9376 = UInt256.ofNat minv)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hy : Model.FastRepresents mem px n y) : ∀ i,
-    Model.FastRepresents (dblMem amMem px mem i) 0 n mm ∧
-      MachineState.readWord (dblMem amMem px mem i) 9376 = UInt256.ofNat minv ∧
-      Model.FastRepresents (dblMem amMem px mem i) px n (Ladder.dblVal mm y i) := by
+    Model.FastRepresents (ccSeedMem amMem px mem i) 0 n mm ∧
+      MachineState.readWord (ccSeedMem amMem px mem i) 9376 = UInt256.ofNat minv ∧
+      Model.FastRepresents (ccSeedMem amMem px mem i) px n (Model.doubleChain mm y i) := by
   intro i
   induction i with
   | zero => exact ⟨hmod, hminv, hy⟩
@@ -5679,30 +5369,29 @@ theorem dblMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
       refine ⟨?_, ?_, ?_⟩
       · exact spec.amFrame px px px 0 mm _ (by omega) (Or.inr (by omega)) hm0
       · exact (spec.amMinv px px px _ (by omega)).trans hmi
-      · rw [dblMem_succ, Ladder.dblVal_succ]
-        exact spec.amValue px px px _ _ _ (by omega) (by omega) (by omega) hm0
-          hv hv (by have := Ladder.dblVal_lt hm hylt i; omega)
+      · rw [ccSeedMem_succ, Model.doubleChain_succ]
+        exact spec.amValue px px px _ _ _ (by omega) (by omega) (by omega) hm0 hv hv
+          (by have := Model.doubleChain_lt hm hylt i; omega)
 
-/-- The doubling chain leaves every block disjoint from `px` alone. -/
-theorem dblMem_preserves {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
+theorem ccSeedMem_preserves {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (px ptr v : Nat)
     (hptr : ptr + 32 * n ≤ 7168)
-    (hdisj : px + 32 * n ≤ ptr ∨ ptr + 32 * n ≤ px)
-    (mem : ByteArray) (hv : Model.FastRepresents mem ptr n v) : ∀ i,
-    Model.FastRepresents (dblMem amMem px mem i) ptr n v := by
+    (hdisj : px + 32 * n ≤ ptr ∨ ptr + 32 * n ≤ px) (mem : ByteArray)
+    (hrep : Model.FastRepresents mem ptr n v) :
+    ∀ i, Model.FastRepresents (ccSeedMem amMem px mem i) ptr n v := by
   intro i
   induction i with
-  | zero => exact hv
+  | zero => exact hrep
   | succ i ih => exact spec.amFrame px px px ptr v _ hptr hdisj ih
 
-theorem dblMem_frame {s : State} {n bsize mm minv : Nat}
-    (sub : Subroutines s n bsize mm minv) (px : Nat) (hpx6 : px ≤ 6144)
-    (mem : ByteArray) (hf : Frame mem n bsize minv) : ∀ i,
-    Frame (dblMem sub.amMem px mem i) n bsize minv := by
+theorem ccSeedMem_frame {s : State} {n bsize mm minv : Nat}
+    (sub : Subroutines s n bsize mm minv) (px : Nat) (hpx : px ≤ 6144)
+    (mem : ByteArray) (hf : Frame mem n bsize minv) :
+    ∀ i, Frame (ccSeedMem sub.amMem px mem i) n bsize minv := by
   intro i
   induction i with
   | zero => exact hf
-  | succ i ih => exact sub.amFrame px px px _ hpx6 ih
+  | succ i ih => exact sub.amFrame px px px _ hpx ih
 
 /-- **The `CCB` squaring chain, at the level of memory.** -/
 theorem ccSqMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
@@ -5752,17 +5441,19 @@ theorem ccSqMem_frame {s : State} {n bsize mm minv : Nat}
 theorem ccbMem_frame {s : State} {n bsize mm minv : Nat}
     (sub : Subroutines s n bsize mm minv) (px : Nat) (hpx : px ≤ 6144)
     (mem : ByteArray) (hf : Frame mem n bsize minv) :
-    Frame (ccbMem sub.mpMem sub.amMem px mem) n bsize minv :=
-  ccSqMem_frame sub px hpx _ (sub.amFrame px px px mem hpx hf) 8
+    Frame (ccbMem n sub.mpMem sub.amMem px mem) n bsize minv :=
+  ccSqMem_frame sub px hpx _
+    (ccSeedMem_frame sub px hpx mem hf (CcbSeed.doubles n)) (CcbSeed.squares n)
 
 theorem ccbMem_preserves {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (px ptr v : Nat)
     (hptr : ptr + 32 * n ≤ 7168)
     (hdisj : px + 32 * n ≤ ptr ∨ ptr + 32 * n ≤ px) (mem : ByteArray)
     (hrep : Model.FastRepresents mem ptr n v) :
-    Model.FastRepresents (ccbMem mpMem amMem px mem) ptr n v :=
+    Model.FastRepresents (ccbMem n mpMem amMem px mem) ptr n v :=
   ccSqMem_preserves spec px ptr v hptr hdisj _
-    (spec.amFrame px px px ptr v mem hptr hdisj hrep) 8
+    (ccSeedMem_preserves spec px ptr v hptr hdisj mem hrep (CcbSeed.doubles n))
+    (CcbSeed.squares n)
 
 /-- **The `CCB` postcondition, at the level of memory.** -/
 theorem ccbMem_represents {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
@@ -5772,75 +5463,21 @@ theorem ccbMem_represents {mpMem amMem : Nat → Nat → Nat → ByteArray → B
     (hminv : MachineState.readWord mem 9376 = UInt256.ofNat minv)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hy : Model.FastRepresents mem px n (R % mm)) :
-    Model.FastRepresents (ccbMem mpMem amMem px mem) px n (Limbs.radix * R % mm) := by
-  have ham : Model.FastRepresents (amMem px px px mem) px n ((R % mm + R % mm) % mm) :=
-    spec.amValue px px px mem (R % mm) (R % mm) (by omega) (by omega) (by omega)
-      hmod hy hy (by have := Nat.mod_lt R hm; omega)
-  have hmod' : Model.FastRepresents (amMem px px px mem) 0 n mm :=
-    spec.amFrame px px px 0 mm mem (by omega) (Or.inr (by omega)) hmod
-  have hminv' : MachineState.readWord (amMem px px px mem) 9376 =
-      UInt256.ofNat minv := (spec.amMinv px px px mem (by omega)).trans hminv
-  have h := (ccSqMem_inv spec hm hn32 px hpxlo hpxhi (amMem px px px mem)
-    ((R % mm + R % mm) % mm) (Nat.mod_lt _ hm) hminv' hmod' ham 8).2.2
-  rwa [ccSq_eight hm hcop] at h
-
-/-- The memory a whole ladder call leaves: `a` doublings then `sq` squarings. -/
-def ladderMem (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray)
-    (nn px : Nat) (mem : ByteArray) : ByteArray :=
-  ccSqMem mpMem px (dblMem amMem px mem (Ladder.aOf nn)) (Ladder.sqOf nn)
-
-theorem ladderMem_frame {s : State} {n bsize mm minv : Nat}
-    (sub : Subroutines s n bsize mm minv) (nn px : Nat) (hpx6 : px ≤ 6144)
-    (mem : ByteArray) (hf : Frame mem n bsize minv) :
-    Frame (ladderMem sub.mpMem sub.amMem nn px mem) n bsize minv :=
-  ccSqMem_frame sub px hpx6 _ (dblMem_frame sub px hpx6 mem hf _) _
-
-theorem ladderMem_preserves {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
-    {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (nn px ptr v : Nat)
-    (hptr : ptr + 32 * n ≤ 7168)
-    (hdisj : px + 32 * n ≤ ptr ∨ ptr + 32 * n ≤ px)
-    (mem : ByteArray) (hv : Model.FastRepresents mem ptr n v) :
-    Model.FastRepresents (ladderMem mpMem amMem nn px mem) ptr n v :=
-  ccSqMem_preserves spec px ptr v hptr hdisj _
-    (dblMem_preserves spec px ptr v hptr hdisj mem hv _) _
-
-/-- **The ladder postcondition.**  Identical to `ccbMem_represents` — the ladder
-is a different schedule for the same function. -/
-theorem ladderMem_represents {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
-    {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
-    (hcop : Nat.Coprime R mm) (hn32 : n ≤ 32) (nn px : Nat)
-    (hpxlo : 32 * n ≤ px) (hpxhi : px + 32 * n ≤ 6144) (mem : ByteArray)
-    (hminv : MachineState.readWord mem 9376 = UInt256.ofNat minv)
-    (hmod : Model.FastRepresents mem 0 n mm)
-    (hy : Model.FastRepresents mem px n (R % mm)) :
-    Model.FastRepresents (ladderMem mpMem amMem nn px mem) px n
-      (Limbs.radix * R % mm) := by
-  have hdbl := dblMem_inv spec hm hn32 px hpxlo hpxhi mem (R % mm)
-    (Nat.mod_lt _ hm) hminv hmod hy (Ladder.aOf nn)
-  have hform : Ladder.dblVal mm (R % mm) (Ladder.aOf nn) ≡
-      2 ^ Ladder.aOf nn * R [MOD mm] :=
-    Ladder.dblVal_form (Nat.mod_modEq R mm) (Ladder.aOf nn)
-  have hvlt : Ladder.dblVal mm (R % mm) (Ladder.aOf nn) < mm :=
-    Ladder.dblVal_lt hm (Nat.mod_lt _ hm) _
-  have h := (ccSqMem_inv spec hm hn32 px hpxlo hpxhi
-    (dblMem amMem px mem (Ladder.aOf nn))
-    (Ladder.dblVal mm (R % mm) (Ladder.aOf nn)) hvlt hdbl.2.1 hdbl.1 hdbl.2.2
-    (Ladder.sqOf nn)).2.2
-  rwa [ccSq_pow hm hcop (Ladder.aOf_mul_pow_sqOf nn) hvlt hform] at h
-
-theorem ladderMem_modulus {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
-    {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hn32 : n ≤ 32)
-    (nn px : Nat) (hpxlo : 32 * n ≤ px) (_hpxhi : px + 32 * n ≤ 6144)
-    (mem : ByteArray) (hmod : Model.FastRepresents mem 0 n mm) :
-    Model.FastRepresents (ladderMem mpMem amMem nn px mem) 0 n mm :=
-  ladderMem_preserves spec nn px 0 mm (by omega) (Or.inr (by omega)) mem hmod
+    Model.FastRepresents (ccbMem n mpMem amMem px mem) px n (Limbs.radix * R % mm) := by
+  have hseed := ccSeedMem_inv spec hm px hpxlo hpxhi mem (R % mm)
+    (Nat.mod_lt R hm) hminv hmod hy (CcbSeed.doubles n)
+  have h := (ccSqMem_inv spec hm hn32 px hpxlo hpxhi _
+    (Model.doubleChain mm (R % mm) (CcbSeed.doubles n))
+    (Model.doubleChain_lt hm (Nat.mod_lt R hm) _) hseed.2.1 hseed.1 hseed.2.2
+    (CcbSeed.squares n)).2.2
+  rwa [ccSq_seed hm hcop _ _ (ccSeed_counts n)] at h
 
 /-- The modulus block survives a whole `CCB` call. -/
 theorem ccbMem_modulus {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hn32 : n ≤ 32)
     (px : Nat) (hpxlo : 32 * n ≤ px) (_hpxhi : px + 32 * n ≤ 6144) (mem : ByteArray)
     (hmod : Model.FastRepresents mem 0 n mm) :
-    Model.FastRepresents (ccbMem mpMem amMem px mem) 0 n mm :=
+    Model.FastRepresents (ccbMem n mpMem amMem px mem) 0 n mm :=
   ccbMem_preserves spec px 0 mm (by omega) (Or.inr (by omega)) mem hmod
 
 theorem jump2874 :
@@ -5855,84 +5492,13 @@ theorem jump2888 :
   rw [show (UInt256.ofNat 2888).toNat = 2888 by decide]
   exact jumpDest2888
 
-theorem jump3948 :
+theorem jump4040 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat 3948).toNat = true := by
-  rw [show (UInt256.ofNat 3948).toNat = 3948 by decide]
-  exact Ladder.jumpDest3948
+      (UInt256.ofNat 4040).toNat = true := by
+  rw [show (UInt256.ofNat 4040).toNat = 4040 by decide]
+  exact CcbSeed.jumpDest4040
 
-/-- **The ladder against the real `ADDMOD` and `MONPRO`.**  Entering pc 3924
-with `[px, ret] ++ OUTER` returns to `ret` with the block at `px` carried
-through `a` modular doublings and `sq` Montgomery squarings.  Same calling
-convention and same shape of postcondition as `gasSteps_ccbFull`; the value it
-lands on is `ladderMem`, and `ladderMem_represents` is what identifies that with
-`radix * R mod m`. -/
-def gasSteps_ladderFull (s : State) {n bsize mm minv R : Nat}
-    (sub : Subroutines s n bsize mm minv)
-    (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
-    (esize msize : Nat) (hm : 0 < mm) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hact : 298 ≤ s.activeWords.toNat)
-    (px : Nat) (hpxlo : 32 * n ≤ px) (hpxhi : px + 32 * n ≤ 6144)
-    (ret : UInt256) (mem : ByteArray) (y : Nat)
-    (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
-    (hf : Frame mem n bsize minv)
-    (hmod : Model.FastRepresents mem 0 n mm)
-    (hy : Model.FastRepresents mem px n y) (hylt : y < mm)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (ladderCall s mem px ret n bsize esize msize)
-      (retTo s (ladderMem sub.mpMem sub.amMem n px mem) ret
-        (outer n bsize esize msize)) :=
-  have hpx6 : px ≤ 6144 := by omega
-  have hdbl := dblMem_inv spec hm hn32 px hpxlo hpxhi mem y hylt hf.minvW hmod hy
-  have hyAlt : Ladder.dblVal mm y (Ladder.aOf n) < mm := Ladder.dblVal_lt hm hylt _
-  (Ladder.gasSteps_ladder s px n ret (outer n bsize esize msize)
-      (dblMem sub.amMem px mem)
-      (by simp only [outer, List.length_cons, List.length_nil]; omega)
-      hn32 hact hf.s32
-      (fun i _ =>
-        sub.addmod px px px (UInt256.ofNat 3948)
-          ([UInt256.ofNat (Ladder.aOf n - i), UInt256.ofNat (Ladder.ltOf n),
-            UInt256.ofNat px, ret] ++ outer n bsize esize msize)
-          (dblMem sub.amMem px mem i)
-          (by simp only [outer, List.length_cons, List.length_nil,
-            List.length_append]; omega)
-          (by omega) (by omega) (by omega) (by omega) (by omega) jump3948
-          (dblMem_frame sub px hpx6 mem hf i))
-      hcode hfork hrun hnp).trans
-    (Ccb.gasSteps_tail s px (Ladder.sqOf n) ret (outer n bsize esize msize)
-      (ccSqMem sub.mpMem px (dblMem sub.amMem px mem (Ladder.aOf n)))
-      (Ladder.sqOf_pos n) (Ladder.sqOf_le_eight n)
-      (fun i _ =>
-        sub.monpro px px px (UInt256.ofNat 2888)
-          (Ccb.loopStack px (Ladder.sqOf n - i) ret (outer n bsize esize msize))
-          (ccSqMem sub.mpMem px (dblMem sub.amMem px mem (Ladder.aOf n)) i)
-          (ccSq mm R (Ladder.dblVal mm y (Ladder.aOf n)) i)
-          (ccSq mm R (Ladder.dblVal mm y (Ladder.aOf n)) i)
-          (by simp only [Ccb.loopStack, outer, List.length_cons, List.length_nil,
-            List.length_append]; omega)
-          (by omega) (by omega) (by omega) (by omega) (by omega) jump2888
-          (ccSqMem_frame sub px hpx6 _
-            (dblMem_frame sub px hpx6 mem hf (Ladder.aOf n)) i)
-          (ccSqMem_inv spec hm hn32 px hpxlo hpxhi _
-            (Ladder.dblVal mm y (Ladder.aOf n)) hyAlt
-            (hdbl (Ladder.aOf n)).2.1 (hdbl (Ladder.aOf n)).1
-            (hdbl (Ladder.aOf n)).2.2 i).1
-          (ccSqMem_inv spec hm hn32 px hpxlo hpxhi _
-            (Ladder.dblVal mm y (Ladder.aOf n)) hyAlt
-            (hdbl (Ladder.aOf n)).2.1 (hdbl (Ladder.aOf n)).1
-            (hdbl (Ladder.aOf n)).2.2 i).2.2
-          (ccSqMem_inv spec hm hn32 px hpxlo hpxhi _
-            (Ladder.dblVal mm y (Ladder.aOf n)) hyAlt
-            (hdbl (Ladder.aOf n)).2.1 (hdbl (Ladder.aOf n)).1
-            (hdbl (Ladder.aOf n)).2.2 i).2.2
-          (ccSq_lt hm hyAlt i))
-      (by simp only [outer, List.length_cons, List.length_nil]; omega)
-      hcode hjump hfork hrun hnp)
-
-/-- **`CCB` against the real `ADDMOD` and `MONPRO`.**  Entering pc 2863 with
+/-- **`CCB` against the real `ADDMOD` and `MONPRO`.**  Entering pc 4016 with
 `[px, ret] ++ OUTER` returns to `ret` with the block at `px` multiplied by
 `radix` modulo `m`. -/
 def gasSteps_ccbFull (s : State) {n bsize mm minv R : Nat}
@@ -5945,47 +5511,44 @@ def gasSteps_ccbFull (s : State) {n bsize mm minv R : Nat}
     (hf : Frame mem n bsize minv)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hy : Model.FastRepresents mem px n y) (hylt : y < mm)
+    (hact : 296 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (ccCall s mem px ret n bsize esize msize)
-      (retTo s (ccbMem sub.mpMem sub.amMem px mem) ret (outer n bsize esize msize)) :=
+      (retTo s (ccbMem n sub.mpMem sub.amMem px mem) ret (outer n bsize esize msize)) := by
   have hpx6 : px ≤ 6144 := by omega
-  have hmod' : Model.FastRepresents (sub.amMem px px px mem) 0 n mm :=
-    spec.amFrame px px px 0 mm mem (by omega) (Or.inr (by omega)) hmod
-  have hminv' : MachineState.readWord (sub.amMem px px px mem) 9376 =
-      UInt256.ofNat minv := (spec.amMinv px px px mem hpx6).trans hf.minvW
-  have ham : Model.FastRepresents (sub.amMem px px px mem) px n ((y + y) % mm) :=
-    spec.amValue px px px mem y y (by omega) (by omega) (by omega) hmod hy hy
-      (by omega)
-  have hframe' : Frame (sub.amMem px px px mem) n bsize minv :=
-    sub.amFrame px px px mem hpx6 hf
-  Ccb.gasSteps_ccb s px ret (outer n bsize esize msize) mem
-    (ccSqMem sub.mpMem px (sub.amMem px px px mem))
-    (sub.addmod px px px (UInt256.ofNat 2874)
-      ([UInt256.ofNat px, ret] ++ outer n bsize esize msize) mem
-      (by simp only [outer, List.length_cons, List.length_nil,
-        List.length_append]; omega)
-      (by omega) (by omega) (by omega) (by omega) (by omega) jump2874 hf)
-    (fun i hi =>
-      sub.monpro px px px (UInt256.ofNat 2888)
-        (Ccb.loopStack px (8 - i) ret (outer n bsize esize msize))
-        (ccSqMem sub.mpMem px (sub.amMem px px px mem) i)
-        (ccSq mm R ((y + y) % mm) i) (ccSq mm R ((y + y) % mm) i)
-        (by simp only [Ccb.loopStack, outer, List.length_cons, List.length_nil,
-          List.length_append]; omega)
-        (by omega) (by omega) (by omega) (by omega) (by omega) jump2888
-        (ccSqMem_frame sub px hpx6 _ hframe' i)
-        (ccSqMem_inv spec hm hn32 px hpxlo hpxhi _ ((y + y) % mm)
-          (Nat.mod_lt _ hm) hminv' hmod' ham i).1
-        (ccSqMem_inv spec hm hn32 px hpxlo hpxhi _ ((y + y) % mm)
-          (Nat.mod_lt _ hm) hminv' hmod' ham i).2.2
-        (ccSqMem_inv spec hm hn32 px hpxlo hpxhi _ ((y + y) % mm)
-          (Nat.mod_lt _ hm) hminv' hmod' ham i).2.2
-        (ccSq_lt hm (Nat.mod_lt _ hm) i))
+  let seedMems := ccSeedMem sub.amMem px mem
+  let seedValue := Model.doubleChain mm y (CcbSeed.doubles n)
+  let squareMems := ccSqMem sub.mpMem px (seedMems (CcbSeed.doubles n))
+  have hseed := ccSeedMem_inv spec hm px hpxlo hpxhi mem y hylt
+    hf.minvW hmod hy (CcbSeed.doubles n)
+  have hseedLt : seedValue < mm := Model.doubleChain_lt hm hylt _
+  have hseedFrame := ccSeedMem_frame sub px hpx6 mem hf (CcbSeed.doubles n)
+  refine CcbSeed.gasSteps_ccb s px n ret (outer n bsize esize msize)
+    seedMems squareMems rfl ?_ ?_
     (by simp only [outer, List.length_cons, List.length_nil]; omega)
-    hcode hjump hfork hrun hnp
+    hn32 hf.s32 hact hcode hjump hfork hrun hnp
+  · intro i _hi
+    exact sub.addmod px px px (UInt256.ofNat 4040)
+      (CcbSeed.loopStack px n (CcbSeed.doubles n - i) ret (outer n bsize esize msize))
+      (seedMems i)
+      (by simp only [CcbSeed.loopStack, outer, List.length_cons, List.length_nil,
+        List.length_append]; omega)
+      (by omega) (by omega) (by omega) (by omega) (by omega) jump4040
+      (ccSeedMem_frame sub px hpx6 mem hf i)
+  · intro i _hi
+    have hsquare := ccSqMem_inv spec hm hn32 px hpxlo hpxhi
+      (seedMems (CcbSeed.doubles n)) seedValue hseedLt hseed.2.1 hseed.1 hseed.2.2 i
+    exact sub.monpro px px px (UInt256.ofNat 2888)
+      (Ccb.loopStack px (CcbSeed.squares n - i) ret (outer n bsize esize msize))
+      (squareMems i) (ccSq mm R seedValue i) (ccSq mm R seedValue i)
+      (by simp only [Ccb.loopStack, outer, List.length_cons, List.length_nil,
+        List.length_append]; omega)
+      (by omega) (by omega) (by omega) (by omega) (by omega) jump2888
+      (ccSqMem_frame sub px hpx6 _ hseedFrame i)
+      hsquare.1 hsquare.2.2 hsquare.2.2 (ccSq_lt hm hseedLt i)
 
 /-- The modulus block and the `CC` block as the `CCB` call finds them: the
 `DOUBLE256` chain has turned `R1` into `R mod m` and the `MCOPY` has copied it
@@ -6014,9 +5577,9 @@ theorem setupToCC_facts (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0
 theorem setupToDirect_frame {s : State} {n bsize mm minv : Nat}
     (sub : Subroutines s n bsize mm minv) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     {mem : ByteArray} (hf : Frame mem n bsize minv) :
-    Frame (setupToDirectMem (r1Mem n) (ladderMem sub.mpMem sub.amMem n) n mem)
+    Frame (setupToDirectMem (r1Mem n) (ccbMem n sub.mpMem sub.amMem) n mem)
       n bsize minv :=
-  ladderMem_frame sub n 5120 (by omega) _
+  ccbMem_frame sub 5120 (by omega) _
     (frame_mcopyMem (by omega) (r1Mem_frame hn hn32 hf))
 
 theorem setupToDirect_preserves {s : State} {n bsize mm minv R : Nat}
@@ -6026,14 +5589,14 @@ theorem setupToDirect_preserves {s : State} {n bsize mm minv R : Nat}
     (hlo : 1024 ≤ ptr) (hhi : ptr + 32 * n ≤ 4096) (mem : ByteArray)
     (hrep : Model.FastRepresents mem ptr n v) :
     Model.FastRepresents
-      (setupToDirectMem (r1Mem n) (ladderMem sub.mpMem sub.amMem n) n mem) ptr n v := by
+      (setupToDirectMem (r1Mem n) (ccbMem n sub.mpMem sub.amMem) n mem) ptr n v := by
   have h1 : Model.FastRepresents (r1Mem n 4096 mem) ptr n v :=
     r1Mem_preserves hn hn32 hlo hhi mem hrep
   have h2 : Model.FastRepresents (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n))
       ptr n v :=
     fastRepresents_mcopyMem_disjoint (r1Mem n 4096 mem) 5120 4096 (32 * n) ptr n v
       (by omega) h1
-  exact ladderMem_preserves spec n 5120 ptr v (by omega) (Or.inr (by omega)) _ h2
+  exact ccbMem_preserves spec 5120 ptr v (by omega) (Or.inr (by omega)) _ h2
 
 /-- Before the direct helper copies CC to RR, modulus, R1 and CC already have
 their complete semantic values. No fact about the old RR block is needed. -/
@@ -6047,12 +5610,12 @@ theorem setupToDirect_facts {s : State} {bsize minv : Nat} (n mm : Nat)
     (hxlt : Limbs.radix ^ (n - 1) < mm)
     (htz : Model.FastRepresents mem 8256 n 0) :
     Model.FastRepresents
-        (setupToDirectMem (r1Mem n) (ladderMem sub.mpMem sub.amMem n) n mem) 0 n mm ∧
+        (setupToDirectMem (r1Mem n) (ccbMem n sub.mpMem sub.amMem) n mem) 0 n mm ∧
       Model.FastRepresents
-        (setupToDirectMem (r1Mem n) (ladderMem sub.mpMem sub.amMem n) n mem) 4096 n
+        (setupToDirectMem (r1Mem n) (ccbMem n sub.mpMem sub.amMem) n mem) 4096 n
         (Limbs.radix ^ n % mm) ∧
       Model.FastRepresents
-        (setupToDirectMem (r1Mem n) (ladderMem sub.mpMem sub.amMem n) n mem) 5120 n
+        (setupToDirectMem (r1Mem n) (ccbMem n sub.mpMem sub.amMem) n mem) 5120 n
         (Limbs.radix * Limbs.radix ^ n % mm) := by
   have hcop : Nat.Coprime (Limbs.radix ^ n) mm :=
     Model.coprime_radix_pow_of_odd hodd n
@@ -6068,19 +5631,19 @@ theorem setupToDirect_facts {s : State} {bsize minv : Nat} (n mm : Nat)
     fastRepresents_mcopyMem_disjoint (r1Mem n 4096 mem) 5120 4096 (32 * n) 4096 n
       (Limbs.radix ^ n % mm) (by omega) h1r
   obtain ⟨h2m, h2c⟩ := setupToCC_facts n mm hn hn32 hmpos hodd mem hmod hr1 hxlt htz
-  exact ⟨ladderMem_modulus spec hn32 n 5120 (by omega) (by omega) _ h2m,
-    ladderMem_preserves spec n 5120 4096 (Limbs.radix ^ n % mm) (by omega)
+  exact ⟨ccbMem_modulus spec hn32 5120 (by omega) (by omega) _ h2m,
+    ccbMem_preserves spec 5120 4096 (Limbs.radix ^ n % mm) (by omega)
       (Or.inr (by omega)) _ h2r,
-    ladderMem_represents spec hmpos hcop hn32 n 5120 (by omega) (by omega) _ hf2.minvW
+    ccbMem_represents spec hmpos hcop hn32 5120 (by omega) (by omega) _ hf2.minvW
       h2m h2c⟩
 
 theorem setupToRR_frame {s : State} {n bsize mm minv : Nat}
     (sub : Subroutines s n bsize mm minv) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     {mem : ByteArray} (hf : Frame mem n bsize minv) :
-    Frame (setupToRRMem (r1Mem n) (ladderMem sub.mpMem sub.amMem n) n mem)
+    Frame (setupToRRMem (r1Mem n) (ccbMem n sub.mpMem sub.amMem) n mem)
       n bsize minv :=
   frame_mcopyMem (by omega)
-    (ladderMem_frame sub n 5120 (by omega) _
+    (ccbMem_frame sub 5120 (by omega) _
       (frame_mcopyMem (by omega) (r1Mem_frame (by omega) hn32 hf)))
 
 theorem setupToRR_preserves {s : State} {n bsize mm minv R : Nat}
@@ -6090,7 +5653,7 @@ theorem setupToRR_preserves {s : State} {n bsize mm minv R : Nat}
     (_hlo : 1024 ≤ ptr) (hhi : ptr + 32 * n ≤ 4096) (mem : ByteArray)
     (hrep : Model.FastRepresents mem ptr n v) :
     Model.FastRepresents
-      (setupToRRMem (r1Mem n) (ladderMem sub.mpMem sub.amMem n) n mem) ptr n v := by
+      (setupToRRMem (r1Mem n) (ccbMem n sub.mpMem sub.amMem) n mem) ptr n v := by
   have h1 : Model.FastRepresents (r1Mem n 4096 mem) ptr n v :=
     r1Mem_preserves hn _hn32 _hlo hhi mem hrep
   have h2 : Model.FastRepresents (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n))
@@ -6098,11 +5661,11 @@ theorem setupToRR_preserves {s : State} {n bsize mm minv R : Nat}
     fastRepresents_mcopyMem_disjoint (r1Mem n 4096 mem) 5120 4096 (32 * n) ptr n v
       (by omega) h1
   have h3 : Model.FastRepresents
-      (ladderMem sub.mpMem sub.amMem n 5120
+      (ccbMem n sub.mpMem sub.amMem 5120
         (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n))) ptr n v :=
-    ladderMem_preserves spec n 5120 ptr v (by omega) (Or.inr (by omega)) _ h2
+    ccbMem_preserves spec 5120 ptr v (by omega) (Or.inr (by omega)) _ h2
   exact fastRepresents_mcopyMem_disjoint
-    (ladderMem sub.mpMem sub.amMem n 5120
+    (ccbMem n sub.mpMem sub.amMem 5120
       (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n)))
     6144 4096 (32 * n) ptr n v (by omega) h3
 
@@ -6117,7 +5680,7 @@ theorem setupToRR_inv {s : State} {bsize minv : Nat} (n mm : Nat)
     (hr1 : Model.FastRepresents mem 4096 n (Limbs.radix ^ (n - 1)))
     (hxlt : Limbs.radix ^ (n - 1) < mm)
     (htz : Model.FastRepresents mem 8256 n 0) :
-    RrInv (setupToRRMem (r1Mem n) (ladderMem sub.mpMem sub.amMem n) n mem) n mm
+    RrInv (setupToRRMem (r1Mem n) (ccbMem n sub.mpMem sub.amMem) n mem) n mm
       (Limbs.radix ^ n) (Limbs.radix ^ n % mm) := by
   have hcop : Nat.Coprime (Limbs.radix ^ n) mm := Model.coprime_radix_pow_of_odd hodd n
   have hf1 : Frame (r1Mem n 4096 mem) n bsize minv :=
@@ -6144,35 +5707,35 @@ theorem setupToRR_inv {s : State} {bsize minv : Nat} (n mm : Nat)
     fastRepresents_mcopyMem_disjoint (r1Mem n 4096 mem) 5120 4096 (32 * n) 0 n mm
       (by omega) h1m
   have h3c : Model.FastRepresents
-      (ladderMem sub.mpMem sub.amMem n 5120
+      (ccbMem n sub.mpMem sub.amMem 5120
         (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n))) 5120 n
       (Limbs.radix * Limbs.radix ^ n % mm) :=
-    ladderMem_represents spec hmpos hcop hn32 n 5120 (by omega) (by omega) _ hf2.minvW
+    ccbMem_represents spec hmpos hcop hn32 5120 (by omega) (by omega) _ hf2.minvW
       h2m h2c
   have h3m : Model.FastRepresents
-      (ladderMem sub.mpMem sub.amMem n 5120
+      (ccbMem n sub.mpMem sub.amMem 5120
         (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n))) 0 n mm :=
-    ladderMem_modulus spec hn32 n 5120 (by omega) (by omega) _ h2m
+    ccbMem_modulus spec hn32 5120 (by omega) (by omega) _ h2m
   have h3r : Model.FastRepresents
-      (ladderMem sub.mpMem sub.amMem n 5120
+      (ccbMem n sub.mpMem sub.amMem 5120
         (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n))) 4096 n
       (Limbs.radix ^ n % mm) :=
-    ladderMem_preserves spec n 5120 4096 (Limbs.radix ^ n % mm) (by omega)
+    ccbMem_preserves spec 5120 4096 (Limbs.radix ^ n % mm) (by omega)
       (Or.inr (by omega)) _ h2r
   exact ⟨fastRepresents_mcopyMem_disjoint
-      (ladderMem sub.mpMem sub.amMem n 5120
+      (ccbMem n sub.mpMem sub.amMem 5120
         (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n)))
       6144 4096 (32 * n) 0 n mm (by omega) h3m,
     fastRepresents_mcopyMem_disjoint
-      (ladderMem sub.mpMem sub.amMem n 5120
+      (ccbMem n sub.mpMem sub.amMem 5120
         (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n)))
       6144 4096 (32 * n) 4096 n (Limbs.radix ^ n % mm) (by omega) h3r,
     fastRepresents_mcopyMem_disjoint
-      (ladderMem sub.mpMem sub.amMem n 5120
+      (ccbMem n sub.mpMem sub.amMem 5120
         (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n)))
       6144 4096 (32 * n) 5120 n (Limbs.radix * Limbs.radix ^ n % mm) (by omega) h3c,
     fastRepresents_mcopyMem
-      (ladderMem sub.mpMem sub.amMem n 5120
+      (ccbMem n sub.mpMem sub.amMem 5120
         (mcopyMem (r1Mem n 4096 mem) 5120 4096 (32 * n)))
       6144 4096 n (Limbs.radix ^ n % mm) (by omega) h3r⟩
 
@@ -6353,15 +5916,15 @@ def gasSteps_handover (s : State) (mem : ByteArray) (n bsize esize msize mm minv
     Challenge.EvmProof.GasSteps
       (r1Call s mem 4096 (UInt256.ofNat 1533) n bsize esize msize)
       (RrLeadingTraceCore.entryState s
-        (setupToDirectMem (r1Mem n) (ladderMem sub.mpMem sub.amMem n) n mem)
+        (setupToDirectMem (r1Mem n) (ccbMem n sub.mpMem sub.amMem) n mem)
         n bsize esize msize) :=
-  gasSteps_setupToRR s sub mem esize msize (r1Mem n) (ladderMem sub.mpMem sub.amMem n)
+  gasSteps_setupToRR s sub mem esize msize (r1Mem n) (ccbMem n sub.mpMem sub.amMem)
     (fun ret mem' hjump hf =>
       gasSteps_r1Block s esize msize hcode hfork hrun hnp
         (Nat.le_trans (show 296 ≤ 298 by norm_num) hact) hn hn32 ret mem' hjump hf)
     (fun ret mem' y' hjump hf hmod' hy' hylt' =>
-      gasSteps_ladderFull s sub spec esize msize hmpos hn hn32 hact 5120 (by omega)
-        (by omega) ret mem' y' hjump hf hmod' hy' hylt' hcode hfork hrun hnp)
+      gasSteps_ccbFull s sub spec esize msize hmpos hn hn32 5120 (by omega) (by omega)
+        ret mem' y' hjump hf hmod' hy' hylt' (by omega) hcode hfork hrun hnp)
     (fun mem' hf => r1Mem_frame (by omega) hn32 hf)
     (Limbs.radix ^ n % mm)
     (setupToCC_facts n mm hn hn32 hmpos hodd mem hmod0 hr10 hxlt htz).1
@@ -6412,7 +5975,7 @@ theorem handled_of_handover (input : ByteArray) (s : State) (mem : ByteArray)
   obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
     handled_of_rrHead input s
       (setupToRRMem (r1Mem n)
-        (ladderMem (subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32 hmpos
+        (ccbMem n (subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32 hmpos
       hminvlt hminvA).mpMem
           (subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32 hmpos
       hminvlt hminvA).amMem) n mem)

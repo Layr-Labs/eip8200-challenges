@@ -66,16 +66,16 @@ def blk1406 :
    opAt 1407 (.Dup ⟨0, by decide⟩),
    opAt 1408 .MLOAD,
    pushAt 1409 0 0,
-   pushAt 1410 2 9440,
+   pushAt 1410 4 9440,
    opAt 1411 .MLOAD,
    opAt 1412 (.Dup ⟨4, by decide⟩),
-   pushAt 1413 1 32,
-   opAt 1414 .ADD,
-   pushAt 1415 2 9344,
-   opAt 1416 .MLOAD,
-   opAt 1417 .ADD,
-   pushAt 1418 1 32,
-   opAt 1419 (.Swap ⟨0, by decide⟩),
-   opAt 1420 .SUB]
+   pushAt 1413 2 9344,
+   opAt 1414 .MLOAD,
+   opAt 1415 .ADD,
+   opAt 1416 .JUMPDEST,
+   opAt 1417 .JUMPDEST,
+   opAt 1418 .JUMPDEST,
+   opAt 1419 .JUMPDEST,
+   opAt 1420 .JUMPDEST]
 
 end Challenge.Modexp.Submission.Proofs.Fast

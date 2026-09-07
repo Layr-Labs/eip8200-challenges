@@ -116,4 +116,3 @@ theorem run_lookup (template : State) (base modulus : UInt256)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitByte2High
 
-

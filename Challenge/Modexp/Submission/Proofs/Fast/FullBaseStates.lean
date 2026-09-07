@@ -40,12 +40,12 @@ def copyState (s : State) (memory : ByteArray)
            stack := outer n bsize esize msize
            memory := memory }
 
-/-- Existing ADDMOD entry after copying calldata to ACC. -/
+/-- RR-first Montgomery entry after copying the normal-domain base to ACC. -/
 def addCallState (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2467
-           stack := [UInt256.ofNat 1024, UInt256.ofNat 3072,
-             UInt256.ofNat 1024, UInt256.ofNat 3644] ++
+  { s with pc := UInt256.ofNat 1939
+           stack := [UInt256.ofNat 6144, UInt256.ofNat 1024,
+             UInt256.ofNat 2048, UInt256.ofNat 1755] ++
              outer n bsize esize msize
            memory := copyBaseMem memory input n }
 
@@ -76,13 +76,6 @@ def rejoinState (s : State) (memory : ByteArray)
 def fallbackState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 3661
-           stack := outer n bsize esize msize
-           memory := memory }
-
-/-- Public guard miss enters the independent width-only raw-base dispatcher. -/
-def rawDispatchState (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3695
            stack := outer n bsize esize msize
            memory := memory }
 
