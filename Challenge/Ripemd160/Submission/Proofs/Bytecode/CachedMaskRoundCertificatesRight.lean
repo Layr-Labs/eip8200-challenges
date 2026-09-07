@@ -26,16 +26,16 @@ def gasSteps_rightNormal (s : State) (word : Nat → UInt32)
   have hframe : (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho).length < 1007 := by
     simp only [List.length_cons]
     omega
-  have hraw := CachedMaskHelper.run_right (4 - k.val / 4) (by have h := k.isLt; omega) s site.helper.startPC
+  have hraw := CachedMaskHoistHelper.run_right (4 - k.val / 4) (by have h := k.isLt; omega) s site.helper.startPC
     (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k) (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) site.returnPC (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) working (QuadSites.rightConstant k) a b c d e rho
     (fun h => rightConstant_zero k h) hstack hrun
     (rightRotation0_le32 k) (rightRotation1_le32 k)
     (rightRotation2_le32 k) (rightRotation3_le32 k)
-  have ghelper := CachedMaskHelper.gasSteps_of_raw (CachedMaskHelper.rightTemplate (4 - k.val / 4) (QuadSites.rightConstant k))
-    (CachedMaskHelper.right_advances (4 - k.val / 4) (by have h := k.isLt; omega) (QuadSites.rightConstant k))
+  have ghelper := CachedMaskHelper.gasSteps_of_raw (CachedMaskHoistHelper.rightTemplate (4 - k.val / 4) (QuadSites.rightConstant k))
+    (CachedMaskHoistHelper.right_advances (4 - k.val / 4) (by have h := k.isLt; omega) (QuadSites.rightConstant k))
     (4 - k.val / 4) (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k) (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) (QuadSites.rightConstant k)
     site.helper s site.returnPC working (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho) hraw hrun hcode hfork hnp
-  have g := CachedMaskCalls.Normal.gasSteps_quad_of_helper (4 - k.val / 4) (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k) (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) (QuadSites.rightConstant k) (CachedMaskHelper.rightTemplate (4 - k.val / 4) (QuadSites.rightConstant k))
+  have g := CachedMaskCalls.Normal.gasSteps_quad_of_helper (4 - k.val / 4) (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k) (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) (QuadSites.rightConstant k) (CachedMaskHoistHelper.rightTemplate (4 - k.val / 4) (QuadSites.rightConstant k))
     site s working (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho) hframe hrun hcode hfork hnp ghelper
   have hw := rightWorking_eq s word working k hwords
 
@@ -69,16 +69,16 @@ def gasSteps_rightFallthrough (s : State) (word : Nat → UInt32)
   have hframe : (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho).length < 1007 := by
     simp only [List.length_cons]
     omega
-  have hraw := CachedMaskHelper.run_right (4 - group.val) (by omega) s site.helper.startPC
+  have hraw := CachedMaskHoistHelper.run_right (4 - group.val) (by omega) s site.helper.startPC
     (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k) (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) site.returnPC (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) working (QuadSites.rightConstant k) a b c d e rho
     (fun h => rightConstant_zero k (by omega)) hstack hrun
     (rightRotation0_le32 k) (rightRotation1_le32 k)
     (rightRotation2_le32 k) (rightRotation3_le32 k)
-  have ghelper := CachedMaskHelper.gasSteps_of_raw (CachedMaskHelper.rightTemplate (4 - group.val) (QuadSites.rightConstant k))
-    (CachedMaskHelper.right_advances (4 - group.val) (by omega) (QuadSites.rightConstant k))
+  have ghelper := CachedMaskHelper.gasSteps_of_raw (CachedMaskHoistHelper.rightTemplate (4 - group.val) (QuadSites.rightConstant k))
+    (CachedMaskHoistHelper.right_advances (4 - group.val) (by omega) (QuadSites.rightConstant k))
     (4 - group.val) (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k) (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) (QuadSites.rightConstant k)
     site.helper s site.returnPC working (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho) hraw hrun hcode hfork hnp
-  have g := CachedMaskCalls.Fallthrough.gasSteps_of_helper (4 - group.val) (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k) (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) (QuadSites.rightConstant k) (CachedMaskHelper.rightTemplate (4 - group.val) (QuadSites.rightConstant k))
+  have g := CachedMaskCalls.Fallthrough.gasSteps_of_helper (4 - group.val) (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k) (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) (QuadSites.rightConstant k) (CachedMaskHoistHelper.rightTemplate (4 - group.val) (QuadSites.rightConstant k))
     site s working (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho) hframe hrun hcode hfork hnp ghelper
   have hw := rightWorking_eq s word working k hwords
 
