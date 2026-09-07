@@ -24,50 +24,50 @@ theorem pc_toNat_instructionPC (index : Nat) :
     (A.instructionPC_le_code_size index) code_bound)
 
 def leftWrapperIndex : Nat → Nat
-  | 0 => 1106
-  | 1 => 1106
-  | 2 => 1106
-  | 3 => 1106
-  | 4 => 1298
-  | 5 => 1310
-  | 6 => 1322
-  | 7 => 1334
-  | 8 => 1460
-  | 9 => 1460
-  | 10 => 1460
-  | 11 => 1460
-  | 12 => 1676
-  | 13 => 1688
-  | 14 => 1700
-  | 15 => 1712
-  | 16 => 1838
-  | 17 => 1850
-  | 18 => 1862
-  | 19 => 1874
-  | _ => 1996
+  | 0 => 1093
+  | 1 => 1093
+  | 2 => 1093
+  | 3 => 1093
+  | 4 => 1282
+  | 5 => 1294
+  | 6 => 1306
+  | 7 => 1318
+  | 8 => 1444
+  | 9 => 1444
+  | 10 => 1444
+  | 11 => 1444
+  | 12 => 1660
+  | 13 => 1672
+  | 14 => 1684
+  | 15 => 1696
+  | 16 => 1822
+  | 17 => 1834
+  | 18 => 1846
+  | 19 => 1858
+  | _ => 1980
 
 def leftReturnIndex : Nat → Nat
-  | 0 => 1297
-  | 1 => 1297
-  | 2 => 1297
-  | 3 => 1297
-  | 4 => 1309
-  | 5 => 1321
-  | 6 => 1333
-  | 7 => 1459
-  | 8 => 1675
-  | 9 => 1675
-  | 10 => 1675
-  | 11 => 1675
-  | 12 => 1687
-  | 13 => 1699
-  | 14 => 1711
-  | 15 => 1837
-  | 16 => 1849
-  | 17 => 1861
-  | 18 => 1873
-  | 19 => 1995
-  | _ => 1996
+  | 0 => 1281
+  | 1 => 1281
+  | 2 => 1281
+  | 3 => 1281
+  | 4 => 1293
+  | 5 => 1305
+  | 6 => 1317
+  | 7 => 1443
+  | 8 => 1659
+  | 9 => 1659
+  | 10 => 1659
+  | 11 => 1659
+  | 12 => 1671
+  | 13 => 1683
+  | 14 => 1695
+  | 15 => 1821
+  | 16 => 1833
+  | 17 => 1845
+  | 18 => 1857
+  | 19 => 1979
+  | _ => 1980
 
 def leftPC (k : Nat) : UInt256 := UInt256.ofNat (A.instructionPC (leftWrapperIndex k))
 def leftJumpPC (k : Nat) : UInt256 :=
@@ -81,17 +81,17 @@ theorem leftWrapper_pc (k : Fin 21) :
 
 def leftHelperStartIndex : Nat → Nat
   | 0 => 2
-  | 1 => 1343
-  | 2 => 1112
-  | 3 => 1721
-  | _ => 1883
+  | 1 => 1327
+  | 2 => 1099
+  | 3 => 1705
+  | _ => 1867
 
 def leftHelperJumpIndex : Nat → Nat
-  | 0 => 411
-  | 1 => 1458
-  | 2 => 1295
-  | 3 => 1836
-  | _ => 1994
+  | 0 => 403
+  | 1 => 1442
+  | 2 => 1279
+  | 3 => 1820
+  | _ => 1978
 
 def leftHelperPCNat : Nat → Nat
   | 0 => 4
@@ -109,50 +109,50 @@ theorem leftHelper_pc (group : Fin 5) :
   fin_cases group <;> rw [ArtifactByteLength.instructionPC_eq_byteLength] <;> decide
 
 def rightWrapperIndex : Nat → Nat
-  | 0 => 2007
-  | 1 => 2019
-  | 2 => 2031
-  | 3 => 2043
-  | 4 => 2165
-  | 5 => 2177
-  | 6 => 2189
-  | 7 => 2201
-  | 8 => 2327
-  | 9 => 2339
-  | 10 => 2351
-  | 11 => 2363
-  | 12 => 2485
-  | 13 => 2497
-  | 14 => 2509
-  | 15 => 2521
-  | 16 => 2647
-  | 17 => 2647
-  | 18 => 2647
-  | 19 => 2647
-  | _ => 2749
+  | 0 => 1991
+  | 1 => 2003
+  | 2 => 2015
+  | 3 => 2027
+  | 4 => 2149
+  | 5 => 2161
+  | 6 => 2173
+  | 7 => 2185
+  | 8 => 2311
+  | 9 => 2323
+  | 10 => 2335
+  | 11 => 2347
+  | 12 => 2469
+  | 13 => 2481
+  | 14 => 2493
+  | 15 => 2505
+  | 16 => 2631
+  | 17 => 2631
+  | 18 => 2631
+  | 19 => 2631
+  | _ => 2728
 
 def rightReturnIndex : Nat → Nat
-  | 0 => 2018
-  | 1 => 2030
-  | 2 => 2042
-  | 3 => 2164
-  | 4 => 2176
-  | 5 => 2188
-  | 6 => 2200
-  | 7 => 2326
-  | 8 => 2338
-  | 9 => 2350
-  | 10 => 2362
-  | 11 => 2484
-  | 12 => 2496
-  | 13 => 2508
-  | 14 => 2520
-  | 15 => 2646
-  | 16 => 2748
-  | 17 => 2748
-  | 18 => 2748
-  | 19 => 2748
-  | _ => 2749
+  | 0 => 2002
+  | 1 => 2014
+  | 2 => 2026
+  | 3 => 2148
+  | 4 => 2160
+  | 5 => 2172
+  | 6 => 2184
+  | 7 => 2310
+  | 8 => 2322
+  | 9 => 2334
+  | 10 => 2346
+  | 11 => 2468
+  | 12 => 2480
+  | 13 => 2492
+  | 14 => 2504
+  | 15 => 2630
+  | 16 => 2727
+  | 17 => 2727
+  | 18 => 2727
+  | 19 => 2727
+  | _ => 2728
 
 def rightPC (k : Nat) : UInt256 := UInt256.ofNat (A.instructionPC (rightWrapperIndex k))
 def rightJumpPC (k : Nat) : UInt256 :=
@@ -165,18 +165,18 @@ theorem rightWrapper_pc (k : Fin 21) :
   fin_cases k <;> rw [ArtifactByteLength.instructionPC_eq_byteLength] <;> decide
 
 def rightHelperStartIndex : Nat → Nat
-  | 0 => 2052
-  | 1 => 2210
-  | 2 => 2372
-  | 3 => 2530
-  | _ => 473
+  | 0 => 2036
+  | 1 => 2194
+  | 2 => 2356
+  | 3 => 2514
+  | _ => 466
 
 def rightHelperJumpIndex : Nat → Nat
-  | 0 => 2163
-  | 1 => 2325
-  | 2 => 2483
-  | 3 => 2645
-  | _ => 855
+  | 0 => 2147
+  | 1 => 2309
+  | 2 => 2467
+  | 3 => 2629
+  | _ => 841
 
 def rightHelperPCNat : Nat → Nat
   | 0 => 3036
@@ -193,43 +193,43 @@ theorem rightHelper_pc (group : Fin 5) :
       rightHelperPCNat group.val := by
   fin_cases group <;> rw [ArtifactByteLength.instructionPC_eq_byteLength] <;> decide
 
-def routeIndex : Nat := 1996
+def routeIndex : Nat := 1980
 theorem route_pc : A.instructionPC routeIndex = 0xb15 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def rightLoadIndex : Nat := 1997
+def rightLoadIndex : Nat := 1981
 theorem rightLoad_pc : A.instructionPC rightLoadIndex = 0xb16 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def tailIndex : Nat := 2749
-theorem tail_pc : A.instructionPC tailIndex = 0x10eb := by
+def tailIndex : Nat := 2728
+theorem tail_pc : A.instructionPC tailIndex = 0x10e6 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def tailJumpIndex : Nat := 2802
-theorem tailJump_pc : A.instructionPC tailJumpIndex = 4394 := by
+def tailJumpIndex : Nat := 2781
+theorem tailJump_pc : A.instructionPC tailJumpIndex = 4389 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def scheduleIndex : Nat := 2803
-theorem schedule_pc : A.instructionPC scheduleIndex = 4395 := by
+def scheduleIndex : Nat := 2782
+theorem schedule_pc : A.instructionPC scheduleIndex = 4390 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def scheduleJumpIndex : Nat := 2854
-theorem scheduleJump_pc : A.instructionPC scheduleJumpIndex = 4593 := by
+def scheduleJumpIndex : Nat := 2833
+theorem scheduleJump_pc : A.instructionPC scheduleJumpIndex = 4588 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def outputIndex : Nat := 2855
-theorem output_pc : A.instructionPC outputIndex = 4594 := by
+def outputIndex : Nat := 2834
+theorem output_pc : A.instructionPC outputIndex = 4589 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def outputReturnIndex : Nat := 2904
-theorem outputReturn_pc : A.instructionPC outputReturnIndex = 4779 := by
+def outputReturnIndex : Nat := 2883
+theorem outputReturn_pc : A.instructionPC outputReturnIndex = 4774 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 

@@ -8,7 +8,7 @@ set_option maxHeartbeats 4000000
 # One-instruction steps for the scan
 
 Handing `simp` a whole block makes it unfold `runLocated`, evaluate
-`instructionPC` over the chunked instruction list and scan the 5319-byte array
+`instructionPC` over the chunked instruction list and scan the 5314-byte array
 for a `JUMPDEST`, and the two shifts in the straddle correction make it carry
 both branches of `UInt256.shiftRight` through every later instruction.  Taking
 one instruction at a time, with the program counter supplied from a named
