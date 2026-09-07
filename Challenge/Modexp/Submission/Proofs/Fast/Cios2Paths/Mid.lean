@@ -88,7 +88,12 @@ private theorem startPC :
 @[simp] theorem midPC (index : Nat) (hlo : startIndex ≤ index)
     (hhi : index ≤ 2949) :
     Artifact.submissionArtifact.instructionPC index =
-      [4696,4697,4698,4699,4702,4703,4704,4705,4708,4709,4710,4713,4714,4717,4718,4719,4722,4723,4724,4725,4728,4729,4730,4731,4732,4733,4734,4767,4768,4769,4770,4771,4772,4773,4774,4775,4776,4777,4778,4779,4780,4783,4784,4786,4787,4788,4791,4792,4794,4795][index - startIndex]! := by
+      [4696, 4697, 4698, 4699, 4702, 4703, 4704, 4705, 4708,
+       4709, 4710, 4713, 4714, 4717, 4718, 4719, 4722, 4723,
+       4724, 4725, 4728, 4729, 4730, 4731, 4732, 4733, 4734,
+       4767, 4768, 4769, 4770, 4771, 4772, 4773, 4774, 4775,
+       4776, 4777, 4778, 4779, 4780, 4783, 4784, 4786, 4787,
+       4788, 4791, 4792, 4794, 4795][index - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -103,7 +108,6 @@ private theorem startPC :
     _ = _ := by
       rw [startPC]
       interval_cases index <;> rfl
-
 
 def opAt (offset : Nat) (op : Operation)
     (hget : template[offset]? = some (.op op) := by rfl)

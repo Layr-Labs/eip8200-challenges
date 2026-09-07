@@ -9,13 +9,6 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-private theorem instructionPC_add
-    (p : Challenge.EvmProof.ProgramArtifact) (base count : Nat) :
-    p.instructionPC (base + count) = p.instructionPC base +
-      (assembleBytes ((p.instructions.drop base).take count)).length := by
-  simp only [Challenge.EvmProof.ProgramArtifact.instructionPC, List.take_add,
-    assembleBytes_append, List.length_append]
-
 def firstStartIndex : Nat := 2995
 
 private def firstTemplate : List Instr :=
@@ -78,6 +71,13 @@ private theorem firstGetElem (offset : Nat)
   rw [List.getElem?_take, if_pos hoffset, List.getElem?_drop] at hs
   simpa [Nat.add_comm] using hs
 
+private theorem instructionPC_add
+    (p : Challenge.EvmProof.ProgramArtifact) (base count : Nat) :
+    p.instructionPC (base + count) = p.instructionPC base +
+      (assembleBytes ((p.instructions.drop base).take count)).length := by
+  simp only [Challenge.EvmProof.ProgramArtifact.instructionPC, List.take_add,
+    assembleBytes_append, List.length_append]
+
 private theorem firstStartPC :
     Artifact.submissionArtifact.instructionPC firstStartIndex = 4938 := by
   rfl
@@ -85,7 +85,12 @@ private theorem firstStartPC :
 @[simp] theorem firstPC (index : Nat) (hlo : firstStartIndex ≤ index)
     (hhi : index ≤ 3039) :
     Artifact.submissionArtifact.instructionPC index =
-      [4938,4939,4940,4941,4942,4943,4944,4945,4946,4979,4980,4981,4982,4983,4984,4985,4986,4987,4988,4989,4990,4991,4992,4993,4994,4995,4996,4997,4998,4999,5000,5001,5002,5003,5004,5005,5006,5008,5009,5010,5043,5044,5045,5078,5079][index - firstStartIndex]! := by
+      [4938, 4939, 4940, 4941, 4942, 4943, 4944, 4945, 4946,
+       4979, 4980, 4981, 4982, 4983, 4984, 4985, 4986, 4987,
+       4988, 4989, 4990, 4991, 4992, 4993, 4994, 4995, 4996,
+       4997, 4998, 4999, 5000, 5001, 5002, 5003, 5004, 5005,
+       5006, 5008, 5009, 5010, 5043, 5044, 5045, 5078,
+       5079][index - firstStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -100,7 +105,6 @@ private theorem firstStartPC :
     _ = _ := by
       rw [firstStartPC]
       interval_cases index <;> rfl
-
 
 def firstOpAt (offset : Nat) (op : Operation)
     (hget : firstTemplate[offset]? = some (.op op) := by rfl)
@@ -242,7 +246,12 @@ private theorem secondStartPC :
 @[simp] theorem secondPC (index : Nat) (hlo : secondStartIndex ≤ index)
     (hhi : index ≤ 3088) :
     Artifact.submissionArtifact.instructionPC index =
-      [5080,5081,5082,5083,5084,5085,5086,5087,5120,5121,5122,5123,5124,5125,5126,5127,5128,5129,5130,5131,5132,5133,5134,5135,5136,5137,5138,5139,5140,5141,5142,5143,5144,5145,5146,5147,5149,5150,5151,5184,5185,5186,5219,5220,5221,5224,5225,5226,5229][index - secondStartIndex]! := by
+      [5080, 5081, 5082, 5083, 5084, 5085, 5086, 5087, 5120,
+       5121, 5122, 5123, 5124, 5125, 5126, 5127, 5128, 5129,
+       5130, 5131, 5132, 5133, 5134, 5135, 5136, 5137, 5138,
+       5139, 5140, 5141, 5142, 5143, 5144, 5145, 5146, 5147,
+       5149, 5150, 5151, 5184, 5185, 5186, 5219, 5220, 5221,
+       5224, 5225, 5226, 5229][index - secondStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -257,7 +266,6 @@ private theorem secondStartPC :
     _ = _ := by
       rw [secondStartPC]
       interval_cases index <;> rfl
-
 
 def secondOpAt (offset : Nat) (op : Operation)
     (hget : secondTemplate[offset]? = some (.op op) := by rfl)

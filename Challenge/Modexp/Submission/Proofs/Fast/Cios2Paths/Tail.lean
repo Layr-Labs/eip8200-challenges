@@ -15,10 +15,10 @@ def startIndex : Nat := 3089
 private def template : List Instr :=
   [.op .POP,
    .op .POP,
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap ⟨1, by decide⟩),
    .op .POP,
-   .op (.Swap ⟨0, by decide⟩),
    .op .POP,
+   .op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
    .push 2 8224,
    .op .MLOAD,
@@ -69,7 +69,10 @@ private theorem startPC :
 @[simp] theorem tailPC (index : Nat) (hlo : startIndex ≤ index)
     (hhi : index ≤ 3119) :
     Artifact.submissionArtifact.instructionPC index =
-      [5230,5231,5232,5233,5234,5235,5236,5237,5240,5241,5242,5243,5246,5247,5248,5251,5252,5253,5256,5257,5290,5291,5292,5293,5294,5297,5298,5299,5300,5301,5304][index - startIndex]! := by
+      [5230, 5231, 5232, 5233, 5234, 5235, 5236, 5237, 5240,
+       5241, 5242, 5243, 5246, 5247, 5248, 5251, 5252, 5253,
+       5256, 5257, 5290, 5291, 5292, 5293, 5294, 5297, 5298,
+       5299, 5300, 5301, 5304][index - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -84,7 +87,6 @@ private theorem startPC :
     _ = _ := by
       rw [startPC]
       interval_cases index <;> rfl
-
 
 def opAt (offset : Nat) (op : Operation)
     (hget : template[offset]? = some (.op op) := by rfl)
@@ -108,10 +110,10 @@ def cios2Tail :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 0 .POP,
    opAt 1 .POP,
-   opAt 2 (.Swap ⟨0, by decide⟩),
+   opAt 2 (.Swap ⟨1, by decide⟩),
    opAt 3 .POP,
-   opAt 4 (.Swap ⟨0, by decide⟩),
-   opAt 5 .POP,
+   opAt 4 .POP,
+   opAt 5 .JUMPDEST,
    opAt 6 (.Dup ⟨0, by decide⟩),
    pushAt 7 2 8224,
    opAt 8 .MLOAD,

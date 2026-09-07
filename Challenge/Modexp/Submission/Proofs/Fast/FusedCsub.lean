@@ -550,10 +550,18 @@ theorem run_tail (s : State) (memory : ByteArray) (pa pb n j : Nat)
   have hactC2N : MachineState.activeWordsAfter s.activeWords.toNat
       (resultSrc memory pa pb n j).toNat (32 * n) = s.activeWords.toNat :=
     Csub.activeWordsAfter_fix s.activeWords.toNat _ (32 * n) (by omega) hsrcFit hact
-  have hsrcEq : (8256 : UInt256) - (1088 : UInt256) *
+  have hOr : UInt256.lor (UInt256.isZero (limbStep memory pa pb n j).borrow)
+      (limbStep memory pa pb n j).carry =
       UInt256.lor (limbStep memory pa pb n j).carry
-        (UInt256.isZero (limbStep memory pa pb n j).borrow) =
-      resultSrc memory pa pb n j := rfl
+        (UInt256.isZero (limbStep memory pa pb n j).borrow) := by
+    apply Challenge.EvmProof.Word.word_ext
+    simp only [Challenge.EvmProof.Word.word_toNat_lor, Nat.or_comm]
+  have hsrcEq : (8256 : UInt256) - (1088 : UInt256) *
+      UInt256.lor (UInt256.isZero (limbStep memory pa pb n j).borrow)
+        (limbStep memory pa pb n j).carry =
+      resultSrc memory pa pb n j := by
+    rw [hOr]
+    rfl
   simp (config := { maxSteps := 500000 })
     [blk3191, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,

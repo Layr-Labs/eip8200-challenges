@@ -111,11 +111,11 @@ theorem run_secondBody (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     decide
   have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
-  have h4938 : (4938 : UInt256).toNat = 4938 := by decide
-  have h4938' : (4938 : UInt256) = UInt256.ofNat 4938 := by decide
+  have h4662 : (4938 : UInt256).toNat = 4938 := by decide
+  have h4662' : (4938 : UInt256) = UInt256.ofNat 4938 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
       (4938 : UInt256).toNat = true := by
-    rw [h4938]
+    rw [h4662]
     exact jumpDest4938
   have hpmj : ptrAt (32 * n - 64) k %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
@@ -156,7 +156,7 @@ theorem run_secondBody (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       l2At, l2Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC13, fastPC14,
       hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, h32, h8224,
-      h4938, h4938', hjump, jumpDest4938,
+      h4662, h4662', hjump, jumpDest4938,
       hpmj, hptj, hwr, hnextT, hgt, hactM, hactT, hactW,
       ptrAt_succ, ptrAt_shift32, UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
