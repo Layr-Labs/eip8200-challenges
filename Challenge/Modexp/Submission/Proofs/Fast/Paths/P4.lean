@@ -18,16 +18,20 @@ def blk1195 :
   [pushAt 1195 2 3606,
    opAt 1196 .JUMP]
 
-/-- Instructions 1216..1222, pc 1668..1676. -/
+/-- Instructions 1216..1221, pc 1668..1675: compare the limb counter with the limb count. -/
 def blk1216 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1216 .JUMPDEST,
    opAt 1217 (.Dup ⟨1, by decide⟩),
    opAt 1218 (.Dup ⟨1, by decide⟩),
    opAt 1219 .EQ,
-   opAt 1220 .JUMPDEST,
-   pushAt 1221 2 1736,
-   opAt 1222 .JUMPI]
+   pushAt 1220 2 1736,
+   opAt 1221 .JUMPI]
+
+/-- The fall-through landing at pc 1676. -/
+def blk1222 :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 1222 .JUMPDEST]
 
 /-- Instructions 1223..1228, pc 1677..1692. -/
 def blk1223 :

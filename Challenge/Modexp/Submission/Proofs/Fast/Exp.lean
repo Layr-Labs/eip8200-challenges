@@ -808,11 +808,11 @@ def bRejoin (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
            memory := mem }
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1216` (pc 1668..1676) with `j < pb`: run the body. -/
+/-- `blk1216` (pc 1668..1675) compares the limb counter; `blk1222` is the body landing. -/
 theorem run_blHead_body (s : State) (mem : ByteArray)
     (n bsize esize msize pb j : Nat) (hpb : pb ≤ 32) (hj : j < pb)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1216
+    Challenge.EvmProof.Stepper.runLocatedBlock (blk1216 ++ blk1222)
       (blHead s mem n bsize esize msize pb j) =
       some (blMul s mem n bsize esize msize pb j) := by
   have hj256 : j < 2 ^ 256 := Nat.lt_of_lt_of_le hj
@@ -821,7 +821,7 @@ theorem run_blHead_body (s : State) (mem : ByteArray)
   have heq : UInt256.eq (UInt256.ofNat j) (UInt256.ofNat pb) = UInt256.ofNat 0 := by
     rw [UInt256.eq, toNat_ofNat_self hj256, toNat_ofNat_self hpb256,
       if_neg (Nat.ne_of_lt hj)]
-  simp (config := { maxSteps := 400000 }) [blk1216, opAt, pushAt, wfOp,
+  simp (config := { maxSteps := 400000 }) [blk1216, blk1222, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     blHead, blMul, outer, hrun, heq, not_isTrue_zero,
@@ -1172,7 +1172,7 @@ def gasSteps_blBodyHead (s : State) (mem : ByteArray)
     Challenge.EvmProof.GasSteps (blHead s mem n bsize esize msize pb j)
       (blMul s mem n bsize esize msize pb j) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka blk1216 hcode hfork
+    (blk1216 ++ blk1222) hcode hfork
       (run_blHead_body s mem n bsize esize msize pb j hpb hj hrun) hrun hnp
 
 def gasSteps_blHeadExit (s : State) (mem : ByteArray)
