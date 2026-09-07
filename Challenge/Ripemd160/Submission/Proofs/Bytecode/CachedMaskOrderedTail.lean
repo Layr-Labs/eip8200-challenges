@@ -125,7 +125,7 @@ theorem run (s : State)
     (rest : List UInt256)
     (hrun : s.halt = .Running)
     (_hfork : s.fork = .Osaka)
-    (hactive : 66 ≤ s.activeWords.toNat)
+    (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1006)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     runInstrSeq template (entry s left right ret rest) =
@@ -178,7 +178,6 @@ theorem run (s : State)
     simp only [MachineState.writeBytes_getElem?_getD,
       YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
     split_ifs <;> first | rfl | omega
-
 
 #print axioms run
 

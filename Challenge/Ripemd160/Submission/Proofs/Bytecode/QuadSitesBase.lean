@@ -3,7 +3,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadCallTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShiftedHoistHelper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.newShiftedHoistHelper
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskCalls
 
 set_option warningAsError true

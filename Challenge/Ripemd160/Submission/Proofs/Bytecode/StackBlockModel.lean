@@ -26,7 +26,7 @@ def driverRest (input : ByteArray) (i : Nat) : List UInt256 :=
   [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
 
 def scheduleRest (input : ByteArray) (i : Nat) : List UInt256 :=
-  [UInt256.ofNat 0x404] ++ driverRest input i
+  [UInt256.ofNat 0x436] ++ driverRest input i
 
 def withMemory (s : State) (memory : ByteArray) : State :=
   {s with memory := memory}
@@ -63,7 +63,7 @@ def withActiveWords (s : State) (activeWords : UInt256) : State :=
 def scheduledState (s : State) (input : ByteArray) (i : Nat) : State :=
   withActiveWords
     (withMemory
-      (Schedule.loopState s (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x425)
+      (Schedule.loopState s (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523)
         (scheduleRest input i) 16)
       (DenseScheduleTemplate.denseExpectedMemory s (DriverTrace.messageOffsetWord i)))
     (DenseScheduleTemplate.denseExpectedActiveWords s
@@ -83,7 +83,7 @@ def resultHash (s : State) (input : ByteArray) (i : Nat) : Compression.EvmHashSt
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   {scheduledState s input i with
-    pc := UInt256.ofNat 0x404
+    pc := UInt256.ofNat 0x436
     stack := driverRest input i
     memory := StackMemory.storeHash (scheduledState s input i).memory (resultHash s input i)}
 
@@ -114,7 +114,7 @@ private theorem scheduleLoop_callStack (s : State)
 
 theorem scheduleLoop_word_outsideX (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) (n address : Nat) (hn : n ≤ 16)
-    (houtside : address + 32 ≤ 0x28c ∨ 0x4a0 ≤ address) :
+    (houtside : address + 32 ≤ 0x2a0 ∨ 0x4a0 ≤ address) :
     MachineState.readWord (Schedule.loopState s messageOffset returnDest rest n).memory
         address = MachineState.readWord s.memory address := by
   induction n with
@@ -251,7 +251,7 @@ theorem scheduledState_hash (s : State) (input : ByteArray) (i : Nat) :
 
 theorem scheduledState_activeWords (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < DriverTrace.blockCount input) :
-    (scheduledState s input i).activeWords.toNat = max s.activeWords.toNat (66 + 2 * i) := by
+    (scheduledState s input i).activeWords.toNat = max s.activeWords.toNat (39 + 2 * i) := by
   rw [scheduledState, withActiveWords_activeWords]
   exact DenseScheduleActiveWords.expectedActiveWords_toNat s input hfit i hi
 

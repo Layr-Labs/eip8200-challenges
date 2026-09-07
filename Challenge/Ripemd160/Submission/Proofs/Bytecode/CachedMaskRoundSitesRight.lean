@@ -1,7 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSitesBase
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadHelperTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskCalls
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShiftedHoistHelper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.newShiftedHoistHelper
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -78,7 +78,7 @@ def normalPushes (k : NormalIndex) :
 
 def normalJump (k : NormalIndex) : LocatedSite Artifact .Osaka where
   located :=
-    { index := rightWrapperIndex (normalFin k).val + 10
+    { index := rightWrapperIndex (normalFin k).val + 11
       instruction := .op .JUMP
       atIndex := by
         fin_cases k <;> rfl

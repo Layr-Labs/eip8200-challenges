@@ -5,12 +5,12 @@ benchmark's RIPEMD-160 contract.
 
 ## Artifact
 
-- Byte length: 5,256
-- Decoded instructions: 3,155
-- Hex-file SHA-256: `52abdc32054c60af07914ba762d4cf1a53787b126c45dd70a74f0ce7ca78e126`
-- Raw-byte SHA-256: `9f89bd18331ae362abffeaf035a7e2d821fd1e2665606890a831a5d1fb28aa6c`
-- Native 49-vector clean gas total: 1,530,785
-- Native 49-vector dirty gas total: 1,530,785
+- Byte length: 5,305
+- Decoded instructions: 3,234
+- Hex-file SHA-256: `baf10ee2c322a41696ff7a745aedb7293ca0dd179e9854ce30165b1188461a95`
+- Raw-byte SHA-256: `facbc97e2beb7a825cd15ac3ed49271a0dc5f5994821a275e77684e42b9276c6`
+- Native 49-vector clean gas total: 1,575,468
+- Native 49-vector dirty gas total: 1,575,468
 - Native vector coverage: 49/49 in both initial-state configurations
 
 ## Verification contract

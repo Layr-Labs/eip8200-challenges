@@ -56,7 +56,7 @@ private theorem storeActiveWords_eq_of_end_le (s : State) (current : UInt256)
       exact ih htail htailAddr
 
 private theorem storeActiveWords_stores (s : State) (current : UInt256)
-    (half : Nat) (hhalf : half ≤ 1) (hcurrent : 67 ≤ current.toNat) :
+    (half : Nat) (hhalf : half ≤ 1) (hcurrent : 40 ≤ current.toNat) :
     PackedScheduleTemplate.storeActiveWords current
       (PackedScheduleTemplate.storeAddresses half) = current := by
   apply storeActiveWords_eq_of_end_le s current
@@ -76,11 +76,11 @@ private theorem message_bounds (input : ByteArray) (hfit : CalldataFits input)
     Padding.messageOffset + 64 * i < 2 ^ 256 ∧
     Padding.messageOffset + 64 * i + 32 < 2 ^ 256 ∧
     Padding.messageOffset + 64 * i + 60 < 2 ^ 256 ∧
-    67 + 2 * i < 2 ^ 256 ∧
+    40 + 2 * i < 2 ^ 256 ∧
     (Padding.messageOffset + 64 * i + 60 + 32 - 1) / 32 + 1 =
-      67 + 2 * i ∧
-    Padding.messageOffset + 64 * i + 32 ≤ (67 + 2 * i) * 32 ∧
-    Padding.messageOffset + 64 * i + 64 ≤ (67 + 2 * i) * 32 := by
+      40 + 2 * i ∧
+    Padding.messageOffset + 64 * i + 32 ≤ (40 + 2 * i) * 32 ∧
+    Padding.messageOffset + 64 * i + 64 ≤ (40 + 2 * i) * 32 := by
   have hpadded := Padding.paddedLength_lt input.size
   have hoff : 64 * i < Padding.paddedLength input.size := by
     rw [DriverTrace.paddedLength_eq_blockCount input]
@@ -91,25 +91,25 @@ private theorem message_bounds (input : ByteArray) (hfit : CalldataFits input)
     norm_num [Padding.messageOffset] at hsize ⊢
     omega
   have hp32 : Padding.messageOffset + 64 * i + 32 < 2 ^ 256 := by
-    change 2048 + 64 * i + 32 < 2 ^ 256
+    change 1184 + 64 * i + 32 < 2 ^ 256
     omega
   have hp60 : Padding.messageOffset + 64 * i + 60 < 2 ^ 256 := by
-    change 2048 + 64 * i + 60 < 2 ^ 256
+    change 1184 + 64 * i + 60 < 2 ^ 256
     omega
-  have htarget : 67 + 2 * i < 2 ^ 256 := by
+  have htarget : 40 + 2 * i < 2 ^ 256 := by
     norm_num [Padding.messageOffset] at hsize ⊢
     omega
   have hlast :
       (Padding.messageOffset + 64 * i + 60 + 32 - 1) / 32 + 1 =
-        67 + 2 * i := by
+        40 + 2 * i := by
     norm_num [Padding.messageOffset]
     omega
   have hread0 : Padding.messageOffset + 64 * i + 32 ≤
-      (67 + 2 * i) * 32 := by
+      (40 + 2 * i) * 32 := by
     norm_num [Padding.messageOffset]
     omega
   have hread1 : Padding.messageOffset + 64 * i + 64 ≤
-      (67 + 2 * i) * 32 := by
+      (40 + 2 * i) * 32 := by
     norm_num [Padding.messageOffset]
     omega
   exact ⟨hp, hp32, hp60, htarget, hlast, hread0, hread1⟩
@@ -200,33 +200,33 @@ private theorem warmupActiveWords_toNat (s : State) (input : ByteArray)
     (hi : i < DriverTrace.blockCount input) :
     (PackedScheduleTemplate.warmupActiveWords s
         (DriverTrace.messageOffsetWord i)).toNat =
-      max s.activeWords.toNat (67 + 2 * i) := by
+      max s.activeWords.toNat (40 + 2 * i) := by
   rcases message_bounds input hfit i hi with
     ⟨hp, hp32, hp60, htarget, hhigh, hread0, hread1⟩
   rcases message_words i hp hp32 hp60 with
     ⟨_, hmsg, hmsg60, hmsg32⟩
   exact warmupActiveWords_toNat_of_bounds s
     (DriverTrace.messageOffsetWord i) (Padding.messageOffset + 64 * i)
-    (67 + 2 * i) hmsg hmsg60 hmsg32 htarget hhigh hread0 hread1
+    (40 + 2 * i) hmsg hmsg60 hmsg32 htarget hhigh hread0 hread1
 
 private theorem expectedActiveWords_toNat (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat)
     (hi : i < DriverTrace.blockCount input) :
     (PackedScheduleTemplate.expectedActiveWords s
         (DriverTrace.messageOffsetWord i)).toNat =
-      max s.activeWords.toNat (67 + 2 * i) := by
+      max s.activeWords.toNat (40 + 2 * i) := by
   have hwarm := warmupActiveWords_toNat s input hfit i hi
-  have hwarm67 : 67 ≤
+  have hwarm40 : 40 ≤
       (PackedScheduleTemplate.warmupActiveWords s
           (DriverTrace.messageOffsetWord i)).toNat := by
     rw [hwarm]
-    exact (by omega : 67 ≤ 67 + 2 * i).trans (Nat.le_max_right _ _)
+    exact (by omega : 40 ≤ 40 + 2 * i).trans (Nat.le_max_right _ _)
   have hstore0 := storeActiveWords_stores s
     (PackedScheduleTemplate.warmupActiveWords s
-      (DriverTrace.messageOffsetWord i)) 0 (by norm_num) hwarm67
+      (DriverTrace.messageOffsetWord i)) 0 (by norm_num) hwarm40
   have hstore1 := storeActiveWords_stores s
     (PackedScheduleTemplate.warmupActiveWords s
-      (DriverTrace.messageOffsetWord i)) 1 (by norm_num) hwarm67
+      (DriverTrace.messageOffsetWord i)) 1 (by norm_num) hwarm40
   unfold PackedScheduleTemplate.expectedActiveWords
   rw [hstore0, hstore1, hwarm]
 

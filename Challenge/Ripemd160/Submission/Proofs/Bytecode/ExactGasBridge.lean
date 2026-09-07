@@ -218,9 +218,9 @@ structure OuterCostFacts (input : ByteArray) (hfit : CalldataFits input)
     (seam : DirectCorrect.CompressionSeam input) : Prop where
   padding : (PaddingTrace.gasSteps_pad input hfit).cost =
     paddingWork + 3 * GasCost.calldataWords input.size +
-      MachineState.memCost (64 + 2 * DriverTrace.blockCount input)
+      MachineState.memCost (37 + 2 * DriverTrace.blockCount input)
   initialActive : (seam.states 0).activeWords.toNat =
-    64 + 2 * DriverTrace.blockCount input
+    37 + 2 * DriverTrace.blockCount input
   finalActive :
     (seam.states (DriverTrace.blockCount input)).activeWords.toNat =
       GasCost.finalActiveWords input.size

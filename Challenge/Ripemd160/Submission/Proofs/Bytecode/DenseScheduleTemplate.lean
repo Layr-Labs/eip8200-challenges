@@ -12,8 +12,8 @@ set_option maxHeartbeats 4000000
 The dense helper keeps both packed message words on the stack only until the
 two endian stages finish.  It then stores one packed word at each dense
 address.  The reachable helper has 52 instructions including its return
-`JUMP`; four compact, unreachable pushes preserve the original 56-instruction,
-325-byte artifact window.
+`JUMP`. The artifact window has 52 instructions and 199 bytes, with no
+padding after the return.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
@@ -85,12 +85,8 @@ def finalJumpTemplate : List Instr := [op .JUMP]
 def denseFullTemplate : List Instr :=
   denseBeforeJumpTemplate ++ finalJumpTemplate
 
-/-- Compact unreachable padding after the helper's return jump.  Its four
-instructions occupy exactly the 126 bytes removed from the live stages. -/
-def paddingTemplate : List Instr :=
-  [push32 (UInt256.ofNat 0), push32 (UInt256.ofNat 0),
-    push32 (UInt256.ofNat 0),
-    .push ⟨26, by decide⟩ (UInt256.ofNat 0)]
+/-- No padding remains after the helper return. -/
+def paddingTemplate : List Instr := []
 
 def denseWindowTemplate : List Instr := denseFullTemplate ++ paddingTemplate
 
@@ -113,9 +109,9 @@ def denseWindowTemplate : List Instr := denseFullTemplate ++ paddingTemplate
     denseFullTemplate.length = 52 := by
   rfl
 
-@[simp] theorem paddingTemplate_length : paddingTemplate.length = 4 := by rfl
+@[simp] theorem paddingTemplate_length : paddingTemplate.length = 0 := by rfl
 
-@[simp] theorem denseWindowTemplate_length : denseWindowTemplate.length = 56 := by rfl
+@[simp] theorem denseWindowTemplate_length : denseWindowTemplate.length = 52 := by rfl
 
 theorem assembleBytes_length (instructions : List Instr) :
     (assembleBytes instructions).length =
@@ -151,12 +147,11 @@ theorem denseFullTemplate_byteLength :
   rfl
 
 theorem paddingTemplate_byteLength :
-    (assembleBytes paddingTemplate).length = 126 := by
-  rw [assembleBytes_length]
-  norm_num [paddingTemplate, push32]
+    (assembleBytes paddingTemplate).length = 0 := by
+  rfl
 
 theorem denseWindowTemplate_byteLength :
-    (assembleBytes denseWindowTemplate).length = 325 := by
+    (assembleBytes denseWindowTemplate).length = 199 := by
   rw [denseWindowTemplate, assembleBytes_append, List.length_append,
     denseFullTemplate_byteLength, paddingTemplate_byteLength]
 

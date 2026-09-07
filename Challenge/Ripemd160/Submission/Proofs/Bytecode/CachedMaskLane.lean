@@ -1,7 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskRoundCertificatesLeft
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskRoundCertificatesRight
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskCavityExecution
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.FourthInlineExecution
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -19,9 +18,8 @@ abbrev stateAt := CachedMaskRoundCertificates.stateAt
 private noncomputable def left_span (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (start count : Nat)
     (hbound : start + count ≤ 20)
-    (hallowed : ∀ i, i < count →
-      4 ≤ start + i ∧ (start + i < 8 ∨ 12 ≤ start + i) ∧ start + i < 16)
-    (hwords : low32DenseWordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
+    (hallowed : ∀ i, i < count → 4 ≤ start + i ∧ (start + i < 8 ∨ 12 ≤ start + i))
+    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -54,7 +52,7 @@ private noncomputable def left_span (s : State) (word : Nat → UInt32)
 
 noncomputable def gasSteps_left80 (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256)
-    (hwords : low32DenseWordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -76,19 +74,13 @@ noncomputable def gasSteps_left80 (s : State) (word : Nat → UInt32)
       (leftRounds word 32 working) = leftRounds word 48 working :=
     CachedMaskParams.left_result_after s word working 2 hwords
   rw [thirdResult] at third
-  have last := left_span s word working rho 12 4 (by decide)
+  have last := left_span s word working rho 12 8 (by decide)
     (by intro i hi; omega) hwords hactive hstack hcode hfork hrun hnp
-  have fourth := FourthInlineExecution.left4_group s (leftRounds word 64 working) rho
-    (CachedMaskParams.left_fits s 4 hactive) hstack hrun hcode hfork hnp
-  have fourthResult : CachedMaskQuadGroup.fourResult (CachedMaskParams.left 4) s
-      (leftRounds word 64 working) = leftRounds word 80 working :=
-    CachedMaskParams.left_result_after s word working 4 hwords
-  rw [fourthResult] at fourth
-  exact (((first.trans second).trans third).trans last).trans fourth
+  exact ((first.trans second).trans third).trans last
 
 noncomputable def gasSteps_right80 (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (a b c d e : UInt256) (rho : List UInt256)
-    (hwords : low32DenseWordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1001) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
