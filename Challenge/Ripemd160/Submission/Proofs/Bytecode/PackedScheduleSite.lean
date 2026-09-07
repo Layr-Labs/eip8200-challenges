@@ -1,10 +1,11 @@
 import Batteries.Tactic.OpenPrivate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadLayout
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Schedule
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.newArtifactByteLength
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -107,7 +108,7 @@ private theorem denseBeforeJumpTemplate_advances :
   · exact denseHalfTemplate_advances 0 instruction h0
 
 private theorem packedSchedule_slice :
-    (Artifact.submissionArtifact.instructions.drop 268).take
+    (Artifact.submissionArtifact.instructions.drop 272).take
         DenseScheduleTemplate.denseBeforeJumpTemplate.length =
       DenseScheduleTemplate.denseBeforeJumpTemplate := by
   rfl
@@ -117,10 +118,10 @@ def packedScheduleSite :
       DenseScheduleTemplate.denseBeforeJumpTemplate :=
   StackSiteBuilder.ofSlice
     (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    DenseScheduleTemplate.denseBeforeJumpTemplate 268
+    DenseScheduleTemplate.denseBeforeJumpTemplate 272
     packedSchedule_slice
     (by
-      change 268 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
+      change 272 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
         Artifact.submissionInstructions.length
       rw [DenseScheduleTemplate.denseBeforeJumpTemplate_length,
         Artifact.referenceInstructions_count]
@@ -136,25 +137,23 @@ private theorem denseScheduleTemplate_byteLength :
   exact DenseScheduleTemplate.denseBeforeJumpTemplate_byteLength
 
 private theorem packedSchedule_start_instructionPC :
-    Artifact.submissionArtifact.instructionPC 268 = 0x1ed := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
+    Artifact.submissionArtifact.instructionPC 272 = 0x1d0 :=
+  QuadLayout.schedule_pc
 
 private theorem packedSchedule_end_instructionPC :
-    Artifact.submissionArtifact.instructionPC 319 = 0x2ab := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
+    Artifact.submissionArtifact.instructionPC 323 = 0x28e :=
+  QuadLayout.scheduleJump_pc
 
 @[simp] theorem packedScheduleSite_startPC :
-    packedScheduleSite.startPC = UInt256.ofNat 0x1ed := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 268) =
-    UInt256.ofNat 0x1ed
+    packedScheduleSite.startPC = UInt256.ofNat 0x1d0 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 272) =
+    UInt256.ofNat 0x1d0
   rw [packedSchedule_start_instructionPC]
 
 @[simp] theorem packedScheduleSite_endPC :
-    packedScheduleSite.endPC = UInt256.ofNat 0x2ab := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 319) =
-    UInt256.ofNat 0x2ab
+    packedScheduleSite.endPC = UInt256.ofNat 0x28e := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 323) =
+    UInt256.ofNat 0x28e
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleSite_end_eq_pcAfter :
@@ -165,6 +164,15 @@ theorem packedScheduleSite_end_eq_pcAfter :
     packedScheduleSite.startPC packedScheduleSite.endPC packedScheduleSite.head_eq
     packedScheduleSite.end_eq packedScheduleSite.contiguous
   rwa [packedScheduleSite.instruction_eq] at h
+
+private theorem pc_toNat_instructionPC (index : Nat) :
+    (UInt256.ofNat (Artifact.submissionArtifact.instructionPC index)).toNat =
+      Artifact.submissionArtifact.instructionPC index := by
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat]
+  apply Nat.mod_eq_of_lt
+  have hle := Artifact.submissionArtifact.instructionPC_le_code_size index
+  have hcode := QuadLayout.code_bound
+  exact Nat.lt_of_le_of_lt hle hcode
 
 def gasSteps_packedSchedule_of_raw
     (s : State) (messageOffset returnPC : UInt256) (rest : List UInt256)
@@ -196,6 +204,5 @@ def gasSteps_packedSchedule_of_raw
   · rfl
   · exact denseBeforeJumpTemplate_advances
   · exact hresult
-
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleSite

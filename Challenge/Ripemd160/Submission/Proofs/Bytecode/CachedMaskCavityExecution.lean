@@ -31,7 +31,16 @@ noncomputable def left0_core (s : State) (w : Compression.EvmWorking)
   · simpa [stateAt, roundEntry] using hrun
   · simpa [stateAt, roundEntry] using hnp
 
-noncomputable abbrev left0_group := left0_core
+
+noncomputable def left0_group (s : State) (w : Compression.EvmWorking)
+    (rho : List UInt256) (hfit : ∀ k, ((left 0) k).Fits s)
+    (hstack : rho.length < 1006) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = A.code) (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps (stateAt s left0First.startPC w (mask :: rho))
+      (stateAt s left0First.endPC (fourResult (left 0) s w) (mask :: rho)) := by
+  exact left0_core s w rho hfit hstack hrun hcode hfork hnp
 
 noncomputable def left2_core (s : State) (w : Compression.EvmWorking)
     (rho : List UInt256) (hfit : ∀ k, ((left 2) k).Fits s)
@@ -52,7 +61,16 @@ noncomputable def left2_core (s : State) (w : Compression.EvmWorking)
   · simpa [stateAt, roundEntry] using hrun
   · simpa [stateAt, roundEntry] using hnp
 
-noncomputable abbrev left2_group := left2_core
+
+noncomputable def left2_group (s : State) (w : Compression.EvmWorking)
+    (rho : List UInt256) (hfit : ∀ k, ((left 2) k).Fits s)
+    (hstack : rho.length < 1006) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = A.code) (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps (stateAt s left2First.startPC w (mask :: rho))
+      (stateAt s left2First.endPC (fourResult (left 2) s w) (mask :: rho)) := by
+  exact left2_core s w rho hfit hstack hrun hcode hfork hnp
 
 noncomputable def right_core (s : State) (w : Compression.EvmWorking) (a b c d e : UInt256)
     (rho : List UInt256) (hfit : ∀ k, (right k).Fits s)
@@ -74,7 +92,17 @@ noncomputable def right_core (s : State) (w : Compression.EvmWorking) (a b c d e
   · simpa [stateAt, roundEntry] using hrun
   · simpa [stateAt, roundEntry] using hnp
 
-noncomputable abbrev right_group := right_core
+
+noncomputable def right_group (s : State) (w : Compression.EvmWorking) (a b c d e : UInt256)
+    (rho : List UInt256) (hfit : ∀ k, (right k).Fits s)
+    (hstack : rho.length < 1001) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = A.code) (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps (stateAt s rightFirst.startPC w (a :: b :: c :: d :: e :: mask :: rho))
+      (stateAt s rightFirst.endPC (fourResult right s w)
+        (a :: b :: c :: d :: e :: mask :: rho)) := by
+  exact right_core s w a b c d e rho hfit hstack hrun hcode hfork hnp
 
 #print axioms left0_core
 #print axioms left0_group

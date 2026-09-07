@@ -17,10 +17,12 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites
 
 abbrev Artifact := QuadSites.Artifact
 
-abbrev NormalIndex := Fin 6
+abbrev NormalIndex := Fin 5
 
 def normalFin (k : NormalIndex) : Fin 20 :=
-  ⟨(k.val + 6) + (k.val + 6) / 3, by omega⟩
+  ⟨if k.val < 2 then k.val + 5 else k.val + 10, by
+    have hk : k.val < 5 := k.isLt
+    split_ifs <;> omega⟩
 
 private theorem normal_slice (k : NormalIndex) :
     (Artifact.instructions.drop (rightWrapperIndex (normalFin k).val)).take
@@ -135,13 +137,13 @@ def normalCall (k : NormalIndex) :
   jump_pc := normalPushes_end k
 
 private theorem helper_slice (group : Fin 2) :
-    (Artifact.instructions.drop (rightHelperStartIndex (group.val + 2))).take
-        (rightHelperTemplate ⟨(group.val + 2), by omega⟩).length = rightHelperTemplate ⟨(group.val + 2), by omega⟩ := by
+    (Artifact.instructions.drop (rightHelperStartIndex (2 * group.val + 1))).take
+        (rightHelperTemplate ⟨(2 * group.val + 1), by omega⟩).length = rightHelperTemplate ⟨(2 * group.val + 1), by omega⟩ := by
   fin_cases group <;> rfl
 
 def helperSite (group : Fin 2) :
-    GenericRoundSite Artifact .Osaka (rightHelperTemplate ⟨(group.val + 2), by omega⟩) :=
-  StackSiteBuilder.ofSlice _ (rightHelperStartIndex (group.val + 2))
+    GenericRoundSite Artifact .Osaka (rightHelperTemplate ⟨(2 * group.val + 1), by omega⟩) :=
+  StackSiteBuilder.ofSlice _ (rightHelperStartIndex (2 * group.val + 1))
     (helper_slice group)
     (by fin_cases group <;> decide)
     QuadLayout.code_bound
@@ -150,15 +152,15 @@ def helperSite (group : Fin 2) :
 
 def helperJump (group : Fin 2) : LocatedSite Artifact .Osaka where
   located :=
-    { index := rightHelperJumpIndex (group.val + 2)
+    { index := rightHelperJumpIndex (2 * group.val + 1)
       instruction := .op .JUMP
       atIndex := by fin_cases group <;> rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.instructionPC (rightHelperJumpIndex (group.val + 2)))
+  pc := UInt256.ofNat (Artifact.instructionPC (rightHelperJumpIndex (2 * group.val + 1)))
   pc_eq := QuadLayout.pc_toNat_instructionPC _
 
 private theorem helper_start (group : Fin 2) :
-    (helperSite group).startPC = rightHelperPCOfGroup (group.val + 2) := by
+    (helperSite group).startPC = rightHelperPCOfGroup (2 * group.val + 1) := by
   fin_cases group <;> rfl
 
 private theorem helper_end (group : Fin 2) :
@@ -170,20 +172,20 @@ private theorem helper_end (group : Fin 2) :
   rw [(helperSite group).instruction_eq, helper_start group] at hend
   calc
     (helperJump group).pc =
-        UInt256.ofNat (Artifact.instructionPC (rightHelperJumpIndex (group.val + 2))) := rfl
-    _ = StackRoundTrace.pcAfter (rightHelperPCOfGroup (group.val + 2))
-        (rightHelperTemplate ⟨(group.val + 2), by omega⟩) := by
+        UInt256.ofNat (Artifact.instructionPC (rightHelperJumpIndex (2 * group.val + 1))) := rfl
+    _ = StackRoundTrace.pcAfter (rightHelperPCOfGroup (2 * group.val + 1))
+        (rightHelperTemplate ⟨(2 * group.val + 1), by omega⟩) := by
       fin_cases group <;> rfl
     _ = (helperSite group).endPC := hend.symm
 
 private theorem helper_valid (group : Fin 2) :
     Decode.isValidJumpDest Artifact.code
-      (rightHelperPCOfGroup (group.val + 2)).toNat = true := by
-  have hpc : (rightHelperPCOfGroup (group.val + 2)).toNat =
-      Artifact.instructionPC (rightHelperStartIndex (group.val + 2)) := by
+      (rightHelperPCOfGroup (2 * group.val + 1)).toNat = true := by
+  have hpc : (rightHelperPCOfGroup (2 * group.val + 1)).toNat =
+      Artifact.instructionPC (rightHelperStartIndex (2 * group.val + 1)) := by
     fin_cases group <;> rfl
   rw [hpc]
-  exact Artifact.isValidJumpDest_index (rightHelperStartIndex (group.val + 2))
+  exact Artifact.isValidJumpDest_index (rightHelperStartIndex (2 * group.val + 1))
     (by fin_cases group <;> rfl)
 
 private theorem normalReturn_valid (k : NormalIndex) :
@@ -206,21 +208,21 @@ def normalRound (k : NormalIndex) :
   returnPC := rightReturnPC (normalFin k).val
   helperPC := rightHelperPC (normalFin k).val
   call := normalCall k
-  helper := castTemplate (helperSite ⟨(normalFin k).val / 4 - 2, by dsimp [normalFin]; omega⟩) (by fin_cases k <;> rfl)
+  helper := castTemplate (helperSite ⟨(normalFin k).val / 8, by fin_cases k <;> decide⟩) (by fin_cases k <;> rfl)
   helper_start := by rw [castTemplate_start, helper_start]; fin_cases k <;> rfl
-  helperJump := helperJump ⟨(normalFin k).val / 4 - 2, by dsimp [normalFin]; omega⟩
+  helperJump := helperJump ⟨(normalFin k).val / 8, by fin_cases k <;> decide⟩
   helper_jump_instr := rfl
   helper_end := by rw [castTemplate_end, helper_end]
   returnSite := normalReturn k
   return_instr := rfl
   return_at := rfl
   helper_valid := by
-    have h := helper_valid ⟨(normalFin k).val / 4 - 2, by dsimp [normalFin]; omega⟩
+    have h := helper_valid ⟨(normalFin k).val / 8, by fin_cases k <;> decide⟩
     fin_cases k <;> exact h
   return_valid := normalReturn_valid k
 
 def fallthroughK (group : Fin 2) : Fin 20 :=
-  ⟨4 * (group.val + 2) + 3, by omega⟩
+  ⟨4 * (2 * group.val + 1) + 3, by omega⟩
 
 private theorem fallthrough_slice (group : Fin 2) :
     (Artifact.instructions.drop (rightWrapperIndex (fallthroughK group).val)).take
@@ -283,7 +285,7 @@ def fallthroughRound (group : Fin 2) :
       (rightAddress2 (fallthroughK group)) (rightAddress3 (fallthroughK group))
       (rightRotation0 (fallthroughK group)) (rightRotation1 (fallthroughK group))
       (rightRotation2 (fallthroughK group)) (rightRotation3 (fallthroughK group))
-      (LoadedHoistHelper.rightTemplate (4 - (group.val + 2)) (rightConstant (fallthroughK group))) where
+      (LoadedHoistHelper.rightTemplate (4 - (2 * group.val + 1)) (rightConstant (fallthroughK group))) where
   returnPC := rightReturnPC (fallthroughK group).val
   callPushes := fallthroughPushes group
   helper := castTemplate (helperSite group) (by fin_cases group <;> rfl)
