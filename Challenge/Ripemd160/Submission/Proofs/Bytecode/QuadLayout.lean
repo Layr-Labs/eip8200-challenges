@@ -228,8 +228,8 @@ theorem output_pc : A.instructionPC outputIndex = 4694 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def outputReturnIndex : Nat := 3291
-theorem outputReturn_pc : A.instructionPC outputReturnIndex = 4879 := by
+def outputReturnIndex : Nat := 3289
+theorem outputReturn_pc : A.instructionPC outputReturnIndex = 4822 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
