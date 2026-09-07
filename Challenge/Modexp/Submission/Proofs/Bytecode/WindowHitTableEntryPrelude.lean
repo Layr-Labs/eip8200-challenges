@@ -29,10 +29,9 @@ private def endState (template : State) (base modulus : UInt256)
     activeWords := UInt256.ofNat 3 }
 
 @[simp] private theorem preludePCs (index : Nat)
-    (hlo : 1855 ≤ index) (hhi : index ≤ 1869) :
+    (hlo : 1850 ≤ index) (hhi : index ≤ 1864) :
     Artifact.submissionArtifact.instructionPC index =
-      [3034, 3036, 3037, 3039, 3040, 3041, 3042, 3044,
-       3045, 3046, 3047, 3048, 3049, 3050, 3052][index - 1855]! := by
+      ([3034,3036,3037,3039,3040,3041,3042,3044,3045,3046,3047,3048,3049,3050,3052] : List Nat)[index - 1850]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in

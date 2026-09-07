@@ -158,20 +158,16 @@ def bigReturned (s : State) (accumulatorWord : UInt256)
     activeWords := UInt256.ofNat
       (MachineState.activeWordsAfter current.activeWords.toNat 6144 m) }
 
-@[simp] private theorem outerFinishPCs (i : Nat) (hi : 719 ≤ i)
-    (hii : i ≤ 725) :
+@[simp] private theorem outerFinishPCs (i : Nat)
+    (hi : 719 ≤ i) (hii : i ≤ 725) :
     Artifact.submissionArtifact.instructionPC i =
-      ([946,947,948,949,950,951,954])[i - 719]! := by
+      ([946,947,948,949,950,951,954] : List Nat)[i - 719]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem serializerPCs (i : Nat) (hi : 838 ≤ i)
-    (hii : i ≤ 889) :
+@[simp] private theorem serializerPCs (i : Nat)
+    (hi : 838 ≤ i) (hii : i ≤ 889) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1118,1119,1120,1121,1122,1123,1124,1125,1126,1129,1130,1131,
-        1133,1134,1135,1136,1137,1139,1140,1142,1143,1144,1146,1147,
-        1149,1150,1152,1153,1156,1157,1158,1159,1160,1161,1162,1165,
-        1166,1167,1168,1169,1170,1172,1173,1174,1175,1176,1179,1180,
-        1181,1182,1183,1186])[i - 838]! := by
+      ([1118,1119,1120,1121,1122,1123,1124,1125,1126,1129,1130,1131,1133,1134,1135,1136,1137,1139,1140,1142,1143,1144,1146,1147,1149,1150,1152,1153,1156,1157,1158,1159,1160,1161,1162,1165,1166,1167,1168,1169,1170,1172,1173,1174,1175,1176,1179,1180,1181,1182,1183,1186] : List Nat)[i - 838]! := by
   interval_cases i <;> decide
 
 private theorem jump1118 :

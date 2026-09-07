@@ -131,9 +131,10 @@ def bigEntryState (input : ByteArray) : State :=
       UInt256.ofNat 1283, UInt256.ofNat modOff, UInt256.ofNat expOff,
       UInt256.ofNat m, UInt256.ofNat e, UInt256.ofNat b] }
 
-@[simp] theorem bigTailPCs (i : Nat) (hi : 950 ≤ i) (hii : i ≤ 959) :
+@[simp] theorem bigTailPCs (i : Nat)
+    (hi : 950 ≤ i) (hii : i ≤ 959) :
     Artifact.submissionArtifact.instructionPC i =
-      [1268,1269,1272,1273,1274,1276,1277,1278,1279,1282][i - 950]! := by
+      ([1268,1269,1272,1273,1274,1276,1277,1278,1279,1282] : List Nat)[i - 950]! := by
   interval_cases i <;> decide
 
 theorem jump704 : Decode.isValidJumpDest submissionBytecode 704 = true :=

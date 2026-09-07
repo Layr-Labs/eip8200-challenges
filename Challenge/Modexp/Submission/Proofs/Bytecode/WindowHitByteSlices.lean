@@ -8,7 +8,7 @@ set_option maxRecDepth 40000
 # Generated-artifact byte slices
 
 This is the only module that binds the reusable four-byte loop model to the
-generated instruction list.  Each path has exactly sixty-two instruction
+generated instruction list.  Each path has exactly sixty-six instruction
 certificates.  Keeping the four equalities separate bounds regeneration
 failures to one concrete slice.
 -/
@@ -19,7 +19,6 @@ open Challenge.EvmProof.Stepper
 open EvmSemantics
 open EvmSemantics.EVM
 open WindowByteKernel
-open WindowNibbleKernel
 
 def locatedSlice (start count : Nat)
     (hbound : start + count ≤ Artifact.submissionInstructions.length) :
@@ -31,18 +30,18 @@ def locatedSlice (start count : Nat)
         omega⟩
 
 def byte0Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 1999 62 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 1968 66 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte1Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2061 62 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2034 66 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte2Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2123 62 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2100 66 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte3Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2185 62 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2166 66 (by rw [Artifact.submissionInstructions_count]; omega)
 
-def byteStartIndex (byte : Fin 4) : Nat := 1999 + 62 * byte.val
+def byteStartIndex (byte : Fin 4) : Nat := 1968 + 66 * byte.val
 
 def byteStartPC (byte : Fin 4) : Nat :=
   [3208, 3292, 3377, 3462][byte.val]!
@@ -54,38 +53,53 @@ def highPrepPath (byte : Fin 4) :
     unfold byteStartIndex
     omega)
 
-def highSquareLookupPath (byte : Fin 4) :
+def highSquarePath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + 6) 25 (by
+  locatedSlice (byteStartIndex byte + 6) 18 (by
+    rw [Artifact.submissionInstructions_count]
+    unfold byteStartIndex
+    omega)
+
+def highLookupPath (byte : Fin 4) :
+    List (Located Artifact.submissionArtifact .Osaka) :=
+  locatedSlice (byteStartIndex byte + 24) 9 (by
     rw [Artifact.submissionInstructions_count]
     unfold byteStartIndex
     omega)
 
 def lowPrepPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + 31) 4 (by
+  locatedSlice (byteStartIndex byte + 33) 4 (by
     rw [Artifact.submissionInstructions_count]
     unfold byteStartIndex
     omega)
 
-def lowSquareLookupPath (byte : Fin 4) :
+def lowSquarePath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + 35) 25 (by
+  locatedSlice (byteStartIndex byte + 37) 18 (by
+    rw [Artifact.submissionInstructions_count]
+    unfold byteStartIndex
+    omega)
+
+def lowLookupPath (byte : Fin 4) :
+    List (Located Artifact.submissionArtifact .Osaka) :=
+  locatedSlice (byteStartIndex byte + 55) 9 (by
     rw [Artifact.submissionInstructions_count]
     unfold byteStartIndex
     omega)
 
 def finishPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + 60) 2 (by
+  locatedSlice (byteStartIndex byte + 64) 2 (by
     rw [Artifact.submissionInstructions_count]
     unfold byteStartIndex
     omega)
 
 def segmentedBytePath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  highPrepPath byte ++ highSquareLookupPath byte ++
-    lowPrepPath byte ++ lowSquareLookupPath byte ++ finishPath byte
+  highPrepPath byte ++ highSquarePath byte ++ highLookupPath byte ++
+    lowPrepPath byte ++ lowSquarePath byte ++ lowLookupPath byte ++
+      finishPath byte
 
 /-! These are the four regeneration-sensitive obligations. -/
 
@@ -110,68 +124,10 @@ theorem highPrep_instructions (byte : Fin 4) :
       highPrepProgram byte.val := by
   fin_cases byte <;> rfl
 
-theorem highSquareLookup0_instructions :
-    (highSquareLookupPath 0).map (fun located => located.instruction) =
-      squareLookupProgram := by
-  rfl
-
-theorem highSquareLookup1_instructions :
-    (highSquareLookupPath 1).map (fun located => located.instruction) =
-      squareLookupProgram := by
-  rfl
-
-theorem highSquareLookup2_instructions :
-    (highSquareLookupPath 2).map (fun located => located.instruction) =
-      squareLookupProgram := by
-  rfl
-
-theorem highSquareLookup3_instructions :
-    (highSquareLookupPath 3).map (fun located => located.instruction) =
-      squareLookupProgram := by
-  rfl
-
-theorem highSquareLookup_instructions (byte : Fin 4) :
-    (highSquareLookupPath byte).map (fun located => located.instruction) =
-      squareLookupProgram := by
-  fin_cases byte
-  · exact highSquareLookup0_instructions
-  · exact highSquareLookup1_instructions
-  · exact highSquareLookup2_instructions
-  · exact highSquareLookup3_instructions
-
 theorem lowPrep_instructions (byte : Fin 4) :
     (lowPrepPath byte).map (fun located => located.instruction) =
       lowPrepProgram := by
   fin_cases byte <;> rfl
-
-theorem lowSquareLookup0_instructions :
-    (lowSquareLookupPath 0).map (fun located => located.instruction) =
-      squareLookupProgram := by
-  rfl
-
-theorem lowSquareLookup1_instructions :
-    (lowSquareLookupPath 1).map (fun located => located.instruction) =
-      squareLookupProgram := by
-  rfl
-
-theorem lowSquareLookup2_instructions :
-    (lowSquareLookupPath 2).map (fun located => located.instruction) =
-      squareLookupProgram := by
-  rfl
-
-theorem lowSquareLookup3_instructions :
-    (lowSquareLookupPath 3).map (fun located => located.instruction) =
-      squareLookupProgram := by
-  rfl
-
-theorem lowSquareLookup_instructions (byte : Fin 4) :
-    (lowSquareLookupPath byte).map (fun located => located.instruction) =
-      squareLookupProgram := by
-  fin_cases byte
-  · exact lowSquareLookup0_instructions
-  · exact lowSquareLookup1_instructions
-  · exact lowSquareLookup2_instructions
-  · exact lowSquareLookup3_instructions
 
 theorem finish_instructions (byte : Fin 4) :
     (finishPath byte).map (fun located => located.instruction) =
