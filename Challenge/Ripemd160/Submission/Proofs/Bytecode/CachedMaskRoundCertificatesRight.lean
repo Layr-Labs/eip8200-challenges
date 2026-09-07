@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.SingleCachedMaskInlineSite
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskRoundFacts
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskRoundSitesRight
 
@@ -107,35 +108,35 @@ noncomputable def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
   apply Classical.choice
   fin_cases k <;> norm_num at hk
 
+  · exact ⟨SingleCachedMaskInlineSite.gasSteps_right0 s word working a b c d e rho hwords hactive hstack hcode hfork hrun hnp⟩
+
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 0 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 1 hwords hactive hstack hcode hfork hrun hnp⟩
 
-  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 2 hwords hactive hstack hcode hfork hrun hnp⟩
-
   · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 0 hwords hactive hstack hcode hfork hrun hnp⟩
+
+  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 2 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 3 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 4 hwords hactive hstack hcode hfork hrun hnp⟩
 
-  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 5 hwords hactive hstack hcode hfork hrun hnp⟩
-
   · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 1 hwords hactive hstack hcode hfork hrun hnp⟩
+
+  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 5 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 6 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 7 hwords hactive hstack hcode hfork hrun hnp⟩
 
-  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 8 hwords hactive hstack hcode hfork hrun hnp⟩
-
   · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 2 hwords hactive hstack hcode hfork hrun hnp⟩
+
+  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 8 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 9 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 10 hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 11 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 3 hwords hactive hstack hcode hfork hrun hnp⟩
 
