@@ -42,10 +42,10 @@ def dup1 : Instr := .op (.Dup ⟨0, by decide⟩)
 def swap1 : Instr := .op (.Swap ⟨0, by decide⟩)
 
 def mask8 : UInt256 :=
-  UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
+  UInt256.ofNat 0xff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
 
 def mask16 : UInt256 :=
-  UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
+  UInt256.ofNat 0xffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
 
 def denseStoreAddress (half : Nat) : Nat := 220 + 32 * half
 
@@ -63,7 +63,7 @@ def endianFactorPush (shift : Nat) : Instr :=
   if shift = 8 then push2 (endianFactor shift) else push3 (endianFactor shift)
 
 def endianMaskPush (shift : Nat) (mask : UInt256) : Instr :=
-  if shift = 8 then .push ⟨31, by decide⟩ mask else .push ⟨30, by decide⟩ mask
+  if shift = 8 then .push 31 mask else .push 30 mask
 
 /-- If `t = ((value >>> shift) XOR value) AND mask`, the masks used below
 put `t` and `t <<< shift` in disjoint lanes.  Multiplication by
@@ -78,7 +78,7 @@ def endianStage16 : List Instr := endianStage 16 mask16
 
 def denseHalfTemplate (half : Nat) : List Instr :=
   endianStage8 ++ endianStage16 ++
-    [ push2 (UInt256.ofNat (denseStoreAddress half)), op .MSTORE ]
+    [ push1 (UInt256.ofNat (denseStoreAddress half)), op .MSTORE ]
 
 def denseBeforeJumpTemplate : List Instr :=
   initialTemplate ++ denseHalfTemplate 1 ++ denseHalfTemplate 0
@@ -133,14 +133,14 @@ theorem assembleBytes_length (instructions : List Instr) :
       rw [ih]
 
 theorem denseHalfTemplate_byteLength (half : Nat) :
-    (assembleBytes (denseHalfTemplate half)).length = 92 := by
+    (assembleBytes (denseHalfTemplate half)).length = 91 := by
   rw [assembleBytes_length]
-  simp [denseHalfTemplate, endianStage8, endianStage16, endianStage, endianMaskPush,
-    endianFactorPush, endianFactor, op, push1, push2, push3, dup1,
+  simp [denseHalfTemplate, endianStage8, endianStage16, endianStage,
+    endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3, dup1,
     denseStoreAddress]
 
 theorem denseBeforeJumpTemplate_byteLength :
-    (assembleBytes denseBeforeJumpTemplate).length = 192 := by
+    (assembleBytes denseBeforeJumpTemplate).length = 190 := by
   rw [denseBeforeJumpTemplate, assembleBytes_append, List.length_append,
     assembleBytes_length]
   simp [denseHalfTemplate, initialTemplate, endianStage8, endianStage16,
@@ -148,7 +148,7 @@ theorem denseBeforeJumpTemplate_byteLength :
     dup1, swap1, denseStoreAddress]
 
 theorem denseFullTemplate_byteLength :
-    (assembleBytes denseFullTemplate).length = 193 := by
+    (assembleBytes denseFullTemplate).length = 191 := by
   rw [denseFullTemplate, assembleBytes_append, List.length_append,
     denseBeforeJumpTemplate_byteLength]
   rfl
@@ -159,7 +159,7 @@ theorem paddingTemplate_byteLength :
   norm_num [paddingTemplate, push32]
 
 theorem denseWindowTemplate_byteLength :
-    (assembleBytes denseWindowTemplate).length = 319 := by
+    (assembleBytes denseWindowTemplate).length = 317 := by
   rw [denseWindowTemplate, assembleBytes_append, List.length_append,
     denseFullTemplate_byteLength, paddingTemplate_byteLength]
 
@@ -172,7 +172,7 @@ theorem denseFullTemplate_staticGas :
   norm_num [staticGas, denseFullTemplate, denseBeforeJumpTemplate,
     denseHalfTemplate, initialTemplate, endianStage8, endianStage16,
     endianStage, endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3,
-    dup1, swap1,
+    push32, dup1, swap1,
     Challenge.EvmProof.Meter.instrStaticCost, Gas.baseCost]
   rfl
 

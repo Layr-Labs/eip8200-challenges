@@ -126,9 +126,9 @@ theorem readWord_storeHash_outside (memory : ByteArray)
     readWord_writeHashWord_outside _ address 96 value.h2 (by omega) houtside,
     readWord_writeHashWord_outside _ address 64 value.h1 (by omega) houtside]
 
-theorem readWord_storeHash_ge_120 (memory : ByteArray)
+theorem readWord_storeHash_ge_2e0 (memory : ByteArray)
     (value : Compression.EvmHashState) (address : Nat)
-    (haddress : 0x120 ≤ address) :
+    (haddress : 0x2e0 ≤ address) :
     MachineState.readWord (storeHash memory value) address =
       MachineState.readWord memory address := by
   apply readWord_storeHash_outside

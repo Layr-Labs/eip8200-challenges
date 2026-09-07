@@ -22,13 +22,13 @@ def rightQuad (word : Nat → UInt32) (k : Fin 4) (w : Compression.EvmWorking) :
     (rightStep word (64 + 4 * k.val + 2)
       (rightStep word (64 + 4 * k.val + 1) (rightStep word (64 + 4 * k.val) w)))
 
-theorem left_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
+theorem left_fits (s : State) (hactive : 25 ≤ s.activeWords.toNat) :
     ∀ k, (left k).Fits s := by
   intro k i
   have h := quadLeftAddress_end_le s ⟨k.val, by omega⟩ i hactive
   fin_cases k <;> fin_cases i <;> exact h
 
-theorem right_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
+theorem right_fits (s : State) (hactive : 25 ≤ s.activeWords.toNat) :
     ∀ k, (right k).Fits s := by
   intro k i
   have h := quadRightAddress_end_le s ⟨16 + k.val, by omega⟩ i hactive
