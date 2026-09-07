@@ -307,7 +307,7 @@ private theorem runTailInstrs_append {xs ys : List Instr} {s t u : State}
 set_option linter.unusedSimpArgs false in
 private theorem runLocatedBlock_tail (s : State)
     (left right : Compression.EvmWorking) (ret : UInt256) (rest : List UInt256)
-    (hactive : 40 ≤ s.activeWords.toNat)
+    (hactive : 67 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1009)
     (hrun : s.halt = .Running)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
@@ -322,7 +322,7 @@ private theorem runLocatedBlock_tail (s : State)
 
 def actualTailGasSteps (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256)
-    (hactive : 40 ≤ s.activeWords.toNat)
+    (hactive : 67 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1009)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code)
     (hfork : s.fork = .Osaka)

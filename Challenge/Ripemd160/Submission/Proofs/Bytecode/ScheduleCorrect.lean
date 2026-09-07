@@ -10,7 +10,7 @@ set_option maxRecDepth 10000
 This layer describes the `X[0..15]` image independently of control flow.  The
 only caller seam is preservation of the message reads while the disjoint X
 area is populated; the padding/driver proof can discharge it from its concrete
-`msgOff >= 0x800` layout.
+`msgOff >= 0x760` layout.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduleCorrect
@@ -123,7 +123,7 @@ theorem loopState_sixteen_slots (s : State) (msgOff returnDest : UInt256)
       (expectedWord s.memory msgOff) 16 :=
   loopState_slots s msgOff returnDest rest 16 (by omega) hread
 
-/-- The concrete reference layout (`msgOff >= 0x800`) discharges the
+/- The concrete reference layout (`msgOff >= 0x760`) discharges the
 read-preservation seam and yields the complete X-array image. -/
 theorem loopState_sixteen_slots_of_separated (s : State)
     (msgOff returnDest : UInt256) (rest : List UInt256)

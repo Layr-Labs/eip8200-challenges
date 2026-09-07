@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadFallthroughTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.newShiftedHoistHelper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShiftedHoistHelper
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -18,14 +18,14 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTemplate
 
 /-- Instructions push `s3, p3, s2, p2, s1, p1, s0, return-PC, p0,
-helper-PC`, with SWAP8 before the p0 push to exchange A and return-PC. -/
+helper-PC`.  The resulting top-first stack has the quad helper-entry shape. -/
 def quadCallPushes (returnPC p0 p1 p2 p3 helperPC : UInt256)
     (r0 r1 r2 r3 : Nat) : List Instr :=
   [ShiftedHoistHelper.controlPush r3, push2 p3,
     ShiftedHoistHelper.controlPush r2, push2 p2,
     ShiftedHoistHelper.controlPush r1, push2 p1,
     ShiftedHoistHelper.controlPush r0, push2 returnPC,
-    .op (.Swap ⟨7, by decide⟩), push2 p0, push2 helperPC]
+    push2 p0, push2 helperPC]
 
 /-- State after the quad wrapper has pushed its ten values. -/
 def quadCallPushed (s : State) (pc returnPC p0 p1 p2 p3 helperPC : UInt256)
@@ -33,10 +33,9 @@ def quadCallPushed (s : State) (pc returnPC p0 p1 p2 p3 helperPC : UInt256)
     (rho : List UInt256) : State :=
   { s with
     pc := pc
-    stack := [helperPC, p0, working.a, ShiftedHoistHelper.shiftedFactor r0, p1,
+    stack := [helperPC, p0, returnPC, ShiftedHoistHelper.shiftedFactor r0, p1,
       ShiftedHoistHelper.shiftedFactor r1, p2, ShiftedHoistHelper.shiftedFactor r2, p3,
-      ShiftedHoistHelper.shiftedFactor r3, returnPC,
-      working.b, working.c, working.d, working.e] ++
+      ShiftedHoistHelper.shiftedFactor r3] ++ roundWords working ++
       [QuadRoundTemplate.factor] ++ rho }
 
 theorem quadCallPushes_advances (returnPC p0 p1 p2 p3 helperPC : UInt256)
@@ -45,10 +44,8 @@ theorem quadCallPushes_advances (returnPC p0 p1 p2 p3 helperPC : UInt256)
       SharedCallTrace.Advances instruction := by
   intro instruction hmem
   simp only [quadCallPushes, List.mem_cons, List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
-  all_goals first
-    | exact Or.inl (StraightLine.push _ _)
-    | exact Or.inl (StraightLine.swap _)
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  all_goals exact Or.inl (StraightLine.push _ _)
 
 set_option linter.unusedSimpArgs false in
 theorem runInstrSeq_quadCallPushes (s : State)
@@ -67,10 +64,9 @@ theorem runInstrSeq_quadCallPushes (s : State)
   simp (discharger := omega)
     [quadCallPushes, quadCallPushed, roundEntry, runInstrSeq,
       Stepper.runInstr, pcAfter, ShiftedHoistHelper.controlPush, push1, push2, hrun, hcap,
-      Nat.add_assoc, Instr.size_push, Instr.size_op, UInt256.succ, List.exchange, roundWords,
-      List.getElem?_cons_zero, Option.bind_some, QuadRoundTemplate.factor]
+      Nat.add_assoc, Instr.size_push, roundWords,
+      QuadRoundTemplate.factor]
   simp only [Nat.add_comm]
-  rfl
 
 theorem runLocatedBlock_quadCallPushes {artifact : ProgramArtifact} {fork : Fork}
     (returnPC p0 p1 p2 p3 helperPC : UInt256)
@@ -132,26 +128,24 @@ theorem runLocatedBlock_call {artifact : ProgramArtifact} {fork : Fork}
       r0 r1 r2 r3 site.pushes s working rho hstack hrun
   · exact hrun
   · have hcap :
-        ([p0, working.a, ShiftedHoistHelper.shiftedFactor r0, p1,
+        ([p0, returnPC, ShiftedHoistHelper.shiftedFactor r0, p1,
           ShiftedHoistHelper.shiftedFactor r1, p2, ShiftedHoistHelper.shiftedFactor r2, p3,
-          ShiftedHoistHelper.shiftedFactor r3, returnPC,
-          working.b, working.c, working.d, working.e] ++
+          ShiftedHoistHelper.shiftedFactor r3] ++ roundWords working ++
           [QuadRoundTemplate.factor] ++ rho).length < 1023 := by
-      simp
+      simp [roundWords]
       omega
     have h := SharedCallTrace.runLocated_jump site.jump site.jump_instr s
       helperPC
-      ([p0, working.a, ShiftedHoistHelper.shiftedFactor r0, p1,
+      ([p0, returnPC, ShiftedHoistHelper.shiftedFactor r0, p1,
         ShiftedHoistHelper.shiftedFactor r1, p2, ShiftedHoistHelper.shiftedFactor r2, p3,
-        ShiftedHoistHelper.shiftedFactor r3, returnPC,
-        working.b, working.c, working.d, working.e] ++
+        ShiftedHoistHelper.shiftedFactor r3] ++ roundWords working ++
         [QuadRoundTemplate.factor] ++ rho) hcap hvalid
     have hlocated : Stepper.runLocated site.jump.located
         (quadCallPushed s site.pushes.endPC returnPC p0 p1 p2 p3 helperPC
           r0 r1 r2 r3 working rho) =
         some (ShiftedHoistHelper.quadHelperEntry s helperPC p0 p1 p2 p3 returnPC
           r0 r1 r2 r3 working rho) := by
-      simpa [quadCallPushed, ShiftedHoistHelper.quadHelperEntry,
+      simpa [quadCallPushed, ShiftedHoistHelper.quadHelperEntry, roundWords,
         site.jump_pc, QuadRoundTemplate.factor] using h
     simp only [Stepper.runLocatedBlock, hlocated]
 
@@ -196,7 +190,7 @@ def pushes (returnPC p0 p1 p2 p3 : UInt256)
     ShiftedHoistHelper.controlPush r2, push2 p2,
     ShiftedHoistHelper.controlPush r1, push2 p1,
     ShiftedHoistHelper.controlPush r0, push2 returnPC,
-    .op (.Swap ⟨7, by decide⟩), push2 p0]
+    push2 p0]
 
 theorem pushes_advances (returnPC p0 p1 p2 p3 : UInt256)
     (r0 r1 r2 r3 : Nat) :
@@ -204,10 +198,8 @@ theorem pushes_advances (returnPC p0 p1 p2 p3 : UInt256)
       SharedCallTrace.Advances instruction := by
   intro instruction hmem
   simp only [pushes, List.mem_cons, List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
-  all_goals first
-    | exact Or.inl (StraightLine.push _ _)
-    | exact Or.inl (StraightLine.swap _)
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  all_goals exact Or.inl (StraightLine.push _ _)
 
 set_option linter.unusedSimpArgs false in
 theorem runInstrSeq_pushes (s : State)
@@ -225,10 +217,8 @@ theorem runInstrSeq_pushes (s : State)
   simp (discharger := omega)
     [pushes, ShiftedHoistHelper.quadHelperEntry, roundEntry, runInstrSeq,
       Stepper.runInstr, pcAfter, ShiftedHoistHelper.controlPush, push1, push2, hrun, hcap,
-      Nat.add_assoc, Instr.size_push, Instr.size_op, UInt256.succ, List.exchange, roundWords,
-      List.getElem?_cons_zero, Option.bind_some, factor]
+      Nat.add_assoc, Instr.size_push, roundWords, factor]
   simp only [Nat.add_comm]
-  rfl
 
 theorem runLocatedBlock_pushes {artifact : ProgramArtifact} {fork : Fork}
     (returnPC p0 p1 p2 p3 : UInt256) (r0 r1 r2 r3 : Nat)

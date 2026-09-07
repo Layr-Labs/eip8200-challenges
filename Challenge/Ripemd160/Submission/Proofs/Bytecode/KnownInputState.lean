@@ -16,20 +16,20 @@ open EvmSemantics.EVM
 
 def legacyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x12b5
-    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x436,
+    pc := UInt256.ofNat 0x12b3
+    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x404,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 def sizeMatched (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x12ea
-    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x436,
+    pc := UInt256.ofNat 0x12dc
+    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x404,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 def sizeFailed (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x12ef
-    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x436,
+    pc := UInt256.ofNat 0x12ed
+    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x404,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 def chunk0 := KnownInputData.checks.take 8
@@ -58,13 +58,13 @@ def accState (s : State) (input : ByteArray) (i pc n : Nat) : State :=
   { s with
     pc := UInt256.ofNat pc
     stack := [accAfter input n, DriverTrace.messageOffsetWord i,
-      UInt256.ofNat 0x436, DriverTrace.blockOffsetWord i,
+      UInt256.ofNat 0x404, DriverTrace.blockOffsetWord i,
       Padding.paddedWord input] }
 
 def selectorEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
     pc := UInt256.ofNat 0x17b9
-    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x436,
+    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x404,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 def bodyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
@@ -72,7 +72,7 @@ def bodyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
     pc := UInt256.ofNat ([0x1848, 0x1873, 0x189e, 0x18c9,
       0x18f4, 0x191f, 0x194a, 0x1975, 0x19a0, 0x19cb, 0x19f6,
       0x1a21, 0x1a4c, 0x1a77, 0x1aa2, 0x1acd][i]!)
-    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x436,
+    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x404,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 def knownAfter (i : Nat) : Array UInt32 :=
@@ -120,7 +120,7 @@ def resultActiveWords (s : State) : UInt256 :=
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x436
+    pc := UInt256.ofNat 0x404
     stack := [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
     memory := resultMemory s.memory i
     activeWords := resultActiveWords s }
