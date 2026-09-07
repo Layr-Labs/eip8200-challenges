@@ -68,7 +68,7 @@ def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
 /-- The `ADDMOD` call, pc 2467, with the frame `[px, px, px, 1926]` pushed. -/
 def callState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2467
+  { s with pc := UInt256.ofNat 4643
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
                      UInt256.ofNat 1926] ++ loopStack px k ret rest
            memory := mem }
@@ -131,14 +131,14 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have h1926 : (1926 : UInt256) = UInt256.ofNat 1926 := by decide
-  have h2467 : (2467 : UInt256) = UInt256.ofNat 2467 := by decide
-  have h2467Nat : (UInt256.ofNat 2467).toNat = 2467 := by decide
+  have h4643 : (4643 : UInt256) = UInt256.ofNat 4643 := by decide
+  have h4643Nat : (UInt256.ofNat 4643).toNat = 4643 := by decide
   simp (config := { maxSteps := 400000 }) [blk1362, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopState, callState, loopStack, fastPC9, hc3, hc4, hc5, hc6, hc7, hc8,
     hcode, hrun,
-    h1926, h2467, h2467Nat, jumpDest2467,
+    h1926, h4643, h4643Nat, jumpDest4643,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -520,7 +520,7 @@ def gasSteps_addmodStep (s : State) (mem : ByteArray) (px n : Nat) (ret' : UInt2
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret'.toNat = true)
     (hv : Vars mem n) :
     Challenge.EvmProof.GasSteps
-      (Csub.amEntryState s mem px px (UInt256.ofNat px) ret' tail)
+      (FusedCsub.entryState s mem px px (UInt256.ofNat px) ret' tail)
       (FusedCsub.returnedState s mem px px n n (UInt256.ofNat px) ret' tail) := by
   have hs32' : MachineState.readWord
       (FusedCsub.tnMemory mem px px n n) 9344 =
@@ -540,10 +540,8 @@ def gasSteps_addmodStep (s : State) (mem : ByteArray) (px n : Nat) (ret' : UInt2
     simpa only [hnj] using
       (FusedCsub.gasSteps_tail s mem px px n n (UInt256.ofNat px) ret' tail hcap hcode
         hfork hrun hnp hact hn hn32 hjump hs32' hdstFit hcarry)
-  exact ((((FusedCsub.gasSteps_trampoline s mem px px (UInt256.ofNat px) ret' tail
-        hcap hcode hfork hrun hnp).trans
-      (FusedCsub.gasSteps_entry s mem px px n (UInt256.ofNat px) ret' tail hcap hcode
-        hfork hrun hnp hact hv.tl)).trans
+  exact (((FusedCsub.gasSteps_entry s mem px px n (UInt256.ofNat px) ret' tail hcap hcode
+        hfork hrun hnp hact hv.tl).trans
     (FusedCsub.gasSteps_loop s mem px px n (UInt256.ofNat px) ret' tail hcap hcode hfork
       hrun hnp hact hn hn32 (by omega) (by omega))).trans
     (FusedCsub.gasSteps_exit s mem px px n (UInt256.ofNat px) ret' tail hcap hcode hfork
