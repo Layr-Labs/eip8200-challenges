@@ -148,12 +148,12 @@ private theorem secondStartPC :
   rfl
 
 @[simp] theorem secondPC (index : Nat) (hlo : secondStartIndex ≤ index)
-    (hhi : index ≤ 3088) :
+    (hhi : index ≤ 3078) :
     Artifact.submissionArtifact.instructionPC index =
             [5075, 5076, 5077, 5110, 5111, 5112, 5113, 5114, 5115, 5116, 5117, 5118, 5119, 5120,
        5121, 5122, 5123, 5124, 5125, 5126, 5127, 5128, 5129, 5130, 5131, 5132, 5133, 5134,
        5135, 5136, 5137, 5139, 5140, 5173, 5174, 5175, 5176, 5177, 5210, 5211, 5214, 5215,
-       5216, 5219, 5220, 5221, 5222, 5223, 5224, 5225, 5226, 5227, 5228, 5229][index - secondStartIndex]! := by
+       5216, 5219][index - secondStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -188,7 +188,7 @@ def secondPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨secondStartIndex + offset, .push width value,
     (secondGetElem offset hoffset).trans hget, hwf⟩
 
-/-- Second MAC and pair test: instructions 3040..3088, pc 5075..5229. -/
+/-- Second MAC and pair test: instructions 3040..3078, pc 5075..5219. -/
 def secondMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
     [secondOpAt 0 (.Dup ⟨0, by decide⟩), secondOpAt 1 .MLOAD,
@@ -212,20 +212,10 @@ def secondMac :
    secondOpAt 38 .ADD, secondPushAt 39 2 8224, secondOpAt 40 (.Dup ⟨2, by decide⟩),
    secondOpAt 41 .GT, secondPushAt 42 2 4938, secondOpAt 43 .JUMPI]
 
-/-- Same trace plus the padding `JUMPDEST`s on the fall-through path. -/
+/-- The terminal trace falls directly into the common tail. -/
 def secondMacExit :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  secondMac ++
-  [secondOpAt 44 .JUMPDEST,
-   secondOpAt 45 .JUMPDEST,
-   secondOpAt 46 .JUMPDEST,
-   secondOpAt 47 .JUMPDEST,
-   secondOpAt 48 .JUMPDEST,
-   secondOpAt 49 .JUMPDEST,
-   secondOpAt 50 .JUMPDEST,
-   secondOpAt 51 .JUMPDEST,
-   secondOpAt 52 .JUMPDEST,
-   secondOpAt 53 .JUMPDEST]
+  secondMac
 
 
 /-- The complete pair block, retained for whole-block consumers. -/
