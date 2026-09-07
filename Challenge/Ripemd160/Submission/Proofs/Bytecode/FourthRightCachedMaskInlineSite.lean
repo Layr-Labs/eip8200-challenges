@@ -18,30 +18,20 @@ abbrev A := Artifact.submissionArtifact
 def template : List Instr := CachedMaskQuadGroup.code (rightParams 0 3) 5
 
 private theorem template_slice :
-    (A.instructions.drop 2508).take template.length = template := by rfl
+    (A.instructions.drop 2505).take template.length = template := by rfl
 
 private theorem template_wellFormed : ∀ instruction ∈ template,
     Stepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def site : GenericRoundSite A .Osaka template :=
-  StackSiteBuilder.ofSlice _ 2508 template_slice (by
-    change 2508 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 2505 template_slice (by
+    change 2505 + template.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) QuadLayout.code_bound template_wellFormed (by decide)
 
-def destination : LocatedSite A .Osaka where
-  located :=
-    { index := 2620
-      instruction := .op .JUMPDEST
-      atIndex := by rfl
-      wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := QuadSites.rightReturnPC 3
-  pc_eq := QuadLayout.pc_toNat_instructionPC _
-
 theorem site_start : site.startPC = QuadSites.rightPC 3 := by rfl
-theorem site_end : site.endPC = destination.pc := by rfl
-theorem destination_next : destination.pc.succ = QuadSites.rightPC 4 := by rfl
+theorem site_end : site.endPC = QuadSites.rightPC 4 := by rfl
 
 def gasSteps_right3 (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (a b c d e : UInt256) (rho : List UInt256)
@@ -59,18 +49,9 @@ def gasSteps_right3 (s : State) (word : Nat → UInt32)
     s working a b c d e rho (right3_fits s hactive) hstack hcode hfork hrun hnp
   have hw : (rightParams 0 3).apply s working = CachedMaskRoundCertificates.right4 word 3 working :=
     CachedMaskRoundCertificates.rightWorking_eq s word working 3 hwords
-  let w := (rightParams 0 3).apply s working
-  have hcap : ([w.a, w.b, w.c, w.d, w.e] ++
-      factor :: a :: b :: c :: d :: e :: mask :: rho).length < 1024 := by
-    simp only [List.length_append, List.length_cons, List.length_nil]
-    omega
-  have finish := SingleCachedMaskInline.gasSteps_destination destination rfl s
-    ([w.a, w.b, w.c, w.d, w.e] ++ factor :: a :: b :: c :: d :: e :: mask :: rho)
-    hcap hcode hfork hrun hnp
-  rw [← site_end] at finish
-  have whole := core.trans finish
+  have whole := core
   exact whole.cast (by rw [site_start]; rfl) (by
-    rw [site_end, destination_next]
+    rw [site_end]
     change CachedMaskRoundCertificates.stateAt s (QuadSites.rightPC 4)
       ((rightParams 0 3).apply s working) (a :: b :: c :: d :: e :: mask :: rho) = _
     rw [hw])
