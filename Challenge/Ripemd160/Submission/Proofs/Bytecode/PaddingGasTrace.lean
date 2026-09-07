@@ -609,7 +609,7 @@ private theorem lengthLoop_cost_potential (input : ByteArray) :
     (fun i hi => lengthIteration_cost_potential input i hi)
 
 private theorem initialize_cost (input : ByteArray) :
-    (Main.gasSteps_initialize input).cost = 68 := by
+    (Main.gasSteps_initialize input).cost = 72 := by
   have hactive := padLengthReady_activeWords input
   change (Main.initializedState input).activeWords.toNat = 5 at hactive
   exact InitializationGasTrace.initialize_cost_of_active input hactive
@@ -628,7 +628,7 @@ private theorem lengthExit_cost (input : ByteArray) :
 
 theorem padding_cost (input : ByteArray) (hfit : CalldataFits input) :
     (PaddingTrace.gasSteps_pad input hfit).cost =
-      868 + 3 * GasCost.calldataWords input.size +
+      872 + 3 * GasCost.calldataWords input.size +
         MachineState.memCost (64 + 2 * DriverTrace.blockCount input) := by
   have hsetup := lengthSetup_cost_potential input hfit
   have hloop := lengthLoop_cost_potential input

@@ -11,9 +11,7 @@ set_option maxHeartbeats 4000000
 
 The dense helper keeps both packed message words on the stack only until the
 two endian stages finish.  It then stores one packed word at each dense
-address.  The reachable helper has 52 instructions including its return
-`JUMP`; four compact, unreachable pushes preserve the original 56-instruction,
-325-byte artifact window.
+address, so each half has 24 instructions and the helper has 56.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
@@ -30,9 +28,6 @@ def push1 (value : UInt256) : Instr :=
 
 def push2 (value : UInt256) : Instr :=
   .push ⟨2, by decide⟩ value
-
-def push3 (value : UInt256) : Instr :=
-  .push ⟨3, by decide⟩ value
 
 def push32 (value : UInt256) : Instr :=
   .push ⟨32, by decide⟩ value
@@ -56,18 +51,10 @@ def initialTemplate : List Instr :=
   [ op .JUMPDEST, dup1, op .MLOAD, swap1, push1 (UInt256.ofNat 32), op .ADD,
     op .MLOAD ]
 
-def endianFactor (shift : Nat) : UInt256 :=
-  UInt256.ofNat (2 ^ shift + 1)
-
-def endianFactorPush (shift : Nat) : Instr :=
-  if shift = 8 then push2 (endianFactor shift) else push3 (endianFactor shift)
-
-/-- If `t = ((value >>> shift) XOR value) AND mask`, the masks used below
-put `t` and `t <<< shift` in disjoint lanes.  Multiplication by
-`1 + 2^shift` therefore combines the two copies without a carry. -/
 def endianStage (shift : Nat) (mask : UInt256) : List Instr :=
-  [ dup1, dup1, push1 (UInt256.ofNat shift), op .SHR, op .XOR,
-    push32 mask, op .AND, endianFactorPush shift, op .MUL, op .XOR ]
+  [ dup1, push1 (UInt256.ofNat shift), op .SHR, push32 mask, op .AND,
+    swap1, push32 mask, op .AND, push1 (UInt256.ofNat shift), op .SHL,
+    op .OR ]
 
 def endianStage8 : List Instr := endianStage 8 mask8
 
@@ -85,37 +72,24 @@ def finalJumpTemplate : List Instr := [op .JUMP]
 def denseFullTemplate : List Instr :=
   denseBeforeJumpTemplate ++ finalJumpTemplate
 
-/-- Compact unreachable padding after the helper's return jump.  Its four
-instructions occupy exactly the 126 bytes removed from the live stages. -/
-def paddingTemplate : List Instr :=
-  [push32 (UInt256.ofNat 0), push32 (UInt256.ofNat 0),
-    push32 (UInt256.ofNat 0),
-    .push ⟨26, by decide⟩ (UInt256.ofNat 0)]
-
-def denseWindowTemplate : List Instr := denseFullTemplate ++ paddingTemplate
-
 @[simp] theorem initialTemplate_length : initialTemplate.length = 7 := by
   rfl
 
 @[simp] theorem endianStage_length (shift : Nat) (mask : UInt256) :
-    (endianStage shift mask).length = 10 := by
+    (endianStage shift mask).length = 11 := by
   rfl
 
 @[simp] theorem denseHalfTemplate_length (half : Nat) :
-    (denseHalfTemplate half).length = 22 := by
+    (denseHalfTemplate half).length = 24 := by
   rfl
 
 @[simp] theorem denseBeforeJumpTemplate_length :
-    denseBeforeJumpTemplate.length = 51 := by
+    denseBeforeJumpTemplate.length = 55 := by
   rfl
 
 @[simp] theorem denseFullTemplate_length :
-    denseFullTemplate.length = 52 := by
+    denseFullTemplate.length = 56 := by
   rfl
-
-@[simp] theorem paddingTemplate_length : paddingTemplate.length = 4 := by rfl
-
-@[simp] theorem denseWindowTemplate_length : denseWindowTemplate.length = 56 := by rfl
 
 theorem assembleBytes_length (instructions : List Instr) :
     (assembleBytes instructions).length =
@@ -130,46 +104,33 @@ theorem assembleBytes_length (instructions : List Instr) :
       rw [ih]
 
 theorem denseHalfTemplate_byteLength (half : Nat) :
-    (assembleBytes (denseHalfTemplate half)).length = 95 := by
+    (assembleBytes (denseHalfTemplate half)).length = 158 := by
   rw [assembleBytes_length]
   simp [denseHalfTemplate, endianStage8, endianStage16, endianStage,
-    endianFactorPush, endianFactor, op, push1, push2, push3, push32, dup1,
-    denseStoreAddress]
+    op, push1, push2, push32, dup1, swap1, denseStoreAddress]
 
 theorem denseBeforeJumpTemplate_byteLength :
-    (assembleBytes denseBeforeJumpTemplate).length = 198 := by
+    (assembleBytes denseBeforeJumpTemplate).length = 324 := by
   rw [denseBeforeJumpTemplate, assembleBytes_append, List.length_append,
     assembleBytes_length]
   simp [denseHalfTemplate, initialTemplate, endianStage8, endianStage16,
-    endianStage, endianFactorPush, endianFactor, op, push1, push2, push3,
-    push32, dup1, swap1, denseStoreAddress]
+    endianStage, op, push1, push2, push32, dup1, swap1, denseStoreAddress]
 
 theorem denseFullTemplate_byteLength :
-    (assembleBytes denseFullTemplate).length = 199 := by
+    (assembleBytes denseFullTemplate).length = 325 := by
   rw [denseFullTemplate, assembleBytes_append, List.length_append,
     denseBeforeJumpTemplate_byteLength]
   rfl
-
-theorem paddingTemplate_byteLength :
-    (assembleBytes paddingTemplate).length = 126 := by
-  rw [assembleBytes_length]
-  norm_num [paddingTemplate, push32]
-
-theorem denseWindowTemplate_byteLength :
-    (assembleBytes denseWindowTemplate).length = 325 := by
-  rw [denseWindowTemplate, assembleBytes_append, List.length_append,
-    denseFullTemplate_byteLength, paddingTemplate_byteLength]
 
 def staticGas (instructions : List Instr) : Nat :=
   (instructions.map
     (Challenge.EvmProof.Meter.instrStaticCost .Osaka)).sum
 
 theorem denseFullTemplate_staticGas :
-    staticGas denseFullTemplate = 167 := by
+    staticGas denseFullTemplate = 171 := by
   norm_num [staticGas, denseFullTemplate, denseBeforeJumpTemplate,
     denseHalfTemplate, initialTemplate, endianStage8, endianStage16,
-    endianStage, endianFactorPush, endianFactor, op, push1, push2, push3,
-    push32, dup1, swap1,
+    endianStage, op, push1, push2, push32, dup1, swap1,
     Challenge.EvmProof.Meter.instrStaticCost, Gas.baseCost]
   rfl
 
@@ -178,14 +139,6 @@ def packedStage (value : UInt256) (shift : Nat) (mask : UInt256) : UInt256 :=
     (UInt256.shiftLeft (UInt256.land value mask) (UInt256.ofNat shift))
     (UInt256.land
       (UInt256.shiftRight value (UInt256.ofNat shift)) mask)
-
-def endianDelta (value : UInt256) (shift : Nat) (mask : UInt256) : UInt256 :=
-  UInt256.land
-    (UInt256.xor (UInt256.shiftRight value (UInt256.ofNat shift)) value) mask
-
-def multipliedStage (value : UInt256) (shift : Nat) (mask : UInt256) : UInt256 :=
-  UInt256.xor
-    (UInt256.mul (endianFactor shift) (endianDelta value shift mask)) value
 
 def packedWord (value : UInt256) : UInt256 :=
   packedStage (packedStage value 8 mask8) 16 mask16

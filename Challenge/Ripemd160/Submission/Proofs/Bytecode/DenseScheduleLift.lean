@@ -27,36 +27,17 @@ theorem runInstr_pc_mstore {s t : State}
             rfl
   · simp [Stepper.runInstr, hcap] at hresult
 
-theorem runInstr_pc_mul {s t : State}
-    (hresult : Stepper.runInstr (.op .MUL) s = some t) :
-    t.pc = s.pc + UInt256.ofNat (Instr.op .MUL).size := by
-  by_cases hcap : s.stack.length < 1024
-  · rw [Stepper.runInstr, if_pos hcap] at hresult
-    cases hs : s.stack with
-    | nil => simp [hs] at hresult
-    | cons a tail =>
-        cases ht : tail with
-        | nil => simp [hs, ht] at hresult
-        | cons b rest =>
-            simp [hs, ht] at hresult
-            subst t
-            rfl
-  · simp [Stepper.runInstr, hcap] at hresult
-
 def Advances (instruction : Instr) : Prop :=
-  SharedCallTrace.Advances instruction ∨ instruction = .op .MSTORE ∨
-    instruction = .op .MUL
+  SharedCallTrace.Advances instruction ∨ instruction = .op .MSTORE
 
 theorem runInstr_pc_of_advances {instruction : Instr} {s t : State}
     (hform : Advances instruction)
     (hresult : Stepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
-  rcases hform with hshared | hstore | hmul
+  rcases hform with hshared | hstore
   · exact SharedCallTrace.runInstr_pc_of_advances hshared hresult
   · subst instruction
     exact runInstr_pc_mstore hresult
-  · subst instruction
-    exact runInstr_pc_mul hresult
 
 theorem runLocatedBlock_eq_raw {artifact : ProgramArtifact} {fork : Fork}
     {template : List Instr} (site : GenericRoundSite artifact fork template)
