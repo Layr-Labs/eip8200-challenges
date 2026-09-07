@@ -229,7 +229,7 @@ def gasSteps_nonzero (s : State) (b e m baseOff expOff modOff : Nat)
       n, expTail])
 
 def nonzeroWork (n b e m : Nat) : Nat :=
-  (343 + n * 284 + m * 190) +
+  (341 + n * 284 + m * 188) +
   (50 + n * 74) +
   (77 + n * 71) +
   (b * (3506 + n * 7248) + (206 + n * 453)) +
