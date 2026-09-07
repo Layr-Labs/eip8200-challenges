@@ -5,13 +5,17 @@ benchmark's RIPEMD-160 contract.
 
 ## Artifact
 
-- Byte length: 5,305
-- Decoded instructions: 3,234
-- Hex-file SHA-256: `baf10ee2c322a41696ff7a745aedb7293ca0dd179e9854ce30165b1188461a95`
-- Raw-byte SHA-256: `facbc97e2beb7a825cd15ac3ed49271a0dc5f5994821a275e77684e42b9276c6`
-- Native 49-vector clean gas total: 1,575,468
-- Native 49-vector dirty gas total: 1,575,468
-- Native vector coverage: 49/49 in both initial-state configurations
+| Surface | State |
+|---|---|
+| Runtime artifact | Updated |
+| Byte-array source | Updated |
+| Decoded instruction source | Updated |
+| Scanner state and execution certificates | Updated |
+| Challenge-owned interfaces | Preserved |
+
+The public parent is terrapinelf's RIPEMD-160 submission in pull request 564.
+This package also restores part of i34-9's earlier accepted contribution.
+Official validation and promotion status belong to the platform record.
 
 ## Verification contract
 
