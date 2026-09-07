@@ -40,7 +40,7 @@ def nonzeroState (input : ByteArray) : State :=
 /-- Zero-modulus branch boundary before its return tail. -/
 def zeroState (input : ByteArray) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 3563
+    pc := UInt256.ofNat 3556
     stack := modulusWord input :: routeStack input }
 
 /-- Boundary after table slot `power` has been stored. -/
@@ -56,7 +56,7 @@ def tableState (input : ByteArray) (power pc : Nat) : State :=
 /-- Loop head after the sixteen-entry table has been constructed. -/
 def loopState (input : ByteArray) (pointer : Nat) (accumulator : UInt256) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 3197
+    pc := UInt256.ofNat 3190
     stack := [UInt256.ofNat pointer, accumulator, modulusWord input] ++
       routeStack input
     memory := tableMemory (baseWord input) (modulusWord input)
@@ -66,7 +66,7 @@ def loopState (input : ByteArray) (pointer : Nat) (accumulator : UInt256) : Stat
 word. -/
 def loopContinueState (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) : State :=
-  { loopState input pointer accumulator with pc := UInt256.ofNat 3206 }
+  { loopState input pointer accumulator with pc := UInt256.ofNat 3199 }
 
 /-- Accumulator after `count` of the four bytes in the currently loaded word.
 The loop bytecode retains that word on the stack until all four bytes have
@@ -101,7 +101,7 @@ theorem byteAccumulator_four (input : ByteArray) (pointer : Nat)
 
 /-- Loop exit reached when the calldata pointer is 160. -/
 def finishState (input : ByteArray) (accumulator : UInt256) : State :=
-  { loopState input 160 accumulator with pc := UInt256.ofNat 3555 }
+  { loopState input 160 accumulator with pc := UInt256.ofNat 3548 }
 
 def outputMemory (word : UInt256) : ByteArray :=
   storeWord ByteArray.empty 0 word
@@ -111,7 +111,7 @@ def normalOutputMemory (input : ByteArray) (word : UInt256) : ByteArray :=
 
 def returnedState (input : ByteArray) (word : UInt256) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 3563
+    pc := UInt256.ofNat 3556
     stack := modulusWord input :: routeStack input
     memory := normalOutputMemory input word
     activeWords := UInt256.ofNat 16
@@ -120,7 +120,7 @@ def returnedState (input : ByteArray) (word : UInt256) : State :=
 
 def zeroReturnedState (input : ByteArray) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 3570
+    pc := UInt256.ofNat 3563
     stack := modulusWord input :: routeStack input
     memory := outputMemory 0
     activeWords := UInt256.ofNat 1
