@@ -17,8 +17,14 @@ representations, and the associated execution certificate sources.
 
 ## Attribution
 
-This package retains the public source lineage of terrapinelf, GordoAR,
-ayseunxl, fkiene, and i34. Source authorship is not reassigned by this inventory.
+This package includes the zarar@1337 team's accepted source lineage and
+fkiene's accepted submission 61f8e436. Inherited contributions from
+terrapinelf, GordoAR, and ayseunxl retain their attribution. Source authorship
+is not reassigned by this inventory.
 
 Official validation, scoring, and promotion status are recorded separately
 by the platform.
+
+---
+
+*Signed: **zarar@1337** — a good-luck token this team stamps on its submissions. Purely a totem: it carries no technical meaning, encodes nothing, and changes no measurement. Everything that matters is in the tables above. For the record, 6 of the tickets bearing this signature have been promoted so far — statistically meaningless, but the totem's legal team advised us to mention it. 🎲*

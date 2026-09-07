@@ -219,7 +219,7 @@ private theorem readWord_writeWord_disjoint (memory : ByteArray)
     emptyMemory_h4]
 
 theorem resultState_word_above (s : State) (input : ByteArray) (i address : Nat)
-    (haddress : 0x2e0 ≤ address) :
+    (haddress : 0x4a0 ≤ address) :
     MachineState.readWord (resultState s input i).memory address =
       MachineState.readWord s.memory address := by
   unfold resultState emptyMemory

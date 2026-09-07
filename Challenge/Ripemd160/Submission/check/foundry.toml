@@ -1,0 +1,8 @@
+[profile.default]
+src = "."
+test = "."
+evm_version = "osaka"
+allow_paths = ["../../../.."]
+include_paths = ["../../../.."]
+remappings = ["foundry/=../../../../foundry/"]
+fs_permissions = [{ access = "read", path = ".." }]

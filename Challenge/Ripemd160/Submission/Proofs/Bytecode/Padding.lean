@@ -16,7 +16,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Padding
 
 open EvmSemantics
 
-def messageOffset : Nat := 0x2e0
+def messageOffset : Nat := 0x4a0
 
 /-- `ceil ((n + 9) / 64) * 64`, in the arithmetic form emitted by Yul. -/
 def paddedLength (n : Nat) : Nat := ((n + 72) / 64) * 64
