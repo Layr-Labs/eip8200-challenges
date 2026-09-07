@@ -47,7 +47,7 @@ def clearSetupPath :
 def clearGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 17 .JUMPDEST, opAt 18 (.Dup ⟨2, by decide⟩),
-   opAt 19 (.Dup ⟨1, by decide⟩), opAt 20 .LT, opAt 21 .ISZERO,
+   opAt 19 (.Dup ⟨1, by decide⟩), opAt 20 .EQ, opAt 21 .JUMPDEST,
    pushAt 22 2 48, opAt 23 .JUMPI]
 
 def clearBodyPath :
@@ -146,28 +146,25 @@ theorem run_clearGuard (s : State) (ptr : UInt256) (count i : Nat)
   have hi256 : i < 2 ^ 256 := hi.trans hcount
   have himod : i % 2 ^ 256 = i := Nat.mod_eq_of_lt hi256
   have hnmod : count % 2 ^ 256 = count := Nat.mod_eq_of_lt hcount
-  have hlt : i % 2 ^ 256 < count % 2 ^ 256 := by
-    rw [Nat.mod_eq_of_lt hi256, Nat.mod_eq_of_lt hcount]
-    exact hi
-  have hltLiteral :
-      i % 115792089237316195423570985008687907853269984665640564039457584007913129639936 <
-        count % 115792089237316195423570985008687907853269984665640564039457584007913129639936 := by
-    norm_num at hlt ⊢
-    exact hlt
+  have hne : i ≠ count := Nat.ne_of_lt hi
+  have heq : UInt256.eq (UInt256.ofNat i) (UInt256.ofNat count) =
+      UInt256.ofNat 0 := by
+    rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat, himod, hnmod, if_neg hne]
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
-  have honeIsZero : (UInt256.ofNat 1).isZero.toNat = 0 := by decide
+  have hzeroNat : (UInt256.ofNat 0).toNat = 0 := by decide
   have hpc : UInt256.ofNat 26 + UInt256.ofNat 3 = UInt256.ofNat 29 := by
     exact Challenge.EvmProof.Word.ofNat_add_ofNat (by norm_num)
   simp [clearGuardPath, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     clearLoop, clearBodyEntry, clearPCs, hc4, hc5, hc6, hrun,
-    UInt256.lt, UInt256.isTrue, Challenge.EvmProof.Word.succ_ofNat_mod,
+    UInt256.isTrue, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
-    himod, hnmod, hlt, hltLiteral, honeIsZero, hpc]
+    hi, hi256, hcount, himod, hnmod, hne, heq, hzeroNat, hpc]
 
 set_option linter.unusedSimpArgs false in
 theorem run_clearBody (s : State) (ptr : UInt256) (count i : Nat)
@@ -219,7 +216,9 @@ theorem run_clearFinishGuard (s : State) (ptr : UInt256) (count : Nat)
       (clearLoop s ptr count count returnDest rest) =
         some (clearExit s ptr count returnDest rest) := by
   have hnmod : count % 2 ^ 256 = count := Nat.mod_eq_of_lt hcount
-  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
+  have heq : UInt256.eq (UInt256.ofNat count) (UInt256.ofNat count) =
+      UInt256.ofNat 1 := by
+    simp [UInt256.eq]
   have hfortyEight : (48 : UInt256) = UInt256.ofNat 48 := by decide
   have hfortyEightNat : (48 : UInt256).toNat = 48 := by decide
   have hjump : Decode.isValidJumpDest submissionBytecode
@@ -235,10 +234,10 @@ theorem run_clearFinishGuard (s : State) (ptr : UInt256) (count : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     clearLoop, clearExit, clearPCs, hc4, hc5, hc6, hcode, hrun,
-    UInt256.lt, UInt256.isTrue, Challenge.EvmProof.Word.succ_ofNat_mod,
+    UInt256.isTrue, UInt256.eq, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
-    hnmod, hzeroFalse, hfortyEight, hfortyEightNat, hjump, jump48, hpc]
+    hnmod, heq, hfortyEight, hfortyEightNat, hjump, jump48, hpc]
 
 set_option linter.unusedSimpArgs false in
 theorem run_clearExit (s : State) (ptr : UInt256) (count : Nat)
@@ -473,10 +472,10 @@ theorem gasSteps_clearIteration_cost_potential (s : State) (ptr : UInt256)
     (gasSteps_clearIteration s ptr count i returnDest rest hcap hcount hi
       hcode hfork hrun hnp).cost +
         MachineState.memCost (clearLoop s ptr count i returnDest rest).activeWords.toNat =
-      71 + MachineState.memCost
+      69 + MachineState.memCost
         (clearLoop s ptr count (i + 1) returnDest rest).activeWords.toNat := by
   have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    clearGuardPath 26 (run_clearGuard s ptr count i returnDest rest
+    clearGuardPath 24 (run_clearGuard s ptr count i returnDest rest
       hcap hcount hi hrun)
     (by simpa [clearLoop, State.fork] using hfork)
     (by decide) (by rfl)
@@ -500,7 +499,7 @@ theorem gasSteps_clearIteration_cost_potential (s : State) (ptr : UInt256)
         (run_clearBody s ptr count i returnDest rest hcap (by omega) hcode hrun)
         (by simpa [clearBodyEntry, clearLoop] using hrun)
         (by simpa [clearBodyEntry, clearLoop, State.fork] using hnp)))
-    26 45 hguard hbody
+    24 45 hguard hbody
   simpa [gasSteps_clearIteration] using htrans
 
 theorem gasSteps_clearLoop_cost_potential (s : State) (ptr : UInt256)
@@ -513,7 +512,7 @@ theorem gasSteps_clearLoop_cost_potential (s : State) (ptr : UInt256)
     (gasSteps_clearLoop s ptr count returnDest rest hcap hcount hcode hfork
       hrun hnp).cost + MachineState.memCost
         (clearLoop s ptr count 0 returnDest rest).activeWords.toNat =
-      count * 71 + MachineState.memCost
+      count * 69 + MachineState.memCost
         (clearLoop s ptr count count returnDest rest).activeWords.toNat := by
   unfold gasSteps_clearLoop
   apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
@@ -532,10 +531,10 @@ theorem gasSteps_clearFinish_cost_potential (s : State) (ptr : UInt256)
     (gasSteps_clearFinish s ptr count returnDest rest hcap hcount hcode hfork
       hrun hnp hvalid).cost + MachineState.memCost
         (clearLoop s ptr count count returnDest rest).activeWords.toNat =
-      41 + MachineState.memCost
+      39 + MachineState.memCost
         (clearReturned s ptr count returnDest rest).activeWords.toNat := by
   have hguard := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    clearGuardPath 26 (run_clearFinishGuard s ptr count returnDest rest
+    clearGuardPath 24 (run_clearFinishGuard s ptr count returnDest rest
       hcap hcount hcode hrun)
     (by simpa [clearLoop, State.fork] using hfork)
     (by decide) (by rfl)
@@ -559,7 +558,7 @@ theorem gasSteps_clearFinish_cost_potential (s : State) (ptr : UInt256)
         (run_clearExit s ptr count returnDest rest hcap hcode hvalid hrun)
         (by simpa [clearExit, clearLoop] using hrun)
         (by simpa [clearExit, clearLoop, State.fork] using hnp)))
-    26 15 hguard hexit
+    24 15 hguard hexit
   simpa [gasSteps_clearFinish] using htrans
 
 theorem gasSteps_clear_cost_potential (s : State) (ptr : UInt256)
@@ -572,7 +571,7 @@ theorem gasSteps_clear_cost_potential (s : State) (ptr : UInt256)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     (gasSteps_clear s ptr count returnDest rest hcap hcount hcode hfork hrun hnp
       hvalid).cost + MachineState.memCost s.activeWords.toNat =
-      (44 + count * 71) + MachineState.memCost
+      (42 + count * 69) + MachineState.memCost
         (clearReturned s ptr count returnDest rest).activeWords.toNat := by
   have hsetup := gasSteps_clearSetup_cost_potential s ptr count returnDest rest
     hcap hcode hfork hrun hnp
@@ -589,12 +588,12 @@ theorem gasSteps_clear_cost_potential (s : State) (ptr : UInt256)
   have hprefix := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     (gasSteps_clearSetup s ptr count returnDest rest hcap hcode hfork hrun hnp)
     (gasSteps_clearLoop s ptr count returnDest rest hcap hcount hcode hfork hrun hnp)
-    3 (count * 71) hsetup' hloop
+    3 (count * 69) hsetup' hloop
   have htotal := Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
     ((gasSteps_clearSetup s ptr count returnDest rest hcap hcode hfork hrun hnp).trans
       (gasSteps_clearLoop s ptr count returnDest rest hcap hcount hcode hfork hrun hnp))
     (gasSteps_clearFinish s ptr count returnDest rest hcap hcount hcode hfork
-      hrun hnp hvalid) (3 + count * 71) 41 hprefix hfinish
+      hrun hnp hvalid) (3 + count * 69) 39 hprefix hfinish
   unfold gasSteps_clear
   simp only [Challenge.EvmProof.GasSteps.trans_cost] at htotal ⊢
   have hactive : (clearEntry s ptr count returnDest rest).activeWords =
