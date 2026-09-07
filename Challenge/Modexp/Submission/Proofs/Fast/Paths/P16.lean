@@ -12,8 +12,7 @@ The three basic blocks are
 
 * `blk1781` (idx 1781..1792, pc 2922..2937) — the byte load and the `i = 0`
   test;
-* `blk1793` (idx 1793..1795, pc 2938..2943) — `PUSH1 128` and the jump back
-  into the bit loop;
+* `blk1793` (idx 1793..1795, pc 2938..2943) — `PUSH1 128` and a jump to the appended zero-byte dispatcher;
 * `blk1796` (idx 1796..1815, pc 2944..2970) — the fold
   `w ||| w >>> 1 ||| w >>> 2 ||| w >>> 4`, then `>>> 1` and `+ 1`, and the
   jump back. -/
@@ -44,7 +43,7 @@ def blk1781 :
 def blk1793 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1793 1 128,
-   pushAt 1794 2 1789,
+   pushAt 1794 2 3965,
    opAt 1795 .JUMP]
 
 /-- Instructions 1796..1815, pc 2944..2970: the highest set bit of byte `0`. -/

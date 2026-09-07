@@ -101,11 +101,27 @@ def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : St
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
-/-- The bit-loop head both arms rejoin, pc 1789. -/
+/-- The nonzero-byte path rejoins at the bit-loop head, pc 1789. -/
 def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 1789
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
+           memory := mem }
+
+
+/-- The appended dispatcher, pc 3965, keeps the nonzero-byte mask on top. -/
+def lzDispatch (s : State) (mem : ByteArray) (i w : Nat)
+    (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 3965
+           stack := UInt256.ofNat 128 :: UInt256.ofNat w :: UInt256.ofNat i :: rest
+           memory := mem }
+
+/-- The zero-byte tail enters `ENX`, pc 1832, whose zero mask falls through
+to the existing byte-loop tail. -/
+def lzNext (s : State) (mem : ByteArray) (i w : Nat)
+    (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 1832
+           stack := UInt256.ofNat 0 :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- The state `LZ`'s byte-0 arm now hands to `LZBASE`, pc 3897.  The stack is
@@ -226,21 +242,23 @@ theorem sm_lt (w : Nat) (hw : w < 256) :
 
 /-! ## The two rejoining arms -/
 
-/-- Instructions 1793..1795: every byte after the first starts the bit loop at
-`0x80`, exactly as the code this replaces did. -/
+/-- Instructions 1793..1795: every byte after the first starts at the appended
+dispatcher, which selects the zero-byte squaring tail. -/
 theorem run_lzOther (s : State) (mem : ByteArray) (i w : Nat)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1793
-      (lzOther s mem i w rest) = some (lzJoin s mem i w 128 rest) := by
+      (lzOther s mem i w rest) = some (lzDispatch s mem i w rest) := by
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
+  have h3965 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3965 = true :=
+    Artifact.isValidJumpDest_index 2617 (by rfl)
   simp (config := { maxSteps := 400000 }) [blk1793, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lzOther, lzJoin, hrun, hcode, hc2, hc3, hc4, jumpDest1789,
+    lzOther, lzDispatch, hrun, hcode, hc2, hc3, hc4, h3965,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat]
