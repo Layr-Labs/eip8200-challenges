@@ -29,10 +29,10 @@ private def tableKernelState (template : State) (base modulus : UInt256)
     activeWords := UInt256.ofNat (power + 1) }
 
 @[simp] private theorem table4PCs (index : Nat)
-    (hlo : 1879 ≤ index) (hhi : index ≤ 1887) :
+    (hlo : 1910 ≤ index) (hhi : index ≤ 1918) :
     Artifact.submissionArtifact.instructionPC index =
-      ([3063, 3064, 3065, 3066, 3067, 3068, 3069, 3070, 3072]
-        : List Nat)[index - 1879]! := by
+      ([3092, 3093, 3094, 3095, 3096, 3097, 3098, 3099, 3101]
+        : List Nat)[index - 1904]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -40,8 +40,8 @@ private theorem run_table4_generic (template : State) (base modulus : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hrun : template.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock table4Path
-      (tableKernelState template base modulus 3 3063 rest) =
-        some (tableKernelState template base modulus 4 3073 rest) := by
+      (tableKernelState template base modulus 3 3107 rest) =
+        some (tableKernelState template base modulus 4 3117 rest) := by
   have h3 : rest.length + 3 < 1024 := by omega
   have h4 : rest.length + 4 < 1024 := by omega
   have h5 : rest.length + 5 < 1024 := by omega
@@ -68,7 +68,7 @@ private theorem run_table4_generic (template : State) (base modulus : UInt256)
 
 theorem run_table4 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock table4Path
-      (tableState input 3 3063) = some (tableState input 4 3073) := by
+      (tableState input 3 3107) = some (tableState input 4 3117) := by
   have h := run_table4_generic (Dispatch.wordEntryState input)
     (baseWord input) (modulusWord input) (routeStack input)
     (by simp [routeStack]) rfl
@@ -88,7 +88,7 @@ private def sound {s t : State}
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka path hcode hfork h hrun hnp
 
-def gasSteps_table4 (input : ByteArray) : TableUpdateStep input 3 3063 := by
+def gasSteps_table4 (input : ByteArray) : TableUpdateStep input 3 3092 := by
   exact sound table4Path (run_table4 input)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitTableUpdate4

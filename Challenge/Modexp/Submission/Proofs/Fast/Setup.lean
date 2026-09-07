@@ -1039,7 +1039,7 @@ def setupPathD :
   [pushAt 1125 0 0, opAt 1126 .SUB, pushAt 1127 2 9376, opAt 1128 .MSTORE,
    opAt 1129 .POP, opAt 1130 .POP, pushAt 1131 1 1, pushAt 1132 2 4096,
    opAt 1133 .MSTORE, pushAt 1134 2 1533, pushAt 1135 2 4096,
-   pushAt 1136 2 2901, opAt 1137 .JUMP]
+   pushAt 1136 2 2945, opAt 1137 .JUMP]
 
 /-- After the variable stores and the modulus load (pc 1451). -/
 def modLoadedState (s : State) (input : ByteArray) (m0 : Nat) : State :=
@@ -1057,10 +1057,10 @@ def newtonState (s : State) (input : ByteArray) (m0 x p : Nat) : State :=
            memory := modulusMem s.memory input
            activeWords := loadWords s.activeWords input }
 
-/-- State at the `R1B` guard entry `JUMPDEST` (pc 2901).  The guard dispatches
+/-- State at the `R1B` guard entry `JUMPDEST` (pc 2945).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 2901
+  { s with pc := UInt256.ofNat 2945
            stack := UInt256.ofNat 4096 :: UInt256.ofNat 1533 :: outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
@@ -1538,7 +1538,7 @@ def lowLimb (input : ByteArray) : Nat :=
 /-- `minv = -m[0]⁻¹ mod 2^256`, as the block stores it at `V_MINV`. -/
 def minvValue (input : ByteArray) : Nat := negWord (newton8 (lowLimb input))
 
-/-- The state the setup reaches: the `DOUBLE256` entry `JUMPDEST` at pc 1911. -/
+/-- The state the setup reaches: the `R1B` guard entry `JUMPDEST` at pc 2945. -/
 def fastSetupState (input : ByteArray) : State :=
   setupExitState (initialState submissionBytecode input 0) input (lowLimb input)
 
@@ -1550,7 +1550,7 @@ theorem fastSetupState_memory (input : ByteArray) :
     (fastSetupState input).memory = fastSetupMemory input := rfl
 
 theorem fastSetupState_pc (input : ByteArray) :
-    (fastSetupState input).pc = UInt256.ofNat 2901 := rfl
+    (fastSetupState input).pc = UInt256.ofNat 2945 := rfl
 
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack =

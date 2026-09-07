@@ -20,9 +20,9 @@ theorem run_byte0_highPrep (template : State)
     (base modulus word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (highPrepPath 0)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3208)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3252)
         base modulus word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3215)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3259)
       base modulus (highNibble 0 word) (byteValue 0 word) word pointer
       accumulator rest) := by
   have h4 : rest.length + 1 + 1 + 1 + 1 < 1024 := by omega

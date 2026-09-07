@@ -63,7 +63,7 @@ theorem handled_of_handover (input : ByteArray) (s : State) (mem : ByteArray)
     dsimp only [sub]
     exact specOf_subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32
       hmpos hminvlt hminvA hodd
-  let directMem := setupToDirectMem (r1Mem n) (ladderMem sub.mpMem sub.amMem n) n mem
+  let directMem := setupToDirectMem (r1Mem n) (ccbMem sub.mpMem sub.amMem) n mem
   have hframeDirect : Frame directMem n bsize minv := by
     dsimp only [directMem]
     exact setupToDirect_frame sub hn hn32 hframe0
