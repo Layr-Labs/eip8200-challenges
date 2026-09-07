@@ -26,10 +26,10 @@ def shl (v : EWord) (n : Nat) : EWord :=
   UInt256.shiftLeft v (UInt256.ofNat n)
 
 def mask8 : EWord :=
-  UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
+  UInt256.ofNat 0xff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
 
 def mask16 : EWord :=
-  UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
+  UInt256.ofNat 0xffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
 
 def packed (v : EWord) : EWord :=
   let t :=
@@ -66,13 +66,13 @@ private theorem land_toNat (a b : EWord) :
   exact Challenge.EvmProof.Word.word_toNat_land a b
 
 private theorem mask8_toNat : mask8.toNat =
-    0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff := by
+    0xff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff := by
   unfold mask8
   rw [Challenge.EvmProof.Word.word_toNat_ofNat]
   exact Nat.mod_eq_of_lt (by norm_num)
 
 private theorem mask16_toNat : mask16.toNat =
-    0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff := by
+    0xffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff := by
   unfold mask16
   rw [Challenge.EvmProof.Word.word_toNat_ofNat]
   exact Nat.mod_eq_of_lt (by norm_num)

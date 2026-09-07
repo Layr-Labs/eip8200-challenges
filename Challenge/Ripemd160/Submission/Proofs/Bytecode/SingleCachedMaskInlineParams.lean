@@ -58,31 +58,24 @@ theorem right4_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
     fin_cases i <;> decide
   omega
 
-theorem right8_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
-    (rightParams 2 0).Fits s := by
+theorem right5_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
+    (rightParams 1 1).Fits s := by
   intro i
-  have hend : ((rightParams 2 0).address i).toNat + 32 ≤ 11 * 32 := by
+  have hend : ((rightParams 1 1).address i).toNat + 32 ≤ 11 * 32 := by
     fin_cases i <;> decide
   omega
 
-theorem right9_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
-    (rightParams 2 1).Fits s := by
+theorem right6_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
+    (rightParams 1 2).Fits s := by
   intro i
-  have hend : ((rightParams 2 1).address i).toNat + 32 ≤ 11 * 32 := by
+  have hend : ((rightParams 1 2).address i).toNat + 32 ≤ 11 * 32 := by
     fin_cases i <;> decide
   omega
 
-theorem right10_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
-    (rightParams 2 2).Fits s := by
+theorem right7_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
+    (rightParams 1 3).Fits s := by
   intro i
-  have hend : ((rightParams 2 2).address i).toNat + 32 ≤ 11 * 32 := by
-    fin_cases i <;> decide
-  omega
-
-theorem right11_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
-    (rightParams 2 3).Fits s := by
-  intro i
-  have hend : ((rightParams 2 3).address i).toNat + 32 ≤ 11 * 32 := by
+  have hend : ((rightParams 1 3).address i).toNat + 32 ≤ 11 * 32 := by
     fin_cases i <;> decide
   omega
 

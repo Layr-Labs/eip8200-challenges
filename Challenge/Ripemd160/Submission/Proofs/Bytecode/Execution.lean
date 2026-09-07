@@ -2,7 +2,7 @@ import Challenge.EvmProof.Stepper
 import Challenge.EvmProof.Word
 import Challenge.Ripemd160.ProofSupport.InitialState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.ExecutionEntry
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Entry
 set_option warningAsError true
 set_option maxRecDepth 10000
 set_option maxHeartbeats 1000000
@@ -30,26 +30,26 @@ private def wfOp {op : Operation}
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
 
-def mainStart (input : ByteArray) : State := atPC input 0x4
+def mainStart (input : ByteArray) : State := atPC input 0x155
 
 def path_start : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨0, .push ⟨1, by decide⟩ (UInt256.ofNat 168), by rfl, by decide⟩,
-   ⟨1, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  []
 
 
 def path_3ee : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨2, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨183, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
-def gasSteps_start (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0xa8) :=
-  ExecutionEntry.initial_entry input
+def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
+    (hne256 : input.size ≠ 256) :
+    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0x8) :=
+  Prefix256Entry.gasSteps_skip input hfit hne256
 
 def gasSteps_3ee (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 0x3) (mainStart input) := by
+    Challenge.EvmProof.GasSteps (atPC input 0x154) (mainStart input) := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_3ee
-      (atPC input 0x3) = some (mainStart input) := by
+      (atPC input 0x154) = some (mainStart input) := by
     simp [path_3ee, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, mainStart, initialState]
@@ -63,7 +63,7 @@ def gasSteps_3ee (input : ByteArray) :
 
 def gasSteps_entry (input : ByteArray)
     (entryPrefix : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (atPC input 0x3)) :
+      (atPC input 0x154)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (mainStart input) :=
   entryPrefix.trans (gasSteps_3ee input)

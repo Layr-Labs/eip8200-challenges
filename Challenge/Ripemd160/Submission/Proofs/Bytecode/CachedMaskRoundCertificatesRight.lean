@@ -1,7 +1,6 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RightGroupTwoQuad0Site
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RightGroupTwoQuad1Site
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RightGroupTwoQuad2Site
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RightGroupTwoQuad3Site
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.SixthRightCachedMaskInlineSite
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.SeventhRightCachedMaskInlineSite
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.EighthRightCachedMaskInlineSite
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FifthRightCachedMaskInlineSite
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ThirdCachedMaskInlineSite
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FourthRightCachedMaskInlineSite
@@ -71,23 +70,23 @@ def gasSteps_rightFallthrough (s : State) (word : Nat → UInt32)
   let k := CachedMaskRoundSitesRight.fallthroughK group
   let site := CachedMaskRoundSitesRight.fallthroughRound group
 
-  have hgroup : k.val / 4 = (2 * group.val + 1) := by
+  have hgroup : k.val / 4 = (group.val + 2) := by
     dsimp [k, CachedMaskRoundSitesRight.fallthroughK]
     omega
 
   have hframe : (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho).length < 1007 := by
     simp only [List.length_cons]
     omega
-  have hraw := LoadedHoistHelper.run_right (4 - (2 * group.val + 1)) (by omega) s site.helper.startPC
+  have hraw := LoadedHoistHelper.run_right (4 - (group.val + 2)) (by omega) s site.helper.startPC
     (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k) (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) site.returnPC (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) working (QuadSites.rightConstant k) a b c d e rho
     (fun h => rightConstant_zero k (by omega)) hstack hrun
     (rightRotation0_pos k) (rightRotation0_lt32 k) (rightRotation1_pos k) (rightRotation1_lt32 k)
     (rightRotation2_pos k) (rightRotation2_lt32 k) (rightRotation3_pos k) (rightRotation3_lt32 k)
-  have ghelper := LoadedHoistHelper.gasSteps_of_raw (LoadedHoistHelper.rightTemplate (4 - (2 * group.val + 1)) (QuadSites.rightConstant k))
-    (LoadedHoistHelper.right_advances (4 - (2 * group.val + 1)) (by omega) (QuadSites.rightConstant k))
-    (4 - (2 * group.val + 1)) (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k) (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) (QuadSites.rightConstant k)
+  have ghelper := LoadedHoistHelper.gasSteps_of_raw (LoadedHoistHelper.rightTemplate (4 - (group.val + 2)) (QuadSites.rightConstant k))
+    (LoadedHoistHelper.right_advances (4 - (group.val + 2)) (by omega) (QuadSites.rightConstant k))
+    (4 - (group.val + 2)) (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k) (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) (QuadSites.rightConstant k)
     site.helper s site.returnPC working (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho) hraw hrun hcode hfork hnp
-  have g := LoadedCalls.Fallthrough.gasSteps_of_helper (4 - (2 * group.val + 1)) (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k) (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) (QuadSites.rightConstant k) (LoadedHoistHelper.rightTemplate (4 - (2 * group.val + 1)) (QuadSites.rightConstant k))
+  have g := LoadedCalls.Fallthrough.gasSteps_of_helper (4 - (group.val + 2)) (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k) (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k) (QuadSites.rightRotation0 k) (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k) (QuadSites.rightRotation3 k) (QuadSites.rightConstant k) (LoadedHoistHelper.rightTemplate (4 - (group.val + 2)) (QuadSites.rightConstant k))
     site s working (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho) hframe hrun hcode hfork hnp ghelper
   have hw := rightWorking_eq s word working k hwords
 
@@ -126,25 +125,25 @@ noncomputable def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
 
   · exact ⟨FifthRightCachedMaskInlineSite.gasSteps_right4 s word working a b c d e rho hwords hactive hstack hcode hfork hrun hnp⟩
 
+  · exact ⟨SixthRightCachedMaskInlineSite.gasSteps_right5 s word working a b c d e rho hwords hactive hstack hcode hfork hrun hnp⟩
+
+  · exact ⟨SeventhRightCachedMaskInlineSite.gasSteps_right6 s word working a b c d e rho hwords hactive hstack hcode hfork hrun hnp⟩
+
+  · exact ⟨EighthRightCachedMaskInlineSite.gasSteps_right7 s word working a b c d e rho hwords hactive hstack hcode hfork hrun hnp⟩
+
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 0 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 1 hwords hactive hstack hcode hfork hrun hnp⟩
 
-  · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 0 hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨RightGroupTwoQuad0Site.gasSteps_right8 s word working a b c d e rho hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨RightGroupTwoQuad1Site.gasSteps_right9 s word working a b c d e rho hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨RightGroupTwoQuad2Site.gasSteps_right10 s word working a b c d e rho hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨RightGroupTwoQuad3Site.gasSteps_right11 s word working a b c d e rho hwords hactive hstack hcode hfork hrun hnp⟩
-
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 2 hwords hactive hstack hcode hfork hrun hnp⟩
+
+  · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 0 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 3 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 4 hwords hactive hstack hcode hfork hrun hnp⟩
+
+  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 5 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 1 hwords hactive hstack hcode hfork hrun hnp⟩
 
