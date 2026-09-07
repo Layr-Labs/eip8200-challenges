@@ -1,7 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSitesBase
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadHelperTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskCalls
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.newShiftedHoistHelper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskHoistHelper
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -24,13 +24,13 @@ def normalFin (k : NormalIndex) : Fin 20 :=
 
 private theorem normal_slice (k : NormalIndex) :
     (Artifact.instructions.drop (rightWrapperIndex (normalFin k).val)).take
-        (CachedMaskCalls.ShiftedCall.quadCallPushes (rightReturnPC (normalFin k).val)
+        (QuadCallTrace.quadCallPushes (rightReturnPC (normalFin k).val)
           (rightAddress0 (normalFin k)) (rightAddress1 (normalFin k))
           (rightAddress2 (normalFin k)) (rightAddress3 (normalFin k))
           (rightHelperPC (normalFin k).val) (rightRotation0 (normalFin k))
           (rightRotation1 (normalFin k)) (rightRotation2 (normalFin k))
           (rightRotation3 (normalFin k))).length =
-      CachedMaskCalls.ShiftedCall.quadCallPushes (rightReturnPC (normalFin k).val)
+      QuadCallTrace.quadCallPushes (rightReturnPC (normalFin k).val)
         (rightAddress0 (normalFin k)) (rightAddress1 (normalFin k))
         (rightAddress2 (normalFin k)) (rightAddress3 (normalFin k))
         (rightHelperPC (normalFin k).val) (rightRotation0 (normalFin k))
@@ -42,7 +42,7 @@ private theorem normal_slice (k : NormalIndex) :
 
 private theorem normal_fits (k : NormalIndex) :
     rightWrapperIndex (normalFin k).val +
-        (CachedMaskCalls.ShiftedCall.quadCallPushes (rightReturnPC (normalFin k).val)
+        (QuadCallTrace.quadCallPushes (rightReturnPC (normalFin k).val)
           (rightAddress0 (normalFin k)) (rightAddress1 (normalFin k))
           (rightAddress2 (normalFin k)) (rightAddress3 (normalFin k))
           (rightHelperPC (normalFin k).val) (rightRotation0 (normalFin k))
@@ -52,7 +52,7 @@ private theorem normal_fits (k : NormalIndex) :
   fin_cases k <;> decide
 
 private theorem normal_wellFormed (k : NormalIndex) :
-    ∀ instruction ∈ CachedMaskCalls.ShiftedCall.quadCallPushes
+    ∀ instruction ∈ QuadCallTrace.quadCallPushes
         (rightReturnPC (normalFin k).val)
         (rightAddress0 (normalFin k)) (rightAddress1 (normalFin k))
         (rightAddress2 (normalFin k)) (rightAddress3 (normalFin k))
@@ -66,7 +66,7 @@ private theorem normal_wellFormed (k : NormalIndex) :
 
 def normalPushes (k : NormalIndex) :
     GenericRoundSite Artifact .Osaka
-      (CachedMaskCalls.ShiftedCall.quadCallPushes (rightReturnPC (normalFin k).val)
+      (QuadCallTrace.quadCallPushes (rightReturnPC (normalFin k).val)
         (rightAddress0 (normalFin k)) (rightAddress1 (normalFin k))
         (rightAddress2 (normalFin k)) (rightAddress3 (normalFin k))
         (rightHelperPC (normalFin k).val) (rightRotation0 (normalFin k))
@@ -74,7 +74,7 @@ def normalPushes (k : NormalIndex) :
         (rightRotation3 (normalFin k))) :=
   StackSiteBuilder.ofSlice _ (rightWrapperIndex (normalFin k).val) (normal_slice k)
     (normal_fits k) QuadLayout.code_bound (normal_wellFormed k)
-    (by simp [CachedMaskCalls.ShiftedCall.quadCallPushes])
+    (by simp [QuadCallTrace.quadCallPushes])
 
 def normalJump (k : NormalIndex) : LocatedSite Artifact .Osaka where
   located :=
@@ -98,7 +98,7 @@ private theorem normalPushes_end (k : NormalIndex) :
   calc
     (normalJump k).pc = rightJumpPC (normalFin k).val := by rfl
     _ = StackRoundTrace.pcAfter (rightPC (normalFin k).val)
-        (CachedMaskCalls.ShiftedCall.quadCallPushes (rightReturnPC (normalFin k).val)
+        (QuadCallTrace.quadCallPushes (rightReturnPC (normalFin k).val)
           (rightAddress0 (normalFin k)) (rightAddress1 (normalFin k))
           (rightAddress2 (normalFin k)) (rightAddress3 (normalFin k))
           (rightHelperPC (normalFin k).val) (rightRotation0 (normalFin k))
@@ -122,7 +122,7 @@ def normalReturn (k : NormalIndex) : LocatedSite Artifact .Osaka where
   pc_eq := QuadLayout.pc_toNat_instructionPC _
 
 def normalCall (k : NormalIndex) :
-    CachedMaskCalls.ShiftedCall.CallSite Artifact .Osaka
+    QuadCallTrace.CallSite Artifact .Osaka
       (rightReturnPC (normalFin k).val)
       (rightAddress0 (normalFin k)) (rightAddress1 (normalFin k))
       (rightAddress2 (normalFin k)) (rightAddress3 (normalFin k))
@@ -202,7 +202,7 @@ def normalRound (k : NormalIndex) :
       (rightAddress2 (normalFin k)) (rightAddress3 (normalFin k))
       (rightRotation0 (normalFin k)) (rightRotation1 (normalFin k))
       (rightRotation2 (normalFin k)) (rightRotation3 (normalFin k))
-      (ShiftedHoistHelper.rightTemplate (4 - (normalFin k).val / 4) (rightConstant (normalFin k))) where
+      (CachedMaskHoistHelper.rightTemplate (4 - (normalFin k).val / 4) (rightConstant (normalFin k))) where
   returnPC := rightReturnPC (normalFin k).val
   helperPC := rightHelperPC (normalFin k).val
   call := normalCall k
@@ -222,14 +222,14 @@ def fallthroughK (group : Fin 4) : Fin 20 :=
 
 private theorem fallthrough_slice (group : Fin 4) :
     (Artifact.instructions.drop (rightWrapperIndex (fallthroughK group).val)).take
-        (CachedMaskCalls.ShiftedFallthrough.pushes
+        (QuadFallthroughTrace.pushes
           (rightReturnPC (fallthroughK group).val)
           (rightAddress0 (fallthroughK group)) (rightAddress1 (fallthroughK group))
           (rightAddress2 (fallthroughK group)) (rightAddress3 (fallthroughK group))
           (rightRotation0 (fallthroughK group)) (rightRotation1 (fallthroughK group))
           (rightRotation2 (fallthroughK group))
           (rightRotation3 (fallthroughK group))).length =
-      CachedMaskCalls.ShiftedFallthrough.pushes (rightReturnPC (fallthroughK group).val)
+      QuadFallthroughTrace.pushes (rightReturnPC (fallthroughK group).val)
         (rightAddress0 (fallthroughK group)) (rightAddress1 (fallthroughK group))
         (rightAddress2 (fallthroughK group)) (rightAddress3 (fallthroughK group))
         (rightRotation0 (fallthroughK group)) (rightRotation1 (fallthroughK group))
@@ -238,7 +238,7 @@ private theorem fallthrough_slice (group : Fin 4) :
   fin_cases group <;> rfl
 
 def fallthroughPushes (group : Fin 4) : GenericRoundSite Artifact .Osaka
-    (CachedMaskCalls.ShiftedFallthrough.pushes (rightReturnPC (fallthroughK group).val)
+    (QuadFallthroughTrace.pushes (rightReturnPC (fallthroughK group).val)
       (rightAddress0 (fallthroughK group)) (rightAddress1 (fallthroughK group))
       (rightAddress2 (fallthroughK group)) (rightAddress3 (fallthroughK group))
       (rightRotation0 (fallthroughK group)) (rightRotation1 (fallthroughK group))
@@ -249,7 +249,7 @@ def fallthroughPushes (group : Fin 4) : GenericRoundSite Artifact .Osaka
     (by fin_cases group <;> decide)
     QuadLayout.code_bound
     (StackRoundData.templateWellFormed_mem (by fin_cases group <;> decide))
-    (by simp [CachedMaskCalls.ShiftedFallthrough.pushes])
+    (by simp [QuadFallthroughTrace.pushes])
 
 def fallthroughReturn (group : Fin 4) : LocatedSite Artifact .Osaka where
   located :=
@@ -281,7 +281,7 @@ def fallthroughRound (group : Fin 4) :
       (rightAddress2 (fallthroughK group)) (rightAddress3 (fallthroughK group))
       (rightRotation0 (fallthroughK group)) (rightRotation1 (fallthroughK group))
       (rightRotation2 (fallthroughK group)) (rightRotation3 (fallthroughK group))
-      (ShiftedHoistHelper.rightTemplate (4 - group.val) (rightConstant (fallthroughK group))) where
+      (CachedMaskHoistHelper.rightTemplate (4 - group.val) (rightConstant (fallthroughK group))) where
   returnPC := rightReturnPC (fallthroughK group).val
   callPushes := fallthroughPushes group
   helper := castTemplate (helperSite group) (by fin_cases group <;> rfl)
