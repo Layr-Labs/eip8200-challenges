@@ -154,6 +154,14 @@ def amCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
              ret :: tail
            memory := mem }
 
+/-- The direct fused `ADDMOD` call state at pc 5029. -/
+def amCallDirect (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
+    (tail : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 5029
+           stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
+             ret :: tail
+           memory := mem }
+
 /-- The state a subroutine returns to. -/
 def retTo (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
@@ -223,6 +231,52 @@ def gasSteps_addmodFull (s : State) (mem : ByteArray) (pa pb n pd : Nat)
           hcode hfork hrun hnp hact htl)).trans
       (FusedCsub.gasSteps_loop s mem pa pb n (UInt256.ofNat pd) ret tail hcap hcode
         hfork hrun hnp hact hn hn32 (by omega) (by omega))).trans
+      (FusedCsub.gasSteps_exit s mem pa pb n (UInt256.ofNat pd) ret tail hcap hcode
+        hfork hrun hnp hact hn hn32 (by omega) (by omega))).trans
+      htail)
+    rfl
+    (by simp only [FusedCsub.returnedState, retTo, amMemOf,
+      FusedCsub.resultMemory, hpdN])
+
+/-- One fused `ADDMOD` call entered directly at the appended routine. -/
+def gasSteps_addmodDirect (s : State) (mem : ByteArray) (pa pb n pd : Nat)
+    (ret : UInt256) (tail : List UInt256) (hcap : tail.length ≤ 1008)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (_hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 7168)
+    (_hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 7168)
+    (hpd : pd + 32 * n ≤ 8192)
+    (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
+    (_hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * n - 32))
+    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
+    Challenge.EvmProof.GasSteps (amCallDirect s mem pa pb pd ret tail)
+      (retTo s (amMemOf mem pa pb n pd) ret tail) :=
+  have hpdN : (UInt256.ofNat pd).toNat = pd := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (show pd ≤ 8192 by omega) (by norm_num))]
+  have hs32' : MachineState.readWord (FusedCsub.tnMemory mem pa pb n n) 9344 =
+      UInt256.ofNat (32 * n) := by
+    rw [FusedCsub.tnMemory_readWord_disjoint mem pa pb n n 9344
+      (Or.inr (by omega)) (Or.inr (by omega)) (Or.inr (by omega)) (by omega)]
+    exact hs32
+  have hcarry := (FusedCsub.flags_le_one mem pa pb n n le_rfl).1
+  have hdstFit : (UInt256.ofNat pd).toNat + 32 * n ≤ 9472 := by rw [hpdN]; omega
+  have hnj : n - 1 + 1 = n := by omega
+  have htail : Challenge.EvmProof.GasSteps
+      (FusedCsub.tailState s mem pa pb n (n - 1 + 1) (UInt256.ofNat pd) ret tail)
+      (FusedCsub.returnedState s mem pa pb n n (UInt256.ofNat pd) ret tail) := by
+    simpa only [hnj] using
+      (FusedCsub.gasSteps_tail s mem pa pb n n (UInt256.ofNat pd) ret tail hcap hcode
+        hfork hrun hnp hact hn hn32 hjump hs32' hdstFit hcarry)
+  Challenge.EvmProof.GasSteps.cast
+    ((((FusedCsub.gasSteps_entry s mem pa pb n (UInt256.ofNat pd) ret tail hcap
+          hcode hfork hrun hnp hact htl).trans
+        (FusedCsub.gasSteps_loop s mem pa pb n (UInt256.ofNat pd) ret tail hcap hcode
+          hfork hrun hnp hact hn hn32 (by omega) (by omega))).trans
       (FusedCsub.gasSteps_exit s mem pa pb n (UInt256.ofNat pd) ret tail hcap hcode
         hfork hrun hnp hact hn hn32 (by omega) (by omega))).trans
       htail)
@@ -308,6 +362,16 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     Challenge.EvmProof.GasSteps (amCall s mem pa pb pd ret tail)
       (retTo s (amMem pa pb pd mem) ret tail)
 
+
+  /-- `ADDMOD` through the fused body, entered directly at pc 5029. -/
+  addmodDirect : ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256)
+    (mem : ByteArray), tail.length ≤ 1000 →
+    32 ≤ pa → pa + 32 * n ≤ 7168 → 32 ≤ pb → pb + 32 * n ≤ 7168 →
+    pd + 32 * n ≤ 8192 →
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
+    Frame mem n bsize minv →
+    Challenge.EvmProof.GasSteps (amCallDirect s mem pa pb pd ret tail)
+      (retTo s (amMem pa pb pd mem) ret tail)
 /-! ## The `RR` chain
 
 `RRL` (pc 1569) is entered with `[k] ++ OUTER` for `k = 5, 4, …, 0`; each
@@ -5039,6 +5103,24 @@ def subsAddmod (s : State) (n bsize minv : Nat)
     gasSteps_addmodFull s mem pa pb n pd ret tail (by omega) hcode hfork hrun hnp hact
       hn hn32 hpa hpaFit hpb hpbFit hpdFit hjump hf.s32 hf.ml hf.tl
 
+/-- The direct fused `ADDMOD` step of the concrete instance. -/
+def subsAddmodDirect (s : State) (n bsize minv : Nat)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32) :
+    ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256) (mem : ByteArray),
+      tail.length ≤ 1000 →
+      32 ≤ pa → pa + 32 * n ≤ 7168 → 32 ≤ pb → pb + 32 * n ≤ 7168 →
+      pd + 32 * n ≤ 8192 →
+      Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
+      Frame mem n bsize minv →
+      Challenge.EvmProof.GasSteps (amCallDirect s mem pa pb pd ret tail)
+        (retTo s (amMemOf mem pa pb n pd) ret tail) :=
+  fun pa pb pd ret tail mem hcap hpa hpaFit hpb hpbFit hpdFit hjump hf =>
+    gasSteps_addmodDirect s mem pa pb n pd ret tail (by omega) hcode hfork hrun hnp hact
+      hn hn32 hpa hpaFit hpb hpbFit hpdFit hjump hf.s32 hf.ml hf.tl
 /-- The concrete pair of subroutine contracts. -/
 def subs (s : State) (n bsize mm minv : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -5058,7 +5140,9 @@ def subs (s : State) (n bsize mm minv : Nat)
     hminvlt hminvA
   monproCios2 := subsMonproCios2 s n bsize mm minv hcode hfork hrun hnp hact hcds hn
     hn32 hmpos hminvlt hminvA
+
   addmod := subsAddmod s n bsize minv hcode hfork hrun hnp hact hn hn32
+  addmodDirect := subsAddmodDirect s n bsize minv hcode hfork hrun hnp hact hn hn32
 
 /-- The value-level contract the concrete pair satisfies. -/
 theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
@@ -5607,7 +5691,7 @@ def gasSteps_ccbFull (s : State) {n bsize mm minv R : Nat}
     (by simp only [outer, List.length_cons, List.length_nil]; omega)
     hn32 hf.s32 hact hcode hjump hfork hrun hnp
   · intro i _hi
-    exact sub.addmod px px px (UInt256.ofNat 4040)
+    exact sub.addmodDirect px px px (UInt256.ofNat 4040)
       (CcbSeed.loopStack px n (CcbSeed.doubles n - i) ret (outer n bsize esize msize))
       (seedMems i)
       (by simp only [CcbSeed.loopStack, outer, List.length_cons, List.length_nil,
@@ -5963,7 +6047,8 @@ theorem subs_amMem (s : State) (n bsize mm minv : Nat)
              hmpos hminvlt hminvA
            monproCios2 := subsMonproCios2 s n bsize mm minv hcode hfork hrun hnp hact hcds
              hn hn32 hmpos hminvlt hminvA
-           addmod := subsAddmod s n bsize minv hcode hfork hrun hnp hact hn hn32 } :
+           addmod := subsAddmod s n bsize minv hcode hfork hrun hnp hact hn hn32
+           addmodDirect := subsAddmodDirect s n bsize minv hcode hfork hrun hnp hact hn hn32 } :
           Subroutines s n bsize mm minv) := by
     rfl
   have hfield := congrArg (fun sub : Subroutines s n bsize mm minv => sub.amMem) hrec
