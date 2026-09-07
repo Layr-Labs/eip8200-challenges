@@ -88,10 +88,10 @@ def leftHelperStartIndex : Nat → Nat
 
 def leftHelperJumpIndex : Nat → Nat
   | 0 => 411
-  | 1 => 1462
+  | 1 => 1464
   | 2 => 1295
-  | 3 => 1849
-  | _ => 2016
+  | 3 => 1851
+  | _ => 2018
 
 def leftHelperPCNat : Nat → Nat
   | 0 => 4
@@ -172,10 +172,10 @@ def rightHelperStartIndex : Nat → Nat
   | _ => 473
 
 def rightHelperJumpIndex : Nat → Nat
-  | 0 => 2194
-  | 1 => 2365
-  | 2 => 2532
-  | 3 => 2703
+  | 0 => 2196
+  | 1 => 2367
+  | 2 => 2534
+  | 3 => 2705
   | _ => 855
 
 def rightHelperPCNat : Nat → Nat

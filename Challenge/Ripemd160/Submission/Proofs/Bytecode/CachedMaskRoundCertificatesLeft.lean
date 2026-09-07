@@ -12,7 +12,7 @@ open StackRoundTrace QuadRoundState QuadRoundTemplate QuadSites QuadSemantic
 
 def gasSteps_leftNormal (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (n : CachedMaskRoundSitesLeft.NormalIndex)
-    (hwords : low32DenseWordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -26,16 +26,16 @@ def gasSteps_leftNormal (s : State) (word : Nat → UInt32)
   have hframe : (StackRoundTemplate.mask :: rho).length < 1007 := by
     simp only [List.length_cons]
     omega
-  have hraw := CachedMaskHoistHelper.run_left (k.val / 4) (by have h := k.isLt; omega) s site.helper.startPC
+  have hraw := CachedMaskHelper.run_left (k.val / 4) (by have h := k.isLt; omega) s site.helper.startPC
     (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) site.returnPC (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) working (QuadSites.leftConstant k) rho
     (fun h => leftConstant_zero k h) hstack hrun
     (leftRotation0_le32 k) (leftRotation1_le32 k)
     (leftRotation2_le32 k) (leftRotation3_le32 k)
-  have ghelper := CachedMaskHelper.gasSteps_of_raw (CachedMaskHoistHelper.leftTemplate (k.val / 4) (QuadSites.leftConstant k))
-    (CachedMaskHoistHelper.left_advances (k.val / 4) (by have h := k.isLt; omega) (QuadSites.leftConstant k))
+  have ghelper := CachedMaskHelper.gasSteps_of_raw (CachedMaskHelper.leftTemplate (k.val / 4) (QuadSites.leftConstant k))
+    (CachedMaskHelper.left_advances (k.val / 4) (by have h := k.isLt; omega) (QuadSites.leftConstant k))
     (k.val / 4) (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) (QuadSites.leftConstant k)
     site.helper s site.returnPC working (StackRoundTemplate.mask :: rho) hraw hrun hcode hfork hnp
-  have g := CachedMaskCalls.Normal.gasSteps_quad_of_helper (k.val / 4) (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) (QuadSites.leftConstant k) (CachedMaskHoistHelper.leftTemplate (k.val / 4) (QuadSites.leftConstant k))
+  have g := CachedMaskCalls.Normal.gasSteps_quad_of_helper (k.val / 4) (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) (QuadSites.leftConstant k) (CachedMaskHelper.leftTemplate (k.val / 4) (QuadSites.leftConstant k))
     site s working (StackRoundTemplate.mask :: rho) hframe hrun hcode hfork hnp ghelper
   have hw := leftWorking_eq s word working k hwords
 
@@ -51,7 +51,7 @@ def gasSteps_leftNormal (s : State) (word : Nat → UInt32)
 
 def gasSteps_leftFallthrough (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (group : Fin 3)
-    (hwords : low32DenseWordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -69,16 +69,16 @@ def gasSteps_leftFallthrough (s : State) (word : Nat → UInt32)
   have hframe : (StackRoundTemplate.mask :: rho).length < 1007 := by
     simp only [List.length_cons]
     omega
-  have hraw := CachedMaskHoistHelper.run_left ((CachedMaskRoundSitesLeft.groupFin group).val) (by have h := (CachedMaskRoundSitesLeft.groupFin group).isLt; omega) s site.helper.startPC
+  have hraw := CachedMaskHelper.run_left ((CachedMaskRoundSitesLeft.groupFin group).val) (by have h := (CachedMaskRoundSitesLeft.groupFin group).isLt; omega) s site.helper.startPC
     (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) site.returnPC (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) working (QuadSites.leftConstant k) rho
     (fun h => leftConstant_zero k (by omega)) hstack hrun
     (leftRotation0_le32 k) (leftRotation1_le32 k)
     (leftRotation2_le32 k) (leftRotation3_le32 k)
-  have ghelper := CachedMaskHelper.gasSteps_of_raw (CachedMaskHoistHelper.leftTemplate ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftConstant k))
-    (CachedMaskHoistHelper.left_advances ((CachedMaskRoundSitesLeft.groupFin group).val) (by have h := (CachedMaskRoundSitesLeft.groupFin group).isLt; omega) (QuadSites.leftConstant k))
+  have ghelper := CachedMaskHelper.gasSteps_of_raw (CachedMaskHelper.leftTemplate ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftConstant k))
+    (CachedMaskHelper.left_advances ((CachedMaskRoundSitesLeft.groupFin group).val) (by have h := (CachedMaskRoundSitesLeft.groupFin group).isLt; omega) (QuadSites.leftConstant k))
     ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) (QuadSites.leftConstant k)
     site.helper s site.returnPC working (StackRoundTemplate.mask :: rho) hraw hrun hcode hfork hnp
-  have g := CachedMaskCalls.Fallthrough.gasSteps_of_helper ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) (QuadSites.leftConstant k) (CachedMaskHoistHelper.leftTemplate ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftConstant k))
+  have g := CachedMaskCalls.Fallthrough.gasSteps_of_helper ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) (QuadSites.leftConstant k) (CachedMaskHelper.leftTemplate ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftConstant k))
     site s working (StackRoundTemplate.mask :: rho) hframe hrun hcode hfork hnp ghelper
   have hw := leftWorking_eq s word working k hwords
 
@@ -97,7 +97,7 @@ def gasSteps_leftFallthrough (s : State) (word : Nat → UInt32)
 noncomputable def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
     (hk : 4 ≤ k.val ∧ (k.val < 8 ∨ 12 ≤ k.val))
-    (hwords : low32DenseWordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
