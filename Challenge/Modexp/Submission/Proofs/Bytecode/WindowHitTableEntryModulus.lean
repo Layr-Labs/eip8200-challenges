@@ -16,9 +16,9 @@ private def framed (template : State) (pc : Nat) (stack : List UInt256) : State 
   { template with pc := UInt256.ofNat pc, stack := stack }
 
 @[simp] private theorem modulusPCs (index : Nat)
-    (hlo : 1848 ≤ index) (hhi : index ≤ 1854) :
+    (hlo : 1843 ≤ index) (hhi : index ≤ 1849) :
     Artifact.submissionArtifact.instructionPC index =
-      [3024, 3025, 3027, 3028, 3029, 3030, 3033][index - 1848]! := by
+      [3017, 3018, 3020, 3021, 3022, 3023, 3026][index - 1843]! := by
   interval_cases index <;> decide
 
 private theorem toNat_ne_zero {word : UInt256} (hword : word ≠ 0) :
@@ -34,7 +34,7 @@ theorem run_nonzero_generic (template : State) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hword : MachineState.readWord template.executionEnv.calldata 160 ≠ 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock modulusCheckPath
-      (framed template 3024 rest) =
+      (framed template 3017 rest) =
     some (framed template 3034
       (MachineState.readWord template.executionEnv.calldata 160 :: rest)) := by
   have hnat := toNat_ne_zero hword
@@ -59,8 +59,8 @@ theorem run_zero_generic (template : State) (rest : List UInt256)
     (hcode : template.executionEnv.code = submissionBytecode)
     (hword : MachineState.readWord template.executionEnv.calldata 160 = 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock modulusCheckPath
-      (framed template 3024 rest) =
-    some (framed template 3563
+      (framed template 3017 rest) =
+    some (framed template 3556
       (MachineState.readWord template.executionEnv.calldata 160 :: rest)) := by
   have hnat : (MachineState.readWord template.executionEnv.calldata 160).toNat = 0 := by
     rw [hword]
@@ -73,7 +73,7 @@ theorem run_zero_generic (template : State) (rest : List UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr, framed, hrun, hcode, modulusPCs,
-    hword, hnat, jump3563, UInt256.isZero, UInt256.isTrue,
+    hword, hnat, jump3556, UInt256.isZero, UInt256.isTrue,
     hcap0, hcap1, hcap2, hcap3,
     List.getElem?_cons_zero, Option.getD_some, Nat.add_assoc,
     Challenge.EvmProof.Word.literal_eq_ofNat,
