@@ -46,7 +46,7 @@ def prefixPath : List Located :=
   [⟨889, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨890, .push ⟨2, by decide⟩ (UInt256.ofNat 1050), by rfl, by decide⟩,
    ⟨891, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨892, .push ⟨2, by decide⟩ (UInt256.ofNat 4495), by rfl, by decide⟩,
+   ⟨892, .push ⟨2, by decide⟩ (UInt256.ofNat 4490), by rfl, by decide⟩,
    ⟨893, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def exitPath : List Located :=
@@ -76,7 +76,7 @@ def loadSite1238 : GenericRoundSite Artifact.submissionArtifact .Osaka
   rfl
 
 @[simp] theorem loadSite1238_startPC :
-    loadSite1238.startPC = UInt256.ofNat 0xb27 := by
+    loadSite1238.startPC = UInt256.ofNat 0xb22 := by
   change UInt256.ofNat
     (Artifact.submissionArtifact.instructionPC QuadLayout.rightLoadIndex) = _
   rw [QuadLayout.rightLoad_pc]
@@ -107,8 +107,8 @@ theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
   have hpc981 : Artifact.submissionArtifact.instructionPC 891 = 0x415 := by rfl
   have hpc982 : Artifact.submissionArtifact.instructionPC 892 = 0x416 := by rfl
   have hpc983 : Artifact.submissionArtifact.instructionPC 893 = 0x419 := by rfl
-  have hdest12ac : Decode.isValidJumpDest submissionBytecode 0x118f = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3190 (by rfl)
+  have hdest12ac : Decode.isValidJumpDest submissionBytecode 0x118a = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 3187 (by rfl)
   have hswap1 (u v : UInt256) (rho : List UInt256) :
       (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
     simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
@@ -265,12 +265,12 @@ def savedLeft (left : Compression.EvmWorking) : List UInt256 :=
 
 def routeEntry (s : State) (left : Compression.EvmWorking)
     (rest : List UInt256) : State :=
-  StackRoundTrace.roundEntry s (UInt256.ofNat 0xb26)
+  StackRoundTrace.roundEntry s (UInt256.ofNat 0xb21)
     left.a left.b left.c left.d left.e (QuadRoundTemplate.factor :: rest)
 
 def routeReturned (s : State) (left : Compression.EvmWorking)
     (rest : List UInt256) : State :=
-  StackLoadTrace.loadEntry s (UInt256.ofNat 0xb27)
+  StackLoadTrace.loadEntry s (UInt256.ofNat 0xb22)
     (QuadRoundTemplate.factor :: (savedLeft left ++ rest))
 
 def routePath : List Located :=
@@ -283,7 +283,7 @@ theorem run_route (s : State) (left : Compression.EvmWorking)
     Stepper.runLocatedBlock routePath (routeEntry s left rest) =
       some (routeReturned s left rest) := by
   have hpc : Artifact.submissionArtifact.instructionPC
-      QuadLayout.routeIndex = 0xb26 := QuadLayout.route_pc
+      QuadLayout.routeIndex = 0xb21 := QuadLayout.route_pc
   have hcap : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hswap :
       (left.a :: left.b :: left.c :: left.d :: left.e ::

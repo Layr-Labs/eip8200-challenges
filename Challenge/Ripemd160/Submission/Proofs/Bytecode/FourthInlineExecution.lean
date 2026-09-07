@@ -31,8 +31,6 @@ noncomputable def left4_core (s : State) (w : Compression.EvmWorking)
   · simpa [stateAt, roundEntry] using hrun
   · simpa [stateAt, roundEntry] using hnp
 
-theorem return_start : left4Return.push.pc = left4First.endPC := by rfl
-
 noncomputable def left4_group (s : State) (w : Compression.EvmWorking)
     (rho : List UInt256) (hfit : ∀ k, ((left 4) k).Fits s)
     (hstack : rho.length < 1006) (hrun : s.halt = .Running)
@@ -40,19 +38,8 @@ noncomputable def left4_group (s : State) (w : Compression.EvmWorking)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (stateAt s left4First.startPC w (mask :: rho))
-      (stateAt s left4Return.destination.pc.succ (fourResult (left 4) s w) (mask :: rho)) := by
-  have core := left4_core s w rho hfit hstack hrun hcode hfork hnp
-  have hcap (work : Compression.EvmWorking) :
-      ([work.a, work.b, work.c, work.d, work.e] ++ factor :: (mask :: rho)).length < 1023 := by
-    simp only [List.length_append, List.length_cons, List.length_nil]
-    omega
-  have ret := gasSteps_popBridge left4Return s
-    ([(fourResult (left 4) s w).a, (fourResult (left 4) s w).b,
-      (fourResult (left 4) s w).c, (fourResult (left 4) s w).d,
-      (fourResult (left 4) s w).e] ++ factor :: (mask :: rho))
-    (hcap (fourResult (left 4) s w)) hcode hfork hrun hnp
-  rw [return_start] at ret
-  exact core.trans ret
+      (stateAt s left4First.endPC (fourResult (left 4) s w) (mask :: rho)) := by
+  exact left4_core s w rho hfit hstack hrun hcode hfork hnp
 
 #print axioms left4_core
 #print axioms left4_group

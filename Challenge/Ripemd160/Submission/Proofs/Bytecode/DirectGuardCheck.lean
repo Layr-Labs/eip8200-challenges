@@ -15,11 +15,11 @@ open KnownInputCompactState
 theorem run_checkEntry (input : ByteArray)
     (href : referenceWord input = KnownInputData.fullWord) :
     run checkEntryPath (sizeMatched input) = some (loopState input 0) := by
-  have hpc3278 : Artifact.submissionArtifact.instructionPC 3323 = 4943 := by rfl
-  have hpc3279 : Artifact.submissionArtifact.instructionPC 3324 = 4944 := by rfl
-  have hpc3280 : Artifact.submissionArtifact.instructionPC 3325 = 4945 := by rfl
-  have hpc3281 : Artifact.submissionArtifact.instructionPC 3326 = 4946 := by rfl
-  have hpc3282 : Artifact.submissionArtifact.instructionPC 3327 = 4948 := by rfl
+  have hpc3278 : Artifact.submissionArtifact.instructionPC 3320 = 4938 := by rfl
+  have hpc3279 : Artifact.submissionArtifact.instructionPC 3321 = 4939 := by rfl
+  have hpc3280 : Artifact.submissionArtifact.instructionPC 3322 = 4940 := by rfl
+  have hpc3281 : Artifact.submissionArtifact.instructionPC 3323 = 4941 := by rfl
+  have hpc3282 : Artifact.submissionArtifact.instructionPC 3324 = 4943 := by rfl
   have hzero : UInt256.xor KnownInputData.fullWord (referenceWord input) = 0 := by
     exact (KnownInputLogic.wordXor_eq_zero_iff
       KnownInputData.fullWord (referenceWord input)).2 href.symm
