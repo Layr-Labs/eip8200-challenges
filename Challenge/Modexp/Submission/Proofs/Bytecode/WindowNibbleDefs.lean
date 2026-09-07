@@ -20,25 +20,34 @@ def squareProgram : List Instr :=
    .op (.Dup ⟨0, by decide⟩), .op .MULMOD,
    .op (.Swap ⟨4, by decide⟩), .op .POP]
 
-/-- The table lookup and multiply.  `DUP6 DUP6` lift the modulus and the
-accumulator into `MULMOD` order *before* the table word is loaded, so the
-`SWAP1` the load-first form needed to slide the modulus underneath is gone.
-Ten instructions and eleven bytes, exactly as many as the load-first form, with
-the freed byte spent on a `JUMPDEST` (1 gas) so that neither the instruction
-count nor any program counter outside this window moves.  34 gas -> 32 gas.
+def lookupLoadProgram : List Instr :=
+  [.op (.Dup ⟨0, by decide⟩), .push 1 5, .op .SHL, .op .MLOAD]
 
-Note the operand order: `MULMOD` now pops the table word first and the
-accumulator second, so the machine produces `mulMod (tableWord ..) acc m` where
-the load-first form produced `mulMod acc (tableWord ..) m`.  Those are equal but
-NOT definitionally equal; `mulMod_comm` below is what bridges them, and every
-statement downstream keeps the accumulator-first spelling. -/
-def lookupProgram : List Instr :=
+def lookupMulProgram : List Instr :=
+  [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup ⟨6, by decide⟩), .op .MULMOD,
+   .op (.Swap ⟨4, by decide⟩), .op .POP]
+
+def lookupProgram : List Instr := lookupLoadProgram ++ lookupMulProgram
+
+def beginSquareProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .push 1 5, .op .SHL, .op .MLOAD,
-   .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP, .op .JUMPDEST]
+   .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
 
+def topSquareProgram : List Instr :=
+  [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
+
+def finishSquareProgram : List Instr :=
+  [.op (.Swap ⟨4, by decide⟩), .op .POP,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+
+/-- Keep the accumulator at the top between squarings. The six padding
+JUMPDESTs retain the certified layout while saving nine gas per nibble. -/
 def fourSquareProgram : List Instr :=
-  squareProgram ++ squareProgram ++ squareProgram ++ squareProgram
+  beginSquareProgram ++ topSquareProgram ++ topSquareProgram ++
+    topSquareProgram ++ finishSquareProgram
 
 def squareLookupProgram : List Instr := fourSquareProgram ++ lookupProgram
 
@@ -57,19 +66,6 @@ theorem word_add_assoc (left middle right : UInt256) :
               change UInt256.mk ((left + middle) + right) =
                 UInt256.mk (left + (middle + right))
               rw [add_assoc]
-
-/-- `UInt256.succ` in `+` form, so `word_add_assoc` applies to it.  A `PUSH1`
-advances the program counter by two in one step while `advancePC` advances by
-one eleven times; re-associating is what lines the two up. -/
-theorem succ_eq_add (x : UInt256) : x.succ = x + UInt256.ofNat 1 := rfl
-
-/-- `MULMOD` is commutative in its two factors.  Needed because the window
-loads the table word last and therefore multiplies in the opposite order from
-the spelling every downstream statement uses. -/
-theorem mulMod_comm (left right modulus : UInt256) :
-    UInt256.mulMod left right modulus = UInt256.mulMod right left modulus := by
-  unfold UInt256.mulMod
-  rw [Nat.mul_comm left.toNat right.toNat]
 
 theorem advancePC_add (left right : Nat) (pc : UInt256) :
     advancePC (left + right) pc = advancePC right (advancePC left pc) := by
@@ -100,6 +96,16 @@ def nibbleState (template : State) (pc : UInt256) (base modulus : UInt256)
     pc := pc
     stack := [UInt256.ofNat nibble, byte, word, pointer, accumulator, modulus] ++
       rest
+    memory := WindowTableMemory.tableMemory base modulus
+    activeWords := UInt256.ofNat 16 }
+
+def lookupState (template : State) (pc : UInt256) (base modulus : UInt256)
+    (nibble : Nat) (byte word pointer accumulator : UInt256)
+    (rest : List UInt256) : State :=
+  { template with
+    pc := pc
+    stack := [WindowMath.tableWord base modulus nibble, UInt256.ofNat nibble,
+      byte, word, pointer, accumulator, modulus] ++ rest
     memory := WindowTableMemory.tableMemory base modulus
     activeWords := UInt256.ofNat 16 }
 
