@@ -18,12 +18,12 @@ def blk1683 :
    opAt 1685 .MLOAD,
    opAt 1686 (.Dup ⟨2, by decide⟩),
    opAt 1687 .MLOAD,
-   opAt 1688 (.Swap ⟨0, by decide⟩),
+   opAt 1688 .JUMPDEST,
    opAt 1689 (.Dup ⟨1, by decide⟩),
    opAt 1690 (.Dup ⟨1, by decide⟩),
-   opAt 1691 .LT,
+   opAt 1691 .GT,
    opAt 1692 (.Swap ⟨1, by decide⟩),
-   opAt 1693 (.Swap ⟨0, by decide⟩),
+   opAt 1693 .JUMPDEST,
    opAt 1694 .SUB,
    opAt 1695 (.Dup ⟨5, by decide⟩),
    opAt 1696 (.Dup ⟨1, by decide⟩),
@@ -55,7 +55,9 @@ def blk1683 :
    pushAt 1722 2 2666,
    opAt 1723 .JUMPI]
 
-/-- Instructions 1724..1741, pc 2807..2862. -/
+/-- Instructions 1724..1741, pc 2807..2862. The return path jumps at
+idx 1739; the two trailing one-byte JUMPDESTs preserve the fixed PCs of
+the following CCB entry. -/
 def blk1724 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1724 .POP,
@@ -71,10 +73,8 @@ def blk1724 :
    opAt 1734 .ADD,
    pushAt 1735 2 9344,
    opAt 1736 .MLOAD,
-   opAt 1737 (.Swap ⟨0, by decide⟩),
-   opAt 1738 (.Dup ⟨2, by decide⟩),
-   opAt 1739 .MCOPY,
-   opAt 1740 .POP,
-   opAt 1741 .JUMP]
+   opAt 1737 (.Swap ⟨1, by decide⟩),
+   opAt 1738 .MCOPY,
+   opAt 1739 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
