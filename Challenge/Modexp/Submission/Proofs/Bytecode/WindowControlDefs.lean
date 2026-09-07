@@ -20,32 +20,32 @@ open EvmSemantics.EVM
 
 def guardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 1831 .JUMPDEST,
-   Main.opAt 1832 (.Dup ⟨0, by decide⟩),
-   Main.pushAt 1833 1 32,
-   Main.opAt 1834 .XOR,
-   Main.opAt 1835 (.Dup ⟨2, by decide⟩),
-   Main.pushAt 1836 1 32,
-   Main.opAt 1837 .XOR,
-   Main.opAt 1838 .OR,
-   Main.opAt 1839 (.Dup ⟨3, by decide⟩),
-   Main.pushAt 1840 1 32,
-   Main.opAt 1841 .XOR,
-   Main.opAt 1842 .OR,
-   Main.opAt 1843 .ISZERO]
+  [Main.opAt 1826 .JUMPDEST,
+   Main.opAt 1827 (.Dup ⟨0, by decide⟩),
+   Main.pushAt 1828 1 32,
+   Main.opAt 1829 .XOR,
+   Main.opAt 1830 (.Dup ⟨2, by decide⟩),
+   Main.pushAt 1831 1 32,
+   Main.opAt 1832 .XOR,
+   Main.opAt 1833 .OR,
+   Main.opAt 1834 (.Dup ⟨3, by decide⟩),
+   Main.pushAt 1835 1 32,
+   Main.opAt 1836 .XOR,
+   Main.opAt 1837 .OR,
+   Main.opAt 1838 .ISZERO]
 
 def branchPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.pushAt 1844 2 3024, Main.opAt 1845 .JUMPI]
+  [Main.pushAt 1839 2 3017, Main.opAt 1840 .JUMPI]
 
 def missPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.pushAt 1846 2 517, Main.opAt 1847 .JUMP]
+  [Main.pushAt 1841 2 517, Main.opAt 1842 .JUMP]
 
 /-- The first instruction on the fixed-width hit path. -/
 def hitEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 1848 .JUMPDEST]
+  [Main.opAt 1843 .JUMPDEST]
 
 @[simp] theorem routePCs (i : Nat) (hlo : 1831 ≤ i) (hhi : i ≤ 1848) :
     Artifact.submissionArtifact.instructionPC i =

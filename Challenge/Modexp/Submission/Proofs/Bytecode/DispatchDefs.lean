@@ -54,7 +54,7 @@ def wordEntryPath :
    pushAt 940 2 1267, opAt 941 (.Dup ⟨1, by decide⟩),
    opAt 942 (.Dup ⟨3, by decide⟩), pushAt 943 1 96,
    opAt 944 (.Dup ⟨6, by decide⟩), opAt 945 (.Dup ⟨8, by decide⟩),
-   opAt 946 (.Dup ⟨10, by decide⟩), pushAt 947 2 3000, opAt 948 .JUMP]
+   opAt 946 (.Dup ⟨10, by decide⟩), pushAt 947 2 2993, opAt 948 .JUMP]
 
 def zeroSetupPath := zeroSizePath.take 6
 def zeroReturnPath := [opAt 927 .RETURN]
@@ -88,8 +88,8 @@ def wordTailPath := wordRestPath.drop 12
   Artifact.isValidJumpDest_index 415 (by rfl)
 
 @[simp] theorem jump3000 :
-    Decode.isValidJumpDest submissionBytecode 3000 = true :=
-  Artifact.isValidJumpDest_index 1831 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 2993 = true :=
+  Artifact.isValidJumpDest_index 1826 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with
@@ -160,4 +160,3 @@ abbrev WordRouteMiss (input : ByteArray) : Type :=
 
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
-

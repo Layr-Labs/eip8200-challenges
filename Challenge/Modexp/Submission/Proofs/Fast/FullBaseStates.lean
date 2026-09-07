@@ -26,33 +26,33 @@ def redirectState (s : State) (memory : ByteArray)
            stack := outer n bsize esize msize
            memory := memory }
 
-/-- Redirected base-chain head, pc3606. -/
+/-- Redirected base-chain head, pc3599. -/
 def entryState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3606
+  { s with pc := UInt256.ofNat 3599
            stack := outer n bsize esize msize
            memory := memory }
 
-/-- Guard hit, immediately before the calldata copy, pc3621. -/
+/-- Guard hit, immediately before the calldata copy, pc3614. -/
 def copyState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3621
+  { s with pc := UInt256.ofNat 3614
            stack := outer n bsize esize msize
            memory := memory }
 
 /-- Existing ADDMOD entry after copying calldata to ACC. -/
 def addCallState (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2467
+  { s with pc := UInt256.ofNat 2460
            stack := [UInt256.ofNat 1024, UInt256.ofNat 3072,
-             UInt256.ofNat 1024, UInt256.ofNat 3644] ++
+             UInt256.ofNat 1024, UInt256.ofNat 3637] ++
              outer n bsize esize msize
            memory := copyBaseMem memory input n }
 
-/-- Return from ADDMOD, pc3644. The memory argument is its abstract result. -/
+/-- Return from ADDMOD, pc3637. The memory argument is its abstract result. -/
 def afterAddState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3644
+  { s with pc := UInt256.ofNat 3637
            stack := outer n bsize esize msize
            memory := memory }
 
@@ -72,10 +72,10 @@ def rejoinState (s : State) (memory : ByteArray)
            stack := outer n bsize esize msize
            memory := memory }
 
-/-- Guard miss, pc3661, with the original stack and memory. -/
+/-- Guard miss, pc3654, with the original stack and memory. -/
 def fallbackState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3661
+  { s with pc := UInt256.ofNat 3654
            stack := outer n bsize esize msize
            memory := memory }
 
