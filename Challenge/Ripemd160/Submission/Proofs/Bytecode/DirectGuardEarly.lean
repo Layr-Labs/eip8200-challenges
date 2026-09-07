@@ -8,8 +8,8 @@ set_option maxHeartbeats 20000000
 # The fall-through into the patterned guard
 
 The first word of the calldata is not the 1000-a word, so the `JUMPI` at
-pc 5055 is taken, the stub at pc 5120 drops the word and jumps to the appended
-guard at pc 5126.  The eleven instructions are taken one at a time.
+pc 5055 is taken, the stub at pc 5120 drops the word and falls through to the
+guard at pc 5126. POP consumes the old jump target for six fewer gas.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
@@ -38,8 +38,6 @@ def gasSteps_checkEarly (input : ByteArray)
     simpa using h
   have hcleanup : Decode.isValidJumpDest submissionBytecode 0x1400 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3223 (by rfl)
-  have hblock : Decode.isValidJumpDest submissionBytecode 0x1406 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3227 (by rfl)
   rw [show sizeMatched input = stG input 0x1397 [] from rfl,
     show PatternedScan.patternedEntry input = stG input 0x1406 [] from rfl]
   refine ?_
@@ -90,9 +88,9 @@ def gasSteps_checkEarly (input : ByteArray)
     (blockOf _ (pcFactG input 3225 0x1402 [] (by norm_num) pc2862)
       (stepG_push input 0x1402 2 (UInt256.ofNat 5126) [] (by simp) (by decide)
         (by decide) (by norm_num)))
-  have step10 := soundG (opAt 3226 .JUMP)
+  have step10 := soundG (opAt 3226 .POP)
     (blockOf _ (pcFactG input 3226 0x1405 [UInt256.ofNat 5126] (by norm_num) pc2863)
-      (stepG_jump input 0x1405 5126 [] (by simp) (by norm_num) hblock))
+      (stepG_pop input 0x1405 (UInt256.ofNat 5126) [] (by simp) (by norm_num)))
   exact step0.trans (step1.trans (step2.trans (step3.trans (step4.trans
     (step5.trans (step6.trans (step7.trans (step8.trans (step9.trans step10)))))))))
 
