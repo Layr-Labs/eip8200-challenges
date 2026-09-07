@@ -51,8 +51,15 @@ theorem right3_fits (s : State) (hactive : 25 ≤ s.activeWords.toNat) :
     fin_cases i <;> decide
   omega
 
+theorem right4_fits (s : State) (hactive : 25 ≤ s.activeWords.toNat) :
+    (rightParams 1 0).Fits s := by
+  intro i
+  have hend : ((rightParams 1 0).address i).toNat + 32 ≤ 25 * 32 := by
+    fin_cases i <;> decide
+  omega
+
 def nativeRight0Quad0 : List Instr :=
-[  .push 1 212,
+[  .push 2 212,
   Artifact.op 0x51,
   Artifact.op 0x84,
   Artifact.op 0x19,
@@ -80,7 +87,7 @@ def nativeRight0Quad0 : List Instr :=
   .push 1 22,
   Artifact.op 0x1c,
   Artifact.op 0x93,
-  .push 1 248,
+  .push 2 248,
   Artifact.op 0x51,
   Artifact.op 0x85,
   Artifact.op 0x19,
@@ -108,7 +115,7 @@ def nativeRight0Quad0 : List Instr :=
   .push 1 22,
   Artifact.op 0x1c,
   Artifact.op 0x92,
-  .push 1 220,
+  .push 2 220,
   Artifact.op 0x51,
   Artifact.op 0x84,
   Artifact.op 0x19,
@@ -136,7 +143,7 @@ def nativeRight0Quad0 : List Instr :=
   .push 1 22,
   Artifact.op 0x1c,
   Artifact.op 0x93,
-  .push 1 192,
+  .push 2 192,
   Artifact.op 0x51,
   Artifact.op 0x85,
   Artifact.op 0x19,

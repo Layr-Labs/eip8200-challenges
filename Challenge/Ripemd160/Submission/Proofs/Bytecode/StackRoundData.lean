@@ -70,8 +70,8 @@ def rightHelperPCOfGroup (group : Nat) : UInt256 :=
   match group with
   | 0 => UInt256.ofNat 0xedf
   | 1 => UInt256.ofNat 0x1127
-  | 2 => UInt256.ofNat 0xee6
-  | 3 => UInt256.ofNat 0xf21
+  | 2 => UInt256.ofNat 0xf56
+  | 3 => UInt256.ofNat 0xf91
   | _ => UInt256.ofNat 0xfcd
 
 def leftHelperPC (i : Nat) : UInt256 :=
