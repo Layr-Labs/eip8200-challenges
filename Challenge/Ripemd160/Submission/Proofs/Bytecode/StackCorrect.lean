@@ -13,7 +13,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open StackBlockModel StackEndpoint CachedMaskLane StackLoadSeams
 
-private theorem returnPC : Artifact.submissionArtifact.instructionPC 893 = 0x436 := by
+private theorem returnPC : Artifact.submissionArtifact.instructionPC 880 = 0x436 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -33,7 +33,7 @@ noncomputable def gasSteps_legacyBlock (s : State) (input : ByteArray) (i : Nat)
   let left := StackCompression.leftRounds word 80 w
   let right := StackCompression.rightRounds word 80 w
   let rightRest := StackFrame.savedLeft left ++ StackRoundTemplate.mask :: rest
-  have qactive : 39 ≤ q.activeWords.toNat := by
+  have qactive : 66 ≤ q.activeWords.toNat := by
     rw [scheduledState_activeWords s input hfit i hi]
     omega
   have qwords : QuadSemantic.DenseWordsAt q word :=
@@ -78,7 +78,7 @@ noncomputable def gasSteps_legacyBlock (s : State) (input : ByteArray) (i : Nat)
     qwords qactive (by simp [rest, StackFrame.frameRest, driverRest]) qcode qfork qrun qnp
   have hvalid : Decode.isValidJumpDest q.executionEnv.code
       (UInt256.ofNat 0x436).toNat = true := by
-    have hdest := Artifact.submissionArtifact.isValidJumpDest_index 893 (by rfl)
+    have hdest := Artifact.submissionArtifact.isValidJumpDest_index 880 (by rfl)
     rw [returnPC] at hdest
     change Decode.isValidJumpDest q.executionEnv.code 0x436 = true
     rw [qcode]

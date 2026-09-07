@@ -464,7 +464,7 @@ private theorem writeLoopState_activeWords_eq (s : State) (offset : Nat)
         omega
 
 private theorem outputLoopState_activeWords_eq (s : State) (input : ByteArray)
-    (i : Nat) (hi : i ≤ 5) (hactive : 37 ≤ s.activeWords.toNat) :
+    (i : Nat) (hi : i ≤ 5) (hactive : 64 ≤ s.activeWords.toNat) :
     (outputLoopState s input i).activeWords = s.activeWords := by
   induction i with
   | zero =>
@@ -493,7 +493,7 @@ private theorem outputLoopState_activeWords_eq (s : State) (input : ByteArray)
       simpa [prev, hloaded] using hwrite
 
 private theorem outputResult_activeWords_eq (s : State) (input : ByteArray)
-    (hactive : 37 ≤ s.activeWords.toNat) :
+    (hactive : 64 ≤ s.activeWords.toNat) :
     (outputResult s input).activeWords = s.activeWords := by
   let q := outputLoopState s input 5
   have hq : q.activeWords = s.activeWords :=
@@ -602,7 +602,7 @@ private theorem output_cost (s : State) (input : ByteArray)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false)
-    (hactive : 37 ≤ s.activeWords.toNat) :
+    (hactive : 64 ≤ s.activeWords.toNat) :
     (gasSteps_output s input hcode hfork hrun hnp).cost = 2601 := by
   have hpotential := output_cost_potential s input hcode hfork hrun hnp
   rw [outputResult_activeWords_eq s input hactive] at hpotential

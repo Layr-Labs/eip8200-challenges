@@ -354,16 +354,16 @@ private theorem blockCount_pos (input : ByteArray) :
 
 theorem states_final_activeWords_of_step (input : ByteArray)
     (hinitial : (PaddingTrace.padReturned input).activeWords.toNat =
-      37 + 2 * DriverTrace.blockCount input)
+      64 + 2 * DriverTrace.blockCount input)
     (hstep : ∀ n, n < DriverTrace.blockCount input →
       (CompressionFullTrace.resultState (states input n) input n).activeWords.toNat =
-        max (states input n).activeWords.toNat (40 + 2 * n)) :
+        max (states input n).activeWords.toNat (67 + 2 * n)) :
     (states input (DriverTrace.blockCount input)).activeWords.toNat =
       GasCost.finalActiveWords input.size := by
   let blocks := DriverTrace.blockCount input
   have hstates : ∀ n, n ≤ blocks →
       (states input n).activeWords.toNat =
-        max (37 + 2 * blocks) (38 + 2 * n) := by
+        max (64 + 2 * blocks) (65 + 2 * n) := by
     intro n hn
     induction n with
     | zero =>
@@ -374,8 +374,8 @@ theorem states_final_activeWords_of_step (input : ByteArray)
     | succ n ih =>
         rw [states, hstep n (by omega),
           ih (by omega), Nat.max_assoc]
-        rw [Nat.max_eq_right (by omega : 38 + 2 * n ≤ 40 + 2 * n)]
-        exact congrArg (Nat.max (37 + 2 * blocks)) (by omega)
+        rw [Nat.max_eq_right (by omega : 65 + 2 * n ≤ 67 + 2 * n)]
+        exact congrArg (Nat.max (64 + 2 * blocks)) (by omega)
   rw [hstates blocks (by omega), Nat.max_eq_right (by omega)]
   simp [GasCost.finalActiveWords, GasCost.blockCount, blocks,
     DriverTrace.blockCount, Padding.paddedLength]
@@ -384,7 +384,7 @@ theorem states_final_activeWords_of_step (input : ByteArray)
 provided the independently metered padding trace supplies its endpoint. -/
 theorem states_final_activeWords (input : ByteArray) (hfit : CalldataFits input)
     (hinitial : (PaddingTrace.padReturned input).activeWords.toNat =
-      37 + 2 * DriverTrace.blockCount input) :
+      64 + 2 * DriverTrace.blockCount input) :
     (states input (DriverTrace.blockCount input)).activeWords.toNat =
       GasCost.finalActiveWords input.size := by
   apply states_final_activeWords_of_step input hinitial

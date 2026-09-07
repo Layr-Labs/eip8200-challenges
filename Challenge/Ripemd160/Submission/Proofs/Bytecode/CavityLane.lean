@@ -18,7 +18,7 @@ abbrev stateAt := CavityRoundCertificates.stateAt
 
 noncomputable def gasSteps_left80 (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256)
-    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1007) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -51,7 +51,7 @@ noncomputable def gasSteps_left80 (s : State) (word : Nat → UInt32)
 
 noncomputable def gasSteps_right80 (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256)
-    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1007) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

@@ -78,7 +78,7 @@ def normalPushes (k : NormalIndex) :
 
 def normalJump (k : NormalIndex) : LocatedSite Artifact .Osaka where
   located :=
-    { index := rightWrapperIndex (normalFin k).val + 10
+    { index := rightWrapperIndex (normalFin k).val + 11
       instruction := .op .JUMP
       atIndex := by
         fin_cases k <;> rfl

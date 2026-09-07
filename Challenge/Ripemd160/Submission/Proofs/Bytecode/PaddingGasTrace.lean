@@ -31,7 +31,7 @@ open private gasSteps_padPrefix run_lengthCondition run_lengthByte
   Challenge.Ripemd160.Submission.Proofs.Bytecode.PaddingTrace
 
 private def paddingTargetWords (input : ByteArray) : Nat :=
-  37 + 2 * DriverTrace.blockCount input
+  64 + 2 * DriverTrace.blockCount input
 
 private theorem paddingTargetWords_mul (input : ByteArray) :
     paddingTargetWords input * 32 =
@@ -238,7 +238,7 @@ private theorem lengthLoopActiveWords_le (input : ByteArray)
 
 theorem padReturned_activeWords (input : ByteArray) (hfit : CalldataFits input) :
     (PaddingTrace.padReturned input).activeWords.toNat =
-      37 + 2 * DriverTrace.blockCount input := by
+      64 + 2 * DriverTrace.blockCount input := by
   change (PaddingTrace.lengthLoopActiveWords input 8).toNat = _
   have hupper7 := lengthLoopActiveWords_le input hfit 7 (by omega)
   rw [lengthLoopActiveWords_succ_toNat input hfit 7 (by omega)]
@@ -263,7 +263,7 @@ theorem padReturned_activeWords (input : ByteArray) (hfit : CalldataFits input) 
     Nat.max (PaddingTrace.lengthLoopActiveWords input 7).toNat
         (paddingTargetWords input) = paddingTargetWords input :=
       Nat.max_eq_right hupper7
-    _ = 37 + 2 * DriverTrace.blockCount input := rfl
+    _ = 64 + 2 * DriverTrace.blockCount input := rfl
 
 private theorem lengthCopy_cost_potential (input : ByteArray)
     (hfit : CalldataFits input) :
@@ -629,7 +629,7 @@ private theorem lengthExit_cost (input : ByteArray) :
 theorem padding_cost (input : ByteArray) (hfit : CalldataFits input) :
     (PaddingTrace.gasSteps_pad input hfit).cost =
       868 + 3 * GasCost.calldataWords input.size +
-        MachineState.memCost (37 + 2 * DriverTrace.blockCount input) := by
+        MachineState.memCost (64 + 2 * DriverTrace.blockCount input) := by
   have hsetup := lengthSetup_cost_potential input hfit
   have hloop := lengthLoop_cost_potential input
   rw [show (PaddingTrace.lengthLoopActiveWords input 0).toNat =
@@ -648,7 +648,7 @@ theorem padding_cost (input : ByteArray) (hfit : CalldataFits input) :
           (PaddingTrace.gasSteps_lengthLoop input).cost =
         709 + 3 * ((input.size + 31) / 32) +
           MachineState.memCost
-            (37 + 2 * DriverTrace.blockCount input) := by
+            (64 + 2 * DriverTrace.blockCount input) := by
     omega
   unfold PaddingTrace.gasSteps_pad gasSteps_padPrefix PaddingTrace.gasSteps_padBody
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
@@ -660,7 +660,7 @@ theorem padding_cost (input : ByteArray) (hfit : CalldataFits input) :
 theorem seam_initial_activeWords (input : ByteArray) (hfit : CalldataFits input)
     (seam : DirectCorrect.CompressionSeam input) :
     (seam.states 0).activeWords.toNat =
-      37 + 2 * DriverTrace.blockCount input := by
+      64 + 2 * DriverTrace.blockCount input := by
   have h := congrArg (fun s : State => s.activeWords.toNat) seam.initial
   change (seam.states 0).activeWords.toNat =
     (PaddingTrace.padReturned input).activeWords.toNat at h

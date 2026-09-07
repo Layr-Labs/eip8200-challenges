@@ -251,7 +251,7 @@ theorem scheduledState_hash (s : State) (input : ByteArray) (i : Nat) :
 
 theorem scheduledState_activeWords (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < DriverTrace.blockCount input) :
-    (scheduledState s input i).activeWords.toNat = max s.activeWords.toNat (39 + 2 * i) := by
+    (scheduledState s input i).activeWords.toNat = max s.activeWords.toNat (66 + 2 * i) := by
   rw [scheduledState, withActiveWords_activeWords]
   exact DenseScheduleActiveWords.expectedActiveWords_toNat s input hfit i hi
 
