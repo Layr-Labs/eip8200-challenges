@@ -208,8 +208,8 @@ theorem tail_pc : A.instructionPC tailIndex = 0x101b := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def tailJumpIndex : Nat := 2869
-theorem tailJump_pc : A.instructionPC tailJumpIndex = 4186 := by
+def tailJumpIndex : Nat := 2863
+theorem tailJump_pc : A.instructionPC tailJumpIndex = 4180 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
