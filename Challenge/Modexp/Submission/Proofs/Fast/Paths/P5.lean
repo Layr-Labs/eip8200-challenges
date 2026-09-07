@@ -28,13 +28,13 @@ def blk1264 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1264 .JUMPDEST]
 
-/-- Instructions 1265..1267, pc 1756..1760. The fixed-exponent candidate
-redirects `BDONE` to its appended dispatcher; indices 1268..1271 are inert
+/- Instructions 1265..1267, pc 1756..1760. The fixed-exponent candidate
+redirects `BDONE` to its width guard at pc 4057; indices 1268..1271 are inert
 padding and are not part of the executed block. -/
 def blk1265 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1265 .JUMPDEST,
-   pushAt 1266 2 3892,
+   pushAt 1266 2 4057,
    opAt 1267 .JUMP]
 
 /-- Instructions 1272..1278, pc 1769..1777. -/

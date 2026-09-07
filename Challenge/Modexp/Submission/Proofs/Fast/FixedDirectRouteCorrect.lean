@@ -54,51 +54,63 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
     n bsize esize msize hcode hfork hrun hnp
   miss := by
     intro hnot
-    by_cases h3 : esize = 3
-    · cases h3
-      have hv : exponentValue input bsize 3 ≠ 65537 := by
-        intro hv
-        apply hnot
-        exact ⟨16, Case.fermat rfl hv⟩
-      exact ((FixedDirectDispatchTrace.gasSteps_entry_three s memory
-        n bsize msize hcode hfork hrun hnp).trans
-        (FixedDirectValueTrace.gasSteps_check65537_miss s memory input
-          n bsize msize hb hv hdata hactive hframe.eoff
-          hcode hfork hrun hnp)).trans
-        (FixedDirectFallbackTrace.gasSteps_fallback s memory
-          n bsize 3 msize hn hn32 hactive hcode hfork hrun hnp)
-    · have hentry := FixedDirectDispatchTrace.gasSteps_entry_other
-        s memory n bsize esize msize h3 he hcode hfork hrun hnp
-      by_cases h1 : esize = 1
-      · cases h1
-        have hv : exponentValue input bsize 1 ≠ 3 := by
+    by_cases hlarge : 3 < esize
+    · exact
+        (FixedDirectEntryTrace.gasSteps_guard_large s memory n bsize esize msize
+          hlarge he hcode hfork hrun hnp).trans
+        (FixedDirectFallbackTrace.gasSteps_fallback s memory n bsize esize msize
+          hn hn32 hactive hcode hfork hrun hnp)
+    · have hguard :=
+        FixedDirectEntryTrace.gasSteps_guard_small s memory n bsize esize msize
+          (by omega) hcode hfork hrun hnp
+      by_cases h3 : esize = 3
+      · cases h3
+        have hv : exponentValue input bsize 3 ≠ 65537 := by
           intro hv
           apply hnot
-          exact ⟨1, Case.three rfl hv⟩
-        exact (((hentry.trans
-          (FixedDirectDispatchTrace.gasSteps_oneWidth_hit s memory
-            n bsize msize hcode hfork hrun hnp)).trans
-          (FixedDirectValueTrace.gasSteps_checkThree_miss s memory input
+          exact ⟨16, Case.fermat rfl hv⟩
+        exact hguard.trans (((FixedDirectDispatchTrace.gasSteps_entry_three
+          s memory n bsize msize hcode hfork hrun hnp).trans
+          (FixedDirectValueTrace.gasSteps_check65537_miss s memory input
             n bsize msize hb hv hdata hactive hframe.eoff
             hcode hfork hrun hnp)).trans
-          (FixedDirectFallbackTrace.gasSteps_fallback s memory
-            n bsize 1 msize hn hn32 hactive hcode hfork hrun hnp))
-      · exact (hentry.trans
-          (FixedDirectDispatchTrace.gasSteps_oneWidth_miss s memory
-            n bsize esize msize h1 he hcode hfork hrun hnp)).trans
-          (FixedDirectFallbackTrace.gasSteps_fallback s memory
-            n bsize esize msize hn hn32 hactive hcode hfork hrun hnp)
+          (FixedDirectFallbackTrace.gasSteps_fallback s memory n bsize 3 msize
+            hn hn32 hactive hcode hfork hrun hnp))
+      · have hentry := FixedDirectDispatchTrace.gasSteps_entry_other
+          s memory n bsize esize msize h3 he hcode hfork hrun hnp
+        by_cases h1 : esize = 1
+        · cases h1
+          have hv : exponentValue input bsize 1 ≠ 3 := by
+            intro hv
+            apply hnot
+            exact ⟨1, Case.three rfl hv⟩
+          exact hguard.trans (((hentry.trans
+            (FixedDirectDispatchTrace.gasSteps_oneWidth_hit s memory
+              n bsize msize hcode hfork hrun hnp)).trans
+            (FixedDirectValueTrace.gasSteps_checkThree_miss s memory input
+              n bsize msize hb hv hdata hactive hframe.eoff
+              hcode hfork hrun hnp)).trans
+            (FixedDirectFallbackTrace.gasSteps_fallback s memory n bsize 1 msize
+              hn hn32 hactive hcode hfork hrun hnp))
+        · exact hguard.trans ((hentry.trans
+            (FixedDirectDispatchTrace.gasSteps_oneWidth_miss s memory
+              n bsize esize msize h1 he hcode hfork hrun hnp)).trans
+            (FixedDirectFallbackTrace.gasSteps_fallback s memory n bsize esize
+              msize hn hn32 hactive hcode hfork hrun hnp))
   hit := by
     rcases hraw with ⟨rawBase, hrawRep, hrawForm⟩
     rintro ⟨count, hcase⟩
     cases hcase with
     | three hsize hvalue =>
         cases hsize
+        have hguard :=
+          FixedDirectEntryTrace.gasSteps_guard_small s memory n bsize 1 msize
+            (by omega) hcode hfork hrun hnp
         have htoSpecial :=
           ((FixedDirectDispatchTrace.gasSteps_entry_other s memory
             n bsize 1 msize (by decide) (by omega) hcode hfork hrun hnp).trans
-          (FixedDirectDispatchTrace.gasSteps_oneWidth_hit s memory
-            n bsize msize hcode hfork hrun hnp)).trans
+            (FixedDirectDispatchTrace.gasSteps_oneWidth_hit s memory
+              n bsize msize hcode hfork hrun hnp)).trans
           (FixedDirectValueTrace.gasSteps_checkThree_hit s memory input
             n bsize msize hb hvalue hdata hactive hframe.eoff
             hcode hfork hrun hnp)
@@ -113,9 +125,12 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
           (by omega) (by omega)
           (by simpa [exponentValue] using hvalue)
           hframe hmod hbase hrawRep hone
-        exact prepend htoSpecial hfixed
+        exact prepend (hguard.trans htoSpecial) hfixed
     | fermat hsize hvalue =>
         cases hsize
+        have hguard :=
+          FixedDirectEntryTrace.gasSteps_guard_small s memory n bsize 3 msize
+            (by omega) hcode hfork hrun hnp
         have htoSpecial :=
           (FixedDirectDispatchTrace.gasSteps_entry_three s memory
             n bsize msize hcode hfork hrun hnp).trans
@@ -133,6 +148,6 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
           (by omega) (by omega)
           (by simpa [exponentValue] using hvalue)
           hframe hmod hbase hrawRep hone
-        exact prepend htoSpecial hfixed
+        exact prepend (hguard.trans htoSpecial) hfixed
 
 end Challenge.Modexp.Submission.Proofs.Fast.FixedDirectRouteCorrect

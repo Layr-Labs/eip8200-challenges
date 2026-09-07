@@ -37,6 +37,11 @@ abbrev Located :=
        4011,4012,4015][i - 2609]! := by
   interval_cases i <;> decide
 
+def guard : List Located :=
+  [opAt 2670 .JUMPDEST, pushAt 2671 1 3,
+   opAt 2672 (.Dup ⟨4, by decide⟩), opAt 2673 .GT, pushAt 2674 2 4002,
+   opAt 2675 .JUMPI, pushAt 2676 2 3892, opAt 2677 .JUMP]
+
 def entryPrefix : List Located :=
   [opAt 2572 .JUMPDEST, opAt 2573 (.Dup ⟨3, by decide⟩),
    pushAt 2574 1 3, opAt 2575 .EQ, pushAt 2576 2 3931,
@@ -119,5 +124,8 @@ theorem jumpDest3997 :
 theorem jumpDest4002 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4002 = true :=
   Artifact.isValidJumpDest_index 2634 (by rfl)
+theorem jumpDest4057 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4057 = true :=
+  Artifact.isValidJumpDest_index 2670 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths

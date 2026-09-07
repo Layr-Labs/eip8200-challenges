@@ -26,7 +26,7 @@ theorem run_entry_three (s : State) (memory : ByteArray)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock entryPrefix
-      (entryState s memory n bsize 3 msize) =
+      (dispatcherState s memory n bsize 3 msize) =
       some (FixedDirectStates.check65537 s memory n bsize 3 msize) := by
   have heq : UInt256.eq (UInt256.ofNat 3) (UInt256.ofNat 3) =
       UInt256.ofNat 1 := by decide
@@ -35,7 +35,7 @@ theorem run_entry_three (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      entryState, Exp.bDone, FixedDirectStates.check65537, Exp.outer,
+      dispatcherState, Exp.bDone, FixedDirectStates.check65537, Exp.outer,
       hcode, hrun, heq,
       Exp.isTrue_one, jumpDest3931,
       Challenge.EvmProof.Word.literal_eq_ofNat,
@@ -48,7 +48,7 @@ theorem run_entry_other (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 1024)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock entryPrefix
-      (entryState s memory n bsize esize msize) =
+      (dispatcherState s memory n bsize esize msize) =
       some (otherWidth s memory n bsize esize msize) := by
   have heq : UInt256.eq (UInt256.ofNat 3) (UInt256.ofNat esize) =
       UInt256.ofNat 0 := by
@@ -60,7 +60,7 @@ theorem run_entry_other (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      entryState, Exp.bDone, otherWidth, Exp.outer, hrun, heq,
+      dispatcherState, Exp.bDone, otherWidth, Exp.outer, hrun, heq,
       Exp.not_isTrue_zero,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -131,14 +131,14 @@ def gasSteps_entry_three (s : State) (memory : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (entryState s memory n bsize 3 msize)
+      (dispatcherState s memory n bsize 3 msize)
       (FixedDirectStates.check65537 s memory n bsize 3 msize) :=
   sound entryPrefix
     (run_entry_three s memory n bsize msize hcode hrun)
-    (by simpa [entryState, Exp.bDone, Artifact.submissionArtifact] using hcode)
-    (by simpa [entryState, Exp.bDone] using hfork)
-    (by simpa [entryState, Exp.bDone] using hrun)
-    (by simpa [entryState, Exp.bDone] using hnp)
+    (by simpa [dispatcherState, Exp.bDone, Artifact.submissionArtifact] using hcode)
+    (by simpa [dispatcherState, Exp.bDone] using hfork)
+    (by simpa [dispatcherState, Exp.bDone] using hrun)
+    (by simpa [dispatcherState, Exp.bDone] using hnp)
 
 def gasSteps_entry_other (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 1024)
@@ -147,14 +147,14 @@ def gasSteps_entry_other (s : State) (memory : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (entryState s memory n bsize esize msize)
+      (dispatcherState s memory n bsize esize msize)
       (otherWidth s memory n bsize esize msize) :=
   sound entryPrefix
     (run_entry_other s memory n bsize esize msize hne he hrun)
-    (by simpa [entryState, Exp.bDone, Artifact.submissionArtifact] using hcode)
-    (by simpa [entryState, Exp.bDone] using hfork)
-    (by simpa [entryState, Exp.bDone] using hrun)
-    (by simpa [entryState, Exp.bDone] using hnp)
+    (by simpa [dispatcherState, Exp.bDone, Artifact.submissionArtifact] using hcode)
+    (by simpa [dispatcherState, Exp.bDone] using hfork)
+    (by simpa [dispatcherState, Exp.bDone] using hrun)
+    (by simpa [dispatcherState, Exp.bDone] using hnp)
 
 def gasSteps_oneWidth_hit (s : State) (memory : ByteArray)
     (n bsize msize : Nat)
