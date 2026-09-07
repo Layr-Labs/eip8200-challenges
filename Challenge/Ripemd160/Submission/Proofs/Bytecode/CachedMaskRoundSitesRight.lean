@@ -1,7 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSitesBase
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadHelperTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskCalls
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskHoistHelper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskHelper
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -202,7 +202,7 @@ def normalRound (k : NormalIndex) :
       (rightAddress2 (normalFin k)) (rightAddress3 (normalFin k))
       (rightRotation0 (normalFin k)) (rightRotation1 (normalFin k))
       (rightRotation2 (normalFin k)) (rightRotation3 (normalFin k))
-      (CachedMaskHoistHelper.rightTemplate (4 - (normalFin k).val / 4) (rightConstant (normalFin k))) where
+      (CachedMaskHelper.rightTemplate (4 - (normalFin k).val / 4) (rightConstant (normalFin k))) where
   returnPC := rightReturnPC (normalFin k).val
   helperPC := rightHelperPC (normalFin k).val
   call := normalCall k
@@ -281,7 +281,7 @@ def fallthroughRound (group : Fin 4) :
       (rightAddress2 (fallthroughK group)) (rightAddress3 (fallthroughK group))
       (rightRotation0 (fallthroughK group)) (rightRotation1 (fallthroughK group))
       (rightRotation2 (fallthroughK group)) (rightRotation3 (fallthroughK group))
-      (CachedMaskHoistHelper.rightTemplate (4 - group.val) (rightConstant (fallthroughK group))) where
+      (CachedMaskHelper.rightTemplate (4 - group.val) (rightConstant (fallthroughK group))) where
   returnPC := rightReturnPC (fallthroughK group).val
   callPushes := fallthroughPushes group
   helper := castTemplate (helperSite group) (by fin_cases group <;> rfl)

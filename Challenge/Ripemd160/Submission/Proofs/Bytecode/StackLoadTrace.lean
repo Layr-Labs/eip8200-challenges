@@ -1,6 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackMemory
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduleActiveWords
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -10,6 +9,28 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackLoadTrace
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTemplate StackRoundTrace
+
+private theorem activeWordsAfter_eq_of_end_le (curr offset size : Nat)
+    (hend : offset + size ≤ curr * 32) :
+    MachineState.activeWordsAfter curr offset size = curr := by
+  unfold MachineState.activeWordsAfter
+  split
+  · rfl
+  · dsimp only
+    apply Nat.max_eq_left
+    have hq : (offset + size - 1) / 32 < curr :=
+      (Nat.div_lt_iff_lt_mul (by omega)).2 (by omega)
+    omega
+
+private theorem ofNat_toNat (w : UInt256) : UInt256.ofNat w.toNat = w := by
+  cases w with
+  | mk val => simp [UInt256.ofNat, UInt256.toNat, UInt256.size]
+
+private theorem activeWordsAfterUInt256_eq (s : State) (offset size : Nat)
+    (hend : offset + size ≤ s.activeWords.toNat * 32) :
+    s.activeWordsAfterUInt256 offset size = s.activeWords := by
+  rw [State.activeWordsAfterUInt256,
+    activeWordsAfter_eq_of_end_le _ _ _ hend, ofNat_toNat]
 
 def loadTemplate : List Instr :=
   [push1 (UInt256.ofNat 160), op .MLOAD,
@@ -36,26 +57,26 @@ theorem loadTemplate_straight : ∀ instruction ∈ loadTemplate, StraightLine i
 
 set_option linter.unusedSimpArgs false in
 theorem runInstrSeq_load (s : State) (pc : UInt256) (rest : List UInt256)
-    (hactive : 66 ≤ s.activeWords.toNat) (hstack : rest.length < 1019)
+    (hactive : 25 ≤ s.activeWords.toNat) (hstack : rest.length < 1019)
     (hrun : s.halt = .Running) :
     runInstrSeq loadTemplate (loadEntry s pc rest) =
       some (loadReturned s (pcAfter pc loadTemplate) rest) := by
   have hcap (n : Nat) (hn : n ≤ 5) : rest.length + n < 1024 := by omega
   have hc0 : rest.length < 1024 := by omega
   have h32 : s.activeWordsAfterUInt256 32 32 = s.activeWords := by
-    apply ScheduleActiveWords.activeWordsAfterUInt256_eq
+    apply activeWordsAfterUInt256_eq
     omega
   have h64 : s.activeWordsAfterUInt256 64 32 = s.activeWords := by
-    apply ScheduleActiveWords.activeWordsAfterUInt256_eq
+    apply activeWordsAfterUInt256_eq
     omega
   have h96 : s.activeWordsAfterUInt256 96 32 = s.activeWords := by
-    apply ScheduleActiveWords.activeWordsAfterUInt256_eq
+    apply activeWordsAfterUInt256_eq
     omega
   have h128 : s.activeWordsAfterUInt256 128 32 = s.activeWords := by
-    apply ScheduleActiveWords.activeWordsAfterUInt256_eq
+    apply activeWordsAfterUInt256_eq
     omega
   have h160 : s.activeWordsAfterUInt256 160 32 = s.activeWords := by
-    apply ScheduleActiveWords.activeWordsAfterUInt256_eq
+    apply activeWordsAfterUInt256_eq
     omega
   simp only [State.activeWordsAfterUInt256] at h32 h64 h96 h128 h160
   simp (discharger := omega) [loadTemplate, loadEntry, loadReturned, hashWords, StackMemory.hashAt,
@@ -67,7 +88,7 @@ theorem runInstrSeq_load (s : State) (pc : UInt256) (rest : List UInt256)
 theorem runLocatedBlock_load {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork loadTemplate)
     (s : State) (rest : List UInt256)
-    (hactive : 66 ≤ s.activeWords.toNat) (hstack : rest.length < 1019)
+    (hactive : 25 ≤ s.activeWords.toNat) (hstack : rest.length < 1019)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock site.path (loadEntry s site.startPC rest) =
       some (loadReturned s site.endPC rest) := by
@@ -94,7 +115,7 @@ theorem runLocatedBlock_load {artifact : ProgramArtifact} {fork : Fork}
 def gasSteps_load {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork loadTemplate)
     (s : State) (rest : List UInt256)
-    (hactive : 66 ≤ s.activeWords.toNat) (hstack : rest.length < 1019)
+    (hactive : 25 ≤ s.activeWords.toNat) (hstack : rest.length < 1019)
     (hcode : s.executionEnv.code = artifact.code) (hfork : s.fork = fork)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

@@ -3,7 +3,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadCallTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskHoistHelper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskHelper
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -131,11 +131,11 @@ def rightWrapperTemplate (k : Fin 20) : List Instr :=
     (rightRotation2 k) (rightRotation3 k)
 
 def leftHelperTemplate (group : Fin 5) : List Instr :=
-  CachedMaskHoistHelper.leftTemplate group.val
+  CachedMaskHelper.leftTemplate group.val
     (StackRoundData.leftConstant (16 * group.val))
 
 def rightHelperTemplate (group : Fin 5) : List Instr :=
-  CachedMaskHoistHelper.rightTemplate (4 - group.val)
+  CachedMaskHelper.rightTemplate (4 - group.val)
     (StackRoundData.rightConstant (16 * group.val))
 
 theorem getElem_of_slice {artifact : ProgramArtifact}

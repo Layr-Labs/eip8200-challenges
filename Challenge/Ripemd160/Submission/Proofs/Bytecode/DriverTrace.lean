@@ -212,7 +212,7 @@ theorem padReturned_blockSeparated (input : ByteArray)
     (hfit : Challenge.Ripemd160.CalldataFits input) (i : Nat)
     (hi : i < blockCount input) :
     ∀ k, k < 16 →
-      0x4a0 ≤ (Schedule.loadOffsetWord (messageOffsetWord i) k).toNat := by
+      0x2e0 ≤ (Schedule.loadOffsetWord (messageOffsetWord i) k).toNat := by
   simpa [messageOffsetWord, blockOffset, blockCount] using
     PaddedBlockBridge.padReturned_blockIndexSeparated input hfit i hi
 

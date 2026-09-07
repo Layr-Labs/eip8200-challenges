@@ -240,18 +240,7 @@ private theorem denseScheduleTemplate_byteLength :
 
 private theorem packedSchedule_start_instructionPC :
     Artifact.submissionArtifact.instructionPC 2898 = 0x109f := by
-  have h := instructionPC_prefix_plus_segment Artifact.submissionArtifact
-    packedScheduleBefore (DenseScheduleTemplate.denseWindowTemplate ++ packedScheduleAfter)
-    (by simpa only [List.append_assoc] using artifact_dense_split)
-  have hlength : byteLength
-      (DenseScheduleTemplate.denseWindowTemplate ++ packedScheduleAfter) = 1050 := by
-    decide
-  rw [packedScheduleBefore_length, hlength] at h
-  have hsize : Artifact.submissionArtifact.code.size = 5305 := by
-    change Challenge.Ripemd160.submissionBytecode.size = 5305
-    exact Challenge.Ripemd160.referenceBytecode_size
-  rw [hsize] at h
-  omega
+  rfl
 
 private theorem packedSchedule_end_instructionPC :
     Artifact.submissionArtifact.instructionPC 2949 = 0x1165 := by
