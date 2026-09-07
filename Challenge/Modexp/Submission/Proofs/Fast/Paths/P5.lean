@@ -53,7 +53,7 @@ def blk1272 :
 /-- Instructions 1279..1286, pc 1778..1787. -/
 def blk1279 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1279 2 2922,
+  [pushAt 1279 2 2951,
    opAt 1280 .JUMP]
 
 /-- Instructions 1287..1293, pc 1789..1805. -/

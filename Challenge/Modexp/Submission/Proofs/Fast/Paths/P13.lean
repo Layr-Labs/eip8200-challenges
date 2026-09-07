@@ -2,7 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Fast.Defs
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-/-! Basic-block instruction paths, group 13 (instructions 1683..1741). -/
+/-! Basic-block instruction paths, group 13 (original instructions 1683..1741;
+relocated indices 1708..1766). -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
 
@@ -10,71 +11,71 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1683..1723, pc 2666..2806. -/
+/-- Original block `1683`, now instructions 1708..1748, pc 2695..2835. -/
 def blk1683 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1683 .JUMPDEST,
-   opAt 1684 (.Dup ⟨0, by decide⟩),
-   opAt 1685 .MLOAD,
-   opAt 1686 (.Dup ⟨2, by decide⟩),
-   opAt 1687 .MLOAD,
-   opAt 1688 (.Swap ⟨0, by decide⟩),
-   opAt 1689 (.Dup ⟨1, by decide⟩),
-   opAt 1690 (.Dup ⟨1, by decide⟩),
-   opAt 1691 .LT,
-   opAt 1692 (.Swap ⟨1, by decide⟩),
-   opAt 1693 (.Swap ⟨0, by decide⟩),
-   opAt 1694 .SUB,
-   opAt 1695 (.Dup ⟨5, by decide⟩),
-   opAt 1696 (.Dup ⟨1, by decide⟩),
-   opAt 1697 .SUB,
-   opAt 1698 (.Swap ⟨0, by decide⟩),
-   opAt 1699 (.Dup ⟨6, by decide⟩),
-   opAt 1700 (.Swap ⟨0, by decide⟩),
-   opAt 1701 .LT,
-   opAt 1702 (.Swap ⟨0, by decide⟩),
-   opAt 1703 (.Swap ⟨1, by decide⟩),
-   opAt 1704 .OR,
-   opAt 1705 (.Swap ⟨4, by decide⟩),
-   opAt 1706 .POP,
-   opAt 1707 (.Dup ⟨3, by decide⟩),
-   opAt 1708 .MSTORE,
-   pushAt 1709 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 1710 .ADD,
-   opAt 1711 (.Swap ⟨0, by decide⟩),
-   pushAt 1712 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 1713 .ADD,
-   opAt 1714 (.Swap ⟨0, by decide⟩),
-   opAt 1715 (.Swap ⟨1, by decide⟩),
-   pushAt 1716 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 1717 .ADD,
-   opAt 1718 (.Swap ⟨1, by decide⟩),
-   pushAt 1719 2 8224,
-   opAt 1720 (.Dup ⟨1, by decide⟩),
-   opAt 1721 .GT,
-   pushAt 1722 2 2666,
-   opAt 1723 .JUMPI]
+  [opAt 1708 .JUMPDEST,
+   opAt 1709 (.Dup ⟨0, by decide⟩),
+   opAt 1710 .MLOAD,
+   opAt 1711 (.Dup ⟨2, by decide⟩),
+   opAt 1712 .MLOAD,
+   opAt 1713 (.Swap ⟨0, by decide⟩),
+   opAt 1714 (.Dup ⟨1, by decide⟩),
+   opAt 1715 (.Dup ⟨1, by decide⟩),
+   opAt 1716 .LT,
+   opAt 1717 (.Swap ⟨1, by decide⟩),
+   opAt 1718 (.Swap ⟨0, by decide⟩),
+   opAt 1719 .SUB,
+   opAt 1720 (.Dup ⟨5, by decide⟩),
+   opAt 1721 (.Dup ⟨1, by decide⟩),
+   opAt 1722 .SUB,
+   opAt 1723 (.Swap ⟨0, by decide⟩),
+   opAt 1724 (.Dup ⟨6, by decide⟩),
+   opAt 1725 (.Swap ⟨0, by decide⟩),
+   opAt 1726 .LT,
+   opAt 1727 (.Swap ⟨0, by decide⟩),
+   opAt 1728 (.Swap ⟨1, by decide⟩),
+   opAt 1729 .OR,
+   opAt 1730 (.Swap ⟨4, by decide⟩),
+   opAt 1731 .POP,
+   opAt 1732 (.Dup ⟨3, by decide⟩),
+   opAt 1733 .MSTORE,
+   pushAt 1734 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 1735 .ADD,
+   opAt 1736 (.Swap ⟨0, by decide⟩),
+   pushAt 1737 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 1738 .ADD,
+   opAt 1739 (.Swap ⟨0, by decide⟩),
+   opAt 1740 (.Swap ⟨1, by decide⟩),
+   pushAt 1741 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 1742 .ADD,
+   opAt 1743 (.Swap ⟨1, by decide⟩),
+   pushAt 1744 2 8224,
+   opAt 1745 (.Dup ⟨1, by decide⟩),
+   opAt 1746 .GT,
+   pushAt 1747 2 2695,
+   opAt 1748 .JUMPI]
 
-/-- Instructions 1724..1741, pc 2807..2862. The return path jumps at
-idx 1739; the two trailing one-byte JUMPDESTs preserve the fixed PCs of
-the following CCB entry. -/
+/-- Original block `1724`, now instructions 1749..1766, pc 2836..2891. -/
 def blk1724 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1724 .POP,
-   opAt 1725 .POP,
-   opAt 1726 .POP,
-   opAt 1727 .ISZERO,
-   pushAt 1728 2 8224,
-   opAt 1729 .MLOAD,
-   opAt 1730 .OR,
-   pushAt 1731 32 115792089237316195423570985008687907853269984665640564039457584007913129638848,
-   opAt 1732 .MUL,
-   pushAt 1733 2 8256,
-   opAt 1734 .ADD,
-   pushAt 1735 2 9344,
-   opAt 1736 .MLOAD,
-   opAt 1737 (.Swap ⟨1, by decide⟩),
-   opAt 1738 .MCOPY,
-   opAt 1739 .JUMP]
+  [opAt 1749 .POP,
+   opAt 1750 .POP,
+   opAt 1751 .POP,
+   opAt 1752 .ISZERO,
+   pushAt 1753 2 8224,
+   opAt 1754 .MLOAD,
+   opAt 1755 .OR,
+   pushAt 1756 32 115792089237316195423570985008687907853269984665640564039457584007913129638848,
+   opAt 1757 .MUL,
+   pushAt 1758 2 8256,
+   opAt 1759 .ADD,
+   pushAt 1760 2 9344,
+   opAt 1761 .MLOAD,
+   opAt 1762 (.Swap ⟨0, by decide⟩),
+   opAt 1763 (.Dup ⟨2, by decide⟩),
+   opAt 1764 .MCOPY,
+   opAt 1765 .POP,
+   opAt 1766 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

@@ -48,9 +48,9 @@ private theorem append7
 theorem run_byte0 (template : State) (base modulus word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (segmentedBytePath 0)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3208)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3237)
         base modulus word pointer accumulator rest) =
-    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3292)
+    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3321)
       base modulus word pointer
       (WindowMath.byteWordStep modulus base accumulator
         (byteValue 0 word).toNat) rest) := by
@@ -78,59 +78,59 @@ theorem run_byte0 (template : State) (base modulus word pointer accumulator : UI
   have h6 := WindowHitByteTrace3.run_byte0_finish template base modulus low
     (byteValue 0 word) word pointer lowAcc rest hrest
   have h56 := runLocatedBlock_append (lowLookupPath 0) (finishPath 0)
-    (nibbleState { template with halt := .Running } (UInt256.ofNat 3279)
+    (nibbleState { template with halt := .Running } (UInt256.ofNat 3308)
       base modulus low (byteValue 0 word) word pointer lowSquared rest)
-    (nibbleState { template with halt := .Running } (UInt256.ofNat 3290)
+    (nibbleState { template with halt := .Running } (UInt256.ofNat 3319)
       base modulus low (byteValue 0 word) word pointer lowAcc rest)
-    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3292)
+    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3321)
       base modulus word pointer lowAcc rest)
     (by simpa [low, lowSquared, lowAcc] using h5) rfl
     (by simpa [low, lowAcc] using h6)
   have h456 := runLocatedBlock_append (lowSquarePath 0)
     (lowLookupPath 0 ++ finishPath 0)
-    (nibbleState { template with halt := .Running } (UInt256.ofNat 3255)
+    (nibbleState { template with halt := .Running } (UInt256.ofNat 3284)
       base modulus low (byteValue 0 word) word pointer highAcc rest)
-    (nibbleState { template with halt := .Running } (UInt256.ofNat 3279)
+    (nibbleState { template with halt := .Running } (UInt256.ofNat 3308)
       base modulus low (byteValue 0 word) word pointer lowSquared rest)
-    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3292)
+    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3321)
       base modulus word pointer lowAcc rest)
     (by simpa [low, highAcc, lowSquared] using h4) rfl h56
   have h3456 := runLocatedBlock_append (lowPrepPath 0)
     (lowSquarePath 0 ++ lowLookupPath 0 ++ finishPath 0)
-    (nibbleState { template with halt := .Running } (UInt256.ofNat 3250)
+    (nibbleState { template with halt := .Running } (UInt256.ofNat 3279)
       base modulus high (byteValue 0 word) word pointer highAcc rest)
-    (nibbleState { template with halt := .Running } (UInt256.ofNat 3255)
+    (nibbleState { template with halt := .Running } (UInt256.ofNat 3284)
       base modulus low (byteValue 0 word) word pointer highAcc rest)
-    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3292)
+    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3321)
       base modulus word pointer lowAcc rest)
     (by simpa [high, low, highAcc] using h3) rfl h456
   have h23456 := runLocatedBlock_append (highLookupPath 0)
     (lowPrepPath 0 ++ lowSquarePath 0 ++ lowLookupPath 0 ++ finishPath 0)
-    (nibbleState { template with halt := .Running } (UInt256.ofNat 3239)
+    (nibbleState { template with halt := .Running } (UInt256.ofNat 3268)
       base modulus high (byteValue 0 word) word pointer highSquared rest)
-    (nibbleState { template with halt := .Running } (UInt256.ofNat 3250)
+    (nibbleState { template with halt := .Running } (UInt256.ofNat 3279)
       base modulus high (byteValue 0 word) word pointer highAcc rest)
-    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3292)
+    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3321)
       base modulus word pointer lowAcc rest)
     (by simpa [high, highSquared, highAcc] using h2) rfl h3456
   have h123456 := runLocatedBlock_append (highSquarePath 0)
     (highLookupPath 0 ++ lowPrepPath 0 ++ lowSquarePath 0 ++
       lowLookupPath 0 ++ finishPath 0)
-    (nibbleState { template with halt := .Running } (UInt256.ofNat 3215)
+    (nibbleState { template with halt := .Running } (UInt256.ofNat 3244)
       base modulus high (byteValue 0 word) word pointer accumulator rest)
-    (nibbleState { template with halt := .Running } (UInt256.ofNat 3239)
+    (nibbleState { template with halt := .Running } (UInt256.ofNat 3268)
       base modulus high (byteValue 0 word) word pointer highSquared rest)
-    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3292)
+    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3321)
       base modulus word pointer lowAcc rest)
     (by simpa [high, highSquared] using h1) rfl h23456
   have hall := runLocatedBlock_append (highPrepPath 0)
     (highSquarePath 0 ++ highLookupPath 0 ++ lowPrepPath 0 ++
       lowSquarePath 0 ++ lowLookupPath 0 ++ finishPath 0)
-    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3208)
+    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3237)
       base modulus word pointer accumulator rest)
-    (nibbleState { template with halt := .Running } (UInt256.ofNat 3215)
+    (nibbleState { template with halt := .Running } (UInt256.ofNat 3244)
       base modulus high (byteValue 0 word) word pointer accumulator rest)
-    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3292)
+    (wordKernelState { template with halt := .Running } (UInt256.ofNat 3321)
       base modulus word pointer lowAcc rest)
     (by simpa [high] using h0) rfl h123456
   simpa [segmentedBytePath, high, low, highSquared, highAcc, lowSquared,
@@ -140,9 +140,9 @@ theorem run_byte0 (template : State) (base modulus word pointer accumulator : UI
 theorem run_byte1 (template : State) (base modulus word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (segmentedBytePath 1)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3292)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3321)
         base modulus word pointer accumulator rest) =
-    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3377)
+    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3406)
       base modulus word pointer
       (WindowMath.byteWordStep modulus base accumulator
         (byteValue 1 word).toNat) rest) := by
@@ -155,53 +155,53 @@ theorem run_byte1 (template : State) (base modulus word pointer accumulator : UI
   let lowAcc := UInt256.mulMod lowSquared
     (WindowMath.tableWord base modulus low) modulus
   have h0 : runLocatedBlock (highPrepPath 1)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3292)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3321)
         base modulus word pointer accumulator rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3300)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3329)
         base modulus high (byteValue 1 word) word pointer accumulator rest) := by
     simpa [high] using WindowHitByte1High.run_prep template base modulus word
       pointer accumulator rest hrest
   have h1 : runLocatedBlock (highSquarePath 1)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3300)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3329)
         base modulus high (byteValue 1 word) word pointer accumulator rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3324)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3353)
         base modulus high (byteValue 1 word) word pointer highSquared rest) := by
     simpa [high, highSquared] using WindowHitByte1High.run_square template
       base modulus high (byteValue 1 word) word pointer accumulator rest hrest
   have h2 : runLocatedBlock (highLookupPath 1)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3324)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3353)
         base modulus high (byteValue 1 word) word pointer highSquared rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3335)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3364)
         base modulus high (byteValue 1 word) word pointer highAcc rest) := by
     simpa [high, highSquared, highAcc] using WindowHitByte1High.run_lookup
       template base modulus high (byteValue 1 word) word pointer highSquared rest
       (highNibble_lt 1 word (by decide)) hrest
   have h3 : runLocatedBlock (lowPrepPath 1)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3335)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3364)
         base modulus high (byteValue 1 word) word pointer highAcc rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3340)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3369)
         base modulus low (byteValue 1 word) word pointer highAcc rest) := by
     simpa [high, low, highAcc] using WindowHitByte1Low.run_prep template base
       modulus high word pointer highAcc rest hrest
   have h4 : runLocatedBlock (lowSquarePath 1)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3340)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3369)
         base modulus low (byteValue 1 word) word pointer highAcc rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3364)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3393)
         base modulus low (byteValue 1 word) word pointer lowSquared rest) := by
     simpa [low, highAcc, lowSquared] using WindowHitByte1Low.run_square template
       base modulus low (byteValue 1 word) word pointer highAcc rest hrest
   have h5 : runLocatedBlock (lowLookupPath 1)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3364)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3393)
         base modulus low (byteValue 1 word) word pointer lowSquared rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3375)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3404)
         base modulus low (byteValue 1 word) word pointer lowAcc rest) := by
     simpa [low, lowSquared, lowAcc] using WindowHitByte1Low.run_lookup template
       base modulus low (byteValue 1 word) word pointer lowSquared rest
       (lowNibble_lt 1 word) hrest
   have h6 : runLocatedBlock (finishPath 1)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3375)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3404)
         base modulus low (byteValue 1 word) word pointer lowAcc rest) =
-      some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3377)
+      some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3406)
         base modulus word pointer lowAcc rest) := by
     simpa [low, lowAcc] using WindowHitByte1Low.run_finish template base modulus
       low (byteValue 1 word) word pointer lowAcc rest hrest
@@ -213,9 +213,9 @@ theorem run_byte1 (template : State) (base modulus word pointer accumulator : UI
 theorem run_byte2 (template : State) (base modulus word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (segmentedBytePath 2)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3377)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3406)
         base modulus word pointer accumulator rest) =
-    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3462)
+    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3491)
       base modulus word pointer
       (WindowMath.byteWordStep modulus base accumulator
         (byteValue 2 word).toNat) rest) := by
@@ -228,53 +228,53 @@ theorem run_byte2 (template : State) (base modulus word pointer accumulator : UI
   let lowAcc := UInt256.mulMod lowSquared
     (WindowMath.tableWord base modulus low) modulus
   have h0 : runLocatedBlock (highPrepPath 2)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3377)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3406)
         base modulus word pointer accumulator rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3385)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3414)
         base modulus high (byteValue 2 word) word pointer accumulator rest) := by
     simpa [high] using WindowHitByte2High.run_prep template base modulus word
       pointer accumulator rest hrest
   have h1 : runLocatedBlock (highSquarePath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3385)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3414)
         base modulus high (byteValue 2 word) word pointer accumulator rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3409)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3438)
         base modulus high (byteValue 2 word) word pointer highSquared rest) := by
     simpa [high, highSquared] using WindowHitByte2High.run_square template
       base modulus high (byteValue 2 word) word pointer accumulator rest hrest
   have h2 : runLocatedBlock (highLookupPath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3409)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3438)
         base modulus high (byteValue 2 word) word pointer highSquared rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3420)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3449)
         base modulus high (byteValue 2 word) word pointer highAcc rest) := by
     simpa [high, highSquared, highAcc] using WindowHitByte2High.run_lookup
       template base modulus high (byteValue 2 word) word pointer highSquared rest
       (highNibble_lt 2 word (by decide)) hrest
   have h3 : runLocatedBlock (lowPrepPath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3420)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3449)
         base modulus high (byteValue 2 word) word pointer highAcc rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3425)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3454)
         base modulus low (byteValue 2 word) word pointer highAcc rest) := by
     simpa [high, low, highAcc] using WindowHitByte2Low.run_prep template base
       modulus high word pointer highAcc rest hrest
   have h4 : runLocatedBlock (lowSquarePath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3425)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3454)
         base modulus low (byteValue 2 word) word pointer highAcc rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3449)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3478)
         base modulus low (byteValue 2 word) word pointer lowSquared rest) := by
     simpa [low, highAcc, lowSquared] using WindowHitByte2Low.run_square template
       base modulus low (byteValue 2 word) word pointer highAcc rest hrest
   have h5 : runLocatedBlock (lowLookupPath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3449)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3478)
         base modulus low (byteValue 2 word) word pointer lowSquared rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3460)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3489)
         base modulus low (byteValue 2 word) word pointer lowAcc rest) := by
     simpa [low, lowSquared, lowAcc] using WindowHitByte2Low.run_lookup template
       base modulus low (byteValue 2 word) word pointer lowSquared rest
       (lowNibble_lt 2 word) hrest
   have h6 : runLocatedBlock (finishPath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3460)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3489)
         base modulus low (byteValue 2 word) word pointer lowAcc rest) =
-      some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3462)
+      some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3491)
         base modulus word pointer lowAcc rest) := by
     simpa [low, lowAcc] using WindowHitByte2Low.run_finish template base modulus
       low (byteValue 2 word) word pointer lowAcc rest hrest
@@ -286,9 +286,9 @@ theorem run_byte2 (template : State) (base modulus word pointer accumulator : UI
 theorem run_byte3 (template : State) (base modulus word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (segmentedBytePath 3)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3462)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3491)
         base modulus word pointer accumulator rest) =
-    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3547)
+    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3576)
       base modulus word pointer
       (WindowMath.byteWordStep modulus base accumulator
         (byteValue 3 word).toNat) rest) := by
@@ -301,53 +301,53 @@ theorem run_byte3 (template : State) (base modulus word pointer accumulator : UI
   let lowAcc := UInt256.mulMod lowSquared
     (WindowMath.tableWord base modulus low) modulus
   have h0 : runLocatedBlock (highPrepPath 3)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3462)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3491)
         base modulus word pointer accumulator rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3470)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3499)
         base modulus high (byteValue 3 word) word pointer accumulator rest) := by
     simpa [high] using WindowHitByte3High.run_prep template base modulus word
       pointer accumulator rest hrest
   have h1 : runLocatedBlock (highSquarePath 3)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3470)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3499)
         base modulus high (byteValue 3 word) word pointer accumulator rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3494)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3523)
         base modulus high (byteValue 3 word) word pointer highSquared rest) := by
     simpa [high, highSquared] using WindowHitByte3High.run_square template
       base modulus high (byteValue 3 word) word pointer accumulator rest hrest
   have h2 : runLocatedBlock (highLookupPath 3)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3494)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3523)
         base modulus high (byteValue 3 word) word pointer highSquared rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3505)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3534)
         base modulus high (byteValue 3 word) word pointer highAcc rest) := by
     simpa [high, highSquared, highAcc] using WindowHitByte3High.run_lookup
       template base modulus high (byteValue 3 word) word pointer highSquared rest
       (highNibble_lt 3 word (by decide)) hrest
   have h3 : runLocatedBlock (lowPrepPath 3)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3505)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3534)
         base modulus high (byteValue 3 word) word pointer highAcc rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3510)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3539)
         base modulus low (byteValue 3 word) word pointer highAcc rest) := by
     simpa [high, low, highAcc] using WindowHitByte3Low.run_prep template base
       modulus high word pointer highAcc rest hrest
   have h4 : runLocatedBlock (lowSquarePath 3)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3510)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3539)
         base modulus low (byteValue 3 word) word pointer highAcc rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3534)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3563)
         base modulus low (byteValue 3 word) word pointer lowSquared rest) := by
     simpa [low, highAcc, lowSquared] using WindowHitByte3Low.run_square template
       base modulus low (byteValue 3 word) word pointer highAcc rest hrest
   have h5 : runLocatedBlock (lowLookupPath 3)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3534)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3563)
         base modulus low (byteValue 3 word) word pointer lowSquared rest) =
-      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3545)
+      some (nibbleState { template with halt := .Running } (UInt256.ofNat 3574)
         base modulus low (byteValue 3 word) word pointer lowAcc rest) := by
     simpa [low, lowSquared, lowAcc] using WindowHitByte3Low.run_lookup template
       base modulus low (byteValue 3 word) word pointer lowSquared rest
       (lowNibble_lt 3 word) hrest
   have h6 : runLocatedBlock (finishPath 3)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3545)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3574)
         base modulus low (byteValue 3 word) word pointer lowAcc rest) =
-      some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3547)
+      some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3576)
         base modulus word pointer lowAcc rest) := by
     simpa [low, lowAcc] using WindowHitByte3Low.run_finish template base modulus
       low (byteValue 3 word) word pointer lowAcc rest hrest
