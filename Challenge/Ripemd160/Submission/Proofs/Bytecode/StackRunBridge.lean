@@ -337,7 +337,7 @@ def compressionSeam (kernel : BlockKernel) :
 /-- Correctness remains conditional on the genuine block kernel. -/
 theorem correct_of_block_kernel (kernel : BlockKernel)
     (input : ByteArray) (hfit : CalldataFits input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x3d3)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x3f3)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   exact FastOutputResultBridge.correct_of_compression_trace (compressionSeam kernel) input hfit entryPrefix

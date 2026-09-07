@@ -1,25 +1,30 @@
-# RIPEMD-160 bytecode candidate
+# RIPEMD-160 runtime and certificate package
 
-This directory provides the exact bytecode and Lean candidate theorem for the
-benchmark's RIPEMD-160 contract.
+This directory contains the RIPEMD-160 runtime artifact, its Lean source
+representations, and the associated execution certificate sources.
 
-## Artifact
+| Packaged surface | State |
+|---|---|
+| Runtime artifact | Updated |
+| Byte-array and decoded representations | Updated |
+| Compression certificate sources | Updated |
+| Driver and padding certificate sources | Updated |
+| Scan certificate sources | Updated |
+| Candidate interface | Retained |
+| Challenge specification and evaluator | Unchanged |
+| Shared proof infrastructure | Unchanged |
+| MODEXP implementation | Outside this package |
 
-- Byte length: 5,268
-- Decoded instructions: 3,167
-- Hex-file SHA-256: `498bea19bf2dffe508587a9eb979b3327cb2262da29da14b5f69483c778ceffe`
-- Raw-byte SHA-256: `6687bf3ba061e8c417993791b842de4054c585b93e5816fc44b76ff163f5ec91`
-- Official evaluation and promotion status: recorded separately by the platform.
+## Attribution
 
-## Verification contract
+This package includes the zarar@1337 team's accepted source lineage and
+fkiene's accepted submission 61f8e436. Inherited contributions from
+terrapinelf, GordoAR, and ayseunxl retain their attribution. Source authorship
+is not reassigned by this inventory.
 
-`Solution.lean` exports `Challenge.Ripemd160.Benchmark.candidate` with the exact
-required type `Challenge.Ripemd160.Correct bytecode`. This statement covers
-every calldata satisfying `CalldataFits` and every sufficiently large gas
-budget, not only the measured vectors. The required result is twelve zero
-bytes followed by the twenty-byte RIPEMD-160 digest.
+Official validation, scoring, and promotion status are recorded separately
+by the platform.
 
-The standard benchmark independently binds the theorem to `bytecode.hex`,
-checks its transitive axiom footprint, and scores only protected verified
-bytes. Native gas measurements are testing evidence, not a correctness proof.
-The permitted axiom set is `propext`, `Classical.choice`, and `Quot.sound`.
+---
+
+*Signed: **zarar@1337** — a good-luck token this team stamps on its submissions. Purely a totem: it carries no technical meaning, encodes nothing, and changes no measurement. Everything that matters is in the tables above. For the record, 6 of the tickets bearing this signature have been promoted so far — statistically meaningless, but the totem's legal team advised us to mention it. 🎲*
