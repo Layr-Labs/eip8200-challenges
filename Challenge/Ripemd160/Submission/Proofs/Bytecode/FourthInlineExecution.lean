@@ -46,7 +46,7 @@ noncomputable def left4_group (s : State) (w : Compression.EvmWorking)
       ([work.a, work.b, work.c, work.d, work.e] ++ factor :: (mask :: rho)).length < 1023 := by
     simp only [List.length_append, List.length_cons, List.length_nil]
     omega
-  have ret := gasSteps_popBridge left4Return s
+  have ret := gasSteps_bridge left4Return s
     ([(fourResult (left 4) s w).a, (fourResult (left 4) s w).b,
       (fourResult (left 4) s w).c, (fourResult (left 4) s w).d,
       (fourResult (left 4) s w).e] ++ factor :: (mask :: rho))

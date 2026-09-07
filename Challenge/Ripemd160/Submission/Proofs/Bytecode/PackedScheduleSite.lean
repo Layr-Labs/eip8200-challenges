@@ -71,6 +71,9 @@ private theorem endianStage_advances (shift : Nat) (mask : UInt256) :
     | apply advances_straight
       unfold DenseScheduleTemplate.endianFactorPush
       split <;> constructor
+    | apply advances_straight
+      unfold DenseScheduleTemplate.endianMaskPush
+      split <;> constructor
 
 private theorem denseStore_advances (half : Nat) :
     ∀ instruction ∈
@@ -105,7 +108,7 @@ private theorem denseBeforeJumpTemplate_advances :
   · exact denseHalfTemplate_advances 0 instruction h0
 
 private theorem packedSchedule_slice :
-    (Artifact.submissionArtifact.instructions.drop 3145).take
+    (Artifact.submissionArtifact.instructions.drop 3249).take
         DenseScheduleTemplate.denseBeforeJumpTemplate.length =
       DenseScheduleTemplate.denseBeforeJumpTemplate := by
   rfl
@@ -115,10 +118,10 @@ def packedScheduleSite :
       DenseScheduleTemplate.denseBeforeJumpTemplate :=
   StackSiteBuilder.ofSlice
     (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    DenseScheduleTemplate.denseBeforeJumpTemplate 3145
+    DenseScheduleTemplate.denseBeforeJumpTemplate 3249
     packedSchedule_slice
     (by
-      change 3145 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
+      change 3249 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
         Artifact.submissionInstructions.length
       rw [DenseScheduleTemplate.denseBeforeJumpTemplate_length,
         Artifact.referenceInstructions_count]
@@ -129,28 +132,28 @@ def packedScheduleSite :
     (by decide)
 
 private theorem denseScheduleTemplate_byteLength :
-    byteLength DenseScheduleTemplate.denseBeforeJumpTemplate = 198 := by
+    byteLength DenseScheduleTemplate.denseBeforeJumpTemplate = 192 := by
   rw [byteLength_eq_assemble]
   exact DenseScheduleTemplate.denseBeforeJumpTemplate_byteLength
 
 private theorem packedSchedule_start_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3145 = 0x120d :=
+    Artifact.submissionArtifact.instructionPC 3249 = 0x1267 :=
   QuadLayout.schedule_pc
 
 private theorem packedSchedule_end_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3196 = 0x12d3 :=
+    Artifact.submissionArtifact.instructionPC 3300 = 0x1327 :=
   QuadLayout.scheduleJump_pc
 
 @[simp] theorem packedScheduleSite_startPC :
-    packedScheduleSite.startPC = UInt256.ofNat 0x120d := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3145) =
-    UInt256.ofNat 0x120d
+    packedScheduleSite.startPC = UInt256.ofNat 0x1267 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3249) =
+    UInt256.ofNat 0x1267
   rw [packedSchedule_start_instructionPC]
 
 @[simp] theorem packedScheduleSite_endPC :
-    packedScheduleSite.endPC = UInt256.ofNat 0x12d3 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3196) =
-    UInt256.ofNat 0x12d3
+    packedScheduleSite.endPC = UInt256.ofNat 0x1327 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3300) =
+    UInt256.ofNat 0x1327
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleSite_end_eq_pcAfter :
@@ -174,12 +177,12 @@ private theorem pc_toNat_instructionPC (index : Nat) :
 def packedScheduleFinalJump :
     LocatedSite Artifact.submissionArtifact .Osaka where
   located :=
-    { index := 3196
+    { index := 3300
       instruction := .op .JUMP
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3196)
-  pc_eq := pc_toNat_instructionPC 3196
+  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3300)
+  pc_eq := pc_toNat_instructionPC 3300
 
 def packedScheduleFinalJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -195,15 +198,15 @@ private theorem runLocatedBlock_singleton
   | some t => simp [Challenge.EvmProof.Stepper.runLocatedBlock, h]
 
 @[simp] theorem packedScheduleFinalJump_pc :
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x12d3 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3196) =
-    UInt256.ofNat 0x12d3
+    packedScheduleFinalJump.pc = UInt256.ofNat 0x1327 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3300) =
+    UInt256.ofNat 0x1327
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleFinalJump_site_end :
     packedScheduleFinalJump.pc = packedScheduleSite.endPC := by
   calc
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x12d3 := packedScheduleFinalJump_pc
+    packedScheduleFinalJump.pc = UInt256.ofNat 0x1327 := packedScheduleFinalJump_pc
     _ = packedScheduleSite.endPC := packedScheduleSite_endPC.symm
 
 theorem packedScheduleFinalJump_pc_eq_expected

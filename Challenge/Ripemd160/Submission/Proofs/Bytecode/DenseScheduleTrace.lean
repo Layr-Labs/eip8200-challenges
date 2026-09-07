@@ -193,7 +193,7 @@ theorem runInstrSeq_endianStage
   all_goals norm_num at hsemantic
   all_goals
     simp (config := { maxSteps := 1000000 })
-      [endianStage, endianFactorPush, endianFactor, op, push1, push2, push3,
+      [endianStage, endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3,
         push32, dup1, swap1,
         stageState, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
         pcAfter, hrun, hcap, hcap2, hcap3, hcap4, hswap1, UInt256.succ, Instr.size,
