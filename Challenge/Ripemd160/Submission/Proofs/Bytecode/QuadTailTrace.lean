@@ -9,7 +9,7 @@ set_option maxHeartbeats 8000000
 # Cached-factor consume-tail raw trace
 
 Retires the old DUP/POP tail evaluator. The consume body is the frozen
-54-instruction sequence through the `JUMP`; nine `STOP` bytes are
+53-instruction sequence through the earlier `JUMP`; nine `STOP` bytes are
 not executed.
 -/
 
@@ -25,7 +25,7 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailConsume
 theorem runTail_quadTail
     (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256)
-    (hactive : 39 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1007)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     StackTail.runTailInstrs quadTailTemplate
@@ -39,7 +39,7 @@ theorem runInstrSeq_quadTail
     (ret : UInt256) (rest : List UInt256)
     (hrun : s.halt = .Running)
     (hfork : s.fork = .Osaka)
-    (hactive : 39 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1007)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     QuadTailConsume.runInstrSeq consumeBody

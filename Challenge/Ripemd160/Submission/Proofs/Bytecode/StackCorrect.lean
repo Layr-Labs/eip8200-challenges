@@ -1,6 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackLoadSeams
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadLane
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailSite
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskLane
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskTailSite
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastEmptyBlock
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
 
@@ -11,9 +11,9 @@ set_option maxHeartbeats 5000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
-open StackBlockModel StackEndpoint QuadLane StackLoadSeams
+open StackBlockModel StackEndpoint CachedMaskLane StackLoadSeams
 
-private theorem returnPC : Artifact.submissionArtifact.instructionPC 717 = 0x436 := by
+private theorem returnPC : Artifact.submissionArtifact.instructionPC 893 = 0x436 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -32,8 +32,8 @@ noncomputable def gasSteps_legacyBlock (s : State) (input : ByteArray) (i : Nat)
   let rest := StackFrame.frameRest input i
   let left := StackCompression.leftRounds word 80 w
   let right := StackCompression.rightRounds word 80 w
-  let rightRest := StackFrame.savedLeft left ++ rest
-  have qactive : 39 ≤ q.activeWords.toNat := by
+  let rightRest := StackFrame.savedLeft left ++ StackRoundTemplate.mask :: rest
+  have qactive : 66 ≤ q.activeWords.toNat := by
     rw [scheduledState_activeWords s input hfit i hi]
     omega
   have qwords : QuadSemantic.DenseWordsAt q word :=
@@ -48,47 +48,49 @@ noncomputable def gasSteps_legacyBlock (s : State) (input : ByteArray) (i : Nat)
       Schedule.loopState_halt, hrun]
   have qnp : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig
       q.executionEnv.fork q.executionEnv.codeAddr = false := by rw [qenv]; exact hnp
-  have restBound : rest.length < 1007 := by
+  have restBound : rest.length < 1006 := by
     simp [rest, StackFrame.frameRest, driverRest]
-  have laneRestBound : rest.length < 1006 := by
-    simp [rest, StackFrame.frameRest, driverRest]
-  have rightRestBound : rightRest.length < 1006 := by
+  have rightRestBound : rightRest.length < 1007 := by
     simp [rightRest, StackFrame.savedLeft, rest, StackFrame.frameRest, driverRest]
   have gframe := StackFrame.gasSteps_frame s input i hfit hi hcode hfork hrun hnp
   have gload1 := StackLoadTrace.gasSteps_load StackFrame.loadSite987 q
-    (MaskProjection.mask :: QuadRoundTemplate.factor :: rest) qactive
+    (QuadRoundTemplate.factor :: StackRoundTemplate.mask :: rest) qactive
     (by simp [rest, StackFrame.frameRest, driverRest]) qcode qfork qrun qnp
   have gload1' : GasSteps (StackFrame.frameLoadEntry s input i)
-      (stateAt q (QuadLayout.leftPC 0) w rest) := by
+      (stateAt q (QuadLayout.leftPC 0) w (StackRoundTemplate.mask :: rest)) := by
     exact gload1.cast (firstLoad_entry s input i)
-      (firstLoad_returned q (MaskProjection.mask :: QuadRoundTemplate.factor :: rest))
-  have gleft := gasSteps_left80 q word w rest qwords qactive laneRestBound qcode qfork qrun qnp
-  have groute := StackFrame.gasSteps_route q left rest restBound qcode qfork qrun qnp
-  have groute' : GasSteps (stateAt q (QuadLayout.leftPC 20) left rest)
-      (StackFrame.routeReturned q left rest) :=
-    groute.cast (routeEntry_atLanePC q left rest) rfl
+      (firstLoad_returned q (QuadRoundTemplate.factor :: StackRoundTemplate.mask :: rest))
+  have gleft := gasSteps_left80 q word w rest qwords qactive restBound qcode qfork qrun qnp
+  have groute := StackFrame.gasSteps_route q left (StackRoundTemplate.mask :: rest)
+    (by simp only [List.length_cons]; omega) qcode qfork qrun qnp
+  have groute' : GasSteps (stateAt q (QuadLayout.leftPC 20) left (StackRoundTemplate.mask :: rest))
+      (StackFrame.routeReturned q left (StackRoundTemplate.mask :: rest)) :=
+    groute.cast (routeEntry_atLanePC q left (StackRoundTemplate.mask :: rest)) rfl
   have gload2 := StackLoadTrace.gasSteps_load StackFrame.loadSite1238 q
-    (MaskProjection.mask :: QuadRoundTemplate.factor :: rightRest) qactive
+    (QuadRoundTemplate.factor :: rightRest) qactive
     (by simp [rightRest, StackFrame.savedLeft, rest, StackFrame.frameRest, driverRest])
     qcode qfork qrun qnp
-  have gload2' : GasSteps (StackFrame.routeReturned q left rest)
+  have gload2' : GasSteps (StackFrame.routeReturned q left (StackRoundTemplate.mask :: rest))
       (stateAt q (QuadLayout.rightPC 0) w rightRest) := by
-    exact gload2.cast (secondLoad_entry q left rest)
-      (secondLoad_returned q (MaskProjection.mask :: QuadRoundTemplate.factor :: rightRest))
-  have gright := gasSteps_right80 q word w rightRest qwords qactive rightRestBound
-    qcode qfork qrun qnp
+    exact gload2.cast (secondLoad_entry q left (StackRoundTemplate.mask :: rest))
+      (secondLoad_returned q (QuadRoundTemplate.factor :: rightRest))
+  have gright := gasSteps_right80 q word w left.b left.c left.d left.e left.a rest
+    qwords qactive (by simp [rest, StackFrame.frameRest, driverRest]) qcode qfork qrun qnp
   have hvalid : Decode.isValidJumpDest q.executionEnv.code
       (UInt256.ofNat 0x436).toNat = true := by
-    have hdest := Artifact.submissionArtifact.isValidJumpDest_index 717 (by rfl)
+    have hdest := Artifact.submissionArtifact.isValidJumpDest_index 893 (by rfl)
     rw [returnPC] at hdest
     change Decode.isValidJumpDest q.executionEnv.code 0x436 = true
     rw [qcode]
     exact hdest
-  have gtail := QuadTailSite.actualTailGasSteps q left right (UInt256.ofNat 0x436)
+  have gtail := CachedMaskTailSite.actualTailGasSteps q left right (UInt256.ofNat 0x436)
     (driverRest input i) qactive (by simp [driverRest]) qcode qfork qrun qnp hvalid
   have tailSeam : stateAt q (QuadLayout.rightPC 20) right rightRest =
-      QuadTailTemplate.tailEntry q left right (UInt256.ofNat 0x436) (driverRest input i) := by
-    exact (tailEntry_atLanePC q left right (UInt256.ofNat 0x436) (driverRest input i)).symm
+      CachedMaskTail.entry q left right (UInt256.ofNat 0x436) (driverRest input i) := by
+    change StackRoundTrace.roundEntry q (QuadLayout.rightPC 20) right.a right.b right.c
+      right.d right.e (QuadRoundTemplate.factor :: rightRest) = _
+    rw [StackEndpoint.rightPC_last]
+    rfl
   have hleft : left = leftWorking s input i := by
     exact congrArg (StackCompression.leftRounds (blockWords input i) 80)
       (initialWorking_scheduled s input i)

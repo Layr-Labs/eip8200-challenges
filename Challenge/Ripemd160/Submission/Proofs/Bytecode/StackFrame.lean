@@ -3,7 +3,6 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleActiveWords
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.newMaskProjection
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleSite
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTemplate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Schedule
@@ -44,21 +43,21 @@ private def wfOp {op : Operation}
   ⟨hopcode, hplain, havailable⟩
 
 def prefixPath : List Located :=
-  [⟨913, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨914, .push ⟨2, by decide⟩ (UInt256.ofNat 0x523), by rfl, by decide⟩,
-   ⟨915, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨916, .push ⟨2, by decide⟩ (UInt256.ofNat 0x10e2), by rfl, by decide⟩,
-   ⟨917, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨1087, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨1088, .push ⟨2, by decide⟩ (UInt256.ofNat 0x523), by rfl, by decide⟩,
+   ⟨1089, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨1090, .push ⟨2, by decide⟩ (UInt256.ofNat 0x109f), by rfl, by decide⟩,
+   ⟨1091, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def exitPath : List Located :=
-  [⟨919, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨920, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩,
-   ⟨921, .push ⟨4, by decide⟩ MaskProjection.mask, by rfl, by decide⟩]
+  [⟨1093, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨1094, .push ⟨4, by decide⟩ mask, by rfl, by decide⟩,
+   ⟨1095, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
 
 def loadSite987 : GenericRoundSite Artifact.submissionArtifact .Osaka
     StackLoadTrace.loadTemplate :=
   StackSiteBuilder.ofSlice (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    StackLoadTrace.loadTemplate 922 (by rfl) (by decide)
+    StackLoadTrace.loadTemplate 1096 (by rfl) (by decide)
     QuadLayout.code_bound
     (StackRoundData.templateWellFormed_mem
       (instructions := StackLoadTrace.loadTemplate) (by decide))
@@ -67,7 +66,7 @@ def loadSite987 : GenericRoundSite Artifact.submissionArtifact .Osaka
 def loadSite1238 : GenericRoundSite Artifact.submissionArtifact .Osaka
     StackLoadTrace.loadTemplate :=
   StackSiteBuilder.ofSlice (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    StackLoadTrace.loadTemplate 1178 (by rfl) (by decide)
+    StackLoadTrace.loadTemplate QuadLayout.rightLoadIndex (by rfl) (by decide)
     QuadLayout.code_bound
     (StackRoundData.templateWellFormed_mem
       (instructions := StackLoadTrace.loadTemplate) (by decide))
@@ -76,22 +75,23 @@ def loadSite1238 : GenericRoundSite Artifact.submissionArtifact .Osaka
 @[simp] theorem loadSite987_startPC : loadSite987.startPC = UInt256.ofNat 0x52f := by
   rfl
 
-@[simp] theorem loadSite1238_startPC : loadSite1238.startPC = UInt256.ofNat 0x8ec := by
-  rfl
+@[simp] theorem loadSite1238_startPC :
+    loadSite1238.startPC = UInt256.ofNat 0xaa3 := by
+  change UInt256.ofNat
+    (Artifact.submissionArtifact.instructionPC QuadLayout.rightLoadIndex) = _
+  rw [QuadLayout.rightLoad_pc]
 
 def frameRest (input : ByteArray) (i : Nat) : List UInt256 :=
   UInt256.ofNat 0x436 :: StackBlockModel.driverRest input i
 
 def frameLoadEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   StackLoadTrace.loadEntry (StackBlockModel.scheduledState s input i)
-    (UInt256.ofNat 0x52f)
-    (MaskProjection.mask :: QuadRoundTemplate.factor :: frameRest input i)
+    (UInt256.ofNat 0x52f) (QuadRoundTemplate.factor :: mask :: frameRest input i)
 
 theorem frameLoadEntry_eq_loadSite987 (s : State) (input : ByteArray) (i : Nat) :
     frameLoadEntry s input i =
       StackLoadTrace.loadEntry (StackBlockModel.scheduledState s input i)
-        loadSite987.startPC
-        (MaskProjection.mask :: QuadRoundTemplate.factor :: frameRest input i) := by
+        loadSite987.startPC (QuadRoundTemplate.factor :: mask :: frameRest input i) := by
   simp [frameLoadEntry]
 
 theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
@@ -102,13 +102,13 @@ theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
         PackedScheduleSite.packedScheduleSite.startPC
         (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523)
         (StackBlockModel.scheduleRest input i)) := by
-  have hpc979 : Artifact.submissionArtifact.instructionPC 913 = 0x519 := by rfl
-  have hpc980 : Artifact.submissionArtifact.instructionPC 914 = 0x51a := by rfl
-  have hpc981 : Artifact.submissionArtifact.instructionPC 915 = 0x51d := by rfl
-  have hpc982 : Artifact.submissionArtifact.instructionPC 916 = 0x51e := by rfl
-  have hpc983 : Artifact.submissionArtifact.instructionPC 917 = 0x521 := by rfl
-  have hdest12ac : Decode.isValidJumpDest submissionBytecode 0x10e2 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2673 (by rfl)
+  have hpc979 : Artifact.submissionArtifact.instructionPC 1087 = 0x519 := by rfl
+  have hpc980 : Artifact.submissionArtifact.instructionPC 1088 = 0x51a := by rfl
+  have hpc981 : Artifact.submissionArtifact.instructionPC 1089 = 0x51d := by rfl
+  have hpc982 : Artifact.submissionArtifact.instructionPC 1090 = 0x51e := by rfl
+  have hpc983 : Artifact.submissionArtifact.instructionPC 1091 = 0x521 := by rfl
+  have hdest12ac : Decode.isValidJumpDest submissionBytecode 0x109f = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2898 (by rfl)
   have hswap1 (u v : UInt256) (rho : List UInt256) :
       (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
     simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
@@ -124,14 +124,14 @@ theorem run_exit (s : State) (input : ByteArray) (i : Nat)
         (Schedule.scheduleReturned (StackBlockModel.scheduledState s input i)
           (UInt256.ofNat 0x523) (StackBlockModel.scheduleRest input i)) =
       some (frameLoadEntry s input i) := by
-  have hpc985 : Artifact.submissionArtifact.instructionPC 919 = 0x523 := by rfl
-  have hpc986 : Artifact.submissionArtifact.instructionPC 920 = 0x524 := by rfl
-  have hpc987 : Artifact.submissionArtifact.instructionPC 921 = 0x52a := by rfl
+  have hpc985 : Artifact.submissionArtifact.instructionPC 1093 = 0x523 := by rfl
+  have hmaskPC : Artifact.submissionArtifact.instructionPC 1094 = 0x524 := by rfl
+  have hpc986 : Artifact.submissionArtifact.instructionPC 1095 = 0x529 := by rfl
   simp [exitPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     frameLoadEntry, Schedule.scheduleReturned, StackBlockModel.scheduledState,
     StackBlockModel.scheduleRest, StackBlockModel.driverRest, frameRest,
     StackLoadTrace.loadEntry, QuadRoundTemplate.factor,
-    hrun, hpc985, hpc986, hpc987]
+    hrun, hpc985, hmaskPC, hpc986, mask]
 
 def gasSteps_prefix (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
@@ -203,7 +203,7 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
       Decode.isValidJumpDest s.executionEnv.code
         (UInt256.ofNat 0x523).toNat = true := by
     rw [hcode]
-    exact Artifact.submissionArtifact.isValidJumpDest_index 919 (by rfl)
+    exact Artifact.submissionArtifact.isValidJumpDest_index 1093 (by rfl)
   have hpacked := PackedScheduleSite.gasSteps_packedSchedule s
     (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x523) rest
     hartifactCode hfork hrun hnp hstack1023 hvalid
@@ -265,102 +265,36 @@ def savedLeft (left : Compression.EvmWorking) : List UInt256 :=
 
 def routeEntry (s : State) (left : Compression.EvmWorking)
     (rest : List UInt256) : State :=
-  StackRoundTrace.roundEntry s (QuadLayout.leftPC 20)
-    left.a left.b left.c left.d left.e
-    (MaskProjection.mask :: QuadRoundTemplate.factor :: rest)
+  StackRoundTrace.roundEntry s (UInt256.ofNat 0xaa2)
+    left.a left.b left.c left.d left.e (QuadRoundTemplate.factor :: rest)
 
 def routeReturned (s : State) (left : Compression.EvmWorking)
     (rest : List UInt256) : State :=
-  StackLoadTrace.loadEntry s (UInt256.ofNat 0x8ec)
-    (MaskProjection.mask :: QuadRoundTemplate.factor :: (savedLeft left ++ rest))
+  StackLoadTrace.loadEntry s (UInt256.ofNat 0xaa3)
+    (QuadRoundTemplate.factor :: (savedLeft left ++ rest))
 
 def routePath : List Located :=
-  [⟨1172, .op (.Swap ⟨5, by decide⟩), by rfl,
-    wfOp (by decide) trivial rfl⟩,
-   ⟨1173, .op (.Swap ⟨0, by decide⟩), by rfl,
-    wfOp (by decide) trivial rfl⟩,
-   ⟨1174, .op (.Swap ⟨1, by decide⟩), by rfl,
-    wfOp (by decide) trivial rfl⟩,
-   ⟨1175, .op (.Swap ⟨2, by decide⟩), by rfl,
-    wfOp (by decide) trivial rfl⟩,
-   ⟨1176, .op (.Swap ⟨3, by decide⟩), by rfl,
-    wfOp (by decide) trivial rfl⟩,
-   ⟨1177, .op (.Swap ⟨4, by decide⟩), by rfl,
+  [⟨QuadLayout.routeIndex, .op (.Swap ⟨4, by decide⟩), by rfl,
     wfOp (by decide) trivial rfl⟩]
 
 theorem run_route (s : State) (left : Compression.EvmWorking)
     (rest : List UInt256) (hstack : rest.length < 1007)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock routePath (routeEntry s left rest) =
-  some (routeReturned s left rest) := by
-  have hpc : Artifact.submissionArtifact.instructionPC 1172 = 0x8e6 := by rfl
-  have hleft : (QuadLayout.leftPC 20).toNat = 0x8e6 := by rfl
-  have hleft1 : (QuadLayout.leftPC 20).succ.toNat = 0x8e7 := by rfl
-  have hleft2 : (QuadLayout.leftPC 20).succ.succ.toNat = 0x8e8 := by rfl
-  have hleft3 : (QuadLayout.leftPC 20).succ.succ.succ.toNat = 0x8e9 := by rfl
-  have hleft4 : (QuadLayout.leftPC 20).succ.succ.succ.succ.toNat = 0x8ea := by rfl
-  have hleft5 : (QuadLayout.leftPC 20).succ.succ.succ.succ.succ.toNat = 0x8eb := by rfl
-  have hleft6 : (QuadLayout.leftPC 20).succ.succ.succ.succ.succ.succ =
-      UInt256.ofNat 0x8ec := by rfl
-  have hpc1173 : Artifact.submissionArtifact.instructionPC 1173 = 0x8e7 := by rfl
-  have hpc1174 : Artifact.submissionArtifact.instructionPC 1174 = 0x8e8 := by rfl
-  have hpc1175 : Artifact.submissionArtifact.instructionPC 1175 = 0x8e9 := by rfl
-  have hpc1176 : Artifact.submissionArtifact.instructionPC 1176 = 0x8ea := by rfl
-  have hpc1177 : Artifact.submissionArtifact.instructionPC 1177 = 0x8eb := by rfl
-  have hcap : rest.length + 7 < 1024 := by omega
-  have hswap6 :
+      some (routeReturned s left rest) := by
+  have hpc : Artifact.submissionArtifact.instructionPC
+      QuadLayout.routeIndex = 0xaa2 := QuadLayout.route_pc
+  have hcap : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hswap :
       (left.a :: left.b :: left.c :: left.d :: left.e ::
-        MaskProjection.mask :: QuadRoundTemplate.factor :: rest).exchange 0 6 =
+        QuadRoundTemplate.factor :: rest).exchange 0 5 =
       some (QuadRoundTemplate.factor :: left.b :: left.c :: left.d :: left.e ::
-        MaskProjection.mask :: left.a :: rest) := by
+        left.a :: rest) := by
     simpa using YulEvmCompiler.exchange_swap left.a QuadRoundTemplate.factor
-      [left.b, left.c, left.d, left.e, MaskProjection.mask] rest
-  have hswap1 :
-      (QuadRoundTemplate.factor :: left.b :: left.c :: left.d :: left.e ::
-        MaskProjection.mask :: left.a :: rest).exchange 0 1 =
-      some (left.b :: QuadRoundTemplate.factor :: left.c :: left.d :: left.e ::
-        MaskProjection.mask :: left.a :: rest) := by
-    simpa using YulEvmCompiler.exchange_swap QuadRoundTemplate.factor left.b
-      ([] : List UInt256) (left.c :: left.d :: left.e :: MaskProjection.mask ::
-        left.a :: rest)
-  have hswap2 :
-      (left.b :: QuadRoundTemplate.factor :: left.c :: left.d :: left.e ::
-        MaskProjection.mask :: left.a :: rest).exchange 0 2 =
-      some (left.c :: QuadRoundTemplate.factor :: left.b :: left.d :: left.e ::
-        MaskProjection.mask :: left.a :: rest) := by
-    simpa using YulEvmCompiler.exchange_swap left.b left.c
-      [QuadRoundTemplate.factor] (left.d :: left.e :: MaskProjection.mask ::
-        left.a :: rest)
-  have hswap3 :
-      (left.c :: QuadRoundTemplate.factor :: left.b :: left.d :: left.e ::
-        MaskProjection.mask :: left.a :: rest).exchange 0 3 =
-      some (left.d :: QuadRoundTemplate.factor :: left.b :: left.c :: left.e ::
-        MaskProjection.mask :: left.a :: rest) := by
-    simpa using YulEvmCompiler.exchange_swap left.c left.d
-      [QuadRoundTemplate.factor, left.b]
-      (left.e :: MaskProjection.mask :: left.a :: rest)
-  have hswap4 :
-      (left.d :: QuadRoundTemplate.factor :: left.b :: left.c :: left.e ::
-        MaskProjection.mask :: left.a :: rest).exchange 0 4 =
-      some (left.e :: QuadRoundTemplate.factor :: left.b :: left.c :: left.d ::
-        MaskProjection.mask :: left.a :: rest) := by
-    simpa using YulEvmCompiler.exchange_swap left.d left.e
-      [QuadRoundTemplate.factor, left.b, left.c]
-      (MaskProjection.mask :: left.a :: rest)
-  have hswap5 :
-      (left.e :: QuadRoundTemplate.factor :: left.b :: left.c :: left.d ::
-        MaskProjection.mask :: left.a :: rest).exchange 0 5 =
-      some (MaskProjection.mask :: QuadRoundTemplate.factor :: left.b ::
-        left.c :: left.d :: left.e :: left.a :: rest) := by
-    simpa using YulEvmCompiler.exchange_swap left.e MaskProjection.mask
-      [QuadRoundTemplate.factor, left.b, left.c, left.d]
-      (left.a :: rest)
+      [left.b, left.c, left.d, left.e] rest
   simp [routePath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     routeEntry, routeReturned, StackRoundTrace.roundEntry,
-    StackLoadTrace.loadEntry, savedLeft, hpc, hleft, hleft1, hleft2, hleft3,
-    hleft4, hleft5, hleft6, hrun, hcap,
-    hpc1173, hpc1174, hpc1175, hpc1176, hpc1177,
-    hswap6, hswap1, hswap2, hswap3, hswap4, hswap5]
+    StackLoadTrace.loadEntry, savedLeft, hpc, hrun, hcap, hswap]
 
 def gasSteps_route (s : State) (left : Compression.EvmWorking)
     (rest : List UInt256) (hstack : rest.length < 1007)

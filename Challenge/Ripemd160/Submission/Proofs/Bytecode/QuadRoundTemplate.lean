@@ -58,4 +58,23 @@ def cachedTailFTemplate (j : Nat) (constant : UInt256) : List Instr :=
     cachedCfold7 ++
     [swap4, swap1]
 
+/-- Cached second-pair form for the optimized first-pair seam.  At the first
+round's message addition, the two exchanges become a cancelling pair after
+the preceding seam exchange is removed, so both slots are sequential
+`JUMPDEST`s. -/
+def optimizedCachedTailFTemplate (j : Nat) (constant : UInt256) : List Instr :=
+  [op .MLOAD] ++ pairFirstBooleanOps j ++
+    [op .ADD, op .JUMPDEST, op .JUMPDEST, op .ADD] ++
+    (if j = 0 then [] else [push4 constant, op .ADD]) ++
+    [push4 mask, op .AND] ++ cachedQrot10 ++
+    [pairDup8, op .ADD, push4 mask, op .AND, pairSwap5] ++
+    cachedCfold9 ++
+    [swap1, op .MLOAD] ++ pairSecondBooleanOps j ++
+    [op .ADD, swap1, pairSwap7, op .ADD] ++
+    (if j = 0 then [] else [push4 constant, op .ADD]) ++
+    [push4 mask, op .AND] ++ cachedQrot8 ++
+    [dup5, op .ADD, push4 mask, op .AND, swap2] ++
+    cachedCfold7 ++
+    [swap4, swap1]
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTemplate

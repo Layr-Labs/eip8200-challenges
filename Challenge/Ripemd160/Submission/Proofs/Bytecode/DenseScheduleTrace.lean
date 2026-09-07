@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseEndianMultiply
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
 import Challenge.EvmProof.Meter
 
@@ -9,9 +10,10 @@ set_option linter.unusedSimpArgs false
 /-!
 # Raw evaluator trace for the dense two-word schedule helper
 
-This file proves the 56 instructions before the final return `JUMP`.  The
-result is generic in the surrounding state, memory, words, return address,
-and suffix stack.
+This file proves the 51 reachable instructions before the final return
+`JUMP`.  The result is generic in the surrounding state, memory, words,
+return address, and suffix stack.  Unreachable size-preserving padding is
+kept out of the evaluator trace.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
@@ -72,6 +74,9 @@ private theorem add_assoc_hAdd_explicit (u v w : UInt256) :
     UInt256.add (u + v) w = u + (v + w) := by
   change (u + v) + w = u + (v + w)
   exact word_add_assoc u v w
+
+private theorem mul_op (u v : UInt256) : u * v = UInt256.mul u v := by
+  rfl
 
 theorem pcAfter_append (pc : UInt256) (first second : List Instr) :
     pcAfter pc (first ++ second) = pcAfter (pcAfter pc first) second := by
@@ -151,38 +156,61 @@ def stageState (s : State) (endPC value : UInt256)
 
 theorem runInstrSeq_endianStage
     (s : State) (startPC value : UInt256) (shift : Nat) (mask : UInt256)
-    (rest : List UInt256) (hstack : rest.length < 1021)
+    (rest : List UInt256) (hstack : rest.length < 1020)
+    (hcase : (shift = 8 ∧ mask = mask8) ∨
+      (shift = 16 ∧ mask = mask16))
     (hrun : s.halt = .Running) :
     runInstrSeq (endianStage shift mask)
       { s with pc := startPC, stack := value :: rest } =
       some (stageState s
         (pcAfter startPC (endianStage shift mask)) value shift mask rest) := by
-  have hcap (m : Nat) (hm : m ≤ 2) : rest.length + m < 1024 := by
+  have hcap (m : Nat) (hm : m ≤ 4) : rest.length + m < 1024 := by
     omega
   have hcap2 : rest.length + 1 + 1 < 1024 := by
     omega
   have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by
     omega
+  have hcap4 : rest.length + 1 + 1 + 1 + 1 < 1024 := by
+    omega
   have hswap1 (u v : UInt256) (rho : List UInt256) :
       (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
     simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
-  simp (config := { maxSteps := 1000000 })
-    [endianStage, op, push1, push32, dup1, swap1, packedStage,
-      stageState, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
-      pcAfter, hrun, hcap, hcap2, hcap3, hswap1, UInt256.succ, Instr.size,
-      Instr.size_push, Instr.size_op, Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat, word_add_assoc,
-      word_add_ofNat_assoc, Word.land_comm,
-      Word.lor_comm]
-  rw [add_ofNat_assoc_hAdd startPC 1 2]
-  repeat first
-    | rw [add_ofNat_assoc_hAdd]
-    | rw [add_ofNat_assoc_add]
-    | rw [add_ofNat_assoc]
-  simp only [add_assoc_explicit, add_assoc_explicit_hAdd,
-    add_assoc_hAdd_explicit, word_add_assoc]
-  simp [Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc]
+  have hsemantic :
+      UInt256.xor
+        (UInt256.mul (endianFactor shift)
+          (UInt256.land mask
+            (UInt256.xor
+              (UInt256.shiftRight value (UInt256.ofNat shift)) value))) value =
+        packedStage value shift mask := by
+    rw [Word.land_comm mask]
+    rcases hcase with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
+    · simpa only [multipliedStage, endianDelta, endianFactor] using
+        DenseEndianMultiply.multipliedStage8_eq_packedStage value
+    · simpa only [multipliedStage, endianDelta, endianFactor] using
+        DenseEndianMultiply.multipliedStage16_eq_packedStage value
+  rcases hcase with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
+  all_goals simp only [endianFactor] at hsemantic
+  all_goals norm_num at hsemantic
+  all_goals
+    simp (config := { maxSteps := 1000000 })
+      [endianStage, endianFactorPush, endianFactor, op, push1, push2, push3,
+        push32, dup1, swap1,
+        stageState, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
+        pcAfter, hrun, hcap, hcap2, hcap3, hcap4, hswap1, UInt256.succ, Instr.size,
+        Instr.size_push, Instr.size_op, Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.ofNat_add_mod,
+        Challenge.EvmProof.Word.succ_ofNat, word_add_assoc,
+        word_add_ofNat_assoc, hsemantic]
+    rw [add_ofNat_assoc startPC 1 1]
+    repeat first
+      | rw [add_ofNat_assoc_hAdd]
+      | rw [add_ofNat_assoc_add]
+      | rw [add_ofNat_assoc]
+    simp only [add_assoc_explicit, add_assoc_explicit_hAdd,
+      add_assoc_hAdd_explicit, word_add_assoc]
+    simp [Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc]
+    rw [mul_op]
+    exact hsemantic
 
 theorem runInstrSeq_initial
     (s : State) (startPC messageOffset returnPC : UInt256)
@@ -258,11 +286,11 @@ theorem runInstrSeq_denseHalf
       some (afterDenseHalf s startPC half (packedWord value)
         (other :: rest)) := by
   have h8 := runInstrSeq_endianStage s startPC value 8 mask8
-    (other :: rest) (by simp; omega) hrun
+    (other :: rest) (by simp; omega) (Or.inl ⟨rfl, rfl⟩) hrun
   have h16 := runInstrSeq_endianStage s
     (pcAfter startPC endianStage8)
     (packedStage value 8 mask8) 16 mask16 (other :: rest)
-    (by simp; omega) hrun
+    (by simp; omega) (Or.inr ⟨rfl, rfl⟩) hrun
   have hstore := runInstrSeq_denseStore s
     (pcAfter (pcAfter startPC endianStage8) endianStage16)
     half (packedWord value) (other :: rest) (by simp; omega) hrun

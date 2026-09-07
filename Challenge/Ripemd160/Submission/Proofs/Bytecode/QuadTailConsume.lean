@@ -13,7 +13,7 @@ set_option maxHeartbeats 4000000
 # Raw execution of the 419d031 consume tail
 
 Artifact-independent. `consumeBody` is the frozen candidate sequence from
-PC `0xb2b` through the `JUMP` at `0xb7e`. Nine following `STOP`
+PC `0x9a9` through the earlier `JUMP` at `0x9fb`. Nine following `STOP`
 bytes are unreachable padding and are not executed.
 -/
 
@@ -29,17 +29,17 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailTemplate
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSwapLemmas
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
 
-/-- Frozen candidate bytes at `0xb2b .. 0xb7e` inclusive. -/
+/-- Frozen candidate bytes at `0x9a9 .. 0x9fc` inclusive. -/
 def consumeBodyBytes : List UInt8 :=
-  [0x92, 0x90, 0x97, 0x60, 0x40, 0x51, 0x01, 0x01, 0x63, 0xff, 0xff, 0xff, 0xff,
-   0x16, 0x92, 0x90, 0x97, 0x60, 0x60, 0x51, 0x01, 0x01, 0x63, 0xff, 0xff, 0xff,
-   0xff, 0x16, 0x60, 0x40, 0x52, 0x90, 0x96, 0x60, 0x80, 0x51, 0x01, 0x01, 0x63,
-   0xff, 0xff, 0xff, 0xff, 0x16, 0x60, 0x60, 0x52, 0x50, 0x94, 0x90, 0x91, 0x60, 0xa0,
+  [0x92, 0x90, 0x96, 0x60, 0x40, 0x51, 0x01, 0x01, 0x63, 0xff, 0xff, 0xff, 0xff,
+   0x16, 0x92, 0x90, 0x96, 0x60, 0x60, 0x51, 0x01, 0x01, 0x63, 0xff, 0xff, 0xff,
+   0xff, 0x16, 0x60, 0x40, 0x52, 0x90, 0x95, 0x60, 0x80, 0x51, 0x01, 0x01, 0x63,
+   0xff, 0xff, 0xff, 0xff, 0x16, 0x60, 0x60, 0x52, 0x94, 0x90, 0x91, 0x60, 0xa0,
    0x51, 0x01, 0x01, 0x63, 0xff, 0xff, 0xff, 0xff, 0x16, 0x60, 0x80, 0x52,
    0x60, 0x20, 0x51, 0x01, 0x01, 0x63, 0xff, 0xff, 0xff, 0xff, 0x16, 0x60, 0xa0,
    0x52, 0x60, 0x20, 0x52, 0x50, 0x56]
 
-@[simp] theorem consumeBodyBytes_length : consumeBodyBytes.length = 84 := by
+@[simp] theorem consumeBodyBytes_length : consumeBodyBytes.length = 83 := by
   rfl
 
 set_option linter.unusedSimpArgs false in
@@ -47,7 +47,7 @@ theorem consumeBody_bytes :
     assembleBytes consumeBody = consumeBodyBytes := by
   simp [consumeBody, quadTailBeforeJumpTemplate, c0Instructions, c1Instructions,
     c2Instructions, c3Instructions, c4Instructions, storeH0Instructions,
-    cleanupInstructions, consumeBodyBytes, swap5H, swap6H, swap7H, swap8H,
+    cleanupInstructions, consumeBodyBytes, swap5H, swap6H, swap7H,
     swap1, swap2, swap3, op, push1, push4, mask, assembleBytes_cons,
     assembleBytes_nil, Instr.bytes, Instr.opByte, natToBE]
 
@@ -69,8 +69,8 @@ def runInstrSeq : List Instr → State → Option State
 abbrev consumeResult := QuadTailTemplate.finalResult
 
 private theorem activeWordsAfter_tail (s : State) (offset : Nat)
-    (hoff : offset + 32 ≤ 39 * 32)
-    (hactive : 39 ≤ s.activeWords.toNat) :
+    (hoff : offset + 32 ≤ 66 * 32)
+    (hactive : 66 ≤ s.activeWords.toNat) :
     s.activeWordsAfterUInt256 offset 32 = s.activeWords := by
   unfold State.activeWordsAfterUInt256
   have haw : MachineState.activeWordsAfter s.activeWords.toNat offset 32 =
@@ -201,7 +201,7 @@ theorem run_consumeBody (s : State)
     (rest : List UInt256)
     (hrun : s.halt = .Running)
     (_hfork : s.fork = .Osaka)
-    (hactive : 39 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1007)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     runInstrSeq consumeBody (tailEntry s left right ret rest) =
@@ -227,7 +227,7 @@ theorem run_consumeBody (s : State)
     [runInstrSeq, consumeBody, quadTailBeforeJumpTemplate,
       c0Instructions, c1Instructions, c2Instructions, c3Instructions,
       c4Instructions, storeH0Instructions, cleanupInstructions,
-      swap5H, swap6H, swap7H, swap8H, swap1, swap2, swap3, op, push1, push4, mask,
+      swap5H, swap6H, swap7H, swap1, swap2, swap3, op, push1, push4, mask,
       tailEntry, workingStack, tailStartPC, tailJumpPC, factor,
       finalResult, beforeJumpResult, StackTail.preJumpResult, StackTail.combined,
       Challenge.EvmProof.Stepper.runInstr, StackMemory.storeHash,
@@ -236,24 +236,19 @@ theorem run_consumeBody (s : State)
       read160_write96, read160_write128, read32_write64, read32_write96,
       read32_write128, read32_write160, mask32_push,
       exchange_swap1, exchange_swap2, exchange_swap3, exchange_swap5,
-      exchange_swap6, exchange_swap7, exchange_swap8, hrun, hactive, hstack, hvalid,
+      exchange_swap6, exchange_swap7, hrun, hactive, hstack, hvalid,
       hcap0, hcap1, hcap2, hcap3, hcap4, hcap5, hcap6, hcap7, hcap8, hcap9,
-      hcap10, hcap11, hcap12, hcap13, hcap14, hcap15, hcap16, Nat.add_assoc,
+      hcap10, hcap11, hcap12, hcap13, hcap14, hcap15, hcap16,
+      add3_comm_right, Nat.add_assoc,
       List.getElem?_cons_zero, List.getElem?_cons_succ,
       Challenge.EvmProof.Word.mask32_toNat, Compression.evmCombine,
       StackMemory.hashAt]
-  have horder (a : UInt256) : a + right.b + left.a = a + left.a + right.b := by
-    change UInt256.mk ((a.val + right.b.val) + left.a.val) =
-      UInt256.mk ((a.val + left.a.val) + right.b.val)
-    congr 1
-    exact add_right_comm _ _ _
-  try simp only [horder]
 
 set_option linter.unusedSimpArgs false in
 theorem runTail_consumeBody (s : State)
     (left right : Compression.EvmWorking) (ret : UInt256)
     (rest : List UInt256)
-    (hactive : 39 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1007)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     StackTail.runTailInstrs consumeBody (tailEntry s left right ret rest) =
@@ -279,7 +274,7 @@ theorem runTail_consumeBody (s : State)
     [StackTail.runTailInstrs, consumeBody, quadTailBeforeJumpTemplate,
       c0Instructions, c1Instructions, c2Instructions, c3Instructions,
       c4Instructions, storeH0Instructions, cleanupInstructions,
-      swap5H, swap6H, swap7H, swap8H, swap1, swap2, swap3, op, push1, push4, mask,
+      swap5H, swap6H, swap7H, swap1, swap2, swap3, op, push1, push4, mask,
       tailEntry, workingStack, tailStartPC, tailJumpPC, factor,
       finalResult, beforeJumpResult, StackTail.preJumpResult, StackTail.combined,
       Challenge.EvmProof.Stepper.runInstr, StackMemory.storeHash,
@@ -288,17 +283,12 @@ theorem runTail_consumeBody (s : State)
       read160_write96, read160_write128, read32_write64, read32_write96,
       read32_write128, read32_write160, mask32_push,
       exchange_swap1, exchange_swap2, exchange_swap3, exchange_swap5,
-      exchange_swap6, exchange_swap7, exchange_swap8, hactive, hstack, hvalid,
+      exchange_swap6, exchange_swap7, hactive, hstack, hvalid,
       hcap0, hcap1, hcap2, hcap3, hcap4, hcap5, hcap6, hcap7, hcap8, hcap9,
-      hcap10, hcap11, hcap12, hcap13, hcap14, hcap15, hcap16, Nat.add_assoc,
+      hcap10, hcap11, hcap12, hcap13, hcap14, hcap15, hcap16,
+      add3_comm_right, Nat.add_assoc,
       List.getElem?_cons_zero, List.getElem?_cons_succ,
       Challenge.EvmProof.Word.mask32_toNat, Compression.evmCombine,
       StackMemory.hashAt]
-  have horder (a : UInt256) : a + right.b + left.a = a + left.a + right.b := by
-    change UInt256.mk ((a.val + right.b.val) + left.a.val) =
-      UInt256.mk ((a.val + left.a.val) + right.b.val)
-    congr 1
-    exact add_right_comm _ _ _
-  try simp only [horder]
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailConsume
