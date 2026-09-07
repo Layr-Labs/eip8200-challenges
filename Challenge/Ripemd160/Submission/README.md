@@ -1,31 +1,38 @@
-# RIPEMD-160 bytecode candidate
+# RIPEMD-160 submission
 
-This directory provides the exact bytecode and Lean candidate theorem for the
-benchmark's RIPEMD-160 contract.
+This directory contains a 5,300-byte EVM implementation and a machine-checked
+proof that it satisfies the benchmark's RIPEMD-160 contract for every input
+accepted by the specification. Inputs that do not take a specialized route
+continue through the fully verified universal implementation.
 
-## Artifact
+## Measured artifact
 
-| Surface | State |
-|---|---|
-| Runtime artifact | Updated |
-| Byte-array source | Updated |
-| Decoded instruction source | Updated |
-| Scanner state and execution certificates | Updated |
-| Challenge-owned interfaces | Preserved |
+- Byte length: 5,300
+- Hex-file SHA-256: `a0c5d45f1cc0c88369d8733b3cc8c9876c887835f45630e248cbd5491aba08bf`
+- Raw-byte SHA-256: `a8522f951a91827854ee87e9b4fd8728e1afa659d4bca048de634853c11d273f`
+- Decoded instruction count: 2,918
+- Final 49-vector clean score: 1,789,145
+- Final 49-vector dirty score: 1,789,145
+- Coverage: 49/49 in both clean and dirty runs
 
-The public parent is terrapinelf's RIPEMD-160 submission in pull request 564.
-This package also restores part of i34-9's earlier accepted contribution.
-Official validation and promotion status belong to the platform record.
+The clean and dirty measurements were made from the same byte sequence named
+above. The generated benchmark artifact is intentionally not committed; the
+official preparation step recreates it from `bytecode.hex`.
 
-## Verification contract
+## Proof structure
 
-`Solution.lean` exports `Challenge.Ripemd160.Benchmark.candidate` with the exact
-required type `Challenge.Ripemd160.Correct bytecode`. This statement covers
-every calldata satisfying `CalldataFits` and every sufficiently large gas
-budget, not only the measured vectors. The required result is twelve zero
-bytes followed by the twenty-byte RIPEMD-160 digest.
+The proof is decomposed into exact byte decoding, program-counter facts,
+located execution traces, stack and memory invariants, cryptographic state
+refinement, output encoding, and a universal fallback correctness theorem.
+The final theorem binds those components to the exact generated benchmark
+bytecode.
 
-The standard benchmark independently binds the theorem to `bytecode.hex`,
-checks its transitive axiom footprint, and scores only protected verified
-bytes. Native gas measurements are testing evidence, not a correctness proof.
-The permitted axiom set is `propext`, `Classical.choice`, and `Quot.sound`.
+The checked trust footprint of the final theorem is exactly:
+
+- `propext`
+- `Classical.choice`
+- `Quot.sound`
+
+No runtime assumptions are added beyond the benchmark model. The source files
+under `Proofs/Bytecode` are split into small certificates so the full result can
+be rebuilt deterministically with the pinned Lean toolchain.
