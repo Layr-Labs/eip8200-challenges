@@ -220,7 +220,7 @@ private theorem rightWorking_eq (s : State) (word : Nat → UInt32)
   simpa [right4] using h
 
 private theorem leftActiveWords_eq (s : State) (k : Fin 20)
-    (hactive : 39 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     QuadRoundState.quadActiveWordsAfterUInt256_4 s
         (QuadSites.leftAddress0 k).toNat (QuadSites.leftAddress1 k).toNat
         (QuadSites.leftAddress2 k).toNat (QuadSites.leftAddress3 k).toNat =
@@ -230,7 +230,7 @@ private theorem leftActiveWords_eq (s : State) (k : Fin 20)
   exact QuadSemantic.quadLeftActiveWords_unchanged s k hactive
 
 private theorem rightActiveWords_eq (s : State) (k : Fin 20)
-    (hactive : 39 ≤ s.activeWords.toNat) :
+    (hactive : 66 ≤ s.activeWords.toNat) :
     QuadRoundState.quadActiveWordsAfterUInt256_4 s
         (QuadSites.rightAddress0 k).toNat (QuadSites.rightAddress1 k).toNat
         (QuadSites.rightAddress2 k).toNat (QuadSites.rightAddress3 k).toNat =
@@ -242,7 +242,7 @@ private theorem rightActiveWords_eq (s : State) (k : Fin 20)
 def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
     (hwords : low32DenseWordsAt s word)
-    (hactive : 39 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006)
     (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -329,7 +329,7 @@ def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
 def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
     (hwords : low32DenseWordsAt s word)
-    (hactive : 39 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006)
     (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -345,10 +345,10 @@ def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
         (maskQuadHelperEntry s site.helper.startPC
           (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k)
           (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k)
-          site.returnPC (UInt256.ofNat (32 - QuadSites.rightRotation0 k))
-          (UInt256.ofNat (32 - QuadSites.rightRotation1 k))
-          (UInt256.ofNat (32 - QuadSites.rightRotation2 k))
-          (UInt256.ofNat (32 - QuadSites.rightRotation3 k)) working rho) =
+          site.returnPC (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation0 k))
+          (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation1 k))
+          (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation2 k))
+          (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation3 k)) working rho) =
       some (maskQuadAfterHelperBeforeJump s
         (pcAfter site.helper.startPC (rightHelperTemplate group))
         site.returnPC (4 - group.val) working
@@ -364,8 +364,10 @@ def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
         site.returnPC (QuadSites.rightRotation0 k)
         (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k)
         (QuadSites.rightRotation3 k) working rho hstack hrun
-        (QuadSites.rightRotation0_le32 k) (QuadSites.rightRotation1_le32 k)
-        (QuadSites.rightRotation2_le32 k) (QuadSites.rightRotation3_le32 k))
+        (QuadSites.rightRotation0_pos k) (QuadSites.rightRotation0_lt32 k)
+        (QuadSites.rightRotation1_pos k) (QuadSites.rightRotation1_lt32 k)
+        (QuadSites.rightRotation2_pos k) (QuadSites.rightRotation2_lt32 k)
+        (QuadSites.rightRotation3_pos k) (QuadSites.rightRotation3_lt32 k))
   have ghelper := MaskQuadHelperTrace.gasSteps_helper_of_raw
     (j := 4 - group.val) (p0 := QuadSites.rightAddress0 k)
     (p1 := QuadSites.rightAddress1 k) (p2 := QuadSites.rightAddress2 k)
@@ -373,10 +375,10 @@ def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
     (r0 := QuadSites.rightRotation0 k) (r1 := QuadSites.rightRotation1 k)
     (r2 := QuadSites.rightRotation2 k) (r3 := QuadSites.rightRotation3 k)
     (constant := StackRoundData.rightConstant (16 * group.val)) site.helper s
-    site.returnPC (UInt256.ofNat (32 - QuadSites.rightRotation0 k))
-    (UInt256.ofNat (32 - QuadSites.rightRotation1 k))
-    (UInt256.ofNat (32 - QuadSites.rightRotation2 k))
-    (UInt256.ofNat (32 - QuadSites.rightRotation3 k)) working rho
+    site.returnPC (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation0 k))
+    (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation1 k))
+    (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation2 k))
+    (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation3 k)) working rho
     (MaskHelperTemplates.rightTemplate_advances group
       (StackRoundData.rightConstant (16 * group.val))) hraw hrun hcode hfork hnp
   have g := MaskQuadHelperTrace.gasSteps_maskQuad_of_helper
@@ -414,7 +416,7 @@ def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
 def gasSteps_leftQuad_masked (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
     (hwords : low32DenseWordsAt s word)
-    (hactive : 39 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006)
     (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -501,7 +503,7 @@ def gasSteps_leftQuad_masked (s : State) (word : Nat → UInt32)
 def gasSteps_rightQuad_masked (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
     (hwords : low32DenseWordsAt s word)
-    (hactive : 39 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006)
     (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -517,10 +519,10 @@ def gasSteps_rightQuad_masked (s : State) (word : Nat → UInt32)
         (maskQuadHelperEntry s site.helper.startPC
           (QuadSites.rightAddress0 k) (QuadSites.rightAddress1 k)
           (QuadSites.rightAddress2 k) (QuadSites.rightAddress3 k)
-          site.returnPC (UInt256.ofNat (32 - QuadSites.rightRotation0 k))
-          (UInt256.ofNat (32 - QuadSites.rightRotation1 k))
-          (UInt256.ofNat (32 - QuadSites.rightRotation2 k))
-          (UInt256.ofNat (32 - QuadSites.rightRotation3 k)) working rho) =
+          site.returnPC (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation0 k))
+          (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation1 k))
+          (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation2 k))
+          (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation3 k)) working rho) =
       some (maskQuadAfterHelperBeforeJump s
         (pcAfter site.helper.startPC (rightHelperTemplate group))
         site.returnPC (4 - group.val) working
@@ -536,8 +538,10 @@ def gasSteps_rightQuad_masked (s : State) (word : Nat → UInt32)
         site.returnPC (QuadSites.rightRotation0 k)
         (QuadSites.rightRotation1 k) (QuadSites.rightRotation2 k)
         (QuadSites.rightRotation3 k) working rho hstack hrun
-        (QuadSites.rightRotation0_le32 k) (QuadSites.rightRotation1_le32 k)
-        (QuadSites.rightRotation2_le32 k) (QuadSites.rightRotation3_le32 k))
+        (QuadSites.rightRotation0_pos k) (QuadSites.rightRotation0_lt32 k)
+        (QuadSites.rightRotation1_pos k) (QuadSites.rightRotation1_lt32 k)
+        (QuadSites.rightRotation2_pos k) (QuadSites.rightRotation2_lt32 k)
+        (QuadSites.rightRotation3_pos k) (QuadSites.rightRotation3_lt32 k))
   have ghelper := MaskQuadHelperTrace.gasSteps_helper_of_raw
     (j := 4 - group.val) (p0 := QuadSites.rightAddress0 k)
     (p1 := QuadSites.rightAddress1 k) (p2 := QuadSites.rightAddress2 k)
@@ -545,10 +549,10 @@ def gasSteps_rightQuad_masked (s : State) (word : Nat → UInt32)
     (r0 := QuadSites.rightRotation0 k) (r1 := QuadSites.rightRotation1 k)
     (r2 := QuadSites.rightRotation2 k) (r3 := QuadSites.rightRotation3 k)
     (constant := StackRoundData.rightConstant (16 * group.val)) site.helper s
-    site.returnPC (UInt256.ofNat (32 - QuadSites.rightRotation0 k))
-    (UInt256.ofNat (32 - QuadSites.rightRotation1 k))
-    (UInt256.ofNat (32 - QuadSites.rightRotation2 k))
-    (UInt256.ofNat (32 - QuadSites.rightRotation3 k)) working rho
+    site.returnPC (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation0 k))
+    (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation1 k))
+    (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation2 k))
+    (MaskHelperTrace.shiftedFactor (QuadSites.rightRotation3 k)) working rho
     (MaskHelperTemplates.rightTemplate_advances group
       (StackRoundData.rightConstant (16 * group.val))) hraw hrun hcode hfork hnp
   have g := MaskQuadHelperTrace.gasSteps_maskQuad_of_helper

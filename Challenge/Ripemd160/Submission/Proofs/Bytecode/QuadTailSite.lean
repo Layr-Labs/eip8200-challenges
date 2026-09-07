@@ -40,7 +40,6 @@ open private
   submissionInstructionsChunk12
   submissionInstructionsChunk13
   submissionInstructionsChunk14
-  submissionInstructionsChunk15
   submissionInstructionsChunk0_length
   submissionInstructionsChunk1_length
   submissionInstructionsChunk2_length
@@ -56,7 +55,6 @@ open private
   submissionInstructionsChunk12_length
   submissionInstructionsChunk13_length
   submissionInstructionsChunk14_length
-  submissionInstructionsChunk15_length
   from Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 
 private def artifactPrefix : List Instr :=
@@ -72,7 +70,7 @@ private def tailAfter : List Instr :=
     submissionInstructionsChunk11 ++
     submissionInstructionsChunk12 ++
     submissionInstructionsChunk13 ++
-    submissionInstructionsChunk14 ++ submissionInstructionsChunk15
+    submissionInstructionsChunk14
 
 private theorem tailBefore_length : tailBefore.length = 1428 := by
   simp [tailBefore, artifactPrefix]
@@ -90,7 +88,7 @@ private theorem artifact_tail_split :
   change Artifact.submissionInstructions = _
   have hprefix : Artifact.submissionInstructions =
       artifactPrefix ++ submissionInstructionsChunk7 ++
-        submissionInstructionsChunk8 ++ submissionInstructionsChunk9 ++ submissionInstructionsChunk10 ++ submissionInstructionsChunk11 ++ submissionInstructionsChunk12 ++ submissionInstructionsChunk13 ++ submissionInstructionsChunk14 ++ submissionInstructionsChunk15 := by
+        submissionInstructionsChunk8 ++ submissionInstructionsChunk9 ++ submissionInstructionsChunk10 ++ submissionInstructionsChunk11 ++ submissionInstructionsChunk12 ++ submissionInstructionsChunk13 ++ submissionInstructionsChunk14 := by
     simp only [Artifact.submissionInstructions, artifactPrefix, List.append_assoc]
   rw [hprefix]
   conv_lhs => rw [artifactChunk7_tail]
@@ -119,7 +117,7 @@ private theorem tail_instruction_at (i : Nat)
 private theorem tail_instruction_pc (i : Nat)
     (hi : i ≤ QuadTailTemplate.consumeBody.length) :
     Artifact.submissionArtifact.instructionPC (1428 + i) =
-      0xb2b + ArtifactByteLength.byteLength (QuadTailTemplate.consumeBody.take i) := by
+      0xca3 + ArtifactByteLength.byteLength (QuadTailTemplate.consumeBody.take i) := by
   have hzero := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     tailBefore QuadTailTemplate.consumeBody
     (QuadTailTemplate.paddingStops ++ tailAfter)
@@ -127,18 +125,18 @@ private theorem tail_instruction_pc (i : Nat)
   have hzero' : Artifact.submissionArtifact.instructionPC 1428 =
       (assembleBytes tailBefore).length := by
     simpa [tailBefore_length] using hzero
-  have hbefore : (assembleBytes tailBefore).length = 0xb2b :=
+  have hbefore : (assembleBytes tailBefore).length = 0xca3 :=
     hzero'.symm.trans QuadLayout.tail_pc
   have h := ArtifactSegment.instructionPC_segment_of_bounds Artifact.submissionArtifact
     tailBefore QuadTailTemplate.consumeBody
-    (QuadTailTemplate.paddingStops ++ tailAfter) 1428 0xb2b
+    (QuadTailTemplate.paddingStops ++ tailAfter) 1428 0xca3
     artifact_consume_split tailBefore_length hbefore i hi
   simpa only [ArtifactByteLength.byteLength_eq_assemble] using h
 
 private theorem tail_instruction_pc_global (index : Nat)
     (hlo : 1428 ≤ index) (hhi : index ≤ 1482) :
     Artifact.submissionArtifact.instructionPC index =
-      0xb2b + ArtifactByteLength.byteLength
+      0xca3 + ArtifactByteLength.byteLength
         (QuadTailTemplate.consumeBody.take (index - 1428)) := by
   have hi : index - 1428 ≤ QuadTailTemplate.consumeBody.length := by
     rw [tailInstructions_length]
@@ -232,7 +230,7 @@ private theorem runLocatedBlock_tail_raw (s : State)
 
 theorem runLocatedBlock_tail (s : State)
     (left right : Compression.EvmWorking) (ret : UInt256) (rest : List UInt256)
-    (hactive : 39 ≤ s.activeWords.toNat) (hstack : rest.length < 1007)
+    (hactive : 66 ≤ s.activeWords.toNat) (hstack : rest.length < 1007)
     (hrun : s.halt = .Running)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock tailPath
@@ -243,7 +241,7 @@ theorem runLocatedBlock_tail (s : State)
 
 def actualTailGasSteps (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256)
-    (hactive : 39 ≤ s.activeWords.toNat) (hstack : rest.length < 1007)
+    (hactive : 66 ≤ s.activeWords.toNat) (hstack : rest.length < 1007)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

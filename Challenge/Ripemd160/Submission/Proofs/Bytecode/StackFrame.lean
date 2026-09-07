@@ -47,7 +47,7 @@ def prefixPath : List Located :=
   [⟨913, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨914, .push ⟨2, by decide⟩ (UInt256.ofNat 0x523), by rfl, by decide⟩,
    ⟨915, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨916, .push ⟨2, by decide⟩ (UInt256.ofNat 0x10e2), by rfl, by decide⟩,
+   ⟨916, .push ⟨2, by decide⟩ (UInt256.ofNat 0x125a), by rfl, by decide⟩,
    ⟨917, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def exitPath : List Located :=
@@ -107,8 +107,8 @@ theorem run_prefix (s : State) (input : ByteArray) (i : Nat)
   have hpc981 : Artifact.submissionArtifact.instructionPC 915 = 0x51d := by rfl
   have hpc982 : Artifact.submissionArtifact.instructionPC 916 = 0x51e := by rfl
   have hpc983 : Artifact.submissionArtifact.instructionPC 917 = 0x521 := by rfl
-  have hdest12ac : Decode.isValidJumpDest submissionBytecode 0x10e2 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2673 (by rfl)
+  have hdest12ac : Decode.isValidJumpDest submissionBytecode 0x125a = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2653 (by rfl)
   have hswap1 (u v : UInt256) (rho : List UInt256) :
       (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
     simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho

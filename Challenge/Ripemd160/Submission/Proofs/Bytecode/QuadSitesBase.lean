@@ -144,15 +144,18 @@ def leftCallTemplate (k : Fin 20) : List Instr :=
     (shiftedFactor (leftRotation3 k))
 
 def rightCallTemplate (k : Fin 20) : List Instr :=
-  MaskCallTrace.maskQuadCallPushes ⟨0, by decide⟩ ⟨0, by decide⟩
-    ⟨0, by decide⟩ ⟨0, by decide⟩
+  MaskCallTrace.maskQuadCallPushes
+    (shiftedFactorWidth (rightRotation0 k))
+    (shiftedFactorWidth (rightRotation1 k))
+    (shiftedFactorWidth (rightRotation2 k))
+    (shiftedFactorWidth (rightRotation3 k))
     (rightReturnPC k.val)
     (rightAddress0 k) (rightAddress1 k) (rightAddress2 k) (rightAddress3 k)
     (rightHelperPC k.val)
-    (UInt256.ofNat (32 - rightRotation0 k))
-    (UInt256.ofNat (32 - rightRotation1 k))
-    (UInt256.ofNat (32 - rightRotation2 k))
-    (UInt256.ofNat (32 - rightRotation3 k))
+    (shiftedFactor (rightRotation0 k))
+    (shiftedFactor (rightRotation1 k))
+    (shiftedFactor (rightRotation2 k))
+    (shiftedFactor (rightRotation3 k))
 
 def leftWrapperTemplate (k : Fin 20) : List Instr :=
   leftCallTemplate k ++ [op .JUMP, op .JUMPDEST]

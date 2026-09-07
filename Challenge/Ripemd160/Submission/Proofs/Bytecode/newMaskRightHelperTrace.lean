@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.newMaskHelperTemplates
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.newMaskHelperTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.newMaskProjection
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTrace
 
@@ -26,9 +27,15 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRound
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
+open Challenge.Ripemd160.Submission.Proofs.Bytecode.SharedRoundTrace
+open Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTrace
 
 def rightLongEdit (i : Nat) (instruction : Instr) : Instr :=
   match i with
+  | 18 => push1 (UInt256.ofNat 32)
+  | 47 => push1 (UInt256.ofNat 32)
+  | 75 => push1 (UInt256.ofNat 32)
+  | 104 => push1 (UInt256.ofNat 32)
   | 14 => d 13
   | 16 => d 14
   | 22 => d 12
@@ -49,6 +56,10 @@ def rightLongEdit (i : Nat) (instruction : Instr) : Instr :=
 
 def rightShortEdit (i : Nat) (instruction : Instr) : Instr :=
   match i with
+  | 19 => push1 (UInt256.ofNat 32)
+  | 49 => push1 (UInt256.ofNat 32)
+  | 78 => push1 (UInt256.ofNat 32)
+  | 108 => push1 (UInt256.ofNat 32)
   | 15 => d 13
   | 17 => d 14
   | 23 => d 12
@@ -69,6 +80,10 @@ def rightShortEdit (i : Nat) (instruction : Instr) : Instr :=
 
 def rightZeroEdit (i : Nat) (instruction : Instr) : Instr :=
   match i with
+  | 15 => push1 (UInt256.ofNat 32)
+  | 41 => push1 (UInt256.ofNat 32)
+  | 66 => push1 (UInt256.ofNat 32)
+  | 92 => push1 (UInt256.ofNat 32)
   | 11 => d 13
   | 13 => d 14
   | 19 => d 12
@@ -88,12 +103,17 @@ def rightZeroEdit (i : Nat) (instruction : Instr) : Instr :=
   | _ => instruction
 
 def rightLift (j : Nat) (constant : UInt256) : List Instr :=
-  (quadBeforeJumpTemplate j constant).mapIdx (fun i instruction =>
+  let edited := (quadBeforeJumpTemplate j constant).mapIdx (fun i instruction =>
     match j with
     | 0 => rightZeroEdit i instruction
     | 1 | 3 => rightShortEdit i instruction
     | 2 | 4 => rightLongEdit i instruction
     | _ => instruction)
+  match j with
+  | 0 => eraseAt 13 (eraseAt 39 (eraseAt 64 (eraseAt 90 edited)))
+  | 1 | 3 => eraseAt 17 (eraseAt 47 (eraseAt 76 (eraseAt 106 edited)))
+  | 2 | 4 => eraseAt 16 (eraseAt 45 (eraseAt 73 (eraseAt 102 edited)))
+  | _ => edited
 
 theorem rightTemplate_eq_lift (group : Fin 5) :
     Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates.rightTemplate
@@ -109,23 +129,41 @@ theorem right_relation
     (working : Challenge.Ripemd160.Submission.Proofs.Bytecode.Compression.EvmWorking)
     (rho : List UInt256)
     (hstack : rho.length < 1006) (hrun : s.halt = .Running)
+    (hrot0 : 0 < r0) (hrot0' : r0 < 32)
+    (hrot1 : 0 < r1) (hrot1' : r1 < 32)
+    (hrot2 : 0 < r2) (hrot2' : r2 < 32)
+    (hrot3 : 0 < r3) (hrot3' : r3 < 32)
     :
     runInstrSeq
         (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates.rightTemplate
           group (rightConstant (16 * group.val)))
         (maskQuadHelperEntry s startPC p0 p1 p2 p3 returnPC
-          (UInt256.ofNat (32 - r0)) (UInt256.ofNat (32 - r1))
-          (UInt256.ofNat (32 - r2)) (UInt256.ofNat (32 - r3)) working rho) =
+          (shiftedFactor r0) (shiftedFactor r1)
+          (shiftedFactor r2) (shiftedFactor r3) working rho) =
       Option.map (fun out => {out with
         pc := pcAfter startPC
           (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates.rightTemplate
             group (rightConstant (16 * group.val))),
         stack := out.stack.take 6 ++ [MaskProjection.mask] ++ out.stack.drop 6})
-        (runInstrSeq (quadBeforeJumpTemplate (4 - group.val)
+      (runInstrSeq (quadBeforeJumpTemplate (4 - group.val)
           (rightConstant (16 * group.val)))
           (quadHelperEntry s startPC p0 p1 p2 p3 returnPC
             r0 r1 r2 r3 working rho)) := by
   rw [rightTemplate_eq_lift group]
+  have hrot (u : UInt256) (r : Nat) (hr0 : 0 < r) (hr32 : r < 32) :
+      UInt256.shiftRight
+        (UInt256.land (UInt256.ofNat 0xffffffff) u * shiftedFactor r)
+        (UInt256.ofNat 32) =
+      UInt256.shiftRight
+        (UInt256.ofNat 0x100000001 * UInt256.land (UInt256.ofNat 0xffffffff) u)
+        (UInt256.ofNat (32 - r)) := by
+    rw [shiftedFactor_eq_shiftLeft r hr0 hr32]
+    exact (MaskProjection.left_factor_shift_eq _ r
+      (mask_land_toNat_lt u) hr0 hr32).symm
+  have hrotMasked0 (u : UInt256) := hrot u r0 hrot0 hrot0'
+  have hrotMasked1 (u : UInt256) := hrot u r1 hrot1 hrot1'
+  have hrotMasked2 (u : UInt256) := hrot u r2 hrot2 hrot2'
+  have hrotMasked3 (u : UInt256) := hrot u r3 hrot3 hrot3'
   have activeWordsAfter_lt (curr off : Nat)
       (hcurr : curr < UInt256.size) (hoff : off < UInt256.size) :
       MachineState.activeWordsAfter curr off 32 < UInt256.size := by
@@ -254,7 +292,7 @@ theorem right_relation
     exact word_add_assoc u v w
   fin_cases group <;>
     simp (config := { maxSteps := 5000000 })
-    [rightLift, rightLongEdit, rightShortEdit, rightZeroEdit,
+    [rightLift, eraseAt, rightLongEdit, rightShortEdit, rightZeroEdit,
      quadBeforeJumpTemplate, oldQuadBeforeJumpTemplate, firstFTemplate,
      cachedTailFTemplate, firstBoolean, secondBoolean, d, w,
      cachedQrot10, cachedCfold9, cachedQrot8, cachedCfold7,
@@ -273,7 +311,7 @@ theorem right_relation
      pairHelperEntry,
      State.activeWordsAfterUInt256_2,
      MaskProjection.mask, StackRoundTemplate.mask, QuadRoundTemplate.factor,
-     hadd, hcomm,
+     hadd, hcomm, hrotMasked0, hrotMasked1, hrotMasked2, hrotMasked3,
      hactive0, hactive0mod, hactive1, hactive1mod, hactive2, hactive2mod,
      hactive0mod', hactive1mod', hactive2mod',
      UInt256.size,
@@ -290,13 +328,17 @@ theorem group4_relation
     (r0 r1 r2 r3 : Nat)
     (working : Challenge.Ripemd160.Submission.Proofs.Bytecode.Compression.EvmWorking)
     (rho : List UInt256)
-    (hstack : rho.length < 1006) (hrun : s.halt = .Running) :
+    (hstack : rho.length < 1006) (hrun : s.halt = .Running)
+    (hrot0 : 0 < r0) (hrot0' : r0 < 32)
+    (hrot1 : 0 < r1) (hrot1' : r1 < 32)
+    (hrot2 : 0 < r2) (hrot2' : r2 < 32)
+    (hrot3 : 0 < r3) (hrot3' : r3 < 32) :
     runInstrSeq
         (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates.rightTemplate
           ⟨4, by decide⟩ (rightConstant (16 * 4)))
         (maskQuadHelperEntry s startPC p0 p1 p2 p3 returnPC
-          (UInt256.ofNat (32 - r0)) (UInt256.ofNat (32 - r1))
-          (UInt256.ofNat (32 - r2)) (UInt256.ofNat (32 - r3)) working rho) =
+          (shiftedFactor r0) (shiftedFactor r1)
+          (shiftedFactor r2) (shiftedFactor r3) working rho) =
       Option.map (fun out => {out with
         pc := pcAfter startPC
           (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates.rightTemplate
@@ -307,6 +349,7 @@ theorem group4_relation
             r0 r1 r2 r3 working rho)) := by
   simpa using right_relation ⟨4, by decide⟩ s startPC p0 p1 p2 p3 returnPC
     r0 r1 r2 r3 working rho hstack hrun
+    hrot0 hrot0' hrot1 hrot1' hrot2 hrot2' hrot3 hrot3'
 
 set_option linter.unusedSimpArgs false in
 theorem runInstrSeq_maskRight
@@ -316,14 +359,16 @@ theorem runInstrSeq_maskRight
     (working : Challenge.Ripemd160.Submission.Proofs.Bytecode.Compression.EvmWorking)
     (rho : List UInt256)
     (hstack : rho.length < 1006) (hrun : s.halt = .Running)
-    (hrot0 : r0 ≤ 32) (hrot1 : r1 ≤ 32)
-    (hrot2 : r2 ≤ 32) (hrot3 : r3 ≤ 32) :
+    (hrot0 : 0 < r0) (hrot0' : r0 < 32)
+    (hrot1 : 0 < r1) (hrot1' : r1 < 32)
+    (hrot2 : 0 < r2) (hrot2' : r2 < 32)
+    (hrot3 : 0 < r3) (hrot3' : r3 < 32) :
     runInstrSeq
         (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates.rightTemplate
           group (rightConstant (16 * group.val)))
         (maskQuadHelperEntry s startPC p0 p1 p2 p3 returnPC
-          (UInt256.ofNat (32 - r0)) (UInt256.ofNat (32 - r1))
-          (UInt256.ofNat (32 - r2)) (UInt256.ofNat (32 - r3)) working rho) =
+          (shiftedFactor r0) (shiftedFactor r1)
+          (shiftedFactor r2) (shiftedFactor r3) working rho) =
       some (maskQuadAfterHelperBeforeJump s
         (pcAfter startPC
           (Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskHelperTemplates.rightTemplate
@@ -337,9 +382,10 @@ theorem runInstrSeq_maskRight
   have hraw := QuadRoundTrace.runInstrSeq_quad (4 - group.val) (by omega)
     s startPC p0 p1 p2 p3 returnPC r0 r1 r2 r3 working
     (rightConstant (16 * group.val)) rho hzero (by omega) hrun
-    hrot0 hrot1 hrot2 hrot3
+    (by omega) (by omega) (by omega) (by omega)
   have hrelation := right_relation group s startPC p0 p1 p2 p3 returnPC
     r0 r1 r2 r3 working rho hstack hrun
+    hrot0 hrot0' hrot1 hrot1' hrot2 hrot2' hrot3 hrot3'
   rw [hraw] at hrelation
   simpa [maskQuadAfterHelperBeforeJump, quadAfterHelperBeforeJump,
     pairAfterHelperBeforeJump, quadWorking, quadFirstState,

@@ -45,11 +45,11 @@ def leftLength : Fin 5 → Nat
   | ⟨4, _⟩ => 113
 
 def rightLength : Fin 5 → Nat
-  | ⟨0, _⟩ => 117
-  | ⟨1, _⟩ => 121
-  | ⟨2, _⟩ => 117
-  | ⟨3, _⟩ => 121
-  | ⟨4, _⟩ => 105
+  | ⟨0, _⟩ => 113
+  | ⟨1, _⟩ => 117
+  | ⟨2, _⟩ => 113
+  | ⟨3, _⟩ => 117
+  | ⟨4, _⟩ => 101
 
 private def leftTemplate0 : List Instr :=
 [
@@ -650,9 +650,8 @@ private def rightTemplate0 : List Instr :=
   op 0x01,
   op 0x8d,
   op 0x16,
-  op 0x8e,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x8b,
   op 0x01,
@@ -679,9 +678,8 @@ private def rightTemplate0 : List Instr :=
   op 0x01,
   op 0x8b,
   op 0x16,
-  op 0x8c,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x88,
   op 0x01,
@@ -707,9 +705,8 @@ private def rightTemplate0 : List Instr :=
   op 0x01,
   op 0x89,
   op 0x16,
-  op 0x8a,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x87,
   op 0x01,
@@ -736,9 +733,8 @@ private def rightTemplate0 : List Instr :=
   op 0x01,
   op 0x87,
   op 0x16,
-  op 0x88,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x84,
   op 0x01,
@@ -750,9 +746,8 @@ private def rightTemplate0 : List Instr :=
   .push 1 22,
   op 0x1c,
   op 0x93,
-  op 0x90
+  op 0x90,
 ]
-
 private def rightTemplate1 : List Instr :=
 [
   op 0x5b,
@@ -772,9 +767,8 @@ private def rightTemplate1 : List Instr :=
   op 0x01,
   op 0x8d,
   op 0x16,
-  op 0x8e,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x8b,
   op 0x01,
@@ -802,9 +796,8 @@ private def rightTemplate1 : List Instr :=
   op 0x01,
   op 0x8b,
   op 0x16,
-  op 0x8c,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x88,
   op 0x01,
@@ -831,9 +824,8 @@ private def rightTemplate1 : List Instr :=
   op 0x01,
   op 0x89,
   op 0x16,
-  op 0x8a,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x87,
   op 0x01,
@@ -861,9 +853,8 @@ private def rightTemplate1 : List Instr :=
   op 0x01,
   op 0x87,
   op 0x16,
-  op 0x88,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x84,
   op 0x01,
@@ -875,9 +866,8 @@ private def rightTemplate1 : List Instr :=
   .push 1 22,
   op 0x1c,
   op 0x93,
-  op 0x90
+  op 0x90,
 ]
-
 private def rightTemplate2 : List Instr :=
 [
   op 0x5b,
@@ -896,9 +886,8 @@ private def rightTemplate2 : List Instr :=
   op 0x01,
   op 0x8d,
   op 0x16,
-  op 0x8e,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x8b,
   op 0x01,
@@ -925,9 +914,8 @@ private def rightTemplate2 : List Instr :=
   op 0x01,
   op 0x8b,
   op 0x16,
-  op 0x8c,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x88,
   op 0x01,
@@ -953,9 +941,8 @@ private def rightTemplate2 : List Instr :=
   op 0x01,
   op 0x89,
   op 0x16,
-  op 0x8a,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x87,
   op 0x01,
@@ -982,9 +969,8 @@ private def rightTemplate2 : List Instr :=
   op 0x01,
   op 0x87,
   op 0x16,
-  op 0x88,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x84,
   op 0x01,
@@ -996,9 +982,8 @@ private def rightTemplate2 : List Instr :=
   .push 1 22,
   op 0x1c,
   op 0x93,
-  op 0x90
+  op 0x90,
 ]
-
 private def rightTemplate3 : List Instr :=
 [
   op 0x5b,
@@ -1018,9 +1003,8 @@ private def rightTemplate3 : List Instr :=
   op 0x01,
   op 0x8d,
   op 0x16,
-  op 0x8e,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x8b,
   op 0x01,
@@ -1048,9 +1032,8 @@ private def rightTemplate3 : List Instr :=
   op 0x01,
   op 0x8b,
   op 0x16,
-  op 0x8c,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x88,
   op 0x01,
@@ -1077,9 +1060,8 @@ private def rightTemplate3 : List Instr :=
   op 0x01,
   op 0x89,
   op 0x16,
-  op 0x8a,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x87,
   op 0x01,
@@ -1107,9 +1089,8 @@ private def rightTemplate3 : List Instr :=
   op 0x01,
   op 0x87,
   op 0x16,
-  op 0x88,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x84,
   op 0x01,
@@ -1121,9 +1102,8 @@ private def rightTemplate3 : List Instr :=
   .push 1 22,
   op 0x1c,
   op 0x93,
-  op 0x90
+  op 0x90,
 ]
-
 private def rightTemplate4 : List Instr :=
 [
   op 0x5b,
@@ -1139,9 +1119,8 @@ private def rightTemplate4 : List Instr :=
   op 0x01,
   op 0x8d,
   op 0x16,
-  op 0x8e,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x8b,
   op 0x01,
@@ -1165,9 +1144,8 @@ private def rightTemplate4 : List Instr :=
   op 0x01,
   op 0x8b,
   op 0x16,
-  op 0x8c,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x88,
   op 0x01,
@@ -1190,9 +1168,8 @@ private def rightTemplate4 : List Instr :=
   op 0x01,
   op 0x89,
   op 0x16,
-  op 0x8a,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x87,
   op 0x01,
@@ -1216,9 +1193,8 @@ private def rightTemplate4 : List Instr :=
   op 0x01,
   op 0x87,
   op 0x16,
-  op 0x88,
   op 0x02,
-  op 0x90,
+  .push 1 32,
   op 0x1c,
   op 0x84,
   op 0x01,
@@ -1230,7 +1206,7 @@ private def rightTemplate4 : List Instr :=
   .push 1 22,
   op 0x1c,
   op 0x93,
-  op 0x90
+  op 0x90,
 ]
 
 def leftTemplate (group : Fin 5) (_constant : UInt256) : List Instr :=

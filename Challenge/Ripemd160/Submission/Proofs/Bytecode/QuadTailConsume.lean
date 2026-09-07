@@ -13,7 +13,7 @@ set_option maxHeartbeats 4000000
 # Raw execution of the 419d031 consume tail
 
 Artifact-independent. `consumeBody` is the frozen candidate sequence from
-PC `0xb2b` through the `JUMP` at `0xb7e`. Nine following `STOP`
+PC `0xca3` through the `JUMP` at `0xcf6`. Nine following `STOP`
 bytes are unreachable padding and are not executed.
 -/
 
@@ -29,7 +29,7 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailTemplate
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSwapLemmas
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
 
-/-- Frozen candidate bytes at `0xb2b .. 0xb7e` inclusive. -/
+/-- Frozen candidate bytes at `0xca3 .. 0xcf6` inclusive. -/
 def consumeBodyBytes : List UInt8 :=
   [0x92, 0x90, 0x97, 0x60, 0x40, 0x51, 0x01, 0x01, 0x63, 0xff, 0xff, 0xff, 0xff,
    0x16, 0x92, 0x90, 0x97, 0x60, 0x60, 0x51, 0x01, 0x01, 0x63, 0xff, 0xff, 0xff,
@@ -69,8 +69,8 @@ def runInstrSeq : List Instr → State → Option State
 abbrev consumeResult := QuadTailTemplate.finalResult
 
 private theorem activeWordsAfter_tail (s : State) (offset : Nat)
-    (hoff : offset + 32 ≤ 39 * 32)
-    (hactive : 39 ≤ s.activeWords.toNat) :
+    (hoff : offset + 32 ≤ 66 * 32)
+    (hactive : 66 ≤ s.activeWords.toNat) :
     s.activeWordsAfterUInt256 offset 32 = s.activeWords := by
   unfold State.activeWordsAfterUInt256
   have haw : MachineState.activeWordsAfter s.activeWords.toNat offset 32 =
@@ -201,7 +201,7 @@ theorem run_consumeBody (s : State)
     (rest : List UInt256)
     (hrun : s.halt = .Running)
     (_hfork : s.fork = .Osaka)
-    (hactive : 39 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1007)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     runInstrSeq consumeBody (tailEntry s left right ret rest) =
@@ -253,7 +253,7 @@ set_option linter.unusedSimpArgs false in
 theorem runTail_consumeBody (s : State)
     (left right : Compression.EvmWorking) (ret : UInt256)
     (rest : List UInt256)
-    (hactive : 39 ≤ s.activeWords.toNat)
+    (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1007)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     StackTail.runTailInstrs consumeBody (tailEntry s left right ret rest) =

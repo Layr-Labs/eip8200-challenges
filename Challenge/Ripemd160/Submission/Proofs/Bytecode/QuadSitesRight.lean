@@ -133,11 +133,14 @@ def rightCallSite (k : Fin 20) :
     MaskCallTrace.CallSite Artifact .Osaka
       (rightReturnPC k.val) (rightAddress0 k) (rightAddress1 k)
       (rightAddress2 k) (rightAddress3 k) (rightHelperPC k.val)
-      ⟨0, by decide⟩ ⟨0, by decide⟩ ⟨0, by decide⟩ ⟨0, by decide⟩
-      (UInt256.ofNat (32 - rightRotation0 k))
-      (UInt256.ofNat (32 - rightRotation1 k))
-      (UInt256.ofNat (32 - rightRotation2 k))
-      (UInt256.ofNat (32 - rightRotation3 k)) where
+      (shiftedFactorWidth (rightRotation0 k))
+      (shiftedFactorWidth (rightRotation1 k))
+      (shiftedFactorWidth (rightRotation2 k))
+      (shiftedFactorWidth (rightRotation3 k))
+      (shiftedFactor (rightRotation0 k))
+      (shiftedFactor (rightRotation1 k))
+      (shiftedFactor (rightRotation2 k))
+      (shiftedFactor (rightRotation3 k)) where
   pushes := rightCallPushes k
   jump := rightCallJump k
   jump_instr := by simp [rightCallJump]
@@ -256,11 +259,14 @@ def rightRoundSite (k : Fin 20) :
       (rightHelperTemplate ⟨k.val / 4, by omega⟩)
       (rightAddress0 k) (rightAddress1 k)
       (rightAddress2 k) (rightAddress3 k)
-      ⟨0, by decide⟩ ⟨0, by decide⟩ ⟨0, by decide⟩ ⟨0, by decide⟩
-      (UInt256.ofNat (32 - rightRotation0 k))
-      (UInt256.ofNat (32 - rightRotation1 k))
-      (UInt256.ofNat (32 - rightRotation2 k))
-      (UInt256.ofNat (32 - rightRotation3 k)) where
+      (shiftedFactorWidth (rightRotation0 k))
+      (shiftedFactorWidth (rightRotation1 k))
+      (shiftedFactorWidth (rightRotation2 k))
+      (shiftedFactorWidth (rightRotation3 k))
+      (shiftedFactor (rightRotation0 k))
+      (shiftedFactor (rightRotation1 k))
+      (shiftedFactor (rightRotation2 k))
+      (shiftedFactor (rightRotation3 k)) where
   returnPC := rightReturnPC k.val
   helperPC := rightHelperPC k.val
   call := rightCallSite k
@@ -301,12 +307,44 @@ theorem rightRotation3_le32 (k : Fin 20) :
     rightRotation3 k ≤ 32 := by
   fin_cases k <;> decide
 
+theorem rightRotation0_pos (k : Fin 20) :
+    0 < rightRotation0 k := by
+  fin_cases k <;> decide
+
+theorem rightRotation1_pos (k : Fin 20) :
+    0 < rightRotation1 k := by
+  fin_cases k <;> decide
+
+theorem rightRotation2_pos (k : Fin 20) :
+    0 < rightRotation2 k := by
+  fin_cases k <;> decide
+
+theorem rightRotation3_pos (k : Fin 20) :
+    0 < rightRotation3 k := by
+  fin_cases k <;> decide
+
+theorem rightRotation0_lt32 (k : Fin 20) :
+    rightRotation0 k < 32 := by
+  fin_cases k <;> decide
+
+theorem rightRotation1_lt32 (k : Fin 20) :
+    rightRotation1 k < 32 := by
+  fin_cases k <;> decide
+
+theorem rightRotation2_lt32 (k : Fin 20) :
+    rightRotation2 k < 32 := by
+  fin_cases k <;> decide
+
+theorem rightRotation3_lt32 (k : Fin 20) :
+    rightRotation3 k < 32 := by
+  fin_cases k <;> decide
+
 @[simp] theorem rightPC_zero : rightPC 0 = UInt256.ofNat 0x8fb := by
   change UInt256.ofNat (Artifact.instructionPC (rightWrapperIndex 0)) =
     UInt256.ofNat (QuadLayout.rightWrapperPCNat 0)
   exact congrArg UInt256.ofNat (QuadLayout.rightWrapper_pc ⟨0, by decide⟩)
 
-@[simp] theorem rightPC_end : rightPC 20 = UInt256.ofNat 0xb2b := by
+@[simp] theorem rightPC_end : rightPC 20 = UInt256.ofNat 0xca3 := by
   change UInt256.ofNat (Artifact.instructionPC (rightWrapperIndex 20)) =
     UInt256.ofNat (QuadLayout.rightWrapperPCNat 20)
   exact congrArg UInt256.ofNat (QuadLayout.rightWrapper_pc ⟨20, by decide⟩)
@@ -314,7 +352,7 @@ theorem rightRotation3_le32 (k : Fin 20) :
 @[simp] theorem rightStartPC_eq : rightStartPC = UInt256.ofNat 0x8fb := by
   exact rightPC_zero
 
-@[simp] theorem rightEndPC_eq : rightEndPC = UInt256.ofNat 0xb2b := by
+@[simp] theorem rightEndPC_eq : rightEndPC = UInt256.ofNat 0xca3 := by
   exact rightPC_end
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites
