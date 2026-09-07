@@ -20,13 +20,22 @@ def squareProgram : List Instr :=
    .op (.Dup ⟨0, by decide⟩), .op .MULMOD,
    .op (.Swap ⟨4, by decide⟩), .op .POP]
 
-/-- The lookup uses the same factor order and stack effect. A wide encoding
-of the constant five absorbs the removed square/lookup padding, preserving
-the complete nibble's 35-byte window without adding a stack slot. -/
+/-- The table lookup and multiply.  `DUP6 DUP6` lift the modulus and the
+accumulator into `MULMOD` order *before* the table word is loaded, so the
+`SWAP1` the load-first form needed to slide the modulus underneath is gone.
+Ten instructions and eleven bytes, exactly as many as the load-first form, with
+the freed byte spent on a `JUMPDEST` (1 gas) so that neither the instruction
+count nor any program counter outside this window moves.  34 gas -> 32 gas.
+
+Note the operand order: `MULMOD` now pops the table word first and the
+accumulator second, so the machine produces `mulMod (tableWord ..) acc m` where
+the load-first form produced `mulMod acc (tableWord ..) m`.  Those are equal but
+NOT definitionally equal; `mulMod_comm` below is what bridges them, and every
+statement downstream keeps the accumulator-first spelling. -/
 def lookupProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .push 8 5, .op .SHL, .op .MLOAD,
-   .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP]
+   .op (.Dup ⟨2, by decide⟩), .push 1 5, .op .SHL, .op .MLOAD,
+   .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP, .op .JUMPDEST]
 
 def beginSquareProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
@@ -37,9 +46,12 @@ def topSquareProgram : List Instr :=
    .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
 
 def finishSquareProgram : List Instr :=
-  [.op (.Swap ⟨4, by decide⟩), .op .POP]
+  [.op (.Swap ⟨4, by decide⟩), .op .POP,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
 
-/-- Keep the accumulator at the top between squarings; no padding is executed. -/
+/-- Keep the accumulator at the top between squarings. The six padding
+JUMPDESTs retain the certified layout while saving nine gas per nibble. -/
 def fourSquareProgram : List Instr :=
   beginSquareProgram ++ topSquareProgram ++ topSquareProgram ++
     topSquareProgram ++ finishSquareProgram

@@ -48,7 +48,7 @@ theorem run_square (template : State) (base modulus : UInt256)
     runLocatedBlock (highSquarePath 3)
       (nibbleState { template with halt := .Running } (UInt256.ofNat 3470)
         base modulus nibble byte word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3488)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3494)
       base modulus nibble byte word pointer
       (WindowMath.squareWordAfter modulus 4 accumulator) rest) := by
   have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -75,7 +75,7 @@ theorem run_lookup (template : State) (base modulus : UInt256)
     (rest : List UInt256) (hnibble : nibble < 16)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (highLookupPath 3)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3488)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3494)
         base modulus nibble byte word pointer accumulator rest) =
     some (nibbleState { template with halt := .Running } (UInt256.ofNat 3505)
       base modulus nibble byte word pointer
@@ -115,3 +115,4 @@ theorem run_lookup (template : State) (base modulus : UInt256)
   exact mulMod_comm _ _ _
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitByte3High
+

@@ -22,7 +22,7 @@ theorem run_byte0_highSquare (template : State) (base modulus : UInt256)
     runLocatedBlock (highSquarePath 0)
       (nibbleState { template with halt := .Running } (UInt256.ofNat 3215)
         base modulus nibble byte word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3233)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3239)
       base modulus nibble byte word pointer
       (WindowMath.squareWordAfter modulus 4 accumulator) rest) := by
   have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega

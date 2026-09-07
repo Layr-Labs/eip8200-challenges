@@ -1,5 +1,5 @@
 import Challenge.Modexp.Benchmark.Artifact
-import Challenge.Modexp.Submission.Proofs.Fast.ShiftCorrect
+import Challenge.Modexp.Submission.Proofs.Fast.RrLeadingCorrect
 import Challenge.Modexp.Submission.Proofs.Fast.WindowCorrect
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitCorrect
 
@@ -24,7 +24,7 @@ theorem candidateFromWindow
     Challenge.Modexp.Correct bytecode := by
   change Challenge.Modexp.Correct Challenge.Modexp.submissionBytecode
   exact Challenge.Modexp.Submission.Proofs.Fast.WindowCorrect.submission_correct_of
-    route Challenge.Modexp.Submission.Proofs.Fast.Shift.gasSteps_handled
+    route Challenge.Modexp.Submission.Proofs.Fast.Exp.gasSteps_handled
 
 /-- Universal correctness of the exact submitted bytecode, including the
 concrete fixed-width window route and the complete legacy fallback. -/

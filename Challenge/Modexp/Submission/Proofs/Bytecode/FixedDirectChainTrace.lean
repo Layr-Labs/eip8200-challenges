@@ -45,14 +45,15 @@ theorem run_squareCall (s : State) (memory : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.squareCall
       (FixedDirectStates.square s memory n bsize esize msize count) =
-      some (Exp.mpCall s memory 2048 2048 2048 (UInt256.ofNat 3970)
+      some (Exp.mpDispatchCall s memory 2048 2048 2048 (UInt256.ofNat 3970)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) := by
   simp (config := { maxSteps := 400000 })
     [FixedDirectPaths.squareCall, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      FixedDirectStates.square, Exp.mpCall, Exp.outer, hcode, hrun, jumpDest1939,
+      FixedDirectStates.square, Exp.mpDispatchCall, Cios2Dispatch.dispatchState,
+      Exp.outer, hcode, hrun, Cios2Dispatch.jumpDest4057,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -114,15 +115,15 @@ theorem run_product (s : State) (memory : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.product
       (FixedDirectStates.product s memory n bsize esize msize) =
-      some (Exp.mpCall s memory 2048 1024 1024 (UInt256.ofNat 3997)
+      some (Exp.mpDispatchCall s memory 2048 1024 1024 (UInt256.ofNat 3997)
         (Exp.outer n bsize esize msize)) := by
   simp (config := { maxSteps := 400000 })
     [FixedDirectPaths.product, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      FixedDirectStates.product, Exp.mpCall, Exp.outer,
-      hcode, hrun, jumpDest1939,
+      FixedDirectStates.product, Exp.mpDispatchCall, Cios2Dispatch.dispatchState,
+      Exp.outer, hcode, hrun, Cios2Dispatch.jumpDest4057,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -183,7 +184,7 @@ def gasSteps_squareCall (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedDirectStates.square s memory n bsize esize msize count)
-      (Exp.mpCall s memory 2048 2048 2048 (UInt256.ofNat 3970)
+      (Exp.mpDispatchCall s memory 2048 2048 2048 (UInt256.ofNat 3970)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
   sound FixedDirectPaths.squareCall
     (run_squareCall s memory n bsize esize msize count hcode hrun)
@@ -223,7 +224,7 @@ def gasSteps_product (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedDirectStates.product s memory n bsize esize msize)
-      (Exp.mpCall s memory 2048 1024 1024 (UInt256.ofNat 3997)
+      (Exp.mpDispatchCall s memory 2048 1024 1024 (UInt256.ofNat 3997)
         (Exp.outer n bsize esize msize)) :=
   sound FixedDirectPaths.product
     (run_product s memory n bsize esize msize hcode hrun)

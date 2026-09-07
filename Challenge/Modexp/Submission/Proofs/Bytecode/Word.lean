@@ -132,13 +132,13 @@ def bitJumpPath :
 /-- The head of the unrolled block derives `base - 1` for the eight copies. -/
 def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2327 .JUMPDEST, pushAt 2328 1 (UInt256.ofNat 1),
-   opAt 2329 (.Dup ⟨6, by decide⟩), opAt 2330 .SUB]
+  [opAt 2414 .JUMPDEST, pushAt 2415 1 (UInt256.ofNat 1),
+   opAt 2416 (.Dup ⟨6, by decide⟩), opAt 2417 .SUB]
 
 /-- Its tail drops `base - 1` and rejoins the byte loop. -/
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2467 .POP, pushAt 2468 2 (UInt256.ofNat 655), opAt 2469 .JUMP]
+  [opAt 2554 .POP, pushAt 2555 2 (UInt256.ofNat 655), opAt 2556 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
 def bitPC (j : Nat) : Nat := 3700 + 20 * j
@@ -348,7 +348,7 @@ def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
       UInt256.ofNat (modulusValue input)] ++ bitTail input)
 
 theorem jump3695 : Decode.isValidJumpDest submissionBytecode 3695 = true :=
-  Artifact.isValidJumpDest_index 2327 (by rfl)
+  Artifact.isValidJumpDest_index 2414 (by rfl)
 
 /-- The loop head jumps into the unrolled block. -/
 def gasSteps_bitEntry (input : ByteArray) (outer : Nat)
@@ -547,20 +547,21 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
       exact baseStep_spec input count (modulusValue input)
         rfl hmodpos hmodlt (by omega)
 
-@[simp] private theorem startPCs (i : Nat)
-    (hi : 415 ≤ i) (hii : i ≤ 429) :
+@[simp] private theorem startPCs (i : Nat) (hi : 415 ≤ i) (hii : i ≤ 429) :
     Artifact.submissionArtifact.instructionPC i =
-      ([517,518,519,520,521,523,524,526,527,528,529,532,533,534,537] : List Nat)[i - 415]! := by
+      [517, 518, 519, 520, 521, 523, 524, 526, 527, 528, 529, 532,
+       533, 534, 537][i - 415]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump538 :
     Decode.isValidJumpDest submissionBytecode 538 = true :=
   Artifact.isValidJumpDest_index 430 (by rfl)
 
-@[simp] theorem wordPCs (i : Nat)
-    (hi : 430 ≤ i) (hii : i ≤ 462) :
+@[simp] theorem wordPCs (i : Nat) (hi : 430 ≤ i) (hii : i ≤ 462) :
     Artifact.submissionArtifact.instructionPC i =
-      ([538,539,540,541,542,543,544,545,546,549,550,551,554,555,556,557,558,561,562,563,564,567,568,569,570,571,572,574,575,578,579,580,581] : List Nat)[i - 430]! := by
+      [538, 539, 540, 541, 542, 543, 544, 545, 546, 549, 550,
+       551, 554, 555, 556, 557, 558, 561, 562, 563, 564, 567,
+       568, 569, 570, 571, 572, 574, 575, 578, 579, 580, 581][i - 430]! := by
   interval_cases i <;> decide
 
 @[simp] theorem jump582 :
@@ -579,16 +580,18 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
     Decode.isValidJumpDest submissionBytecode 541 = true :=
   Artifact.isValidJumpDest_index 433 (by rfl)
 
-@[simp] theorem baseFinishPCs (i : Nat)
-    (hi : 463 ≤ i) (hii : i ≤ 468) :
+@[simp] theorem baseFinishPCs (i : Nat) (hi : 463 ≤ i) (hii : i ≤ 468) :
     Artifact.submissionArtifact.instructionPC i =
-      ([582,583,584,585,587,588] : List Nat)[i - 463]! := by
+      [582, 583, 584, 585, 587, 588][i - 463]! := by
   interval_cases i <;> decide
 
-@[simp] theorem expPCs (i : Nat)
-    (hi : 469 ≤ i) (hii : i ≤ 535) :
+@[simp] theorem expPCs (i : Nat) (hi : 469 ≤ i) (hii : i ≤ 535) :
     Artifact.submissionArtifact.instructionPC i =
-      ([589,590,591,592,593,594,597,598,599,600,601,602,603,604,605,606,607,610,611,613,614,615,616,618,619,620,622,623,624,625,626,627,628,629,630,631,632,633,634,635,636,637,638,639,640,641,642,643,644,645,647,648,651,652,653,654,655,656,657,658,659,661,662,665,666,667,668] : List Nat)[i - 469]! := by
+      [589,590,591,592,593,594,597,598,599,600,601,602,603,604,605,606,
+       607,610,611,613,614,615,616,618,619,620,622,623,624,625,
+       626,627,628,629,630,631,632,633,634,635,636,637,638,639,
+       640,641,642,643,644,645,647,648,651,652,653,654,655,656,
+       657,658,659,661,662,665,666,667,668][i - 469]! := by
   interval_cases i <;> decide
 
 @[simp] theorem jump669 :

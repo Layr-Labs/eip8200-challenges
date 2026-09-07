@@ -37,11 +37,11 @@ macro_rules
         activeWords := UInt256.ofNat (power + 1) }
 
     @[simp] private theorem tablePCs (index : Nat)
-        (hlo : $firstIndex ≤ index) (hhi : index ≤ $firstIndex + 6) :
+        (hlo : $firstIndex ≤ index) (hhi : index ≤ $firstIndex + 8) :
         Artifact.submissionArtifact.instructionPC index =
           $startPC + (index - $firstIndex) +
-            (if index - $firstIndex = 6 then
-              (if $offset < 256 then 3 else 4) else 0) := by
+            (if index - $firstIndex = 8 then
+              (if $offset < 256 then 1 else 2) else 0) := by
       interval_cases index <;> decide
 
     set_option linter.unusedSimpArgs false in

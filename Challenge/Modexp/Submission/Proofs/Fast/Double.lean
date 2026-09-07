@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P6
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P7
-import Challenge.Modexp.Submission.Proofs.Fast.Csub
+import Challenge.Modexp.Submission.Proofs.Fast.FusedCsubFunctional
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
@@ -438,9 +438,9 @@ at pc 2642, and `CSUB` from there to the return jump.  Composing the two gives
 the indexed contract the loop above consumes, with memory transformer
 `dblStep px n`. -/
 
-/-- The memory one `ADDMOD(px, px, px)` call leaves behind. -/
+/-- The memory one fused `ADDMOD(px, px, px)` call leaves behind. -/
 def dblStep (px n : Nat) (mem : ByteArray) : ByteArray :=
-  Csub.csResultMemory (Csub.amResultMemory mem px px n) n px
+  FusedCsub.resultMemory mem px px n px
 
 /-- The three derived variables `ADDMOD` and `CSUB` read: `V_S32 = 0x2480`,
 `V_ML = 0x24C0` and `V_TL = 0x24E0`. -/
@@ -479,14 +479,14 @@ theorem readWord_csResultMemory_high (mem : ByteArray) (n pdst addr : Nat)
 theorem vars_dblStep (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hpxFit : px + 32 * n ≤ 8192) (hv : Vars mem n) : Vars (dblStep px n mem) n := by
   refine ⟨?_, ?_, ?_⟩
-  · rw [dblStep, readWord_csResultMemory_high _ n px 9344 (by omega) hn32 (by omega)
-      (by omega), readWord_amResultMemory_high _ px px n 9344 (by omega) hn32 (by omega)]
+  · rw [dblStep, FusedCsub.resultMemory_readWord_high _ px px n px 9344
+      (by omega) hn32 (by omega) (by omega)]
     exact hv.s32
-  · rw [dblStep, readWord_csResultMemory_high _ n px 9408 (by omega) hn32 (by omega)
-      (by omega), readWord_amResultMemory_high _ px px n 9408 (by omega) hn32 (by omega)]
+  · rw [dblStep, FusedCsub.resultMemory_readWord_high _ px px n px 9408
+      (by omega) hn32 (by omega) (by omega)]
     exact hv.ml
-  · rw [dblStep, readWord_csResultMemory_high _ n px 9440 (by omega) hn32 (by omega)
-      (by omega), readWord_amResultMemory_high _ px px n 9440 (by omega) hn32 (by omega)]
+  · rw [dblStep, FusedCsub.resultMemory_readWord_high _ px px n px 9440
+      (by omega) hn32 (by omega) (by omega)]
     exact hv.tl
 
 theorem vars_iterMem (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
@@ -494,19 +494,21 @@ theorem vars_iterMem (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤
     Vars (iterMem (dblStep px n) mem i) n := by
   induction i with
   | zero => exact hv
-  | succ i ih => exact vars_dblStep _ px n hn hn32 hpxFit ih
+  | succ i ih =>
+      rw [iterMem_succ]
+      exact vars_dblStep (iterMem (dblStep px n) mem i) px n hn hn32 hpxFit ih
 
-/-- The `CSUB` return state, spelled as the loop's return state. -/
-theorem csReturned_eq (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
+/-- The fused return state, spelled as the doubling loop's return state. -/
+theorem fusedReturned_eq (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) (hpx : px < 2 ^ 256) :
-    Csub.csReturnedState s (Csub.amResultMemory mem px px n) n n (UInt256.ofNat px)
+    FusedCsub.returnedState s mem px px n n (UInt256.ofNat px)
         (UInt256.ofNat 1926) (loopStack px k ret rest) =
       retState s (dblStep px n mem) px k ret rest := by
   have hpxN : (UInt256.ofNat px).toNat = px := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hpx]
-  simp only [Csub.csReturnedState, retState, dblStep, Csub.csResultMemory, hpxN]
+  simp only [FusedCsub.returnedState, retState, dblStep, FusedCsub.resultMemory, hpxN]
 
-/-- One complete `ADDMOD(px, px, px)` call: `ADDMOD` followed by `CSUB`. -/
+/-- One complete fused `ADDMOD(px, px, px)` call. -/
 def gasSteps_addmodStep (s : State) (mem : ByteArray) (px n : Nat) (ret' : UInt256)
     (tail : List UInt256) (hcap : tail.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -514,40 +516,38 @@ def gasSteps_addmodStep (s : State) (mem : ByteArray) (px n : Nat) (ret' : UInt2
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hpx : 32 ≤ px) (hpxFit : px + 32 * n ≤ 8192)
+    (_hpx : 32 ≤ px) (hpxFit : px + 32 * n ≤ 8192)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret'.toNat = true)
     (hv : Vars mem n) :
     Challenge.EvmProof.GasSteps
       (Csub.amEntryState s mem px px (UInt256.ofNat px) ret' tail)
-      (Csub.csReturnedState s (Csub.amResultMemory mem px px n) n n
-        (UInt256.ofNat px) ret' tail) :=
-  have hml : MachineState.readWord (Csub.amResultMemory mem px px n) 9408 =
-      UInt256.ofNat (32 * n - 32) := by
-    rw [readWord_amResultMemory_high _ px px n 9408 (by omega) hn32 (by omega)]
-    exact hv.ml
-  have htl : MachineState.readWord (Csub.amResultMemory mem px px n) 9440 =
-      UInt256.ofNat (8224 + 32 * n) := by
-    rw [readWord_amResultMemory_high _ px px n 9440 (by omega) hn32 (by omega)]
-    exact hv.tl
+      (FusedCsub.returnedState s mem px px n n (UInt256.ofNat px) ret' tail) := by
   have hs32' : MachineState.readWord
-      (Csub.csStep (Csub.amResultMemory mem px px n) n n).memory 9344 =
+      (FusedCsub.tnMemory mem px px n n) 9344 =
       UInt256.ofNat (32 * n) := by
-    rw [Csub.csStep_readWord_disjoint _ n 9344 (by omega) (Or.inr (by omega)) n le_rfl,
-      readWord_amResultMemory_high _ px px n 9344 (by omega) hn32 (by omega)]
+    rw [FusedCsub.tnMemory_readWord_disjoint mem px px n n 9344
+      (Or.inr (by omega)) (Or.inr (by omega)) (Or.inr (by omega)) (by omega)]
     exact hv.s32
-  have htn : (MachineState.readWord
-      (Csub.csStep (Csub.amResultMemory mem px px n) n n).memory 8224).toNat ≤ 1 := by
-    rw [Csub.csStep_readWord_disjoint _ n 8224 (by omega) (Or.inr (by omega)) n le_rfl,
-      Csub.addmod_tn]
-    exact Csub.addmod_carry_le_one mem px px n hn (by omega) (by omega)
+  have hcarry := (FusedCsub.flags_le_one mem px px n n le_rfl).1
   have hdstFit : (UInt256.ofNat px).toNat + 32 * n ≤ 9472 := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (show px ≤ 8192 by omega) (by norm_num))]
     omega
-  (Csub.gasSteps_addmod s mem px px n (UInt256.ofNat px) ret' tail hcap hcode hfork hrun
-      hnp hact hn hn32 hpx (by omega) hpx (by omega) hv.s32 hv.tl).trans
-    (Csub.gasSteps_csub s (Csub.amResultMemory mem px px n) n (UInt256.ofNat px) ret' tail
-      hcap hcode hfork hrun hnp hact hn hn32 hjump hml htl hs32' hdstFit htn)
+  have hnj : n - 1 + 1 = n := by omega
+  have htail : Challenge.EvmProof.GasSteps
+      (FusedCsub.tailState s mem px px n (n - 1 + 1) (UInt256.ofNat px) ret' tail)
+      (FusedCsub.returnedState s mem px px n n (UInt256.ofNat px) ret' tail) := by
+    simpa only [hnj] using
+      (FusedCsub.gasSteps_tail s mem px px n n (UInt256.ofNat px) ret' tail hcap hcode
+        hfork hrun hnp hact hn hn32 hjump hs32' hdstFit hcarry)
+  exact ((((FusedCsub.gasSteps_trampoline s mem px px (UInt256.ofNat px) ret' tail
+        hcap hcode hfork hrun hnp).trans
+      (FusedCsub.gasSteps_entry s mem px px n (UInt256.ofNat px) ret' tail hcap hcode
+        hfork hrun hnp hact hv.tl)).trans
+    (FusedCsub.gasSteps_loop s mem px px n (UInt256.ofNat px) ret' tail hcap hcode hfork
+      hrun hnp hact hn hn32 (by omega) (by omega))).trans
+    (FusedCsub.gasSteps_exit s mem px px n (UInt256.ofNat px) ret' tail hcap hcode hfork
+      hrun hnp hact hn hn32 (by omega) (by omega))).trans htail
 
 theorem jump1926 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
@@ -570,14 +570,21 @@ def gasSteps_double256_addmod (s : State) (mem : ByteArray) (px n : Nat)
     Challenge.EvmProof.GasSteps (entryState s mem px ret rest)
       (doneState s (iterMem (dblStep px n) mem 256) ret rest) :=
   gasSteps_double256 s px ret rest (iterMem (dblStep px n) mem)
-    (fun i _ => Challenge.EvmProof.GasSteps.cast
-      (gasSteps_addmodStep s (iterMem (dblStep px n) mem i) px n (UInt256.ofNat 1926)
+    (fun i _ =>
+      have hstep :=
+        gasSteps_addmodStep s (iterMem (dblStep px n) mem i) px n (UInt256.ofNat 1926)
         (loopStack px (256 - i) ret rest)
         (by rw [loopStack_length]; omega) hcode hfork hrun hnp hact hn hn32 hpx hpxFit
-        jump1926 (vars_iterMem mem px n hn hn32 hpxFit hv i))
-      rfl
-      (csReturned_eq s (iterMem (dblStep px n) mem i) px n (256 - i) ret rest
-        (Nat.lt_of_le_of_lt (show px ≤ 8192 by omega) (by norm_num))))
+        jump1926 (vars_iterMem mem px n hn hn32 hpxFit hv i)
+      have hret :
+          FusedCsub.returnedState s (iterMem (dblStep px n) mem i) px px n n
+              (UInt256.ofNat px) (UInt256.ofNat 1926)
+              (loopStack px (256 - i) ret rest) =
+            retState s (iterMem (dblStep px n) mem (i + 1)) px (256 - i) ret rest := by
+        rw [iterMem_succ]
+        exact fusedReturned_eq s (iterMem (dblStep px n) mem i) px n (256 - i) ret rest
+          (Nat.lt_of_le_of_lt (show px ≤ 8192 by omega) (by norm_num))
+      Challenge.EvmProof.GasSteps.cast hstep rfl hret)
     (by omega) hcode hjump hfork hrun hnp
 
 
@@ -585,11 +592,11 @@ def gasSteps_double256_addmod (s : State) (mem : ByteArray) (px n : Nat)
 
 /-- One `ADDMOD(px, px, px)` call doubles the block at `px` modulo `m`. -/
 theorem dblStep_represents (mem : ByteArray) (px n mm x : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 8192) (_hpxLow : 32 * n ≤ px)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 7168) (_hpxLow : 32 * n ≤ px)
     (hm : Model.FastRepresents mem 0 n mm) (hmpos : 0 < mm)
     (hx : Model.FastRepresents mem px n x) (hxlt : x < mm) :
     Model.FastRepresents (dblStep px n mem) px n ((x + x) % mm) :=
-  Csub.addmod_csub_correct mem px px n x x mm px hn hn32 (by omega) (by omega)
+  FusedCsub.addmod_correct mem px px n x x mm px hn hn32 (by omega) (by omega)
     hx hx hm hmpos (by omega)
 
 /-- One `ADDMOD(px, px, px)` call leaves every block outside the `t`, `SUBB`
@@ -600,13 +607,14 @@ theorem dblStep_preserves (mem : ByteArray) (px n ptr cnt v : Nat) (hn : 2 ≤ n
     (hdisjDst : px + 32 * n ≤ ptr ∨ ptr + 32 * cnt ≤ px)
     (hrep : Model.FastRepresents mem ptr cnt v) :
     Model.FastRepresents (dblStep px n mem) ptr cnt v :=
-  Csub.addmod_csub_preserves_region mem px px n px ptr cnt v hn hdisjT hdisjSubb
-    hdisjDst hrep
+  FusedCsub.addmod_preserves_region mem px px n px ptr cnt v hdisjSubb
+    (hdisjT.elim (fun h => Or.inl (by omega)) Or.inr)
+    (hdisjT.elim Or.inl (fun h => Or.inr (by omega))) hdisjDst hrep
 
 /-- **The loop invariant.**  After `i` calls the modulus block is intact and
 the block at `px` holds `x * 2 ^ i mod m`. -/
 theorem iterMem_dblStep_invariant (mem : ByteArray) (px n mm x : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 8192) (hpxLow : 32 * n ≤ px)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 7168) (hpxLow : 32 * n ≤ px)
     (hmpos : 0 < mm) (hm : Model.FastRepresents mem 0 n mm)
     (hx : Model.FastRepresents mem px n x) (hxlt : x < mm) (i : Nat) :
     Model.FastRepresents (iterMem (dblStep px n) mem i) 0 n mm ∧
@@ -615,17 +623,18 @@ theorem iterMem_dblStep_invariant (mem : ByteArray) (px n mm x : Nat)
   induction i with
   | zero => exact ⟨hm, hx⟩
   | succ i ih =>
+      rw [iterMem_succ]
       refine ⟨?_, ?_⟩
       · exact dblStep_preserves _ px n 0 n mm hn (by omega) (by omega)
           (Or.inr (by omega)) ih.1
-      · rw [iterMem_succ, Model.doubleChain_succ]
+      · rw [Model.doubleChain_succ]
         exact dblStep_represents _ px n mm _ hn hn32 hpxFit hpxLow ih.1 hmpos ih.2
           (Model.doubleChain_lt hmpos hxlt i)
 
 /-- **Functional postcondition of `DOUBLE256`.**  The block at `px` goes from
 `x` to `x * radix mod m`. -/
 theorem double256_addmod_represents (mem : ByteArray) (px n mm x : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 8192) (hpxLow : 32 * n ≤ px)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 7168) (hpxLow : 32 * n ≤ px)
     (hmpos : 0 < mm) (hm : Model.FastRepresents mem 0 n mm)
     (hx : Model.FastRepresents mem px n x) (hxlt : x < mm) :
     Model.FastRepresents (iterMem (dblStep px n) mem 256) px n
@@ -636,7 +645,7 @@ theorem double256_addmod_represents (mem : ByteArray) (px n mm x : Nat)
 
 /-- The modulus block survives the whole subroutine. -/
 theorem double256_addmod_modulus (mem : ByteArray) (px n mm x : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 8192) (hpxLow : 32 * n ≤ px)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 7168) (hpxLow : 32 * n ≤ px)
     (hmpos : 0 < mm) (hm : Model.FastRepresents mem 0 n mm)
     (hx : Model.FastRepresents mem px n x) (hxlt : x < mm) :
     Model.FastRepresents (iterMem (dblStep px n) mem 256) 0 n mm :=
@@ -653,7 +662,9 @@ theorem double256_addmod_preserves (mem : ByteArray) (px n ptr cnt v : Nat)
     Model.FastRepresents (iterMem (dblStep px n) mem i) ptr cnt v := by
   induction i with
   | zero => exact hrep
-  | succ i ih => exact dblStep_preserves _ px n ptr cnt v hn hdisjT hdisjSubb hdisjDst ih
+  | succ i ih =>
+      rw [iterMem_succ]
+      exact dblStep_preserves _ px n ptr cnt v hn hdisjT hdisjSubb hdisjDst ih
 
 
 end Challenge.Modexp.Submission.Proofs.Fast.Double

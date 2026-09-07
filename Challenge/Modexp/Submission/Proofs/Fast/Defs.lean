@@ -200,170 +200,170 @@ private theorem fastPCAnchor10 :
       rfl
 
 private theorem fastPCAnchor11 :
-    Artifact.submissionArtifact.instructionPC 1416 = 1995 := by
+    Artifact.submissionArtifact.instructionPC 1417 = 1991 := by
   calc
-    Artifact.submissionArtifact.instructionPC 1416 =
+    Artifact.submissionArtifact.instructionPC 1417 =
         Artifact.submissionArtifact.instructionPC 1377 +
           (assembleBytes
             ((Artifact.submissionArtifact.instructions.drop 1377).take
-              39)).length :=
-      instructionPC_add Artifact.submissionArtifact 1377 39
-    _ = 1995 := by
+              40)).length :=
+      instructionPC_add Artifact.submissionArtifact 1377 40
+    _ = 1991 := by
       rw [fastPCAnchor10]
       rfl
 
 private theorem fastPCAnchor12 :
-    Artifact.submissionArtifact.instructionPC 1452 = 2128 := by
+    Artifact.submissionArtifact.instructionPC 1457 = 2063 := by
   calc
-    Artifact.submissionArtifact.instructionPC 1452 =
-        Artifact.submissionArtifact.instructionPC 1416 +
+    Artifact.submissionArtifact.instructionPC 1457 =
+        Artifact.submissionArtifact.instructionPC 1417 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1416).take
-              36)).length :=
-      instructionPC_add Artifact.submissionArtifact 1416 36
-    _ = 2128 := by
+            ((Artifact.submissionArtifact.instructions.drop 1417).take
+              40)).length :=
+      instructionPC_add Artifact.submissionArtifact 1417 40
+    _ = 2063 := by
       rw [fastPCAnchor11]
       rfl
 
 private theorem fastPCAnchor13 :
-    Artifact.submissionArtifact.instructionPC 1492 = 2213 := by
+    Artifact.submissionArtifact.instructionPC 1497 = 2213 := by
   calc
-    Artifact.submissionArtifact.instructionPC 1492 =
-        Artifact.submissionArtifact.instructionPC 1452 +
+    Artifact.submissionArtifact.instructionPC 1497 =
+        Artifact.submissionArtifact.instructionPC 1457 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1452).take
+            ((Artifact.submissionArtifact.instructions.drop 1457).take
               40)).length :=
-      instructionPC_add Artifact.submissionArtifact 1452 40
+      instructionPC_add Artifact.submissionArtifact 1457 40
     _ = 2213 := by
       rw [fastPCAnchor12]
       rfl
 
 private theorem fastPCAnchor14 :
-    Artifact.submissionArtifact.instructionPC 1532 = 2291 := by
+    Artifact.submissionArtifact.instructionPC 1537 = 2291 := by
   calc
-    Artifact.submissionArtifact.instructionPC 1532 =
-        Artifact.submissionArtifact.instructionPC 1492 +
+    Artifact.submissionArtifact.instructionPC 1537 =
+        Artifact.submissionArtifact.instructionPC 1497 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1492).take
+            ((Artifact.submissionArtifact.instructions.drop 1497).take
               40)).length :=
-      instructionPC_add Artifact.submissionArtifact 1492 40
+      instructionPC_add Artifact.submissionArtifact 1497 40
     _ = 2291 := by
       rw [fastPCAnchor13]
       rfl
 
 private theorem fastPCAnchor15 :
-    Artifact.submissionArtifact.instructionPC 1572 = 2402 := by
+    Artifact.submissionArtifact.instructionPC 1577 = 2402 := by
   calc
-    Artifact.submissionArtifact.instructionPC 1572 =
-        Artifact.submissionArtifact.instructionPC 1532 +
+    Artifact.submissionArtifact.instructionPC 1577 =
+        Artifact.submissionArtifact.instructionPC 1537 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1532).take
+            ((Artifact.submissionArtifact.instructions.drop 1537).take
               40)).length :=
-      instructionPC_add Artifact.submissionArtifact 1532 40
+      instructionPC_add Artifact.submissionArtifact 1537 40
     _ = 2402 := by
       rw [fastPCAnchor14]
       rfl
 
 private theorem fastPCAnchor16 :
-    Artifact.submissionArtifact.instructionPC 1612 = 2488 := by
+    Artifact.submissionArtifact.instructionPC 1617 = 2488 := by
   calc
-    Artifact.submissionArtifact.instructionPC 1612 =
-        Artifact.submissionArtifact.instructionPC 1572 +
+    Artifact.submissionArtifact.instructionPC 1617 =
+        Artifact.submissionArtifact.instructionPC 1577 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1572).take
+            ((Artifact.submissionArtifact.instructions.drop 1577).take
               40)).length :=
-      instructionPC_add Artifact.submissionArtifact 1572 40
+      instructionPC_add Artifact.submissionArtifact 1577 40
     _ = 2488 := by
       rw [fastPCAnchor15]
       rfl
 
 private theorem fastPCAnchor17 :
-    Artifact.submissionArtifact.instructionPC 1652 = 2626 := by
+    Artifact.submissionArtifact.instructionPC 1657 = 2626 := by
   calc
-    Artifact.submissionArtifact.instructionPC 1652 =
-        Artifact.submissionArtifact.instructionPC 1612 +
+    Artifact.submissionArtifact.instructionPC 1657 =
+        Artifact.submissionArtifact.instructionPC 1617 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1612).take
+            ((Artifact.submissionArtifact.instructions.drop 1617).take
               40)).length :=
-      instructionPC_add Artifact.submissionArtifact 1612 40
+      instructionPC_add Artifact.submissionArtifact 1617 40
     _ = 2626 := by
       rw [fastPCAnchor16]
       rfl
 
 private theorem fastPCAnchor18 :
-    Artifact.submissionArtifact.instructionPC 1692 = 2680 := by
+    Artifact.submissionArtifact.instructionPC 1697 = 2680 := by
   calc
-    Artifact.submissionArtifact.instructionPC 1692 =
-        Artifact.submissionArtifact.instructionPC 1652 +
+    Artifact.submissionArtifact.instructionPC 1697 =
+        Artifact.submissionArtifact.instructionPC 1657 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1652).take
+            ((Artifact.submissionArtifact.instructions.drop 1657).take
               40)).length :=
-      instructionPC_add Artifact.submissionArtifact 1652 40
+      instructionPC_add Artifact.submissionArtifact 1657 40
     _ = 2680 := by
       rw [fastPCAnchor17]
       rfl
 
 private theorem fastPCAnchor19 :
-    Artifact.submissionArtifact.instructionPC 1732 = 2858 := by
+    Artifact.submissionArtifact.instructionPC 1737 = 2858 := by
   calc
-    Artifact.submissionArtifact.instructionPC 1732 =
-        Artifact.submissionArtifact.instructionPC 1692 +
+    Artifact.submissionArtifact.instructionPC 1737 =
+        Artifact.submissionArtifact.instructionPC 1697 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1692).take
+            ((Artifact.submissionArtifact.instructions.drop 1697).take
               40)).length :=
-      instructionPC_add Artifact.submissionArtifact 1692 40
+      instructionPC_add Artifact.submissionArtifact 1697 40
     _ = 2858 := by
       rw [fastPCAnchor18]
       rfl
 
 private theorem fastPCAnchor20 :
-    Artifact.submissionArtifact.instructionPC 1737 = 2863 := by
+    Artifact.submissionArtifact.instructionPC 1742 = 2863 := by
   calc
-    Artifact.submissionArtifact.instructionPC 1737 =
-        Artifact.submissionArtifact.instructionPC 1732 +
+    Artifact.submissionArtifact.instructionPC 1742 =
+        Artifact.submissionArtifact.instructionPC 1737 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1732).take
+            ((Artifact.submissionArtifact.instructions.drop 1737).take
               5)).length :=
-      instructionPC_add Artifact.submissionArtifact 1732 5
+      instructionPC_add Artifact.submissionArtifact 1737 5
     _ = 2863 := by
       rw [fastPCAnchor19]
       rfl
 
 private theorem fastPCAnchor21 :
-    Artifact.submissionArtifact.instructionPC 1763 = 2901 := by
+    Artifact.submissionArtifact.instructionPC 1768 = 2901 := by
   calc
-    Artifact.submissionArtifact.instructionPC 1763 =
-        Artifact.submissionArtifact.instructionPC 1737 +
+    Artifact.submissionArtifact.instructionPC 1768 =
+        Artifact.submissionArtifact.instructionPC 1742 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1737).take
+            ((Artifact.submissionArtifact.instructions.drop 1742).take
               26)).length :=
-      instructionPC_add Artifact.submissionArtifact 1737 26
+      instructionPC_add Artifact.submissionArtifact 1742 26
     _ = 2901 := by
       rw [fastPCAnchor20]
       rfl
 
 private theorem fastPCAnchor22 :
-    Artifact.submissionArtifact.instructionPC 1776 = 2922 := by
+    Artifact.submissionArtifact.instructionPC 1781 = 2922 := by
   calc
-    Artifact.submissionArtifact.instructionPC 1776 =
-        Artifact.submissionArtifact.instructionPC 1763 +
+    Artifact.submissionArtifact.instructionPC 1781 =
+        Artifact.submissionArtifact.instructionPC 1768 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1763).take
+            ((Artifact.submissionArtifact.instructions.drop 1768).take
               13)).length :=
-      instructionPC_add Artifact.submissionArtifact 1763 13
+      instructionPC_add Artifact.submissionArtifact 1768 13
     _ = 2922 := by
       rw [fastPCAnchor21]
       rfl
 
 private theorem fastPCAnchor23 :
-    Artifact.submissionArtifact.instructionPC 1811 = 2971 := by
+    Artifact.submissionArtifact.instructionPC 1816 = 2971 := by
   calc
-    Artifact.submissionArtifact.instructionPC 1811 =
-        Artifact.submissionArtifact.instructionPC 1776 +
+    Artifact.submissionArtifact.instructionPC 1816 =
+        Artifact.submissionArtifact.instructionPC 1781 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1776).take
+            ((Artifact.submissionArtifact.instructions.drop 1781).take
               35)).length :=
-      instructionPC_add Artifact.submissionArtifact 1776 35
+      instructionPC_add Artifact.submissionArtifact 1781 35
     _ = 2971 := by
       rw [fastPCAnchor22]
       rfl
@@ -528,9 +528,9 @@ private theorem fastPCAnchor23 :
       rw [fastPCAnchor9]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC10 (i : Nat) (hi : 1377 ≤ i) (hii : i ≤ 1415) :
+@[simp] theorem fastPC10 (i : Nat) (hi : 1377 ≤ i) (hii : i ≤ 1416) :
     Artifact.submissionArtifact.instructionPC i =
-      [1937,1938,1939,1940,1943,1944,1945,1947,1948,1949,1952,1953,1954,1955,1956,1958,1959,1960,1962,1963,1964,1965,1966,1967,1968,1970,1971,1972,1973,1974,1975,1976,1977,1978,1983,1984,1985,1993,1994][i - 1377]! := by
+      [1937,1938,1939,1940,1943,1944,1945,1947,1948,1949,1952,1953,1954,1955,1956,1958,1959,1960,1962,1963,1964,1965,1966,1967,1968,1970,1971,1972,1973,1974,1975,1976,1977,1978,1983,1984,1985,1988,1989,1990][i - 1377]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (1377 + (i - 1377)) := by
@@ -544,153 +544,137 @@ private theorem fastPCAnchor23 :
       rw [fastPCAnchor10]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC11 (i : Nat) (hi : 1416 ≤ i) (hii : i ≤ 1451) :
+@[simp] theorem fastPC11 (i : Nat) (hi : 1417 ≤ i) (hii : i ≤ 1456) :
     Artifact.submissionArtifact.instructionPC i =
-      [1995,1996,1999,2000,2033,2066,2068,2070,2072,2074,2076,2078,2080,2082,2084,2086,2088,2090,2092,2094,2096,2098,2100,2102,2104,2106,2108,2110,2112,2114,2116,2118,2120,2122,2124,2126][i - 1416]! := by
+      [1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055,2056,2057,2058,2059,2060,2061,2062][i - 1417]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (1416 + (i - 1416)) := by
+        Artifact.submissionArtifact.instructionPC (1417 + (i - 1417)) := by
       rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC 1416 +
+    _ = Artifact.submissionArtifact.instructionPC 1417 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1416).take
-              (i - 1416))).length :=
-      instructionPC_add Artifact.submissionArtifact 1416 (i - 1416)
+            ((Artifact.submissionArtifact.instructions.drop 1417).take
+              (i - 1417))).length :=
+      instructionPC_add Artifact.submissionArtifact 1417 (i - 1417)
     _ = _ := by
       rw [fastPCAnchor11]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC12 (i : Nat) (hi : 1452 ≤ i) (hii : i ≤ 1491) :
+@[simp] theorem fastPC12 (i : Nat) (hi : 1457 ≤ i) (hii : i ≤ 1496) :
     Artifact.submissionArtifact.instructionPC i =
-      [2128,2130,2131,2132,2133,2134,2135,2136,2137,2138,2139,2140,2141,2142,2143,2144,2147,2148,2149,2150,2153,2154,2155,2158,2159,2162,2163,2164,2167,2168,2169,2170,2173,2174,2175,2176,2177,2178,2179,2212][i - 1452]! := by
+      [2063,2064,2097,2098,2099,2132,2133,2134,2135,2136,2137,2140,2141,2142,2143,2144,2147,2148,2149,2150,2153,2154,2155,2158,2159,2162,2163,2164,2167,2168,2169,2170,2173,2174,2175,2176,2177,2178,2179,2212][i - 1457]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (1452 + (i - 1452)) := by
+        Artifact.submissionArtifact.instructionPC (1457 + (i - 1457)) := by
       rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC 1452 +
+    _ = Artifact.submissionArtifact.instructionPC 1457 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1452).take
-              (i - 1452))).length :=
-      instructionPC_add Artifact.submissionArtifact 1452 (i - 1452)
+            ((Artifact.submissionArtifact.instructions.drop 1457).take
+              (i - 1457))).length :=
+      instructionPC_add Artifact.submissionArtifact 1457 (i - 1457)
     _ = _ := by
       rw [fastPCAnchor12]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC13 (i : Nat) (hi : 1492 ≤ i) (hii : i ≤ 1531) :
+@[simp] theorem fastPC13 (i : Nat) (hi : 1497 ≤ i) (hii : i ≤ 1536) :
     Artifact.submissionArtifact.instructionPC i =
-      [2213,2214,2215,2216,2217,2218,2219,2220,2221,2222,2223,2224,2225,2228,2229,2231,2232,2233,2236,2237,2239,2240,2241,2242,2243,2244,2277,2278,2279,2280,2281,2282,2283,2284,2285,2286,2287,2288,2289,2290][i - 1492]! := by
+      [2213,2214,2215,2216,2217,2218,2219,2220,2221,2222,2223,2224,2225,2228,2229,2231,2232,2233,2236,2237,2239,2240,2241,2242,2243,2244,2245,2246,2247,2248,2249,2282,2283,2284,2285,2286,2287,2288,2289,2290][i - 1497]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (1492 + (i - 1492)) := by
+        Artifact.submissionArtifact.instructionPC (1497 + (i - 1497)) := by
       rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC 1492 +
+    _ = Artifact.submissionArtifact.instructionPC 1497 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1492).take
-              (i - 1492))).length :=
-      instructionPC_add Artifact.submissionArtifact 1492 (i - 1492)
+            ((Artifact.submissionArtifact.instructions.drop 1497).take
+              (i - 1497))).length :=
+      instructionPC_add Artifact.submissionArtifact 1497 (i - 1497)
     _ = _ := by
       rw [fastPCAnchor13]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC14 (i : Nat) (hi : 1532 ≤ i) (hii : i ≤ 1571) :
+@[simp] theorem fastPC14 (i : Nat) (hi : 1537 ≤ i) (hii : i ≤ 1576) :
     Artifact.submissionArtifact.instructionPC i =
-      [2291,2292,2293,2294,2295,2296,2297,2298,2299,2300,2301,2302,2303,2304,2306,2307,2340,2341,2342,2343,2344,2377,2378,2379,2380,2381,2382,2383,2386,2387,2388,2391,2392,2393,2394,2395,2396,2397,2398,2399][i - 1532]! := by
+      [2291,2292,2293,2294,2295,2296,2297,2298,2299,2300,2301,2302,2303,2304,2305,2306,2307,2308,2309,2311,2312,2313,2346,2347,2348,2381,2382,2383,2386,2387,2388,2391,2392,2393,2394,2395,2396,2397,2398,2399][i - 1537]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (1532 + (i - 1532)) := by
+        Artifact.submissionArtifact.instructionPC (1537 + (i - 1537)) := by
       rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC 1532 +
+    _ = Artifact.submissionArtifact.instructionPC 1537 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1532).take
-              (i - 1532))).length :=
-      instructionPC_add Artifact.submissionArtifact 1532 (i - 1532)
+            ((Artifact.submissionArtifact.instructions.drop 1537).take
+              (i - 1537))).length :=
+      instructionPC_add Artifact.submissionArtifact 1537 (i - 1537)
     _ = _ := by
       rw [fastPCAnchor14]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC15 (i : Nat) (hi : 1572 ≤ i) (hii : i ≤ 1611) :
+@[simp] theorem fastPC15 (i : Nat) (hi : 1577 ≤ i) (hii : i ≤ 1616) :
     Artifact.submissionArtifact.instructionPC i =
-      [2402,2403,2404,2405,2408,2409,2410,2413,2414,2415,2418,2419,2452,2453,2454,2455,2456,2459,2460,2461,2462,2463,2466,2467,2468,2471,2472,2473,2474,2475,2477,2478,2479,2480,2481,2482,2484,2485,2486,2487][i - 1572]! := by
+      [2402,2403,2404,2405,2408,2409,2410,2413,2414,2415,2418,2419,2452,2453,2454,2455,2456,2459,2460,2461,2462,2463,2466,2467,2468,2471,2472,2473,2474,2475,2477,2478,2479,2480,2481,2482,2484,2485,2486,2487][i - 1577]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (1572 + (i - 1572)) := by
+        Artifact.submissionArtifact.instructionPC (1577 + (i - 1577)) := by
       rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC 1572 +
+    _ = Artifact.submissionArtifact.instructionPC 1577 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1572).take
-              (i - 1572))).length :=
-      instructionPC_add Artifact.submissionArtifact 1572 (i - 1572)
+            ((Artifact.submissionArtifact.instructions.drop 1577).take
+              (i - 1577))).length :=
+      instructionPC_add Artifact.submissionArtifact 1577 (i - 1577)
     _ = _ := by
       rw [fastPCAnchor15]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC16 (i : Nat) (hi : 1612 ≤ i) (hii : i ≤ 1651) :
+@[simp] theorem fastPC16 (i : Nat) (hi : 1617 ≤ i) (hii : i ≤ 1656) :
     Artifact.submissionArtifact.instructionPC i =
-      [2488,2489,2490,2491,2494,2495,2496,2497,2498,2499,2500,2501,2502,2503,2504,2505,2506,2507,2508,2509,2510,2511,2512,2513,2514,2515,2516,2517,2518,2519,2520,2553,2554,2555,2588,2589,2590,2591,2624,2625][i - 1612]! := by
+      [2488,2489,2490,2491,2494,2495,2496,2497,2498,2499,2500,2501,2502,2503,2504,2505,2506,2507,2508,2509,2510,2511,2512,2513,2514,2515,2516,2517,2518,2519,2520,2553,2554,2555,2588,2589,2590,2591,2624,2625][i - 1617]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (1612 + (i - 1612)) := by
+        Artifact.submissionArtifact.instructionPC (1617 + (i - 1617)) := by
       rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC 1612 +
+    _ = Artifact.submissionArtifact.instructionPC 1617 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1612).take
-              (i - 1612))).length :=
-      instructionPC_add Artifact.submissionArtifact 1612 (i - 1612)
+            ((Artifact.submissionArtifact.instructions.drop 1617).take
+              (i - 1617))).length :=
+      instructionPC_add Artifact.submissionArtifact 1617 (i - 1617)
     _ = _ := by
       rw [fastPCAnchor16]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC17 (i : Nat) (hi : 1652 ≤ i) (hii : i ≤ 1691) :
+@[simp] theorem fastPC17 (i : Nat) (hi : 1657 ≤ i) (hii : i ≤ 1696) :
     Artifact.submissionArtifact.instructionPC i =
-      [2626,2629,2630,2631,2634,2635,2636,2637,2638,2641,2642,2643,2646,2647,2650,2651,2652,2655,2656,2659,2660,2661,2662,2663,2664,2665,2666,2667,2668,2669,2670,2671,2672,2673,2674,2675,2676,2677,2678,2679][i - 1652]! := by
+      [2626,2629,2630,2631,2634,2635,2636,2637,2638,2641,2642,2643,2646,2647,2650,2651,2652,2655,2656,2659,2660,2661,2662,2663,2664,2665,2666,2667,2668,2669,2670,2671,2672,2673,2674,2675,2676,2677,2678,2679][i - 1657]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (1652 + (i - 1652)) := by
+        Artifact.submissionArtifact.instructionPC (1657 + (i - 1657)) := by
       rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC 1652 +
+    _ = Artifact.submissionArtifact.instructionPC 1657 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1652).take
-              (i - 1652))).length :=
-      instructionPC_add Artifact.submissionArtifact 1652 (i - 1652)
+            ((Artifact.submissionArtifact.instructions.drop 1657).take
+              (i - 1657))).length :=
+      instructionPC_add Artifact.submissionArtifact 1657 (i - 1657)
     _ = _ := by
       rw [fastPCAnchor17]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC18 (i : Nat) (hi : 1692 ≤ i) (hii : i ≤ 1731) :
+@[simp] theorem fastPC18 (i : Nat) (hi : 1697 ≤ i) (hii : i ≤ 1736) :
     Artifact.submissionArtifact.instructionPC i =
-      [2680,2681,2682,2683,2684,2685,2686,2687,2688,2689,2690,2691,2692,2725,2726,2727,2760,2761,2762,2763,2796,2797,2798,2801,2802,2803,2806,2807,2808,2809,2810,2811,2814,2815,2816,2849,2850,2853,2854,2857][i - 1692]! := by
+      [2680,2681,2682,2683,2684,2685,2686,2687,2688,2689,2690,2691,2692,2725,2726,2727,2760,2761,2762,2763,2796,2797,2798,2801,2802,2803,2806,2807,2808,2809,2810,2811,2814,2815,2816,2849,2850,2853,2854,2857][i - 1697]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (1692 + (i - 1692)) := by
+        Artifact.submissionArtifact.instructionPC (1697 + (i - 1697)) := by
       rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC 1692 +
+    _ = Artifact.submissionArtifact.instructionPC 1697 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1692).take
-              (i - 1692))).length :=
-      instructionPC_add Artifact.submissionArtifact 1692 (i - 1692)
+            ((Artifact.submissionArtifact.instructions.drop 1697).take
+              (i - 1697))).length :=
+      instructionPC_add Artifact.submissionArtifact 1697 (i - 1697)
     _ = _ := by
       rw [fastPCAnchor18]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC19 (i : Nat) (hi : 1732 ≤ i) (hii : i ≤ 1736) :
+@[simp] theorem fastPC19 (i : Nat) (hi : 1737 ≤ i) (hii : i ≤ 1741) :
     Artifact.submissionArtifact.instructionPC i =
-      [2858,2859,2860,2861,2862][i - 1732]! := by
-  calc
-    Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (1732 + (i - 1732)) := by
-      rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC 1732 +
-          (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1732).take
-              (i - 1732))).length :=
-      instructionPC_add Artifact.submissionArtifact 1732 (i - 1732)
-    _ = _ := by
-      rw [fastPCAnchor19]
-      interval_cases i <;> rfl
-
-@[simp] theorem fastPC20 (i : Nat) (hi : 1737 ≤ i) (hii : i ≤ 1762) :
-    Artifact.submissionArtifact.instructionPC i =
-      [2863,2864,2867,2868,2869,2870,2873,2874,2875,2877,2878,2881,2882,2883,2884,2887,2888,2889,2890,2891,2892,2893,2897,2898,2899,2900][i - 1737]! := by
+      [2858,2859,2860,2861,2862][i - 1737]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (1737 + (i - 1737)) := by
@@ -701,53 +685,69 @@ private theorem fastPCAnchor23 :
               (i - 1737))).length :=
       instructionPC_add Artifact.submissionArtifact 1737 (i - 1737)
     _ = _ := by
+      rw [fastPCAnchor19]
+      interval_cases i <;> rfl
+
+@[simp] theorem fastPC20 (i : Nat) (hi : 1742 ≤ i) (hii : i ≤ 1767) :
+    Artifact.submissionArtifact.instructionPC i =
+      [2863,2864,2867,2868,2869,2870,2873,2874,2875,2877,2878,2881,2882,2883,2884,2887,2888,2889,2890,2891,2892,2893,2897,2898,2899,2900][i - 1742]! := by
+  calc
+    Artifact.submissionArtifact.instructionPC i =
+        Artifact.submissionArtifact.instructionPC (1742 + (i - 1742)) := by
+      rw [Nat.add_sub_of_le hi]
+    _ = Artifact.submissionArtifact.instructionPC 1742 +
+          (assembleBytes
+            ((Artifact.submissionArtifact.instructions.drop 1742).take
+              (i - 1742))).length :=
+      instructionPC_add Artifact.submissionArtifact 1742 (i - 1742)
+    _ = _ := by
       rw [fastPCAnchor20]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC21 (i : Nat) (hi : 1763 ≤ i) (hii : i ≤ 1775) :
+@[simp] theorem fastPC21 (i : Nat) (hi : 1768 ≤ i) (hii : i ≤ 1780) :
     Artifact.submissionArtifact.instructionPC i =
-      [2901,2902,2903,2904,2906,2907,2908,2911,2912,2914,2917,2918,2921][i - 1763]! := by
+      [2901,2902,2903,2904,2906,2907,2908,2911,2912,2914,2917,2918,2921][i - 1768]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (1763 + (i - 1763)) := by
+        Artifact.submissionArtifact.instructionPC (1768 + (i - 1768)) := by
       rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC 1763 +
+    _ = Artifact.submissionArtifact.instructionPC 1768 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1763).take
-              (i - 1763))).length :=
-      instructionPC_add Artifact.submissionArtifact 1763 (i - 1763)
+            ((Artifact.submissionArtifact.instructions.drop 1768).take
+              (i - 1768))).length :=
+      instructionPC_add Artifact.submissionArtifact 1768 (i - 1768)
     _ = _ := by
       rw [fastPCAnchor21]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC22 (i : Nat) (hi : 1776 ≤ i) (hii : i ≤ 1810) :
+@[simp] theorem fastPC22 (i : Nat) (hi : 1781 ≤ i) (hii : i ≤ 1815) :
     Artifact.submissionArtifact.instructionPC i =
-      [2922,2923,2924,2927,2928,2929,2930,2931,2932,2933,2934,2937,2938,2940,2943,2944,2945,2946,2947,2949,2950,2951,2952,2954,2955,2956,2957,2959,2960,2961,2963,2964,2966,2967,2970][i - 1776]! := by
+      [2922,2923,2924,2927,2928,2929,2930,2931,2932,2933,2934,2937,2938,2940,2943,2944,2945,2946,2947,2949,2950,2951,2952,2954,2955,2956,2957,2959,2960,2961,2963,2964,2966,2967,2970][i - 1781]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (1776 + (i - 1776)) := by
+        Artifact.submissionArtifact.instructionPC (1781 + (i - 1781)) := by
       rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC 1776 +
+    _ = Artifact.submissionArtifact.instructionPC 1781 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1776).take
-              (i - 1776))).length :=
-      instructionPC_add Artifact.submissionArtifact 1776 (i - 1776)
+            ((Artifact.submissionArtifact.instructions.drop 1781).take
+              (i - 1781))).length :=
+      instructionPC_add Artifact.submissionArtifact 1781 (i - 1781)
     _ = _ := by
       rw [fastPCAnchor22]
       interval_cases i <;> rfl
 
-@[simp] theorem fastPC23 (i : Nat) (hi : 1811 ≤ i) (hii : i ≤ 1825) :
+@[simp] theorem fastPC23 (i : Nat) (hi : 1816 ≤ i) (hii : i ≤ 1830) :
     Artifact.submissionArtifact.instructionPC i =
-      [2971,2972,2973,2976,2977,2980,2981,2984,2987,2988,2991,2994,2995,2996,2999][i - 1811]! := by
+      [2971,2972,2973,2976,2977,2980,2981,2984,2987,2988,2991,2994,2995,2996,2999][i - 1816]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (1811 + (i - 1811)) := by
+        Artifact.submissionArtifact.instructionPC (1816 + (i - 1816)) := by
       rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC 1811 +
+    _ = Artifact.submissionArtifact.instructionPC 1816 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 1811).take
-              (i - 1811))).length :=
-      instructionPC_add Artifact.submissionArtifact 1811 (i - 1811)
+            ((Artifact.submissionArtifact.instructions.drop 1816).take
+              (i - 1816))).length :=
+      instructionPC_add Artifact.submissionArtifact 1816 (i - 1816)
     _ = _ := by
       rw [fastPCAnchor23]
       interval_cases i <;> rfl
@@ -755,10 +755,35 @@ private theorem fastPCAnchor23 :
 /-- PC table for the appended full-width-base helper. The intervening window
 and direct-RR helpers occupy indices 1831..2360 and receive their own tables in
 their proof modules. -/
-@[simp] theorem fullBasePC (i : Nat)
-    (hi : 2274 ≤ i) (hii : i ≤ 2326) :
+@[simp] theorem fullBasePC (i : Nat) (hi : 2361 ≤ i) (hii : i ≤ 2413) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3606,3607,3608,3609,3610,3611,3612,3614,3615,3616,3617,3620,3621,3622,3624,3627,3628,3631,3634,3637,3640,3643,3644,3645,3648,3651,3654,3657,3660,3661,3662,3663,3665,3666,3668,3669,3670,3671,3673,3674,3675,3677,3678,3680,3681,3682,3683,3684,3687,3688,3689,3691,3694] : List Nat)[i - 2274]! := by
+      [3606,3607,3608,3609,3610,3611,3612,3614,3615,3616,3617,3620,
+       3621,3622,3624,3627,3628,3631,3634,3637,3640,3643,3644,3645,
+       3648,3651,3654,3657,3660,3661,3662,3663,3665,3666,3668,3669,
+       3670,3671,3673,3674,3675,3677,3678,3680,3681,3682,3683,3684,
+       3687,3688,3689,3691,3694][i - 2361]! := by
+  interval_cases i <;> decide
+
+/-- PC table for the fused ADDMOD/CSUB entry appended after the CIOS2 helper. -/
+@[simp] theorem fusedCsubPC0 (i : Nat) (hi : 3398 ≤ i) (hii : i ≤ 3413) :
+    Artifact.submissionArtifact.instructionPC i =
+      [5299,5300,5305,5306,5307,5308,5309,5310,5311,5312,5313,5314,5315,5316,5317,5320][i - 3398]! := by
+  interval_cases i <;> decide
+
+/-- PC table for the fused limb loop. -/
+@[simp] theorem fusedCsubPC1 (i : Nat) (hi : 3414 ≤ i) (hii : i ≤ 3468) :
+    Artifact.submissionArtifact.instructionPC i =
+      [5321,5322,5323,5324,5325,5326,5327,5328,5329,5330,5331,5332,5333,
+       5334,5335,5336,5337,5338,5339,5340,5341,5342,5343,5344,5347,5348,
+       5349,5350,5351,5352,5353,5354,5355,5356,5357,5358,5359,5360,5361,
+       5362,5363,5364,5367,5368,5369,5370,5371,5372,5374,5375,5376,5379,
+       5380,5381,5384][i - 3414]! := by
+  interval_cases i <;> decide
+
+/-- PC table for the fused selection/return tail. -/
+@[simp] theorem fusedCsubPC2 (i : Nat) (hi : 3469 ≤ i) (hii : i ≤ 3491) :
+    Artifact.submissionArtifact.instructionPC i =
+      [5385,5386,5387,5390,5391,5392,5393,5394,5397,5398,5401,5402,5403,5404,5405,5408,5409,5410,5411,5412,5413,5414,5415][i - 3469]! := by
   interval_cases i <;> decide
 
 theorem jumpDest1196 :
@@ -875,78 +900,86 @@ theorem jumpDest1974 :
 
 theorem jumpDest1995 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1995 = true :=
-  Artifact.isValidJumpDest_index 1416 (by rfl)
+  Artifact.isValidJumpDest_index 1421 (by rfl)
 
 theorem jumpDest2241 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2241 = true :=
-  Artifact.isValidJumpDest_index 1514 (by rfl)
+  Artifact.isValidJumpDest_index 1519 (by rfl)
 
 theorem jumpDest2467 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2467 = true :=
-  Artifact.isValidJumpDest_index 1595 (by rfl)
+  Artifact.isValidJumpDest_index 1600 (by rfl)
 
 theorem jumpDest2500 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2500 = true :=
-  Artifact.isValidJumpDest_index 1622 (by rfl)
+  Artifact.isValidJumpDest_index 1627 (by rfl)
 
 theorem jumpDest2642 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2642 = true :=
-  Artifact.isValidJumpDest_index 1662 (by rfl)
+  Artifact.isValidJumpDest_index 1667 (by rfl)
 
 theorem jumpDest2666 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2666 = true :=
-  Artifact.isValidJumpDest_index 1678 (by rfl)
+  Artifact.isValidJumpDest_index 1683 (by rfl)
 
 theorem jumpDest2863 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2863 = true :=
-  Artifact.isValidJumpDest_index 1737 (by rfl)
+  Artifact.isValidJumpDest_index 1742 (by rfl)
 
 theorem jumpDest2874 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2874 = true :=
-  Artifact.isValidJumpDest_index 1744 (by rfl)
+  Artifact.isValidJumpDest_index 1749 (by rfl)
 
 theorem jumpDest2877 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2877 = true :=
-  Artifact.isValidJumpDest_index 1746 (by rfl)
+  Artifact.isValidJumpDest_index 1751 (by rfl)
 
 theorem jumpDest2888 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2888 = true :=
-  Artifact.isValidJumpDest_index 1753 (by rfl)
+  Artifact.isValidJumpDest_index 1758 (by rfl)
 
 theorem jumpDest2901 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2901 = true :=
-  Artifact.isValidJumpDest_index 1763 (by rfl)
+  Artifact.isValidJumpDest_index 1768 (by rfl)
 
 theorem jumpDest2922 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2922 = true :=
-  Artifact.isValidJumpDest_index 1776 (by rfl)
+  Artifact.isValidJumpDest_index 1781 (by rfl)
 
 theorem jumpDest2944 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2944 = true :=
-  Artifact.isValidJumpDest_index 1791 (by rfl)
+  Artifact.isValidJumpDest_index 1796 (by rfl)
 
 theorem jumpDest2971 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2971 = true :=
-  Artifact.isValidJumpDest_index 1811 (by rfl)
+  Artifact.isValidJumpDest_index 1816 (by rfl)
 
 theorem jumpDest2995 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2995 = true :=
-  Artifact.isValidJumpDest_index 1823 (by rfl)
+  Artifact.isValidJumpDest_index 1828 (by rfl)
 
 theorem jumpDest3571 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3571 = true :=
-  Artifact.isValidJumpDest_index 2251 (by rfl)
+  Artifact.isValidJumpDest_index 2338 (by rfl)
 
 theorem jumpDest3606 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3606 = true :=
-  Artifact.isValidJumpDest_index 2274 (by rfl)
+  Artifact.isValidJumpDest_index 2361 (by rfl)
 
 theorem jumpDest3644 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3644 = true :=
-  Artifact.isValidJumpDest_index 2296 (by rfl)
+  Artifact.isValidJumpDest_index 2383 (by rfl)
 
 theorem jumpDest3661 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3661 = true :=
-  Artifact.isValidJumpDest_index 2303 (by rfl)
+  Artifact.isValidJumpDest_index 2390 (by rfl)
+
+theorem jumpDest5299 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5299 = true :=
+  Artifact.isValidJumpDest_index 3398 (by rfl)
+
+theorem jumpDest5321 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5321 = true :=
+  Artifact.isValidJumpDest_index 3414 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast
