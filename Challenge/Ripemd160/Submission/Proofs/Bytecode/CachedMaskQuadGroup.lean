@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskInline
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskHoistInline
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CavityQuadGroup
 
 set_option warningAsError true
@@ -12,7 +12,7 @@ open StackRoundTemplate StackRoundTrace QuadRoundState QuadRoundTemplate
 open CavityQuadGroup
 
 def code (q : Params) (shift : Fin 6) : List Instr :=
-  CachedMaskInline.template shift q.function.val
+  CachedMaskHoistInline.template shift q.function.val
     (q.address 0) (q.address 1) (q.address 2) (q.address 3)
     (q.rotation 0) (q.rotation 1) (q.rotation 2) (q.rotation 3) q.constant
 
@@ -21,7 +21,7 @@ theorem run_left (q : Params) (s : State) (pc : UInt256)
     (hfit : q.Fits s) (hstack : rho.length < 1006) (hrun : s.halt = .Running) :
     runInstrSeq (code q 0) (stateAt s pc w (mask :: rho)) =
       some (stateAt s (pcAfter pc (code q 0)) (q.apply s w) (mask :: rho)) := by
-  have h := CachedMaskInline.run_left q.function.val q.function.isLt s pc
+  have h := CachedMaskHoistInline.run_left q.function.val q.function.isLt s pc
     (q.address 0) (q.address 1) (q.address 2) (q.address 3)
     (q.rotation 0) (q.rotation 1) (q.rotation 2) (q.rotation 3)
     w q.constant rho q.constant_zero hstack hrun
@@ -37,7 +37,7 @@ theorem run_right (q : Params) (s : State) (pc : UInt256)
     runInstrSeq (code q 5) (stateAt s pc w (a :: b :: c :: d :: e :: mask :: rho)) =
       some (stateAt s (pcAfter pc (code q 5)) (q.apply s w)
         (a :: b :: c :: d :: e :: mask :: rho)) := by
-  have h := CachedMaskInline.run_right q.function.val q.function.isLt s pc
+  have h := CachedMaskHoistInline.run_right q.function.val q.function.isLt s pc
     (q.address 0) (q.address 1) (q.address 2) (q.address 3)
     (q.rotation 0) (q.rotation 1) (q.rotation 2) (q.rotation 3)
     w q.constant a b c d e rho q.constant_zero hstack hrun
@@ -49,7 +49,7 @@ theorem run_right (q : Params) (s : State) (pc : UInt256)
 
 theorem advances (q : Params) (shift : Fin 6) :
     ∀ instruction ∈ code q shift, PairMultiplyLift.Advances instruction := by
-  exact CachedMaskInline.advances shift q.function.val q.function.isLt
+  exact CachedMaskHoistInline.advances shift q.function.val q.function.isLt
     (q.address 0) (q.address 1) (q.address 2) (q.address 3)
     (q.rotation 0) (q.rotation 1) (q.rotation 2) (q.rotation 3) q.constant
 
