@@ -37,6 +37,20 @@ theorem right1_fits (s : State) (hactive : 25 ≤ s.activeWords.toNat) :
     fin_cases i <;> decide
   omega
 
+theorem right2_fits (s : State) (hactive : 25 ≤ s.activeWords.toNat) :
+    (rightParams 0 2).Fits s := by
+  intro i
+  have hend : ((rightParams 0 2).address i).toNat + 32 ≤ 25 * 32 := by
+    fin_cases i <;> decide
+  omega
+
+theorem right3_fits (s : State) (hactive : 25 ≤ s.activeWords.toNat) :
+    (rightParams 0 3).Fits s := by
+  intro i
+  have hend : ((rightParams 0 3).address i).toNat + 32 ≤ 25 * 32 := by
+    fin_cases i <;> decide
+  omega
+
 def nativeRight0Quad0 : List Instr :=
 [  .push 2 664,
   Artifact.op 0x51,

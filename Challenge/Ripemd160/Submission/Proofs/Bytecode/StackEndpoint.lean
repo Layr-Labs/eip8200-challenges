@@ -40,7 +40,7 @@ theorem quadTailResult_eq_resultState (s : State) (input : ByteArray) (i : Nat) 
       (UInt256.ofNat 0x424) (driverRest input i) = resultState s input i :=
   tailResult_eq_resultState s input i
 
-theorem rightPC_last : QuadLayout.rightPC 20 = UInt256.ofNat 0x11a2 := by
+theorem rightPC_last : QuadLayout.rightPC 20 = UInt256.ofNat 0x11d3 := by
   change UInt256.ofNat
     (Artifact.submissionArtifact.instructionPC QuadLayout.tailIndex) = _
   rw [QuadLayout.tail_pc]
