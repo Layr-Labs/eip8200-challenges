@@ -50,7 +50,7 @@ def gasSteps_leftNormal (s : State) (word : Nat → UInt32)
 #print axioms gasSteps_leftNormal
 
 def gasSteps_leftFallthrough (s : State) (word : Nat → UInt32)
-    (working : Compression.EvmWorking) (rho : List UInt256) (group : Fin 3)
+    (working : Compression.EvmWorking) (rho : List UInt256) (group : Fin 2)
     (hwords : low32DenseWordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -96,7 +96,7 @@ def gasSteps_leftFallthrough (s : State) (word : Nat → UInt32)
 
 noncomputable def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
-    (hk : 4 ≤ k.val ∧ (k.val < 8 ∨ 12 ≤ k.val))
+    (hk : 4 ≤ k.val ∧ (k.val < 8 ∨ 12 ≤ k.val) ∧ k.val < 16)
     (hwords : low32DenseWordsAt s word) (hactive : 66 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -122,14 +122,6 @@ noncomputable def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
   · exact ⟨gasSteps_leftNormal s word working rho 5 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_leftFallthrough s word working rho 1 hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨gasSteps_leftNormal s word working rho 6 hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨gasSteps_leftNormal s word working rho 7 hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨gasSteps_leftNormal s word working rho 8 hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨gasSteps_leftFallthrough s word working rho 2 hwords hactive hstack hcode hfork hrun hnp⟩
 
 #print axioms gasSteps_leftQuad
 
