@@ -13,26 +13,26 @@ open CachedMaskR2Inline
 
 abbrev A := QuadSites.Artifact
 
--- The retained R1 return JUMPDEST is at index 2522. R2 starts after it.
+-- The retained R1 return JUMPDEST is at index 2511. R2 starts after it.
 theorem r2_slice :
-    (A.instructions.drop 2523).take r2Code.length = r2Code := by rfl
+    (A.instructions.drop 2512).take r2Code.length = r2Code := by rfl
 
 def site : GenericRoundSite A .Osaka r2Code :=
-  StackSiteBuilder.ofSlice _ 2523 r2_slice
+  StackSiteBuilder.ofSlice _ 2512 r2_slice
     (by
-      change 2523 + r2Code.length ≤ Artifact.submissionInstructions.length
+      change 2512 + r2Code.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count, r2Code_length]
       decide)
     QuadLayout.code_bound
     (StackRoundData.templateWellFormed_mem (by decide))
     (by intro h; have hlen := r2Code_length; simp [h] at hlen)
 
-theorem start_pc : site.startPC = UInt256.ofNat 3785 := by
-  change UInt256.ofNat (A.instructionPC 2523) = _
+theorem start_pc : site.startPC = UInt256.ofNat 3773 := by
+  change UInt256.ofNat (A.instructionPC 2512) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-theorem end_pc : site.endPC = UInt256.ofNat 4345 := by
+theorem end_pc : site.endPC = UInt256.ofNat 4333 := by
   have h := StackRoundTrace.endPC_eq_pcAfter_sites site.sites site.startPC site.endPC
     site.head_eq site.end_eq site.contiguous
   rw [site.instruction_eq, start_pc] at h
@@ -40,13 +40,13 @@ theorem end_pc : site.endPC = UInt256.ofNat 4345 := by
 
 theorem start_rightPC : site.startPC = QuadSites.rightPC 8 := by
   rw [start_pc]
-  change UInt256.ofNat 3785 = UInt256.ofNat (A.instructionPC _)
+  change UInt256.ofNat 3773 = UInt256.ofNat (A.instructionPC _)
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem end_rightPC : site.endPC = QuadSites.rightPC 12 := by
   rw [end_pc]
-  change UInt256.ofNat 4345 = UInt256.ofNat (A.instructionPC _)
+  change UInt256.ofNat 4333 = UInt256.ofNat (A.instructionPC _)
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 

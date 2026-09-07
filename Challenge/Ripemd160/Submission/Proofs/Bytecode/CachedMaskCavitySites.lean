@@ -55,7 +55,7 @@ def left2First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 2) :=
     decide) code_bound wellFormed_left2First (by decide)
 
 private theorem rightFirst_slice :
-    (A.instructions.drop 3144).take CachedMaskParams.rightCode.length =
+    (A.instructions.drop 3133).take CachedMaskParams.rightCode.length =
       CachedMaskParams.rightCode := by rfl
 
 private theorem wellFormed_rightFirst : ∀ instruction ∈ CachedMaskParams.rightCode,
@@ -63,8 +63,8 @@ private theorem wellFormed_rightFirst : ∀ instruction ∈ CachedMaskParams.rig
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def rightFirst : GenericRoundSite A .Osaka CachedMaskParams.rightCode :=
-  StackSiteBuilder.ofSlice _ 3144 rightFirst_slice (by
-    change 3144 + CachedMaskParams.rightCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 3133 rightFirst_slice (by
+    change 3133 + CachedMaskParams.rightCode.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_rightFirst (by decide)
 
