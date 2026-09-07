@@ -32,13 +32,11 @@ def pushedReturn (input : ByteArray) : State :=
 
 def pushedOutput (input : ByteArray) : State :=
   { pushedReturn input with
-    pc := (pushedReturn input).pc.succ
-    stack := (pushedReturn input).stack }
+    pc := (pushedReturn input).pc + UInt256.ofNat 3
+    stack := UInt256.ofNat 0x1d9 :: (pushedReturn input).stack }
 
 def pushedPad (input : ByteArray) : State :=
-  { pushedOutput input with
-    pc := (pushedOutput input).pc + UInt256.ofNat 7
-    stack := UInt256.ofNat 0x1d9 :: (pushedOutput input).stack }
+  pushedOutput input
 
 def padEntry (input : ByteArray) : State :=
   { pushedPad input with

@@ -913,9 +913,9 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x59,
   op 0x52,
   .push 2 1071,
-  op 0x5b,
-  .push 6 473,
+  .push 2 473,
   op 0x56,
+  .push 4 0,
   op 0x5b,
   .push 1 64,
   op 0x01,
@@ -3634,8 +3634,8 @@ private theorem submissionInstructionsChunk4_assemble : assembleBytes submission
   0x61, 0x11, 0x77, 0x56, 0x5b, 0x63, 0x67, 0x45, 0x23, 0x01, 0x60, 0x20,
   0x52, 0x63, 0xef, 0xcd, 0xab, 0x89, 0x59, 0x52, 0x63, 0x98, 0xba, 0xdc,
   0xfe, 0x59, 0x52, 0x63, 0x10, 0x32, 0x54, 0x76, 0x59, 0x52, 0x63, 0xc3,
-  0xd2, 0xe1, 0xf0, 0x59, 0x52, 0x61, 0x04, 0x2f, 0x5b, 0x65, 0x00, 0x00,
-  0x00, 0x00, 0x01, 0xd9, 0x56, 0x5b, 0x60, 0x40, 0x01, 0x81, 0x81, 0x14,
+  0xd2, 0xe1, 0xf0, 0x59, 0x52, 0x61, 0x04, 0x2f, 0x61, 0x01, 0xd9,
+  0x56, 0x63, 0x00, 0x00, 0x00, 0x00, 0x5b, 0x60, 0x40, 0x01, 0x81, 0x81, 0x14,
   0x61, 0x12, 0x79, 0x57, 0x5b, 0x61, 0x04, 0x24, 0x81, 0x61, 0x02, 0xe0,
   0x01, 0x61, 0x13, 0x33, 0x56, 0x5b, 0x61, 0x04, 0x45, 0x90, 0x61, 0x11,
   0xb2, 0x56, 0x5b, 0x63, 0xff, 0xff, 0xff, 0xff, 0x64, 0x01, 0x00, 0x00,
@@ -5248,34 +5248,34 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
   rfl
 
 @[simp] theorem referenceArtifact_pc_861 :
-    submissionArtifact.instructionPC 872 = 0x41c := by
+    submissionArtifact.instructionPC 872 = 0x41e := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc861 :
-    submissionArtifact.instructionPC 872 = 0x41c := by
+    submissionArtifact.instructionPC 872 = 0x41e := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc861 :
-    instructionPC 872 = 0x41c := by
-  change submissionArtifact.instructionPC 872 = 0x41c
+    instructionPC 872 = 0x41e := by
+  change submissionArtifact.instructionPC 872 = 0x41e
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_862 :
-    submissionArtifact.instructionPC 873 = 0x423 := by
+    submissionArtifact.instructionPC 873 = 0x41f := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc862 :
-    submissionArtifact.instructionPC 873 = 0x423 := by
+    submissionArtifact.instructionPC 873 = 0x41f := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc862 :
-    instructionPC 873 = 0x423 := by
-  change submissionArtifact.instructionPC 873 = 0x423
+    instructionPC 873 = 0x41f := by
+  change submissionArtifact.instructionPC 873 = 0x41f
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -5305,12 +5305,6 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
     (submissionArtifact.instructionPC 854) = true at h
   simpa using h
 
-@[simp] theorem validJumpDest_416 :
-    Decode.isValidJumpDest submissionBytecode 0x41b = true := by
-  have h := submissionArtifact.isValidJumpDest_index 871 (by rfl)
-  change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 871) = true at h
-  simpa using h
 
 private def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
@@ -5323,9 +5317,8 @@ private def wfOp {op : Operation}
 def padEnterPath : List
     (Challenge.EvmProof.Stepper.Located submissionArtifact .Osaka) :=
   [⟨870, .push ⟨2, by decide⟩ (UInt256.ofNat 1071), by rfl, by decide⟩,
-   ⟨871, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨872, .push ⟨6, by decide⟩ (UInt256.ofNat 473), by rfl, by decide⟩,
-   ⟨873, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨871, .push ⟨2, by decide⟩ (UInt256.ofNat 473), by rfl, by decide⟩,
+   ⟨872, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for RIPEMD padded-length arithmetic. -/
 def padLengthPath : List
