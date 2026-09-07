@@ -71,10 +71,8 @@ def blk1724 :
    opAt 1734 .ADD,
    pushAt 1735 2 9344,
    opAt 1736 .MLOAD,
-   opAt 1737 (.Swap ⟨0, by decide⟩),
-   opAt 1738 (.Dup ⟨2, by decide⟩),
-   opAt 1739 .MCOPY,
-   opAt 1740 .POP,
-   opAt 1741 .JUMP]
+   opAt 1737 (.Swap ⟨1, by decide⟩),
+   opAt 1738 .MCOPY,
+   opAt 1739 .JUMP
 
 end Challenge.Modexp.Submission.Proofs.Fast
