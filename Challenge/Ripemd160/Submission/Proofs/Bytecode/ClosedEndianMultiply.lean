@@ -29,6 +29,61 @@ def code (shift : Nat) : List Instr :=
   [dup1, dup1, push1 (UInt256.ofNat shift), op .SHR, op .XOR,
    endianFactorPush shift, .push 0 0, op .NOT, op .DIV, op .AND,
    endianFactorPush shift, op .MUL, op .XOR]
+def code16 : List Instr :=
+  DenseScheduleTemplate.endianStage 16 mask16 ++
+    [op .JUMPDEST, op .JUMPDEST, op .JUMPDEST]
+
+theorem run_endian16 (s : State) (startPC value : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 1020)
+    (hrun : s.halt = .Running) :
+    runInstrSeq (code16) {s with pc := startPC, stack := value :: rest} =
+      some {s with
+        pc := pcAfter startPC (code16)
+        stack := packedStage value 16 mask16 :: rest} := by
+  have hstage := DenseScheduleTrace.runInstrSeq_endianStage s startPC value
+    16 mask16 rest hstack (Or.inr ⟨rfl, rfl⟩) hrun
+  have hcap (m : Nat) (hm : m ≤ 3) : rest.length + m < 1024 := by omega
+  have hpad :
+      runInstrSeq [op .JUMPDEST, op .JUMPDEST, op .JUMPDEST]
+        {s with
+          pc := pcAfter startPC (endianStage 16 mask16)
+          stack := packedStage value 16 mask16 :: rest} =
+      some {s with
+        pc := pcAfter (pcAfter startPC (endianStage 16 mask16))
+          [op .JUMPDEST, op .JUMPDEST, op .JUMPDEST]
+        stack := packedStage value 16 mask16 :: rest} := by
+    simp [runInstrSeq, Stepper.runInstr, op, pcAfter, hrun, hcap,
+      UInt256.succ, Instr.size, Instr.size_op]
+  have hjoined := DenseScheduleTrace.runInstrSeq_append_running hstage
+    (by simpa [stageState] using hrun) hpad
+  simpa [code16, pcAfter_append, stageState] using hjoined
+
+theorem advances16 {instruction : Instr} {s t : State}
+    (hmem : instruction ∈ code16)
+    (hrun : Stepper.runInstr instruction s = some t) :
+    t.pc = s.pc + UInt256.ofNat instruction.size := by
+  have hstage : ∀ {instruction : Instr},
+      instruction ∈ DenseScheduleTemplate.endianStage 16 mask16 →
+        DenseScheduleLift.Advances instruction := by
+    intro instruction hmem
+    simp only [DenseScheduleTemplate.endianStage, List.mem_cons,
+      List.not_mem_nil, or_false] at hmem
+    rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+    all_goals first
+      | exact Or.inr (Or.inr rfl)
+      | exact Or.inl (Or.inl (by constructor))
+      | simp only [DenseScheduleTemplate.endianMaskPush]; split <;>
+          exact Or.inl (Or.inl (by constructor))
+      | simp only [DenseScheduleTemplate.endianFactorPush]; split <;>
+          exact Or.inl (Or.inl (by constructor))
+  apply DenseScheduleLift.runInstr_pc_of_advances ?_ hrun
+  simp only [code16, List.mem_append] at hmem
+  rcases hmem with hmem | hmem
+  · exact hstage hmem
+  · simp only [List.mem_cons, List.not_mem_nil, or_false] at hmem
+    rcases hmem with rfl | rfl | rfl
+    all_goals exact Or.inl (Or.inr (Or.inr rfl))
+
 
 theorem run_endian (s : State) (startPC value : UInt256) (shift : Nat)
     (mask : UInt256) (rest : List UInt256) (hstack : rest.length < 1020)

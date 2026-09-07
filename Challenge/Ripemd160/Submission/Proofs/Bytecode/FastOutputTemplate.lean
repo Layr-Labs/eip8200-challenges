@@ -58,7 +58,7 @@ def fastPackTemplate : List Instr :=
 
 def fastEndianStage8 : List Instr := ClosedEndianMultiply.code 8
 
-def fastEndianStage16 : List Instr := ClosedEndianMultiply.code 16
+def fastEndianStage16 : List Instr := ClosedEndianMultiply.code16
 
 def fastStoreAndSetup : List Instr :=
   [push0, DenseScheduleTemplate.op .MSTORE,
@@ -103,11 +103,13 @@ def fastOutputTemplate : List Instr :=
   rfl
 
 theorem fastOutputTemplate_byteLength :
-    (assembleBytes fastOutputTemplate).length = 76 := by
+    (assembleBytes fastOutputTemplate).length = 103 := by
   rw [fastOutputTemplate, assembleBytes_append,
     List.length_append, assembleBytes_length, assembleBytes_length]
   simp [fastOutputBeforeReturnTemplate, fastPackTemplate, fastLoad0,
     fastPackStep, fastEndianStage8, fastEndianStage16, ClosedEndianMultiply.code,
+    ClosedEndianMultiply.code16, DenseScheduleTemplate.endianStage,
+    DenseScheduleTemplate.endianMaskPush,
     DenseScheduleTemplate.endianFactorPush, DenseScheduleTemplate.endianFactor,
     DenseScheduleTemplate.push2, DenseScheduleTemplate.push3, fastStoreAndSetup,
     fastOutputReturnTemplate, push0,
@@ -119,10 +121,11 @@ def staticGas (instructions : List Instr) : Nat :=
   (instructions.map
     (Challenge.EvmProof.Meter.instrStaticCost .Osaka)).sum
 
-theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 161 := by
+theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 154 := by
   norm_num [staticGas, fastOutputTemplate, fastOutputBeforeReturnTemplate,
     fastPackTemplate, fastLoad0, fastPackStep, fastEndianStage8,
-    fastEndianStage16, ClosedEndianMultiply.code,
+    fastEndianStage16, ClosedEndianMultiply.code, ClosedEndianMultiply.code16,
+    DenseScheduleTemplate.endianStage, DenseScheduleTemplate.endianMaskPush,
     DenseScheduleTemplate.endianFactorPush, DenseScheduleTemplate.endianFactor,
     DenseScheduleTemplate.push2, DenseScheduleTemplate.push3, fastStoreAndSetup, fastOutputReturnTemplate,
     push0, DenseScheduleTemplate.op,

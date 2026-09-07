@@ -107,7 +107,7 @@ private theorem fastOutputBeforeReturn_advances
   · exact DenseScheduleLift.runInstr_pc_of_advances
       (fastPackTemplate_advances instruction hpack) hrun
   · exact ClosedEndianMultiply.advances 8 h8 hrun
-  · exact ClosedEndianMultiply.advances 16 h16 hrun
+  · exact ClosedEndianMultiply.advances16 h16 hrun
   · exact DenseScheduleLift.runInstr_pc_of_advances
       (fastStoreAndSetup_advances instruction hstore) hrun
 
@@ -143,9 +143,9 @@ def fastOutputSite :
   decide
 
 @[simp] theorem fastOutputSite_endPC :
-    fastOutputSite.endPC = UInt256.ofNat 0x14f7 := by
+    fastOutputSite.endPC = UInt256.ofNat 0x1512 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3830) =
-    UInt256.ofNat 0x14f7
+    UInt256.ofNat 0x1512
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -181,16 +181,16 @@ def fastOutputReturnPath :
   [fastOutputReturn.located]
 
 @[simp] theorem fastOutputReturn_pc :
-    fastOutputReturn.pc = UInt256.ofNat 0x14f7 := by
+    fastOutputReturn.pc = UInt256.ofNat 0x1512 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3830) =
-    UInt256.ofNat 0x14f7
+    UInt256.ofNat 0x1512
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem fastOutputReturn_site_end :
     fastOutputReturn.pc = fastOutputSite.endPC := by
   calc
-    fastOutputReturn.pc = UInt256.ofNat 0x14f7 := fastOutputReturn_pc
+    fastOutputReturn.pc = UInt256.ofNat 0x1512 := fastOutputReturn_pc
     _ = fastOutputSite.endPC := fastOutputSite_endPC.symm
 
 private theorem runLocatedBlock_singleton
