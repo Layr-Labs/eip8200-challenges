@@ -9,7 +9,14 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def firstStartIndex : Nat := 2911
+private theorem instructionPC_add
+    (p : Challenge.EvmProof.ProgramArtifact) (base count : Nat) :
+    p.instructionPC (base + count) = p.instructionPC base +
+      (assembleBytes ((p.instructions.drop base).take count)).length := by
+  simp only [Challenge.EvmProof.ProgramArtifact.instructionPC, List.take_add,
+    assembleBytes_append, List.length_append]
+
+def firstStartIndex : Nat := 2995
 
 private def firstTemplate : List Instr :=
   [.op .JUMPDEST,
@@ -71,26 +78,14 @@ private theorem firstGetElem (offset : Nat)
   rw [List.getElem?_take, if_pos hoffset, List.getElem?_drop] at hs
   simpa [Nat.add_comm] using hs
 
-private theorem instructionPC_add
-    (p : Challenge.EvmProof.ProgramArtifact) (base count : Nat) :
-    p.instructionPC (base + count) = p.instructionPC base +
-      (assembleBytes ((p.instructions.drop base).take count)).length := by
-  simp only [Challenge.EvmProof.ProgramArtifact.instructionPC, List.take_add,
-    assembleBytes_append, List.length_append]
-
 private theorem firstStartPC :
-    Artifact.submissionArtifact.instructionPC firstStartIndex = 4662 := by
+    Artifact.submissionArtifact.instructionPC firstStartIndex = 4938 := by
   rfl
 
 @[simp] theorem firstPC (index : Nat) (hlo : firstStartIndex ≤ index)
-    (hhi : index ≤ 2955) :
+    (hhi : index ≤ 3039) :
     Artifact.submissionArtifact.instructionPC index =
-      [4662, 4663, 4664, 4665, 4666, 4667, 4668, 4669, 4670,
-       4703, 4704, 4705, 4706, 4707, 4708, 4709, 4710, 4711,
-       4712, 4713, 4714, 4715, 4716, 4717, 4718, 4719, 4720,
-       4721, 4722, 4723, 4724, 4725, 4726, 4727, 4728, 4729,
-       4730, 4732, 4733, 4734, 4767, 4768, 4769, 4802,
-       4803][index - firstStartIndex]! := by
+      [4938,4939,4940,4941,4942,4943,4944,4945,4946,4979,4980,4981,4982,4983,4984,4985,4986,4987,4988,4989,4990,4991,4992,4993,4994,4995,4996,4997,4998,4999,5000,5001,5002,5003,5004,5005,5006,5008,5009,5010,5043,5044,5045,5078,5079][index - firstStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -105,6 +100,7 @@ private theorem firstStartPC :
     _ = _ := by
       rw [firstStartPC]
       interval_cases index <;> rfl
+
 
 def firstOpAt (offset : Nat) (op : Operation)
     (hget : firstTemplate[offset]? = some (.op op) := by rfl)
@@ -124,7 +120,7 @@ def firstPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨firstStartIndex + offset, .push width value,
     (firstGetElem offset hoffset).trans hget, hwf⟩
 
-/-- First MAC: instructions 2911..2955, pc 4662..4803. -/
+/-- First MAC: instructions 2995..3039, pc 4938..5079. -/
 def firstMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [firstOpAt 0 .JUMPDEST,
@@ -173,7 +169,7 @@ def firstMac :
    firstOpAt 43 .ADD,
    firstOpAt 44 (.Swap ⟨0, by decide⟩)]
 
-def secondStartIndex : Nat := 2956
+def secondStartIndex : Nat := 3040
 
 private def secondTemplate : List Instr :=
   [.op (.Dup ⟨3, by decide⟩),
@@ -223,7 +219,7 @@ private def secondTemplate : List Instr :=
    .push 2 8224,
    .op (.Dup ⟨2, by decide⟩),
    .op .GT,
-   .push 2 4662,
+   .push 2 4938,
    .op .JUMPI]
 
 private theorem secondSlice_eq :
@@ -240,18 +236,13 @@ private theorem secondGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem secondStartPC :
-    Artifact.submissionArtifact.instructionPC secondStartIndex = 4804 := by
+    Artifact.submissionArtifact.instructionPC secondStartIndex = 5080 := by
   rfl
 
 @[simp] theorem secondPC (index : Nat) (hlo : secondStartIndex ≤ index)
-    (hhi : index ≤ 3004) :
+    (hhi : index ≤ 3088) :
     Artifact.submissionArtifact.instructionPC index =
-      [4804, 4805, 4806, 4807, 4808, 4809, 4810, 4811, 4844,
-       4845, 4846, 4847, 4848, 4849, 4850, 4851, 4852, 4853,
-       4854, 4855, 4856, 4857, 4858, 4859, 4860, 4861, 4862,
-       4863, 4864, 4865, 4866, 4867, 4868, 4869, 4870, 4871,
-       4873, 4874, 4875, 4908, 4909, 4910, 4943, 4944, 4945,
-       4948, 4949, 4950, 4953][index - secondStartIndex]! := by
+      [5080,5081,5082,5083,5084,5085,5086,5087,5120,5121,5122,5123,5124,5125,5126,5127,5128,5129,5130,5131,5132,5133,5134,5135,5136,5137,5138,5139,5140,5141,5142,5143,5144,5145,5146,5147,5149,5150,5151,5184,5185,5186,5219,5220,5221,5224,5225,5226,5229][index - secondStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -266,6 +257,7 @@ private theorem secondStartPC :
     _ = _ := by
       rw [secondStartPC]
       interval_cases index <;> rfl
+
 
 def secondOpAt (offset : Nat) (op : Operation)
     (hget : secondTemplate[offset]? = some (.op op) := by rfl)
@@ -285,7 +277,7 @@ def secondPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨secondStartIndex + offset, .push width value,
     (secondGetElem offset hoffset).trans hget, hwf⟩
 
-/-- Second MAC and pair test: instructions 2956..3004, pc 4804..4953. -/
+/-- Second MAC and pair test: instructions 3040..3088, pc 5080..5229. -/
 def secondMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [secondOpAt 0 (.Dup ⟨3, by decide⟩),
@@ -335,7 +327,7 @@ def secondMac :
    secondPushAt 44 2 8224,
    secondOpAt 45 (.Dup ⟨2, by decide⟩),
    secondOpAt 46 .GT,
-   secondPushAt 47 2 4662,
+   secondPushAt 47 2 4938,
    secondOpAt 48 .JUMPI]
 
 /-- The complete pair block, retained for whole-block consumers. -/

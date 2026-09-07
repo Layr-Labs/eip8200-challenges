@@ -765,27 +765,27 @@ their proof modules. -/
   interval_cases i <;> decide
 
 /-- PC table for the fused ADDMOD/CSUB entry appended after the CIOS2 helper. -/
-@[simp] theorem fusedCsubPC0 (i : Nat) (hi : 3036 ≤ i) (hii : i ≤ 3051) :
+@[simp] theorem fusedCsubPC0 (i : Nat) (hi : 3120 ≤ i) (hii : i ≤ 3135) :
     Artifact.submissionArtifact.instructionPC i =
-      [5029,5030,5033,5034,5035,5038,5039,5040,5041,5042,5043,5044,5045,
-       5046,5047,5050][i - 3036]! := by
+      [5305,5306,5309,5310,5311,5314,5315,5316,5317,5318,5319,5320,5321,
+       5322,5323,5326][i - 3120]! := by
   interval_cases i <;> decide
 
 /-- PC table for the fused limb loop. -/
-@[simp] theorem fusedCsubPC1 (i : Nat) (hi : 3052 ≤ i) (hii : i ≤ 3106) :
+@[simp] theorem fusedCsubPC1 (i : Nat) (hi : 3136 ≤ i) (hii : i ≤ 3190) :
     Artifact.submissionArtifact.instructionPC i =
-      [5051,5052,5053,5054,5055,5056,5057,5058,5059,5060,5061,5062,5063,
-       5064,5065,5066,5067,5068,5069,5070,5071,5072,5073,5074,5077,5078,
-       5079,5080,5081,5082,5083,5084,5085,5086,5087,5088,5089,5090,5091,
-       5092,5093,5094,5097,5098,5099,5100,5101,5102,5104,5105,5106,5109,
-       5110,5111,5114][i - 3052]! := by
+      [5327,5328,5329,5330,5331,5332,5333,5334,5335,5336,5337,5338,5339,
+       5340,5341,5342,5343,5344,5345,5346,5347,5348,5349,5350,5353,5354,
+       5355,5356,5357,5358,5359,5360,5361,5362,5363,5364,5365,5366,5367,
+       5368,5369,5370,5373,5374,5375,5376,5377,5378,5380,5381,5382,5385,
+       5386,5387,5390][i - 3136]! := by
   interval_cases i <;> decide
 
 /-- PC table for the fused selection/return tail. -/
-@[simp] theorem fusedCsubPC2 (i : Nat) (hi : 3107 ≤ i) (hii : i ≤ 3129) :
+@[simp] theorem fusedCsubPC2 (i : Nat) (hi : 3191 ≤ i) (hii : i ≤ 3213) :
     Artifact.submissionArtifact.instructionPC i =
-      [5115,5116,5119,5120,5121,5122,5123,5124,5127,5128,5131,5132,5135,
-       5136,5137,5138,5139,5140,5141,5142,5143,5144,5145][i - 3107]! := by
+      [5391,5392,5395,5396,5397,5398,5399,5400,5403,5404,5407,5408,5411,
+       5412,5413,5414,5415,5416,5417,5418,5419,5420,5421][i - 3191]! := by
   interval_cases i <;> decide
 
 theorem jumpDest1196 :
@@ -976,12 +976,12 @@ theorem jumpDest3661 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3661 = true :=
   Artifact.isValidJumpDest_index 2390 (by rfl)
 
-theorem jumpDest5029 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5029 = true :=
-  Artifact.isValidJumpDest_index 3036 (by rfl)
+theorem jumpDest5305 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5305 = true :=
+  Artifact.isValidJumpDest_index 3120 (by rfl)
 
-theorem jumpDest5051 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5051 = true :=
-  Artifact.isValidJumpDest_index 3052 (by rfl)
+theorem jumpDest5327 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5327 = true :=
+  Artifact.isValidJumpDest_index 3136 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast
