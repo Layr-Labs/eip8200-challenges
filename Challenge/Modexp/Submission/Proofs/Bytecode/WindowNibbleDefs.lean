@@ -45,18 +45,28 @@ def topSquareProgram : List Instr :=
   [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨0, by decide⟩),
    .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
 
-def finishSquareProgram : List Instr :=
-  [.op (.Swap ⟨4, by decide⟩), .op .POP,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+/-- The fused finish-and-lookup block, replacing the old eight-byte finish
+(`SWAP4 POP` plus six padding `JUMPDEST`s) and the ten-instruction lookup:
+`DUP7 SWAP1 DUP3 PUSH10 5 SHL MLOAD MULMOD SWAP5 POP` — nine instructions,
+nineteen bytes (eight one-byte operations plus the eleven-byte `PUSH10`
+opcode and immediate).  `PUSH10 5` pushes the same value `5` the old
+`PUSH1 5` pushed; the width moves the program counter, never the value.
+Peak depth is ten plus `rest`; the machine multiplies table-first, and
+`mulMod_comm` restores the accumulator-first spelling downstream. -/
+def fusedSquareLookupProgram : List Instr :=
+  [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩), .push 10 5, .op .SHL, .op .MLOAD,
+   .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP]
 
-/-- Keep the accumulator at the top between squarings. The six padding
-JUMPDESTs retain the certified layout while saving nine gas per nibble. -/
+/-- Keep the accumulator at the top between squarings: four pure squarings
+(sixteen instructions, sixteen bytes) ending on the seven-slot square state.
+The cleanup and table lookup are fused separately. -/
 def fourSquareProgram : List Instr :=
   beginSquareProgram ++ topSquareProgram ++ topSquareProgram ++
-    topSquareProgram ++ finishSquareProgram
+    topSquareProgram
 
-def squareLookupProgram : List Instr := fourSquareProgram ++ lookupProgram
+def squareLookupProgram : List Instr :=
+  fourSquareProgram ++ fusedSquareLookupProgram
 
 def advancePC : Nat → UInt256 → UInt256
   | 0, pc => pc

@@ -28,52 +28,52 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem helperPCAnchor :
-    Artifact.submissionArtifact.instructionPC 2338 = 3571 := by
+    Artifact.submissionArtifact.instructionPC 2266 = 3571 := by
   rfl
 
-@[simp] theorem helperPC (i : Nat) (hlo : 2338 ≤ i) (hhi : i ≤ 2360) :
+@[simp] theorem helperPC (i : Nat) (hlo : 2266 ≤ i) (hhi : i ≤ 2288) :
     Artifact.submissionArtifact.instructionPC i =
       [3571, 3572, 3575, 3576, 3579, 3582, 3583, 3584,
        3586, 3587, 3588, 3590, 3591, 3592, 3594, 3595,
-       3596, 3598, 3599, 3600, 3601, 3602, 3605][i - 2338]! := by
+       3596, 3598, 3599, 3600, 3601, 3602, 3605][i - 2266]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (2338 + (i - 2338)) := by
+        Artifact.submissionArtifact.instructionPC (2266 + (i - 2266)) := by
       rw [Nat.add_sub_of_le hlo]
-    _ = Artifact.submissionArtifact.instructionPC 2338 +
+    _ = Artifact.submissionArtifact.instructionPC 2266 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 2338).take
-              (i - 2338))).length :=
-      instructionPC_add Artifact.submissionArtifact 2338 (i - 2338)
+            ((Artifact.submissionArtifact.instructions.drop 2266).take
+              (i - 2266))).length :=
+      instructionPC_add Artifact.submissionArtifact 2266 (i - 2266)
     _ = _ := by
       rw [helperPCAnchor]
       interval_cases i <;> rfl
 
 def helperPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2338 .JUMPDEST,
-   pushAt 2339 2 9344,
-   opAt 2340 .MLOAD,
-   pushAt 2341 2 5120,
-   pushAt 2342 2 6144,
-   opAt 2343 .MCOPY,
-   opAt 2344 (.Dup ⟨1, by decide⟩),
-   pushAt 2345 1 3,
-   opAt 2346 .LT,
-   opAt 2347 (.Dup ⟨2, by decide⟩),
-   pushAt 2348 1 7,
-   opAt 2349 .LT,
-   opAt 2350 (.Dup ⟨3, by decide⟩),
-   pushAt 2351 1 15,
-   opAt 2352 .LT,
-   opAt 2353 (.Dup ⟨4, by decide⟩),
-   pushAt 2354 1 31,
-   opAt 2355 .LT,
-   opAt 2356 .ADD,
-   opAt 2357 .ADD,
-   opAt 2358 .ADD,
-   pushAt 2359 2 1569,
-   opAt 2360 .JUMP]
+  [opAt 2266 .JUMPDEST,
+   pushAt 2267 2 9344,
+   opAt 2268 .MLOAD,
+   pushAt 2269 2 5120,
+   pushAt 2270 2 6144,
+   opAt 2271 .MCOPY,
+   opAt 2272 (.Dup ⟨1, by decide⟩),
+   pushAt 2273 1 3,
+   opAt 2274 .LT,
+   opAt 2275 (.Dup ⟨2, by decide⟩),
+   pushAt 2276 1 7,
+   opAt 2277 .LT,
+   opAt 2278 (.Dup ⟨3, by decide⟩),
+   pushAt 2279 1 15,
+   opAt 2280 .LT,
+   opAt 2281 (.Dup ⟨4, by decide⟩),
+   pushAt 2282 1 31,
+   opAt 2283 .LT,
+   opAt 2284 .ADD,
+   opAt 2285 .ADD,
+   opAt 2286 .ADD,
+   pushAt 2287 2 1569,
+   opAt 2288 .JUMP]
 
 @[simp] theorem jump1569 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1569 = true :=
