@@ -16,9 +16,9 @@ set_option linter.unusedSimpArgs false in
 theorem run_prep (template : State) (base modulus word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (highPrepPath 3)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3462)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3455)
         base modulus word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3470)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3463)
       base modulus (highNibble 3 word) (byteValue 3 word) word pointer
       accumulator rest) := by
   have h4 : rest.length + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -46,9 +46,9 @@ theorem run_square (template : State) (base modulus : UInt256)
     (nibble : Nat) (byte word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (highSquarePath 3)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3470)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3463)
         base modulus nibble byte word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3494)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3487)
       base modulus nibble byte word pointer
       (WindowMath.squareWordAfter modulus 4 accumulator) rest) := by
   have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -75,9 +75,9 @@ theorem run_lookup (template : State) (base modulus : UInt256)
     (rest : List UInt256) (hnibble : nibble < 16)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (highLookupPath 3)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3494)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3487)
         base modulus nibble byte word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3505)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3498)
       base modulus nibble byte word pointer
       (UInt256.mulMod accumulator (WindowMath.tableWord base modulus nibble)
         modulus) rest) := by
@@ -92,8 +92,6 @@ theorem run_lookup (template : State) (base modulus : UInt256)
   have h7 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
-  have h10 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by
-    omega
   simp (config := { maxSteps := 2000000 }) (disch := omega)
     [highLookupPath, byteStartIndex, locatedSlice,
       Challenge.EvmProof.Stepper.Located.ofIndex,
@@ -101,19 +99,14 @@ theorem run_lookup (template : State) (base modulus : UInt256)
       Artifact.submissionArtifact, Artifact.submissionInstructions,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      nibbleState,
+      nibbleState, lookupState,
       List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
-      hrest, h6, h7, h8, h9, h10, hshift, hoffset, hread, hactive,
+      hrest, h6, h7, h8, h9, hshift, hoffset, hread, hactive,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
-  -- The window loads the table word last, so `MULMOD` multiplies in the
-  -- opposite order from the spelling this statement uses.  Equal, but not
-  -- definitionally equal.
-  exact mulMod_comm _ _ _
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitByte3High
-
 

@@ -7,8 +7,8 @@ set_option maxHeartbeats 4000000
 /-!
 # The `LZ` head of the exponent-byte loop
 
-`LZ` occupies instruction indices 1781..1815 (pc 2922..2970).  It is entered
-at pc 2922 with the byte index `i` on top of the driver frame, loads exponent
+`LZ` occupies instruction indices 1776..1810 (pc 2915..2963).  It is entered
+at pc 2915 with the byte index `i` on top of the driver frame, loads exponent
 byte `i` exactly as the code it replaces did, and then chooses the mask the
 inner bit loop starts from:
 
@@ -82,22 +82,22 @@ theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w 
 
 /-! ## States at the block boundaries -/
 
-/-- The `LZ` entry, pc 2922.  The driver frame below the byte index is left
+/-- The `LZ` entry, pc 2915.  The driver frame below the byte index is left
 abstract so that this module does not depend on `Fast.Exp`. -/
 def lzEntry (s : State) (mem : ByteArray) (i : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2922
+  { s with pc := UInt256.ofNat 2915
            stack := UInt256.ofNat i :: rest
            memory := mem }
 
-/-- pc 2938, the arm every byte after the first takes. -/
+/-- pc 2931, the arm every byte after the first takes. -/
 def lzOther (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2938
+  { s with pc := UInt256.ofNat 2931
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
-/-- pc 2944, the arm byte `0` takes. -/
+/-- pc 2937, the arm byte `0` takes. -/
 def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2944
+  { s with pc := UInt256.ofNat 2937
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -108,12 +108,10 @@ def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
-/-- The state `LZ`'s byte-0 arm now hands to `LZBASE`, pc 3897.  The stack is
-the one the bit loop expects; the block below it copies `BASE` into `ACC` and
-resumes at the mask shift. -/
+/- The first-byte arm hands to `LZBASE`, whose relocated entry is pc 3865. -/
 def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3897
+  { s with pc := UInt256.ofNat 3865
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -281,10 +279,12 @@ theorem run_lzFirst (s : State) (mem : ByteArray) (i w : Nat)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hcomm : (1 : Nat) + (sm3 w >>> 1) = topBit w := by
     simp only [topBit]; omega
+  have h3865 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3865 = true :=
+    Artifact.isValidJumpDest_index 2557 (by rfl)
   simp (config := { maxSteps := 600000 }) [blk1796, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lzFirst, lzBase, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, jumpDest3897,
+    lzFirst, lzBase, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, h3865,
     e1, e2, e3, e4, e5, e6, e7,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
