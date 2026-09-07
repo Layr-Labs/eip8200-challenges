@@ -25,7 +25,7 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailConsume
 theorem runTail_quadTail
     (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256)
-    (hactive : 66 ≤ s.activeWords.toNat)
+    (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1007)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     StackTail.runTailInstrs quadTailTemplate
@@ -39,7 +39,7 @@ theorem runInstrSeq_quadTail
     (ret : UInt256) (rest : List UInt256)
     (hrun : s.halt = .Running)
     (hfork : s.fork = .Osaka)
-    (hactive : 66 ≤ s.activeWords.toNat)
+    (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1007)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     QuadTailConsume.runInstrSeq consumeBody
