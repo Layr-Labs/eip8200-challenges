@@ -62,7 +62,8 @@ private theorem run_normal_generic (template : State) (pointer word : UInt256)
 set_option linter.unusedSimpArgs false in
 private theorem run_zero_generic (template : State) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
-    (hactive : template.activeWords = UInt256.ofNat 0) :
+    (hactive : template.activeWords = UInt256.ofNat 0)
+    (hmemory : template.memory = ByteArray.empty) :
     Challenge.EvmProof.Stepper.runLocatedBlock zeroReturnPath
       (framed template 3563 rest) =
     some (outputState template 3570 1 0 rest) := by
@@ -72,7 +73,7 @@ private theorem run_zero_generic (template : State) (rest : List UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr, framed, outputState,
-    hrun, hactive, returnPCs, WindowTableMemory.storeWord,
+    hrun, hactive, hmemory, returnPCs, WindowTableMemory.storeWord,
     State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
     List.getElem?_cons_zero, Option.getD_some, Nat.add_assoc, hcap, hcap0,
     Challenge.EvmProof.Word.literal_eq_ofNat,
@@ -92,9 +93,9 @@ theorem run_normalReturn (input : ByteArray) (word : UInt256) :
 theorem run_zeroReturn (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock zeroReturnPath
       (zeroState input) = some (zeroReturnedState input) := by
-  have h := run_zero_generic (zeroState input)
-    (modulusWord input :: routeStack input) (by simp [routeStack]) rfl rfl
   have hmemory : (Dispatch.wordEntryState input).memory = ByteArray.empty := rfl
+  have h := run_zero_generic (zeroState input)
+    (modulusWord input :: routeStack input) (by simp [routeStack]) rfl hmemory
   simpa only [framed, outputState, zeroState, zeroReturnedState, outputMemory,
     storeWord, hmemory] using h
 

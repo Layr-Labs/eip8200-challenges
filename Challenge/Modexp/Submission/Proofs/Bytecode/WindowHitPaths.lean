@@ -136,7 +136,7 @@ def zeroReturnPath :
   [Main.opAt 2331 .JUMPDEST,
    Main.pushAt 2332 0 0,
    Main.pushAt 2333 0 0,
-   Main.opAt 2334 .MSTORE,
+   Main.opAt 2334 .POP,
    Main.pushAt 2335 1 32,
    Main.pushAt 2336 0 0,
    Main.opAt 2337 .RETURN]

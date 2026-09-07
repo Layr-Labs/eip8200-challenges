@@ -2356,7 +2356,7 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
  YulEvmCompiler.Instr.push 0 0,
  YulEvmCompiler.Instr.push 0 0,
- YulEvmCompiler.Instr.op EvmSemantics.Operation.MSTORE,
+ YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
  YulEvmCompiler.Instr.push 1 32,
  YulEvmCompiler.Instr.push 0 0,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.RETURN,
