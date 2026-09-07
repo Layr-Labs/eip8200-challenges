@@ -1,6 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2Mid
-import Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.L2Peel
 import Challenge.Modexp.Submission.Proofs.Fast.MacAlt
+import Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.L2Peel
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -24,8 +24,8 @@ theorem run_peel (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hn : 2 < n) :
     Challenge.EvmProof.Stepper.runLocatedBlock cios2L2Peel
-      (l2At 4796 s mid bi mu c0 pa pb n i 0 pdst ret rest) =
-      some (l2At 4938 s mid bi mu c0 pa pb n i 1 pdst ret rest) := by
+      (l2At 4776 s mid bi mu c0 pa pb n i 0 pdst ret rest) =
+      some (l2At 4913 s mid bi mu c0 pa pb n i 1 pdst ret rest) := by
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
@@ -91,8 +91,8 @@ theorem run_peel (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       (8256 + 32 * (n - 1)) 32) = s.activeWords :=
     activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 800000 })
-    [cios2L2Peel, Cios2Paths.L2Peel.peelPC, Cios2Paths.L2Peel.startIndex,
-      Cios2Paths.L2Peel.opAt, Cios2Paths.L2Peel.pushAt, wfOp,
+    [cios2L2Peel, Cios2Paths.L2Peel.peelPC, Cios2Paths.L2Peel.peelStartIndex,
+      Cios2Paths.L2Peel.peelOpAt, Cios2Paths.L2Peel.peelPushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -119,8 +119,8 @@ def gasSteps_peel (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hn : 2 < n) :
     Challenge.EvmProof.GasSteps
-      (l2At 4796 s mid bi mu c0 pa pb n i 0 pdst ret rest)
-      (l2At 4938 s mid bi mu c0 pa pb n i 1 pdst ret rest) :=
+      (l2At 4776 s mid bi mu c0 pa pb n i 0 pdst ret rest)
+      (l2At 4913 s mid bi mu c0 pa pb n i 1 pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka cios2L2Peel hcode hfork
     (run_peel s mid bi mu c0 pa pb n i pdst ret rest hcap hrun hact hn32 hn)

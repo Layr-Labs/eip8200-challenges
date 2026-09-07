@@ -16,20 +16,47 @@ private theorem instructionPC_add
   simp only [Challenge.EvmProof.ProgramArtifact.instructionPC, List.take_add,
     assembleBytes_append, List.length_append]
 
-def firstStartIndex : Nat := 2995
+def firstStartIndex : Nat := 2970
 
 private def firstTemplate : List Instr :=
-    [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .op .MLOAD,
+  [.op .JUMPDEST,
+   .op (.Dup ⟨0, by decide⟩),
+   .op .MLOAD,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨4, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨5, by decide⟩),
-   .op .GT, .op .SUB, .op .SUB, .op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨3, by decide⟩),
-   .op .MLOAD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨4, by decide⟩), .op .GT,
-   .op .ADD, .op (.Swap ⟨2, by decide⟩), .push 1 32, .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .MUL,
+   .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup ⟨6, by decide⟩),
+   .op .MULMOD,
+   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩),
+   .op .LT,
+   .op .SUB,
+   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨5, by decide⟩),
+   .op .GT,
+   .op .SUB,
+   .op .SUB,
+   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
+   .op .MLOAD,
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨4, by decide⟩),
+   .op .GT,
+   .op .ADD,
+   .op (.Swap ⟨2, by decide⟩),
+   .push 1 32,
+   .op (.Dup ⟨3, by decide⟩),
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .ADD, .op .MSTORE,
+   .op .ADD,
+   .op (.Swap ⟨3, by decide⟩),
+   .op .ADD,
+   .op .MSTORE,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    .op .ADD]
 
@@ -47,15 +74,13 @@ private theorem firstGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem firstStartPC :
-    Artifact.submissionArtifact.instructionPC firstStartIndex = 4938 := by
+    Artifact.submissionArtifact.instructionPC firstStartIndex = 4913 := by
   rfl
 
 @[simp] theorem firstPC (index : Nat) (hlo : firstStartIndex ≤ index)
-    (hhi : index ≤ 3034) :
+    (hhi : index ≤ 3009) :
     Artifact.submissionArtifact.instructionPC index =
-            [4938, 4939, 4940, 4941, 4974, 4975, 4976, 4977, 4978, 4979, 4980, 4981, 4982, 4983,
-       4984, 4985, 4986, 4987, 4988, 4989, 4990, 4991, 4992, 4993, 4994, 4995, 4996, 4997,
-       4998, 4999, 5000, 5001, 5003, 5004, 5037, 5038, 5039, 5040, 5041, 5074][index - firstStartIndex]! := by
+      [4913,4914,4915,4916,4949,4950,4951,4952,4953,4954,4955,4956,4957,4958,4959,4960,4961,4962,4963,4964,4965,4966,4967,4968,4969,4970,4971,4972,4973,4974,4975,4976,4978,4979,5012,5013,5014,5015,5016,5049][index - firstStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -70,7 +95,6 @@ private theorem firstStartPC :
     _ = _ := by
       rw [firstStartPC]
       interval_cases index <;> rfl
-
 
 def firstOpAt (offset : Nat) (op : Operation)
     (hget : firstTemplate[offset]? = some (.op op) := by rfl)
@@ -90,45 +114,97 @@ def firstPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨firstStartIndex + offset, .push width value,
     (firstGetElem offset hoffset).trans hget, hwf⟩
 
-/-- First MAC: instructions 2995..3039, pc 4938..5079. -/
+/-- First paired L2 MAC: instructions 2970..3009, pc 4913..5049. -/
 def firstMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-    [firstOpAt 0 .JUMPDEST, firstOpAt 1 (.Dup ⟨0, by decide⟩), firstOpAt 2 .MLOAD,
+  [firstOpAt 0 .JUMPDEST,
+   firstOpAt 1 (.Dup ⟨0, by decide⟩),
+   firstOpAt 2 .MLOAD,
    firstPushAt 3 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   firstOpAt 4 (.Dup ⟨5, by decide⟩), firstOpAt 5 (.Dup ⟨2, by decide⟩), firstOpAt 6 .MUL,
-   firstOpAt 7 (.Swap ⟨1, by decide⟩), firstOpAt 8 (.Dup ⟨6, by decide⟩), firstOpAt 9 .MULMOD,
-   firstOpAt 10 (.Dup ⟨1, by decide⟩), firstOpAt 11 (.Dup ⟨1, by decide⟩), firstOpAt 12 .LT,
-   firstOpAt 13 .SUB, firstOpAt 14 (.Dup ⟨4, by decide⟩), firstOpAt 15 (.Dup ⟨2, by decide⟩),
-   firstOpAt 16 .ADD, firstOpAt 17 (.Dup ⟨0, by decide⟩), firstOpAt 18 (.Swap ⟨5, by decide⟩),
-   firstOpAt 19 .GT, firstOpAt 20 .SUB, firstOpAt 21 .SUB, firstOpAt 22 (.Dup ⟨3, by decide⟩),
-   firstOpAt 23 (.Dup ⟨3, by decide⟩), firstOpAt 24 .MLOAD, firstOpAt 25 .ADD,
-   firstOpAt 26 (.Dup ⟨0, by decide⟩), firstOpAt 27 (.Swap ⟨4, by decide⟩), firstOpAt 28 .GT,
-   firstOpAt 29 .ADD, firstOpAt 30 (.Swap ⟨2, by decide⟩), firstPushAt 31 1 32,
+   firstOpAt 4 (.Dup ⟨5, by decide⟩),
+   firstOpAt 5 (.Dup ⟨2, by decide⟩),
+   firstOpAt 6 .MUL,
+   firstOpAt 7 (.Swap ⟨1, by decide⟩),
+   firstOpAt 8 (.Dup ⟨6, by decide⟩),
+   firstOpAt 9 .MULMOD,
+   firstOpAt 10 (.Dup ⟨1, by decide⟩),
+   firstOpAt 11 (.Dup ⟨1, by decide⟩),
+   firstOpAt 12 .LT,
+   firstOpAt 13 .SUB,
+   firstOpAt 14 (.Dup ⟨4, by decide⟩),
+   firstOpAt 15 (.Dup ⟨2, by decide⟩),
+   firstOpAt 16 .ADD,
+   firstOpAt 17 (.Dup ⟨0, by decide⟩),
+   firstOpAt 18 (.Swap ⟨5, by decide⟩),
+   firstOpAt 19 .GT,
+   firstOpAt 20 .SUB,
+   firstOpAt 21 .SUB,
+   firstOpAt 22 (.Dup ⟨3, by decide⟩),
+   firstOpAt 23 (.Dup ⟨3, by decide⟩),
+   firstOpAt 24 .MLOAD,
+   firstOpAt 25 .ADD,
+   firstOpAt 26 (.Dup ⟨0, by decide⟩),
+   firstOpAt 27 (.Swap ⟨4, by decide⟩),
+   firstOpAt 28 .GT,
+   firstOpAt 29 .ADD,
+   firstOpAt 30 (.Swap ⟨2, by decide⟩),
+   firstPushAt 31 1 32,
    firstOpAt 32 (.Dup ⟨3, by decide⟩),
    firstPushAt 33 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   firstOpAt 34 .ADD, firstOpAt 35 (.Swap ⟨3, by decide⟩), firstOpAt 36 .ADD,
+   firstOpAt 34 .ADD,
+   firstOpAt 35 (.Swap ⟨3, by decide⟩),
+   firstOpAt 36 .ADD,
    firstOpAt 37 .MSTORE,
    firstPushAt 38 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    firstOpAt 39 .ADD]
 
-def secondStartIndex : Nat := 3035
+
+def secondStartIndex : Nat := 3010
 
 private def secondTemplate : List Instr :=
-    [.op (.Dup ⟨0, by decide⟩), .op .MLOAD,
+  [.op (.Dup ⟨0, by decide⟩),
+   .op .MLOAD,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨4, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨5, by decide⟩),
-   .op .GT, .op .SUB, .op .SUB, .op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨3, by decide⟩),
-   .op .MLOAD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨4, by decide⟩), .op .GT,
-   .op .ADD, .op (.Swap ⟨2, by decide⟩), .push 1 32, .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .MUL,
+   .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup ⟨6, by decide⟩),
+   .op .MULMOD,
+   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩),
+   .op .LT,
+   .op .SUB,
+   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨5, by decide⟩),
+   .op .GT,
+   .op .SUB,
+   .op .SUB,
+   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
+   .op .MLOAD,
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨4, by decide⟩),
+   .op .GT,
+   .op .ADD,
+   .op (.Swap ⟨2, by decide⟩),
+   .push 1 32,
+   .op (.Dup ⟨3, by decide⟩),
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .ADD, .op .MSTORE,
+   .op .ADD,
+   .op (.Swap ⟨3, by decide⟩),
+   .op .ADD,
+   .op .MSTORE,
+   .op (.Dup ⟨0, by decide⟩),
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   .op .ADD, .push 2 8224, .op (.Dup ⟨2, by decide⟩), .op .GT, .push 2 4938, .op .JUMPI,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+   .op .ADD,
+   .op (.Swap ⟨0, by decide⟩),
+   .push 2 4913,
+   .op .JUMPI]
 
 private theorem secondSlice_eq :
     (Artifact.submissionInstructions.drop secondStartIndex).take
@@ -144,16 +220,13 @@ private theorem secondGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem secondStartPC :
-    Artifact.submissionArtifact.instructionPC secondStartIndex = 5075 := by
+    Artifact.submissionArtifact.instructionPC secondStartIndex = 5050 := by
   rfl
 
 @[simp] theorem secondPC (index : Nat) (hlo : secondStartIndex ≤ index)
-    (hhi : index ≤ 3088) :
+    (hhi : index ≤ 3052) :
     Artifact.submissionArtifact.instructionPC index =
-            [5075, 5076, 5077, 5110, 5111, 5112, 5113, 5114, 5115, 5116, 5117, 5118, 5119, 5120,
-       5121, 5122, 5123, 5124, 5125, 5126, 5127, 5128, 5129, 5130, 5131, 5132, 5133, 5134,
-       5135, 5136, 5137, 5139, 5140, 5173, 5174, 5175, 5176, 5177, 5210, 5211, 5214, 5215,
-       5216, 5219, 5220, 5221, 5222, 5223, 5224, 5225, 5226, 5227, 5228, 5229][index - secondStartIndex]! := by
+      [5050,5051,5052,5085,5086,5087,5088,5089,5090,5091,5092,5093,5094,5095,5096,5097,5098,5099,5100,5101,5102,5103,5104,5105,5106,5107,5108,5109,5110,5111,5112,5114,5115,5148,5149,5150,5151,5152,5153,5186,5187,5188,5191][index - secondStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -168,7 +241,6 @@ private theorem secondStartPC :
     _ = _ := by
       rw [secondStartPC]
       interval_cases index <;> rfl
-
 
 def secondOpAt (offset : Nat) (op : Operation)
     (hget : secondTemplate[offset]? = some (.op op) := by rfl)
@@ -188,47 +260,57 @@ def secondPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨secondStartIndex + offset, .push width value,
     (secondGetElem offset hoffset).trans hget, hwf⟩
 
-/-- Second MAC and pair test: instructions 3040..3088, pc 5075..5229. -/
+/-- Compact second L2 MAC and pair test: instructions 3010..3052, pc 5050..5191. -/
 def secondMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-    [secondOpAt 0 (.Dup ⟨0, by decide⟩), secondOpAt 1 .MLOAD,
+  [secondOpAt 0 (.Dup ⟨0, by decide⟩),
+   secondOpAt 1 .MLOAD,
    secondPushAt 2 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   secondOpAt 3 (.Dup ⟨5, by decide⟩), secondOpAt 4 (.Dup ⟨2, by decide⟩), secondOpAt 5 .MUL,
-   secondOpAt 6 (.Swap ⟨1, by decide⟩), secondOpAt 7 (.Dup ⟨6, by decide⟩),
-   secondOpAt 8 .MULMOD, secondOpAt 9 (.Dup ⟨1, by decide⟩),
-   secondOpAt 10 (.Dup ⟨1, by decide⟩), secondOpAt 11 .LT, secondOpAt 12 .SUB,
-   secondOpAt 13 (.Dup ⟨4, by decide⟩), secondOpAt 14 (.Dup ⟨2, by decide⟩),
-   secondOpAt 15 .ADD, secondOpAt 16 (.Dup ⟨0, by decide⟩),
-   secondOpAt 17 (.Swap ⟨5, by decide⟩), secondOpAt 18 .GT, secondOpAt 19 .SUB,
-   secondOpAt 20 .SUB, secondOpAt 21 (.Dup ⟨3, by decide⟩),
-   secondOpAt 22 (.Dup ⟨3, by decide⟩), secondOpAt 23 .MLOAD, secondOpAt 24 .ADD,
-   secondOpAt 25 (.Dup ⟨0, by decide⟩), secondOpAt 26 (.Swap ⟨4, by decide⟩),
-   secondOpAt 27 .GT, secondOpAt 28 .ADD, secondOpAt 29 (.Swap ⟨2, by decide⟩),
-   secondPushAt 30 1 32, secondOpAt 31 (.Dup ⟨3, by decide⟩),
+   secondOpAt 3 (.Dup ⟨5, by decide⟩),
+   secondOpAt 4 (.Dup ⟨2, by decide⟩),
+   secondOpAt 5 .MUL,
+   secondOpAt 6 (.Swap ⟨1, by decide⟩),
+   secondOpAt 7 (.Dup ⟨6, by decide⟩),
+   secondOpAt 8 .MULMOD,
+   secondOpAt 9 (.Dup ⟨1, by decide⟩),
+   secondOpAt 10 (.Dup ⟨1, by decide⟩),
+   secondOpAt 11 .LT,
+   secondOpAt 12 .SUB,
+   secondOpAt 13 (.Dup ⟨4, by decide⟩),
+   secondOpAt 14 (.Dup ⟨2, by decide⟩),
+   secondOpAt 15 .ADD,
+   secondOpAt 16 (.Dup ⟨0, by decide⟩),
+   secondOpAt 17 (.Swap ⟨5, by decide⟩),
+   secondOpAt 18 .GT,
+   secondOpAt 19 .SUB,
+   secondOpAt 20 .SUB,
+   secondOpAt 21 (.Dup ⟨3, by decide⟩),
+   secondOpAt 22 (.Dup ⟨3, by decide⟩),
+   secondOpAt 23 .MLOAD,
+   secondOpAt 24 .ADD,
+   secondOpAt 25 (.Dup ⟨0, by decide⟩),
+   secondOpAt 26 (.Swap ⟨4, by decide⟩),
+   secondOpAt 27 .GT,
+   secondOpAt 28 .ADD,
+   secondOpAt 29 (.Swap ⟨2, by decide⟩),
+   secondPushAt 30 1 32,
+   secondOpAt 31 (.Dup ⟨3, by decide⟩),
    secondPushAt 32 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   secondOpAt 33 .ADD, secondOpAt 34 (.Swap ⟨3, by decide⟩), secondOpAt 35 .ADD,
+   secondOpAt 33 .ADD,
+   secondOpAt 34 (.Swap ⟨3, by decide⟩),
+   secondOpAt 35 .ADD,
    secondOpAt 36 .MSTORE,
-   secondPushAt 37 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   secondOpAt 38 .ADD, secondPushAt 39 2 8224, secondOpAt 40 (.Dup ⟨2, by decide⟩),
-   secondOpAt 41 .GT, secondPushAt 42 2 4938, secondOpAt 43 .JUMPI]
+   secondOpAt 37 (.Dup ⟨0, by decide⟩),
+   secondPushAt 38 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   secondOpAt 39 .ADD,
+   secondOpAt 40 (.Swap ⟨0, by decide⟩),
+   secondPushAt 41 2 4913,
+   secondOpAt 42 .JUMPI]
 
-/-- Same trace plus the padding `JUMPDEST`s on the fall-through path. -/
-def secondMacExit :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  secondMac ++
-  [secondOpAt 44 .JUMPDEST,
-   secondOpAt 45 .JUMPDEST,
-   secondOpAt 46 .JUMPDEST,
-   secondOpAt 47 .JUMPDEST,
-   secondOpAt 48 .JUMPDEST,
-   secondOpAt 49 .JUMPDEST,
-   secondOpAt 50 .JUMPDEST,
-   secondOpAt 51 .JUMPDEST,
-   secondOpAt 52 .JUMPDEST,
-   secondOpAt 53 .JUMPDEST]
+/-- The body and exit share the compact block ending at JUMPI. -/
+def secondMacBody := secondMac.take 43
 
 
-/-- The complete pair block, retained for whole-block consumers. -/
 def cios2L2Pair := firstMac ++ secondMac
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.L2Pair
