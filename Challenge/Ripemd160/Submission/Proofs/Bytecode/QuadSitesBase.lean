@@ -3,7 +3,8 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadCallTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskHoistHelper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.newShiftedHoistHelper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskCalls
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -107,6 +108,54 @@ def rightRotation2 (k : Fin 20) : Nat :=
 def rightRotation3 (k : Fin 20) : Nat :=
   StackRoundData.rightRotation (4 * k.val + 3)
 
+theorem leftRotation0_pos (k : Fin 20) : 0 < leftRotation0 k := by
+  fin_cases k <;> decide
+
+theorem leftRotation0_lt32 (k : Fin 20) : leftRotation0 k < 32 := by
+  fin_cases k <;> decide
+
+theorem leftRotation1_pos (k : Fin 20) : 0 < leftRotation1 k := by
+  fin_cases k <;> decide
+
+theorem leftRotation1_lt32 (k : Fin 20) : leftRotation1 k < 32 := by
+  fin_cases k <;> decide
+
+theorem leftRotation2_pos (k : Fin 20) : 0 < leftRotation2 k := by
+  fin_cases k <;> decide
+
+theorem leftRotation2_lt32 (k : Fin 20) : leftRotation2 k < 32 := by
+  fin_cases k <;> decide
+
+theorem leftRotation3_pos (k : Fin 20) : 0 < leftRotation3 k := by
+  fin_cases k <;> decide
+
+theorem leftRotation3_lt32 (k : Fin 20) : leftRotation3 k < 32 := by
+  fin_cases k <;> decide
+
+theorem rightRotation0_pos (k : Fin 20) : 0 < rightRotation0 k := by
+  fin_cases k <;> decide
+
+theorem rightRotation0_lt32 (k : Fin 20) : rightRotation0 k < 32 := by
+  fin_cases k <;> decide
+
+theorem rightRotation1_pos (k : Fin 20) : 0 < rightRotation1 k := by
+  fin_cases k <;> decide
+
+theorem rightRotation1_lt32 (k : Fin 20) : rightRotation1 k < 32 := by
+  fin_cases k <;> decide
+
+theorem rightRotation2_pos (k : Fin 20) : 0 < rightRotation2 k := by
+  fin_cases k <;> decide
+
+theorem rightRotation2_lt32 (k : Fin 20) : rightRotation2 k < 32 := by
+  fin_cases k <;> decide
+
+theorem rightRotation3_pos (k : Fin 20) : 0 < rightRotation3 k := by
+  fin_cases k <;> decide
+
+theorem rightRotation3_lt32 (k : Fin 20) : rightRotation3 k < 32 := by
+  fin_cases k <;> decide
+
 def leftConstant (k : Fin 20) : UInt256 :=
   StackRoundData.leftConstant (16 * (k.val / 4))
 
@@ -115,7 +164,7 @@ def rightConstant (k : Fin 20) : UInt256 :=
 
 def quadWrapperTemplate (returnPC p0 p1 p2 p3 helperPC : UInt256)
     (r0 r1 r2 r3 : Nat) : List Instr :=
-  QuadCallTrace.quadCallPushes returnPC p0 p1 p2 p3 helperPC r0 r1 r2 r3 ++
+  CachedMaskCalls.ShiftedCall.quadCallPushes returnPC p0 p1 p2 p3 helperPC r0 r1 r2 r3 ++
     [op .JUMP, op .JUMPDEST]
 
 def leftWrapperTemplate (k : Fin 20) : List Instr :=
@@ -131,11 +180,11 @@ def rightWrapperTemplate (k : Fin 20) : List Instr :=
     (rightRotation2 k) (rightRotation3 k)
 
 def leftHelperTemplate (group : Fin 5) : List Instr :=
-  CachedMaskHoistHelper.leftTemplate group.val
+  ShiftedHoistHelper.leftTemplate group.val
     (StackRoundData.leftConstant (16 * group.val))
 
 def rightHelperTemplate (group : Fin 5) : List Instr :=
-  CachedMaskHoistHelper.rightTemplate (4 - group.val)
+  ShiftedHoistHelper.rightTemplate (4 - group.val)
     (StackRoundData.rightConstant (16 * group.val))
 
 theorem getElem_of_slice {artifact : ProgramArtifact}
