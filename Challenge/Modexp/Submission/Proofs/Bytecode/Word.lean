@@ -71,7 +71,7 @@ def baseSetupPath :
 def baseGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 433 .JUMPDEST, opAt 434 (.Dup ⟨3, by decide⟩),
-   opAt 435 (.Dup ⟨1, by decide⟩), opAt 436 .EQ, opAt 437 .JUMPDEST,
+   opAt 435 (.Dup ⟨1, by decide⟩), opAt 436 .LT, opAt 437 .ISZERO,
    pushAt 438 2 582, opAt 439 .JUMPI]
 
 def baseCallPath :
@@ -132,13 +132,13 @@ def bitJumpPath :
 /-- The head of the unrolled block derives `base - 1` for the eight copies. -/
 def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2414 .JUMPDEST, pushAt 2415 1 (UInt256.ofNat 1),
-   opAt 2416 (.Dup ⟨6, by decide⟩), opAt 2417 .SUB]
+  [opAt 2332 .JUMPDEST, pushAt 2333 1 (UInt256.ofNat 1),
+   opAt 2334 (.Dup ⟨6, by decide⟩), opAt 2335 .SUB]
 
 /-- Its tail drops `base - 1` and rejoins the byte loop. -/
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2554 .POP, pushAt 2555 2 (UInt256.ofNat 655), opAt 2556 .JUMP]
+  [opAt 2472 .POP, pushAt 2473 2 (UInt256.ofNat 655), opAt 2474 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
 def bitPC (j : Nat) : Nat := 3700 + 20 * j
@@ -348,7 +348,7 @@ def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
       UInt256.ofNat (modulusValue input)] ++ bitTail input)
 
 theorem jump3695 : Decode.isValidJumpDest submissionBytecode 3695 = true :=
-  Artifact.isValidJumpDest_index 2414 (by rfl)
+  Artifact.isValidJumpDest_index 2332 (by rfl)
 
 /-- The loop head jumps into the unrolled block. -/
 def gasSteps_bitEntry (input : ByteArray) (outer : Nat)
@@ -736,21 +736,32 @@ theorem run_baseGuard (input : ByteArray) (i : Nat) (base : UInt256)
   have himod : i % 2 ^ 256 = i := Nat.mod_eq_of_lt hi256
   have hbmod : baseSize input % 2 ^ 256 = baseSize input :=
     Nat.mod_eq_of_lt hb256
-  have hne : i ≠ baseSize input := Nat.ne_of_lt hi
-  have heq : UInt256.eq (UInt256.ofNat i) (UInt256.ofNat (baseSize input)) =
-      UInt256.ofNat 0 := by
-    rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat, himod, hbmod, if_neg hne]
+  have hilt : i % 2 ^ 256 < baseSize input % 2 ^ 256 := by
+    rw [himod, hbmod]
+    exact hi
+  have hisZero : (UInt256.ofNat 1).isZero.toNat = 0 := by decide
+  have hcond :
+      (if i % 2 ^ 256 < baseSize input % 2 ^ 256 then UInt256.ofNat 1
+        else UInt256.ofNat 0).isZero.toNat = 0 := by
+    rw [if_pos hilt]
+    exact hisZero
+  have hcondLiteral :
+      (if i %
+          115792089237316195423570985008687907853269984665640564039457584007913129639936 <
+          baseSize input %
+          115792089237316195423570985008687907853269984665640564039457584007913129639936
+        then UInt256.ofNat 1 else UInt256.ofNat 0).isZero.toNat = 0 := by
+    exact hcond
   have h550 : (550 : UInt256).toNat = 550 := by decide
-  have hzeroNat : (UInt256.ofNat 0).toNat = 0 := by decide
   simp (config := { maxSteps := 150000 })
     [baseGuardPath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       baseLoopState, baseGuardState, nonzeroState, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState, wordPCs,
-      UInt256.isTrue, Challenge.EvmProof.Word.word_toNat_ofNat,
-      hi, hi256, hb256, himod, hbmod, hne, heq, hzeroNat, h550]
+      UInt256.isTrue, UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
+      hi, hi256, hb256, himod, hbmod, hilt, hisZero, hcond, hcondLiteral,
+      h550]
 
 set_option linter.unusedSimpArgs false in
 theorem run_baseCall (input : ByteArray) (i : Nat) (base : UInt256)
@@ -784,19 +795,17 @@ theorem run_baseFinishGuard (input : ByteArray) (base : UInt256)
   have hb256 : baseSize input < 2 ^ 256 := by omega
   have hbmod : baseSize input % 2 ^ 256 = baseSize input :=
     Nat.mod_eq_of_lt hb256
-  have heq : UInt256.eq (UInt256.ofNat (baseSize input))
-      (UInt256.ofNat (baseSize input)) = UInt256.ofNat 1 := by
-    simp [UInt256.eq]
   have h582 : (582 : UInt256).toNat = 582 := by decide
   have h582Word : (582 : UInt256) = UInt256.ofNat 582 := by decide
+  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   simp (config := { maxSteps := 150000 })
     [baseGuardPath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       baseLoopState, baseFinishDispatchState, nonzeroState, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState, wordPCs,
-      UInt256.isTrue, UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
-      hb256, hbmod, heq, h582, h582Word, jump582]
+      UInt256.isTrue, UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
+      hb256, hbmod, hzeroFalse, h582, h582Word, jump582]
 
 /- The exponent trace declarations live in `WordExpRuns` so their large
    proof terms are elaborated in a bounded module. -/

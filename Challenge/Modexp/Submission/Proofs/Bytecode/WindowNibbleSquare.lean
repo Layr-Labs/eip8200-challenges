@@ -79,7 +79,7 @@ private theorem run_finishSquare (template : State) (pc : UInt256)
     (hrest : rest.length ≤ 1000) :
     runInstructions finishSquareProgram
       (squareTopState template pc base modulus nibble byte word pointer original accumulator rest) =
-    some (nibbleState template (advancePC 8 pc) base modulus nibble byte word pointer
+    some (nibbleState template (advancePC 2 pc) base modulus nibble byte word pointer
       accumulator rest) := by
   have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h7 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -97,7 +97,7 @@ theorem run_fourSquares (template : State) (pc : UInt256)
     runInstructions fourSquareProgram
       (nibbleState template pc base modulus nibble byte word pointer
         accumulator rest) =
-      some (nibbleState template (advancePC 24 pc) base modulus nibble
+      some (nibbleState template (advancePC 18 pc) base modulus nibble
         byte word pointer (WindowMath.squareWordAfter modulus 4 accumulator)
         rest) := by
   rw [fourSquareProgram, runInstructions_append, runInstructions_append,
@@ -111,8 +111,8 @@ theorem run_fourSquares (template : State) (pc : UInt256)
   rw [run_topSquare (hrest := hrest)]
   simp only [Option.bind_some]
   rw [run_finishSquare (hrest := hrest)]
-  rw [show advancePC 8 (advancePC 4 (advancePC 4 (advancePC 4 (advancePC 4 pc)))) =
-      advancePC 24 pc by
+  rw [show advancePC 2 (advancePC 4 (advancePC 4 (advancePC 4 (advancePC 4 pc)))) =
+      advancePC 18 pc by
     rw [← advancePC_add, ← advancePC_add, ← advancePC_add, ← advancePC_add]]
   rfl
 

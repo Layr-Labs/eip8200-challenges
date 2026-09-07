@@ -31,7 +31,7 @@ theorem run_squareLookup (template : State) (pc : UInt256)
     run_fourSquares template pc base modulus nibble byte word pointer
       accumulator rest hrest]
   simp only [Option.bind_some]
-  rw [run_lookup template (advancePC 24 pc) base modulus nibble byte word
+  rw [run_lookup template (advancePC 18 pc) base modulus nibble byte word
     pointer (WindowMath.squareWordAfter modulus 4 accumulator) rest hnibble
     hrest]
   rw [← advancePC_add]
