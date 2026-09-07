@@ -40,12 +40,26 @@ def gasSteps_miss (input : ByteArray)
     (sound branchPath (run_branch_miss input hmatch))).trans
       (sound missPath (run_miss input))
 
-/-- Successful fixed-width guard, before the modulus branch. -/
-def gasSteps_hit (input : ByteArray) (hmatch : WindowGuardLogic.Matches input) :
+def gasSteps_hit (input : ByteArray)
+    (hmatch : WindowGuardLogic.Matches input)
+    (hshortcut : ¬ baseZeroMatches input) :
     Challenge.EvmProof.GasSteps (Dispatch.wordRouteEntryState input)
       (hitState input) :=
-  (sound guardPath (run_guard input)).trans
+  ((sound guardPath (run_guard input)).trans
+    (sound branchPath (run_branch_match input hmatch))).trans
+      (sound baseZeroGuardPath (run_baseZeroGuard_miss input hshortcut))
+
+def gasSteps_baseZero (input : ByteArray)
+    (hmatch : WindowGuardLogic.Matches input)
+    (hshortcut : baseZeroMatches input) :
+    Challenge.EvmProof.GasSteps (Dispatch.wordRouteEntryState input)
+      (baseZeroReturnState input) :=
+  let prefix := (sound guardPath (run_guard input)).trans
     (sound branchPath (run_branch_match input hmatch))
+  let check := sound baseZeroGuardPath
+    (run_baseZeroGuard_hit input hshortcut.1 hshortcut.2)
+  let load := sound baseZeroHandlerPath (run_baseZeroHandler input)
+  (prefix.trans check).trans load
 
 /-- Concrete control half of the fixed-width route. -/
 def control : WindowRoute.Control where

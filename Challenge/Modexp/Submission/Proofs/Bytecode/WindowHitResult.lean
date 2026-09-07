@@ -68,4 +68,33 @@ theorem zeroReturnedState_result (input : ByteArray)
   simp only [Precompile.natToBytes]
   rfl
 
+theorem baseZeroReturnedState_result (input : ByteArray)
+    (hmatch : WindowGuardLogic.Matches input)
+    (hshortcut : WindowControlDefs.baseZeroMatches input) :
+    (zeroReturnedState input).toResult = .returned (spec input) := by
+  by_cases hmodulus : WindowSpec.modulusValue input = 0
+  · exact zeroReturnedState_result input hmatch hmodulus
+  · have hmodulusPos : 0 < WindowSpec.modulusValue input := by omega
+    rcases hshortcut with ⟨hbase, hexponent⟩
+    have hbaseNat : WindowSpec.baseValue input = 0 := by
+      calc
+        WindowSpec.baseValue input =
+            (WindowControlDefs.shortcutBaseWord input).toNat := by
+          symm
+          exact Challenge.EvmProof.Bytes.readWord_toNat input 96
+        _ = 0 := by rw [hbase]; rfl
+    have hexponentNat : WindowSpec.exponentValue input ≠ 0 := by
+      intro hzero
+      apply hexponent
+      apply Challenge.EvmProof.Word.word_ext
+      calc
+        (WindowControlDefs.shortcutExponentWord input).toNat =
+            WindowSpec.exponentValue input := by
+          exact Challenge.EvmProof.Bytes.readWord_toNat input 128
+        _ = 0 := hzero
+    have hspec := WindowSpec.spec_eq input hmatch hmodulusPos
+    rw [hspec, WindowSpec.windowResult_eq_modPow input hmodulusPos]
+    unfold Precompile.modPow
+    simp [hbaseNat, hexponentNat]
+
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitResult

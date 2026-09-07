@@ -36,11 +36,53 @@ def guardPath :
 
 def branchPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.pushAt 1844 2 3024, Main.opAt 1845 .JUMPI]
+  [Main.pushAt 1844 2 5372, Main.opAt 1845 .JUMPI]
 
 def missPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [Main.pushAt 1846 2 517, Main.opAt 1847 .JUMP]
+/-- The new fixed-width shortcut entry checks a zero base against a
+nonzero exponent before the existing table path. -/
+def baseZeroGuardPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [Main.opAt 3268 .JUMPDEST,
+   Main.pushAt 3269 1 96,
+   Main.opAt 3270 .CALLDATALOAD,
+   Main.opAt 3271 .ISZERO,
+   Main.pushAt 3272 1 128,
+   Main.opAt 3273 .CALLDATALOAD,
+   Main.opAt 3274 .ISZERO,
+   Main.opAt 3275 .ISZERO,
+   Main.opAt 3276 .AND,
+   Main.pushAt 3277 2 5391,
+   Main.opAt 3278 .JUMPI,
+   Main.pushAt 3279 2 3024,
+   Main.opAt 3280 .JUMP]
+
+def baseZeroHandlerPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [Main.opAt 3281 .JUMPDEST,
+   Main.pushAt 3282 1 160,
+   Main.opAt 3283 .CALLDATALOAD,
+   Main.pushAt 3284 2 3563,
+   Main.opAt 3285 .JUMP]
+
+@[simp] theorem baseZeroPCs (i : Nat) (hlo : 3268 ≤ i) (hhi : i ≤ 3285) :
+    Artifact.submissionArtifact.instructionPC i =
+      [5372, 5373, 5375, 5376, 5377, 5379, 5380, 5381, 5382,
+       5383, 5386, 5387, 5390, 5391, 5392, 5394, 5395, 5398][i - 3268]! := by
+  interval_cases i <;> decide
+
+@[simp] theorem jump5391 :
+    Decode.isValidJumpDest submissionBytecode 5391 = true :=
+  Artifact.isValidJumpDest_index 3281 (by rfl)
+@[simp] theorem jump5372 :
+    Decode.isValidJumpDest submissionBytecode 5372 = true :=
+  Artifact.isValidJumpDest_index 3268 (by rfl)
+
+@[simp] theorem jump3563 :
+    Decode.isValidJumpDest submissionBytecode 3563 = true :=
+  Artifact.isValidJumpDest_index 2331 (by rfl)
 
 /-- The first instruction on the fixed-width hit path. -/
 def hitEntryPath :
@@ -86,6 +128,30 @@ def missState (input : ByteArray) : State :=
 `JUMPDEST`.  The guard preserves the dispatcher calling-convention stack. -/
 def hitState (input : ByteArray) : State :=
   { Dispatch.wordEntryState input with pc := UInt256.ofNat 3024 }
+
+def baseZeroEntryState (input : ByteArray) : State :=
+  { Dispatch.wordEntryState input with
+    pc := UInt256.ofNat 5372
+    stack := routeStack input }
+
+def baseZeroHandlerState (input : ByteArray) : State :=
+  { Dispatch.wordEntryState input with
+    pc := UInt256.ofNat 5391
+    stack := routeStack input }
+
+def baseZeroReturnState (input : ByteArray) : State :=
+  { Dispatch.wordEntryState input with
+    pc := UInt256.ofNat 3563
+    stack := MachineState.readWord input 160 :: routeStack input }
+
+def shortcutBaseWord (input : ByteArray) : UInt256 :=
+  MachineState.readWord input 96
+
+def shortcutExponentWord (input : ByteArray) : UInt256 :=
+  MachineState.readWord input 128
+
+def baseZeroMatches (input : ByteArray) : Prop :=
+  shortcutBaseWord input = 0 ∧ shortcutExponentWord input ≠ 0
 
 theorem routeStack_eq_entry (input : ByteArray) :
     routeStack input = (Dispatch.wordEntryState input).stack := by
