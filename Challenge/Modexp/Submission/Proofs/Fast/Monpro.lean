@@ -11,10 +11,11 @@ set_option maxHeartbeats 4000000
 /-!
 # The `MONPRO` subroutine of the appended Montgomery path
 
-`MONPRO` occupies instruction indices 1379..1599 (pc 1939..2466).  It is
-entered with stack `[pa, pb, pc, ret]`, computes the CIOS Montgomery product
+`MONPRO` occupies instruction indices 1379..1651 (pc 1939..2528).  It is
+entered with stack `[pa, pb, pc, ret]`, hoists the frame pointer `TL` below
+the working stack, and computes the CIOS Montgomery product
 `a * b * R⁻¹ mod m` of the `n`-limb blocks at `pa` and `pb` into the CIOS
-scratch area, and tail-calls `CSUB` at pc 2642 with stack `[pc, ret]`.
+scratch area, and tail-calls `CSUB` at pc 2671 with stack `[pc, ret]`.
 
 This module starts with the 512-bit multiply-accumulate identity that every
 CIOS row step relies on.
@@ -411,65 +412,130 @@ def mpEntryState (s : State) (mem : ByteArray) (pa pb : Nat) (pdst ret : UInt256
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
-/-- The outer loop head, pc 1974, at the start of row `i`. -/
+/-- The outer loop head, pc 1982, at the start of row `i`, with `TL` saved. -/
 def mpOutState (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1974
+  { s with pc := UInt256.ofNat 1982
            stack := [UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
+                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret,
+                     UInt256.ofNat (8224 + 32 * n)] ++ rest
            memory := mem }
 
-/-- The first limb loop head, pc 1995, after `j` steps of row `i`. -/
-def mpL1State (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Nat)
+/-- The P8 dispatcher entry, pc 1993, before the first-limb body. -/
+def mpL1DispatchState (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1995
+  { s with pc := UInt256.ofNat 1993
            stack := [UInt256.ofNat (ptrAt (pa + 32 * n - 32) j),
                      UInt256.ofNat (ptrAt (8224 + 32 * n) j),
                      (l1Step mem bi pa n j).carry, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
+                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret,
+                     UInt256.ofNat (8224 + 32 * n)] ++ rest
            memory := (l1Step mem bi pa n j).memory }
 
-/-- The row middle, pc 2141.  The two spent loop pointers are popped at once,
+/-- The first limb loop head, pc 2009, after `j` steps of row `i`. -/
+def mpL1State (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Nat)
+    (pdst ret : UInt256) (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 2009
+           stack := [UInt256.ofNat (ptrAt (pa + 32 * n - 32) j),
+                     UInt256.ofNat (ptrAt (8224 + 32 * n) j),
+                     (l1Step mem bi pa n j).carry, bi,
+                     UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
+                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret,
+                     UInt256.ofNat (8224 + 32 * n)] ++ rest
+           memory := (l1Step mem bi pa n j).memory }
+
+/-- The four-core first-limb body, pc 3921, after `j` steps of row `i`. -/
+def mpL1UnrollState (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Nat)
+    (pdst ret : UInt256) (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 3921
+           stack := [UInt256.ofNat (ptrAt (pa + 32 * n - 32) j),
+                     UInt256.ofNat (ptrAt (8224 + 32 * n) j),
+                     (l1Step mem bi pa n j).carry, bi,
+                     UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
+                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret,
+                     UInt256.ofNat (8224 + 32 * n)] ++ rest
+           memory := (l1Step mem bi pa n j).memory }
+
+/-- The row middle landing, pc 2155.  The two spent loop pointers are popped at once,
 so they stay opaque. -/
 def mpMidState (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2141
+  { s with pc := UInt256.ofNat 2155
            stack := [paj, ptj, c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
+                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret,
+                     UInt256.ofNat (8224 + 32 * n)] ++ rest
            memory := mem }
 
-/-- The second limb loop head, pc 2241, after `k` steps of row `i`. -/
-def mpL2State (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
+/-- The P10 dispatcher entry, pc 2250, before the second-limb body. -/
+def mpL2DispatchState (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2241
+  { s with pc := UInt256.ofNat 2250
            stack := [UInt256.ofNat (ptrAt (32 * n - 64) k),
                      UInt256.ofNat (ptrAt (8192 + 32 * n) k),
                      (l2Step mid mu c0 n k).carry, mu, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
+                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret,
+                     UInt256.ofNat (8224 + 32 * n)] ++ rest
            memory := (l2Step mid mu c0 n k).memory }
 
-/-- The row tail, pc 2392. -/
+/-- The second limb loop head, pc 2266, after `k` steps of row `i`. -/
+def mpL2State (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
+    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 2266
+           stack := [UInt256.ofNat (ptrAt (32 * n - 64) k),
+                     UInt256.ofNat (ptrAt (8192 + 32 * n) k),
+                     (l2Step mid mu c0 n k).carry, mu, bi,
+                     UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
+                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret,
+                     UInt256.ofNat (8224 + 32 * n)] ++ rest
+           memory := (l2Step mid mu c0 n k).memory }
+
+/-- The P10 three-core prefix, pc 4485, after `k` steps of row `i`. -/
+def mpL2UnrollState (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
+    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 4485
+           stack := [UInt256.ofNat (ptrAt (32 * n - 64) k),
+                     UInt256.ofNat (ptrAt (8192 + 32 * n) k),
+                     (l2Step mid mu c0 n k).carry, mu, bi,
+                     UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
+                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret,
+                     UInt256.ofNat (8224 + 32 * n)] ++ rest
+           memory := (l2Step mid mu c0 n k).memory }
+
+/-- The P10 four-core remainder loop, pc 4922, after `k` steps of row `i`. -/
+def mpL2LoopState (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
+    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 4922
+           stack := [UInt256.ofNat (ptrAt (32 * n - 64) k),
+                     UInt256.ofNat (ptrAt (8192 + 32 * n) k),
+                     (l2Step mid mu c0 n k).carry, mu, bi,
+                     UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
+                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret,
+                     UInt256.ofNat (8224 + 32 * n)] ++ rest
+           memory := (l2Step mid mu c0 n k).memory }
+
+/-- The row tail, pc 2417, with `TL` saved. -/
 def mpTailState (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2392
+  { s with pc := UInt256.ofNat 2417
            stack := [pmj, ptj, c, mu, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
+                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret,
+                     UInt256.ofNat (8224 + 32 * n)] ++ rest
            memory := mem }
 
-/-- The subroutine exit, pc 2460, after all `n` rows. -/
-def mpExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
+/-- The subroutine exit, pc 2486, after all `n` rows, with `TL` saved. -/
+def mpExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2460
+  { s with pc := UInt256.ofNat 2486
            stack := [pbi, UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32),
-                     pdst, ret] ++ rest
+                     pdst, ret, UInt256.ofNat (8224 + 32 * n)] ++ rest
            memory := mem }
 
-/-- `CSUB` entry, pc 2642, with stack `[pd, ret]`. -/
+/-- `CSUB` entry, pc 2671, with stack `[pd, ret]`. -/
 def mpCsubState (s : State) (mem : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2642
+  { s with pc := UInt256.ofNat 2671
            stack := [pdst, ret] ++ rest
            memory := mem }
 
@@ -484,7 +550,8 @@ theorem run_mpEntry (s : State) (mem : ByteArray) (pa pb n : Nat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n)) :
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
+    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1379
       (mpEntryState s mem pa pb pdst ret rest) =
       some (mpOutState s (mpZeroed s mem n) pa pb n 0 pdst ret rest) := by
@@ -497,6 +564,7 @@ theorem run_mpEntry (s : State) (mem : ByteArray) (pa pb n : Nat)
   have h64 : (64 : UInt256) = UInt256.ofNat 64 := by decide
   have h8192 : (8192 : UInt256).toNat = 8192 := by decide
   have h9344 : (9344 : UInt256).toNat = 9344 := by decide
+  have h9440 : (9440 : UInt256).toNat = 9440 := by decide
   have hsizeN : (64 + 32 * n) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       64 + 32 * n := Nat.mod_eq_of_lt (by omega)
@@ -513,6 +581,9 @@ theorem run_mpEntry (s : State) (mem : ByteArray) (pa pb n : Nat)
   have hactS : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) = s.activeWords :=
     activeWords_fix s 9344 32 (by decide) (by omega) hact
+  have hactT : UInt256.ofNat
+      (MachineState.activeWordsAfter s.activeWords.toNat 9440 32) = s.activeWords :=
+    activeWords_fix s 9440 32 (by decide) (by omega) hact
   have hactC : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 8192 (64 + 32 * n)) =
       s.activeWords := activeWords_fix s 8192 (64 + 32 * n) (by omega) (by omega) hact
@@ -522,8 +593,8 @@ theorem run_mpEntry (s : State) (mem : ByteArray) (pa pb n : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpEntryState, mpOutState, mpZeroed, fastPC10,
-      hc4, hc5, hc6, hc7, hc8, hrun, h32, h64, h8192, h9344, hs32,
-      hsizeN, hcdsN, hsub1, hsub2, hsub3, hactS, hactC,
+      hc4, hc5, hc6, hc7, hc8, hrun, h32, h64, h8192, h9344, h9440, hs32, htl,
+      hsizeN, hcdsN, hsub1, hsub2, hsub3, hactS, hactT, hactC,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -542,7 +613,7 @@ theorem run_mpOut (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1406
       (mpOutState s mem pa pb n i pdst ret rest) =
-      some (mpL1State s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) := by
+      some (mpL1DispatchState s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) := by
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
@@ -576,7 +647,7 @@ theorem run_mpOut (s : State) (mem : ByteArray) (pa pb n i : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      mpOutState, mpL1State, l1Step, rowBi, fastPC10, fastPC11,
+      mpOutState, mpL1DispatchState, l1Step, rowBi, fastPC10, fastPC11,
       hc5, hc6, hc7, hc8, hc9, hc10, hrun, h32, h9344, h9440, hzero,
       hs32, htl, hpbi, hpa32, hsuba, hactB, hactT, hactS,
       State.activeWordsAfterUInt256,
@@ -600,7 +671,7 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1421
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1421Core
       (mpL1State s mem bi pa pb n i j pdst ret rest) =
       some (mpL1State s mem bi pa pb n i (j + 1) pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
@@ -612,11 +683,11 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
-  have h1995 : (1995 : UInt256).toNat = 1995 := by decide
-  have h1995' : (1995 : UInt256) = UInt256.ofNat 1995 := by decide
+  have h2009 : (2009 : UInt256).toNat = 2009 := by decide
+  have h2009' : (2009 : UInt256) = UInt256.ofNat 2009 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (1995 : UInt256).toNat = true := by
-    rw [h1995]; exact jumpDest1995
+      (2009 : UInt256).toNat = true := by
+    rw [h2009]; exact jumpDest2009
   have hpaj : ptrAt (pa + 32 * n - 32) j %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       pa + 32 * (n - 1 - j) := by
@@ -640,14 +711,14 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       (8256 + 32 * (n - 1 - j)) 32) = s.activeWords :=
     activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 800000 })
-    [blk1421, opAt, pushAt, wfOp,
+    [blk1421Core, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpL1State, l1Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC11, fastPC12,
-      hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK, h1995, h1995', hjump,
-      jumpDest1995, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
+      hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK, h2009, h2009', hjump,
+      jumpDest2009, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -662,7 +733,7 @@ theorem run_mpL1Exit (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hj : j + 1 = n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1421
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1421Core
       (mpL1State s mem bi pa pb n i j pdst ret rest) =
       some (mpMidState s (l1Step mem bi pa n (j + 1)).memory
         (UInt256.ofNat (ptrAt (pa + 32 * n - 32) (j + 1)))
@@ -699,7 +770,7 @@ theorem run_mpL1Exit (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       (8256 + 32 * (n - 1 - j)) 32) = s.activeWords :=
     activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 800000 })
-    [blk1421, opAt, pushAt, wfOp,
+    [blk1421Core, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -753,8 +824,8 @@ theorem run_mpMid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * n - 32))
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1469
-      (mpMidState s mem paj ptj c bi pa pb n i pdst ret rest) =
-      some (mpL2State s (midMem mem c) bi (rowMu mem n)
+  (mpMidState s mem paj ptj c bi pa pb n i pdst ret rest) =
+      some (mpL2DispatchState s (midMem mem c) bi (rowMu mem n)
         (rowC0 mem n) pa pb n i 0 pdst ret rest) := by
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
@@ -811,7 +882,7 @@ theorem run_mpMid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      mpMidState, mpL2State, l2Step, midMem, midMem1, rowMu, rowC0, mulHi,
+      mpMidState, mpL2DispatchState, l2Step, midMem, midMem1, rowMu, rowC0, mulHi,
       zero_lt_eq_double_isZero,
       maxWord_literal, fastPC12, fastPC13, readWord_midMem_peel,
       hc6, hc7, hc8, hc9, hc10, hc11, hrun, h32, h8192, h8224, h9376, h9408, h9440,
@@ -837,7 +908,7 @@ theorem run_mpL2Body (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hk : k + 2 < n) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1519
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1519Core
       (mpL2State s mid bi mu c0 pa pb n i k pdst ret rest) =
       some (mpL2State s mid bi mu c0 pa pb n i (k + 1) pdst ret rest) := by
   have hc10 : rest.length + 10 < 1024 := by omega
@@ -851,11 +922,11 @@ theorem run_mpL2Body (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     decide
   have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
-  have h2241 : (2241 : UInt256).toNat = 2241 := by decide
-  have h2241' : (2241 : UInt256) = UInt256.ofNat 2241 := by decide
+  have h2266 : (2266 : UInt256).toNat = 2266 := by decide
+  have h2266' : (2266 : UInt256) = UInt256.ofNat 2266 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (2241 : UInt256).toNat = true := by
-    rw [h2241]; exact jumpDest2241
+      (2266 : UInt256).toNat = true := by
+    rw [h2266]; exact jumpDest2266
   have hpmj : ptrAt (32 * n - 64) k %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       32 * (n - 2 - k) := by
@@ -883,14 +954,14 @@ theorem run_mpL2Body (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       (8256 + 32 * (n - 1 - k)) 32) = s.activeWords :=
     activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 800000 })
-    [blk1519, opAt, pushAt, wfOp,
+    [blk1519Core, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpL2State, l2Step, macSum, macCarry, mulHi, maxWord_literal,
-      fastPC13, fastPC14,
+      fastPC14, fastPC15,
       hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, h32, h8224,
-      h2241, h2241', hjump, jumpDest2241,
+      h2266, h2266', hjump, jumpDest2266,
       hpmj, hptj, hwr, hnextT, hgt, hactM, hactT, hactW, ptrAt_succ, ptrAt_shift32,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
@@ -905,7 +976,7 @@ theorem run_mpL2Exit (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hk : k + 2 = n) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1519
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1519Core
       (mpL2State s mid bi mu c0 pa pb n i k pdst ret rest) =
       some (mpTailState s (l2Step mid mu c0 n (k + 1)).memory
         (UInt256.ofNat (ptrAt (32 * n - 64) (k + 1)))
@@ -948,12 +1019,12 @@ theorem run_mpL2Exit (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       (8256 + 32 * (n - 1 - k)) 32) = s.activeWords :=
     activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 800000 })
-    [blk1519, opAt, pushAt, wfOp,
+    [blk1519Core, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpL2State, mpTailState, l2Step, macSum, macCarry, mulHi, maxWord_literal,
-      fastPC13, fastPC14,
+      fastPC14, fastPC15,
       hc10, hc11, hc12, hc13, hc14, hrun, hK, h32, h8224,
       hpmj, hptj, hwr, hnextT, hactM, hactT, hactW, ptrAt_succ, ptrAt_shift32,
       UInt256.gt, UInt256.isTrue,
@@ -989,11 +1060,11 @@ theorem run_mpTailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
   have h8192 : (8192 : UInt256).toNat = 8192 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
   have h8256 : (8256 : UInt256).toNat = 8256 := by decide
-  have h1974 : (1974 : UInt256).toNat = 1974 := by decide
-  have h1974' : (1974 : UInt256) = UInt256.ofNat 1974 := by decide
+  have h1982 : (1982 : UInt256).toNat = 1982 := by decide
+  have h1982' : (1982 : UInt256) = UInt256.ofNat 1982 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (1974 : UInt256).toNat = true := by
-    rw [h1974]; exact jumpDest1974
+      (1982 : UInt256).toNat = true := by
+    rw [h1982]; exact jumpDest1982
   have hnextB : ptrAt (pb + 32 * n - 32) (i + 1) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       pb + 32 * (n - 2 - i) := by
@@ -1016,9 +1087,9 @@ theorem run_mpTailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      mpTailState, mpOutState, tailMem, tailMem1, fastPC14, fastPC15,
+      mpTailState, mpOutState, tailMem, tailMem1, fastPC15,
       hc5, hc6, hc7, hc8, hc9, hc10, hrun, hcode, hK, h8192, h8224, h8256,
-      h1974, h1974', hjump, jumpDest1974, hnextB, hpbmN, hgt,
+      h1982, h1982', hjump, jumpDest1982, hnextB, hpbmN, hgt,
       hactN, hactS, hactP, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
@@ -1037,7 +1108,7 @@ theorem run_mpTailLast (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock blk1569
       (mpTailState s mem pmj ptj c mu bi pa pb n i pdst ret rest) =
       some (mpExitState s (tailMem mem c)
-        (UInt256.ofNat (ptrAt (pb + 32 * n - 32) (i + 1))) pa pb pdst ret rest) := by
+        (UInt256.ofNat (ptrAt (pb + 32 * n - 32) (i + 1))) pa pb n pdst ret rest) := by
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
@@ -1072,7 +1143,7 @@ theorem run_mpTailLast (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      mpTailState, mpExitState, tailMem, tailMem1, fastPC14, fastPC15,
+      mpTailState, mpExitState, tailMem, tailMem1, fastPC15,
       hc5, hc6, hc7, hc8, hc9, hc10, hrun, hK, h8192, h8224, h8256,
       hnextB, hpbmN, hactN, hactS, hactP, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
@@ -1083,29 +1154,33 @@ theorem run_mpTailLast (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
       List.exchange]
 
 set_option linter.unusedSimpArgs false in
-theorem run_mpExit (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
+theorem run_mpExit (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1595
-      (mpExitState s mem pbi pa pb pdst ret rest) =
+      (mpExitState s mem pbi pa pb n pdst ret rest) =
       some (mpCsubState s mem pdst ret rest) := by
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have h2642 : (2642 : UInt256).toNat = 2642 := by decide
-  have h2642' : (2642 : UInt256) = UInt256.ofNat 2642 := by decide
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have h2671 : (2671 : UInt256).toNat = 2671 := by decide
+  have h2671' : (2671 : UInt256) = UInt256.ofNat 2671 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (2642 : UInt256).toNat = true := by
-    rw [h2642]; exact jumpDest2642
+      (2671 : UInt256).toNat = true := by
+    rw [h2671]; exact jumpDest2671
   simp (config := { maxSteps := 400000 })
     [blk1595, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      mpExitState, mpCsubState, fastPC15,
-      hc2, hc3, hc4, hc5, hrun, hcode, h2642, h2642', hjump, jumpDest2642,
+      mpExitState, mpCsubState, fastPC16,
+      hc2, hc3, hc4, hc5, hc6, hc7, hc8, hrun, hcode, h2671, h2671', hjump,
+      jumpDest2671,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
@@ -1213,7 +1288,1000 @@ theorem readWord_mpZeroed (s : State) (mem : ByteArray) (n addr : Nat)
   rw [Challenge.EvmProof.Memory.readPadded_size]
   omega
 
+/-! ## The P10 divisibility dispatcher -/
+
+set_option linter.unusedSimpArgs false in
+theorem run_mpL2Dispatch_div4 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
+    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hdiv : n % 4 = 0) (hs32 : MachineState.readWord mid 9344 = UInt256.ofNat (32 * n)) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1519
+      (mpL2DispatchState s mid bi mu c0 pa pb n i k pdst ret rest) =
+      some (mpL2UnrollState s mid bi mu c0 pa pb n i k pdst ret rest) := by
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have h9344 : (9344 : UInt256).toNat = 9344 := by decide
+  have h4485 : (4485 : UInt256).toNat = 4485 := by decide
+  have h4485' : (4485 : UInt256) = UInt256.ofNat 4485 := by decide
+  have hs32' : MachineState.readWord (l2Step mid mu c0 n k).memory 9344 =
+      UInt256.ofNat (32 * n) := by
+    exact (readWord_l2Step mid mu c0 n 9344 k hn32 (Or.inr (by omega))).trans hs32
+  have hzero : UInt256.isZero
+      (UInt256.land (UInt256.ofNat (32 * n)) (UInt256.ofNat 127)) = UInt256.ofNat 1 := by
+    interval_cases n <;> norm_num at hdiv ⊢
+  have hactS : UInt256.ofNat
+      (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) = s.activeWords :=
+    activeWords_fix s 9344 32 (by decide) (by omega) hact
+  have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4485 = true :=
+    Artifact.isValidJumpDest_index 2773 (by rfl)
+  simp (config := { maxSteps := 400000 })
+    [blk1519, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      mpL2DispatchState, mpL2UnrollState, l2Step,
+      fastPC13, fastPC14, hc11, hc12, hc13, hc14, hrun, hcode, h9344, h4485, h4485',
+      hs32', hzero, hactS, hjump,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt,
+      List.exchange]
+
+set_option linter.unusedSimpArgs false in
+theorem run_mpL2Dispatch_not_div4 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
+    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hdiv : n % 4 ≠ 0) (hs32 : MachineState.readWord mid 9344 = UInt256.ofNat (32 * n)) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1519
+      (mpL2DispatchState s mid bi mu c0 pa pb n i k pdst ret rest) =
+      some (mpL2State s mid bi mu c0 pa pb n i k pdst ret rest) := by
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have h9344 : (9344 : UInt256).toNat = 9344 := by decide
+  have hactS : UInt256.ofNat
+      (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) = s.activeWords :=
+    activeWords_fix s 9344 32 (by decide) (by omega) hact
+  have hs32' : MachineState.readWord (l2Step mid mu c0 n k).memory 9344 =
+      UInt256.ofNat (32 * n) := by
+    exact (readWord_l2Step mid mu c0 n 9344 k hn32 (Or.inr (by omega))).trans hs32
+  have hzero : UInt256.isZero
+      (UInt256.land (UInt256.ofNat (32 * n)) (UInt256.ofNat 127)) = UInt256.ofNat 0 := by
+    interval_cases n <;> norm_num at hdiv ⊢
+  simp (config := { maxSteps := 400000 })
+    [blk1519, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      mpL2DispatchState, mpL2State, l2Step,
+      fastPC13, fastPC14, hc11, hc12, hc13, hc14, hrun, hcode, h9344,
+      hs32', hzero, hactS,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt,
+      List.exchange]
+
+/-! ## The P8 four-core dispatcher
+
+The shared `Defs` table is intentionally not used here: this proof is keyed
+to the frozen final artifact coordinates. -/
+
+private theorem p8PC_dispatcher (i : Nat) (hi : 1421 ≤ i) (hii : i ≤ 1431) :
+    Artifact.submissionArtifact.instructionPC i =
+      [1993,1994,1997,1998,1999,2001,2002,2003,2004,2005,2008][i - 1421]! := by
+  interval_cases i <;> decide
+
+private theorem p8JumpDest3921 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3921 = true :=
+  Artifact.isValidJumpDest_index 2597 (by rfl)
+
+set_option linter.unusedSimpArgs false in
+theorem run_mpL1Dispatch_div4 (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hdiv : n % 4 = 0)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n)) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1421
+      (mpL1DispatchState s mem bi pa pb n i j pdst ret rest) =
+      some (mpL1UnrollState s mem bi pa pb n i j pdst ret rest) := by
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have h9344 : (9344 : UInt256).toNat = 9344 := by decide
+  have h3921 : (3921 : UInt256) = UInt256.ofNat 3921 := by decide
+  have hs32' : MachineState.readWord (l1Step mem bi pa n j).memory 9344 =
+      UInt256.ofNat (32 * n) := by
+    exact (readWord_l1Step mem bi pa n 9344 j hn32 (Or.inr (by omega))).trans hs32
+  have hzero : UInt256.isZero
+      (UInt256.land (UInt256.ofNat (32 * n)) (UInt256.ofNat 127)) = UInt256.ofNat 1 := by
+    interval_cases n <;> norm_num at hdiv ⊢
+  have hactS : UInt256.ofNat
+      (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) = s.activeWords :=
+    activeWords_fix s 9344 32 (by decide) (by omega) hact
+  simp (config := { maxSteps := 400000 })
+    [blk1421, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      mpL1DispatchState, mpL1UnrollState, l1Step,
+      p8PC_dispatcher, hc11, hc12, hc13, hrun, hcode, h9344, h3921, hs32', hzero, hactS,
+      p8JumpDest3921,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt,
+      List.exchange]
+
+set_option linter.unusedSimpArgs false in
+theorem run_mpL1Dispatch_not_div4 (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hdiv : n % 4 ≠ 0)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n)) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1421
+      (mpL1DispatchState s mem bi pa pb n i j pdst ret rest) =
+      some (mpL1State s mem bi pa pb n i j pdst ret rest) := by
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have h9344 : (9344 : UInt256).toNat = 9344 := by decide
+  have hs32' : MachineState.readWord (l1Step mem bi pa n j).memory 9344 =
+      UInt256.ofNat (32 * n) := by
+    exact (readWord_l1Step mem bi pa n 9344 j hn32 (Or.inr (by omega))).trans hs32
+  have hzero : UInt256.isZero
+      (UInt256.land (UInt256.ofNat (32 * n)) (UInt256.ofNat 127)) = UInt256.ofNat 0 := by
+    interval_cases n <;> norm_num at hdiv ⊢
+  have hactS : UInt256.ofNat
+      (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) = s.activeWords :=
+    activeWords_fix s 9344 32 (by decide) (by omega) hact
+  simp (config := { maxSteps := 400000 })
+    [blk1421, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      mpL1DispatchState, mpL1State, l1Step,
+      p8PC_dispatcher, hc11, hc12, hc13, hrun, hcode, h9344, hs32', hzero, hactS,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt,
+      List.exchange]
+
+private theorem p8PC_unroll (i : Nat) (hi : 2597 ≤ i) (hii : i ≤ 2772) :
+    Artifact.submissionArtifact.instructionPC i =
+      [3921, 3922, 3923, 3924, 3925, 3926, 3927, 3928,
+       3929, 3962, 3963, 3964, 3965, 3966, 3967, 3968,
+       3969, 3970, 3971, 3972, 3973, 3974, 3975, 3976,
+       3977, 3978, 3979, 3980, 3981, 3982, 3983, 3984,
+       3985, 3986, 3987, 3988, 3989, 3990, 4023, 4024,
+       4025, 4058, 4059, 4060, 4061, 4062, 4063, 4064,
+       4065, 4066, 4067, 4100, 4101, 4102, 4103, 4104,
+       4105, 4106, 4107, 4108, 4109, 4110, 4111, 4112,
+       4113, 4114, 4115, 4116, 4117, 4118, 4119, 4120,
+       4121, 4122, 4123, 4124, 4125, 4126, 4127, 4128,
+       4161, 4162, 4163, 4196, 4197, 4198, 4199, 4200,
+       4201, 4202, 4203, 4204, 4205, 4238, 4239, 4240,
+       4241, 4242, 4243, 4244, 4245, 4246, 4247, 4248,
+       4249, 4250, 4251, 4252, 4253, 4254, 4255, 4256,
+       4257, 4258, 4259, 4260, 4261, 4262, 4263, 4264,
+       4265, 4266, 4299, 4300, 4301, 4334, 4335, 4336,
+       4337, 4338, 4339, 4340, 4341, 4342, 4343, 4376,
+       4377, 4378, 4379, 4380, 4381, 4382, 4383, 4384,
+       4385, 4386, 4387, 4388, 4389, 4390, 4391, 4392,
+       4393, 4394, 4395, 4396, 4397, 4398, 4399, 4400,
+       4401, 4402, 4403, 4404, 4437, 4438, 4439, 4472,
+       4473, 4474, 4475, 4476, 4477, 4480, 4481, 4484][i - 2597]! := by
+  interval_cases i <;> decide
+
+private theorem p8JumpDest2155 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2155 = true :=
+  Artifact.isValidJumpDest_index 1480 (by rfl)
+
+set_option linter.unusedSimpArgs false in
+theorem run_mpL1Unroll_continue (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32)
+    (hj : j + 4 < n) (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1421UnrollContinue
+      (mpL1UnrollState s mem bi pa pb n i j pdst ret rest) =
+      some (mpL1UnrollState s mem bi pa pb n i (j + 4) pdst ret rest) := by
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
+      UInt256) = UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+    decide
+  have hpamN : (pa - 32) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      pa - 32 := Nat.mod_eq_of_lt (by omega)
+  have hA0 : ptrAt (pa + 32 * n - 32) j %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      pa + 32 * (n - 1 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hT0 : ptrAt (8224 + 32 * n) j %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 1 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hA1 : ptrAt (pa + 32 * n - 32) (j + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      pa + 32 * (n - 2 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hT1 : ptrAt (8224 + 32 * n) (j + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 2 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hA2 : ptrAt (pa + 32 * n - 32) (j + 2) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      pa + 32 * (n - 3 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hT2 : ptrAt (8224 + 32 * n) (j + 2) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 3 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hA3 : ptrAt (pa + 32 * n - 32) (j + 3) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      pa + 32 * (n - 4 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hT3 : ptrAt (8224 + 32 * n) (j + 3) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 4 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hA4 : ptrAt (pa + 32 * n - 32) (j + 4) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      pa + 32 * (n - 5 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hT4 : ptrAt (8224 + 32 * n) (j + 4) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 5 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hgt : pa - 32 < pa + 32 * (n - 5 - j) := by omega
+  have hactA0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (pa + 32 * (n - 1 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 1 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactA1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (pa + 32 * (n - 2 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 2 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactA2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (pa + 32 * (n - 3 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 3 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactA3 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (pa + 32 * (n - 4 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT3 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 4 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  simp (config := { maxSteps := 4000000 })
+    [blk1421UnrollContinue, blk1421Unroll, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      mpL1UnrollState, l1Step, macSum, macCarry, mulHi, maxWord_literal,
+      p8PC_unroll, p8JumpDest3921,
+      hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK,
+      hA0, hT0, hA1, hT1, hA2, hT2, hA3, hT3, hA4, hT4, hpamN, hgt,
+      hactA0, hactT0, hactA1, hactT1, hactA2, hactT2, hactA3, hactT3,
+      ptrAt_succ, UInt256.gt, UInt256.isTrue,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+      List.exchange]
+
+set_option linter.unusedSimpArgs false in
+theorem run_mpL1Unroll_exit (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32)
+    (hj : j + 4 = n) (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1421UnrollExit
+      (mpL1UnrollState s mem bi pa pb n i j pdst ret rest) =
+      some (mpMidState s (l1Step mem bi pa n (j + 4)).memory
+        (UInt256.ofNat (ptrAt (pa + 32 * n - 32) (j + 4)))
+        (UInt256.ofNat (ptrAt (8224 + 32 * n) (j + 4)))
+        (l1Step mem bi pa n (j + 4)).carry bi pa pb n i pdst ret rest) := by
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
+      UInt256) = UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+    decide
+  have h3921 : (3921 : UInt256) = UInt256.ofNat 3921 := by decide
+  have h2155 : (2155 : UInt256) = UInt256.ofNat 2155 := by decide
+  have hpamN : (pa - 32) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      pa - 32 := Nat.mod_eq_of_lt (by omega)
+  have hA0 : ptrAt (pa + 32 * n - 32) j %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      pa + 32 * (n - 1 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hT0 : ptrAt (8224 + 32 * n) j %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 1 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hA1 : ptrAt (pa + 32 * n - 32) (j + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      pa + 32 * (n - 2 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hT1 : ptrAt (8224 + 32 * n) (j + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 2 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hA2 : ptrAt (pa + 32 * n - 32) (j + 2) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      pa + 32 * (n - 3 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hT2 : ptrAt (8224 + 32 * n) (j + 2) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 3 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hA3 : ptrAt (pa + 32 * n - 32) (j + 3) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      pa + 32 * (n - 4 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hT3 : ptrAt (8224 + 32 * n) (j + 3) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 4 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hA4 : ptrAt (pa + 32 * n - 32) (j + 4) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      pa - 32 := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hT4 : ptrAt (8224 + 32 * n) (j + 4) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8224 := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hactA0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (pa + 32 * (n - 1 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 1 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactA1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (pa + 32 * (n - 2 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 2 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactA2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (pa + 32 * (n - 3 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 3 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactA3 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (pa + 32 * (n - 4 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT3 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 4 - j)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  simp (config := { maxSteps := 4000000 })
+    [blk1421UnrollExit, blk1421Unroll, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      mpL1UnrollState, mpMidState, l1Step, macSum, macCarry, mulHi, maxWord_literal,
+      p8PC_unroll, p8JumpDest3921, p8JumpDest2155,
+      hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK, h3921, h2155,
+      hA0, hT0, hA1, hT1, hA2, hT2, hA3, hT3, hA4, hT4, hpamN,
+      hactA0, hactT0, hactA1, hactT1, hactA2, hactT2, hactA3, hactT3,
+      ptrAt_succ, UInt256.gt, UInt256.isTrue,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+      List.exchange]
+
 /-! ## Gas traces for the individual blocks -/
+
+private theorem p10PC_unroll (i : Nat) (hi : 2773 ≤ i) (hii : i ≤ 3096) :
+    Artifact.submissionArtifact.instructionPC i =
+      [4485,4486,4487,4488,4489,4490,4491,4492,
+       4493,4526,4527,4528,4529,4530,4531,4532,
+       4533,4534,4535,4536,4537,4538,4539,4540,
+       4541,4542,4543,4544,4545,4546,4547,4548,
+       4549,4550,4551,4552,4553,4555,4556,4557,
+       4590,4591,4592,4625,4626,4627,4628,4629,
+       4630,4631,4632,4633,4634,4667,4668,4669,
+       4670,4671,4672,4673,4674,4675,4676,4677,
+       4678,4679,4680,4681,4682,4683,4684,4685,
+       4686,4687,4688,4689,4690,4691,4692,4693,
+       4694,4696,4697,4698,4731,4732,4733,4766,
+       4767,4768,4769,4770,4771,4772,4773,4774,
+       4775,4808,4809,4810,4811,4812,4813,4814,
+       4815,4816,4817,4818,4819,4820,4821,4822,
+       4823,4824,4825,4826,4827,4828,4829,4830,
+       4831,4832,4833,4834,4835,4837,4838,4839,
+       4872,4873,4874,4907,4908,4909,4912,4913,
+       4914,4917,4918,4921,4922,4923,4924,4925,
+       4926,4927,4928,4929,4930,4963,4964,4965,
+       4966,4967,4968,4969,4970,4971,4972,4973,
+       4974,4975,4976,4977,4978,4979,4980,4981,
+       4982,4983,4984,4985,4986,4987,4988,4989,
+       4990,4992,4993,4994,5027,5028,5029,5062,
+       5063,5064,5065,5066,5067,5068,5069,5070,
+       5071,5104,5105,5106,5107,5108,5109,5110,
+       5111,5112,5113,5114,5115,5116,5117,5118,
+       5119,5120,5121,5122,5123,5124,5125,5126,
+       5127,5128,5129,5130,5131,5133,5134,5135,
+       5168,5169,5170,5203,5204,5205,5206,5207,
+       5208,5209,5210,5211,5212,5245,5246,5247,
+       5248,5249,5250,5251,5252,5253,5254,5255,
+       5256,5257,5258,5259,5260,5261,5262,5263,
+       5264,5265,5266,5267,5268,5269,5270,5271,
+       5272,5274,5275,5276,5309,5310,5311,5344,
+       5345,5346,5347,5348,5349,5350,5351,5352,
+       5353,5386,5387,5388,5389,5390,5391,5392,
+       5393,5394,5395,5396,5397,5398,5399,5400,
+       5401,5402,5403,5404,5405,5406,5407,5408,
+       5409,5410,5411,5412,5413,5415,5416,5417,
+       5450,5451,5452,5485,5486,5487,5490,5491,
+       5492,5495,5496,5499][i - 2773]! := by
+  interval_cases i <;> decide
+
+private theorem p10JumpDest4922 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4922 = true :=
+  Artifact.isValidJumpDest_index 2913 (by rfl)
+
+private theorem p10JumpDest2417 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2417 = true :=
+  Artifact.isValidJumpDest_index 1590 (by rfl)
+
+/-! ## The P10 three-core prefix -/
+
+set_option linter.unusedSimpArgs false in
+theorem run_mpL2UnrollPrefix_continue (s : State) (mid : ByteArray)
+    (bi mu c0 : UInt256) (pa pb n i k : Nat)
+    (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32)
+    (hj : k + 4 < n) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1519UnrollPrefixContinue
+      (mpL2UnrollState s mid bi mu c0 pa pb n i k pdst ret rest) =
+      some (mpL2LoopState s mid bi mu c0 pa pb n i (k + 3) pdst ret rest) := by
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
+      UInt256) = UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+    decide
+  have h8224 : (8224 : UInt256).toNat = 8224 := by decide
+  have h4922 : (4922 : UInt256).toNat = 4922 := by decide
+  have h4922' : (4922 : UInt256) = UInt256.ofNat 4922 := by decide
+  have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
+      (4922 : UInt256).toNat = true := by
+    rw [h4922]
+    exact p10JumpDest4922
+  have hM0 : ptrAt (32 * n - 64) k %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 2 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT0 : ptrAt (8192 + 32 * n) k %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 2 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hM1 : ptrAt (32 * n - 64) (k + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 3 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT1 : ptrAt (8192 + 32 * n) (k + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 3 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hM2 : ptrAt (32 * n - 64) (k + 2) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 4 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT2 : ptrAt (8192 + 32 * n) (k + 2) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 4 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hM3 : ptrAt (32 * n - 64) (k + 3) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 5 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT3 : ptrAt (8192 + 32 * n) (k + 3) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 5 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hgt : 8224 < 8256 + 32 * (n - 5 - k) := by omega
+  have hactM0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 2 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 2 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactM1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 3 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 3 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactM2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 4 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 4 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactM3 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 5 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT3 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 5 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  simp (config := { maxSteps := 4000000 })
+    [blk1519UnrollPrefixContinue, blk1519UnrollPrefix, blk1519Unroll,
+      opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      mpL2UnrollState, mpL2LoopState, l2Step, macSum, macCarry, mulHi, maxWord_literal,
+      p10PC_unroll, p10JumpDest4922,
+      hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, h8224, h4922, h4922', hjump,
+      hM0, hT0, hM1, hT1, hM2, hT2, hM3, hT3, hgt,
+      hactM0, hactT0, hactM1, hactT1, hactM2, hactT2, hactM3, hactT3,
+      ptrAt_succ, UInt256.gt, UInt256.isTrue,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+      List.exchange]
+
+set_option linter.unusedSimpArgs false in
+theorem run_mpL2UnrollPrefix_exit (s : State) (mid : ByteArray)
+    (bi mu c0 : UInt256) (pa pb n i k : Nat)
+    (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32)
+    (hj : k + 4 = n) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1519UnrollPrefixExit
+      (mpL2UnrollState s mid bi mu c0 pa pb n i k pdst ret rest) =
+      some (mpTailState s (l2Step mid mu c0 n (k + 3)).memory
+        (UInt256.ofNat (ptrAt (32 * n - 64) (k + 3)))
+        (UInt256.ofNat (ptrAt (8192 + 32 * n) (k + 3)))
+        (l2Step mid mu c0 n (k + 3)).carry mu bi pa pb n i pdst ret rest) := by
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
+      UInt256) = UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+    decide
+  have h8224 : (8224 : UInt256).toNat = 8224 := by decide
+  have h2417 : (2417 : UInt256).toNat = 2417 := by decide
+  have h2417' : (2417 : UInt256) = UInt256.ofNat 2417 := by decide
+  have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
+      (2417 : UInt256).toNat = true := by
+    rw [h2417]
+    exact p10JumpDest2417
+  have hM0 : ptrAt (32 * n - 64) k %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 2 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT0 : ptrAt (8192 + 32 * n) k %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 2 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hM1 : ptrAt (32 * n - 64) (k + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 3 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT1 : ptrAt (8192 + 32 * n) (k + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 3 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hM2 : ptrAt (32 * n - 64) (k + 2) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 4 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT2 : ptrAt (8192 + 32 * n) (k + 2) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 4 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT3 : ptrAt (8192 + 32 * n) (k + 3) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8224 := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hactM0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 2 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 2 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactM1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 3 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 3 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactM2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 4 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 4 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  simp (config := { maxSteps := 4000000 })
+    [blk1519UnrollPrefixExit, blk1519UnrollPrefix, blk1519Unroll,
+      opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      mpL2UnrollState, mpTailState, l2Step, macSum, macCarry, mulHi, maxWord_literal,
+      p10PC_unroll, p10JumpDest2417,
+      hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, h8224, h2417, h2417', hjump,
+      hM0, hT0, hM1, hT1, hM2, hT2, hT3,
+      hactM0, hactT0, hactM1, hactT1, hactM2, hactT2,
+      ptrAt_succ, UInt256.gt, UInt256.isTrue,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+      List.exchange]
+
+private theorem p10PC_loop (i : Nat) (hi : 2913 ≤ i) (hii : i ≤ 3096) :
+    Artifact.submissionArtifact.instructionPC i =
+      [4922,4923,4924,4925,4926,4927,4928,4929,
+       4930,4963,4964,4965,4966,4967,4968,4969,
+       4970,4971,4972,4973,4974,4975,4976,4977,
+       4978,4979,4980,4981,4982,4983,4984,4985,
+       4986,4987,4988,4989,4990,4992,4993,4994,
+       5027,5028,5029,5062,5063,5064,5065,5066,
+       5067,5068,5069,5070,5071,5104,5105,5106,
+       5107,5108,5109,5110,5111,5112,5113,5114,
+       5115,5116,5117,5118,5119,5120,5121,5122,
+       5123,5124,5125,5126,5127,5128,5129,5130,
+       5131,5133,5134,5135,5168,5169,5170,5203,
+       5204,5205,5206,5207,5208,5209,5210,5211,
+       5212,5245,5246,5247,5248,5249,5250,5251,
+       5252,5253,5254,5255,5256,5257,5258,5259,
+       5260,5261,5262,5263,5264,5265,5266,5267,
+       5268,5269,5270,5271,5272,5274,5275,5276,
+       5309,5310,5311,5344,5345,5346,5347,5348,
+       5349,5350,5351,5352,5353,5386,5387,5388,
+       5389,5390,5391,5392,5393,5394,5395,5396,
+       5397,5398,5399,5400,5401,5402,5403,5404,
+       5405,5406,5407,5408,5409,5410,5411,5412,
+       5413,5415,5416,5417,5450,5451,5452,5485,
+       5486,5487,5490,5491,5492,5495,5496,5499][i - 2913]! := by
+  interval_cases i <;> decide
+
+private theorem p10LoopJumpDest4922 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4922 = true :=
+  Artifact.isValidJumpDest_index 2913 (by rfl)
+
+private theorem p10LoopJumpDest2417 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2417 = true :=
+  Artifact.isValidJumpDest_index 1590 (by rfl)
+
+/-! ## The P10 four-core remainder loop -/
+
+set_option linter.unusedSimpArgs false in
+theorem run_mpL2LoopUnroll_continue (s : State) (mid : ByteArray)
+    (bi mu c0 : UInt256) (pa pb n i k : Nat)
+    (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32)
+    (hj : k + 4 + 1 < n) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1519UnrollLoopContinue
+      (mpL2LoopState s mid bi mu c0 pa pb n i k pdst ret rest) =
+      some (mpL2LoopState s mid bi mu c0 pa pb n i (k + 4) pdst ret rest) := by
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
+      UInt256) = UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+    decide
+  have h8224 : (8224 : UInt256).toNat = 8224 := by decide
+  have h4922 : (4922 : UInt256).toNat = 4922 := by decide
+  have h4922' : (4922 : UInt256) = UInt256.ofNat 4922 := by decide
+  have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
+      (4922 : UInt256).toNat = true := by
+    rw [h4922]
+    exact p10LoopJumpDest4922
+  have hM0 : ptrAt (32 * n - 64) k %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 2 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT0 : ptrAt (8192 + 32 * n) k %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 2 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hM1 : ptrAt (32 * n - 64) (k + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 3 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT1 : ptrAt (8192 + 32 * n) (k + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 3 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hM2 : ptrAt (32 * n - 64) (k + 2) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 4 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT2 : ptrAt (8192 + 32 * n) (k + 2) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 4 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hM3 : ptrAt (32 * n - 64) (k + 3) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 5 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT3 : ptrAt (8192 + 32 * n) (k + 3) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 5 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hM4 : ptrAt (32 * n - 64) (k + 4) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 6 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT4 : ptrAt (8192 + 32 * n) (k + 4) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 6 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hgt : 8224 < 8256 + 32 * (n - 6 - k) := by omega
+  have hactM0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 2 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 2 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactM1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 3 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 3 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactM2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 4 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 4 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactM3 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 5 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT3 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 5 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  simp (config := { maxSteps := 4000000 })
+    [blk1519UnrollLoopContinue, blk1519UnrollLoop, blk1519Unroll,
+      opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      mpL2LoopState, l2Step, macSum, macCarry, mulHi, maxWord_literal,
+      p10PC_loop, p10LoopJumpDest4922,
+      hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, h8224, h4922, h4922', hjump,
+      hM0, hT0, hM1, hT1, hM2, hT2, hM3, hT3, hM4, hT4, hgt,
+      hactM0, hactT0, hactM1, hactT1, hactM2, hactT2, hactM3, hactT3,
+      ptrAt_succ, UInt256.gt, UInt256.isTrue,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+      List.exchange]
+
+set_option linter.unusedSimpArgs false in
+theorem run_mpL2LoopUnroll_exit (s : State) (mid : ByteArray)
+    (bi mu c0 : UInt256) (pa pb n i k : Nat)
+    (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32)
+    (hj : k + 4 + 1 = n) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1519UnrollLoopExit
+      (mpL2LoopState s mid bi mu c0 pa pb n i k pdst ret rest) =
+      some (mpTailState s (l2Step mid mu c0 n (k + 4)).memory
+        (UInt256.ofNat (ptrAt (32 * n - 64) (k + 4)))
+        (UInt256.ofNat (ptrAt (8192 + 32 * n) (k + 4)))
+        (l2Step mid mu c0 n (k + 4)).carry mu bi pa pb n i pdst ret rest) := by
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
+      UInt256) = UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+    decide
+  have h8224 : (8224 : UInt256).toNat = 8224 := by decide
+  have h2417 : (2417 : UInt256).toNat = 2417 := by decide
+  have h2417' : (2417 : UInt256) = UInt256.ofNat 2417 := by decide
+  have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
+      (2417 : UInt256).toNat = true := by
+    rw [h2417]
+    exact p10LoopJumpDest2417
+  have hM0 : ptrAt (32 * n - 64) k %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 2 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT0 : ptrAt (8192 + 32 * n) k %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 2 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hM1 : ptrAt (32 * n - 64) (k + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 3 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT1 : ptrAt (8192 + 32 * n) (k + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 3 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hM2 : ptrAt (32 * n - 64) (k + 2) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 4 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT2 : ptrAt (8192 + 32 * n) (k + 2) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 4 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hM3 : ptrAt (32 * n - 64) (k + 3) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32 * (n - 5 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT3 : ptrAt (8192 + 32 * n) (k + 3) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8256 + 32 * (n - 5 - k) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hT4 : ptrAt (8192 + 32 * n) (k + 4) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      8224 := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]
+    omega
+  have hactM0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 2 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 2 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactM1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 3 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 3 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactM2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 4 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 4 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactM3 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (32 * (n - 5 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hactT3 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      (8256 + 32 * (n - 5 - k)) 32) = s.activeWords :=
+    activeWords_fix s _ 32 (by decide) (by omega) hact
+  simp (config := { maxSteps := 4000000 })
+    [blk1519UnrollLoopExit, blk1519UnrollLoop, blk1519Unroll,
+      opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      mpL2LoopState, mpTailState, l2Step, macSum, macCarry, mulHi, maxWord_literal,
+      p10PC_loop, p10LoopJumpDest2417,
+      hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, h8224, h2417, h2417', hjump,
+      hM0, hT0, hM1, hT1, hM2, hT2, hM3, hT3, hT4,
+      hactM0, hactT0, hactM1, hactT1, hactM2, hactT2, hactM3, hactT3,
+      ptrAt_succ, UInt256.gt, UInt256.isTrue,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+      List.exchange]
+
+def gasSteps_mpL2UnrollLoop_continue (s : State) (mid : ByteArray)
+    (bi mu c0 : UInt256) (pa pb n i k : Nat)
+    (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32)
+    (hj : k + 4 + 1 < n) :
+    Challenge.EvmProof.GasSteps
+      (mpL2LoopState s mid bi mu c0 pa pb n i k pdst ret rest)
+      (mpL2LoopState s mid bi mu c0 pa pb n i (k + 4) pdst ret rest) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk1519UnrollLoopContinue hcode hfork
+    (run_mpL2LoopUnroll_continue s mid bi mu c0 pa pb n i k pdst ret rest hcap hrun hcode
+      hact hn32 hj) hrun hnp
+
+def gasSteps_mpL2UnrollLoop_exit (s : State) (mid : ByteArray)
+    (bi mu c0 : UInt256) (pa pb n i k : Nat)
+    (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32)
+    (hj : k + 4 + 1 = n) :
+    Challenge.EvmProof.GasSteps
+      (mpL2LoopState s mid bi mu c0 pa pb n i k pdst ret rest)
+      (mpTailState s (l2Step mid mu c0 n (k + 4)).memory
+        (UInt256.ofNat (ptrAt (32 * n - 64) (k + 4)))
+        (UInt256.ofNat (ptrAt (8192 + 32 * n) (k + 4)))
+        (l2Step mid mu c0 n (k + 4)).carry mu bi pa pb n i pdst ret rest) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk1519UnrollLoopExit hcode hfork
+    (run_mpL2LoopUnroll_exit s mid bi mu c0 pa pb n i k pdst ret rest hcap hrun hcode
+      hact hn32 hj) hrun hnp
 
 def gasSteps_mpEntry (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
@@ -1226,14 +2294,15 @@ def gasSteps_mpEntry (s : State) (mem : ByteArray) (pa pb n : Nat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n)) :
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
+    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.GasSteps
       (mpEntryState s mem pa pb pdst ret rest)
       (mpOutState s (mpZeroed s mem n) pa pb n 0 pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1379 hcode hfork
     (run_mpEntry s mem pa pb n pdst ret rest hcap hrun hact hn hn32 hpa hpaFit
-      hpb hpbFit hcds hs32) hrun hnp
+      hpb hpbFit hcds hs32 htl) hrun hnp
 
 def gasSteps_mpOut (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
@@ -1249,7 +2318,7 @@ def gasSteps_mpOut (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.GasSteps
       (mpOutState s mem pa pb n i pdst ret rest)
-      (mpL1State s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) :=
+      (mpL1DispatchState s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1406 hcode hfork
     (run_mpOut s mem pa pb n i pdst ret rest hcap hrun hact hn hn32 hi hpa hpaFit
@@ -1268,7 +2337,7 @@ def gasSteps_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256)
       (mpL1State s mem bi pa pb n i j pdst ret rest)
       (mpL1State s mem bi pa pb n i (j + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka blk1421 hcode hfork
+    Artifact.submissionArtifact .Osaka blk1421Core hcode hfork
     (run_mpL1Body s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact hn32 hj
       hpa hpaFit) hrun hnp
 
@@ -1305,9 +2374,170 @@ def gasSteps_mpL1Exit (s : State) (mem : ByteArray) (bi : UInt256)
         (UInt256.ofNat (ptrAt (8224 + 32 * n) (j + 1)))
         (l1Step mem bi pa n (j + 1)).carry bi pa pb n i pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka blk1421 hcode hfork
+    Artifact.submissionArtifact .Osaka blk1421Core hcode hfork
     (run_mpL1Exit s mem bi pa pb n i j pdst ret rest hcap hrun hact hn32 hj hpa
       hpaFit) hrun hnp
+
+def gasSteps_mpL1Dispatch_div4 (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hdiv : n % 4 = 0)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n)) :
+    Challenge.EvmProof.GasSteps
+      (mpL1DispatchState s mem bi pa pb n i j pdst ret rest)
+      (mpL1UnrollState s mem bi pa pb n i j pdst ret rest) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk1421 hcode hfork
+    (run_mpL1Dispatch_div4 s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact hn
+      hn32 hdiv hs32) hrun hnp
+
+def gasSteps_mpL1Dispatch_not_div4 (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hdiv : n % 4 ≠ 0)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n)) :
+    Challenge.EvmProof.GasSteps
+      (mpL1DispatchState s mem bi pa pb n i j pdst ret rest)
+      (mpL1State s mem bi pa pb n i j pdst ret rest) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk1421 hcode hfork
+    (run_mpL1Dispatch_not_div4 s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact hn
+      hn32 hdiv hs32) hrun hnp
+
+def gasSteps_mpL1Unroll_continue (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32)
+    (hj : j + 4 < n) (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
+    Challenge.EvmProof.GasSteps
+      (mpL1UnrollState s mem bi pa pb n i j pdst ret rest)
+      (mpL1UnrollState s mem bi pa pb n i (j + 4) pdst ret rest) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk1421UnrollContinue hcode hfork
+    (run_mpL1Unroll_continue s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact
+      hn32 hj hpa hpaFit) hrun hnp
+
+def gasSteps_mpL1Unroll_exit (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32)
+    (hj : j + 4 = n) (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
+    Challenge.EvmProof.GasSteps
+      (mpL1UnrollState s mem bi pa pb n i j pdst ret rest)
+      (mpMidState s (l1Step mem bi pa n (j + 4)).memory
+        (UInt256.ofNat (ptrAt (pa + 32 * n - 32) (j + 4)))
+        (UInt256.ofNat (ptrAt (8224 + 32 * n) (j + 4)))
+        (l1Step mem bi pa n (j + 4)).carry bi pa pb n i pdst ret rest) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk1421UnrollExit hcode hfork
+    (run_mpL1Unroll_exit s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact
+      hn32 hj hpa hpaFit) hrun hnp
+
+def gasSteps_mpL1FallbackP8 (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb m i : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : m + 2 ≤ 32)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * (m + 2) ≤ 9472) :
+    Challenge.EvmProof.GasSteps
+      (mpL1State s mem bi pa pb (m + 2) i 0 pdst ret rest)
+      (mpMidState s (l1Step mem bi pa (m + 2) (m + 1 + 1)).memory
+        (UInt256.ofNat (ptrAt (pa + 32 * (m + 2) - 32) (m + 1 + 1)))
+        (UInt256.ofNat (ptrAt (8224 + 32 * (m + 2)) (m + 1 + 1)))
+        (l1Step mem bi pa (m + 2) (m + 1 + 1)).carry bi pa pb (m + 2) i pdst ret rest) :=
+  (gasSteps_mpL1Loop s mem bi pa pb m i pdst ret rest hcap hrun hcode hfork hnp hact
+      hn32 hpa hpaFit).trans <|
+    gasSteps_mpL1Exit s mem bi pa pb (m + 2) i (m + 1) pdst ret rest hcap hrun hcode
+      hfork hnp hact hn32 rfl hpa hpaFit
+
+def gasSteps_mpL1Unroll (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb m i : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : m + 2 ≤ 32)
+    (hdiv : (m + 2) % 4 = 0)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * (m + 2) ≤ 9472) :
+    Challenge.EvmProof.GasSteps
+      (mpL1UnrollState s mem bi pa pb (m + 2) i 0 pdst ret rest)
+      (mpMidState s (l1Step mem bi pa (m + 2) (m + 2)).memory
+        (UInt256.ofNat (ptrAt (pa + 32 * (m + 2) - 32) (m + 2)))
+        (UInt256.ofNat (ptrAt (8224 + 32 * (m + 2)) (m + 2)))
+        (l1Step mem bi pa (m + 2) (m + 2)).carry bi pa pb (m + 2) i pdst ret rest) := by
+  have hn : 2 ≤ m + 2 := by omega
+  have hnq : m + 2 = 4 * ((m + 2) / 4) := by
+    have h := Nat.mod_add_div (m + 2) 4
+    omega
+  let q := (m + 2) / 4
+  have hloop : Challenge.EvmProof.GasSteps
+      (mpL1UnrollState s mem bi pa pb (m + 2) i 0 pdst ret rest)
+      (mpL1UnrollState s mem bi pa pb (m + 2) i (4 * (q - 1)) pdst ret rest) :=
+    Challenge.EvmProof.GasSteps.iterateBounded
+      (I := fun k => mpL1UnrollState s mem bi pa pb (m + 2) i (4 * k) pdst ret rest)
+      (q - 1)
+      (fun k hk => by
+        have hj : 4 * k + 4 < m + 2 := by
+          dsimp [q] at hk ⊢
+          omega
+        simpa [Nat.mul_succ] using
+          (gasSteps_mpL1Unroll_continue s mem bi pa pb (m + 2) i (4 * k) pdst ret rest
+            hcap hrun hcode hfork hnp hact hn32 hj hpa hpaFit))
+  have hj : 4 * (q - 1) + 4 = m + 2 := by
+    dsimp [q]
+    omega
+  simpa [q, hj] using
+    hloop.trans
+      (gasSteps_mpL1Unroll_exit s mem bi pa pb (m + 2) i (4 * (q - 1)) pdst ret rest
+        hcap hrun hcode hfork hnp hact hn32 hj hpa hpaFit)
+
+def gasSteps_mpL1P8 (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb m i : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : m + 2 ≤ 32)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * (m + 2) ≤ 9472)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * (m + 2))) :
+    Challenge.EvmProof.GasSteps
+      (mpL1DispatchState s mem bi pa pb (m + 2) i 0 pdst ret rest)
+      (mpMidState s (l1Step mem bi pa (m + 2) (m + 2)).memory
+        (UInt256.ofNat (ptrAt (pa + 32 * (m + 2) - 32) (m + 2)))
+        (UInt256.ofNat (ptrAt (8224 + 32 * (m + 2)) (m + 2)))
+        (l1Step mem bi pa (m + 2) (m + 2)).carry bi pa pb (m + 2) i pdst ret rest) := by
+  by_cases hdiv : (m + 2) % 4 = 0
+  · exact (gasSteps_mpL1Dispatch_div4 s mem bi pa pb (m + 2) i 0 pdst ret rest hcap hrun
+      hcode hfork hnp hact (by omega) hn32 hdiv hs32).trans <|
+      gasSteps_mpL1Unroll s mem bi pa pb m i pdst ret rest hcap hrun hcode hfork hnp hact
+        hn32 hdiv hpa hpaFit
+  · exact (gasSteps_mpL1Dispatch_not_div4 s mem bi pa pb (m + 2) i 0 pdst ret rest hcap
+      hrun hcode hfork hnp hact (by omega) hn32 hdiv hs32).trans <|
+      gasSteps_mpL1FallbackP8 s mem bi pa pb m i pdst ret rest hcap hrun hcode hfork hnp hact
+        hn32 hpa hpaFit
 
 def gasSteps_mpMid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256)
@@ -1321,7 +2551,7 @@ def gasSteps_mpMid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.GasSteps
       (mpMidState s mem paj ptj c bi pa pb n i pdst ret rest)
-      (mpL2State s (midMem mem c) bi (rowMu mem n)
+      (mpL2DispatchState s (midMem mem c) bi (rowMu mem n)
         (rowC0 mem n) pa pb n i 0 pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1469 hcode hfork
@@ -1340,7 +2570,7 @@ def gasSteps_mpL2Body (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       (mpL2State s mid bi mu c0 pa pb n i k pdst ret rest)
       (mpL2State s mid bi mu c0 pa pb n i (k + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka blk1519 hcode hfork
+    Artifact.submissionArtifact .Osaka blk1519Core hcode hfork
     (run_mpL2Body s mid bi mu c0 pa pb n i k pdst ret rest hcap hrun hcode hact
       hn32 hk) hrun hnp
 
@@ -1375,9 +2605,195 @@ def gasSteps_mpL2Exit (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
         (UInt256.ofNat (ptrAt (8192 + 32 * n) (k + 1)))
         (l2Step mid mu c0 n (k + 1)).carry mu bi pa pb n i pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka blk1519 hcode hfork
+    Artifact.submissionArtifact .Osaka blk1519Core hcode hfork
     (run_mpL2Exit s mid bi mu c0 pa pb n i k pdst ret rest hcap hrun hact hn32 hk)
     hrun hnp
+
+def gasSteps_mpL2Dispatch_div4 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
+    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hdiv : n % 4 = 0)
+    (hs32 : MachineState.readWord mid 9344 = UInt256.ofNat (32 * n)) :
+    Challenge.EvmProof.GasSteps
+      (mpL2DispatchState s mid bi mu c0 pa pb n i k pdst ret rest)
+      (mpL2UnrollState s mid bi mu c0 pa pb n i k pdst ret rest) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk1519 hcode hfork
+    (run_mpL2Dispatch_div4 s mid bi mu c0 pa pb n i k pdst ret rest hcap hrun hcode
+      hact hn hn32 hdiv hs32) hrun hnp
+
+def gasSteps_mpL2Dispatch_not_div4 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
+    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hdiv : n % 4 ≠ 0)
+    (hs32 : MachineState.readWord mid 9344 = UInt256.ofNat (32 * n)) :
+    Challenge.EvmProof.GasSteps
+      (mpL2DispatchState s mid bi mu c0 pa pb n i k pdst ret rest)
+      (mpL2State s mid bi mu c0 pa pb n i k pdst ret rest) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk1519 hcode hfork
+    (run_mpL2Dispatch_not_div4 s mid bi mu c0 pa pb n i k pdst ret rest hcap hrun hcode
+      hact hn hn32 hdiv hs32) hrun hnp
+
+def gasSteps_mpL2UnrollPrefix_continue (s : State) (mid : ByteArray)
+    (bi mu c0 : UInt256) (pa pb n i k : Nat)
+    (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32)
+    (hj : k + 4 < n) :
+    Challenge.EvmProof.GasSteps
+      (mpL2UnrollState s mid bi mu c0 pa pb n i k pdst ret rest)
+      (mpL2LoopState s mid bi mu c0 pa pb n i (k + 3) pdst ret rest) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk1519UnrollPrefixContinue hcode hfork
+    (run_mpL2UnrollPrefix_continue s mid bi mu c0 pa pb n i k pdst ret rest hcap hrun
+      hcode hact hn32 hj) hrun hnp
+
+def gasSteps_mpL2UnrollPrefix_exit (s : State) (mid : ByteArray)
+    (bi mu c0 : UInt256) (pa pb n i k : Nat)
+    (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32)
+    (hj : k + 4 = n) :
+    Challenge.EvmProof.GasSteps
+      (mpL2UnrollState s mid bi mu c0 pa pb n i k pdst ret rest)
+      (mpTailState s (l2Step mid mu c0 n (k + 3)).memory
+        (UInt256.ofNat (ptrAt (32 * n - 64) (k + 3)))
+        (UInt256.ofNat (ptrAt (8192 + 32 * n) (k + 3)))
+        (l2Step mid mu c0 n (k + 3)).carry mu bi pa pb n i pdst ret rest) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka blk1519UnrollPrefixExit hcode hfork
+    (run_mpL2UnrollPrefix_exit s mid bi mu c0 pa pb n i k pdst ret rest hcap hrun
+      hcode hact hn32 hj) hrun hnp
+
+def gasSteps_mpL2FallbackP10 (s : State) (mid : ByteArray)
+    (bi mu c0 : UInt256) (pa pb m i : Nat)
+    (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : m + 2 ≤ 32) :
+    Challenge.EvmProof.GasSteps
+      (mpL2State s mid bi mu c0 pa pb (m + 2) i 0 pdst ret rest)
+      (mpTailState s (l2Step mid mu c0 (m + 2) (m + 1)).memory
+        (UInt256.ofNat (ptrAt (32 * (m + 2) - 64) (m + 1)))
+        (UInt256.ofNat (ptrAt (8192 + 32 * (m + 2)) (m + 1)))
+        (l2Step mid mu c0 (m + 2) (m + 1)).carry mu bi pa pb (m + 2) i pdst ret rest) :=
+  (gasSteps_mpL2Loop s mid bi mu c0 pa pb m i pdst ret rest hcap hrun hcode hfork hnp
+      hact hn32).trans <|
+    gasSteps_mpL2Exit s mid bi mu c0 pa pb (m + 2) i m pdst ret rest hcap hrun hcode
+      hfork hnp hact hn32 rfl
+
+def gasSteps_mpL2Unroll (s : State) (mid : ByteArray)
+    (bi mu c0 : UInt256) (pa pb m i : Nat)
+    (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : m + 2 ≤ 32)
+    (hdiv : (m + 2) % 4 = 0) :
+    Challenge.EvmProof.GasSteps
+      (mpL2UnrollState s mid bi mu c0 pa pb (m + 2) i 0 pdst ret rest)
+      (mpTailState s (l2Step mid mu c0 (m + 2) (m + 1)).memory
+        (UInt256.ofNat (ptrAt (32 * (m + 2) - 64) (m + 1)))
+        (UInt256.ofNat (ptrAt (8192 + 32 * (m + 2)) (m + 1)))
+        (l2Step mid mu c0 (m + 2) (m + 1)).carry mu bi pa pb (m + 2) i pdst ret rest) := by
+  have hn : 2 ≤ m + 2 := by omega
+  by_cases hn4 : m + 2 = 4
+  · simpa [hn4] using
+      (gasSteps_mpL2UnrollPrefix_exit s mid bi mu c0 pa pb (m + 2) i 0 pdst ret rest
+        hcap hrun hcode hfork hnp hact hn32 (by omega))
+  · let q := (m + 2) / 4
+    have hnq : m + 2 = 4 * q := by
+      dsimp [q]
+      have h := Nat.mod_add_div (m + 2) 4
+      omega
+    have hq : 2 ≤ q := by
+      dsimp [q]
+      have h := Nat.mod_add_div (m + 2) 4
+      omega
+    have hprefix : Challenge.EvmProof.GasSteps
+        (mpL2UnrollState s mid bi mu c0 pa pb (m + 2) i 0 pdst ret rest)
+        (mpL2LoopState s mid bi mu c0 pa pb (m + 2) i 3 pdst ret rest) :=
+      gasSteps_mpL2UnrollPrefix_continue s mid bi mu c0 pa pb (m + 2) i 0 pdst ret rest
+        hcap hrun hcode hfork hnp hact hn32 (by omega)
+    have hloop : Challenge.EvmProof.GasSteps
+        (mpL2LoopState s mid bi mu c0 pa pb (m + 2) i 3 pdst ret rest)
+        (mpL2LoopState s mid bi mu c0 pa pb (m + 2) i (3 + 4 * (q - 2)) pdst ret rest) :=
+      Challenge.EvmProof.GasSteps.iterateBounded
+        (I := fun r =>
+          mpL2LoopState s mid bi mu c0 pa pb (m + 2) i (3 + 4 * r) pdst ret rest)
+        (q - 2)
+        (fun r hr => by
+          have hk : 3 + 4 * r + 5 < m + 2 := by
+            dsimp [q] at hr ⊢
+            omega
+          have hnext : 3 + 4 * r + 4 = 3 + 4 * (r + 1) := by
+            omega
+          simpa only [hnext] using
+            (gasSteps_mpL2UnrollLoop_continue s mid bi mu c0 pa pb (m + 2) i
+              (3 + 4 * r) pdst ret rest hcap hrun hcode hfork hnp hact hn32 hk)
+            )
+    have hj : 3 + 4 * (q - 2) + 5 = m + 2 := by
+      dsimp [q]
+      omega
+    have hk4 : 3 + 4 * (q - 2) + 4 = m + 1 := by
+      omega
+    simpa only [hk4] using
+      hprefix.trans
+        (hloop.trans
+          (gasSteps_mpL2UnrollLoop_exit s mid bi mu c0 pa pb (m + 2) i
+            (3 + 4 * (q - 2)) pdst ret rest hcap hrun hcode hfork hnp hact hn32 hj))
+
+def gasSteps_mpL2P10 (s : State) (mid : ByteArray)
+    (bi mu c0 : UInt256) (pa pb m i : Nat)
+    (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : m + 2 ≤ 32)
+    (hs32 : MachineState.readWord mid 9344 = UInt256.ofNat (32 * (m + 2))) :
+    Challenge.EvmProof.GasSteps
+      (mpL2DispatchState s mid bi mu c0 pa pb (m + 2) i 0 pdst ret rest)
+      (mpTailState s (l2Step mid mu c0 (m + 2) (m + 1)).memory
+        (UInt256.ofNat (ptrAt (32 * (m + 2) - 64) (m + 1)))
+        (UInt256.ofNat (ptrAt (8192 + 32 * (m + 2)) (m + 1)))
+        (l2Step mid mu c0 (m + 2) (m + 1)).carry mu bi pa pb (m + 2) i pdst ret rest) := by
+  by_cases hdiv : (m + 2) % 4 = 0
+  · exact
+      (gasSteps_mpL2Dispatch_div4 s mid bi mu c0 pa pb (m + 2) i 0 pdst ret rest
+        hcap hrun hcode hfork hnp hact (by omega) hn32 hdiv hs32).trans <|
+      gasSteps_mpL2Unroll s mid bi mu c0 pa pb m i pdst ret rest hcap hrun hcode hfork hnp
+        hact hn32 hdiv
+  · exact
+      (gasSteps_mpL2Dispatch_not_div4 s mid bi mu c0 pa pb (m + 2) i 0 pdst ret rest
+        hcap hrun hcode hfork hnp hact (by omega) hn32 hdiv hs32).trans <|
+      gasSteps_mpL2FallbackP10 s mid bi mu c0 pa pb m i pdst ret rest hcap hrun hcode hfork
+        hnp hact hn32
 
 def gasSteps_mpTailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256)
@@ -1408,13 +2824,13 @@ def gasSteps_mpTailLast (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256
     Challenge.EvmProof.GasSteps
       (mpTailState s mem pmj ptj c mu bi pa pb n i pdst ret rest)
       (mpExitState s (tailMem mem c)
-        (UInt256.ofNat (ptrAt (pb + 32 * n - 32) (i + 1))) pa pb pdst ret rest) :=
+        (UInt256.ofNat (ptrAt (pb + 32 * n - 32) (i + 1))) pa pb n pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1569 hcode hfork
     (run_mpTailLast s mem pmj ptj c mu bi pa pb n i pdst ret rest hcap hrun hact
       hn32 hi hpb hpbFit) hrun hnp
 
-def gasSteps_mpExit (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
+def gasSteps_mpExit (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -1422,11 +2838,11 @@ def gasSteps_mpExit (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (mpExitState s mem pbi pa pb pdst ret rest)
+      (mpExitState s mem pbi pa pb n pdst ret rest)
       (mpCsubState s mem pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1595 hcode hfork
-    (run_mpExit s mem pbi pa pb pdst ret rest hcap hrun hcode) hrun hnp
+    (run_mpExit s mem pbi pa pb n pdst ret rest hcap hrun hcode) hrun hnp
 
 /-! ## One CIOS row and the outer loop
 
@@ -1468,15 +2884,18 @@ def gasSteps_mpRowToTail (s : State) (mem : ByteArray) (pa pb m i : Nat)
         (UInt256.ofNat (ptrAt (32 * (m + 2) - 64) (m + 1)))
         (UInt256.ofNat (ptrAt (8192 + 32 * (m + 2)) (m + 1)))
         (rowL2 mem pa pb (m + 2) i).carry
-        (rowMu (rowL1 mem pa pb (m + 2) i).memory (m + 2))
+    (rowMu (rowL1 mem pa pb (m + 2) i).memory (m + 2))
         (rowBi mem pb (m + 2) i) pa pb (m + 2) i pdst ret rest) :=
-  (gasSteps_mpOut s mem pa pb (m + 2) i pdst ret rest hcap hrun hcode hfork hnp
+by
+  have hs32' : MachineState.readWord (rowMid mem pa pb (m + 2) i) 9344 =
+      UInt256.ofNat (32 * (m + 2)) := by
+    exact (readWord_rowMid mem pa pb (m + 2) i 9344 hn32 (Or.inr (by omega))).trans hs32
+  exact
+    (gasSteps_mpOut s mem pa pb (m + 2) i pdst ret rest hcap hrun hcode hfork hnp
       hact (by omega) hn32 hi hpa hpaFit hpb hpbFit hs32 htl).trans <|
-  (gasSteps_mpL1Loop s mem (rowBi mem pb (m + 2) i) pa pb m i pdst ret rest hcap
-      hrun hcode hfork hnp hact hn32 hpa hpaFit).trans <|
-  (gasSteps_mpL1Exit s mem (rowBi mem pb (m + 2) i) pa pb (m + 2) i (m + 1) pdst
-      ret rest hcap hrun hcode hfork hnp hact hn32 rfl hpa hpaFit).trans <|
-  (gasSteps_mpMid s
+    (gasSteps_mpL1P8 s mem (rowBi mem pb (m + 2) i) pa pb m i pdst ret rest hcap
+      hrun hcode hfork hnp hact hn32 hpa hpaFit hs32).trans <|
+    (gasSteps_mpMid s
       (l1Step mem (rowBi mem pb (m + 2) i) pa (m + 2) (m + 1 + 1)).memory
       (UInt256.ofNat (ptrAt (pa + 32 * (m + 2) - 32) (m + 1 + 1)))
       (UInt256.ofNat (ptrAt (8224 + 32 * (m + 2)) (m + 1 + 1)))
@@ -1487,14 +2906,10 @@ def gasSteps_mpRowToTail (s : State) (mem : ByteArray) (pa pb m i : Nat)
           hn32 (by omega)).trans hml)
       ((readWord_l1Step mem (rowBi mem pb (m + 2) i) pa (m + 2) 9440 (m + 1 + 1)
           hn32 (by omega)).trans htl)).trans <|
-  (gasSteps_mpL2Loop s (rowMid mem pa pb (m + 2) i) (rowBi mem pb (m + 2) i)
+    gasSteps_mpL2P10 s (rowMid mem pa pb (m + 2) i) (rowBi mem pb (m + 2) i)
       (rowMu (rowL1 mem pa pb (m + 2) i).memory (m + 2))
       (rowC0 (rowL1 mem pa pb (m + 2) i).memory (m + 2)) pa pb m i pdst ret rest
-      hcap hrun hcode hfork hnp hact hn32).trans
-  (gasSteps_mpL2Exit s (rowMid mem pa pb (m + 2) i) (rowBi mem pb (m + 2) i)
-      (rowMu (rowL1 mem pa pb (m + 2) i).memory (m + 2))
-      (rowC0 (rowL1 mem pa pb (m + 2) i).memory (m + 2)) pa pb (m + 2) i m pdst ret
-      rest hcap hrun hcode hfork hnp hact hn32 rfl)
+      hcap hrun hcode hfork hnp hact hn32 hs32'
 
 def gasSteps_mpRowNext (s : State) (mem : ByteArray) (pa pb m i : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
@@ -1548,8 +2963,8 @@ def gasSteps_mpRowLast (s : State) (mem : ByteArray) (pa pb m i : Nat)
       (rowMu (rowL1 mem pa pb (m + 2) i).memory (m + 2))
       (rowBi mem pb (m + 2) i) pa pb (m + 2) i pdst ret rest hcap hrun hcode hfork
       hnp hact hn32 hi hpb hpbFit).trans
-  (gasSteps_mpExit s (rowMem mem pa pb (m + 2) i)
-      (UInt256.ofNat (ptrAt (pb + 32 * (m + 2) - 32) (i + 1))) pa pb pdst ret rest
+    (gasSteps_mpExit s (rowMem mem pa pb (m + 2) i)
+      (UInt256.ofNat (ptrAt (pb + 32 * (m + 2) - 32) (i + 1))) pa pb (m + 2) pdst ret rest
       hcap hrun hcode hfork hnp)
 
 def gasSteps_mpRows (s : State) (memory : ByteArray) (pa pb m : Nat)
@@ -1602,7 +3017,7 @@ def gasSteps_monproToCsub (s : State) (mem : ByteArray) (pa pb m : Nat)
       (mpCsubState s
         (rowsMem (mpZeroed s mem (m + 2)) pa pb (m + 2) (m + 2)) pdst ret rest) :=
   (gasSteps_mpEntry s mem pa pb (m + 2) pdst ret rest hcap hrun hcode hfork hnp
-      hact (by omega) hn32 hpa hpaFit hpb hpbFit hcds hs32).trans <|
+      hact (by omega) hn32 hpa hpaFit hpb hpbFit hcds hs32 htl).trans <|
   (gasSteps_mpRows s (mpZeroed s mem (m + 2)) pa pb m pdst ret rest hcap hrun
       hcode hfork hnp hact hn32 hpa hpaFit hpb hpbFit
       ((readWord_mpZeroed s mem (m + 2) 9344 hn32 (by omega)).trans hs32)
@@ -1648,8 +3063,8 @@ theorem fastRepresents_monpro_preserved (s : State) (memory : ByteArray)
 
 /-! ## The subroutine trace
 
-`MONPRO` is entered at pc 1939 with stack `[pa, pb, pd, ret]` and tail-calls
-`CSUB` at pc 2642 with stack `[pd, ret]`; `CSUB` (proved in `Fast.Csub`) copies
+`MONPRO` is entered at pc 1939 with stack `[pa, pb, pd, ret]`, saves `TL`, and
+tail-calls `CSUB` at pc 2671 with stack `[pd, ret]`; `CSUB` (proved in `Fast.Csub`) copies
 the reduced product to `pd` and returns to `ret`.  The trace below therefore
 ends exactly at the `CSUB` entry state. -/
 

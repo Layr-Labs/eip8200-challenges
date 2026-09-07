@@ -30,21 +30,21 @@ def locatedSlice (start count : Nat)
         omega⟩
 
 def byte0Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 1999 80 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2024 80 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte1Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2079 80 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2104 80 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte2Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2159 80 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2184 80 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte3Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2239 80 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2264 80 (by rw [Artifact.submissionInstructions_count]; omega)
 
-def byteStartIndex (byte : Fin 4) : Nat := 1999 + 80 * byte.val
+def byteStartIndex (byte : Fin 4) : Nat := 2024 + 80 * byte.val
 
 def byteStartPC (byte : Fin 4) : Nat :=
-  [3208, 3292, 3377, 3462][byte.val]!
+  [3237, 3321, 3406, 3491][byte.val]!
 
 def highPrepPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
