@@ -764,6 +764,30 @@ their proof modules. -/
        3687,3688,3689,3691,3694][i - 2361]! := by
   interval_cases i <;> decide
 
+/-- PC table for the fused ADDMOD/CSUB entry appended after the CIOS helper. -/
+@[simp] theorem fusedCsubPC0 (i : Nat) (hi : 2670 ≤ i) (hii : i ≤ 2685) :
+    Artifact.submissionArtifact.instructionPC i =
+      [4057,4058,4061,4062,4063,4066,4067,4068,4069,4070,4071,4072,4073,
+       4074,4075,4078][i - 2670]! := by
+  interval_cases i <;> decide
+
+/-- PC table for the fused limb loop. -/
+@[simp] theorem fusedCsubPC1 (i : Nat) (hi : 2686 ≤ i) (hii : i ≤ 2740) :
+    Artifact.submissionArtifact.instructionPC i =
+      [4079,4080,4081,4082,4083,4084,4085,4086,4087,4088,4089,4090,4091,
+       4092,4093,4094,4095,4096,4097,4098,4099,4100,4101,4102,4105,4106,
+       4107,4108,4109,4110,4111,4112,4113,4114,4115,4116,4117,4118,4119,
+       4120,4121,4122,4125,4126,4127,4128,4129,4130,4132,4133,4134,4137,
+       4138,4139,4142][i - 2686]! := by
+  interval_cases i <;> decide
+
+/-- PC table for the fused selection/return tail. -/
+@[simp] theorem fusedCsubPC2 (i : Nat) (hi : 2741 ≤ i) (hii : i ≤ 2763) :
+    Artifact.submissionArtifact.instructionPC i =
+      [4143,4144,4147,4148,4149,4150,4151,4152,4155,4156,4159,4160,4163,
+       4164,4165,4166,4167,4168,4169,4170,4171,4172,4173][i - 2741]! := by
+  interval_cases i <;> decide
+
 theorem jumpDest1196 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1196 = true :=
   Artifact.isValidJumpDest_index 899 (by rfl)
@@ -951,5 +975,13 @@ theorem jumpDest3644 :
 theorem jumpDest3661 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3661 = true :=
   Artifact.isValidJumpDest_index 2390 (by rfl)
+
+theorem jumpDest4057 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4057 = true :=
+  Artifact.isValidJumpDest_index 2670 (by rfl)
+
+theorem jumpDest4079 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4079 = true :=
+  Artifact.isValidJumpDest_index 2686 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast
