@@ -12,9 +12,9 @@ open EvmSemantics.EVM
 open WindowHitPaths
 
 @[simp] private theorem advanceJumpPCs (index : Nat)
-    (hlo : 2322 ≤ index) (hhi : index ≤ 2323) :
+    (hlo : 2317 ≤ index) (hhi : index ≤ 2318) :
     Artifact.submissionArtifact.instructionPC index =
-      [3551, 3554][index - 2322]! := by
+      [3544, 3547][index - 2317]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -23,9 +23,9 @@ theorem run (template : State)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hcode : template.executionEnv.code = submissionBytecode) :
     Challenge.EvmProof.Stepper.runLocatedBlock (loopAdvancePath.drop 3)
-      (WindowHitLoopAdvanceHead.framed template 3551
+      (WindowHitLoopAdvanceHead.framed template 3544
         (pointer :: accumulator :: modulus :: rest)) =
-    some (WindowHitLoopAdvanceHead.framed template 3197
+    some (WindowHitLoopAdvanceHead.framed template 3190
       (pointer :: accumulator :: modulus :: rest)) := by
   have hcap3 : rest.length + 3 < 1024 := by omega
   have hcap4 : rest.length + 4 < 1024 := by omega
@@ -34,7 +34,7 @@ theorem run (template : State)
     Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr, WindowHitLoopAdvanceHead.framed,
     hrun, hcode, advanceJumpPCs, List.getElem?_cons_zero, Option.getD_some,
-    Nat.add_assoc, hrest, hcap3, hcap4, jump3197,
+    Nat.add_assoc, hrest, hcap3, hcap4, jump3190,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod]
