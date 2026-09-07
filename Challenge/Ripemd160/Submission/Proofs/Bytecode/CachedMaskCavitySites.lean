@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CavityFragmentChain
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.CallsConstantSites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskParams
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 
@@ -40,22 +41,11 @@ def left0First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 0) :=
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left0First (by decide)
 
-private theorem left2First_slice :
-    (A.instructions.drop 914).take (CachedMaskParams.leftCode 2).length =
-      CachedMaskParams.leftCode 2 := by rfl
-
-private theorem wellFormed_left2First : ∀ instruction ∈ CachedMaskParams.leftCode 2,
-    Stepper.WellFormed .Osaka instruction := by
-  exact StackRoundData.templateWellFormed_mem (by decide)
-
-def left2First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 2) :=
-  StackSiteBuilder.ofSlice _ 914 left2First_slice (by
-    change 914 + (CachedMaskParams.leftCode 2).length ≤ Artifact.submissionInstructions.length
-    rw [Artifact.referenceInstructions_count]
-    decide) code_bound wellFormed_left2First (by decide)
+abbrev left2First := CallsConstantSites.left2
+abbrev left4First := CallsConstantSites.left4
 
 private theorem rightFirst_slice :
-    (A.instructions.drop 3248).take CachedMaskParams.rightCode.length =
+    (A.instructions.drop 3537).take CachedMaskParams.rightCode.length =
       CachedMaskParams.rightCode := by rfl
 
 private theorem wellFormed_rightFirst : ∀ instruction ∈ CachedMaskParams.rightCode,
@@ -63,23 +53,9 @@ private theorem wellFormed_rightFirst : ∀ instruction ∈ CachedMaskParams.rig
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def rightFirst : GenericRoundSite A .Osaka CachedMaskParams.rightCode :=
-  StackSiteBuilder.ofSlice _ 3248 rightFirst_slice (by
-    change 3248 + CachedMaskParams.rightCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 3537 rightFirst_slice (by
+    change 3537 + CachedMaskParams.rightCode.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_rightFirst (by decide)
-
-private theorem left4First_slice :
-    (A.instructions.drop 1535).take (CachedMaskParams.leftCode 4).length =
-      CachedMaskParams.leftCode 4 := by rfl
-
-private theorem wellFormed_left4First : ∀ instruction ∈ CachedMaskParams.leftCode 4,
-    Stepper.WellFormed .Osaka instruction := by
-  exact StackRoundData.templateWellFormed_mem (by decide)
-
-def left4First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 4) :=
-  StackSiteBuilder.ofSlice _ 1535 left4First_slice (by
-    change 1535 + (CachedMaskParams.leftCode 4).length ≤ Artifact.submissionInstructions.length
-    rw [Artifact.referenceInstructions_count]
-    decide) code_bound wellFormed_left4First (by decide)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskCavitySites
