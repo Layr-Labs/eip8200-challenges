@@ -4,14 +4,14 @@ set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 /-! Basic-block instruction paths, group 17 (instructions 1816..1830).
 
-`RRSEL` (pc 2971) sits between the `RR` chain's selector and its multiply.
+`RRSEL` (pc 2964) sits between the `RR` chain's selector and its multiply.
 The selector is `R1` when the corresponding bit of `n` is clear, and `R1` is
 the Montgomery form of one, so that multiply is the identity; this block skips
 the call in that case and rejoins at pc 1615 with the stack untouched.
 
-* `blk1816` (idx 1816..1821, pc 2971..2980) — the `selOf = R1` test;
-* `blk1822` (idx 1822..1827, pc 2981..2994) — the `MONPRO` call frame;
-* `blk1828` (idx 1828..1830, pc 2995..2999) — the skip, straight to pc 1615. -/
+* `blk1816` (idx 1811..1816, pc 2964..2973) — the `selOf = R1` test;
+* `blk1822` (idx 1817..1822, pc 2974..2987) — the `MONPRO` call frame;
+* `blk1828` (idx 1823..1825, pc 2988..2992) — the skip, straight to pc 1615. -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
 
@@ -19,31 +19,31 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1816..1821, pc 2971..2980. -/
+/-- Instructions 1811..1816, pc 2964..2973. -/
 def blk1816 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1816 .JUMPDEST,
-   opAt 1817 (.Dup ⟨0, by decide⟩),
-   pushAt 1818 2 4096,
-   opAt 1819 .EQ,
-   pushAt 1820 2 1615,
-   opAt 1821 .JUMPI]
+  [opAt 1811 .JUMPDEST,
+   opAt 1812 (.Dup ⟨0, by decide⟩),
+   pushAt 1813 2 4096,
+   opAt 1814 .EQ,
+   pushAt 1815 2 1615,
+   opAt 1816 .JUMPI]
 
-/-- Instructions 1822..1827, pc 2981..2994: the multiply's call frame. -/
+/-- Instructions 1817..1822, pc 2974..2987: the multiply's call frame. -/
 def blk1822 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1822 2 1615,
-   pushAt 1823 2 6144,
-   opAt 1824 (.Dup ⟨2, by decide⟩),
-   pushAt 1825 2 6144,
-   pushAt 1826 2 1939,
-   opAt 1827 .JUMP]
+  [pushAt 1817 2 1615,
+   pushAt 1818 2 6144,
+   opAt 1819 (.Dup ⟨2, by decide⟩),
+   pushAt 1820 2 6144,
+   pushAt 1821 2 1939,
+   opAt 1822 .JUMP]
 
-/-- Instructions 1828..1830, pc 2995..2999: the skip. -/
+/-- Instructions 1823..1825, pc 2988..2992: the skip. -/
 def blk1828 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1828 .JUMPDEST,
-   pushAt 1829 2 1615,
-   opAt 1830 .JUMP]
+  [opAt 1823 .JUMPDEST,
+   pushAt 1824 2 1615,
+   opAt 1825 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
