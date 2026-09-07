@@ -21,20 +21,58 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
 set_option linter.unusedSimpArgs false in
-theorem run_redirect (s : State) (memory : ByteArray)
+theorem run_redirect_raw (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat)
+    (he : esize ≤ 1024) (hzero : esize ≠ 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1195
+    Challenge.EvmProof.Stepper.runLocatedBlock
+      (blk1195 ++ blkBaseHeadDispatchRaw)
       (redirectState s memory n bsize esize msize) =
       some (rawDispatchState s memory n bsize esize msize) := by
-  simp [blk1195, opAt, pushAt, wfOp,
-    Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated,
-    Challenge.EvmProof.Stepper.runInstr,
-    redirectState, rawDispatchState, outer, hcode, hrun, jumpDest3695,
-    Challenge.EvmProof.Word.literal_eq_ofNat,
-    Challenge.EvmProof.Word.word_toNat_ofNat]
+  have hz : UInt256.isZero (UInt256.ofNat esize) = UInt256.ofNat 0 :=
+    Challenge.Modexp.Submission.Proofs.Fast.Exp.isZero_ofNat_of_ne
+      (Nat.lt_of_le_of_lt he (by norm_num)) hzero
+  simp (config := { maxSteps := 300000 })
+    [blk1195, blkBaseHeadDispatchRaw, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      redirectState, rawDispatchState, outer, hcode, hrun, hz,
+      jumpDest3965, jumpDest3695,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_redirect_zero (s : State) (memory : ByteArray)
+    (n bsize esize msize : Nat)
+    (hzero : esize = 0)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock
+      (blk1195 ++ blkBaseHeadDispatchZero)
+      (redirectState s memory n bsize esize msize) =
+      some (Challenge.Modexp.Submission.Proofs.Fast.Exp.bDone
+        s memory n bsize esize msize) := by
+  have hz : UInt256.isZero (UInt256.ofNat esize) = UInt256.ofNat 1 := by
+    rw [hzero]
+    exact Challenge.Modexp.Submission.Proofs.Fast.Exp.isZero_ofNat_zero
+  simp (config := { maxSteps := 300000 })
+    [blk1195, blkBaseHeadDispatchZero, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      redirectState,
+      Challenge.Modexp.Submission.Proofs.Fast.Exp.bDone,
+      outer, hcode, hrun, hzero, hz,
+      Challenge.Modexp.Submission.Proofs.Fast.Exp.isTrue_one,
+      jumpDest3965, jumpDest3976, jumpDest1756,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
 theorem run_guard (s : State) (memory : ByteArray)
@@ -159,16 +197,26 @@ private def sound {s t : State}
     Artifact.submissionArtifact .Osaka path hcode hfork h hrun hnp
 
 def gasSteps_redirect (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat)
+    (n bsize esize msize : Nat) (he : esize ≤ 1024)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (redirectState s memory n bsize esize msize)
-      (rawDispatchState s memory n bsize esize msize) :=
-  sound blk1195 (run_redirect s memory n bsize esize msize hcode hrun)
-    hcode hfork hrun hnp
+      (if esize = 0 then
+        Challenge.Modexp.Submission.Proofs.Fast.Exp.bDone
+          s memory n bsize esize msize
+       else rawDispatchState s memory n bsize esize msize) := by
+  by_cases hz : esize = 0
+  · rw [if_pos hz]
+    exact sound (blk1195 ++ blkBaseHeadDispatchZero)
+      (run_redirect_zero s memory n bsize esize msize hz hcode hrun)
+      hcode hfork hrun hnp
+  · rw [if_neg hz]
+    exact sound (blk1195 ++ blkBaseHeadDispatchRaw)
+      (run_redirect_raw s memory n bsize esize msize he hz hcode hrun)
+      hcode hfork hrun hnp
 
 def gasSteps_guard (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 32)

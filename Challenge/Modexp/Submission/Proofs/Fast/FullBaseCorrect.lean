@@ -46,6 +46,7 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
     (hcc : Model.FastRepresents mem 5120 n (Limbs.radix * Limbs.radix ^ n % mm))
     (hrrb : Model.FastRepresents mem 6144 n rr)
     (hacc : Model.FastRepresents mem 1024 n 0)
+    (hbase : Model.FastRepresents mem 2048 n 0)
     (hone : Model.FastRepresents mem 3072 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
@@ -57,40 +58,82 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
     Model.coprime_radix_pow_of_odd hodd n
   have hredirect : Challenge.EvmProof.GasSteps
       (baseHead s mem n bsize esize msize)
-      (FullBase.rawDispatchState s mem n bsize esize msize) :=
+      (if esize = 0 then
+        bDone s mem n bsize esize msize
+       else FullBase.rawDispatchState s mem n bsize esize msize) :=
     Challenge.EvmProof.GasSteps.cast
-      (Bytecode.FullBaseHitTrace.gasSteps_redirect s mem n bsize esize msize
+      (Bytecode.FullBaseHitTrace.gasSteps_redirect s mem n bsize esize msize he
         hcode hfork hrun hnp) rfl rfl
-  by_cases hraw : bsize = 32 * n
-  · have htrace := gasSteps_rawBaseChain s sub input mem esize msize rr hraw
-      hdata hn hn32 hact hrrlt hframe hmod hrrb hcode hfork hrun hnp
-    have hframeC := rawBaseCopy_frame (input := input) hn32 hframe
-    have hframeM := sub.mpFrame 6144 2048 2048 (rawBaseCopy mem input n) (by omega) hframeC
+  by_cases hzero : esize = 0
+  · rw [if_pos hzero] at hredirect
+    have hframeC : Frame (mcopyMem mem 1024 4096 (32 * n)) n bsize minv :=
+      frame_mcopyMem (by omega) hframe
     have hEb : EbInv
-        (mcopyMem (sub.mpMem 6144 2048 2048 (rawBaseCopy mem input n)) 1024 4096 (32 * n))
-        n mm (Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n % mm)
-        (expAcc mm (Limbs.radix ^ n)
-          (Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n % mm)
-          (expBits input bsize) 0) := by
-      simpa only [hraw, expAcc] using
-        rawBaseCopy_ebInv spec mem input hn hn32 hmpos hcop hrrmod hrrlt
-          hframe.minvW hmod hr1 hrrb hone
-    obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
-      handled_of_bDone input s (sub.mpMem 6144 2048 2048 (rawBaseCopy mem input n))
-        n bsize esize msize mm minv
-        (Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n % mm) sub spec
-        hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32 hbsize hesize hmsz
-        hmm hodd hradix (Nat.mod_lt _ hmpos) (Nat.mod_modEq _ _) hframeM hEb
-    exact ⟨final, ⟨(hredirect.trans htrace).trans tr⟩, hdone, hres⟩
-  · have hwidth := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Bytecode.Artifact.submissionArtifact .Osaka rawGuardBlock
-      (s := rawGuard s mem n bsize esize msize) hcode hfork
-      (run_rawGuard_miss s mem n bsize esize msize hn32 hb hraw hcode hrun)
-      hrun hnp
-    obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
-      handled_of_baseFallback input s mem n bsize esize msize mm minv rr sub spec
-        hcode hfork hrun hnp hdata hstack hact hn hn32 hb hb0 he hmz hm32 hbsize
-        hesize hmsz hmm hodd hradix hrrlt hrrmod hframe hmod hr1 hcc hrrb hacc hone
-    exact ⟨final, ⟨(hredirect.trans hwidth).trans tr⟩, hdone, hres⟩
+        (mcopyMem mem 1024 4096 (32 * n)) n mm 0
+        (expAcc mm (Limbs.radix ^ n) 0 (expBits input bsize) 0) := by
+      refine ⟨?_, ?_, ?_, ⟨0, Limbs.radix_pos, ?_⟩⟩
+      · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 0 n mm
+          (by omega) hmod
+      · exact Csub.fastRepresents_mcopy _ 4096 1024 n (Limbs.radix ^ n % mm)
+          (by omega) hr1
+      · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 2048 n 0
+          (by omega) hbase
+      · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 3072 n 0
+          (by omega) hone
+    have htrace := gasSteps_expChain s sub spec mem input esize msize 0
+      hdata hmpos hcop hn hn32 hb he hmz hm32 hradix (by omega)
+      hact hframe hEb hcode hfork hrun hnp
+    have hfinal0 := ebMem_final (spec := spec) (bM := 0) (b := 0)
+      (e := Precompile.bytesToNatPadded input (96 + bsize) esize)
+      hmpos hn hn32 hcop hradix (by omega) (by simp) input bsize esize rfl
+      (mcopyMem mem 1024 4096 (32 * n)) hframeC.minvW hEb
+    have hexp :
+        Precompile.bytesToNatPadded input (96 + bsize) esize = 0 := by
+      rw [hzero]
+      exact Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width input (96 + bsize)
+    have hres0 :
+        Precompile.modPow 0
+            (Precompile.bytesToNatPadded input (96 + bsize) esize) mm =
+          Precompile.modPow
+            (Precompile.bytesToNatPadded input 96 bsize)
+            (Precompile.bytesToNatPadded input (96 + bsize) esize)
+            (Precompile.bytesToNatPadded input (96 + bsize + esize) msize) := by
+      rw [hexp, ← hmm]
+      simp [Challenge.Modexp.Submission.Proofs.Algorithm.modPow_eq, hmpos.ne']
+    exact handled_of_trace input (bDone s mem n bsize esize msize) s _ n
+      bsize esize msize _ hstack (hredirect.trans htrace) hn hm32 (by omega)
+      hbsize hesize hmsz hfinal0 hres0
+  · rw [if_neg hzero] at hredirect
+    by_cases hraw : bsize = 32 * n
+    · have htrace := gasSteps_rawBaseChain s sub input mem esize msize rr hraw
+        hdata hn hn32 hact hrrlt hframe hmod hrrb hcode hfork hrun hnp
+      have hframeC := rawBaseCopy_frame (input := input) hn32 hframe
+      have hframeM := sub.mpFrame 6144 2048 2048 (rawBaseCopy mem input n) (by omega) hframeC
+      have hEb : EbInv
+          (mcopyMem (sub.mpMem 6144 2048 2048 (rawBaseCopy mem input n)) 1024 4096 (32 * n))
+          n mm (Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n % mm)
+          (expAcc mm (Limbs.radix ^ n)
+            (Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n % mm)
+            (expBits input bsize) 0) := by
+        simpa only [hraw, expAcc] using
+          rawBaseCopy_ebInv spec mem input hn hn32 hmpos hcop hrrmod hrrlt
+            hframe.minvW hmod hr1 hrrb hone
+      obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
+        handled_of_bDone input s (sub.mpMem 6144 2048 2048 (rawBaseCopy mem input n))
+          n bsize esize msize mm minv
+          (Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n % mm) sub spec
+          hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32 hbsize hesize hmsz
+          hmm hodd hradix (Nat.mod_lt _ hmpos) (Nat.mod_modEq _ _) hframeM hEb
+      exact ⟨final, ⟨(hredirect.trans htrace).trans tr⟩, hdone, hres⟩
+    · have hwidth := Challenge.EvmProof.Stepper.runLocatedBlock_sound
+        Bytecode.Artifact.submissionArtifact .Osaka rawGuardBlock
+        (s := rawGuard s mem n bsize esize msize) hcode hfork
+        (run_rawGuard_miss s mem n bsize esize msize hn32 hb hraw hcode hrun)
+        hrun hnp
+      obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
+        handled_of_baseFallback input s mem n bsize esize msize mm minv rr sub spec
+          hcode hfork hrun hnp hdata hstack hact hn hn32 hb hb0 he hmz hm32 hbsize
+          hesize hmsz hmm hodd hradix hrrlt hrrmod hframe hmod hr1 hcc hrrb hacc hone
+      exact ⟨final, ⟨(hredirect.trans hwidth).trans tr⟩, hdone, hres⟩
 
 end Challenge.Modexp.Submission.Proofs.Fast.Exp

@@ -77,7 +77,7 @@ theorem handled_of_rrDone (input : ByteArray) (s : State) (mem : ByteArray)
       handled_of_baseHead input s mem n bsize esize msize mm minv rr sub spec
         hcode hfork hrun hnp hdata hstack hact hn hn32 hb hb0 he hmz hm32
         hbsize hesize hmsz hmm hodd hradix hrrlt hrrmod hframe
-        hinv.modulus hinv.r1 hinv.cc hinv.rr hacc0 hone0
+        hinv.modulus hinv.r1 hinv.cc hinv.rr hacc0 hbase0 hone0
     exact ⟨final,
       ⟨(gasSteps_rrDone_base s mem n bsize esize msize hb (by omega)
         hcode hfork hrun hnp).trans tr⟩,

@@ -88,5 +88,30 @@ def blkFullBaseFallback :
    pushAt 2412 2 1668,
    opAt 2413 .JUMP]
 
+/-- pc 3965..3975, indices 2617..2623: dispatch a zero exponent to the
+existing exponent-chain entry, otherwise enter the raw-base dispatcher. -/
+def blkBaseHeadDispatchRaw :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 2617 .JUMPDEST,
+   opAt 2618 (.Dup ⟨3, by decide⟩),
+   opAt 2619 .ISZERO,
+   pushAt 2620 2 3976,
+   opAt 2621 .JUMPI,
+   pushAt 2622 2 3695,
+   opAt 2623 .JUMP]
+
+/-- pc 3965..3980, indices 2617..2622 and 2624..2626: zero-exponent
+dispatch landing at BDONE. -/
+def blkBaseHeadDispatchZero :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 2617 .JUMPDEST,
+   opAt 2618 (.Dup ⟨3, by decide⟩),
+   opAt 2619 .ISZERO,
+   pushAt 2620 2 3976,
+   opAt 2621 .JUMPI,
+   opAt 2624 .JUMPDEST,
+   pushAt 2625 2 1756,
+   opAt 2626 .JUMP]
+
 end Challenge.Modexp.Submission.Proofs.Fast
 
