@@ -54,19 +54,19 @@ def squareReturn (s : State) (mem : ByteArray)
 
 def product (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3980
+  { s with pc := UInt256.ofNat 3979
            stack := UInt256.ofNat 0 :: outer n bsize esize msize
            memory := mem }
 
 def finish (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3997
+  { s with pc := UInt256.ofNat 3996
            stack := outer n bsize esize msize
            memory := mem }
 
 def fallback (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 4002
+  { s with pc := UInt256.ofNat 4001
            stack := outer n bsize esize msize
            memory := mem }
 

@@ -25,9 +25,9 @@ theorem jumpD3970 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 3970).toNat = true :=
   Exp.jumpD 3970 (by decide) FixedDirectPaths.jumpDest3970
 
-theorem jumpD3997 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3997).toNat = true :=
-  Exp.jumpD 3997 (by decide) FixedDirectPaths.jumpDest3997
+theorem jumpD3996 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
+    (UInt256.ofNat 3996).toNat = true :=
+  Exp.jumpD 3996 (by decide) FixedDirectPaths.jumpDest3996
 
 /-- Execute the remaining positive number of in-place BASE squares. -/
 def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}

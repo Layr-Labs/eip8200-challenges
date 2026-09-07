@@ -8,7 +8,7 @@ set_option maxHeartbeats 4000000
 /-!
 # Exact located blocks for the direct fixed-exponent handler
 
-The appended handler occupies pc3892..4015 and instruction indices2572..2641.
+The appended handler occupies pc3892..4014 and instruction indices2572..2641.
 This file is the generated-Artifact boundary for its concrete trace proofs.
 -/
 
@@ -32,9 +32,9 @@ abbrev Located :=
 @[simp] theorem directPC1 (i : Nat) (hi : 2609 ≤ i) (hii : i ≤ 2641) :
     Artifact.submissionArtifact.instructionPC i =
       [3952,3953,3954,3957,3960,3963,3966,3969,3970,3971,
-       3973,3974,3975,3976,3979,3980,3981,3984,3987,3990,
-       3993,3996,3997,3998,4001,4002,4003,4004,4007,4010,
-       4011,4012,4015][i - 2609]! := by
+       3972,3973,3974,3975,3978,3979,3980,3983,3986,3989,
+       3992,3995,3996,3997,4000,4001,4002,4003,4006,4009,
+       4010,4011,4014][i - 2609]! := by
   interval_cases i <;> decide
 
 def entryPrefix : List Located :=
@@ -44,13 +44,13 @@ def entryPrefix : List Located :=
 
 def oneWidth : List Located :=
   [opAt 2578 (.Dup ⟨3, by decide⟩), pushAt 2579 1 1,
-   opAt 2580 .EQ, opAt 2581 .ISZERO, pushAt 2582 2 4002,
+   opAt 2580 .EQ, opAt 2581 .ISZERO, pushAt 2582 2 4001,
    opAt 2583 .JUMPI]
 
 def checkThree : List Located :=
   [pushAt 2584 2 9472, opAt 2585 .MLOAD, opAt 2586 .CALLDATALOAD,
    pushAt 2587 0 0, opAt 2588 .BYTE, pushAt 2589 1 3,
-   opAt 2590 .EQ, opAt 2591 .ISZERO, pushAt 2592 2 4002,
+   opAt 2590 .EQ, opAt 2591 .ISZERO, pushAt 2592 2 4001,
    opAt 2593 .JUMPI]
 
 def threeHit : List Located :=
@@ -60,7 +60,7 @@ def check65537 : List Located :=
   [opAt 2597 .JUMPDEST, pushAt 2598 2 9472, opAt 2599 .MLOAD,
    opAt 2600 .CALLDATALOAD, pushAt 2601 1 232, opAt 2602 .SHR,
    pushAt 2603 3 65537, opAt 2604 .EQ, opAt 2605 .ISZERO,
-   pushAt 2606 2 4002, opAt 2607 .JUMPI]
+   pushAt 2606 2 4001, opAt 2607 .JUMPI]
 
 def fermatHit : List Located :=
   [pushAt 2608 1 16]
@@ -74,13 +74,13 @@ def squareCall : List Located :=
    opAt 2616 .JUMP]
 
 def squareReturn : List Located :=
-  [opAt 2617 .JUMPDEST, pushAt 2618 1 1,
-   opAt 2619 (.Swap ⟨0, by decide⟩), opAt 2620 .SUB,
+  [opAt 2617 .JUMPDEST, pushAt 2618 0 0,
+   opAt 2619 .NOT, opAt 2620 .ADD,
    opAt 2621 (.Dup ⟨0, by decide⟩), pushAt 2622 2 3953,
    opAt 2623 .JUMPI]
 
 def product : List Located :=
-  [opAt 2624 .POP, pushAt 2625 2 3997, pushAt 2626 2 1024,
+  [opAt 2624 .POP, pushAt 2625 2 3996, pushAt 2626 2 1024,
    pushAt 2627 2 1024, pushAt 2628 2 2048, pushAt 2629 2 1939,
    opAt 2630 .JUMP]
 
@@ -112,12 +112,12 @@ theorem jumpDest3970 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3970 = true :=
   Artifact.isValidJumpDest_index 2617 (by rfl)
 
-theorem jumpDest3997 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3997 = true :=
+theorem jumpDest3996 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3996 = true :=
   Artifact.isValidJumpDest_index 2631 (by rfl)
 
-theorem jumpDest4002 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4002 = true :=
+theorem jumpDest4001 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4001 = true :=
   Artifact.isValidJumpDest_index 2634 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths

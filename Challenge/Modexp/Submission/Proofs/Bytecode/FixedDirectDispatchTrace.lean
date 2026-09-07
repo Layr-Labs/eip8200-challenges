@@ -106,7 +106,7 @@ theorem run_oneWidth_miss (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       otherWidth, FixedDirectStates.fallback, Exp.outer, hcode, hrun, heq,
-      Exp.isZero_ofNat_zero, Exp.isTrue_one, jumpDest4002,
+      Exp.isZero_ofNat_zero, Exp.isTrue_one, jumpDest4001,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,

@@ -2882,11 +2882,11 @@ def r1Call (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
            stack := UInt256.ofNat px :: ret :: outer n bsize esize msize
            memory := mem }
 
-/-- The width-dependent `CCB` entry, pc 4016, stack `[px, ret] ++ OUTER`.
+/-- The width-dependent `CCB` entry, pc 4015, stack `[px, ret] ++ OUTER`.
 Its seed doublings and Montgomery squarings produce the same residue target. -/
 def ccCall (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 4016
+  { s with pc := UInt256.ofNat 4015
            stack := UInt256.ofNat px :: ret :: outer n bsize esize msize
            memory := mem }
 
@@ -2925,13 +2925,13 @@ theorem run_r0 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       (32 * n)) = s.activeWords :=
     activeWords_fix2 s 5120 (32 * n) 4096 (32 * n) (by omega) (by omega) (by omega)
       (by omega) hact
-  have h4016 : (4016 : UInt256) = UInt256.ofNat 4016 := by decide
-  have h4016Nat : (UInt256.ofNat 4016).toNat = 4016 := by decide
+  have h4015 : (4015 : UInt256) = UInt256.ofNat 4015 := by decide
+  have h4015Nat : (UInt256.ofNat 4015).toNat = 4015 := by decide
   simp (config := { maxSteps := 600000 }) [blk1138, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     r0State, ccCall, mcopyMem, outer, fastPC4, hcode, hrun, hs32, hmod, hfix1,
-    hfix2, h4016, h4016Nat, CcbSeed.jumpDest4016, State.activeWordsAfterUInt256,
+    hfix2, h4015, h4015Nat, CcbSeed.jumpDest4015, State.activeWordsAfterUInt256,
     State.activeWordsAfterUInt256_2,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -5492,13 +5492,13 @@ theorem jump2888 :
   rw [show (UInt256.ofNat 2888).toNat = 2888 by decide]
   exact jumpDest2888
 
-theorem jump4040 :
+theorem jump4039 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat 4040).toNat = true := by
-  rw [show (UInt256.ofNat 4040).toNat = 4040 by decide]
-  exact CcbSeed.jumpDest4040
+      (UInt256.ofNat 4039).toNat = true := by
+  rw [show (UInt256.ofNat 4039).toNat = 4039 by decide]
+  exact CcbSeed.jumpDest4039
 
-/-- **`CCB` against the real `ADDMOD` and `MONPRO`.**  Entering pc 4016 with
+/-- **`CCB` against the real `ADDMOD` and `MONPRO`.**  Entering pc 4015 with
 `[px, ret] ++ OUTER` returns to `ret` with the block at `px` multiplied by
 `radix` modulo `m`. -/
 def gasSteps_ccbFull (s : State) {n bsize mm minv R : Nat}
@@ -5531,12 +5531,12 @@ def gasSteps_ccbFull (s : State) {n bsize mm minv R : Nat}
     (by simp only [outer, List.length_cons, List.length_nil]; omega)
     hn32 hf.s32 hact hcode hjump hfork hrun hnp
   · intro i _hi
-    exact sub.addmod px px px (UInt256.ofNat 4040)
+    exact sub.addmod px px px (UInt256.ofNat 4039)
       (CcbSeed.loopStack px n (CcbSeed.doubles n - i) ret (outer n bsize esize msize))
       (seedMems i)
       (by simp only [CcbSeed.loopStack, outer, List.length_cons, List.length_nil,
         List.length_append]; omega)
-      (by omega) (by omega) (by omega) (by omega) (by omega) jump4040
+      (by omega) (by omega) (by omega) (by omega) (by omega) jump4039
       (ccSeedMem_frame sub px hpx6 mem hf i)
   · intro i _hi
     have hsquare := ccSqMem_inv spec hm hn32 px hpxlo hpxhi

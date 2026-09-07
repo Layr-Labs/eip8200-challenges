@@ -16,12 +16,12 @@ private theorem instructionPC_add (p : Challenge.EvmProof.ProgramArtifact) (base
     assembleBytes_append, List.length_append]
 
 private theorem seedPCAnchor :
-    Artifact.submissionArtifact.instructionPC 2642 = 4016 := by rfl
+    Artifact.submissionArtifact.instructionPC 2642 = 4015 := by rfl
 
 @[simp] theorem seedPC (i : Nat) (hi : 2642 ≤ i) (hii : i ≤ 2669) :
     Artifact.submissionArtifact.instructionPC i =
-      [4016,4017,4020,4021,4023,4024,4025,4027,4028,4029,4030,4033,4034,4035,
-       4036,4039,4040,4041,4042,4043,4044,4045,4048,4049,4050,4052,4053,4056][i - 2642]! := by
+      [4015,4016,4019,4020,4022,4023,4024,4026,4027,4028,4029,4032,4033,4034,4035,
+       4038,4039,4040,4041,4042,4043,4044,4047,4048,4049,4051,4052,4055][i - 2642]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (2642 + (i - 2642)) := by
@@ -47,7 +47,7 @@ def entryPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArti
 
 def callPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2651 .JUMPDEST,
-   pushAt 2652 2 4040,
+   pushAt 2652 2 4039,
    opAt 2653 (.Dup ⟨3, by decide⟩),
    opAt 2654 (.Dup ⟨0, by decide⟩),
    opAt 2655 (.Dup ⟨0, by decide⟩),
@@ -60,7 +60,7 @@ def retPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifa
    opAt 2660 .NOT,
    opAt 2661 .ADD,
    opAt 2662 (.Dup ⟨0, by decide⟩),
-   pushAt 2663 2 4029,
+   pushAt 2663 2 4028,
    opAt 2664 .JUMPI]
 
 def finishPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -70,16 +70,16 @@ def finishPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArt
    pushAt 2668 2 2877,
    opAt 2669 .JUMP]
 
-theorem jumpDest4016 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4016 = true :=
+theorem jumpDest4015 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4015 = true :=
   Artifact.isValidJumpDest_index 2642 (by rfl)
 
-theorem jumpDest4029 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4029 = true :=
+theorem jumpDest4028 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4028 = true :=
   Artifact.isValidJumpDest_index 2651 (by rfl)
 
-theorem jumpDest4040 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4040 = true :=
+theorem jumpDest4039 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4039 = true :=
   Artifact.isValidJumpDest_index 2658 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CcbSeed

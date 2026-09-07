@@ -45,13 +45,13 @@ def loopStack (px n k : Nat) (ret : UInt256) (rest : List UInt256) : List UInt25
 
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4016
+  { s with pc := UInt256.ofNat 4015
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
 def loopState (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4029
+  { s with pc := UInt256.ofNat 4028
            stack := loopStack px n k ret rest
            memory := mem }
 
@@ -59,18 +59,18 @@ def amCallState (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 2467
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
-                     UInt256.ofNat 4040] ++ loopStack px n k ret rest
+                     UInt256.ofNat 4039] ++ loopStack px n k ret rest
            memory := mem }
 
 def retState (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4040
+  { s with pc := UInt256.ofNat 4039
            stack := loopStack px n k ret rest
            memory := mem }
 
 def exitState (s : State) (mem : ByteArray) (px n : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4049
+  { s with pc := UInt256.ofNat 4048
            stack := loopStack px n 0 ret rest
            memory := mem }
 
@@ -158,7 +158,7 @@ theorem run_ret (s : State) (mem : ByteArray) (px n k k' : Nat) (ret : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hk15 : k' ≤ 15 := by omega
   have hzero : (0 : UInt256) = UInt256.ofNat 0 := by decide
-  have h4029Nat : (UInt256.ofNat 4029).toNat = 4029 := by decide
+  have h4028Nat : (UInt256.ofNat 4028).toNat = 4028 := by decide
   have hdec : UInt256.lnot ({ val := 0 } : UInt256) + UInt256.ofNat (k' + 1) =
       UInt256.ofNat k' := by
     interval_cases k' <;> decide
@@ -171,7 +171,7 @@ theorem run_ret (s : State) (mem : ByteArray) (px n k k' : Nat) (ret : UInt256)
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
      retState, loopState, loopStack, hc4, hc5, hc6, hcode, hrun,
-     hzero, h4029Nat, hdec, htrue, jumpDest4029, List.exchange,
+     hzero, h4028Nat, hdec, htrue, jumpDest4028, List.exchange,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
