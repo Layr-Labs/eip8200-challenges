@@ -140,6 +140,11 @@ def amLoopState (s : State) (memory : ByteArray) (pa pb n j : Nat)
                      (amStep memory pa pb n j).flag, pd, ret] ++ rest
            memory := (amStep memory pa pb n j).memory }
 
+/- The old pc-2467 prologue was replaced by the fused-routine trampoline.
+The unchanged old limb body remains below because its functional definitions
+and memory lemmas are still useful; the live entry certificate is now in
+`Fast.FusedCsub`. -/
+/-
 set_option linter.unusedSimpArgs false in
 theorem run_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
     (pd ret : UInt256) (rest : List UInt256)
@@ -186,6 +191,7 @@ theorem run_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
+-/
 
 
 
@@ -1095,6 +1101,8 @@ theorem csSrc_toNat (memory : ByteArray) (n j : Nat)
 
 /-! ## Execution certificates -/
 
+/- The live replacement of this entry certificate is in `Fast.FusedCsub`. -/
+/-
 def gasSteps_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
     (pd ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008)
@@ -1117,6 +1125,7 @@ def gasSteps_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
       hs32 htl)
     (by simpa [amEntryState] using hrun)
     (by simpa [amEntryState, State.fork] using hnp)
+-/
 
 def gasSteps_amIteration (s : State) (memory : ByteArray) (pa pb n j : Nat)
     (pd ret : UInt256) (rest : List UInt256)
@@ -1202,6 +1211,8 @@ def gasSteps_amTailStep (s : State) (memory : ByteArray) (pa pb n j : Nat)
 /-- Whole-subroutine trace for `ADDMOD`: from the entry `[pa, pb, pd, ret]` to
 the fall-through entry of `CSUB`, with the sum limbs in the `t` block and the
 carry stored at `TN`. -/
+/- Replaced by the full fused ADDMOD certificate in `Fast.FusedCsub`. -/
+/-
 def gasSteps_addmod (s : State) (memory : ByteArray) (pa pb n : Nat)
     (pd ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008)
@@ -1230,6 +1241,7 @@ def gasSteps_addmod (s : State) (memory : ByteArray) (pa pb n : Nat)
       (gasSteps_amTailStep s memory pa pb n (n - 1 + 1) pd ret rest hcap hcode hfork
         hrun hnp hact))
     rfl (by rw [hnn])
+-/
 
 def gasSteps_csEntry (s : State) (memory : ByteArray) (n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)

@@ -8,6 +8,7 @@ import Challenge.EvmProof.Memory
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 import Challenge.Modexp.Submission.Proofs.Fast.Setup
 import Challenge.Modexp.Submission.Proofs.Fast.Double
+import Challenge.Modexp.Submission.Proofs.Fast.FusedCsubFunctional
 import Challenge.Modexp.Submission.Proofs.Fast.Ccb
 import Challenge.Modexp.Submission.Proofs.Fast.CcbSeed
 import Challenge.Modexp.Submission.Proofs.Fast.R1
@@ -167,16 +168,14 @@ structure Frame (mem : ByteArray) (n bsize minv : Nat) : Prop where
 
 /-! ### The combined `ADDMOD` transformer
 
-`Fast.Csub` splits the routine at pc 2680 into `gasSteps_addmod` (the schoolbook
-add) and `gasSteps_csub` (the conditional subtract); the driver only ever calls
-the pair.  `amMemOf` is the memory the pair leaves behind. -/
+The fused routine computes the schoolbook sum and conditional subtraction in a
+single limb walk. `amMemOf` is the memory it leaves behind. -/
 
 /-- The memory one `ADDMOD(pa, pb) → pd` call produces. -/
 def amMemOf (mem : ByteArray) (pa pb n pd : Nat) : ByteArray :=
-  Csub.csResultMemory (Csub.amResultMemory mem pa pb n) n pd
+  FusedCsub.resultMemory mem pa pb n pd
 
-/-- One full `ADDMOD` call, `Csub.gasSteps_addmod` followed by
-`Csub.gasSteps_csub`. -/
+/-- One full fused `ADDMOD` call. -/
 def gasSteps_addmodFull (s : State) (mem : ByteArray) (pa pb n pd : Nat)
     (ret : UInt256) (tail : List UInt256) (hcap : tail.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -184,44 +183,45 @@ def gasSteps_addmodFull (s : State) (mem : ByteArray) (pa pb n pd : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 8192)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 8192)
+    (_hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 7168)
+    (_hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 7168)
     (hpd : pd + 32 * n ≤ 8192)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * n - 32))
+    (_hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * n - 32))
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.GasSteps (amCall s mem pa pb pd ret tail)
       (retTo s (amMemOf mem pa pb n pd) ret tail) :=
   have hpdN : (UInt256.ofNat pd).toNat = pd := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (show pd ≤ 8192 by omega) (by norm_num))]
-  have hml' : MachineState.readWord (Csub.amResultMemory mem pa pb n) 9408 =
-      UInt256.ofNat (32 * n - 32) := by
-    rw [Double.readWord_amResultMemory_high _ pa pb n 9408 (by omega) hn32 (by omega)]
-    exact hml
-  have htl' : MachineState.readWord (Csub.amResultMemory mem pa pb n) 9440 =
-      UInt256.ofNat (8224 + 32 * n) := by
-    rw [Double.readWord_amResultMemory_high _ pa pb n 9440 (by omega) hn32 (by omega)]
-    exact htl
-  have hs32' : MachineState.readWord
-      (Csub.csStep (Csub.amResultMemory mem pa pb n) n n).memory 9344 =
+  have hs32' : MachineState.readWord (FusedCsub.tnMemory mem pa pb n n) 9344 =
       UInt256.ofNat (32 * n) := by
-    rw [Csub.csStep_readWord_disjoint _ n 9344 (by omega) (Or.inr (by omega)) n le_rfl,
-      Double.readWord_amResultMemory_high _ pa pb n 9344 (by omega) hn32 (by omega)]
+    rw [FusedCsub.tnMemory_readWord_disjoint mem pa pb n n 9344
+      (Or.inr (by omega)) (Or.inr (by omega)) (Or.inr (by omega)) (by omega)]
     exact hs32
-  have htn : (MachineState.readWord
-      (Csub.csStep (Csub.amResultMemory mem pa pb n) n n).memory 8224).toNat ≤ 1 := by
-    rw [Csub.csStep_readWord_disjoint _ n 8224 (by omega) (Or.inr (by omega)) n le_rfl,
-      Csub.addmod_tn]
-    exact Csub.addmod_carry_le_one mem pa pb n hn (by omega) (by omega)
+  have hcarry := (FusedCsub.flags_le_one mem pa pb n n le_rfl).1
   have hdstFit : (UInt256.ofNat pd).toNat + 32 * n ≤ 9472 := by rw [hpdN]; omega
+  have hnj : n - 1 + 1 = n := by omega
+  have htail : Challenge.EvmProof.GasSteps
+      (FusedCsub.tailState s mem pa pb n (n - 1 + 1) (UInt256.ofNat pd) ret tail)
+      (FusedCsub.returnedState s mem pa pb n n (UInt256.ofNat pd) ret tail) := by
+    simpa only [hnj] using
+      (FusedCsub.gasSteps_tail s mem pa pb n n (UInt256.ofNat pd) ret tail hcap hcode
+        hfork hrun hnp hact hn hn32 hjump hs32' hdstFit hcarry)
   Challenge.EvmProof.GasSteps.cast
-    ((Csub.gasSteps_addmod s mem pa pb n (UInt256.ofNat pd) ret tail hcap hcode hfork
-        hrun hnp hact hn hn32 hpa (by omega) hpb (by omega) hs32 htl).trans
-      (Csub.gasSteps_csub s (Csub.amResultMemory mem pa pb n) n (UInt256.ofNat pd) ret
-        tail hcap hcode hfork hrun hnp hact hn hn32 hjump hml' htl' hs32' hdstFit htn))
-    rfl (by simp only [Csub.csReturnedState, retTo, amMemOf, Csub.csResultMemory, hpdN])
+    (((((FusedCsub.gasSteps_trampoline s mem pa pb (UInt256.ofNat pd) ret tail
+          hcap hcode hfork hrun hnp).trans
+        (FusedCsub.gasSteps_entry s mem pa pb n (UInt256.ofNat pd) ret tail hcap
+          hcode hfork hrun hnp hact htl)).trans
+      (FusedCsub.gasSteps_loop s mem pa pb n (UInt256.ofNat pd) ret tail hcap hcode
+        hfork hrun hnp hact hn hn32 (by omega) (by omega))).trans
+      (FusedCsub.gasSteps_exit s mem pa pb n (UInt256.ofNat pd) ret tail hcap hcode
+        hfork hrun hnp hact hn hn32 (by omega) (by omega))).trans
+      htail)
+    rfl
+    (by simp only [FusedCsub.returnedState, retTo, amMemOf,
+      FusedCsub.resultMemory, hpdN])
 
 /-- `ADDMOD` writes only below `8256`, so nothing at or above `V_S32` moves. -/
 theorem amMemOf_readWord_high (mem : ByteArray) (pa pb n pd addr : Nat)
@@ -229,8 +229,7 @@ theorem amMemOf_readWord_high (mem : ByteArray) (pa pb n pd addr : Nat)
     MachineState.readWord (amMemOf mem pa pb n pd) addr =
       MachineState.readWord mem addr := by
   rw [amMemOf,
-    Double.readWord_csResultMemory_high _ n pd addr hn hn32 (by omega) haddr,
-    Double.readWord_amResultMemory_high _ pa pb n addr hn hn32 haddr]
+    FusedCsub.resultMemory_readWord_high mem pa pb n pd addr hn hn32 hpd haddr]
 
 /-- `ADDMOD` preserves the configuration words. -/
 theorem amMemOf_frame {mem : ByteArray} {n bsize minv : Nat} (pa pb pd : Nat)
@@ -285,7 +284,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
   /-- `ADDMOD` at pc 2467. -/
   addmod : ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256)
     (mem : ByteArray), tail.length ≤ 1000 →
-    32 ≤ pa → pa + 32 * n ≤ 8192 → 32 ≤ pb → pb + 32 * n ≤ 8192 →
+    32 ≤ pa → pa + 32 * n ≤ 7168 → 32 ≤ pb → pb + 32 * n ≤ 7168 →
     pd + 32 * n ≤ 8192 →
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
     Frame mem n bsize minv →
@@ -2658,7 +2657,7 @@ structure SubSpec (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
     MachineState.readWord (mpMem pa pb pd mem) 9376 = MachineState.readWord mem 9376
   /-- `AddMod(pa, pb) → pd` writes the modular sum. -/
   amValue : ∀ (pa pb pd : Nat) (mem : ByteArray) (a b : Nat),
-    pa + 32 * n ≤ 8192 → pb + 32 * n ≤ 8192 → pd + 32 * n ≤ 8192 →
+    pa + 32 * n ≤ 7168 → pb + 32 * n ≤ 7168 → pd + 32 * n ≤ 8192 →
     Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem pa n a → Model.FastRepresents mem pb n b →
     a + b < 2 * mm →
@@ -4960,7 +4959,7 @@ def subsAddmod (s : State) (n bsize minv : Nat)
     (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32) :
     ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256) (mem : ByteArray),
       tail.length ≤ 1000 →
-      32 ≤ pa → pa + 32 * n ≤ 8192 → 32 ≤ pb → pb + 32 * n ≤ 8192 →
+      32 ≤ pa → pa + 32 * n ≤ 7168 → 32 ≤ pb → pb + 32 * n ≤ 7168 →
       pd + 32 * n ≤ 8192 →
       Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
       Frame mem n bsize minv →
@@ -5013,10 +5012,10 @@ theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     Monpro.monproMem_readWord_high s mem pa pb n pd 9376 (by omega) hn32 (by omega)
       (by omega)
   amValue pa pb pd mem a b hpa hpb hpd hm ha hb hab :=
-    Csub.addmod_csub_correct mem pa pb n a b mm pd hn hn32 hpa hpb ha hb hm hmpos hab
+    FusedCsub.addmod_correct mem pa pb n a b mm pd hn hn32 hpa hpb ha hb hm hmpos hab
   amFrame pa pb pd ptr v mem hptr hdisj hrep :=
-    Csub.addmod_csub_preserves_region mem pa pb n pd ptr n v hn (by omega) (by omega)
-      (by omega) hrep
+    FusedCsub.addmod_preserves_region mem pa pb n pd ptr n v (Or.inl hptr)
+      (Or.inl (by omega)) (Or.inl (by omega)) hdisj hrep
   amMinv pa pb pd mem hpd :=
     amMemOf_readWord_high mem pa pb n pd 9376 (by omega) hn32 (by omega) (by omega)
 
@@ -5049,7 +5048,12 @@ theorem dbl256Mem_frame {n bsize minv : Nat} (px : Nat) (hn : 1 ≤ n) (hn32 : n
     intro i
     induction i with
     | zero => exact hf
-    | succ i ih => exact amMemOf_frame px px px hn hn32 hpx ih
+    | succ i ih =>
+        rw [Double.iterMem_succ]
+        change Frame
+          (amMemOf (Double.iterMem (Double.dblStep px n) mem i) px px n px)
+          n bsize minv
+        exact amMemOf_frame px px px hn hn32 hpx ih
   exact key 256
 
 /-- One full `DOUBLE256` call, as the hand-over needs it. -/
@@ -5861,6 +5865,7 @@ theorem subs_mpMem (s : State) (n bsize mm minv : Nat)
   delta subs
   rfl
 
+set_option maxHeartbeats 100000 in
 theorem subs_amMem (s : State) (n bsize mm minv : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -5873,8 +5878,22 @@ theorem subs_amMem (s : State) (n bsize mm minv : Nat)
     (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn hn32 hmpos
       hminvlt hminvA).amMem =
       fun pa pb pd mem => amMemOf mem pa pb n pd := by
-  delta subs
-  rfl
+  have hrec :
+      subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn hn32 hmpos hminvlt
+          hminvA =
+        ({ mpMem pa pb pd mem := Monpro.monproMem s mem pa pb n pd
+           amMem pa pb pd mem := amMemOf mem pa pb n pd
+           mpFrame pa pb pd mem hpd hf :=
+             monproMem_frame' pa pb pd (by omega) hn32 (by omega) hf
+           amFrame pa pb pd mem hpd hf :=
+             amMemOf_frame pa pb pd (by omega) hn32 (by omega) hf
+           monpro := subsMonpro s n bsize mm minv hcode hfork hrun hnp hact hcds hn hn32
+             hmpos hminvlt hminvA
+           addmod := subsAddmod s n bsize minv hcode hfork hrun hnp hact hn hn32 } :
+          Subroutines s n bsize mm minv) := by
+    rfl
+  have hfield := congrArg (fun sub : Subroutines s n bsize mm minv => sub.amMem) hrec
+  with_reducible exact hfield
 
 /-- The value contract of the concrete instance, at the concrete instance. -/
 theorem specOf_subs (s : State) (n bsize mm minv : Nat)

@@ -49,35 +49,11 @@ def blk1595 :
    pushAt 1598 2 2642,
    opAt 1599 .JUMP]
 
-/-- Instructions 1600..1626, pc 2467..2499. -/
+/-- Instructions 1600..1602, pc 2467..2471: trampoline to fused ADDMOD. -/
 def blk1600 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1600 .JUMPDEST,
-   pushAt 1601 2 9344,
-   opAt 1602 .MLOAD,
-   opAt 1603 (.Dup ⟨0, by decide⟩),
-   opAt 1604 (.Dup ⟨2, by decide⟩),
-   opAt 1605 .ADD,
-   pushAt 1606 1 32,
-   opAt 1607 (.Swap ⟨0, by decide⟩),
-   opAt 1608 .SUB,
-   opAt 1609 (.Dup ⟨1, by decide⟩),
-   opAt 1610 (.Dup ⟨4, by decide⟩),
-   opAt 1611 .ADD,
-   pushAt 1612 1 32,
-   opAt 1613 (.Swap ⟨0, by decide⟩),
-   opAt 1614 .SUB,
-   opAt 1615 (.Swap ⟨2, by decide⟩),
-   opAt 1616 .POP,
-   opAt 1617 (.Swap ⟨2, by decide⟩),
-   opAt 1618 .POP,
-   opAt 1619 .POP,
-   pushAt 1620 2 9440,
-   opAt 1621 .MLOAD,
-   pushAt 1622 0 0,
-   opAt 1623 .JUMPDEST,
-   opAt 1624 .JUMPDEST,
-   opAt 1625 (.Swap ⟨2, by decide⟩),
-   opAt 1626 (.Swap ⟨0, by decide⟩)]
+   pushAt 1601 2 4643,
+   opAt 1602 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
