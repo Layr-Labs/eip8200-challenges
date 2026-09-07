@@ -47,7 +47,7 @@ structure BlockContext (s : State) (input : ByteArray) (i : Nat)
     (DriverTrace.messageOffsetWord i) (Padding.paddedMessage input)
     (DriverTrace.blockOffset i)
   separated : ∀ k, k < 16 →
-    0x2e0 ≤ (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord i) k).toNat
+    0x120 ≤ (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord i) k).toNat
   hash : hashAt32 s = Compression.embedHash h
 
 /-- A genuine compression endpoint and its exact one-block certificate. -/
@@ -56,7 +56,7 @@ structure BlockKernel where
   executionEnv : ∀ s input i, (nextState s input i).executionEnv = s.executionEnv
   halt : ∀ s input i, (nextState s input i).halt = s.halt
   callStack : ∀ s input i, (nextState s input i).callStack = s.callStack
-  wordAbove : ∀ s input i address, 0x2e0 ≤ address →
+  wordAbove : ∀ s input i address, 0x120 ≤ address →
     wordAt (nextState s input i) address = wordAt s address
   hashResult : ∀ (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (_hfit : CalldataFits input)
@@ -117,7 +117,7 @@ theorem states_callStack (kernel : BlockKernel) (input : ByteArray) (n : Nat) :
       rw [states, BlockKernel.callStack, ih]
 
 theorem states_word_above (kernel : BlockKernel) (input : ByteArray)
-    (n address : Nat) (haddress : 0x2e0 ≤ address) :
+    (n address : Nat) (haddress : 0x120 ≤ address) :
     wordAt (states kernel input n) address =
       wordAt (PaddingTrace.padReturned input) address := by
   induction n with
@@ -225,7 +225,7 @@ private theorem initialHashWords (kernel : BlockKernel) (input : ByteArray)
 private theorem blockSeparated (input : ByteArray) (hfit : CalldataFits input)
     (n : Nat) (hn : n < DriverTrace.blockCount input) :
     ∀ k, k < 16 →
-      0x2e0 ≤ (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord n) k).toNat := by
+      0x120 ≤ (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord n) k).toNat := by
   simpa [DriverTrace.messageOffsetWord, DriverTrace.blockOffset,
     DriverTrace.blockCount] using
     PaddedBlockBridge.padReturned_blockIndexSeparated input hfit n (by
@@ -337,7 +337,7 @@ def compressionSeam (kernel : BlockKernel) :
 /-- Correctness remains conditional on the genuine block kernel. -/
 theorem correct_of_block_kernel (kernel : BlockKernel)
     (input : ByteArray) (hfit : CalldataFits input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x14a)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x145)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   exact FastOutputResultBridge.correct_of_compression_trace (compressionSeam kernel) input hfit entryPrefix
