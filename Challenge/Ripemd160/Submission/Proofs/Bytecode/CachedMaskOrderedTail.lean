@@ -125,7 +125,7 @@ theorem run (s : State)
     (rest : List UInt256)
     (hrun : s.halt = .Running)
     (_hfork : s.fork = .Osaka)
-    (hactive : 39 ≤ s.activeWords.toNat)
+    (hactive : 25 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1006)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     runInstrSeq template (entry s left right ret rest) =

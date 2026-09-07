@@ -12,7 +12,7 @@ open StackRoundTrace QuadRoundState QuadRoundTemplate QuadSites QuadSemantic
 
 def gasSteps_rightNormal (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (a b c d e : UInt256) (rho : List UInt256) (n : CachedMaskRoundSitesRight.NormalIndex)
-    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 25 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1001) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -51,7 +51,7 @@ def gasSteps_rightNormal (s : State) (word : Nat → UInt32)
 
 def gasSteps_rightFallthrough (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (a b c d e : UInt256) (rho : List UInt256) (group : Fin 4)
-    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 25 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1001) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -97,7 +97,7 @@ def gasSteps_rightFallthrough (s : State) (word : Nat → UInt32)
 noncomputable def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (a b c d e : UInt256) (rho : List UInt256) (k : Fin 20)
     (hk : k.val < 16)
-    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 25 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1001) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
