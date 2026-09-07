@@ -17,13 +17,6 @@ open Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode.WordStep
 open Challenge.Modexp.Submission.Proofs.Bytecode.UnrollPCs
 
-private theorem shiftRight_zero (byte : UInt256) :
-    UInt256.shiftRight byte (0 : UInt256) = byte := by
-  apply Challenge.EvmProof.Word.word_ext
-  change (UInt256.shiftRight byte (UInt256.ofNat 0)).toNat = byte.toNat
-  rw [Challenge.EvmProof.Word.shiftRight_toNat _ (by norm_num)]
-  simp
-
 /-- Copy 7, with every stack slot left symbolic. -/
 def gasSteps_bitCopy7_sym (s : State) (rest : List UInt256)
     (Bm1 zero byte offset outerW acc base m : UInt256)
@@ -42,12 +35,9 @@ def gasSteps_bitCopy7_sym (s : State) (rest : List UInt256)
   have step2487 := soundW hs (pushAt 2540 1 0)
     (blockOfW _ (pcFactW s 2540 3844 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2540)
       (stepW_push s 3844 1 (0 : UInt256) ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
-  have step2488 := (soundW hs (opAt 2541 .POP)
+  have step2488 := soundW hs (opAt 2541 .SHR)
     (blockOfW _ (pcFactW s 2541 3846 ([(0 : UInt256), byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2541)
-      (stepW_pop s 3846 (0 : UInt256) ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))).cast rfl
-        (show stW s 3847 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) =
-          stW s 3847 ([UInt256.shiftRight byte (0 : UInt256), (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) by
-            rw [shiftRight_zero])
+      (stepW_shr s 3846 ((0 : UInt256)) (byte) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
   have step2489 := soundW hs (opAt 2542 .AND)
     (blockOfW _ (pcFactW s 2542 3847 ([(UInt256.shiftRight byte (0 : UInt256)), (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2542)
       (stepW_and s 3847 ((UInt256.shiftRight byte (0 : UInt256))) ((1 : UInt256)) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
@@ -90,7 +80,7 @@ def gasSteps_bitCopy7_sym (s : State) (rest : List UInt256)
 theorem gasSteps_bitCopy7_sym_cost (s : State) (rest : List UInt256)
     (Bm1 zero byte offset outerW acc base m : UInt256)
     (hs : Frame s) (hrest : rest.length < 1000) :
-    (gasSteps_bitCopy7_sym s rest Bm1 zero byte offset outerW acc base m hs hrest).cost = 61 := by
+    (gasSteps_bitCopy7_sym s rest Bm1 zero byte offset outerW acc base m hs hrest).cost = 62 := by
   unfold gasSteps_bitCopy7_sym
   have c2484 := blockCostW [opAt 2537 (.Dup ⟨7, by decide⟩)] 3
     (blockOfW _ (pcFactW s 2537 3840 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2537)
@@ -104,9 +94,9 @@ theorem gasSteps_bitCopy7_sym_cost (s : State) (rest : List UInt256)
   have c2487 := blockCostW [pushAt 2540 1 0] 3
     (blockOfW _ (pcFactW s 2540 3844 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2540)
       (stepW_push s 3844 1 (0 : UInt256) ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2488 := blockCostW [opAt 2541 .POP] 2
+  have c2488 := blockCostW [opAt 2541 .SHR] 3
     (blockOfW _ (pcFactW s 2541 3846 ([(0 : UInt256), byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2541)
-      (stepW_pop s 3846 (0 : UInt256) ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+      (stepW_shr s 3846 ((0 : UInt256)) (byte) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
   have c2489 := blockCostW [opAt 2542 .AND] 3
     (blockOfW _ (pcFactW s 2542 3847 ([(UInt256.shiftRight byte (0 : UInt256)), (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2542)
       (stepW_and s 3847 ((UInt256.shiftRight byte (0 : UInt256))) ((1 : UInt256)) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
@@ -143,7 +133,7 @@ theorem gasSteps_bitCopy7_sym_cost (s : State) (rest : List UInt256)
   have c2500 := blockCostW [opAt 2553 .POP] 2
     (blockOfW _ (pcFactW s 2553 3859 ([acc, Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (0 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by norm_num) pc2553)
       (stepW_pop s 3859 (acc) ([Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (0 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  simp only [soundW, Challenge.EvmProof.GasSteps.cast_cost, Challenge.EvmProof.GasSteps.trans_cost,
+  simp only [soundW, Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost, Nat.reduceAdd]
   omega
 
