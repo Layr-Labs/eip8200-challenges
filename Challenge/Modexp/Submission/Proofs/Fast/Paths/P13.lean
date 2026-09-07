@@ -55,7 +55,9 @@ def blk1683 :
    pushAt 1722 2 2666,
    opAt 1723 .JUMPI]
 
-/-- Instructions 1724..1741, pc 2807..2862. -/
+/-- Instructions 1724..1741, pc 2807..2862. The return path jumps at
+idx 1739; the two trailing one-byte JUMPDESTs preserve the fixed PCs of
+the following CCB entry. -/
 def blk1724 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1724 .POP,
@@ -71,10 +73,8 @@ def blk1724 :
    opAt 1734 .ADD,
    pushAt 1735 2 9344,
    opAt 1736 .MLOAD,
-   opAt 1737 (.Swap ⟨0, by decide⟩),
-   opAt 1738 (.Dup ⟨2, by decide⟩),
-   opAt 1739 .MCOPY,
-   opAt 1740 .POP,
-   opAt 1741 .JUMP]
+   opAt 1737 (.Swap ⟨1, by decide⟩),
+   opAt 1738 .MCOPY,
+   opAt 1739 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

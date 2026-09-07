@@ -6,7 +6,8 @@ set_option maxHeartbeats 4000000
 /-!
 # Fused ADDMOD and conditional subtraction
 
-The live pc-2467 entry jumps to pc 5305.  The appended routine walks the input
+The legacy pc-2467 entry jumps to pc 5305; callers now enter pc 5305 directly.
+The appended routine walks the input
 blocks, the modulus, `TS`, and `SUBB` once, maintaining the ADDMOD carry and the
 conditional-subtraction borrow together.  This specialization depends only on
 the public fast-path shape (`2 ≤ n ≤ 32`) and not on corpus bytes or their seed.

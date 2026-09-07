@@ -16,7 +16,7 @@ The four basic blocks are
 
 * `blk1360` (idx 1360..1361, pc 1911..1912) — `JUMPDEST; PUSH2 256`;
 * `blk1362` (idx 1362..1368, pc 1915..1925) — the loop head `DBL`, which
-  pushes the call frame `[px, px, px, 1926]` and jumps to `ADDMOD` (pc 2467);
+  pushes the call frame `[px, px, px, 1926]` and jumps to `ADDMOD` (pc 5305);
 * `blk1369` (idx 1369..1375, pc 1926..1935) — the return point, which
   decrements the counter and jumps back to pc 1915 while it is nonzero;
 * `blk1376` (idx 1376..1378, pc 1936..1938) — `POP; POP; JUMP ret`.
@@ -65,10 +65,10 @@ def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The `ADDMOD` call, pc 2467, with the frame `[px, px, px, 1926]` pushed. -/
+/-- The `ADDMOD` call, pc 5305, with the frame `[px, px, px, 1926]` pushed. -/
 def callState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2467
+  { s with pc := UInt256.ofNat 5305
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
                      UInt256.ofNat 1926] ++ loopStack px k ret rest
            memory := mem }
@@ -116,7 +116,7 @@ theorem run_entry (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 
 set_option linter.unusedSimpArgs false in
 /-- `blk1362` (pc 1915..1925): the loop head pushes the `ADDMOD` frame
-`[px, px, px, 1926]` and jumps to pc 2467. -/
+`[px, px, px, 1926]` and jumps to pc 5305. -/
 theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -131,14 +131,14 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have h1926 : (1926 : UInt256) = UInt256.ofNat 1926 := by decide
-  have h2467 : (2467 : UInt256) = UInt256.ofNat 2467 := by decide
-  have h2467Nat : (UInt256.ofNat 2467).toNat = 2467 := by decide
+  have h5305 : (5305 : UInt256) = UInt256.ofNat 5305 := by decide
+  have h5305Nat : (UInt256.ofNat 5305).toNat = 5305 := by decide
   simp (config := { maxSteps := 400000 }) [blk1362, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopState, callState, loopStack, fastPC9, hc3, hc4, hc5, hc6, hc7, hc8,
     hcode, hrun,
-    h1926, h2467, h2467Nat, jumpDest2467,
+    h1926, h5305, h5305Nat, jumpDest5305,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -433,10 +433,10 @@ theorem iterMem_preserves (f : ByteArray → ByteArray) (mem : ByteArray)
 
 /-! ## Wiring in the concrete `ADDMOD` subroutine
 
-`Fast.Csub` proves `ADDMOD` from its entry at pc 2467 down to the `CSUB` entry
-at pc 2642, and `CSUB` from there to the return jump.  Composing the two gives
-the indexed contract the loop above consumes, with memory transformer
-`dblStep px n`. -/
+`Fast.FusedCsub` proves the fused addition and conditional subtraction from
+its entry at pc 5305 through the return jump. Its entry, loop, exit, and tail
+certificates give the indexed contract consumed by the doubling loop, with
+memory transformer `dblStep px n`. -/
 
 /-- The memory one fused `ADDMOD(px, px, px)` call leaves behind. -/
 def dblStep (px n : Nat) (mem : ByteArray) : ByteArray :=
@@ -520,7 +520,7 @@ def gasSteps_addmodStep (s : State) (mem : ByteArray) (px n : Nat) (ret' : UInt2
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret'.toNat = true)
     (hv : Vars mem n) :
     Challenge.EvmProof.GasSteps
-      (Csub.amEntryState s mem px px (UInt256.ofNat px) ret' tail)
+      (FusedCsub.entryState s mem px px (UInt256.ofNat px) ret' tail)
       (FusedCsub.returnedState s mem px px n n (UInt256.ofNat px) ret' tail) := by
   have hs32' : MachineState.readWord
       (FusedCsub.tnMemory mem px px n n) 9344 =
@@ -540,10 +540,8 @@ def gasSteps_addmodStep (s : State) (mem : ByteArray) (px n : Nat) (ret' : UInt2
     simpa only [hnj] using
       (FusedCsub.gasSteps_tail s mem px px n n (UInt256.ofNat px) ret' tail hcap hcode
         hfork hrun hnp hact hn hn32 hjump hs32' hdstFit hcarry)
-  exact ((((FusedCsub.gasSteps_trampoline s mem px px (UInt256.ofNat px) ret' tail
-        hcap hcode hfork hrun hnp).trans
-      (FusedCsub.gasSteps_entry s mem px px n (UInt256.ofNat px) ret' tail hcap hcode
-        hfork hrun hnp hact hv.tl)).trans
+  exact (((FusedCsub.gasSteps_entry s mem px px n (UInt256.ofNat px) ret' tail hcap hcode
+        hfork hrun hnp hact hv.tl).trans
     (FusedCsub.gasSteps_loop s mem px px n (UInt256.ofNat px) ret' tail hcap hcode hfork
       hrun hnp hact hn hn32 (by omega) (by omega))).trans
     (FusedCsub.gasSteps_exit s mem px px n (UInt256.ofNat px) ret' tail hcap hcode hfork

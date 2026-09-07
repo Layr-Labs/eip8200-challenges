@@ -21,7 +21,7 @@ eight Montgomery squarings turn that into the residue of `2 ^ (2 ^ 8)`, i.e.
 The five basic blocks are
 
 * `blk1742` (idx 1742..1748, pc 2863..2873) — `JUMPDEST`, then the call frame
-  `[px, px, px, 2874]` and a jump to `ADDMOD` (pc 2467);
+  `[px, px, px, 2874]` and a jump to `ADDMOD` (pc 5305);
 * `blk1749` (idx 1749..1750, pc 2874..2876) — `JUMPDEST; PUSH1 8`;
 * `blk1751` (idx 1751..1757, pc 2877..2887) — the loop head `CCL`, which
   pushes the call frame `[px, px, px, 2888]` and jumps to its width dispatcher;
@@ -61,10 +61,10 @@ def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- The prologue `ADDMOD` call, pc 2467, frame `[px, px, px, 2874]`. -/
+/-- The prologue `ADDMOD` call, pc 5305, frame `[px, px, px, 2874]`. -/
 def amCallState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2467
+  { s with pc := UInt256.ofNat 5305
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
                      UInt256.ofNat 2874] ++ ([UInt256.ofNat px, ret] ++ rest)
            memory := mem }
@@ -115,7 +115,7 @@ def doneState (s : State) (mem : ByteArray) (ret : UInt256)
 /-! ## Block reductions -/
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1742` (pc 2863..2873): push the `ADDMOD` frame and jump to pc 2467. -/
+/-- `blk1742` (pc 2863..2873): push the `ADDMOD` frame and jump to pc 5305. -/
 theorem run_entry (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -130,13 +130,13 @@ theorem run_entry (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have h2874 : (2874 : UInt256) = UInt256.ofNat 2874 := by decide
-  have h2467 : (2467 : UInt256) = UInt256.ofNat 2467 := by decide
-  have h2467Nat : (UInt256.ofNat 2467).toNat = 2467 := by decide
+  have h5305 : (5305 : UInt256) = UInt256.ofNat 5305 := by decide
+  have h5305Nat : (UInt256.ofNat 5305).toNat = 5305 := by decide
   simp (config := { maxSteps := 400000 }) [blk1742, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     entryState, amCallState, fastPC20, hc2, hc3, hc4, hc5, hc6, hc7, hcode, hrun,
-    h2874, h2467, h2467Nat, jumpDest2467,
+    h2874, h5305, h5305Nat, jumpDest5305,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,

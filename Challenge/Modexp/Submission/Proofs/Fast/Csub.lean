@@ -447,18 +447,12 @@ theorem run_csEntry (s : State) (memory : ByteArray) (n : Nat)
   have h9408 : (9408 : UInt256).toNat = 9408 := by decide
   have h9440 : (9440 : UInt256).toNat = 9440 := by decide
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
-  have hadd : (7168 : UInt256) + UInt256.ofNat (8224 + 32 * n) =
-      UInt256.ofNat (15392 + 32 * n) := by
+  have hadd : (7168 : UInt256) + UInt256.ofNat (32 * n - 32) =
+      UInt256.ofNat (7136 + 32 * n) := by
     rw [show (7168 : UInt256) = UInt256.ofNat 7168 from by decide,
       Challenge.EvmProof.Word.ofNat_add_mod]
     congr 1
     omega
-  have hsub : UInt256.ofNat (15392 + 32 * n) - (8256 : UInt256) =
-      UInt256.ofNat (7136 + 32 * n) := by
-    rw [show (8256 : UInt256) = UInt256.ofNat 8256 from by decide,
-      Challenge.EvmProof.Word.ofNat_sub_ofNat (a := 15392 + 32 * n) (b := 8256)
-        (by omega) (by omega)]
-    exact congrArg UInt256.ofNat (by omega)
   have hactA : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 9440 32) =
       s.activeWords := activeWords_fix s 9440 32 (by decide) (by omega) hact
@@ -472,7 +466,7 @@ theorem run_csEntry (s : State) (memory : ByteArray) (n : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       csEntryState, csLoopState, csStep, fastPC17,
       hc2, hc3, hc4, hc5, hc6, hc7, hrun, h9408, h9440, hzero,
-      hml, htl, hadd, hsub, hactA, hactB,
+      hml, htl, hadd, hactA, hactB,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
