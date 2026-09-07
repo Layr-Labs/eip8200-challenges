@@ -33,7 +33,7 @@ noncomputable def gasSteps_legacyBlock (s : State) (input : ByteArray) (i : Nat)
   let left := StackCompression.leftRounds word 80 w
   let right := StackCompression.rightRounds word 80 w
   let rightRest := StackFrame.savedLeft left ++ StackRoundTemplate.mask :: rest
-  have qactive : 25 ≤ q.activeWords.toNat := by
+  have qactive : 11 ≤ q.activeWords.toNat := by
     rw [scheduledState_activeWords s input hfit i hi]
     omega
   have qwords : QuadSemantic.DenseWordsAt q word :=
@@ -128,7 +128,7 @@ def nextState (s : State) (input : ByteArray) (i : Nat) : State :=
   split <;> simp
 
 theorem nextState_word_above (s : State) (input : ByteArray) (i address : Nat)
-    (haddress : 0x2e0 ≤ address) :
+    (haddress : 0x120 ≤ address) :
     StackRunBridge.wordAt (nextState s input i) address =
       StackRunBridge.wordAt s address := by
   unfold nextState

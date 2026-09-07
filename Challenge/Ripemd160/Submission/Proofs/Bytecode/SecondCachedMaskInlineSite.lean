@@ -46,7 +46,7 @@ theorem destination_next : destination.pc.succ = QuadSites.rightPC 2 := by rfl
 def gasSteps_right1 (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (a b c d e : UInt256) (rho : List UInt256)
     (hwords : CachedMaskRoundCertificates.low32DenseWordsAt s word)
-    (hactive : 25 ≤ s.activeWords.toNat) (hstack : rho.length < 1001)
+    (hactive : 11 ≤ s.activeWords.toNat) (hstack : rho.length < 1001)
     (hcode : s.executionEnv.code = A.code) (hfork : s.fork = .Osaka)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
