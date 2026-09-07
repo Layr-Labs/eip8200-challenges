@@ -142,7 +142,7 @@ theorem gasSteps_bitEntry_cost (input : ByteArray) (outer : Nat)
     (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-    (by exact Word.jump3695)
+    (by exact Word.jump3727)
 
 theorem gasSteps_bitHead_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :

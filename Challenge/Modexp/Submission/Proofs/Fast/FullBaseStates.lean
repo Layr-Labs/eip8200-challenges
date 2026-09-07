@@ -79,4 +79,11 @@ def fallbackState (s : State) (memory : ByteArray)
            stack := outer n bsize esize msize
            memory := memory }
 
+/-- Public guard miss enters the independent width-only raw-base dispatcher. -/
+def rawDispatchState (s : State) (memory : ByteArray)
+    (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat 3695
+           stack := outer n bsize esize msize
+           memory := memory }
+
 end Challenge.Modexp.Submission.Proofs.Fast.FullBase
