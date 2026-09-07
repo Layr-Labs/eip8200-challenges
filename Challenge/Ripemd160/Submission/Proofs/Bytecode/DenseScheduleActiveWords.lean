@@ -8,7 +8,7 @@ set_option maxHeartbeats 4000000
 # Active-memory endpoint for the dense schedule
 
 The dense schedule keeps the three-word warmup and replaces the sixteen
-schedule-slot stores by the two stores at byte offsets 672 and 704.  This
+schedule-slot stores by the two stores at byte offsets 220 and 252.  This
 module proves the active-word result from those direct lists.  It does not
 claim that the corresponding memory bytes are equal.
 -/
@@ -64,26 +64,26 @@ def storeActiveWords (current : UInt256) (addresses : List Nat) : UInt256 :=
     (fun current address => activeAfterWord current (UInt256.ofNat address)) current
 
 def expectedActiveWords (s : State) (messageOffset : UInt256) : UInt256 :=
-  storeActiveWords (loadedActiveWords s messageOffset) [704, 672]
+  storeActiveWords (loadedActiveWords s messageOffset) [252, 220]
 
 theorem storeActiveWords_704_672 (current : UInt256)
     (hcurrent : 23 ≤ current.toNat) :
-    storeActiveWords current [704, 672] = current := by
-  have h672 : (UInt256.ofNat 672).toNat + 32 ≤ current.toNat * 32 := by
+    storeActiveWords current [252, 220] = current := by
+  have h672 : (UInt256.ofNat 220).toNat + 32 ≤ current.toNat * 32 := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (by norm_num : (672 : Nat) < 2 ^ 256)]
+      Nat.mod_eq_of_lt (by norm_num : (220 : Nat) < 2 ^ 256)]
     omega
-  have h704 : (UInt256.ofNat 704).toNat + 32 ≤ current.toNat * 32 := by
+  have h704 : (UInt256.ofNat 252).toNat + 32 ≤ current.toNat * 32 := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (by norm_num : (704 : Nat) < 2 ^ 256)]
+      Nat.mod_eq_of_lt (by norm_num : (252 : Nat) < 2 ^ 256)]
     omega
   simp only [storeActiveWords, List.foldl]
-  rw [activeAfterWord_eq current (UInt256.ofNat 704) h704]
-  rw [activeAfterWord_eq current (UInt256.ofNat 672) h672]
+  rw [activeAfterWord_eq current (UInt256.ofNat 252) h704]
+  rw [activeAfterWord_eq current (UInt256.ofNat 220) h672]
 
 theorem storeActiveWords_loaded_eq (s : State) (messageOffset : UInt256)
     (hcurrent : 23 ≤ (loadedActiveWords s messageOffset).toNat) :
-    storeActiveWords (loadedActiveWords s messageOffset) [704, 672] =
+    storeActiveWords (loadedActiveWords s messageOffset) [252, 220] =
       loadedActiveWords s messageOffset :=
   storeActiveWords_704_672 _ hcurrent
 

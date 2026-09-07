@@ -26,7 +26,7 @@ def driverRest (input : ByteArray) (i : Nat) : List UInt256 :=
   [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
 
 def scheduleRest (input : ByteArray) (i : Nat) : List UInt256 :=
-  [UInt256.ofNat 0x419] ++ driverRest input i
+  [UInt256.ofNat 0x424] ++ driverRest input i
 
 def withMemory (s : State) (memory : ByteArray) : State :=
   {s with memory := memory}
@@ -63,7 +63,7 @@ def withActiveWords (s : State) (activeWords : UInt256) : State :=
 def scheduledState (s : State) (input : ByteArray) (i : Nat) : State :=
   withActiveWords
     (withMemory
-      (Schedule.loopState s (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x43a)
+      (Schedule.loopState s (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x445)
         (scheduleRest input i) 16)
       (DenseScheduleTemplate.denseExpectedMemory s (DriverTrace.messageOffsetWord i)))
     (DenseScheduleTemplate.denseExpectedActiveWords s
@@ -83,7 +83,7 @@ def resultHash (s : State) (input : ByteArray) (i : Nat) : Compression.EvmHashSt
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   {scheduledState s input i with
-    pc := UInt256.ofNat 0x419
+    pc := UInt256.ofNat 0x424
     stack := driverRest input i
     memory := StackMemory.storeHash (scheduledState s input i).memory (resultHash s input i)}
 
@@ -137,31 +137,31 @@ private theorem denseWordBytes_size (value : UInt256) :
     ByteArray.size]
 
 private theorem denseStoreOffset_zero :
-    DenseScheduleTemplate.denseStoreOffset 0 = 672 := by
+    DenseScheduleTemplate.denseStoreOffset 0 = 220 := by
   norm_num [DenseScheduleTemplate.denseStoreOffset,
     DenseScheduleTemplate.denseStoreAddress,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 private theorem denseStoreOffset_one :
-    DenseScheduleTemplate.denseStoreOffset 1 = 704 := by
+    DenseScheduleTemplate.denseStoreOffset 1 = 252 := by
   norm_num [DenseScheduleTemplate.denseStoreOffset,
     DenseScheduleTemplate.denseStoreAddress,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 private theorem denseExpectedMemory_readWord_outside (s : State)
     (messageOffset : UInt256) (address : Nat)
-    (houtside : address + 32 ≤ 672 ∨ 736 ≤ address) :
+    (houtside : address + 32 ≤ 220 ∨ 284 ≤ address) :
     MachineState.readWord
         (DenseScheduleTemplate.denseExpectedMemory s messageOffset) address =
       MachineState.readWord s.memory address := by
   rw [DenseScheduleTemplate.denseExpectedMemory, denseStoreOffset_zero,
     denseStoreOffset_one]
   unfold DenseScheduleTemplate.writeDenseWord
-  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 672 (by
+  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 220 (by
     rcases houtside with hbefore | hafter
     · exact Or.inl hbefore
     · exact Or.inr (by rw [denseWordBytes_size]; omega)),
-    Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 704 (by
+    Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ address 252 (by
       rcases houtside with hbefore | hafter
       · exact Or.inl (by omega)
       · exact Or.inr (by rw [denseWordBytes_size]; omega))]
@@ -222,7 +222,7 @@ private theorem denseExpectedMemory_word_low32 (s : State) (p k : Nat)
     Challenge.EvmProof.Word.toUInt32
         (MachineState.readWord
           (DenseScheduleTemplate.denseExpectedMemory s (UInt256.ofNat p))
-          (644 + 4 * k)) =
+          (192 + 4 * k)) =
       Challenge.EvmProof.Word.toUInt32
         (ScheduleCorrect.expectedWord s.memory (UInt256.ofNat p) k) := by
   rw [denseExpectedMemory_eq_denseMemory s p hbound]
@@ -260,7 +260,7 @@ theorem scheduledState_words (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input)
     (k : Nat) (hk : k < 16) :
     Challenge.EvmProof.Word.toUInt32
-        (MachineState.readWord (scheduledState s input i).memory (644 + 4 * k)) =
+        (MachineState.readWord (scheduledState s input i).memory (192 + 4 * k)) =
       blockWords input i k := by
   let p := Padding.messageOffset + 64 * i
   have hpadded := Padding.paddedLength_lt input.size
@@ -287,13 +287,13 @@ theorem scheduledState_words (s : State) (input : ByteArray) (i : Nat)
     simpa [hmessage] using ctx.messageBlock k hk
   calc
     Challenge.EvmProof.Word.toUInt32
-        (MachineState.readWord (scheduledState s input i).memory (644 + 4 * k)) =
+        (MachineState.readWord (scheduledState s input i).memory (192 + 4 * k)) =
         Challenge.EvmProof.Word.toUInt32
           (ScheduleCorrect.expectedWord s.memory (UInt256.ofNat p) k) := by
       change Challenge.EvmProof.Word.toUInt32
           (MachineState.readWord
             (DenseScheduleTemplate.denseExpectedMemory s
-              (DriverTrace.messageOffsetWord i)) (644 + 4 * k)) = _
+              (DriverTrace.messageOffsetWord i)) (192 + 4 * k)) = _
       rw [hmessage]
       exact denseExpectedMemory_word_low32 s p k hk hbound
     _ = blockWords input i k := by

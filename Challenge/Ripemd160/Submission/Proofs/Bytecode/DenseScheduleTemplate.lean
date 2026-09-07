@@ -42,12 +42,12 @@ def dup1 : Instr := .op (.Dup ⟨0, by decide⟩)
 def swap1 : Instr := .op (.Swap ⟨0, by decide⟩)
 
 def mask8 : UInt256 :=
-  UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
+  UInt256.ofNat 0xff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
 
 def mask16 : UInt256 :=
-  UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
+  UInt256.ofNat 0xffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
 
-def denseStoreAddress (half : Nat) : Nat := 672 + 32 * half
+def denseStoreAddress (half : Nat) : Nat := 220 + 32 * half
 
 def denseStoreOffset (half : Nat) : Nat :=
   (UInt256.ofNat (denseStoreAddress half)).toNat
@@ -62,15 +62,12 @@ def endianFactor (shift : Nat) : UInt256 :=
 def endianFactorPush (shift : Nat) : Instr :=
   if shift = 8 then push2 (endianFactor shift) else push3 (endianFactor shift)
 
-def endianMaskPush (shift : Nat) (mask : UInt256) : Instr :=
-  if shift = 8 then .push ⟨31, by decide⟩ mask else .push ⟨30, by decide⟩ mask
-
 /-- If `t = ((value >>> shift) XOR value) AND mask`, the masks used below
 put `t` and `t <<< shift` in disjoint lanes.  Multiplication by
 `1 + 2^shift` therefore combines the two copies without a carry. -/
 def endianStage (shift : Nat) (mask : UInt256) : List Instr :=
   [ dup1, dup1, push1 (UInt256.ofNat shift), op .SHR, op .XOR,
-    endianMaskPush shift mask, op .AND, endianFactorPush shift, op .MUL, op .XOR ]
+    push32 mask, op .AND, endianFactorPush shift, op .MUL, op .XOR ]
 
 def endianStage8 : List Instr := endianStage 8 mask8
 
@@ -133,22 +130,22 @@ theorem assembleBytes_length (instructions : List Instr) :
       rw [ih]
 
 theorem denseHalfTemplate_byteLength (half : Nat) :
-    (assembleBytes (denseHalfTemplate half)).length = 92 := by
+    (assembleBytes (denseHalfTemplate half)).length = 95 := by
   rw [assembleBytes_length]
-  simp [denseHalfTemplate, endianStage8, endianStage16, endianStage, endianMaskPush,
-    endianFactorPush, endianFactor, op, push1, push2, push3, dup1,
+  simp [denseHalfTemplate, endianStage8, endianStage16, endianStage,
+    endianFactorPush, endianFactor, op, push1, push2, push3, push32, dup1,
     denseStoreAddress]
 
 theorem denseBeforeJumpTemplate_byteLength :
-    (assembleBytes denseBeforeJumpTemplate).length = 192 := by
+    (assembleBytes denseBeforeJumpTemplate).length = 198 := by
   rw [denseBeforeJumpTemplate, assembleBytes_append, List.length_append,
     assembleBytes_length]
   simp [denseHalfTemplate, initialTemplate, endianStage8, endianStage16,
-    endianStage, endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3,
-    dup1, swap1, denseStoreAddress]
+    endianStage, endianFactorPush, endianFactor, op, push1, push2, push3,
+    push32, dup1, swap1, denseStoreAddress]
 
 theorem denseFullTemplate_byteLength :
-    (assembleBytes denseFullTemplate).length = 193 := by
+    (assembleBytes denseFullTemplate).length = 199 := by
   rw [denseFullTemplate, assembleBytes_append, List.length_append,
     denseBeforeJumpTemplate_byteLength]
   rfl
@@ -159,7 +156,7 @@ theorem paddingTemplate_byteLength :
   norm_num [paddingTemplate, push32]
 
 theorem denseWindowTemplate_byteLength :
-    (assembleBytes denseWindowTemplate).length = 319 := by
+    (assembleBytes denseWindowTemplate).length = 325 := by
   rw [denseWindowTemplate, assembleBytes_append, List.length_append,
     denseFullTemplate_byteLength, paddingTemplate_byteLength]
 
@@ -171,8 +168,8 @@ theorem denseFullTemplate_staticGas :
     staticGas denseFullTemplate = 167 := by
   norm_num [staticGas, denseFullTemplate, denseBeforeJumpTemplate,
     denseHalfTemplate, initialTemplate, endianStage8, endianStage16,
-    endianStage, endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3,
-    dup1, swap1,
+    endianStage, endianFactorPush, endianFactor, op, push1, push2, push3,
+    push32, dup1, swap1,
     Challenge.EvmProof.Meter.instrStaticCost, Gas.baseCost]
   rfl
 

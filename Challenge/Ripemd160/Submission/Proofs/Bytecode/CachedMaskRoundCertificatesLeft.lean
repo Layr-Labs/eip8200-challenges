@@ -26,16 +26,16 @@ def gasSteps_leftNormal (s : State) (word : Nat → UInt32)
   have hframe : (StackRoundTemplate.mask :: rho).length < 1007 := by
     simp only [List.length_cons]
     omega
-  have hraw := ShiftedHoistHelper.run_left (k.val / 4) (by have h := k.isLt; omega) s site.helper.startPC
+  have hraw := LoadedHoistHelper.run_left (k.val / 4) (by have h := k.isLt; omega) s site.helper.startPC
     (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) site.returnPC (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) working (QuadSites.leftConstant k) rho
     (fun h => leftConstant_zero k h) hstack hrun
     (leftRotation0_pos k) (leftRotation0_lt32 k) (leftRotation1_pos k) (leftRotation1_lt32 k)
     (leftRotation2_pos k) (leftRotation2_lt32 k) (leftRotation3_pos k) (leftRotation3_lt32 k)
-  have ghelper := ShiftedHoistHelper.gasSteps_of_raw (ShiftedHoistHelper.leftTemplate (k.val / 4) (QuadSites.leftConstant k))
-    (ShiftedHoistHelper.left_advances (k.val / 4) (by have h := k.isLt; omega) (QuadSites.leftConstant k))
+  have ghelper := LoadedHoistHelper.gasSteps_of_raw (LoadedHoistHelper.leftTemplate (k.val / 4) (QuadSites.leftConstant k))
+    (LoadedHoistHelper.left_advances (k.val / 4) (by have h := k.isLt; omega) (QuadSites.leftConstant k))
     (k.val / 4) (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) (QuadSites.leftConstant k)
     site.helper s site.returnPC working (StackRoundTemplate.mask :: rho) hraw hrun hcode hfork hnp
-  have g := CachedMaskCalls.Normal.gasSteps_quad_of_helper (k.val / 4) (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) (QuadSites.leftConstant k) (ShiftedHoistHelper.leftTemplate (k.val / 4) (QuadSites.leftConstant k))
+  have g := LoadedCalls.Normal.gasSteps_quad_of_helper (k.val / 4) (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) (QuadSites.leftConstant k) (LoadedHoistHelper.leftTemplate (k.val / 4) (QuadSites.leftConstant k))
     site s working (StackRoundTemplate.mask :: rho) hframe hrun hcode hfork hnp ghelper
   have hw := leftWorking_eq s word working k hwords
 
@@ -69,16 +69,16 @@ def gasSteps_leftFallthrough (s : State) (word : Nat → UInt32)
   have hframe : (StackRoundTemplate.mask :: rho).length < 1007 := by
     simp only [List.length_cons]
     omega
-  have hraw := ShiftedHoistHelper.run_left ((CachedMaskRoundSitesLeft.groupFin group).val) (by have h := (CachedMaskRoundSitesLeft.groupFin group).isLt; omega) s site.helper.startPC
+  have hraw := LoadedHoistHelper.run_left ((CachedMaskRoundSitesLeft.groupFin group).val) (by have h := (CachedMaskRoundSitesLeft.groupFin group).isLt; omega) s site.helper.startPC
     (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) site.returnPC (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) working (QuadSites.leftConstant k) rho
     (fun h => leftConstant_zero k (by omega)) hstack hrun
     (leftRotation0_pos k) (leftRotation0_lt32 k) (leftRotation1_pos k) (leftRotation1_lt32 k)
     (leftRotation2_pos k) (leftRotation2_lt32 k) (leftRotation3_pos k) (leftRotation3_lt32 k)
-  have ghelper := ShiftedHoistHelper.gasSteps_of_raw (ShiftedHoistHelper.leftTemplate ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftConstant k))
-    (ShiftedHoistHelper.left_advances ((CachedMaskRoundSitesLeft.groupFin group).val) (by have h := (CachedMaskRoundSitesLeft.groupFin group).isLt; omega) (QuadSites.leftConstant k))
+  have ghelper := LoadedHoistHelper.gasSteps_of_raw (LoadedHoistHelper.leftTemplate ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftConstant k))
+    (LoadedHoistHelper.left_advances ((CachedMaskRoundSitesLeft.groupFin group).val) (by have h := (CachedMaskRoundSitesLeft.groupFin group).isLt; omega) (QuadSites.leftConstant k))
     ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) (QuadSites.leftConstant k)
     site.helper s site.returnPC working (StackRoundTemplate.mask :: rho) hraw hrun hcode hfork hnp
-  have g := CachedMaskCalls.Fallthrough.gasSteps_of_helper ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) (QuadSites.leftConstant k) (ShiftedHoistHelper.leftTemplate ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftConstant k))
+  have g := LoadedCalls.Fallthrough.gasSteps_of_helper ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftAddress0 k) (QuadSites.leftAddress1 k) (QuadSites.leftAddress2 k) (QuadSites.leftAddress3 k) (QuadSites.leftRotation0 k) (QuadSites.leftRotation1 k) (QuadSites.leftRotation2 k) (QuadSites.leftRotation3 k) (QuadSites.leftConstant k) (LoadedHoistHelper.leftTemplate ((CachedMaskRoundSitesLeft.groupFin group).val) (QuadSites.leftConstant k))
     site s working (StackRoundTemplate.mask :: rho) hframe hrun hcode hfork hnp ghelper
   have hw := leftWorking_eq s word working k hwords
 

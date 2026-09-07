@@ -26,10 +26,10 @@ def shl (v : EWord) (n : Nat) : EWord :=
   UInt256.shiftLeft v (UInt256.ofNat n)
 
 def mask8 : EWord :=
-  UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
+  UInt256.ofNat 0xff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
 
 def mask16 : EWord :=
-  UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
+  UInt256.ofNat 0xffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
 
 def packed (v : EWord) : EWord :=
   let t :=
@@ -66,13 +66,13 @@ private theorem land_toNat (a b : EWord) :
   exact Challenge.EvmProof.Word.word_toNat_land a b
 
 private theorem mask8_toNat : mask8.toNat =
-    0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff := by
+    0xff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff := by
   unfold mask8
   rw [Challenge.EvmProof.Word.word_toNat_ofNat]
   exact Nat.mod_eq_of_lt (by norm_num)
 
 private theorem mask16_toNat : mask16.toNat =
-    0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff := by
+    0xffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff := by
   unfold mask16
   rw [Challenge.EvmProof.Word.word_toNat_ofNat]
   exact Nat.mod_eq_of_lt (by norm_num)
@@ -199,8 +199,8 @@ def writePacked (memory : ByteArray) (value : UInt256) (start : Nat) : ByteArray
   MachineState.writeBytes memory (packedBytes value) start
 
 theorem writePacked_comm_672_704 (bs : ByteArray) (first second : UInt256) :
-    writePacked (writePacked bs second 704) first 672 =
-      writePacked (writePacked bs first 672) second 704 := by
+    writePacked (writePacked bs second 252) first 220 =
+      writePacked (writePacked bs first 220) second 252 := by
   have hfirstSize : (packedBytes first).size = 32 := by
     simp only [packedBytes,
       YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
@@ -217,16 +217,16 @@ theorem writePacked_comm_672_704 (bs : ByteArray) (first second : UInt256) :
     simp only [writePacked, packedBytes,
       MachineState.writeBytes_getElem?_getD,
       YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
-    by_cases hfirst : 672 ≤ i ∧ i < 704
+    by_cases hfirst : 220 ≤ i ∧ i < 252
     · rw [if_pos hfirst, if_neg (by omega), if_pos hfirst]
-    · by_cases hsecond : 704 ≤ i ∧ i < 736
+    · by_cases hsecond : 252 ≤ i ∧ i < 284
       · rw [if_neg hfirst, if_pos hsecond, if_pos hsecond]
       · rw [if_neg hfirst, if_neg hsecond, if_neg hsecond, if_neg hfirst]
 
 def denseMemory (bs : ByteArray) (p : Nat) : ByteArray :=
   let first := DensePacked.packed (MachineState.readWord bs p)
   let second := DensePacked.packed (MachineState.readWord bs (p + 32))
-  writePacked (writePacked bs first 672) second 704
+  writePacked (writePacked bs first 220) second 252
 
 def densePackedWord (bs : ByteArray) (p i : Nat) : UInt256 :=
   let h := i / 8
@@ -538,39 +538,39 @@ private theorem packedBytes_segment_eq_chunk
 
 private theorem denseMemory_first_window (bs : ByteArray) (p i : Nat)
     (hi : i < 8) :
-    MachineState.readPadded (denseMemory bs p) (672 + 4 * i) 4 =
+    MachineState.readPadded (denseMemory bs p) (220 + 4 * i) 4 =
       MachineState.readPadded (packedBytes
         (DensePacked.packed (MachineState.readWord bs p))) (4 * i) 4 := by
   unfold denseMemory writePacked
   rw [Challenge.EvmProof.Memory.readPadded_writeBytes_disjoint
     (MachineState.writeBytes bs
-      (packedBytes (DensePacked.packed (MachineState.readWord bs p))) 672)
+      (packedBytes (DensePacked.packed (MachineState.readWord bs p))) 220)
     (packedBytes (DensePacked.packed
-      (MachineState.readWord bs (p + 32)))) (672 + 4 * i) 4 704
+      (MachineState.readWord bs (p + 32)))) (220 + 4 * i) 4 252
     (Or.inl (by omega))]
   exact readPadded_writeBytes_window bs
     (packedBytes (DensePacked.packed (MachineState.readWord bs p)))
-    672 (4 * i) (packedBytes_size _) (by omega)
+    220 (4 * i) (packedBytes_size _) (by omega)
 
 private theorem denseMemory_second_window (bs : ByteArray) (p i : Nat)
     (hi : 8 ≤ i) (hi16 : i < 16) :
-    MachineState.readPadded (denseMemory bs p) (672 + 4 * i) 4 =
+    MachineState.readPadded (denseMemory bs p) (220 + 4 * i) 4 =
       MachineState.readPadded (packedBytes
         (DensePacked.packed (MachineState.readWord bs (p + 32))))
         (4 * (i - 8)) 4 := by
-  have hindex : 672 + 4 * i = 704 + 4 * (i - 8) := by omega
+  have hindex : 220 + 4 * i = 252 + 4 * (i - 8) := by omega
   rw [hindex]
   unfold denseMemory writePacked
   rw [readPadded_writeBytes_window
     (MachineState.writeBytes bs
-      (packedBytes (DensePacked.packed (MachineState.readWord bs p))) 672)
+      (packedBytes (DensePacked.packed (MachineState.readWord bs p))) 220)
     (packedBytes (DensePacked.packed
-      (MachineState.readWord bs (p + 32)))) 704 (4 * (i - 8))
+      (MachineState.readWord bs (p + 32)))) 252 (4 * (i - 8))
     (packedBytes_size _) (by omega)]
 
 private theorem denseMemory_first_bytesToNatPadded (bs : ByteArray) (p i : Nat)
     (hi : i < 8) :
-    EVM.Precompile.bytesToNatPadded (denseMemory bs p) (672 + 4 * i) 4 =
+    EVM.Precompile.bytesToNatPadded (denseMemory bs p) (220 + 4 * i) 4 =
       EVM.Precompile.bytesToNatPadded
         (packedBytes (DensePacked.packed (MachineState.readWord bs p)))
         (4 * i) 4 := by
@@ -579,7 +579,7 @@ private theorem denseMemory_first_bytesToNatPadded (bs : ByteArray) (p i : Nat)
 
 private theorem denseMemory_second_bytesToNatPadded (bs : ByteArray) (p i : Nat)
     (hi : 8 ≤ i) (hi16 : i < 16) :
-    EVM.Precompile.bytesToNatPadded (denseMemory bs p) (672 + 4 * i) 4 =
+    EVM.Precompile.bytesToNatPadded (denseMemory bs p) (220 + 4 * i) 4 =
       EVM.Precompile.bytesToNatPadded
         (packedBytes (DensePacked.packed (MachineState.readWord bs (p + 32))))
         (4 * (i - 8)) 4 := by
@@ -615,12 +615,12 @@ private theorem denseMemory_second_word (bs : ByteArray) (p i : Nat)
 theorem denseMemory_readWord_low32 (bs : ByteArray) (p i : Nat)
     (hi : i < 16) (hbound : p + 64 < 2 ^ 256) :
     Word.toUInt32
-        (MachineState.readWord (denseMemory bs p) (644 + 4 * i)) =
+        (MachineState.readWord (denseMemory bs p) (192 + 4 * i)) =
       Word.toUInt32
         (ScheduleCorrect.expectedWord bs (naturalp p) i) := by
   have hlast := toUInt32_readWord_eq_last4
-    (denseMemory bs p) (644 + 4 * i)
-  rw [hlast, show 644 + 4 * i + 28 = 672 + 4 * i by omega]
+    (denseMemory bs p) (192 + 4 * i)
+  rw [hlast, show 192 + 4 * i + 28 = 220 + 4 * i by omega]
   by_cases hi8 : i < 8
   · rw [denseMemory_first_bytesToNatPadded bs p i hi8,
       denseMemory_first_word bs p i hi8,
@@ -634,23 +634,23 @@ theorem denseMemory_readWord_low32_all (bs : ByteArray) (p : Nat)
     (hbound : p + 64 < 2 ^ 256) :
     ∀ i, i < 16 →
       Word.toUInt32
-          (MachineState.readWord (denseMemory bs p) (644 + 4 * i)) =
+          (MachineState.readWord (denseMemory bs p) (192 + 4 * i)) =
         Word.toUInt32
           (ScheduleCorrect.expectedWord bs (naturalp p) i) := by
   intro i hi
   exact denseMemory_readWord_low32 bs p i hi hbound
 
 private theorem denseMemory_readWord_first (bs : ByteArray) (p : Nat) :
-    MachineState.readWord (denseMemory bs p) 672 =
+    MachineState.readWord (denseMemory bs p) 220 =
       DensePacked.packed (MachineState.readWord bs p) := by
   dsimp [denseMemory]
   unfold writePacked
   rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
     (MachineState.writeBytes bs
-      (packedBytes (DensePacked.packed (MachineState.readWord bs p))) 672)
-    (packedBytes (DensePacked.packed (MachineState.readWord bs (p + 32)))) 672 704
+      (packedBytes (DensePacked.packed (MachineState.readWord bs p))) 220)
+    (packedBytes (DensePacked.packed (MachineState.readWord bs (p + 32)))) 220 252
     (Or.inl (by omega))]
-  exact Challenge.EvmProof.Memory.readWord_writeWord bs 672 _
+  exact Challenge.EvmProof.Memory.readWord_writeWord bs 220 _
 
 private theorem readWord_writePacked_disjoint
     (memory : ByteArray) (value : UInt256) (start address : Nat)
@@ -664,25 +664,25 @@ private theorem readWord_writePacked_disjoint
   · exact Or.inr (by rw [packedBytes_size]; omega)
 
 theorem denseMemory_readWord_outside (bs : ByteArray) (p address : Nat)
-    (houtside : address + 32 ≤ 672 ∨ 736 ≤ address) :
+    (houtside : address + 32 ≤ 220 ∨ 284 ≤ address) :
     MachineState.readWord (denseMemory bs p) address =
       MachineState.readWord bs address := by
   dsimp [denseMemory]
   rw [readWord_writePacked_disjoint
-    (writePacked bs (DensePacked.packed (MachineState.readWord bs p)) 672)
-    (DensePacked.packed (MachineState.readWord bs (p + 32))) 704 address (by
+    (writePacked bs (DensePacked.packed (MachineState.readWord bs p)) 220)
+    (DensePacked.packed (MachineState.readWord bs (p + 32))) 252 address (by
       rcases houtside with hbefore | hafter
       · exact Or.inl (by omega)
       · exact Or.inr (by omega))]
   apply readWord_writePacked_disjoint bs
-    (DensePacked.packed (MachineState.readWord bs p)) 672 address
+    (DensePacked.packed (MachineState.readWord bs p)) 220 address
   rcases houtside with hbefore | hafter
   · exact Or.inl hbefore
   · exact Or.inr (by omega)
 
 example :
     Word.toUInt32
-        (MachineState.readWord (denseMemory ByteArray.empty 0) 644) =
+        (MachineState.readWord (denseMemory ByteArray.empty 0) 192) =
       Word.toUInt32
         (ScheduleCorrect.expectedWord ByteArray.empty (naturalp 0) 0) := by
   exact denseMemory_readWord_low32 ByteArray.empty 0 0 (by decide) (by norm_num)
@@ -692,11 +692,11 @@ example :
         (MachineState.readWord
           (denseMemory
             (MachineState.writeBytes ByteArray.empty
-              (Data.Bytes.natToBytesPadded 1 32) 0) 0) 672) ≠
+              (Data.Bytes.natToBytesPadded 1 32) 0) 0) 220) ≠
       Word.toUInt32
         (MachineState.readWord
           (MachineState.writeBytes ByteArray.empty
-            (Data.Bytes.natToBytesPadded 1 32) 0) 672) := by
+            (Data.Bytes.natToBytesPadded 1 32) 0) 220) := by
   have hbs0 :
       MachineState.readWord
           (MachineState.writeBytes ByteArray.empty
@@ -706,9 +706,9 @@ example :
   have hbs672 :
       MachineState.readWord
           (MachineState.writeBytes ByteArray.empty
-            (Data.Bytes.natToBytesPadded 1 32) 0) 672 = UInt256.ofNat 0 := by
+            (Data.Bytes.natToBytesPadded 1 32) 0) 220 = UInt256.ofNat 0 := by
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
-      ByteArray.empty (Data.Bytes.natToBytesPadded 1 32) 672 0
+      ByteArray.empty (Data.Bytes.natToBytesPadded 1 32) 220 0
       (Or.inr (by simp [Data.Bytes.natToBytesPadded, ByteArray.size]))]
     apply Challenge.EvmProof.Word.word_ext
     rw [Challenge.EvmProof.Bytes.readWord_toNat]

@@ -44,10 +44,10 @@ def rightNextPC (i : Nat) : UInt256 :=
   rightWrapperPC i + UInt256.ofNat 13
 
 def leftAddress (i : Nat) : UInt256 :=
-  UInt256.ofNat (644 + 4 * Crypto.Ripemd160.r[i]!)
+  UInt256.ofNat (192 + 4 * Crypto.Ripemd160.r[i]!)
 
 def rightAddress (i : Nat) : UInt256 :=
-  UInt256.ofNat (644 + 4 * Crypto.Ripemd160.rP[i]!)
+  UInt256.ofNat (192 + 4 * Crypto.Ripemd160.rP[i]!)
 
 def leftRotation (i : Nat) : Nat := Crypto.Ripemd160.s[i]!
 def rightRotation (i : Nat) : Nat := Crypto.Ripemd160.sP[i]!
@@ -63,14 +63,14 @@ def leftHelperPCOfGroup (group : Nat) : UInt256 :=
   | 0 => UInt256.ofNat 0xfca
   | 1 => UInt256.ofNat 0xffe
   | 2 => UInt256.ofNat 0xe2d
-  | 3 => UInt256.ofNat 0x1075
-  | _ => UInt256.ofNat 0x10b1
+  | 3 => UInt256.ofNat 0x1052
+  | _ => UInt256.ofNat 0x108e
 
 def rightHelperPCOfGroup (group : Nat) : UInt256 :=
   match group with
   | 0 => UInt256.ofNat 0xedf
   | 1 => UInt256.ofNat 0x1127
-  | 2 => UInt256.ofNat 0xf56
+  | 2 => UInt256.ofNat 0xf3a
   | 3 => UInt256.ofNat 0xf91
   | _ => UInt256.ofNat 0xfcd
 

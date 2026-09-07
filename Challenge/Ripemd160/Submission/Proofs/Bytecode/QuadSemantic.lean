@@ -31,10 +31,10 @@ def quadIndex (k : Fin 20) (offset : Fin 4) : Nat :=
   4 * k.val + offset.val
 
 def quadLeftAddress (k : Fin 20) (offset : Fin 4) : UInt256 :=
-  UInt256.ofNat (644 + 4 * Crypto.Ripemd160.r[quadIndex k offset]!)
+  UInt256.ofNat (192 + 4 * Crypto.Ripemd160.r[quadIndex k offset]!)
 
 def quadRightAddress (k : Fin 20) (offset : Fin 4) : UInt256 :=
-  UInt256.ofNat (644 + 4 * Crypto.Ripemd160.rP[quadIndex k offset]!)
+  UInt256.ofNat (192 + 4 * Crypto.Ripemd160.rP[quadIndex k offset]!)
 
 def quadLeftRotation (k : Fin 20) (offset : Fin 4) : Nat :=
   Crypto.Ripemd160.s[quadIndex k offset]!
@@ -50,7 +50,7 @@ def quadRightConstant (k : Fin 20) : UInt256 :=
 
 def DenseWordsAt (s : State) (word : Nat → UInt32) : Prop :=
   ∀ i, i < 16 →
-    Word.toUInt32 (MachineState.readWord s.memory (644 + 4 * i)) = word i
+    Word.toUInt32 (MachineState.readWord s.memory (192 + 4 * i)) = word i
 
 private theorem leftScheduleIndex_lt (k : Fin 20) (offset : Fin 4) :
     Crypto.Ripemd160.r[quadIndex k offset]! < 16 := by
@@ -62,7 +62,7 @@ private theorem rightScheduleIndex_lt (k : Fin 20) (offset : Fin 4) :
 
 theorem quadLeftAddress_toNat (k : Fin 20) (offset : Fin 4) :
     (quadLeftAddress k offset).toNat =
-      644 + 4 * Crypto.Ripemd160.r[quadIndex k offset]! := by
+      192 + 4 * Crypto.Ripemd160.r[quadIndex k offset]! := by
   unfold quadLeftAddress
   rw [Word.word_toNat_ofNat]
   apply Nat.mod_eq_of_lt
@@ -71,7 +71,7 @@ theorem quadLeftAddress_toNat (k : Fin 20) (offset : Fin 4) :
 
 theorem quadRightAddress_toNat (k : Fin 20) (offset : Fin 4) :
     (quadRightAddress k offset).toNat =
-      644 + 4 * Crypto.Ripemd160.rP[quadIndex k offset]! := by
+      192 + 4 * Crypto.Ripemd160.rP[quadIndex k offset]! := by
   unfold quadRightAddress
   rw [Word.word_toNat_ofNat]
   apply Nat.mod_eq_of_lt

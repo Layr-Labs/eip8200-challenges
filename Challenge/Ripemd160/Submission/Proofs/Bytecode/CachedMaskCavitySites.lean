@@ -79,7 +79,7 @@ def rightFirst : GenericRoundSite A .Osaka CachedMaskParams.rightCode :=
     decide) code_bound wellFormed_rightFirst (by decide)
 
 private theorem left4First_slice :
-    (A.instructions.drop 1692).take (CachedMaskParams.leftCode 4).length =
+    (A.instructions.drop 1710).take (CachedMaskParams.leftCode 4).length =
       CachedMaskParams.leftCode 4 := by rfl
 
 private theorem wellFormed_left4First : ∀ instruction ∈ CachedMaskParams.leftCode 4,
@@ -87,8 +87,8 @@ private theorem wellFormed_left4First : ∀ instruction ∈ CachedMaskParams.lef
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def left4First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 4) :=
-  StackSiteBuilder.ofSlice _ 1692 left4First_slice (by
-    change 1692 + (CachedMaskParams.leftCode 4).length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 1710 left4First_slice (by
+    change 1710 + (CachedMaskParams.leftCode 4).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left4First (by decide)
 
@@ -118,7 +118,7 @@ def left0Entry : Bridge A .Osaka where
     decide
 
 def left0Return : Bridge A .Osaka where
-  push := exactSite 403 (.push 2 (UInt256.ofNat 1694)) (by rfl) (by decide)
+  push := exactSite 403 (.push 2 (UInt256.ofNat 1705)) (by rfl) (by decide)
   jump := exactSite 404 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 1360 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
@@ -135,8 +135,8 @@ def left0Return : Bridge A .Osaka where
     decide
 
 def left2Entry : Bridge A .Osaka where
-  push := exactSite 1525 (.push 2 (UInt256.ofNat 1113)) (by rfl) (by decide)
-  jump := exactSite 1526 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  push := exactSite 1534 (.push 2 (UInt256.ofNat 1124)) (by rfl) (by decide)
+  jump := exactSite 1535 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 909 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
@@ -152,9 +152,9 @@ def left2Entry : Bridge A .Osaka where
     decide
 
 def left2Return : Bridge A .Osaka where
-  push := exactSite 1358 (.push 2 (UInt256.ofNat 2024)) (by rfl) (by decide)
+  push := exactSite 1358 (.push 2 (UInt256.ofNat 2028)) (by rfl) (by decide)
   jump := exactSite 1359 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 1527 (.op .JUMPDEST) (by rfl)
+  destination := exactSite 1536 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
     simp only [exactSite]
@@ -169,8 +169,8 @@ def left2Return : Bridge A .Osaka where
     decide
 
 def rightEntry : Bridge A .Osaka where
-  push := exactSite 3198 (.push 2 (UInt256.ofNat 535)) (by rfl) (by decide)
-  jump := exactSite 3199 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  push := exactSite 3048 (.push 2 (UInt256.ofNat 542)) (by rfl) (by decide)
+  jump := exactSite 3049 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 451 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
@@ -186,9 +186,9 @@ def rightEntry : Bridge A .Osaka where
     decide
 
 def rightReturn : Bridge A .Osaka where
-  push := exactSite 852 (.push 2 (UInt256.ofNat 4652)) (by rfl) (by decide)
+  push := exactSite 852 (.push 2 (UInt256.ofNat 4471)) (by rfl) (by decide)
   jump := exactSite 853 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 3200 (.op .JUMPDEST) (by rfl)
+  destination := exactSite 3050 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
     simp only [exactSite]
@@ -202,23 +202,19 @@ def rightReturn : Bridge A .Osaka where
     repeat' rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
 
-def left4Return : PopBridge A .Osaka where
-  push := exactSite 2140 (.push 2 (UInt256.ofNat 2931)) (by rfl) (by decide)
-  pop := exactSite 2141 (.op .POP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 2142 (.op .JUMPDEST) (by rfl)
+def left4Return : Bridge A .Osaka where
+  push := exactSite 2158 (.push 2 (UInt256.ofNat 2928)) (by rfl) (by decide)
+  jump := exactSite 2159 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  destination := exactSite 2160 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
     simp only [exactSite]
     apply congrArg (Instr.push ⟨2, by decide⟩)
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  pop_instr := rfl
+  jump_instr := rfl
   destination_instr := rfl
-  pop_at := by
-    simp only [exactSite]
-    repeat' rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  destination_at := by
+  jump_at := by
     simp only [exactSite]
     repeat' rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide

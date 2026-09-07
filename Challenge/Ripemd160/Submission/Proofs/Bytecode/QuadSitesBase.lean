@@ -3,8 +3,8 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadCallTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShiftedHoistHelper
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskCalls
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.LoadedHoistHelper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.LoadedCalls
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -164,7 +164,7 @@ def rightConstant (k : Fin 20) : UInt256 :=
 
 def quadWrapperTemplate (returnPC p0 p1 p2 p3 helperPC : UInt256)
     (r0 r1 r2 r3 : Nat) : List Instr :=
-  CachedMaskCalls.ShiftedCall.quadCallPushes returnPC p0 p1 p2 p3 helperPC r0 r1 r2 r3 ++
+  LoadedCalls.ShiftedCall.quadCallPushes returnPC p0 p1 p2 p3 helperPC r0 r1 r2 r3 ++
     [op .JUMP, op .JUMPDEST]
 
 def leftWrapperTemplate (k : Fin 20) : List Instr :=
@@ -180,11 +180,11 @@ def rightWrapperTemplate (k : Fin 20) : List Instr :=
     (rightRotation2 k) (rightRotation3 k)
 
 def leftHelperTemplate (group : Fin 5) : List Instr :=
-  ShiftedHoistHelper.leftTemplate group.val
+  LoadedHoistHelper.leftTemplate group.val
     (StackRoundData.leftConstant (16 * group.val))
 
 def rightHelperTemplate (group : Fin 5) : List Instr :=
-  ShiftedHoistHelper.rightTemplate (4 - group.val)
+  LoadedHoistHelper.rightTemplate (4 - group.val)
     (StackRoundData.rightConstant (16 * group.val))
 
 theorem getElem_of_slice {artifact : ProgramArtifact}

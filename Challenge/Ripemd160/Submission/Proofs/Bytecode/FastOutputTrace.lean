@@ -239,7 +239,7 @@ private theorem add_assoc_hAdd_explicit (u v w : UInt256) :
 
 theorem runInstrSeq_fastLoad0
     (s : State) (startPC : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1021) (hrun : s.halt = .Running) :
     runInstrSeq fastLoad0 { s with pc := startPC, stack := rest } =
       some (afterFastLoad s startPC rest) := by
   have hcap (m : Nat) (hm : m ≤ 2) : rest.length + m < 1024 := by
@@ -258,7 +258,7 @@ theorem runInstrSeq_fastPackStep
     (s : State) (startPC : UInt256) (address : Nat)
     (acc : UInt256) (rest : List UInt256)
     (haddress : address < 2 ^ 256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1021) (hrun : s.halt = .Running) :
     runInstrSeq (fastPackStep address)
       { s with pc := startPC, stack := acc :: rest } =
       some (afterFastPackStep s startPC address acc rest) := by
@@ -283,7 +283,7 @@ theorem runInstrSeq_fastPackStep
 
 theorem runInstrSeq_jumpdest
     (s : State) (startPC : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1021) (hrun : s.halt = .Running) :
     runInstrSeq [DenseScheduleTemplate.op .JUMPDEST]
       { s with pc := startPC, stack := rest } =
       some { s with
@@ -298,7 +298,7 @@ theorem runInstrSeq_jumpdest
 
 theorem runInstrSeq_fastPackTemplate
     (s : State) (startPC : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1021) (hrun : s.halt = .Running) :
     runInstrSeq fastPackTemplate
       { s with pc := startPC, stack := rest } =
       some (afterFastPack s startPC rest) := by
@@ -396,31 +396,77 @@ theorem runInstrSeq_fastPackTemplate
 
 theorem runInstrSeq_fastEndianStage8
     (s : State) (startPC value : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1021) (hrun : s.halt = .Running) :
     runInstrSeq fastEndianStage8
       { s with pc := startPC, stack := value :: rest } =
       some { s with
         pc := pcAfter startPC fastEndianStage8
         stack := DenseScheduleTemplate.packedStage value 8
           FastOutputTemplate.mask8 :: rest } := by
-  exact ClosedEndianMultiply.run_endian s startPC value 8
-    DenseScheduleTemplate.mask8 rest hstack (Or.inl ⟨rfl, rfl⟩) hrun
+  have hcap (m : Nat) (hm : m ≤ 2) : rest.length + m < 1024 := by
+    omega
+  have hcap2 : rest.length + 1 + 1 < 1024 := by omega
+  have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by omega
+  have hswap1 (u v : UInt256) (rho : List UInt256) :
+      (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
+    simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
+  simp (config := { maxSteps := 1000000 })
+    [fastEndianStage8, push31, DenseScheduleTemplate.push1,
+      DenseScheduleTemplate.op, DenseScheduleTemplate.dup1,
+      DenseScheduleTemplate.swap1, DenseScheduleTemplate.packedStage,
+      runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun,
+      hcap, hcap2, hcap3, hswap1, UInt256.succ, Instr.size,
+      Instr.size_push, Instr.size_op,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat, Word.land_comm,
+      Word.lor_comm]
+  repeat first
+    | rw [add_ofNat_assoc_hAdd]
+    | rw [add_ofNat_assoc_add]
+    | rw [add_ofNat_assoc]
+  simp only [add_assoc_explicit, add_assoc_explicit_hAdd,
+    add_assoc_hAdd_explicit, word_add_assoc]
+  simp [Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc]
 
 theorem runInstrSeq_fastEndianStage16
     (s : State) (startPC value : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1021) (hrun : s.halt = .Running) :
     runInstrSeq fastEndianStage16
       { s with pc := startPC, stack := value :: rest } =
       some { s with
         pc := pcAfter startPC fastEndianStage16
         stack := DenseScheduleTemplate.packedStage value 16
           FastOutputTemplate.mask16 :: rest } := by
-  exact ClosedEndianMultiply.run_endian s startPC value 16
-    DenseScheduleTemplate.mask16 rest hstack (Or.inr ⟨rfl, rfl⟩) hrun
+  have hcap (m : Nat) (hm : m ≤ 2) : rest.length + m < 1024 := by
+    omega
+  have hcap2 : rest.length + 1 + 1 < 1024 := by omega
+  have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by omega
+  have hswap1 (u v : UInt256) (rho : List UInt256) :
+      (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
+    simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
+  simp (config := { maxSteps := 1000000 })
+    [fastEndianStage16, push30, DenseScheduleTemplate.push1,
+      DenseScheduleTemplate.op, DenseScheduleTemplate.dup1,
+      DenseScheduleTemplate.swap1, DenseScheduleTemplate.packedStage,
+      runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun,
+      hcap, hcap2, hcap3, hswap1, UInt256.succ, Instr.size,
+      Instr.size_push, Instr.size_op,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat, Word.land_comm,
+      Word.lor_comm]
+  repeat first
+    | rw [add_ofNat_assoc_hAdd]
+    | rw [add_ofNat_assoc_add]
+    | rw [add_ofNat_assoc]
+  simp only [add_assoc_explicit, add_assoc_explicit_hAdd,
+    add_assoc_hAdd_explicit, word_add_assoc]
+  simp [Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc]
 
 theorem runInstrSeq_fastStoreAndSetup
     (s : State) (startPC value : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1021) (hrun : s.halt = .Running) :
     runInstrSeq fastStoreAndSetup
       { s with pc := startPC, stack := value :: rest } =
       some (afterFastStore s startPC value rest) := by
@@ -445,7 +491,7 @@ theorem runInstrSeq_fastStoreAndSetup
 
 theorem runInstrSeq_fastReturn
     (s : State) (startPC : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1021) (hrun : s.halt = .Running) :
     runInstrSeq fastOutputReturnTemplate
       { s with pc := startPC, stack := [⟨0⟩, UInt256.ofNat 32] ++ rest } =
       some (afterFastReturn s startPC rest) := by
@@ -458,7 +504,7 @@ theorem runInstrSeq_fastReturn
 
 theorem runInstrSeq_fastOutput_beforeReturn
     (s : State) (startPC : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1021) (hrun : s.halt = .Running) :
     runInstrSeq fastOutputBeforeReturnTemplate
       { s with pc := startPC, stack := rest } =
       some (fastOutputBeforeReturnState s startPC rest) := by
@@ -542,7 +588,7 @@ theorem runInstrSeq_fastOutput_beforeReturn
 
 theorem runInstrSeq_fastOutput
     (s : State) (startPC : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1021) (hrun : s.halt = .Running) :
     runInstrSeq fastOutputTemplate
       { s with pc := startPC, stack := rest } =
       some (fastOutputReturned s startPC rest) := by

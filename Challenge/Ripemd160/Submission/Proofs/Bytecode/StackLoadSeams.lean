@@ -12,7 +12,7 @@ open StackBlockModel StackEndpoint
 
 theorem firstLoad_end : StackFrame.loadSite987.endPC = QuadLayout.leftPC 0 := rfl
 
-theorem secondLoad_start : StackFrame.loadSite1238.startPC = UInt256.ofNat 0xb75 := rfl
+theorem secondLoad_start : StackFrame.loadSite1238.startPC = UInt256.ofNat 0xb72 := rfl
 
 theorem secondLoad_end : StackFrame.loadSite1238.endPC = QuadLayout.rightPC 0 := rfl
 
@@ -29,7 +29,7 @@ theorem loadEntry_eq_roundEntry (s : State) (pc : UInt256)
 theorem tailEntry_eq_roundEntry (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) :
     QuadTailTemplate.tailEntry s left right ret rest =
-      StackRoundTrace.roundEntry s (UInt256.ofNat 0x122d)
+      StackRoundTrace.roundEntry s (UInt256.ofNat 0x1178)
         right.a right.b right.c right.d right.e
         (QuadRoundTemplate.factor :: (StackFrame.savedLeft left ++ ret :: rest)) := rfl
 
@@ -80,9 +80,9 @@ theorem tailEntry_atLanePC (s : State) (left right : Compression.EvmWorking)
   exact tailEntry_eq_roundEntry s left right ret rest
 
 theorem compressReturned_eq_self (s : State) (input : ByteArray) (i : Nat)
-    (hpc : s.pc = UInt256.ofNat 0x419) (hstack : s.stack = driverRest input i) :
+    (hpc : s.pc = UInt256.ofNat 0x424) (hstack : s.stack = driverRest input i) :
     DriverTrace.compressReturned s input i = s := by
-  change {s with pc := UInt256.ofNat 0x419, stack := driverRest input i} = s
+  change {s with pc := UInt256.ofNat 0x424, stack := driverRest input i} = s
   rw [← hpc, ← hstack]
 
 theorem resultState_returned (s : State) (input : ByteArray) (i : Nat) :
@@ -94,7 +94,7 @@ theorem scheduled_words_memory (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input)
     (k : Nat) (hk : k < 16) :
     Challenge.EvmProof.Word.toUInt32
-      (MachineState.readWord (scheduledState s input i).memory (644 + 4 * k)) =
+      (MachineState.readWord (scheduledState s input i).memory (192 + 4 * k)) =
       blockWords input i k :=
   scheduledState_words s input i h ctx hfit hi k hk
 
