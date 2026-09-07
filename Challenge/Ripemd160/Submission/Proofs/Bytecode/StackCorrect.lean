@@ -86,7 +86,7 @@ noncomputable def gasSteps_legacyBlock (s : State) (input : ByteArray) (i : Nat)
   have gtail := CachedMaskTailSite.actualTailGasSteps q left right (UInt256.ofNat 0x436)
     (driverRest input i) qactive (by simp [driverRest]) qcode qfork qrun qnp hvalid
   have tailSeam : stateAt q (QuadLayout.rightPC 20) right rightRest =
-      CachedMaskTail.entry q left right (UInt256.ofNat 0x436) (driverRest input i) := by
+      CachedMaskOrderedTail.entry q left right (UInt256.ofNat 0x436) (driverRest input i) := by
     change StackRoundTrace.roundEntry q (QuadLayout.rightPC 20) right.a right.b right.c
       right.d right.e (QuadRoundTemplate.factor :: rightRest) = _
     rw [StackEndpoint.rightPC_last]

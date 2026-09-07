@@ -35,100 +35,100 @@ private def wfOp {op : Operation}
 
 
 private theorem left0First_slice :
-    (A.instructions.drop 3).take ((CachedMaskParams.leftCode 0).take 407).length =
-      (CachedMaskParams.leftCode 0).take 407 := by rfl
+    (A.instructions.drop 3).take ((CachedMaskParams.leftCode 0).take 399).length =
+      (CachedMaskParams.leftCode 0).take 399 := by rfl
 
-private theorem wellFormed_left0First : ∀ instruction ∈ (CachedMaskParams.leftCode 0).take 407,
+private theorem wellFormed_left0First : ∀ instruction ∈ (CachedMaskParams.leftCode 0).take 399,
     Stepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
-def left0First : GenericRoundSite A .Osaka ((CachedMaskParams.leftCode 0).take 407) :=
+def left0First : GenericRoundSite A .Osaka ((CachedMaskParams.leftCode 0).take 399) :=
   StackSiteBuilder.ofSlice _ 3 left0First_slice (by
-    change 3 + ((CachedMaskParams.leftCode 0).take 407).length ≤ Artifact.submissionInstructions.length
+    change 3 + ((CachedMaskParams.leftCode 0).take 399).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left0First (by decide)
 
 private theorem left0Second_slice :
-    (A.instructions.drop 1109).take ((CachedMaskParams.leftCode 0).drop 407).length =
-      (CachedMaskParams.leftCode 0).drop 407 := by rfl
+    (A.instructions.drop 1109).take ((CachedMaskParams.leftCode 0).drop 399).length =
+      (CachedMaskParams.leftCode 0).drop 399 := by rfl
 
-private theorem wellFormed_left0Second : ∀ instruction ∈ (CachedMaskParams.leftCode 0).drop 407,
+private theorem wellFormed_left0Second : ∀ instruction ∈ (CachedMaskParams.leftCode 0).drop 399,
     Stepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
-def left0Second : GenericRoundSite A .Osaka ((CachedMaskParams.leftCode 0).drop 407) :=
+def left0Second : GenericRoundSite A .Osaka ((CachedMaskParams.leftCode 0).drop 399) :=
   StackSiteBuilder.ofSlice _ 1109 left0Second_slice (by
-    change 1109 + ((CachedMaskParams.leftCode 0).drop 407).length ≤ Artifact.submissionInstructions.length
+    change 1109 + ((CachedMaskParams.leftCode 0).drop 399).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left0Second (by decide)
 
 private theorem left2First_slice :
-    (A.instructions.drop 1113).take ((CachedMaskParams.leftCode 2).take 181).length =
-      (CachedMaskParams.leftCode 2).take 181 := by rfl
+    (A.instructions.drop 1113).take ((CachedMaskParams.leftCode 2).take 178).length =
+      (CachedMaskParams.leftCode 2).take 178 := by rfl
 
-private theorem wellFormed_left2First : ∀ instruction ∈ (CachedMaskParams.leftCode 2).take 181,
+private theorem wellFormed_left2First : ∀ instruction ∈ (CachedMaskParams.leftCode 2).take 178,
     Stepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
-def left2First : GenericRoundSite A .Osaka ((CachedMaskParams.leftCode 2).take 181) :=
+def left2First : GenericRoundSite A .Osaka ((CachedMaskParams.leftCode 2).take 178) :=
   StackSiteBuilder.ofSlice _ 1113 left2First_slice (by
-    change 1113 + ((CachedMaskParams.leftCode 2).take 181).length ≤ Artifact.submissionInstructions.length
+    change 1113 + ((CachedMaskParams.leftCode 2).take 178).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left2First (by decide)
 
 private theorem left2Second_slice :
-    (A.instructions.drop 1463).take (((CachedMaskParams.leftCode 2).drop 181).take 210).length =
-      ((CachedMaskParams.leftCode 2).drop 181).take 210 := by rfl
+    (A.instructions.drop 1463).take (((CachedMaskParams.leftCode 2).drop 178).take 210).length =
+      ((CachedMaskParams.leftCode 2).drop 178).take 210 := by rfl
 
-private theorem wellFormed_left2Second : ∀ instruction ∈ ((CachedMaskParams.leftCode 2).drop 181).take 210,
+private theorem wellFormed_left2Second : ∀ instruction ∈ ((CachedMaskParams.leftCode 2).drop 178).take 210,
     Stepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
-def left2Second : GenericRoundSite A .Osaka (((CachedMaskParams.leftCode 2).drop 181).take 210) :=
+def left2Second : GenericRoundSite A .Osaka (((CachedMaskParams.leftCode 2).drop 178).take 210) :=
   StackSiteBuilder.ofSlice _ 1463 left2Second_slice (by
-    change 1463 + (((CachedMaskParams.leftCode 2).drop 181).take 210).length ≤ Artifact.submissionInstructions.length
+    change 1463 + (((CachedMaskParams.leftCode 2).drop 178).take 210).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left2Second (by decide)
 
 private theorem left2Third_slice :
-    (A.instructions.drop 2681).take ((CachedMaskParams.leftCode 2).drop 391).length =
-      (CachedMaskParams.leftCode 2).drop 391 := by rfl
+    (A.instructions.drop 2681).take ((CachedMaskParams.leftCode 2).drop 388).length =
+      (CachedMaskParams.leftCode 2).drop 388 := by rfl
 
-private theorem wellFormed_left2Third : ∀ instruction ∈ (CachedMaskParams.leftCode 2).drop 391,
+private theorem wellFormed_left2Third : ∀ instruction ∈ (CachedMaskParams.leftCode 2).drop 388,
     Stepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
-def left2Third : GenericRoundSite A .Osaka ((CachedMaskParams.leftCode 2).drop 391) :=
+def left2Third : GenericRoundSite A .Osaka ((CachedMaskParams.leftCode 2).drop 388) :=
   StackSiteBuilder.ofSlice _ 2681 left2Third_slice (by
-    change 2681 + ((CachedMaskParams.leftCode 2).drop 391).length ≤ Artifact.submissionInstructions.length
+    change 2681 + ((CachedMaskParams.leftCode 2).drop 388).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left2Third (by decide)
 
 private theorem rightFirst_slice :
-    (A.instructions.drop 474).take (CachedMaskParams.rightCode.take 380).length =
-      CachedMaskParams.rightCode.take 380 := by rfl
+    (A.instructions.drop 474).take (CachedMaskParams.rightCode.take 373).length =
+      CachedMaskParams.rightCode.take 373 := by rfl
 
-private theorem wellFormed_rightFirst : ∀ instruction ∈ CachedMaskParams.rightCode.take 380,
+private theorem wellFormed_rightFirst : ∀ instruction ∈ CachedMaskParams.rightCode.take 373,
     Stepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
-def rightFirst : GenericRoundSite A .Osaka (CachedMaskParams.rightCode.take 380) :=
+def rightFirst : GenericRoundSite A .Osaka (CachedMaskParams.rightCode.take 373) :=
   StackSiteBuilder.ofSlice _ 474 rightFirst_slice (by
-    change 474 + (CachedMaskParams.rightCode.take 380).length ≤ Artifact.submissionInstructions.length
+    change 474 + (CachedMaskParams.rightCode.take 373).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_rightFirst (by decide)
 
 private theorem rightSecond_slice :
-    (A.instructions.drop 2650).take (CachedMaskParams.rightCode.drop 380).length =
-      CachedMaskParams.rightCode.drop 380 := by rfl
+    (A.instructions.drop 2650).take (CachedMaskParams.rightCode.drop 373).length =
+      CachedMaskParams.rightCode.drop 373 := by rfl
 
-private theorem wellFormed_rightSecond : ∀ instruction ∈ CachedMaskParams.rightCode.drop 380,
+private theorem wellFormed_rightSecond : ∀ instruction ∈ CachedMaskParams.rightCode.drop 373,
     Stepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
-def rightSecond : GenericRoundSite A .Osaka (CachedMaskParams.rightCode.drop 380) :=
+def rightSecond : GenericRoundSite A .Osaka (CachedMaskParams.rightCode.drop 373) :=
   StackSiteBuilder.ofSlice _ 2650 rightSecond_slice (by
-    change 2650 + (CachedMaskParams.rightCode.drop 380).length ≤ Artifact.submissionInstructions.length
+    change 2650 + (CachedMaskParams.rightCode.drop 373).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_rightSecond (by decide)
 
@@ -158,8 +158,8 @@ def left0Entry : Bridge A .Osaka where
     decide
 
 def left0Bridge1 : Bridge A .Osaka where
-  push := exactSite 410 (.push 2 (UInt256.ofNat 1346)) (by rfl) (by decide)
-  jump := exactSite 411 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  push := exactSite 402 (.push 2 (UInt256.ofNat 1346)) (by rfl) (by decide)
+  jump := exactSite 403 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 1108 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
@@ -209,8 +209,8 @@ def left2Entry : Bridge A .Osaka where
     decide
 
 def left2Bridge1 : Bridge A .Osaka where
-  push := exactSite 1294 (.push 2 (UInt256.ofNat 1917)) (by rfl) (by decide)
-  jump := exactSite 1295 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  push := exactSite 1291 (.push 2 (UInt256.ofNat 1917)) (by rfl) (by decide)
+  jump := exactSite 1292 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 1462 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
@@ -243,8 +243,8 @@ def left2Bridge2 : Bridge A .Osaka where
     decide
 
 def left2Return : Bridge A .Osaka where
-  push := exactSite 2746 (.push 2 (UInt256.ofNat 2193)) (by rfl) (by decide)
-  jump := exactSite 2747 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  push := exactSite 2741 (.push 2 (UInt256.ofNat 2193)) (by rfl) (by decide)
+  jump := exactSite 2742 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 1675 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
@@ -277,8 +277,8 @@ def rightEntry : Bridge A .Osaka where
     decide
 
 def rightBridge1 : Bridge A .Osaka where
-  push := exactSite 854 (.push 2 (UInt256.ofNat 4206)) (by rfl) (by decide)
-  jump := exactSite 855 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  push := exactSite 847 (.push 2 (UInt256.ofNat 4206)) (by rfl) (by decide)
+  jump := exactSite 848 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 2649 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
@@ -294,8 +294,8 @@ def rightBridge1 : Bridge A .Osaka where
     decide
 
 def rightReturn : Bridge A .Osaka where
-  push := exactSite 2678 (.push 2 (UInt256.ofNat 4330)) (by rfl) (by decide)
-  jump := exactSite 2679 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  push := exactSite 2677 (.push 2 (UInt256.ofNat 4330)) (by rfl) (by decide)
+  jump := exactSite 2678 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 2748 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by

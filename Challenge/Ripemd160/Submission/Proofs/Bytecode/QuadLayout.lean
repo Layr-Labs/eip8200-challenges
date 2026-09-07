@@ -87,9 +87,9 @@ def leftHelperStartIndex : Nat → Nat
   | _ => 1883
 
 def leftHelperJumpIndex : Nat → Nat
-  | 0 => 411
+  | 0 => 403
   | 1 => 1458
-  | 2 => 1295
+  | 2 => 1292
   | 3 => 1836
   | _ => 1994
 
@@ -176,7 +176,7 @@ def rightHelperJumpIndex : Nat → Nat
   | 1 => 2325
   | 2 => 2483
   | 3 => 2645
-  | _ => 855
+  | _ => 848
 
 def rightHelperPCNat : Nat → Nat
   | 0 => 3036
@@ -208,8 +208,8 @@ theorem tail_pc : A.instructionPC tailIndex = 0x10eb := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def tailJumpIndex : Nat := 2802
-theorem tailJump_pc : A.instructionPC tailJumpIndex = 4394 := by
+def tailJumpIndex : Nat := 2796
+theorem tailJump_pc : A.instructionPC tailJumpIndex = 4388 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
