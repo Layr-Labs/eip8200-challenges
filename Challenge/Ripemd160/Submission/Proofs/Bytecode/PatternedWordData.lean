@@ -31,7 +31,7 @@ def expectedWordAt (j : Nat) : UInt256 := UInt256.ofNat (patternedWordNat j)
 theorem patternedWordNat_0 : patternedWordNat 0 = 0x072c51769bc0e50a2f54799ec3e80d32577ca1c6eb10355a7fa4c9ee13385d82 := by decide
 
 @[simp] theorem expectedWordAt_0 :
-    expectedWordAt 0 = (0x72c51769bc0e50a2f54799ec3e80d32577ca1c6eb10355a7fa4c9ee13385d82 : UInt256) := by
+    expectedWordAt 0 = (0x072c51769bc0e50a2f54799ec3e80d32577ca1c6eb10355a7fa4c9ee13385d82 : UInt256) := by
   rw [expectedWordAt, patternedWordNat_0]
   rfl
 
@@ -220,7 +220,7 @@ theorem patternedWordNat_26 : patternedWordNat 26 = 0x688db2d7fc21466b90b5daff24
 theorem patternedWordNat_27 : patternedWordNat 27 = 0x082d52779cc1e60b30557a9fc4e90e33587da2c7ec11365b80a5caef14395e83 := by decide
 
 @[simp] theorem expectedWordAt_27 :
-    expectedWordAt 27 = (0x82d52779cc1e60b30557a9fc4e90e33587da2c7ec11365b80a5caef14395e83 : UInt256) := by
+    expectedWordAt 27 = (0x082d52779cc1e60b30557a9fc4e90e33587da2c7ec11365b80a5caef14395e83 : UInt256) := by
   rw [expectedWordAt, patternedWordNat_27]
   rfl
 

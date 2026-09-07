@@ -30,10 +30,10 @@ def pairSwap6 : Instr := .op (.Swap ⟨5, by decide⟩)
 def pairSwap7 : Instr := .op (.Swap ⟨6, by decide⟩)
 
 def qrot : List Instr :=
-  [.push ⟨5, by decide⟩ (UInt256.ofNat 0x100000001), op .MUL, swap1, op .SHR]
+  [.push ⟨5, by decide⟩ (UInt256.ofNat 0x0100000001), op .MUL, swap1, op .SHR]
 
 def cfold : List Instr :=
-  [.push ⟨5, by decide⟩ (UInt256.ofNat 0x100000001), op .MUL,
+  [.push ⟨5, by decide⟩ (UInt256.ofNat 0x0100000001), op .MUL,
     push1 c22, op .SHR]
 
 /-! The first round has the H22 Boolean depths increased by two. -/

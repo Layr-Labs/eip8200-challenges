@@ -21,7 +21,7 @@ private noncomputable def left_span (s : State) (word : Nat → UInt32)
     (hbound : start + count ≤ 20)
     (hallowed : ∀ i, i < count →
       4 ≤ start + i ∧ (start + i < 8 ∨ 12 ≤ start + i) ∧ start + i < 16)
-    (hwords : low32DenseWordsAt s word) (hactive : 25 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 11 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -54,7 +54,7 @@ private noncomputable def left_span (s : State) (word : Nat → UInt32)
 
 noncomputable def gasSteps_left80 (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256)
-    (hwords : low32DenseWordsAt s word) (hactive : 25 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 11 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -88,7 +88,7 @@ noncomputable def gasSteps_left80 (s : State) (word : Nat → UInt32)
 
 noncomputable def gasSteps_right80 (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (a b c d e : UInt256) (rho : List UInt256)
-    (hwords : low32DenseWordsAt s word) (hactive : 25 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 11 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1001) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

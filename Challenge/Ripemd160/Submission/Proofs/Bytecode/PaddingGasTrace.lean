@@ -145,6 +145,7 @@ theorem padLengthReady_activeWords (input : ByteArray) :
     change (UInt256.ofNat 160).toNat = 160
     norm_num
   simp [PaddingTrace.padLengthReady, PaddingTrace.padEntry,
+    PaddingTrace.pushedPad, PaddingTrace.pushedOutput,
     PaddingTrace.pushedReturn, Main.initializedState, Artifact.initStores,
     Main.applyInitStore, Execution.mainStart, Execution.atPC, initialState,
     State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
