@@ -37,7 +37,7 @@ def callPath : List Located :=
    ⟨885, .push ⟨2, by decide⟩ (UInt256.ofNat Padding.messageOffset),
       by rfl, by decide⟩,
    ⟨886, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨887, .push ⟨2, by decide⟩ (UInt256.ofNat 4957), by rfl, by decide⟩,
+   ⟨887, .push ⟨2, by decide⟩ (UInt256.ofNat 4764), by rfl, by decide⟩,
    ⟨888, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def postCheckPath : List Located :=
@@ -47,7 +47,7 @@ def postCheckPath : List Located :=
    ⟨877, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨878, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨879, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨880, .push ⟨2, by decide⟩ (UInt256.ofNat 4771), by rfl, by decide⟩,
+   ⟨880, .push ⟨2, by decide⟩ (UInt256.ofNat 4578), by rfl, by decide⟩,
    ⟨881, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem pc785 : Artifact.submissionArtifact.instructionPC 874 = 0x424 := by decide
@@ -90,7 +90,7 @@ def loopAt (s : State) (input : ByteArray) (i : Nat) : State :=
 ordinary compression entry stack. -/
 def dispatchEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x135d
+    pc := UInt256.ofNat 0x129c
     stack := [messageOffsetWord i, UInt256.ofNat 0x424,
       blockOffsetWord i, Padding.paddedWord input] }
 
@@ -114,7 +114,7 @@ def afterIteration (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def afterExit (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 0x12a3
+    pc := UInt256.ofNat 0x11e2
     stack := [blockOffsetWord (blockCount input), Padding.paddedWord input] }
 
 def iterationEnd (s : State) (input : ByteArray) (i : Nat) : State :=
@@ -207,12 +207,12 @@ theorem padReturned_messageBlockAt (input : ByteArray)
   simpa [messageOffsetWord, blockOffset, blockCount] using
     PaddedBlockBridge.padReturned_blockIndexAt input hfit i hi
 
-/-- The same block pointer is separated from the dense schedule scratch. -/
+/-- The same block pointer is separated from the sixteen schedule slots. -/
 theorem padReturned_blockSeparated (input : ByteArray)
     (hfit : Challenge.Ripemd160.CalldataFits input) (i : Nat)
     (hi : i < blockCount input) :
     ∀ k, k < 16 →
-      0x2e0 ≤ (Schedule.loadOffsetWord (messageOffsetWord i) k).toNat := by
+      0x4a0 ≤ (Schedule.loadOffsetWord (messageOffsetWord i) k).toNat := by
   simpa [messageOffsetWord, blockOffset, blockCount] using
     PaddedBlockBridge.padReturned_blockIndexSeparated input hfit i hi
 
@@ -225,8 +225,8 @@ theorem run_call (s : State) (input : ByteArray)
       (loopAt s input i) = some (dispatchEntry s input i) := by
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (messageOffset_lt_uint256 input hfit i hi)
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x135d = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3155 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x129c = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2955 (by rfl)
   simp [callPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopAt, dispatchEntry, messageOffsetWord, blockOffsetWord,
@@ -273,8 +273,8 @@ theorem run_postCheck_exit (s : State) (input : ByteArray)
   have heq := offset_eq_total input hfit
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x12a3 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3105 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x11e2 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2905 (by rfl)
   simp [postCheckPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     compressReturned, afterExit, hrun, hcode, hadd, hlast, heq,

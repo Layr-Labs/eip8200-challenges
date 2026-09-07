@@ -230,11 +230,11 @@ private theorem denseExpectedMemory_word_low32 (s : State) (p k : Nat)
     (DenseScheduleMemory.denseMemory_readWord_low32 s.memory p k hk hbound)
 
 theorem resultState_word_above (s : State) (input : ByteArray) (i address : Nat)
-    (haddress : 0x2e0 ≤ address) :
+    (haddress : 0x4a0 ≤ address) :
     StackRunBridge.wordAt (resultState s input i) address =
       StackRunBridge.wordAt s address := by
   unfold StackRunBridge.wordAt resultState
-  rw [StackMemory.readWord_storeHash_ge_2e0 _ _ address haddress]
+  rw [StackMemory.readWord_storeHash_ge_4a0 _ _ address haddress]
   simpa [scheduledState] using
     denseExpectedMemory_readWord_outside s (DriverTrace.messageOffsetWord i)
       address (Or.inr (by omega))
@@ -251,7 +251,7 @@ theorem scheduledState_hash (s : State) (input : ByteArray) (i : Nat) :
 
 theorem scheduledState_activeWords (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (i : Nat) (hi : i < DriverTrace.blockCount input) :
-    (scheduledState s input i).activeWords.toNat = max s.activeWords.toNat (25 + 2 * i) := by
+    (scheduledState s input i).activeWords.toNat = max s.activeWords.toNat (39 + 2 * i) := by
   rw [scheduledState, withActiveWords_activeWords]
   exact DenseScheduleActiveWords.expectedActiveWords_toNat s input hfit i hi
 

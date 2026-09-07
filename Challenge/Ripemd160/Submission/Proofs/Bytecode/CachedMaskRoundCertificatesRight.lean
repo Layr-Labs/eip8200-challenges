@@ -1,5 +1,3 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.SecondCachedMaskInlineSite
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.SingleCachedMaskInlineSite
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskRoundFacts
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskRoundSitesRight
 
@@ -14,7 +12,7 @@ open StackRoundTrace QuadRoundState QuadRoundTemplate QuadSites QuadSemantic
 
 def gasSteps_rightNormal (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (a b c d e : UInt256) (rho : List UInt256) (n : CachedMaskRoundSitesRight.NormalIndex)
-    (hwords : low32DenseWordsAt s word) (hactive : 25 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1001) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -53,7 +51,7 @@ def gasSteps_rightNormal (s : State) (word : Nat → UInt32)
 
 def gasSteps_rightFallthrough (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (a b c d e : UInt256) (rho : List UInt256) (group : Fin 4)
-    (hwords : low32DenseWordsAt s word) (hactive : 25 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1001) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -99,7 +97,7 @@ def gasSteps_rightFallthrough (s : State) (word : Nat → UInt32)
 noncomputable def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (a b c d e : UInt256) (rho : List UInt256) (k : Fin 20)
     (hk : k.val < 16)
-    (hwords : low32DenseWordsAt s word) (hactive : 25 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1001) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -109,35 +107,35 @@ noncomputable def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
   apply Classical.choice
   fin_cases k <;> norm_num at hk
 
-  · exact ⟨SingleCachedMaskInlineSite.gasSteps_right0 s word working a b c d e rho hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨SecondCachedMaskInlineSite.gasSteps_right1 s word working a b c d e rho hwords hactive hstack hcode hfork hrun hnp⟩
-
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 0 hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 0 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 1 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 2 hwords hactive hstack hcode hfork hrun hnp⟩
 
-  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 3 hwords hactive hstack hcode hfork hrun hnp⟩
+  · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 0 hwords hactive hstack hcode hfork hrun hnp⟩
 
-  · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 1 hwords hactive hstack hcode hfork hrun hnp⟩
+  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 3 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 4 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 5 hwords hactive hstack hcode hfork hrun hnp⟩
 
-  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 6 hwords hactive hstack hcode hfork hrun hnp⟩
+  · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 1 hwords hactive hstack hcode hfork hrun hnp⟩
 
-  · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 2 hwords hactive hstack hcode hfork hrun hnp⟩
+  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 6 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 7 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 8 hwords hactive hstack hcode hfork hrun hnp⟩
 
+  · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 2 hwords hactive hstack hcode hfork hrun hnp⟩
+
   · exact ⟨gasSteps_rightNormal s word working a b c d e rho 9 hwords hactive hstack hcode hfork hrun hnp⟩
+
+  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 10 hwords hactive hstack hcode hfork hrun hnp⟩
+
+  · exact ⟨gasSteps_rightNormal s word working a b c d e rho 11 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_rightFallthrough s word working a b c d e rho 3 hwords hactive hstack hcode hfork hrun hnp⟩
 

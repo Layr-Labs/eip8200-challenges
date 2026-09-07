@@ -69,8 +69,8 @@ def runInstrSeq : List Instr → State → Option State
 abbrev consumeResult := QuadTailTemplate.finalResult
 
 private theorem activeWordsAfter_tail (s : State) (offset : Nat)
-    (hoff : offset + 32 ≤ 25 * 32)
-    (hactive : 25 ≤ s.activeWords.toNat) :
+    (hoff : offset + 32 ≤ 39 * 32)
+    (hactive : 39 ≤ s.activeWords.toNat) :
     s.activeWordsAfterUInt256 offset 32 = s.activeWords := by
   unfold State.activeWordsAfterUInt256
   have haw : MachineState.activeWordsAfter s.activeWords.toNat offset 32 =
@@ -201,7 +201,7 @@ theorem run_consumeBody (s : State)
     (rest : List UInt256)
     (hrun : s.halt = .Running)
     (_hfork : s.fork = .Osaka)
-    (hactive : 25 ≤ s.activeWords.toNat)
+    (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1007)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     runInstrSeq consumeBody (tailEntry s left right ret rest) =
@@ -248,7 +248,7 @@ set_option linter.unusedSimpArgs false in
 theorem runTail_consumeBody (s : State)
     (left right : Compression.EvmWorking) (ret : UInt256)
     (rest : List UInt256)
-    (hactive : 25 ≤ s.activeWords.toNat)
+    (hactive : 39 ≤ s.activeWords.toNat)
     (hstack : rest.length < 1007)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     StackTail.runTailInstrs consumeBody (tailEntry s left right ret rest) =

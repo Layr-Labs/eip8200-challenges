@@ -25,8 +25,8 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTail
 
 def factor : UInt256 := UInt256.ofNat 0x100000001
 
-def tailStartPC : UInt256 := UInt256.ofNat 0x11a2
-def tailJumpPC : UInt256 := UInt256.ofNat 0x11db
+def tailStartPC : UInt256 := UInt256.ofNat 0x10e1
+def tailJumpPC : UInt256 := UInt256.ofNat 0x111a
 
 def swap5H : Instr := .op (.Swap ⟨4, by decide⟩)
 def swap6H : Instr := .op (.Swap ⟨5, by decide⟩)

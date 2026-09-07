@@ -29,7 +29,7 @@ theorem loadEntry_eq_roundEntry (s : State) (pc : UInt256)
 theorem tailEntry_eq_roundEntry (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) :
     QuadTailTemplate.tailEntry s left right ret rest =
-      StackRoundTrace.roundEntry s (UInt256.ofNat 0x11a2)
+      StackRoundTrace.roundEntry s (UInt256.ofNat 0x10e1)
         right.a right.b right.c right.d right.e
         (QuadRoundTemplate.factor :: (StackFrame.savedLeft left ++ ret :: rest)) := rfl
 

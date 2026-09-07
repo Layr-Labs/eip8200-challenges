@@ -17,10 +17,10 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites
 
 abbrev Artifact := QuadSites.Artifact
 
-abbrev NormalIndex := Fin 10
+abbrev NormalIndex := Fin 12
 
 def normalFin (k : NormalIndex) : Fin 20 :=
-  ⟨(k.val + 2) + (k.val + 2) / 3, by omega⟩
+  ⟨k.val + k.val / 3, by omega⟩
 
 private theorem normal_slice (k : NormalIndex) :
     (Artifact.instructions.drop (rightWrapperIndex (normalFin k).val)).take

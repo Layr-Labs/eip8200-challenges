@@ -9,7 +9,7 @@ set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 
-/-! Exact masked consume tail at instruction 3005, including its final JUMP. -/
+/-! Exact masked consume tail at instruction 2805, including its final JUMP. -/
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskTailSite
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
@@ -41,7 +41,6 @@ open private
   submissionInstructionsChunk13
   submissionInstructionsChunk14
   submissionInstructionsChunk15
-  submissionInstructionsChunk16
   submissionInstructionsChunk0_length
   submissionInstructionsChunk1_length
   submissionInstructionsChunk2_length
@@ -58,7 +57,6 @@ open private
   submissionInstructionsChunk13_length
   submissionInstructionsChunk14_length
   submissionInstructionsChunk15_length
-  submissionInstructionsChunk16_length
   from Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 
 private def artifactPrefix : List Instr :=
@@ -75,23 +73,21 @@ private def artifactPrefix : List Instr :=
     submissionInstructionsChunk10 ++
     submissionInstructionsChunk11 ++
     submissionInstructionsChunk12 ++
-    submissionInstructionsChunk13 ++
-    submissionInstructionsChunk14
+    submissionInstructionsChunk13
 
 private def tailBefore : List Instr :=
-  artifactPrefix ++ submissionInstructionsChunk15.take 5
+  artifactPrefix ++ submissionInstructionsChunk14.take 5
 
 private def tailAfter : List Instr :=
-  submissionInstructionsChunk15.drop 53 ++
-    submissionInstructionsChunk16
+  submissionInstructionsChunk14.drop 53 ++ submissionInstructionsChunk15
 
-private theorem tailBefore_length : tailBefore.length = 3005 := by
+private theorem tailBefore_length : tailBefore.length = 2805 := by
   simp [tailBefore, artifactPrefix]
 
 private theorem artifactChunk_tail :
-    submissionInstructionsChunk15 =
-      submissionInstructionsChunk15.take 5 ++
-        CachedMaskOrderedTail.template ++ submissionInstructionsChunk15.drop 53 := by rfl
+    submissionInstructionsChunk14 =
+      submissionInstructionsChunk14.take 5 ++
+        CachedMaskOrderedTail.template ++ submissionInstructionsChunk14.drop 53 := by rfl
 
 private theorem artifact_tail_split :
     Artifact.submissionArtifact.instructions =
@@ -99,8 +95,8 @@ private theorem artifact_tail_split :
   change Artifact.submissionInstructions = _
   have hprefix : Artifact.submissionInstructions =
       artifactPrefix ++
-    submissionInstructionsChunk15 ++
-    submissionInstructionsChunk16 := by
+    submissionInstructionsChunk14 ++
+    submissionInstructionsChunk15 := by
     simp only [Artifact.submissionInstructions, artifactPrefix, List.append_assoc]
   rw [hprefix]
   conv_lhs => rw [artifactChunk_tail]
@@ -116,7 +112,7 @@ private theorem tailInstructions_length : CachedMaskOrderedTail.template.length 
 
 private theorem tail_instruction_at (i : Nat)
     (hi : i < CachedMaskOrderedTail.template.length) :
-    Artifact.submissionArtifact.instructions[3005 + i]? =
+    Artifact.submissionArtifact.instructions[2805 + i]? =
       CachedMaskOrderedTail.template[i]? := by
   have h := ArtifactSegment.getElem?_segment Artifact.submissionArtifact
     tailBefore CachedMaskOrderedTail.template
@@ -126,32 +122,32 @@ private theorem tail_instruction_at (i : Nat)
 
 private theorem tail_instruction_pc (i : Nat)
     (hi : i ≤ CachedMaskOrderedTail.template.length) :
-    Artifact.submissionArtifact.instructionPC (3005 + i) =
-      0x11a2 + ArtifactByteLength.byteLength (CachedMaskOrderedTail.template.take i) := by
+    Artifact.submissionArtifact.instructionPC (2805 + i) =
+      0x10e1 + ArtifactByteLength.byteLength (CachedMaskOrderedTail.template.take i) := by
   have hzero := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     tailBefore CachedMaskOrderedTail.template
     tailAfter
     artifact_consume_split 0 (by omega)
-  have hzero' : Artifact.submissionArtifact.instructionPC 3005 =
+  have hzero' : Artifact.submissionArtifact.instructionPC 2805 =
       (assembleBytes tailBefore).length := by
     simpa [tailBefore_length] using hzero
-  have hbefore : (assembleBytes tailBefore).length = 0x11a2 :=
+  have hbefore : (assembleBytes tailBefore).length = 0x10e1 :=
     hzero'.symm.trans QuadLayout.tail_pc
   have h := ArtifactSegment.instructionPC_segment_of_bounds Artifact.submissionArtifact
     tailBefore CachedMaskOrderedTail.template
-    tailAfter 3005 0x11a2
+    tailAfter 2805 0x10e1
     artifact_consume_split tailBefore_length hbefore i hi
   simpa only [ArtifactByteLength.byteLength_eq_assemble] using h
 
 private theorem tail_instruction_pc_global (index : Nat)
-    (hlo : 3005 ≤ index) (hhi : index ≤ 3053) :
+    (hlo : 2805 ≤ index) (hhi : index ≤ 2853) :
     Artifact.submissionArtifact.instructionPC index =
-      0x11a2 + ArtifactByteLength.byteLength
-        (CachedMaskOrderedTail.template.take (index - 3005)) := by
-  have hi : index - 3005 ≤ CachedMaskOrderedTail.template.length := by
+      0x10e1 + ArtifactByteLength.byteLength
+        (CachedMaskOrderedTail.template.take (index - 2805)) := by
+  have hi : index - 2805 ≤ CachedMaskOrderedTail.template.length := by
     rw [tailInstructions_length]
     omega
-  have h := tail_instruction_pc (index - 3005) hi
+  have h := tail_instruction_pc (index - 2805) hi
   simpa only [Nat.add_sub_of_le hlo] using h
 
 private theorem tail_instruction_wellFormed (i : Nat)
@@ -163,7 +159,7 @@ private theorem tail_instruction_wellFormed (i : Nat)
 
 def tailLocated (i : Nat) (hi : i < CachedMaskOrderedTail.template.length) :
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka where
-  index := 3005 + i
+  index := 2805 + i
   instruction := ((CachedMaskOrderedTail.template)[i]'hi)
   atIndex := by
     simpa [List.getElem?_eq_getElem hi] using tail_instruction_at i hi
@@ -228,7 +224,7 @@ private theorem runLocatedBlock_tail_raw (s : State)
 
 theorem runLocatedBlock_tail (s : State)
     (left right : Compression.EvmWorking) (ret : UInt256) (rest : List UInt256)
-    (hactive : 25 ≤ s.activeWords.toNat) (hstack : rest.length < 1006)
+    (hactive : 39 ≤ s.activeWords.toNat) (hstack : rest.length < 1006)
     (hrun : s.halt = .Running) (hfork : s.fork = .Osaka)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock tailPath
@@ -239,7 +235,7 @@ theorem runLocatedBlock_tail (s : State)
 
 def actualTailGasSteps (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256)
-    (hactive : 25 ≤ s.activeWords.toNat) (hstack : rest.length < 1006)
+    (hactive : 39 ≤ s.activeWords.toNat) (hstack : rest.length < 1006)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

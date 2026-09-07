@@ -169,8 +169,8 @@ def left2Return : Bridge A .Osaka where
     decide
 
 def rightEntry : Bridge A .Osaka where
-  push := exactSite 3002 (.push 2 (UInt256.ofNat 542)) (by rfl) (by decide)
-  jump := exactSite 3003 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  push := exactSite 2802 (.push 2 (UInt256.ofNat 542)) (by rfl) (by decide)
+  jump := exactSite 2803 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 451 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
@@ -186,9 +186,9 @@ def rightEntry : Bridge A .Osaka where
     decide
 
 def rightReturn : Bridge A .Osaka where
-  push := exactSite 852 (.push 2 (UInt256.ofNat 4513)) (by rfl) (by decide)
+  push := exactSite 852 (.push 2 (UInt256.ofNat 4320)) (by rfl) (by decide)
   jump := exactSite 853 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 3004 (.op .JUMPDEST) (by rfl)
+  destination := exactSite 2804 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
     simp only [exactSite]
@@ -202,9 +202,9 @@ def rightReturn : Bridge A .Osaka where
     repeat' rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
 
-def left4Return : Bridge A .Osaka where
+def left4Return : PopBridge A .Osaka where
   push := exactSite 2140 (.push 2 (UInt256.ofNat 2942)) (by rfl) (by decide)
-  jump := exactSite 2141 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  pop := exactSite 2141 (.op .POP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 2142 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
@@ -212,9 +212,13 @@ def left4Return : Bridge A .Osaka where
     apply congrArg (Instr.push ⟨2, by decide⟩)
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  jump_instr := rfl
+  pop_instr := rfl
   destination_instr := rfl
-  jump_at := by
+  pop_at := by
+    simp only [exactSite]
+    repeat' rw [ArtifactByteLength.instructionPC_eq_byteLength]
+    decide
+  destination_at := by
     simp only [exactSite]
     repeat' rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
