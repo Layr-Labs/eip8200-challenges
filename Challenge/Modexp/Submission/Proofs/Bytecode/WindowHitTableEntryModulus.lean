@@ -60,7 +60,7 @@ theorem run_zero_generic (template : State) (rest : List UInt256)
     (hword : MachineState.readWord template.executionEnv.calldata 160 = 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock modulusCheckPath
       (framed template 3024 rest) =
-    some (framed template 3563
+    some (framed template 3481
       (MachineState.readWord template.executionEnv.calldata 160 :: rest)) := by
   have hnat : (MachineState.readWord template.executionEnv.calldata 160).toNat = 0 := by
     rw [hword]

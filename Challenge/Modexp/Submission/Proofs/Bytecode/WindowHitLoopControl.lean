@@ -23,9 +23,9 @@ private def framed (template : State) (pc : Nat) (stack : List UInt256) : State 
   { template with pc := UInt256.ofNat pc, stack := stack }
 
 @[simp] private theorem controlPCs (index : Nat)
-    (hlo : 1991 ≤ index) (hhi : index ≤ 1998) :
+    (hlo : 1965 ≤ index) (hhi : index ≤ 1972) :
     Artifact.submissionArtifact.instructionPC index =
-      [3197, 3198, 3199, 3201, 3202, 3205, 3206, 3207][index - 1991]! := by
+      [3171, 3172, 3173, 3175, 3176, 3179, 3180, 3181][index - 1965]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -34,8 +34,8 @@ private theorem run_guard_continue_generic (template : State) (pointer : Nat)
     (hrest : rest.length ≤ 1000) (hpointer : pointer < 160)
     (hrun : template.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock loopGuardPath
-      (framed template 3197 (UInt256.ofNat pointer :: accumulator :: modulus :: rest)) =
-    some (framed template 3206 (UInt256.ofNat pointer :: accumulator :: modulus :: rest)) := by
+      (framed template 3171 (UInt256.ofNat pointer :: accumulator :: modulus :: rest)) =
+    some (framed template 3180 (UInt256.ofNat pointer :: accumulator :: modulus :: rest)) := by
   have hmod : pointer % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = pointer :=
     Nat.mod_eq_of_lt (by omega)
   have hne : pointer ≠ 160 := Nat.ne_of_lt hpointer
@@ -60,8 +60,8 @@ private theorem run_load_generic (template : State) (pointer : Nat)
     (hrest : rest.length ≤ 1000) (hpointer : pointer < 160)
     (hrun : template.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock wordLoadPath
-      (framed template 3206 (UInt256.ofNat pointer :: accumulator :: modulus :: rest)) =
-    some (framed template 3208
+      (framed template 3180 (UInt256.ofNat pointer :: accumulator :: modulus :: rest)) =
+    some (framed template 3182
       (MachineState.readWord template.executionEnv.calldata pointer ::
         UInt256.ofNat pointer :: accumulator :: modulus :: rest)) := by
   have hmod : pointer % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = pointer :=
@@ -82,8 +82,8 @@ private theorem run_guard_exit_generic (template : State)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hcode : template.executionEnv.code = submissionBytecode) :
     Challenge.EvmProof.Stepper.runLocatedBlock loopGuardPath
-      (framed template 3197 (UInt256.ofNat 160 :: accumulator :: modulus :: rest)) =
-    some (framed template 3555 (UInt256.ofNat 160 :: accumulator :: modulus :: rest)) := by
+      (framed template 3171 (UInt256.ofNat 160 :: accumulator :: modulus :: rest)) =
+    some (framed template 3473 (UInt256.ofNat 160 :: accumulator :: modulus :: rest)) := by
   have hcap3 : rest.length + 3 < 1024 := by omega
   have hcap4 : rest.length + 4 < 1024 := by omega
   have hcap5 : rest.length + 5 < 1024 := by omega
@@ -112,7 +112,7 @@ theorem run_wordLoad (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) (hpointer : pointer < 160) :
     Challenge.EvmProof.Stepper.runLocatedBlock wordLoadPath
       (loopContinueState input pointer accumulator) =
-        some (wordState input pointer 0 3208 accumulator) := by
+        some (wordState input pointer 0 3182 accumulator) := by
   have h := run_load_generic (loopState input pointer accumulator)
     pointer accumulator (modulusWord input) (routeStack input)
     (by simp [routeStack]) hpointer rfl

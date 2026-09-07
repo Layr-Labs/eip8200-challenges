@@ -12,14 +12,11 @@ set_option linter.unusedSimpArgs false in
 /-- One nibble's table lookup and multiply.
 
 The window loads the table word *last*, so there is no intermediate state
-worth naming: the whole ten-instruction block reduces in one step.  Two facts
+worth naming: the whole nine-instruction block reduces in one step. Two facts
 are worth stating rather than rediscovering.
 
-`advancePC 11` is unchanged from the load-first form, which advanced `5` and
-then `6`.  `advancePC` counts BYTES, not instructions, and the new block is ten
-instructions in eleven bytes exactly as the old one was ten instructions in
-eleven bytes.  The instruction stride moved (4 + 6 became 10); the byte stride
-did not, and this statement is written in the byte stride.
+`advancePC` counts bytes, not instructions. The compact block advances ten
+bytes across nine instructions.
 
 `h10` is new.  The block's peak stack is one slot deeper than the load-first
 form's, because the modulus and the accumulator are duplicated *before* the
@@ -34,7 +31,7 @@ theorem run_lookup (template : State) (pc : UInt256)
     runInstructions lookupProgram
       (nibbleState template pc base modulus nibble byte word pointer
         accumulator rest) =
-      some (nibbleState template (advancePC 11 pc) base modulus nibble
+      some (nibbleState template (advancePC 10 pc) base modulus nibble
         byte word pointer
         (UInt256.mulMod accumulator (WindowMath.tableWord base modulus nibble)
           modulus) rest) := by

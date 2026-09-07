@@ -12,7 +12,7 @@ open WindowControlDefs WindowHitStates WindowHitPaths
 
 /-- RETURN retains its own pc; the output-memory bridge is pc-independent. -/
 def normalReturnedState (input : ByteArray) (word : UInt256) : State :=
-  { returnedState input word with pc := UInt256.ofNat 3562 }
+  { returnedState input word with pc := UInt256.ofNat 3480 }
 
 private def framed (template : State) (pc : Nat) (stack : List UInt256) : State :=
   { template with pc := UInt256.ofNat pc, stack := stack }
@@ -31,10 +31,10 @@ private def outputState (template : State) (pc active : Nat)
 @[simp] private theorem zero_toNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
 
 @[simp] private theorem returnPCs (index : Nat)
-    (hlo : 2252 ≤ index) (hhi : index ≤ 2265) :
+    (hlo : 2226 ≤ index) (hhi : index ≤ 2239) :
     Artifact.submissionArtifact.instructionPC index =
-      [3555, 3556, 3557, 3558, 3559, 3561, 3562,
-       3563, 3564, 3565, 3566, 3567, 3569, 3570][index - 2252]! := by
+      [3473, 3474, 3475, 3476, 3477, 3479, 3480,
+       3481, 3482, 3483, 3484, 3485, 3487, 3488][index - 2226]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -43,8 +43,8 @@ private theorem run_normal_generic (template : State) (pointer word : UInt256)
     (hrun : template.halt = .Running)
     (hactive : template.activeWords = UInt256.ofNat 16) :
     Challenge.EvmProof.Stepper.runLocatedBlock normalReturnPath
-      (framed template 3555 (pointer :: word :: rest)) =
-    some (outputState template 3562 16 word rest) := by
+      (framed template 3473 (pointer :: word :: rest)) =
+    some (outputState template 3480 16 word rest) := by
   have hcap (n : Nat) (hn : n ≤ 4) : rest.length + n < 1024 := by omega
   have hcap0 : rest.length < 1024 := by omega
   simp (disch := omega) [normalReturnPath, Main.opAt, Main.pushAt, Main.wfOp,
@@ -64,8 +64,8 @@ private theorem run_zero_generic (template : State) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hactive : template.activeWords = UInt256.ofNat 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock zeroReturnPath
-      (framed template 3563 rest) =
-    some (outputState template 3570 1 0 rest) := by
+      (framed template 3481 rest) =
+    some (outputState template 3488 1 0 rest) := by
   have hcap (n : Nat) (hn : n ≤ 4) : rest.length + n < 1024 := by omega
   have hcap0 : rest.length < 1024 := by omega
   simp (disch := omega) [zeroReturnPath, Main.opAt, Main.pushAt, Main.wfOp,

@@ -601,49 +601,49 @@ def mpL1At (p : Nat) (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
 
 def blkUL1_0 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2611 .JUMPDEST,
-   opAt 2612 (.Dup ⟨3, by decide⟩),
-   opAt 2613 (.Dup ⟨1, by decide⟩),
-   opAt 2614 .MLOAD,
-   opAt 2615 (.Dup ⟨1, by decide⟩),
-   opAt 2616 (.Dup ⟨1, by decide⟩),
-   opAt 2617 .MUL,
-   opAt 2618 (.Swap ⟨1, by decide⟩),
-   pushAt 2619 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   opAt 2620 (.Swap ⟨1, by decide⟩),
-   opAt 2621 .MULMOD,
-   opAt 2622 (.Dup ⟨1, by decide⟩),
-   opAt 2623 (.Dup ⟨1, by decide⟩),
-   opAt 2624 .LT,
-   opAt 2625 (.Dup ⟨2, by decide⟩),
+  [opAt 2585 .JUMPDEST,
+   opAt 2586 (.Dup ⟨3, by decide⟩),
+   opAt 2587 (.Dup ⟨1, by decide⟩),
+   opAt 2588 .MLOAD,
+   opAt 2589 (.Dup ⟨1, by decide⟩),
+   opAt 2590 (.Dup ⟨1, by decide⟩),
+   opAt 2591 .MUL,
+   opAt 2592 (.Swap ⟨1, by decide⟩),
+   pushAt 2593 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   opAt 2594 (.Swap ⟨1, by decide⟩),
+   opAt 2595 .MULMOD,
+   opAt 2596 (.Dup ⟨1, by decide⟩),
+   opAt 2597 (.Dup ⟨1, by decide⟩),
+   opAt 2598 .LT,
+   opAt 2599 (.Dup ⟨2, by decide⟩),
+   opAt 2600 .ADD,
+   opAt 2601 (.Swap ⟨0, by decide⟩),
+   opAt 2602 .SUB,
+   opAt 2603 (.Dup ⟨3, by decide⟩),
+   opAt 2604 .MLOAD,
+   opAt 2605 (.Swap ⟨1, by decide⟩),
+   opAt 2606 (.Dup ⟨2, by decide⟩),
+   opAt 2607 .ADD,
+   opAt 2608 (.Swap ⟨1, by decide⟩),
+   opAt 2609 (.Dup ⟨2, by decide⟩),
+   opAt 2610 .LT,
+   opAt 2611 .ADD,
+   opAt 2612 (.Swap ⟨0, by decide⟩),
+   opAt 2613 (.Dup ⟨4, by decide⟩),
+   opAt 2614 .ADD,
+   opAt 2615 (.Swap ⟨3, by decide⟩),
+   opAt 2616 (.Dup ⟨4, by decide⟩),
+   opAt 2617 .LT,
+   opAt 2618 .ADD,
+   opAt 2619 (.Swap ⟨2, by decide⟩),
+   opAt 2620 (.Dup ⟨2, by decide⟩),
+   opAt 2621 .MSTORE,
+   pushAt 2622 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 2623 .ADD,
+   opAt 2624 (.Swap ⟨0, by decide⟩),
+   pushAt 2625 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    opAt 2626 .ADD,
-   opAt 2627 (.Swap ⟨0, by decide⟩),
-   opAt 2628 .SUB,
-   opAt 2629 (.Dup ⟨3, by decide⟩),
-   opAt 2630 .MLOAD,
-   opAt 2631 (.Swap ⟨1, by decide⟩),
-   opAt 2632 (.Dup ⟨2, by decide⟩),
-   opAt 2633 .ADD,
-   opAt 2634 (.Swap ⟨1, by decide⟩),
-   opAt 2635 (.Dup ⟨2, by decide⟩),
-   opAt 2636 .LT,
-   opAt 2637 .ADD,
-   opAt 2638 (.Swap ⟨0, by decide⟩),
-   opAt 2639 (.Dup ⟨4, by decide⟩),
-   opAt 2640 .ADD,
-   opAt 2641 (.Swap ⟨3, by decide⟩),
-   opAt 2642 (.Dup ⟨4, by decide⟩),
-   opAt 2643 .LT,
-   opAt 2644 .ADD,
-   opAt 2645 (.Swap ⟨2, by decide⟩),
-   opAt 2646 (.Dup ⟨2, by decide⟩),
-   opAt 2647 .MSTORE,
-   pushAt 2648 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2649 .ADD,
-   opAt 2650 (.Swap ⟨0, by decide⟩),
-   pushAt 2651 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2652 .ADD,
-   opAt 2653 (.Swap ⟨0, by decide⟩)]
+   opAt 2627 (.Swap ⟨0, by decide⟩)]
 
 set_option linter.unusedVariables false in
 set_option linter.unusedSimpArgs false in
@@ -655,8 +655,8 @@ theorem run_mpL1Copy0 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
     (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkUL1_0
-      (mpL1At 4076 s mem bi pa pb n i j pdst ret rest) =
-      some (mpL1At 4215 s mem bi pa pb n i (j + 1) pdst ret rest) := by
+      (mpL1At 3994 s mem bi pa pb n i j pdst ret rest) =
+      some (mpL1At 4133 s mem bi pa pb n i (j + 1) pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -705,49 +705,49 @@ theorem run_mpL1Copy0 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
 
 def blkUL1_1 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2654 .JUMPDEST,
-   opAt 2655 (.Dup ⟨3, by decide⟩),
-   opAt 2656 (.Dup ⟨1, by decide⟩),
-   opAt 2657 .MLOAD,
-   opAt 2658 (.Dup ⟨1, by decide⟩),
-   opAt 2659 (.Dup ⟨1, by decide⟩),
-   opAt 2660 .MUL,
-   opAt 2661 (.Swap ⟨1, by decide⟩),
-   pushAt 2662 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   opAt 2663 (.Swap ⟨1, by decide⟩),
-   opAt 2664 .MULMOD,
-   opAt 2665 (.Dup ⟨1, by decide⟩),
-   opAt 2666 (.Dup ⟨1, by decide⟩),
-   opAt 2667 .LT,
-   opAt 2668 (.Dup ⟨2, by decide⟩),
+  [opAt 2628 .JUMPDEST,
+   opAt 2629 (.Dup ⟨3, by decide⟩),
+   opAt 2630 (.Dup ⟨1, by decide⟩),
+   opAt 2631 .MLOAD,
+   opAt 2632 (.Dup ⟨1, by decide⟩),
+   opAt 2633 (.Dup ⟨1, by decide⟩),
+   opAt 2634 .MUL,
+   opAt 2635 (.Swap ⟨1, by decide⟩),
+   pushAt 2636 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   opAt 2637 (.Swap ⟨1, by decide⟩),
+   opAt 2638 .MULMOD,
+   opAt 2639 (.Dup ⟨1, by decide⟩),
+   opAt 2640 (.Dup ⟨1, by decide⟩),
+   opAt 2641 .LT,
+   opAt 2642 (.Dup ⟨2, by decide⟩),
+   opAt 2643 .ADD,
+   opAt 2644 (.Swap ⟨0, by decide⟩),
+   opAt 2645 .SUB,
+   opAt 2646 (.Dup ⟨3, by decide⟩),
+   opAt 2647 .MLOAD,
+   opAt 2648 (.Swap ⟨1, by decide⟩),
+   opAt 2649 (.Dup ⟨2, by decide⟩),
+   opAt 2650 .ADD,
+   opAt 2651 (.Swap ⟨1, by decide⟩),
+   opAt 2652 (.Dup ⟨2, by decide⟩),
+   opAt 2653 .LT,
+   opAt 2654 .ADD,
+   opAt 2655 (.Swap ⟨0, by decide⟩),
+   opAt 2656 (.Dup ⟨4, by decide⟩),
+   opAt 2657 .ADD,
+   opAt 2658 (.Swap ⟨3, by decide⟩),
+   opAt 2659 (.Dup ⟨4, by decide⟩),
+   opAt 2660 .LT,
+   opAt 2661 .ADD,
+   opAt 2662 (.Swap ⟨2, by decide⟩),
+   opAt 2663 (.Dup ⟨2, by decide⟩),
+   opAt 2664 .MSTORE,
+   pushAt 2665 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 2666 .ADD,
+   opAt 2667 (.Swap ⟨0, by decide⟩),
+   pushAt 2668 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    opAt 2669 .ADD,
-   opAt 2670 (.Swap ⟨0, by decide⟩),
-   opAt 2671 .SUB,
-   opAt 2672 (.Dup ⟨3, by decide⟩),
-   opAt 2673 .MLOAD,
-   opAt 2674 (.Swap ⟨1, by decide⟩),
-   opAt 2675 (.Dup ⟨2, by decide⟩),
-   opAt 2676 .ADD,
-   opAt 2677 (.Swap ⟨1, by decide⟩),
-   opAt 2678 (.Dup ⟨2, by decide⟩),
-   opAt 2679 .LT,
-   opAt 2680 .ADD,
-   opAt 2681 (.Swap ⟨0, by decide⟩),
-   opAt 2682 (.Dup ⟨4, by decide⟩),
-   opAt 2683 .ADD,
-   opAt 2684 (.Swap ⟨3, by decide⟩),
-   opAt 2685 (.Dup ⟨4, by decide⟩),
-   opAt 2686 .LT,
-   opAt 2687 .ADD,
-   opAt 2688 (.Swap ⟨2, by decide⟩),
-   opAt 2689 (.Dup ⟨2, by decide⟩),
-   opAt 2690 .MSTORE,
-   pushAt 2691 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2692 .ADD,
-   opAt 2693 (.Swap ⟨0, by decide⟩),
-   pushAt 2694 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2695 .ADD,
-   opAt 2696 (.Swap ⟨0, by decide⟩)]
+   opAt 2670 (.Swap ⟨0, by decide⟩)]
 
 set_option linter.unusedVariables false in
 set_option linter.unusedSimpArgs false in
@@ -759,8 +759,8 @@ theorem run_mpL1Copy1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
     (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkUL1_1
-      (mpL1At 4215 s mem bi pa pb n i j pdst ret rest) =
-      some (mpL1At 4354 s mem bi pa pb n i (j + 1) pdst ret rest) := by
+      (mpL1At 4133 s mem bi pa pb n i j pdst ret rest) =
+      some (mpL1At 4272 s mem bi pa pb n i (j + 1) pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -809,49 +809,49 @@ theorem run_mpL1Copy1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
 
 def blkUL1_2 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2697 .JUMPDEST,
-   opAt 2698 (.Dup ⟨3, by decide⟩),
-   opAt 2699 (.Dup ⟨1, by decide⟩),
-   opAt 2700 .MLOAD,
-   opAt 2701 (.Dup ⟨1, by decide⟩),
-   opAt 2702 (.Dup ⟨1, by decide⟩),
-   opAt 2703 .MUL,
-   opAt 2704 (.Swap ⟨1, by decide⟩),
-   pushAt 2705 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   opAt 2706 (.Swap ⟨1, by decide⟩),
-   opAt 2707 .MULMOD,
-   opAt 2708 (.Dup ⟨1, by decide⟩),
-   opAt 2709 (.Dup ⟨1, by decide⟩),
-   opAt 2710 .LT,
-   opAt 2711 (.Dup ⟨2, by decide⟩),
+  [opAt 2671 .JUMPDEST,
+   opAt 2672 (.Dup ⟨3, by decide⟩),
+   opAt 2673 (.Dup ⟨1, by decide⟩),
+   opAt 2674 .MLOAD,
+   opAt 2675 (.Dup ⟨1, by decide⟩),
+   opAt 2676 (.Dup ⟨1, by decide⟩),
+   opAt 2677 .MUL,
+   opAt 2678 (.Swap ⟨1, by decide⟩),
+   pushAt 2679 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   opAt 2680 (.Swap ⟨1, by decide⟩),
+   opAt 2681 .MULMOD,
+   opAt 2682 (.Dup ⟨1, by decide⟩),
+   opAt 2683 (.Dup ⟨1, by decide⟩),
+   opAt 2684 .LT,
+   opAt 2685 (.Dup ⟨2, by decide⟩),
+   opAt 2686 .ADD,
+   opAt 2687 (.Swap ⟨0, by decide⟩),
+   opAt 2688 .SUB,
+   opAt 2689 (.Dup ⟨3, by decide⟩),
+   opAt 2690 .MLOAD,
+   opAt 2691 (.Swap ⟨1, by decide⟩),
+   opAt 2692 (.Dup ⟨2, by decide⟩),
+   opAt 2693 .ADD,
+   opAt 2694 (.Swap ⟨1, by decide⟩),
+   opAt 2695 (.Dup ⟨2, by decide⟩),
+   opAt 2696 .LT,
+   opAt 2697 .ADD,
+   opAt 2698 (.Swap ⟨0, by decide⟩),
+   opAt 2699 (.Dup ⟨4, by decide⟩),
+   opAt 2700 .ADD,
+   opAt 2701 (.Swap ⟨3, by decide⟩),
+   opAt 2702 (.Dup ⟨4, by decide⟩),
+   opAt 2703 .LT,
+   opAt 2704 .ADD,
+   opAt 2705 (.Swap ⟨2, by decide⟩),
+   opAt 2706 (.Dup ⟨2, by decide⟩),
+   opAt 2707 .MSTORE,
+   pushAt 2708 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 2709 .ADD,
+   opAt 2710 (.Swap ⟨0, by decide⟩),
+   pushAt 2711 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    opAt 2712 .ADD,
-   opAt 2713 (.Swap ⟨0, by decide⟩),
-   opAt 2714 .SUB,
-   opAt 2715 (.Dup ⟨3, by decide⟩),
-   opAt 2716 .MLOAD,
-   opAt 2717 (.Swap ⟨1, by decide⟩),
-   opAt 2718 (.Dup ⟨2, by decide⟩),
-   opAt 2719 .ADD,
-   opAt 2720 (.Swap ⟨1, by decide⟩),
-   opAt 2721 (.Dup ⟨2, by decide⟩),
-   opAt 2722 .LT,
-   opAt 2723 .ADD,
-   opAt 2724 (.Swap ⟨0, by decide⟩),
-   opAt 2725 (.Dup ⟨4, by decide⟩),
-   opAt 2726 .ADD,
-   opAt 2727 (.Swap ⟨3, by decide⟩),
-   opAt 2728 (.Dup ⟨4, by decide⟩),
-   opAt 2729 .LT,
-   opAt 2730 .ADD,
-   opAt 2731 (.Swap ⟨2, by decide⟩),
-   opAt 2732 (.Dup ⟨2, by decide⟩),
-   opAt 2733 .MSTORE,
-   pushAt 2734 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2735 .ADD,
-   opAt 2736 (.Swap ⟨0, by decide⟩),
-   pushAt 2737 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2738 .ADD,
-   opAt 2739 (.Swap ⟨0, by decide⟩)]
+   opAt 2713 (.Swap ⟨0, by decide⟩)]
 
 set_option linter.unusedVariables false in
 set_option linter.unusedSimpArgs false in
@@ -863,8 +863,8 @@ theorem run_mpL1Copy2 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
     (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkUL1_2
-      (mpL1At 4354 s mem bi pa pb n i j pdst ret rest) =
-      some (mpL1At 4493 s mem bi pa pb n i (j + 1) pdst ret rest) := by
+      (mpL1At 4272 s mem bi pa pb n i j pdst ret rest) =
+      some (mpL1At 4411 s mem bi pa pb n i (j + 1) pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -913,49 +913,49 @@ theorem run_mpL1Copy2 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
 
 def blkUL1_3 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2740 .JUMPDEST,
-   opAt 2741 (.Dup ⟨3, by decide⟩),
-   opAt 2742 (.Dup ⟨1, by decide⟩),
-   opAt 2743 .MLOAD,
-   opAt 2744 (.Dup ⟨1, by decide⟩),
-   opAt 2745 (.Dup ⟨1, by decide⟩),
-   opAt 2746 .MUL,
-   opAt 2747 (.Swap ⟨1, by decide⟩),
-   pushAt 2748 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   opAt 2749 (.Swap ⟨1, by decide⟩),
-   opAt 2750 .MULMOD,
-   opAt 2751 (.Dup ⟨1, by decide⟩),
-   opAt 2752 (.Dup ⟨1, by decide⟩),
-   opAt 2753 .LT,
-   opAt 2754 (.Dup ⟨2, by decide⟩),
+  [opAt 2714 .JUMPDEST,
+   opAt 2715 (.Dup ⟨3, by decide⟩),
+   opAt 2716 (.Dup ⟨1, by decide⟩),
+   opAt 2717 .MLOAD,
+   opAt 2718 (.Dup ⟨1, by decide⟩),
+   opAt 2719 (.Dup ⟨1, by decide⟩),
+   opAt 2720 .MUL,
+   opAt 2721 (.Swap ⟨1, by decide⟩),
+   pushAt 2722 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   opAt 2723 (.Swap ⟨1, by decide⟩),
+   opAt 2724 .MULMOD,
+   opAt 2725 (.Dup ⟨1, by decide⟩),
+   opAt 2726 (.Dup ⟨1, by decide⟩),
+   opAt 2727 .LT,
+   opAt 2728 (.Dup ⟨2, by decide⟩),
+   opAt 2729 .ADD,
+   opAt 2730 (.Swap ⟨0, by decide⟩),
+   opAt 2731 .SUB,
+   opAt 2732 (.Dup ⟨3, by decide⟩),
+   opAt 2733 .MLOAD,
+   opAt 2734 (.Swap ⟨1, by decide⟩),
+   opAt 2735 (.Dup ⟨2, by decide⟩),
+   opAt 2736 .ADD,
+   opAt 2737 (.Swap ⟨1, by decide⟩),
+   opAt 2738 (.Dup ⟨2, by decide⟩),
+   opAt 2739 .LT,
+   opAt 2740 .ADD,
+   opAt 2741 (.Swap ⟨0, by decide⟩),
+   opAt 2742 (.Dup ⟨4, by decide⟩),
+   opAt 2743 .ADD,
+   opAt 2744 (.Swap ⟨3, by decide⟩),
+   opAt 2745 (.Dup ⟨4, by decide⟩),
+   opAt 2746 .LT,
+   opAt 2747 .ADD,
+   opAt 2748 (.Swap ⟨2, by decide⟩),
+   opAt 2749 (.Dup ⟨2, by decide⟩),
+   opAt 2750 .MSTORE,
+   pushAt 2751 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 2752 .ADD,
+   opAt 2753 (.Swap ⟨0, by decide⟩),
+   pushAt 2754 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    opAt 2755 .ADD,
-   opAt 2756 (.Swap ⟨0, by decide⟩),
-   opAt 2757 .SUB,
-   opAt 2758 (.Dup ⟨3, by decide⟩),
-   opAt 2759 .MLOAD,
-   opAt 2760 (.Swap ⟨1, by decide⟩),
-   opAt 2761 (.Dup ⟨2, by decide⟩),
-   opAt 2762 .ADD,
-   opAt 2763 (.Swap ⟨1, by decide⟩),
-   opAt 2764 (.Dup ⟨2, by decide⟩),
-   opAt 2765 .LT,
-   opAt 2766 .ADD,
-   opAt 2767 (.Swap ⟨0, by decide⟩),
-   opAt 2768 (.Dup ⟨4, by decide⟩),
-   opAt 2769 .ADD,
-   opAt 2770 (.Swap ⟨3, by decide⟩),
-   opAt 2771 (.Dup ⟨4, by decide⟩),
-   opAt 2772 .LT,
-   opAt 2773 .ADD,
-   opAt 2774 (.Swap ⟨2, by decide⟩),
-   opAt 2775 (.Dup ⟨2, by decide⟩),
-   opAt 2776 .MSTORE,
-   pushAt 2777 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2778 .ADD,
-   opAt 2779 (.Swap ⟨0, by decide⟩),
-   pushAt 2780 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2781 .ADD,
-   opAt 2782 (.Swap ⟨0, by decide⟩)]
+   opAt 2756 (.Swap ⟨0, by decide⟩)]
 
 set_option linter.unusedVariables false in
 set_option linter.unusedSimpArgs false in
@@ -967,8 +967,8 @@ theorem run_mpL1Copy3 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
     (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkUL1_3
-      (mpL1At 4493 s mem bi pa pb n i j pdst ret rest) =
-      some (mpL1At 4632 s mem bi pa pb n i (j + 1) pdst ret rest) := by
+      (mpL1At 4411 s mem bi pa pb n i j pdst ret rest) =
+      some (mpL1At 4550 s mem bi pa pb n i (j + 1) pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -1020,32 +1020,32 @@ theorem run_mpL1Copy3 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j 
 def blkStubL1 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1421 .JUMPDEST,
-   pushAt 1422 2 4057,
+   pushAt 1422 2 3975,
    opAt 1423 .JUMP]
 
 /-- The unrolled block's loop test. -/
 def blkTestL1 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2783 (.Dup ⟨5, by decide⟩),
-   opAt 2784 (.Dup ⟨1, by decide⟩),
-   opAt 2785 .GT,
-   pushAt 2786 2 4076,
-   opAt 2787 .JUMPI]
+  [opAt 2757 (.Dup ⟨5, by decide⟩),
+   opAt 2758 (.Dup ⟨1, by decide⟩),
+   opAt 2759 .GT,
+   pushAt 2760 2 3994,
+   opAt 2761 .JUMPI]
 
 /-- The unrolled block's exit: back to the padded head, then the row middle. -/
 def blkExitL1 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2788 2 2140,
-   opAt 2789 .JUMP,
+  [pushAt 2762 2 2140,
+   opAt 2763 .JUMP,
    opAt 1468 .JUMPDEST]
 
 theorem jumpDest3924 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4057 = true :=
-  Artifact.isValidJumpDest_index 2598 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3975 = true :=
+  Artifact.isValidJumpDest_index 2572 (by rfl)
 
 theorem jumpDest3943 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4076 = true :=
-  Artifact.isValidJumpDest_index 2611 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3994 = true :=
+  Artifact.isValidJumpDest_index 2585 (by rfl)
 
 theorem jumpDest2140 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2140 = true :=
@@ -1059,11 +1059,11 @@ theorem run_stubL1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : N
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkStubL1
       (mpL1State s mem bi pa pb n i j pdst ret rest) =
-      some (mpL1At 4057 s mem bi pa pb n i j pdst ret rest) := by
+      some (mpL1At 3975 s mem bi pa pb n i j pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
-  have h3924 : (4057 : UInt256).toNat = 4057 := by decide
-  have h3924' : (4057 : UInt256) = UInt256.ofNat 4057 := by decide
+  have h3924 : (3975 : UInt256).toNat = 3975 := by decide
+  have h3924' : (3975 : UInt256) = UInt256.ofNat 3975 := by decide
   simp (config := { maxSteps := 400000 })
     [blkStubL1, mpL1At, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -1078,107 +1078,107 @@ theorem run_stubL1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : N
 
 def blkUL1_3T :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2740 .JUMPDEST,
-   opAt 2741 (.Dup ⟨3, by decide⟩),
-   opAt 2742 (.Dup ⟨1, by decide⟩),
-   opAt 2743 .MLOAD,
-   opAt 2744 (.Dup ⟨1, by decide⟩),
-   opAt 2745 (.Dup ⟨1, by decide⟩),
-   opAt 2746 .MUL,
-   opAt 2747 (.Swap ⟨1, by decide⟩),
-   pushAt 2748 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   opAt 2749 (.Swap ⟨1, by decide⟩),
-   opAt 2750 .MULMOD,
-   opAt 2751 (.Dup ⟨1, by decide⟩),
-   opAt 2752 (.Dup ⟨1, by decide⟩),
-   opAt 2753 .LT,
-   opAt 2754 (.Dup ⟨2, by decide⟩),
+  [opAt 2714 .JUMPDEST,
+   opAt 2715 (.Dup ⟨3, by decide⟩),
+   opAt 2716 (.Dup ⟨1, by decide⟩),
+   opAt 2717 .MLOAD,
+   opAt 2718 (.Dup ⟨1, by decide⟩),
+   opAt 2719 (.Dup ⟨1, by decide⟩),
+   opAt 2720 .MUL,
+   opAt 2721 (.Swap ⟨1, by decide⟩),
+   pushAt 2722 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   opAt 2723 (.Swap ⟨1, by decide⟩),
+   opAt 2724 .MULMOD,
+   opAt 2725 (.Dup ⟨1, by decide⟩),
+   opAt 2726 (.Dup ⟨1, by decide⟩),
+   opAt 2727 .LT,
+   opAt 2728 (.Dup ⟨2, by decide⟩),
+   opAt 2729 .ADD,
+   opAt 2730 (.Swap ⟨0, by decide⟩),
+   opAt 2731 .SUB,
+   opAt 2732 (.Dup ⟨3, by decide⟩),
+   opAt 2733 .MLOAD,
+   opAt 2734 (.Swap ⟨1, by decide⟩),
+   opAt 2735 (.Dup ⟨2, by decide⟩),
+   opAt 2736 .ADD,
+   opAt 2737 (.Swap ⟨1, by decide⟩),
+   opAt 2738 (.Dup ⟨2, by decide⟩),
+   opAt 2739 .LT,
+   opAt 2740 .ADD,
+   opAt 2741 (.Swap ⟨0, by decide⟩),
+   opAt 2742 (.Dup ⟨4, by decide⟩),
+   opAt 2743 .ADD,
+   opAt 2744 (.Swap ⟨3, by decide⟩),
+   opAt 2745 (.Dup ⟨4, by decide⟩),
+   opAt 2746 .LT,
+   opAt 2747 .ADD,
+   opAt 2748 (.Swap ⟨2, by decide⟩),
+   opAt 2749 (.Dup ⟨2, by decide⟩),
+   opAt 2750 .MSTORE,
+   pushAt 2751 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 2752 .ADD,
+   opAt 2753 (.Swap ⟨0, by decide⟩),
+   pushAt 2754 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    opAt 2755 .ADD,
    opAt 2756 (.Swap ⟨0, by decide⟩),
-   opAt 2757 .SUB,
-   opAt 2758 (.Dup ⟨3, by decide⟩),
-   opAt 2759 .MLOAD,
-   opAt 2760 (.Swap ⟨1, by decide⟩),
-   opAt 2761 (.Dup ⟨2, by decide⟩),
-   opAt 2762 .ADD,
-   opAt 2763 (.Swap ⟨1, by decide⟩),
-   opAt 2764 (.Dup ⟨2, by decide⟩),
-   opAt 2765 .LT,
-   opAt 2766 .ADD,
-   opAt 2767 (.Swap ⟨0, by decide⟩),
-   opAt 2768 (.Dup ⟨4, by decide⟩),
-   opAt 2769 .ADD,
-   opAt 2770 (.Swap ⟨3, by decide⟩),
-   opAt 2771 (.Dup ⟨4, by decide⟩),
-   opAt 2772 .LT,
-   opAt 2773 .ADD,
-   opAt 2774 (.Swap ⟨2, by decide⟩),
-   opAt 2775 (.Dup ⟨2, by decide⟩),
-   opAt 2776 .MSTORE,
-   pushAt 2777 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2778 .ADD,
-   opAt 2779 (.Swap ⟨0, by decide⟩),
-   pushAt 2780 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2781 .ADD,
-   opAt 2782 (.Swap ⟨0, by decide⟩),
-   opAt 2783 (.Dup ⟨5, by decide⟩),
-   opAt 2784 (.Dup ⟨1, by decide⟩),
-   opAt 2785 .GT,
-   pushAt 2786 2 4076,
-   opAt 2787 .JUMPI]
+   opAt 2757 (.Dup ⟨5, by decide⟩),
+   opAt 2758 (.Dup ⟨1, by decide⟩),
+   opAt 2759 .GT,
+   pushAt 2760 2 3994,
+   opAt 2761 .JUMPI]
 
 def blkUL1_3X :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2740 .JUMPDEST,
-   opAt 2741 (.Dup ⟨3, by decide⟩),
-   opAt 2742 (.Dup ⟨1, by decide⟩),
-   opAt 2743 .MLOAD,
-   opAt 2744 (.Dup ⟨1, by decide⟩),
-   opAt 2745 (.Dup ⟨1, by decide⟩),
-   opAt 2746 .MUL,
-   opAt 2747 (.Swap ⟨1, by decide⟩),
-   pushAt 2748 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   opAt 2749 (.Swap ⟨1, by decide⟩),
-   opAt 2750 .MULMOD,
-   opAt 2751 (.Dup ⟨1, by decide⟩),
-   opAt 2752 (.Dup ⟨1, by decide⟩),
-   opAt 2753 .LT,
-   opAt 2754 (.Dup ⟨2, by decide⟩),
+  [opAt 2714 .JUMPDEST,
+   opAt 2715 (.Dup ⟨3, by decide⟩),
+   opAt 2716 (.Dup ⟨1, by decide⟩),
+   opAt 2717 .MLOAD,
+   opAt 2718 (.Dup ⟨1, by decide⟩),
+   opAt 2719 (.Dup ⟨1, by decide⟩),
+   opAt 2720 .MUL,
+   opAt 2721 (.Swap ⟨1, by decide⟩),
+   pushAt 2722 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   opAt 2723 (.Swap ⟨1, by decide⟩),
+   opAt 2724 .MULMOD,
+   opAt 2725 (.Dup ⟨1, by decide⟩),
+   opAt 2726 (.Dup ⟨1, by decide⟩),
+   opAt 2727 .LT,
+   opAt 2728 (.Dup ⟨2, by decide⟩),
+   opAt 2729 .ADD,
+   opAt 2730 (.Swap ⟨0, by decide⟩),
+   opAt 2731 .SUB,
+   opAt 2732 (.Dup ⟨3, by decide⟩),
+   opAt 2733 .MLOAD,
+   opAt 2734 (.Swap ⟨1, by decide⟩),
+   opAt 2735 (.Dup ⟨2, by decide⟩),
+   opAt 2736 .ADD,
+   opAt 2737 (.Swap ⟨1, by decide⟩),
+   opAt 2738 (.Dup ⟨2, by decide⟩),
+   opAt 2739 .LT,
+   opAt 2740 .ADD,
+   opAt 2741 (.Swap ⟨0, by decide⟩),
+   opAt 2742 (.Dup ⟨4, by decide⟩),
+   opAt 2743 .ADD,
+   opAt 2744 (.Swap ⟨3, by decide⟩),
+   opAt 2745 (.Dup ⟨4, by decide⟩),
+   opAt 2746 .LT,
+   opAt 2747 .ADD,
+   opAt 2748 (.Swap ⟨2, by decide⟩),
+   opAt 2749 (.Dup ⟨2, by decide⟩),
+   opAt 2750 .MSTORE,
+   pushAt 2751 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 2752 .ADD,
+   opAt 2753 (.Swap ⟨0, by decide⟩),
+   pushAt 2754 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    opAt 2755 .ADD,
    opAt 2756 (.Swap ⟨0, by decide⟩),
-   opAt 2757 .SUB,
-   opAt 2758 (.Dup ⟨3, by decide⟩),
-   opAt 2759 .MLOAD,
-   opAt 2760 (.Swap ⟨1, by decide⟩),
-   opAt 2761 (.Dup ⟨2, by decide⟩),
-   opAt 2762 .ADD,
-   opAt 2763 (.Swap ⟨1, by decide⟩),
-   opAt 2764 (.Dup ⟨2, by decide⟩),
-   opAt 2765 .LT,
-   opAt 2766 .ADD,
-   opAt 2767 (.Swap ⟨0, by decide⟩),
-   opAt 2768 (.Dup ⟨4, by decide⟩),
-   opAt 2769 .ADD,
-   opAt 2770 (.Swap ⟨3, by decide⟩),
-   opAt 2771 (.Dup ⟨4, by decide⟩),
-   opAt 2772 .LT,
-   opAt 2773 .ADD,
-   opAt 2774 (.Swap ⟨2, by decide⟩),
-   opAt 2775 (.Dup ⟨2, by decide⟩),
-   opAt 2776 .MSTORE,
-   pushAt 2777 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2778 .ADD,
-   opAt 2779 (.Swap ⟨0, by decide⟩),
-   pushAt 2780 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2781 .ADD,
-   opAt 2782 (.Swap ⟨0, by decide⟩),
-   opAt 2783 (.Dup ⟨5, by decide⟩),
-   opAt 2784 (.Dup ⟨1, by decide⟩),
-   opAt 2785 .GT,
-   pushAt 2786 2 4076,
-   opAt 2787 .JUMPI,
-   pushAt 2788 2 2140,
-   opAt 2789 .JUMP,
+   opAt 2757 (.Dup ⟨5, by decide⟩),
+   opAt 2758 (.Dup ⟨1, by decide⟩),
+   opAt 2759 .GT,
+   pushAt 2760 2 3994,
+   opAt 2761 .JUMPI,
+   pushAt 2762 2 2140,
+   opAt 2763 .JUMP,
    opAt 1468 .JUMPDEST]
 
 set_option linter.unusedVariables false in
@@ -1191,8 +1191,8 @@ theorem run_mpL1Copy3T (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j
     (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkUL1_3T
-      (mpL1At 4493 s mem bi pa pb n i j pdst ret rest) =
-      some (mpL1At 4076 s mem bi pa pb n i (j + 1) pdst ret rest) := by
+      (mpL1At 4411 s mem bi pa pb n i j pdst ret rest) =
+      some (mpL1At 3994 s mem bi pa pb n i (j + 1) pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -1202,10 +1202,10 @@ theorem run_mpL1Copy3T (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
-  have h1995 : (4076 : UInt256).toNat = 4076 := by decide
-  have h1995' : (4076 : UInt256) = UInt256.ofNat 4076 := by decide
+  have h1995 : (3994 : UInt256).toNat = 3994 := by decide
+  have h1995' : (3994 : UInt256) = UInt256.ofNat 3994 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (4076 : UInt256).toNat = true := by
+      (3994 : UInt256).toNat = true := by
     rw [h1995]; exact jumpDest3943
   have hpaj : ptrAt (pa + 32 * n - 32) j %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
@@ -1255,7 +1255,7 @@ theorem run_mpL1Copy3X (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j
     (hn32 : n ≤ 32) (hj : j + 1 = n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkUL1_3X
-      (mpL1At 4493 s mem bi pa pb n i j pdst ret rest) =
+      (mpL1At 4411 s mem bi pa pb n i j pdst ret rest) =
       some (mpMidState s (l1Step mem bi pa n (j + 1)).memory
         (UInt256.ofNat (ptrAt (pa + 32 * n - 32) (j + 1)))
         (UInt256.ofNat (ptrAt (8224 + 32 * n) (j + 1)))
@@ -1320,31 +1320,31 @@ into the second loop from `t[0] + mu * m[0] = C * radix`. -/
 /-- The unrolled block's entry dispatch. -/
 def blkDispL1 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2598 .JUMPDEST,
-   opAt 2599 (.Dup ⟨0, by decide⟩),
-   opAt 2600 (.Dup ⟨6, by decide⟩),
-   opAt 2601 .SUB,
-   pushAt 2602 1 5,
-   opAt 2603 .SHR,
-   pushAt 2604 1 3,
-   opAt 2605 .AND,
-   pushAt 2606 2 139,
-   opAt 2607 .MUL,
-   pushAt 2608 2 4076,
-   opAt 2609 .ADD,
-   opAt 2610 .JUMP]
+  [opAt 2572 .JUMPDEST,
+   opAt 2573 (.Dup ⟨0, by decide⟩),
+   opAt 2574 (.Dup ⟨6, by decide⟩),
+   opAt 2575 .SUB,
+   pushAt 2576 1 5,
+   opAt 2577 .SHR,
+   pushAt 2578 1 3,
+   opAt 2579 .AND,
+   pushAt 2580 2 139,
+   opAt 2581 .MUL,
+   pushAt 2582 2 3994,
+   opAt 2583 .ADD,
+   opAt 2584 .JUMP]
 
 theorem jumpDest4082 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4215 = true :=
-  Artifact.isValidJumpDest_index 2654 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4133 = true :=
+  Artifact.isValidJumpDest_index 2628 (by rfl)
 
 theorem jumpDest4221 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4354 = true :=
-  Artifact.isValidJumpDest_index 2697 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4272 = true :=
+  Artifact.isValidJumpDest_index 2671 (by rfl)
 
 theorem jumpDest4360 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4493 = true :=
-  Artifact.isValidJumpDest_index 2740 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4411 = true :=
+  Artifact.isValidJumpDest_index 2714 (by rfl)
 
 set_option maxRecDepth 100000 in
 set_option linter.unusedVariables false in
@@ -1359,20 +1359,20 @@ theorem run_dispatchL1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j
           (UInt256.ofNat (pa - 32) - UInt256.ofNat (ptrAt (pa + 32 * n - 32) j)) (5 : UInt256))
         = UInt256.ofNat t) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkDispL1
-      (mpL1At 4057 s mem bi pa pb n i j pdst ret rest) =
-      some (mpL1At (4076 + 139 * t) s mem bi pa pb n i j pdst ret rest) := by
+      (mpL1At 3975 s mem bi pa pb n i j pdst ret rest) =
+      some (mpL1At (3994 + 139 * t) s mem bi pa pb n i j pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
-  have p0 : (4076 : UInt256) + (139 : UInt256) * UInt256.ofNat 0 = UInt256.ofNat 4076 := by decide
-  have p1 : (4076 : UInt256) + (139 : UInt256) * UInt256.ofNat 1 = UInt256.ofNat 4215 := by decide
-  have p2 : (4076 : UInt256) + (139 : UInt256) * UInt256.ofNat 2 = UInt256.ofNat 4354 := by decide
-  have p3 : (4076 : UInt256) + (139 : UInt256) * UInt256.ofNat 3 = UInt256.ofNat 4493 := by decide
-  have q0 : (UInt256.ofNat 4076).toNat = 4076 := by decide
-  have q1 : (UInt256.ofNat 4215).toNat = 4215 := by decide
-  have q2 : (UInt256.ofNat 4354).toNat = 4354 := by decide
-  have q3 : (UInt256.ofNat 4493).toNat = 4493 := by decide
+  have p0 : (3994 : UInt256) + (139 : UInt256) * UInt256.ofNat 0 = UInt256.ofNat 3994 := by decide
+  have p1 : (3994 : UInt256) + (139 : UInt256) * UInt256.ofNat 1 = UInt256.ofNat 4133 := by decide
+  have p2 : (3994 : UInt256) + (139 : UInt256) * UInt256.ofNat 2 = UInt256.ofNat 4272 := by decide
+  have p3 : (3994 : UInt256) + (139 : UInt256) * UInt256.ofNat 3 = UInt256.ofNat 4411 := by decide
+  have q0 : (UInt256.ofNat 3994).toNat = 3994 := by decide
+  have q1 : (UInt256.ofNat 4133).toNat = 4133 := by decide
+  have q2 : (UInt256.ofNat 4272).toNat = 4272 := by decide
+  have q3 : (UInt256.ofNat 4411).toNat = 4411 := by decide
   interval_cases t <;>
     simp (config := { maxSteps := 400000 })
       [blkDispL1, mpL1At, opAt, pushAt, wfOp,
@@ -1446,7 +1446,7 @@ def gasSteps_stubL1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : 
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (mpL1State s mem bi pa pb n i j pdst ret rest)
-      (mpL1At 4057 s mem bi pa pb n i j pdst ret rest) :=
+      (mpL1At 3975 s mem bi pa pb n i j pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blkStubL1 hcode hfork
     (run_stubL1 s mem bi pa pb n i j pdst ret rest hcap hrun hcode) hrun hnp
@@ -1464,8 +1464,8 @@ def gasSteps_dispL1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j t 
           (UInt256.ofNat (pa - 32) - UInt256.ofNat (ptrAt (pa + 32 * n - 32) j)) (5 : UInt256))
         = UInt256.ofNat t) :
     Challenge.EvmProof.GasSteps
-      (mpL1At 4057 s mem bi pa pb n i j pdst ret rest)
-      (mpL1At (4076 + 139 * t) s mem bi pa pb n i j pdst ret rest) :=
+      (mpL1At 3975 s mem bi pa pb n i j pdst ret rest)
+      (mpL1At (3994 + 139 * t) s mem bi pa pb n i j pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blkDispL1 hcode hfork
     (run_dispatchL1 s mem bi pa pb n i j t pdst ret rest hcap hrun hcode ht hval) hrun hnp
@@ -1480,8 +1480,8 @@ def gasSteps_L1c0 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Na
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (mpL1At 4076 s mem bi pa pb n i j pdst ret rest)
-      (mpL1At 4215 s mem bi pa pb n i (j + 1) pdst ret rest) :=
+      (mpL1At 3994 s mem bi pa pb n i j pdst ret rest)
+      (mpL1At 4133 s mem bi pa pb n i (j + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blkUL1_0 hcode hfork
     (run_mpL1Copy0 s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact hn32 hj
@@ -1497,8 +1497,8 @@ def gasSteps_L1c1 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Na
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (mpL1At 4215 s mem bi pa pb n i j pdst ret rest)
-      (mpL1At 4354 s mem bi pa pb n i (j + 1) pdst ret rest) :=
+      (mpL1At 4133 s mem bi pa pb n i j pdst ret rest)
+      (mpL1At 4272 s mem bi pa pb n i (j + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blkUL1_1 hcode hfork
     (run_mpL1Copy1 s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact hn32 hj
@@ -1514,8 +1514,8 @@ def gasSteps_L1c2 (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Na
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (mpL1At 4354 s mem bi pa pb n i j pdst ret rest)
-      (mpL1At 4493 s mem bi pa pb n i (j + 1) pdst ret rest) :=
+      (mpL1At 4272 s mem bi pa pb n i j pdst ret rest)
+      (mpL1At 4411 s mem bi pa pb n i (j + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blkUL1_2 hcode hfork
     (run_mpL1Copy2 s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact hn32 hj
@@ -1531,8 +1531,8 @@ def gasSteps_L1c3T (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : N
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (mpL1At 4493 s mem bi pa pb n i j pdst ret rest)
-      (mpL1At 4076 s mem bi pa pb n i (j + 1) pdst ret rest) :=
+      (mpL1At 4411 s mem bi pa pb n i j pdst ret rest)
+      (mpL1At 3994 s mem bi pa pb n i (j + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blkUL1_3T hcode hfork
     (run_mpL1Copy3T s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact hn32 hj
@@ -1548,7 +1548,7 @@ def gasSteps_L1c3X (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : N
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 1 = n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (mpL1At 4493 s mem bi pa pb n i j pdst ret rest)
+      (mpL1At 4411 s mem bi pa pb n i j pdst ret rest)
       (mpMidState s (l1Step mem bi pa n (j + 1)).memory
         (UInt256.ofNat (ptrAt (pa + 32 * n - 32) (j + 1)))
         (UInt256.ofNat (ptrAt (8224 + 32 * n) (j + 1)))
@@ -1570,8 +1570,8 @@ def gasSteps_L1pass (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : 
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 4 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (mpL1At 4076 s mem bi pa pb n i j pdst ret rest)
-      (mpL1At 4076 s mem bi pa pb n i (j + 4) pdst ret rest) :=
+      (mpL1At 3994 s mem bi pa pb n i j pdst ret rest)
+      (mpL1At 3994 s mem bi pa pb n i (j + 4) pdst ret rest) :=
   (gasSteps_L1c0 s mem bi pa pb n i j pdst ret rest hcap hrun hcode hfork hnp hact
       hn32 (by omega) hpa hpaFit).trans
   ((gasSteps_L1c1 s mem bi pa pb n i (j + 1) pdst ret rest hcap hrun hcode hfork hnp
@@ -1591,7 +1591,7 @@ def gasSteps_L1last (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : 
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 4 = n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (mpL1At 4076 s mem bi pa pb n i j pdst ret rest)
+      (mpL1At 3994 s mem bi pa pb n i j pdst ret rest)
       (mpMidState s (l1Step mem bi pa n (j + 3 + 1)).memory
         (UInt256.ofNat (ptrAt (pa + 32 * n - 32) (j + 3 + 1)))
         (UInt256.ofNat (ptrAt (8224 + 32 * n) (j + 3 + 1)))
@@ -1624,7 +1624,7 @@ def gasSteps_L1c3XN (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : 
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 1 = n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (mpL1At 4493 s mem bi pa pb n i j pdst ret rest)
+      (mpL1At 4411 s mem bi pa pb n i j pdst ret rest)
       (mpMidOf s mem bi pa pb n i pdst ret rest) := by
   have h := gasSteps_L1c3X s mem bi pa pb n i j pdst ret rest hcap hrun hcode hfork
     hnp hact hn32 hj hpa hpaFit
@@ -1641,7 +1641,7 @@ def gasSteps_L1lastN (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 4 = n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (mpL1At 4076 s mem bi pa pb n i j pdst ret rest)
+      (mpL1At 3994 s mem bi pa pb n i j pdst ret rest)
       (mpMidOf s mem bi pa pb n i pdst ret rest) := by
   have h := gasSteps_L1last s mem bi pa pb n i j pdst ret rest hcap hrun hcode hfork
     hnp hact hn32 hj hpa hpaFit
@@ -1660,7 +1660,7 @@ def gasSteps_L1tail (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i : Na
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     ∀ (k j : Nat), j + 4 * (k + 1) = n →
       Challenge.EvmProof.GasSteps
-        (mpL1At 4076 s mem bi pa pb n i j pdst ret rest)
+        (mpL1At 3994 s mem bi pa pb n i j pdst ret rest)
         (mpMidOf s mem bi pa pb n i pdst ret rest)
   | 0, j, h =>
       gasSteps_L1lastN s mem bi pa pb n i j pdst ret rest hcap hrun hcode hfork hnp
@@ -1682,7 +1682,7 @@ def gasSteps_L1run (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i : Nat
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472)
     (t : Nat) (ht : t < 4) (hmod : (n - (4 - t)) % 4 = 0) (hle : 4 - t ≤ n) :
     Challenge.EvmProof.GasSteps
-      (mpL1At (4076 + 139 * t) s mem bi pa pb n i 0 pdst ret rest)
+      (mpL1At (3994 + 139 * t) s mem bi pa pb n i 0 pdst ret rest)
       (mpMidOf s mem bi pa pb n i pdst ret rest) := by
   interval_cases t
   · by_cases hEq : 4 = n

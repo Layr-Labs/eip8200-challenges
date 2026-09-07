@@ -66,10 +66,6 @@ private theorem run_topSquare (template : State) (pc : UInt256)
       Challenge.EvmProof.Stepper.runInstr, hrest, h6, h7, h8, h9,
       List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange, advancePC]
 
-set_option linter.unusedSimpArgs false in
-/-- The four pure squarings reduce in one pass to the seven-slot square state
-holding `squareWordAfter modulus 4 accumulator`: sixteen instructions, sixteen
-bytes, peak depth nine plus `rest`. -/
 theorem run_fourSquares (template : State) (pc : UInt256)
     (base modulus : UInt256) (nibble : Nat)
     (byte word pointer accumulator : UInt256) (rest : List UInt256)
@@ -82,8 +78,7 @@ theorem run_fourSquares (template : State) (pc : UInt256)
         (WindowMath.squareWordAfter modulus 4 accumulator) rest) := by
   rw [fourSquareProgram, runInstructions_append, runInstructions_append,
     runInstructions_append,
-    run_beginSquare template pc base modulus nibble byte word pointer
-      accumulator rest hrest]
+    run_beginSquare template pc base modulus nibble byte word pointer accumulator rest hrest]
   simp only [Option.bind_some]
   rw [run_topSquare (hrest := hrest)]
   simp only [Option.bind_some]

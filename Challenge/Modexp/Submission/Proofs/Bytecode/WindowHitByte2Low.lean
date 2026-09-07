@@ -17,9 +17,9 @@ theorem run_prep (template : State) (base modulus : UInt256) (high : Nat)
     (word pointer accumulator : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (lowPrepPath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3420)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3359)
         base modulus high (byteValue 2 word) word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3425)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3364)
       base modulus (lowNibble 2 word) (byteValue 2 word) word pointer
       accumulator rest) := by
   have h5 : rest.length + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -43,17 +43,14 @@ theorem run_prep (template : State) (base modulus : UInt256) (high : Nat)
   exact hlow
 
 set_option linter.unusedSimpArgs false in
-/-- Fused low-nibble block: four squares then the table multiply, 25
-instructions in 35 bytes (`3425 → 3460`).  The machine loads the table word
-last, so the accumulator-first `nibbleWordStep` spelling needs `mulMod_comm`. -/
 theorem run_squareLookup (template : State) (base modulus : UInt256)
     (nibble : Nat) (byte word pointer accumulator : UInt256)
     (rest : List UInt256) (hnibble : nibble < 16)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (lowSquareLookupPath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3425)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3364)
         base modulus nibble byte word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3460)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3392)
       base modulus nibble byte word pointer
       (WindowMath.nibbleWordStep modulus base accumulator nibble) rest) := by
   have hshift := shift_nibble nibble hnibble
@@ -66,8 +63,7 @@ theorem run_squareLookup (template : State) (base modulus : UInt256)
   have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h7 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
-  have h9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by
-    omega
+  have h9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h10 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by
     omega
   simp (config := { maxSteps := 2000000 }) (disch := omega)
@@ -85,9 +81,6 @@ theorem run_squareLookup (template : State) (base modulus : UInt256)
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
-  -- The fused block loads the table word last, so `MULMOD` multiplies in the
-  -- opposite order from the accumulator-first `nibbleWordStep` spelling.
-  -- Equal, but not definitionally equal.
   exact mulMod_comm _ _ _
 
 set_option linter.unusedSimpArgs false in
@@ -95,9 +88,9 @@ theorem run_finish (template : State) (base modulus : UInt256)
     (nibble : Nat) (byte word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (finishPath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3460)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3392)
         base modulus nibble byte word pointer accumulator rest) =
-    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3462)
+    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3394)
       base modulus word pointer accumulator rest) := by
   have h5 : rest.length + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega

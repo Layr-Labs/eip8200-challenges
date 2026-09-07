@@ -1,5 +1,4 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitByteSlices
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowBytePrep
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleSquare
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleLookup
 
@@ -17,17 +16,14 @@ open WindowByteKernel
 open WindowNibbleKernel
 
 set_option linter.unusedSimpArgs false in
-/-- Fused high-nibble block: four squares then the table multiply, 25
-instructions in 35 bytes (`3215 → 3250`).  The machine loads the table word
-last, so the accumulator-first `nibbleWordStep` spelling needs `mulMod_comm`. -/
 theorem run_byte0_highSquareLookup (template : State) (base modulus : UInt256)
     (nibble : Nat) (byte word pointer accumulator : UInt256)
     (rest : List UInt256) (hnibble : nibble < 16)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (highSquareLookupPath 0)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3215)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3189)
         base modulus nibble byte word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3250)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3217)
       base modulus nibble byte word pointer
       (WindowMath.nibbleWordStep modulus base accumulator nibble) rest) := by
   have hshift := shift_nibble nibble hnibble
@@ -60,9 +56,6 @@ theorem run_byte0_highSquareLookup (template : State) (base modulus : UInt256)
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
-  -- The fused block loads the table word last, so `MULMOD` multiplies in the
-  -- opposite order from the accumulator-first `nibbleWordStep` spelling.
-  -- Equal, but not definitionally equal.
   exact mulMod_comm _ _ _
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitByteTrace1
