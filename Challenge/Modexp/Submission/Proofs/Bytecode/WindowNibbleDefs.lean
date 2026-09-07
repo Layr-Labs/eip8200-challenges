@@ -37,24 +37,8 @@ def lookupProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩), .push 1 5, .op .SHL, .op .MLOAD,
    .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP, .op .JUMPDEST]
 
-def beginSquareProgram : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
-
-def topSquareProgram : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
-
-def finishSquareProgram : List Instr :=
-  [.op (.Swap ⟨4, by decide⟩), .op .POP,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
-
-/-- Keep the accumulator at the top between squarings. The six padding
-JUMPDESTs retain the certified layout while saving nine gas per nibble. -/
 def fourSquareProgram : List Instr :=
-  beginSquareProgram ++ topSquareProgram ++ topSquareProgram ++
-    topSquareProgram ++ finishSquareProgram
+  squareProgram ++ squareProgram ++ squareProgram ++ squareProgram
 
 def squareLookupProgram : List Instr := fourSquareProgram ++ lookupProgram
 
