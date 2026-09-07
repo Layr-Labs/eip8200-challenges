@@ -108,7 +108,7 @@ private theorem denseBeforeJumpTemplate_advances :
   · exact denseHalfTemplate_advances 0 instruction h0
 
 private theorem packedSchedule_slice :
-    (Artifact.submissionArtifact.instructions.drop 3282).take
+    (Artifact.submissionArtifact.instructions.drop 3287).take
         DenseScheduleTemplate.denseBeforeJumpTemplate.length =
       DenseScheduleTemplate.denseBeforeJumpTemplate := by
   rfl
@@ -118,10 +118,10 @@ def packedScheduleSite :
       DenseScheduleTemplate.denseBeforeJumpTemplate :=
   StackSiteBuilder.ofSlice
     (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    DenseScheduleTemplate.denseBeforeJumpTemplate 3282
+    DenseScheduleTemplate.denseBeforeJumpTemplate 3287
     packedSchedule_slice
     (by
-      change 3282 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
+      change 3287 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
         Artifact.submissionInstructions.length
       rw [DenseScheduleTemplate.denseBeforeJumpTemplate_length,
         Artifact.referenceInstructions_count]
@@ -137,23 +137,23 @@ private theorem denseScheduleTemplate_byteLength :
   exact DenseScheduleTemplate.denseBeforeJumpTemplate_byteLength
 
 private theorem packedSchedule_start_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3282 = 0x123a :=
+    Artifact.submissionArtifact.instructionPC 3287 = 0x11eb :=
   QuadLayout.schedule_pc
 
 private theorem packedSchedule_end_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3333 = 0x12fa :=
+    Artifact.submissionArtifact.instructionPC 3338 = 0x12ab :=
   QuadLayout.scheduleJump_pc
 
 @[simp] theorem packedScheduleSite_startPC :
-    packedScheduleSite.startPC = UInt256.ofNat 0x123a := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3282) =
-    UInt256.ofNat 0x123a
+    packedScheduleSite.startPC = UInt256.ofNat 0x11eb := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3287) =
+    UInt256.ofNat 0x11eb
   rw [packedSchedule_start_instructionPC]
 
 @[simp] theorem packedScheduleSite_endPC :
-    packedScheduleSite.endPC = UInt256.ofNat 0x12fa := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3333) =
-    UInt256.ofNat 0x12fa
+    packedScheduleSite.endPC = UInt256.ofNat 0x12ab := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3338) =
+    UInt256.ofNat 0x12ab
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleSite_end_eq_pcAfter :
@@ -177,12 +177,12 @@ private theorem pc_toNat_instructionPC (index : Nat) :
 def packedScheduleFinalJump :
     LocatedSite Artifact.submissionArtifact .Osaka where
   located :=
-    { index := 3333
+    { index := 3338
       instruction := .op .JUMP
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3333)
-  pc_eq := pc_toNat_instructionPC 3333
+  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3338)
+  pc_eq := pc_toNat_instructionPC 3338
 
 def packedScheduleFinalJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -198,15 +198,15 @@ private theorem runLocatedBlock_singleton
   | some t => simp [Challenge.EvmProof.Stepper.runLocatedBlock, h]
 
 @[simp] theorem packedScheduleFinalJump_pc :
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x12fa := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3333) =
-    UInt256.ofNat 0x12fa
+    packedScheduleFinalJump.pc = UInt256.ofNat 0x12ab := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3338) =
+    UInt256.ofNat 0x12ab
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleFinalJump_site_end :
     packedScheduleFinalJump.pc = packedScheduleSite.endPC := by
   calc
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x12fa := packedScheduleFinalJump_pc
+    packedScheduleFinalJump.pc = UInt256.ofNat 0x12ab := packedScheduleFinalJump_pc
     _ = packedScheduleSite.endPC := packedScheduleSite_endPC.symm
 
 theorem packedScheduleFinalJump_pc_eq_expected
