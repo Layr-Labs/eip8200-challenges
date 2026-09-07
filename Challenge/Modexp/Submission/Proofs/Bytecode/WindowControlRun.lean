@@ -27,8 +27,8 @@ private theorem run_guard_generic (template : State) (b e m : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hrun : template.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock guardPath
-      (framed template 3000 (b :: e :: m :: rest)) =
-    some (framed template 3016
+      (framed template 3029 (b :: e :: m :: rest)) =
+    some (framed template 3045
       (UInt256.isZero (guardValue b e m) :: b :: e :: m :: rest)) := by
   have hcap (n : Nat) (hn : n ≤ 6) : rest.length + n < 1024 := by omega
   simp (disch := omega) [guardPath, Main.opAt, Main.pushAt, Main.wfOp,
@@ -46,13 +46,13 @@ private theorem run_branch_true_generic (template : State) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hcode : template.executionEnv.code = submissionBytecode) :
     Challenge.EvmProof.Stepper.runLocatedBlock branchPath
-      (framed template 3016 (UInt256.ofNat 1 :: rest)) =
-    some (framed template 3024 rest) := by
+      (framed template 3045 (UInt256.ofNat 1 :: rest)) =
+    some (framed template 3053 rest) := by
   have hcap (n : Nat) (hn : n ≤ 3) : rest.length + n < 1024 := by omega
   simp (disch := omega) [branchPath, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    framed, hrun, hcode, hcap, routePCs, jump3024, UInt256.isTrue, Nat.add_assoc,
+    framed, hrun, hcode, hcap, routePCs, jump3053, UInt256.isTrue, Nat.add_assoc,
     List.getElem?_cons_zero, List.getElem?_cons_succ, Option.getD_some,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -63,8 +63,8 @@ set_option linter.unusedSimpArgs false in
 private theorem run_branch_false_generic (template : State) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock branchPath
-      (framed template 3016 (UInt256.ofNat 0 :: rest)) =
-    some (framed template 3020 rest) := by
+      (framed template 3045 (UInt256.ofNat 0 :: rest)) =
+    some (framed template 3049 rest) := by
   have hcap (n : Nat) (hn : n ≤ 3) : rest.length + n < 1024 := by omega
   simp (disch := omega) [branchPath, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -81,7 +81,7 @@ private theorem run_miss_generic (template : State) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hcode : template.executionEnv.code = submissionBytecode) :
     Challenge.EvmProof.Stepper.runLocatedBlock missPath
-      (framed template 3020 rest) = some (framed template 517 rest) := by
+      (framed template 3049 rest) = some (framed template 517 rest) := by
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
   simp (disch := omega) [missPath, Main.opAt, Main.pushAt, Main.wfOp,
