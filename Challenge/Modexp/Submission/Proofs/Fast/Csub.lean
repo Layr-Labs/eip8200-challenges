@@ -540,6 +540,7 @@ theorem run_csLoopBody (s : State) (memory : ByteArray) (n j : Nat)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
+  simp [UInt256.lt, Challenge.EvmProof.Word.word_toNat_sub]
 
 set_option linter.unusedSimpArgs false in
 theorem run_csLoopExit (s : State) (memory : ByteArray) (n j : Nat)
@@ -599,6 +600,7 @@ theorem run_csLoopExit (s : State) (memory : ByteArray) (n j : Nat)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
+  simp [UInt256.lt, Challenge.EvmProof.Word.word_toNat_sub]
 
 /-! ### The branchless selection and the return -/
 
