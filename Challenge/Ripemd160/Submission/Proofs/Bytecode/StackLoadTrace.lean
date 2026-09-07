@@ -56,7 +56,7 @@ theorem loadTemplate_straight : ∀ instruction ∈ loadTemplate, StraightLine i
 
 set_option linter.unusedSimpArgs false in
 theorem runInstrSeq_load (s : State) (pc : UInt256) (rest : List UInt256)
-    (hactive : 25 ≤ s.activeWords.toNat) (hstack : rest.length < 1019)
+    (hactive : 11 ≤ s.activeWords.toNat) (hstack : rest.length < 1019)
     (hrun : s.halt = .Running) :
     runInstrSeq loadTemplate (loadEntry s pc rest) =
       some (loadReturned s (pcAfter pc loadTemplate) rest) := by
@@ -87,7 +87,7 @@ theorem runInstrSeq_load (s : State) (pc : UInt256) (rest : List UInt256)
 theorem runLocatedBlock_load {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork loadTemplate)
     (s : State) (rest : List UInt256)
-    (hactive : 25 ≤ s.activeWords.toNat) (hstack : rest.length < 1019)
+    (hactive : 11 ≤ s.activeWords.toNat) (hstack : rest.length < 1019)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock site.path (loadEntry s site.startPC rest) =
       some (loadReturned s site.endPC rest) := by
@@ -114,7 +114,7 @@ theorem runLocatedBlock_load {artifact : ProgramArtifact} {fork : Fork}
 def gasSteps_load {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork loadTemplate)
     (s : State) (rest : List UInt256)
-    (hactive : 25 ≤ s.activeWords.toNat) (hstack : rest.length < 1019)
+    (hactive : 11 ≤ s.activeWords.toNat) (hstack : rest.length < 1019)
     (hcode : s.executionEnv.code = artifact.code) (hfork : s.fork = fork)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

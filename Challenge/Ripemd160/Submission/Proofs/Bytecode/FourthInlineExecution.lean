@@ -31,7 +31,15 @@ noncomputable def left4_core (s : State) (w : Compression.EvmWorking)
   · simpa [stateAt, roundEntry] using hrun
   · simpa [stateAt, roundEntry] using hnp
 
-noncomputable abbrev left4_group := left4_core
+noncomputable def left4_group (s : State) (w : Compression.EvmWorking)
+    (rho : List UInt256) (hfit : ∀ k, ((left 4) k).Fits s)
+    (hstack : rho.length < 1006) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = A.code) (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps (stateAt s left4First.startPC w (mask :: rho))
+      (stateAt s left4First.endPC (fourResult (left 4) s w) (mask :: rho)) := by
+  exact left4_core s w rho hfit hstack hrun hcode hfork hnp
 
 #print axioms left4_core
 #print axioms left4_group
