@@ -767,8 +767,8 @@ their proof modules. -/
 /-- PC table for the leading-bit base copy appended after the unrolled block. -/
 @[simp] theorem fastPC24 (i : Nat) (hi : 2574 ≤ i) (hii : i ≤ 2588) :
     Artifact.submissionArtifact.instructionPC i =
-      [3897,3898,3899,3900,3903,3904,3907,3908,3911,3914,3915,3918,3919,
-       3920,3923][i - 2574]! := by
+      [3896,3897,3898,3899,3902,3903,3906,3907,3910,3913,3914,3917,3918,
+       3919,3922][i - 2574]! := by
   interval_cases i <;> decide
 
 theorem jumpDest1196 :
@@ -967,12 +967,12 @@ theorem jumpDest3727 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3727 = true :=
   Artifact.isValidJumpDest_index 2431 (by rfl)
 
-theorem jumpDest3897 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3897 = true :=
+theorem jumpDest3896 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3896 = true :=
   Artifact.isValidJumpDest_index 2574 (by rfl)
 
-theorem jumpDest3919 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3919 = true :=
+theorem jumpDest3918 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3918 = true :=
   Artifact.isValidJumpDest_index 2586 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

@@ -146,21 +146,21 @@ open EvmSemantics.EVM
 @[simp] theorem pc2555 : Artifact.submissionArtifact.instructionPC 2555 = 3873 := by rfl
 @[simp] theorem pc2556 : Artifact.submissionArtifact.instructionPC 2556 = 3875 := by rfl
 @[simp] theorem pc2557 : Artifact.submissionArtifact.instructionPC 2557 = 3876 := by rfl
-@[simp] theorem pc2558 : Artifact.submissionArtifact.instructionPC 2558 = 3878 := by rfl
-@[simp] theorem pc2559 : Artifact.submissionArtifact.instructionPC 2559 = 3879 := by rfl
-@[simp] theorem pc2560 : Artifact.submissionArtifact.instructionPC 2560 = 3880 := by rfl
-@[simp] theorem pc2561 : Artifact.submissionArtifact.instructionPC 2561 = 3881 := by rfl
-@[simp] theorem pc2562 : Artifact.submissionArtifact.instructionPC 2562 = 3882 := by rfl
-@[simp] theorem pc2563 : Artifact.submissionArtifact.instructionPC 2563 = 3884 := by rfl
-@[simp] theorem pc2564 : Artifact.submissionArtifact.instructionPC 2564 = 3885 := by rfl
-@[simp] theorem pc2565 : Artifact.submissionArtifact.instructionPC 2565 = 3886 := by rfl
-@[simp] theorem pc2566 : Artifact.submissionArtifact.instructionPC 2566 = 3887 := by rfl
-@[simp] theorem pc2567 : Artifact.submissionArtifact.instructionPC 2567 = 3888 := by rfl
-@[simp] theorem pc2568 : Artifact.submissionArtifact.instructionPC 2568 = 3889 := by rfl
-@[simp] theorem pc2569 : Artifact.submissionArtifact.instructionPC 2569 = 3890 := by rfl
-@[simp] theorem pc2570 : Artifact.submissionArtifact.instructionPC 2570 = 3891 := by rfl
-@[simp] theorem pc2571 : Artifact.submissionArtifact.instructionPC 2571 = 3892 := by rfl
-@[simp] theorem pc2572 : Artifact.submissionArtifact.instructionPC 2572 = 3893 := by rfl
-@[simp] theorem pc2573 : Artifact.submissionArtifact.instructionPC 2573 = 3896 := by rfl
+@[simp] theorem pc2558 : Artifact.submissionArtifact.instructionPC 2558 = 3877 := by rfl
+@[simp] theorem pc2559 : Artifact.submissionArtifact.instructionPC 2559 = 3878 := by rfl
+@[simp] theorem pc2560 : Artifact.submissionArtifact.instructionPC 2560 = 3879 := by rfl
+@[simp] theorem pc2561 : Artifact.submissionArtifact.instructionPC 2561 = 3880 := by rfl
+@[simp] theorem pc2562 : Artifact.submissionArtifact.instructionPC 2562 = 3881 := by rfl
+@[simp] theorem pc2563 : Artifact.submissionArtifact.instructionPC 2563 = 3883 := by rfl
+@[simp] theorem pc2564 : Artifact.submissionArtifact.instructionPC 2564 = 3884 := by rfl
+@[simp] theorem pc2565 : Artifact.submissionArtifact.instructionPC 2565 = 3885 := by rfl
+@[simp] theorem pc2566 : Artifact.submissionArtifact.instructionPC 2566 = 3886 := by rfl
+@[simp] theorem pc2567 : Artifact.submissionArtifact.instructionPC 2567 = 3887 := by rfl
+@[simp] theorem pc2568 : Artifact.submissionArtifact.instructionPC 2568 = 3888 := by rfl
+@[simp] theorem pc2569 : Artifact.submissionArtifact.instructionPC 2569 = 3889 := by rfl
+@[simp] theorem pc2570 : Artifact.submissionArtifact.instructionPC 2570 = 3890 := by rfl
+@[simp] theorem pc2571 : Artifact.submissionArtifact.instructionPC 2571 = 3891 := by rfl
+@[simp] theorem pc2572 : Artifact.submissionArtifact.instructionPC 2572 = 3892 := by rfl
+@[simp] theorem pc2573 : Artifact.submissionArtifact.instructionPC 2573 = 3895 := by rfl
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.UnrollPCs

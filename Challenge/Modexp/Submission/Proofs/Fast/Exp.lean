@@ -1335,17 +1335,17 @@ def ebitHead (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) 
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
-/-- pc 3904, `LZBASE` past its zero test with the copy still to run. -/
+/-- pc 3903, `LZBASE` past its zero test with the copy still to run. -/
 def lzBaseCopy (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 3904
+  { s with pc := UInt256.ofNat 3903
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
-/-- pc 3919, `LZBASE`'s zero-byte arm. -/
+/-- pc 3918, `LZBASE`'s zero-byte arm. -/
 def lzBaseSkip (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 3919
+  { s with pc := UInt256.ofNat 3918
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
@@ -1498,7 +1498,7 @@ theorem run_ebLoad (s : State) (mem : ByteArray)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `LZBASE`'s test, pc 3897, with a zero leading byte: take the untouched arm. -/
+/-- `LZBASE`'s test, pc 3896, with a zero leading byte: take the untouched arm. -/
 theorem run_lzBase_zero (s : State) (mem : ByteArray)
     (n bsize esize msize i w mask : Nat) (hw : w = 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -1511,7 +1511,7 @@ theorem run_lzBase_zero (s : State) (mem : ByteArray)
   simp (config := { maxSteps := 400000 }) [blk2574, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    Lz.lzBase, lzBaseSkip, bitStack, hrun, hcode, hz, jumpDest3919,
+    Lz.lzBase, lzBaseSkip, bitStack, hrun, hcode, hz, jumpDest3918,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1539,7 +1539,7 @@ theorem run_lzBase_copy (s : State) (mem : ByteArray)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `blk2579` (pc 3904..3918): `ACC := BASE`, then resume at the mask shift. -/
+/-- `blk2579` (pc 3903..3917): `ACC := BASE`, then resume at the mask shift. -/
 theorem run_lzBaseCopy (s : State) (mem : ByteArray)
     (n bsize esize msize i w mask : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hact : 298 ≤ s.activeWords.toNat)
