@@ -1,5 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Fast.RrLeadingSuffix
 import Challenge.Modexp.Submission.Proofs.Fast.FullBaseCorrect
+import Challenge.Modexp.Submission.Proofs.Fast.FixedDirectCorrect
 
 set_option warningAsError true
 set_option maxHeartbeats 16000000
@@ -66,10 +67,12 @@ theorem handled_of_rrDone (input : ByteArray) (s : State) (mem : ByteArray)
       · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 3072 n 0
           (by omega) hone0
     obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
-      handled_of_bDone input s mem n 0 esize msize mm minv 0 sub spec
+      FixedDirectCorrect.handled_of_bDoneConcrete input s mem
+        n 0 esize msize mm minv 0 sub spec
         hcode hfork hrun hnp hdata hstack hact hn hn32 (by omega) he hmz hm32
-        hbsize hesize hmsz hmm hodd hradix hmpos (by simpa using Nat.ModEq.refl 0)
-        hframe hEb
+        hbsize hesize hmsz hmm hodd hradix hmpos
+        (by simpa using Nat.ModEq.refl 0) hframe hinv.modulus hbase0
+        ⟨0, Limbs.radix_pos, hone0⟩ hEb (by simpa using hacc0)
     exact ⟨final,
       ⟨(gasSteps_rrDone_skip s mem n esize msize hcode hfork hrun hnp).trans tr⟩,
       hdone, hres⟩

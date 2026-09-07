@@ -1,5 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P16
+import Challenge.Modexp.Submission.Proofs.Fast.Paths.P18
 import Challenge.Modexp.Submission.Proofs.Fast.Setup
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -73,8 +74,7 @@ theorem topBit_spec (w : Nat) (hw : w < 256) :
     topBit w = 2 ^ topExp w ∧ topExp w ≤ 7 ∧ w < 2 ^ (topExp w + 1) := by
   interval_cases w <;> exact ⟨by decide, by decide, by decide⟩
 
-/-- A nonzero byte has its `topExp` bit set: the smear really does find the
-leading one, so the loop's first iteration multiplies by `BASE`. -/
+/-- A nonzero byte has its `topExp` bit set. -/
 theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w := by
   interval_cases w
   · exact absurd rfl hne
@@ -108,12 +108,10 @@ def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
-/-- The state `LZ`'s byte-0 arm now hands to `LZBASE`, pc 3897.  The stack is
-the one the bit loop expects; the block below it copies `BASE` into `ACC` and
-resumes at the mask shift. -/
+/-- The state handed to the relocated leading-bit shortcut at pc3865. -/
 def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3897
+  { s with pc := UInt256.ofNat 3865
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -284,7 +282,7 @@ theorem run_lzFirst (s : State) (mem : ByteArray) (i w : Nat)
   simp (config := { maxSteps := 600000 }) [blk1796, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lzFirst, lzBase, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, jumpDest3897,
+    lzFirst, lzBase, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, jumpDest3865,
     e1, e2, e3, e4, e5, e6, e7,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
