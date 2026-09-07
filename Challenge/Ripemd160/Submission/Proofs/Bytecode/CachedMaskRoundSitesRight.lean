@@ -1,7 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSitesBase
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadHelperTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskCalls
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.newShiftedHoistHelper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShiftedHoistHelper
 
 set_option warningAsError true
 set_option maxRecDepth 50000

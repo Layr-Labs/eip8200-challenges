@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadFallthroughTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.newShiftedHoistHelper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShiftedHoistHelper
 
 set_option warningAsError true
 set_option maxRecDepth 50000

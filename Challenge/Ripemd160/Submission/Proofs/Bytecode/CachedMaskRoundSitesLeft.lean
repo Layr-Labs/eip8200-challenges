@@ -1,7 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSitesBase
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadHelperTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskCalls
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.newShiftedHoistHelper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShiftedHoistHelper
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -17,12 +17,12 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites
 
 abbrev Artifact := QuadSites.Artifact
 
-abbrev NormalIndex := Fin 9
+abbrev NormalIndex := Fin 6
 
-def groupFin (group : Fin 3) : Fin 5 :=
+def groupFin (group : Fin 2) : Fin 5 :=
   ⟨if group.val = 0 then 1 else group.val + 2, by split <;> omega⟩
 
-def normalGroup (k : NormalIndex) : Fin 3 := ⟨k.val / 3, by omega⟩
+def normalGroup (k : NormalIndex) : Fin 2 := ⟨k.val / 3, by omega⟩
 
 def normalFin (k : NormalIndex) : Fin 20 :=
   ⟨4 * (groupFin (normalGroup k)).val + k.val % 3, by
@@ -141,12 +141,12 @@ def normalCall (k : NormalIndex) :
   jump_instr := rfl
   jump_pc := normalPushes_end k
 
-private theorem helper_slice (group : Fin 3) :
+private theorem helper_slice (group : Fin 2) :
     (Artifact.instructions.drop (leftHelperStartIndex (groupFin group).val)).take
         (leftHelperTemplate (groupFin group)).length = leftHelperTemplate (groupFin group) := by
   fin_cases group <;> rfl
 
-def helperSite (group : Fin 3) :
+def helperSite (group : Fin 2) :
     GenericRoundSite Artifact .Osaka (leftHelperTemplate (groupFin group)) :=
   StackSiteBuilder.ofSlice _ (leftHelperStartIndex (groupFin group).val)
     (helper_slice group)
@@ -155,7 +155,7 @@ def helperSite (group : Fin 3) :
     (StackRoundData.templateWellFormed_mem (by fin_cases group <;> decide))
     (by fin_cases group <;> decide)
 
-def helperJump (group : Fin 3) : LocatedSite Artifact .Osaka where
+def helperJump (group : Fin 2) : LocatedSite Artifact .Osaka where
   located :=
     { index := leftHelperJumpIndex (groupFin group).val
       instruction := .op .JUMP
@@ -164,11 +164,11 @@ def helperJump (group : Fin 3) : LocatedSite Artifact .Osaka where
   pc := UInt256.ofNat (Artifact.instructionPC (leftHelperJumpIndex (groupFin group).val))
   pc_eq := QuadLayout.pc_toNat_instructionPC _
 
-private theorem helper_start (group : Fin 3) :
+private theorem helper_start (group : Fin 2) :
     (helperSite group).startPC = leftHelperPCOfGroup (groupFin group).val := by
   fin_cases group <;> rfl
 
-private theorem helper_end (group : Fin 3) :
+private theorem helper_end (group : Fin 2) :
     (helperJump group).pc = (helperSite group).endPC := by
   have hend := StackRoundTrace.endPC_eq_pcAfter_sites
     (helperSite group).sites (helperSite group).startPC (helperSite group).endPC
@@ -183,7 +183,7 @@ private theorem helper_end (group : Fin 3) :
       fin_cases group <;> rfl
     _ = (helperSite group).endPC := hend.symm
 
-private theorem helper_valid (group : Fin 3) :
+private theorem helper_valid (group : Fin 2) :
     Decode.isValidJumpDest Artifact.code
       (leftHelperPCOfGroup (groupFin group).val).toNat = true := by
   have hpc : (leftHelperPCOfGroup (groupFin group).val).toNat =
@@ -226,10 +226,10 @@ def normalRound (k : NormalIndex) :
     convert h using 1; fin_cases k <;> rfl
   return_valid := normalReturn_valid k
 
-def fallthroughK (group : Fin 3) : Fin 20 :=
+def fallthroughK (group : Fin 2) : Fin 20 :=
   ⟨4 * (groupFin group).val + 3, by have h := (groupFin group).isLt; omega⟩
 
-private theorem fallthrough_slice (group : Fin 3) :
+private theorem fallthrough_slice (group : Fin 2) :
     (Artifact.instructions.drop (leftWrapperIndex (fallthroughK group).val)).take
         (CachedMaskCalls.ShiftedFallthrough.pushes
           (leftReturnPC (fallthroughK group).val)
@@ -246,7 +246,7 @@ private theorem fallthrough_slice (group : Fin 3) :
         (leftRotation3 (fallthroughK group)) := by
   fin_cases group <;> rfl
 
-def fallthroughPushes (group : Fin 3) : GenericRoundSite Artifact .Osaka
+def fallthroughPushes (group : Fin 2) : GenericRoundSite Artifact .Osaka
     (CachedMaskCalls.ShiftedFallthrough.pushes (leftReturnPC (fallthroughK group).val)
       (leftAddress0 (fallthroughK group)) (leftAddress1 (fallthroughK group))
       (leftAddress2 (fallthroughK group)) (leftAddress3 (fallthroughK group))
@@ -260,7 +260,7 @@ def fallthroughPushes (group : Fin 3) : GenericRoundSite Artifact .Osaka
     (StackRoundData.templateWellFormed_mem (by fin_cases group <;> decide))
     (by simp [CachedMaskCalls.ShiftedFallthrough.pushes])
 
-def fallthroughReturn (group : Fin 3) : LocatedSite Artifact .Osaka where
+def fallthroughReturn (group : Fin 2) : LocatedSite Artifact .Osaka where
   located :=
     { index := QuadLayout.leftReturnIndex (fallthroughK group).val
       instruction := .op .JUMPDEST
@@ -269,11 +269,11 @@ def fallthroughReturn (group : Fin 3) : LocatedSite Artifact .Osaka where
   pc := leftReturnPC (fallthroughK group).val
   pc_eq := QuadLayout.pc_toNat_instructionPC _
 
-private theorem fallthrough_helper_start (group : Fin 3) :
+private theorem fallthrough_helper_start (group : Fin 2) :
     (helperSite group).startPC = (fallthroughPushes group).endPC := by
   fin_cases group <;> rfl
 
-private theorem fallthrough_return_valid (group : Fin 3) :
+private theorem fallthrough_return_valid (group : Fin 2) :
     Decode.isValidJumpDest Artifact.code
       (leftReturnPC (fallthroughK group).val).toNat = true := by
   rw [show (leftReturnPC (fallthroughK group).val).toNat =
@@ -284,7 +284,7 @@ private theorem fallthrough_return_valid (group : Fin 3) :
     (QuadLayout.leftReturnIndex (fallthroughK group).val)
     (fallthroughReturn group).located.atIndex
 
-def fallthroughRound (group : Fin 3) :
+def fallthroughRound (group : Fin 2) :
     CachedMaskCalls.Fallthrough.RoundSite Artifact .Osaka
       (leftAddress0 (fallthroughK group)) (leftAddress1 (fallthroughK group))
       (leftAddress2 (fallthroughK group)) (leftAddress3 (fallthroughK group))
@@ -311,11 +311,11 @@ theorem normal_end (k : NormalIndex) :
       leftPC ((normalFin k).val + 1) := by
   fin_cases k <;> rfl
 
-theorem fallthrough_start (group : Fin 3) :
+theorem fallthrough_start (group : Fin 2) :
     (fallthroughRound group).callPushes.startPC =
       leftPC (fallthroughK group).val := rfl
 
-theorem fallthrough_end (group : Fin 3) :
+theorem fallthrough_end (group : Fin 2) :
     (fallthroughRound group).returnSite.pc.succ =
       leftPC ((fallthroughK group).val + 1) := by
   fin_cases group <;> rfl

@@ -10,8 +10,8 @@ set_option maxHeartbeats 4000000
 
 The 419d031 helper leaves `[right.a,b,c,d,e, factor, left.b,c,d,e,a, ret] ++ rest`.
 The consume tail permutes those live words onto the combine operands, writes the
-five `evmCombine` stores, pops the leftover factor, and `JUMP`s.
-No padding remains after the return.
+five `evmCombine` stores, pops the leftover factor, and `JUMP`s. Eight following
+`STOP` bytes are unreachable padding so later PCs and instruction indices stay.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailTemplate
@@ -25,8 +25,8 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTail
 
 def factor : UInt256 := UInt256.ofNat 0x100000001
 
-def tailStartPC : UInt256 := UInt256.ofNat 0x10f4
-def tailJumpPC : UInt256 := UInt256.ofNat 0x1146
+def tailStartPC : UInt256 := UInt256.ofNat 0x104a
+def tailJumpPC : UInt256 := UInt256.ofNat 0x109c
 
 def swap5H : Instr := .op (.Swap ⟨4, by decide⟩)
 def swap6H : Instr := .op (.Swap ⟨5, by decide⟩)
@@ -75,9 +75,11 @@ def consumeBody : List Instr :=
   quadTailBeforeJumpTemplate ++ [op .JUMP]
 
 /-- Unreachable padding after the return `JUMP`. Not executed. -/
-def paddingStops : List Instr := []
+def paddingStops : List Instr :=
+  [op .STOP, op .STOP, op .STOP, op .STOP,
+   op .STOP, op .STOP, op .STOP, op .STOP, op .STOP]
 
-/-- Reachable legacy tail window without padding. -/
+/-- 62-instruction window: 53 reachable + 9 `STOP`. Preserves later PCs. -/
 def quadTailWindow : List Instr :=
   consumeBody ++ paddingStops
 
@@ -110,10 +112,10 @@ def finalResult (s : State) (left right : Compression.EvmWorking)
 @[simp] theorem consumeBody_length : consumeBody.length = 53 := by
   rfl
 
-@[simp] theorem paddingStops_length : paddingStops.length = 0 := by
+@[simp] theorem paddingStops_length : paddingStops.length = 9 := by
   rfl
 
-@[simp] theorem quadTailWindow_length : quadTailWindow.length = 53 := by
+@[simp] theorem quadTailWindow_length : quadTailWindow.length = 62 := by
   rfl
 
 @[simp] theorem quadTailTemplate_length : quadTailTemplate.length = 53 := by
