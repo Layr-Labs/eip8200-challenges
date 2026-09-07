@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardLoop
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -116,18 +117,59 @@ theorem run_tail_fallback (input : ByteArray) (hsize : input.size = 1000)
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
-theorem run_return :
-    run returnPath (returnEntry KnownInputData.targetInput) =
-      some (returnedState KnownInputData.targetInput) := by
+def returnMsizeInput (input : ByteArray) : State :=
+  { initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 0x13d2
+    memory := answerMemory
+    activeWords := UInt256.ofNat 1
+    stack := [] }
+
+def returnAfterMsize (input : ByteArray) : State :=
+  { initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 0x13d3
+    memory := answerMemory
+    activeWords := UInt256.ofNat 1
+    stack := [UInt256.ofNat 32] }
+
+theorem run_return_prefix :
+    run returnPrefixPath (returnEntry KnownInputData.targetInput) =
+      some (returnMsizeInput KnownInputData.targetInput) := by
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp (config := { maxSteps := 1000000 })
-    [returnPath, opAt, pushAt, wfOp, returnEntry, atPC, returnedState,
+    [returnPrefixPath, opAt, pushAt, wfOp, returnEntry, returnMsizeInput,
     answerMemory, storeWord, ExactGuardSpec.paddedDigestWord,
     MachineState.mstore, State.activeWordsAfterUInt256,
-    MachineState.activeWordsAfter, hzeroNat,
+    State.activeWordsAfter, hzeroNat,
     Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
+
+theorem run_return_suffix :
+    run returnSuffixPath (returnAfterMsize KnownInputData.targetInput) =
+      some (returnedState KnownInputData.targetInput) := by
+  have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
+  simp (config := { maxSteps := 1000000 })
+    [returnSuffixPath, opAt, pushAt, wfOp, returnAfterMsize, returnedState,
+    answerMemory, MachineState.mstore, State.activeWordsAfterUInt256,
+    State.activeWordsAfter, hzeroNat,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
+
+theorem returnMsizeDecoded (s : State)
+    (hpc : s.pc = UInt256.ofNat 0x13d2)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) : s.decodedOp = some .MSIZE := by
+  have hget : Artifact.submissionInstructions[3463]? = some (.op .MSIZE) := by
+    rfl
+  have hdecode := Artifact.submissionArtifact.decodeAt_op_index
+    3463 .MSIZE hget (by decide) trivial
+  have hpcNat : s.pc.toNat =
+      Artifact.submissionArtifact.instructionPC 3463 := by
+    rw [hpc, Challenge.EvmProof.Word.word_toNat_ofNat, pc2857]
+  exact Artifact.submissionArtifact.state_decodedOp_of s 3463
+    hcode hpcNat .MSIZE none hdecode (by rw [hfork]; decide)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

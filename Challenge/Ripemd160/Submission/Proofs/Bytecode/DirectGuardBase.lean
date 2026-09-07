@@ -58,7 +58,7 @@ def checkEarlyPath : List Located :=
    pushAt 3427 1 97, opAt 3428 .MUL, opAt 3429 .XOR,
    pushAt 3430 2 5078, opAt 3431 .JUMPI,
    opAt 3466 .JUMPDEST, opAt 3467 .POP,
-   pushAt 3468 2 5084, opAt 3469 .POP]
+   pushAt 3468 3 5084, opAt 3469 .POP]
 
 def loopPath : List Located :=
   [opAt 3434 .JUMPDEST, opAt 3435 (.Swap ⟨0, by decide⟩),
@@ -74,10 +74,12 @@ def tailPath : List Located :=
    opAt 3455 .JUMPDEST, opAt 3456 (.Swap ⟨0, by decide⟩), opAt 3457 .POP,
    pushAt 3458 2 1004, opAt 3459 .JUMPI]
 
-def returnPath : List Located :=
+def returnPrefixPath : List Located :=
   [pushAt 3460 20 972889429405991776604892044862621566948497025487,
-   pushAt 3461 0 0, opAt 3462 .MSTORE, pushAt 3463 1 32,
-   pushAt 3464 0 0, opAt 3465 .RETURN]
+   pushAt 3461 0 0, opAt 3462 .MSTORE]
+
+def returnSuffixPath : List Located :=
+  [pushAt 3464 0 0, opAt 3465 .RETURN]
 
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
@@ -226,15 +228,15 @@ abbrev run := Challenge.EvmProof.Stepper.runLocatedBlock
 @[simp] theorem pc2857 :
     Artifact.submissionArtifact.instructionPC 3463 = 0x13d2 := by rfl
 @[simp] theorem pc2858 :
-    Artifact.submissionArtifact.instructionPC 3464 = 0x13d4 := by rfl
+    Artifact.submissionArtifact.instructionPC 3464 = 0x13d3 := by rfl
 @[simp] theorem pc2859 :
-    Artifact.submissionArtifact.instructionPC 3465 = 0x13d5 := by rfl
+    Artifact.submissionArtifact.instructionPC 3465 = 0x13d4 := by rfl
 @[simp] theorem pc2860 :
-    Artifact.submissionArtifact.instructionPC 3466 = 0x13d6 := by rfl
+    Artifact.submissionArtifact.instructionPC 3466 = 0x13d5 := by rfl
 @[simp] theorem pc2861 :
-    Artifact.submissionArtifact.instructionPC 3467 = 0x13d7 := by rfl
+    Artifact.submissionArtifact.instructionPC 3467 = 0x13d6 := by rfl
 @[simp] theorem pc2862 :
-    Artifact.submissionArtifact.instructionPC 3468 = 0x13d8 := by rfl
+    Artifact.submissionArtifact.instructionPC 3468 = 0x13d7 := by rfl
 @[simp] theorem pc2863 :
     Artifact.submissionArtifact.instructionPC 3469 = 0x13db := by rfl
 

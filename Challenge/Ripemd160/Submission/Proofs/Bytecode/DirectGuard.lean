@@ -22,6 +22,20 @@ private def sound (path : List Located) {s t : State}
         exact deployAddress_not_precompile) : GasSteps s t :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     path hcode hfork h hrun hnp
+private def gasSteps_return :
+    GasSteps (returnEntry KnownInputData.targetInput)
+      (returnedState KnownInputData.targetInput) := by
+  let s := returnMsizeInput KnownInputData.targetInput
+  have hop := returnMsizeDecoded s (by rfl) (by rfl) (by rfl)
+  have gmraw := Msize.step hop (by simp [s, returnMsizeInput])
+    (by rfl) (by exact deployAddress_not_precompile)
+  have gm : GasSteps s (returnAfterMsize KnownInputData.targetInput) :=
+    GasSteps.cast gmraw rfl (by
+      simp [s, returnMsizeInput, returnAfterMsize,
+        Challenge.EvmProof.Word.succ_ofNat_mod])
+  exact (sound returnPrefixPath run_return_prefix).trans
+    (gm.trans (sound returnSuffixPath run_return_suffix))
+
 
 private def gasSteps_loop (input : ByteArray) :
     GasSteps (loopState input 0) (loopExitState input) := by
@@ -42,7 +56,7 @@ def gasSteps_target :
       ((sound checkEntryPath (run_checkEntry KnownInputData.targetInput href)).trans
         ((gasSteps_loop KnownInputData.targetInput).trans
           ((sound tailPath run_tail_target).trans
-            (sound returnPath run_return)))))
+            gasSteps_return)))
 
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
     (hne : input ≠ KnownInputData.targetInput)

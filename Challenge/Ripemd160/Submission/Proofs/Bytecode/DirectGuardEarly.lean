@@ -38,7 +38,7 @@ def gasSteps_checkEarly (input : ByteArray)
       apply Challenge.EvmProof.Word.word_ext
       simpa using hnat
     simpa using h
-  have hcleanup : Decode.isValidJumpDest submissionBytecode 0x13d6 = true :=
+  have hcleanup : Decode.isValidJumpDest submissionBytecode 0x13d5 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3466 (by rfl)
   rw [show sizeMatched input = stG input 0x1386 [] from rfl,
     show PatternedScan.patternedEntry input = stG input 0x13dc [] from rfl]
@@ -78,14 +78,14 @@ def gasSteps_checkEarly (input : ByteArray)
         (UInt256.xor KnownInputData.fullWord (referenceWord input))
         [referenceWord input] (by simp) (by norm_num) htrue hcleanup))
   have step7 := soundG (opAt 3466 .JUMPDEST)
-    (blockOf _ (pcFactG input 3466 0x13d6 [referenceWord input] (by norm_num) pc2860)
-      (stepG_jumpdest input 0x13d6 [referenceWord input] (by simp) (by norm_num)))
+    (blockOf _ (pcFactG input 3466 0x13d5 [referenceWord input] (by norm_num) pc2860)
+      (stepG_jumpdest input 0x13d5 [referenceWord input] (by simp) (by norm_num)))
   have step8 := soundG (opAt 3467 .POP)
-    (blockOf _ (pcFactG input 3467 0x13d7 [referenceWord input] (by norm_num) pc2861)
-      (stepG_pop input 0x13d7 (referenceWord input) [] (by simp) (by norm_num)))
-  have step9 := soundG (pushAt 3468 2 (UInt256.ofNat 5084))
-    (blockOf _ (pcFactG input 3468 0x13d8 [] (by norm_num) pc2862)
-      (stepG_push input 0x13d8 2 (UInt256.ofNat 5084) [] (by simp) (by decide)
+    (blockOf _ (pcFactG input 3467 0x13d6 [referenceWord input] (by norm_num) pc2861)
+      (stepG_pop input 0x13d6 (referenceWord input) [] (by simp) (by norm_num)))
+  have step9 := soundG (pushAt 3468 3 (UInt256.ofNat 5084))
+    (blockOf _ (pcFactG input 3468 0x13d7 [] (by norm_num) pc2862)
+      (stepG_push input 0x13d7 3 (UInt256.ofNat 5084) [] (by simp) (by decide)
         (by decide) (by norm_num)))
   have step10 := soundG (opAt 3469 .POP)
     (blockOf _ (pcFactG input 3469 0x13db [UInt256.ofNat 5084] (by norm_num) pc2863)
