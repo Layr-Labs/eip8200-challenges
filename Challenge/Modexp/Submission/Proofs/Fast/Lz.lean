@@ -1,6 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P16
-import Challenge.Modexp.Submission.Proofs.Fast.Paths.P18
 import Challenge.Modexp.Submission.Proofs.Fast.Setup
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -8,8 +7,8 @@ set_option maxHeartbeats 4000000
 /-!
 # The `LZ` head of the exponent-byte loop
 
-`LZ` occupies instruction indices 1781..1815 (pc 2922..2970).  It is entered
-at pc 2922 with the byte index `i` on top of the driver frame, loads exponent
+`LZ` occupies instruction indices 1806..1840 (pc 2951..2999).  It is entered
+at pc 2951 with the byte index `i` on top of the driver frame, loads exponent
 byte `i` exactly as the code it replaces did, and then chooses the mask the
 inner bit loop starts from:
 
@@ -74,7 +73,8 @@ theorem topBit_spec (w : Nat) (hw : w < 256) :
     topBit w = 2 ^ topExp w ∧ topExp w ≤ 7 ∧ w < 2 ^ (topExp w + 1) := by
   interval_cases w <;> exact ⟨by decide, by decide, by decide⟩
 
-/-- A nonzero byte has its `topExp` bit set. -/
+/-- A nonzero byte has its `topExp` bit set: the smear really does find the
+leading one, so the loop's first iteration multiplies by `BASE`. -/
 theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w := by
   interval_cases w
   · exact absurd rfl hne
@@ -82,22 +82,22 @@ theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w 
 
 /-! ## States at the block boundaries -/
 
-/-- The `LZ` entry, pc 2922.  The driver frame below the byte index is left
+/-- The `LZ` entry, pc 2951.  The driver frame below the byte index is left
 abstract so that this module does not depend on `Fast.Exp`. -/
 def lzEntry (s : State) (mem : ByteArray) (i : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2922
+  { s with pc := UInt256.ofNat 2951
            stack := UInt256.ofNat i :: rest
            memory := mem }
 
-/-- pc 2938, the arm every byte after the first takes. -/
+/-- pc 2967, the arm every byte after the first takes. -/
 def lzOther (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2938
+  { s with pc := UInt256.ofNat 2967
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
-/-- pc 2944, the arm byte `0` takes. -/
+/-- pc 2973, the arm byte `0` takes. -/
 def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2944
+  { s with pc := UInt256.ofNat 2973
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -108,10 +108,10 @@ def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
-/-- The state handed to the relocated leading-bit shortcut at pc3865. -/
+/- The first-byte arm hands to `LZBASE`, whose relocated entry is pc 3894. -/
 def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3865
+  { s with pc := UInt256.ofNat 3894
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -279,10 +279,12 @@ theorem run_lzFirst (s : State) (mem : ByteArray) (i w : Nat)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hcomm : (1 : Nat) + (sm3 w >>> 1) = topBit w := by
     simp only [topBit]; omega
+  have h3894 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3894 = true :=
+    Artifact.isValidJumpDest_index 2582 (by rfl)
   simp (config := { maxSteps := 600000 }) [blk1796, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lzFirst, lzBase, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, jumpDest3865,
+    lzFirst, lzBase, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, h3894,
     e1, e2, e3, e4, e5, e6, e7,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,

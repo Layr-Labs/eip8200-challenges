@@ -21,13 +21,13 @@ open WindowHitStates
 theorem run_loopAdvance (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) (hpointer : pointer < 160) :
     Challenge.EvmProof.Stepper.runLocatedBlock loopAdvancePath
-      (wordState input pointer 4 3547 accumulator) =
+      (wordState input pointer 4 3576 accumulator) =
         some (loopState input (pointer + 4)
           (WindowMath.chunkWordStep (modulusWord input) (baseWord input)
             accumulator (MachineState.readWord input pointer))) := by
   let chunk := WindowMath.chunkWordStep (modulusWord input) (baseWord input)
     accumulator (MachineState.readWord input pointer)
-  let template := wordState input pointer 4 3547 accumulator
+  let template := wordState input pointer 4 3576 accumulator
   have hhead := WindowHitLoopAdvanceHead.run template
     (MachineState.readWord input pointer) (UInt256.ofNat pointer) chunk
     (modulusWord input) (routeStack input) pointer rfl hpointer
@@ -37,13 +37,13 @@ theorem run_loopAdvance (input : ByteArray) (pointer : Nat)
     (by simp [routeStack]) rfl rfl
   have hall := Challenge.EvmProof.Stepper.runLocatedBlock_append
     (loopAdvancePath.take 3) (loopAdvancePath.drop 3)
-    (WindowHitLoopAdvanceHead.framed template 3547
+    (WindowHitLoopAdvanceHead.framed template 3576
       (MachineState.readWord input pointer :: UInt256.ofNat pointer :: chunk ::
         modulusWord input :: routeStack input))
-    (WindowHitLoopAdvanceHead.framed template 3551
+    (WindowHitLoopAdvanceHead.framed template 3580
       (UInt256.ofNat (pointer + 4) :: chunk :: modulusWord input ::
         routeStack input))
-    (WindowHitLoopAdvanceHead.framed template 3197
+    (WindowHitLoopAdvanceHead.framed template 3226
       (UInt256.ofNat (pointer + 4) :: chunk :: modulusWord input ::
         routeStack input))
     hhead rfl hjump

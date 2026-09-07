@@ -16,9 +16,9 @@ set_option linter.unusedSimpArgs false in
 theorem run_prep (template : State) (base modulus word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (highPrepPath 2)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3377)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3406)
         base modulus word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3385)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3414)
       base modulus (highNibble 2 word) (byteValue 2 word) word pointer
       accumulator rest) := by
   have h4 : rest.length + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -46,9 +46,9 @@ theorem run_square (template : State) (base modulus : UInt256)
     (nibble : Nat) (byte word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (highSquarePath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3385)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3414)
         base modulus nibble byte word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3409)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3438)
       base modulus nibble byte word pointer
       (WindowMath.squareWordAfter modulus 4 accumulator) rest) := by
   have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -75,9 +75,9 @@ theorem run_lookup (template : State) (base modulus : UInt256)
     (rest : List UInt256) (hnibble : nibble < 16)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (highLookupPath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3409)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3438)
         base modulus nibble byte word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3420)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3449)
       base modulus nibble byte word pointer
       (UInt256.mulMod accumulator (WindowMath.tableWord base modulus nibble)
         modulus) rest) := by
@@ -108,6 +108,5 @@ theorem run_lookup (template : State) (base modulus : UInt256)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 
+
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitByte2High
-
-

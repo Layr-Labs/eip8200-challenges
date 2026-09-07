@@ -7,8 +7,8 @@ set_option maxHeartbeats 4000000
 /-!
 # Located direct RR-leading helper
 
-The appended helper occupies instruction indices 2338..2360 and bytes
-3571..3605. It copies CC to RR, computes the remaining RR counter from the
+The appended helper occupies instruction indices 2363..2385 and bytes
+3600..3634. It copies CC to RR, computes the remaining RR counter from the
 limb count, and rejoins the unchanged RR loop at byte 1569.
 -/
 
@@ -28,52 +28,52 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem helperPCAnchor :
-    Artifact.submissionArtifact.instructionPC 2338 = 3571 := by
+    Artifact.submissionArtifact.instructionPC 2363 = 3600 := by
   rfl
 
-@[simp] theorem helperPC (i : Nat) (hlo : 2338 ≤ i) (hhi : i ≤ 2360) :
+@[simp] theorem helperPC (i : Nat) (hlo : 2363 ≤ i) (hhi : i ≤ 2385) :
     Artifact.submissionArtifact.instructionPC i =
-      [3571, 3572, 3575, 3576, 3579, 3582, 3583, 3584,
-       3586, 3587, 3588, 3590, 3591, 3592, 3594, 3595,
-       3596, 3598, 3599, 3600, 3601, 3602, 3605][i - 2338]! := by
+      [3600, 3601, 3604, 3605, 3608, 3611, 3612, 3613,
+       3615, 3616, 3617, 3619, 3620, 3621, 3623, 3624,
+       3625, 3627, 3628, 3629, 3630, 3631, 3634][i - 2363]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (2338 + (i - 2338)) := by
+        Artifact.submissionArtifact.instructionPC (2363 + (i - 2363)) := by
       rw [Nat.add_sub_of_le hlo]
-    _ = Artifact.submissionArtifact.instructionPC 2338 +
+    _ = Artifact.submissionArtifact.instructionPC 2363 +
           (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop 2338).take
-              (i - 2338))).length :=
-      instructionPC_add Artifact.submissionArtifact 2338 (i - 2338)
+            ((Artifact.submissionArtifact.instructions.drop 2363).take
+              (i - 2363))).length :=
+      instructionPC_add Artifact.submissionArtifact 2363 (i - 2363)
     _ = _ := by
       rw [helperPCAnchor]
       interval_cases i <;> rfl
 
 def helperPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2338 .JUMPDEST,
-   pushAt 2339 2 9344,
-   opAt 2340 .MLOAD,
-   pushAt 2341 2 5120,
-   pushAt 2342 2 6144,
-   opAt 2343 .MCOPY,
-   opAt 2344 (.Dup ⟨1, by decide⟩),
-   pushAt 2345 1 3,
-   opAt 2346 .LT,
-   opAt 2347 (.Dup ⟨2, by decide⟩),
-   pushAt 2348 1 7,
-   opAt 2349 .LT,
-   opAt 2350 (.Dup ⟨3, by decide⟩),
-   pushAt 2351 1 15,
-   opAt 2352 .LT,
-   opAt 2353 (.Dup ⟨4, by decide⟩),
-   pushAt 2354 1 31,
-   opAt 2355 .LT,
-   opAt 2356 .ADD,
-   opAt 2357 .ADD,
-   opAt 2358 .ADD,
-   pushAt 2359 2 1569,
-   opAt 2360 .JUMP]
+  [opAt 2363 .JUMPDEST,
+   pushAt 2364 2 9344,
+   opAt 2365 .MLOAD,
+   pushAt 2366 2 5120,
+   pushAt 2367 2 6144,
+   opAt 2368 .MCOPY,
+   opAt 2369 (.Dup ⟨1, by decide⟩),
+   pushAt 2370 1 3,
+   opAt 2371 .LT,
+   opAt 2372 (.Dup ⟨2, by decide⟩),
+   pushAt 2373 1 7,
+   opAt 2374 .LT,
+   opAt 2375 (.Dup ⟨3, by decide⟩),
+   pushAt 2376 1 15,
+   opAt 2377 .LT,
+   opAt 2378 (.Dup ⟨4, by decide⟩),
+   pushAt 2379 1 31,
+   opAt 2380 .LT,
+   opAt 2381 .ADD,
+   opAt 2382 .ADD,
+   opAt 2383 .ADD,
+   pushAt 2384 2 1569,
+   opAt 2385 .JUMP]
 
 @[simp] theorem jump1569 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1569 = true :=

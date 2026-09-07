@@ -21,9 +21,9 @@ theorem run_byte0_highLookup (template : State) (base modulus : UInt256)
     (rest : List UInt256) (hnibble : nibble < 16)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (highLookupPath 0)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3239)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3268)
         base modulus nibble byte word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3250)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3279)
       base modulus nibble byte word pointer
       (UInt256.mulMod accumulator (WindowMath.tableWord base modulus nibble)
         modulus) rest) := by

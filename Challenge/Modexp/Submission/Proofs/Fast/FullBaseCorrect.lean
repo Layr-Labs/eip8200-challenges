@@ -1,7 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.FullBaseHitTrace
 import Challenge.Modexp.Submission.Proofs.Fast.FullBaseValueBridge
 import Challenge.Modexp.Submission.Proofs.Fast.Exp
-import Challenge.Modexp.Submission.Proofs.Fast.FixedDirectCorrect
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -89,15 +88,15 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
     have hcopy := Bytecode.FullBaseHitTrace.gasSteps_copyAdd
       s mem input n bsize esize msize hn32 hact hdata hcode hfork hrun hnp
     have hj3644 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-        (UInt256.ofNat 3644).toNat = true := by
+        (UInt256.ofNat 3673).toNat = true := by
       rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-        Nat.mod_eq_of_lt (show 3644 < 2 ^ 256 by norm_num)]
+        Nat.mod_eq_of_lt (show 3673 < 2 ^ 256 by norm_num)]
       exact jumpDest3644
     have hadd : Challenge.EvmProof.GasSteps
         (FullBase.addCallState s mem input n bsize esize msize)
         (FullBase.afterAddState s reduced n bsize esize msize) := by
       exact Challenge.EvmProof.GasSteps.cast
-        (sub.addmod 1024 3072 1024 (UInt256.ofNat 3644)
+        (sub.addmod 1024 3072 1024 (UInt256.ofNat 3673)
           (outer n bsize esize msize) copied (by simp [outer])
           (by omega) (by omega) (by omega) (by omega) (by omega) hj3644 hframeCopy)
         rfl rfl
@@ -135,17 +134,10 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
       dsimp only [baseM, base]
       rw [hbEq]
       exact Nat.mod_modEq _ _
-    have hrawConv : Model.FastRepresents converted 1024 n
-        (Precompile.bytesToNatPadded input 96 bsize % mm) := by
-      have hp := spec.mpFrame 1024 6144 2048 1024 (base % mm) reduced
-        (by omega) (Or.inr (by omega)) hred
-      simpa only [converted, base, hbEq] using hp
     obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
-      FixedDirectCorrect.handled_of_bDoneConcrete input s converted
-        n bsize esize msize mm minv baseM sub spec
+      handled_of_bDone input s converted n bsize esize msize mm minv baseM sub spec
         hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32 hbsize hesize
-        hmsz hmm hodd hradix (Nat.mod_lt _ hmpos) hbaseForm hframeConv hmodConv
-        hbaseConv ⟨0, Limbs.radix_pos, honeConv⟩ hEb hrawConv
+        hmsz hmm hodd hradix (Nat.mod_lt _ hmpos) hbaseForm hframeConv hEb
     have hroute := hredirect.trans hguardHit
     have hroute := hroute.trans hcopy
     have hroute := hroute.trans hadd
@@ -161,11 +153,6 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
       handled_of_baseFallback input s mem n bsize esize msize mm minv rr sub spec
         hcode hfork hrun hnp hdata hstack hact hn hn32 hb hb0 he hmz hm32 hbsize
         hesize hmsz hmm hodd hradix hrrlt hrrmod hframe hmod hr1 hcc hrrb hacc hone
-        (fun mem' bM hframe' hmod' hbase' hone' hEb' hbMlt' hbMform' hraw' =>
-          FixedDirectCorrect.handled_of_bDoneConcrete input s mem'
-            n bsize esize msize mm minv bM sub spec hcode hfork hrun hnp hdata
-            hstack hact hn hn32 hb he hmz hm32 hbsize hesize hmsz hmm hodd hradix
-            hbMlt' hbMform' hframe' hmod' hbase' hone' hEb' hraw')
     exact ⟨final, ⟨(hredirect.trans hguardMiss).trans tr⟩, hdone, hres⟩
 
 end Challenge.Modexp.Submission.Proofs.Fast.Exp
