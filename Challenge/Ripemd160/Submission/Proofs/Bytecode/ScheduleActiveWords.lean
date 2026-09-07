@@ -9,7 +9,7 @@ set_option maxHeartbeats 100000
 # Active-memory endpoint of the message schedule
 
 The schedule's last unaligned `MLOAD` is the unique high-water access.  The
-sixteen iterations therefore end at word `max current (67 + 2 * block)`.
+sixteen iterations therefore end at word `max current (62 + 2 * block)`.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduleActiveWords
@@ -111,7 +111,7 @@ private theorem scheduleIteration_activeWords_le (s : State)
     (hblock : block < DriverTrace.blockCount input) (hk : k < 16)
     (returnDest : UInt256) (rest : List UInt256) (bound : Nat)
     (hs : s.activeWords.toNat ≤ bound)
-    (hbound : 67 + 2 * block ≤ bound) (hlt : bound < 2 ^ 256) :
+    (hbound : 62 + 2 * block ≤ bound) (hlt : bound < 2 ^ 256) :
     (Schedule.afterIteration s (DriverTrace.messageOffsetWord block)
       returnDest rest k).activeWords.toNat ≤ bound := by
   have hload := messageLoadOffset input hfit block k hblock hk
@@ -148,8 +148,8 @@ private theorem scheduleLoopPrefix_activeWords_le (s : State)
     (returnDest : UInt256) (rest : List UInt256) (n : Nat) (hn : n ≤ 16) :
     (Schedule.loopState s (DriverTrace.messageOffsetWord block)
       returnDest rest n).activeWords.toNat ≤
-      max s.activeWords.toNat (67 + 2 * block) := by
-  let bound := max s.activeWords.toNat (67 + 2 * block)
+      max s.activeWords.toNat (62 + 2 * block) := by
+  let bound := max s.activeWords.toNat (62 + 2 * block)
   have hlt : bound < 2 ^ 256 := by
     unfold bound
     exact (Nat.max_lt).2 ⟨s.activeWords.val.isLt, by
@@ -181,7 +181,7 @@ private theorem scheduleLoop_activeWords_le (s : State)
     (returnDest : UInt256) (rest : List UInt256) :
     (Schedule.loopState s (DriverTrace.messageOffsetWord block)
       returnDest rest 16).activeWords.toNat ≤
-      max s.activeWords.toNat (67 + 2 * block) :=
+      max s.activeWords.toNat (62 + 2 * block) :=
   scheduleLoopPrefix_activeWords_le s input hfit block hblock returnDest rest
     16 (by omega)
 
@@ -190,7 +190,7 @@ private theorem scheduleIteration_activeWords_ge (s : State)
     (hblock : block < DriverTrace.blockCount input) (hk : k < 16)
     (returnDest : UInt256) (rest : List UInt256) (bound : Nat)
     (hs : s.activeWords.toNat ≤ bound)
-    (hbound : 67 + 2 * block ≤ bound) (hlt : bound < 2 ^ 256) :
+    (hbound : 62 + 2 * block ≤ bound) (hlt : bound < 2 ^ 256) :
     s.activeWords.toNat ≤
       (Schedule.afterIteration s (DriverTrace.messageOffsetWord block)
         returnDest rest k).activeWords.toNat := by
@@ -231,7 +231,7 @@ private theorem scheduleLoopPrefix_activeWords_ge (s : State)
     s.activeWords.toNat ≤
       (Schedule.loopState s (DriverTrace.messageOffsetWord block)
         returnDest rest n).activeWords.toNat := by
-  let bound := max s.activeWords.toNat (67 + 2 * block)
+  let bound := max s.activeWords.toNat (62 + 2 * block)
   have hlt : bound < 2 ^ 256 := by
     exact (Nat.max_lt).2 ⟨s.activeWords.val.isLt, by
       have hpadded := Padding.paddedLength_lt input.size
@@ -279,10 +279,10 @@ theorem scheduledState_activeWords (s : State) (input : ByteArray)
     (returnDest : UInt256) (rest : List UInt256) :
     (Schedule.loopState s (DriverTrace.messageOffsetWord block)
       returnDest rest 16).activeWords.toNat =
-      max s.activeWords.toNat (67 + 2 * block) := by
+      max s.activeWords.toNat (62 + 2 * block) := by
   let prev := Schedule.loopState s (DriverTrace.messageOffsetWord block)
     returnDest rest 15
-  let target := 67 + 2 * block
+  let target := 62 + 2 * block
   let bound := max s.activeWords.toNat target
   have hprevLe : prev.activeWords.toNat ≤ bound :=
     scheduleLoopPrefix_activeWords_le s input hfit block hblock returnDest rest
@@ -346,7 +346,7 @@ theorem scheduledState_activeWords_ge_67 (s : State) (input : ByteArray)
     (hfit : CalldataFits input) (block : Nat)
     (hblock : block < DriverTrace.blockCount input)
     (returnDest : UInt256) (rest : List UInt256) :
-    67 ≤ (Schedule.loopState s (DriverTrace.messageOffsetWord block)
+    62 ≤ (Schedule.loopState s (DriverTrace.messageOffsetWord block)
       returnDest rest 16).activeWords.toNat := by
   rw [scheduledState_activeWords s input hfit block hblock returnDest rest]
   exact le_trans (by omega) (Nat.le_max_right _ _)
