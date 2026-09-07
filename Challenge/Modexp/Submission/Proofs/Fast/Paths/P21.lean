@@ -14,17 +14,17 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 def blk3036 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 3036 .JUMPDEST,
-   pushAt 3037 2 8256,
-   opAt 3038 (.Dup ⟨1, by decide⟩),
-   opAt 3039 .SUB,
-   pushAt 3040 2 8256,
-   opAt 3041 (.Dup ⟨3, by decide⟩),
+   pushAt 3037 4 8256,
+   opAt 3038 (.Dup ⟨0, by decide⟩),
+   opAt 3039 (.Swap ⟨1, by decide⟩),
+   opAt 3040 .SUB,
+   opAt 3041 (.Swap ⟨1, by decide⟩),
    opAt 3042 .SUB,
    opAt 3043 (.Swap ⟨0, by decide⟩),
-   opAt 3044 (.Swap ⟨1, by decide⟩),
-   opAt 3045 .POP,
-   opAt 3046 (.Swap ⟨1, by decide⟩),
-   opAt 3047 .POP,
+   opAt 3044 .JUMPDEST,
+   opAt 3045 .JUMPDEST,
+   opAt 3046 .JUMPDEST,
+   opAt 3047 .JUMPDEST,
    pushAt 3048 0 0,
    pushAt 3049 0 0,
    pushAt 3050 2 9440,
@@ -89,31 +89,27 @@ def blk3052 :
    pushAt 3105 2 5051,
    opAt 3106 .JUMPI]
 
-/-- Fused selection and return, instructions 3107..3129, pc 5115..5145. -/
+/-- Fused selection and return, live instructions 3107..3125, pc 5115..5141; trailing padding is not executed. -/
 def blk3107 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3107 (.Dup ⟨1, by decide⟩),
-   pushAt 3108 2 8224,
-   opAt 3109 .MSTORE,
-   opAt 3110 (.Dup ⟨2, by decide⟩),
-   opAt 3111 .ISZERO,
-   opAt 3112 (.Dup ⟨2, by decide⟩),
+  [opAt 3107 .POP,
+   opAt 3108 (.Dup ⟨0, by decide⟩),
+   pushAt 3109 2 8224,
+   opAt 3110 .MSTORE,
+   opAt 3111 (.Swap ⟨0, by decide⟩),
+   opAt 3112 .ISZERO,
    opAt 3113 .OR,
    pushAt 3114 2 1088,
    opAt 3115 .MUL,
    pushAt 3116 2 8256,
    opAt 3117 .SUB,
-   pushAt 3118 2 9344,
-   opAt 3119 .MLOAD,
-   opAt 3120 (.Swap ⟨0, by decide⟩),
-   opAt 3121 (.Dup ⟨7, by decide⟩),
-   opAt 3122 .MCOPY,
-   opAt 3123 .POP,
-   opAt 3124 .POP,
-   opAt 3125 .POP,
-   opAt 3126 .POP,
-   opAt 3127 .POP,
-   opAt 3128 .POP,
-   opAt 3129 .JUMP]
+   opAt 3118 (.Swap ⟨1, by decide⟩),
+   opAt 3119 .POP,
+   opAt 3120 .POP,
+   pushAt 3121 2 9344,
+   opAt 3122 .MLOAD,
+   opAt 3123 (.Swap ⟨1, by decide⟩),
+   opAt 3124 .MCOPY,
+   opAt 3125 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

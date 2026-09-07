@@ -767,8 +767,7 @@ their proof modules. -/
 /-- PC table for the fused ADDMOD/CSUB entry appended after the CIOS2 helper. -/
 @[simp] theorem fusedCsubPC0 (i : Nat) (hi : 3036 ≤ i) (hii : i ≤ 3051) :
     Artifact.submissionArtifact.instructionPC i =
-      [5029,5030,5033,5034,5035,5038,5039,5040,5041,5042,5043,5044,5045,
-       5046,5047,5050][i - 3036]! := by
+      [5029,5030,5035,5036,5037,5038,5039,5040,5041,5042,5043,5044,5045,5046,5047,5050][i - 3036]! := by
   interval_cases i <;> decide
 
 /-- PC table for the fused limb loop. -/
@@ -784,8 +783,7 @@ their proof modules. -/
 /-- PC table for the fused selection/return tail. -/
 @[simp] theorem fusedCsubPC2 (i : Nat) (hi : 3107 ≤ i) (hii : i ≤ 3129) :
     Artifact.submissionArtifact.instructionPC i =
-      [5115,5116,5119,5120,5121,5122,5123,5124,5127,5128,5131,5132,5135,
-       5136,5137,5138,5139,5140,5141,5142,5143,5144,5145][i - 3107]! := by
+      [5115,5116,5117,5120,5121,5122,5123,5124,5127,5128,5131,5132,5133,5134,5135,5138,5139,5140,5141,5142,5143,5144,5145][i - 3107]! := by
   interval_cases i <;> decide
 
 theorem jumpDest1196 :
