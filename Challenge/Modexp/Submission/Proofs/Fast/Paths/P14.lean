@@ -23,7 +23,7 @@ def blk1742 :
    opAt 1744 (.Dup ⟨1, by decide⟩),
    opAt 1745 (.Dup ⟨0, by decide⟩),
    opAt 1746 (.Dup ⟨0, by decide⟩),
-   pushAt 1747 2 5305,
+   pushAt 1747 2 5267,
    opAt 1748 .JUMP]
 
 /-- Instructions 1749..1750, pc 2874..2876: the squaring counter. -/

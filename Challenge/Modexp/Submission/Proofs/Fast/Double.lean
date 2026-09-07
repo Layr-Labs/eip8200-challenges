@@ -16,7 +16,7 @@ The four basic blocks are
 
 * `blk1360` (idx 1360..1361, pc 1911..1912) — `JUMPDEST; PUSH2 256`;
 * `blk1362` (idx 1362..1368, pc 1915..1925) — the loop head `DBL`, which
-  pushes the call frame `[px, px, px, 1926]` and jumps to `ADDMOD` (pc 5305);
+  pushes the call frame `[px, px, px, 1926]` and jumps to `ADDMOD` (pc 5267);
 * `blk1369` (idx 1369..1375, pc 1926..1935) — the return point, which
   decrements the counter and jumps back to pc 1915 while it is nonzero;
 * `blk1376` (idx 1376..1378, pc 1936..1938) — `POP; POP; JUMP ret`.
@@ -65,10 +65,10 @@ def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The `ADDMOD` call, pc 5305, with the frame `[px, px, px, 1926]` pushed. -/
+/-- The `ADDMOD` call, pc 5267, with the frame `[px, px, px, 1926]` pushed. -/
 def callState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5305
+  { s with pc := UInt256.ofNat 5267
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
                      UInt256.ofNat 1926] ++ loopStack px k ret rest
            memory := mem }
@@ -116,7 +116,7 @@ theorem run_entry (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 
 set_option linter.unusedSimpArgs false in
 /-- `blk1362` (pc 1915..1925): the loop head pushes the `ADDMOD` frame
-`[px, px, px, 1926]` and jumps to pc 5305. -/
+`[px, px, px, 1926]` and jumps to pc 5267. -/
 theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -131,14 +131,14 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have h1926 : (1926 : UInt256) = UInt256.ofNat 1926 := by decide
-  have h5305 : (5305 : UInt256) = UInt256.ofNat 5305 := by decide
-  have h5305Nat : (UInt256.ofNat 5305).toNat = 5305 := by decide
+  have h5267 : (5267 : UInt256) = UInt256.ofNat 5267 := by decide
+  have h5267Nat : (UInt256.ofNat 5267).toNat = 5267 := by decide
   simp (config := { maxSteps := 400000 }) [blk1362, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopState, callState, loopStack, fastPC9, hc3, hc4, hc5, hc6, hc7, hc8,
     hcode, hrun,
-    h1926, h5305, h5305Nat, jumpDest5305,
+    h1926, h5267, h5267Nat, jumpDest5267,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -434,7 +434,7 @@ theorem iterMem_preserves (f : ByteArray → ByteArray) (mem : ByteArray)
 /-! ## Wiring in the concrete `ADDMOD` subroutine
 
 `Fast.FusedCsub` proves the fused addition and conditional subtraction from
-its entry at pc 5305 through the return jump. Its entry, loop, exit, and tail
+its entry at pc 5267 through the return jump. Its entry, loop, exit, and tail
 certificates give the indexed contract consumed by the doubling loop, with
 memory transformer `dblStep px n`. -/
 

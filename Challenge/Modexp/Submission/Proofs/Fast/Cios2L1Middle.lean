@@ -25,8 +25,8 @@ theorem run_l1MiddleOneMac (s : State) (mem : ByteArray) (bi : UInt256)
     (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock middleOneMac
-      (l1At 4275 s mem bi pa pb n i j pdst ret rest) =
-      some (l1At 4413 s mem bi pa pb n i (j + 1) pdst ret rest) := by
+      (l1At 4270 s mem bi pa pb n i j pdst ret rest) =
+      some (l1At 4403 s mem bi pa pb n i (j + 1) pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -76,6 +76,8 @@ theorem run_l1MiddleOneMac (s : State) (mem : ByteArray) (bi : UInt256)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
+  refine ⟨?_, MacAlt.macCarryFix _ _ _ _⟩
+  rw [MacAlt.macSumNat]
 
 set_option linter.unusedVariables false in
 set_option linter.unusedSimpArgs false in
@@ -87,8 +89,8 @@ theorem run_l1MiddleTwoMac (s : State) (mem : ByteArray) (bi : UInt256)
     (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock middleTwoMac
-      (l1At 4413 s mem bi pa pb n i j pdst ret rest) =
-      some (l1At 4551 s mem bi pa pb n i (j + 1) pdst ret rest) := by
+      (l1At 4403 s mem bi pa pb n i j pdst ret rest) =
+      some (l1At 4536 s mem bi pa pb n i (j + 1) pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -138,6 +140,8 @@ theorem run_l1MiddleTwoMac (s : State) (mem : ByteArray) (bi : UInt256)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
+  refine ⟨?_, MacAlt.macCarryFix _ _ _ _⟩
+  rw [MacAlt.macSumNat]
 
 def gasSteps_l1MiddleOneMac (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
@@ -149,8 +153,8 @@ def gasSteps_l1MiddleOneMac (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4275 s mem bi pa pb n i j pdst ret rest)
-      (l1At 4413 s mem bi pa pb n i (j + 1) pdst ret rest) :=
+      (l1At 4270 s mem bi pa pb n i j pdst ret rest)
+      (l1At 4403 s mem bi pa pb n i (j + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka middleOneMac hcode hfork
     (run_l1MiddleOneMac s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact
@@ -166,8 +170,8 @@ def gasSteps_l1MiddleTwoMac (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4413 s mem bi pa pb n i j pdst ret rest)
-      (l1At 4551 s mem bi pa pb n i (j + 1) pdst ret rest) :=
+      (l1At 4403 s mem bi pa pb n i j pdst ret rest)
+      (l1At 4536 s mem bi pa pb n i (j + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka middleTwoMac hcode hfork
     (run_l1MiddleTwoMac s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact

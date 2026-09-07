@@ -35,7 +35,7 @@ appended path runs three loops and returns:
    flagless square-and-multiply steps producing `ACC = φ(b ^ e)`, the final
    `MonPro(ACC, 1)` and the `RETURN`.
 
-`MONPRO` (pc 1939) and `ADDMOD` (pc 5305) are developed in `Fast.Monpro` and
+`MONPRO` (pc 1939) and `ADDMOD` (pc 5267) are developed in `Fast.Monpro` and
 `Fast.Csub`; here they enter only through the abstract `Subroutines` contract,
 so this module does not depend on those developments.
 -/
@@ -146,10 +146,10 @@ def mpDispatchCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256
   Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch.dispatchState
     s mem pa pb (UInt256.ofNat pd) ret tail
 
-/-- The `ADDMOD` call state, pc 5305, stack `[pa, pb, pd, ret] ++ tail`. -/
+/-- The `ADDMOD` call state, pc 5267, stack `[pa, pb, pd, ret] ++ tail`. -/
 def amCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5305
+  { s with pc := UInt256.ofNat 5267
            stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
              ret :: tail
            memory := mem }
@@ -296,7 +296,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     Model.FastRepresents mem pa n a → Model.FastRepresents mem pb n b → a < mm →
     Challenge.EvmProof.GasSteps (mpDispatchCall s mem pa pb pd ret tail)
       (retTo s (mpMem pa pb pd mem) ret tail)
-  /-- `ADDMOD` at pc 5305. -/
+  /-- `ADDMOD` at pc 5267. -/
   addmod : ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256)
     (mem : ByteArray), tail.length ≤ 1000 →
     32 ≤ pa → pa + 32 * n ≤ 7168 → 32 ≤ pb → pb + 32 * n ≤ 7168 →
@@ -1146,12 +1146,12 @@ theorem run_blAdd (s : State) (mem input : ByteArray)
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (3040 + 32 * n) 32) = s.activeWords :=
     activeWords_fix s (3040 + 32 * n) 32 (by omega) (by omega) hact
-  have h5305Nat : (UInt256.ofNat 5305).toNat = 5305 := by decide
+  have h5267Nat : (UInt256.ofNat 5267).toNat = 5267 := by decide
   simp (config := { maxSteps := 800000 }) [blk1229, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     blAdd, amCall, storeWord, baseLimbWord, outer, hdata, hcode, hrun, hsub1, hshl,
-    hsub2, hmodOff, hmod, hfix, h5305Nat, jumpDest5305,
+    hsub2, hmodOff, hmod, hfix, h5267Nat, jumpDest5267,
     State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,

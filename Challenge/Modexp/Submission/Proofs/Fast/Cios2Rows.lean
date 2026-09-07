@@ -96,7 +96,7 @@ def gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (l2At 4796 s mid bi mu c0 pa pb 4 i 0 pdst ret rest)
+      (l2At 4776 s mid bi mu c0 pa pb 4 i 0 pdst ret rest)
       (tailState s (l2Step mid mu c0 4 3).memory
         (UInt256.ofNat (ptrAt (32 * 4 - 64) 3))
         (UInt256.ofNat (ptrAt (8192 + 32 * 4) 3))
@@ -116,7 +116,7 @@ def gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (l2At 4796 s mid bi mu c0 pa pb 8 i 0 pdst ret rest)
+      (l2At 4776 s mid bi mu c0 pa pb 8 i 0 pdst ret rest)
       (tailState s (l2Step mid mu c0 8 7).memory
         (UInt256.ofNat (ptrAt (32 * 8 - 64) 7))
         (UInt256.ofNat (ptrAt (8192 + 32 * 8) 7))
