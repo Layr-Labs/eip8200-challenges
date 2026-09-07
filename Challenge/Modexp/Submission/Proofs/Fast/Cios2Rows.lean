@@ -1,5 +1,4 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2Tail
-import Challenge.Modexp.Submission.Proofs.Fast.Cios2L1Middle
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -22,13 +21,12 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Entry
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Out
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2L1Mac
-open Challenge.Modexp.Submission.Proofs.Fast.Cios2L1Middle
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Mid
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2L2Peel
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2L2Pair
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Tail
 
-/-- Four-limb L1: four copied MACs and one shared exit test. -/
+/-- Four-limb L1: one exiting four-MAC block. -/
 def gasSteps_l1Four (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb i : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
@@ -39,21 +37,15 @@ def gasSteps_l1Four (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4136 s mem bi pa pb 4 i 0 pdst ret rest)
+      (l1At 4171 s mem bi pa pb 4 i 0 pdst ret rest)
       (midState s (l1Step mem bi pa 4 4).memory
         (UInt256.ofNat (ptrAt (pa + 32 * 4 - 32) 4))
         (UInt256.ofNat (ptrAt (8224 + 32 * 4) 4))
         (l1Step mem bi pa 4 4).carry bi pa pb 4 i pdst ret rest) :=
-  (gasSteps_l1FirstMac s mem bi pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork
-      hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1MiddleOneMac s mem bi pa pb 4 i 1 pdst ret rest hcap hrun hcode
-      hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1MiddleTwoMac s mem bi pa pb 4 i 2 pdst ret rest hcap hrun hcode
-      hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  gasSteps_l1SecondMacExit s mem bi pa pb 4 i 3 pdst ret rest hcap hrun hcode
+  gasSteps_l1FourExit s mem bi pa pb 4 i 0 pdst ret rest hcap hrun hcode
     hfork hnp hact (by decide) (by decide) hpa hpaFit
 
-/-- Eight-limb L1: one four-MAC backedge group and one exiting group. -/
+/-- Eight-limb L1: fixed eight-MAC schedule with one midpoint selector. -/
 def gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb i : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
@@ -64,26 +56,12 @@ def gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4136 s mem bi pa pb 8 i 0 pdst ret rest)
+      (l1At 4171 s mem bi pa pb 8 i 0 pdst ret rest)
       (midState s (l1Step mem bi pa 8 8).memory
         (UInt256.ofNat (ptrAt (pa + 32 * 8 - 32) 8))
         (UInt256.ofNat (ptrAt (8224 + 32 * 8) 8))
         (l1Step mem bi pa 8 8).carry bi pa pb 8 i pdst ret rest) :=
-  (gasSteps_l1FirstMac s mem bi pa pb 8 i 0 pdst ret rest hcap hrun hcode hfork
-      hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1MiddleOneMac s mem bi pa pb 8 i 1 pdst ret rest hcap hrun hcode
-      hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1MiddleTwoMac s mem bi pa pb 8 i 2 pdst ret rest hcap hrun hcode
-      hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1SecondMacBody s mem bi pa pb 8 i 3 pdst ret rest hcap hrun hcode
-      hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1FirstMac s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork
-      hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1MiddleOneMac s mem bi pa pb 8 i 5 pdst ret rest hcap hrun hcode
-      hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1MiddleTwoMac s mem bi pa pb 8 i 6 pdst ret rest hcap hrun hcode
-      hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  gasSteps_l1SecondMacExit s mem bi pa pb 8 i 7 pdst ret rest hcap hrun hcode
+  gasSteps_l1EightExit s mem bi pa pb 8 i 0 pdst ret rest hcap hrun hcode
     hfork hnp hact (by decide) (by decide) hpa hpaFit
 
 /-- Four-limb L2: peeled MAC 0 and exiting pair 1/2. -/
@@ -96,7 +74,7 @@ def gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (l2At 4776 s mid bi mu c0 pa pb 4 i 0 pdst ret rest)
+      (l2At 4832 s mid bi mu c0 pa pb 4 i 0 pdst ret rest)
       (tailState s (l2Step mid mu c0 4 3).memory
         (UInt256.ofNat (ptrAt (32 * 4 - 64) 3))
         (UInt256.ofNat (ptrAt (8192 + 32 * 4) 3))
@@ -106,7 +84,7 @@ def gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
   gasSteps_pairExit s mid bi mu c0 pa pb 4 i 1 pdst ret rest hcap hrun hcode
     hfork hnp hact (by decide) (by decide)
 
-/-- Eight-limb L2: peeled MAC 0, pairs 1/2 and 3/4, exiting pair 5/6. -/
+/-- Eight-limb L2: peeled MAC 0 and fixed six-MAC remainder. -/
 def gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pa pb i : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
@@ -116,18 +94,14 @@ def gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (l2At 4776 s mid bi mu c0 pa pb 8 i 0 pdst ret rest)
+      (l2At 4832 s mid bi mu c0 pa pb 8 i 0 pdst ret rest)
       (tailState s (l2Step mid mu c0 8 7).memory
         (UInt256.ofNat (ptrAt (32 * 8 - 64) 7))
         (UInt256.ofNat (ptrAt (8192 + 32 * 8) 7))
         (l2Step mid mu c0 8 7).carry mu bi pa pb 8 i pdst ret rest) :=
   (gasSteps_peel s mid bi mu c0 pa pb 8 i pdst ret rest hcap hrun hcode hfork
       hnp hact (by decide) (by decide)).trans <|
-  (gasSteps_pairBody s mid bi mu c0 pa pb 8 i 1 pdst ret rest hcap hrun hcode
-      hfork hnp hact (by decide) (by decide)).trans <|
-  (gasSteps_pairBody s mid bi mu c0 pa pb 8 i 3 pdst ret rest hcap hrun hcode
-      hfork hnp hact (by decide) (by decide)).trans <|
-  gasSteps_pairExit s mid bi mu c0 pa pb 8 i 5 pdst ret rest hcap hrun hcode
+  gasSteps_sixExit s mid bi mu c0 pa pb 8 i 1 pdst ret rest hcap hrun hcode
     hfork hnp hact (by decide) (by decide)
 
 /-- One complete four-limb row, stopping at the common tail block. -/

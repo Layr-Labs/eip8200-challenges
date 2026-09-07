@@ -18,9 +18,9 @@ open Challenge.Modexp.Submission.Proofs.Fast.Cios2Entry
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2L2Pair
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Tail
 
-theorem jumpDest4115 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4115 = true := by
-  exact Artifact.isValidJumpDest_index 2711 (by rfl)
+theorem jumpDest4150 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4150 = true := by
+  exact Artifact.isValidJumpDest_index 2714 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_tailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
@@ -39,6 +39,7 @@ theorem run_tailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
   have hK :
       (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
         UInt256) = UInt256.ofNat
@@ -47,12 +48,12 @@ theorem run_tailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
   have h8192 : (8192 : UInt256).toNat = 8192 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
   have h8256 : (8256 : UInt256).toNat = 8256 := by decide
-  have h4115 : (4115 : UInt256).toNat = 4115 := by decide
-  have h4115' : (4115 : UInt256) = UInt256.ofNat 4115 := by decide
+  have h4115 : (4150 : UInt256).toNat = 4150 := by decide
+  have h4115' : (4150 : UInt256) = UInt256.ofNat 4150 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (4115 : UInt256).toNat = true := by
+      (4150 : UInt256).toNat = true := by
     rw [h4115]
-    exact jumpDest4115
+    exact jumpDest4150
   have hnextB : ptrAt (pb + 32 * n - 32) (i + 1) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       pb + 32 * (n - 2 - i) := by
@@ -79,8 +80,8 @@ theorem run_tailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       tailState, outState, tailMem, tailMem1, fastPC14, fastPC15,
-      hc5, hc6, hc7, hc8, hc9, hc10, hrun, hcode, hK, h8192, h8224, h8256,
-      h4115, h4115', hjump, jumpDest4115, hnextB, hpbmN, hgt,
+      hc5, hc6, hc7, hc8, hc9, hc10, hc11, hrun, hcode, hK, h8192, h8224, h8256,
+      h4115, h4115', hjump, jumpDest4150, hnextB, hpbmN, hgt,
       hactN, hactS, hactP, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
@@ -109,6 +110,7 @@ theorem run_tailLast (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
   have hK :
       (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
         UInt256) = UInt256.ofNat
@@ -147,7 +149,7 @@ theorem run_tailLast (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       tailState, mpCsubState, tailMem, tailMem1, fastPC14, fastPC15,
-      hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hrun, hcode,
+      hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hrun, hcode,
       hK, h8192, h8224, h8256, h2642, h2642', hjump, jumpDest2642,
       hnextB, hpbmN, hactN, hactS, hactP, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,

@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Defs
+
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
@@ -9,16 +10,15 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 3053
+def startIndex : Nat := 3366
 
-/-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
   [.op .POP,
    .op .POP,
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap ⟨1, by decide⟩),
    .op .POP,
-   .op (.Swap ⟨0, by decide⟩),
    .op .POP,
+   .op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
    .push 2 8224,
    .op .MLOAD,
@@ -32,13 +32,14 @@ private def template : List Instr :=
    .op .ADD,
    .push 2 8224,
    .op .MSTORE,
-   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   .op (.Dup ⟨3, by decide⟩),
    .op .ADD,
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4115,
+   .push 2 4150,
    .op .JUMPI,
+   .op .POP,
    .op .POP,
    .op .POP,
    .op .POP,
@@ -63,28 +64,23 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem startPC :
-    Artifact.submissionArtifact.instructionPC startIndex = 5192 := by
-  rfl
+    Artifact.submissionArtifact.instructionPC startIndex = 5255 := by rfl
 
-@[simp] theorem tailPC (index : Nat) (hlo : startIndex ≤ index)
-    (hhi : index ≤ 3083) :
-    Artifact.submissionArtifact.instructionPC index =
-      [5192,5193,5194,5195,5196,5197,5198,5199,5202,5203,5204,5205,5208,5209,5210,5213,5214,5215,5218,5219,5252,5253,5254,5255,5256,5259,5260,5261,5262,5263,5266][index - startIndex]! := by
+@[simp] theorem tailPC (i : Nat) (hi : startIndex ≤ i) (hii : i ≤ 3397) :
+    Artifact.submissionArtifact.instructionPC i =
+      [5255, 5256, 5257, 5258, 5259, 5260, 5261, 5262, 5265, 5266, 5267, 5268, 5271, 5272, 5273, 5276, 5277, 5278, 5281, 5282, 5283, 5284, 5285, 5286, 5287, 5290, 5291, 5292, 5293, 5294, 5295, 5298][i - startIndex]! := by
   calc
-    Artifact.submissionArtifact.instructionPC index =
-        Artifact.submissionArtifact.instructionPC
-          (startIndex + (index - startIndex)) := by
-      rw [Nat.add_sub_of_le hlo]
+    Artifact.submissionArtifact.instructionPC i =
+        Artifact.submissionArtifact.instructionPC (startIndex + (i - startIndex)) := by
+      rw [Nat.add_sub_of_le hi]
     _ = Artifact.submissionArtifact.instructionPC startIndex +
           (assembleBytes
             ((Artifact.submissionArtifact.instructions.drop startIndex).take
-              (index - startIndex))).length :=
-      instructionPC_add Artifact.submissionArtifact startIndex
-        (index - startIndex)
+              (i - startIndex))).length :=
+      instructionPC_add Artifact.submissionArtifact startIndex (i - startIndex)
     _ = _ := by
       rw [startPC]
-      interval_cases index <;> rfl
-
+      interval_cases i <;> rfl
 
 def opAt (offset : Nat) (op : Operation)
     (hget : template[offset]? = some (.op op) := by rfl)
@@ -103,15 +99,15 @@ def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨startIndex + offset, .push width value, (getElem_slice offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 3053..3083, pc 5192..5266. -/
+/-- Exact live instruction slice 3366..3397, PCs 5255..5298. -/
 def cios2Tail :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 0 .POP,
    opAt 1 .POP,
-   opAt 2 (.Swap ⟨0, by decide⟩),
+   opAt 2 (.Swap ⟨1, by decide⟩),
    opAt 3 .POP,
-   opAt 4 (.Swap ⟨0, by decide⟩),
-   opAt 5 .POP,
+   opAt 4 .POP,
+   opAt 5 .JUMPDEST,
    opAt 6 (.Dup ⟨0, by decide⟩),
    pushAt 7 2 8224,
    opAt 8 .MLOAD,
@@ -125,20 +121,20 @@ def cios2Tail :
    opAt 16 .ADD,
    pushAt 17 2 8224,
    opAt 18 .MSTORE,
-   pushAt 19 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 19 (.Dup ⟨3, by decide⟩),
    opAt 20 .ADD,
    opAt 21 (.Dup ⟨2, by decide⟩),
    opAt 22 (.Dup ⟨1, by decide⟩),
    opAt 23 .GT,
-   pushAt 24 2 4115,
+   pushAt 24 2 4150,
    opAt 25 .JUMPI,
    opAt 26 .POP,
    opAt 27 .POP,
    opAt 28 .POP,
-   pushAt 29 2 2642,
-   opAt 30 .JUMP]
+   opAt 29 .POP,
+   pushAt 30 2 2642,
+   opAt 31 .JUMP]
 
-/-- The taken outer-loop branch stops at its `JUMPI`. -/
 def cios2TailLoop := cios2Tail.take 26
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Tail

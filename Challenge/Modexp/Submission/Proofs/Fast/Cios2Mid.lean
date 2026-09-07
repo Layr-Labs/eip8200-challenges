@@ -24,7 +24,8 @@ def l2At (pc : Nat) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
                      UInt256.ofNat (ptrAt (8192 + 32 * n) k),
                      (l2Step mid mu c0 n k).carry, mu, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
+                     UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32),
+                     (115792089237316195423570985008687907853269984665640564039457584007913129639904 : UInt256), pdst, ret] ++ rest
            memory := (l2Step mid mu c0 n k).memory }
 
 set_option linter.unusedSimpArgs false in
@@ -36,7 +37,7 @@ theorem run_mid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.Stepper.runLocatedBlock cios2Mid
       (midState s mem paj ptj c bi pa pb n i pdst ret rest) =
-      some (l2At 4776 s (midMem mem c) bi (rowMu mem n)
+      some (l2At 4832 s (midMem mem c) bi (rowMu mem n)
         (rowC0 mem n) pa pb n i 0 pdst ret rest) := by
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
@@ -44,6 +45,7 @@ theorem run_mid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
   have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have h8192 : (8192 : UInt256).toNat = 8192 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
@@ -97,7 +99,7 @@ theorem run_mid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
       midState, l2At, l2Step, midMem, midMem1, rowMu, rowC0, mulHi,
       zero_lt_eq_double_isZero,
       maxWord_literal, fastPC12, fastPC13, readWord_midMem_peel,
-      hc6, hc7, hc8, hc9, hc10, hc11, hrun, h32, h8192, h8224, h9376, h9408, h9440,
+      hc6, hc7, hc8, hc9, hc10, hc11, hc12, hrun, h32, h8192, h8224, h9376, h9408, h9440,
       hml, htl, hTLN, hMLN, hsubTL, hsubML, hsc1, hsc2, hsc3,
       hactN, hactP, hactTL, hactT0, hactMI, hactML, hactM0,
       State.activeWordsAfterUInt256,
@@ -118,7 +120,7 @@ def gasSteps_mid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.GasSteps
       (midState s mem paj ptj c bi pa pb n i pdst ret rest)
-      (l2At 4776 s (midMem mem c) bi (rowMu mem n)
+      (l2At 4832 s (midMem mem c) bi (rowMu mem n)
         (rowC0 mem n) pa pb n i 0 pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka cios2Mid hcode hfork

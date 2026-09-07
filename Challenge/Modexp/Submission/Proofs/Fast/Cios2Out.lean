@@ -30,13 +30,14 @@ theorem run_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.Stepper.runLocatedBlock cios2Out
       (outState s mem pa pb n i pdst ret rest) =
-      some (l1At 4136 s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) := by
+      some (l1At 4171 s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) := by
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
   have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have h9344 : (9344 : UInt256).toNat = 9344 := by decide
   have h9440 : (9440 : UInt256).toNat = 9440 := by decide
@@ -68,7 +69,7 @@ theorem run_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       outState, l1At, l1Step, rowBi, fastPC10, fastPC11,
-      hc5, hc6, hc7, hc8, hc9, hc10, hrun, h32, h9344, h9440, hzero,
+      hc5, hc6, hc7, hc8, hc9, hc10, hc11, hrun, h32, h9344, h9440, hzero,
       hs32, htl, hpbi, hpa32, hsuba, hsubaN, hactB, hactT, hactS,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -91,7 +92,7 @@ def gasSteps_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.GasSteps
       (outState s mem pa pb n i pdst ret rest)
-      (l1At 4136 s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) :=
+      (l1At 4171 s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka cios2Out hcode hfork
     (run_out s mem pa pb n i pdst ret rest hcap hrun hact hn hn32 hi hpa hpaFit
