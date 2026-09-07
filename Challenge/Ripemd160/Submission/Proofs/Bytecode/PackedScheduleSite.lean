@@ -107,7 +107,7 @@ private theorem denseBeforeJumpTemplate_advances :
   · exact denseHalfTemplate_advances 0 instruction h0
 
 private theorem packedSchedule_slice :
-    (Artifact.submissionArtifact.instructions.drop 268).take
+    (Artifact.submissionArtifact.instructions.drop 273).take
         DenseScheduleTemplate.denseBeforeJumpTemplate.length =
       DenseScheduleTemplate.denseBeforeJumpTemplate := by
   rfl
@@ -117,10 +117,10 @@ def packedScheduleSite :
       DenseScheduleTemplate.denseBeforeJumpTemplate :=
   StackSiteBuilder.ofSlice
     (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    DenseScheduleTemplate.denseBeforeJumpTemplate 268
+    DenseScheduleTemplate.denseBeforeJumpTemplate 273
     packedSchedule_slice
     (by
-      change 268 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
+      change 273 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
         Artifact.submissionInstructions.length
       rw [DenseScheduleTemplate.denseBeforeJumpTemplate_length,
         Artifact.referenceInstructions_count]
@@ -136,25 +136,25 @@ private theorem denseScheduleTemplate_byteLength :
   exact DenseScheduleTemplate.denseBeforeJumpTemplate_byteLength
 
 private theorem packedSchedule_start_instructionPC :
-    Artifact.submissionArtifact.instructionPC 268 = 0x1ed := by
+    Artifact.submissionArtifact.instructionPC 273 = 0x1f2 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 private theorem packedSchedule_end_instructionPC :
-    Artifact.submissionArtifact.instructionPC 319 = 0x2ab := by
+    Artifact.submissionArtifact.instructionPC 324 = 0x2b0 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem packedScheduleSite_startPC :
-    packedScheduleSite.startPC = UInt256.ofNat 0x1ed := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 268) =
-    UInt256.ofNat 0x1ed
+    packedScheduleSite.startPC = UInt256.ofNat 0x1f2 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 273) =
+    UInt256.ofNat 0x1f2
   rw [packedSchedule_start_instructionPC]
 
 @[simp] theorem packedScheduleSite_endPC :
-    packedScheduleSite.endPC = UInt256.ofNat 0x2ab := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 319) =
-    UInt256.ofNat 0x2ab
+    packedScheduleSite.endPC = UInt256.ofNat 0x2b0 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 324) =
+    UInt256.ofNat 0x2b0
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleSite_end_eq_pcAfter :

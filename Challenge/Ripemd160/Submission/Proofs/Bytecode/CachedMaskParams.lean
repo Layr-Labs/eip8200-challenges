@@ -35,7 +35,7 @@ def leftQuad (word : Nat → UInt32) (group : Fin 5) (k : Fin 4)
       (leftStep word (16 * group.val + 4 * k.val + 1)
         (leftStep word (16 * group.val + 4 * k.val) w)))
 
-theorem left_fits (s : State) (group : Fin 5) (hactive : 11 ≤ s.activeWords.toNat) :
+theorem left_fits (s : State) (group : Fin 5) (hactive : 25 ≤ s.activeWords.toNat) :
     ∀ k, (left group k).Fits s := by
   intro k i
   have h := quadLeftAddress_end_le s ⟨4 * group.val + k.val, by omega⟩ i hactive

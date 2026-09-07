@@ -12,7 +12,7 @@ open StackRoundTrace QuadRoundState QuadRoundTemplate QuadSites QuadSemantic
 
 def gasSteps_leftNormal (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (n : CachedMaskRoundSitesLeft.NormalIndex)
-    (hwords : low32DenseWordsAt s word) (hactive : 11 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 25 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -51,7 +51,7 @@ def gasSteps_leftNormal (s : State) (word : Nat → UInt32)
 
 def gasSteps_leftFallthrough (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (group : Fin 2)
-    (hwords : low32DenseWordsAt s word) (hactive : 11 ≤ s.activeWords.toNat)
+    (hwords : low32DenseWordsAt s word) (hactive : 25 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -96,8 +96,8 @@ def gasSteps_leftFallthrough (s : State) (word : Nat → UInt32)
 
 noncomputable def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
-    (hk : 4 ≤ k.val ∧ (k.val < 8 ∨ 12 ≤ k.val) ∧ k.val < 16)
-    (hwords : low32DenseWordsAt s word) (hactive : 11 ≤ s.activeWords.toNat)
+    (hk : 12 ≤ k.val ∧ k.val < 16)
+    (hwords : low32DenseWordsAt s word) (hactive : 25 ≤ s.activeWords.toNat)
     (hstack : rho.length < 1006) (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -114,14 +114,6 @@ noncomputable def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
   · exact ⟨gasSteps_leftNormal s word working rho 2 hwords hactive hstack hcode hfork hrun hnp⟩
 
   · exact ⟨gasSteps_leftFallthrough s word working rho 0 hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨gasSteps_leftNormal s word working rho 3 hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨gasSteps_leftNormal s word working rho 4 hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨gasSteps_leftNormal s word working rho 5 hwords hactive hstack hcode hfork hrun hnp⟩
-
-  · exact ⟨gasSteps_leftFallthrough s word working rho 1 hwords hactive hstack hcode hfork hrun hnp⟩
 
 #print axioms gasSteps_leftQuad
 

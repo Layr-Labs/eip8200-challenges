@@ -23,59 +23,17 @@ def rightParams (group : Fin 5) (k : Fin 4) : Params where
     subst group
     rfl
 
-theorem right0_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
+theorem right0_fits (s : State) (hactive : 25 ≤ s.activeWords.toNat) :
     (rightParams 0 0).Fits s := by
   intro i
-  have hend : ((rightParams 0 0).address i).toNat + 32 ≤ 11 * 32 := by
+  have hend : ((rightParams 0 0).address i).toNat + 32 ≤ 25 * 32 := by
     fin_cases i <;> decide
   omega
 
-theorem right1_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
+theorem right1_fits (s : State) (hactive : 25 ≤ s.activeWords.toNat) :
     (rightParams 0 1).Fits s := by
   intro i
-  have hend : ((rightParams 0 1).address i).toNat + 32 ≤ 11 * 32 := by
-    fin_cases i <;> decide
-  omega
-
-theorem right2_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
-    (rightParams 0 2).Fits s := by
-  intro i
-  have hend : ((rightParams 0 2).address i).toNat + 32 ≤ 11 * 32 := by
-    fin_cases i <;> decide
-  omega
-
-theorem right3_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
-    (rightParams 0 3).Fits s := by
-  intro i
-  have hend : ((rightParams 0 3).address i).toNat + 32 ≤ 11 * 32 := by
-    fin_cases i <;> decide
-  omega
-
-theorem right4_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
-    (rightParams 1 0).Fits s := by
-  intro i
-  have hend : ((rightParams 1 0).address i).toNat + 32 ≤ 11 * 32 := by
-    fin_cases i <;> decide
-  omega
-
-theorem right5_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
-    (rightParams 1 1).Fits s := by
-  intro i
-  have hend : ((rightParams 1 1).address i).toNat + 32 ≤ 11 * 32 := by
-    fin_cases i <;> decide
-  omega
-
-theorem right6_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
-    (rightParams 1 2).Fits s := by
-  intro i
-  have hend : ((rightParams 1 2).address i).toNat + 32 ≤ 11 * 32 := by
-    fin_cases i <;> decide
-  omega
-
-theorem right7_fits (s : State) (hactive : 11 ≤ s.activeWords.toNat) :
-    (rightParams 1 3).Fits s := by
-  intro i
-  have hend : ((rightParams 1 3).address i).toNat + 32 ≤ 11 * 32 := by
+  have hend : ((rightParams 0 1).address i).toNat + 32 ≤ 25 * 32 := by
     fin_cases i <;> decide
   omega
 

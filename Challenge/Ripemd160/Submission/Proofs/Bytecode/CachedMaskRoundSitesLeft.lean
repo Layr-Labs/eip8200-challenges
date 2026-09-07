@@ -17,12 +17,13 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites
 
 abbrev Artifact := QuadSites.Artifact
 
-abbrev NormalIndex := Fin 6
+abbrev NormalIndex := Fin 3
 
 def groupFin (group : Fin 2) : Fin 5 :=
-  ⟨if group.val = 0 then 1 else group.val + 2, by split <;> omega⟩
+  ⟨3, by decide⟩
 
-def normalGroup (k : NormalIndex) : Fin 2 := ⟨k.val / 3, by omega⟩
+def normalGroup (k : NormalIndex) : Fin 2 :=
+  ⟨0, by decide⟩
 
 def normalFin (k : NormalIndex) : Fin 20 :=
   ⟨4 * (groupFin (normalGroup k)).val + k.val % 3, by
