@@ -503,4 +503,3 @@ def gasSteps_of_helper {artifact : ProgramArtifact} {fork : Fork}
 end Fallthrough
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.LoadedCalls
-

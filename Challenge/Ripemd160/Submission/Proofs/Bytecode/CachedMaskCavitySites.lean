@@ -26,18 +26,8 @@ theorem pc_toNat (index : Nat) :
   exact Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt
     (A.instructionPC_le_code_size index) code_bound)
 
-private def wfOp {op : Operation}
-    (hopcode : Decode.opcodeOf (Instr.opByte op) = some op)
-    (hplain : plainOp op)
-    (havailable : op.availableInFork .Osaka = true) :
-    Stepper.WellFormed .Osaka (.op op) :=
-  ⟨hopcode, hplain, havailable⟩
-
-
-
-
 private theorem left0First_slice :
-    (A.instructions.drop 3).take (CachedMaskParams.leftCode 0).length =
+    (A.instructions.drop 336).take (CachedMaskParams.leftCode 0).length =
       CachedMaskParams.leftCode 0 := by rfl
 
 private theorem wellFormed_left0First : ∀ instruction ∈ CachedMaskParams.leftCode 0,
@@ -45,13 +35,13 @@ private theorem wellFormed_left0First : ∀ instruction ∈ CachedMaskParams.lef
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def left0First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 0) :=
-  StackSiteBuilder.ofSlice _ 3 left0First_slice (by
-    change 3 + (CachedMaskParams.leftCode 0).length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 336 left0First_slice (by
+    change 336 + (CachedMaskParams.leftCode 0).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left0First (by decide)
 
 private theorem left2First_slice :
-    (A.instructions.drop 910).take (CachedMaskParams.leftCode 2).length =
+    (A.instructions.drop 909).take (CachedMaskParams.leftCode 2).length =
       CachedMaskParams.leftCode 2 := by rfl
 
 private theorem wellFormed_left2First : ∀ instruction ∈ CachedMaskParams.leftCode 2,
@@ -59,13 +49,13 @@ private theorem wellFormed_left2First : ∀ instruction ∈ CachedMaskParams.lef
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def left2First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 2) :=
-  StackSiteBuilder.ofSlice _ 910 left2First_slice (by
-    change 910 + (CachedMaskParams.leftCode 2).length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 909 left2First_slice (by
+    change 909 + (CachedMaskParams.leftCode 2).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left2First (by decide)
 
 private theorem rightFirst_slice :
-    (A.instructions.drop 452).take CachedMaskParams.rightCode.length =
+    (A.instructions.drop 2865).take CachedMaskParams.rightCode.length =
       CachedMaskParams.rightCode := by rfl
 
 private theorem wellFormed_rightFirst : ∀ instruction ∈ CachedMaskParams.rightCode,
@@ -73,13 +63,13 @@ private theorem wellFormed_rightFirst : ∀ instruction ∈ CachedMaskParams.rig
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def rightFirst : GenericRoundSite A .Osaka CachedMaskParams.rightCode :=
-  StackSiteBuilder.ofSlice _ 452 rightFirst_slice (by
-    change 452 + CachedMaskParams.rightCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 2865 rightFirst_slice (by
+    change 2865 + CachedMaskParams.rightCode.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_rightFirst (by decide)
 
 private theorem left4First_slice :
-    (A.instructions.drop 1710).take (CachedMaskParams.leftCode 4).length =
+    (A.instructions.drop 1530).take (CachedMaskParams.leftCode 4).length =
       CachedMaskParams.leftCode 4 := by rfl
 
 private theorem wellFormed_left4First : ∀ instruction ∈ CachedMaskParams.leftCode 4,
@@ -87,120 +77,9 @@ private theorem wellFormed_left4First : ∀ instruction ∈ CachedMaskParams.lef
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def left4First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 4) :=
-  StackSiteBuilder.ofSlice _ 1710 left4First_slice (by
-    change 1710 + (CachedMaskParams.leftCode 4).length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 1530 left4First_slice (by
+    change 1530 + (CachedMaskParams.leftCode 4).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left4First (by decide)
-
-private def exactSite (index : Nat) (instruction : Instr)
-    (atIndex : A.instructions[index]? = some instruction)
-    (wellFormed : Stepper.WellFormed .Osaka instruction) : LocatedSite A .Osaka where
-  located := ⟨index, instruction, atIndex, wellFormed⟩
-  pc := UInt256.ofNat (A.instructionPC index)
-  pc_eq := pc_toNat index
-
-
-def left0Entry : Bridge A .Osaka where
-  push := exactSite 907 (.push 2 (UInt256.ofNat 4)) (by rfl) (by decide)
-  jump := exactSite 908 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 2 (.op .JUMPDEST) (by rfl)
-    (wfOp (by decide) trivial rfl)
-  push_instr := by
-    simp only [exactSite]
-    apply congrArg (Instr.push ⟨2, by decide⟩)
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  jump_instr := rfl
-  destination_instr := rfl
-  jump_at := by
-    simp only [exactSite]
-    repeat' rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-
-def left0Return : Bridge A .Osaka where
-  push := exactSite 403 (.push 2 (UInt256.ofNat 1694)) (by rfl) (by decide)
-  jump := exactSite 404 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 1360 (.op .JUMPDEST) (by rfl)
-    (wfOp (by decide) trivial rfl)
-  push_instr := by
-    simp only [exactSite]
-    apply congrArg (Instr.push ⟨2, by decide⟩)
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  jump_instr := rfl
-  destination_instr := rfl
-  jump_at := by
-    simp only [exactSite]
-    repeat' rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-
-def left2Entry : Bridge A .Osaka where
-  push := exactSite 1534 (.push 2 (UInt256.ofNat 1113)) (by rfl) (by decide)
-  jump := exactSite 1535 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 909 (.op .JUMPDEST) (by rfl)
-    (wfOp (by decide) trivial rfl)
-  push_instr := by
-    simp only [exactSite]
-    apply congrArg (Instr.push ⟨2, by decide⟩)
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  jump_instr := rfl
-  destination_instr := rfl
-  jump_at := by
-    simp only [exactSite]
-    repeat' rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-
-def left2Return : Bridge A .Osaka where
-  push := exactSite 1358 (.push 2 (UInt256.ofNat 2017)) (by rfl) (by decide)
-  jump := exactSite 1359 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 1536 (.op .JUMPDEST) (by rfl)
-    (wfOp (by decide) trivial rfl)
-  push_instr := by
-    simp only [exactSite]
-    apply congrArg (Instr.push ⟨2, by decide⟩)
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  jump_instr := rfl
-  destination_instr := rfl
-  jump_at := by
-    simp only [exactSite]
-    repeat' rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-
-def rightEntry : Bridge A .Osaka where
-  push := exactSite 3231 (.push 2 (UInt256.ofNat 535)) (by rfl) (by decide)
-  jump := exactSite 3232 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 451 (.op .JUMPDEST) (by rfl)
-    (wfOp (by decide) trivial rfl)
-  push_instr := by
-    simp only [exactSite]
-    apply congrArg (Instr.push ⟨2, by decide⟩)
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  jump_instr := rfl
-  destination_instr := rfl
-  jump_at := by
-    simp only [exactSite]
-    repeat' rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-
-def rightReturn : Bridge A .Osaka where
-  push := exactSite 852 (.push 2 (UInt256.ofNat 4607)) (by rfl) (by decide)
-  jump := exactSite 853 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 3233 (.op .JUMPDEST) (by rfl)
-    (wfOp (by decide) trivial rfl)
-  push_instr := by
-    simp only [exactSite]
-    apply congrArg (Instr.push ⟨2, by decide⟩)
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  jump_instr := rfl
-  destination_instr := rfl
-  jump_at := by
-    simp only [exactSite]
-    repeat' rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskCavitySites

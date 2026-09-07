@@ -1,11 +1,10 @@
 import Batteries.Tactic.OpenPrivate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadLayout
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Schedule
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.newArtifactByteLength
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -71,9 +70,6 @@ private theorem endianStage_advances (shift : Nat) (mask : UInt256) :
     | apply advances_straight
       unfold DenseScheduleTemplate.endianFactorPush
       split <;> constructor
-    | apply advances_straight
-      unfold DenseScheduleTemplate.endianMaskPush
-      split <;> constructor
 
 private theorem denseStore_advances (half : Nat) :
     ∀ instruction ∈
@@ -108,7 +104,7 @@ private theorem denseBeforeJumpTemplate_advances :
   · exact denseHalfTemplate_advances 0 instruction h0
 
 private theorem packedSchedule_slice :
-    (Artifact.submissionArtifact.instructions.drop 3282).take
+    (Artifact.submissionArtifact.instructions.drop 273).take
         DenseScheduleTemplate.denseBeforeJumpTemplate.length =
       DenseScheduleTemplate.denseBeforeJumpTemplate := by
   rfl
@@ -118,10 +114,10 @@ def packedScheduleSite :
       DenseScheduleTemplate.denseBeforeJumpTemplate :=
   StackSiteBuilder.ofSlice
     (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    DenseScheduleTemplate.denseBeforeJumpTemplate 3282
+    DenseScheduleTemplate.denseBeforeJumpTemplate 273
     packedSchedule_slice
     (by
-      change 3282 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
+      change 273 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
         Artifact.submissionInstructions.length
       rw [DenseScheduleTemplate.denseBeforeJumpTemplate_length,
         Artifact.referenceInstructions_count]
@@ -132,28 +128,30 @@ def packedScheduleSite :
     (by decide)
 
 private theorem denseScheduleTemplate_byteLength :
-    byteLength DenseScheduleTemplate.denseBeforeJumpTemplate = 192 := by
+    byteLength DenseScheduleTemplate.denseBeforeJumpTemplate = 198 := by
   rw [byteLength_eq_assemble]
   exact DenseScheduleTemplate.denseBeforeJumpTemplate_byteLength
 
 private theorem packedSchedule_start_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3282 = 0x123a :=
-  QuadLayout.schedule_pc
+    Artifact.submissionArtifact.instructionPC 273 = 0x1fe := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]
+  rfl
 
 private theorem packedSchedule_end_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3333 = 0x12fa :=
-  QuadLayout.scheduleJump_pc
+    Artifact.submissionArtifact.instructionPC 324 = 0x2c4 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]
+  rfl
 
 @[simp] theorem packedScheduleSite_startPC :
-    packedScheduleSite.startPC = UInt256.ofNat 0x123a := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3282) =
-    UInt256.ofNat 0x123a
+    packedScheduleSite.startPC = UInt256.ofNat 0x1fe := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 273) =
+    UInt256.ofNat 0x1fe
   rw [packedSchedule_start_instructionPC]
 
 @[simp] theorem packedScheduleSite_endPC :
-    packedScheduleSite.endPC = UInt256.ofNat 0x12fa := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3333) =
-    UInt256.ofNat 0x12fa
+    packedScheduleSite.endPC = UInt256.ofNat 0x2c4 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 324) =
+    UInt256.ofNat 0x2c4
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleSite_end_eq_pcAfter :
@@ -164,121 +162,6 @@ theorem packedScheduleSite_end_eq_pcAfter :
     packedScheduleSite.startPC packedScheduleSite.endPC packedScheduleSite.head_eq
     packedScheduleSite.end_eq packedScheduleSite.contiguous
   rwa [packedScheduleSite.instruction_eq] at h
-
-private theorem pc_toNat_instructionPC (index : Nat) :
-    (UInt256.ofNat (Artifact.submissionArtifact.instructionPC index)).toNat =
-      Artifact.submissionArtifact.instructionPC index := by
-  rw [Challenge.EvmProof.Word.word_toNat_ofNat]
-  apply Nat.mod_eq_of_lt
-  have hle := Artifact.submissionArtifact.instructionPC_le_code_size index
-  have hcode := QuadLayout.code_bound
-  exact Nat.lt_of_le_of_lt hle hcode
-
-def packedScheduleFinalJump :
-    LocatedSite Artifact.submissionArtifact .Osaka where
-  located :=
-    { index := 3333
-      instruction := .op .JUMP
-      atIndex := by rfl
-      wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3333)
-  pc_eq := pc_toNat_instructionPC 3333
-
-def packedScheduleFinalJumpPath :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [packedScheduleFinalJump.located]
-
-private theorem runLocatedBlock_singleton
-    {artifact : ProgramArtifact} {fork : Fork}
-    (located : Challenge.EvmProof.Stepper.Located artifact fork) (s : State) :
-    Challenge.EvmProof.Stepper.runLocatedBlock [located] s =
-      Challenge.EvmProof.Stepper.runLocated located s := by
-  cases h : Challenge.EvmProof.Stepper.runLocated located s with
-  | none => simp [Challenge.EvmProof.Stepper.runLocatedBlock, h]
-  | some t => simp [Challenge.EvmProof.Stepper.runLocatedBlock, h]
-
-@[simp] theorem packedScheduleFinalJump_pc :
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x12fa := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3333) =
-    UInt256.ofNat 0x12fa
-  rw [packedSchedule_end_instructionPC]
-
-theorem packedScheduleFinalJump_site_end :
-    packedScheduleFinalJump.pc = packedScheduleSite.endPC := by
-  calc
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x12fa := packedScheduleFinalJump_pc
-    _ = packedScheduleSite.endPC := packedScheduleSite_endPC.symm
-
-theorem packedScheduleFinalJump_pc_eq_expected
-    (s : State) (messageOffset returnPC : UInt256) (rest : List UInt256) :
-    packedScheduleFinalJump.pc =
-      (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-        messageOffset returnPC rest).pc := by
-  calc
-    packedScheduleFinalJump.pc = packedScheduleSite.endPC :=
-      packedScheduleFinalJump_site_end
-    _ = StackRoundTrace.pcAfter packedScheduleSite.startPC
-        DenseScheduleTemplate.denseBeforeJumpTemplate :=
-      packedScheduleSite_end_eq_pcAfter
-    _ = (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-        messageOffset returnPC rest).pc := by rfl
-
-theorem runPackedScheduleFinalJump
-    (s : State) (messageOffset returnPC : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1023)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code returnPC.toNat = true) :
-    Stepper.runLocatedBlock packedScheduleFinalJumpPath
-      (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-        messageOffset returnPC rest) =
-      some (Schedule.scheduleReturned
-        (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-          messageOffset returnPC rest) returnPC rest) := by
-  have hvalid' :
-      Decode.isValidJumpDest
-        (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-          messageOffset returnPC rest).executionEnv.code returnPC.toNat = true := by
-    simpa [DenseScheduleTemplate.denseExpectedState] using hvalid
-  have h := SharedCallTrace.runLocated_jump packedScheduleFinalJump (by rfl)
-    (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-      messageOffset returnPC rest) returnPC rest hstack hvalid'
-  have hstate :
-      { DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-          messageOffset returnPC rest with
-        pc := packedScheduleFinalJump.pc
-        stack := returnPC :: rest } =
-        DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-          messageOffset returnPC rest := by
-    rw [packedScheduleFinalJump_pc_eq_expected s messageOffset returnPC rest]
-    rfl
-  rw [hstate] at h
-  have hsingleton :
-      Stepper.runLocatedBlock packedScheduleFinalJumpPath
-          (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-            messageOffset returnPC rest) =
-        Stepper.runLocated packedScheduleFinalJump.located
-          (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-            messageOffset returnPC rest) := by
-    exact runLocatedBlock_singleton _ _
-  have hblock :
-      Stepper.runLocatedBlock packedScheduleFinalJumpPath
-          (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-            messageOffset returnPC rest) =
-        some { DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-          messageOffset returnPC rest with
-          pc := returnPC
-          stack := rest } := by
-    calc
-      Stepper.runLocatedBlock packedScheduleFinalJumpPath
-          (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-            messageOffset returnPC rest) =
-          Stepper.runLocated packedScheduleFinalJump.located
-            (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-              messageOffset returnPC rest) := hsingleton
-      _ = some { DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-          messageOffset returnPC rest with
-          pc := returnPC
-          stack := rest } := h
-  exact hblock
 
 def gasSteps_packedSchedule_of_raw
     (s : State) (messageOffset returnPC : UInt256) (rest : List UInt256)
@@ -311,75 +194,5 @@ def gasSteps_packedSchedule_of_raw
   · exact denseBeforeJumpTemplate_advances
   · exact hresult
 
-def gasSteps_packedSchedule_finalJump
-    (s : State) (messageOffset returnPC : UInt256) (rest : List UInt256)
-    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code)
-    (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hstack : rest.length < 1023)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code returnPC.toNat = true) :
-    GasSteps
-      (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-        messageOffset returnPC rest)
-      (Schedule.scheduleReturned
-        (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-          messageOffset returnPC rest) returnPC rest) := by
-  have hqcode :
-      (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-        messageOffset returnPC rest).executionEnv.code =
-        Artifact.submissionArtifact.code := by
-    simpa [DenseScheduleTemplate.denseExpectedState] using hcode
-  have hqfork :
-      (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-        messageOffset returnPC rest).fork = .Osaka := by
-    simpa [DenseScheduleTemplate.denseExpectedState, State.fork] using hfork
-  have hqrun :
-      (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-        messageOffset returnPC rest).halt = .Running := by
-    simpa [DenseScheduleTemplate.denseExpectedState] using hrun
-  have hqnp :
-      Precompile.isPrecompileWithConfig
-        (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-          messageOffset returnPC rest).executionEnv.precompileConfig
-        (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-          messageOffset returnPC rest).executionEnv.fork
-        (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-          messageOffset returnPC rest).executionEnv.codeAddr = false := by
-    simpa [DenseScheduleTemplate.denseExpectedState] using hnp
-  apply Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
-    packedScheduleFinalJumpPath
-  · exact hqcode
-  · exact hqfork
-  · exact runPackedScheduleFinalJump s messageOffset returnPC rest hstack hvalid
-  · exact hqrun
-  · exact hqnp
-
-def gasSteps_packedSchedule
-    (s : State) (messageOffset returnPC : UInt256) (rest : List UInt256)
-    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code)
-    (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hstack : rest.length < 1023)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code returnPC.toNat = true)
-    (hresult :
-      StackRoundTrace.runInstrSeq DenseScheduleTemplate.denseBeforeJumpTemplate
-        (DenseScheduleTemplate.scheduleEntry s packedScheduleSite.startPC
-          messageOffset returnPC rest) =
-      some (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-        messageOffset returnPC rest)) :
-    GasSteps
-      (DenseScheduleTemplate.scheduleEntry s packedScheduleSite.startPC
-        messageOffset returnPC rest)
-      (Schedule.scheduleReturned
-        (DenseScheduleTemplate.denseExpectedState s packedScheduleSite.startPC
-          messageOffset returnPC rest) returnPC rest) := by
-  exact (gasSteps_packedSchedule_of_raw s messageOffset returnPC rest hcode hfork hrun hnp
-    hresult).trans
-    (gasSteps_packedSchedule_finalJump s messageOffset returnPC rest hcode hfork hrun hnp
-      hstack hvalid)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleSite
