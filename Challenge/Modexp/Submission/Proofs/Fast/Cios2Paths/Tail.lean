@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 3005
+def startIndex : Nat := 2997
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
@@ -67,7 +67,7 @@ private theorem startPC :
   rfl
 
 @[simp] theorem tailPC (index : Nat) (hlo : startIndex ≤ index)
-    (hhi : index ≤ 3035) :
+    (hhi : index ≤ 3027) :
     Artifact.submissionArtifact.instructionPC index =
       [4954, 4955, 4956, 4957, 4958, 4959, 4960, 4961, 4964,
        4965, 4966, 4967, 4970, 4971, 4972, 4975, 4976, 4977,
@@ -105,7 +105,7 @@ def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨startIndex + offset, .push width value, (getElem_slice offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 3005..3035, pc 4954..5028. -/
+/-- Instructions 2997..3027, pc 4954..5028. -/
 def cios2Tail :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 0 .POP,

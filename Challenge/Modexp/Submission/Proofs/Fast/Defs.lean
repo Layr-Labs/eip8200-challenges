@@ -765,27 +765,27 @@ their proof modules. -/
   interval_cases i <;> decide
 
 /-- PC table for the fused ADDMOD/CSUB entry appended after the CIOS2 helper. -/
-@[simp] theorem fusedCsubPC0 (i : Nat) (hi : 3036 ≤ i) (hii : i ≤ 3051) :
+@[simp] theorem fusedCsubPC0 (i : Nat) (hi : 3028 ≤ i) (hii : i ≤ 3043) :
     Artifact.submissionArtifact.instructionPC i =
       [5029,5030,5033,5034,5035,5038,5039,5040,5041,5042,5043,5044,5045,
-       5046,5047,5050][i - 3036]! := by
+       5046,5047,5050][i - 3028]! := by
   interval_cases i <;> decide
 
 /-- PC table for the fused limb loop. -/
-@[simp] theorem fusedCsubPC1 (i : Nat) (hi : 3052 ≤ i) (hii : i ≤ 3106) :
+@[simp] theorem fusedCsubPC1 (i : Nat) (hi : 3044 ≤ i) (hii : i ≤ 3098) :
     Artifact.submissionArtifact.instructionPC i =
       [5051,5052,5053,5054,5055,5056,5057,5058,5059,5060,5061,5062,5063,
        5064,5065,5066,5067,5068,5069,5070,5071,5072,5073,5074,5077,5078,
        5079,5080,5081,5082,5083,5084,5085,5086,5087,5088,5089,5090,5091,
        5092,5093,5094,5097,5098,5099,5100,5101,5102,5104,5105,5106,5109,
-       5110,5111,5114][i - 3052]! := by
+       5110,5111,5114][i - 3044]! := by
   interval_cases i <;> decide
 
 /-- PC table for the fused selection/return tail. -/
-@[simp] theorem fusedCsubPC2 (i : Nat) (hi : 3107 ≤ i) (hii : i ≤ 3129) :
+@[simp] theorem fusedCsubPC2 (i : Nat) (hi : 3099 ≤ i) (hii : i ≤ 3121) :
     Artifact.submissionArtifact.instructionPC i =
       [5115,5116,5119,5120,5121,5122,5123,5124,5127,5128,5131,5132,5135,
-       5136,5137,5138,5139,5140,5141,5142,5143,5144,5145][i - 3107]! := by
+       5136,5137,5138,5139,5140,5141,5142,5143,5144,5145][i - 3099]! := by
   interval_cases i <;> decide
 
 theorem jumpDest1196 :
@@ -978,10 +978,10 @@ theorem jumpDest3661 :
 
 theorem jumpDest5029 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5029 = true :=
-  Artifact.isValidJumpDest_index 3036 (by rfl)
+  Artifact.isValidJumpDest_index 3028 (by rfl)
 
 theorem jumpDest5051 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5051 = true :=
-  Artifact.isValidJumpDest_index 3052 (by rfl)
+  Artifact.isValidJumpDest_index 3044 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

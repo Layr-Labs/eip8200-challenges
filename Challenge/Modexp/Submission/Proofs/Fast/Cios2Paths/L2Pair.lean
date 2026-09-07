@@ -126,8 +126,7 @@ private def secondTemplate : List Instr :=
    .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .ADD, .op .MSTORE,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    .op .ADD, .push 2 8224, .op (.Dup ⟨2, by decide⟩), .op .GT, .push 2 4662, .op .JUMPI,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+   .push 8 0, .op .POP]
 
 private theorem secondSlice_eq :
     (Artifact.submissionInstructions.drop secondStartIndex).take
@@ -147,12 +146,12 @@ private theorem secondStartPC :
   rfl
 
 @[simp] theorem secondPC (index : Nat) (hlo : secondStartIndex ≤ index)
-    (hhi : index ≤ 3004) :
+    (hhi : index ≤ 2996) :
     Artifact.submissionArtifact.instructionPC index =
             [4799, 4800, 4801, 4834, 4835, 4836, 4837, 4838, 4839, 4840, 4841, 4842, 4843, 4844,
        4845, 4846, 4847, 4848, 4849, 4850, 4851, 4852, 4853, 4854, 4855, 4856, 4857, 4858,
        4859, 4860, 4861, 4863, 4864, 4897, 4898, 4899, 4900, 4901, 4934, 4935, 4938, 4939,
-       4940, 4943, 4944, 4945, 4946, 4947, 4948, 4949, 4950, 4951, 4952, 4953][index - secondStartIndex]! := by
+       4940, 4943, 4944, 4953][index - secondStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -186,7 +185,7 @@ def secondPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨secondStartIndex + offset, .push width value,
     (secondGetElem offset hoffset).trans hget, hwf⟩
 
-/-- Second MAC and pair test: instructions 2956..3004, pc 4799..4953. -/
+/-- Second MAC and pair test: instructions 2951..2994, pc 4799..4943. -/
 def secondMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
     [secondOpAt 0 (.Dup ⟨0, by decide⟩), secondOpAt 1 .MLOAD,
@@ -210,20 +209,12 @@ def secondMac :
    secondOpAt 38 .ADD, secondPushAt 39 2 8224, secondOpAt 40 (.Dup ⟨2, by decide⟩),
    secondOpAt 41 .GT, secondPushAt 42 2 4662, secondOpAt 43 .JUMPI]
 
-/-- Same trace plus the ten padding `JUMPDEST`s on the fall-through path. -/
+/-- Same trace plus the final identity `PUSH8 0`/`POP` at instructions 2995..2996, pc 4944..4953. -/
 def secondMacExit :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   secondMac ++
-  [secondOpAt 44 .JUMPDEST,
-   secondOpAt 45 .JUMPDEST,
-   secondOpAt 46 .JUMPDEST,
-   secondOpAt 47 .JUMPDEST,
-   secondOpAt 48 .JUMPDEST,
-   secondOpAt 49 .JUMPDEST,
-   secondOpAt 50 .JUMPDEST,
-   secondOpAt 51 .JUMPDEST,
-   secondOpAt 52 .JUMPDEST,
-   secondOpAt 53 .JUMPDEST]
+  [secondPushAt 44 8 0,
+   secondOpAt 45 .POP]
 
 
 /-- The complete pair block, retained for whole-block consumers. -/
