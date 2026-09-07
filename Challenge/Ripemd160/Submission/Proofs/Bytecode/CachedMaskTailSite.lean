@@ -9,7 +9,7 @@ set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 
-/-! Exact masked consume tail at instruction 3544, including its final JUMP. -/
+/-! Exact masked consume tail at instruction 3638, including its final JUMP. -/
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskTailSite
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
@@ -82,28 +82,29 @@ private def artifactPrefix : List Instr :=
     submissionInstructionsChunk13 ++
     submissionInstructionsChunk14 ++
     submissionInstructionsChunk15 ++
-    submissionInstructionsChunk16
+    submissionInstructionsChunk16 ++
+    submissionInstructionsChunk17
 
 private def tailBefore : List Instr :=
-  artifactPrefix ++ submissionInstructionsChunk17.take 144
+  artifactPrefix ++ submissionInstructionsChunk18.take 38
 
 private def tailAfter : List Instr :=
-  submissionInstructionsChunk17.drop 192 ++ submissionInstructionsChunk18
+  submissionInstructionsChunk18.drop 86
 
-private theorem tailBefore_length : tailBefore.length = 3544 := by
+private theorem tailBefore_length : tailBefore.length = 3638 := by
   simp [tailBefore, artifactPrefix]
 
 private theorem artifactChunk_tail :
-    submissionInstructionsChunk17 =
-      submissionInstructionsChunk17.take 144 ++
-        CachedMaskOrderedTail.template ++ submissionInstructionsChunk17.drop 192 := by rfl
+    submissionInstructionsChunk18 =
+      submissionInstructionsChunk18.take 38 ++
+        CachedMaskOrderedTail.template ++ submissionInstructionsChunk18.drop 86 := by rfl
 
 private theorem artifact_tail_split :
     Artifact.submissionArtifact.instructions =
       tailBefore ++ CachedMaskOrderedTail.template ++ tailAfter := by
   change Artifact.submissionInstructions = _
   have hprefix : Artifact.submissionInstructions =
-      artifactPrefix ++ submissionInstructionsChunk17 ++ submissionInstructionsChunk18 := by
+      artifactPrefix ++ submissionInstructionsChunk18 := by
     simp only [Artifact.submissionInstructions, artifactPrefix, List.append_assoc]
   rw [hprefix]
   conv_lhs => rw [artifactChunk_tail]
@@ -119,7 +120,7 @@ private theorem tailInstructions_length : CachedMaskOrderedTail.template.length 
 
 private theorem tail_instruction_at (i : Nat)
     (hi : i < CachedMaskOrderedTail.template.length) :
-    Artifact.submissionArtifact.instructions[3544 + i]? =
+    Artifact.submissionArtifact.instructions[3638 + i]? =
       CachedMaskOrderedTail.template[i]? := by
   have h := ArtifactSegment.getElem?_segment Artifact.submissionArtifact
     tailBefore CachedMaskOrderedTail.template
@@ -129,32 +130,32 @@ private theorem tail_instruction_at (i : Nat)
 
 private theorem tail_instruction_pc (i : Nat)
     (hi : i ≤ CachedMaskOrderedTail.template.length) :
-    Artifact.submissionArtifact.instructionPC (3544 + i) =
-      0x1408 + ArtifactByteLength.byteLength (CachedMaskOrderedTail.template.take i) := by
+    Artifact.submissionArtifact.instructionPC (3638 + i) =
+      0x143a + ArtifactByteLength.byteLength (CachedMaskOrderedTail.template.take i) := by
   have hzero := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     tailBefore CachedMaskOrderedTail.template
     tailAfter
     artifact_consume_split 0 (by omega)
-  have hzero' : Artifact.submissionArtifact.instructionPC 3544 =
+  have hzero' : Artifact.submissionArtifact.instructionPC 3638 =
       (assembleBytes tailBefore).length := by
     simpa [tailBefore_length] using hzero
-  have hbefore : (assembleBytes tailBefore).length = 0x1408 :=
+  have hbefore : (assembleBytes tailBefore).length = 0x143a :=
     hzero'.symm.trans QuadLayout.tail_pc
   have h := ArtifactSegment.instructionPC_segment_of_bounds Artifact.submissionArtifact
     tailBefore CachedMaskOrderedTail.template
-    tailAfter 3544 0x1408
+    tailAfter 3638 0x143a
     artifact_consume_split tailBefore_length hbefore i hi
   simpa only [ArtifactByteLength.byteLength_eq_assemble] using h
 
 private theorem tail_instruction_pc_global (index : Nat)
-    (hlo : 3544 ≤ index) (hhi : index ≤ 3592) :
+    (hlo : 3638 ≤ index) (hhi : index ≤ 3686) :
     Artifact.submissionArtifact.instructionPC index =
-      0x1408 + ArtifactByteLength.byteLength
-        (CachedMaskOrderedTail.template.take (index - 3544)) := by
-  have hi : index - 3544 ≤ CachedMaskOrderedTail.template.length := by
+      0x143a + ArtifactByteLength.byteLength
+        (CachedMaskOrderedTail.template.take (index - 3638)) := by
+  have hi : index - 3638 ≤ CachedMaskOrderedTail.template.length := by
     rw [tailInstructions_length]
     omega
-  have h := tail_instruction_pc (index - 3544) hi
+  have h := tail_instruction_pc (index - 3638) hi
   simpa only [Nat.add_sub_of_le hlo] using h
 
 private theorem tail_instruction_wellFormed (i : Nat)
@@ -166,7 +167,7 @@ private theorem tail_instruction_wellFormed (i : Nat)
 
 def tailLocated (i : Nat) (hi : i < CachedMaskOrderedTail.template.length) :
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka where
-  index := 3544 + i
+  index := 3638 + i
   instruction := ((CachedMaskOrderedTail.template)[i]'hi)
   atIndex := by
     simpa [List.getElem?_eq_getElem hi] using tail_instruction_at i hi
@@ -231,7 +232,7 @@ private theorem runLocatedBlock_tail_raw (s : State)
 
 theorem runLocatedBlock_tail (s : State)
     (left right : Compression.EvmWorking) (ret : UInt256) (rest : List UInt256)
-    (hactive : 25 ≤ s.activeWords.toNat) (hstack : rest.length < 1006)
+    (hactive : 11 ≤ s.activeWords.toNat) (hstack : rest.length < 1006)
     (hrun : s.halt = .Running) (hfork : s.fork = .Osaka)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock tailPath
@@ -242,7 +243,7 @@ theorem runLocatedBlock_tail (s : State)
 
 def actualTailGasSteps (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256)
-    (hactive : 25 ≤ s.activeWords.toNat) (hstack : rest.length < 1006)
+    (hactive : 11 ≤ s.activeWords.toNat) (hstack : rest.length < 1006)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

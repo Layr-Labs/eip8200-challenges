@@ -209,7 +209,7 @@ theorem rightWorking_eq (s : State) (word : Nat → UInt32)
   simpa [right4] using h
 
 theorem leftActiveWords_eq (s : State) (k : Fin 20)
-    (hactive : 25 ≤ s.activeWords.toNat) :
+    (hactive : 11 ≤ s.activeWords.toNat) :
     QuadRoundState.quadActiveWordsAfterUInt256_4 s
         (QuadSites.leftAddress0 k).toNat (QuadSites.leftAddress1 k).toNat
         (QuadSites.leftAddress2 k).toNat (QuadSites.leftAddress3 k).toNat =
@@ -219,7 +219,7 @@ theorem leftActiveWords_eq (s : State) (k : Fin 20)
   exact QuadSemantic.quadLeftActiveWords_unchanged s k hactive
 
 theorem rightActiveWords_eq (s : State) (k : Fin 20)
-    (hactive : 25 ≤ s.activeWords.toNat) :
+    (hactive : 11 ≤ s.activeWords.toNat) :
     QuadRoundState.quadActiveWordsAfterUInt256_4 s
         (QuadSites.rightAddress0 k).toNat (QuadSites.rightAddress1 k).toNat
         (QuadSites.rightAddress2 k).toNat (QuadSites.rightAddress3 k).toNat =
