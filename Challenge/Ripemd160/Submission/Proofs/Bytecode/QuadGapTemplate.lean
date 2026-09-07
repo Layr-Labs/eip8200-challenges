@@ -42,33 +42,6 @@ def firstFTemplate (j : Nat) (constant : UInt256) : List Instr :=
      d 8, op .ADD, push4 mask, op .AND, w 5,
      d 10, op .MUL, push1 c22, op .SHR, w 7, w 4]
 
-/-- First-pair form used by the active quad helper.  Omitting the final
-`SWAP5` changes the short-lived seam ordering; the matching cached prefix
-below consumes that ordering directly. -/
-def optimizedFirstFTemplate (j : Nat) (constant : UInt256) : List Instr :=
-  [op .JUMPDEST, op .MLOAD] ++ firstBoolean j ++
-    [op .ADD, w 0, w 8, op .ADD] ++
-    (if j = 0 then [] else [push4 constant, op .ADD]) ++
-    [push4 mask, op .AND, d 13, op .MUL, w 0, op .SHR,
-     d 11, op .ADD, push4 mask, op .AND, w 8,
-     d 12, op .MUL, push1 c22, op .SHR, w 0, op .MLOAD] ++
-    secondBoolean j ++ [op .ADD, w 0, w 10, op .ADD] ++
-    (if j = 0 then [] else [push4 constant, op .ADD]) ++
-    [push4 mask, op .AND, d 11, op .MUL, w 0, op .SHR,
-     d 8, op .ADD, push4 mask, op .AND, w 5,
-     d 10, op .MUL, push1 c22, op .SHR, w 7, op .JUMPDEST]
-
-@[simp] theorem optimizedFirstFTemplate_length_0 (constant : UInt256) :
-    (optimizedFirstFTemplate 0 constant).length = 54 := by rfl
-@[simp] theorem optimizedFirstFTemplate_length_1 (constant : UInt256) :
-    (optimizedFirstFTemplate 1 constant).length = 62 := by rfl
-@[simp] theorem optimizedFirstFTemplate_length_2 (constant : UInt256) :
-    (optimizedFirstFTemplate 2 constant).length = 60 := by rfl
-@[simp] theorem optimizedFirstFTemplate_length_3 (constant : UInt256) :
-    (optimizedFirstFTemplate 3 constant).length = 62 := by rfl
-@[simp] theorem optimizedFirstFTemplate_length_4 (constant : UInt256) :
-    (optimizedFirstFTemplate 4 constant).length = 60 := by rfl
-
 @[simp] theorem firstFTemplate_length_0 (constant : UInt256) :
     (firstFTemplate 0 constant).length = 54 := by rfl
 @[simp] theorem firstFTemplate_length_1 (constant : UInt256) :

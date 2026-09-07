@@ -49,196 +49,196 @@ abbrev run := Challenge.EvmProof.Stepper.runLocatedBlock
 
 /-- Push the five constants and start the scan. -/
 def setupPath : List Located :=
-  [opAt 3115 .JUMPDEST,
-   pushAt 3116 32 0x8080808080808080808080808080808080808080808080808080808080808080,
-   pushAt 3117 32 0x072c51769bc0e50a2f54799ec3e80d32577ca1c6eb10355a7fa4c9ee13385d82,
-   pushAt 3118 32 0x7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f,
-   pushAt 3119 32 0x0101010101010101010101010101010101010101010101010101010101010101,
-   opAt 3120 (.Dup ⟨2, by decide⟩), opAt 3121 (.Dup ⟨2, by decide⟩),
-   opAt 3122 .AND, pushAt 3123 0 0, pushAt 3124 0 0, pushAt 3125 0 0]
+  [opAt 2590 .JUMPDEST,
+   pushAt 2591 32 0x8080808080808080808080808080808080808080808080808080808080808080,
+   pushAt 2592 32 0x072c51769bc0e50a2f54799ec3e80d32577ca1c6eb10355a7fa4c9ee13385d82,
+   pushAt 2593 32 0x7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f,
+   pushAt 2594 32 0x0101010101010101010101010101010101010101010101010101010101010101,
+   opAt 2595 (.Dup ⟨2, by decide⟩), opAt 2596 (.Dup ⟨2, by decide⟩),
+   opAt 2597 .AND, pushAt 2598 0 0, pushAt 2599 0 0, pushAt 2600 0 0]
 
 /-- Derive the expected word and test for a straddler. -/
 def wordPath : List Located :=
-  [opAt 3126 .JUMPDEST, opAt 3127 (.Dup ⟨0, by decide⟩),
-   opAt 3128 (.Dup ⟨5, by decide⟩), opAt 3129 .MUL,
-   opAt 3130 (.Dup ⟨0, by decide⟩), opAt 3131 (.Dup ⟨7, by decide⟩),
-   opAt 3132 .AND, opAt 3133 (.Dup ⟨5, by decide⟩), opAt 3134 .ADD,
-   opAt 3135 (.Dup ⟨1, by decide⟩), opAt 3136 (.Dup ⟨9, by decide⟩),
-   opAt 3137 .XOR, opAt 3138 (.Dup ⟨10, by decide⟩), opAt 3139 .AND,
-   opAt 3140 .XOR, opAt 3141 (.Dup ⟨3, by decide⟩), pushAt 3142 1 0xff,
-   opAt 3143 .AND, pushAt 3144 1 0xe0, opAt 3145 .EQ, pushAt 3146 2 0x1490,
-   opAt 3147 .JUMPI]
+  [opAt 2601 .JUMPDEST, opAt 2602 (.Dup ⟨0, by decide⟩),
+   opAt 2603 (.Dup ⟨5, by decide⟩), opAt 2604 .MUL,
+   opAt 2605 (.Dup ⟨0, by decide⟩), opAt 2606 (.Dup ⟨7, by decide⟩),
+   opAt 2607 .AND, opAt 2608 (.Dup ⟨5, by decide⟩), opAt 2609 .ADD,
+   opAt 2610 (.Dup ⟨1, by decide⟩), opAt 2611 (.Dup ⟨9, by decide⟩),
+   opAt 2612 .XOR, opAt 2613 (.Dup ⟨10, by decide⟩), opAt 2614 .AND,
+   opAt 2615 .XOR, opAt 2616 (.Dup ⟨3, by decide⟩), pushAt 2617 1 0xff,
+   opAt 2618 .AND, pushAt 2619 1 0xe0, opAt 2620 .EQ, pushAt 2621 2 0x14d3,
+   opAt 2622 .JUMPI]
 
 /-- Fold one word into the accumulator and advance. -/
 def comparePath : List Located :=
-  [opAt 3148 .JUMPDEST, opAt 3149 (.Dup ⟨3, by decide⟩),
-   opAt 3150 .CALLDATALOAD, opAt 3151 .XOR, opAt 3152 (.Dup ⟨4, by decide⟩),
-   opAt 3153 .OR, opAt 3154 (.Swap ⟨3, by decide⟩), opAt 3155 .POP,
-   opAt 3156 .POP, opAt 3157 .JUMPDEST, pushAt 3158 1 0xa0,
-   opAt 3159 .ADD, pushAt 3160 1 0xff, opAt 3161 .AND,
-   opAt 3162 .JUMPDEST, opAt 3163 .JUMPDEST,
-   opAt 3164 (.Dup ⟨1, by decide⟩), pushAt 3165 1 0x20, opAt 3166 .ADD,
-   opAt 3167 (.Swap ⟨1, by decide⟩), opAt 3168 .POP,
-   opAt 3169 (.Dup ⟨1, by decide⟩), pushAt 3170 2 0x03e0, opAt 3171 .GT,
-   pushAt 3172 2 0x1418, opAt 3173 .JUMPI]
+  [opAt 2623 .JUMPDEST, opAt 2624 (.Dup ⟨3, by decide⟩),
+   opAt 2625 .CALLDATALOAD, opAt 2626 .XOR, opAt 2627 (.Dup ⟨4, by decide⟩),
+   opAt 2628 .OR, opAt 2629 (.Swap ⟨3, by decide⟩), opAt 2630 .POP,
+   opAt 2631 .POP, opAt 2632 (.Dup ⟨0, by decide⟩), pushAt 2633 1 0xa0,
+   opAt 2634 .ADD, pushAt 2635 1 0xff, opAt 2636 .AND,
+   opAt 2637 (.Swap ⟨0, by decide⟩), opAt 2638 .POP,
+   opAt 2639 (.Dup ⟨1, by decide⟩), pushAt 2640 1 0x20, opAt 2641 .ADD,
+   opAt 2642 (.Swap ⟨1, by decide⟩), opAt 2643 .POP,
+   opAt 2644 (.Dup ⟨1, by decide⟩), pushAt 2645 2 0x03e0, opAt 2646 .GT,
+   pushAt 2647 2 0x145b, opAt 2648 .JUMPI]
 
 /-- The padded tail word, the cleanup and the miss test. -/
 def tailPath : List Located :=
-  [pushAt 3174 2 0x03e0, opAt 3175 .CALLDATALOAD,
-   pushAt 3176 8 0x88add2f71c41668b, pushAt 3177 1 0xc0, opAt 3178 .SHL,
-   opAt 3179 .XOR, opAt 3180 (.Dup ⟨3, by decide⟩), opAt 3181 .OR,
-   opAt 3182 (.Swap ⟨2, by decide⟩), opAt 3183 .POP,
-   opAt 3184 (.Swap ⟨1, by decide⟩), opAt 3185 (.Swap ⟨6, by decide⟩),
-   opAt 3186 .POP, opAt 3187 .POP, opAt 3188 .POP, opAt 3189 .POP,
-   opAt 3190 .POP, opAt 3191 .POP, opAt 3192 .POP, pushAt 3193 2 0x03ee,
-   opAt 3194 .JUMPI]
+  [pushAt 2649 2 0x03e0, opAt 2650 .CALLDATALOAD,
+   pushAt 2651 8 0x88add2f71c41668b, pushAt 2652 1 0xc0, opAt 2653 .SHL,
+   opAt 2654 .XOR, opAt 2655 (.Dup ⟨3, by decide⟩), opAt 2656 .OR,
+   opAt 2657 (.Swap ⟨2, by decide⟩), opAt 2658 .POP,
+   opAt 2659 (.Swap ⟨1, by decide⟩), opAt 2660 (.Swap ⟨6, by decide⟩),
+   opAt 2661 .POP, opAt 2662 .POP, opAt 2663 .POP, opAt 2664 .POP,
+   opAt 2665 .POP, opAt 2666 .POP, opAt 2667 .POP, pushAt 2668 2 0x289,
+   opAt 2669 .JUMPI]
 
 /-- Store and return the stored digest. -/
 def returnPath : List Located :=
-  [pushAt 3195 20 0x863c598588bd72a4babf36c6bb01f27bbdc0ecd4,
-   pushAt 3196 0 0, opAt 3197 .MSTORE, pushAt 3198 1 0x20, pushAt 3199 0 0,
-   opAt 3200 .RETURN]
+  [pushAt 2670 20 0x863c598588bd72a4babf36c6bb01f27bbdc0ecd4,
+   pushAt 2671 0 0, opAt 2672 .MSTORE, pushAt 2673 1 0x20, pushAt 2674 0 0,
+   opAt 2675 .RETURN]
 
 /-- Shift the correction constant out of `M`. -/
 def straddleCorrPath : List Located :=
-  [opAt 3201 .JUMPDEST, opAt 3202 (.Dup ⟨6, by decide⟩),
-   opAt 3203 (.Dup ⟨4, by decide⟩), pushAt 3204 1 0x08, opAt 3205 .SHR,
-   pushAt 3206 1 0x05, opAt 3207 .MUL, pushAt 3208 1 0x1b, opAt 3209 .SUB,
-   pushAt 3210 1 0x08, opAt 3211 .MUL, opAt 3212 .SHR, pushAt 3213 1 0x0b,
-   opAt 3214 .MUL]
+  [opAt 2676 .JUMPDEST, opAt 2677 (.Dup ⟨6, by decide⟩),
+   opAt 2678 (.Dup ⟨4, by decide⟩), pushAt 2679 1 0x08, opAt 2680 .SHR,
+   pushAt 2681 1 0x05, opAt 2682 .MUL, pushAt 2683 1 0x1b, opAt 2684 .SUB,
+   pushAt 2685 1 0x08, opAt 2686 .MUL, opAt 2687 .SHR, pushAt 2688 1 0x0b,
+   opAt 2689 .MUL]
 
 /-- Apply the correction to the expected word. -/
 def straddleAddPath : List Located :=
-  [opAt 3215 (.Dup ⟨1, by decide⟩), opAt 3216 (.Dup ⟨9, by decide⟩),
-   opAt 3217 .AND, opAt 3218 (.Dup ⟨1, by decide⟩), opAt 3219 .ADD,
-   opAt 3220 (.Dup ⟨2, by decide⟩), opAt 3221 (.Dup ⟨12, by decide⟩),
-   opAt 3222 .AND, opAt 3223 .XOR, opAt 3224 (.Swap ⟨1, by decide⟩),
-   opAt 3225 .POP, opAt 3226 .POP]
+  [opAt 2690 (.Dup ⟨1, by decide⟩), opAt 2691 (.Dup ⟨9, by decide⟩),
+   opAt 2692 .AND, opAt 2693 (.Dup ⟨1, by decide⟩), opAt 2694 .ADD,
+   opAt 2695 (.Dup ⟨2, by decide⟩), opAt 2696 (.Dup ⟨12, by decide⟩),
+   opAt 2697 .AND, opAt 2698 .XOR, opAt 2699 (.Swap ⟨1, by decide⟩),
+   opAt 2700 .POP, opAt 2701 .POP]
 
 /-- Bump the scalar and rejoin the scan. -/
 def straddleBackPath : List Located :=
-  [opAt 3227 (.Dup ⟨2, by decide⟩), pushAt 3228 1 0x0b, opAt 3229 .ADD,
-   opAt 3230 (.Swap ⟨2, by decide⟩), opAt 3231 .POP, pushAt 3232 2 0x1432,
-   opAt 3233 .JUMP]
+  [opAt 2702 (.Dup ⟨2, by decide⟩), pushAt 2703 1 0x0b, opAt 2704 .ADD,
+   opAt 2705 (.Swap ⟨2, by decide⟩), opAt 2706 .POP, pushAt 2707 2 0x1475,
+   opAt 2708 .JUMP]
 
 
-@[simp] theorem pc2903 : Artifact.submissionArtifact.instructionPC 3115 = 5005 := by rfl
-@[simp] theorem pc2904 : Artifact.submissionArtifact.instructionPC 3116 = 5006 := by rfl
-@[simp] theorem pc2905 : Artifact.submissionArtifact.instructionPC 3117 = 5039 := by rfl
-@[simp] theorem pc2906 : Artifact.submissionArtifact.instructionPC 3118 = 5072 := by rfl
-@[simp] theorem pc2907 : Artifact.submissionArtifact.instructionPC 3119 = 5105 := by rfl
-@[simp] theorem pc2908 : Artifact.submissionArtifact.instructionPC 3120 = 5138 := by rfl
-@[simp] theorem pc2909 : Artifact.submissionArtifact.instructionPC 3121 = 5139 := by rfl
-@[simp] theorem pc2910 : Artifact.submissionArtifact.instructionPC 3122 = 5140 := by rfl
-@[simp] theorem pc2911 : Artifact.submissionArtifact.instructionPC 3123 = 5141 := by rfl
-@[simp] theorem pc2912 : Artifact.submissionArtifact.instructionPC 3124 = 5142 := by rfl
-@[simp] theorem pc2913 : Artifact.submissionArtifact.instructionPC 3125 = 5143 := by rfl
-@[simp] theorem pc2914 : Artifact.submissionArtifact.instructionPC 3126 = 5144 := by rfl
-@[simp] theorem pc2915 : Artifact.submissionArtifact.instructionPC 3127 = 5145 := by rfl
-@[simp] theorem pc2916 : Artifact.submissionArtifact.instructionPC 3128 = 5146 := by rfl
-@[simp] theorem pc2917 : Artifact.submissionArtifact.instructionPC 3129 = 5147 := by rfl
-@[simp] theorem pc2918 : Artifact.submissionArtifact.instructionPC 3130 = 5148 := by rfl
-@[simp] theorem pc2919 : Artifact.submissionArtifact.instructionPC 3131 = 5149 := by rfl
-@[simp] theorem pc2920 : Artifact.submissionArtifact.instructionPC 3132 = 5150 := by rfl
-@[simp] theorem pc2921 : Artifact.submissionArtifact.instructionPC 3133 = 5151 := by rfl
-@[simp] theorem pc2922 : Artifact.submissionArtifact.instructionPC 3134 = 5152 := by rfl
-@[simp] theorem pc2923 : Artifact.submissionArtifact.instructionPC 3135 = 5153 := by rfl
-@[simp] theorem pc2924 : Artifact.submissionArtifact.instructionPC 3136 = 5154 := by rfl
-@[simp] theorem pc2925 : Artifact.submissionArtifact.instructionPC 3137 = 5155 := by rfl
-@[simp] theorem pc2926 : Artifact.submissionArtifact.instructionPC 3138 = 5156 := by rfl
-@[simp] theorem pc2927 : Artifact.submissionArtifact.instructionPC 3139 = 5157 := by rfl
-@[simp] theorem pc2928 : Artifact.submissionArtifact.instructionPC 3140 = 5158 := by rfl
-@[simp] theorem pc2929 : Artifact.submissionArtifact.instructionPC 3141 = 5159 := by rfl
-@[simp] theorem pc2930 : Artifact.submissionArtifact.instructionPC 3142 = 5160 := by rfl
-@[simp] theorem pc2931 : Artifact.submissionArtifact.instructionPC 3143 = 5162 := by rfl
-@[simp] theorem pc2932 : Artifact.submissionArtifact.instructionPC 3144 = 5163 := by rfl
-@[simp] theorem pc2933 : Artifact.submissionArtifact.instructionPC 3145 = 5165 := by rfl
-@[simp] theorem pc2934 : Artifact.submissionArtifact.instructionPC 3146 = 5166 := by rfl
-@[simp] theorem pc2935 : Artifact.submissionArtifact.instructionPC 3147 = 5169 := by rfl
-@[simp] theorem pc2936 : Artifact.submissionArtifact.instructionPC 3148 = 5170 := by rfl
-@[simp] theorem pc2937 : Artifact.submissionArtifact.instructionPC 3149 = 5171 := by rfl
-@[simp] theorem pc2938 : Artifact.submissionArtifact.instructionPC 3150 = 5172 := by rfl
-@[simp] theorem pc2939 : Artifact.submissionArtifact.instructionPC 3151 = 5173 := by rfl
-@[simp] theorem pc2940 : Artifact.submissionArtifact.instructionPC 3152 = 5174 := by rfl
-@[simp] theorem pc2941 : Artifact.submissionArtifact.instructionPC 3153 = 5175 := by rfl
-@[simp] theorem pc2942 : Artifact.submissionArtifact.instructionPC 3154 = 5176 := by rfl
-@[simp] theorem pc2943 : Artifact.submissionArtifact.instructionPC 3155 = 5177 := by rfl
-@[simp] theorem pc2944 : Artifact.submissionArtifact.instructionPC 3156 = 5178 := by rfl
-@[simp] theorem pc2945 : Artifact.submissionArtifact.instructionPC 3157 = 5179 := by rfl
-@[simp] theorem pc2946 : Artifact.submissionArtifact.instructionPC 3158 = 5180 := by rfl
-@[simp] theorem pc2947 : Artifact.submissionArtifact.instructionPC 3159 = 5182 := by rfl
-@[simp] theorem pc2948 : Artifact.submissionArtifact.instructionPC 3160 = 5183 := by rfl
-@[simp] theorem pc2949 : Artifact.submissionArtifact.instructionPC 3161 = 5185 := by rfl
-@[simp] theorem pc2950 : Artifact.submissionArtifact.instructionPC 3162 = 5186 := by rfl
-@[simp] theorem pc2951 : Artifact.submissionArtifact.instructionPC 3163 = 5187 := by rfl
-@[simp] theorem pc2952 : Artifact.submissionArtifact.instructionPC 3164 = 5188 := by rfl
-@[simp] theorem pc2953 : Artifact.submissionArtifact.instructionPC 3165 = 5189 := by rfl
-@[simp] theorem pc2954 : Artifact.submissionArtifact.instructionPC 3166 = 5191 := by rfl
-@[simp] theorem pc2955 : Artifact.submissionArtifact.instructionPC 3167 = 5192 := by rfl
-@[simp] theorem pc2956 : Artifact.submissionArtifact.instructionPC 3168 = 5193 := by rfl
-@[simp] theorem pc2957 : Artifact.submissionArtifact.instructionPC 3169 = 5194 := by rfl
-@[simp] theorem pc2958 : Artifact.submissionArtifact.instructionPC 3170 = 5195 := by rfl
-@[simp] theorem pc2959 : Artifact.submissionArtifact.instructionPC 3171 = 5198 := by rfl
-@[simp] theorem pc2960 : Artifact.submissionArtifact.instructionPC 3172 = 5199 := by rfl
-@[simp] theorem pc2961 : Artifact.submissionArtifact.instructionPC 3173 = 5202 := by rfl
-@[simp] theorem pc2962 : Artifact.submissionArtifact.instructionPC 3174 = 5203 := by rfl
-@[simp] theorem pc2963 : Artifact.submissionArtifact.instructionPC 3175 = 5206 := by rfl
-@[simp] theorem pc2964 : Artifact.submissionArtifact.instructionPC 3176 = 5207 := by rfl
-@[simp] theorem pc2965 : Artifact.submissionArtifact.instructionPC 3177 = 5216 := by rfl
-@[simp] theorem pc2966 : Artifact.submissionArtifact.instructionPC 3178 = 5218 := by rfl
-@[simp] theorem pc2967 : Artifact.submissionArtifact.instructionPC 3179 = 5219 := by rfl
-@[simp] theorem pc2968 : Artifact.submissionArtifact.instructionPC 3180 = 5220 := by rfl
-@[simp] theorem pc2969 : Artifact.submissionArtifact.instructionPC 3181 = 5221 := by rfl
-@[simp] theorem pc2970 : Artifact.submissionArtifact.instructionPC 3182 = 5222 := by rfl
-@[simp] theorem pc2971 : Artifact.submissionArtifact.instructionPC 3183 = 5223 := by rfl
-@[simp] theorem pc2972 : Artifact.submissionArtifact.instructionPC 3184 = 5224 := by rfl
-@[simp] theorem pc2973 : Artifact.submissionArtifact.instructionPC 3185 = 5225 := by rfl
-@[simp] theorem pc2974 : Artifact.submissionArtifact.instructionPC 3186 = 5226 := by rfl
-@[simp] theorem pc2975 : Artifact.submissionArtifact.instructionPC 3187 = 5227 := by rfl
-@[simp] theorem pc2976 : Artifact.submissionArtifact.instructionPC 3188 = 5228 := by rfl
-@[simp] theorem pc2977 : Artifact.submissionArtifact.instructionPC 3189 = 5229 := by rfl
-@[simp] theorem pc2978 : Artifact.submissionArtifact.instructionPC 3190 = 5230 := by rfl
-@[simp] theorem pc2979 : Artifact.submissionArtifact.instructionPC 3191 = 5231 := by rfl
-@[simp] theorem pc2980 : Artifact.submissionArtifact.instructionPC 3192 = 5232 := by rfl
-@[simp] theorem pc2981 : Artifact.submissionArtifact.instructionPC 3193 = 5233 := by rfl
-@[simp] theorem pc2982 : Artifact.submissionArtifact.instructionPC 3194 = 5236 := by rfl
-@[simp] theorem pc2983 : Artifact.submissionArtifact.instructionPC 3195 = 5237 := by rfl
-@[simp] theorem pc2984 : Artifact.submissionArtifact.instructionPC 3196 = 5258 := by rfl
-@[simp] theorem pc2985 : Artifact.submissionArtifact.instructionPC 3197 = 5259 := by rfl
-@[simp] theorem pc2986 : Artifact.submissionArtifact.instructionPC 3198 = 5260 := by rfl
-@[simp] theorem pc2987 : Artifact.submissionArtifact.instructionPC 3199 = 5262 := by rfl
-@[simp] theorem pc2988 : Artifact.submissionArtifact.instructionPC 3200 = 5263 := by rfl
-@[simp] theorem pc2989 : Artifact.submissionArtifact.instructionPC 3201 = 5264 := by rfl
-@[simp] theorem pc2990 : Artifact.submissionArtifact.instructionPC 3202 = 5265 := by rfl
-@[simp] theorem pc2991 : Artifact.submissionArtifact.instructionPC 3203 = 5266 := by rfl
-@[simp] theorem pc2992 : Artifact.submissionArtifact.instructionPC 3204 = 5267 := by rfl
-@[simp] theorem pc2993 : Artifact.submissionArtifact.instructionPC 3205 = 5269 := by rfl
-@[simp] theorem pc2994 : Artifact.submissionArtifact.instructionPC 3206 = 5270 := by rfl
-@[simp] theorem pc2995 : Artifact.submissionArtifact.instructionPC 3207 = 5272 := by rfl
-@[simp] theorem pc2996 : Artifact.submissionArtifact.instructionPC 3208 = 5273 := by rfl
-@[simp] theorem pc2997 : Artifact.submissionArtifact.instructionPC 3209 = 5275 := by rfl
-@[simp] theorem pc2998 : Artifact.submissionArtifact.instructionPC 3210 = 5276 := by rfl
-@[simp] theorem pc2999 : Artifact.submissionArtifact.instructionPC 3211 = 5278 := by rfl
-@[simp] theorem pc3000 : Artifact.submissionArtifact.instructionPC 3212 = 5279 := by rfl
-@[simp] theorem pc3001 : Artifact.submissionArtifact.instructionPC 3213 = 5280 := by rfl
-@[simp] theorem pc3002 : Artifact.submissionArtifact.instructionPC 3214 = 5282 := by rfl
-@[simp] theorem pc3003 : Artifact.submissionArtifact.instructionPC 3215 = 5283 := by rfl
-@[simp] theorem pc3004 : Artifact.submissionArtifact.instructionPC 3216 = 5284 := by rfl
-@[simp] theorem pc3005 : Artifact.submissionArtifact.instructionPC 3217 = 5285 := by rfl
-@[simp] theorem pc3006 : Artifact.submissionArtifact.instructionPC 3218 = 5286 := by rfl
-@[simp] theorem pc3007 : Artifact.submissionArtifact.instructionPC 3219 = 5287 := by rfl
-@[simp] theorem pc3008 : Artifact.submissionArtifact.instructionPC 3220 = 5288 := by rfl
-@[simp] theorem pc3009 : Artifact.submissionArtifact.instructionPC 3221 = 5289 := by rfl
-@[simp] theorem pc3010 : Artifact.submissionArtifact.instructionPC 3222 = 5290 := by rfl
-@[simp] theorem pc3011 : Artifact.submissionArtifact.instructionPC 3223 = 5291 := by rfl
-@[simp] theorem pc3012 : Artifact.submissionArtifact.instructionPC 3224 = 5292 := by rfl
-@[simp] theorem pc3013 : Artifact.submissionArtifact.instructionPC 3225 = 5293 := by rfl
-@[simp] theorem pc3014 : Artifact.submissionArtifact.instructionPC 3226 = 5294 := by rfl
-@[simp] theorem pc3015 : Artifact.submissionArtifact.instructionPC 3227 = 5295 := by rfl
-@[simp] theorem pc3016 : Artifact.submissionArtifact.instructionPC 3228 = 5296 := by rfl
-@[simp] theorem pc3017 : Artifact.submissionArtifact.instructionPC 3229 = 5298 := by rfl
-@[simp] theorem pc3018 : Artifact.submissionArtifact.instructionPC 3230 = 5299 := by rfl
-@[simp] theorem pc3019 : Artifact.submissionArtifact.instructionPC 3231 = 5300 := by rfl
-@[simp] theorem pc3020 : Artifact.submissionArtifact.instructionPC 3232 = 5301 := by rfl
-@[simp] theorem pc3021 : Artifact.submissionArtifact.instructionPC 3233 = 5304 := by rfl
+@[simp] theorem pc2903 : Artifact.submissionArtifact.instructionPC 2590 = 5072 := by rfl
+@[simp] theorem pc2904 : Artifact.submissionArtifact.instructionPC 2591 = 5073 := by rfl
+@[simp] theorem pc2905 : Artifact.submissionArtifact.instructionPC 2592 = 5106 := by rfl
+@[simp] theorem pc2906 : Artifact.submissionArtifact.instructionPC 2593 = 5139 := by rfl
+@[simp] theorem pc2907 : Artifact.submissionArtifact.instructionPC 2594 = 5172 := by rfl
+@[simp] theorem pc2908 : Artifact.submissionArtifact.instructionPC 2595 = 5205 := by rfl
+@[simp] theorem pc2909 : Artifact.submissionArtifact.instructionPC 2596 = 5206 := by rfl
+@[simp] theorem pc2910 : Artifact.submissionArtifact.instructionPC 2597 = 5207 := by rfl
+@[simp] theorem pc2911 : Artifact.submissionArtifact.instructionPC 2598 = 5208 := by rfl
+@[simp] theorem pc2912 : Artifact.submissionArtifact.instructionPC 2599 = 5209 := by rfl
+@[simp] theorem pc2913 : Artifact.submissionArtifact.instructionPC 2600 = 5210 := by rfl
+@[simp] theorem pc2914 : Artifact.submissionArtifact.instructionPC 2601 = 5211 := by rfl
+@[simp] theorem pc2915 : Artifact.submissionArtifact.instructionPC 2602 = 5212 := by rfl
+@[simp] theorem pc2916 : Artifact.submissionArtifact.instructionPC 2603 = 5213 := by rfl
+@[simp] theorem pc2917 : Artifact.submissionArtifact.instructionPC 2604 = 5214 := by rfl
+@[simp] theorem pc2918 : Artifact.submissionArtifact.instructionPC 2605 = 5215 := by rfl
+@[simp] theorem pc2919 : Artifact.submissionArtifact.instructionPC 2606 = 5216 := by rfl
+@[simp] theorem pc2920 : Artifact.submissionArtifact.instructionPC 2607 = 5217 := by rfl
+@[simp] theorem pc2921 : Artifact.submissionArtifact.instructionPC 2608 = 5218 := by rfl
+@[simp] theorem pc2922 : Artifact.submissionArtifact.instructionPC 2609 = 5219 := by rfl
+@[simp] theorem pc2923 : Artifact.submissionArtifact.instructionPC 2610 = 5220 := by rfl
+@[simp] theorem pc2924 : Artifact.submissionArtifact.instructionPC 2611 = 5221 := by rfl
+@[simp] theorem pc2925 : Artifact.submissionArtifact.instructionPC 2612 = 5222 := by rfl
+@[simp] theorem pc2926 : Artifact.submissionArtifact.instructionPC 2613 = 5223 := by rfl
+@[simp] theorem pc2927 : Artifact.submissionArtifact.instructionPC 2614 = 5224 := by rfl
+@[simp] theorem pc2928 : Artifact.submissionArtifact.instructionPC 2615 = 5225 := by rfl
+@[simp] theorem pc2929 : Artifact.submissionArtifact.instructionPC 2616 = 5226 := by rfl
+@[simp] theorem pc2930 : Artifact.submissionArtifact.instructionPC 2617 = 5227 := by rfl
+@[simp] theorem pc2931 : Artifact.submissionArtifact.instructionPC 2618 = 5229 := by rfl
+@[simp] theorem pc2932 : Artifact.submissionArtifact.instructionPC 2619 = 5230 := by rfl
+@[simp] theorem pc2933 : Artifact.submissionArtifact.instructionPC 2620 = 5232 := by rfl
+@[simp] theorem pc2934 : Artifact.submissionArtifact.instructionPC 2621 = 5233 := by rfl
+@[simp] theorem pc2935 : Artifact.submissionArtifact.instructionPC 2622 = 5236 := by rfl
+@[simp] theorem pc2936 : Artifact.submissionArtifact.instructionPC 2623 = 5237 := by rfl
+@[simp] theorem pc2937 : Artifact.submissionArtifact.instructionPC 2624 = 5238 := by rfl
+@[simp] theorem pc2938 : Artifact.submissionArtifact.instructionPC 2625 = 5239 := by rfl
+@[simp] theorem pc2939 : Artifact.submissionArtifact.instructionPC 2626 = 5240 := by rfl
+@[simp] theorem pc2940 : Artifact.submissionArtifact.instructionPC 2627 = 5241 := by rfl
+@[simp] theorem pc2941 : Artifact.submissionArtifact.instructionPC 2628 = 5242 := by rfl
+@[simp] theorem pc2942 : Artifact.submissionArtifact.instructionPC 2629 = 5243 := by rfl
+@[simp] theorem pc2943 : Artifact.submissionArtifact.instructionPC 2630 = 5244 := by rfl
+@[simp] theorem pc2944 : Artifact.submissionArtifact.instructionPC 2631 = 5245 := by rfl
+@[simp] theorem pc2945 : Artifact.submissionArtifact.instructionPC 2632 = 5246 := by rfl
+@[simp] theorem pc2946 : Artifact.submissionArtifact.instructionPC 2633 = 5247 := by rfl
+@[simp] theorem pc2947 : Artifact.submissionArtifact.instructionPC 2634 = 5249 := by rfl
+@[simp] theorem pc2948 : Artifact.submissionArtifact.instructionPC 2635 = 5250 := by rfl
+@[simp] theorem pc2949 : Artifact.submissionArtifact.instructionPC 2636 = 5252 := by rfl
+@[simp] theorem pc2950 : Artifact.submissionArtifact.instructionPC 2637 = 5253 := by rfl
+@[simp] theorem pc2951 : Artifact.submissionArtifact.instructionPC 2638 = 5254 := by rfl
+@[simp] theorem pc2952 : Artifact.submissionArtifact.instructionPC 2639 = 5255 := by rfl
+@[simp] theorem pc2953 : Artifact.submissionArtifact.instructionPC 2640 = 5256 := by rfl
+@[simp] theorem pc2954 : Artifact.submissionArtifact.instructionPC 2641 = 5258 := by rfl
+@[simp] theorem pc2955 : Artifact.submissionArtifact.instructionPC 2642 = 5259 := by rfl
+@[simp] theorem pc2956 : Artifact.submissionArtifact.instructionPC 2643 = 5260 := by rfl
+@[simp] theorem pc2957 : Artifact.submissionArtifact.instructionPC 2644 = 5261 := by rfl
+@[simp] theorem pc2958 : Artifact.submissionArtifact.instructionPC 2645 = 5262 := by rfl
+@[simp] theorem pc2959 : Artifact.submissionArtifact.instructionPC 2646 = 5265 := by rfl
+@[simp] theorem pc2960 : Artifact.submissionArtifact.instructionPC 2647 = 5266 := by rfl
+@[simp] theorem pc2961 : Artifact.submissionArtifact.instructionPC 2648 = 5269 := by rfl
+@[simp] theorem pc2962 : Artifact.submissionArtifact.instructionPC 2649 = 5270 := by rfl
+@[simp] theorem pc2963 : Artifact.submissionArtifact.instructionPC 2650 = 5273 := by rfl
+@[simp] theorem pc2964 : Artifact.submissionArtifact.instructionPC 2651 = 5274 := by rfl
+@[simp] theorem pc2965 : Artifact.submissionArtifact.instructionPC 2652 = 5283 := by rfl
+@[simp] theorem pc2966 : Artifact.submissionArtifact.instructionPC 2653 = 5285 := by rfl
+@[simp] theorem pc2967 : Artifact.submissionArtifact.instructionPC 2654 = 5286 := by rfl
+@[simp] theorem pc2968 : Artifact.submissionArtifact.instructionPC 2655 = 5287 := by rfl
+@[simp] theorem pc2969 : Artifact.submissionArtifact.instructionPC 2656 = 5288 := by rfl
+@[simp] theorem pc2970 : Artifact.submissionArtifact.instructionPC 2657 = 5289 := by rfl
+@[simp] theorem pc2971 : Artifact.submissionArtifact.instructionPC 2658 = 5290 := by rfl
+@[simp] theorem pc2972 : Artifact.submissionArtifact.instructionPC 2659 = 5291 := by rfl
+@[simp] theorem pc2973 : Artifact.submissionArtifact.instructionPC 2660 = 5292 := by rfl
+@[simp] theorem pc2974 : Artifact.submissionArtifact.instructionPC 2661 = 5293 := by rfl
+@[simp] theorem pc2975 : Artifact.submissionArtifact.instructionPC 2662 = 5294 := by rfl
+@[simp] theorem pc2976 : Artifact.submissionArtifact.instructionPC 2663 = 5295 := by rfl
+@[simp] theorem pc2977 : Artifact.submissionArtifact.instructionPC 2664 = 5296 := by rfl
+@[simp] theorem pc2978 : Artifact.submissionArtifact.instructionPC 2665 = 5297 := by rfl
+@[simp] theorem pc2979 : Artifact.submissionArtifact.instructionPC 2666 = 5298 := by rfl
+@[simp] theorem pc2980 : Artifact.submissionArtifact.instructionPC 2667 = 5299 := by rfl
+@[simp] theorem pc2981 : Artifact.submissionArtifact.instructionPC 2668 = 5300 := by rfl
+@[simp] theorem pc2982 : Artifact.submissionArtifact.instructionPC 2669 = 5303 := by rfl
+@[simp] theorem pc2983 : Artifact.submissionArtifact.instructionPC 2670 = 5304 := by rfl
+@[simp] theorem pc2984 : Artifact.submissionArtifact.instructionPC 2671 = 5325 := by rfl
+@[simp] theorem pc2985 : Artifact.submissionArtifact.instructionPC 2672 = 5326 := by rfl
+@[simp] theorem pc2986 : Artifact.submissionArtifact.instructionPC 2673 = 5327 := by rfl
+@[simp] theorem pc2987 : Artifact.submissionArtifact.instructionPC 2674 = 5329 := by rfl
+@[simp] theorem pc2988 : Artifact.submissionArtifact.instructionPC 2675 = 5330 := by rfl
+@[simp] theorem pc2989 : Artifact.submissionArtifact.instructionPC 2676 = 5331 := by rfl
+@[simp] theorem pc2990 : Artifact.submissionArtifact.instructionPC 2677 = 5332 := by rfl
+@[simp] theorem pc2991 : Artifact.submissionArtifact.instructionPC 2678 = 5333 := by rfl
+@[simp] theorem pc2992 : Artifact.submissionArtifact.instructionPC 2679 = 5334 := by rfl
+@[simp] theorem pc2993 : Artifact.submissionArtifact.instructionPC 2680 = 5336 := by rfl
+@[simp] theorem pc2994 : Artifact.submissionArtifact.instructionPC 2681 = 5337 := by rfl
+@[simp] theorem pc2995 : Artifact.submissionArtifact.instructionPC 2682 = 5339 := by rfl
+@[simp] theorem pc2996 : Artifact.submissionArtifact.instructionPC 2683 = 5340 := by rfl
+@[simp] theorem pc2997 : Artifact.submissionArtifact.instructionPC 2684 = 5342 := by rfl
+@[simp] theorem pc2998 : Artifact.submissionArtifact.instructionPC 2685 = 5343 := by rfl
+@[simp] theorem pc2999 : Artifact.submissionArtifact.instructionPC 2686 = 5345 := by rfl
+@[simp] theorem pc3000 : Artifact.submissionArtifact.instructionPC 2687 = 5346 := by rfl
+@[simp] theorem pc3001 : Artifact.submissionArtifact.instructionPC 2688 = 5347 := by rfl
+@[simp] theorem pc3002 : Artifact.submissionArtifact.instructionPC 2689 = 5349 := by rfl
+@[simp] theorem pc3003 : Artifact.submissionArtifact.instructionPC 2690 = 5350 := by rfl
+@[simp] theorem pc3004 : Artifact.submissionArtifact.instructionPC 2691 = 5351 := by rfl
+@[simp] theorem pc3005 : Artifact.submissionArtifact.instructionPC 2692 = 5352 := by rfl
+@[simp] theorem pc3006 : Artifact.submissionArtifact.instructionPC 2693 = 5353 := by rfl
+@[simp] theorem pc3007 : Artifact.submissionArtifact.instructionPC 2694 = 5354 := by rfl
+@[simp] theorem pc3008 : Artifact.submissionArtifact.instructionPC 2695 = 5355 := by rfl
+@[simp] theorem pc3009 : Artifact.submissionArtifact.instructionPC 2696 = 5356 := by rfl
+@[simp] theorem pc3010 : Artifact.submissionArtifact.instructionPC 2697 = 5357 := by rfl
+@[simp] theorem pc3011 : Artifact.submissionArtifact.instructionPC 2698 = 5358 := by rfl
+@[simp] theorem pc3012 : Artifact.submissionArtifact.instructionPC 2699 = 5359 := by rfl
+@[simp] theorem pc3013 : Artifact.submissionArtifact.instructionPC 2700 = 5360 := by rfl
+@[simp] theorem pc3014 : Artifact.submissionArtifact.instructionPC 2701 = 5361 := by rfl
+@[simp] theorem pc3015 : Artifact.submissionArtifact.instructionPC 2702 = 5362 := by rfl
+@[simp] theorem pc3016 : Artifact.submissionArtifact.instructionPC 2703 = 5363 := by rfl
+@[simp] theorem pc3017 : Artifact.submissionArtifact.instructionPC 2704 = 5365 := by rfl
+@[simp] theorem pc3018 : Artifact.submissionArtifact.instructionPC 2705 = 5366 := by rfl
+@[simp] theorem pc3019 : Artifact.submissionArtifact.instructionPC 2706 = 5367 := by rfl
+@[simp] theorem pc3020 : Artifact.submissionArtifact.instructionPC 2707 = 5368 := by rfl
+@[simp] theorem pc3021 : Artifact.submissionArtifact.instructionPC 2708 = 5371 := by rfl
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan

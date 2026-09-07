@@ -1,15 +1,13 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 2000000
 /-!
 # Direct execution of the RIPEMD-160 main-body initialization
 
-The compact entry stores the five chaining words consecutively.  After the
-first explicit offset, each next offset is the current memory size.  Push and
-store instructions use located paths; the four `MSIZE` instructions use the
-submission-local gas-accounted EVM rule.
+The compact entry emits five consecutive `PUSH; PUSH; MSTORE` triples. A located
+path certifies those exact instructions against the frozen artifact; it also
+handles the two `PUSH0` values without a special semantic assumption.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Main
@@ -58,42 +56,22 @@ private theorem pushAvailable (width : Fin 33) :
 
 @[simp] private theorem toNatZero : (0 : UInt256).toNat = 0 := rfl
 
-def afterInitValue (s : State) (w : Artifact.InitStore) : State :=
-  { s with
-    pc := UInt256.ofNat (Artifact.instructionPC (w.index + 1))
-    stack := [w.value] }
-
-def afterInitOffset (s : State) (w : Artifact.InitStore) : State :=
-  { s with
-    pc := UInt256.ofNat (Artifact.instructionPC (w.index + 2))
-    stack := [w.offset, w.value] }
-
-def locatedInitValue (w : Artifact.InitStore) (hw : w ∈ Artifact.initStores) :
+/-- The three certified instruction locations for one table/state store. -/
+def locatedInitStore (w : Artifact.InitStore) (hw : w ∈ Artifact.initStores) :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   let hv := Artifact.initStore_valid w hw
   [⟨w.index, .push w.valueWidth w.value, hv.1,
-      ⟨valueFits w hw, pushAvailable w.valueWidth⟩⟩]
-
-def locatedInitOffset (w : Artifact.InitStore) (hw : w ∈ Artifact.initStores)
-    (hm : w.useMsize = false) :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  let hv := Artifact.initStore_valid w hw
-  [⟨w.index + 1, .push w.offsetWidth w.offset, by
-      change Artifact.submissionInstructions[w.index + 1]? = _
-      simpa [hm] using hv.2.2.1,
-      ⟨offsetFits w hw, pushAvailable w.offsetWidth⟩⟩]
-
-def locatedInitWrite (w : Artifact.InitStore) (hw : w ∈ Artifact.initStores) :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  let hv := Artifact.initStore_valid w hw
-  [⟨w.index + 2, .op .MSTORE, hv.2.2.2.2.1,
+      ⟨valueFits w hw, pushAvailable w.valueWidth⟩⟩,
+   ⟨w.index + 1, .push w.offsetWidth w.offset, hv.2.2.1,
+      ⟨offsetFits w hw, pushAvailable w.offsetWidth⟩⟩,
+   ⟨w.index + 2, .op .MSTORE, hv.2.2.2.2.1,
       wfOp (by decide) trivial rfl⟩]
 
 def initializedState (input : ByteArray) : State :=
   Artifact.initStores.foldl applyInitStore (Execution.mainStart input)
 
 @[simp] theorem initializedState_pc (input : ByteArray) :
-    (initializedState input).pc = UInt256.ofNat (Artifact.instructionPC 872) := by
+    (initializedState input).pc = UInt256.ofNat (Artifact.instructionPC 437) := by
   rfl
 
 @[simp] theorem initializedState_stack (input : ByteArray) :
@@ -111,77 +89,45 @@ def initializedState (input : ByteArray) : State :=
 @[simp] theorem initializedState_codeAddr (input : ByteArray) :
     (initializedState input).executionEnv.codeAddr = deployAddress := by rfl
 
-theorem run_initValue (s : State) (w : Artifact.InitStore)
+/-! The sixteen program counters of the initializing stores, named so that
+`simp` never normalizes the chunked instruction list to compute one. -/
+
+@[simp] private theorem initPC683 : Artifact.instructionPC 422 = 650 := by rfl
+@[simp] private theorem initPC684 : Artifact.instructionPC 423 = 655 := by rfl
+@[simp] private theorem initPC685 : Artifact.instructionPC 424 = 657 := by rfl
+@[simp] private theorem initPC686 : Artifact.instructionPC 425 = 658 := by rfl
+@[simp] private theorem initPC687 : Artifact.instructionPC 426 = 663 := by rfl
+@[simp] private theorem initPC688 : Artifact.instructionPC 427 = 665 := by rfl
+@[simp] private theorem initPC689 : Artifact.instructionPC 428 = 666 := by rfl
+@[simp] private theorem initPC690 : Artifact.instructionPC 429 = 671 := by rfl
+@[simp] private theorem initPC691 : Artifact.instructionPC 430 = 673 := by rfl
+@[simp] private theorem initPC692 : Artifact.instructionPC 431 = 674 := by rfl
+@[simp] private theorem initPC693 : Artifact.instructionPC 432 = 679 := by rfl
+@[simp] private theorem initPC694 : Artifact.instructionPC 433 = 681 := by rfl
+@[simp] private theorem initPC695 : Artifact.instructionPC 434 = 682 := by rfl
+@[simp] private theorem initPC696 : Artifact.instructionPC 435 = 687 := by rfl
+@[simp] private theorem initPC697 : Artifact.instructionPC 436 = 689 := by rfl
+@[simp] private theorem initPC698 : Artifact.instructionPC 437 = 690 := by rfl
+
+theorem run_initStore (s : State) (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores)
     (hpc : s.pc = UInt256.ofNat (Artifact.instructionPC w.index))
     (hstack : s.stack = [])
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock (locatedInitValue w hw) s =
-      some (afterInitValue s w) := by
-  simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
-  rcases hw with rfl | rfl | rfl | rfl | rfl
-  all_goals
-    simp (config := { maxSteps := 200000 })
-      [locatedInitValue, afterInitValue, hpc, hstack, hrun,
-        Artifact.instructionPC,
-        Challenge.EvmProof.Stepper.runLocatedBlock,
-        Challenge.EvmProof.Stepper.runLocated,
-        Challenge.EvmProof.Stepper.runInstr,
-        Challenge.EvmProof.Word.word_toNat_ofNat]
-
-theorem run_initOffset (s : State) (w : Artifact.InitStore)
-    (hw : w ∈ Artifact.initStores) (hm : w.useMsize = false)
-    (hpc : s.pc = UInt256.ofNat (Artifact.instructionPC (w.index + 1)))
-    (hstack : s.stack = [w.value]) (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock (locatedInitOffset w hw hm) s =
-      some (afterInitOffset s w) := by
-  simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
-  rcases hw with rfl | rfl | rfl | rfl | rfl
-  all_goals simp at hm
-  simp (config := { maxSteps := 200000 })
-    [locatedInitOffset, afterInitOffset, hpc, hstack, hrun,
-      Artifact.instructionPC, Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      Challenge.EvmProof.Word.word_toNat_ofNat]
-
-theorem run_initWrite (s : State) (w : Artifact.InitStore)
-    (hw : w ∈ Artifact.initStores)
-    (hpc : s.pc = UInt256.ofNat (Artifact.instructionPC (w.index + 2)))
-    (hstack : s.stack = [w.offset, w.value]) (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock (locatedInitWrite w hw) s =
+    Challenge.EvmProof.Stepper.runLocatedBlock (locatedInitStore w hw) s =
       some (applyInitStore s w) := by
   simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
   rcases hw with rfl | rfl | rfl | rfl | rfl
   all_goals
     simp (config := { maxSteps := 200000 })
-      [locatedInitWrite, applyInitStore, hpc, hstack, hrun,
-        Artifact.instructionPC,
+      [locatedInitStore, applyInitStore, hpc, hstack, hrun,
+        Challenge.EvmProof.Word.ofNat_add_mod,
+        Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
         State.activeWordsAfterUInt256,
         Challenge.EvmProof.Word.word_toNat_ofNat]
-
-private theorem msizeDecoded (s : State) (w : Artifact.InitStore)
-    (hw : w ∈ Artifact.initStores) (hm : w.useMsize = true)
-    (hpc : s.pc = UInt256.ofNat (Artifact.instructionPC (w.index + 1)))
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) : s.decodedOp = some .MSIZE := by
-  have hv := Artifact.initStore_valid w hw
-  have hget : Artifact.submissionInstructions[w.index + 1]? = some (.op .MSIZE) := by
-    simpa [hm] using hv.2.2.1
-  have hdecode := Artifact.submissionArtifact.decodeAt_op_index
-    (w.index + 1) .MSIZE hget (by decide) trivial
-  have hpcNat : s.pc.toNat =
-      Artifact.submissionArtifact.instructionPC (w.index + 1) := by
-    rw [hpc, Challenge.EvmProof.Word.word_toNat_ofNat]
-    exact Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt
-      (Artifact.submissionArtifact.instructionPC_le_code_size (w.index + 1))
-      (by change submissionBytecode.size < 2 ^ 256
-          rw [referenceBytecode_size]
-          decide))
-  exact Artifact.submissionArtifact.state_decodedOp_of s (w.index + 1)
-    hcode hpcNat .MSIZE none hdecode (by rw [hfork]; decide)
 
 def gasSteps_initStore (s : State) (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores)
@@ -190,91 +136,20 @@ def gasSteps_initStore (s : State) (w : Artifact.InitStore)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hrun : s.halt = .Running)
-    (hmsize : w.useMsize = true →
-      UInt256.ofNat (32 * s.activeWords.toNat) = w.offset)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps s (applyInitStore s w) := by
-  have gvalue := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka (locatedInitValue w hw)
-    (by simpa [Artifact.submissionArtifact] using hcode) hfork
-    (run_initValue s w hw hpc hstack hrun) hrun hnp
-  by_cases hm : w.useMsize = true
-  · let sv := afterInitValue s w
-    let so := afterInitOffset s w
-    have hop : sv.decodedOp = some .MSIZE := msizeDecoded sv w hw hm
-      (by rfl) (by simpa [sv, afterInitValue] using hcode)
-      (by simpa [sv, afterInitValue] using hfork)
-    have gmraw := Msize.step hop (by simp [sv, afterInitValue])
-      (by simpa [sv, afterInitValue] using hrun)
-      (by simpa [sv, afterInitValue] using hnp)
-    have gm : Challenge.EvmProof.GasSteps sv so :=
-      Challenge.EvmProof.GasSteps.cast gmraw rfl (by
-        have hv := Artifact.initStore_valid w hw
-        have hnextpc : Artifact.instructionPC (w.index + 2) =
-            Artifact.instructionPC (w.index + 1) + 1 := by
-          simpa [hm] using hv.2.2.2.1
-        simp [sv, so, afterInitValue, afterInitOffset, hmsize hm,
-          Challenge.EvmProof.Word.succ_ofNat_mod, hnextpc])
-    have gw := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka (locatedInitWrite w hw)
-      (by simpa [so, afterInitOffset, Artifact.submissionArtifact] using hcode)
-      (by simpa [so, afterInitOffset] using hfork)
-      (run_initWrite so w hw (by rfl) (by rfl)
-        (by simpa [so, afterInitOffset] using hrun))
-      (by simpa [so, afterInitOffset] using hrun)
-      (by simpa [so, afterInitOffset] using hnp)
-    exact gvalue.trans (gm.trans gw)
-  · have hmfalse : w.useMsize = false := Bool.eq_false_of_not_eq_true hm
-    let sv := afterInitValue s w
-    let so := afterInitOffset s w
-    have go := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka (locatedInitOffset w hw hmfalse)
-      (by simpa [sv, afterInitValue, Artifact.submissionArtifact] using hcode)
-      (by simpa [sv, afterInitValue] using hfork)
-      (run_initOffset sv w hw hmfalse (by rfl) (by rfl)
-        (by simpa [sv, afterInitValue] using hrun))
-      (by simpa [sv, afterInitValue] using hrun)
-      (by simpa [sv, afterInitValue] using hnp)
-    have gw := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      Artifact.submissionArtifact .Osaka (locatedInitWrite w hw)
-      (by simpa [so, afterInitOffset, Artifact.submissionArtifact] using hcode)
-      (by simpa [so, afterInitOffset] using hfork)
-      (run_initWrite so w hw (by rfl) (by rfl)
-        (by simpa [so, afterInitOffset] using hrun))
-      (by simpa [so, afterInitOffset] using hrun)
-      (by simpa [so, afterInitOffset] using hnp)
-    exact gvalue.trans (go.trans gw)
+  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka (locatedInitStore w hw)
+  · simpa [Artifact.submissionArtifact] using hcode
+  · exact hfork
+  · exact run_initStore s w hw hpc hstack hrun
+  · exact hrun
+  · exact hnp
 
 def InitChain : List Artifact.InitStore → Prop
   | [] | [_] => True
   | a :: b :: rest => b.index = a.index + 3 ∧ InitChain (b :: rest)
-
-theorem nextActive_after (s : State) (w next : Artifact.InitStore)
-    (hw : w ∈ Artifact.initStores) (hn : next ∈ Artifact.initStores)
-    (hnext : next.index = w.index + 3)
-    (hactive : s.activeWords.toNat ≤ w.offset.toNat / 32) :
-    (applyInitStore s w).activeWords.toNat = next.offset.toNat / 32 := by
-  simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw hn
-  rcases hw with rfl | rfl | rfl | rfl | rfl <;>
-    rcases hn with rfl | rfl | rfl | rfl | rfl <;>
-    simp_all [applyInitStore, State.activeWordsAfterUInt256,
-      MachineState.activeWordsAfter, Challenge.EvmProof.Word.literal_eq_ofNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat]
-  all_goals
-    simp only [Nat.max_def]
-    split <;> omega
-
-theorem nextMsize_after (s : State) (w next : Artifact.InitStore)
-    (hw : w ∈ Artifact.initStores) (hn : next ∈ Artifact.initStores)
-    (hnext : next.index = w.index + 3)
-    (hactive : s.activeWords.toNat ≤ w.offset.toNat / 32) :
-    next.useMsize = true →
-      UInt256.ofNat (32 * (applyInitStore s w).activeWords.toNat) = next.offset := by
-  intro _
-  rw [nextActive_after s w next hw hn hnext hactive]
-  simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hn
-  rcases hn with rfl | rfl | rfl | rfl | rfl <;> decide
 
 def gasSteps_initStores (s : State) :
     (ws : List Artifact.InitStore) →
@@ -283,29 +158,24 @@ def gasSteps_initStores (s : State) :
     (∀ w, ws.head? = some w →
       s.pc = UInt256.ofNat (Artifact.instructionPC w.index)) →
     s.stack = [] →
-    (∀ w, ws.head? = some w → s.activeWords.toNat ≤ w.offset.toNat / 32) →
-    (∀ w, ws.head? = some w → w.useMsize = true →
-      UInt256.ofNat (32 * s.activeWords.toNat) = w.offset) →
     s.executionEnv.code = submissionBytecode →
     s.fork = .Osaka →
     s.halt = .Running →
     Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false →
     Challenge.EvmProof.GasSteps s (ws.foldl applyInitStore s)
-  | [], _, _, _, _, _, _, _, _, _, _ => Challenge.EvmProof.GasSteps.refl s
-  | [w], hmem, _, hpc, hstack, _, hmsize, hcode, hfork, hrun, hnp => by
+  | [], _, _, _, _, _, _, _, _ => Challenge.EvmProof.GasSteps.refl s
+  | [w], hmem, _, hpc, hstack, hcode, hfork, hrun, hnp => by
       have hw : w ∈ Artifact.initStores := hmem w (by simp)
       have hpcw : s.pc = UInt256.ofNat (Artifact.instructionPC w.index) :=
         hpc w (by simp)
-      have gone := gasSteps_initStore s w hw hpcw hstack hcode hfork hrun
-        (hmsize w (by simp)) hnp
+      have gone := gasSteps_initStore s w hw hpcw hstack hcode hfork hrun hnp
       exact Challenge.EvmProof.GasSteps.cast gone rfl (by simp)
-  | w :: next :: rest, hmem, hchain, hpc, hstack, hactive, hmsize, hcode, hfork, hrun, hnp => by
+  | w :: next :: rest, hmem, hchain, hpc, hstack, hcode, hfork, hrun, hnp => by
       have hw : w ∈ Artifact.initStores := hmem w (by simp)
       have hpcw : s.pc = UInt256.ofNat (Artifact.instructionPC w.index) :=
         hpc w (by simp)
-      have gone := gasSteps_initStore s w hw hpcw hstack hcode hfork hrun
-        (hmsize w (by simp)) hnp
+      have gone := gasSteps_initStore s w hw hpcw hstack hcode hfork hrun hnp
       have hnext : next.index = w.index + 3 := hchain.1
       have htail : InitChain (next :: rest) := hchain.2
       have grest := gasSteps_initStores (applyInitStore s w) (next :: rest)
@@ -315,16 +185,6 @@ def gasSteps_initStores (s : State) :
           subst x
           simp [applyInitStore, hnext])
         (by simp [applyInitStore])
-        (fun x hx => by
-          simp only [List.head?_cons, Option.some.injEq] at hx
-          subst x
-          exact (nextActive_after s w next hw (hmem next (by simp))
-            hnext (hactive w (by simp))).le)
-        (fun x hx => by
-          simp only [List.head?_cons, Option.some.injEq] at hx
-          subst x
-          exact nextMsize_after s w next hw
-            (hmem next (by simp)) hnext (hactive w (by simp)))
         (by simpa [applyInitStore] using hcode)
         (by simpa [applyInitStore] using hfork)
         (by simpa [applyInitStore] using hrun)
@@ -344,16 +204,6 @@ def gasSteps_bodyInitialization (input : ByteArray) :
       subst w
       rfl)
     (by simp [Execution.mainStart, Execution.atPC, initialState])
-    (by
-      intro w hw
-      simp only [Artifact.initStores, List.head?_cons, Option.some.injEq] at hw
-      subst w
-      simp [Execution.mainStart, Execution.atPC, initialState])
-    (by
-      intro w hw
-      simp only [Artifact.initStores, List.head?_cons, Option.some.injEq] at hw
-      subst w
-      simp)
     (by simp [Execution.mainStart, Execution.atPC, initialState])
     (by simp [Execution.mainStart, Execution.atPC, initialState])
     (by simp [Execution.mainStart, Execution.atPC, initialState])
@@ -364,7 +214,7 @@ def gasSteps_bodyInitialization (input : ByteArray) :
 
 def gasSteps_initialize (input : ByteArray)
     (entryPrefix : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 0x3ee)) :
+      (Execution.atPC input 0x289)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (initializedState input) :=
   (Execution.gasSteps_entry input entryPrefix).trans (gasSteps_bodyInitialization input)

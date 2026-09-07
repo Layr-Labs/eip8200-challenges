@@ -57,8 +57,7 @@ theorem template_advances (j : Nat) (hj : j < 5) (constant : UInt256) :
       PairMultiplyLift.Advances instruction := by
   intro instruction hmem
   interval_cases j <;>
-    simp [quadBeforeJumpTemplate, optimizedFirstFTemplate,
-      optimizedCachedTailFTemplate, firstFTemplate, cachedTailFTemplate,
+    simp [quadBeforeJumpTemplate, firstFTemplate, cachedTailFTemplate,
       firstBoolean, secondBoolean, d, w,
       pairFirstBooleanOps, pairSecondBooleanOps,
       pairDup7, pairDup8, pairDup9, pairDup10, pairSwap5, pairSwap7,

@@ -50,12 +50,16 @@ noncomputable def gasSteps_driver (input : ByteArray)
     (hfit : CalldataFits input) (seam : CompressionSeam input) :
     GasSteps (PaddingTrace.padReturned input)
       (DriverTrace.afterExit (seam.states (DriverTrace.blockCount input)) input) := by
+  have gsetup := DriverTrace.gasSteps_setup (seam.states 0) input
+    (seam.code 0 (by omega)) (seam.fork 0 (by omega))
+    (seam.running 0 (by omega)) (seam.noPrecompile 0 (by omega))
   have gloop := DriverTrace.gasSteps_loop_of_compress seam.states input hfit
     seam.code seam.fork seam.running seam.noPrecompile seam.compress
-  have hstart : DriverTrace.loopAt (seam.states 0) input 0 =
-      PaddingTrace.padReturned input := by
-    rw [← seam.initial]
-    rfl
-  exact GasSteps.cast gloop hstart rfl
+  let final := seam.states (DriverTrace.blockCount input)
+  have gexit := DriverTrace.gasSteps_condition_exit final input hfit
+    (seam.code _ (by omega)) (seam.fork _ (by omega))
+    (seam.running _ (by omega)) (seam.noPrecompile _ (by omega))
+  exact GasSteps.cast (gsetup.trans (gloop.trans gexit)) seam.initial
+    (by simp [final, DriverTrace.afterExit])
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectCorrect

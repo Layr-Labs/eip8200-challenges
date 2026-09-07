@@ -26,24 +26,24 @@ def finalAcc (input : ByteArray) : UInt256 :=
 
 def loopState (s : State) (input : ByteArray) (i n : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x12f6
+    pc := UInt256.ofNat 0x117e
     stack := [UInt256.ofNat (32 * (n + 1)), loopAcc input n,
       referenceWord input, DriverTrace.messageOffsetWord i,
-      UInt256.ofNat 0x436, DriverTrace.blockOffsetWord i,
+      UInt256.ofNat 0x2d1, DriverTrace.blockOffsetWord i,
       Padding.paddedWord input] }
 
 def loopExitState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x130b
+    pc := UInt256.ofNat 0x1193
     stack := [UInt256.ofNat 992, loopAcc input 30,
       referenceWord input, DriverTrace.messageOffsetWord i,
-      UInt256.ofNat 0x436, DriverTrace.blockOffsetWord i,
+      UInt256.ofNat 0x2d1, DriverTrace.blockOffsetWord i,
       Padding.paddedWord input] }
 
 def bodyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x131f
-    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x436,
+    pc := UInt256.ofNat 0x11a7
+    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x2d1,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactState

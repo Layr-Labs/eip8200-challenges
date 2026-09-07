@@ -24,6 +24,7 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundState
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundTemplate
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSemantic
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites
+open Challenge.Ripemd160.Submission.Proofs.Bytecode.MaskProjection
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCompression
 
@@ -33,13 +34,13 @@ abbrev low32DenseWordsAt := QuadSemantic.DenseWordsAt
 def stateAt (s : State) (pc : UInt256) (working : Compression.EvmWorking)
     (rho : List UInt256) : State :=
   StackRoundTrace.roundEntry s pc working.a working.b working.c working.d working.e
-    (QuadRoundTemplate.factor :: rho)
+    (MaskProjection.mask :: QuadRoundTemplate.factor :: rho)
 
 def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
     (hwords : low32DenseWordsAt s word)
     (hactive : 66 ≤ s.activeWords.toNat)
-    (hstack : rho.length < 1007)
+    (hstack : rho.length < 1006)
     (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -48,7 +49,7 @@ def gasSteps_leftQuad (s : State) (word : Nat → UInt32)
       (stateAt s (QuadSites.leftPC k.val) working rho)
       (stateAt s (QuadSites.leftPC (k.val + 1))
         (QuadRoundCertificates.left4 word k working) rho) := by
-  simpa only [stateAt, QuadRoundCertificates.stateAt] using
+  simpa only [stateAt, QuadRoundCertificates.maskedStateAt] using
     (QuadRoundCertificates.gasSteps_leftQuad s word working rho k
       hwords hactive hstack hcode hfork hrun hnp)
 
@@ -56,7 +57,7 @@ def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256) (k : Fin 20)
     (hwords : low32DenseWordsAt s word)
     (hactive : 66 ≤ s.activeWords.toNat)
-    (hstack : rho.length < 1007)
+    (hstack : rho.length < 1006)
     (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -65,7 +66,7 @@ def gasSteps_rightQuad (s : State) (word : Nat → UInt32)
       (stateAt s (QuadSites.rightPC k.val) working rho)
       (stateAt s (QuadSites.rightPC (k.val + 1))
         (QuadRoundCertificates.right4 word k working) rho) := by
-  simpa only [stateAt, QuadRoundCertificates.stateAt] using
+  simpa only [stateAt, QuadRoundCertificates.maskedStateAt] using
     (QuadRoundCertificates.gasSteps_rightQuad s word working rho k
       hwords hactive hstack hcode hfork hrun hnp)
 
@@ -73,7 +74,7 @@ def gasSteps_left80 (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256)
     (hwords : low32DenseWordsAt s word)
     (hactive : 66 ≤ s.activeWords.toNat)
-    (hstack : rho.length < 1007)
+    (hstack : rho.length < 1006)
     (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -107,7 +108,7 @@ def gasSteps_right80 (s : State) (word : Nat → UInt32)
     (working : Compression.EvmWorking) (rho : List UInt256)
     (hwords : low32DenseWordsAt s word)
     (hactive : 66 ≤ s.activeWords.toNat)
-    (hstack : rho.length < 1007)
+    (hstack : rho.length < 1006)
     (hcode : s.executionEnv.code = Artifact.code)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

@@ -9,7 +9,7 @@ set_option maxHeartbeats 8000000
 # Cached-factor consume-tail raw trace
 
 Retires the old DUP/POP tail evaluator. The consume body is the frozen
-53-instruction sequence through the earlier `JUMP`; nine `STOP` bytes are
+54-instruction sequence through the `JUMP`; nine `STOP` bytes are
 not executed.
 -/
 
