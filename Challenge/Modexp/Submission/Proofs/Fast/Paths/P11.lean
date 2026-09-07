@@ -2,7 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.Defs
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-/-! Basic-block instruction paths, group 11 (instructions 1569..1626). -/
+/-! Basic-block instruction paths, group 11 (instructions 1568..1626). -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
 
@@ -10,10 +10,11 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1569..1594, pc 2392..2459. -/
+/-- Instructions 1568..1594, pc 2391..2459. -/
 def blk1569 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1569 .POP,
+  [opAt 1568 .JUMPDEST,
+   opAt 1569 .POP,
    opAt 1570 .POP,
    opAt 1571 (.Swap ⟨0, by decide⟩),
    opAt 1572 .POP,

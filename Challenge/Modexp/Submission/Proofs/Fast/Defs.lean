@@ -239,7 +239,7 @@ private theorem fastPCAnchor13 :
       rfl
 
 private theorem fastPCAnchor14 :
-    Artifact.submissionArtifact.instructionPC 1537 = 2291 := by
+    Artifact.submissionArtifact.instructionPC 1537 = 2293 := by
   calc
     Artifact.submissionArtifact.instructionPC 1537 =
         Artifact.submissionArtifact.instructionPC 1497 +
@@ -247,7 +247,7 @@ private theorem fastPCAnchor14 :
             ((Artifact.submissionArtifact.instructions.drop 1497).take
               40)).length :=
       instructionPC_add Artifact.submissionArtifact 1497 40
-    _ = 2291 := by
+    _ = 2293 := by
       rw [fastPCAnchor13]
       rfl
 
@@ -584,7 +584,7 @@ private theorem fastPCAnchor23 :
 
 @[simp] theorem fastPC13 (i : Nat) (hi : 1497 ≤ i) (hii : i ≤ 1536) :
     Artifact.submissionArtifact.instructionPC i =
-      [2213,2214,2215,2216,2217,2218,2219,2220,2221,2222,2223,2224,2225,2228,2229,2231,2232,2233,2236,2237,2239,2240,2241,2242,2243,2244,2245,2246,2247,2248,2249,2282,2283,2284,2285,2286,2287,2288,2289,2290][i - 1497]! := by
+      [2213,2214,2215,2216,2217,2218,2219,2220,2221,2222,2223,2224,2225,2228,2229,2231,2232,2233,2236,2237,2239,2240,2241,2242,2245,2246,2247,2248,2249,2250,2251,2284,2285,2286,2287,2288,2289,2290,2291,2292][i - 1497]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (1497 + (i - 1497)) := by
@@ -600,7 +600,7 @@ private theorem fastPCAnchor23 :
 
 @[simp] theorem fastPC14 (i : Nat) (hi : 1537 ≤ i) (hii : i ≤ 1576) :
     Artifact.submissionArtifact.instructionPC i =
-      [2291,2292,2293,2294,2295,2296,2297,2298,2299,2300,2301,2302,2303,2304,2305,2306,2307,2308,2309,2311,2312,2313,2346,2347,2348,2381,2382,2383,2386,2387,2388,2391,2392,2393,2394,2395,2396,2397,2398,2399][i - 1537]! := by
+      [2293,2294,2295,2296,2297,2298,2299,2300,2301,2302,2303,2304,2305,2306,2307,2308,2309,2310,2311,2313,2314,2315,2347,2348,2349,2381,2382,2383,2386,2387,2388,2391,2392,2393,2394,2395,2396,2397,2398,2399][i - 1537]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (1537 + (i - 1537)) := by
@@ -889,6 +889,10 @@ theorem jumpDest1995 :
 theorem jumpDest2241 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2241 = true :=
   Artifact.isValidJumpDest_index 1519 (by rfl)
+
+theorem jumpDest2391 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2391 = true :=
+  Artifact.isValidJumpDest_index 1568 (by rfl)
 
 theorem jumpDest2467 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2467 = true :=

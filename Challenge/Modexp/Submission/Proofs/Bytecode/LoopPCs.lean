@@ -5,7 +5,7 @@ set_option maxHeartbeats 8000000
 /-!
 # Program counters for the appended limb-loop blocks
 
-Instruction indices 2670 .. 2861, one lemma each.
+Instruction indices 2670 .. 2970, one lemma each.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.LoopPCs
@@ -205,5 +205,115 @@ open EvmSemantics.EVM
 @[simp] theorem pc2859 : Artifact.submissionArtifact.instructionPC 2859 = 4638 := by rfl
 @[simp] theorem pc2860 : Artifact.submissionArtifact.instructionPC 2860 = 4639 := by rfl
 @[simp] theorem pc2861 : Artifact.submissionArtifact.instructionPC 2861 = 4642 := by rfl
+
+@[simp] theorem pc2862 : Artifact.submissionArtifact.instructionPC 2862 = 4643 := by rfl
+@[simp] theorem pc2863 : Artifact.submissionArtifact.instructionPC 2863 = 4644 := by rfl
+@[simp] theorem pc2864 : Artifact.submissionArtifact.instructionPC 2864 = 4645 := by rfl
+@[simp] theorem pc2865 : Artifact.submissionArtifact.instructionPC 2865 = 4647 := by rfl
+@[simp] theorem pc2866 : Artifact.submissionArtifact.instructionPC 2866 = 4648 := by rfl
+@[simp] theorem pc2867 : Artifact.submissionArtifact.instructionPC 2867 = 4650 := by rfl
+@[simp] theorem pc2868 : Artifact.submissionArtifact.instructionPC 2868 = 4651 := by rfl
+@[simp] theorem pc2869 : Artifact.submissionArtifact.instructionPC 2869 = 4652 := by rfl
+@[simp] theorem pc2870 : Artifact.submissionArtifact.instructionPC 2870 = 4655 := by rfl
+@[simp] theorem pc2871 : Artifact.submissionArtifact.instructionPC 2871 = 4656 := by rfl
+@[simp] theorem pc2872 : Artifact.submissionArtifact.instructionPC 2872 = 4659 := by rfl
+@[simp] theorem pc2873 : Artifact.submissionArtifact.instructionPC 2873 = 4660 := by rfl
+@[simp] theorem pc2874 : Artifact.submissionArtifact.instructionPC 2874 = 4661 := by rfl
+@[simp] theorem pc2875 : Artifact.submissionArtifact.instructionPC 2875 = 4662 := by rfl
+@[simp] theorem pc2876 : Artifact.submissionArtifact.instructionPC 2876 = 4663 := by rfl
+@[simp] theorem pc2877 : Artifact.submissionArtifact.instructionPC 2877 = 4664 := by rfl
+@[simp] theorem pc2878 : Artifact.submissionArtifact.instructionPC 2878 = 4665 := by rfl
+@[simp] theorem pc2879 : Artifact.submissionArtifact.instructionPC 2879 = 4666 := by rfl
+@[simp] theorem pc2880 : Artifact.submissionArtifact.instructionPC 2880 = 4667 := by rfl
+@[simp] theorem pc2881 : Artifact.submissionArtifact.instructionPC 2881 = 4668 := by rfl
+@[simp] theorem pc2882 : Artifact.submissionArtifact.instructionPC 2882 = 4669 := by rfl
+@[simp] theorem pc2883 : Artifact.submissionArtifact.instructionPC 2883 = 4702 := by rfl
+@[simp] theorem pc2884 : Artifact.submissionArtifact.instructionPC 2884 = 4703 := by rfl
+@[simp] theorem pc2885 : Artifact.submissionArtifact.instructionPC 2885 = 4704 := by rfl
+@[simp] theorem pc2886 : Artifact.submissionArtifact.instructionPC 2886 = 4705 := by rfl
+@[simp] theorem pc2887 : Artifact.submissionArtifact.instructionPC 2887 = 4706 := by rfl
+@[simp] theorem pc2888 : Artifact.submissionArtifact.instructionPC 2888 = 4707 := by rfl
+@[simp] theorem pc2889 : Artifact.submissionArtifact.instructionPC 2889 = 4708 := by rfl
+@[simp] theorem pc2890 : Artifact.submissionArtifact.instructionPC 2890 = 4709 := by rfl
+@[simp] theorem pc2891 : Artifact.submissionArtifact.instructionPC 2891 = 4710 := by rfl
+@[simp] theorem pc2892 : Artifact.submissionArtifact.instructionPC 2892 = 4711 := by rfl
+@[simp] theorem pc2893 : Artifact.submissionArtifact.instructionPC 2893 = 4712 := by rfl
+@[simp] theorem pc2894 : Artifact.submissionArtifact.instructionPC 2894 = 4713 := by rfl
+@[simp] theorem pc2895 : Artifact.submissionArtifact.instructionPC 2895 = 4714 := by rfl
+@[simp] theorem pc2896 : Artifact.submissionArtifact.instructionPC 2896 = 4715 := by rfl
+@[simp] theorem pc2897 : Artifact.submissionArtifact.instructionPC 2897 = 4716 := by rfl
+@[simp] theorem pc2898 : Artifact.submissionArtifact.instructionPC 2898 = 4717 := by rfl
+@[simp] theorem pc2899 : Artifact.submissionArtifact.instructionPC 2899 = 4718 := by rfl
+@[simp] theorem pc2900 : Artifact.submissionArtifact.instructionPC 2900 = 4719 := by rfl
+@[simp] theorem pc2901 : Artifact.submissionArtifact.instructionPC 2901 = 4720 := by rfl
+@[simp] theorem pc2902 : Artifact.submissionArtifact.instructionPC 2902 = 4721 := by rfl
+@[simp] theorem pc2903 : Artifact.submissionArtifact.instructionPC 2903 = 4722 := by rfl
+@[simp] theorem pc2904 : Artifact.submissionArtifact.instructionPC 2904 = 4723 := by rfl
+@[simp] theorem pc2905 : Artifact.submissionArtifact.instructionPC 2905 = 4724 := by rfl
+@[simp] theorem pc2906 : Artifact.submissionArtifact.instructionPC 2906 = 4725 := by rfl
+@[simp] theorem pc2907 : Artifact.submissionArtifact.instructionPC 2907 = 4726 := by rfl
+@[simp] theorem pc2908 : Artifact.submissionArtifact.instructionPC 2908 = 4727 := by rfl
+@[simp] theorem pc2909 : Artifact.submissionArtifact.instructionPC 2909 = 4728 := by rfl
+@[simp] theorem pc2910 : Artifact.submissionArtifact.instructionPC 2910 = 4729 := by rfl
+@[simp] theorem pc2911 : Artifact.submissionArtifact.instructionPC 2911 = 4731 := by rfl
+@[simp] theorem pc2912 : Artifact.submissionArtifact.instructionPC 2912 = 4732 := by rfl
+@[simp] theorem pc2913 : Artifact.submissionArtifact.instructionPC 2913 = 4733 := by rfl
+@[simp] theorem pc2914 : Artifact.submissionArtifact.instructionPC 2914 = 4766 := by rfl
+@[simp] theorem pc2915 : Artifact.submissionArtifact.instructionPC 2915 = 4767 := by rfl
+@[simp] theorem pc2916 : Artifact.submissionArtifact.instructionPC 2916 = 4768 := by rfl
+@[simp] theorem pc2917 : Artifact.submissionArtifact.instructionPC 2917 = 4801 := by rfl
+@[simp] theorem pc2918 : Artifact.submissionArtifact.instructionPC 2918 = 4802 := by rfl
+@[simp] theorem pc2919 : Artifact.submissionArtifact.instructionPC 2919 = 4803 := by rfl
+@[simp] theorem pc2920 : Artifact.submissionArtifact.instructionPC 2920 = 4804 := by rfl
+@[simp] theorem pc2921 : Artifact.submissionArtifact.instructionPC 2921 = 4805 := by rfl
+@[simp] theorem pc2922 : Artifact.submissionArtifact.instructionPC 2922 = 4806 := by rfl
+@[simp] theorem pc2923 : Artifact.submissionArtifact.instructionPC 2923 = 4807 := by rfl
+@[simp] theorem pc2924 : Artifact.submissionArtifact.instructionPC 2924 = 4808 := by rfl
+@[simp] theorem pc2925 : Artifact.submissionArtifact.instructionPC 2925 = 4809 := by rfl
+@[simp] theorem pc2926 : Artifact.submissionArtifact.instructionPC 2926 = 4810 := by rfl
+@[simp] theorem pc2927 : Artifact.submissionArtifact.instructionPC 2927 = 4811 := by rfl
+@[simp] theorem pc2928 : Artifact.submissionArtifact.instructionPC 2928 = 4844 := by rfl
+@[simp] theorem pc2929 : Artifact.submissionArtifact.instructionPC 2929 = 4845 := by rfl
+@[simp] theorem pc2930 : Artifact.submissionArtifact.instructionPC 2930 = 4846 := by rfl
+@[simp] theorem pc2931 : Artifact.submissionArtifact.instructionPC 2931 = 4847 := by rfl
+@[simp] theorem pc2932 : Artifact.submissionArtifact.instructionPC 2932 = 4848 := by rfl
+@[simp] theorem pc2933 : Artifact.submissionArtifact.instructionPC 2933 = 4849 := by rfl
+@[simp] theorem pc2934 : Artifact.submissionArtifact.instructionPC 2934 = 4850 := by rfl
+@[simp] theorem pc2935 : Artifact.submissionArtifact.instructionPC 2935 = 4851 := by rfl
+@[simp] theorem pc2936 : Artifact.submissionArtifact.instructionPC 2936 = 4852 := by rfl
+@[simp] theorem pc2937 : Artifact.submissionArtifact.instructionPC 2937 = 4853 := by rfl
+@[simp] theorem pc2938 : Artifact.submissionArtifact.instructionPC 2938 = 4854 := by rfl
+@[simp] theorem pc2939 : Artifact.submissionArtifact.instructionPC 2939 = 4855 := by rfl
+@[simp] theorem pc2940 : Artifact.submissionArtifact.instructionPC 2940 = 4856 := by rfl
+@[simp] theorem pc2941 : Artifact.submissionArtifact.instructionPC 2941 = 4857 := by rfl
+@[simp] theorem pc2942 : Artifact.submissionArtifact.instructionPC 2942 = 4858 := by rfl
+@[simp] theorem pc2943 : Artifact.submissionArtifact.instructionPC 2943 = 4859 := by rfl
+@[simp] theorem pc2944 : Artifact.submissionArtifact.instructionPC 2944 = 4860 := by rfl
+@[simp] theorem pc2945 : Artifact.submissionArtifact.instructionPC 2945 = 4861 := by rfl
+@[simp] theorem pc2946 : Artifact.submissionArtifact.instructionPC 2946 = 4862 := by rfl
+@[simp] theorem pc2947 : Artifact.submissionArtifact.instructionPC 2947 = 4863 := by rfl
+@[simp] theorem pc2948 : Artifact.submissionArtifact.instructionPC 2948 = 4864 := by rfl
+@[simp] theorem pc2949 : Artifact.submissionArtifact.instructionPC 2949 = 4865 := by rfl
+@[simp] theorem pc2950 : Artifact.submissionArtifact.instructionPC 2950 = 4866 := by rfl
+@[simp] theorem pc2951 : Artifact.submissionArtifact.instructionPC 2951 = 4867 := by rfl
+@[simp] theorem pc2952 : Artifact.submissionArtifact.instructionPC 2952 = 4868 := by rfl
+@[simp] theorem pc2953 : Artifact.submissionArtifact.instructionPC 2953 = 4869 := by rfl
+@[simp] theorem pc2954 : Artifact.submissionArtifact.instructionPC 2954 = 4870 := by rfl
+@[simp] theorem pc2955 : Artifact.submissionArtifact.instructionPC 2955 = 4871 := by rfl
+@[simp] theorem pc2956 : Artifact.submissionArtifact.instructionPC 2956 = 4873 := by rfl
+@[simp] theorem pc2957 : Artifact.submissionArtifact.instructionPC 2957 = 4874 := by rfl
+@[simp] theorem pc2958 : Artifact.submissionArtifact.instructionPC 2958 = 4875 := by rfl
+@[simp] theorem pc2959 : Artifact.submissionArtifact.instructionPC 2959 = 4908 := by rfl
+@[simp] theorem pc2960 : Artifact.submissionArtifact.instructionPC 2960 = 4909 := by rfl
+@[simp] theorem pc2961 : Artifact.submissionArtifact.instructionPC 2961 = 4910 := by rfl
+@[simp] theorem pc2962 : Artifact.submissionArtifact.instructionPC 2962 = 4943 := by rfl
+@[simp] theorem pc2963 : Artifact.submissionArtifact.instructionPC 2963 = 4944 := by rfl
+@[simp] theorem pc2964 : Artifact.submissionArtifact.instructionPC 2964 = 4945 := by rfl
+@[simp] theorem pc2965 : Artifact.submissionArtifact.instructionPC 2965 = 4948 := by rfl
+@[simp] theorem pc2966 : Artifact.submissionArtifact.instructionPC 2966 = 4949 := by rfl
+@[simp] theorem pc2967 : Artifact.submissionArtifact.instructionPC 2967 = 4950 := by rfl
+@[simp] theorem pc2968 : Artifact.submissionArtifact.instructionPC 2968 = 4953 := by rfl
+@[simp] theorem pc2969 : Artifact.submissionArtifact.instructionPC 2969 = 4954 := by rfl
+@[simp] theorem pc2970 : Artifact.submissionArtifact.instructionPC 2970 = 4957 := by rfl
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.LoopPCs
