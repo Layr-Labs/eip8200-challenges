@@ -56,20 +56,10 @@ def fastPackTemplate : List Instr :=
     fastPackStep 64 ++ fastPackStep 96 ++ fastPackStep 128 ++ fastPackStep 160
 
 def fastEndianStage8 : List Instr :=
-  [DenseScheduleTemplate.dup1,
-   DenseScheduleTemplate.push1 (UInt256.ofNat 8), DenseScheduleTemplate.op .SHR,
-   push31 mask8, DenseScheduleTemplate.op .AND,
-   DenseScheduleTemplate.swap1, push31 mask8, DenseScheduleTemplate.op .AND,
-   DenseScheduleTemplate.push1 (UInt256.ofNat 8), DenseScheduleTemplate.op .SHL,
-   DenseScheduleTemplate.op .OR]
+  DenseScheduleTemplate.endianStage8
 
 def fastEndianStage16 : List Instr :=
-  [DenseScheduleTemplate.dup1,
-   DenseScheduleTemplate.push1 (UInt256.ofNat 16), DenseScheduleTemplate.op .SHR,
-   push30 mask16, DenseScheduleTemplate.op .AND,
-   DenseScheduleTemplate.swap1, push30 mask16, DenseScheduleTemplate.op .AND,
-   DenseScheduleTemplate.push1 (UInt256.ofNat 16), DenseScheduleTemplate.op .SHL,
-   DenseScheduleTemplate.op .OR]
+  DenseScheduleTemplate.endianStage16
 
 def fastStoreAndSetup : List Instr :=
   [push0, DenseScheduleTemplate.op .MSTORE,
@@ -94,47 +84,54 @@ def fastOutputTemplate : List Instr :=
 @[simp] theorem fastPackTemplate_length : fastPackTemplate.length = 23 := by
   rfl
 
-@[simp] theorem fastEndianStage8_length : fastEndianStage8.length = 11 := by
+@[simp] theorem fastEndianStage8_length : fastEndianStage8.length = 10 := by
   rfl
 
-@[simp] theorem fastEndianStage16_length : fastEndianStage16.length = 11 := by
+@[simp] theorem fastEndianStage16_length : fastEndianStage16.length = 10 := by
   rfl
 
 @[simp] theorem fastStoreAndSetup_length : fastStoreAndSetup.length = 4 := by
   rfl
 
 @[simp] theorem fastOutputBeforeReturnTemplate_length :
-    fastOutputBeforeReturnTemplate.length = 49 := by
+    fastOutputBeforeReturnTemplate.length = 47 := by
   rfl
 
 @[simp] theorem fastOutputReturnTemplate_length : fastOutputReturnTemplate.length = 1 := by
   rfl
 
-@[simp] theorem fastOutputTemplate_length : fastOutputTemplate.length = 50 := by
+@[simp] theorem fastOutputTemplate_length : fastOutputTemplate.length = 48 := by
   rfl
 
 theorem fastOutputTemplate_byteLength :
-    (assembleBytes fastOutputTemplate).length = 186 := by
+    (assembleBytes fastOutputTemplate).length = 129 := by
   rw [fastOutputTemplate, assembleBytes_append,
     List.length_append, assembleBytes_length, assembleBytes_length]
   simp [fastOutputBeforeReturnTemplate, fastPackTemplate, fastLoad0,
     fastPackStep, fastEndianStage8, fastEndianStage16, fastStoreAndSetup,
-    fastOutputReturnTemplate, push0, push30, push31,
+    fastOutputReturnTemplate, push0,
     DenseScheduleTemplate.op, DenseScheduleTemplate.push1,
-    DenseScheduleTemplate.dup1, DenseScheduleTemplate.swap1,
+    DenseScheduleTemplate.dup1,
+    DenseScheduleTemplate.endianStage8, DenseScheduleTemplate.endianStage16,
+    DenseScheduleTemplate.endianStage, DenseScheduleTemplate.endianFactorPush,
+    DenseScheduleTemplate.endianFactor, DenseScheduleTemplate.push2,
+    DenseScheduleTemplate.push3, DenseScheduleTemplate.push32,
     Instr.size]
 
 def staticGas (instructions : List Instr) : Nat :=
   (instructions.map
     (Challenge.EvmProof.Meter.instrStaticCost .Osaka)).sum
 
-theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 143 := by
+theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 141 := by
   norm_num [staticGas, fastOutputTemplate, fastOutputBeforeReturnTemplate,
     fastPackTemplate, fastLoad0, fastPackStep, fastEndianStage8,
     fastEndianStage16, fastStoreAndSetup, fastOutputReturnTemplate,
-    push0, push30, push31, DenseScheduleTemplate.op,
+    push0, DenseScheduleTemplate.op,
     DenseScheduleTemplate.push1, DenseScheduleTemplate.dup1,
-    DenseScheduleTemplate.swap1,
+    DenseScheduleTemplate.endianStage8, DenseScheduleTemplate.endianStage16,
+    DenseScheduleTemplate.endianStage, DenseScheduleTemplate.endianFactorPush,
+    DenseScheduleTemplate.endianFactor, DenseScheduleTemplate.push2,
+    DenseScheduleTemplate.push3, DenseScheduleTemplate.push32,
     Challenge.EvmProof.Meter.instrStaticCost, Gas.baseCost]
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputTemplate
