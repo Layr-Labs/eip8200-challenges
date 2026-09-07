@@ -13,7 +13,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open StackBlockModel StackEndpoint CachedMaskLane StackLoadSeams
 
-private theorem returnPC : Artifact.submissionArtifact.instructionPC 874 = 0x419 := by
+private theorem returnPC : Artifact.submissionArtifact.instructionPC 873 = 0x418 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -77,16 +77,16 @@ noncomputable def gasSteps_legacyBlock (s : State) (input : ByteArray) (i : Nat)
   have gright := gasSteps_right80 q word w left.b left.c left.d left.e left.a rest
     qwords qactive (by simp [rest, StackFrame.frameRest, driverRest]) qcode qfork qrun qnp
   have hvalid : Decode.isValidJumpDest q.executionEnv.code
-      (UInt256.ofNat 0x419).toNat = true := by
-    have hdest := Artifact.submissionArtifact.isValidJumpDest_index 874 (by rfl)
+      (UInt256.ofNat 0x418).toNat = true := by
+    have hdest := Artifact.submissionArtifact.isValidJumpDest_index 873 (by rfl)
     rw [returnPC] at hdest
-    change Decode.isValidJumpDest q.executionEnv.code 0x419 = true
+    change Decode.isValidJumpDest q.executionEnv.code 0x418 = true
     rw [qcode]
     exact hdest
-  have gtail := CachedMaskTailSite.actualTailGasSteps q left right (UInt256.ofNat 0x419)
+  have gtail := CachedMaskTailSite.actualTailGasSteps q left right (UInt256.ofNat 0x418)
     (driverRest input i) qactive (by simp [driverRest]) qcode qfork qrun qnp hvalid
   have tailSeam : stateAt q (QuadLayout.rightPC 20) right rightRest =
-      CachedMaskOrderedTail.entry q left right (UInt256.ofNat 0x419) (driverRest input i) := by
+      CachedMaskOrderedTail.entry q left right (UInt256.ofNat 0x418) (driverRest input i) := by
     change StackRoundTrace.roundEntry q (QuadLayout.rightPC 20) right.a right.b right.c
       right.d right.e (QuadRoundTemplate.factor :: rightRest) = _
     rw [StackEndpoint.rightPC_last]
@@ -97,12 +97,12 @@ noncomputable def gasSteps_legacyBlock (s : State) (input : ByteArray) (i : Nat)
   have hright : right = rightWorking s input i := by
     exact congrArg (StackCompression.rightRounds (blockWords input i) 80)
       (initialWorking_scheduled s input i)
-  have tailEnd : QuadTailTemplate.finalResult q left right (UInt256.ofNat 0x419)
+  have tailEnd : QuadTailTemplate.finalResult q left right (UInt256.ofNat 0x418)
       (driverRest input i) =
       DriverTrace.compressReturned (resultState s input i) input i := by
-    change StackTail.tailResult q left right (UInt256.ofNat 0x419)
+    change StackTail.tailResult q left right (UInt256.ofNat 0x418)
       (driverRest input i) = _
-    exact (congrArg₂ (fun l r => StackTail.tailResult q l r (UInt256.ofNat 0x419)
+    exact (congrArg₂ (fun l r => StackTail.tailResult q l r (UInt256.ofNat 0x418)
       (driverRest input i)) hleft hright).trans
       ((tailResult_eq_resultState s input i).trans (resultState_returned s input i))
   exact gframe.trans (gload1'.trans (gleft.trans (groute'.trans (gload2'.trans

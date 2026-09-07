@@ -51,7 +51,7 @@ def left0First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 0) :=
     decide) code_bound wellFormed_left0First (by decide)
 
 private theorem left2First_slice :
-    (A.instructions.drop 910).take (CachedMaskParams.leftCode 2).length =
+    (A.instructions.drop 909).take (CachedMaskParams.leftCode 2).length =
       CachedMaskParams.leftCode 2 := by rfl
 
 private theorem wellFormed_left2First : ∀ instruction ∈ CachedMaskParams.leftCode 2,
@@ -59,8 +59,8 @@ private theorem wellFormed_left2First : ∀ instruction ∈ CachedMaskParams.lef
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def left2First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 2) :=
-  StackSiteBuilder.ofSlice _ 910 left2First_slice (by
-    change 910 + (CachedMaskParams.leftCode 2).length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 909 left2First_slice (by
+    change 909 + (CachedMaskParams.leftCode 2).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left2First (by decide)
 
@@ -79,7 +79,7 @@ def rightFirst : GenericRoundSite A .Osaka CachedMaskParams.rightCode :=
     decide) code_bound wellFormed_rightFirst (by decide)
 
 private theorem left4First_slice :
-    (A.instructions.drop 1710).take (CachedMaskParams.leftCode 4).length =
+    (A.instructions.drop 1709).take (CachedMaskParams.leftCode 4).length =
       CachedMaskParams.leftCode 4 := by rfl
 
 private theorem wellFormed_left4First : ∀ instruction ∈ CachedMaskParams.leftCode 4,
@@ -87,8 +87,8 @@ private theorem wellFormed_left4First : ∀ instruction ∈ CachedMaskParams.lef
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def left4First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 4) :=
-  StackSiteBuilder.ofSlice _ 1710 left4First_slice (by
-    change 1710 + (CachedMaskParams.leftCode 4).length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 1709 left4First_slice (by
+    change 1709 + (CachedMaskParams.leftCode 4).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left4First (by decide)
 
@@ -101,8 +101,8 @@ private def exactSite (index : Nat) (instruction : Instr)
 
 
 def left0Entry : Bridge A .Osaka where
-  push := exactSite 907 (.push 2 (UInt256.ofNat 4)) (by rfl) (by decide)
-  jump := exactSite 908 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  push := exactSite 906 (.push 2 (UInt256.ofNat 4)) (by rfl) (by decide)
+  jump := exactSite 907 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 2 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
@@ -118,9 +118,9 @@ def left0Entry : Bridge A .Osaka where
     decide
 
 def left0Return : Bridge A .Osaka where
-  push := exactSite 403 (.push 2 (UInt256.ofNat 1694)) (by rfl) (by decide)
+  push := exactSite 403 (.push 2 (UInt256.ofNat 1693)) (by rfl) (by decide)
   jump := exactSite 404 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 1360 (.op .JUMPDEST) (by rfl)
+  destination := exactSite 1359 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
     simp only [exactSite]
@@ -135,9 +135,9 @@ def left0Return : Bridge A .Osaka where
     decide
 
 def left2Entry : Bridge A .Osaka where
-  push := exactSite 1534 (.push 2 (UInt256.ofNat 1113)) (by rfl) (by decide)
-  jump := exactSite 1535 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 909 (.op .JUMPDEST) (by rfl)
+  push := exactSite 1533 (.push 2 (UInt256.ofNat 1112)) (by rfl) (by decide)
+  jump := exactSite 1534 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  destination := exactSite 908 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
     simp only [exactSite]
@@ -152,9 +152,9 @@ def left2Entry : Bridge A .Osaka where
     decide
 
 def left2Return : Bridge A .Osaka where
-  push := exactSite 1358 (.push 2 (UInt256.ofNat 2017)) (by rfl) (by decide)
-  jump := exactSite 1359 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 1536 (.op .JUMPDEST) (by rfl)
+  push := exactSite 1357 (.push 2 (UInt256.ofNat 2016)) (by rfl) (by decide)
+  jump := exactSite 1358 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  destination := exactSite 1535 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
     simp only [exactSite]
@@ -169,8 +169,8 @@ def left2Return : Bridge A .Osaka where
     decide
 
 def rightEntry : Bridge A .Osaka where
-  push := exactSite 3236 (.push 2 (UInt256.ofNat 535)) (by rfl) (by decide)
-  jump := exactSite 3237 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  push := exactSite 3230 (.push 2 (UInt256.ofNat 535)) (by rfl) (by decide)
+  jump := exactSite 3231 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 451 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
@@ -186,9 +186,9 @@ def rightEntry : Bridge A .Osaka where
     decide
 
 def rightReturn : Bridge A .Osaka where
-  push := exactSite 852 (.push 2 (UInt256.ofNat 4612)) (by rfl) (by decide)
+  push := exactSite 852 (.push 2 (UInt256.ofNat 4606)) (by rfl) (by decide)
   jump := exactSite 853 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 3238 (.op .JUMPDEST) (by rfl)
+  destination := exactSite 3232 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
     simp only [exactSite]
