@@ -111,9 +111,9 @@ def straddleCorrPath : List Located :=
 def straddleAddPath : List Located :=
   [opAt 3215 (.Dup ⟨1, by decide⟩), opAt 3216 (.Dup ⟨9, by decide⟩),
    opAt 3217 .AND, opAt 3218 (.Dup ⟨1, by decide⟩), opAt 3219 .ADD,
-   opAt 3220 (.Dup ⟨2, by decide⟩), opAt 3221 (.Dup ⟨12, by decide⟩),
-   opAt 3222 .AND, opAt 3223 .XOR, opAt 3224 (.Swap ⟨1, by decide⟩),
-   opAt 3225 .POP, opAt 3226 .POP]
+   opAt 3220 .POP, opAt 3221 (.Dup ⟨1, by decide⟩),
+   opAt 3222 (.Dup ⟨11, by decide⟩), opAt 3223 .AND,
+   opAt 3224 .XOR, opAt 3225 .POP, opAt 3226 .JUMPDEST]
 
 /-- Bump the scalar and rejoin the scan. -/
 def straddleBackPath : List Located :=

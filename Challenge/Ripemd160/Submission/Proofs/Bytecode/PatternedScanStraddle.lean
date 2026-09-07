@@ -81,27 +81,66 @@ def gasSteps_straddle_sym (input : ByteArray) (E S sv ov acc : UInt256) :
   have step3007 := soundS (opAt 3219 .ADD)
     (blockOfS _ (pcFactS input 3219 5287 [((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), (UInt256.land m7 E), ((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3007)
       (stepS_add input 5287 (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))))))) ((UInt256.land m7 E)) [((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step3008 := soundS (opAt 3220 (.Dup ⟨2, by decide⟩))
-    (blockOfS _ (pcFactS input 3220 5288 [(((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E)), ((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3008)
-      (stepS_dup input 5288 2 (by decide) [(((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E)), ((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), E, S, sv, ov, acc, P7, M, m7, P, m8] (E) (by rfl) (by simp) (by norm_num)))
-  have step3009 := soundS (opAt 3221 (.Dup ⟨12, by decide⟩))
-    (blockOfS _ (pcFactS input 3221 5289 [E, (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E)), ((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3009)
-      (stepS_dup input 5289 12 (by decide) [E, (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E)), ((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), E, S, sv, ov, acc, P7, M, m7, P, m8] (m8) (by rfl) (by simp) (by norm_num)))
-  have step3010 := soundS (opAt 3222 .AND)
-    (blockOfS _ (pcFactS input 3222 5290 [m8, E, (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E)), ((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3010)
-      (stepS_and input 5290 (m8) (E) [(((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E)), ((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step3011 := soundS (opAt 3223 .XOR)
-    (blockOfS _ (pcFactS input 3223 5291 [(UInt256.land m8 E), (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E)), ((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3011)
-      (stepS_xor input 5291 ((UInt256.land m8 E)) ((((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))) [((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step3012 := soundS (opAt 3224 (.Swap ⟨1, by decide⟩))
-    (blockOfS _ (pcFactS input 3224 5292 [(UInt256.xor (UInt256.land m8 E) (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))), ((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3012)
-      (stepS_swap input 5292 1 (by decide) [(UInt256.xor (UInt256.land m8 E) (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))), ((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), E, S, sv, ov, acc, P7, M, m7, P, m8] [E, ((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), (UInt256.xor (UInt256.land m8 E) (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))), S, sv, ov, acc, P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
-  have step3013 := soundS (opAt 3225 .POP)
-    (blockOfS _ (pcFactS input 3225 5293 [E, ((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), (UInt256.xor (UInt256.land m8 E) (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))), S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3013)
-      (stepS_pop input 5293 (E) [((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), (UInt256.xor (UInt256.land m8 E) (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))), S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step3014 := soundS (opAt 3226 .POP)
-    (blockOfS _ (pcFactS input 3226 5294 [((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))), (UInt256.xor (UInt256.land m8 E) (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))), S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3014)
-      (stepS_pop input 5294 (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))))))) [(UInt256.xor (UInt256.land m8 E) (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))), S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have cleanup (R C E S sv ov acc : UInt256) :
+      GasSteps
+        (stS input 5288 [R, C, E, S, sv, ov, acc, P7, M, m7, P, m8])
+        (stS input 5295
+          [UInt256.xor (UInt256.land m8 E) R, S, sv, ov, acc, P7, M, m7, P, m8]) := by
+    have cleanup0 := soundS (opAt 3220 .POP)
+      (blockOfS _ (pcFactS input 3220 5288
+          [R, C, E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3008)
+        (stepS_pop input 5288 C [E, S, sv, ov, acc, P7, M, m7, P, m8]
+          (by simp) (by norm_num)))
+    have cleanup1 := soundS (opAt 3221 (.Dup ⟨1, by decide⟩))
+      (blockOfS _ (pcFactS input 3221 5289
+          [R, E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3009)
+        (stepS_dup input 5289 1 (by decide)
+          [R, E, S, sv, ov, acc, P7, M, m7, P, m8] E
+          (by rfl) (by simp) (by norm_num)))
+    have cleanup2 := soundS (opAt 3222 (.Dup ⟨11, by decide⟩))
+      (blockOfS _ (pcFactS input 3222 5290
+          [E, R, E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3010)
+        (stepS_dup input 5290 11 (by decide)
+          [E, R, E, S, sv, ov, acc, P7, M, m7, P, m8] m8
+          (by rfl) (by simp) (by norm_num)))
+    have cleanup3 := soundS (opAt 3223 .AND)
+      (blockOfS _ (pcFactS input 3223 5291
+          [m8, E, R, E, S, sv, ov, acc, P7, M, m7, P, m8]
+          (by norm_num) pc3011)
+        (stepS_and input 5291 m8 E
+          [R, E, S, sv, ov, acc, P7, M, m7, P, m8]
+          (by simp) (by norm_num)))
+    have cleanup4 := soundS (opAt 3224 .XOR)
+      (blockOfS _ (pcFactS input 3224 5292
+          [UInt256.land m8 E, R, E, S, sv, ov, acc, P7, M, m7, P, m8]
+          (by norm_num) pc3012)
+        (stepS_xor input 5292 (UInt256.land m8 E) R
+          [E, S, sv, ov, acc, P7, M, m7, P, m8]
+          (by simp) (by norm_num)))
+    have cleanup5 := soundS (opAt 3225 .POP)
+      (blockOfS _ (pcFactS input 3225 5293
+          [UInt256.xor (UInt256.land m8 E) R, E, S, sv, ov, acc, P7, M, m7, P, m8]
+          (by norm_num) pc3013)
+        (stepS_pop input 5293 E [S, sv, ov, acc, P7, M, m7, P, m8]
+          (by simp) (by norm_num)))
+    have cleanup6 := soundS (opAt 3226 .JUMPDEST)
+      (blockOfS _ (pcFactS input 3226 5294
+          [UInt256.xor (UInt256.land m8 E) R, S, sv, ov, acc, P7, M, m7, P, m8]
+          (by norm_num) pc3014)
+        (stepS_jumpdest input 5294
+          [UInt256.xor (UInt256.land m8 E) R, S, sv, ov, acc, P7, M, m7, P, m8]
+          (by simp) (by norm_num)))
+    exact cleanup0.trans (cleanup1.trans (cleanup2.trans (cleanup3.trans
+      (cleanup4.trans (cleanup5.trans cleanup6)))))
+  have step3008 := cleanup
+    (((11 : UInt256) * (UInt256.shiftRight M
+      ((8 : UInt256) * ((27 : UInt256) -
+        ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) +
+      (UInt256.land m7 E))
+    ((11 : UInt256) * (UInt256.shiftRight M
+      ((8 : UInt256) * ((27 : UInt256) -
+        ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))))))
+    E S sv ov acc
   have step3015 := soundS (opAt 3227 (.Dup ⟨2, by decide⟩))
     (blockOfS _ (pcFactS input 3227 5295 [(UInt256.xor (UInt256.land m8 E) (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))), S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3015)
       (stepS_dup input 5295 2 (by decide) [(UInt256.xor (UInt256.land m8 E) (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))), S, sv, ov, acc, P7, M, m7, P, m8] (sv) (by rfl) (by simp) (by norm_num)))
@@ -123,7 +162,33 @@ def gasSteps_straddle_sym (input : ByteArray) (E S sv ov acc : UInt256) :
   have step3021 := soundS (opAt 3233 .JUMP)
     (blockOfS _ (pcFactS input 3233 5304 [(5170 : UInt256), (UInt256.xor (UInt256.land m8 E) (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))), S, ((11 : UInt256) + sv), ov, acc, P7, M, m7, P, m8] (by norm_num) pc3021)
       (stepS_jump input 5304 5170 ((5170 : UInt256)) [(UInt256.xor (UInt256.land m8 E) (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))), S, ((11 : UInt256) + sv), ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num) rfl hdest5170))
-  exact step2989.trans (step2990.trans (step2991.trans (step2992.trans (step2993.trans (step2994.trans (step2995.trans (step2996.trans (step2997.trans (step2998.trans (step2999.trans (step3000.trans (step3001.trans (step3002.trans (step3003.trans (step3004.trans (step3005.trans (step3006.trans (step3007.trans (step3008.trans (step3009.trans (step3010.trans (step3011.trans (step3012.trans (step3013.trans (step3014.trans (step3015.trans (step3016.trans (step3017.trans (step3018.trans (step3019.trans (step3020.trans (step3021))))))))))))))))))))))))))))))))
+  have all0 := step2989.trans step2990
+  have all1 := all0.trans step2991
+  have all2 := all1.trans step2992
+  have all3 := all2.trans step2993
+  have all4 := all3.trans step2994
+  have all5 := all4.trans step2995
+  have all6 := all5.trans step2996
+  have all7 := all6.trans step2997
+  have all8 := all7.trans step2998
+  have all9 := all8.trans step2999
+  have all10 := all9.trans step3000
+  have all11 := all10.trans step3001
+  have all12 := all11.trans step3002
+  have all13 := all12.trans step3003
+  have all14 := all13.trans step3004
+  have all15 := all14.trans step3005
+  have all16 := all15.trans step3006
+  have all17 := all16.trans step3007
+  have all18 := all17.trans step3008
+  have all19 := all18.trans step3015
+  have all20 := all19.trans step3016
+  have all21 := all20.trans step3017
+  have all22 := all21.trans step3018
+  have all23 := all22.trans step3019
+  have all24 := all23.trans step3020
+  have all25 := all24.trans step3021
+  exact all25
 
 /-- The running scalar never leaves a byte. -/
 theorem scalarAt_lt (k : Nat) : scalarAt k < 256 := by
