@@ -23,7 +23,7 @@ open WindowHitStates
 private def tableEndState (template : State) (base modulus : UInt256)
     (rest : List UInt256) : State :=
   { template with
-    pc := UInt256.ofNat 3191
+    pc := UInt256.ofNat 3184
     stack := [WindowMath.tableWord base modulus 15, base, modulus] ++ rest
     memory := WindowTableMemory.tableMemory base modulus
     activeWords := UInt256.ofNat 16 }
@@ -31,15 +31,15 @@ private def tableEndState (template : State) (base modulus : UInt256)
 private def loopHeadState (template : State) (base modulus : UInt256)
     (rest : List UInt256) : State :=
   { template with
-    pc := UInt256.ofNat 3197
+    pc := UInt256.ofNat 3190
     stack := [UInt256.ofNat 128, UInt256.ofNat 1, modulus] ++ rest
     memory := WindowTableMemory.tableMemory base modulus
     activeWords := UInt256.ofNat 16 }
 
 @[simp] private theorem finishPCs (index : Nat)
-    (hlo : 1987 ≤ index) (hhi : index ≤ 1990) :
+    (hlo : 1982 ≤ index) (hhi : index ≤ 1985) :
     Artifact.submissionArtifact.instructionPC index =
-      [3191, 3192, 3193, 3195][index - 1987]! := by
+      [3184, 3185, 3186, 3188][index - 1982]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -53,18 +53,18 @@ private theorem run_tableFinish_generic (template : State)
   have h2 : rest.length + 2 < 1024 := by omega
   have h3 : rest.length + 3 < 1024 := by omega
   have h4 : rest.length + 4 < 1024 := by omega
-  have hpc3192 : (UInt256.ofNat 3192).toNat = 3192 := by decide
-  have hpc3193 : (UInt256.ofNat 3193).toNat = 3193 := by decide
-  have hpc3195 : (UInt256.ofNat 3195).toNat = 3195 := by decide
-  have hsucc3192 : (UInt256.ofNat 3192).succ = UInt256.ofNat 3193 := by decide
-  have hadd3193 : UInt256.ofNat 3193 + UInt256.ofNat 2 = UInt256.ofNat 3195 := by decide
-  have hadd3195 : UInt256.ofNat 3195 + UInt256.ofNat 2 = UInt256.ofNat 3197 := by decide
+  have hpc3185 : (UInt256.ofNat 3185).toNat = 3185 := by decide
+  have hpc3186 : (UInt256.ofNat 3186).toNat = 3186 := by decide
+  have hpc3188 : (UInt256.ofNat 3188).toNat = 3188 := by decide
+  have hsucc3185 : (UInt256.ofNat 3185).succ = UInt256.ofNat 3186 := by decide
+  have hadd3186 : UInt256.ofNat 3186 + UInt256.ofNat 2 = UInt256.ofNat 3188 := by decide
+  have hadd3188 : UInt256.ofNat 3188 + UInt256.ofNat 2 = UInt256.ofNat 3190 := by decide
   simp (disch := omega) [tableFinishPath, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr,
     tableEndState, loopHeadState, hrest, h1, h2, h3, h4, hrun, finishPCs,
-    hpc3192, hpc3193, hpc3195, hsucc3192, hadd3193, hadd3195,
+    hpc3185, hpc3186, hpc3188, hsucc3185, hadd3186, hadd3188,
     List.getElem?_cons_zero, List.getElem?_cons_succ, Option.getD_some,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -73,7 +73,7 @@ private theorem run_tableFinish_generic (template : State)
 
 theorem run_tableFinish (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tableFinishPath
-      (tableState input 15 3191) =
+      (tableState input 15 3184) =
         some (loopState input 128 (UInt256.ofNat 1)) := by
   have h := run_tableFinish_generic (Dispatch.wordEntryState input)
     (baseWord input) (modulusWord input) (routeStack input)
@@ -98,7 +98,7 @@ private def sound {s t : State}
     Artifact.submissionArtifact .Osaka path hcode hfork h hrun hnp
 
 def gasSteps_tableFinish (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (tableState input 15 3191)
+    Challenge.EvmProof.GasSteps (tableState input 15 3184)
       (loopState input 128 (UInt256.ofNat 1)) :=
   sound tableFinishPath (run_tableFinish input)
 
