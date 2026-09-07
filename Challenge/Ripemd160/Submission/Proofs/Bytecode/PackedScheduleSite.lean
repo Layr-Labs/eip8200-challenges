@@ -137,23 +137,23 @@ private theorem denseScheduleTemplate_byteLength :
   exact DenseScheduleTemplate.denseBeforeJumpTemplate_byteLength
 
 private theorem packedSchedule_start_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3287 = 0x123f :=
+    Artifact.submissionArtifact.instructionPC 3287 = 0x11eb :=
   QuadLayout.schedule_pc
 
 private theorem packedSchedule_end_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3338 = 0x12ff :=
+    Artifact.submissionArtifact.instructionPC 3338 = 0x12ab :=
   QuadLayout.scheduleJump_pc
 
 @[simp] theorem packedScheduleSite_startPC :
-    packedScheduleSite.startPC = UInt256.ofNat 0x123f := by
+    packedScheduleSite.startPC = UInt256.ofNat 0x11eb := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3287) =
-    UInt256.ofNat 0x123f
+    UInt256.ofNat 0x11eb
   rw [packedSchedule_start_instructionPC]
 
 @[simp] theorem packedScheduleSite_endPC :
-    packedScheduleSite.endPC = UInt256.ofNat 0x12ff := by
+    packedScheduleSite.endPC = UInt256.ofNat 0x12ab := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3338) =
-    UInt256.ofNat 0x12ff
+    UInt256.ofNat 0x12ab
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleSite_end_eq_pcAfter :
@@ -198,15 +198,15 @@ private theorem runLocatedBlock_singleton
   | some t => simp [Challenge.EvmProof.Stepper.runLocatedBlock, h]
 
 @[simp] theorem packedScheduleFinalJump_pc :
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x12ff := by
+    packedScheduleFinalJump.pc = UInt256.ofNat 0x12ab := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3338) =
-    UInt256.ofNat 0x12ff
+    UInt256.ofNat 0x12ab
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleFinalJump_site_end :
     packedScheduleFinalJump.pc = packedScheduleSite.endPC := by
   calc
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x12ff := packedScheduleFinalJump_pc
+    packedScheduleFinalJump.pc = UInt256.ofNat 0x12ab := packedScheduleFinalJump_pc
     _ = packedScheduleSite.endPC := packedScheduleSite_endPC.symm
 
 theorem packedScheduleFinalJump_pc_eq_expected

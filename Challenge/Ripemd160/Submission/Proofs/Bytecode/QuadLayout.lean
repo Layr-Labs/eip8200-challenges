@@ -194,42 +194,42 @@ theorem rightHelper_pc (group : Fin 5) :
   fin_cases group <;> rw [ArtifactByteLength.instructionPC_eq_byteLength] <;> decide
 
 def routeIndex : Nat := 2158
-theorem route_pc : A.instructionPC routeIndex = 0xb61 := by
+theorem route_pc : A.instructionPC routeIndex = 0xb21 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def rightLoadIndex : Nat := 2159
-theorem rightLoad_pc : A.instructionPC rightLoadIndex = 0xb62 := by
+theorem rightLoad_pc : A.instructionPC rightLoadIndex = 0xb22 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def tailIndex : Nat := 3239
-theorem tail_pc : A.instructionPC tailIndex = 0x1205 := by
+theorem tail_pc : A.instructionPC tailIndex = 0x11b1 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def tailJumpIndex : Nat := 3286
-theorem tailJump_pc : A.instructionPC tailJumpIndex = 4670 := by
+theorem tailJump_pc : A.instructionPC tailJumpIndex = 4586 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def scheduleIndex : Nat := 3287
-theorem schedule_pc : A.instructionPC scheduleIndex = 4671 := by
+theorem schedule_pc : A.instructionPC scheduleIndex = 4587 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def scheduleJumpIndex : Nat := 3338
-theorem scheduleJump_pc : A.instructionPC scheduleJumpIndex = 4863 := by
+theorem scheduleJump_pc : A.instructionPC scheduleJumpIndex = 4779 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def outputIndex : Nat := 3339
-theorem output_pc : A.instructionPC outputIndex = 4864 := by
+theorem output_pc : A.instructionPC outputIndex = 4780 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-def outputReturnIndex : Nat := 3392
-theorem outputReturn_pc : A.instructionPC outputReturnIndex = 4939 := by
+def outputReturnIndex : Nat := 3386
+theorem outputReturn_pc : A.instructionPC outputReturnIndex = 4905 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 

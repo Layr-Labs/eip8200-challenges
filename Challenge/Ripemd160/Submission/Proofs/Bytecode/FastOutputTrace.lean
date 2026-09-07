@@ -403,8 +403,10 @@ theorem runInstrSeq_fastEndianStage8
         pc := pcAfter startPC fastEndianStage8
         stack := DenseScheduleTemplate.packedStage value 8
           FastOutputTemplate.mask8 :: rest } := by
-  exact ClosedEndianMultiply.run_endian s startPC value 8
-    DenseScheduleTemplate.mask8 rest hstack (Or.inl ⟨rfl, rfl⟩) hrun
+  simpa only [fastEndianStage8, DenseScheduleTemplate.endianStage8,
+    DenseScheduleTrace.stageState] using
+    (DenseScheduleTrace.runInstrSeq_endianStage s startPC value 8
+      DenseScheduleTemplate.mask8 rest hstack (Or.inl ⟨rfl, rfl⟩) hrun)
 
 theorem runInstrSeq_fastEndianStage16
     (s : State) (startPC value : UInt256) (rest : List UInt256)
@@ -415,8 +417,10 @@ theorem runInstrSeq_fastEndianStage16
         pc := pcAfter startPC fastEndianStage16
         stack := DenseScheduleTemplate.packedStage value 16
           FastOutputTemplate.mask16 :: rest } := by
-  exact ClosedEndianMultiply.run_endian s startPC value 16
-    DenseScheduleTemplate.mask16 rest hstack (Or.inr ⟨rfl, rfl⟩) hrun
+  simpa only [fastEndianStage16, DenseScheduleTemplate.endianStage16,
+    DenseScheduleTrace.stageState] using
+    (DenseScheduleTrace.runInstrSeq_endianStage s startPC value 16
+      DenseScheduleTemplate.mask16 rest hstack (Or.inr ⟨rfl, rfl⟩) hrun)
 
 theorem runInstrSeq_fastStoreAndSetup
     (s : State) (startPC value : UInt256) (rest : List UInt256)

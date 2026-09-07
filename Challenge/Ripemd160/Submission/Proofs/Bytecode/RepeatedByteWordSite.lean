@@ -28,16 +28,16 @@ def site : GenericRoundSite A .Osaka template :=
     rw [Artifact.referenceInstructions_count]
     decide) QuadLayout.code_bound template_wellFormed (by decide)
 
-theorem site_start : site.startPC = UInt256.ofNat 5001 := by rfl
-theorem site_end : site.endPC = UInt256.ofNat 5009 := by rfl
+theorem site_start : site.startPC = UInt256.ofNat 4967 := by rfl
+theorem site_end : site.endPC = UInt256.ofNat 4975 := by rfl
 
 def gasSteps_fullWord (s : State) (rho : List UInt256) (hstack : rho.length < 1021)
     (hcode : s.executionEnv.code = A.code) (hfork : s.fork = .Osaka)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 5001, stack := rho}
-      {s with pc := UInt256.ofNat 5009, stack := KnownInputData.fullWord :: rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4967, stack := rho}
+      {s with pc := UInt256.ofNat 4975, stack := KnownInputData.fullWord :: rho} := by
   have g := RepeatedByteWord.gasSteps_word (UInt256.ofNat 97) site
     s rho hstack hcode hfork hrun hnp
   exact g.cast (by rw [site_start]) (by rw [site_end, RepeatedByteWord.ascii_a])
