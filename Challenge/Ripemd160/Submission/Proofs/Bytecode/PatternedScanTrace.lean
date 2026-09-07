@@ -28,7 +28,7 @@ def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
 
 /-! Only these projections of the initial state are ever unfolded, so `simp`
-never normalizes the 5305-byte array. -/
+never normalizes the 5303-byte array. -/
 
 @[simp] theorem initialState_code (code calldata : ByteArray) (gas : Nat) :
     (initialState code calldata gas).executionEnv.code = code := rfl
@@ -73,20 +73,20 @@ def compareState (input : ByteArray) (k s : Nat) (a : UInt256) : State :=
 /-- At the head of the correction block, for a straddling offset. -/
 def straddleState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 5264
+    pc := UInt256.ofNat 5262
     stack := rawWord k :: UInt256.mul M (UInt256.ofNat (scalarAt k)) ::
       UInt256.ofNat (scalarAt k) :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- After the thirty-one words, at the padded tail. -/
 def tailState (input : ByteArray) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 5203
+    pc := UInt256.ofNat 5201
     stack := UInt256.ofNat (scalarAt 31) :: UInt256.ofNat 992 :: a :: frame }
 
 /-- The stub jumps here, and the guard answers or falls through.  -/
 def patternedEntry (input : ByteArray) : State := atPC input 5005
 
-def hitState (input : ByteArray) : State := atPC input 5237
+def hitState (input : ByteArray) : State := atPC input 5235
 def fallbackState (input : ByteArray) : State := atPC input 1006
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
@@ -96,7 +96,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 5263
+    pc := UInt256.ofNat 5261
     memory := answerMemory
     activeWords := UInt256.ofNat 1
     halt := .Returned
@@ -181,16 +181,16 @@ theorem run_word_straddle (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 
       rw [Challenge.EvmProof.Word.word_toNat_ofNat,
         Nat.mod_eq_of_lt (by norm_num : 224 < 2 ^ 256), hval, h])]
     decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 5264 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3201 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 5262 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 3199 (by rfl)
   have hdestN : Decode.isValidJumpDest submissionBytecode
-      (UInt256.ofNat 5264).toNat = true := by
+      (UInt256.ofNat 5262).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (by norm_num : 5264 < 2 ^ 256)]
+      Nat.mod_eq_of_lt (by norm_num : 5262 < 2 ^ 256)]
     exact hdest
   have hdestL : Decode.isValidJumpDest submissionBytecode
-      ((5264 : UInt256)).toNat = true := by
-    rw [show ((5264 : UInt256)).toNat = 5264 from by decide]
+      ((5262 : UInt256)).toNat = true := by
+    rw [show ((5262 : UInt256)).toNat = 5262 from by decide]
     exact hdest
   simp (config := { maxSteps := 800000 })
     [wordPath, opAt, pushAt, wfOp, loopState, straddleState, frame, rawWord,
