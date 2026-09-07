@@ -77,8 +77,8 @@ def comparePath : List Located :=
    opAt 3089 .POP, opAt 3090 .JUMPDEST, pushAt 3091 1 0xa0,
    opAt 3092 .ADD, pushAt 3093 1 0xff, opAt 3094 .AND,
    opAt 3095 .JUMPDEST, opAt 3096 .JUMPDEST,
-   opAt 3097 (.Dup ⟨1, by decide⟩), pushAt 3098 1 0x20, opAt 3099 .ADD,
-   opAt 3100 (.Swap ⟨1, by decide⟩), opAt 3101 .POP,
+   opAt 3097 (.Swap ⟨0, by decide⟩), pushAt 3098 1 0x20, opAt 3099 .ADD,
+   opAt 3100 (.Swap ⟨0, by decide⟩), opAt 3101 .JUMPDEST,
    opAt 3102 (.Dup ⟨1, by decide⟩), pushAt 3103 2 0x3e0, opAt 3104 .GT,
    pushAt 3105 2 0x13f3, opAt 3106 .JUMPI]
 
