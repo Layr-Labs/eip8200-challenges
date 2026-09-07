@@ -38,7 +38,7 @@ abbrev l1State := l1At 4136
 /-- Row middle reached after the final L1 MAC. -/
 def midState (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4696
+  { s with pc := UInt256.ofNat 4676
            stack := [paj, ptj, c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
@@ -189,7 +189,7 @@ theorem run_l1SecondMacExit (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hk : k + 1 = n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
-    Challenge.EvmProof.Stepper.runLocatedBlock secondMacExit
+    Challenge.EvmProof.Stepper.runLocatedBlock secondMac
       (l1At 4536 s mem bi pa pb n i k pdst ret rest) =
       some (midState s (l1Step mem bi pa n (k + 1)).memory
         (UInt256.ofNat (ptrAt (pa + 32 * n - 32) (k + 1)))
@@ -230,7 +230,7 @@ theorem run_l1SecondMacExit (s : State) (mem : ByteArray) (bi : UInt256)
       (8256 + 32 * (n - 1 - k)) 32) = s.activeWords :=
     activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 800000 })
-    [secondMacExit, secondMac, Cios2Paths.L1.secondPC, Cios2Paths.L1.secondStartIndex,
+    [secondMac, Cios2Paths.L1.secondPC, Cios2Paths.L1.secondStartIndex,
       Cios2Paths.L1.secondOpAt, Cios2Paths.L1.secondPushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
@@ -296,7 +296,7 @@ def gasSteps_l1SecondMacExit (s : State) (mem : ByteArray) (bi : UInt256)
         (UInt256.ofNat (ptrAt (8224 + 32 * n) (k + 1)))
         (l1Step mem bi pa n (k + 1)).carry bi pa pb n i pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka secondMacExit hcode hfork
+    Artifact.submissionArtifact .Osaka secondMac hcode hfork
     (run_l1SecondMacExit s mem bi pa pb n i k pdst ret rest hcap hrun hact hn32
       hk hpa hpaFit) hrun hnp
 

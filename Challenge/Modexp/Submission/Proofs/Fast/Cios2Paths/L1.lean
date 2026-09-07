@@ -19,7 +19,7 @@ private theorem instructionPC_add
 def firstStartIndex : Nat := 2726
 
 private def firstTemplate : List Instr :=
-    [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .op .MLOAD,
+      [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .op .MLOAD,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩),
    .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op (.Dup ⟨1, by decide⟩),
@@ -53,7 +53,7 @@ private theorem firstStartPC :
 @[simp] theorem firstPC (index : Nat) (hlo : firstStartIndex ≤ index)
     (hhi : index ≤ 2763) :
     Artifact.submissionArtifact.instructionPC index =
-            [4136, 4137, 4138, 4139, 4172, 4173, 4174, 4175, 4176, 4177, 4178, 4179, 4180, 4181,
+                  [4136, 4137, 4138, 4139, 4172, 4173, 4174, 4175, 4176, 4177, 4178, 4179, 4180, 4181,
        4182, 4183, 4184, 4185, 4186, 4187, 4188, 4189, 4190, 4191, 4192, 4193, 4194, 4195,
        4196, 4197, 4198, 4199, 4200, 4233, 4234, 4235, 4236, 4269][index - firstStartIndex]! := by
   calc
@@ -93,7 +93,7 @@ def firstPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
 /-- First MAC: instructions 2726..2768, pc 4136..4274. -/
 def firstMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-    [firstOpAt 0 .JUMPDEST, firstOpAt 1 (.Dup ⟨0, by decide⟩), firstOpAt 2 .MLOAD,
+      [firstOpAt 0 .JUMPDEST, firstOpAt 1 (.Dup ⟨0, by decide⟩), firstOpAt 2 .MLOAD,
    firstPushAt 3 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    firstOpAt 4 (.Dup ⟨5, by decide⟩), firstOpAt 5 (.Dup ⟨2, by decide⟩), firstOpAt 6 .MUL,
    firstOpAt 7 (.Swap ⟨1, by decide⟩), firstOpAt 8 (.Dup ⟨6, by decide⟩), firstOpAt 9 .MULMOD,
@@ -111,7 +111,7 @@ def firstMac :
 def middleOneStartIndex : Nat := 2764
 
 private def middleOneTemplate : List Instr :=
-    [.op (.Dup ⟨0, by decide⟩), .op .MLOAD,
+      [.op (.Dup ⟨0, by decide⟩), .op .MLOAD,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩),
    .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op (.Dup ⟨1, by decide⟩),
@@ -145,7 +145,7 @@ private theorem middleOneStartPC :
 @[simp] theorem middleOnePC (index : Nat) (hlo : middleOneStartIndex ≤ index)
     (hhi : index ≤ 2800) :
     Artifact.submissionArtifact.instructionPC index =
-            [4270, 4271, 4272, 4305, 4306, 4307, 4308, 4309, 4310, 4311, 4312, 4313, 4314, 4315,
+                  [4270, 4271, 4272, 4305, 4306, 4307, 4308, 4309, 4310, 4311, 4312, 4313, 4314, 4315,
        4316, 4317, 4318, 4319, 4320, 4321, 4322, 4323, 4324, 4325, 4326, 4327, 4328, 4329,
        4330, 4331, 4332, 4333, 4366, 4367, 4368, 4369, 4402][index - middleOneStartIndex]! := by
   calc
@@ -185,7 +185,7 @@ def middleOnePushAt (offset : Nat) (width : Fin 33) (value : UInt256)
 /-- MiddleOne MAC: instructions 2769..2810, pc 4270..4412. -/
 def middleOneMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-    [middleOneOpAt 0 (.Dup ⟨0, by decide⟩), middleOneOpAt 1 .MLOAD,
+      [middleOneOpAt 0 (.Dup ⟨0, by decide⟩), middleOneOpAt 1 .MLOAD,
    middleOnePushAt 2 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    middleOneOpAt 3 (.Dup ⟨5, by decide⟩), middleOneOpAt 4 (.Dup ⟨2, by decide⟩),
    middleOneOpAt 5 .MUL, middleOneOpAt 6 (.Swap ⟨1, by decide⟩),
@@ -206,7 +206,7 @@ def middleOneMac :
 def middleTwoStartIndex : Nat := 2801
 
 private def middleTwoTemplate : List Instr :=
-    [.op (.Dup ⟨0, by decide⟩), .op .MLOAD,
+      [.op (.Dup ⟨0, by decide⟩), .op .MLOAD,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩),
    .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op (.Dup ⟨1, by decide⟩),
@@ -240,7 +240,7 @@ private theorem middleTwoStartPC :
 @[simp] theorem middleTwoPC (index : Nat) (hlo : middleTwoStartIndex ≤ index)
     (hhi : index ≤ 2837) :
     Artifact.submissionArtifact.instructionPC index =
-            [4403, 4404, 4405, 4438, 4439, 4440, 4441, 4442, 4443, 4444, 4445, 4446, 4447, 4448,
+                  [4403, 4404, 4405, 4438, 4439, 4440, 4441, 4442, 4443, 4444, 4445, 4446, 4447, 4448,
        4449, 4450, 4451, 4452, 4453, 4454, 4455, 4456, 4457, 4458, 4459, 4460, 4461, 4462,
        4463, 4464, 4465, 4466, 4499, 4500, 4501, 4502, 4535][index - middleTwoStartIndex]! := by
   calc
@@ -280,7 +280,7 @@ def middleTwoPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
 /-- MiddleTwo MAC: instructions 2811..2852, pc 4403..4550. -/
 def middleTwoMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-    [middleTwoOpAt 0 (.Dup ⟨0, by decide⟩), middleTwoOpAt 1 .MLOAD,
+      [middleTwoOpAt 0 (.Dup ⟨0, by decide⟩), middleTwoOpAt 1 .MLOAD,
    middleTwoPushAt 2 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    middleTwoOpAt 3 (.Dup ⟨5, by decide⟩), middleTwoOpAt 4 (.Dup ⟨2, by decide⟩),
    middleTwoOpAt 5 .MUL, middleTwoOpAt 6 (.Swap ⟨1, by decide⟩),
@@ -301,7 +301,7 @@ def middleTwoMac :
 def secondStartIndex : Nat := 2838
 
 private def secondTemplate : List Instr :=
-    [.op (.Dup ⟨0, by decide⟩), .op .MLOAD,
+      [.op (.Dup ⟨0, by decide⟩), .op .MLOAD,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩),
    .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op (.Dup ⟨1, by decide⟩),
@@ -314,10 +314,7 @@ private def secondTemplate : List Instr :=
    .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MSTORE,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    .op .ADD, .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .GT, .push 2 4136,
-   .op .JUMPI, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+   .op .JUMPI]
 
 private theorem secondSlice_eq :
     (Artifact.submissionInstructions.drop secondStartIndex).take
@@ -337,13 +334,11 @@ private theorem secondStartPC :
   rfl
 
 @[simp] theorem secondPC (index : Nat) (hlo : secondStartIndex ≤ index)
-    (hhi : index ≤ 2899) :
+    (hhi : index ≤ 2879) :
     Artifact.submissionArtifact.instructionPC index =
-            [4536, 4537, 4538, 4571, 4572, 4573, 4574, 4575, 4576, 4577, 4578, 4579, 4580, 4581,
+                  [4536, 4537, 4538, 4571, 4572, 4573, 4574, 4575, 4576, 4577, 4578, 4579, 4580, 4581,
        4582, 4583, 4584, 4585, 4586, 4587, 4588, 4589, 4590, 4591, 4592, 4593, 4594, 4595,
-       4596, 4597, 4598, 4599, 4632, 4633, 4634, 4635, 4668, 4669, 4670, 4671, 4672, 4675,
-       4676, 4677, 4678, 4679, 4680, 4681, 4682, 4683, 4684, 4685, 4686, 4687, 4688, 4689,
-       4690, 4691, 4692, 4693, 4694, 4695][index - secondStartIndex]! := by
+       4596, 4597, 4598, 4599, 4632, 4633, 4634, 4635, 4668, 4669, 4670, 4671, 4672, 4675][index - secondStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -381,7 +376,7 @@ def secondPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
 /-- Second MAC: instructions 2853..2899, pc 4536..4695. -/
 def secondMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-    [secondOpAt 0 (.Dup ⟨0, by decide⟩), secondOpAt 1 .MLOAD,
+      [secondOpAt 0 (.Dup ⟨0, by decide⟩), secondOpAt 1 .MLOAD,
    secondPushAt 2 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    secondOpAt 3 (.Dup ⟨5, by decide⟩), secondOpAt 4 (.Dup ⟨2, by decide⟩), secondOpAt 5 .MUL,
    secondOpAt 6 (.Swap ⟨1, by decide⟩), secondOpAt 7 (.Dup ⟨6, by decide⟩),
@@ -401,31 +396,6 @@ def secondMac :
    secondOpAt 36 .ADD, secondOpAt 37 (.Dup ⟨5, by decide⟩),
    secondOpAt 38 (.Dup ⟨1, by decide⟩), secondOpAt 39 .GT, secondPushAt 40 2 4136,
    secondOpAt 41 .JUMPI]
-
-/-- Same trace plus the padding `JUMPDEST`s on the fall-through path. -/
-def secondMacExit :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  secondMac ++
-  [secondOpAt 42 .JUMPDEST,
-   secondOpAt 43 .JUMPDEST,
-   secondOpAt 44 .JUMPDEST,
-   secondOpAt 45 .JUMPDEST,
-   secondOpAt 46 .JUMPDEST,
-   secondOpAt 47 .JUMPDEST,
-   secondOpAt 48 .JUMPDEST,
-   secondOpAt 49 .JUMPDEST,
-   secondOpAt 50 .JUMPDEST,
-   secondOpAt 51 .JUMPDEST,
-   secondOpAt 52 .JUMPDEST,
-   secondOpAt 53 .JUMPDEST,
-   secondOpAt 54 .JUMPDEST,
-   secondOpAt 55 .JUMPDEST,
-   secondOpAt 56 .JUMPDEST,
-   secondOpAt 57 .JUMPDEST,
-   secondOpAt 58 .JUMPDEST,
-   secondOpAt 59 .JUMPDEST,
-   secondOpAt 60 .JUMPDEST,
-   secondOpAt 61 .JUMPDEST]
 
 
 /-- The complete four-MAC L1 block, retained for whole-block consumers. -/

@@ -9,60 +9,21 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 2900
+def startIndex : Nat := 2880
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
-  [.op .POP,
-   .op .POP,
-   .op (.Dup ⟨0, by decide⟩),
-   .push 2 8224,
-   .op .MLOAD,
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .push 2 8224,
-   .op .MSTORE,
-   .op .LT,
-   .push 2 8192,
-   .op .MSTORE,
-   .push 2 9440,
-   .op .MLOAD,
-   .op .MLOAD,
-   .push 2 9376,
-   .op .MLOAD,
-   .op .MUL,
-   .op (.Dup ⟨0, by decide⟩),
-   .push 2 9408,
-   .op .MLOAD,
-   .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op .MUL,
-   .op (.Swap ⟨1, by decide⟩),
+    [.op .POP, .op .POP, .op (.Dup ⟨0, by decide⟩), .push 2 8224, .op .MLOAD, .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .push 2 8224, .op .MSTORE, .op .LT, .push 2 8192, .op .MSTORE,
+   .push 2 9440, .op .MLOAD, .op .MLOAD, .push 2 9376, .op .MLOAD, .op .MUL,
+   .op (.Dup ⟨0, by decide⟩), .push 2 9408, .op .MLOAD, .op .MLOAD, .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩),
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   .op (.Swap ⟨1, by decide⟩),
-   .op .MULMOD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op .LT,
-   .op (.Dup ⟨2, by decide⟩),
-   .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op .SUB,
-   .op (.Swap ⟨0, by decide⟩),
-   .push 0 0,
-   .op .LT,
-   .op .ADD,
-   .push 2 9440,
-   .op .MLOAD,
-   .push 1 32,
-   .op (.Swap ⟨0, by decide⟩),
-   .op .SUB,
-   .push 2 9408,
-   .op .MLOAD,
-   .push 1 32,
-   .op (.Swap ⟨0, by decide⟩),
-   .op .SUB]
+   .op (.Swap ⟨1, by decide⟩), .op .MULMOD, .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩), .op .LT, .op (.Dup ⟨2, by decide⟩), .op .ADD,
+   .op (.Swap ⟨0, by decide⟩), .op .SUB, .op (.Swap ⟨0, by decide⟩), .push 0 0, .op .LT,
+   .op .ADD, .push 2 9440, .op .MLOAD, .push 1 32, .op (.Swap ⟨0, by decide⟩), .op .SUB,
+   .push 2 9408, .op .MLOAD, .push 1 32, .op (.Swap ⟨0, by decide⟩), .op .SUB]
 
 private theorem slice_eq :
     (Artifact.submissionInstructions.drop startIndex).take template.length = template := by
@@ -82,13 +43,16 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem startPC :
-    Artifact.submissionArtifact.instructionPC startIndex = 4696 := by
+    Artifact.submissionArtifact.instructionPC startIndex = 4676 := by
   rfl
 
 @[simp] theorem midPC (index : Nat) (hlo : startIndex ≤ index)
-    (hhi : index ≤ 2949) :
+    (hhi : index ≤ 2929) :
     Artifact.submissionArtifact.instructionPC index =
-      [4696,4697,4698,4699,4702,4703,4704,4705,4708,4709,4710,4713,4714,4717,4718,4719,4722,4723,4724,4725,4728,4729,4730,4731,4732,4733,4734,4767,4768,4769,4770,4771,4772,4773,4774,4775,4776,4777,4778,4779,4780,4783,4784,4786,4787,4788,4791,4792,4794,4795][index - startIndex]! := by
+            [4676, 4677, 4678, 4679, 4682, 4683, 4684, 4685, 4688, 4689, 4690, 4693, 4694, 4697,
+       4698, 4699, 4702, 4703, 4704, 4705, 4708, 4709, 4710, 4711, 4712, 4713, 4714, 4747,
+       4748, 4749, 4750, 4751, 4752, 4753, 4754, 4755, 4756, 4757, 4758, 4759, 4760, 4763,
+       4764, 4766, 4767, 4768, 4771, 4772, 4774, 4775][index - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -125,55 +89,18 @@ def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
 /-- Instructions 2900..2949, pc 4696..4795. -/
 def cios2Mid :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 0 .POP,
-   opAt 1 .POP,
-   opAt 2 (.Dup ⟨0, by decide⟩),
-   pushAt 3 2 8224,
-   opAt 4 .MLOAD,
-   opAt 5 .ADD,
-   opAt 6 (.Dup ⟨0, by decide⟩),
-   pushAt 7 2 8224,
-   opAt 8 .MSTORE,
-   opAt 9 .LT,
-   pushAt 10 2 8192,
-   opAt 11 .MSTORE,
-   pushAt 12 2 9440,
-   opAt 13 .MLOAD,
-   opAt 14 .MLOAD,
-   pushAt 15 2 9376,
-   opAt 16 .MLOAD,
-   opAt 17 .MUL,
-   opAt 18 (.Dup ⟨0, by decide⟩),
-   pushAt 19 2 9408,
-   opAt 20 .MLOAD,
-   opAt 21 .MLOAD,
-   opAt 22 (.Dup ⟨1, by decide⟩),
-   opAt 23 (.Dup ⟨1, by decide⟩),
-   opAt 24 .MUL,
-   opAt 25 (.Swap ⟨1, by decide⟩),
+    [opAt 0 .POP, opAt 1 .POP, opAt 2 (.Dup ⟨0, by decide⟩), pushAt 3 2 8224, opAt 4 .MLOAD,
+   opAt 5 .ADD, opAt 6 (.Dup ⟨0, by decide⟩), pushAt 7 2 8224, opAt 8 .MSTORE, opAt 9 .LT,
+   pushAt 10 2 8192, opAt 11 .MSTORE, pushAt 12 2 9440, opAt 13 .MLOAD, opAt 14 .MLOAD,
+   pushAt 15 2 9376, opAt 16 .MLOAD, opAt 17 .MUL, opAt 18 (.Dup ⟨0, by decide⟩),
+   pushAt 19 2 9408, opAt 20 .MLOAD, opAt 21 .MLOAD, opAt 22 (.Dup ⟨1, by decide⟩),
+   opAt 23 (.Dup ⟨1, by decide⟩), opAt 24 .MUL, opAt 25 (.Swap ⟨1, by decide⟩),
    pushAt 26 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   opAt 27 (.Swap ⟨1, by decide⟩),
-   opAt 28 .MULMOD,
-   opAt 29 (.Dup ⟨1, by decide⟩),
-   opAt 30 (.Dup ⟨1, by decide⟩),
-   opAt 31 .LT,
-   opAt 32 (.Dup ⟨2, by decide⟩),
-   opAt 33 .ADD,
-   opAt 34 (.Swap ⟨0, by decide⟩),
-   opAt 35 .SUB,
-   opAt 36 (.Swap ⟨0, by decide⟩),
-   pushAt 37 0 0,
-   opAt 38 .LT,
-   opAt 39 .ADD,
-   pushAt 40 2 9440,
-   opAt 41 .MLOAD,
-   pushAt 42 1 32,
-   opAt 43 (.Swap ⟨0, by decide⟩),
-   opAt 44 .SUB,
-   pushAt 45 2 9408,
-   opAt 46 .MLOAD,
-   pushAt 47 1 32,
-   opAt 48 (.Swap ⟨0, by decide⟩),
-   opAt 49 .SUB]
+   opAt 27 (.Swap ⟨1, by decide⟩), opAt 28 .MULMOD, opAt 29 (.Dup ⟨1, by decide⟩),
+   opAt 30 (.Dup ⟨1, by decide⟩), opAt 31 .LT, opAt 32 (.Dup ⟨2, by decide⟩), opAt 33 .ADD,
+   opAt 34 (.Swap ⟨0, by decide⟩), opAt 35 .SUB, opAt 36 (.Swap ⟨0, by decide⟩),
+   pushAt 37 0 0, opAt 38 .LT, opAt 39 .ADD, pushAt 40 2 9440, opAt 41 .MLOAD, pushAt 42 1 32,
+   opAt 43 (.Swap ⟨0, by decide⟩), opAt 44 .SUB, pushAt 45 2 9408, opAt 46 .MLOAD,
+   pushAt 47 1 32, opAt 48 (.Swap ⟨0, by decide⟩), opAt 49 .SUB]
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Mid

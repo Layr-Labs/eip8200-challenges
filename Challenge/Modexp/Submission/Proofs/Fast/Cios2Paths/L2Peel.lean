@@ -9,11 +9,11 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 2950
+def startIndex : Nat := 2930
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
-    [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .op .MLOAD,
+      [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .op .MLOAD,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩),
    .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op (.Dup ⟨1, by decide⟩),
@@ -25,7 +25,7 @@ private def template : List Instr :=
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .ADD, .op .MSTORE,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   .op .ADD, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+   .op .ADD]
 
 private theorem slice_eq :
     (Artifact.submissionInstructions.drop startIndex).take template.length = template := by
@@ -45,16 +45,15 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem startPC :
-    Artifact.submissionArtifact.instructionPC startIndex = 4796 := by
+    Artifact.submissionArtifact.instructionPC startIndex = 4776 := by
   rfl
 
 @[simp] theorem peelPC (index : Nat) (hlo : startIndex ≤ index)
-    (hhi : index ≤ 2994) :
+    (hhi : index ≤ 2969) :
     Artifact.submissionArtifact.instructionPC index =
-            [4796, 4797, 4798, 4799, 4832, 4833, 4834, 4835, 4836, 4837, 4838, 4839, 4840, 4841,
-       4842, 4843, 4844, 4845, 4846, 4847, 4848, 4849, 4850, 4851, 4852, 4853, 4854, 4855,
-       4856, 4857, 4858, 4859, 4861, 4862, 4895, 4896, 4897, 4898, 4899, 4932, 4933, 4934,
-       4935, 4936, 4937][index - startIndex]! := by
+                  [4776, 4777, 4778, 4779, 4812, 4813, 4814, 4815, 4816, 4817, 4818, 4819, 4820, 4821,
+       4822, 4823, 4824, 4825, 4826, 4827, 4828, 4829, 4830, 4831, 4832, 4833, 4834, 4835,
+       4836, 4837, 4838, 4839, 4841, 4842, 4875, 4876, 4877, 4878, 4879, 4912][index - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -91,7 +90,7 @@ def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
 /-- Instructions 2950..2994, pc 4796..4937. -/
 def cios2L2Peel :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-    [opAt 0 .JUMPDEST, opAt 1 (.Dup ⟨0, by decide⟩), opAt 2 .MLOAD,
+      [opAt 0 .JUMPDEST, opAt 1 (.Dup ⟨0, by decide⟩), opAt 2 .MLOAD,
    pushAt 3 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    opAt 4 (.Dup ⟨5, by decide⟩), opAt 5 (.Dup ⟨2, by decide⟩), opAt 6 .MUL,
    opAt 7 (.Swap ⟨1, by decide⟩), opAt 8 (.Dup ⟨6, by decide⟩), opAt 9 .MULMOD,
@@ -105,7 +104,6 @@ def cios2L2Peel :
    pushAt 33 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    opAt 34 .ADD, opAt 35 (.Swap ⟨3, by decide⟩), opAt 36 .ADD, opAt 37 .MSTORE,
    pushAt 38 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 39 .ADD, opAt 40 .JUMPDEST, opAt 41 .JUMPDEST, opAt 42 .JUMPDEST, opAt 43 .JUMPDEST,
-   opAt 44 .JUMPDEST]
+   opAt 39 .ADD]
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.L2Peel

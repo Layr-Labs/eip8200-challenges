@@ -61,14 +61,14 @@ def limbStep (memory : ByteArray) (pa pb n : Nat) : Nat → LimbState
 /-- State immediately after the pc-2467 trampoline. -/
 def entryState (s : State) (memory : ByteArray) (pa pb : Nat)
     (pd ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5305
+  { s with pc := UInt256.ofNat 5270
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pd, ret] ++ rest
            memory := memory }
 
 /-- Fused loop head at pc 5327 after `j` completed limbs. -/
 def loopState (s : State) (memory : ByteArray) (pa pb n j : Nat)
     (pd ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5327
+  { s with pc := UInt256.ofNat 5292
            stack := [UInt256.ofNat (8224 + 32 * (n - j)),
                      (limbStep memory pa pb n j).carry,
                      (limbStep memory pa pb n j).borrow,
@@ -78,7 +78,7 @@ def loopState (s : State) (memory : ByteArray) (pa pb n j : Nat)
 /-- Fused tail at pc 5391 after all `n` limbs. -/
 def tailState (s : State) (memory : ByteArray) (pa pb n j : Nat)
     (pd ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5391
+  { s with pc := UInt256.ofNat 5356
            stack := [UInt256.ofNat (8224 + 32 * (n - j)),
                      (limbStep memory pa pb n j).carry,
                      (limbStep memory pa pb n j).borrow,
@@ -174,12 +174,12 @@ theorem run_trampoline (s : State) (memory : ByteArray) (pa pb : Nat)
       some (entryState s memory pa pb pd ret rest) := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have h4057 : (5305 : UInt256).toNat = 5305 := by decide
-  have h4057' : (5305 : UInt256) = UInt256.ofNat 5305 := by decide
+  have h4057 : (5270 : UInt256).toNat = 5270 := by decide
+  have h4057' : (5270 : UInt256) = UInt256.ofNat 5270 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (5305 : UInt256).toNat = true := by
+      (5270 : UInt256).toNat = true := by
     rw [h4057]
-    exact jumpDest5305
+    exact jumpDest5270
   simp (config := { maxSteps := 100000 })
     [blk1600, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -187,7 +187,7 @@ theorem run_trampoline (s : State) (memory : ByteArray) (pa pb : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       Csub.amEntryState, entryState, fastPC15, hc4, hc5, hrun, hcode, h4057,
       h4057', hjump,
-      jumpDest5305, Challenge.EvmProof.Word.succ_ofNat_mod,
+      jumpDest5270, Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt, List.exchange]
 
 set_option linter.unusedSimpArgs false in
@@ -308,12 +308,12 @@ theorem run_loop_body (s : State) (memory : ByteArray) (pa pb n j : Nat)
     rw [← hTaddr]
     exact hnext
   norm_num at haddrT hnextMod haddrA haddrB haddrM haddrP h8256N h1088N h32N hAN hBN hMN hDN hnextN
-  have h4079 : (5327 : UInt256).toNat = 5327 := by decide
-  have h4079' : (5327 : UInt256) = UInt256.ofNat 5327 := by decide
+  have h4079 : (5292 : UInt256).toNat = 5292 := by decide
+  have h4079' : (5292 : UInt256) = UInt256.ofNat 5292 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (5327 : UInt256).toNat = true := by
+      (5292 : UInt256).toNat = true := by
     rw [h4079]
-    exact jumpDest5327
+    exact jumpDest5292
   have hactA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (pa + 32 * (n - 1 - j)) 32) = s.activeWords :=
     Csub.activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -338,7 +338,7 @@ theorem run_loop_body (s : State) (memory : ByteArray) (pa pb n j : Nat)
       hrun, hcode, h32, h1088, h8256, h8224, hA, hB, hM, hD, hnext, hTaddr, haddrT,
       hnextMod, hgt, haddrP, hAN, hBN, hMN, hDN, hnextN, hnextP,
       haddrA, haddrB, haddrM, h4079, h4079', hjump,
-      jumpDest5327, hactA, hactB, hactM, hactD, hactT,
+      jumpDest5292, hactA, hactB, hactM, hactD, hactT,
       UInt256.gt, UInt256.lt, UInt256.isTrue, State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -384,7 +384,7 @@ theorem run_loop_exit (s : State) (memory : ByteArray) (pa pb n j : Nat)
   have hnextMod : (8224 + 32 * (n - (j + 1))) % 2 ^ 256 =
       8224 + 32 * (n - (j + 1)) := Nat.mod_eq_of_lt (by omega)
   have hngt : ¬8224 < 8224 + 32 * (n - (j + 1)) := by omega
-  have h4143' : (5391 : UInt256) = UInt256.ofNat 5391 := by decide
+  have h4143' : (5356 : UInt256) = UInt256.ofNat 5356 := by decide
   have haddrA : (pa + 32 * (n - 1 - j)) % 2 ^ 256 =
       pa + 32 * (n - 1 - j) := Nat.mod_eq_of_lt (by omega)
   have haddrB : (pb + 32 * (n - 1 - j)) % 2 ^ 256 =
@@ -516,11 +516,11 @@ theorem run_tail (s : State) (memory : ByteArray) (pa pb n j : Nat)
   have hc10 : rest.length + 10 < 1024 := by omega
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
   have h9344 : (9344 : UInt256).toNat = 9344 := by decide
-  have h4169 : (5417 : UInt256).toNat = 5417 := by decide
-  have h4170 : (5418 : UInt256).toNat = 5418 := by decide
-  have h4171 : (5419 : UInt256).toNat = 5419 := by decide
-  have h4172 : (5420 : UInt256).toNat = 5420 := by decide
-  have h4173 : (5421 : UInt256).toNat = 5421 := by decide
+  have h4169 : (5382 : UInt256).toNat = 5382 := by decide
+  have h4170 : (5383 : UInt256).toNat = 5383 := by decide
+  have h4171 : (5384 : UInt256).toNat = 5384 := by decide
+  have h4172 : (5385 : UInt256).toNat = 5385 := by decide
+  have h4173 : (5386 : UInt256).toNat = 5386 := by decide
   have huse := useSub_le_one memory pa pb n j hcarry
   have hsrcFit : (resultSrc memory pa pb n j).toNat + 32 * n ≤ 9472 := by
     rw [resultSrc_toNat memory pa pb n j huse]
