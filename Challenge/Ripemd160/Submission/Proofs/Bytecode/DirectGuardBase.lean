@@ -41,7 +41,7 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def sizePath : List Located :=
   [opAt 3414 .JUMPDEST, opAt 3415 .CALLDATASIZE, pushAt 3416 2 1000,
-   opAt 3417 .XOR, pushAt 3418 2 1004, opAt 3419 .JUMPI]
+   opAt 3417 .XOR, pushAt 3418 2 5298, opAt 3419 .JUMPI]
 
 def checkEntryPath : List Located :=
   [pushAt 3420 0 0, opAt 3421 .CALLDATALOAD,

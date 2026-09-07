@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardTail
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.AbcGuard
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -46,7 +47,8 @@ def gasSteps_target :
 
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
     (hne : input ≠ KnownInputData.targetInput)
-    (hpne : input ≠ PatternedInputData.patternedInput) :
+    (hpne : input ≠ PatternedInputData.patternedInput)
+    (hane : input ≠ AbcGuard.abcInput) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) := by
   by_cases hsize : input.size = 1000
   · by_cases href : referenceWord input = KnownInputData.fullWord
@@ -60,7 +62,18 @@ def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
           ((gasSteps_checkEarly input href).trans
             (PatternedScan.gasSteps_patterned_miss input hsize hpne)))
   · exact (Execution.gasSteps_start input).trans
-      (sound sizePath (run_size_fail input hfit hsize))
+      ((sound sizePath (run_size_fail input hfit hsize)).trans
+        (by_cases habcSize : input.size = 3
+         · have hword : MachineState.readWord input 0 ≠ AbcGuard.abcWord := by
+             intro heq
+             apply hane
+             exact AbcGuard.abcInput_of_size3_word_eq input habcSize heq
+           exact (sound AbcGuard.abcDispatchPath
+             (AbcGuard.run_abc_dispatch_match input habcSize)).trans
+             (sound AbcGuard.abcWordPath
+               (AbcGuard.run_abc_word_fail input hword))
+         · exact sound AbcGuard.abcDispatchPath
+             (AbcGuard.run_abc_dispatch_fail input hfit habcSize)))
 
 private theorem answerMemory_read :
     MachineState.readPadded answerMemory 0 32 = ExactGuardSpec.paddedDigest := by
@@ -87,27 +100,40 @@ theorem correct : Correct submissionBytecode := by
     rw [answerMemory_read, ← ExactGuardSpec.spec_targetInput_eq] at heval
     rw [show ExactGuardData.targetInput = KnownInputData.targetInput by rfl] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · by_cases hp : input = PatternedInputData.patternedInput
+  · by_cases ha : input = AbcGuard.abcInput
     · subst input
-      have href : referenceWord PatternedInputData.patternedInput ≠
-          KnownInputData.fullWord := PatternedInputData.patterned_reference_ne
-      have hsize := PatternedInputData.patternedInput_size
-      let trace :=
-        (Execution.gasSteps_start PatternedInputData.patternedInput).trans
-          ((sound sizePath (run_size_match PatternedInputData.patternedInput hsize)).trans
-            ((gasSteps_checkEarly PatternedInputData.patternedInput href).trans
-              PatternedScan.gasSteps_patterned))
+      let trace := AbcGuard.gasSteps_abc
       refine ⟨trace.cost, fun gas hgas => ?_⟩
       have heval := eval_of_steps (trace.trace gas hgas) (by
-        simp [withGas, PatternedScan.returnedState, initialState,
+        simp [withGas, AbcGuard.abcReturnedState, initialState,
           State.isDone, State.isHalted, State.isRunning])
       rw [State.toResult_returned _ (by rfl)] at heval
       change Eval (withGas
-        (initialState submissionBytecode PatternedInputData.patternedInput 0) gas)
-        (.returned (MachineState.readPadded PatternedScan.answerMemory 0 32)) at heval
-      rw [PatternedScan.answerMemory_read, ← PatternedGuardSpec.spec_patternedInput_eq] at heval
+        (initialState submissionBytecode AbcGuard.abcInput 0) gas)
+        (.returned (MachineState.readPadded AbcGuard.abcAnswerMemory 0 32)) at heval
+      rw [AbcGuard.abcAnswerMemory_read, ← AbcGuard.spec_abcInput_eq] at heval
       simpa [GasCost.withGas_initialState_zero] using heval
-    · exact StackCorrect.correct input hfit
-        (gasSteps_fallback input hfit h hp)
+    · by_cases hp : input = PatternedInputData.patternedInput
+      · subst input
+        have href : referenceWord PatternedInputData.patternedInput ≠
+            KnownInputData.fullWord := PatternedInputData.patterned_reference_ne
+        have hsize := PatternedInputData.patternedInput_size
+        let trace :=
+          (Execution.gasSteps_start PatternedInputData.patternedInput).trans
+            ((sound sizePath (run_size_match PatternedInputData.patternedInput hsize)).trans
+              ((gasSteps_checkEarly PatternedInputData.patternedInput href).trans
+                PatternedScan.gasSteps_patterned))
+        refine ⟨trace.cost, fun gas hgas => ?_⟩
+        have heval := eval_of_steps (trace.trace gas hgas) (by
+          simp [withGas, PatternedScan.returnedState, initialState,
+            State.isDone, State.isHalted, State.isRunning])
+        rw [State.toResult_returned _ (by rfl)] at heval
+        change Eval (withGas
+          (initialState submissionBytecode PatternedInputData.patternedInput 0) gas)
+          (.returned (MachineState.readPadded PatternedScan.answerMemory 0 32)) at heval
+        rw [PatternedScan.answerMemory_read, ← PatternedGuardSpec.spec_patternedInput_eq] at heval
+        simpa [GasCost.withGas_initialState_zero] using heval
+      · exact StackCorrect.correct input hfit
+          (gasSteps_fallback input hfit h hp ha)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

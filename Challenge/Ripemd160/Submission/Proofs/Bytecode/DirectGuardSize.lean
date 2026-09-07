@@ -11,10 +11,12 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open KnownInputCompactState
+def abcDispatchState (input : ByteArray) : State :=
+  Execution.atPC input 0x14b2
 
 theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
     (hsize : input.size ≠ 1000) :
-    run sizePath (Execution.atPC input 0x137c) = some (fallbackState input) := by
+    run sizePath (Execution.atPC input 0x137c) = some (abcDispatchState input) := by
   have hlt : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
   have hword : UInt256.ofNat input.size ≠ UInt256.ofNat 1000 := by
     intro heq
@@ -36,10 +38,10 @@ theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
     simpa using hnat
   have hcond : (UInt256.xor (UInt256.ofNat 1000)
       (UInt256.ofNat input.size)).toNat ≠ 0 := htrue
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x3ec = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 854 (by rfl)
-  simp [sizePath, opAt, pushAt, wfOp, Execution.atPC, fallbackState, atPC,
-    htrue, hcond, hdest, UInt256.isTrue, BooleanSelect.xor_comm,
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x14b2 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 3597 (by rfl)
+  simp [sizePath, opAt, pushAt, wfOp, Execution.atPC, abcDispatchState,
+    atPC, htrue, hcond, hdest, UInt256.isTrue, BooleanSelect.xor_comm,
     Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
