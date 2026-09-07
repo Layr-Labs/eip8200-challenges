@@ -118,7 +118,7 @@ def left0Entry : Bridge A .Osaka where
     decide
 
 def left0Return : Bridge A .Osaka where
-  push := exactSite 403 (.push 2 (UInt256.ofNat 1705)) (by rfl) (by decide)
+  push := exactSite 403 (.push 2 (UInt256.ofNat 1646)) (by rfl) (by decide)
   jump := exactSite 404 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 1360 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
@@ -135,7 +135,7 @@ def left0Return : Bridge A .Osaka where
     decide
 
 def left2Entry : Bridge A .Osaka where
-  push := exactSite 1534 (.push 2 (UInt256.ofNat 1124)) (by rfl) (by decide)
+  push := exactSite 1534 (.push 2 (UInt256.ofNat 1081)) (by rfl) (by decide)
   jump := exactSite 1535 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 909 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
@@ -152,7 +152,7 @@ def left2Entry : Bridge A .Osaka where
     decide
 
 def left2Return : Bridge A .Osaka where
-  push := exactSite 1358 (.push 2 (UInt256.ofNat 2028)) (by rfl) (by decide)
+  push := exactSite 1358 (.push 2 (UInt256.ofNat 1969)) (by rfl) (by decide)
   jump := exactSite 1359 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 1536 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
@@ -169,8 +169,8 @@ def left2Return : Bridge A .Osaka where
     decide
 
 def rightEntry : Bridge A .Osaka where
-  push := exactSite 3048 (.push 2 (UInt256.ofNat 542)) (by rfl) (by decide)
-  jump := exactSite 3049 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
+  push := exactSite 3139 (.push 2 (UInt256.ofNat 519)) (by rfl) (by decide)
+  jump := exactSite 3140 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 451 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
@@ -186,9 +186,9 @@ def rightEntry : Bridge A .Osaka where
     decide
 
 def rightReturn : Bridge A .Osaka where
-  push := exactSite 852 (.push 2 (UInt256.ofNat 4471)) (by rfl) (by decide)
+  push := exactSite 852 (.push 2 (UInt256.ofNat 4436)) (by rfl) (by decide)
   jump := exactSite 853 (.op .JUMP) (by rfl) (wfOp (by decide) trivial rfl)
-  destination := exactSite 3050 (.op .JUMPDEST) (by rfl)
+  destination := exactSite 3141 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)
   push_instr := by
     simp only [exactSite]
@@ -203,7 +203,7 @@ def rightReturn : Bridge A .Osaka where
     decide
 
 def left4Return : PopBridge A .Osaka where
-  push := exactSite 2158 (.push 2 (UInt256.ofNat 2928)) (by rfl) (by decide)
+  push := exactSite 2158 (.push 2 (UInt256.ofNat 2853)) (by rfl) (by decide)
   pop := exactSite 2159 (.op .POP) (by rfl) (wfOp (by decide) trivial rfl)
   destination := exactSite 2160 (.op .JUMPDEST) (by rfl)
     (wfOp (by decide) trivial rfl)

@@ -152,7 +152,7 @@ def gasSteps_bridge {artifact : ProgramArtifact} {fork : Fork}
     (run_bridge b s stack hstack hcode hrun) hrun hnp
 
 /-- A degenerate `Bridge` whose target is the instruction that follows the
-jump. Replacing that `JUMP` with `POP` consumes the pushed target and then
+jump.  Replacing that `JUMP` with `POP` consumes the pushed target and then
 falls through the destination `JUMPDEST`, preserving the endpoint. -/
 structure PopBridge (artifact : ProgramArtifact) (fork : Fork) where
   push : LocatedSite artifact fork
