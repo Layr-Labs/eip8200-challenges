@@ -78,7 +78,7 @@ def endianStage16 : List Instr := endianStage 16 mask16
 
 def denseHalfTemplate (half : Nat) : List Instr :=
   endianStage8 ++ endianStage16 ++
-    [ push2 (UInt256.ofNat (denseStoreAddress half)), op .MSTORE ]
+    [ push1 (UInt256.ofNat (denseStoreAddress half)), op .MSTORE ]
 
 def denseBeforeJumpTemplate : List Instr :=
   initialTemplate ++ denseHalfTemplate 1 ++ denseHalfTemplate 0
@@ -133,14 +133,14 @@ theorem assembleBytes_length (instructions : List Instr) :
       rw [ih]
 
 theorem denseHalfTemplate_byteLength (half : Nat) :
-    (assembleBytes (denseHalfTemplate half)).length = 92 := by
+    (assembleBytes (denseHalfTemplate half)).length = 91 := by
   rw [assembleBytes_length]
   simp [denseHalfTemplate, endianStage8, endianStage16, endianStage, endianMaskPush,
     endianFactorPush, endianFactor, op, push1, push2, push3, dup1,
     denseStoreAddress]
 
 theorem denseBeforeJumpTemplate_byteLength :
-    (assembleBytes denseBeforeJumpTemplate).length = 192 := by
+    (assembleBytes denseBeforeJumpTemplate).length = 190 := by
   rw [denseBeforeJumpTemplate, assembleBytes_append, List.length_append,
     assembleBytes_length]
   simp [denseHalfTemplate, initialTemplate, endianStage8, endianStage16,
@@ -148,7 +148,7 @@ theorem denseBeforeJumpTemplate_byteLength :
     dup1, swap1, denseStoreAddress]
 
 theorem denseFullTemplate_byteLength :
-    (assembleBytes denseFullTemplate).length = 193 := by
+    (assembleBytes denseFullTemplate).length = 191 := by
   rw [denseFullTemplate, assembleBytes_append, List.length_append,
     denseBeforeJumpTemplate_byteLength]
   rfl
@@ -159,7 +159,7 @@ theorem paddingTemplate_byteLength :
   norm_num [paddingTemplate, push32]
 
 theorem denseWindowTemplate_byteLength :
-    (assembleBytes denseWindowTemplate).length = 319 := by
+    (assembleBytes denseWindowTemplate).length = 317 := by
   rw [denseWindowTemplate, assembleBytes_append, List.length_append,
     denseFullTemplate_byteLength, paddingTemplate_byteLength]
 

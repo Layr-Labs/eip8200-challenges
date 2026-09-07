@@ -49,8 +49,7 @@ def gasSteps_right4 (s : State) (word : Nat → UInt32)
     s working a b c d e rho (right4_fits s hactive) hstack hcode hfork hrun hnp
   have hw : (rightParams 1 0).apply s working = CachedMaskRoundCertificates.right4 word 4 working :=
     CachedMaskRoundCertificates.rightWorking_eq s word working 4 hwords
-  have whole := core
-  exact whole.cast (by rw [site_start]; rfl) (by
+  exact core.cast (by rw [site_start]; rfl) (by
     rw [site_end]
     change CachedMaskRoundCertificates.stateAt s (QuadSites.rightPC 5)
       ((rightParams 1 0).apply s working) (a :: b :: c :: d :: e :: mask :: rho) = _

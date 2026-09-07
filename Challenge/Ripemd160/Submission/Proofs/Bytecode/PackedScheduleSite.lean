@@ -77,7 +77,7 @@ private theorem endianStage_advances (shift : Nat) (mask : UInt256) :
 
 private theorem denseStore_advances (half : Nat) :
     ∀ instruction ∈
-      [DenseScheduleTemplate.push2
+      [DenseScheduleTemplate.push1
           (UInt256.ofNat (DenseScheduleTemplate.denseStoreAddress half)),
         DenseScheduleTemplate.op .MSTORE],
       DenseScheduleLift.Advances instruction := by
@@ -132,28 +132,28 @@ def packedScheduleSite :
     (by decide)
 
 private theorem denseScheduleTemplate_byteLength :
-    byteLength DenseScheduleTemplate.denseBeforeJumpTemplate = 192 := by
+    byteLength DenseScheduleTemplate.denseBeforeJumpTemplate = 190 := by
   rw [byteLength_eq_assemble]
   exact DenseScheduleTemplate.denseBeforeJumpTemplate_byteLength
 
 private theorem packedSchedule_start_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3282 = 0x123a :=
+    Artifact.submissionArtifact.instructionPC 3282 = 0x11e6 :=
   QuadLayout.schedule_pc
 
 private theorem packedSchedule_end_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3333 = 0x12fa :=
+    Artifact.submissionArtifact.instructionPC 3333 = 0x12a4 :=
   QuadLayout.scheduleJump_pc
 
 @[simp] theorem packedScheduleSite_startPC :
-    packedScheduleSite.startPC = UInt256.ofNat 0x123a := by
+    packedScheduleSite.startPC = UInt256.ofNat 0x11e6 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3282) =
-    UInt256.ofNat 0x123a
+    UInt256.ofNat 0x11e6
   rw [packedSchedule_start_instructionPC]
 
 @[simp] theorem packedScheduleSite_endPC :
-    packedScheduleSite.endPC = UInt256.ofNat 0x12fa := by
+    packedScheduleSite.endPC = UInt256.ofNat 0x12a4 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3333) =
-    UInt256.ofNat 0x12fa
+    UInt256.ofNat 0x12a4
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleSite_end_eq_pcAfter :
@@ -198,15 +198,15 @@ private theorem runLocatedBlock_singleton
   | some t => simp [Challenge.EvmProof.Stepper.runLocatedBlock, h]
 
 @[simp] theorem packedScheduleFinalJump_pc :
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x12fa := by
+    packedScheduleFinalJump.pc = UInt256.ofNat 0x12a4 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3333) =
-    UInt256.ofNat 0x12fa
+    UInt256.ofNat 0x12a4
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleFinalJump_site_end :
     packedScheduleFinalJump.pc = packedScheduleSite.endPC := by
   calc
-    packedScheduleFinalJump.pc = UInt256.ofNat 0x12fa := packedScheduleFinalJump_pc
+    packedScheduleFinalJump.pc = UInt256.ofNat 0x12a4 := packedScheduleFinalJump_pc
     _ = packedScheduleSite.endPC := packedScheduleSite_endPC.symm
 
 theorem packedScheduleFinalJump_pc_eq_expected

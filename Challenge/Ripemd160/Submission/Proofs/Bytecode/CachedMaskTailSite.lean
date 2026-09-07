@@ -9,7 +9,7 @@ set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 
-/-! Exact masked consume tail at instruction 3239, including its final JUMP. -/
+/-! Exact masked consume tail at instruction 3234, including its final JUMP. -/
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskTailSite
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
@@ -130,7 +130,7 @@ private theorem tail_instruction_at (i : Nat)
 private theorem tail_instruction_pc (i : Nat)
     (hi : i ≤ CachedMaskOrderedTail.template.length) :
     Artifact.submissionArtifact.instructionPC (3234 + i) =
-      0x1200 + ArtifactByteLength.byteLength (CachedMaskOrderedTail.template.take i) := by
+      0x11ac + ArtifactByteLength.byteLength (CachedMaskOrderedTail.template.take i) := by
   have hzero := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     tailBefore CachedMaskOrderedTail.template
     tailAfter
@@ -138,18 +138,18 @@ private theorem tail_instruction_pc (i : Nat)
   have hzero' : Artifact.submissionArtifact.instructionPC 3234 =
       (assembleBytes tailBefore).length := by
     simpa [tailBefore_length] using hzero
-  have hbefore : (assembleBytes tailBefore).length = 0x1200 :=
+  have hbefore : (assembleBytes tailBefore).length = 0x11ac :=
     hzero'.symm.trans QuadLayout.tail_pc
   have h := ArtifactSegment.instructionPC_segment_of_bounds Artifact.submissionArtifact
     tailBefore CachedMaskOrderedTail.template
-    tailAfter 3234 0x1200
+    tailAfter 3234 0x11ac
     artifact_consume_split tailBefore_length hbefore i hi
   simpa only [ArtifactByteLength.byteLength_eq_assemble] using h
 
 private theorem tail_instruction_pc_global (index : Nat)
     (hlo : 3234 ≤ index) (hhi : index ≤ 3282) :
     Artifact.submissionArtifact.instructionPC index =
-      0x1200 + ArtifactByteLength.byteLength
+      0x11ac + ArtifactByteLength.byteLength
         (CachedMaskOrderedTail.template.take (index - 3234)) := by
   have hi : index - 3234 ≤ CachedMaskOrderedTail.template.length := by
     rw [tailInstructions_length]
