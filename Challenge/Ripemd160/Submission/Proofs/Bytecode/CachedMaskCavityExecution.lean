@@ -27,14 +27,14 @@ noncomputable def left0_core (s : State) (w : Compression.EvmWorking)
       (stateAt s left0Second.endPC (fourResult (left 0) s w) (mask :: rho)) := by
   have hwhole := run_leftCode 0 s left0First.startPC w rho hfit hstack hrun
 
-  have g := gasSteps_twoPieces ((leftCode 0).take 399) ((leftCode 0).drop 399)
+  have g := gasSteps_twoPieces ((leftCode 0).take 407) ((leftCode 0).drop 407)
     left0First left0Second left0Bridge1 left0_first_end left0_second_start
     (fun i hi => left_advances 0 i (List.mem_of_mem_take hi))
     (fun i hi => left_advances 0 i (List.mem_of_mem_drop hi))
     (stateAt s left0First.startPC w (mask :: rho))
     (stateAt s (pcAfter left0First.startPC (leftCode 0)) (fourResult (left 0) s w) (mask :: rho))
     rfl (by simpa only [List.take_append_drop] using hwhole)
-    (left_prefix_cap 0 399 left0_total s left0First.startPC w rho hstack) hcode hfork hrun hnp
+    (left_prefix_cap 0 407 left0_total s left0First.startPC w rho hstack) hcode hfork hrun hnp
   exact g
 
 noncomputable def left0_group (s : State) (w : Compression.EvmWorking)
@@ -83,39 +83,32 @@ noncomputable def left2_core (s : State) (w : Compression.EvmWorking)
   let result := stateAt s (pcAfter left2First.startPC (leftCode 2))
     (fourResult (left 2) s w) (mask :: rho)
   apply CavityFragmentCap.gasSteps_splice_cap
-    ((leftCode 2).take 178) ((leftCode 2).drop 178)
+    ((leftCode 2).take 181) ((leftCode 2).drop 181)
     left2First left2Bridge1 left2_first_end
     (fun i hi => left_advances 2 i (List.mem_of_mem_take hi))
     (fun i hi => left_advances 2 i (List.mem_of_mem_drop hi))
     (stateAt s left2First.startPC w (mask :: rho)) result
     (stateAt s left2Third.endPC (fourResult (left 2) s w) (mask :: rho))
     rfl (by simpa only [List.take_append_drop] using hwhole)
-    (left_prefix_cap 2 178 left2_total s left2First.startPC w rho hstack) hcode hfork hrun hnp
-  intro middle hpc henv hrunMiddle _hcapMiddle hraw
-  have hlength := CavityStackEffect.runInstrSeq_length ((leftCode 2).drop 178)
-    (fun i hi => left_advances 2 i (List.mem_of_mem_drop hi)) hraw
-  have hcapMiddle : middle.stack.length < 1022 := by
-    rw [left2_remaining_total] at hlength
-    simp only [result, stateAt, roundEntry, List.length_append,
-      List.length_cons, List.length_nil] at hlength
-    omega
+    (left_prefix_cap 2 181 left2_total s left2First.startPC w rho hstack) hcode hfork hrun hnp
+  intro middle hpc henv hrunMiddle hcapMiddle hraw
   have hsplit :
-      ((leftCode 2).drop 178).take 210 ++ (leftCode 2).drop 388 =
-        (leftCode 2).drop 178 := by
-    rw [show (leftCode 2).drop 388 = ((leftCode 2).drop 178).drop 210 by
+      ((leftCode 2).drop 181).take 210 ++ (leftCode 2).drop 391 =
+        (leftCode 2).drop 181 := by
+    rw [show (leftCode 2).drop 391 = ((leftCode 2).drop 181).drop 210 by
       rw [List.drop_drop]]
-    exact List.take_append_drop 210 ((leftCode 2).drop 178)
+    exact List.take_append_drop 210 ((leftCode 2).drop 181)
   have hrawSplit :
-      runInstrSeq (((leftCode 2).drop 178).take 210 ++ (leftCode 2).drop 388) middle =
-        some {result with pc := pcAfter middle.pc ((leftCode 2).drop 178)} := by
+      runInstrSeq (((leftCode 2).drop 181).take 210 ++ (leftCode 2).drop 391) middle =
+        some {result with pc := pcAfter middle.pc ((leftCode 2).drop 181)} := by
     rw [hsplit]
     exact hraw
   have g := gasSteps_twoPieces
-    (((leftCode 2).drop 178).take 210) ((leftCode 2).drop 388)
+    (((leftCode 2).drop 181).take 210) ((leftCode 2).drop 391)
     left2Second left2Third left2Bridge2 left2_middle_end left2_third_start
     (fun i hi => left_advances 2 i (List.mem_of_mem_drop (List.mem_of_mem_take hi)))
     (fun i hi => left_advances 2 i (List.mem_of_mem_drop hi))
-    middle {result with pc := pcAfter middle.pc ((leftCode 2).drop 178)}
+    middle {result with pc := pcAfter middle.pc ((leftCode 2).drop 181)}
     (hpc.trans left2_second_start.symm) hrawSplit (left2_middle_cap middle hcapMiddle)
     (by rw [henv]; exact hcode)
     (by change middle.executionEnv.fork = .Osaka; rw [henv]; exact hfork)
@@ -162,7 +155,7 @@ noncomputable def right_core (s : State) (w : Compression.EvmWorking) (a b c d e
       (stateAt s rightSecond.endPC (fourResult right s w) (a :: b :: c :: d :: e :: mask :: rho)) := by
   have hwhole := run_rightCode s rightFirst.startPC w a b c d e rho hfit hstack hrun
 
-  have g := gasSteps_twoPieces (rightCode.take 373) (rightCode.drop 373)
+  have g := gasSteps_twoPieces (rightCode.take 380) (rightCode.drop 380)
     rightFirst rightSecond rightBridge1 right_first_end right_second_start
     (fun i hi => right_advances i (List.mem_of_mem_take hi))
     (fun i hi => right_advances i (List.mem_of_mem_drop hi))

@@ -18,11 +18,10 @@ theorem left_advances (group : Fin 5) :
 theorem right_advances :
     ∀ i ∈ rightCode, PairMultiplyLift.Advances i := four_advances right 5
 
-theorem left0_total : total ((leftCode 0).take 399) = 0 := by decide
-theorem left2_total : total ((leftCode 2).take 178) = 0 := by decide
-theorem left2_middle_total : total (((leftCode 2).drop 178).take 210) = 1 := by decide
-theorem left2_remaining_total : total ((leftCode 2).drop 178) = 0 := by decide
-theorem right_total : total (rightCode.take 373) = 1 := by decide
+theorem left0_total : total ((leftCode 0).take 407) = 0 := by decide
+theorem left2_total : total ((leftCode 2).take 181) = 0 := by decide
+theorem left2_middle_total : total (((leftCode 2).drop 181).take 210) = 0 := by decide
+theorem right_total : total (rightCode.take 380) = 1 := by decide
 
 theorem left_prefix_cap (group : Fin 5) (cut : Nat)
     (htotal : total ((leftCode group).take cut) = 0)
@@ -37,8 +36,8 @@ theorem left_prefix_cap (group : Fin 5) (cut : Nat)
     simp only [stateAt, roundEntry, List.length_append, List.length_cons, List.length_nil]
     omega
 
-theorem left2_middle_cap (s : State) (hstack : s.stack.length < 1022) :
-    ∀ middle, runInstrSeq (((leftCode 2).drop 178).take 210) s = some middle →
+theorem left2_middle_cap (s : State) (hstack : s.stack.length < 1023) :
+    ∀ middle, runInstrSeq (((leftCode 2).drop 181).take 210) s = some middle →
       middle.stack.length < 1023 := by
   apply cap_of_total
   · intro i hi
@@ -48,7 +47,7 @@ theorem left2_middle_cap (s : State) (hstack : s.stack.length < 1022) :
 
 theorem right_prefix_cap (s : State) (pc : UInt256) (w : Compression.EvmWorking)
     (a b c d e : UInt256) (rho : List UInt256) (hstack : rho.length < 1001) :
-    ∀ middle, runInstrSeq (rightCode.take 373)
+    ∀ middle, runInstrSeq (rightCode.take 380)
       (stateAt s pc w (a :: b :: c :: d :: e :: mask :: rho)) = some middle →
       middle.stack.length < 1023 := by
   apply cap_of_total
