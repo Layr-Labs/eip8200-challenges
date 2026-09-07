@@ -913,9 +913,9 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x59,
   op 0x52,
   .push 2 1060,
-  op 0x5b,
   .push 2 473,
   op 0x56,
+  op 0x5b,
   op 0x5b,
   .push 1 64,
   op 0x01,
@@ -3837,8 +3837,8 @@ private theorem submissionInstructionsChunk4_assemble : assembleBytes submission
   0x61, 0x12, 0x04, 0x56, 0x5b, 0x63, 0x67, 0x45, 0x23, 0x01, 0x60, 0x20,
   0x52, 0x63, 0xef, 0xcd, 0xab, 0x89, 0x59, 0x52, 0x63, 0x98, 0xba, 0xdc,
   0xfe, 0x59, 0x52, 0x63, 0x10, 0x32, 0x54, 0x76, 0x59, 0x52, 0x63, 0xc3,
-  0xd2, 0xe1, 0xf0, 0x59, 0x52, 0x61, 0x04, 0x24, 0x5b, 0x61, 0x01, 0xd9,
-  0x56, 0x5b, 0x60, 0x40, 0x01, 0x81, 0x81, 0x14, 0x61, 0x13, 0x00, 0x57,
+  0xd2, 0xe1, 0xf0, 0x59, 0x52, 0x61, 0x04, 0x24, 0x61, 0x01, 0xd9, 0x56,
+  0x5b, 0x5b, 0x60, 0x40, 0x01, 0x81, 0x81, 0x14, 0x61, 0x13, 0x00, 0x57,
   0x5b, 0x61, 0x04, 0x19, 0x81, 0x61, 0x02, 0xe0, 0x01, 0x61, 0x13, 0x4c,
   0x56, 0x5b, 0x61, 0x04, 0x3a, 0x90, 0x61, 0x12, 0x3f, 0x56, 0x5b, 0x63,
   0xff, 0xff, 0xff, 0xff, 0x64, 0x01, 0x00, 0x00, 0x00, 0x01, 0x60, 0xa0,
@@ -4317,7 +4317,8 @@ private theorem assemble_chunk17 :
 theorem assemble_referenceInstructions :
     assemble submissionInstructions = submissionBytecode := by
   simp only [submissionInstructions, ArtifactSegment.assemble_append,
-    assemble_chunk0, assemble_chunk1, assemble_chunk2, assemble_chunk3, assemble_chunk4, assemble_chunk5, assemble_chunk6, assemble_chunk7, assemble_chunk8, assemble_chunk9, assemble_chunk10, assemble_chunk11, assemble_chunk12, assemble_chunk13, assemble_chunk14, assemble_chunk15, assemble_chunk16, assemble_chunk17, submissionBytecode, submissionBytes]
+    assemble_chunk0, assemble_chunk1, assemble_chunk2, assemble_chunk3, assemble_chunk4, assemble_chunk5, assemble_chunk6, assemble_chunk7, assemble_chunk8, assemble_chunk9, assemble_chunk10, assemble_chunk11, assemble_chunk12, assemble_chunk13, assemble_chunk14, assemble_chunk15, assemble_chunk16, assemble_chunk17,
+    submissionBytecode, submissionBytes]
 
 def submissionArtifact : Challenge.EvmProof.ProgramArtifact where
   code := submissionBytecode
@@ -5462,18 +5463,18 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
   rfl
 
 @[simp] theorem referenceArtifact_pc_861 :
-    submissionArtifact.instructionPC 872 = 0x415 := by
+    submissionArtifact.instructionPC 872 = 0x417 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc861 :
-    submissionArtifact.instructionPC 872 = 0x415 := by
+    submissionArtifact.instructionPC 872 = 0x417 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc861 :
-    instructionPC 872 = 0x415 := by
-  change submissionArtifact.instructionPC 872 = 0x415
+    instructionPC 872 = 0x417 := by
+  change submissionArtifact.instructionPC 872 = 0x417
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -5519,13 +5520,6 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
     (submissionArtifact.instructionPC 854) = true at h
   simpa using h
 
-@[simp] theorem validJumpDest_416 :
-    Decode.isValidJumpDest submissionBytecode 0x414 = true := by
-  have h := submissionArtifact.isValidJumpDest_index 871 (by rfl)
-  change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 871) = true at h
-  simpa using h
-
 private def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
@@ -5537,9 +5531,8 @@ private def wfOp {op : Operation}
 def padEnterPath : List
     (Challenge.EvmProof.Stepper.Located submissionArtifact .Osaka) :=
   [⟨870, .push ⟨2, by decide⟩ (UInt256.ofNat 1060), by rfl, by decide⟩,
-   ⟨871, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨872, .push ⟨2, by decide⟩ (UInt256.ofNat 473), by rfl, by decide⟩,
-   ⟨873, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨871, .push ⟨2, by decide⟩ (UInt256.ofNat 473), by rfl, by decide⟩,
+   ⟨872, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for RIPEMD padded-length arithmetic. -/
 def padLengthPath : List
