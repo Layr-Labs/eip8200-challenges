@@ -26,7 +26,7 @@ def driverRest (input : ByteArray) (i : Nat) : List UInt256 :=
   [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
 
 def scheduleRest (input : ByteArray) (i : Nat) : List UInt256 :=
-  [UInt256.ofNat 0x424] ++ driverRest input i
+  [UInt256.ofNat 0x419] ++ driverRest input i
 
 def withMemory (s : State) (memory : ByteArray) : State :=
   {s with memory := memory}
@@ -63,7 +63,7 @@ def withActiveWords (s : State) (activeWords : UInt256) : State :=
 def scheduledState (s : State) (input : ByteArray) (i : Nat) : State :=
   withActiveWords
     (withMemory
-      (Schedule.loopState s (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x445)
+      (Schedule.loopState s (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x43a)
         (scheduleRest input i) 16)
       (DenseScheduleTemplate.denseExpectedMemory s (DriverTrace.messageOffsetWord i)))
     (DenseScheduleTemplate.denseExpectedActiveWords s
@@ -83,7 +83,7 @@ def resultHash (s : State) (input : ByteArray) (i : Nat) : Compression.EvmHashSt
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   {scheduledState s input i with
-    pc := UInt256.ofNat 0x424
+    pc := UInt256.ofNat 0x419
     stack := driverRest input i
     memory := StackMemory.storeHash (scheduledState s input i).memory (resultHash s input i)}
 

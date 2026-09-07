@@ -14,7 +14,7 @@ open KnownInputCompactState
 
 theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
     (hsize : input.size ≠ 1000) :
-    run sizePath (Execution.atPC input 0x13be) = some (fallbackState input) := by
+    run sizePath (Execution.atPC input 0x13a4) = some (fallbackState input) := by
   have hlt : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
   have hword : UInt256.ofNat input.size ≠ UInt256.ofNat 1000 := by
     intro heq
@@ -36,7 +36,7 @@ theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
     simpa using hnat
   have hcond : (UInt256.xor (UInt256.ofNat 1000)
       (UInt256.ofNat input.size)).toNat ≠ 0 := htrue
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x3f3 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x3ec = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 854 (by rfl)
   simp [sizePath, opAt, pushAt, wfOp, Execution.atPC, fallbackState, atPC,
     htrue, hcond, hdest, UInt256.isTrue, BooleanSelect.xor_comm,
@@ -46,7 +46,7 @@ theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
     Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_size_match (input : ByteArray) (hsize : input.size = 1000) :
-    run sizePath (Execution.atPC input 0x13be) = some (sizeMatched input) := by
+    run sizePath (Execution.atPC input 0x13a4) = some (sizeMatched input) := by
   have hzero : UInt256.xor (UInt256.ofNat 1000)
       (UInt256.ofNat input.size) = 0 := by
     rw [hsize]
