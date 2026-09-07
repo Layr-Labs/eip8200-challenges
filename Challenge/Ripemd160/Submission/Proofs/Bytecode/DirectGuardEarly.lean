@@ -90,9 +90,9 @@ def gasSteps_checkEarly (input : ByteArray)
     (blockOf _ (pcFactG input 3225 0x1402 [] (by norm_num) pc2862)
       (stepG_push input 0x1402 2 (UInt256.ofNat 5126) [] (by simp) (by decide)
         (by decide) (by norm_num)))
-  have step10 := soundG (opAt 3226 .JUMP)
+  have step10 := soundG (opAt 3226 .POP)
     (blockOf _ (pcFactG input 3226 0x1405 [UInt256.ofNat 5126] (by norm_num) pc2863)
-      (stepG_jump input 0x1405 5126 [] (by simp) (by norm_num) hblock))
+      (stepG_pop input 0x1405 (UInt256.ofNat 5126) [] (by simp) (by norm_num)))
   exact step0.trans (step1.trans (step2.trans (step3.trans (step4.trans
     (step5.trans (step6.trans (step7.trans (step8.trans (step9.trans step10)))))))))
 

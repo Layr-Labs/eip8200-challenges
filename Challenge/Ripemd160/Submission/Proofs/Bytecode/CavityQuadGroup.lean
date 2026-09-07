@@ -151,10 +151,61 @@ def gasSteps_bridge {artifact : ProgramArtifact} {fork : Fork}
   exact Stepper.runLocatedBlock_sound artifact fork b.path hcode hfork
     (run_bridge b s stack hstack hcode hrun) hrun hnp
 
+/-- A degenerate `Bridge` whose target is the instruction that follows the
+jump.  The `JUMP` is then observationally a `POP`: both consume the pushed
+word and continue at `destination.pc`, which the `JUMPDEST` leaves at
+`destination.pc.succ`.  `POP` costs six gas less. -/
+structure PopBridge (artifact : ProgramArtifact) (fork : Fork) where
+  push : LocatedSite artifact fork
+  pop : LocatedSite artifact fork
+  destination : LocatedSite artifact fork
+  push_instr : push.located.instruction = .push ⟨2, by decide⟩ destination.pc
+  pop_instr : pop.located.instruction = .op .POP
+  destination_instr : destination.located.instruction = .op .JUMPDEST
+  pop_at : pop.pc = push.pc + 3
+  destination_at : destination.pc = pop.pc.succ
+
+def PopBridge.path {artifact : ProgramArtifact} {fork : Fork}
+    (b : PopBridge artifact fork) : List (Stepper.Located artifact fork) :=
+  [b.push.located, b.pop.located, b.destination.located]
+
+theorem run_popBridge {artifact : ProgramArtifact} {fork : Fork}
+    (b : PopBridge artifact fork) (s : State) (stack : List UInt256)
+    (hstack : stack.length < 1023) (_hcode : s.executionEnv.code = artifact.code)
+    (hrun : s.halt = .Running) :
+    Stepper.runLocatedBlock b.path {s with pc := b.push.pc, stack := stack} =
+      some {s with pc := b.destination.pc.succ, stack := stack} := by
+  have hpop : (b.push.pc + UInt256.ofNat 3).toNat =
+      artifact.instructionPC b.pop.located.index := by
+    change (b.push.pc + 3).toNat = _
+    rw [← b.pop_at]
+    exact b.pop.pc_eq
+  have hchain : (b.push.pc + UInt256.ofNat 3).succ = b.destination.pc := by
+    rw [b.destination_at, b.pop_at]
+    rfl
+  have hcap : stack.length < 1024 := by omega
+  have hcapPush : stack.length + 1 < 1024 := by omega
+  simp [PopBridge.path, Stepper.runLocatedBlock, Stepper.runLocated,
+    b.push_instr, b.pop_instr, b.destination_instr, Stepper.runInstr,
+    b.push.pc_eq, hpop, hchain, b.destination.pc_eq,
+    hrun, hcap, hcapPush]
+
+def gasSteps_popBridge {artifact : ProgramArtifact} {fork : Fork}
+    (b : PopBridge artifact fork) (s : State) (stack : List UInt256)
+    (hstack : stack.length < 1023) (hcode : s.executionEnv.code = artifact.code)
+    (hfork : s.fork = fork) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps {s with pc := b.push.pc, stack := stack}
+      {s with pc := b.destination.pc.succ, stack := stack} := by
+  exact Stepper.runLocatedBlock_sound artifact fork b.path hcode hfork
+    (run_popBridge b s stack hstack hcode hrun) hrun hnp
 #print axioms runInstrSeq_quad
 #print axioms gasSteps_quad
 #print axioms gasSteps_four
 #print axioms run_bridge
 #print axioms gasSteps_bridge
+#print axioms run_popBridge
+#print axioms gasSteps_popBridge
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.CavityQuadGroup
