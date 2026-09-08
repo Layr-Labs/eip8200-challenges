@@ -22,7 +22,7 @@ open CompressionRightTrace
 def combinationCleaned (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
   { combination4 s messageOffset returnDest rest with
-      pc := UInt256.ofNat 960, stack := returnDest :: rest }
+      pc := UInt256.ofNat 866, stack := returnDest :: rest }
 
 def combinationReturned (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=

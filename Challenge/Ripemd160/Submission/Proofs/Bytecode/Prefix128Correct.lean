@@ -36,7 +36,7 @@ def gasSteps_hit (input : ByteArray) (hsize : input.size = 128)
 
 def gasSteps_miss (input : ByteArray) (hsize : input.size = 128)
     (hne : scanAcc input 4 ≠ 0) :
-    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x15a) :=
+    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x160) :=
   (Prefix256Entry.gasSteps_hit128 input hsize).trans
     ((Prefix128Scan.gasSteps_scan input hsize).trans
       (Prefix256Finish.gasSteps_miss input (UInt256.ofNat (scalarAt 4))

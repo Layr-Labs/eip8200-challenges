@@ -39,8 +39,8 @@ theorem run_post (s : State)
     (hrun : s.halt = .Running) :
     run postPath (copiedState s KnownInputData.targetInput 0) =
       some (KnownInputCompactBodyState.resultState s KnownInputData.targetInput 0) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x436 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 717 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x3d8 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 734 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [postPath, KnownInputCompactPaths.opAt, KnownInputCompactPaths.pushAt,
       KnownInputCompactPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -110,8 +110,8 @@ theorem run_post_at (s : State) (i : Nat)
     (hrun : s.halt = .Running) :
     run postPath (copiedState s KnownInputData.targetInput i) =
       some (KnownInputCompactBodyState.resultState s KnownInputData.targetInput i) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x436 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 717 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x3d8 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 734 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [postPath, KnownInputCompactPaths.opAt, KnownInputCompactPaths.pushAt,
       KnownInputCompactPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,

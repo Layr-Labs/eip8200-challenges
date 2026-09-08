@@ -1,6 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardTail
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Correct
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix128Correct
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix64Correct
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -41,6 +42,7 @@ def gasSteps_target :
   (Execution.gasSteps_start KnownInputData.targetInput
     (by simp only [CalldataFits, KnownInputData.targetInput_size]; norm_num)
     (by rw [KnownInputData.targetInput_size]; decide)
+    (by rw [KnownInputData.targetInput_size]; decide)
     (by rw [KnownInputData.targetInput_size]; decide)).trans
     ((sound sizePath (run_size_match KnownInputData.targetInput
       KnownInputData.targetInput_size)).trans
@@ -50,22 +52,22 @@ def gasSteps_target :
             (sound returnPath run_return)))))
 
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
-    (hne128 : input.size ≠ 128) (hne256 : input.size ≠ 256)
+    (hne64 : input.size ≠ 64) (hne128 : input.size ≠ 128) (hne256 : input.size ≠ 256)
     (hne : input ≠ KnownInputData.targetInput)
     (hpne : input ≠ PatternedInputData.patternedInput) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) := by
   by_cases hsize : input.size = 1000
   · by_cases href : referenceWord input = KnownInputData.fullWord
-    · exact (Execution.gasSteps_start input hfit hne128 hne256).trans
+    · exact (Execution.gasSteps_start input hfit hne64 hne128 hne256).trans
         ((sound sizePath (run_size_match input hsize)).trans
           ((sound checkEntryPath (run_checkEntry input href)).trans
             ((gasSteps_loop input).trans
               (sound tailPath (run_tail_fallback input hsize hne)))))
-    · exact (Execution.gasSteps_start input hfit hne128 hne256).trans
+    · exact (Execution.gasSteps_start input hfit hne64 hne128 hne256).trans
         ((sound sizePath (run_size_match input hsize)).trans
           ((gasSteps_checkEarly input href).trans
             (PatternedScan.gasSteps_patterned_miss input hsize hpne)))
-  · exact (Execution.gasSteps_start input hfit hne128 hne256).trans
+  · exact (Execution.gasSteps_start input hfit hne64 hne128 hne256).trans
       (sound sizePath (run_size_fail input hfit hsize))
 
 private theorem answerMemory_read :
@@ -79,6 +81,8 @@ private theorem answerMemory_read :
 
 theorem correct : Correct submissionBytecode := by
   intro input hfit
+  by_cases hsize64 : input.size = 64
+  · exact Prefix64Correct.correct input hfit hsize64
   by_cases hsize128 : input.size = 128
   · exact Prefix128Correct.correct input hfit hsize128
   by_cases hsize256 : input.size = 256
@@ -103,7 +107,7 @@ theorem correct : Correct submissionBytecode := by
           KnownInputData.fullWord := PatternedInputData.patterned_reference_ne
       have hsize := PatternedInputData.patternedInput_size
       let trace :=
-        (Execution.gasSteps_start PatternedInputData.patternedInput hfit hsize128 hsize256).trans
+        (Execution.gasSteps_start PatternedInputData.patternedInput hfit hsize64 hsize128 hsize256).trans
           ((sound sizePath (run_size_match PatternedInputData.patternedInput hsize)).trans
             ((gasSteps_checkEarly PatternedInputData.patternedInput href).trans
               PatternedScan.gasSteps_patterned))
@@ -118,6 +122,6 @@ theorem correct : Correct submissionBytecode := by
       rw [PatternedScan.answerMemory_read, ← PatternedGuardSpec.spec_patternedInput_eq] at heval
       simpa [GasCost.withGas_initialState_zero] using heval
     · exact StackCorrect.correct input hfit
-        (gasSteps_fallback input hfit hsize128 hsize256 h hp)
+        (gasSteps_fallback input hfit hsize64 hsize128 hsize256 h hp)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

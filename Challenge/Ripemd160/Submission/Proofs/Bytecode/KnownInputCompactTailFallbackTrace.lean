@@ -53,8 +53,8 @@ theorem run_tail_fallback (s : State) (input : ByteArray) (i : Nat)
       exact congrArg (fun x => UInt256.lor x (loopAcc input 30)) hxor
     rw [heq]
     exact htrue
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x129e = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2792 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x1240 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2809 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [tailPath, KnownInputCompactPaths.opAt, KnownInputCompactPaths.pushAt,
     KnownInputCompactPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,

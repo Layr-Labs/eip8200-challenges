@@ -83,7 +83,7 @@ def resultHash (s : State) (input : ByteArray) (i : Nat) : Compression.EvmHashSt
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   {scheduledState s input i with
-    pc := UInt256.ofNat 0x1bf
+    pc := UInt256.ofNat 0x1c5
     stack := driverRest input i
     memory := StackMemory.storeHash (scheduledState s input i).memory (resultHash s input i)}
 

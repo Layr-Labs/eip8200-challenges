@@ -43,8 +43,8 @@ theorem run_size_target (s : State) (i : Nat)
     (hrun : s.halt = .Running) :
     run sizePath (DriverTrace.dispatchEntry s KnownInputData.targetInput i) =
       some (sizeMatched s KnownInputData.targetInput i) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x12dc = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2821 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x127e = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2838 (by rfl)
   simp [sizePath, KnownInputCompactPaths.opAt, KnownInputCompactPaths.pushAt,
     KnownInputCompactPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -67,8 +67,8 @@ theorem run_size_match (s : State) (input : ByteArray) (i : Nat)
       (UInt256.eq (UInt256.ofNat 1000) (UInt256.ofNat input.size)) := by
     rw [hsize]
     decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x12dc = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2821 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x127e = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2838 (by rfl)
   simp [sizePath, KnownInputCompactPaths.opAt, KnownInputCompactPaths.pushAt,
     KnownInputCompactPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -110,8 +110,8 @@ theorem run_size_fallback (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     run sizeFallbackPath (sizeFailed s input i) = some (legacyEntry s input i) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x129e = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2792 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x1240 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2809 (by rfl)
   simp [sizeFallbackPath, KnownInputCompactPaths.opAt, KnownInputCompactPaths.pushAt,
     KnownInputCompactPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -150,8 +150,8 @@ theorem run_loop_more (s : State) (input : ByteArray) (i n : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     run loopPath (loopState s input i n) = some (loopState s input i (n + 1)) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x12f6 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2836 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x1298 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2853 (by rfl)
   have hptr : 32 * (n + 2) < 992 := by omega
   have hstart : 32 * n + 32 < 2 ^ 256 := by omega
   have hnext : 32 * n + 64 < 2 ^ 256 := by omega
@@ -264,8 +264,8 @@ theorem run_tail_fallback (s : State) (input : ByteArray) (i : Nat)
             (UInt256.ofNat 192)))
         (loopAcc input 30)) := by
     simpa only [finalAcc, BooleanSelect.xor_comm] using htrue
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x129e = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2792 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x1240 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2809 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [tailPath, KnownInputCompactPaths.opAt, KnownInputCompactPaths.pushAt,
     KnownInputCompactPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,

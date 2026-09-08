@@ -180,12 +180,12 @@ def gasSteps_rightTest_continue (s : State)
 
 def rightExitTested (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 804
+  { s with pc := UInt256.ofNat 710
            stack := UInt256.ofNat 80 :: messageOffset :: returnDest :: rest }
 
 def combinationEntry (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 806
+  { s with pc := UInt256.ofNat 712
            stack := [messageOffset, returnDest] ++ rest }
 
 set_option linter.unusedSimpArgs false in
@@ -199,7 +199,7 @@ theorem run_rightTest_exit (s : State) (messageOffset returnDest : UInt256)
   have hlt : UInt256.lt (UInt256.ofNat 80) (UInt256.ofNat 80) = 0 := by decide
   have hzero : UInt256.isZero (0 : UInt256) = 1 := by decide
   have htrue : UInt256.isTrue (1 : UInt256) = true := by decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 804 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 710 = true := by decide
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -269,7 +269,7 @@ theorem run_rightIncrement (s : State)
         some (rightLoopAt s messageOffset returnDest rest (i + 1)) := by
   have hadd : UInt256.ofNat i + UInt256.ofNat 1 = UInt256.ofNat (i + 1) := by
     exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
-  have hdest : Decode.isValidJumpDest submissionBytecode 729 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 635 = true := by decide
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
