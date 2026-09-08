@@ -42,7 +42,7 @@ theorem run_prep (template : State) (base modulus word pointer accumulator : UIn
   exact ⟨shift_highNibble 2 word, rfl⟩
 
 set_option linter.unusedSimpArgs false in
-/-- Fused high-nibble block: four squares then the table multiply, 24
+/-- Fused high-nibble block: four squares then the table multiply, 21
 instructions in 36 bytes.  The machine loads the table word
 last, so the accumulator-first `nibbleWordStep` spelling needs `mulMod_comm`. -/
 theorem run_squareLookup (template : State) (base modulus : UInt256)
@@ -69,6 +69,8 @@ theorem run_squareLookup (template : State) (base modulus : UInt256)
     omega
   have h10 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by
     omega
+  have h11 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have h12 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   simp (config := { maxSteps := 2000000 }) (disch := omega)
     [highSquareLookupPath, byteStartIndex, locatedSlice,
       Challenge.EvmProof.Stepper.Located.ofIndex,
@@ -78,7 +80,7 @@ theorem run_squareLookup (template : State) (base modulus : UInt256)
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       droppedNibbleState, nibbleState, WindowMath.squareWordAfter,
       List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
-      hrest, h6, h7, h8, h9, h10, hshift, hoffset, hread, hactive,
+      hrest, h6, h7, h8, h9, h10, h11, h12, hshift, hoffset, hread, hactive,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

@@ -26,7 +26,7 @@ theorem run_fusedSquareLookup (template : State) (pc : UInt256)
     runInstructions fusedSquareLookupProgram
       (squareTopState template pc base modulus nibble byte word pointer
         original accumulator rest) =
-      some (droppedNibbleState template (advancePC 20 pc) base modulus nibble
+      some (droppedNibbleState template (advancePC 23 pc) base modulus nibble
         byte word pointer
         (UInt256.mulMod accumulator
           (WindowMath.tableWord base modulus nibble) modulus) rest) := by
@@ -54,6 +54,9 @@ theorem run_fusedSquareLookup (template : State) (pc : UInt256)
       advancePC]
   refine ⟨?_, mulMod_comm _ _ _⟩
   simp only [succ_eq_add,
+    show UInt256.ofNat 16 = UInt256.ofNat 1 + UInt256.ofNat 15 by decide,
+    show UInt256.ofNat 15 = UInt256.ofNat 1 + UInt256.ofNat 14 by decide,
+    show UInt256.ofNat 14 = UInt256.ofNat 1 + UInt256.ofNat 13 by decide,
     show UInt256.ofNat 13 = UInt256.ofNat 1 + UInt256.ofNat 12 by decide,
     show UInt256.ofNat 12 = UInt256.ofNat 1 + UInt256.ofNat 11 by decide,
     show UInt256.ofNat 11 = UInt256.ofNat 1 + UInt256.ofNat 10 by decide,

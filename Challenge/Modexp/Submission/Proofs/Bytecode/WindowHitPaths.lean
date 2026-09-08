@@ -108,39 +108,39 @@ def wordLoadPath :
 
 def loopAdvancePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 2195 .POP,
-   Main.pushAt 2196 1 4,
-   Main.opAt 2197 .ADD,
-   Main.pushAt 2198 2 3192,
-   Main.opAt 2199 .JUMP]
+  [Main.opAt 2171 .POP,
+   Main.pushAt 2172 1 4,
+   Main.opAt 2173 .ADD,
+   Main.pushAt 2174 2 3192,
+   Main.opAt 2175 .JUMP]
 
 def normalReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 2200 .JUMPDEST,
-   Main.opAt 2201 .POP,
-   Main.pushAt 2202 0 0,
-   Main.opAt 2203 .MSTORE,
-   Main.pushAt 2204 1 32,
-   Main.pushAt 2205 0 0,
-   Main.opAt 2206 .RETURN]
+  [Main.opAt 2176 .JUMPDEST,
+   Main.opAt 2177 .POP,
+   Main.pushAt 2178 0 0,
+   Main.opAt 2179 .MSTORE,
+   Main.pushAt 2180 1 32,
+   Main.pushAt 2181 0 0,
+   Main.opAt 2182 .RETURN]
 
 def zeroReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 2207 .JUMPDEST,
-   Main.pushAt 2208 0 0,
-   Main.pushAt 2209 0 0,
-   Main.opAt 2210 .MSTORE,
-   Main.pushAt 2211 1 32,
-   Main.pushAt 2212 0 0,
-   Main.opAt 2213 .RETURN]
+  [Main.opAt 2183 .JUMPDEST,
+   Main.pushAt 2184 0 0,
+   Main.pushAt 2185 0 0,
+   Main.opAt 2186 .MSTORE,
+   Main.pushAt 2187 1 32,
+   Main.pushAt 2188 0 0,
+   Main.opAt 2189 .RETURN]
 
 @[simp] theorem jump3563 :
     Decode.isValidJumpDest submissionBytecode 3558 = true :=
-  Artifact.isValidJumpDest_index 2207 (by rfl)
+  Artifact.isValidJumpDest_index 2183 (by rfl)
 
 @[simp] theorem jump3555 :
     Decode.isValidJumpDest submissionBytecode 3550 = true :=
-  Artifact.isValidJumpDest_index 2200 (by rfl)
+  Artifact.isValidJumpDest_index 2176 (by rfl)
 
 @[simp] theorem jump3197 :
     Decode.isValidJumpDest submissionBytecode 3192 = true :=
