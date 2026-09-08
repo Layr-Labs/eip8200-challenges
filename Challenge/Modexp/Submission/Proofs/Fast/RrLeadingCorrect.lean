@@ -109,7 +109,6 @@ theorem handled_of_handover (input : ByteArray) (s : State) (mem : ByteArray)
     hcode hfork hrun hnp hact hn hn32 hmpos hodd hmod0 hr10 hxlt htz hframe0).trans
       hhelper').trans trTail⟩, hdone, hres⟩
 
-/- The fast-path certificate now lives in `Fast.ShiftCorrect`, which dispatches
-between the shift-reduce base conversion and this RR-leading chain. -/
+/- The complete dispatch certificate is in ShiftCorrect. -/
 
 end Challenge.Modexp.Submission.Proofs.Fast.Exp

@@ -12,9 +12,9 @@ open EvmSemantics.EVM
 open WindowHitPaths
 
 @[simp] private theorem advanceJumpPCs (index : Nat)
-    (hlo : 2174 ≤ index) (hhi : index ≤ 2175) :
+    (hlo : 2218 ≤ index) (hhi : index ≤ 2219) :
     Artifact.submissionArtifact.instructionPC index =
-      ([3546,3549] : List Nat)[index - 2174]! := by
+      [3551, 3554][index - 2218]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -23,9 +23,9 @@ theorem run (template : State)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hcode : template.executionEnv.code = submissionBytecode) :
     Challenge.EvmProof.Stepper.runLocatedBlock (loopAdvancePath.drop 3)
-      (WindowHitLoopAdvanceHead.framed template 3546
+      (WindowHitLoopAdvanceHead.framed template 3551
         (pointer :: accumulator :: modulus :: rest)) =
-    some (WindowHitLoopAdvanceHead.framed template 3192
+    some (WindowHitLoopAdvanceHead.framed template 3197
       (pointer :: accumulator :: modulus :: rest)) := by
   have hcap3 : rest.length + 3 < 1024 := by omega
   have hcap4 : rest.length + 4 < 1024 := by omega

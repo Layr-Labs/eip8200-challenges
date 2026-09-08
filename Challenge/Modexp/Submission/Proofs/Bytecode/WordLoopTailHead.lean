@@ -29,10 +29,10 @@ def bitFinishTailMidState (input : ByteArray) (outer : Nat)
       UInt256.ofNat 96, UInt256.ofNat (expOffset input),
       UInt256.ofNat (modulusOffset input), UInt256.ofNat 1267] ++ callerRest input }
 
-@[simp] private theorem exitPCs (i : Nat)
-    (hi : 525 ≤ i) (hii : i ≤ 549) :
+@[simp] private theorem exitPCs (i : Nat) (hi : 525 ≤ i) (hii : i ≤ 549) :
     Artifact.submissionArtifact.instructionPC i =
-      ([655,656,657,658,659,661,662,665,666,667,668,669,670,671,672,673,675,676,678,679,680,681,682,683,688] : List Nat)[i - 525]! := by
+      [655,656,657,658,659,661,662,665,666,667,668,669,670,671,672,
+       673,675,676,678,679,680,681,682,683,688][i - 525]! := by
   interval_cases i <;> decide
 
 set_option linter.unusedSimpArgs false in

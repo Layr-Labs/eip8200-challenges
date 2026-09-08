@@ -14,11 +14,12 @@ def squareTopState (template : State) (pc : UInt256)
     (base modulus : UInt256) (nibble : Nat)
     (byte word pointer original accumulator : UInt256) (rest : List UInt256) : State :=
   { nibbleState template pc base modulus nibble byte word pointer original rest with
-    stack := [accumulator, UInt256.ofNat nibble, byte, word, pointer, original, modulus] ++ rest }
+    stack := [accumulator, modulus, UInt256.ofNat nibble, byte, word, pointer, original, modulus] ++ rest }
 
 set_option linter.unusedSimpArgs false in
 /-- The fused block reduces on the square state (peak depth ten plus `rest`)
-to the accumulator-first result, consuming the nibble and the external POP in one certificate. -/
+to the accumulator-first result, replacing the old eight-byte finish and the
+ten-instruction lookup in one certificate. -/
 theorem run_fusedSquareLookup (template : State) (pc : UInt256)
     (base modulus : UInt256) (nibble : Nat)
     (byte word pointer original accumulator : UInt256) (rest : List UInt256)
@@ -26,7 +27,7 @@ theorem run_fusedSquareLookup (template : State) (pc : UInt256)
     runInstructions fusedSquareLookupProgram
       (squareTopState template pc base modulus nibble byte word pointer
         original accumulator rest) =
-      some (droppedNibbleState template (advancePC 23 pc) base modulus nibble
+      some (nibbleState template (advancePC 21 pc) base modulus nibble
         byte word pointer
         (UInt256.mulMod accumulator
           (WindowMath.tableWord base modulus nibble) modulus) rest) := by
@@ -37,15 +38,14 @@ theorem run_fusedSquareLookup (template : State) (pc : UInt256)
     omega
   have hread := WindowTableMemory.readWord_tableMemory base modulus nibble hnibble
   have hactive := WindowTableMemory.activeWordsAfter_lookup nibble hnibble
-  have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h7 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h10 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by
     omega
   simp (config := { maxSteps := 8000000 }) (disch := omega)
-    [runInstructions, fusedSquareLookupProgram, squareTopState, droppedNibbleState, nibbleState,
-      Challenge.EvmProof.Stepper.runInstr, hrest, h6, h7, h8, h9, h10,
+    [runInstructions, fusedSquareLookupProgram, squareTopState, nibbleState,
+      Challenge.EvmProof.Stepper.runInstr, hrest, h7, h8, h9, h10,
       List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
       hshift, hoffset, hread, hactive,
       State.activeWordsAfterUInt256,
@@ -54,8 +54,7 @@ theorem run_fusedSquareLookup (template : State) (pc : UInt256)
       advancePC]
   refine ⟨?_, mulMod_comm _ _ _⟩
   simp only [succ_eq_add,
-    show UInt256.ofNat 16 = UInt256.ofNat 1 + UInt256.ofNat 15 by decide,
-    show UInt256.ofNat 15 = UInt256.ofNat 1 + UInt256.ofNat 14 by decide,
+        show UInt256.ofNat 15 = UInt256.ofNat 1 + UInt256.ofNat 14 by decide,
     show UInt256.ofNat 14 = UInt256.ofNat 1 + UInt256.ofNat 13 by decide,
     show UInt256.ofNat 13 = UInt256.ofNat 1 + UInt256.ofNat 12 by decide,
     show UInt256.ofNat 12 = UInt256.ofNat 1 + UInt256.ofNat 11 by decide,

@@ -24,7 +24,7 @@ The five basic blocks are
   `[px, px, px, 2874]` and a jump to `ADDMOD` (pc 2467);
 * `blk1749` (idx 1749..1750, pc 2874..2876) — `JUMPDEST; PUSH1 8`;
 * `blk1751` (idx 1751..1757, pc 2877..2887) — the loop head `CCL`, which
-  pushes the call frame `[px, px, px, 2888]` and jumps to `MONPRO` (pc 1939);
+  pushes the call frame `[px, px, px, 2888]` and jumps to its width dispatcher;
 * `blk1758` (idx 1758..1764, pc 2888..2897) — the return point, which
   decrements the counter and jumps back to pc 2877 while it is nonzero;
 * `blk1765` (idx 1765..1767, pc 2898..2900) — `POP; POP; JUMP ret`.
@@ -57,51 +57,51 @@ def loopStack (px k : Nat) (ret : UInt256) (rest : List UInt256) : List UInt256 
 /-- Subroutine entry, pc 2863, stack `[px, ret]`. -/
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2858
+  { s with pc := UInt256.ofNat 2863
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
 /-- The prologue `ADDMOD` call, pc 2467, frame `[px, px, px, 2874]`. -/
 def amCallState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2462
+  { s with pc := UInt256.ofNat 2467
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
-                     UInt256.ofNat 2869] ++ ([UInt256.ofNat px, ret] ++ rest)
+                     UInt256.ofNat 2874] ++ ([UInt256.ofNat px, ret] ++ rest)
            memory := mem }
 
 /-- The prologue return point, pc 2874, stack `[px, ret]`. -/
 def postState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2869
+  { s with pc := UInt256.ofNat 2874
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
 /-- The loop head `CCL`, pc 2877, with the counter at `k`. -/
 def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2872
+  { s with pc := UInt256.ofNat 2877
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The `MONPRO` call, pc 1939, with the frame `[px, px, px, 2888]` pushed. -/
+/-- The dispatched `MONPRO` call, pc 4057, with the frame pushed. -/
 def mpCallState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1939
+  { s with pc := UInt256.ofNat 4057
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
-                     UInt256.ofNat 2883] ++ loopStack px k ret rest
+                     UInt256.ofNat 2888] ++ loopStack px k ret rest
            memory := mem }
 
 /-- The return point, pc 2888, with the counter still at `k`. -/
 def retState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2883
+  { s with pc := UInt256.ofNat 2888
            stack := loopStack px k ret rest
            memory := mem }
 
 /-- The loop exit, pc 2898, with the counter at zero. -/
 def exitState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2893
+  { s with pc := UInt256.ofNat 2898
            stack := loopStack px 0 ret rest
            memory := mem }
 
@@ -129,9 +129,9 @@ theorem run_entry (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
-  have h2874 : (2869 : UInt256) = UInt256.ofNat 2869 := by decide
-  have h2467 : (2462 : UInt256) = UInt256.ofNat 2462 := by decide
-  have h2467Nat : (UInt256.ofNat 2462).toNat = 2462 := by decide
+  have h2874 : (2874 : UInt256) = UInt256.ofNat 2874 := by decide
+  have h2467 : (2467 : UInt256) = UInt256.ofNat 2467 := by decide
+  have h2467Nat : (UInt256.ofNat 2467).toNat = 2467 := by decide
   simp (config := { maxSteps := 400000 }) [blk1742, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -161,7 +161,7 @@ theorem run_post (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1751` (pc 2877..2887): push the `MONPRO` frame and jump to pc 1939. -/
+/-- `blk1751` (pc 2877..2887): push the frame and jump to pc 4057. -/
 theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -175,14 +175,16 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
-  have h2888 : (2883 : UInt256) = UInt256.ofNat 2883 := by decide
-  have h1939 : (1939 : UInt256) = UInt256.ofNat 1939 := by decide
-  have h1939Nat : (UInt256.ofNat 1939).toNat = 1939 := by decide
+  have h2888 : (2888 : UInt256) = UInt256.ofNat 2888 := by decide
+  have h4057 : (4057 : UInt256) = UInt256.ofNat 4057 := by decide
+  have h4057Nat : (UInt256.ofNat 4057).toNat = 4057 := by decide
+  have hjump4057 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4057 =
+      true := Artifact.isValidJumpDest_index 2566 (by rfl)
   simp (config := { maxSteps := 400000 }) [blk1751, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopState, mpCallState, loopStack, fastPC20, hc3, hc4, hc5, hc6, hc7, hc8,
-    hcode, hrun, h2888, h1939, h1939Nat, jumpDest1939,
+    hcode, hrun, h2888, h4057, h4057Nat, hjump4057,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -203,8 +205,8 @@ theorem run_ret (s : State) (mem : ByteArray) (px k k' : Nat) (ret : UInt256)
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hzero : (0 : UInt256) = UInt256.ofNat 0 := by decide
-  have h2877 : (2872 : UInt256) = UInt256.ofNat 2872 := by decide
-  have h2877Nat : (UInt256.ofNat 2872).toNat = 2872 := by decide
+  have h2877 : (2877 : UInt256) = UInt256.ofNat 2877 := by decide
+  have h2877Nat : (UInt256.ofNat 2877).toNat = 2877 := by decide
   have hk7 : k' ≤ 7 := by omega
   have hdec : UInt256.lnot ({ val := 0 } : UInt256) + UInt256.ofNat (k' + 1) =
       UInt256.ofNat k' := by
@@ -234,7 +236,7 @@ theorem run_retLast (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hzero : (0 : UInt256) = UInt256.ofNat 0 := by decide
-  have h2877 : (2872 : UInt256) = UInt256.ofNat 2872 := by decide
+  have h2877 : (2877 : UInt256) = UInt256.ofNat 2877 := by decide
   have hdec : UInt256.lnot ({ val := 0 } : UInt256) + UInt256.ofNat 1 =
       UInt256.ofNat 0 := by decide
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
