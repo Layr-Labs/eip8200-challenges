@@ -12,7 +12,7 @@ set_option maxHeartbeats 8000000
 /-!
 # H31 fast-output site
 
-The first 53 instructions of the fast-output helper are a straight-line
+The first 47 instructions of the fast-output helper are a straight-line
 certificate.  The final `RETURN` is kept as a separate located site because it
 does not advance the program counter.
 -/
@@ -84,6 +84,36 @@ private theorem fastPackTemplate_advances :
     · exact fastPackStep_advances 128
   · exact fastPackStep_advances 160
 
+private theorem fastEndianStage8_advances :
+    ∀ instruction ∈ FastOutputTemplate.fastEndianStage8,
+      DenseScheduleLift.Advances instruction := by
+  intro instruction hmem
+  simp only [FastOutputTemplate.fastEndianStage8, DenseScheduleTemplate.endianStage8,
+    DenseScheduleTemplate.endianStage, DenseScheduleTemplate.endianMaskPush,
+    DenseScheduleTemplate.endianFactorPush, DenseScheduleTemplate.endianFactor,
+    DenseScheduleTemplate.op, DenseScheduleTemplate.push1,
+    DenseScheduleTemplate.push2, DenseScheduleTemplate.dup1,
+    List.mem_cons, List.not_mem_nil, or_false] at hmem
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  all_goals first
+    | exact Or.inl (Or.inl (by constructor))
+    | exact Or.inr (Or.inr rfl)
+
+private theorem fastEndianStage16_advances :
+    ∀ instruction ∈ FastOutputTemplate.fastEndianStage16,
+      DenseScheduleLift.Advances instruction := by
+  intro instruction hmem
+  simp only [FastOutputTemplate.fastEndianStage16, DenseScheduleTemplate.endianStage16,
+    DenseScheduleTemplate.endianStage, DenseScheduleTemplate.endianMaskPush,
+    DenseScheduleTemplate.endianFactorPush, DenseScheduleTemplate.endianFactor,
+    DenseScheduleTemplate.op, DenseScheduleTemplate.push1,
+    DenseScheduleTemplate.push3, DenseScheduleTemplate.dup1,
+    List.mem_cons, List.not_mem_nil, or_false] at hmem
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  all_goals first
+    | exact Or.inl (Or.inl (by constructor))
+    | exact Or.inr (Or.inr rfl)
+
 private theorem fastStoreAndSetup_advances :
     ∀ instruction ∈ FastOutputTemplate.fastStoreAndSetup,
       DenseScheduleLift.Advances instruction := by
@@ -105,8 +135,10 @@ private theorem fastOutputBeforeReturn_advances
   rcases hmem with ((hpack | h8) | h16) | hstore
   · exact DenseScheduleLift.runInstr_pc_of_advances
       (fastPackTemplate_advances instruction hpack) hrun
-  · exact ClosedEndianMultiply.advances 8 h8 hrun
-  · exact ClosedEndianMultiply.advances 16 h16 hrun
+  · exact DenseScheduleLift.runInstr_pc_of_advances
+      (fastEndianStage8_advances instruction h8) hrun
+  · exact DenseScheduleLift.runInstr_pc_of_advances
+      (fastEndianStage16_advances instruction h16) hrun
   · exact DenseScheduleLift.runInstr_pc_of_advances
       (fastStoreAndSetup_advances instruction hstore) hrun
 
@@ -142,9 +174,9 @@ def fastOutputSite :
   decide
 
 @[simp] theorem fastOutputSite_endPC :
-    fastOutputSite.endPC = UInt256.ofNat 0x1451 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4276) =
-    UInt256.ofNat 0x1451
+    fastOutputSite.endPC = UInt256.ofNat 0x1483 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4270) =
+    UInt256.ofNat 0x1483
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -168,28 +200,28 @@ private theorem pc_toNat_instructionPC (index : Nat) :
 
 def fastOutputReturn : LocatedSite Artifact.submissionArtifact .Osaka where
   located :=
-    { index := 4276
+    { index := 4270
       instruction := .op .RETURN
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4276)
-  pc_eq := pc_toNat_instructionPC 4276
+  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4270)
+  pc_eq := pc_toNat_instructionPC 4270
 
 def fastOutputReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [fastOutputReturn.located]
 
 @[simp] theorem fastOutputReturn_pc :
-    fastOutputReturn.pc = UInt256.ofNat 0x1451 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4276) =
-    UInt256.ofNat 0x1451
+    fastOutputReturn.pc = UInt256.ofNat 0x1483 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4270) =
+    UInt256.ofNat 0x1483
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem fastOutputReturn_site_end :
     fastOutputReturn.pc = fastOutputSite.endPC := by
   calc
-    fastOutputReturn.pc = UInt256.ofNat 0x1451 := fastOutputReturn_pc
+    fastOutputReturn.pc = UInt256.ofNat 0x1483 := fastOutputReturn_pc
     _ = fastOutputSite.endPC := fastOutputSite_endPC.symm
 
 private theorem runLocatedBlock_singleton
@@ -267,12 +299,12 @@ private theorem runFastOutputReturn
           simpa [h] using hret_raw
         subst next
         rfl
-  have hpc_nat : t.pc.toNat = Artifact.submissionArtifact.instructionPC 4276 := by
+  have hpc_nat : t.pc.toNat = Artifact.submissionArtifact.instructionPC 4270 := by
     calc
       t.pc.toNat = fastOutputReturn.pc.toNat := by rw [hpc_t]
       _ = Artifact.submissionArtifact.instructionPC fastOutputReturn.located.index :=
         fastOutputReturn.pc_eq
-      _ = Artifact.submissionArtifact.instructionPC 4276 := by rfl
+      _ = Artifact.submissionArtifact.instructionPC 4270 := by rfl
   have hlocated :
       Stepper.runLocated fastOutputReturn.located t =
         some (FastOutputTrace.afterFastReturn t t.pc rest) := by

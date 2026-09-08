@@ -9,7 +9,7 @@ set_option linter.unusedSimpArgs false
 
 /-! Raw later-block dispatch for the H8 checked prefix.
 
-`PrefixStatePaths.laterPath` is the four-instruction prologue at PC 5202:
+`PrefixStatePaths.laterPath` is the four-instruction prologue at PC 5252:
 `JUMPDEST`, `DUP3` (stack index 2, duplicating the driver block offset),
 `PUSH2 464`, and `JUMPI`.  For a later block (`i ≠ 0`, so the block offset
 word is nonzero under the calldata-fit bound) the jump is taken and the
