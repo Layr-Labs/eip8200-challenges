@@ -28,36 +28,11 @@ def blk1376 :
    opAt 1377 .POP,
    opAt 1378 .JUMP]
 
-/-- Instructions 1379..1405, pc 1939..1973. -/
-def blk1379 :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+/-- Entry trampoline, instructions 1379..1381, pc 1939..1943. -/
+def blk1379 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1379 .JUMPDEST,
-   pushAt 1380 2 9344,
-   opAt 1381 .MLOAD,
-   opAt 1382 (.Dup ⟨0, by decide⟩),
-   pushAt 1383 1 64,
-   opAt 1384 .ADD,
-   opAt 1385 .CALLDATASIZE,
-   pushAt 1386 2 8192,
-   opAt 1387 .CALLDATACOPY,
-   opAt 1388 (.Dup ⟨0, by decide⟩),
-   opAt 1389 (.Dup ⟨3, by decide⟩),
-   opAt 1390 .ADD,
-   pushAt 1391 1 32,
-   opAt 1392 (.Swap ⟨0, by decide⟩),
-   opAt 1393 .SUB,
-   pushAt 1394 1 32,
-   opAt 1395 (.Dup ⟨4, by decide⟩),
-   opAt 1396 .SUB,
-   opAt 1397 (.Swap ⟨3, by decide⟩),
-   opAt 1398 .POP,
-   opAt 1399 (.Swap ⟨0, by decide⟩),
-   opAt 1400 .POP,
-   pushAt 1401 1 32,
-   opAt 1402 (.Dup ⟨2, by decide⟩),
-   opAt 1403 .SUB,
-   opAt 1404 (.Swap ⟨1, by decide⟩),
-   opAt 1405 .POP]
+   pushAt 1380 2 5351,
+   opAt 1381 .JUMP]
 
 /-- Instructions 1406..1420, pc 1974..1994. -/
 def blk1406 :

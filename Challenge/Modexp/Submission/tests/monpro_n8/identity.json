@@ -1,0 +1,284 @@
+{
+  "base": "ae7bee26443011c5ce256e58bd913185fb933403",
+  "sha256": "ce0325cee4eef2ab9efa8c3b28a88cd74d0a44f698697209bc45d4179f04c4fc",
+  "bytes": 6097,
+  "instructions": 3715,
+  "labels": {
+    "dispatch": 5351,
+    "entry8": 5405,
+    "row8": 5407
+  },
+  "boundaries": {
+    "l1_0": {
+      "offset": 6,
+      "stack": [
+        "ca",
+        "bi",
+        "ap",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5414
+    },
+    "l1_1": {
+      "offset": 47,
+      "stack": [
+        "ca",
+        "bi",
+        "ap",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5455
+    },
+    "l1_2": {
+      "offset": 87,
+      "stack": [
+        "ca",
+        "bi",
+        "ap",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5495
+    },
+    "l1_3": {
+      "offset": 127,
+      "stack": [
+        "ca",
+        "bi",
+        "ap",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5535
+    },
+    "l1_4": {
+      "offset": 167,
+      "stack": [
+        "ca",
+        "bi",
+        "ap",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5575
+    },
+    "l1_5": {
+      "offset": 207,
+      "stack": [
+        "ca",
+        "bi",
+        "ap",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5615
+    },
+    "l1_6": {
+      "offset": 247,
+      "stack": [
+        "ca",
+        "bi",
+        "ap",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5655
+    },
+    "l1_7": {
+      "offset": 287,
+      "stack": [
+        "ca",
+        "bi",
+        "ap",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5695
+    },
+    "l1_8": {
+      "offset": 327,
+      "stack": [
+        "ca",
+        "bi",
+        "ap",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5735
+    },
+    "mid": {
+      "offset": 349,
+      "stack": [
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5757
+    },
+    "l2_0": {
+      "offset": 379,
+      "stack": [
+        "cm",
+        "mu",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5787
+    },
+    "l2_1": {
+      "offset": 417,
+      "stack": [
+        "cm",
+        "mu",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5825
+    },
+    "l2_2": {
+      "offset": 455,
+      "stack": [
+        "cm",
+        "mu",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5863
+    },
+    "l2_3": {
+      "offset": 493,
+      "stack": [
+        "cm",
+        "mu",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5901
+    },
+    "l2_4": {
+      "offset": 531,
+      "stack": [
+        "cm",
+        "mu",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5939
+    },
+    "l2_5": {
+      "offset": 569,
+      "stack": [
+        "cm",
+        "mu",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 5977
+    },
+    "l2_6": {
+      "offset": 607,
+      "stack": [
+        "cm",
+        "mu",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 6015
+    },
+    "l2_7": {
+      "offset": 644,
+      "stack": [
+        "cm",
+        "mu",
+        "K",
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 6052
+    },
+    "tail": {
+      "offset": 675,
+      "stack": [
+        "pbi",
+        "pae",
+        "pbe",
+        "pd",
+        "ret"
+      ],
+      "pc": 6083
+    }
+  },
+  "eligible": false
+}
