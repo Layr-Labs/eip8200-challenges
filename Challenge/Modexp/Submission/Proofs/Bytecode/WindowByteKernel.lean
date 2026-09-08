@@ -22,7 +22,7 @@ theorem run_byte (template : State) (pc : UInt256)
     (run_high template pc base modulus word pointer accumulator rest index hindex
       hrest)
   simpa only [← advancePC_add,
-      show highPrepAdvance index + 36 + 41 = byteAdvance index by
+      show highPrepAdvance index + 36 + 25 = byteAdvance index by
         unfold byteAdvance
         omega,
       WindowMath.byteWordStep, highNibble, lowNibble] using

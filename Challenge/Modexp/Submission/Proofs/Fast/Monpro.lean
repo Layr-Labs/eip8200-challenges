@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P7
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P8
@@ -11,16 +12,20 @@ set_option maxHeartbeats 4000000
 /-!
 # The `MONPRO` subroutine of the appended Montgomery path
 
-`MONPRO` occupies instruction indices 1379..1599 (pc 1939..2466).  It is
+`MONPRO` occupies instruction indices 1379..1599 (pc 1939..2223).  It is
 entered with stack `[pa, pb, pc, ret]`, computes the CIOS Montgomery product
 `a * b * R⁻¹ mod m` of the `n`-limb blocks at `pa` and `pb` into the CIOS
-scratch area, and tail-calls `CSUB` at pc 2642 with stack `[pc, ret]`.
+scratch area, and tail-calls `CSUB` at pc 2309 with stack `[pc, ret]`.
 
 This module starts with the 512-bit multiply-accumulate identity that every
 CIOS row step relies on.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.Monpro
+
+attribute [local simp]
+  CompactConstants.notZero CompactConstants.notZeroStruct
+  CompactConstants.notThirtyOne CompactConstants.not1087
 
 open EvmSemantics
 open EvmSemantics.EVM
@@ -524,19 +529,19 @@ def mpL1State (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Nat)
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := (l1Step mem bi pa n j).memory }
 
-/-- The row middle, pc 2141.  The two spent loop pointers are popped at once,
+/-- The row middle, pc 2050.  The two spent loop pointers are popped at once,
 so they stay opaque. -/
 def mpMidState (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2141
+  { s with pc := UInt256.ofNat 2050
            stack := [paj, ptj, c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
 
-/-- The second limb loop head, pc 2241, after `k` steps of row `i`. -/
+/-- The second limb loop head, pc 2119, after `k` steps of row `i`. -/
 def mpL2State (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2241
+  { s with pc := UInt256.ofNat 2119
            stack := [UInt256.ofNat (ptrAt (32 * n - 64) k),
                      UInt256.ofNat (ptrAt (8192 + 32 * n) k),
                      (l2Step mid mu c0 n k).carry, mu, bi,
@@ -544,10 +549,10 @@ def mpL2State (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := (l2Step mid mu c0 n k).memory }
 
-/-- The row tail, pc 2392. -/
+/-- The row tail, pc 2179. -/
 def mpTailState (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2387
+  { s with pc := UInt256.ofNat 2174
            stack := [pmj, ptj, c, mu, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
@@ -555,15 +560,15 @@ def mpTailState (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
 /-- The subroutine exit, pc 2460, after all `n` rows. -/
 def mpExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2455
+  { s with pc := UInt256.ofNat 2212
            stack := [pbi, UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32),
                      pdst, ret] ++ rest
            memory := mem }
 
-/-- `CSUB` entry, pc 2642, with stack `[pd, ret]`. -/
+/-- `CSUB` entry, pc 2309, with stack `[pd, ret]`. -/
 def mpCsubState (s : State) (mem : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2637
+  { s with pc := UInt256.ofNat 2304
            stack := [pdst, ret] ++ rest
            memory := mem }
 
@@ -946,10 +951,10 @@ theorem run_mpL2Body (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     decide
   have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
-  have h2241 : (2241 : UInt256).toNat = 2241 := by decide
-  have h2241' : (2241 : UInt256) = UInt256.ofNat 2241 := by decide
+  have h2241 : (2119 : UInt256).toNat = 2119 := by decide
+  have h2241' : (2119 : UInt256) = UInt256.ofNat 2119 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (2241 : UInt256).toNat = true := by
+      (2119 : UInt256).toNat = true := by
     rw [h2241]; exact jumpDest2241
   have hpmj : ptrAt (32 * n - 64) k %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
@@ -1198,10 +1203,10 @@ theorem run_mpExit (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have h2642 : (2637 : UInt256).toNat = 2637 := by decide
-  have h2642' : (2637 : UInt256) = UInt256.ofNat 2637 := by decide
+  have h2642 : (2304 : UInt256).toNat = 2304 := by decide
+  have h2642' : (2304 : UInt256) = UInt256.ofNat 2304 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (2637 : UInt256).toNat = true := by
+      (2304 : UInt256).toNat = true := by
     rw [h2642]; exact jumpDest2642
   simp (config := { maxSteps := 400000 })
     [blk1595, opAt, pushAt, wfOp,
@@ -1753,7 +1758,7 @@ theorem fastRepresents_monpro_preserved (s : State) (memory : ByteArray)
 /-! ## The subroutine trace
 
 `MONPRO` is entered at pc 1939 with stack `[pa, pb, pd, ret]` and tail-calls
-`CSUB` at pc 2642 with stack `[pd, ret]`; `CSUB` (proved in `Fast.Csub`) copies
+`CSUB` at pc 2309 with stack `[pd, ret]`; `CSUB` (proved in `Fast.Csub`) copies
 the reduced product to `pd` and returns to `ret`.  The trace below therefore
 ends exactly at the `CSUB` entry state. -/
 
@@ -2185,7 +2190,7 @@ theorem c0_spec (m0 minv t0 : UInt256)
 
 /-! ## The tail call into `CSUB`
 
-`MONPRO` enters `CSUB` at pc 2642 with stack `[pd, ret]`, `t[n]` at
+`MONPRO` enters `CSUB` at pc 2309 with stack `[pd, ret]`, `t[n]` at
 `TN = 8224` and `t_low` in the `n`-limb block at `TS = 8256` — exactly
 `Csub.csEntryState`'s shape.  `Csub.gasSteps_csub` then reduces `t` modulo the
 modulus, copies the result to `pd` and jumps to `ret`. -/

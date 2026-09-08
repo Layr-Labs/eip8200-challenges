@@ -34,7 +34,7 @@ def blk1320 :
    pushAt 1328 2 1024,
    pushAt 1329 2 3072,
    pushAt 1330 2 1024,
-   pushAt 1331 2 4785,
+   pushAt 1331 2 4202,
    opAt 1332 .JUMP]
 
 /-- Instructions 1333..1340, pc 1876..1885. -/
@@ -94,7 +94,7 @@ def blk1362 :
    opAt 1364 (.Dup ⟨2, by decide⟩),
    opAt 1365 (.Dup ⟨0, by decide⟩),
    opAt 1366 (.Dup ⟨0, by decide⟩),
-   pushAt 1367 2 2462,
+   pushAt 1367 2 2219,
    opAt 1368 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

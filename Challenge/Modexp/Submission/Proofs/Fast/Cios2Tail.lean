@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Fast.Cios2Constants
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2L2Pair
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2Out
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Tail
@@ -20,8 +19,8 @@ open Challenge.Modexp.Submission.Proofs.Fast.Cios2L2Pair
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Tail
 
 theorem jumpDest4115 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4843 = true := by
-  exact Artifact.isValidJumpDest_index 2953 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4260 = true := by
+  exact Artifact.isValidJumpDest_index 2967 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_tailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
@@ -48,10 +47,10 @@ theorem run_tailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
   have h8192 : (8192 : UInt256).toNat = 8192 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
   have h8256 : (8256 : UInt256).toNat = 8256 := by decide
-  have h4115 : (4843 : UInt256).toNat = 4843 := by decide
-  have h4115' : (4843 : UInt256) = UInt256.ofNat 4843 := by decide
+  have h4115 : (4260 : UInt256).toNat = 4260 := by decide
+  have h4115' : (4260 : UInt256) = UInt256.ofNat 4260 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (4843 : UInt256).toNat = true := by
+      (4260 : UInt256).toNat = true := by
     rw [h4115]
     exact jumpDest4115
   have hnextB : ptrAt (pb + 32 * n - 32) (i + 1) %
@@ -79,7 +78,6 @@ theorem run_tailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      Cios2Constants.notThirtyOne, Cios2Constants.notZero,
       tailState, outState, tailMem, tailMem1, fastPC14, fastPC15,
       hc5, hc6, hc7, hc8, hc9, hc10, hrun, hcode, hK, h8192, h8224, h8256,
       h4115, h4115', hjump, jumpDest4115, hnextB, hpbmN, hgt,
@@ -119,10 +117,10 @@ theorem run_tailLast (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
   have h8192 : (8192 : UInt256).toNat = 8192 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
   have h8256 : (8256 : UInt256).toNat = 8256 := by decide
-  have h2642 : (2637 : UInt256).toNat = 2637 := by decide
-  have h2642' : (2637 : UInt256) = UInt256.ofNat 2637 := by decide
+  have h2642 : (2304 : UInt256).toNat = 2304 := by decide
+  have h2642' : (2304 : UInt256) = UInt256.ofNat 2304 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (2637 : UInt256).toNat = true := by
+      (2304 : UInt256).toNat = true := by
     rw [h2642]
     exact jumpDest2642
   have hnextB : ptrAt (pb + 32 * n - 32) (i + 1) %
@@ -148,7 +146,6 @@ theorem run_tailLast (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      Cios2Constants.notThirtyOne, Cios2Constants.notZero,
       tailState, mpCsubState, tailMem, tailMem1, fastPC14, fastPC15,
       hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hrun, hcode,
       hK, h8192, h8224, h8256, h2642, h2642', hjump, jumpDest2642,

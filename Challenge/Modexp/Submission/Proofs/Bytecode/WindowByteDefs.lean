@@ -39,7 +39,7 @@ def highPrepWidth (index : Nat) : Nat := if index = 0 then 0 else 1
 
 def highPrepAdvance (index : Nat) : Nat := if index = 0 then 7 else 8
 
-def byteAdvance (index : Nat) : Nat := highPrepAdvance index + 77
+def byteAdvance (index : Nat) : Nat := highPrepAdvance index + 61
 
 def highPrepProgram (index : Nat) : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .push ⟨highPrepWidth index, by

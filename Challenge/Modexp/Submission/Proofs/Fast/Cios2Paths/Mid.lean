@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 3130
+def startIndex : Nat := 3136
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
@@ -39,8 +39,7 @@ private def template : List Instr :=
    .op (.Dup ⟨1, by decide⟩),
    .op .MUL,
    .op (.Swap ⟨1, by decide⟩),
-   .push 0 0,
-   .op .NOT,
+   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    .op (.Swap ⟨1, by decide⟩),
    .op .MULMOD,
    .op (.Dup ⟨1, by decide⟩),
@@ -83,13 +82,13 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem startPC :
-    Artifact.submissionArtifact.instructionPC startIndex = 5164 := by
+    Artifact.submissionArtifact.instructionPC startIndex = 4821 := by
   rfl
 
 @[simp] theorem midPC (index : Nat) (hlo : startIndex ≤ index)
-    (hhi : index ≤ 3180) :
+    (hhi : index ≤ 3185) :
     Artifact.submissionArtifact.instructionPC index =
-      [5164,5165,5166,5167,5170,5171,5172,5173,5176,5177,5178,5181,5182,5185,5186,5187,5190,5191,5192,5193,5196,5197,5198,5199,5200,5201,5202,5203,5204,5205,5206,5207,5208,5209,5210,5211,5212,5213,5214,5215,5216,5217,5220,5221,5223,5224,5225,5228,5229,5231,5232][index - startIndex]! := by
+      [4821,4822,4823,4824,4827,4828,4829,4830,4833,4834,4835,4838,4839,4842,4843,4844,4847,4848,4849,4850,4853,4854,4855,4856,4857,4858,4859,4892,4893,4894,4895,4896,4897,4898,4899,4900,4901,4902,4903,4904,4905,4908,4909,4911,4912,4913,4916,4917,4919,4920][index - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -123,7 +122,7 @@ def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨startIndex + offset, .push width value, (getElem_slice offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 2880..2929, pc 5164..5232. -/
+/-- Instructions 2880..2929, pc 4821..4920. -/
 def cios2Mid :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 0 .POP,
@@ -152,30 +151,29 @@ def cios2Mid :
    opAt 23 (.Dup ⟨1, by decide⟩),
    opAt 24 .MUL,
    opAt 25 (.Swap ⟨1, by decide⟩),
-   pushAt 26 0 0,
-   opAt 27 .NOT,
-   opAt 28 (.Swap ⟨1, by decide⟩),
-   opAt 29 .MULMOD,
+   pushAt 26 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   opAt 27 (.Swap ⟨1, by decide⟩),
+   opAt 28 .MULMOD,
+   opAt 29 (.Dup ⟨1, by decide⟩),
    opAt 30 (.Dup ⟨1, by decide⟩),
-   opAt 31 (.Dup ⟨1, by decide⟩),
-   opAt 32 .LT,
-   opAt 33 (.Dup ⟨2, by decide⟩),
-   opAt 34 .ADD,
-   opAt 35 (.Swap ⟨0, by decide⟩),
-   opAt 36 .SUB,
-   opAt 37 (.Swap ⟨0, by decide⟩),
-   pushAt 38 0 0,
-   opAt 39 .LT,
-   opAt 40 .ADD,
-   pushAt 41 2 9440,
-   opAt 42 .MLOAD,
-   pushAt 43 1 32,
-   opAt 44 (.Swap ⟨0, by decide⟩),
-   opAt 45 .SUB,
-   pushAt 46 2 9408,
-   opAt 47 .MLOAD,
-   pushAt 48 1 32,
-   opAt 49 (.Swap ⟨0, by decide⟩),
-   opAt 50 .SUB]
+   opAt 31 .LT,
+   opAt 32 (.Dup ⟨2, by decide⟩),
+   opAt 33 .ADD,
+   opAt 34 (.Swap ⟨0, by decide⟩),
+   opAt 35 .SUB,
+   opAt 36 (.Swap ⟨0, by decide⟩),
+   pushAt 37 0 0,
+   opAt 38 .LT,
+   opAt 39 .ADD,
+   pushAt 40 2 9440,
+   opAt 41 .MLOAD,
+   pushAt 42 1 32,
+   opAt 43 (.Swap ⟨0, by decide⟩),
+   opAt 44 .SUB,
+   pushAt 45 2 9408,
+   opAt 46 .MLOAD,
+   pushAt 47 1 32,
+   opAt 48 (.Swap ⟨0, by decide⟩),
+   opAt 49 .SUB]
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Mid

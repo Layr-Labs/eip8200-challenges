@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Fast.Cios2Constants
 import Challenge.Modexp.Submission.Proofs.Fast.MacAlt
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2Mid
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.L2Peel
@@ -25,8 +24,8 @@ theorem run_peel (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hn : 2 < n) :
     Challenge.EvmProof.Stepper.runLocatedBlock cios2L2Peel
-      (l2At 5233 s mid bi mu c0 pa pb n i 0 pdst ret rest) =
-      some (l2At 5279 s mid bi mu c0 pa pb n i 1 pdst ret rest) := by
+      (l2At 4921 s mid bi mu c0 pa pb n i 0 pdst ret rest) =
+      some (l2At 5058 s mid bi mu c0 pa pb n i 1 pdst ret rest) := by
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
@@ -97,7 +96,6 @@ theorem run_peel (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      Cios2Constants.notThirtyOne, Cios2Constants.notZero,
       l2At, l2Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC13, fastPC14,
       hc10, hc11, hc12, hc13, hc14, hrun, hK, h32, h8224,
@@ -121,8 +119,8 @@ opaque gasSteps_peel (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hn : 2 < n) :
     Challenge.EvmProof.GasSteps
-      (l2At 5233 s mid bi mu c0 pa pb n i 0 pdst ret rest)
-      (l2At 5279 s mid bi mu c0 pa pb n i 1 pdst ret rest) :=
+      (l2At 4921 s mid bi mu c0 pa pb n i 0 pdst ret rest)
+      (l2At 5058 s mid bi mu c0 pa pb n i 1 pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka cios2L2Peel hcode hfork
     (run_peel s mid bi mu c0 pa pb n i pdst ret rest hcap hrun hact hn32 hn)

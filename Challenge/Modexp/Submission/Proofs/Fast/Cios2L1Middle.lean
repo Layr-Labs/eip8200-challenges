@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Fast.Cios2Constants
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2L1Mac
 
 set_option warningAsError true
@@ -26,8 +25,8 @@ theorem run_l1MiddleOneMac (s : State) (mem : ByteArray) (bi : UInt256)
     (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock middleOneMac
-      (l1At 4938 s mem bi pa pb n i j pdst ret rest) =
-      some (l1At 5011 s mem bi pa pb n i (j + 1) pdst ret rest) := by
+      (l1At 4415 s mem bi pa pb n i j pdst ret rest) =
+      some (l1At 4548 s mem bi pa pb n i (j + 1) pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -69,7 +68,6 @@ theorem run_l1MiddleOneMac (s : State) (mem : ByteArray) (bi : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      Cios2Constants.notThirtyOne, Cios2Constants.notZero,
       l1At, l1Step, macSum, macCarry, mulHi, maxWord_literal,
       hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK,
       hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
@@ -91,8 +89,8 @@ theorem run_l1MiddleTwoMac (s : State) (mem : ByteArray) (bi : UInt256)
     (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock middleTwoMac
-      (l1At 5011 s mem bi pa pb n i j pdst ret rest) =
-      some (l1At 5084 s mem bi pa pb n i (j + 1) pdst ret rest) := by
+      (l1At 4548 s mem bi pa pb n i j pdst ret rest) =
+      some (l1At 4681 s mem bi pa pb n i (j + 1) pdst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -134,7 +132,6 @@ theorem run_l1MiddleTwoMac (s : State) (mem : ByteArray) (bi : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      Cios2Constants.notThirtyOne, Cios2Constants.notZero,
       l1At, l1Step, macSum, macCarry, mulHi, maxWord_literal,
       hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK,
       hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
@@ -156,8 +153,8 @@ opaque gasSteps_l1MiddleOneMac (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4938 s mem bi pa pb n i j pdst ret rest)
-      (l1At 5011 s mem bi pa pb n i (j + 1) pdst ret rest) :=
+      (l1At 4415 s mem bi pa pb n i j pdst ret rest)
+      (l1At 4548 s mem bi pa pb n i (j + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka middleOneMac hcode hfork
     (run_l1MiddleOneMac s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact
@@ -173,8 +170,8 @@ opaque gasSteps_l1MiddleTwoMac (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j + 1 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 5011 s mem bi pa pb n i j pdst ret rest)
-      (l1At 5084 s mem bi pa pb n i (j + 1) pdst ret rest) :=
+      (l1At 4548 s mem bi pa pb n i j pdst ret rest)
+      (l1At 4681 s mem bi pa pb n i (j + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka middleTwoMac hcode hfork
     (run_l1MiddleTwoMac s mem bi pa pb n i j pdst ret rest hcap hrun hcode hact

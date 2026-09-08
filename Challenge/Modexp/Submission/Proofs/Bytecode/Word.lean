@@ -123,7 +123,7 @@ def expLoadPath :
 /-- The loop head now pushes the unrolled block and jumps to it. -/
 def bitEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 484 .JUMPDEST, pushAt 485 2 3690]
+  [opAt 484 .JUMPDEST, pushAt 485 2 3198]
 
 def bitJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -132,16 +132,16 @@ def bitJumpPath :
 /-- The head of the unrolled block derives `base - 1` for the eight copies. -/
 def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2248 .JUMPDEST, pushAt 2249 1 1,
-   opAt 2250 (.Dup ⟨6, by decide⟩), opAt 2251 .SUB]
+  [opAt 2260 .JUMPDEST, pushAt 2261 1 1,
+   opAt 2262 (.Dup ⟨6, by decide⟩), opAt 2263 .SUB]
 
 /-- Its tail drops `base - 1` and rejoins the byte loop. -/
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2388 .POP, pushAt 2389 2 655, opAt 2390 .JUMP]
+  [opAt 2400 .POP, pushAt 2401 2 655, opAt 2402 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
-def bitPC (j : Nat) : Nat := 3695 + 20 * j
+def bitPC (j : Nat) : Nat := 3203 + 20 * j
 
 def bitDecodePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -339,16 +339,16 @@ def bitUnrollState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
 def bitPushState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
   let s := bitLoopState input outer 0 byte offset acc base
-  { s with pc := UInt256.ofNat 610, stack := UInt256.ofNat 3690 :: s.stack }
+  { s with pc := UInt256.ofNat 610, stack := UInt256.ofNat 3198 :: s.stack }
 
 def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 3690
+  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 3198
     ([UInt256.ofNat 0, byte, offset, UInt256.ofNat outer, acc, base,
       UInt256.ofNat (modulusValue input)] ++ bitTail input)
 
-theorem jump3695 : Decode.isValidJumpDest submissionBytecode 3690 = true :=
-  Artifact.isValidJumpDest_index 2248 (by rfl)
+theorem jump3695 : Decode.isValidJumpDest submissionBytecode 3198 = true :=
+  Artifact.isValidJumpDest_index 2260 (by rfl)
 
 /-- The loop head jumps into the unrolled block. -/
 def gasSteps_bitEntry (input : ByteArray) (outer : Nat)

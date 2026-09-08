@@ -55,7 +55,7 @@ def lowFourSquareProgram : List Instr :=
 
 def lowFusedSquareLookupProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op (.Swap ⟨1, by decide⟩),
-   .push 17 5, .op .SHL, .op .MLOAD, .op .MULMOD,
+   .push 1 5, .op .SHL, .op .MLOAD, .op .MULMOD,
    .op (.Swap ⟨2, by decide⟩), .op .POP]
 
 def lowSquareLookupProgram : List Instr :=
@@ -131,7 +131,7 @@ theorem run_lowFusedSquareLookup (template : State) (pc : UInt256)
     runInstructions lowFusedSquareLookupProgram
       (lowSquareTopState template pc base modulus nibble byte word pointer
         original accumulator rest) =
-      some (lowResultState template (advancePC 25 pc) base modulus nibble
+      some (lowResultState template (advancePC 9 pc) base modulus nibble
         byte word pointer
         (UInt256.mulMod accumulator
           (WindowMath.tableWord base modulus nibble) modulus) rest) := by
@@ -182,7 +182,7 @@ theorem run_lowFusedSquareLookup (template : State) (pc : UInt256)
 
 set_option linter.unusedSimpArgs false in
 /-- The square phase followed by the fused cleanup-and-lookup reduces in one
-pass.  The byte stride is unchanged: `advancePC 38` advances by BYTES and the
+pass.  The compact byte stride is: `advancePC 22` advances by BYTES and the
 whole program is twenty-one instructions in thirty-eight bytes. -/
 theorem run_lowSquareLookup (template : State) (pc : UInt256)
     (base modulus : UInt256) (nibble : Nat)
@@ -191,7 +191,7 @@ theorem run_lowSquareLookup (template : State) (pc : UInt256)
     runInstructions lowSquareLookupProgram
       (lowNibbleState template pc base modulus nibble byte word pointer
         accumulator rest) =
-      some (lowResultState template (advancePC 38 pc) base modulus nibble
+      some (lowResultState template (advancePC 22 pc) base modulus nibble
         byte word pointer
         (WindowMath.nibbleWordStep modulus base accumulator nibble) rest) := by
   rw [lowSquareLookupProgram, runInstructions_append,

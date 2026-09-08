@@ -23,7 +23,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Entry
 
 def outState (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4843
+  { s with pc := UInt256.ofNat 4260
            stack := [UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
@@ -74,7 +74,7 @@ theorem run_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
       Cios2Paths.Entry.opAt, Cios2Paths.Entry.pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
-      Challenge.EvmProof.Stepper.runInstr, UInt256.lnot,
+      Challenge.EvmProof.Stepper.runInstr,
       specializedEntryState, outState, mpZeroed, fastPC10,
       hc4, hc5, hc6, hc7, hc8, hrun, h32, h64, h8192, h9344, hs32,
       hsizeN, hcdsN, hsub1, hsub2, hsub3, hactS, hactC,

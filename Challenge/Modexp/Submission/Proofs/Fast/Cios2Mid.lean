@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Fast.Cios2Constants
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2L1Mac
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Mid
 
@@ -16,11 +15,6 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2L1Mac
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Mid
-
-/-- PUSH0 exposes the zero word in constructor form in the execution semantics. -/
-@[simp] theorem notZeroStruct :
-    UInt256.lnot ({ val := 0 } : UInt256) = maxWord := by
-  decide
 
 /-- L2 state at either the peeled head or the paired-loop head. -/
 def l2At (pc : Nat) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -42,7 +36,7 @@ theorem run_mid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.Stepper.runLocatedBlock cios2Mid
       (midState s mem paj ptj c bi pa pb n i pdst ret rest) =
-      some (l2At 5233 s (midMem mem c) bi (rowMu mem n)
+      some (l2At 4921 s (midMem mem c) bi (rowMu mem n)
         (rowC0 mem n) pa pb n i 0 pdst ret rest) := by
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
@@ -100,7 +94,6 @@ theorem run_mid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      Cios2Constants.notThirtyOne, Cios2Constants.notZero, notZeroStruct,
       midState, l2At, l2Step, midMem, midMem1, rowMu, rowC0, mulHi,
       zero_lt_eq_double_isZero,
       maxWord_literal, fastPC12, fastPC13, readWord_midMem_peel,
@@ -125,7 +118,7 @@ opaque gasSteps_mid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.GasSteps
       (midState s mem paj ptj c bi pa pb n i pdst ret rest)
-      (l2At 5233 s (midMem mem c) bi (rowMu mem n)
+      (l2At 4921 s (midMem mem c) bi (rowMu mem n)
         (rowC0 mem n) pa pb n i 0 pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka cios2Mid hcode hfork
