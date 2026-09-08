@@ -178,20 +178,14 @@ def midProgram : List Instr :=
    .op .GT,
    .op .ADD,
    .op .SUB,
-   .op .JUMPDEST,
-   .op .JUMPDEST,
-   .op .JUMPDEST,
-   .op .JUMPDEST,
-   .push 3 9440,
+   .push 6 9440,
    .op .MLOAD,
    .op (.Dup ⟨8, by decide⟩),
    .op .ADD,
-   .op .JUMPDEST,
-   .push 3 9408,
+   .push 6 9408,
    .op .MLOAD,
    .op (.Dup ⟨9, by decide⟩),
-   .op .ADD,
-   .op .JUMPDEST]
+   .op .ADD]
 
 def tailProgram : List Instr :=
   [.op .POP,

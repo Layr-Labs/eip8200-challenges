@@ -25,7 +25,7 @@ def highProgram : List Instr :=
 def lowProgram : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .push 0 0, .op .LT, .op .ADD]
 
-def roundedProgram : List Instr := CiosCachedRoundedCarry.newProgram
+def roundedProgram : List Instr := CiosCachedRoundedCarry.newProgram.take 7
 
 def program : List Instr := firstProgram ++ roundedProgram
 
@@ -71,23 +71,22 @@ theorem run_rounded (s : State) (mm lo mu bi pbi paEnd pbEnd flag dst ret : UInt
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions roundedProgram
       (framed s (UInt256.ofNat 4692) ([mm, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4703)
+    some (framed s (UInt256.ofNat 4699)
       ([UInt256.lt (UInt256.ofNat 0) lo + (mm-(lo+UInt256.lt mm lo)), mu] ++
         baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
-  have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
   have hc14 : rest.length + 14 < 1024 := by omega
   simp [roundedProgram, CiosCachedRoundedCarry.newProgram, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, baseStack, framed, ← allOnes_not,
-    hc11, hc12, hc13, hc14, Nat.add_assoc, Challenge.EvmProof.Word.succ_ofNat_mod]
+    hc12, hc13, hc14, Nat.add_assoc, Challenge.EvmProof.Word.succ_ofNat_mod]
   exact (CiosCachedRoundedCarry.rounded_high mm lo).symm
 
 theorem run_words (s : State) (x mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions program
       (framed s (UInt256.ofNat 4685) ([x, mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4703)
+    some (framed s (UInt256.ofNat 4699)
       ([UInt256.isZero (UInt256.isZero (x*mu))+mulHi x mu, mu] ++
         baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hf := run_first s x mu bi pbi paEnd pbEnd flag dst ret rest hcap

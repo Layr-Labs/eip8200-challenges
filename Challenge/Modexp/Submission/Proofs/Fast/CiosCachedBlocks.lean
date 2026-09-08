@@ -30,19 +30,19 @@ def l1Join : Block Artifact.submissionArtifact .Osaka 4502 joinProgram :=
     (by decide) (by rfl) (by rfl) (by decide)
 
 def mid : Block Artifact.submissionArtifact .Osaka 4651 midProgram :=
-  WindowNineSlice.block Artifact.allWellFormed 3303 50 4651 midProgram
+  WindowNineSlice.block Artifact.allWellFormed 3303 44 4651 midProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Dispatch : Block Artifact.submissionArtifact .Osaka 4719 l2DispatchProgram :=
-  WindowNineSlice.block Artifact.allWellFormed 3353 4 4719 l2DispatchProgram
+  WindowNineSlice.block Artifact.allWellFormed 3347 4 4719 l2DispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Join : Block Artifact.submissionArtifact .Osaka 4885 joinProgram :=
-  WindowNineSlice.block Artifact.allWellFormed 3513 1 4885 joinProgram
+  WindowNineSlice.block Artifact.allWellFormed 3507 1 4885 joinProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def tailLoop : Block Artifact.submissionArtifact .Osaka 5006 (CiosCached.tailProgram.take 26) :=
-  WindowNineSlice.block Artifact.allWellFormed 3631 26 5006 (CiosCached.tailProgram.take 26)
+  WindowNineSlice.block Artifact.allWellFormed 3625 26 5006 (CiosCached.tailProgram.take 26)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Mac0 : Block Artifact.submissionArtifact .Osaka 4354 l1Program :=
@@ -78,35 +78,35 @@ def l1Mac7 : Block Artifact.submissionArtifact .Osaka 4614 l1Program :=
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Mac0 : Block Artifact.submissionArtifact .Osaka 4725 l2Program :=
-  WindowNineSlice.block Artifact.allWellFormed 3357 39 4725 l2Program
+  WindowNineSlice.block Artifact.allWellFormed 3351 39 4725 l2Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Mac1 : Block Artifact.submissionArtifact .Osaka 4765 l2Program :=
-  WindowNineSlice.block Artifact.allWellFormed 3396 39 4765 l2Program
+  WindowNineSlice.block Artifact.allWellFormed 3390 39 4765 l2Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Mac2 : Block Artifact.submissionArtifact .Osaka 4805 l2Program :=
-  WindowNineSlice.block Artifact.allWellFormed 3435 39 4805 l2Program
+  WindowNineSlice.block Artifact.allWellFormed 3429 39 4805 l2Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Mac3 : Block Artifact.submissionArtifact .Osaka 4845 l2Program :=
-  WindowNineSlice.block Artifact.allWellFormed 3474 39 4845 l2Program
+  WindowNineSlice.block Artifact.allWellFormed 3468 39 4845 l2Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Mac4 : Block Artifact.submissionArtifact .Osaka 4886 l2Program :=
-  WindowNineSlice.block Artifact.allWellFormed 3514 39 4886 l2Program
+  WindowNineSlice.block Artifact.allWellFormed 3508 39 4886 l2Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Mac5 : Block Artifact.submissionArtifact .Osaka 4926 l2Program :=
-  WindowNineSlice.block Artifact.allWellFormed 3553 39 4926 l2Program
+  WindowNineSlice.block Artifact.allWellFormed 3547 39 4926 l2Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Mac6 : Block Artifact.submissionArtifact .Osaka 4966 l2Program :=
-  WindowNineSlice.block Artifact.allWellFormed 3592 39 4966 l2Program
+  WindowNineSlice.block Artifact.allWellFormed 3586 39 4966 l2Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def exitBlock : Block Artifact.submissionArtifact .Osaka 5042 (CiosCached.tailProgram.drop 26) :=
-  WindowNineSlice.block Artifact.allWellFormed 3657 8 5042 (CiosCached.tailProgram.drop 26)
+  WindowNineSlice.block Artifact.allWellFormed 3651 8 5042 (CiosCached.tailProgram.drop 26)
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest4339 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4339 = true :=
@@ -116,7 +116,7 @@ theorem jumpDest4502 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecod
   Artifact.isValidJumpDest_index 3154 (by rfl)
 
 theorem jumpDest4885 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4885 = true :=
-  Artifact.isValidJumpDest_index 3513 (by rfl)
+  Artifact.isValidJumpDest_index 3507 (by rfl)
 
 def environment (s : State)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
