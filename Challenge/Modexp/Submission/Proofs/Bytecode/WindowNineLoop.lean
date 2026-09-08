@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
 
 def iterationProgram : List Instr :=
-  [.op .JUMPDEST] ++ WindowNineBody.program ++ WindowNineTail.program (UInt256.ofNat 3201)
+  [.op .JUMPDEST] ++ WindowNineBody.program ++ WindowNineTail.program (UInt256.ofNat 2821)
 
 def repeatProgram : Nat → List Instr
   | 0 => []
@@ -17,7 +17,7 @@ def repeatProgram : Nat → List Instr
 
 def loopState (template : State) (base modulus exponent : UInt256)
     (count : Nat) (rest : List UInt256) : State :=
-  WindowNineGroup.state template (UInt256.ofNat 3201) base modulus
+  WindowNineGroup.state template (UInt256.ofNat 2821) base modulus
     (WindowNineMath.accumulator base modulus exponent.toNat (9 * count))
     (UInt256.shiftLeft exponent (UInt256.ofNat (4 * (1 + 9 * count))))
     (UInt256.ofNat (6 - count)) 0 rest
@@ -25,7 +25,7 @@ def loopState (template : State) (base modulus exponent : UInt256)
 /-- The final decrement wraps, but no instruction reads this dead counter again. -/
 def finishState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
-  WindowNineGroup.state template (UInt256.ofNat 3408) base modulus
+  WindowNineGroup.state template (UInt256.ofNat 3028) base modulus
     (WindowNineMath.accumulator base modulus exponent.toNat 63)
     (UInt256.shiftLeft
       (UInt256.shiftLeft exponent (UInt256.ofNat 220)) (UInt256.ofNat 36))
@@ -41,7 +41,7 @@ private theorem advancePC_ofNat (count pc : Nat) :
 theorem run_continue (template : State) (base modulus exponent : UInt256)
     (count : Nat) (hcount : count < 6)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 3201 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 2821 = true) :
     runInstructions iterationProgram (loopState template base modulus exponent count rest) =
     some (loopState template base modulus exponent (count + 1) rest) := by
   let a := WindowNineMath.accumulator base modulus exponent.toNat (9 * count)
@@ -62,11 +62,11 @@ theorem run_continue (template : State) (base modulus exponent : UInt256)
       UInt256.shiftLeft exponent (UInt256.ofNat (4 * (1 + 9 * (count + 1)))) := by
     rw [WindowNineTail.shift_nine exponent (1 + 9 * count) (by omega)]
     congr 2
-  have hh := WindowNineTail.run_head template (UInt256.ofNat 3201)
+  have hh := WindowNineTail.run_head template (UInt256.ofNat 2821)
     base modulus a e c rest hrest
-  have hb := WindowNineBody.run_nine template (UInt256.ofNat 3202)
+  have hb := WindowNineBody.run_nine template (UInt256.ofNat 2822)
     base modulus a exponent c (1 + 9 * count) (by omega) rest hrest
-  have ht := WindowNineTail.run_tail template (UInt256.ofNat 3394) (UInt256.ofNat 3201)
+  have ht := WindowNineTail.run_tail template (UInt256.ofNat 3014) (UInt256.ofNat 2821)
     base modulus nextA e c rest hrest hjump
   rw [ha, advancePC_ofNat] at hb
   rw [if_pos hc, hsub, hshift] at ht
@@ -76,7 +76,7 @@ theorem run_continue (template : State) (base modulus exponent : UInt256)
 
 theorem run_last (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 3201 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 2821 = true) :
     runInstructions iterationProgram (loopState template base modulus exponent 6 rest) =
     some (finishState template base modulus exponent rest) := by
   let a := WindowNineMath.accumulator base modulus exponent.toNat 54
@@ -84,11 +84,11 @@ theorem run_last (template : State) (base modulus exponent : UInt256)
   let nextA := WindowNineMath.accumulator base modulus exponent.toNat 63
   have ha : WindowNineMath.advance base modulus exponent.toNat 55 9 a = nextA := by
     exact (WindowNineMath.accumulator_nine base modulus exponent.toNat 54).symm
-  have hh := WindowNineTail.run_head template (UInt256.ofNat 3201)
+  have hh := WindowNineTail.run_head template (UInt256.ofNat 2821)
     base modulus a e (UInt256.ofNat 0) rest hrest
-  have hb := WindowNineBody.run_nine template (UInt256.ofNat 3202)
+  have hb := WindowNineBody.run_nine template (UInt256.ofNat 2822)
     base modulus a exponent (UInt256.ofNat 0) 55 (by decide) rest hrest
-  have ht := WindowNineTail.run_tail template (UInt256.ofNat 3394) (UInt256.ofNat 3201)
+  have ht := WindowNineTail.run_tail template (UInt256.ofNat 3014) (UInt256.ofNat 2821)
     base modulus nextA e (UInt256.ofNat 0) rest hrest hjump
   rw [ha, advancePC_ofNat] at hb
   rw [if_neg (by decide : ¬ UInt256.isTrue (UInt256.ofNat 0)), advancePC_ofNat] at ht
@@ -99,7 +99,7 @@ theorem run_last (template : State) (base modulus exponent : UInt256)
 theorem run_prefix (template : State) (base modulus exponent : UInt256)
     (count : Nat) (hcount : count ≤ 6)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 3201 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 2821 = true) :
     runInstructions (repeatProgram count) (loopState template base modulus exponent 0 rest) =
     some (loopState template base modulus exponent count rest) := by
   induction count with
@@ -111,7 +111,7 @@ theorem run_prefix (template : State) (base modulus exponent : UInt256)
 /-- Exactly seven passes process the remaining sixty-three exponent nibbles. -/
 theorem run_seven (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 3201 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 2821 = true) :
     runInstructions (repeatProgram 7) (loopState template base modulus exponent 0 rest) =
     some (finishState template base modulus exponent rest) := by
   exact runInstructions_append_some _ _ _ _ _

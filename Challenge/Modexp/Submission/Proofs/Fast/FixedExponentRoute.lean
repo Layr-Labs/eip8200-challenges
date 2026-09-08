@@ -38,10 +38,10 @@ def Matches (input : ByteArray) (bsize esize : Nat) : Prop :=
   ∃ count : Nat, Case input bsize esize count
 
 /-- State after the replacement in `BDONE` jumps to the appended dispatcher
-at pc 3892. -/
+at pc 3400. -/
 abbrev entryState (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 3905 }
+  { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 3395 }
 
 /-- Exact inherited exponent-loop state restored by every dispatcher miss. -/
 abbrev missState (s : State) (mem : ByteArray)

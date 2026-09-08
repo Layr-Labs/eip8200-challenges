@@ -15,7 +15,7 @@ theorem run_low (template : State) (pc : UInt256)
     runInstructions lowProgram
       (droppedNibbleState template pc base modulus high (byteValue index word) word
         pointer accumulator rest) =
-    some (wordKernelState template (advancePC 41 pc) base modulus word pointer
+    some (wordKernelState template (advancePC 25 pc) base modulus word pointer
       (WindowMath.nibbleWordStep modulus base accumulator
         (lowNibble index word)) rest) := by
   unfold lowProgram
@@ -26,9 +26,9 @@ theorem run_low (template : State) (pc : UInt256)
       (run_lowSquareLookup template (advancePC 3 pc) base modulus
         (lowNibble index word) (byteValue index word) word pointer accumulator
         rest (lowNibble_lt index word) hrest))
-  simpa only [← advancePC_add, show 3 + 38 + 0 = 41 by decide] using
+  simpa only [← advancePC_add, show 3 + 22 + 0 = 25 by decide] using
     run_finish template
-      (advancePC 38 (advancePC 3 pc)) base modulus (lowNibble index word)
+      (advancePC 22 (advancePC 3 pc)) base modulus (lowNibble index word)
       (byteValue index word) word pointer
       (WindowMath.nibbleWordStep modulus base accumulator
         (lowNibble index word)) rest hrest

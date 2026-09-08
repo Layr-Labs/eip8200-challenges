@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftTrace2
 
 set_option warningAsError false
@@ -12,6 +13,8 @@ The middle block, the two repair loops, the `CSUB` call and the loop exits.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.Shift
+
+attribute [local simp] CompactConstants.notThirtyOne notThirtyOneOfNat
 
 open EvmSemantics
 open EvmSemantics.EVM

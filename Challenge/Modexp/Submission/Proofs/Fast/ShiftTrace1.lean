@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftStates
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftPaths
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftBlocks
@@ -18,12 +19,21 @@ precomputation.
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.Shift
 
+attribute [local simp] CompactConstants.notThirtyOne
+
 open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
+
+/-- The shift traces normalize PUSH1 literals to `ofNat` before NOT. -/
+theorem notThirtyOneOfNat : UInt256.lnot (UInt256.ofNat 31) = UInt256.ofNat
+    115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+  decide
+
+attribute [local simp] notThirtyOneOfNat
 
 /-- `blk2862`: the guard, byte-identical to the full-base guard. -/
 theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)

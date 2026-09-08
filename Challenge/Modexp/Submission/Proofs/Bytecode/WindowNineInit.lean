@@ -164,15 +164,15 @@ theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt
     (hoffset : rest[5]? = some modulusOffset)
     (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus) :
     runInstructions program
-      (WindowNineTable.state template (UInt256.ofNat 3179) base modulus exponent 15 rest) =
-    some (WindowNineGroup.state template (UInt256.ofNat 3201) base modulus
+      (WindowNineTable.state template (UInt256.ofNat 2799) base modulus exponent 15 rest) =
+    some (WindowNineGroup.state template (UInt256.ofNat 2821) base modulus
       (WindowNineMath.initialAccumulator base modulus exponent.toNat)
       (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 6) 0 rest) := by
-  have hl := run_lookup template (UInt256.ofNat 3179) base modulus exponent rest hrest
-  have hf := run_frame template (advancePC 12 (UInt256.ofNat 3179)) base modulus exponent modulusOffset
+  have hl := run_lookup template (UInt256.ofNat 2799) base modulus exponent rest hrest
+  have hf := run_frame template (advancePC 12 (UInt256.ofNat 2799)) base modulus exponent modulusOffset
     (WindowNineMath.initialAccumulator base modulus exponent.toNat) rest hrest hoffset hmodulus
   have both := runInstructions_append_some _ _ _ _ _ hl hf
-  have hpc : advancePC 10 (advancePC 12 (UInt256.ofNat 3179)) = UInt256.ofNat 3201 := by decide
+  have hpc : advancePC 10 (advancePC 12 (UInt256.ofNat 2799)) = UInt256.ofNat 2821 := by decide
   simpa only [program, hpc] using both
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineInit
