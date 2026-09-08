@@ -6,7 +6,7 @@ set_option maxRecDepth 50000
 set_option maxHeartbeats 5000000
 set_option linter.unusedSimpArgs false
 
-/-! Generic `CODECOPY` step for the H8 checked prefix (index 4296, pc 5216).
+/-! Generic `CODECOPY` step for the H8 checked prefix (index 4286, pc 5216).
 
 The raw symbolic stepper has no `CODECOPY` case, so this module proves the
 single step directly against `StepRunning.codecopy`, following the
@@ -44,12 +44,12 @@ def gasSteps_codecopy (s : State) (rho : List UInt256)
     change s.executionEnv.code = submissionBytecode
     exact hcode
   have hpc : (withGas pre gas).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4296 := by
+      Artifact.submissionArtifact.instructionPC 4286 := by
     show (UInt256.ofNat 5216).toNat = _
     rw [PrefixStatePaths.pc4022]
     decide
   have hdec := Stepper.decodes_of_artifact
-    Artifact.submissionArtifact (withGas pre gas) 4296 (.op .CODECOPY)
+    Artifact.submissionArtifact (withGas pre gas) 4286 (.op .CODECOPY)
     hcode' hpc (by rfl) (by exact ⟨by decide, trivial, rfl⟩)
   change (withGas pre gas).decodedOp = some .CODECOPY at hdec
   apply EVM.Step.running
