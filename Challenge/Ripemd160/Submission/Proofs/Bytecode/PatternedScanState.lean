@@ -105,8 +105,8 @@ def tailPath : List Located :=
 
 /-- Store and return the stored digest. -/
 def returnPath : List Located :=
-  [pushAt 162 20 766350606435067737561421097975693824639675460820,
-   pushAt 163 0 0, opAt 164 .MSTORE, pushAt 165 1 32, pushAt 166 0 0,
+  [pushAt 162 21 766350606435067737561421097975693824639675460820,
+   pushAt 163 0 0, opAt 164 .MSTORE, opAt 165 .MSIZE, pushAt 166 0 0,
    opAt 167 .RETURN]
 
 /-- Shift the correction constant out of `M`. -/

@@ -29,7 +29,7 @@ def gasSteps_fromEntry_hit (input : ByteArray) (hsize : input.size = 1000)
           (by
             have h := (scanAccFinal_zero_iff_eq input hsize).1 hz
             subst input
-            exact sound returnPath run_return))))
+            exact gasSteps_return))))
 
 def gasSteps_fromEntry_miss (input : ByteArray) (hsize : input.size = 1000)
     (hne : scanAccFinal input ≠ 0) (h7 : PatternedScanGate.firstByte input = 7) :
