@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CavityFragmentChain
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.CallsConstantSites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskParams
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 
@@ -26,18 +27,8 @@ theorem pc_toNat (index : Nat) :
   exact Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt
     (A.instructionPC_le_code_size index) code_bound)
 
-private def wfOp {op : Operation}
-    (hopcode : Decode.opcodeOf (Instr.opByte op) = some op)
-    (hplain : plainOp op)
-    (havailable : op.availableInFork .Osaka = true) :
-    Stepper.WellFormed .Osaka (.op op) :=
-  ⟨hopcode, hplain, havailable⟩
-
-
-
-
 private theorem left0First_slice :
-    (A.instructions.drop 335).take (CachedMaskParams.leftCode 0).length =
+    (A.instructions.drop 371).take (CachedMaskParams.leftCode 0).length =
       CachedMaskParams.leftCode 0 := by rfl
 
 private theorem wellFormed_left0First : ∀ instruction ∈ CachedMaskParams.leftCode 0,
@@ -45,27 +36,16 @@ private theorem wellFormed_left0First : ∀ instruction ∈ CachedMaskParams.lef
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def left0First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 0) :=
-  StackSiteBuilder.ofSlice _ 335 left0First_slice (by
-    change 335 + (CachedMaskParams.leftCode 0).length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 371 left0First_slice (by
+    change 371 + (CachedMaskParams.leftCode 0).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left0First (by decide)
 
-private theorem left2First_slice :
-    (A.instructions.drop 908).take (CachedMaskParams.leftCode 2).length =
-      CachedMaskParams.leftCode 2 := by rfl
-
-private theorem wellFormed_left2First : ∀ instruction ∈ CachedMaskParams.leftCode 2,
-    Stepper.WellFormed .Osaka instruction := by
-  exact StackRoundData.templateWellFormed_mem (by decide)
-
-def left2First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 2) :=
-  StackSiteBuilder.ofSlice _ 908 left2First_slice (by
-    change 908 + (CachedMaskParams.leftCode 2).length ≤ Artifact.submissionInstructions.length
-    rw [Artifact.referenceInstructions_count]
-    decide) code_bound wellFormed_left2First (by decide)
+abbrev left2First := CallsConstantSites.left2
+abbrev left4First := CallsConstantSites.left4
 
 private theorem rightFirst_slice :
-    (A.instructions.drop 3329).take CachedMaskParams.rightCode.length =
+    (A.instructions.drop 3567).take CachedMaskParams.rightCode.length =
       CachedMaskParams.rightCode := by rfl
 
 private theorem wellFormed_rightFirst : ∀ instruction ∈ CachedMaskParams.rightCode,
@@ -73,32 +53,9 @@ private theorem wellFormed_rightFirst : ∀ instruction ∈ CachedMaskParams.rig
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def rightFirst : GenericRoundSite A .Osaka CachedMaskParams.rightCode :=
-  StackSiteBuilder.ofSlice _ 3329 rightFirst_slice (by
-    change 3329 + CachedMaskParams.rightCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 3567 rightFirst_slice (by
+    change 3567 + CachedMaskParams.rightCode.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_rightFirst (by decide)
-
-private theorem left4First_slice :
-    (A.instructions.drop 1529).take (CachedMaskParams.leftCode 4).length =
-      CachedMaskParams.leftCode 4 := by rfl
-
-private theorem wellFormed_left4First : ∀ instruction ∈ CachedMaskParams.leftCode 4,
-    Stepper.WellFormed .Osaka instruction := by
-  exact StackRoundData.templateWellFormed_mem (by decide)
-
-def left4First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 4) :=
-  StackSiteBuilder.ofSlice _ 1529 left4First_slice (by
-    change 1529 + (CachedMaskParams.leftCode 4).length ≤ Artifact.submissionInstructions.length
-    rw [Artifact.referenceInstructions_count]
-    decide) code_bound wellFormed_left4First (by decide)
-
-private def exactSite (index : Nat) (instruction : Instr)
-    (atIndex : A.instructions[index]? = some instruction)
-    (wellFormed : Stepper.WellFormed .Osaka instruction) : LocatedSite A .Osaka where
-  located := ⟨index, instruction, atIndex, wellFormed⟩
-  pc := UInt256.ofNat (A.instructionPC index)
-  pc_eq := pc_toNat index
-
-
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskCavitySites

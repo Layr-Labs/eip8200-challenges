@@ -18,7 +18,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.OutputTrace
 open EvmSemantics
 open EvmSemantics.EVM
 
-def hOffset (i : Nat) : Nat := 0x20 + 32 * i
+def hOffset (i : Nat) : Nat := 0x160 + 32 * i
 
 def hWord (s : State) (i : Nat) : UInt256 :=
   MachineState.readWord s.memory (hOffset i)

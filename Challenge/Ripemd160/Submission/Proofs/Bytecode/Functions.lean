@@ -34,12 +34,12 @@ def rotlPath : List
    ⟨7, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
    ⟨8, .op .SUB, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨9, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨10, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨11, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
-   ⟨12, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨13, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨14, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨15, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨15, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨16, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
+   ⟨17, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨18, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨19, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨20, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def rotlValue (x n : UInt256) : UInt256 :=
   Challenge.EvmProof.Word.mask32

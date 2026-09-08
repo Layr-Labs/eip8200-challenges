@@ -45,16 +45,16 @@ def packWords (word0 word1 word2 word3 word4 : UInt256) : UInt256 :=
   packAppend (packAppend (packAppend (packAppend word0 word1) word2) word3) word4
 
 def fastLoad0 : List Instr :=
-  [DenseScheduleTemplate.push1 (UInt256.ofNat 32), DenseScheduleTemplate.op .MLOAD]
+  [DenseScheduleTemplate.push2 (UInt256.ofNat 352), DenseScheduleTemplate.op .MLOAD]
 
 def fastPackStep (address : Nat) : List Instr :=
   [DenseScheduleTemplate.push1 (UInt256.ofNat 32), DenseScheduleTemplate.op .SHL,
-   DenseScheduleTemplate.push1 (UInt256.ofNat address), DenseScheduleTemplate.op .MLOAD,
+   DenseScheduleTemplate.push2 (UInt256.ofNat address), DenseScheduleTemplate.op .MLOAD,
    DenseScheduleTemplate.op .OR]
 
 def fastPackTemplate : List Instr :=
   [DenseScheduleTemplate.op .JUMPDEST] ++ fastLoad0 ++
-    fastPackStep 64 ++ fastPackStep 96 ++ fastPackStep 128 ++ fastPackStep 160
+    fastPackStep 384 ++ fastPackStep 416 ++ fastPackStep 448 ++ fastPackStep 480
 
 def fastEndianStage8 : List Instr := ClosedEndianMultiply.code 8
 
@@ -103,7 +103,7 @@ def fastOutputTemplate : List Instr :=
   rfl
 
 theorem fastOutputTemplate_byteLength :
-    (assembleBytes fastOutputTemplate).length = 76 := by
+    (assembleBytes fastOutputTemplate).length = 81 := by
   rw [fastOutputTemplate, assembleBytes_append,
     List.length_append, assembleBytes_length, assembleBytes_length]
   simp [fastOutputBeforeReturnTemplate, fastPackTemplate, fastLoad0,

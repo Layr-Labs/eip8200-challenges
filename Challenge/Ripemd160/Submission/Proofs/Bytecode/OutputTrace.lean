@@ -39,204 +39,204 @@ private def wfOp {op : Operation}
 
 def preludePath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨725, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨726, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨727, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
-   ⟨728, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
-   ⟨729, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨730, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩]
+  [⟨742, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨743, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨744, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
+   ⟨745, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
+   ⟨746, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨747, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩]
 
 def outerTestPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨731, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨732, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨733, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨734, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨735, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨736, .push ⟨2, by decide⟩ (UInt256.ofNat 0x474), by rfl, by decide⟩,
-   ⟨737, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨748, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨749, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨750, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨751, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨752, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨753, .push ⟨2, by decide⟩ (UInt256.ofNat 0x474), by rfl, by decide⟩,
+   ⟨754, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def hAtCallPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨738, .push ⟨2, by decide⟩ (UInt256.ofNat 0x469), by rfl, by decide⟩,
-   ⟨739, .push ⟨2, by decide⟩ (UInt256.ofNat 0x45d), by rfl, by decide⟩,
-   ⟨740, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
-   ⟨741, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨742, .push ⟨2, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
-   ⟨743, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨755, .push ⟨2, by decide⟩ (UInt256.ofNat 0x469), by rfl, by decide⟩,
+   ⟨756, .push ⟨2, by decide⟩ (UInt256.ofNat 0x45d), by rfl, by decide⟩,
+   ⟨757, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
+   ⟨758, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨759, .push ⟨2, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
+   ⟨760, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def hAtPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨23, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨24, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨25, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨26, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
-   ⟨27, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨28, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨29, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨30, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨31, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨28, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨29, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨30, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨31, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
+   ⟨32, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨33, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨34, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨35, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨36, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def writeCallPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨744, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨745, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨746, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
-   ⟨747, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨748, .push ⟨1, by decide⟩ (UInt256.ofNat 12), by rfl, by decide⟩,
-   ⟨749, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨750, .push ⟨2, by decide⟩ (UInt256.ofNat 0x3c6), by rfl, by decide⟩,
-   ⟨751, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨761, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨762, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨763, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
+   ⟨764, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨765, .push ⟨1, by decide⟩ (UInt256.ofNat 12), by rfl, by decide⟩,
+   ⟨766, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨767, .push ⟨2, by decide⟩ (UInt256.ofNat 0x3c6), by rfl, by decide⟩,
+   ⟨768, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def writeInitPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨650, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨651, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩]
+  [⟨667, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨668, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩]
 
 def writeTestPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨652, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨653, .push ⟨1, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
-   ⟨654, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨655, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨656, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨657, .push ⟨2, by decide⟩ (UInt256.ofNat 0x3e9), by rfl, by decide⟩,
-   ⟨658, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨669, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨670, .push ⟨1, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
+   ⟨671, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨672, .op .LT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨673, .op .ISZERO, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨674, .push ⟨2, by decide⟩ (UInt256.ofNat 0x3e9), by rfl, by decide⟩,
+   ⟨675, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def writeBodyPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨659, .push ⟨1, by decide⟩ (UInt256.ofNat 0xff), by rfl, by decide⟩,
-   ⟨660, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨661, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨662, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
-   ⟨663, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨664, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨665, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨666, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨667, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨668, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨669, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨670, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨671, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨672, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨673, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨674, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨675, .push ⟨2, by decide⟩ (UInt256.ofNat 0x3c8), by rfl, by decide⟩,
-   ⟨676, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨676, .push ⟨1, by decide⟩ (UInt256.ofNat 0xff), by rfl, by decide⟩,
+   ⟨677, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨678, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨679, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
+   ⟨680, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨681, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨682, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨683, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨684, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨685, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨686, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨687, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨688, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨689, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨690, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨691, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨692, .push ⟨2, by decide⟩ (UInt256.ofNat 0x3c8), by rfl, by decide⟩,
+   ⟨693, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def writeExitPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨677, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨678, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨679, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨680, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨681, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨694, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨695, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨696, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨697, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨698, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def outerNextPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨752, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨753, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨754, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨755, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨756, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨757, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨758, .push ⟨2, by decide⟩ (UInt256.ofNat 0x447), by rfl, by decide⟩,
-   ⟨759, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨769, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨770, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨771, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨772, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨773, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨774, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨775, .push ⟨2, by decide⟩ (UInt256.ofNat 0x447), by rfl, by decide⟩,
+   ⟨776, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def finishPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨760, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨761, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨762, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨763, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
-   ⟨764, .op .RETURN, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨777, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨778, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨779, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨780, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
+   ⟨781, .op .RETURN, by rfl, wfOp (by decide) trivial rfl⟩]
 
-@[simp] private theorem pc23 : Artifact.submissionArtifact.instructionPC 23 = 0x20 := by rfl
-@[simp] private theorem pc24 : Artifact.submissionArtifact.instructionPC 24 = 0x21 := by rfl
-@[simp] private theorem pc25 : Artifact.submissionArtifact.instructionPC 25 = 0x23 := by rfl
-@[simp] private theorem pc26 : Artifact.submissionArtifact.instructionPC 26 = 0x24 := by rfl
-@[simp] private theorem pc27 : Artifact.submissionArtifact.instructionPC 27 = 0x26 := by rfl
-@[simp] private theorem pc28 : Artifact.submissionArtifact.instructionPC 28 = 0x27 := by rfl
-@[simp] private theorem pc29 : Artifact.submissionArtifact.instructionPC 29 = 0x28 := by rfl
-@[simp] private theorem pc30 : Artifact.submissionArtifact.instructionPC 30 = 0x29 := by rfl
-@[simp] private theorem pc31 : Artifact.submissionArtifact.instructionPC 31 = 0x2a := by rfl
-@[simp] private theorem pc32 : Artifact.submissionArtifact.instructionPC 32 = 0x2b := by rfl
-@[simp] private theorem pc33 : Artifact.submissionArtifact.instructionPC 33 = 0x2c := by rfl
-@[simp] private theorem pc34 : Artifact.submissionArtifact.instructionPC 34 = 0x2d := by rfl
+@[simp] private theorem pc23 : Artifact.submissionArtifact.instructionPC 28 = 0x46 := by rfl
+@[simp] private theorem pc24 : Artifact.submissionArtifact.instructionPC 29 = 0x48 := by rfl
+@[simp] private theorem pc25 : Artifact.submissionArtifact.instructionPC 30 = 0x49 := by rfl
+@[simp] private theorem pc26 : Artifact.submissionArtifact.instructionPC 31 = 0x4a := by rfl
+@[simp] private theorem pc27 : Artifact.submissionArtifact.instructionPC 32 = 0x4b := by rfl
+@[simp] private theorem pc28 : Artifact.submissionArtifact.instructionPC 33 = 0x4c := by rfl
+@[simp] private theorem pc29 : Artifact.submissionArtifact.instructionPC 34 = 0x4d := by rfl
+@[simp] private theorem pc30 : Artifact.submissionArtifact.instructionPC 35 = 0x4e := by rfl
+@[simp] private theorem pc31 : Artifact.submissionArtifact.instructionPC 36 = 0x4f := by rfl
+@[simp] private theorem pc32 : Artifact.submissionArtifact.instructionPC 37 = 0x50 := by rfl
+@[simp] private theorem pc33 : Artifact.submissionArtifact.instructionPC 38 = 0x52 := by rfl
+@[simp] private theorem pc34 : Artifact.submissionArtifact.instructionPC 39 = 0x53 := by rfl
 
-@[simp] private theorem pc650 : Artifact.submissionArtifact.instructionPC 650 = 0x3c6 := by rfl
-@[simp] private theorem pc651 : Artifact.submissionArtifact.instructionPC 651 = 0x3c7 := by rfl
-@[simp] private theorem pc652 : Artifact.submissionArtifact.instructionPC 652 = 0x3c8 := by rfl
-@[simp] private theorem pc653 : Artifact.submissionArtifact.instructionPC 653 = 0x3c9 := by rfl
-@[simp] private theorem pc654 : Artifact.submissionArtifact.instructionPC 654 = 0x3cb := by rfl
-@[simp] private theorem pc655 : Artifact.submissionArtifact.instructionPC 655 = 0x3cc := by rfl
-@[simp] private theorem pc656 : Artifact.submissionArtifact.instructionPC 656 = 0x3cd := by rfl
-@[simp] private theorem pc657 : Artifact.submissionArtifact.instructionPC 657 = 0x3ce := by rfl
-@[simp] private theorem pc658 : Artifact.submissionArtifact.instructionPC 658 = 0x3d1 := by rfl
-@[simp] private theorem pc659 : Artifact.submissionArtifact.instructionPC 659 = 0x3d2 := by rfl
-@[simp] private theorem pc660 : Artifact.submissionArtifact.instructionPC 660 = 0x3d4 := by rfl
-@[simp] private theorem pc661 : Artifact.submissionArtifact.instructionPC 661 = 0x3d5 := by rfl
-@[simp] private theorem pc662 : Artifact.submissionArtifact.instructionPC 662 = 0x3d6 := by rfl
-@[simp] private theorem pc663 : Artifact.submissionArtifact.instructionPC 663 = 0x3d8 := by rfl
-@[simp] private theorem pc664 : Artifact.submissionArtifact.instructionPC 664 = 0x3d9 := by rfl
-@[simp] private theorem pc665 : Artifact.submissionArtifact.instructionPC 665 = 0x3da := by rfl
-@[simp] private theorem pc666 : Artifact.submissionArtifact.instructionPC 666 = 0x3db := by rfl
-@[simp] private theorem pc667 : Artifact.submissionArtifact.instructionPC 667 = 0x3dc := by rfl
-@[simp] private theorem pc668 : Artifact.submissionArtifact.instructionPC 668 = 0x3dd := by rfl
-@[simp] private theorem pc669 : Artifact.submissionArtifact.instructionPC 669 = 0x3de := by rfl
-@[simp] private theorem pc670 : Artifact.submissionArtifact.instructionPC 670 = 0x3df := by rfl
-@[simp] private theorem pc671 : Artifact.submissionArtifact.instructionPC 671 = 0x3e1 := by rfl
-@[simp] private theorem pc672 : Artifact.submissionArtifact.instructionPC 672 = 0x3e2 := by rfl
-@[simp] private theorem pc673 : Artifact.submissionArtifact.instructionPC 673 = 0x3e3 := by rfl
-@[simp] private theorem pc674 : Artifact.submissionArtifact.instructionPC 674 = 0x3e4 := by rfl
-@[simp] private theorem pc675 : Artifact.submissionArtifact.instructionPC 675 = 0x3e5 := by rfl
-@[simp] private theorem pc676 : Artifact.submissionArtifact.instructionPC 676 = 0x3e8 := by rfl
-@[simp] private theorem pc677 : Artifact.submissionArtifact.instructionPC 677 = 0x3e9 := by rfl
-@[simp] private theorem pc678 : Artifact.submissionArtifact.instructionPC 678 = 0x3ea := by rfl
-@[simp] private theorem pc679 : Artifact.submissionArtifact.instructionPC 679 = 0x3eb := by rfl
-@[simp] private theorem pc680 : Artifact.submissionArtifact.instructionPC 680 = 0x3ec := by rfl
-@[simp] private theorem pc681 : Artifact.submissionArtifact.instructionPC 681 = 0x3ed := by rfl
+@[simp] private theorem pc650 : Artifact.submissionArtifact.instructionPC 667 = 0x3d1 := by rfl
+@[simp] private theorem pc651 : Artifact.submissionArtifact.instructionPC 668 = 0x3d2 := by rfl
+@[simp] private theorem pc652 : Artifact.submissionArtifact.instructionPC 669 = 0x3d3 := by rfl
+@[simp] private theorem pc653 : Artifact.submissionArtifact.instructionPC 670 = 0x3d4 := by rfl
+@[simp] private theorem pc654 : Artifact.submissionArtifact.instructionPC 671 = 0x3d5 := by rfl
+@[simp] private theorem pc655 : Artifact.submissionArtifact.instructionPC 672 = 0x3d6 := by rfl
+@[simp] private theorem pc656 : Artifact.submissionArtifact.instructionPC 673 = 0x3d7 := by rfl
+@[simp] private theorem pc657 : Artifact.submissionArtifact.instructionPC 674 = 0x3d8 := by rfl
+@[simp] private theorem pc658 : Artifact.submissionArtifact.instructionPC 675 = 0x3d9 := by rfl
+@[simp] private theorem pc659 : Artifact.submissionArtifact.instructionPC 676 = 0x3da := by rfl
+@[simp] private theorem pc660 : Artifact.submissionArtifact.instructionPC 677 = 0x3dc := by rfl
+@[simp] private theorem pc661 : Artifact.submissionArtifact.instructionPC 678 = 0x3dd := by rfl
+@[simp] private theorem pc662 : Artifact.submissionArtifact.instructionPC 679 = 0x3de := by rfl
+@[simp] private theorem pc663 : Artifact.submissionArtifact.instructionPC 680 = 0x3df := by rfl
+@[simp] private theorem pc664 : Artifact.submissionArtifact.instructionPC 681 = 0x3e0 := by rfl
+@[simp] private theorem pc665 : Artifact.submissionArtifact.instructionPC 682 = 0x3e1 := by rfl
+@[simp] private theorem pc666 : Artifact.submissionArtifact.instructionPC 683 = 0x3e2 := by rfl
+@[simp] private theorem pc667 : Artifact.submissionArtifact.instructionPC 684 = 0x3e3 := by rfl
+@[simp] private theorem pc668 : Artifact.submissionArtifact.instructionPC 685 = 0x3e4 := by rfl
+@[simp] private theorem pc669 : Artifact.submissionArtifact.instructionPC 686 = 0x3e6 := by rfl
+@[simp] private theorem pc670 : Artifact.submissionArtifact.instructionPC 687 = 0x3e7 := by rfl
+@[simp] private theorem pc671 : Artifact.submissionArtifact.instructionPC 688 = 0x3e8 := by rfl
+@[simp] private theorem pc672 : Artifact.submissionArtifact.instructionPC 689 = 0x3ea := by rfl
+@[simp] private theorem pc673 : Artifact.submissionArtifact.instructionPC 690 = 0x3eb := by rfl
+@[simp] private theorem pc674 : Artifact.submissionArtifact.instructionPC 691 = 0x3ec := by rfl
+@[simp] private theorem pc675 : Artifact.submissionArtifact.instructionPC 692 = 0x3ed := by rfl
+@[simp] private theorem pc676 : Artifact.submissionArtifact.instructionPC 693 = 0x3ee := by rfl
+@[simp] private theorem pc677 : Artifact.submissionArtifact.instructionPC 694 = 0x3ef := by rfl
+@[simp] private theorem pc678 : Artifact.submissionArtifact.instructionPC 695 = 0x3f0 := by rfl
+@[simp] private theorem pc679 : Artifact.submissionArtifact.instructionPC 696 = 0x3f1 := by rfl
+@[simp] private theorem pc680 : Artifact.submissionArtifact.instructionPC 697 = 0x3f2 := by rfl
+@[simp] private theorem pc681 : Artifact.submissionArtifact.instructionPC 698 = 0x3f3 := by rfl
 
-@[simp] private theorem pc791 : Artifact.submissionArtifact.instructionPC 725 = 0x441 := by rfl
-@[simp] private theorem pc792 : Artifact.submissionArtifact.instructionPC 726 = 0x442 := by rfl
-@[simp] private theorem pc793 : Artifact.submissionArtifact.instructionPC 727 = 0x443 := by rfl
-@[simp] private theorem pc794 : Artifact.submissionArtifact.instructionPC 728 = 0x444 := by rfl
-@[simp] private theorem pc795 : Artifact.submissionArtifact.instructionPC 729 = 0x445 := by rfl
-@[simp] private theorem pc796 : Artifact.submissionArtifact.instructionPC 730 = 0x446 := by rfl
-@[simp] private theorem pc797 : Artifact.submissionArtifact.instructionPC 731 = 0x447 := by rfl
-@[simp] private theorem pc798 : Artifact.submissionArtifact.instructionPC 732 = 0x448 := by rfl
-@[simp] private theorem pc799 : Artifact.submissionArtifact.instructionPC 733 = 0x44a := by rfl
-@[simp] private theorem pc800 : Artifact.submissionArtifact.instructionPC 734 = 0x44b := by rfl
-@[simp] private theorem pc801 : Artifact.submissionArtifact.instructionPC 735 = 0x44c := by rfl
-@[simp] private theorem pc802 : Artifact.submissionArtifact.instructionPC 736 = 0x44d := by rfl
-@[simp] private theorem pc803 : Artifact.submissionArtifact.instructionPC 737 = 0x450 := by rfl
-@[simp] private theorem pc804 : Artifact.submissionArtifact.instructionPC 738 = 0x451 := by rfl
-@[simp] private theorem pc805 : Artifact.submissionArtifact.instructionPC 739 = 0x454 := by rfl
-@[simp] private theorem pc806 : Artifact.submissionArtifact.instructionPC 740 = 0x457 := by rfl
-@[simp] private theorem pc807 : Artifact.submissionArtifact.instructionPC 741 = 0x458 := by rfl
-@[simp] private theorem pc808 : Artifact.submissionArtifact.instructionPC 742 = 0x459 := by rfl
-@[simp] private theorem pc809 : Artifact.submissionArtifact.instructionPC 743 = 0x45c := by rfl
-@[simp] private theorem pc810 : Artifact.submissionArtifact.instructionPC 744 = 0x45d := by rfl
-@[simp] private theorem pc811 : Artifact.submissionArtifact.instructionPC 745 = 0x45e := by rfl
-@[simp] private theorem pc812 : Artifact.submissionArtifact.instructionPC 746 = 0x45f := by rfl
-@[simp] private theorem pc813 : Artifact.submissionArtifact.instructionPC 747 = 0x461 := by rfl
-@[simp] private theorem pc814 : Artifact.submissionArtifact.instructionPC 748 = 0x462 := by rfl
-@[simp] private theorem pc815 : Artifact.submissionArtifact.instructionPC 749 = 0x464 := by rfl
-@[simp] private theorem pc816 : Artifact.submissionArtifact.instructionPC 750 = 0x465 := by rfl
-@[simp] private theorem pc817 : Artifact.submissionArtifact.instructionPC 751 = 0x468 := by rfl
-@[simp] private theorem pc818 : Artifact.submissionArtifact.instructionPC 752 = 0x469 := by rfl
-@[simp] private theorem pc819 : Artifact.submissionArtifact.instructionPC 753 = 0x46a := by rfl
-@[simp] private theorem pc820 : Artifact.submissionArtifact.instructionPC 754 = 0x46c := by rfl
-@[simp] private theorem pc821 : Artifact.submissionArtifact.instructionPC 755 = 0x46d := by rfl
-@[simp] private theorem pc822 : Artifact.submissionArtifact.instructionPC 756 = 0x46e := by rfl
-@[simp] private theorem pc823 : Artifact.submissionArtifact.instructionPC 757 = 0x46f := by rfl
-@[simp] private theorem pc824 : Artifact.submissionArtifact.instructionPC 758 = 0x470 := by rfl
-@[simp] private theorem pc825 : Artifact.submissionArtifact.instructionPC 759 = 0x473 := by rfl
-@[simp] private theorem pc826 : Artifact.submissionArtifact.instructionPC 760 = 0x474 := by rfl
-@[simp] private theorem pc827 : Artifact.submissionArtifact.instructionPC 761 = 0x475 := by rfl
-@[simp] private theorem pc828 : Artifact.submissionArtifact.instructionPC 762 = 0x476 := by rfl
-@[simp] private theorem pc829 : Artifact.submissionArtifact.instructionPC 763 = 0x478 := by rfl
-@[simp] private theorem pc830 : Artifact.submissionArtifact.instructionPC 764 = 0x479 := by rfl
+@[simp] private theorem pc791 : Artifact.submissionArtifact.instructionPC 742 = 0x425 := by rfl
+@[simp] private theorem pc792 : Artifact.submissionArtifact.instructionPC 743 = 0x426 := by rfl
+@[simp] private theorem pc793 : Artifact.submissionArtifact.instructionPC 744 = 0x427 := by rfl
+@[simp] private theorem pc794 : Artifact.submissionArtifact.instructionPC 745 = 0x428 := by rfl
+@[simp] private theorem pc795 : Artifact.submissionArtifact.instructionPC 746 = 0x429 := by rfl
+@[simp] private theorem pc796 : Artifact.submissionArtifact.instructionPC 747 = 0x42a := by rfl
+@[simp] private theorem pc797 : Artifact.submissionArtifact.instructionPC 748 = 0x42b := by rfl
+@[simp] private theorem pc798 : Artifact.submissionArtifact.instructionPC 749 = 0x42c := by rfl
+@[simp] private theorem pc799 : Artifact.submissionArtifact.instructionPC 750 = 0x42d := by rfl
+@[simp] private theorem pc800 : Artifact.submissionArtifact.instructionPC 751 = 0x42e := by rfl
+@[simp] private theorem pc801 : Artifact.submissionArtifact.instructionPC 752 = 0x430 := by rfl
+@[simp] private theorem pc802 : Artifact.submissionArtifact.instructionPC 753 = 0x431 := by rfl
+@[simp] private theorem pc803 : Artifact.submissionArtifact.instructionPC 754 = 0x432 := by rfl
+@[simp] private theorem pc804 : Artifact.submissionArtifact.instructionPC 755 = 0x433 := by rfl
+@[simp] private theorem pc805 : Artifact.submissionArtifact.instructionPC 756 = 0x434 := by rfl
+@[simp] private theorem pc806 : Artifact.submissionArtifact.instructionPC 757 = 0x435 := by rfl
+@[simp] private theorem pc807 : Artifact.submissionArtifact.instructionPC 758 = 0x436 := by rfl
+@[simp] private theorem pc808 : Artifact.submissionArtifact.instructionPC 759 = 0x437 := by rfl
+@[simp] private theorem pc809 : Artifact.submissionArtifact.instructionPC 760 = 0x438 := by rfl
+@[simp] private theorem pc810 : Artifact.submissionArtifact.instructionPC 761 = 0x43a := by rfl
+@[simp] private theorem pc811 : Artifact.submissionArtifact.instructionPC 762 = 0x43b := by rfl
+@[simp] private theorem pc812 : Artifact.submissionArtifact.instructionPC 763 = 0x43c := by rfl
+@[simp] private theorem pc813 : Artifact.submissionArtifact.instructionPC 764 = 0x443 := by rfl
+@[simp] private theorem pc814 : Artifact.submissionArtifact.instructionPC 765 = 0x445 := by rfl
+@[simp] private theorem pc815 : Artifact.submissionArtifact.instructionPC 766 = 0x446 := by rfl
+@[simp] private theorem pc816 : Artifact.submissionArtifact.instructionPC 767 = 0x44d := by rfl
+@[simp] private theorem pc817 : Artifact.submissionArtifact.instructionPC 768 = 0x44f := by rfl
+@[simp] private theorem pc818 : Artifact.submissionArtifact.instructionPC 769 = 0x450 := by rfl
+@[simp] private theorem pc819 : Artifact.submissionArtifact.instructionPC 770 = 0x456 := by rfl
+@[simp] private theorem pc820 : Artifact.submissionArtifact.instructionPC 771 = 0x458 := by rfl
+@[simp] private theorem pc821 : Artifact.submissionArtifact.instructionPC 772 = 0x459 := by rfl
+@[simp] private theorem pc822 : Artifact.submissionArtifact.instructionPC 773 = 0x45f := by rfl
+@[simp] private theorem pc823 : Artifact.submissionArtifact.instructionPC 774 = 0x462 := by rfl
+@[simp] private theorem pc824 : Artifact.submissionArtifact.instructionPC 775 = 0x463 := by rfl
+@[simp] private theorem pc825 : Artifact.submissionArtifact.instructionPC 776 = 0x465 := by rfl
+@[simp] private theorem pc826 : Artifact.submissionArtifact.instructionPC 777 = 0x466 := by rfl
+@[simp] private theorem pc827 : Artifact.submissionArtifact.instructionPC 778 = 0x469 := by rfl
+@[simp] private theorem pc828 : Artifact.submissionArtifact.instructionPC 779 = 0x46a := by rfl
+@[simp] private theorem pc829 : Artifact.submissionArtifact.instructionPC 780 = 0x46b := by rfl
+@[simp] private theorem pc830 : Artifact.submissionArtifact.instructionPC 781 = 0x472 := by rfl
 
 def hOffset (i : Nat) : Nat := 0x20 + 32 * i
 
@@ -260,26 +260,26 @@ def zeroOutput (s : State) : State :=
     activeWords := s.activeWordsAfterUInt256 0 32 }
 
 private theorem valid20 : Decode.isValidJumpDest submissionBytecode 0x20 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 23 (by rfl)
-private theorem valid3c6 : Decode.isValidJumpDest submissionBytecode 0x3c6 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 650 (by rfl)
-private theorem valid3c8 : Decode.isValidJumpDest submissionBytecode 0x3c8 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 652 (by rfl)
-private theorem valid3e9 : Decode.isValidJumpDest submissionBytecode 0x3e9 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 677 (by rfl)
+  Artifact.submissionArtifact.isValidJumpDest_index 28 (by rfl)
+private theorem valid3c6 : Decode.isValidJumpDest submissionBytecode 0x368 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 667 (by rfl)
+private theorem valid3c8 : Decode.isValidJumpDest submissionBytecode 0x36a = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 669 (by rfl)
+private theorem valid3e9 : Decode.isValidJumpDest submissionBytecode 0x38b = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 694 (by rfl)
 private theorem valid654 : Decode.isValidJumpDest submissionBytecode 0x447 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 731 (by rfl)
-private theorem valid66a : Decode.isValidJumpDest submissionBytecode 0x45d = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 744 (by rfl)
-private theorem valid676 : Decode.isValidJumpDest submissionBytecode 0x469 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 752 (by rfl)
-private theorem valid681 : Decode.isValidJumpDest submissionBytecode 0x474 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 760 (by rfl)
+  Artifact.submissionArtifact.isValidJumpDest_index 748 (by rfl)
+private theorem valid66a : Decode.isValidJumpDest submissionBytecode 0x3ff = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 761 (by rfl)
+private theorem valid676 : Decode.isValidJumpDest submissionBytecode 0x40b = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 769 (by rfl)
+private theorem valid681 : Decode.isValidJumpDest submissionBytecode 0x416 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 777 (by rfl)
 
 theorem run_prelude (s : State) (offset : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1022) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock preludePath
-      { s with pc := UInt256.ofNat 0x441, stack := offset :: rest } =
+      { s with pc := UInt256.ofNat 0x3e3, stack := offset :: rest } =
     some { zeroOutput s with pc := UInt256.ofNat 0x447, stack := ⟨0⟩ :: rest } := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -293,7 +293,7 @@ theorem run_outerTest_continue (s : State) (i : Nat) (rest : List UInt256)
     (hi : i < 5) (hcap : rest.length < 1021) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock outerTestPath
       { s with pc := UInt256.ofNat 0x447, stack := UInt256.ofNat i :: rest } =
-    some { s with pc := UInt256.ofNat 0x451, stack := UInt256.ofNat i :: rest } := by
+    some { s with pc := UInt256.ofNat 0x3f3, stack := UInt256.ofNat i :: rest } := by
   have hi256 : i < 2 ^ 256 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -315,7 +315,7 @@ theorem run_outerTest_exit (s : State) (rest : List UInt256)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock outerTestPath
       { s with pc := UInt256.ofNat 0x447, stack := UInt256.ofNat 5 :: rest } =
-    some { s with pc := UInt256.ofNat 0x474, stack := UInt256.ofNat 5 :: rest } := by
+    some { s with pc := UInt256.ofNat 0x416, stack := UInt256.ofNat 5 :: rest } := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
@@ -332,7 +332,7 @@ theorem run_hAtCall (s : State) (i : Nat) (rest : List UInt256)
     (hcap : rest.length < 1018) (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock hAtCallPath
-      { s with pc := UInt256.ofNat 0x451, stack := UInt256.ofNat i :: rest } =
+      { s with pc := UInt256.ofNat 0x3f3, stack := UInt256.ofNat i :: rest } =
     some { s with
       pc := UInt256.ofNat 0x20
       stack := [UInt256.ofNat i, ⟨0⟩, UInt256.ofNat 0x45d,
@@ -355,7 +355,7 @@ theorem run_hAt (s : State) (i : Nat) (rest : List UInt256)
         pc := UInt256.ofNat 0x20
         stack := [UInt256.ofNat i, ⟨0⟩, UInt256.ofNat 0x45d] ++ rest } =
     some { s with
-      pc := UInt256.ofNat 0x45d
+      pc := UInt256.ofNat 0x3ff
       stack := hWord s i :: rest
       activeWords := s.activeWordsAfterUInt256 (hOffset i) 32 } := by
   have hi256 : i < 2 ^ 256 := by omega
@@ -385,10 +385,10 @@ theorem run_writeCall (s : State) (i : Nat) (word : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock writeCallPath
       { s with
-        pc := UInt256.ofNat 0x45d
+        pc := UInt256.ofNat 0x3ff
         stack := word :: UInt256.ofNat 0x469 :: UInt256.ofNat i :: rest } =
     some { s with
-      pc := UInt256.ofNat 0x3c6
+      pc := UInt256.ofNat 0x368
       stack := UInt256.ofNat (12 + 4 * i) :: word :: UInt256.ofNat 0x469 ::
         UInt256.ofNat i :: rest } := by
   have hi256 : i < 2 ^ 256 := by omega
@@ -411,9 +411,9 @@ theorem run_writeCall (s : State) (i : Nat) (word : UInt256)
 theorem run_writeInit (s : State) (offset word ret : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1020) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock writeInitPath
-      { s with pc := UInt256.ofNat 0x3c6, stack := offset :: word :: ret :: rest } =
+      { s with pc := UInt256.ofNat 0x368, stack := offset :: word :: ret :: rest } =
     some { s with
-      pc := UInt256.ofNat 0x3c8
+      pc := UInt256.ofNat 0x36a
       stack := ⟨0⟩ :: offset :: word :: ret :: rest } := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
@@ -424,8 +424,8 @@ theorem run_writeInit (s : State) (offset word ret : UInt256)
 theorem run_writeTest_continue (s : State) (j : Nat) (tail : List UInt256)
     (hj : j < 4) (hcap : tail.length < 1021) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock writeTestPath
-      { s with pc := UInt256.ofNat 0x3c8, stack := UInt256.ofNat j :: tail } =
-    some { s with pc := UInt256.ofNat 0x3d2, stack := UInt256.ofNat j :: tail } := by
+      { s with pc := UInt256.ofNat 0x36a, stack := UInt256.ofNat j :: tail } =
+    some { s with pc := UInt256.ofNat 0x374, stack := UInt256.ofNat j :: tail } := by
   have hj256 : j < 2 ^ 256 := by omega
   have hc1 : tail.length + 1 < 1024 := by omega
   have hc2 : tail.length + 2 < 1024 := by omega
@@ -446,8 +446,8 @@ theorem run_writeTest_exit (s : State) (tail : List UInt256)
     (hcap : tail.length < 1021) (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock writeTestPath
-      { s with pc := UInt256.ofNat 0x3c8, stack := UInt256.ofNat 4 :: tail } =
-    some { s with pc := UInt256.ofNat 0x3e9, stack := UInt256.ofNat 4 :: tail } := by
+      { s with pc := UInt256.ofNat 0x36a, stack := UInt256.ofNat 4 :: tail } =
+    some { s with pc := UInt256.ofNat 0x38b, stack := UInt256.ofNat 4 :: tail } := by
   have hc1 : tail.length + 1 < 1024 := by omega
   have hc2 : tail.length + 2 < 1024 := by omega
   have hc3 : tail.length + 3 < 1024 := by omega
@@ -467,10 +467,10 @@ theorem run_writeBody (s : State) (offset : Nat) (word : UInt256) (j : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock writeBodyPath
       { s with
-        pc := UInt256.ofNat 0x3d2
+        pc := UInt256.ofNat 0x374
         stack := UInt256.ofNat j :: UInt256.ofNat offset :: word :: ret :: rest } =
     some { writeByte s offset word j with
-      pc := UInt256.ofNat 0x3c8
+      pc := UInt256.ofNat 0x36a
       stack := UInt256.ofNat (j + 1) :: UInt256.ofNat offset :: word :: ret :: rest } := by
   have hj256 : j < 2 ^ 256 := by omega
   have hoffWord : UInt256.ofNat offset + UInt256.ofNat j =
@@ -510,7 +510,7 @@ theorem run_writeExit (s : State) (offset word : UInt256) (ret : UInt256)
     (hvalid : Decode.isValidJumpDest submissionBytecode ret.toNat = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock writeExitPath
       { s with
-        pc := UInt256.ofNat 0x3e9
+        pc := UInt256.ofNat 0x38b
         stack := UInt256.ofNat 4 :: offset :: word :: ret :: rest } =
     some { s with pc := ret, stack := rest } := by
   have hc1 : rest.length + 1 < 1024 := by omega
@@ -525,7 +525,7 @@ theorem run_outerNext (s : State) (i : Nat) (rest : List UInt256)
     (hi : i < 5) (hcap : rest.length < 1021)
     (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock outerNextPath
-      { s with pc := UInt256.ofNat 0x469, stack := UInt256.ofNat i :: rest } =
+      { s with pc := UInt256.ofNat 0x40b, stack := UInt256.ofNat i :: rest } =
     some { s with
       pc := UInt256.ofNat 0x447
       stack := UInt256.ofNat (i + 1) :: rest } := by
@@ -543,9 +543,9 @@ theorem run_outerNext (s : State) (i : Nat) (rest : List UInt256)
 theorem run_finish (s : State) (rest : List UInt256)
     (hcap : rest.length < 1022) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock finishPath
-      { s with pc := UInt256.ofNat 0x474, stack := UInt256.ofNat 5 :: rest } =
+      { s with pc := UInt256.ofNat 0x416, stack := UInt256.ofNat 5 :: rest } =
     some { s with
-      pc := UInt256.ofNat 0x479
+      pc := UInt256.ofNat 0x41b
       stack := rest
       halt := .Returned
       hReturn := MachineState.readPadded s.memory 0 32

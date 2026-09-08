@@ -1,101 +1,56 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastEmptyBlock
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateKernel
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedEndpointProvider
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixH1Miss
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixH1Seed
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedSuffixBridge
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedOutputExitBridge
 
 set_option warningAsError true
-set_option maxRecDepth 50000
-set_option maxHeartbeats 5000000
+set_option autoImplicit false
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
-open PrefixStateModel
 
-/-- H8 driver kernel state: empty fast path, checked-prefix H1 hit, then the
-generic compressor on the prepared (post-CODECOPY when i = 0) state. -/
-def nextState : State → ByteArray → Nat → State := PrefixStateKernel.nextState
+/-- The actual packed endpoint provider supplies every block-kernel field.
+No legacy instruction trace or extra correctness premise is used here. -/
+noncomputable def kernel : StackRunBridge.BlockKernel :=
+  PackedKernelChoice.kernelFromWitness PackedEndpointProvider.endpointProvider
 
-theorem nextState_word_above (s : State) (input : ByteArray) (i address : Nat)
-    (haddress : 0x2e0 ≤ address) :
-    StackRunBridge.wordAt (nextState s input i) address =
-      StackRunBridge.wordAt s address :=
-  PrefixStateKernel.nextState_word_above s input i address haddress
-
-
-noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
-    (h : Compression.HashState) (hfit : CalldataFits input)
-    (hi : i < DriverTrace.blockCount input)
-    (ctx : StackRunBridge.BlockContext s input i h)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps (DriverTrace.dispatchEntry s input i)
-      (DriverTrace.compressReturned (nextState s input i) input i) := by
-  by_cases hempty : input.size = 0
-  · have gempty := FastEmptyBlock.gasSteps_empty s input i hempty
-      ctx.calldata hcode hfork hrun hnp
-    exact GasSteps.cast gempty (by rfl) (by
-      simp [nextState, PrefixStateKernel.nextState, hempty,
-        DriverTrace.compressReturned, FastEmptyBlock.resultState])
-  · have gdispatch := FastEmptyBlock.gasSteps_nonempty s input i hfit
-      (Nat.pos_of_ne_zero hempty) ctx.calldata hcode hfork hrun hnp
-    by_cases hhit : i = 0 ∧ Matched input
-    · rcases hhit with ⟨rfl, hmatch⟩
-      have hif : (if 0 = 0 ∧ Matched input then
-          PrefixStateMemory.resultState (PrefixStateMemory.copied s) input 0
-        else DriverTrace.compressEntry (prepared s 0) input 0) =
-        PrefixStateMemory.resultState (PrefixStateMemory.copied s) input 0 := by
-        rw [if_pos ⟨rfl, hmatch⟩]
-      exact (gdispatch.trans
-        ((PrefixStateTrace.gasSteps_dispatch s input 0 hfit hi ctx.calldata
-            hcode hfork hrun hnp).cast (by rfl) hif)).cast (by rfl) (by
-          simp [nextState, PrefixStateKernel.nextState, hempty, hmatch,
-            DriverTrace.compressReturned, PrefixStateMemory.resultState])
-    · have ghelper : GasSteps (FastEmptyBlock.nonemptyEntry s input i)
-          (DriverTrace.compressEntry (prepared s i) input i) := by
-        have hif : (if i = 0 ∧ Matched input then
-            PrefixStateMemory.resultState (PrefixStateMemory.copied s) input i
-          else DriverTrace.compressEntry (prepared s i) input i) =
-          DriverTrace.compressEntry (prepared s i) input i := by
-          rw [if_neg hhit]
-        exact (PrefixStateTrace.gasSteps_dispatch s input i hfit hi ctx.calldata
-          hcode hfork hrun hnp).cast (by rfl) hif
-      have hcode' : (prepared s i).executionEnv.code = submissionBytecode := by
-        rw [PrefixStateModel.prepared_executionEnv]; exact hcode
-      have hfork' : (prepared s i).fork = .Osaka := by
-        simpa [State.fork] using hfork
-      have hrun' : (prepared s i).halt = .Running := by
-        rw [PrefixStateModel.prepared_halt]; exact hrun
-      have hnp' : Precompile.isPrecompileWithConfig
-          (prepared s i).executionEnv.precompileConfig
-          (prepared s i).executionEnv.fork
-          (prepared s i).executionEnv.codeAddr = false := by
-        rw [PrefixStateModel.prepared_executionEnv]; exact hnp
-      have gcompress := PairedBlockTrace.gasSteps_compress (prepared s i)
-        input i h hfit hi (PrefixStateKernel.preparedContext s input i h ctx)
-        hcode' hfork' hrun' hnp'
-      exact GasSteps.cast (gdispatch.trans (ghelper.trans gcompress)) (by rfl) (by
-        simp [nextState, PrefixStateKernel.nextState, hempty, hhit,
-          DriverTrace.compressReturned])
-
-noncomputable def kernel : StackRunBridge.BlockKernel where
-  nextState := nextState
-  executionEnv := PrefixStateKernel.nextState_executionEnv
-  halt := PrefixStateKernel.nextState_halt
-  callStack := PrefixStateKernel.nextState_callStack
-  wordAbove := nextState_word_above
-  hashResult := fun s input i h hfit hi ctx hmodel =>
-    PrefixStateKernel.nextState_hash s input i h hfit hi ctx hmodel
-  gasSteps := gasSteps_block
-
+/-- Preserve the entry-prefix interface consumed by all outer guard branches. -/
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 0x3)) :
+      (Execution.atPC input 0x16c)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
-      Eval (initialState submissionBytecode input gas) (.returned (spec input)) :=
-  StackRunBridge.correct_of_block_kernel kernel input hfit entryPrefix
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  classical
+  by_cases hrec : PrefixBranch.Recognised input
+  · let seed := PrefixH1Seed.seed input
+    have inv := PrefixH1Seed.seedInvariant input hrec
+    let suffix := PackedSuffixBridge.suffixRun kernel input hfit 1 seed inv
+      (PrefixH1Seed.start_lt input hrec)
+    have prefixTrace := PrefixH1Seed.gasSteps_hit_to_loop input hfit entryPrefix hrec
+    have hcode : suffix.final.executionEnv.code = submissionBytecode := by
+      rw [suffix.executionEnv]
+      exact inv.code
+    have hfork : suffix.final.fork = .Osaka := by
+      change suffix.final.executionEnv.fork = .Osaka
+      rw [suffix.executionEnv]
+      exact inv.fork
+    have hrun : suffix.final.halt = .Running :=
+      suffix.halt.trans inv.running
+    have hnp : Precompile.isPrecompileWithConfig
+        suffix.final.executionEnv.precompileConfig suffix.final.executionEnv.fork
+        suffix.final.executionEnv.codeAddr = false := by
+      rw [suffix.executionEnv]
+      exact inv.noPrecompile
+    exact PackedOutputExitBridge.correct_of_driver_exit input suffix.final
+      (prefixTrace.trans suffix.gasSteps) hcode hfork hrun hnp
+      (suffix.callStack.trans inv.callStack) suffix.hashWords
+  · exact StackRunBridge.correct_of_block_kernel kernel input hfit
+      (PrefixH1Miss.gasSteps_padding_miss input hfit entryPrefix hrec)
+
+#print axioms kernel
+#print axioms correct
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect

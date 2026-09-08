@@ -1,0 +1,44 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedCompressionGapSite
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedCompressionEndpoint
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedHashEntryOps
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedRoundSites
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedLocatedRoundCertificate
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedLocatedInvariants
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPreprocessLayout
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPreprocessSpread
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedLocatedEndpointPC
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPreprocessValues
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPreprocessSpreadSite
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPreprocessPreservation
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedLocatedBoundaryChain
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedLocatedFullRounds
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPreprocessByteSwap
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedCombineMemory
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedHashEntryTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedDriverEntry
+
+set_option warningAsError true
+
+/-! Joint dependency check on the final artifact. This does not claim that
+the missing preprocessing, entry, combine and GasSteps composition are solved. -/
+
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedRoundSites.round_straightLine
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedCompressionEndpoint.endpoint_result
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedHashEntryOps.duplicate_lane
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedCompressionGapSite.gasSteps_gapPath
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedLocatedRoundCertificate.round_certificate
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedBoundarySites.boundary_certificate
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedLocatedInvariants.block_running
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPreprocessSpread.runInstrSeq_spreadStore
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedLocatedEndpointPC.round_block_endPC
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedLocatedInvariants.certificate_preserved
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPreprocessValues.spreadValue_packedBaseMemory
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPreprocessSpreadSite.gasSteps_spread
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPreprocessPreservation.preprocessing_read_above
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedLocatedBoundaryChain.round_transition
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedLocatedFullRounds.full_rounds
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPreprocessByteSwap.gasSteps_byteSwap
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedCombineMemory.hashAt_writeHash
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedCombineMemory.writeHash_read_above
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedHashEntryTrace.gasSteps_hashEntry
+#print axioms Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedDriverEntry.gasSteps_driverLanding

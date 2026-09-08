@@ -35,17 +35,17 @@ theorem initializedState_memory (input : ByteArray) :
     (Data.Bytes.natToBytesPadded n 32).size = 32 := by
   simp [Data.Bytes.natToBytesPadded, ByteArray.size]
 
-@[simp] private theorem toNat32 : (32 : UInt256).toNat = 32 := by decide
-@[simp] private theorem toNat64 : (64 : UInt256).toNat = 64 := by decide
-@[simp] private theorem toNat96 : (96 : UInt256).toNat = 96 := by decide
-@[simp] private theorem toNat128 : (128 : UInt256).toNat = 128 := by decide
-@[simp] private theorem toNat160 : (160 : UInt256).toNat = 160 := by decide
+@[simp] private theorem toNat352 : (352 : UInt256).toNat = 352 := by decide
+@[simp] private theorem toNat384 : (384 : UInt256).toNat = 384 := by decide
+@[simp] private theorem toNat416 : (416 : UInt256).toNat = 416 := by decide
+@[simp] private theorem toNat448 : (448 : UInt256).toNat = 448 := by decide
+@[simp] private theorem toNat480 : (480 : UInt256).toNat = 480 := by decide
 
 def slotWord (memory : ByteArray) (base i : Nat) : UInt256 :=
   MachineState.readWord memory (base + 32 * i)
 
 private theorem initialized_h (i : Nat) (hi : i < 5) :
-    slotWord initializedMemory 0x020 i =
+    slotWord initializedMemory 0x160 i =
       ofUInt32 (Crypto.Ripemd160.H0[i]!) := by
   interval_cases i <;>
     unfold slotWord initializedMemory Main.initializedState <;>
@@ -62,7 +62,7 @@ private theorem initialized_h (i : Nat) (hi : i < 5) :
 
 theorem initializedState_hash (input : ByteArray) :
     ∀ i, i < 5 →
-      slotWord (Main.initializedState input).memory 0x020 i =
+      slotWord (Main.initializedState input).memory 0x160 i =
         ofUInt32 (Crypto.Ripemd160.H0[i]!) := by
   rw [initializedState_memory]
   exact initialized_h

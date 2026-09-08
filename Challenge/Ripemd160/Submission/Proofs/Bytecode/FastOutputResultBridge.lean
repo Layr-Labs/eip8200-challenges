@@ -16,7 +16,7 @@ def driverRest (input : ByteArray) : List UInt256 :=
   [DriverTrace.blockOffsetWord (DriverTrace.blockCount input), Padding.paddedWord input]
 
 def outputState (s : State) (input : ByteArray) : State :=
-  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x1406) (driverRest input)
+  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x1432) (driverRest input)
 
 def outputBytes (s : State) : ByteArray :=
   MachineState.readPadded (FastOutputTrace.outputMemory s) 0 32
@@ -66,7 +66,7 @@ private theorem outputBytes_eq_packed (s : State) (h0 h1 h2 h3 h4 : UInt32)
   rw [← packed_eq_template]
   rfl
 
-private theorem outputBytes_eq_emitDigest (s : State) (H : Array UInt32)
+theorem outputBytes_eq_emitDigest (s : State) (H : Array UInt32)
     (hwords : ∀ i : Fin 5, OutputTrace.hWord s i = Word.ofUInt32 H[i.val]!) :
     outputBytes s = ByteArray.mk (Array.replicate 12 0) ++ SpecBridge.emitDigest H := by
   have hw (i : Fin 5) : FastOutputTrace.inputWord s i = Word.ofUInt32 H[i.val]! :=
@@ -77,7 +77,7 @@ private theorem outputBytes_eq_emitDigest (s : State) (H : Array UInt32)
   rw [PackedOutputMath.packedOutput_eq_prefix_emitDigest]
   rfl
 
-private theorem spec_eq (input : ByteArray) :
+theorem spec_eq (input : ByteArray) :
     spec input = ByteArray.mk (Array.replicate 12 0) ++ Crypto.Ripemd160.hash input := by
   unfold spec
   simp only [Std.Legacy.Range.forIn_eq_forIn_range', Std.Legacy.Range.size,
@@ -97,25 +97,26 @@ private theorem outputBytes_eq_spec (input : ByteArray) (seam : CompressionSeam 
 
 noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
     (seam : CompressionSeam input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x3)) :
+    (paddingTrace : GasSteps (initialState submissionBytecode input 0)
+      (PaddingTrace.padReturned input)) :
     GasSteps (initialState submissionBytecode input 0)
       (outputState (seam.states (DriverTrace.blockCount input)) input) := by
   let final := seam.states (DriverTrace.blockCount input)
   have gout := FastOutputSite.gasSteps_fastOutput final (driverRest input)
     (by simp [driverRest]) (seam.code _ (by omega)) (seam.fork _ (by omega))
     (seam.running _ (by omega)) (seam.noPrecompile _ (by omega))
-  exact (PaddingTrace.gasSteps_pad input hfit entryPrefix).trans
-    ((DirectCorrect.gasSteps_driver input hfit seam).trans
-      (by simpa only [DriverTrace.afterExit, outputState, driverRest, final] using gout))
+  exact paddingTrace.trans ((DirectCorrect.gasSteps_driver input hfit seam).trans
+    (by simpa only [DriverTrace.afterExit, outputState, driverRest, final] using gout))
 
 /-- The output proof needs only the existing compression seam. -/
 theorem correct_of_compression_trace
     (seam : ∀ input : ByteArray, CalldataFits input → CompressionSeam input)
     (input : ByteArray) (hfit : CalldataFits input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x3)) :
+    (paddingTrace : GasSteps (initialState submissionBytecode input 0)
+      (PaddingTrace.padReturned input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  let trace := fullTrace input hfit (seam input hfit) entryPrefix
+  let trace := fullTrace input hfit (seam input hfit) paddingTrace
   let final := (seam input hfit).states (DriverTrace.blockCount input)
   have hcall : (outputState final input).callStack = [] :=
     (seam input hfit).callStack _ (by omega)

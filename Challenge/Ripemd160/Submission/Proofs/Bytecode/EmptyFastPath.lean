@@ -243,7 +243,8 @@ def gasSteps_empty_dispatch :
 
 def gasSteps_empty :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode emptyInput 0) emptyFinal :=
-  (Execution.gasSteps_start emptyInput).trans gasSteps_empty_dispatch
+  (Execution.gasSteps_start emptyInput (by decide) (by decide) (by decide) (by decide)).trans
+    gasSteps_empty_dispatch
 
 theorem emptyFinal_halt : emptyFinal.halt = .Returned := by rfl
 

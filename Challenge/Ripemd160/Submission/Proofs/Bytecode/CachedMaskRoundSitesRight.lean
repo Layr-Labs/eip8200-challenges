@@ -17,12 +17,10 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadSites
 
 abbrev Artifact := QuadSites.Artifact
 
-abbrev NormalIndex := Fin 5
+abbrev NormalIndex := Fin 3
 
 def normalFin (k : NormalIndex) : Fin 20 :=
-  ⟨if k.val < 2 then k.val + 5 else k.val + 10, by
-    have hk : k.val < 5 := k.isLt
-    split_ifs <;> omega⟩
+  ⟨k.val + 12, by omega⟩
 
 private theorem normal_slice (k : NormalIndex) :
     (Artifact.instructions.drop (rightWrapperIndex (normalFin k).val)).take
@@ -136,34 +134,34 @@ def normalCall (k : NormalIndex) :
   jump_instr := rfl
   jump_pc := normalPushes_end k
 
-private theorem helper_slice (group : Fin 2) :
-    (Artifact.instructions.drop (rightHelperStartIndex (2 * group.val + 1))).take
-        (rightHelperTemplate ⟨(2 * group.val + 1), by omega⟩).length = rightHelperTemplate ⟨(2 * group.val + 1), by omega⟩ := by
-  fin_cases group <;> rfl
+private theorem helper_slice (group : Fin 1) :
+    (Artifact.instructions.drop (rightHelperStartIndex (group.val + 3))).take
+        (rightHelperTemplate ⟨(group.val + 3), by omega⟩).length = rightHelperTemplate ⟨(group.val + 3), by omega⟩ := by
+  fin_cases group; rfl
 
-def helperSite (group : Fin 2) :
-    GenericRoundSite Artifact .Osaka (rightHelperTemplate ⟨(2 * group.val + 1), by omega⟩) :=
-  StackSiteBuilder.ofSlice _ (rightHelperStartIndex (2 * group.val + 1))
+def helperSite (group : Fin 1) :
+    GenericRoundSite Artifact .Osaka (rightHelperTemplate ⟨(group.val + 3), by omega⟩) :=
+  StackSiteBuilder.ofSlice _ (rightHelperStartIndex (group.val + 3))
     (helper_slice group)
-    (by fin_cases group <;> decide)
+    (by fin_cases group; decide)
     QuadLayout.code_bound
-    (StackRoundData.templateWellFormed_mem (by fin_cases group <;> decide))
-    (by fin_cases group <;> decide)
+    (StackRoundData.templateWellFormed_mem (by fin_cases group; decide))
+    (by fin_cases group; decide)
 
-def helperJump (group : Fin 2) : LocatedSite Artifact .Osaka where
+def helperJump (group : Fin 1) : LocatedSite Artifact .Osaka where
   located :=
-    { index := rightHelperJumpIndex (2 * group.val + 1)
+    { index := rightHelperJumpIndex (group.val + 3)
       instruction := .op .JUMP
-      atIndex := by fin_cases group <;> rfl
+      atIndex := by fin_cases group; rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.instructionPC (rightHelperJumpIndex (2 * group.val + 1)))
+  pc := UInt256.ofNat (Artifact.instructionPC (rightHelperJumpIndex (group.val + 3)))
   pc_eq := QuadLayout.pc_toNat_instructionPC _
 
-private theorem helper_start (group : Fin 2) :
-    (helperSite group).startPC = rightHelperPCOfGroup (2 * group.val + 1) := by
-  fin_cases group <;> rfl
+private theorem helper_start (group : Fin 1) :
+    (helperSite group).startPC = rightHelperPCOfGroup (group.val + 3) := by
+  fin_cases group; rfl
 
-private theorem helper_end (group : Fin 2) :
+private theorem helper_end (group : Fin 1) :
     (helperJump group).pc = (helperSite group).endPC := by
   have hend := StackRoundTrace.endPC_eq_pcAfter_sites
     (helperSite group).sites (helperSite group).startPC (helperSite group).endPC
@@ -172,21 +170,21 @@ private theorem helper_end (group : Fin 2) :
   rw [(helperSite group).instruction_eq, helper_start group] at hend
   calc
     (helperJump group).pc =
-        UInt256.ofNat (Artifact.instructionPC (rightHelperJumpIndex (2 * group.val + 1))) := rfl
-    _ = StackRoundTrace.pcAfter (rightHelperPCOfGroup (2 * group.val + 1))
-        (rightHelperTemplate ⟨(2 * group.val + 1), by omega⟩) := by
-      fin_cases group <;> rfl
+        UInt256.ofNat (Artifact.instructionPC (rightHelperJumpIndex (group.val + 3))) := rfl
+    _ = StackRoundTrace.pcAfter (rightHelperPCOfGroup (group.val + 3))
+        (rightHelperTemplate ⟨(group.val + 3), by omega⟩) := by
+      fin_cases group; rfl
     _ = (helperSite group).endPC := hend.symm
 
-private theorem helper_valid (group : Fin 2) :
+private theorem helper_valid (group : Fin 1) :
     Decode.isValidJumpDest Artifact.code
-      (rightHelperPCOfGroup (2 * group.val + 1)).toNat = true := by
-  have hpc : (rightHelperPCOfGroup (2 * group.val + 1)).toNat =
-      Artifact.instructionPC (rightHelperStartIndex (2 * group.val + 1)) := by
-    fin_cases group <;> rfl
+      (rightHelperPCOfGroup (group.val + 3)).toNat = true := by
+  have hpc : (rightHelperPCOfGroup (group.val + 3)).toNat =
+      Artifact.instructionPC (rightHelperStartIndex (group.val + 3)) := by
+    fin_cases group; rfl
   rw [hpc]
-  exact Artifact.isValidJumpDest_index (rightHelperStartIndex (2 * group.val + 1))
-    (by fin_cases group <;> rfl)
+  exact Artifact.isValidJumpDest_index (rightHelperStartIndex (group.val + 3))
+    (by fin_cases group; rfl)
 
 private theorem normalReturn_valid (k : NormalIndex) :
     Decode.isValidJumpDest Artifact.code
@@ -208,23 +206,23 @@ def normalRound (k : NormalIndex) :
   returnPC := rightReturnPC (normalFin k).val
   helperPC := rightHelperPC (normalFin k).val
   call := normalCall k
-  helper := castTemplate (helperSite ⟨(normalFin k).val / 8, by fin_cases k <;> decide⟩) (by fin_cases k <;> rfl)
+  helper := castTemplate (helperSite ⟨(normalFin k).val / 4 - 3, by dsimp [normalFin]; omega⟩) (by fin_cases k <;> rfl)
   helper_start := by rw [castTemplate_start, helper_start]; fin_cases k <;> rfl
-  helperJump := helperJump ⟨(normalFin k).val / 8, by fin_cases k <;> decide⟩
+  helperJump := helperJump ⟨(normalFin k).val / 4 - 3, by dsimp [normalFin]; omega⟩
   helper_jump_instr := rfl
   helper_end := by rw [castTemplate_end, helper_end]
   returnSite := normalReturn k
   return_instr := rfl
   return_at := rfl
   helper_valid := by
-    have h := helper_valid ⟨(normalFin k).val / 8, by fin_cases k <;> decide⟩
+    have h := helper_valid ⟨(normalFin k).val / 4 - 3, by dsimp [normalFin]; omega⟩
     fin_cases k <;> exact h
   return_valid := normalReturn_valid k
 
-def fallthroughK (group : Fin 2) : Fin 20 :=
-  ⟨4 * (2 * group.val + 1) + 3, by omega⟩
+def fallthroughK (group : Fin 1) : Fin 20 :=
+  ⟨4 * (group.val + 3) + 3, by omega⟩
 
-private theorem fallthrough_slice (group : Fin 2) :
+private theorem fallthrough_slice (group : Fin 1) :
     (Artifact.instructions.drop (rightWrapperIndex (fallthroughK group).val)).take
         (LoadedCalls.ShiftedFallthrough.pushes
           (rightReturnPC (fallthroughK group).val)
@@ -239,9 +237,9 @@ private theorem fallthrough_slice (group : Fin 2) :
         (rightRotation0 (fallthroughK group)) (rightRotation1 (fallthroughK group))
         (rightRotation2 (fallthroughK group))
         (rightRotation3 (fallthroughK group)) := by
-  fin_cases group <;> rfl
+  fin_cases group; rfl
 
-def fallthroughPushes (group : Fin 2) : GenericRoundSite Artifact .Osaka
+def fallthroughPushes (group : Fin 1) : GenericRoundSite Artifact .Osaka
     (LoadedCalls.ShiftedFallthrough.pushes (rightReturnPC (fallthroughK group).val)
       (rightAddress0 (fallthroughK group)) (rightAddress1 (fallthroughK group))
       (rightAddress2 (fallthroughK group)) (rightAddress3 (fallthroughK group))
@@ -250,25 +248,25 @@ def fallthroughPushes (group : Fin 2) : GenericRoundSite Artifact .Osaka
       (rightRotation3 (fallthroughK group))) :=
   StackSiteBuilder.ofSlice _ (rightWrapperIndex (fallthroughK group).val)
     (fallthrough_slice group)
-    (by fin_cases group <;> decide)
+    (by fin_cases group; decide)
     QuadLayout.code_bound
-    (StackRoundData.templateWellFormed_mem (by fin_cases group <;> decide))
+    (StackRoundData.templateWellFormed_mem (by fin_cases group; decide))
     (by simp [LoadedCalls.ShiftedFallthrough.pushes])
 
-def fallthroughReturn (group : Fin 2) : LocatedSite Artifact .Osaka where
+def fallthroughReturn (group : Fin 1) : LocatedSite Artifact .Osaka where
   located :=
     { index := QuadLayout.rightReturnIndex (fallthroughK group).val
       instruction := .op .JUMPDEST
-      atIndex := by fin_cases group <;> rfl
+      atIndex := by fin_cases group; rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
   pc := rightReturnPC (fallthroughK group).val
   pc_eq := QuadLayout.pc_toNat_instructionPC _
 
-private theorem fallthrough_helper_start (group : Fin 2) :
+private theorem fallthrough_helper_start (group : Fin 1) :
     (helperSite group).startPC = (fallthroughPushes group).endPC := by
-  fin_cases group <;> rfl
+  fin_cases group; rfl
 
-private theorem fallthrough_return_valid (group : Fin 2) :
+private theorem fallthrough_return_valid (group : Fin 1) :
     Decode.isValidJumpDest Artifact.code
       (rightReturnPC (fallthroughK group).val).toNat = true := by
   rw [show (rightReturnPC (fallthroughK group).val).toNat =
@@ -279,16 +277,16 @@ private theorem fallthrough_return_valid (group : Fin 2) :
     (QuadLayout.rightReturnIndex (fallthroughK group).val)
     (fallthroughReturn group).located.atIndex
 
-def fallthroughRound (group : Fin 2) :
+def fallthroughRound (group : Fin 1) :
     LoadedCalls.Fallthrough.RoundSite Artifact .Osaka
       (rightAddress0 (fallthroughK group)) (rightAddress1 (fallthroughK group))
       (rightAddress2 (fallthroughK group)) (rightAddress3 (fallthroughK group))
       (rightRotation0 (fallthroughK group)) (rightRotation1 (fallthroughK group))
       (rightRotation2 (fallthroughK group)) (rightRotation3 (fallthroughK group))
-      (LoadedHoistHelper.rightTemplate (4 - (2 * group.val + 1)) (rightConstant (fallthroughK group))) where
+      (LoadedHoistHelper.rightTemplate (4 - (group.val + 3)) (rightConstant (fallthroughK group))) where
   returnPC := rightReturnPC (fallthroughK group).val
   callPushes := fallthroughPushes group
-  helper := castTemplate (helperSite group) (by fin_cases group <;> rfl)
+  helper := castTemplate (helperSite group) (by fin_cases group; rfl)
   helper_start := by rw [castTemplate_start, fallthrough_helper_start]
   helperJump := helperJump group
   helper_jump_instr := rfl
@@ -306,13 +304,13 @@ theorem normal_end (k : NormalIndex) :
       rightPC ((normalFin k).val + 1) := by
   fin_cases k <;> rfl
 
-theorem fallthrough_start (group : Fin 2) :
+theorem fallthrough_start (group : Fin 1) :
     (fallthroughRound group).callPushes.startPC =
       rightPC (fallthroughK group).val := rfl
 
-theorem fallthrough_end (group : Fin 2) :
+theorem fallthrough_end (group : Fin 1) :
     (fallthroughRound group).returnSite.pc.succ =
       rightPC ((fallthroughK group).val + 1) := by
-  fin_cases group <;> rfl
+  fin_cases group; rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskRoundSitesRight

@@ -55,7 +55,7 @@ def gasSteps_prelude (s : State) (offset : UInt256) (rest : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      { s with pc := UInt256.ofNat 0x441, stack := offset :: rest }
+      { s with pc := UInt256.ofNat 0x3e3, stack := offset :: rest }
       { OutputTrace.zeroOutput s with
         pc := UInt256.ofNat 0x447, stack := ⟨0⟩ :: rest } :=
   gasSteps_block OutputTrace.preludePath _ _ hcode hfork
@@ -71,10 +71,10 @@ def gasSteps_writeBody (s : State) (offset : Nat) (word : UInt256) (j : Nat)
       s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       { s with
-        pc := UInt256.ofNat 0x3d2
+        pc := UInt256.ofNat 0x374
         stack := UInt256.ofNat j :: UInt256.ofNat offset :: word :: ret :: rest }
       { OutputTrace.writeByte s offset word j with
-        pc := UInt256.ofNat 0x3c8
+        pc := UInt256.ofNat 0x36a
         stack := UInt256.ofNat (j + 1) :: UInt256.ofNat offset :: word :: ret :: rest } :=
   gasSteps_block OutputTrace.writeBodyPath _ _ hcode hfork
     (OutputTrace.run_writeBody s offset word j ret rest hj hoff256 hcap hcode hrun)
@@ -133,9 +133,9 @@ def gasSteps_finish (s : State) (rest : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      { s with pc := UInt256.ofNat 0x474, stack := UInt256.ofNat 5 :: rest }
+      { s with pc := UInt256.ofNat 0x416, stack := UInt256.ofNat 5 :: rest }
       { s with
-        pc := UInt256.ofNat 0x479
+        pc := UInt256.ofNat 0x41b
         stack := rest
         halt := .Returned
         hReturn := MachineState.readPadded s.memory 0 32

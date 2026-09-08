@@ -29,7 +29,7 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 
-def inputAddress (index : Nat) : Nat := 32 + 32 * index
+def inputAddress (index : Nat) : Nat := 352 + 32 * index
 
 def inputWord (s : State) (index : Nat) : UInt256 :=
   MachineState.readWord s.memory (inputAddress index)
@@ -247,7 +247,8 @@ theorem runInstrSeq_fastLoad0
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
   simp [fastLoad0, afterFastLoad, inputWord, inputAddress,
-    DenseScheduleTemplate.push1, DenseScheduleTemplate.op,
+    DenseScheduleTemplate.push1, DenseScheduleTemplate.push2,
+    DenseScheduleTemplate.op,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter,
     hrun, hcap, hcap0, hcap1, loadActive, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.word_toNat_ofNat, UInt256.succ,
@@ -271,7 +272,8 @@ theorem runInstrSeq_fastPackStep
     rw [Challenge.EvmProof.Word.word_toNat_ofNat]
     exact Nat.mod_eq_of_lt haddress
   simp [fastPackStep, afterFastPackStep, packAppend,
-    DenseScheduleTemplate.push1, DenseScheduleTemplate.op,
+    DenseScheduleTemplate.push1, DenseScheduleTemplate.push2,
+    DenseScheduleTemplate.op,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter,
     hrun, hcap, hcap0, hcap1, hcap2, haddressWord,
     loadActive, State.activeWordsAfterUInt256,
@@ -315,74 +317,74 @@ theorem runInstrSeq_fastPackTemplate
       hrun hload
     simpa only [entry, List.cons_append, List.nil_append] using h
   let t0 : State := afterFastLoad s entry.pc rest
-  have h1raw := runInstrSeq_fastPackStep t0 t0.pc 64
+  have h1raw := runInstrSeq_fastPackStep t0 t0.pc 384
     (inputWord s 0) rest (by norm_num) hstack (by simpa [t0] using hrun)
   have h1 :
-      runInstrSeq (fastPackStep 64) t0 =
-        some (afterFastPackStep t0 t0.pc 64 (inputWord s 0) rest) := by
+      runInstrSeq (fastPackStep 384) t0 =
+        some (afterFastPackStep t0 t0.pc 384 (inputWord s 0) rest) := by
     simpa [t0, afterFastLoad, inputWord] using h1raw
-  let t1 : State := afterFastPackStep t0 t0.pc 64 (inputWord s 0) rest
+  let t1 : State := afterFastPackStep t0 t0.pc 384 (inputWord s 0) rest
   have hprefix1 :
       runInstrSeq (([DenseScheduleTemplate.op .JUMPDEST] ++ fastLoad0) ++
-          fastPackStep 64)
+          fastPackStep 384)
         { s with pc := startPC, stack := rest } = some t1 := by
     exact runInstrSeq_append_running hprefix
       (by simpa [t1, t0] using hrun) h1
-  have h2raw := runInstrSeq_fastPackStep t1 t1.pc 96
+  have h2raw := runInstrSeq_fastPackStep t1 t1.pc 416
     (packAppend (inputWord s 0) (inputWord s 1)) rest
     (by norm_num) hstack (by simpa [t1, t0] using hrun)
   have h2 :
-      runInstrSeq (fastPackStep 96) t1 =
-        some (afterFastPackStep t1 t1.pc 96
+      runInstrSeq (fastPackStep 416) t1 =
+        some (afterFastPackStep t1 t1.pc 416
           (packAppend (inputWord s 0) (inputWord s 1)) rest) := by
     simpa [t1, t0, afterFastLoad, afterFastPackStep, inputWord,
       inputAddress] using h2raw
-  let t2 : State := afterFastPackStep t1 t1.pc 96
+  let t2 : State := afterFastPackStep t1 t1.pc 416
     (packAppend (inputWord s 0) (inputWord s 1)) rest
   have hprefix2 :
       runInstrSeq ((([DenseScheduleTemplate.op .JUMPDEST] ++ fastLoad0) ++
-          fastPackStep 64) ++ fastPackStep 96)
+          fastPackStep 384) ++ fastPackStep 416)
         { s with pc := startPC, stack := rest } = some t2 := by
     exact runInstrSeq_append_running hprefix1
       (by simpa [t2, t1, t0] using hrun) h2
-  have h3raw := runInstrSeq_fastPackStep t2 t2.pc 128
+  have h3raw := runInstrSeq_fastPackStep t2 t2.pc 448
     (packAppend (packAppend (inputWord s 0) (inputWord s 1))
       (inputWord s 2)) rest
     (by norm_num) hstack (by simpa [t2, t1, t0] using hrun)
   have h3 :
-      runInstrSeq (fastPackStep 128) t2 =
-        some (afterFastPackStep t2 t2.pc 128
+      runInstrSeq (fastPackStep 448) t2 =
+        some (afterFastPackStep t2 t2.pc 448
           (packAppend (packAppend (inputWord s 0) (inputWord s 1))
             (inputWord s 2)) rest) := by
     simpa [t2, t1, t0, afterFastLoad, afterFastPackStep, inputWord,
       inputAddress] using h3raw
-  let t3 : State := afterFastPackStep t2 t2.pc 128
+  let t3 : State := afterFastPackStep t2 t2.pc 448
     (packAppend (packAppend (inputWord s 0) (inputWord s 1))
       (inputWord s 2)) rest
   have hprefix3 :
       runInstrSeq (((( [DenseScheduleTemplate.op .JUMPDEST] ++ fastLoad0) ++
-          fastPackStep 64) ++ fastPackStep 96) ++ fastPackStep 128)
+          fastPackStep 384) ++ fastPackStep 416) ++ fastPackStep 448)
         { s with pc := startPC, stack := rest } = some t3 := by
     exact runInstrSeq_append_running hprefix2
       (by simpa [t3, t2, t1, t0] using hrun) h3
-  have h4raw := runInstrSeq_fastPackStep t3 t3.pc 160
+  have h4raw := runInstrSeq_fastPackStep t3 t3.pc 480
     (packAppend (packAppend (packAppend (inputWord s 0) (inputWord s 1))
       (inputWord s 2)) (inputWord s 3)) rest
     (by norm_num) hstack (by simpa [t3, t2, t1, t0] using hrun)
   have h4 :
-      runInstrSeq (fastPackStep 160) t3 =
-        some (afterFastPackStep t3 t3.pc 160
+      runInstrSeq (fastPackStep 480) t3 =
+        some (afterFastPackStep t3 t3.pc 480
           (packAppend (packAppend (packAppend (inputWord s 0) (inputWord s 1))
             (inputWord s 2)) (inputWord s 3)) rest) := by
     simpa [t3, t2, t1, t0, afterFastLoad, afterFastPackStep, inputWord,
       inputAddress] using h4raw
-  let t4 : State := afterFastPackStep t3 t3.pc 160
+  let t4 : State := afterFastPackStep t3 t3.pc 480
     (packAppend (packAppend (packAppend (inputWord s 0) (inputWord s 1))
       (inputWord s 2)) (inputWord s 3)) rest
   have hfull :
       runInstrSeq ((((([DenseScheduleTemplate.op .JUMPDEST] ++ fastLoad0) ++
-          fastPackStep 64) ++ fastPackStep 96) ++ fastPackStep 128) ++
-          fastPackStep 160)
+          fastPackStep 384) ++ fastPackStep 416) ++ fastPackStep 448) ++
+          fastPackStep 480)
         { s with pc := startPC, stack := rest } = some t4 := by
     exact runInstrSeq_append_running hprefix3
       (by simpa [t4, t3, t2, t1, t0] using hrun) h4
