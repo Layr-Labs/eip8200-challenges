@@ -16,7 +16,7 @@ def driverRest (input : ByteArray) : List UInt256 :=
   [DriverTrace.blockOffsetWord (DriverTrace.blockCount input), Padding.paddedWord input]
 
 def outputState (s : State) (input : ByteArray) : State :=
-  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 5192) (driverRest input)
+  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x1457) (driverRest input)
 
 def outputBytes (s : State) : ByteArray :=
   MachineState.readPadded (FastOutputTrace.outputMemory s) 0 32
@@ -97,7 +97,7 @@ private theorem outputBytes_eq_spec (input : ByteArray) (seam : CompressionSeam 
 
 noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
     (seam : CompressionSeam input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x154)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x15a)) :
     GasSteps (initialState submissionBytecode input 0)
       (outputState (seam.states (DriverTrace.blockCount input)) input) := by
   let final := seam.states (DriverTrace.blockCount input)
@@ -112,7 +112,7 @@ noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
 theorem correct_of_compression_trace
     (seam : ∀ input : ByteArray, CalldataFits input → CompressionSeam input)
     (input : ByteArray) (hfit : CalldataFits input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x154)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x15a)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let trace := fullTrace input hfit (seam input hfit) entryPrefix

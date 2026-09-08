@@ -53,7 +53,7 @@ def afterCondition (s : State) (msgOff returnDest : UInt256)
 
 def readEntry (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 0x1b7
+  { s with pc := UInt256.ofNat 0x1bd
            stack := [loadOffsetWord msgOff i, 0, UInt256.ofNat 0x253,
              UInt256.ofNat 0x259, UInt256.ofNat i, msgOff, returnDest] ++ rest }
 
@@ -70,7 +70,7 @@ def beforeFirstByte (s : State) (msgOff returnDest : UInt256)
   let off := loadOffsetWord msgOff i
   let w := MachineState.readWord s.memory off.toNat
   { s with
-    pc := UInt256.ofNat 0x1bd
+    pc := UInt256.ofNat 0x1c3
     stack := [UInt256.ofNat 3, w, w, off, 0, UInt256.ofNat 0x253,
       UInt256.ofNat 0x259, UInt256.ofNat i, msgOff, returnDest] ++ rest
     activeWords := s.activeWordsAfterUInt256 off.toNat 32 }

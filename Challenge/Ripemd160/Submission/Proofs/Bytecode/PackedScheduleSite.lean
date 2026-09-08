@@ -45,7 +45,11 @@ private theorem advances_mstore :
 
 private theorem advances_mul :
     DenseScheduleLift.Advances (.op .MUL) := by
-  exact Or.inr (Or.inr rfl)
+  exact Or.inr (Or.inr (Or.inl rfl))
+
+private theorem advances_div :
+    DenseScheduleLift.Advances (.op .DIV) := by
+  exact Or.inr (Or.inr (Or.inr rfl))
 
 private theorem initialTemplate_advances :
     ∀ instruction ∈ DenseScheduleTemplate.initialTemplate,
@@ -57,22 +61,54 @@ private theorem initialTemplate_advances :
   · exact advances_jumpdest
   all_goals exact advances_straight (by constructor)
 
-private theorem endianStage_advances (shift : Nat) (mask : UInt256) :
-    ∀ instruction ∈ DenseScheduleTemplate.endianStage shift mask,
+private theorem factorPush_advances (shift : Nat) :
+    DenseScheduleLift.Advances (DenseScheduleTemplate.endianFactorPush shift) := by
+  apply advances_straight
+  unfold DenseScheduleTemplate.endianFactorPush
+  split <;> constructor
+
+private theorem maskPush_advances (shift : Nat) (mask : UInt256) :
+    DenseScheduleLift.Advances (DenseScheduleTemplate.endianMaskPush shift mask) := by
+  apply advances_straight
+  unfold DenseScheduleTemplate.endianMaskPush
+  split <;> constructor
+
+private theorem maskTemplate_advances (shift : Nat) (mask : UInt256) (compact : Bool) :
+    ∀ instruction ∈ DenseScheduleTemplate.endianMaskTemplate shift mask compact,
       DenseScheduleLift.Advances instruction := by
   intro instruction hmem
-  simp only [DenseScheduleTemplate.endianStage, List.mem_cons,
-    List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
-  all_goals first
-    | exact advances_mul
-    | exact advances_straight (by constructor)
-    | apply advances_straight
-      unfold DenseScheduleTemplate.endianFactorPush
-      split <;> constructor
-    | apply advances_straight
-      unfold DenseScheduleTemplate.endianMaskPush
-      split <;> constructor
+  cases compact with
+  | false =>
+    change instruction ∈ [DenseScheduleTemplate.endianMaskPush shift mask] at hmem
+    rw [List.mem_singleton] at hmem
+    subst instruction
+    exact maskPush_advances shift mask
+  | true =>
+    change instruction ∈ [DenseScheduleTemplate.endianFactorPush shift,
+      .push 0 0, DenseScheduleTemplate.op .NOT, DenseScheduleTemplate.op .DIV] at hmem
+    simp only [List.mem_cons, List.not_mem_nil, or_false] at hmem
+    rcases hmem with rfl | rfl | rfl | rfl
+    · exact factorPush_advances shift
+    · exact advances_straight (by constructor)
+    · exact advances_straight (by constructor)
+    · exact advances_div
+
+private theorem endianStage_advances (shift : Nat) (mask : UInt256) (compact : Bool) :
+    ∀ instruction ∈ DenseScheduleTemplate.endianStage shift mask compact,
+      DenseScheduleLift.Advances instruction := by
+  intro instruction hmem
+  simp only [DenseScheduleTemplate.endianStage, List.mem_append] at hmem
+  rcases hmem with (hfirst | hmask) | hlast
+  · simp only [List.mem_cons, List.not_mem_nil, or_false] at hfirst
+    rcases hfirst with rfl | rfl | rfl | rfl | rfl
+    all_goals exact advances_straight (by constructor)
+  · exact maskTemplate_advances shift mask compact instruction hmask
+  · simp only [List.mem_cons, List.not_mem_nil, or_false] at hlast
+    rcases hlast with rfl | rfl | rfl | rfl
+    · exact advances_straight (by constructor)
+    · exact factorPush_advances shift
+    · exact advances_mul
+    · exact advances_straight (by constructor)
 
 private theorem denseStore_advances (half : Nat) :
     ∀ instruction ∈
@@ -92,8 +128,8 @@ private theorem denseHalfTemplate_advances (half : Nat) :
   intro instruction hmem
   simp only [DenseScheduleTemplate.denseHalfTemplate, List.mem_append] at hmem
   rcases hmem with (h8 | h16) | hstore
-  · exact endianStage_advances 8 DenseScheduleTemplate.mask8 instruction h8
-  · exact endianStage_advances 16 DenseScheduleTemplate.mask16 instruction h16
+  · exact endianStage_advances 8 DenseScheduleTemplate.mask8 (half == 1) instruction h8
+  · exact endianStage_advances 16 DenseScheduleTemplate.mask16 (half == 1) instruction h16
   · exact denseStore_advances half instruction hstore
 
 private theorem denseBeforeJumpTemplate_advances :
@@ -107,7 +143,7 @@ private theorem denseBeforeJumpTemplate_advances :
   · exact denseHalfTemplate_advances 0 instruction h0
 
 private theorem packedSchedule_slice :
-    (Artifact.submissionArtifact.instructions.drop 278).take
+    (Artifact.submissionArtifact.instructions.drop 283).take
         DenseScheduleTemplate.denseBeforeJumpTemplate.length =
       DenseScheduleTemplate.denseBeforeJumpTemplate := by
   rfl
@@ -117,10 +153,10 @@ def packedScheduleSite :
       DenseScheduleTemplate.denseBeforeJumpTemplate :=
   StackSiteBuilder.ofSlice
     (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    DenseScheduleTemplate.denseBeforeJumpTemplate 278
+    DenseScheduleTemplate.denseBeforeJumpTemplate 283
     packedSchedule_slice
     (by
-      change 278 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
+      change 283 + DenseScheduleTemplate.denseBeforeJumpTemplate.length ≤
         Artifact.submissionInstructions.length
       rw [DenseScheduleTemplate.denseBeforeJumpTemplate_length,
         Artifact.referenceInstructions_count]
@@ -131,30 +167,30 @@ def packedScheduleSite :
     (by decide)
 
 private theorem denseScheduleTemplate_byteLength :
-    byteLength DenseScheduleTemplate.denseBeforeJumpTemplate = 190 := by
+    byteLength DenseScheduleTemplate.denseBeforeJumpTemplate = 140 := by
   rw [byteLength_eq_assemble]
   exact DenseScheduleTemplate.denseBeforeJumpTemplate_byteLength
 
 private theorem packedSchedule_start_instructionPC :
-    Artifact.submissionArtifact.instructionPC 278 = 0x1fc := by
+    Artifact.submissionArtifact.instructionPC 283 = 0x202 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 private theorem packedSchedule_end_instructionPC :
-    Artifact.submissionArtifact.instructionPC 329 = 0x2ba := by
+    Artifact.submissionArtifact.instructionPC 340 = 0x28e := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem packedScheduleSite_startPC :
-    packedScheduleSite.startPC = UInt256.ofNat 0x1fc := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 278) =
-    UInt256.ofNat 0x1fc
+    packedScheduleSite.startPC = UInt256.ofNat 0x202 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 283) =
+    UInt256.ofNat 0x202
   rw [packedSchedule_start_instructionPC]
 
 @[simp] theorem packedScheduleSite_endPC :
-    packedScheduleSite.endPC = UInt256.ofNat 0x2ba := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 329) =
-    UInt256.ofNat 0x2ba
+    packedScheduleSite.endPC = UInt256.ofNat 0x28e := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 340) =
+    UInt256.ofNat 0x28e
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleSite_end_eq_pcAfter :

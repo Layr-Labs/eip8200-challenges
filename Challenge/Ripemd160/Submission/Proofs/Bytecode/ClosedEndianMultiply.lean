@@ -87,7 +87,7 @@ theorem advances (shift : Nat) {instruction : Instr} {s t : State}
     | exact RepeatedByteWord.runInstr_pc_div hrun
     | apply DenseScheduleLift.runInstr_pc_of_advances ?_ hrun
   all_goals first
-    | exact Or.inr (Or.inr rfl)
+    | exact Or.inr (Or.inr (Or.inl rfl))
     | exact Or.inl (Or.inl (by constructor))
     | simp only [endianFactorPush]; split <;>
         exact Or.inl (Or.inl (by constructor))

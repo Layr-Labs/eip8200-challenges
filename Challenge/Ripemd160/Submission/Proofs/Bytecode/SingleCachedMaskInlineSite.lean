@@ -18,15 +18,15 @@ abbrev A := Artifact.submissionArtifact
 def template : List Instr := CachedMaskQuadGroup.code (rightParams 0 0) 5
 
 private theorem template_slice :
-    (A.instructions.drop 1994).take template.length = template := by rfl
+    (A.instructions.drop 2005).take template.length = template := by rfl
 
 private theorem template_wellFormed : ∀ instruction ∈ template,
     Stepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def site : GenericRoundSite A .Osaka template :=
-  StackSiteBuilder.ofSlice _ 1994 template_slice (by
-    change 1994 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 2005 template_slice (by
+    change 2005 + template.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) QuadLayout.code_bound template_wellFormed (by decide)
 
