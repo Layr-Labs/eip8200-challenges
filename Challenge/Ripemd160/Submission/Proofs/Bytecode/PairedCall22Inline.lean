@@ -50,11 +50,10 @@ def inline22Template : List Instr :=
    .op .AND,
    .op (.Dup ⟨6, by decide⟩),
    .op .MUL,
-   .op (.Dup ⟨0, by decide⟩),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 25),
-   .op .SHR,
-   .op (.Swap ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
+   .op .SHR,
+   .op (.Dup ⟨0, by decide⟩),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 2),
    .op .SHR,
    .op (.Dup ⟨1, by decide⟩),
    .op .XOR,
@@ -73,7 +72,7 @@ def inline22Template : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .AND]
 
-theorem inline22Template_length : inline22Template.length = 49 := rfl
+theorem inline22Template_length : inline22Template.length = 48 := rfl
 
 #print axioms inline22Template_length
 
@@ -86,7 +85,7 @@ theorem run_inline22Template_raw (s : State) (pc : UInt256) (q : PairedHelperBoo
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
-  simp (discharger := omega) [inline22Template, inline22Entry, inline22Output,
+  simp (discharger := omega) [PairedLaneSequentialShift.shr_word, inline22Template, inline22Entry, inline22Output,
     inlineT, inlineRotation, inline22Frame, oneRaw, inlineProduct, rawC10,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
