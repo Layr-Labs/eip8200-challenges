@@ -41,7 +41,7 @@ def Matches (input : ByteArray) (bsize esize : Nat) : Prop :=
 at pc 3892. -/
 abbrev entryState (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 3887 }
+  { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 3905 }
 
 /-- Exact inherited exponent-loop state restored by every dispatcher miss. -/
 abbrev missState (s : State) (mem : ByteArray)

@@ -10,7 +10,7 @@ open WindowNibbleKernel
 def width (power : Nat) : Fin 33 := if power < 7 then 1 else 2
 
 def tablePC (power : Nat) : Nat :=
-  if power ≤ 7 then 3063 + 6 * power else 3056 + 7 * power
+  if power ≤ 7 then 3081 + 6 * power else 3074 + 7 * power
 
 private theorem updatePC (power : Nat) (hlo : 2 ≤ power) (hhi : power < 15) :
     WindowNineTable.storePC (width power) (advancePC 2 (UInt256.ofNat (tablePC power))) =
@@ -38,7 +38,7 @@ theorem run_build (template : State) (base modulus exponent : UInt256)
     (count : Nat) (hcount : count ≤ 13)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (buildProgram count)
-      (WindowNineTable.state template (UInt256.ofNat 3075) base modulus exponent 2 rest) =
+      (WindowNineTable.state template (UInt256.ofNat 3093) base modulus exponent 2 rest) =
     some (WindowNineTable.state template (UInt256.ofNat (tablePC (count + 2)))
       base modulus exponent (count + 2) rest) := by
   induction count with
@@ -55,12 +55,12 @@ theorem run_all (template : State) (base modulus exponentOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hoffset : rest[4]? = some exponentOffset) :
     runInstructions program
-      (WindowNineTablePrelude.initial template (UInt256.ofNat 3044) base modulus rest) =
-    some (WindowNineTable.state template (UInt256.ofNat 3161) base modulus
+      (WindowNineTablePrelude.initial template (UInt256.ofNat 3062) base modulus rest) =
+    some (WindowNineTable.state template (UInt256.ofNat 3179) base modulus
       (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) 15 rest) := by
-  have hp := WindowNineTablePrelude.run_prelude template (UInt256.ofNat 3044)
+  have hp := WindowNineTablePrelude.run_prelude template (UInt256.ofNat 3062)
     base modulus exponentOffset rest hrest hoffset
-  have hpc : WindowNineTablePrelude.endPC (UInt256.ofNat 3044) = UInt256.ofNat 3075 := by decide
+  have hpc : WindowNineTablePrelude.endPC (UInt256.ofNat 3062) = UInt256.ofNat 3093 := by decide
   rw [hpc] at hp
   have hb := run_build template base modulus
     (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) 13 (by decide) rest hrest
