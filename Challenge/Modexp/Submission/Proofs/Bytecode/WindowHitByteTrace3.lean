@@ -21,7 +21,7 @@ theorem run_byte0_lowPrep (template : State) (base modulus : UInt256)
     (high : Nat) (word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (lowPrepPath 0)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3245)
+      (droppedNibbleState { template with halt := .Running } (UInt256.ofNat 3246)
         base modulus high (byteValue 0 word) word pointer accumulator rest) =
     some (nibbleState { template with halt := .Running } (UInt256.ofNat 3250)
       base modulus (lowNibble 0 word) (byteValue 0 word) word pointer
@@ -38,7 +38,7 @@ theorem run_byte0_lowPrep (template : State) (base modulus : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      nibbleState, List.getElem?_cons_zero, List.getElem?_cons_succ,
+      droppedNibbleState, nibbleState, List.getElem?_cons_zero, List.getElem?_cons_succ,
       List.exchange, hrest, h5, h6, h7, hlow,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -48,8 +48,8 @@ theorem run_byte0_lowPrep (template : State) (base modulus : UInt256)
   exact hlow
 
 set_option linter.unusedSimpArgs false in
-/-- Fused low-nibble block: four squares then the table multiply, 25
-instructions in 35 bytes (`3255 → 3290`).  The machine loads the table word
+/-- Fused low-nibble block: four squares then the table multiply, 24
+instructions in 36 bytes.  The machine loads the table word
 last, so the accumulator-first `nibbleWordStep` spelling needs `mulMod_comm`. -/
 theorem run_byte0_lowSquareLookup (template : State) (base modulus : UInt256)
     (nibble : Nat) (byte word pointer accumulator : UInt256)
@@ -58,7 +58,7 @@ theorem run_byte0_lowSquareLookup (template : State) (base modulus : UInt256)
     runLocatedBlock (lowSquareLookupPath 0)
       (nibbleState { template with halt := .Running } (UInt256.ofNat 3250)
         base modulus nibble byte word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3285)
+    some (droppedNibbleState { template with halt := .Running } (UInt256.ofNat 3286)
       base modulus nibble byte word pointer
       (WindowMath.nibbleWordStep modulus base accumulator nibble) rest) := by
   have hshift := shift_nibble nibble hnibble
@@ -83,7 +83,7 @@ theorem run_byte0_lowSquareLookup (template : State) (base modulus : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      nibbleState, WindowMath.squareWordAfter,
+      droppedNibbleState, nibbleState, WindowMath.squareWordAfter,
       List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
       hrest, h6, h7, h8, h9, h10, hshift, hoffset, hread, hactive,
       State.activeWordsAfterUInt256,
@@ -101,7 +101,7 @@ theorem run_byte0_finish (template : State) (base modulus : UInt256)
     (nibble : Nat) (byte word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (finishPath 0)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3285)
+      (droppedNibbleState { template with halt := .Running } (UInt256.ofNat 3286)
         base modulus nibble byte word pointer accumulator rest) =
     some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3287)
       base modulus word pointer accumulator rest) := by
@@ -115,7 +115,7 @@ theorem run_byte0_finish (template : State) (base modulus : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      nibbleState, wordKernelState,
+      droppedNibbleState, nibbleState, wordKernelState,
       List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
       hrest, h5, h6,
       Challenge.EvmProof.Word.word_toNat_ofNat,

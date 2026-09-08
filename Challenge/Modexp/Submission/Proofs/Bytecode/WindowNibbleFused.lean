@@ -18,8 +18,7 @@ def squareTopState (template : State) (pc : UInt256)
 
 set_option linter.unusedSimpArgs false in
 /-- The fused block reduces on the square state (peak depth ten plus `rest`)
-to the accumulator-first result, replacing the old eight-byte finish and the
-ten-instruction lookup in one certificate. -/
+to the accumulator-first result, consuming the nibble and the external POP in one certificate. -/
 theorem run_fusedSquareLookup (template : State) (pc : UInt256)
     (base modulus : UInt256) (nibble : Nat)
     (byte word pointer original accumulator : UInt256) (rest : List UInt256)
@@ -27,7 +26,7 @@ theorem run_fusedSquareLookup (template : State) (pc : UInt256)
     runInstructions fusedSquareLookupProgram
       (squareTopState template pc base modulus nibble byte word pointer
         original accumulator rest) =
-      some (nibbleState template (advancePC 19 pc) base modulus nibble
+      some (droppedNibbleState template (advancePC 20 pc) base modulus nibble
         byte word pointer
         (UInt256.mulMod accumulator
           (WindowMath.tableWord base modulus nibble) modulus) rest) := by
@@ -38,14 +37,15 @@ theorem run_fusedSquareLookup (template : State) (pc : UInt256)
     omega
   have hread := WindowTableMemory.readWord_tableMemory base modulus nibble hnibble
   have hactive := WindowTableMemory.activeWordsAfter_lookup nibble hnibble
+  have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h7 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h10 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by
     omega
   simp (config := { maxSteps := 8000000 }) (disch := omega)
-    [runInstructions, fusedSquareLookupProgram, squareTopState, nibbleState,
-      Challenge.EvmProof.Stepper.runInstr, hrest, h7, h8, h9, h10,
+    [runInstructions, fusedSquareLookupProgram, squareTopState, droppedNibbleState, nibbleState,
+      Challenge.EvmProof.Stepper.runInstr, hrest, h6, h7, h8, h9, h10,
       List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
       hshift, hoffset, hread, hactive,
       State.activeWordsAfterUInt256,
@@ -54,6 +54,8 @@ theorem run_fusedSquareLookup (template : State) (pc : UInt256)
       advancePC]
   refine ⟨?_, mulMod_comm _ _ _⟩
   simp only [succ_eq_add,
+    show UInt256.ofNat 13 = UInt256.ofNat 1 + UInt256.ofNat 12 by decide,
+    show UInt256.ofNat 12 = UInt256.ofNat 1 + UInt256.ofNat 11 by decide,
     show UInt256.ofNat 11 = UInt256.ofNat 1 + UInt256.ofNat 10 by decide,
     show UInt256.ofNat 10 = UInt256.ofNat 1 + UInt256.ofNat 9 by decide,
     show UInt256.ofNat 9 = UInt256.ofNat 1 + UInt256.ofNat 8 by decide,

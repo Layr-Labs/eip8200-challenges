@@ -10,8 +10,8 @@ open EvmSemantics.EVM
 
 set_option linter.unusedSimpArgs false in
 /-- The square phase followed by the fused cleanup-and-lookup reduces in one
-pass.  The byte stride is unchanged: `advancePC 35` advances by BYTES and the
-whole program is twenty-five instructions in thirty-five bytes. -/
+pass.  The byte stride is unchanged: `advancePC 36` advances by BYTES and the
+whole program is twenty-four instructions in thirty-six bytes. -/
 theorem run_squareLookup (template : State) (pc : UInt256)
     (base modulus : UInt256) (nibble : Nat)
     (byte word pointer accumulator : UInt256) (rest : List UInt256)
@@ -19,7 +19,7 @@ theorem run_squareLookup (template : State) (pc : UInt256)
     runInstructions squareLookupProgram
       (nibbleState template pc base modulus nibble byte word pointer
         accumulator rest) =
-      some (nibbleState template (advancePC 35 pc) base modulus nibble
+      some (droppedNibbleState template (advancePC 36 pc) base modulus nibble
         byte word pointer
         (WindowMath.nibbleWordStep modulus base accumulator nibble) rest) := by
   rw [squareLookupProgram, runInstructions_append,

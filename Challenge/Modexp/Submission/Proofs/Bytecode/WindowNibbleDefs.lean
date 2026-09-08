@@ -45,18 +45,13 @@ def topSquareProgram : List Instr :=
   [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨0, by decide⟩),
    .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
 
-/-- The fused finish-and-lookup block, replacing the old eight-byte finish
-(`SWAP4 POP` plus six padding `JUMPDEST`s) and the ten-instruction lookup:
-`DUP7 SWAP1 DUP3 PUSH10 5 SHL MLOAD MULMOD SWAP5 POP` — nine instructions,
-nineteen bytes (eight one-byte operations plus the eleven-byte `PUSH10`
-opcode and immediate).  `PUSH10 5` pushes the same value `5` the old
-`PUSH1 5` pushed; the width moves the program counter, never the value.
-Peak depth is ten plus `rest`; the machine multiplies table-first, and
-`mulMod_comm` restores the accumulator-first spelling downstream. -/
+/-- Consume the no-longer-needed nibble while loading the table word.
+This eight-instruction block is twenty bytes; it also replaces the following
+external POP. The square-state and final word-state interfaces are unchanged. -/
 def fusedSquareLookupProgram : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .push 10 5, .op .SHL, .op .MLOAD,
-   .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP]
+  [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨1, by decide⟩),
+   .push 12 5, .op .SHL, .op .MLOAD, .op .MULMOD,
+   .op (.Swap ⟨3, by decide⟩), .op .POP]
 
 /-- Keep the accumulator at the top between squarings: four pure squarings
 (sixteen instructions, sixteen bytes) ending on the seven-slot square state.
@@ -128,6 +123,13 @@ def nibbleState (template : State) (pc : UInt256) (base modulus : UInt256)
       rest
     memory := WindowTableMemory.tableMemory base modulus
     activeWords := UInt256.ofNat 16 }
+
+/-- The table product state with the consumed nibble removed. -/
+def droppedNibbleState (template : State) (pc : UInt256) (base modulus : UInt256)
+    (nibble : Nat) (byte word pointer accumulator : UInt256)
+    (rest : List UInt256) : State :=
+  let state := nibbleState template pc base modulus nibble byte word pointer accumulator rest
+  { state with stack := state.stack.tail }
 
 theorem shift_nibble (nibble : Nat) (hnibble : nibble < 16) :
     UInt256.shiftLeft (UInt256.ofNat nibble) (UInt256.ofNat 5) =

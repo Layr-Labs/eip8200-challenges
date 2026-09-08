@@ -77,9 +77,9 @@ theorem run_lowPrep (template : State) (pc : UInt256)
     (word pointer accumulator : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) :
     runInstructions lowPrepProgram
-      (nibbleState template pc base modulus high (byteValue index word) word
+      (droppedNibbleState template pc base modulus high (byteValue index word) word
         pointer accumulator rest) =
-    some (nibbleState template (advancePC 5 pc) base modulus
+    some (nibbleState template (advancePC 4 pc) base modulus
       (lowNibble index word) (byteValue index word) word pointer accumulator
       rest) := by
   have h5 : rest.length + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -87,7 +87,7 @@ theorem run_lowPrep (template : State) (pc : UInt256)
   have h7 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hlow := mask_lowNibble index word
   simp (config := { maxSteps := 100000 }) (disch := omega)
-    [runInstructions, lowPrepProgram, nibbleState,
+    [runInstructions, lowPrepProgram, droppedNibbleState, nibbleState,
       Challenge.EvmProof.Stepper.runInstr, hrest, h5, h6, h7,
       List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
       hlow, advancePC,
@@ -96,9 +96,9 @@ theorem run_lowPrep (template : State) (pc : UInt256)
   constructor
   · unfold UInt256.succ
     rw [show UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 by decide]
-    change (((pc + UInt256.ofNat 1) + UInt256.ofNat 1) +
+    change ((pc + UInt256.ofNat 1) +
         (UInt256.ofNat 1 + UInt256.ofNat 1)) + UInt256.ofNat 1 =
-      ((((pc + UInt256.ofNat 1) + UInt256.ofNat 1) + UInt256.ofNat 1) +
+      (((pc + UInt256.ofNat 1) + UInt256.ofNat 1) +
         UInt256.ofNat 1) + UInt256.ofNat 1
     simp only [word_add_assoc]
   · rw [word_land_comm]
@@ -109,14 +109,14 @@ theorem run_finish (template : State) (pc : UInt256)
     (base modulus : UInt256) (nibble : Nat) (byte word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions finishProgram
-      (nibbleState template pc base modulus nibble byte word pointer
+      (droppedNibbleState template pc base modulus nibble byte word pointer
         accumulator rest) =
-    some (wordKernelState template (advancePC 2 pc) base modulus word pointer
+    some (wordKernelState template (advancePC 1 pc) base modulus word pointer
       accumulator rest) := by
   have h5 : rest.length + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   simp (config := { maxSteps := 100000 })
-    [runInstructions, finishProgram, nibbleState, wordKernelState,
+    [runInstructions, finishProgram, droppedNibbleState, nibbleState, wordKernelState,
       Challenge.EvmProof.Stepper.runInstr, h5, h6,
       List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
       advancePC]

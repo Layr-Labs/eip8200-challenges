@@ -48,9 +48,9 @@ def highPrepProgram (index : Nat) : List Instr :=
    .op (.Dup ⟨0, by decide⟩), .push 1 4, .op .SHR]
 
 def lowPrepProgram : List Instr :=
-  [.op .POP, .op (.Dup ⟨0, by decide⟩), .push 1 15, .op .AND]
+  [.op (.Dup ⟨0, by decide⟩), .push 1 15, .op .AND]
 
-def finishProgram : List Instr := [.op .POP, .op .POP]
+def finishProgram : List Instr := [.op .POP]
 
 def highProgram (index : Nat) : List Instr :=
   highPrepProgram index ++ squareLookupProgram
