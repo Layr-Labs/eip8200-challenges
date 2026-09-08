@@ -114,6 +114,12 @@ private theorem ofNat_zero_lt_eq_double_isZero (x : UInt256) :
     UInt256.lt (UInt256.ofNat 0) x = UInt256.isZero (UInt256.isZero x) :=
   Monpro.zero_lt_eq_double_isZero x
 
+/-- Same-width SWAP1 elision before ADDMOD keeps the old quotient model. -/
+private theorem estimate_addMod_comm (a b m : UInt256) :
+    UInt256.addMod a b m = UInt256.addMod b a m := by
+  unfold UInt256.addMod
+  rw [Nat.add_comm a.toNat b.toNat]
+
 theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hact : 296 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -143,6 +149,7 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       estimateState, macSetupState, kState, pcEstimate, pcMacSetup, qhatOf,
       PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
       outer, Exp.outer, hcode, hrun, hA, hB, hC, hD, hE, hF, hG, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
+      estimate_addMod_comm,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
