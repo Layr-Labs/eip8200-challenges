@@ -6,7 +6,7 @@ set_option maxRecDepth 50000
 set_option maxHeartbeats 5000000
 set_option linter.unusedSimpArgs false
 
-/-! Generic `CODECOPY` step for the H8 checked prefix (index 4225, pc 5233).
+/-! Generic `CODECOPY` step for the H8 checked prefix (index 4296, pc 5216).
 
 The raw symbolic stepper has no `CODECOPY` case, so this module proves the
 single step directly against `StepRunning.codecopy`, following the
@@ -20,12 +20,12 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
 def preCopyState (s : State) (rho : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 5233
+    pc := UInt256.ofNat 5216
     stack := [UInt256.ofNat 0, UInt256.ofNat 262, UInt256.ofNat 32] ++ rho }
 
 def copiedState (s : State) (rho : List UInt256) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5234
+    pc := UInt256.ofNat 5217
     stack := rho }
 
 def gasSteps_codecopy (s : State) (rho : List UInt256)
@@ -44,12 +44,12 @@ def gasSteps_codecopy (s : State) (rho : List UInt256)
     change s.executionEnv.code = submissionBytecode
     exact hcode
   have hpc : (withGas pre gas).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4225 := by
-    show (UInt256.ofNat 5233).toNat = _
+      Artifact.submissionArtifact.instructionPC 4296 := by
+    show (UInt256.ofNat 5216).toNat = _
     rw [PrefixStatePaths.pc4022]
     decide
   have hdec := Stepper.decodes_of_artifact
-    Artifact.submissionArtifact (withGas pre gas) 4225 (.op .CODECOPY)
+    Artifact.submissionArtifact (withGas pre gas) 4296 (.op .CODECOPY)
     hcode' hpc (by rfl) (by exact ⟨by decide, trivial, rfl⟩)
   change (withGas pre gas).decodedOp = some .CODECOPY at hdec
   apply EVM.Step.running
@@ -75,7 +75,7 @@ def gasSteps_codecopy (s : State) (rho : List UInt256)
     simpa [pre, cost, preCopyState, copiedState, PrefixStateMemory.copied,
       withGas, Gas.codecopyTotal, State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.word_toNat_ofNat, mz, mz262, mz32,
-      Challenge.EvmProof.Word.succ_ofNat (n := 5233) (by norm_num),
+      Challenge.EvmProof.Word.succ_ofNat (n := 5216) (by norm_num),
       hcode] using hstep
 
 #print axioms gasSteps_codecopy
