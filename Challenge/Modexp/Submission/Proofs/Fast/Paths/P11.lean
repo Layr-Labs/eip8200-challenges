@@ -32,52 +32,52 @@ def blk1569 :
    opAt 1575 .ADD,
    pushAt 1576 2 8224,
    opAt 1577 .MSTORE,
-   pushAt 1578 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 1579 .ADD,
-   opAt 1580 (.Dup ⟨2, by decide⟩),
-   opAt 1581 (.Dup ⟨1, by decide⟩),
-   opAt 1582 .GT,
-   pushAt 1583 2 1974,
-   opAt 1584 .JUMPI]
+   pushAt 1578 1 31, opAt 1579 .NOT,
+   opAt 1580 .ADD,
+   opAt 1581 (.Dup ⟨2, by decide⟩),
+   opAt 1582 (.Dup ⟨1, by decide⟩),
+   opAt 1583 .GT,
+   pushAt 1584 2 1974,
+   opAt 1585 .JUMPI]
 
 /-- Instructions 1595..1599, pc 2460..2466. -/
 def blk1595 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1585 .POP,
-   opAt 1586 .POP,
+  [opAt 1586 .POP,
    opAt 1587 .POP,
-   pushAt 1588 2 2637,
-   opAt 1589 .JUMP]
+   opAt 1588 .POP,
+   pushAt 1589 2 2517,
+   opAt 1590 .JUMP]
 
 /-- Instructions 1600..1626, pc 2467..2499. -/
 def blk1600 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1590 .JUMPDEST,
-   pushAt 1591 2 9344,
-   opAt 1592 .MLOAD,
-   opAt 1593 (.Dup ⟨0, by decide⟩),
-   opAt 1594 (.Dup ⟨2, by decide⟩),
-   opAt 1595 .ADD,
-   pushAt 1596 1 32,
-   opAt 1597 (.Swap ⟨0, by decide⟩),
-   opAt 1598 .SUB,
-   opAt 1599 (.Dup ⟨1, by decide⟩),
-   opAt 1600 (.Dup ⟨4, by decide⟩),
-   opAt 1601 .ADD,
-   pushAt 1602 1 32,
-   opAt 1603 (.Swap ⟨0, by decide⟩),
-   opAt 1604 .SUB,
-   opAt 1605 (.Swap ⟨2, by decide⟩),
-   opAt 1606 .POP,
-   opAt 1607 (.Swap ⟨2, by decide⟩),
-   opAt 1608 .POP,
+  [opAt 1591 .JUMPDEST,
+   pushAt 1592 2 9344,
+   opAt 1593 .MLOAD,
+   opAt 1594 (.Dup ⟨0, by decide⟩),
+   opAt 1595 (.Dup ⟨2, by decide⟩),
+   opAt 1596 .ADD,
+   pushAt 1597 1 32,
+   opAt 1598 (.Swap ⟨0, by decide⟩),
+   opAt 1599 .SUB,
+   opAt 1600 (.Dup ⟨1, by decide⟩),
+   opAt 1601 (.Dup ⟨4, by decide⟩),
+   opAt 1602 .ADD,
+   pushAt 1603 1 32,
+   opAt 1604 (.Swap ⟨0, by decide⟩),
+   opAt 1605 .SUB,
+   opAt 1606 (.Swap ⟨2, by decide⟩),
+   opAt 1607 .POP,
+   opAt 1608 (.Swap ⟨2, by decide⟩),
    opAt 1609 .POP,
-   pushAt 1610 2 9440,
-   opAt 1611 .MLOAD,
-   pushAt 1612 0 0,
-   opAt 1613 .JUMPDEST,
+   opAt 1610 .POP,
+   pushAt 1611 2 9440,
+   opAt 1612 .MLOAD,
+   pushAt 1613 0 0,
    opAt 1614 .JUMPDEST,
-   opAt 1615 (.Swap ⟨2, by decide⟩),
-   opAt 1616 (.Swap ⟨0, by decide⟩)]
+   opAt 1615 .JUMPDEST,
+   opAt 1616 (.Swap ⟨2, by decide⟩),
+   opAt 1617 (.Swap ⟨0, by decide⟩)]
 
 end Challenge.Modexp.Submission.Proofs.Fast

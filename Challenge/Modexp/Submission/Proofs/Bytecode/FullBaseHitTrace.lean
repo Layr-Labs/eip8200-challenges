@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 import Challenge.Modexp.Submission.Proofs.Fast.FullBaseGuardCore
 import Challenge.Modexp.Submission.Proofs.Fast.FullBasePaths
 
@@ -114,14 +113,14 @@ theorem run_copyAdd (s : State) (memory input : ByteArray)
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
-        copyState, outer, hcode, hrun, fullBasePC, Cios2Dispatch.jumpDest4057,
+        copyState, outer, hcode, hrun, fullBasePC, jumpDest1939,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
         Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Word.ofNat_add_mod]]
   exact Challenge.Modexp.Submission.Proofs.Fast.FullBase.run_copyAdd
     s memory input n bsize esize msize hn32 hactive hdata
-      (by simpa [hcode] using Cios2Dispatch.jumpDest4057)
+      (by simpa [hcode] using jumpDest1939)
 
 set_option linter.unusedSimpArgs false in
 theorem run_afterAdd (s : State) (memory : ByteArray)
@@ -139,13 +138,13 @@ theorem run_afterAdd (s : State) (memory : ByteArray)
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
-        afterAddState, outer, hcode, hrun, fullBasePC, Cios2Dispatch.jumpDest4057,
+        afterAddState, outer, hcode, hrun, fullBasePC, jumpDest1939,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
         Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Word.ofNat_add_mod]]
   exact Challenge.Modexp.Submission.Proofs.Fast.FullBase.run_afterAdd
-    s memory n bsize esize msize (by simpa [hcode] using Cios2Dispatch.jumpDest4057)
+    s memory n bsize esize msize (by simpa [hcode] using jumpDest1939)
 
 private def sound {s t : State}
     (path : List (Challenge.EvmProof.Stepper.Located

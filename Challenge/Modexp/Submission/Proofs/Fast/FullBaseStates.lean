@@ -29,21 +29,21 @@ def redirectState (s : State) (memory : ByteArray)
 /-- Redirected base-chain head, pc3606. -/
 def entryState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3601
+  { s with pc := UInt256.ofNat 3391
            stack := outer n bsize esize msize
            memory := memory }
 
 /-- Guard hit, immediately before the calldata copy, pc3621. -/
 def copyState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3616
+  { s with pc := UInt256.ofNat 3406
            stack := outer n bsize esize msize
            memory := memory }
 
 /-- RR-first Montgomery entry after copying the normal-domain base to ACC. -/
 def addCallState (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 4785
+  { s with pc := UInt256.ofNat 1939
            stack := [UInt256.ofNat 6144, UInt256.ofNat 1024,
              UInt256.ofNat 2048, UInt256.ofNat 1755] ++
              outer n bsize esize msize
@@ -52,14 +52,14 @@ def addCallState (s : State) (memory input : ByteArray)
 /-- Return from ADDMOD, pc3644. The memory argument is its abstract result. -/
 def afterAddState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3639
+  { s with pc := UInt256.ofNat 3429
            stack := outer n bsize esize msize
            memory := memory }
 
 /-- Existing Montgomery-product entry that converts ACC into BASE. -/
 def monproCallState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 4785
+  { s with pc := UInt256.ofNat 1939
            stack := [UInt256.ofNat 1024, UInt256.ofNat 6144,
              UInt256.ofNat 2048, UInt256.ofNat 1755] ++
              outer n bsize esize msize
@@ -75,7 +75,7 @@ def rejoinState (s : State) (memory : ByteArray)
 /-- Guard miss, pc3661, with the original stack and memory. -/
 def fallbackState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3656
+  { s with pc := UInt256.ofNat 3446
            stack := outer n bsize esize msize
            memory := memory }
 

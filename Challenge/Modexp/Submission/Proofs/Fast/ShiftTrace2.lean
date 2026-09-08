@@ -110,6 +110,13 @@ theorem run_shiftBody (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
       Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- Generic word identity; the quotient clamp itself is unchanged. -/
+private theorem addMod_comm (a b n : UInt256) :
+    UInt256.addMod a b n = UInt256.addMod b a n := by
+  unfold UInt256.addMod
+  by_cases h : n.val.val = 0
+  · simp [h]
+  · simp [h, Nat.add_comm]
+
 private theorem saturation_gt_eq_lt (a b : UInt256) : UInt256.gt a b = UInt256.lt b a := by
   rfl
 
@@ -151,7 +158,7 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, saturation_gt_eq_lt]
+      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt]
 
 /-- `blk3069`: the limb-pass frame `[paj, ptj, 0, q]`. -/
 theorem run_macSetup (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
