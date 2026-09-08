@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanGate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanLoop
 
 set_option warningAsError true
@@ -10,7 +11,7 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
 
 def doneState (input : ByteArray) : State :=
-  stS input 5180 [UInt256.ofNat (scalarAt 2), 64, scanAcc input 2, P7, M, m7, P, m8]
+  stS input 5192 [UInt256.ofNat (scalarAt 2), 64, scanAcc input 2, P7, M, m7, P, m8]
 
 def gasSteps_last (input : ByteArray) (hsize : input.size = 64) :
     GasSteps (compareState input 1 (scalarAt 1) (scanAcc input 1))
@@ -32,12 +33,13 @@ def gasSteps_last (input : ByteArray) (hsize : input.size = 64) :
   rw [hs, ho, hr] at h
   convert h using 1 <;> rfl
 
-def gasSteps_scan (input : ByteArray) (hsize : input.size = 64) :
+def gasSteps_scan (input : ByteArray) (hsize : input.size = 64)
+    (h7 : PatternedScanGate.firstByte input = 7) :
     GasSteps (patternedEntry input) (doneState input) := by
   have last : GasSteps (loopState input 1 (scanAcc input 1)) (doneState input) :=
     (sound wordPath (run_word_regular input 1 (scanAcc input 1)
       (by norm_num) (by decide))).trans (gasSteps_last input hsize)
-  exact (sound setupPath (run_setup input)).trans
-    ((gasStep0 input (by rw [hsize]; decide)).trans last)
+  exact (PatternedScanGate.gasSteps_pass input h7).trans ((sound setupPath (run_setup input)).trans
+    ((gasStep0 input (by rw [hsize]; decide)).trans last))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix64Scan

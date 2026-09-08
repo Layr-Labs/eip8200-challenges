@@ -26,19 +26,19 @@ theorem scanAcc_zero_iff_eq (input : ByteArray) (hsize : input.size = 64) :
     rw [Prefix64Data.readWord_data j hj, guardWord_eq j (by omega)]
 
 def gasSteps_hit (input : ByteArray) (hsize : input.size = 64)
-    (hz : scanAcc input 2 = 0) :
+    (hz : scanAcc input 2 = 0) (h7 : PatternedScanGate.firstByte input = 7) :
     GasSteps (initialState submissionBytecode input 0)
       (Prefix64Finish.returnedState input) :=
   (Prefix256Entry.gasSteps_hit64 input hsize).trans
-    ((Prefix64Scan.gasSteps_scan input hsize).trans
+    ((Prefix64Scan.gasSteps_scan input hsize h7).trans
       (Prefix64Finish.gasSteps_finish_hit input (UInt256.ofNat (scalarAt 2))
         64 (scanAcc input 2) hsize hz))
 
 def gasSteps_miss (input : ByteArray) (hsize : input.size = 64)
-    (hne : scanAcc input 2 ≠ 0) :
-    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x160) :=
+    (hne : scanAcc input 2 ≠ 0) (h7 : PatternedScanGate.firstByte input = 7) :
+    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x16c) :=
   (Prefix256Entry.gasSteps_hit64 input hsize).trans
-    ((Prefix64Scan.gasSteps_scan input hsize).trans
+    ((Prefix64Scan.gasSteps_scan input hsize h7).trans
       (Prefix256Finish.gasSteps_miss input (UInt256.ofNat (scalarAt 2))
         64 (scanAcc input 2) hne))
 
@@ -46,11 +46,15 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (hsize : input.size = 64) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  by_cases h7 : PatternedScanGate.firstByte input = 7
+  swap
+  · exact StackCorrect.correct input hfit
+      ((Prefix256Entry.gasSteps_hit64 input hsize).trans (PatternedScanGate.gasSteps_exit input h7))
   by_cases hz : scanAcc input 2 = 0
   · have heq := (scanAcc_zero_iff_eq input hsize).1 hz
     have hspec : spec input = Prefix64Digest.paddedDigest := by
       rw [heq, Prefix64Digest.spec_data_eq]
-    let trace := gasSteps_hit input hsize hz
+    let trace := gasSteps_hit input hsize hz h7
     refine ⟨trace.cost, fun gas hgas => ?_⟩
     have heval := eval_of_steps (trace.trace gas hgas) (by
       simp [withGas, Prefix64Finish.returnedState, Prefix64Finish.storedState,
@@ -60,6 +64,6 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
       (.returned (MachineState.readPadded Prefix64Finish.answerMemory 0 32)) at heval
     rw [Prefix64Finish.answerMemory_read, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (gasSteps_miss input hsize hz)
+  · exact StackCorrect.correct input hfit (gasSteps_miss input hsize hz h7)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix64Correct

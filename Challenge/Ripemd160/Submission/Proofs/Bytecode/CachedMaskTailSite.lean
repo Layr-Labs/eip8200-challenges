@@ -91,18 +91,18 @@ private def artifactPrefix : List Instr :=
     submissionInstructionsChunk18
 
 private def tailBefore : List Instr :=
-  artifactPrefix ++ submissionInstructionsChunk19.take 159
+  artifactPrefix ++ submissionInstructionsChunk19.take 167
 
 private def tailAfter : List Instr :=
-  submissionInstructionsChunk20.drop 7
+  submissionInstructionsChunk20.drop 15
 
-private theorem tailBefore_length : tailBefore.length = 3959 := by
+private theorem tailBefore_length : tailBefore.length = 3967 := by
   simp [tailBefore, artifactPrefix]
 
 private theorem artifactChunk_tail :
     submissionInstructionsChunk19 ++ submissionInstructionsChunk20 =
-      submissionInstructionsChunk19.take 159 ++
-        CachedMaskOrderedTail.template ++ submissionInstructionsChunk20.drop 7 := by rfl
+      submissionInstructionsChunk19.take 167 ++
+        CachedMaskOrderedTail.template ++ submissionInstructionsChunk20.drop 15 := by rfl
 
 private theorem artifact_tail_split :
     Artifact.submissionArtifact.instructions =
@@ -125,7 +125,7 @@ private theorem tailInstructions_length : CachedMaskOrderedTail.template.length 
 
 private theorem tail_instruction_at (i : Nat)
     (hi : i < CachedMaskOrderedTail.template.length) :
-    Artifact.submissionArtifact.instructions[3959 + i]? =
+    Artifact.submissionArtifact.instructions[3967 + i]? =
       CachedMaskOrderedTail.template[i]? := by
   have h := ArtifactSegment.getElem?_segment Artifact.submissionArtifact
     tailBefore CachedMaskOrderedTail.template
@@ -135,32 +135,32 @@ private theorem tail_instruction_at (i : Nat)
 
 private theorem tail_instruction_pc (i : Nat)
     (hi : i ≤ CachedMaskOrderedTail.template.length) :
-    Artifact.submissionArtifact.instructionPC (3959 + i) =
-      0x13b6 + ArtifactByteLength.byteLength (CachedMaskOrderedTail.template.take i) := by
+    Artifact.submissionArtifact.instructionPC (3967 + i) =
+      0x13c2 + ArtifactByteLength.byteLength (CachedMaskOrderedTail.template.take i) := by
   have hzero := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
     tailBefore CachedMaskOrderedTail.template
     tailAfter
     artifact_consume_split 0 (by omega)
-  have hzero' : Artifact.submissionArtifact.instructionPC 3959 =
+  have hzero' : Artifact.submissionArtifact.instructionPC 3967 =
       (assembleBytes tailBefore).length := by
     simpa [tailBefore_length] using hzero
-  have hbefore : (assembleBytes tailBefore).length = 0x13b6 :=
+  have hbefore : (assembleBytes tailBefore).length = 0x13c2 :=
     hzero'.symm.trans QuadLayout.tail_pc
   have h := ArtifactSegment.instructionPC_segment_of_bounds Artifact.submissionArtifact
     tailBefore CachedMaskOrderedTail.template
-    tailAfter 3959 0x13b6
+    tailAfter 3967 0x13c2
     artifact_consume_split tailBefore_length hbefore i hi
   simpa only [ArtifactByteLength.byteLength_eq_assemble] using h
 
 private theorem tail_instruction_pc_global (index : Nat)
-    (hlo : 3959 ≤ index) (hhi : index ≤ 4007) :
+    (hlo : 3967 ≤ index) (hhi : index ≤ 4015) :
     Artifact.submissionArtifact.instructionPC index =
-      0x13b6 + ArtifactByteLength.byteLength
-        (CachedMaskOrderedTail.template.take (index - 3959)) := by
-  have hi : index - 3959 ≤ CachedMaskOrderedTail.template.length := by
+      0x13c2 + ArtifactByteLength.byteLength
+        (CachedMaskOrderedTail.template.take (index - 3967)) := by
+  have hi : index - 3967 ≤ CachedMaskOrderedTail.template.length := by
     rw [tailInstructions_length]
     omega
-  have h := tail_instruction_pc (index - 3959) hi
+  have h := tail_instruction_pc (index - 3967) hi
   simpa only [Nat.add_sub_of_le hlo] using h
 
 private theorem tail_instruction_wellFormed (i : Nat)
@@ -172,7 +172,7 @@ private theorem tail_instruction_wellFormed (i : Nat)
 
 def tailLocated (i : Nat) (hi : i < CachedMaskOrderedTail.template.length) :
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka where
-  index := 3959 + i
+  index := 3967 + i
   instruction := ((CachedMaskOrderedTail.template)[i]'hi)
   atIndex := by
     simpa [List.getElem?_eq_getElem hi] using tail_instruction_at i hi

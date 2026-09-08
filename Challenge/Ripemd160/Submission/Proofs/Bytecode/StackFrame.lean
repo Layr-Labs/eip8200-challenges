@@ -53,13 +53,13 @@ private def wfOp {op : Operation}
 (index 352, pc 0x267).  The removed call prefix and the removed inner-return
 JUMPDEST are no longer live instructions. -/
 def exitPath : List Located :=
-  [⟨351, .push ⟨4, by decide⟩ mask, by rfl, by decide⟩,
-   ⟨352, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
+  [⟨359, .push ⟨4, by decide⟩ mask, by rfl, by decide⟩,
+   ⟨360, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
 
 def loadSite987 : GenericRoundSite Artifact.submissionArtifact .Osaka
     StackLoadTrace.loadTemplate :=
   StackSiteBuilder.ofSlice (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    StackLoadTrace.loadTemplate 353 (by rfl) (by decide)
+    StackLoadTrace.loadTemplate 361 (by rfl) (by decide)
     QuadLayout.code_bound
     (StackRoundData.templateWellFormed_mem
       (instructions := StackLoadTrace.loadTemplate) (by decide))
@@ -74,27 +74,27 @@ def loadSite1238 : GenericRoundSite Artifact.submissionArtifact .Osaka
       (instructions := StackLoadTrace.loadTemplate) (by decide))
     (by simp [StackLoadTrace.loadTemplate])
 
-@[simp] theorem loadSite987_startPC : loadSite987.startPC = UInt256.ofNat 0x26d := by
+@[simp] theorem loadSite987_startPC : loadSite987.startPC = UInt256.ofNat 0x279 := by
   rfl
 
 @[simp] theorem loadSite1238_startPC :
-    loadSite1238.startPC = UInt256.ofNat 0xaa6 := by
+    loadSite1238.startPC = UInt256.ofNat 0xab2 := by
   change UInt256.ofNat
     (Artifact.submissionArtifact.instructionPC QuadLayout.rightLoadIndex) = _
   rw [QuadLayout.rightLoad_pc]
 
 def frameRest (input : ByteArray) (i : Nat) : List UInt256 :=
-  UInt256.ofNat 0x1c5 :: StackBlockModel.driverRest input i
+  UInt256.ofNat 0x1d1 :: StackBlockModel.driverRest input i
 
 /-- The frame the two exit pushes run from: the schedule body ends at pc 0x262
 with the outer return word preserved on the stack. -/
 def frameSeam (s : State) (input : ByteArray) (i : Nat) : State :=
   { StackBlockModel.scheduledState s input i with
-    pc := UInt256.ofNat 0x262, stack := frameRest input i }
+    pc := UInt256.ofNat 0x26e, stack := frameRest input i }
 
 def frameLoadEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   StackLoadTrace.loadEntry (StackBlockModel.scheduledState s input i)
-    (UInt256.ofNat 0x26d) (QuadRoundTemplate.factor :: mask :: frameRest input i)
+    (UInt256.ofNat 0x279) (QuadRoundTemplate.factor :: mask :: frameRest input i)
 
 theorem frameLoadEntry_eq_loadSite987 (s : State) (input : ByteArray) (i : Nat) :
     frameLoadEntry s input i =
@@ -109,7 +109,7 @@ theorem frameEntry_eq_scheduleEntry (s : State) (input : ByteArray) (i : Nat) :
     DriverTrace.compressEntry s input i =
       DenseScheduleTemplate.scheduleEntry s
         PackedScheduleSite.packedScheduleSite.startPC
-        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1c5)
+        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1d1)
         (StackBlockModel.driverRest input i) := by
   unfold DriverTrace.compressEntry DenseScheduleTemplate.scheduleEntry
     StackBlockModel.driverRest PackedScheduleSite.packedScheduleSite
@@ -121,49 +121,49 @@ sides by pc 0x262 and frameRest, without changing the pure loopState model. -/
 theorem denseEnd_eq_frameSeam (s : State) (input : ByteArray) (i : Nat) :
     DenseScheduleTemplate.denseExpectedState s
         PackedScheduleSite.packedScheduleSite.startPC
-        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1c5)
+        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1d1)
         (StackBlockModel.driverRest input i) =
       frameSeam s input i := by
-  have hpc : PackedScheduleSite.packedScheduleSite.startPC = UInt256.ofNat 520 :=
+  have hpc : PackedScheduleSite.packedScheduleSite.startPC = UInt256.ofNat 532 :=
     PackedScheduleSite.packedScheduleSite_startPC
   let mo := DriverTrace.messageOffsetWord i
   let dr := StackBlockModel.driverRest input i
   have h := DenseScheduleState.returned_eq_schedule_with_memory_active s
-    (UInt256.ofNat 520) mo (UInt256.ofNat 1093) (UInt256.ofNat 0x424 :: dr)
+    (UInt256.ofNat 532) mo (UInt256.ofNat 1105) (UInt256.ofNat 0x430 :: dr)
     (DenseScheduleTemplate.denseExpectedMemory s mo) rfl
   have hu := congrArg (fun t : State =>
-    { t with pc := UInt256.ofNat 610, stack := UInt256.ofNat 0x1c5 :: dr }) h
+    { t with pc := UInt256.ofNat 622, stack := UInt256.ofNat 0x1d1 :: dr }) h
   rw [hpc]
-  show DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 520)
-      mo (UInt256.ofNat 0x1c5) dr = frameSeam s input i
-  calc DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 520)
-        mo (UInt256.ofNat 0x1c5) dr =
+  show DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 532)
+      mo (UInt256.ofNat 0x1d1) dr = frameSeam s input i
+  calc DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 532)
+        mo (UInt256.ofNat 0x1d1) dr =
       { Schedule.scheduleReturned
-          (DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 520)
-            mo (UInt256.ofNat 1093) (UInt256.ofNat 0x424 :: dr))
-          (UInt256.ofNat 1093) (UInt256.ofNat 0x424 :: dr) with
-        pc := UInt256.ofNat 610, stack := UInt256.ofNat 0x1c5 :: dr } := by
+          (DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 532)
+            mo (UInt256.ofNat 1105) (UInt256.ofNat 0x430 :: dr))
+          (UInt256.ofNat 1105) (UInt256.ofNat 0x430 :: dr) with
+        pc := UInt256.ofNat 622, stack := UInt256.ofNat 0x1d1 :: dr } := by
         unfold DenseScheduleTemplate.denseExpectedState Schedule.scheduleReturned
         rfl
     _ = { Schedule.scheduleReturned
-            { { Schedule.loopState s mo (UInt256.ofNat 1093)
-                  (UInt256.ofNat 0x424 :: dr) 16 with
+            { { Schedule.loopState s mo (UInt256.ofNat 1105)
+                  (UInt256.ofNat 0x430 :: dr) 16 with
                 memory := DenseScheduleTemplate.denseExpectedMemory s mo } with
               activeWords := DenseScheduleTemplate.denseExpectedActiveWords s mo }
-            (UInt256.ofNat 1093) (UInt256.ofNat 0x424 :: dr) with
-          pc := UInt256.ofNat 610, stack := UInt256.ofNat 0x1c5 :: dr } := hu
+            (UInt256.ofNat 1105) (UInt256.ofNat 0x430 :: dr) with
+          pc := UInt256.ofNat 622, stack := UInt256.ofNat 0x1d1 :: dr } := hu
     _ = frameSeam s input i := by
         unfold frameSeam frameRest StackBlockModel.scheduledState
           StackBlockModel.withMemory StackBlockModel.withActiveWords
           StackBlockModel.scheduleRest Schedule.scheduleReturned
-        rw [show [UInt256.ofNat 0x424] ++ dr = UInt256.ofNat 0x424 :: dr from rfl]
+        rw [show [UInt256.ofNat 0x430] ++ dr = UInt256.ofNat 0x430 :: dr from rfl]
 
 theorem run_exit (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock exitPath (frameSeam s input i) =
       some (frameLoadEntry s input i) := by
-  have hpc940 : Artifact.submissionArtifact.instructionPC 351 = 0x262 := by rfl
-  have hpc941 : Artifact.submissionArtifact.instructionPC 352 = 0x267 := by rfl
+  have hpc940 : Artifact.submissionArtifact.instructionPC 359 = 0x26e := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc941 : Artifact.submissionArtifact.instructionPC 360 = 0x273 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   simp [exitPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     frameSeam, frameLoadEntry, StackBlockModel.scheduledState,
     StackBlockModel.withMemory, StackBlockModel.withActiveWords,
@@ -184,7 +184,7 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
     GasSteps
         (DenseScheduleTemplate.scheduleEntry s
           PackedScheduleSite.packedScheduleSite.startPC
-          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1c5)
+          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1d1)
           (StackBlockModel.driverRest input i))
         (frameSeam s input i) := by
   let rest := StackBlockModel.driverRest input i
@@ -194,19 +194,19 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
       StackRoundTrace.runInstrSeq DenseScheduleTemplate.denseBeforeJumpTemplate
         (DenseScheduleTemplate.scheduleEntry s
           PackedScheduleSite.packedScheduleSite.startPC
-          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1c5) rest) =
+          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1d1) rest) =
         some (DenseScheduleTemplate.denseExpectedState s
           PackedScheduleSite.packedScheduleSite.startPC
-          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1c5) rest) := by
+          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1d1) rest) := by
     exact DenseScheduleTrace.runInstrSeq_denseBeforeJump s
       PackedScheduleSite.packedScheduleSite.startPC
-      (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1c5) rest
+      (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1d1) rest
       hstack1017 hrun
   have hartifactCode : s.executionEnv.code = Artifact.submissionArtifact.code := by
     change s.executionEnv.code = submissionBytecode
     exact hcode
   have hpacked := PackedScheduleSite.gasSteps_packedSchedule_of_raw s
-    (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1c5) rest
+    (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x1d1) rest
     hartifactCode hfork hrun hnp hraw
   exact hpacked.cast rfl (denseEnd_eq_frameSeam s input i)
 
@@ -257,12 +257,12 @@ def savedLeft (left : Compression.EvmWorking) : List UInt256 :=
 
 def routeEntry (s : State) (left : Compression.EvmWorking)
     (rest : List UInt256) : State :=
-  StackRoundTrace.roundEntry s (UInt256.ofNat 0xaa5)
+  StackRoundTrace.roundEntry s (UInt256.ofNat 0xab1)
     left.a left.b left.c left.d left.e (QuadRoundTemplate.factor :: rest)
 
 def routeReturned (s : State) (left : Compression.EvmWorking)
     (rest : List UInt256) : State :=
-  StackLoadTrace.loadEntry s (UInt256.ofNat 0xaa6)
+  StackLoadTrace.loadEntry s (UInt256.ofNat 0xab2)
     (QuadRoundTemplate.factor :: (savedLeft left ++ rest))
 
 def routePath : List Located :=
@@ -275,7 +275,7 @@ theorem run_route (s : State) (left : Compression.EvmWorking)
     Stepper.runLocatedBlock routePath (routeEntry s left rest) =
       some (routeReturned s left rest) := by
   have hpc : Artifact.submissionArtifact.instructionPC
-      QuadLayout.routeIndex = 0xaa5 := QuadLayout.route_pc
+      QuadLayout.routeIndex = 0xab1 := QuadLayout.route_pc
   have hcap : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hswap :
       (left.a :: left.b :: left.c :: left.d :: left.e ::
