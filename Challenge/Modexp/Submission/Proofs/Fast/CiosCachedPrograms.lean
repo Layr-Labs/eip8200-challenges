@@ -199,7 +199,6 @@ def tailProgram : List Instr :=
    .op (.Swap ⟨1, by decide⟩),
    .op .POP,
    .op .POP,
-   .op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
    .push 2 8224,
    .op .MLOAD,

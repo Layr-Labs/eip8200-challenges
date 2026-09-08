@@ -41,8 +41,8 @@ def l2Join : Block Artifact.submissionArtifact .Osaka 4885 joinProgram :=
   WindowNineSlice.block Artifact.allWellFormed 3513 1 4885 joinProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def tailLoop : Block Artifact.submissionArtifact .Osaka 5006 (CiosCached.tailProgram.take 26) :=
-  WindowNineSlice.block Artifact.allWellFormed 3631 26 5006 (CiosCached.tailProgram.take 26)
+def tailLoop : Block Artifact.submissionArtifact .Osaka 5006 (CiosCached.tailProgram.take 25) :=
+  WindowNineSlice.block Artifact.allWellFormed 3631 25 5006 (CiosCached.tailProgram.take 25)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Mac0 : Block Artifact.submissionArtifact .Osaka 4354 l1Program :=
@@ -105,8 +105,8 @@ def l2Mac6 : Block Artifact.submissionArtifact .Osaka 4966 l2Program :=
   WindowNineSlice.block Artifact.allWellFormed 3592 39 4966 l2Program
     (by decide) (by rfl) (by rfl) (by decide)
 
-def exitBlock : Block Artifact.submissionArtifact .Osaka 5042 (CiosCached.tailProgram.drop 26) :=
-  WindowNineSlice.block Artifact.allWellFormed 3657 8 5042 (CiosCached.tailProgram.drop 26)
+def exitBlock : Block Artifact.submissionArtifact .Osaka 5041 (CiosCached.tailProgram.drop 25) :=
+  WindowNineSlice.block Artifact.allWellFormed 3656 8 5041 (CiosCached.tailProgram.drop 25)
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest4339 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4339 = true :=
