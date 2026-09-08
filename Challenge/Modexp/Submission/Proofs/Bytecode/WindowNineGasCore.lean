@@ -64,11 +64,11 @@ def steps_core {artifact : ProgramArtifact} {fork : Fork}
     (WindowNineTableBuild.run_all template base modulus exponentOffset rest hrest he)
   have hi := WindowNineInit.run_enter template base modulus exponent modulusOffset rest hrest hm hmodulus
   have hi' : runInstructions WindowNineInit.program
-      (WindowNineTable.state template (UInt256.ofNat 2799) base modulus exponent 15 rest) =
+      (WindowNineTable.framed template (UInt256.ofNat 2799) base modulus 16 ([base, exponent] ++ rest)) =
       some (WindowNineLoop.loopState template base modulus exponent 0 rest) := by
     simpa only [WindowNineLoop.loopState, WindowNineMath.accumulator, WindowNineMath.advance] using hi
   have hinit := paths.init.steps
-    (s := WindowNineTable.state template (UInt256.ofNat 2799) base modulus exponent 15 rest)
+    (s := WindowNineTable.framed template (UInt256.ofNat 2799) base modulus 16 ([base, exponent] ++ rest))
     (env.transfer rfl rfl) rfl hi'
   have hloop := steps_seven paths template env base modulus exponent rest hrest hjump
   have hfinish := paths.finish.steps

@@ -56,7 +56,7 @@ theorem run_core (template : State) (base modulus exponentOffset modulusOffset :
   have hl := WindowNineLoop.run_seven template base modulus exponent rest hrest hjump
   have hr := run_finish template base modulus exponent rest hrest
   have hi' : runInstructions WindowNineInit.program
-      (WindowNineTable.state template (UInt256.ofNat 2799) base modulus exponent 15 rest) =
+      (WindowNineTable.framed template (UInt256.ofNat 2799) base modulus 16 ([base, exponent] ++ rest)) =
       some (WindowNineLoop.loopState template base modulus exponent 0 rest) := by
     simpa only [WindowNineLoop.loopState, WindowNineMath.accumulator, WindowNineMath.advance] using hi
   have hti := runInstructions_append_some _ _ _ _ _ ht hi'
