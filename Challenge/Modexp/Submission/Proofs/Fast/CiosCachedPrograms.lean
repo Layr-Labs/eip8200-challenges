@@ -182,16 +182,14 @@ def midProgram : List Instr :=
    .push 0 0,
    .op .LT,
    .op .ADD,
-   .push 2 9440,
+   .push 4 9440,
    .op .MLOAD,
-   .push 1 32,
-   .op (.Swap ⟨0, by decide⟩),
-   .op .SUB,
-   .push 2 9408,
+   .op (.Dup ⟨8, by decide⟩),
+   .op .ADD,
+   .push 4 9408,
    .op .MLOAD,
-   .push 1 32,
-   .op (.Swap ⟨0, by decide⟩),
-   .op .SUB]
+   .op (.Dup ⟨9, by decide⟩),
+   .op .ADD]
 
 def tailProgram : List Instr :=
   [.op .POP,
