@@ -28,6 +28,24 @@ theorem scheduled_readLane (s : State) (i : Nat) :
       Challenge.EvmProof.Word.toUInt32 h.h4⟩ : PairedLaneCryptoBridge.CryptoLane))
     (scheduled_hashWords s i)
 
+/-- Masking a hash word with `lowerWord` is identity.
+
+Every write to the five state addresses is either a `PUSH4` literal, which
+cannot be wider than 32 bits, or the compression output, which the artifact
+masks with `lowerWord` in the instruction before the store.  `BlockContext.hash`
+records that as `hashAt32 s = embedHash h`, whose fields are `Word.ofUInt32` by
+construction.  `mask32 y` is `y &&& 0xffffffff`, so the only remaining gap is the
+commutativity the tree already proves as `Word.land_comm`.
+
+This is what makes the removed `DUPn ; AND` windows sound. -/
+theorem land_lower_ofUInt32 (x : UInt32) :
+    UInt256.land PairedDerivedStartup.lowerWord (Challenge.EvmProof.Word.ofUInt32 x) =
+      Challenge.EvmProof.Word.ofUInt32 x := by
+  have h := Challenge.EvmProof.Word.mask32_ofUInt32 x
+  simp only [Challenge.EvmProof.Word.mask32] at h
+  rw [Word.land_comm, PairedDerivedStartup.lowerWord]
+  exact h
+
 theorem tail_stack (s : State) (input : ByteArray) (i : Nat) :
     coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower]
       (coreCryptoResult (blockWords input i) (PairedBlockMath.readLane s.memory)
@@ -72,8 +90,21 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp
   have gschedule' : GasSteps (DriverTrace.compressEntry s input i)
       {q with pc := UInt256.ofNat 701, stack := rho} := gschedule
+  have hhash : PairedBlockMath.hashWords q.memory = Compression.embedHash h := by
+    rw [scheduled_hashWords]; exact ctx.hash
+  have hn (a : Nat) (proj : Compression.EvmHashState → UInt256)
+      (hproj : proj (PairedBlockMath.hashWords q.memory) = MachineState.readWord q.memory a)
+      (x : UInt32) (hx : proj (Compression.embedHash h) = Challenge.EvmProof.Word.ofUInt32 x) :
+      UInt256.land PairedDerivedStartup.lowerWord (MachineState.readWord q.memory a) =
+        MachineState.readWord q.memory a := by
+    rw [← hproj, hhash, hx]; exact land_lower_ofUInt32 x
+  have h32 := hn 32 Compression.EvmHashState.h0 rfl _ rfl
+  have h64 := hn 64 Compression.EvmHashState.h1 rfl _ rfl
+  have h96 := hn 96 Compression.EvmHashState.h2 rfl _ rfl
+  have h128 := hn 128 Compression.EvmHashState.h3 rfl _ rfl
+  have h160 := hn 160 Compression.EvmHashState.h4 rfl _ rfl
   have gstartup := PairedAllInlineBoundarySites.gasSteps_startup q rho hstack qrun qactive
-    qcode qfork qnp
+    qcode qfork qnp h32 h64 h96 h128 h160
   have gcore := PairedAllInlineCoreSites.gasSteps_core_normalized q (blockWords input i) lane lane rho
     hstack qrun qactive qcode qfork qnp (scheduled_ready s input i h hfit hi ctx)
   have hentry :

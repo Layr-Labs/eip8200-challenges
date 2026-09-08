@@ -176,11 +176,22 @@ def gasSteps_startup (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1
     (hrun : s.halt = .Running) (hactive : 23 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (h32 : UInt256.land PairedDerivedStartup.lowerWord (MachineState.readWord s.memory 32) =
+      MachineState.readWord s.memory 32)
+    (h64 : UInt256.land PairedDerivedStartup.lowerWord (MachineState.readWord s.memory 64) =
+      MachineState.readWord s.memory 64)
+    (h96 : UInt256.land PairedDerivedStartup.lowerWord (MachineState.readWord s.memory 96) =
+      MachineState.readWord s.memory 96)
+    (h128 : UInt256.land PairedDerivedStartup.lowerWord (MachineState.readWord s.memory 128) =
+      MachineState.readWord s.memory 128)
+    (h160 : UInt256.land PairedDerivedStartup.lowerWord (MachineState.readWord s.memory 160) =
+      MachineState.readWord s.memory 160)
+    :
     GasSteps {s with pc := UInt256.ofNat 701, stack := rho}
       {s with pc := UInt256.ofNat 769, stack := PairedStartupTrace.resultStack s.memory rho} := by
   have h := PairedDerivedStartup.gasSteps_template startupSite s rho hstack hrun hactive
-    hcode hfork hnp
+    hcode hfork hnp h32 h64 h96 h128 h160
   change GasSteps {s with pc := startupSite.startPC, stack := rho}
     {s with pc := startupSite.endPC, stack := PairedStartupTrace.resultStack s.memory rho} at h
   simpa only [startupSite_startPC, startupSite_endPC] using h

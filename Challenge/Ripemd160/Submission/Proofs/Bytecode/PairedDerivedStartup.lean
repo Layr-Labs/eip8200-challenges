@@ -27,8 +27,8 @@ def cacheTemplate : List Instr :=
    dup1, .op (.Dup ⟨2, by decide⟩), .op .OR,
    .push ⟨5, by decide⟩ factorWord]
 
-def loadTemplate (address : Nat) (dup : Operation.DupOp) : List Instr :=
-  [push1 (UInt256.ofNat address), .op .MLOAD, .op (.Dup dup), .op .AND,
+def loadTemplate (address : Nat) (_dup : Operation.DupOp) : List Instr :=
+  [push1 (UInt256.ofNat address), .op .MLOAD, .op .JUMPDEST, .op .JUMPDEST,
    dup1, push1 (UInt256.ofNat 128), .op .SHL, .op .OR]
 
 /-- Exact physical instructions 751..819 of the frozen 5324-byte candidate. -/
@@ -62,9 +62,26 @@ theorem template_length : template.length = 48 := by
 theorem template_bytes : (template.map Instr.size).sum = 68 := by
   norm_num [template, cacheTemplate, loadTemplate, push1, dup1, Instr.size]
 
+/-- The five state words are already 32 bits wide, so masking them is identity.
+
+Every write to those addresses is either a `PUSH4` literal or the compression
+output, which the artifact masks with `lowerWord` in the instruction before the
+store; `BlockContext.hash` records that.  The mask the window removes was
+therefore redundant at every one of these addresses. -/
 theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
-    (hactive : 23 ≤ s.activeWords.toNat) :
+    (hactive : 23 ≤ s.activeWords.toNat)
+    (h32 : UInt256.land lowerWord (MachineState.readWord s.memory 32) =
+      MachineState.readWord s.memory 32)
+    (h64 : UInt256.land lowerWord (MachineState.readWord s.memory 64) =
+      MachineState.readWord s.memory 64)
+    (h96 : UInt256.land lowerWord (MachineState.readWord s.memory 96) =
+      MachineState.readWord s.memory 96)
+    (h128 : UInt256.land lowerWord (MachineState.readWord s.memory 128) =
+      MachineState.readWord s.memory 128)
+    (h160 : UInt256.land lowerWord (MachineState.readWord s.memory 160) =
+      MachineState.readWord s.memory 160)
+    :
     runInstrSeq template {s with pc := pc, stack := rho} =
       some {s with pc := pcAfter pc template, stack := resultStack s.memory rho} := by
   have hcap (n : Nat) (hn : n ≤ 11) : rho.length + n < 1024 := by omega
@@ -77,7 +94,7 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
     pcAfter, UInt256.succ, Instr.size, hrun, hcap, h0, Nat.add_assoc,
     upper_from_lower, pair_from_lower,
     List.getElem?_cons_zero, State.activeWordsAfterUInt256, hactiveAt,
-    Challenge.EvmProof.Word.word_toNat_ofNat]
+    Challenge.EvmProof.Word.word_toNat_ofNat, h32, h64, h96, h128, h160]
   rfl
 
 #print axioms active_preserved
@@ -99,40 +116,40 @@ def frozenInstructions : List Instr :=
    .push ⟨5, by decide⟩ (UInt256.ofNat 0x0100000001),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0xa0),
    .op .MLOAD,
-   .op (.Dup ⟨4, by decide⟩),
-   .op .AND,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHL,
    .op .OR,
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .MLOAD,
-   .op (.Dup ⟨5, by decide⟩),
-   .op .AND,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHL,
    .op .OR,
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x60),
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
-   .op .AND,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHL,
    .op .OR,
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x40),
    .op .MLOAD,
-   .op (.Dup ⟨7, by decide⟩),
-   .op .AND,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHL,
    .op .OR,
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x20),
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
-   .op .AND,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHL,
@@ -154,11 +171,23 @@ theorem template_advances :
     | exact Or.inl (Or.inl StraightLine.shl)
     | exact Or.inl (Or.inl StraightLine.mload)
     | exact Or.inl (Or.inl (StraightLine.dup _))
+    | exact Or.inl (Or.inr (Or.inr rfl))
 
 theorem runLocatedBlock_template {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork template)
     (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1002)
-    (hrun : s.halt = .Running) (hactive : 23 ≤ s.activeWords.toNat) :
+    (hrun : s.halt = .Running) (hactive : 23 ≤ s.activeWords.toNat)
+    (h32 : UInt256.land lowerWord (MachineState.readWord s.memory 32) =
+      MachineState.readWord s.memory 32)
+    (h64 : UInt256.land lowerWord (MachineState.readWord s.memory 64) =
+      MachineState.readWord s.memory 64)
+    (h96 : UInt256.land lowerWord (MachineState.readWord s.memory 96) =
+      MachineState.readWord s.memory 96)
+    (h128 : UInt256.land lowerWord (MachineState.readWord s.memory 128) =
+      MachineState.readWord s.memory 128)
+    (h160 : UInt256.land lowerWord (MachineState.readWord s.memory 160) =
+      MachineState.readWord s.memory 160)
+    :
     Stepper.runLocatedBlock site.path {s with pc := site.startPC, stack := rho} =
       some {s with pc := site.endPC, stack := resultStack s.memory rho} := by
   have hend : site.endPC = pcAfter site.startPC template := by
@@ -167,7 +196,7 @@ theorem runLocatedBlock_template {artifact : ProgramArtifact} {fork : Fork}
     rwa [site.instruction_eq] at h
   rw [DenseScheduleLift.runLocatedBlock_eq_raw site template_advances
     {s with pc := site.startPC, stack := rho} rfl]
-  have h := run_template s site.startPC rho hstack hrun hactive
+  have h := run_template s site.startPC rho hstack hrun hactive h32 h64 h96 h128 h160
   rw [← hend] at h
   exact h
 
@@ -177,13 +206,24 @@ def gasSteps_template {artifact : ProgramArtifact} {fork : Fork}
     (hrun : s.halt = .Running) (hactive : 23 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = artifact.code) (hfork : s.fork = fork)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (h32 : UInt256.land lowerWord (MachineState.readWord s.memory 32) =
+      MachineState.readWord s.memory 32)
+    (h64 : UInt256.land lowerWord (MachineState.readWord s.memory 64) =
+      MachineState.readWord s.memory 64)
+    (h96 : UInt256.land lowerWord (MachineState.readWord s.memory 96) =
+      MachineState.readWord s.memory 96)
+    (h128 : UInt256.land lowerWord (MachineState.readWord s.memory 128) =
+      MachineState.readWord s.memory 128)
+    (h160 : UInt256.land lowerWord (MachineState.readWord s.memory 160) =
+      MachineState.readWord s.memory 160)
+    :
     GasSteps {s with pc := site.startPC, stack := rho}
       {s with pc := site.endPC, stack := resultStack s.memory rho} := by
   apply Stepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode
   · exact hfork
-  · exact runLocatedBlock_template site s rho hstack hrun hactive
+  · exact runLocatedBlock_template site s rho hstack hrun hactive h32 h64 h96 h128 h160
   · exact hrun
   · exact hnp
 
@@ -194,7 +234,12 @@ def gasSteps_template {artifact : ProgramArtifact} {fork : Fork}
 
 
 theorem template_exactBytes : assembleBytes template =
-  [0x63, 0xff, 0xff, 0xff, 0xff, 0x80, 0x60, 0x80, 0x1b, 0x80, 0x82, 0x17, 0x64, 0x01, 0x00, 0x00, 0x00, 0x01, 0x60, 0xa0, 0x51, 0x84, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17, 0x60, 0x80, 0x51, 0x85, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17, 0x60, 0x60, 0x51, 0x86, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17, 0x60, 0x40, 0x51, 0x87, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17, 0x60, 0x20, 0x51, 0x88, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17] := by decide
+  [0x63, 0xff, 0xff, 0xff, 0xff, 0x80, 0x60, 0x80, 0x1b, 0x80, 0x82, 0x17,
+  0x64, 0x01, 0x00, 0x00, 0x00, 0x01, 0x60, 0xa0, 0x51, 0x5b, 0x5b, 0x80,
+  0x60, 0x80, 0x1b, 0x17, 0x60, 0x80, 0x51, 0x5b, 0x5b, 0x80, 0x60, 0x80,
+  0x1b, 0x17, 0x60, 0x60, 0x51, 0x5b, 0x5b, 0x80, 0x60, 0x80, 0x1b, 0x17,
+  0x60, 0x40, 0x51, 0x5b, 0x5b, 0x80, 0x60, 0x80, 0x1b, 0x17, 0x60, 0x20,
+  0x51, 0x5b, 0x5b, 0x80, 0x60, 0x80, 0x1b, 0x17] := by decide
 
 #print axioms template_exactBytes
 
