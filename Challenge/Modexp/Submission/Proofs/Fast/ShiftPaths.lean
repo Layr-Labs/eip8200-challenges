@@ -250,7 +250,7 @@ def blk3026 :
    opAt 2908 (.Dup ⟨4, by decide⟩),
    opAt 2909 .MULMOD,
    opAt 2910 (.Dup ⟨2, by decide⟩),
-   opAt 2911 .JUMPDEST,
+   opAt 2911 (.Swap ⟨0, by decide⟩),
    opAt 2912 .ADDMOD,
    opAt 2913 (.Swap ⟨0, by decide⟩),
    opAt 2914 .SUB,
