@@ -16,7 +16,7 @@ private theorem instructionPC_add
   simp only [Challenge.EvmProof.ProgramArtifact.instructionPC, List.take_add,
     assembleBytes_append, List.length_append]
 
-def firstStartIndex : Nat := 3224
+def firstStartIndex : Nat := 3223
 
 private def firstTemplate : List Instr :=
   [.op .JUMPDEST,
@@ -77,13 +77,13 @@ private theorem firstGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem firstStartPC :
-    Artifact.submissionArtifact.instructionPC firstStartIndex = 5279 := by
+    Artifact.submissionArtifact.instructionPC firstStartIndex = 5310 := by
   rfl
 
 @[simp] theorem firstPC (index : Nat) (hlo : firstStartIndex ≤ index)
-    (hhi : index ≤ 3266) :
+    (hhi : index ≤ 3265) :
     Artifact.submissionArtifact.instructionPC index =
-      [5279,5280,5281,5282,5283,5284,5285,5286,5287,5288,5289,5290,5291,5292,5293,5294,5295,5296,5297,5298,5299,5300,5301,5302,5303,5304,5305,5306,5307,5308,5309,5310,5311,5313,5314,5316,5317,5318,5319,5320,5321,5323,5324][index - firstStartIndex]! := by
+      [5310,5311,5312,5313,5314,5315,5316,5317,5318,5319,5320,5321,5322,5323,5324,5325,5326,5327,5328,5329,5330,5331,5332,5333,5334,5335,5336,5337,5338,5339,5340,5341,5342,5344,5345,5347,5348,5349,5350,5351,5352,5354,5355][index - firstStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -118,7 +118,7 @@ def firstPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨firstStartIndex + offset, .push width value,
     (firstGetElem offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 2970..3009, pc 5279..5324. -/
+/-- Instructions 2970..3009, pc 5310..5355. -/
 def firstMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [firstOpAt 0 .JUMPDEST,
@@ -165,7 +165,7 @@ def firstMac :
    firstOpAt 41 .NOT,
    firstOpAt 42 .ADD]
 
-def secondStartIndex : Nat := 3267
+def secondStartIndex : Nat := 3266
 
 private def secondTemplate : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
@@ -212,7 +212,7 @@ private def secondTemplate : List Instr :=
    .op .NOT,
    .op .ADD,
    .op (.Swap ⟨0, by decide⟩),
-   .push 2 5279,
+   .push 2 5310,
    .op .JUMPI]
 
 private theorem secondSlice_eq :
@@ -229,13 +229,13 @@ private theorem secondGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem secondStartPC :
-    Artifact.submissionArtifact.instructionPC secondStartIndex = 5325 := by
+    Artifact.submissionArtifact.instructionPC secondStartIndex = 5356 := by
   rfl
 
 @[simp] theorem secondPC (index : Nat) (hlo : secondStartIndex ≤ index)
-    (hhi : index ≤ 3312) :
+    (hhi : index ≤ 3311) :
     Artifact.submissionArtifact.instructionPC index =
-      [5325,5326,5327,5328,5329,5330,5331,5332,5333,5334,5335,5336,5337,5338,5339,5340,5341,5342,5343,5344,5345,5346,5347,5348,5349,5350,5351,5352,5353,5354,5355,5356,5358,5359,5361,5362,5363,5364,5365,5366,5367,5369,5370,5371,5372,5375][index - secondStartIndex]! := by
+      [5356,5357,5358,5359,5360,5361,5362,5363,5364,5365,5366,5367,5368,5369,5370,5371,5372,5373,5374,5375,5376,5377,5378,5379,5380,5381,5382,5383,5384,5385,5386,5387,5389,5390,5392,5393,5394,5395,5396,5397,5398,5400,5401,5402,5403,5406][index - secondStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -270,7 +270,7 @@ def secondPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨secondStartIndex + offset, .push width value,
     (secondGetElem offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 3010..3052, pc 5325..5375. -/
+/-- Instructions 3010..3052, pc 5356..5406. -/
 def secondMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [secondOpAt 0 (.Dup ⟨0, by decide⟩),
@@ -317,7 +317,7 @@ def secondMac :
    secondOpAt 41 .NOT,
    secondOpAt 42 .ADD,
    secondOpAt 43 (.Swap ⟨0, by decide⟩),
-   secondPushAt 44 2 5279,
+   secondPushAt 44 2 5310,
    secondOpAt 45 .JUMPI]
 
 /-- The body and exit share the compact block ending at JUMPI. -/

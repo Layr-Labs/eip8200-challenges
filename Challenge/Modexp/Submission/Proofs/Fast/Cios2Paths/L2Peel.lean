@@ -16,8 +16,7 @@ private def template : List Instr :=
   [.op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
-   .push 0 0,
-   .op .NOT,
+   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    .op (.Dup ⟨5, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
    .op .MUL,
@@ -79,9 +78,9 @@ private theorem startPC :
   rfl
 
 @[simp] theorem peelPC (index : Nat) (hlo : startIndex ≤ index)
-    (hhi : index ≤ 3223) :
+    (hhi : index ≤ 3222) :
     Artifact.submissionArtifact.instructionPC index =
-      [5233,5234,5235,5236,5237,5238,5239,5240,5241,5242,5243,5244,5245,5246,5247,5248,5249,5250,5251,5252,5253,5254,5255,5256,5257,5258,5259,5260,5261,5262,5263,5264,5265,5267,5268,5270,5271,5272,5273,5274,5275,5277,5278][index - startIndex]! := by
+      [5233,5234,5235,5236,5269,5270,5271,5272,5273,5274,5275,5276,5277,5278,5279,5280,5281,5282,5283,5284,5285,5286,5287,5288,5289,5290,5291,5292,5293,5294,5295,5296,5298,5299,5301,5302,5303,5304,5305,5306,5308,5309][index - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -116,50 +115,50 @@ def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨startIndex + offset, .push width value, (getElem_slice offset hoffset).trans hget, hwf⟩
 
 /-- Instructions 2930..2969, pc 5233..5278. -/
+/-- Instructions 3181..3222, pc 5233..5309. -/
 def cios2L2Peel :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 0 .JUMPDEST,
    opAt 1 (.Dup ⟨0, by decide⟩),
    opAt 2 .MLOAD,
-   pushAt 3 0 0,
-   opAt 4 .NOT,
-   opAt 5 (.Dup ⟨5, by decide⟩),
-   opAt 6 (.Dup ⟨2, by decide⟩),
-   opAt 7 .MUL,
-   opAt 8 (.Swap ⟨1, by decide⟩),
-   opAt 9 (.Dup ⟨6, by decide⟩),
-   opAt 10 .MULMOD,
+   pushAt 3 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   opAt 4 (.Dup ⟨5, by decide⟩),
+   opAt 5 (.Dup ⟨2, by decide⟩),
+   opAt 6 .MUL,
+   opAt 7 (.Swap ⟨1, by decide⟩),
+   opAt 8 (.Dup ⟨6, by decide⟩),
+   opAt 9 .MULMOD,
+   opAt 10 (.Dup ⟨1, by decide⟩),
    opAt 11 (.Dup ⟨1, by decide⟩),
-   opAt 12 (.Dup ⟨1, by decide⟩),
-   opAt 13 .LT,
-   opAt 14 .SUB,
-   opAt 15 (.Dup ⟨4, by decide⟩),
-   opAt 16 (.Dup ⟨2, by decide⟩),
-   opAt 17 .ADD,
-   opAt 18 (.Dup ⟨0, by decide⟩),
-   opAt 19 (.Swap ⟨5, by decide⟩),
-   opAt 20 .GT,
+   opAt 12 .LT,
+   opAt 13 .SUB,
+   opAt 14 (.Dup ⟨4, by decide⟩),
+   opAt 15 (.Dup ⟨2, by decide⟩),
+   opAt 16 .ADD,
+   opAt 17 (.Dup ⟨0, by decide⟩),
+   opAt 18 (.Swap ⟨5, by decide⟩),
+   opAt 19 .GT,
+   opAt 20 .SUB,
    opAt 21 .SUB,
-   opAt 22 .SUB,
+   opAt 22 (.Dup ⟨3, by decide⟩),
    opAt 23 (.Dup ⟨3, by decide⟩),
-   opAt 24 (.Dup ⟨3, by decide⟩),
-   opAt 25 .MLOAD,
-   opAt 26 .ADD,
-   opAt 27 (.Dup ⟨0, by decide⟩),
-   opAt 28 (.Swap ⟨4, by decide⟩),
-   opAt 29 .GT,
-   opAt 30 .ADD,
-   opAt 31 (.Swap ⟨2, by decide⟩),
-   pushAt 32 1 32,
-   opAt 33 (.Dup ⟨3, by decide⟩),
-   pushAt 34 1 31,
-   opAt 35 .NOT,
-   opAt 36 .ADD,
-   opAt 37 (.Swap ⟨3, by decide⟩),
-   opAt 38 .ADD,
-   opAt 39 .MSTORE,
-   pushAt 40 1 31,
-   opAt 41 .NOT,
-   opAt 42 .ADD]
+   opAt 24 .MLOAD,
+   opAt 25 .ADD,
+   opAt 26 (.Dup ⟨0, by decide⟩),
+   opAt 27 (.Swap ⟨4, by decide⟩),
+   opAt 28 .GT,
+   opAt 29 .ADD,
+   opAt 30 (.Swap ⟨2, by decide⟩),
+   pushAt 31 1 32,
+   opAt 32 (.Dup ⟨3, by decide⟩),
+   pushAt 33 1 31,
+   opAt 34 .NOT,
+   opAt 35 .ADD,
+   opAt 36 (.Swap ⟨3, by decide⟩),
+   opAt 37 .ADD,
+   opAt 38 .MSTORE,
+   pushAt 39 1 31,
+   opAt 40 .NOT,
+   opAt 41 .ADD]
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.L2Peel
