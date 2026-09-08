@@ -3,12 +3,12 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 set_option warningAsError true
 
 /-!
-Artifact-independent relative-depth lookup for every staged digit.
+Artifact-independent relative-depth lookup for all nine sites.
 The caller supplies the proved shifted-nibble address and two live tail slots.
 Concrete bytecode bindings are supplied separately.
 -/
 
-namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLookup
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineLookup
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
@@ -53,4 +53,4 @@ theorem run_lookup (template : State) (pc base modulus accumulator exponent : UI
       hexponent, hmask, haddress, hread, hactive, State.activeWordsAfterUInt256,
       advancePC, succ_eq_add, hpush, word_add_assoc]
 
-end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLookup
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineLookup

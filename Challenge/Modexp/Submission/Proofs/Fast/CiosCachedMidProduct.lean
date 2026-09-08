@@ -26,8 +26,8 @@ theorem run_loadMu (s : State) (n : Nat) (bi pbi paEnd pbEnd flag dst ret : UInt
     (hn32 : n ≤ 32)
     (htl : MachineState.readWord s.memory 9440 = UInt256.ofNat (8224+32*n)) :
     runInstructions loadMuProgram
-      (framed s (UInt256.ofNat 4925) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4935)
+      (framed s (UInt256.ofNat 4669) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4679)
       ([rowMu s.memory n] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc8 : rest.length+9 < 1024 := by omega
   have hc9 : rest.length+10 < 1024 := by omega
@@ -54,8 +54,8 @@ theorem run_loadM0 (s : State) (n : Nat) (mu bi pbi paEnd pbEnd flag dst ret : U
     (hn32 : n ≤ 32)
     (hml : MachineState.readWord s.memory 9408 = UInt256.ofNat (32*n-32)) :
     runInstructions loadM0Program
-      (framed s (UInt256.ofNat 4935) ([mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4941)
+      (framed s (UInt256.ofNat 4679) ([mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4685)
       ([MachineState.readWord s.memory (32*n-32), mu, mu] ++
         baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc9 : rest.length+10 < 1024 := by omega
@@ -80,7 +80,7 @@ theorem run_product (s : State) (n : Nat) (bi pbi paEnd pbEnd flag dst ret : UIn
     (hml : MachineState.readWord s.memory 9408 = UInt256.ofNat (32*n-32))
     (htl : MachineState.readWord s.memory 9440 = UInt256.ofNat (8224+32*n)) :
     runInstructions productProgram
-      (framed s (UInt256.ofNat 4925) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+      (framed s (UInt256.ofNat 4669) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
     some (product s n bi pbi paEnd pbEnd flag dst ret rest) := by
   rw [program_eq]
   exact runInstructions_append_some _ _ _ _ _

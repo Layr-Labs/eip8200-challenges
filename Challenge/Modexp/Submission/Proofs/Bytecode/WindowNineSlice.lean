@@ -1,11 +1,11 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineBinding
 
 set_option warningAsError true
 
-namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineSlice
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
-open Challenge.EvmProof Challenge.EvmProof.Stepper WindowTwentyOneLocated WindowTwentyOneBinding
+open Challenge.EvmProof Challenge.EvmProof.Stepper WindowNineLocated WindowNineBinding
 
 /-- Consecutive, individually certified instruction locations. The count bound
 rules out truncated slices rather than silently dropping missing instructions. -/
@@ -69,4 +69,4 @@ def block {artifact : ProgramArtifact} {fork : Fork}
     rw [hopcodes]
     exact hlinear
 
-end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineSlice

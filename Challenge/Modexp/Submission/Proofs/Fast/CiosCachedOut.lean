@@ -25,7 +25,7 @@ theorem run_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     runInstructions outProgram
       (outState s mem pa pb n i pdst ret rest) =
-      some (l1At 4604 s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) := by
+      some (l1At 4348 s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega

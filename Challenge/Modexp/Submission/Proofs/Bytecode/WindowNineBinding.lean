@@ -1,8 +1,8 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLocated
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineLocated
 
 set_option warningAsError true
 
-namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineBinding
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof Challenge.EvmProof.Stepper WindowNibbleKernel
@@ -32,7 +32,7 @@ structure Block (artifact : ProgramArtifact) (fork : Fork) (pc : Nat)
     (instructions : List Instr) where
   path : List (Located artifact fork)
   instructions_eq : path.map Located.instruction = instructions
-  layout : WindowTwentyOneLocated.LinearPath (UInt256.ofNat pc) path
+  layout : WindowNineLocated.LinearPath (UInt256.ofNat pc) path
 
 def Block.steps {artifact : ProgramArtifact} {fork : Fork} {pc : Nat}
     {instructions : List Instr} (block : Block artifact fork pc instructions)
@@ -43,7 +43,7 @@ def Block.steps {artifact : ProgramArtifact} {fork : Fork} {pc : Nat}
     rw [block.instructions_eq]
     exact hrun
   exact runLocatedBlock_sound artifact fork block.path env.code env.forkEq
-    (WindowTwentyOneLocated.run_linear block.path _ s t env.sizeBound block.layout hpc env.running hraw)
+    (WindowNineLocated.run_linear block.path _ s t env.sizeBound block.layout hpc env.running hraw)
     env.running env.noPrecompile
 
-end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineBinding

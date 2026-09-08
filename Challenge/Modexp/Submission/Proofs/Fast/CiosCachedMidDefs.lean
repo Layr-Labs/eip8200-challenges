@@ -16,8 +16,8 @@ open CiosCachedMacCore CiosCached CiosCached
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 def storeProgram : List Instr := midProgram.take 12
-def productProgram : List Instr := (midProgram.drop 12).take 28
-def pointersProgram : List Instr := midProgram.drop 40
+def productProgram : List Instr := (midProgram.drop 12).take 24
+def pointersProgram : List Instr := midProgram.drop 36
 
 theorem program_eq : midProgram = (storeProgram ++ productProgram) ++ pointersProgram := rfl
 
@@ -26,21 +26,21 @@ def baseStack (bi pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) 
 
 def input (s : State) (paj ptj c bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 4907) ([paj, ptj, c] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 4651) ([paj, ptj, c] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 def stored (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed { s with memory := midMem s.memory c } (UInt256.ofNat 4925)
+  framed { s with memory := midMem s.memory c } (UInt256.ofNat 4669)
     (baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 def product (s : State) (n : Nat) (bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 4959)
+  framed s (UInt256.ofNat 4699)
     ([rowC0 s.memory n, rowMu s.memory n] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 def result (s : State) (n : Nat) (bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 4975)
+  framed s (UInt256.ofNat 4719)
     ([UInt256.ofNat (32*n-64), UInt256.ofNat (8192+32*n),
       rowC0 s.memory n, rowMu s.memory n] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
 

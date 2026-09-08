@@ -10,7 +10,7 @@ set_option maxHeartbeats 16000000
 # Fast-path certificate with the shift-reduce base conversion
 
 After `Fast.Setup` and the `R1B` guard, execution reaches the dispatcher at
-pc 3841.  When the base is exactly `n` words wide and the modulus has its top
+pc 3585.  When the base is exactly `n` words wide and the modulus has its top
 bit set, the shift-reduce routine converts the base and rejoins the exponent
 phase at `BDONE`; otherwise the old `r0` block runs the unchanged RR-leading
 chain.
@@ -26,8 +26,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3816).toNat = true :=
-  Exp.jumpD 3816 (by decide) jumpDest4643
+    (UInt256.ofNat 3560).toNat = true :=
+  Exp.jumpD 3560 (by decide) jumpDest4643
 
 /-! ## Facts at `BDONE` on the hit path -/
 
@@ -149,7 +149,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (htz : Model.FastRepresents mem 8256 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
-        (Exp.r1Call s mem 4096 (UInt256.ofNat 3816) n bsize esize msize) final) ∧
+        (Exp.r1Call s mem 4096 (UInt256.ofNat 3560) n bsize esize msize) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hact296 : 296 ≤ s.activeWords.toNat :=
@@ -165,10 +165,10 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
   -- the R1B call
   set mem1 := Exp.r1Mem n 4096 mem with hmem1
   have hr1 : Challenge.EvmProof.GasSteps
-      (Exp.r1Call s mem 4096 (UInt256.ofNat 3816) n bsize esize msize)
+      (Exp.r1Call s mem 4096 (UInt256.ofNat 3560) n bsize esize msize)
       (dispState s mem1 n bsize esize msize) :=
     Exp.gasSteps_r1Block s esize msize hcode hfork hrun hnp hact296 hn hn32
-      (UInt256.ofNat 3816) mem jumpD4643 hframe0
+      (UInt256.ofNat 3560) mem jumpD4643 hframe0
   have hframe1 : Exp.Frame mem1 n bsize minv := Exp.r1Mem_frame hn hn32 hframe0
   have hmod1 : Model.FastRepresents mem1 0 n mm :=
     Exp.r1Mem_modulus hn hn32 hmpos mem hmod0 hr10 hxlt
@@ -245,7 +245,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       (Exp.gasSteps_r0 s mem1 n bsize esize msize hn hn32 hact hframe1.s32 hcode hfork hrun
         hnp).trans
       (Exp.gasSteps_ccbFull s sub hspec esize msize hmpos hn hn32 5120 (by omega) (by omega)
-        (UInt256.ofNat 3330) (Exp.mcopyMem mem1 5120 4096 (32 * n)) (Limbs.radix ^ n % mm)
+        (UInt256.ofNat 3074) (Exp.mcopyMem mem1 5120 4096 (32 * n)) (Limbs.radix ^ n % mm)
         Exp.jumpD3571 hf2 hcc.1 hcc.2 (Nat.mod_lt _ hmpos) hact296 hcode hfork hrun hnp)
     have hframeDirect : Exp.Frame directMem n bsize minv := by
       dsimp only [directMem]

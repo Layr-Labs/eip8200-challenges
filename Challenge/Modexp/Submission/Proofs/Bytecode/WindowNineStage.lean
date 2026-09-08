@@ -3,11 +3,11 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 set_option warningAsError true
 
 /-!
-Artifact-independent staged-modulus execution for the twenty-one-nibble route.
+Artifact-independent staged-modulus execution for the nine-nibble route.
 Concrete bytecode bindings are supplied separately.
 -/
 
-namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneStage
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineStage
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
@@ -144,4 +144,4 @@ theorem run_fourSquares (template : State) (pc accumulator modulus : UInt256)
     ← advancePC_add, show 2 + 2 + 2 + 2 = 8 by decide,
     List.cons_append, List.nil_append] using hall
 
-end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneStage
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineStage

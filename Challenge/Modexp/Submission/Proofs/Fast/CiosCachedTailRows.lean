@@ -26,7 +26,7 @@ theorem run_next (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) (hi : i+1 < n)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4595 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4339 = true) :
     runInstructions tailLoopProgram
       (CiosCached.tailState s mem pmj ptj c mu bi pa pb n i dst ret rest) =
     some (CiosCached.outState s (tailMem mem c) pa pb n (i+1) dst ret rest) := by
@@ -44,7 +44,7 @@ theorem run_last (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) (hi : i+1 = n)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4595 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4339 = true) :
     runInstructions tailLoopProgram
       (CiosCached.tailState s mem pmj ptj c mu bi pa pb n i dst ret rest) =
     some (exitState s (tailMem mem c)
@@ -64,7 +64,7 @@ theorem run_last_exit (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) (hi : i+1 = n)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4595 = true)
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4339 = true)
     (hcsub : Decode.isValidJumpDest s.executionEnv.code 2304 = true) :
     runInstructions (tailLoopProgram ++ exitProgram)
       (CiosCached.tailState s mem pmj ptj c mu bi pa pb n i dst ret rest) =

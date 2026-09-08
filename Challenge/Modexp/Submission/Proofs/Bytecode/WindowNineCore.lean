@@ -1,0 +1,78 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineTableBuild
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineInit
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineLoop
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineReturn
+
+set_option warningAsError true
+
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineCore
+
+open EvmSemantics EvmSemantics.EVM YulEvmCompiler
+open WindowNibbleKernel
+
+def program : List Instr :=
+  WindowNineTableBuild.program ++ WindowNineInit.program ++
+    WindowNineLoop.repeatProgram 7 ++ WindowNineReturn.program
+
+def returnedState (template : State) (base modulus exponent : UInt256)
+    (rest : List UInt256) : State :=
+  let finish := WindowNineLoop.finishState template base modulus exponent rest
+  WindowNineReturn.returned finish (UInt256.ofNat 3033)
+    (WindowNineMath.accumulator base modulus exponent.toNat 63) 16 finish.stack.tail
+
+theorem run_finish (template : State) (base modulus exponent : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructions WindowNineReturn.program
+      (WindowNineLoop.finishState template base modulus exponent rest) =
+    some (returnedState template base modulus exponent rest) := by
+  let finish := WindowNineLoop.finishState template base modulus exponent rest
+  have htail : finish.stack.tail.length + 3 < 1024 := by
+    simp only [finish, WindowNineLoop.finishState, WindowNineGroup.state,
+      WindowNineLookup.framed, List.replicate_zero, List.nil_append, List.cons_append,
+      List.tail_cons, List.length_cons]
+    omega
+  have h := WindowNineReturn.run_return finish (UInt256.ofNat 3028)
+    (WindowNineMath.accumulator base modulus exponent.toNat 63) 16 (by decide) rfl
+    finish.stack.tail htail
+  have hpc : advancePC 5 (UInt256.ofNat 3028) = UInt256.ofNat 3033 := by decide
+  simpa only [returnedState, finish, WindowNineReturn.framed, WindowNineLoop.finishState,
+    WindowNineGroup.state, WindowNineLookup.framed, List.replicate_zero,
+    List.nil_append, List.cons_append, List.tail_cons, hpc] using h
+
+/-- Complete arithmetic path, from the normalized base through the returned word.
+Calldata pointer witnesses and the loop jump certificate remain explicit. -/
+theorem run_core (template : State) (base modulus exponentOffset modulusOffset : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000)
+    (he : rest[4]? = some exponentOffset) (hm : rest[5]? = some modulusOffset)
+    (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus)
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 2821 = true) :
+    runInstructions program
+      (WindowNineTablePrelude.initial template (UInt256.ofNat 2682) base modulus rest) =
+    some (returnedState template base modulus
+      (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) rest) := by
+  let exponent := MachineState.readWord template.executionEnv.calldata exponentOffset.toNat
+  have ht := WindowNineTableBuild.run_all template base modulus exponentOffset rest hrest he
+  have hi := WindowNineInit.run_enter template base modulus exponent modulusOffset rest hrest hm hmodulus
+  have hl := WindowNineLoop.run_seven template base modulus exponent rest hrest hjump
+  have hr := run_finish template base modulus exponent rest hrest
+  have hi' : runInstructions WindowNineInit.program
+      (WindowNineTable.framed template (UInt256.ofNat 2799) base modulus 16 ([base, exponent] ++ rest)) =
+      some (WindowNineLoop.loopState template base modulus exponent 0 rest) := by
+    simpa only [WindowNineLoop.loopState, WindowNineMath.accumulator, WindowNineMath.advance] using hi
+  have hti := runInstructions_append_some _ _ _ _ _ ht hi'
+  have htil := runInstructions_append_some _ _ _ _ _ hti hl
+  exact runInstructions_append_some _ _ _ _ _ htil hr
+
+theorem core_result (template : State) (base modulus exponent : UInt256)
+    (hmodulus : 0 < modulus.toNat) (rest : List UInt256) :
+    (returnedState template base modulus exponent rest).toResult =
+      .returned (Precompile.natToBytes (base.toNat ^ exponent.toNat % modulus.toNat) 32) := by
+  unfold returnedState
+  rw [WindowNineReturn.returned_result]
+  have he : exponent.toNat < 16 ^ 64 := by
+    change exponent.toNat < 2 ^ 256
+    exact exponent.val.isLt
+  have h := WindowNineMath.seven_bodies_toNat base modulus exponent.toNat hmodulus he
+  rw [h]
+
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineCore

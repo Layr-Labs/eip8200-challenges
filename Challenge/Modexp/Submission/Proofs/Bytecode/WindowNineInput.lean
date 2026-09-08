@@ -12,7 +12,7 @@ right-zero-padding semantics. Zero base width and zero modulus values are
 handled explicitly, including the `0^0` convention.
 -/
 
-namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInput
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineInput
 
 open EvmSemantics
 open EvmSemantics.EVM
@@ -165,4 +165,4 @@ theorem emptyBase_spec (input : ByteArray) (hmatch : Matches input)
     simp [baseValue, hbase, Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width]
   rw [hzero]
 
-end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInput
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineInput
