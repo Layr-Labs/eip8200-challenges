@@ -12,7 +12,7 @@ open StackBlockModel StackEndpoint
 
 theorem firstLoad_end : StackFrame.loadSite987.endPC = QuadLayout.leftPC 0 := rfl
 
-theorem secondLoad_start : StackFrame.loadSite1238.startPC = UInt256.ofNat 0xafe := rfl
+theorem secondLoad_start : StackFrame.loadSite1238.startPC = UInt256.ofNat 0xaba := rfl
 
 theorem secondLoad_end : StackFrame.loadSite1238.endPC = QuadLayout.rightPC 0 := rfl
 
@@ -29,7 +29,7 @@ theorem loadEntry_eq_roundEntry (s : State) (pc : UInt256)
 theorem tailEntry_eq_roundEntry (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) :
     QuadTailTemplate.tailEntry s left right ret rest =
-      StackRoundTrace.roundEntry s (UInt256.ofNat 0x140e)
+      StackRoundTrace.roundEntry s (UInt256.ofNat 0x13ca)
         right.a right.b right.c right.d right.e
         (QuadRoundTemplate.factor :: (StackFrame.savedLeft left ++ ret :: rest)) := rfl
 
@@ -53,7 +53,7 @@ theorem routeEntry_atLanePC (s : State) (left : Compression.EvmWorking)
     StackFrame.routeEntry s left rest =
       StackRoundTrace.roundEntry s (QuadLayout.leftPC 20)
         left.a left.b left.c left.d left.e (QuadRoundTemplate.factor :: rest) := by
-  have hpc : QuadLayout.leftPC 20 = UInt256.ofNat 0xafd := by
+  have hpc : QuadLayout.leftPC 20 = UInt256.ofNat 0xab9 := by
     change UInt256.ofNat
       (Artifact.submissionArtifact.instructionPC QuadLayout.routeIndex) = _
     rw [QuadLayout.route_pc]
@@ -82,7 +82,7 @@ theorem tailEntry_atLanePC (s : State) (left right : Compression.EvmWorking)
       StackRoundTrace.roundEntry s (QuadLayout.rightPC 20)
         right.a right.b right.c right.d right.e
         (QuadRoundTemplate.factor :: (StackFrame.savedLeft left ++ ret :: rest)) := by
-  have hpc : QuadLayout.rightPC 20 = UInt256.ofNat 0x140e := by
+  have hpc : QuadLayout.rightPC 20 = UInt256.ofNat 0x13ca := by
     change UInt256.ofNat
       (Artifact.submissionArtifact.instructionPC QuadLayout.tailIndex) = _
     rw [QuadLayout.tail_pc]
@@ -90,9 +90,9 @@ theorem tailEntry_atLanePC (s : State) (left right : Compression.EvmWorking)
   exact tailEntry_eq_roundEntry s left right ret rest
 
 theorem compressReturned_eq_self (s : State) (input : ByteArray) (i : Nat)
-    (hpc : s.pc = UInt256.ofNat 0x1b9) (hstack : s.stack = driverRest input i) :
+    (hpc : s.pc = UInt256.ofNat 0x1403) (hstack : s.stack = driverRest input i) :
     DriverTrace.compressReturned s input i = s := by
-  change {s with pc := UInt256.ofNat 0x1b9, stack := driverRest input i} = s
+  change {s with pc := UInt256.ofNat 0x1403, stack := driverRest input i} = s
   rw [← hpc, ← hstack]
 
 theorem resultState_returned (s : State) (input : ByteArray) (i : Nat) :

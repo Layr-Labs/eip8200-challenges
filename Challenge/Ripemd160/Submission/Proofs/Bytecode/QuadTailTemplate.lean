@@ -25,8 +25,8 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTail
 
 def factor : UInt256 := UInt256.ofNat 0x100000001
 
-def tailStartPC : UInt256 := UInt256.ofNat 5134
-def tailJumpPC : UInt256 := UInt256.ofNat 5191
+def tailStartPC : UInt256 := UInt256.ofNat 5066
+def tailJumpPC : UInt256 := UInt256.ofNat 5123
 
 def swap5H : Instr := .op (.Swap ⟨4, by decide⟩)
 def swap6H : Instr := .op (.Swap ⟨5, by decide⟩)
@@ -72,7 +72,7 @@ def quadTailBeforeJumpTemplate : List Instr :=
 
 /-- Reachable consume body, including the return `JUMP`. -/
 def consumeBody : List Instr :=
-  quadTailBeforeJumpTemplate ++ [op .JUMP]
+  quadTailBeforeJumpTemplate
 
 /-- Unreachable padding after the return `JUMP`. Not executed. -/
 def paddingStops : List Instr :=
@@ -105,20 +105,18 @@ def beforeJumpResult (s : State) (left right : Compression.EvmWorking)
 
 def finalResult (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : State :=
-  { beforeJumpResult s left right ret rest with
-    pc := ret
-    stack := rest }
+  beforeJumpResult s left right ret rest
 
-@[simp] theorem consumeBody_length : consumeBody.length = 53 := by
+@[simp] theorem consumeBody_length : consumeBody.length = 52 := by
   rfl
 
 @[simp] theorem paddingStops_length : paddingStops.length = 9 := by
   rfl
 
-@[simp] theorem quadTailWindow_length : quadTailWindow.length = 62 := by
+@[simp] theorem quadTailWindow_length : quadTailWindow.length = 61 := by
   rfl
 
-@[simp] theorem quadTailTemplate_length : quadTailTemplate.length = 53 := by
+@[simp] theorem quadTailTemplate_length : quadTailTemplate.length = 52 := by
   rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailTemplate
