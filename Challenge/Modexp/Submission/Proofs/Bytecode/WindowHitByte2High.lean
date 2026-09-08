@@ -17,9 +17,9 @@ set_option linter.unusedSimpArgs false in
 theorem run_prep (template : State) (base modulus word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (highPrepPath 2)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3372)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3162)
         base modulus word pointer accumulator rest) =
-    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3380)
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3170)
       base modulus (highNibble 2 word) (byteValue 2 word) word pointer
       accumulator rest) := by
   have h4 : rest.length + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -51,9 +51,9 @@ theorem run_squareLookup (template : State) (base modulus : UInt256)
     (rest : List UInt256) (hnibble : nibble < 16)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (highSquareLookupPath 2)
-      (nibbleState { template with halt := .Running } (UInt256.ofNat 3380)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3170)
         base modulus nibble byte word pointer accumulator rest) =
-    some (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 3416)
+    some (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 3206)
       base modulus nibble byte word pointer accumulator
       (WindowMath.nibbleWordStep modulus base accumulator nibble) rest) := by
   have hshift := shift_nibble nibble hnibble
