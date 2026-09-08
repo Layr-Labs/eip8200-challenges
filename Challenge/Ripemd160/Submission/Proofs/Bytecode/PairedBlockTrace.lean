@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockModel
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedCoreSites
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedHoistedCoreSites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBoundarySites
 
 set_option warningAsError true
@@ -74,7 +74,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
       {q with pc := UInt256.ofNat 857, stack := rho} := gschedule
   have gstartup := PairedBoundarySites.gasSteps_startup q rho hstack qrun qactive
     qcode qfork qnp
-  have gcore := PairedCoreSites.gasSteps_core_normalized q (blockWords input i) lane lane rho
+  have gcore := PairedHoistedCoreSites.gasSteps_core_normalized q (blockWords input i) lane lane rho
     hstack qrun qactive qcode qfork qnp (scheduled_ready s input i h hfit hi ctx)
   have hentry :
       {q with
@@ -85,11 +85,11 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     rw [startup_stack, scheduled_readLane]
   have htail :
       {q with
-        pc := UInt256.ofNat 5083
+        pc := UInt256.ofNat 5068
         stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower]
           (coreCryptoResult (blockWords input i) lane lane) rho} =
       {q with
-        pc := UInt256.ofNat 5083
+        pc := UInt256.ofNat 5068
         stack := PairedTailTrace.entryStack (resultFrame s input i)
           (UInt256.ofNat 102) (driverRest input i)} := by
     rw [show coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower]
@@ -101,7 +101,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     (valid_return q qcode) qcode qfork qnp
   have gtail' : GasSteps
       {q with
-        pc := UInt256.ofNat 5083
+        pc := UInt256.ofNat 5068
         stack := PairedTailTrace.entryStack (resultFrame s input i)
           (UInt256.ofNat 102) (driverRest input i)}
       (DriverTrace.compressReturned (resultState s input i) input i) := gtail
