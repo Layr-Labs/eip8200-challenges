@@ -29,18 +29,18 @@ theorem initialWorking_scheduled (s : State) (input : ByteArray) (i : Nat) :
 theorem tailResult_eq_resultState (s : State) (input : ByteArray) (i : Nat) :
     StackTail.tailResult (scheduledState s input i)
       (leftWorking s input i) (rightWorking s input i)
-      (UInt256.ofNat 0x1b9) (driverRest input i) = resultState s input i := by
+      (DriverTrace.blockOffsetWord i) [Padding.paddedWord input] = resultState s input i := by
   simp only [StackTail.tailResult, StackTail.preJumpResult, StackTail.combined,
-    resultState, resultHash, StackCompression.compress, leftWorking, rightWorking,
+    resultState, driverRest, resultHash, StackCompression.compress, leftWorking, rightWorking,
     initialWorking, scheduledState_hash]
 
 theorem quadTailResult_eq_resultState (s : State) (input : ByteArray) (i : Nat) :
     QuadTailTemplate.finalResult (scheduledState s input i)
       (leftWorking s input i) (rightWorking s input i)
-      (UInt256.ofNat 0x1b9) (driverRest input i) = resultState s input i :=
+      (DriverTrace.blockOffsetWord i) [Padding.paddedWord input] = resultState s input i :=
   tailResult_eq_resultState s input i
 
-theorem rightPC_last : QuadLayout.rightPC 20 = UInt256.ofNat 5134 := by
+theorem rightPC_last : QuadLayout.rightPC 20 = UInt256.ofNat 5066 := by
   change UInt256.ofNat
     (Artifact.submissionArtifact.instructionPC QuadLayout.tailIndex) = _
   rw [QuadLayout.tail_pc]

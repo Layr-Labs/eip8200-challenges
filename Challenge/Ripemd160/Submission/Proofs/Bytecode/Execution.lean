@@ -30,7 +30,7 @@ private def wfOp {op : Operation}
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
 
-def mainStart (input : ByteArray) : State := atPC input 0x155
+def mainStart (input : ByteArray) : State := atPC input 0x154
 
 def path_start : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -39,7 +39,7 @@ def path_start : List
 
 def path_3ee : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨183, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨182, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
     (hne256 : input.size ≠ 256) :
@@ -47,9 +47,9 @@ def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
   Prefix256Entry.gasSteps_skip input hfit hne256
 
 def gasSteps_3ee (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 0x154) (mainStart input) := by
+    Challenge.EvmProof.GasSteps (atPC input 0x153) (mainStart input) := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_3ee
-      (atPC input 0x154) = some (mainStart input) := by
+      (atPC input 0x153) = some (mainStart input) := by
     simp [path_3ee, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, mainStart, initialState]
@@ -63,7 +63,7 @@ def gasSteps_3ee (input : ByteArray) :
 
 def gasSteps_entry (input : ByteArray)
     (entryPrefix : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (atPC input 0x154)) :
+      (atPC input 0x153)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (mainStart input) :=
   entryPrefix.trans (gasSteps_3ee input)

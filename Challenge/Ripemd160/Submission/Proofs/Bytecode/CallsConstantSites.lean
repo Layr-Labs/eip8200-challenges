@@ -20,7 +20,7 @@ theorem code_bound : A.code.size < UInt256.size := by
   decide
 
 private theorem left2_slice :
-    (A.instructions.drop 914).take left2Code.length = left2Code := by
+    (A.instructions.drop 880).take left2Code.length = left2Code := by
   rfl
 
 private theorem left2_wellFormed : ∀ instruction ∈ left2Code,
@@ -28,19 +28,19 @@ private theorem left2_wellFormed : ∀ instruction ∈ left2Code,
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def left2 : GenericRoundSite A .Osaka left2Code :=
-  StackSiteBuilder.ofSlice _ 914 left2_slice (by
-    change 914 + left2Code.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 880 left2_slice (by
+    change 880 + left2Code.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound left2_wellFormed (by decide)
 
-theorem left2_start : left2.startPC = UInt256.ofNat 1490 := by
+theorem left2_start : left2.startPC = UInt256.ofNat 1422 := by
   rfl
 
-theorem left2_end : left2.endPC = UInt256.ofNat 1992 := by
+theorem left2_end : left2.endPC = UInt256.ofNat 1924 := by
   rfl
 
 private theorem left4_slice :
-    (A.instructions.drop 1537).take left4Code.length = left4Code := by
+    (A.instructions.drop 1503).take left4Code.length = left4Code := by
   rfl
 
 private theorem left4_wellFormed : ∀ instruction ∈ left4Code,
@@ -48,19 +48,19 @@ private theorem left4_wellFormed : ∀ instruction ∈ left4Code,
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def left4 : GenericRoundSite A .Osaka left4Code :=
-  StackSiteBuilder.ofSlice _ 1537 left4_slice (by
-    change 1537 + left4Code.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 1503 left4_slice (by
+    change 1503 + left4Code.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound left4_wellFormed (by decide)
 
-theorem left4_start : left4.startPC = UInt256.ofNat 2311 := by
+theorem left4_start : left4.startPC = UInt256.ofNat 2243 := by
   rfl
 
-theorem left4_end : left4.endPC = UInt256.ofNat 2813 := by
+theorem left4_end : left4.endPC = UInt256.ofNat 2745 := by
   rfl
 
 private theorem right0_slice :
-    (A.instructions.drop 1998).take right0Code.length = right0Code := by
+    (A.instructions.drop 1964).take right0Code.length = right0Code := by
   rfl
 
 private theorem right0_wellFormed : ∀ instruction ∈ right0Code,
@@ -68,19 +68,19 @@ private theorem right0_wellFormed : ∀ instruction ∈ right0Code,
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def right0 : GenericRoundSite A .Osaka right0Code :=
-  StackSiteBuilder.ofSlice _ 1998 right0_slice (by
-    change 1998 + right0Code.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 1964 right0_slice (by
+    change 1964 + right0Code.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound right0_wellFormed (by decide)
 
-theorem right0_start : right0.startPC = UInt256.ofNat 2829 := by
+theorem right0_start : right0.startPC = UInt256.ofNat 2761 := by
   rfl
 
-theorem right0_end : right0.endPC = UInt256.ofNat 3331 := by
+theorem right0_end : right0.endPC = UInt256.ofNat 3263 := by
   rfl
 
 private theorem right1_slice :
-    (A.instructions.drop 2448).take right1Code.length = right1Code := by
+    (A.instructions.drop 2414).take right1Code.length = right1Code := by
   rfl
 
 private theorem right1_wellFormed : ∀ instruction ∈ right1Code,
@@ -88,19 +88,19 @@ private theorem right1_wellFormed : ∀ instruction ∈ right1Code,
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def right1 : GenericRoundSite A .Osaka right1Code :=
-  StackSiteBuilder.ofSlice _ 2448 right1_slice (by
-    change 2448 + right1Code.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 2414 right1_slice (by
+    change 2414 + right1Code.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound right1_wellFormed (by decide)
 
-theorem right1_start : right1.startPC = UInt256.ofNat 3331 := by
+theorem right1_start : right1.startPC = UInt256.ofNat 3263 := by
   rfl
 
-theorem right1_end : right1.endPC = UInt256.ofNat 3849 := by
+theorem right1_end : right1.endPC = UInt256.ofNat 3781 := by
   rfl
 
 private theorem right2_slice :
-    (A.instructions.drop 2914).take right2Code.length = right2Code := by
+    (A.instructions.drop 2880).take right2Code.length = right2Code := by
   rfl
 
 private theorem right2_wellFormed : ∀ instruction ∈ right2Code,
@@ -108,15 +108,15 @@ private theorem right2_wellFormed : ∀ instruction ∈ right2Code,
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def right2 : GenericRoundSite A .Osaka right2Code :=
-  StackSiteBuilder.ofSlice _ 2914 right2_slice (by
-    change 2914 + right2Code.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 2880 right2_slice (by
+    change 2880 + right2Code.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound right2_wellFormed (by decide)
 
-theorem right2_start : right2.startPC = UInt256.ofNat 3849 := by
+theorem right2_start : right2.startPC = UInt256.ofNat 3781 := by
   rfl
 
-theorem right2_end : right2.endPC = UInt256.ofNat 4351 := by
+theorem right2_end : right2.endPC = UInt256.ofNat 4283 := by
   rfl
 
 private def advancesCheck : Instr → Bool

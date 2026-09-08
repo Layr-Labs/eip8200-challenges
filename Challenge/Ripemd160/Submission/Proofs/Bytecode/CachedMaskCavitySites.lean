@@ -28,7 +28,7 @@ theorem pc_toNat (index : Nat) :
     (A.instructionPC_le_code_size index) code_bound)
 
 private theorem left0First_slice :
-    (A.instructions.drop 341).take (CachedMaskParams.leftCode 0).length =
+    (A.instructions.drop 307).take (CachedMaskParams.leftCode 0).length =
       CachedMaskParams.leftCode 0 := by rfl
 
 private theorem wellFormed_left0First : ∀ instruction ∈ CachedMaskParams.leftCode 0,
@@ -36,8 +36,8 @@ private theorem wellFormed_left0First : ∀ instruction ∈ CachedMaskParams.lef
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def left0First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 0) :=
-  StackSiteBuilder.ofSlice _ 341 left0First_slice (by
-    change 341 + (CachedMaskParams.leftCode 0).length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 307 left0First_slice (by
+    change 307 + (CachedMaskParams.leftCode 0).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left0First (by decide)
 
@@ -45,7 +45,7 @@ abbrev left2First := CallsConstantSites.left2
 abbrev left4First := CallsConstantSites.left4
 
 private theorem rightFirst_slice :
-    (A.instructions.drop 3537).take CachedMaskParams.rightCode.length =
+    (A.instructions.drop 3503).take CachedMaskParams.rightCode.length =
       CachedMaskParams.rightCode := by rfl
 
 private theorem wellFormed_rightFirst : ∀ instruction ∈ CachedMaskParams.rightCode,
@@ -53,8 +53,8 @@ private theorem wellFormed_rightFirst : ∀ instruction ∈ CachedMaskParams.rig
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def rightFirst : GenericRoundSite A .Osaka CachedMaskParams.rightCode :=
-  StackSiteBuilder.ofSlice _ 3537 rightFirst_slice (by
-    change 3537 + CachedMaskParams.rightCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 3503 rightFirst_slice (by
+    change 3503 + CachedMaskParams.rightCode.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_rightFirst (by decide)
 

@@ -128,8 +128,7 @@ def preJumpResult (s : State) (left right : Compression.EvmWorking)
 def tailResult (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : State :=
   { preJumpResult s left right ret rest with
-    pc := ret
-    stack := rest }
+    pc := UInt256.ofNat 0x1403 }
 
 def runTailInstrs : List Instr → State → Option State
   | [], s => some s
@@ -306,15 +305,5 @@ theorem run_tail60 (s : State) (left right : Compression.EvmWorking)
       StackMemory.hashAt]
   decide
 
-theorem run_tail_jump (s : State) (left right : Compression.EvmWorking)
-    (ret : UInt256) (rest : List UInt256)
-    (_hactive : 11 ≤ s.activeWords.toNat)
-    (hstack : rest.length < 1009)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
-    runTailInstrs finalJumpInstructions (preJumpResult s left right ret rest) =
-      some (tailResult s left right ret rest) := by
-  have hcap1 : rest.length + 1 < 1024 := by omega
-  simp [runTailInstrs, finalJumpInstructions, preJumpResult, tailResult,
-    Challenge.EvmProof.Stepper.runInstr, hvalid, hcap1]
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTail

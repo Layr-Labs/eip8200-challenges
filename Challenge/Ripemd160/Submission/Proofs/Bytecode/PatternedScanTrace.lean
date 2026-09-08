@@ -74,21 +74,21 @@ def compareState (input : ByteArray) (k s : Nat) (a : UInt256) : State :=
 /-- At the head of the correction block, for a straddling offset. -/
 def straddleState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x12c
+    pc := UInt256.ofNat 0x12b
     stack := rawWord k :: UInt256.mul M (UInt256.ofNat (scalarAt k)) ::
       UInt256.ofNat (scalarAt k) :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- After the thirty-one words, at the padded tail. -/
 def tailState (input : ByteArray) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0xef
+    pc := UInt256.ofNat 0xee
     stack := UInt256.ofNat (scalarAt 31) :: UInt256.ofNat 992 :: a :: frame }
 
 /-- The stub jumps here, and the guard answers or falls through.  -/
 def patternedEntry (input : ByteArray) : State := atPC input 0x7c
 
-def hitState (input : ByteArray) : State := atPC input 0x111
-def fallbackState (input : ByteArray) : State := atPC input 0x154
+def hitState (input : ByteArray) : State := atPC input 0x110
+def fallbackState (input : ByteArray) : State := atPC input 0x153
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded word.toNat 32) address
@@ -97,7 +97,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x12b
+    pc := UInt256.ofNat 0x12a
     memory := answerMemory
     activeWords := UInt256.ofNat 1
     halt := .Returned
@@ -105,14 +105,14 @@ def returnedState (input : ByteArray) : State :=
 
 theorem run_setup (input : ByteArray) :
     run setupPath (atPC input 0x7c) = some (loopState input 0 0) := by
-  have hpc3229 : Artifact.submissionArtifact.instructionPC 56 = 127 := by rfl
-  have hpc3230 : Artifact.submissionArtifact.instructionPC 57 = 128 := by rfl
-  have hpc3231 : Artifact.submissionArtifact.instructionPC 58 = 129 := by rfl
-  have hpc3233 : Artifact.submissionArtifact.instructionPC 60 = 163 := by rfl
-  have hpc3234 : Artifact.submissionArtifact.instructionPC 61 = 164 := by rfl
-  have hpc3235 : Artifact.submissionArtifact.instructionPC 62 = 166 := by rfl
-  have hpc3236 : Artifact.submissionArtifact.instructionPC 63 = 167 := by rfl
-  have hpc3238 : Artifact.submissionArtifact.instructionPC 65 = 169 := by rfl
+  have hpc3229 : Artifact.submissionArtifact.instructionPC 56 = 127 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3230 : Artifact.submissionArtifact.instructionPC 57 = 128 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3231 : Artifact.submissionArtifact.instructionPC 58 = 129 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3233 : Artifact.submissionArtifact.instructionPC 60 = 163 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3234 : Artifact.submissionArtifact.instructionPC 61 = 164 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3235 : Artifact.submissionArtifact.instructionPC 62 = 166 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3236 : Artifact.submissionArtifact.instructionPC 63 = 167 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3238 : Artifact.submissionArtifact.instructionPC 65 = 169 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := rfl
   have hhigh := CompactGuardConstants.repeated_high_ofNat
   simp only [M, m8] at hhigh
@@ -197,16 +197,16 @@ theorem run_word_straddle (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 
       rw [Challenge.EvmProof.Word.word_toNat_ofNat,
         Nat.mod_eq_of_lt (by norm_num : 224 < 2 ^ 256), hval, h])]
     decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x12c = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 150 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x12b = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 149 (by rfl)
   have hdestN : Decode.isValidJumpDest submissionBytecode
-      (UInt256.ofNat 300).toNat = true := by
+      (UInt256.ofNat 299).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (by norm_num : 300 < 2 ^ 256)]
+      Nat.mod_eq_of_lt (by norm_num : 299 < 2 ^ 256)]
     exact hdest
   have hdestL : Decode.isValidJumpDest submissionBytecode
-      ((300 : UInt256)).toNat = true := by
-    rw [show ((300 : UInt256)).toNat = 300 from by decide]
+      ((299 : UInt256)).toNat = true := by
+    rw [show ((299 : UInt256)).toNat = 299 from by decide]
     exact hdest
   simp (config := { maxSteps := 800000 })
     [wordPath, opAt, pushAt, wfOp, loopState, straddleState, frame, rawWord,

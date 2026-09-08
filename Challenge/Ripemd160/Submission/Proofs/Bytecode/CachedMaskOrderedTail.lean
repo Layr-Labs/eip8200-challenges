@@ -14,6 +14,14 @@ open QuadTailTemplate QuadSwapLemmas StackRoundTemplate
 
 abbrev runInstrSeq := StackRoundTrace.runInstrSeq
 
+@[simp] private theorem succSmall (n : Nat) (h : n + 1 < 2 ^ 256) :
+    (UInt256.ofNat n).succ = UInt256.ofNat (n + 1) :=
+  Challenge.EvmProof.Word.succ_ofNat h
+
+@[simp] private theorem addSmall (a b : Nat) (h : a + b < 2 ^ 256) :
+    UInt256.ofNat a + UInt256.ofNat b = UInt256.ofNat (a + b) :=
+  Challenge.EvmProof.Word.ofNat_add_ofNat h
+
 open private
   activeWordsAfter_tail
   readWord_writeHashWord_disjoint
@@ -112,8 +120,7 @@ def template : List Instr :=
    .op .MSTORE,
    .push 1 (UInt256.ofNat 96),
    .op .MSTORE,
-   .op .POP,
-   .op .JUMP]
+   .op .POP]
 
 def entry (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : State :=
@@ -126,8 +133,7 @@ theorem run (s : State)
     (hrun : s.halt = .Running)
     (_hfork : s.fork = .Osaka)
     (hactive : 11 ≤ s.activeWords.toNat)
-    (hstack : rest.length < 1006)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
+    (hstack : rest.length < 1006) :
     runInstrSeq template (entry s left right ret rest) =
       some (finalResult s left right ret rest) := by
   have hcap0 : rest.length < 1024 := by omega
@@ -160,7 +166,7 @@ theorem run (s : State)
       read160_write96, read160_write128, read32_write64, read32_write96,
       read32_write128, read32_write160, mask32_push,
       exchange_swap1, exchange_swap2, exchange_swap3, exchange_swap5,
-      exchange_swap6, exchange_swap7, exchange_swap8, exchange_swap4, hrun, hactive, hstack, hvalid,
+      exchange_swap6, exchange_swap7, exchange_swap8, exchange_swap4, hrun, hactive, hstack,
       hcap0, hcap1, hcap2, hcap3, hcap4, hcap5, hcap6, hcap7, hcap8, hcap9,
       hcap10, hcap11, hcap12, hcap13, hcap14, hcap15, hcap16,
       add_assoc, add_left_comm, Word.word_add_comm, Nat.add_assoc,
