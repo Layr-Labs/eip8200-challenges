@@ -3885,7 +3885,7 @@ private def submissionInstructionsChunk18 : List Instr :=
   .push 20 233347948783734465632298330963582576039387513209,
   .push 0 0,
   op 0x52,
-  .push 1 32,
+  op 0x59,
   .push 0 0,
   op 0xf3,
 ]
