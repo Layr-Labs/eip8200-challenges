@@ -3,10 +3,10 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 
 set_option warningAsError true
 
-namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineCorrect
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCorrect
 
 open EvmSemantics EvmSemantics.EVM
-open WindowNineBinding WindowNinePositive
+open WindowTwentyOneBinding WindowTwentyOnePositive
 
 private def environment (input : ByteArray) :
     Environment Artifact.submissionArtifact .Osaka (Main.headerState input) where
@@ -29,11 +29,11 @@ private theorem miss_eq (input : ByteArray) :
       Dispatch.wordEntryState input := by
   rfl
 
-def handled (input : ByteArray) (hmatch : WindowNineInput.Matches input) :
+def handled (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
     WindowRoute.Handled input := by
-  obtain ⟨final, ⟨trace⟩, done, result⟩ := WindowNineGasRoute.handled
-    Artifact.ninePaths (Main.headerState input) (environment input) rfl input hmatch
-  have guard := WindowNineGasRoute.steps_hit Artifact.ninePaths
+  obtain ⟨final, ⟨trace⟩, done, result⟩ := WindowTwentyOneGasRoute.handled
+    Artifact.twentyOnePaths (Main.headerState input) (environment input) rfl input hmatch
+  have guard := WindowTwentyOneGasRoute.steps_hit Artifact.twentyOnePaths
     (Main.headerState input) (environment input) input hmatch
   refine ⟨final, ⟨?_⟩, done, result⟩
   change Challenge.EvmProof.GasSteps (Dispatch.wordRouteEntryState input) final
@@ -43,9 +43,9 @@ def handled (input : ByteArray) (hmatch : WindowNineInput.Matches input) :
 def route : WindowRoute.Route where
   enter := Dispatch.gasSteps_wordRouteEnter
   miss := fun input _ _ _ hmiss => by
-    have h := WindowNineGasRoute.steps_miss Artifact.ninePaths
+    have h := WindowTwentyOneGasRoute.steps_miss Artifact.twentyOnePaths
       (Main.headerState input) (environment input) input hmiss
     simpa only [entry_eq, miss_eq] using h
   hit := fun input _ _ _ hmatch => handled input hmatch
 
-end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineCorrect
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCorrect

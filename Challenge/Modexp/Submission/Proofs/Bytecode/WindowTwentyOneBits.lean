@@ -10,7 +10,7 @@ change a nibble whose four selected bits remain inside the word. These lemmas
 cover every such shift and digit, rather than particular exponent values.
 -/
 
-namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineBits
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBits
 
 open EvmSemantics
 
@@ -69,10 +69,10 @@ theorem lookupAddress_toNat (value : UInt256) (shift : Nat) (hshift : shift < 25
   norm_num only [Nat.reducePow]
   exact Nat.mul_comm _ 32
 
-/-- An exponent shifted by `processed` nibbles exposes the next nine lookup
-addresses using the three physical groups' shifts 247,243,...,215. -/
+/-- An exponent shifted by `processed` nibbles exposes the next twenty-one lookup
+addresses using the seven physical groups' shifts 247,243,...,167. -/
 theorem shifted_lookupAddress (exponent : UInt256) (processed index : Nat)
-    (hindex : index < 9) (hinside : processed + index < 64) :
+    (hindex : index < 21) (hinside : processed + index < 64) :
     (lookupAddress
       (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed)))
       (247 - 4 * index)).toNat =
@@ -89,4 +89,4 @@ theorem shifted_lookupAddress (exponent : UInt256) (processed index : Nat)
     rw [Nat.pow_mul]
   rw [hpow]
 
-end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineBits
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBits

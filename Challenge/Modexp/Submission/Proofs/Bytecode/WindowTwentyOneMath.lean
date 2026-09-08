@@ -3,16 +3,16 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WindowMath
 set_option warningAsError true
 
 /-!
-# Artifact-independent arithmetic for a nine-nibble window body
+# Artifact-independent arithmetic for a twenty-one-nibble window body
 
 The exponent is one 256-bit word. Its first nibble initializes the table
-accumulator; seven bodies consume nine further nibbles each. The arithmetic
+accumulator; three bodies consume twenty-one further nibbles each. The arithmetic
 does not assume a base width, and the same result supports both the full-word
 and positive short-base parsers. No execution or artifact theorem is asserted
 in this module.
 -/
 
-namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineMath
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneMath
 
 open EvmSemantics
 open EvmSemantics.EVM
@@ -116,16 +116,16 @@ theorem accumulator_mod (base modulus : UInt256) (exponent count : Nat)
       rw [show 1 + count = count + 1 by omega,
         ← prefix_succ exponent (count + 1) (by omega)]
 
-theorem accumulator_nine (base modulus : UInt256) (exponent count : Nat) :
-    accumulator base modulus exponent (count + 9) =
-      advance base modulus exponent (1 + count) 9
+theorem accumulator_twentyOne (base modulus : UInt256) (exponent count : Nat) :
+    accumulator base modulus exponent (count + 21) =
+      advance base modulus exponent (1 + count) 21
         (accumulator base modulus exponent count) := by
-  exact advance_add base modulus exponent 1 count 9 _
+  exact advance_add base modulus exponent 1 count 21 _
 
-/-- First nibble plus seven nine-nibble bodies is the full exponent word. -/
-theorem seven_bodies_toNat (base modulus : UInt256) (exponent : Nat)
+/-- First nibble plus three twenty-one-nibble bodies is the full exponent word. -/
+theorem three_bodies_toNat (base modulus : UInt256) (exponent : Nat)
     (hmodulus : 0 < modulus.toNat) (hexponent : exponent < 16 ^ 64) :
-    (accumulator base modulus exponent (7 * 9)).toNat =
+    (accumulator base modulus exponent (3 * 21)).toNat =
       base.toNat ^ exponent % modulus.toNat := by
   have hlt : (accumulator base modulus exponent 63).toNat < modulus.toNat := by
     change (WindowMath.nibbleWordStep modulus base
@@ -136,4 +136,4 @@ theorem seven_bodies_toNat (base modulus : UInt256) (exponent : Nat)
   rw [Nat.mod_eq_of_lt hlt] at h
   simpa [exponentPrefix] using h
 
-end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineMath
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneMath

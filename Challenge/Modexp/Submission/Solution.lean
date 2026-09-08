@@ -1,7 +1,7 @@
 import Challenge.Modexp.Benchmark.Artifact
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftCorrect
 import Challenge.Modexp.Submission.Proofs.Fast.WindowCorrect
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineCorrect
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCorrect
 
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -30,6 +30,6 @@ theorem candidateFromWindow
 concrete fixed-width window route and the complete legacy fallback. -/
 theorem candidate : Challenge.Modexp.Correct bytecode :=
   candidateFromWindow
-    Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineCorrect.route
+    Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCorrect.route
 
 end Challenge.Modexp.Benchmark

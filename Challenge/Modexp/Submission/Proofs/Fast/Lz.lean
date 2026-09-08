@@ -111,7 +111,7 @@ def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
 /-- The state handed to the relocated leading-bit shortcut at pc3865. -/
 def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3368
+  { s with pc := UInt256.ofNat 3624
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 

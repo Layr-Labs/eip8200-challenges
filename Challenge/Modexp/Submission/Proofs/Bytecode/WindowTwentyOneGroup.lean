@@ -1,16 +1,16 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineStage
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineLookup
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneStage
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLookup
 
 set_option warningAsError true
 
-namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineGroup
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGroup
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
 
 def state (template : State) (pc base modulus accumulator exponent counter : UInt256)
     (copies : Nat) (rest : List UInt256) : State :=
-  WindowNineLookup.framed template pc base modulus
+  WindowTwentyOneLookup.framed template pc base modulus
     (accumulator :: List.replicate copies modulus ++
       ([modulus, exponent, UInt256.ofNat 480, counter] ++ rest))
 
@@ -19,8 +19,8 @@ def address (exponent : UInt256) (shift : Fin 256) : Nat :=
     (UInt256.shiftRight exponent (UInt256.ofNat shift.val))).toNat
 
 def nibbleProgram (copies : Nat) (hcopies : copies ≤ 10) (shift : Fin 256) : List Instr :=
-  WindowNineStage.fourSquaresProgram ++
-    WindowNineLookup.program (copies + 1) (by omega) shift
+  WindowTwentyOneStage.fourSquaresProgram ++
+    WindowTwentyOneLookup.program (copies + 1) (by omega) shift
 
 /-- One staged nibble consumes five modulus copies and leaves its entire tail. -/
 theorem run_nibble (template : State) (pc base modulus accumulator exponent counter : UInt256)
@@ -34,19 +34,19 @@ theorem run_nibble (template : State) (pc base modulus accumulator exponent coun
       exponent counter copies rest) := by
   let tail := List.replicate copies modulus ++
     ([modulus, exponent, UInt256.ofNat 480, counter] ++ rest)
-  let core := WindowNineLookup.framed template pc base modulus []
+  let core := WindowTwentyOneLookup.framed template pc base modulus []
   let squared := WindowMath.squareWordAfter modulus 4 accumulator
-  have hsquare := WindowNineStage.run_fourSquares core pc accumulator modulus
+  have hsquare := WindowTwentyOneStage.run_fourSquares core pc accumulator modulus
     (modulus :: tail)
     (by simp only [tail, List.length_cons, List.length_append, List.length_replicate,
           List.length_nil]; omega)
   have hsquare' :
-      runInstructions WindowNineStage.fourSquaresProgram
+      runInstructions WindowTwentyOneStage.fourSquaresProgram
         (state template pc base modulus accumulator exponent counter (copies + 5) rest) =
-      some (WindowNineLookup.framed template (advancePC 8 pc) base modulus
+      some (WindowTwentyOneLookup.framed template (advancePC 8 pc) base modulus
         (squared :: modulus :: tail)) := by
-    simpa only [state, core, tail, squared, WindowNineStage.framed,
-      WindowNineLookup.framed, List.replicate_succ, List.cons_append, List.nil_append] using hsquare
+    simpa only [state, core, tail, squared, WindowTwentyOneStage.framed,
+      WindowTwentyOneLookup.framed, List.replicate_succ, List.cons_append, List.nil_append] using hsquare
   have hexponent : tail[copies + 1]? = some exponent := by
     dsimp only [tail]
     rw [List.getElem?_append_right (by simp)]
@@ -55,7 +55,7 @@ theorem run_nibble (template : State) (pc base modulus accumulator exponent coun
     dsimp only [tail]
     rw [List.getElem?_append_right (by simp)]
     simp
-  have hlookup := WindowNineLookup.run_lookup template (advancePC 8 pc)
+  have hlookup := WindowTwentyOneLookup.run_lookup template (advancePC 8 pc)
     base modulus squared exponent tail (copies + 1) (by omega) shift index hindex
     hexponent hmask haddress
     (by simp only [tail, List.length_append, List.length_replicate,
@@ -66,7 +66,7 @@ theorem run_nibble (template : State) (pc base modulus accumulator exponent coun
     ← advancePC_add, show 8 + 8 = 16 by decide, List.cons_append] using both
 
 def program (shift0 shift1 shift2 : Fin 256) : List Instr :=
-  WindowNineStage.stageProgram ++ nibbleProgram 10 (by decide) shift0 ++
+  WindowTwentyOneStage.stageProgram ++ nibbleProgram 10 (by decide) shift0 ++
     nibbleProgram 5 (by decide) shift1 ++ nibbleProgram 0 (by decide) shift2
 
 def accumulatorAfter (base modulus accumulator : UInt256)
@@ -88,16 +88,16 @@ theorem run_group (template : State) (pc base modulus accumulator exponent count
     some (state template (advancePC 64 pc) base modulus
       (accumulatorAfter base modulus accumulator index0 index1 index2)
       exponent counter 0 rest) := by
-  let core := WindowNineLookup.framed template pc base modulus []
+  let core := WindowTwentyOneLookup.framed template pc base modulus []
   let a1 := WindowMath.nibbleWordStep modulus base accumulator index0
   let a2 := WindowMath.nibbleWordStep modulus base a1 index1
-  have hs := WindowNineStage.run_stage core pc accumulator modulus exponent
+  have hs := WindowTwentyOneStage.run_stage core pc accumulator modulus exponent
     (UInt256.ofNat 480) counter rest hrest
   have hs' :
-      runInstructions WindowNineStage.stageProgram
+      runInstructions WindowTwentyOneStage.stageProgram
         (state template pc base modulus accumulator exponent counter 0 rest) =
       some (state template (advancePC 16 pc) base modulus accumulator exponent counter 15 rest) := by
-    simpa only [state, core, WindowNineStage.framed, WindowNineLookup.framed,
+    simpa only [state, core, WindowTwentyOneStage.framed, WindowTwentyOneLookup.framed,
       List.replicate_zero, List.nil_append, List.cons_append, List.append_assoc] using hs
   have h0 := run_nibble template (advancePC 16 pc) base modulus accumulator exponent counter
     10 (by decide) shift0 index0 hi0 ha0 rest hrest
@@ -111,4 +111,4 @@ theorem run_group (template : State) (pc base modulus accumulator exponent count
   simpa only [program, a1, a2, accumulatorAfter, ← advancePC_add,
     show 16 + 16 + 16 + 16 = 64 by decide] using hall
 
-end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineGroup
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGroup
