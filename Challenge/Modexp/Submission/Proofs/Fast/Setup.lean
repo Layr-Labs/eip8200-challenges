@@ -992,54 +992,54 @@ def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
 `MLOAD` of its least significant limb. -/
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1039 (.Dup ⟨1, by decide⟩), pushAt 1040 2 9344, opAt 1041 .MSTORE,
-   opAt 1042 (.Dup ⟨2, by decide⟩), pushAt 1043 2 9504, opAt 1044 .MSTORE,
-   opAt 1045 (.Dup ⟨3, by decide⟩), pushAt 1046 1 96, opAt 1047 .ADD,
-   pushAt 1048 2 9472, opAt 1049 .MSTORE, opAt 1050 (.Dup ⟨1, by decide⟩),
-   pushAt 1051 1 32, opAt 1052 (.Swap ⟨0, by decide⟩), opAt 1053 .SUB,
-   opAt 1054 (.Dup ⟨0, by decide⟩), pushAt 1055 2 9408, opAt 1056 .MSTORE,
-   opAt 1057 (.Dup ⟨2, by decide⟩), pushAt 1058 2 8224, opAt 1059 .ADD,
-   pushAt 1060 2 9440, opAt 1061 .MSTORE, opAt 1062 (.Dup ⟨2, by decide⟩),
-   opAt 1063 .CALLDATASIZE, pushAt 1064 0 0, opAt 1065 .CALLDATACOPY,
-   opAt 1066 (.Dup ⟨6, by decide⟩), opAt 1067 (.Dup ⟨2, by decide⟩),
-   opAt 1068 (.Dup ⟨1, by decide⟩), opAt 1069 (.Dup ⟨5, by decide⟩),
-   opAt 1070 .SUB, opAt 1071 .CALLDATACOPY,
-   opAt 1072 (.Swap ⟨0, by decide⟩), opAt 1073 .POP,
-   opAt 1074 (.Dup ⟨0, by decide⟩), opAt 1075 .MLOAD]
+  [opAt 1033 (.Dup ⟨1, by decide⟩), pushAt 1034 2 9344, opAt 1035 .MSTORE,
+   opAt 1036 (.Dup ⟨2, by decide⟩), pushAt 1037 2 9504, opAt 1038 .MSTORE,
+   opAt 1039 (.Dup ⟨3, by decide⟩), pushAt 1040 1 96, opAt 1041 .ADD,
+   pushAt 1042 2 9472, opAt 1043 .MSTORE, opAt 1044 (.Dup ⟨1, by decide⟩),
+   pushAt 1045 1 32, opAt 1046 (.Swap ⟨0, by decide⟩), opAt 1047 .SUB,
+   opAt 1048 (.Dup ⟨0, by decide⟩), pushAt 1049 2 9408, opAt 1050 .MSTORE,
+   opAt 1051 (.Dup ⟨2, by decide⟩), pushAt 1052 2 8224, opAt 1053 .ADD,
+   pushAt 1054 2 9440, opAt 1055 .MSTORE, opAt 1056 (.Dup ⟨2, by decide⟩),
+   opAt 1057 .CALLDATASIZE, pushAt 1058 0 0, opAt 1059 .CALLDATACOPY,
+   opAt 1060 (.Dup ⟨6, by decide⟩), opAt 1061 (.Dup ⟨2, by decide⟩),
+   opAt 1062 (.Dup ⟨1, by decide⟩), opAt 1063 (.Dup ⟨5, by decide⟩),
+   opAt 1064 .SUB, opAt 1065 .CALLDATACOPY,
+   opAt 1066 (.Swap ⟨0, by decide⟩), opAt 1067 .POP,
+   opAt 1068 (.Dup ⟨0, by decide⟩), opAt 1069 .MLOAD]
 
 /-- Instructions 1076..1100: `x := 1` and the first four Newton steps. -/
 def setupPathB :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1076 1 1, opAt 1077 (.Dup ⟨0, by decide⟩),
+  [pushAt 1070 1 1, opAt 1071 (.Dup ⟨0, by decide⟩),
+   opAt 1072 (.Dup ⟨2, by decide⟩), opAt 1073 .MUL, pushAt 1074 1 2,
+   opAt 1075 .SUB, opAt 1076 .MUL, opAt 1077 (.Dup ⟨0, by decide⟩),
    opAt 1078 (.Dup ⟨2, by decide⟩), opAt 1079 .MUL, pushAt 1080 1 2,
    opAt 1081 .SUB, opAt 1082 .MUL, opAt 1083 (.Dup ⟨0, by decide⟩),
    opAt 1084 (.Dup ⟨2, by decide⟩), opAt 1085 .MUL, pushAt 1086 1 2,
    opAt 1087 .SUB, opAt 1088 .MUL, opAt 1089 (.Dup ⟨0, by decide⟩),
    opAt 1090 (.Dup ⟨2, by decide⟩), opAt 1091 .MUL, pushAt 1092 1 2,
-   opAt 1093 .SUB, opAt 1094 .MUL, opAt 1095 (.Dup ⟨0, by decide⟩),
-   opAt 1096 (.Dup ⟨2, by decide⟩), opAt 1097 .MUL, pushAt 1098 1 2,
-   opAt 1099 .SUB, opAt 1100 .MUL]
+   opAt 1093 .SUB, opAt 1094 .MUL]
 
 /-- Instructions 1101..1124: the last four Newton steps. -/
 def setupPathC :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1101 (.Dup ⟨0, by decide⟩), opAt 1102 (.Dup ⟨2, by decide⟩),
+  [opAt 1095 (.Dup ⟨0, by decide⟩), opAt 1096 (.Dup ⟨2, by decide⟩),
+   opAt 1097 .MUL, pushAt 1098 1 2, opAt 1099 .SUB, opAt 1100 .MUL,
+   opAt 1101 (.Dup ⟨0, by decide⟩), opAt 1102 (.Dup ⟨2, by decide⟩),
    opAt 1103 .MUL, pushAt 1104 1 2, opAt 1105 .SUB, opAt 1106 .MUL,
    opAt 1107 (.Dup ⟨0, by decide⟩), opAt 1108 (.Dup ⟨2, by decide⟩),
    opAt 1109 .MUL, pushAt 1110 1 2, opAt 1111 .SUB, opAt 1112 .MUL,
    opAt 1113 (.Dup ⟨0, by decide⟩), opAt 1114 (.Dup ⟨2, by decide⟩),
-   opAt 1115 .MUL, pushAt 1116 1 2, opAt 1117 .SUB, opAt 1118 .MUL,
-   opAt 1119 (.Dup ⟨0, by decide⟩), opAt 1120 (.Dup ⟨2, by decide⟩),
-   opAt 1121 .MUL, pushAt 1122 1 2, opAt 1123 .SUB, opAt 1124 .MUL]
+   opAt 1115 .MUL, pushAt 1116 1 2, opAt 1117 .SUB, opAt 1118 .MUL]
 
 /-- Instructions 1125..1137: `MSTORE V_MINV`, `MSTORE R1 1` and the tail call
 into the `R1B` guard. -/
 def setupPathD :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1125 0 0, opAt 1126 .SUB, pushAt 1127 2 9376, opAt 1128 .MSTORE,
-   opAt 1129 .POP, opAt 1130 .POP, pushAt 1131 1 1, pushAt 1132 2 4096,
-   opAt 1133 .MSTORE, pushAt 1134 2 4618, pushAt 1135 2 4096,
-   pushAt 1136 2 2896, opAt 1137 .JUMP]
+  [pushAt 1119 0 0, opAt 1120 .SUB, pushAt 1121 2 9376, opAt 1122 .MSTORE,
+   opAt 1123 .POP, opAt 1124 .POP, pushAt 1125 1 1, pushAt 1126 2 4096,
+   opAt 1127 .MSTORE, pushAt 1128 2 4471, pushAt 1129 2 4096,
+   pushAt 1130 2 2750, opAt 1131 .JUMP]
 
 /-- After the variable stores and the modulus load (pc 1451). -/
 def modLoadedState (s : State) (input : ByteArray) (m0 : Nat) : State :=

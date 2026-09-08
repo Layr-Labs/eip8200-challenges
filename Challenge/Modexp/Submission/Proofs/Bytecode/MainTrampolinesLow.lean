@@ -15,9 +15,9 @@ theorem run_tramp0 (input : ByteArray) :
   have hzero : (0 : UInt256).toNat = 0 := by decide
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 0) (b := 3) (by norm_num : 0 + 3 < 2 ^ 256)
-  have hdest : (1314 : UInt256).toNat = 1314 := by decide
-  have hjump : Decode.isValidJumpDest submissionBytecode 1314 = true :=
-    Artifact.isValidJumpDest_index 977 (by rfl)
+  have hdest : (1302 : UInt256).toNat = 1302 := by decide
+  have hjump : Decode.isValidJumpDest submissionBytecode 1302 = true :=
+    Artifact.isValidJumpDest_index 972 (by rfl)
   have hdestWord : (1314 : UInt256) = UInt256.ofNat 1314 := by decide
   simp [tramp0Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -101,7 +101,7 @@ theorem run_tramp6 (input : ByteArray) :
     (n := 512) (by norm_num : 512 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 513) (b := 3) (by norm_num : 513 + 3 < 2 ^ 256)
-  have hdest : (699 : UInt256).toNat = 699 := by decide
+  have hdest : (688 : UInt256).toNat = 688 := by decide
   simp [tramp6Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     trampolineState, initialState, hsucc, hadd, hdest,

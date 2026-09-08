@@ -43,35 +43,35 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def setupToClear0Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 563 .JUMPDEST, pushAt 564 1 31,
-   opAt 565 (.Dup ⟨3, by decide⟩), opAt 566 .ADD,
-   pushAt 567 1 5, opAt 568 .SHR, pushAt 569 2 721,
-   opAt 570 (.Dup ⟨1, by decide⟩), pushAt 571 0 0,
-   pushAt 572 2 19, opAt 573 .JUMP]
+  [opAt 559 .JUMPDEST, pushAt 560 1 31,
+   opAt 561 (.Dup ⟨3, by decide⟩), opAt 562 .ADD,
+   pushAt 563 1 5, opAt 564 .SHR, pushAt 565 2 710,
+   opAt 566 (.Dup ⟨1, by decide⟩), pushAt 567 0 0,
+   pushAt 568 2 19, opAt 569 .JUMP]
 
 def toClear1024Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 574 .JUMPDEST, pushAt 575 2 733,
-   opAt 576 (.Dup ⟨1, by decide⟩), pushAt 577 2 1024,
-   pushAt 578 2 19, opAt 579 .JUMP]
+  [opAt 570 .JUMPDEST, pushAt 571 2 722,
+   opAt 572 (.Dup ⟨1, by decide⟩), pushAt 573 2 1024,
+   pushAt 574 2 19, opAt 575 .JUMP]
 
 def toClear2048Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 580 .JUMPDEST, pushAt 581 2 745,
-   opAt 582 (.Dup ⟨1, by decide⟩), pushAt 583 2 2048,
-   pushAt 584 2 19, opAt 585 .JUMP]
+  [opAt 576 .JUMPDEST, pushAt 577 2 734,
+   opAt 578 (.Dup ⟨1, by decide⟩), pushAt 579 2 2048,
+   pushAt 580 2 19, opAt 581 .JUMP]
 
 def toClear6144Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 586 .JUMPDEST, pushAt 587 2 757,
-   opAt 588 (.Dup ⟨1, by decide⟩), pushAt 589 2 6144,
-   pushAt 590 2 19, opAt 591 .JUMP]
+  [opAt 582 .JUMPDEST, pushAt 583 2 746,
+   opAt 584 (.Dup ⟨1, by decide⟩), pushAt 585 2 6144,
+   pushAt 586 2 19, opAt 587 .JUMP]
 
 def toLoadModulusPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 592 .JUMPDEST, pushAt 593 2 768, pushAt 594 0 0,
-   opAt 595 (.Dup ⟨5, by decide⟩), opAt 596 (.Dup ⟨9, by decide⟩),
-   pushAt 597 2 439, opAt 598 .JUMP]
+  [opAt 588 .JUMPDEST, pushAt 589 2 757, pushAt 590 0 0,
+   opAt 591 (.Dup ⟨5, by decide⟩), opAt 592 (.Dup ⟨9, by decide⟩),
+   pushAt 593 2 439, opAt 594 .JUMP]
 
 def saved (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
     (rest : List UInt256) : List UInt256 :=
@@ -134,24 +134,24 @@ private theorem jump439 :
   Artifact.isValidJumpDest_index 353 (by rfl)
 
 private theorem jump721 :
-    Decode.isValidJumpDest submissionBytecode 721 = true :=
-  Artifact.isValidJumpDest_index 574 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 710 = true :=
+  Artifact.isValidJumpDest_index 570 (by rfl)
 
 private theorem jump733 :
-    Decode.isValidJumpDest submissionBytecode 733 = true :=
-  Artifact.isValidJumpDest_index 580 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 722 = true :=
+  Artifact.isValidJumpDest_index 576 (by rfl)
 
 private theorem jump745 :
-    Decode.isValidJumpDest submissionBytecode 745 = true :=
-  Artifact.isValidJumpDest_index 586 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 734 = true :=
+  Artifact.isValidJumpDest_index 582 (by rfl)
 
 private theorem jump757 :
-    Decode.isValidJumpDest submissionBytecode 757 = true :=
-  Artifact.isValidJumpDest_index 592 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 746 = true :=
+  Artifact.isValidJumpDest_index 588 (by rfl)
 
 private theorem jump768 :
-    Decode.isValidJumpDest submissionBytecode 768 = true :=
-  Artifact.isValidJumpDest_index 599 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 757 = true :=
+  Artifact.isValidJumpDest_index 595 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupToClear0 (s : State) (b e m baseOff expOff modOff : Nat)
@@ -211,7 +211,7 @@ theorem run_toClear1024 (s : State) (b e m baseOff expOff modOff : Nat)
           (afterClear0 s b e m baseOff expOff modOff returnDest rest)
           1024 (Limbs.limbCount m) 733
           (saved b e m baseOff expOff modOff returnDest rest)) := by
-  have h721 : (721 : UInt256).toNat = 721 := by decide
+  have h721 : (710 : UInt256).toNat = 710 := by decide
   have h721Word : (721 : UInt256) = UInt256.ofNat 721 := by decide
   have h19 : (19 : UInt256).toNat = 19 := by decide
   have h19Word : (19 : UInt256) = UInt256.ofNat 19 := by decide
@@ -243,7 +243,7 @@ theorem run_toClear2048 (s : State) (b e m baseOff expOff modOff : Nat)
           (afterClear1024 s b e m baseOff expOff modOff returnDest rest)
           2048 (Limbs.limbCount m) 745
           (saved b e m baseOff expOff modOff returnDest rest)) := by
-  have h733 : (733 : UInt256).toNat = 733 := by decide
+  have h733 : (722 : UInt256).toNat = 722 := by decide
   have h733Word : (733 : UInt256) = UInt256.ofNat 733 := by decide
   have h19 : (19 : UInt256).toNat = 19 := by decide
   have h19Word : (19 : UInt256) = UInt256.ofNat 19 := by decide
@@ -275,7 +275,7 @@ theorem run_toClear6144 (s : State) (b e m baseOff expOff modOff : Nat)
           (afterClear2048 s b e m baseOff expOff modOff returnDest rest)
           6144 (Limbs.limbCount m) 757
           (saved b e m baseOff expOff modOff returnDest rest)) := by
-  have h745 : (745 : UInt256).toNat = 745 := by decide
+  have h745 : (734 : UInt256).toNat = 734 := by decide
   have h745Word : (745 : UInt256) = UInt256.ofNat 745 := by decide
   have h19 : (19 : UInt256).toNat = 19 := by decide
   have h19Word : (19 : UInt256) = UInt256.ofNat 19 := by decide
@@ -308,7 +308,7 @@ theorem run_toLoadModulus (s : State) (b e m baseOff expOff modOff : Nat)
           (afterClear6144 s b e m baseOff expOff modOff returnDest rest)
           (UInt256.ofNat modOff) (UInt256.ofNat m) 0 768
           (saved b e m baseOff expOff modOff returnDest rest)) := by
-  have h757 : (757 : UInt256).toNat = 757 := by decide
+  have h757 : (746 : UInt256).toNat = 746 := by decide
   have h757Word : (757 : UInt256) = UInt256.ofNat 757 := by decide
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have h0Word : (0 : UInt256) = UInt256.ofNat 0 := by decide

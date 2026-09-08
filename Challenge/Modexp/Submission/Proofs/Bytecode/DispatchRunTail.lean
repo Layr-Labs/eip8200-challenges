@@ -22,7 +22,7 @@ private theorem run_wordTail_generic (template : State)
     some (framed template 2995
       [b, e, m, UInt256.ofNat 96, expOff, modOff, UInt256.ofNat 1267,
         modOff, expOff, m, e, b]) := by
-  have h3000 : (2995 : UInt256).toNat = 2995 := by decide
+  have h3000 : (2849 : UInt256).toNat = 2849 := by decide
   have h3000Word : (2995 : UInt256) = UInt256.ofNat 2995 := by decide
   have h96Word : (96 : UInt256) = UInt256.ofNat 96 := by decide
   have h1267Word : (1267 : UInt256) = UInt256.ofNat 1267 := by decide

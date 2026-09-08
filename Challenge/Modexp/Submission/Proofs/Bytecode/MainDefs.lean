@@ -43,42 +43,42 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 /-- First half of the compiler trampoline chain. -/
 def trampoline1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 0 2 1314, opAt 1 .JUMP]
+  [pushAt 0 2 1302, opAt 1 .JUMP]
 
 /-- Second half of the compiler trampoline chain. -/
 def trampoline2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 899 .JUMPDEST]
+  [opAt 895 .JUMPDEST]
 
 /-- Three EIP-198 header loads. -/
 def headerLoadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 900 0 0, opAt 901 .CALLDATALOAD,
-   pushAt 902 1 32, opAt 903 .CALLDATALOAD,
-   pushAt 904 1 64, opAt 905 .CALLDATALOAD]
+  [pushAt 896 0 0, opAt 897 .CALLDATALOAD,
+   pushAt 898 1 32, opAt 899 .CALLDATALOAD,
+   pushAt 900 1 64, opAt 901 .CALLDATALOAD]
 
 /-- Direct jump over the EIP-7823 checks, justified by `Correct`'s valid-input
 precondition. The jump preserves the three loaded length words. -/
 def headerCheckPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 906 2 1228, opAt 907 .JUMP]
+  [pushAt 902 2 1217, opAt 903 .JUMP]
 
 /-- Reachable instructions from byte zero through optimized header parsing,
 retained as a single audit-friendly path. -/
 def headerPath := trampoline1Path ++ trampoline2Path ++
   headerLoadPath ++ headerCheckPath
 
-def tramp0Path := [pushAt 0 2 1314, opAt 1 .JUMP]
+def tramp0Path := [pushAt 0 2 1302, opAt 1 .JUMP]
 def tramp1Path := [opAt 12 .JUMPDEST, pushAt 13 2 53, opAt 14 .JUMP]
 def tramp2Path := [opAt 43 .JUMPDEST, pushAt 44 2 99, opAt 45 .JUMP]
 def tramp3Path := [opAt 80 .JUMPDEST, pushAt 81 2 305, opAt 82 .JUMP]
 def tramp4Path := [opAt 262 .JUMPDEST, pushAt 263 2 434, opAt 264 .JUMP]
 def tramp5Path := [opAt 350 .JUMPDEST, pushAt 351 2 512, opAt 352 .JUMP]
-def tramp6Path := [opAt 412 .JUMPDEST, pushAt 413 2 699, opAt 414 .JUMP]
-def tramp7Path := [opAt 560 .JUMPDEST, pushAt 561 2 1196, opAt 562 .JUMP,
-  opAt 899 .JUMPDEST]
-def tramp7JumpPath := [opAt 560 .JUMPDEST, pushAt 561 2 1196, opAt 562 .JUMP]
-def tramp7DestPath := [opAt 899 .JUMPDEST]
+def tramp6Path := [opAt 412 .JUMPDEST, pushAt 413 2 688, opAt 414 .JUMP]
+def tramp7Path := [opAt 556 .JUMPDEST, pushAt 557 2 1185, opAt 558 .JUMP,
+  opAt 895 .JUMPDEST]
+def tramp7JumpPath := [opAt 556 .JUMPDEST, pushAt 557 2 1185, opAt 558 .JUMP]
+def tramp7DestPath := [opAt 895 .JUMPDEST]
 
 def trampolineState (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
@@ -140,7 +140,7 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
     omega
 
 @[simp] theorem headerPCs0 (i : Nat) (hi : i ≤ 1) :
-    Artifact.submissionArtifact.instructionPC i = [0, 3][i]! := by
+    Artifact.submissionArtifact.instructionPC i = [0,3][i]! := by
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs12 (i : Nat)
@@ -216,16 +216,16 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
   Artifact.isValidJumpDest_index 412 (by rfl)
 
 @[simp] theorem jump699 :
-    Decode.isValidJumpDest submissionBytecode 699 = true :=
-  Artifact.isValidJumpDest_index 560 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 688 = true :=
+  Artifact.isValidJumpDest_index 556 (by rfl)
 
 @[simp] theorem jump1196 :
-    Decode.isValidJumpDest submissionBytecode 1196 = true :=
-  Artifact.isValidJumpDest_index 899 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1185 = true :=
+  Artifact.isValidJumpDest_index 895 (by rfl)
 
 @[simp] theorem jump1228 :
-    Decode.isValidJumpDest submissionBytecode 1228 = true :=
-  Artifact.isValidJumpDest_index 921 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1217 = true :=
+  Artifact.isValidJumpDest_index 917 (by rfl)
 
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Main

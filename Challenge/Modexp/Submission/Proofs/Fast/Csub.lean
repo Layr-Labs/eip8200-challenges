@@ -223,7 +223,7 @@ theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
-  have h2500 : (2495 : UInt256).toNat = 2495 := by decide
+  have h2500 : (2355 : UInt256).toNat = 2355 := by decide
   have h2500' : (2495 : UInt256) = UInt256.ofNat 2495 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
       (2495 : UInt256).toNat = true := by
@@ -489,7 +489,7 @@ theorem run_csLoopBody (s : State) (memory : ByteArray) (n j : Nat)
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
-  have h2666 : (2661 : UInt256).toNat = 2661 := by decide
+  have h2666 : (2520 : UInt256).toNat = 2520 := by decide
   have h2666' : (2661 : UInt256) = UInt256.ofNat 2661 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
       (2661 : UInt256).toNat = true := by

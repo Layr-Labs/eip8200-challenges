@@ -20,7 +20,7 @@ theorem run_baseTail_head (input : ByteArray) (i : Nat) (base : UInt256)
         some (baseTailMidState input i base) := by
   rcases hvalid with ⟨_, hb, he, hm⟩
   have hi256 : i < 2 ^ 256 := by omega
-  have h562 : (562 : UInt256).toNat = 562 := by decide
+  have h562 : (560 : UInt256).toNat = 560 := by decide
   have h562Word : (562 : UInt256) = UInt256.ofNat 562 := by decide
   have h256Word : (256 : UInt256) = UInt256.ofNat 256 := by decide
   simp (config := { maxSteps := 150000 })
@@ -66,7 +66,7 @@ theorem run_baseTail_finish (input : ByteArray) (i : Nat) (base : UInt256)
         some (baseLoopState input (i + 1) (baseStep input i base)) := by
   rcases hvalid with ⟨_, hb, he, hm⟩
   have hi256 : i < 2 ^ 256 := by omega
-  have h541 : (541 : UInt256).toNat = 541 := by decide
+  have h541 : (539 : UInt256).toNat = 539 := by decide
   have h541Word : (541 : UInt256) = UInt256.ofNat 541 := by decide
   have hisucc' := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := i) (b := 1) (by omega : i + 1 < 2 ^ 256)
@@ -111,7 +111,7 @@ def gasSteps_baseIteration (input : ByteArray) (i : Nat) (base : UInt256)
     (hvalid : ValidInput input) (hi : i < baseSize input) :
     Challenge.EvmProof.GasSteps (baseLoopState input i base)
       (baseLoopState input (i + 1) (baseStep input i base)) := by
-  have h562 : (562 : UInt256).toNat = 562 := by decide
+  have h562 : (560 : UInt256).toNat = 560 := by decide
   have hcap : (baseRest input i base).length < 1017 := by
     simp [baseRest, callerRest]
   have hjump : Decode.isValidJumpDest submissionBytecode

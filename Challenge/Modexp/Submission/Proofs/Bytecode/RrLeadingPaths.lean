@@ -28,7 +28,7 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem helperPCAnchor :
-    Artifact.submissionArtifact.instructionPC 2230 = 3566 := by
+    Artifact.submissionArtifact.instructionPC 2203 = 3420 := by
   rfl
 
 @[simp] theorem helperPC (i : Nat)
@@ -39,29 +39,29 @@ private theorem helperPCAnchor :
 
 def helperPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2230 .JUMPDEST,
-   pushAt 2231 2 9344,
-   opAt 2232 .MLOAD,
-   pushAt 2233 2 5120,
-   pushAt 2234 2 6144,
-   opAt 2235 .MCOPY,
-   opAt 2236 (.Dup ⟨1, by decide⟩),
-   pushAt 2237 1 3,
-   opAt 2238 .LT,
-   opAt 2239 (.Dup ⟨2, by decide⟩),
-   pushAt 2240 1 7,
-   opAt 2241 .LT,
-   opAt 2242 (.Dup ⟨3, by decide⟩),
-   pushAt 2243 1 15,
-   opAt 2244 .LT,
-   opAt 2245 (.Dup ⟨4, by decide⟩),
-   pushAt 2246 1 31,
-   opAt 2247 .LT,
-   opAt 2248 .ADD,
-   opAt 2249 .ADD,
-   opAt 2250 .ADD,
-   pushAt 2251 2 1569,
-   opAt 2252 .JUMP]
+  [opAt 2203 .JUMPDEST,
+   pushAt 2204 2 9344,
+   opAt 2205 .MLOAD,
+   pushAt 2206 2 5120,
+   pushAt 2207 2 6144,
+   opAt 2208 .MCOPY,
+   opAt 2209 (.Dup ⟨1, by decide⟩),
+   pushAt 2210 1 3,
+   opAt 2211 .LT,
+   opAt 2212 (.Dup ⟨2, by decide⟩),
+   pushAt 2213 1 7,
+   opAt 2214 .LT,
+   opAt 2215 (.Dup ⟨3, by decide⟩),
+   pushAt 2216 1 15,
+   opAt 2217 .LT,
+   opAt 2218 (.Dup ⟨4, by decide⟩),
+   pushAt 2219 1 31,
+   opAt 2220 .LT,
+   opAt 2221 .ADD,
+   opAt 2222 .ADD,
+   opAt 2223 .ADD,
+   pushAt 2224 2 1556,
+   opAt 2225 .JUMP]
 
 @[simp] theorem jump1569 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1569 = true :=

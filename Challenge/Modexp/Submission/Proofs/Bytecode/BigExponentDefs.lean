@@ -42,88 +42,88 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def startExponentPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 717 .JUMPDEST, pushAt 718 0 0]
+  [opAt 713 .JUMPDEST, pushAt 714 0 0]
 
 def outerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 719 .JUMPDEST, opAt 720 (.Dup ⟨4, by decide⟩),
-   opAt 721 (.Dup ⟨1, by decide⟩), opAt 722 .LT, opAt 723 .ISZERO,
-   pushAt 724 2 1118, opAt 725 .JUMPI]
+  [opAt 715 .JUMPDEST, opAt 716 (.Dup ⟨4, by decide⟩),
+   opAt 717 (.Dup ⟨1, by decide⟩), opAt 718 .LT, opAt 719 .ISZERO,
+   pushAt 720 2 1107, opAt 721 .JUMPI]
 
 def outerToInnerPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 726 (.Dup ⟨0, by decide⟩), opAt 727 (.Dup ⟨8, by decide⟩),
-   opAt 728 .ADD, opAt 729 (.Dup ⟨0, by decide⟩),
-   opAt 730 .CALLDATALOAD, pushAt 731 0 0, opAt 732 .BYTE,
-   pushAt 733 0 0]
+  [opAt 722 (.Dup ⟨0, by decide⟩), opAt 723 (.Dup ⟨8, by decide⟩),
+   opAt 724 .ADD, opAt 725 (.Dup ⟨0, by decide⟩),
+   opAt 726 .CALLDATALOAD, pushAt 727 0 0, opAt 728 .BYTE,
+   pushAt 729 0 0]
 
 def innerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 734 .JUMPDEST, pushAt 735 1 8, opAt 736 (.Dup ⟨1, by decide⟩),
-   opAt 737 .LT, opAt 738 .ISZERO, pushAt 739 2 1104,
-   opAt 740 .JUMPI]
+  [opAt 730 .JUMPDEST, pushAt 731 1 8, opAt 732 (.Dup ⟨1, by decide⟩),
+   opAt 733 .LT, opAt 734 .ISZERO, pushAt 735 2 1093,
+   opAt 736 .JUMPI]
 
 def innerToSquarePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 741 1 1, opAt 742 (.Dup ⟨2, by decide⟩),
-   opAt 743 (.Dup ⟨2, by decide⟩), pushAt 744 1 7,
-   opAt 745 .SUB, opAt 746 .SHR, opAt 747 .AND,
-   pushAt 748 2 1000, opAt 749 (.Dup ⟨7, by decide⟩),
-   pushAt 750 0 0, pushAt 751 2 3072, pushAt 752 2 2048,
-   pushAt 753 2 2048, pushAt 754 2 310, opAt 755 .JUMP]
+  [pushAt 737 1 1, opAt 738 (.Dup ⟨2, by decide⟩),
+   opAt 739 (.Dup ⟨2, by decide⟩), pushAt 740 1 7,
+   opAt 741 .SUB, opAt 742 .SHR, opAt 743 .AND,
+   pushAt 744 2 989, opAt 745 (.Dup ⟨7, by decide⟩),
+   pushAt 746 0 0, pushAt 747 2 3072, pushAt 748 2 2048,
+   pushAt 749 2 2048, pushAt 750 2 310, opAt 751 .JUMP]
 
 def squareToCopyPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 756 .JUMPDEST, pushAt 757 2 1015,
-   opAt 758 (.Dup ⟨7, by decide⟩), pushAt 759 2 3072,
-   pushAt 760 2 2048, pushAt 761 2 58, opAt 762 .JUMP]
+  [opAt 752 .JUMPDEST, pushAt 753 2 1004,
+   opAt 754 (.Dup ⟨7, by decide⟩), pushAt 755 2 3072,
+   pushAt 756 2 2048, pushAt 757 2 58, opAt 758 .JUMP]
 
 def copyToProductPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 763 .JUMPDEST, pushAt 764 2 1034,
-   opAt 765 (.Dup ⟨7, by decide⟩), pushAt 766 0 0,
-   pushAt 767 2 3072, pushAt 768 2 1024, pushAt 769 2 2048,
-   pushAt 770 2 310, opAt 771 .JUMP]
+  [opAt 759 .JUMPDEST, pushAt 760 2 1023,
+   opAt 761 (.Dup ⟨7, by decide⟩), pushAt 762 0 0,
+   pushAt 763 2 3072, pushAt 764 2 1024, pushAt 765 2 2048,
+   pushAt 766 2 310, opAt 767 .JUMP]
 
 def productToSelectPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 772 .JUMPDEST, opAt 773 (.Dup ⟨0, by decide⟩),
-   pushAt 774 0 0, opAt 775 .SUB, pushAt 776 0 0]
+  [opAt 768 .JUMPDEST, opAt 769 (.Dup ⟨0, by decide⟩),
+   pushAt 770 0 0, opAt 771 .SUB, pushAt 772 0 0]
 
 def selectGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 777 .JUMPDEST, opAt 778 (.Dup ⟨8, by decide⟩),
-   opAt 779 (.Dup ⟨1, by decide⟩), opAt 780 .LT, opAt 781 .ISZERO,
-   pushAt 782 2 1090, opAt 783 .JUMPI]
+  [opAt 773 .JUMPDEST, opAt 774 (.Dup ⟨8, by decide⟩),
+   opAt 775 (.Dup ⟨1, by decide⟩), opAt 776 .LT, opAt 777 .ISZERO,
+   pushAt 778 2 1079, opAt 779 .JUMPI]
 
 def selectBodyPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 784 (.Dup ⟨0, by decide⟩), pushAt 785 1 5, opAt 786 .SHL,
-   opAt 787 (.Dup ⟨0, by decide⟩), pushAt 788 2 2048, opAt 789 .ADD,
-   opAt 790 .MLOAD, opAt 791 (.Dup ⟨1, by decide⟩),
-   pushAt 792 2 3072, opAt 793 .ADD, opAt 794 .MLOAD,
-   opAt 795 (.Dup ⟨4, by decide⟩), opAt 796 (.Dup ⟨1, by decide⟩),
-   opAt 797 (.Dup ⟨3, by decide⟩), opAt 798 .XOR, opAt 799 .AND,
-   opAt 800 (.Dup ⟨2, by decide⟩), opAt 801 .XOR,
-   opAt 802 (.Dup ⟨3, by decide⟩), pushAt 803 2 2048,
-   opAt 804 .ADD, opAt 805 .MSTORE, opAt 806 .POP, opAt 807 .POP,
-   opAt 808 .POP, pushAt 809 1 1, opAt 810 (.Dup ⟨1, by decide⟩),
-   opAt 811 .ADD, opAt 812 (.Swap ⟨0, by decide⟩), opAt 813 .POP,
-   pushAt 814 2 1039, opAt 815 .JUMP]
+  [opAt 780 (.Dup ⟨0, by decide⟩), pushAt 781 1 5, opAt 782 .SHL,
+   opAt 783 (.Dup ⟨0, by decide⟩), pushAt 784 2 2048, opAt 785 .ADD,
+   opAt 786 .MLOAD, opAt 787 (.Dup ⟨1, by decide⟩),
+   pushAt 788 2 3072, opAt 789 .ADD, opAt 790 .MLOAD,
+   opAt 791 (.Dup ⟨4, by decide⟩), opAt 792 (.Dup ⟨1, by decide⟩),
+   opAt 793 (.Dup ⟨3, by decide⟩), opAt 794 .XOR, opAt 795 .AND,
+   opAt 796 (.Dup ⟨2, by decide⟩), opAt 797 .XOR,
+   opAt 798 (.Dup ⟨3, by decide⟩), pushAt 799 2 2048,
+   opAt 800 .ADD, opAt 801 .MSTORE, opAt 802 .POP, opAt 803 .POP,
+   opAt 804 .POP, pushAt 805 1 1, opAt 806 (.Dup ⟨1, by decide⟩),
+   opAt 807 .ADD, opAt 808 (.Swap ⟨0, by decide⟩), opAt 809 .POP,
+   pushAt 810 2 1028, opAt 811 .JUMP]
 
 def selectFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 816 .JUMPDEST, opAt 817 .POP, opAt 818 .POP, opAt 819 .POP,
-   pushAt 820 1 1, opAt 821 (.Dup ⟨1, by decide⟩), opAt 822 .ADD,
-   opAt 823 (.Swap ⟨0, by decide⟩), opAt 824 .POP,
-   pushAt 825 2 963, opAt 826 .JUMP]
+  [opAt 812 .JUMPDEST, opAt 813 .POP, opAt 814 .POP, opAt 815 .POP,
+   pushAt 816 1 1, opAt 817 (.Dup ⟨1, by decide⟩), opAt 818 .ADD,
+   opAt 819 (.Swap ⟨0, by decide⟩), opAt 820 .POP,
+   pushAt 821 2 952, opAt 822 .JUMP]
 
 def innerFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 827 .JUMPDEST, opAt 828 .POP, opAt 829 .POP, opAt 830 .POP,
-   pushAt 831 1 1, opAt 832 (.Dup ⟨1, by decide⟩), opAt 833 .ADD,
-   opAt 834 (.Swap ⟨0, by decide⟩), opAt 835 .POP,
-   pushAt 836 2 946, opAt 837 .JUMP]
+  [opAt 823 .JUMPDEST, opAt 824 .POP, opAt 825 .POP, opAt 826 .POP,
+   pushAt 827 1 1, opAt 828 (.Dup ⟨1, by decide⟩), opAt 829 .ADD,
+   opAt 830 (.Swap ⟨0, by decide⟩), opAt 831 .POP,
+   pushAt 832 2 935, opAt 833 .JUMP]
 
 def exponentEntry (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=

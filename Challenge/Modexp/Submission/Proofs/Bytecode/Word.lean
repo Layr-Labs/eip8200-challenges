@@ -50,11 +50,11 @@ def startPath :
    opAt 417 .CALLDATALOAD, opAt 418 (.Dup ⟨3, by decide⟩),
    pushAt 419 1 32, opAt 420 .SUB, pushAt 421 1 3,
    opAt 422 .SHL, opAt 423 .SHR, opAt 424 (.Dup ⟨0, by decide⟩),
-   pushAt 425 2 538, opAt 426 .JUMPI]
+   pushAt 425 2 536, opAt 426 .JUMPI]
 
 def zeroTailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 427 (.Dup ⟨3, by decide⟩), pushAt 428 2 0,
+  [opAt 427 (.Dup ⟨3, by decide⟩), pushAt 428 0 0,
    opAt 429 .RETURN]
 
 def zeroModulusPath :
@@ -72,11 +72,11 @@ def baseGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 433 .JUMPDEST, opAt 434 (.Dup ⟨3, by decide⟩),
    opAt 435 (.Dup ⟨1, by decide⟩), opAt 436 .LT, opAt 437 .ISZERO,
-   pushAt 438 2 582, opAt 439 .JUMPI]
+   pushAt 438 2 580, opAt 439 .JUMPI]
 
 def baseCallPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 440 (.Dup ⟨2, by decide⟩), pushAt 441 2 562, pushAt 442 0 0,
+  [opAt 440 (.Dup ⟨2, by decide⟩), pushAt 441 2 560, pushAt 442 0 0,
    opAt 443 (.Dup ⟨3, by decide⟩), opAt 444 (.Dup ⟨10, by decide⟩),
    opAt 445 .ADD, pushAt 446 2 4, opAt 447 .JUMP]
 
@@ -97,7 +97,7 @@ def baseTailPopPath :
 def baseTailFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 456 1 1,
-   opAt 457 .ADD, pushAt 458 2 541, opAt 459 .JUMP]
+   opAt 457 .ADD, pushAt 458 2 539, opAt 459 .JUMP]
 
 def baseTailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -111,75 +111,74 @@ def baseFinishTailPath :
 def expGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 469 .JUMPDEST, opAt 470 (.Dup ⟨5, by decide⟩),
-   opAt 471 (.Dup ⟨1, by decide⟩), opAt 472 .EQ, opAt 473 .JUMPDEST,
-   pushAt 474 2 669, opAt 475 .JUMPI]
+   opAt 471 (.Dup ⟨1, by decide⟩), opAt 472 .EQ,    pushAt 473 2 662, opAt 474 .JUMPI]
 
 def expLoadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 476 (.Dup ⟨0, by decide⟩), opAt 477 (.Dup ⟨9, by decide⟩),
-   opAt 478 .ADD, opAt 479 (.Dup ⟨0, by decide⟩), opAt 480 .CALLDATALOAD,
-   pushAt 481 0 0, opAt 482 .BYTE, pushAt 483 0 0]
+  [opAt 475 (.Dup ⟨0, by decide⟩), opAt 476 (.Dup ⟨9, by decide⟩),
+   opAt 477 .ADD, opAt 478 (.Dup ⟨0, by decide⟩), opAt 479 .CALLDATALOAD,
+   pushAt 480 0 0, opAt 481 .BYTE, pushAt 482 0 0]
 
 /-- The loop head now pushes the unrolled block and jumps to it. -/
 def bitEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 484 .JUMPDEST, pushAt 485 2 3690]
+  [opAt 483 .JUMPDEST, pushAt 484 2 3544]
 
 def bitJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 486 .JUMP]
+  [opAt 485 .JUMP]
 
 /-- The head of the unrolled block derives `base - 1` for the eight copies. -/
 def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2306 .JUMPDEST, pushAt 2307 1 1,
-   opAt 2308 (.Dup ⟨6, by decide⟩), opAt 2309 .SUB]
+  [opAt 2279 .JUMPDEST, pushAt 2280 1 1,
+   opAt 2281 (.Dup ⟨6, by decide⟩), opAt 2282 .SUB]
 
 /-- Its tail drops `base - 1` and rejoins the byte loop. -/
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2446 .POP, pushAt 2447 2 655, opAt 2448 .JUMP]
+  [opAt 2419 .POP, pushAt 2420 2 648, opAt 2421 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
 def bitPC (j : Nat) : Nat := 3695 + 20 * j
 
 def bitDecodePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 491 1 1, opAt 492 (.Dup ⟨2, by decide⟩),
-   opAt 493 (.Dup ⟨2, by decide⟩), pushAt 494 1 7, opAt 495 .SUB,
-   opAt 496 .SHR, opAt 497 .AND]
+  [pushAt 487 1 1, opAt 488 (.Dup ⟨2, by decide⟩),
+   opAt 489 (.Dup ⟨2, by decide⟩), pushAt 490 1 7, opAt 491 .SUB,
+   opAt 492 .SHR, opAt 493 .AND]
 
 def bitSquarePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 498 (.Dup ⟨7, by decide⟩), opAt 499 (.Dup ⟨6, by decide⟩),
-   opAt 500 (.Dup ⟨7, by decide⟩), opAt 501 .MULMOD]
+  [opAt 494 (.Dup ⟨7, by decide⟩), opAt 495 (.Dup ⟨6, by decide⟩),
+   opAt 496 (.Dup ⟨7, by decide⟩), opAt 497 .MULMOD]
 
 def bitMaskPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 502 (.Dup ⟨1, by decide⟩), pushAt 503 0 0, opAt 504 .SUB]
+  [opAt 498 (.Dup ⟨1, by decide⟩), pushAt 499 0 0, opAt 500 .SUB]
 
 def bitProductPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 505 (.Dup ⟨9, by decide⟩), opAt 506 (.Dup ⟨9, by decide⟩),
-   opAt 507 (.Dup ⟨3, by decide⟩), opAt 508 .MULMOD]
+  [opAt 501 (.Dup ⟨9, by decide⟩), opAt 502 (.Dup ⟨9, by decide⟩),
+   opAt 503 (.Dup ⟨3, by decide⟩), opAt 504 .MULMOD]
 
 def bitChoosePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 509 (.Dup ⟨2, by decide⟩), opAt 510 .XOR, opAt 511 .AND,
-   opAt 512 (.Dup ⟨1, by decide⟩), opAt 513 .XOR]
+  [opAt 505 (.Dup ⟨2, by decide⟩), opAt 506 .XOR, opAt 507 .AND,
+   opAt 508 (.Dup ⟨1, by decide⟩), opAt 509 .XOR]
 
 def bitAdvanceSwapPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 514 (.Swap ⟨6, by decide⟩)]
+  [opAt 510 (.Swap ⟨6, by decide⟩)]
 
 def bitAdvanceDropPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 515 .POP, opAt 516 .POP, opAt 517 .POP]
+  [opAt 511 .POP, opAt 512 .POP, opAt 513 .POP]
 
 def bitAdvanceFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 518 1 1, opAt 519 .ADD,
-   pushAt 520 2 606, opAt 521 .JUMP]
+  [pushAt 514 1 1, opAt 515 .ADD,
+   pushAt 516 2 603, opAt 517 .JUMP]
 
 def bitAdvancePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -347,8 +346,8 @@ def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     ([UInt256.ofNat 0, byte, offset, UInt256.ofNat outer, acc, base,
       UInt256.ofNat (modulusValue input)] ++ bitTail input)
 
-theorem jump3695 : Decode.isValidJumpDest submissionBytecode 3690 = true :=
-  Artifact.isValidJumpDest_index 2306 (by rfl)
+theorem jump3695 : Decode.isValidJumpDest submissionBytecode 3544 = true :=
+  Artifact.isValidJumpDest_index 2279 (by rfl)
 
 /-- The loop head jumps into the unrolled block. -/
 def gasSteps_bitEntry (input : ByteArray) (outer : Nat)
@@ -554,7 +553,7 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
   interval_cases i <;> decide
 
 @[simp] private theorem jump538 :
-    Decode.isValidJumpDest submissionBytecode 538 = true :=
+    Decode.isValidJumpDest submissionBytecode 536 = true :=
   Artifact.isValidJumpDest_index 430 (by rfl)
 
 @[simp] theorem wordPCs (i : Nat)
@@ -564,11 +563,11 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
   interval_cases i <;> decide
 
 @[simp] theorem jump582 :
-    Decode.isValidJumpDest submissionBytecode 582 = true :=
+    Decode.isValidJumpDest submissionBytecode 580 = true :=
   Artifact.isValidJumpDest_index 463 (by rfl)
 
 @[simp] theorem jump562 :
-    Decode.isValidJumpDest submissionBytecode 562 = true :=
+    Decode.isValidJumpDest submissionBytecode 560 = true :=
   Artifact.isValidJumpDest_index 448 (by rfl)
 
 @[simp] theorem jump4 :
@@ -576,7 +575,7 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
   Artifact.isValidJumpDest_index 2 (by rfl)
 
 @[simp] theorem jump541 :
-    Decode.isValidJumpDest submissionBytecode 541 = true :=
+    Decode.isValidJumpDest submissionBytecode 539 = true :=
   Artifact.isValidJumpDest_index 433 (by rfl)
 
 @[simp] theorem baseFinishPCs (i : Nat)
@@ -592,19 +591,19 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
   interval_cases i <;> decide
 
 @[simp] theorem jump669 :
-    Decode.isValidJumpDest submissionBytecode 669 = true :=
-  Artifact.isValidJumpDest_index 536 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 662 = true :=
+  Artifact.isValidJumpDest_index 532 (by rfl)
 
 @[simp] theorem jump655 :
-    Decode.isValidJumpDest submissionBytecode 655 = true :=
-  Artifact.isValidJumpDest_index 525 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 648 = true :=
+  Artifact.isValidJumpDest_index 521 (by rfl)
 
 @[simp] theorem jump606 :
-    Decode.isValidJumpDest submissionBytecode 606 = true :=
-  Artifact.isValidJumpDest_index 484 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 603 = true :=
+  Artifact.isValidJumpDest_index 483 (by rfl)
 
 @[simp] theorem jump589 :
-    Decode.isValidJumpDest submissionBytecode 589 = true :=
+    Decode.isValidJumpDest submissionBytecode 587 = true :=
   Artifact.isValidJumpDest_index 469 (by rfl)
 
 set_option linter.unusedSimpArgs false in
@@ -664,7 +663,7 @@ theorem run_startJump_nonzero (input : ByteArray)
   have hcondition : modulusValue input % 2 ^ 256 ≠ 0 := by
     rw [hmodNat]
     omega
-  have h538 : (538 : UInt256).toNat = 538 := by decide
+  have h538 : (536 : UInt256).toNat = 536 := by decide
   have h538Word : (538 : UInt256) = UInt256.ofNat 538 := by decide
   simp [startJumpPath, opAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -792,7 +791,7 @@ theorem run_baseFinishGuard (input : ByteArray) (base : UInt256)
   have hb256 : baseSize input < 2 ^ 256 := by omega
   have hbmod : baseSize input % 2 ^ 256 = baseSize input :=
     Nat.mod_eq_of_lt hb256
-  have h582 : (582 : UInt256).toNat = 582 := by decide
+  have h582 : (580 : UInt256).toNat = 580 := by decide
   have h582Word : (582 : UInt256) = UInt256.ofNat 582 := by decide
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   simp (config := { maxSteps := 150000 })
@@ -984,7 +983,7 @@ theorem run_bitAdvance (input : ByteArray) (outer j : Nat)
       UInt256.ofNat (j + 1) := by
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact hsucc'
-  have h606 : (606 : UInt256).toNat = 606 := by decide
+  have h606 : (603 : UInt256).toNat = 603 := by decide
   have h606Word : (606 : UInt256) = UInt256.ofNat 606 := by decide
   have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
   simp (config := { maxSteps := 175000 })

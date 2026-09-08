@@ -38,26 +38,26 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def zeroSizePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 921 .JUMPDEST, opAt 922 (.Dup ⟨0, by decide⟩),
-   pushAt 923 2 1237, opAt 924 .JUMPI,
-   pushAt 925 0 0, pushAt 926 0 0, opAt 927 .RETURN]
+  [opAt 917 .JUMPDEST, opAt 918 (.Dup ⟨0, by decide⟩),
+   pushAt 919 2 1226, opAt 920 .JUMPI,
+   pushAt 921 0 0, pushAt 922 0 0, opAt 923 .RETURN]
 
 def wordEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 921 .JUMPDEST, opAt 922 (.Dup ⟨0, by decide⟩),
-   pushAt 923 2 1237, opAt 924 .JUMPI,
-   opAt 928 .JUMPDEST, opAt 929 (.Dup ⟨2, by decide⟩),
-   pushAt 930 1 96, opAt 931 .ADD,
-   opAt 932 (.Dup ⟨2, by decide⟩), opAt 933 (.Dup ⟨1, by decide⟩),
-   opAt 934 .ADD, pushAt 935 1 32, opAt 936 (.Dup ⟨3, by decide⟩),
-   opAt 937 .GT, pushAt 938 2 1268, opAt 939 .JUMPI,
-   pushAt 940 2 1267, opAt 941 (.Dup ⟨1, by decide⟩),
-   opAt 942 (.Dup ⟨3, by decide⟩), pushAt 943 1 96,
-   opAt 944 (.Dup ⟨6, by decide⟩), opAt 945 (.Dup ⟨8, by decide⟩),
-   opAt 946 (.Dup ⟨10, by decide⟩), pushAt 947 2 2995, opAt 948 .JUMP]
+  [opAt 917 .JUMPDEST, opAt 918 (.Dup ⟨0, by decide⟩),
+   pushAt 919 2 1226, opAt 920 .JUMPI,
+   opAt 924 .JUMPDEST, opAt 925 (.Dup ⟨2, by decide⟩),
+   pushAt 926 1 96, opAt 927 .ADD,
+   opAt 928 (.Dup ⟨2, by decide⟩), opAt 929 (.Dup ⟨1, by decide⟩),
+   opAt 930 .ADD, pushAt 931 1 32, opAt 932 (.Dup ⟨3, by decide⟩),
+   opAt 933 .GT, pushAt 934 2 1257, opAt 935 .JUMPI,
+   pushAt 936 2 1256, opAt 937 (.Dup ⟨1, by decide⟩),
+   opAt 938 (.Dup ⟨3, by decide⟩), pushAt 939 1 96,
+   opAt 940 (.Dup ⟨6, by decide⟩), opAt 941 (.Dup ⟨8, by decide⟩),
+   opAt 942 (.Dup ⟨10, by decide⟩), pushAt 943 2 2849, opAt 944 .JUMP]
 
 def zeroSetupPath := zeroSizePath.take 6
-def zeroReturnPath := [opAt 927 .RETURN]
+def zeroReturnPath := [opAt 923 .RETURN]
 def wordJumpPath := wordEntryPath.take 4
 def wordRestPath := wordEntryPath.drop 4
 def wordCheckPath := wordRestPath.take 12
@@ -79,16 +79,16 @@ def wordTailPath := wordRestPath.drop 12
   simp [MachineState.readPadded]
 
 @[simp] theorem jump1237 :
-    Decode.isValidJumpDest submissionBytecode 1237 = true :=
-  Artifact.isValidJumpDest_index 928 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1226 = true :=
+  Artifact.isValidJumpDest_index 924 (by rfl)
 
 @[simp] theorem jump517 :
     Decode.isValidJumpDest submissionBytecode 517 = true :=
   Artifact.isValidJumpDest_index 415 (by rfl)
 
 @[simp] theorem jump3000 :
-    Decode.isValidJumpDest submissionBytecode 2995 = true :=
-  Artifact.isValidJumpDest_index 1821 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 2849 = true :=
+  Artifact.isValidJumpDest_index 1794 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with

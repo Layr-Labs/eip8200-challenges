@@ -19,7 +19,7 @@ attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   interval_cases i <;> decide
 
 @[simp] private theorem jump589 :
-    Decode.isValidJumpDest submissionBytecode 589 = true :=
+    Decode.isValidJumpDest submissionBytecode 587 = true :=
   Artifact.isValidJumpDest_index 469 (by rfl)
 
 set_option linter.unusedSimpArgs false in
@@ -37,7 +37,7 @@ theorem run_bitFinishTailFinish (input : ByteArray) (outer : Nat)
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact hsucc
   have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  have h589 : (589 : UInt256).toNat = 589 := by decide
+  have h589 : (587 : UInt256).toNat = 587 := by decide
   have h589Word : (589 : UInt256) = UInt256.ofNat 589 := by decide
   simp (config := { maxSteps := 125000 })
     [bitFinishTailFinishPath, Word.opAt, Word.pushAt, Word.wfOp,

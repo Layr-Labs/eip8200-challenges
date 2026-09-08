@@ -35,40 +35,40 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def outerFinishGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 719 .JUMPDEST, opAt 720 (.Dup ⟨4, by decide⟩),
-   opAt 721 (.Dup ⟨1, by decide⟩), opAt 722 .LT, opAt 723 .ISZERO,
-   pushAt 724 2 1118, opAt 725 .JUMPI]
+  [opAt 715 .JUMPDEST, opAt 716 (.Dup ⟨4, by decide⟩),
+   opAt 717 (.Dup ⟨1, by decide⟩), opAt 718 .LT, opAt 719 .ISZERO,
+   pushAt 720 2 1107, opAt 721 .JUMPI]
 
 def serializerEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 838 .JUMPDEST, opAt 839 .POP, pushAt 840 0 0]
+  [opAt 834 .JUMPDEST, opAt 835 .POP, pushAt 836 0 0]
 
 def serializerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 841 .JUMPDEST, opAt 842 (.Dup ⟨5, by decide⟩),
-   opAt 843 (.Dup ⟨1, by decide⟩), opAt 844 .LT, opAt 845 .ISZERO,
-   pushAt 846 2 1180, opAt 847 .JUMPI]
+  [opAt 837 .JUMPDEST, opAt 838 (.Dup ⟨5, by decide⟩),
+   opAt 839 (.Dup ⟨1, by decide⟩), opAt 840 .LT, opAt 841 .ISZERO,
+   pushAt 842 2 1169, opAt 843 .JUMPI]
 
 def serializerBodyPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 848 (.Dup ⟨0, by decide⟩), pushAt 849 1 1,
-   opAt 850 (.Dup ⟨7, by decide⟩), opAt 851 .SUB, opAt 852 .SUB,
-   opAt 853 (.Dup ⟨0, by decide⟩), pushAt 854 1 5, opAt 855 .SHR,
-   pushAt 856 1 31, opAt 857 (.Dup ⟨2, by decide⟩), opAt 858 .AND,
-   pushAt 859 1 3, opAt 860 .SHL, pushAt 861 1 255,
-   opAt 862 (.Dup ⟨2, by decide⟩), pushAt 863 1 5, opAt 864 .SHL,
-   pushAt 865 2 2048, opAt 866 .ADD, opAt 867 .MLOAD,
-   opAt 868 (.Dup ⟨2, by decide⟩), opAt 869 .SHR, opAt 870 .AND,
-   opAt 871 (.Dup ⟨4, by decide⟩), pushAt 872 2 6144,
-   opAt 873 .ADD, opAt 874 .MSTORE8, opAt 875 .POP, opAt 876 .POP,
-   opAt 877 .POP, pushAt 878 1 1, opAt 879 (.Dup ⟨1, by decide⟩),
-   opAt 880 .ADD, opAt 881 (.Swap ⟨0, by decide⟩), opAt 882 .POP,
-   pushAt 883 2 1121, opAt 884 .JUMP]
+  [opAt 844 (.Dup ⟨0, by decide⟩), pushAt 845 1 1,
+   opAt 846 (.Dup ⟨7, by decide⟩), opAt 847 .SUB, opAt 848 .SUB,
+   opAt 849 (.Dup ⟨0, by decide⟩), pushAt 850 1 5, opAt 851 .SHR,
+   pushAt 852 1 31, opAt 853 (.Dup ⟨2, by decide⟩), opAt 854 .AND,
+   pushAt 855 1 3, opAt 856 .SHL, pushAt 857 1 255,
+   opAt 858 (.Dup ⟨2, by decide⟩), pushAt 859 1 5, opAt 860 .SHL,
+   pushAt 861 2 2048, opAt 862 .ADD, opAt 863 .MLOAD,
+   opAt 864 (.Dup ⟨2, by decide⟩), opAt 865 .SHR, opAt 866 .AND,
+   opAt 867 (.Dup ⟨4, by decide⟩), pushAt 868 2 6144,
+   opAt 869 .ADD, opAt 870 .MSTORE8, opAt 871 .POP, opAt 872 .POP,
+   opAt 873 .POP, pushAt 874 1 1, opAt 875 (.Dup ⟨1, by decide⟩),
+   opAt 876 .ADD, opAt 877 (.Swap ⟨0, by decide⟩), opAt 878 .POP,
+   pushAt 879 2 1110, opAt 880 .JUMP]
 
 def serializerReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 885 .JUMPDEST, opAt 886 .POP, opAt 887 (.Dup ⟨4, by decide⟩),
-   pushAt 888 2 6144, opAt 889 .RETURN]
+  [opAt 881 .JUMPDEST, opAt 882 .POP, opAt 883 (.Dup ⟨4, by decide⟩),
+   pushAt 884 2 6144, opAt 885 .RETURN]
 
 def exponentOuterExit (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
@@ -171,16 +171,16 @@ def bigReturned (s : State) (accumulatorWord : UInt256)
   interval_cases i <;> decide
 
 private theorem jump1118 :
-    Decode.isValidJumpDest submissionBytecode 1118 = true :=
-  Artifact.isValidJumpDest_index 838 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1107 = true :=
+  Artifact.isValidJumpDest_index 834 (by rfl)
 
 private theorem jump1121 :
-    Decode.isValidJumpDest submissionBytecode 1121 = true :=
-  Artifact.isValidJumpDest_index 841 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1110 = true :=
+  Artifact.isValidJumpDest_index 837 (by rfl)
 
 private theorem jump1180 :
-    Decode.isValidJumpDest submissionBytecode 1180 = true :=
-  Artifact.isValidJumpDest_index 885 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1169 = true :=
+  Artifact.isValidJumpDest_index 881 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_outerFinishGuard (s : State) (accumulatorWord : UInt256)
@@ -196,7 +196,7 @@ theorem run_outerFinishGuard (s : State) (accumulatorWord : UInt256)
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
-  have h1118 : (1118 : UInt256).toNat = 1118 := by decide
+  have h1118 : (1107 : UInt256).toNat = 1107 := by decide
   have h1118Word : (1118 : UInt256) = UInt256.ofNat 1118 := by decide
   simp [outerFinishGuardPath, opAt, pushAt, wfOp, outerLoop,
     exponentOuterExit, outerFinishPCs,
@@ -283,7 +283,7 @@ theorem run_serializerBody (s : State) (accumulatorWord : UInt256)
   have hc14 : rest.length + 14 < 1024 := by omega
   have hc15 : rest.length + 15 < 1024 := by omega
   have hc16 : rest.length + 16 < 1024 := by omega
-  have h1121 : (1121 : UInt256).toNat = 1121 := by decide
+  have h1121 : (1110 : UInt256).toNat = 1110 := by decide
   have h1121Word : (1121 : UInt256) = UInt256.ofNat 1121 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   have hthree : (3 : UInt256) = UInt256.ofNat 3 := by decide
@@ -318,7 +318,7 @@ theorem run_serializerFinishGuard (s : State) (accumulatorWord : UInt256)
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
-  have h1180 : (1180 : UInt256).toNat = 1180 := by decide
+  have h1180 : (1169 : UInt256).toNat = 1169 := by decide
   have h1180Word : (1180 : UInt256) = UInt256.ofNat 1180 := by decide
   simp [serializerGuardPath, opAt, pushAt, wfOp, serializerLoop,
     serializerExit, serializerPCs, hcode, hrun, hzeroFalse,
