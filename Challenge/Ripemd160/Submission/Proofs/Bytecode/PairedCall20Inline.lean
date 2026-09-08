@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedCall26Inline
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneSequentialShift
 
 set_option warningAsError true
 
@@ -50,12 +51,12 @@ def inline20Template : List Instr :=
    .op .AND,
    .op (.Dup ⟨6, by decide⟩),
    .op .MUL,
-   .op (.Dup ⟨0, by decide⟩),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 21),
-   .op .SHR,
-   .op (.Swap ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 20),
    .op .SHR,
+   .op (.Dup ⟨0, by decide⟩),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 1),
+   .op .SHR,
+   .op .JUMPDEST,
    .op (.Dup ⟨1, by decide⟩),
    .op .XOR,
    .op (.Dup ⟨5, by decide⟩),
@@ -86,7 +87,7 @@ theorem run_inline20Template_raw (s : State) (pc : UInt256) (q : PairedHelperBoo
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
-  simp (discharger := omega) [inline20Template, inline20Entry, inline20Output,
+  simp (discharger := omega) [PairedLaneSequentialShift.shr_word, inline20Template, inline20Entry, inline20Output,
     inlineT, inlineRotation, inline20Frame, oneRaw, inlineProduct, rawC10,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
