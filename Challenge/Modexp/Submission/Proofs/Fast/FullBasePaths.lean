@@ -16,76 +16,76 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- pc 3606..3620, indices 2361..2372: size/top-bit guard. -/
+/-- pc 3601..3629, indices 2213..2224: size/top-bit guard. -/
 def blkFullBaseGuard :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2195 .JUMPDEST,
-   opAt 2196 (.Dup ⟨0, by decide⟩),
-   opAt 2197 (.Dup ⟨3, by decide⟩),
-   opAt 2198 .EQ,
-   pushAt 2199 0 0,
-   opAt 2200 .MLOAD,
-   pushAt 2201 1 255,
-   opAt 2202 .SHR,
-   opAt 2203 .AND,
-   opAt 2204 .ISZERO,
-   pushAt 2205 2 3656,
-   opAt 2206 .JUMPI]
+  [opAt 2213 .JUMPDEST,
+   opAt 2214 (.Dup ⟨0, by decide⟩),
+   opAt 2215 (.Dup ⟨3, by decide⟩),
+   opAt 2216 .EQ,
+   pushAt 2217 0 0,
+   opAt 2218 .MLOAD,
+   pushAt 2219 1 255,
+   opAt 2220 .SHR,
+   opAt 2221 .AND,
+   opAt 2222 .ISZERO,
+   pushAt 2223 2 3656,
+   opAt 2224 .JUMPI]
 
-/-- pc 3621..3643, indices 2373..2382: copy the base to ACC and call
+/-- pc 3632..3638, indices 2225..2234: copy the base to ACC and call
 the existing add-mod routine with ZERO as its second operand. -/
 def blkFullBaseCopyAdd :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2207 (.Dup ⟨0, by decide⟩),
-   pushAt 2208 1 96,
-   pushAt 2209 2 1024,
-   opAt 2210 .CALLDATACOPY,
-   pushAt 2211 2 1755,
-   pushAt 2212 2 2048,
-   pushAt 2213 2 1024,
-   pushAt 2214 2 6144,
-   pushAt 2215 2 4785,
-   opAt 2216 .JUMP]
+  [opAt 2225 (.Dup ⟨0, by decide⟩),
+   pushAt 2226 1 96,
+   pushAt 2227 2 1024,
+   opAt 2228 .CALLDATACOPY,
+   pushAt 2229 2 1755,
+   pushAt 2230 2 2048,
+   pushAt 2231 2 1024,
+   pushAt 2232 2 6144,
+   pushAt 2233 2 1939,
+   opAt 2234 .JUMP]
 
-/-- pc 3644..3660, indices 2383..2389: after add-mod, convert ACC to the
+/-- pc 3639..3655, indices 2235..2241: after add-mod, convert ACC to the
 Montgomery BASE block and rejoin at pc 1755. -/
 def blkFullBaseAfterAdd :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2217 .JUMPDEST,
-   pushAt 2218 2 1755,
-   pushAt 2219 2 2048,
-   pushAt 2220 2 6144,
-   pushAt 2221 2 1024,
-   pushAt 2222 2 4785,
-   opAt 2223 .JUMP]
+  [opAt 2235 .JUMPDEST,
+   pushAt 2236 2 1755,
+   pushAt 2237 2 2048,
+   pushAt 2238 2 6144,
+   pushAt 2239 2 1024,
+   pushAt 2240 2 1939,
+   opAt 2241 .JUMP]
 
-/-- pc 3661..3694, indices 2390..2413: relocated original base-head
+/-- pc 3656..3689, indices 2242..2265: relocated original base-head
 computation and the jump to the unchanged loop head. -/
 def blkFullBaseFallback :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2224 .JUMPDEST,
-   opAt 2225 (.Dup ⟨2, by decide⟩),
-   pushAt 2226 1 31,
-   opAt 2227 .ADD,
-   pushAt 2228 1 5,
-   opAt 2229 .SHR,
-   opAt 2230 (.Dup ⟨3, by decide⟩),
-   opAt 2231 (.Dup ⟨1, by decide⟩),
-   pushAt 2232 1 5,
-   opAt 2233 .SHL,
-   opAt 2234 .SUB,
-   pushAt 2235 1 3,
-   opAt 2236 .SHL,
-   pushAt 2237 1 96,
-   opAt 2238 .CALLDATALOAD,
-   opAt 2239 (.Swap ⟨0, by decide⟩),
-   opAt 2240 .SHR,
-   opAt 2241 (.Dup ⟨2, by decide⟩),
-   pushAt 2242 2 992,
-   opAt 2243 .ADD,
-   opAt 2244 .MSTORE,
-   pushAt 2245 1 1,
-   pushAt 2246 2 1668,
-   opAt 2247 .JUMP]
+  [opAt 2242 .JUMPDEST,
+   opAt 2243 (.Dup ⟨2, by decide⟩),
+   pushAt 2244 1 31,
+   opAt 2245 .ADD,
+   pushAt 2246 1 5,
+   opAt 2247 .SHR,
+   opAt 2248 (.Dup ⟨3, by decide⟩),
+   opAt 2249 (.Dup ⟨1, by decide⟩),
+   pushAt 2250 1 5,
+   opAt 2251 .SHL,
+   opAt 2252 .SUB,
+   pushAt 2253 1 3,
+   opAt 2254 .SHL,
+   pushAt 2255 1 96,
+   opAt 2256 .CALLDATALOAD,
+   opAt 2257 (.Swap ⟨0, by decide⟩),
+   opAt 2258 .SHR,
+   opAt 2259 (.Dup ⟨2, by decide⟩),
+   pushAt 2260 2 992,
+   opAt 2261 .ADD,
+   opAt 2262 .MSTORE,
+   pushAt 2263 1 1,
+   pushAt 2264 2 1668,
+   opAt 2265 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

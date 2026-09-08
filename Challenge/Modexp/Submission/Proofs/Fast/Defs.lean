@@ -213,7 +213,7 @@ private theorem fastPCAnchor11 :
       rfl
 
 private theorem fastPCAnchor12 :
-    Artifact.submissionArtifact.instructionPC 1452 = 2063 := by
+    Artifact.submissionArtifact.instructionPC 1452 = 2128 := by
   calc
     Artifact.submissionArtifact.instructionPC 1452 =
         Artifact.submissionArtifact.instructionPC 1416 +
@@ -221,7 +221,7 @@ private theorem fastPCAnchor12 :
             ((Artifact.submissionArtifact.instructions.drop 1416).take
               36)).length :=
       instructionPC_add Artifact.submissionArtifact 1416 36
-    _ = 2063 := by
+    _ = 2128 := by
       rw [fastPCAnchor11]
       rfl
 
@@ -546,7 +546,7 @@ private theorem fastPCAnchor23 :
 
 @[simp] theorem fastPC11 (i : Nat) (hi : 1416 ≤ i) (hii : i ≤ 1451) :
     Artifact.submissionArtifact.instructionPC i =
-      [1995,1996,1997,1998,1999,2000,2001,2002,2003,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055,2056,2057,2058,2059,2060,2061,2062][i - 1416]! := by
+      [1995,1996,1999,2000,2033,2066,2068,2070,2072,2074,2076,2078,2080,2082,2084,2086,2088,2090,2092,2094,2096,2098,2100,2102,2104,2106,2108,2110,2112,2114,2116,2118,2120,2122,2124,2126][i - 1416]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (1416 + (i - 1416)) := by
@@ -562,7 +562,7 @@ private theorem fastPCAnchor23 :
 
 @[simp] theorem fastPC12 (i : Nat) (hi : 1452 ≤ i) (hii : i ≤ 1491) :
     Artifact.submissionArtifact.instructionPC i =
-      [2063,2064,2097,2098,2099,2132,2133,2134,2135,2136,2137,2140,2141,2142,2143,2144,2147,2148,2149,2150,2153,2154,2155,2158,2159,2162,2163,2164,2167,2168,2169,2170,2173,2174,2175,2176,2177,2178,2179,2212][i - 1452]! := by
+      [2128,2130,2131,2132,2133,2134,2135,2136,2137,2138,2139,2140,2141,2142,2143,2144,2147,2148,2149,2150,2153,2154,2155,2158,2159,2162,2163,2164,2167,2168,2169,2170,2173,2174,2175,2176,2177,2178,2179,2212][i - 1452]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (1452 + (i - 1452)) := by
@@ -756,9 +756,9 @@ private theorem fastPCAnchor23 :
 and direct-RR helpers occupy indices 1831..2360 and receive their own tables in
 their proof modules. -/
 @[simp] theorem fullBasePC (i : Nat)
-    (hi : 2195 ≤ i) (hii : i ≤ 2247) :
+    (hi : 2213 ≤ i) (hii : i ≤ 2265) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3601,3602,3603,3604,3605,3606,3607,3609,3610,3611,3612,3615,3616,3617,3619,3622,3623,3626,3629,3632,3635,3638,3639,3640,3643,3646,3649,3652,3655,3656,3657,3658,3660,3661,3663,3664,3665,3666,3668,3669,3670,3672,3673,3675,3676,3677,3678,3679,3682,3683,3684,3686,3689] : List Nat)[i - 2195]! := by
+      ([3601,3602,3603,3604,3605,3606,3607,3609,3610,3611,3612,3615,3616,3617,3619,3622,3623,3626,3629,3632,3635,3638,3639,3640,3643,3646,3649,3652,3655,3656,3657,3658,3660,3661,3663,3664,3665,3666,3668,3669,3670,3672,3673,3675,3676,3677,3678,3679,3682,3683,3684,3686,3689] : List Nat)[i - 2213]! := by
   interval_cases i <;> decide
 
 theorem jumpDest1196 :
@@ -935,18 +935,18 @@ theorem jumpDest2995 :
 
 theorem jumpDest3571 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3566 = true :=
-  Artifact.isValidJumpDest_index 2172 (by rfl)
+  Artifact.isValidJumpDest_index 2190 (by rfl)
 
 theorem jumpDest3606 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3601 = true :=
-  Artifact.isValidJumpDest_index 2195 (by rfl)
+  Artifact.isValidJumpDest_index 2213 (by rfl)
 
 theorem jumpDest3644 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3639 = true :=
-  Artifact.isValidJumpDest_index 2217 (by rfl)
+  Artifact.isValidJumpDest_index 2235 (by rfl)
 
 theorem jumpDest3661 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3656 = true :=
-  Artifact.isValidJumpDest_index 2224 (by rfl)
+  Artifact.isValidJumpDest_index 2242 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

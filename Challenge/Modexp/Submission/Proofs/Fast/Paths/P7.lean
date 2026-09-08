@@ -32,8 +32,8 @@ def blk1376 :
 def blk1379 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1379 .JUMPDEST,
-   pushAt 1380 2 9344,
-   opAt 1381 .MLOAD,
+   pushAt 1380 2 5351,
+   opAt 1381 .JUMP,
    opAt 1382 (.Dup ⟨0, by decide⟩),
    pushAt 1383 1 64,
    opAt 1384 .ADD,

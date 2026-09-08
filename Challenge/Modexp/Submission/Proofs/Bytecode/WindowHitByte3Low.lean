@@ -11,34 +11,49 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitByte3Low
 
 open Challenge.EvmProof.Stepper EvmSemantics EvmSemantics.EVM
 open WindowHitByteSlices WindowByteKernel WindowNibbleKernel
-open WindowNibbleForward
 
 set_option linter.unusedSimpArgs false in
 theorem run_prep (template : State) (base modulus : UInt256) (high : Nat)
-    (word pointer original accumulator : UInt256) (rest : List UInt256)
+    (word pointer accumulator : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (lowPrepPath 3)
-      (finalForwardedNibbleState { template with halt := .Running } (UInt256.ofNat 3500)
-        base modulus high (byteValue 3 word) word pointer original accumulator rest) =
-    some (finalForwardedNibbleState { template with halt := .Running } (UInt256.ofNat 3500)
+      (droppedNibbleState { template with halt := .Running } (UInt256.ofNat 3501)
+        base modulus high (byteValue 3 word) word pointer accumulator rest) =
+    some (nibbleState { template with halt := .Running } (UInt256.ofNat 3505)
       base modulus (lowNibble 3 word) (byteValue 3 word) word pointer
-      original accumulator rest)  := by
-  have _ := hrest
-  rfl
+      accumulator rest) := by
+  have h5 : rest.length + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have h7 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hlow := mask_lowNibble 3 word
+  simp (config := { maxSteps := 2000000 }) (disch := omega)
+    [lowPrepPath, byteStartIndex, locatedSlice,
+      Challenge.EvmProof.Stepper.Located.ofIndex,
+      Challenge.EvmProof.ProgramArtifact.instructionPC,
+      Artifact.submissionArtifact, Artifact.submissionInstructions,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      droppedNibbleState, nibbleState, List.getElem?_cons_zero, List.getElem?_cons_succ,
+      List.exchange, hrest, h5, h6, h7, hlow,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod]
+  rw [word_land_comm]
+  exact hlow
 
 set_option linter.unusedSimpArgs false in
-/-- Fused low-nibble block: four squares then the table multiply, 23
-instructions in 43 bytes.  The machine loads the table word
+/-- Fused low-nibble block: four squares then the table multiply, 21
+instructions in 36 bytes.  The machine loads the table word
 last, so the accumulator-first `nibbleWordStep` spelling needs `mulMod_comm`. -/
 theorem run_squareLookup (template : State) (base modulus : UInt256)
-    (nibble : Nat) (byte word pointer original accumulator : UInt256)
+    (nibble : Nat) (byte word pointer accumulator : UInt256)
     (rest : List UInt256) (hnibble : nibble < 16)
-    (hmask : UInt256.land (UInt256.ofNat 15) byte = UInt256.ofNat nibble)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (lowSquareLookupPath 3)
-      (finalForwardedNibbleState { template with halt := .Running } (UInt256.ofNat 3500)
-        base modulus nibble byte word pointer original accumulator rest) =
-    some (finalLowResultState { template with halt := .Running } (UInt256.ofNat 3543)
+      (nibbleState { template with halt := .Running } (UInt256.ofNat 3505)
+        base modulus nibble byte word pointer accumulator rest) =
+    some (droppedNibbleState { template with halt := .Running } (UInt256.ofNat 3541)
       base modulus nibble byte word pointer
       (WindowMath.nibbleWordStep modulus base accumulator nibble) rest) := by
   have hshift := shift_nibble nibble hnibble
@@ -48,9 +63,6 @@ theorem run_squareLookup (template : State) (base modulus : UInt256)
     omega
   have hread := WindowTableMemory.readWord_tableMemory base modulus nibble hnibble
   have hactive := WindowTableMemory.activeWordsAfter_lookup nibble hnibble
-  have h3 : rest.length + 1 + 1 + 1 < 1024 := by omega
-  have h4 : rest.length + 1 + 1 + 1 + 1 < 1024 := by omega
-  have h5 : rest.length + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h7 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have h8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -67,9 +79,9 @@ theorem run_squareLookup (template : State) (base modulus : UInt256)
       Artifact.submissionArtifact, Artifact.submissionInstructions,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      finalLowResultState, finalForwardedNibbleState, finalLowNibbleState, nibbleState, WindowMath.squareWordAfter,
+      droppedNibbleState, nibbleState, WindowMath.squareWordAfter,
       List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
-      hrest, h3, h4, h5, h6, h7, h8, h9, h10, h11, h12, hmask, hshift, hoffset, hread, hactive,
+      hrest, h6, h7, h8, h9, h10, h11, h12, hshift, hoffset, hread, hactive,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -85,11 +97,24 @@ theorem run_finish (template : State) (base modulus : UInt256)
     (nibble : Nat) (byte word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (finishPath 3)
-      (finalLowResultState { template with halt := .Running } (UInt256.ofNat 3543)
+      (droppedNibbleState { template with halt := .Running } (UInt256.ofNat 3541)
         base modulus nibble byte word pointer accumulator rest) =
-    some (finalWordKernelState { template with halt := .Running } (UInt256.ofNat 3543)
-      base modulus word pointer accumulator rest)  := by
-  have _ := hrest
-  rfl
+    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3542)
+      base modulus word pointer accumulator rest) := by
+  have h5 : rest.length + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have h6 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  simp (config := { maxSteps := 2000000 }) (disch := omega)
+    [finishPath, byteStartIndex, locatedSlice,
+      Challenge.EvmProof.Stepper.Located.ofIndex,
+      Challenge.EvmProof.ProgramArtifact.instructionPC,
+      Artifact.submissionArtifact, Artifact.submissionInstructions,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      droppedNibbleState, nibbleState, wordKernelState,
+      List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
+      hrest, h5, h6,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod]
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitByte3Low

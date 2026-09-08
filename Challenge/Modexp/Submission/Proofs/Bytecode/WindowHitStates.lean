@@ -69,7 +69,8 @@ def loopContinueState (input : ByteArray) (pointer : Nat)
   { loopState input pointer accumulator with pc := UInt256.ofNat 3201 }
 
 /-- Accumulator after `count` of the four bytes in the currently loaded word.
-The loop bytecode retains that word on the stack during the first three byte segments; the final segment consumes it. -/
+The loop bytecode retains that word on the stack until all four bytes have
+been consumed. -/
 def byteAccumulator (input : ByteArray) (pointer : Nat) :
     Nat → UInt256 → UInt256
   | 0, accumulator => accumulator
@@ -79,8 +80,8 @@ def byteAccumulator (input : ByteArray) (pointer : Nat) :
         (UInt256.byteAt (UInt256.ofNat count)
           (MachineState.readWord input pointer)).toNat
 
-/-- Boundary before a byte segment (`count = 0`) or after one of the first three
-byte segments (`1 ≤ count ≤ 3`); `wordDoneState` is the final boundary. -/
+/-- Boundary before a byte segment (`count = 0`) or after one of its four
+byte segments (`1 ≤ count ≤ 4`). -/
 def wordState (input : ByteArray) (pointer count pc : Nat)
     (accumulator : UInt256) : State :=
   { Dispatch.wordEntryState input with
@@ -88,17 +89,6 @@ def wordState (input : ByteArray) (pointer count pc : Nat)
     stack := [MachineState.readWord input pointer, UInt256.ofNat pointer,
       byteAccumulator input pointer count accumulator, modulusWord input] ++
         routeStack input
-    memory := tableMemory (baseWord input) (modulusWord input)
-    activeWords := UInt256.ofNat 16 }
-
-/-- After all four bytes, the dead calldata word has been consumed. -/
-def wordDoneState (input : ByteArray) (pointer : Nat)
-    (accumulator : UInt256) : State :=
-  { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 3543
-    stack := [UInt256.ofNat pointer,
-      WindowMath.chunkWordStep (modulusWord input) (baseWord input) accumulator
-        (MachineState.readWord input pointer), modulusWord input] ++ routeStack input
     memory := tableMemory (baseWord input) (modulusWord input)
     activeWords := UInt256.ofNat 16 }
 
@@ -178,7 +168,7 @@ abbrev ByteStep (input : ByteArray) (pointer count startPC endPC : Nat)
 
 abbrev LoopAdvanceStep (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) : Type :=
-  Challenge.EvmProof.GasSteps (wordDoneState input pointer accumulator)
+  Challenge.EvmProof.GasSteps (wordState input pointer 4 3542 accumulator)
     (loopState input (pointer + 4)
       (WindowMath.chunkWordStep (modulusWord input) (baseWord input)
         accumulator (MachineState.readWord input pointer)))
