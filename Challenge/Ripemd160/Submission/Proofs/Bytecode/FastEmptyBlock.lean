@@ -251,10 +251,10 @@ theorem run_decision_nonempty (s : State) (input : ByteArray) (i : Nat)
   have htrue : UInt256.isTrue (UInt256.ofNat input.size) := by
     exact hmod
   have hdest : Decode.isValidJumpDest submissionBytecode 5230 = true := by
-    have hpc : Artifact.submissionArtifact.instructionPC 4013 = 5230 := by
+    have hpc : Artifact.submissionArtifact.instructionPC 4134 = 5230 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]
       decide
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 4013 (by rfl)
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 4134 (by rfl)
     rw [hpc] at h
     exact h
   have hpc2792 : Artifact.submissionArtifact.instructionPC 77 = 0x79 := by

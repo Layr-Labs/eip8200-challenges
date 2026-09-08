@@ -29,6 +29,7 @@ private theorem straddle_shift_three (v : UInt256) :
   rw [Challenge.EvmProof.Word.word_toNat_ofNat, Fin.val_mul]
   norm_num [Nat.shiftLeft_eq, UInt256.size, UInt256.toNat, Nat.mul_comm]
 
+/-- The correction block, with every stack slot symbolic. -/
 def gasSteps_straddle_sym (input : ByteArray) (E S sv ov acc : UInt256) :
     GasSteps (stS input 423 [E, S, sv, ov, acc, P7, M, m7, P, m8])
       (stS input 334 [(UInt256.xor (UInt256.land m8 E) (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))), S, ((11 : UInt256) + sv), ov, acc, P7, M, m7, P, m8]) := by
