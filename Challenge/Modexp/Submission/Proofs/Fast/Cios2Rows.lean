@@ -39,7 +39,7 @@ opaque gasSteps_l1Four (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4281 s mem bi pa pb 4 i 0 pdst ret rest)
+      (l1At 4276 s mem bi pa pb 4 i 0 pdst ret rest)
       (midState s (l1Step mem bi pa 4 4).memory
         (UInt256.ofNat (ptrAt (pa + 32 * 4 - 32) 4))
         (UInt256.ofNat (ptrAt (8224 + 32 * 4) 4))
@@ -64,7 +64,7 @@ opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4281 s mem bi pa pb 8 i 0 pdst ret rest)
+      (l1At 4276 s mem bi pa pb 8 i 0 pdst ret rest)
       (midState s (l1Step mem bi pa 8 8).memory
         (UInt256.ofNat (ptrAt (pa + 32 * 8 - 32) 8))
         (UInt256.ofNat (ptrAt (8224 + 32 * 8) 8))
@@ -96,7 +96,7 @@ opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (l2At 4921 s mid bi mu c0 pa pb 4 i 0 pdst ret rest)
+      (l2At 4916 s mid bi mu c0 pa pb 4 i 0 pdst ret rest)
       (tailState s (l2Step mid mu c0 4 3).memory
         (UInt256.ofNat (ptrAt (32 * 4 - 64) 3))
         (UInt256.ofNat (ptrAt (8192 + 32 * 4) 3))
@@ -116,7 +116,7 @@ opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (l2At 4921 s mid bi mu c0 pa pb 8 i 0 pdst ret rest)
+      (l2At 4916 s mid bi mu c0 pa pb 8 i 0 pdst ret rest)
       (tailState s (l2Step mid mu c0 8 7).memory
         (UInt256.ofNat (ptrAt (32 * 8 - 64) 7))
         (UInt256.ofNat (ptrAt (8192 + 32 * 8) 7))

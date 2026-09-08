@@ -22,12 +22,7 @@ private def template : List Instr :=
    .op (.Dup ⟨4, by decide⟩),
    .push 2 9344,
    .op .MLOAD,
-   .op .ADD,
-   .op .JUMPDEST,
-   .op .JUMPDEST,
-   .op .JUMPDEST,
-   .op .JUMPDEST,
-   .op .JUMPDEST]
+   .op .ADD]
 
 private theorem slice_eq :
     (Artifact.submissionInstructions.drop startIndex).take template.length = template := by
@@ -51,10 +46,10 @@ private theorem startPC :
   rfl
 
 @[simp] theorem outPC (index : Nat) (hlo : startIndex ≤ index)
-    (hhi : index ≤ 2981) :
+    (hhi : index ≤ 2976) :
     Artifact.submissionArtifact.instructionPC index =
       [4260, 4261, 4262, 4263, 4264, 4269, 4270, 4271, 4274,
-       4275, 4276, 4277, 4278, 4279, 4280][index - startIndex]! := by
+       4275][index - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -87,7 +82,7 @@ def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨startIndex + offset, .push width value, (getElem_slice offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 2711..2725, pc 4260..4280. -/
+/-- Instructions 2711..2720, pc 4260..4275. -/
 def cios2Out :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 0 .JUMPDEST,
@@ -99,11 +94,6 @@ def cios2Out :
    opAt 6 (.Dup ⟨4, by decide⟩),
    pushAt 7 2 9344,
    opAt 8 .MLOAD,
-   opAt 9 .ADD,
-   opAt 10 .JUMPDEST,
-   opAt 11 .JUMPDEST,
-   opAt 12 .JUMPDEST,
-   opAt 13 .JUMPDEST,
-   opAt 14 .JUMPDEST]
+   opAt 9 .ADD]
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Out

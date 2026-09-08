@@ -3000,11 +3000,6 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.op EvmSemantics.Operation.MLOAD,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.ADD,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
- YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
- YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
- YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
- YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
- YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
  YulEvmCompiler.Instr.op EvmSemantics.Operation.MLOAD,
  YulEvmCompiler.Instr.push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
@@ -3156,7 +3151,7 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 5 }),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
  YulEvmCompiler.Instr.op EvmSemantics.Operation.GT,
- YulEvmCompiler.Instr.push 2 4281,
+ YulEvmCompiler.Instr.push 2 4276,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
@@ -3329,7 +3324,7 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.ADD,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }),
- YulEvmCompiler.Instr.push 2 5058,
+ YulEvmCompiler.Instr.push 2 5053,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
@@ -3363,7 +3358,7 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.push 2 2304,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP]
 
-theorem submissionInstructions_count : submissionInstructions.length = 3340 := by
+theorem submissionInstructions_count : submissionInstructions.length = 3335 := by
   decide
 
 theorem assemble_submissionInstructions :

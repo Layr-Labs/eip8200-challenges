@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 3136
+def startIndex : Nat := 3131
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
@@ -82,13 +82,13 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem startPC :
-    Artifact.submissionArtifact.instructionPC startIndex = 4821 := by
+    Artifact.submissionArtifact.instructionPC startIndex = 4816 := by
   rfl
 
 @[simp] theorem midPC (index : Nat) (hlo : startIndex ≤ index)
-    (hhi : index ≤ 3185) :
+    (hhi : index ≤ 3180) :
     Artifact.submissionArtifact.instructionPC index =
-      [4821,4822,4823,4824,4827,4828,4829,4830,4833,4834,4835,4838,4839,4842,4843,4844,4847,4848,4849,4850,4853,4854,4855,4856,4857,4858,4859,4892,4893,4894,4895,4896,4897,4898,4899,4900,4901,4902,4903,4904,4905,4908,4909,4911,4912,4913,4916,4917,4919,4920][index - startIndex]! := by
+      [4816,4817,4818,4819,4822,4823,4824,4825,4828,4829,4830,4833,4834,4837,4838,4839,4842,4843,4844,4845,4848,4849,4850,4851,4852,4853,4854,4887,4888,4889,4890,4891,4892,4893,4894,4895,4896,4897,4898,4899,4900,4903,4904,4906,4907,4908,4911,4912,4914,4915][index - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -122,7 +122,7 @@ def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨startIndex + offset, .push width value, (getElem_slice offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 2880..2929, pc 4821..4920. -/
+/-- Instructions 2880..2929, pc 4816..4915. -/
 def cios2Mid :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 0 .POP,
