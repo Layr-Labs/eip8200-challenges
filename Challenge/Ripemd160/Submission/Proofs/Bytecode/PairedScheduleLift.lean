@@ -68,16 +68,28 @@ theorem readWord_offset16 (memory : ByteArray) (offset : Nat)
     hright, Nat.add_zero]
 
 theorem read_schedule_upper (memory : ByteArray) (words : Nat → UInt256)
-    (hread : ∀ i, i ≤ 16 → MachineState.readWord memory (192 + 32 * i) = words i)
-    (hbound : ∀ i, i ≤ 16 → (words i).toNat < 2 ^ 32)
+    (hread : ∀ i, i < 16 → MachineState.readWord memory (192 + 32 * i) = words i)
+    (hbound : ∀ i, i < 16 → (words i).toNat < 2 ^ 32)
+    (hcell16 : MachineState.readWord memory (192 + 32 * 16) = UInt256.ofNat 0)
     (i : Nat) (hi : i < 16) :
     MachineState.readWord memory (208 + 32 * i) =
       UInt256.shiftLeft (words i) (UInt256.ofNat 128) := by
-  have hnext : MachineState.readWord memory (192 + 32 * i + 32) = words (i + 1) := by
-    convert hread (i + 1) (by omega) using 1
-    congr 1
-  have h := readWord_offset16 memory (192 + 32 * i) (words i) (words (i + 1))
-    (hread i (by omega)) hnext (hbound i (by omega)) (hbound (i + 1) (by omega))
+  have hnext : MachineState.readWord memory (192 + 32 * i + 32) =
+      if i + 1 = 16 then UInt256.ofNat 0 else words (i + 1) := by
+    by_cases hlast : i + 1 = 16
+    · subst hlast
+      simpa using hcell16
+    · have hi' : i + 1 < 16 := by omega
+      simpa [if_neg hlast] using hread (i + 1) hi'
+  have hnext32 : (if i + 1 = 16 then UInt256.ofNat 0 else words (i + 1)).toNat < 2 ^ 32 := by
+    by_cases hlast : i + 1 = 16
+    · simp [hlast]
+      decide
+    · simp [if_neg hlast]
+      exact hbound (i + 1) (by omega)
+  have h := readWord_offset16 memory (192 + 32 * i) (words i)
+    (if i + 1 = 16 then UInt256.ofNat 0 else words (i + 1))
+    (hread i hi) hnext (hbound i hi) hnext32
   convert h using 1
   congr 1
   omega
@@ -104,9 +116,11 @@ def storeCells (memory : ByteArray) (words : Nat → UInt256) (first : Nat) :
   | 0 => memory
   | n + 1 => writeWord (storeCells memory words first n) (cell (first + n)) (words (first + n))
 
-/-- Match the emitted order: upper eight cells, lower eight, then the sentinel. -/
+/-- Match the emitted order: upper eight cells, then lower eight.
+The overlapping upper-lane read of cell 15 uses the untouched 16-byte
+window at 704, which stays zero on the clean-state padded buffer. -/
 def normalizedMemory (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
-  writeWord (storeCells (storeCells memory words 8 8) words 0 8) (cell 16) (UInt256.ofNat 0)
+  storeCells (storeCells memory words 8 8) words 0 8
 
 theorem read_writeWord (memory : ByteArray) (address : Nat) (value : UInt256) :
     MachineState.readWord (writeWord memory address value) address = value :=
@@ -164,58 +178,47 @@ theorem getD_storeCells_outside (memory : ByteArray) (words : Nat → UInt256)
     omega
 
 theorem read_normalized_cell (memory : ByteArray) (words : Nat → UInt256)
-    (i : Nat) (hi : i ≤ 16) :
-    MachineState.readWord (normalizedMemory memory words) (cell i) =
-      if i = 16 then UInt256.ofNat 0 else words i := by
-  by_cases heq : i = 16
-  · subst i
-    simp only [normalizedMemory, read_writeWord, ↓reduceIte]
-  · rw [if_neg heq, normalizedMemory, read_writeWord_disjoint _ _ _ _
-      (Or.inl (by simp only [cell]; omega))]
-    by_cases hlow : i < 8
-    · exact read_storeCells _ _ 0 8 i (by omega) (by omega)
-    · rw [read_storeCells_outside _ _ 0 8 (cell i)
-        (Or.inr (by simp only [cell]; omega))]
-      exact read_storeCells _ _ 8 8 i (by omega) (by omega)
+    (i : Nat) (hi : i < 16) :
+    MachineState.readWord (normalizedMemory memory words) (cell i) = words i := by
+  simp only [normalizedMemory]
+  by_cases hlow : i < 8
+  · exact read_storeCells _ _ 0 8 i (by omega) (by omega)
+  · rw [read_storeCells_outside _ _ 0 8 (cell i)
+      (Or.inr (by simp only [cell]; omega))]
+    exact read_storeCells _ _ 8 8 i (by omega) (by omega)
 
 theorem read_normalized_upper (memory : ByteArray) (words : Nat → UInt256)
     (hbound : ∀ i, i < 16 → (words i).toNat < 2 ^ 32)
+    (hcell16 : MachineState.readWord memory (cell 16) = UInt256.ofNat 0)
     (i : Nat) (hi : i < 16) :
     MachineState.readWord (normalizedMemory memory words) (208 + 32 * i) =
       UInt256.shiftLeft (words i) (UInt256.ofNat 128) := by
+  have h16 : MachineState.readWord (normalizedMemory memory words) (cell 16) =
+      UInt256.ofNat 0 := by
+    simp only [normalizedMemory]
+    rw [read_storeCells_outside _ _ 0 8 (cell 16) (Or.inr (by simp only [cell]; omega)),
+      read_storeCells_outside _ _ 8 8 (cell 16) (Or.inr (by simp only [cell]; omega))]
+    exact hcell16
   have h := PairedScheduleOverlap.read_schedule_upper
-    (normalizedMemory memory words) (fun j => if j = 16 then UInt256.ofNat 0 else words j)
-    (fun j hj => read_normalized_cell memory words j hj)
-    (by
-      intro j hj
-      by_cases heq : j = 16
-      · simp only [heq, ↓reduceIte]
-        decide
-      · simp only [if_neg heq]
-        exact hbound j (by omega))
-    i hi
-  simpa only [if_neg (show i ≠ 16 by omega)] using h
+    (normalizedMemory memory words) words
+    (fun j hj => read_normalized_cell memory words j hj) hbound h16 i hi
+  exact h
 
 theorem read_normalized_outside (memory : ByteArray) (words : Nat → UInt256)
     (address : Nat) (houtside : address + 32 ≤ 192 ∨ 736 ≤ address) :
     MachineState.readWord (normalizedMemory memory words) address =
       MachineState.readWord memory address := by
-  rw [normalizedMemory, read_writeWord_disjoint]
-  · rw [read_storeCells_outside, read_storeCells_outside]
-    · simp only [cell]
-      omega
-    · simp only [cell]
-      omega
+  rw [normalizedMemory, read_storeCells_outside, read_storeCells_outside]
+  · simp only [cell]
+    omega
   · simp only [cell]
     omega
 
 theorem getD_normalized_outside (memory : ByteArray) (words : Nat → UInt256)
     (address : Nat) (houtside : address < 192 ∨ 736 ≤ address) :
     (normalizedMemory memory words)[address]?.getD 0 = memory[address]?.getD 0 := by
-  simp only [normalizedMemory, writeWord, MachineState.writeBytes_getElem?_getD,
-    YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
-  rw [if_neg (by simp only [cell]; omega), getD_storeCells_outside,
-    getD_storeCells_outside]
+  simp only [normalizedMemory]
+  rw [getD_storeCells_outside, getD_storeCells_outside]
   · simp only [cell]
     omega
   · simp only [cell]
@@ -269,12 +272,12 @@ theorem storeCells_size (memory : ByteArray) (words : Nat → UInt256)
     split <;> simp only [cell] <;> omega
 
 theorem normalizedMemory_size (memory : ByteArray) (words : Nat → UInt256) :
-    (normalizedMemory memory words).size = max memory.size 736 := by
-  rw [normalizedMemory, writeWord_size, storeCells_size, storeCells_size]
+    (normalizedMemory memory words).size = max memory.size 704 := by
+  rw [normalizedMemory, storeCells_size, storeCells_size]
   norm_num [cell]
 
 theorem normalizedMemory_size_of_ge (memory : ByteArray) (words : Nat → UInt256)
-    (hsize : 736 ≤ memory.size) :
+    (hsize : 704 ≤ memory.size) :
     (normalizedMemory memory words).size = memory.size := by
   rw [normalizedMemory_size, Nat.max_eq_left hsize]
 
@@ -415,13 +418,14 @@ theorem read_normalized_extracted (memory : ByteArray) (p i : Nat) (hi : i < 16)
       (192 + 32 * i) = littleWord memory p i := by
   change MachineState.readWord (normalizedMemory memory (extractedWord memory p))
     (cell i) = littleWord memory p i
-  rw [read_normalized_cell _ _ _ (by omega), if_neg (by omega)]
+  rw [read_normalized_cell _ _ _ (by omega)]
   exact extractedWord_eq_littleWord memory p i
 
-theorem read_normalized_extracted_upper (memory : ByteArray) (p i : Nat) (hi : i < 16) :
+theorem read_normalized_extracted_upper (memory : ByteArray) (p i : Nat) (hi : i < 16)
+    (hcell16 : MachineState.readWord memory (cell 16) = UInt256.ofNat 0) :
     MachineState.readWord (normalizedMemory memory (extractedWord memory p))
       (208 + 32 * i) = UInt256.shiftLeft (littleWord memory p i) (UInt256.ofNat 128) := by
-  rw [read_normalized_upper _ _ (fun j _ => extractedWord_bound memory p j) _ hi,
+  rw [read_normalized_upper _ _ (fun j _ => extractedWord_bound memory p j) hcell16 hi,
     extractedWord_eq_littleWord]
 
 #print axioms reversedWord_eq_packed
@@ -777,7 +781,7 @@ theorem run_sentinelTemplate (s : State) (pc : UInt256) (rest : List UInt256)
   simpa only [sentinelTemplate, DenseScheduleTrace.pcAfter_append] using hjoin
 
 def fullTemplate : List Instr :=
-  ((initialTemplate ++ reversedHalfTemplate 8) ++ reversedHalfTemplate 0) ++ sentinelTemplate
+  (initialTemplate ++ reversedHalfTemplate 8) ++ reversedHalfTemplate 0
 
 theorem run_fullTemplate (s : State) (pc messageOffset returnPC : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1018) (hrun : s.halt = .Running)
@@ -802,17 +806,7 @@ theorem run_fullTemplate (s : State) (pc messageOffset returnPC : UInt256)
     (pcAfter (pcAfter pc initialTemplate) (reversedHalfTemplate 8))
     (inputWord0 s messageOffset) 0 (returnPC :: rest)
     (by simp only [List.length_cons]; omega) hrun hactive (by decide)
-  have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
-  have h4 := run_sentinelTemplate
-    { s with
-      activeWords := loadedActiveWords s messageOffset
-      memory := storeCells
-        (storeCells s.memory (halfWords (packedInput1 s messageOffset) 8) 8 8)
-        (halfWords (packedInput0 s messageOffset) 0) 0 8 }
-    (pcAfter (pcAfter (pcAfter pc initialTemplate) (reversedHalfTemplate 8))
-      (reversedHalfTemplate 0)) (returnPC :: rest)
-    (by simp only [List.length_cons]; omega) hrun hactive
-  have hjoin := DenseScheduleTrace.runInstrSeq_append_running h123 (by exact hrun) h4
+  have hjoin := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
   rw [store_upper_schedule, store_lower_schedule] at hjoin
   simpa only [fullTemplate, DenseScheduleTrace.pcAfter_append, normalizedMemory] using hjoin
 
@@ -909,14 +903,14 @@ theorem run_fullTemplate_natural (s : State) (pc returnPC : UInt256)
     (fun i hi => scheduleWords_eq_extracted s p i hi hbound)] at h
   exact h
 
-theorem fullTemplate_length : fullTemplate.length = 152 := by
+theorem fullTemplate_length : fullTemplate.length = 149 := by
   norm_num [fullTemplate, initialTemplate, reversedHalfTemplate, endianStage8, endianStage16,
     endianStage, halfTemplate, prefixTemplate, keepTemplate, PairedScheduleStores.firstTemplate,
     PairedScheduleStores.middleTemplate, PairedScheduleStores.lastTemplate,
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.maskTemplate,
     PairedSchedulePrimitives.storeTemplate, sentinelTemplate]
 
-theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 393 := by
+theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 388 := by
   rw [DenseScheduleTemplate.assembleBytes_length]
   norm_num [fullTemplate, initialTemplate, reversedHalfTemplate, endianStage8, endianStage16,
     endianStage, endianMaskPush, endianFactorPush, endianFactor,
@@ -926,7 +920,7 @@ theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 393 := b
     PairedSchedulePrimitives.storeTemplate, sentinelTemplate, cell,
     op, push1, push2, push3, dup1, swap1]
 
-theorem fullTemplate_staticGas : staticGas fullTemplate = 461 := by
+theorem fullTemplate_staticGas : staticGas fullTemplate = 453 := by
   norm_num [staticGas, fullTemplate, initialTemplate, reversedHalfTemplate,
     endianStage8, endianStage16, endianStage, endianMaskPush, endianFactorPush, endianFactor,
     halfTemplate, prefixTemplate, keepTemplate, PairedScheduleStores.firstTemplate,
@@ -957,7 +951,7 @@ open EvmSemantics EvmSemantics.EVM
 open YulEvmCompiler
 open DenseScheduleTemplate PairedScheduleMemory PairedScheduleHalves PairedScheduleCombined
 
-/-- Exact instruction decoding of the frozen 5337-byte candidate's 393-byte
+/-- Exact instruction decoding of the frozen 5225-byte candidate's 388-byte
 window beginning at physical PC464. This list is not generated from test inputs. -/
 def frozenInstructions : List Instr :=
   [.op .JUMPDEST,
@@ -1108,9 +1102,6 @@ def frozenInstructions : List Instr :=
    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
    .op .AND,
    .push ⟨2, by decide⟩ (UInt256.ofNat 0x01a0),
-   .op .MSTORE,
-   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x02c0),
    .op .MSTORE]
 
 theorem fullTemplate_eq_frozenInstructions : fullTemplate = frozenInstructions := by
@@ -1139,7 +1130,7 @@ theorem fullTemplate_advances :
   intro instruction hmem
   rw [fullTemplate_eq_frozenInstructions] at hmem
   simp only [frozenInstructions, List.mem_cons, List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals first
     | exact Or.inl (Or.inl (StraightLine.push _ _))
     | exact Or.inl (Or.inl StraightLine.add)

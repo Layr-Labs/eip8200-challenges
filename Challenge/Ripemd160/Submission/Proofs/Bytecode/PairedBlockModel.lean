@@ -71,13 +71,17 @@ theorem scheduled_ready (s : State) (input : ByteArray) (i : Nat)
       (PairedScheduleMemory.normalizedMemory s.memory
         (PairedScheduleData.extractedWord s.memory (messagePointer i)))
         (PairedScheduleMemory.cell k) = _
-    rw [PairedScheduleMemory.read_normalized_cell _ _ _ (by omega), if_neg (by omega)]
+    rw [PairedScheduleMemory.read_normalized_cell _ _ _ (by omega)]
     exact extracted_words s input i h hfit hi ctx k hk
   · intro k hk
     change MachineState.readWord
       (PairedScheduleMemory.normalizedMemory s.memory
         (PairedScheduleData.extractedWord s.memory (messagePointer i))) (208 + 32 * k) = _
-    rw [PairedScheduleData.read_normalized_extracted_upper _ _ _ hk,
+    have hcell16 : MachineState.readWord s.memory (PairedScheduleMemory.cell 16) =
+        UInt256.ofNat 0 := by
+      apply Challenge.EvmProof.Word.word_ext
+      simp [PairedScheduleMemory.cell, Challenge.EvmProof.Word.word_toNat_ofNat]
+    rw [PairedScheduleData.read_normalized_extracted_upper _ _ _ hk hcell16,
       ← PairedScheduleData.extractedWord_eq_littleWord,
       extracted_words s input i h hfit hi ctx k hk]
     rfl

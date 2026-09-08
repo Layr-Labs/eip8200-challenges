@@ -24,7 +24,7 @@ def loadTemplate (address : Nat) (dup : Operation.DupOp) : List Instr :=
   [push1 (UInt256.ofNat address), .op .MLOAD, .op (.Dup dup), .op .AND,
    dup1, push1 (UInt256.ofNat 128), .op .SHL, .op .OR]
 
-/-- Exact physical instructions 857..960 of the frozen 5315-byte candidate. -/
+/-- Exact physical instructions 857..960 of the frozen 5225-byte candidate. -/
 def template : List Instr :=
   cacheTemplate ++ loadTemplate 160 ⟨4, by decide⟩ ++
     loadTemplate 128 ⟨5, by decide⟩ ++ loadTemplate 96 ⟨6, by decide⟩ ++
