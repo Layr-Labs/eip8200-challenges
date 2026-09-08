@@ -19,14 +19,14 @@ open Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.L2Pair
 
 def tailState (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5337
+  { s with pc := UInt256.ofNat 5332
            stack := [pmj, ptj, c, mu, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
 
 theorem jumpDest4913 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5058 = true := by
-  exact Artifact.isValidJumpDest_index 3242 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5053 = true := by
+  exact Artifact.isValidJumpDest_index 3237 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_first (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -35,8 +35,8 @@ theorem run_first (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hk : k + 2 < n) :
     Challenge.EvmProof.Stepper.runLocatedBlock firstMac
-      (l2At 5058 s mid bi mu c0 pa pb n i k pdst ret rest) =
-      some (l2At 5195 s mid bi mu c0 pa pb n i (k + 1) pdst ret rest) := by
+      (l2At 5053 s mid bi mu c0 pa pb n i k pdst ret rest) =
+      some (l2At 5190 s mid bi mu c0 pa pb n i (k + 1) pdst ret rest) := by
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
@@ -107,8 +107,8 @@ theorem run_secondBody (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hk : k + 2 < n) :
     Challenge.EvmProof.Stepper.runLocatedBlock secondMacBody
-      (l2At 5195 s mid bi mu c0 pa pb n i k pdst ret rest) =
-      some (l2At 5058 s mid bi mu c0 pa pb n i (k + 1) pdst ret rest) := by
+      (l2At 5190 s mid bi mu c0 pa pb n i k pdst ret rest) =
+      some (l2At 5053 s mid bi mu c0 pa pb n i (k + 1) pdst ret rest) := by
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
@@ -121,10 +121,10 @@ theorem run_secondBody (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     decide
   have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
-  have h4913 : (5058 : UInt256).toNat = 5058 := by decide
-  have h4913' : (5058 : UInt256) = UInt256.ofNat 5058 := by decide
+  have h4913 : (5053 : UInt256).toNat = 5053 := by decide
+  have h4913' : (5053 : UInt256) = UInt256.ofNat 5053 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (5058 : UInt256).toNat = true := by
+      (5053 : UInt256).toNat = true := by
     rw [h4913]
     exact jumpDest4913
   have hpmj : ptrAt (32 * n - 64) k %
@@ -192,7 +192,7 @@ theorem run_secondExit (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hk : k + 2 = n) :
     Challenge.EvmProof.Stepper.runLocatedBlock secondMac
-      (l2At 5195 s mid bi mu c0 pa pb n i k pdst ret rest) =
+      (l2At 5190 s mid bi mu c0 pa pb n i k pdst ret rest) =
       some (tailState s (l2Step mid mu c0 n (k + 1)).memory
         (UInt256.ofNat (ptrAt (32 * n - 64) (k + 1)))
         (UInt256.ofNat (ptrAt (8192 + 32 * n) (k + 1)))
@@ -275,8 +275,8 @@ opaque gasSteps_first (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hk : k + 2 < n) :
     Challenge.EvmProof.GasSteps
-      (l2At 5058 s mid bi mu c0 pa pb n i k pdst ret rest)
-      (l2At 5195 s mid bi mu c0 pa pb n i (k + 1) pdst ret rest) :=
+      (l2At 5053 s mid bi mu c0 pa pb n i k pdst ret rest)
+      (l2At 5190 s mid bi mu c0 pa pb n i (k + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka firstMac hcode hfork
     (run_first s mid bi mu c0 pa pb n i k pdst ret rest hcap hrun hact hn32 hk)
@@ -291,8 +291,8 @@ opaque gasSteps_secondBody (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hk : k + 2 < n) :
     Challenge.EvmProof.GasSteps
-      (l2At 5195 s mid bi mu c0 pa pb n i k pdst ret rest)
-      (l2At 5058 s mid bi mu c0 pa pb n i (k + 1) pdst ret rest) :=
+      (l2At 5190 s mid bi mu c0 pa pb n i k pdst ret rest)
+      (l2At 5053 s mid bi mu c0 pa pb n i (k + 1) pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka secondMacBody hcode hfork
     (run_secondBody s mid bi mu c0 pa pb n i k pdst ret rest hcap hrun hcode hact hn32 hk)
@@ -307,7 +307,7 @@ opaque gasSteps_secondExit (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hk : k + 2 = n) :
     Challenge.EvmProof.GasSteps
-      (l2At 5195 s mid bi mu c0 pa pb n i k pdst ret rest)
+      (l2At 5190 s mid bi mu c0 pa pb n i k pdst ret rest)
       (tailState s (l2Step mid mu c0 n (k + 1)).memory
         (UInt256.ofNat (ptrAt (32 * n - 64) (k + 1)))
         (UInt256.ofNat (ptrAt (8192 + 32 * n) (k + 1)))
@@ -326,8 +326,8 @@ opaque gasSteps_pairBody (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hk : k + 3 < n) :
     Challenge.EvmProof.GasSteps
-      (l2At 5058 s mid bi mu c0 pa pb n i k pdst ret rest)
-      (l2At 5058 s mid bi mu c0 pa pb n i (k + 2) pdst ret rest) :=
+      (l2At 5053 s mid bi mu c0 pa pb n i k pdst ret rest)
+      (l2At 5053 s mid bi mu c0 pa pb n i (k + 2) pdst ret rest) :=
   (gasSteps_first s mid bi mu c0 pa pb n i k pdst ret rest hcap hrun hcode hfork
       hnp hact hn32 (by omega)).trans
     (gasSteps_secondBody s mid bi mu c0 pa pb n i (k + 1) pdst ret rest hcap hrun
@@ -342,7 +342,7 @@ opaque gasSteps_pairExit (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hk : k + 3 = n) :
     Challenge.EvmProof.GasSteps
-      (l2At 5058 s mid bi mu c0 pa pb n i k pdst ret rest)
+      (l2At 5053 s mid bi mu c0 pa pb n i k pdst ret rest)
       (tailState s (l2Step mid mu c0 n (k + 2)).memory
         (UInt256.ofNat (ptrAt (32 * n - 64) (k + 2)))
         (UInt256.ofNat (ptrAt (8192 + 32 * n) (k + 2)))

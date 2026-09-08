@@ -16,7 +16,7 @@ private theorem instructionPC_add
   simp only [Challenge.EvmProof.ProgramArtifact.instructionPC, List.take_add,
     assembleBytes_append, List.length_append]
 
-def firstStartIndex : Nat := 2998
+def firstStartIndex : Nat := 2993
 
 private def firstTemplate : List Instr :=
   [.op .JUMPDEST,
@@ -72,13 +72,13 @@ private theorem firstGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem firstStartPC :
-    Artifact.submissionArtifact.instructionPC firstStartIndex = 4281 := by
+    Artifact.submissionArtifact.instructionPC firstStartIndex = 4276 := by
   rfl
 
 @[simp] theorem firstPC (index : Nat) (hlo : firstStartIndex ≤ index)
-    (hhi : index ≤ 3035) :
+    (hhi : index ≤ 3030) :
     Artifact.submissionArtifact.instructionPC index =
-      [4281,4282,4283,4284,4317,4318,4319,4320,4321,4322,4323,4324,4325,4326,4327,4328,4329,4330,4331,4332,4333,4334,4335,4336,4337,4338,4339,4340,4341,4342,4343,4344,4345,4378,4379,4380,4381,4414][index - firstStartIndex]! := by
+      [4276,4277,4278,4279,4312,4313,4314,4315,4316,4317,4318,4319,4320,4321,4322,4323,4324,4325,4326,4327,4328,4329,4330,4331,4332,4333,4334,4335,4336,4337,4338,4339,4340,4373,4374,4375,4376,4409][index - firstStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -113,7 +113,7 @@ def firstPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨firstStartIndex + offset, .push width value,
     (firstGetElem offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 2726..2763, pc 4281..4414. -/
+/-- Instructions 2726..2763, pc 4276..4409. -/
 def firstMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [firstOpAt 0 .JUMPDEST,
@@ -154,7 +154,7 @@ def firstMac :
    firstOpAt 35 .MSTORE,
    firstPushAt 36 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    firstOpAt 37 .ADD]
-def middleOneStartIndex : Nat := 3036
+def middleOneStartIndex : Nat := 3031
 
 private def middleOneTemplate : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
@@ -209,13 +209,13 @@ private theorem middleOneGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem middleOneStartPC :
-    Artifact.submissionArtifact.instructionPC middleOneStartIndex = 4415 := by
+    Artifact.submissionArtifact.instructionPC middleOneStartIndex = 4410 := by
   rfl
 
 @[simp] theorem middleOnePC (index : Nat) (hlo : middleOneStartIndex ≤ index)
-    (hhi : index ≤ 3072) :
+    (hhi : index ≤ 3067) :
     Artifact.submissionArtifact.instructionPC index =
-      [4415,4416,4417,4450,4451,4452,4453,4454,4455,4456,4457,4458,4459,4460,4461,4462,4463,4464,4465,4466,4467,4468,4469,4470,4471,4472,4473,4474,4475,4476,4477,4478,4511,4512,4513,4514,4547][index - middleOneStartIndex]! := by
+      [4410,4411,4412,4445,4446,4447,4448,4449,4450,4451,4452,4453,4454,4455,4456,4457,4458,4459,4460,4461,4462,4463,4464,4465,4466,4467,4468,4469,4470,4471,4472,4473,4506,4507,4508,4509,4542][index - middleOneStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -250,7 +250,7 @@ def middleOnePushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨middleOneStartIndex + offset, .push width value,
     (middleOneGetElem offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 2764..2800, pc 4415..4547. -/
+/-- Instructions 2764..2800, pc 4410..4542. -/
 def middleOneMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [middleOneOpAt 0 (.Dup ⟨0, by decide⟩),
@@ -290,7 +290,7 @@ def middleOneMac :
    middleOneOpAt 34 .MSTORE,
    middleOnePushAt 35 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    middleOneOpAt 36 .ADD]
-def middleTwoStartIndex : Nat := 3073
+def middleTwoStartIndex : Nat := 3068
 
 private def middleTwoTemplate : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
@@ -345,13 +345,13 @@ private theorem middleTwoGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem middleTwoStartPC :
-    Artifact.submissionArtifact.instructionPC middleTwoStartIndex = 4548 := by
+    Artifact.submissionArtifact.instructionPC middleTwoStartIndex = 4543 := by
   rfl
 
 @[simp] theorem middleTwoPC (index : Nat) (hlo : middleTwoStartIndex ≤ index)
-    (hhi : index ≤ 3109) :
+    (hhi : index ≤ 3104) :
     Artifact.submissionArtifact.instructionPC index =
-      [4548,4549,4550,4583,4584,4585,4586,4587,4588,4589,4590,4591,4592,4593,4594,4595,4596,4597,4598,4599,4600,4601,4602,4603,4604,4605,4606,4607,4608,4609,4610,4611,4644,4645,4646,4647,4680][index - middleTwoStartIndex]! := by
+      [4543,4544,4545,4578,4579,4580,4581,4582,4583,4584,4585,4586,4587,4588,4589,4590,4591,4592,4593,4594,4595,4596,4597,4598,4599,4600,4601,4602,4603,4604,4605,4606,4639,4640,4641,4642,4675][index - middleTwoStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -386,7 +386,7 @@ def middleTwoPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨middleTwoStartIndex + offset, .push width value,
     (middleTwoGetElem offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 2801..2837, pc 4548..4680. -/
+/-- Instructions 2801..2837, pc 4543..4675. -/
 def middleTwoMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [middleTwoOpAt 0 (.Dup ⟨0, by decide⟩),
@@ -426,7 +426,7 @@ def middleTwoMac :
    middleTwoOpAt 34 .MSTORE,
    middleTwoPushAt 35 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    middleTwoOpAt 36 .ADD]
-def secondStartIndex : Nat := 3110
+def secondStartIndex : Nat := 3105
 
 private def secondTemplate : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
@@ -469,7 +469,7 @@ private def secondTemplate : List Instr :=
    .op (.Dup ⟨5, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4281,
+   .push 2 4276,
    .op .JUMPI]
 
 private theorem secondSlice_eq :
@@ -486,13 +486,13 @@ private theorem secondGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem secondStartPC :
-    Artifact.submissionArtifact.instructionPC secondStartIndex = 4681 := by
+    Artifact.submissionArtifact.instructionPC secondStartIndex = 4676 := by
   rfl
 
 @[simp] theorem secondPC (index : Nat) (hlo : secondStartIndex ≤ index)
-    (hhi : index ≤ 3151) :
+    (hhi : index ≤ 3146) :
     Artifact.submissionArtifact.instructionPC index =
-      [4681,4682,4683,4716,4717,4718,4719,4720,4721,4722,4723,4724,4725,4726,4727,4728,4729,4730,4731,4732,4733,4734,4735,4736,4737,4738,4739,4740,4741,4742,4743,4744,4777,4778,4779,4780,4813,4814,4815,4816,4817,4820][index - secondStartIndex]! := by
+      [4676,4677,4678,4711,4712,4713,4714,4715,4716,4717,4718,4719,4720,4721,4722,4723,4724,4725,4726,4727,4728,4729,4730,4731,4732,4733,4734,4735,4736,4737,4738,4739,4772,4773,4774,4775,4808,4809,4810,4811,4812,4815][index - secondStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -527,7 +527,7 @@ def secondPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨secondStartIndex + offset, .push width value,
     (secondGetElem offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 2838..2879, pc 4681..4820. -/
+/-- Instructions 2838..2879, pc 4676..4815. -/
 def secondMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [secondOpAt 0 (.Dup ⟨0, by decide⟩),
@@ -570,7 +570,7 @@ def secondMac :
    secondOpAt 37 (.Dup ⟨5, by decide⟩),
    secondOpAt 38 (.Dup ⟨1, by decide⟩),
    secondOpAt 39 .GT,
-   secondPushAt 40 2 4281,
+   secondPushAt 40 2 4276,
    secondOpAt 41 .JUMPI]
 
 /-- The body and exit share the compact block ending at JUMPI. -/
