@@ -54,11 +54,11 @@ theorem returned_result (template : State) (pc word : UInt256)
   rfl
 
 def emptyValue (exponent modulus : UInt256) : UInt256 :=
-  UInt256.mul (UInt256.mod (UInt256.ofNat 1) modulus) (UInt256.isZero exponent)
+  UInt256.mul (UInt256.lt (UInt256.ofNat 1) modulus) (UInt256.isZero exponent)
 
 def emptyValueProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨4, by decide⟩), .op .CALLDATALOAD, .op .ISZERO,
-   .op (.Dup ⟨6, by decide⟩), .op .CALLDATALOAD, .push 1 1, .op .MOD, .op .MUL]
+   .op (.Dup ⟨6, by decide⟩), .op .CALLDATALOAD, .push 1 1, .op .LT, .op .MUL]
 
 theorem run_empty_value (template : State) (pc exponentOffset modulusOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length + 3 < 1024)

@@ -124,28 +124,27 @@ private theorem mul_toNat (a b : UInt256) :
   rw [Fin.val_mul]
   rfl
 
-private theorem one_mod_toNat (modulus : UInt256) :
-    (UInt256.mod (UInt256.ofNat 1) modulus).toNat =
-      if modulus.toNat = 0 then 0 else 1 % modulus.toNat := by
-  change (if modulus.toNat = 0 then (0 : UInt256)
-    else UInt256.mk ((UInt256.ofNat 1).val % modulus.val)).toNat = _
-  by_cases hzero : modulus.toNat = 0
-  · rw [if_pos hzero, if_pos hzero]
-    rfl
-  · rw [if_neg hzero, if_neg hzero]
-    change ((UInt256.ofNat 1).val % modulus.val).val = _
-    rw [Fin.mod_val]
-    rfl
+private theorem one_lt_toNat (modulus : UInt256) :
+    (UInt256.lt (UInt256.ofNat 1) modulus).toNat =
+      if 1 < modulus.toNat then 1 else 0 := by
+  rw [Challenge.EvmProof.Word.word_toNat_lt,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (show 1 < 2 ^ 256 by norm_num)]
 
-/-- Exact `MOD(1,m); MUL(isZero(e))` result used by the empty-base branch. -/
+/-- Exact `LT(1,m); MUL(isZero(e))` result used by the empty-base branch. -/
 def emptyBaseWord (exponent modulus : UInt256) : UInt256 :=
-  UInt256.mul (UInt256.mod (UInt256.ofNat 1) modulus) (UInt256.isZero exponent)
+  UInt256.mul (UInt256.lt (UInt256.ofNat 1) modulus) (UInt256.isZero exponent)
 
 theorem emptyBaseWord_toNat (exponent modulus : UInt256) :
     (emptyBaseWord exponent modulus).toNat =
       Precompile.modPow 0 exponent.toNat modulus.toNat := by
-  rw [emptyBaseWord, mul_toNat, one_mod_toNat,
-    Challenge.EvmProof.Word.word_toNat_isZero, Algorithm.modPow_eq]
+  have h1 : (if 1 < modulus.toNat then (1 : Nat) else 0) = 1 % modulus.toNat := by
+    by_cases h : 1 < modulus.toNat
+    · rw [if_pos h, Nat.mod_eq_of_lt h]
+    · have hm1 : modulus.toNat = 1 := by omega
+      simp [hm1, h]
+  rw [emptyBaseWord, mul_toNat, one_lt_toNat,
+    Challenge.EvmProof.Word.word_toNat_isZero, h1, Algorithm.modPow_eq]
   by_cases hm : modulus.toNat = 0
   · simp [hm]
   · have hsmall : 1 % modulus.toNat < 2 ^ 256 :=

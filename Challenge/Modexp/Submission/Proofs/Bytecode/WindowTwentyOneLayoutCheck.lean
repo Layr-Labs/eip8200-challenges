@@ -675,7 +675,7 @@ def emptyReturnInstructions : List Instr :=
    YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 6 }),
    YulEvmCompiler.Instr.op EvmSemantics.Operation.CALLDATALOAD,
    YulEvmCompiler.Instr.push 1 1,
-   YulEvmCompiler.Instr.op EvmSemantics.Operation.MOD,
+   YulEvmCompiler.Instr.op EvmSemantics.Operation.LT,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.MUL,
    YulEvmCompiler.Instr.push 0 0,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.MSTORE,
