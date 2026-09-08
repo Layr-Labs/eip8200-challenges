@@ -11,7 +11,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedCoreSites
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTemplate PairedHelperBooleanTrace
 
-/-- Actual instruction windows for the frozen 5349-byte generic paired compressor. -/
+/-- Actual instruction windows for the frozen 5347-byte generic paired compressor. -/
 
 theorem group0_slice :
     (Artifact.submissionArtifact.instructions.drop 468).take group0Template.length = group0Template := by
