@@ -1,5 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowForwardDefs
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowFinalByte
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -8,8 +8,8 @@ set_option maxRecDepth 40000
 # Generated-artifact byte slices
 
 This is the only module that binds the reusable four-byte loop model to the
-generated instruction list.  The first three paths have forty-eight instructions; the final path has
-forty-seven and consumes the word before the loop-advance boundary.  Keeping the four equalities separate bounds regeneration
+generated instruction list.  The first three paths have fifty instructions; the final path has
+forty-nine and consumes the word before the loop-advance boundary.  Keeping the four equalities separate bounds regeneration
 failures to one concrete slice.
 -/
 
@@ -20,7 +20,6 @@ open EvmSemantics
 open EvmSemantics.EVM
 open WindowByteKernel
 open WindowNibbleKernel
-open WindowNibbleForward
 
 def locatedSlice (start count : Nat)
     (hbound : start + count ≤ Artifact.submissionInstructions.length) :
@@ -32,18 +31,18 @@ def locatedSlice (start count : Nat)
         omega⟩
 
 def byte0Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 1963 48 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 1963 50 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte1Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2011 48 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2013 50 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte2Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2059 48 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2063 50 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte3Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2107 47 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2113 49 (by rw [Artifact.submissionInstructions_count]; omega)
 
-def byteStartIndex (byte : Fin 4) : Nat := 1963 + 48 * byte.val
+def byteStartIndex (byte : Fin 4) : Nat := 1963 + 50 * byte.val
 
 def byteStartPC (byte : Fin 4) : Nat :=
   [3203, 3287, 3372, 3457][byte.val]!
@@ -57,28 +56,28 @@ def highPrepPath (byte : Fin 4) :
 
 def highSquareLookupPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + if byte.val = 3 then 5 else 6) 19 (by
+  locatedSlice (byteStartIndex byte + if byte.val = 3 then 5 else 6) 21 (by
     rw [Artifact.submissionInstructions_count]
     unfold byteStartIndex
     split <;> omega)
 
 def lowPrepPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + if byte.val = 3 then 24 else 25) 0 (by
+  locatedSlice (byteStartIndex byte + if byte.val = 3 then 26 else 27) 2 (by
     rw [Artifact.submissionInstructions_count]
     unfold byteStartIndex
     split <;> omega)
 
 def lowSquareLookupPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + if byte.val = 3 then 24 else 25) 23 (by
+  locatedSlice (byteStartIndex byte + if byte.val = 3 then 28 else 29) 21 (by
     rw [Artifact.submissionInstructions_count]
     unfold byteStartIndex
     split <;> omega)
 
 def finishPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice (byteStartIndex byte + if byte.val = 3 then 47 else 48) 0 (by
+  locatedSlice (byteStartIndex byte + if byte.val = 3 then 49 else 50) 0 (by
     rw [Artifact.submissionInstructions_count]
     unfold byteStartIndex
     split <;> omega)
@@ -91,19 +90,19 @@ def segmentedBytePath (byte : Fin 4) :
 /-! These are the four regeneration-sensitive obligations. -/
 
 theorem byte0_instructions :
-    byte0Path.map (fun located => located.instruction) = forwardByteProgram 0 := by
+    byte0Path.map (fun located => located.instruction) = byteProgram 0 := by
   rfl
 
 theorem byte1_instructions :
-    byte1Path.map (fun located => located.instruction) = forwardByteProgram 1 := by
+    byte1Path.map (fun located => located.instruction) = byteProgram 1 := by
   rfl
 
 theorem byte2_instructions :
-    byte2Path.map (fun located => located.instruction) = forwardByteProgram 2 := by
+    byte2Path.map (fun located => located.instruction) = byteProgram 2 := by
   rfl
 
 theorem byte3_instructions :
-    byte3Path.map (fun located => located.instruction) = forwardFinalByteProgram := by
+    byte3Path.map (fun located => located.instruction) = finalByteProgram := by
   rfl
 
 theorem highPrep_instructions (byte : Fin 4) :
@@ -113,27 +112,27 @@ theorem highPrep_instructions (byte : Fin 4) :
 
 theorem highSquareLookup0_instructions :
     (highSquareLookupPath 0).map (fun located => located.instruction) =
-      forwardHighSquareLookupProgram := by
+      squareLookupProgram := by
   rfl
 
 theorem highSquareLookup1_instructions :
     (highSquareLookupPath 1).map (fun located => located.instruction) =
-      forwardHighSquareLookupProgram := by
+      squareLookupProgram := by
   rfl
 
 theorem highSquareLookup2_instructions :
     (highSquareLookupPath 2).map (fun located => located.instruction) =
-      forwardHighSquareLookupProgram := by
+      squareLookupProgram := by
   rfl
 
 theorem highSquareLookup3_instructions :
     (highSquareLookupPath 3).map (fun located => located.instruction) =
-      forwardFinalHighSquareLookupProgram := by
+      finalHighSquareLookupProgram := by
   rfl
 
 theorem highSquareLookup_instructions (byte : Fin 4) :
     (highSquareLookupPath byte).map (fun located => located.instruction) =
-      (if byte.val = 3 then forwardFinalHighSquareLookupProgram else forwardHighSquareLookupProgram) := by
+      (if byte.val = 3 then finalHighSquareLookupProgram else squareLookupProgram) := by
   fin_cases byte
   · exact highSquareLookup0_instructions
   · exact highSquareLookup1_instructions
@@ -142,32 +141,32 @@ theorem highSquareLookup_instructions (byte : Fin 4) :
 
 theorem lowPrep_instructions (byte : Fin 4) :
     (lowPrepPath byte).map (fun located => located.instruction) =
-      forwardLowPrepProgram := by
+      lowPrepProgram := by
   fin_cases byte <;> rfl
 
 theorem lowSquareLookup0_instructions :
     (lowSquareLookupPath 0).map (fun located => located.instruction) =
-      forwardLowSquareLookupProgram := by
+      lowSquareLookupProgram := by
   rfl
 
 theorem lowSquareLookup1_instructions :
     (lowSquareLookupPath 1).map (fun located => located.instruction) =
-      forwardLowSquareLookupProgram := by
+      lowSquareLookupProgram := by
   rfl
 
 theorem lowSquareLookup2_instructions :
     (lowSquareLookupPath 2).map (fun located => located.instruction) =
-      forwardLowSquareLookupProgram := by
+      lowSquareLookupProgram := by
   rfl
 
 theorem lowSquareLookup3_instructions :
     (lowSquareLookupPath 3).map (fun located => located.instruction) =
-      forwardFinalLowSquareLookupProgram := by
+      finalLowSquareLookupProgram := by
   rfl
 
 theorem lowSquareLookup_instructions (byte : Fin 4) :
     (lowSquareLookupPath byte).map (fun located => located.instruction) =
-      (if byte.val = 3 then forwardFinalLowSquareLookupProgram else forwardLowSquareLookupProgram) := by
+      (if byte.val = 3 then finalLowSquareLookupProgram else lowSquareLookupProgram) := by
   fin_cases byte
   · exact lowSquareLookup0_instructions
   · exact lowSquareLookup1_instructions
