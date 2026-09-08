@@ -22,98 +22,98 @@ abbrev Located :=
   Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka
 
 @[simp] theorem directPC0 (i : Nat)
-    (hi : 2406 ≤ i) (hii : i ≤ 2442) :
+    (hi : 2413 ≤ i) (hii : i ≤ 2449) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3887,3888,3889,3891,3892,3895,3896,3897,3899,3900,3901,3904,3905,3908,3909,3910,3911,3912,3914,3915,3916,3919,3920,3922,3925,3926,3927,3930,3931,3932,3934,3935,3939,3940,3941,3944,3945] : List Nat)[i - 2406]! := by
+      ([3677,3678,3679,3681,3682,3685,3686,3687,3689,3690,3691,3694,3695,3698,3699,3700,3701,3702,3704,3705,3706,3709,3710,3712,3715,3716,3717,3720,3721,3722,3724,3725,3729,3730,3731,3734,3735] : List Nat)[i - 2413]! := by
   interval_cases i <;> decide
 
 @[simp] theorem directPC1 (i : Nat)
-    (hi : 2443 ≤ i) (hii : i ≤ 2475) :
+    (hi : 2450 ≤ i) (hii : i ≤ 2482) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3947,3948,3949,3952,3955,3958,3961,3964,3965,3966,3968,3969,3970,3971,3974,3975,3976,3979,3982,3985,3988,3991,3992,3993,3996,3997,3998,3999,4002,4005,4006,4007,4010] : List Nat)[i - 2443]! := by
+      ([3737,3738,3739,3742,3745,3748,3751,3754,3755,3756,3758,3759,3760,3761,3764,3765,3766,3769,3772,3775,3778,3781,3782,3783,3786,3787,3788,3789,3792,3795,3796,3797,3800] : List Nat)[i - 2450]! := by
   interval_cases i <;> decide
 
 def entryPrefix : List Located :=
-  [opAt 2406 .JUMPDEST, opAt 2407 (.Dup ⟨3, by decide⟩),
-   pushAt 2408 1 3, opAt 2409 .EQ, pushAt 2410 2 3926,
-   opAt 2411 .JUMPI]
+  [opAt 2413 .JUMPDEST, opAt 2414 (.Dup ⟨3, by decide⟩),
+   pushAt 2415 1 3, opAt 2416 .EQ, pushAt 2417 2 3716,
+   opAt 2418 .JUMPI]
 
 def oneWidth : List Located :=
-  [opAt 2412 (.Dup ⟨3, by decide⟩), pushAt 2413 1 1,
-   opAt 2414 .EQ, opAt 2415 .ISZERO, pushAt 2416 2 3997,
-   opAt 2417 .JUMPI]
+  [opAt 2419 (.Dup ⟨3, by decide⟩), pushAt 2420 1 1,
+   opAt 2421 .EQ, opAt 2422 .ISZERO, pushAt 2423 2 3787,
+   opAt 2424 .JUMPI]
 
 def checkThree : List Located :=
-  [pushAt 2418 2 9472, opAt 2419 .MLOAD, opAt 2420 .CALLDATALOAD,
-   pushAt 2421 0 0, opAt 2422 .BYTE, pushAt 2423 1 3,
-   opAt 2424 .EQ, opAt 2425 .ISZERO, pushAt 2426 2 3997,
-   opAt 2427 .JUMPI]
+  [pushAt 2425 2 9472, opAt 2426 .MLOAD, opAt 2427 .CALLDATALOAD,
+   pushAt 2428 0 0, opAt 2429 .BYTE, pushAt 2430 1 3,
+   opAt 2431 .EQ, opAt 2432 .ISZERO, pushAt 2433 2 3787,
+   opAt 2434 .JUMPI]
 
 def threeHit : List Located :=
-  [pushAt 2428 1 1, pushAt 2429 2 3947, opAt 2430 .JUMP]
+  [pushAt 2435 1 1, pushAt 2436 2 3737, opAt 2437 .JUMP]
 
 def check65537 : List Located :=
-  [opAt 2431 .JUMPDEST, pushAt 2432 2 9472, opAt 2433 .MLOAD,
-   opAt 2434 .CALLDATALOAD, pushAt 2435 1 232, opAt 2436 .SHR,
-   pushAt 2437 3 65537, opAt 2438 .EQ, opAt 2439 .ISZERO,
-   pushAt 2440 2 3997, opAt 2441 .JUMPI]
+  [opAt 2438 .JUMPDEST, pushAt 2439 2 9472, opAt 2440 .MLOAD,
+   opAt 2441 .CALLDATALOAD, pushAt 2442 1 232, opAt 2443 .SHR,
+   pushAt 2444 3 65537, opAt 2445 .EQ, opAt 2446 .ISZERO,
+   pushAt 2447 2 3787, opAt 2448 .JUMPI]
 
 def fermatHit : List Located :=
-  [pushAt 2442 1 16]
+  [pushAt 2449 1 16]
 
 def start : List Located :=
-  [opAt 2443 .JUMPDEST]
+  [opAt 2450 .JUMPDEST]
 
 def squareCall : List Located :=
-  [opAt 2444 .JUMPDEST, pushAt 2445 2 3965, pushAt 2446 2 2048,
-   pushAt 2447 2 2048, pushAt 2448 2 2048, pushAt 2449 2 4785,
-   opAt 2450 .JUMP]
+  [opAt 2451 .JUMPDEST, pushAt 2452 2 3755, pushAt 2453 2 2048,
+   pushAt 2454 2 2048, pushAt 2455 2 2048, pushAt 2456 2 1939,
+   opAt 2457 .JUMP]
 
 def squareReturn : List Located :=
-  [opAt 2451 .JUMPDEST, pushAt 2452 1 1,
-   opAt 2453 (.Swap ⟨0, by decide⟩), opAt 2454 .SUB,
-   opAt 2455 (.Dup ⟨0, by decide⟩), pushAt 2456 2 3948,
-   opAt 2457 .JUMPI]
+  [opAt 2458 .JUMPDEST, pushAt 2459 1 1,
+   opAt 2460 (.Swap ⟨0, by decide⟩), opAt 2461 .SUB,
+   opAt 2462 (.Dup ⟨0, by decide⟩), pushAt 2463 2 3738,
+   opAt 2464 .JUMPI]
 
 def product : List Located :=
-  [opAt 2458 .POP, pushAt 2459 2 3992, pushAt 2460 2 1024,
-   pushAt 2461 2 1024, pushAt 2462 2 2048, pushAt 2463 2 4785,
-   opAt 2464 .JUMP]
+  [opAt 2465 .POP, pushAt 2466 2 3782, pushAt 2467 2 1024,
+   pushAt 2468 2 1024, pushAt 2469 2 2048, pushAt 2470 2 1939,
+   opAt 2471 .JUMP]
 
 def finish : List Located :=
-  [opAt 2465 .JUMPDEST, pushAt 2466 2 1876, opAt 2467 .JUMP]
+  [opAt 2472 .JUMPDEST, pushAt 2473 2 1876, opAt 2474 .JUMP]
 
 def fallback : List Located :=
-  [opAt 2468 .JUMPDEST, opAt 2469 (.Dup ⟨0, by decide⟩),
-   pushAt 2470 2 4096, pushAt 2471 2 1024, opAt 2472 .MCOPY,
-   pushAt 2473 0 0, pushAt 2474 2 1769, opAt 2475 .JUMP]
+  [opAt 2475 .JUMPDEST, opAt 2476 (.Dup ⟨0, by decide⟩),
+   pushAt 2477 2 4096, pushAt 2478 2 1024, opAt 2479 .MCOPY,
+   pushAt 2480 0 0, pushAt 2481 2 1769, opAt 2482 .JUMP]
 
 theorem jumpDest3892 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3887 = true :=
-  Artifact.isValidJumpDest_index 2406 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3677 = true :=
+  Artifact.isValidJumpDest_index 2413 (by rfl)
 
 theorem jumpDest3931 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3926 = true :=
-  Artifact.isValidJumpDest_index 2431 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3716 = true :=
+  Artifact.isValidJumpDest_index 2438 (by rfl)
 
 theorem jumpDest3952 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3947 = true :=
-  Artifact.isValidJumpDest_index 2443 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3737 = true :=
+  Artifact.isValidJumpDest_index 2450 (by rfl)
 
 theorem jumpDest3953 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3948 = true :=
-  Artifact.isValidJumpDest_index 2444 (by rfl)
-
-theorem jumpDest3970 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3965 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3738 = true :=
   Artifact.isValidJumpDest_index 2451 (by rfl)
 
+theorem jumpDest3970 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3755 = true :=
+  Artifact.isValidJumpDest_index 2458 (by rfl)
+
 theorem jumpDest3997 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3992 = true :=
-  Artifact.isValidJumpDest_index 2465 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3782 = true :=
+  Artifact.isValidJumpDest_index 2472 (by rfl)
 
 theorem jumpDest4002 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3997 = true :=
-  Artifact.isValidJumpDest_index 2468 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3787 = true :=
+  Artifact.isValidJumpDest_index 2475 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
