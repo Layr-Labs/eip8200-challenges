@@ -11,6 +11,7 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitByte2High
 
 open Challenge.EvmProof.Stepper EvmSemantics EvmSemantics.EVM
 open WindowHitByteSlices WindowByteKernel WindowNibbleKernel
+open WindowNibbleForward
 
 set_option linter.unusedSimpArgs false in
 theorem run_prep (template : State) (base modulus word pointer accumulator : UInt256)
@@ -32,7 +33,7 @@ theorem run_prep (template : State) (base modulus word pointer accumulator : UIn
       Artifact.submissionArtifact, Artifact.submissionInstructions,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      wordKernelState, droppedNibbleState, nibbleState,
+      wordKernelState, forwardedNibbleState, nibbleState,
       List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
       hrest, h4, h5, h6, h7,
       Challenge.EvmProof.Word.literal_eq_ofNat,
@@ -42,7 +43,7 @@ theorem run_prep (template : State) (base modulus word pointer accumulator : UIn
   exact ⟨shift_highNibble 2 word, rfl⟩
 
 set_option linter.unusedSimpArgs false in
-/-- Fused high-nibble block: four squares then the table multiply, 21
+/-- Fused high-nibble block: four squares then the table multiply, 19
 instructions in 36 bytes.  The machine loads the table word
 last, so the accumulator-first `nibbleWordStep` spelling needs `mulMod_comm`. -/
 theorem run_squareLookup (template : State) (base modulus : UInt256)
@@ -52,8 +53,8 @@ theorem run_squareLookup (template : State) (base modulus : UInt256)
     runLocatedBlock (highSquareLookupPath 2)
       (nibbleState { template with halt := .Running } (UInt256.ofNat 3380)
         base modulus nibble byte word pointer accumulator rest) =
-    some (droppedNibbleState { template with halt := .Running } (UInt256.ofNat 3416)
-      base modulus nibble byte word pointer
+    some (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 3416)
+      base modulus nibble byte word pointer accumulator
       (WindowMath.nibbleWordStep modulus base accumulator nibble) rest) := by
   have hshift := shift_nibble nibble hnibble
   have hoffset : (UInt256.ofNat (32 * nibble)).toNat = 32 * nibble := by
@@ -78,7 +79,7 @@ theorem run_squareLookup (template : State) (base modulus : UInt256)
       Artifact.submissionArtifact, Artifact.submissionInstructions,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      droppedNibbleState, nibbleState, WindowMath.squareWordAfter,
+      forwardedNibbleState, nibbleState, WindowMath.squareWordAfter,
       List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
       hrest, h6, h7, h8, h9, h10, h11, h12, hshift, hoffset, hread, hactive,
       State.activeWordsAfterUInt256,

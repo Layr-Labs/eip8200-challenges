@@ -14,9 +14,9 @@ def framed (template : State) (pc : Nat) (stack : List UInt256) : State :=
   { template with pc := UInt256.ofNat pc, stack := stack }
 
 @[simp] private theorem advanceHeadPCs (index : Nat)
-    (hlo : 2162 ≤ index) (hhi : index ≤ 2163) :
+    (hlo : 2154 ≤ index) (hhi : index ≤ 2155) :
     Artifact.submissionArtifact.instructionPC index =
-      ([3543,3545] : List Nat)[index - 2162]! := by
+      ([3543,3545] : List Nat)[index - 2154]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in
