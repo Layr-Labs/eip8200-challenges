@@ -84,7 +84,7 @@ private def scanSuffix : List YulEvmCompiler.Instr :=
 private theorem scanBefore_length : scanBefore.length = 150 := by
   simp [scanBefore, scanPrefix]
 
-private theorem scanSuffix_length : scanSuffix.length = 4162 := by
+private theorem scanSuffix_length : scanSuffix.length = 4159 := by
   simp [scanSuffix]
 
 private theorem artifact_scan_split :
@@ -129,7 +129,7 @@ private theorem artifact_instruction_projection :
     Artifact.submissionArtifact.instructions = Artifact.submissionInstructions := by rfl
 
 private theorem scan_instruction_at (index : Nat)
-    (hlo : 150 ≤ index) (hhi : index < 4312) :
+    (hlo : 150 ≤ index) (hhi : index < 4309) :
     Artifact.submissionInstructions[index]? = scanSuffix[index - 150]? := by
   have hi : index - 150 < scanSuffix.length := by
     rw [scanSuffix_length]
@@ -140,7 +140,7 @@ private theorem scan_instruction_at (index : Nat)
     Nat.add_sub_of_le hlo] using h
 
 private theorem scan_instruction_pc (index : Nat)
-    (hlo : 150 ≤ index) (hhi : index ≤ 4312) :
+    (hlo : 150 ≤ index) (hhi : index ≤ 4309) :
     Artifact.submissionArtifact.instructionPC index =
       256 + (YulEvmCompiler.assembleBytes (scanSuffix.take (index - 150))).length := by
   have hi : index - 150 ≤ scanSuffix.length := by
@@ -212,7 +212,7 @@ def wordPath : List Located :=
    opAt 177 (.Dup ⟨1, by decide⟩), opAt 178 (.Dup ⟨9, by decide⟩),
    opAt 179 .XOR, opAt 180 (.Dup ⟨10, by decide⟩), opAt 181 .AND,
    opAt 182 .XOR, opAt 183 (.Dup ⟨3, by decide⟩), pushAt 184 1 255,
-   opAt 185 .AND, pushAt 186 1 224, opAt 187 .EQ, pushAt 188 2 423,
+   opAt 185 .AND, pushAt 186 1 224, opAt 187 .EQ, pushAt 188 2 422,
    opAt 189 .JUMPI]
 
 /-- Fold one word into the accumulator and advance. -/
@@ -224,7 +224,7 @@ def comparePath : List Located :=
    opAt 200 .ADD, pushAt 201 1 255, opAt 202 .AND,
    opAt 203 (.Swap ⟨0, by decide⟩), pushAt 204 1 32, opAt 205 .ADD,
    opAt 206 (.Swap ⟨0, by decide⟩), opAt 207 (.Dup ⟨1, by decide⟩), pushAt 208 2 992, opAt 209 .GT,
-   pushAt 210 2 308, opAt 211 .JUMPI]
+   pushAt 210 2 307, opAt 211 .JUMPI]
 
 /-- The padded tail word, the cleanup and the miss test. -/
 def tailPath : List Located :=
@@ -262,247 +262,247 @@ def straddleAddPath : List Located :=
 /-- Bump the scalar and rejoin the scan. -/
 def straddleBackPath : List Located :=
   [opAt 265 (.Dup ⟨2, by decide⟩), pushAt 266 1 11, opAt 267 .ADD,
-   opAt 268 (.Swap ⟨2, by decide⟩), opAt 269 .POP, pushAt 270 2 334,
+   opAt 268 (.Swap ⟨2, by decide⟩), opAt 269 .POP, pushAt 270 2 333,
    opAt 271 .JUMP]
 
 
-@[simp] theorem pc2903 : Artifact.submissionArtifact.instructionPC 150 = 0x100 :=
+@[simp] theorem pc2903 : Artifact.submissionArtifact.instructionPC 150 = 255 :=
   by rw [scan_instruction_pc 150 (by decide) (by decide)]; rfl
-@[simp] theorem pc2904 : Artifact.submissionArtifact.instructionPC 150 = 0x100 :=
+@[simp] theorem pc2904 : Artifact.submissionArtifact.instructionPC 150 = 255 :=
   by rw [scan_instruction_pc 150 (by decide) (by decide)]; rfl
-@[simp] theorem pc2905 : Artifact.submissionArtifact.instructionPC 154 = 0x105 :=
+@[simp] theorem pc2905 : Artifact.submissionArtifact.instructionPC 154 = 260 :=
   by rw [scan_instruction_pc 154 (by decide) (by decide)]; rfl
-@[simp] theorem pc2906 : Artifact.submissionArtifact.instructionPC 159 = 0x12b :=
+@[simp] theorem pc2906 : Artifact.submissionArtifact.instructionPC 159 = 298 :=
   by rw [scan_instruction_pc 159 (by decide) (by decide)]; rfl
-@[simp] theorem pc2907 : Artifact.submissionArtifact.instructionPC 161 = 0x12d :=
+@[simp] theorem pc2907 : Artifact.submissionArtifact.instructionPC 161 = 300 :=
   by rw [scan_instruction_pc 161 (by decide) (by decide)]; rfl
-@[simp] theorem pc2908 : Artifact.submissionArtifact.instructionPC 162 = 0x12e :=
+@[simp] theorem pc2908 : Artifact.submissionArtifact.instructionPC 162 = 301 :=
   by rw [scan_instruction_pc 162 (by decide) (by decide)]; rfl
-@[simp] theorem pc2909 : Artifact.submissionArtifact.instructionPC 163 = 0x12f :=
+@[simp] theorem pc2909 : Artifact.submissionArtifact.instructionPC 163 = 302 :=
   by rw [scan_instruction_pc 163 (by decide) (by decide)]; rfl
-@[simp] theorem pc2910 : Artifact.submissionArtifact.instructionPC 164 = 0x130 :=
+@[simp] theorem pc2910 : Artifact.submissionArtifact.instructionPC 164 = 303 :=
   by rw [scan_instruction_pc 164 (by decide) (by decide)]; rfl
-@[simp] theorem pc2911 : Artifact.submissionArtifact.instructionPC 165 = 0x131 :=
+@[simp] theorem pc2911 : Artifact.submissionArtifact.instructionPC 165 = 304 :=
   by rw [scan_instruction_pc 165 (by decide) (by decide)]; rfl
-@[simp] theorem pc2912 : Artifact.submissionArtifact.instructionPC 166 = 0x132 :=
+@[simp] theorem pc2912 : Artifact.submissionArtifact.instructionPC 166 = 305 :=
   by rw [scan_instruction_pc 166 (by decide) (by decide)]; rfl
-@[simp] theorem pc2913 : Artifact.submissionArtifact.instructionPC 167 = 0x133 :=
+@[simp] theorem pc2913 : Artifact.submissionArtifact.instructionPC 167 = 306 :=
   by rw [scan_instruction_pc 167 (by decide) (by decide)]; rfl
-@[simp] theorem pc2914 : Artifact.submissionArtifact.instructionPC 168 = 0x134 :=
+@[simp] theorem pc2914 : Artifact.submissionArtifact.instructionPC 168 = 307 :=
   by rw [scan_instruction_pc 168 (by decide) (by decide)]; rfl
-@[simp] theorem pc2915 : Artifact.submissionArtifact.instructionPC 169 = 0x135 :=
+@[simp] theorem pc2915 : Artifact.submissionArtifact.instructionPC 169 = 308 :=
   by rw [scan_instruction_pc 169 (by decide) (by decide)]; rfl
-@[simp] theorem pc2916 : Artifact.submissionArtifact.instructionPC 170 = 0x136 :=
+@[simp] theorem pc2916 : Artifact.submissionArtifact.instructionPC 170 = 309 :=
   by rw [scan_instruction_pc 170 (by decide) (by decide)]; rfl
-@[simp] theorem pc2917 : Artifact.submissionArtifact.instructionPC 171 = 0x137 :=
+@[simp] theorem pc2917 : Artifact.submissionArtifact.instructionPC 171 = 310 :=
   by rw [scan_instruction_pc 171 (by decide) (by decide)]; rfl
-@[simp] theorem pc2918 : Artifact.submissionArtifact.instructionPC 172 = 0x138 :=
+@[simp] theorem pc2918 : Artifact.submissionArtifact.instructionPC 172 = 311 :=
   by rw [scan_instruction_pc 172 (by decide) (by decide)]; rfl
-@[simp] theorem pc2919 : Artifact.submissionArtifact.instructionPC 173 = 0x139 :=
+@[simp] theorem pc2919 : Artifact.submissionArtifact.instructionPC 173 = 312 :=
   by rw [scan_instruction_pc 173 (by decide) (by decide)]; rfl
-@[simp] theorem pc2920 : Artifact.submissionArtifact.instructionPC 174 = 0x13a :=
+@[simp] theorem pc2920 : Artifact.submissionArtifact.instructionPC 174 = 313 :=
   by rw [scan_instruction_pc 174 (by decide) (by decide)]; rfl
-@[simp] theorem pc2921 : Artifact.submissionArtifact.instructionPC 175 = 0x13b :=
+@[simp] theorem pc2921 : Artifact.submissionArtifact.instructionPC 175 = 314 :=
   by rw [scan_instruction_pc 175 (by decide) (by decide)]; rfl
-@[simp] theorem pc2922 : Artifact.submissionArtifact.instructionPC 176 = 0x13c :=
+@[simp] theorem pc2922 : Artifact.submissionArtifact.instructionPC 176 = 315 :=
   by rw [scan_instruction_pc 176 (by decide) (by decide)]; rfl
-@[simp] theorem pc2923 : Artifact.submissionArtifact.instructionPC 177 = 0x13d :=
+@[simp] theorem pc2923 : Artifact.submissionArtifact.instructionPC 177 = 316 :=
   by rw [scan_instruction_pc 177 (by decide) (by decide)]; rfl
-@[simp] theorem pc2924 : Artifact.submissionArtifact.instructionPC 178 = 0x13e :=
+@[simp] theorem pc2924 : Artifact.submissionArtifact.instructionPC 178 = 317 :=
   by rw [scan_instruction_pc 178 (by decide) (by decide)]; rfl
-@[simp] theorem pc2925 : Artifact.submissionArtifact.instructionPC 179 = 0x13f :=
+@[simp] theorem pc2925 : Artifact.submissionArtifact.instructionPC 179 = 318 :=
   by rw [scan_instruction_pc 179 (by decide) (by decide)]; rfl
-@[simp] theorem pc2926 : Artifact.submissionArtifact.instructionPC 180 = 0x140 :=
+@[simp] theorem pc2926 : Artifact.submissionArtifact.instructionPC 180 = 319 :=
   by rw [scan_instruction_pc 180 (by decide) (by decide)]; rfl
-@[simp] theorem pc2927 : Artifact.submissionArtifact.instructionPC 181 = 0x141 :=
+@[simp] theorem pc2927 : Artifact.submissionArtifact.instructionPC 181 = 320 :=
   by rw [scan_instruction_pc 181 (by decide) (by decide)]; rfl
-@[simp] theorem pc2928 : Artifact.submissionArtifact.instructionPC 182 = 0x142 :=
+@[simp] theorem pc2928 : Artifact.submissionArtifact.instructionPC 182 = 321 :=
   by rw [scan_instruction_pc 182 (by decide) (by decide)]; rfl
-@[simp] theorem pc2929 : Artifact.submissionArtifact.instructionPC 183 = 0x143 :=
+@[simp] theorem pc2929 : Artifact.submissionArtifact.instructionPC 183 = 322 :=
   by rw [scan_instruction_pc 183 (by decide) (by decide)]; rfl
-@[simp] theorem pc2930 : Artifact.submissionArtifact.instructionPC 184 = 0x144 :=
+@[simp] theorem pc2930 : Artifact.submissionArtifact.instructionPC 184 = 323 :=
   by rw [scan_instruction_pc 184 (by decide) (by decide)]; rfl
-@[simp] theorem pc2931 : Artifact.submissionArtifact.instructionPC 185 = 0x146 :=
+@[simp] theorem pc2931 : Artifact.submissionArtifact.instructionPC 185 = 325 :=
   by rw [scan_instruction_pc 185 (by decide) (by decide)]; rfl
-@[simp] theorem pc2932 : Artifact.submissionArtifact.instructionPC 186 = 0x147 :=
+@[simp] theorem pc2932 : Artifact.submissionArtifact.instructionPC 186 = 326 :=
   by rw [scan_instruction_pc 186 (by decide) (by decide)]; rfl
-@[simp] theorem pc2933 : Artifact.submissionArtifact.instructionPC 187 = 0x149 :=
+@[simp] theorem pc2933 : Artifact.submissionArtifact.instructionPC 187 = 328 :=
   by rw [scan_instruction_pc 187 (by decide) (by decide)]; rfl
-@[simp] theorem pc2934 : Artifact.submissionArtifact.instructionPC 188 = 0x14a :=
+@[simp] theorem pc2934 : Artifact.submissionArtifact.instructionPC 188 = 329 :=
   by rw [scan_instruction_pc 188 (by decide) (by decide)]; rfl
-@[simp] theorem pc2935 : Artifact.submissionArtifact.instructionPC 189 = 0x14d :=
+@[simp] theorem pc2935 : Artifact.submissionArtifact.instructionPC 189 = 332 :=
   by rw [scan_instruction_pc 189 (by decide) (by decide)]; rfl
-@[simp] theorem pc2936 : Artifact.submissionArtifact.instructionPC 190 = 0x14e :=
+@[simp] theorem pc2936 : Artifact.submissionArtifact.instructionPC 190 = 333 :=
   by rw [scan_instruction_pc 190 (by decide) (by decide)]; rfl
-@[simp] theorem pc2937 : Artifact.submissionArtifact.instructionPC 191 = 0x14f :=
+@[simp] theorem pc2937 : Artifact.submissionArtifact.instructionPC 191 = 334 :=
   by rw [scan_instruction_pc 191 (by decide) (by decide)]; rfl
-@[simp] theorem pc2938 : Artifact.submissionArtifact.instructionPC 192 = 0x150 :=
+@[simp] theorem pc2938 : Artifact.submissionArtifact.instructionPC 192 = 335 :=
   by rw [scan_instruction_pc 192 (by decide) (by decide)]; rfl
-@[simp] theorem pc2939 : Artifact.submissionArtifact.instructionPC 193 = 0x151 :=
+@[simp] theorem pc2939 : Artifact.submissionArtifact.instructionPC 193 = 336 :=
   by rw [scan_instruction_pc 193 (by decide) (by decide)]; rfl
-@[simp] theorem pc2940 : Artifact.submissionArtifact.instructionPC 194 = 0x152 :=
+@[simp] theorem pc2940 : Artifact.submissionArtifact.instructionPC 194 = 337 :=
   by rw [scan_instruction_pc 194 (by decide) (by decide)]; rfl
-@[simp] theorem pc2941 : Artifact.submissionArtifact.instructionPC 195 = 0x153 :=
+@[simp] theorem pc2941 : Artifact.submissionArtifact.instructionPC 195 = 338 :=
   by rw [scan_instruction_pc 195 (by decide) (by decide)]; rfl
-@[simp] theorem pc2942 : Artifact.submissionArtifact.instructionPC 196 = 0x154 :=
+@[simp] theorem pc2942 : Artifact.submissionArtifact.instructionPC 196 = 339 :=
   by rw [scan_instruction_pc 196 (by decide) (by decide)]; rfl
-@[simp] theorem pc2943 : Artifact.submissionArtifact.instructionPC 197 = 0x155 :=
+@[simp] theorem pc2943 : Artifact.submissionArtifact.instructionPC 197 = 340 :=
   by rw [scan_instruction_pc 197 (by decide) (by decide)]; rfl
-@[simp] theorem pc2944 : Artifact.submissionArtifact.instructionPC 198 = 0x156 :=
+@[simp] theorem pc2944 : Artifact.submissionArtifact.instructionPC 198 = 341 :=
   by rw [scan_instruction_pc 198 (by decide) (by decide)]; rfl
-@[simp] theorem pc2945 : Artifact.submissionArtifact.instructionPC 199 = 0x157 :=
+@[simp] theorem pc2945 : Artifact.submissionArtifact.instructionPC 199 = 342 :=
   by rw [scan_instruction_pc 199 (by decide) (by decide)]; rfl
-@[simp] theorem pc2946 : Artifact.submissionArtifact.instructionPC 199 = 0x157 :=
+@[simp] theorem pc2946 : Artifact.submissionArtifact.instructionPC 199 = 342 :=
   by rw [scan_instruction_pc 199 (by decide) (by decide)]; rfl
-@[simp] theorem pc2947 : Artifact.submissionArtifact.instructionPC 200 = 0x159 :=
+@[simp] theorem pc2947 : Artifact.submissionArtifact.instructionPC 200 = 344 :=
   by rw [scan_instruction_pc 200 (by decide) (by decide)]; rfl
-@[simp] theorem pc2948 : Artifact.submissionArtifact.instructionPC 201 = 0x15a :=
+@[simp] theorem pc2948 : Artifact.submissionArtifact.instructionPC 201 = 345 :=
   by rw [scan_instruction_pc 201 (by decide) (by decide)]; rfl
-@[simp] theorem pc2949 : Artifact.submissionArtifact.instructionPC 202 = 0x15c :=
+@[simp] theorem pc2949 : Artifact.submissionArtifact.instructionPC 202 = 347 :=
   by rw [scan_instruction_pc 202 (by decide) (by decide)]; rfl
-@[simp] theorem pc2950 : Artifact.submissionArtifact.instructionPC 203 = 0x15d :=
+@[simp] theorem pc2950 : Artifact.submissionArtifact.instructionPC 203 = 348 :=
   by rw [scan_instruction_pc 203 (by decide) (by decide)]; rfl
-@[simp] theorem pc2951 : Artifact.submissionArtifact.instructionPC 203 = 0x15d :=
+@[simp] theorem pc2951 : Artifact.submissionArtifact.instructionPC 203 = 348 :=
   by rw [scan_instruction_pc 203 (by decide) (by decide)]; rfl
-@[simp] theorem pc2952 : Artifact.submissionArtifact.instructionPC 203 = 0x15d :=
+@[simp] theorem pc2952 : Artifact.submissionArtifact.instructionPC 203 = 348 :=
   by rw [scan_instruction_pc 203 (by decide) (by decide)]; rfl
-@[simp] theorem pc2953 : Artifact.submissionArtifact.instructionPC 204 = 0x15e :=
+@[simp] theorem pc2953 : Artifact.submissionArtifact.instructionPC 204 = 349 :=
   by rw [scan_instruction_pc 204 (by decide) (by decide)]; rfl
-@[simp] theorem pc2954 : Artifact.submissionArtifact.instructionPC 205 = 0x160 :=
+@[simp] theorem pc2954 : Artifact.submissionArtifact.instructionPC 205 = 351 :=
   by rw [scan_instruction_pc 205 (by decide) (by decide)]; rfl
-@[simp] theorem pc2955 : Artifact.submissionArtifact.instructionPC 206 = 0x161 :=
+@[simp] theorem pc2955 : Artifact.submissionArtifact.instructionPC 206 = 352 :=
   by rw [scan_instruction_pc 206 (by decide) (by decide)]; rfl
-@[simp] theorem pc2956 : Artifact.submissionArtifact.instructionPC 207 = 0x162 :=
+@[simp] theorem pc2956 : Artifact.submissionArtifact.instructionPC 207 = 353 :=
   by rw [scan_instruction_pc 207 (by decide) (by decide)]; rfl
-@[simp] theorem pc2957 : Artifact.submissionArtifact.instructionPC 207 = 0x162 :=
+@[simp] theorem pc2957 : Artifact.submissionArtifact.instructionPC 207 = 353 :=
   by rw [scan_instruction_pc 207 (by decide) (by decide)]; rfl
-@[simp] theorem pc2958 : Artifact.submissionArtifact.instructionPC 208 = 0x163 :=
+@[simp] theorem pc2958 : Artifact.submissionArtifact.instructionPC 208 = 354 :=
   by rw [scan_instruction_pc 208 (by decide) (by decide)]; rfl
-@[simp] theorem pc2959 : Artifact.submissionArtifact.instructionPC 209 = 0x166 :=
+@[simp] theorem pc2959 : Artifact.submissionArtifact.instructionPC 209 = 357 :=
   by rw [scan_instruction_pc 209 (by decide) (by decide)]; rfl
-@[simp] theorem pc2960 : Artifact.submissionArtifact.instructionPC 210 = 0x167 :=
+@[simp] theorem pc2960 : Artifact.submissionArtifact.instructionPC 210 = 358 :=
   by rw [scan_instruction_pc 210 (by decide) (by decide)]; rfl
-@[simp] theorem pc2961 : Artifact.submissionArtifact.instructionPC 211 = 0x16a :=
+@[simp] theorem pc2961 : Artifact.submissionArtifact.instructionPC 211 = 361 :=
   by rw [scan_instruction_pc 211 (by decide) (by decide)]; rfl
-@[simp] theorem pc2962 : Artifact.submissionArtifact.instructionPC 212 = 0x16b :=
+@[simp] theorem pc2962 : Artifact.submissionArtifact.instructionPC 212 = 362 :=
   by rw [scan_instruction_pc 212 (by decide) (by decide)]; rfl
-@[simp] theorem pc2963 : Artifact.submissionArtifact.instructionPC 213 = 0x16e :=
+@[simp] theorem pc2963 : Artifact.submissionArtifact.instructionPC 213 = 365 :=
   by rw [scan_instruction_pc 213 (by decide) (by decide)]; rfl
-@[simp] theorem pc2964 : Artifact.submissionArtifact.instructionPC 214 = 0x16f :=
+@[simp] theorem pc2964 : Artifact.submissionArtifact.instructionPC 214 = 366 :=
   by rw [scan_instruction_pc 214 (by decide) (by decide)]; rfl
-@[simp] theorem pc2965 : Artifact.submissionArtifact.instructionPC 215 = 0x178 :=
+@[simp] theorem pc2965 : Artifact.submissionArtifact.instructionPC 215 = 375 :=
   by rw [scan_instruction_pc 215 (by decide) (by decide)]; rfl
-@[simp] theorem pc2966 : Artifact.submissionArtifact.instructionPC 216 = 0x17a :=
+@[simp] theorem pc2966 : Artifact.submissionArtifact.instructionPC 216 = 377 :=
   by rw [scan_instruction_pc 216 (by decide) (by decide)]; rfl
-@[simp] theorem pc2967 : Artifact.submissionArtifact.instructionPC 217 = 0x17b :=
+@[simp] theorem pc2967 : Artifact.submissionArtifact.instructionPC 217 = 378 :=
   by rw [scan_instruction_pc 217 (by decide) (by decide)]; rfl
-@[simp] theorem pc2968 : Artifact.submissionArtifact.instructionPC 218 = 0x17c :=
+@[simp] theorem pc2968 : Artifact.submissionArtifact.instructionPC 218 = 379 :=
   by rw [scan_instruction_pc 218 (by decide) (by decide)]; rfl
-@[simp] theorem pc2969 : Artifact.submissionArtifact.instructionPC 219 = 0x17d :=
+@[simp] theorem pc2969 : Artifact.submissionArtifact.instructionPC 219 = 380 :=
   by rw [scan_instruction_pc 219 (by decide) (by decide)]; rfl
-@[simp] theorem pc2970 : Artifact.submissionArtifact.instructionPC 220 = 0x17e :=
+@[simp] theorem pc2970 : Artifact.submissionArtifact.instructionPC 220 = 381 :=
   by rw [scan_instruction_pc 220 (by decide) (by decide)]; rfl
-@[simp] theorem pc2971 : Artifact.submissionArtifact.instructionPC 221 = 0x17f :=
+@[simp] theorem pc2971 : Artifact.submissionArtifact.instructionPC 221 = 382 :=
   by rw [scan_instruction_pc 221 (by decide) (by decide)]; rfl
-@[simp] theorem pc2972 : Artifact.submissionArtifact.instructionPC 222 = 0x180 :=
+@[simp] theorem pc2972 : Artifact.submissionArtifact.instructionPC 222 = 383 :=
   by rw [scan_instruction_pc 222 (by decide) (by decide)]; rfl
-@[simp] theorem pc2973 : Artifact.submissionArtifact.instructionPC 223 = 0x181 :=
+@[simp] theorem pc2973 : Artifact.submissionArtifact.instructionPC 223 = 384 :=
   by rw [scan_instruction_pc 223 (by decide) (by decide)]; rfl
-@[simp] theorem pc2974 : Artifact.submissionArtifact.instructionPC 224 = 0x182 :=
+@[simp] theorem pc2974 : Artifact.submissionArtifact.instructionPC 224 = 385 :=
   by rw [scan_instruction_pc 224 (by decide) (by decide)]; rfl
-@[simp] theorem pc2975 : Artifact.submissionArtifact.instructionPC 225 = 0x183 :=
+@[simp] theorem pc2975 : Artifact.submissionArtifact.instructionPC 225 = 386 :=
   by rw [scan_instruction_pc 225 (by decide) (by decide)]; rfl
-@[simp] theorem pc2976 : Artifact.submissionArtifact.instructionPC 226 = 0x184 :=
+@[simp] theorem pc2976 : Artifact.submissionArtifact.instructionPC 226 = 387 :=
   by rw [scan_instruction_pc 226 (by decide) (by decide)]; rfl
-@[simp] theorem pc2977 : Artifact.submissionArtifact.instructionPC 227 = 0x185 :=
+@[simp] theorem pc2977 : Artifact.submissionArtifact.instructionPC 227 = 388 :=
   by rw [scan_instruction_pc 227 (by decide) (by decide)]; rfl
-@[simp] theorem pc2978 : Artifact.submissionArtifact.instructionPC 228 = 0x186 :=
+@[simp] theorem pc2978 : Artifact.submissionArtifact.instructionPC 228 = 389 :=
   by rw [scan_instruction_pc 228 (by decide) (by decide)]; rfl
-@[simp] theorem pc2979 : Artifact.submissionArtifact.instructionPC 229 = 0x187 :=
+@[simp] theorem pc2979 : Artifact.submissionArtifact.instructionPC 229 = 390 :=
   by rw [scan_instruction_pc 229 (by decide) (by decide)]; rfl
-@[simp] theorem pc2980 : Artifact.submissionArtifact.instructionPC 230 = 0x188 :=
+@[simp] theorem pc2980 : Artifact.submissionArtifact.instructionPC 230 = 391 :=
   by rw [scan_instruction_pc 230 (by decide) (by decide)]; rfl
-@[simp] theorem pc2981 : Artifact.submissionArtifact.instructionPC 231 = 0x189 :=
+@[simp] theorem pc2981 : Artifact.submissionArtifact.instructionPC 231 = 392 :=
   by rw [scan_instruction_pc 231 (by decide) (by decide)]; rfl
-@[simp] theorem pc2982 : Artifact.submissionArtifact.instructionPC 232 = 0x18b :=
+@[simp] theorem pc2982 : Artifact.submissionArtifact.instructionPC 232 = 394 :=
   by rw [scan_instruction_pc 232 (by decide) (by decide)]; rfl
-@[simp] theorem pc2983 : Artifact.submissionArtifact.instructionPC 233 = 0x18c :=
+@[simp] theorem pc2983 : Artifact.submissionArtifact.instructionPC 233 = 395 :=
   by rw [scan_instruction_pc 233 (by decide) (by decide)]; rfl
-@[simp] theorem pc2984 : Artifact.submissionArtifact.instructionPC 234 = 0x1a1 :=
+@[simp] theorem pc2984 : Artifact.submissionArtifact.instructionPC 234 = 416 :=
   by rw [scan_instruction_pc 234 (by decide) (by decide)]; rfl
-@[simp] theorem pc2985 : Artifact.submissionArtifact.instructionPC 235 = 0x1a2 :=
+@[simp] theorem pc2985 : Artifact.submissionArtifact.instructionPC 235 = 417 :=
   by rw [scan_instruction_pc 235 (by decide) (by decide)]; rfl
-@[simp] theorem pc2986 : Artifact.submissionArtifact.instructionPC 236 = 0x1a3 :=
+@[simp] theorem pc2986 : Artifact.submissionArtifact.instructionPC 236 = 418 :=
   by rw [scan_instruction_pc 236 (by decide) (by decide)]; rfl
-@[simp] theorem pc2987 : Artifact.submissionArtifact.instructionPC 237 = 0x1a5 :=
+@[simp] theorem pc2987 : Artifact.submissionArtifact.instructionPC 237 = 420 :=
   by rw [scan_instruction_pc 237 (by decide) (by decide)]; rfl
-@[simp] theorem pc2988 : Artifact.submissionArtifact.instructionPC 238 = 0x1a6 :=
+@[simp] theorem pc2988 : Artifact.submissionArtifact.instructionPC 238 = 421 :=
   by rw [scan_instruction_pc 238 (by decide) (by decide)]; rfl
-@[simp] theorem pc2989 : Artifact.submissionArtifact.instructionPC 239 = 0x1a7 :=
+@[simp] theorem pc2989 : Artifact.submissionArtifact.instructionPC 239 = 422 :=
   by rw [scan_instruction_pc 239 (by decide) (by decide)]; rfl
-@[simp] theorem pc2990 : Artifact.submissionArtifact.instructionPC 240 = 0x1a8 :=
+@[simp] theorem pc2990 : Artifact.submissionArtifact.instructionPC 240 = 423 :=
   by rw [scan_instruction_pc 240 (by decide) (by decide)]; rfl
-@[simp] theorem pc2991 : Artifact.submissionArtifact.instructionPC 241 = 0x1a9 :=
+@[simp] theorem pc2991 : Artifact.submissionArtifact.instructionPC 241 = 424 :=
   by rw [scan_instruction_pc 241 (by decide) (by decide)]; rfl
-@[simp] theorem pc2992 : Artifact.submissionArtifact.instructionPC 242 = 0x1aa :=
+@[simp] theorem pc2992 : Artifact.submissionArtifact.instructionPC 242 = 425 :=
   by rw [scan_instruction_pc 242 (by decide) (by decide)]; rfl
-@[simp] theorem pc2993 : Artifact.submissionArtifact.instructionPC 243 = 0x1ac :=
+@[simp] theorem pc2993 : Artifact.submissionArtifact.instructionPC 243 = 427 :=
   by rw [scan_instruction_pc 243 (by decide) (by decide)]; rfl
-@[simp] theorem pc2994 : Artifact.submissionArtifact.instructionPC 244 = 0x1ad :=
+@[simp] theorem pc2994 : Artifact.submissionArtifact.instructionPC 244 = 428 :=
   by rw [scan_instruction_pc 244 (by decide) (by decide)]; rfl
-@[simp] theorem pc2995 : Artifact.submissionArtifact.instructionPC 245 = 0x1af :=
+@[simp] theorem pc2995 : Artifact.submissionArtifact.instructionPC 245 = 430 :=
   by rw [scan_instruction_pc 245 (by decide) (by decide)]; rfl
-@[simp] theorem pc2996 : Artifact.submissionArtifact.instructionPC 246 = 0x1b0 :=
+@[simp] theorem pc2996 : Artifact.submissionArtifact.instructionPC 246 = 431 :=
   by rw [scan_instruction_pc 246 (by decide) (by decide)]; rfl
-@[simp] theorem pc2997 : Artifact.submissionArtifact.instructionPC 247 = 0x1b2 :=
+@[simp] theorem pc2997 : Artifact.submissionArtifact.instructionPC 247 = 433 :=
   by rw [scan_instruction_pc 247 (by decide) (by decide)]; rfl
-@[simp] theorem pc2998 : Artifact.submissionArtifact.instructionPC 248 = 0x1b3 :=
+@[simp] theorem pc2998 : Artifact.submissionArtifact.instructionPC 248 = 434 :=
   by rw [scan_instruction_pc 248 (by decide) (by decide)]; rfl
-@[simp] theorem pc2999 : Artifact.submissionArtifact.instructionPC 249 = 0x1b5 :=
+@[simp] theorem pc2999 : Artifact.submissionArtifact.instructionPC 249 = 436 :=
   by rw [scan_instruction_pc 249 (by decide) (by decide)]; rfl
-@[simp] theorem pc3000 : Artifact.submissionArtifact.instructionPC 250 = 0x1b6 :=
+@[simp] theorem pc3000 : Artifact.submissionArtifact.instructionPC 250 = 437 :=
   by rw [scan_instruction_pc 250 (by decide) (by decide)]; rfl
-@[simp] theorem pc3001 : Artifact.submissionArtifact.instructionPC 251 = 0x1b7 :=
+@[simp] theorem pc3001 : Artifact.submissionArtifact.instructionPC 251 = 438 :=
   by rw [scan_instruction_pc 251 (by decide) (by decide)]; rfl
-@[simp] theorem pc3002 : Artifact.submissionArtifact.instructionPC 252 = 0x1b9 :=
+@[simp] theorem pc3002 : Artifact.submissionArtifact.instructionPC 252 = 440 :=
   by rw [scan_instruction_pc 252 (by decide) (by decide)]; rfl
-@[simp] theorem pc3003 : Artifact.submissionArtifact.instructionPC 253 = 0x1ba :=
+@[simp] theorem pc3003 : Artifact.submissionArtifact.instructionPC 253 = 441 :=
   by rw [scan_instruction_pc 253 (by decide) (by decide)]; rfl
-@[simp] theorem pc3004 : Artifact.submissionArtifact.instructionPC 254 = 0x1bb :=
+@[simp] theorem pc3004 : Artifact.submissionArtifact.instructionPC 254 = 442 :=
   by rw [scan_instruction_pc 254 (by decide) (by decide)]; rfl
-@[simp] theorem pc3005 : Artifact.submissionArtifact.instructionPC 255 = 0x1bc :=
+@[simp] theorem pc3005 : Artifact.submissionArtifact.instructionPC 255 = 443 :=
   by rw [scan_instruction_pc 255 (by decide) (by decide)]; rfl
-@[simp] theorem pc3006 : Artifact.submissionArtifact.instructionPC 256 = 0x1bd :=
+@[simp] theorem pc3006 : Artifact.submissionArtifact.instructionPC 256 = 444 :=
   by rw [scan_instruction_pc 256 (by decide) (by decide)]; rfl
-@[simp] theorem pc3007 : Artifact.submissionArtifact.instructionPC 257 = 0x1be :=
+@[simp] theorem pc3007 : Artifact.submissionArtifact.instructionPC 257 = 445 :=
   by rw [scan_instruction_pc 257 (by decide) (by decide)]; rfl
-@[simp] theorem pc3008 : Artifact.submissionArtifact.instructionPC 258 = 0x1bf :=
+@[simp] theorem pc3008 : Artifact.submissionArtifact.instructionPC 258 = 446 :=
   by rw [scan_instruction_pc 258 (by decide) (by decide)]; rfl
-@[simp] theorem pc3009 : Artifact.submissionArtifact.instructionPC 259 = 0x1c0 :=
+@[simp] theorem pc3009 : Artifact.submissionArtifact.instructionPC 259 = 447 :=
   by rw [scan_instruction_pc 259 (by decide) (by decide)]; rfl
-@[simp] theorem pc3010 : Artifact.submissionArtifact.instructionPC 260 = 0x1c1 :=
+@[simp] theorem pc3010 : Artifact.submissionArtifact.instructionPC 260 = 448 :=
   by rw [scan_instruction_pc 260 (by decide) (by decide)]; rfl
-@[simp] theorem pc3011 : Artifact.submissionArtifact.instructionPC 261 = 0x1c2 :=
+@[simp] theorem pc3011 : Artifact.submissionArtifact.instructionPC 261 = 449 :=
   by rw [scan_instruction_pc 261 (by decide) (by decide)]; rfl
-@[simp] theorem pc3012 : Artifact.submissionArtifact.instructionPC 262 = 0x1c3 :=
+@[simp] theorem pc3012 : Artifact.submissionArtifact.instructionPC 262 = 450 :=
   by rw [scan_instruction_pc 262 (by decide) (by decide)]; rfl
-@[simp] theorem pc3013 : Artifact.submissionArtifact.instructionPC 263 = 0x1c4 :=
+@[simp] theorem pc3013 : Artifact.submissionArtifact.instructionPC 263 = 451 :=
   by rw [scan_instruction_pc 263 (by decide) (by decide)]; rfl
-@[simp] theorem pc3014 : Artifact.submissionArtifact.instructionPC 264 = 0x1c5 :=
+@[simp] theorem pc3014 : Artifact.submissionArtifact.instructionPC 264 = 452 :=
   by rw [scan_instruction_pc 264 (by decide) (by decide)]; rfl
-@[simp] theorem pc3015 : Artifact.submissionArtifact.instructionPC 265 = 0x1c6 :=
+@[simp] theorem pc3015 : Artifact.submissionArtifact.instructionPC 265 = 453 :=
   by rw [scan_instruction_pc 265 (by decide) (by decide)]; rfl
-@[simp] theorem pc3016 : Artifact.submissionArtifact.instructionPC 266 = 0x1c7 :=
+@[simp] theorem pc3016 : Artifact.submissionArtifact.instructionPC 266 = 454 :=
   by rw [scan_instruction_pc 266 (by decide) (by decide)]; rfl
-@[simp] theorem pc3017 : Artifact.submissionArtifact.instructionPC 267 = 0x1c9 :=
+@[simp] theorem pc3017 : Artifact.submissionArtifact.instructionPC 267 = 456 :=
   by rw [scan_instruction_pc 267 (by decide) (by decide)]; rfl
-@[simp] theorem pc3018 : Artifact.submissionArtifact.instructionPC 268 = 0x1ca :=
+@[simp] theorem pc3018 : Artifact.submissionArtifact.instructionPC 268 = 457 :=
   by rw [scan_instruction_pc 268 (by decide) (by decide)]; rfl
-@[simp] theorem pc3019 : Artifact.submissionArtifact.instructionPC 269 = 0x1cb :=
+@[simp] theorem pc3019 : Artifact.submissionArtifact.instructionPC 269 = 458 :=
   by rw [scan_instruction_pc 269 (by decide) (by decide)]; rfl
-@[simp] theorem pc3020 : Artifact.submissionArtifact.instructionPC 270 = 0x1cc :=
+@[simp] theorem pc3020 : Artifact.submissionArtifact.instructionPC 270 = 459 :=
   by rw [scan_instruction_pc 270 (by decide) (by decide)]; rfl
-@[simp] theorem pc3021 : Artifact.submissionArtifact.instructionPC 271 = 0x1cf :=
+@[simp] theorem pc3021 : Artifact.submissionArtifact.instructionPC 271 = 462 :=
   by rw [scan_instruction_pc 271 (by decide) (by decide)]; rfl
 #print axioms scan_instruction_at
 #print axioms scan_instruction_pc

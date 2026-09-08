@@ -146,4 +146,3 @@ theorem lastEntry_eq (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) :
 #print axioms lastEntry_eq
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLastKRound
-
