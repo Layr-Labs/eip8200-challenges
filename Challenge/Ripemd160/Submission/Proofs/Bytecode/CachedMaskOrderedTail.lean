@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.WordCacheGroups
 import Batteries.Tactic.OpenPrivate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadTailConsume
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
@@ -113,11 +114,14 @@ def template : List Instr :=
    .push 1 (UInt256.ofNat 96),
    .op .MSTORE,
    .op .POP,
+   .op .POP,
+   .op .POP,
+   .op .POP,
    .op .JUMP]
 
 def entry (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : State :=
-  {s with pc := tailStartPC, stack := workingStack left right mask (ret :: rest)}
+  {s with pc := tailStartPC, stack := workingStack left right mask (WordCacheGroups.words s ++ ret :: rest)}
 
 set_option linter.unusedSimpArgs false in
 theorem run (s : State)
@@ -126,7 +130,7 @@ theorem run (s : State)
     (hrun : s.halt = .Running)
     (_hfork : s.fork = .Osaka)
     (hactive : 11 ≤ s.activeWords.toNat)
-    (hstack : rest.length < 1006)
+    (hstack : rest.length < 1003)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     runInstrSeq template (entry s left right ret rest) =
       some (finalResult s left right ret rest) := by
@@ -147,12 +151,15 @@ theorem run (s : State)
   have hcap14 : rest.length + 14 < 1024 := by omega
   have hcap15 : rest.length + 15 < 1024 := by omega
   have hcap16 : rest.length + 16 < 1024 := by omega
+  have hcap17 : rest.length + 17 < 1024 := by omega
+  have hcap18 : rest.length + 18 < 1024 := by omega
+  have hcap19 : rest.length + 19 < 1024 := by omega
   simp (config := { maxSteps := 1000000 }) (discharger := omega)
     [runInstrSeq, StackRoundTrace.runInstrSeq, template, quadTailBeforeJumpTemplate,
       c0Instructions, c1Instructions, c2Instructions, c3Instructions,
       c4Instructions, storeH0Instructions, cleanupInstructions,
       swap5H, swap6H, swap7H, swap1, swap2, swap3, op, push1, push4, mask,
-      entry, tailEntry, workingStack, tailStartPC, tailJumpPC, factor,
+      entry, WordCacheGroups.words, WordCacheTemplates.words, tailEntry, workingStack, tailStartPC, tailJumpPC, factor,
       finalResult, beforeJumpResult, StackTail.preJumpResult, StackTail.combined,
       Challenge.EvmProof.Stepper.runInstr, StackMemory.storeHash,
       activeWordsAfter_tail, readWord_writeHashWord_disjoint,
@@ -162,7 +169,7 @@ theorem run (s : State)
       exchange_swap1, exchange_swap2, exchange_swap3, exchange_swap5,
       exchange_swap6, exchange_swap7, exchange_swap8, exchange_swap4, hrun, hactive, hstack, hvalid,
       hcap0, hcap1, hcap2, hcap3, hcap4, hcap5, hcap6, hcap7, hcap8, hcap9,
-      hcap10, hcap11, hcap12, hcap13, hcap14, hcap15, hcap16,
+      hcap10, hcap11, hcap12, hcap13, hcap14, hcap15, hcap16, hcap17, hcap18, hcap19,
       add_assoc, add_left_comm, Word.word_add_comm, Nat.add_assoc,
       writeHashWord_comm,
       List.getElem?_cons_zero, List.getElem?_cons_succ,

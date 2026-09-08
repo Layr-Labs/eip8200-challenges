@@ -30,9 +30,10 @@ noncomputable def gasSteps_legacyBlock (s : State) (input : ByteArray) (i : Nat)
   let word := blockWords input i
   let w := initialWorking q
   let rest := StackFrame.frameRest input i
+  let cachedRest := WordCacheGroups.words q ++ rest
   let left := StackCompression.leftRounds word 80 w
   let right := StackCompression.rightRounds word 80 w
-  let rightRest := StackFrame.savedLeft left ++ StackRoundTemplate.mask :: rest
+  let rightRest := StackFrame.savedLeft left ++ StackRoundTemplate.mask :: cachedRest
   have qactive : 11 ≤ q.activeWords.toNat := by
     rw [scheduledState_activeWords s input hfit i hi]
     omega
@@ -48,34 +49,34 @@ noncomputable def gasSteps_legacyBlock (s : State) (input : ByteArray) (i : Nat)
       Schedule.loopState_halt, hrun]
   have qnp : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig
       q.executionEnv.fork q.executionEnv.codeAddr = false := by rw [qenv]; exact hnp
-  have restBound : rest.length < 1006 := by
+  have restBound : rest.length < 1003 := by
     simp [rest, StackFrame.frameRest, driverRest]
   have rightRestBound : rightRest.length < 1007 := by
-    simp [rightRest, StackFrame.savedLeft, rest, StackFrame.frameRest, driverRest]
+    simp [rightRest, StackFrame.savedLeft, cachedRest, WordCacheGroups.words, WordCacheTemplates.words, rest, StackFrame.frameRest, driverRest]
   have gframe := StackFrame.gasSteps_frame s input i hfit hi hcode hfork hrun hnp
   have gload1 := StackLoadTrace.gasSteps_load StackFrame.loadSite987 q
-    (QuadRoundTemplate.factor :: StackRoundTemplate.mask :: rest) qactive
-    (by simp [rest, StackFrame.frameRest, driverRest]) qcode qfork qrun qnp
+    (QuadRoundTemplate.factor :: StackRoundTemplate.mask :: cachedRest) qactive
+    (by simp [cachedRest, WordCacheGroups.words, WordCacheTemplates.words, rest, StackFrame.frameRest, driverRest]) qcode qfork qrun qnp
   have gload1' : GasSteps (StackFrame.frameLoadEntry s input i)
-      (stateAt q (QuadLayout.leftPC 0) w (StackRoundTemplate.mask :: rest)) := by
+      (stateAt q (QuadLayout.leftPC 0) w (StackRoundTemplate.mask :: cachedRest)) := by
     exact gload1.cast (firstLoad_entry s input i)
-      (firstLoad_returned q (QuadRoundTemplate.factor :: StackRoundTemplate.mask :: rest))
+      (firstLoad_returned q (QuadRoundTemplate.factor :: StackRoundTemplate.mask :: cachedRest))
   have gleft := gasSteps_left80 q word w rest qwords qactive restBound qcode qfork qrun qnp
-  have groute := StackFrame.gasSteps_route q left (StackRoundTemplate.mask :: rest)
-    (by simp only [List.length_cons]; omega) qcode qfork qrun qnp
-  have groute' : GasSteps (stateAt q (QuadLayout.leftPC 20) left (StackRoundTemplate.mask :: rest))
-      (StackFrame.routeReturned q left (StackRoundTemplate.mask :: rest)) :=
-    groute.cast (routeEntry_atLanePC q left (StackRoundTemplate.mask :: rest)) rfl
+  have groute := StackFrame.gasSteps_route q left (StackRoundTemplate.mask :: cachedRest)
+    (by simp [cachedRest, WordCacheGroups.words, WordCacheTemplates.words, rest, StackFrame.frameRest, driverRest]) qcode qfork qrun qnp
+  have groute' : GasSteps (stateAt q (QuadLayout.leftPC 20) left (StackRoundTemplate.mask :: cachedRest))
+      (StackFrame.routeReturned q left (StackRoundTemplate.mask :: cachedRest)) :=
+    groute.cast (routeEntry_atLanePC q left (StackRoundTemplate.mask :: cachedRest)) rfl
   have gload2 := StackLoadTrace.gasSteps_load StackFrame.loadSite1238 q
     (QuadRoundTemplate.factor :: rightRest) qactive
-    (by simp [rightRest, StackFrame.savedLeft, rest, StackFrame.frameRest, driverRest])
+    (by simp [rightRest, StackFrame.savedLeft, cachedRest, WordCacheGroups.words, WordCacheTemplates.words, rest, StackFrame.frameRest, driverRest])
     qcode qfork qrun qnp
-  have gload2' : GasSteps (StackFrame.routeReturned q left (StackRoundTemplate.mask :: rest))
+  have gload2' : GasSteps (StackFrame.routeReturned q left (StackRoundTemplate.mask :: cachedRest))
       (stateAt q (QuadLayout.rightPC 0) w rightRest) := by
-    exact gload2.cast (secondLoad_entry q left (StackRoundTemplate.mask :: rest))
+    exact gload2.cast (secondLoad_entry q left (StackRoundTemplate.mask :: cachedRest))
       (secondLoad_returned q (QuadRoundTemplate.factor :: rightRest))
   have gright := gasSteps_right80 q word w left.b left.c left.d left.e left.a rest
-    qwords qactive (by simp [rest, StackFrame.frameRest, driverRest]) qcode qfork qrun qnp
+    qwords qactive (by simp [cachedRest, WordCacheGroups.words, WordCacheTemplates.words, rest, StackFrame.frameRest, driverRest]) qcode qfork qrun qnp
   have hvalid : Decode.isValidJumpDest q.executionEnv.code
       (UInt256.ofNat 0x1bf).toNat = true := by
     have hdest := Artifact.submissionArtifact.isValidJumpDest_index 250 (by rfl)

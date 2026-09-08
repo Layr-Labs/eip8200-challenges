@@ -1,3 +1,5 @@
+import Batteries.Tactic.OpenPrivate
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.WordCacheGroups
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DriverTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
@@ -49,17 +51,21 @@ private def wfOp {op : Operation}
     Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
   ⟨hopcode, hplain, havailable⟩
 
-/-- N+L exit block: the mask push (index 334, pc 0x2c0) and the factor push
-(index 335, pc 0x2c5).  The removed call prefix and the removed inner-return
-JUMPDEST are no longer live instructions. -/
+/-- Preload the three dense message words, then cache the mask and factor. -/
 def exitPath : List Located :=
-  [⟨334, .push ⟨4, by decide⟩ mask, by rfl, by decide⟩,
-   ⟨335, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
+  [⟨334, .push ⟨1, by decide⟩ 200, by rfl, by decide⟩,
+   ⟨335, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨336, .push ⟨1, by decide⟩ 196, by rfl, by decide⟩,
+   ⟨337, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨338, .push ⟨1, by decide⟩ 192, by rfl, by decide⟩,
+   ⟨339, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨340, .push ⟨4, by decide⟩ mask, by rfl, by decide⟩,
+   ⟨341, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
 
 def loadSite987 : GenericRoundSite Artifact.submissionArtifact .Osaka
     StackLoadTrace.loadTemplate :=
   StackSiteBuilder.ofSlice (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    StackLoadTrace.loadTemplate 336 (by rfl) (by decide)
+    StackLoadTrace.loadTemplate 342 (by rfl) (by decide)
     QuadLayout.code_bound
     (StackRoundData.templateWellFormed_mem
       (instructions := StackLoadTrace.loadTemplate) (by decide))
@@ -74,11 +80,11 @@ def loadSite1238 : GenericRoundSite Artifact.submissionArtifact .Osaka
       (instructions := StackLoadTrace.loadTemplate) (by decide))
     (by simp [StackLoadTrace.loadTemplate])
 
-@[simp] theorem loadSite987_startPC : loadSite987.startPC = UInt256.ofNat 0x2cb := by
+@[simp] theorem loadSite987_startPC : loadSite987.startPC = UInt256.ofNat 0x2d4 := by
   rfl
 
 @[simp] theorem loadSite1238_startPC :
-    loadSite1238.startPC = UInt256.ofNat 0xb04 := by
+    loadSite1238.startPC = UInt256.ofNat 0xafb := by
   change UInt256.ofNat
     (Artifact.submissionArtifact.instructionPC QuadLayout.rightLoadIndex) = _
   rw [QuadLayout.rightLoad_pc]
@@ -94,12 +100,14 @@ def frameSeam (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def frameLoadEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   StackLoadTrace.loadEntry (StackBlockModel.scheduledState s input i)
-    (UInt256.ofNat 0x2cb) (QuadRoundTemplate.factor :: mask :: frameRest input i)
+    (UInt256.ofNat 0x2d4) (QuadRoundTemplate.factor :: mask ::
+      (WordCacheGroups.words (StackBlockModel.scheduledState s input i) ++ frameRest input i))
 
 theorem frameLoadEntry_eq_loadSite987 (s : State) (input : ByteArray) (i : Nat) :
     frameLoadEntry s input i =
       StackLoadTrace.loadEntry (StackBlockModel.scheduledState s input i)
-        loadSite987.startPC (QuadRoundTemplate.factor :: mask :: frameRest input i) := by
+        loadSite987.startPC (QuadRoundTemplate.factor :: mask ::
+      (WordCacheGroups.words (StackBlockModel.scheduledState s input i) ++ frameRest input i)) := by
   simp [frameLoadEntry]
 
 /-- N+L: the raw dense entry is definitionally the compression entry — the
@@ -158,18 +166,44 @@ theorem denseEnd_eq_frameSeam (s : State) (input : ByteArray) (i : Nat) :
           StackBlockModel.scheduleRest Schedule.scheduleReturned
         rw [show [UInt256.ofNat 0x424] ++ dr = UInt256.ofNat 0x424 :: dr from rfl]
 
+open private activeWordsAfterUInt256_eq
+  from Challenge.Ripemd160.Submission.Proofs.Bytecode.StackLoadTrace
+
+set_option linter.unusedSimpArgs false in
 theorem run_exit (s : State) (input : ByteArray) (i : Nat)
+    (hactive : 11 ≤ (StackBlockModel.scheduledState s input i).activeWords.toNat)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock exitPath (frameSeam s input i) =
       some (frameLoadEntry s input i) := by
-  have hpc940 : Artifact.submissionArtifact.instructionPC 334 = 0x2c0 := by rfl
-  have hpc941 : Artifact.submissionArtifact.instructionPC 335 = 0x2c5 := by rfl
+  let q := StackBlockModel.scheduledState s input i
+  have h192 : q.activeWordsAfterUInt256 192 32 = q.activeWords := by
+    apply activeWordsAfterUInt256_eq
+    dsimp only [q]
+    omega
+  have h196 : q.activeWordsAfterUInt256 196 32 = q.activeWords := by
+    apply activeWordsAfterUInt256_eq
+    dsimp only [q]
+    omega
+  have h200 : q.activeWordsAfterUInt256 200 32 = q.activeWords := by
+    apply activeWordsAfterUInt256_eq
+    dsimp only [q]
+    omega
+  simp only [State.activeWordsAfterUInt256, q] at h192 h196 h200
+  have hpc334 : Artifact.submissionArtifact.instructionPC 334 = 704 := by rfl
+  have hpc335 : Artifact.submissionArtifact.instructionPC 335 = 706 := by rfl
+  have hpc336 : Artifact.submissionArtifact.instructionPC 336 = 707 := by rfl
+  have hpc337 : Artifact.submissionArtifact.instructionPC 337 = 709 := by rfl
+  have hpc338 : Artifact.submissionArtifact.instructionPC 338 = 710 := by rfl
+  have hpc339 : Artifact.submissionArtifact.instructionPC 339 = 712 := by rfl
+  have hpc340 : Artifact.submissionArtifact.instructionPC 340 = 713 := by rfl
+  have hpc341 : Artifact.submissionArtifact.instructionPC 341 = 718 := by rfl
   simp [exitPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     frameSeam, frameLoadEntry, StackBlockModel.scheduledState,
     StackBlockModel.withMemory, StackBlockModel.withActiveWords,
     StackBlockModel.scheduleRest, StackBlockModel.driverRest, frameRest,
-    StackLoadTrace.loadEntry, QuadRoundTemplate.factor,
-    hrun, hpc940, hpc941, mask]
+    StackLoadTrace.loadEntry, QuadRoundTemplate.factor, WordCacheGroups.words, WordCacheTemplates.words,
+    State.activeWordsAfterUInt256, h192, h196, h200,
+    hrun, hpc334, hpc335, hpc336, hpc337, hpc338, hpc339, hpc340, hpc341, mask]
 
 /-- N schedule step: raw dense body at the relocated site with the preserved
 outer return word and the bare two-word driver suffix.  No `hvalid` premise —
@@ -211,6 +245,7 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
   exact hpacked.cast rfl (denseEnd_eq_frameSeam s input i)
 
 def gasSteps_exit (s : State) (input : ByteArray) (i : Nat)
+    (hactive : 11 ≤ (StackBlockModel.scheduledState s input i).activeWords.toNat)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -236,7 +271,7 @@ def gasSteps_exit (s : State) (input : ByteArray) (i : Nat)
   apply Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka exitPath
   · exact hqcode
   · exact hqfork
-  · exact run_exit s input i hrun
+  · exact run_exit s input i hactive hrun
   · exact hqrun
   · exact hqnp
 
@@ -250,19 +285,21 @@ def gasSteps_frame (s : State) (input : ByteArray) (i : Nat)
     GasSteps (DriverTrace.compressEntry s input i) (frameLoadEntry s input i) :=
   ((gasSteps_schedule s input i hfit hi hcode hfork hrun hnp).cast
     (frameEntry_eq_scheduleEntry s input i).symm rfl).trans <|
-      gasSteps_exit s input i hcode hfork hrun hnp
+      gasSteps_exit s input i (by
+        rw [StackBlockModel.scheduledState_activeWords s input hfit i hi]
+        omega) hcode hfork hrun hnp
 
 def savedLeft (left : Compression.EvmWorking) : List UInt256 :=
   [left.b, left.c, left.d, left.e, left.a]
 
 def routeEntry (s : State) (left : Compression.EvmWorking)
     (rest : List UInt256) : State :=
-  StackRoundTrace.roundEntry s (UInt256.ofNat 0xb03)
+  StackRoundTrace.roundEntry s (UInt256.ofNat 0xafa)
     left.a left.b left.c left.d left.e (QuadRoundTemplate.factor :: rest)
 
 def routeReturned (s : State) (left : Compression.EvmWorking)
     (rest : List UInt256) : State :=
-  StackLoadTrace.loadEntry s (UInt256.ofNat 0xb04)
+  StackLoadTrace.loadEntry s (UInt256.ofNat 0xafb)
     (QuadRoundTemplate.factor :: (savedLeft left ++ rest))
 
 def routePath : List Located :=
@@ -275,7 +312,7 @@ theorem run_route (s : State) (left : Compression.EvmWorking)
     Stepper.runLocatedBlock routePath (routeEntry s left rest) =
       some (routeReturned s left rest) := by
   have hpc : Artifact.submissionArtifact.instructionPC
-      QuadLayout.routeIndex = 0xb03 := QuadLayout.route_pc
+      QuadLayout.routeIndex = 0xafa := QuadLayout.route_pc
   have hcap : rest.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hswap :
       (left.a :: left.b :: left.c :: left.d :: left.e ::
