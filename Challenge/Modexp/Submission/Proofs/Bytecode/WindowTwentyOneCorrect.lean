@@ -20,7 +20,7 @@ private def environment (input : ByteArray) :
   noPrecompile := deployAddress_not_precompile
 
 private theorem entry_eq (input : ByteArray) :
-    state (Main.headerState input) input (UInt256.ofNat 2633) =
+    state (Main.headerState input) input (UInt256.ofNat 2613) =
       Dispatch.wordRouteEntryState input := by
   rfl
 

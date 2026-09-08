@@ -29,8 +29,8 @@ def program : List Instr := (firstProgram ++ highProgram) ++ lowProgram
 theorem run_first (s : State) (x mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions firstProgram
-      (framed s (UInt256.ofNat 4941) ([x, mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4948)
+      (framed s (UInt256.ofNat 4914) ([x, mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4921)
       ([UInt256.mulMod x mu maxWord, x*mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc11 : rest.length+12 < 1024 := by omega
   have hc12 : rest.length+13 < 1024 := by omega
@@ -42,8 +42,8 @@ theorem run_first (s : State) (x mu bi pbi paEnd pbEnd flag dst ret : UInt256)
 theorem run_high (s : State) (mm lo mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions highProgram
-      (framed s (UInt256.ofNat 4948) ([mm, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4955)
+      (framed s (UInt256.ofNat 4921) ([mm, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4928)
       ([mm-(lo+UInt256.lt mm lo), lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc11 : rest.length+12 < 1024 := by omega
   have hc12 : rest.length+13 < 1024 := by omega
@@ -55,8 +55,8 @@ theorem run_high (s : State) (mm lo mu bi pbi paEnd pbEnd flag dst ret : UInt256
 theorem run_low (s : State) (hi lo mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions lowProgram
-      (framed s (UInt256.ofNat 4955) ([hi, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4959)
+      (framed s (UInt256.ofNat 4928) ([hi, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4932)
       ([UInt256.isZero (UInt256.isZero lo)+hi, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc11 : rest.length+12 < 1024 := by omega
   have hc12 : rest.length+13 < 1024 := by omega
@@ -67,8 +67,8 @@ theorem run_low (s : State) (hi lo mu bi pbi paEnd pbEnd flag dst ret : UInt256)
 theorem run_words (s : State) (x mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions program
-      (framed s (UInt256.ofNat 4941) ([x, mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4959)
+      (framed s (UInt256.ofNat 4914) ([x, mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4932)
       ([UInt256.isZero (UInt256.isZero (x*mu))+mulHi x mu, mu] ++
         baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   exact runInstructions_append_some _ _ _ _ _

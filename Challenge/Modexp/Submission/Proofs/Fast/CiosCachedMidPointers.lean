@@ -17,8 +17,8 @@ theorem run_words (s : State) (ml tl c0 mu bi pbi paEnd pbEnd flag dst ret : UIn
     (hml : MachineState.readWord s.memory 9408 = ml)
     (htl : MachineState.readWord s.memory 9440 = tl) :
     runInstructions pointersProgram
-      (framed s (UInt256.ofNat 4959) ([c0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4975)
+      (framed s (UInt256.ofNat 4932) ([c0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4948)
       ([ml-UInt256.ofNat 32, tl-UInt256.ofNat 32, c0, mu] ++
         baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc10 : rest.length+11 < 1024 := by omega

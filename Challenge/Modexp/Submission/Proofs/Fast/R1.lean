@@ -87,7 +87,7 @@ def tnMem (mem : ByteArray) : ByteArray :=
 /-- Subroutine entry, pc 2539, stack `[px, ret]`. -/
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2534
+  { s with pc := UInt256.ofNat 2515
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
@@ -95,14 +95,14 @@ def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 stack and memory exactly as they arrived. -/
 def dblState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1911
+  { s with pc := UInt256.ofNat 1902
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
 /-- Between the test and the store, pc 2550. -/
 def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2545
+  { s with pc := UInt256.ofNat 2526
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
@@ -111,7 +111,7 @@ def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 store does not grow memory. -/
 def csubState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2304
+  { s with pc := UInt256.ofNat 2292
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := tnMem mem }
 

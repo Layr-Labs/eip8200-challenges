@@ -26,7 +26,7 @@ open EvmSemantics.EVM
 /-- The exact declared-width predicate tested by the appended route. -/
 abbrev Matches := WindowTwentyOneInput.Matches
 
-/-- State immediately after entering the appended route at pc 2633. -/
+/-- State immediately after entering the appended route at pc 2613. -/
 abbrev entryState (input : ByteArray) : State :=
   Dispatch.wordRouteEntryState input
 
