@@ -20,6 +20,36 @@ open PatternedInputData PatternedDigest PatternedGuardSpec PatternedSwar
 theorem hdest5170 : Decode.isValidJumpDest submissionBytecode 0x14e = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 190 (by rfl)
 
+/-- Multiplication by eight is a three-bit shift, including modular overflow. -/
+private theorem shiftLeft_three_eq_mul_eight (value : UInt256) :
+    UInt256.shiftLeft value (3 : UInt256) = (8 : UInt256) * value := by
+  have hshift : (UInt256.ofNat 3).toNat = 3 := by
+    norm_num [Challenge.EvmProof.Word.word_toNat_ofNat]
+  have hleft : (UInt256.shiftLeft value (UInt256.ofNat 3)).toNat =
+      (value.toNat <<< 3) % 2 ^ 256 := by
+    unfold UInt256.shiftLeft
+    rw [if_neg (by omega), hshift, Challenge.EvmProof.Word.word_toNat_ofNat]
+    rw [show UInt256.size = 2 ^ 256 by rfl, Nat.mod_mod]
+  have hmul : (UInt256.mul (UInt256.ofNat 8) value).toNat =
+      ((UInt256.ofNat 8).toNat * value.toNat) % 2 ^ 256 := by
+    change ((UInt256.ofNat 8).val * value.val).val = _
+    rw [Fin.val_mul]
+    rfl
+  apply Challenge.EvmProof.Word.word_ext
+  change (UInt256.shiftLeft value (UInt256.ofNat 3)).toNat =
+    (UInt256.mul (UInt256.ofNat 8) value).toNat
+  rw [hleft, hmul, Challenge.EvmProof.Word.word_toNat_ofNat, Nat.shiftLeft_eq]
+  norm_num [Nat.mul_comm]
+
+private theorem stepS_mul_eight_via_shl (input : ByteArray) (pc : Nat)
+    (value : UInt256) (rest : List UInt256)
+    (hlen : rest.length + 2 < 1024) (hpc : pc + 1 < 2 ^ 256) :
+    Challenge.EvmProof.Stepper.runInstr (.op .SHL)
+        (stS input pc ((3 : UInt256) :: value :: rest)) =
+      some (stS input (pc + 1) (((8 : UInt256) * value) :: rest)) := by
+  simpa only [shiftLeft_three_eq_mul_eight] using
+    (stepS_shl input pc (3 : UInt256) value rest hlen hpc)
+
 /-- The correction block, with every stack slot symbolic. -/
 def gasSteps_straddle_sym (input : ByteArray) (E S sv ov acc : UInt256) :
     GasSteps (stS input 423 [E, S, sv, ov, acc, P7, M, m7, P, m8])
@@ -51,12 +81,12 @@ def gasSteps_straddle_sym (input : ByteArray) (E S sv ov acc : UInt256) :
   have step2997 := soundS (opAt 247 .SUB)
     (blockOfS _ (pcFactS input 247 0x1b2 [(27 : UInt256), ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2997)
       (stepS_sub input 0x1b2 ((27 : UInt256)) (((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))) [M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2998 := soundS (pushAt 248 1 8)
+  have step2998 := soundS (pushAt 248 1 3)
     (blockOfS _ (pcFactS input 248 0x1b3 [((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2998)
-      (stepS_push input 0x1b3 1 (8 : UInt256) [((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have step2999 := soundS (opAt 249 .MUL)
-    (blockOfS _ (pcFactS input 249 0x1b5 [(8 : UInt256), ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2999)
-      (stepS_mul input 0x1b5 ((8 : UInt256)) (((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))) [M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+      (stepS_push input 0x1b3 1 (3 : UInt256) [((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have step2999 := soundS (opAt 249 .SHL)
+    (blockOfS _ (pcFactS input 249 0x1b5 [(3 : UInt256), ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2999)
+      (stepS_mul_eight_via_shl input 0x1b5 (((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))) [M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
   have step3000 := soundS (opAt 250 .SHR)
     (blockOfS _ (pcFactS input 250 0x1b6 [((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3000)
       (stepS_shr input 0x1b6 (((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))))) (M) [E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
