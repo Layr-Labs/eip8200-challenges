@@ -16,7 +16,7 @@ private theorem instructionPC_add
   simp only [Challenge.EvmProof.ProgramArtifact.instructionPC, List.take_add,
     assembleBytes_append, List.length_append]
 
-def firstStartIndex : Nat := 3237
+def firstStartIndex : Nat := 3236
 
 private def firstTemplate : List Instr :=
   [.op .JUMPDEST,
@@ -74,13 +74,13 @@ private theorem firstGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem firstStartPC :
-    Artifact.submissionArtifact.instructionPC firstStartIndex = 5053 := by
+    Artifact.submissionArtifact.instructionPC firstStartIndex = 5052 := by
   rfl
 
 @[simp] theorem firstPC (index : Nat) (hlo : firstStartIndex ≤ index)
-    (hhi : index ≤ 3276) :
+    (hhi : index ≤ 3275) :
     Artifact.submissionArtifact.instructionPC index =
-      [5053,5054,5055,5056,5089,5090,5091,5092,5093,5094,5095,5096,5097,5098,5099,5100,5101,5102,5103,5104,5105,5106,5107,5108,5109,5110,5111,5112,5113,5114,5115,5116,5118,5119,5152,5153,5154,5155,5156,5189][index - firstStartIndex]! := by
+      [5052,5053,5054,5055,5088,5089,5090,5091,5092,5093,5094,5095,5096,5097,5098,5099,5100,5101,5102,5103,5104,5105,5106,5107,5108,5109,5110,5111,5112,5113,5114,5115,5117,5118,5151,5152,5153,5154,5155,5188][index - firstStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -115,7 +115,7 @@ def firstPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨firstStartIndex + offset, .push width value,
     (firstGetElem offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 2970..3004, pc 5053..5189. -/
+/-- Instructions 2970..3004, pc 5052..5188. -/
 def firstMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [firstOpAt 0 .JUMPDEST,
@@ -159,7 +159,7 @@ def firstMac :
    firstPushAt 38 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    firstOpAt 39 .ADD]
 
-def secondStartIndex : Nat := 3277
+def secondStartIndex : Nat := 3276
 
 private def secondTemplate : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
@@ -203,7 +203,7 @@ private def secondTemplate : List Instr :=
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    .op .ADD,
    .op (.Swap ⟨0, by decide⟩),
-   .push 2 5053,
+   .push 2 5052,
    .op .JUMPI]
 
 private theorem secondSlice_eq :
@@ -220,13 +220,13 @@ private theorem secondGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem secondStartPC :
-    Artifact.submissionArtifact.instructionPC secondStartIndex = 5190 := by
+    Artifact.submissionArtifact.instructionPC secondStartIndex = 5189 := by
   rfl
 
 @[simp] theorem secondPC (index : Nat) (hlo : secondStartIndex ≤ index)
-    (hhi : index ≤ 3319) :
+    (hhi : index ≤ 3318) :
     Artifact.submissionArtifact.instructionPC index =
-      [5190,5191,5192,5225,5226,5227,5228,5229,5230,5231,5232,5233,5234,5235,5236,5237,5238,5239,5240,5241,5242,5243,5244,5245,5246,5247,5248,5249,5250,5251,5252,5254,5255,5288,5289,5290,5291,5292,5293,5326,5327,5328,5331][index - secondStartIndex]! := by
+      [5189,5190,5191,5224,5225,5226,5227,5228,5229,5230,5231,5232,5233,5234,5235,5236,5237,5238,5239,5240,5241,5242,5243,5244,5245,5246,5247,5248,5249,5250,5251,5253,5254,5287,5288,5289,5290,5291,5292,5325,5326,5327,5330][index - secondStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -261,7 +261,7 @@ def secondPushAt (offset : Nat) (width : Fin 33) (value : UInt256)
   ⟨secondStartIndex + offset, .push width value,
     (secondGetElem offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 3005..3047, pc 5190..5331. -/
+/-- Instructions 3005..3047, pc 5189..5330. -/
 def secondMac :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [secondOpAt 0 (.Dup ⟨0, by decide⟩),
@@ -305,7 +305,7 @@ def secondMac :
    secondPushAt 38 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    secondOpAt 39 .ADD,
    secondOpAt 40 (.Swap ⟨0, by decide⟩),
-   secondPushAt 41 2 5053,
+   secondPushAt 41 2 5052,
    secondOpAt 42 .JUMPI]
 
 /-- The body and exit share the compact block ending at JUMPI. -/

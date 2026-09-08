@@ -13,8 +13,7 @@ def startIndex : Nat := 3197
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨0, by decide⟩),
+  [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    .op (.Dup ⟨5, by decide⟩),
@@ -76,9 +75,9 @@ private theorem startPC :
   rfl
 
 @[simp] theorem peelPC (index : Nat) (hlo : startIndex ≤ index)
-    (hhi : index ≤ 3236) :
+    (hhi : index ≤ 3235) :
     Artifact.submissionArtifact.instructionPC index =
-      [4916,4917,4918,4919,4952,4953,4954,4955,4956,4957,4958,4959,4960,4961,4962,4963,4964,4965,4966,4967,4968,4969,4970,4971,4972,4973,4974,4975,4976,4977,4978,4979,4981,4982,5015,5016,5017,5018,5019,5052][index - startIndex]! := by
+      [4916,4917,4918,4951,4952,4953,4954,4955,4956,4957,4958,4959,4960,4961,4962,4963,4964,4965,4966,4967,4968,4969,4970,4971,4972,4973,4974,4975,4976,4977,4978,4980,4981,5014,5015,5016,5017,5018,5051][index - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -112,48 +111,47 @@ def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨startIndex + offset, .push width value, (getElem_slice offset hoffset).trans hget, hwf⟩
 
-/-- Instructions 2930..2969, pc 4916..5052. -/
+/-- Instructions 3197..3235, pc 4916..5051. -/
 def cios2L2Peel :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 0 .JUMPDEST,
-   opAt 1 (.Dup ⟨0, by decide⟩),
-   opAt 2 .MLOAD,
-   pushAt 3 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   opAt 4 (.Dup ⟨5, by decide⟩),
-   opAt 5 (.Dup ⟨2, by decide⟩),
-   opAt 6 .MUL,
-   opAt 7 (.Swap ⟨1, by decide⟩),
-   opAt 8 (.Dup ⟨6, by decide⟩),
-   opAt 9 .MULMOD,
+  [opAt 0 (.Dup ⟨0, by decide⟩),
+   opAt 1 .MLOAD,
+   pushAt 2 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   opAt 3 (.Dup ⟨5, by decide⟩),
+   opAt 4 (.Dup ⟨2, by decide⟩),
+   opAt 5 .MUL,
+   opAt 6 (.Swap ⟨1, by decide⟩),
+   opAt 7 (.Dup ⟨6, by decide⟩),
+   opAt 8 .MULMOD,
+   opAt 9 (.Dup ⟨1, by decide⟩),
    opAt 10 (.Dup ⟨1, by decide⟩),
-   opAt 11 (.Dup ⟨1, by decide⟩),
-   opAt 12 .LT,
-   opAt 13 .SUB,
-   opAt 14 (.Dup ⟨4, by decide⟩),
-   opAt 15 (.Dup ⟨2, by decide⟩),
-   opAt 16 .ADD,
-   opAt 17 (.Dup ⟨0, by decide⟩),
-   opAt 18 (.Swap ⟨5, by decide⟩),
-   opAt 19 .GT,
+   opAt 11 .LT,
+   opAt 12 .SUB,
+   opAt 13 (.Dup ⟨4, by decide⟩),
+   opAt 14 (.Dup ⟨2, by decide⟩),
+   opAt 15 .ADD,
+   opAt 16 (.Dup ⟨0, by decide⟩),
+   opAt 17 (.Swap ⟨5, by decide⟩),
+   opAt 18 .GT,
+   opAt 19 .SUB,
    opAt 20 .SUB,
-   opAt 21 .SUB,
+   opAt 21 (.Dup ⟨3, by decide⟩),
    opAt 22 (.Dup ⟨3, by decide⟩),
-   opAt 23 (.Dup ⟨3, by decide⟩),
-   opAt 24 .MLOAD,
-   opAt 25 .ADD,
-   opAt 26 (.Dup ⟨0, by decide⟩),
-   opAt 27 (.Swap ⟨4, by decide⟩),
-   opAt 28 .GT,
-   opAt 29 .ADD,
-   opAt 30 (.Swap ⟨2, by decide⟩),
-   pushAt 31 1 32,
-   opAt 32 (.Dup ⟨3, by decide⟩),
-   pushAt 33 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 34 .ADD,
-   opAt 35 (.Swap ⟨3, by decide⟩),
-   opAt 36 .ADD,
-   opAt 37 .MSTORE,
-   pushAt 38 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 39 .ADD]
+   opAt 23 .MLOAD,
+   opAt 24 .ADD,
+   opAt 25 (.Dup ⟨0, by decide⟩),
+   opAt 26 (.Swap ⟨4, by decide⟩),
+   opAt 27 .GT,
+   opAt 28 .ADD,
+   opAt 29 (.Swap ⟨2, by decide⟩),
+   pushAt 30 1 32,
+   opAt 31 (.Dup ⟨3, by decide⟩),
+   pushAt 32 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 33 .ADD,
+   opAt 34 (.Swap ⟨3, by decide⟩),
+   opAt 35 .ADD,
+   opAt 36 .MSTORE,
+   pushAt 37 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 38 .ADD]
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.L2Peel

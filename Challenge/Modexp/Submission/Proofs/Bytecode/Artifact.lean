@@ -3221,7 +3221,6 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.push 1 32,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }),
  YulEvmCompiler.Instr.op EvmSemantics.Operation.SUB,
- YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
  YulEvmCompiler.Instr.op EvmSemantics.Operation.MLOAD,
  YulEvmCompiler.Instr.push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
@@ -3342,7 +3341,7 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.ADD,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }),
- YulEvmCompiler.Instr.push 2 5053,
+ YulEvmCompiler.Instr.push 2 5052,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
@@ -3375,7 +3374,7 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.push 2 2304,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP]
 
-theorem submissionInstructions_count : submissionInstructions.length = 3350 := by
+theorem submissionInstructions_count : submissionInstructions.length = 3349 := by
   decide
 
 theorem assemble_submissionInstructions :
