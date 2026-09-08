@@ -1,4 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Branch
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Trace
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -23,7 +25,7 @@ def storedState (input : ByteArray) (pc : Nat) (stk : List UInt256) : State :=
   { stS input pc stk with memory := answerMemory, activeWords := UInt256.ofNat 1 }
 
 def returnedState (input : ByteArray) : State :=
-  { storedState input 5247 [] with
+  { storedState input 5246 [] with
     halt := .Returned
     hReturn := MachineState.readPadded answerMemory 0 32 }
 
@@ -69,8 +71,8 @@ private theorem pc3766 : Artifact.submissionArtifact.instructionPC 4090 = 5221 :
 private theorem pc3767 : Artifact.submissionArtifact.instructionPC 4091 = 5242 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 private theorem pc3768 : Artifact.submissionArtifact.instructionPC 4092 = 5243 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 private theorem pc3769 : Artifact.submissionArtifact.instructionPC 4093 = 5244 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc3770 : Artifact.submissionArtifact.instructionPC 4094 = 5246 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc3771 : Artifact.submissionArtifact.instructionPC 4095 = 5247 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+private theorem pc3770 : Artifact.submissionArtifact.instructionPC 4094 = 5245 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+private theorem pc3771 : Artifact.submissionArtifact.instructionPC 4095 = 5246 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 private theorem fallbackDest : Decode.isValidJumpDest submissionBytecode 364 = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 201 (by rfl)
@@ -268,27 +270,33 @@ def gasSteps_return (input : ByteArray) :
     rfl
   have c := soundS (opAt 4092 .MSTORE)
     (blockOfS _ (pcFactS input 4092 5243 _ (by norm_num) pc3768) hc)
-  have hd : Stepper.runInstr (.push 1 32) (storedState input 5244 []) =
-      some (storedState input 5246 [32]) := by rfl
-  have d := soundS (pushAt 4093 1 32)
-    (blockOfS _
-      (show (storedState input 5244 []).pc.toNat =
-        Artifact.submissionArtifact.instructionPC 4093 from
-          pcFactS input 4093 5244 [] (by norm_num) pc3769) hd)
-  have he : Stepper.runInstr (.push 0 0) (storedState input 5246 [32]) =
-      some (storedState input 5247 [0, 32]) := by rfl
+  have hop : (storedState input 5244 []).decodedOp = some .MSIZE := by
+    apply Trace.decodedOpAt (storedState input 5244 []) 4093 .MSIZE
+    · rfl
+    · change UInt256.ofNat 5244 =
+        UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4093)
+      rw [pc3769]
+    · rfl
+    · rfl
+    · trivial
+    · rfl
+  have d : GasSteps (storedState input 5244 []) (storedState input 5245 [32]) := by
+    exact Msize.step hop (by change 0 < 1024; decide) (by rfl)
+      deployAddress_not_precompile
+  have he : Stepper.runInstr (.push 0 0) (storedState input 5245 [32]) =
+      some (storedState input 5246 [0, 32]) := by rfl
   have e := soundS (pushAt 4094 0 0)
     (blockOfS _
-      (show (storedState input 5246 [32]).pc.toNat =
+      (show (storedState input 5245 [32]).pc.toNat =
         Artifact.submissionArtifact.instructionPC 4094 from
-          pcFactS input 4094 5246 [32] (by norm_num) pc3770) he)
-  have hf : Stepper.runInstr (.op .RETURN) (storedState input 5247 [0, 32]) =
+          pcFactS input 4094 5245 [32] (by norm_num) pc3770) he)
+  have hf : Stepper.runInstr (.op .RETURN) (storedState input 5246 [0, 32]) =
       some (returnedState input) := by rfl
   have f := soundS (opAt 4095 .RETURN)
     (blockOfS _
-      (show (storedState input 5247 [0, 32]).pc.toNat =
+      (show (storedState input 5246 [0, 32]).pc.toNat =
         Artifact.submissionArtifact.instructionPC 4095 from
-          pcFactS input 4095 5247 [0, 32] (by norm_num) pc3771) hf)
+          pcFactS input 4095 5246 [0, 32] (by norm_num) pc3771) hf)
   exact a.trans (b.trans (c.trans (d.trans (e.trans f))))
 
 def gasSteps_finish_hit (input : ByteArray) (sv ov acc : UInt256)
