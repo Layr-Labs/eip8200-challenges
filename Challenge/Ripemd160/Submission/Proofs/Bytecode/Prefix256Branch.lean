@@ -20,7 +20,7 @@ theorem stepS_calldatasize (input : ByteArray) (pc : Nat) (stk : List UInt256)
 def gasSteps_size_test (input : ByteArray) (sv ov : UInt256) (rest : List UInt256)
     (hlen : rest.length < 1020) :
     GasSteps (stS input 230 (sv :: ov :: rest))
-      (stS input 236 ((5283 : UInt256) ::
+      (stS input 236 ((5274 : UInt256) ::
         UInt256.eq ov (UInt256.ofNat input.size) :: sv :: ov :: rest)) := by
   have a := soundS (opAt 118 .CALLDATASIZE)
     (blockOfS _ (pcFactS input 118 230 _ (by norm_num) (by rfl))
@@ -34,9 +34,9 @@ def gasSteps_size_test (input : ByteArray) (sv ov : UInt256) (rest : List UInt25
     (blockOfS _ (pcFactS input 120 232 _ (by norm_num) (by rfl))
       (stepS_eq input 232 ov (UInt256.ofNat input.size) (sv :: ov :: rest)
         (by simp; omega) (by norm_num)))
-  have d := soundS (pushAt 121 2 5283)
+  have d := soundS (pushAt 121 2 5274)
     (blockOfS _ (pcFactS input 121 233 _ (by norm_num) (by rfl))
-      (stepS_push input 233 2 5283
+      (stepS_push input 233 2 5274
         (UInt256.eq ov (UInt256.ofNat input.size) :: sv :: ov :: rest)
         (by simp; omega) (by decide) (by decide) (by norm_num)))
   exact a.trans (b.trans (c.trans d))
@@ -53,21 +53,21 @@ def gasSteps_size_skip (input : ByteArray) (sv ov : UInt256) (rest : List UInt25
   exact (gasSteps_size_test input sv ov rest hlen).trans
     (soundS (opAt 122 .JUMPI)
       (blockOfS _ (pcFactS input 122 236 _ (by norm_num) (by rfl))
-        (stepS_jumpi_fall input 236 5283 (UInt256.eq ov (UInt256.ofNat input.size))
+        (stepS_jumpi_fall input 236 5274 (UInt256.eq ov (UInt256.ofNat input.size))
           (sv :: ov :: rest) (by simp; omega) (by norm_num) hc)))
 
 def gasSteps_size_done (input : ByteArray) (sv ov : UInt256) (rest : List UInt256)
     (hlen : rest.length < 1020) (heq : ov = UInt256.ofNat input.size) :
     GasSteps (stS input 230 (sv :: ov :: rest))
-      (stS input 5283 (sv :: ov :: rest)) := by
+      (stS input 5274 (sv :: ov :: rest)) := by
   have hc : UInt256.isTrue (UInt256.eq ov (UInt256.ofNat input.size)) := by
     simp [UInt256.eq, UInt256.isTrue, heq]
-  have hd : Decode.isValidJumpDest submissionBytecode 5283 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3761 (by rfl)
+  have hd : Decode.isValidJumpDest submissionBytecode 5274 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 4044 (by rfl)
   exact (gasSteps_size_test input sv ov rest hlen).trans
     (soundS (opAt 122 .JUMPI)
       (blockOfS _ (pcFactS input 122 236 _ (by norm_num) (by rfl))
-        (stepS_jumpi_taken input 236 5283 5283 (UInt256.eq ov (UInt256.ofNat input.size))
+        (stepS_jumpi_taken input 236 5274 5274 (UInt256.eq ov (UInt256.ofNat input.size))
           (sv :: ov :: rest) (by simp; omega) (by norm_num) rfl hc hd)))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
