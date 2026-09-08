@@ -1038,7 +1038,7 @@ def setupPathD :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1125 0 0, opAt 1126 .SUB, pushAt 1127 2 9376, opAt 1128 .MSTORE,
    opAt 1129 .POP, opAt 1130 .POP, pushAt 1131 1 1, pushAt 1132 2 4096,
-   opAt 1133 .MSTORE, pushAt 1134 2 4618, pushAt 1135 2 4096,
+   opAt 1133 .MSTORE, pushAt 1134 2 4052, pushAt 1135 2 4096,
    pushAt 1136 2 2896, opAt 1137 .JUMP]
 
 /-- After the variable stores and the modulus load (pc 1451). -/
@@ -1061,7 +1061,7 @@ def newtonState (s : State) (input : ByteArray) (m0 x p : Nat) : State :=
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
   { s with pc := UInt256.ofNat 2896
-           stack := UInt256.ofNat 4096 :: UInt256.ofNat 4618 :: outerStack input
+           stack := UInt256.ofNat 4096 :: UInt256.ofNat 4052 :: outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
 
@@ -1554,7 +1554,7 @@ theorem fastSetupState_pc (input : ByteArray) :
 
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack =
-      UInt256.ofNat 4096 :: UInt256.ofNat 4618 :: outerStack input := rfl
+      UInt256.ofNat 4096 :: UInt256.ofNat 4052 :: outerStack input := rfl
 
 /-- **Setup certificate.**  For every calldata satisfying the fast-path
 precondition (and the `ValidInput` bound on the calldata length), execution

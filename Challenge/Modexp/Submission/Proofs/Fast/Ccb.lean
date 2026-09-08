@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P14
 set_option warningAsError true
@@ -24,7 +25,7 @@ The five basic blocks are
   `[px, px, px, 2874]` and a jump to `ADDMOD` (pc 2467);
 * `blk1749` (idx 1749..1750, pc 2874..2876) — `JUMPDEST; PUSH1 8`;
 * `blk1751` (idx 1751..1757, pc 2877..2887) — the loop head `CCL`, which
-  pushes the call frame `[px, px, px, 2888]` and jumps to `MONPRO` (pc 1939);
+  pushes the call frame `[px, px, px, 2888]` and jumps to `MONPRO` (pc 4785);
 * `blk1758` (idx 1758..1764, pc 2888..2897) — the return point, which
   decrements the counter and jumps back to pc 2877 while it is nonzero;
 * `blk1765` (idx 1765..1767, pc 2898..2900) — `POP; POP; JUMP ret`.
@@ -83,10 +84,10 @@ def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The `MONPRO` call, pc 1939, with the frame `[px, px, px, 2888]` pushed. -/
+/-- The `MONPRO` call, pc 4785, with the frame `[px, px, px, 2888]` pushed. -/
 def mpCallState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1939
+  { s with pc := UInt256.ofNat 4785
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
                      UInt256.ofNat 2883] ++ loopStack px k ret rest
            memory := mem }
@@ -161,7 +162,7 @@ theorem run_post (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1751` (pc 2877..2887): push the `MONPRO` frame and jump to pc 1939. -/
+/-- `blk1751` (pc 2877..2887): push the `MONPRO` frame and jump to pc 4785. -/
 theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -176,13 +177,13 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have h2888 : (2883 : UInt256) = UInt256.ofNat 2883 := by decide
-  have h1939 : (1939 : UInt256) = UInt256.ofNat 1939 := by decide
-  have h1939Nat : (UInt256.ofNat 1939).toNat = 1939 := by decide
+  have h1939 : (4785 : UInt256) = UInt256.ofNat 4785 := by decide
+  have h1939Nat : (UInt256.ofNat 4785).toNat = 4785 := by decide
   simp (config := { maxSteps := 400000 }) [blk1751, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopState, mpCallState, loopStack, fastPC20, hc3, hc4, hc5, hc6, hc7, hc8,
-    hcode, hrun, h2888, h1939, h1939Nat, jumpDest1939,
+    hcode, hrun, h2888, h1939, h1939Nat, Cios2Dispatch.jumpDest4057,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,

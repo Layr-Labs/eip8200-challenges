@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.Cios2Full
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P3
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P4
@@ -16,6 +17,12 @@ import Challenge.Modexp.Submission.Proofs.Fast.Paths.P17
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P18
 import Challenge.Modexp.Submission.Proofs.Bytecode.RrLeadingTraceCore
 import Challenge.Modexp.Submission.Proofs.Bytecode.FullBaseFallbackTrace
+
+-- Keep the caller proofs in their original word normal form.
+attribute [-simp]
+  Challenge.Modexp.Submission.Proofs.Fast.Cios2Constants.notThirtyOne
+  Challenge.Modexp.Submission.Proofs.Fast.Cios2Constants.notZero
+  Challenge.Modexp.Submission.Proofs.Fast.Cios2Mid.notZeroStruct
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
@@ -33,7 +40,7 @@ appended path runs three loops and returns:
    flagless square-and-multiply steps producing `ACC = φ(b ^ e)`, the final
    `MonPro(ACC, 1)` and the `RETURN`.
 
-`MONPRO` (pc 1939) and `ADDMOD` (pc 2467) are developed in `Fast.Monpro` and
+`MONPRO` (pc 4785) and `ADDMOD` (pc 2467) are developed in `Fast.Monpro` and
 `Fast.Csub`; here they enter only through the abstract `Subroutines` contract,
 so this module does not depend on those developments.
 -/
@@ -130,10 +137,10 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
   [UInt256.ofNat (32 * n), UInt256.ofNat n, UInt256.ofNat bsize,
    UInt256.ofNat esize, UInt256.ofNat msize]
 
-/-- The `MONPRO` call state, pc 1939, stack `[pa, pb, pd, ret] ++ tail`. -/
+/-- The `MONPRO` call state, pc 4785, stack `[pa, pb, pd, ret] ++ tail`. -/
 def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1939
+  { s with pc := UInt256.ofNat 4785
            stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
              ret :: tail
            memory := mem }
@@ -257,7 +264,7 @@ theorem monproMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat}
    by rw [key.2.2.2.2]; exact hf.eoff⟩
 
 /-- The two subroutines this module calls, as abstract single-step contracts
-carrying exactly the side conditions `Fast.Monpro.gasSteps_monproFull` and
+carrying exactly the side conditions `Fast.Cios2Full.gasSteps_monproFull` and
 `Fast.Csub.gasSteps_addmod`/`gasSteps_csub` require: the configuration words
 (`Frame`), the pointer bounds, the return-address jump destination, and — for
 `MONPRO` — the values of the two operand blocks. -/
@@ -272,7 +279,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
   /-- `ADDMOD` preserves the configuration words. -/
   amFrame : ∀ (pa pb pd : Nat) (mem : ByteArray), pd ≤ 6144 →
     Frame mem n bsize minv → Frame (amMem pa pb pd mem) n bsize minv
-  /-- `MONPRO` at pc 1939. -/
+  /-- `MONPRO` at pc 4785. -/
   monpro : ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256)
     (mem : ByteArray) (a b : Nat), tail.length ≤ 1000 →
     32 ≤ pa → pa + 32 * n ≤ 8192 → 32 ≤ pb → pb + 32 * n ≤ 8192 →
@@ -380,11 +387,11 @@ theorem run_rrHead (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       (rrHead s mem n bsize esize msize k) =
       some (mpCall s mem 6144 6144 6144 (UInt256.ofNat 1586)
         (UInt256.ofNat k :: outer n bsize esize msize)) := by
-  have h1939Nat : (UInt256.ofNat 1939).toNat = 1939 := by decide
+  have h1939Nat : (UInt256.ofNat 4785).toNat = 4785 := by decide
   simp (config := { maxSteps := 400000 }) [blk1155, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    rrHead, mpCall, outer, fastPC4, hcode, hrun, h1939Nat, jumpDest1939,
+    rrHead, mpCall, outer, fastPC4, hcode, hrun, h1939Nat, Cios2Dispatch.jumpDest4057,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -487,7 +494,7 @@ theorem run_rrCallSel (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
   simp (config := { maxSteps := 400000 }) [blk1822, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    rrCallSel, mpCall, outer, hcode, hrun, fastPC23, jumpDest1939,
+    rrCallSel, mpCall, outer, hcode, hrun, fastPC23, Cios2Dispatch.jumpDest4057,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -863,11 +870,11 @@ theorem run_blMul (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat)
       (blMul s mem n bsize esize msize pb j) =
       some (mpCall s mem 1024 5120 1024 (UInt256.ofNat 1693)
         (UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize)) := by
-  have h1939Nat : (UInt256.ofNat 1939).toNat = 1939 := by decide
+  have h1939Nat : (UInt256.ofNat 4785).toNat = 4785 := by decide
   simp (config := { maxSteps := 400000 }) [blk1223, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    blMul, mpCall, outer, hcode, hrun, h1939Nat, jumpDest1939,
+    blMul, mpCall, outer, hcode, hrun, h1939Nat, Cios2Dispatch.jumpDest4057,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -902,11 +909,11 @@ theorem run_blExit (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat
       (blExit s mem n bsize esize msize pb j) =
       some (mpCall s mem 1024 6144 2048 (UInt256.ofNat 1755)
         (outer n bsize esize msize)) := by
-  have h1939Nat : (UInt256.ofNat 1939).toNat = 1939 := by decide
+  have h1939Nat : (UInt256.ofNat 4785).toNat = 4785 := by decide
   simp (config := { maxSteps := 400000 }) [blk1255, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    blExit, mpCall, outer, hcode, hrun, h1939Nat, jumpDest1939,
+    blExit, mpCall, outer, hcode, hrun, h1939Nat, Cios2Dispatch.jumpDest4057,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1543,11 +1550,11 @@ theorem run_ebitHead (s : State) (mem : ByteArray)
       (ebitHead s mem n bsize esize msize i w mask) =
       some (mpCall s mem 1024 1024 1024 (UInt256.ofNat 1806)
         (bitStack n bsize esize msize i w mask)) := by
-  have h1939Nat : (UInt256.ofNat 1939).toNat = 1939 := by decide
+  have h1939Nat : (UInt256.ofNat 4785).toNat = 4785 := by decide
   simp (config := { maxSteps := 400000 }) [blk1287, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    ebitHead, mpCall, bitStack, outer, hcode, hrun, h1939Nat, jumpDest1939,
+    ebitHead, mpCall, bitStack, outer, hcode, hrun, h1939Nat, Cios2Dispatch.jumpDest4057,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1609,11 +1616,11 @@ theorem run_ebitMul (s : State) (mem : ByteArray)
       (ebitMul s mem n bsize esize msize i w mask) =
       some (mpCall s mem 1024 2048 1024 (UInt256.ofNat 1831)
         (bitStack n bsize esize msize i w mask)) := by
-  have h1939Nat : (UInt256.ofNat 1939).toNat = 1939 := by decide
+  have h1939Nat : (UInt256.ofNat 4785).toNat = 4785 := by decide
   simp (config := { maxSteps := 400000 }) [blk1301, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    ebitMul, mpCall, bitStack, outer, hcode, hrun, h1939Nat, jumpDest1939,
+    ebitMul, mpCall, bitStack, outer, hcode, hrun, h1939Nat, Cios2Dispatch.jumpDest4057,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1718,12 +1725,12 @@ theorem run_ebEnd (s : State) (mem : ByteArray) (n bsize esize msize i : Nat)
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (3040 + 32 * n) 32) = s.activeWords :=
     activeWords_fix s (3040 + 32 * n) 32 (by omega) (by omega) hact
-  have h1939Nat : (UInt256.ofNat 1939).toNat = 1939 := by decide
+  have h1939Nat : (UInt256.ofNat 4785).toNat = 4785 := by decide
   simp (config := { maxSteps := 600000 }) [blk1320, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     ebEnd, mpCall, storeWord, outer, hcode, hrun, hmod, hfix, h1939Nat,
-    jumpDest1939, State.activeWordsAfterUInt256,
+    Cios2Dispatch.jumpDest4057, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -4902,7 +4909,7 @@ theorem handled_of_rrHead (input : ByteArray) (s : State) (mem : ByteArray)
 
 /-! ## The concrete subroutine instance
 
-`MONPRO` comes from `Fast.Monpro.gasSteps_monproFull`, `ADDMOD` from the pair
+`MONPRO` comes from `Fast.Cios2Full.gasSteps_monproFull`, `ADDMOD` from the pair
 `Fast.Csub.gasSteps_addmod` / `gasSteps_csub` packaged as `gasSteps_addmodFull`. -/
 
 /-- The `MONPRO` step of the concrete instance. -/
@@ -4943,7 +4950,7 @@ def subsMonpro (s : State) (n bsize mm minv : Nat)
       have hmi : (MachineState.readWord mem 9376).toNat = minv := by
         rw [hf.minvW, toNat_ofNat_self hminvlt]
       exact Challenge.EvmProof.GasSteps.cast
-        (Monpro.gasSteps_monproFull s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
+        (Cios2Full.gasSteps_monproFull s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
           (by omega) hrun hcode hfork hnp hact hn32 hpa hpaFit hpb hpbFit hcds
           hf.s32 hf.tl hf.ml hjump (by omega) ha hb hm ham hmpos
           (by rw [hlow, hmi]; exact hminvA))
@@ -5837,7 +5844,7 @@ theorem fastSetup_notPrecompile (input : ByteArray) :
 theorem fastSetup_entry_eq (input : ByteArray) :
     Setup.fastSetupState input =
       r1Call (Setup.fastSetupState input) (Setup.fastSetupMemory input) 4096
-        (UInt256.ofNat 4618) (Setup.limbs input) (Challenge.Modexp.baseSize input)
+        (UInt256.ofNat 4052) (Setup.limbs input) (Challenge.Modexp.baseSize input)
         (Challenge.Modexp.exponentSize input) (Challenge.Modexp.modulusSize input) := rfl
 
 /-! ## The top-level certificate -/
