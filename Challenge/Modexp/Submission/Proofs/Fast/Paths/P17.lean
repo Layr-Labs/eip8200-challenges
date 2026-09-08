@@ -22,28 +22,28 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 1816..1821, pc 2971..2980. -/
 def blk1816 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1806 .JUMPDEST,
-   opAt 1807 (.Dup ⟨0, by decide⟩),
-   pushAt 1808 2 4096,
-   opAt 1809 .EQ,
-   pushAt 1810 2 1615,
-   opAt 1811 .JUMPI]
+  [opAt 1790 .JUMPDEST,
+   opAt 1791 (.Dup ⟨0, by decide⟩),
+   pushAt 1792 2 4096,
+   opAt 1793 .EQ,
+   pushAt 1794 2 1603,
+   opAt 1795 .JUMPI]
 
 /-- Instructions 1822..1827, pc 2981..2994: the multiply's call frame. -/
 def blk1822 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1812 2 1615,
-   pushAt 1813 2 6144,
-   opAt 1814 (.Dup ⟨2, by decide⟩),
-   pushAt 1815 2 6144,
-   pushAt 1816 2 4785,
-   opAt 1817 .JUMP]
+  [pushAt 1796 2 1603,
+   pushAt 1797 2 6144,
+   opAt 1798 (.Dup ⟨2, by decide⟩),
+   pushAt 1799 2 6144,
+   pushAt 1800 2 4751,
+   opAt 1801 .JUMP]
 
 /-- Instructions 1828..1830, pc 2995..2999: the skip. -/
 def blk1828 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1818 .JUMPDEST,
-   pushAt 1819 2 1615,
-   opAt 1820 .JUMP]
+  [opAt 1802 .JUMPDEST,
+   pushAt 1803 2 1603,
+   opAt 1804 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 2926
+def startIndex : Nat := 2909
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
@@ -59,13 +59,13 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem startPC :
-    Artifact.submissionArtifact.instructionPC startIndex = 4808 := by
+    Artifact.submissionArtifact.instructionPC startIndex = 4774 := by
   rfl
 
 @[simp] theorem entryPC (index : Nat) (hlo : startIndex ≤ index)
-    (hhi : index ≤ 2952) :
+    (hhi : index ≤ 2935) :
     Artifact.submissionArtifact.instructionPC index =
-      [4808,4809,4812,4813,4814,4816,4817,4818,4821,4822,4823,4824,4825,4827,4828,4829,4831,4832,4833,4834,4835,4836,4837,4839,4840,4841,4842][index - startIndex]! := by
+      [4774,4775,4778,4779,4780,4782,4783,4784,4787,4788,4789,4790,4791,4793,4794,4795,4797,4798,4799,4800,4801,4802,4803,4805,4806,4807,4808][index - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC

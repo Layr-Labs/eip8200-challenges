@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 3313
+def startIndex : Nat := 3296
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
@@ -38,12 +38,12 @@ private def template : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4843,
+   .push 2 4809,
    .op .JUMPI,
    .op .POP,
    .op .POP,
    .op .POP,
-   .push 2 2637,
+   .push 2 2610,
    .op .JUMP]
 
 private theorem slice_eq :
@@ -64,13 +64,13 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem startPC :
-    Artifact.submissionArtifact.instructionPC startIndex = 5376 := by
+    Artifact.submissionArtifact.instructionPC startIndex = 5342 := by
   rfl
 
 @[simp] theorem tailPC (index : Nat) (hlo : startIndex ≤ index)
-    (hhi : index ≤ 3344) :
+    (hhi : index ≤ 3327) :
     Artifact.submissionArtifact.instructionPC index =
-      [5376,5377,5378,5379,5380,5381,5382,5383,5386,5387,5388,5389,5392,5393,5394,5397,5398,5399,5402,5403,5405,5406,5407,5408,5409,5410,5413,5414,5415,5416,5417,5420][index - startIndex]! := by
+      [5342,5343,5344,5345,5346,5347,5348,5349,5352,5353,5354,5355,5358,5359,5360,5363,5364,5365,5368,5369,5371,5372,5373,5374,5375,5376,5379,5380,5381,5382,5383,5386][index - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -132,12 +132,12 @@ def cios2Tail :
    opAt 22 (.Dup ⟨2, by decide⟩),
    opAt 23 (.Dup ⟨1, by decide⟩),
    opAt 24 .GT,
-   pushAt 25 2 4843,
+   pushAt 25 2 4809,
    opAt 26 .JUMPI,
    opAt 27 .POP,
    opAt 28 .POP,
    opAt 29 .POP,
-   pushAt 30 2 2637,
+   pushAt 30 2 2610,
    opAt 31 .JUMP]
 
 /-- The taken outer-loop branch stops at its `JUMPI`. -/

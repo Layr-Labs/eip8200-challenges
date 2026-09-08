@@ -37,13 +37,13 @@ theorem run_loopAdvance (input : ByteArray) (pointer : Nat)
     (by simp [routeStack]) rfl rfl
   have hall := Challenge.EvmProof.Stepper.runLocatedBlock_append
     (loopAdvancePath.take 2) (loopAdvancePath.drop 2)
-    (WindowHitLoopAdvanceHead.framed template 3543
+    (WindowHitLoopAdvanceHead.framed template 3510
       (UInt256.ofNat pointer :: chunk ::
         modulusWord input :: routeStack input))
-    (WindowHitLoopAdvanceHead.framed template 3546
+    (WindowHitLoopAdvanceHead.framed template 3513
       (UInt256.ofNat (pointer + 4) :: chunk :: modulusWord input ::
         routeStack input))
-    (WindowHitLoopAdvanceHead.framed template 3192
+    (WindowHitLoopAdvanceHead.framed template 3159
       (UInt256.ofNat (pointer + 4) :: chunk :: modulusWord input ::
         routeStack input))
     hhead rfl hjump

@@ -34,13 +34,13 @@ abbrev tableMemory := WindowTableMemory.tableMemory
 /-- Nonzero-modulus branch boundary before loading the base. -/
 def nonzeroState (input : ByteArray) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 3029
+    pc := UInt256.ofNat 2996
     stack := modulusWord input :: routeStack input }
 
 /-- Zero-modulus branch boundary before its return tail. -/
 def zeroState (input : ByteArray) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 3558
+    pc := UInt256.ofNat 3525
     stack := modulusWord input :: routeStack input }
 
 /-- Boundary after table slot `power` has been stored. -/
@@ -56,7 +56,7 @@ def tableState (input : ByteArray) (power pc : Nat) : State :=
 /-- Loop head after the sixteen-entry table has been constructed. -/
 def loopState (input : ByteArray) (pointer : Nat) (accumulator : UInt256) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 3192
+    pc := UInt256.ofNat 3159
     stack := [UInt256.ofNat pointer, accumulator, modulusWord input] ++
       routeStack input
     memory := tableMemory (baseWord input) (modulusWord input)
@@ -66,7 +66,7 @@ def loopState (input : ByteArray) (pointer : Nat) (accumulator : UInt256) : Stat
 word. -/
 def loopContinueState (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) : State :=
-  { loopState input pointer accumulator with pc := UInt256.ofNat 3201 }
+  { loopState input pointer accumulator with pc := UInt256.ofNat 3168 }
 
 /-- Accumulator after `count` of the four bytes in the currently loaded word.
 The loop bytecode retains that word on the stack during the first three byte segments; the final segment consumes it. -/
@@ -95,7 +95,7 @@ def wordState (input : ByteArray) (pointer count pc : Nat)
 def wordDoneState (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 3543
+    pc := UInt256.ofNat 3510
     stack := [UInt256.ofNat pointer,
       WindowMath.chunkWordStep (modulusWord input) (baseWord input) accumulator
         (MachineState.readWord input pointer), modulusWord input] ++ routeStack input
@@ -111,7 +111,7 @@ theorem byteAccumulator_four (input : ByteArray) (pointer : Nat)
 
 /-- Loop exit reached when the calldata pointer is 160. -/
 def finishState (input : ByteArray) (accumulator : UInt256) : State :=
-  { loopState input 160 accumulator with pc := UInt256.ofNat 3550 }
+  { loopState input 160 accumulator with pc := UInt256.ofNat 3517 }
 
 def outputMemory (word : UInt256) : ByteArray :=
   storeWord ByteArray.empty 0 word
@@ -121,7 +121,7 @@ def normalOutputMemory (input : ByteArray) (word : UInt256) : ByteArray :=
 
 def returnedState (input : ByteArray) (word : UInt256) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 3558
+    pc := UInt256.ofNat 3525
     stack := modulusWord input :: routeStack input
     memory := normalOutputMemory input word
     activeWords := UInt256.ofNat 16
@@ -130,7 +130,7 @@ def returnedState (input : ByteArray) (word : UInt256) : State :=
 
 def zeroReturnedState (input : ByteArray) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 3565
+    pc := UInt256.ofNat 3532
     stack := modulusWord input :: routeStack input
     memory := outputMemory 0
     activeWords := UInt256.ofNat 1
@@ -154,7 +154,7 @@ abbrev ModulusZeroStep (input : ByteArray) : Type :=
 
 abbrev TablePreludeStep (input : ByteArray) : Type :=
   Challenge.EvmProof.GasSteps (nonzeroState input)
-    (tableState input 2 3048)
+    (tableState input 2 3015)
 
 abbrev TableUpdateStep (input : ByteArray) (power nextPC : Nat) : Type :=
   Challenge.EvmProof.GasSteps (tableState input power nextPC)
@@ -164,7 +164,7 @@ abbrev TableUpdateStep (input : ByteArray) (power nextPC : Nat) : Type :=
 abbrev LoopContinueStep (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) : Type :=
   Challenge.EvmProof.GasSteps (loopState input pointer accumulator)
-    (wordState input pointer 0 3203 accumulator)
+    (wordState input pointer 0 3170 accumulator)
 
 abbrev LoopExitStep (input : ByteArray) (accumulator : UInt256) : Type :=
   Challenge.EvmProof.GasSteps (loopState input 160 accumulator)

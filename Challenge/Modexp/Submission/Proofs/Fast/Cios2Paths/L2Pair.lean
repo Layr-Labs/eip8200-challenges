@@ -16,7 +16,7 @@ private theorem instructionPC_add
   simp only [Challenge.EvmProof.ProgramArtifact.instructionPC, List.take_add,
     assembleBytes_append, List.length_append]
 
-def firstStartIndex : Nat := 3224
+def firstStartIndex : Nat := 3207
 
 private def firstTemplate : List Instr :=
   [.op .JUMPDEST,
@@ -77,13 +77,13 @@ private theorem firstGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem firstStartPC :
-    Artifact.submissionArtifact.instructionPC firstStartIndex = 5279 := by
+    Artifact.submissionArtifact.instructionPC firstStartIndex = 5245 := by
   rfl
 
 @[simp] theorem firstPC (index : Nat) (hlo : firstStartIndex ≤ index)
-    (hhi : index ≤ 3266) :
+    (hhi : index ≤ 3249) :
     Artifact.submissionArtifact.instructionPC index =
-      [5279,5280,5281,5282,5283,5284,5285,5286,5287,5288,5289,5290,5291,5292,5293,5294,5295,5296,5297,5298,5299,5300,5301,5302,5303,5304,5305,5306,5307,5308,5309,5310,5311,5313,5314,5316,5317,5318,5319,5320,5321,5323,5324][index - firstStartIndex]! := by
+      [5245,5246,5247,5248,5249,5250,5251,5252,5253,5254,5255,5256,5257,5258,5259,5260,5261,5262,5263,5264,5265,5266,5267,5268,5269,5270,5271,5272,5273,5274,5275,5276,5277,5279,5280,5282,5283,5284,5285,5286,5287,5289,5290][index - firstStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -165,7 +165,7 @@ def firstMac :
    firstOpAt 41 .NOT,
    firstOpAt 42 .ADD]
 
-def secondStartIndex : Nat := 3267
+def secondStartIndex : Nat := 3250
 
 private def secondTemplate : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
@@ -212,7 +212,7 @@ private def secondTemplate : List Instr :=
    .op .NOT,
    .op .ADD,
    .op (.Swap ⟨0, by decide⟩),
-   .push 2 5279,
+   .push 2 5245,
    .op .JUMPI]
 
 private theorem secondSlice_eq :
@@ -229,13 +229,13 @@ private theorem secondGetElem (offset : Nat)
   simpa [Nat.add_comm] using hs
 
 private theorem secondStartPC :
-    Artifact.submissionArtifact.instructionPC secondStartIndex = 5325 := by
+    Artifact.submissionArtifact.instructionPC secondStartIndex = 5291 := by
   rfl
 
 @[simp] theorem secondPC (index : Nat) (hlo : secondStartIndex ≤ index)
-    (hhi : index ≤ 3312) :
+    (hhi : index ≤ 3295) :
     Artifact.submissionArtifact.instructionPC index =
-      [5325,5326,5327,5328,5329,5330,5331,5332,5333,5334,5335,5336,5337,5338,5339,5340,5341,5342,5343,5344,5345,5346,5347,5348,5349,5350,5351,5352,5353,5354,5355,5356,5358,5359,5361,5362,5363,5364,5365,5366,5367,5369,5370,5371,5372,5375][index - secondStartIndex]! := by
+      [5291,5292,5293,5294,5295,5296,5297,5298,5299,5300,5301,5302,5303,5304,5305,5306,5307,5308,5309,5310,5311,5312,5313,5314,5315,5316,5317,5318,5319,5320,5321,5322,5324,5325,5327,5328,5329,5330,5331,5332,5333,5335,5336,5337,5338,5341][index - secondStartIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC index =
         Artifact.submissionArtifact.instructionPC
@@ -317,7 +317,7 @@ def secondMac :
    secondOpAt 41 .NOT,
    secondOpAt 42 .ADD,
    secondOpAt 43 (.Swap ⟨0, by decide⟩),
-   secondPushAt 44 2 5279,
+   secondPushAt 44 2 5245,
    secondOpAt 45 .JUMPI]
 
 /-- The body and exit share the compact block ending at JUMPI. -/

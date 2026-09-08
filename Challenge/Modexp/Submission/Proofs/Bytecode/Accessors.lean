@@ -54,7 +54,7 @@ def calldataByteReturned (s : State) (offset returnDest : UInt256)
 @[simp] private theorem helperPCs (i : Nat)
     (hi : 2 ≤ i) (hii : i ≤ 11) :
     Artifact.submissionArtifact.instructionPC i =
-      ([4,5,6,7,8,9,10,11,12,13] : List Nat)[i - 2]! := by
+      [4,5,6,7,8,9,10,11,12,13][i - 2]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem helperNext (i : Nat) (hi : 4 ≤ i) (hii : i ≤ 13) :

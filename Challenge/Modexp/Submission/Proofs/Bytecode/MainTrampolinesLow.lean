@@ -11,14 +11,14 @@ open EvmSemantics.EVM
 set_option linter.unusedSimpArgs false in
 theorem run_tramp0 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path
-      (initialState submissionBytecode input 0) = some (trampolineState input 1314) := by
+      (initialState submissionBytecode input 0) = some (trampolineState input 1309) := by
   have hzero : (0 : UInt256).toNat = 0 := by decide
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 0) (b := 3) (by norm_num : 0 + 3 < 2 ^ 256)
-  have hdest : (1314 : UInt256).toNat = 1314 := by decide
-  have hjump : Decode.isValidJumpDest submissionBytecode 1314 = true :=
-    Artifact.isValidJumpDest_index 977 (by rfl)
-  have hdestWord : (1314 : UInt256) = UInt256.ofNat 1314 := by decide
+  have hdest : (1309 : UInt256).toNat = 1309 := by decide
+  have hjump : Decode.isValidJumpDest submissionBytecode 1309 = true :=
+    Artifact.isValidJumpDest_index 973 (by rfl)
+  have hdestWord : (1309 : UInt256) = UInt256.ofNat 1309 := by decide
   simp [tramp0Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     trampolineState, initialState, hzero, hadd, hdest, hjump, hdestWord]
@@ -96,12 +96,12 @@ theorem run_tramp5 (input : ByteArray) :
 set_option linter.unusedSimpArgs false in
 theorem run_tramp6 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp6Path
-      (trampolineState input 512) = some (trampolineState input 699) := by
+      (trampolineState input 512) = some (trampolineState input 695) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
     (n := 512) (by norm_num : 512 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 513) (b := 3) (by norm_num : 513 + 3 < 2 ^ 256)
-  have hdest : (699 : UInt256).toNat = 699 := by decide
+  have hdest : (695 : UInt256).toNat = 695 := by decide
   simp [tramp6Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     trampolineState, initialState, hsucc, hadd, hdest,

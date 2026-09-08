@@ -22,9 +22,9 @@ theorem run_byte0_lowPrep (template : State) (base modulus : UInt256)
     (high : Nat) (word pointer original accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (lowPrepPath 0)
-      (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 3246)
+      (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 3213)
         base modulus high (byteValue 0 word) word pointer original accumulator rest) =
-    some (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 3246)
+    some (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 3213)
       base modulus (lowNibble 0 word) (byteValue 0 word) word pointer
       original accumulator rest)  := by
   have _ := hrest
@@ -40,9 +40,9 @@ theorem run_byte0_lowSquareLookup (template : State) (base modulus : UInt256)
     (hmask : UInt256.land (UInt256.ofNat 15) byte = UInt256.ofNat nibble)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (lowSquareLookupPath 0)
-      (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 3246)
+      (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 3213)
         base modulus nibble byte word pointer original accumulator rest) =
-    some (lowResultState { template with halt := .Running } (UInt256.ofNat 3287)
+    some (lowResultState { template with halt := .Running } (UInt256.ofNat 3254)
       base modulus nibble byte word pointer
       (WindowMath.nibbleWordStep modulus base accumulator nibble) rest) := by
   have hshift := shift_nibble nibble hnibble
@@ -88,9 +88,9 @@ theorem run_byte0_finish (template : State) (base modulus : UInt256)
     (nibble : Nat) (byte word pointer accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runLocatedBlock (finishPath 0)
-      (lowResultState { template with halt := .Running } (UInt256.ofNat 3287)
+      (lowResultState { template with halt := .Running } (UInt256.ofNat 3254)
         base modulus nibble byte word pointer accumulator rest) =
-    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3287)
+    some (wordKernelState { template with halt := .Running } (UInt256.ofNat 3254)
       base modulus word pointer accumulator rest)  := by
   have _ := hrest
   rfl

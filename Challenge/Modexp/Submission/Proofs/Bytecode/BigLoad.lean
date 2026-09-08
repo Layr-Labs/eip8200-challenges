@@ -179,25 +179,25 @@ def loadReturned (s : State) (offset length dst returnDest : UInt256)
 @[simp] private theorem loadSetupPCs (i : Nat)
     (hi : 353 ≤ i) (hii : i ≤ 361) :
     Artifact.submissionArtifact.instructionPC i =
-      ([439,440,441,442,443,444,445,446,449] : List Nat)[i - 353]! := by
+      [439,440,441,442,443,444,445,446,449][i - 353]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem loadBodyPCs (i : Nat)
     (hi : 362 ≤ i) (hii : i ≤ 386) :
     Artifact.submissionArtifact.instructionPC i =
-      ([450,451,453,454,455,456,457,459,460,462,463,464,466,467,468,470,471,472,473,476,477,478,479,480,483] : List Nat)[i - 362]! := by
+      [450,451,453,454,455,456,457,459,460,462,463,464,466,467,468,470,471,472,473,476,477,478,479,480,483][i - 362]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem loadStorePCs (i : Nat)
     (hi : 387 ≤ i) (hii : i ≤ 405) :
     Artifact.submissionArtifact.instructionPC i =
-      ([484,485,486,487,488,489,490,491,492,493,494,495,496,498,499,500,501,502,505] : List Nat)[i - 387]! := by
+      [484,485,486,487,488,489,490,491,492,493,494,495,496,498,499,500,501,502,505][i - 387]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem loadExitPCs (i : Nat)
     (hi : 406 ≤ i) (hii : i ≤ 411) :
     Artifact.submissionArtifact.instructionPC i =
-      ([506,507,508,509,510,511] : List Nat)[i - 406]! := by
+      [506,507,508,509,510,511][i - 406]! := by
   interval_cases i <;> decide
 
 private theorem jump441 :

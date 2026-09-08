@@ -30,7 +30,7 @@ theorem run_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.Stepper.runLocatedBlock cios2Out
       (outState s mem pa pb n i pdst ret rest) =
-      some (l1At 4864 s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) := by
+      some (l1At 4830 s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) := by
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
@@ -91,7 +91,7 @@ opaque gasSteps_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.GasSteps
       (outState s mem pa pb n i pdst ret rest)
-      (l1At 4864 s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) :=
+      (l1At 4830 s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka cios2Out hcode hfork
     (run_out s mem pa pb n i pdst ret rest hcap hrun hact hn hn32 hi hpa hpaFit

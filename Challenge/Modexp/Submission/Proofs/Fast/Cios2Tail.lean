@@ -20,8 +20,8 @@ open Challenge.Modexp.Submission.Proofs.Fast.Cios2L2Pair
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Tail
 
 theorem jumpDest4115 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4843 = true := by
-  exact Artifact.isValidJumpDest_index 2953 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4809 = true := by
+  exact Artifact.isValidJumpDest_index 2936 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_tailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
@@ -48,10 +48,10 @@ theorem run_tailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
   have h8192 : (8192 : UInt256).toNat = 8192 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
   have h8256 : (8256 : UInt256).toNat = 8256 := by decide
-  have h4115 : (4843 : UInt256).toNat = 4843 := by decide
-  have h4115' : (4843 : UInt256) = UInt256.ofNat 4843 := by decide
+  have h4115 : (4809 : UInt256).toNat = 4809 := by decide
+  have h4115' : (4809 : UInt256) = UInt256.ofNat 4809 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (4843 : UInt256).toNat = true := by
+      (4809 : UInt256).toNat = true := by
     rw [h4115]
     exact jumpDest4115
   have hnextB : ptrAt (pb + 32 * n - 32) (i + 1) %
@@ -119,10 +119,10 @@ theorem run_tailLast (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
   have h8192 : (8192 : UInt256).toNat = 8192 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
   have h8256 : (8256 : UInt256).toNat = 8256 := by decide
-  have h2642 : (2637 : UInt256).toNat = 2637 := by decide
-  have h2642' : (2637 : UInt256) = UInt256.ofNat 2637 := by decide
+  have h2642 : (2610 : UInt256).toNat = 2610 := by decide
+  have h2642' : (2610 : UInt256) = UInt256.ofNat 2610 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (2637 : UInt256).toNat = true := by
+      (2610 : UInt256).toNat = true := by
     rw [h2642]
     exact jumpDest2642
   have hnextB : ptrAt (pb + 32 * n - 32) (i + 1) %
