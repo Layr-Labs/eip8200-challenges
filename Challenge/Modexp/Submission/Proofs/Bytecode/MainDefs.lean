@@ -43,42 +43,42 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 /-- First half of the compiler trampoline chain. -/
 def trampoline1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 0 2 1314, opAt 1 .JUMP]
+  [pushAt 0 2 1309, opAt 1 .JUMP]
 
 /-- Second half of the compiler trampoline chain. -/
 def trampoline2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 899 .JUMPDEST]
+  [opAt 895 .JUMPDEST]
 
 /-- Three EIP-198 header loads. -/
 def headerLoadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 900 0 0, opAt 901 .CALLDATALOAD,
-   pushAt 902 1 32, opAt 903 .CALLDATALOAD,
-   pushAt 904 1 64, opAt 905 .CALLDATALOAD]
+  [pushAt 896 0 0, opAt 897 .CALLDATALOAD,
+   pushAt 898 1 32, opAt 899 .CALLDATALOAD,
+   pushAt 900 1 64, opAt 901 .CALLDATALOAD]
 
 /-- Direct jump over the EIP-7823 checks, justified by `Correct`'s valid-input
 precondition. The jump preserves the three loaded length words. -/
 def headerCheckPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 906 2 1228, opAt 907 .JUMP]
+  [pushAt 902 2 1224, opAt 903 .JUMP]
 
 /-- Reachable instructions from byte zero through optimized header parsing,
 retained as a single audit-friendly path. -/
 def headerPath := trampoline1Path ++ trampoline2Path ++
   headerLoadPath ++ headerCheckPath
 
-def tramp0Path := [pushAt 0 2 1314, opAt 1 .JUMP]
+def tramp0Path := [pushAt 0 2 1309, opAt 1 .JUMP]
 def tramp1Path := [opAt 12 .JUMPDEST, pushAt 13 2 53, opAt 14 .JUMP]
 def tramp2Path := [opAt 43 .JUMPDEST, pushAt 44 2 99, opAt 45 .JUMP]
 def tramp3Path := [opAt 80 .JUMPDEST, pushAt 81 2 305, opAt 82 .JUMP]
 def tramp4Path := [opAt 262 .JUMPDEST, pushAt 263 2 434, opAt 264 .JUMP]
 def tramp5Path := [opAt 350 .JUMPDEST, pushAt 351 2 512, opAt 352 .JUMP]
-def tramp6Path := [opAt 412 .JUMPDEST, pushAt 413 2 699, opAt 414 .JUMP]
-def tramp7Path := [opAt 560 .JUMPDEST, pushAt 561 2 1196, opAt 562 .JUMP,
-  opAt 899 .JUMPDEST]
-def tramp7JumpPath := [opAt 560 .JUMPDEST, pushAt 561 2 1196, opAt 562 .JUMP]
-def tramp7DestPath := [opAt 899 .JUMPDEST]
+def tramp6Path := [opAt 412 .JUMPDEST, pushAt 413 2 695, opAt 414 .JUMP]
+def tramp7Path := [opAt 556 .JUMPDEST, pushAt 557 2 1192, opAt 558 .JUMP,
+  opAt 895 .JUMPDEST]
+def tramp7JumpPath := [opAt 556 .JUMPDEST, pushAt 557 2 1192, opAt 558 .JUMP]
+def tramp7DestPath := [opAt 895 .JUMPDEST]
 
 def trampolineState (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
@@ -89,37 +89,37 @@ def trampolineMidState (input : ByteArray) : State :=
 
 /-- Gas-erased state at the public entry point. -/
 def headerEntryState (input : ByteArray) : State :=
-  { initialState submissionBytecode input 0 with pc := UInt256.ofNat 1197 }
+  { initialState submissionBytecode input 0 with pc := UInt256.ofNat 1193 }
 
 /-- Gas-erased state after loading the three header words. -/
 def headerLoadedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1205
+    pc := UInt256.ofNat 1201
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def headerModulusCheckedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1210
+    pc := UInt256.ofNat 1206
     stack := [0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def headerExponentCheckedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1215
+    pc := UInt256.ofNat 1211
     stack := [0, 0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def headerBaseCheckedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1220
+    pc := UInt256.ofNat 1216
     stack := [0, 0, 0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 /-- Gas-erased state immediately after the successful size-check jump. -/
 def headerState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1228
+    pc := UInt256.ofNat 1224
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
@@ -140,55 +140,55 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
     omega
 
 @[simp] theorem headerPCs0 (i : Nat) (hi : i ≤ 1) :
-    Artifact.submissionArtifact.instructionPC i = [0, 3][i]! := by
+    Artifact.submissionArtifact.instructionPC i = [0,3][i]! := by
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs12 (i : Nat)
     (hi : 12 ≤ i) (hii : i ≤ 14) :
     Artifact.submissionArtifact.instructionPC i =
-      ([14,15,18] : List Nat)[i - 12]! := by
+      [14,15,18][i - 12]! := by
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs43 (i : Nat)
     (hi : 43 ≤ i) (hii : i ≤ 45) :
     Artifact.submissionArtifact.instructionPC i =
-      ([53,54,57] : List Nat)[i - 43]! := by
+      [53,54,57][i - 43]! := by
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs80 (i : Nat)
     (hi : 80 ≤ i) (hii : i ≤ 82) :
     Artifact.submissionArtifact.instructionPC i =
-      ([99,100,103] : List Nat)[i - 80]! := by
+      [99,100,103][i - 80]! := by
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs262 (i : Nat)
     (hi : 262 ≤ i) (hii : i ≤ 264) :
     Artifact.submissionArtifact.instructionPC i =
-      ([305,306,309] : List Nat)[i - 262]! := by
+      [305,306,309][i - 262]! := by
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs350 (i : Nat)
     (hi : 350 ≤ i) (hii : i ≤ 352) :
     Artifact.submissionArtifact.instructionPC i =
-      ([434,435,438] : List Nat)[i - 350]! := by
+      [434,435,438][i - 350]! := by
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs412 (i : Nat)
     (hi : 412 ≤ i) (hii : i ≤ 414) :
     Artifact.submissionArtifact.instructionPC i =
-      ([512,513,516] : List Nat)[i - 412]! := by
+      [512,513,516][i - 412]! := by
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs560 (i : Nat)
-    (hi : 560 ≤ i) (hii : i ≤ 562) :
+    (hi : 556 ≤ i) (hii : i ≤ 558) :
     Artifact.submissionArtifact.instructionPC i =
-      ([699,700,703] : List Nat)[i - 560]! := by
+      [695,696,699][i - 556]! := by
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs899 (i : Nat)
-    (hi : 899 ≤ i) (hii : i ≤ 919) :
+    (hi : 895 ≤ i) (hii : i ≤ 915) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1196,1197,1198,1199,1201,1202,1204,1205,1208,1209,1210,1213,1214,1215,1218,1219,1220,1221,1222,1223,1226] : List Nat)[i - 899]! := by
+      [1192,1193,1194,1195,1197,1198,1200,1201,1204,1205,1206,1209,1210,1211,1214,1215,1216,1217,1218,1219,1222][i - 895]! := by
   interval_cases i <;> decide
 
 @[simp] theorem jump14 :
@@ -216,16 +216,16 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
   Artifact.isValidJumpDest_index 412 (by rfl)
 
 @[simp] theorem jump699 :
-    Decode.isValidJumpDest submissionBytecode 699 = true :=
-  Artifact.isValidJumpDest_index 560 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 695 = true :=
+  Artifact.isValidJumpDest_index 556 (by rfl)
 
 @[simp] theorem jump1196 :
-    Decode.isValidJumpDest submissionBytecode 1196 = true :=
-  Artifact.isValidJumpDest_index 899 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1192 = true :=
+  Artifact.isValidJumpDest_index 895 (by rfl)
 
 @[simp] theorem jump1228 :
-    Decode.isValidJumpDest submissionBytecode 1228 = true :=
-  Artifact.isValidJumpDest_index 921 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1224 = true :=
+  Artifact.isValidJumpDest_index 917 (by rfl)
 
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Main

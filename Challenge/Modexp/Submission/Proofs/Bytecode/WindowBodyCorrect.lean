@@ -93,7 +93,7 @@ def handledOf (route : WindowRoute.Route) (input : ByteArray)
     (hvalid : ValidInput input)
     (entry : Challenge.EvmProof.GasSteps
       (initialState submissionBytecode input 0)
-      (Main.trampolineState input 1196)) : Handled input := by
+      (Main.trampolineState input 1192)) : Handled input := by
   by_cases hzeroSize : modulusSize input = 0
   · exact ⟨Dispatch.zeroSizeFinalState input,
       ⟨Dispatch.gasSteps_zeroSize_total input hvalid hzeroSize entry⟩,
