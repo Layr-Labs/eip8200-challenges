@@ -16,9 +16,9 @@ private def framed (template : State) (pc : Nat) (stack : List UInt256) : State 
   { template with pc := UInt256.ofNat pc, stack := stack }
 
 @[simp] private theorem modulusPCs (index : Nat)
-    (hlo : 1838 ≤ index) (hhi : index ≤ 1844) :
+    (hlo : 1845 ≤ index) (hhi : index ≤ 1851) :
     Artifact.submissionArtifact.instructionPC index =
-      ([3019,3020,3022,3023,3024,3025,3028] : List Nat)[index - 1838]! := by
+      ([2809,2810,2812,2813,2814,2815,2818] : List Nat)[index - 1845]! := by
   interval_cases index <;> decide
 
 private theorem toNat_ne_zero {word : UInt256} (hword : word ≠ 0) :
@@ -34,8 +34,8 @@ theorem run_nonzero_generic (template : State) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hword : MachineState.readWord template.executionEnv.calldata 160 ≠ 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock modulusCheckPath
-      (framed template 3019 rest) =
-    some (framed template 3029
+      (framed template 2809 rest) =
+    some (framed template 2819
       (MachineState.readWord template.executionEnv.calldata 160 :: rest)) := by
   have hnat := toNat_ne_zero hword
   have hcap0 : rest.length < 1024 := by omega
@@ -59,8 +59,8 @@ theorem run_zero_generic (template : State) (rest : List UInt256)
     (hcode : template.executionEnv.code = submissionBytecode)
     (hword : MachineState.readWord template.executionEnv.calldata 160 = 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock modulusCheckPath
-      (framed template 3019 rest) =
-    some (framed template 3558
+      (framed template 2809 rest) =
+    some (framed template 3348
       (MachineState.readWord template.executionEnv.calldata 160 :: rest)) := by
   have hnat : (MachineState.readWord template.executionEnv.calldata 160).toNat = 0 := by
     rw [hword]
