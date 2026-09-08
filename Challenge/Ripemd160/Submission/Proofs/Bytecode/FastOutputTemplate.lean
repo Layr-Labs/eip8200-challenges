@@ -103,12 +103,14 @@ def fastOutputTemplate : List Instr :=
   rfl
 
 theorem fastOutputTemplate_byteLength :
-    (assembleBytes fastOutputTemplate).length = 76 := by
+    (assembleBytes fastOutputTemplate).length = 132 := by
   rw [fastOutputTemplate, assembleBytes_append,
     List.length_append, assembleBytes_length, assembleBytes_length]
   simp [fastOutputBeforeReturnTemplate, fastPackTemplate, fastLoad0,
     fastPackStep, fastEndianStage8, fastEndianStage16, ClosedEndianMultiply.code,
-    DenseScheduleTemplate.endianFactorPush, DenseScheduleTemplate.endianFactor,
+    DenseScheduleTemplate.endianMaskPush, DenseScheduleTemplate.endianFactorPush,
+    DenseScheduleTemplate.endianFactor, DenseScheduleTemplate.mask8,
+    DenseScheduleTemplate.mask16,
     DenseScheduleTemplate.push2, DenseScheduleTemplate.push3, fastStoreAndSetup,
     fastOutputReturnTemplate, push0,
     DenseScheduleTemplate.op, DenseScheduleTemplate.push1,
@@ -119,11 +121,13 @@ def staticGas (instructions : List Instr) : Nat :=
   (instructions.map
     (Challenge.EvmProof.Meter.instrStaticCost .Osaka)).sum
 
-theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 161 := by
+theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 147 := by
   norm_num [staticGas, fastOutputTemplate, fastOutputBeforeReturnTemplate,
     fastPackTemplate, fastLoad0, fastPackStep, fastEndianStage8,
     fastEndianStage16, ClosedEndianMultiply.code,
-    DenseScheduleTemplate.endianFactorPush, DenseScheduleTemplate.endianFactor,
+    DenseScheduleTemplate.endianMaskPush, DenseScheduleTemplate.endianFactorPush,
+    DenseScheduleTemplate.endianFactor, DenseScheduleTemplate.mask8,
+    DenseScheduleTemplate.mask16,
     DenseScheduleTemplate.push2, DenseScheduleTemplate.push3, fastStoreAndSetup, fastOutputReturnTemplate,
     push0, DenseScheduleTemplate.op,
     DenseScheduleTemplate.push1, DenseScheduleTemplate.dup1,

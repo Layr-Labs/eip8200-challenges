@@ -20,12 +20,12 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
 def preCopyState (s : State) (rho : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 5244
+    pc := UInt256.ofNat 5300
     stack := [UInt256.ofNat 0, UInt256.ofNat 262, UInt256.ofNat 32] ++ rho }
 
 def copiedState (s : State) (rho : List UInt256) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5245
+    pc := UInt256.ofNat 5301
     stack := rho }
 
 def gasSteps_codecopy (s : State) (rho : List UInt256)
@@ -45,7 +45,7 @@ def gasSteps_codecopy (s : State) (rho : List UInt256)
     exact hcode
   have hpc : (withGas pre gas).pc.toNat =
       Artifact.submissionArtifact.instructionPC 4143 := by
-    show (UInt256.ofNat 5244).toNat = _
+    show (UInt256.ofNat 5300).toNat = _
     rw [PrefixStatePaths.pc4022]
     decide
   have hdec := Stepper.decodes_of_artifact
@@ -75,7 +75,7 @@ def gasSteps_codecopy (s : State) (rho : List UInt256)
     simpa [pre, cost, preCopyState, copiedState, PrefixStateMemory.copied,
       withGas, Gas.codecopyTotal, State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.word_toNat_ofNat, mz, mz262, mz32,
-      Challenge.EvmProof.Word.succ_ofNat (n := 5244) (by norm_num),
+      Challenge.EvmProof.Word.succ_ofNat (n := 5300) (by norm_num),
       hcode] using hstep
 
 #print axioms gasSteps_codecopy

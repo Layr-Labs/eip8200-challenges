@@ -27,7 +27,8 @@ theorem mask16_div :
 
 def code (shift : Nat) : List Instr :=
   [dup1, dup1, push1 (UInt256.ofNat shift), op .SHR, op .XOR,
-   endianFactorPush shift, .push 0 0, op .NOT, op .DIV, op .AND,
+   endianMaskPush shift (if shift = 8 then mask8 else mask16),
+   op .AND, op .JUMPDEST, op .JUMPDEST, op .JUMPDEST,
    endianFactorPush shift, op .MUL, op .XOR]
 
 theorem run_endian (s : State) (startPC value : UInt256) (shift : Nat)
@@ -60,9 +61,9 @@ theorem run_endian (s : State) (startPC value : UInt256) (shift : Nat)
   all_goals norm_num at hsemantic
   all_goals
     simp (config := { maxSteps := 1000000 })
-      [code, endianFactorPush, endianFactor, op, push1, push2, push3, dup1,
-        runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap, hcap2, hcap3, hcap4,
-        hzero, mask8_div, mask16_div, UInt256.succ, Instr.size,
+      [code, endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3,
+        dup1, mask8, mask16, runInstrSeq, Stepper.runInstr, pcAfter, hrun,
+        hcap, hcap2, hcap3, hcap4, hzero, UInt256.succ, Instr.size,
         Instr.size_push, Instr.size_op, Word.literal_eq_ofNat,
         Word.word_toNat_ofNat, Word.ofNat_add_mod, Word.succ_ofNat,
         word_add_assoc, word_add_ofNat_assoc, hsemantic]
@@ -86,10 +87,11 @@ theorem advances (shift : Nat) {instruction : Instr} {s t : State}
   all_goals first
     | exact RepeatedByteWord.runInstr_pc_div hrun
     | apply DenseScheduleLift.runInstr_pc_of_advances ?_ hrun
-  all_goals first
     | exact Or.inr (Or.inr rfl)
     | exact Or.inl (Or.inl (by constructor))
     | simp only [endianFactorPush]; split <;>
+        exact Or.inl (Or.inl (by constructor))
+    | simp only [endianMaskPush]; split <;>
         exact Or.inl (Or.inl (by constructor))
 
 theorem run_located {artifact : ProgramArtifact} {fork : Fork}
