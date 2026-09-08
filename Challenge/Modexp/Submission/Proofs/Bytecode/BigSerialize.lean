@@ -36,7 +36,7 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 def outerFinishGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 719 .JUMPDEST, opAt 720 (.Dup ⟨4, by decide⟩),
-   opAt 721 (.Dup ⟨1, by decide⟩), opAt 722 .LT, opAt 723 .ISZERO,
+   opAt 721 (.Dup ⟨1, by decide⟩), opAt 722 .EQ, opAt 723 .JUMPDEST,
    pushAt 724 2 1118, opAt 725 .JUMPI]
 
 def serializerEntryPath :
@@ -195,13 +195,15 @@ theorem run_outerFinishGuard (s : State) (accumulatorWord : UInt256)
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
-  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
+  have heq : UInt256.eq (UInt256.ofNat e) (UInt256.ofNat e) =
+      UInt256.ofNat 1 := by
+    simp [UInt256.eq]
   have h1118 : (1118 : UInt256).toNat = 1118 := by decide
   have h1118Word : (1118 : UInt256) = UInt256.ofNat 1118 := by decide
   simp [outerFinishGuardPath, opAt, pushAt, wfOp, outerLoop,
     exponentOuterExit, outerFinishPCs,
-    hcode, hrun, hzeroFalse, h1118, h1118Word, jump1118,
-    hc8, hc9, hc10, UInt256.lt, UInt256.isTrue,
+    hcode, hrun, heq, h1118, h1118Word, jump1118,
+    hc8, hc9, hc10, UInt256.eq, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -564,11 +566,11 @@ theorem gasSteps_serializeResult_cost_potential (s : State)
         MachineState.memCost
           (outerLoop s accumulatorWord count b e m baseOff expOff rest
             e).activeWords.toNat =
-      (66 + m * 138) + MachineState.memCost
+      (64 + m * 138) + MachineState.memCost
         (bigReturned s accumulatorWord count b e m baseOff expOff rest).activeWords.toNat := by
   have hguard :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      outerFinishGuardPath 26
+      outerFinishGuardPath 24
         (run_outerFinishGuard s accumulatorWord count b e m baseOff expOff rest
           (by omega) he hcode hrun)
         (by simpa [outerLoop, State.fork] using hfork)

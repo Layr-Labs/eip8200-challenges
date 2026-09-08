@@ -47,7 +47,7 @@ def startExponentPath :
 def outerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 719 .JUMPDEST, opAt 720 (.Dup ⟨4, by decide⟩),
-   opAt 721 (.Dup ⟨1, by decide⟩), opAt 722 .LT, opAt 723 .ISZERO,
+   opAt 721 (.Dup ⟨1, by decide⟩), opAt 722 .EQ, opAt 723 .JUMPDEST,
    pushAt 724 2 1118, opAt 725 .JUMPI]
 
 def outerToInnerPath :

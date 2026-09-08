@@ -234,8 +234,8 @@ def nonzeroWork (n b e m : Nat) : Nat :=
   (77 + n * 71) +
   (b * (3506 + n * 7248) + (206 + n * 453)) +
   3 +
-  e * (106 + 8 * (613 + n * 526 +
+  e * (104 + 8 * (613 + n * 526 +
     2 * (n * (102 + 256 * (426 + n * 906))))) +
-  (66 + m * 138)
+  (64 + m * 138)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigComplete

@@ -41,16 +41,15 @@ theorem run_outerGuard (s : State) (accumulatorWord : UInt256)
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
-  have hlt : UInt256.lt (UInt256.ofNat i) (UInt256.ofNat e) = 1 := by
-    rw [UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
+  have hne : i ≠ e := Nat.ne_of_lt hi
+  have heq : UInt256.eq (UInt256.ofNat i) (UInt256.ofNat e) =
+      UInt256.ofNat 0 := by
+    rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt hi256, Nat.mod_eq_of_lt he, if_pos hi]
-    decide
-  have honeNat : (1 : UInt256).toNat = 1 := by decide
+      Nat.mod_eq_of_lt hi256, Nat.mod_eq_of_lt he, if_neg hne]
+  have hzeroNat : (UInt256.ofNat 0).toNat = 0 := by decide
   simp [outerGuardPath, opAt, pushAt, wfOp, outerLoop, outerBody,
-    exponentPCs, hrun, hlt, honeNat, hc8, hc9, hc10, UInt256.isTrue,
-    Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    exponentPCs, hrun, heq, hzeroNat, hc8, hc9, hc10, UInt256.isTrue,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
