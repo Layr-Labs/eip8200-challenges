@@ -24,45 +24,46 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 2557..2561, pc 3865..3871: the `w = 0` test. -/
 def blk2557 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2409 .JUMPDEST,
-   opAt 2410 (.Dup ⟨1, by decide⟩),
-   opAt 2411 .ISZERO,
-   pushAt 2412 2 3882,
-   opAt 2413 .JUMPI]
+  [opAt 2406 .JUMPDEST,
+   opAt 2407 (.Dup ⟨1, by decide⟩),
+   opAt 2408 .ISZERO,
+   pushAt 2409 2 3801,
+   opAt 2410 .JUMPI]
 
 /-- Instructions 2562..2568, pc 3872..3886: `ACC := BASE`, then the shift. -/
 def blk2562 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2414 2 9344,
-   opAt 2415 .MLOAD,
-   pushAt 2416 2 2048,
-   pushAt 2417 2 1024,
-   opAt 2418 .MCOPY,
-   pushAt 2419 2 1832,
-   opAt 2420 .JUMP]
+  [pushAt 2411 2 9344,
+   opAt 2412 .MLOAD,
+   pushAt 2413 2 2048,
+   pushAt 2414 2 1024,
+   opAt 2415 .MCOPY,
+   pushAt 2416 2 1832,
+   opAt 2417 .JUMP]
 
 /-- Instructions 2569..2571, pc 3887..3891: the zero-byte arm. -/
 def blk2569 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2421 .JUMPDEST,
-   pushAt 2422 2 1789,
-   opAt 2423 .JUMP]
+  [opAt 2418 .JUMPDEST,
+   pushAt 2419 2 1789,
+   opAt 2420 .JUMP]
 
 /-- PC table for the relocated leading-bit shortcut.  This range is outside
 the inherited `Fast.Defs` tables, so execution proofs need a local certificate
 instead of unfolding the complete bytecode prefix at every instruction. -/
-@[simp] theorem leadingBitPC (i : Nat)
-    (hi : 2409 ≤ i) (hii : i ≤ 2423) :
+@[simp] theorem leadingBitPC (i : Nat) (hi : 2406 ≤ i) (hii : i ≤ 2420) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3860,3861,3862,3863,3866,3867,3870,3871,3874,3877,3878,3881,3882,3883,3886] : List Nat)[i - 2409]! := by
+      [3779, 3780, 3781, 3782, 3785,
+       3786, 3789, 3790, 3793, 3796, 3797, 3800,
+       3801, 3802, 3805][i - 2406]! := by
   interval_cases i <;> decide
 
 theorem jumpDest3865 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3860 = true :=
-  Artifact.isValidJumpDest_index 2409 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3779 = true :=
+  Artifact.isValidJumpDest_index 2406 (by rfl)
 
 theorem jumpDest3887 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3882 = true :=
-  Artifact.isValidJumpDest_index 2421 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3801 = true :=
+  Artifact.isValidJumpDest_index 2418 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

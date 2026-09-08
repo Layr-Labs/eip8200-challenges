@@ -42,7 +42,6 @@ theorem run_square (template : State) (pc : UInt256)
       List.getElem?_cons_zero, List.getElem?_cons_succ, List.exchange,
       advancePC]
 
-
 set_option linter.unusedSimpArgs false in
 /-- The four pure squarings reduce in one pass to the seven-slot square state
 holding `squareWordAfter modulus 4 accumulator`: thirteen instructions, thirteen

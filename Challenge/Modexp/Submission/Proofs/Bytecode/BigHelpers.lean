@@ -103,10 +103,10 @@ def clearReturned (s : State) (ptr : UInt256) (count : Nat)
            memory := clearMemory s.memory ptr count
            activeWords := clearWords s.activeWords ptr count }
 
-@[simp] private theorem clearPCs (i : Nat)
-    (hi : 15 ≤ i) (hii : i ≤ 42) :
+@[simp] private theorem clearPCs (i : Nat) (hi : 15 ≤ i) (hii : i ≤ 42) :
     Artifact.submissionArtifact.instructionPC i =
-      ([19,20,21,22,23,24,25,26,29,30,31,32,34,35,36,37,38,40,41,42,43,44,47,48,49,50,51,52] : List Nat)[i - 15]! := by
+      [19,20,21,22,23,24,25,26,29,30,31,32,34,35,36,37,38,40,
+       41,42,43,44,47,48,49,50,51,52][i - 15]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump21 :
@@ -674,10 +674,10 @@ def copyReturned (s : State) (dst src : UInt256) (count : Nat)
            memory := copyMemory s.memory dst src count
            activeWords := copyWords s.activeWords dst src count }
 
-@[simp] private theorem copyPCs (i : Nat)
-    (hi : 46 ≤ i) (hii : i ≤ 79) :
+@[simp] private theorem copyPCs (i : Nat) (hi : 46 ≤ i) (hii : i ≤ 79) :
     Artifact.submissionArtifact.instructionPC i =
-      ([58,59,60,61,62,63,64,65,68,69,70,72,73,74,75,76,77,79,80,81,82,83,85,86,87,88,89,92,93,94,95,96,97,98] : List Nat)[i - 46]! := by
+      [58,59,60,61,62,63,64,65,68,69,70,72,73,74,75,76,77,
+       79,80,81,82,83,85,86,87,88,89,92,93,94,95,96,97,98][i - 46]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump60 :
@@ -1655,10 +1655,13 @@ def subtractLoopEntry (s : State) (dst src take modulus : UInt256)
            memory := progress.memory
            activeWords := progress.activeWords }
 
-@[simp] private theorem addPCs (i : Nat)
-    (hi : 83 ≤ i) (hii : i ≤ 146) :
+@[simp] private theorem addPCs (i : Nat) (hi : 83 ≤ i) (hii : i ≤ 146) :
     Artifact.submissionArtifact.instructionPC i =
-      ([104,105,106,107,108,109,110,111,112,113,114,115,118,119,120,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,162,163,164,165,166,169,170,171,172,173] : List Nat)[i - 83]! := by
+      [104,105,106,107,108,109,110,111,112,113,114,115,118,119,120,122,
+       123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,
+       139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,
+       155,156,157,158,159,160,162,163,164,165,166,169,170,171,172,
+       173][i - 83]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump110 :
@@ -2155,10 +2158,12 @@ def selectLoopEntry (s : State) (dst src take modulus : UInt256)
            memory := subtracted.memory
            activeWords := subtracted.activeWords }
 
-@[simp] private theorem subtractPCs (i : Nat)
-    (hi : 147 ≤ i) (hii : i ≤ 209) :
+@[simp] private theorem subtractPCs (i : Nat) (hi : 147 ≤ i) (hii : i ≤ 209) :
     Artifact.submissionArtifact.instructionPC i =
-      ([174,175,176,177,178,179,182,183,184,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,228,229,230,231,232,235,236,237,238,239,240,241,242,243,244] : List Nat)[i - 147]! := by
+      ([174,175,176,177,178,179,182,183,184,186,187,188,189,190,191,192,
+       193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,
+       209,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,
+       228,229,230,231,232,235,236,237,238,239,240,241,242,243,244])[i - 147]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump174 :
@@ -2712,10 +2717,12 @@ theorem addReturned_preserves_region (s : State)
     subtracted.activeWords (0 - useSub) dst ptr count count value (by omega)
     hdstFit hptrDst hsubtracted
 
-@[simp] private theorem selectPCs (i : Nat)
-    (hi : 210 ≤ i) (hii : i ≤ 261) :
+@[simp] private theorem selectPCs (i : Nat) (hi : 210 ≤ i) (hii : i ≤ 261) :
     Artifact.submissionArtifact.instructionPC i =
-      ([245,246,247,248,249,250,253,254,255,257,258,259,260,261,262,263,266,267,268,269,270,271,272,273,274,275,276,277,278,279,280,281,282,283,285,286,287,288,289,292,293,294,295,296,297,298,299,300,301,302,303,304] : List Nat)[i - 210]! := by
+      [245,246,247,248,249,250,253,254,255,257,258,259,260,261,262,263,
+       266,267,268,269,270,271,272,273,274,275,276,277,278,279,280,281,
+       282,283,285,286,287,288,289,292,293,294,295,296,297,298,299,300,
+       301,302,303,304][i - 210]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump245 :

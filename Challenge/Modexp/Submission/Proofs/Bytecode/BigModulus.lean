@@ -111,10 +111,13 @@ def scanZeroFinal (s : State) (count b e m baseOff expOff modOff : Nat)
            halt := .Returned
            hReturn := MachineState.readPadded s.memory 6144 m }
 
-@[simp] private theorem scanPCs (i : Nat)
-    (hi : 599 ≤ i) (hii : i ≤ 631) :
+@[simp] private theorem scanPCs (i : Nat) (hi : 599 ≤ i)
+    (hii : i ≤ 631) :
     Artifact.submissionArtifact.instructionPC i =
-      ([768,769,770,771,772,773,774,775,776,779,780,781,783,784,785,786,787,788,789,791,792,793,794,795,798,799,800,801,802,805,806,807,810] : List Nat)[i - 599]! := by
+      ([768,769,770,771,772,773,774,775,776,779,780,781,783,784,785,
+       786,787,788,789,791,792,793,794,795,798,799,800,801,802,805,
+       806,807,810]
+        )[i - 599]! := by
   interval_cases i <;> decide
 
 private theorem jump771 :
