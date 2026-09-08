@@ -93,7 +93,7 @@ def productToSelectPath :
 def selectGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 777 .JUMPDEST, opAt 778 (.Dup ⟨8, by decide⟩),
-   opAt 779 (.Dup ⟨1, by decide⟩), opAt 780 .LT, opAt 781 .ISZERO,
+   opAt 779 (.Dup ⟨1, by decide⟩), opAt 780 .EQ, opAt 781 .JUMPDEST,
    pushAt 782 2 1090, opAt 783 .JUMPI]
 
 def selectBodyPath :

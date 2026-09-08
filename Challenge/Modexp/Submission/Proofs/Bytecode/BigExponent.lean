@@ -275,15 +275,16 @@ theorem run_selectGuard (s : State) (accumulatorWord : UInt256)
   have hc14 : rest.length + 14 < 1024 := by omega
   have hc15 : rest.length + 15 < 1024 := by omega
   have hc16 : rest.length + 16 < 1024 := by omega
-  have hlt : UInt256.lt (UInt256.ofNat k) (UInt256.ofNat count) = 1 := by
-    rw [UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
+  have hne : k ≠ count := Nat.ne_of_lt hk
+  have heq : UInt256.eq (UInt256.ofNat k) (UInt256.ofNat count) =
+      UInt256.ofNat 0 := by
+    rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt hk256, Nat.mod_eq_of_lt hcount, if_pos hk]
-    decide
+      Nat.mod_eq_of_lt hk256, Nat.mod_eq_of_lt hcount, if_neg hne]
   have honeNat : (1 : UInt256).toNat = 1 := by decide
   simp [selectGuardPath, opAt, pushAt, wfOp, selectLoop, selectBody,
-    selectPCs, hrun, hlt, honeNat, hc14, hc15, hc16, UInt256.isTrue,
-    Challenge.EvmProof.Stepper.runLocatedBlock,
+    selectPCs, hrun, heq, honeNat, hc14, hc15, hc16, UInt256.isTrue,
+    UInt256.eq, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -341,12 +342,14 @@ theorem run_selectFinishGuard (s : State) (accumulatorWord : UInt256)
   have hc14 : rest.length + 14 < 1024 := by omega
   have hc15 : rest.length + 15 < 1024 := by omega
   have hc16 : rest.length + 16 < 1024 := by omega
-  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
+  have heq : UInt256.eq (UInt256.ofNat count) (UInt256.ofNat count) =
+      UInt256.ofNat 1 := by
+    simp [UInt256.eq]
   have h1090 : (1090 : UInt256).toNat = 1090 := by decide
   have h1090Word : (1090 : UInt256) = UInt256.ofNat 1090 := by decide
   simp [selectGuardPath, opAt, pushAt, wfOp, selectLoop, selectExit,
-    selectPCs, hcode, hrun, hzeroFalse, h1090, h1090Word, jump1090,
-    hc14, hc15, hc16, UInt256.lt, UInt256.isTrue,
+    selectPCs, hcode, hrun, heq, h1090, h1090Word, jump1090,
+    hc14, hc15, hc16, UInt256.isTrue, UInt256.eq,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
