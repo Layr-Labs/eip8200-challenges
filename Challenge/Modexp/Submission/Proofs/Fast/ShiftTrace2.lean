@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftTrace1
 
 set_option warningAsError false
@@ -15,8 +14,6 @@ middle block, the repair rounds, the `CSUB` call and the exits.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.Shift
-
-attribute [local simp] CompactConstants.notThirtyOne notThirtyOneOfNat
 
 open EvmSemantics
 open EvmSemantics.EVM
@@ -120,10 +117,6 @@ private theorem ofNat_zero_lt_eq_double_isZero (x : UInt256) :
     UInt256.lt (UInt256.ofNat 0) x = UInt256.isZero (UInt256.isZero x) :=
   Monpro.zero_lt_eq_double_isZero x
 
-private theorem addMod_comm (a b m : UInt256) :
-    UInt256.addMod a b m = UInt256.addMod b a m := by
-  simp only [UInt256.addMod, Nat.add_comm]
-
 /-- `blk3026`: quotient estimate with a branchless saturation mask. -/
 theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hact : 296 ≤ s.activeWords.toNat)
@@ -158,7 +151,7 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, saturation_gt_eq_lt, addMod_comm]
+      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, saturation_gt_eq_lt]
 
 /-- `blk3069`: the limb-pass frame `[paj, ptj, 0, q]`. -/
 theorem run_macSetup (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)

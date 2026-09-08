@@ -1,5 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineInput
 
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -24,9 +24,9 @@ open EvmSemantics
 open EvmSemantics.EVM
 
 /-- The exact declared-width predicate tested by the appended route. -/
-abbrev Matches := WindowGuardLogic.Matches
+abbrev Matches := WindowNineInput.Matches
 
-/-- State immediately after entering the appended route at pc 2638. -/
+/-- State immediately after entering the appended route at pc 3000. -/
 abbrev entryState (input : ByteArray) : State :=
   Dispatch.wordRouteEntryState input
 
