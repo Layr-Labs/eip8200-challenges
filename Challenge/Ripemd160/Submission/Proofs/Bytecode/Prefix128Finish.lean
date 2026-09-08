@@ -39,18 +39,30 @@ theorem answerMemory_read :
     (returnedState input).hReturn.size = 32 := by
   rw [returnedState_hReturn, Prefix128Digest.paddedDigest_size]
 
-private theorem pc3772 : Artifact.submissionArtifact.instructionPC 4077 = 5201 := rfl
-private theorem pc3773 : Artifact.submissionArtifact.instructionPC 4078 = 5202 := rfl
-private theorem pc3774 : Artifact.submissionArtifact.instructionPC 4079 = 5204 := rfl
-private theorem pc3775 : Artifact.submissionArtifact.instructionPC 4080 = 5205 := rfl
-private theorem pc3776 : Artifact.submissionArtifact.instructionPC 4081 = 5208 := rfl
-private theorem pc3783 : Artifact.submissionArtifact.instructionPC 4088 = 5236 := rfl
-private theorem pc3784 : Artifact.submissionArtifact.instructionPC 4089 = 5237 := rfl
-private theorem pc3785 : Artifact.submissionArtifact.instructionPC 4090 = 5258 := rfl
-private theorem pc3786 : Artifact.submissionArtifact.instructionPC 4091 = 5259 := rfl
-private theorem pc3787 : Artifact.submissionArtifact.instructionPC 4092 = 5260 := rfl
-private theorem pc3788 : Artifact.submissionArtifact.instructionPC 4093 = 5262 := rfl
-private theorem pc3789 : Artifact.submissionArtifact.instructionPC 4094 = 5263 := rfl
+private theorem pc3772 : Artifact.submissionArtifact.instructionPC 4077 = 5201 := by
+  simpa using Prefix256Finish.finish_instruction_pc_table 16 (by decide)
+private theorem pc3773 : Artifact.submissionArtifact.instructionPC 4078 = 5202 := by
+  simpa using Prefix256Finish.finish_instruction_pc_table 17 (by decide)
+private theorem pc3774 : Artifact.submissionArtifact.instructionPC 4079 = 5204 := by
+  simpa using Prefix256Finish.finish_instruction_pc_table 18 (by decide)
+private theorem pc3775 : Artifact.submissionArtifact.instructionPC 4080 = 5205 := by
+  simpa using Prefix256Finish.finish_instruction_pc_table 19 (by decide)
+private theorem pc3776 : Artifact.submissionArtifact.instructionPC 4081 = 5208 := by
+  simpa using Prefix256Finish.finish_instruction_pc_table 20 (by decide)
+private theorem pc3783 : Artifact.submissionArtifact.instructionPC 4088 = 5236 := by
+  simpa using Prefix256Finish.finish_instruction_pc_table 27 (by decide)
+private theorem pc3784 : Artifact.submissionArtifact.instructionPC 4089 = 5237 := by
+  simpa using Prefix256Finish.finish_instruction_pc_table 28 (by decide)
+private theorem pc3785 : Artifact.submissionArtifact.instructionPC 4090 = 5258 := by
+  simpa using Prefix256Finish.finish_instruction_pc_table 29 (by decide)
+private theorem pc3786 : Artifact.submissionArtifact.instructionPC 4091 = 5259 := by
+  simpa using Prefix256Finish.finish_instruction_pc_table 30 (by decide)
+private theorem pc3787 : Artifact.submissionArtifact.instructionPC 4092 = 5260 := by
+  simpa using Prefix256Finish.finish_instruction_pc_table 31 (by decide)
+private theorem pc3788 : Artifact.submissionArtifact.instructionPC 4093 = 5262 := by
+  simpa using Prefix256Finish.finish_instruction_pc_table 32 (by decide)
+private theorem pc3789 : Artifact.submissionArtifact.instructionPC 4094 = 5263 := by
+  simpa using Prefix256Finish.finish_instruction_pc_table 33 (by decide)
 
 private theorem returnDest : Decode.isValidJumpDest submissionBytecode 5236 = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 4088 (by rfl)

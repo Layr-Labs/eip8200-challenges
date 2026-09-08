@@ -1,3 +1,4 @@
+import Batteries.Tactic.OpenPrivate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Branch
 
 set_option warningAsError true
@@ -8,6 +9,51 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Finish
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
+open YulEvmCompiler
+
+open private
+  submissionInstructionsChunk0
+  submissionInstructionsChunk1
+  submissionInstructionsChunk2
+  submissionInstructionsChunk3
+  submissionInstructionsChunk4
+  submissionInstructionsChunk5
+  submissionInstructionsChunk6
+  submissionInstructionsChunk7
+  submissionInstructionsChunk8
+  submissionInstructionsChunk9
+  submissionInstructionsChunk10
+  submissionInstructionsChunk11
+  submissionInstructionsChunk12
+  submissionInstructionsChunk13
+  submissionInstructionsChunk14
+  submissionInstructionsChunk15
+  submissionInstructionsChunk16
+  submissionInstructionsChunk17
+  submissionInstructionsChunk18
+  submissionInstructionsChunk19
+  submissionInstructionsChunk20
+  submissionInstructionsChunk0_length
+  submissionInstructionsChunk1_length
+  submissionInstructionsChunk2_length
+  submissionInstructionsChunk3_length
+  submissionInstructionsChunk4_length
+  submissionInstructionsChunk5_length
+  submissionInstructionsChunk6_length
+  submissionInstructionsChunk7_length
+  submissionInstructionsChunk8_length
+  submissionInstructionsChunk9_length
+  submissionInstructionsChunk10_length
+  submissionInstructionsChunk11_length
+  submissionInstructionsChunk12_length
+  submissionInstructionsChunk13_length
+  submissionInstructionsChunk14_length
+  submissionInstructionsChunk15_length
+  submissionInstructionsChunk16_length
+  submissionInstructionsChunk17_length
+  submissionInstructionsChunk18_length
+  submissionInstructionsChunk19_length
+  from Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 
 def paddedDigestWord : UInt256 := 0xc6c53c46cf08de1c5375b15af8676a2d32ef528a
 
@@ -49,28 +95,124 @@ theorem answerMemory_read :
     (returnedState input).hReturn.size = 32 := by
   rw [returnedState_hReturn, paddedDigest_size]
 
+private def artifactPrefix : List Instr :=
+  submissionInstructionsChunk0 ++ submissionInstructionsChunk1 ++
+    submissionInstructionsChunk2 ++ submissionInstructionsChunk3 ++
+    submissionInstructionsChunk4 ++ submissionInstructionsChunk5 ++
+    submissionInstructionsChunk6 ++ submissionInstructionsChunk7 ++
+    submissionInstructionsChunk8 ++ submissionInstructionsChunk9 ++
+    submissionInstructionsChunk10 ++ submissionInstructionsChunk11 ++
+    submissionInstructionsChunk12 ++ submissionInstructionsChunk13 ++
+    submissionInstructionsChunk14 ++ submissionInstructionsChunk15 ++
+    submissionInstructionsChunk16 ++ submissionInstructionsChunk17 ++
+    submissionInstructionsChunk18 ++ submissionInstructionsChunk19
+
+private def finishBefore : List Instr :=
+  artifactPrefix ++ submissionInstructionsChunk20.take 61
+
+private def finishSegment : List Instr :=
+  (submissionInstructionsChunk20.drop 61).take 41
+
+private def finishAfter : List Instr :=
+  submissionInstructionsChunk20.drop 102
+
+private theorem finishBefore_length : finishBefore.length = 4061 := by
+  simp [finishBefore, artifactPrefix]
+
+private theorem finishSegment_length : finishSegment.length = 41 := by decide
+
+private theorem artifactChunk20_finish :
+    submissionInstructionsChunk20 =
+      submissionInstructionsChunk20.take 61 ++ finishSegment ++ finishAfter := by
+  rfl
+
+private theorem artifact_finish_split :
+    Artifact.submissionArtifact.instructions =
+      finishBefore ++ finishSegment ++ finishAfter := by
+  change Artifact.submissionInstructions = _
+  have hprefix : Artifact.submissionInstructions =
+      artifactPrefix ++ submissionInstructionsChunk20 := by
+    simp only [Artifact.submissionInstructions, artifactPrefix, List.append_assoc]
+  rw [hprefix]
+  conv_lhs => rw [artifactChunk20_finish]
+  simp only [finishBefore, List.append_assoc]
+
+/-- The sole whole-artifact reduction; subsequent finish PCs use the certified
+local segment and its instruction widths. -/
 private theorem pc3750 : Artifact.submissionArtifact.instructionPC 4061 = 5180 := rfl
-private theorem pc3751 : Artifact.submissionArtifact.instructionPC 4062 = 5181 := rfl
-private theorem pc3752 : Artifact.submissionArtifact.instructionPC 4063 = 5182 := rfl
-private theorem pc3753 : Artifact.submissionArtifact.instructionPC 4064 = 5183 := rfl
-private theorem pc3754 : Artifact.submissionArtifact.instructionPC 4065 = 5184 := rfl
-private theorem pc3755 : Artifact.submissionArtifact.instructionPC 4066 = 5185 := rfl
-private theorem pc3756 : Artifact.submissionArtifact.instructionPC 4067 = 5186 := rfl
-private theorem pc3757 : Artifact.submissionArtifact.instructionPC 4068 = 5187 := rfl
-private theorem pc3758 : Artifact.submissionArtifact.instructionPC 4069 = 5188 := rfl
-private theorem pc3759 : Artifact.submissionArtifact.instructionPC 4070 = 5189 := rfl
-private theorem pc3760 : Artifact.submissionArtifact.instructionPC 4071 = 5192 := rfl
-private theorem pc3761 : Artifact.submissionArtifact.instructionPC 4077 = 5201 := rfl
-private theorem pc3762 : Artifact.submissionArtifact.instructionPC 4078 = 5202 := rfl
-private theorem pc3763 : Artifact.submissionArtifact.instructionPC 4079 = 5204 := rfl
-private theorem pc3764 : Artifact.submissionArtifact.instructionPC 4080 = 5205 := rfl
-private theorem pc3765 : Artifact.submissionArtifact.instructionPC 4081 = 5208 := rfl
-private theorem pc3766 : Artifact.submissionArtifact.instructionPC 4082 = 5209 := rfl
-private theorem pc3767 : Artifact.submissionArtifact.instructionPC 4083 = 5230 := rfl
-private theorem pc3768 : Artifact.submissionArtifact.instructionPC 4084 = 5231 := rfl
-private theorem pc3769 : Artifact.submissionArtifact.instructionPC 4085 = 5232 := rfl
-private theorem pc3770 : Artifact.submissionArtifact.instructionPC 4086 = 5234 := rfl
-private theorem pc3771 : Artifact.submissionArtifact.instructionPC 4087 = 5235 := rfl
+
+private theorem finish_instruction_pc (i : Nat) (hi : i ≤ finishSegment.length) :
+    Artifact.submissionArtifact.instructionPC (4061 + i) =
+      5180 + ArtifactByteLength.byteLength (finishSegment.take i) := by
+  have hzero := ArtifactSegment.instructionPC_segment Artifact.submissionArtifact
+    finishBefore finishSegment finishAfter artifact_finish_split 0 (by omega)
+  have hzero' : Artifact.submissionArtifact.instructionPC 4061 =
+      (assembleBytes finishBefore).length := by
+    simpa [finishBefore_length] using hzero
+  have hbefore : (assembleBytes finishBefore).length = 5180 :=
+    hzero'.symm.trans pc3750
+  have h := ArtifactSegment.instructionPC_segment_of_bounds
+    Artifact.submissionArtifact finishBefore finishSegment finishAfter 4061 5180
+    artifact_finish_split finishBefore_length hbefore i hi
+  simpa only [ArtifactByteLength.byteLength_eq_assemble] using h
+
+/-- Shared PC certificate for the complete 64/128/256 finish region.  The only
+whole-artifact PC reduction is `pc3750`; callers reduce this small local table. -/
+theorem finish_instruction_pc_table (i : Nat) (hi : i ≤ 41) :
+    Artifact.submissionArtifact.instructionPC (4061 + i) =
+      [5180, 5181, 5182, 5183, 5184, 5185, 5186, 5187, 5188, 5189,
+       5192, 5193, 5194, 5196, 5197, 5200, 5201, 5202, 5204, 5205,
+       5208, 5209, 5230, 5231, 5232, 5234, 5235, 5236, 5237, 5258,
+       5259, 5260, 5262, 5263, 5264, 5265, 5286, 5287, 5288, 5290,
+       5291, 5292][i]! := by
+  have hsegment : i ≤ finishSegment.length := by
+    rw [finishSegment_length]
+    exact hi
+  rw [finish_instruction_pc i hsegment]
+  interval_cases i <;> decide
+
+private theorem pc3751 : Artifact.submissionArtifact.instructionPC 4062 = 5181 := by
+  simpa using finish_instruction_pc_table 1 (by decide)
+private theorem pc3752 : Artifact.submissionArtifact.instructionPC 4063 = 5182 := by
+  simpa using finish_instruction_pc_table 2 (by decide)
+private theorem pc3753 : Artifact.submissionArtifact.instructionPC 4064 = 5183 := by
+  simpa using finish_instruction_pc_table 3 (by decide)
+private theorem pc3754 : Artifact.submissionArtifact.instructionPC 4065 = 5184 := by
+  simpa using finish_instruction_pc_table 4 (by decide)
+private theorem pc3755 : Artifact.submissionArtifact.instructionPC 4066 = 5185 := by
+  simpa using finish_instruction_pc_table 5 (by decide)
+private theorem pc3756 : Artifact.submissionArtifact.instructionPC 4067 = 5186 := by
+  simpa using finish_instruction_pc_table 6 (by decide)
+private theorem pc3757 : Artifact.submissionArtifact.instructionPC 4068 = 5187 := by
+  simpa using finish_instruction_pc_table 7 (by decide)
+private theorem pc3758 : Artifact.submissionArtifact.instructionPC 4069 = 5188 := by
+  simpa using finish_instruction_pc_table 8 (by decide)
+private theorem pc3759 : Artifact.submissionArtifact.instructionPC 4070 = 5189 := by
+  simpa using finish_instruction_pc_table 9 (by decide)
+private theorem pc3760 : Artifact.submissionArtifact.instructionPC 4071 = 5192 := by
+  simpa using finish_instruction_pc_table 10 (by decide)
+private theorem pc3761 : Artifact.submissionArtifact.instructionPC 4077 = 5201 := by
+  simpa using finish_instruction_pc_table 16 (by decide)
+private theorem pc3762 : Artifact.submissionArtifact.instructionPC 4078 = 5202 := by
+  simpa using finish_instruction_pc_table 17 (by decide)
+private theorem pc3763 : Artifact.submissionArtifact.instructionPC 4079 = 5204 := by
+  simpa using finish_instruction_pc_table 18 (by decide)
+private theorem pc3764 : Artifact.submissionArtifact.instructionPC 4080 = 5205 := by
+  simpa using finish_instruction_pc_table 19 (by decide)
+private theorem pc3765 : Artifact.submissionArtifact.instructionPC 4081 = 5208 := by
+  simpa using finish_instruction_pc_table 20 (by decide)
+private theorem pc3766 : Artifact.submissionArtifact.instructionPC 4082 = 5209 := by
+  simpa using finish_instruction_pc_table 21 (by decide)
+private theorem pc3767 : Artifact.submissionArtifact.instructionPC 4083 = 5230 := by
+  simpa using finish_instruction_pc_table 22 (by decide)
+private theorem pc3768 : Artifact.submissionArtifact.instructionPC 4084 = 5231 := by
+  simpa using finish_instruction_pc_table 23 (by decide)
+private theorem pc3769 : Artifact.submissionArtifact.instructionPC 4085 = 5232 := by
+  simpa using finish_instruction_pc_table 24 (by decide)
+private theorem pc3770 : Artifact.submissionArtifact.instructionPC 4086 = 5234 := by
+  simpa using finish_instruction_pc_table 25 (by decide)
+private theorem pc3771 : Artifact.submissionArtifact.instructionPC 4087 = 5235 := by
+  simpa using finish_instruction_pc_table 26 (by decide)
 
 private theorem fallbackDest : Decode.isValidJumpDest submissionBytecode 352 = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 193 (by rfl)
@@ -83,38 +225,6 @@ def exitPath : List Located :=
    opAt 4064 (.Swap ⟨4, by decide⟩), opAt 4065 .POP, opAt 4066 .POP,
    opAt 4067 .POP, opAt 4068 .POP, opAt 4069 .POP,
    pushAt 4070 2 352, opAt 4071 .JUMPI]
-
-theorem run_exit (input : ByteArray) (sv ov acc : UInt256) :
-    run exitPath (stS input 5180 [sv, ov, acc, P7, M, m7, P, m8]) =
-      some (if UInt256.isTrue acc then fallbackState input else stS input 5193 []) := by
-  by_cases hc : UInt256.isTrue acc <;>
-    simp (config := { maxSteps := 400000 })
-      [exitPath, opAt, pushAt, stS, fallbackState, atPC, List.exchange, hc,
-       Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
-       Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
-       Word.word_toNat_ofNat, pc3750, pc3751, pc3752, pc3753, pc3754,
-       pc3755, pc3756, pc3757, pc3758, pc3759, pc3760]
-
-theorem run_exit_fallback_iff (input : ByteArray) (sv ov acc : UInt256) :
-    run exitPath (stS input 5180 [sv, ov, acc, P7, M, m7, P, m8]) =
-      some (fallbackState input) ↔ acc ≠ 0 := by
-  rw [run_exit]
-  by_cases hc : UInt256.isTrue acc
-  · simp only [if_pos hc, true_iff]
-    intro hz
-    subst acc
-    exact hc rfl
-  · have hz : acc = 0 := by
-      apply Word.word_ext
-      change acc.toNat = 0
-      exact not_not.mp hc
-    have hstates : stS input 5193 [] ≠ fallbackState input := by
-      intro h
-      have hp := congrArg (fun s : State => s.pc.toNat) h
-      change 5193 = 352 at hp
-      omega
-    rw [if_neg hc]
-    simp [hz, hstates]
 
 /-- Remove the counters and constants; keep only the branch condition. -/
 def gasSteps_cleanup (input : ByteArray) (sv ov acc : UInt256) :
@@ -301,6 +411,5 @@ def gasSteps_finish_hit (input : ByteArray) (sv ov acc : UInt256)
 
 #print axioms gasSteps_miss
 #print axioms gasSteps_finish_hit
-#print axioms run_exit_fallback_iff
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Finish
