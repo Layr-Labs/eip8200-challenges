@@ -108,6 +108,7 @@ def firstTTemplate : List Instr :=
    .op (.Dup ⟨12, by decide⟩),
    .op .MUL,
    .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨0, by decide⟩),
    .op (.Swap ⟨2, by decide⟩),
    .op .SHR,
    .op (.Swap ⟨1, by decide⟩),
@@ -149,7 +150,7 @@ def afterTStack (q : Frame) (value : UInt256) (rho : List UInt256) : List UInt25
   [value, q.message1, q.rightShift1, q.leftShift1, q.d, q.ret, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
 
 
-theorem firstTTemplate_length : firstTTemplate.length = 23 := rfl
+theorem firstTTemplate_length : firstTTemplate.length = 24 := rfl
 
 theorem run_firstTTemplate (s : State) (pc value : UInt256) (q : Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running) :
@@ -246,6 +247,7 @@ def secondTTemplate : List Instr :=
    .op (.Dup ⟨9, by decide⟩),
    .op .MUL,
    .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨0, by decide⟩),
    .op (.Swap ⟨2, by decide⟩),
    .op .SHR,
    .op (.Swap ⟨1, by decide⟩),
@@ -266,7 +268,7 @@ def secondTStack (q : Frame) (first value : UInt256) (rho : List UInt256) : List
   [value, q.d, q.ret, q.b, first, q.upper, (rawC10 q), q.factor, q.pair, q.k, q.lower] ++ rho
 
 
-theorem secondTTemplate_length : secondTTemplate.length = 23 := rfl
+theorem secondTTemplate_length : secondTTemplate.length = 24 := rfl
 
 theorem run_secondTTemplate (s : State) (pc first value : UInt256) (q : Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running) :
@@ -331,9 +333,9 @@ def fullTemplate : List Instr :=
   (((((template ++ firstTTemplate) ++ firstC10Template) ++ secondBooleanTemplate) ++
     secondTTemplate) ++ secondC10Template) ++ returnTemplate
 
-theorem fullTemplate_length : fullTemplate.length = 101 := by decide
+theorem fullTemplate_length : fullTemplate.length = 103 := by decide
 
-theorem fullTemplate_byteLength : (fullTemplate.map Instr.size).sum = 103 := by decide
+theorem fullTemplate_byteLength : (fullTemplate.map Instr.size).sum = 105 := by decide
 
 theorem run_fullTemplate (s : State) (pc : UInt256) (q : Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
@@ -455,7 +457,7 @@ theorem secondFrame_wordStep (q : Frame) (r t : Nat)
 
 
 
-/-- Independent literal transcription of the pinned helper bytes 5153..5256. -/
+/-- Independent literal transcription of the pinned helper bytes 5168..5273. -/
 def frozenHelperInstructions : List Instr :=
   [.op .JUMPDEST,
    .op (.Swap ⟨2, by decide⟩),
@@ -486,6 +488,7 @@ def frozenHelperInstructions : List Instr :=
    .op (.Dup ⟨12, by decide⟩),
    .op .MUL,
    .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨0, by decide⟩),
    .op (.Swap ⟨2, by decide⟩),
    .op .SHR,
    .op (.Swap ⟨1, by decide⟩),
@@ -535,6 +538,7 @@ def frozenHelperInstructions : List Instr :=
    .op (.Dup ⟨9, by decide⟩),
    .op .MUL,
    .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨0, by decide⟩),
    .op (.Swap ⟨2, by decide⟩),
    .op .SHR,
    .op (.Swap ⟨1, by decide⟩),
