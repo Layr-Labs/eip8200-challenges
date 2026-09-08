@@ -1,8 +1,8 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineTablePrelude
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTablePrelude
 
 set_option warningAsError true
 
-namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineTableBuild
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTableBuild
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
@@ -13,33 +13,33 @@ def tablePC (power : Nat) : Nat :=
   if power ≤ 7 then 2701 + 6 * power else 2694 + 7 * power
 
 private theorem updatePC (power : Nat) (hlo : 2 ≤ power) (hhi : power < 15) :
-    WindowNineTable.storePC (width power) (advancePC 2 (UInt256.ofNat (tablePC power))) =
+    WindowTwentyOneTable.storePC (width power) (advancePC 2 (UInt256.ofNat (tablePC power))) =
       UInt256.ofNat (tablePC (power + 1)) := by
   interval_cases power <;> decide
 
 theorem run_one (template : State) (base modulus exponent : UInt256)
     (power : Nat) (hlo : 2 ≤ power) (hhi : power < 15)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions (WindowNineTable.updateProgram power hlo (width power))
-      (WindowNineTable.state template (UInt256.ofNat (tablePC power)) base modulus exponent power rest) =
-    some (WindowNineTable.state template (UInt256.ofNat (tablePC (power + 1)))
+    runInstructions (WindowTwentyOneTable.updateProgram power hlo (width power))
+      (WindowTwentyOneTable.state template (UInt256.ofNat (tablePC power)) base modulus exponent power rest) =
+    some (WindowTwentyOneTable.state template (UInt256.ofNat (tablePC (power + 1)))
       base modulus exponent (power + 1) rest) := by
   have hw : 0 < (width power).val := by unfold width; split <;> decide
-  have h := WindowNineTable.run_update template (UInt256.ofNat (tablePC power))
+  have h := WindowTwentyOneTable.run_update template (UInt256.ofNat (tablePC power))
     base modulus exponent power hlo hhi (width power) hw rest hrest
   simpa only [updatePC power hlo hhi] using h
 
 def buildProgram : Nat → List Instr
   | 0 => []
   | count + 1 => buildProgram count ++
-      WindowNineTable.updateProgram (count + 2) (by omega) (width (count + 2))
+      WindowTwentyOneTable.updateProgram (count + 2) (by omega) (width (count + 2))
 
 theorem run_build (template : State) (base modulus exponent : UInt256)
     (count : Nat) (hcount : count ≤ 13)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (buildProgram count)
-      (WindowNineTable.state template (UInt256.ofNat 2713) base modulus exponent 2 rest) =
-    some (WindowNineTable.state template (UInt256.ofNat (tablePC (count + 2)))
+      (WindowTwentyOneTable.state template (UInt256.ofNat 2713) base modulus exponent 2 rest) =
+    some (WindowTwentyOneTable.state template (UInt256.ofNat (tablePC (count + 2)))
       base modulus exponent (count + 2) rest) := by
   induction count with
   | zero => rfl
@@ -49,27 +49,27 @@ theorem run_build (template : State) (base modulus exponent : UInt256)
       simpa only [buildProgram, show count + 2 + 1 = count + 1 + 2 by omega] using both
 
 def program : List Instr :=
-  WindowNineTablePrelude.program ++ buildProgram 12 ++ WindowNineTable.lastUpdateProgram
+  WindowTwentyOneTablePrelude.program ++ buildProgram 12 ++ WindowTwentyOneTable.lastUpdateProgram
 
 /-- The complete 117-byte table construction, including the exponent load. -/
 theorem run_all (template : State) (base modulus exponentOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hoffset : rest[4]? = some exponentOffset) :
     runInstructions program
-      (WindowNineTablePrelude.initial template (UInt256.ofNat 2682) base modulus rest) =
-    some (WindowNineTable.framed template (UInt256.ofNat 2799) base modulus 16
+      (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 2682) base modulus rest) =
+    some (WindowTwentyOneTable.framed template (UInt256.ofNat 2799) base modulus 16
       ([base, MachineState.readWord template.executionEnv.calldata exponentOffset.toNat] ++ rest)) := by
-  have hp := WindowNineTablePrelude.run_prelude template (UInt256.ofNat 2682)
+  have hp := WindowTwentyOneTablePrelude.run_prelude template (UInt256.ofNat 2682)
     base modulus exponentOffset rest hrest hoffset
-  have hpc : WindowNineTablePrelude.endPC (UInt256.ofNat 2682) = UInt256.ofNat 2713 := by decide
+  have hpc : WindowTwentyOneTablePrelude.endPC (UInt256.ofNat 2682) = UInt256.ofNat 2713 := by decide
   rw [hpc] at hp
   have hb := run_build template base modulus
     (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) 12 (by decide) rest hrest
-  have hl := WindowNineTable.run_last_update template (UInt256.ofNat (tablePC 14))
+  have hl := WindowTwentyOneTable.run_last_update template (UInt256.ofNat (tablePC 14))
     base modulus (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) rest hrest
-  have hlastPC : WindowNineTable.storePC 2 (advancePC 2 (UInt256.ofNat (tablePC 14))) =
+  have hlastPC : WindowTwentyOneTable.storePC 2 (advancePC 2 (UInt256.ofNat (tablePC 14))) =
       UInt256.ofNat 2799 := by decide
   rw [hlastPC] at hl
   exact runInstructions_append_some _ _ _ _ _ (runInstructions_append_some _ _ _ _ _ hp hb) hl
 
-end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineTableBuild
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTableBuild

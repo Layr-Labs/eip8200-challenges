@@ -14,13 +14,13 @@ open WindowNibbleKernel
 
 def entryState (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4225
+  { s with pc := UInt256.ofNat 4481
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
 def outState (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4339
+  { s with pc := UInt256.ofNat 4595
            stack := [UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa + 32*n - 32), UInt256.ofNat (pb - 32), isFour n, negative32, allOnes, pdst, ret] ++ rest
            memory := mem }
@@ -28,7 +28,7 @@ def outState (s : State) (mem : ByteArray) (pa pb n i : Nat)
 
 def midState (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4651
+  { s with pc := UInt256.ofNat 4907
            stack := [paj, ptj, c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa + 32*n - 32), UInt256.ofNat (pb - 32), isFour n, negative32, allOnes, pdst, ret] ++ rest
            memory := mem }
@@ -36,7 +36,7 @@ def midState (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
 
 def tailState (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5006
+  { s with pc := UInt256.ofNat 5262
            stack := [pmj, ptj, c, mu, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa + 32*n - 32), UInt256.ofNat (pb - 32), isFour n, negative32, allOnes, pdst, ret] ++ rest
            memory := mem }

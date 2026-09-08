@@ -1,8 +1,8 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineStage
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneStage
 
 set_option warningAsError true
 
-namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineTable
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTable
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
@@ -146,4 +146,4 @@ theorem run_last_update (template : State) (pc base modulus exponent : UInt256)
   simp only [show 14 - 14 = 0 by decide, List.replicate_zero] at hm
   exact runInstructions_append_some _ _ _ _ _ hm hs
 
-end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineTable
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTable

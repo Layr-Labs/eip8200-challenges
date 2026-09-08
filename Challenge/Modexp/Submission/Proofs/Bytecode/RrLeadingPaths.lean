@@ -8,7 +8,7 @@ set_option maxHeartbeats 4000000
 # Located direct RR-leading helper
 
 The appended helper occupies instruction indices 2338..2360 and bytes
-3079..3113. It copies CC to RR, computes the remaining RR counter from the
+3335..3369. It copies CC to RR, computes the remaining RR counter from the
 limb count, and rejoins the unchanged RR loop at byte 1569.
 -/
 
@@ -28,40 +28,40 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem helperPCAnchor :
-    Artifact.submissionArtifact.instructionPC 2200 = 3074 := by
+    Artifact.submissionArtifact.instructionPC 2444 = 3330 := by
   rfl
 
 @[simp] theorem helperPC (i : Nat)
-    (hlo : 2200 ≤ i) (hhi : i ≤ 2222) :
+    (hlo : 2444 ≤ i) (hhi : i ≤ 2466) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3074,3075,3078,3079,3082,3085,3086,3087,3089,3090,3091,3093,3094,3095,3097,3098,3099,3101,3102,3103,3104,3105,3108] : List Nat)[i - 2200]! := by
+      ([3330,3331,3334,3335,3338,3341,3342,3343,3345,3346,3347,3349,3350,3351,3353,3354,3355,3357,3358,3359,3360,3361,3364] : List Nat)[i - 2444]! := by
   interval_cases i <;> decide
 
 def helperPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2200 .JUMPDEST,
-   pushAt 2201 2 9344,
-   opAt 2202 .MLOAD,
-   pushAt 2203 2 5120,
-   pushAt 2204 2 6144,
-   opAt 2205 .MCOPY,
-   opAt 2206 (.Dup ⟨1, by decide⟩),
-   pushAt 2207 1 3,
-   opAt 2208 .LT,
-   opAt 2209 (.Dup ⟨2, by decide⟩),
-   pushAt 2210 1 7,
-   opAt 2211 .LT,
-   opAt 2212 (.Dup ⟨3, by decide⟩),
-   pushAt 2213 1 15,
-   opAt 2214 .LT,
-   opAt 2215 (.Dup ⟨4, by decide⟩),
-   pushAt 2216 1 31,
-   opAt 2217 .LT,
-   opAt 2218 .ADD,
-   opAt 2219 .ADD,
-   opAt 2220 .ADD,
-   pushAt 2221 2 1569,
-   opAt 2222 .JUMP]
+  [opAt 2444 .JUMPDEST,
+   pushAt 2445 2 9344,
+   opAt 2446 .MLOAD,
+   pushAt 2447 2 5120,
+   pushAt 2448 2 6144,
+   opAt 2449 .MCOPY,
+   opAt 2450 (.Dup ⟨1, by decide⟩),
+   pushAt 2451 1 3,
+   opAt 2452 .LT,
+   opAt 2453 (.Dup ⟨2, by decide⟩),
+   pushAt 2454 1 7,
+   opAt 2455 .LT,
+   opAt 2456 (.Dup ⟨3, by decide⟩),
+   pushAt 2457 1 15,
+   opAt 2458 .LT,
+   opAt 2459 (.Dup ⟨4, by decide⟩),
+   pushAt 2460 1 31,
+   opAt 2461 .LT,
+   opAt 2462 .ADD,
+   opAt 2463 .ADD,
+   opAt 2464 .ADD,
+   pushAt 2465 2 1569,
+   opAt 2466 .JUMP]
 
 @[simp] theorem jump1569 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1569 = true :=
