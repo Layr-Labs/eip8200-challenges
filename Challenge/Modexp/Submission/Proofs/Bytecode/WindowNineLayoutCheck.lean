@@ -168,7 +168,7 @@ def tableInstructions : List Instr :=
    .op .MSTORE,
    .op (.Dup ⟨2, by decide⟩),
    .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩),
+   .op .JUMPDEST,
    .push 2 480,
    .op .MSTORE]
 
@@ -177,7 +177,7 @@ theorem table_eq : WindowNineTableBuild.program = tableInstructions := by rfl
 theorem table_linear : WindowNineSlice.linearProgram tableInstructions = true := by decide
 
 def initInstructions : List Instr :=
-  [.op .POP,
+  [.op .JUMPDEST,
    .op .POP,
    .push 2 480,
    .op (.Dup ⟨1, by decide⟩),
