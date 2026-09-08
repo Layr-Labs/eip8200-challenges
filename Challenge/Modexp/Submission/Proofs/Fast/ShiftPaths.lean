@@ -23,7 +23,7 @@ def blk2862 :
    opAt 2511 .SHR,
    opAt 2512 .AND,
    opAt 2513 .ISZERO,
-   pushAt 2514 2 4096,
+   pushAt 2514 2 1533,
    opAt 2515 .JUMPI]
 
 /-- Instructions 2874..2888, pc 4092..4120. -/
@@ -250,7 +250,7 @@ def blk3026 :
    opAt 2694 (.Dup ⟨4, by decide⟩),
    opAt 2695 .MULMOD,
    opAt 2696 (.Dup ⟨2, by decide⟩),
-   opAt 2697 (.Swap ⟨0, by decide⟩),
+   opAt 2697 .JUMPDEST,
    opAt 2698 .ADDMOD,
    opAt 2699 (.Swap ⟨0, by decide⟩),
    opAt 2700 .SUB,
