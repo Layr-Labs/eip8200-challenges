@@ -147,9 +147,9 @@ def fullTemplate : List Instr :=
   (((((template ++ firstTTemplate) ++ firstC10Template) ++ secondBooleanTemplate) ++
     secondTTemplate) ++ secondC10Template) ++ returnTemplate
 
-theorem fullTemplate_length : fullTemplate.length = 93 := by decide
+theorem fullTemplate_length : fullTemplate.length = 91 := by decide
 
-theorem fullTemplate_byteLength : (fullTemplate.map Instr.size).sum = 95 := by decide
+theorem fullTemplate_byteLength : (fullTemplate.map Instr.size).sum = 93 := by decide
 
 theorem run_fullTemplate (s : State) (pc : UInt256) (q : PairedHelperBooleanTrace.Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
@@ -242,7 +242,6 @@ def frozenHelperInstructions : List Instr :=
    .op (.Dup ⟨12, by decide⟩),
    .op .MUL,
    .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
    .op (.Swap ⟨2, by decide⟩),
    .op .SHR,
    .op (.Swap ⟨1, by decide⟩),
@@ -287,7 +286,6 @@ def frozenHelperInstructions : List Instr :=
    .op (.Dup ⟨9, by decide⟩),
    .op .MUL,
    .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
    .op (.Swap ⟨2, by decide⟩),
    .op .SHR,
    .op (.Swap ⟨1, by decide⟩),
