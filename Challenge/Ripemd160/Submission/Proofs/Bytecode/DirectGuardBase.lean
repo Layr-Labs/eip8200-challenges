@@ -66,9 +66,9 @@ def loopPath : List Located :=
    pushAt 32 1 60, opAt 33 .JUMPI]
 
 def tailPath : List Located :=
-  [opAt 34 .CALLDATALOAD, opAt 35 (.Dup ⟨2, by decide⟩),
-   opAt 36 .XOR, pushAt 37 1 192, opAt 38 .SHR, opAt 39 .OR,
-   opAt 40 (.Swap ⟨0, by decide⟩), opAt 41 .POP,
+  [opAt 34 .CALLDATALOAD, opAt 35 (.Swap ⟨0, by decide⟩),
+   opAt 36 (.Swap ⟨1, by decide⟩), opAt 37 .XOR, pushAt 38 1 192,
+   opAt 39 .SHR, opAt 40 .OR, opAt 41 .JUMPDEST,
    pushAt 42 2 340, opAt 43 .JUMPI]
 
 def returnPath : List Located :=
