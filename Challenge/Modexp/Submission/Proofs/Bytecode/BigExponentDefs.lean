@@ -60,7 +60,7 @@ def outerToInnerPath :
 def innerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 734 .JUMPDEST, pushAt 735 1 8, opAt 736 (.Dup ⟨1, by decide⟩),
-   opAt 737 .LT, opAt 738 .ISZERO, pushAt 739 2 1104,
+   opAt 737 .EQ, opAt 738 .JUMPDEST, pushAt 739 2 1104,
    opAt 740 .JUMPI]
 
 def innerToSquarePath :

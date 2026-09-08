@@ -95,15 +95,17 @@ theorem run_innerGuard (s : State) (accumulatorWord : UInt256)
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
-  have hlt : UInt256.lt (UInt256.ofNat j) 8 = 1 := by
+  have heq : UInt256.eq (UInt256.ofNat j) 8 = UInt256.ofNat 0 := by
     have hj256 : j < 2 ^ 256 := by omega
     have h8 : (8 : UInt256).toNat = 8 := by decide
-    rw [UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt hj256, h8, if_pos hj]
-    decide
+    have hne : j ≠ 8 := Nat.ne_of_lt hj
+    rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hj256, h8,
+      if_neg hne]
   have honeNat : (1 : UInt256).toNat = 1 := by decide
   simp [innerGuardPath, opAt, pushAt, wfOp, innerLoop, innerBody,
-    exponentPCs, hrun, hlt, honeNat, hc11, hc12, hc13, UInt256.isTrue,
+    exponentPCs, hrun, heq, honeNat, hc11, hc12, hc13, UInt256.eq,
+    UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -399,13 +401,14 @@ theorem run_innerFinishGuard (s : State) (accumulatorWord : UInt256)
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
-  have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   have h8Nat : (8 : UInt256).toNat = 8 := by decide
   have h1104 : (1104 : UInt256).toNat = 1104 := by decide
   have h1104Word : (1104 : UInt256) = UInt256.ofNat 1104 := by decide
+  have heq : UInt256.eq (UInt256.ofNat 8) 8 = UInt256.ofNat 1 := by
+    simp [UInt256.eq]
   simp [innerGuardPath, opAt, pushAt, wfOp, innerLoop, innerExit,
-    exponentPCs, hcode, hrun, hzeroFalse, h8Nat, h1104, h1104Word, jump1104,
-    hc11, hc12, hc13, UInt256.lt, UInt256.isTrue,
+    exponentPCs, hcode, hrun, heq, h8Nat, h1104, h1104Word, jump1104,
+    hc11, hc12, hc13, UInt256.eq, UInt256.isTrue,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
