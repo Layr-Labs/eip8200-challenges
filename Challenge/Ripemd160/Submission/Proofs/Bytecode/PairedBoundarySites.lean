@@ -12,7 +12,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBoundarySites
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTemplate
 
-/-- Exact schedule, startup, and tail windows of the frozen 5214-byte artifact. -/
+/-- Exact schedule, startup, and tail windows of the frozen 5262-byte artifact. -/
 
 theorem schedule_slice :
     (Artifact.submissionArtifact.instructions.drop 272).take

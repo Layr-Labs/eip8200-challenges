@@ -143,13 +143,96 @@ theorem run_secondBooleanTemplate (s : State) (pc first : UInt256)
 #print axioms run_secondBooleanTemplate_raw
 #print axioms run_secondBooleanTemplate
 
+/-- Local two-SWAP elision from fkiene's public de17e3ad; old shared source stays unchanged. -/
+def firstTTemplate : List Instr :=
+  [.op .ADD,
+   .op .ADD,
+   .op (.Dup ⟨14, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨13, by decide⟩),
+   .op .AND,
+   .op (.Dup ⟨12, by decide⟩),
+   .op .MUL,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨2, by decide⟩),
+   .op .SHR,
+   .op (.Swap ⟨1, by decide⟩),
+   .op (.Swap ⟨0, by decide⟩),
+   .op .SHR,
+   .op (.Dup ⟨1, by decide⟩),
+   .op .XOR,
+   .op (.Dup ⟨9, by decide⟩),
+   .op .AND,
+   .op .XOR,
+   .op (.Dup ⟨9, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨11, by decide⟩),
+   .op .AND]
+
+theorem firstTTemplate_length : firstTTemplate.length = 23 := rfl
+
+theorem run_firstTTemplate (s : State) (pc value : UInt256) (q : PairedHelperBooleanTrace.Frame)
+    (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running) :
+    runInstrSeq firstTTemplate {s with pc := pc, stack := firstTEntry q value rho} =
+      some {s with pc := pcAfter pc firstTTemplate, stack := afterTStack q (rawT q value) rho} := by
+  have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
+  simp (discharger := omega) [firstTTemplate, firstTEntry, afterTStack,
+    rawT, rawRotation, rawProduct, rawSum, runInstrSeq,
+    Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap]
+  exact ⟨rfl, rfl⟩
+
+#print axioms firstTTemplate_length
+#print axioms run_firstTTemplate
+
+def secondTTemplate : List Instr :=
+  [.op .ADD,
+   .op .ADD,
+   .op (.Dup ⟨11, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨10, by decide⟩),
+   .op .AND,
+   .op (.Dup ⟨9, by decide⟩),
+   .op .MUL,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨2, by decide⟩),
+   .op .SHR,
+   .op (.Swap ⟨1, by decide⟩),
+   .op (.Swap ⟨0, by decide⟩),
+   .op .SHR,
+   .op (.Dup ⟨1, by decide⟩),
+   .op .XOR,
+   .op (.Dup ⟨6, by decide⟩),
+   .op .AND,
+   .op .XOR,
+   .op (.Dup ⟨1, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨8, by decide⟩),
+   .op .AND]
+
+theorem secondTTemplate_length : secondTTemplate.length = 23 := rfl
+
+theorem run_secondTTemplate (s : State) (pc first value : UInt256) (q : PairedHelperBooleanTrace.Frame)
+    (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running) :
+    runInstrSeq secondTTemplate {s with pc := pc, stack := secondTEntry q first value rho} =
+      some {s with pc := pcAfter pc secondTTemplate, stack := secondTStack q first (rawT (secondFrame q first) value) rho} := by
+  have hcap (n : Nat) (hn : n ≤ 15) : rho.length + n < 1024 := by omega
+  simp (discharger := omega) [secondTTemplate, secondTEntry, secondTStack,
+    rawT, rawRotation, rawProduct, rawSum, secondFrame, runInstrSeq,
+    Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap]
+  exact ⟨rfl, rfl⟩
+
+#print axioms secondTTemplate_length
+#print axioms run_secondTTemplate
+
 def fullTemplate : List Instr :=
   (((((template ++ firstTTemplate) ++ firstC10Template) ++ secondBooleanTemplate) ++
     secondTTemplate) ++ secondC10Template) ++ returnTemplate
 
-theorem fullTemplate_length : fullTemplate.length = 93 := by decide
+theorem fullTemplate_length : fullTemplate.length = 91 := by decide
 
-theorem fullTemplate_byteLength : (fullTemplate.map Instr.size).sum = 95 := by decide
+theorem fullTemplate_byteLength : (fullTemplate.map Instr.size).sum = 93 := by decide
 
 theorem run_fullTemplate (s : State) (pc : UInt256) (q : PairedHelperBooleanTrace.Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
@@ -242,7 +325,6 @@ def frozenHelperInstructions : List Instr :=
    .op (.Dup ⟨12, by decide⟩),
    .op .MUL,
    .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
    .op (.Swap ⟨2, by decide⟩),
    .op .SHR,
    .op (.Swap ⟨1, by decide⟩),
@@ -287,7 +369,6 @@ def frozenHelperInstructions : List Instr :=
    .op (.Dup ⟨9, by decide⟩),
    .op .MUL,
    .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
    .op (.Swap ⟨2, by decide⟩),
    .op .SHR,
    .op (.Swap ⟨1, by decide⟩),
