@@ -27,7 +27,7 @@ def op (opcode : UInt8) : Instr :=
 private def submissionInstructionsChunk0 : List Instr :=
 [
   op 0x36,
-  op 0x80,
+  op 0x36,
   .push 2 256,
   op 0x14,
   op 0x90,
@@ -4230,7 +4230,7 @@ theorem referenceInstructions_count : submissionInstructions.length = 4073 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length, submissionInstructionsChunk20_length]
 
 private theorem submissionInstructionsChunk0_assemble : assembleBytes submissionInstructionsChunk0 = [
-  0x36, 0x80, 0x61, 0x01, 0x00, 0x14, 0x90, 0x60, 0x80, 0x14, 0x17, 0x60,
+  0x36, 0x36, 0x61, 0x01, 0x00, 0x14, 0x90, 0x60, 0x80, 0x14, 0x17, 0x60,
   0x82, 0x57, 0x36, 0x61, 0x03, 0xe8, 0x18, 0x61, 0x01, 0x5a, 0x57, 0x5f,
   0x35, 0x80, 0x7f, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
   0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
