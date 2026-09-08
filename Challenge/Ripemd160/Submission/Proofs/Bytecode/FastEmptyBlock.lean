@@ -89,7 +89,7 @@ theorem compress_empty :
 
 def decisionPath : List Located :=
   [⟨77, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨78, .push ⟨2, by decide⟩ (UInt256.ofNat 464), by rfl, by decide⟩,
+   ⟨78, .push ⟨2, by decide⟩ (UInt256.ofNat 5230), by rfl, by decide⟩,
    ⟨79, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def bodyPath : List Located :=
@@ -123,6 +123,13 @@ def legacyDispatchEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
     pc := UInt256.ofNat 0x79
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x66,
+      DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
+
+/-- Nonempty dispatcher target: checked first-block helper. -/
+def nonemptyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
+  { s with
+    pc := UInt256.ofNat 5230
+    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 private def writeWord (memory : ByteArray) (offset : Nat)
@@ -235,7 +242,7 @@ theorem run_decision_nonempty (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock decisionPath
       (legacyDispatchEntry s input i) =
-        some (DriverTrace.compressEntry s input i) := by
+        some (nonemptyEntry s input i) := by
   have hsize : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
   have hmod : input.size % 2 ^ 256 ≠ 0 := by
     rw [Nat.mod_eq_of_lt hsize]
@@ -243,11 +250,11 @@ theorem run_decision_nonempty (s : State) (input : ByteArray) (i : Nat)
   norm_num at hmod
   have htrue : UInt256.isTrue (UInt256.ofNat input.size) := by
     exact hmod
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x1d0 = true := by
-    have hpc : Artifact.submissionArtifact.instructionPC 272 = 0x1d0 := by
+  have hdest : Decode.isValidJumpDest submissionBytecode 5230 = true := by
+    have hpc : Artifact.submissionArtifact.instructionPC 4013 = 5230 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]
       decide
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 272 (by rfl)
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 4013 (by rfl)
     rw [hpc] at h
     exact h
   have hpc2792 : Artifact.submissionArtifact.instructionPC 77 = 0x79 := by
@@ -264,7 +271,7 @@ theorem run_decision_nonempty (s : State) (input : ByteArray) (i : Nat)
     decide
   simp [decisionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    legacyDispatchEntry, DriverTrace.compressEntry, hcalldata, hcode,
+    legacyDispatchEntry, nonemptyEntry, hcalldata, hcode,
     hrun, hmod, htrue, hdest, hpc2792, hpc2793, hpc2794, hpc2795, UInt256.isTrue,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.succ_ofNat_mod]
@@ -391,7 +398,7 @@ def gasSteps_nonempty (s : State) (input : ByteArray) (i : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (legacyDispatchEntry s input i)
-      (DriverTrace.compressEntry s input i) :=
+      (nonemptyEntry s input i) :=
   gasStepsBlock decisionPath _ _ hcode hfork
     (run_decision_nonempty s input i hfit hpositive hcalldata hcode hrun)
     hrun hnp

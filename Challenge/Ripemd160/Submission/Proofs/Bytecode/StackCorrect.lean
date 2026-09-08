@@ -1,5 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastEmptyBlock
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateKernel
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
 
 set_option warningAsError true
@@ -9,73 +11,18 @@ set_option maxHeartbeats 5000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
-open PairedBlockModel
+open PrefixStateModel
 
-def nextState (s : State) (input : ByteArray) (i : Nat) : State :=
-  if input.size = 0 then FastEmptyBlock.resultState s input i
-  else resultState s input i
-
-@[simp] theorem nextState_executionEnv (s : State) (input : ByteArray) (i : Nat) :
-    (nextState s input i).executionEnv = s.executionEnv := by
-  unfold nextState
-  split <;> simp
-
-@[simp] theorem nextState_halt (s : State) (input : ByteArray) (i : Nat) :
-    (nextState s input i).halt = s.halt := by
-  unfold nextState
-  split <;> simp
-
-@[simp] theorem nextState_callStack (s : State) (input : ByteArray) (i : Nat) :
-    (nextState s input i).callStack = s.callStack := by
-  unfold nextState
-  split <;> simp
+/-- H8 driver kernel state: empty fast path, checked-prefix H1 hit, then the
+generic compressor on the prepared (post-CODECOPY when i = 0) state. -/
+def nextState : State → ByteArray → Nat → State := PrefixStateKernel.nextState
 
 theorem nextState_word_above (s : State) (input : ByteArray) (i address : Nat)
     (haddress : 0x2e0 ≤ address) :
     StackRunBridge.wordAt (nextState s input i) address =
-      StackRunBridge.wordAt s address := by
-  unfold nextState
-  split
-  · exact FastEmptyBlock.resultState_word_above s input i address (by omega)
-  · exact resultState_word_above s input i address haddress
+      StackRunBridge.wordAt s address :=
+  PrefixStateKernel.nextState_word_above s input i address haddress
 
-private theorem input_eq_empty (input : ByteArray) (hempty : input.size = 0) :
-    input = ByteArray.empty := by
-  apply ByteArray.ext
-  apply Array.ext
-  · simpa using hempty
-  · intro i hi
-    simp [hempty] at hi
-
-theorem nextState_hash (s : State) (input : ByteArray) (i : Nat)
-    (h : Compression.HashState) (hfit : CalldataFits input)
-    (hi : i < DriverTrace.blockCount input)
-    (ctx : StackRunBridge.BlockContext s input i h)
-    (hmodel : CompressionCorrect.hashArray h =
-      CompressionSeamBridge.hashAfter input i) :
-    StackRunBridge.hashAt32 (nextState s input i) =
-      StackRunBridge.embedHashArray
-        (Crypto.Ripemd160.compressBlock (CompressionCorrect.hashArray h)
-          (Padding.paddedMessage input) (DriverTrace.blockOffset i)) := by
-  unfold nextState
-  by_cases hempty : input.size = 0
-  · rw [if_pos hempty]
-    have hinput := input_eq_empty input hempty
-    subst input
-    have hi0 : i = 0 := by
-      simp [DriverTrace.blockCount, Padding.paddedLength] at hi
-      omega
-    subst i
-    change StackMemory.hashAt (FastEmptyBlock.resultState s ByteArray.empty 0).memory = _
-    rw [FastEmptyBlock.resultState_hashAt, hmodel]
-    change FastEmptyBlock.emptyHash =
-      StackRunBridge.embedHashArray
-        (Crypto.Ripemd160.compressBlock Crypto.Ripemd160.H0
-          (Padding.paddedMessage ByteArray.empty) 0)
-    rw [FastEmptyBlock.compress_empty]
-    rfl
-  · rw [if_neg hempty]
-    exact resultState_hash s input i h ctx
 
 noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (hfit : CalldataFits input)
@@ -91,23 +38,57 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
   · have gempty := FastEmptyBlock.gasSteps_empty s input i hempty
       ctx.calldata hcode hfork hrun hnp
     exact GasSteps.cast gempty (by rfl) (by
-      simp [nextState, hempty, DriverTrace.compressReturned,
-        FastEmptyBlock.resultState])
+      simp [nextState, PrefixStateKernel.nextState, hempty,
+        DriverTrace.compressReturned, FastEmptyBlock.resultState])
   · have gdispatch := FastEmptyBlock.gasSteps_nonempty s input i hfit
       (Nat.pos_of_ne_zero hempty) ctx.calldata hcode hfork hrun hnp
-    have glegacy := PairedBlockTrace.gasSteps_compress s input i h hfit hi ctx hcode hfork
-      hrun hnp
-    exact GasSteps.cast (gdispatch.trans glegacy) (by rfl) (by
-      simp [nextState, hempty])
+    by_cases hhit : i = 0 ∧ Matched input
+    · rcases hhit with ⟨rfl, hmatch⟩
+      have hif : (if 0 = 0 ∧ Matched input then
+          PrefixStateMemory.resultState (PrefixStateMemory.copied s) input 0
+        else DriverTrace.compressEntry (prepared s 0) input 0) =
+        PrefixStateMemory.resultState (PrefixStateMemory.copied s) input 0 := by
+        rw [if_pos ⟨rfl, hmatch⟩]
+      exact (gdispatch.trans
+        ((PrefixStateTrace.gasSteps_dispatch s input 0 hfit hi ctx.calldata
+            hcode hfork hrun hnp).cast (by rfl) hif)).cast (by rfl) (by
+          simp [nextState, PrefixStateKernel.nextState, hempty, hmatch,
+            DriverTrace.compressReturned, PrefixStateMemory.resultState])
+    · have ghelper : GasSteps (FastEmptyBlock.nonemptyEntry s input i)
+          (DriverTrace.compressEntry (prepared s i) input i) := by
+        have hif : (if i = 0 ∧ Matched input then
+            PrefixStateMemory.resultState (PrefixStateMemory.copied s) input i
+          else DriverTrace.compressEntry (prepared s i) input i) =
+          DriverTrace.compressEntry (prepared s i) input i := by
+          rw [if_neg hhit]
+        exact (PrefixStateTrace.gasSteps_dispatch s input i hfit hi ctx.calldata
+          hcode hfork hrun hnp).cast (by rfl) hif
+      have hcode' : (prepared s i).executionEnv.code = submissionBytecode := by
+        rw [PrefixStateModel.prepared_executionEnv]; exact hcode
+      have hfork' : (prepared s i).fork = .Osaka := by
+        simpa [State.fork] using hfork
+      have hrun' : (prepared s i).halt = .Running := by
+        rw [PrefixStateModel.prepared_halt]; exact hrun
+      have hnp' : Precompile.isPrecompileWithConfig
+          (prepared s i).executionEnv.precompileConfig
+          (prepared s i).executionEnv.fork
+          (prepared s i).executionEnv.codeAddr = false := by
+        rw [PrefixStateModel.prepared_executionEnv]; exact hnp
+      have gcompress := PairedBlockTrace.gasSteps_compress (prepared s i)
+        input i h hfit hi (PrefixStateKernel.preparedContext s input i h ctx)
+        hcode' hfork' hrun' hnp'
+      exact GasSteps.cast (gdispatch.trans (ghelper.trans gcompress)) (by rfl) (by
+        simp [nextState, PrefixStateKernel.nextState, hempty, hhit,
+          DriverTrace.compressReturned])
 
 noncomputable def kernel : StackRunBridge.BlockKernel where
   nextState := nextState
-  executionEnv := nextState_executionEnv
-  halt := nextState_halt
-  callStack := nextState_callStack
+  executionEnv := PrefixStateKernel.nextState_executionEnv
+  halt := PrefixStateKernel.nextState_halt
+  callStack := PrefixStateKernel.nextState_callStack
   wordAbove := nextState_word_above
   hashResult := fun s input i h hfit hi ctx hmodel =>
-    nextState_hash s input i h hfit hi ctx hmodel
+    PrefixStateKernel.nextState_hash s input i h hfit hi ctx hmodel
   gasSteps := gasSteps_block
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)

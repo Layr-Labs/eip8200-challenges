@@ -84,7 +84,7 @@ private def scanSuffix : List YulEvmCompiler.Instr :=
 private theorem scanBefore_length : scanBefore.length = 150 := by
   simp [scanBefore, scanPrefix]
 
-private theorem scanSuffix_length : scanSuffix.length = 4055 := by
+private theorem scanSuffix_length : scanSuffix.length = 3901 := by
   simp [scanSuffix]
 
 private theorem artifact_scan_split :
@@ -129,7 +129,7 @@ private theorem artifact_instruction_projection :
     Artifact.submissionArtifact.instructions = Artifact.submissionInstructions := by rfl
 
 private theorem scan_instruction_at (index : Nat)
-    (hlo : 150 ≤ index) (hhi : index < 4205) :
+    (hlo : 150 ≤ index) (hhi : index < 4013) :
     Artifact.submissionInstructions[index]? = scanSuffix[index - 150]? := by
   have hi : index - 150 < scanSuffix.length := by
     rw [scanSuffix_length]
@@ -140,7 +140,7 @@ private theorem scan_instruction_at (index : Nat)
     Nat.add_sub_of_le hlo] using h
 
 private theorem scan_instruction_pc (index : Nat)
-    (hlo : 150 ≤ index) (hhi : index ≤ 4205) :
+    (hlo : 150 ≤ index) (hhi : index ≤ 4013) :
     Artifact.submissionArtifact.instructionPC index =
       256 + (YulEvmCompiler.assembleBytes (scanSuffix.take (index - 150))).length := by
   have hi : index - 150 ≤ scanSuffix.length := by
@@ -248,7 +248,7 @@ def straddleCorrPath : List Located :=
   [opAt 239 .JUMPDEST, opAt 240 (.Dup ⟨6, by decide⟩),
    opAt 241 (.Dup ⟨4, by decide⟩), pushAt 242 1 8, opAt 243 .SHR,
    pushAt 244 1 5, opAt 245 .MUL, pushAt 246 1 27, opAt 247 .SUB,
-   pushAt 248 1 3, opAt 249 .SHL, opAt 250 .SHR, pushAt 251 1 11,
+   pushAt 248 1 8, opAt 249 .MUL, opAt 250 .SHR, pushAt 251 1 11,
    opAt 252 .MUL]
 
 /-- Apply the correction to the expected word. -/
