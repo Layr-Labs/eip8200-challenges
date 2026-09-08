@@ -32,21 +32,21 @@ def locatedSlice (start count : Nat)
         omega⟩
 
 def byte0Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 1963 48 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 1970 48 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte1Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2011 48 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2018 48 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte2Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2059 48 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2066 48 (by rw [Artifact.submissionInstructions_count]; omega)
 
 def byte3Path : List (Located Artifact.submissionArtifact .Osaka) :=
-  locatedSlice 2107 47 (by rw [Artifact.submissionInstructions_count]; omega)
+  locatedSlice 2114 47 (by rw [Artifact.submissionInstructions_count]; omega)
 
-def byteStartIndex (byte : Fin 4) : Nat := 1963 + 48 * byte.val
+def byteStartIndex (byte : Fin 4) : Nat := 1970 + 48 * byte.val
 
 def byteStartPC (byte : Fin 4) : Nat :=
-  [3203, 3287, 3372, 3457][byte.val]!
+  [2993, 3077, 3162, 3247][byte.val]!
 
 def highPrepPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
@@ -177,6 +177,16 @@ theorem lowSquareLookup_instructions (byte : Fin 4) :
 theorem finish_instructions (byte : Fin 4) :
     (finishPath byte).map (fun located => located.instruction) =
       finishProgram := by
+  fin_cases byte <;> rfl
+
+
+/-- The reusable template starts at the exact relocated slice boundary. -/
+theorem byteStartPC_exact (byte : Fin 4) :
+    Artifact.submissionArtifact.instructionPC (byteStartIndex byte) = byteStartPC byte := by
+  fin_cases byte <;> rfl
+
+theorem segmentedBytePath_length (byte : Fin 4) :
+    (segmentedBytePath byte).length = (if byte.val = 3 then 47 else 48) := by
   fin_cases byte <;> rfl
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitByteSlices
