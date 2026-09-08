@@ -48,7 +48,7 @@ theorem compress_empty :
         (Padding.paddedMessage ByteArray.empty) 0 =
       #[0xa585119c, 0x54fce9c5, 0x97082861, 0x48f5e87e, 0x318d25b2] := by
   let initial : Compression.HashState :=
-    { h0 := 0x67452301, h1 := 0xefcdab89, h2 := 0x98badcfe
+    { h0 := 0x67452861, h1 := 0xefcdab89, h2 := 0x98badcfe
       h3 := 0x10325476, h4 := 0xc3d2e1f0 }
   have hspec := CompressionCorrect.compressModel_eq_compressBlock
     (Padding.paddedMessage ByteArray.empty) 0 initial
@@ -89,7 +89,7 @@ theorem compress_empty :
 
 def decisionPath : List Located :=
   [⟨77, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨78, .push ⟨2, by decide⟩ (UInt256.ofNat 5230), by rfl, by decide⟩,
+   ⟨78, .push ⟨2, by decide⟩ (UInt256.ofNat 5286), by rfl, by decide⟩,
    ⟨79, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def bodyPath : List Located :=
@@ -128,7 +128,7 @@ def legacyDispatchEntry (s : State) (input : ByteArray) (i : Nat) : State :=
 /-- Nonempty dispatcher target: checked first-block helper. -/
 def nonemptyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 5230
+    pc := UInt256.ofNat 5286
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
@@ -250,8 +250,8 @@ theorem run_decision_nonempty (s : State) (input : ByteArray) (i : Nat)
   norm_num at hmod
   have htrue : UInt256.isTrue (UInt256.ofNat input.size) := by
     exact hmod
-  have hdest : Decode.isValidJumpDest submissionBytecode 5230 = true := by
-    have hpc : Artifact.submissionArtifact.instructionPC 4134 = 5230 := by
+  have hdest : Decode.isValidJumpDest submissionBytecode 5286 = true := by
+    have hpc : Artifact.submissionArtifact.instructionPC 4134 = 5286 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]
       decide
     have h := Artifact.submissionArtifact.isValidJumpDest_index 4134 (by rfl)

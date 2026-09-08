@@ -142,9 +142,9 @@ def fastOutputSite :
   decide
 
 @[simp] theorem fastOutputSite_endPC :
-    fastOutputSite.endPC = UInt256.ofNat 0x146d := by
+    fastOutputSite.endPC = UInt256.ofNat 0x14a5 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4133) =
-    UInt256.ofNat 0x146d
+    UInt256.ofNat 0x14a5
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -180,16 +180,16 @@ def fastOutputReturnPath :
   [fastOutputReturn.located]
 
 @[simp] theorem fastOutputReturn_pc :
-    fastOutputReturn.pc = UInt256.ofNat 0x146d := by
+    fastOutputReturn.pc = UInt256.ofNat 0x14a5 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4133) =
-    UInt256.ofNat 0x146d
+    UInt256.ofNat 0x14a5
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem fastOutputReturn_site_end :
     fastOutputReturn.pc = fastOutputSite.endPC := by
   calc
-    fastOutputReturn.pc = UInt256.ofNat 0x146d := fastOutputReturn_pc
+    fastOutputReturn.pc = UInt256.ofNat 0x14a5 := fastOutputReturn_pc
     _ = fastOutputSite.endPC := fastOutputSite_endPC.symm
 
 private theorem runLocatedBlock_singleton
