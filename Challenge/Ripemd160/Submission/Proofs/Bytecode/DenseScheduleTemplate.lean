@@ -11,9 +11,9 @@ set_option maxHeartbeats 4000000
 
 The dense helper keeps both packed message words on the stack only until the
 two endian stages finish.  It then stores one packed word at each dense
-address. Both halves construct their masks as constant quotients. The
-reachable helper has 64 instructions including its return `JUMP` and
-occupies 91 bytes.
+address.  The reachable helper has 52 instructions including its return
+`JUMP`; four compact, unreachable pushes preserve the original 56-instruction,
+325-byte artifact window.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
@@ -42,10 +42,10 @@ def dup1 : Instr := .op (.Dup ⟨0, by decide⟩)
 def swap1 : Instr := .op (.Swap ⟨0, by decide⟩)
 
 def mask8 : UInt256 :=
-  UInt256.ofNat 0xff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
+  UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
 
 def mask16 : UInt256 :=
-  UInt256.ofNat 0xffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
+  UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
 
 def denseStoreAddress (half : Nat) : Nat := 220 + 32 * half
 
@@ -63,27 +63,21 @@ def endianFactorPush (shift : Nat) : Instr :=
   if shift = 8 then push2 (endianFactor shift) else push3 (endianFactor shift)
 
 def endianMaskPush (shift : Nat) (mask : UInt256) : Instr :=
-  if shift = 8 then .push 31 mask else .push 30 mask
+  if shift = 8 then .push ⟨31, by decide⟩ mask else .push ⟨30, by decide⟩ mask
 
 /-- If `t = ((value >>> shift) XOR value) AND mask`, the masks used below
 put `t` and `t <<< shift` in disjoint lanes.  Multiplication by
 `1 + 2^shift` therefore combines the two copies without a carry. -/
-def endianMaskTemplate (shift : Nat) (mask : UInt256) (compact : Bool) : List Instr :=
-  if compact then
-    [endianFactorPush shift, .push 0 0, op .NOT, op .DIV]
-  else [endianMaskPush shift mask]
+def endianStage (shift : Nat) (mask : UInt256) : List Instr :=
+  [ dup1, dup1, push1 (UInt256.ofNat shift), op .SHR, op .XOR,
+    endianMaskPush shift mask, op .AND, endianFactorPush shift, op .MUL, op .XOR ]
 
-def endianStage (shift : Nat) (mask : UInt256) (compact : Bool := false) : List Instr :=
-  [ dup1, dup1, push1 (UInt256.ofNat shift), op .SHR, op .XOR ] ++
-    endianMaskTemplate shift mask compact ++
-    [op .AND, endianFactorPush shift, op .MUL, op .XOR]
+def endianStage8 : List Instr := endianStage 8 mask8
 
-def endianStage8 (compact : Bool := false) : List Instr := endianStage 8 mask8 compact
-
-def endianStage16 (compact : Bool := false) : List Instr := endianStage 16 mask16 compact
+def endianStage16 : List Instr := endianStage 16 mask16
 
 def denseHalfTemplate (half : Nat) : List Instr :=
-  endianStage8 true ++ endianStage16 true ++
+  endianStage8 ++ endianStage16 ++
     [ push1 (UInt256.ofNat (denseStoreAddress half)), op .MSTORE ]
 
 def denseBeforeJumpTemplate : List Instr :=
@@ -106,25 +100,25 @@ def denseWindowTemplate : List Instr := denseFullTemplate ++ paddingTemplate
 @[simp] theorem initialTemplate_length : initialTemplate.length = 7 := by
   rfl
 
-@[simp] theorem endianStage_length (shift : Nat) (mask : UInt256) (compact : Bool) :
-    (endianStage shift mask compact).length = if compact then 13 else 10 := by
-  cases compact <;> rfl
+@[simp] theorem endianStage_length (shift : Nat) (mask : UInt256) :
+    (endianStage shift mask).length = 10 := by
+  rfl
 
 @[simp] theorem denseHalfTemplate_length (half : Nat) :
-    (denseHalfTemplate half).length = 28 := by
+    (denseHalfTemplate half).length = 22 := by
   rfl
 
 @[simp] theorem denseBeforeJumpTemplate_length :
-    denseBeforeJumpTemplate.length = 63 := by
+    denseBeforeJumpTemplate.length = 51 := by
   rfl
 
 @[simp] theorem denseFullTemplate_length :
-    denseFullTemplate.length = 64 := by
+    denseFullTemplate.length = 52 := by
   rfl
 
 @[simp] theorem paddingTemplate_length : paddingTemplate.length = 4 := by rfl
 
-@[simp] theorem denseWindowTemplate_length : denseWindowTemplate.length = 68 := by rfl
+@[simp] theorem denseWindowTemplate_length : denseWindowTemplate.length = 56 := by rfl
 
 theorem assembleBytes_length (instructions : List Instr) :
     (assembleBytes instructions).length =
@@ -139,22 +133,22 @@ theorem assembleBytes_length (instructions : List Instr) :
       rw [ih]
 
 theorem denseHalfTemplate_byteLength (half : Nat) :
-    (assembleBytes (denseHalfTemplate half)).length = 41 := by
+    (assembleBytes (denseHalfTemplate half)).length = 91 := by
   rw [assembleBytes_length]
-  simp [denseHalfTemplate, endianStage8, endianStage16, endianStage,
-    endianMaskTemplate, endianFactorPush, endianFactor, op, push1, push2, push3, dup1,
+  simp [denseHalfTemplate, endianStage8, endianStage16, endianStage, endianMaskPush,
+    endianFactorPush, endianFactor, op, push1, push2, push3, dup1,
     denseStoreAddress]
 
 theorem denseBeforeJumpTemplate_byteLength :
-    (assembleBytes denseBeforeJumpTemplate).length = 90 := by
+    (assembleBytes denseBeforeJumpTemplate).length = 190 := by
   rw [denseBeforeJumpTemplate, assembleBytes_append, List.length_append,
     assembleBytes_length]
   simp [denseHalfTemplate, initialTemplate, endianStage8, endianStage16,
-    endianStage, endianMaskTemplate, endianFactorPush, endianFactor, op, push1, push2, push3,
+    endianStage, endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3,
     dup1, swap1, denseStoreAddress]
 
 theorem denseFullTemplate_byteLength :
-    (assembleBytes denseFullTemplate).length = 91 := by
+    (assembleBytes denseFullTemplate).length = 191 := by
   rw [denseFullTemplate, assembleBytes_append, List.length_append,
     denseBeforeJumpTemplate_byteLength]
   rfl
@@ -165,7 +159,7 @@ theorem paddingTemplate_byteLength :
   norm_num [paddingTemplate, push32]
 
 theorem denseWindowTemplate_byteLength :
-    (assembleBytes denseWindowTemplate).length = 217 := by
+    (assembleBytes denseWindowTemplate).length = 317 := by
   rw [denseWindowTemplate, assembleBytes_append, List.length_append,
     denseFullTemplate_byteLength, paddingTemplate_byteLength]
 
@@ -174,11 +168,11 @@ def staticGas (instructions : List Instr) : Nat :=
     (Challenge.EvmProof.Meter.instrStaticCost .Osaka)).sum
 
 theorem denseFullTemplate_staticGas :
-    staticGas denseFullTemplate = 207 := by
+    staticGas denseFullTemplate = 167 := by
   norm_num [staticGas, denseFullTemplate, denseBeforeJumpTemplate,
     denseHalfTemplate, initialTemplate, endianStage8, endianStage16,
-    endianStage, endianMaskTemplate, endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3,
-    push32, dup1, swap1,
+    endianStage, endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3,
+    dup1, swap1,
     Challenge.EvmProof.Meter.instrStaticCost, Gas.baseCost]
   rfl
 
@@ -279,6 +273,6 @@ def denseExpectedState (s : State) (startPC messageOffset returnPC : UInt256)
     memory := denseExpectedMemory s messageOffset
     activeWords := denseExpectedActiveWords s messageOffset }
 
-def denseStaticGas : Nat := 211
+def denseStaticGas : Nat := 171
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate

@@ -1,8 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskRoundCertificatesLeft
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskRoundCertificatesRight
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedMaskCavityExecution
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.CallsConstantGroup
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.CallsConstantParams
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FourthInlineExecution
 
 set_option warningAsError true
@@ -73,18 +71,18 @@ noncomputable def gasSteps_left80 (s : State) (word : Nat → UInt32)
   have second := left_span s word working rho 4 4 (by decide)
     (by intro i hi; omega) hwords hactive hstack hcode hfork hrun hnp
   have third := CachedMaskCavityExecution.left2_group s (leftRounds word 32 working) rho
-    (CallsConstantParams.left2_fits s hactive) hstack hrun hcode hfork hnp
-  have thirdResult : CallsConstantGroup.cachedFourResult CallsConstantParams.left2 s
+    (CachedMaskParams.left_fits s 2 hactive) hstack hrun hcode hfork hnp
+  have thirdResult : CachedMaskQuadGroup.fourResult (CachedMaskParams.left 2) s
       (leftRounds word 32 working) = leftRounds word 48 working :=
-    CallsConstantParams.left2_result_after s word working hwords
+    CachedMaskParams.left_result_after s word working 2 hwords
   rw [thirdResult] at third
   have last := left_span s word working rho 12 4 (by decide)
     (by intro i hi; omega) hwords hactive hstack hcode hfork hrun hnp
   have fourth := FourthInlineExecution.left4_group s (leftRounds word 64 working) rho
-    (CallsConstantParams.left4_fits s hactive) hstack hrun hcode hfork hnp
-  have fourthResult : CallsConstantGroup.cachedFourResult CallsConstantParams.left4 s
+    (CachedMaskParams.left_fits s 4 hactive) hstack hrun hcode hfork hnp
+  have fourthResult : CachedMaskQuadGroup.fourResult (CachedMaskParams.left 4) s
       (leftRounds word 64 working) = leftRounds word 80 working :=
-    CallsConstantParams.left4_result_after s word working hwords
+    CachedMaskParams.left_result_after s word working 4 hwords
   rw [fourthResult] at fourth
   exact (((first.trans second).trans third).trans last).trans fourth
 
@@ -99,51 +97,31 @@ noncomputable def gasSteps_right80 (s : State) (word : Nat → UInt32)
       (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho))
       (stateAt s (QuadSites.rightPC 20) (rightRounds word 80 working)
         (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho)) := by
-  have first := CachedMaskCavityExecution.right0_group s working a b c d e rho
-    (CallsConstantParams.right0_fits s hactive) hstack hrun hcode hfork hnp
-  have firstResult : CallsConstantGroup.cachedFourResult CallsConstantParams.right0 s working =
-      rightRounds word 16 working := by
-    simpa only [StackCompression.rightRounds] using
-      CallsConstantParams.right0_result_after s word working hwords
-  rw [firstResult] at first
-  have second := CachedMaskCavityExecution.right1_group s (rightRounds word 16 working)
-      a b c d e rho (CallsConstantParams.right1_fits s hactive)
-      hstack hrun hcode hfork hnp
-  rw [CallsConstantParams.right1_result_after s word working hwords] at second
-  have third := CachedMaskCavityExecution.right2_group s (rightRounds word 32 working)
-      a b c d e rho (CallsConstantParams.right2_fits s hactive)
-      hstack hrun hcode hfork hnp
-  rw [CallsConstantParams.right2_result_after s word working hwords] at third
-
-  let states := fun n => stateAt s (QuadSites.rightPC (12 + n))
-    (rightRounds word (48 + 4 * n) working)
-    (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho)
-  have step (i : Nat) (hi : i < 4) : GasSteps (states i) (states (i + 1)) := by
-    let k : Fin 20 := ⟨12 + i, by omega⟩
+  let states := fun n => stateAt s (QuadSites.rightPC n)
+    (rightRounds word (4 * n) working) (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho)
+  have step (i : Nat) (hi : i < 16) : GasSteps (states i) (states (i + 1)) := by
+    let k : Fin 20 := ⟨i, by omega⟩
     have g := CachedMaskRoundCertificates.gasSteps_rightQuad s word
-      (rightRounds word (48 + 4 * i) working) a b c d e rho k (by dsimp [k]; omega)
+      (rightRounds word (4 * i) working) a b c d e rho k hi
       hwords hactive hstack hcode hfork hrun hnp
-    have hnext : rightRounds word (48 + 4 * (i + 1)) working =
-        right4 word k (rightRounds word (48 + 4 * i) working) := by
-      rw [show 48 + 4 * (i + 1) = 4 * ((12 + i) + 1) by omega,
-        rightRounds_quad word (12 + i) working,
-        show 4 * (12 + i) = 48 + 4 * i by omega]
-      simp [right4, QuadSemantic.quadIndex, k, Nat.mul_add, Nat.add_comm]
+    have hnext : rightRounds word (4 * (i + 1)) working =
+        right4 word k (rightRounds word (4 * i) working) := by
+      rw [rightRounds_quad word i working]
+      rfl
     apply g.cast
     · rfl
-    · change stateAt s (QuadSites.rightPC (12 + i + 1))
-          (right4 word k (rightRounds word (48 + 4 * i) working))
+    · change stateAt s (QuadSites.rightPC (i + 1))
+          (right4 word k (rightRounds word (4 * i) working))
           (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho) =
-        stateAt s (QuadSites.rightPC (12 + (i + 1)))
-          (rightRounds word (48 + 4 * (i + 1)) working)
+        stateAt s (QuadSites.rightPC (i + 1)) (rightRounds word (4 * (i + 1)) working)
           (a :: b :: c :: d :: e :: StackRoundTemplate.mask :: rho)
-      rw [show 12 + (i + 1) = 12 + i + 1 by omega, hnext]
-  have normal := GasSteps.iterateBounded 4 step
+      rw [hnext]
+  have first := GasSteps.iterateBounded 16 step
   have last := CachedMaskCavityExecution.right_group s (rightRounds word 64 working)
     a b c d e rho (CavityResultSemantic.right_fits s hactive)
     hstack hrun hcode hfork hnp
   rw [CachedMaskParams.right_result_after64 s word working hwords] at last
-  exact (((first.trans second).trans third).trans normal).trans last
+  exact first.trans last
 
 #print axioms gasSteps_left80
 #print axioms gasSteps_right80

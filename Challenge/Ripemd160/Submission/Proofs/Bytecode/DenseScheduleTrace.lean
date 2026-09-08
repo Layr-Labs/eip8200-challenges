@@ -159,11 +159,11 @@ theorem runInstrSeq_endianStage
     (rest : List UInt256) (hstack : rest.length < 1020)
     (hcase : (shift = 8 ∧ mask = mask8) ∨
       (shift = 16 ∧ mask = mask16))
-    (hrun : s.halt = .Running) (compact : Bool := false) :
-    runInstrSeq (endianStage shift mask compact)
+    (hrun : s.halt = .Running) :
+    runInstrSeq (endianStage shift mask)
       { s with pc := startPC, stack := value :: rest } =
       some (stageState s
-        (pcAfter startPC (endianStage shift mask compact)) value shift mask rest) := by
+        (pcAfter startPC (endianStage shift mask)) value shift mask rest) := by
   have hcap (m : Nat) (hm : m ≤ 4) : rest.length + m < 1024 := by
     omega
   have hcap2 : rest.length + 1 + 1 < 1024 := by
@@ -188,12 +188,12 @@ theorem runInstrSeq_endianStage
         DenseEndianMultiply.multipliedStage8_eq_packedStage value
     · simpa only [multipliedStage, endianDelta, endianFactor] using
         DenseEndianMultiply.multipliedStage16_eq_packedStage value
-  cases compact <;> rcases hcase with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
+  rcases hcase with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
   all_goals simp only [endianFactor] at hsemantic
   all_goals norm_num at hsemantic
   all_goals
     simp (config := { maxSteps := 1000000 })
-      [endianStage, endianMaskTemplate, endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3,
+      [endianStage, endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3,
         push32, dup1, swap1,
         stageState, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
         pcAfter, hrun, hcap, hcap2, hcap3, hcap4, hswap1, UInt256.succ, Instr.size,
@@ -286,23 +286,23 @@ theorem runInstrSeq_denseHalf
       some (afterDenseHalf s startPC half (packedWord value)
         (other :: rest)) := by
   have h8 := runInstrSeq_endianStage s startPC value 8 mask8
-    (other :: rest) (by simp; omega) (Or.inl ⟨rfl, rfl⟩) hrun true
+    (other :: rest) (by simp; omega) (Or.inl ⟨rfl, rfl⟩) hrun
   have h16 := runInstrSeq_endianStage s
-    (pcAfter startPC (endianStage8 true))
+    (pcAfter startPC endianStage8)
     (packedStage value 8 mask8) 16 mask16 (other :: rest)
-    (by simp; omega) (Or.inr ⟨rfl, rfl⟩) hrun true
+    (by simp; omega) (Or.inr ⟨rfl, rfl⟩) hrun
   have hstore := runInstrSeq_denseStore s
-    (pcAfter (pcAfter startPC (endianStage8 true)) (endianStage16 true))
+    (pcAfter (pcAfter startPC endianStage8) endianStage16)
     half (packedWord value) (other :: rest) (by simp; omega) hrun
   have h16store := runInstrSeq_append_running h16
     (by simp [stageState_halt, hrun])
     (by simpa only [stageState, packedWord, endianStage16] using hstore)
   have hhalf :
-      runInstrSeq ((endianStage8 true) ++ ((endianStage16 true) ++
+      runInstrSeq (endianStage8 ++ (endianStage16 ++
         [push1 (UInt256.ofNat (denseStoreAddress half)), op .MSTORE]))
         { s with pc := startPC, stack := value :: other :: rest } =
       some { s with
-        pc := pcAfter (pcAfter (pcAfter startPC (endianStage8 true)) (endianStage16 true))
+        pc := pcAfter (pcAfter (pcAfter startPC endianStage8) endianStage16)
           [push1 (UInt256.ofNat (denseStoreAddress half)), op .MSTORE]
         stack := other :: rest
         memory := writeDenseWord s.memory (denseStoreOffset half)
@@ -314,13 +314,13 @@ theorem runInstrSeq_denseHalf
     simpa only [List.append_assoc, packedWord, endianStage8, endianStage16] using h
   have hpc :
       pcAfter startPC (denseHalfTemplate half) =
-        pcAfter (pcAfter (pcAfter startPC (endianStage8 true)) (endianStage16 true))
+        pcAfter (pcAfter (pcAfter startPC endianStage8) endianStage16)
           [push1 (UInt256.ofNat (denseStoreAddress half)), op .MSTORE] := by
     rw [denseHalfTemplate, pcAfter_append, pcAfter_append]
   have hend :
       afterDenseHalf s startPC half (packedWord value) (other :: rest) =
         { s with
-          pc := pcAfter (pcAfter (pcAfter startPC (endianStage8 true)) (endianStage16 true))
+          pc := pcAfter (pcAfter (pcAfter startPC endianStage8) endianStage16)
             [push1 (UInt256.ofNat (denseStoreAddress half)), op .MSTORE]
           stack := other :: rest
           memory := writeDenseWord s.memory (denseStoreOffset half)

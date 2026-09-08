@@ -28,11 +28,11 @@ private def loadedH (s : State) (i : Nat) : State :=
 private def writeLoopState (s : State) (offset : Nat) (word ret : UInt256)
     (tail : List UInt256) : Nat → State
   | 0 => { s with
-      pc := UInt256.ofNat 0x36a
+      pc := UInt256.ofNat 0x3c8
       stack := [⟨0⟩, UInt256.ofNat offset, word, ret] ++ tail }
   | j + 1 => { OutputTrace.writeByte (writeLoopState s offset word ret tail j)
         offset word j with
-      pc := UInt256.ofNat 0x36a
+      pc := UInt256.ofNat 0x3c8
       stack := [UInt256.ofNat (j + 1), UInt256.ofNat offset, word, ret] ++ tail }
 
 private def afterWrittenWord (s : State) (input : ByteArray) (i : Nat) : State :=
@@ -304,7 +304,7 @@ theorem correct_of_compression_trace
   have heval := Challenge.EvmProof.eval_of_steps (trace.trace gas hgas) (by
     change (withGas
       { q with
-        pc := UInt256.ofNat 0x41b
+        pc := UInt256.ofNat 0x479
         stack := [Padding.paddedWord input]
         halt := .Returned
         hReturn := MachineState.readPadded q.memory 0 32

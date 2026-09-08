@@ -41,10 +41,10 @@ def swap1 : Instr := .op (.Swap ⟨0, by decide⟩)
 def mask32 : UInt256 := UInt256.ofNat 0xffffffff
 
 def mask8 : UInt256 :=
-  UInt256.ofNat 0xff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
+  UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
 
 def mask16 : UInt256 :=
-  UInt256.ofNat 0xffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
+  UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
 
 def storeBase (half : Nat) : Nat := 672 + 32 * (8 * half)
 

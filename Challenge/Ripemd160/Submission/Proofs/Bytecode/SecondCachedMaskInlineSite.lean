@@ -18,15 +18,15 @@ abbrev A := Artifact.submissionArtifact
 def template : List Instr := CachedMaskQuadGroup.code (rightParams 0 1) 5
 
 private theorem template_slice :
-    (A.instructions.drop 2106).take template.length = template := by rfl
+    (A.instructions.drop 2100).take template.length = template := by rfl
 
 private theorem template_wellFormed : ∀ instruction ∈ template,
     Stepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def site : GenericRoundSite A .Osaka template :=
-  StackSiteBuilder.ofSlice _ 2106 template_slice (by
-    change 2106 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 2100 template_slice (by
+    change 2100 + template.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) QuadLayout.code_bound template_wellFormed (by decide)
 
@@ -49,7 +49,8 @@ def gasSteps_right1 (s : State) (word : Nat → UInt32)
     s working a b c d e rho (right1_fits s hactive) hstack hcode hfork hrun hnp
   have hw : (rightParams 0 1).apply s working = CachedMaskRoundCertificates.right4 word 1 working :=
     CachedMaskRoundCertificates.rightWorking_eq s word working 1 hwords
-  exact core.cast (by rw [site_start]; rfl) (by
+  have whole := core
+  exact whole.cast (by rw [site_start]; rfl) (by
     rw [site_end]
     change CachedMaskRoundCertificates.stateAt s (QuadSites.rightPC 2)
       ((rightParams 0 1).apply s working) (a :: b :: c :: d :: e :: mask :: rho) = _
