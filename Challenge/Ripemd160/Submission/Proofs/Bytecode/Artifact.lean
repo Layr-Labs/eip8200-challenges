@@ -27,7 +27,7 @@ def op (opcode : UInt8) : Instr :=
 private def submissionInstructionsChunk0 : List Instr :=
 [
   op 0x36,
-  op 0x80,
+  op 0x36,
   .push 2 256,
   op 0x14,
   op 0x90,

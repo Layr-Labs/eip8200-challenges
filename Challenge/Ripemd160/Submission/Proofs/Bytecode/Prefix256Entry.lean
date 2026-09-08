@@ -19,10 +19,10 @@ def gasSteps_test (input : ByteArray) :
   have a := soundS (opAt 0 .CALLDATASIZE)
     (blockOfS _ (pcFactS input 0 0 [] (by norm_num) (by rfl))
       (stepS_calldatasize input 0 [] (by simp) (by norm_num)))
-  have b := soundS (opAt 1 (.Dup ⟨0, by decide⟩))
+  have b := soundS (opAt 1 .CALLDATASIZE)
     (blockOfS _ (pcFactS input 1 1 _ (by norm_num) (by rfl))
-      (stepS_dup input 1 0 (by decide) [UInt256.ofNat input.size]
-        (UInt256.ofNat input.size) (by rfl) (by simp) (by norm_num)))
+      (stepS_calldatasize input 1 [UInt256.ofNat input.size]
+        (by simp) (by norm_num)))
   have c := soundS (pushAt 2 2 256)
     (blockOfS _ (pcFactS input 2 2 _ (by norm_num) (by rfl))
       (stepS_push input 2 2 256 [UInt256.ofNat input.size, UInt256.ofNat input.size]
