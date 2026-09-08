@@ -6637,10 +6637,10 @@ def inline79Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : Li
   [q.d, q.k, q.c, q.b, q.e, q.a, q.factor, q.pair, q.upper, q.lower] ++ rho
 
 def inline79Output (q : PairedHelperBooleanTrace.Frame) (value : UInt256) (rho : List UInt256) : List UInt256 :=
-  [rawC10 q, q.k, value, q.b, q.e, q.d, q.factor, q.pair, q.upper, q.lower] ++ rho
+  [rawC10 q, value, q.b, q.e, q.d, q.factor, q.pair, q.upper, q.lower] ++ rho
 
 def inline79WordStack (q : PairedHelperBooleanTrace.Frame) (state : PairedLaneWordRound.WordLane) (rho : List UInt256) : List UInt256 :=
-  [state.d, q.k, state.b, state.c, state.a, state.e, q.factor, q.pair, q.upper, q.lower] ++ rho
+  [state.d, state.b, state.c, state.a, state.e, q.factor, q.pair, q.upper, q.lower] ++ rho
 
 def inline79Template : List Instr :=
   [.op (.Swap ⟨4, by decide⟩),
@@ -6662,11 +6662,10 @@ def inline79Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op .ADD,
-   .op (.Dup ⟨1, by decide⟩),
    .op .ADD,
-   .op (.Dup ⟨7, by decide⟩),
-   .op .AND,
    .op (.Dup ⟨6, by decide⟩),
+   .op .AND,
+   .op (.Dup ⟨5, by decide⟩),
    .op .MUL,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 26),
@@ -6676,22 +6675,22 @@ def inline79Template : List Instr :=
    .op .SHR,
    .op (.Dup ⟨1, by decide⟩),
    .op .XOR,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup ⟨8, by decide⟩),
    .op .AND,
    .op .XOR,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
    .op .ADD,
-   .op (.Dup ⟨7, by decide⟩),
-   .op .AND,
-   .op (.Swap ⟨1, by decide⟩),
    .op (.Dup ⟨6, by decide⟩),
+   .op .AND,
+   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
    .op .MUL,
    .push ⟨1, by decide⟩ (UInt256.ofNat 22),
    .op .SHR,
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup ⟨6, by decide⟩),
    .op .AND]
 
-theorem inline79Template_length : inline79Template.length = 47 := rfl
+theorem inline79Template_length : inline79Template.length = 46 := rfl
 
 #print axioms inline79Template_length
 
@@ -6710,7 +6709,18 @@ theorem run_inline79Template_raw (s : State) (pc : UInt256) (q : PairedHelperBoo
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
-  exact ⟨rfl, rfl, rfl⟩
+  refine ⟨rfl, rfl, ?_⟩
+  let post (v : UInt256) : UInt256 :=
+    let product := UInt256.mul q.factor (UInt256.land q.pair v)
+    UInt256.land q.pair (UInt256.add q.e
+      (UInt256.xor
+        (UInt256.land q.upper
+          (UInt256.xor (UInt256.shiftRight product (UInt256.ofNat 26))
+            (UInt256.shiftRight product (UInt256.ofNat 21))))
+        (UInt256.shiftRight product (UInt256.ofNat 26))))
+  let sum := UInt256.add (inline79Frame s.memory q).message0 (UInt256.add (fourRaw q) q.a)
+  change post (UInt256.add sum q.k) = post (UInt256.add q.k sum)
+  exact congrArg post (Challenge.EvmProof.Word.word_add_comm sum q.k)
 
 #print axioms run_inline79Template_raw
 
@@ -6905,27 +6915,7 @@ theorem run_group64Template (s : State) (pc : UInt256) (q : PairedHelperBooleanT
 
 #print axioms run_group64Template
 
-def coreExitTemplate : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩),
-   .op .POP]
 
-def coreExitEntry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
-  [q.d, q.k, q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
-
-def coreExitOutput (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
-  [q.d, q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
-
-theorem run_coreExitTemplate (s : State) (pc : UInt256) (q : PairedHelperBooleanTrace.Frame)
-    (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running) :
-    runInstrSeq coreExitTemplate {s with pc := pc, stack := coreExitEntry q rho} =
-      some {s with pc := pcAfter pc coreExitTemplate, stack := coreExitOutput q rho} := by
-  have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [coreExitTemplate, coreExitEntry, coreExitOutput,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
-    Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap]
-  rfl
-
-#print axioms run_coreExitTemplate
 
 theorem group0Template_pc : pcAfter (UInt256.ofNat 769) group0Template = UInt256.ofNat 777 := rfl
 
@@ -8098,11 +8088,11 @@ def inline78Block : CoreBlock 4931 4985 [.d, .k, .b, .c, .a, .e, .factor, .pair,
     rw [inline78Template_pc] at h
     exact h
 
-theorem inline79Template_pc : pcAfter (UInt256.ofNat 4985) inline79Template = UInt256.ofNat 5039 := rfl
+theorem inline79Template_pc : pcAfter (UInt256.ofNat 4985) inline79Template = UInt256.ofNat 5038 := rfl
 
 #print axioms inline79Template_pc
 
-def inline79Block : CoreBlock 4985 5039 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+def inline79Block : CoreBlock 4985 5038 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := inline79Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 6 11 (inline79Frame memory f.frame).message0 f.k f.lane}
   run := by
@@ -8112,20 +8102,7 @@ def inline79Block : CoreBlock 4985 5039 [.d, .k, .c, .b, .e, .a, .factor, .pair,
     rw [inline79Template_pc] at h
     exact h
 
-theorem coreExitTemplate_pc : pcAfter (UInt256.ofNat 5039) coreExitTemplate = UInt256.ofNat 5041 := rfl
-
-#print axioms coreExitTemplate_pc
-
-def coreExitBlock : CoreBlock 5039 5041 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
-  code := coreExitTemplate
-  eval := fun _memory f => f
-  run := by
-    intro s f rho hstack hrun _hactive
-    have h := run_coreExitTemplate s (UInt256.ofNat 5039) f.frame rho hstack hrun
-    rw [coreExitTemplate_pc] at h
-    exact h
-
-def wholeCoreChain : CoreChain 769 [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] 5041 [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] :=
+def wholeCoreChain : CoreChain 769 [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] 5038 [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] :=
   .cons group0Block (
   .cons inline0Block (
   .cons inline1Block (
@@ -8211,14 +8188,14 @@ def wholeCoreChain : CoreChain 769 [.a, .b, .c, .d, .e, .factor, .pair, .upper, 
   .cons inline77Block (
   .cons inline78Block (
   .cons inline79Block (
-  .cons coreExitBlock (.nil 5041 [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower]))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  .nil 5038 [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower])))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 theorem run_wholeCoreChain (s : State) (f : CoreFrame) (rho : List UInt256)
     (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)  :
     runInstrSeq wholeCoreChain.code
       {s with pc := UInt256.ofNat 769, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] f rho} =
-      some {s with pc := UInt256.ofNat 5041, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (wholeCoreChain.eval s.memory f) rho} :=
+      some {s with pc := UInt256.ofNat 5038, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (wholeCoreChain.eval s.memory f) rho} :=
   wholeCoreChain.run s f rho hstack hrun hactive
 
 #print axioms run_wholeCoreChain
@@ -8729,10 +8706,7 @@ theorem inline79Block_eval (memory : ByteArray) (q : PairedLaneWordRound.WordLan
 
 #print axioms inline79Block_eval
 
-theorem coreExitBlock_eval (memory : ByteArray) (f : CoreFrame) :
-    coreExitBlock.eval memory f = f := rfl
 
-#print axioms coreExitBlock_eval
 
 inductive CoreEvalCert : {a b : Nat} → {xs ys : List CoreReg} →
     CoreChain a xs b ys → ByteArray → CoreFrame → CoreFrame → Prop where
@@ -8845,7 +8819,6 @@ theorem wholeCoreChain_eval (memory : ByteArray) (f : CoreFrame) :
   let f83 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 78 f.lane, physicalKey 4⟩
   let f84 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 79 f.lane, physicalKey 4⟩
   let f85 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 80 f.lane, physicalKey 4⟩
-  let f86 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 80 f.lane, physicalKey 4⟩
   have h0 : group0Block.eval memory f0 = f1 := by
     exact group0Block_eval memory f0
   have h1 : inline0Block.eval memory f1 = f2 := by
@@ -9016,9 +8989,7 @@ theorem wholeCoreChain_eval (memory : ByteArray) (f : CoreFrame) :
     exact inline78Block_eval memory (hoistedAlgorithmFold memory 0 78 f.lane)
   have h84 : inline79Block.eval memory f84 = f85 := by
     exact inline79Block_eval memory (hoistedAlgorithmFold memory 0 79 f.lane)
-  have h85 : coreExitBlock.eval memory f85 = f86 := by
-    exact coreExitBlock_eval memory f85
-  have hc : CoreEvalCert wholeCoreChain memory f0 f86 :=
+  have hc : CoreEvalCert wholeCoreChain memory f0 f85 :=
     .cons group0Block _ h0 (
     .cons inline0Block _ h1 (
     .cons inline1Block _ h2 (
@@ -9104,7 +9075,7 @@ theorem wholeCoreChain_eval (memory : ByteArray) (f : CoreFrame) :
     .cons inline77Block _ h82 (
     .cons inline78Block _ h83 (
     .cons inline79Block _ h84 (
-    .cons coreExitBlock _ h85 (.nil))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+    .nil)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
   exact hc.sound
 
 #print axioms wholeCoreChain_eval
@@ -9117,14 +9088,14 @@ theorem run_wholeCore_crypto (s : State) (words : Nat → UInt32)
       packed32 (words Crypto.Ripemd160.r[i]!) (words Crypto.Ripemd160.rP[i]!)) :
     runInstrSeq wholeCoreChain.code
       {s with pc := UInt256.ofNat 769, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho} =
-      some {s with pc := UInt256.ofNat 5041, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (coreCryptoResult words left right) rho} := by
+      some {s with pc := UInt256.ofNat 5038, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (coreCryptoResult words left right) rho} := by
   let f : CoreFrame := ⟨PairedLaneWordRound.packCrypto left right, 0⟩
   have h0 := wholeCoreChain_eval s.memory f
   have h1 := hoistedAlgorithmFold_crypto s.memory words 80 (by decide) left right hmessage
   have he : wholeCoreChain.eval s.memory f = coreCryptoResult words left right :=
     h0.trans (congrArg (fun q => CoreFrame.mk q (algorithmKey 4)) h1)
   exact (run_wholeCoreChain s f rho hstack hrun hactive).trans
-    (congrArg (fun q => some {s with pc := UInt256.ofNat 5041, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] q rho}) he)
+    (congrArg (fun q => some {s with pc := UInt256.ofNat 5038, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] q rho}) he)
 
 #print axioms run_wholeCore_crypto
 
@@ -9135,7 +9106,7 @@ theorem run_wholeCore_normalized (s : State) (words : Nat → UInt32)
     (hready : NormalizedScheduleReady s.memory words) :
     runInstrSeq wholeCoreChain.code
       {s with pc := UInt256.ofNat 769, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho} =
-      some {s with pc := UInt256.ofNat 5041, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (coreCryptoResult words left right) rho} := by
+      some {s with pc := UInt256.ofNat 5038, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (coreCryptoResult words left right) rho} := by
   exact run_wholeCore_crypto s words left right rho hstack hrun hactive
     (algorithmMessage_of_normalized s.memory words hready)
 
@@ -9795,12 +9766,7 @@ theorem inline79Block_terminal_advances :
 
 #print axioms inline79Block_terminal_advances
 
-theorem coreExitBlock_terminal_advances :
-    ∀ instruction ∈ coreExitBlock.code.dropLast, DenseScheduleLift.Advances instruction := by
-  apply coreAdvancesAll_sound
-  decide
 
-#print axioms coreExitBlock_terminal_advances
 
 structure WholeCoreSites (artifact : ProgramArtifact) (fork : Fork) where
   group0 : {site : GenericRoundSite artifact fork group0Block.code // site.startPC = UInt256.ofNat 769}
@@ -9888,7 +9854,6 @@ structure WholeCoreSites (artifact : ProgramArtifact) (fork : Fork) where
   inline77 : {site : GenericRoundSite artifact fork inline77Block.code // site.startPC = UInt256.ofNat 4877}
   inline78 : {site : GenericRoundSite artifact fork inline78Block.code // site.startPC = UInt256.ofNat 4931}
   inline79 : {site : GenericRoundSite artifact fork inline79Block.code // site.startPC = UInt256.ofNat 4985}
-  coreExit : {site : GenericRoundSite artifact fork coreExitBlock.code // site.startPC = UInt256.ofNat 5039}
 
 def wholeCoreGasChain {artifact : ProgramArtifact} {fork : Fork}
     (sites : WholeCoreSites artifact fork) : CoreGasChain artifact fork wholeCoreChain :=
@@ -9977,7 +9942,7 @@ def wholeCoreGasChain {artifact : ProgramArtifact} {fork : Fork}
   .cons inline77Block _ (CoreGasBlock.of_site inline77Block sites.inline77.val sites.inline77.property inline77Block_terminal_advances) (
   .cons inline78Block _ (CoreGasBlock.of_site inline78Block sites.inline78.val sites.inline78.property inline78Block_terminal_advances) (
   .cons inline79Block _ (CoreGasBlock.of_site inline79Block sites.inline79.val sites.inline79.property inline79Block_terminal_advances) (
-  .cons coreExitBlock _ (CoreGasBlock.of_site coreExitBlock sites.coreExit.val sites.coreExit.property coreExitBlock_terminal_advances) (.nil 5041 [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower]))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  .nil 5038 [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower])))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 def gasSteps_wholeCore {artifact : ProgramArtifact} {fork : Fork}
     (sites : WholeCoreSites artifact fork) (s : State) (f : CoreFrame) (rho : List UInt256)
@@ -9987,7 +9952,7 @@ def gasSteps_wholeCore {artifact : ProgramArtifact} {fork : Fork}
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 769, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] f rho}
-      {s with pc := UInt256.ofNat 5041, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (wholeCoreChain.eval s.memory f) rho} :=
+      {s with pc := UInt256.ofNat 5038, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (wholeCoreChain.eval s.memory f) rho} :=
   (wholeCoreGasChain sites).run s f rho hstack hrun hactive hcode hfork hnp
 
 #print axioms gasSteps_wholeCore
@@ -10002,7 +9967,7 @@ def gasSteps_wholeCore_normalized {artifact : ProgramArtifact} {fork : Fork}
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hready : NormalizedScheduleReady s.memory words) :
     GasSteps {s with pc := UInt256.ofNat 769, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho}
-      {s with pc := UInt256.ofNat 5041, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (coreCryptoResult words left right) rho} := by
+      {s with pc := UInt256.ofNat 5038, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (coreCryptoResult words left right) rho} := by
   let f : CoreFrame := ⟨PairedLaneWordRound.packCrypto left right, 0⟩
   have h0 := wholeCoreChain_eval s.memory f
   have h1 := hoistedAlgorithmFold_crypto s.memory words 80 (by decide) left right
@@ -10010,7 +9975,7 @@ def gasSteps_wholeCore_normalized {artifact : ProgramArtifact} {fork : Fork}
   have he : wholeCoreChain.eval s.memory f = coreCryptoResult words left right :=
     h0.trans (congrArg (fun q => CoreFrame.mk q (algorithmKey 4)) h1)
   exact (gasSteps_wholeCore sites s f rho hstack hrun hactive hcode hfork hnp).cast rfl
-    (congrArg (fun q => {s with pc := UInt256.ofNat 5041, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] q rho}) he)
+    (congrArg (fun q => {s with pc := UInt256.ofNat 5038, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] q rho}) he)
 
 #print axioms gasSteps_wholeCore_normalized
 
