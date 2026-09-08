@@ -1,30 +1,31 @@
-import Challenge.Modexp.Submission.Proofs.Fast.Cios2Rows
+import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedRows
+import Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 
 /-!
-# Universal CIOS2-to-MONPRO bridge
+# Universal cached CIOS-to-MONPRO bridge
 
-Widths four and eight execute the specialized CIOS2 schedules.  Every other
+Widths four and eight execute the specialized cached CIOS schedules.  Every other
 width takes the dispatcher's unchanged jump to the original MONPRO entry.
 Both arms end in the same existing `rowsMem` model at the common CSUB entry.
 -/
 
-namespace Challenge.Modexp.Submission.Proofs.Fast.Cios2Full
+namespace Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFull
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
-open Challenge.Modexp.Submission.Proofs.Fast.Cios2Entry
-open Challenge.Modexp.Submission.Proofs.Fast.Cios2Rows
+open CiosCached CiosCachedGas
+open Challenge.Modexp.Submission.Proofs.Fast.CiosCachedRows
 
 opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -52,7 +53,7 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
       pa pb 4 i pdst ret rest) 3 ?_).trans ?_
   · intro i hi
     exact gasSteps_rowFourNext s (rowsMem (mpZeroed s mem 4) pa pb 4 i) pa pb i
-      pdst ret rest hcap hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb
+      pdst ret rest (by omega) hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb
       hpbFit
       ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 9344 (by decide) (by omega)
         i).trans hs32z)
@@ -62,7 +63,7 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
         i).trans hmlz)
   · simpa only [rowsMem] using
       gasSteps_rowFourLast s (rowsMem (mpZeroed s mem 4) pa pb 4 3) pa pb 3
-        pdst ret rest hcap hrun hcode hfork hnp hact (by decide) hpa hpaFit hpb
+        pdst ret rest (by omega) hrun hcode hfork hnp hact (by decide) hpa hpaFit hpb
         hpbFit
         ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 9344 (by decide) (by omega)
           3).trans hs32z)
@@ -73,7 +74,7 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
 
 opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -101,7 +102,7 @@ opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
       pa pb 8 i pdst ret rest) 7 ?_).trans ?_
   · intro i hi
     exact gasSteps_rowEightNext s (rowsMem (mpZeroed s mem 8) pa pb 8 i) pa pb i
-      pdst ret rest hcap hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb
+      pdst ret rest (by omega) hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb
       hpbFit
       ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 9344 (by decide) (by omega)
         i).trans hs32z)
@@ -111,7 +112,7 @@ opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
         i).trans hmlz)
   · simpa only [rowsMem] using
       gasSteps_rowEightLast s (rowsMem (mpZeroed s mem 8) pa pb 8 7) pa pb 7
-        pdst ret rest hcap hrun hcode hfork hnp hact (by decide) hpa hpaFit hpb
+        pdst ret rest (by omega) hrun hcode hfork hnp hact (by decide) hpa hpaFit hpb
         hpbFit
         ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 9344 (by decide) (by omega)
           7).trans hs32z)
@@ -122,7 +123,7 @@ opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
 
 opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -137,16 +138,16 @@ opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (mpCsubState s (rowsMem (mpZeroed s mem 4) pa pb 4 4) pdst ret rest) :=
-  (gasSteps_dispatch4 s mem pa pb pdst ret rest hcap hrun hcode hfork hnp hact
+  (gasSteps_dispatch4 s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp hact
     (by simpa using hs32)).trans <|
-  (gasSteps_entry s mem pa pb 4 pdst ret rest hcap hrun hcode hfork hnp hact
+  (gasSteps_entry s mem pa pb 4 pdst ret rest (by omega) hrun hcode hfork hnp hact
     (by decide) (by decide) hpa hpaFit hpb hpbFit hcds hs32).trans <|
-  gasSteps_rowsFour s mem pa pb pdst ret rest hcap hrun hcode hfork hnp hact
+  gasSteps_rowsFour s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp hact
     hpa hpaFit hpb hpbFit hs32 htl hml
 
 opaque gasSteps_specializedEight (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -161,18 +162,18 @@ opaque gasSteps_specializedEight (s : State) (mem : ByteArray) (pa pb : Nat)
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (mpCsubState s (rowsMem (mpZeroed s mem 8) pa pb 8 8) pdst ret rest) :=
-  (gasSteps_dispatch8 s mem pa pb pdst ret rest hcap hrun hcode hfork hnp hact
+  (gasSteps_dispatch8 s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp hact
     (by simpa using hs32)).trans <|
-  (gasSteps_entry s mem pa pb 8 pdst ret rest hcap hrun hcode hfork hnp hact
+  (gasSteps_entry s mem pa pb 8 pdst ret rest (by omega) hrun hcode hfork hnp hact
     (by decide) (by decide) hpa hpaFit hpb hpbFit hcds hs32).trans <|
-  gasSteps_rowsEight s mem pa pb pdst ret rest hcap hrun hcode hfork hnp hact
+  gasSteps_rowsEight s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp hact
     hpa hpaFit hpb hpbFit hs32 htl hml
 
 /-- Universal execution bridge.  It is observationally identical to the
 existing MONPRO trace at the CSUB entry for every admitted limb count. -/
 opaque gasSteps_toCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -189,11 +190,11 @@ opaque gasSteps_toCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
       (mpCsubState s (rowsMem (mpZeroed s mem n) pa pb n n) pdst ret rest) := by
   by_cases hn4 : n = 4
   · subst n
-    exact gasSteps_specializedFour s mem pa pb pdst ret rest hcap hrun hcode
+    exact gasSteps_specializedFour s mem pa pb pdst ret rest (by omega) hrun hcode
       hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml
   by_cases hn8 : n = 8
   · subst n
-    exact gasSteps_specializedEight s mem pa pb pdst ret rest hcap hrun hcode
+    exact gasSteps_specializedEight s mem pa pb pdst ret rest (by omega) hrun hcode
       hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml
   have h32n : 32 * n < 2 ^ 256 := by omega
   have h128 : MachineState.readWord mem 9344 ≠ UInt256.ofNat 128 := by
@@ -210,15 +211,15 @@ opaque gasSteps_toCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt h32n,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by norm_num)] at hnat
     exact hn8 (by omega)
-  exact (gasSteps_dispatchFallback s mem pa pb pdst ret rest hcap hrun hcode
+  exact (gasSteps_dispatchFallback s mem pa pb pdst ret rest (by omega) hrun hcode
     hfork hnp hact h128 h256).trans
-    (gasSteps_monpro s mem pa pb n pdst ret rest hcap hrun hcode hfork hnp hact
+    (gasSteps_monpro s mem pa pb n pdst ret rest (by omega) hrun hcode hfork hnp hact
       hn hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml)
 
 /-- The universal dispatcher followed by the unchanged CSUB tail. -/
 opaque gasSteps_monproCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -238,10 +239,10 @@ opaque gasSteps_monproCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
       (dispatchState s mem pa pb pdst ret rest)
       (Csub.csReturnedState s (rowsMem (mpZeroed s mem n) pa pb n n) n n pdst ret
         rest) :=
-  (gasSteps_toCsub s mem pa pb n pdst ret rest hcap hrun hcode hfork hnp hact hn
+  (gasSteps_toCsub s mem pa pb n pdst ret rest (by omega) hrun hcode hfork hnp hact hn
       hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml).trans
     (Csub.gasSteps_csub s (rowsMem (mpZeroed s mem n) pa pb n n) n pdst ret rest
-      hcap hcode hfork hrun hnp hact hn hn32 hjump
+      (by omega) hcode hfork hrun hnp hact hn hn32 hjump
       ((readWord_monpro_preserved s mem pa pb n n 9408 hn32 (by omega)).trans hml)
       ((readWord_monpro_preserved s mem pa pb n n 9440 hn32 (by omega)).trans htl)
       ((Csub.csStep_readWord_disjoint (rowsMem (mpZeroed s mem n) pa pb n n) n 9344
@@ -253,11 +254,11 @@ opaque gasSteps_monproCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
           8224 (by omega) (Or.inr (by omega)) n (Nat.le_refl n)]
         exact htn))
 
-/-- The full CIOS2-dispatched MONPRO call with the existing arithmetic theorem
+/-- The full cached CIOS-dispatched MONPRO call with the existing arithmetic theorem
 discharging the accumulator bound. -/
 opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)
     (a b mm : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -282,10 +283,10 @@ opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)
       (Csub.csReturnedState s
         (rowsMem (mpZeroed s mem (p + 2)) pa pb (p + 2) (p + 2)) (p + 2) (p + 2)
         pdst ret rest) :=
-  gasSteps_monproCsub s mem pa pb (p + 2) pdst ret rest hcap hrun hcode hfork hnp
+  gasSteps_monproCsub s mem pa pb (p + 2) pdst ret rest (by omega) hrun hcode hfork hnp
     hact (by omega) hn32 hpa (by omega) hpb (by omega) hcds hs32 htl hml hjump
     hdstFit
     (Monpro.monpro_tn_le_one s mem pa pb p a b mm hn32 hpaFit hpbFit ha hb hm ham
       hmpos hminv)
 
-end Challenge.Modexp.Submission.Proofs.Fast.Cios2Full
+end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFull
