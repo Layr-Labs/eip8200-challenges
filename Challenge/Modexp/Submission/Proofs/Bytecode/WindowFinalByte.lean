@@ -55,7 +55,7 @@ def finalLowFourSquareProgram : List Instr :=
 
 def finalLowFusedSquareLookupProgram : List Instr :=
   [.op (.Dup ⟨4, by decide⟩), .op (.Swap ⟨1, by decide⟩),
-   .push 1 5, .op .SHL, .op .MLOAD, .op .MULMOD,
+   .push 19 5, .op .SHL, .op .MLOAD, .op .MULMOD,
    .op (.Swap ⟨1, by decide⟩), .op .POP]
 
 def finalLowSquareLookupProgram : List Instr :=
@@ -133,7 +133,7 @@ theorem run_finalLowFusedSquareLookup (template : State) (pc : UInt256)
     runInstructions finalLowFusedSquareLookupProgram
       (finalLowSquareTopState template pc base modulus nibble byte word pointer
         original accumulator rest) =
-      some (finalLowResultState template (advancePC 9 pc) base modulus nibble
+      some (finalLowResultState template (advancePC 27 pc) base modulus nibble
         byte word pointer
         (UInt256.mulMod accumulator
           (WindowMath.tableWord base modulus nibble) modulus) rest) := by
@@ -187,8 +187,8 @@ theorem run_finalLowFusedSquareLookup (template : State) (pc : UInt256)
 
 set_option linter.unusedSimpArgs false in
 /-- The square phase followed by the fused cleanup-and-lookup reduces in one
-pass.  The compact byte stride is: `advancePC 22` advances by BYTES and the
-whole program is twenty-one instructions in twenty-two bytes. -/
+pass.  The byte stride is unchanged: `advancePC 40` advances by BYTES and the
+whole program is twenty-one instructions in forty bytes. -/
 theorem run_finalLowSquareLookup (template : State) (pc : UInt256)
     (base modulus : UInt256) (nibble : Nat)
     (byte word pointer accumulator : UInt256) (rest : List UInt256)
@@ -196,7 +196,7 @@ theorem run_finalLowSquareLookup (template : State) (pc : UInt256)
     runInstructions finalLowSquareLookupProgram
       (finalLowNibbleState template pc base modulus nibble byte word pointer
         accumulator rest) =
-      some (finalLowResultState template (advancePC 22 pc) base modulus nibble
+      some (finalLowResultState template (advancePC 40 pc) base modulus nibble
         byte word pointer
         (WindowMath.nibbleWordStep modulus base accumulator nibble) rest) := by
   rw [finalLowSquareLookupProgram, runInstructions_append,

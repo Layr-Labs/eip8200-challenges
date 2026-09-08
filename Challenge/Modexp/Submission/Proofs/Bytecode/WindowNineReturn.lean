@@ -84,16 +84,16 @@ theorem run_empty (template : State) (exponentOffset modulusOffset : UInt256)
     (active : Nat) (hsmall : active ≤ 16) (hactive : template.activeWords = UInt256.ofNat active)
     (rest : List UInt256) (hrest : rest.length + 3 < 1024)
     (he : rest[4]? = some exponentOffset) (hm : rest[5]? = some modulusOffset) :
-    runInstructions emptyProgram (framed template (UInt256.ofNat 3042) rest) =
-    some (returned template (UInt256.ofNat 3057)
+    runInstructions emptyProgram (framed template (UInt256.ofNat 3422) rest) =
+    some (returned template (UInt256.ofNat 3437)
       (emptyValue (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat)
         (MachineState.readWord template.executionEnv.calldata modulusOffset.toNat)) active rest) := by
   let word := emptyValue (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat)
     (MachineState.readWord template.executionEnv.calldata modulusOffset.toNat)
-  have hv := run_empty_value template (UInt256.ofNat 3042) exponentOffset modulusOffset rest hrest he hm
-  have hr := run_return template (advancePC 10 (UInt256.ofNat 3042)) word active hsmall hactive rest hrest
+  have hv := run_empty_value template (UInt256.ofNat 3422) exponentOffset modulusOffset rest hrest he hm
+  have hr := run_return template (advancePC 10 (UInt256.ofNat 3422)) word active hsmall hactive rest hrest
   have both := runInstructions_append_some _ _ _ _ _ hv hr
-  have hpc : advancePC 5 (advancePC 10 (UInt256.ofNat 3042)) = UInt256.ofNat 3057 := by decide
+  have hpc : advancePC 5 (advancePC 10 (UInt256.ofNat 3422)) = UInt256.ofNat 3437 := by decide
   simpa only [emptyProgram, hpc, word] using both
 
 def zeroProgram : List Instr := [.op .JUMPDEST, .push 0 0] ++ program
@@ -101,18 +101,18 @@ def zeroProgram : List Instr := [.op .JUMPDEST, .push 0 0] ++ program
 theorem run_zero (template : State) (active : Nat) (hsmall : active ≤ 16)
     (hactive : template.activeWords = UInt256.ofNat active)
     (rest : List UInt256) (hrest : rest.length + 3 < 1024) :
-    runInstructions zeroProgram (framed template (UInt256.ofNat 3034) rest) =
-    some (returned template (UInt256.ofNat 3041) (UInt256.ofNat 0) active rest) := by
+    runInstructions zeroProgram (framed template (UInt256.ofNat 3414) rest) =
+    some (returned template (UInt256.ofNat 3421) (UInt256.ofNat 0) active rest) := by
   have hcap0 : rest.length < 1024 := by omega
   have hz : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hp : runInstructions [.op .JUMPDEST, .push 0 0]
-      (framed template (UInt256.ofNat 3034) rest) =
-      some (framed template (UInt256.ofNat 3036) (UInt256.ofNat 0 :: rest)) := by
+      (framed template (UInt256.ofNat 3414) rest) =
+      some (framed template (UInt256.ofNat 3416) (UInt256.ofNat 0 :: rest)) := by
     simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr, hcap0, hz,
       Challenge.EvmProof.Word.succ_ofNat_mod]
-  have hr := run_return template (UInt256.ofNat 3036) (UInt256.ofNat 0) active hsmall hactive rest hrest
+  have hr := run_return template (UInt256.ofNat 3416) (UInt256.ofNat 0) active hsmall hactive rest hrest
   have both := runInstructions_append_some _ _ _ _ _ hp hr
-  have hpc : advancePC 5 (UInt256.ofNat 3036) = UInt256.ofNat 3041 := by decide
+  have hpc : advancePC 5 (UInt256.ofNat 3416) = UInt256.ofNat 3421 := by decide
   simpa only [zeroProgram, hpc] using both
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineReturn

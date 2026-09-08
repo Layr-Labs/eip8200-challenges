@@ -24,14 +24,14 @@ def finalForwardedNibbleState (template : State) (pc : UInt256) (base modulus : 
 
 def forwardHighLookupProgram : List Instr :=
   [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨1, by decide⟩),
-   .push 1 5, .op .SHL, .op .MLOAD, .op .MULMOD]
+   .push 17 5, .op .SHL, .op .MLOAD, .op .MULMOD]
 
 def forwardHighSquareLookupProgram : List Instr :=
   fourSquareProgram ++ forwardHighLookupProgram
 
 def forwardFinalHighLookupProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op (.Swap ⟨1, by decide⟩),
-   .push 1 5, .op .SHL, .op .MLOAD, .op .MULMOD]
+   .push 17 5, .op .SHL, .op .MLOAD, .op .MULMOD]
 
 def forwardFinalHighSquareLookupProgram : List Instr :=
   lowFourSquareProgram ++ forwardFinalHighLookupProgram
@@ -58,12 +58,12 @@ def forwardFinalLowSquareProgram : List Instr :=
 
 def forwardLowLookupProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op (.Swap ⟨1, by decide⟩),
-   .push 1 15, .op .AND, .push 1 5, .op .SHL, .op .MLOAD,
+   .push 1 15, .op .AND, .push 17 5, .op .SHL, .op .MLOAD,
    .op .MULMOD, .op (.Swap ⟨2, by decide⟩), .op .POP]
 
 def forwardFinalLowLookupProgram : List Instr :=
   [.op (.Dup ⟨4, by decide⟩), .op (.Swap ⟨1, by decide⟩),
-   .push 1 15, .op .AND, .push 1 5, .op .SHL, .op .MLOAD,
+   .push 1 15, .op .AND, .push 19 5, .op .SHL, .op .MLOAD,
    .op .MULMOD, .op (.Swap ⟨1, by decide⟩), .op .POP]
 
 def forwardLowSquareLookupProgram : List Instr :=

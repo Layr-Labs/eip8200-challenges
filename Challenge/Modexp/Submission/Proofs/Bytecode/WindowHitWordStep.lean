@@ -20,7 +20,7 @@ open WindowHitStates
 def gasSteps_fourBytes (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) :
     Challenge.EvmProof.GasSteps
-      (wordState input pointer 0 2841 accumulator)
+      (wordState input pointer 0 3203 accumulator)
       (wordDoneState input pointer accumulator) := by
   have h := WindowHitByteGas.gasSteps_fourBytes
     (Dispatch.wordEntryState input) (baseWord input) (modulusWord input)
@@ -36,7 +36,7 @@ def gasSteps_fourBytes (input : ByteArray) (pointer : Nat)
 def gasSteps_word (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) (hpointer : pointer < 160) :
     Challenge.EvmProof.GasSteps
-      (wordState input pointer 0 2841 accumulator)
+      (wordState input pointer 0 3203 accumulator)
       (loopState input (pointer + 4)
         (WindowMath.chunkWordStep (modulusWord input) (baseWord input)
           accumulator (MachineState.readWord input pointer))) :=

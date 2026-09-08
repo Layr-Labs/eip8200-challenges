@@ -8,7 +8,7 @@ set_option maxHeartbeats 2000000
 /-!
 # Fixed-width route control-flow definitions
 
-Artifact-bound paths and gas-erased states for the width guard at pc 2638.
+Artifact-bound paths and gas-erased states for the width guard at pc 3000.
 The execution proofs are intentionally split from these definitions so each
 short segment can be elaborated independently.
 -/
@@ -20,42 +20,42 @@ open EvmSemantics.EVM
 
 def guardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 1833 .JUMPDEST,
-   Main.opAt 1834 (.Dup ⟨0, by decide⟩),
-   Main.pushAt 1835 1 32,
-   Main.opAt 1836 .XOR,
-   Main.opAt 1837 (.Dup ⟨2, by decide⟩),
-   Main.pushAt 1838 1 32,
-   Main.opAt 1839 .XOR,
-   Main.opAt 1840 .OR,
-   Main.opAt 1841 (.Dup ⟨3, by decide⟩),
-   Main.pushAt 1842 1 32,
-   Main.opAt 1843 .XOR,
-   Main.opAt 1844 .OR,
-   Main.opAt 1845 .ISZERO]
+  [Main.opAt 1821 .JUMPDEST,
+   Main.opAt 1822 (.Dup ⟨0, by decide⟩),
+   Main.pushAt 1823 1 32,
+   Main.opAt 1824 .XOR,
+   Main.opAt 1825 (.Dup ⟨2, by decide⟩),
+   Main.pushAt 1826 1 32,
+   Main.opAt 1827 .XOR,
+   Main.opAt 1828 .OR,
+   Main.opAt 1829 (.Dup ⟨3, by decide⟩),
+   Main.pushAt 1830 1 32,
+   Main.opAt 1831 .XOR,
+   Main.opAt 1832 .OR,
+   Main.opAt 1833 .ISZERO]
 
 def branchPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.pushAt 1846 2 2657, Main.opAt 1847 .JUMPI]
+  [Main.pushAt 1834 2 3019, Main.opAt 1835 .JUMPI]
 
 def missPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.pushAt 1848 2 517, Main.opAt 1849 .JUMP]
+  [Main.pushAt 1836 2 517, Main.opAt 1837 .JUMP]
 
 /-- The first instruction on the fixed-width hit path. -/
 def hitEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 1850 .JUMPDEST]
+  [Main.opAt 1838 .JUMPDEST]
 
 @[simp] theorem routePCs (i : Nat)
-    (hlo : 1833 ≤ i) (hhi : i ≤ 1850) :
+    (hlo : 1821 ≤ i) (hhi : i ≤ 1838) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2633,2634,2635,2637,2638,2639,2641,2642,2643,2644,2646,2647,2648,2649,2652,2653,2656,2657] : List Nat)[i - 1833]! := by
+      ([2995,2996,2997,2999,3000,3001,3003,3004,3005,3006,3008,3009,3010,3011,3014,3015,3018,3019] : List Nat)[i - 1821]! := by
   interval_cases i <;> decide
 
 @[simp] theorem jump3024 :
-    Decode.isValidJumpDest submissionBytecode 2657 = true :=
-  Artifact.isValidJumpDest_index 1850 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 3019 = true :=
+  Artifact.isValidJumpDest_index 1838 (by rfl)
 
 @[simp] theorem jump517 :
     Decode.isValidJumpDest submissionBytecode 517 = true :=
@@ -75,17 +75,17 @@ def routeStack (input : ByteArray) : List UInt256 :=
 /-- State after the three width comparisons and the final `ISZERO`. -/
 def conditionState (input : ByteArray) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 2649
+    pc := UInt256.ofNat 3011
     stack := UInt256.isZero (WindowGuardLogic.guardDiff input) :: routeStack input }
 
 /-- State after the untaken conditional branch, before the legacy jump. -/
 def missState (input : ByteArray) : State :=
-  { Dispatch.wordEntryState input with pc := UInt256.ofNat 2653 }
+  { Dispatch.wordEntryState input with pc := UInt256.ofNat 3015 }
 
 /-- State after the taken conditional branch, before consuming the hit
 `JUMPDEST`.  The guard preserves the dispatcher calling-convention stack. -/
 def hitState (input : ByteArray) : State :=
-  { Dispatch.wordEntryState input with pc := UInt256.ofNat 2657 }
+  { Dispatch.wordEntryState input with pc := UInt256.ofNat 3019 }
 
 theorem routeStack_eq_entry (input : ByteArray) :
     routeStack input = (Dispatch.wordEntryState input).stack := by

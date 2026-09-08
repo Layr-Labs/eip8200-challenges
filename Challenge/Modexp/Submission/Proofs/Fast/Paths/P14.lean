@@ -4,7 +4,7 @@ set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 /-! Basic-block instruction paths, group 14 (instructions 1742..1767).
 
-`CCB` (pc 2501) replaces the second `DOUBLE256` call: it doubles `CC` once
+`CCB` (pc 2863) replaces the second `DOUBLE256` call: it doubles `CC` once
 through `ADDMOD` and then squares it eight times through `MONPRO`, which
 carries `R mod m` to `radix * R mod m` in `8` Montgomery multiplications
 instead of `256` modular doublings. -/
@@ -15,50 +15,50 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1742..1748, pc 2501..2511: `CCB` entry, `ADDMOD(px, px) → px`. -/
+/-- Instructions 1742..1748, pc 2863..2873: `CCB` entry, `ADDMOD(px, px) → px`. -/
 def blk1742 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1744 .JUMPDEST,
-   pushAt 1745 2 2507,
-   opAt 1746 (.Dup ⟨1, by decide⟩),
-   opAt 1747 (.Dup ⟨0, by decide⟩),
-   opAt 1748 (.Dup ⟨0, by decide⟩),
-   pushAt 1749 2 2219,
-   opAt 1750 .JUMP]
+  [opAt 1990 .JUMPDEST,
+   pushAt 1991 2 2887,
+   opAt 1992 (.Dup ⟨1, by decide⟩),
+   opAt 1993 (.Dup ⟨0, by decide⟩),
+   opAt 1994 (.Dup ⟨0, by decide⟩),
+   pushAt 1995 2 2480,
+   opAt 1996 .JUMP]
 
-/-- Instructions 1749..1750, pc 2874..2514: the squaring counter. -/
+/-- Instructions 1749..1750, pc 2874..2876: the squaring counter. -/
 def blk1749 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1751 .JUMPDEST,
-   pushAt 1752 1 8]
+  [opAt 1997 .JUMPDEST,
+   pushAt 1998 1 8]
 
-/-- Instructions 1751..1757, pc 2515..2525: `MONPRO(px, px) → px`. -/
+/-- Instructions 1751..1757, pc 2877..2887: `MONPRO(px, px) → px`. -/
 def blk1751 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1753 .JUMPDEST,
-   pushAt 1754 2 2521,
-   opAt 1755 (.Dup ⟨2, by decide⟩),
-   opAt 1756 (.Dup ⟨0, by decide⟩),
-   opAt 1757 (.Dup ⟨0, by decide⟩),
-   pushAt 1758 2 4202,
-   opAt 1759 .JUMP]
+  [opAt 1999 .JUMPDEST,
+   pushAt 2000 2 2901,
+   opAt 2001 (.Dup ⟨2, by decide⟩),
+   opAt 2002 (.Dup ⟨0, by decide⟩),
+   opAt 2003 (.Dup ⟨0, by decide⟩),
+   pushAt 2004 2 1939,
+   opAt 2005 .JUMP]
 
-/-- Instructions 1758..1764, pc 2526..2535: decrement and loop back. -/
+/-- Instructions 1758..1764, pc 2888..2897: decrement and loop back. -/
 def blk1758 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1760 .JUMPDEST,
-   pushAt 1761 0 0,
-   opAt 1762 .NOT,
-   opAt 1763 .ADD,
-   opAt 1764 (.Dup ⟨0, by decide⟩),
-   pushAt 1765 3 2510,
-   opAt 1766 .JUMPI]
+  [opAt 2006 .JUMPDEST,
+   pushAt 2007 0 0,
+   opAt 2008 .NOT,
+   opAt 2009 .ADD,
+   opAt 2010 (.Dup ⟨0, by decide⟩),
+   pushAt 2011 3 2890,
+   opAt 2012 .JUMPI]
 
-/-- Instructions 1765..1767, pc 2536..2900: drop the counter and return. -/
+/-- Instructions 1765..1767, pc 2898..2900: drop the counter and return. -/
 def blk1765 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1767 .POP,
-   opAt 1768 .POP,
-   opAt 1769 .JUMP]
+  [opAt 2013 .POP,
+   opAt 2014 .POP,
+   opAt 2015 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
