@@ -29,14 +29,14 @@ def redirectState (s : State) (memory : ByteArray)
 /-- Redirected base-chain head, pc3606. -/
 def entryState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3601
+  { s with pc := UInt256.ofNat 3520
            stack := outer n bsize esize msize
            memory := memory }
 
 /-- Guard hit, immediately before the calldata copy, pc3621. -/
 def copyState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3616
+  { s with pc := UInt256.ofNat 3535
            stack := outer n bsize esize msize
            memory := memory }
 
@@ -52,7 +52,7 @@ def addCallState (s : State) (memory input : ByteArray)
 /-- Return from ADDMOD, pc3644. The memory argument is its abstract result. -/
 def afterAddState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3639
+  { s with pc := UInt256.ofNat 3558
            stack := outer n bsize esize msize
            memory := memory }
 
@@ -75,7 +75,7 @@ def rejoinState (s : State) (memory : ByteArray)
 /-- Guard miss, pc3661, with the original stack and memory. -/
 def fallbackState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3656
+  { s with pc := UInt256.ofNat 3575
            stack := outer n bsize esize msize
            memory := memory }
 

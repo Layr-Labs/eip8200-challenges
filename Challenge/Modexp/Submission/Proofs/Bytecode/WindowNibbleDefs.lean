@@ -23,9 +23,7 @@ def squareProgram : List Instr :=
 /-- The table lookup and multiply.  `DUP6 DUP6` lift the modulus and the
 accumulator into `MULMOD` order *before* the table word is loaded, so the
 `SWAP1` the load-first form needed to slide the modulus underneath is gone.
-Ten instructions and eleven bytes, exactly as many as the load-first form, with
-the freed byte spent on a `JUMPDEST` (1 gas) so that neither the instruction
-count nor any program counter outside this window moves.  34 gas -> 32 gas.
+The compact sequence has nine instructions and ten bytes.
 
 Note the operand order: `MULMOD` now pops the table word first and the
 accumulator second, so the machine produces `mulMod (tableWord ..) acc m` where
@@ -34,21 +32,19 @@ NOT definitionally equal; `mulMod_comm` below is what bridges them, and every
 statement downstream keeps the accumulator-first spelling. -/
 def lookupProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .push 8 5, .op .SHL, .op .MLOAD,
+   .op (.Dup ⟨2, by decide⟩), .push 1 5, .op .SHL, .op .MLOAD,
    .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP]
 
-
-/-- Consume the no-longer-needed nibble while loading the table word.
-This eight-instruction block is twenty-three bytes; it also replaces the following
-external POP. The square-state and final word-state interfaces are unchanged. -/
+/-- Consume the no-longer-needed nibble while loading the table word.  This
+eight-instruction block is sixteen bytes and also replaces the following
+external `POP`; the eight-byte immediate still pushes the value `5`. -/
 def fusedSquareLookupProgram : List Instr :=
   [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨1, by decide⟩),
-   .push 15 5, .op .SHL, .op .MLOAD, .op .MULMOD,
+   .push 8 5, .op .SHL, .op .MLOAD, .op .MULMOD,
    .op (.Swap ⟨3, by decide⟩), .op .POP]
 
-/-- Stage four moduli before squaring: four pure squarings
-(thirteen instructions, thirteen bytes) ending on the seven-slot square state.
-The cleanup and table lookup are fused separately. -/
+/-- Stage four moduli before squaring: four pure squarings, thirteen
+instructions and thirteen bytes, ending in the seven-slot square state. -/
 def fourSquareProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨6, by decide⟩),
    .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨8, by decide⟩),

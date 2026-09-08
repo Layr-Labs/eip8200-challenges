@@ -14,7 +14,7 @@ theorem run_high (template : State) (pc : UInt256)
     runInstructions (highProgram index)
       (wordKernelState template pc base modulus word pointer accumulator rest) =
     some (droppedNibbleState template
-      (advancePC (highPrepAdvance index + 36) pc) base modulus
+      (advancePC (highPrepAdvance index + 29) pc) base modulus
       (highNibble index word) (byteValue index word) word pointer
       (WindowMath.nibbleWordStep modulus base accumulator
         (highNibble index word)) rest) := by

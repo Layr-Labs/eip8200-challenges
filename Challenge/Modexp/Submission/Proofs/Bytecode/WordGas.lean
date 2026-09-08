@@ -69,8 +69,8 @@ theorem gasSteps_start_cost (input : ByteArray) (hvalid : ValidInput input)
 
 theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
     (base : UInt256) (hvalid : ValidInput input) (hi : i < baseSize input) :
-    (gasSteps_baseIteration input i base hvalid hi).cost = 132 := by
-  have hguard := blockCost_of_static baseGuardPath 26
+    (gasSteps_baseIteration input i base hvalid hi).cost = 130 := by
+  have hguard := blockCost_of_static baseGuardPath 24
     (run_baseGuard input i base hvalid hi) (by rfl)
     (by decide) (by rfl) (by rfl)
   have hcall := blockCost_of_static baseCallPath 28
@@ -97,10 +97,10 @@ theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
   omega
 
 theorem gasSteps_baseLoop_cost (input : ByteArray) (hvalid : ValidInput input) :
-    (gasSteps_baseLoop input hvalid).cost = 132 * baseSize input := by
+    (gasSteps_baseLoop input hvalid).cost = 130 * baseSize input := by
   unfold gasSteps_baseLoop
   have h := Challenge.EvmProof.GasSteps.iterateBounded_cost_of_const
-    (count := baseSize input) (cost := 132) (body := fun i hi =>
+    (count := baseSize input) (cost := 130) (body := fun i hi =>
       gasSteps_baseIteration input i (baseAfter input i) hvalid hi) (by
         intro i hi
         exact gasSteps_baseIteration_cost input i (baseAfter input i) hvalid hi)
@@ -108,8 +108,8 @@ theorem gasSteps_baseLoop_cost (input : ByteArray) (hvalid : ValidInput input) :
 
 theorem gasSteps_baseFinish_cost (input : ByteArray) (base : UInt256)
     (hvalid : ValidInput input) (hword : modulusSize input ≤ 32) :
-    (gasSteps_baseFinish input base hvalid hword).cost = 42 := by
-  have hguard := blockCost_of_static baseGuardPath 26
+    (gasSteps_baseFinish input base hvalid hword).cost = 40 := by
+  have hguard := blockCost_of_static baseGuardPath 24
     (run_baseFinishGuard input base hvalid) (by rfl)
     (by decide) (by rfl) (by rfl)
   have htail := blockCost_of_static baseFinishTailPath 16
@@ -356,6 +356,6 @@ theorem gasSteps_zeroModulus_cost (input : ByteArray)
   omega
 
 def wordGas (input : ByteArray) : Nat :=
-  929 + 132 * baseSize input + 619 * exponentSize input
+  927 + 130 * baseSize input + 618 * exponentSize input
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordGas

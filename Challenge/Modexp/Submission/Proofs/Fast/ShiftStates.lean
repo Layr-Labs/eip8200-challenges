@@ -22,39 +22,39 @@ open Challenge.Modexp.Submission.Proofs.Fast
 abbrev outer := Exp.outer
 
 /-- Program counters of the appended routine. -/
-def pcDispatch : Nat := 4618
-def pcHit : Nat := 4633
-def pcMiss : Nat := 4662
-def pcAfterCsub0 : Nat := 4667
-def pcNegLoop : Nat := 4674
-def pcNegNext : Nat := 4697
+def pcDispatch : Nat := 4537
+def pcHit : Nat := 4552
+def pcMiss : Nat := 4581
+def pcAfterCsub0 : Nat := 4586
+def pcNegLoop : Nat := 4593
+def pcNegNext : Nat := 4616
 /-- The negation body after its store, before the exit test. -/
-def pcNegMid : Nat := 4691
-def pcNegDone : Nat := 4735
-def pcPreNewton : Nat := 4781
-def pcNewtonB : Nat := 4812
-def pcShiftLoop : Nat := 4849
-def pcShiftBody : Nat := 4856
-def pcEstimate : Nat := 4870
-def pcMacSetup : Nat := 4938
-def pcMacLoop : Nat := 4952
-def pcMid : Nat := 5095
+def pcNegMid : Nat := 4610
+def pcNegDone : Nat := 4654
+def pcPreNewton : Nat := 4700
+def pcNewtonB : Nat := 4731
+def pcShiftLoop : Nat := 4768
+def pcShiftBody : Nat := 4775
+def pcEstimate : Nat := 4789
+def pcMacSetup : Nat := 4848
+def pcMacLoop : Nat := 4862
+def pcMid : Nat := 5010
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 5086
-def pcAddLoop : Nat := 5129
-def pcAddInner : Nat := 5135
-def pcAddTail : Nat := 5208
+def pcMacTail : Nat := 4996
+def pcAddLoop : Nat := 5044
+def pcAddInner : Nat := 5050
+def pcAddTail : Nat := 5123
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 5164
-def pcSubCheck : Nat := 5226
-def pcSubEntry : Nat := 5236
-def pcSubInner : Nat := 5241
-def pcSubTail : Nat := 5311
+def pcAddMid : Nat := 5079
+def pcSubCheck : Nat := 5141
+def pcSubEntry : Nat := 5151
+def pcSubInner : Nat := 5156
+def pcSubTail : Nat := 5226
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 5266
-def pcCsubCall : Nat := 5325
-def pcAfterCsub : Nat := 5336
-def pcShiftDone : Nat := 5345
+def pcSubMid : Nat := 5181
+def pcCsubCall : Nat := 5240
+def pcAfterCsub : Nat := 5251
+def pcShiftDone : Nat := 5260
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=

@@ -8,8 +8,7 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open EvmSemantics
 open EvmSemantics.EVM
 
-/-- The seven-slot state between squarings: current value on top, the entry
-accumulator at position 5, the modulus at position 6. -/
+/-- The seven-slot state between squarings. -/
 def squareTopState (template : State) (pc : UInt256)
     (base modulus : UInt256) (nibble : Nat)
     (byte word pointer original accumulator : UInt256) (rest : List UInt256) : State :=
@@ -17,8 +16,8 @@ def squareTopState (template : State) (pc : UInt256)
     stack := [accumulator, UInt256.ofNat nibble, byte, word, pointer, original, modulus] ++ rest }
 
 set_option linter.unusedSimpArgs false in
-/-- The fused block reduces on the square state (peak depth ten plus `rest`)
-to the accumulator-first result, consuming the nibble and the external POP in one certificate. -/
+/-- The fused sixteen-byte block performs the table lookup while consuming
+the no-longer-needed nibble and the following external `POP`. -/
 theorem run_fusedSquareLookup (template : State) (pc : UInt256)
     (base modulus : UInt256) (nibble : Nat)
     (byte word pointer original accumulator : UInt256) (rest : List UInt256)
@@ -26,7 +25,7 @@ theorem run_fusedSquareLookup (template : State) (pc : UInt256)
     runInstructions fusedSquareLookupProgram
       (squareTopState template pc base modulus nibble byte word pointer
         original accumulator rest) =
-      some (droppedNibbleState template (advancePC 23 pc) base modulus nibble
+      some (droppedNibbleState template (advancePC 16 pc) base modulus nibble
         byte word pointer
         (UInt256.mulMod accumulator
           (WindowMath.tableWord base modulus nibble) modulus) rest) := by
@@ -54,13 +53,6 @@ theorem run_fusedSquareLookup (template : State) (pc : UInt256)
       advancePC]
   refine ⟨?_, mulMod_comm _ _ _⟩
   simp only [succ_eq_add,
-    show UInt256.ofNat 16 = UInt256.ofNat 1 + UInt256.ofNat 15 by decide,
-    show UInt256.ofNat 15 = UInt256.ofNat 1 + UInt256.ofNat 14 by decide,
-    show UInt256.ofNat 14 = UInt256.ofNat 1 + UInt256.ofNat 13 by decide,
-    show UInt256.ofNat 13 = UInt256.ofNat 1 + UInt256.ofNat 12 by decide,
-    show UInt256.ofNat 12 = UInt256.ofNat 1 + UInt256.ofNat 11 by decide,
-    show UInt256.ofNat 11 = UInt256.ofNat 1 + UInt256.ofNat 10 by decide,
-    show UInt256.ofNat 10 = UInt256.ofNat 1 + UInt256.ofNat 9 by decide,
     show UInt256.ofNat 9 = UInt256.ofNat 1 + UInt256.ofNat 8 by decide,
     show UInt256.ofNat 8 = UInt256.ofNat 1 + UInt256.ofNat 7 by decide,
     show UInt256.ofNat 7 = UInt256.ofNat 1 + UInt256.ofNat 6 by decide,

@@ -459,10 +459,9 @@ theorem readWord_eq_of_represents (left right : ByteArray)
   | succ i ih =>
       simp [mulOuterProgress, mulLoadedState, ih]
 
-@[simp] private theorem mulPCs (i : Nat)
-    (hi : 265 ≤ i) (hii : i ≤ 279) :
+@[simp] private theorem mulPCs (i : Nat) (hi : 265 ≤ i) (hii : i ≤ 279) :
     Artifact.submissionArtifact.instructionPC i =
-      ([310,311,314,315,316,319,320,321,324,325,326,329,332,333,334] : List Nat)[i - 265]! := by
+      [310,311,314,315,316,319,320,321,324,325,326,329,332,333,334][i - 265]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem listGetZero {α : Type} (head default : α)
@@ -475,34 +474,33 @@ theorem readWord_eq_of_represents (left right : ByteArray)
     (head :: tail)[0]? = some head := by
   rfl
 
-@[simp] private theorem mulLoopPCs (i : Nat)
-    (hi : 280 ≤ i) (hii : i ≤ 300) :
+@[simp] private theorem mulLoopPCs (i : Nat) (hi : 280 ≤ i) (hii : i ≤ 300) :
     Artifact.submissionArtifact.instructionPC i =
-      ([335,336,337,338,339,340,343,344,345,347,348,349,350,351,352,353,356,357,358,359,362] : List Nat)[i - 280]! := by
+      [335,336,337,338,339,340,343,344,345,347,348,349,350,351,352,
+       353,356,357,358,359,362][i - 280]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem mulInnerPCs (i : Nat)
-    (hi : 301 ≤ i) (hii : i ≤ 322) :
+@[simp] private theorem mulInnerPCs (i : Nat) (hi : 301 ≤ i) (hii : i ≤ 322) :
     Artifact.submissionArtifact.instructionPC i =
-      ([363,365,366,367,368,369,372,373,374,375,378,379,382,383,384,387,388,389,391,394,397,400] : List Nat)[i - 301]! := by
+      [363,365,366,367,368,369,372,373,374,375,378,379,382,383,384,
+       387,388,389,391,394,397,400][i - 301]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem mulNextPCs (i : Nat)
-    (hi : 323 ≤ i) (hii : i ≤ 331) :
+@[simp] private theorem mulNextPCs (i : Nat) (hi : 323 ≤ i) (hii : i ≤ 331) :
     Artifact.submissionArtifact.instructionPC i =
-      ([401,402,403,405,406,407,408,409,412] : List Nat)[i - 323]! := by
+      [401,402,403,405,406,407,408,409,412][i - 323]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem mulInnerExitPCs (i : Nat)
-    (hi : 332 ≤ i) (hii : i ≤ 341) :
+@[simp] private theorem mulInnerExitPCs (i : Nat) (hi : 332 ≤ i)
+    (hii : i ≤ 341) :
     Artifact.submissionArtifact.instructionPC i =
-      ([413,414,415,416,418,419,420,421,422,425] : List Nat)[i - 332]! := by
+      [413,414,415,416,418,419,420,421,422,425][i - 332]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem mulReturnPCs (i : Nat)
-    (hi : 342 ≤ i) (hii : i ≤ 349) :
+@[simp] private theorem mulReturnPCs (i : Nat) (hi : 342 ≤ i)
+    (hii : i ≤ 349) :
     Artifact.submissionArtifact.instructionPC i =
-      ([426,427,428,429,430,431,432,433] : List Nat)[i - 342]! := by
+      [426,427,428,429,430,431,432,433][i - 342]! := by
   interval_cases i <;> decide
 
 private theorem jump335 :

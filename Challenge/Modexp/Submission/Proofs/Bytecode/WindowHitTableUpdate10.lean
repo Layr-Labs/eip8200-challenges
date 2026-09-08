@@ -10,6 +10,6 @@ open EvmSemantics
 open EvmSemantics.EVM
 open WindowHitPaths
 
-window_table_update run_table10 gasSteps_table10 table10Path 9 10 3120 3131 1909 320
+window_table_update run_table10 gasSteps_table10 table10Path 9 10 3107 3116 1914 320
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitTableUpdate10

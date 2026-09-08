@@ -9,10 +9,21 @@ open EvmSemantics
 open EvmSemantics.EVM
 
 set_option linter.unusedSimpArgs false in
-/-- One nibble's lookup: nine instructions, seventeen bytes. PUSH8 five
-advances by nine bytes and leaves the same word as PUSH1 five. Together with
-the eighteen-byte square segment, the full nibble still advances 35 bytes.
-The peak stack and the accumulator-first result contract are unchanged. -/
+/-- One nibble's table lookup and multiply.
+
+The window loads the table word *last*, so there is no intermediate state
+worth naming: the whole nine-instruction block reduces in one step. Two facts
+are worth stating rather than rediscovering.
+
+`advancePC` counts bytes, not instructions. The compact block advances ten
+bytes across nine instructions.
+
+`h10` is new.  The block's peak stack is one slot deeper than the load-first
+form's, because the modulus and the accumulator are duplicated *before* the
+`PUSH1 5`, not after the load.  Peak is `rest.length + 10` against the old
+`rest.length + 9`; with `hrest` that is at most 1010, and the EVM limit is
+1024.  Without `h10` the `stack.length < 1024` guard on the `PUSH1` does not
+discharge and the block does not reduce at all. -/
 theorem run_lookup (template : State) (pc : UInt256)
     (base modulus : UInt256) (nibble : Nat)
     (byte word pointer accumulator : UInt256) (rest : List UInt256)
@@ -20,7 +31,7 @@ theorem run_lookup (template : State) (pc : UInt256)
     runInstructions lookupProgram
       (nibbleState template pc base modulus nibble byte word pointer
         accumulator rest) =
-      some (nibbleState template (advancePC 17 pc) base modulus nibble
+      some (nibbleState template (advancePC 10 pc) base modulus nibble
         byte word pointer
         (UInt256.mulMod accumulator (WindowMath.tableWord base modulus nibble)
           modulus) rest) := by
@@ -48,7 +59,7 @@ theorem run_lookup (template : State) (pc : UInt256)
       advancePC]
   refine ⟨?_, mulMod_comm _ _ _⟩
   simp only [succ_eq_add,
-    show UInt256.ofNat 9 = UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 by decide,
+    show UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 by decide,
     word_add_assoc]
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
