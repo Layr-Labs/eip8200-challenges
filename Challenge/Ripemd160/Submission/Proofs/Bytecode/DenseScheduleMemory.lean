@@ -26,10 +26,10 @@ def shl (v : EWord) (n : Nat) : EWord :=
   UInt256.shiftLeft v (UInt256.ofNat n)
 
 def mask8 : EWord :=
-  UInt256.ofNat 0xff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
+  UInt256.ofNat 0xff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00fa
 
 def mask16 : EWord :=
-  UInt256.ofNat 0xffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
+  UInt256.ofNat 0xffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000fffa
 
 def packed (v : EWord) : EWord :=
   let t :=

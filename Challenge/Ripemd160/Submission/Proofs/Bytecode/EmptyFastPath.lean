@@ -91,12 +91,12 @@ def mstoreState : State :=
 
 def s4_push1 : State :=
   { mstoreState with
-    pc := UInt256.ofNat 0x14d3
+    pc := UInt256.ofNat 0x14ce
     stack := [UInt256.ofNat 32] }
 
 def s5_push0 : State :=
   { s4_push1 with
-    pc := UInt256.ofNat 0x14d4
+    pc := UInt256.ofNat 0x14cf
     stack := [UInt256.ofNat 0, UInt256.ofNat 32] }
 
 private def path_2922 :

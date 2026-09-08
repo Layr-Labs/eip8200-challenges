@@ -42,10 +42,10 @@ def dup1 : Instr := .op (.Dup ⟨0, by decide⟩)
 def swap1 : Instr := .op (.Swap ⟨0, by decide⟩)
 
 def mask8 : UInt256 :=
-  UInt256.ofNat 0xff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
+  UInt256.ofNat 0xff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00fa
 
 def mask16 : UInt256 :=
-  UInt256.ofNat 0xffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
+  UInt256.ofNat 0xffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000fffa
 
 def denseStoreAddress (half : Nat) : Nat := 220 + 32 * half
 

@@ -28,7 +28,7 @@ def gasSteps_codecopy (s : State) (input : ByteArray) (i : Nat)
     exact hcode
   have hpc : (withGas pre gas).pc.toNat =
       Artifact.submissionArtifact.instructionPC 2893 := by
-    change (UInt256.ofNat 0x132e).toNat =
+    change (UInt256.ofNat 0x1329).toNat =
       Artifact.submissionArtifact.instructionPC 2893
     rw [KnownInputCompactPaths.pc2876]
     decide

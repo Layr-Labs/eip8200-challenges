@@ -53,7 +53,7 @@ def setupPath : List Located :=
    pushAt 74 0 0,
    opAt 75 .NOT,
    opAt 76 .DIV,
-   pushAt 77 32 3244493450063667868678674439968361782956185527883176199882357678282131398018,
+   pushAt 77 32 3244493450063667868678674439968361782956185527883176199882357678282131398013,
    opAt 78 (.Dup ⟨1, by decide⟩),
    pushAt 79 1 7,
    opAt 80 .SHL,
@@ -95,7 +95,7 @@ def comparePath : List Located :=
 /-- The padded tail word, the cleanup and the miss test. -/
 def tailPath : List Located :=
   [pushAt 141 2 992, opAt 142 .CALLDATALOAD,
-   pushAt 143 8 9848759918901945995, pushAt 144 1 192, opAt 145 .SHL,
+   pushAt 143 8 9848759918901945990, pushAt 144 1 192, opAt 145 .SHL,
    opAt 146 .XOR, opAt 147 (.Dup ⟨3, by decide⟩), opAt 148 .OR,
    opAt 149 (.Swap ⟨2, by decide⟩), opAt 150 .POP,
    opAt 151 (.Swap ⟨1, by decide⟩), opAt 152 (.Swap ⟨6, by decide⟩),
@@ -105,7 +105,7 @@ def tailPath : List Located :=
 
 /-- Store and return the stored digest. -/
 def returnPath : List Located :=
-  [pushAt 162 20 766350606435067737561421097975693824639675460820,
+  [pushAt 162 20 766350606435067737561421097975693824639675460815,
    pushAt 163 0 0, opAt 164 .MSTORE, pushAt 165 1 32, pushAt 166 0 0,
    opAt 167 .RETURN]
 

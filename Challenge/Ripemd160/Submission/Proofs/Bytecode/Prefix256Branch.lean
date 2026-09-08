@@ -34,9 +34,9 @@ def gasSteps_size_test (input : ByteArray) (sv ov : UInt256) (rest : List UInt25
     (blockOfS _ (pcFactS input 133 250 _ (by norm_num) (by rfl))
       (stepS_eq input 250 ov (UInt256.ofNat input.size) (sv :: ov :: rest)
         (by simp; omega) (by norm_num)))
-  have d := soundS (pushAt 134 2 5192)
+  have d := soundS (pushAt 134 2 5187)
     (blockOfS _ (pcFactS input 134 251 _ (by norm_num) (by rfl))
-      (stepS_push input 251 2 5192
+      (stepS_push input 251 2 5187
         (UInt256.eq ov (UInt256.ofNat input.size) :: sv :: ov :: rest)
         (by simp; omega) (by decide) (by decide) (by norm_num)))
   exact a.trans (b.trans (c.trans d))
@@ -53,21 +53,21 @@ def gasSteps_size_skip (input : ByteArray) (sv ov : UInt256) (rest : List UInt25
   exact (gasSteps_size_test input sv ov rest hlen).trans
     (soundS (opAt 135 .JUMPI)
       (blockOfS _ (pcFactS input 135 254 _ (by norm_num) (by rfl))
-        (stepS_jumpi_fall input 254 5192 (UInt256.eq ov (UInt256.ofNat input.size))
+        (stepS_jumpi_fall input 254 5187 (UInt256.eq ov (UInt256.ofNat input.size))
           (sv :: ov :: rest) (by simp; omega) (by norm_num) hc)))
 
 def gasSteps_size_done (input : ByteArray) (sv ov : UInt256) (rest : List UInt256)
     (hlen : rest.length < 1020) (heq : ov = UInt256.ofNat input.size) :
     GasSteps (stS input 248 (sv :: ov :: rest))
-      (stS input 5192 (sv :: ov :: rest)) := by
+      (stS input 5187 (sv :: ov :: rest)) := by
   have hc : UInt256.isTrue (UInt256.eq ov (UInt256.ofNat input.size)) := by
     simp [UInt256.eq, UInt256.isTrue, heq]
-  have hd : Decode.isValidJumpDest submissionBytecode 5192 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 4069 (by rfl)
+  have hd : Decode.isValidJumpDest submissionBytecode 5187 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 4064 (by rfl)
   exact (gasSteps_size_test input sv ov rest hlen).trans
     (soundS (opAt 135 .JUMPI)
       (blockOfS _ (pcFactS input 135 254 _ (by norm_num) (by rfl))
-        (stepS_jumpi_taken input 254 5192 5192 (UInt256.eq ov (UInt256.ofNat input.size))
+        (stepS_jumpi_taken input 254 5187 5187 (UInt256.eq ov (UInt256.ofNat input.size))
           (sv :: ov :: rest) (by simp; omega) (by norm_num) rfl hc hd)))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan

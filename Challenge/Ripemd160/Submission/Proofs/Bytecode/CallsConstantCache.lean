@@ -12,14 +12,14 @@ open StackRoundTemplate StackRoundTrace QuadRoundState QuadRoundTemplate
 /-- The cached constant is an extra stack value. Every arithmetic operation
     keeps its original operands. Order is kept too, except at the last cached
     use: there the constant is already directly under the accumulator, so the
-    exchange that would restore the original order is dropped for a no-op and
+    exchange that would restore the original order is dropped entirely and
     the closing `ADD` sees its two operands the other way round. `ADD` is
     commutative, so the value is unchanged (see `uint256_add_comm`). -/
 def rewrite (constant : UInt256) (remaining depth : Nat) : List Instr → List Instr
   | [] => []
   | .push width value :: rest =>
     if width.val = 4 ∧ value = constant then
-      if remaining = 1 then .op .JUMPDEST :: rest
+      if remaining = 1 then rest
       else .op (.Dup ⟨depth % 16, Nat.mod_lt _ (by decide)⟩) ::
         rewrite constant (remaining - 1) (depth + 1) rest
     else .push width value :: rewrite constant remaining (depth + 1) rest

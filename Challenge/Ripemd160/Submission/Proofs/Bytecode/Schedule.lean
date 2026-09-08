@@ -88,7 +88,7 @@ def afterStore (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
   let loaded := afterRead s msgOff returnDest rest i
   let value := UInt256.land (readLEWord s.memory (loadOffsetWord msgOff i))
-    (UInt256.ofNat 0xffffffff)
+    (UInt256.ofNat 0xfffffffa)
   { loaded with
     pc := UInt256.ofNat 0x259
     stack := [UInt256.ofNat i, msgOff, returnDest] ++ rest

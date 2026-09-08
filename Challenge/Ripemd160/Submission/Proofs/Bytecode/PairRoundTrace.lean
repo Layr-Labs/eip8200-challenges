@@ -269,11 +269,11 @@ theorem runInstrSeq_f0 (s : State) (startPC p0 p1 returnPC : UInt256)
               rw [hcomm]
   have hmul_mask (q : UInt256) :
       UInt256.mul (UInt256.ofNat (0x100000001 : Nat))
-          (UInt256.land (UInt256.ofNat 0xffffffff) q) =
-        UInt256.lor (UInt256.land (UInt256.ofNat 0xffffffff) q)
-          (UInt256.shiftLeft (UInt256.land (UInt256.ofNat 0xffffffff) q)
+          (UInt256.land (UInt256.ofNat 0xfffffffa) q) =
+        UInt256.lor (UInt256.land (UInt256.ofNat 0xfffffffa) q)
+          (UInt256.shiftLeft (UInt256.land (UInt256.ofNat 0xfffffffa) q)
             (UInt256.ofNat 32)) := by
-    have hmask : UInt256.land (UInt256.ofNat 0xffffffff) q =
+    have hmask : UInt256.land (UInt256.ofNat 0xfffffffa) q =
         _root_.Challenge.EvmProof.Word.mask32 q := by
       unfold _root_.Challenge.EvmProof.Word.mask32
       exact Challenge.Ripemd160.Submission.Proofs.Bytecode.Word.land_comm _ _

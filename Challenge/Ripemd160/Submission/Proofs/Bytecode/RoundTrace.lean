@@ -51,7 +51,7 @@ def prefixPath : List Located :=
    ⟨229, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨230, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨231, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨232, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨232, .push ⟨4, by decide⟩ (UInt256.ofNat 0xfffffffa), by rfl, by decide⟩,
    ⟨233, .op (.Dup ⟨10, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨234, .push ⟨2, by decide⟩ (UInt256.ofNat 0x13a), by rfl, by decide⟩,
    ⟨235, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
@@ -77,7 +77,7 @@ def afterFPath : List Located :=
    ⟨251, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨252, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨253, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨254, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨254, .push ⟨4, by decide⟩ (UInt256.ofNat 0xfffffffa), by rfl, by decide⟩,
    ⟨255, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨256, .push ⟨2, by decide⟩ (UInt256.ofNat 0x15d), by rfl, by decide⟩,
    ⟨257, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
@@ -92,12 +92,12 @@ def afterRot1Path : List Located :=
    ⟨264, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨265, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨266, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨267, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨267, .push ⟨4, by decide⟩ (UInt256.ofNat 0xfffffffa), by rfl, by decide⟩,
    ⟨268, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨269, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨270, .op (.Dup ⟨7, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨271, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨272, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨272, .push ⟨4, by decide⟩ (UInt256.ofNat 0xfffffffa), by rfl, by decide⟩,
    ⟨273, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨274, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨275, .push ⟨1, by decide⟩ (UInt256.ofNat 0x80), by rfl, by decide⟩,
@@ -121,14 +121,14 @@ def afterRot2Path : List Located :=
 
 def suffixPath : List Located :=
   [⟨291, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨292, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨292, .push ⟨4, by decide⟩ (UInt256.ofNat 0xfffffffa), by rfl, by decide⟩,
    ⟨293, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨294, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨295, .push ⟨1, by decide⟩ (UInt256.ofNat 0x40), by rfl, by decide⟩,
    ⟨296, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨297, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨298, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨299, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨299, .push ⟨4, by decide⟩ (UInt256.ofNat 0xfffffffa), by rfl, by decide⟩,
    ⟨300, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨304, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨305, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
@@ -192,7 +192,7 @@ private def rotlValue (x n : UInt256) : UInt256 :=
   UInt256.land
     (UInt256.lor (UInt256.shiftLeft x n)
       (UInt256.shiftRight x (UInt256.ofNat 32 - n)))
-    (UInt256.ofNat 0xffffffff)
+    (UInt256.ofNat 0xfffffffa)
 
 def rotlEntry (s : State) (x n returnDest : UInt256)
     (rest : List UInt256) : State :=
@@ -291,7 +291,7 @@ private def afterLoads (s : State) (base : UInt256) : State :=
 private def roundTail (s : State) (base : UInt256) (j : Nat)
     (wordIndex rotation k returnDest : UInt256) (rest : List UInt256) :
     List UInt256 :=
-  [k, UInt256.ofNat 0xffffffff, loadedE s base, loadedD s base,
+  [k, UInt256.ofNat 0xfffffffa, loadedE s base, loadedD s base,
     loadedC s base, loadedB s base, loadedA s base, base, UInt256.ofNat j,
     wordIndex, rotation, k, returnDest] ++ rest
 
@@ -310,7 +310,7 @@ private def xReturnedState (s : State) (base : UInt256) (j : Nat)
 private def fTail (s : State) (base : UInt256) (j : Nat)
     (wordIndex rotation k returnDest word : UInt256) (rest : List UInt256) :
     List UInt256 :=
-  [word, k, UInt256.ofNat 0xffffffff, loadedE s base, loadedD s base,
+  [word, k, UInt256.ofNat 0xfffffffa, loadedE s base, loadedD s base,
     loadedC s base, loadedB s base, loadedA s base, base, UInt256.ofNat j,
     wordIndex, rotation, k, returnDest] ++ rest
 
@@ -324,12 +324,12 @@ private def t0 (s : State) (base : UInt256) (j : Nat)
     (word k : UInt256) : UInt256 :=
   UInt256.land
     (((loadedA s base + Word.evmF j (loadedB s base) (loadedC s base)
-      (loadedD s base)) + word) + k) (UInt256.ofNat 0xffffffff)
+      (loadedD s base)) + word) + k) (UInt256.ofNat 0xfffffffa)
 
 private def rot1Tail (s : State) (base : UInt256) (j : Nat)
     (wordIndex rotation k returnDest word : UInt256) (rest : List UInt256) :
     List UInt256 :=
-  [loadedE s base, UInt256.ofNat 0xffffffff, t0 s base j word k,
+  [loadedE s base, UInt256.ofNat 0xfffffffa, t0 s base j word k,
     loadedE s base, loadedD s base, loadedC s base, loadedB s base,
     loadedA s base, base, UInt256.ofNat j, wordIndex, rotation, k,
     returnDest] ++ rest
@@ -342,7 +342,7 @@ def rot1CallState (s : State) (base : UInt256) (j : Nat)
 private def nextB (s : State) (base : UInt256) (j : Nat)
     (word rotation k : UInt256) : UInt256 :=
   UInt256.land (rotlValue (t0 s base j word k) rotation + loadedE s base)
-    (UInt256.ofNat 0xffffffff)
+    (UInt256.ofNat 0xfffffffa)
 
 private def afterFirstStores (s : State) (base : UInt256) : State :=
   TableTrace.storedWord
@@ -499,13 +499,13 @@ theorem run_prefix (s : State) (base : UInt256) (j : Nat)
 private def genericTail (base : UInt256) (j : Nat)
     (wordIndex rotation k returnDest : UInt256) (a b c d e : UInt256)
     (rest : List UInt256) : List UInt256 :=
-  [k, UInt256.ofNat 0xffffffff, e, d, c, b, a, base, UInt256.ofNat j,
+  [k, UInt256.ofNat 0xfffffffa, e, d, c, b, a, base, UInt256.ofNat j,
     wordIndex, rotation, k, returnDest] ++ rest
 
 private def genericFTail (base : UInt256) (j : Nat)
     (wordIndex rotation k returnDest word : UInt256) (a b c d e : UInt256)
     (rest : List UInt256) : List UInt256 :=
-  [word, k, UInt256.ofNat 0xffffffff, e, d, c, b, a, base,
+  [word, k, UInt256.ofNat 0xfffffffa, e, d, c, b, a, base,
     UInt256.ofNat j, wordIndex, rotation, k, returnDest] ++ rest
 
 set_option linter.unusedSimpArgs false in
@@ -530,12 +530,12 @@ theorem run_afterX (q : State) (base : UInt256) (j : Nat)
 
 private def genericT0 (j : Nat) (word k a b c d : UInt256) : UInt256 :=
   UInt256.land (((a + Word.evmF j b c d) + word) + k)
-    (UInt256.ofNat 0xffffffff)
+    (UInt256.ofNat 0xfffffffa)
 
 private def genericRot1Tail (base : UInt256) (j : Nat)
     (wordIndex rotation k returnDest word : UInt256) (a b c d e : UInt256)
     (rest : List UInt256) : List UInt256 :=
-  [e, UInt256.ofNat 0xffffffff, genericT0 j word k a b c d, e, d, c, b,
+  [e, UInt256.ofNat 0xfffffffa, genericT0 j word k a b c d, e, d, c, b,
     a, base, UInt256.ofNat j, wordIndex, rotation, k, returnDest] ++ rest
 
 set_option linter.unusedSimpArgs false in
@@ -564,7 +564,7 @@ theorem run_afterF (q : State) (base : UInt256) (j : Nat)
 private def genericNextB (j : Nat) (word rotation k a b c d e : UInt256) :
     UInt256 :=
   UInt256.land (rotlValue (genericT0 j word k a b c d) rotation + e)
-    (UInt256.ofNat 0xffffffff)
+    (UInt256.ofNat 0xfffffffa)
 
 private def genericAfterFirstStores (q : State) (base e d : UInt256) : State :=
   TableTrace.storedWord
@@ -832,13 +832,13 @@ def gasSteps_round (s : State) (base : UInt256) (j : Nat) (hj : j < 5)
 each store boundary. -/
 def roundResult (x : Compression.EvmWorking) (j : Nat) (word : UInt256)
     (rotation : Nat) (k : UInt256) : Compression.EvmWorking :=
-  { a := UInt256.land x.e (UInt256.ofNat 0xffffffff)
+  { a := UInt256.land x.e (UInt256.ofNat 0xfffffffa)
     b := genericNextB j word (UInt256.ofNat rotation) k
       x.a x.b x.c x.d x.e
-    c := UInt256.land x.b (UInt256.ofNat 0xffffffff)
+    c := UInt256.land x.b (UInt256.ofNat 0xfffffffa)
     d := UInt256.land (rotlValue x.c (UInt256.ofNat 10))
-      (UInt256.ofNat 0xffffffff)
-    e := UInt256.land x.d (UInt256.ofNat 0xffffffff) }
+      (UInt256.ofNat 0xfffffffa)
+    e := UInt256.land x.d (UInt256.ofNat 0xfffffffa) }
 
 /-- The five contiguous words at a non-wrapping natural-number base. -/
 def workingAtNat (s : State) (base : Nat) : Compression.EvmWorking :=
@@ -861,11 +861,11 @@ private theorem readWord_writePadded32_disjoint (memory : ByteArray)
 
 private theorem land_mask32_idem (x : UInt256) :
     UInt256.land
-        (UInt256.land x (UInt256.ofNat 0xffffffff))
-        (UInt256.ofNat 0xffffffff) =
-      UInt256.land x (UInt256.ofNat 0xffffffff) := by
-  change (x &&& UInt256.ofNat 0xffffffff) &&&
-      UInt256.ofNat 0xffffffff = x &&& UInt256.ofNat 0xffffffff
+        (UInt256.land x (UInt256.ofNat 0xfffffffa))
+        (UInt256.ofNat 0xfffffffa) =
+      UInt256.land x (UInt256.ofNat 0xfffffffa) := by
+  change (x &&& UInt256.ofNat 0xfffffffa) &&&
+      UInt256.ofNat 0xfffffffa = x &&& UInt256.ofNat 0xfffffffa
   simpa [Challenge.EvmProof.Word.mask32] using
     Challenge.EvmProof.Word.mask32_idem x
 
@@ -953,7 +953,7 @@ private theorem rotlValue_ofUInt32 (x : UInt32) (n : Nat)
   exact Challenge.EvmProof.Word.evm_rotl32 x n hn0 hn
 
 private theorem landMask_eq (v : UInt256) :
-    UInt256.land v (UInt256.ofNat 0xffffffff) =
+    UInt256.land v (UInt256.ofNat 0xfffffffa) =
       Challenge.EvmProof.Word.mask32 v := by rfl
 
 set_option linter.unusedSimpArgs false in

@@ -7,116 +7,116 @@ set_option maxHeartbeats 5000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputPaths
 
 def selectorGroup0 : List Located :=
-  [opAt 3002 (.Dup ⟨2, by decide⟩),
-   pushAt 3003 0 0,
-   opAt 3004 .EQ,
-   pushAt 3005 2 6216,
-   opAt 3006 .JUMPI]
+  [opAt 2998 (.Dup ⟨2, by decide⟩),
+   pushAt 2999 0 0,
+   opAt 3000 .EQ,
+   pushAt 3001 2 6211,
+   opAt 3002 .JUMPI]
 
 def selectorGroup1 : List Located :=
-  [opAt 3007 (.Dup ⟨2, by decide⟩),
-   pushAt 3008 1 64,
-   opAt 3009 .EQ,
-   pushAt 3010 2 6259,
-   opAt 3011 .JUMPI]
+  [opAt 3003 (.Dup ⟨2, by decide⟩),
+   pushAt 3004 1 64,
+   opAt 3005 .EQ,
+   pushAt 3006 2 6254,
+   opAt 3007 .JUMPI]
 
 def selectorGroup2 : List Located :=
-  [opAt 3012 (.Dup ⟨2, by decide⟩),
-   pushAt 3013 1 128,
-   opAt 3014 .EQ,
-   pushAt 3015 2 6302,
-   opAt 3016 .JUMPI]
+  [opAt 3008 (.Dup ⟨2, by decide⟩),
+   pushAt 3009 1 128,
+   opAt 3010 .EQ,
+   pushAt 3011 2 6297,
+   opAt 3012 .JUMPI]
 
 def selectorGroup3 : List Located :=
-  [opAt 3017 (.Dup ⟨2, by decide⟩),
-   pushAt 3018 1 192,
-   opAt 3019 .EQ,
-   pushAt 3020 2 6345,
-   opAt 3021 .JUMPI]
+  [opAt 3013 (.Dup ⟨2, by decide⟩),
+   pushAt 3014 1 192,
+   opAt 3015 .EQ,
+   pushAt 3016 2 6340,
+   opAt 3017 .JUMPI]
 
 def selectorGroup4 : List Located :=
-  [opAt 3022 (.Dup ⟨2, by decide⟩),
-   pushAt 3023 2 256,
-   opAt 3024 .EQ,
-   pushAt 3025 2 6388,
-   opAt 3026 .JUMPI]
+  [opAt 3018 (.Dup ⟨2, by decide⟩),
+   pushAt 3019 2 256,
+   opAt 3020 .EQ,
+   pushAt 3021 2 6383,
+   opAt 3022 .JUMPI]
 
 def selectorGroup5 : List Located :=
-  [opAt 3027 (.Dup ⟨2, by decide⟩),
-   pushAt 3028 2 320,
-   opAt 3029 .EQ,
-   pushAt 3030 2 6431,
-   opAt 3031 .JUMPI]
+  [opAt 3023 (.Dup ⟨2, by decide⟩),
+   pushAt 3024 2 320,
+   opAt 3025 .EQ,
+   pushAt 3026 2 6426,
+   opAt 3027 .JUMPI]
 
 def selectorGroup6 : List Located :=
-  [opAt 3032 (.Dup ⟨2, by decide⟩),
-   pushAt 3033 2 384,
-   opAt 3034 .EQ,
-   pushAt 3035 2 6474,
-   opAt 3036 .JUMPI]
+  [opAt 3028 (.Dup ⟨2, by decide⟩),
+   pushAt 3029 2 384,
+   opAt 3030 .EQ,
+   pushAt 3031 2 6469,
+   opAt 3032 .JUMPI]
 
 def selectorGroup7 : List Located :=
-  [opAt 3037 (.Dup ⟨2, by decide⟩),
-   pushAt 3038 2 448,
-   opAt 3039 .EQ,
-   pushAt 3040 2 6517,
-   opAt 3041 .JUMPI]
+  [opAt 3033 (.Dup ⟨2, by decide⟩),
+   pushAt 3034 2 448,
+   opAt 3035 .EQ,
+   pushAt 3036 2 6512,
+   opAt 3037 .JUMPI]
 
 def selectorGroup8 : List Located :=
-  [opAt 3042 (.Dup ⟨2, by decide⟩),
-   pushAt 3043 2 512,
-   opAt 3044 .EQ,
-   pushAt 3045 2 6560,
-   opAt 3046 .JUMPI]
+  [opAt 3038 (.Dup ⟨2, by decide⟩),
+   pushAt 3039 2 512,
+   opAt 3040 .EQ,
+   pushAt 3041 2 6555,
+   opAt 3042 .JUMPI]
 
 def selectorGroup9 : List Located :=
-  [opAt 3047 (.Dup ⟨2, by decide⟩),
-   pushAt 3048 2 576,
-   opAt 3049 .EQ,
-   pushAt 3050 2 6603,
-   opAt 3051 .JUMPI]
+  [opAt 3043 (.Dup ⟨2, by decide⟩),
+   pushAt 3044 2 576,
+   opAt 3045 .EQ,
+   pushAt 3046 2 6598,
+   opAt 3047 .JUMPI]
 
 def selectorGroup10 : List Located :=
-  [opAt 3052 (.Dup ⟨2, by decide⟩),
-   pushAt 3053 2 640,
-   opAt 3054 .EQ,
-   pushAt 3055 2 6646,
-   opAt 3056 .JUMPI]
+  [opAt 3048 (.Dup ⟨2, by decide⟩),
+   pushAt 3049 2 640,
+   opAt 3050 .EQ,
+   pushAt 3051 2 6641,
+   opAt 3052 .JUMPI]
 
 def selectorGroup11 : List Located :=
-  [opAt 3057 (.Dup ⟨2, by decide⟩),
-   pushAt 3058 2 704,
-   opAt 3059 .EQ,
-   pushAt 3060 2 6689,
-   opAt 3061 .JUMPI]
+  [opAt 3053 (.Dup ⟨2, by decide⟩),
+   pushAt 3054 2 704,
+   opAt 3055 .EQ,
+   pushAt 3056 2 6684,
+   opAt 3057 .JUMPI]
 
 def selectorGroup12 : List Located :=
-  [opAt 3062 (.Dup ⟨2, by decide⟩),
-   pushAt 3063 2 768,
-   opAt 3064 .EQ,
-   pushAt 3065 2 6732,
-   opAt 3066 .JUMPI]
+  [opAt 3058 (.Dup ⟨2, by decide⟩),
+   pushAt 3059 2 768,
+   opAt 3060 .EQ,
+   pushAt 3061 2 6727,
+   opAt 3062 .JUMPI]
 
 def selectorGroup13 : List Located :=
-  [opAt 3067 (.Dup ⟨2, by decide⟩),
-   pushAt 3068 2 832,
-   opAt 3069 .EQ,
-   pushAt 3070 2 6775,
-   opAt 3071 .JUMPI]
+  [opAt 3063 (.Dup ⟨2, by decide⟩),
+   pushAt 3064 2 832,
+   opAt 3065 .EQ,
+   pushAt 3066 2 6770,
+   opAt 3067 .JUMPI]
 
 def selectorGroup14 : List Located :=
-  [opAt 3072 (.Dup ⟨2, by decide⟩),
-   pushAt 3073 2 896,
-   opAt 3074 .EQ,
-   pushAt 3075 2 6818,
-   opAt 3076 .JUMPI]
+  [opAt 3068 (.Dup ⟨2, by decide⟩),
+   pushAt 3069 2 896,
+   opAt 3070 .EQ,
+   pushAt 3071 2 6813,
+   opAt 3072 .JUMPI]
 
 def selectorGroup15 : List Located :=
-  [opAt 3077 (.Dup ⟨2, by decide⟩),
-   pushAt 3078 2 960,
-   opAt 3079 .EQ,
-   pushAt 3080 2 6861,
-   opAt 3081 .JUMPI]
+  [opAt 3073 (.Dup ⟨2, by decide⟩),
+   pushAt 3074 2 960,
+   opAt 3075 .EQ,
+   pushAt 3076 2 6856,
+   opAt 3077 .JUMPI]
 
 def selectorPath0 : List Located := selectorGroup0
 def selectorPath1 : List Located := selectorGroup0 ++ selectorGroup1

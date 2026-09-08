@@ -182,16 +182,16 @@ theorem activeWords_unchanged (s : State)
     UInt256.land x y = x &&& y := by rfl
 
 @[simp] private theorem land_mask_idem (x : UInt256) :
-    UInt256.land (UInt256.land x (UInt256.ofNat 0xffffffff))
-      (UInt256.ofNat 0xffffffff) =
-        UInt256.land x (UInt256.ofNat 0xffffffff) := by
+    UInt256.land (UInt256.land x (UInt256.ofNat 0xfffffffa))
+      (UInt256.ofNat 0xfffffffa) =
+        UInt256.land x (UInt256.ofNat 0xfffffffa) := by
   rw [land_eq_and, land_eq_and]
   simpa [Challenge.EvmProof.Word.mask32] using
     Challenge.EvmProof.Word.mask32_idem x
 
 @[simp] private theorem and_mask_idem (x : UInt256) :
-    (x &&& UInt256.ofNat 0xffffffff) &&& UInt256.ofNat 0xffffffff =
-      x &&& UInt256.ofNat 0xffffffff := by
+    (x &&& UInt256.ofNat 0xfffffffa) &&& UInt256.ofNat 0xfffffffa =
+      x &&& UInt256.ofNat 0xfffffffa := by
   simpa [Challenge.EvmProof.Word.mask32] using
     Challenge.EvmProof.Word.mask32_idem x
 

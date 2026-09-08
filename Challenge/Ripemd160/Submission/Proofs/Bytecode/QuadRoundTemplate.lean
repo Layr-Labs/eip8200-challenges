@@ -22,7 +22,7 @@ open Challenge.EvmProof
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.PairRoundTemplate
 
-def factor : UInt256 := UInt256.ofNat 0x100000001
+def factor : UInt256 := UInt256.ofNat 0x0fffffffc
 
 def cachedDup10 : Instr := .op (.Dup ⟨9, by decide⟩)
 def cachedDup9 : Instr := .op (.Dup ⟨8, by decide⟩)

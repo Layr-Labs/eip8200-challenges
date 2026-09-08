@@ -310,16 +310,16 @@ theorem rightRotation3_le32 (k : Fin 20) :
     rightRotation3 k ≤ 32 := by
   fin_cases k <;> decide
 
-@[simp] theorem rightPC_zero : rightPC 0 = UInt256.ofNat 0x779 := by
+@[simp] theorem rightPC_zero : rightPC 0 = UInt256.ofNat 0x778 := by
   rfl
 
-@[simp] theorem rightPC_end : rightPC 20 = UInt256.ofNat 0x9a9 := by
+@[simp] theorem rightPC_end : rightPC 20 = UInt256.ofNat 0x9a8 := by
   rfl
 
-@[simp] theorem rightStartPC_eq : rightStartPC = UInt256.ofNat 0x779 := by
+@[simp] theorem rightStartPC_eq : rightStartPC = UInt256.ofNat 0x778 := by
   rfl
 
-@[simp] theorem rightEndPC_eq : rightEndPC = UInt256.ofNat 0x9a9 := by
+@[simp] theorem rightEndPC_eq : rightEndPC = UInt256.ofNat 0x9a8 := by
   rfl
 
 theorem rightPC_succ (k : Fin 20) :

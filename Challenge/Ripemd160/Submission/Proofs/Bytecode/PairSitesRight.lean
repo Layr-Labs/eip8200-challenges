@@ -285,13 +285,13 @@ theorem rightRotation0_le32 (k : Fin 40) : rightRotation0 k ≤ 32 := by
 theorem rightRotation1_le32 (k : Fin 40) : rightRotation1 k ≤ 32 := by
   fin_cases k <;> decide
 
-@[simp] theorem rightPC_zero : rightPC 0 = UInt256.ofNat 0x812 := by rfl
+@[simp] theorem rightPC_zero : rightPC 0 = UInt256.ofNat 0x811 := by rfl
 
-@[simp] theorem rightPC_end : rightPC 40 = UInt256.ofNat 0xae2 := by rfl
+@[simp] theorem rightPC_end : rightPC 40 = UInt256.ofNat 0xae0 := by rfl
 
-@[simp] theorem rightStartPC_eq : rightStartPC = UInt256.ofNat 0x812 := by rfl
+@[simp] theorem rightStartPC_eq : rightStartPC = UInt256.ofNat 0x811 := by rfl
 
-@[simp] theorem rightEndPC_eq : rightEndPC = UInt256.ofNat 0xae2 := by rfl
+@[simp] theorem rightEndPC_eq : rightEndPC = UInt256.ofNat 0xae0 := by rfl
 
 theorem rightPC_succ (k : Fin 40) :
     rightPC (k.val + 1) = rightPC k.val + UInt256.ofNat 18 := by

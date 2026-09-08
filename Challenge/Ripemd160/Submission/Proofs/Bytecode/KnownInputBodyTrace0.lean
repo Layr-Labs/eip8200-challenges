@@ -18,8 +18,8 @@ theorem run_selector_0 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 0) (selectorEntry s KnownInputData.targetInput 0) =
       some (bodyEntry s KnownInputData.targetInput 0) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 6216 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3084 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 6211 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 3080 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath0,
       selectorGroup0, selectorGroup1, selectorGroup2, selectorGroup3,
@@ -65,8 +65,8 @@ theorem run_selector_1 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 1) (selectorEntry s KnownInputData.targetInput 1) =
       some (bodyEntry s KnownInputData.targetInput 1) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 6259 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3102 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 6254 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 3098 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath1,
       selectorGroup0, selectorGroup1, selectorGroup2, selectorGroup3,
@@ -112,8 +112,8 @@ theorem run_selector_2 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 2) (selectorEntry s KnownInputData.targetInput 2) =
       some (bodyEntry s KnownInputData.targetInput 2) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 6302 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3120 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 6297 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 3116 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath2,
       selectorGroup0, selectorGroup1, selectorGroup2, selectorGroup3,
@@ -159,8 +159,8 @@ theorem run_selector_3 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 3) (selectorEntry s KnownInputData.targetInput 3) =
       some (bodyEntry s KnownInputData.targetInput 3) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 6345 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3138 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 6340 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 3134 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath3,
       selectorGroup0, selectorGroup1, selectorGroup2, selectorGroup3,

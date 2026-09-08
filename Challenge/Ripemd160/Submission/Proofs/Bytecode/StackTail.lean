@@ -30,7 +30,7 @@ def workingStack (left right : Compression.EvmWorking)
 def tailEntry (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 0xa76
+    pc := UInt256.ofNat 0xa75
     stack := workingStack left right ret rest }
 
 def combined (s : State) (left right : Compression.EvmWorking) :
@@ -44,7 +44,7 @@ def c0Instructions : List Instr :=
     .op .MLOAD,
     .op .ADD,
     .op .ADD,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
+    .push ⟨4, by decide⟩ (UInt256.ofNat 0xfffffffa),
     .op .AND ]
 
 def c1Instructions : List Instr :=
@@ -54,7 +54,7 @@ def c1Instructions : List Instr :=
     .op .MLOAD,
     .op .ADD,
     .op .ADD,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
+    .push ⟨4, by decide⟩ (UInt256.ofNat 0xfffffffa),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 0x40),
     .op .MSTORE ]
@@ -66,7 +66,7 @@ def c2Instructions : List Instr :=
     .op .MLOAD,
     .op .ADD,
     .op .ADD,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
+    .push ⟨4, by decide⟩ (UInt256.ofNat 0xfffffffa),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 0x60),
     .op .MSTORE ]
@@ -78,7 +78,7 @@ def c3Instructions : List Instr :=
     .op .MLOAD,
     .op .ADD,
     .op .ADD,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
+    .push ⟨4, by decide⟩ (UInt256.ofNat 0xfffffffa),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
     .op .MSTORE ]
@@ -90,7 +90,7 @@ def c4Instructions : List Instr :=
     .op .MLOAD,
     .op .ADD,
     .op .ADD,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
+    .push ⟨4, by decide⟩ (UInt256.ofNat 0xfffffffa),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 0xa0),
     .op .MSTORE ]
@@ -115,13 +115,13 @@ def tailInstructions : List Instr := tail60Instructions ++ finalJumpInstructions
 def c0Result (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 0xa83
+    pc := UInt256.ofNat 0xa82
     stack := (combined s left right).h0 :: workingStack left right ret rest }
 
 def preJumpResult (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 0xad0
+    pc := UInt256.ofNat 0xace
     memory := StackMemory.storeHash s.memory (combined s left right)
     stack := ret :: rest }
 
@@ -238,10 +238,10 @@ private theorem read32_write128 (memory : ByteArray) (value : Nat) :
   exact readWord_writeHashWord_disjoint _ _ _ _ (Or.inl (by omega))
 
 private theorem mask32_push (value : UInt256) :
-    UInt256.land (UInt256.ofNat 0xffffffff) value = mask32 value := by
+    UInt256.land (UInt256.ofNat 0xfffffffa) value = mask32 value := by
   unfold mask32
   exact Challenge.Ripemd160.Submission.Proofs.Bytecode.Word.land_comm
-    (UInt256.ofNat 0xffffffff) value
+    (UInt256.ofNat 0xfffffffa) value
 
 set_option linter.unusedSimpArgs false in
 theorem run_c0 (s : State) (left right : Compression.EvmWorking)
@@ -264,7 +264,7 @@ theorem run_c0 (s : State) (left right : Compression.EvmWorking)
   · simp only [Compression.evmCombine, StackMemory.hashAt]
     unfold mask32
     exact (Challenge.Ripemd160.Submission.Proofs.Bytecode.Word.land_comm
-      (UInt256.ofNat 0xffffffff)
+      (UInt256.ofNat 0xfffffffa)
       (MachineState.readWord s.memory 64 + left.c + right.d))
 
 set_option linter.unusedSimpArgs false in

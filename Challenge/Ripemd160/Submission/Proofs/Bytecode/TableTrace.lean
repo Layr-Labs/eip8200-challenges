@@ -114,7 +114,7 @@ def loadedWord (s : State) (base i : UInt256) : UInt256 :=
 
 def storedWord (s : State) (base i value : UInt256) : State :=
   let address := slotAddress base i
-  let masked := UInt256.land value (UInt256.ofNat 0xffffffff)
+  let masked := UInt256.land value (UInt256.ofNat 0xfffffffa)
   { s with
     memory := MachineState.writeBytes s.memory
       (Data.Bytes.natToBytesPadded masked.toNat 32) address.toNat
@@ -425,13 +425,13 @@ def gasSteps_tableAt (s : State) (base i returnDest : UInt256)
     (storedWord s base i value).memory =
       MachineState.writeBytes s.memory
         (Data.Bytes.natToBytesPadded
-          (UInt256.land value (UInt256.ofNat 0xffffffff)).toNat 32)
+          (UInt256.land value (UInt256.ofNat 0xfffffffa)).toNat 32)
         (slotAddress base i).toNat := by
   rfl
 
 @[simp] theorem loadedWord_storedWord (s : State) (base i value : UInt256) :
     loadedWord (storedWord s base i value) base i =
-      UInt256.land value (UInt256.ofNat 0xffffffff) := by
+      UInt256.land value (UInt256.ofNat 0xfffffffa) := by
   unfold loadedWord
   rw [storedWord_memory, Challenge.EvmProof.Memory.readWord_writeWord]
 

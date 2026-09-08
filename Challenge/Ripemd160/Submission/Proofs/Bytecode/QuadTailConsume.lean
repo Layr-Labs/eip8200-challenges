@@ -175,10 +175,10 @@ private theorem read32_write160 (memory : ByteArray) (value : Nat) :
   exact readWord_writeHashWord_disjoint _ _ _ _ (Or.inl (by omega))
 
 private theorem mask32_push (value : UInt256) :
-    UInt256.land (UInt256.ofNat 0xffffffff) value = mask32 value := by
+    UInt256.land (UInt256.ofNat 0xfffffffa) value = mask32 value := by
   unfold mask32
   exact Challenge.Ripemd160.Submission.Proofs.Bytecode.Word.land_comm
-    (UInt256.ofNat 0xffffffff) value
+    (UInt256.ofNat 0xfffffffa) value
 
 private theorem add3_comm_right (a b c : UInt256) : a + b + c = a + c + b := by
   apply Challenge.EvmProof.Word.word_ext

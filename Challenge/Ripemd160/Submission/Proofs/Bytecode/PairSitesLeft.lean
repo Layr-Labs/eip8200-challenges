@@ -287,11 +287,11 @@ theorem leftRotation1_le32 (k : Fin 40) : leftRotation1 k ≤ 32 := by
 
 @[simp] theorem leftPC_zero : leftPC 0 = UInt256.ofNat 0x533 := by rfl
 
-@[simp] theorem leftPC_end : leftPC 40 = UInt256.ofNat 0x803 := by rfl
+@[simp] theorem leftPC_end : leftPC 40 = UInt256.ofNat 0x802 := by rfl
 
 @[simp] theorem leftStartPC_eq : leftStartPC = UInt256.ofNat 0x533 := by rfl
 
-@[simp] theorem leftEndPC_eq : leftEndPC = UInt256.ofNat 0x803 := by rfl
+@[simp] theorem leftEndPC_eq : leftEndPC = UInt256.ofNat 0x802 := by rfl
 
 theorem leftPC_succ (k : Fin 40) :
     leftPC (k.val + 1) = leftPC k.val + UInt256.ofNat 18 := by

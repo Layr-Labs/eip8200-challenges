@@ -21,11 +21,11 @@ def shl (v : EWord) (n : Nat) : EWord :=
 
 /-- `0x00ff` repeated sixteen times. -/
 def mask8 : EWord :=
-  UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
+  UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00fa
 
 /-- `0x0000ffff` repeated eight times. -/
 def mask16 : EWord :=
-  UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff
+  UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000fffa
 
 /-- Reverse the bytes inside each four-byte lane of a 256-bit word. -/
 def packed (v : EWord) : EWord :=

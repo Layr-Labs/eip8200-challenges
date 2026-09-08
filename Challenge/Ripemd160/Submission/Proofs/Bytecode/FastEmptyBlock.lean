@@ -33,11 +33,11 @@ private def wfOp {op : Operation}
 abbrev Located :=
   Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka
 
-def h0 : UInt256 := UInt256.ofNat 0xa585119c
-def h1 : UInt256 := UInt256.ofNat 0x54fce9c5
-def h2 : UInt256 := UInt256.ofNat 0x97082861
-def h3 : UInt256 := UInt256.ofNat 0x48f5e87e
-def h4 : UInt256 := UInt256.ofNat 0x318d25b2
+def h0 : UInt256 := UInt256.ofNat 0xa5851197
+def h1 : UInt256 := UInt256.ofNat 0x54fce9c0
+def h2 : UInt256 := UInt256.ofNat 0x9708285c
+def h3 : UInt256 := UInt256.ofNat 0x48f5e879
+def h4 : UInt256 := UInt256.ofNat 0x318d25ad
 
 def emptyHash : Compression.EvmHashState :=
   { h0 := h0, h1 := h1, h2 := h2, h3 := h3, h4 := h4 }

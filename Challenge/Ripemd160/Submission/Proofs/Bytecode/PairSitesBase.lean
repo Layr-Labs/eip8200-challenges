@@ -68,18 +68,18 @@ def rightReturnPC (k : Nat) : UInt256 :=
   UInt256.ofNat (Artifact.instructionPC (rightWrapperIndex k + 7))
 
 def leftHelperPCOfGroup : Nat → UInt256
-  | 0 => UInt256.ofNat 0xb3d
-  | 1 => UInt256.ofNat 0xb9a
-  | 2 => UInt256.ofNat 0xc07
-  | 3 => UInt256.ofNat 0xc72
-  | _ => UInt256.ofNat 0xcdf
+  | 0 => UInt256.ofNat 0xb3b
+  | 1 => UInt256.ofNat 0xb98
+  | 2 => UInt256.ofNat 0xc05
+  | 3 => UInt256.ofNat 0xc70
+  | _ => UInt256.ofNat 0xcdc
 
 def rightHelperPCOfGroup : Nat → UInt256
-  | 0 => UInt256.ofNat 0xd4a
-  | 1 => UInt256.ofNat 0xdb5
-  | 2 => UInt256.ofNat 0xe22
-  | 3 => UInt256.ofNat 0xe8d
-  | _ => UInt256.ofNat 0xefa
+  | 0 => UInt256.ofNat 0xd47
+  | 1 => UInt256.ofNat 0xdb2
+  | 2 => UInt256.ofNat 0xe1f
+  | 3 => UInt256.ofNat 0xe8a
+  | _ => UInt256.ofNat 0xef6
 
 def leftHelperPC (k : Nat) : UInt256 := leftHelperPCOfGroup (k / 8)
 

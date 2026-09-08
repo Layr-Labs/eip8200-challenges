@@ -10,7 +10,7 @@ open StackRoundTemplate
 
 def d (index : Fin 16) : Instr := .op (.Dup ⟨index⟩)
 def w (index : Fin 16) : Instr := .op (.Swap ⟨index⟩)
-def factor : UInt256 := UInt256.ofNat 0x100000001
+def factor : UInt256 := UInt256.ofNat 0x0fffffffc
 
 -- Four future control words remain between the current controls and working words.
 def firstBoolean (j : Nat) : List Instr :=

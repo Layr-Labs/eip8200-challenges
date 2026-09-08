@@ -12,7 +12,7 @@ open StackBlockModel StackEndpoint
 
 theorem firstLoad_end : StackFrame.loadSite987.endPC = QuadLayout.leftPC 0 := rfl
 
-theorem secondLoad_start : StackFrame.loadSite1238.startPC = UInt256.ofNat 0xab2 := rfl
+theorem secondLoad_start : StackFrame.loadSite1238.startPC = UInt256.ofNat 0xab0 := rfl
 
 theorem secondLoad_end : StackFrame.loadSite1238.endPC = QuadLayout.rightPC 0 := rfl
 
@@ -29,7 +29,7 @@ theorem loadEntry_eq_roundEntry (s : State) (pc : UInt256)
 theorem tailEntry_eq_roundEntry (s : State) (left right : Compression.EvmWorking)
     (ret : UInt256) (rest : List UInt256) :
     QuadTailTemplate.tailEntry s left right ret rest =
-      StackRoundTrace.roundEntry s (UInt256.ofNat 0x13c2)
+      StackRoundTrace.roundEntry s (UInt256.ofNat 0x13bd)
         right.a right.b right.c right.d right.e
         (QuadRoundTemplate.factor :: (StackFrame.savedLeft left ++ ret :: rest)) := rfl
 
@@ -53,7 +53,7 @@ theorem routeEntry_atLanePC (s : State) (left : Compression.EvmWorking)
     StackFrame.routeEntry s left rest =
       StackRoundTrace.roundEntry s (QuadLayout.leftPC 20)
         left.a left.b left.c left.d left.e (QuadRoundTemplate.factor :: rest) := by
-  have hpc : QuadLayout.leftPC 20 = UInt256.ofNat 0xab1 := by
+  have hpc : QuadLayout.leftPC 20 = UInt256.ofNat 0xaaf := by
     change UInt256.ofNat
       (Artifact.submissionArtifact.instructionPC QuadLayout.routeIndex) = _
     rw [QuadLayout.route_pc]
@@ -82,7 +82,7 @@ theorem tailEntry_atLanePC (s : State) (left right : Compression.EvmWorking)
       StackRoundTrace.roundEntry s (QuadLayout.rightPC 20)
         right.a right.b right.c right.d right.e
         (QuadRoundTemplate.factor :: (StackFrame.savedLeft left ++ ret :: rest)) := by
-  have hpc : QuadLayout.rightPC 20 = UInt256.ofNat 0x13c2 := by
+  have hpc : QuadLayout.rightPC 20 = UInt256.ofNat 0x13bd := by
     change UInt256.ofNat
       (Artifact.submissionArtifact.instructionPC QuadLayout.tailIndex) = _
     rw [QuadLayout.tail_pc]

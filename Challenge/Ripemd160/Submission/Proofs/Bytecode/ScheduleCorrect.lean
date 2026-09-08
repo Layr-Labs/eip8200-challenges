@@ -23,7 +23,7 @@ def xValue (s : State) (i : Nat) : UInt256 :=
 
 def expectedWord (memory : ByteArray) (msgOff : UInt256) (i : Nat) : UInt256 :=
   UInt256.land (Schedule.readLEWord memory (Schedule.loadOffsetWord msgOff i))
-    (UInt256.ofNat 0xffffffff)
+    (UInt256.ofNat 0xfffffffa)
 
 def SlotsCorrect (s : State) (expected : Nat → UInt256) (upto : Nat) : Prop :=
   ∀ i, i < upto → xValue s i = expected i

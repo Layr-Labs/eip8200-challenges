@@ -49,7 +49,7 @@ def swap2 : Instr := .op (.Swap ⟨1, by decide⟩)
 def swap3 : Instr := .op (.Swap ⟨2, by decide⟩)
 def swap4 : Instr := .op (.Swap ⟨3, by decide⟩)
 
-def mask : UInt256 := UInt256.ofNat 0xffffffff
+def mask : UInt256 := UInt256.ofNat 0xfffffffa
 
 def c10 : UInt256 := UInt256.ofNat 10
 def c22 : UInt256 := UInt256.ofNat 22

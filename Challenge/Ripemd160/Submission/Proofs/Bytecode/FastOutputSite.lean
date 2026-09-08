@@ -112,7 +112,7 @@ private theorem fastOutputBeforeReturn_advances
       (fastStoreAndSetup_advances instruction hstore) hrun
 
 private theorem fastOutput_slice :
-    (Artifact.submissionArtifact.instructions.drop 4015).take
+    (Artifact.submissionArtifact.instructions.drop 4010).take
         FastOutputTemplate.fastOutputBeforeReturnTemplate.length =
       FastOutputTemplate.fastOutputBeforeReturnTemplate := by
   rfl
@@ -136,16 +136,16 @@ def fastOutputSite :
     (by decide)
 
 @[simp] theorem fastOutputSite_startPC :
-    fastOutputSite.startPC = UInt256.ofNat 0x13fc := by
+    fastOutputSite.startPC = UInt256.ofNat 0x13f7 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4015) =
-    UInt256.ofNat 0x13fc
+    UInt256.ofNat 0x13f7
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] theorem fastOutputSite_endPC :
-    fastOutputSite.endPC = UInt256.ofNat 0x1447 := by
+    fastOutputSite.endPC = UInt256.ofNat 0x1442 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4068) =
-    UInt256.ofNat 0x1447
+    UInt256.ofNat 0x1442
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -181,16 +181,16 @@ def fastOutputReturnPath :
   [fastOutputReturn.located]
 
 @[simp] theorem fastOutputReturn_pc :
-    fastOutputReturn.pc = UInt256.ofNat 0x1447 := by
+    fastOutputReturn.pc = UInt256.ofNat 0x1442 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4068) =
-    UInt256.ofNat 0x1447
+    UInt256.ofNat 0x1442
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem fastOutputReturn_site_end :
     fastOutputReturn.pc = fastOutputSite.endPC := by
   calc
-    fastOutputReturn.pc = UInt256.ofNat 0x1447 := fastOutputReturn_pc
+    fastOutputReturn.pc = UInt256.ofNat 0x1442 := fastOutputReturn_pc
     _ = fastOutputSite.endPC := fastOutputSite_endPC.symm
 
 private theorem runLocatedBlock_singleton
@@ -204,11 +204,11 @@ private theorem runLocatedBlock_singleton
 
 private theorem fastOutputReturn_pc_eq_state
     (s : State) (rest : List UInt256) :
-    (FastOutputTrace.fastOutputBeforeReturnState s (UInt256.ofNat 0x13fc) rest).pc =
+    (FastOutputTrace.fastOutputBeforeReturnState s (UInt256.ofNat 0x13f7) rest).pc =
       fastOutputReturn.pc := by
   calc
-    (FastOutputTrace.fastOutputBeforeReturnState s (UInt256.ofNat 0x13fc) rest).pc =
-        StackRoundTrace.pcAfter (UInt256.ofNat 0x13fc)
+    (FastOutputTrace.fastOutputBeforeReturnState s (UInt256.ofNat 0x13f7) rest).pc =
+        StackRoundTrace.pcAfter (UInt256.ofNat 0x13f7)
           FastOutputTemplate.fastOutputBeforeReturnTemplate := by rfl
     _ = StackRoundTrace.pcAfter fastOutputSite.startPC
           FastOutputTemplate.fastOutputBeforeReturnTemplate := by
@@ -220,10 +220,10 @@ private theorem runFastOutputReturn
     (s : State) (rest : List UInt256)
     (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock fastOutputReturnPath
-      (FastOutputTrace.fastOutputBeforeReturnState s (UInt256.ofNat 0x13fc) rest) =
-      some (FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x13fc) rest) := by
+      (FastOutputTrace.fastOutputBeforeReturnState s (UInt256.ofNat 0x13f7) rest) =
+      some (FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x13f7) rest) := by
   let t := FastOutputTrace.fastOutputBeforeReturnState s
-    (UInt256.ofNat 0x13fc) rest
+    (UInt256.ofNat 0x13f7) rest
   have hrun_t : t.halt = .Running := by
     simpa [t, FastOutputTrace.fastOutputBeforeReturnState] using hrun
   have hpc_t : t.pc = fastOutputReturn.pc := by
@@ -235,23 +235,23 @@ private theorem runFastOutputReturn
     simpa [t, FastOutputTrace.fastOutputBeforeReturnState] using h
   have hpre_raw :
       StackRoundTrace.runInstrSeq FastOutputTemplate.fastOutputBeforeReturnTemplate
-          {s with pc := UInt256.ofNat 0x13fc, stack := rest} = some t := by
+          {s with pc := UInt256.ofNat 0x13f7, stack := rest} = some t := by
     simpa [t] using
       (FastOutputTrace.runInstrSeq_fastOutput_beforeReturn s
-        (UInt256.ofNat 0x13fc) rest hstack hrun)
+        (UInt256.ofNat 0x13f7) rest hstack hrun)
   have hfull_raw :
       StackRoundTrace.runInstrSeq FastOutputTemplate.fastOutputTemplate
-          {s with pc := UInt256.ofNat 0x13fc, stack := rest} =
+          {s with pc := UInt256.ofNat 0x13f7, stack := rest} =
         some (FastOutputTrace.afterFastReturn t t.pc rest) := by
     have h := DenseScheduleTrace.runInstrSeq_append_running hpre_raw
       (by simpa [t, FastOutputTrace.fastOutputBeforeReturnState] using hrun)
       hret_raw
     simpa [FastOutputTemplate.fastOutputTemplate] using h
   have hfull_trace := FastOutputTrace.runInstrSeq_fastOutput s
-    (UInt256.ofNat 0x13fc) rest hstack hrun
+    (UInt256.ofNat 0x13f7) rest hstack hrun
   have hstate :
       FastOutputTrace.afterFastReturn t t.pc rest =
-      FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x13fc) rest :=
+      FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x13f7) rest :=
     Option.some.inj (hfull_raw.symm.trans hfull_trace)
   have hrun_instr :
       Stepper.runInstr (.op .RETURN) t =
@@ -296,11 +296,11 @@ def gasSteps_fastOutput
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
       GasSteps
-      {s with pc := UInt256.ofNat 0x13fc, stack := rest}
-      (FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x13fc) rest) := by
-  let entry : State := {s with pc := UInt256.ofNat 0x13fc, stack := rest}
+      {s with pc := UInt256.ofNat 0x13f7, stack := rest}
+      (FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x13f7) rest) := by
+  let entry : State := {s with pc := UInt256.ofNat 0x13f7, stack := rest}
   let middle : State := FastOutputTrace.fastOutputBeforeReturnState s
-    (UInt256.ofNat 0x13fc) rest
+    (UInt256.ofNat 0x13f7) rest
   have hentry_code : entry.executionEnv.code = Artifact.submissionArtifact.code := by
     simpa [entry] using hcode
   have hentry_fork : entry.fork = .Osaka := by
@@ -318,7 +318,7 @@ def gasSteps_fastOutput
         some middle := by
     simpa [entry, middle] using
       (FastOutputTrace.runInstrSeq_fastOutput_beforeReturn s
-        (UInt256.ofNat 0x13fc) rest hstack hrun)
+        (UInt256.ofNat 0x13f7) rest hstack hrun)
   have hlocated : Stepper.runLocatedBlock fastOutputSite.path entry = some middle := by
     have heq := StackRoundTrace.runLocatedBlock_eq_runInstrSeq_site
       fastOutputSite entry hentry_pc (by
@@ -342,7 +342,7 @@ def gasSteps_fastOutput
         middle.executionEnv.fork middle.executionEnv.codeAddr = false := by
     simpa [middle, FastOutputTrace.fastOutputBeforeReturnState] using hnp
   have hreturn : GasSteps middle
-      (FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x13fc) rest) := by
+      (FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x13f7) rest) := by
     apply Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
       fastOutputReturnPath
     · exact hmiddle_code

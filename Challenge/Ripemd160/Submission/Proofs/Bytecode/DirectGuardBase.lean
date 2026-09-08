@@ -72,7 +72,7 @@ def tailPath : List Located :=
    pushAt 52 2 364, opAt 53 .JUMPI]
 
 def returnPath : List Located :=
-  [pushAt 54 20 972889429405991776604892044862621566948497025487,
+  [pushAt 54 20 972889429405991776604892044862621566948497025482,
    pushAt 55 0 0, opAt 56 .MSTORE, pushAt 57 1 32,
    pushAt 58 0 0, opAt 59 .RETURN]
 

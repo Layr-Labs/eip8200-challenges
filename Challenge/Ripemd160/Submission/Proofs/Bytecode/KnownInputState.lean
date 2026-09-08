@@ -16,19 +16,19 @@ open EvmSemantics.EVM
 
 def legacyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x12e1
+    pc := UInt256.ofNat 0x12dc
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x410,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 def sizeMatched (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x126c
+    pc := UInt256.ofNat 0x1267
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x410,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 def sizeFailed (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x1379
+    pc := UInt256.ofNat 0x1374
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x410,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
@@ -63,7 +63,7 @@ def accState (s : State) (input : ByteArray) (i pc n : Nat) : State :=
 
 def selectorEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x17b9
+    pc := UInt256.ofNat 0x17b4
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x410,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 

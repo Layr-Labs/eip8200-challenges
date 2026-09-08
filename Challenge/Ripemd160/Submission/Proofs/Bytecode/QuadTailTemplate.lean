@@ -23,7 +23,7 @@ open Challenge.EvmProof
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTail
 
-def factor : UInt256 := UInt256.ofNat 0x100000001
+def factor : UInt256 := UInt256.ofNat 0x0fffffffc
 
 def tailStartPC : UInt256 := UInt256.ofNat 5058
 def tailJumpPC : UInt256 := UInt256.ofNat 5115

@@ -11,7 +11,7 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
 
 def doneState (input : ByteArray) : State :=
-  stS input 5192 [UInt256.ofNat (scalarAt 4), 128, scanAcc input 4, P7, M, m7, P, m8]
+  stS input 5187 [UInt256.ofNat (scalarAt 4), 128, scanAcc input 4, P7, M, m7, P, m8]
 
 def gasSteps_last (input : ByteArray) (hsize : input.size = 128) :
     GasSteps (compareState input 3 (scalarAt 3) (scanAcc input 3))
