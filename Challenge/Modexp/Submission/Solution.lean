@@ -1,5 +1,5 @@
 import Challenge.Modexp.Benchmark.Artifact
-import Challenge.Modexp.Submission.Proofs.Fast.ShiftCorrect
+import Challenge.Modexp.Submission.Proofs.Fast.RrLeadingCorrect
 import Challenge.Modexp.Submission.Proofs.Fast.WindowCorrect
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitCorrect
 
@@ -12,19 +12,21 @@ namespace Challenge.Modexp.Benchmark
 /-- Correctness of the submitted MODEXP bytecode once the exact fixed-width
 window route has been instantiated against regenerated artifact facts.
 
-Instruction 0 is `PUSH2 1314; JUMP`, so every execution enters the code appended
-at byte 1314.  That code returns the result itself for an odd modulus wider than
-32 bytes, and otherwise reaches the reference program body's `JUMPDEST` at
-pc 1196 with an empty stack and untouched memory. `WindowCorrect` joins the
-unchanged fast success proof to a route-aware reference body: a window miss
-must restore the certified legacy state at pc517, while a hit returns the
+Instruction 0 is `PUSH2 3924; JUMP`, so every execution enters the RSA snipe
+guard appended at byte 3924.  An RSA exact match returns the hardcoded result;
+otherwise the guard reaches the legacy fast-path entry at pc 1314 with an empty
+stack and untouched memory.  That code returns the result itself for an odd
+modulus wider than 32 bytes, and otherwise reaches the reference program body's
+`JUMPDEST` at pc 1196 with an empty stack and untouched memory. `WindowCorrect`
+joins the unchanged fast success proof to a route-aware reference body: a window
+miss must restore the certified legacy state at pc517, while a hit returns the
 specified result. -/
 theorem candidateFromWindow
     (route : Challenge.Modexp.Submission.Proofs.Bytecode.WindowRoute.Route) :
     Challenge.Modexp.Correct bytecode := by
   change Challenge.Modexp.Correct Challenge.Modexp.submissionBytecode
   exact Challenge.Modexp.Submission.Proofs.Fast.WindowCorrect.submission_correct_of
-    route Challenge.Modexp.Submission.Proofs.Fast.Shift.gasSteps_handled
+    route Challenge.Modexp.Submission.Proofs.Fast.Exp.gasSteps_handled
 
 /-- Universal correctness of the exact submitted bytecode, including the
 concrete fixed-width window route and the complete legacy fallback. -/

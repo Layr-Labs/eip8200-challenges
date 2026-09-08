@@ -14,9 +14,9 @@ def framed (template : State) (pc : Nat) (stack : List UInt256) : State :=
   { template with pc := UInt256.ofNat pc, stack := stack }
 
 @[simp] private theorem advanceHeadPCs (index : Nat)
-    (hlo : 2171 ≤ index) (hhi : index ≤ 2173) :
+    (hlo : 2319 ≤ index) (hhi : index ≤ 2321) :
     Artifact.submissionArtifact.instructionPC index =
-      ([3542,3543,3545] : List Nat)[index - 2171]! := by
+      [3547, 3548, 3550][index - 2319]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -26,8 +26,8 @@ theorem run (template : State)
     (hpointer : pointerNat < 160) (hrest : rest.length ≤ 1000)
     (hrun : template.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (loopAdvancePath.take 3)
-      (framed template 3542 (word :: pointer :: accumulator :: modulus :: rest)) =
-    some (framed template 3546
+      (framed template 3547 (word :: pointer :: accumulator :: modulus :: rest)) =
+    some (framed template 3551
       (UInt256.ofNat (pointerNat + 4) :: accumulator :: modulus :: rest)) := by
   have hlt : pointerNat + 4 < 2 ^ 256 := by omega
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat

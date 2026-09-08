@@ -134,10 +134,10 @@ def gasSteps_headerFromBody (input : ByteArray) :
   exact (gasSteps_tramp7Dest input).trans <|
     (gasSteps_headerLoad input).trans (gasSteps_headerCheck input)
 
-/-- Entry hop into the appended fast path. -/
+/-- Entry hop into the appended RSA snipe guard. -/
 def gasSteps_entryHop (input : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (trampolineState input 1314) := gasSteps_tramp0 input
+      (trampolineState input 3924) := gasSteps_tramp0 input
 
 /-- The reference header block, prefixed by whatever trace reaches the body
 `JUMPDEST` at pc 1196.  The appended fast path supplies that prefix on the

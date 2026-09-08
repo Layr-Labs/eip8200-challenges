@@ -11,14 +11,14 @@ open EvmSemantics.EVM
 set_option linter.unusedSimpArgs false in
 theorem run_tramp0 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path
-      (initialState submissionBytecode input 0) = some (trampolineState input 1314) := by
+      (initialState submissionBytecode input 0) = some (trampolineState input 3924) := by
   have hzero : (0 : UInt256).toNat = 0 := by decide
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 0) (b := 3) (by norm_num : 0 + 3 < 2 ^ 256)
-  have hdest : (1314 : UInt256).toNat = 1314 := by decide
-  have hjump : Decode.isValidJumpDest submissionBytecode 1314 = true :=
-    Artifact.isValidJumpDest_index 977 (by rfl)
-  have hdestWord : (1314 : UInt256) = UInt256.ofNat 1314 := by decide
+  have hdest : (3924 : UInt256).toNat = 3924 := by decide
+  have hjump : Decode.isValidJumpDest submissionBytecode 3924 = true :=
+    Artifact.isValidJumpDest_index 2589 (by rfl)
+  have hdestWord : (3924 : UInt256) = UInt256.ofNat 3924 := by decide
   simp [tramp0Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     trampolineState, initialState, hzero, hadd, hdest, hjump, hdestWord]

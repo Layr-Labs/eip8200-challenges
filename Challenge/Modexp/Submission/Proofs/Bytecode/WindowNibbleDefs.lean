@@ -34,32 +34,29 @@ NOT definitionally equal; `mulMod_comm` below is what bridges them, and every
 statement downstream keeps the accumulator-first spelling. -/
 def lookupProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .push 8 5, .op .SHL, .op .MLOAD,
-   .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP]
+   .op (.Dup ⟨2, by decide⟩), .push 1 5, .op .SHL, .op .MLOAD,
+   .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP, .op .JUMPDEST]
 
-
-/-- Consume the no-longer-needed nibble while loading the table word.
-This eight-instruction block is twenty-three bytes; it also replaces the following
-external POP. The square-state and final word-state interfaces are unchanged. -/
-def fusedSquareLookupProgram : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨1, by decide⟩),
-   .push 15 5, .op .SHL, .op .MLOAD, .op .MULMOD,
-   .op (.Swap ⟨3, by decide⟩), .op .POP]
-
-/-- Stage four moduli before squaring: four pure squarings
-(thirteen instructions, thirteen bytes) ending on the seven-slot square state.
-The cleanup and table lookup are fused separately. -/
-def fourSquareProgram : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨6, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩), .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩), .op .MULMOD,
+def beginSquareProgram : List Instr :=
+  [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
    .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
 
-def squareLookupProgram : List Instr :=
-  fourSquareProgram ++ fusedSquareLookupProgram
+def topSquareProgram : List Instr :=
+  [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
+
+def finishSquareProgram : List Instr :=
+  [.op (.Swap ⟨4, by decide⟩), .op .POP,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+
+/-- Keep the accumulator at the top between squarings. The six padding
+JUMPDESTs retain the certified layout while saving nine gas per nibble. -/
+def fourSquareProgram : List Instr :=
+  beginSquareProgram ++ topSquareProgram ++ topSquareProgram ++
+    topSquareProgram ++ finishSquareProgram
+
+def squareLookupProgram : List Instr := fourSquareProgram ++ lookupProgram
 
 def advancePC : Nat → UInt256 → UInt256
   | 0, pc => pc
@@ -121,13 +118,6 @@ def nibbleState (template : State) (pc : UInt256) (base modulus : UInt256)
       rest
     memory := WindowTableMemory.tableMemory base modulus
     activeWords := UInt256.ofNat 16 }
-
-/-- The table product state with the consumed nibble removed. -/
-def droppedNibbleState (template : State) (pc : UInt256) (base modulus : UInt256)
-    (nibble : Nat) (byte word pointer accumulator : UInt256)
-    (rest : List UInt256) : State :=
-  let state := nibbleState template pc base modulus nibble byte word pointer accumulator rest
-  { state with stack := state.stack.tail }
 
 theorem shift_nibble (nibble : Nat) (hnibble : nibble < 16) :
     UInt256.shiftLeft (UInt256.ofNat nibble) (UInt256.ofNat 5) =

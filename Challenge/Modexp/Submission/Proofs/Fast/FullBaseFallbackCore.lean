@@ -71,13 +71,13 @@ def fallbackStoreProgram : List Instr :=
 
 def fallbackCountState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3664
+  { s with pc := UInt256.ofNat 3669
            stack := UInt256.ofNat (pbOf bsize) :: outer n bsize esize msize
            memory := memory }
 
 def fallbackWordState (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3678
+  { s with pc := UInt256.ofNat 3683
            stack := UInt256.ofNat (topLimbOf input bsize) ::
              UInt256.ofNat (pbOf bsize) :: outer n bsize esize msize
            memory := memory }

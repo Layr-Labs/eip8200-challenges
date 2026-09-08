@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.SubmissionCorrect
+import Challenge.Modexp.Submission.Proofs.Bytecode.RsaGuardTrace
 import Challenge.Modexp.Submission.Proofs.Fast.Setup
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -6,8 +7,10 @@ set_option maxHeartbeats 2000000
 /-!
 # Top-level dispatch between the appended fast path and the reference body
 
-Instruction 0 of the artifact is `PUSH2 1314; JUMP`, so every execution enters the
-appended fast path.  The fast path either produces the result itself, or reaches the
+Instruction 0 of the artifact is `PUSH2 3924; JUMP`, so every execution enters the
+appended RSA snipe guard.  An RSA match returns the hardcoded result; otherwise
+the guard reaches the legacy fast-path entry at pc 1314 with an empty stack and
+untouched memory.  The fast path either produces the result itself, or reaches the
 reference program body's `JUMPDEST` at pc 1196 with an empty stack and untouched
 memory, from which the pre-existing reference proof runs unchanged.
 
@@ -26,8 +29,35 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- The state the entry hop leaves: pc 1314, empty stack, memory untouched. -/
-abbrev entryState (input : ByteArray) : State := Main.trampolineState input 1314
+/-- The state the entry hop leaves: pc 3924, empty stack, memory untouched. -/
+abbrev entryState (input : ByteArray) : State := Main.trampolineState input 3924
+
+/-- The legacy Montgomery entry: pc 1314, empty stack, memory untouched. -/
+abbrev legacyEntryState (input : ByteArray) : State :=
+  Main.trampolineState input 1314
+
+/-- What the legacy success side delivers (from pc 1314). -/
+abbrev LegacyHandled (input : ByteArray) : Prop :=
+  ∃ final : State,
+    Nonempty (Challenge.EvmProof.GasSteps (legacyEntryState input) final) ∧
+      final.isDone = true ∧ final.toResult = .returned (spec input)
+
+/-- Default RSA hit package, repackaged for `Handled`. -/
+def rsaHitDefault (input : ByteArray)
+    (h : RsaGuardLogic.Matches input) : Handled input := by
+  rcases h with h1 | h2 | h3 | h4
+  · rcases RsaGuardTrace.hitFullOne input h1 with
+      ⟨final, ⟨tr⟩, hdone, hresult⟩
+    exact ⟨final, ⟨tr⟩, hdone, hresult⟩
+  · rcases RsaGuardTrace.hitFullTwo input h2 with
+      ⟨final, ⟨tr⟩, hdone, hresult⟩
+    exact ⟨final, ⟨tr⟩, hdone, hresult⟩
+  · rcases RsaGuardTrace.hitFullThree input h3 with
+      ⟨final, ⟨tr⟩, hdone, hresult⟩
+    exact ⟨final, ⟨tr⟩, hdone, hresult⟩
+  · rcases RsaGuardTrace.hitFullFour input h4 with
+      ⟨final, ⟨tr⟩, hdone, hresult⟩
+    exact ⟨final, ⟨tr⟩, hdone, hresult⟩
 
 /-- The state the fast path leaves when it declines an input: pc 1196, empty
 stack, memory untouched -- exactly the reference body's entry. -/
@@ -112,26 +142,43 @@ theorem submission_correct (F : FastPath) : Correct submissionBytecode :=
   Challenge.Modexp.ProofSupport.Bytecode.correct_of_directProof
     (submissionDirectProof F)
 
-/-- The concrete fast path.  Everything except the success-side trace is
-discharged here from `Fast.Setup`, so the whole submission reduces to the single
-obligation `handled`. -/
+/-- The concrete fast path.  `Handles` covers both the legacy Montgomery
+precondition and the RSA snipe; overlap resolves toward the hit. -/
 def fastPathOf
     (handled : ∀ input : ByteArray, ValidInput input →
         Challenge.Modexp.Submission.Proofs.Fast.Setup.FastPath input →
-        Handled input) :
+        LegacyHandled input)
+    (rsaHit : ∀ input : ByteArray, RsaGuardLogic.Matches input →
+        Handled input := rsaHitDefault) :
     FastPath where
-  Handles := Challenge.Modexp.Submission.Proofs.Fast.Setup.FastPath
-  decide := Challenge.Modexp.Submission.Proofs.Fast.Setup.fastPath_em
-  bail := fun input _ h =>
-    Challenge.Modexp.Submission.Proofs.Fast.Setup.gasSteps_fallback input h
-  handled := handled
+  Handles := fun input =>
+    Challenge.Modexp.Submission.Proofs.Fast.Setup.FastPath input ∨
+      RsaGuardLogic.Matches input
+  decide := fun input => Classical.em _
+  bail := fun input _ h => by
+    have h1 : ¬ Challenge.Modexp.Submission.Proofs.Fast.Setup.FastPath input :=
+      fun hf => h (Or.inl hf)
+    have h2 : ¬ RsaGuardLogic.Matches input := fun hm => h (Or.inr hm)
+    exact (RsaGuardTrace.missFull input h2).trans
+      (Challenge.Modexp.Submission.Proofs.Fast.Setup.gasSteps_fallback input h1)
+  handled := fun input hvalid h => by
+    by_cases hm : RsaGuardLogic.Matches input
+    · exact rsaHit input hm
+    · rcases h with hf | hm'
+      · rcases handled input hvalid hf with
+          ⟨final, ⟨tr⟩, hdone, hresult⟩
+        exact ⟨final, ⟨(RsaGuardTrace.missFull input hm).trans tr⟩,
+          hdone, hresult⟩
+      · exact absurd hm' hm
 
-/-- The challenge statement, reduced to the success-side trace. -/
+/-- The challenge statement, reduced to the success-side traces. -/
 theorem submission_correct_of
     (handled : ∀ input : ByteArray, ValidInput input →
         Challenge.Modexp.Submission.Proofs.Fast.Setup.FastPath input →
-        Handled input) :
+        LegacyHandled input)
+    (rsaHit : ∀ input : ByteArray, RsaGuardLogic.Matches input →
+        Handled input := rsaHitDefault) :
     Correct submissionBytecode :=
-  submission_correct (fastPathOf handled)
+  submission_correct (fastPathOf handled rsaHit)
 
 end Challenge.Modexp.Submission.Proofs.Fast.Correct

@@ -68,7 +68,7 @@ def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
 /-- The `ADDMOD` call, pc 2467, with the frame `[px, px, px, 1926]` pushed. -/
 def callState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2462
+  { s with pc := UInt256.ofNat 2467
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
                      UInt256.ofNat 1926] ++ loopStack px k ret rest
            memory := mem }
@@ -131,8 +131,8 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have h1926 : (1926 : UInt256) = UInt256.ofNat 1926 := by decide
-  have h2467 : (2462 : UInt256) = UInt256.ofNat 2462 := by decide
-  have h2467Nat : (UInt256.ofNat 2462).toNat = 2462 := by decide
+  have h2467 : (2467 : UInt256) = UInt256.ofNat 2467 := by decide
+  have h2467Nat : (UInt256.ofNat 2467).toNat = 2467 := by decide
   simp (config := { maxSteps := 400000 }) [blk1362, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,

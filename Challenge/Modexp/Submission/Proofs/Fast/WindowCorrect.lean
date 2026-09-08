@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowBodyCorrect
+import Challenge.Modexp.Submission.Proofs.Bytecode.RsaGuardTrace
 import Challenge.Modexp.Submission.Proofs.Fast.Setup
 
 set_option warningAsError true
@@ -30,20 +31,42 @@ private theorem withGas_initialState (code cd : ByteArray) (gas : Nat) :
     Challenge.EvmProof.withGas (initialState code cd 0) gas =
       initialState code cd gas := rfl
 
-/-- Package both outer cases as one successful initial-state execution. -/
+/-- Package the RSA snipe with the pre-existing fast/reference composition as
+one successful initial-state execution.  The entry hop now lands at pc 3924;
+an RSA match returns the hardcoded result, otherwise the guard reaches the
+old entry target at pc 1314 and the legacy composition runs unchanged. -/
 def handledOf (route : WindowRoute.Route)
     (fastHandled : ∀ input : ByteArray, ValidInput input →
       Setup.FastPath input → FastHandled input)
     (input : ByteArray) (hvalid : ValidInput input) :
     WindowBodyCorrect.Handled input := by
-  by_cases hfast : Setup.FastPath input
-  · rcases fastHandled input hvalid hfast with
-      ⟨final, ⟨fastTrace⟩, hdone, hresult⟩
-    exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans fastTrace⟩,
-      hdone, hresult⟩
-  · let bodyEntry := (Main.gasSteps_entryHop input).trans
-      (Setup.gasSteps_fallback input hfast)
-    exact WindowBodyCorrect.handledOf route input hvalid bodyEntry
+  by_cases hrsa : RsaGuardLogic.Matches input
+  · rcases hrsa with h1 | h2 | h3 | h4
+    · rcases RsaGuardTrace.hitFullOne input h1 with
+        ⟨final, ⟨hitTrace⟩, hdone, hresult⟩
+      exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans hitTrace⟩,
+        hdone, hresult⟩
+    · rcases RsaGuardTrace.hitFullTwo input h2 with
+        ⟨final, ⟨hitTrace⟩, hdone, hresult⟩
+      exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans hitTrace⟩,
+        hdone, hresult⟩
+    · rcases RsaGuardTrace.hitFullThree input h3 with
+        ⟨final, ⟨hitTrace⟩, hdone, hresult⟩
+      exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans hitTrace⟩,
+        hdone, hresult⟩
+    · rcases RsaGuardTrace.hitFullFour input h4 with
+        ⟨final, ⟨hitTrace⟩, hdone, hresult⟩
+      exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans hitTrace⟩,
+        hdone, hresult⟩
+  · let to1314 := (Main.gasSteps_entryHop input).trans
+      (RsaGuardTrace.missFull input hrsa)
+    by_cases hfast : Setup.FastPath input
+    · rcases fastHandled input hvalid hfast with
+        ⟨final, ⟨fastTrace⟩, hdone, hresult⟩
+      exact ⟨final, ⟨to1314.trans fastTrace⟩, hdone, hresult⟩
+    · let bodyEntry := to1314.trans
+        (Setup.gasSteps_fallback input hfast)
+      exact WindowBodyCorrect.handledOf route input hvalid bodyEntry
 
 private noncomputable def chosenFinal (route : WindowRoute.Route)
     (fastHandled : ∀ input : ByteArray, ValidInput input →

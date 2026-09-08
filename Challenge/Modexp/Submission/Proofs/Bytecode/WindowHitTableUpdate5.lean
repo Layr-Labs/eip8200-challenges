@@ -29,9 +29,10 @@ private def tableKernelState (template : State) (base modulus : UInt256)
     activeWords := UInt256.ofNat (power + 1) }
 
 @[simp] private theorem tablePCs (index : Nat)
-    (hlo : 1874 ≤ index) (hhi : index ≤ 1880) :
+    (hlo : 1888 ≤ index) (hhi : index ≤ 1896) :
     Artifact.submissionArtifact.instructionPC index =
-      ([3068,3069,3070,3071,3072,3073,3077] : List Nat)[index - 1874]! := by
+      ([3073, 3074, 3075, 3076, 3077, 3078, 3079, 3080, 3082]
+        : List Nat)[index - 1888]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -39,8 +40,8 @@ private theorem run_generic (template : State) (base modulus : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hrun : template.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock table5Path
-      (tableKernelState template base modulus 4 3068 rest) =
-        some (tableKernelState template base modulus 5 3078 rest) := by
+      (tableKernelState template base modulus 4 3073 rest) =
+        some (tableKernelState template base modulus 5 3083 rest) := by
   have h3 : rest.length + 3 < 1024 := by omega
   have h4 : rest.length + 4 < 1024 := by omega
   have h5 : rest.length + 5 < 1024 := by omega
@@ -65,7 +66,7 @@ private theorem run_generic (template : State) (base modulus : UInt256)
 
 theorem run_table5 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock table5Path
-      (tableState input 4 3068) = some (tableState input 5 3078) := by
+      (tableState input 4 3073) = some (tableState input 5 3083) := by
   have h := run_generic (Dispatch.wordEntryState input)
     (baseWord input) (modulusWord input) (routeStack input)
     (by simp [routeStack]) rfl
@@ -85,7 +86,7 @@ private def sound {s t : State}
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka path hcode hfork h hrun hnp
 
-def gasSteps_table5 (input : ByteArray) : TableUpdateStep input 4 3068 := by
+def gasSteps_table5 (input : ByteArray) : TableUpdateStep input 4 3073 := by
   exact sound table5Path (run_table5 input)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitTableUpdate5
