@@ -187,7 +187,7 @@ def gasSteps_hit (input : ByteArray) (sv ov acc : UInt256) (heq : acc = 0) :
 
 private def gasSteps_size64_test (input : ByteArray) :
     GasSteps (stS input 5205 [])
-      (stS input 5212 [5276,
+      (stS input 5212 [5275,
         UInt256.eq 64 (UInt256.ofNat input.size)]) := by
   have a := soundS (opAt 4080 .CALLDATASIZE)
     (blockOfS _ (pcFactS input 4080 5205 _ (by norm_num) (by rfl))
@@ -200,9 +200,9 @@ private def gasSteps_size64_test (input : ByteArray) :
     (blockOfS _ (pcFactS input 4082 5208 _ (by norm_num) (by rfl))
       (stepS_eq input 5208 64 (UInt256.ofNat input.size) []
         (by simp) (by norm_num)))
-  have d := soundS (pushAt 4083 2 5276)
+  have d := soundS (pushAt 4083 2 5275)
     (blockOfS _ (pcFactS input 4083 5209 _ (by norm_num) (by rfl))
-      (stepS_push input 5209 2 5276
+      (stepS_push input 5209 2 5275
         [UInt256.eq 64 (UInt256.ofNat input.size)]
         (by simp) (by decide) (by decide) (by norm_num)))
   exact a.trans (b.trans (c.trans d))
@@ -215,7 +215,7 @@ def gasSteps_skip64 (input : ByteArray)
   exact (gasSteps_size64_test input).trans
     (soundS (opAt 4084 .JUMPI)
       (blockOfS _ (pcFactS input 4084 5212 _ (by norm_num) (by rfl))
-        (stepS_jumpi_fall input 5212 5276
+        (stepS_jumpi_fall input 5212 5275
           (UInt256.eq 64 (UInt256.ofNat input.size)) []
           (by simp) (by norm_num) hc)))
 
