@@ -110,8 +110,25 @@ theorem run_shiftBody (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
       Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- Generic word identity; the quotient clamp itself is unchanged. -/
+private theorem addMod_comm (a b n : UInt256) :
+    UInt256.addMod a b n = UInt256.addMod b a n := by
+  unfold UInt256.addMod
+  by_cases h : n.val.val = 0
+  · simp [h]
+  · simp [h, Nat.add_comm]
+
 private theorem saturation_gt_eq_lt (a b : UInt256) : UInt256.gt a b = UInt256.lt b a := by
   rfl
+
+/-- `PUSH0; SUB` of a flag is `x - 0 = x`; the JUMPDEST pair preserves it. -/
+private theorem sub_zero (x : UInt256) : x - UInt256.ofNat 0 = x := by
+  have hx : x.toNat < 2 ^ 256 := x.val.isLt
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_sub, Challenge.EvmProof.Word.word_toNat_ofNat]
+  have hmod : (2 ^ 256 + x.toNat) % 2 ^ 256 = x.toNat := by
+    rw [Nat.add_mod, Nat.mod_self, Nat.zero_add, Nat.mod_mod]
+    exact Nat.mod_eq_of_lt hx
+  simpa using hmod
 
 private theorem ofNat_zero_lt_eq_double_isZero (x : UInt256) :
     UInt256.lt (UInt256.ofNat 0) x = UInt256.isZero (UInt256.isZero x) :=
@@ -151,7 +168,7 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, saturation_gt_eq_lt]
+      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt, sub_zero]
 
 /-- `blk3069`: the limb-pass frame `[paj, ptj, 0, q]`. -/
 theorem run_macSetup (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)

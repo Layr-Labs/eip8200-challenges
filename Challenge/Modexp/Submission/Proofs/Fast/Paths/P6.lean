@@ -94,7 +94,7 @@ def blk1362 :
    opAt 1364 (.Dup ⟨2, by decide⟩),
    opAt 1365 (.Dup ⟨0, by decide⟩),
    opAt 1366 (.Dup ⟨0, by decide⟩),
-   pushAt 1367 2 2480,
+   pushAt 1367 2 2462,
    opAt 1368 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

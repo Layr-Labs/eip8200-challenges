@@ -25,7 +25,7 @@ def widthInstructions : List Instr :=
    .op .XOR,
    .op .OR,
    .op .ISZERO,
-   .push 2 3037,
+   .push 2 3019,
    .op .JUMPI]
 
 theorem width_eq : WindowNineEntry.widthProgram = widthInstructions := by rfl
@@ -44,7 +44,7 @@ def baseInstructions : List Instr :=
   [.op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
    .op .ISZERO,
-   .push 2 3422,
+   .push 2 3404,
    .op .JUMPI]
 
 theorem base_eq : WindowNineEntry.baseProgram = baseInstructions := by rfl
@@ -56,7 +56,7 @@ def modulusInstructions : List Instr :=
    .op .CALLDATALOAD,
    .op (.Dup ⟨0, by decide⟩),
    .op .ISZERO,
-   .push 2 3414,
+   .push 2 3396,
    .op .JUMPI]
 
 theorem modulus_eq : WindowNineEntry.modulusProgram = modulusInstructions := by rfl
@@ -392,7 +392,7 @@ def iterationInstructions : List Instr :=
    .op (.Dup ⟨5, by decide⟩),
    .op .SUB,
    .op (.Swap ⟨4, by decide⟩),
-   .push 2 3201,
+   .push 2 3183,
    .op .JUMPI]
 
 theorem iteration_eq : WindowNineLoop.iterationProgram = iterationInstructions := by rfl
