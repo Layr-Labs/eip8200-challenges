@@ -1,4 +1,4 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleLow
 
 set_option warningAsError true
 
@@ -48,15 +48,15 @@ def highPrepProgram (index : Nat) : List Instr :=
    .op (.Dup ⟨0, by decide⟩), .push 1 4, .op .SHR]
 
 def lowPrepProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .push 1 15, .op .AND]
+  [.push 1 15, .op .AND]
 
-def finishProgram : List Instr := [.op .POP]
+def finishProgram : List Instr := []
 
 def highProgram (index : Nat) : List Instr :=
   highPrepProgram index ++ squareLookupProgram
 
 def lowProgram : List Instr :=
-  lowPrepProgram ++ squareLookupProgram ++ finishProgram
+  lowPrepProgram ++ lowSquareLookupProgram ++ finishProgram
 
 def byteProgram (index : Nat) : List Instr :=
   highProgram index ++ lowProgram

@@ -756,9 +756,9 @@ private theorem fastPCAnchor23 :
 and direct-RR helpers occupy indices 1831..2360 and receive their own tables in
 their proof modules. -/
 @[simp] theorem fullBasePC (i : Nat)
-    (hi : 2237 ≤ i) (hii : i ≤ 2289) :
+    (hi : 2229 ≤ i) (hii : i ≤ 2281) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3601,3602,3603,3604,3605,3606,3607,3609,3610,3611,3612,3615,3616,3617,3619,3622,3623,3626,3629,3632,3635,3638,3639,3640,3643,3646,3649,3652,3655,3656,3657,3658,3660,3661,3663,3664,3665,3666,3668,3669,3670,3672,3673,3675,3676,3677,3678,3679,3682,3683,3684,3686,3689] : List Nat)[i - 2237]! := by
+      ([3601,3602,3603,3604,3605,3606,3607,3609,3610,3611,3612,3615,3616,3617,3619,3622,3623,3626,3629,3632,3635,3638,3639,3640,3643,3646,3649,3652,3655,3656,3657,3658,3660,3661,3663,3664,3665,3666,3668,3669,3670,3672,3673,3675,3676,3677,3678,3679,3682,3683,3684,3686,3689] : List Nat)[i - 2229]! := by
   interval_cases i <;> decide
 
 theorem jumpDest1196 :
@@ -935,18 +935,18 @@ theorem jumpDest2995 :
 
 theorem jumpDest3571 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3566 = true :=
-  Artifact.isValidJumpDest_index 2214 (by rfl)
+  Artifact.isValidJumpDest_index 2206 (by rfl)
 
 theorem jumpDest3606 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3601 = true :=
-  Artifact.isValidJumpDest_index 2237 (by rfl)
+  Artifact.isValidJumpDest_index 2229 (by rfl)
 
 theorem jumpDest3644 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3639 = true :=
-  Artifact.isValidJumpDest_index 2259 (by rfl)
+  Artifact.isValidJumpDest_index 2251 (by rfl)
 
 theorem jumpDest3661 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3656 = true :=
-  Artifact.isValidJumpDest_index 2266 (by rfl)
+  Artifact.isValidJumpDest_index 2258 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

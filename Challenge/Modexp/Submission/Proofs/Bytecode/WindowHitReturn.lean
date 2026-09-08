@@ -31,9 +31,9 @@ private def outputState (template : State) (pc active : Nat)
 @[simp] private theorem zero_toNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
 
 @[simp] private theorem returnPCs (index : Nat)
-    (hlo : 2200 ≤ index) (hhi : index ≤ 2213) :
+    (hlo : 2192 ≤ index) (hhi : index ≤ 2205) :
     Artifact.submissionArtifact.instructionPC index =
-      ([3550,3551,3552,3553,3554,3556,3557,3558,3559,3560,3561,3562,3564,3565] : List Nat)[index - 2200]! := by
+      ([3550,3551,3552,3553,3554,3556,3557,3558,3559,3560,3561,3562,3564,3565] : List Nat)[index - 2192]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in

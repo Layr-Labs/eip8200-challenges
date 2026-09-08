@@ -12,9 +12,9 @@ open EvmSemantics.EVM
 open WindowHitPaths
 
 @[simp] private theorem advanceJumpPCs (index : Nat)
-    (hlo : 2198 ≤ index) (hhi : index ≤ 2199) :
+    (hlo : 2190 ≤ index) (hhi : index ≤ 2191) :
     Artifact.submissionArtifact.instructionPC index =
-      ([3546,3549] : List Nat)[index - 2198]! := by
+      ([3546,3549] : List Nat)[index - 2190]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in
