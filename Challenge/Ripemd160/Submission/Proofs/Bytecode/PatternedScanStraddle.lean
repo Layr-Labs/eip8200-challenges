@@ -20,7 +20,15 @@ open PatternedInputData PatternedDigest PatternedGuardSpec PatternedSwar
 theorem hdest5170 : Decode.isValidJumpDest submissionBytecode 0x14e = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 190 (by rfl)
 
-/-- The correction block, with every stack slot symbolic. -/
+/-- Strength reduction is valid for every 256-bit word, including wraparound. -/
+private theorem straddle_shift_three (v : UInt256) :
+    UInt256.shiftLeft v 3 = (8 : UInt256) * v := by
+  apply Challenge.EvmProof.Word.word_ext
+  change (UInt256.ofNat ((v.toNat <<< 3) % UInt256.size)).toNat =
+    ((8 : Fin UInt256.size) * v.val).val
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat, Fin.val_mul]
+  norm_num [Nat.shiftLeft_eq, UInt256.size, UInt256.toNat, Nat.mul_comm]
+
 def gasSteps_straddle_sym (input : ByteArray) (E S sv ov acc : UInt256) :
     GasSteps (stS input 423 [E, S, sv, ov, acc, P7, M, m7, P, m8])
       (stS input 334 [(UInt256.xor (UInt256.land m8 E) (((11 : UInt256) * (UInt256.shiftRight M ((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))))) + (UInt256.land m7 E))), S, ((11 : UInt256) + sv), ov, acc, P7, M, m7, P, m8]) := by
@@ -51,12 +59,13 @@ def gasSteps_straddle_sym (input : ByteArray) (E S sv ov acc : UInt256) :
   have step2997 := soundS (opAt 247 .SUB)
     (blockOfS _ (pcFactS input 247 0x1b2 [(27 : UInt256), ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2997)
       (stepS_sub input 0x1b2 ((27 : UInt256)) (((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))) [M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2998 := soundS (pushAt 248 1 8)
+  have step2998 := soundS (pushAt 248 1 3)
     (blockOfS _ (pcFactS input 248 0x1b3 [((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2998)
-      (stepS_push input 0x1b3 1 (8 : UInt256) [((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have step2999 := soundS (opAt 249 .MUL)
-    (blockOfS _ (pcFactS input 249 0x1b5 [(8 : UInt256), ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2999)
-      (stepS_mul input 0x1b5 ((8 : UInt256)) (((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))) [M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+      (stepS_push input 0x1b3 1 (3 : UInt256) [((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have step2999 := soundS (opAt 249 .SHL)
+    (blockOfS _ (pcFactS input 249 0x1b5 [(3 : UInt256), ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2999)
+      (stepS_shl input 0x1b5 ((3 : UInt256)) (((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))) [M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  rw [straddle_shift_three] at step2999
   have step3000 := soundS (opAt 250 .SHR)
     (blockOfS _ (pcFactS input 250 0x1b6 [((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256))))), M, E, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc3000)
       (stepS_shr input 0x1b6 (((8 : UInt256) * ((27 : UInt256) - ((5 : UInt256) * (UInt256.shiftRight ov (8 : UInt256)))))) (M) [E, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
