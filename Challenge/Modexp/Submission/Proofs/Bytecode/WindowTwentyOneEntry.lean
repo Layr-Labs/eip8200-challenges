@@ -2,7 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 
 set_option warningAsError true
 
-namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineEntry
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneEntry
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
@@ -94,36 +94,36 @@ theorem run_miss (template : State) (rest : List UInt256) (hrest : rest.length �
     Challenge.EvmProof.Word.word_toNat_ofNat, htarget]
 
 def baseProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩)] ++ testProgram (UInt256.ofNat 3042)
+  [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩)] ++ testProgram (UInt256.ofNat 3298)
 
 theorem run_base (template : State) (baseSize : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hbase : rest[0]? = some baseSize)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 3042 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 3298 = true) :
     runInstructions baseProgram (framed template (UInt256.ofNat 2657) rest) =
-    some (framed template (if baseSize.toNat = 0 then UInt256.ofNat 3042 else UInt256.ofNat 2664) rest) := by
+    some (framed template (if baseSize.toNat = 0 then UInt256.ofNat 3298 else UInt256.ofNat 2664) rest) := by
   have hcap : rest.length < 1024 := by omega
   have hh : runInstructions [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩)]
       (framed template (UInt256.ofNat 2657) rest) =
       some (framed template (UInt256.ofNat 2659) (baseSize :: rest)) := by
     simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr, hcap,
       hbase, Challenge.EvmProof.Word.succ_ofNat_mod]
-  have ht := run_test template (UInt256.ofNat 2659) (UInt256.ofNat 3042) baseSize rest hrest htarget
+  have ht := run_test template (UInt256.ofNat 2659) (UInt256.ofNat 3298) baseSize rest hrest htarget
   have both := runInstructions_append_some _ _ _ _ _ hh ht
   have hpc : advancePC 5 (UInt256.ofNat 2659) = UInt256.ofNat 2664 := by decide
   simpa only [baseProgram, framed, hpc] using both
 
 def modulusProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .op (.Dup ⟨0, by decide⟩)] ++
-    testProgram (UInt256.ofNat 3034)
+    testProgram (UInt256.ofNat 3290)
 
 theorem run_modulus (template : State) (modulusOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 999)
     (hoffset : rest[5]? = some modulusOffset)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 3034 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 3290 = true) :
     let modulus := MachineState.readWord template.executionEnv.calldata modulusOffset.toNat
     runInstructions modulusProgram (framed template (UInt256.ofNat 2664) rest) =
-    some (framed template (if modulus.toNat = 0 then UInt256.ofNat 3034 else UInt256.ofNat 2672)
+    some (framed template (if modulus.toNat = 0 then UInt256.ofNat 3290 else UInt256.ofNat 2672)
       (modulus :: rest)) := by
   let modulus := MachineState.readWord template.executionEnv.calldata modulusOffset.toNat
   have hcap0 : rest.length < 1024 := by omega
@@ -133,7 +133,7 @@ theorem run_modulus (template : State) (modulusOffset : UInt256)
       some (framed template (UInt256.ofNat 2667) (modulus :: modulus :: rest)) := by
     simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr, hcap0, hcap1,
       hoffset, modulus, Challenge.EvmProof.Word.succ_ofNat_mod]
-  have ht := run_test template (UInt256.ofNat 2667) (UInt256.ofNat 3034) modulus
+  have ht := run_test template (UInt256.ofNat 2667) (UInt256.ofNat 3290) modulus
     (modulus :: rest) (by simp only [List.length_cons]; omega) htarget
   have both := runInstructions_append_some _ _ _ _ _ hh ht
   have hpc : advancePC 5 (UInt256.ofNat 2667) = UInt256.ofNat 2672 := by decide
@@ -167,4 +167,4 @@ theorem run_normalize (template : State) (modulus baseOffset : UInt256)
     Challenge.EvmProof.Word.literal_eq_ofNat, hshift,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
-end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineEntry
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneEntry

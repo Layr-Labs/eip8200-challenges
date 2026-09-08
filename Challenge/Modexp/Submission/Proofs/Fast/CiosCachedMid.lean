@@ -24,7 +24,7 @@ theorem run_middle (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224+32*n)) :
     runInstructions midProgram
       (CiosCached.midState s mem paj ptj c bi pa pb n i dst ret rest) =
-    some (CiosCached.l2At 4719 s (midMem mem c) bi (rowMu mem n) (rowC0 mem n)
+    some (CiosCached.l2At 4975 s (midMem mem c) bi (rowMu mem n) (rowC0 mem n)
       pa pb n i 0 dst ret rest) := by
   have hml' : MachineState.readWord (midMem mem c) 9408 = UInt256.ofNat (32*n-32) :=
     (read_mid mem c 9408 (Or.inr (by decide))).trans hml

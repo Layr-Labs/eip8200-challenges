@@ -26,8 +26,8 @@ theorem program_eq : pointersProgram = (firstProgram ++ middleProgram) ++ lastPr
 theorem run_first (s : State) (width pa pb flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions firstProgram
-      (framed s (UInt256.ofNat 4317) ([width, pa, pb, flag, negative32, allOnes, dst, ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 4324)
+      (framed s (UInt256.ofNat 4573) ([width, pa, pb, flag, negative32, allOnes, dst, ret] ++ rest)) =
+    some (framed s (UInt256.ofNat 4580)
       ([pb+width-UInt256.ofNat 32, width, pa, pb, flag, negative32, allOnes, dst, ret] ++ rest)) := by
   have hc7 : rest.length+8 < 1024 := by omega
   have hc8 : rest.length+9 < 1024 := by omega
@@ -40,8 +40,8 @@ theorem run_first (s : State) (width pa pb flag dst ret : UInt256)
 theorem run_middle (s : State) (pbi width pa pb flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions middleProgram
-      (framed s (UInt256.ofNat 4324) ([pbi, width, pa, pb, flag, negative32, allOnes, dst, ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 4333)
+      (framed s (UInt256.ofNat 4580) ([pbi, width, pa, pb, flag, negative32, allOnes, dst, ret] ++ rest)) =
+    some (framed s (UInt256.ofNat 4589)
       ([pbi, pa+width, pb-UInt256.ofNat 32, flag, negative32, allOnes, dst, ret] ++ rest)) := by
   have hc7 : rest.length+8 < 1024 := by omega
   have hc8 : rest.length+9 < 1024 := by omega
@@ -55,8 +55,8 @@ theorem run_middle (s : State) (pbi width pa pb flag dst ret : UInt256)
 theorem run_last (s : State) (pbi pa pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions lastProgram
-      (framed s (UInt256.ofNat 4333) ([pbi, pa, pbEnd, flag, negative32, allOnes, dst, ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 4339)
+      (framed s (UInt256.ofNat 4589) ([pbi, pa, pbEnd, flag, negative32, allOnes, dst, ret] ++ rest)) =
+    some (framed s (UInt256.ofNat 4595)
       ([pbi, pa-UInt256.ofNat 32, pbEnd, flag, negative32, allOnes, dst, ret] ++ rest)) := by
   have hc7 : rest.length+8 < 1024 := by omega
   have hc8 : rest.length+9 < 1024 := by omega
@@ -69,8 +69,8 @@ theorem run_last (s : State) (pbi pa pbEnd flag dst ret : UInt256)
 theorem run_words (s : State) (width pa pb flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions pointersProgram
-      (framed s (UInt256.ofNat 4317) ([width, pa, pb, flag, negative32, allOnes, dst, ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 4339)
+      (framed s (UInt256.ofNat 4573) ([width, pa, pb, flag, negative32, allOnes, dst, ret] ++ rest)) =
+    some (framed s (UInt256.ofNat 4595)
       ([pb+width-UInt256.ofNat 32, pa+width-UInt256.ofNat 32, pb-UInt256.ofNat 32,
         flag, negative32, allOnes, dst, ret] ++ rest)) := by
   rw [program_eq]

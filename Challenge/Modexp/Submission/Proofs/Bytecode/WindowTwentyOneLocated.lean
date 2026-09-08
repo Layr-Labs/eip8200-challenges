@@ -2,7 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 
 set_option warningAsError true
 
-namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineLocated
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLocated
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof Challenge.EvmProof.Stepper WindowNibbleKernel
@@ -81,4 +81,4 @@ theorem run_linear {artifact : ProgramArtifact} {fork : Fork}
               have hresult := ih _ middle t htail hmiddlePC hmiddleRun hrest
               simpa only [runLocatedBlock, hloc, hstep, hmiddleRun] using hresult
 
-end Challenge.Modexp.Submission.Proofs.Bytecode.WindowNineLocated
+end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLocated

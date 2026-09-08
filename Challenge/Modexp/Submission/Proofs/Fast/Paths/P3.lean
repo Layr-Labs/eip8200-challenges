@@ -19,9 +19,9 @@ def blk1138 :
    pushAt 1141 2 4096,
    pushAt 1142 2 5120,
    opAt 1143 .MCOPY,
-   pushAt 1144 2 3074,
+   pushAt 1144 2 3330,
    pushAt 1145 2 5120,
-   pushAt 1146 2 3519,
+   pushAt 1146 2 3775,
    opAt 1147 .JUMP]
 
 /-- Instructions 1148..1154, pc 1555..1567. -/
@@ -43,7 +43,7 @@ def blk1155 :
    pushAt 1157 2 6144,
    pushAt 1158 2 6144,
    pushAt 1159 2 6144,
-   pushAt 1160 2 4202,
+   pushAt 1160 2 4458,
    opAt 1161 .JUMP]
 
 /-- Instructions 1162..1173, pc 1586..1604. -/
