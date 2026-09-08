@@ -23,12 +23,12 @@ theorem run_low (template : State) (pc : UInt256)
     (runInstructions_append_some _ _ _ _ _
       (run_lowPrep template pc base modulus high index word pointer accumulator
         rest hrest)
-      (run_squareLookup template (advancePC 4 pc) base modulus
+      (run_lowSquareLookup template (advancePC 3 pc) base modulus
         (lowNibble index word) (byteValue index word) word pointer accumulator
         rest (lowNibble_lt index word) hrest))
-  simpa only [← advancePC_add, show 4 + 36 + 1 = 41 by decide] using
+  simpa only [← advancePC_add, show 3 + 38 + 0 = 41 by decide] using
     run_finish template
-      (advancePC 36 (advancePC 4 pc)) base modulus (lowNibble index word)
+      (advancePC 38 (advancePC 3 pc)) base modulus (lowNibble index word)
       (byteValue index word) word pointer
       (WindowMath.nibbleWordStep modulus base accumulator
         (lowNibble index word)) rest hrest

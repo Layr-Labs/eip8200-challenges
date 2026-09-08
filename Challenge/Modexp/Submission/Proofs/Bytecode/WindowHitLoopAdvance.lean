@@ -21,24 +21,24 @@ open WindowHitStates
 theorem run_loopAdvance (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) (hpointer : pointer < 160) :
     Challenge.EvmProof.Stepper.runLocatedBlock loopAdvancePath
-      (wordState input pointer 4 3542 accumulator) =
+      (wordDoneState input pointer accumulator) =
         some (loopState input (pointer + 4)
           (WindowMath.chunkWordStep (modulusWord input) (baseWord input)
             accumulator (MachineState.readWord input pointer))) := by
   let chunk := WindowMath.chunkWordStep (modulusWord input) (baseWord input)
     accumulator (MachineState.readWord input pointer)
-  let template := wordState input pointer 4 3542 accumulator
+  let template := wordDoneState input pointer accumulator
   have hhead := WindowHitLoopAdvanceHead.run template
-    (MachineState.readWord input pointer) (UInt256.ofNat pointer) chunk
+    (UInt256.ofNat pointer) chunk
     (modulusWord input) (routeStack input) pointer rfl hpointer
     (by simp [routeStack]) rfl
   have hjump := WindowHitLoopAdvanceJump.run template
     (UInt256.ofNat (pointer + 4)) chunk (modulusWord input) (routeStack input)
     (by simp [routeStack]) rfl rfl
   have hall := Challenge.EvmProof.Stepper.runLocatedBlock_append
-    (loopAdvancePath.take 3) (loopAdvancePath.drop 3)
-    (WindowHitLoopAdvanceHead.framed template 3542
-      (MachineState.readWord input pointer :: UInt256.ofNat pointer :: chunk ::
+    (loopAdvancePath.take 2) (loopAdvancePath.drop 2)
+    (WindowHitLoopAdvanceHead.framed template 3543
+      (UInt256.ofNat pointer :: chunk ::
         modulusWord input :: routeStack input))
     (WindowHitLoopAdvanceHead.framed template 3546
       (UInt256.ofNat (pointer + 4) :: chunk :: modulusWord input ::
@@ -48,8 +48,8 @@ theorem run_loopAdvance (input : ByteArray) (pointer : Nat)
         routeStack input))
     hhead rfl hjump
   simpa only [List.take_append_drop, WindowHitLoopAdvanceHead.framed,
-    template, chunk, wordState, loopState,
-    WindowHitStates.byteAccumulator_four, List.cons_append, List.nil_append] using hall
+    template, chunk, wordDoneState, loopState,
+    List.cons_append, List.nil_append] using hall
 
 private def sound {s t : State}
     (path : List (Challenge.EvmProof.Stepper.Located

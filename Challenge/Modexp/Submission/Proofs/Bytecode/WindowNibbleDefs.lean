@@ -37,6 +37,13 @@ def lookupProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩), .push 8 5, .op .SHL, .op .MLOAD,
    .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP]
 
+def beginSquareProgram : List Instr :=
+  [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
+
+def topSquareProgram : List Instr :=
+  [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
 
 /-- Consume the no-longer-needed nibble while loading the table word.
 This eight-instruction block is twenty-three bytes; it also replaces the following
@@ -46,17 +53,23 @@ def fusedSquareLookupProgram : List Instr :=
    .push 15 5, .op .SHL, .op .MLOAD, .op .MULMOD,
    .op (.Swap ⟨3, by decide⟩), .op .POP]
 
-/-- Stage four moduli before squaring: four pure squarings
+/-- Keep the accumulator at the top between squarings: four pure squarings
 (thirteen instructions, thirteen bytes) ending on the seven-slot square state.
 The cleanup and table lookup are fused separately. -/
 def fourSquareProgram : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨6, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨8, by decide⟩),
+  [.op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩), .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩), .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
+   .op (.Dup ⟨0, by decide⟩),
+   .op .MULMOD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op .MULMOD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op .MULMOD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op .MULMOD]
 
 def squareLookupProgram : List Instr :=
   fourSquareProgram ++ fusedSquareLookupProgram

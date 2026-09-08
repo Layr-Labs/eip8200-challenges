@@ -91,7 +91,7 @@ def gasSteps_byte3 (template : State) (base modulus word pointer accumulator : U
     Challenge.EvmProof.GasSteps
       (wordKernelState { template with halt := .Running } (UInt256.ofNat 3457)
         base modulus word pointer accumulator rest)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3542)
+      (finalWordKernelState { template with halt := .Running } (UInt256.ofNat 3543)
         base modulus word pointer
         (WindowMath.byteWordStep modulus base accumulator
           (byteValue 3 word).toNat) rest) :=
@@ -109,7 +109,7 @@ def gasSteps_fourBytes (template : State)
     Challenge.EvmProof.GasSteps
       (wordKernelState { template with halt := .Running } (UInt256.ofNat 3203)
         base modulus word pointer accumulator rest)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 3542)
+      (finalWordKernelState { template with halt := .Running } (UInt256.ofNat 3543)
         base modulus word pointer
         (WindowMath.chunkWordStep modulus base accumulator word) rest) := by
   let a1 := WindowMath.byteWordStep modulus base accumulator
