@@ -9,7 +9,7 @@ set_option maxHeartbeats 2000000
 /-!
 # Fixed-width route guard
 
-Pure semantics of the three-word width guard at pc 2638.  Keeping this lemma
+Pure semantics of the three-word width guard at pc 3000.  Keeping this lemma
 independent of the generated artifact lets the execution proof reduce the
 branch condition without importing any of the window arithmetic.
 -/
