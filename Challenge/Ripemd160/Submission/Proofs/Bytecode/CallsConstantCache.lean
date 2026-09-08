@@ -9,13 +9,17 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.CallsConstantCache
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTemplate StackRoundTrace QuadRoundState QuadRoundTemplate
 
-/-- The cached constant is an extra stack value. All arithmetic operations
-    keep their original operands and their original order. -/
+/-- The cached constant is an extra stack value. Every arithmetic operation
+    keeps its original operands. Order is kept too, except at the last cached
+    use: there the constant is already directly under the accumulator, so the
+    exchange that would restore the original order is dropped for a no-op and
+    the closing `ADD` sees its two operands the other way round. `ADD` is
+    commutative, so the value is unchanged (see `uint256_add_comm`). -/
 def rewrite (constant : UInt256) (remaining depth : Nat) : List Instr → List Instr
   | [] => []
   | .push width value :: rest =>
     if width.val = 4 ∧ value = constant then
-      if remaining = 1 then .op (.Swap ⟨0, by decide⟩) :: rest
+      if remaining = 1 then .op .JUMPDEST :: rest
       else .op (.Dup ⟨depth % 16, Nat.mod_lt _ (by decide)⟩) ::
         rewrite constant (remaining - 1) (depth + 1) rest
     else .push width value :: rewrite constant remaining (depth + 1) rest
@@ -57,6 +61,11 @@ private theorem uint256_add_assoc (u v w : UInt256) : (u + v) + w = u + (v + w) 
   apply Word.word_ext
   change ((u.val + v.val) + w.val).val = (u.val + (v.val + w.val)).val
   simp [Fin.add_def, Nat.add_assoc]
+
+/-- The dropped `SWAP1` of the last cached use leaves the final `ADD`'s two
+operands in the opposite order; addition on words is commutative. -/
+private theorem uint256_add_comm (u v : UInt256) : u + v = v + u :=
+  Word.word_add_comm u v
 
 private theorem left_keep (j : Fin 3)
     (s : State) (startPC p0 p1 p2 p3 : UInt256)
@@ -104,7 +113,7 @@ private theorem left_finish (j : Fin 3)
        roundEntry, runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap,
        Instr.size, UInt256.succ, List.exchange, List.getElem?_cons_zero,
        Option.bind_some, Nat.add_assoc, State.activeWordsAfterUInt256,
-       uint256_add_method, uint256_add_assoc]
+       uint256_add_method, uint256_add_assoc, uint256_add_comm]
 
 private theorem right_keep (j : Fin 3)
     (s : State) (startPC p0 p1 p2 p3 : UInt256)
@@ -152,7 +161,7 @@ private theorem right_finish (j : Fin 3)
        roundEntry, runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap,
        Instr.size, UInt256.succ, List.exchange, List.getElem?_cons_zero,
        Option.bind_some, Nat.add_assoc, State.activeWordsAfterUInt256,
-       uint256_add_method, uint256_add_assoc]
+       uint256_add_method, uint256_add_assoc, uint256_add_comm]
 
 /-- Both cache modes preserve the existing left and right suffix bounds. -/
 theorem cache_equiv (right finish : Bool) (j : Fin 3)

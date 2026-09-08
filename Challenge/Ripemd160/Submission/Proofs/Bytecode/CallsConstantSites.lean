@@ -133,6 +133,8 @@ private def advancesCheck : Instr → Bool
   | .op (.Dup _) => true
   | .op (.Swap _) => true
   | .op .MUL => true
+  -- the no-op left behind by the last cached constant use
+  | .op .JUMPDEST => true
   | _ => false
 
 private theorem advancesCheck_sound (instruction : Instr)
