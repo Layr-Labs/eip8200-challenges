@@ -110,13 +110,6 @@ theorem run_shiftBody (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
       Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- Generic word identity; the quotient clamp itself is unchanged. -/
-private theorem addMod_comm (a b n : UInt256) :
-    UInt256.addMod a b n = UInt256.addMod b a n := by
-  unfold UInt256.addMod
-  by_cases h : n.val.val = 0
-  · simp [h]
-  · simp [h, Nat.add_comm]
-
 private theorem saturation_gt_eq_lt (a b : UInt256) : UInt256.gt a b = UInt256.lt b a := by
   rfl
 
@@ -125,6 +118,11 @@ private theorem ofNat_zero_lt_eq_double_isZero (x : UInt256) :
   Monpro.zero_lt_eq_double_isZero x
 
 /-- `blk3026`: quotient estimate with a branchless saturation mask. -/
+private theorem estimator_add_comm (a b m : UInt256) :
+    UInt256.addMod a b m = UInt256.addMod b a m := by
+  unfold UInt256.addMod
+  rw [Nat.add_comm a.toNat b.toNat]
+
 theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hact : 296 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -158,7 +156,8 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt]
+      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, saturation_gt_eq_lt,
+      estimator_add_comm]
 
 /-- `blk3069`: the limb-pass frame `[paj, ptj, 0, q]`. -/
 theorem run_macSetup (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)

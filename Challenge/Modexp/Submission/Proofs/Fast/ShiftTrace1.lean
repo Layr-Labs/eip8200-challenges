@@ -34,7 +34,7 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       (dispState s mem n bsize esize msize) =
       some (if FullBase.Matches mem n bsize
         then hitState s mem n bsize esize msize
-        else missState s mem n bsize esize msize) := by
+        else Exp.r0State s mem n bsize esize msize) := by
   have hzeroNat : (⟨0⟩ : UInt256).toNat = 0 := rfl
   have haw : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 0 32) = s.activeWords :=
@@ -68,8 +68,8 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
-        dispState, missState, frameState, pcDispatch, pcMiss, outer, Exp.outer,
-        hcode, hrun, hzeroNat, haw, jumpDest4687, hm, FullBase.guardWord, hc,
+        dispState, Exp.r0State, frameState, pcDispatch, outer, Exp.outer,
+        hcode, hrun, hzeroNat, haw, jumpDest1533, hm, FullBase.guardWord, hc,
         State.activeWordsAfterUInt256,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,

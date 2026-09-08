@@ -23,7 +23,7 @@ def blk2862 :
    opAt 2683 .SHR,
    opAt 2684 .AND,
    opAt 2685 .ISZERO,
-   pushAt 2686 2 4662,
+   pushAt 2686 2 1533,
    opAt 2687 .JUMPI]
 
 /-- Instructions 2874..2888, pc 4658..4686. -/
