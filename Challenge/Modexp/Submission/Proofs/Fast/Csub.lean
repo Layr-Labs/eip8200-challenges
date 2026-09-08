@@ -205,6 +205,9 @@ theorem ptrAt_mod (base j : Nat) (hj : 32 * j ≤ base) (hbase : base < 2 ^ 256)
   rw [hlit, ← Challenge.EvmProof.Word.word_toNat_ofNat]
   exact ptrAt_toNat base j hj hbase
 
+private theorem gt_eq_lt (a b : UInt256) : UInt256.gt a b = UInt256.lt b a := by
+  simp only [UInt256.gt, UInt256.lt]
+
 set_option linter.unusedSimpArgs false in
 theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
     (pd ret : UInt256) (rest : List UInt256)
@@ -248,7 +251,12 @@ theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       8224 + 32 * (n - 1 - j) := by
     rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
-  have hgt : 8224 < 8224 + 32 * (n - 1 - j) := by omega
+  have hlt : UInt256.lt (8224 : UInt256)
+      (UInt256.ofNat (8224 + 32 * (n - 1 - j))) = 1 := by
+    rw [Challenge.EvmProof.Word.word_toNat_lt, h8224,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by omega : 8224 + 32 * (n - 1 - j) < 2 ^ 256), if_pos hgt]
+    decide
   have hactA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (pa + 32 * (n - 1 - j)) 32) = s.activeWords :=
     activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -265,9 +273,8 @@ theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       amLoopState, amStep, fastPC16, fastPC17,
       hc6, hc7, hc8, hc9, hrun, hcode, hK, h8224, h2500, h2500', hjump, jumpDest2500,
-      hta, htb, htt, hnext, hgt, hactA, hactB, hactT, ptrAt_succ,
-      UInt256.gt, UInt256.isTrue,
-      State.activeWordsAfterUInt256,
+      hta, htb, htt, hnext, hgt, hlt, hactA, hactB, hactT, ptrAt_succ,
+      UInt256.gt, gt_eq_lt, UInt256.lt, UInt256.isTrue,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
@@ -333,6 +340,12 @@ theorem run_amLoopExit (s : State) (memory : ByteArray) (pa pb n j : Nat)
     rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
   have hactA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat pa 32) =
       s.activeWords := activeWords_fix s pa 32 (by decide) (by omega) hact
+  have hlt : UInt256.lt (8224 : UInt256)
+      (UInt256.ofNat (8224 + 32 * (n - 1 - j))) = 0 := by
+    rw [Challenge.EvmProof.Word.word_toNat_lt, h8224,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by omega), if_neg (by omega)]
+    decide
   have hactB : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat pb 32) =
       s.activeWords := activeWords_fix s pb 32 (by decide) (by omega) hact
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 8256 32) =
@@ -344,8 +357,8 @@ theorem run_amLoopExit (s : State) (memory : ByteArray) (pa pb n j : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       amLoopState, amTailState, amStep, fastPC16, fastPC17,
       hc6, hc7, hc8, hc9, hrun, hK, h8224, hnj,
-      hta, htb, htt, hnext, hactA, hactB, hactT, ptrAt_succ,
-      UInt256.gt, UInt256.isTrue,
+      hta, htb, htt, hnext, hlt, hactA, hactB, hactT, ptrAt_succ,
+      UInt256.gt, gt_eq_lt, UInt256.lt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -514,7 +527,12 @@ theorem run_csLoopBody (s : State) (memory : ByteArray) (n j : Nat)
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       8224 + 32 * (n - 1 - j) := by
     rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
-  have hgt : 8224 < 8224 + 32 * (n - 1 - j) := by omega
+  have hlt : UInt256.lt (8224 : UInt256)
+      (UInt256.ofNat (8224 + 32 * (n - 1 - j))) = 1 := by
+    rw [Challenge.EvmProof.Word.word_toNat_lt, h8224,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by omega : 8224 + 32 * (n - 1 - j) < 2 ^ 256), if_pos hgt]
+    decide
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (8256 + 32 * (n - 1 - j)) 32) = s.activeWords :=
     activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -532,7 +550,7 @@ theorem run_csLoopBody (s : State) (memory : ByteArray) (n j : Nat)
       csLoopState, csStep, fastPC17, fastPC18,
       hc6, hc7, hc8, hc9, hc10, hrun, hcode, hK, h8224, h2666, h2666', hjump,
       jumpDest2666, ht, hm, hd, hnext, hgt, hactT, hactM, hactD, ptrAt_succ,
-      UInt256.gt, UInt256.lt, UInt256.isTrue,
+      UInt256.gt, gt_eq_lt, UInt256.lt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -576,7 +594,12 @@ theorem run_csLoopExit (s : State) (memory : ByteArray) (n j : Nat)
   have hnext : ptrAt (8224 + 32 * n) (j + 1) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       8224 + 32 * (n - 1 - j) := by
-    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hlt : UInt256.lt (8224 : UInt256)
+      (UInt256.ofNat (8224 + 32 * (n - 1 - j))) = 0 := by
+    rw [Challenge.EvmProof.Word.word_toNat_lt, h8224,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by omega), if_neg (by omega)]
+    decide
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 8256 32) =
       s.activeWords := activeWords_fix s 8256 32 (by decide) (by omega) hact
   have hactM : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
@@ -590,8 +613,8 @@ theorem run_csLoopExit (s : State) (memory : ByteArray) (n j : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       csLoopState, csTailState, csStep, fastPC17, fastPC18,
       hc6, hc7, hc8, hc9, hc10, hrun, hK, h8224, hnj,
-      ht, hm, hd, hnext, hactT, hactM, hactD, ptrAt_succ,
-      UInt256.gt, UInt256.lt, UInt256.isTrue,
+      ht, hm, hd, hnext, hlt, hactT, hactM, hactD, ptrAt_succ,
+      UInt256.gt, gt_eq_lt, UInt256.lt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,

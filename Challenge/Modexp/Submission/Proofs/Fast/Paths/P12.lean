@@ -44,8 +44,8 @@ def blk1627 :
    opAt 1656 .ADD,
    opAt 1657 (.Swap ⟨1, by decide⟩),
    pushAt 1658 2 8224,
-   opAt 1659 (.Dup ⟨1, by decide⟩),
-   opAt 1660 .GT,
+   opAt 1659 .LT,
+   opAt 1660 .JUMPDEST,
    pushAt 1661 2 2252,
    opAt 1662 .JUMPI]
 

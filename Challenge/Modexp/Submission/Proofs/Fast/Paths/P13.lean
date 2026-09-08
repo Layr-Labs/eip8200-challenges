@@ -50,8 +50,8 @@ def blk1683 :
    opAt 1718 .ADD,
    opAt 1719 (.Swap ⟨1, by decide⟩),
    pushAt 1720 2 8224,
-   opAt 1721 (.Dup ⟨1, by decide⟩),
-   opAt 1722 .GT,
+   opAt 1721 .LT,
+   opAt 1722 .JUMPDEST,
    pushAt 1723 2 2328,
    opAt 1724 .JUMPI]
 
