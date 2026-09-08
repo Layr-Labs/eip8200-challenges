@@ -46,7 +46,6 @@ open private
   submissionInstructionsChunk17
   submissionInstructionsChunk18
   submissionInstructionsChunk19
-  submissionInstructionsChunk20
   submissionInstructionsChunk0_length
   submissionInstructionsChunk1_length
   submissionInstructionsChunk2_length
@@ -67,7 +66,6 @@ open private
   submissionInstructionsChunk17_length
   submissionInstructionsChunk18_length
   submissionInstructionsChunk19_length
-  submissionInstructionsChunk20_length
   from Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 
 private def scanPrefix : List YulEvmCompiler.Instr :=
@@ -77,12 +75,12 @@ private def scanBefore : List YulEvmCompiler.Instr :=
   scanPrefix ++ submissionInstructionsChunk0.take 150
 
 private def scanSuffix : List YulEvmCompiler.Instr :=
-  submissionInstructionsChunk0.drop 150 ++ submissionInstructionsChunk1 ++ submissionInstructionsChunk2 ++ submissionInstructionsChunk3 ++ submissionInstructionsChunk4 ++ submissionInstructionsChunk5 ++ submissionInstructionsChunk6 ++ submissionInstructionsChunk7 ++ submissionInstructionsChunk8 ++ submissionInstructionsChunk9 ++ submissionInstructionsChunk10 ++ submissionInstructionsChunk11 ++ submissionInstructionsChunk12 ++ submissionInstructionsChunk13 ++ submissionInstructionsChunk14 ++ submissionInstructionsChunk15 ++ submissionInstructionsChunk16 ++ submissionInstructionsChunk17 ++ submissionInstructionsChunk18 ++ submissionInstructionsChunk19 ++ submissionInstructionsChunk20
+  submissionInstructionsChunk0.drop 150 ++ submissionInstructionsChunk1 ++ submissionInstructionsChunk2 ++ submissionInstructionsChunk3 ++ submissionInstructionsChunk4 ++ submissionInstructionsChunk5 ++ submissionInstructionsChunk6 ++ submissionInstructionsChunk7 ++ submissionInstructionsChunk8 ++ submissionInstructionsChunk9 ++ submissionInstructionsChunk10 ++ submissionInstructionsChunk11 ++ submissionInstructionsChunk12 ++ submissionInstructionsChunk13 ++ submissionInstructionsChunk14 ++ submissionInstructionsChunk15 ++ submissionInstructionsChunk16 ++ submissionInstructionsChunk17 ++ submissionInstructionsChunk18 ++ submissionInstructionsChunk19
 
 private theorem scanBefore_length : scanBefore.length = 150 := by
   simp [scanBefore, scanPrefix]
 
-private theorem scanSuffix_length : scanSuffix.length = 3863 := by
+private theorem scanSuffix_length : scanSuffix.length = 3826 := by
   simp [scanSuffix]
 
 private theorem artifact_scan_split :
@@ -109,8 +107,7 @@ private theorem artifact_scan_split :
     submissionInstructionsChunk16 ++
     submissionInstructionsChunk17 ++
     submissionInstructionsChunk18 ++
-    submissionInstructionsChunk19 ++
-    submissionInstructionsChunk20 := by
+    submissionInstructionsChunk19 := by
     simp only [Artifact.submissionInstructions, scanPrefix, List.append_assoc, List.nil_append]
   have hchunk : submissionInstructionsChunk0 =
       submissionInstructionsChunk0.take 150 ++ submissionInstructionsChunk0.drop 150 := by
@@ -126,7 +123,7 @@ private theorem artifact_instruction_projection :
     Artifact.submissionArtifact.instructions = Artifact.submissionInstructions := by rfl
 
 private theorem scan_instruction_at (index : Nat)
-    (hlo : 150 ≤ index) (hhi : index < 4013) :
+    (hlo : 150 ≤ index) (hhi : index < 3976) :
     Artifact.submissionInstructions[index]? = scanSuffix[index - 150]? := by
   have hi : index - 150 < scanSuffix.length := by
     rw [scanSuffix_length]
@@ -137,7 +134,7 @@ private theorem scan_instruction_at (index : Nat)
     Nat.add_sub_of_le hlo] using h
 
 private theorem scan_instruction_pc (index : Nat)
-    (hlo : 150 ≤ index) (hhi : index ≤ 4013) :
+    (hlo : 150 ≤ index) (hhi : index ≤ 3976) :
     Artifact.submissionArtifact.instructionPC index =
       256 + (YulEvmCompiler.assembleBytes (scanSuffix.take (index - 150))).length := by
   have hi : index - 150 ≤ scanSuffix.length := by
