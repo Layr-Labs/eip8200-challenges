@@ -105,17 +105,17 @@ theorem jumpDest_driver : Decode.isValidJumpDest submissionBytecode 102 = true :
   exact h
 
 theorem jumpDest_hit2 : Decode.isValidJumpDest submissionBytecode 5179 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4210 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4203 (by rfl)
   rw [PrefixStatePaths.pc4210] at h
   exact h
 
 theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5231 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4236 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4229 (by rfl)
   rw [PrefixStatePaths.pc4236] at h
   exact h
 
 theorem jumpDest_bail : Decode.isValidJumpDest submissionBytecode 5278 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4258 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4251 (by rfl)
   rw [PrefixStatePaths.pc4258] at h
   exact h
 
