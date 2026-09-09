@@ -14,7 +14,7 @@ open WindowHitPaths
 @[simp] private theorem advanceJumpPCs (index : Nat)
     (hlo : 2168 ≤ index) (hhi : index ≤ 2169) :
     Artifact.submissionArtifact.instructionPC index =
-      ([3006,3007] : List Nat)[index - 2168]! := by
+      ([3054,3057] : List Nat)[index - 2168]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -23,9 +23,9 @@ theorem run (template : State)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hcode : template.executionEnv.code = submissionBytecode) :
     Challenge.EvmProof.Stepper.runLocatedBlock (loopAdvancePath.drop 2)
-      (WindowHitLoopAdvanceHead.framed template 3032
+      (WindowHitLoopAdvanceHead.framed template 3054
         (pointer :: accumulator :: modulus :: rest)) =
-    some (WindowHitLoopAdvanceHead.framed template 2808
+    some (WindowHitLoopAdvanceHead.framed template 2830
       (pointer :: accumulator :: modulus :: rest)) := by
   have hcap3 : rest.length + 3 < 1024 := by omega
   have hcap4 : rest.length + 4 < 1024 := by omega

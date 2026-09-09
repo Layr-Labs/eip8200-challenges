@@ -85,33 +85,33 @@ theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w 
 /-- The `LZ` entry, pc 2560.  The driver frame below the byte index is left
 abstract so that this module does not depend on `Fast.Exp`. -/
 def lzEntry (s : State) (mem : ByteArray) (i : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2535
+  { s with pc := UInt256.ofNat 2555
            stack := UInt256.ofNat i :: rest
            memory := mem }
 
 /-- pc 2576, the arm every byte after the first takes. -/
 def lzOther (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2551
+  { s with pc := UInt256.ofNat 2571
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- pc 2582, the arm byte `0` takes. -/
 def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2557
+  { s with pc := UInt256.ofNat 2577
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- The bit-loop head both arms rejoin, pc 1789. -/
 def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1780
+  { s with pc := UInt256.ofNat 1789
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- The state handed to the relocated leading-bit shortcut at pc3865. -/
 def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3588
+  { s with pc := UInt256.ofNat 3624
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -238,7 +238,7 @@ theorem run_lzOther (s : State) (mem : ByteArray) (i w : Nat)
   simp (config := { maxSteps := 400000 }) [blk1793, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lzOther, lzJoin, hrun, hcode, hc2, hc3, hc4, jumpDest1780,
+    lzOther, lzJoin, hrun, hcode, hc2, hc3, hc4, jumpDest1789,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -282,7 +282,7 @@ theorem run_lzFirst (s : State) (mem : ByteArray) (i w : Nat)
   simp (config := { maxSteps := 600000 }) [blk1796, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lzFirst, lzBase, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, jumpDest3829,
+    lzFirst, lzBase, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, jumpDest3865,
     e1, e2, e3, e4, e5, e6, e7,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,

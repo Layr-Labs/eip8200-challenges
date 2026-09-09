@@ -41,7 +41,7 @@ def decodeProgram : List Instr :=
    .push ⟨2, by decide⟩ (UInt256.ofNat 1024),
    .push ⟨2, by decide⟩ (UInt256.ofNat 3072),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1024),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1930),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1939),
    .op .JUMP]
 
 set_option linter.unusedSimpArgs false in
@@ -75,7 +75,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_decodeProgram (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 32)
     (hactive : 298 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 1930 = true)
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 1939 = true)
     (hrun : s.halt = .Running) :
     runInstructions decodeProgram (decode s memory n bsize esize msize) =
       some (Exp.mpCall s

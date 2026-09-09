@@ -20,7 +20,7 @@ def blk977 :
    pushAt 981 1 33,
    opAt 982 .GT,
    opAt 983 .JUMPDEST,
-   pushAt 984 2 1877,
+   pushAt 984 2 1886,
    opAt 985 .JUMPI]
 
 /-- Instructions 986..1002, pc 1327..1352. -/
@@ -41,7 +41,7 @@ def blk986 :
    pushAt 998 2 1024,
    opAt 999 .LT,
    opAt 1000 .OR,
-   pushAt 1001 2 1883,
+   pushAt 1001 2 1892,
    opAt 1002 .JUMPI]
 
 /-- Instructions 1003..1027, pc 1353..1384. -/
@@ -70,7 +70,7 @@ def blk1003 :
    opAt 1023 (.Swap ⟨0, by decide⟩),
    opAt 1024 .SHR,
    opAt 1025 .ISZERO,
-   pushAt 1026 2 1891,
+   pushAt 1026 2 1900,
    opAt 1027 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

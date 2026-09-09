@@ -100,17 +100,13 @@ def l2Program (x tl ts : UInt256) : List Instr :=
    .op (.Swap ⟨0, by decide⟩),
    .push 2 ts,
    .op .MSTORE]
-/- Terminal second-loop MAC.  Its modulus limb address is zero, so Osaka's
-`PUSH0` supplies the same word as the generic `PUSH2 0` without the two-byte
-immediate. -/
-def l2LastProgram (tl ts : UInt256) : List Instr :=
-  [.push 0 0] ++ (l2Program 0 tl ts).drop 1
 
 def entryProgram : List Instr :=
   [.op .JUMPDEST,
-   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   .op (.Swap ⟨1, by decide⟩),
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   .op (.Swap ⟨1, by decide⟩),
+   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   .op (.Swap ⟨2, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
    .push 2 9344,
    .op .MLOAD,
@@ -215,7 +211,7 @@ def tailProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4560,
+   .push 2 4595,
    .op .JUMPI,
    .op .POP,
    .op .POP,
@@ -223,17 +219,17 @@ def tailProgram : List Instr :=
    .op .POP,
    .op .POP,
    .op .POP,
-   .push 2 2288,
+   .push 2 2304,
    .op .JUMP]
 
 def l1DispatchProgram : List Instr :=
   [.op (.Dup ⟨6, by decide⟩),
-   .push 2 4722,
+   .push 2 4757,
    .op .JUMPI]
 
 def l2DispatchProgram : List Instr :=
   [.op (.Dup ⟨6, by decide⟩),
-   .push 2 5077,
+   .push 2 5112,
    .op .JUMPI]
 
 def joinProgram : List Instr :=

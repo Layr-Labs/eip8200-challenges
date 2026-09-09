@@ -29,13 +29,13 @@ theorem run_l1Last (t : UInt256) (s : State) (mem : ByteArray) (bi : UInt256)
     (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hpos : 0 < n) (ht : t.toNat = 8256)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32*n ≤ 9472) :
-    runInstructions (l1LastProgram t) (l1At 4837 s mem bi pa pb n i (n-1) pdst ret rest) =
+    runInstructions (l1LastProgram t) (l1At 4872 s mem bi pa pb n i (n-1) pdst ret rest) =
       some (midState s (l1Step mem bi pa n n).memory (l1Step mem bi pa n n).carry bi
         pa pb n i pdst ret rest) := by
-  have h := CiosCachedL1.run_last s (UInt256.ofNat 4837) mem bi pa n t ht
+  have h := CiosCachedL1.run_last s (UInt256.ofNat 4872) mem bi pa n t ht
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa + 32*n - 32))
     (UInt256.ofNat (pb-32)) (isFour n) pdst ret rest hcap hact hn32 hpos hpa hpaFit
-  have hpc : UInt256.ofNat 4837 + UInt256.ofNat 37 = UInt256.ofNat 4874 := by decide
+  have hpc : UInt256.ofNat 4872 + UInt256.ofNat 37 = UInt256.ofNat 4909 := by decide
   simpa only [CiosCachedL1.state, CiosCachedL1.doneState, l1At, midState, hpc] using h
 
 theorem run_l2Mac (pc : Nat) (x tl ts : UInt256) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -47,23 +47,6 @@ theorem run_l2Mac (pc : Nat) (x tl ts : UInt256) (s : State) (mid : ByteArray) (
     runInstructions (l2Program x tl ts) (l2At pc s mid bi mu c0 pa pb n i k pdst ret rest) =
       some (l2At (pc+38) s mid bi mu c0 pa pb n i (k+1) pdst ret rest) := by
   have h := CiosCachedL2.run_step s (UInt256.ofNat pc) mid bi mu c0 n k x tl ts hx htl hts
-    (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa + 32*n - 32))
-    (UInt256.ofNat (pb-32)) (isFour n) pdst ret rest hcap hact hn32 hk
-  simpa only [CiosCachedL2.state, l2At,
-    Challenge.EvmProof.Word.ofNat_add_mod] using h
-
-theorem run_l2LastMac (pc : Nat) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
-    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
-    (hn32 : n ≤ 32) (hk : k+1 < n)
-    (hx : (UInt256.ofNat 0).toNat = 32 * (n - 2 - k))
-    (htl : (UInt256.ofNat 8256).toNat = 8256 + 32 * (n - 2 - k))
-    (hts : (UInt256.ofNat 8288).toNat = 8256 + 32 * (n - 1 - k)) :
-    runInstructions (l2LastProgram (UInt256.ofNat 8256) (UInt256.ofNat 8288))
-      (l2At pc s mid bi mu c0 pa pb n i k pdst ret rest) =
-      some (l2At (pc+36) s mid bi mu c0 pa pb n i (k+1) pdst ret rest) := by
-  have h := CiosCachedL2.run_last_step s (UInt256.ofNat pc) mid bi mu c0 n k
-    hx htl hts
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa + 32*n - 32))
     (UInt256.ofNat (pb-32)) (isFour n) pdst ret rest hcap hact hn32 hk
   simpa only [CiosCachedL2.state, l2At,
