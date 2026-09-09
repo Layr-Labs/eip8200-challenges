@@ -1010,9 +1010,9 @@ def setupPathA :
 /-- Instructions 1076..1100: `x := 1` and the first four Newton steps. -/
 def setupPathB :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1076 1 0, opAt 1077 (.Dup ⟨1, by decide⟩),
-   opAt 1078 .ADD, opAt 1079 .JUMPDEST, pushAt 1080 1 2,
-   opAt 1081 .SUB, opAt 1082 .JUMPDEST, opAt 1083 (.Dup ⟨0, by decide⟩),
+  [opAt 1076 (.Dup ⟨0, by decide⟩), pushAt 1077 2 2,
+   opAt 1078 .SUB, opAt 1079 .JUMPDEST, opAt 1080 .JUMPDEST,
+   opAt 1081 .JUMPDEST, opAt 1082 .JUMPDEST, opAt 1083 (.Dup ⟨0, by decide⟩),
    opAt 1084 (.Dup ⟨2, by decide⟩), opAt 1085 .MUL, pushAt 1086 1 2,
    opAt 1087 .SUB, opAt 1088 .MUL, opAt 1089 (.Dup ⟨0, by decide⟩),
    opAt 1090 (.Dup ⟨2, by decide⟩), opAt 1091 .MUL, pushAt 1092 1 2,

@@ -333,16 +333,13 @@ theorem run_preNewton (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hmulone (x : UInt256) : x * UInt256.ofNat 1 = x := by
     change UInt256.mk (x.val * (1 : Fin UInt256.size)) = x
     simp
-  have haddzero (x : UInt256) : x + UInt256.ofNat 0 = x := by
-    change UInt256.mk (x.val + (0 : Fin UInt256.size)) = x
-    simp
   simp (config := { maxSteps := 600000 })
     [blk2956, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       preNewtonState, newtonBState, pcPreNewton, pcNewtonB, newton4W, newtonW,
-      hmulone, haddzero,
+      hmulone,
       outer, Exp.outer, hcode, hrun,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
