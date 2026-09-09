@@ -34,8 +34,8 @@ private theorem word_add_ofNat_assoc (u : UInt256) (a b : Nat) :
   rw [word_add_assoc, Word.ofNat_add_mod]
 
 def upperTemplate : List Instr :=
-  [.push ⟨4, by decide⟩ (UInt256.ofNat 0x50a28be6),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 128), .op .SHL]
+  [.push ⟨20, by decide⟩
+     (UInt256.ofNat 460344169260758029377710773882198039553172832256)]
 
 def replaceTemplate : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op .POP,
@@ -51,10 +51,7 @@ theorem run_upperTemplate (s : State) (pc : UInt256) (rho : List UInt256)
   have hcap (n : Nat) (hn : n ≤ 2) : rho.length + n < 1024 := by omega
   have hzero : rho.length < 1024 := by omega
   simp [upperTemplate, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
-    pcAfter, Instr.size, Nat.add_assoc, UInt256.succ, hrun, hzero, hcap, upper_value,
-    word_add_ofNat_assoc]
-  change (pc + UInt256.ofNat 7) + UInt256.ofNat 1 = pc + UInt256.ofNat 8
-  exact word_add_ofNat_assoc pc 7 1
+    pcAfter, Instr.size, hrun, hzero]
 
 #print axioms run_upperTemplate
 

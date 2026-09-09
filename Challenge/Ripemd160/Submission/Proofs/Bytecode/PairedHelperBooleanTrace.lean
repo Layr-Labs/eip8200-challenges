@@ -6505,7 +6505,7 @@ def call16Template : List Instr :=
   [.op (.Swap ⟨7, by decide⟩),
    .op (.Swap ⟨3, by decide⟩),
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1920),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1933),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 19),
    .push ⟨1, by decide⟩ (UInt256.ofNat 26),
@@ -6524,11 +6524,11 @@ def call16Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5168),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5181),
    .op .JUMP]
 
 def call16Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 416), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 560) (MachineState.readWord memory 320), leftShift1 := UInt256.ofNat 26, rightShift1 := UInt256.ofNat 19, ret := UInt256.ofNat 1920}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 416), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 560) (MachineState.readWord memory 320), leftShift1 := UInt256.ofNat 26, rightShift1 := UInt256.ofNat 19, ret := UInt256.ofNat 1933}
 
 def call16Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.k, q.d, q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -6538,9 +6538,9 @@ theorem call16Template_length : call16Template.length = 24 := rfl
 theorem run_call16Template (s : State) (pc : UInt256) (q : Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5168 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5181 = true) :
     runInstrSeq call16Template {s with pc := pc, stack := call16Entry q rho} =
-      some {s with pc := UInt256.ofNat 5168, stack := entryStack (call16Frame s.memory q) rho} := by
+      some {s with pc := UInt256.ofNat 5181, stack := entryStack (call16Frame s.memory q) rho} := by
   have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
@@ -6552,7 +6552,7 @@ theorem run_call16Template (s : State) (pc : UInt256) (q : Frame)
     Challenge.EvmProof.Word.word_toNat_ofNat, hvalid]
 
 def call20Template : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 2077),
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 2090),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 24),
    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
@@ -6571,11 +6571,11 @@ def call20Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5168),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5181),
    .op .JUMP]
 
 def call20Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 512), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 20, message1 := UInt256.lor (MachineState.readWord memory 624) (MachineState.readWord memory 384), leftShift1 := UInt256.ofNat 23, rightShift1 := UInt256.ofNat 24, ret := UInt256.ofNat 2077}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 512), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 20, message1 := UInt256.lor (MachineState.readWord memory 624) (MachineState.readWord memory 384), leftShift1 := UInt256.ofNat 23, rightShift1 := UInt256.ofNat 24, ret := UInt256.ofNat 2090}
 
 def call20Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -6585,9 +6585,9 @@ theorem call20Template_length : call20Template.length = 21 := rfl
 theorem run_call20Template (s : State) (pc : UInt256) (q : Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5168 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5181 = true) :
     runInstrSeq call20Template {s with pc := pc, stack := call20Entry q rho} =
-      some {s with pc := UInt256.ofNat 5168, stack := entryStack (call20Frame s.memory q) rho} := by
+      some {s with pc := UInt256.ofNat 5181, stack := entryStack (call20Frame s.memory q) rho} := by
   have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
@@ -6601,7 +6601,7 @@ theorem run_call20Template (s : State) (pc : UInt256) (q : Frame)
 def call22Template : List Instr :=
   [.op .JUMPDEST,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 2116),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 2129),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 21),
    .push ⟨1, by decide⟩ (UInt256.ofNat 17),
@@ -6620,11 +6620,11 @@ def call22Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5168),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5181),
    .op .JUMP]
 
 def call22Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 672), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 528) (MachineState.readWord memory 288), leftShift1 := UInt256.ofNat 17, rightShift1 := UInt256.ofNat 21, ret := UInt256.ofNat 2116}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 672), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 528) (MachineState.readWord memory 288), leftShift1 := UInt256.ofNat 17, rightShift1 := UInt256.ofNat 21, ret := UInt256.ofNat 2129}
 
 def call22Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.a, q.d, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -6634,9 +6634,9 @@ theorem call22Template_length : call22Template.length = 23 := rfl
 theorem run_call22Template (s : State) (pc : UInt256) (q : Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5168 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5181 = true) :
     runInstrSeq call22Template {s with pc := pc, stack := call22Entry q rho} =
-      some {s with pc := UInt256.ofNat 5168, stack := entryStack (call22Frame s.memory q) rho} := by
+      some {s with pc := UInt256.ofNat 5181, stack := entryStack (call22Frame s.memory q) rho} := by
   have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
@@ -6648,7 +6648,7 @@ theorem run_call22Template (s : State) (pc : UInt256) (q : Frame)
     Challenge.EvmProof.Word.word_toNat_ofNat, hvalid]
 
 def call26Template : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 2264),
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 2277),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 25),
    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
@@ -6667,11 +6667,11 @@ def call26Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5168),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5181),
    .op .JUMP]
 
 def call26Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 20, message1 := UInt256.lor (MachineState.readWord memory 592) (MachineState.readWord memory 352), leftShift1 := UInt256.ofNat 23, rightShift1 := UInt256.ofNat 25, ret := UInt256.ofNat 2264}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 20, message1 := UInt256.lor (MachineState.readWord memory 592) (MachineState.readWord memory 352), leftShift1 := UInt256.ofNat 23, rightShift1 := UInt256.ofNat 25, ret := UInt256.ofNat 2277}
 
 def call26Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -6681,9 +6681,9 @@ theorem call26Template_length : call26Template.length = 21 := rfl
 theorem run_call26Template (s : State) (pc : UInt256) (q : Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5168 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5181 = true) :
     runInstrSeq call26Template {s with pc := pc, stack := call26Entry q rho} =
-      some {s with pc := UInt256.ofNat 5168, stack := entryStack (call26Frame s.memory q) rho} := by
+      some {s with pc := UInt256.ofNat 5181, stack := entryStack (call26Frame s.memory q) rho} := by
   have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
@@ -6697,7 +6697,7 @@ theorem run_call26Template (s : State) (pc : UInt256) (q : Frame)
 def call28Template : List Instr :=
   [.op .JUMPDEST,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 2303),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 2316),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 17),
    .push ⟨1, by decide⟩ (UInt256.ofNat 25),
@@ -6716,11 +6716,11 @@ def call28Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5168),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5181),
    .op .JUMP]
 
 def call28Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 26, message1 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 640), leftShift1 := UInt256.ofNat 25, rightShift1 := UInt256.ofNat 17, ret := UInt256.ofNat 2303}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 26, message1 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 640), leftShift1 := UInt256.ofNat 25, rightShift1 := UInt256.ofNat 17, ret := UInt256.ofNat 2316}
 
 def call28Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.a, q.d, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -6730,9 +6730,9 @@ theorem call28Template_length : call28Template.length = 23 := rfl
 theorem run_call28Template (s : State) (pc : UInt256) (q : Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5168 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5181 = true) :
     runInstrSeq call28Template {s with pc := pc, stack := call28Entry q rho} =
-      some {s with pc := UInt256.ofNat 5168, stack := entryStack (call28Frame s.memory q) rho} := by
+      some {s with pc := UInt256.ofNat 5181, stack := entryStack (call28Frame s.memory q) rho} := by
   have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
@@ -7001,250 +7001,250 @@ theorem CoreChain.run {a b : Nat} {xs ys : List CoreReg}
 
 
 
-theorem group0Template_pc : pcAfter (UInt256.ofNat 960) group0Template = UInt256.ofNat 981 := rfl
+theorem group0Template_pc : pcAfter (UInt256.ofNat 973) group0Template = UInt256.ofNat 994 := rfl
 
-def group0Block : CoreBlock 960 981 [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] [.k, .a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] where
+def group0Block : CoreBlock 973 994 [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] [.k, .a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] where
   code := group0Template
   eval := fun _memory f => {f with k := UInt256.ofNat 460344169260758029377710773882198039553172832256}
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_group0Template s (UInt256.ofNat 960) f.frame rho hstack hrun
+    have h := run_group0Template s (UInt256.ofNat 973) f.frame rho hstack hrun
     rw [group0Template_pc] at h
     exact h
 
 
-theorem inline0Template_pc : pcAfter (UInt256.ofNat 981) inline0Template = UInt256.ofNat 1035 := rfl
+theorem inline0Template_pc : pcAfter (UInt256.ofNat 994) inline0Template = UInt256.ofNat 1048 := rfl
 
-theorem inline1Template_pc : pcAfter (UInt256.ofNat 1035) inline1Template = UInt256.ofNat 1089 := rfl
+theorem inline1Template_pc : pcAfter (UInt256.ofNat 1048) inline1Template = UInt256.ofNat 1102 := rfl
 
-theorem inline2Template_pc : pcAfter (UInt256.ofNat 1089) inline2Template = UInt256.ofNat 1144 := rfl
+theorem inline2Template_pc : pcAfter (UInt256.ofNat 1102) inline2Template = UInt256.ofNat 1157 := rfl
 
-theorem inline3Template_pc : pcAfter (UInt256.ofNat 1144) inline3Template = UInt256.ofNat 1198 := rfl
+theorem inline3Template_pc : pcAfter (UInt256.ofNat 1157) inline3Template = UInt256.ofNat 1211 := rfl
 
-theorem inline4Template_pc : pcAfter (UInt256.ofNat 1198) inline4Template = UInt256.ofNat 1253 := rfl
+theorem inline4Template_pc : pcAfter (UInt256.ofNat 1211) inline4Template = UInt256.ofNat 1266 := rfl
 
-theorem inline5Template_pc : pcAfter (UInt256.ofNat 1253) inline5Template = UInt256.ofNat 1308 := rfl
+theorem inline5Template_pc : pcAfter (UInt256.ofNat 1266) inline5Template = UInt256.ofNat 1321 := rfl
 
-theorem inline6Template_pc : pcAfter (UInt256.ofNat 1308) inline6Template = UInt256.ofNat 1363 := rfl
+theorem inline6Template_pc : pcAfter (UInt256.ofNat 1321) inline6Template = UInt256.ofNat 1376 := rfl
 
-theorem inline7Template_pc : pcAfter (UInt256.ofNat 1363) inline7Template = UInt256.ofNat 1418 := rfl
+theorem inline7Template_pc : pcAfter (UInt256.ofNat 1376) inline7Template = UInt256.ofNat 1431 := rfl
 
-theorem inline8Template_pc : pcAfter (UInt256.ofNat 1418) inline8Template = UInt256.ofNat 1473 := rfl
+theorem inline8Template_pc : pcAfter (UInt256.ofNat 1431) inline8Template = UInt256.ofNat 1486 := rfl
 
-theorem inline9Template_pc : pcAfter (UInt256.ofNat 1473) inline9Template = UInt256.ofNat 1528 := rfl
+theorem inline9Template_pc : pcAfter (UInt256.ofNat 1486) inline9Template = UInt256.ofNat 1541 := rfl
 
-theorem inline10Template_pc : pcAfter (UInt256.ofNat 1528) inline10Template = UInt256.ofNat 1583 := rfl
+theorem inline10Template_pc : pcAfter (UInt256.ofNat 1541) inline10Template = UInt256.ofNat 1596 := rfl
 
-theorem inline11Template_pc : pcAfter (UInt256.ofNat 1583) inline11Template = UInt256.ofNat 1638 := rfl
+theorem inline11Template_pc : pcAfter (UInt256.ofNat 1596) inline11Template = UInt256.ofNat 1651 := rfl
 
-theorem inline12Template_pc : pcAfter (UInt256.ofNat 1638) inline12Template = UInt256.ofNat 1692 := rfl
+theorem inline12Template_pc : pcAfter (UInt256.ofNat 1651) inline12Template = UInt256.ofNat 1705 := rfl
 
-theorem inline13Template_pc : pcAfter (UInt256.ofNat 1692) inline13Template = UInt256.ofNat 1747 := rfl
+theorem inline13Template_pc : pcAfter (UInt256.ofNat 1705) inline13Template = UInt256.ofNat 1760 := rfl
 
-theorem inline14Template_pc : pcAfter (UInt256.ofNat 1747) inline14Template = UInt256.ofNat 1802 := rfl
+theorem inline14Template_pc : pcAfter (UInt256.ofNat 1760) inline14Template = UInt256.ofNat 1815 := rfl
 
-theorem inline15Template_pc : pcAfter (UInt256.ofNat 1802) inline15Template = UInt256.ofNat 1857 := rfl
+theorem inline15Template_pc : pcAfter (UInt256.ofNat 1815) inline15Template = UInt256.ofNat 1870 := rfl
 
-theorem group16Template_pc : pcAfter (UInt256.ofNat 1857) group16Template = UInt256.ofNat 1880 := rfl
+theorem group16Template_pc : pcAfter (UInt256.ofNat 1870) group16Template = UInt256.ofNat 1893 := rfl
 
-def group16Block : CoreBlock 1857 1880 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+def group16Block : CoreBlock 1870 1893 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := group16Template
   eval := fun _memory f => {f with k := UInt256.ofNat 526962527014005041256681316140890030896371104153}
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_group16Template s (UInt256.ofNat 1857) f.frame rho hstack hrun
+    have h := run_group16Template s (UInt256.ofNat 1870) f.frame rho hstack hrun
     rw [group16Template_pc] at h
     exact h
 
 
-theorem return18Template_pc : pcAfter (UInt256.ofNat 1920) return18Template = UInt256.ofNat 1921 := rfl
+theorem return18Template_pc : pcAfter (UInt256.ofNat 1933) return18Template = UInt256.ofNat 1934 := rfl
 
-def return18Block : CoreBlock 1920 1921 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def return18Block : CoreBlock 1933 1934 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := return18Template
   eval := fun _memory f => f
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_return18Template s (UInt256.ofNat 1920) f.frame rho hstack hrun
+    have h := run_return18Template s (UInt256.ofNat 1933) f.frame rho hstack hrun
     rw [return18Template_pc] at h
     exact h
 
 
-theorem inline18Template_pc : pcAfter (UInt256.ofNat 1921) inline18Template = UInt256.ofNat 1981 := rfl
+theorem inline18Template_pc : pcAfter (UInt256.ofNat 1934) inline18Template = UInt256.ofNat 1994 := rfl
 
-theorem inline19Template_pc : pcAfter (UInt256.ofNat 1981) inline19Template = UInt256.ofNat 2041 := rfl
+theorem inline19Template_pc : pcAfter (UInt256.ofNat 1994) inline19Template = UInt256.ofNat 2054 := rfl
 
-theorem return24Template_pc : pcAfter (UInt256.ofNat 2116) return24Template = UInt256.ofNat 2117 := rfl
+theorem return24Template_pc : pcAfter (UInt256.ofNat 2129) return24Template = UInt256.ofNat 2130 := rfl
 
-def return24Block : CoreBlock 2116 2117 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def return24Block : CoreBlock 2129 2130 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := return24Template
   eval := fun _memory f => f
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_return24Template s (UInt256.ofNat 2116) f.frame rho hstack hrun
+    have h := run_return24Template s (UInt256.ofNat 2129) f.frame rho hstack hrun
     rw [return24Template_pc] at h
     exact h
 
 
-theorem inline24Template_pc : pcAfter (UInt256.ofNat 2117) inline24Template = UInt256.ofNat 2167 := rfl
+theorem inline24Template_pc : pcAfter (UInt256.ofNat 2130) inline24Template = UInt256.ofNat 2180 := rfl
 
-theorem inline25Template_pc : pcAfter (UInt256.ofNat 2167) inline25Template = UInt256.ofNat 2227 := rfl
+theorem inline25Template_pc : pcAfter (UInt256.ofNat 2180) inline25Template = UInt256.ofNat 2240 := rfl
 
-theorem return30Template_pc : pcAfter (UInt256.ofNat 2303) return30Template = UInt256.ofNat 2304 := rfl
+theorem return30Template_pc : pcAfter (UInt256.ofNat 2316) return30Template = UInt256.ofNat 2317 := rfl
 
-def return30Block : CoreBlock 2303 2304 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def return30Block : CoreBlock 2316 2317 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := return30Template
   eval := fun _memory f => f
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_return30Template s (UInt256.ofNat 2303) f.frame rho hstack hrun
+    have h := run_return30Template s (UInt256.ofNat 2316) f.frame rho hstack hrun
     rw [return30Template_pc] at h
     exact h
 
 
-theorem inline30Template_pc : pcAfter (UInt256.ofNat 2304) inline30Template = UInt256.ofNat 2353 := rfl
+theorem inline30Template_pc : pcAfter (UInt256.ofNat 2317) inline30Template = UInt256.ofNat 2366 := rfl
 
-theorem inline31Template_pc : pcAfter (UInt256.ofNat 2353) inline31Template = UInt256.ofNat 2414 := rfl
+theorem inline31Template_pc : pcAfter (UInt256.ofNat 2366) inline31Template = UInt256.ofNat 2427 := rfl
 
-theorem group32Template_pc : pcAfter (UInt256.ofNat 2414) group32Template = UInt256.ofNat 2437 := rfl
+theorem group32Template_pc : pcAfter (UInt256.ofNat 2427) group32Template = UInt256.ofNat 2450 := rfl
 
-def group32Block : CoreBlock 2414 2437 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] where
+def group32Block : CoreBlock 2427 2450 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] where
   code := group32Template
   eval := fun _memory f => {f with k := UInt256.ofNat 624783161132376868856603395408315258898134723489}
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_group32Template s (UInt256.ofNat 2414) f.frame rho hstack hrun
+    have h := run_group32Template s (UInt256.ofNat 2427) f.frame rho hstack hrun
     rw [group32Template_pc] at h
     exact h
 
 
-theorem inline32Template_pc : pcAfter (UInt256.ofNat 2437) inline32Template = UInt256.ofNat 2487 := rfl
+theorem inline32Template_pc : pcAfter (UInt256.ofNat 2450) inline32Template = UInt256.ofNat 2500 := rfl
 
-theorem inline33Template_pc : pcAfter (UInt256.ofNat 2487) inline33Template = UInt256.ofNat 2537 := rfl
+theorem inline33Template_pc : pcAfter (UInt256.ofNat 2500) inline33Template = UInt256.ofNat 2550 := rfl
 
-theorem inline34Template_pc : pcAfter (UInt256.ofNat 2537) inline34Template = UInt256.ofNat 2586 := rfl
+theorem inline34Template_pc : pcAfter (UInt256.ofNat 2550) inline34Template = UInt256.ofNat 2599 := rfl
 
-theorem inline35Template_pc : pcAfter (UInt256.ofNat 2586) inline35Template = UInt256.ofNat 2636 := rfl
+theorem inline35Template_pc : pcAfter (UInt256.ofNat 2599) inline35Template = UInt256.ofNat 2649 := rfl
 
-theorem inline36Template_pc : pcAfter (UInt256.ofNat 2636) inline36Template = UInt256.ofNat 2686 := rfl
+theorem inline36Template_pc : pcAfter (UInt256.ofNat 2649) inline36Template = UInt256.ofNat 2699 := rfl
 
-theorem inline37Template_pc : pcAfter (UInt256.ofNat 2686) inline37Template = UInt256.ofNat 2736 := rfl
+theorem inline37Template_pc : pcAfter (UInt256.ofNat 2699) inline37Template = UInt256.ofNat 2749 := rfl
 
-theorem inline38Template_pc : pcAfter (UInt256.ofNat 2736) inline38Template = UInt256.ofNat 2786 := rfl
+theorem inline38Template_pc : pcAfter (UInt256.ofNat 2749) inline38Template = UInt256.ofNat 2799 := rfl
 
-theorem inline39Template_pc : pcAfter (UInt256.ofNat 2786) inline39Template = UInt256.ofNat 2835 := rfl
+theorem inline39Template_pc : pcAfter (UInt256.ofNat 2799) inline39Template = UInt256.ofNat 2848 := rfl
 
-theorem inline40Template_pc : pcAfter (UInt256.ofNat 2835) inline40Template = UInt256.ofNat 2885 := rfl
+theorem inline40Template_pc : pcAfter (UInt256.ofNat 2848) inline40Template = UInt256.ofNat 2898 := rfl
 
-theorem inline41Template_pc : pcAfter (UInt256.ofNat 2885) inline41Template = UInt256.ofNat 2935 := rfl
+theorem inline41Template_pc : pcAfter (UInt256.ofNat 2898) inline41Template = UInt256.ofNat 2948 := rfl
 
-theorem inline42Template_pc : pcAfter (UInt256.ofNat 2935) inline42Template = UInt256.ofNat 2984 := rfl
+theorem inline42Template_pc : pcAfter (UInt256.ofNat 2948) inline42Template = UInt256.ofNat 2997 := rfl
 
-theorem inline43Template_pc : pcAfter (UInt256.ofNat 2984) inline43Template = UInt256.ofNat 3034 := rfl
+theorem inline43Template_pc : pcAfter (UInt256.ofNat 2997) inline43Template = UInt256.ofNat 3047 := rfl
 
-theorem inline44Template_pc : pcAfter (UInt256.ofNat 3034) inline44Template = UInt256.ofNat 3084 := rfl
+theorem inline44Template_pc : pcAfter (UInt256.ofNat 3047) inline44Template = UInt256.ofNat 3097 := rfl
 
-theorem inline45Template_pc : pcAfter (UInt256.ofNat 3084) inline45Template = UInt256.ofNat 3133 := rfl
+theorem inline45Template_pc : pcAfter (UInt256.ofNat 3097) inline45Template = UInt256.ofNat 3146 := rfl
 
-theorem inline46Template_pc : pcAfter (UInt256.ofNat 3133) inline46Template = UInt256.ofNat 3173 := rfl
+theorem inline46Template_pc : pcAfter (UInt256.ofNat 3146) inline46Template = UInt256.ofNat 3186 := rfl
 
-theorem inline47Template_pc : pcAfter (UInt256.ofNat 3173) inline47Template = UInt256.ofNat 3213 := rfl
+theorem inline47Template_pc : pcAfter (UInt256.ofNat 3186) inline47Template = UInt256.ofNat 3226 := rfl
 
-theorem group48Template_pc : pcAfter (UInt256.ofNat 3213) group48Template = UInt256.ofNat 3236 := rfl
+theorem group48Template_pc : pcAfter (UInt256.ofNat 3226) group48Template = UInt256.ofNat 3249 := rfl
 
-def group48Block : CoreBlock 3213 3236 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.k, .d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def group48Block : CoreBlock 3226 3249 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.k, .d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := group48Template
   eval := fun _memory f => {f with k := UInt256.ofNat 698938013802679700166637234969497128417458109660}
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_group48Template s (UInt256.ofNat 3213) f.frame rho hstack hrun
+    have h := run_group48Template s (UInt256.ofNat 3226) f.frame rho hstack hrun
     rw [group48Template_pc] at h
     exact h
 
 
-theorem inline48Template_pc : pcAfter (UInt256.ofNat 3236) inline48Template = UInt256.ofNat 3296 := rfl
+theorem inline48Template_pc : pcAfter (UInt256.ofNat 3249) inline48Template = UInt256.ofNat 3309 := rfl
 
-theorem inline49Template_pc : pcAfter (UInt256.ofNat 3296) inline49Template = UInt256.ofNat 3357 := rfl
+theorem inline49Template_pc : pcAfter (UInt256.ofNat 3309) inline49Template = UInt256.ofNat 3370 := rfl
 
-theorem inline50Template_pc : pcAfter (UInt256.ofNat 3357) inline50Template = UInt256.ofNat 3418 := rfl
+theorem inline50Template_pc : pcAfter (UInt256.ofNat 3370) inline50Template = UInt256.ofNat 3431 := rfl
 
-theorem inline51Template_pc : pcAfter (UInt256.ofNat 3418) inline51Template = UInt256.ofNat 3478 := rfl
+theorem inline51Template_pc : pcAfter (UInt256.ofNat 3431) inline51Template = UInt256.ofNat 3491 := rfl
 
-theorem inline52Template_pc : pcAfter (UInt256.ofNat 3478) inline52Template = UInt256.ofNat 3528 := rfl
+theorem inline52Template_pc : pcAfter (UInt256.ofNat 3491) inline52Template = UInt256.ofNat 3541 := rfl
 
-theorem inline53Template_pc : pcAfter (UInt256.ofNat 3528) inline53Template = UInt256.ofNat 3589 := rfl
+theorem inline53Template_pc : pcAfter (UInt256.ofNat 3541) inline53Template = UInt256.ofNat 3602 := rfl
 
-theorem inline54Template_pc : pcAfter (UInt256.ofNat 3589) inline54Template = UInt256.ofNat 3650 := rfl
+theorem inline54Template_pc : pcAfter (UInt256.ofNat 3602) inline54Template = UInt256.ofNat 3663 := rfl
 
-theorem inline55Template_pc : pcAfter (UInt256.ofNat 3650) inline55Template = UInt256.ofNat 3710 := rfl
+theorem inline55Template_pc : pcAfter (UInt256.ofNat 3663) inline55Template = UInt256.ofNat 3723 := rfl
 
-theorem inline56Template_pc : pcAfter (UInt256.ofNat 3710) inline56Template = UInt256.ofNat 3771 := rfl
+theorem inline56Template_pc : pcAfter (UInt256.ofNat 3723) inline56Template = UInt256.ofNat 3784 := rfl
 
-theorem inline57Template_pc : pcAfter (UInt256.ofNat 3771) inline57Template = UInt256.ofNat 3832 := rfl
+theorem inline57Template_pc : pcAfter (UInt256.ofNat 3784) inline57Template = UInt256.ofNat 3845 := rfl
 
-theorem inline58Template_pc : pcAfter (UInt256.ofNat 3832) inline58Template = UInt256.ofNat 3893 := rfl
+theorem inline58Template_pc : pcAfter (UInt256.ofNat 3845) inline58Template = UInt256.ofNat 3906 := rfl
 
-theorem inline59Template_pc : pcAfter (UInt256.ofNat 3893) inline59Template = UInt256.ofNat 3954 := rfl
+theorem inline59Template_pc : pcAfter (UInt256.ofNat 3906) inline59Template = UInt256.ofNat 3967 := rfl
 
-theorem inline60Template_pc : pcAfter (UInt256.ofNat 3954) inline60Template = UInt256.ofNat 4015 := rfl
+theorem inline60Template_pc : pcAfter (UInt256.ofNat 3967) inline60Template = UInt256.ofNat 4028 := rfl
 
-theorem inline61Template_pc : pcAfter (UInt256.ofNat 4015) inline61Template = UInt256.ofNat 4076 := rfl
+theorem inline61Template_pc : pcAfter (UInt256.ofNat 4028) inline61Template = UInt256.ofNat 4089 := rfl
 
-theorem inline62Template_pc : pcAfter (UInt256.ofNat 4076) inline62Template = UInt256.ofNat 4137 := rfl
+theorem inline62Template_pc : pcAfter (UInt256.ofNat 4089) inline62Template = UInt256.ofNat 4150 := rfl
 
-theorem inline63Template_pc : pcAfter (UInt256.ofNat 4137) inline63Template = UInt256.ofNat 4198 := rfl
+theorem inline63Template_pc : pcAfter (UInt256.ofNat 4150) inline63Template = UInt256.ofNat 4211 := rfl
 
-theorem group64Template_pc : pcAfter (UInt256.ofNat 4198) group64Template = UInt256.ofNat 4205 := rfl
+theorem group64Template_pc : pcAfter (UInt256.ofNat 4211) group64Template = UInt256.ofNat 4218 := rfl
 
-def group64Block : CoreBlock 4198 4205 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] where
+def group64Block : CoreBlock 4211 4218 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] where
   code := group64Template
   eval := fun _memory f => {f with k := UInt256.ofNat 2840853838}
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_group64Template s (UInt256.ofNat 4198) f.frame rho hstack hrun
+    have h := run_group64Template s (UInt256.ofNat 4211) f.frame rho hstack hrun
     rw [group64Template_pc] at h
     exact h
 
 
-theorem inline64Template_pc : pcAfter (UInt256.ofNat 4205) inline64Template = UInt256.ofNat 4260 := rfl
+theorem inline64Template_pc : pcAfter (UInt256.ofNat 4218) inline64Template = UInt256.ofNat 4273 := rfl
 
-theorem inline65Template_pc : pcAfter (UInt256.ofNat 4260) inline65Template = UInt256.ofNat 4314 := rfl
+theorem inline65Template_pc : pcAfter (UInt256.ofNat 4273) inline65Template = UInt256.ofNat 4327 := rfl
 
-theorem inline66Template_pc : pcAfter (UInt256.ofNat 4314) inline66Template = UInt256.ofNat 4369 := rfl
+theorem inline66Template_pc : pcAfter (UInt256.ofNat 4327) inline66Template = UInt256.ofNat 4382 := rfl
 
-theorem inline67Template_pc : pcAfter (UInt256.ofNat 4369) inline67Template = UInt256.ofNat 4424 := rfl
+theorem inline67Template_pc : pcAfter (UInt256.ofNat 4382) inline67Template = UInt256.ofNat 4437 := rfl
 
-theorem inline68Template_pc : pcAfter (UInt256.ofNat 4424) inline68Template = UInt256.ofNat 4478 := rfl
+theorem inline68Template_pc : pcAfter (UInt256.ofNat 4437) inline68Template = UInt256.ofNat 4491 := rfl
 
-theorem inline69Template_pc : pcAfter (UInt256.ofNat 4478) inline69Template = UInt256.ofNat 4533 := rfl
+theorem inline69Template_pc : pcAfter (UInt256.ofNat 4491) inline69Template = UInt256.ofNat 4546 := rfl
 
-theorem inline70Template_pc : pcAfter (UInt256.ofNat 4533) inline70Template = UInt256.ofNat 4588 := rfl
+theorem inline70Template_pc : pcAfter (UInt256.ofNat 4546) inline70Template = UInt256.ofNat 4601 := rfl
 
-theorem inline71Template_pc : pcAfter (UInt256.ofNat 4588) inline71Template = UInt256.ofNat 4643 := rfl
+theorem inline71Template_pc : pcAfter (UInt256.ofNat 4601) inline71Template = UInt256.ofNat 4656 := rfl
 
-theorem inline72Template_pc : pcAfter (UInt256.ofNat 4643) inline72Template = UInt256.ofNat 4698 := rfl
+theorem inline72Template_pc : pcAfter (UInt256.ofNat 4656) inline72Template = UInt256.ofNat 4711 := rfl
 
-theorem inline73Template_pc : pcAfter (UInt256.ofNat 4698) inline73Template = UInt256.ofNat 4752 := rfl
+theorem inline73Template_pc : pcAfter (UInt256.ofNat 4711) inline73Template = UInt256.ofNat 4765 := rfl
 
-theorem inline74Template_pc : pcAfter (UInt256.ofNat 4752) inline74Template = UInt256.ofNat 4807 := rfl
+theorem inline74Template_pc : pcAfter (UInt256.ofNat 4765) inline74Template = UInt256.ofNat 4820 := rfl
 
-theorem inline75Template_pc : pcAfter (UInt256.ofNat 4807) inline75Template = UInt256.ofNat 4862 := rfl
+theorem inline75Template_pc : pcAfter (UInt256.ofNat 4820) inline75Template = UInt256.ofNat 4875 := rfl
 
-theorem inline76Template_pc : pcAfter (UInt256.ofNat 4862) inline76Template = UInt256.ofNat 4916 := rfl
+theorem inline76Template_pc : pcAfter (UInt256.ofNat 4875) inline76Template = UInt256.ofNat 4929 := rfl
 
-theorem inline77Template_pc : pcAfter (UInt256.ofNat 4916) inline77Template = UInt256.ofNat 4971 := rfl
+theorem inline77Template_pc : pcAfter (UInt256.ofNat 4929) inline77Template = UInt256.ofNat 4984 := rfl
 
-theorem inline78Template_pc : pcAfter (UInt256.ofNat 4971) inline78Template = UInt256.ofNat 5026 := rfl
+theorem inline78Template_pc : pcAfter (UInt256.ofNat 4984) inline78Template = UInt256.ofNat 5039 := rfl
 
-theorem inline79Template_pc : pcAfter (UInt256.ofNat 5026) inline79Template = UInt256.ofNat 5081 := rfl
+theorem inline79Template_pc : pcAfter (UInt256.ofNat 5039) inline79Template = UInt256.ofNat 5094 := rfl
 
-theorem coreExitTemplate_pc : pcAfter (UInt256.ofNat 5081) coreExitTemplate = UInt256.ofNat 5083 := rfl
+theorem coreExitTemplate_pc : pcAfter (UInt256.ofNat 5094) coreExitTemplate = UInt256.ofNat 5096 := rfl
 
-def coreExitBlock : CoreBlock 5081 5083 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def coreExitBlock : CoreBlock 5094 5096 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := coreExitTemplate
   eval := fun _memory f => f
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_coreExitTemplate s (UInt256.ofNat 5081) f.frame rho hstack hrun
+    have h := run_coreExitTemplate s (UInt256.ofNat 5094) f.frame rho hstack hrun
     rw [coreExitTemplate_pc] at h
     exact h
 
@@ -8365,91 +8365,91 @@ theorem runInstrSeq_append_tail
 
 /-- Each physical window has its own exact bytecode binding; calls share one helper. -/
 structure WholeCoreSites (artifact : ProgramArtifact) (fork : Fork) where
-  group0 : {site : GenericRoundSite artifact fork group0Template // site.startPC = UInt256.ofNat 960}
-  inline0 : {site : GenericRoundSite artifact fork inline0Template // site.startPC = UInt256.ofNat 981}
-  inline1 : {site : GenericRoundSite artifact fork inline1Template // site.startPC = UInt256.ofNat 1035}
-  inline2 : {site : GenericRoundSite artifact fork inline2Template // site.startPC = UInt256.ofNat 1089}
-  inline3 : {site : GenericRoundSite artifact fork inline3Template // site.startPC = UInt256.ofNat 1144}
-  inline4 : {site : GenericRoundSite artifact fork inline4Template // site.startPC = UInt256.ofNat 1198}
-  inline5 : {site : GenericRoundSite artifact fork inline5Template // site.startPC = UInt256.ofNat 1253}
-  inline6 : {site : GenericRoundSite artifact fork inline6Template // site.startPC = UInt256.ofNat 1308}
-  inline7 : {site : GenericRoundSite artifact fork inline7Template // site.startPC = UInt256.ofNat 1363}
-  inline8 : {site : GenericRoundSite artifact fork inline8Template // site.startPC = UInt256.ofNat 1418}
-  inline9 : {site : GenericRoundSite artifact fork inline9Template // site.startPC = UInt256.ofNat 1473}
-  inline10 : {site : GenericRoundSite artifact fork inline10Template // site.startPC = UInt256.ofNat 1528}
-  inline11 : {site : GenericRoundSite artifact fork inline11Template // site.startPC = UInt256.ofNat 1583}
-  inline12 : {site : GenericRoundSite artifact fork inline12Template // site.startPC = UInt256.ofNat 1638}
-  inline13 : {site : GenericRoundSite artifact fork inline13Template // site.startPC = UInt256.ofNat 1692}
-  inline14 : {site : GenericRoundSite artifact fork inline14Template // site.startPC = UInt256.ofNat 1747}
-  inline15 : {site : GenericRoundSite artifact fork inline15Template // site.startPC = UInt256.ofNat 1802}
-  group16 : {site : GenericRoundSite artifact fork group16Template // site.startPC = UInt256.ofNat 1857}
-  call16 : {site : GenericRoundSite artifact fork call16Template // site.startPC = UInt256.ofNat 1880}
-  return18 : {site : GenericRoundSite artifact fork return18Template // site.startPC = UInt256.ofNat 1920}
-  inline18 : {site : GenericRoundSite artifact fork inline18Template // site.startPC = UInt256.ofNat 1921}
-  inline19 : {site : GenericRoundSite artifact fork inline19Template // site.startPC = UInt256.ofNat 1981}
-  call20 : {site : GenericRoundSite artifact fork call20Template // site.startPC = UInt256.ofNat 2041}
-  call22 : {site : GenericRoundSite artifact fork call22Template // site.startPC = UInt256.ofNat 2077}
-  return24 : {site : GenericRoundSite artifact fork return24Template // site.startPC = UInt256.ofNat 2116}
-  inline24 : {site : GenericRoundSite artifact fork inline24Template // site.startPC = UInt256.ofNat 2117}
-  inline25 : {site : GenericRoundSite artifact fork inline25Template // site.startPC = UInt256.ofNat 2167}
-  call26 : {site : GenericRoundSite artifact fork call26Template // site.startPC = UInt256.ofNat 2227}
-  call28 : {site : GenericRoundSite artifact fork call28Template // site.startPC = UInt256.ofNat 2264}
-  return30 : {site : GenericRoundSite artifact fork return30Template // site.startPC = UInt256.ofNat 2303}
-  inline30 : {site : GenericRoundSite artifact fork inline30Template // site.startPC = UInt256.ofNat 2304}
-  inline31 : {site : GenericRoundSite artifact fork inline31Template // site.startPC = UInt256.ofNat 2353}
-  group32 : {site : GenericRoundSite artifact fork group32Template // site.startPC = UInt256.ofNat 2414}
-  inline32 : {site : GenericRoundSite artifact fork inline32Template // site.startPC = UInt256.ofNat 2437}
-  inline33 : {site : GenericRoundSite artifact fork inline33Template // site.startPC = UInt256.ofNat 2487}
-  inline34 : {site : GenericRoundSite artifact fork inline34Template // site.startPC = UInt256.ofNat 2537}
-  inline35 : {site : GenericRoundSite artifact fork inline35Template // site.startPC = UInt256.ofNat 2586}
-  inline36 : {site : GenericRoundSite artifact fork inline36Template // site.startPC = UInt256.ofNat 2636}
-  inline37 : {site : GenericRoundSite artifact fork inline37Template // site.startPC = UInt256.ofNat 2686}
-  inline38 : {site : GenericRoundSite artifact fork inline38Template // site.startPC = UInt256.ofNat 2736}
-  inline39 : {site : GenericRoundSite artifact fork inline39Template // site.startPC = UInt256.ofNat 2786}
-  inline40 : {site : GenericRoundSite artifact fork inline40Template // site.startPC = UInt256.ofNat 2835}
-  inline41 : {site : GenericRoundSite artifact fork inline41Template // site.startPC = UInt256.ofNat 2885}
-  inline42 : {site : GenericRoundSite artifact fork inline42Template // site.startPC = UInt256.ofNat 2935}
-  inline43 : {site : GenericRoundSite artifact fork inline43Template // site.startPC = UInt256.ofNat 2984}
-  inline44 : {site : GenericRoundSite artifact fork inline44Template // site.startPC = UInt256.ofNat 3034}
-  inline45 : {site : GenericRoundSite artifact fork inline45Template // site.startPC = UInt256.ofNat 3084}
-  inline46 : {site : GenericRoundSite artifact fork inline46Template // site.startPC = UInt256.ofNat 3133}
-  inline47 : {site : GenericRoundSite artifact fork inline47Template // site.startPC = UInt256.ofNat 3173}
-  group48 : {site : GenericRoundSite artifact fork group48Template // site.startPC = UInt256.ofNat 3213}
-  inline48 : {site : GenericRoundSite artifact fork inline48Template // site.startPC = UInt256.ofNat 3236}
-  inline49 : {site : GenericRoundSite artifact fork inline49Template // site.startPC = UInt256.ofNat 3296}
-  inline50 : {site : GenericRoundSite artifact fork inline50Template // site.startPC = UInt256.ofNat 3357}
-  inline51 : {site : GenericRoundSite artifact fork inline51Template // site.startPC = UInt256.ofNat 3418}
-  inline52 : {site : GenericRoundSite artifact fork inline52Template // site.startPC = UInt256.ofNat 3478}
-  inline53 : {site : GenericRoundSite artifact fork inline53Template // site.startPC = UInt256.ofNat 3528}
-  inline54 : {site : GenericRoundSite artifact fork inline54Template // site.startPC = UInt256.ofNat 3589}
-  inline55 : {site : GenericRoundSite artifact fork inline55Template // site.startPC = UInt256.ofNat 3650}
-  inline56 : {site : GenericRoundSite artifact fork inline56Template // site.startPC = UInt256.ofNat 3710}
-  inline57 : {site : GenericRoundSite artifact fork inline57Template // site.startPC = UInt256.ofNat 3771}
-  inline58 : {site : GenericRoundSite artifact fork inline58Template // site.startPC = UInt256.ofNat 3832}
-  inline59 : {site : GenericRoundSite artifact fork inline59Template // site.startPC = UInt256.ofNat 3893}
-  inline60 : {site : GenericRoundSite artifact fork inline60Template // site.startPC = UInt256.ofNat 3954}
-  inline61 : {site : GenericRoundSite artifact fork inline61Template // site.startPC = UInt256.ofNat 4015}
-  inline62 : {site : GenericRoundSite artifact fork inline62Template // site.startPC = UInt256.ofNat 4076}
-  inline63 : {site : GenericRoundSite artifact fork inline63Template // site.startPC = UInt256.ofNat 4137}
-  group64 : {site : GenericRoundSite artifact fork group64Template // site.startPC = UInt256.ofNat 4198}
-  inline64 : {site : GenericRoundSite artifact fork inline64Template // site.startPC = UInt256.ofNat 4205}
-  inline65 : {site : GenericRoundSite artifact fork inline65Template // site.startPC = UInt256.ofNat 4260}
-  inline66 : {site : GenericRoundSite artifact fork inline66Template // site.startPC = UInt256.ofNat 4314}
-  inline67 : {site : GenericRoundSite artifact fork inline67Template // site.startPC = UInt256.ofNat 4369}
-  inline68 : {site : GenericRoundSite artifact fork inline68Template // site.startPC = UInt256.ofNat 4424}
-  inline69 : {site : GenericRoundSite artifact fork inline69Template // site.startPC = UInt256.ofNat 4478}
-  inline70 : {site : GenericRoundSite artifact fork inline70Template // site.startPC = UInt256.ofNat 4533}
-  inline71 : {site : GenericRoundSite artifact fork inline71Template // site.startPC = UInt256.ofNat 4588}
-  inline72 : {site : GenericRoundSite artifact fork inline72Template // site.startPC = UInt256.ofNat 4643}
-  inline73 : {site : GenericRoundSite artifact fork inline73Template // site.startPC = UInt256.ofNat 4698}
-  inline74 : {site : GenericRoundSite artifact fork inline74Template // site.startPC = UInt256.ofNat 4752}
-  inline75 : {site : GenericRoundSite artifact fork inline75Template // site.startPC = UInt256.ofNat 4807}
-  inline76 : {site : GenericRoundSite artifact fork inline76Template // site.startPC = UInt256.ofNat 4862}
-  inline77 : {site : GenericRoundSite artifact fork inline77Template // site.startPC = UInt256.ofNat 4916}
-  inline78 : {site : GenericRoundSite artifact fork inline78Template // site.startPC = UInt256.ofNat 4971}
-  inline79 : {site : GenericRoundSite artifact fork inline79Template // site.startPC = UInt256.ofNat 5026}
-  coreExit : {site : GenericRoundSite artifact fork coreExitTemplate // site.startPC = UInt256.ofNat 5081}
-  helper : {site : GenericRoundSite artifact fork fullTemplate // site.startPC = UInt256.ofNat 5168}
+  group0 : {site : GenericRoundSite artifact fork group0Template // site.startPC = UInt256.ofNat 973}
+  inline0 : {site : GenericRoundSite artifact fork inline0Template // site.startPC = UInt256.ofNat 994}
+  inline1 : {site : GenericRoundSite artifact fork inline1Template // site.startPC = UInt256.ofNat 1048}
+  inline2 : {site : GenericRoundSite artifact fork inline2Template // site.startPC = UInt256.ofNat 1102}
+  inline3 : {site : GenericRoundSite artifact fork inline3Template // site.startPC = UInt256.ofNat 1157}
+  inline4 : {site : GenericRoundSite artifact fork inline4Template // site.startPC = UInt256.ofNat 1211}
+  inline5 : {site : GenericRoundSite artifact fork inline5Template // site.startPC = UInt256.ofNat 1266}
+  inline6 : {site : GenericRoundSite artifact fork inline6Template // site.startPC = UInt256.ofNat 1321}
+  inline7 : {site : GenericRoundSite artifact fork inline7Template // site.startPC = UInt256.ofNat 1376}
+  inline8 : {site : GenericRoundSite artifact fork inline8Template // site.startPC = UInt256.ofNat 1431}
+  inline9 : {site : GenericRoundSite artifact fork inline9Template // site.startPC = UInt256.ofNat 1486}
+  inline10 : {site : GenericRoundSite artifact fork inline10Template // site.startPC = UInt256.ofNat 1541}
+  inline11 : {site : GenericRoundSite artifact fork inline11Template // site.startPC = UInt256.ofNat 1596}
+  inline12 : {site : GenericRoundSite artifact fork inline12Template // site.startPC = UInt256.ofNat 1651}
+  inline13 : {site : GenericRoundSite artifact fork inline13Template // site.startPC = UInt256.ofNat 1705}
+  inline14 : {site : GenericRoundSite artifact fork inline14Template // site.startPC = UInt256.ofNat 1760}
+  inline15 : {site : GenericRoundSite artifact fork inline15Template // site.startPC = UInt256.ofNat 1815}
+  group16 : {site : GenericRoundSite artifact fork group16Template // site.startPC = UInt256.ofNat 1870}
+  call16 : {site : GenericRoundSite artifact fork call16Template // site.startPC = UInt256.ofNat 1893}
+  return18 : {site : GenericRoundSite artifact fork return18Template // site.startPC = UInt256.ofNat 1933}
+  inline18 : {site : GenericRoundSite artifact fork inline18Template // site.startPC = UInt256.ofNat 1934}
+  inline19 : {site : GenericRoundSite artifact fork inline19Template // site.startPC = UInt256.ofNat 1994}
+  call20 : {site : GenericRoundSite artifact fork call20Template // site.startPC = UInt256.ofNat 2054}
+  call22 : {site : GenericRoundSite artifact fork call22Template // site.startPC = UInt256.ofNat 2090}
+  return24 : {site : GenericRoundSite artifact fork return24Template // site.startPC = UInt256.ofNat 2129}
+  inline24 : {site : GenericRoundSite artifact fork inline24Template // site.startPC = UInt256.ofNat 2130}
+  inline25 : {site : GenericRoundSite artifact fork inline25Template // site.startPC = UInt256.ofNat 2180}
+  call26 : {site : GenericRoundSite artifact fork call26Template // site.startPC = UInt256.ofNat 2240}
+  call28 : {site : GenericRoundSite artifact fork call28Template // site.startPC = UInt256.ofNat 2277}
+  return30 : {site : GenericRoundSite artifact fork return30Template // site.startPC = UInt256.ofNat 2316}
+  inline30 : {site : GenericRoundSite artifact fork inline30Template // site.startPC = UInt256.ofNat 2317}
+  inline31 : {site : GenericRoundSite artifact fork inline31Template // site.startPC = UInt256.ofNat 2366}
+  group32 : {site : GenericRoundSite artifact fork group32Template // site.startPC = UInt256.ofNat 2427}
+  inline32 : {site : GenericRoundSite artifact fork inline32Template // site.startPC = UInt256.ofNat 2450}
+  inline33 : {site : GenericRoundSite artifact fork inline33Template // site.startPC = UInt256.ofNat 2500}
+  inline34 : {site : GenericRoundSite artifact fork inline34Template // site.startPC = UInt256.ofNat 2550}
+  inline35 : {site : GenericRoundSite artifact fork inline35Template // site.startPC = UInt256.ofNat 2599}
+  inline36 : {site : GenericRoundSite artifact fork inline36Template // site.startPC = UInt256.ofNat 2649}
+  inline37 : {site : GenericRoundSite artifact fork inline37Template // site.startPC = UInt256.ofNat 2699}
+  inline38 : {site : GenericRoundSite artifact fork inline38Template // site.startPC = UInt256.ofNat 2749}
+  inline39 : {site : GenericRoundSite artifact fork inline39Template // site.startPC = UInt256.ofNat 2799}
+  inline40 : {site : GenericRoundSite artifact fork inline40Template // site.startPC = UInt256.ofNat 2848}
+  inline41 : {site : GenericRoundSite artifact fork inline41Template // site.startPC = UInt256.ofNat 2898}
+  inline42 : {site : GenericRoundSite artifact fork inline42Template // site.startPC = UInt256.ofNat 2948}
+  inline43 : {site : GenericRoundSite artifact fork inline43Template // site.startPC = UInt256.ofNat 2997}
+  inline44 : {site : GenericRoundSite artifact fork inline44Template // site.startPC = UInt256.ofNat 3047}
+  inline45 : {site : GenericRoundSite artifact fork inline45Template // site.startPC = UInt256.ofNat 3097}
+  inline46 : {site : GenericRoundSite artifact fork inline46Template // site.startPC = UInt256.ofNat 3146}
+  inline47 : {site : GenericRoundSite artifact fork inline47Template // site.startPC = UInt256.ofNat 3186}
+  group48 : {site : GenericRoundSite artifact fork group48Template // site.startPC = UInt256.ofNat 3226}
+  inline48 : {site : GenericRoundSite artifact fork inline48Template // site.startPC = UInt256.ofNat 3249}
+  inline49 : {site : GenericRoundSite artifact fork inline49Template // site.startPC = UInt256.ofNat 3309}
+  inline50 : {site : GenericRoundSite artifact fork inline50Template // site.startPC = UInt256.ofNat 3370}
+  inline51 : {site : GenericRoundSite artifact fork inline51Template // site.startPC = UInt256.ofNat 3431}
+  inline52 : {site : GenericRoundSite artifact fork inline52Template // site.startPC = UInt256.ofNat 3491}
+  inline53 : {site : GenericRoundSite artifact fork inline53Template // site.startPC = UInt256.ofNat 3541}
+  inline54 : {site : GenericRoundSite artifact fork inline54Template // site.startPC = UInt256.ofNat 3602}
+  inline55 : {site : GenericRoundSite artifact fork inline55Template // site.startPC = UInt256.ofNat 3663}
+  inline56 : {site : GenericRoundSite artifact fork inline56Template // site.startPC = UInt256.ofNat 3723}
+  inline57 : {site : GenericRoundSite artifact fork inline57Template // site.startPC = UInt256.ofNat 3784}
+  inline58 : {site : GenericRoundSite artifact fork inline58Template // site.startPC = UInt256.ofNat 3845}
+  inline59 : {site : GenericRoundSite artifact fork inline59Template // site.startPC = UInt256.ofNat 3906}
+  inline60 : {site : GenericRoundSite artifact fork inline60Template // site.startPC = UInt256.ofNat 3967}
+  inline61 : {site : GenericRoundSite artifact fork inline61Template // site.startPC = UInt256.ofNat 4028}
+  inline62 : {site : GenericRoundSite artifact fork inline62Template // site.startPC = UInt256.ofNat 4089}
+  inline63 : {site : GenericRoundSite artifact fork inline63Template // site.startPC = UInt256.ofNat 4150}
+  group64 : {site : GenericRoundSite artifact fork group64Template // site.startPC = UInt256.ofNat 4211}
+  inline64 : {site : GenericRoundSite artifact fork inline64Template // site.startPC = UInt256.ofNat 4218}
+  inline65 : {site : GenericRoundSite artifact fork inline65Template // site.startPC = UInt256.ofNat 4273}
+  inline66 : {site : GenericRoundSite artifact fork inline66Template // site.startPC = UInt256.ofNat 4327}
+  inline67 : {site : GenericRoundSite artifact fork inline67Template // site.startPC = UInt256.ofNat 4382}
+  inline68 : {site : GenericRoundSite artifact fork inline68Template // site.startPC = UInt256.ofNat 4437}
+  inline69 : {site : GenericRoundSite artifact fork inline69Template // site.startPC = UInt256.ofNat 4491}
+  inline70 : {site : GenericRoundSite artifact fork inline70Template // site.startPC = UInt256.ofNat 4546}
+  inline71 : {site : GenericRoundSite artifact fork inline71Template // site.startPC = UInt256.ofNat 4601}
+  inline72 : {site : GenericRoundSite artifact fork inline72Template // site.startPC = UInt256.ofNat 4656}
+  inline73 : {site : GenericRoundSite artifact fork inline73Template // site.startPC = UInt256.ofNat 4711}
+  inline74 : {site : GenericRoundSite artifact fork inline74Template // site.startPC = UInt256.ofNat 4765}
+  inline75 : {site : GenericRoundSite artifact fork inline75Template // site.startPC = UInt256.ofNat 4820}
+  inline76 : {site : GenericRoundSite artifact fork inline76Template // site.startPC = UInt256.ofNat 4875}
+  inline77 : {site : GenericRoundSite artifact fork inline77Template // site.startPC = UInt256.ofNat 4929}
+  inline78 : {site : GenericRoundSite artifact fork inline78Template // site.startPC = UInt256.ofNat 4984}
+  inline79 : {site : GenericRoundSite artifact fork inline79Template // site.startPC = UInt256.ofNat 5039}
+  coreExit : {site : GenericRoundSite artifact fork coreExitTemplate // site.startPC = UInt256.ofNat 5094}
+  helper : {site : GenericRoundSite artifact fork fullTemplate // site.startPC = UInt256.ofNat 5181}
 
 #print axioms template_length
 #print axioms run_template
