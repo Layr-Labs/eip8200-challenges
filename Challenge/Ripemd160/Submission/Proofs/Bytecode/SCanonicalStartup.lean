@@ -1,5 +1,4 @@
 import Challenge.EvmProof.Word
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedDivMaskCache
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneUInt256Bridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedDerivedStartup
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Word
@@ -11,12 +10,12 @@ import Init.Data.BitVec.Bitblast
 set_option warningAsError true
 
 /-!
-Canonical multiply startup, 32 instructions and 48 bytes. The schedule cleanup
-now leaves the 32-bit mask on the stack, so the startup no longer pushes it:
-the freed five bytes are absorbed by widening the shift amount's push to six,
-which keeps the site at 48 bytes and every later pc unmoved. The duplication
-factor is the quotient of the paired mask and the lower mask. Canonical
-hash-load bounds imply equality with PairedDerivedStartup.resultStack.
+Canonical multiply startup, 32 instructions and 48 bytes. The canonical
+32-bit mask already determines the duplicated-lane factor, so this startup
+pushes the fixed factor directly instead of deriving it with a division. The
+removed derivation and old final factor replacement are replaced by eight
+executable JUMPDEST bytes, preserving the 48-byte site and every later pc.
+Canonical hash-load bounds imply equality with PairedDerivedStartup.resultStack.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.SCanonicalStartup
@@ -116,15 +115,14 @@ def loadMulTemplate (address : Nat) (dup : Operation.DupOp) : List Instr :=
 
 def template : List Instr :=
   [dup1, .push ⟨6, by decide⟩ (UInt256.ofNat 128), .op .SHL,
-   dup1, .op (.Dup ⟨2, by decide⟩), .op .OR,
-   .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .DIV] ++
+   .push ⟨5, by decide⟩ PairedDerivedStartup.factorWord] ++
    loadMulTemplate 160 ⟨1, by decide⟩ ++
    loadMulTemplate 128 ⟨2, by decide⟩ ++
    loadMulTemplate 96 ⟨3, by decide⟩ ++
    loadMulTemplate 64 ⟨4, by decide⟩ ++
    loadMulTemplate 32 ⟨5, by decide⟩ ++
-   [.push ⟨5, by decide⟩ PairedDerivedStartup.factorWord,
-    .op (.Swap ⟨5, by decide⟩), .op .POP]
+   [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+    .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
 
 theorem template_length : template.length = 32 := by
   norm_num [template, loadMulTemplate]
@@ -164,11 +162,6 @@ theorem mul_eq_packedHash (memory : ByteArray) (address : Nat)
   rw [hstar, uint_mul_comm]
   exact hmul
 
-theorem pair_div_lower :
-    PairedDerivedStartup.pairWord / PairedDerivedStartup.lowerWord = dupFactor := by
-  decide
-
-#print axioms pair_div_lower
 
 theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
     (h32 : (MachineState.readWord s.memory 32).toNat < 2 ^ 32)
@@ -194,8 +187,7 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
     PairedDerivedStartup.packedHash, PairedDerivedStartup.resultStack,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, hrun, hcap, Nat.add_assoc,
-    PairedDerivedStartup.upper_from_lower, PairedDerivedStartup.pair_from_lower,
-    pair_div_lower,
+    PairedDerivedStartup.upper_from_lower,
     List.getElem?_cons_zero, List.getElem?_cons_succ,
     State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -210,39 +202,37 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
 
 open Challenge.EvmProof StackRoundTemplate
 
-/-- Flat 33-op expansion of `template` for the advancement case split. -/
+/-- Flat 32-op expansion of `template` for the advancement case split. -/
 def frozenInstructions : List Instr :=
   [DenseScheduleTemplate.dup1, .push ⟨6, by decide⟩ (UInt256.ofNat 128), .op .SHL,
-   DenseScheduleTemplate.dup1, .op (.Dup ⟨2, by decide⟩), .op .OR,
-   .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .DIV,
+   .push ⟨5, by decide⟩ PairedDerivedStartup.factorWord,
    DenseScheduleTemplate.push1 (UInt256.ofNat 160), .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .MUL,
    DenseScheduleTemplate.push1 (UInt256.ofNat 128), .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .op .MUL,
    DenseScheduleTemplate.push1 (UInt256.ofNat 96), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .MUL,
    DenseScheduleTemplate.push1 (UInt256.ofNat 64), .op .MLOAD, .op (.Dup ⟨4, by decide⟩), .op .MUL,
    DenseScheduleTemplate.push1 (UInt256.ofNat 32), .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL,
-   .push ⟨5, by decide⟩ PairedDerivedStartup.factorWord,
-   .op (.Swap ⟨5, by decide⟩), .op .POP]
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
 
 theorem template_eq_frozenInstructions : template = frozenInstructions := by
   rfl
 
 theorem template_advances :
-    ∀ instruction ∈ template,
-      DenseScheduleLift.Advances instruction ∨ instruction = .op .DIV := by
+    ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   intro instruction hmem
   rw [template_eq_frozenInstructions] at hmem
   simp only [frozenInstructions, List.mem_cons, List.not_mem_nil, or_false] at hmem
   rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals first
-    | exact Or.inr rfl
-    | exact Or.inl (Or.inl (Or.inl (StraightLine.push _ _)))
-    | exact Or.inl (Or.inl (Or.inl StraightLine.shl))
-    | exact Or.inl (Or.inl (Or.inl StraightLine.or))
-    | exact Or.inl (Or.inl (Or.inl StraightLine.mload))
-    | exact Or.inl (Or.inl (Or.inl (StraightLine.dup _)))
-    | exact Or.inl (Or.inl (Or.inl (StraightLine.swap _)))
-    | exact Or.inl (Or.inl (Or.inl StraightLine.pop))
+    | exact Or.inl (Or.inl (StraightLine.push _ _))
+    | exact Or.inl (Or.inl StraightLine.shl)
+    | exact Or.inl (Or.inl StraightLine.or)
+    | exact Or.inl (Or.inl StraightLine.mload)
+    | exact Or.inl (Or.inl (StraightLine.dup _))
+    | exact Or.inl (Or.inl (StraightLine.swap _))
+    | exact Or.inl (Or.inl StraightLine.pop)
     | exact Or.inl (Or.inr (Or.inr rfl))
+    | exact Or.inr (Or.inr rfl)
 
 theorem runLocatedBlock_template {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork template)
@@ -270,10 +260,8 @@ theorem runLocatedBlock_template {artifact : ProgramArtifact} {fork : Fork}
     have hin : located.located.instruction ∈ template := by
       rw [← site.instruction_eq]
       exact List.mem_map_of_mem hmem
-    rcases template_advances located.located.instruction hin with hnormal | hdiv
-    · exact DenseScheduleLift.runInstr_pc_of_advances hnormal hresult
-    · rw [hdiv] at hresult
-      simpa only [hdiv] using PairedDivMaskCache.runInstr_pc_div hresult
+    exact DenseScheduleLift.runInstr_pc_of_advances
+      (template_advances located.located.instruction hin) hresult
   rw [hraw]
   have h := run_template s site.startPC rho h32 h64 h96 h128 h160 hstack hrun hactive
   rw [← hend] at h
