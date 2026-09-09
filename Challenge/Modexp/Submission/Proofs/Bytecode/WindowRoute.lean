@@ -46,16 +46,17 @@ already-proved state at pc 517.
 structure Control where
   enter : ∀ input : ByteArray, ValidInput input →
     0 < modulusSize input → modulusSize input ≤ 32 →
-    Dispatch.WordRouteEnter input
+    0 < exponentSize input → Dispatch.WordRouteEnter input
   miss : ∀ input : ByteArray, ValidInput input →
-    0 < modulusSize input → modulusSize input ≤ 32 → ¬ Matches input →
+    0 < modulusSize input → modulusSize input ≤ 32 →
+    0 < exponentSize input → ¬ Matches input →
     Dispatch.WordRouteMiss input
 
 /-- The complete proof interface of the appended route. `hit` owns all new
 arithmetic and output work; its control fields are proved independently. -/
 structure Route extends Control where
   hit : ∀ input : ByteArray, ValidInput input →
-    0 < modulusSize input → modulusSize input ≤ 32 → Matches input →
+    0 < modulusSize input → modulusSize input ≤ 32 →
+    0 < exponentSize input → Matches input →
     Handled input
-
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowRoute

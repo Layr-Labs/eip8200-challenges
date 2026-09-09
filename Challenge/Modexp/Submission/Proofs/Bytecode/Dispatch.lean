@@ -86,10 +86,44 @@ private def gasSteps_wordCheck (input : ByteArray) (hvalid : ValidInput input)
 
 private def gasSteps_wordTail (input : ByteArray) :
     Challenge.EvmProof.GasSteps (wordCheckedState input)
-      (wordRouteEntryState input) :=
+      (wordDispatchRouteState input) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka wordTailPath rfl rfl
       (run_wordTail input) rfl deployAddress_not_precompile
+private def gasSteps_zeroExponentDispatch_nonzero (input : ByteArray)
+    (hzero : exponentSize input ≠ 0) :
+    Challenge.EvmProof.GasSteps (wordDispatchRouteState input)
+      (wordRouteEntryState input) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka zeroExponentDispatchPath rfl rfl
+      (run_zeroExponentDispatch_nonzero input hzero) rfl
+      deployAddress_not_precompile
+
+private def gasSteps_zeroExponentDispatch_zero (input : ByteArray)
+    (hzero : exponentSize input = 0) :
+    Challenge.EvmProof.GasSteps (wordDispatchRouteState input)
+      (zeroExponentHandlerState input) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka zeroExponentDispatchZeroPath rfl rfl
+      (run_zeroExponentDispatch_zero input hzero) rfl
+      deployAddress_not_precompile
+
+private def gasSteps_zeroExponentHandler (input : ByteArray)
+    (hmodpos : 0 < modulusValue input) :
+    Challenge.EvmProof.GasSteps (zeroExponentHandlerState input)
+      (zeroExponentBaseFinishState input) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka zeroExponentHandlerPath rfl rfl
+      (run_zeroExponentHandler input hmodpos) rfl deployAddress_not_precompile
+
+private def gasSteps_zeroExponentHandler_zeroModulus (input : ByteArray)
+    (hmodzero : modulusValue input = 0) :
+    Challenge.EvmProof.GasSteps (zeroExponentHandlerState input)
+      (wordEntryState input) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka zeroExponentHandlerZeroModulusPath rfl rfl
+      (run_zeroExponentHandler_zeroModulus input hmodzero) rfl
+      deployAddress_not_precompile
 
 @[simp] private theorem gasSteps_wordJump_cost (input : ByteArray)
     (hvalid : ValidInput input) (hpositive : 0 < modulusSize input) :
@@ -115,19 +149,72 @@ private def gasSteps_wordTail (input : ByteArray) :
   exact blockCost_of_static wordTailPath 32 (run_wordTail input)
     rfl (by decide) rfl rfl
 
+private theorem gasSteps_zeroExponentDispatch_nonzero_cost (input : ByteArray)
+    (hzero : exponentSize input ≠ 0) :
+    (gasSteps_zeroExponentDispatch_nonzero input hzero).cost = 31 := by
+  change Challenge.EvmProof.Stepper.runLocatedBlockCost zeroExponentDispatchPath
+    (wordDispatchRouteState input) = 31
+  exact blockCost_of_static zeroExponentDispatchPath 31
+    (run_zeroExponentDispatch_nonzero input hzero)
+    rfl (by decide) rfl rfl
+private theorem gasSteps_zeroExponentHandler_cost (input : ByteArray)
+    (hmodpos : 0 < modulusValue input) :
+    (gasSteps_zeroExponentHandler input hmodpos).cost = 39 := by
+  change Challenge.EvmProof.Stepper.runLocatedBlockCost zeroExponentHandlerPath
+    (zeroExponentHandlerState input) = 39
+  exact blockCost_of_static zeroExponentHandlerPath 39
+    (run_zeroExponentHandler input hmodpos)
+    rfl (by decide) rfl rfl
+
+private theorem gasSteps_zeroExponentHandler_zeroModulus_cost (input : ByteArray)
+    (hmodzero : modulusValue input = 0) :
+    (gasSteps_zeroExponentHandler_zeroModulus input hmodzero).cost = 20 := by
+  change Challenge.EvmProof.Stepper.runLocatedBlockCost
+    zeroExponentHandlerZeroModulusPath (zeroExponentHandlerState input) = 20
+  exact blockCost_of_static zeroExponentHandlerZeroModulusPath 20
+    (run_zeroExponentHandler_zeroModulus input hmodzero)
+    rfl (by decide) rfl rfl
+
+def gasSteps_zeroExponentPrefix (input : ByteArray) (hvalid : ValidInput input)
+    (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hzero : exponentSize input = 0)
+    (hmodpos : 0 < modulusValue input) :
+    Challenge.EvmProof.GasSteps (Main.headerState input)
+      (zeroExponentBaseFinishState input) :=
+  (gasSteps_wordJump input hvalid hpositive).trans <|
+    (gasSteps_wordCheck input hvalid hpositive hword).trans <|
+      (gasSteps_wordTail input).trans <|
+        (gasSteps_zeroExponentDispatch_zero input hzero).trans
+          (gasSteps_zeroExponentHandler input hmodpos)
+
+def gasSteps_zeroExponentLegacyPrefix (input : ByteArray)
+    (hvalid : ValidInput input) (hpositive : 0 < modulusSize input)
+    (hword : modulusSize input ≤ 32) (hzero : exponentSize input = 0)
+    (hmodzero : modulusValue input = 0) :
+    Challenge.EvmProof.GasSteps (Main.headerState input)
+      (wordEntryState input) :=
+  (gasSteps_wordJump input hvalid hpositive).trans <|
+    (gasSteps_wordCheck input hvalid hpositive hword).trans <|
+      (gasSteps_wordTail input).trans <|
+        (gasSteps_zeroExponentDispatch_zero input hzero).trans
+          (gasSteps_zeroExponentHandler_zeroModulus input hmodzero)
+
 def gasSteps_wordRouteEnter (input : ByteArray) (hvalid : ValidInput input)
-    (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32) :
+    (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hexppos : 0 < exponentSize input) :
     WordRouteEnter input :=
   (gasSteps_wordJump input hvalid hpositive).trans <|
-    (gasSteps_wordCheck input hvalid hpositive hword).trans
-      (gasSteps_wordTail input)
+    (gasSteps_wordCheck input hvalid hpositive hword).trans <|
+      (gasSteps_wordTail input).trans <|
+        gasSteps_zeroExponentDispatch_nonzero input (by omega)
 
 set_option maxHeartbeats 5000000 in
 theorem gasSteps_wordRouteEnter_cost (input : ByteArray)
     (hvalid : ValidInput input)
-    (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32) :
-    (gasSteps_wordRouteEnter input hvalid hpositive hword).cost = 90 := by
-  simp [gasSteps_wordRouteEnter]
+    (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hexppos : 0 < exponentSize input) :
+    (gasSteps_wordRouteEnter input hvalid hpositive hword hexppos).cost = 121 := by
+  simp [gasSteps_wordRouteEnter, gasSteps_zeroExponentDispatch_nonzero_cost]
 
 /-- Complete trace and exact minimum gas for zero-width results. -/
 def gasSteps_zeroSize_total (input : ByteArray) (hvalid : ValidInput input)

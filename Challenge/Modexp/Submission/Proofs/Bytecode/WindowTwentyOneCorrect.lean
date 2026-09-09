@@ -45,10 +45,10 @@ def handled (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
 
 def route : WindowRoute.Route where
   enter := Dispatch.gasSteps_wordRouteEnter
-  miss := fun input _ _ _ hmiss => by
+  miss := fun input _ _ _ _ hmiss => by
     have h := WindowTwentyOneGasRoute.steps_miss Artifact.twentyOnePaths
       (Main.headerState input) (environment input) input hmiss
     simpa only [entry_eq, miss_eq] using h
-  hit := fun input _ _ _ hmatch => handled input hmatch
+  hit := fun input _ _ _ _ hmatch => handled input hmatch
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCorrect

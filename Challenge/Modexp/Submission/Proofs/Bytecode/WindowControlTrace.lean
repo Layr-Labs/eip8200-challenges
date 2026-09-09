@@ -50,6 +50,6 @@ def gasSteps_hit (input : ByteArray) (hmatch : WindowGuardLogic.Matches input) :
 /-- Concrete control half of the fixed-width route. -/
 def control : WindowRoute.Control where
   enter := Dispatch.gasSteps_wordRouteEnter
-  miss := fun input _ _ _ hmatch => gasSteps_miss input hmatch
+  miss := fun input _ _ _ _ hmatch => gasSteps_miss input hmatch
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowControlTrace

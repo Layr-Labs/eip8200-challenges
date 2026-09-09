@@ -54,7 +54,7 @@ def wordEntryPath :
    pushAt 940 2 1267, opAt 941 (.Dup ⟨1, by decide⟩),
    opAt 942 (.Dup ⟨3, by decide⟩), pushAt 943 1 96,
    opAt 944 (.Dup ⟨6, by decide⟩), opAt 945 (.Dup ⟨8, by decide⟩),
-   opAt 946 (.Dup ⟨10, by decide⟩), pushAt 947 2 2633, opAt 948 .JUMP]
+   opAt 946 (.Dup ⟨10, by decide⟩), pushAt 947 2 5329, opAt 948 .JUMP]
 
 def zeroSetupPath := zeroSizePath.take 6
 def zeroReturnPath := [opAt 927 .RETURN]
@@ -117,6 +117,10 @@ def wordCheckedState (input : ByteArray) : State :=
       UInt256.ofNat (96 + baseSize input), UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
+def modulusValue (input : ByteArray) : Nat :=
+  Precompile.bytesToNatPadded input
+    (96 + baseSize input + exponentSize input) (modulusSize input)
+
 /-- Calling-convention state at the first instruction of `modexpWord`. -/
 def wordEntryState (input : ByteArray) : State :=
   let b := baseSize input
@@ -130,6 +134,44 @@ def wordEntryState (input : ByteArray) : State :=
       UInt256.ofNat 96, UInt256.ofNat expOff, UInt256.ofNat modOff,
       UInt256.ofNat 1267, UInt256.ofNat modOff, UInt256.ofNat expOff,
       UInt256.ofNat m, UInt256.ofNat e, UInt256.ofNat b] }
+def wordDispatchRouteState (input : ByteArray) : State :=
+  { wordEntryState input with pc := UInt256.ofNat 5329 }
+
+def zeroExponentHandlerState (input : ByteArray) : State :=
+  { wordDispatchRouteState input with pc := UInt256.ofNat 5340 }
+
+def zeroExponentBaseFinishState (input : ByteArray) : State :=
+  { wordEntryState input with
+    pc := UInt256.ofNat 582
+    stack := [UInt256.ofNat (baseSize input), 0,
+      UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
+      UInt256.ofNat 96, UInt256.ofNat (expOffset input),
+      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1267] ++
+      [UInt256.ofNat (modulusOffset input), UInt256.ofNat (expOffset input),
+       UInt256.ofNat (modulusSize input), UInt256.ofNat (exponentSize input),
+       UInt256.ofNat (baseSize input)] }
+
+def zeroExponentDispatchPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 3877 .JUMPDEST, opAt 3878 (.Dup ⟨1, by decide⟩),
+   opAt 3879 .ISZERO, pushAt 3880 2 5340, opAt 3881 .JUMPI,
+   pushAt 3882 2 2633, opAt 3883 .JUMP]
+def zeroExponentDispatchZeroPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  zeroExponentDispatchPath.take 5
+
+def zeroExponentHandlerPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 3884 .JUMPDEST, opAt 3885 (.Dup ⟨2, by decide⟩),
+   opAt 3886 .ISZERO, pushAt 3887 2 517, opAt 3888 .JUMPI,
+   opAt 3889 (.Dup ⟨2, by decide⟩), pushAt 3890 0 0,
+   opAt 3891 (.Dup ⟨2, by decide⟩), pushAt 3892 2 582,
+   opAt 3893 .JUMP]
+def zeroExponentHandlerZeroModulusPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  zeroExponentHandlerPath.take 5
+
 
 /-! ## Retargeted one-word dispatch boundary
 
