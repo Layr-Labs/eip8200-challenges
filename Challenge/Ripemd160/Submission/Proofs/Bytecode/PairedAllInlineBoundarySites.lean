@@ -21,12 +21,12 @@ theorem schedule_slice :
   rfl
 
 theorem schedule_instructionPC :
-    Artifact.submissionArtifact.instructionPC 294 = 512 := by
+    Artifact.submissionArtifact.instructionPC 294 = 542 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem schedule_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 459 = 749 := by
+    Artifact.submissionArtifact.instructionPC 459 = 779 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -58,12 +58,12 @@ theorem startup_slice :
   rfl
 
 theorem startup_instructionPC :
-    Artifact.submissionArtifact.instructionPC 459 = 749 := by
+    Artifact.submissionArtifact.instructionPC 459 = 779 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem startup_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 497 = 807 := by
+    Artifact.submissionArtifact.instructionPC 497 = 837 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -95,12 +95,12 @@ theorem tailPrefix_slice :
   rfl
 
 theorem tailPrefix_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3966 = 4874 := by
+    Artifact.submissionArtifact.instructionPC 3966 = 4904 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem tailPrefix_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 4035 = 4958 := by
+    Artifact.submissionArtifact.instructionPC 4035 = 4988 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -163,7 +163,7 @@ def gasSteps_schedule (s : State) (returnPC : UInt256) (p : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 512) (UInt256.ofNat p) returnPC rest)
       { s with
-        pc := UInt256.ofNat 749
+        pc := UInt256.ofNat 779
         stack := returnPC :: rest
         memory := PairedScheduleMemory.normalizedMemory s.memory
           (PairedScheduleData.extractedWord s.memory p)
@@ -187,8 +187,8 @@ def gasSteps_startup (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1
       MachineState.readWord s.memory 128)
     (h160 : UInt256.land PairedDerivedStartup.lowerWord (MachineState.readWord s.memory 160) =
       MachineState.readWord s.memory 160) :
-    GasSteps {s with pc := UInt256.ofNat 749, stack := rho}
-      {s with pc := UInt256.ofNat 807, stack := PairedStartupTrace.resultStack s.memory rho} := by
+    GasSteps {s with pc := UInt256.ofNat 779, stack := rho}
+      {s with pc := UInt256.ofNat 837, stack := PairedStartupTrace.resultStack s.memory rho} := by
   have h := PairedNormalizedStartup.gasSteps_template startupSite s rho hstack hrun hactive
     hcode hfork hnp h32 h64 h96 h128 h160
   change GasSteps {s with pc := startupSite.startPC, stack := rho}
@@ -202,7 +202,7 @@ def gasSteps_tail (s : State) (ret : UInt256) (q : PairedTailTrace.Frame)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4874, stack := PairedAllInlineTail.entryStack q ret rho}
+    GasSteps {s with pc := UInt256.ofNat 4904, stack := PairedAllInlineTail.entryStack q ret rho}
       {s with pc := ret, stack := rho, memory := PairedTailTrace.resultMemory s.memory q} := by
   have h := PairedAllInlineTail.gasSteps_tail tailSite s ret q rho hstack hrun hactive hvalid
     hcode hfork hnp

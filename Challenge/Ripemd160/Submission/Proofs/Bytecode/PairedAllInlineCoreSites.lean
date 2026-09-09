@@ -18,7 +18,7 @@ theorem group0_slice :
   rfl
 
 theorem group0_instructionPC :
-    Artifact.submissionArtifact.instructionPC 497 = 807 := by
+    Artifact.submissionArtifact.instructionPC 497 = 837 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -42,7 +42,7 @@ theorem inline0_slice :
   rfl
 
 theorem inline0_instructionPC :
-    Artifact.submissionArtifact.instructionPC 500 = 815 := by
+    Artifact.submissionArtifact.instructionPC 500 = 845 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -66,7 +66,7 @@ theorem inline1_slice :
   rfl
 
 theorem inline1_instructionPC :
-    Artifact.submissionArtifact.instructionPC 544 = 865 := by
+    Artifact.submissionArtifact.instructionPC 544 = 895 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -90,7 +90,7 @@ theorem inline2_slice :
   rfl
 
 theorem inline2_instructionPC :
-    Artifact.submissionArtifact.instructionPC 588 = 915 := by
+    Artifact.submissionArtifact.instructionPC 588 = 945 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -114,7 +114,7 @@ theorem inline3_slice :
   rfl
 
 theorem inline3_instructionPC :
-    Artifact.submissionArtifact.instructionPC 632 = 966 := by
+    Artifact.submissionArtifact.instructionPC 632 = 996 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -138,7 +138,7 @@ theorem inline4_slice :
   rfl
 
 theorem inline4_instructionPC :
-    Artifact.submissionArtifact.instructionPC 674 = 1013 := by
+    Artifact.submissionArtifact.instructionPC 674 = 1043 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -162,7 +162,7 @@ theorem inline5_slice :
   rfl
 
 theorem inline5_instructionPC :
-    Artifact.submissionArtifact.instructionPC 718 = 1064 := by
+    Artifact.submissionArtifact.instructionPC 718 = 1094 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -186,7 +186,7 @@ theorem inline6_slice :
   rfl
 
 theorem inline6_instructionPC :
-    Artifact.submissionArtifact.instructionPC 762 = 1115 := by
+    Artifact.submissionArtifact.instructionPC 762 = 1145 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -210,7 +210,7 @@ theorem inline7_slice :
   rfl
 
 theorem inline7_instructionPC :
-    Artifact.submissionArtifact.instructionPC 806 = 1166 := by
+    Artifact.submissionArtifact.instructionPC 806 = 1196 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -234,7 +234,7 @@ theorem inline8_slice :
   rfl
 
 theorem inline8_instructionPC :
-    Artifact.submissionArtifact.instructionPC 850 = 1217 := by
+    Artifact.submissionArtifact.instructionPC 850 = 1247 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -258,7 +258,7 @@ theorem inline9_slice :
   rfl
 
 theorem inline9_instructionPC :
-    Artifact.submissionArtifact.instructionPC 894 = 1268 := by
+    Artifact.submissionArtifact.instructionPC 894 = 1298 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -282,7 +282,7 @@ theorem inline10_slice :
   rfl
 
 theorem inline10_instructionPC :
-    Artifact.submissionArtifact.instructionPC 938 = 1319 := by
+    Artifact.submissionArtifact.instructionPC 938 = 1349 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -306,7 +306,7 @@ theorem inline11_slice :
   rfl
 
 theorem inline11_instructionPC :
-    Artifact.submissionArtifact.instructionPC 982 = 1370 := by
+    Artifact.submissionArtifact.instructionPC 982 = 1400 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -330,7 +330,7 @@ theorem inline12_slice :
   rfl
 
 theorem inline12_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1026 = 1421 := by
+    Artifact.submissionArtifact.instructionPC 1026 = 1451 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -354,7 +354,7 @@ theorem inline13_slice :
   rfl
 
 theorem inline13_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1070 = 1471 := by
+    Artifact.submissionArtifact.instructionPC 1070 = 1501 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -378,7 +378,7 @@ theorem inline14_slice :
   rfl
 
 theorem inline14_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1114 = 1522 := by
+    Artifact.submissionArtifact.instructionPC 1114 = 1552 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -402,7 +402,7 @@ theorem inline15_slice :
   rfl
 
 theorem inline15_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1158 = 1573 := by
+    Artifact.submissionArtifact.instructionPC 1158 = 1603 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -426,7 +426,7 @@ theorem group16_slice :
   rfl
 
 theorem group16_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1202 = 1624 := by
+    Artifact.submissionArtifact.instructionPC 1202 = 1654 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -450,7 +450,7 @@ theorem inline16_slice :
   rfl
 
 theorem inline16_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1205 = 1647 := by
+    Artifact.submissionArtifact.instructionPC 1205 = 1677 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -474,7 +474,7 @@ theorem inline17_slice :
   rfl
 
 theorem inline17_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1251 = 1700 := by
+    Artifact.submissionArtifact.instructionPC 1251 = 1730 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -498,7 +498,7 @@ theorem inline18_slice :
   rfl
 
 theorem inline18_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1297 = 1753 := by
+    Artifact.submissionArtifact.instructionPC 1297 = 1783 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -522,7 +522,7 @@ theorem inline19_slice :
   rfl
 
 theorem inline19_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1343 = 1806 := by
+    Artifact.submissionArtifact.instructionPC 1343 = 1836 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -546,7 +546,7 @@ theorem inline20_slice :
   rfl
 
 theorem inline20_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1389 = 1858 := by
+    Artifact.submissionArtifact.instructionPC 1389 = 1888 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -570,7 +570,7 @@ theorem inline21_slice :
   rfl
 
 theorem inline21_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1433 = 1907 := by
+    Artifact.submissionArtifact.instructionPC 1433 = 1937 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -594,7 +594,7 @@ theorem inline22_slice :
   rfl
 
 theorem inline22_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1477 = 1957 := by
+    Artifact.submissionArtifact.instructionPC 1477 = 1987 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -618,7 +618,7 @@ theorem inline23_slice :
   rfl
 
 theorem inline23_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1523 = 2010 := by
+    Artifact.submissionArtifact.instructionPC 1523 = 2040 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -642,7 +642,7 @@ theorem inline24_slice :
   rfl
 
 theorem inline24_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1569 = 2063 := by
+    Artifact.submissionArtifact.instructionPC 1569 = 2093 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -666,7 +666,7 @@ theorem inline25_slice :
   rfl
 
 theorem inline25_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1609 = 2109 := by
+    Artifact.submissionArtifact.instructionPC 1609 = 2139 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -690,7 +690,7 @@ theorem inline26_slice :
   rfl
 
 theorem inline26_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1655 = 2161 := by
+    Artifact.submissionArtifact.instructionPC 1655 = 2191 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -714,7 +714,7 @@ theorem inline27_slice :
   rfl
 
 theorem inline27_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1701 = 2214 := by
+    Artifact.submissionArtifact.instructionPC 1701 = 2244 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -738,7 +738,7 @@ theorem inline28_slice :
   rfl
 
 theorem inline28_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1747 = 2267 := by
+    Artifact.submissionArtifact.instructionPC 1747 = 2297 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -762,7 +762,7 @@ theorem inline29_slice :
   rfl
 
 theorem inline29_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1793 = 2320 := by
+    Artifact.submissionArtifact.instructionPC 1793 = 2350 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -786,7 +786,7 @@ theorem inline30_slice :
   rfl
 
 theorem inline30_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1839 = 2373 := by
+    Artifact.submissionArtifact.instructionPC 1839 = 2403 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -810,7 +810,7 @@ theorem inline31_slice :
   rfl
 
 theorem inline31_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1879 = 2418 := by
+    Artifact.submissionArtifact.instructionPC 1879 = 2448 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -834,7 +834,7 @@ theorem group32_slice :
   rfl
 
 theorem group32_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1923 = 2468 := by
+    Artifact.submissionArtifact.instructionPC 1923 = 2498 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -858,7 +858,7 @@ theorem inline32_slice :
   rfl
 
 theorem inline32_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1926 = 2492 := by
+    Artifact.submissionArtifact.instructionPC 1926 = 2522 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -882,7 +882,7 @@ theorem inline33_slice :
   rfl
 
 theorem inline33_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1965 = 2538 := by
+    Artifact.submissionArtifact.instructionPC 1965 = 2568 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -906,7 +906,7 @@ theorem inline34_slice :
   rfl
 
 theorem inline34_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2004 = 2584 := by
+    Artifact.submissionArtifact.instructionPC 2004 = 2614 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -930,7 +930,7 @@ theorem inline35_slice :
   rfl
 
 theorem inline35_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2043 = 2630 := by
+    Artifact.submissionArtifact.instructionPC 2043 = 2660 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -954,7 +954,7 @@ theorem inline36_slice :
   rfl
 
 theorem inline36_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2082 = 2676 := by
+    Artifact.submissionArtifact.instructionPC 2082 = 2706 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -978,7 +978,7 @@ theorem inline37_slice :
   rfl
 
 theorem inline37_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2121 = 2722 := by
+    Artifact.submissionArtifact.instructionPC 2121 = 2752 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1002,7 +1002,7 @@ theorem inline38_slice :
   rfl
 
 theorem inline38_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2160 = 2768 := by
+    Artifact.submissionArtifact.instructionPC 2160 = 2798 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1026,7 +1026,7 @@ theorem inline39_slice :
   rfl
 
 theorem inline39_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2199 = 2814 := by
+    Artifact.submissionArtifact.instructionPC 2199 = 2844 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1050,7 +1050,7 @@ theorem inline40_slice :
   rfl
 
 theorem inline40_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2236 = 2856 := by
+    Artifact.submissionArtifact.instructionPC 2236 = 2886 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1074,7 +1074,7 @@ theorem inline41_slice :
   rfl
 
 theorem inline41_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2275 = 2902 := by
+    Artifact.submissionArtifact.instructionPC 2275 = 2932 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1098,7 +1098,7 @@ theorem inline42_slice :
   rfl
 
 theorem inline42_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2314 = 2948 := by
+    Artifact.submissionArtifact.instructionPC 2314 = 2978 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1122,7 +1122,7 @@ theorem inline43_slice :
   rfl
 
 theorem inline43_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2353 = 2993 := by
+    Artifact.submissionArtifact.instructionPC 2353 = 3023 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1146,7 +1146,7 @@ theorem inline44_slice :
   rfl
 
 theorem inline44_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2392 = 3039 := by
+    Artifact.submissionArtifact.instructionPC 2392 = 3069 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1170,7 +1170,7 @@ theorem inline45_slice :
   rfl
 
 theorem inline45_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2431 = 3085 := by
+    Artifact.submissionArtifact.instructionPC 2431 = 3115 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1194,7 +1194,7 @@ theorem inline46_slice :
   rfl
 
 theorem inline46_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2468 = 3127 := by
+    Artifact.submissionArtifact.instructionPC 2468 = 3157 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1218,7 +1218,7 @@ theorem inline47_slice :
   rfl
 
 theorem inline47_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2501 = 3166 := by
+    Artifact.submissionArtifact.instructionPC 2501 = 3196 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1242,7 +1242,7 @@ theorem group48_slice :
   rfl
 
 theorem group48_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2534 = 3205 := by
+    Artifact.submissionArtifact.instructionPC 2534 = 3235 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1266,7 +1266,7 @@ theorem inline48_slice :
   rfl
 
 theorem inline48_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2537 = 3228 := by
+    Artifact.submissionArtifact.instructionPC 2537 = 3258 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1290,7 +1290,7 @@ theorem inline49_slice :
   rfl
 
 theorem inline49_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2583 = 3280 := by
+    Artifact.submissionArtifact.instructionPC 2583 = 3310 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1314,7 +1314,7 @@ theorem inline50_slice :
   rfl
 
 theorem inline50_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2629 = 3333 := by
+    Artifact.submissionArtifact.instructionPC 2629 = 3363 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1338,7 +1338,7 @@ theorem inline51_slice :
   rfl
 
 theorem inline51_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2675 = 3386 := by
+    Artifact.submissionArtifact.instructionPC 2675 = 3416 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1362,7 +1362,7 @@ theorem inline52_slice :
   rfl
 
 theorem inline52_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2721 = 3438 := by
+    Artifact.submissionArtifact.instructionPC 2721 = 3468 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1386,7 +1386,7 @@ theorem inline53_slice :
   rfl
 
 theorem inline53_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2761 = 3483 := by
+    Artifact.submissionArtifact.instructionPC 2761 = 3513 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1410,7 +1410,7 @@ theorem inline54_slice :
   rfl
 
 theorem inline54_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2805 = 3533 := by
+    Artifact.submissionArtifact.instructionPC 2805 = 3563 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1434,7 +1434,7 @@ theorem inline55_slice :
   rfl
 
 theorem inline55_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2851 = 3586 := by
+    Artifact.submissionArtifact.instructionPC 2851 = 3616 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1458,7 +1458,7 @@ theorem inline56_slice :
   rfl
 
 theorem inline56_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2897 = 3638 := by
+    Artifact.submissionArtifact.instructionPC 2897 = 3668 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1482,7 +1482,7 @@ theorem inline57_slice :
   rfl
 
 theorem inline57_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2943 = 3691 := by
+    Artifact.submissionArtifact.instructionPC 2943 = 3721 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1506,7 +1506,7 @@ theorem inline58_slice :
   rfl
 
 theorem inline58_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2989 = 3744 := by
+    Artifact.submissionArtifact.instructionPC 2989 = 3774 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1530,7 +1530,7 @@ theorem inline59_slice :
   rfl
 
 theorem inline59_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3035 = 3797 := by
+    Artifact.submissionArtifact.instructionPC 3035 = 3827 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1554,7 +1554,7 @@ theorem inline60_slice :
   rfl
 
 theorem inline60_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3081 = 3850 := by
+    Artifact.submissionArtifact.instructionPC 3081 = 3880 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1578,7 +1578,7 @@ theorem inline61_slice :
   rfl
 
 theorem inline61_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3127 = 3903 := by
+    Artifact.submissionArtifact.instructionPC 3127 = 3933 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1602,7 +1602,7 @@ theorem inline62_slice :
   rfl
 
 theorem inline62_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3171 = 3953 := by
+    Artifact.submissionArtifact.instructionPC 3171 = 3983 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1626,7 +1626,7 @@ theorem inline63_slice :
   rfl
 
 theorem inline63_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3217 = 4007 := by
+    Artifact.submissionArtifact.instructionPC 3217 = 4037 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1650,7 +1650,7 @@ theorem group64_slice :
   rfl
 
 theorem group64_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3263 = 4060 := by
+    Artifact.submissionArtifact.instructionPC 3263 = 4090 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1674,7 +1674,7 @@ theorem inline64_slice :
   rfl
 
 theorem inline64_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3266 = 4067 := by
+    Artifact.submissionArtifact.instructionPC 3266 = 4097 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1698,7 +1698,7 @@ theorem inline65_slice :
   rfl
 
 theorem inline65_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3308 = 4115 := by
+    Artifact.submissionArtifact.instructionPC 3308 = 4145 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1722,7 +1722,7 @@ theorem inline66_slice :
   rfl
 
 theorem inline66_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3352 = 4166 := by
+    Artifact.submissionArtifact.instructionPC 3352 = 4196 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1746,7 +1746,7 @@ theorem inline67_slice :
   rfl
 
 theorem inline67_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3396 = 4217 := by
+    Artifact.submissionArtifact.instructionPC 3396 = 4247 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1770,7 +1770,7 @@ theorem inline68_slice :
   rfl
 
 theorem inline68_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3440 = 4268 := by
+    Artifact.submissionArtifact.instructionPC 3440 = 4298 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1794,7 +1794,7 @@ theorem inline69_slice :
   rfl
 
 theorem inline69_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3484 = 4318 := by
+    Artifact.submissionArtifact.instructionPC 3484 = 4348 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1818,7 +1818,7 @@ theorem inline70_slice :
   rfl
 
 theorem inline70_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3528 = 4369 := by
+    Artifact.submissionArtifact.instructionPC 3528 = 4399 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1842,7 +1842,7 @@ theorem inline71_slice :
   rfl
 
 theorem inline71_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3570 = 4417 := by
+    Artifact.submissionArtifact.instructionPC 3570 = 4447 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1866,7 +1866,7 @@ theorem inline72_slice :
   rfl
 
 theorem inline72_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3614 = 4468 := by
+    Artifact.submissionArtifact.instructionPC 3614 = 4498 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1890,7 +1890,7 @@ theorem inline73_slice :
   rfl
 
 theorem inline73_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3658 = 4519 := by
+    Artifact.submissionArtifact.instructionPC 3658 = 4549 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1914,7 +1914,7 @@ theorem inline74_slice :
   rfl
 
 theorem inline74_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3700 = 4566 := by
+    Artifact.submissionArtifact.instructionPC 3700 = 4596 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1938,7 +1938,7 @@ theorem inline75_slice :
   rfl
 
 theorem inline75_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3744 = 4617 := by
+    Artifact.submissionArtifact.instructionPC 3744 = 4647 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1962,7 +1962,7 @@ theorem inline76_slice :
   rfl
 
 theorem inline76_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3788 = 4669 := by
+    Artifact.submissionArtifact.instructionPC 3788 = 4699 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1986,7 +1986,7 @@ theorem inline77_slice :
   rfl
 
 theorem inline77_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3832 = 4719 := by
+    Artifact.submissionArtifact.instructionPC 3832 = 4749 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -2010,7 +2010,7 @@ theorem inline78_slice :
   rfl
 
 theorem inline78_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3876 = 4770 := by
+    Artifact.submissionArtifact.instructionPC 3876 = 4800 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -2034,7 +2034,7 @@ theorem inline79_slice :
   rfl
 
 theorem inline79_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3920 = 4821 := by
+    Artifact.submissionArtifact.instructionPC 3920 = 4851 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -2058,7 +2058,7 @@ theorem coreExit_slice :
   rfl
 
 theorem coreExit_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3964 = 4872 := by
+    Artifact.submissionArtifact.instructionPC 3964 = 4902 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -2174,8 +2174,8 @@ def gasSteps_core_normalized (s : State) (words : Nat → UInt32)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hready : NormalizedScheduleReady s.memory words) :
-    GasSteps {s with pc := UInt256.ofNat 807, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho}
-      {s with pc := UInt256.ofNat 4874, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (coreCryptoResult words left right) rho} :=
+    GasSteps {s with pc := UInt256.ofNat 837, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho}
+      {s with pc := UInt256.ofNat 4904, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (coreCryptoResult words left right) rho} :=
   PairedAllInlineCoreTrace.gasSteps_wholeCore_normalized wholeSites s words left right rho hstack hrun hactive
     hcode hfork hnp hready
 

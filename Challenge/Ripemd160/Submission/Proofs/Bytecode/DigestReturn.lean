@@ -14,19 +14,19 @@ open PatternedScan
 def answerMemory (word : UInt256) : ByteArray := storeWord ByteArray.empty 0 word
 
 def storedState (input : ByteArray) (word : UInt256) : State :=
-  { stS input 468 [] with memory := answerMemory word, activeWords := UInt256.ofNat 1 }
+  { stS input 528 [] with memory := answerMemory word, activeWords := UInt256.ofNat 1 }
 
 def sizedState (input : ByteArray) (word : UInt256) : State :=
-  { storedState input word with pc := UInt256.ofNat 469, stack := [UInt256.ofNat 32] }
+  { storedState input word with pc := UInt256.ofNat 529, stack := [UInt256.ofNat 32] }
 
 def returnedState (input : ByteArray) (word : UInt256) : State :=
-  { storedState input word with pc := UInt256.ofNat 470, halt := .Returned, hReturn := MachineState.readPadded (answerMemory word) 0 32 }
+  { storedState input word with pc := UInt256.ofNat 530, halt := .Returned, hReturn := MachineState.readPadded (answerMemory word) 0 32 }
 
 def storePath : List Located := [pushAt 256 0 0, opAt 257 .MSTORE]
 def finishPath : List Located := [pushAt 259 0 0, opAt 260 .RETURN]
 
 theorem run_store (input : ByteArray) (word : UInt256) :
-    run storePath (stS input 466 [word]) = some (storedState input word) := by
+    run storePath (stS input 526 [word]) = some (storedState input word) := by
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp [storePath, opAt, pushAt, wfOp, stS, initialState, storedState,
     answerMemory, storeWord, MachineState.mstore, State.activeWordsAfterUInt256,
@@ -44,7 +44,7 @@ theorem run_finish (input : ByteArray) (word : UInt256) :
     Word.succ_ofNat_mod, Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
 def gasSteps_return (input : ByteArray) (word : UInt256) :
-    GasSteps (stS input 466 [word]) (returnedState input word) := by
+    GasSteps (stS input 526 [word]) (returnedState input word) := by
   have gs := sound storePath (run_store input word)
   have hd := Artifact.submissionArtifact.decodeAt_op_index 258 .MSIZE
     (by rfl) (by decide) trivial

@@ -14,7 +14,7 @@ open KnownInputCompactState
 
 theorem run_loop_more (input : ByteArray) (n : Nat) (hn : n < 29) :
     run loopPath (loopState input n) = some (loopState input (n + 1)) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0xd2 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 0xf0 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 127 (by rfl)
   have hstart : 32 * n + 32 < 2 ^ 256 := by omega
   have hnext : 32 * n + 64 < 2 ^ 256 := by omega

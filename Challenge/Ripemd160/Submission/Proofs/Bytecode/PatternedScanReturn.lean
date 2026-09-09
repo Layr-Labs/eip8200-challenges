@@ -20,10 +20,10 @@ def storePath : List Located :=
 def finishPath : List Located := [pushAt 259 0 0, opAt 260 .RETURN]
 
 def storedState (input : ByteArray) : State :=
-  { atPC input 468 with memory := answerMemory, activeWords := UInt256.ofNat 1 }
+  { atPC input 528 with memory := answerMemory, activeWords := UInt256.ofNat 1 }
 
 def sizedState (input : ByteArray) : State :=
-  { storedState input with pc := UInt256.ofNat 469, stack := [UInt256.ofNat 32] }
+  { storedState input with pc := UInt256.ofNat 529, stack := [UInt256.ofNat 32] }
 
 /-- The branchless selector on a 1000-byte input: the size test is false, so the
 correction term is multiplied by zero and the general digest survives the `XOR`. -/

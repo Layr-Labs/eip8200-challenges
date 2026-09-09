@@ -14,8 +14,8 @@ open PatternedScan PatternedSwar
 @[simp] private theorem helperPC1 : Artifact.submissionArtifact.instructionPC 98 = 169 := rfl
 @[simp] private theorem helperPC2 : Artifact.submissionArtifact.instructionPC 99 = 170 := rfl
 @[simp] private theorem helperPC3 : Artifact.submissionArtifact.instructionPC 100 = 173 := rfl
-@[simp] private theorem cleanupPC : Artifact.submissionArtifact.instructionPC 261 = 471 := rfl
-@[simp] private theorem cleanupDest : Decode.isValidJumpDest submissionBytecode 402 = true :=
+@[simp] private theorem cleanupPC : Artifact.submissionArtifact.instructionPC 261 = 501 := rfl
+@[simp] private theorem cleanupDest : Decode.isValidJumpDest submissionBytecode 432 = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 235 (by rfl)
 @[simp] private theorem fallbackDest : Decode.isValidJumpDest submissionBytecode 3 = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 2 (by rfl)
@@ -23,7 +23,7 @@ open PatternedScan PatternedSwar
 def exitPath : List Located :=
   [opAt 97 .JUMPDEST,
    opAt 98 (.Dup ⟨2, by decide⟩),
-   pushAt 99 2 402,
+   pushAt 99 2 432,
    opAt 100 .JUMP,
    opAt 235 .JUMPDEST,
    opAt 236 (.Swap ⟨2, by decide⟩),
@@ -42,7 +42,7 @@ def exitPath : List Located :=
 
 theorem run_exit (input : ByteArray) (sv ov acc : UInt256) :
     run exitPath (stS input 168 [sv, ov, acc, P7, M, m7, P, m8]) =
-      some (if UInt256.isTrue acc then fallbackState input else stS input 417 []) := by
+      some (if UInt256.isTrue acc then fallbackState input else stS input 447 []) := by
   by_cases hc : UInt256.isTrue acc <;>
     simp (config := { maxSteps := 400000 })
       [exitPath, opAt, pushAt, stS, fallbackState, atPC, List.exchange, hc,
@@ -65,7 +65,7 @@ def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
     (by rfl) (by rfl) h (by rfl) deployAddress_not_precompile
 
 def gasSteps_hit (input : ByteArray) (sv ov : UInt256) :
-    GasSteps (stS input 168 [sv, ov, 0, P7, M, m7, P, m8]) (stS input 417 []) := by
+    GasSteps (stS input 168 [sv, ov, 0, P7, M, m7, P, m8]) (stS input 447 []) := by
   have h := run_exit input sv ov 0
   rw [if_neg (by decide)] at h
   exact Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka exitPath

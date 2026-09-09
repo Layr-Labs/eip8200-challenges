@@ -29,23 +29,23 @@ private def frame (s : State) (input : ByteArray) (pc : Nat) : State :=
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
 /-- Entry at the second word comparison in the checked prefix. -/
-def entry (s : State) (input : ByteArray) : State := frame s input 5057
+def entry (s : State) (input : ByteArray) : State := frame s input 5087
 
 /-- Entry at the depth-2 rung (word-2 comparison). -/
-def rungEntry (s : State) (input : ByteArray) : State := frame s input 5098
+def rungEntry (s : State) (input : ByteArray) : State := frame s input 5128
 
 /-- Entry at the word-3 comparison. -/
-def fourthEntry (s : State) (input : ByteArray) : State := frame s input 5139
+def fourthEntry (s : State) (input : ByteArray) : State := frame s input 5169
 
 /-- Entry at the `H2` install after both rung words matched. -/
-def hit2Entry (s : State) (input : ByteArray) : State := frame s input 5180
+def hit2Entry (s : State) (input : ByteArray) : State := frame s input 5210
 
 /-- Entry at the `H1` install (`JUMPDEST` target of the rung's guards). -/
-def hit1Entry (s : State) (input : ByteArray) : State := frame s input 5227
+def hit1Entry (s : State) (input : ByteArray) : State := frame s input 5257
 
 /-- The generic compression target of the guard is a valid jump destination. -/
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 512 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 294 = 512 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 542 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 294 = 542 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   have h := Artifact.submissionArtifact.isValidJumpDest_index 294 (by rfl)
@@ -53,8 +53,8 @@ theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 512 = true 
   exact h
 
 /-- The `H1` install entry is a valid jump destination. -/
-theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5227 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 4144 = 5227 := by
+theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5257 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 4144 = 5257 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   have h := Artifact.submissionArtifact.isValidJumpDest_index 4144 (by rfl)
@@ -558,7 +558,7 @@ def gasSteps_finish (s : State) (input : ByteArray)
       else DriverTrace.compressEntry s input 0) := by
   have ghit1 : Challenge.EvmProof.GasSteps (hit1Entry s input)
       (PrefixStateMemory.resultState s input 0) :=
-    frameBlock PrefixStatePaths.hitPath s input 5227 _ hcode hfork hrun hnp
+    frameBlock PrefixStatePaths.hitPath s input 5257 _ hcode hfork hrun hnp
       (run_hit1 s input hcode hrun)
   have ghit2 : Challenge.EvmProof.GasSteps (hit2Entry s input)
       (PrefixStateMemory.resultState2 s input) :=

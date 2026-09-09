@@ -34,12 +34,12 @@ def rho (input : ByteArray) : List UInt256 :=
 with the plain driver stack on top of the copied-code state. -/
 def firstMatchedState (s : State) (input : ByteArray) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5057
+    pc := UInt256.ofNat 5087
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 512 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 294 = 512 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 542 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 294 = 542 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   have h := Artifact.submissionArtifact.isValidJumpDest_index 294 (by rfl)
@@ -114,7 +114,7 @@ private theorem act_idem (s : State) :
 
 private theorem compare_mload_active (s : State) (input : ByteArray) :
     ({ toSharedState := (PrefixStateMemory.copied s).toSharedState,
-        pc := UInt256.ofNat 5051,
+        pc := UInt256.ofNat 5081,
         stack := [UInt256.ofNat 0, MachineState.readWord input 0,
           DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
           DriverTrace.blockOffsetWord 0, Padding.paddedWord input],
@@ -202,7 +202,7 @@ theorem run_firstCompare_mismatch (s : State) (input : ByteArray)
   have hword : MachineState.readWord (PrefixStateMemory.copied s).memory 0 =
       PatternedWordData.expectedWordAt 0 :=
     PrefixStateMemory.copied_word_zero s
-  have hdest : Decode.isValidJumpDest submissionBytecode 512 = true := jumpDest_generic
+  have hdest : Decode.isValidJumpDest submissionBytecode 542 = true := jumpDest_generic
   have htrue : UInt256.isTrue
       (UInt256.xor (PatternedWordData.expectedWordAt 0)
         (MachineState.readWord input 0)) = true :=

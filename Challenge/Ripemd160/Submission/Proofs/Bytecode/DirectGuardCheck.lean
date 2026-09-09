@@ -15,11 +15,11 @@ open KnownInputCompactState
 theorem run_checkEntry (input : ByteArray)
     (href : referenceWord input = KnownInputData.fullWord) :
     run checkEntryPath (sizeMatched input) = some (loopState input 0) := by
-  have hpc3278 : Artifact.submissionArtifact.instructionPC 117 = 196 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3279 : Artifact.submissionArtifact.instructionPC 118 = 197 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3280 : Artifact.submissionArtifact.instructionPC 119 = 198 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3281 : Artifact.submissionArtifact.instructionPC 120 = 199 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3282 : Artifact.submissionArtifact.instructionPC 121 = 201 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3278 : Artifact.submissionArtifact.instructionPC 117 = 227 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3279 : Artifact.submissionArtifact.instructionPC 118 = 228 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3280 : Artifact.submissionArtifact.instructionPC 119 = 229 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3281 : Artifact.submissionArtifact.instructionPC 120 = 230 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3282 : Artifact.submissionArtifact.instructionPC 121 = 231 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hzero : UInt256.xor KnownInputData.fullWord (referenceWord input) = 0 := by
     exact (KnownInputLogic.wordXor_eq_zero_iff
       KnownInputData.fullWord (referenceWord input)).2 href.symm
@@ -45,10 +45,8 @@ theorem run_checkEntry (input : ByteArray)
     simpa only [referenceWord] using hzero
   have hzeroFalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   have hpushzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
-  have hfullWordMul : UInt256.mul (UInt256.ofNat 97) PatternedSwar.M =
-      KnownInputData.fullWord := RepeatedByteWord.ascii_a
   simp (config := { maxSteps := 1000000 })
-    [hpc3278, hpc3279, hpc3280, hpc3281, hpc3282, hpushzero, hfullWordMul, CompactGuardConstants.repeated_one_ofNat, RepeatedByteWord.ascii_a, checkEntryPath, opAt, pushAt, wfOp, sizeMatched, atPC, loopState,
+    [hpc3278, hpc3279, hpc3280, hpc3281, hpc3282, hpushzero, CompactGuardConstants.repeated_one_ofNat, RepeatedByteWord.ascii_a, checkEntryPath, opAt, pushAt, wfOp, sizeMatched, atPC, loopState,
     loopAcc, referenceWord, href, hzero, hfalse, hcond, hstack, hcondStack,
     hstackZero, hzeroFalse,
     Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
