@@ -49,11 +49,11 @@ def primeValueProgram : List Instr :=
 def primeProgram : List Instr := primeValueProgram ++ WindowTwentyOneEntry.testProgram (UInt256.ofNat 5319)
 
 def exponentValueProgram : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .push 1 1,
-   .op (.Dup ⟨2, by decide⟩), .op .SUB, .op .EQ]
+  [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .push 2 1,
+   .op (.Dup ⟨2, by decide⟩), .op .SUB, .op .XOR]
 
 def exponentProgram : List Instr := exponentValueProgram ++
-  WindowTwentyOneEntry.testProgram (UInt256.ofNat 5319)
+  [.push 2 (UInt256.ofNat 5319), .op .JUMPI]
 
 private theorem zero_lt_eq_double_isZero (x : UInt256) :
     UInt256.lt ({ val := 0 } : UInt256) x = UInt256.isZero (UInt256.isZero x) := by
@@ -117,23 +117,35 @@ theorem run_exponent (template : State) (modulus offset : UInt256) (rest : List 
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
-  have hv : runInstructions exponentValueProgram (framed template (UInt256.ofNat 5288)
-      (modulus :: rest)) =
-      some (framed template (UInt256.ofNat 5295)
-        (UInt256.eq (modulus - UInt256.ofNat 1)
-          (MachineState.readWord template.executionEnv.calldata offset.toNat) :: modulus :: rest)) := by
-    simp (config := { maxSteps := 500000 }) [exponentValueProgram, runInstructions, framed, hoff,
-      Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4,
-      Challenge.EvmProof.Word.literal_eq_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod]
-  have ht := WindowTwentyOneEntry.run_test template (UInt256.ofNat 5295) (UInt256.ofNat 5319)
-    (UInt256.eq (modulus - UInt256.ofNat 1)
-      (MachineState.readWord template.executionEnv.calldata offset.toNat)) (modulus :: rest)
-    (by simp; omega) htarget
-  have both := runInstructions_append_some _ _ _ _ _ hv ht
-  have hpc : advancePC 5 (UInt256.ofNat 5295) = UInt256.ofNat 5300 := by decide
-  simpa only [exponentProgram, hpc, framed] using both
+  let value := MachineState.readWord template.executionEnv.calldata offset.toNat
+  by_cases hv : modulus - UInt256.ofNat 1 = value
+  · have hx : UInt256.xor (modulus - UInt256.ofNat 1) value = 0 :=
+      (WindowGuardLogic.wordXor_eq_zero_iff _ _).mpr hv
+    have he : UInt256.eq (modulus - UInt256.ofNat 1) value = UInt256.ofNat 1 := by
+      simp [UInt256.eq, hv]
+    simp (config := { maxSteps := 700000 })
+      [exponentProgram, exponentValueProgram, runInstructions, framed, hoff,
+       Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4,
+       ← show value = MachineState.readWord template.executionEnv.calldata offset.toNat from rfl,
+       hx, he, UInt256.isTrue,
+       Challenge.EvmProof.Word.literal_eq_ofNat,
+       Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
+  · have hx : UInt256.xor (modulus - UInt256.ofNat 1) value ≠ 0 := by
+      intro hz
+      exact hv ((WindowGuardLogic.wordXor_eq_zero_iff _ _).mp hz)
+    have he : UInt256.eq (modulus - UInt256.ofNat 1) value = 0 :=
+      (eq_zero_iff _ _).mpr hv
+    have ht : UInt256.isTrue (UInt256.xor (modulus - UInt256.ofNat 1) value) := by
+      unfold UInt256.isTrue
+      intro hz
+      exact hx (Challenge.EvmProof.Word.word_ext hz)
+    simp (config := { maxSteps := 700000 })
+      [exponentProgram, exponentValueProgram, runInstructions, framed, hoff,
+       Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4,
+       ← show value = MachineState.readWord template.executionEnv.calldata offset.toNat from rfl,
+       ht, he, htarget,
+       Challenge.EvmProof.Word.literal_eq_ofNat,
+       Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 private theorem run_value (template : State) (modulus offset : UInt256) (rest : List UInt256)
     (baseSize : Nat) (hwidth : baseSize ≤ 32)
@@ -200,3 +212,5 @@ structure Paths (artifact : Challenge.EvmProof.ProgramArtifact) (fork : Fork) wh
   legacyJump : Decode.isValidJumpDest artifact.code 2637 = true
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FermatProgram
+
+#print axioms Challenge.Modexp.Submission.Proofs.Bytecode.FermatProgram.run_exponent
