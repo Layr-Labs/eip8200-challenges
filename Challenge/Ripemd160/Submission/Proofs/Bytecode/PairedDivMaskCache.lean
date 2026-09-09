@@ -47,8 +47,9 @@ private theorem add_ofNat_assoc_add (u : UInt256) (a b : Nat) :
 
 def cachedInitial : List Instr :=
   [op .JUMPDEST, .push ⟨4, by decide⟩ maskWord,
-    push2 (UInt256.ofNat 257), .push 0 0, op .NOT, op .DIV,
-    push3 (UInt256.ofNat 65537), .push 0 0, op .NOT, op .DIV,
+    .push 0 0, op .NOT, dup1, op .JUMPDEST,
+    push2 (UInt256.ofNat 257), op .DIV,
+    push3 (UInt256.ofNat 65537), op .DIV,
     .op (.Swap ⟨2, by decide⟩), dup1, op .MLOAD, swap1,
     push1 (UInt256.ofNat 32), op .ADD, op .MLOAD]
 
@@ -187,12 +188,12 @@ theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 237 := b
 
 #print axioms fullTemplate_byteLength
 
-theorem fullTemplate_staticGas : staticGas fullTemplate = 499 := by
+theorem fullTemplate_staticGas : staticGas fullTemplate = 498 := by
   have happend (xs ys : List Instr) : staticGas (xs ++ ys) = staticGas xs + staticGas ys := by
     simp only [staticGas, List.map_append, List.sum_append]
   have hold := PairedMask32Cache.fullTemplate_staticGas
   have hi : staticGas PairedMask32Cache.cachedInitial = 31 := by decide
-  have hn : staticGas cachedInitial = 51 := by decide
+  have hn : staticGas cachedInitial = 50 := by decide
   simp only [PairedMask32Cache.fullTemplate, happend, hi] at hold
   simp only [fullTemplate, happend, hn]
   omega
