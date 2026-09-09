@@ -27,48 +27,48 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 1781..1792, pc 2560..2937: load exponent byte `i`, test `i = 0`. -/
 def blk1781 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1776 .JUMPDEST,
-   opAt 1777 (.Dup ⟨0, by decide⟩),
-   pushAt 1778 2 9472,
-   opAt 1779 .MLOAD,
-   opAt 1780 .ADD,
-   opAt 1781 .CALLDATALOAD,
-   pushAt 1782 0 0,
-   opAt 1783 .BYTE,
-   opAt 1784 (.Dup ⟨1, by decide⟩),
-   opAt 1785 .ISZERO,
-   pushAt 1786 2 2557,
-   opAt 1787 .JUMPI]
+  [opAt 1774 .JUMPDEST,
+   opAt 1775 (.Dup ⟨0, by decide⟩),
+   pushAt 1776 2 9472,
+   opAt 1777 .MLOAD,
+   opAt 1778 .ADD,
+   opAt 1779 .CALLDATALOAD,
+   pushAt 1780 0 0,
+   opAt 1781 .BYTE,
+   opAt 1782 (.Dup ⟨1, by decide⟩),
+   opAt 1783 .ISZERO,
+   pushAt 1784 2 2557,
+   opAt 1785 .JUMPI]
 
 /-- Instructions 1793..1795, pc 2576..2943: every byte after the first. -/
 def blk1793 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1788 1 128,
-   pushAt 1789 2 1780,
-   opAt 1790 .JUMP]
+  [pushAt 1786 1 128,
+   pushAt 1787 2 1780,
+   opAt 1788 .JUMP]
 
 /-- Instructions 1796..1815, pc 2582..2970: the highest set bit of byte `0`. -/
 def blk1796 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1791 .JUMPDEST,
-   opAt 1792 (.Dup ⟨0, by decide⟩),
-   opAt 1793 (.Dup ⟨0, by decide⟩),
-   pushAt 1794 1 1,
-   opAt 1795 .SHR,
-   opAt 1796 .OR,
-   opAt 1797 (.Dup ⟨0, by decide⟩),
-   pushAt 1798 1 2,
-   opAt 1799 .SHR,
-   opAt 1800 .OR,
-   opAt 1801 (.Dup ⟨0, by decide⟩),
-   pushAt 1802 1 4,
-   opAt 1803 .SHR,
-   opAt 1804 .OR,
+  [opAt 1789 .JUMPDEST,
+   opAt 1790 (.Dup ⟨0, by decide⟩),
+   opAt 1791 (.Dup ⟨0, by decide⟩),
+   pushAt 1792 1 1,
+   opAt 1793 .SHR,
+   opAt 1794 .OR,
+   opAt 1795 (.Dup ⟨0, by decide⟩),
+   pushAt 1796 1 2,
+   opAt 1797 .SHR,
+   opAt 1798 .OR,
+   opAt 1799 (.Dup ⟨0, by decide⟩),
+   pushAt 1800 1 4,
+   opAt 1801 .SHR,
+   opAt 1802 .OR,
+   pushAt 1803 1 1,
+   opAt 1804 .SHR,
    pushAt 1805 1 1,
-   opAt 1806 .SHR,
-   pushAt 1807 1 1,
-   opAt 1808 .ADD,
-   pushAt 1809 2 3588,
-   opAt 1810 .JUMP]
+   opAt 1806 .ADD,
+   pushAt 1807 2 3588,
+   opAt 1808 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

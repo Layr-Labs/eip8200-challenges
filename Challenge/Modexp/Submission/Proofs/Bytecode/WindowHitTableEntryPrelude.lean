@@ -31,8 +31,7 @@ private def endState (template : State) (base modulus : UInt256)
 @[simp] private theorem preludePCs (index : Nat)
     (hlo : 1857 ≤ index) (hhi : index ≤ 1871) :
     Artifact.submissionArtifact.instructionPC index =
-      ([2655,2657,2658,2660,2661,2662,2664,2665,2666,2667,2669,2670,2671,
-       2672,2673] : List Nat)[index - 1857]! := by
+      ([2655,2657,2658,2660,2661,2662,2664,2665,2666,2667,2669,2670,2671,2672,2673] : List Nat)[index - 1857]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in
