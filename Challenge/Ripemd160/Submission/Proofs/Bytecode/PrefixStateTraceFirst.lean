@@ -35,7 +35,7 @@ def rho (input : ByteArray) : List UInt256 :=
 with the plain driver stack on top of the copied-code state. -/
 def firstMatchedState (s : State) (input : ByteArray) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5232
+    pc := UInt256.ofNat 5244
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 165,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] ++ Execution.maskTail }
 
@@ -119,7 +119,7 @@ arbitrary one: the two persistent mask words at the bottom changed how the
 stack is spelled at this site, and a fixed spelling stopped the rewrite firing. -/
 private theorem compare_mload_active (s : State) (stk : List UInt256) :
     ({ toSharedState := (PrefixStateMemory.copied s).toSharedState,
-        pc := UInt256.ofNat 5226,
+        pc := UInt256.ofNat 5238,
         stack := stk,
         execLength := (PrefixStateMemory.copied s).execLength,
         halt := HaltKind.Running, callStack := s.callStack } : State).activeWordsAfterUInt256 0 32 =

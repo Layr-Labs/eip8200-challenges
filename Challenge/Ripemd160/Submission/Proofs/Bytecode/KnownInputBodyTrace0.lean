@@ -41,7 +41,7 @@ theorem run_body_0 (s : State)
     (hrun : s.halt = .Running) :
     run (bodyPath 0) (bodyEntry s KnownInputData.targetInput 0) =
       some (resultState s KnownInputData.targetInput 0) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x436 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x442 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 719 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [bodyPath, bodyPath0, KnownInputPaths.opAt, KnownInputPaths.pushAt,
@@ -88,7 +88,7 @@ theorem run_body_1 (s : State)
     (hrun : s.halt = .Running) :
     run (bodyPath 1) (bodyEntry s KnownInputData.targetInput 1) =
       some (resultState s KnownInputData.targetInput 1) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x436 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x442 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 719 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [bodyPath, bodyPath1, KnownInputPaths.opAt, KnownInputPaths.pushAt,
@@ -135,7 +135,7 @@ theorem run_body_2 (s : State)
     (hrun : s.halt = .Running) :
     run (bodyPath 2) (bodyEntry s KnownInputData.targetInput 2) =
       some (resultState s KnownInputData.targetInput 2) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x436 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x442 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 719 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [bodyPath, bodyPath2, KnownInputPaths.opAt, KnownInputPaths.pushAt,
@@ -182,7 +182,7 @@ theorem run_body_3 (s : State)
     (hrun : s.halt = .Running) :
     run (bodyPath 3) (bodyEntry s KnownInputData.targetInput 3) =
       some (resultState s KnownInputData.targetInput 3) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x436 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x442 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 719 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [bodyPath, bodyPath3, KnownInputPaths.opAt, KnownInputPaths.pushAt,

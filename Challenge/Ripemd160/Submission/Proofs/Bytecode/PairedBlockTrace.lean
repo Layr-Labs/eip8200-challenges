@@ -85,18 +85,18 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     hstack qrun qactive qcode qfork qnp (scheduled_ready s input i h hfit hi ctx)
   have hentry :
       {q with
-        pc := UInt256.ofNat 797
+        pc := UInt256.ofNat 809
         stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower]
           ⟨PairedLaneWordRound.packCrypto lane lane, 0⟩ rho} =
-      {q with pc := UInt256.ofNat 797, stack := PairedStartupTrace.resultStack q.memory rho} := by
+      {q with pc := UInt256.ofNat 809, stack := PairedStartupTrace.resultStack q.memory rho} := by
     rw [startup_stack, scheduled_readLane]
   have htail :
       {q with
-        pc := UInt256.ofNat 5060
+        pc := UInt256.ofNat 5072
         stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower]
           (coreCryptoResult (blockWords input i) lane lane) rho} =
       {q with
-        pc := UInt256.ofNat 5060
+        pc := UInt256.ofNat 5072
         stack := PairedAllInlineTail.entryStack (resultFrame s input i)
           (UInt256.ofNat 165) (driverRest input i)} := by
     rw [show coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower]
@@ -108,7 +108,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     (valid_return q qcode) qcode qfork qnp
   have gtail' : GasSteps
       {q with
-        pc := UInt256.ofNat 5060
+        pc := UInt256.ofNat 5072
         stack := PairedAllInlineTail.entryStack (resultFrame s input i)
           (UInt256.ofNat 165) (driverRest input i)}
       (DriverTrace.compressReturned (resultState s input i) input i) := gtail

@@ -1684,12 +1684,12 @@ theorem run_call16Template_word (s : State) (pc : UInt256) (q : PairedHelperBool
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 5186 = true)
-    (hreturn : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 1958).toNat = true)
+    (hreturn : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 1970).toNat = true)
     (hfactor : q.factor = PairedLaneWordRotate.factorWord)
     (hpair : q.pair = pairWord) (hupper : q.upper = upperWord) :
     runInstrSeq (call16Template ++ fullTemplate)
         {s with pc := pc, stack := call16Entry q rho} =
-      some {s with pc := UInt256.ofNat 1958, stack := wordReturnStack q (PairedLaneWordRound.wordStep 1 6 13 (call16Frame s.memory q).message1 q.k (PairedLaneWordRound.wordStep 1 7 9 (call16Frame s.memory q).message0 q.k (frameLane q))) rho} := by
+      some {s with pc := UInt256.ofNat 1970, stack := wordReturnStack q (PairedLaneWordRound.wordStep 1 6 13 (call16Frame s.memory q).message1 q.k (PairedLaneWordRound.wordStep 1 7 9 (call16Frame s.memory q).message0 q.k (frameLane q))) rho} := by
   have h0 := run_call16Template s pc q rho hstack hrun hactive hvalid
   have h1 := run_fullTemplate_word s (UInt256.ofNat 5186) (call16Frame s.memory q)
     rho hstack hrun hreturn 7 9 6 13 hfactor hpair hupper rfl rfl rfl rfl
@@ -1747,12 +1747,12 @@ theorem run_call20Template_word (s : State) (pc : UInt256) (q : PairedHelperBool
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 5186 = true)
-    (hreturn : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 2115).toNat = true)
+    (hreturn : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 2127).toNat = true)
     (hfactor : q.factor = PairedLaneWordRotate.factorWord)
     (hpair : q.pair = pairWord) (hupper : q.upper = upperWord) :
     runInstrSeq (call20Template ++ fullTemplate)
         {s with pc := pc, stack := call20Entry q rho} =
-      some {s with pc := UInt256.ofNat 2115, stack := wordReturnStack q (PairedLaneWordRound.wordStep 1 9 8 (call20Frame s.memory q).message1 q.k (PairedLaneWordRound.wordStep 1 11 12 (call20Frame s.memory q).message0 q.k (frameLane q))) rho} := by
+      some {s with pc := UInt256.ofNat 2127, stack := wordReturnStack q (PairedLaneWordRound.wordStep 1 9 8 (call20Frame s.memory q).message1 q.k (PairedLaneWordRound.wordStep 1 11 12 (call20Frame s.memory q).message0 q.k (frameLane q))) rho} := by
   have h0 := run_call20Template s pc q rho hstack hrun hactive hvalid
   have h1 := run_fullTemplate_word s (UInt256.ofNat 5186) (call20Frame s.memory q)
     rho hstack hrun hreturn 11 12 9 8 hfactor hpair hupper rfl rfl rfl rfl
@@ -1812,12 +1812,12 @@ theorem run_call22Template_word (s : State) (pc : UInt256) (q : PairedHelperBool
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 5186 = true)
-    (hreturn : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 2154).toNat = true)
+    (hreturn : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 2166).toNat = true)
     (hfactor : q.factor = PairedLaneWordRotate.factorWord)
     (hpair : q.pair = pairWord) (hupper : q.upper = upperWord) :
     runInstrSeq (call22Template ++ fullTemplate)
         {s with pc := pc, stack := call22Entry q rho} =
-      some {s with pc := UInt256.ofNat 2154, stack := wordReturnStack q (PairedLaneWordRound.wordStep 1 15 11 (call22Frame s.memory q).message1 q.k (PairedLaneWordRound.wordStep 1 7 9 (call22Frame s.memory q).message0 q.k (frameLane q))) rho} := by
+      some {s with pc := UInt256.ofNat 2166, stack := wordReturnStack q (PairedLaneWordRound.wordStep 1 15 11 (call22Frame s.memory q).message1 q.k (PairedLaneWordRound.wordStep 1 7 9 (call22Frame s.memory q).message0 q.k (frameLane q))) rho} := by
   have h0 := run_call22Template s pc q rho hstack hrun hactive hvalid
   have h1 := run_fullTemplate_word s (UInt256.ofNat 5186) (call22Frame s.memory q)
     rho hstack hrun hreturn 7 9 15 11 hfactor hpair hupper rfl rfl rfl rfl
@@ -2041,14 +2041,14 @@ theorem CoreChain.run {a b : Nat} {xs ys : List CoreReg}
 
 
 
-theorem group0Template_pc : pcAfter (UInt256.ofNat 998) group0Template = UInt256.ofNat 1019 := rfl
+theorem group0Template_pc : pcAfter (UInt256.ofNat 1010) group0Template = UInt256.ofNat 1031 := rfl
 
-def group0Block : CoreBlock 998 1019 [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] [.k, .a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] where
+def group0Block : CoreBlock 1010 1031 [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] [.k, .a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] where
   code := group0Template
   eval := fun _memory f => {f with k := UInt256.ofNat 460344169260758029377710773882198039553172832256}
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_group0Template s (UInt256.ofNat 998) f.frame rho hstack hrun
+    have h := run_group0Template s (UInt256.ofNat 1010) f.frame rho hstack hrun
     rw [group0Template_pc] at h
     exact h
 
@@ -2056,14 +2056,14 @@ def group0Block : CoreBlock 998 1019 [.a, .b, .c, .d, .e, .factor, .pair, .upper
 
 #print axioms group0Block
 
-theorem inline0Template_pc : pcAfter (UInt256.ofNat 1019) inline0Template = UInt256.ofNat 1073 := rfl
+theorem inline0Template_pc : pcAfter (UInt256.ofNat 1031) inline0Template = UInt256.ofNat 1085 := rfl
 
-def inline0Block : CoreBlock 1019 1073 [.k, .a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
+def inline0Block : CoreBlock 1031 1085 [.k, .a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
   code := inline0Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 11 8 (inline0Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline0Template_word s (UInt256.ofNat 1019) f.frame rho
+    have h := run_inline0Template_word s (UInt256.ofNat 1031) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline0Template_pc] at h
     exact h
@@ -2072,14 +2072,14 @@ def inline0Block : CoreBlock 1019 1073 [.k, .a, .b, .c, .d, .e, .factor, .pair, 
 
 #print axioms inline0Block
 
-theorem inline1Template_pc : pcAfter (UInt256.ofNat 1073) inline1Template = UInt256.ofNat 1127 := rfl
+theorem inline1Template_pc : pcAfter (UInt256.ofNat 1085) inline1Template = UInt256.ofNat 1139 := rfl
 
-def inline1Block : CoreBlock 1073 1127 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+def inline1Block : CoreBlock 1085 1139 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := inline1Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 14 9 (inline1Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline1Template_word s (UInt256.ofNat 1073) f.frame rho
+    have h := run_inline1Template_word s (UInt256.ofNat 1085) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline1Template_pc] at h
     exact h
@@ -2088,14 +2088,14 @@ def inline1Block : CoreBlock 1073 1127 [.d, .k, .c, .b, .e, .a, .factor, .pair, 
 
 #print axioms inline1Block
 
-theorem inline2Template_pc : pcAfter (UInt256.ofNat 1127) inline2Template = UInt256.ofNat 1182 := rfl
+theorem inline2Template_pc : pcAfter (UInt256.ofNat 1139) inline2Template = UInt256.ofNat 1194 := rfl
 
-def inline2Block : CoreBlock 1127 1182 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
+def inline2Block : CoreBlock 1139 1194 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
   code := inline2Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 15 9 (inline2Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline2Template_word s (UInt256.ofNat 1127) f.frame rho
+    have h := run_inline2Template_word s (UInt256.ofNat 1139) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline2Template_pc] at h
     exact h
@@ -2104,14 +2104,14 @@ def inline2Block : CoreBlock 1127 1182 [.d, .k, .b, .c, .a, .e, .factor, .pair, 
 
 #print axioms inline2Block
 
-theorem inline3Template_pc : pcAfter (UInt256.ofNat 1182) inline3Template = UInt256.ofNat 1236 := rfl
+theorem inline3Template_pc : pcAfter (UInt256.ofNat 1194) inline3Template = UInt256.ofNat 1248 := rfl
 
-def inline3Block : CoreBlock 1182 1236 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+def inline3Block : CoreBlock 1194 1248 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := inline3Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 12 11 (inline3Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline3Template_word s (UInt256.ofNat 1182) f.frame rho
+    have h := run_inline3Template_word s (UInt256.ofNat 1194) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline3Template_pc] at h
     exact h
@@ -2120,14 +2120,14 @@ def inline3Block : CoreBlock 1182 1236 [.d, .k, .c, .b, .e, .a, .factor, .pair, 
 
 #print axioms inline3Block
 
-theorem inline4Template_pc : pcAfter (UInt256.ofNat 1236) inline4Template = UInt256.ofNat 1291 := rfl
+theorem inline4Template_pc : pcAfter (UInt256.ofNat 1248) inline4Template = UInt256.ofNat 1303 := rfl
 
-def inline4Block : CoreBlock 1236 1291 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
+def inline4Block : CoreBlock 1248 1303 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
   code := inline4Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 5 13 (inline4Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline4Template_word s (UInt256.ofNat 1236) f.frame rho
+    have h := run_inline4Template_word s (UInt256.ofNat 1248) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline4Template_pc] at h
     exact h
@@ -2136,14 +2136,14 @@ def inline4Block : CoreBlock 1236 1291 [.d, .k, .b, .c, .a, .e, .factor, .pair, 
 
 #print axioms inline4Block
 
-theorem inline5Template_pc : pcAfter (UInt256.ofNat 1291) inline5Template = UInt256.ofNat 1346 := rfl
+theorem inline5Template_pc : pcAfter (UInt256.ofNat 1303) inline5Template = UInt256.ofNat 1358 := rfl
 
-def inline5Block : CoreBlock 1291 1346 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+def inline5Block : CoreBlock 1303 1358 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := inline5Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 8 15 (inline5Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline5Template_word s (UInt256.ofNat 1291) f.frame rho
+    have h := run_inline5Template_word s (UInt256.ofNat 1303) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline5Template_pc] at h
     exact h
@@ -2152,14 +2152,14 @@ def inline5Block : CoreBlock 1291 1346 [.d, .k, .c, .b, .e, .a, .factor, .pair, 
 
 #print axioms inline5Block
 
-theorem inline6Template_pc : pcAfter (UInt256.ofNat 1346) inline6Template = UInt256.ofNat 1401 := rfl
+theorem inline6Template_pc : pcAfter (UInt256.ofNat 1358) inline6Template = UInt256.ofNat 1413 := rfl
 
-def inline6Block : CoreBlock 1346 1401 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
+def inline6Block : CoreBlock 1358 1413 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
   code := inline6Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 7 15 (inline6Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline6Template_word s (UInt256.ofNat 1346) f.frame rho
+    have h := run_inline6Template_word s (UInt256.ofNat 1358) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline6Template_pc] at h
     exact h
@@ -2168,14 +2168,14 @@ def inline6Block : CoreBlock 1346 1401 [.d, .k, .b, .c, .a, .e, .factor, .pair, 
 
 #print axioms inline6Block
 
-theorem inline7Template_pc : pcAfter (UInt256.ofNat 1401) inline7Template = UInt256.ofNat 1456 := rfl
+theorem inline7Template_pc : pcAfter (UInt256.ofNat 1413) inline7Template = UInt256.ofNat 1456 := rfl
 
-def inline7Block : CoreBlock 1401 1456 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+def inline7Block : CoreBlock 1413 1456 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := inline7Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 9 5 (inline7Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline7Template_word s (UInt256.ofNat 1401) f.frame rho
+    have h := run_inline7Template_word s (UInt256.ofNat 1413) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline7Template_pc] at h
     exact h
@@ -2184,9 +2184,9 @@ def inline7Block : CoreBlock 1401 1456 [.d, .k, .c, .b, .e, .a, .factor, .pair, 
 
 #print axioms inline7Block
 
-theorem inline8Template_pc : pcAfter (UInt256.ofNat 1456) inline8Template = UInt256.ofNat 1511 := rfl
+theorem inline8Template_pc : pcAfter (UInt256.ofNat 1456) inline8Template = UInt256.ofNat 1523 := rfl
 
-def inline8Block : CoreBlock 1456 1511 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
+def inline8Block : CoreBlock 1456 1523 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
   code := inline8Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 11 7 (inline8Frame memory f.frame).message0 f.k f.lane}
   run := by
@@ -2200,14 +2200,14 @@ def inline8Block : CoreBlock 1456 1511 [.d, .k, .b, .c, .a, .e, .factor, .pair, 
 
 #print axioms inline8Block
 
-theorem inline9Template_pc : pcAfter (UInt256.ofNat 1511) inline9Template = UInt256.ofNat 1566 := rfl
+theorem inline9Template_pc : pcAfter (UInt256.ofNat 1523) inline9Template = UInt256.ofNat 1566 := rfl
 
-def inline9Block : CoreBlock 1511 1566 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+def inline9Block : CoreBlock 1523 1566 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := inline9Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 13 7 (inline9Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline9Template_word s (UInt256.ofNat 1511) f.frame rho
+    have h := run_inline9Template_word s (UInt256.ofNat 1523) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline9Template_pc] at h
     exact h
@@ -2232,9 +2232,9 @@ def inline10Block : CoreBlock 1566 1621 [.d, .k, .b, .c, .a, .e, .factor, .pair,
 
 #print axioms inline10Block
 
-theorem inline11Template_pc : pcAfter (UInt256.ofNat 1621) inline11Template = UInt256.ofNat 1676 := rfl
+theorem inline11Template_pc : pcAfter (UInt256.ofNat 1621) inline11Template = UInt256.ofNat 1688 := rfl
 
-def inline11Block : CoreBlock 1621 1676 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+def inline11Block : CoreBlock 1621 1688 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := inline11Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 15 11 (inline11Frame memory f.frame).message0 f.k f.lane}
   run := by
@@ -2248,14 +2248,14 @@ def inline11Block : CoreBlock 1621 1676 [.d, .k, .c, .b, .e, .a, .factor, .pair,
 
 #print axioms inline11Block
 
-theorem inline12Template_pc : pcAfter (UInt256.ofNat 1676) inline12Template = UInt256.ofNat 1730 := rfl
+theorem inline12Template_pc : pcAfter (UInt256.ofNat 1688) inline12Template = UInt256.ofNat 1742 := rfl
 
-def inline12Block : CoreBlock 1676 1730 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
+def inline12Block : CoreBlock 1688 1742 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
   code := inline12Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 6 14 (inline12Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline12Template_word s (UInt256.ofNat 1676) f.frame rho
+    have h := run_inline12Template_word s (UInt256.ofNat 1688) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline12Template_pc] at h
     exact h
@@ -2264,14 +2264,14 @@ def inline12Block : CoreBlock 1676 1730 [.d, .k, .b, .c, .a, .e, .factor, .pair,
 
 #print axioms inline12Block
 
-theorem inline13Template_pc : pcAfter (UInt256.ofNat 1730) inline13Template = UInt256.ofNat 1785 := rfl
+theorem inline13Template_pc : pcAfter (UInt256.ofNat 1742) inline13Template = UInt256.ofNat 1797 := rfl
 
-def inline13Block : CoreBlock 1730 1785 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+def inline13Block : CoreBlock 1742 1797 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := inline13Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 7 14 (inline13Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline13Template_word s (UInt256.ofNat 1730) f.frame rho
+    have h := run_inline13Template_word s (UInt256.ofNat 1742) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline13Template_pc] at h
     exact h
@@ -2280,14 +2280,14 @@ def inline13Block : CoreBlock 1730 1785 [.d, .k, .c, .b, .e, .a, .factor, .pair,
 
 #print axioms inline13Block
 
-theorem inline14Template_pc : pcAfter (UInt256.ofNat 1785) inline14Template = UInt256.ofNat 1840 := rfl
+theorem inline14Template_pc : pcAfter (UInt256.ofNat 1797) inline14Template = UInt256.ofNat 1852 := rfl
 
-def inline14Block : CoreBlock 1785 1840 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
+def inline14Block : CoreBlock 1797 1852 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
   code := inline14Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 9 12 (inline14Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline14Template_word s (UInt256.ofNat 1785) f.frame rho
+    have h := run_inline14Template_word s (UInt256.ofNat 1797) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline14Template_pc] at h
     exact h
@@ -2296,14 +2296,14 @@ def inline14Block : CoreBlock 1785 1840 [.d, .k, .b, .c, .a, .e, .factor, .pair,
 
 #print axioms inline14Block
 
-theorem inline15Template_pc : pcAfter (UInt256.ofNat 1840) inline15Template = UInt256.ofNat 1895 := rfl
+theorem inline15Template_pc : pcAfter (UInt256.ofNat 1852) inline15Template = UInt256.ofNat 1907 := rfl
 
-def inline15Block : CoreBlock 1840 1895 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+def inline15Block : CoreBlock 1852 1907 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := inline15Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 0 8 6 (inline15Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline15Template_word s (UInt256.ofNat 1840) f.frame rho
+    have h := run_inline15Template_word s (UInt256.ofNat 1852) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline15Template_pc] at h
     exact h
@@ -2312,14 +2312,14 @@ def inline15Block : CoreBlock 1840 1895 [.d, .k, .c, .b, .e, .a, .factor, .pair,
 
 #print axioms inline15Block
 
-theorem group16Template_pc : pcAfter (UInt256.ofNat 1895) group16Template = UInt256.ofNat 1918 := rfl
+theorem group16Template_pc : pcAfter (UInt256.ofNat 1907) group16Template = UInt256.ofNat 1930 := rfl
 
-def group16Block : CoreBlock 1895 1918 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+def group16Block : CoreBlock 1907 1930 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := group16Template
   eval := fun _memory f => {f with k := UInt256.ofNat 526962527014005041256681316140890030896371104153}
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_group16Template s (UInt256.ofNat 1895) f.frame rho hstack hrun
+    have h := run_group16Template s (UInt256.ofNat 1907) f.frame rho hstack hrun
     rw [group16Template_pc] at h
     exact h
 
@@ -2327,14 +2327,14 @@ def group16Block : CoreBlock 1895 1918 [.d, .k, .b, .c, .a, .e, .factor, .pair, 
 
 #print axioms group16Block
 
-def call16Block : CoreBlock 1918 1958 [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def call16Block : CoreBlock 1930 1970 [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := (call16Template ++ fullTemplate)
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 1 6 13 (call16Frame memory f.frame).message1 f.k (PairedLaneWordRound.wordStep 1 7 9 (call16Frame memory f.frame).message0 f.k f.lane)}
   run := by
     intro s f rho hstack hrun hactive hvalid
     have hh := hvalid 5186 (by decide)
     have hr := hvalid 1958 (by decide)
-    have h := run_call16Template_word s (UInt256.ofNat 1918) f.frame rho
+    have h := run_call16Template_word s (UInt256.ofNat 1930) f.frame rho
       hstack hrun hactive hh hr rfl rfl rfl
     exact h
 
@@ -2342,14 +2342,14 @@ def call16Block : CoreBlock 1918 1958 [.k, .d, .b, .c, .a, .e, .factor, .pair, .
 
 #print axioms call16Block
 
-theorem return18Template_pc : pcAfter (UInt256.ofNat 1958) return18Template = UInt256.ofNat 1959 := rfl
+theorem return18Template_pc : pcAfter (UInt256.ofNat 1970) return18Template = UInt256.ofNat 1971 := rfl
 
-def return18Block : CoreBlock 1958 1959 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def return18Block : CoreBlock 1970 1971 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := return18Template
   eval := fun _memory f => f
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_return18Template s (UInt256.ofNat 1958) f.frame rho hstack hrun
+    have h := run_return18Template s (UInt256.ofNat 1970) f.frame rho hstack hrun
     rw [return18Template_pc] at h
     exact h
 
@@ -2357,14 +2357,14 @@ def return18Block : CoreBlock 1958 1959 [.a, .d, .b, .c, .upper, .e, .factor, .p
 
 #print axioms return18Block
 
-theorem inline18Template_pc : pcAfter (UInt256.ofNat 1959) inline18Template = UInt256.ofNat 2019 := rfl
+theorem inline18Template_pc : pcAfter (UInt256.ofNat 1971) inline18Template = UInt256.ofNat 2031 := rfl
 
-def inline18Block : CoreBlock 1959 2019 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
+def inline18Block : CoreBlock 1971 2031 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
   code := inline18Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 1 8 15 (inline18Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline18Template_word s (UInt256.ofNat 1959) f.frame rho
+    have h := run_inline18Template_word s (UInt256.ofNat 1971) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline18Template_pc] at h
     exact h
@@ -2373,14 +2373,14 @@ def inline18Block : CoreBlock 1959 2019 [.a, .d, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline18Block
 
-theorem inline19Template_pc : pcAfter (UInt256.ofNat 2019) inline19Template = UInt256.ofNat 2079 := rfl
+theorem inline19Template_pc : pcAfter (UInt256.ofNat 2031) inline19Template = UInt256.ofNat 2091 := rfl
 
-def inline19Block : CoreBlock 2019 2079 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def inline19Block : CoreBlock 2031 2091 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := inline19Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 1 13 7 (inline19Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline19Template_word s (UInt256.ofNat 2019) f.frame rho
+    have h := run_inline19Template_word s (UInt256.ofNat 2031) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline19Template_pc] at h
     exact h
@@ -2389,14 +2389,14 @@ def inline19Block : CoreBlock 2019 2079 [.d, .e, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline19Block
 
-def call20Block : CoreBlock 2079 2115 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def call20Block : CoreBlock 2091 2127 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := (call20Template ++ fullTemplate)
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 1 9 8 (call20Frame memory f.frame).message1 f.k (PairedLaneWordRound.wordStep 1 11 12 (call20Frame memory f.frame).message0 f.k f.lane)}
   run := by
     intro s f rho hstack hrun hactive hvalid
     have hh := hvalid 5186 (by decide)
     have hr := hvalid 2115 (by decide)
-    have h := run_call20Template_word s (UInt256.ofNat 2079) f.frame rho
+    have h := run_call20Template_word s (UInt256.ofNat 2091) f.frame rho
       hstack hrun hactive hh hr rfl rfl rfl
     exact h
 
@@ -2404,14 +2404,14 @@ def call20Block : CoreBlock 2079 2115 [.d, .a, .b, .c, .upper, .e, .factor, .pai
 
 #print axioms call20Block
 
-def call22Block : CoreBlock 2115 2154 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def call22Block : CoreBlock 2127 2166 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := (call22Template ++ fullTemplate)
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 1 15 11 (call22Frame memory f.frame).message1 f.k (PairedLaneWordRound.wordStep 1 7 9 (call22Frame memory f.frame).message0 f.k f.lane)}
   run := by
     intro s f rho hstack hrun hactive hvalid
     have hh := hvalid 5186 (by decide)
     have hr := hvalid 2154 (by decide)
-    have h := run_call22Template_word s (UInt256.ofNat 2115) f.frame rho
+    have h := run_call22Template_word s (UInt256.ofNat 2127) f.frame rho
       hstack hrun hactive hh hr rfl rfl rfl
     exact h
 
@@ -2419,14 +2419,14 @@ def call22Block : CoreBlock 2115 2154 [.a, .d, .b, .c, .upper, .e, .factor, .pai
 
 #print axioms call22Block
 
-theorem return24Template_pc : pcAfter (UInt256.ofNat 2154) return24Template = UInt256.ofNat 2155 := rfl
+theorem return24Template_pc : pcAfter (UInt256.ofNat 2166) return24Template = UInt256.ofNat 2167 := rfl
 
-def return24Block : CoreBlock 2154 2155 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def return24Block : CoreBlock 2166 2167 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := return24Template
   eval := fun _memory f => f
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_return24Template s (UInt256.ofNat 2154) f.frame rho hstack hrun
+    have h := run_return24Template s (UInt256.ofNat 2166) f.frame rho hstack hrun
     rw [return24Template_pc] at h
     exact h
 
@@ -2434,14 +2434,14 @@ def return24Block : CoreBlock 2154 2155 [.a, .d, .b, .c, .upper, .e, .factor, .p
 
 #print axioms return24Block
 
-theorem inline24Template_pc : pcAfter (UInt256.ofNat 2155) inline24Template = UInt256.ofNat 2205 := rfl
+theorem inline24Template_pc : pcAfter (UInt256.ofNat 2167) inline24Template = UInt256.ofNat 2217 := rfl
 
-def inline24Block : CoreBlock 2155 2205 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
+def inline24Block : CoreBlock 2167 2217 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
   code := inline24Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 1 7 7 (inline24Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline24Template_word s (UInt256.ofNat 2155) f.frame rho
+    have h := run_inline24Template_word s (UInt256.ofNat 2167) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline24Template_pc] at h
     exact h
@@ -2450,14 +2450,14 @@ def inline24Block : CoreBlock 2155 2205 [.a, .d, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline24Block
 
-theorem inline25Template_pc : pcAfter (UInt256.ofNat 2205) inline25Template = UInt256.ofNat 2265 := rfl
+theorem inline25Template_pc : pcAfter (UInt256.ofNat 2217) inline25Template = UInt256.ofNat 2277 := rfl
 
-def inline25Block : CoreBlock 2205 2265 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def inline25Block : CoreBlock 2217 2277 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := inline25Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 1 12 7 (inline25Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline25Template_word s (UInt256.ofNat 2205) f.frame rho
+    have h := run_inline25Template_word s (UInt256.ofNat 2217) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline25Template_pc] at h
     exact h
@@ -2466,14 +2466,14 @@ def inline25Block : CoreBlock 2205 2265 [.d, .e, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline25Block
 
-def call26Block : CoreBlock 2265 2302 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def call26Block : CoreBlock 2277 2302 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := (call26Template ++ fullTemplate)
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 1 9 7 (call26Frame memory f.frame).message1 f.k (PairedLaneWordRound.wordStep 1 15 12 (call26Frame memory f.frame).message0 f.k f.lane)}
   run := by
     intro s f rho hstack hrun hactive hvalid
     have hh := hvalid 5186 (by decide)
     have hr := hvalid 2302 (by decide)
-    have h := run_call26Template_word s (UInt256.ofNat 2265) f.frame rho
+    have h := run_call26Template_word s (UInt256.ofNat 2277) f.frame rho
       hstack hrun hactive hh hr rfl rfl rfl
     exact h
 
@@ -2511,9 +2511,9 @@ def return30Block : CoreBlock 2341 2342 [.a, .d, .b, .c, .upper, .e, .factor, .p
 
 #print axioms return30Block
 
-theorem inline30Template_pc : pcAfter (UInt256.ofNat 2342) inline30Template = UInt256.ofNat 2391 := rfl
+theorem inline30Template_pc : pcAfter (UInt256.ofNat 2342) inline30Template = UInt256.ofNat 2403 := rfl
 
-def inline30Block : CoreBlock 2342 2391 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
+def inline30Block : CoreBlock 2342 2403 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
   code := inline30Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 1 13 13 (inline30Frame memory f.frame).message0 f.k f.lane}
   run := by
@@ -2527,14 +2527,14 @@ def inline30Block : CoreBlock 2342 2391 [.a, .d, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline30Block
 
-theorem inline31Template_pc : pcAfter (UInt256.ofNat 2391) inline31Template = UInt256.ofNat 2452 := rfl
+theorem inline31Template_pc : pcAfter (UInt256.ofNat 2403) inline31Template = UInt256.ofNat 2452 := rfl
 
-def inline31Block : CoreBlock 2391 2452 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def inline31Block : CoreBlock 2403 2452 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := inline31Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 1 12 11 (inline31Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline31Template_word s (UInt256.ofNat 2391) f.frame rho
+    have h := run_inline31Template_word s (UInt256.ofNat 2403) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline31Template_pc] at h
     exact h
@@ -2543,9 +2543,9 @@ def inline31Block : CoreBlock 2391 2452 [.d, .e, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline31Block
 
-theorem group32Template_pc : pcAfter (UInt256.ofNat 2452) group32Template = UInt256.ofNat 2476 := rfl
+theorem group32Template_pc : pcAfter (UInt256.ofNat 2452) group32Template = UInt256.ofNat 2488 := rfl
 
-def group32Block : CoreBlock 2452 2476 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] where
+def group32Block : CoreBlock 2452 2488 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] where
   code := group32Template
   eval := fun _memory f => {f with k := UInt256.ofNat 2086284798122997420139349764661223671126594022305}
   run := by
@@ -2558,14 +2558,14 @@ def group32Block : CoreBlock 2452 2476 [.d, .a, .b, .c, .upper, .e, .factor, .pa
 
 #print axioms group32Block
 
-theorem inline32Template_pc : pcAfter (UInt256.ofNat 2476) inline32Template = UInt256.ofNat 2525 := rfl
+theorem inline32Template_pc : pcAfter (UInt256.ofNat 2488) inline32Template = UInt256.ofNat 2537 := rfl
 
-def inline32Block : CoreBlock 2476 2525 [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline32Block : CoreBlock 2488 2537 [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline32Template
   eval := fun memory f => {f with lane := rawWordStep2 11 9 (inline32Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline32Template_word s (UInt256.ofNat 2476) f.frame rho
+    have h := run_inline32Template_word s (UInt256.ofNat 2488) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline32Template_pc] at h
     exact h
@@ -2574,14 +2574,14 @@ def inline32Block : CoreBlock 2476 2525 [.k, .a, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline32Block
 
-theorem inline33Template_pc : pcAfter (UInt256.ofNat 2525) inline33Template = UInt256.ofNat 2574 := rfl
+theorem inline33Template_pc : pcAfter (UInt256.ofNat 2537) inline33Template = UInt256.ofNat 2586 := rfl
 
-def inline33Block : CoreBlock 2525 2574 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline33Block : CoreBlock 2537 2586 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline33Template
   eval := fun memory f => {f with lane := rawWordStep2 13 7 (inline33Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline33Template_word s (UInt256.ofNat 2525) f.frame rho
+    have h := run_inline33Template_word s (UInt256.ofNat 2537) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline33Template_pc] at h
     exact h
@@ -2590,14 +2590,14 @@ def inline33Block : CoreBlock 2525 2574 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline33Block
 
-theorem inline34Template_pc : pcAfter (UInt256.ofNat 2574) inline34Template = UInt256.ofNat 2622 := rfl
+theorem inline34Template_pc : pcAfter (UInt256.ofNat 2586) inline34Template = UInt256.ofNat 2634 := rfl
 
-def inline34Block : CoreBlock 2574 2622 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline34Block : CoreBlock 2586 2634 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline34Template
   eval := fun memory f => {f with lane := rawWordStep2 6 15 (inline34Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline34Template_word s (UInt256.ofNat 2574) f.frame rho
+    have h := run_inline34Template_word s (UInt256.ofNat 2586) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline34Template_pc] at h
     exact h
@@ -2606,14 +2606,14 @@ def inline34Block : CoreBlock 2574 2622 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline34Block
 
-theorem inline35Template_pc : pcAfter (UInt256.ofNat 2622) inline35Template = UInt256.ofNat 2671 := rfl
+theorem inline35Template_pc : pcAfter (UInt256.ofNat 2634) inline35Template = UInt256.ofNat 2683 := rfl
 
-def inline35Block : CoreBlock 2622 2671 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline35Block : CoreBlock 2634 2683 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline35Template
   eval := fun memory f => {f with lane := rawWordStep2 7 11 (inline35Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline35Template_word s (UInt256.ofNat 2622) f.frame rho
+    have h := run_inline35Template_word s (UInt256.ofNat 2634) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline35Template_pc] at h
     exact h
@@ -2622,14 +2622,14 @@ def inline35Block : CoreBlock 2622 2671 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline35Block
 
-theorem inline36Template_pc : pcAfter (UInt256.ofNat 2671) inline36Template = UInt256.ofNat 2720 := rfl
+theorem inline36Template_pc : pcAfter (UInt256.ofNat 2683) inline36Template = UInt256.ofNat 2732 := rfl
 
-def inline36Block : CoreBlock 2671 2720 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline36Block : CoreBlock 2683 2732 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline36Template
   eval := fun memory f => {f with lane := rawWordStep2 14 8 (inline36Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline36Template_word s (UInt256.ofNat 2671) f.frame rho
+    have h := run_inline36Template_word s (UInt256.ofNat 2683) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline36Template_pc] at h
     exact h
@@ -2638,14 +2638,14 @@ def inline36Block : CoreBlock 2671 2720 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline36Block
 
-theorem inline37Template_pc : pcAfter (UInt256.ofNat 2720) inline37Template = UInt256.ofNat 2769 := rfl
+theorem inline37Template_pc : pcAfter (UInt256.ofNat 2732) inline37Template = UInt256.ofNat 2781 := rfl
 
-def inline37Block : CoreBlock 2720 2769 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline37Block : CoreBlock 2732 2781 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline37Template
   eval := fun memory f => {f with lane := rawWordStep2 9 6 (inline37Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline37Template_word s (UInt256.ofNat 2720) f.frame rho
+    have h := run_inline37Template_word s (UInt256.ofNat 2732) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline37Template_pc] at h
     exact h
@@ -2654,14 +2654,14 @@ def inline37Block : CoreBlock 2720 2769 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline37Block
 
-theorem inline38Template_pc : pcAfter (UInt256.ofNat 2769) inline38Template = UInt256.ofNat 2818 := rfl
+theorem inline38Template_pc : pcAfter (UInt256.ofNat 2781) inline38Template = UInt256.ofNat 2830 := rfl
 
-def inline38Block : CoreBlock 2769 2818 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline38Block : CoreBlock 2781 2830 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline38Template
   eval := fun memory f => {f with lane := rawWordStep2 13 6 (inline38Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline38Template_word s (UInt256.ofNat 2769) f.frame rho
+    have h := run_inline38Template_word s (UInt256.ofNat 2781) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline38Template_pc] at h
     exact h
@@ -2670,14 +2670,14 @@ def inline38Block : CoreBlock 2769 2818 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline38Block
 
-theorem inline39Template_pc : pcAfter (UInt256.ofNat 2818) inline39Template = UInt256.ofNat 2866 := rfl
+theorem inline39Template_pc : pcAfter (UInt256.ofNat 2830) inline39Template = UInt256.ofNat 2878 := rfl
 
-def inline39Block : CoreBlock 2818 2866 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline39Block : CoreBlock 2830 2878 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline39Template
   eval := fun memory f => {f with lane := rawWordStep2 15 14 (inline39Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline39Template_word s (UInt256.ofNat 2818) f.frame rho
+    have h := run_inline39Template_word s (UInt256.ofNat 2830) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline39Template_pc] at h
     exact h
@@ -2686,14 +2686,14 @@ def inline39Block : CoreBlock 2818 2866 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline39Block
 
-theorem inline40Template_pc : pcAfter (UInt256.ofNat 2866) inline40Template = UInt256.ofNat 2915 := rfl
+theorem inline40Template_pc : pcAfter (UInt256.ofNat 2878) inline40Template = UInt256.ofNat 2927 := rfl
 
-def inline40Block : CoreBlock 2866 2915 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline40Block : CoreBlock 2878 2927 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline40Template
   eval := fun memory f => {f with lane := rawWordStep2 14 12 (inline40Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline40Template_word s (UInt256.ofNat 2866) f.frame rho
+    have h := run_inline40Template_word s (UInt256.ofNat 2878) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline40Template_pc] at h
     exact h
@@ -2702,14 +2702,14 @@ def inline40Block : CoreBlock 2866 2915 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline40Block
 
-theorem inline41Template_pc : pcAfter (UInt256.ofNat 2915) inline41Template = UInt256.ofNat 2964 := rfl
+theorem inline41Template_pc : pcAfter (UInt256.ofNat 2927) inline41Template = UInt256.ofNat 2976 := rfl
 
-def inline41Block : CoreBlock 2915 2964 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline41Block : CoreBlock 2927 2976 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline41Template
   eval := fun memory f => {f with lane := rawWordStep2 8 13 (inline41Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline41Template_word s (UInt256.ofNat 2915) f.frame rho
+    have h := run_inline41Template_word s (UInt256.ofNat 2927) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline41Template_pc] at h
     exact h
@@ -2718,14 +2718,14 @@ def inline41Block : CoreBlock 2915 2964 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline41Block
 
-theorem inline42Template_pc : pcAfter (UInt256.ofNat 2964) inline42Template = UInt256.ofNat 3012 := rfl
+theorem inline42Template_pc : pcAfter (UInt256.ofNat 2976) inline42Template = UInt256.ofNat 3024 := rfl
 
-def inline42Block : CoreBlock 2964 3012 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline42Block : CoreBlock 2976 3024 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline42Template
   eval := fun memory f => {f with lane := rawWordStep2 13 5 (inline42Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline42Template_word s (UInt256.ofNat 2964) f.frame rho
+    have h := run_inline42Template_word s (UInt256.ofNat 2976) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline42Template_pc] at h
     exact h
@@ -2734,14 +2734,14 @@ def inline42Block : CoreBlock 2964 3012 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline42Block
 
-theorem inline43Template_pc : pcAfter (UInt256.ofNat 3012) inline43Template = UInt256.ofNat 3061 := rfl
+theorem inline43Template_pc : pcAfter (UInt256.ofNat 3024) inline43Template = UInt256.ofNat 3061 := rfl
 
-def inline43Block : CoreBlock 3012 3061 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline43Block : CoreBlock 3024 3061 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline43Template
   eval := fun memory f => {f with lane := rawWordStep2 6 14 (inline43Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline43Template_word s (UInt256.ofNat 3012) f.frame rho
+    have h := run_inline43Template_word s (UInt256.ofNat 3024) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline43Template_pc] at h
     exact h
@@ -2766,9 +2766,9 @@ def inline44Block : CoreBlock 3061 3110 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline44Block
 
-theorem inline45Template_pc : pcAfter (UInt256.ofNat 3110) inline45Template = UInt256.ofNat 3158 := rfl
+theorem inline45Template_pc : pcAfter (UInt256.ofNat 3110) inline45Template = UInt256.ofNat 3170 := rfl
 
-def inline45Block : CoreBlock 3110 3158 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline45Block : CoreBlock 3110 3170 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline45Template
   eval := fun memory f => {f with lane := rawWordStep2 12 13 (inline45Frame memory f.frame).message0 f.k f.lane}
   run := by
@@ -2782,14 +2782,14 @@ def inline45Block : CoreBlock 3110 3158 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline45Block
 
-theorem inline46Template_pc : pcAfter (UInt256.ofNat 3158) inline46Template = UInt256.ofNat 3197 := rfl
+theorem inline46Template_pc : pcAfter (UInt256.ofNat 3170) inline46Template = UInt256.ofNat 3209 := rfl
 
-def inline46Block : CoreBlock 3158 3197 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline46Block : CoreBlock 3170 3209 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline46Template
   eval := fun memory f => {f with lane := rawWordStep2 7 7 (inline46Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline46Template_word s (UInt256.ofNat 3158) f.frame rho
+    have h := run_inline46Template_word s (UInt256.ofNat 3170) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline46Template_pc] at h
     exact h
@@ -2798,14 +2798,14 @@ def inline46Block : CoreBlock 3158 3197 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline46Block
 
-theorem inline47Template_pc : pcAfter (UInt256.ofNat 3197) inline47Template = UInt256.ofNat 3236 := rfl
+theorem inline47Template_pc : pcAfter (UInt256.ofNat 3209) inline47Template = UInt256.ofNat 3248 := rfl
 
-def inline47Block : CoreBlock 3197 3236 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline47Block : CoreBlock 3209 3248 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline47Template
   eval := fun memory f => {f with lane := rawWordStep2 5 5 (inline47Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline47Template_word s (UInt256.ofNat 3197) f.frame rho
+    have h := run_inline47Template_word s (UInt256.ofNat 3209) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline47Template_pc] at h
     exact h
@@ -2814,14 +2814,14 @@ def inline47Block : CoreBlock 3197 3236 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline47Block
 
-theorem group48Template_pc : pcAfter (UInt256.ofNat 3236) group48Template = UInt256.ofNat 3259 := rfl
+theorem group48Template_pc : pcAfter (UInt256.ofNat 3248) group48Template = UInt256.ofNat 3271 := rfl
 
-def group48Block : CoreBlock 3236 3259 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.k, .d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def group48Block : CoreBlock 3248 3271 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.k, .d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := group48Template
   eval := fun _memory f => {f with k := UInt256.ofNat 698938013802679700166637234969497128417458109660}
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_group48Template s (UInt256.ofNat 3236) f.frame rho hstack hrun
+    have h := run_group48Template s (UInt256.ofNat 3248) f.frame rho hstack hrun
     rw [group48Template_pc] at h
     exact h
 
@@ -2829,14 +2829,14 @@ def group48Block : CoreBlock 3236 3259 [.d, .k, .b, .c, .upper, .e, .factor, .pa
 
 #print axioms group48Block
 
-theorem inline48Template_pc : pcAfter (UInt256.ofNat 3259) inline48Template = UInt256.ofNat 3319 := rfl
+theorem inline48Template_pc : pcAfter (UInt256.ofNat 3271) inline48Template = UInt256.ofNat 3319 := rfl
 
-def inline48Block : CoreBlock 3259 3319 [.k, .d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
+def inline48Block : CoreBlock 3271 3319 [.k, .d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
   code := inline48Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 11 15 (inline48Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline48Template_word s (UInt256.ofNat 3259) f.frame rho
+    have h := run_inline48Template_word s (UInt256.ofNat 3271) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline48Template_pc] at h
     exact h
@@ -2845,9 +2845,9 @@ def inline48Block : CoreBlock 3259 3319 [.k, .d, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline48Block
 
-theorem inline49Template_pc : pcAfter (UInt256.ofNat 3319) inline49Template = UInt256.ofNat 3380 := rfl
+theorem inline49Template_pc : pcAfter (UInt256.ofNat 3319) inline49Template = UInt256.ofNat 3392 := rfl
 
-def inline49Block : CoreBlock 3319 3380 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def inline49Block : CoreBlock 3319 3392 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := inline49Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 12 5 (inline49Frame memory f.frame).message0 f.k f.lane}
   run := by
@@ -2861,14 +2861,14 @@ def inline49Block : CoreBlock 3319 3380 [.d, .e, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline49Block
 
-theorem inline50Template_pc : pcAfter (UInt256.ofNat 3380) inline50Template = UInt256.ofNat 3441 := rfl
+theorem inline50Template_pc : pcAfter (UInt256.ofNat 3392) inline50Template = UInt256.ofNat 3453 := rfl
 
-def inline50Block : CoreBlock 3380 3441 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
+def inline50Block : CoreBlock 3392 3453 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
   code := inline50Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 14 8 (inline50Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline50Template_word s (UInt256.ofNat 3380) f.frame rho
+    have h := run_inline50Template_word s (UInt256.ofNat 3392) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline50Template_pc] at h
     exact h
@@ -2877,14 +2877,14 @@ def inline50Block : CoreBlock 3380 3441 [.d, .a, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline50Block
 
-theorem inline51Template_pc : pcAfter (UInt256.ofNat 3441) inline51Template = UInt256.ofNat 3501 := rfl
+theorem inline51Template_pc : pcAfter (UInt256.ofNat 3453) inline51Template = UInt256.ofNat 3513 := rfl
 
-def inline51Block : CoreBlock 3441 3501 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def inline51Block : CoreBlock 3453 3513 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := inline51Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 15 11 (inline51Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline51Template_word s (UInt256.ofNat 3441) f.frame rho
+    have h := run_inline51Template_word s (UInt256.ofNat 3453) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline51Template_pc] at h
     exact h
@@ -2893,14 +2893,14 @@ def inline51Block : CoreBlock 3441 3501 [.d, .e, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline51Block
 
-theorem inline52Template_pc : pcAfter (UInt256.ofNat 3501) inline52Template = UInt256.ofNat 3551 := rfl
+theorem inline52Template_pc : pcAfter (UInt256.ofNat 3513) inline52Template = UInt256.ofNat 3563 := rfl
 
-def inline52Block : CoreBlock 3501 3551 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
+def inline52Block : CoreBlock 3513 3563 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
   code := inline52Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 14 14 (inline52Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline52Template_word s (UInt256.ofNat 3501) f.frame rho
+    have h := run_inline52Template_word s (UInt256.ofNat 3513) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline52Template_pc] at h
     exact h
@@ -2909,14 +2909,14 @@ def inline52Block : CoreBlock 3501 3551 [.d, .a, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline52Block
 
-theorem inline53Template_pc : pcAfter (UInt256.ofNat 3551) inline53Template = UInt256.ofNat 3612 := rfl
+theorem inline53Template_pc : pcAfter (UInt256.ofNat 3563) inline53Template = UInt256.ofNat 3612 := rfl
 
-def inline53Block : CoreBlock 3551 3612 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def inline53Block : CoreBlock 3563 3612 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := inline53Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 15 14 (inline53Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline53Template_word s (UInt256.ofNat 3551) f.frame rho
+    have h := run_inline53Template_word s (UInt256.ofNat 3563) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline53Template_pc] at h
     exact h
@@ -2925,9 +2925,9 @@ def inline53Block : CoreBlock 3551 3612 [.d, .e, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline53Block
 
-theorem inline54Template_pc : pcAfter (UInt256.ofNat 3612) inline54Template = UInt256.ofNat 3673 := rfl
+theorem inline54Template_pc : pcAfter (UInt256.ofNat 3612) inline54Template = UInt256.ofNat 3685 := rfl
 
-def inline54Block : CoreBlock 3612 3673 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
+def inline54Block : CoreBlock 3612 3685 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
   code := inline54Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 9 6 (inline54Frame memory f.frame).message0 f.k f.lane}
   run := by
@@ -2941,14 +2941,14 @@ def inline54Block : CoreBlock 3612 3673 [.d, .a, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline54Block
 
-theorem inline55Template_pc : pcAfter (UInt256.ofNat 3673) inline55Template = UInt256.ofNat 3733 := rfl
+theorem inline55Template_pc : pcAfter (UInt256.ofNat 3685) inline55Template = UInt256.ofNat 3745 := rfl
 
-def inline55Block : CoreBlock 3673 3733 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def inline55Block : CoreBlock 3685 3745 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := inline55Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 8 14 (inline55Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline55Template_word s (UInt256.ofNat 3673) f.frame rho
+    have h := run_inline55Template_word s (UInt256.ofNat 3685) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline55Template_pc] at h
     exact h
@@ -2957,14 +2957,14 @@ def inline55Block : CoreBlock 3673 3733 [.d, .e, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline55Block
 
-theorem inline56Template_pc : pcAfter (UInt256.ofNat 3733) inline56Template = UInt256.ofNat 3794 := rfl
+theorem inline56Template_pc : pcAfter (UInt256.ofNat 3745) inline56Template = UInt256.ofNat 3806 := rfl
 
-def inline56Block : CoreBlock 3733 3794 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
+def inline56Block : CoreBlock 3745 3806 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
   code := inline56Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 9 6 (inline56Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline56Template_word s (UInt256.ofNat 3733) f.frame rho
+    have h := run_inline56Template_word s (UInt256.ofNat 3745) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline56Template_pc] at h
     exact h
@@ -2973,14 +2973,14 @@ def inline56Block : CoreBlock 3733 3794 [.d, .a, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline56Block
 
-theorem inline57Template_pc : pcAfter (UInt256.ofNat 3794) inline57Template = UInt256.ofNat 3855 := rfl
+theorem inline57Template_pc : pcAfter (UInt256.ofNat 3806) inline57Template = UInt256.ofNat 3867 := rfl
 
-def inline57Block : CoreBlock 3794 3855 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def inline57Block : CoreBlock 3806 3867 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := inline57Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 14 9 (inline57Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline57Template_word s (UInt256.ofNat 3794) f.frame rho
+    have h := run_inline57Template_word s (UInt256.ofNat 3806) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline57Template_pc] at h
     exact h
@@ -2989,14 +2989,14 @@ def inline57Block : CoreBlock 3794 3855 [.d, .e, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline57Block
 
-theorem inline58Template_pc : pcAfter (UInt256.ofNat 3855) inline58Template = UInt256.ofNat 3916 := rfl
+theorem inline58Template_pc : pcAfter (UInt256.ofNat 3867) inline58Template = UInt256.ofNat 3928 := rfl
 
-def inline58Block : CoreBlock 3855 3916 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
+def inline58Block : CoreBlock 3867 3928 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
   code := inline58Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 5 12 (inline58Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline58Template_word s (UInt256.ofNat 3855) f.frame rho
+    have h := run_inline58Template_word s (UInt256.ofNat 3867) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline58Template_pc] at h
     exact h
@@ -3005,14 +3005,14 @@ def inline58Block : CoreBlock 3855 3916 [.d, .a, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline58Block
 
-theorem inline59Template_pc : pcAfter (UInt256.ofNat 3916) inline59Template = UInt256.ofNat 3977 := rfl
+theorem inline59Template_pc : pcAfter (UInt256.ofNat 3928) inline59Template = UInt256.ofNat 3989 := rfl
 
-def inline59Block : CoreBlock 3916 3977 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def inline59Block : CoreBlock 3928 3989 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := inline59Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 6 9 (inline59Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline59Template_word s (UInt256.ofNat 3916) f.frame rho
+    have h := run_inline59Template_word s (UInt256.ofNat 3928) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline59Template_pc] at h
     exact h
@@ -3021,14 +3021,14 @@ def inline59Block : CoreBlock 3916 3977 [.d, .e, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline59Block
 
-theorem inline60Template_pc : pcAfter (UInt256.ofNat 3977) inline60Template = UInt256.ofNat 4038 := rfl
+theorem inline60Template_pc : pcAfter (UInt256.ofNat 3989) inline60Template = UInt256.ofNat 4050 := rfl
 
-def inline60Block : CoreBlock 3977 4038 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
+def inline60Block : CoreBlock 3989 4050 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
   code := inline60Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 8 12 (inline60Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline60Template_word s (UInt256.ofNat 3977) f.frame rho
+    have h := run_inline60Template_word s (UInt256.ofNat 3989) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline60Template_pc] at h
     exact h
@@ -3037,14 +3037,14 @@ def inline60Block : CoreBlock 3977 4038 [.d, .a, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline60Block
 
-theorem inline61Template_pc : pcAfter (UInt256.ofNat 4038) inline61Template = UInt256.ofNat 4099 := rfl
+theorem inline61Template_pc : pcAfter (UInt256.ofNat 4050) inline61Template = UInt256.ofNat 4111 := rfl
 
-def inline61Block : CoreBlock 4038 4099 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def inline61Block : CoreBlock 4050 4111 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := inline61Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 6 5 (inline61Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline61Template_word s (UInt256.ofNat 4038) f.frame rho
+    have h := run_inline61Template_word s (UInt256.ofNat 4050) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline61Template_pc] at h
     exact h
@@ -3053,14 +3053,14 @@ def inline61Block : CoreBlock 4038 4099 [.d, .e, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline61Block
 
-theorem inline62Template_pc : pcAfter (UInt256.ofNat 4099) inline62Template = UInt256.ofNat 4160 := rfl
+theorem inline62Template_pc : pcAfter (UInt256.ofNat 4111) inline62Template = UInt256.ofNat 4172 := rfl
 
-def inline62Block : CoreBlock 4099 4160 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
+def inline62Block : CoreBlock 4111 4172 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] where
   code := inline62Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 5 15 (inline62Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline62Template_word s (UInt256.ofNat 4099) f.frame rho
+    have h := run_inline62Template_word s (UInt256.ofNat 4111) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline62Template_pc] at h
     exact h
@@ -3069,14 +3069,14 @@ def inline62Block : CoreBlock 4099 4160 [.d, .a, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline62Block
 
-theorem inline63Template_pc : pcAfter (UInt256.ofNat 4160) inline63Template = UInt256.ofNat 4221 := rfl
+theorem inline63Template_pc : pcAfter (UInt256.ofNat 4172) inline63Template = UInt256.ofNat 4233 := rfl
 
-def inline63Block : CoreBlock 4160 4221 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def inline63Block : CoreBlock 4172 4233 [.d, .e, .c, .b, .upper, .a, .factor, .pair, .k, .lower] [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := inline63Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 3 12 8 (inline63Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline63Template_word s (UInt256.ofNat 4160) f.frame rho
+    have h := run_inline63Template_word s (UInt256.ofNat 4172) f.frame rho
       hstack hrun hactive rfl rfl rfl
     rw [inline63Template_pc] at h
     exact h
@@ -3085,14 +3085,14 @@ def inline63Block : CoreBlock 4160 4221 [.d, .e, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline63Block
 
-theorem group64Template_pc : pcAfter (UInt256.ofNat 4221) group64Template = UInt256.ofNat 4228 := rfl
+theorem group64Template_pc : pcAfter (UInt256.ofNat 4233) group64Template = UInt256.ofNat 4240 := rfl
 
-def group64Block : CoreBlock 4221 4228 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] where
+def group64Block : CoreBlock 4233 4240 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] where
   code := group64Template
   eval := fun _memory f => {f with k := UInt256.ofNat 2840853838}
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_group64Template s (UInt256.ofNat 4221) f.frame rho hstack hrun
+    have h := run_group64Template s (UInt256.ofNat 4233) f.frame rho hstack hrun
     rw [group64Template_pc] at h
     exact h
 
@@ -3100,14 +3100,14 @@ def group64Block : CoreBlock 4221 4228 [.d, .a, .b, .c, .upper, .e, .factor, .pa
 
 #print axioms group64Block
 
-theorem inline64Template_pc : pcAfter (UInt256.ofNat 4228) inline64Template = UInt256.ofNat 4283 := rfl
+theorem inline64Template_pc : pcAfter (UInt256.ofNat 4240) inline64Template = UInt256.ofNat 4295 := rfl
 
-def inline64Block : CoreBlock 4228 4283 [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline64Block : CoreBlock 4240 4295 [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline64Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 9 8 (inline64Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline64Template_word s (UInt256.ofNat 4228) f.frame rho
+    have h := run_inline64Template_word s (UInt256.ofNat 4240) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline64Template_pc] at h
     exact h
@@ -3116,14 +3116,14 @@ def inline64Block : CoreBlock 4228 4283 [.k, .a, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline64Block
 
-theorem inline65Template_pc : pcAfter (UInt256.ofNat 4283) inline65Template = UInt256.ofNat 4337 := rfl
+theorem inline65Template_pc : pcAfter (UInt256.ofNat 4295) inline65Template = UInt256.ofNat 4349 := rfl
 
-def inline65Block : CoreBlock 4283 4337 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline65Block : CoreBlock 4295 4349 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline65Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 15 5 (inline65Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline65Template_word s (UInt256.ofNat 4283) f.frame rho
+    have h := run_inline65Template_word s (UInt256.ofNat 4295) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline65Template_pc] at h
     exact h
@@ -3132,14 +3132,14 @@ def inline65Block : CoreBlock 4283 4337 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline65Block
 
-theorem inline66Template_pc : pcAfter (UInt256.ofNat 4337) inline66Template = UInt256.ofNat 4392 := rfl
+theorem inline66Template_pc : pcAfter (UInt256.ofNat 4349) inline66Template = UInt256.ofNat 4404 := rfl
 
-def inline66Block : CoreBlock 4337 4392 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline66Block : CoreBlock 4349 4404 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline66Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 5 12 (inline66Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline66Template_word s (UInt256.ofNat 4337) f.frame rho
+    have h := run_inline66Template_word s (UInt256.ofNat 4349) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline66Template_pc] at h
     exact h
@@ -3148,14 +3148,14 @@ def inline66Block : CoreBlock 4337 4392 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline66Block
 
-theorem inline67Template_pc : pcAfter (UInt256.ofNat 4392) inline67Template = UInt256.ofNat 4447 := rfl
+theorem inline67Template_pc : pcAfter (UInt256.ofNat 4404) inline67Template = UInt256.ofNat 4459 := rfl
 
-def inline67Block : CoreBlock 4392 4447 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline67Block : CoreBlock 4404 4459 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline67Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 11 9 (inline67Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline67Template_word s (UInt256.ofNat 4392) f.frame rho
+    have h := run_inline67Template_word s (UInt256.ofNat 4404) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline67Template_pc] at h
     exact h
@@ -3164,14 +3164,14 @@ def inline67Block : CoreBlock 4392 4447 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline67Block
 
-theorem inline68Template_pc : pcAfter (UInt256.ofNat 4447) inline68Template = UInt256.ofNat 4501 := rfl
+theorem inline68Template_pc : pcAfter (UInt256.ofNat 4459) inline68Template = UInt256.ofNat 4513 := rfl
 
-def inline68Block : CoreBlock 4447 4501 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline68Block : CoreBlock 4459 4513 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline68Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 6 12 (inline68Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline68Template_word s (UInt256.ofNat 4447) f.frame rho
+    have h := run_inline68Template_word s (UInt256.ofNat 4459) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline68Template_pc] at h
     exact h
@@ -3180,14 +3180,14 @@ def inline68Block : CoreBlock 4447 4501 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline68Block
 
-theorem inline69Template_pc : pcAfter (UInt256.ofNat 4501) inline69Template = UInt256.ofNat 4556 := rfl
+theorem inline69Template_pc : pcAfter (UInt256.ofNat 4513) inline69Template = UInt256.ofNat 4568 := rfl
 
-def inline69Block : CoreBlock 4501 4556 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline69Block : CoreBlock 4513 4568 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline69Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 8 5 (inline69Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline69Template_word s (UInt256.ofNat 4501) f.frame rho
+    have h := run_inline69Template_word s (UInt256.ofNat 4513) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline69Template_pc] at h
     exact h
@@ -3196,14 +3196,14 @@ def inline69Block : CoreBlock 4501 4556 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline69Block
 
-theorem inline70Template_pc : pcAfter (UInt256.ofNat 4556) inline70Template = UInt256.ofNat 4611 := rfl
+theorem inline70Template_pc : pcAfter (UInt256.ofNat 4568) inline70Template = UInt256.ofNat 4623 := rfl
 
-def inline70Block : CoreBlock 4556 4611 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline70Block : CoreBlock 4568 4623 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline70Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 13 14 (inline70Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline70Template_word s (UInt256.ofNat 4556) f.frame rho
+    have h := run_inline70Template_word s (UInt256.ofNat 4568) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline70Template_pc] at h
     exact h
@@ -3212,14 +3212,14 @@ def inline70Block : CoreBlock 4556 4611 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline70Block
 
-theorem inline71Template_pc : pcAfter (UInt256.ofNat 4611) inline71Template = UInt256.ofNat 4666 := rfl
+theorem inline71Template_pc : pcAfter (UInt256.ofNat 4623) inline71Template = UInt256.ofNat 4678 := rfl
 
-def inline71Block : CoreBlock 4611 4666 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline71Block : CoreBlock 4623 4678 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline71Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 12 6 (inline71Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline71Template_word s (UInt256.ofNat 4611) f.frame rho
+    have h := run_inline71Template_word s (UInt256.ofNat 4623) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline71Template_pc] at h
     exact h
@@ -3228,14 +3228,14 @@ def inline71Block : CoreBlock 4611 4666 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline71Block
 
-theorem inline72Template_pc : pcAfter (UInt256.ofNat 4666) inline72Template = UInt256.ofNat 4721 := rfl
+theorem inline72Template_pc : pcAfter (UInt256.ofNat 4678) inline72Template = UInt256.ofNat 4721 := rfl
 
-def inline72Block : CoreBlock 4666 4721 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline72Block : CoreBlock 4678 4721 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline72Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 5 8 (inline72Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline72Template_word s (UInt256.ofNat 4666) f.frame rho
+    have h := run_inline72Template_word s (UInt256.ofNat 4678) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline72Template_pc] at h
     exact h
@@ -3244,9 +3244,9 @@ def inline72Block : CoreBlock 4666 4721 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline72Block
 
-theorem inline73Template_pc : pcAfter (UInt256.ofNat 4721) inline73Template = UInt256.ofNat 4775 := rfl
+theorem inline73Template_pc : pcAfter (UInt256.ofNat 4721) inline73Template = UInt256.ofNat 4787 := rfl
 
-def inline73Block : CoreBlock 4721 4775 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline73Block : CoreBlock 4721 4787 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline73Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 12 13 (inline73Frame memory f.frame).message0 f.k f.lane}
   run := by
@@ -3260,14 +3260,14 @@ def inline73Block : CoreBlock 4721 4775 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline73Block
 
-theorem inline74Template_pc : pcAfter (UInt256.ofNat 4775) inline74Template = UInt256.ofNat 4830 := rfl
+theorem inline74Template_pc : pcAfter (UInt256.ofNat 4787) inline74Template = UInt256.ofNat 4842 := rfl
 
-def inline74Block : CoreBlock 4775 4830 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline74Block : CoreBlock 4787 4842 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline74Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 13 6 (inline74Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline74Template_word s (UInt256.ofNat 4775) f.frame rho
+    have h := run_inline74Template_word s (UInt256.ofNat 4787) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline74Template_pc] at h
     exact h
@@ -3276,14 +3276,14 @@ def inline74Block : CoreBlock 4775 4830 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline74Block
 
-theorem inline75Template_pc : pcAfter (UInt256.ofNat 4830) inline75Template = UInt256.ofNat 4885 := rfl
+theorem inline75Template_pc : pcAfter (UInt256.ofNat 4842) inline75Template = UInt256.ofNat 4897 := rfl
 
-def inline75Block : CoreBlock 4830 4885 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline75Block : CoreBlock 4842 4897 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline75Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 14 5 (inline75Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline75Template_word s (UInt256.ofNat 4830) f.frame rho
+    have h := run_inline75Template_word s (UInt256.ofNat 4842) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline75Template_pc] at h
     exact h
@@ -3292,14 +3292,14 @@ def inline75Block : CoreBlock 4830 4885 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline75Block
 
-theorem inline76Template_pc : pcAfter (UInt256.ofNat 4885) inline76Template = UInt256.ofNat 4939 := rfl
+theorem inline76Template_pc : pcAfter (UInt256.ofNat 4897) inline76Template = UInt256.ofNat 4951 := rfl
 
-def inline76Block : CoreBlock 4885 4939 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline76Block : CoreBlock 4897 4951 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline76Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 11 15 (inline76Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline76Template_word s (UInt256.ofNat 4885) f.frame rho
+    have h := run_inline76Template_word s (UInt256.ofNat 4897) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline76Template_pc] at h
     exact h
@@ -3308,14 +3308,14 @@ def inline76Block : CoreBlock 4885 4939 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline76Block
 
-theorem inline77Template_pc : pcAfter (UInt256.ofNat 4939) inline77Template = UInt256.ofNat 4994 := rfl
+theorem inline77Template_pc : pcAfter (UInt256.ofNat 4951) inline77Template = UInt256.ofNat 5006 := rfl
 
-def inline77Block : CoreBlock 4939 4994 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline77Block : CoreBlock 4951 5006 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline77Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 8 13 (inline77Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline77Template_word s (UInt256.ofNat 4939) f.frame rho
+    have h := run_inline77Template_word s (UInt256.ofNat 4951) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline77Template_pc] at h
     exact h
@@ -3324,14 +3324,14 @@ def inline77Block : CoreBlock 4939 4994 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline77Block
 
-theorem inline78Template_pc : pcAfter (UInt256.ofNat 4994) inline78Template = UInt256.ofNat 5049 := rfl
+theorem inline78Template_pc : pcAfter (UInt256.ofNat 5006) inline78Template = UInt256.ofNat 5061 := rfl
 
-def inline78Block : CoreBlock 4994 5049 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
+def inline78Block : CoreBlock 5006 5061 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] where
   code := inline78Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 5 11 (inline78Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline78Template_word s (UInt256.ofNat 4994) f.frame rho
+    have h := run_inline78Template_word s (UInt256.ofNat 5006) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline78Template_pc] at h
     exact h
@@ -3340,14 +3340,14 @@ def inline78Block : CoreBlock 4994 5049 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 #print axioms inline78Block
 
-theorem inline79Template_pc : pcAfter (UInt256.ofNat 5049) inline79Template = UInt256.ofNat 5104 := rfl
+theorem inline79Template_pc : pcAfter (UInt256.ofNat 5061) inline79Template = UInt256.ofNat 5116 := rfl
 
-def inline79Block : CoreBlock 5049 5104 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def inline79Block : CoreBlock 5061 5116 [.d, .k, .c, .b, .upper, .a, .factor, .pair, .e, .lower] [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := inline79Template
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 6 11 (inline79Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive _hvalid
-    have h := run_inline79Template_word s (UInt256.ofNat 5049) f.frame rho
+    have h := run_inline79Template_word s (UInt256.ofNat 5061) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline79Template_pc] at h
     exact h
@@ -3356,14 +3356,14 @@ def inline79Block : CoreBlock 5049 5104 [.d, .k, .c, .b, .upper, .a, .factor, .p
 
 #print axioms inline79Block
 
-theorem coreExitTemplate_pc : pcAfter (UInt256.ofNat 5104) coreExitTemplate = UInt256.ofNat 5106 := rfl
+theorem coreExitTemplate_pc : pcAfter (UInt256.ofNat 5116) coreExitTemplate = UInt256.ofNat 5118 := rfl
 
-def coreExitBlock : CoreBlock 5104 5106 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def coreExitBlock : CoreBlock 5116 5118 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := coreExitTemplate
   eval := fun _memory f => f
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_coreExitTemplate s (UInt256.ofNat 5104) f.frame rho hstack hrun
+    have h := run_coreExitTemplate s (UInt256.ofNat 5116) f.frame rho hstack hrun
     rw [coreExitTemplate_pc] at h
     exact h
 
@@ -3373,7 +3373,7 @@ def coreExitBlock : CoreBlock 5104 5106 [.d, .k, .b, .c, .upper, .e, .factor, .p
 
 
 
-def wholeCoreChain : CoreChain 998 [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] 5106 [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] :=
+def wholeCoreChain : CoreChain 1010 [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] 5118 [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] :=
   .cons group0Block (
   .cons inline0Block (
   .cons inline1Block (
@@ -3463,8 +3463,8 @@ theorem run_wholeCoreChain (s : State) (f : CoreFrame) (rho : List UInt256)
     (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) (hvalid : CoreJumpValid s) :
     runInstrSeq wholeCoreChain.code
-      {s with pc := UInt256.ofNat 998, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] f rho} =
-      some {s with pc := UInt256.ofNat 5106, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (wholeCoreChain.eval s.memory f) rho} :=
+      {s with pc := UInt256.ofNat 1010, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] f rho} =
+      some {s with pc := UInt256.ofNat 5118, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (wholeCoreChain.eval s.memory f) rho} :=
   wholeCoreChain.run s f rho hstack hrun hactive hvalid
 
 
@@ -4259,15 +4259,15 @@ theorem run_wholeCore_crypto (s : State) (words : Nat → UInt32)
     (hmessage : ∀ i < 80, algorithmMessage s.memory i =
       packed32 (words Crypto.Ripemd160.r[i]!) (words Crypto.Ripemd160.rP[i]!)) :
     runInstrSeq wholeCoreChain.code
-      {s with pc := UInt256.ofNat 998, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho} =
-      some {s with pc := UInt256.ofNat 5106, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (coreCryptoResult words left right) rho} := by
+      {s with pc := UInt256.ofNat 1010, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho} =
+      some {s with pc := UInt256.ofNat 5118, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (coreCryptoResult words left right) rho} := by
   let f : CoreFrame := ⟨PairedLaneWordRound.packCrypto left right, 0⟩
   have h0 := wholeCoreChain_eval s.memory f
   have h1 := hoistedAlgorithmFold_crypto s.memory words 80 (by decide) left right hmessage
   have he : wholeCoreChain.eval s.memory f = coreCryptoResult words left right :=
     h0.trans (congrArg (fun q => CoreFrame.mk q (algorithmKey 4)) h1)
   exact (run_wholeCoreChain s f rho hstack hrun hactive hvalid).trans
-    (congrArg (fun q => some {s with pc := UInt256.ofNat 5106, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] q rho}) he)
+    (congrArg (fun q => some {s with pc := UInt256.ofNat 5118, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] q rho}) he)
 
 
 
@@ -4278,8 +4278,8 @@ theorem run_wholeCore_normalized (s : State) (words : Nat → UInt32)
     (hactive : 23 ≤ s.activeWords.toNat) (hvalid : CoreJumpValid s)
     (hready : NormalizedScheduleReady s.memory words) :
     runInstrSeq wholeCoreChain.code
-      {s with pc := UInt256.ofNat 998, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho} =
-      some {s with pc := UInt256.ofNat 5106, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (coreCryptoResult words left right) rho} := by
+      {s with pc := UInt256.ofNat 1010, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho} =
+      some {s with pc := UInt256.ofNat 5118, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (coreCryptoResult words left right) rho} := by
   exact run_wholeCore_crypto s words left right rho hstack hrun hactive hvalid
     (algorithmMessage_of_normalized s.memory words hready)
 
@@ -4759,26 +4759,26 @@ theorem coreExitTemplate_terminal_advances :
 def call16GasBlock {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork call16Template)
     (helper : GenericRoundSite artifact fork fullTemplate)
-    (hpc : site.startPC = UInt256.ofNat 1918)
+    (hpc : site.startPC = UInt256.ofNat 1930)
     (hhelper : helper.startPC = UInt256.ofNat 5186) :
     CoreGasBlock call16Block artifact fork where
   run := by
     intro s f rho hstack hrun hactive hvalid hcode hfork hnp
     let q := f.frame
     have hh := hvalid 5186 (by decide)
-    have raw0 := run_call16Template s (UInt256.ofNat 1918) q rho hstack hrun hactive hh
+    have raw0 := run_call16Template s (UInt256.ofNat 1930) q rho hstack hrun hactive hh
     have rawAll := call16Block.run s f rho hstack hrun hactive hvalid
     have raw1 : runInstrSeq fullTemplate
         {s with pc := UInt256.ofNat 5186, stack := entryStack (call16Frame s.memory q) rho} =
-        some {s with pc := UInt256.ofNat 1958, stack := coreStack [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] (call16Block.eval s.memory f) rho} :=
+        some {s with pc := UInt256.ofNat 1970, stack := coreStack [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] (call16Block.eval s.memory f) rho} :=
       runInstrSeq_append_tail (first := call16Template) (second := fullTemplate)
         raw0 hrun rawAll
-    have g0 : GasSteps {s with pc := UInt256.ofNat 1918, stack := call16Entry q rho}
+    have g0 : GasSteps {s with pc := UInt256.ofNat 1930, stack := call16Entry q rho}
         {s with pc := UInt256.ofNat 5186, stack := entryStack (call16Frame s.memory q) rho} :=
       gasSteps_terminal_of_raw site _ _ hcode hfork hrun hnp hpc.symm
         call16Template_terminal_advances raw0
     have g1 : GasSteps {s with pc := UInt256.ofNat 5186, stack := entryStack (call16Frame s.memory q) rho}
-        {s with pc := UInt256.ofNat 1958, stack := coreStack [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] (call16Block.eval s.memory f) rho} :=
+        {s with pc := UInt256.ofNat 1970, stack := coreStack [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] (call16Block.eval s.memory f) rho} :=
       gasSteps_terminal_of_raw helper _ _ hcode hfork hrun hnp hhelper.symm
         fullTemplate_terminal_advances raw1
     exact g0.trans g1
@@ -4786,26 +4786,26 @@ def call16GasBlock {artifact : ProgramArtifact} {fork : Fork}
 def call20GasBlock {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork call20Template)
     (helper : GenericRoundSite artifact fork fullTemplate)
-    (hpc : site.startPC = UInt256.ofNat 2079)
+    (hpc : site.startPC = UInt256.ofNat 2091)
     (hhelper : helper.startPC = UInt256.ofNat 5186) :
     CoreGasBlock call20Block artifact fork where
   run := by
     intro s f rho hstack hrun hactive hvalid hcode hfork hnp
     let q := f.frame
     have hh := hvalid 5186 (by decide)
-    have raw0 := run_call20Template s (UInt256.ofNat 2079) q rho hstack hrun hactive hh
+    have raw0 := run_call20Template s (UInt256.ofNat 2091) q rho hstack hrun hactive hh
     have rawAll := call20Block.run s f rho hstack hrun hactive hvalid
     have raw1 : runInstrSeq fullTemplate
         {s with pc := UInt256.ofNat 5186, stack := entryStack (call20Frame s.memory q) rho} =
-        some {s with pc := UInt256.ofNat 2115, stack := coreStack [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] (call20Block.eval s.memory f) rho} :=
+        some {s with pc := UInt256.ofNat 2127, stack := coreStack [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] (call20Block.eval s.memory f) rho} :=
       runInstrSeq_append_tail (first := call20Template) (second := fullTemplate)
         raw0 hrun rawAll
-    have g0 : GasSteps {s with pc := UInt256.ofNat 2079, stack := call20Entry q rho}
+    have g0 : GasSteps {s with pc := UInt256.ofNat 2091, stack := call20Entry q rho}
         {s with pc := UInt256.ofNat 5186, stack := entryStack (call20Frame s.memory q) rho} :=
       gasSteps_terminal_of_raw site _ _ hcode hfork hrun hnp hpc.symm
         call20Template_terminal_advances raw0
     have g1 : GasSteps {s with pc := UInt256.ofNat 5186, stack := entryStack (call20Frame s.memory q) rho}
-        {s with pc := UInt256.ofNat 2115, stack := coreStack [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] (call20Block.eval s.memory f) rho} :=
+        {s with pc := UInt256.ofNat 2127, stack := coreStack [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] (call20Block.eval s.memory f) rho} :=
       gasSteps_terminal_of_raw helper _ _ hcode hfork hrun hnp hhelper.symm
         fullTemplate_terminal_advances raw1
     exact g0.trans g1
@@ -4813,26 +4813,26 @@ def call20GasBlock {artifact : ProgramArtifact} {fork : Fork}
 def call22GasBlock {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork call22Template)
     (helper : GenericRoundSite artifact fork fullTemplate)
-    (hpc : site.startPC = UInt256.ofNat 2115)
+    (hpc : site.startPC = UInt256.ofNat 2127)
     (hhelper : helper.startPC = UInt256.ofNat 5186) :
     CoreGasBlock call22Block artifact fork where
   run := by
     intro s f rho hstack hrun hactive hvalid hcode hfork hnp
     let q := f.frame
     have hh := hvalid 5186 (by decide)
-    have raw0 := run_call22Template s (UInt256.ofNat 2115) q rho hstack hrun hactive hh
+    have raw0 := run_call22Template s (UInt256.ofNat 2127) q rho hstack hrun hactive hh
     have rawAll := call22Block.run s f rho hstack hrun hactive hvalid
     have raw1 : runInstrSeq fullTemplate
         {s with pc := UInt256.ofNat 5186, stack := entryStack (call22Frame s.memory q) rho} =
-        some {s with pc := UInt256.ofNat 2154, stack := coreStack [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] (call22Block.eval s.memory f) rho} :=
+        some {s with pc := UInt256.ofNat 2166, stack := coreStack [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] (call22Block.eval s.memory f) rho} :=
       runInstrSeq_append_tail (first := call22Template) (second := fullTemplate)
         raw0 hrun rawAll
-    have g0 : GasSteps {s with pc := UInt256.ofNat 2115, stack := call22Entry q rho}
+    have g0 : GasSteps {s with pc := UInt256.ofNat 2127, stack := call22Entry q rho}
         {s with pc := UInt256.ofNat 5186, stack := entryStack (call22Frame s.memory q) rho} :=
       gasSteps_terminal_of_raw site _ _ hcode hfork hrun hnp hpc.symm
         call22Template_terminal_advances raw0
     have g1 : GasSteps {s with pc := UInt256.ofNat 5186, stack := entryStack (call22Frame s.memory q) rho}
-        {s with pc := UInt256.ofNat 2154, stack := coreStack [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] (call22Block.eval s.memory f) rho} :=
+        {s with pc := UInt256.ofNat 2166, stack := coreStack [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] (call22Block.eval s.memory f) rho} :=
       gasSteps_terminal_of_raw helper _ _ hcode hfork hrun hnp hhelper.symm
         fullTemplate_terminal_advances raw1
     exact g0.trans g1
@@ -4840,21 +4840,21 @@ def call22GasBlock {artifact : ProgramArtifact} {fork : Fork}
 def call26GasBlock {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork call26Template)
     (helper : GenericRoundSite artifact fork fullTemplate)
-    (hpc : site.startPC = UInt256.ofNat 2265)
+    (hpc : site.startPC = UInt256.ofNat 2277)
     (hhelper : helper.startPC = UInt256.ofNat 5186) :
     CoreGasBlock call26Block artifact fork where
   run := by
     intro s f rho hstack hrun hactive hvalid hcode hfork hnp
     let q := f.frame
     have hh := hvalid 5186 (by decide)
-    have raw0 := run_call26Template s (UInt256.ofNat 2265) q rho hstack hrun hactive hh
+    have raw0 := run_call26Template s (UInt256.ofNat 2277) q rho hstack hrun hactive hh
     have rawAll := call26Block.run s f rho hstack hrun hactive hvalid
     have raw1 : runInstrSeq fullTemplate
         {s with pc := UInt256.ofNat 5186, stack := entryStack (call26Frame s.memory q) rho} =
         some {s with pc := UInt256.ofNat 2302, stack := coreStack [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] (call26Block.eval s.memory f) rho} :=
       runInstrSeq_append_tail (first := call26Template) (second := fullTemplate)
         raw0 hrun rawAll
-    have g0 : GasSteps {s with pc := UInt256.ofNat 2265, stack := call26Entry q rho}
+    have g0 : GasSteps {s with pc := UInt256.ofNat 2277, stack := call26Entry q rho}
         {s with pc := UInt256.ofNat 5186, stack := entryStack (call26Frame s.memory q) rho} :=
       gasSteps_terminal_of_raw site _ _ hcode hfork hrun hnp hpc.symm
         call26Template_terminal_advances raw0
@@ -4893,90 +4893,90 @@ def call28GasBlock {artifact : ProgramArtifact} {fork : Fork}
 
 /-- Each physical window has its own exact bytecode binding; calls share one helper. -/
 structure WholeCoreSites (artifact : ProgramArtifact) (fork : Fork) where
-  group0 : {site : GenericRoundSite artifact fork group0Template // site.startPC = UInt256.ofNat 998}
-  inline0 : {site : GenericRoundSite artifact fork inline0Template // site.startPC = UInt256.ofNat 1019}
-  inline1 : {site : GenericRoundSite artifact fork inline1Template // site.startPC = UInt256.ofNat 1073}
-  inline2 : {site : GenericRoundSite artifact fork inline2Template // site.startPC = UInt256.ofNat 1127}
-  inline3 : {site : GenericRoundSite artifact fork inline3Template // site.startPC = UInt256.ofNat 1182}
-  inline4 : {site : GenericRoundSite artifact fork inline4Template // site.startPC = UInt256.ofNat 1236}
-  inline5 : {site : GenericRoundSite artifact fork inline5Template // site.startPC = UInt256.ofNat 1291}
-  inline6 : {site : GenericRoundSite artifact fork inline6Template // site.startPC = UInt256.ofNat 1346}
-  inline7 : {site : GenericRoundSite artifact fork inline7Template // site.startPC = UInt256.ofNat 1401}
+  group0 : {site : GenericRoundSite artifact fork group0Template // site.startPC = UInt256.ofNat 1010}
+  inline0 : {site : GenericRoundSite artifact fork inline0Template // site.startPC = UInt256.ofNat 1031}
+  inline1 : {site : GenericRoundSite artifact fork inline1Template // site.startPC = UInt256.ofNat 1085}
+  inline2 : {site : GenericRoundSite artifact fork inline2Template // site.startPC = UInt256.ofNat 1139}
+  inline3 : {site : GenericRoundSite artifact fork inline3Template // site.startPC = UInt256.ofNat 1194}
+  inline4 : {site : GenericRoundSite artifact fork inline4Template // site.startPC = UInt256.ofNat 1248}
+  inline5 : {site : GenericRoundSite artifact fork inline5Template // site.startPC = UInt256.ofNat 1303}
+  inline6 : {site : GenericRoundSite artifact fork inline6Template // site.startPC = UInt256.ofNat 1358}
+  inline7 : {site : GenericRoundSite artifact fork inline7Template // site.startPC = UInt256.ofNat 1413}
   inline8 : {site : GenericRoundSite artifact fork inline8Template // site.startPC = UInt256.ofNat 1456}
-  inline9 : {site : GenericRoundSite artifact fork inline9Template // site.startPC = UInt256.ofNat 1511}
+  inline9 : {site : GenericRoundSite artifact fork inline9Template // site.startPC = UInt256.ofNat 1523}
   inline10 : {site : GenericRoundSite artifact fork inline10Template // site.startPC = UInt256.ofNat 1566}
   inline11 : {site : GenericRoundSite artifact fork inline11Template // site.startPC = UInt256.ofNat 1621}
-  inline12 : {site : GenericRoundSite artifact fork inline12Template // site.startPC = UInt256.ofNat 1676}
-  inline13 : {site : GenericRoundSite artifact fork inline13Template // site.startPC = UInt256.ofNat 1730}
-  inline14 : {site : GenericRoundSite artifact fork inline14Template // site.startPC = UInt256.ofNat 1785}
-  inline15 : {site : GenericRoundSite artifact fork inline15Template // site.startPC = UInt256.ofNat 1840}
-  group16 : {site : GenericRoundSite artifact fork group16Template // site.startPC = UInt256.ofNat 1895}
-  call16 : {site : GenericRoundSite artifact fork call16Template // site.startPC = UInt256.ofNat 1918}
-  return18 : {site : GenericRoundSite artifact fork return18Template // site.startPC = UInt256.ofNat 1958}
-  inline18 : {site : GenericRoundSite artifact fork inline18Template // site.startPC = UInt256.ofNat 1959}
-  inline19 : {site : GenericRoundSite artifact fork inline19Template // site.startPC = UInt256.ofNat 2019}
-  call20 : {site : GenericRoundSite artifact fork call20Template // site.startPC = UInt256.ofNat 2079}
-  call22 : {site : GenericRoundSite artifact fork call22Template // site.startPC = UInt256.ofNat 2115}
-  return24 : {site : GenericRoundSite artifact fork return24Template // site.startPC = UInt256.ofNat 2154}
-  inline24 : {site : GenericRoundSite artifact fork inline24Template // site.startPC = UInt256.ofNat 2155}
-  inline25 : {site : GenericRoundSite artifact fork inline25Template // site.startPC = UInt256.ofNat 2205}
-  call26 : {site : GenericRoundSite artifact fork call26Template // site.startPC = UInt256.ofNat 2265}
+  inline12 : {site : GenericRoundSite artifact fork inline12Template // site.startPC = UInt256.ofNat 1688}
+  inline13 : {site : GenericRoundSite artifact fork inline13Template // site.startPC = UInt256.ofNat 1742}
+  inline14 : {site : GenericRoundSite artifact fork inline14Template // site.startPC = UInt256.ofNat 1797}
+  inline15 : {site : GenericRoundSite artifact fork inline15Template // site.startPC = UInt256.ofNat 1852}
+  group16 : {site : GenericRoundSite artifact fork group16Template // site.startPC = UInt256.ofNat 1907}
+  call16 : {site : GenericRoundSite artifact fork call16Template // site.startPC = UInt256.ofNat 1930}
+  return18 : {site : GenericRoundSite artifact fork return18Template // site.startPC = UInt256.ofNat 1970}
+  inline18 : {site : GenericRoundSite artifact fork inline18Template // site.startPC = UInt256.ofNat 1971}
+  inline19 : {site : GenericRoundSite artifact fork inline19Template // site.startPC = UInt256.ofNat 2031}
+  call20 : {site : GenericRoundSite artifact fork call20Template // site.startPC = UInt256.ofNat 2091}
+  call22 : {site : GenericRoundSite artifact fork call22Template // site.startPC = UInt256.ofNat 2127}
+  return24 : {site : GenericRoundSite artifact fork return24Template // site.startPC = UInt256.ofNat 2166}
+  inline24 : {site : GenericRoundSite artifact fork inline24Template // site.startPC = UInt256.ofNat 2167}
+  inline25 : {site : GenericRoundSite artifact fork inline25Template // site.startPC = UInt256.ofNat 2217}
+  call26 : {site : GenericRoundSite artifact fork call26Template // site.startPC = UInt256.ofNat 2277}
   call28 : {site : GenericRoundSite artifact fork call28Template // site.startPC = UInt256.ofNat 2302}
   return30 : {site : GenericRoundSite artifact fork return30Template // site.startPC = UInt256.ofNat 2341}
   inline30 : {site : GenericRoundSite artifact fork inline30Template // site.startPC = UInt256.ofNat 2342}
-  inline31 : {site : GenericRoundSite artifact fork inline31Template // site.startPC = UInt256.ofNat 2391}
+  inline31 : {site : GenericRoundSite artifact fork inline31Template // site.startPC = UInt256.ofNat 2403}
   group32 : {site : GenericRoundSite artifact fork group32Template // site.startPC = UInt256.ofNat 2452}
-  inline32 : {site : GenericRoundSite artifact fork inline32Template // site.startPC = UInt256.ofNat 2476}
-  inline33 : {site : GenericRoundSite artifact fork inline33Template // site.startPC = UInt256.ofNat 2525}
-  inline34 : {site : GenericRoundSite artifact fork inline34Template // site.startPC = UInt256.ofNat 2574}
-  inline35 : {site : GenericRoundSite artifact fork inline35Template // site.startPC = UInt256.ofNat 2622}
-  inline36 : {site : GenericRoundSite artifact fork inline36Template // site.startPC = UInt256.ofNat 2671}
-  inline37 : {site : GenericRoundSite artifact fork inline37Template // site.startPC = UInt256.ofNat 2720}
-  inline38 : {site : GenericRoundSite artifact fork inline38Template // site.startPC = UInt256.ofNat 2769}
-  inline39 : {site : GenericRoundSite artifact fork inline39Template // site.startPC = UInt256.ofNat 2818}
-  inline40 : {site : GenericRoundSite artifact fork inline40Template // site.startPC = UInt256.ofNat 2866}
-  inline41 : {site : GenericRoundSite artifact fork inline41Template // site.startPC = UInt256.ofNat 2915}
-  inline42 : {site : GenericRoundSite artifact fork inline42Template // site.startPC = UInt256.ofNat 2964}
-  inline43 : {site : GenericRoundSite artifact fork inline43Template // site.startPC = UInt256.ofNat 3012}
+  inline32 : {site : GenericRoundSite artifact fork inline32Template // site.startPC = UInt256.ofNat 2488}
+  inline33 : {site : GenericRoundSite artifact fork inline33Template // site.startPC = UInt256.ofNat 2537}
+  inline34 : {site : GenericRoundSite artifact fork inline34Template // site.startPC = UInt256.ofNat 2586}
+  inline35 : {site : GenericRoundSite artifact fork inline35Template // site.startPC = UInt256.ofNat 2634}
+  inline36 : {site : GenericRoundSite artifact fork inline36Template // site.startPC = UInt256.ofNat 2683}
+  inline37 : {site : GenericRoundSite artifact fork inline37Template // site.startPC = UInt256.ofNat 2732}
+  inline38 : {site : GenericRoundSite artifact fork inline38Template // site.startPC = UInt256.ofNat 2781}
+  inline39 : {site : GenericRoundSite artifact fork inline39Template // site.startPC = UInt256.ofNat 2830}
+  inline40 : {site : GenericRoundSite artifact fork inline40Template // site.startPC = UInt256.ofNat 2878}
+  inline41 : {site : GenericRoundSite artifact fork inline41Template // site.startPC = UInt256.ofNat 2927}
+  inline42 : {site : GenericRoundSite artifact fork inline42Template // site.startPC = UInt256.ofNat 2976}
+  inline43 : {site : GenericRoundSite artifact fork inline43Template // site.startPC = UInt256.ofNat 3024}
   inline44 : {site : GenericRoundSite artifact fork inline44Template // site.startPC = UInt256.ofNat 3061}
   inline45 : {site : GenericRoundSite artifact fork inline45Template // site.startPC = UInt256.ofNat 3110}
-  inline46 : {site : GenericRoundSite artifact fork inline46Template // site.startPC = UInt256.ofNat 3158}
-  inline47 : {site : GenericRoundSite artifact fork inline47Template // site.startPC = UInt256.ofNat 3197}
-  group48 : {site : GenericRoundSite artifact fork group48Template // site.startPC = UInt256.ofNat 3236}
-  inline48 : {site : GenericRoundSite artifact fork inline48Template // site.startPC = UInt256.ofNat 3259}
+  inline46 : {site : GenericRoundSite artifact fork inline46Template // site.startPC = UInt256.ofNat 3170}
+  inline47 : {site : GenericRoundSite artifact fork inline47Template // site.startPC = UInt256.ofNat 3209}
+  group48 : {site : GenericRoundSite artifact fork group48Template // site.startPC = UInt256.ofNat 3248}
+  inline48 : {site : GenericRoundSite artifact fork inline48Template // site.startPC = UInt256.ofNat 3271}
   inline49 : {site : GenericRoundSite artifact fork inline49Template // site.startPC = UInt256.ofNat 3319}
-  inline50 : {site : GenericRoundSite artifact fork inline50Template // site.startPC = UInt256.ofNat 3380}
-  inline51 : {site : GenericRoundSite artifact fork inline51Template // site.startPC = UInt256.ofNat 3441}
-  inline52 : {site : GenericRoundSite artifact fork inline52Template // site.startPC = UInt256.ofNat 3501}
-  inline53 : {site : GenericRoundSite artifact fork inline53Template // site.startPC = UInt256.ofNat 3551}
+  inline50 : {site : GenericRoundSite artifact fork inline50Template // site.startPC = UInt256.ofNat 3392}
+  inline51 : {site : GenericRoundSite artifact fork inline51Template // site.startPC = UInt256.ofNat 3453}
+  inline52 : {site : GenericRoundSite artifact fork inline52Template // site.startPC = UInt256.ofNat 3513}
+  inline53 : {site : GenericRoundSite artifact fork inline53Template // site.startPC = UInt256.ofNat 3563}
   inline54 : {site : GenericRoundSite artifact fork inline54Template // site.startPC = UInt256.ofNat 3612}
-  inline55 : {site : GenericRoundSite artifact fork inline55Template // site.startPC = UInt256.ofNat 3673}
-  inline56 : {site : GenericRoundSite artifact fork inline56Template // site.startPC = UInt256.ofNat 3733}
-  inline57 : {site : GenericRoundSite artifact fork inline57Template // site.startPC = UInt256.ofNat 3794}
-  inline58 : {site : GenericRoundSite artifact fork inline58Template // site.startPC = UInt256.ofNat 3855}
-  inline59 : {site : GenericRoundSite artifact fork inline59Template // site.startPC = UInt256.ofNat 3916}
-  inline60 : {site : GenericRoundSite artifact fork inline60Template // site.startPC = UInt256.ofNat 3977}
-  inline61 : {site : GenericRoundSite artifact fork inline61Template // site.startPC = UInt256.ofNat 4038}
-  inline62 : {site : GenericRoundSite artifact fork inline62Template // site.startPC = UInt256.ofNat 4099}
-  inline63 : {site : GenericRoundSite artifact fork inline63Template // site.startPC = UInt256.ofNat 4160}
-  group64 : {site : GenericRoundSite artifact fork group64Template // site.startPC = UInt256.ofNat 4221}
-  inline64 : {site : GenericRoundSite artifact fork inline64Template // site.startPC = UInt256.ofNat 4228}
-  inline65 : {site : GenericRoundSite artifact fork inline65Template // site.startPC = UInt256.ofNat 4283}
-  inline66 : {site : GenericRoundSite artifact fork inline66Template // site.startPC = UInt256.ofNat 4337}
-  inline67 : {site : GenericRoundSite artifact fork inline67Template // site.startPC = UInt256.ofNat 4392}
-  inline68 : {site : GenericRoundSite artifact fork inline68Template // site.startPC = UInt256.ofNat 4447}
-  inline69 : {site : GenericRoundSite artifact fork inline69Template // site.startPC = UInt256.ofNat 4501}
-  inline70 : {site : GenericRoundSite artifact fork inline70Template // site.startPC = UInt256.ofNat 4556}
-  inline71 : {site : GenericRoundSite artifact fork inline71Template // site.startPC = UInt256.ofNat 4611}
-  inline72 : {site : GenericRoundSite artifact fork inline72Template // site.startPC = UInt256.ofNat 4666}
+  inline55 : {site : GenericRoundSite artifact fork inline55Template // site.startPC = UInt256.ofNat 3685}
+  inline56 : {site : GenericRoundSite artifact fork inline56Template // site.startPC = UInt256.ofNat 3745}
+  inline57 : {site : GenericRoundSite artifact fork inline57Template // site.startPC = UInt256.ofNat 3806}
+  inline58 : {site : GenericRoundSite artifact fork inline58Template // site.startPC = UInt256.ofNat 3867}
+  inline59 : {site : GenericRoundSite artifact fork inline59Template // site.startPC = UInt256.ofNat 3928}
+  inline60 : {site : GenericRoundSite artifact fork inline60Template // site.startPC = UInt256.ofNat 3989}
+  inline61 : {site : GenericRoundSite artifact fork inline61Template // site.startPC = UInt256.ofNat 4050}
+  inline62 : {site : GenericRoundSite artifact fork inline62Template // site.startPC = UInt256.ofNat 4111}
+  inline63 : {site : GenericRoundSite artifact fork inline63Template // site.startPC = UInt256.ofNat 4172}
+  group64 : {site : GenericRoundSite artifact fork group64Template // site.startPC = UInt256.ofNat 4233}
+  inline64 : {site : GenericRoundSite artifact fork inline64Template // site.startPC = UInt256.ofNat 4240}
+  inline65 : {site : GenericRoundSite artifact fork inline65Template // site.startPC = UInt256.ofNat 4295}
+  inline66 : {site : GenericRoundSite artifact fork inline66Template // site.startPC = UInt256.ofNat 4349}
+  inline67 : {site : GenericRoundSite artifact fork inline67Template // site.startPC = UInt256.ofNat 4404}
+  inline68 : {site : GenericRoundSite artifact fork inline68Template // site.startPC = UInt256.ofNat 4459}
+  inline69 : {site : GenericRoundSite artifact fork inline69Template // site.startPC = UInt256.ofNat 4513}
+  inline70 : {site : GenericRoundSite artifact fork inline70Template // site.startPC = UInt256.ofNat 4568}
+  inline71 : {site : GenericRoundSite artifact fork inline71Template // site.startPC = UInt256.ofNat 4623}
+  inline72 : {site : GenericRoundSite artifact fork inline72Template // site.startPC = UInt256.ofNat 4678}
   inline73 : {site : GenericRoundSite artifact fork inline73Template // site.startPC = UInt256.ofNat 4721}
-  inline74 : {site : GenericRoundSite artifact fork inline74Template // site.startPC = UInt256.ofNat 4775}
-  inline75 : {site : GenericRoundSite artifact fork inline75Template // site.startPC = UInt256.ofNat 4830}
-  inline76 : {site : GenericRoundSite artifact fork inline76Template // site.startPC = UInt256.ofNat 4885}
-  inline77 : {site : GenericRoundSite artifact fork inline77Template // site.startPC = UInt256.ofNat 4939}
-  inline78 : {site : GenericRoundSite artifact fork inline78Template // site.startPC = UInt256.ofNat 4994}
-  inline79 : {site : GenericRoundSite artifact fork inline79Template // site.startPC = UInt256.ofNat 5049}
-  coreExit : {site : GenericRoundSite artifact fork coreExitTemplate // site.startPC = UInt256.ofNat 5104}
+  inline74 : {site : GenericRoundSite artifact fork inline74Template // site.startPC = UInt256.ofNat 4787}
+  inline75 : {site : GenericRoundSite artifact fork inline75Template // site.startPC = UInt256.ofNat 4842}
+  inline76 : {site : GenericRoundSite artifact fork inline76Template // site.startPC = UInt256.ofNat 4897}
+  inline77 : {site : GenericRoundSite artifact fork inline77Template // site.startPC = UInt256.ofNat 4951}
+  inline78 : {site : GenericRoundSite artifact fork inline78Template // site.startPC = UInt256.ofNat 5006}
+  inline79 : {site : GenericRoundSite artifact fork inline79Template // site.startPC = UInt256.ofNat 5061}
+  coreExit : {site : GenericRoundSite artifact fork coreExitTemplate // site.startPC = UInt256.ofNat 5116}
   helper : {site : GenericRoundSite artifact fork fullTemplate // site.startPC = UInt256.ofNat 5186}
 
 def wholeCoreGasChain {artifact : ProgramArtifact} {fork : Fork}
@@ -5073,8 +5073,8 @@ def gasSteps_wholeCore {artifact : ProgramArtifact} {fork : Fork}
     (hcode : s.executionEnv.code = artifact.code) (hfork : s.fork = fork)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 998, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] f rho}
-      {s with pc := UInt256.ofNat 5106, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (wholeCoreChain.eval s.memory f) rho} :=
+    GasSteps {s with pc := UInt256.ofNat 1010, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] f rho}
+      {s with pc := UInt256.ofNat 5118, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (wholeCoreChain.eval s.memory f) rho} :=
   (wholeCoreGasChain sites).run s f rho hstack hrun hactive hvalid hcode hfork hnp
 
 def gasSteps_wholeCore_normalized {artifact : ProgramArtifact} {fork : Fork}
@@ -5086,8 +5086,8 @@ def gasSteps_wholeCore_normalized {artifact : ProgramArtifact} {fork : Fork}
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hready : NormalizedScheduleReady s.memory words) :
-    GasSteps {s with pc := UInt256.ofNat 998, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho}
-      {s with pc := UInt256.ofNat 5106, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (coreCryptoResult words left right) rho} := by
+    GasSteps {s with pc := UInt256.ofNat 1010, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho}
+      {s with pc := UInt256.ofNat 5118, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (coreCryptoResult words left right) rho} := by
   let f : CoreFrame := ⟨PairedLaneWordRound.packCrypto left right, 0⟩
   have h0 := wholeCoreChain_eval s.memory f
   have h1 := hoistedAlgorithmFold_crypto s.memory words 80 (by decide) left right
@@ -5095,7 +5095,7 @@ def gasSteps_wholeCore_normalized {artifact : ProgramArtifact} {fork : Fork}
   have he : wholeCoreChain.eval s.memory f = coreCryptoResult words left right :=
     h0.trans (congrArg (fun q => CoreFrame.mk q (algorithmKey 4)) h1)
   exact (gasSteps_wholeCore sites s f rho hstack hrun hactive hvalid hcode hfork hnp).cast rfl
-    (congrArg (fun q => {s with pc := UInt256.ofNat 5106, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] q rho}) he)
+    (congrArg (fun q => {s with pc := UInt256.ofNat 5118, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] q rho}) he)
 
 
 #print axioms call16Template_terminal_advances

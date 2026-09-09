@@ -77,7 +77,7 @@ theorem run_body (s : State) (i : Nat) (hi : i < 16)
     (hrun : s.halt = .Running) :
     run (bodyPath i) (bodyEntry s KnownInputData.targetInput i) =
       some (resultState s KnownInputData.targetInput i) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x436 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x442 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 719 (by rfl)
   interval_cases i <;>
     simp (config := { maxSteps := 1000000 })

@@ -22,7 +22,7 @@ open CompressionRightTrace
 def combinationCleaned (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
   { combination4 s messageOffset returnDest rest with
-      pc := UInt256.ofNat 998, stack := returnDest :: rest }
+      pc := UInt256.ofNat 1010, stack := returnDest :: rest }
 
 def combinationReturned (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
@@ -31,7 +31,7 @@ def combinationReturned (s : State) (messageOffset returnDest : UInt256)
 
 @[simp] theorem combination4_pc (s : State)
     (messageOffset returnDest : UInt256) (rest : List UInt256) :
-    (combination4 s messageOffset returnDest rest).pc = UInt256.ofNat 988 := by
+    (combination4 s messageOffset returnDest rest).pc = UInt256.ofNat 1000 := by
   simp only [combination4]
 
 @[simp] theorem combination4_stack (s : State)

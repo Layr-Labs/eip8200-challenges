@@ -397,7 +397,7 @@ noncomputable def compressionRun (input : ByteArray) (hfit : CalldataFits input)
   states := states input
   initial := by
     let s := PaddingTrace.padReturned input
-    have hpc : s.pc = UInt256.ofNat 0x41f := PaddingTrace.padReturned_pc input
+    have hpc : s.pc = UInt256.ofNat 0x42b := PaddingTrace.padReturned_pc input
     have hstack : s.stack = [Padding.paddedWord input] :=
       PaddingTrace.padReturned_stack input
     change DriverTrace.setupEntry s input = s

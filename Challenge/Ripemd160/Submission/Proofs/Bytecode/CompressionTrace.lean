@@ -154,7 +154,7 @@ def leftRoundSuffixLocated : List Located :=
    ⟨500, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem leftInitPC :
-    Artifact.submissionArtifact.instructionPC 465 = 802 := by rfl
+    Artifact.submissionArtifact.instructionPC 465 = 814 := by rfl
 
 @[simp] private theorem leftRoundSetupPC (j : Nat)
     (hlo : 477 ≤ j) (hhi : j ≤ 504) :
@@ -374,7 +374,7 @@ def leftBodyAt (s : State) (messageOffset returnDest : UInt256)
 index.  The concrete round trace determines `discard`; loop control does not. -/
 def leftRoundReturned (s : State) (messageOffset returnDest discard : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 762
+  { s with pc := UInt256.ofNat 774
            stack := discard :: UInt256.ofNat i :: messageOffset :: returnDest :: rest }
 
 def roundIndex (i : Nat) : Nat := i / 16
@@ -985,27 +985,27 @@ def gasSteps_left80Concrete (s : State) (messageOffset returnDest : UInt256)
 
 def rightLoopAt (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 771
+  { s with pc := UInt256.ofNat 783
            stack := UInt256.ofNat i :: messageOffset :: returnDest :: rest }
 
 def rightBodyAt (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 783
+  { s with pc := UInt256.ofNat 795
            stack := UInt256.ofNat i :: messageOffset :: returnDest :: rest }
 
 def rightRoundReturned (s : State) (messageOffset returnDest discard : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 830
+  { s with pc := UInt256.ofNat 842
            stack := discard :: UInt256.ofNat i :: messageOffset :: returnDest :: rest }
 
 def leftExitCompared (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 772
+  { s with pc := UInt256.ofNat 784
            stack := UInt256.ofNat 80 :: messageOffset :: returnDest :: rest }
 
 def leftExited (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 774
+  { s with pc := UInt256.ofNat 786
            stack := messageOffset :: returnDest :: rest }
 
 set_option linter.unusedSimpArgs false in

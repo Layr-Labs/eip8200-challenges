@@ -388,7 +388,7 @@ def setCallState (s : State) (base : UInt256) (j : Nat)
   exact Artifact.submissionArtifact.isValidJumpDest_index 57 (by rfl)
 
 @[simp] private theorem valid687 :
-    Decode.isValidJumpDest submissionBytecode 0x47a = true := by
+    Decode.isValidJumpDest submissionBytecode 0x486 = true := by
   exact Artifact.submissionArtifact.isValidJumpDest_index 767 (by rfl)
 
 @[simp] private theorem valid13A :
