@@ -130,14 +130,14 @@ theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
 /-- Subroutine entry (pc 2224) with stack `[pa, pb, pd, ret]`. -/
 def amEntryState (s : State) (memory : ByteArray) (pa pb : Nat)
     (pd ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2219
+  { s with pc := UInt256.ofNat 2203
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pd, ret] ++ rest
            memory := memory }
 
 /-- The `ADDMOD` loop head (pc 2257) after `j` limb steps. -/
 def amLoopState (s : State) (memory : ByteArray) (pa pb n j : Nat)
     (pd ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2252
+  { s with pc := UInt256.ofNat 2236
            stack := [UInt256.ofNat (ptrAt (8224 + 32 * n) j),
                      UInt256.ofNat (ptrAt (pa + 32 * n - 32) j),
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) j),
@@ -227,11 +227,11 @@ theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
-  have h2500 : (2252 : UInt256).toNat = 2252 := by decide
-  have h2500' : (2252 : UInt256) = UInt256.ofNat 2252 := by decide
+  have h2500 : (2236 : UInt256).toNat = 2236 := by decide
+  have h2500' : (2236 : UInt256) = UInt256.ofNat 2236 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (2252 : UInt256).toNat = true := by
-    rw [h2500]; exact jumpDest2500
+      (2236 : UInt256).toNat = true := by
+    rw [h2500]; exact jumpDest2481
   have hta : ptrAt (pa + 32 * n - 32) j %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       pa + 32 * (n - 1 - j) := by
@@ -264,7 +264,7 @@ theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       amLoopState, amStep, fastPC16, fastPC17,
-      hc6, hc7, hc8, hc9, hrun, hcode, hK, h8224, h2500, h2500', hjump, jumpDest2500,
+      hc6, hc7, hc8, hc9, hrun, hcode, hK, h8224, h2500, h2500', hjump, jumpDest2481,
       hta, htb, htt, hnext, hgt, hactA, hactB, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
@@ -278,7 +278,7 @@ theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
 pointers plus the carry are still on the stack. -/
 def amTailState (s : State) (memory : ByteArray) (pa pb n j : Nat)
     (pd ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2297
+  { s with pc := UInt256.ofNat 2281
            stack := [UInt256.ofNat (ptrAt (8224 + 32 * n) j),
                      UInt256.ofNat (ptrAt (pa + 32 * n - 32) j),
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) j),
@@ -288,7 +288,7 @@ def amTailState (s : State) (memory : ByteArray) (pa pb n j : Nat)
 /-- Entry of `CSUB` (pc 2309) with stack `[pd, ret]`. -/
 def csEntryState (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2304
+  { s with pc := UInt256.ofNat 2288
            stack := [pdst, ret] ++ rest
            memory := memory }
 
@@ -408,7 +408,7 @@ def csStep (memory : ByteArray) (n : Nat) : Nat → LimbState
 /-- The `CSUB` loop head (pc 2333) after `j` limb steps. -/
 def csLoopState (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2328
+  { s with pc := UInt256.ofNat 2312
            stack := [UInt256.ofNat (ptrAt (8224 + 32 * n) j),
                      UInt256.ofNat (ptrAt (32 * n - 32) j),
                      UInt256.ofNat (ptrAt (7136 + 32 * n) j),
@@ -418,7 +418,7 @@ def csLoopState (s : State) (memory : ByteArray) (n j : Nat)
 /-- The `CSUB` loop exit (pc 2807). -/
 def csTailState (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2469
+  { s with pc := UInt256.ofNat 2450
            stack := [UInt256.ofNat (ptrAt (8224 + 32 * n) j),
                      UInt256.ofNat (ptrAt (32 * n - 32) j),
                      UInt256.ofNat (ptrAt (7136 + 32 * n) j),
@@ -493,11 +493,11 @@ theorem run_csLoopBody (s : State) (memory : ByteArray) (n j : Nat)
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
-  have h2666 : (2328 : UInt256).toNat = 2328 := by decide
-  have h2666' : (2328 : UInt256) = UInt256.ofNat 2328 := by decide
+  have h2666 : (2312 : UInt256).toNat = 2312 := by decide
+  have h2666' : (2312 : UInt256) = UInt256.ofNat 2312 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (2328 : UInt256).toNat = true := by
-    rw [h2666]; exact jumpDest2666
+      (2312 : UInt256).toNat = true := by
+    rw [h2666]; exact jumpDest2646
   have ht : ptrAt (8224 + 32 * n) j %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       8256 + 32 * (n - 1 - j) := by
@@ -531,7 +531,7 @@ theorem run_csLoopBody (s : State) (memory : ByteArray) (n j : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       csLoopState, csStep, fastPC17, fastPC18,
       hc6, hc7, hc8, hc9, hc10, hrun, hcode, hK, h8224, h2666, h2666', hjump,
-      jumpDest2666, ht, hm, hd, hnext, hgt, hactT, hactM, hactD, ptrAt_succ,
+      jumpDest2646, ht, hm, hd, hnext, hgt, hactT, hactM, hactD, ptrAt_succ,
       UInt256.gt, UInt256.lt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,

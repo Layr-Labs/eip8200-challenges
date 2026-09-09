@@ -18,8 +18,8 @@ theorem run_storeWords (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (carry bi pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions CiosStackCachePrograms.midStore
-      (framed s (UInt256.ofNat 4894) ([carry, bi] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed { s with memory := midMem s.memory carry } (UInt256.ofNat 4910)
+      (framed s (UInt256.ofNat 4890) ([carry, bi] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed { s with memory := midMem s.memory carry } (UInt256.ofNat 4906)
       ([bi] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) := by
   have h18 : rest.length+18 < 1024 := by omega
   have h19 : rest.length+19 < 1024 := by omega
@@ -45,9 +45,9 @@ theorem run_store (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (carry bi pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions CiosStackCachePrograms.midStore
-      (framed { s with memory := c.memory } (UInt256.ofNat 4894)
+      (framed { s with memory := c.memory } (UInt256.ofNat 4890)
         ([carry, bi] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed { s with memory := (cacheMid c carry).memory } (UInt256.ofNat 4910)
+    some (framed { s with memory := (cacheMid c carry).memory } (UInt256.ofNat 4906)
       ([bi] ++ rowFrame (cacheMid c carry) r pbi paEnd pbEnd flag dst ret rest)) := by
   simpa only [cacheMid_eq, rowFrame, cacheTail] using
     run_storeWords { s with memory := c.memory } c r carry bi pbi paEnd pbEnd flag dst ret rest hcap hact

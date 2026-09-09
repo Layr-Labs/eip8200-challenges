@@ -41,7 +41,7 @@ def newProgram : List Instr :=
 
 def initial (s : State) (mm lo mu bi pbi paEnd pbEnd flag k dst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4692
+  { s with pc := UInt256.ofNat 4657
            stack := [mm, lo, mu, bi, pbi, paEnd, pbEnd, flag, k,
                      UInt256.lnot (UInt256.ofNat 0), dst, ret] ++ rest }
 

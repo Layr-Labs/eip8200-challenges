@@ -108,15 +108,15 @@ theorem run_l1Last (s : State) (c : CachedMemory) (r : ReadOnlyCache) (bi : UInt
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hn : n ≤ 32) (hpos : 0 < n) (hpa : 32 ≤ pa) (hfit : pa+32*n ≤ 8192) :
-    runInstructions l1Last (l1At 4862 s c r bi pa pb n i (n-1) dst ret rest) =
+    runInstructions l1Last (l1At 4858 s c r bi pa pb n i (n-1) dst ret rest) =
     some (midAt s (cacheL1 c bi pa n n).cache r (cacheL1 c bi pa n n).carry bi
       pa pb n i dst ret rest) := by
   have hn0 : n-1-(n-1) = 0 := by omega
   have hn1 : n-1+1 = n := by omega
-  have hb := run_l1Body 4862 s c r bi pa pb n i (n-1) dst ret rest hcap hact hn (by omega) hpa hfit
+  have hb := run_l1Body 4858 s c r bi pa pb n i (n-1) dst ret rest hcap hact hn (by omega) hpa hfit
   rw [hn0] at hb
   let p := cacheL1 c bi pa n n
-  have hd := run_drop { s with memory := p.cache.memory } (UInt256.ofNat 4893) p.cache r
+  have hd := run_drop { s with memory := p.cache.memory } (UInt256.ofNat 4889) p.cache r
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa+32*n-32))
     (UInt256.ofNat (pb-32)) (CiosCached.isFour n) dst ret
     (UInt256.ofNat (ptrAt (pa+32*n-32) (n-1))) p.carry bi rest hcap

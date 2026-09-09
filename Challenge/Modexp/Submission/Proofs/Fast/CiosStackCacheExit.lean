@@ -27,8 +27,8 @@ theorem run_dropFrame (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) :
     runInstructions dropFrame
-      (framed s (UInt256.ofNat 5212) (rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 5218) (cacheTail c r dst ret rest)) := by
+      (framed s (UInt256.ofNat 5208) (rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 5214) (cacheTail c r dst ret rest)) := by
   have h10 : rest.length+10 < 1024 := by omega
   have h11 : rest.length+11 < 1024 := by omega
   have h12 : rest.length+12 < 1024 := by omega
@@ -45,8 +45,8 @@ theorem run_flush (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 998)
     (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions flush
-      (framed { s with memory := c.memory } (UInt256.ofNat 5218) (cacheTail c r dst ret rest)) =
-    some (framed { s with memory := c.virtual } (UInt256.ofNat 5230) (suffix r dst ret rest)) := by
+      (framed { s with memory := c.memory } (UInt256.ofNat 5214) (cacheTail c r dst ret rest)) =
+    some (framed { s with memory := c.virtual } (UInt256.ofNat 5226) (suffix r dst ret rest)) := by
   have h8 : rest.length+8 < 1024 := by omega
   have h9 : rest.length+9 < 1024 := by omega
   have h10 : rest.length+10 < 1024 := by omega
@@ -66,10 +66,10 @@ theorem run_flush (s : State) (c : CachedMemory) (r : ReadOnlyCache)
 set_option linter.unusedSimpArgs false in
 theorem run_returnBlock (s : State) (r : ReadOnlyCache) (dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 2304 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 2288 = true) :
     runInstructions returnBlock
-      (framed s (UInt256.ofNat 5230) (suffix r dst ret rest)) =
-    some (framed s (UInt256.ofNat 2304) ([dst, ret] ++ rest)) := by
+      (framed s (UInt256.ofNat 5226) (suffix r dst ret rest)) =
+    some (framed s (UInt256.ofNat 2288) ([dst, ret] ++ rest)) := by
   have h2 : rest.length+2 < 1024 := by omega
   have h3 : rest.length+3 < 1024 := by omega
   have h4 : rest.length+4 < 1024 := by omega
@@ -85,11 +85,11 @@ theorem run_returnBlock (s : State) (r : ReadOnlyCache) (dst ret : UInt256)
 theorem run_exit (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 2304 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 2288 = true) :
     runInstructions CiosStackCachePrograms.exit
-      (framed { s with memory := c.memory } (UInt256.ofNat 5212)
+      (framed { s with memory := c.memory } (UInt256.ofNat 5208)
         (rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed { s with memory := c.virtual } (UInt256.ofNat 2304) ([dst, ret] ++ rest)) := by
+    some (framed { s with memory := c.virtual } (UInt256.ofNat 2288) ([dst, ret] ++ rest)) := by
   rw [split_program]
   exact runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _
