@@ -32,7 +32,7 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hnd : PrefixStateModel.double input = true → 2 ≤ i) :
+    (hnd : PrefixStateModel.double input = true → 4 ≤ i) :
     GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i) := by
   by_cases hempty : input.size = 0
@@ -88,7 +88,7 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
         simp [nextState, PrefixStateKernel.nextState, hempty, hhit,
           DriverTrace.compressReturned])
 
-/-- The depth-2 ladder rung: one dispatcher execution consumes blocks 0 and 1. -/
+/-- The depth-4 ladder rung: one dispatcher execution consumes blocks 0 through 3. -/
 noncomputable def gasSteps_block2 (s : State) (input : ByteArray)
     (h : Compression.HashState) (hfit : CalldataFits input)
     (hd : PrefixStateModel.double input = true)
@@ -98,7 +98,7 @@ noncomputable def gasSteps_block2 (s : State) (input : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (DriverTrace.dispatchEntry s input 0)
-      (DriverTrace.compressReturned (PrefixStateKernel.nextState2 s input) input 1) := by
+      (DriverTrace.compressReturned (PrefixStateKernel.nextState2 s input) input 3) := by
   obtain ⟨hmatch, hmatch2⟩ := (PrefixStateModel.double_iff input).1 hd
   have hsize := PrefixStateData.size_ge_64_of_words input hmatch.2
   have hpos : 0 < input.size := by omega

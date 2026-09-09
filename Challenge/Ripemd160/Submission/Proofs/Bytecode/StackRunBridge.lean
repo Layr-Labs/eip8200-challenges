@@ -52,7 +52,7 @@ structure BlockContext (s : State) (input : ByteArray) (i : Nat)
 
 /-- A genuine compression endpoint and its exact one-block certificate.  The
 `double` path additionally certifies one dispatcher execution consuming
-blocks 0 and 1 together (the depth-2 prefix ladder). -/
+blocks 0 through 3 together (the depth-4 prefix ladder). -/
 structure BlockKernel where
   nextState : State → ByteArray → Nat → State
   executionEnv : ∀ s input i, (nextState s input i).executionEnv = s.executionEnv
@@ -69,7 +69,7 @@ structure BlockKernel where
       embedHashArray
         (Crypto.Ripemd160.compressBlock (CompressionCorrect.hashArray h)
           (Padding.paddedMessage input) (DriverTrace.blockOffset i))
-  /-- Whether the first dispatcher execution consumes two blocks. -/
+  /-- Whether the first dispatcher execution consumes four blocks. -/
   double : ByteArray → Bool
   gasSteps : ∀ (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (_hfit : CalldataFits input)
@@ -78,7 +78,7 @@ structure BlockKernel where
     (_hfork : s.fork = .Osaka) (_hrun : s.halt = .Running)
     (_hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (_hnd : double input = true → 2 ≤ i),
+    (_hnd : double input = true → 4 ≤ i),
     GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i)
   nextState2 : State → ByteArray → State
@@ -87,10 +87,10 @@ structure BlockKernel where
   callStack2 : ∀ s input, (nextState2 s input).callStack = s.callStack
   wordAbove2 : ∀ s input address, 0x2e0 ≤ address →
     wordAt (nextState2 s input) address = wordAt s address
-  doubleBlocks : ∀ input, double input = true → 2 ≤ DriverTrace.blockCount input
+  doubleBlocks : ∀ input, double input = true → 4 ≤ DriverTrace.blockCount input
   hashResult2 : ∀ (s : State) (input : ByteArray), double input = true →
     hashAt32 (nextState2 s input) =
-      embedHashArray (CompressionSeamBridge.hashAfter input 2)
+      embedHashArray (CompressionSeamBridge.hashAfter input 4)
   gasSteps2 : ∀ (s : State) (input : ByteArray)
     (h : Compression.HashState) (_hfit : CalldataFits input)
     (_hd : double input = true) (_ctx : BlockContext s input 0 h)
@@ -99,13 +99,13 @@ structure BlockKernel where
     (_hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false),
     GasSteps (DriverTrace.dispatchEntry s input 0)
-      (DriverTrace.compressReturned (nextState2 s input) input 1)
+      (DriverTrace.compressReturned (nextState2 s input) input 3)
 
 def states (kernel : BlockKernel) (input : ByteArray) : Nat → State
   | 0 => PaddingTrace.padReturned input
   | 1 => kernel.nextState (PaddingTrace.padReturned input) input 0
   | n + 2 =>
-    if n = 0 ∧ kernel.double input = true then
+    if n = 2 ∧ kernel.double input = true then
       kernel.nextState2 (PaddingTrace.padReturned input) input
     else kernel.nextState (states kernel input (n + 1)) input (n + 1)
 
@@ -119,30 +119,30 @@ theorem states_one (kernel : BlockKernel) (input : ByteArray) :
 
 theorem states_add_two (kernel : BlockKernel) (input : ByteArray) (n : Nat) :
     states kernel input (n + 2) =
-      if n = 0 ∧ kernel.double input = true then
+      if n = 2 ∧ kernel.double input = true then
         kernel.nextState2 (PaddingTrace.padReturned input) input
       else kernel.nextState (states kernel input (n + 1)) input (n + 1) := rfl
 
 theorem states_two_double (kernel : BlockKernel) (input : ByteArray)
     (hd : kernel.double input = true) :
-    states kernel input 2 = kernel.nextState2 (PaddingTrace.padReturned input) input := by
-  show (if 0 = 0 ∧ kernel.double input = true then _ else _) = _
+    states kernel input 4 = kernel.nextState2 (PaddingTrace.padReturned input) input := by
+  show (if 2 = 2 ∧ kernel.double input = true then _ else _) = _
   rw [if_pos ⟨rfl, hd⟩]
 
 theorem states_succ2 (kernel : BlockKernel) (input : ByteArray) (n : Nat)
-    (hn : ¬ (n = 0 ∧ kernel.double input = true)) :
+    (hn : ¬ (n = 2 ∧ kernel.double input = true)) :
     states kernel input (n + 2) = kernel.nextState (states kernel input (n + 1)) input (n + 1) := by
-  show (if n = 0 ∧ kernel.double input = true then _ else _) = _
+  show (if n = 2 ∧ kernel.double input = true then _ else _) = _
   rw [if_neg hn]
 
 /-- Every step other than the doubled one is a one-block kernel step. -/
 theorem states_succ_single (kernel : BlockKernel) (input : ByteArray) (n : Nat)
-    (hn : ¬ (n = 1 ∧ kernel.double input = true)) :
+    (hn : ¬ (n = 3 ∧ kernel.double input = true)) :
     states kernel input (n + 1) = kernel.nextState (states kernel input n) input n := by
   cases n with
   | zero => rfl
   | succ m =>
-    show (if m = 0 ∧ kernel.double input = true then _ else _) = _
+    show (if m = 2 ∧ kernel.double input = true then _ else _) = _
     rw [if_neg (fun h => hn ⟨by omega, h.2⟩)]
 
 theorem states_executionEnv (kernel : BlockKernel) (input : ByteArray) :
@@ -372,7 +372,7 @@ private theorem hashWords_next (kernel : BlockKernel) (input : ByteArray)
 
 private theorem hashWords_two_double (kernel : BlockKernel) (input : ByteArray)
     (hd : kernel.double input = true) :
-    CompressionSeamBridge.HashWordsAt input 2 (states kernel input 2) := by
+    CompressionSeamBridge.HashWordsAt input 4 (states kernel input 4) := by
   rw [states_two_double kernel input hd]
   have hout := BlockKernel.hashResult2 kernel (PaddingTrace.padReturned input) input hd
   intro i
@@ -392,7 +392,7 @@ theorem hashWords (kernel : BlockKernel) (input : ByteArray)
     rw [states_one]
     exact hashWords_next kernel input hfit 0 (by omega) (initialHashWords kernel input hfit)
   | n + 2, hn => by
-    by_cases hd : n = 0 ∧ kernel.double input = true
+    by_cases hd : n = 2 ∧ kernel.double input = true
     · obtain ⟨rfl, hd⟩ := hd
       exact hashWords_two_double kernel input hd
     · rw [states_succ2 kernel input n hd]

@@ -10,13 +10,18 @@ def Matched (input : ByteArray) : Prop :=
 instance (input : ByteArray) : Decidable (Matched input) := inferInstanceAs (Decidable (_ ∧ _))
 
 
-/-- The depth-2 rung additionally pins calldata words 2 and 3. -/
+/-- The depth-4 rung additionally pins calldata words 2 through 7. -/
 def Matched2 (input : ByteArray) : Prop :=
   MachineState.readWord input 64 = PatternedWordData.expectedWordAt 2 ∧
-  MachineState.readWord input 96 = PatternedWordData.expectedWordAt 3
+  MachineState.readWord input 96 = PatternedWordData.expectedWordAt 3 ∧
+  MachineState.readWord input 128 = PatternedWordData.expectedWordAt 4 ∧
+  MachineState.readWord input 160 = PatternedWordData.expectedWordAt 5 ∧
+  MachineState.readWord input 192 = PatternedWordData.expectedWordAt 6 ∧
+  MachineState.readWord input 224 = PatternedWordData.expectedWordAt 7
 instance (input : ByteArray) : Decidable (Matched2 input) := inferInstanceAs (Decidable (_ ∧ _))
 
-/-- The dispatcher consumes two blocks at once exactly when all four words match. -/
+/-- The dispatcher consumes four blocks at once exactly when all eight words match. -/
+/-- Legacy interface name: a true flag now denotes four consumed blocks. -/
 def double (input : ByteArray) : Bool := decide (Matched input ∧ Matched2 input)
 
 theorem double_iff (input : ByteArray) : double input = true ↔ Matched input ∧ Matched2 input := by

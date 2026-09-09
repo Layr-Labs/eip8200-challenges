@@ -120,14 +120,14 @@ theorem resultState_word_above (s : State) (input : ByteArray) (i address : Nat)
     (resultState s input i).callStack = s.callStack := rfl
 
 
-/-! ## Depth-2 ladder rung: `H2` install with block 1 consumed -/
+/-! ## Depth-4 ladder rung: `H4` install with block 3 consumed -/
 
 def hash2 : Compression.EvmHashState :=
-  { h0 := UInt256.ofNat 0xa7557f9b
-    h1 := UInt256.ofNat 0x1ea410e0
-    h2 := UInt256.ofNat 0xdb680f80
-    h3 := UInt256.ofNat 0xc7f1f365
-    h4 := UInt256.ofNat 0x97936109 }
+  { h0 := UInt256.ofNat 0xf2b65335
+    h1 := UInt256.ofNat 0x632596df
+    h2 := UInt256.ofNat 0xb57a0387
+    h3 := UInt256.ofNat 0xfe2f65dc
+    h4 := UInt256.ofNat 0x2bf007d7 }
 
 def hashMemory2 (memory : ByteArray) : ByteArray :=
   let m0 := writeWord memory 32 hash2.h0
@@ -136,14 +136,14 @@ def hashMemory2 (memory : ByteArray) : ByteArray :=
   let m3 := writeWord m2 128 hash2.h3
   writeWord m3 160 hash2.h4
 
-/-- After the two extra word checks the rung installs `H2` and returns to the
-driver's `102` continuation with the block-1 offset (`0x40`) on the stack. -/
+/-- After the two extra word checks the rung installs `H4` and returns to the
+driver's `102` continuation with the block-3 offset (`0xc0`) on the stack. -/
 def resultState2 (s : State) (input : ByteArray) : State :=
   { s with
     memory := hashMemory2 s.memory
     activeWords := FastEmptyBlock.emptyActiveWords s
     pc := UInt256.ofNat 102
-    stack := [DriverTrace.blockOffsetWord 1, Padding.paddedWord input] }
+    stack := [DriverTrace.blockOffsetWord 3, Padding.paddedWord input] }
 
 theorem resultState2_hash (s : State) (input : ByteArray) :
     StackMemory.hashAt (resultState2 s input).memory = hash2 := by
