@@ -1,5 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectDispatchTrace
-import Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRouteLogic
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -52,8 +52,8 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
       (MachineState.readWord input (96 + bsize)) = UInt256.ofNat 3 := by
     rw [Challenge.EvmProof.Bytes.byteAt_zero_readWord]
     rw [← exponentValue_one, hvalue]
-  have heq : UInt256.eq (UInt256.ofNat 3) (UInt256.ofNat 3) =
-      UInt256.ofNat 1 := by decide
+  have hxor : UInt256.xor (UInt256.ofNat 3) (UInt256.ofNat 3) =
+      UInt256.ofNat 0 := by decide
   simp (config := { maxSteps := 700000 })
     [FixedDirectPaths.checkThree, FixedDirectPaths.threeHit,
       opAt, pushAt, wfOp,
@@ -61,7 +61,7 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       FixedDirectStates.checkThree, FixedDirectStates.special, Exp.outer,
-      hdata, hcode, hrun, heoff, hfix, haddr, hread, heq,
+      hdata, hcode, hrun, heoff, hfix, haddr, hread, hxor,
       Exp.isZero_ofNat_one, Exp.not_isTrue_zero, jumpDest3952,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
@@ -96,17 +96,27 @@ theorem run_checkThree_miss (s : State) (memory input : ByteArray)
   have hvlt : exponentValue input bsize 1 < 2 ^ 256 :=
     (Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow
       input (96 + bsize) 1).trans_le (by norm_num)
-  have heq : UInt256.eq (UInt256.ofNat 3)
-      (UInt256.ofNat (exponentValue input bsize 1)) = UInt256.ofNat 0 := by
-    rw [UInt256.eq, Exp.toNat_ofNat_self (by norm_num),
-      Exp.toNat_ofNat_self hvlt, if_neg hvalue.symm]
+  have hxor : UInt256.xor (UInt256.ofNat 3)
+      (UInt256.ofNat (exponentValue input bsize 1)) ≠ UInt256.ofNat 0 := by
+    intro hz
+    have heq : UInt256.ofNat 3 =
+        UInt256.ofNat (exponentValue input bsize 1) := by
+      apply (Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic.wordXor_eq_zero_iff
+        (UInt256.ofNat 3)
+          (UInt256.ofNat (exponentValue input bsize 1))).mp
+      simpa using hz
+    have hnat := congrArg UInt256.toNat heq
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hvlt, Nat.mod_eq_of_lt (by norm_num)] at hnat
+    exact hvalue hnat.symm
   simp (config := { maxSteps := 700000 })
     [FixedDirectPaths.checkThree, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       FixedDirectStates.checkThree, FixedDirectStates.fallback, Exp.outer,
-      hdata, hcode, hrun, heoff, hfix, haddr, hread, heq,
+      hdata, hcode, hrun, heoff, hfix, haddr, hread, hxor,
       Exp.isZero_ofNat_zero, Exp.isTrue_one, jumpDest3959,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,

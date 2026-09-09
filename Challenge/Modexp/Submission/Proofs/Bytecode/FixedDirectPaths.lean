@@ -51,7 +51,7 @@ def oneWidth : List Located :=
 def checkThree : List Located :=
   [pushAt 2681 2 9472, opAt 2682 .MLOAD, opAt 2683 .CALLDATALOAD,
    pushAt 2684 0 0, opAt 2685 .BYTE, pushAt 2686 1 3,
-   opAt 2687 .EQ, opAt 2688 .ISZERO, pushAt 2689 2 3725,
+   opAt 2687 .XOR, opAt 2688 .JUMPDEST, pushAt 2689 2 3725,
    opAt 2690 .JUMPI]
 
 def threeHit : List Located :=
