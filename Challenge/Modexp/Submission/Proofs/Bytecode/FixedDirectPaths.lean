@@ -55,7 +55,7 @@ def threeHit : List Located :=
 def check65537 : List Located :=
   [opAt 2703 .JUMPDEST, pushAt 2704 2 9472, opAt 2705 .MLOAD,
    opAt 2706 .CALLDATALOAD, pushAt 2707 1 232, opAt 2708 .SHR,
-   pushAt 2709 3 65537, opAt 2710 .EQ, opAt 2711 .ISZERO,
+   pushAt 2709 3 65537, opAt 2710 .XOR, opAt 2711 .JUMPDEST,
    pushAt 2712 2 3761, opAt 2713 .JUMPI]
 
 def fermatHit : List Located :=
