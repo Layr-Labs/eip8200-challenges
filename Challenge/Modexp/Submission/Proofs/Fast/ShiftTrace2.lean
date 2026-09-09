@@ -124,6 +124,7 @@ private theorem addMod_comm (a b m : UInt256) :
     UInt256.addMod a b m = UInt256.addMod b a m := by
   simp only [UInt256.addMod, Nat.add_comm]
 
+
 @[simp] private theorem newEstimatePC2960 : Artifact.submissionArtifact.instructionPC 2960 = 4045 := by rfl
 @[simp] private theorem newEstimatePC2961 : Artifact.submissionArtifact.instructionPC 2961 = 4046 := by rfl
 @[simp] private theorem newEstimatePC2962 : Artifact.submissionArtifact.instructionPC 2962 = 4047 := by rfl
@@ -133,12 +134,15 @@ private theorem addMod_comm (a b m : UInt256) :
 @[simp] private theorem newEstimatePC2966 : Artifact.submissionArtifact.instructionPC 2966 = 4053 := by rfl
 @[simp] private theorem newEstimatePC2967 : Artifact.submissionArtifact.instructionPC 2967 = 4055 := by rfl
 @[simp] private theorem newEstimatePC2968 : Artifact.submissionArtifact.instructionPC 2968 = 4056 := by rfl
-@[simp] private theorem newEstimatePC2969 : Artifact.submissionArtifact.instructionPC 2969 = 4057 := by rfl
-@[simp] private theorem newEstimatePC2970 : Artifact.submissionArtifact.instructionPC 2970 = 4058 := by rfl
-@[simp] private theorem newEstimatePC2971 : Artifact.submissionArtifact.instructionPC 2971 = 4059 := by rfl
-@[simp] private theorem newEstimatePC2972 : Artifact.submissionArtifact.instructionPC 2972 = 4060 := by rfl
-@[simp] private theorem newEstimatePC2973 : Artifact.submissionArtifact.instructionPC 2973 = 4061 := by rfl
-@[simp] private theorem newEstimatePC2974 : Artifact.submissionArtifact.instructionPC 2974 = 4062 := by rfl
+@[simp] private theorem newEstimatePC2969 : Artifact.submissionArtifact.instructionPC 2969 = 4058 := by rfl
+@[simp] private theorem newEstimatePC2970 : Artifact.submissionArtifact.instructionPC 2970 = 4059 := by rfl
+@[simp] private theorem newEstimatePC2971 : Artifact.submissionArtifact.instructionPC 2971 = 4060 := by rfl
+@[simp] private theorem newEstimatePC2972 : Artifact.submissionArtifact.instructionPC 2972 = 4062 := by rfl
+@[simp] private theorem newEstimatePC2973 : Artifact.submissionArtifact.instructionPC 2973 = 4063 := by rfl
+@[simp] private theorem newEstimatePC2974 : Artifact.submissionArtifact.instructionPC 2974 = 4064 := by rfl
+@[simp] private theorem newEstimatePC2975 : Artifact.submissionArtifact.instructionPC 2975 = 4065 := by rfl
+@[simp] private theorem newEstimatePC2976 : Artifact.submissionArtifact.instructionPC 2976 = 4066 := by rfl
+@[simp] private theorem newEstimatePC2977 : Artifact.submissionArtifact.instructionPC 2977 = 4067 := by rfl
 
 /-- `blk3026`: quotient estimate with a branchless saturation mask. -/
 theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
@@ -270,7 +274,7 @@ theorem run_macTail_go (s : State) (mm : ByteArray) (pa pt c q : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcMacTail, pcMacLoop, outer, Exp.outer, hcode, hrun, hgt, jumpDest4933,
+      pcMacTail, pcMacLoop, outer, Exp.outer, hcode, hrun, hgt, jumpDest4937,
       UInt256.gt, UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -294,7 +298,7 @@ theorem run_macTail_exit (s : State) (mm : ByteArray) (pa pt c q : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcMacTail, pcMid, outer, Exp.outer, hcode, hrun, hpt, jumpDest4933,
+      pcMacTail, pcMid, outer, Exp.outer, hcode, hrun, hpt, jumpDest4937,
       UInt256.gt, UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

@@ -92,14 +92,14 @@ def decode : List Located :=
    opAt 2470 (.Dup ⟨1, by decide⟩), pushAt 2471 1 96,
    opAt 2472 .ADD, opAt 2473 .MSTORE, pushAt 2474 2 1746,
    pushAt 2475 2 2048, pushAt 2476 2 1024, pushAt 2477 2 6144,
-   pushAt 2478 2 4424, opAt 2479 .JUMP]
+   pushAt 2478 2 4428, opAt 2479 .JUMP]
 
 def finish : List Located :=
   [opAt 2480 .JUMPDEST, pushAt 2481 2 1746, opAt 2482 .JUMP]
 
 def fallback : List Located :=
   [opAt 2483 .JUMPDEST, opAt 2484 (.Dup ⟨0, by decide⟩),
-   pushAt 2485 2 4424, pushAt 2486 2 1024, opAt 2487 .MCOPY,
+   pushAt 2485 2 4428, pushAt 2486 2 1024, opAt 2487 .MCOPY,
    pushAt 2488 0 0, pushAt 2489 1 31, opAt 2490 .JUMP]
 
 theorem jumpDest3659 :

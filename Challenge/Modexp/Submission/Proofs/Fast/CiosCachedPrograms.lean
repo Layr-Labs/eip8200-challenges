@@ -215,7 +215,7 @@ def tailProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4560,
+   .push 2 4564,
    .op .JUMPI,
    .op .POP,
    .op .POP,
@@ -228,12 +228,12 @@ def tailProgram : List Instr :=
 
 def l1DispatchProgram : List Instr :=
   [.op (.Dup ⟨6, by decide⟩),
-   .push 2 4722,
+   .push 2 4726,
    .op .JUMPI]
 
 def l2DispatchProgram : List Instr :=
   [.op (.Dup ⟨6, by decide⟩),
-   .push 2 5077,
+   .push 2 5081,
    .op .JUMPI]
 
 def joinProgram : List Instr :=

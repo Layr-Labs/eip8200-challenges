@@ -31,14 +31,14 @@ opaque gasSteps_l1Four (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4565 s mem bi pa pb 4 i 0 pdst ret rest)
+      (l1At 4569 s mem bi pa pb 4 i 0 pdst ret rest)
       (midState s (l1Step mem bi pa 4 4).memory (l1Step mem bi pa 4 4).carry bi
         pa pb 4 i pdst ret rest) :=
   (gasSteps_l1Dispatch4 s mem bi pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
   (gasSteps_l1Join s mem bi pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4723 8352 l1Mac4 s mem bi pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4761 8320 l1Mac5 s mem bi pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4799 8288 l1Mac6 s mem bi pa pb 4 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4727 8352 l1Mac4 s mem bi pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4765 8320 l1Mac5 s mem bi pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4803 8288 l1Mac6 s mem bi pa pb 4 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
   gasSteps_l1Last s mem bi pa pb 4 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit
 
 opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
@@ -51,18 +51,18 @@ opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4565 s mem bi pa pb 8 i 0 pdst ret rest)
+      (l1At 4569 s mem bi pa pb 8 i 0 pdst ret rest)
       (midState s (l1Step mem bi pa 8 8).memory (l1Step mem bi pa 8 8).carry bi
         pa pb 8 i pdst ret rest) :=
   (gasSteps_l1Dispatch8 s mem bi pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4570 8480 l1Mac0 s mem bi pa pb 8 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4608 8448 l1Mac1 s mem bi pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4646 8416 l1Mac2 s mem bi pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4684 8384 l1Mac3 s mem bi pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4574 8480 l1Mac0 s mem bi pa pb 8 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4612 8448 l1Mac1 s mem bi pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4650 8416 l1Mac2 s mem bi pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4688 8384 l1Mac3 s mem bi pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
   (gasSteps_l1Join s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4723 8352 l1Mac4 s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4761 8320 l1Mac5 s mem bi pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4799 8288 l1Mac6 s mem bi pa pb 8 i 6 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4727 8352 l1Mac4 s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4765 8320 l1Mac5 s mem bi pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4803 8288 l1Mac6 s mem bi pa pb 8 i 6 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) hpa hpaFit).trans <|
   gasSteps_l1Last s mem bi pa pb 8 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit
 
 opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -74,13 +74,13 @@ opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (l2At 4920 s mid bi mu c0 pa pb 4 i 0 pdst ret rest)
+      (l2At 4924 s mid bi mu c0 pa pb 4 i 0 pdst ret rest)
       (tailState s (l2Step mid mu c0 4 3).memory
         (l2Step mid mu c0 4 3).carry mu bi pa pb 4 i pdst ret rest) :=
   (gasSteps_l2Dispatch4 s mid bi mu c0 pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
   (gasSteps_l2Join s mid bi mu c0 pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l2Mac 5078 64 8320 8352 l2Mac4 s mid bi mu c0 pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 5116 32 8288 8320 l2Mac5 s mid bi mu c0 pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 5082 64 8320 8352 l2Mac4 s mid bi mu c0 pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 5120 32 8288 8320 l2Mac5 s mid bi mu c0 pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
   gasSteps_l2Final s mid bi mu c0 pa pb 4 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide)
 
 opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -92,17 +92,17 @@ opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (l2At 4920 s mid bi mu c0 pa pb 8 i 0 pdst ret rest)
+      (l2At 4924 s mid bi mu c0 pa pb 8 i 0 pdst ret rest)
       (tailState s (l2Step mid mu c0 8 7).memory
         (l2Step mid mu c0 8 7).carry mu bi pa pb 8 i pdst ret rest) :=
   (gasSteps_l2Dispatch8 s mid bi mu c0 pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l2Mac 4925 192 8448 8480 l2Mac0 s mid bi mu c0 pa pb 8 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 4963 160 8416 8448 l2Mac1 s mid bi mu c0 pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 5001 128 8384 8416 l2Mac2 s mid bi mu c0 pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 5039 96 8352 8384 l2Mac3 s mid bi mu c0 pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 4929 192 8448 8480 l2Mac0 s mid bi mu c0 pa pb 8 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 4967 160 8416 8448 l2Mac1 s mid bi mu c0 pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 5005 128 8384 8416 l2Mac2 s mid bi mu c0 pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 5043 96 8352 8384 l2Mac3 s mid bi mu c0 pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
   (gasSteps_l2Join s mid bi mu c0 pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l2Mac 5078 64 8320 8352 l2Mac4 s mid bi mu c0 pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 5116 32 8288 8320 l2Mac5 s mid bi mu c0 pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 5082 64 8320 8352 l2Mac4 s mid bi mu c0 pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 5120 32 8288 8320 l2Mac5 s mid bi mu c0 pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
   gasSteps_l2Final s mid bi mu c0 pa pb 8 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide)
 
 /-- One complete four-limb row, stopping at the common tail block. -/

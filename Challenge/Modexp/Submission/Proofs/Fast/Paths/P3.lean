@@ -43,7 +43,7 @@ def blk1155 :
    pushAt 1153 2 6144,
    pushAt 1154 2 6144,
    pushAt 1155 2 6144,
-   pushAt 1156 2 4424,
+   pushAt 1156 2 4428,
    opAt 1157 .JUMP]
 
 /-- Instructions 1162..1173, pc 1586..1604. -/
