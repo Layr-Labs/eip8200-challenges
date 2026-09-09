@@ -45,7 +45,8 @@ theorem run_l2Mac (pc : Nat) (x tl ts : UInt256) (s : State) (mid : ByteArray) (
     (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 8256 + 32 * (n - 2 - k))
     (hts : ts.toNat = 8256 + 32 * (n - 1 - k)) :
     runInstructions (l2Program x tl ts) (l2At pc s mid bi mu c0 pa pb n i k pdst ret rest) =
-      some (l2At (pc+38) s mid bi mu c0 pa pb n i (k+1) pdst ret rest) := by
+      some (l2At (pc + (CiosCachedL2.loadLength x + 33))
+        s mid bi mu c0 pa pb n i (k+1) pdst ret rest) := by
   have h := CiosCachedL2.run_step s (UInt256.ofNat pc) mid bi mu c0 n k x tl ts hx htl hts
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa + 32*n - 32))
     (UInt256.ofNat (pb-32)) (isFour n) pdst ret rest hcap hact hn32 hk

@@ -202,7 +202,8 @@ opaque gasSteps_l2Mac (pc : Nat) (x tl ts : UInt256)
     (hts : ts.toNat = 8256 + 32 * (n - 1 - k)) :
     Challenge.EvmProof.GasSteps
       (l2At pc s mem bi mu c0 pa pb n i k pdst ret rest)
-      (l2At (pc+38) s mem bi mu c0 pa pb n i (k+1) pdst ret rest) :=
+      (l2At (pc + (CiosCachedL2.loadLength x + 33))
+        s mem bi mu c0 pa pb n i (k+1) pdst ret rest) :=
   block.steps (environment (l2At pc s mem bi mu c0 pa pb n i k pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l2Mac pc x tl ts s mem bi mu c0 pa pb n i k pdst ret rest hcap hact hn32 hk hx htl hts)
 
@@ -268,6 +269,6 @@ opaque gasSteps_l2Final (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (by rw [show n - 1 - (n - 2) = 1 by omega]; decide)
   have hnn : n - 2 + 1 = n - 1 := by omega
   rw [hnn] at h
-  exact h
+  simpa [CiosCachedL2.loadLength] using h
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedGas

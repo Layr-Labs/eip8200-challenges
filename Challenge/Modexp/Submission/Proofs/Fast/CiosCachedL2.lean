@@ -25,8 +25,11 @@ def state (template : State) (pc : UInt256) (mem : ByteArray)
       negative32, allOnes, destination, returnPC] ++ rest
     memory := (l2Step mem mu c0 n k).memory }
 
+def loadLength (x : UInt256) : Nat :=
+  if x.toNat = 0 then 3 else 5
+
 def loadProgram (x : UInt256) : List Instr :=
-  [.push 2 x, .op .MLOAD,
+  [pushAddress x, .op .MLOAD,
    .op (.Dup ⟨9, by decide⟩)]
 
 def storeProgram (ts : UInt256) : List Instr :=
@@ -42,15 +45,17 @@ theorem run_load (template : State) (pc x carry mu bi pbi paEnd pbEnd flag desti
     runInstructions (loadProgram x)
       (framed template pc
         ([carry, mu, bi, pbi, paEnd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) =
-    some (framed template (pc + UInt256.ofNat 5)
+    some (framed template (pc + UInt256.ofNat (loadLength x))
       ([maxWord, MachineState.readWord template.memory x.toNat, carry, mu, bi,
         pbi, paEnd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) := by
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hN : allOnes = maxWord := allOnes_value
-  simp [runInstructions, loadProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    hc11, hc12, State.activeWordsAfterUInt256, hactive, hN, succ_eq_add, word_add_assoc,
-    Challenge.EvmProof.Word.ofNat_add_mod]
+  by_cases hx : x.toNat = 0 <;>
+    simp [runInstructions, loadProgram, pushAddress, loadLength, framed,
+      Challenge.EvmProof.Stepper.runInstr, hc11, hc12, State.activeWordsAfterUInt256,
+      hactive, hN, succ_eq_add, word_add_assoc, hx,
+      Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_store (template : State) (pc sum carry mu bi pbi paEnd pbEnd flag destination returnPC ts : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
@@ -81,7 +86,7 @@ theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
     (hactive : 296 ≤ template.activeWords.toNat) (hn : n ≤ 32) (hk : k+1 < n) :
     runInstructions (l2Program x tl ts) (state template pc mem bi mu c0 n k pbi paEnd pbEnd flag destination returnPC rest) =
-    some (state template (pc + UInt256.ofNat 38) mem bi mu c0 n (k+1)
+    some (state template (pc + UInt256.ofNat (loadLength x + 33)) mem bi mu c0 n (k+1)
       pbi paEnd pbEnd flag destination returnPC rest) := by
   have hc6 : rest.length + 6 < 1024 := by omega
   have hactM : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
@@ -105,11 +110,12 @@ theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
     simpa only [st, hts] using hactW
   have hl := run_load st pc x (l2Step mem mu c0 n k).carry mu bi
     pbi paEnd pbEnd flag destination returnPC rest hrest hM
-  have hm := L2.run_mac st (pc + UInt256.ofNat 5)
+  have hm := L2.run_mac st (pc + UInt256.ofNat (loadLength x))
     (MachineState.readWord st.memory x.toNat) mu (l2Step mem mu c0 n k).carry tl
     ([bi, pbi, paEnd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT
-  have hs := run_store st (advancePC 6 (advancePC 18 (pc + UInt256.ofNat 5) + UInt256.ofNat 5))
+  have hs := run_store st (advancePC 6 (advancePC 18
+      (pc + UInt256.ofNat (loadLength x)) + UInt256.ofNat 5))
     (macSum (MachineState.readWord st.memory x.toNat) mu
       (MachineState.readWord st.memory tl.toNat) (l2Step mem mu c0 n k).carry)
     (macCarry (MachineState.readWord st.memory x.toNat) mu
@@ -117,9 +123,12 @@ theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
     mu bi pbi paEnd pbEnd flag destination returnPC ts rest hrest hW
   have both := runInstructions_append_some _ _ _ _ _ hl hm
   have hall := runInstructions_append_some _ _ _ _ _ both hs
-  have hpc : advancePC 6 (advancePC 18 (pc + UInt256.ofNat 5) + UInt256.ofNat 5) + UInt256.ofNat 4 =
-      pc + UInt256.ofNat 38 := by
-    simp [advancePC, succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+  have hpc : advancePC 6 (advancePC 18
+      (pc + UInt256.ofNat (loadLength x)) + UInt256.ofNat 5) + UInt256.ofNat 4 =
+      pc + UInt256.ofNat (loadLength x + 33) := by
+    by_cases hx0 : x.toNat = 0 <;>
+      simp [loadLength, advancePC, succ_eq_add, word_add_assoc,
+        Challenge.EvmProof.Word.ofNat_add_mod, hx0]
   simpa only [program_eq, st, state, framed, l2Step, hx, htl, hts, hpc] using hall
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedL2

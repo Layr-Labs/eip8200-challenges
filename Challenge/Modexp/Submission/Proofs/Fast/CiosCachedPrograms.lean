@@ -64,11 +64,14 @@ def l1Program (t : UInt256) : List Instr :=
 def l1LastProgram (t : UInt256) : List Instr :=
   l1Body t ++ [.op .POP]
 
+def pushAddress (x : UInt256) : Instr :=
+  if x.toNat = 0 then .push 0 0 else .push 2 x
+
 /-- One second-loop MAC.  Entered with `[carry, mu, bi, ...]`; `x` is the
 address of the modulus limb, `tl` the accumulator limb read and `ts` the
 (one limb higher) accumulator limb written. -/
 def l2Program (x tl ts : UInt256) : List Instr :=
-  [.push 2 x,
+  [pushAddress x,
    .op .MLOAD,
    .op (.Dup ⟨9, by decide⟩),
    .op (.Dup ⟨3, by decide⟩),

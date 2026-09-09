@@ -101,12 +101,12 @@ def l2Mac6 : Block Artifact.submissionArtifact .Osaka 5189 (l2Program 0 8256 828
   WindowTwentyOneSlice.block Artifact.allWellFormed 3749 32 5189 (l2Program 0 8256 8288)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def tailLoop : Block Artifact.submissionArtifact .Osaka 5227 (CiosCached.tailProgram.take 23) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3781 23 5227 (CiosCached.tailProgram.take 23)
+def tailLoop : Block Artifact.submissionArtifact .Osaka 5225 (CiosCached.tailProgram.take 23) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3781 23 5225 (CiosCached.tailProgram.take 23)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def exitBlock : Block Artifact.submissionArtifact .Osaka 5260 (CiosCached.tailProgram.drop 23) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3804 8 5260 (CiosCached.tailProgram.drop 23)
+def exitBlock : Block Artifact.submissionArtifact .Osaka 5258 (CiosCached.tailProgram.drop 23) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3804 8 5258 (CiosCached.tailProgram.drop 23)
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest4595 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4595 = true :=
