@@ -5,7 +5,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMid
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedTailRows
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMac
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedControl
-import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedL2LastRun
+import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedL1LastRun
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -134,6 +134,30 @@ opaque gasSteps_l1Mac (pc : Nat) {c : Nat}
     (by simpa only [l1Program, hc] using
       (run_l1Mac pc s mem bi pa pb n i j pdst ret rest hcap hact hn32 hj hpa hpaFit))
 
+opaque gasSteps_l1Last (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) (hj : j < n)
+    (hpa : 32 ≤ pa) (hpaFit : pa+32*n ≤ 9472) :
+    Challenge.EvmProof.GasSteps
+      (l1At 4870 s mem bi pa pb n i j pdst ret rest)
+      (midState s (l1Step mem bi pa n (j+1)).memory
+        (UInt256.ofNat (ptrAt (pa+32*n-32) j))
+        (UInt256.ofNat (ptrAt (8224+32*n) j))
+        (l1Step mem bi pa n (j+1)).carry bi pa pb n i pdst ret rest) :=
+  l1Mac7.steps (environment (l1At 4870 s mem bi pa pb n i j pdst ret rest)
+    hcode hfork hrun hnp) rfl (by
+      have h := CiosCachedL1LastRun.run_step s (UInt256.ofNat 4870) mem bi pa n j
+        (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa+32*n-32))
+        (UInt256.ofNat (pb-32)) (isFour n) pdst ret rest hcap hact hn32 hj hpa hpaFit
+      simpa only [CiosCachedL1LastRun.program_matches, CiosCachedL1.state,
+        CiosCachedL1LastRun.outputState, l1At, midState,
+        Challenge.EvmProof.Word.ofNat_add_mod] using h)
+
 opaque gasSteps_l1Dispatch4 (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
@@ -175,8 +199,8 @@ opaque gasSteps_l1Join (s : State) (mem : ByteArray) (bi : UInt256)
   l1Join.steps (environment (l1At 4758 s mem bi pa pb n i j pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l1Join s mem bi pa pb n i j pdst ret rest hcap)
 
-opaque gasSteps_l2Mac (pc : Nat) {c : Nat}
-    (block : Block Artifact.submissionArtifact .Osaka pc (l2Program c))
+opaque gasSteps_l2Mac (pc p : Nat)
+    (block : Block Artifact.submissionArtifact .Osaka pc (l2Program p))
     (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
@@ -186,37 +210,14 @@ opaque gasSteps_l2Mac (pc : Nat) {c : Nat}
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hk : k+1 < n)
-    (hc : UInt256.ofNat c = UInt256.ofNat (ptrAt (8192 + 32*n) k - 32)) :
+    (hp : p = 32 * (n - 2 - k)) :
     Challenge.EvmProof.GasSteps
       (l2At pc s mem bi mu c0 pa pb n i k pdst ret rest)
-      (l2At (pc+40) s mem bi mu c0 pa pb n i (k+1) pdst ret rest) :=
-  block.steps (environment (l2At pc s mem bi mu c0 pa pb n i k pdst ret rest) hcode hfork hrun hnp) rfl
-    (by simpa only [l2Program, hc] using
-      (run_l2Mac pc s mem bi mu c0 pa pb n i k pdst ret rest hcap hact hn32 hk))
-
-opaque gasSteps_l2Last (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
-    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hn32 : n ≤ 32) (hk : k+1 < n) :
-    Challenge.EvmProof.GasSteps
-      (l2At 5222 s mem bi mu c0 pa pb n i k pdst ret rest)
-      (tailState s (l2Step mem mu c0 n (k+1)).memory
-        (UInt256.ofNat (ptrAt (32*n - 64) k))
-        (UInt256.ofNat (ptrAt (8192 + 32*n) k))
-        (l2Step mem mu c0 n (k+1)).carry mu bi pa pb n i pdst ret rest) :=
-  l2Mac6.steps (environment (l2At 5222 s mem bi mu c0 pa pb n i k pdst ret rest)
-    hcode hfork hrun hnp) rfl (by
-      have h := CiosCachedL2LastRun.run_step s (UInt256.ofNat 5222) mem bi mu c0 n k
-        (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa+32*n-32))
-        (UInt256.ofNat (pb-32)) (isFour n) pdst ret rest hcap hact hn32 hk
-      simpa only [CiosCachedL2LastRun.program_matches, CiosCachedL2.state,
-        CiosCachedL2LastRun.outputState, l2At, tailState,
-        Challenge.EvmProof.Word.ofNat_add_mod] using h)
+      (l2At (pc+40) s mem bi mu c0 pa pb n i (k+1) pdst ret rest) := by
+  subst p
+  exact block.steps
+    (environment (l2At pc s mem bi mu c0 pa pb n i k pdst ret rest) hcode hfork hrun hnp) rfl
+    (run_l2Mac pc s mem bi mu c0 pa pb n i k pdst ret rest hcap hact hn32 hk)
 
 opaque gasSteps_l2Dispatch4 (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (pa pb i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
