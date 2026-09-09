@@ -30,8 +30,9 @@ def template : List Instr :=
   headTemplate ++ [.push ⟨17, by decide⟩ PairedSpreadProduct.spreadFactor] ++
     loadTemplate 160 ⟨1, by decide⟩ ++ loadTemplate 128 ⟨2, by decide⟩ ++
     loadTemplate 96 ⟨3, by decide⟩ ++ loadTemplate 64 ⟨4, by decide⟩ ++
-    loadTemplate 32 ⟨5, by decide⟩ ++
-    [.push ⟨5, by decide⟩ factorWord, .op (.Swap ⟨5, by decide⟩), .op .POP]
+    [.push ⟨5, by decide⟩ factorWord, .op (.Swap ⟨4, by decide⟩),
+     .push ⟨2, by decide⟩ (UInt256.ofNat 32), .op .MLOAD, .op .MUL,
+     .op .JUMPDEST, .op .JUMPDEST]
 
 theorem mask_identity_ofUInt32 (x : UInt32) :
     UInt256.land lowerWord (Word.ofUInt32 x) = Word.ofUInt32 x := by
@@ -109,6 +110,7 @@ theorem template_advances :
     | exact Or.inl (Or.inl StraightLine.pop)
     | exact Or.inl (Or.inl (StraightLine.dup _))
     | exact Or.inl (Or.inl (StraightLine.swap _))
+    | exact Or.inl (Or.inl (Or.inr rfl))
     | exact Or.inr (Or.inr rfl)
 
 theorem runLocatedBlock_template {artifact : ProgramArtifact} {fork : Fork}
@@ -168,8 +170,8 @@ theorem template_exactBytes : assembleBytes template =
    0x70, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x61, 0x00, 0xa0, 0x51, 0x81, 0x02,
    0x61, 0x00, 0x80, 0x51, 0x82, 0x02, 0x61, 0x00, 0x60, 0x51, 0x83, 0x02,
-   0x61, 0x00, 0x40, 0x51, 0x84, 0x02, 0x61, 0x00, 0x20, 0x51, 0x85, 0x02,
-   0x64, 0x01, 0x00, 0x00, 0x00, 0x01, 0x95, 0x50] := by decide
+   0x61, 0x00, 0x40, 0x51, 0x84, 0x02, 0x64,
+   0x01, 0x00, 0x00, 0x00, 0x01, 0x94, 0x61, 0x00, 0x20, 0x51, 0x02, 0x5b, 0x5b] := by decide
 
 #print axioms mask_identity_ofUInt32
 #print axioms template_length
