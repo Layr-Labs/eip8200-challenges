@@ -33,7 +33,7 @@ theorem run_maskTemplate (s : State) (pc value : UInt256) (slot : Fin 16)
 
 def middleTemplate (shift address : Nat) (slot : Fin 16) : List Instr :=
   PairedSchedulePrimitives.duplicateShiftTemplate shift ++
-    (maskTemplate slot ++ PairedSchedulePrimitives.storeTemplate address)
+    (maskTemplate slot ++ PairedSchedulePrimitives.storeTemplateW (PairedSchedulePrimitives.storeWidth address) address)
 
 theorem run_middleTemplate (s : State) (pc value : UInt256)
     (shift address : Nat) (slot : Fin 16)
@@ -52,10 +52,11 @@ theorem run_middleTemplate (s : State) (pc value : UInt256)
     (pcAfter pc (PairedSchedulePrimitives.duplicateShiftTemplate shift))
     (UInt256.shiftRight value (UInt256.ofNat shift)) slot (value :: rest)
     (by simp only [List.length_cons]; omega) (hlookup _ _) hrun
-  have h3 := PairedSchedulePrimitives.run_storeTemplate s
+  have h3 := PairedSchedulePrimitives.run_storeTemplateW (PairedSchedulePrimitives.storeWidth address) s
     (pcAfter (pcAfter pc (PairedSchedulePrimitives.duplicateShiftTemplate shift)) (maskTemplate slot))
     (Word.mask32 (UInt256.shiftRight value (UInt256.ofNat shift)))
-    address (value :: rest) (by simp only [List.length_cons]; omega) haddress hrun
+    address (value :: rest) (by simp only [List.length_cons]; omega)
+    (PairedSchedulePrimitives.storeWidth_ne_zero address) haddress hrun
   have h23 := DenseScheduleTrace.runInstrSeq_append_running h2 (by exact hrun) h3
   unfold middleTemplate
   rw [DenseScheduleTrace.pcAfter_append, DenseScheduleTrace.pcAfter_append]
@@ -64,7 +65,7 @@ theorem run_middleTemplate (s : State) (pc value : UInt256)
 #print axioms run_middleTemplate
 
 def lastTemplate (address : Nat) (slot : Fin 16) : List Instr :=
-  maskTemplate slot ++ PairedSchedulePrimitives.storeTemplate address
+  maskTemplate slot ++ PairedSchedulePrimitives.storeTemplateW (PairedSchedulePrimitives.storeWidth address) address
 
 theorem run_lastTemplate (s : State) (pc value : UInt256) (address : Nat)
     (slot : Fin 16) (rest : List UInt256) (hstack : rest.length < 1022)
@@ -77,8 +78,8 @@ theorem run_lastTemplate (s : State) (pc value : UInt256) (address : Nat)
         memory := writeWord s.memory address (Word.mask32 value)
         activeWords := UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32)} := by
   have h1 := run_maskTemplate s pc value slot rest hstack hlookup hrun
-  have h2 := PairedSchedulePrimitives.run_storeTemplate s (pcAfter pc (maskTemplate slot))
-    (Word.mask32 value) address rest hstack haddress hrun
+  have h2 := PairedSchedulePrimitives.run_storeTemplateW (PairedSchedulePrimitives.storeWidth address) s (pcAfter pc (maskTemplate slot))
+    (Word.mask32 value) address rest hstack (PairedSchedulePrimitives.storeWidth_ne_zero address) haddress hrun
   unfold lastTemplate
   rw [DenseScheduleTrace.pcAfter_append]
   exact DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
@@ -422,16 +423,18 @@ theorem fullTemplate_length : fullTemplate.length = 159 := by
     cachedStage, halfTemplate, prefixTemplate, keepTemplate, PairedScheduleStores.firstTemplate,
     middleTemplate, lastTemplate, maskTemplate,
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.storeTemplate,
+    PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth,
     sentinelTemplate, cleanupTemplate]
 
 #print axioms fullTemplate_length
 
-theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 287 := by
+theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 285 := by
   rw [DenseScheduleTemplate.assembleBytes_length]
   norm_num [fullTemplate, cachedInitial, upperTemplate, lowerTemplate, cachedReversedHalf,
     cachedStage, endianFactorPush, endianFactor, halfTemplate, prefixTemplate, keepTemplate,
     PairedScheduleStores.firstTemplate, middleTemplate, lastTemplate, maskTemplate,
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.storeTemplate,
+    PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth,
     sentinelTemplate, cleanupTemplate, cell, op, push1, push2, push3, dup1, swap1]
 
 #print axioms fullTemplate_byteLength
@@ -441,6 +444,7 @@ theorem fullTemplate_staticGas : staticGas fullTemplate = 479 := by
     cachedStage, endianFactorPush, endianFactor, halfTemplate, prefixTemplate, keepTemplate,
     PairedScheduleStores.firstTemplate, middleTemplate, lastTemplate, maskTemplate,
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.storeTemplate,
+    PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth,
     sentinelTemplate, cleanupTemplate, cell, op, push1, push2, push3, dup1, swap1,
     Meter.instrStaticCost, Gas.baseCost]
 
@@ -484,6 +488,7 @@ private theorem keepTemplate_advances (first j : Nat) (slot : Fin 14) :
   split at hmem
   · simp only [PairedScheduleStores.firstTemplate,
       PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.storeTemplate,
+      PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth,
       List.mem_append, List.mem_cons, List.not_mem_nil, or_false] at hmem
     rcases hmem with (rfl | rfl | rfl) | (rfl | rfl)
     all_goals first
@@ -492,7 +497,8 @@ private theorem keepTemplate_advances (first j : Nat) (slot : Fin 14) :
       | exact Or.inl (Or.inl StraightLine.shr)
       | exact Or.inr (Or.inl rfl)
   · simp only [middleTemplate, maskTemplate,
-      PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.storeTemplate,
+      PairedSchedulePrimitives.duplicateShiftTemplate,
+      PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth,
       List.mem_append, List.mem_cons, List.not_mem_nil, or_false] at hmem
     rcases hmem with (rfl | rfl | rfl) | ((rfl | rfl) | (rfl | rfl))
     all_goals first
@@ -517,7 +523,7 @@ private theorem halfTemplate_advances (first : Nat) (slot : Fin 14) :
   intro instruction hmem
   rcases List.mem_append.mp hmem with hp | hl
   · exact prefixTemplate_advances first slot 7 instruction hp
-  · simp only [lastTemplate, maskTemplate, PairedSchedulePrimitives.storeTemplate,
+  · simp only [lastTemplate, maskTemplate, PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth,
       List.mem_append, List.mem_cons, List.not_mem_nil, or_false] at hl
     rcases hl with (rfl | rfl) | (rfl | rfl)
     all_goals first
@@ -616,12 +622,12 @@ theorem fullTemplate_exactBytes : assembleBytes fullTemplate =
     0x16, 0x61, 0x02, 0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x84, 0x16, 0x61, 0x02, 0x80, 0x52, 0x83,
     0x16, 0x61, 0x02, 0xa0, 0x52]) ++ [
     0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x82, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
-    0x10, 0x1c, 0x18, 0x84, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x61,
-    0x00, 0xc0, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x83, 0x16, 0x61, 0x00, 0xe0, 0x52, 0x80, 0x60, 0xa0,
-    0x1c, 0x83, 0x16, 0x61, 0x01, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x20,
-    0x52, 0x80, 0x60, 0x60, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x40, 0x52, 0x80, 0x60, 0x40, 0x1c, 0x83,
-    0x16, 0x61, 0x01, 0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x80, 0x52, 0x82,
-    0x16, 0x61, 0x01, 0xa0, 0x52]) ++ [
+    0x10, 0x1c, 0x18, 0x84, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x60,
+    0xc0, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x83, 0x16, 0x60, 0xe0, 0x52, 0x80, 0x60, 0xa0, 0x1c, 0x83,
+    0x16, 0x61, 0x01, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x20, 0x52, 0x80,
+    0x60, 0x60, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x40, 0x52, 0x80, 0x60, 0x40, 0x1c, 0x83, 0x16, 0x61,
+    0x01, 0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x80, 0x52, 0x82, 0x16, 0x61,
+    0x01, 0xa0, 0x52]) ++ [
     0x5f, 0x61, 0x02, 0xc0, 0x52]) ++ [
     0x50, 0x50, 0x50]) := by
   have h0 : assembleBytes cachedInitial =
@@ -643,12 +649,12 @@ theorem fullTemplate_exactBytes : assembleBytes fullTemplate =
   have h2 : assembleBytes lowerTemplate =
     [
       0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x82, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
-      0x10, 0x1c, 0x18, 0x84, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x61,
-      0x00, 0xc0, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x83, 0x16, 0x61, 0x00, 0xe0, 0x52, 0x80, 0x60, 0xa0,
-      0x1c, 0x83, 0x16, 0x61, 0x01, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x20,
-      0x52, 0x80, 0x60, 0x60, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x40, 0x52, 0x80, 0x60, 0x40, 0x1c, 0x83,
-      0x16, 0x61, 0x01, 0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x80, 0x52, 0x82,
-      0x16, 0x61, 0x01, 0xa0, 0x52] := by decide
+      0x10, 0x1c, 0x18, 0x84, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x60,
+      0xc0, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x83, 0x16, 0x60, 0xe0, 0x52, 0x80, 0x60, 0xa0, 0x1c, 0x83,
+      0x16, 0x61, 0x01, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x20, 0x52, 0x80,
+      0x60, 0x60, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x40, 0x52, 0x80, 0x60, 0x40, 0x1c, 0x83, 0x16, 0x61,
+      0x01, 0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x80, 0x52, 0x82, 0x16, 0x61,
+      0x01, 0xa0, 0x52] := by decide
   have h3 : assembleBytes sentinelTemplate =
     [
       0x5f, 0x61, 0x02, 0xc0, 0x52] := by decide

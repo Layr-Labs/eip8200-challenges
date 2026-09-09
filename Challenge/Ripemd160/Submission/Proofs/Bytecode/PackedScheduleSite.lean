@@ -137,23 +137,22 @@ private theorem denseScheduleTemplate_byteLength :
   exact DenseScheduleTemplate.denseBeforeJumpTemplate_byteLength
 
 private theorem packedSchedule_start_instructionPC :
-    Artifact.submissionArtifact.instructionPC 272 = 0x1d0 :=
+    Artifact.submissionArtifact.instructionPC 272 = 0x1cc :=
   QuadLayout.schedule_pc
 
 private theorem packedSchedule_end_instructionPC :
-    Artifact.submissionArtifact.instructionPC 323 = 0x28e :=
+    Artifact.submissionArtifact.instructionPC 317 = 0x249 :=
   QuadLayout.scheduleJump_pc
 
 @[simp] theorem packedScheduleSite_startPC :
-    packedScheduleSite.startPC = UInt256.ofNat 0x1d0 := by
+    packedScheduleSite.startPC = UInt256.ofNat 0x1cc := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 272) =
-    UInt256.ofNat 0x1d0
+    UInt256.ofNat 0x1cc
   rw [packedSchedule_start_instructionPC]
 
 @[simp] theorem packedScheduleSite_endPC :
     packedScheduleSite.endPC = UInt256.ofNat 0x28e := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 323) =
-    UInt256.ofNat 0x28e
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 317) = UInt256.ofNat 0x249
   rw [packedSchedule_end_instructionPC]
 
 theorem packedScheduleSite_end_eq_pcAfter :

@@ -12,10 +12,10 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 
 deriving instance DecidableEq for Instr
 
-theorem destination : Decode.isValidJumpDest submissionBytecode 0xa8 = true := by
+theorem destination : Decode.isValidJumpDest submissionBytecode 0xa7 = true := by
   have hget : Artifact.submissionArtifact.instructions[97]? = some (.op .JUMPDEST) := by
     decide
-  have hpc : Artifact.submissionArtifact.instructionPC 97 = 0xa8 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 97 = 0xa7 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   have h := Artifact.submissionArtifact.isValidJumpDest_index 97 hget
@@ -23,16 +23,16 @@ theorem destination : Decode.isValidJumpDest submissionBytecode 0xa8 = true := b
   exact h
 
 def path : List (Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨0, .push ⟨1, by decide⟩ (UInt256.ofNat 168), by rfl, by decide⟩,
+  [⟨0, .push ⟨1, by decide⟩ (UInt256.ofNat 167), by rfl, by decide⟩,
    ⟨1, .op .JUMP, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def entry (s : State) : State := { s with pc := UInt256.ofNat 0, stack := [] }
-def finish (s : State) : State := { s with pc := UInt256.ofNat 0xa8, stack := [] }
+def finish (s : State) : State := { s with pc := UInt256.ofNat 0xa7, stack := [] }
 
 theorem run_entry (s : State)
     (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock path (entry s) = some (finish s) := by
-  have hdestNat : (UInt256.ofNat 0xa8).toNat = 0xa8 := by decide
+  have hdestNat : (UInt256.ofNat 0xa7).toNat = 0xa7 := by decide
   simp [path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     entry, finish, hcode, hrun, hdestNat, destination,
     Word.word_toNat_ofNat, Word.ofNat_add_mod]
@@ -48,7 +48,7 @@ def generic (s : State)
 
 def initial_entry (input : ByteArray) :
     GasSteps (initialState submissionBytecode input 0)
-      { initialState submissionBytecode input 0 with pc := UInt256.ofNat 0xa8 } :=
+      { initialState submissionBytecode input 0 with pc := UInt256.ofNat 0xa7 } :=
   generic (initialState submissionBytecode input 0) rfl rfl rfl deployAddress_not_precompile
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.ExecutionEntry
