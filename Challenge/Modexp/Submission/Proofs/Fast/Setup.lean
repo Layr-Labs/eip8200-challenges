@@ -995,8 +995,8 @@ def setupPathA :
   [opAt 1039 (.Dup ⟨1, by decide⟩), pushAt 1040 2 9344, opAt 1041 .MSTORE,
    opAt 1042 (.Dup ⟨2, by decide⟩), pushAt 1043 2 9504, opAt 1044 .MSTORE,
    opAt 1045 (.Dup ⟨3, by decide⟩), pushAt 1046 1 96, opAt 1047 .ADD,
-   pushAt 1048 2 9472, opAt 1049 .MSTORE, opAt 1050 (.Dup ⟨1, by decide⟩),
-   pushAt 1051 1 32, opAt 1052 (.Swap ⟨0, by decide⟩), opAt 1053 .SUB,
+   pushAt 1048 2 9472, opAt 1049 .MSTORE, pushAt 1050 1 32,
+   opAt 1051 (.Dup ⟨2, by decide⟩), opAt 1052 .JUMPDEST, opAt 1053 .SUB,
    opAt 1054 (.Dup ⟨0, by decide⟩), pushAt 1055 2 9408, opAt 1056 .MSTORE,
    opAt 1057 (.Dup ⟨2, by decide⟩), pushAt 1058 2 8224, opAt 1059 .ADD,
    pushAt 1060 2 9440, opAt 1061 .MSTORE, opAt 1062 (.Dup ⟨2, by decide⟩),
@@ -1010,9 +1010,9 @@ def setupPathA :
 /-- Instructions 1076..1100: `x := 1` and the first four Newton steps. -/
 def setupPathB :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1076 1 1, opAt 1077 (.Dup ⟨0, by decide⟩),
-   opAt 1078 (.Dup ⟨2, by decide⟩), opAt 1079 .MUL, pushAt 1080 1 2,
-   opAt 1081 .SUB, opAt 1082 .MUL, opAt 1083 (.Dup ⟨0, by decide⟩),
+  [opAt 1076 (.Dup ⟨0, by decide⟩), pushAt 1077 2 2,
+   opAt 1078 .SUB, opAt 1079 .JUMPDEST, opAt 1080 .JUMPDEST,
+   opAt 1081 .JUMPDEST, opAt 1082 .JUMPDEST, opAt 1083 (.Dup ⟨0, by decide⟩),
    opAt 1084 (.Dup ⟨2, by decide⟩), opAt 1085 .MUL, pushAt 1086 1 2,
    opAt 1087 .SUB, opAt 1088 .MUL, opAt 1089 (.Dup ⟨0, by decide⟩),
    opAt 1090 (.Dup ⟨2, by decide⟩), opAt 1091 .MUL, pushAt 1092 1 2,
@@ -1110,11 +1110,17 @@ theorem run_setupB (s : State) (input : ByteArray) (m0 : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathB (modLoadedState s input m0) =
       some (newtonState s input m0 (newton4 m0) 1481) := by
+  have hmulone (x : UInt256) : x * UInt256.ofNat 1 = x := by
+    change UInt256.mk (x.val * (1 : Fin UInt256.size)) = x
+    simp
+  have hseed : UInt256.ofNat 2 - UInt256.ofNat m0 =
+      UInt256.ofNat (Model.newtonStep m0 1) := by
+    simpa only [hmulone] using newton_word_step m0 1
   simp (config := { maxSteps := 1000000 })
     [setupPathB, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     modLoadedState, newtonState, outerStack, newton4, hrun, newton_word_step,
+     modLoadedState, newtonState, outerStack, newton4, hrun, newton_word_step, hseed,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,

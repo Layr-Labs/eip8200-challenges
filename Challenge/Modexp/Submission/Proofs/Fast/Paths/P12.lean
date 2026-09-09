@@ -72,10 +72,10 @@ def blk1667 :
    pushAt 1676 2 8256,
    opAt 1677 .JUMPDEST,
    opAt 1678 .POP,
-   pushAt 1679 0 0,
-   opAt 1680 (.Swap ⟨2, by decide⟩),
-   opAt 1681 (.Swap ⟨0, by decide⟩),
-   opAt 1682 (.Swap ⟨1, by decide⟩),
-   opAt 1683 (.Swap ⟨0, by decide⟩)]
+   opAt 1679 (.Swap ⟨0, by decide⟩),
+   pushAt 1680 0 0,
+   opAt 1681 (.Swap ⟨2, by decide⟩),
+   opAt 1682 .JUMPDEST,
+   opAt 1683 .JUMPDEST]
 
 end Challenge.Modexp.Submission.Proofs.Fast
