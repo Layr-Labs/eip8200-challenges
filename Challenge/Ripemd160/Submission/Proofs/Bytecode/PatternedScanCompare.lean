@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedStep
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Branch
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -17,152 +17,113 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedInputData PatternedDigest PatternedGuardSpec PatternedSwar
 
-theorem hdest5144 : Decode.isValidJumpDest submissionBytecode 0x13f = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 176 (by rfl)
+theorem hdest5144 : Decode.isValidJumpDest submissionBytecode 0x149 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 182 (by rfl)
 
 /-- One folded word, with the scan continuing. -/
-def gasSteps_compare_more_sym (input : ByteArray) (W S sv ov acc : UInt256) (hc : UInt256.isTrue (UInt256.gt (992 : UInt256) ((32 : UInt256) + ov))) :
-    GasSteps (stS input 345 [W, S, sv, ov, acc, P7, M, m7, P, m8])
-      (stS input 319 [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8]) := by
-  have step2936 := soundS (opAt 198 .JUMPDEST)
-    (blockOfS _ (pcFactS input 198 0x159 [W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2936)
-      (stepS_jumpdest input 0x159 [W, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2937 := soundS (opAt 199 (.Dup ⟨3, by decide⟩))
-    (blockOfS _ (pcFactS input 199 0x15a [W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2937)
-      (stepS_dup input 0x15a 3 (by decide) [W, S, sv, ov, acc, P7, M, m7, P, m8] (ov) (by rfl) (by simp) (by norm_num)))
-  have step2938 := soundS (opAt 200 .CALLDATALOAD)
-    (blockOfS _ (pcFactS input 200 0x15b [ov, W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2938)
-      (stepS_calldataload input 0x15b (ov) [W, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2939 := soundS (opAt 201 .XOR)
-    (blockOfS _ (pcFactS input 201 0x15c [(MachineState.readWord input (ov).toNat), W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2939)
-      (stepS_xor input 0x15c ((MachineState.readWord input (ov).toNat)) (W) [S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2940 := soundS (opAt 202 (.Dup ⟨4, by decide⟩))
-    (blockOfS _ (pcFactS input 202 0x15d [(UInt256.xor (MachineState.readWord input (ov).toNat) W), S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2940)
-      (stepS_dup input 0x15d 4 (by decide) [(UInt256.xor (MachineState.readWord input (ov).toNat) W), S, sv, ov, acc, P7, M, m7, P, m8] (acc) (by rfl) (by simp) (by norm_num)))
-  have step2941 := soundS (opAt 203 .OR)
-    (blockOfS _ (pcFactS input 203 0x15e [acc, (UInt256.xor (MachineState.readWord input (ov).toNat) W), S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2941)
-      (stepS_or input 0x15e (acc) ((UInt256.xor (MachineState.readWord input (ov).toNat) W)) [S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2942 := soundS (opAt 204 (.Swap ⟨3, by decide⟩))
-    (blockOfS _ (pcFactS input 204 0x15f [(UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2942)
-      (stepS_swap input 0x15f 3 (by decide) [(UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), S, sv, ov, acc, P7, M, m7, P, m8] [acc, S, sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
-  have step2943 := soundS (opAt 205 .POP)
-    (blockOfS _ (pcFactS input 205 0x160 [acc, S, sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2943)
-      (stepS_pop input 0x160 (acc) [S, sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2944 := soundS (opAt 206 .POP)
-    (blockOfS _ (pcFactS input 206 0x161 [S, sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2944)
-      (stepS_pop input 0x161 (S) [sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2946 := soundS (pushAt 207 1 160)
-    (blockOfS _ (pcFactS input 207 0x162 [sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2946)
-      (stepS_push input 0x162 1 (160 : UInt256) [sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have step2947 := soundS (opAt 208 .ADD)
-    (blockOfS _ (pcFactS input 208 0x164 [(160 : UInt256), sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2947)
-      (stepS_add input 0x164 ((160 : UInt256)) (sv) [ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2948 := soundS (pushAt 209 1 255)
-    (blockOfS _ (pcFactS input 209 0x165 [((160 : UInt256) + sv), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2948)
-      (stepS_push input 0x165 1 (255 : UInt256) [((160 : UInt256) + sv), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have step2949 := soundS (opAt 210 .AND)
-    (blockOfS _ (pcFactS input 210 0x167 [(255 : UInt256), ((160 : UInt256) + sv), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2949)
-      (stepS_and input 0x167 ((255 : UInt256)) (((160 : UInt256) + sv)) [ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2952 := soundS (opAt 211 (.Swap ⟨0, by decide⟩))
-    (blockOfS _ (pcFactS input 211 0x168 [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2952)
-      (stepS_swap input 0x168 0 (by decide) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] [ov, (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
-  have step2953 := soundS (pushAt 212 1 32)
-    (blockOfS _ (pcFactS input 212 0x169 [ov, (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2953)
-      (stepS_push input 0x169 1 (32 : UInt256) [ov, (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have step2954 := soundS (opAt 213 .ADD)
-    (blockOfS _ (pcFactS input 213 0x16b [(32 : UInt256), ov, (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2954)
-      (stepS_add input 0x16b ((32 : UInt256)) (ov) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2955 := soundS (opAt 214 (.Swap ⟨0, by decide⟩))
-    (blockOfS _ (pcFactS input 214 0x16c [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2955)
-      (stepS_swap input 0x16c 0 (by decide) [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
-  have step2957 := soundS (opAt 215 (.Dup ⟨1, by decide⟩))
-    (blockOfS _ (pcFactS input 215 0x16d [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2957)
-      (stepS_dup input 0x16d 1 (by decide) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (((32 : UInt256) + ov)) (by rfl) (by simp) (by norm_num)))
-  have step2958 := soundS (pushAt 216 2 992)
-    (blockOfS _ (pcFactS input 216 0x16e [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2958)
-      (stepS_push input 0x16e 2 (992 : UInt256) [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have step2959 := soundS (opAt 217 .GT)
-    (blockOfS _ (pcFactS input 217 0x171 [(992 : UInt256), ((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2959)
-      (stepS_gt input 0x171 ((992 : UInt256)) (((32 : UInt256) + ov)) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2960 := soundS (pushAt 218 2 319)
-    (blockOfS _ (pcFactS input 218 0x172 [(UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2960)
-      (stepS_push input 0x172 2 (319 : UInt256) [(UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have step2961 := soundS (opAt 219 .JUMPI)
-    (blockOfS _ (pcFactS input 219 0x175 [(319 : UInt256), (UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2961)
-      (stepS_jumpi_taken input 0x175 319 ((319 : UInt256)) ((UInt256.gt (992 : UInt256) ((32 : UInt256) + ov))) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num) rfl hc hdest5144))
-  exact step2936.trans (step2937.trans (step2938.trans (step2939.trans (step2940.trans (step2941.trans (step2942.trans (step2943.trans (step2944.trans (step2946.trans (step2947.trans (step2948.trans (step2949.trans (step2952.trans (step2953.trans (step2954.trans (step2955.trans (step2957.trans (step2958.trans (step2959.trans (step2960.trans (step2961)))))))))))))))))))))
+def gasSteps_compare_fold (input : ByteArray) (W S sv ov acc : UInt256) :
+    GasSteps (stS input 355 [W, S, sv, ov, acc, P7, M, m7, P, m8])
+      (stS input 375 [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8]) := by
+  have step2936 := soundS (opAt 204 .JUMPDEST)
+    (blockOfS _ (pcFactS input 204 0x163 [W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2936)
+      (stepS_jumpdest input 0x163 [W, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have step2937 := soundS (opAt 205 (.Dup ⟨3, by decide⟩))
+    (blockOfS _ (pcFactS input 205 0x164 [W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2937)
+      (stepS_dup input 0x164 3 (by decide) [W, S, sv, ov, acc, P7, M, m7, P, m8] (ov) (by rfl) (by simp) (by norm_num)))
+  have step2938 := soundS (opAt 206 .CALLDATALOAD)
+    (blockOfS _ (pcFactS input 206 0x165 [ov, W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2938)
+      (stepS_calldataload input 0x165 (ov) [W, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have step2939 := soundS (opAt 207 .XOR)
+    (blockOfS _ (pcFactS input 207 0x166 [(MachineState.readWord input (ov).toNat), W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2939)
+      (stepS_xor input 0x166 ((MachineState.readWord input (ov).toNat)) (W) [S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have step2940 := soundS (opAt 208 (.Dup ⟨4, by decide⟩))
+    (blockOfS _ (pcFactS input 208 0x167 [(UInt256.xor (MachineState.readWord input (ov).toNat) W), S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2940)
+      (stepS_dup input 0x167 4 (by decide) [(UInt256.xor (MachineState.readWord input (ov).toNat) W), S, sv, ov, acc, P7, M, m7, P, m8] (acc) (by rfl) (by simp) (by norm_num)))
+  have step2941 := soundS (opAt 209 .OR)
+    (blockOfS _ (pcFactS input 209 0x168 [acc, (UInt256.xor (MachineState.readWord input (ov).toNat) W), S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2941)
+      (stepS_or input 0x168 (acc) ((UInt256.xor (MachineState.readWord input (ov).toNat) W)) [S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have step2942 := soundS (opAt 210 (.Swap ⟨3, by decide⟩))
+    (blockOfS _ (pcFactS input 210 0x169 [(UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2942)
+      (stepS_swap input 0x169 3 (by decide) [(UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), S, sv, ov, acc, P7, M, m7, P, m8] [acc, S, sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
+  have step2943 := soundS (opAt 211 .POP)
+    (blockOfS _ (pcFactS input 211 0x16a [acc, S, sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2943)
+      (stepS_pop input 0x16a (acc) [S, sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have step2944 := soundS (opAt 212 .POP)
+    (blockOfS _ (pcFactS input 212 0x16b [S, sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2944)
+      (stepS_pop input 0x16b (S) [sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have step2946 := soundS (pushAt 213 1 160)
+    (blockOfS _ (pcFactS input 213 0x16c [sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2946)
+      (stepS_push input 0x16c 1 (160 : UInt256) [sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have step2947 := soundS (opAt 214 .ADD)
+    (blockOfS _ (pcFactS input 214 0x16e [(160 : UInt256), sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2947)
+      (stepS_add input 0x16e ((160 : UInt256)) (sv) [ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have step2948 := soundS (pushAt 215 1 255)
+    (blockOfS _ (pcFactS input 215 0x16f [((160 : UInt256) + sv), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2948)
+      (stepS_push input 0x16f 1 (255 : UInt256) [((160 : UInt256) + sv), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have step2949 := soundS (opAt 216 .AND)
+    (blockOfS _ (pcFactS input 216 0x171 [(255 : UInt256), ((160 : UInt256) + sv), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2949)
+      (stepS_and input 0x171 ((255 : UInt256)) (((160 : UInt256) + sv)) [ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have step2952 := soundS (opAt 217 (.Swap ⟨0, by decide⟩))
+    (blockOfS _ (pcFactS input 217 0x172 [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2952)
+      (stepS_swap input 0x172 0 (by decide) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] [ov, (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
+  have step2953 := soundS (pushAt 218 1 32)
+    (blockOfS _ (pcFactS input 218 0x173 [ov, (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2953)
+      (stepS_push input 0x173 1 (32 : UInt256) [ov, (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have step2954 := soundS (opAt 219 .ADD)
+    (blockOfS _ (pcFactS input 219 0x175 [(32 : UInt256), ov, (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2954)
+      (stepS_add input 0x175 ((32 : UInt256)) (ov) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have step2955 := soundS (opAt 220 (.Swap ⟨0, by decide⟩))
+    (blockOfS _ (pcFactS input 220 0x176 [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2955)
+      (stepS_swap input 0x176 0 (by decide) [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
+  exact step2936.trans (step2937.trans (step2938.trans (step2939.trans (step2940.trans (step2941.trans (step2942.trans (step2943.trans (step2944.trans (step2946.trans (step2947.trans (step2948.trans (step2949.trans (step2952.trans (step2953.trans (step2954.trans (step2955))))))))))))))))
 
-/-- The last folded word, falling through to the tail. -/
-def gasSteps_compare_last_sym (input : ByteArray) (W S sv ov acc : UInt256) (hc : ¬ UInt256.isTrue (UInt256.gt (992 : UInt256) ((32 : UInt256) + ov))) :
-    GasSteps (stS input 345 [W, S, sv, ov, acc, P7, M, m7, P, m8])
-      (stS input 374 [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8]) := by
-  have step2936 := soundS (opAt 198 .JUMPDEST)
-    (blockOfS _ (pcFactS input 198 0x159 [W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2936)
-      (stepS_jumpdest input 0x159 [W, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2937 := soundS (opAt 199 (.Dup ⟨3, by decide⟩))
-    (blockOfS _ (pcFactS input 199 0x15a [W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2937)
-      (stepS_dup input 0x15a 3 (by decide) [W, S, sv, ov, acc, P7, M, m7, P, m8] (ov) (by rfl) (by simp) (by norm_num)))
-  have step2938 := soundS (opAt 200 .CALLDATALOAD)
-    (blockOfS _ (pcFactS input 200 0x15b [ov, W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2938)
-      (stepS_calldataload input 0x15b (ov) [W, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2939 := soundS (opAt 201 .XOR)
-    (blockOfS _ (pcFactS input 201 0x15c [(MachineState.readWord input (ov).toNat), W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2939)
-      (stepS_xor input 0x15c ((MachineState.readWord input (ov).toNat)) (W) [S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2940 := soundS (opAt 202 (.Dup ⟨4, by decide⟩))
-    (blockOfS _ (pcFactS input 202 0x15d [(UInt256.xor (MachineState.readWord input (ov).toNat) W), S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2940)
-      (stepS_dup input 0x15d 4 (by decide) [(UInt256.xor (MachineState.readWord input (ov).toNat) W), S, sv, ov, acc, P7, M, m7, P, m8] (acc) (by rfl) (by simp) (by norm_num)))
-  have step2941 := soundS (opAt 203 .OR)
-    (blockOfS _ (pcFactS input 203 0x15e [acc, (UInt256.xor (MachineState.readWord input (ov).toNat) W), S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2941)
-      (stepS_or input 0x15e (acc) ((UInt256.xor (MachineState.readWord input (ov).toNat) W)) [S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2942 := soundS (opAt 204 (.Swap ⟨3, by decide⟩))
-    (blockOfS _ (pcFactS input 204 0x15f [(UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pc2942)
-      (stepS_swap input 0x15f 3 (by decide) [(UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), S, sv, ov, acc, P7, M, m7, P, m8] [acc, S, sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
-  have step2943 := soundS (opAt 205 .POP)
-    (blockOfS _ (pcFactS input 205 0x160 [acc, S, sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2943)
-      (stepS_pop input 0x160 (acc) [S, sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2944 := soundS (opAt 206 .POP)
-    (blockOfS _ (pcFactS input 206 0x161 [S, sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2944)
-      (stepS_pop input 0x161 (S) [sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2946 := soundS (pushAt 207 1 160)
-    (blockOfS _ (pcFactS input 207 0x162 [sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2946)
-      (stepS_push input 0x162 1 (160 : UInt256) [sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have step2947 := soundS (opAt 208 .ADD)
-    (blockOfS _ (pcFactS input 208 0x164 [(160 : UInt256), sv, ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2947)
-      (stepS_add input 0x164 ((160 : UInt256)) (sv) [ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2948 := soundS (pushAt 209 1 255)
-    (blockOfS _ (pcFactS input 209 0x165 [((160 : UInt256) + sv), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2948)
-      (stepS_push input 0x165 1 (255 : UInt256) [((160 : UInt256) + sv), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have step2949 := soundS (opAt 210 .AND)
-    (blockOfS _ (pcFactS input 210 0x167 [(255 : UInt256), ((160 : UInt256) + sv), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2949)
-      (stepS_and input 0x167 ((255 : UInt256)) (((160 : UInt256) + sv)) [ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2952 := soundS (opAt 211 (.Swap ⟨0, by decide⟩))
-    (blockOfS _ (pcFactS input 211 0x168 [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2952)
-      (stepS_swap input 0x168 0 (by decide) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ov, (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] [ov, (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
-  have step2953 := soundS (pushAt 212 1 32)
-    (blockOfS _ (pcFactS input 212 0x169 [ov, (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2953)
-      (stepS_push input 0x169 1 (32 : UInt256) [ov, (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have step2954 := soundS (opAt 213 .ADD)
-    (blockOfS _ (pcFactS input 213 0x16b [(32 : UInt256), ov, (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2954)
-      (stepS_add input 0x16b ((32 : UInt256)) (ov) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2955 := soundS (opAt 214 (.Swap ⟨0, by decide⟩))
-    (blockOfS _ (pcFactS input 214 0x16c [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2955)
-      (stepS_swap input 0x16c 0 (by decide) [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
-  have step2957 := soundS (opAt 215 (.Dup ⟨1, by decide⟩))
-    (blockOfS _ (pcFactS input 215 0x16d [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2957)
-      (stepS_dup input 0x16d 1 (by decide) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (((32 : UInt256) + ov)) (by rfl) (by simp) (by norm_num)))
-  have step2958 := soundS (pushAt 216 2 992)
-    (blockOfS _ (pcFactS input 216 0x16e [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2958)
-      (stepS_push input 0x16e 2 (992 : UInt256) [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have step2959 := soundS (opAt 217 .GT)
-    (blockOfS _ (pcFactS input 217 0x171 [(992 : UInt256), ((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2959)
-      (stepS_gt input 0x171 ((992 : UInt256)) (((32 : UInt256) + ov)) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have step2960 := soundS (pushAt 218 2 319)
-    (blockOfS _ (pcFactS input 218 0x172 [(UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2960)
-      (stepS_push input 0x172 2 (319 : UInt256) [(UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have step2961 := soundS (opAt 219 .JUMPI)
-    (blockOfS _ (pcFactS input 219 0x175 [(319 : UInt256), (UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2961)
-      (stepS_jumpi_fall input 0x175 ((319 : UInt256)) ((UInt256.gt (992 : UInt256) ((32 : UInt256) + ov))) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num) hc))
-  exact step2936.trans (step2937.trans (step2938.trans (step2939.trans (step2940.trans (step2941.trans (step2942.trans (step2943.trans (step2944.trans (step2946.trans (step2947.trans (step2948.trans (step2949.trans (step2952.trans (step2953.trans (step2954.trans (step2955.trans (step2957.trans (step2958.trans (step2959.trans (step2960.trans (step2961)))))))))))))))))))))
+def gasSteps_compare_more_sym (input : ByteArray) (W S sv ov acc : UInt256) (hc : UInt256.isTrue (UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)))
+    (hne : (32 : UInt256) + ov ≠ UInt256.ofNat input.size) :
+    GasSteps (stS input 355 [W, S, sv, ov, acc, P7, M, m7, P, m8])
+      (stS input 329 [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8]) := by
+  have step2957 := soundS (opAt 226 (.Dup ⟨1, by decide⟩))
+    (blockOfS _ (pcFactS input 226 0x17e [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2957)
+      (stepS_dup input 0x17e 1 (by decide) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (((32 : UInt256) + ov)) (by rfl) (by simp) (by norm_num)))
+  have step2958 := soundS (pushAt 227 2 992)
+    (blockOfS _ (pcFactS input 227 0x17f [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2958)
+      (stepS_push input 0x17f 2 (992 : UInt256) [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have step2959 := soundS (opAt 228 .GT)
+    (blockOfS _ (pcFactS input 228 0x182 [(992 : UInt256), ((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2959)
+      (stepS_gt input 0x182 ((992 : UInt256)) (((32 : UInt256) + ov)) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have step2960 := soundS (pushAt 229 2 329)
+    (blockOfS _ (pcFactS input 229 0x183 [(UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2960)
+      (stepS_push input 0x183 2 (329 : UInt256) [(UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have step2961 := soundS (opAt 230 .JUMPI)
+    (blockOfS _ (pcFactS input 230 0x186 [(329 : UInt256), (UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2961)
+      (stepS_jumpi_taken input 0x186 329 ((329 : UInt256)) ((UInt256.gt (992 : UInt256) ((32 : UInt256) + ov))) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num) rfl hc hdest5144))
+  exact (gasSteps_compare_fold input W S sv ov acc).trans
+    ((gasSteps_size_skip input
+    (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)) ((32 : UInt256) + ov)
+    [(UInt256.lor acc (UInt256.xor (MachineState.readWord input ov.toNat) W)), P7, M, m7, P, m8] (by simp) hne).trans (step2957.trans (step2958.trans (step2959.trans (step2960.trans (step2961))))))
+
+def gasSteps_compare_last_sym (input : ByteArray) (W S sv ov acc : UInt256) (hc : ¬ UInt256.isTrue (UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)))
+    (hne : (32 : UInt256) + ov ≠ UInt256.ofNat input.size) :
+    GasSteps (stS input 355 [W, S, sv, ov, acc, P7, M, m7, P, m8])
+      (stS input 391 [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8]) := by
+  have step2957 := soundS (opAt 226 (.Dup ⟨1, by decide⟩))
+    (blockOfS _ (pcFactS input 226 0x17e [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2957)
+      (stepS_dup input 0x17e 1 (by decide) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (((32 : UInt256) + ov)) (by rfl) (by simp) (by norm_num)))
+  have step2958 := soundS (pushAt 227 2 992)
+    (blockOfS _ (pcFactS input 227 0x17f [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2958)
+      (stepS_push input 0x17f 2 (992 : UInt256) [((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have step2959 := soundS (opAt 228 .GT)
+    (blockOfS _ (pcFactS input 228 0x182 [(992 : UInt256), ((32 : UInt256) + ov), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2959)
+      (stepS_gt input 0x182 ((992 : UInt256)) (((32 : UInt256) + ov)) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have step2960 := soundS (pushAt 229 2 329)
+    (blockOfS _ (pcFactS input 229 0x183 [(UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2960)
+      (stepS_push input 0x183 2 (329 : UInt256) [(UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have step2961 := soundS (opAt 230 .JUMPI)
+    (blockOfS _ (pcFactS input 230 0x186 [(329 : UInt256), (UInt256.gt (992 : UInt256) ((32 : UInt256) + ov)), (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by norm_num) pc2961)
+      (stepS_jumpi_fall input 0x186 ((329 : UInt256)) ((UInt256.gt (992 : UInt256) ((32 : UInt256) + ov))) [(UInt256.land (255 : UInt256) ((160 : UInt256) + sv)), ((32 : UInt256) + ov), (UInt256.lor acc (UInt256.xor (MachineState.readWord input (ov).toNat) W)), P7, M, m7, P, m8] (by simp) (by norm_num) hc))
+  exact (gasSteps_compare_fold input W S sv ov acc).trans
+    ((gasSteps_size_skip input
+    (UInt256.land (255 : UInt256) ((160 : UInt256) + sv)) ((32 : UInt256) + ov)
+    [(UInt256.lor acc (UInt256.xor (MachineState.readWord input ov.toNat) W)), P7, M, m7, P, m8] (by simp) hne).trans (step2957.trans (step2958.trans (step2959.trans (step2960.trans (step2961))))))
 
 /-- The offset advances by a word. -/
 theorem offset_step (k : Nat) (hk : k < 31) :
@@ -201,6 +162,7 @@ theorem compare_cond (k : Nat) (hk : k < 31) :
 
 /-- One folded word, with the scan continuing. -/
 def gasSteps_compare_more (input : ByteArray) (k s : Nat) (a : UInt256)
+    (hne : UInt256.ofNat (32 * (k + 1)) ≠ UInt256.ofNat input.size)
     (hk : k + 1 < 31) (hs : s < 256) (hstep : (s + 160) % 256 = scalarAt (k + 1)) :
     GasSteps (compareState input k s a)
       (loopState input (k + 1)
@@ -210,12 +172,12 @@ def gasSteps_compare_more (input : ByteArray) (k s : Nat) (a : UInt256)
   have hoff : (UInt256.ofNat (32 * k)).toNat = 32 * k := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
   have hstart : compareState input k s a =
-      stS input 345 [guardWord k, UInt256.mul M (UInt256.ofNat (scalarAt k)),
+      stS input 355 [guardWord k, UInt256.mul M (UInt256.ofNat (scalarAt k)),
         UInt256.ofNat s, UInt256.ofNat (32 * k), a, P7, M, m7, P, m8] := rfl
   have hend : loopState input (k + 1)
         (UInt256.lor a (UInt256.xor (MachineState.readWord input (32 * k))
           (guardWord k))) =
-      stS input 319 [UInt256.land (255 : UInt256)
+      stS input 329 [UInt256.land (255 : UInt256)
           ((160 : UInt256) + UInt256.ofNat s),
         (32 : UInt256) + UInt256.ofNat (32 * k),
         UInt256.lor a (UInt256.xor
@@ -226,10 +188,11 @@ def gasSteps_compare_more (input : ByteArray) (k s : Nat) (a : UInt256)
   rw [hstart, hend]
   exact gasSteps_compare_more_sym input (guardWord k)
     (UInt256.mul M (UInt256.ofNat (scalarAt k))) (UInt256.ofNat s)
-    (UInt256.ofNat (32 * k)) a ((compare_cond k hk31).2 hk)
+    (UInt256.ofNat (32 * k)) a ((compare_cond k hk31).2 hk) (by rwa [offset_step k hk31])
 
 /-- The thirty-first word, falling through to the padded tail. -/
 def gasSteps_compare_last (input : ByteArray) (s : Nat) (a : UInt256)
+    (hne : UInt256.ofNat 992 ≠ UInt256.ofNat input.size)
     (hs : s < 256) (hstep : (s + 160) % 256 = scalarAt 31) :
     GasSteps (compareState input 30 s a)
       (tailState input
@@ -238,12 +201,12 @@ def gasSteps_compare_last (input : ByteArray) (s : Nat) (a : UInt256)
   have hoff : (UInt256.ofNat (32 * 30)).toNat = 32 * 30 := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by norm_num)]
   have hstart : compareState input 30 s a =
-      stS input 345 [guardWord 30, UInt256.mul M (UInt256.ofNat (scalarAt 30)),
+      stS input 355 [guardWord 30, UInt256.mul M (UInt256.ofNat (scalarAt 30)),
         UInt256.ofNat s, UInt256.ofNat (32 * 30), a, P7, M, m7, P, m8] := rfl
   have hend : tailState input
         (UInt256.lor a (UInt256.xor (MachineState.readWord input (32 * 30))
           (guardWord 30))) =
-      stS input 374 [UInt256.land (255 : UInt256)
+      stS input 391 [UInt256.land (255 : UInt256)
           ((160 : UInt256) + UInt256.ofNat s),
         (32 : UInt256) + UInt256.ofNat (32 * 30),
         UInt256.lor a (UInt256.xor
@@ -256,6 +219,7 @@ def gasSteps_compare_last (input : ByteArray) (s : Nat) (a : UInt256)
     (UInt256.mul M (UInt256.ofNat (scalarAt 30))) (UInt256.ofNat s)
     (UInt256.ofNat (32 * 30)) a
     (fun hc => absurd ((compare_cond 30 (by norm_num)).1 hc) (by norm_num))
+    (by rwa [offset_step 30 (by norm_num)])
 
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan

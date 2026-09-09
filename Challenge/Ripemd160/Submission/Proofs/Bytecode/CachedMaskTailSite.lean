@@ -118,7 +118,7 @@ private theorem tailInstructions_length : CachedMaskOrderedTail.template.length 
 
 private theorem tail_instruction_at (i : Nat)
     (hi : i < CachedMaskOrderedTail.template.length) :
-    Artifact.submissionArtifact.instructions[3729 + i]? =
+    Artifact.submissionArtifact.instructions[3753 + i]? =
       CachedMaskOrderedTail.template[i]? := by
   have h := ArtifactSegment.getElem?_segment Artifact.submissionArtifact
     tailBefore CachedMaskOrderedTail.template
@@ -134,7 +134,7 @@ private theorem tail_instruction_pc (i : Nat)
     tailBefore CachedMaskOrderedTail.template
     tailAfter
     artifact_consume_split 0 (by omega)
-  have hzero' : Artifact.submissionArtifact.instructionPC 3721 =
+  have hzero' : Artifact.submissionArtifact.instructionPC 3749 =
       (assembleBytes tailBefore).length := by
     simpa [tailBefore_length] using hzero
   have hbefore : (assembleBytes tailBefore).length = 0x1472 :=

@@ -60,9 +60,17 @@ def path_3ee : List
    ⟨9, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨10, .op .DIV, by rfl, wfOp (by decide) trivial rfl⟩]
 
+
 def gasSteps_start (input : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0xb4) :=
   ExecutionEntry.initial_entry input
+
+@[simp] private theorem prefixInitPc4 : Artifact.submissionArtifact.instructionPC 4 = 7 := rfl
+@[simp] private theorem prefixInitPc5 : Artifact.submissionArtifact.instructionPC 5 = 8 := rfl
+@[simp] private theorem prefixInitPc6 : Artifact.submissionArtifact.instructionPC 6 = 9 := rfl
+@[simp] private theorem prefixInitPc8 : Artifact.submissionArtifact.instructionPC 8 = 14 := rfl
+@[simp] private theorem prefixInitPc9 : Artifact.submissionArtifact.instructionPC 9 = 15 := rfl
+@[simp] private theorem prefixInitPc10 : Artifact.submissionArtifact.instructionPC 10 = 16 := rfl
 
 def gasSteps_3ee (input : ByteArray) :
     Challenge.EvmProof.GasSteps (atPC input 0x3) (mainStart input) := by
@@ -71,7 +79,7 @@ def gasSteps_3ee (input : ByteArray) :
     simp [path_3ee, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, mainStart, maskTail, initialState]
-    exact ⟨by decide, by decide⟩
+    constructor <;> decide
   apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka path_3ee
   · rfl

@@ -106,7 +106,7 @@ private theorem tailInstructions_length : QuadTailTemplate.consumeBody.length = 
 
 private theorem tail_instruction_at (i : Nat)
     (hi : i < QuadTailTemplate.consumeBody.length) :
-    Artifact.submissionArtifact.instructions[2604 + i]? =
+    Artifact.submissionArtifact.instructions[2628 + i]? =
       QuadTailTemplate.consumeBody[i]? := by
   have h := ArtifactSegment.getElem?_segment Artifact.submissionArtifact
     tailBefore QuadTailTemplate.consumeBody
@@ -122,7 +122,7 @@ private theorem tail_instruction_pc (i : Nat)
     tailBefore QuadTailTemplate.consumeBody
     tailAfter
     artifact_consume_split 0 (by omega)
-  have hzero' : Artifact.submissionArtifact.instructionPC 2596 =
+  have hzero' : Artifact.submissionArtifact.instructionPC 2624 =
       (assembleBytes tailBefore).length := by
     simpa [tailBefore_length] using hzero
   have hbefore : (assembleBytes tailBefore).length = 0x101b :=

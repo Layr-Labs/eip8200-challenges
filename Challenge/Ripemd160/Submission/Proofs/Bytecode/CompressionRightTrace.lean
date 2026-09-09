@@ -21,7 +21,7 @@ open EvmSemantics.EVM
 open CompressionTrace
 
 @[simp] private theorem rightInitPC :
-    Artifact.submissionArtifact.instructionPC 512 = 842 := by rfl
+    Artifact.submissionArtifact.instructionPC 536 = 843 := by rfl
 
 @[simp] private theorem rightTestPC (j : Nat) (hlo : 517 ≤ j) (hhi : j ≤ 523) :
     Artifact.submissionArtifact.instructionPC j =
@@ -90,7 +90,7 @@ def rightRoundState (s : State) (messageOffset returnDest : UInt256)
 
 def rightInitEntry (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 747
+  { s with pc := UInt256.ofNat 761
            stack := [messageOffset, returnDest] ++ rest }
 
 set_option linter.unusedSimpArgs false in
@@ -170,7 +170,7 @@ theorem run_rightRoundPrefix (s : State) (messageOffset returnDest : UInt256)
     apply Nat.mod_eq_of_lt
     change 1728 + roundIndex i * 32 < 2 ^ 256
     exact hsmall
-  have hdest : Decode.isValidJumpDest submissionBytecode 120 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 70 = true := by decide
   have hcap (m : Nat) (hm : m ≤ 12) : rest.length + m < 1024 := by omega
   simp (config := { maxSteps := 300000 })
     [rightRoundPrefixLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -196,7 +196,7 @@ theorem run_rightRoundMiddle (s : State) (messageOffset returnDest : UInt256)
           constantAt s 1728 i, UInt256.ofNat 792,
           UInt256.ofNat (roundIndex i), UInt256.ofNat i,
           messageOffset, returnDest] ++ rest)) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 120 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 70 = true := by decide
   have hcap (m : Nat) (hm : m ≤ 12) : rest.length + m < 1024 := by omega
   simp (config := { maxSteps := 200000 })
     [rightRoundMiddleLocated, Challenge.EvmProof.Stepper.runLocatedBlock,

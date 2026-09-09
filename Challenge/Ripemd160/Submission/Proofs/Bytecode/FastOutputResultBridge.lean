@@ -17,7 +17,7 @@ def driverRest (input : ByteArray) : List UInt256 :=
    DenseScheduleTemplate.mask16, DenseScheduleTemplate.mask8]
 
 def outputState (s : State) (input : ByteArray) : State :=
-  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x1412) (driverRest input)
+  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x140c) (driverRest input)
 
 def outputBytes (s : State) : ByteArray :=
   MachineState.readPadded (FastOutputTrace.outputMemory s) 0 32

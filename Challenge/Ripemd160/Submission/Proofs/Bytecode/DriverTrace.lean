@@ -45,7 +45,7 @@ def postCheckPath : List Located :=
    ⟨75, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨76, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨77, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨78, .push ⟨2, by decide⟩ (UInt256.ofNat 5138), by rfl, by decide⟩,
+   ⟨78, .push ⟨2, by decide⟩ (UInt256.ofNat 5132), by rfl, by decide⟩,
    ⟨79, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem pc785 : Artifact.submissionArtifact.instructionPC 72 = 0x73 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -97,7 +97,7 @@ padded-message pointer, its return destination, and the driver invariant
 stack underneath. -/
 def compressEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x1d7
+    pc := UInt256.ofNat 0x205
     stack := [messageOffsetWord i, UInt256.ofNat 0x73,
       blockOffsetWord i, Padding.paddedWord input] ++ Execution.maskTail }
 
@@ -112,7 +112,7 @@ def afterIteration (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def afterExit (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 0x1412
+    pc := UInt256.ofNat 0x140c
     stack := [blockOffsetWord (blockCount input), Padding.paddedWord input] ++ Execution.maskTail }
 
 def iterationEnd (s : State) (input : ByteArray) (i : Nat) : State :=
@@ -269,8 +269,8 @@ theorem run_postCheck_exit (s : State) (input : ByteArray)
   have heq := offset_eq_total input hfit
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x1412 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 4199 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x140c = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 4227 (by rfl)
   simp [postCheckPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     compressReturned, afterExit, hrun, hcode, hadd, hlast, heq,

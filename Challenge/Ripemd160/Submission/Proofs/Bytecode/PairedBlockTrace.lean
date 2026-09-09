@@ -73,7 +73,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     (by simp) hrun
     (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp
   have gschedule' : GasSteps (DriverTrace.compressEntry s input i)
-      {q with pc := UInt256.ofNat 695, stack := PairedDerivedStartup.lowerWord :: rho} := gschedule
+      {q with pc := UInt256.ofNat 741, stack := PairedDerivedStartup.lowerWord :: rho} := gschedule
   have gstartup := PairedAllInlineBoundarySites.gasSteps_startup q rho hstack qrun qactive
     (SStartupPremises.scheduled_canonical32 s input i h ctx)
     (SStartupPremises.scheduled_canonical64 s input i h ctx)
@@ -85,18 +85,18 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     hstack qrun qactive qcode qfork qnp (scheduled_ready s input i h hfit hi ctx)
   have hentry :
       {q with
-        pc := UInt256.ofNat 770
+        pc := UInt256.ofNat 784
         stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower]
           ⟨PairedLaneWordRound.packCrypto lane lane, 0⟩ rho} =
-      {q with pc := UInt256.ofNat 770, stack := PairedStartupTrace.resultStack q.memory rho} := by
+      {q with pc := UInt256.ofNat 784, stack := PairedStartupTrace.resultStack q.memory rho} := by
     rw [startup_stack, scheduled_readLane]
   have htail :
       {q with
-        pc := UInt256.ofNat 5053
+        pc := UInt256.ofNat 5047
         stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower]
           (coreCryptoResult (blockWords input i) lane lane) rho} =
       {q with
-        pc := UInt256.ofNat 5053
+        pc := UInt256.ofNat 5047
         stack := PairedAllInlineTail.entryStack (resultFrame s input i)
           (UInt256.ofNat 115) (driverRest input i)} := by
     rw [show coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower]
@@ -108,7 +108,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     (valid_return q qcode) qcode qfork qnp
   have gtail' : GasSteps
       {q with
-        pc := UInt256.ofNat 5053
+        pc := UInt256.ofNat 5047
         stack := PairedAllInlineTail.entryStack (resultFrame s input i)
           (UInt256.ofNat 115) (driverRest input i)}
       (DriverTrace.compressReturned (resultState s input i) input i) := gtail

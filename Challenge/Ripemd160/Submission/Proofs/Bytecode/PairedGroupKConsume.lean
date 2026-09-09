@@ -238,7 +238,7 @@ private theorem word_add_ofNat_assoc (u : UInt256) (a b : Nat) :
   rw [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
 def materialize16Template : List Instr :=
-  [.push ⟨20, by decide⟩ (UInt256.ofNat 526962527014005041256681316140890030896371104153),
+  [.push ⟨4, by decide⟩ (UInt256.ofNat 0x5c4dd124),
    .push ⟨1, by decide⟩ (UInt256.ofNat 128), .op .SHL,
    .push ⟨4, by decide⟩ (UInt256.ofNat 0x5a827999), .op .OR]
 

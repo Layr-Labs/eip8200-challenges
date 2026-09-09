@@ -22,18 +22,18 @@ def gasSteps_fromEntry_hit (input : ByteArray) (hsize : input.size = 1000)
     (hz : scanAccFinal input = 0) :
     GasSteps (patternedEntry input) (returnedState input) :=
   (sound setupPath (run_setup input)).trans
-    ((gasSteps_scan input).trans
+    ((gasSteps_scan input hsize).trans
       ((gasSteps_tail_hit input hz).trans
         (by
           have h := (scanAccFinal_zero_iff_eq input hsize).1 hz
           subst input
           exact gasSteps_return)))
 
-def gasSteps_fromEntry_miss (input : ByteArray) (_hsize : input.size = 1000)
+def gasSteps_fromEntry_miss (input : ByteArray) (hsize : input.size = 1000)
     (hne : scanAccFinal input ≠ 0) :
     GasSteps (patternedEntry input) (fallbackState input) :=
   (sound setupPath (run_setup input)).trans
-    ((gasSteps_scan input).trans (gasSteps_tail_miss input hne))
+    ((gasSteps_scan input hsize).trans (gasSteps_tail_miss input hne))
 
 def gasSteps_patterned :
     GasSteps (patternedEntry patternedInput) (returnedState patternedInput) :=

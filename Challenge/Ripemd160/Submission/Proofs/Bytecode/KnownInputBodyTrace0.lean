@@ -19,7 +19,7 @@ theorem run_selector_0 (s : State)
     run (selectorPath 0) (selectorEntry s KnownInputData.targetInput 0) =
       some (bodyEntry s KnownInputData.targetInput 0) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 6216 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3065 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 3093 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath0,
       selectorGroup0, selectorGroup1, selectorGroup2, selectorGroup3,
@@ -41,8 +41,8 @@ theorem run_body_0 (s : State)
     (hrun : s.halt = .Running) :
     run (bodyPath 0) (bodyEntry s KnownInputData.targetInput 0) =
       some (resultState s KnownInputData.targetInput 0) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x436 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 719 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x429 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 743 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [bodyPath, bodyPath0, KnownInputPaths.opAt, KnownInputPaths.pushAt,
       KnownInputPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -66,7 +66,7 @@ theorem run_selector_1 (s : State)
     run (selectorPath 1) (selectorEntry s KnownInputData.targetInput 1) =
       some (bodyEntry s KnownInputData.targetInput 1) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 6259 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3083 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 3111 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath1,
       selectorGroup0, selectorGroup1, selectorGroup2, selectorGroup3,
@@ -88,8 +88,8 @@ theorem run_body_1 (s : State)
     (hrun : s.halt = .Running) :
     run (bodyPath 1) (bodyEntry s KnownInputData.targetInput 1) =
       some (resultState s KnownInputData.targetInput 1) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x436 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 719 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x429 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 743 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [bodyPath, bodyPath1, KnownInputPaths.opAt, KnownInputPaths.pushAt,
       KnownInputPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -113,7 +113,7 @@ theorem run_selector_2 (s : State)
     run (selectorPath 2) (selectorEntry s KnownInputData.targetInput 2) =
       some (bodyEntry s KnownInputData.targetInput 2) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 6302 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3101 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 3129 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath2,
       selectorGroup0, selectorGroup1, selectorGroup2, selectorGroup3,
@@ -135,8 +135,8 @@ theorem run_body_2 (s : State)
     (hrun : s.halt = .Running) :
     run (bodyPath 2) (bodyEntry s KnownInputData.targetInput 2) =
       some (resultState s KnownInputData.targetInput 2) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x436 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 719 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x429 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 743 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [bodyPath, bodyPath2, KnownInputPaths.opAt, KnownInputPaths.pushAt,
       KnownInputPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -160,7 +160,7 @@ theorem run_selector_3 (s : State)
     run (selectorPath 3) (selectorEntry s KnownInputData.targetInput 3) =
       some (bodyEntry s KnownInputData.targetInput 3) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 6345 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3119 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 3147 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath3,
       selectorGroup0, selectorGroup1, selectorGroup2, selectorGroup3,
@@ -182,8 +182,8 @@ theorem run_body_3 (s : State)
     (hrun : s.halt = .Running) :
     run (bodyPath 3) (bodyEntry s KnownInputData.targetInput 3) =
       some (resultState s KnownInputData.targetInput 3) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x436 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 719 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x429 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 743 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [bodyPath, bodyPath3, KnownInputPaths.opAt, KnownInputPaths.pushAt,
       KnownInputPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,

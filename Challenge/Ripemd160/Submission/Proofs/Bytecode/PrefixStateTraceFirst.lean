@@ -35,15 +35,15 @@ def rho (input : ByteArray) : List UInt256 :=
 with the plain driver stack on top of the copied-code state. -/
 def firstMatchedState (s : State) (input : ByteArray) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5225
+    pc := UInt256.ofNat 5219
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 115,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] ++ Execution.maskTail }
 
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 471 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 279 = 471 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 517 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 297 = 517 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 279 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 297 (by rfl)
   rw [hpc] at h
   exact h
 
@@ -119,7 +119,7 @@ arbitrary one: the two persistent mask words at the bottom changed how the
 stack is spelled at this site, and a fixed spelling stopped the rewrite firing. -/
 private theorem compare_mload_active (s : State) (stk : List UInt256) :
     ({ toSharedState := (PrefixStateMemory.copied s).toSharedState,
-        pc := UInt256.ofNat 5219,
+        pc := UInt256.ofNat 5213,
         stack := stk,
         execLength := (PrefixStateMemory.copied s).execLength,
         halt := HaltKind.Running, callStack := s.callStack } : State).activeWordsAfterUInt256 0 32 =
@@ -205,7 +205,7 @@ theorem run_firstCompare_mismatch (s : State) (input : ByteArray)
   have hword : MachineState.readWord (PrefixStateMemory.copied s).memory 0 =
       PatternedWordData.expectedWordAt 0 :=
     PrefixStateMemory.copied_word_zero s
-  have hdest : Decode.isValidJumpDest submissionBytecode 471 = true := jumpDest_generic
+  have hdest : Decode.isValidJumpDest submissionBytecode 517 = true := jumpDest_generic
   have htrue : UInt256.isTrue
       (UInt256.xor (PatternedWordData.expectedWordAt 0)
         (MachineState.readWord input 0)) = true :=
