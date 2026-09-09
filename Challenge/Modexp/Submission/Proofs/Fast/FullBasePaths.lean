@@ -44,7 +44,7 @@ def blkFullBaseCopyAdd :
    pushAt 2475 2 2048,
    pushAt 2476 2 1024,
    pushAt 2477 2 6144,
-   pushAt 2478 2 4424,
+   pushAt 2478 2 4428,
    opAt 2479 .JUMP]
 
 /-- pc 3644..3424, indices 2170..2176: after add-mod, convert ACC to the
@@ -56,7 +56,7 @@ def blkFullBaseAfterAdd :
    pushAt 2482 2 2048,
    pushAt 2483 2 6144,
    pushAt 2484 2 1024,
-   pushAt 2485 2 4424,
+   pushAt 2485 2 4428,
    opAt 2486 .JUMP]
 
 /-- pc 3425..3458, indices 2177..2200: relocated original base-head

@@ -31,7 +31,7 @@ opaque gasSteps_l1Four (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4565 s mem bi pa pb 4 i 0 pdst ret rest)
+      (l1At 4569 s mem bi pa pb 4 i 0 pdst ret rest)
       (midState s (l1Step mem bi pa 4 4).memory (l1Step mem bi pa 4 4).carry bi
         pa pb 4 i pdst ret rest) :=
   (gasSteps_l1Dispatch4 s mem bi pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
@@ -51,7 +51,7 @@ opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4565 s mem bi pa pb 8 i 0 pdst ret rest)
+      (l1At 4569 s mem bi pa pb 8 i 0 pdst ret rest)
       (midState s (l1Step mem bi pa 8 8).memory (l1Step mem bi pa 8 8).carry bi
         pa pb 8 i pdst ret rest) :=
   (gasSteps_l1Dispatch8 s mem bi pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
@@ -74,7 +74,7 @@ opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (l2At 4920 s mid bi mu c0 pa pb 4 i 0 pdst ret rest)
+      (l2At 4924 s mid bi mu c0 pa pb 4 i 0 pdst ret rest)
       (tailState s (l2Step mid mu c0 4 3).memory
         (l2Step mid mu c0 4 3).carry mu bi pa pb 4 i pdst ret rest) :=
   (gasSteps_l2Dispatch4 s mid bi mu c0 pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
@@ -92,7 +92,7 @@ opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (l2At 4920 s mid bi mu c0 pa pb 8 i 0 pdst ret rest)
+      (l2At 4924 s mid bi mu c0 pa pb 8 i 0 pdst ret rest)
       (tailState s (l2Step mid mu c0 8 7).memory
         (l2Step mid mu c0 8 7).carry mu bi pa pb 8 i pdst ret rest) :=
   (gasSteps_l2Dispatch8 s mid bi mu c0 pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|

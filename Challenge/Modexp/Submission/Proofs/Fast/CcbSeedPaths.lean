@@ -21,9 +21,7 @@ private theorem seedPCAnchor :
 @[simp] theorem seedPC (i : Nat)
     (hi : 2739 ≤ i) (hii : i ≤ 2766) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3739,3740,3743,3744,3746,3747,3748,3750,3751,3752,3753,3756,3757,
-       3758,3759,3762,3763,3764,3765,3766,3767,3768,3771,3772,
-       3773,3775,3776,3779] : List Nat)[i - 2739]! := by
+      ([3739,3740,3743,3744,3746,3747,3748,3750,3751,3752,3753,3756,3757,3758,3759,3762,3763,3764,3765,3766,3767,3768,3771,3772,3773,3775,3776,3779] : List Nat)[i - 2739]! := by
   interval_cases i <;> decide
 
 def entryPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=

@@ -34,7 +34,7 @@ def blk1320 :
    pushAt 1324 2 1024,
    pushAt 1325 2 3072,
    pushAt 1326 2 1024,
-   pushAt 1327 2 4424,
+   pushAt 1327 2 4428,
    opAt 1328 .JUMP]
 
 /-- Instructions 1333..1340, pc 1876..1885. -/

@@ -34,8 +34,7 @@ private theorem helperPCAnchor :
 @[simp] theorem helperPC (i : Nat)
     (hlo : 2435 ≤ i) (hhi : i ≤ 2457) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3294,3295,3298,3299,3302,3305,3306,3307,3309,3310,3311,3313,3314,
-       3315,3317,3318,3319,3321,3322,3323,3324,3325,3328] : List Nat)[i - 2435]! := by
+      ([3294,3295,3298,3299,3302,3305,3306,3307,3309,3310,3311,3313,3314,3315,3317,3318,3319,3321,3322,3323,3324,3325,3328] : List Nat)[i - 2435]! := by
   interval_cases i <;> decide
 
 def helperPath :

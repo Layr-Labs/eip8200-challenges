@@ -50,8 +50,7 @@ def hitEntryPath :
 @[simp] theorem routePCs (i : Nat)
     (hlo : 1826 ≤ i) (hhi : i ≤ 1843) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2613,2614,2616,2617,2618,2619,2621,2622,2623,2624,2626,2627,2628,
-       2629,2632,2633,2636,2637] : List Nat)[i - 1826]! := by
+      ([2613,2614,2616,2617,2618,2619,2621,2622,2623,2624,2626,2627,2628,2629,2632,2633,2636,2637] : List Nat)[i - 1826]! := by
   interval_cases i <;> decide
 
 @[simp] theorem jump3024 :

@@ -157,7 +157,7 @@ def out : List Instr :=
 /-- Bytes 4596 through 4600. -/
 def l1Dispatch : List Instr :=
   [.op (.Dup ⟨6, by decide⟩),
-   .push 2 4753,
+   .push 2 4757,
    .op .JUMPI]
 
 /-- Bytes 4601 through 4638. -/
@@ -493,7 +493,7 @@ def midProduct : List Instr :=
 /-- Bytes 4924 through 4928. -/
 def l2Dispatch : List Instr :=
   [.op (.Dup ⟨6, by decide⟩),
-   .push 2 5081,
+   .push 2 5085,
    .op .JUMPI]
 
 /-- Bytes 4929 through 4966. -/
@@ -769,7 +769,7 @@ def tailTest : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4591,
+   .push 2 4595,
    .op .JUMPI]
 
 /-- Bytes 5208 through 5234. -/

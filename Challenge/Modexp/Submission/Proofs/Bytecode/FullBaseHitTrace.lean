@@ -33,7 +33,7 @@ theorem run_redirect (s : State) (memory : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr,
-    redirectState, entryState, outer, hcode, hrun, jumpDest3570,
+    redirectState, entryState, outer, hcode, hrun, jumpDest3569,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 

@@ -54,8 +54,7 @@ instead of unfolding the complete bytecode prefix at every instruction. -/
 @[simp] theorem leadingBitPC (i : Nat)
     (hi : 2654 ≤ i) (hii : i ≤ 2668) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3588,3589,3590,3591,3594,3595,3598,3599,3602,3605,3606,3609,3610,
-       3611,3614] : List Nat)[i - 2654]! := by
+      ([3588,3589,3590,3591,3594,3595,3598,3599,3602,3605,3606,3609,3610,3611,3614] : List Nat)[i - 2654]! := by
   interval_cases i <;> decide
 
 theorem jumpDest3829 :

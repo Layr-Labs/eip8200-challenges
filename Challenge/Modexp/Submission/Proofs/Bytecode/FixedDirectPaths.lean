@@ -24,18 +24,13 @@ abbrev Located :=
 @[simp] theorem directPC0 (i : Nat)
     (hi : 2669 ≤ i) (hii : i ≤ 2705) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3615,3616,3617,3619,3620,3623,3624,3625,3627,3628,3629,3632,3633,
-       3636,3637,3638,3639,3640,3642,3643,3644,3647,3648,3650,
-       3653,3654,3655,3658,3659,3660,3662,3663,3667,3668,3669,
-       3672,3673] : List Nat)[i - 2669]! := by
+      ([3615,3616,3617,3619,3620,3623,3624,3625,3627,3628,3629,3632,3633,3636,3637,3638,3639,3640,3642,3643,3644,3647,3648,3650,3653,3654,3655,3658,3659,3660,3662,3663,3667,3668,3669,3672,3673] : List Nat)[i - 2669]! := by
   interval_cases i <;> decide
 
 @[simp] theorem directPC1 (i : Nat)
     (hi : 2706 ≤ i) (hii : i ≤ 2738) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3675,3676,3677,3680,3683,3686,3689,3692,3693,3694,3696,3697,3698,
-       3699,3702,3703,3704,3707,3710,3713,3716,3719,3720,3721,
-       3724,3725,3726,3727,3730,3733,3734,3735,3738] : List Nat)[i - 2706]! := by
+      ([3675,3676,3677,3680,3683,3686,3689,3692,3693,3694,3696,3697,3698,3699,3702,3703,3704,3707,3710,3713,3716,3719,3720,3721,3724,3725,3726,3727,3730,3733,3734,3735,3738] : List Nat)[i - 2706]! := by
   interval_cases i <;> decide
 
 def entryPrefix : List Located :=
@@ -71,7 +66,7 @@ def start : List Located :=
 
 def squareCall : List Located :=
   [opAt 2707 .JUMPDEST, pushAt 2708 2 3693, pushAt 2709 2 2048,
-   pushAt 2710 2 2048, pushAt 2711 2 2048, pushAt 2712 2 4424,
+   pushAt 2710 2 2048, pushAt 2711 2 2048, pushAt 2712 2 4428,
    opAt 2713 .JUMP]
 
 def squareReturn : List Located :=
@@ -82,7 +77,7 @@ def squareReturn : List Located :=
 
 def product : List Located :=
   [opAt 2721 .POP, pushAt 2722 2 3720, pushAt 2723 2 1024,
-   pushAt 2724 2 1024, pushAt 2725 2 2048, pushAt 2726 2 4424,
+   pushAt 2724 2 1024, pushAt 2725 2 2048, pushAt 2726 2 4428,
    opAt 2727 .JUMP]
 
 def finish : List Located :=

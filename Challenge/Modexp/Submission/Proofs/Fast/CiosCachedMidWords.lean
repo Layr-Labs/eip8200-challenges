@@ -32,8 +32,8 @@ def program : List Instr := firstProgram ++ roundedProgram
 theorem run_first (s : State) (x mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions firstProgram
-      (framed s (UInt256.ofNat 4906) ([x, mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4913)
+      (framed s (UInt256.ofNat 4910) ([x, mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4917)
       ([UInt256.mulMod x mu maxWord, x*mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc11 : rest.length+12 < 1024 := by omega
   have hc12 : rest.length+13 < 1024 := by omega
@@ -45,8 +45,8 @@ theorem run_first (s : State) (x mu bi pbi paEnd pbEnd flag dst ret : UInt256)
 theorem run_high (s : State) (mm lo mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions highProgram
-      (framed s (UInt256.ofNat 4913) ([mm, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4920)
+      (framed s (UInt256.ofNat 4917) ([mm, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4924)
       ([mm-(lo+UInt256.lt mm lo), lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc11 : rest.length+12 < 1024 := by omega
   have hc12 : rest.length+13 < 1024 := by omega
@@ -58,8 +58,8 @@ theorem run_high (s : State) (mm lo mu bi pbi paEnd pbEnd flag dst ret : UInt256
 theorem run_low (s : State) (hi lo mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions lowProgram
-      (framed s (UInt256.ofNat 4920) ([hi, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4924)
+      (framed s (UInt256.ofNat 4924) ([hi, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4928)
       ([UInt256.isZero (UInt256.isZero lo)+hi, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc11 : rest.length+12 < 1024 := by omega
   have hc12 : rest.length+13 < 1024 := by omega
@@ -70,8 +70,8 @@ theorem run_low (s : State) (hi lo mu bi pbi paEnd pbEnd flag dst ret : UInt256)
 theorem run_rounded (s : State) (mm lo mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions roundedProgram
-      (framed s (UInt256.ofNat 4913) ([mm, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4920)
+      (framed s (UInt256.ofNat 4917) ([mm, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4924)
       ([UInt256.lt (UInt256.ofNat 0) lo + (mm-(lo+UInt256.lt mm lo)), mu] ++
         baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc12 : rest.length + 12 < 1024 := by omega
@@ -85,8 +85,8 @@ theorem run_rounded (s : State) (mm lo mu bi pbi paEnd pbEnd flag dst ret : UInt
 theorem run_words (s : State) (x mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions program
-      (framed s (UInt256.ofNat 4906) ([x, mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4920)
+      (framed s (UInt256.ofNat 4910) ([x, mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4924)
       ([UInt256.isZero (UInt256.isZero (x*mu))+mulHi x mu, mu] ++
         baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hf := run_first s x mu bi pbi paEnd pbEnd flag dst ret rest hcap

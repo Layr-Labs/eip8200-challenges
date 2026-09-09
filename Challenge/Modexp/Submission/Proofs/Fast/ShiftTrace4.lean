@@ -313,7 +313,7 @@ theorem jumpD5357 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
 
 theorem jumpD4692 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat pcAfterCsub0).toNat = true :=
-  Exp.jumpD pcAfterCsub0 (by decide) jumpDest4657
+  Exp.jumpD pcAfterCsub0 (by decide) jumpDest4661
 
 /-- `CSUB(BASE)` from the routine's call block back to `AFTER_CSUB`. -/
 def gasSteps_csubStep (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
