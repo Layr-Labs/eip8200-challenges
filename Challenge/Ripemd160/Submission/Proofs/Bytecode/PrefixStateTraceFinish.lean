@@ -14,23 +14,23 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 /-- Entry at the second word comparison in the checked H8 prefix. -/
 def entry (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 5239
-    stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
-      DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
+    pc := UInt256.ofNat 5232
+    stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 165,
+      DriverTrace.blockOffsetWord 0, Padding.paddedWord input] ++ Execution.maskTail }
 
 /-- Entry at the H1 stores after the second word guard has matched. -/
 def hitEntry (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 5280
-    stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
-      DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
+    pc := UInt256.ofNat 5273
+    stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 165,
+      DriverTrace.blockOffsetWord 0, Padding.paddedWord input] ++ Execution.maskTail }
 
 /-- The generic compression target of the guard is a valid jump destination. -/
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 460 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 271 = 460 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 525 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 273 = 525 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 271 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 273 (by rfl)
   rw [hpc] at h
   exact h
 
@@ -41,11 +41,11 @@ theorem run_hit (s : State) (input : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock PrefixStatePaths.hitPath
       (hitEntry s input) =
       some (PrefixStateMemory.resultState s input 0) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 102 = true := by
-    have hpc : Artifact.submissionArtifact.instructionPC 64 = 102 := by
+  have hdest : Decode.isValidJumpDest submissionBytecode 165 = true := by
+    have hpc : Artifact.submissionArtifact.instructionPC 66 = 165 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]
       decide
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 64 (by rfl)
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 66 (by rfl)
     rw [hpc] at h
     exact h
   simp (config := { maxSteps := 500000 })

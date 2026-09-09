@@ -54,8 +54,8 @@ private def wfOp {op : Operation}
 (index 324, pc 0x293).  The removed call prefix and the removed inner-return
 JUMPDEST are no longer live instructions. -/
 def exitPath : List Located :=
-  [⟨317, .push ⟨4, by decide⟩ mask, by rfl, by decide⟩,
-   ⟨318, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
+  [⟨319, .push ⟨4, by decide⟩ mask, by rfl, by decide⟩,
+   ⟨320, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
 
 def loadSite987 : GenericRoundSite Artifact.submissionArtifact .Osaka
     StackLoadTrace.loadTemplate :=
@@ -75,17 +75,17 @@ def loadSite1238 : GenericRoundSite Artifact.submissionArtifact .Osaka
       (instructions := StackLoadTrace.loadTemplate) (by decide))
     (by simp [StackLoadTrace.loadTemplate])
 
-@[simp] theorem loadSite987_startPC : loadSite987.startPC = UInt256.ofNat 0x299 := by
+@[simp] theorem loadSite987_startPC : loadSite987.startPC = UInt256.ofNat 0x29d := by
   rfl
 
 @[simp] theorem loadSite1238_startPC :
-    loadSite1238.startPC = UInt256.ofNat 0xb68 := by
+    loadSite1238.startPC = UInt256.ofNat 0xb6c := by
   change UInt256.ofNat
     (Artifact.submissionArtifact.instructionPC QuadLayout.rightLoadIndex) = _
   rw [QuadLayout.rightLoad_pc]
 
 def frameRest (input : ByteArray) (i : Nat) : List UInt256 :=
-  UInt256.ofNat 0x66 :: StackBlockModel.driverRest input i
+  UInt256.ofNat 0xa5 :: StackBlockModel.driverRest input i
 
 /-- The frame the two exit pushes run from: the schedule body ends at pc 0x28e
 with the outer return word preserved on the stack. -/
@@ -110,7 +110,7 @@ theorem frameEntry_eq_scheduleEntry (s : State) (input : ByteArray) (i : Nat) :
     DriverTrace.compressEntry s input i =
       DenseScheduleTemplate.scheduleEntry s
         PackedScheduleSite.packedScheduleSite.startPC
-        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x66)
+        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0xa5)
         (StackBlockModel.driverRest input i) := by
   unfold DriverTrace.compressEntry DenseScheduleTemplate.scheduleEntry
     StackBlockModel.driverRest PackedScheduleSite.packedScheduleSite
@@ -122,49 +122,49 @@ sides by pc 0x28e and frameRest, without changing the pure loopState model. -/
 theorem denseEnd_eq_frameSeam (s : State) (input : ByteArray) (i : Nat) :
     DenseScheduleTemplate.denseExpectedState s
         PackedScheduleSite.packedScheduleSite.startPC
-        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x66)
+        (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0xa5)
         (StackBlockModel.driverRest input i) =
       frameSeam s input i := by
-  have hpc : PackedScheduleSite.packedScheduleSite.startPC = UInt256.ofNat 460 :=
+  have hpc : PackedScheduleSite.packedScheduleSite.startPC = UInt256.ofNat 525 :=
     PackedScheduleSite.packedScheduleSite_startPC
   let mo := DriverTrace.messageOffsetWord i
   let dr := StackBlockModel.driverRest input i
   have h := DenseScheduleState.returned_eq_schedule_with_memory_active s
-    (UInt256.ofNat 460) mo (UInt256.ofNat 670) (UInt256.ofNat 0x66 :: dr)
+    (UInt256.ofNat 525) mo (UInt256.ofNat 670) (UInt256.ofNat 0xa5 :: dr)
     (DenseScheduleTemplate.denseExpectedMemory s mo) rfl
   have hu := congrArg (fun t : State =>
-    { t with pc := UInt256.ofNat 654, stack := UInt256.ofNat 0x66 :: dr }) h
+    { t with pc := UInt256.ofNat 654, stack := UInt256.ofNat 0xa5 :: dr }) h
   rw [hpc]
-  show DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 460)
-      mo (UInt256.ofNat 0x66) dr = frameSeam s input i
-  calc DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 460)
-        mo (UInt256.ofNat 0x66) dr =
+  show DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 525)
+      mo (UInt256.ofNat 0xa5) dr = frameSeam s input i
+  calc DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 525)
+        mo (UInt256.ofNat 0xa5) dr =
       { Schedule.scheduleReturned
-          (DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 460)
-            mo (UInt256.ofNat 670) (UInt256.ofNat 0x66 :: dr))
-          (UInt256.ofNat 670) (UInt256.ofNat 0x66 :: dr) with
-        pc := UInt256.ofNat 654, stack := UInt256.ofNat 0x66 :: dr } := by
+          (DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 525)
+            mo (UInt256.ofNat 670) (UInt256.ofNat 0xa5 :: dr))
+          (UInt256.ofNat 670) (UInt256.ofNat 0xa5 :: dr) with
+        pc := UInt256.ofNat 654, stack := UInt256.ofNat 0xa5 :: dr } := by
         unfold DenseScheduleTemplate.denseExpectedState Schedule.scheduleReturned
         rfl
     _ = { Schedule.scheduleReturned
             { { Schedule.loopState s mo (UInt256.ofNat 670)
-                  (UInt256.ofNat 0x66 :: dr) 16 with
+                  (UInt256.ofNat 0xa5 :: dr) 16 with
                 memory := DenseScheduleTemplate.denseExpectedMemory s mo } with
               activeWords := DenseScheduleTemplate.denseExpectedActiveWords s mo }
-            (UInt256.ofNat 670) (UInt256.ofNat 0x66 :: dr) with
-          pc := UInt256.ofNat 654, stack := UInt256.ofNat 0x66 :: dr } := hu
+            (UInt256.ofNat 670) (UInt256.ofNat 0xa5 :: dr) with
+          pc := UInt256.ofNat 654, stack := UInt256.ofNat 0xa5 :: dr } := hu
     _ = frameSeam s input i := by
         unfold frameSeam frameRest StackBlockModel.scheduledState
           StackBlockModel.withMemory StackBlockModel.withActiveWords
           StackBlockModel.scheduleRest Schedule.scheduleReturned
-        rw [show [UInt256.ofNat 0x66] ++ dr = UInt256.ofNat 0x66 :: dr from rfl]
+        rw [show [UInt256.ofNat 0xa5] ++ dr = UInt256.ofNat 0xa5 :: dr from rfl]
 
 theorem run_exit (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock exitPath (frameSeam s input i) =
       some (frameLoadEntry s input i) := by
-  have hpc940 : Artifact.submissionArtifact.instructionPC 317 = 0x249 := by rfl
-  have hpc941 : Artifact.submissionArtifact.instructionPC 318 = 0x24a := by rfl
+  have hpc940 : Artifact.submissionArtifact.instructionPC 319 = 0x24e := by rfl
+  have hpc941 : Artifact.submissionArtifact.instructionPC 320 = 0x24f := by rfl
   simp [exitPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     frameSeam, frameLoadEntry, StackBlockModel.scheduledState,
     StackBlockModel.withMemory, StackBlockModel.withActiveWords,
@@ -185,7 +185,7 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
     GasSteps
         (DenseScheduleTemplate.scheduleEntry s
           PackedScheduleSite.packedScheduleSite.startPC
-          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x66)
+          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0xa5)
           (StackBlockModel.driverRest input i))
         (frameSeam s input i) := by
   let rest := StackBlockModel.driverRest input i
@@ -195,19 +195,19 @@ def gasSteps_schedule (s : State) (input : ByteArray) (i : Nat)
       StackRoundTrace.runInstrSeq DenseScheduleTemplate.denseBeforeJumpTemplate
         (DenseScheduleTemplate.scheduleEntry s
           PackedScheduleSite.packedScheduleSite.startPC
-          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x66) rest) =
+          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0xa5) rest) =
         some (DenseScheduleTemplate.denseExpectedState s
           PackedScheduleSite.packedScheduleSite.startPC
-          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x66) rest) := by
+          (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0xa5) rest) := by
     exact DenseScheduleTrace.runInstrSeq_denseBeforeJump s
       PackedScheduleSite.packedScheduleSite.startPC
-      (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x66) rest
+      (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0xa5) rest
       hstack1017 hrun
   have hartifactCode : s.executionEnv.code = Artifact.submissionArtifact.code := by
     change s.executionEnv.code = submissionBytecode
     exact hcode
   have hpacked := PackedScheduleSite.gasSteps_packedSchedule_of_raw s
-    (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x66) rest
+    (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0xa5) rest
     hartifactCode hfork hrun hnp hraw
   exact hpacked.cast rfl (denseEnd_eq_frameSeam s input i)
 

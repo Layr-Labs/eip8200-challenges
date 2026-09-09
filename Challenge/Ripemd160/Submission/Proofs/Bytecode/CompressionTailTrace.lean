@@ -119,14 +119,14 @@ def touched4 (s : State) : State :=
 def combination0 (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
   let t := touched0 s
-  { t with pc := UInt256.ofNat 860
+  { t with pc := UInt256.ofNat 864
            stack := (tailCombination s).h0 :: messageOffset :: returnDest :: rest }
 
 def combination1 (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
   let out := tailCombination s
   let t := touched1 s
-  { t with pc := UInt256.ofNat 890
+  { t with pc := UInt256.ofNat 894
            stack := out.h1 :: out.h0 :: messageOffset :: returnDest :: rest
            memory := storeWordMemory s.memory 64 out.h1 }
 
@@ -144,7 +144,7 @@ def combination3 (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
   let out := tailCombination s
   let t := touched3 s
-  { t with pc := UInt256.ofNat 915
+  { t with pc := UInt256.ofNat 919
            stack := out.h3 :: out.h2 :: out.h1 :: out.h0 ::
              messageOffset :: returnDest :: rest
            memory := storeWordMemory
@@ -160,7 +160,7 @@ def combination4 (s : State) (messageOffset returnDest : UInt256)
   let m4 := storeWordMemory m3 160 out.h4
   let m5 := storeWordMemory m4 32 out.h0
   let t := touched4 s
-  { t with pc := UInt256.ofNat 988
+  { t with pc := UInt256.ofNat 992
            stack := out.h4 :: out.h3 :: out.h2 :: out.h1 :: out.h0 ::
              messageOffset :: returnDest :: rest
            memory := m5 }

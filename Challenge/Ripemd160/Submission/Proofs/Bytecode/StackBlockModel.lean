@@ -23,10 +23,10 @@ open Challenge.Ripemd160
 open EvmSemantics EvmSemantics.EVM
 
 def driverRest (input : ByteArray) (i : Nat) : List UInt256 :=
-  [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
+  [DriverTrace.blockOffsetWord i, Padding.paddedWord input] ++ Execution.maskTail
 
 def scheduleRest (input : ByteArray) (i : Nat) : List UInt256 :=
-  [UInt256.ofNat 0x66] ++ driverRest input i
+  [UInt256.ofNat 0xa5] ++ driverRest input i
 
 def withMemory (s : State) (memory : ByteArray) : State :=
   {s with memory := memory}
@@ -83,7 +83,7 @@ def resultHash (s : State) (input : ByteArray) (i : Nat) : Compression.EvmHashSt
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   {scheduledState s input i with
-    pc := UInt256.ofNat 0x66
+    pc := UInt256.ofNat 0xa5
     stack := driverRest input i
     memory := StackMemory.storeHash (scheduledState s input i).memory (resultHash s input i)}
 

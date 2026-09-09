@@ -30,20 +30,36 @@ private def wfOp {op : Operation}
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
 
-def mainStart (input : ByteArray) : State := atPC input 0x4
+/-- The two division masks the artifact pushes once at the generic main entry
+and keeps at the bottom of the stack for the whole run: `(2^256-1)/257` and
+`(2^256-1)/65537`.  Top-first, so `mask16` sits above `mask8`. -/
+def maskTail : List UInt256 :=
+  [UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff,
+   UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff]
+
+@[simp] theorem maskTail_length : maskTail.length = 2 := rfl
+
+def mainStart (input : ByteArray) : State :=
+  { atPC input 0x43 with stack := maskTail }
 
 def path_start : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨0, .push ⟨1, by decide⟩ (UInt256.ofNat 167), by rfl, by decide⟩,
+  [⟨0, .push ⟨1, by decide⟩ (UInt256.ofNat 230), by rfl, by decide⟩,
    ⟨1, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 
 def path_3ee : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨2, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨2, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3, .push ⟨31, by decide⟩
+      (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455),
+      by rfl, by decide⟩,
+   ⟨4, .push ⟨30, by decide⟩
+      (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255),
+      by rfl, by decide⟩]
 
 def gasSteps_start (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0xa7) :=
+    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0xe6) :=
   ExecutionEntry.initial_entry input
 
 def gasSteps_3ee (input : ByteArray) :
@@ -52,7 +68,7 @@ def gasSteps_3ee (input : ByteArray) :
       (atPC input 0x3) = some (mainStart input) := by
     simp [path_3ee, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      atPC, mainStart, initialState]
+      atPC, mainStart, maskTail, initialState]
   apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka path_3ee
   · rfl

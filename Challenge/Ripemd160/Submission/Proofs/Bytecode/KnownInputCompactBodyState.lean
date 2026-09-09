@@ -10,7 +10,7 @@ def tableSource (i : Nat) : Nat := 4958 + 21 * i
 
 def preCopyState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x1350
+    pc := UInt256.ofNat 0x1354
     stack := [UInt256.ofNat 0, UInt256.ofNat (tableSource i), UInt256.ofNat 20,
       DriverTrace.messageOffsetWord i, UInt256.ofNat 0x436,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
@@ -60,7 +60,7 @@ def resultActiveWords (s : State) : UInt256 :=
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x458
+    pc := UInt256.ofNat 0x45c
     stack := [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
     memory := resultMemory s i
     activeWords := resultActiveWords s }

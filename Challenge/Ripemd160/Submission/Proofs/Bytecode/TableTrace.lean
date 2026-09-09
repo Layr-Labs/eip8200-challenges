@@ -34,51 +34,51 @@ abbrev Located :=
   Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka
 
 def hAtPath : List Located :=
-  [⟨23, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨24, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨25, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨26, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
-   ⟨27, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨28, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨25, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨26, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨27, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨28, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
    ⟨29, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨30, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨31, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨30, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨31, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨32, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨33, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def hSetPath : List Located :=
-  [⟨38, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨39, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨40, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨41, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨42, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨43, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨44, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
-   ⟨45, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨46, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨47, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨48, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨40, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨41, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨42, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨43, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨44, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨45, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨46, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
+   ⟨47, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨48, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨49, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨50, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def xAtPath : List Located :=
-  [⟨55, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨56, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
-   ⟨57, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨58, .push ⟨2, by decide⟩ (UInt256.ofNat 672), by rfl, by decide⟩,
-   ⟨59, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨60, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨57, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨58, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
+   ⟨59, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨60, .push ⟨2, by decide⟩ (UInt256.ofNat 672), by rfl, by decide⟩,
    ⟨61, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨62, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨63, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨62, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨63, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨64, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨65, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def xSetPath : List Located := Schedule.xSetPath
 
 def tableAtPath : List Located :=
-  [⟨86, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨87, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨88, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨89, .push ⟨1, by decide⟩ (UInt256.ofNat 31), by rfl, by decide⟩,
-   ⟨90, .op .BYTE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨91, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨92, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨93, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨88, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨89, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨90, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨91, .push ⟨1, by decide⟩ (UInt256.ofNat 31), by rfl, by decide⟩,
+   ⟨92, .op .BYTE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨93, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨94, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨95, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem hAtPC (j : Nat) (hlo : 23 ≤ j) (hhi : j ≤ 34) :
     Artifact.submissionArtifact.instructionPC j =
@@ -140,7 +140,7 @@ def atReturned (s : State) (base i returnDest : UInt256)
 
 def setEntry (s : State) (base i value returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 0x33
+  { s with pc := UInt256.ofNat 0x72
            stack := [base, i, value, returnDest] ++ rest }
 
 def setReturned (s : State) (base i value returnDest : UInt256)
@@ -159,7 +159,7 @@ def hSetReturned (s : State) (i value returnDest : UInt256)
 
 def xSetEntry (s : State) (i value returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 0x5f
+  { s with pc := UInt256.ofNat 0x9e
            stack := [i, value, returnDest] ++ rest }
 
 def xSetReturned (s : State) (i value returnDest : UInt256)
@@ -170,7 +170,7 @@ def xSetReturned (s : State) (i value returnDest : UInt256)
 
 def tableAtEntry (s : State) (base i returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 0x78
+  { s with pc := UInt256.ofNat 0xb7
            stack := [base - UInt256.ofNat 31, i, 0, returnDest] ++ rest }
 
 def tableAtReturned (s : State) (base i returnDest : UInt256)

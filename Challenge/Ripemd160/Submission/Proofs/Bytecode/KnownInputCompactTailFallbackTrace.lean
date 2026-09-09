@@ -54,7 +54,7 @@ theorem run_tail_fallback (s : State) (input : ByteArray) (i : Nat)
     rw [heq]
     exact htrue
   have hdest : Decode.isValidJumpDest submissionBytecode 0x129e = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2792 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 2794 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [tailPath, KnownInputCompactPaths.opAt, KnownInputCompactPaths.pushAt,
     KnownInputCompactPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,

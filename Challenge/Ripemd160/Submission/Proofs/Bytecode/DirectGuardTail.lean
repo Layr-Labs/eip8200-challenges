@@ -119,13 +119,13 @@ theorem run_tail_fallback (input : ByteArray) (hsize : input.size = 1000)
 
 def returnStored (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 249
+    pc := UInt256.ofNat 314
     memory := answerMemory
     activeWords := UInt256.ofNat 1 }
 
 def returnSized (input : ByteArray) : State :=
   { returnStored input with
-    pc := UInt256.ofNat 250
+    pc := UInt256.ofNat 315
     stack := [UInt256.ofNat 32] }
 
 theorem run_return_store :
@@ -161,14 +161,14 @@ def gasSteps_return :
     Artifact.submissionArtifact .Osaka (returnPath.take 3)
     (by rfl) (by rfl) run_return_store (by rfl) deployAddress_not_precompile
   have hd := Artifact.submissionArtifact.decodeAt_op_index
-    145 .MSIZE (by rfl) (by decide) trivial
+    147 .MSIZE (by rfl) (by decide) trivial
   have hp : (returnStored KnownInputData.targetInput).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 145 := by
+      Artifact.submissionArtifact.instructionPC 147 := by
     rw [pc2857]
     rfl
   have hop : (returnStored KnownInputData.targetInput).decodedOp = some .MSIZE :=
     Artifact.submissionArtifact.state_decodedOp_of
-      (returnStored KnownInputData.targetInput) 145 (by rfl) hp .MSIZE none hd (by decide)
+      (returnStored KnownInputData.targetInput) 147 (by rfl) hp .MSIZE none hd (by decide)
   have gmraw := Msize.step hop (by simp [returnStored]) (by rfl)
     deployAddress_not_precompile
   have gm : GasSteps (returnStored KnownInputData.targetInput)

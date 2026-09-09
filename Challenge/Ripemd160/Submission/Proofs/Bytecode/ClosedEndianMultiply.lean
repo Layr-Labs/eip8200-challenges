@@ -25,23 +25,35 @@ theorem mask8_div :
 theorem mask16_div :
     UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 65537 = mask16 := by decide
 
+/-- The persistent bottom words make the mask a `DUP`: at this point the stack
+is `t :: value :: a :: b :: mask16 :: mask8 :: tail`, so `mask8` is `DUP6`
+(index 5) and `mask16` is `DUP5` (index 4). -/
+def maskDup (shift : Nat) : Instr :=
+  if shift = 8 then .op (.Dup ⟨5, by decide⟩) else .op (.Dup ⟨4, by decide⟩)
+
 def code (shift : Nat) : List Instr :=
   [dup1, dup1, push1 (UInt256.ofNat shift), op .SHR, op .XOR,
-   endianFactorPush shift, .push 0 0, op .NOT, op .DIV, op .AND,
+   maskDup shift, op .AND,
    endianFactorPush shift, op .MUL, op .XOR]
 
 theorem run_endian (s : State) (startPC value : UInt256) (shift : Nat)
-    (mask : UInt256) (rest : List UInt256) (hstack : rest.length < 1020)
+    (mask a b : UInt256) (tail : List UInt256) (hstack : tail.length < 1016)
     (hcase : (shift = 8 ∧ mask = mask8) ∨ (shift = 16 ∧ mask = mask16))
     (hrun : s.halt = .Running) :
-    runInstrSeq (code shift) {s with pc := startPC, stack := value :: rest} =
+    runInstrSeq (code shift)
+        {s with pc := startPC, stack := value :: a :: b :: mask16 :: mask8 :: tail} =
       some {s with
         pc := pcAfter startPC (code shift)
-        stack := packedStage value shift mask :: rest} := by
-  have hcap (m : Nat) (hm : m ≤ 4) : rest.length + m < 1024 := by omega
-  have hcap2 : rest.length + 1 + 1 < 1024 := by omega
-  have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by omega
-  have hcap4 : rest.length + 1 + 1 + 1 + 1 < 1024 := by omega
+        stack := packedStage value shift mask :: a :: b :: mask16 :: mask8 :: tail} := by
+  have hcap (m : Nat) (hm : m ≤ 4) :
+      (a :: b :: mask16 :: mask8 :: tail).length + m < 1024 := by
+    simp only [List.length_cons]; omega
+  have hcapL (m : Nat) (hm : m ≤ 6) : tail.length + m < 1024 := by omega
+  have hcap0 : tail.length + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hcap1 : tail.length + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hcap2 : tail.length + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hcap3 : tail.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hcap4 : tail.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hsemantic :
       UInt256.xor
@@ -60,13 +72,13 @@ theorem run_endian (s : State) (startPC value : UInt256) (shift : Nat)
   all_goals norm_num at hsemantic
   all_goals
     simp (config := { maxSteps := 1000000 })
-      [code, endianFactorPush, endianFactor, op, push1, push2, push3, dup1,
-        runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap, hcap2, hcap3, hcap4,
+      [code, maskDup, endianFactorPush, endianFactor, op, push1, push2, push3, dup1,
+        runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap, hcapL, hcap0, hcap1, hcap2, hcap3, hcap4,
+        List.length_cons,
         hzero, mask8_div, mask16_div, UInt256.succ, Instr.size,
         Instr.size_push, Instr.size_op, Word.literal_eq_ofNat,
         Word.word_toNat_ofNat, Word.ofNat_add_mod, Word.succ_ofNat,
         word_add_assoc, word_add_ofNat_assoc, hsemantic]
-    rw [add_ofNat_assoc startPC 1 1]
     repeat first
       | rw [add_ofNat_assoc_hAdd]
       | rw [add_ofNat_assoc_add]
@@ -81,56 +93,56 @@ theorem advances (shift : Nat) {instruction : Instr} {s t : State}
     (hmem : instruction ∈ code shift) (hrun : Stepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
   simp only [code, List.mem_cons, List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals first
     | exact RepeatedByteWord.runInstr_pc_div hrun
     | apply DenseScheduleLift.runInstr_pc_of_advances ?_ hrun
   all_goals first
     | exact Or.inr (Or.inr rfl)
     | exact Or.inl (Or.inl (by constructor))
+    | simp only [maskDup]; split <;> exact Or.inl (Or.inl (by constructor))
     | simp only [endianFactorPush]; split <;>
         exact Or.inl (Or.inl (by constructor))
 
 theorem run_located {artifact : ProgramArtifact} {fork : Fork}
     (shift : Nat) (mask : UInt256)
     (site : StackRoundTemplate.GenericRoundSite artifact fork (code shift))
-    (s : State) (value : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020)
+    (s : State) (value a b : UInt256) (tail : List UInt256)
+    (hstack : tail.length < 1016)
     (hcase : (shift = 8 ∧ mask = mask8) ∨ (shift = 16 ∧ mask = mask16))
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock site.path {s with pc := site.startPC, stack := value :: rest} =
-      some {s with pc := site.endPC, stack := packedStage value shift mask :: rest} := by
+    Stepper.runLocatedBlock site.path {s with pc := site.startPC, stack := value :: (a :: b :: mask16 :: mask8 :: tail)} =
+      some {s with pc := site.endPC, stack := packedStage value shift mask :: (a :: b :: mask16 :: mask8 :: tail)} := by
   have hend : site.endPC = pcAfter site.startPC (code shift) := by
     have h := endPC_eq_pcAfter_sites site.sites site.startPC site.endPC
       site.head_eq site.end_eq site.contiguous
     rwa [site.instruction_eq] at h
   have hraw : Stepper.runLocatedBlock site.path
-      {s with pc := site.startPC, stack := value :: rest} =
-      runInstrSeq (code shift) {s with pc := site.startPC, stack := value :: rest} := by
+      {s with pc := site.startPC, stack := value :: (a :: b :: mask16 :: mask8 :: tail)} =
+      runInstrSeq (code shift) {s with pc := site.startPC, stack := value :: (a :: b :: mask16 :: mask8 :: tail)} := by
     apply runLocatedBlock_eq_runInstrSeq_site site _ rfl
     intro located hmem u v hresult
     apply advances shift ?_ hresult
     rw [← site.instruction_eq]
     exact List.mem_map_of_mem hmem
-  rw [hraw, run_endian s site.startPC value shift mask rest hstack hcase hrun, ← hend]
+  rw [hraw, run_endian s site.startPC value shift mask a b tail hstack hcase hrun, ← hend]
 
 def gasSteps_endian {artifact : ProgramArtifact} {fork : Fork}
     (shift : Nat) (mask : UInt256)
     (site : StackRoundTemplate.GenericRoundSite artifact fork (code shift))
-    (s : State) (value : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020)
+    (s : State) (value a b : UInt256) (tail : List UInt256)
+    (hstack : tail.length < 1016)
     (hcase : (shift = 8 ∧ mask = mask8) ∨ (shift = 16 ∧ mask = mask16))
     (hcode : s.executionEnv.code = artifact.code) (hfork : s.fork = fork)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := site.startPC, stack := value :: rest}
-      {s with pc := site.endPC, stack := packedStage value shift mask :: rest} := by
+    GasSteps {s with pc := site.startPC, stack := value :: (a :: b :: mask16 :: mask8 :: tail)}
+      {s with pc := site.endPC, stack := packedStage value shift mask :: (a :: b :: mask16 :: mask8 :: tail)} := by
   apply Stepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode
   · exact hfork
-  · exact run_located shift mask site s value rest hstack hcase hrun
+  · exact run_located shift mask site s value a b tail hstack hcase hrun
   · exact hrun
   · exact hnp
 

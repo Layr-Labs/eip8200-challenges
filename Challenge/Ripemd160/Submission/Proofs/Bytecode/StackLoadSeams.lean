@@ -12,7 +12,7 @@ open StackBlockModel StackEndpoint
 
 theorem firstLoad_end : StackFrame.loadSite987.endPC = QuadLayout.leftPC 0 := rfl
 
-theorem secondLoad_start : StackFrame.loadSite1238.startPC = UInt256.ofNat 0xb68 := rfl
+theorem secondLoad_start : StackFrame.loadSite1238.startPC = UInt256.ofNat 0xb6c := rfl
 
 theorem secondLoad_end : StackFrame.loadSite1238.endPC = QuadLayout.rightPC 0 := rfl
 
@@ -80,9 +80,9 @@ theorem tailEntry_atLanePC (s : State) (left right : Compression.EvmWorking)
   exact tailEntry_eq_roundEntry s left right ret rest
 
 theorem compressReturned_eq_self (s : State) (input : ByteArray) (i : Nat)
-    (hpc : s.pc = UInt256.ofNat 0x66) (hstack : s.stack = driverRest input i) :
+    (hpc : s.pc = UInt256.ofNat 0xa5) (hstack : s.stack = driverRest input i) :
     DriverTrace.compressReturned s input i = s := by
-  change {s with pc := UInt256.ofNat 0x66, stack := driverRest input i} = s
+  change {s with pc := UInt256.ofNat 0xa5, stack := driverRest input i} = s
   rw [← hpc, ← hstack]
 
 theorem resultState_returned (s : State) (input : ByteArray) (i : Nat) :

@@ -21,7 +21,7 @@ open EvmSemantics.EVM
 open CompressionTrace
 
 @[simp] private theorem rightInitPC :
-    Artifact.submissionArtifact.instructionPC 510 = 854 := by rfl
+    Artifact.submissionArtifact.instructionPC 512 = 856 := by rfl
 
 @[simp] private theorem rightTestPC (j : Nat) (hlo : 517 ≤ j) (hhi : j ≤ 523) :
     Artifact.submissionArtifact.instructionPC j =
@@ -90,7 +90,7 @@ def rightRoundState (s : State) (messageOffset returnDest : UInt256)
 
 def rightInitEntry (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 770
+  { s with pc := UInt256.ofNat 774
            stack := [messageOffset, returnDest] ++ rest }
 
 set_option linter.unusedSimpArgs false in
