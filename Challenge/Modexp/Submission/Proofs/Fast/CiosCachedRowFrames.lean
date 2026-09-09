@@ -36,7 +36,7 @@ def midState (s : State) (mem : ByteArray) (c bi : UInt256)
 /-- After the second loop: the carry, `mu` and `b_i` above the row frame. -/
 def tailState (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5227
+  { s with pc := UInt256.ofNat 5225
            stack := [c, mu, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa + 32*n - 32), UInt256.ofNat (pb - 32), isFour n, negative32, allOnes, pdst, ret] ++ rest
            memory := mem }

@@ -23,56 +23,56 @@ def gasSteps_bitCopy4_sym (s : State) (rest : List UInt256)
     (hs : Frame s) (hrest : rest.length < 1000) :
     GasSteps (stW s 3539 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest))
       (stW s 3559 ([Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest)) := by
-  have step2433 := soundW hs (opAt 2592 (.Dup ⟨7, by decide⟩))
-    (blockOfW _ (pcFactW s 2592 3539 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2486)
+  have step2433 := soundW hs (opAt 2585 (.Dup ⟨7, by decide⟩))
+    (blockOfW _ (pcFactW s 2585 3539 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2486)
       (stepW_dup s 3539 7 (by decide) ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (m) (by rfl) (by simp; omega) (by norm_num)))
-  have step2434 := soundW hs (pushAt 2593 1 1)
-    (blockOfW _ (pcFactW s 2593 3540 ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2487)
+  have step2434 := soundW hs (pushAt 2586 1 1)
+    (blockOfW _ (pcFactW s 2586 3540 ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2487)
       (stepW_push s 3540 1 (1 : UInt256) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
-  have step2435 := soundW hs (opAt 2594 (.Dup ⟨4, by decide⟩))
-    (blockOfW _ (pcFactW s 2594 3542 ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2488)
+  have step2435 := soundW hs (opAt 2587 (.Dup ⟨4, by decide⟩))
+    (blockOfW _ (pcFactW s 2587 3542 ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2488)
       (stepW_dup s 3542 4 (by decide) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (byte) (by rfl) (by simp; omega) (by norm_num)))
-  have step2436 := soundW hs (pushAt 2595 1 3)
-    (blockOfW _ (pcFactW s 2595 3543 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2489)
+  have step2436 := soundW hs (pushAt 2588 1 3)
+    (blockOfW _ (pcFactW s 2588 3543 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2489)
       (stepW_push s 3543 1 (3 : UInt256) ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
-  have step2437 := soundW hs (opAt 2596 .SHR)
-    (blockOfW _ (pcFactW s 2596 3545 ([(3 : UInt256), byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2490)
+  have step2437 := soundW hs (opAt 2589 .SHR)
+    (blockOfW _ (pcFactW s 2589 3545 ([(3 : UInt256), byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2490)
       (stepW_shr s 3545 ((3 : UInt256)) (byte) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
-  have step2438 := soundW hs (opAt 2597 .AND)
-    (blockOfW _ (pcFactW s 2597 3546 ([(UInt256.shiftRight byte (3 : UInt256)), (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2491)
+  have step2438 := soundW hs (opAt 2590 .AND)
+    (blockOfW _ (pcFactW s 2590 3546 ([(UInt256.shiftRight byte (3 : UInt256)), (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2491)
       (stepW_and s 3546 ((UInt256.shiftRight byte (3 : UInt256))) ((1 : UInt256)) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
-  have step2439 := soundW hs (opAt 2598 (.Dup ⟨2, by decide⟩))
-    (blockOfW _ (pcFactW s 2598 3547 ([(UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2492)
+  have step2439 := soundW hs (opAt 2591 (.Dup ⟨2, by decide⟩))
+    (blockOfW _ (pcFactW s 2591 3547 ([(UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2492)
       (stepW_dup s 3547 2 (by decide) ([(UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (Bm1) (by rfl) (by simp; omega) (by norm_num)))
-  have step2440 := soundW hs (opAt 2599 .MUL)
-    (blockOfW _ (pcFactW s 2599 3548 ([Bm1, (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2493)
+  have step2440 := soundW hs (opAt 2592 .MUL)
+    (blockOfW _ (pcFactW s 2592 3548 ([Bm1, (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2493)
       (stepW_mul s 3548 (Bm1) ((UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
-  have step2441 := soundW hs (pushAt 2600 1 1)
-    (blockOfW _ (pcFactW s 2600 3549 ([(Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2494)
+  have step2441 := soundW hs (pushAt 2593 1 1)
+    (blockOfW _ (pcFactW s 2593 3549 ([(Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2494)
       (stepW_push s 3549 1 (1 : UInt256) ([(Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
-  have step2442 := soundW hs (opAt 2601 .ADD)
-    (blockOfW _ (pcFactW s 2601 3551 ([(1 : UInt256), (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2495)
+  have step2442 := soundW hs (opAt 2594 .ADD)
+    (blockOfW _ (pcFactW s 2594 3551 ([(1 : UInt256), (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2495)
       (stepW_add s 3551 ((1 : UInt256)) ((Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
-  have step2443 := soundW hs (opAt 2602 (.Dup ⟨1, by decide⟩))
-    (blockOfW _ (pcFactW s 2602 3552 ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2496)
+  have step2443 := soundW hs (opAt 2595 (.Dup ⟨1, by decide⟩))
+    (blockOfW _ (pcFactW s 2595 3552 ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2496)
       (stepW_dup s 3552 1 (by decide) ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (m) (by rfl) (by simp; omega) (by norm_num)))
-  have step2444 := soundW hs (opAt 2603 (.Dup ⟨8, by decide⟩))
-    (blockOfW _ (pcFactW s 2603 3553 ([m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2497)
+  have step2444 := soundW hs (opAt 2596 (.Dup ⟨8, by decide⟩))
+    (blockOfW _ (pcFactW s 2596 3553 ([m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2497)
       (stepW_dup s 3553 8 (by decide) ([m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (acc) (by rfl) (by simp; omega) (by norm_num)))
-  have step2445 := soundW hs (opAt 2604 (.Dup ⟨0, by decide⟩))
-    (blockOfW _ (pcFactW s 2604 3554 ([acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2498)
+  have step2445 := soundW hs (opAt 2597 (.Dup ⟨0, by decide⟩))
+    (blockOfW _ (pcFactW s 2597 3554 ([acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2498)
       (stepW_dup s 3554 0 (by decide) ([acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (acc) (by rfl) (by simp; omega) (by norm_num)))
-  have step2446 := soundW hs (opAt 2605 .MULMOD)
-    (blockOfW _ (pcFactW s 2605 3555 ([acc, acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2499)
+  have step2446 := soundW hs (opAt 2598 .MULMOD)
+    (blockOfW _ (pcFactW s 2598 3555 ([acc, acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2499)
       (stepW_mulmod s 3555 (acc) (acc) (m) ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
-  have step2447 := soundW hs (opAt 2606 .MULMOD)
-    (blockOfW _ (pcFactW s 2606 3556 ([(UInt256.mulMod acc acc m), ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2500)
+  have step2447 := soundW hs (opAt 2599 .MULMOD)
+    (blockOfW _ (pcFactW s 2599 3556 ([(UInt256.mulMod acc acc m), ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2500)
       (stepW_mulmod s 3556 ((UInt256.mulMod acc acc m)) (((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))))) (m) ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
-  have step2448 := soundW hs (opAt 2607 (.Swap ⟨5, by decide⟩))
-    (blockOfW _ (pcFactW s 2607 3557 ([(UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2501)
+  have step2448 := soundW hs (opAt 2600 (.Swap ⟨5, by decide⟩))
+    (blockOfW _ (pcFactW s 2600 3557 ([(UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2501)
       (stepW_swap s 3557 5 (by decide) ([(UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) ([acc, Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by rfl) (by simp; omega) (by norm_num)))
-  have step2449 := soundW hs (opAt 2608 .POP)
-    (blockOfW _ (pcFactW s 2608 3558 ([acc, Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by norm_num) pc2502)
+  have step2449 := soundW hs (opAt 2601 .POP)
+    (blockOfW _ (pcFactW s 2601 3558 ([acc, Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by norm_num) pc2502)
       (stepW_pop s 3558 (acc) ([Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by simp; omega) (by norm_num)))
   exact step2433.trans (step2434.trans (step2435.trans (step2436.trans (step2437.trans (step2438.trans (step2439.trans (step2440.trans (step2441.trans (step2442.trans (step2443.trans (step2444.trans (step2445.trans (step2446.trans (step2447.trans (step2448.trans (step2449))))))))))))))))
 
@@ -82,56 +82,56 @@ theorem gasSteps_bitCopy4_sym_cost (s : State) (rest : List UInt256)
     (hs : Frame s) (hrest : rest.length < 1000) :
     (gasSteps_bitCopy4_sym s rest Bm1 zero byte offset outerW acc base m hs hrest).cost = 62 := by
   unfold gasSteps_bitCopy4_sym
-  have c2433 := blockCostW [opAt 2592 (.Dup ⟨7, by decide⟩)] 3
-    (blockOfW _ (pcFactW s 2592 3539 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2486)
+  have c2433 := blockCostW [opAt 2585 (.Dup ⟨7, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 2585 3539 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2486)
       (stepW_dup s 3539 7 (by decide) ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (m) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2434 := blockCostW [pushAt 2593 1 1] 3
-    (blockOfW _ (pcFactW s 2593 3540 ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2487)
+  have c2434 := blockCostW [pushAt 2586 1 1] 3
+    (blockOfW _ (pcFactW s 2586 3540 ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2487)
       (stepW_push s 3540 1 (1 : UInt256) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2435 := blockCostW [opAt 2594 (.Dup ⟨4, by decide⟩)] 3
-    (blockOfW _ (pcFactW s 2594 3542 ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2488)
+  have c2435 := blockCostW [opAt 2587 (.Dup ⟨4, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 2587 3542 ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2488)
       (stepW_dup s 3542 4 (by decide) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (byte) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2436 := blockCostW [pushAt 2595 1 3] 3
-    (blockOfW _ (pcFactW s 2595 3543 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2489)
+  have c2436 := blockCostW [pushAt 2588 1 3] 3
+    (blockOfW _ (pcFactW s 2588 3543 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2489)
       (stepW_push s 3543 1 (3 : UInt256) ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2437 := blockCostW [opAt 2596 .SHR] 3
-    (blockOfW _ (pcFactW s 2596 3545 ([(3 : UInt256), byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2490)
+  have c2437 := blockCostW [opAt 2589 .SHR] 3
+    (blockOfW _ (pcFactW s 2589 3545 ([(3 : UInt256), byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2490)
       (stepW_shr s 3545 ((3 : UInt256)) (byte) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2438 := blockCostW [opAt 2597 .AND] 3
-    (blockOfW _ (pcFactW s 2597 3546 ([(UInt256.shiftRight byte (3 : UInt256)), (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2491)
+  have c2438 := blockCostW [opAt 2590 .AND] 3
+    (blockOfW _ (pcFactW s 2590 3546 ([(UInt256.shiftRight byte (3 : UInt256)), (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2491)
       (stepW_and s 3546 ((UInt256.shiftRight byte (3 : UInt256))) ((1 : UInt256)) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2439 := blockCostW [opAt 2598 (.Dup ⟨2, by decide⟩)] 3
-    (blockOfW _ (pcFactW s 2598 3547 ([(UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2492)
+  have c2439 := blockCostW [opAt 2591 (.Dup ⟨2, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 2591 3547 ([(UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2492)
       (stepW_dup s 3547 2 (by decide) ([(UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (Bm1) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2440 := blockCostW [opAt 2599 .MUL] 5
-    (blockOfW _ (pcFactW s 2599 3548 ([Bm1, (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2493)
+  have c2440 := blockCostW [opAt 2592 .MUL] 5
+    (blockOfW _ (pcFactW s 2592 3548 ([Bm1, (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2493)
       (stepW_mul s 3548 (Bm1) ((UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2441 := blockCostW [pushAt 2600 1 1] 3
-    (blockOfW _ (pcFactW s 2600 3549 ([(Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2494)
+  have c2441 := blockCostW [pushAt 2593 1 1] 3
+    (blockOfW _ (pcFactW s 2593 3549 ([(Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2494)
       (stepW_push s 3549 1 (1 : UInt256) ([(Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2442 := blockCostW [opAt 2601 .ADD] 3
-    (blockOfW _ (pcFactW s 2601 3551 ([(1 : UInt256), (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2495)
+  have c2442 := blockCostW [opAt 2594 .ADD] 3
+    (blockOfW _ (pcFactW s 2594 3551 ([(1 : UInt256), (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2495)
       (stepW_add s 3551 ((1 : UInt256)) ((Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2443 := blockCostW [opAt 2602 (.Dup ⟨1, by decide⟩)] 3
-    (blockOfW _ (pcFactW s 2602 3552 ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2496)
+  have c2443 := blockCostW [opAt 2595 (.Dup ⟨1, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 2595 3552 ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2496)
       (stepW_dup s 3552 1 (by decide) ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (m) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2444 := blockCostW [opAt 2603 (.Dup ⟨8, by decide⟩)] 3
-    (blockOfW _ (pcFactW s 2603 3553 ([m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2497)
+  have c2444 := blockCostW [opAt 2596 (.Dup ⟨8, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 2596 3553 ([m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2497)
       (stepW_dup s 3553 8 (by decide) ([m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (acc) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2445 := blockCostW [opAt 2604 (.Dup ⟨0, by decide⟩)] 3
-    (blockOfW _ (pcFactW s 2604 3554 ([acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2498)
+  have c2445 := blockCostW [opAt 2597 (.Dup ⟨0, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 2597 3554 ([acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2498)
       (stepW_dup s 3554 0 (by decide) ([acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (acc) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2446 := blockCostW [opAt 2605 .MULMOD] 8
-    (blockOfW _ (pcFactW s 2605 3555 ([acc, acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2499)
+  have c2446 := blockCostW [opAt 2598 .MULMOD] 8
+    (blockOfW _ (pcFactW s 2598 3555 ([acc, acc, m, ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2499)
       (stepW_mulmod s 3555 (acc) (acc) (m) ([((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2447 := blockCostW [opAt 2606 .MULMOD] 8
-    (blockOfW _ (pcFactW s 2606 3556 ([(UInt256.mulMod acc acc m), ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2500)
+  have c2447 := blockCostW [opAt 2599 .MULMOD] 8
+    (blockOfW _ (pcFactW s 2599 3556 ([(UInt256.mulMod acc acc m), ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2500)
       (stepW_mulmod s 3556 ((UInt256.mulMod acc acc m)) (((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256))))) (m) ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2448 := blockCostW [opAt 2607 (.Swap ⟨5, by decide⟩)] 3
-    (blockOfW _ (pcFactW s 2607 3557 ([(UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2501)
+  have c2448 := blockCostW [opAt 2600 (.Swap ⟨5, by decide⟩)] 3
+    (blockOfW _ (pcFactW s 2600 3557 ([(UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2501)
       (stepW_swap s 3557 5 (by decide) ([(UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) ([acc, Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2449 := blockCostW [opAt 2608 .POP] 2
-    (blockOfW _ (pcFactW s 2608 3558 ([acc, Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by norm_num) pc2502)
+  have c2449 := blockCostW [opAt 2601 .POP] 2
+    (blockOfW _ (pcFactW s 2601 3558 ([acc, Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by norm_num) pc2502)
       (stepW_pop s 3558 (acc) ([Bm1, zero, byte, offset, outerW, (UInt256.mulMod (UInt256.mulMod acc acc m) ((1 : UInt256) + (Bm1 * (UInt256.land (UInt256.shiftRight byte (3 : UInt256)) (1 : UInt256)))) m), base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
   simp only [soundW, Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost, Nat.reduceAdd]
