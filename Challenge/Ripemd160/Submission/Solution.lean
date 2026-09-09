@@ -13,5 +13,3 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
   exact Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard.correct
 
 end Challenge.Ripemd160.Benchmark
-
-#print axioms Challenge.Ripemd160.Benchmark.candidate

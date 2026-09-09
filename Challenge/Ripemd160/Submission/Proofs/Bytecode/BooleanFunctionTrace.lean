@@ -167,31 +167,31 @@ def fReturned (s : State) (j : Nat) (x y z returnDest : UInt256)
 
 @[simp] private theorem validCase0 :
     Decode.isValidJumpDest submissionBytecode 0x484 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 772 = 0x45b := by rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 772 = 0x484 := by rfl
   rw [← hpc]
   exact Artifact.submissionArtifact.isValidJumpDest_index 772 (by rfl)
 
 @[simp] private theorem validCase1 :
     Decode.isValidJumpDest submissionBytecode 0x4a4 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 804 = 0x480 := by rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 804 = 0x4a4 := by rfl
   rw [← hpc]
   exact Artifact.submissionArtifact.isValidJumpDest_index 804 (by rfl)
 
 @[simp] private theorem validCase2 :
     Decode.isValidJumpDest submissionBytecode 0x4c4 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 836 = 0x4a3 := by rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 836 = 0x4c4 := by rfl
   rw [← hpc]
   exact Artifact.submissionArtifact.isValidJumpDest_index 836 (by rfl)
 
 @[simp] private theorem validCase3 :
     Decode.isValidJumpDest submissionBytecode 0x4e4 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 864 = 0x4c5 := by rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 864 = 0x4e4 := by rfl
   rw [← hpc]
   exact Artifact.submissionArtifact.isValidJumpDest_index 864 (by rfl)
 
 @[simp] private theorem validCase4 :
     Decode.isValidJumpDest submissionBytecode 0x504 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 896 = 0x4ea := by rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 896 = 0x504 := by rfl
   rw [← hpc]
   exact Artifact.submissionArtifact.isValidJumpDest_index 896 (by rfl)
 

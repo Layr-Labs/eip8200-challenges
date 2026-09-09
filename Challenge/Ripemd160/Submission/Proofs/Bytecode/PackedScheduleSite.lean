@@ -141,7 +141,7 @@ private theorem packedSchedule_start_instructionPC :
   QuadLayout.schedule_pc
 
 private theorem packedSchedule_end_instructionPC :
-    Artifact.submissionArtifact.instructionPC 323 = 0x21b :=
+    Artifact.submissionArtifact.instructionPC 323 = 0x28e :=
   QuadLayout.scheduleJump_pc
 
 @[simp] theorem packedScheduleSite_startPC :
