@@ -3856,12 +3856,11 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 32 21888242871839275222246405745257275088696311157297823662689037894645226208583,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.EQ,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
-  YulEvmCompiler.Instr.push 5 4294968272,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.NOT,
+  YulEvmCompiler.Instr.push 32 115792089237316195423570985008687907853269984665640564039457584007908834671663,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.EQ,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.OR,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-  YulEvmCompiler.Instr.push 2 5319,
+  YulEvmCompiler.Instr.push 2 5345,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 5 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.CALLDATALOAD,
@@ -3870,7 +3869,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op EvmSemantics.Operation.SUB,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.EQ,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-  YulEvmCompiler.Instr.push 2 5319,
+  YulEvmCompiler.Instr.push 2 5345,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 4 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.CALLDATALOAD,
@@ -3894,8 +3893,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP
 ]
 
-theorem submissionInstructions_count : submissionInstructions.length = 3866 := by
-  decide
+theorem submissionInstructions_count : submissionInstructions.length = 3865 := by decide
 
 theorem assemble_submissionInstructions :
     assemble submissionInstructions = submissionBytecode := by
@@ -4000,19 +3998,19 @@ private def nine_emptyReturn :
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def fermat_prime : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5235 FermatProgram.primeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3823 14 5235 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
-private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5288 FermatProgram.exponentProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3837 9 5288 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
-private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5300 FermatProgram.returnProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3846 16 5300 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
-private def fermat_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5319 FermatProgram.missProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3862 4 5319 FermatProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3823 13 5235 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5314 FermatProgram.exponentProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3836 9 5314 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5326 FermatProgram.returnProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3845 16 5326 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5345 FermatProgram.missProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3861 4 5345 FermatProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
 def fermatPaths : FermatProgram.Paths submissionArtifact .Osaka where
   prime := fermat_prime
   exponent := fermat_exponent
   result := fermat_result
   miss := fermat_miss
-  missJump := by exact isValidJumpDest_index 3862 (by rfl)
+  missJump := by exact isValidJumpDest_index 3861 (by rfl)
   legacyJump := by exact isValidJumpDest_index 1843 (by rfl)
 
 def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka where

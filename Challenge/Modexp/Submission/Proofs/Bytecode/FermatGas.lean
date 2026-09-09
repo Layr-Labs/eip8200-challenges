@@ -22,7 +22,7 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
       final.isDone = true ∧ final.toResult = .returned (spec input) := by
   let ec := WindowTwentyOneGasRoute.context_env template env input
   let m := WindowTwentyOneInput.modulusWord input
-  have hjump : Decode.isValidJumpDest (context template input).executionEnv.code 5319 = true := by
+  have hjump : Decode.isValidJumpDest (context template input).executionEnv.code 5345 = true := by
     rw [ec.code]
     exact paths.missJump
   have hlegacyJump : Decode.isValidJumpDest (context template input).executionEnv.code 2637 = true := by
@@ -33,7 +33,7 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
   rw [modulus_at template input hmatch] at hpraw
   have hmraw := FermatProgram.run_miss (context template input) m (routeStack input)
     (by simp [routeStack]) hlegacyJump
-  have missSteps : GasSteps (withModulus template input (UInt256.ofNat 5319))
+  have missSteps : GasSteps (withModulus template input (UInt256.ofNat 5345))
       (state template input (UInt256.ofNat 2637)) :=
     paths.miss.steps (ec.transfer rfl rfl) rfl hmraw
   obtain ⟨oldFinal, ⟨oldTrace⟩, oldDone, oldResult⟩ :=
@@ -41,25 +41,25 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
   by_cases hprime : (FermatProgram.primeValue m).toNat = 0
   · rw [if_pos hprime] at hpraw
     have headSteps : GasSteps (state template input (UInt256.ofNat 5235))
-        (withModulus template input (UInt256.ofNat 5319)) :=
+        (withModulus template input (UInt256.ofNat 5345)) :=
       paths.prime.steps (ec.transfer rfl rfl) rfl hpraw
     exact ⟨oldFinal, ⟨(headSteps.trans missSteps).trans oldTrace⟩, oldDone, oldResult⟩
   · rw [if_neg hprime] at hpraw
     have headSteps : GasSteps (state template input (UInt256.ofNat 5235))
-        (withModulus template input (UInt256.ofNat 5288)) :=
+        (withModulus template input (UInt256.ofNat 5314)) :=
       paths.prime.steps (ec.transfer rfl rfl) rfl hpraw
     have heraw := FermatProgram.run_exponent (context template input) m (exponentOffset input)
       (routeStack input) (by simp [routeStack]) (by simp [routeStack]) hjump
     rw [exponent_at template input hmatch.1] at heraw
     by_cases he : (UInt256.eq (m - UInt256.ofNat 1) (WindowTwentyOneInput.exponentWord input)).toNat = 0
     · rw [if_pos he] at heraw
-      have expSteps : GasSteps (withModulus template input (UInt256.ofNat 5288))
-          (withModulus template input (UInt256.ofNat 5319)) :=
+      have expSteps : GasSteps (withModulus template input (UInt256.ofNat 5314))
+          (withModulus template input (UInt256.ofNat 5345)) :=
         paths.exponent.steps (ec.transfer rfl rfl) rfl heraw
       exact ⟨oldFinal, ⟨((headSteps.trans expSteps).trans missSteps).trans oldTrace⟩, oldDone, oldResult⟩
     · rw [if_neg he] at heraw
-      have expSteps : GasSteps (withModulus template input (UInt256.ofNat 5288))
-          (withModulus template input (UInt256.ofNat 5300)) :=
+      have expSteps : GasSteps (withModulus template input (UInt256.ofNat 5314))
+          (withModulus template input (UInt256.ofNat 5326)) :=
         paths.exponent.steps (ec.transfer rfl rfl) rfl heraw
       have hmNat : m.toNat = WindowTwentyOneInput.modulusValue input :=
         WindowTwentyOneInput.modulusWord_toNat input
@@ -86,20 +86,20 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
         have h := congrArg UInt256.toNat heq
         rw [hsub, WindowTwentyOneInput.exponentWord_toNat, hmNat] at h
         exact h.symm
-      let final := WindowTwentyOneReturn.returned (context template input) (UInt256.ofNat 5318)
+      let final := WindowTwentyOneReturn.returned (context template input) (UInt256.ofNat 5344)
         (FermatMath.resultWord input) 0 (routeStack input)
       have hr := FermatProgram.run_return (context template input) m (UInt256.ofNat 96)
         (routeStack input) (baseSize input) hmatch.1 (by simp [routeStack])
         (by simp [routeStack]) (by simp [routeStack]) 0 (by decide) rfl
       change runInstructions FermatProgram.returnProgram
-        (withModulus template input (UInt256.ofNat 5300)) = some final at hr
-      have resultSteps : GasSteps (withModulus template input (UInt256.ofNat 5300)) final :=
+        (withModulus template input (UInt256.ofNat 5326)) = some final at hr
+      have resultSteps : GasSteps (withModulus template input (UInt256.ofNat 5326)) final :=
         paths.result.steps (ec.transfer rfl rfl) rfl hr
       refine ⟨final, ⟨(headSteps.trans expSteps).trans resultSteps⟩, ?_, ?_⟩
       · change (true && template.callStack.isEmpty) = true
         rw [hcall]
         rfl
-      · have h := WindowTwentyOneReturn.returned_result (context template input) (UInt256.ofNat 5318)
+      · have h := by
           (FermatMath.resultWord input) 0 (routeStack input)
         rw [← FermatMath.result_spec input hmatch hp hexponent] at h
         exact h
