@@ -54,10 +54,10 @@ theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 464 = true 
 
 /-- The `H1` install entry is a valid jump destination. -/
 theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5189 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 4115 = 5189 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 4114 = 5189 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4115 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4114 (by rfl)
   rw [hpc] at h
   exact h
 
@@ -131,7 +131,6 @@ theorem run_hit2 (s : State) (input : ByteArray)
       PrefixStatePaths.pc4106,
       PrefixStatePaths.pc4107,
       PrefixStatePaths.pc4108,
-      PrefixStatePaths.pc4109,
       PrefixStatePaths.pc4110,
       PrefixStatePaths.pc4111,
       PrefixStatePaths.pc4112,
