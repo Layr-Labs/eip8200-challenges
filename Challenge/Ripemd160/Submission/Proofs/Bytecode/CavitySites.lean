@@ -34,7 +34,7 @@ private def wfOp {op : Operation}
   ⟨hopcode, hplain, havailable⟩
 
 private theorem leftFirst_slice :
-    (A.instructions.drop 5).take (CavityParams.leftCode.take 320).length =
+    (A.instructions.drop 11).take (CavityParams.leftCode.take 320).length =
       CavityParams.leftCode.take 320 := by rfl
 
 private theorem wellFormed_leftFirst : ∀ instruction ∈ CavityParams.leftCode.take 320,
@@ -42,7 +42,7 @@ private theorem wellFormed_leftFirst : ∀ instruction ∈ CavityParams.leftCode
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def leftFirst : GenericRoundSite A .Osaka (CavityParams.leftCode.take 320) :=
-  StackSiteBuilder.ofSlice _ 5 leftFirst_slice (by
+  StackSiteBuilder.ofSlice _ 11 leftFirst_slice (by
     change 3 + (CavityParams.leftCode.take 320).length ≤
       Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
@@ -64,7 +64,7 @@ def leftSecond : GenericRoundSite A .Osaka (CavityParams.leftCode.drop 320) :=
     decide) code_bound wellFormed_leftSecond (by decide)
 
 private theorem rightFirst_slice :
-    (A.instructions.drop 383).take (CavityParams.rightCode.take 298).length =
+    (A.instructions.drop 389).take (CavityParams.rightCode.take 298).length =
       CavityParams.rightCode.take 298 := by rfl
 
 private theorem wellFormed_rightFirst : ∀ instruction ∈ CavityParams.rightCode.take 298,
@@ -72,7 +72,7 @@ private theorem wellFormed_rightFirst : ∀ instruction ∈ CavityParams.rightCo
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def rightFirst : GenericRoundSite A .Osaka (CavityParams.rightCode.take 298) :=
-  StackSiteBuilder.ofSlice _ 383 rightFirst_slice (by
+  StackSiteBuilder.ofSlice _ 389 rightFirst_slice (by
     change 381 + (CavityParams.rightCode.take 298).length ≤
       Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]

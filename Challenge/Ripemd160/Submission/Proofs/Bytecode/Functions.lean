@@ -27,19 +27,19 @@ private def wfOp {op : Operation}
 def rotlPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [⟨2, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨6, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨7, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨8, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨9, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨10, .op .SUB, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨11, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨12, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨13, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
-   ⟨14, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨15, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨16, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨17, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨11, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨12, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨13, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨14, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨15, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨16, .op .SUB, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨17, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨18, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨19, .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), by rfl, by decide⟩,
+   ⟨20, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨21, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨22, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨23, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def rotlValue (x n : UInt256) : UInt256 :=
   Challenge.EvmProof.Word.mask32
@@ -48,7 +48,7 @@ def rotlValue (x n : UInt256) : UInt256 :=
 
 def rotlEntry (s : State) (x n returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 67
+  { s with pc := UInt256.ofNat 17
            stack := [x, n, 0, returnDest] ++ rest }
 
 def rotlReturned (s : State) (x n returnDest : UInt256)

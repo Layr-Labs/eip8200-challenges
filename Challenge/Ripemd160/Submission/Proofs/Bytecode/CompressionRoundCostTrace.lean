@@ -194,7 +194,7 @@ theorem roundBody_cost_potential (q : State) (base : UInt256)
     (genericFTail base j wordIndex rotation k returnDest word a b c d e rest)
     (by simp [genericFTail]; omega) hcode hfork hrun hnp
     (by
-      exact Artifact.submissionArtifact.isValidJumpDest_index 245 (by rfl))
+      exact Artifact.submissionArtifact.isValidJumpDest_index 251 (by rfl))
   have h2 := blockCost_potential RoundTrace.afterFPath
     (BooleanFunctionTrace.fReturned q j b c d (UInt256.ofNat 0x147)
       (genericFTail base j wordIndex rotation k returnDest word a b c d e rest))
@@ -212,7 +212,7 @@ theorem roundBody_cost_potential (q : State) (base : UInt256)
       a b c d e rest)
     (by simp [genericRot1Tail]; omega) hcode hfork hrun hnp
     (by
-      exact Artifact.submissionArtifact.isValidJumpDest_index 259 (by rfl))
+      exact Artifact.submissionArtifact.isValidJumpDest_index 265 (by rfl))
   have h4 := blockCost_potential RoundTrace.afterRot1Path
     (RoundTrace.rotlReturned q (genericT0 j word k a b c d) rotation
       (UInt256.ofNat 0x15d)
@@ -230,13 +230,13 @@ theorem roundBody_cost_potential (q : State) (base : UInt256)
       a b c d e rest)
     (by simp [genericRot2Tail]; omega) hcode2 hfork2 hrun2 hnp2
     (by
-      exact Artifact.submissionArtifact.isValidJumpDest_index 283 (by rfl))
+      exact Artifact.submissionArtifact.isValidJumpDest_index 289 (by rfl))
   have h6 := blockCost_potential RoundTrace.afterRot2Path
     (RoundTrace.rotlReturned q2 c (UInt256.ofNat 10) (UInt256.ofNat 0x185)
       (genericRot2Tail base j wordIndex rotation k returnDest word
         a b c d e rest))
     (TableTrace.setEntry q2 base (UInt256.ofNat 3)
-      (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18c)
+      (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x159)
       (genericSetTail base j wordIndex rotation k returnDest word
         a b c d e rest))
     (RoundTrace.run_afterRot2 q2 base j wordIndex rotation k returnDest word
@@ -244,15 +244,15 @@ theorem roundBody_cost_potential (q : State) (base : UInt256)
     (by simpa [RoundTrace.rotlReturned] using hfork2)
     (by simp [RoundTrace.afterRot2Path, CopyFree])
   have h7 := wordSet_cost_potential q2 base (UInt256.ofNat 3)
-    (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18c)
+    (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x159)
     (genericSetTail base j wordIndex rotation k returnDest word
       a b c d e rest)
     (by simp [genericSetTail]; omega) hcode2 hfork2 hrun2 hnp2
     (by
-      exact Artifact.submissionArtifact.isValidJumpDest_index 288 (by rfl))
+      exact Artifact.submissionArtifact.isValidJumpDest_index 294 (by rfl))
   have h8 := blockCost_potential RoundTrace.suffixPath
     (TableTrace.setReturned q2 base (UInt256.ofNat 3)
-      (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18c)
+      (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x159)
       (genericSetTail base j wordIndex rotation k returnDest word
         a b c d e rest))
     (genericReturned q2 base j word rotation k returnDest a b c d e rest)
@@ -313,7 +313,7 @@ theorem round_cost_potential (s : State) (base : UInt256)
     (roundTail s base j wordIndex rotation k returnDest rest)
     (by simp [roundTail]; omega) hcode0 hfork0 hrun0 hnp0
     (by
-      exact Artifact.submissionArtifact.isValidJumpDest_index 236 (by rfl))
+      exact Artifact.submissionArtifact.isValidJumpDest_index 242 (by rfl))
   have h2 := roundBody_cost_potential q base j hj wordIndex rotation k returnDest
     (RoundTrace.roundWord s base wordIndex) (RoundTrace.loadedA s base)
     (RoundTrace.loadedB s base) (RoundTrace.loadedC s base)

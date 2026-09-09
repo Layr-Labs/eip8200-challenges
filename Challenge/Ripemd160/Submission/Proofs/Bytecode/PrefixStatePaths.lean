@@ -15,180 +15,180 @@ private def wfOp {op : Operation}
 
 abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
 
-@[simp] theorem pc4013 : Artifact.submissionArtifact.instructionPC 4247 = 5209 := by
+@[simp] theorem pc4013 : Artifact.submissionArtifact.instructionPC 4247 = 5203 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4014 : Artifact.submissionArtifact.instructionPC 4248 = 5210 := by
+@[simp] theorem pc4014 : Artifact.submissionArtifact.instructionPC 4248 = 5204 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4015 : Artifact.submissionArtifact.instructionPC 4249 = 5211 := by
+@[simp] theorem pc4015 : Artifact.submissionArtifact.instructionPC 4249 = 5205 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4016 : Artifact.submissionArtifact.instructionPC 4250 = 5214 := by
+@[simp] theorem pc4016 : Artifact.submissionArtifact.instructionPC 4250 = 5208 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4017 : Artifact.submissionArtifact.instructionPC 4251 = 5215 := by
+@[simp] theorem pc4017 : Artifact.submissionArtifact.instructionPC 4251 = 5209 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4018 : Artifact.submissionArtifact.instructionPC 4252 = 5216 := by
+@[simp] theorem pc4018 : Artifact.submissionArtifact.instructionPC 4252 = 5210 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4019 : Artifact.submissionArtifact.instructionPC 4253 = 5217 := by
+@[simp] theorem pc4019 : Artifact.submissionArtifact.instructionPC 4253 = 5211 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4020 : Artifact.submissionArtifact.instructionPC 4254 = 5219 := by
+@[simp] theorem pc4020 : Artifact.submissionArtifact.instructionPC 4254 = 5213 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4021 : Artifact.submissionArtifact.instructionPC 4255 = 5222 := by
+@[simp] theorem pc4021 : Artifact.submissionArtifact.instructionPC 4255 = 5216 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4022 : Artifact.submissionArtifact.instructionPC 4256 = 5223 := by
+@[simp] theorem pc4022 : Artifact.submissionArtifact.instructionPC 4256 = 5217 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4023 : Artifact.submissionArtifact.instructionPC 4257 = 5224 := by
+@[simp] theorem pc4023 : Artifact.submissionArtifact.instructionPC 4257 = 5218 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4024 : Artifact.submissionArtifact.instructionPC 4258 = 5225 := by
+@[simp] theorem pc4024 : Artifact.submissionArtifact.instructionPC 4258 = 5219 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4025 : Artifact.submissionArtifact.instructionPC 4259 = 5226 := by
+@[simp] theorem pc4025 : Artifact.submissionArtifact.instructionPC 4259 = 5220 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4026 : Artifact.submissionArtifact.instructionPC 4260 = 5227 := by
+@[simp] theorem pc4026 : Artifact.submissionArtifact.instructionPC 4260 = 5221 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4027 : Artifact.submissionArtifact.instructionPC 4261 = 5230 := by
+@[simp] theorem pc4027 : Artifact.submissionArtifact.instructionPC 4261 = 5224 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4028 : Artifact.submissionArtifact.instructionPC 4262 = 5231 := by
+@[simp] theorem pc4028 : Artifact.submissionArtifact.instructionPC 4262 = 5225 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4029 : Artifact.submissionArtifact.instructionPC 4263 = 5233 := by
+@[simp] theorem pc4029 : Artifact.submissionArtifact.instructionPC 4263 = 5227 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4030 : Artifact.submissionArtifact.instructionPC 4264 = 5234 := by
+@[simp] theorem pc4030 : Artifact.submissionArtifact.instructionPC 4264 = 5228 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4031 : Artifact.submissionArtifact.instructionPC 4265 = 5267 := by
+@[simp] theorem pc4031 : Artifact.submissionArtifact.instructionPC 4265 = 5261 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4032 : Artifact.submissionArtifact.instructionPC 4266 = 5268 := by
+@[simp] theorem pc4032 : Artifact.submissionArtifact.instructionPC 4266 = 5262 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4033 : Artifact.submissionArtifact.instructionPC 4267 = 5271 := by
+@[simp] theorem pc4033 : Artifact.submissionArtifact.instructionPC 4267 = 5265 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4034 : Artifact.submissionArtifact.instructionPC 4268 = 5272 := by
+@[simp] theorem pc4034 : Artifact.submissionArtifact.instructionPC 4268 = 5266 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4035 : Artifact.submissionArtifact.instructionPC 4269 = 5273 := by
+@[simp] theorem pc4035 : Artifact.submissionArtifact.instructionPC 4269 = 5267 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4036 : Artifact.submissionArtifact.instructionPC 4270 = 5278 := by
+@[simp] theorem pc4036 : Artifact.submissionArtifact.instructionPC 4270 = 5272 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4037 : Artifact.submissionArtifact.instructionPC 4271 = 5280 := by
+@[simp] theorem pc4037 : Artifact.submissionArtifact.instructionPC 4271 = 5274 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4038 : Artifact.submissionArtifact.instructionPC 4272 = 5281 := by
+@[simp] theorem pc4038 : Artifact.submissionArtifact.instructionPC 4272 = 5275 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4039 : Artifact.submissionArtifact.instructionPC 4273 = 5286 := by
+@[simp] theorem pc4039 : Artifact.submissionArtifact.instructionPC 4273 = 5280 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4040 : Artifact.submissionArtifact.instructionPC 4274 = 5288 := by
+@[simp] theorem pc4040 : Artifact.submissionArtifact.instructionPC 4274 = 5282 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4041 : Artifact.submissionArtifact.instructionPC 4275 = 5289 := by
+@[simp] theorem pc4041 : Artifact.submissionArtifact.instructionPC 4275 = 5283 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4042 : Artifact.submissionArtifact.instructionPC 4276 = 5294 := by
+@[simp] theorem pc4042 : Artifact.submissionArtifact.instructionPC 4276 = 5288 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4043 : Artifact.submissionArtifact.instructionPC 4277 = 5296 := by
+@[simp] theorem pc4043 : Artifact.submissionArtifact.instructionPC 4277 = 5290 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4044 : Artifact.submissionArtifact.instructionPC 4278 = 5297 := by
+@[simp] theorem pc4044 : Artifact.submissionArtifact.instructionPC 4278 = 5291 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4045 : Artifact.submissionArtifact.instructionPC 4279 = 5302 := by
+@[simp] theorem pc4045 : Artifact.submissionArtifact.instructionPC 4279 = 5296 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4046 : Artifact.submissionArtifact.instructionPC 4280 = 5304 := by
+@[simp] theorem pc4046 : Artifact.submissionArtifact.instructionPC 4280 = 5298 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4047 : Artifact.submissionArtifact.instructionPC 4281 = 5305 := by
+@[simp] theorem pc4047 : Artifact.submissionArtifact.instructionPC 4281 = 5299 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4048 : Artifact.submissionArtifact.instructionPC 4282 = 5310 := by
+@[simp] theorem pc4048 : Artifact.submissionArtifact.instructionPC 4282 = 5304 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4049 : Artifact.submissionArtifact.instructionPC 4283 = 5312 := by
+@[simp] theorem pc4049 : Artifact.submissionArtifact.instructionPC 4283 = 5306 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4050 : Artifact.submissionArtifact.instructionPC 4284 = 5313 := by
+@[simp] theorem pc4050 : Artifact.submissionArtifact.instructionPC 4284 = 5307 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 def laterPath : List Located :=
   [⟨4247, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4248, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4249, .push ⟨2, by decide⟩ (UInt256.ofNat 522), by rfl, by decide⟩,
+   ⟨4249, .push ⟨2, by decide⟩ (UInt256.ofNat 471), by rfl, by decide⟩,
    ⟨4250, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def prefixPath : List Located :=
   [⟨4247, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4248, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4249, .push ⟨2, by decide⟩ (UInt256.ofNat 522), by rfl, by decide⟩,
+   ⟨4249, .push ⟨2, by decide⟩ (UInt256.ofNat 471), by rfl, by decide⟩,
    ⟨4250, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4251, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
    ⟨4252, .op .CALLDATALOAD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4253, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨4254, .push ⟨2, by decide⟩ (UInt256.ofNat 324), by rfl, by decide⟩,
+   ⟨4254, .push ⟨2, by decide⟩ (UInt256.ofNat 273), by rfl, by decide⟩,
    ⟨4255, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩]
 
 def firstComparePath : List Located :=
   [⟨4257, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
    ⟨4258, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4259, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4260, .push ⟨2, by decide⟩ (UInt256.ofNat 522), by rfl, by decide⟩,
+   ⟨4260, .push ⟨2, by decide⟩ (UInt256.ofNat 471), by rfl, by decide⟩,
    ⟨4261, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def secondComparePath : List Located :=
@@ -196,7 +196,7 @@ def secondComparePath : List Located :=
    ⟨4263, .op .CALLDATALOAD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4264, .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906), by rfl, by decide⟩,
    ⟨4265, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4266, .push ⟨2, by decide⟩ (UInt256.ofNat 522), by rfl, by decide⟩,
+   ⟨4266, .push ⟨2, by decide⟩ (UInt256.ofNat 471), by rfl, by decide⟩,
    ⟨4267, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def hitPath : List Located :=

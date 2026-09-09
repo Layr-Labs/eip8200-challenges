@@ -180,12 +180,12 @@ def gasSteps_rightTest_continue (s : State)
 
 def rightExitTested (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 834
+  { s with pc := UInt256.ofNat 828
            stack := UInt256.ofNat 80 :: messageOffset :: returnDest :: rest }
 
 def combinationEntry (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 836
+  { s with pc := UInt256.ofNat 830
            stack := [messageOffset, returnDest] ++ rest }
 
 set_option linter.unusedSimpArgs false in

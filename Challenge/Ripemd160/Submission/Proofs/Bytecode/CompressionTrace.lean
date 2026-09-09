@@ -52,12 +52,12 @@ def rightExitPath : List Nat := List.range' 563 2
 def combinationPath : List Nat := List.range' 565 82
 
 def scheduleSetupLocated : List Located :=
-  [⟨447, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨448, .push ⟨2, by decide⟩ (UInt256.ofNat 630), by rfl, by decide⟩,
-   ⟨449, .op (.Dup ⟨1, by decide⟩), by rfl,
+  [⟨449, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨450, .push ⟨2, by decide⟩ (UInt256.ofNat 630), by rfl, by decide⟩,
+   ⟨451, .op (.Dup ⟨1, by decide⟩), by rfl,
       wfOp (by decide) trivial rfl⟩,
-   ⟨450, .push ⟨2, by decide⟩ (UInt256.ofNat 566), by rfl, by decide⟩,
-   ⟨451, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨452, .push ⟨2, by decide⟩ (UInt256.ofNat 566), by rfl, by decide⟩,
+   ⟨453, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem scheduleSetupPC (j : Nat)
     (hlo : 451 ≤ j) (hhi : j ≤ 455) :
@@ -66,19 +66,19 @@ def scheduleSetupLocated : List Located :=
   interval_cases j <;> rfl
 
 def copyStateLocated : List Located :=
-  [⟨452, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨453, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
-   ⟨454, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨455, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
-   ⟨456, .op .MCOPY, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨457, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
-   ⟨458, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨459, .push ⟨2, by decide⟩ (UInt256.ofNat 352), by rfl, by decide⟩,
-   ⟨460, .op .MCOPY, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨461, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
-   ⟨462, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨463, .push ⟨2, by decide⟩ (UInt256.ofNat 512), by rfl, by decide⟩,
-   ⟨464, .op .MCOPY, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨454, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨455, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
+   ⟨456, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨457, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
+   ⟨458, .op .MCOPY, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨459, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
+   ⟨460, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨461, .push ⟨2, by decide⟩ (UInt256.ofNat 352), by rfl, by decide⟩,
+   ⟨462, .op .MCOPY, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨463, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
+   ⟨464, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨465, .push ⟨2, by decide⟩ (UInt256.ofNat 512), by rfl, by decide⟩,
+   ⟨466, .op .MCOPY, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem copyStatePC (j : Nat)
     (hlo : 456 ≤ j) (hhi : j ≤ 468) :
@@ -328,13 +328,13 @@ def combinationLocated : List Located :=
 
 def compressEntry (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 664
+  { s with pc := UInt256.ofNat 613
            stack := [messageOffset, returnDest] ++ rest }
 
 /-- State at the independently verified schedule helper (PC `0x236`). -/
 def scheduleEntry (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 613
+  { s with pc := UInt256.ofNat 562
            stack := [messageOffset, UInt256.ofNat 630,
              messageOffset, returnDest] ++ rest }
 
@@ -342,7 +342,7 @@ def scheduleEntry (s : State) (messageOffset returnDest : UInt256)
 caller-parametric: `ScheduleCorrect` supplies the schedule-memory invariant. -/
 def scheduleReturned (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 676
+  { s with pc := UInt256.ofNat 625
            stack := [messageOffset, returnDest] ++ rest }
 
 def copyRegion (s : State) (dest src size : Nat) : State :=
@@ -357,17 +357,17 @@ def copiedWorkingState (s : State) : State :=
 def copiesReturned (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
   let t := copiedWorkingState s
-  { t with pc := UInt256.ofNat 695
+  { t with pc := UInt256.ofNat 644
            stack := [messageOffset, returnDest] ++ rest }
 
 def leftLoopAt (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 696
+  { s with pc := UInt256.ofNat 645
            stack := UInt256.ofNat i :: messageOffset :: returnDest :: rest }
 
 def leftBodyAt (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 706
+  { s with pc := UInt256.ofNat 655
            stack := UInt256.ofNat i :: messageOffset :: returnDest :: rest }
 
 /-- The round helper returns one disposable Yul expression above the loop
@@ -985,27 +985,27 @@ def gasSteps_left80Concrete (s : State) (messageOffset returnDest : UInt256)
 
 def rightLoopAt (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 763
+  { s with pc := UInt256.ofNat 744
            stack := UInt256.ofNat i :: messageOffset :: returnDest :: rest }
 
 def rightBodyAt (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 775
+  { s with pc := UInt256.ofNat 756
            stack := UInt256.ofNat i :: messageOffset :: returnDest :: rest }
 
 def rightRoundReturned (s : State) (messageOffset returnDest discard : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 822
+  { s with pc := UInt256.ofNat 816
            stack := discard :: UInt256.ofNat i :: messageOffset :: returnDest :: rest }
 
 def leftExitCompared (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 764
+  { s with pc := UInt256.ofNat 745
            stack := UInt256.ofNat 80 :: messageOffset :: returnDest :: rest }
 
 def leftExited (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 766
+  { s with pc := UInt256.ofNat 747
            stack := messageOffset :: returnDest :: rest }
 
 set_option linter.unusedSimpArgs false in

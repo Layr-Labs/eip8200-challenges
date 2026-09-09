@@ -11,7 +11,7 @@ set_option linter.unusedSimpArgs false
 The raw symbolic stepper has no `CODECOPY` case, so this module proves the
 single step directly against `StepRunning.codecopy`, following the
 `KnownInputCompactCodecopy` pattern.  It copies 32 code bytes from offset
-324 to scratch word 0.  Branch proofs compose via `gasSteps_codecopy`.
+273 to scratch word 0.  Branch proofs compose via `gasSteps_codecopy`.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateCodecopy
@@ -20,12 +20,12 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
 def preCopyState (s : State) (rho : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 5223
-    stack := [UInt256.ofNat 0, UInt256.ofNat 324, UInt256.ofNat 32] ++ rho }
+    pc := UInt256.ofNat 5217
+    stack := [UInt256.ofNat 0, UInt256.ofNat 273, UInt256.ofNat 32] ++ rho }
 
 def copiedState (s : State) (rho : List UInt256) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5224
+    pc := UInt256.ofNat 5218
     stack := rho }
 
 def gasSteps_codecopy (s : State) (rho : List UInt256)
@@ -45,7 +45,7 @@ def gasSteps_codecopy (s : State) (rho : List UInt256)
     exact hcode
   have hpc : (withGas pre gas).pc.toNat =
       Artifact.submissionArtifact.instructionPC 4256 := by
-    show (UInt256.ofNat 5223).toNat = _
+    show (UInt256.ofNat 5217).toNat = _
     rw [PrefixStatePaths.pc4022]
     decide
   have hdec := Stepper.decodes_of_artifact
@@ -56,7 +56,7 @@ def gasSteps_codecopy (s : State) (rho : List UInt256)
   · simpa [pre, preCopyState, withGas] using hrun
   · simpa [pre, preCopyState, withGas] using hnp
   · have hstack' : (withGas pre gas).stack =
-        UInt256.ofNat 0 :: UInt256.ofNat 324 :: UInt256.ofNat 32 :: rho := by
+        UInt256.ofNat 0 :: UInt256.ofNat 273 :: UInt256.ofNat 32 :: rho := by
       rfl
     have hpush : Operation.pushArity .CODECOPY = 0 := rfl
     have hpop : Operation.popArity .CODECOPY = 3 := rfl
@@ -67,15 +67,15 @@ def gasSteps_codecopy (s : State) (rho : List UInt256)
         Operation.pushArity .CODECOPY ≤ 1024 + Operation.popArity .CODECOPY := by
       omega
     have hstep := StepRunning.codecopy (withGas pre gas)
-      (UInt256.ofNat 0) (UInt256.ofNat 324) (UInt256.ofNat 32) rho
+      (UInt256.ofNat 0) (UInt256.ofNat 273) (UInt256.ofNat 32) rho
       hdec hstack' hgas hcap
     have mz : (0 : Nat) % 2 ^ 256 = 0 := Nat.mod_eq_of_lt (by norm_num)
-    have mz260 : (324 : Nat) % 2 ^ 256 = 324 := Nat.mod_eq_of_lt (by norm_num)
+    have mz273 : (273 : Nat) % 2 ^ 256 = 273 := Nat.mod_eq_of_lt (by norm_num)
     have mz32 : (32 : Nat) % 2 ^ 256 = 32 := Nat.mod_eq_of_lt (by norm_num)
     simpa [pre, cost, preCopyState, copiedState, PrefixStateMemory.copied,
       withGas, Gas.codecopyTotal, State.activeWordsAfterUInt256,
-      Challenge.EvmProof.Word.word_toNat_ofNat, mz, mz260, mz32,
-      Challenge.EvmProof.Word.succ_ofNat (n := 5223) (by norm_num),
+      Challenge.EvmProof.Word.word_toNat_ofNat, mz, mz273, mz32,
+      Challenge.EvmProof.Word.succ_ofNat (n := 5217) (by norm_num),
       hcode] using hstep
 
 #print axioms gasSteps_codecopy

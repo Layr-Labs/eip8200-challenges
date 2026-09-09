@@ -40,26 +40,28 @@ def maskTail : List UInt256 :=
 @[simp] theorem maskTail_length : maskTail.length = 2 := rfl
 
 def mainStart (input : ByteArray) : State :=
-  { atPC input 0x43 with stack := maskTail }
+  { atPC input 0x11 with stack := maskTail }
 
 def path_start : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨0, .push ⟨1, by decide⟩ (UInt256.ofNat 230), by rfl, by decide⟩,
+  [⟨0, .push ⟨1, by decide⟩ (UInt256.ofNat 180), by rfl, by decide⟩,
    ⟨1, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 
 def path_3ee : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [⟨2, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3, .push ⟨31, by decide⟩
-      (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455),
-      by rfl, by decide⟩,
-   ⟨4, .push ⟨30, by decide⟩
-      (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255),
-      by rfl, by decide⟩]
+   ⟨3, .push ⟨2, by decide⟩ (UInt256.ofNat 257), by rfl, by decide⟩,
+   ⟨4, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨5, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6, .op .DIV, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨7, .push ⟨3, by decide⟩ (UInt256.ofNat 65537), by rfl, by decide⟩,
+   ⟨8, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨9, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨10, .op .DIV, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def gasSteps_start (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0xe6) :=
+    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0xb4) :=
   ExecutionEntry.initial_entry input
 
 def gasSteps_3ee (input : ByteArray) :
@@ -69,6 +71,7 @@ def gasSteps_3ee (input : ByteArray) :
     simp [path_3ee, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, mainStart, maskTail, initialState]
+    exact ⟨by decide, by decide⟩
   apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka path_3ee
   · rfl

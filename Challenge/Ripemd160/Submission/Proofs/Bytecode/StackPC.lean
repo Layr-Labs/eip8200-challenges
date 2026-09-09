@@ -24,7 +24,7 @@ theorem instructionPC_eq_byteLength (artifact : ProgramArtifact) (index : Nat) :
     artifact.instructionPC index = byteLength (artifact.instructions.take index) :=
   (byteLength_eq_assemble _).symm
 
-theorem tailPC : Artifact.submissionArtifact.instructionPC 1572 = 0x821 := by
+theorem tailPC : Artifact.submissionArtifact.instructionPC 1572 = 0x81b := by
   rw [instructionPC_eq_byteLength]
   decide
 

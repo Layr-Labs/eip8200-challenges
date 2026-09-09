@@ -115,9 +115,9 @@ def loadMulTemplate (address : Nat) (dup : Operation.DupOp) : List Instr :=
   [push1 (UInt256.ofNat address), .op .MLOAD, .op (.Dup dup), .op .MUL]
 
 def template : List Instr :=
-  [dup1, .push ⟨1, by decide⟩ (UInt256.ofNat 128), .op .SHL,
+  [.push ⟨20, by decide⟩ (UInt256.ofNat 0xffffffff00000000000000000000000000000000),
    dup1, .op (.Dup ⟨2, by decide⟩), .op .OR,
-   .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .DIV] ++
+   .push ⟨17, by decide⟩ (UInt256.ofNat 340282366920938463463374607431768211457)] ++
    loadMulTemplate 160 ⟨1, by decide⟩ ++
    loadMulTemplate 128 ⟨2, by decide⟩ ++
    loadMulTemplate 96 ⟨3, by decide⟩ ++
@@ -126,10 +126,10 @@ def template : List Instr :=
    [.push ⟨5, by decide⟩ PairedDerivedStartup.factorWord,
     .op (.Swap ⟨5, by decide⟩), .op .POP]
 
-theorem template_length : template.length = 32 := by
+theorem template_length : template.length = 28 := by
   norm_num [template, loadMulTemplate]
 
-theorem template_bytes : (template.map Instr.size).sum = 43 := by
+theorem template_bytes : (template.map Instr.size).sum = 75 := by
   norm_num [template, loadMulTemplate, push1, dup1, Instr.size]
 
 theorem lower_toNat :
@@ -170,6 +170,26 @@ theorem pair_div_lower :
 
 #print axioms pair_div_lower
 
+/-- The artifact now pushes the factor inline as a `PUSH17` literal rather than
+reading it from the persistent frame, so the trace produces the decimal literal
+where the algebraic lemmas speak of `dupFactor`.  Fold one into the other. -/
+theorem dupFactor_literal :
+    UInt256.ofNat 340282366920938463463374607431768211457 = dupFactor := by
+  unfold dupFactor
+  norm_num
+
+#print axioms dupFactor_literal
+
+/-- Likewise the upper mask: the artifact now pushes it as a `PUSH20` literal
+instead of deriving it from `lowerWord` by a shift. -/
+theorem upperWord_literal :
+    UInt256.ofNat 1461501636990620551282746369252908412224164331520 =
+      PairedDerivedStartup.upperWord := by
+  unfold PairedDerivedStartup.upperWord
+  norm_num
+
+#print axioms upperWord_literal
+
 theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
     (h32 : (MachineState.readWord s.memory 32).toNat < 2 ^ 32)
     (h64 : (MachineState.readWord s.memory 64).toNat < 2 ^ 32)
@@ -190,17 +210,17 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
   have hmul96 := mul_eq_packedHash s.memory 96 h96
   have hmul64 := mul_eq_packedHash s.memory 64 h64
   have hmul32 := mul_eq_packedHash s.memory 32 h32
-  simp (discharger := omega) [template, loadMulTemplate, push1, dup1,
+  simp (discharger := omega) [template, loadMulTemplate, push1, dup1, dupFactor_literal,
+    upperWord_literal, PairedDerivedStartup.pair_from_lower,
     PairedDerivedStartup.packedHash, PairedDerivedStartup.resultStack,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, hrun, hcap, Nat.add_assoc,
-    PairedDerivedStartup.upper_from_lower, PairedDerivedStartup.pair_from_lower,
-    pair_div_lower,
+
     List.getElem?_cons_zero, List.getElem?_cons_succ,
     State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     List.exchange, hmul160, hmul128, hmul96, hmul64, hmul32]
-  rfl
+  simp only [show ∀ a b : UInt256, a.add b = a + b from fun _ _ => rfl]
 
 #print axioms template_length
 #print axioms template_bytes
@@ -210,11 +230,11 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
 
 open Challenge.EvmProof StackRoundTemplate
 
-/-- Flat 33-op expansion of `template` for the advancement case split. -/
+/-- Flat 28-op expansion of `template` for the advancement case split. -/
 def frozenInstructions : List Instr :=
-  [DenseScheduleTemplate.dup1, .push ⟨1, by decide⟩ (UInt256.ofNat 128), .op .SHL,
+  [.push ⟨20, by decide⟩ (UInt256.ofNat 0xffffffff00000000000000000000000000000000),
    DenseScheduleTemplate.dup1, .op (.Dup ⟨2, by decide⟩), .op .OR,
-   .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .DIV,
+   .push ⟨17, by decide⟩ (UInt256.ofNat 340282366920938463463374607431768211457),
    DenseScheduleTemplate.push1 (UInt256.ofNat 160), .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .MUL,
    DenseScheduleTemplate.push1 (UInt256.ofNat 128), .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .op .MUL,
    DenseScheduleTemplate.push1 (UInt256.ofNat 96), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .MUL,
@@ -232,7 +252,7 @@ theorem template_advances :
   intro instruction hmem
   rw [template_eq_frozenInstructions] at hmem
   simp only [frozenInstructions, List.mem_cons, List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals first
     | exact Or.inr rfl
     | exact Or.inl (Or.inl (Or.inl (StraightLine.push _ _)))

@@ -14,11 +14,11 @@ open StackRoundTemplate PairedHelperBooleanTrace
 /-- Actual instruction windows for the frozen 5349-byte generic paired compressor. -/
 
 theorem group0_slice :
-    (Artifact.submissionArtifact.instructions.drop 464).take group0Template.length = group0Template := by
+    (Artifact.submissionArtifact.instructions.drop 466).take group0Template.length = group0Template := by
   rfl
 
 theorem group0_instructionPC :
-    Artifact.submissionArtifact.instructionPC 464 = 789 := by
+    Artifact.submissionArtifact.instructionPC 466 = 770 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -33,8 +33,8 @@ def group0Site : GenericRoundSite Artifact.submissionArtifact .Osaka group0Templ
       (instructions := group0Template) (by decide))
     (by decide)
 
-theorem group0Site_startPC : group0Site.startPC = UInt256.ofNat 990 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 464) = UInt256.ofNat 789
+theorem group0Site_startPC : group0Site.startPC = UInt256.ofNat 984 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 466) = UInt256.ofNat 770
   rw [group0_instructionPC]
 
 
@@ -58,8 +58,8 @@ def inline0Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline0Tem
       (instructions := inline0Template) (by decide))
     (by decide)
 
-theorem inline0Site_startPC : inline0Site.startPC = UInt256.ofNat 1011 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 465) = UInt256.ofNat 794
+theorem inline0Site_startPC : inline0Site.startPC = UInt256.ofNat 1005 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 465) = UInt256.ofNat 769
   rw [inline0_instructionPC]
 
 
@@ -68,7 +68,7 @@ theorem inline1_slice :
   rfl
 
 theorem inline1_instructionPC :
-    Artifact.submissionArtifact.instructionPC 513 = 849 := by
+    Artifact.submissionArtifact.instructionPC 513 = 843 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -83,8 +83,8 @@ def inline1Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline1Tem
       (instructions := inline1Template) (by decide))
     (by decide)
 
-theorem inline1Site_startPC : inline1Site.startPC = UInt256.ofNat 1065 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 513) = UInt256.ofNat 849
+theorem inline1Site_startPC : inline1Site.startPC = UInt256.ofNat 1059 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 513) = UInt256.ofNat 843
   rw [inline1_instructionPC]
 
 
@@ -93,7 +93,7 @@ theorem inline2_slice :
   rfl
 
 theorem inline2_instructionPC :
-    Artifact.submissionArtifact.instructionPC 561 = 903 := by
+    Artifact.submissionArtifact.instructionPC 561 = 897 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -108,8 +108,8 @@ def inline2Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline2Tem
       (instructions := inline2Template) (by decide))
     (by decide)
 
-theorem inline2Site_startPC : inline2Site.startPC = UInt256.ofNat 1119 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 561) = UInt256.ofNat 903
+theorem inline2Site_startPC : inline2Site.startPC = UInt256.ofNat 1113 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 561) = UInt256.ofNat 897
   rw [inline2_instructionPC]
 
 
@@ -118,7 +118,7 @@ theorem inline3_slice :
   rfl
 
 theorem inline3_instructionPC :
-    Artifact.submissionArtifact.instructionPC 609 = 958 := by
+    Artifact.submissionArtifact.instructionPC 609 = 952 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -133,8 +133,8 @@ def inline3Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline3Tem
       (instructions := inline3Template) (by decide))
     (by decide)
 
-theorem inline3Site_startPC : inline3Site.startPC = UInt256.ofNat 1140 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 609) = UInt256.ofNat 958
+theorem inline3Site_startPC : inline3Site.startPC = UInt256.ofNat 1134 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 609) = UInt256.ofNat 952
   rw [inline3_instructionPC]
 
 
@@ -143,7 +143,7 @@ theorem inline4_slice :
   rfl
 
 theorem inline4_instructionPC :
-    Artifact.submissionArtifact.instructionPC 657 = 1012 := by
+    Artifact.submissionArtifact.instructionPC 657 = 1006 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -158,8 +158,8 @@ def inline4Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline4Tem
       (instructions := inline4Template) (by decide))
     (by decide)
 
-theorem inline4Site_startPC : inline4Site.startPC = UInt256.ofNat 1228 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 657) = UInt256.ofNat 1012
+theorem inline4Site_startPC : inline4Site.startPC = UInt256.ofNat 1222 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 657) = UInt256.ofNat 1006
   rw [inline4_instructionPC]
 
 
@@ -168,7 +168,7 @@ theorem inline5_slice :
   rfl
 
 theorem inline5_instructionPC :
-    Artifact.submissionArtifact.instructionPC 705 = 1067 := by
+    Artifact.submissionArtifact.instructionPC 705 = 1061 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -183,8 +183,8 @@ def inline5Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline5Tem
       (instructions := inline5Template) (by decide))
     (by decide)
 
-theorem inline5Site_startPC : inline5Site.startPC = UInt256.ofNat 1283 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 705) = UInt256.ofNat 1067
+theorem inline5Site_startPC : inline5Site.startPC = UInt256.ofNat 1277 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 705) = UInt256.ofNat 1061
   rw [inline5_instructionPC]
 
 
@@ -193,7 +193,7 @@ theorem inline6_slice :
   rfl
 
 theorem inline6_instructionPC :
-    Artifact.submissionArtifact.instructionPC 753 = 1122 := by
+    Artifact.submissionArtifact.instructionPC 753 = 1116 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -208,8 +208,8 @@ def inline6Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline6Tem
       (instructions := inline6Template) (by decide))
     (by decide)
 
-theorem inline6Site_startPC : inline6Site.startPC = UInt256.ofNat 1338 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 753) = UInt256.ofNat 1122
+theorem inline6Site_startPC : inline6Site.startPC = UInt256.ofNat 1332 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 753) = UInt256.ofNat 1116
   rw [inline6_instructionPC]
 
 
@@ -218,7 +218,7 @@ theorem inline7_slice :
   rfl
 
 theorem inline7_instructionPC :
-    Artifact.submissionArtifact.instructionPC 801 = 1177 := by
+    Artifact.submissionArtifact.instructionPC 801 = 1171 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -233,8 +233,8 @@ def inline7Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline7Tem
       (instructions := inline7Template) (by decide))
     (by decide)
 
-theorem inline7Site_startPC : inline7Site.startPC = UInt256.ofNat 1393 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 801) = UInt256.ofNat 1177
+theorem inline7Site_startPC : inline7Site.startPC = UInt256.ofNat 1387 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 801) = UInt256.ofNat 1171
   rw [inline7_instructionPC]
 
 
@@ -243,7 +243,7 @@ theorem inline8_slice :
   rfl
 
 theorem inline8_instructionPC :
-    Artifact.submissionArtifact.instructionPC 849 = 1232 := by
+    Artifact.submissionArtifact.instructionPC 849 = 1226 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -258,8 +258,8 @@ def inline8Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline8Tem
       (instructions := inline8Template) (by decide))
     (by decide)
 
-theorem inline8Site_startPC : inline8Site.startPC = UInt256.ofNat 1444 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 849) = UInt256.ofNat 1232
+theorem inline8Site_startPC : inline8Site.startPC = UInt256.ofNat 1438 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 849) = UInt256.ofNat 1226
   rw [inline8_instructionPC]
 
 
@@ -268,7 +268,7 @@ theorem inline9_slice :
   rfl
 
 theorem inline9_instructionPC :
-    Artifact.submissionArtifact.instructionPC 897 = 1287 := by
+    Artifact.submissionArtifact.instructionPC 897 = 1281 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -283,8 +283,8 @@ def inline9Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline9Tem
       (instructions := inline9Template) (by decide))
     (by decide)
 
-theorem inline9Site_startPC : inline9Site.startPC = UInt256.ofNat 1503 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 897) = UInt256.ofNat 1287
+theorem inline9Site_startPC : inline9Site.startPC = UInt256.ofNat 1497 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 897) = UInt256.ofNat 1281
   rw [inline9_instructionPC]
 
 
@@ -293,7 +293,7 @@ theorem inline10_slice :
   rfl
 
 theorem inline10_instructionPC :
-    Artifact.submissionArtifact.instructionPC 945 = 1344 := by
+    Artifact.submissionArtifact.instructionPC 945 = 1338 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -308,8 +308,8 @@ def inline10Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline10T
       (instructions := inline10Template) (by decide))
     (by decide)
 
-theorem inline10Site_startPC : inline10Site.startPC = UInt256.ofNat 1562 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 945) = UInt256.ofNat 1344
+theorem inline10Site_startPC : inline10Site.startPC = UInt256.ofNat 1556 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 945) = UInt256.ofNat 1338
   rw [inline10_instructionPC]
 
 
@@ -318,7 +318,7 @@ theorem inline11_slice :
   rfl
 
 theorem inline11_instructionPC :
-    Artifact.submissionArtifact.instructionPC 993 = 1401 := by
+    Artifact.submissionArtifact.instructionPC 993 = 1395 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -333,8 +333,8 @@ def inline11Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline11T
       (instructions := inline11Template) (by decide))
     (by decide)
 
-theorem inline11Site_startPC : inline11Site.startPC = UInt256.ofNat 1617 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 993) = UInt256.ofNat 1401
+theorem inline11Site_startPC : inline11Site.startPC = UInt256.ofNat 1611 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 993) = UInt256.ofNat 1395
   rw [inline11_instructionPC]
 
 
@@ -343,7 +343,7 @@ theorem inline12_slice :
   rfl
 
 theorem inline12_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1041 = 1455 := by
+    Artifact.submissionArtifact.instructionPC 1041 = 1449 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -358,8 +358,8 @@ def inline12Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline12T
       (instructions := inline12Template) (by decide))
     (by decide)
 
-theorem inline12Site_startPC : inline12Site.startPC = UInt256.ofNat 1634 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1041) = UInt256.ofNat 1455
+theorem inline12Site_startPC : inline12Site.startPC = UInt256.ofNat 1628 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1041) = UInt256.ofNat 1449
   rw [inline12_instructionPC]
 
 
@@ -368,7 +368,7 @@ theorem inline13_slice :
   rfl
 
 theorem inline13_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1089 = 1510 := by
+    Artifact.submissionArtifact.instructionPC 1089 = 1504 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -383,8 +383,8 @@ def inline13Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline13T
       (instructions := inline13Template) (by decide))
     (by decide)
 
-theorem inline13Site_startPC : inline13Site.startPC = UInt256.ofNat 1695 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1089) = UInt256.ofNat 1510
+theorem inline13Site_startPC : inline13Site.startPC = UInt256.ofNat 1689 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1089) = UInt256.ofNat 1504
   rw [inline13_instructionPC]
 
 
@@ -393,7 +393,7 @@ theorem inline14_slice :
   rfl
 
 theorem inline14_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1137 = 1565 := by
+    Artifact.submissionArtifact.instructionPC 1137 = 1559 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -408,8 +408,8 @@ def inline14Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline14T
       (instructions := inline14Template) (by decide))
     (by decide)
 
-theorem inline14Site_startPC : inline14Site.startPC = UInt256.ofNat 1784 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1137) = UInt256.ofNat 1565
+theorem inline14Site_startPC : inline14Site.startPC = UInt256.ofNat 1778 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1137) = UInt256.ofNat 1559
   rw [inline14_instructionPC]
 
 
@@ -418,7 +418,7 @@ theorem inline15_slice :
   rfl
 
 theorem inline15_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1185 = 1620 := by
+    Artifact.submissionArtifact.instructionPC 1185 = 1614 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -433,8 +433,8 @@ def inline15Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline15T
       (instructions := inline15Template) (by decide))
     (by decide)
 
-theorem inline15Site_startPC : inline15Site.startPC = UInt256.ofNat 1839 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1185) = UInt256.ofNat 1620
+theorem inline15Site_startPC : inline15Site.startPC = UInt256.ofNat 1833 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1185) = UInt256.ofNat 1614
   rw [inline15_instructionPC]
 
 
@@ -443,7 +443,7 @@ theorem group16_slice :
   rfl
 
 theorem group16_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1229 = 1691 := by
+    Artifact.submissionArtifact.instructionPC 1229 = 1685 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -458,8 +458,8 @@ def group16Site : GenericRoundSite Artifact.submissionArtifact .Osaka group16Tem
       (instructions := group16Template) (by decide))
     (by decide)
 
-theorem group16Site_startPC : group16Site.startPC = UInt256.ofNat 1894 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1229) = UInt256.ofNat 1691
+theorem group16Site_startPC : group16Site.startPC = UInt256.ofNat 1888 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1229) = UInt256.ofNat 1685
   rw [group16_instructionPC]
 
 
@@ -468,7 +468,7 @@ theorem call16_slice :
   rfl
 
 theorem call16_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1232 = 1694 := by
+    Artifact.submissionArtifact.instructionPC 1232 = 1688 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -483,8 +483,8 @@ def call16Site : GenericRoundSite Artifact.submissionArtifact .Osaka call16Templ
       (instructions := call16Template) (by decide))
     (by decide)
 
-theorem call16Site_startPC : call16Site.startPC = UInt256.ofNat 1917 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1232) = UInt256.ofNat 1694
+theorem call16Site_startPC : call16Site.startPC = UInt256.ofNat 1911 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1232) = UInt256.ofNat 1688
   rw [call16_instructionPC]
 
 
@@ -493,7 +493,7 @@ theorem return18_slice :
   rfl
 
 theorem return18_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1256 = 1721 := by
+    Artifact.submissionArtifact.instructionPC 1256 = 1715 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -508,8 +508,8 @@ def return18Site : GenericRoundSite Artifact.submissionArtifact .Osaka return18T
       (instructions := return18Template) (by decide))
     (by decide)
 
-theorem return18Site_startPC : return18Site.startPC = UInt256.ofNat 1957 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1256) = UInt256.ofNat 1721
+theorem return18Site_startPC : return18Site.startPC = UInt256.ofNat 1951 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1256) = UInt256.ofNat 1715
   rw [return18_instructionPC]
 
 
@@ -518,7 +518,7 @@ theorem inline18_slice :
   rfl
 
 theorem inline18_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1257 = 1722 := by
+    Artifact.submissionArtifact.instructionPC 1257 = 1716 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -533,8 +533,8 @@ def inline18Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline18T
       (instructions := inline18Template) (by decide))
     (by decide)
 
-theorem inline18Site_startPC : inline18Site.startPC = UInt256.ofNat 1958 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1257) = UInt256.ofNat 1722
+theorem inline18Site_startPC : inline18Site.startPC = UInt256.ofNat 1952 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1257) = UInt256.ofNat 1716
   rw [inline18_instructionPC]
 
 
@@ -543,7 +543,7 @@ theorem inline19_slice :
   rfl
 
 theorem inline19_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1310 = 1782 := by
+    Artifact.submissionArtifact.instructionPC 1310 = 1776 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -558,8 +558,8 @@ def inline19Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline19T
       (instructions := inline19Template) (by decide))
     (by decide)
 
-theorem inline19Site_startPC : inline19Site.startPC = UInt256.ofNat 2018 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1310) = UInt256.ofNat 1782
+theorem inline19Site_startPC : inline19Site.startPC = UInt256.ofNat 2012 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1310) = UInt256.ofNat 1776
   rw [inline19_instructionPC]
 
 
@@ -568,7 +568,7 @@ theorem call20_slice :
   rfl
 
 theorem call20_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1364 = 1843 := by
+    Artifact.submissionArtifact.instructionPC 1364 = 1837 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -583,8 +583,8 @@ def call20Site : GenericRoundSite Artifact.submissionArtifact .Osaka call20Templ
       (instructions := call20Template) (by decide))
     (by decide)
 
-theorem call20Site_startPC : call20Site.startPC = UInt256.ofNat 2078 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1364) = UInt256.ofNat 1843
+theorem call20Site_startPC : call20Site.startPC = UInt256.ofNat 2072 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1364) = UInt256.ofNat 1837
   rw [call20_instructionPC]
 
 
@@ -593,7 +593,7 @@ theorem call22_slice :
   rfl
 
 theorem call22_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1385 = 1868 := by
+    Artifact.submissionArtifact.instructionPC 1385 = 1862 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -608,8 +608,8 @@ def call22Site : GenericRoundSite Artifact.submissionArtifact .Osaka call22Templ
       (instructions := call22Template) (by decide))
     (by decide)
 
-theorem call22Site_startPC : call22Site.startPC = UInt256.ofNat 2114 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1385) = UInt256.ofNat 1868
+theorem call22Site_startPC : call22Site.startPC = UInt256.ofNat 2108 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1385) = UInt256.ofNat 1862
   rw [call22_instructionPC]
 
 
@@ -618,7 +618,7 @@ theorem return24_slice :
   rfl
 
 theorem return24_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1408 = 1893 := by
+    Artifact.submissionArtifact.instructionPC 1408 = 1887 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -633,8 +633,8 @@ def return24Site : GenericRoundSite Artifact.submissionArtifact .Osaka return24T
       (instructions := return24Template) (by decide))
     (by decide)
 
-theorem return24Site_startPC : return24Site.startPC = UInt256.ofNat 2153 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1408) = UInt256.ofNat 1893
+theorem return24Site_startPC : return24Site.startPC = UInt256.ofNat 2147 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1408) = UInt256.ofNat 1887
   rw [return24_instructionPC]
 
 
@@ -643,7 +643,7 @@ theorem inline24_slice :
   rfl
 
 theorem inline24_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1409 = 1894 := by
+    Artifact.submissionArtifact.instructionPC 1409 = 1888 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -658,8 +658,8 @@ def inline24Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline24T
       (instructions := inline24Template) (by decide))
     (by decide)
 
-theorem inline24Site_startPC : inline24Site.startPC = UInt256.ofNat 2154 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1409) = UInt256.ofNat 1894
+theorem inline24Site_startPC : inline24Site.startPC = UInt256.ofNat 2148 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1409) = UInt256.ofNat 1888
   rw [inline24_instructionPC]
 
 
@@ -668,7 +668,7 @@ theorem inline25_slice :
   rfl
 
 theorem inline25_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1453 = 1944 := by
+    Artifact.submissionArtifact.instructionPC 1453 = 1938 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -683,8 +683,8 @@ def inline25Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline25T
       (instructions := inline25Template) (by decide))
     (by decide)
 
-theorem inline25Site_startPC : inline25Site.startPC = UInt256.ofNat 2204 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1453) = UInt256.ofNat 1944
+theorem inline25Site_startPC : inline25Site.startPC = UInt256.ofNat 2198 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1453) = UInt256.ofNat 1938
   rw [inline25_instructionPC]
 
 
@@ -693,7 +693,7 @@ theorem call26_slice :
   rfl
 
 theorem call26_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1507 = 2005 := by
+    Artifact.submissionArtifact.instructionPC 1507 = 1999 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -708,8 +708,8 @@ def call26Site : GenericRoundSite Artifact.submissionArtifact .Osaka call26Templ
       (instructions := call26Template) (by decide))
     (by decide)
 
-theorem call26Site_startPC : call26Site.startPC = UInt256.ofNat 2264 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1507) = UInt256.ofNat 2005
+theorem call26Site_startPC : call26Site.startPC = UInt256.ofNat 2258 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1507) = UInt256.ofNat 1999
   rw [call26_instructionPC]
 
 
@@ -718,7 +718,7 @@ theorem call28_slice :
   rfl
 
 theorem call28_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1528 = 2030 := by
+    Artifact.submissionArtifact.instructionPC 1528 = 2024 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -733,8 +733,8 @@ def call28Site : GenericRoundSite Artifact.submissionArtifact .Osaka call28Templ
       (instructions := call28Template) (by decide))
     (by decide)
 
-theorem call28Site_startPC : call28Site.startPC = UInt256.ofNat 2298 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1528) = UInt256.ofNat 2030
+theorem call28Site_startPC : call28Site.startPC = UInt256.ofNat 2292 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1528) = UInt256.ofNat 2024
   rw [call28_instructionPC]
 
 
@@ -743,7 +743,7 @@ theorem return30_slice :
   rfl
 
 theorem return30_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1551 = 2056 := by
+    Artifact.submissionArtifact.instructionPC 1551 = 2050 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -759,7 +759,7 @@ def return30Site : GenericRoundSite Artifact.submissionArtifact .Osaka return30T
     (by decide)
 
 theorem return30Site_startPC : return30Site.startPC = UInt256.ofNat 2337 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1551) = UInt256.ofNat 2056
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1551) = UInt256.ofNat 2050
   rw [return30_instructionPC]
 
 
@@ -768,7 +768,7 @@ theorem inline30_slice :
   rfl
 
 theorem inline30_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1552 = 2057 := by
+    Artifact.submissionArtifact.instructionPC 1552 = 2051 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -783,8 +783,8 @@ def inline30Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline30T
       (instructions := inline30Template) (by decide))
     (by decide)
 
-theorem inline30Site_startPC : inline30Site.startPC = UInt256.ofNat 2338 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1552) = UInt256.ofNat 2057
+theorem inline30Site_startPC : inline30Site.startPC = UInt256.ofNat 2332 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1552) = UInt256.ofNat 2051
   rw [inline30_instructionPC]
 
 
@@ -793,7 +793,7 @@ theorem inline31_slice :
   rfl
 
 theorem inline31_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1596 = 2108 := by
+    Artifact.submissionArtifact.instructionPC 1596 = 2102 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -808,8 +808,8 @@ def inline31Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline31T
       (instructions := inline31Template) (by decide))
     (by decide)
 
-theorem inline31Site_startPC : inline31Site.startPC = UInt256.ofNat 2390 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1596) = UInt256.ofNat 2108
+theorem inline31Site_startPC : inline31Site.startPC = UInt256.ofNat 2384 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1596) = UInt256.ofNat 2102
   rw [inline31_instructionPC]
 
 
@@ -818,7 +818,7 @@ theorem group32_slice :
   rfl
 
 theorem group32_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1650 = 2168 := by
+    Artifact.submissionArtifact.instructionPC 1650 = 2162 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -834,7 +834,7 @@ def group32Site : GenericRoundSite Artifact.submissionArtifact .Osaka group32Tem
     (by decide)
 
 theorem group32Site_startPC : group32Site.startPC = UInt256.ofNat 2448 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1650) = UInt256.ofNat 2168
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1650) = UInt256.ofNat 2162
   rw [group32_instructionPC]
 
 
@@ -843,7 +843,7 @@ theorem inline32_slice :
   rfl
 
 theorem inline32_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1653 = 2171 := by
+    Artifact.submissionArtifact.instructionPC 1653 = 2165 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -858,8 +858,8 @@ def inline32Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline32T
       (instructions := inline32Template) (by decide))
     (by decide)
 
-theorem inline32Site_startPC : inline32Site.startPC = UInt256.ofNat 2474 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1653) = UInt256.ofNat 2171
+theorem inline32Site_startPC : inline32Site.startPC = UInt256.ofNat 2468 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1653) = UInt256.ofNat 2165
   rw [inline32_instructionPC]
 
 
@@ -868,7 +868,7 @@ theorem inline33_slice :
   rfl
 
 theorem inline33_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1696 = 2220 := by
+    Artifact.submissionArtifact.instructionPC 1696 = 2214 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -883,8 +883,8 @@ def inline33Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline33T
       (instructions := inline33Template) (by decide))
     (by decide)
 
-theorem inline33Site_startPC : inline33Site.startPC = UInt256.ofNat 2524 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1696) = UInt256.ofNat 2220
+theorem inline33Site_startPC : inline33Site.startPC = UInt256.ofNat 2518 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1696) = UInt256.ofNat 2214
   rw [inline33_instructionPC]
 
 
@@ -893,7 +893,7 @@ theorem inline34_slice :
   rfl
 
 theorem inline34_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1739 = 2270 := by
+    Artifact.submissionArtifact.instructionPC 1739 = 2264 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -909,7 +909,7 @@ def inline34Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline34T
     (by decide)
 
 theorem inline34Site_startPC : inline34Site.startPC = UInt256.ofNat 2537 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1739) = UInt256.ofNat 2270
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1739) = UInt256.ofNat 2264
   rw [inline34_instructionPC]
 
 
@@ -918,7 +918,7 @@ theorem inline35_slice :
   rfl
 
 theorem inline35_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1782 = 2320 := by
+    Artifact.submissionArtifact.instructionPC 1782 = 2314 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -933,8 +933,8 @@ def inline35Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline35T
       (instructions := inline35Template) (by decide))
     (by decide)
 
-theorem inline35Site_startPC : inline35Site.startPC = UInt256.ofNat 2589 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1782) = UInt256.ofNat 2320
+theorem inline35Site_startPC : inline35Site.startPC = UInt256.ofNat 2583 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1782) = UInt256.ofNat 2314
   rw [inline35_instructionPC]
 
 
@@ -943,7 +943,7 @@ theorem inline36_slice :
   rfl
 
 theorem inline36_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1825 = 2369 := by
+    Artifact.submissionArtifact.instructionPC 1825 = 2363 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -958,8 +958,8 @@ def inline36Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline36T
       (instructions := inline36Template) (by decide))
     (by decide)
 
-theorem inline36Site_startPC : inline36Site.startPC = UInt256.ofNat 2673 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1825) = UInt256.ofNat 2369
+theorem inline36Site_startPC : inline36Site.startPC = UInt256.ofNat 2667 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1825) = UInt256.ofNat 2363
   rw [inline36_instructionPC]
 
 
@@ -968,7 +968,7 @@ theorem inline37_slice :
   rfl
 
 theorem inline37_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1868 = 2419 := by
+    Artifact.submissionArtifact.instructionPC 1868 = 2413 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -983,8 +983,8 @@ def inline37Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline37T
       (instructions := inline37Template) (by decide))
     (by decide)
 
-theorem inline37Site_startPC : inline37Site.startPC = UInt256.ofNat 2689 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1868) = UInt256.ofNat 2419
+theorem inline37Site_startPC : inline37Site.startPC = UInt256.ofNat 2683 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1868) = UInt256.ofNat 2413
   rw [inline37_instructionPC]
 
 
@@ -993,7 +993,7 @@ theorem inline38_slice :
   rfl
 
 theorem inline38_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1911 = 2467 := by
+    Artifact.submissionArtifact.instructionPC 1911 = 2461 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1008,8 +1008,8 @@ def inline38Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline38T
       (instructions := inline38Template) (by decide))
     (by decide)
 
-theorem inline38Site_startPC : inline38Site.startPC = UInt256.ofNat 2769 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1911) = UInt256.ofNat 2467
+theorem inline38Site_startPC : inline38Site.startPC = UInt256.ofNat 2763 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1911) = UInt256.ofNat 2461
   rw [inline38_instructionPC]
 
 
@@ -1018,7 +1018,7 @@ theorem inline39_slice :
   rfl
 
 theorem inline39_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1954 = 2517 := by
+    Artifact.submissionArtifact.instructionPC 1954 = 2511 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1033,8 +1033,8 @@ def inline39Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline39T
       (instructions := inline39Template) (by decide))
     (by decide)
 
-theorem inline39Site_startPC : inline39Site.startPC = UInt256.ofNat 2823 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1954) = UInt256.ofNat 2517
+theorem inline39Site_startPC : inline39Site.startPC = UInt256.ofNat 2817 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1954) = UInt256.ofNat 2511
   rw [inline39_instructionPC]
 
 
@@ -1043,7 +1043,7 @@ theorem inline40_slice :
   rfl
 
 theorem inline40_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1997 = 2588 := by
+    Artifact.submissionArtifact.instructionPC 1997 = 2582 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1058,8 +1058,8 @@ def inline40Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline40T
       (instructions := inline40Template) (by decide))
     (by decide)
 
-theorem inline40Site_startPC : inline40Site.startPC = UInt256.ofNat 2872 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1997) = UInt256.ofNat 2588
+theorem inline40Site_startPC : inline40Site.startPC = UInt256.ofNat 2866 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1997) = UInt256.ofNat 2582
   rw [inline40_instructionPC]
 
 
@@ -1068,7 +1068,7 @@ theorem inline41_slice :
   rfl
 
 theorem inline41_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2040 = 2638 := by
+    Artifact.submissionArtifact.instructionPC 2040 = 2632 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1083,8 +1083,8 @@ def inline41Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline41T
       (instructions := inline41Template) (by decide))
     (by decide)
 
-theorem inline41Site_startPC : inline41Site.startPC = UInt256.ofNat 2922 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2040) = UInt256.ofNat 2638
+theorem inline41Site_startPC : inline41Site.startPC = UInt256.ofNat 2916 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2040) = UInt256.ofNat 2632
   rw [inline41_instructionPC]
 
 
@@ -1093,7 +1093,7 @@ theorem inline42_slice :
   rfl
 
 theorem inline42_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2083 = 2687 := by
+    Artifact.submissionArtifact.instructionPC 2083 = 2681 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1108,8 +1108,8 @@ def inline42Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline42T
       (instructions := inline42Template) (by decide))
     (by decide)
 
-theorem inline42Site_startPC : inline42Site.startPC = UInt256.ofNat 2972 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2083) = UInt256.ofNat 2687
+theorem inline42Site_startPC : inline42Site.startPC = UInt256.ofNat 2966 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2083) = UInt256.ofNat 2681
   rw [inline42_instructionPC]
 
 
@@ -1118,7 +1118,7 @@ theorem inline43_slice :
   rfl
 
 theorem inline43_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2126 = 2737 := by
+    Artifact.submissionArtifact.instructionPC 2126 = 2731 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1133,8 +1133,8 @@ def inline43Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline43T
       (instructions := inline43Template) (by decide))
     (by decide)
 
-theorem inline43Site_startPC : inline43Site.startPC = UInt256.ofNat 3021 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2126) = UInt256.ofNat 2737
+theorem inline43Site_startPC : inline43Site.startPC = UInt256.ofNat 3015 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2126) = UInt256.ofNat 2731
   rw [inline43_instructionPC]
 
 
@@ -1143,7 +1143,7 @@ theorem inline44_slice :
   rfl
 
 theorem inline44_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2169 = 2787 := by
+    Artifact.submissionArtifact.instructionPC 2169 = 2781 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1158,8 +1158,8 @@ def inline44Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline44T
       (instructions := inline44Template) (by decide))
     (by decide)
 
-theorem inline44Site_startPC : inline44Site.startPC = UInt256.ofNat 3071 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2169) = UInt256.ofNat 2787
+theorem inline44Site_startPC : inline44Site.startPC = UInt256.ofNat 3065 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2169) = UInt256.ofNat 2781
   rw [inline44_instructionPC]
 
 
@@ -1168,7 +1168,7 @@ theorem inline45_slice :
   rfl
 
 theorem inline45_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2212 = 2837 := by
+    Artifact.submissionArtifact.instructionPC 2212 = 2831 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1183,8 +1183,8 @@ def inline45Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline45T
       (instructions := inline45Template) (by decide))
     (by decide)
 
-theorem inline45Site_startPC : inline45Site.startPC = UInt256.ofNat 3121 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2212) = UInt256.ofNat 2837
+theorem inline45Site_startPC : inline45Site.startPC = UInt256.ofNat 3115 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2212) = UInt256.ofNat 2831
   rw [inline45_instructionPC]
 
 
@@ -1193,7 +1193,7 @@ theorem inline46_slice :
   rfl
 
 theorem inline46_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2255 = 2887 := by
+    Artifact.submissionArtifact.instructionPC 2255 = 2881 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1208,8 +1208,8 @@ def inline46Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline46T
       (instructions := inline46Template) (by decide))
     (by decide)
 
-theorem inline46Site_startPC : inline46Site.startPC = UInt256.ofNat 3170 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2255) = UInt256.ofNat 2887
+theorem inline46Site_startPC : inline46Site.startPC = UInt256.ofNat 3164 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2255) = UInt256.ofNat 2881
   rw [inline46_instructionPC]
 
 
@@ -1218,7 +1218,7 @@ theorem inline47_slice :
   rfl
 
 theorem inline47_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2289 = 2927 := by
+    Artifact.submissionArtifact.instructionPC 2289 = 2921 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1233,8 +1233,8 @@ def inline47Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline47T
       (instructions := inline47Template) (by decide))
     (by decide)
 
-theorem inline47Site_startPC : inline47Site.startPC = UInt256.ofNat 3207 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2289) = UInt256.ofNat 2927
+theorem inline47Site_startPC : inline47Site.startPC = UInt256.ofNat 3201 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2289) = UInt256.ofNat 2921
   rw [inline47_instructionPC]
 
 
@@ -1243,7 +1243,7 @@ theorem group48_slice :
   rfl
 
 theorem group48_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2323 = 2967 := by
+    Artifact.submissionArtifact.instructionPC 2323 = 2961 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1258,8 +1258,8 @@ def group48Site : GenericRoundSite Artifact.submissionArtifact .Osaka group48Tem
       (instructions := group48Template) (by decide))
     (by decide)
 
-theorem group48Site_startPC : group48Site.startPC = UInt256.ofNat 3250 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2323) = UInt256.ofNat 2967
+theorem group48Site_startPC : group48Site.startPC = UInt256.ofNat 3244 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2323) = UInt256.ofNat 2961
   rw [group48_instructionPC]
 
 
@@ -1268,7 +1268,7 @@ theorem inline48_slice :
   rfl
 
 theorem inline48_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2326 = 2971 := by
+    Artifact.submissionArtifact.instructionPC 2326 = 2965 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1283,8 +1283,8 @@ def inline48Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline48T
       (instructions := inline48Template) (by decide))
     (by decide)
 
-theorem inline48Site_startPC : inline48Site.startPC = UInt256.ofNat 3273 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2326) = UInt256.ofNat 2971
+theorem inline48Site_startPC : inline48Site.startPC = UInt256.ofNat 3267 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2326) = UInt256.ofNat 2965
   rw [inline48_instructionPC]
 
 
@@ -1293,7 +1293,7 @@ theorem inline49_slice :
   rfl
 
 theorem inline49_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2380 = 3033 := by
+    Artifact.submissionArtifact.instructionPC 2380 = 3027 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1308,8 +1308,8 @@ def inline49Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline49T
       (instructions := inline49Template) (by decide))
     (by decide)
 
-theorem inline49Site_startPC : inline49Site.startPC = UInt256.ofNat 3299 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2380) = UInt256.ofNat 3033
+theorem inline49Site_startPC : inline49Site.startPC = UInt256.ofNat 3293 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2380) = UInt256.ofNat 3027
   rw [inline49_instructionPC]
 
 
@@ -1318,7 +1318,7 @@ theorem inline50_slice :
   rfl
 
 theorem inline50_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2434 = 3095 := by
+    Artifact.submissionArtifact.instructionPC 2434 = 3089 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1333,8 +1333,8 @@ def inline50Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline50T
       (instructions := inline50Template) (by decide))
     (by decide)
 
-theorem inline50Site_startPC : inline50Site.startPC = UInt256.ofNat 3394 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2434) = UInt256.ofNat 3095
+theorem inline50Site_startPC : inline50Site.startPC = UInt256.ofNat 3388 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2434) = UInt256.ofNat 3089
   rw [inline50_instructionPC]
 
 
@@ -1343,7 +1343,7 @@ theorem inline51_slice :
   rfl
 
 theorem inline51_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2488 = 3159 := by
+    Artifact.submissionArtifact.instructionPC 2488 = 3153 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1358,8 +1358,8 @@ def inline51Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline51T
       (instructions := inline51Template) (by decide))
     (by decide)
 
-theorem inline51Site_startPC : inline51Site.startPC = UInt256.ofNat 3455 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2488) = UInt256.ofNat 3159
+theorem inline51Site_startPC : inline51Site.startPC = UInt256.ofNat 3449 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2488) = UInt256.ofNat 3153
   rw [inline51_instructionPC]
 
 
@@ -1368,7 +1368,7 @@ theorem inline52_slice :
   rfl
 
 theorem inline52_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2542 = 3220 := by
+    Artifact.submissionArtifact.instructionPC 2542 = 3214 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1383,8 +1383,8 @@ def inline52Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline52T
       (instructions := inline52Template) (by decide))
     (by decide)
 
-theorem inline52Site_startPC : inline52Site.startPC = UInt256.ofNat 3515 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2542) = UInt256.ofNat 3220
+theorem inline52Site_startPC : inline52Site.startPC = UInt256.ofNat 3509 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2542) = UInt256.ofNat 3214
   rw [inline52_instructionPC]
 
 
@@ -1393,7 +1393,7 @@ theorem inline53_slice :
   rfl
 
 theorem inline53_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2587 = 3272 := by
+    Artifact.submissionArtifact.instructionPC 2587 = 3266 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1408,8 +1408,8 @@ def inline53Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline53T
       (instructions := inline53Template) (by decide))
     (by decide)
 
-theorem inline53Site_startPC : inline53Site.startPC = UInt256.ofNat 3561 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2587) = UInt256.ofNat 3272
+theorem inline53Site_startPC : inline53Site.startPC = UInt256.ofNat 3555 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2587) = UInt256.ofNat 3266
   rw [inline53_instructionPC]
 
 
@@ -1418,7 +1418,7 @@ theorem inline54_slice :
   rfl
 
 theorem inline54_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2641 = 3355 := by
+    Artifact.submissionArtifact.instructionPC 2641 = 3349 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1433,8 +1433,8 @@ def inline54Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline54T
       (instructions := inline54Template) (by decide))
     (by decide)
 
-theorem inline54Site_startPC : inline54Site.startPC = UInt256.ofNat 3626 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2641) = UInt256.ofNat 3355
+theorem inline54Site_startPC : inline54Site.startPC = UInt256.ofNat 3620 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2641) = UInt256.ofNat 3349
   rw [inline54_instructionPC]
 
 
@@ -1443,7 +1443,7 @@ theorem inline55_slice :
   rfl
 
 theorem inline55_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2695 = 3417 := by
+    Artifact.submissionArtifact.instructionPC 2695 = 3411 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1458,8 +1458,8 @@ def inline55Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline55T
       (instructions := inline55Template) (by decide))
     (by decide)
 
-theorem inline55Site_startPC : inline55Site.startPC = UInt256.ofNat 3687 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2695) = UInt256.ofNat 3417
+theorem inline55Site_startPC : inline55Site.startPC = UInt256.ofNat 3681 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2695) = UInt256.ofNat 3411
   rw [inline55_instructionPC]
 
 
@@ -1468,7 +1468,7 @@ theorem inline56_slice :
   rfl
 
 theorem inline56_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2749 = 3479 := by
+    Artifact.submissionArtifact.instructionPC 2749 = 3473 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1483,8 +1483,8 @@ def inline56Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline56T
       (instructions := inline56Template) (by decide))
     (by decide)
 
-theorem inline56Site_startPC : inline56Site.startPC = UInt256.ofNat 3713 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2749) = UInt256.ofNat 3479
+theorem inline56Site_startPC : inline56Site.startPC = UInt256.ofNat 3707 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2749) = UInt256.ofNat 3473
   rw [inline56_instructionPC]
 
 
@@ -1493,7 +1493,7 @@ theorem inline57_slice :
   rfl
 
 theorem inline57_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2803 = 3539 := by
+    Artifact.submissionArtifact.instructionPC 2803 = 3533 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1508,8 +1508,8 @@ def inline57Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline57T
       (instructions := inline57Template) (by decide))
     (by decide)
 
-theorem inline57Site_startPC : inline57Site.startPC = UInt256.ofNat 3808 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2803) = UInt256.ofNat 3539
+theorem inline57Site_startPC : inline57Site.startPC = UInt256.ofNat 3802 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2803) = UInt256.ofNat 3533
   rw [inline57_instructionPC]
 
 
@@ -1518,7 +1518,7 @@ theorem inline58_slice :
   rfl
 
 theorem inline58_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2857 = 3599 := by
+    Artifact.submissionArtifact.instructionPC 2857 = 3593 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1533,8 +1533,8 @@ def inline58Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline58T
       (instructions := inline58Template) (by decide))
     (by decide)
 
-theorem inline58Site_startPC : inline58Site.startPC = UInt256.ofNat 3869 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2857) = UInt256.ofNat 3599
+theorem inline58Site_startPC : inline58Site.startPC = UInt256.ofNat 3863 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2857) = UInt256.ofNat 3593
   rw [inline58_instructionPC]
 
 
@@ -1543,7 +1543,7 @@ theorem inline59_slice :
   rfl
 
 theorem inline59_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2911 = 3660 := by
+    Artifact.submissionArtifact.instructionPC 2911 = 3654 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1558,8 +1558,8 @@ def inline59Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline59T
       (instructions := inline59Template) (by decide))
     (by decide)
 
-theorem inline59Site_startPC : inline59Site.startPC = UInt256.ofNat 3930 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2911) = UInt256.ofNat 3660
+theorem inline59Site_startPC : inline59Site.startPC = UInt256.ofNat 3924 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2911) = UInt256.ofNat 3654
   rw [inline59_instructionPC]
 
 
@@ -1568,7 +1568,7 @@ theorem inline60_slice :
   rfl
 
 theorem inline60_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2965 = 3724 := by
+    Artifact.submissionArtifact.instructionPC 2965 = 3718 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1583,8 +1583,8 @@ def inline60Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline60T
       (instructions := inline60Template) (by decide))
     (by decide)
 
-theorem inline60Site_startPC : inline60Site.startPC = UInt256.ofNat 3991 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2965) = UInt256.ofNat 3724
+theorem inline60Site_startPC : inline60Site.startPC = UInt256.ofNat 3985 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2965) = UInt256.ofNat 3718
   rw [inline60_instructionPC]
 
 
@@ -1593,7 +1593,7 @@ theorem inline61_slice :
   rfl
 
 theorem inline61_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3019 = 3785 := by
+    Artifact.submissionArtifact.instructionPC 3019 = 3779 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1608,8 +1608,8 @@ def inline61Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline61T
       (instructions := inline61Template) (by decide))
     (by decide)
 
-theorem inline61Site_startPC : inline61Site.startPC = UInt256.ofNat 4052 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3019) = UInt256.ofNat 3785
+theorem inline61Site_startPC : inline61Site.startPC = UInt256.ofNat 4046 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3019) = UInt256.ofNat 3779
   rw [inline61_instructionPC]
 
 
@@ -1618,7 +1618,7 @@ theorem inline62_slice :
   rfl
 
 theorem inline62_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3073 = 3848 := by
+    Artifact.submissionArtifact.instructionPC 3073 = 3842 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1633,8 +1633,8 @@ def inline62Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline62T
       (instructions := inline62Template) (by decide))
     (by decide)
 
-theorem inline62Site_startPC : inline62Site.startPC = UInt256.ofNat 4113 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3073) = UInt256.ofNat 3848
+theorem inline62Site_startPC : inline62Site.startPC = UInt256.ofNat 4107 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3073) = UInt256.ofNat 3842
   rw [inline62_instructionPC]
 
 
@@ -1643,7 +1643,7 @@ theorem inline63_slice :
   rfl
 
 theorem inline63_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3127 = 3909 := by
+    Artifact.submissionArtifact.instructionPC 3127 = 3903 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1658,8 +1658,8 @@ def inline63Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline63T
       (instructions := inline63Template) (by decide))
     (by decide)
 
-theorem inline63Site_startPC : inline63Site.startPC = UInt256.ofNat 4174 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3127) = UInt256.ofNat 3909
+theorem inline63Site_startPC : inline63Site.startPC = UInt256.ofNat 4168 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3127) = UInt256.ofNat 3903
   rw [inline63_instructionPC]
 
 
@@ -1668,7 +1668,7 @@ theorem group64_slice :
   rfl
 
 theorem group64_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3181 = 3970 := by
+    Artifact.submissionArtifact.instructionPC 3181 = 3964 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1683,8 +1683,8 @@ def group64Site : GenericRoundSite Artifact.submissionArtifact .Osaka group64Tem
       (instructions := group64Template) (by decide))
     (by decide)
 
-theorem group64Site_startPC : group64Site.startPC = UInt256.ofNat 4201 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3181) = UInt256.ofNat 3970
+theorem group64Site_startPC : group64Site.startPC = UInt256.ofNat 4195 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3181) = UInt256.ofNat 3964
   rw [group64_instructionPC]
 
 
@@ -1693,7 +1693,7 @@ theorem inline64_slice :
   rfl
 
 theorem inline64_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3184 = 3973 := by
+    Artifact.submissionArtifact.instructionPC 3184 = 3967 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1708,8 +1708,8 @@ def inline64Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline64T
       (instructions := inline64Template) (by decide))
     (by decide)
 
-theorem inline64Site_startPC : inline64Site.startPC = UInt256.ofNat 4242 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3184) = UInt256.ofNat 3973
+theorem inline64Site_startPC : inline64Site.startPC = UInt256.ofNat 4236 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3184) = UInt256.ofNat 3967
   rw [inline64_instructionPC]
 
 
@@ -1718,7 +1718,7 @@ theorem inline65_slice :
   rfl
 
 theorem inline65_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3232 = 4028 := by
+    Artifact.submissionArtifact.instructionPC 3232 = 4022 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1733,8 +1733,8 @@ def inline65Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline65T
       (instructions := inline65Template) (by decide))
     (by decide)
 
-theorem inline65Site_startPC : inline65Site.startPC = UInt256.ofNat 4297 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3232) = UInt256.ofNat 4028
+theorem inline65Site_startPC : inline65Site.startPC = UInt256.ofNat 4291 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3232) = UInt256.ofNat 4022
   rw [inline65_instructionPC]
 
 
@@ -1743,7 +1743,7 @@ theorem inline66_slice :
   rfl
 
 theorem inline66_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3280 = 4083 := by
+    Artifact.submissionArtifact.instructionPC 3280 = 4077 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1758,8 +1758,8 @@ def inline66Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline66T
       (instructions := inline66Template) (by decide))
     (by decide)
 
-theorem inline66Site_startPC : inline66Site.startPC = UInt256.ofNat 4351 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3280) = UInt256.ofNat 4083
+theorem inline66Site_startPC : inline66Site.startPC = UInt256.ofNat 4345 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3280) = UInt256.ofNat 4077
   rw [inline66_instructionPC]
 
 
@@ -1768,7 +1768,7 @@ theorem inline67_slice :
   rfl
 
 theorem inline67_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3328 = 4138 := by
+    Artifact.submissionArtifact.instructionPC 3328 = 4132 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1783,8 +1783,8 @@ def inline67Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline67T
       (instructions := inline67Template) (by decide))
     (by decide)
 
-theorem inline67Site_startPC : inline67Site.startPC = UInt256.ofNat 4372 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3328) = UInt256.ofNat 4138
+theorem inline67Site_startPC : inline67Site.startPC = UInt256.ofNat 4366 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3328) = UInt256.ofNat 4132
   rw [inline67_instructionPC]
 
 
@@ -1793,7 +1793,7 @@ theorem inline68_slice :
   rfl
 
 theorem inline68_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3376 = 4193 := by
+    Artifact.submissionArtifact.instructionPC 3376 = 4187 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1808,8 +1808,8 @@ def inline68Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline68T
       (instructions := inline68Template) (by decide))
     (by decide)
 
-theorem inline68Site_startPC : inline68Site.startPC = UInt256.ofNat 4461 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3376) = UInt256.ofNat 4193
+theorem inline68Site_startPC : inline68Site.startPC = UInt256.ofNat 4455 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3376) = UInt256.ofNat 4187
   rw [inline68_instructionPC]
 
 
@@ -1818,7 +1818,7 @@ theorem inline69_slice :
   rfl
 
 theorem inline69_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3424 = 4252 := by
+    Artifact.submissionArtifact.instructionPC 3424 = 4246 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1833,8 +1833,8 @@ def inline69Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline69T
       (instructions := inline69Template) (by decide))
     (by decide)
 
-theorem inline69Site_startPC : inline69Site.startPC = UInt256.ofNat 4515 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3424) = UInt256.ofNat 4252
+theorem inline69Site_startPC : inline69Site.startPC = UInt256.ofNat 4509 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3424) = UInt256.ofNat 4246
   rw [inline69_instructionPC]
 
 
@@ -1843,7 +1843,7 @@ theorem inline70_slice :
   rfl
 
 theorem inline70_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3472 = 4306 := by
+    Artifact.submissionArtifact.instructionPC 3472 = 4300 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1858,8 +1858,8 @@ def inline70Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline70T
       (instructions := inline70Template) (by decide))
     (by decide)
 
-theorem inline70Site_startPC : inline70Site.startPC = UInt256.ofNat 4536 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3472) = UInt256.ofNat 4306
+theorem inline70Site_startPC : inline70Site.startPC = UInt256.ofNat 4530 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3472) = UInt256.ofNat 4300
   rw [inline70_instructionPC]
 
 
@@ -1868,7 +1868,7 @@ theorem inline71_slice :
   rfl
 
 theorem inline71_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3520 = 4361 := by
+    Artifact.submissionArtifact.instructionPC 3520 = 4355 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1883,8 +1883,8 @@ def inline71Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline71T
       (instructions := inline71Template) (by decide))
     (by decide)
 
-theorem inline71Site_startPC : inline71Site.startPC = UInt256.ofNat 4625 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3520) = UInt256.ofNat 4361
+theorem inline71Site_startPC : inline71Site.startPC = UInt256.ofNat 4619 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3520) = UInt256.ofNat 4355
   rw [inline71_instructionPC]
 
 
@@ -1893,7 +1893,7 @@ theorem inline72_slice :
   rfl
 
 theorem inline72_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3568 = 4417 := by
+    Artifact.submissionArtifact.instructionPC 3568 = 4411 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1908,8 +1908,8 @@ def inline72Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline72T
       (instructions := inline72Template) (by decide))
     (by decide)
 
-theorem inline72Site_startPC : inline72Site.startPC = UInt256.ofNat 4680 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3568) = UInt256.ofNat 4417
+theorem inline72Site_startPC : inline72Site.startPC = UInt256.ofNat 4674 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3568) = UInt256.ofNat 4411
   rw [inline72_instructionPC]
 
 
@@ -1918,7 +1918,7 @@ theorem inline73_slice :
   rfl
 
 theorem inline73_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3616 = 4471 := by
+    Artifact.submissionArtifact.instructionPC 3616 = 4465 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1933,8 +1933,8 @@ def inline73Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline73T
       (instructions := inline73Template) (by decide))
     (by decide)
 
-theorem inline73Site_startPC : inline73Site.startPC = UInt256.ofNat 4731 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3616) = UInt256.ofNat 4471
+theorem inline73Site_startPC : inline73Site.startPC = UInt256.ofNat 4725 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3616) = UInt256.ofNat 4465
   rw [inline73_instructionPC]
 
 
@@ -1943,7 +1943,7 @@ theorem inline74_slice :
   rfl
 
 theorem inline74_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3664 = 4526 := by
+    Artifact.submissionArtifact.instructionPC 3664 = 4520 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1958,8 +1958,8 @@ def inline74Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline74T
       (instructions := inline74Template) (by decide))
     (by decide)
 
-theorem inline74Site_startPC : inline74Site.startPC = UInt256.ofNat 4789 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3664) = UInt256.ofNat 4526
+theorem inline74Site_startPC : inline74Site.startPC = UInt256.ofNat 4783 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3664) = UInt256.ofNat 4520
   rw [inline74_instructionPC]
 
 
@@ -1968,7 +1968,7 @@ theorem inline75_slice :
   rfl
 
 theorem inline75_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3712 = 4581 := by
+    Artifact.submissionArtifact.instructionPC 3712 = 4575 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1983,8 +1983,8 @@ def inline75Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline75T
       (instructions := inline75Template) (by decide))
     (by decide)
 
-theorem inline75Site_startPC : inline75Site.startPC = UInt256.ofNat 4844 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3712) = UInt256.ofNat 4581
+theorem inline75Site_startPC : inline75Site.startPC = UInt256.ofNat 4838 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3712) = UInt256.ofNat 4575
   rw [inline75_instructionPC]
 
 
@@ -1993,7 +1993,7 @@ theorem inline76_slice :
   rfl
 
 theorem inline76_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3760 = 4636 := by
+    Artifact.submissionArtifact.instructionPC 3760 = 4630 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -2008,8 +2008,8 @@ def inline76Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline76T
       (instructions := inline76Template) (by decide))
     (by decide)
 
-theorem inline76Site_startPC : inline76Site.startPC = UInt256.ofNat 4899 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3760) = UInt256.ofNat 4636
+theorem inline76Site_startPC : inline76Site.startPC = UInt256.ofNat 4893 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3760) = UInt256.ofNat 4630
   rw [inline76_instructionPC]
 
 
@@ -2018,7 +2018,7 @@ theorem inline77_slice :
   rfl
 
 theorem inline77_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3808 = 4691 := by
+    Artifact.submissionArtifact.instructionPC 3808 = 4685 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -2033,8 +2033,8 @@ def inline77Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline77T
       (instructions := inline77Template) (by decide))
     (by decide)
 
-theorem inline77Site_startPC : inline77Site.startPC = UInt256.ofNat 4953 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3808) = UInt256.ofNat 4691
+theorem inline77Site_startPC : inline77Site.startPC = UInt256.ofNat 4947 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3808) = UInt256.ofNat 4685
   rw [inline77_instructionPC]
 
 
@@ -2043,7 +2043,7 @@ theorem inline78_slice :
   rfl
 
 theorem inline78_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3856 = 4745 := by
+    Artifact.submissionArtifact.instructionPC 3856 = 4739 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -2058,8 +2058,8 @@ def inline78Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline78T
       (instructions := inline78Template) (by decide))
     (by decide)
 
-theorem inline78Site_startPC : inline78Site.startPC = UInt256.ofNat 5008 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3856) = UInt256.ofNat 4745
+theorem inline78Site_startPC : inline78Site.startPC = UInt256.ofNat 5002 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3856) = UInt256.ofNat 4739
   rw [inline78_instructionPC]
 
 
@@ -2068,7 +2068,7 @@ theorem inline79_slice :
   rfl
 
 theorem inline79_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3904 = 4800 := by
+    Artifact.submissionArtifact.instructionPC 3904 = 4794 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -2083,8 +2083,8 @@ def inline79Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline79T
       (instructions := inline79Template) (by decide))
     (by decide)
 
-theorem inline79Site_startPC : inline79Site.startPC = UInt256.ofNat 5063 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3904) = UInt256.ofNat 4800
+theorem inline79Site_startPC : inline79Site.startPC = UInt256.ofNat 5057 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3904) = UInt256.ofNat 4794
   rw [inline79_instructionPC]
 
 
@@ -2093,7 +2093,7 @@ theorem coreExit_slice :
   rfl
 
 theorem coreExit_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3952 = 4855 := by
+    Artifact.submissionArtifact.instructionPC 3952 = 4849 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -2108,8 +2108,8 @@ def coreExitSite : GenericRoundSite Artifact.submissionArtifact .Osaka coreExitT
       (instructions := coreExitTemplate) (by decide))
     (by decide)
 
-theorem coreExitSite_startPC : coreExitSite.startPC = UInt256.ofNat 5118 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3952) = UInt256.ofNat 4855
+theorem coreExitSite_startPC : coreExitSite.startPC = UInt256.ofNat 5112 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3952) = UInt256.ofNat 4849
   rw [coreExit_instructionPC]
 
 
@@ -2118,7 +2118,7 @@ theorem helper_slice :
   rfl
 
 theorem helper_instructionPC :
-    Artifact.submissionArtifact.instructionPC 4024 = 4939 := by
+    Artifact.submissionArtifact.instructionPC 4024 = 4933 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -2133,8 +2133,8 @@ def helperSite : GenericRoundSite Artifact.submissionArtifact .Osaka fullTemplat
       (instructions := fullTemplate) (by decide))
     (by decide)
 
-theorem helperSite_startPC : helperSite.startPC = UInt256.ofNat 5201 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4024) = UInt256.ofNat 4939
+theorem helperSite_startPC : helperSite.startPC = UInt256.ofNat 5195 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4024) = UInt256.ofNat 4933
   rw [helper_instructionPC]
 
 def wholeSites : WholeCoreSites Artifact.submissionArtifact .Osaka where
@@ -2282,8 +2282,8 @@ def gasSteps_core_normalized (s : State) (words : Nat → UInt32)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hready : NormalizedScheduleReady s.memory words) :
-    GasSteps {s with pc := UInt256.ofNat 990, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho}
-      {s with pc := UInt256.ofNat 5082, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (coreCryptoResult words left right) rho} :=
+    GasSteps {s with pc := UInt256.ofNat 984, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho}
+      {s with pc := UInt256.ofNat 5076, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (coreCryptoResult words left right) rho} :=
   gasSteps_wholeCore_normalized wholeSites s words left right rho hstack hrun hactive
     (coreJumpValid s hcode) hcode hfork hnp hready
 

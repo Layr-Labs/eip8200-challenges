@@ -37,7 +37,7 @@ private def wfOp {op : Operation}
 
 
 private theorem left0First_slice :
-    (A.instructions.drop 331).take (CachedMaskParams.leftCode 0).length =
+    (A.instructions.drop 337).take (CachedMaskParams.leftCode 0).length =
       CachedMaskParams.leftCode 0 := by rfl
 
 private theorem wellFormed_left0First : ∀ instruction ∈ CachedMaskParams.leftCode 0,
@@ -45,7 +45,7 @@ private theorem wellFormed_left0First : ∀ instruction ∈ CachedMaskParams.lef
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def left0First : GenericRoundSite A .Osaka (CachedMaskParams.leftCode 0) :=
-  StackSiteBuilder.ofSlice _ 331 left0First_slice (by
+  StackSiteBuilder.ofSlice _ 337 left0First_slice (by
     change 329 + (CachedMaskParams.leftCode 0).length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_left0First (by decide)

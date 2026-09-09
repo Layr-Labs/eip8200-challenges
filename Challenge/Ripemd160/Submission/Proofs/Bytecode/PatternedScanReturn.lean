@@ -13,13 +13,13 @@ open PatternedInputData PatternedDigest PatternedGuardSpec
 
 def returnStored (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 479
+    pc := UInt256.ofNat 428
     memory := answerMemory
     activeWords := UInt256.ofNat 1 }
 
 def returnSized (input : ByteArray) : State :=
   { returnStored input with
-    pc := UInt256.ofNat 480
+    pc := UInt256.ofNat 429
     stack := [UInt256.ofNat 32] }
 
 theorem run_return_store :
@@ -55,14 +55,14 @@ def gasSteps_return :
     Artifact.submissionArtifact .Osaka (returnPath.take 3)
     (by rfl) (by rfl) run_return_store (by rfl) deployAddress_not_precompile
   have hd := Artifact.submissionArtifact.decodeAt_op_index
-    238 .MSIZE (by rfl) (by decide) trivial
+    244 .MSIZE (by rfl) (by decide) trivial
   have hp : (returnStored patternedInput).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 238 := by
+      Artifact.submissionArtifact.instructionPC 244 := by
     rw [pc2986]
     rfl
   have hop : (returnStored patternedInput).decodedOp = some .MSIZE :=
     Artifact.submissionArtifact.state_decodedOp_of
-      (returnStored patternedInput) 238 (by rfl) hp .MSIZE none hd (by decide)
+      (returnStored patternedInput) 244 (by rfl) hp .MSIZE none hd (by decide)
   have gmraw := Msize.step hop (by simp [returnStored, initialState]) (by rfl)
     deployAddress_not_precompile
   have gm : GasSteps (returnStored patternedInput)
