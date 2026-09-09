@@ -30,19 +30,19 @@ def rho (input : ByteArray) : List UInt256 :=
 
 @[simp] theorem rho_length (input : ByteArray) : (rho input).length = 5 := rfl
 
-/-- State after the first comparison succeeds: pc 5002 (instruction 4292)
+/-- State after the first comparison succeeds: pc 5012 (instruction 4292)
 with the plain driver stack on top of the copied-code state. -/
 def firstMatchedState (s : State) (input : ByteArray) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5050
+    pc := UInt256.ofNat 5057
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 502 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 293 = 502 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 499 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 290 = 499 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 293 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 290 (by rfl)
   rw [hpc] at h
   exact h
 
@@ -114,7 +114,7 @@ private theorem act_idem (s : State) :
 
 private theorem compare_mload_active (s : State) (input : ByteArray) :
     ({ toSharedState := (PrefixStateMemory.copied s).toSharedState,
-        pc := UInt256.ofNat 5044,
+        pc := UInt256.ofNat 5051,
         stack := [UInt256.ofNat 0, MachineState.readWord input 0,
           DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
           DriverTrace.blockOffsetWord 0, Padding.paddedWord input],
@@ -152,7 +152,7 @@ private theorem cond_mismatch (input : ByteArray)
   simpa using htrue
 
 /-- The five-instruction first-word comparison on a word-0 match: the final
-`JUMPI` is not taken and execution continues at pc 5002 (instruction 4292). -/
+`JUMPI` is not taken and execution continues at pc 5012 (instruction 4292). -/
 theorem run_firstCompare_match (s : State) (input : ByteArray)
     (hmatch : MachineState.readWord input 0 = PatternedWordData.expectedWordAt 0)
     (hrun : s.halt = .Running) :
@@ -202,7 +202,7 @@ theorem run_firstCompare_mismatch (s : State) (input : ByteArray)
   have hword : MachineState.readWord (PrefixStateMemory.copied s).memory 0 =
       PatternedWordData.expectedWordAt 0 :=
     PrefixStateMemory.copied_word_zero s
-  have hdest : Decode.isValidJumpDest submissionBytecode 502 = true := jumpDest_generic
+  have hdest : Decode.isValidJumpDest submissionBytecode 499 = true := jumpDest_generic
   have htrue : UInt256.isTrue
       (UInt256.xor (PatternedWordData.expectedWordAt 0)
         (MachineState.readWord input 0)) = true :=
