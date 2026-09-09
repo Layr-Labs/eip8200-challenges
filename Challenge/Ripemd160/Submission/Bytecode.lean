@@ -3,11 +3,16 @@ import Challenge.Ripemd160.Submission.Bytes
 import EvmSemantics.Data.Hex
 set_option warningAsError true
 set_option maxRecDepth 10000
-
 /-!
-# Structural binding for the frozen raw-EVM RIPEMD-160 artifact
+# The frozen raw-EVM RIPEMD-160 artifact
 
-The candidate bytecode has 5302 bytes and SHA-256 `842acd7e10ba683e8f1145e487fd9a18108d4aecd80fe159e18c1d324191cdcc`. The hex file remains the external raw input.
+`submissionBytecode` is the exact combined H30b+H31b bytecode from the frozen native
+checkpoint. It preserves the H30b prefix except for the driver's PUSH2 immediate and
+appends the unchanged 186-byte H31b packed-output helper. The existing B01 transform
+is not reapplied.
+
+Correctness proofs target these bytes directly; the compiler is used to
+reproduce the artifact, not as an assumption in the bytecode proof.
 -/
 
 namespace Challenge.Ripemd160
@@ -20,7 +25,7 @@ set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5302 := by
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5298 := by
   simp [submissionBytecode]
 
 set_option maxRecDepth 100000 in
