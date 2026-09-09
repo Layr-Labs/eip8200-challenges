@@ -14,35 +14,35 @@ open PatternedScan PatternedSwar
 @[simp] private theorem helperPC1 : Artifact.submissionArtifact.instructionPC 98 = 169 := rfl
 @[simp] private theorem helperPC2 : Artifact.submissionArtifact.instructionPC 99 = 170 := rfl
 @[simp] private theorem helperPC3 : Artifact.submissionArtifact.instructionPC 100 = 173 := rfl
-@[simp] private theorem cleanupPC : Artifact.submissionArtifact.instructionPC 260 = 461 := rfl
-@[simp] private theorem cleanupDest : Decode.isValidJumpDest submissionBytecode 392 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 234 (by rfl)
+@[simp] private theorem cleanupPC : Artifact.submissionArtifact.instructionPC 258 = 460 := rfl
+@[simp] private theorem cleanupDest : Decode.isValidJumpDest submissionBytecode 391 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 232 (by rfl)
 @[simp] private theorem fallbackDest : Decode.isValidJumpDest submissionBytecode 3 = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 2 (by rfl)
 
 def exitPath : List Located :=
   [opAt 97 .JUMPDEST,
    opAt 98 (.Dup ⟨2, by decide⟩),
-   pushAt 99 2 392,
+   pushAt 99 2 391,
    opAt 100 .JUMP,
-   opAt 234 .JUMPDEST,
-   opAt 235 (.Swap ⟨2, by decide⟩),
-   opAt 236 .POP,
-   opAt 237 (.Swap ⟨1, by decide⟩),
-   opAt 238 (.Swap ⟨6, by decide⟩),
+   opAt 232 .JUMPDEST,
+   opAt 233 (.Swap ⟨2, by decide⟩),
+   opAt 234 .POP,
+   opAt 235 (.Swap ⟨1, by decide⟩),
+   opAt 236 (.Swap ⟨6, by decide⟩),
+   opAt 237 .POP,
+   opAt 238 .POP,
    opAt 239 .POP,
    opAt 240 .POP,
    opAt 241 .POP,
    opAt 242 .POP,
    opAt 243 .POP,
-   opAt 244 .POP,
-   opAt 245 .POP,
-   pushAt 246 1 3,
-   opAt 247 .JUMPI]
+   pushAt 244 1 3,
+   opAt 245 .JUMPI]
 
 theorem run_exit (input : ByteArray) (sv ov acc : UInt256) :
     run exitPath (stS input 168 [sv, ov, acc, P7, M, m7, P, m8]) =
-      some (if UInt256.isTrue acc then fallbackState input else stS input 407 []) := by
+      some (if UInt256.isTrue acc then fallbackState input else stS input 406 []) := by
   by_cases hc : UInt256.isTrue acc <;>
     simp (config := { maxSteps := 400000 })
       [exitPath, opAt, pushAt, stS, fallbackState, atPC, List.exchange, hc,
@@ -65,7 +65,7 @@ def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
     (by rfl) (by rfl) h (by rfl) deployAddress_not_precompile
 
 def gasSteps_hit (input : ByteArray) (sv ov : UInt256) :
-    GasSteps (stS input 168 [sv, ov, 0, P7, M, m7, P, m8]) (stS input 407 []) := by
+    GasSteps (stS input 168 [sv, ov, 0, P7, M, m7, P, m8]) (stS input 406 []) := by
   have h := run_exit input sv ov 0
   rw [if_neg (by decide)] at h
   exact Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka exitPath
