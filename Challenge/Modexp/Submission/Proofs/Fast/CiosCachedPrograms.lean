@@ -100,6 +100,11 @@ def l2Program (x tl ts : UInt256) : List Instr :=
    .op (.Swap ⟨0, by decide⟩),
    .push 2 ts,
    .op .MSTORE]
+/- Terminal second-loop MAC.  Its modulus limb address is zero, so Osaka's
+`PUSH0` supplies the same word as the generic `PUSH2 0` without the two-byte
+immediate. -/
+def l2LastProgram (tl ts : UInt256) : List Instr :=
+  [.push 0 0] ++ (l2Program 0 tl ts).drop 1
 
 def entryProgram : List Instr :=
   [.op .JUMPDEST,

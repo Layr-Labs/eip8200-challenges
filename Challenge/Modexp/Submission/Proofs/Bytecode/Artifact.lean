@@ -3773,7 +3773,7 @@ def submissionInstructions : List Instr :=
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }),
  YulEvmCompiler.Instr.push 2 8320,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.MSTORE,
- YulEvmCompiler.Instr.push 2 0,
+ YulEvmCompiler.Instr.push 0 0,
  YulEvmCompiler.Instr.op EvmSemantics.Operation.MLOAD,
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }),
  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 3 }),
