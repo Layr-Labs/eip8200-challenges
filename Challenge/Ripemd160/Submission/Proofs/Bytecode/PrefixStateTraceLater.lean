@@ -22,11 +22,11 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateTraceLater
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
 /-- The generic compression target `512` is a valid jump destination. -/
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 512 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 294 = 512 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 504 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 296 = 504 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 294 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 296 (by rfl)
   rw [hpc] at h
   exact h
 

@@ -13,10 +13,7 @@ open PatternedScan PatternedSwar
 
 def paddedDigestWord : UInt256 := Prefix256Digest.paddedDigestWord
 
-def paddedDigest : ByteArray := ByteArray.mk #[
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0xc6, 0xc5, 0x3c, 0x46, 0xcf, 0x08, 0xde, 0x1c, 0x53, 0x75,
-  0xb1, 0x5a, 0xf8, 0x67, 0x6a, 0x2d, 0x32, 0xef, 0x52, 0x8a]
+def paddedDigest : ByteArray := Prefix256Digest.paddedDigest
 
 def answerMemory : ByteArray := DigestReturn.answerMemory paddedDigestWord
 
@@ -51,7 +48,7 @@ def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
   Prefix256Cleanup.gasSteps_miss input sv ov acc hne
 
 def gasSteps_finish_hit (input : ByteArray) (sv ov acc : UInt256)
-    (hz : acc = 0) (hsize : input.size = 256) :
+    (hz : acc = 0) (hsize : input.size = 376) :
     GasSteps (stS input 168 [sv, ov, acc, P7, M, m7, P, m8]) (returnedState input) := by
   subst acc
   have select := Prefix256Select.gasSteps_select input

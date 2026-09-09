@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanLoop
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanLogic
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanReturn
 
 set_option warningAsError true

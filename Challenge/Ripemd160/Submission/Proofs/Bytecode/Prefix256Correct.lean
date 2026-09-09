@@ -14,42 +14,36 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Correct
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
 
-theorem scanAcc_zero_iff_eq (input : ByteArray) (hsize : input.size = 256) :
-    scanAcc input 8 = 0 ↔ input = Prefix256Data.data := by
-  rw [scanAcc_zero_iff]
-  constructor
-  · intro hw
-    apply Prefix256Data.eq_data_of_words input hsize
-    intro j hj
-    rw [hw j hj, guardWord_eq j (by omega)]
-  · rintro rfl j hj
-    rw [Prefix256Data.readWord_data j hj, guardWord_eq j (by omega)]
+theorem scanAcc_zero_iff_eq (input : ByteArray) (hsize : input.size = 376) :
+    scanAcc input 12 = 0 ↔ input = Prefix256Data.data := by
+  rw [scanAcc_eq_guardedAcc_376 input hsize 12 (by omega)]
+  exact TailProjectionInstances.acc376_zero_iff input hsize
 
-def gasSteps_hit (input : ByteArray) (hsize : input.size = 256)
+def gasSteps_hit (input : ByteArray) (hsize : input.size = 376)
     (href : KnownInputCompactState.referenceWord input ≠ KnownInputData.fullWord)
-    (hz : scanAcc input 8 = 0) :
+    (hz : scanAcc input 12 = 0) :
     GasSteps (initialState submissionBytecode input 0)
       (Prefix256Finish.returnedState input) :=
   (Prefix256Entry.gasSteps_hit input hsize href).trans
     ((Prefix256Scan.gasSteps_scan input hsize).trans
-      (Prefix256Finish.gasSteps_finish_hit input (UInt256.ofNat (scalarAt 8))
-        256 (scanAcc input 8) hz hsize))
+      (Prefix256Finish.gasSteps_finish_hit input (UInt256.ofNat (scalarAt 12))
+        384 (scanAcc input 12) hz hsize))
 
-def gasSteps_miss (input : ByteArray) (hsize : input.size = 256)
+def gasSteps_miss (input : ByteArray) (hsize : input.size = 376)
     (href : KnownInputCompactState.referenceWord input ≠ KnownInputData.fullWord)
-    (hne : scanAcc input 8 ≠ 0) :
+    (hne : scanAcc input 12 ≠ 0) :
     GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 3) :=
   (Prefix256Entry.gasSteps_hit input hsize href).trans
     ((Prefix256Scan.gasSteps_scan input hsize).trans
-      (Prefix256Finish.gasSteps_miss input (UInt256.ofNat (scalarAt 8))
-        256 (scanAcc input 8) hne))
+      (Prefix256Finish.gasSteps_miss input (UInt256.ofNat (scalarAt 12))
+        384 (scanAcc input 12) hne))
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
-    (hsize : input.size = 256)
+    (hsize : input.size = 376)
     (href : KnownInputCompactState.referenceWord input ≠ KnownInputData.fullWord) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  by_cases hz : scanAcc input 8 = 0
+  by_cases hz : scanAcc input 12 = 0
   · have heq := (scanAcc_zero_iff_eq input hsize).1 hz
     have hspec : spec input = Prefix256Finish.paddedDigest := by
       rw [heq, Prefix256Digest.spec_data_eq]

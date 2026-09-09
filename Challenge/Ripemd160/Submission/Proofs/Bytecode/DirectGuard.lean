@@ -48,7 +48,7 @@ def gasSteps_target :
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
     (hne : input ≠ KnownInputData.targetInput)
     (hpne : input ≠ PatternedInputData.patternedInput)
-    (h256 : input.size ≠ 256) :
+    (h256 : input.size ≠ 376) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) := by
   by_cases hsize : input.size = 1000
   · by_cases href : referenceWord input = KnownInputData.fullWord
@@ -92,8 +92,8 @@ private theorem bytesToNatPadded_zero_beyond (bs : ByteArray) (off : Nat)
         byteFrom_zero_beyond bs (off + n) (by omega)]
       rfl
 
-/-- The compare loop's last word is read entirely past the end of a 256-byte input. -/
-private theorem readWord_past_end (input : ByteArray) (hsize : input.size = 256) :
+/-- The compare loop's last word is read entirely past the end of a 376-byte input. -/
+private theorem readWord_past_end (input : ByteArray) (hsize : input.size = 376) :
     MachineState.readWord input 992 = 0 := by
   apply Challenge.EvmProof.Word.word_ext
   rw [Challenge.EvmProof.Bytes.readWord_toNat,
@@ -103,7 +103,7 @@ private theorem readWord_past_end (input : ByteArray) (hsize : input.size = 256)
 /-- With the first word pinned at `0x6161..61` and the last word read past the end,
 the compare accumulator cannot be zero.  `wordOr_eq_zero_iff` splits the `lor` so
 the contradiction is a closed computation with no free variables left in it. -/
-private theorem finalAcc_ne_zero_short (input : ByteArray) (hsize : input.size = 256)
+private theorem finalAcc_ne_zero_short (input : ByteArray) (hsize : input.size = 376)
     (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
     KnownInputCompactState.finalAcc input ≠ 0 := by
   intro hz
@@ -113,7 +113,7 @@ private theorem finalAcc_ne_zero_short (input : ByteArray) (hsize : input.size =
   revert hleft
   decide
 
-private def gasSteps_fallback256 (input : ByteArray) (hsize : input.size = 256)
+private def gasSteps_fallback256 (input : ByteArray) (hsize : input.size = 376)
     (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
   (Execution.gasSteps_start input).trans
@@ -125,7 +125,7 @@ private def gasSteps_fallback256 (input : ByteArray) (hsize : input.size = 256)
 
 theorem correct : Correct submissionBytecode := by
   intro input hfit
-  by_cases h256 : input.size = 256
+  by_cases h256 : input.size = 376
   · by_cases href : KnownInputCompactState.referenceWord input =
       KnownInputData.fullWord
     · exact StackCorrect.correct input hfit

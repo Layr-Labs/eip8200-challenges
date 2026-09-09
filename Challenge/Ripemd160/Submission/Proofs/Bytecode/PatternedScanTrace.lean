@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanMask
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompactGuardConstants
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanState
 
@@ -50,12 +51,15 @@ attribute [local simp] Challenge.Ripemd160.initialState_stack
 /-- The constants the setup leaves below the working values. -/
 def frame : List UInt256 := [P7, M, m7, P, m8]
 
-/-- The accumulator after `k` words, as the guard builds it. -/
+def maskShift (input : ByteArray) (offset : UInt256) : UInt256 :=
+  TailProjectionInstances.rawShift input.size offset
+
+/-- The accumulator after individually masking each word difference. -/
 def scanAcc (input : ByteArray) : Nat → UInt256
   | 0 => 0
-  | k + 1 =>
-      UInt256.lor (scanAcc input k)
-        (UInt256.xor (MachineState.readWord input (32 * k)) (guardWord k))
+  | k + 1 => UInt256.lor (scanAcc input k)
+      (UInt256.shiftRight (UInt256.xor (MachineState.readWord input (32 * k)) (guardWord k))
+        (maskShift input (UInt256.ofNat (32 * k))))
 
 /-- At the head of the scan with `k` words folded in. -/
 def loopState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
@@ -74,20 +78,20 @@ def compareState (input : ByteArray) (k s : Nat) (a : UInt256) : State :=
 /-- At the head of the correction block, for a straddling offset. -/
 def straddleState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x1d7
+    pc := UInt256.ofNat 0x1cf
     stack := rawWord k :: UInt256.mul M (UInt256.ofNat (scalarAt k)) ::
       UInt256.ofNat (scalarAt k) :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- After the thirty-one words, at the padded tail. -/
 def tailState (input : ByteArray) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x17f
-    stack := UInt256.ofNat (scalarAt 31) :: UInt256.ofNat 992 :: a :: frame }
+    pc := UInt256.ofNat 168
+    stack := UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: a :: frame }
 
 /-- The stub jumps here, and the guard answers or falls through.  -/
 def patternedEntry (input : ByteArray) : State := atPC input 0x10e
 
-def hitState (input : ByteArray) : State := atPC input 0x1a1
+def hitState (input : ByteArray) : State := atPC input 409
 def fallbackState (input : ByteArray) : State := atPC input 0x3
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
@@ -97,7 +101,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x1d6
+    pc := UInt256.ofNat 0x1ce
     memory := answerMemory
     activeWords := UInt256.ofNat 1
     halt := .Returned
@@ -141,7 +145,7 @@ theorem land_ff (n : Nat) (hn : n < 2 ^ 256) :
     Nat.mod_eq_of_lt (Nat.lt_trans (Nat.mod_lt n (by decide)) (by norm_num))]
   rw [Nat.and_comm, show 255 = 2 ^ 8 - 1 by decide, Nat.and_two_pow_sub_one_eq_mod]
 
-theorem straddle_iff (k : Nat) (hk : k < 31) :
+theorem straddle_iff (k : Nat) (hk : k < 32) :
     UInt256.land (UInt256.ofNat 255) (UInt256.ofNat (32 * k)) = UInt256.ofNat 224 ↔
       (32 * k) % 256 = 224 := by
   rw [land_ff _ (by omega)]
@@ -158,7 +162,7 @@ theorem straddle_iff (k : Nat) (hk : k < 31) :
 /-! ### Deriving one expected word -/
 
 set_option maxHeartbeats 80000000 in
-theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 31)
+theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 32)
     (h : ¬ ((32 * k) % 256 = 224)) :
     run wordPath (loopState input k a) = some (compareState input k (scalarAt k) a) := by
   have hval : ((UInt256.ofNat 255).land (UInt256.ofNat (32 * k))).toNat
@@ -183,7 +187,7 @@ theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 3
       Challenge.EvmProof.Word.literal_eq_ofNat]
 
 set_option maxHeartbeats 80000000 in
-theorem run_word_straddle (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 31)
+theorem run_word_straddle (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 32)
     (h : (32 * k) % 256 = 224) :
     run wordPath (loopState input k a) = some (straddleState input k a) := by
   have hval : ((UInt256.ofNat 255).land (UInt256.ofNat (32 * k))).toNat
@@ -197,16 +201,16 @@ theorem run_word_straddle (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 
       rw [Challenge.EvmProof.Word.word_toNat_ofNat,
         Nat.mod_eq_of_lt (by norm_num : 224 < 2 ^ 256), hval, h])]
     decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x1d7 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 261 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x1cf = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 263 (by rfl)
   have hdestN : Decode.isValidJumpDest submissionBytecode
-      (UInt256.ofNat 471).toNat = true := by
+      (UInt256.ofNat 463).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (by norm_num : 471 < 2 ^ 256)]
+      Nat.mod_eq_of_lt (by norm_num : 463 < 2 ^ 256)]
     exact hdest
   have hdestL : Decode.isValidJumpDest submissionBytecode
-      ((471 : UInt256)).toNat = true := by
-    rw [show ((471 : UInt256)).toNat = 471 from by decide]
+      ((463 : UInt256)).toNat = true := by
+    rw [show ((463 : UInt256)).toNat = 463 from by decide]
     exact hdest
   simp (config := { maxSteps := 800000 })
     [wordPath, opAt, pushAt, wfOp, loopState, straddleState, frame, rawWord,

@@ -15,14 +15,14 @@ def digest1000 : UInt256 :=
   UInt256.ofNat 0x863c598588bd72a4babf36c6bb01f27bbdc0ecd4
 
 def digestDifference : UInt256 :=
-  UInt256.ofNat 0x40f965c347b5acb8e9ca879c436698568f2fbe5e
+  UInt256.ofNat 0x70f2f1572c2c87789dd59731da8abf01e8ee2879
 
 def selected (input : ByteArray) : UInt256 :=
   UInt256.xor digest1000
     (UInt256.mul digestDifference
-      (UInt256.eq (UInt256.ofNat 256) (UInt256.ofNat input.size)))
+      (UInt256.eq (UInt256.ofNat 376) (UInt256.ofNat input.size)))
 
-theorem selected_256 (input : ByteArray) (hsize : input.size = 256) :
+theorem selected_256 (input : ByteArray) (hsize : input.size = 376) :
     selected input = Prefix256Digest.paddedDigestWord := by
   simp only [selected, hsize]
   decide
@@ -33,7 +33,7 @@ theorem selected_1000 (input : ByteArray) (hsize : input.size = 1000) :
   decide
 
 def template : List Instr :=
-  [.op .CALLDATASIZE, .push ⟨2, by decide⟩ (UInt256.ofNat 256), .op .EQ,
+  [.op .CALLDATASIZE, .push ⟨2, by decide⟩ (UInt256.ofNat 376), .op .EQ,
    .push ⟨20, by decide⟩ digestDifference, .op .MUL,
    .push ⟨20, by decide⟩ digest1000, .op .XOR]
 

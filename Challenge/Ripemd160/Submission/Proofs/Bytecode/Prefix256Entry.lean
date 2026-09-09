@@ -12,11 +12,11 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Entry
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan
 
-/-- The merged classifier deleted the dedicated 256-byte entry, so a 256-byte input
+/-- The merged classifier deleted the dedicated 376-byte entry, so a 376-byte input
 reaches the scan by the SAME two steps a 1000-byte one uses.  Both are already
 proved: `run_size_match_256` for the classifier, `gasSteps_checkEarly` for the
 first-word test. -/
-def gasSteps_hit (input : ByteArray) (hsize : input.size = 256)
+def gasSteps_hit (input : ByteArray) (hsize : input.size = 376)
     (href : KnownInputCompactState.referenceWord input ≠ KnownInputData.fullWord) :
     GasSteps (initialState submissionBytecode input 0)
       (PatternedScan.patternedEntry input) :=
