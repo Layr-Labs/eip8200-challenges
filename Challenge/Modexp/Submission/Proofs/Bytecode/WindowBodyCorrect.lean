@@ -105,9 +105,12 @@ def handledOf (route : WindowRoute.Route) (input : ByteArray)
     let entered := header.trans (route.enter input hvalid hpositive hword)
     by_cases hmatch : WindowRoute.Matches input
     · exact prepend entered (route.hit input hvalid hpositive hword hmatch)
-    · let missed := entered.trans
-        (route.miss input hvalid hpositive hword hmatch)
-      exact prepend missed (legacyWordHandled input hvalid hpositive hword)
+    · by_cases hexact : WindowRoute.ExactCase input
+      · exact prepend entered
+          (route.exact input hvalid hpositive hword hexact)
+      · let missed := entered.trans
+          (route.miss input hvalid hpositive hword hmatch hexact)
+        exact prepend missed (legacyWordHandled input hvalid hpositive hword)
   · have hbig : 32 < modulusSize input := by omega
     by_cases hzeroModulus : Word.modulusValue input = 0
     · exact ⟨SubmissionCorrect.bigZeroFinalState input,

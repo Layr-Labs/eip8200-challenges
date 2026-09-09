@@ -33,13 +33,27 @@ private def sound {s t : State}
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka path hcode hfork h hrun hnp
 
-def gasSteps_miss (input : ByteArray)
-    (hmatch : ¬ WindowGuardLogic.Matches input) :
-    Dispatch.WordRouteMiss input :=
-  ((sound guardPath (run_guard input)).trans
-    (sound branchPath (run_branch_miss input hmatch))).trans
-      (sound missPath (run_miss input))
+private def exactEnvironment (input : ByteArray) :
+    WindowTwentyOneBinding.Environment Artifact.submissionArtifact .Osaka
+      (Main.headerState input) where
+  sizeBound := by
+    change submissionBytecode.size < 2 ^ 256
+    rw [submissionBytecode_size]
+    norm_num
+  code := rfl
+  forkEq := rfl
+  running := rfl
+  noPrecompile := deployAddress_not_precompile
 
+def gasSteps_miss (input : ByteArray) (hvalid : ValidInput input)
+    (hmatch : ¬ WindowTwentyOneInput.Matches input)
+    (hexact : ¬ WindowTwentyOneInput.ExactCase input) :
+    Dispatch.WordRouteMiss input := by
+  have h := WindowTwentyOneGasRoute.steps_miss Artifact.twentyOnePaths
+    (Main.headerState input) (exactEnvironment input) input hvalid hmatch hexact
+  simpa [WindowTwentyOnePositive.state, WindowTwentyOnePositive.context,
+    WindowTwentyOnePositive.routeStack, Dispatch.wordRouteEntryState,
+    Dispatch.wordEntryState] using h
 /-- Successful fixed-width guard, before the modulus branch. -/
 def gasSteps_hit (input : ByteArray) (hmatch : WindowGuardLogic.Matches input) :
     Challenge.EvmProof.GasSteps (Dispatch.wordRouteEntryState input)
@@ -50,6 +64,7 @@ def gasSteps_hit (input : ByteArray) (hmatch : WindowGuardLogic.Matches input) :
 /-- Concrete control half of the fixed-width route. -/
 def control : WindowRoute.Control where
   enter := Dispatch.gasSteps_wordRouteEnter
-  miss := fun input _ _ _ hmatch => gasSteps_miss input hmatch
+  miss := fun input hvalid _ _ hmatch hexact =>
+    gasSteps_miss input hvalid hmatch hexact
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowControlTrace

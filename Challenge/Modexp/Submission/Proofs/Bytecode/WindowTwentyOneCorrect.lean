@@ -43,12 +43,45 @@ def handled (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
   rw [← entry_eq]
   exact guard.trans trace
 
+private theorem exactStoredMemory_read :
+    MachineState.readPadded
+      (MachineState.writeBytes ByteArray.empty
+        (ByteArray.mk #[UInt8.ofNat 6]) 0) 0 1 =
+      ByteArray.mk #[UInt8.ofNat 6] := by
+  have h := Challenge.EvmProof.Memory.readPadded_writeBytes_same
+    ByteArray.empty (ByteArray.mk #[UInt8.ofNat 6]) 0
+  simpa using h
+
+def exactHandled (input : ByteArray) (hvalid : ValidInput input)
+    (hcase : WindowTwentyOneInput.ExactCase input) :
+    WindowRoute.Handled input := by
+  let ctx := context (Main.headerState input) input
+  let final := WindowTwentyOneEntry.exactReturned ctx (routeStack input)
+  have h := WindowTwentyOneGasRoute.steps_exact Artifact.twentyOnePaths
+    (Main.headerState input) (environment input) input hvalid hcase
+  refine ⟨final, ⟨?_⟩, ?_, ?_⟩
+  · change Challenge.EvmProof.GasSteps
+      (Dispatch.wordRouteEntryState input) final
+    rw [← entry_eq]
+    simpa [final, ctx] using h
+  · rfl
+  · change final.toResult = .returned (spec input)
+    rw [State.toResult_returned _ rfl]
+    change .returned
+      (MachineState.readPadded
+        (MachineState.writeBytes ByteArray.empty
+          (ByteArray.mk #[UInt8.ofNat 6]) 0) 0 1) =
+      .returned (spec input)
+    rw [exactStoredMemory_read,
+      WindowTwentyOneInput.exactCase_spec input hvalid hcase]
+
 def route : WindowRoute.Route where
   enter := Dispatch.gasSteps_wordRouteEnter
-  miss := fun input _ _ _ hmiss => by
+  miss := fun input hvalid _ _ hmiss hexact => by
     have h := WindowTwentyOneGasRoute.steps_miss Artifact.twentyOnePaths
-      (Main.headerState input) (environment input) input hmiss
+      (Main.headerState input) (environment input) input hvalid hmiss hexact
     simpa only [entry_eq, miss_eq] using h
   hit := fun input _ _ _ hmatch => handled input hmatch
-
+  exact := fun input hvalid _ _ hcase =>
+    exactHandled input hvalid hcase
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCorrect

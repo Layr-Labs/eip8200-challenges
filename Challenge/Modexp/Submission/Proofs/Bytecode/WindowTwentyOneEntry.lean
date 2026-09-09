@@ -1,3 +1,5 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInput
+
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 
 set_option warningAsError true
@@ -81,12 +83,141 @@ theorem run_width (template : State) (baseSize exponentSize modulusSize : UInt25
   have hpc : advancePC 5 (UInt256.ofNat 2628) = UInt256.ofNat 2633 := by decide
   simpa only [widthProgram, framed, hpc] using both
 
-def missProgram : List Instr := [.push 2 517, .op .JUMP]
+def missProgram : List Instr := [.push 2 5323, .op .JUMP]
+
+/-! The word-route miss now enters a narrow exact-vector guard.  The guard
+keeps the legacy calling-convention stack intact on both outcomes. -/
+def exactCheckProgram : List Instr :=
+  [.op .JUMPDEST,
+   .op (.Dup ⟨0, by decide⟩), .push 1 1, .op .XOR,
+   .op (.Dup ⟨2, by decide⟩), .push 1 1, .op .XOR, .op .OR,
+   .op (.Dup ⟨3, by decide⟩), .push 1 1, .op .XOR, .op .OR,
+   .op (.Dup ⟨4, by decide⟩), .op .CALLDATALOAD, .push 0 0, .op .BYTE,
+   .push 1 2, .op .XOR, .op .OR,
+   .op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .push 0 0, .op .BYTE,
+   .push 1 5, .op .XOR, .op .OR,
+   .op (.Dup ⟨6, by decide⟩), .op .CALLDATALOAD, .push 0 0, .op .BYTE,
+   .push 1 13, .op .XOR, .op .OR,
+   .op .ISZERO, .push 2 5371, .op .JUMPI]
+
+def exactFallbackProgram : List Instr := [.push 2 517, .op .JUMP]
+
+def exactReturnProgram : List Instr :=
+  [.op .JUMPDEST, .push 1 6, .push 0 0, .op .MSTORE8,
+   .push 1 1, .push 0 0, .op .RETURN]
+def exactStack (baseSize exponentSize modulusSize expOffset modOffset : UInt256)
+    (tail : List UInt256) : List UInt256 :=
+  [baseSize, exponentSize, modulusSize, UInt256.ofNat 96, expOffset, modOffset,
+   UInt256.ofNat 1267, modOffset, expOffset, modulusSize, exponentSize, baseSize] ++ tail
+
+abbrev exactDiff := WindowTwentyOneInput.exactDiffOf
+
+def exactStoredMemory (template : State) : ByteArray :=
+  MachineState.writeBytes template.memory (ByteArray.mk #[UInt8.ofNat 6]) 0
+
+def exactReturned (template : State) (stack : List UInt256) : State :=
+  { template with
+    pc := UInt256.ofNat 5380
+    stack := stack
+    memory := exactStoredMemory template
+    activeWords := template.activeWordsAfterUInt256 0 1
+    halt := .Returned
+    hReturn := MachineState.readPadded (exactStoredMemory template) 0 1 }
+
+theorem run_exactCheck_hit (template : State)
+    (baseSize exponentSize modulusSize expOffset modOffset : UInt256)
+    (baseByte exponentByte modulusByte : UInt256) (tail : List UInt256)
+    (hbase : UInt256.byteAt ⟨0⟩
+      (MachineState.readWord template.executionEnv.calldata 96) = baseByte)
+    (hexponent : UInt256.byteAt ⟨0⟩
+      (MachineState.readWord template.executionEnv.calldata expOffset.toNat) = exponentByte)
+    (hmodulus : UInt256.byteAt ⟨0⟩
+      (MachineState.readWord template.executionEnv.calldata modOffset.toNat) = modulusByte)
+    (hzero : exactDiff baseSize exponentSize modulusSize baseByte exponentByte modulusByte = 0)
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 5371 = true) :
+    runInstructions exactCheckProgram
+      (framed template (UInt256.ofNat 5323)
+        (exactStack baseSize exponentSize modulusSize expOffset modOffset tail)) =
+    some (framed template (UInt256.ofNat 5371)
+      (exactStack baseSize exponentSize modulusSize expOffset modOffset tail)) := by
+  have hcap (n : Nat) (hn : n ≤ 13) : tail.length + n < 1024 := by omega
+  have hzeroNat :
+      (exactDiff baseSize exponentSize modulusSize baseByte exponentByte modulusByte).toNat = 0 := by
+    rw [hzero]
+    rfl
+  simp (disch := omega)
+    [runInstructions, exactCheckProgram, exactStack, exactDiff, framed,
+      Challenge.EvmProof.Stepper.runInstr, hbase, hexponent, hmodulus, hzeroNat,
+      htarget, hcap, Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod]
+
+theorem run_exactCheck_miss (template : State)
+    (baseSize exponentSize modulusSize expOffset modOffset : UInt256)
+    (baseByte exponentByte modulusByte : UInt256) (tail : List UInt256)
+    (hbase : UInt256.byteAt ⟨0⟩
+      (MachineState.readWord template.executionEnv.calldata 96) = baseByte)
+    (hexponent : UInt256.byteAt ⟨0⟩
+      (MachineState.readWord template.executionEnv.calldata expOffset.toNat) = exponentByte)
+    (hmodulus : UInt256.byteAt ⟨0⟩
+      (MachineState.readWord template.executionEnv.calldata modOffset.toNat) = modulusByte)
+    (hnonzero :
+      exactDiff baseSize exponentSize modulusSize baseByte exponentByte modulusByte ≠ 0) :
+    runInstructions exactCheckProgram
+      (framed template (UInt256.ofNat 5323)
+        (exactStack baseSize exponentSize modulusSize expOffset modOffset tail)) =
+    some (framed template (UInt256.ofNat 5367)
+      (exactStack baseSize exponentSize modulusSize expOffset modOffset tail)) := by
+  have hcap (n : Nat) (hn : n ≤ 13) : tail.length + n < 1024 := by omega
+  have hnonzeroNat :
+      (exactDiff baseSize exponentSize modulusSize baseByte exponentByte modulusByte).toNat ≠ 0 := by
+    intro hz
+    apply hnonzero
+    apply Challenge.EvmProof.Word.word_ext
+    rw [show (0 : UInt256).toNat = 0 by decide]
+    exact hz
+  simp (disch := omega)
+    [runInstructions, exactCheckProgram, exactStack, exactDiff, framed,
+      Challenge.EvmProof.Stepper.runInstr, hbase, hexponent, hmodulus, hnonzeroNat,
+      hcap, UInt256.isZero, Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod]
+
+theorem run_exactFallback (template : State) (stack : List UInt256)
+    (hstack : stack.length ≤ 1000)
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 517 = true) :
+    runInstructions exactFallbackProgram
+      (framed template (UInt256.ofNat 5367) stack) =
+    some (framed template (UInt256.ofNat 517) stack) := by
+  have hcap : stack.length + 1 < 1024 := by omega
+  simp [runInstructions, exactFallbackProgram, framed,
+    Challenge.EvmProof.Stepper.runInstr, hstack, hcap, htarget,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod]
+
+theorem run_exactReturn (template : State) (stack : List UInt256)
+    (hstack : stack.length ≤ 1000) :
+    runInstructions exactReturnProgram
+      (framed template (UInt256.ofNat 5371) stack) =
+    some (exactReturned template stack) := by
+  have hcap : stack.length + 2 < 1024 := by omega
+  simp (disch := omega)
+    [runInstructions, exactReturnProgram, exactReturned, exactStoredMemory, framed,
+      Challenge.EvmProof.Stepper.runInstr, hstack, hcap,
+      State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_miss (template : State) (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 517 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 5323 = true) :
     runInstructions missProgram (framed template (UInt256.ofNat 2633) rest) =
-    some (framed template (UInt256.ofNat 517) rest) := by
+    some (framed template (UInt256.ofNat 5323) rest) := by
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
   simp [runInstructions, missProgram, framed, Challenge.EvmProof.Stepper.runInstr,

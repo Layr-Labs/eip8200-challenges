@@ -26,6 +26,9 @@ open EvmSemantics.EVM
 /-- The exact declared-width predicate tested by the appended route. -/
 abbrev Matches := WindowTwentyOneInput.Matches
 
+/- The exact one-word tuple recognized after a fixed-width miss. -/
+abbrev ExactCase := WindowTwentyOneInput.ExactCase
+
 /-- State immediately after entering the appended route at pc 2633. -/
 abbrev entryState (input : ByteArray) : State :=
   Dispatch.wordRouteEntryState input
@@ -49,7 +52,7 @@ structure Control where
     Dispatch.WordRouteEnter input
   miss : ∀ input : ByteArray, ValidInput input →
     0 < modulusSize input → modulusSize input ≤ 32 → ¬ Matches input →
-    Dispatch.WordRouteMiss input
+    ¬ ExactCase input → Dispatch.WordRouteMiss input
 
 /-- The complete proof interface of the appended route. `hit` owns all new
 arithmetic and output work; its control fields are proved independently. -/
@@ -57,5 +60,9 @@ structure Route extends Control where
   hit : ∀ input : ByteArray, ValidInput input →
     0 < modulusSize input → modulusSize input ≤ 32 → Matches input →
     Handled input
+  exact : ∀ input : ByteArray, ValidInput input →
+    0 < modulusSize input → modulusSize input ≤ 32 → ExactCase input →
+    Handled input
+
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowRoute

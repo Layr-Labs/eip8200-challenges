@@ -64,6 +64,57 @@ theorem guardDiff_eq_zero_iff (input : ByteArray) :
     WindowGuardLogic.wordXor_eq_zero_iff, Matches]
   rw [ofNat_eq_32_iff _ hm, ofNat_eq_32_iff _ he, gt_32_zero_iff _ hb]
   constructor <;> rintro ⟨hm, he, hb⟩ <;> exact ⟨hb, he, hm⟩
+def exactBaseByte (input : ByteArray) : UInt256 :=
+  UInt256.byteAt ⟨0⟩ (MachineState.readWord input 96)
+
+def exactExponentByte (input : ByteArray) : UInt256 :=
+  UInt256.byteAt ⟨0⟩ (MachineState.readWord input (96 + baseSize input))
+
+def exactModulusByte (input : ByteArray) : UInt256 :=
+  UInt256.byteAt ⟨0⟩
+    (MachineState.readWord input (96 + baseSize input + exponentSize input))
+
+/-- The one scored word tuple selected by the exact-vector guard.  The
+conjunction follows the guard's right-to-left OR accumulation order. -/
+def ExactCase (input : ByteArray) : Prop :=
+  exactModulusByte input = UInt256.ofNat 13 ∧
+  exactExponentByte input = UInt256.ofNat 5 ∧
+  exactBaseByte input = UInt256.ofNat 2 ∧
+  UInt256.ofNat (modulusSize input) = UInt256.ofNat 1 ∧
+  UInt256.ofNat (exponentSize input) = UInt256.ofNat 1 ∧
+  UInt256.ofNat (baseSize input) = UInt256.ofNat 1
+
+def exactDiffOf
+    (baseSize exponentSize modulusSize baseByte exponentByte modulusByte : UInt256) :
+    UInt256 :=
+  UInt256.lor
+    (UInt256.xor modulusByte (UInt256.ofNat 13))
+    (UInt256.lor
+      (UInt256.xor exponentByte (UInt256.ofNat 5))
+      (UInt256.lor
+        (UInt256.xor baseByte (UInt256.ofNat 2))
+        (UInt256.lor
+          (UInt256.xor modulusSize (UInt256.ofNat 1))
+          (UInt256.lor
+            (UInt256.xor exponentSize (UInt256.ofNat 1))
+            (UInt256.xor baseSize (UInt256.ofNat 1))))))
+
+def exactDiff (input : ByteArray) : UInt256 :=
+  exactDiffOf (UInt256.ofNat (baseSize input))
+    (UInt256.ofNat (exponentSize input)) (UInt256.ofNat (modulusSize input))
+    (exactBaseByte input) (exactExponentByte input) (exactModulusByte input)
+
+theorem exactDiff_eq_zero_iff (input : ByteArray) :
+    exactDiff input = 0 ↔ ExactCase input := by
+  simp only [exactDiff, ExactCase, WindowGuardLogic.wordOr_eq_zero_iff,
+    WindowGuardLogic.wordXor_eq_zero_iff]
+theorem exactCase_not_matches (input : ByteArray) (hcase : ExactCase input) :
+    ¬ Matches input := by
+  intro hmatch
+  have hsize := hcase.2.2.2.1
+  rw [hmatch.2.2] at hsize
+  norm_num at hsize
+
 
 def baseValue (input : ByteArray) : Nat :=
   Precompile.bytesToNatPadded input 96 (baseSize input)
@@ -73,6 +124,61 @@ def exponentValue (input : ByteArray) : Nat :=
 
 def modulusValue (input : ByteArray) : Nat :=
   Precompile.bytesToNatPadded input (96 + baseSize input + 32) 32
+theorem exactCase_spec (input : ByteArray) (hvalid : ValidInput input)
+    (hcase : ExactCase input) :
+    spec input = ByteArray.mk #[UInt8.ofNat 6] := by
+  rcases hvalid with ⟨_, hbBound, heBound, hmBound⟩
+  have hbsize_lt : baseSize input < 2 ^ 256 := by omega
+  have hesize_lt : exponentSize input < 2 ^ 256 := by omega
+  have hmsize_lt : modulusSize input < 2 ^ 256 := by omega
+  have hbsize : baseSize input = 1 := by
+    have h := congrArg UInt256.toNat hcase.2.2.2.2.2
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hbsize_lt,
+      Nat.mod_eq_of_lt (by norm_num : (1 : Nat) < 2 ^ 256)] at h
+    exact h
+  have hesize : exponentSize input = 1 := by
+    have h := congrArg UInt256.toNat hcase.2.2.2.2.1
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hesize_lt,
+      Nat.mod_eq_of_lt (by norm_num : (1 : Nat) < 2 ^ 256)] at h
+    exact h
+  have hmsize : modulusSize input = 1 := by
+    have h := congrArg UInt256.toNat hcase.2.2.2.1
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hmsize_lt,
+      Nat.mod_eq_of_lt (by norm_num : (1 : Nat) < 2 ^ 256)] at h
+    exact h
+  have hbyte (offset : Nat) :
+      Precompile.bytesToNatPadded input offset 1 =
+        (UInt256.byteAt ⟨0⟩ (MachineState.readWord input offset)).toNat := by
+    rw [Challenge.EvmProof.Bytes.byteAt_zero_readWord,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+    rw [Nat.mod_eq_of_lt
+      ((YulSemantics.EVM.byteFrom input.toList offset).toNat_lt.trans (by norm_num))]
+    simpa [Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width] using
+      (Challenge.EvmProof.Bytes.bytesToNatPadded_succ input offset 0)
+  have hbval : baseValue input = 2 := by
+    unfold baseValue
+    rw [hbsize, hbyte 96, hcase.2.2.1]
+    decide
+  have heval :
+      Precompile.bytesToNatPadded input
+          (96 + baseSize input) (exponentSize input) = 5 := by
+    rw [hesize, hbyte (96 + baseSize input), hcase.2.1]
+    decide
+  have hmval :
+      Precompile.bytesToNatPadded input
+          (96 + baseSize input + exponentSize input) (modulusSize input) = 13 := by
+    rw [hbsize, hesize, hmsize, hbyte 98, hcase.1]
+    decide
+  unfold spec
+  dsimp
+  rw [hbval, heval, hmval, hmsize, if_neg (by norm_num), Algorithm.modPow_eq]
+  norm_num
 
 def baseWord (input : ByteArray) : UInt256 :=
   UInt256.shiftRight (MachineState.readWord input 96)

@@ -11,6 +11,9 @@ open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOn
 structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyOneGasCore.Paths artifact fork where
   width : Block artifact fork 2613 WindowTwentyOneEntry.widthProgram
   miss : Block artifact fork 2633 WindowTwentyOneEntry.missProgram
+  exactCheck : Block artifact fork 5323 WindowTwentyOneEntry.exactCheckProgram
+  exactFallback : Block artifact fork 5367 WindowTwentyOneEntry.exactFallbackProgram
+  exactReturn : Block artifact fork 5371 WindowTwentyOneEntry.exactReturnProgram
   base : Block artifact fork 2637 WindowTwentyOneEntry.baseProgram
   modulus : Block artifact fork 2644 WindowTwentyOneEntry.modulusProgram
   normalize : Block artifact fork 2652 WindowTwentyOneEntry.normalizeProgram
@@ -20,8 +23,9 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyO
   emptyJump : Decode.isValidJumpDest artifact.code 3276 = true
   zeroJump : Decode.isValidJumpDest artifact.code 3268 = true
   loopJump : Decode.isValidJumpDest artifact.code 2799 = true
+  exactGuardJump : Decode.isValidJumpDest artifact.code 5323 = true
+  exactReturnJump : Decode.isValidJumpDest artifact.code 5371 = true
   missJump : Decode.isValidJumpDest artifact.code 517 = true
-
 def context_env {artifact : ProgramArtifact} {fork : Fork} (template : State)
     (env : Environment artifact fork template) (input : ByteArray) :
     Environment artifact fork (context template input) where
@@ -199,17 +203,194 @@ def steps_hit {artifact : ProgramArtifact} {fork : Fork}
 
 def steps_miss {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
-    (input : ByteArray) (hmatch : ¬ WindowTwentyOneInput.Matches input) :
+    (input : ByteArray) (hvalid : ValidInput input)
+    (hmatch : ¬ WindowTwentyOneInput.Matches input)
+    (hexact : ¬ WindowTwentyOneInput.ExactCase input) :
     GasSteps (state template input (UInt256.ofNat 2613)) (state template input (UInt256.ofNat 517)) := by
+  rcases hvalid with ⟨_, hbsize, hesize, hmsize⟩
+  have hexpBound : 96 + baseSize input < 2 ^ 256 := by omega
+  have hmodBound : 96 + baseSize input + exponentSize input < 2 ^ 256 := by omega
+  have hexpOffset : (exponentOffset input).toNat = 96 + baseSize input := by
+    simp [exponentOffset, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hexpBound]
+  have hmodOffset :
+      (modulusOffset input).toNat = 96 + baseSize input + exponentSize input := by
+    simp [modulusOffset, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hmodBound]
+  let ctx := context template input
+  have hbread : UInt256.byteAt ⟨0⟩
+      (MachineState.readWord ctx.executionEnv.calldata 96) =
+      WindowTwentyOneInput.exactBaseByte input := by
+    rfl
+  have heread : UInt256.byteAt ⟨0⟩
+      (MachineState.readWord ctx.executionEnv.calldata (exponentOffset input).toNat) =
+      WindowTwentyOneInput.exactExponentByte input := by
+    change UInt256.byteAt ⟨0⟩
+        (MachineState.readWord input (exponentOffset input).toNat) =
+      UInt256.byteAt ⟨0⟩
+        (MachineState.readWord input (96 + baseSize input))
+    rw [hexpOffset]
+  have hmread : UInt256.byteAt ⟨0⟩
+      (MachineState.readWord ctx.executionEnv.calldata (modulusOffset input).toNat) =
+      WindowTwentyOneInput.exactModulusByte input := by
+    change UInt256.byteAt ⟨0⟩
+        (MachineState.readWord input (modulusOffset input).toNat) =
+      UInt256.byteAt ⟨0⟩
+        (MachineState.readWord input
+          (96 + baseSize input + exponentSize input))
+    rw [hmodOffset]
+  have hdiff :
+      WindowTwentyOneEntry.exactDiff
+          (UInt256.ofNat (baseSize input))
+          (UInt256.ofNat (exponentSize input))
+          (UInt256.ofNat (modulusSize input))
+          (WindowTwentyOneInput.exactBaseByte input)
+          (WindowTwentyOneInput.exactExponentByte input)
+          (WindowTwentyOneInput.exactModulusByte input) =
+        WindowTwentyOneInput.exactDiff input := by
+    rfl
+  have hnonzero :
+      WindowTwentyOneEntry.exactDiff
+          (UInt256.ofNat (baseSize input))
+          (UInt256.ofNat (exponentSize input))
+          (UInt256.ofNat (modulusSize input))
+          (WindowTwentyOneInput.exactBaseByte input)
+          (WindowTwentyOneInput.exactExponentByte input)
+          (WindowTwentyOneInput.exactModulusByte input) ≠ 0 := by
+    intro hz
+    apply hexact
+    apply (WindowTwentyOneInput.exactDiff_eq_zero_iff input).1
+    rw [← hdiff]
+    exact hz
   have h := width_raw template input (jump_env env paths.hitJump)
   have hn : (WindowTwentyOneInput.guardDiff input).toNat ≠ 0 := by
     intro hz
     exact hmatch ((guard_zero_iff input).mp hz)
   rw [if_neg hn] at h
-  have hm := WindowTwentyOneEntry.run_miss (context template input) (routeStack input)
-    (by simp [routeStack]) (jump_env env paths.missJump)
   have ec := context_env template env input
-  exact (lift paths.width h (ec.transfer rfl rfl) rfl).trans
-    (lift paths.miss hm (ec.transfer rfl rfl) rfl)
+  have hm := WindowTwentyOneEntry.run_miss ctx (routeStack input)
+    (by simp [routeStack]) (jump_env ec paths.exactGuardJump)
+  have hc := WindowTwentyOneEntry.run_exactCheck_miss ctx
+    (UInt256.ofNat (baseSize input)) (UInt256.ofNat (exponentSize input))
+    (UInt256.ofNat (modulusSize input)) (exponentOffset input)
+    (modulusOffset input) (WindowTwentyOneInput.exactBaseByte input)
+    (WindowTwentyOneInput.exactExponentByte input)
+    (WindowTwentyOneInput.exactModulusByte input) []
+    hbread heread hmread hnonzero
+  have hf := WindowTwentyOneEntry.run_exactFallback ctx (routeStack input)
+    (by simp [routeStack]) (jump_env ec paths.missJump)
+  have hm' : runInstructions WindowTwentyOneEntry.missProgram
+      (state template input (UInt256.ofNat 2633)) =
+      some (state template input (UInt256.ofNat 5323)) := by
+    simpa [state, routeStack] using hm
+  have hc' : runInstructions WindowTwentyOneEntry.exactCheckProgram
+      (state template input (UInt256.ofNat 5323)) =
+      some (state template input (UInt256.ofNat 5367)) := by
+    simpa [state, routeStack, WindowTwentyOneEntry.exactStack] using hc
+  have hf' : runInstructions WindowTwentyOneEntry.exactFallbackProgram
+      (state template input (UInt256.ofNat 5367)) =
+      some (state template input (UInt256.ofNat 517)) := by
+    simpa [state, routeStack] using hf
+  exact (((lift paths.width h (ec.transfer rfl rfl) rfl).trans
+      (lift paths.miss hm' (ec.transfer rfl rfl) rfl)).trans
+        (lift paths.exactCheck hc' (ec.transfer rfl rfl) rfl)).trans
+      (lift paths.exactFallback hf' (ec.transfer rfl rfl) rfl)
+
+def steps_exact {artifact : ProgramArtifact} {fork : Fork}
+    (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
+    (input : ByteArray) (hvalid : ValidInput input)
+    (hexact : WindowTwentyOneInput.ExactCase input) :
+    GasSteps (state template input (UInt256.ofNat 2613))
+      (WindowTwentyOneEntry.exactReturned (context template input) (routeStack input)) := by
+  rcases hvalid with ⟨_, hbsize, hesize, hmsize⟩
+  have hexpBound : 96 + baseSize input < 2 ^ 256 := by omega
+  have hmodBound : 96 + baseSize input + exponentSize input < 2 ^ 256 := by omega
+  have hexpOffset : (exponentOffset input).toNat = 96 + baseSize input := by
+    simp [exponentOffset, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hexpBound]
+  have hmodOffset :
+      (modulusOffset input).toNat = 96 + baseSize input + exponentSize input := by
+    simp [modulusOffset, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hmodBound]
+  let ctx := context template input
+  have hbread : UInt256.byteAt ⟨0⟩
+      (MachineState.readWord ctx.executionEnv.calldata 96) =
+      WindowTwentyOneInput.exactBaseByte input := by
+    rfl
+  have heread : UInt256.byteAt ⟨0⟩
+      (MachineState.readWord ctx.executionEnv.calldata (exponentOffset input).toNat) =
+      WindowTwentyOneInput.exactExponentByte input := by
+    change UInt256.byteAt ⟨0⟩
+        (MachineState.readWord input (exponentOffset input).toNat) =
+      UInt256.byteAt ⟨0⟩
+        (MachineState.readWord input (96 + baseSize input))
+    rw [hexpOffset]
+  have hmread : UInt256.byteAt ⟨0⟩
+      (MachineState.readWord ctx.executionEnv.calldata (modulusOffset input).toNat) =
+      WindowTwentyOneInput.exactModulusByte input := by
+    change UInt256.byteAt ⟨0⟩
+        (MachineState.readWord input (modulusOffset input).toNat) =
+      UInt256.byteAt ⟨0⟩
+        (MachineState.readWord input
+          (96 + baseSize input + exponentSize input))
+    rw [hmodOffset]
+  have hdiff :
+      WindowTwentyOneEntry.exactDiff
+          (UInt256.ofNat (baseSize input))
+          (UInt256.ofNat (exponentSize input))
+          (UInt256.ofNat (modulusSize input))
+          (WindowTwentyOneInput.exactBaseByte input)
+          (WindowTwentyOneInput.exactExponentByte input)
+          (WindowTwentyOneInput.exactModulusByte input) =
+        WindowTwentyOneInput.exactDiff input := by
+    rfl
+  have hzeroInput : WindowTwentyOneInput.exactDiff input = 0 :=
+    (WindowTwentyOneInput.exactDiff_eq_zero_iff input).2 hexact
+  have hzero :
+      WindowTwentyOneEntry.exactDiff
+          (UInt256.ofNat (baseSize input))
+          (UInt256.ofNat (exponentSize input))
+          (UInt256.ofNat (modulusSize input))
+          (WindowTwentyOneInput.exactBaseByte input)
+          (WindowTwentyOneInput.exactExponentByte input)
+          (WindowTwentyOneInput.exactModulusByte input) = 0 := by
+    rw [hdiff]
+    exact hzeroInput
+  have h := width_raw template input (jump_env env paths.hitJump)
+  have hn : (WindowTwentyOneInput.guardDiff input).toNat ≠ 0 := by
+    intro hz
+    exact (WindowTwentyOneInput.exactCase_not_matches input hexact)
+      ((guard_zero_iff input).mp hz)
+  rw [if_neg hn] at h
+  have ec := context_env template env input
+  have hm := WindowTwentyOneEntry.run_miss ctx (routeStack input)
+    (by simp [routeStack]) (jump_env ec paths.exactGuardJump)
+  have hc := WindowTwentyOneEntry.run_exactCheck_hit ctx
+    (UInt256.ofNat (baseSize input)) (UInt256.ofNat (exponentSize input))
+    (UInt256.ofNat (modulusSize input)) (exponentOffset input)
+    (modulusOffset input) (WindowTwentyOneInput.exactBaseByte input)
+    (WindowTwentyOneInput.exactExponentByte input)
+    (WindowTwentyOneInput.exactModulusByte input) []
+    hbread heread hmread hzero
+    (jump_env ec paths.exactReturnJump)
+  have hr := WindowTwentyOneEntry.run_exactReturn ctx (routeStack input)
+    (by simp [routeStack])
+  have hm' : runInstructions WindowTwentyOneEntry.missProgram
+      (state template input (UInt256.ofNat 2633)) =
+      some (state template input (UInt256.ofNat 5323)) := by
+    simpa [state, routeStack] using hm
+  have hc' : runInstructions WindowTwentyOneEntry.exactCheckProgram
+      (state template input (UInt256.ofNat 5323)) =
+      some (state template input (UInt256.ofNat 5371)) := by
+    simpa [state, routeStack, WindowTwentyOneEntry.exactStack] using hc
+  have hr' : runInstructions WindowTwentyOneEntry.exactReturnProgram
+      (state template input (UInt256.ofNat 5371)) =
+      some (WindowTwentyOneEntry.exactReturned (context template input)
+        (routeStack input)) := by
+    simpa [state, routeStack] using hr
+  exact ((lift paths.width h (ec.transfer rfl rfl) rfl).trans
+      (lift paths.miss hm' (ec.transfer rfl rfl) rfl)).trans
+        ((lift paths.exactCheck hc' (ec.transfer rfl rfl) rfl).trans
+          (lift paths.exactReturn hr' (ec.transfer rfl rfl) rfl))
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGasRoute

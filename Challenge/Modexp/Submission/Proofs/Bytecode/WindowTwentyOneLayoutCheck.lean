@@ -33,7 +33,7 @@ theorem width_eq : WindowTwentyOneEntry.widthProgram = widthInstructions := by r
 theorem width_linear : WindowTwentyOneSlice.linearProgram widthInstructions = true := by decide
 
 def missInstructions : List Instr :=
-  [YulEvmCompiler.Instr.push 2 517,
+  [YulEvmCompiler.Instr.push 2 5323,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP]
 
 theorem miss_eq : WindowTwentyOneEntry.missProgram = missInstructions := by rfl

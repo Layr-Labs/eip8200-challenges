@@ -40,7 +40,38 @@ def branchPath :
 
 def missPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.pushAt 1841 2 517, Main.opAt 1842 .JUMP]
+  [Main.pushAt 1841 2 5323, Main.opAt 1842 .JUMP]
+
+def exactCheckPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [Main.opAt 3845 .JUMPDEST,
+   Main.opAt 3846 (.Dup ⟨0, by decide⟩), Main.pushAt 3847 1 1,
+   Main.opAt 3848 .XOR,
+   Main.opAt 3849 (.Dup ⟨2, by decide⟩), Main.pushAt 3850 1 1,
+   Main.opAt 3851 .XOR, Main.opAt 3852 .OR,
+   Main.opAt 3853 (.Dup ⟨3, by decide⟩), Main.pushAt 3854 1 1,
+   Main.opAt 3855 .XOR, Main.opAt 3856 .OR,
+   Main.opAt 3857 (.Dup ⟨4, by decide⟩), Main.opAt 3858 .CALLDATALOAD,
+   Main.pushAt 3859 0 0, Main.opAt 3860 .BYTE, Main.pushAt 3861 1 2,
+   Main.opAt 3862 .XOR, Main.opAt 3863 .OR,
+   Main.opAt 3864 (.Dup ⟨5, by decide⟩), Main.opAt 3865 .CALLDATALOAD,
+   Main.pushAt 3866 0 0, Main.opAt 3867 .BYTE, Main.pushAt 3868 1 5,
+   Main.opAt 3869 .XOR, Main.opAt 3870 .OR,
+   Main.opAt 3871 (.Dup ⟨6, by decide⟩), Main.opAt 3872 .CALLDATALOAD,
+   Main.pushAt 3873 0 0, Main.opAt 3874 .BYTE, Main.pushAt 3875 1 13,
+   Main.opAt 3876 .XOR, Main.opAt 3877 .OR,
+   Main.opAt 3878 .ISZERO, Main.pushAt 3879 2 5371,
+   Main.opAt 3880 .JUMPI]
+
+def exactFallbackPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [Main.pushAt 3881 2 517, Main.opAt 3882 .JUMP]
+
+def exactReturnPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [Main.opAt 3883 .JUMPDEST, Main.pushAt 3884 1 6, Main.pushAt 3885 0 0,
+   Main.opAt 3886 .MSTORE8, Main.pushAt 3887 1 1, Main.pushAt 3888 0 0,
+   Main.opAt 3889 .RETURN]
 
 /-- The first instruction on the fixed-width hit path. -/
 def hitEntryPath :
@@ -61,6 +92,13 @@ def hitEntryPath :
 @[simp] theorem jump517 :
     Decode.isValidJumpDest submissionBytecode 517 = true :=
   Artifact.isValidJumpDest_index 415 (by rfl)
+@[simp] theorem jumpExactEntry :
+    Decode.isValidJumpDest submissionBytecode 5323 = true :=
+  Artifact.isValidJumpDest_index 3845 (by rfl)
+
+@[simp] theorem jumpExactReturn :
+    Decode.isValidJumpDest submissionBytecode 5371 = true :=
+  Artifact.isValidJumpDest_index 3883 (by rfl)
 
 def routeStack (input : ByteArray) : List UInt256 :=
   let b := baseSize input

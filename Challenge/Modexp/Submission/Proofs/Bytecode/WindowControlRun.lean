@@ -81,13 +81,13 @@ private theorem run_miss_generic (template : State) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hcode : template.executionEnv.code = submissionBytecode) :
     Challenge.EvmProof.Stepper.runLocatedBlock missPath
-      (framed template 2633 rest) = some (framed template 517 rest) := by
+      (framed template 2633 rest) = some (framed template 5323 rest) := by
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
   simp (disch := omega) [missPath, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    framed, hrun, hcode, hcap0, hcap1, routePCs, jump517, Nat.add_assoc,
+    framed, hrun, hcode, hcap0, hcap1, routePCs, jumpExactEntry, Nat.add_assoc,
     List.getElem?_cons_zero, List.getElem?_cons_succ, Option.getD_some,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -146,7 +146,7 @@ theorem run_branch_miss (input : ByteArray)
 
 theorem run_miss (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock missPath (missState input) =
-      some (Dispatch.wordEntryState input) := by
+      some ({Dispatch.wordEntryState input with pc := UInt256.ofNat 5323}) := by
   have h := run_miss_generic (Dispatch.wordEntryState input)
     (routeStack input) (by simp [routeStack]) rfl rfl
   simpa only [framed, missState, routeStack_eq_entry, Dispatch.wordEntryState] using h
