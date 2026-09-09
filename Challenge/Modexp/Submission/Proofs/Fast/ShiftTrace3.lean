@@ -28,6 +28,9 @@ theorem run_mid_pos (s : State) (um : ByteArray) (q : UInt256) (n bsize esize ms
     (hact : 296 ≤ s.activeWords.toNat)
     (hneg : negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q =
       UInt256.ofNat 0)
+    (hbad :
+      ¬ ((bwOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q).toNat = 0 ∧
+        (cwOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry).toNat = 1))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3125
@@ -40,6 +43,9 @@ theorem run_mid_pos (s : State) (um : ByteArray) (q : UInt256) (n bsize esize ms
   have hc : UInt256.isTrue (UInt256.isZero
       (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := by
     rw [hneg]; decide
+  have heq := eq_flags_of_neg
+    (Monpro.l1Step um q NEG n n).memory
+    (Monpro.l1Step um q NEG n n).carry q hbad
   unfold negOf bwOf cwOf wN at hc
   simp (config := { maxSteps := 500000 })
     [blk3125, opAt, pushAt, wfOp,
@@ -47,7 +53,7 @@ theorem run_mid_pos (s : State) (um : ByteArray) (q : UInt256) (n bsize esize ms
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       midState, subCheckState, kState, pcMid, pcSubCheck, midMem, tnOf, wN, Exp.storeWord,
-      outer, Exp.outer, hcode, hrun, hTN, hc, jumpDest5247,
+      outer, Exp.outer, hcode, hrun, hTN, hc, heq, jumpDest5247,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -59,6 +65,9 @@ theorem run_mid_neg (s : State) (um : ByteArray) (q : UInt256) (n bsize esize ms
     (hact : 296 ≤ s.activeWords.toNat)
     (hneg : negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q =
       UInt256.ofNat 1)
+    (hbad :
+      ¬ ((bwOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q).toNat = 0 ∧
+        (cwOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry).toNat = 1))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3125
@@ -71,6 +80,9 @@ theorem run_mid_neg (s : State) (um : ByteArray) (q : UInt256) (n bsize esize ms
   have hc : ¬ UInt256.isTrue (UInt256.isZero
       (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := by
     rw [hneg]; decide
+  have heq := eq_flags_of_neg
+    (Monpro.l1Step um q NEG n n).memory
+    (Monpro.l1Step um q NEG n n).carry q hbad
   unfold negOf bwOf cwOf wN at hc
   simp (config := { maxSteps := 500000 })
     [blk3125, opAt, pushAt, wfOp,
@@ -78,7 +90,7 @@ theorem run_mid_neg (s : State) (um : ByteArray) (q : UInt256) (n bsize esize ms
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       midState, addLoopState, kState, pcMid, pcAddLoop, midMem, tnOf, wN, Exp.storeWord,
-      outer, Exp.outer, hcode, hrun, hTN, hc, jumpDest5247,
+      outer, Exp.outer, hcode, hrun, hTN, hc, heq, jumpDest5247,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

@@ -93,6 +93,8 @@ def gasSteps_shiftLoop (s : State) (mem : ByteArray) (n bsize esize msize mm min
           (gasSteps_step s (stepMems mem n mm i) n bsize esize msize (n - i) mm minv
             (by omega) (by omega) hn hn32 e invI
             (repairFacts_of (stepMems mem n mm i) n mm _ hn hn32 hmpos hmm htop invI.modulus
+              invI.neg hbaseI (Nat.mod_lt _ hmpos))
+            (step_neg_flags (stepMems mem n mm i) n mm _ hn hn32 hmm invI.modulus
               invI.neg hbaseI (Nat.mod_lt _ hmpos)))
           rfl (by
             show shiftLoopState s (stepMem (stepMems mem n mm i) n mm) n bsize esize msize

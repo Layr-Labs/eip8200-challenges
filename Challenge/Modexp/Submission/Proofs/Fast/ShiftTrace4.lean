@@ -419,7 +419,12 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
         (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))
       n mm
       (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
-        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))) :
+        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))))
+    (hbad :
+      ¬ ((bwOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+          (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))).toNat = 0 ∧
+        (cwOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+          (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry).toNat = 1)) :
     Challenge.EvmProof.GasSteps (shiftLoopState s mem n bsize esize msize k)
       (shiftLoopState s (stepMem mem n mm) n bsize esize msize (k - 1)) := by
   have rf' : RepairFacts (stepMid mem n) n mm (stepNeg mem n) := rf
@@ -491,7 +496,7 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
           (subCheckState s (stepMid mem n) n bsize esize msize k) :=
         soundEnv blk3125 e
           (run_mid_pos s (stepU mem n) (stepQ mem n) n bsize esize msize k e.act296 h0
-            e.code e.run)
+            hbad e.code e.run)
       have start' : Challenge.EvmProof.GasSteps
           (midState s (stepU mem n) (stepQ mem n) n bsize esize msize k)
           (subCheckState s
@@ -507,7 +512,7 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
           (addLoopState s (stepMid mem n) n bsize esize msize k) :=
         soundEnv blk3125 e
           (run_mid_neg s (stepU mem n) (stepQ mem n) n bsize esize msize k e.act296 h1
-            e.code e.run)
+            hbad e.code e.run)
       have adds := gasSteps_addRounds s (stepMid mem n) n bsize esize msize k
         (addCount (stepMid mem n) n mm (stepNeg mem n)) (by omega) hn32 e hc1 htlMid
         rf'.addRoundsOut (rf'.addLastOut hc1)

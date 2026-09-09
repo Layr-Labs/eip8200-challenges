@@ -131,6 +131,40 @@ def cwOf (mem : ByteArray) (c : UInt256) : UInt256 := UInt256.lt (wN mem c) c
 def tnOf (mem : ByteArray) (c q : UInt256) : UInt256 := wN mem c - q
 def bwOf (mem : ByteArray) (c q : UInt256) : UInt256 := UInt256.lt (wN mem c) q
 def negOf (mem : ByteArray) (c q : UInt256) : UInt256 := UInt256.gt (bwOf mem c q) (cwOf mem c)
+ /-- The equality of the two carry flags is the complement of `negOf`.
+The only excluded boolean pair is the one in which the carry flag is set
+but the borrow flag is clear. -/
+theorem eq_flags_of_neg (mem : ByteArray) (c q : UInt256)
+    (hbad :
+      ¬ ((bwOf mem c q).toNat = 0 ∧ (cwOf mem c).toNat = 1)) :
+    UInt256.eq (bwOf mem c q) (cwOf mem c) =
+      UInt256.isZero (negOf mem c q) := by
+  have hbw :
+      (bwOf mem c q).toNat =
+        if (wN mem c).toNat < q.toNat then 1 else 0 := by
+    unfold bwOf
+    rw [Challenge.EvmProof.Word.word_toNat_lt]
+  have hcw :
+      (cwOf mem c).toNat =
+        if (wN mem c).toNat < c.toNat then 1 else 0 := by
+    unfold cwOf
+    rw [Challenge.EvmProof.Word.word_toNat_lt]
+  by_cases h1 : (wN mem c).toNat < q.toNat
+  · by_cases h2 : (wN mem c).toNat < c.toNat
+    · have hbw' : (bwOf mem c q).toNat = 1 := by rw [hbw, if_pos h1]
+      have hcw' : (cwOf mem c).toNat = 1 := by rw [hcw, if_pos h2]
+      simp [UInt256.eq, UInt256.isZero, UInt256.gt, hbw', hcw']
+    · have hbw' : (bwOf mem c q).toNat = 1 := by rw [hbw, if_pos h1]
+      have hcw' : (cwOf mem c).toNat = 0 := by rw [hcw, if_neg h2]
+      simp [UInt256.eq, UInt256.isZero, UInt256.gt, hbw', hcw']
+  · by_cases h2 : (wN mem c).toNat < c.toNat
+    · have hbw' : (bwOf mem c q).toNat = 0 := by rw [hbw, if_neg h1]
+      have hcw' : (cwOf mem c).toNat = 1 := by rw [hcw, if_pos h2]
+      exact False.elim (hbad ⟨hbw', hcw'⟩)
+    · have hbw' : (bwOf mem c q).toNat = 0 := by rw [hbw, if_neg h1]
+      have hcw' : (cwOf mem c).toNat = 0 := by rw [hcw, if_neg h2]
+      simp [UInt256.eq, UInt256.isZero, UInt256.gt, hbw', hcw']
+
 def midMem (mem : ByteArray) (c q : UInt256) : ByteArray :=
   Exp.storeWord mem 8224 (tnOf mem c q)
 
@@ -579,7 +613,10 @@ theorem mid_relation (mem : ByteArray) (n mm : Nat) (q : UInt256) (u : Nat)
     u + (negOf (macOf mem n q).memory (macOf mem n q).carry q).toNat * Limbs.radix ^ (n + 1) =
         q.toNat * mm + tv (midMem (macOf mem n q).memory (macOf mem n q).carry q) n ∧
       tv (midMem (macOf mem n q).memory (macOf mem n q).carry q) n < Limbs.radix ^ (n + 1) ∧
-      (negOf (macOf mem n q).memory (macOf mem n q).carry q).toNat ≤ 1 := by
+      (negOf (macOf mem n q).memory (macOf mem n q).carry q).toNat ≤ 1 ∧
+      ¬ ((UInt256.lt ((macOf mem n q).carry + MachineState.readWord mem 8224) q).toNat = 0 ∧
+        (UInt256.lt ((macOf mem n q).carry + MachineState.readWord mem 8224)
+          (macOf mem n q).carry).toNat = 1) := by
   have hmac := mac_value mem n q (Limbs.radix ^ n - mm) hn32 hneg
   have hTN : MachineState.readWord (macOf mem n q).memory 8224 =
       MachineState.readWord mem 8224 :=
@@ -630,7 +667,16 @@ theorem mid_relation (mem : ByteArray) (n mm : Nat) (q : UInt256) (u : Nat)
     zify at hu' hmac hW1 hT1 hqa ⊢
     linear_combination (-1 : ℤ) * hu' + (-1 : ℤ) * hmac +
       (-((Limbs.radix : ℤ) ^ n)) * hW1 + (-((Limbs.radix : ℤ) ^ n)) * hT1 + (-1 : ℤ) * hqa
-  refine ⟨?_, ?_, ?_⟩
+  have hbad :
+      ¬ ((UInt256.lt ((macOf mem n q).carry + MachineState.readWord mem 8224) q).toNat = 0 ∧
+        (UInt256.lt ((macOf mem n q).carry + MachineState.readWord mem 8224)
+          (macOf mem n q).carry).toNat = 1) := by
+    intro h
+    have hkey' := hkey
+    rw [h.1, h.2] at hkey'
+    rw [hR'] at hulo
+    omega
+  refine ⟨?_, ?_, ?_, hbad⟩
   · rw [htv, hR', hnegv]
     rcases Nat.le_one_iff_eq_zero_or_eq_one.1 hcw1 with h0 | h1 <;>
     rcases Nat.le_one_iff_eq_zero_or_eq_one.1 hbw1 with g0 | g1
@@ -653,6 +699,20 @@ theorem mid_relation (mem : ByteArray) (n mm : Nat) (q : UInt256) (u : Nat)
     rw [Nat.mul_comm (Limbs.radix ^ n) Limbs.radix]
     omega
   · rw [hnegv]; split <;> omega
+
+ /-- The flag exclusion exposed by `mid_relation` for the runtime sign dispatch. -/
+ theorem mid_flags (mem : ByteArray) (n mm : Nat) (q : UInt256) (u : Nat)
+     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmm : mm < Limbs.radix ^ n)
+     (hmod : Model.FastRepresents mem 0 n mm)
+     (hneg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm))
+     (hu : tv mem n = u) (hulo : u < Limbs.radix ^ (n + 1)) :
+     ¬ ((bwOf (macOf mem n q).memory (macOf mem n q).carry q).toNat = 0 ∧
+       (cwOf (macOf mem n q).memory (macOf mem n q).carry).toNat = 1) := by
+   have hTN : MachineState.readWord (macOf mem n q).memory 8224 =
+       MachineState.readWord mem 8224 :=
+     mac_readWord_disjoint mem n 8224 q (by omega) (Or.inl (by omega))
+   simpa [bwOf, cwOf, wN, hTN] using
+     (mid_relation mem n mm q u hn hn32 hmm hmod hneg hu hulo).2.2.2
 
 /-! ## The repair rounds -/
 
@@ -1294,7 +1354,7 @@ theorem step_spec (mem : ByteArray) (n mm r : Nat)
   have hulo : r * Limbs.radix < Limbs.radix ^ (n + 1) := by
     rw [pow_succ]
     exact Nat.mul_lt_mul_of_pos_right (lt_trans hr hmm) Limbs.radix_pos
-  obtain ⟨hrel, hltmid, hneg1⟩ :=
+  obtain ⟨hrel, hltmid, hneg1, _hbad⟩ :=
     mid_relation (uMem mem n) n mm (qhatOf (uMem mem n)) (r * Limbs.radix) hn hn32 hmm hmodU
       hnegU hu hulo
   have hmodMid : Model.FastRepresents
@@ -1337,6 +1397,30 @@ theorem step_spec (mem : ByteArray) (n mm r : Nat)
     (Nat.zero_le 1) hmpos hbound
   rw [Nat.zero_mul, Nat.zero_add, ← htvFix, hcong] at hres
   exact hres
+
+ theorem step_neg_flags (mem : ByteArray) (n mm r : Nat)
+     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmm : mm < Limbs.radix ^ n)
+     (hmod : Model.FastRepresents mem 0 n mm)
+     (hneg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm))
+     (hbase : Model.FastRepresents mem 2048 n r) (hr : r < mm) :
+     ¬ ((bwOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+           (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))).toNat = 0 ∧
+       (cwOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+           (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry).toNat = 1) := by
+   have hmodU : Model.FastRepresents (uMem mem n) 0 n mm := by
+     refine (Model.fastRepresents_congr ?_ mm).2 hmod
+     intro i hi
+     exact uMem_readWord_disjoint mem n _ (Or.inl (by omega))
+   have hnegU : Model.FastRepresents (uMem mem n) NEG n (Limbs.radix ^ n - mm) := by
+     refine (Model.fastRepresents_congr ?_ _).2 hneg
+     intro i hi
+     exact uMem_readWord_disjoint mem n _ (Or.inl (by unfold NEG; omega))
+   have hu : tv (uMem mem n) n = r * Limbs.radix := uMem_tv mem n r hn hn32 hbase
+   have hulo : r * Limbs.radix < Limbs.radix ^ (n + 1) := by
+     rw [pow_succ]
+     exact Nat.mul_lt_mul_of_pos_right (lt_trans hr hmm) Limbs.radix_pos
+   exact mid_flags (uMem mem n) n mm (qhatOf (uMem mem n)) (r * Limbs.radix)
+     hn hn32 hmm hmodU hnegU hu hulo
 
 theorem stepMem_represents (mem : ByteArray) (n mm r : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)

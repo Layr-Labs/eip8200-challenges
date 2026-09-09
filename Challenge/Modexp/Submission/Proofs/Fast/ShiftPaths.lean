@@ -356,10 +356,10 @@ def blk3125 :
    pushAt 3052 2 8224,
    opAt 3053 .MSTORE,
    opAt 3054 .POP,
-   opAt 3055 .GT,
+   opAt 3055 .EQ,
    opAt 3056 (.Swap ⟨0, by decide⟩),
    opAt 3057 .POP,
-   opAt 3058 .ISZERO,
+   opAt 3058 .JUMPDEST,
    pushAt 3059 2 4330,
    opAt 3060 .JUMPI]
 
