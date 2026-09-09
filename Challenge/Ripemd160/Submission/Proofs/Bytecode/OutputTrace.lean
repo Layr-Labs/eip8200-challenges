@@ -81,9 +81,9 @@ def writeCallPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [⟨744, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨745, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨746, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
+   ⟨746, .push ⟨2, by decide⟩ (UInt256.ofNat 384), by rfl, by decide⟩,
    ⟨747, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨748, .push ⟨1, by decide⟩ (UInt256.ofNat 12), by rfl, by decide⟩,
+   ⟨748, .push ⟨2, by decide⟩ (UInt256.ofNat 560), by rfl, by decide⟩,
    ⟨749, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨750, .push ⟨2, by decide⟩ (UInt256.ofNat 0x3c6), by rfl, by decide⟩,
    ⟨751, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]

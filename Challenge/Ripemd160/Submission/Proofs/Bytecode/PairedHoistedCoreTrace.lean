@@ -1634,7 +1634,7 @@ def call16Template : List Instr :=
   [.op (.Swap ⟨7, by decide⟩),
    .op (.Swap ⟨3, by decide⟩),
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1920),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1927),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 19),
    .push ⟨1, by decide⟩ (UInt256.ofNat 26),
@@ -1653,11 +1653,11 @@ def call16Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5153),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5160),
    .op .JUMP]
 
 def call16Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 416), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 560) (MachineState.readWord memory 320), leftShift1 := UInt256.ofNat 26, rightShift1 := UInt256.ofNat 19, ret := UInt256.ofNat 1920}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 416), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 560) (MachineState.readWord memory 320), leftShift1 := UInt256.ofNat 26, rightShift1 := UInt256.ofNat 19, ret := UInt256.ofNat 1927}
 
 def call16Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.k, q.d, q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -1697,7 +1697,7 @@ theorem run_call16Template_word (s : State) (pc : UInt256) (q : PairedHelperBool
 
 
 def call20Template : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 2077),
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 2084),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 24),
    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
@@ -1716,11 +1716,11 @@ def call20Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5153),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5160),
    .op .JUMP]
 
 def call20Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 512), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 20, message1 := UInt256.lor (MachineState.readWord memory 624) (MachineState.readWord memory 384), leftShift1 := UInt256.ofNat 23, rightShift1 := UInt256.ofNat 24, ret := UInt256.ofNat 2077}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 512), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 20, message1 := UInt256.lor (MachineState.readWord memory 624) (MachineState.readWord memory 384), leftShift1 := UInt256.ofNat 23, rightShift1 := UInt256.ofNat 24, ret := UInt256.ofNat 2084}
 
 def call20Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -1762,7 +1762,7 @@ theorem run_call20Template_word (s : State) (pc : UInt256) (q : PairedHelperBool
 def call22Template : List Instr :=
   [.op .JUMPDEST,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 2116),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 2123),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 21),
    .push ⟨1, by decide⟩ (UInt256.ofNat 17),
@@ -1781,11 +1781,11 @@ def call22Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5153),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5160),
    .op .JUMP]
 
 def call22Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 672), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 528) (MachineState.readWord memory 288), leftShift1 := UInt256.ofNat 17, rightShift1 := UInt256.ofNat 21, ret := UInt256.ofNat 2116}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 672), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 528) (MachineState.readWord memory 288), leftShift1 := UInt256.ofNat 17, rightShift1 := UInt256.ofNat 21, ret := UInt256.ofNat 2123}
 
 def call22Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.a, q.d, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -1825,7 +1825,7 @@ theorem run_call22Template_word (s : State) (pc : UInt256) (q : PairedHelperBool
 
 
 def call26Template : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 2264),
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 2271),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 25),
    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
@@ -1844,11 +1844,11 @@ def call26Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5153),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5160),
    .op .JUMP]
 
 def call26Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 20, message1 := UInt256.lor (MachineState.readWord memory 592) (MachineState.readWord memory 352), leftShift1 := UInt256.ofNat 23, rightShift1 := UInt256.ofNat 25, ret := UInt256.ofNat 2264}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 20, message1 := UInt256.lor (MachineState.readWord memory 592) (MachineState.readWord memory 352), leftShift1 := UInt256.ofNat 23, rightShift1 := UInt256.ofNat 25, ret := UInt256.ofNat 2271}
 
 def call26Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -1890,7 +1890,7 @@ theorem run_call26Template_word (s : State) (pc : UInt256) (q : PairedHelperBool
 def call28Template : List Instr :=
   [.op .JUMPDEST,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 2303),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 2310),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 17),
    .push ⟨1, by decide⟩ (UInt256.ofNat 25),
@@ -1909,11 +1909,11 @@ def call28Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5153),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5160),
    .op .JUMP]
 
 def call28Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 26, message1 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 640), leftShift1 := UInt256.ofNat 25, rightShift1 := UInt256.ofNat 17, ret := UInt256.ofNat 2303}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 26, message1 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 640), leftShift1 := UInt256.ofNat 25, rightShift1 := UInt256.ofNat 17, ret := UInt256.ofNat 2310}
 
 def call28Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.a, q.d, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -1990,7 +1990,7 @@ theorem run_group32Template (s : State) (pc : UInt256) (q : PairedHelperBooleanT
 #print axioms run_group32Template
 
 def CoreJumpValid (s : State) : Prop :=
-  ∀ dest ∈ [5153, 1920, 2077, 2116, 2264, 2303],
+  ∀ dest ∈ [5160, 1927, 2084, 2123, 2271, 2310],
     Decode.isValidJumpDest s.executionEnv.code dest = true
 
 /-- A small, exact instruction path with its generic frame transition. -/

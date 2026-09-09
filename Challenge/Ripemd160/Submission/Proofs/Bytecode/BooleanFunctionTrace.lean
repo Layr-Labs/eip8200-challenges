@@ -87,7 +87,7 @@ def dispatchPath : List Located :=
   [⟨765, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨766, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
    ⟨767, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨768, .push ⟨2, by decide⟩ (UInt256.ofNat 1681), by rfl, by decide⟩,
+   ⟨768, .push ⟨2, by decide⟩ (UInt256.ofNat 1688), by rfl, by decide⟩,
    ⟨769, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨770, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 

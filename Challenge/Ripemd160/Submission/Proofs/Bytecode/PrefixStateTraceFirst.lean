@@ -34,7 +34,7 @@ def rho (input : ByteArray) : List UInt256 :=
 with the plain driver stack on top of the copied-code state. -/
 def firstMatchedState (s : State) (input : ByteArray) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5012
+    pc := UInt256.ofNat 5019
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
@@ -42,7 +42,7 @@ def firstMatchedState (s : State) (input : ByteArray) : State :=
 explicit; it collapses by `PrefixStateMemory.scratchState_copied`. -/
 private def firstMatchedScratch (s : State) (input : ByteArray) : State :=
   { PrefixStateMemory.scratchState (PrefixStateMemory.copied s) with
-    pc := UInt256.ofNat 5012
+    pc := UInt256.ofNat 5019
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 

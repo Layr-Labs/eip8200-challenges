@@ -6361,7 +6361,7 @@ def call16Template : List Instr :=
   [.op (.Swap ⟨7, by decide⟩),
    .op (.Swap ⟨3, by decide⟩),
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1753),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1760),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 19),
    .push ⟨1, by decide⟩ (UInt256.ofNat 26),
@@ -6380,11 +6380,11 @@ def call16Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5050),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5057),
    .op .JUMP]
 
 def call16Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 416), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 560) (MachineState.readWord memory 320), leftShift1 := UInt256.ofNat 26, rightShift1 := UInt256.ofNat 19, ret := UInt256.ofNat 1753}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 416), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 560) (MachineState.readWord memory 320), leftShift1 := UInt256.ofNat 26, rightShift1 := UInt256.ofNat 19, ret := UInt256.ofNat 1760}
 
 def call16Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.k, q.d, q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -6394,9 +6394,9 @@ theorem call16Template_length : call16Template.length = 24 := rfl
 theorem run_call16Template (s : State) (pc : UInt256) (q : PairedHelperBooleanTrace.Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5050 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5057 = true) :
     runInstrSeq call16Template {s with pc := pc, stack := call16Entry q rho} =
-      some {s with pc := UInt256.ofNat 5050, stack := entryStack (call16Frame s.memory q) rho} := by
+      some {s with pc := UInt256.ofNat 5057, stack := entryStack (call16Frame s.memory q) rho} := by
   have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
@@ -6408,7 +6408,7 @@ theorem run_call16Template (s : State) (pc : UInt256) (q : PairedHelperBooleanTr
     Challenge.EvmProof.Word.word_toNat_ofNat, hvalid]
 
 def call28Template : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 2331),
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 2338),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 17),
    .push ⟨1, by decide⟩ (UInt256.ofNat 25),
@@ -6427,11 +6427,11 @@ def call28Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5050),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5057),
    .op .JUMP]
 
 def call28Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 26, message1 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 640), leftShift1 := UInt256.ofNat 25, rightShift1 := UInt256.ofNat 17, ret := UInt256.ofNat 2331}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 26, message1 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 640), leftShift1 := UInt256.ofNat 25, rightShift1 := UInt256.ofNat 17, ret := UInt256.ofNat 2338}
 
 def call28Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -6441,9 +6441,9 @@ theorem call28Template_length : call28Template.length = 21 := rfl
 theorem run_call28Template (s : State) (pc : UInt256) (q : PairedHelperBooleanTrace.Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5050 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5057 = true) :
     runInstrSeq call28Template {s with pc := pc, stack := call28Entry q rho} =
-      some {s with pc := UInt256.ofNat 5050, stack := entryStack (call28Frame s.memory q) rho} := by
+      some {s with pc := UInt256.ofNat 5057, stack := entryStack (call28Frame s.memory q) rho} := by
   have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
@@ -6485,7 +6485,7 @@ theorem run_group32Template (s : State) (pc : UInt256) (q : PairedHelperBooleanT
 #print axioms run_group32Template
 
 def CoreJumpValid (s : State) : Prop :=
-  ∀ dest ∈ [5050, 1753, 2331],
+  ∀ dest ∈ [5057, 1760, 2338],
     Decode.isValidJumpDest s.executionEnv.code dest = true
 
 structure CoreBlock (start finish : Nat) (input output : List CoreReg) where
@@ -7088,77 +7088,77 @@ structure WholeCoreSites (artifact : ProgramArtifact) (fork : Fork) where
   inline12 : {site : GenericRoundSite artifact fork inline12Template // site.startPC = UInt256.ofNat 1476}
   inline13 : {site : GenericRoundSite artifact fork inline13Template // site.startPC = UInt256.ofNat 1529}
   inline14 : {site : GenericRoundSite artifact fork inline14Template // site.startPC = UInt256.ofNat 1583}
-  inline15 : {site : GenericRoundSite artifact fork inline15Template // site.startPC = UInt256.ofNat 1637}
-  group16 : {site : GenericRoundSite artifact fork group16Template // site.startPC = UInt256.ofNat 1690}
-  call16 : {site : GenericRoundSite artifact fork call16Template // site.startPC = UInt256.ofNat 1713}
-  return18 : {site : GenericRoundSite artifact fork return18Template // site.startPC = UInt256.ofNat 1753}
-  inline18 : {site : GenericRoundSite artifact fork inline18Template // site.startPC = UInt256.ofNat 1754}
-  inline19 : {site : GenericRoundSite artifact fork inline19Template // site.startPC = UInt256.ofNat 1809}
-  inline20 : {site : GenericRoundSite artifact fork inline20Template // site.startPC = UInt256.ofNat 1863}
-  inline21 : {site : GenericRoundSite artifact fork inline21Template // site.startPC = UInt256.ofNat 1918}
-  inline22 : {site : GenericRoundSite artifact fork inline22Template // site.startPC = UInt256.ofNat 1973}
-  inline23 : {site : GenericRoundSite artifact fork inline23Template // site.startPC = UInt256.ofNat 2029}
-  inline24 : {site : GenericRoundSite artifact fork inline24Template // site.startPC = UInt256.ofNat 2084}
-  inline25 : {site : GenericRoundSite artifact fork inline25Template // site.startPC = UInt256.ofNat 2130}
-  inline26 : {site : GenericRoundSite artifact fork inline26Template // site.startPC = UInt256.ofNat 2184}
-  inline27 : {site : GenericRoundSite artifact fork inline27Template // site.startPC = UInt256.ofNat 2239}
-  call28 : {site : GenericRoundSite artifact fork call28Template // site.startPC = UInt256.ofNat 2294}
-  return30 : {site : GenericRoundSite artifact fork return30Template // site.startPC = UInt256.ofNat 2331}
-  inline30 : {site : GenericRoundSite artifact fork inline30Template // site.startPC = UInt256.ofNat 2332}
-  inline31 : {site : GenericRoundSite artifact fork inline31Template // site.startPC = UInt256.ofNat 2376}
-  group32 : {site : GenericRoundSite artifact fork group32Template // site.startPC = UInt256.ofNat 2431}
-  inline32 : {site : GenericRoundSite artifact fork inline32Template // site.startPC = UInt256.ofNat 2455}
-  inline33 : {site : GenericRoundSite artifact fork inline33Template // site.startPC = UInt256.ofNat 2503}
-  inline34 : {site : GenericRoundSite artifact fork inline34Template // site.startPC = UInt256.ofNat 2551}
-  inline35 : {site : GenericRoundSite artifact fork inline35Template // site.startPC = UInt256.ofNat 2599}
-  inline36 : {site : GenericRoundSite artifact fork inline36Template // site.startPC = UInt256.ofNat 2648}
-  inline37 : {site : GenericRoundSite artifact fork inline37Template // site.startPC = UInt256.ofNat 2696}
-  inline38 : {site : GenericRoundSite artifact fork inline38Template // site.startPC = UInt256.ofNat 2744}
-  inline39 : {site : GenericRoundSite artifact fork inline39Template // site.startPC = UInt256.ofNat 2792}
-  inline40 : {site : GenericRoundSite artifact fork inline40Template // site.startPC = UInt256.ofNat 2839}
-  inline41 : {site : GenericRoundSite artifact fork inline41Template // site.startPC = UInt256.ofNat 2887}
-  inline42 : {site : GenericRoundSite artifact fork inline42Template // site.startPC = UInt256.ofNat 2936}
-  inline43 : {site : GenericRoundSite artifact fork inline43Template // site.startPC = UInt256.ofNat 2983}
-  inline44 : {site : GenericRoundSite artifact fork inline44Template // site.startPC = UInt256.ofNat 3032}
-  inline45 : {site : GenericRoundSite artifact fork inline45Template // site.startPC = UInt256.ofNat 3081}
-  inline46 : {site : GenericRoundSite artifact fork inline46Template // site.startPC = UInt256.ofNat 3129}
-  inline47 : {site : GenericRoundSite artifact fork inline47Template // site.startPC = UInt256.ofNat 3168}
-  group48 : {site : GenericRoundSite artifact fork group48Template // site.startPC = UInt256.ofNat 3207}
-  inline48 : {site : GenericRoundSite artifact fork inline48Template // site.startPC = UInt256.ofNat 3230}
-  inline49 : {site : GenericRoundSite artifact fork inline49Template // site.startPC = UInt256.ofNat 3285}
-  inline50 : {site : GenericRoundSite artifact fork inline50Template // site.startPC = UInt256.ofNat 3340}
-  inline51 : {site : GenericRoundSite artifact fork inline51Template // site.startPC = UInt256.ofNat 3395}
-  inline52 : {site : GenericRoundSite artifact fork inline52Template // site.startPC = UInt256.ofNat 3449}
-  inline53 : {site : GenericRoundSite artifact fork inline53Template // site.startPC = UInt256.ofNat 3494}
-  inline54 : {site : GenericRoundSite artifact fork inline54Template // site.startPC = UInt256.ofNat 3549}
-  inline55 : {site : GenericRoundSite artifact fork inline55Template // site.startPC = UInt256.ofNat 3604}
-  inline56 : {site : GenericRoundSite artifact fork inline56Template // site.startPC = UInt256.ofNat 3659}
-  inline57 : {site : GenericRoundSite artifact fork inline57Template // site.startPC = UInt256.ofNat 3714}
-  inline58 : {site : GenericRoundSite artifact fork inline58Template // site.startPC = UInt256.ofNat 3769}
-  inline59 : {site : GenericRoundSite artifact fork inline59Template // site.startPC = UInt256.ofNat 3825}
-  inline60 : {site : GenericRoundSite artifact fork inline60Template // site.startPC = UInt256.ofNat 3881}
-  inline61 : {site : GenericRoundSite artifact fork inline61Template // site.startPC = UInt256.ofNat 3937}
-  inline62 : {site : GenericRoundSite artifact fork inline62Template // site.startPC = UInt256.ofNat 3992}
-  inline63 : {site : GenericRoundSite artifact fork inline63Template // site.startPC = UInt256.ofNat 4048}
-  group64 : {site : GenericRoundSite artifact fork group64Template // site.startPC = UInt256.ofNat 4103}
-  inline64 : {site : GenericRoundSite artifact fork inline64Template // site.startPC = UInt256.ofNat 4110}
-  inline65 : {site : GenericRoundSite artifact fork inline65Template // site.startPC = UInt256.ofNat 4163}
-  inline66 : {site : GenericRoundSite artifact fork inline66Template // site.startPC = UInt256.ofNat 4215}
-  inline67 : {site : GenericRoundSite artifact fork inline67Template // site.startPC = UInt256.ofNat 4269}
-  inline68 : {site : GenericRoundSite artifact fork inline68Template // site.startPC = UInt256.ofNat 4322}
-  inline69 : {site : GenericRoundSite artifact fork inline69Template // site.startPC = UInt256.ofNat 4375}
-  inline70 : {site : GenericRoundSite artifact fork inline70Template // site.startPC = UInt256.ofNat 4428}
-  inline71 : {site : GenericRoundSite artifact fork inline71Template // site.startPC = UInt256.ofNat 4482}
-  inline72 : {site : GenericRoundSite artifact fork inline72Template // site.startPC = UInt256.ofNat 4535}
-  inline73 : {site : GenericRoundSite artifact fork inline73Template // site.startPC = UInt256.ofNat 4589}
-  inline74 : {site : GenericRoundSite artifact fork inline74Template // site.startPC = UInt256.ofNat 4642}
-  inline75 : {site : GenericRoundSite artifact fork inline75Template // site.startPC = UInt256.ofNat 4695}
-  inline76 : {site : GenericRoundSite artifact fork inline76Template // site.startPC = UInt256.ofNat 4748}
-  inline77 : {site : GenericRoundSite artifact fork inline77Template // site.startPC = UInt256.ofNat 4801}
-  inline78 : {site : GenericRoundSite artifact fork inline78Template // site.startPC = UInt256.ofNat 4855}
-  inline79 : {site : GenericRoundSite artifact fork inline79Template // site.startPC = UInt256.ofNat 4909}
-  coreExit : {site : GenericRoundSite artifact fork coreExitTemplate // site.startPC = UInt256.ofNat 4963}
-  helper : {site : GenericRoundSite artifact fork fullTemplate // site.startPC = UInt256.ofNat 5050}
+  inline15 : {site : GenericRoundSite artifact fork inline15Template // site.startPC = UInt256.ofNat 1644}
+  group16 : {site : GenericRoundSite artifact fork group16Template // site.startPC = UInt256.ofNat 1697}
+  call16 : {site : GenericRoundSite artifact fork call16Template // site.startPC = UInt256.ofNat 1720}
+  return18 : {site : GenericRoundSite artifact fork return18Template // site.startPC = UInt256.ofNat 1760}
+  inline18 : {site : GenericRoundSite artifact fork inline18Template // site.startPC = UInt256.ofNat 1761}
+  inline19 : {site : GenericRoundSite artifact fork inline19Template // site.startPC = UInt256.ofNat 1816}
+  inline20 : {site : GenericRoundSite artifact fork inline20Template // site.startPC = UInt256.ofNat 1870}
+  inline21 : {site : GenericRoundSite artifact fork inline21Template // site.startPC = UInt256.ofNat 1925}
+  inline22 : {site : GenericRoundSite artifact fork inline22Template // site.startPC = UInt256.ofNat 1980}
+  inline23 : {site : GenericRoundSite artifact fork inline23Template // site.startPC = UInt256.ofNat 2036}
+  inline24 : {site : GenericRoundSite artifact fork inline24Template // site.startPC = UInt256.ofNat 2091}
+  inline25 : {site : GenericRoundSite artifact fork inline25Template // site.startPC = UInt256.ofNat 2137}
+  inline26 : {site : GenericRoundSite artifact fork inline26Template // site.startPC = UInt256.ofNat 2191}
+  inline27 : {site : GenericRoundSite artifact fork inline27Template // site.startPC = UInt256.ofNat 2246}
+  call28 : {site : GenericRoundSite artifact fork call28Template // site.startPC = UInt256.ofNat 2301}
+  return30 : {site : GenericRoundSite artifact fork return30Template // site.startPC = UInt256.ofNat 2338}
+  inline30 : {site : GenericRoundSite artifact fork inline30Template // site.startPC = UInt256.ofNat 2339}
+  inline31 : {site : GenericRoundSite artifact fork inline31Template // site.startPC = UInt256.ofNat 2383}
+  group32 : {site : GenericRoundSite artifact fork group32Template // site.startPC = UInt256.ofNat 2438}
+  inline32 : {site : GenericRoundSite artifact fork inline32Template // site.startPC = UInt256.ofNat 2462}
+  inline33 : {site : GenericRoundSite artifact fork inline33Template // site.startPC = UInt256.ofNat 2510}
+  inline34 : {site : GenericRoundSite artifact fork inline34Template // site.startPC = UInt256.ofNat 2558}
+  inline35 : {site : GenericRoundSite artifact fork inline35Template // site.startPC = UInt256.ofNat 2606}
+  inline36 : {site : GenericRoundSite artifact fork inline36Template // site.startPC = UInt256.ofNat 2655}
+  inline37 : {site : GenericRoundSite artifact fork inline37Template // site.startPC = UInt256.ofNat 2703}
+  inline38 : {site : GenericRoundSite artifact fork inline38Template // site.startPC = UInt256.ofNat 2751}
+  inline39 : {site : GenericRoundSite artifact fork inline39Template // site.startPC = UInt256.ofNat 2799}
+  inline40 : {site : GenericRoundSite artifact fork inline40Template // site.startPC = UInt256.ofNat 2846}
+  inline41 : {site : GenericRoundSite artifact fork inline41Template // site.startPC = UInt256.ofNat 2894}
+  inline42 : {site : GenericRoundSite artifact fork inline42Template // site.startPC = UInt256.ofNat 2943}
+  inline43 : {site : GenericRoundSite artifact fork inline43Template // site.startPC = UInt256.ofNat 2990}
+  inline44 : {site : GenericRoundSite artifact fork inline44Template // site.startPC = UInt256.ofNat 3039}
+  inline45 : {site : GenericRoundSite artifact fork inline45Template // site.startPC = UInt256.ofNat 3088}
+  inline46 : {site : GenericRoundSite artifact fork inline46Template // site.startPC = UInt256.ofNat 3136}
+  inline47 : {site : GenericRoundSite artifact fork inline47Template // site.startPC = UInt256.ofNat 3175}
+  group48 : {site : GenericRoundSite artifact fork group48Template // site.startPC = UInt256.ofNat 3214}
+  inline48 : {site : GenericRoundSite artifact fork inline48Template // site.startPC = UInt256.ofNat 3237}
+  inline49 : {site : GenericRoundSite artifact fork inline49Template // site.startPC = UInt256.ofNat 3292}
+  inline50 : {site : GenericRoundSite artifact fork inline50Template // site.startPC = UInt256.ofNat 3347}
+  inline51 : {site : GenericRoundSite artifact fork inline51Template // site.startPC = UInt256.ofNat 3402}
+  inline52 : {site : GenericRoundSite artifact fork inline52Template // site.startPC = UInt256.ofNat 3456}
+  inline53 : {site : GenericRoundSite artifact fork inline53Template // site.startPC = UInt256.ofNat 3501}
+  inline54 : {site : GenericRoundSite artifact fork inline54Template // site.startPC = UInt256.ofNat 3556}
+  inline55 : {site : GenericRoundSite artifact fork inline55Template // site.startPC = UInt256.ofNat 3611}
+  inline56 : {site : GenericRoundSite artifact fork inline56Template // site.startPC = UInt256.ofNat 3666}
+  inline57 : {site : GenericRoundSite artifact fork inline57Template // site.startPC = UInt256.ofNat 3721}
+  inline58 : {site : GenericRoundSite artifact fork inline58Template // site.startPC = UInt256.ofNat 3776}
+  inline59 : {site : GenericRoundSite artifact fork inline59Template // site.startPC = UInt256.ofNat 3832}
+  inline60 : {site : GenericRoundSite artifact fork inline60Template // site.startPC = UInt256.ofNat 3888}
+  inline61 : {site : GenericRoundSite artifact fork inline61Template // site.startPC = UInt256.ofNat 3944}
+  inline62 : {site : GenericRoundSite artifact fork inline62Template // site.startPC = UInt256.ofNat 3999}
+  inline63 : {site : GenericRoundSite artifact fork inline63Template // site.startPC = UInt256.ofNat 4055}
+  group64 : {site : GenericRoundSite artifact fork group64Template // site.startPC = UInt256.ofNat 4110}
+  inline64 : {site : GenericRoundSite artifact fork inline64Template // site.startPC = UInt256.ofNat 4117}
+  inline65 : {site : GenericRoundSite artifact fork inline65Template // site.startPC = UInt256.ofNat 4170}
+  inline66 : {site : GenericRoundSite artifact fork inline66Template // site.startPC = UInt256.ofNat 4222}
+  inline67 : {site : GenericRoundSite artifact fork inline67Template // site.startPC = UInt256.ofNat 4276}
+  inline68 : {site : GenericRoundSite artifact fork inline68Template // site.startPC = UInt256.ofNat 4329}
+  inline69 : {site : GenericRoundSite artifact fork inline69Template // site.startPC = UInt256.ofNat 4382}
+  inline70 : {site : GenericRoundSite artifact fork inline70Template // site.startPC = UInt256.ofNat 4435}
+  inline71 : {site : GenericRoundSite artifact fork inline71Template // site.startPC = UInt256.ofNat 4489}
+  inline72 : {site : GenericRoundSite artifact fork inline72Template // site.startPC = UInt256.ofNat 4542}
+  inline73 : {site : GenericRoundSite artifact fork inline73Template // site.startPC = UInt256.ofNat 4596}
+  inline74 : {site : GenericRoundSite artifact fork inline74Template // site.startPC = UInt256.ofNat 4649}
+  inline75 : {site : GenericRoundSite artifact fork inline75Template // site.startPC = UInt256.ofNat 4702}
+  inline76 : {site : GenericRoundSite artifact fork inline76Template // site.startPC = UInt256.ofNat 4755}
+  inline77 : {site : GenericRoundSite artifact fork inline77Template // site.startPC = UInt256.ofNat 4808}
+  inline78 : {site : GenericRoundSite artifact fork inline78Template // site.startPC = UInt256.ofNat 4862}
+  inline79 : {site : GenericRoundSite artifact fork inline79Template // site.startPC = UInt256.ofNat 4916}
+  coreExit : {site : GenericRoundSite artifact fork coreExitTemplate // site.startPC = UInt256.ofNat 4970}
+  helper : {site : GenericRoundSite artifact fork fullTemplate // site.startPC = UInt256.ofNat 5057}
 
 #print axioms call16Template_terminal_advances
 #print axioms CoreGasBlock.of_site

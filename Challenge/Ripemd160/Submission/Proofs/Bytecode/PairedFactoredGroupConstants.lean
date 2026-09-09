@@ -39,9 +39,8 @@ def upperTemplate : List Instr :=
 
 def replaceTemplate : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op .POP,
-   .push ⟨4, by decide⟩ (UInt256.ofNat 0x5c4dd124),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 128), .op .SHL,
-   .push ⟨4, by decide⟩ (UInt256.ofNat 0x5a827999), .op .OR]
+   .push ⟨20, by decide⟩
+     (UInt256.ofNat 526962527014005041256681316140890030896371104153)]
 
 theorem run_upperTemplate (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length < 1022) (hrun : s.halt = .Running) :
@@ -70,10 +69,10 @@ theorem run_replaceTemplate (s : State) (pc value discarded : UInt256) (rho : Li
       (u :: v :: rest).exchange 0 1 = some (v :: u :: rest) := by
     simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rest
   simp [replaceTemplate, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
-    pcAfter, Instr.size, Nat.add_assoc, UInt256.succ, hrun, hcap, hswap, mixed_value,
+    pcAfter, Instr.size, Nat.add_assoc, UInt256.succ, hrun, hcap, hswap,
     word_add_ofNat_assoc]
-  change (((((pc + UInt256.ofNat 1) + UInt256.ofNat 1) + UInt256.ofNat 7) +
-    UInt256.ofNat 1) + UInt256.ofNat 5) + UInt256.ofNat 1 = pc + UInt256.ofNat 16
+  change ((pc + UInt256.ofNat 1) + UInt256.ofNat 1) + UInt256.ofNat 21 =
+    pc + UInt256.ofNat 23
   simp only [word_add_ofNat_assoc]
 
 #print axioms run_replaceTemplate

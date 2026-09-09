@@ -67,15 +67,15 @@ def scheduleSetupLocated : List Located :=
 
 def copyStateLocated : List Located :=
   [⟨456, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨457, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
+   ⟨457, .push ⟨2, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
    ⟨458, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
    ⟨459, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
    ⟨460, .op .MCOPY, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨461, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
+   ⟨461, .push ⟨2, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
    ⟨462, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
    ⟨463, .push ⟨2, by decide⟩ (UInt256.ofNat 352), by rfl, by decide⟩,
    ⟨464, .op .MCOPY, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨465, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
+   ⟨465, .push ⟨5, by decide⟩ (UInt256.ofNat 4294967297), by rfl, by decide⟩,
    ⟨466, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
    ⟨467, .push ⟨2, by decide⟩ (UInt256.ofNat 512), by rfl, by decide⟩,
    ⟨468, .op .MCOPY, by rfl, wfOp (by decide) trivial rfl⟩]
@@ -117,7 +117,7 @@ def leftIncrementLocated : List Located :=
    ⟨513, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def leftInitLocated : List Located :=
-  [⟨469, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩]
+  [⟨469, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩]
 
 def leftRoundPrefixLocated : List Located :=
   [⟨477, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
@@ -127,7 +127,7 @@ def leftRoundPrefixLocated : List Located :=
    ⟨481, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨482, .push ⟨1, by decide⟩ (UInt256.ofNat 5), by rfl, by decide⟩,
    ⟨483, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨484, .push ⟨2, by decide⟩ (UInt256.ofNat 1568), by rfl, by decide⟩,
+   ⟨484, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
    ⟨485, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨486, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨487, .push ⟨2, by decide⟩ (UInt256.ofNat 693), by rfl, by decide⟩,
@@ -142,14 +142,14 @@ def leftRoundMiddleLocated : List Located :=
    ⟨494, .push ⟨2, by decide⟩ (UInt256.ofNat 706), by rfl, by decide⟩,
    ⟨495, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
    ⟨496, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨497, .push ⟨2, by decide⟩ (UInt256.ofNat 1153), by rfl, by decide⟩,
+   ⟨497, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
    ⟨498, .push ⟨2, by decide⟩ (UInt256.ofNat 120), by rfl, by decide⟩,
    ⟨499, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def leftRoundSuffixLocated : List Located :=
   [⟨500, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨501, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨502, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
+   ⟨502, .push ⟨1, by decide⟩ (UInt256.ofNat 24), by rfl, by decide⟩,
    ⟨503, .push ⟨2, by decide⟩ (UInt256.ofNat 276), by rfl, by decide⟩,
    ⟨504, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -205,7 +205,7 @@ def rightRoundPrefixLocated : List Located :=
 
 def rightRoundMiddleLocated : List Located :=
   [⟨540, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨541, .push ⟨2, by decide⟩ (UInt256.ofNat 780), by rfl, by decide⟩,
+   ⟨541, .push ⟨1, by decide⟩ (UInt256.ofNat 31), by rfl, by decide⟩,
    ⟨542, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
    ⟨543, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨544, .push ⟨2, by decide⟩ (UInt256.ofNat 1249), by rfl, by decide⟩,
@@ -290,7 +290,7 @@ def combinationLocated : List Located :=
    ⟨615, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
    ⟨616, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨617, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨618, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
+   ⟨618, .push ⟨1, by decide⟩ (UInt256.ofNat 208), by rfl, by decide⟩,
    ⟨619, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨620, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
    ⟨621, .push ⟨2, by decide⟩ (UInt256.ofNat 416), by rfl, by decide⟩,
