@@ -23,7 +23,7 @@ def rowState (s : State) (pc : Nat) (c : CachedMemory) (r : ReadOnlyCache)
 
 def outAt (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256) : State :=
-  rowState s 4591 c r pa pb n i dst ret rest []
+  rowState s 4595 c r pa pb n i dst ret rest []
 
 def l1At (pc : Nat) (s : State) (c : CachedMemory) (r : ReadOnlyCache) (bi : UInt256)
     (pa pb n i j : Nat) (dst ret : UInt256) (rest : List UInt256) : State :=
@@ -39,7 +39,7 @@ def l1BodyAt (pc : Nat) (s : State) (c : CachedMemory) (r : ReadOnlyCache) (bi :
 
 def midAt (s : State) (c : CachedMemory) (r : ReadOnlyCache) (carry bi : UInt256)
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256) : State :=
-  rowState s 4890 c r pa pb n i dst ret rest [carry, bi]
+  rowState s 4894 c r pa pb n i dst ret rest [carry, bi]
 
 def l2At (pc : Nat) (s : State) (c : CachedMemory) (r : ReadOnlyCache) (bi mu c0 : UInt256)
     (pa pb n i k : Nat) (dst ret : UInt256) (rest : List UInt256) : State :=
@@ -48,7 +48,7 @@ def l2At (pc : Nat) (s : State) (c : CachedMemory) (r : ReadOnlyCache) (bi mu c0
 
 def tailAt (s : State) (c : CachedMemory) (r : ReadOnlyCache) (carry mu bi : UInt256)
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256) : State :=
-  rowState s 5177 c r pa pb n i dst ret rest [carry, mu, bi]
+  rowState s 5181 c r pa pb n i dst ret rest [carry, mu, bi]
 
 theorem write_cached_memory (c : CachedMemory) (k : Fin 3) (v : UInt256) :
     (c.write (addr k) v).memory = c.memory := by

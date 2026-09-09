@@ -168,7 +168,7 @@ theorem run_addTail_go (s : State) (mm : ByteArray) (c p p' : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcAddMid, pcAddInner, outer, Exp.outer, hcode, hrun, hp', hgt, jumpDest5121,
+      pcAddMid, pcAddInner, outer, Exp.outer, hcode, hrun, hp', hgt, jumpDest5125,
       UInt256.gt, UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -194,7 +194,7 @@ theorem run_addTail_last (s : State) (mm : ByteArray) (c p p' : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcAddMid, pcAddTail, outer, Exp.outer, hcode, hrun, hp', hle, jumpDest5121,
+      pcAddMid, pcAddTail, outer, Exp.outer, hcode, hrun, hp', hle, jumpDest5125,
       UInt256.gt, UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -270,7 +270,7 @@ theorem run_subCheck_done (s : State) (mem : ByteArray) (n bsize esize msize k :
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       subCheckState, csubCallState, kState, pcSubCheck, pcCsubCall,
-      outer, Exp.outer, hcode, hrun, hTN, htn, jumpDest5311, UInt256.isZero, UInt256.isTrue,
+      outer, Exp.outer, hcode, hrun, hTN, htn, jumpDest5315, UInt256.isZero, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -299,7 +299,7 @@ theorem run_subCheck_go (s : State) (mem : ByteArray) (n bsize esize msize k : N
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod, jumpDest5311]
+      Challenge.EvmProof.Word.ofNat_add_mod, jumpDest5315]
 
 /-- `blk3210`: the subtract round's frame `[p, 0]`. -/
 theorem run_subEntry (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
@@ -384,7 +384,7 @@ theorem run_subTail_go (s : State) (mm : ByteArray) (c p p' : UInt256) (f : UInt
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcSubMid, pcSubInner, outer, Exp.outer, hcode, hrun, hp', hgt, jumpDest5227,
+      pcSubMid, pcSubInner, outer, Exp.outer, hcode, hrun, hp', hgt, jumpDest5231,
       UInt256.gt, UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -410,7 +410,7 @@ theorem run_subTail_last (s : State) (mm : ByteArray) (c p p' : UInt256) (f : UI
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcSubMid, pcSubTail, outer, Exp.outer, hcode, hrun, hp', hle, jumpDest5227,
+      pcSubMid, pcSubTail, outer, Exp.outer, hcode, hrun, hp', hle, jumpDest5231,
       UInt256.gt, UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -476,7 +476,7 @@ theorem run_afterCsub (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       afterCsubState, shiftLoopState, kState, pcAfterCsub, pcShiftLoop,
-      outer, Exp.outer, hcode, hrun, hsub, jumpDest4839,
+      outer, Exp.outer, hcode, hrun, hsub, jumpDest4843,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,

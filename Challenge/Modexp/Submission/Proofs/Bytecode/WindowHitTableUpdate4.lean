@@ -29,9 +29,9 @@ private def tableKernelState (template : State) (base modulus : UInt256)
     activeWords := UInt256.ofNat (power + 1) }
 
 @[simp] private theorem table4PCs (index : Nat)
-    (hlo : 1879 ≤ index) (hhi : index ≤ 1885) :
+    (hlo : 1877 ≤ index) (hhi : index ≤ 1883) :
     Artifact.submissionArtifact.instructionPC index =
-      ([2681,2682,2683,2684,2685,2686,2687] : List Nat)[index - 1879]! := by
+      ([2681,2682,2683,2684,2685,2686,2687] : List Nat)[index - 1877]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in

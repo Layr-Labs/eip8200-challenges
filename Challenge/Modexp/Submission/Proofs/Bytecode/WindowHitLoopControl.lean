@@ -23,9 +23,9 @@ private def framed (template : State) (pc : Nat) (stack : List UInt256) : State 
   { template with pc := UInt256.ofNat pc, stack := stack }
 
 @[simp] private theorem controlPCs (index : Nat)
-    (hlo : 1967 ≤ index) (hhi : index ≤ 1974) :
+    (hlo : 1965 ≤ index) (hhi : index ≤ 1972) :
     Artifact.submissionArtifact.instructionPC index =
-      ([2796,2797,2798,2799,2800,2801,2802,2803] : List Nat)[index - 1967]! := by
+      ([2796,2797,2798,2799,2800,2801,2802,2803] : List Nat)[index - 1965]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in

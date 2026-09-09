@@ -23,9 +23,9 @@ theorem run_tail (s : State) (c : CachedMemory) (r : ReadOnlyCache) (carry mu bi
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hpb : 32 ≤ pb) (hfit : pb+32*n ≤ 8192) (hi : i+1 ≤ n)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 4591 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 4595 = true) :
     runInstructions tailProgram (tailAt s c r carry mu bi pa pb n i dst ret rest) =
-    some (rowState s (if i+1 < n then 4591 else 5208) (CiosStackCacheModel.cacheTail c carry)
+    some (rowState s (if i+1 < n then 4595 else 5212) (CiosStackCacheModel.cacheTail c carry)
       r pa pb n (i+1) dst ret rest []) := by
   let d := CiosStackCacheModel.cacheTail c carry
   have h1 := Tail.run_cleanup { s with memory := c.memory } c r
@@ -52,7 +52,7 @@ theorem run_exit (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 2288 = true) :
-    runInstructions CiosStackCachePrograms.exit (rowState s 5208 c r pa pb n i dst ret rest []) =
+    runInstructions CiosStackCachePrograms.exit (rowState s 5212 c r pa pb n i dst ret rest []) =
     some (mpCsubState s c.virtual dst ret rest) := by
   simpa only [rowState, mpCsubState, framed, List.nil_append] using Exit.run_exit s c r
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa+32*n-32))
