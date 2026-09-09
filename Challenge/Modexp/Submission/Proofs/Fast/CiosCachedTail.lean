@@ -26,4 +26,18 @@ theorem run_tail (s : State) (pmj ptj c mu bi pbi paEnd pbEnd flag dst ret : UIn
       (run_store s c pbi paEnd pbEnd flag dst ret rest hcap hact))
     (run_test { s with memory := tailMem s.memory c } pbi paEnd pbEnd flag dst ret rest hcap htarget)
 
+/-- Execute the unchanged row tail from the first state shared by the former
+and fixed terminal L2 cells. -/
+theorem run_after_cleanup (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4595 = true) :
+    runInstructions tailAfterCleanupProgram
+      (cleaned s c pbi paEnd pbEnd flag dst ret rest) =
+    some (result s c pbi paEnd pbEnd flag dst ret rest) := by
+  rw [tailAfterCleanupProgram_eq]
+  exact runInstructions_append_some _ _ _ _ _
+    (run_store s c pbi paEnd pbEnd flag dst ret rest hcap hact)
+    (run_test { s with memory := tailMem s.memory c }
+      pbi paEnd pbEnd flag dst ret rest hcap htarget)
+
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedTail

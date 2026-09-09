@@ -126,6 +126,13 @@ def l2Program (p : Nat) : List Instr :=
   else
     [.push 2 (UInt256.ofNat (p - 32))]
 
+/-- The final L2 cell stores at the fixed terminal address.  The following
+two instructions in `tailProgram` discard the pointer words, so this
+same-width tail leaves them unchanged. -/
+def l2LastProgram : List Instr :=
+  (l2Program 0).take 30 ++
+    [.push 8 (UInt256.ofNat 8288), .op .MSTORE]
+
 def entryProgram : List Instr :=
   [.op .JUMPDEST,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
@@ -228,9 +235,8 @@ def tailProgram : List Instr :=
    .op (.Swap ⟨1, by decide⟩),
    .op .POP,
    .op .POP,
-   .op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
-   .push 2 8224,
+   .push 3 8224,
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
@@ -259,15 +265,13 @@ def tailProgram : List Instr :=
    .op .JUMP]
 
 def l1DispatchProgram : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨7, by decide⟩),
-   .push 2 4758,
+  [.op (.Dup ⟨7, by decide⟩),
+   .push 3 4758,
    .op .JUMPI]
 
 def l2DispatchProgram : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨8, by decide⟩),
-   .push 2 5141,
+  [.op (.Dup ⟨8, by decide⟩),
+   .push 3 5141,
    .op .JUMPI]
 
 def joinProgram : List Instr :=

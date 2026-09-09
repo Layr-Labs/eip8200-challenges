@@ -15,8 +15,8 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open CiosCachedMacCore CiosCached CiosCached
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
-def tailLoopProgram : List Instr := CiosCached.tailProgram.take 26
-def exitProgram : List Instr := CiosCached.tailProgram.drop 26
+def tailLoopProgram : List Instr := CiosCached.tailProgram.take 25
+def exitProgram : List Instr := CiosCached.tailProgram.drop 25
 
 def exitState (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
@@ -25,10 +25,13 @@ def exitState (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb n : Nat)
       isFour n, negative32, allOnes, dst, ret] ++ rest)
 
 def cleanupProgram : List Instr := tailLoopProgram.take 5
-def storeProgram : List Instr := (tailLoopProgram.drop 5).take 14
-def testProgram : List Instr := tailLoopProgram.drop 19
+def storeProgram : List Instr := (tailLoopProgram.drop 5).take 13
+def testProgram : List Instr := tailLoopProgram.drop 18
+def tailAfterCleanupProgram : List Instr := (tailLoopProgram.drop 5).take 20
 
 theorem program_eq : tailLoopProgram = (cleanupProgram ++ storeProgram) ++ testProgram := rfl
+theorem tailAfterCleanupProgram_eq :
+    tailAfterCleanupProgram = storeProgram ++ testProgram := rfl
 
 def baseStack (pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : List UInt256 :=
   [pbi, paEnd, pbEnd, flag, negative32, allOnes, dst, ret] ++ rest
