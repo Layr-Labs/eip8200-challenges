@@ -12,9 +12,9 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCached CiosCachedMidDefs
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
-theorem run_store (s : State) (paj ptj c bi pbi paEnd pbEnd flag dst ret : UInt256)
+theorem run_store (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
-    runInstructions storeProgram (input s paj ptj c bi pbi paEnd pbEnd flag dst ret rest) =
+    runInstructions storeProgram (input s c bi pbi paEnd pbEnd flag dst ret rest) =
       some (stored s c bi pbi paEnd pbEnd flag dst ret rest) := by
   have hc9 : rest.length+10 < 1024 := by omega
   have hc10 : rest.length+11 < 1024 := by omega

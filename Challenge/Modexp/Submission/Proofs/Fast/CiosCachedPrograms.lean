@@ -4,6 +4,15 @@ set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 
+/-!
+# Instruction sequences of the immediate-address cached CIOS kernel
+
+The fully unrolled four- and eight-limb rows keep only the `a` cursor, the
+running carry and the row multiplier on the stack.  Every `t` and modulus limb
+address is a compile-time `PUSH2` immediate, so the first loop no longer
+maintains a `t` pointer and the second loop maintains no pointer at all.
+-/
+
 namespace Challenge.Modexp.Submission.Proofs.Fast.CiosCached
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
@@ -11,156 +20,85 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 open WindowNibbleKernel
 
-def l1Program : List Instr :=
+/-- One first-loop MAC without its cursor update.  Entered with
+`[pa, carry, bi, ...]`; `t` is the address of the accumulator limb. -/
+def l1Body (t : UInt256) : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .MUL,
-   .op (.Swap ⟨1, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
-   .op .MULMOD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op .LT,
-   .op .SUB,
-   .op (.Dup ⟨4, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨5, by decide⟩),
-   .op .GT,
-   .op .SUB,
-   .op .SUB,
-   .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
-   .op .MLOAD,
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨4, by decide⟩),
-   .op .GT,
-   .op .ADD,
-   .op (.Swap ⟨2, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op .ADD,
-   .op (.Swap ⟨2, by decide⟩),
-   .op .MSTORE,
-   .op (.Dup ⟨8, by decide⟩),
-   .op .ADD]
-
-def l2Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
-   .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .MUL,
-   .op (.Swap ⟨1, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
-   .op .MULMOD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op .LT,
-   .op .SUB,
-   .op (.Dup ⟨4, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨5, by decide⟩),
-   .op .GT,
-   .op .SUB,
-   .op .SUB,
-   .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
-   .op .MLOAD,
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨4, by decide⟩),
-   .op .GT,
-   .op .ADD,
-   .op (.Swap ⟨2, by decide⟩),
-   .push 1 32,
-   .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
-   .op .ADD,
-   .op (.Swap ⟨3, by decide⟩),
-   .op .ADD,
-   .op .MSTORE,
    .op (.Dup ⟨9, by decide⟩),
-   .op .ADD]
-
-/-- Only the final L2 copy leaves its soon-discarded pointers unchanged. -/
-def l2LastProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
-   .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨4, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
    .op .MUL,
    .op (.Swap ⟨1, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
    .op .MULMOD,
    .op (.Dup ⟨1, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .LT,
    .op .SUB,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨5, by decide⟩),
-   .op .GT,
-   .op .SUB,
-   .op .SUB,
-   .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
-   .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨4, by decide⟩),
    .op .GT,
-   .op .ADD,
-   .op (.Swap ⟨2, by decide⟩),
+   .op .SUB,
+   .op .SUB,
    .op (.Dup ⟨2, by decide⟩),
-   .push 6 32,
+   .push 2 t,
+   .op .MLOAD,
    .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨3, by decide⟩),
+   .op .GT,
+   .op .ADD,
+   .op (.Swap ⟨1, by decide⟩),
+   .push 2 t,
    .op .MSTORE]
 
-/-- Fixed L2 addresses leave both unused pointer slots unchanged. -/
-def l2ConstProgram (p : Nat) : List Instr :=
-  [.push 2 (UInt256.ofNat p),
+/-- A first-loop MAC that then moves the `a` cursor one limb down. -/
+def l1Program (t : UInt256) : List Instr :=
+  l1Body t ++ [.op (.Dup ⟨7, by decide⟩), .op .ADD]
+
+/-- The final first-loop MAC discards the exhausted `a` cursor. -/
+def l1LastProgram (t : UInt256) : List Instr :=
+  l1Body t ++ [.op .POP]
+
+/-- One second-loop MAC.  Entered with `[carry, mu, bi, ...]`; `x` is the
+address of the modulus limb, `tl` the accumulator limb read and `ts` the
+(one limb higher) accumulator limb written. -/
+def l2Program (x tl ts : UInt256) : List Instr :=
+  [.push 2 x,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
    .op .MUL,
    .op (.Swap ⟨1, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup ⟨4, by decide⟩),
    .op .MULMOD,
    .op (.Dup ⟨1, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .LT,
    .op .SUB,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨5, by decide⟩),
+   .op (.Swap ⟨3, by decide⟩),
    .op .GT,
    .op .SUB,
    .op .SUB,
-   .op (.Dup ⟨3, by decide⟩),
-   .push 2 (UInt256.ofNat (8256 + p)),
+   .op (.Dup ⟨1, by decide⟩),
+   .push 2 tl,
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨4, by decide⟩),
+   .op (.Swap ⟨2, by decide⟩),
    .op .GT,
    .op .ADD,
-   .op (.Swap ⟨2, by decide⟩),
-   .push 4 (UInt256.ofNat (8288 + p)),
+   .op (.Swap ⟨0, by decide⟩),
+   .push 2 ts,
    .op .MSTORE]
 
 def entryProgram : List Instr :=
@@ -204,19 +142,17 @@ def entryProgram : List Instr :=
    .op (.Swap ⟨1, by decide⟩),
    .op .POP]
 
+/-- Row head: load `b_i`, seed the carry and the `a` cursor. -/
 def outProgram : List Instr :=
   [.op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
    .push 0 0,
-   .push 2 9440,
-   .op .MLOAD,
-   .op (.Dup ⟨4, by decide⟩)]
+   .op (.Dup ⟨3, by decide⟩)]
 
+/-- `t[n] += C`, `t[n+1] := carry`, then `mu` and the first reduction carry. -/
 def midProgram : List Instr :=
-  [.op .POP,
-   .op .POP,
-   .op (.Dup ⟨0, by decide⟩),
+  [.op (.Dup ⟨0, by decide⟩),
    .push 2 8224,
    .op .MLOAD,
    .op .ADD,
@@ -249,23 +185,14 @@ def midProgram : List Instr :=
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
    .op .ADD,
-   .op .SUB,
-   .push 6 9440,
-   .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
-   .op .ADD,
-   .push 6 9408,
-   .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
-   .op .ADD]
+   .op .SUB]
 
+/-- Row tail: drop `mu` and `b_i`, finish the shift, advance the row pointer
+and either loop or fall into the exit. -/
 def tailProgram : List Instr :=
-  [.op .POP,
-   .op .POP,
-   .op (.Swap ⟨1, by decide⟩),
+  [.op (.Swap ⟨1, by decide⟩),
    .op .POP,
    .op .POP,
-   .op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
    .push 2 8224,
    .op .MLOAD,
@@ -296,15 +223,13 @@ def tailProgram : List Instr :=
    .op .JUMP]
 
 def l1DispatchProgram : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨7, by decide⟩),
-   .push 2 4758,
+  [.op (.Dup ⟨6, by decide⟩),
+   .push 2 4757,
    .op .JUMPI]
 
 def l2DispatchProgram : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨8, by decide⟩),
-   .push 2 5141,
+  [.op (.Dup ⟨6, by decide⟩),
+   .push 2 5112,
    .op .JUMPI]
 
 def joinProgram : List Instr :=

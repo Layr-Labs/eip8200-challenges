@@ -21,26 +21,25 @@ def isFour (n : Nat) : UInt256 :=
 @[simp] theorem isFour_four : isFour 4 = UInt256.ofNat 1 := by decide
 @[simp] theorem isFour_eight : isFour 8 = UInt256.ofNat 0 := by decide
 
+/-- Before first-loop step `j` of row `i`: the `a` cursor, the carry and
+`b_i` above the row frame. -/
 def l1At (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc
            stack := [UInt256.ofNat (ptrAt (pa + 32 * n - 32) j),
-                     UInt256.ofNat (ptrAt (8224 + 32 * n) j),
                      (l1Step mem bi pa n j).carry, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa + 32*n - 32), UInt256.ofNat (pb - 32), isFour n, negative32, allOnes, pdst, ret] ++ rest
            memory := (l1Step mem bi pa n j).memory }
 
-
+/-- Before second-loop step `k` of row `i`: only the carry and `mu` above
+`b_i` and the row frame. -/
 def l2At (pc : Nat) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc
-           stack := [UInt256.ofNat (32 * n - 64),
-                     UInt256.ofNat (8192 + 32 * n),
-                     (l2Step mid mu c0 n k).carry, mu, bi,
+           stack := [(l2Step mid mu c0 n k).carry, mu, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa + 32*n - 32), UInt256.ofNat (pb - 32), isFour n, negative32, allOnes, pdst, ret] ++ rest
            memory := (l2Step mid mu c0 n k).memory }
-
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCached

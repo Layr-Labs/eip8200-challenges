@@ -12,18 +12,19 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCached CiosCachedTailDefs
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
-theorem run_cleanup (s : State) (pmj ptj c mu bi pbi paEnd pbEnd flag dst ret : UInt256)
+set_option linter.unusedSimpArgs false in
+theorem run_cleanup (s : State) (c mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
-    runInstructions cleanupProgram (input s pmj ptj c mu bi pbi paEnd pbEnd flag dst ret rest) =
+    runInstructions cleanupProgram (input s c mu bi pbi paEnd pbEnd flag dst ret rest) =
     some (cleaned s c pbi paEnd pbEnd flag dst ret rest) := by
-  have hc9 : rest.length+10 < 1024 := by omega
-  have hc10 : rest.length+11 < 1024 := by omega
-  have hc11 : rest.length+12 < 1024 := by omega
-  have hc12 : rest.length+13 < 1024 := by omega
+  have hc9 : rest.length+9 < 1024 := by omega
+  have hc10 : rest.length+10 < 1024 := by omega
+  have hc11 : rest.length+11 < 1024 := by omega
   simp [cleanupProgram, tailLoopProgram, CiosCached.tailProgram, input, cleaned, baseStack, framed,
-    runInstructions, Challenge.EvmProof.Stepper.runInstr, hc9, hc10, hc11, hc12,
+    runInstructions, Challenge.EvmProof.Stepper.runInstr, hc9, hc10, hc11,
     List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod]
 
+set_option linter.unusedSimpArgs false in
 theorem run_store (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions storeProgram (cleaned s c pbi paEnd pbEnd flag dst ret rest) =

@@ -14,15 +14,15 @@ open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCached CiosCachedTailDe
 open CiosCachedTailStore CiosCachedTailTest
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
-theorem run_tail (s : State) (pmj ptj c mu bi pbi paEnd pbEnd flag dst ret : UInt256)
+theorem run_tail (s : State) (c mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
     (htarget : Decode.isValidJumpDest s.executionEnv.code 4595 = true) :
-    runInstructions tailLoopProgram (input s pmj ptj c mu bi pbi paEnd pbEnd flag dst ret rest) =
+    runInstructions tailLoopProgram (input s c mu bi pbi paEnd pbEnd flag dst ret rest) =
     some (result s c pbi paEnd pbEnd flag dst ret rest) := by
   rw [program_eq]
   exact runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _
-      (run_cleanup s pmj ptj c mu bi pbi paEnd pbEnd flag dst ret rest hcap)
+      (run_cleanup s c mu bi pbi paEnd pbEnd flag dst ret rest hcap)
       (run_store s c pbi paEnd pbEnd flag dst ret rest hcap hact))
     (run_test { s with memory := tailMem s.memory c } pbi paEnd pbEnd flag dst ret rest hcap htarget)
 
