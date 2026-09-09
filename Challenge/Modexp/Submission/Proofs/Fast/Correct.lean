@@ -1,21 +1,19 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.SubmissionCorrect
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowBodyCorrect
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCorrect
 import Challenge.Modexp.Submission.Proofs.Fast.Setup
-import Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordCorrect
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 2000000
 /-!
 # Top-level dispatch between the appended fast path and the reference body
 
-Instruction 0 enters the early one-word dispatcher at pc 5267. Matching headers
-use the complete Fermat/window trace. Every other header restores the exact old
-entry at pc 1314. From there, the fast path either returns the result or reaches
-the reference body at pc 1196 with an empty stack and untouched memory.
+Instruction 0 of the artifact is `PUSH2 1314; JUMP`, so every execution enters the
+appended fast path.  The fast path either produces the result itself, or reaches the
+reference program body's `JUMPDEST` at pc 1196 with an empty stack and untouched
+memory, from which the pre-existing reference proof runs unchanged.
 
-This module keeps the full input domain and packages all three cases. The
-legacy fast-path interfaces remain unchanged.
+This module packages that case split.  The two sides are hypotheses, so the whole
+integration is settled before the fast-path modules land: `Fast.Setup` supplies
+`bail`, and `Fast.Exp` supplies `handled`.
 
 `Challenge.EvmProof.GasSteps` carries a gas count, so it is a `Type`, not a `Prop`.
 It therefore cannot sit under `∃ … ∧ …`; the success side states `Nonempty` of the
@@ -28,7 +26,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- The unchanged legacy fast-path entry: pc 1314 with empty stack and memory. -/
+/-- The state the entry hop leaves: pc 1314, empty stack, memory untouched. -/
 abbrev entryState (input : ByteArray) : State := Main.trampolineState input 1314
 
 /-- The state the fast path leaves when it declines an input: pc 1196, empty
@@ -67,21 +65,18 @@ private noncomputable def chosenData (F : FastPath) (input : ByteArray) (hvalid 
         Nonempty (Challenge.EvmProof.GasSteps
           (initialState submissionBytecode input 0) final) ∧
           final.isDone = true ∧ final.toResult = .returned (spec input) } :=
-  if hmatch : WindowTwentyOneInput.Matches input then
-    ⟨Classical.choose (EarlyWordCorrect.hit input hmatch),
-      Classical.choose_spec (EarlyWordCorrect.hit input hmatch)⟩
+  if h : F.Handles input then
+    ⟨Classical.choose (F.handled input hvalid h),
+      ⟨⟨(Main.gasSteps_entryHop input).trans
+          (Classical.choice (Classical.choose_spec (F.handled input hvalid h)).1)⟩,
+        (Classical.choose_spec (F.handled input hvalid h)).2.1,
+        (Classical.choose_spec (F.handled input hvalid h)).2.2⟩⟩
   else
-    if h : F.Handles input then
-      ⟨Classical.choose (F.handled input hvalid h),
-        ⟨⟨(EarlyWordCorrect.legacy input hmatch).trans
-            (Classical.choice (Classical.choose_spec (F.handled input hvalid h)).1)⟩,
-          (Classical.choose_spec (F.handled input hvalid h)).2.1,
-          (Classical.choose_spec (F.handled input hvalid h)).2.2⟩⟩
-    else
-      let completed := WindowBodyCorrect.handledOf WindowTwentyOneCorrect.route
-        input hvalid
-        ((EarlyWordCorrect.legacy input hmatch).trans (F.bail input hvalid h))
-      ⟨Classical.choose completed, Classical.choose_spec completed⟩
+    ⟨SubmissionCorrect.finalState input,
+      ⟨⟨SubmissionCorrect.gasSteps_submission input hvalid
+          ((Main.gasSteps_entryHop input).trans (F.bail input hvalid h))⟩,
+        SubmissionCorrect.finalState_isDone input,
+        SubmissionCorrect.finalState_result input hvalid⟩⟩
 
 private noncomputable def chosenFinal (F : FastPath) (input : ByteArray)
     (hvalid : ValidInput input) : State :=

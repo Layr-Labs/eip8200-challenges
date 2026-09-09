@@ -7,10 +7,11 @@ set_option maxHeartbeats 2000000
 /-!
 # MODEXP bytecode entry and header parsing
 
-This module certifies the initial jump to the total early-word dispatcher.
-It also retains the legacy header blocks reached after a wrapper miss and
-fast-path fallback. Those blocks read the three EIP-198 length words and skip
-the redundant size checks on the challenge's unchanged valid-input domain.
+This is the first execution certificate for the frozen artifact. It follows
+the optimized entry jump, reads the three EIP-198 header words, skips the
+redundant EIP-7823 checks on the challenge's already-valid domain, and stops at
+the operand dispatcher. The same `GasSteps` witness is used by the functional
+proof and by the exact gas schedule.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Main
@@ -39,12 +40,12 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨index, .push width value, hget, hwf⟩
 
-/-- The initial jump to the total early-word dispatcher. -/
+/-- First half of the compiler trampoline chain. -/
 def trampoline1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 0 2 5267, opAt 1 .JUMP]
+  [pushAt 0 2 1314, opAt 1 .JUMP]
 
-/-- The legacy body jump destination, reached after fallback. -/
+/-- Second half of the compiler trampoline chain. -/
 def trampoline2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 899 .JUMPDEST]
@@ -62,11 +63,12 @@ def headerCheckPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 906 2 1228, opAt 907 .JUMP]
 
-/-- Legacy header instruction inventory, with the separately routed entry jump. -/
+/-- Reachable instructions from byte zero through optimized header parsing,
+retained as a single audit-friendly path. -/
 def headerPath := trampoline1Path ++ trampoline2Path ++
   headerLoadPath ++ headerCheckPath
 
-def tramp0Path := [pushAt 0 2 5267, opAt 1 .JUMP]
+def tramp0Path := [pushAt 0 2 1314, opAt 1 .JUMP]
 def tramp1Path := [opAt 12 .JUMPDEST, pushAt 13 2 53, opAt 14 .JUMP]
 def tramp2Path := [opAt 43 .JUMPDEST, pushAt 44 2 99, opAt 45 .JUMP]
 def tramp3Path := [opAt 80 .JUMPDEST, pushAt 81 2 305, opAt 82 .JUMP]

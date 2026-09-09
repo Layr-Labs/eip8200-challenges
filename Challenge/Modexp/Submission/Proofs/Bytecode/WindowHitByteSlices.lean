@@ -46,7 +46,7 @@ def byte3Path : List (Located Artifact.submissionArtifact .Osaka) :=
 def byteStartIndex (byte : Fin 4) : Nat := 1975 + 48 * byte.val
 
 def byteStartPC (byte : Fin 4) : Nat :=
-  [2841, 2893, 2946, 2999][byte.val]!
+  [2819, 2871, 2924, 2977][byte.val]!
 
 def highPrepPath (byte : Fin 4) :
     List (Located Artifact.submissionArtifact .Osaka) :=
