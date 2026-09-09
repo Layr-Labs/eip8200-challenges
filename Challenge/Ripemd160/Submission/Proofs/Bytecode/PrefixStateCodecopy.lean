@@ -6,7 +6,7 @@ set_option maxRecDepth 50000
 set_option maxHeartbeats 5000000
 set_option linter.unusedSimpArgs false
 
-/-! Generic `CODECOPY` step for the H8 checked prefix (index 4277, pc 5207).
+/-! Generic `CODECOPY` step for the H8 checked prefix (index 4272, pc 5197).
 
 The raw symbolic stepper has no `CODECOPY` case, so this module proves the
 single step directly against `StepRunning.codecopy`, following the
@@ -20,12 +20,12 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
 def preCopyState (s : State) (rho : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 5222
+    pc := UInt256.ofNat 5231
     stack := [UInt256.ofNat 0, UInt256.ofNat 260, UInt256.ofNat 32] ++ rho }
 
 def copiedState (s : State) (rho : List UInt256) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5223
+    pc := UInt256.ofNat 5232
     stack := rho }
 
 def gasSteps_codecopy (s : State) (rho : List UInt256)
@@ -45,7 +45,7 @@ def gasSteps_codecopy (s : State) (rho : List UInt256)
     exact hcode
   have hpc : (withGas pre gas).pc.toNat =
       Artifact.submissionArtifact.instructionPC 4266 := by
-    show (UInt256.ofNat 5222).toNat = _
+    show (UInt256.ofNat 5231).toNat = _
     rw [PrefixStatePaths.pc4022]
     decide
   have hdec := Stepper.decodes_of_artifact
@@ -75,7 +75,7 @@ def gasSteps_codecopy (s : State) (rho : List UInt256)
     simpa [pre, cost, preCopyState, copiedState, PrefixStateMemory.copied,
       withGas, Gas.codecopyTotal, State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.word_toNat_ofNat, mz, mz260, mz32,
-      Challenge.EvmProof.Word.succ_ofNat (n := 5222) (by norm_num),
+      Challenge.EvmProof.Word.succ_ofNat (n := 5231) (by norm_num),
       hcode] using hstep
 
 #print axioms gasSteps_codecopy

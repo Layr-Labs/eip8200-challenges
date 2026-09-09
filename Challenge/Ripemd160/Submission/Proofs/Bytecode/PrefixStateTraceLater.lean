@@ -9,7 +9,7 @@ set_option linter.unusedSimpArgs false
 
 /-! Raw later-block dispatch for the H8 checked prefix.
 
-`PrefixStatePaths.laterPath` is the four-instruction prologue at PC 5193:
+`PrefixStatePaths.laterPath` is the four-instruction prologue at PC 5183:
 `JUMPDEST`, `DUP3` (stack index 2, duplicating the driver block offset),
 `PUSH2 464`, and `JUMPI`.  For a later block (`i ≠ 0`, so the block offset
 word is nonzero under the calldata-fit bound) the jump is taken and the
@@ -23,10 +23,10 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
 /-- The generic compression target `464` is a valid jump destination. -/
 theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 460 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 271 = 460 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 272 = 460 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 271 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 272 (by rfl)
   rw [hpc] at h
   exact h
 

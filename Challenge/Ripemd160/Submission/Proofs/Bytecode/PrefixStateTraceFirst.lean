@@ -10,9 +10,9 @@ set_option linter.unusedSimpArgs false
 /-!
 # H8 first-block execution (index 0)
 
-Raw `prefixPath` (instructions 4268..4276) from the nonempty dispatcher
+Raw `prefixPath` (instructions 4263..4271) from the nonempty dispatcher
 entry to `PrefixStateCodecopy.preCopyState`, the generic `CODECOPY` step,
-then `firstComparePath` (4278..4282) ending at the compression entry on a
+then `firstComparePath` (4273..4277) ending at the compression entry on a
 word-0 mismatch and at `firstMatchedState` on a word-0 match.  Only the
 first block (`i = 0`) is handled here.
 -/
@@ -30,19 +30,19 @@ def rho (input : ByteArray) : List UInt256 :=
 
 @[simp] theorem rho_length (input : ByteArray) : (rho input).length = 5 := rfl
 
-/-- State after the first comparison succeeds: pc 5215 (instruction 4283)
+/-- State after the first comparison succeeds: pc 5205 (instruction 4278)
 with the plain driver stack on top of the copied-code state. -/
 def firstMatchedState (s : State) (input : ByteArray) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5230
+    pc := UInt256.ofNat 5239
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
 theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 460 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 271 = 460 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 272 = 460 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 271 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 272 (by rfl)
   rw [hpc] at h
   exact h
 
@@ -114,7 +114,7 @@ private theorem act_idem (s : State) :
 
 private theorem compare_mload_active (s : State) (input : ByteArray) :
     ({ toSharedState := (PrefixStateMemory.copied s).toSharedState,
-        pc := UInt256.ofNat 5224,
+        pc := UInt256.ofNat 5233,
         stack := [UInt256.ofNat 0, MachineState.readWord input 0,
           DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
           DriverTrace.blockOffsetWord 0, Padding.paddedWord input],
@@ -152,7 +152,7 @@ private theorem cond_mismatch (input : ByteArray)
   simpa using htrue
 
 /-- The five-instruction first-word comparison on a word-0 match: the final
-`JUMPI` is not taken and execution continues at pc 5215 (instruction 4283). -/
+`JUMPI` is not taken and execution continues at pc 5205 (instruction 4278). -/
 theorem run_firstCompare_match (s : State) (input : ByteArray)
     (hmatch : MachineState.readWord input 0 = PatternedWordData.expectedWordAt 0)
     (hrun : s.halt = .Running) :

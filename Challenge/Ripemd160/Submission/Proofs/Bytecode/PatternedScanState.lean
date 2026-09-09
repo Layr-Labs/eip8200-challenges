@@ -261,9 +261,9 @@ def straddleAddPath : List Located :=
 
 /-- Bump the scalar and rejoin the scan. -/
 def straddleBackPath : List Located :=
-  [opAt 265 (.Swap ⟨1, by decide⟩), pushAt 266 1 11, opAt 267 .ADD,
-   opAt 268 (.Swap ⟨1, by decide⟩), pushAt 269 3 332,
-   opAt 270 .JUMP]
+  [opAt 265 (.Dup ⟨2, by decide⟩), pushAt 266 1 11, opAt 267 .ADD,
+   opAt 268 (.Swap ⟨2, by decide⟩), opAt 269 .POP, pushAt 270 2 332,
+   opAt 271 .JUMP]
 
 
 @[simp] theorem pc2903 : Artifact.submissionArtifact.instructionPC 150 = 0xfe :=
@@ -500,10 +500,10 @@ def straddleBackPath : List Located :=
   by rw [scan_instruction_pc 268 (by decide) (by decide)]; rfl
 @[simp] theorem pc3019 : Artifact.submissionArtifact.instructionPC 269 = 0x1c7 :=
   by rw [scan_instruction_pc 269 (by decide) (by decide)]; rfl
-@[simp] theorem pc3020 : Artifact.submissionArtifact.instructionPC 269 = 0x1c7 :=
-  by rw [scan_instruction_pc 269 (by decide) (by decide)]; rfl
-@[simp] theorem pc3021 : Artifact.submissionArtifact.instructionPC 270 = 0x1cb :=
+@[simp] theorem pc3020 : Artifact.submissionArtifact.instructionPC 270 = 0x1c8 :=
   by rw [scan_instruction_pc 270 (by decide) (by decide)]; rfl
+@[simp] theorem pc3021 : Artifact.submissionArtifact.instructionPC 271 = 0x1cb :=
+  by rw [scan_instruction_pc 271 (by decide) (by decide)]; rfl
 #print axioms scan_instruction_at
 #print axioms scan_instruction_pc
 #print axioms setupPath
