@@ -130,29 +130,33 @@ theorem nextState2_word_above (s : State) (input : ByteArray) (address : Nat)
 
 /-- Four matched words force at least three padded blocks. -/
 theorem double_blockCount (input : ByteArray) (hd : double input = true) :
-    2 ≤ DriverTrace.blockCount input := by
+    4 ≤ DriverTrace.blockCount input := by
   have h := (double_iff input).1 hd
-  have hsize := PrefixStateData.size_ge_128_of_words input h.2.2
+  have hsize := PrefixStateData.size_ge_256_of_words input h.2.2.2.2.2.2
   unfold DriverTrace.blockCount Padding.paddedLength
   omega
 
-/-- The chaining state after two blocks of a four-word match is `H2`. -/
 theorem hashAfter_two (input : ByteArray) (h : Matched input ∧ Matched2 input) :
-    CompressionSeamBridge.hashAfter input 2 = PatternedDigest.H2 := by
-  have e2 : CompressionSeamBridge.hashAfter input 2 =
-      Crypto.Ripemd160.compressBlock (CompressionSeamBridge.hashAfter input 1)
-        (Padding.paddedMessage input) (1 * 64) := StackRunBridge.hashAfter_succ input 1
-  have e1 : CompressionSeamBridge.hashAfter input 1 =
-      Crypto.Ripemd160.compressBlock (CompressionSeamBridge.hashAfter input 0)
-        (Padding.paddedMessage input) (0 * 64) := StackRunBridge.hashAfter_succ input 0
-  have e0 : CompressionSeamBridge.hashAfter input 0 = PatternedDigest.H0 := rfl
-  rw [e2, e1, e0, show 0 * 64 = 0 from rfl, show 1 * 64 = 64 from rfl,
-    PrefixStateData.h8_firstBlock input h.1.1 h.1.2]
-  exact PrefixStateData.h_secondBlock input h.2.1 h.2.2
+    CompressionSeamBridge.hashAfter input 4 = PatternedDigest.H4 := by
+  rw [StackRunBridge.hashAfter_succ input 3,
+      StackRunBridge.hashAfter_succ input 2,
+      StackRunBridge.hashAfter_succ input 1,
+      StackRunBridge.hashAfter_succ input 0]
+  change Crypto.Ripemd160.compressBlock
+    (Crypto.Ripemd160.compressBlock
+      (Crypto.Ripemd160.compressBlock
+        (Crypto.Ripemd160.compressBlock PatternedDigest.H0 (Padding.paddedMessage input) 0)
+        (Padding.paddedMessage input) 64)
+      (Padding.paddedMessage input) 128)
+    (Padding.paddedMessage input) 192 = PatternedDigest.H4
+  rw [PrefixStateData.h8_firstBlock input h.1.1 h.1.2,
+    PrefixStateData.h_secondBlock input h.2.1 h.2.2.1,
+    PrefixStateData.h_thirdBlock input h.2.2.2.1 h.2.2.2.2.1,
+    PrefixStateData.h_fourthBlock input h.2.2.2.2.2.1 h.2.2.2.2.2.2]
 
 theorem nextState2_hash (s : State) (input : ByteArray) (hd : double input = true) :
     StackRunBridge.hashAt32 (nextState2 s input) =
-      StackRunBridge.embedHashArray (CompressionSeamBridge.hashAfter input 2) := by
+      StackRunBridge.embedHashArray (CompressionSeamBridge.hashAfter input 4) := by
   change StackMemory.hashAt (PrefixStateMemory.resultState2 (PrefixStateMemory.copied s) input).memory = _
   rw [PrefixStateMemory.resultState2_hash, hashAfter_two input ((double_iff input).1 hd)]
   rfl
