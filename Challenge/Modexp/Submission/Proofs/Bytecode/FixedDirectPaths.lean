@@ -8,8 +8,8 @@ set_option maxHeartbeats 4000000
 /-!
 # Exact located blocks for the direct fixed-exponent handler
 
-The appended handler occupies pc3892..3779 and instruction indices2572..2308.
-This file is the generated-Artifact boundary for its concrete trace proofs.
+The existing dispatcher occupies pc3615..3738. The exponent-five check is
+the appended block at pc5325, with its hit returning to pc3675.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
@@ -51,11 +51,20 @@ def oneWidth : List Located :=
 def checkThree : List Located :=
   [pushAt 2681 2 9472, opAt 2682 .MLOAD, opAt 2683 .CALLDATALOAD,
    pushAt 2684 0 0, opAt 2685 .BYTE, pushAt 2686 1 3,
-   opAt 2687 .EQ, opAt 2688 .ISZERO, pushAt 2689 2 3725,
+   opAt 2687 .EQ, opAt 2688 .ISZERO, pushAt 2689 2 5325,
    opAt 2690 .JUMPI]
 
 def threeHit : List Located :=
   [pushAt 2691 1 1, pushAt 2692 2 3675, opAt 2693 .JUMP]
+
+def checkFive : List Located :=
+  [opAt 3866 .JUMPDEST, pushAt 3867 2 9472, opAt 3868 .MLOAD,
+   opAt 3869 .CALLDATALOAD, pushAt 3870 0 0, opAt 3871 .BYTE,
+   pushAt 3872 1 5, opAt 3873 .EQ, opAt 3874 .ISZERO,
+   pushAt 3875 2 3725, opAt 3876 .JUMPI]
+
+def fiveHit : List Located :=
+  [pushAt 3877 1 2, pushAt 3878 2 3675, opAt 3879 .JUMP]
 
 def check65537 : List Located :=
   [opAt 2694 .JUMPDEST, pushAt 2695 2 9472, opAt 2696 .MLOAD,
@@ -120,5 +129,9 @@ theorem jumpDest3954 :
 theorem jumpDest3959 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3725 = true :=
   Artifact.isValidJumpDest_index 2731 (by rfl)
+
+theorem jumpDest5325 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5325 = true :=
+  Artifact.isValidJumpDest_index 3866 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths

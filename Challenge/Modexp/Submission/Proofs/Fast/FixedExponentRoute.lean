@@ -7,10 +7,10 @@ set_option maxHeartbeats 2000000
 /-!
 # Interface for the fixed public-exponent route
 
-The appended route recognizes exactly exponent 3 in one byte and exponent
-65537 in three bytes. Every other exponent must reproduce the inherited
-generic exponent-loop entry state. This module fixes those boundaries without
-depending on concrete located paths.
+The appended route recognizes exponent 3 and exponent 5 in one byte, plus
+exponent 65537 in three bytes. Every other exponent must reproduce the
+inherited generic exponent-loop entry state. This module fixes those
+boundaries without depending on concrete located paths.
 
 This is an uncompiled source scaffold. It is instantiated only after the exact
 cc628 artifact and relocated path tables have been generated.
@@ -30,10 +30,12 @@ def exponentValue (input : ByteArray) (bsize esize : Nat) : Nat :=
 inductive Case (input : ByteArray) (bsize esize : Nat) : Nat → Prop
   | three : esize = 1 → exponentValue input bsize esize = 3 →
       Case input bsize esize 1
+  | five : esize = 1 → exponentValue input bsize esize = 5 →
+      Case input bsize esize 2
   | fermat : esize = 3 → exponentValue input bsize esize = 65537 →
       Case input bsize esize 16
 
-/-- The route handles precisely one of the two fixed addition chains. -/
+/-- The route handles the two small fixed chains and the Fermat chain. -/
 def Matches (input : ByteArray) (bsize esize : Nat) : Prop :=
   ∃ count : Nat, Case input bsize esize count
 

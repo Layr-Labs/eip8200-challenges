@@ -17,14 +17,17 @@ open FixedExponentRoute
 theorem matches_iff (input : ByteArray) (bsize esize : Nat) :
     Matches input bsize esize ↔
       (esize = 1 ∧ exponentValue input bsize esize = 3) ∨
+      (esize = 1 ∧ exponentValue input bsize esize = 5) ∨
       (esize = 3 ∧ exponentValue input bsize esize = 65537) := by
   constructor
   · rintro ⟨count, hcase⟩
     cases hcase with
     | three hesize hvalue => exact Or.inl ⟨hesize, hvalue⟩
-    | fermat hesize hvalue => exact Or.inr ⟨hesize, hvalue⟩
-  · rintro (hthree | hfermat)
+    | five hesize hvalue => exact Or.inr (Or.inl ⟨hesize, hvalue⟩)
+    | fermat hesize hvalue => exact Or.inr (Or.inr ⟨hesize, hvalue⟩)
+  · rintro (hthree | hfive | hfermat)
     · exact ⟨1, Case.three hthree.1 hthree.2⟩
+    · exact ⟨2, Case.five hfive.1 hfive.2⟩
     · exact ⟨16, Case.fermat hfermat.1 hfermat.2⟩
 
 theorem case_count_unique {input : ByteArray} {bsize esize a b : Nat}
@@ -42,7 +45,8 @@ theorem not_matches_of_size {input : ByteArray} {bsize esize : Nat}
   aesop
 
 theorem matches_one_iff (input : ByteArray) (bsize : Nat) :
-    Matches input bsize 1 ↔ exponentValue input bsize 1 = 3 := by
+    Matches input bsize 1 ↔
+      exponentValue input bsize 1 = 3 ∨ exponentValue input bsize 1 = 5 := by
   rw [matches_iff]
   simp
 

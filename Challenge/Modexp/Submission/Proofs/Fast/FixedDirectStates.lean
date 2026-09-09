@@ -28,6 +28,12 @@ def checkThree (s : State) (mem : ByteArray)
            stack := outer n bsize esize msize
            memory := mem }
 
+def checkFive (s : State) (mem : ByteArray)
+    (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat 5325
+           stack := outer n bsize esize msize
+           memory := mem }
+
 def check65537 (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 3654

@@ -71,18 +71,23 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
         s memory n bsize esize msize h3 he hcode hfork hrun hnp
       by_cases h1 : esize = 1
       · cases h1
-        have hv : exponentValue input bsize 1 ≠ 3 := by
+        have hv3 : exponentValue input bsize 1 ≠ 3 := by
           intro hv
           apply hnot
           exact ⟨1, Case.three rfl hv⟩
+        have hv5 : exponentValue input bsize 1 ≠ 5 := by
+          intro hv
+          apply hnot
+          exact ⟨2, Case.five rfl hv⟩
         exact (((hentry.trans
           (FixedDirectDispatchTrace.gasSteps_oneWidth_hit s memory
             n bsize msize hcode hfork hrun hnp)).trans
           (FixedDirectValueTrace.gasSteps_checkThree_miss s memory input
-            n bsize msize hb hv hdata hactive hframe.eoff
+            n bsize msize hb hv3 hdata hactive hframe.eoff
             hcode hfork hrun hnp)).trans
-          (FixedDirectFallbackTrace.gasSteps_fallback s memory
-            n bsize 1 msize hn hn32 hactive hcode hfork hrun hnp))
+          (FixedDirectValueTrace.gasSteps_checkFive_miss s memory input
+            n bsize msize hb hv5 hdata hactive hframe.eoff
+            hcode hfork hrun hnp))
       · exact (hentry.trans
           (FixedDirectDispatchTrace.gasSteps_oneWidth_miss s memory
             n bsize esize msize h1 he hcode hfork hrun hnp)).trans
@@ -105,6 +110,32 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
         have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
           n bsize 1 msize mm minv (Limbs.radix ^ n) bM
           rawBase 1 sub spec
+          hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
+          hbsize hesize hmsz hmm
+          (lt_of_lt_of_le Limbs.radix_pos hradix)
+          (Model.coprime_radix_pow_of_odd hodd n) hradix hbMlt hbMform
+          hrawForm
+          (by omega) (by omega)
+          (by simpa [exponentValue] using hvalue)
+          hframe hmod hbase hrawRep hone
+        exact prepend htoSpecial hfixed
+    | five hsize hvalue =>
+        cases hsize
+        have htoSpecial :=
+          ((FixedDirectDispatchTrace.gasSteps_entry_other s memory
+            n bsize 1 msize (by decide) (by omega) hcode hfork hrun hnp).trans
+          (FixedDirectDispatchTrace.gasSteps_oneWidth_hit s memory
+            n bsize msize hcode hfork hrun hnp)).trans
+          (FixedDirectValueTrace.gasSteps_checkThree_miss s memory input
+            n bsize msize hb (by omega) hdata hactive hframe.eoff
+            hcode hfork hrun hnp)
+        have htoSpecial := htoSpecial.trans
+          (FixedDirectValueTrace.gasSteps_checkFive_hit s memory input
+            n bsize msize hb hvalue hdata hactive hframe.eoff
+            hcode hfork hrun hnp)
+        have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
+          n bsize 1 msize mm minv (Limbs.radix ^ n) bM
+          rawBase 2 sub spec
           hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
           hbsize hesize hmsz hmm
           (lt_of_lt_of_le Limbs.radix_pos hradix)
