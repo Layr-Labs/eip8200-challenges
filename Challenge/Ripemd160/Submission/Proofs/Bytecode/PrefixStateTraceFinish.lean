@@ -1,7 +1,5 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateMemory
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateFourth
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStatePaths
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateModel
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.BooleanSelect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputLogic
 
 set_option warningAsError true
@@ -9,64 +7,10 @@ set_option maxRecDepth 50000
 set_option maxHeartbeats 5000000
 set_option linter.unusedSimpArgs false
 
-/-!
-# Checked-prefix finish: SWAR setup, the five derived-word rungs, and the installs
-
-After the word-0 match the ladder derives every further expected word from
-the word-0 literal with a bytewise `+0xA0` SWAR recurrence and compares it
-with the next calldata word.  A word-1 mismatch bails to the generic
-compressor; a word-2/3 mismatch installs `H1`; a word-4/5 mismatch installs
-`H2`; six matches install `H3` with blocks 0..2 consumed.
--/
-
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateTraceFinish
-
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
-/-! ## SWAR constants -/
-
-def ONE : UInt256 := UInt256.ofNat 0x0101010101010101010101010101010101010101010101010101010101010101
-def M7f : UInt256 := UInt256.ofNat 0x7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f
-def M80 : UInt256 := UInt256.ofNat 0x8080808080808080808080808080808080808080808080808080808080808080
-def C20 : UInt256 := UInt256.ofNat 0x2020202020202020202020202020202020202020202020202020202020202020
-
-theorem one_eq : UInt256.lnot ⟨0⟩ / UInt256.ofNat 255 = ONE := by decide
-theorem one_eq' : UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 255 = ONE := by decide
-theorem one_eq'' : UInt256.lnot 0 / UInt256.ofNat 255 = ONE := by decide
-theorem m7f_eq : UInt256.ofNat 127 * ONE = M7f := by decide
-theorem m80_eq : UInt256.lnot M7f = M80 := by decide
-theorem c20_eq : UInt256.shiftRight M80 (UInt256.ofNat 2) = C20 := by decide
-
-private theorem zero_toNat : (⟨0⟩ : UInt256).toNat = 0 := rfl
-
-/-! ## The word recurrence
-
-Each rung computes `M80 ^^^ ((M80 &&& e) ^^^ (C20 + (M7f &&& e)))`, which is
-`(e + 0xA0) mod 256` in every byte lane; on the patterned words this steps
-word `k` to word `k + 1`. -/
-
-theorem step0 : UInt256.xor M80 (UInt256.xor (UInt256.land M80 (0x072c51769bc0e50a2f54799ec3e80d32577ca1c6eb10355a7fa4c9ee13385d82 : UInt256))
-    (C20 + UInt256.land M7f (0x072c51769bc0e50a2f54799ec3e80d32577ca1c6eb10355a7fa4c9ee13385d82 : UInt256))) = (0xa7ccf1163b6085aacff4193e6388add2f71c41668bb0d5fa1f44698eb3d8fd22 : UInt256) := by decide
-theorem step0' : UInt256.xor M80 (UInt256.xor (UInt256.land M80 (UInt256.ofNat 0x072c51769bc0e50a2f54799ec3e80d32577ca1c6eb10355a7fa4c9ee13385d82))
-    (C20 + UInt256.land M7f (UInt256.ofNat 0x072c51769bc0e50a2f54799ec3e80d32577ca1c6eb10355a7fa4c9ee13385d82))) = UInt256.ofNat 0xa7ccf1163b6085aacff4193e6388add2f71c41668bb0d5fa1f44698eb3d8fd22 := by decide
-theorem step1 : UInt256.xor M80 (UInt256.xor (UInt256.land M80 (0xa7ccf1163b6085aacff4193e6388add2f71c41668bb0d5fa1f44698eb3d8fd22 : UInt256))
-    (C20 + UInt256.land M7f (0xa7ccf1163b6085aacff4193e6388add2f71c41668bb0d5fa1f44698eb3d8fd22 : UInt256))) = (0x476c91b6db00254a6f94b9de03284d7297bce1062b50759abfe4092e53789dc2 : UInt256) := by decide
-theorem step1' : UInt256.xor M80 (UInt256.xor (UInt256.land M80 (UInt256.ofNat 0xa7ccf1163b6085aacff4193e6388add2f71c41668bb0d5fa1f44698eb3d8fd22))
-    (C20 + UInt256.land M7f (UInt256.ofNat 0xa7ccf1163b6085aacff4193e6388add2f71c41668bb0d5fa1f44698eb3d8fd22))) = UInt256.ofNat 0x476c91b6db00254a6f94b9de03284d7297bce1062b50759abfe4092e53789dc2 := by decide
-theorem step2 : UInt256.xor M80 (UInt256.xor (UInt256.land M80 (0x476c91b6db00254a6f94b9de03284d7297bce1062b50759abfe4092e53789dc2 : UInt256))
-    (C20 + UInt256.land M7f (0x476c91b6db00254a6f94b9de03284d7297bce1062b50759abfe4092e53789dc2 : UInt256))) = (0xe70c31567ba0c5ea0f34597ea3c8ed12375c81a6cbf0153a5f84a9cef3183d62 : UInt256) := by decide
-theorem step2' : UInt256.xor M80 (UInt256.xor (UInt256.land M80 (UInt256.ofNat 0x476c91b6db00254a6f94b9de03284d7297bce1062b50759abfe4092e53789dc2))
-    (C20 + UInt256.land M7f (UInt256.ofNat 0x476c91b6db00254a6f94b9de03284d7297bce1062b50759abfe4092e53789dc2))) = UInt256.ofNat 0xe70c31567ba0c5ea0f34597ea3c8ed12375c81a6cbf0153a5f84a9cef3183d62 := by decide
-theorem step3 : UInt256.xor M80 (UInt256.xor (UInt256.land M80 (0xe70c31567ba0c5ea0f34597ea3c8ed12375c81a6cbf0153a5f84a9cef3183d62 : UInt256))
-    (C20 + UInt256.land M7f (0xe70c31567ba0c5ea0f34597ea3c8ed12375c81a6cbf0153a5f84a9cef3183d62 : UInt256))) = (0x87acd1f61b40658aafd4f91e43688db2d7fc21466b90b5daff24496e93b8dd02 : UInt256) := by decide
-theorem step3' : UInt256.xor M80 (UInt256.xor (UInt256.land M80 (UInt256.ofNat 0xe70c31567ba0c5ea0f34597ea3c8ed12375c81a6cbf0153a5f84a9cef3183d62))
-    (C20 + UInt256.land M7f (UInt256.ofNat 0xe70c31567ba0c5ea0f34597ea3c8ed12375c81a6cbf0153a5f84a9cef3183d62))) = UInt256.ofNat 0x87acd1f61b40658aafd4f91e43688db2d7fc21466b90b5daff24496e93b8dd02 := by decide
-theorem step4 : UInt256.xor M80 (UInt256.xor (UInt256.land M80 (0x87acd1f61b40658aafd4f91e43688db2d7fc21466b90b5daff24496e93b8dd02 : UInt256))
-    (C20 + UInt256.land M7f (0x87acd1f61b40658aafd4f91e43688db2d7fc21466b90b5daff24496e93b8dd02 : UInt256))) = (0x274c7196bbe0052a4f7499bee3082d52779cc1e60b30557a9fc4e90e33587da2 : UInt256) := by decide
-theorem step4' : UInt256.xor M80 (UInt256.xor (UInt256.land M80 (UInt256.ofNat 0x87acd1f61b40658aafd4f91e43688db2d7fc21466b90b5daff24496e93b8dd02))
-    (C20 + UInt256.land M7f (UInt256.ofNat 0x87acd1f61b40658aafd4f91e43688db2d7fc21466b90b5daff24496e93b8dd02))) = UInt256.ofNat 0x274c7196bbe0052a4f7499bee3082d52779cc1e60b30557a9fc4e90e33587da2 := by decide
-
-/-! ## Frames -/
+def byteMask : UInt256 := UInt256.ofNat 29061543965444064733758992315905984716114819680788219994216805398064471752768
 
 private def frame (s : State) (input : ByteArray) (pc : Nat) : State :=
   { s with
@@ -74,19 +18,13 @@ private def frame (s : State) (input : ByteArray) (pc : Nat) : State :=
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
-/-- Entry at the SWAR setup (pc 5019), right after the word-0 match. -/
-def entry (s : State) (input : ByteArray) : State := frame s input 5019
-
-/-- Ladder frame after the scratch `MLOAD`: the running expected word `e`,
-the three SWAR masks, then the driver stack. -/
-def rungFrame (s : State) (input : ByteArray) (pc : Nat) (e : UInt256) : State :=
+private def maskFrame (s : State) (input : ByteArray) (pc : Nat) : State :=
   { s with
     pc := UInt256.ofNat pc
-    activeWords := s.activeWordsAfterUInt256 0 32
-    stack := [e, C20, M80, M7f, DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
+    stack := [byteMask, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
-/-! ## Jump destinations -/
+def entry (s : State) (input : ByteArray) : State := frame s input 5019
 
 theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 464 = true := by
   have hpc : Artifact.submissionArtifact.instructionPC 272 = 464 := by
@@ -104,951 +42,542 @@ theorem jumpDest_driver : Decode.isValidJumpDest submissionBytecode 102 = true :
   rw [hpc] at h
   exact h
 
-theorem jumpDest_hit2 : Decode.isValidJumpDest submissionBytecode 5186 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4199 (by rfl)
-  rw [PrefixStatePaths.pc4210] at h
+theorem jumpDest_h1 : Decode.isValidJumpDest submissionBytecode 5276 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 4200 = 5276 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]
+    decide
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4200 (by rfl)
+  rw [hpc] at h
   exact h
 
-theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5238 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4225 (by rfl)
-  rw [PrefixStatePaths.pc4236] at h
+theorem jumpDest_h2 : Decode.isValidJumpDest submissionBytecode 5241 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 4188 = 5241 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]
+    decide
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4188 (by rfl)
+  rw [hpc] at h
   exact h
 
-theorem jumpDest_bail : Decode.isValidJumpDest submissionBytecode 5285 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4247 (by rfl)
-  rw [PrefixStatePaths.pc4258] at h
+theorem jumpDest_h3 : Decode.isValidJumpDest submissionBytecode 5206 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 4176 = 5206 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]
+    decide
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4176 (by rfl)
+  rw [hpc] at h
   exact h
 
-/-! ## SWAR setup -/
+theorem jumpDest_store : Decode.isValidJumpDest submissionBytecode 5302 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 4206 = 5302 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]
+    decide
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4206 (by rfl)
+  rw [hpc] at h
+  exact h
 
-/-- The thirteen-instruction setup derives `ONE`, `M7f`, `M80`, `C20` on the
-stack and seeds the running word from scratch word 0. -/
-theorem run_setup (s : State) (input : ByteArray)
-    (hmem0 : MachineState.readWord s.memory 0 = PatternedWordData.expectedWordAt 0)
-    (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.setupPath (entry s input) =
-      some (rungFrame s input 5035 (PatternedWordData.expectedWordAt 0)) := by
-  simp (config := { maxSteps := 1000000 })
-    [PrefixStatePaths.setupPath, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, entry, frame, rungFrame, hmem0, hrun,
-      one_eq, one_eq', one_eq'', m7f_eq, m80_eq, c20_eq,
-      PrefixStatePaths.pc4087,
-      PrefixStatePaths.pc4088,
-      PrefixStatePaths.pc4089,
-      PrefixStatePaths.pc4090,
-      PrefixStatePaths.pc4091,
-      PrefixStatePaths.pc4092,
-      PrefixStatePaths.pc4093,
-      PrefixStatePaths.pc4094,
-      PrefixStatePaths.pc4095,
-      PrefixStatePaths.pc4096,
-      PrefixStatePaths.pc4097,
-      PrefixStatePaths.pc4098,
-      PrefixStatePaths.pc4099,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
+theorem jumpDest_bail : Decode.isValidJumpDest submissionBytecode 5320 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 4219 = 5320 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]
+    decide
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4219 (by rfl)
+  rw [hpc] at h
+  exact h
 
-/-! ## Rungs -/
+theorem byteMask_construct :
+    UInt256.ofNat 64 * (UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 255) = byteMask := by decide
 
+theorem byteMask_construct_zero :
+    UInt256.ofNat 64 * (UInt256.lnot (⟨0⟩ : UInt256) / UInt256.ofNat 255) = byteMask := by decide
 
-/-- Rung 1 on a word-1 match: the running word steps to word 1 and the
-`JUMPI` is not taken. -/
-theorem run_rung1_hit (s : State) (input : ByteArray)
+theorem xor_nat_zero_iff (a b : UInt256) : (UInt256.xor a b).toNat = 0 ↔ a = b := by
+  constructor
+  · intro h
+    apply (KnownInputLogic.wordXor_eq_zero_iff _ _).1
+    apply Challenge.EvmProof.Word.word_ext
+    simpa using h
+  · intro h
+    have hz := (KnownInputLogic.wordXor_eq_zero_iff a b).2 h
+    rw [hz]
+    rfl
+
+theorem run_prepare (s : State) (input : ByteArray) (hrun : s.halt = .Running) :
+    Stepper.runLocatedBlock PrefixStatePaths.preparePath (entry s input) =
+      some (maskFrame s input 5028) := by
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.preparePath, entry, frame, byteMask_construct, byteMask_construct_zero, hrun, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+
+theorem run_word1_hit (s : State) (input : ByteArray)
     (hword : MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1)
     (hcalldata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.rung1Path
-      (rungFrame s input 5035 (PatternedWordData.expectedWordAt 0)) =
-      some (rungFrame s input 5055 (PatternedWordData.expectedWordAt 1)) := by
-  have hzero : UInt256.xor (MachineState.readWord input 32)
-      (PatternedWordData.expectedWordAt 1) = 0 :=
-    (KnownInputLogic.wordXor_eq_zero_iff _ _).2 hword
-  have hzero' : UInt256.xor (PatternedWordData.expectedWordAt 1)
-      (MachineState.readWord input 32) = 0 := by
-    rw [hword]
-    exact (KnownInputLogic.wordXor_eq_zero_iff _ _).2 rfl
+    Stepper.runLocatedBlock PrefixStatePaths.word1Path (maskFrame s input 5028) =
+      some (maskFrame s input 5069) := by
   have hcond : (UInt256.xor (MachineState.readWord input 32)
       (PatternedWordData.expectedWordAt 1)).toNat = 0 := by
-    rw [hzero]
-    rfl
-  have hcond' : (UInt256.xor (PatternedWordData.expectedWordAt 1)
-      (MachineState.readWord input 32)).toNat = 0 := by
-    rw [hzero']
-    rfl
+    exact (xor_nat_zero_iff _ _).2 hword
   have hcondL := hcond
   rw [PatternedWordData.expectedWordAt_1] at hcondL
-  have hcondL' := hcond'
-  rw [PatternedWordData.expectedWordAt_1] at hcondL'
-  have hfalse : ¬ UInt256.isTrue (UInt256.xor (MachineState.readWord input 32)
-      (PatternedWordData.expectedWordAt 1)) := by
-    rw [hzero]
-    decide
-  have hfalse' : ¬ UInt256.isTrue (UInt256.xor (PatternedWordData.expectedWordAt 1)
-      (MachineState.readWord input 32)) := by
-    rw [hzero']
-    decide
-  have hfalseL := hfalse
-  rw [PatternedWordData.expectedWordAt_1] at hfalseL
-  have hfalseL' := hfalse'
-  rw [PatternedWordData.expectedWordAt_1] at hfalseL'
-  simp (config := { maxSteps := 1000000 })
-    [PrefixStatePaths.rung1Path, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, step0, step0', step1, step1', step2, step2', step3, step3', step4, step4',
-      hzero, hzero', hcond, hcond', hcondL, hcondL', hfalse, hfalse', hfalseL, hfalseL',
-      jumpDest_bail,
-      PrefixStatePaths.pc4100,
-      PrefixStatePaths.pc4101,
-      PrefixStatePaths.pc4102,
-      PrefixStatePaths.pc4103,
-      PrefixStatePaths.pc4104,
-      PrefixStatePaths.pc4105,
-      PrefixStatePaths.pc4106,
-      PrefixStatePaths.pc4107,
-      PrefixStatePaths.pc4108,
-      PrefixStatePaths.pc4109,
-      PrefixStatePaths.pc4110,
-      PrefixStatePaths.pc4111,
-      PrefixStatePaths.pc4112,
-      PrefixStatePaths.pc4113,
-      PrefixStatePaths.pc4114,
-      PrefixStatePaths.pc4115,
-      PrefixStatePaths.pc4116,
-      UInt256.isTrue, hrun, hcalldata, List.exchange,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word1Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, jumpDest_bail]
 
-/-- Rung 1 on a word-1 mismatch: the running word steps to word 1 and the
-`JUMPI` is taken to pc 5278. -/
-theorem run_rung1_miss (s : State) (input : ByteArray)
+theorem run_word1_miss (s : State) (input : ByteArray)
     (hword : MachineState.readWord input 32 ≠ PatternedWordData.expectedWordAt 1)
     (hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.rung1Path
-      (rungFrame s input 5035 (PatternedWordData.expectedWordAt 0)) =
-      some (rungFrame s input 5285 (PatternedWordData.expectedWordAt 1)) := by
-  have htrue : UInt256.isTrue (UInt256.xor (MachineState.readWord input 32)
-      (PatternedWordData.expectedWordAt 1)) := by
-    intro hz
-    apply hword
-    apply (KnownInputLogic.wordXor_eq_zero_iff _ _).1
-    apply Challenge.EvmProof.Word.word_ext
-    simpa using hz
-  have htrue' : UInt256.isTrue (UInt256.xor (PatternedWordData.expectedWordAt 1)
-      (MachineState.readWord input 32)) := by
-    intro hz
-    apply hword
-    have hzero : UInt256.xor (PatternedWordData.expectedWordAt 1)
-        (MachineState.readWord input 32) = 0 := by
-      apply Challenge.EvmProof.Word.word_ext
-      simpa using hz
-    exact ((KnownInputLogic.wordXor_eq_zero_iff _ _).1 hzero).symm
+    Stepper.runLocatedBlock PrefixStatePaths.word1Path (maskFrame s input 5028) =
+      some (maskFrame s input 5320) := by
   have hcond : (UInt256.xor (MachineState.readWord input 32)
       (PatternedWordData.expectedWordAt 1)).toNat ≠ 0 := by
     intro hz
-    apply hword
-    apply (KnownInputLogic.wordXor_eq_zero_iff _ _).1
-    apply Challenge.EvmProof.Word.word_ext
-    simpa using hz
-  have hcond' : (UInt256.xor (PatternedWordData.expectedWordAt 1)
-      (MachineState.readWord input 32)).toNat ≠ 0 := by
-    intro hz
-    apply hword
-    have hzero : UInt256.xor (PatternedWordData.expectedWordAt 1)
-        (MachineState.readWord input 32) = 0 := by
-      apply Challenge.EvmProof.Word.word_ext
-      simpa using hz
-    exact ((KnownInputLogic.wordXor_eq_zero_iff _ _).1 hzero).symm
+    exact hword ((xor_nat_zero_iff _ _).1 hz)
   have hcondL := hcond
   rw [PatternedWordData.expectedWordAt_1] at hcondL
-  have hcondL' := hcond'
-  rw [PatternedWordData.expectedWordAt_1] at hcondL'
-  have htrueL := htrue
-  rw [PatternedWordData.expectedWordAt_1] at htrueL
-  have htrueL' := htrue'
-  rw [PatternedWordData.expectedWordAt_1] at htrueL'
-  simp (config := { maxSteps := 1000000 })
-    [PrefixStatePaths.rung1Path, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, step0, step0', step1, step1', step2, step2', step3, step3', step4, step4',
-      htrue, htrue', hcond, hcond', hcondL, hcondL', htrueL, htrueL',
-      jumpDest_bail, hcode,
-      PrefixStatePaths.pc4100,
-      PrefixStatePaths.pc4101,
-      PrefixStatePaths.pc4102,
-      PrefixStatePaths.pc4103,
-      PrefixStatePaths.pc4104,
-      PrefixStatePaths.pc4105,
-      PrefixStatePaths.pc4106,
-      PrefixStatePaths.pc4107,
-      PrefixStatePaths.pc4108,
-      PrefixStatePaths.pc4109,
-      PrefixStatePaths.pc4110,
-      PrefixStatePaths.pc4111,
-      PrefixStatePaths.pc4112,
-      PrefixStatePaths.pc4113,
-      PrefixStatePaths.pc4114,
-      PrefixStatePaths.pc4115,
-      PrefixStatePaths.pc4116,
-      UInt256.isTrue, hrun, hcalldata, List.exchange,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word1Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, jumpDest_bail]
 
+def expected2 (b : UInt256) : UInt256 := UInt256.xor byteMask (UInt256.xor (UInt256.land byteMask b + UInt256.land byteMask b) b)
 
-/-- Rung 2 on a word-2 match: the running word steps to word 2 and the
-`JUMPI` is not taken. -/
-theorem run_rung2_hit (s : State) (input : ByteArray)
+theorem expected2_value : expected2 (PatternedWordData.expectedWordAt 0) =
+    PatternedWordData.expectedWordAt 2 := by decide
+
+theorem run_word2_hit (s : State) (input : ByteArray)
+    (hbase : MachineState.readWord input 0 = PatternedWordData.expectedWordAt 0)
     (hword : MachineState.readWord input 64 = PatternedWordData.expectedWordAt 2)
     (hcalldata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.rung2Path
-      (rungFrame s input 5055 (PatternedWordData.expectedWordAt 1)) =
-      some (rungFrame s input 5075 (PatternedWordData.expectedWordAt 2)) := by
-  have hzero : UInt256.xor (MachineState.readWord input 64)
-      (PatternedWordData.expectedWordAt 2) = 0 :=
-    (KnownInputLogic.wordXor_eq_zero_iff _ _).2 hword
-  have hzero' : UInt256.xor (PatternedWordData.expectedWordAt 2)
-      (MachineState.readWord input 64) = 0 := by
-    rw [hword]
-    exact (KnownInputLogic.wordXor_eq_zero_iff _ _).2 rfl
+    Stepper.runLocatedBlock PrefixStatePaths.word2Path (maskFrame s input 5069) =
+      some (maskFrame s input 5087) := by
   have hcond : (UInt256.xor (MachineState.readWord input 64)
       (PatternedWordData.expectedWordAt 2)).toNat = 0 := by
-    rw [hzero]
-    rfl
-  have hcond' : (UInt256.xor (PatternedWordData.expectedWordAt 2)
-      (MachineState.readWord input 64)).toNat = 0 := by
-    rw [hzero']
-    rfl
+    exact (xor_nat_zero_iff _ _).2 hword
+  have hexpected : expected2 (MachineState.readWord input 0) =
+      PatternedWordData.expectedWordAt 2 := by
+    rw [hbase, expected2_value]
+  unfold expected2 at hexpected
   have hcondL := hcond
   rw [PatternedWordData.expectedWordAt_2] at hcondL
-  have hcondL' := hcond'
-  rw [PatternedWordData.expectedWordAt_2] at hcondL'
-  have hfalse : ¬ UInt256.isTrue (UInt256.xor (MachineState.readWord input 64)
-      (PatternedWordData.expectedWordAt 2)) := by
-    rw [hzero]
-    decide
-  have hfalse' : ¬ UInt256.isTrue (UInt256.xor (PatternedWordData.expectedWordAt 2)
-      (MachineState.readWord input 64)) := by
-    rw [hzero']
-    decide
-  have hfalseL := hfalse
-  rw [PatternedWordData.expectedWordAt_2] at hfalseL
-  have hfalseL' := hfalse'
-  rw [PatternedWordData.expectedWordAt_2] at hfalseL'
-  simp (config := { maxSteps := 1000000 })
-    [PrefixStatePaths.rung2Path, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, step0, step0', step1, step1', step2, step2', step3, step3', step4, step4',
-      hzero, hzero', hcond, hcond', hcondL, hcondL', hfalse, hfalse', hfalseL, hfalseL',
-      jumpDest_hit1,
-      PrefixStatePaths.pc4117,
-      PrefixStatePaths.pc4118,
-      PrefixStatePaths.pc4119,
-      PrefixStatePaths.pc4120,
-      PrefixStatePaths.pc4121,
-      PrefixStatePaths.pc4122,
-      PrefixStatePaths.pc4123,
-      PrefixStatePaths.pc4124,
-      PrefixStatePaths.pc4125,
-      PrefixStatePaths.pc4126,
-      PrefixStatePaths.pc4127,
-      PrefixStatePaths.pc4128,
-      PrefixStatePaths.pc4129,
-      PrefixStatePaths.pc4130,
-      PrefixStatePaths.pc4131,
-      PrefixStatePaths.pc4132,
-      PrefixStatePaths.pc4133,
-      UInt256.isTrue, hrun, hcalldata, List.exchange,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
+  have hexpectedL := hexpected
+  rw [PatternedWordData.expectedWordAt_2] at hexpectedL
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word2Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, hexpected, hexpectedL, jumpDest_h1]
 
-/-- Rung 2 on a word-2 mismatch: the running word steps to word 2 and the
-`JUMPI` is taken to pc 5231. -/
-theorem run_rung2_miss (s : State) (input : ByteArray)
+theorem run_word2_miss (s : State) (input : ByteArray)
+    (hbase : MachineState.readWord input 0 = PatternedWordData.expectedWordAt 0)
     (hword : MachineState.readWord input 64 ≠ PatternedWordData.expectedWordAt 2)
     (hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.rung2Path
-      (rungFrame s input 5055 (PatternedWordData.expectedWordAt 1)) =
-      some (rungFrame s input 5238 (PatternedWordData.expectedWordAt 2)) := by
-  have htrue : UInt256.isTrue (UInt256.xor (MachineState.readWord input 64)
-      (PatternedWordData.expectedWordAt 2)) := by
-    intro hz
-    apply hword
-    apply (KnownInputLogic.wordXor_eq_zero_iff _ _).1
-    apply Challenge.EvmProof.Word.word_ext
-    simpa using hz
-  have htrue' : UInt256.isTrue (UInt256.xor (PatternedWordData.expectedWordAt 2)
-      (MachineState.readWord input 64)) := by
-    intro hz
-    apply hword
-    have hzero : UInt256.xor (PatternedWordData.expectedWordAt 2)
-        (MachineState.readWord input 64) = 0 := by
-      apply Challenge.EvmProof.Word.word_ext
-      simpa using hz
-    exact ((KnownInputLogic.wordXor_eq_zero_iff _ _).1 hzero).symm
+    Stepper.runLocatedBlock PrefixStatePaths.word2Path (maskFrame s input 5069) =
+      some (maskFrame s input 5276) := by
   have hcond : (UInt256.xor (MachineState.readWord input 64)
       (PatternedWordData.expectedWordAt 2)).toNat ≠ 0 := by
     intro hz
-    apply hword
-    apply (KnownInputLogic.wordXor_eq_zero_iff _ _).1
-    apply Challenge.EvmProof.Word.word_ext
-    simpa using hz
-  have hcond' : (UInt256.xor (PatternedWordData.expectedWordAt 2)
-      (MachineState.readWord input 64)).toNat ≠ 0 := by
-    intro hz
-    apply hword
-    have hzero : UInt256.xor (PatternedWordData.expectedWordAt 2)
-        (MachineState.readWord input 64) = 0 := by
-      apply Challenge.EvmProof.Word.word_ext
-      simpa using hz
-    exact ((KnownInputLogic.wordXor_eq_zero_iff _ _).1 hzero).symm
+    exact hword ((xor_nat_zero_iff _ _).1 hz)
+  have hexpected : expected2 (MachineState.readWord input 0) =
+      PatternedWordData.expectedWordAt 2 := by
+    rw [hbase, expected2_value]
+  unfold expected2 at hexpected
   have hcondL := hcond
   rw [PatternedWordData.expectedWordAt_2] at hcondL
-  have hcondL' := hcond'
-  rw [PatternedWordData.expectedWordAt_2] at hcondL'
-  have htrueL := htrue
-  rw [PatternedWordData.expectedWordAt_2] at htrueL
-  have htrueL' := htrue'
-  rw [PatternedWordData.expectedWordAt_2] at htrueL'
-  simp (config := { maxSteps := 1000000 })
-    [PrefixStatePaths.rung2Path, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, step0, step0', step1, step1', step2, step2', step3, step3', step4, step4',
-      htrue, htrue', hcond, hcond', hcondL, hcondL', htrueL, htrueL',
-      jumpDest_hit1, hcode,
-      PrefixStatePaths.pc4117,
-      PrefixStatePaths.pc4118,
-      PrefixStatePaths.pc4119,
-      PrefixStatePaths.pc4120,
-      PrefixStatePaths.pc4121,
-      PrefixStatePaths.pc4122,
-      PrefixStatePaths.pc4123,
-      PrefixStatePaths.pc4124,
-      PrefixStatePaths.pc4125,
-      PrefixStatePaths.pc4126,
-      PrefixStatePaths.pc4127,
-      PrefixStatePaths.pc4128,
-      PrefixStatePaths.pc4129,
-      PrefixStatePaths.pc4130,
-      PrefixStatePaths.pc4131,
-      PrefixStatePaths.pc4132,
-      PrefixStatePaths.pc4133,
-      UInt256.isTrue, hrun, hcalldata, List.exchange,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
+  have hexpectedL := hexpected
+  rw [PatternedWordData.expectedWordAt_2] at hexpectedL
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word2Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, hexpected, hexpectedL, jumpDest_h1]
 
+def expected3 (b : UInt256) : UInt256 := UInt256.xor byteMask (UInt256.xor (UInt256.land byteMask b + UInt256.land byteMask b) b)
 
-/-- Rung 3 on a word-3 match: the running word steps to word 3 and the
-`JUMPI` is not taken. -/
-theorem run_rung3_hit (s : State) (input : ByteArray)
+theorem expected3_value : expected3 (PatternedWordData.expectedWordAt 1) =
+    PatternedWordData.expectedWordAt 3 := by decide
+
+theorem run_word3_hit (s : State) (input : ByteArray)
+    (hbase : MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1)
     (hword : MachineState.readWord input 96 = PatternedWordData.expectedWordAt 3)
     (hcalldata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.rung3Path
-      (rungFrame s input 5075 (PatternedWordData.expectedWordAt 2)) =
-      some (rungFrame s input 5095 (PatternedWordData.expectedWordAt 3)) := by
-  have hzero : UInt256.xor (MachineState.readWord input 96)
-      (PatternedWordData.expectedWordAt 3) = 0 :=
-    (KnownInputLogic.wordXor_eq_zero_iff _ _).2 hword
-  have hzero' : UInt256.xor (PatternedWordData.expectedWordAt 3)
-      (MachineState.readWord input 96) = 0 := by
-    rw [hword]
-    exact (KnownInputLogic.wordXor_eq_zero_iff _ _).2 rfl
+    Stepper.runLocatedBlock PrefixStatePaths.word3Path (maskFrame s input 5087) =
+      some (maskFrame s input 5106) := by
   have hcond : (UInt256.xor (MachineState.readWord input 96)
       (PatternedWordData.expectedWordAt 3)).toNat = 0 := by
-    rw [hzero]
-    rfl
-  have hcond' : (UInt256.xor (PatternedWordData.expectedWordAt 3)
-      (MachineState.readWord input 96)).toNat = 0 := by
-    rw [hzero']
-    rfl
+    exact (xor_nat_zero_iff _ _).2 hword
+  have hexpected : expected3 (MachineState.readWord input 32) =
+      PatternedWordData.expectedWordAt 3 := by
+    rw [hbase, expected3_value]
+  unfold expected3 at hexpected
   have hcondL := hcond
   rw [PatternedWordData.expectedWordAt_3] at hcondL
-  have hcondL' := hcond'
-  rw [PatternedWordData.expectedWordAt_3] at hcondL'
-  have hfalse : ¬ UInt256.isTrue (UInt256.xor (MachineState.readWord input 96)
-      (PatternedWordData.expectedWordAt 3)) := by
-    rw [hzero]
-    decide
-  have hfalse' : ¬ UInt256.isTrue (UInt256.xor (PatternedWordData.expectedWordAt 3)
-      (MachineState.readWord input 96)) := by
-    rw [hzero']
-    decide
-  have hfalseL := hfalse
-  rw [PatternedWordData.expectedWordAt_3] at hfalseL
-  have hfalseL' := hfalse'
-  rw [PatternedWordData.expectedWordAt_3] at hfalseL'
-  simp (config := { maxSteps := 1000000 })
-    [PrefixStatePaths.rung3Path, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, step0, step0', step1, step1', step2, step2', step3, step3', step4, step4',
-      hzero, hzero', hcond, hcond', hcondL, hcondL', hfalse, hfalse', hfalseL, hfalseL',
-      jumpDest_hit1,
-      PrefixStatePaths.pc4134,
-      PrefixStatePaths.pc4135,
-      PrefixStatePaths.pc4136,
-      PrefixStatePaths.pc4137,
-      PrefixStatePaths.pc4138,
-      PrefixStatePaths.pc4139,
-      PrefixStatePaths.pc4140,
-      PrefixStatePaths.pc4141,
-      PrefixStatePaths.pc4142,
-      PrefixStatePaths.pc4143,
-      PrefixStatePaths.pc4144,
-      PrefixStatePaths.pc4145,
-      PrefixStatePaths.pc4146,
-      PrefixStatePaths.pc4147,
-      PrefixStatePaths.pc4148,
-      PrefixStatePaths.pc4149,
-      PrefixStatePaths.pc4150,
-      UInt256.isTrue, hrun, hcalldata, List.exchange,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
+  have hexpectedL := hexpected
+  rw [PatternedWordData.expectedWordAt_3] at hexpectedL
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word3Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, hexpected, hexpectedL, jumpDest_h1]
 
-/-- Rung 3 on a word-3 mismatch: the running word steps to word 3 and the
-`JUMPI` is taken to pc 5231. -/
-theorem run_rung3_miss (s : State) (input : ByteArray)
+theorem run_word3_miss (s : State) (input : ByteArray)
+    (hbase : MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1)
     (hword : MachineState.readWord input 96 ≠ PatternedWordData.expectedWordAt 3)
     (hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.rung3Path
-      (rungFrame s input 5075 (PatternedWordData.expectedWordAt 2)) =
-      some (rungFrame s input 5238 (PatternedWordData.expectedWordAt 3)) := by
-  have htrue : UInt256.isTrue (UInt256.xor (MachineState.readWord input 96)
-      (PatternedWordData.expectedWordAt 3)) := by
-    intro hz
-    apply hword
-    apply (KnownInputLogic.wordXor_eq_zero_iff _ _).1
-    apply Challenge.EvmProof.Word.word_ext
-    simpa using hz
-  have htrue' : UInt256.isTrue (UInt256.xor (PatternedWordData.expectedWordAt 3)
-      (MachineState.readWord input 96)) := by
-    intro hz
-    apply hword
-    have hzero : UInt256.xor (PatternedWordData.expectedWordAt 3)
-        (MachineState.readWord input 96) = 0 := by
-      apply Challenge.EvmProof.Word.word_ext
-      simpa using hz
-    exact ((KnownInputLogic.wordXor_eq_zero_iff _ _).1 hzero).symm
+    Stepper.runLocatedBlock PrefixStatePaths.word3Path (maskFrame s input 5087) =
+      some (maskFrame s input 5276) := by
   have hcond : (UInt256.xor (MachineState.readWord input 96)
       (PatternedWordData.expectedWordAt 3)).toNat ≠ 0 := by
     intro hz
-    apply hword
-    apply (KnownInputLogic.wordXor_eq_zero_iff _ _).1
-    apply Challenge.EvmProof.Word.word_ext
-    simpa using hz
-  have hcond' : (UInt256.xor (PatternedWordData.expectedWordAt 3)
-      (MachineState.readWord input 96)).toNat ≠ 0 := by
-    intro hz
-    apply hword
-    have hzero : UInt256.xor (PatternedWordData.expectedWordAt 3)
-        (MachineState.readWord input 96) = 0 := by
-      apply Challenge.EvmProof.Word.word_ext
-      simpa using hz
-    exact ((KnownInputLogic.wordXor_eq_zero_iff _ _).1 hzero).symm
+    exact hword ((xor_nat_zero_iff _ _).1 hz)
+  have hexpected : expected3 (MachineState.readWord input 32) =
+      PatternedWordData.expectedWordAt 3 := by
+    rw [hbase, expected3_value]
+  unfold expected3 at hexpected
   have hcondL := hcond
   rw [PatternedWordData.expectedWordAt_3] at hcondL
-  have hcondL' := hcond'
-  rw [PatternedWordData.expectedWordAt_3] at hcondL'
-  have htrueL := htrue
-  rw [PatternedWordData.expectedWordAt_3] at htrueL
-  have htrueL' := htrue'
-  rw [PatternedWordData.expectedWordAt_3] at htrueL'
-  simp (config := { maxSteps := 1000000 })
-    [PrefixStatePaths.rung3Path, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, step0, step0', step1, step1', step2, step2', step3, step3', step4, step4',
-      htrue, htrue', hcond, hcond', hcondL, hcondL', htrueL, htrueL',
-      jumpDest_hit1, hcode,
-      PrefixStatePaths.pc4134,
-      PrefixStatePaths.pc4135,
-      PrefixStatePaths.pc4136,
-      PrefixStatePaths.pc4137,
-      PrefixStatePaths.pc4138,
-      PrefixStatePaths.pc4139,
-      PrefixStatePaths.pc4140,
-      PrefixStatePaths.pc4141,
-      PrefixStatePaths.pc4142,
-      PrefixStatePaths.pc4143,
-      PrefixStatePaths.pc4144,
-      PrefixStatePaths.pc4145,
-      PrefixStatePaths.pc4146,
-      PrefixStatePaths.pc4147,
-      PrefixStatePaths.pc4148,
-      PrefixStatePaths.pc4149,
-      PrefixStatePaths.pc4150,
-      UInt256.isTrue, hrun, hcalldata, List.exchange,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
+  have hexpectedL := hexpected
+  rw [PatternedWordData.expectedWordAt_3] at hexpectedL
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word3Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, hexpected, hexpectedL, jumpDest_h1]
 
+def expected4 (b : UInt256) : UInt256 := UInt256.xor (byteMask + byteMask) b
 
-/-- Rung 4 on a word-4 match: the running word steps to word 4 and the
-`JUMPI` is not taken. -/
-theorem run_rung4_hit (s : State) (input : ByteArray)
+theorem expected4_value : expected4 (PatternedWordData.expectedWordAt 0) =
+    PatternedWordData.expectedWordAt 4 := by decide
+
+theorem run_word4_hit (s : State) (input : ByteArray)
+    (hbase : MachineState.readWord input 0 = PatternedWordData.expectedWordAt 0)
     (hword : MachineState.readWord input 128 = PatternedWordData.expectedWordAt 4)
     (hcalldata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.rung4Path
-      (rungFrame s input 5095 (PatternedWordData.expectedWordAt 3)) =
-      some (rungFrame s input 5115 (PatternedWordData.expectedWordAt 4)) := by
-  have hzero : UInt256.xor (MachineState.readWord input 128)
-      (PatternedWordData.expectedWordAt 4) = 0 :=
-    (KnownInputLogic.wordXor_eq_zero_iff _ _).2 hword
-  have hzero' : UInt256.xor (PatternedWordData.expectedWordAt 4)
-      (MachineState.readWord input 128) = 0 := by
-    rw [hword]
-    exact (KnownInputLogic.wordXor_eq_zero_iff _ _).2 rfl
+    Stepper.runLocatedBlock PrefixStatePaths.word4Path (maskFrame s input 5106) =
+      some (maskFrame s input 5120) := by
   have hcond : (UInt256.xor (MachineState.readWord input 128)
       (PatternedWordData.expectedWordAt 4)).toNat = 0 := by
-    rw [hzero]
-    rfl
-  have hcond' : (UInt256.xor (PatternedWordData.expectedWordAt 4)
-      (MachineState.readWord input 128)).toNat = 0 := by
-    rw [hzero']
-    rfl
+    exact (xor_nat_zero_iff _ _).2 hword
+  have hexpected : expected4 (MachineState.readWord input 0) =
+      PatternedWordData.expectedWordAt 4 := by
+    rw [hbase, expected4_value]
+  unfold expected4 at hexpected
   have hcondL := hcond
   rw [PatternedWordData.expectedWordAt_4] at hcondL
-  have hcondL' := hcond'
-  rw [PatternedWordData.expectedWordAt_4] at hcondL'
-  have hfalse : ¬ UInt256.isTrue (UInt256.xor (MachineState.readWord input 128)
-      (PatternedWordData.expectedWordAt 4)) := by
-    rw [hzero]
-    decide
-  have hfalse' : ¬ UInt256.isTrue (UInt256.xor (PatternedWordData.expectedWordAt 4)
-      (MachineState.readWord input 128)) := by
-    rw [hzero']
-    decide
-  have hfalseL := hfalse
-  rw [PatternedWordData.expectedWordAt_4] at hfalseL
-  have hfalseL' := hfalse'
-  rw [PatternedWordData.expectedWordAt_4] at hfalseL'
-  simp (config := { maxSteps := 1000000 })
-    [PrefixStatePaths.rung4Path, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, step0, step0', step1, step1', step2, step2', step3, step3', step4, step4',
-      hzero, hzero', hcond, hcond', hcondL, hcondL', hfalse, hfalse', hfalseL, hfalseL',
-      jumpDest_hit2,
-      PrefixStatePaths.pc4151,
-      PrefixStatePaths.pc4152,
-      PrefixStatePaths.pc4153,
-      PrefixStatePaths.pc4154,
-      PrefixStatePaths.pc4155,
-      PrefixStatePaths.pc4156,
-      PrefixStatePaths.pc4157,
-      PrefixStatePaths.pc4158,
-      PrefixStatePaths.pc4159,
-      PrefixStatePaths.pc4160,
-      PrefixStatePaths.pc4161,
-      PrefixStatePaths.pc4162,
-      PrefixStatePaths.pc4163,
-      PrefixStatePaths.pc4164,
-      PrefixStatePaths.pc4165,
-      PrefixStatePaths.pc4166,
-      PrefixStatePaths.pc4167,
-      UInt256.isTrue, hrun, hcalldata, List.exchange,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
+  have hexpectedL := hexpected
+  rw [PatternedWordData.expectedWordAt_4] at hexpectedL
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word4Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, hexpected, hexpectedL, jumpDest_h2]
 
-/-- Rung 4 on a word-4 mismatch: the running word steps to word 4 and the
-`JUMPI` is taken to pc 5179. -/
-theorem run_rung4_miss (s : State) (input : ByteArray)
+theorem run_word4_miss (s : State) (input : ByteArray)
+    (hbase : MachineState.readWord input 0 = PatternedWordData.expectedWordAt 0)
     (hword : MachineState.readWord input 128 ≠ PatternedWordData.expectedWordAt 4)
     (hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.rung4Path
-      (rungFrame s input 5095 (PatternedWordData.expectedWordAt 3)) =
-      some (rungFrame s input 5186 (PatternedWordData.expectedWordAt 4)) := by
-  have htrue : UInt256.isTrue (UInt256.xor (MachineState.readWord input 128)
-      (PatternedWordData.expectedWordAt 4)) := by
-    intro hz
-    apply hword
-    apply (KnownInputLogic.wordXor_eq_zero_iff _ _).1
-    apply Challenge.EvmProof.Word.word_ext
-    simpa using hz
-  have htrue' : UInt256.isTrue (UInt256.xor (PatternedWordData.expectedWordAt 4)
-      (MachineState.readWord input 128)) := by
-    intro hz
-    apply hword
-    have hzero : UInt256.xor (PatternedWordData.expectedWordAt 4)
-        (MachineState.readWord input 128) = 0 := by
-      apply Challenge.EvmProof.Word.word_ext
-      simpa using hz
-    exact ((KnownInputLogic.wordXor_eq_zero_iff _ _).1 hzero).symm
+    Stepper.runLocatedBlock PrefixStatePaths.word4Path (maskFrame s input 5106) =
+      some (maskFrame s input 5241) := by
   have hcond : (UInt256.xor (MachineState.readWord input 128)
       (PatternedWordData.expectedWordAt 4)).toNat ≠ 0 := by
     intro hz
-    apply hword
-    apply (KnownInputLogic.wordXor_eq_zero_iff _ _).1
-    apply Challenge.EvmProof.Word.word_ext
-    simpa using hz
-  have hcond' : (UInt256.xor (PatternedWordData.expectedWordAt 4)
-      (MachineState.readWord input 128)).toNat ≠ 0 := by
-    intro hz
-    apply hword
-    have hzero : UInt256.xor (PatternedWordData.expectedWordAt 4)
-        (MachineState.readWord input 128) = 0 := by
-      apply Challenge.EvmProof.Word.word_ext
-      simpa using hz
-    exact ((KnownInputLogic.wordXor_eq_zero_iff _ _).1 hzero).symm
+    exact hword ((xor_nat_zero_iff _ _).1 hz)
+  have hexpected : expected4 (MachineState.readWord input 0) =
+      PatternedWordData.expectedWordAt 4 := by
+    rw [hbase, expected4_value]
+  unfold expected4 at hexpected
   have hcondL := hcond
   rw [PatternedWordData.expectedWordAt_4] at hcondL
-  have hcondL' := hcond'
-  rw [PatternedWordData.expectedWordAt_4] at hcondL'
-  have htrueL := htrue
-  rw [PatternedWordData.expectedWordAt_4] at htrueL
-  have htrueL' := htrue'
-  rw [PatternedWordData.expectedWordAt_4] at htrueL'
-  simp (config := { maxSteps := 1000000 })
-    [PrefixStatePaths.rung4Path, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, step0, step0', step1, step1', step2, step2', step3, step3', step4, step4',
-      htrue, htrue', hcond, hcond', hcondL, hcondL', htrueL, htrueL',
-      jumpDest_hit2, hcode,
-      PrefixStatePaths.pc4151,
-      PrefixStatePaths.pc4152,
-      PrefixStatePaths.pc4153,
-      PrefixStatePaths.pc4154,
-      PrefixStatePaths.pc4155,
-      PrefixStatePaths.pc4156,
-      PrefixStatePaths.pc4157,
-      PrefixStatePaths.pc4158,
-      PrefixStatePaths.pc4159,
-      PrefixStatePaths.pc4160,
-      PrefixStatePaths.pc4161,
-      PrefixStatePaths.pc4162,
-      PrefixStatePaths.pc4163,
-      PrefixStatePaths.pc4164,
-      PrefixStatePaths.pc4165,
-      PrefixStatePaths.pc4166,
-      PrefixStatePaths.pc4167,
-      UInt256.isTrue, hrun, hcalldata, List.exchange,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
+  have hexpectedL := hexpected
+  rw [PatternedWordData.expectedWordAt_4] at hexpectedL
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word4Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, hexpected, hexpectedL, jumpDest_h2]
 
+def expected5 (b : UInt256) : UInt256 := UInt256.xor (byteMask + byteMask) b
 
-/-- Rung 5 on a word-5 match: the running word steps to word 5 and the
-`JUMPI` is not taken. -/
-theorem run_rung5_hit (s : State) (input : ByteArray)
+theorem expected5_value : expected5 (PatternedWordData.expectedWordAt 1) =
+    PatternedWordData.expectedWordAt 5 := by decide
+
+theorem run_word5_hit (s : State) (input : ByteArray)
+    (hbase : MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1)
     (hword : MachineState.readWord input 160 = PatternedWordData.expectedWordAt 5)
     (hcalldata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.rung5Path
-      (rungFrame s input 5115 (PatternedWordData.expectedWordAt 4)) =
-      some (rungFrame s input 5135 (PatternedWordData.expectedWordAt 5)) := by
-  have hzero : UInt256.xor (MachineState.readWord input 160)
-      (PatternedWordData.expectedWordAt 5) = 0 :=
-    (KnownInputLogic.wordXor_eq_zero_iff _ _).2 hword
-  have hzero' : UInt256.xor (PatternedWordData.expectedWordAt 5)
-      (MachineState.readWord input 160) = 0 := by
-    rw [hword]
-    exact (KnownInputLogic.wordXor_eq_zero_iff _ _).2 rfl
+    Stepper.runLocatedBlock PrefixStatePaths.word5Path (maskFrame s input 5120) =
+      some (maskFrame s input 5135) := by
   have hcond : (UInt256.xor (MachineState.readWord input 160)
       (PatternedWordData.expectedWordAt 5)).toNat = 0 := by
-    rw [hzero]
-    rfl
-  have hcond' : (UInt256.xor (PatternedWordData.expectedWordAt 5)
-      (MachineState.readWord input 160)).toNat = 0 := by
-    rw [hzero']
-    rfl
+    exact (xor_nat_zero_iff _ _).2 hword
+  have hexpected : expected5 (MachineState.readWord input 32) =
+      PatternedWordData.expectedWordAt 5 := by
+    rw [hbase, expected5_value]
+  unfold expected5 at hexpected
   have hcondL := hcond
   rw [PatternedWordData.expectedWordAt_5] at hcondL
-  have hcondL' := hcond'
-  rw [PatternedWordData.expectedWordAt_5] at hcondL'
-  have hfalse : ¬ UInt256.isTrue (UInt256.xor (MachineState.readWord input 160)
-      (PatternedWordData.expectedWordAt 5)) := by
-    rw [hzero]
-    decide
-  have hfalse' : ¬ UInt256.isTrue (UInt256.xor (PatternedWordData.expectedWordAt 5)
-      (MachineState.readWord input 160)) := by
-    rw [hzero']
-    decide
-  have hfalseL := hfalse
-  rw [PatternedWordData.expectedWordAt_5] at hfalseL
-  have hfalseL' := hfalse'
-  rw [PatternedWordData.expectedWordAt_5] at hfalseL'
-  simp (config := { maxSteps := 1000000 })
-    [PrefixStatePaths.rung5Path, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, step0, step0', step1, step1', step2, step2', step3, step3', step4, step4',
-      hzero, hzero', hcond, hcond', hcondL, hcondL', hfalse, hfalse', hfalseL, hfalseL',
-      jumpDest_hit2,
-      PrefixStatePaths.pc4168,
-      PrefixStatePaths.pc4169,
-      PrefixStatePaths.pc4170,
-      PrefixStatePaths.pc4171,
-      PrefixStatePaths.pc4172,
-      PrefixStatePaths.pc4173,
-      PrefixStatePaths.pc4174,
-      PrefixStatePaths.pc4175,
-      PrefixStatePaths.pc4176,
-      PrefixStatePaths.pc4177,
-      PrefixStatePaths.pc4178,
-      PrefixStatePaths.pc4179,
-      PrefixStatePaths.pc4180,
-      PrefixStatePaths.pc4181,
-      PrefixStatePaths.pc4182,
-      PrefixStatePaths.pc4183,
-      PrefixStatePaths.pc4184,
-      UInt256.isTrue, hrun, hcalldata, List.exchange,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
+  have hexpectedL := hexpected
+  rw [PatternedWordData.expectedWordAt_5] at hexpectedL
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word5Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, hexpected, hexpectedL, jumpDest_h2]
 
-/-- Rung 5 on a word-5 mismatch: the running word steps to word 5 and the
-`JUMPI` is taken to pc 5179. -/
-theorem run_rung5_miss (s : State) (input : ByteArray)
+theorem run_word5_miss (s : State) (input : ByteArray)
+    (hbase : MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1)
     (hword : MachineState.readWord input 160 ≠ PatternedWordData.expectedWordAt 5)
     (hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.rung5Path
-      (rungFrame s input 5115 (PatternedWordData.expectedWordAt 4)) =
-      some (rungFrame s input 5186 (PatternedWordData.expectedWordAt 5)) := by
-  have htrue : UInt256.isTrue (UInt256.xor (MachineState.readWord input 160)
-      (PatternedWordData.expectedWordAt 5)) := by
-    intro hz
-    apply hword
-    apply (KnownInputLogic.wordXor_eq_zero_iff _ _).1
-    apply Challenge.EvmProof.Word.word_ext
-    simpa using hz
-  have htrue' : UInt256.isTrue (UInt256.xor (PatternedWordData.expectedWordAt 5)
-      (MachineState.readWord input 160)) := by
-    intro hz
-    apply hword
-    have hzero : UInt256.xor (PatternedWordData.expectedWordAt 5)
-        (MachineState.readWord input 160) = 0 := by
-      apply Challenge.EvmProof.Word.word_ext
-      simpa using hz
-    exact ((KnownInputLogic.wordXor_eq_zero_iff _ _).1 hzero).symm
+    Stepper.runLocatedBlock PrefixStatePaths.word5Path (maskFrame s input 5120) =
+      some (maskFrame s input 5241) := by
   have hcond : (UInt256.xor (MachineState.readWord input 160)
       (PatternedWordData.expectedWordAt 5)).toNat ≠ 0 := by
     intro hz
-    apply hword
-    apply (KnownInputLogic.wordXor_eq_zero_iff _ _).1
-    apply Challenge.EvmProof.Word.word_ext
-    simpa using hz
-  have hcond' : (UInt256.xor (PatternedWordData.expectedWordAt 5)
-      (MachineState.readWord input 160)).toNat ≠ 0 := by
-    intro hz
-    apply hword
-    have hzero : UInt256.xor (PatternedWordData.expectedWordAt 5)
-        (MachineState.readWord input 160) = 0 := by
-      apply Challenge.EvmProof.Word.word_ext
-      simpa using hz
-    exact ((KnownInputLogic.wordXor_eq_zero_iff _ _).1 hzero).symm
+    exact hword ((xor_nat_zero_iff _ _).1 hz)
+  have hexpected : expected5 (MachineState.readWord input 32) =
+      PatternedWordData.expectedWordAt 5 := by
+    rw [hbase, expected5_value]
+  unfold expected5 at hexpected
   have hcondL := hcond
   rw [PatternedWordData.expectedWordAt_5] at hcondL
-  have hcondL' := hcond'
-  rw [PatternedWordData.expectedWordAt_5] at hcondL'
-  have htrueL := htrue
-  rw [PatternedWordData.expectedWordAt_5] at htrueL
-  have htrueL' := htrue'
-  rw [PatternedWordData.expectedWordAt_5] at htrueL'
+  have hexpectedL := hexpected
+  rw [PatternedWordData.expectedWordAt_5] at hexpectedL
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word5Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, hexpected, hexpectedL, jumpDest_h2]
+
+def expected6 (b : UInt256) : UInt256 := UInt256.xor (byteMask + byteMask) b
+
+theorem expected6_value : expected6 (PatternedWordData.expectedWordAt 2) =
+    PatternedWordData.expectedWordAt 6 := by decide
+
+theorem run_word6_hit (s : State) (input : ByteArray)
+    (hbase : MachineState.readWord input 64 = PatternedWordData.expectedWordAt 2)
+    (hword : MachineState.readWord input 192 = PatternedWordData.expectedWordAt 6)
+    (hcalldata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Stepper.runLocatedBlock PrefixStatePaths.word6Path (maskFrame s input 5135) =
+      some (maskFrame s input 5150) := by
+  have hcond : (UInt256.xor (MachineState.readWord input 192)
+      (PatternedWordData.expectedWordAt 6)).toNat = 0 := by
+    exact (xor_nat_zero_iff _ _).2 hword
+  have hexpected : expected6 (MachineState.readWord input 64) =
+      PatternedWordData.expectedWordAt 6 := by
+    rw [hbase, expected6_value]
+  unfold expected6 at hexpected
+  have hcondL := hcond
+  rw [PatternedWordData.expectedWordAt_6] at hcondL
+  have hexpectedL := hexpected
+  rw [PatternedWordData.expectedWordAt_6] at hexpectedL
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word6Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, hexpected, hexpectedL, jumpDest_h3]
+
+theorem run_word6_miss (s : State) (input : ByteArray)
+    (hbase : MachineState.readWord input 64 = PatternedWordData.expectedWordAt 2)
+    (hword : MachineState.readWord input 192 ≠ PatternedWordData.expectedWordAt 6)
+    (hcalldata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Stepper.runLocatedBlock PrefixStatePaths.word6Path (maskFrame s input 5135) =
+      some (maskFrame s input 5206) := by
+  have hcond : (UInt256.xor (MachineState.readWord input 192)
+      (PatternedWordData.expectedWordAt 6)).toNat ≠ 0 := by
+    intro hz
+    exact hword ((xor_nat_zero_iff _ _).1 hz)
+  have hexpected : expected6 (MachineState.readWord input 64) =
+      PatternedWordData.expectedWordAt 6 := by
+    rw [hbase, expected6_value]
+  unfold expected6 at hexpected
+  have hcondL := hcond
+  rw [PatternedWordData.expectedWordAt_6] at hcondL
+  have hexpectedL := hexpected
+  rw [PatternedWordData.expectedWordAt_6] at hexpectedL
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word6Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, hexpected, hexpectedL, jumpDest_h3]
+
+def expected7 (b : UInt256) : UInt256 := UInt256.xor (UInt256.ofNat 99006248207) (UInt256.xor (byteMask + byteMask) b)
+
+theorem expected7_value : expected7 (PatternedWordData.expectedWordAt 3) =
+    PatternedWordData.expectedWordAt 7 := by decide
+
+theorem run_word7_hit (s : State) (input : ByteArray)
+    (hbase : MachineState.readWord input 96 = PatternedWordData.expectedWordAt 3)
+    (hword : MachineState.readWord input 224 = PatternedWordData.expectedWordAt 7)
+    (hcalldata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Stepper.runLocatedBlock PrefixStatePaths.word7Path (maskFrame s input 5150) =
+      some (maskFrame s input 5172) := by
+  have hcond : (UInt256.xor (MachineState.readWord input 224)
+      (PatternedWordData.expectedWordAt 7)).toNat = 0 := by
+    exact (xor_nat_zero_iff _ _).2 hword
+  have hexpected : expected7 (MachineState.readWord input 96) =
+      PatternedWordData.expectedWordAt 7 := by
+    rw [hbase, expected7_value]
+  unfold expected7 at hexpected
+  have hcondL := hcond
+  rw [PatternedWordData.expectedWordAt_7] at hcondL
+  have hexpectedL := hexpected
+  rw [PatternedWordData.expectedWordAt_7] at hexpectedL
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word7Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, hexpected, hexpectedL, jumpDest_h3]
+
+theorem run_word7_miss (s : State) (input : ByteArray)
+    (hbase : MachineState.readWord input 96 = PatternedWordData.expectedWordAt 3)
+    (hword : MachineState.readWord input 224 ≠ PatternedWordData.expectedWordAt 7)
+    (hcalldata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Stepper.runLocatedBlock PrefixStatePaths.word7Path (maskFrame s input 5150) =
+      some (maskFrame s input 5206) := by
+  have hcond : (UInt256.xor (MachineState.readWord input 224)
+      (PatternedWordData.expectedWordAt 7)).toNat ≠ 0 := by
+    intro hz
+    exact hword ((xor_nat_zero_iff _ _).1 hz)
+  have hexpected : expected7 (MachineState.readWord input 96) =
+      PatternedWordData.expectedWordAt 7 := by
+    rw [hbase, expected7_value]
+  unfold expected7 at hexpected
+  have hcondL := hcond
+  rw [PatternedWordData.expectedWordAt_7] at hcondL
+  have hexpectedL := hexpected
+  rw [PatternedWordData.expectedWordAt_7] at hexpectedL
+  simp (config := { maxSteps := 500000 })
+    [PrefixStatePaths.word7Path, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      hcalldata, hcode, hrun, hcond, hcondL, hexpected, hexpectedL, jumpDest_h3]
+
+theorem run_h1 (s : State) (input : ByteArray)
+    (hscratch : PrefixStateMemory.scratchState s = s)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Stepper.runLocatedBlock (PrefixStatePaths.h1Path ++ PrefixStatePaths.storePath)
+      (maskFrame s input 5276) = some (PrefixStateMemory.resultState s input 0) := by
   simp (config := { maxSteps := 1000000 })
-    [PrefixStatePaths.rung5Path, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, step0, step0', step1, step1', step2, step2', step3, step3', step4, step4',
-      htrue, htrue', hcond, hcond', hcondL, hcondL', htrueL, htrueL',
-      jumpDest_hit2, hcode,
-      PrefixStatePaths.pc4168,
-      PrefixStatePaths.pc4169,
-      PrefixStatePaths.pc4170,
-      PrefixStatePaths.pc4171,
-      PrefixStatePaths.pc4172,
-      PrefixStatePaths.pc4173,
-      PrefixStatePaths.pc4174,
-      PrefixStatePaths.pc4175,
-      PrefixStatePaths.pc4176,
-      PrefixStatePaths.pc4177,
-      PrefixStatePaths.pc4178,
-      PrefixStatePaths.pc4179,
-      PrefixStatePaths.pc4180,
-      PrefixStatePaths.pc4181,
-      PrefixStatePaths.pc4182,
-      PrefixStatePaths.pc4183,
-      PrefixStatePaths.pc4184,
-      UInt256.isTrue, hrun, hcalldata, List.exchange,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
+    [PrefixStatePaths.h1Path, PrefixStatePaths.storePath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      PrefixStateMemory.resultState, PrefixStateMemory.hashMemory,
+      PrefixStateMemory.hash, PrefixStateMemory.writeWord,
+      hscratch, FastEmptyBlock.emptyActiveWords,
+      DriverTrace.blockOffsetWord, DriverTrace.blockOffset,
+      hcode, hrun, jumpDest_store, jumpDest_driver]
 
-
-/-! ## Installs and the bail trampoline -/
-
-/-- The `H3` install: drop the ladder scratch, advance the block offset to
-`0x80`, store the five chaining words, return to the driver. -/
-theorem run_hit3 (s : State) (input : ByteArray) (e : UInt256)
+theorem run_h2 (s : State) (input : ByteArray)
+    (hscratch : PrefixStateMemory.scratchState s = s)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.hit3Path (rungFrame s input 5135 e) =
-      some (PrefixStateMemory.resultState3 s input) := by
-  have hbo : DriverTrace.blockOffsetWord 2 = UInt256.ofNat 128 := rfl
-  simp (config := { maxSteps := 500000 })
-    [PrefixStatePaths.hit3Path, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, PrefixStateMemory.resultState3,
-      PrefixStateMemory.hashMemory3, PrefixStateMemory.writeWord,
-      PrefixStateMemory.hash3, PrefixStateMemory.scratchState,
-      FastEmptyBlock.emptyActiveWords,
-      hcode, hrun, jumpDest_driver, hbo, List.exchange,
-      PrefixStatePaths.pc4185,
-      PrefixStatePaths.pc4186,
-      PrefixStatePaths.pc4187,
-      PrefixStatePaths.pc4188,
-      PrefixStatePaths.pc4189,
-      PrefixStatePaths.pc4190,
-      PrefixStatePaths.pc4191,
-      PrefixStatePaths.pc4192,
-      PrefixStatePaths.pc4193,
-      PrefixStatePaths.pc4194,
-      PrefixStatePaths.pc4195,
-      PrefixStatePaths.pc4196,
-      PrefixStatePaths.pc4197,
-      PrefixStatePaths.pc4198,
-      PrefixStatePaths.pc4199,
-      PrefixStatePaths.pc4200,
-      PrefixStatePaths.pc4201,
-      PrefixStatePaths.pc4202,
-      PrefixStatePaths.pc4203,
-      PrefixStatePaths.pc4204,
-      PrefixStatePaths.pc4205,
-      PrefixStatePaths.pc4206,
-      PrefixStatePaths.pc4207,
-      PrefixStatePaths.pc4208,
-      PrefixStatePaths.pc4209,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+    Stepper.runLocatedBlock (PrefixStatePaths.h2Path ++ PrefixStatePaths.storePath)
+      (maskFrame s input 5241) = some (PrefixStateMemory.resultState2 s input) := by
+  simp (config := { maxSteps := 1000000 })
+    [PrefixStatePaths.h2Path, PrefixStatePaths.storePath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      PrefixStateMemory.resultState2, PrefixStateMemory.hashMemory2,
+      PrefixStateMemory.hash2, PrefixStateMemory.writeWord,
+      hscratch, FastEmptyBlock.emptyActiveWords,
+      DriverTrace.blockOffsetWord, DriverTrace.blockOffset,
+      hcode, hrun, jumpDest_store, jumpDest_driver]
 
-/-- The `H2` install: drop the ladder scratch, advance the block offset to
-`0x40`, store the five chaining words, return to the driver. -/
-theorem run_hit2 (s : State) (input : ByteArray) (e : UInt256)
+theorem run_h3 (s : State) (input : ByteArray)
+    (hscratch : PrefixStateMemory.scratchState s = s)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.hit2Path (rungFrame s input 5186 e) =
-      some (PrefixStateMemory.resultState2 s input) := by
-  have hbo : DriverTrace.blockOffsetWord 1 = UInt256.ofNat 64 := rfl
-  simp (config := { maxSteps := 500000 })
-    [PrefixStatePaths.hit2Path, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, PrefixStateMemory.resultState2,
-      PrefixStateMemory.hashMemory2, PrefixStateMemory.writeWord,
-      PrefixStateMemory.hash2, PrefixStateMemory.scratchState,
-      FastEmptyBlock.emptyActiveWords,
-      hcode, hrun, jumpDest_driver, hbo, List.exchange,
-      PrefixStatePaths.pc4210,
-      PrefixStatePaths.pc4211,
-      PrefixStatePaths.pc4212,
-      PrefixStatePaths.pc4213,
-      PrefixStatePaths.pc4214,
-      PrefixStatePaths.pc4215,
-      PrefixStatePaths.pc4216,
-      PrefixStatePaths.pc4217,
-      PrefixStatePaths.pc4218,
-      PrefixStatePaths.pc4219,
-      PrefixStatePaths.pc4220,
-      PrefixStatePaths.pc4221,
-      PrefixStatePaths.pc4222,
-      PrefixStatePaths.pc4223,
-      PrefixStatePaths.pc4224,
-      PrefixStatePaths.pc4225,
-      PrefixStatePaths.pc4226,
-      PrefixStatePaths.pc4227,
-      PrefixStatePaths.pc4228,
-      PrefixStatePaths.pc4229,
-      PrefixStatePaths.pc4230,
-      PrefixStatePaths.pc4231,
-      PrefixStatePaths.pc4232,
-      PrefixStatePaths.pc4233,
-      PrefixStatePaths.pc4234,
-      PrefixStatePaths.pc4235,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+    Stepper.runLocatedBlock (PrefixStatePaths.h3Path ++ PrefixStatePaths.storePath)
+      (maskFrame s input 5206) = some (PrefixStateMemory.resultState3 s input) := by
+  simp (config := { maxSteps := 1000000 })
+    [PrefixStatePaths.h3Path, PrefixStatePaths.storePath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      PrefixStateMemory.resultState3, PrefixStateMemory.hashMemory3,
+      PrefixStateMemory.hash3, PrefixStateMemory.writeWord,
+      hscratch, FastEmptyBlock.emptyActiveWords,
+      DriverTrace.blockOffsetWord, DriverTrace.blockOffset,
+      hcode, hrun, jumpDest_store, jumpDest_driver]
 
-/-- The `H1` install: drop the ladder scratch, store the five chaining
-words, return to the driver with the block offset unchanged. -/
-theorem run_hit1 (s : State) (input : ByteArray) (e : UInt256)
+theorem run_h4 (s : State) (input : ByteArray)
+    (hscratch : PrefixStateMemory.scratchState s = s)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.hit1Path (rungFrame s input 5238 e) =
-      some (PrefixStateMemory.resultState s input 0) := by
-  simp (config := { maxSteps := 500000 })
-    [PrefixStatePaths.hit1Path, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, PrefixStateMemory.resultState,
-      PrefixStateMemory.hashMemory, PrefixStateMemory.writeWord,
-      PrefixStateMemory.hash, PrefixStateMemory.scratchState,
-      FastEmptyBlock.emptyActiveWords,
-      hcode, hrun, jumpDest_driver, List.exchange,
-      PrefixStatePaths.pc4236,
-      PrefixStatePaths.pc4237,
-      PrefixStatePaths.pc4238,
-      PrefixStatePaths.pc4239,
-      PrefixStatePaths.pc4240,
-      PrefixStatePaths.pc4241,
-      PrefixStatePaths.pc4242,
-      PrefixStatePaths.pc4243,
-      PrefixStatePaths.pc4244,
-      PrefixStatePaths.pc4245,
-      PrefixStatePaths.pc4246,
-      PrefixStatePaths.pc4247,
-      PrefixStatePaths.pc4248,
-      PrefixStatePaths.pc4249,
-      PrefixStatePaths.pc4250,
-      PrefixStatePaths.pc4251,
-      PrefixStatePaths.pc4252,
-      PrefixStatePaths.pc4253,
-      PrefixStatePaths.pc4254,
-      PrefixStatePaths.pc4255,
-      PrefixStatePaths.pc4256,
-      PrefixStatePaths.pc4257,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+    Stepper.runLocatedBlock (PrefixStatePaths.h4Path ++ PrefixStatePaths.storePath)
+      (maskFrame s input 5172) = some (PrefixStateMemory.resultState4 s input) := by
+  simp (config := { maxSteps := 1000000 })
+    [PrefixStatePaths.h4Path, PrefixStatePaths.storePath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc,
+      PrefixStateMemory.resultState4, PrefixStateMemory.hashMemory4,
+      PrefixStateMemory.hash4, PrefixStateMemory.writeWord,
+      hscratch, FastEmptyBlock.emptyActiveWords,
+      DriverTrace.blockOffsetWord, DriverTrace.blockOffset,
+      hcode, hrun, jumpDest_store, jumpDest_driver]
 
-/-- The bail trampoline: drop the ladder scratch and jump to the generic
-compressor with the plain driver stack. -/
-theorem run_bail (s : State) (input : ByteArray) (e : UInt256)
+theorem run_bail (s : State) (input : ByteArray)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.bailPath (rungFrame s input 5285 e) =
-      some (DriverTrace.compressEntry (PrefixStateMemory.scratchState s) input 0) := by
+    Stepper.runLocatedBlock PrefixStatePaths.bailPath (maskFrame s input 5320) =
+      some (DriverTrace.compressEntry s input 0) := by
   simp (config := { maxSteps := 500000 })
-    [PrefixStatePaths.bailPath, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, rungFrame, DriverTrace.compressEntry,
-      PrefixStateMemory.scratchState,
-      hcode, hrun, jumpDest_generic,
-      PrefixStatePaths.pc4258,
-      PrefixStatePaths.pc4259,
-      PrefixStatePaths.pc4260,
-      PrefixStatePaths.pc4261,
-      PrefixStatePaths.pc4262,
-      PrefixStatePaths.pc4263,
-      PrefixStatePaths.pc4264,
-      State.activeWordsAfterUInt256, zero_toNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
+    [PrefixStatePaths.bailPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr, maskFrame,
+      State.activeWordsAfterUInt256, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, DriverTrace.compressEntry,
+      DriverTrace.messageOffsetWord, DriverTrace.blockOffset, Padding.messageOffset,
+      hcode, hrun, jumpDest_generic]
 
-/-! ## Composition -/
-
-/-- Lift one concrete located path to the gas-parametric EVM relation. -/
+#print axioms run_prepare
+#print axioms run_h4
 private def gasStepsBlock (path : List PrefixStatePaths.Located) (s t : State)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka)
@@ -1059,137 +588,115 @@ private def gasStepsBlock (path : List PrefixStatePaths.Located) (s t : State)
     GasSteps s t :=
   Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka path hcode hfork hresult hrun hnp
 
-/-- The entry frame carries the environment facts of `s`. -/
-private def entryBlock (path : List PrefixStatePaths.Located) (s : State) (input : ByteArray)
-    (t : State)
+private def maskBlock (path : List PrefixStatePaths.Located) (s : State) (input : ByteArray)
+    (pc : Nat) (t : State)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hresult : Stepper.runLocatedBlock path (entry s input) = some t) :
-    GasSteps (entry s input) t :=
-  gasStepsBlock path (entry s input) t
-    (by simpa [entry, frame] using hcode)
-    (by simpa [entry, frame, State.fork] using hfork)
-    hresult
-    (by simpa [entry, frame] using hrun)
-    (by simpa [entry, frame] using hnp)
+    (hresult : Stepper.runLocatedBlock path (maskFrame s input pc) = some t) :
+    GasSteps (maskFrame s input pc) t :=
+  gasStepsBlock path (maskFrame s input pc) t hcode hfork hresult hrun hnp
 
-/-- Any rung frame carries the environment facts of `s`. -/
-private def rungBlock (path : List PrefixStatePaths.Located) (s : State) (input : ByteArray)
-    (pc : Nat) (e : UInt256) (t : State)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hresult : Stepper.runLocatedBlock path (rungFrame s input pc e) = some t) :
-    GasSteps (rungFrame s input pc e) t :=
-  gasStepsBlock path (rungFrame s input pc e) t
-    (by simpa [rungFrame] using hcode)
-    (by simpa [rungFrame, State.fork] using hfork)
-    hresult
-    (by simpa [rungFrame] using hrun)
-    (by simpa [rungFrame] using hnp)
-
-/-- Execute the SWAR setup, the five rungs and the matching install. -/
 def gasSteps_finish (s : State) (input : ByteArray)
+    (hscratch : PrefixStateMemory.scratchState s = s)
+    (hword0 : MachineState.readWord input 0 = PatternedWordData.expectedWordAt 0)
     (hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hmem0 : MachineState.readWord s.memory 0 = PatternedWordData.expectedWordAt 0) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (entry s input)
       (if MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1 then
         (if PrefixStateModel.Matched2 input then
-          (if PrefixStateModel.Matched3 input then PrefixStateMemory.resultState3 s input
+          (if PrefixStateModel.Matched3 input then
+            (if PrefixStateModel.Matched4 input then PrefixStateMemory.resultState4 s input
+              else PrefixStateMemory.resultState3 s input)
             else PrefixStateMemory.resultState2 s input)
           else PrefixStateMemory.resultState s input 0)
-      else DriverTrace.compressEntry (PrefixStateMemory.scratchState s) input 0) := by
-  have gsetup : GasSteps (entry s input)
-      (rungFrame s input 5035 (PatternedWordData.expectedWordAt 0)) :=
-    entryBlock PrefixStatePaths.setupPath s input _ hcode hfork hrun hnp
-      (run_setup s input hmem0 hrun)
-  have ghit1 : ∀ e, GasSteps (rungFrame s input 5238 e)
-      (PrefixStateMemory.resultState s input 0) := fun e =>
-    rungBlock PrefixStatePaths.hit1Path s input 5238 e _ hcode hfork hrun hnp
-      (run_hit1 s input e hcode hrun)
-  have ghit2 : ∀ e, GasSteps (rungFrame s input 5186 e)
-      (PrefixStateMemory.resultState2 s input) := fun e =>
-    rungBlock PrefixStatePaths.hit2Path s input 5186 e _ hcode hfork hrun hnp
-      (run_hit2 s input e hcode hrun)
-  have ghit3 : ∀ e, GasSteps (rungFrame s input 5135 e)
-      (PrefixStateMemory.resultState3 s input) := fun e =>
-    rungBlock PrefixStatePaths.hit3Path s input 5135 e _ hcode hfork hrun hnp
-      (run_hit3 s input e hcode hrun)
-  have gbail : ∀ e, GasSteps (rungFrame s input 5285 e)
-      (DriverTrace.compressEntry (PrefixStateMemory.scratchState s) input 0) := fun e =>
-    rungBlock PrefixStatePaths.bailPath s input 5285 e _ hcode hfork hrun hnp
-      (run_bail s input e hcode hrun)
+      else DriverTrace.compressEntry s input 0) := by
+  have gprepare : GasSteps (entry s input) (maskFrame s input 5028) :=
+    gasStepsBlock PrefixStatePaths.preparePath _ _ hcode hfork (run_prepare s input hrun) hrun hnp
+  have gh1 : GasSteps (maskFrame s input 5276) (PrefixStateMemory.resultState s input 0) :=
+    maskBlock (PrefixStatePaths.h1Path ++ PrefixStatePaths.storePath) s input 5276 _
+      hcode hfork hrun hnp (run_h1 s input hscratch hcode hrun)
+  have gh2 : GasSteps (maskFrame s input 5241) (PrefixStateMemory.resultState2 s input) :=
+    maskBlock (PrefixStatePaths.h2Path ++ PrefixStatePaths.storePath) s input 5241 _
+      hcode hfork hrun hnp (run_h2 s input hscratch hcode hrun)
+  have gh3 : GasSteps (maskFrame s input 5206) (PrefixStateMemory.resultState3 s input) :=
+    maskBlock (PrefixStatePaths.h3Path ++ PrefixStatePaths.storePath) s input 5206 _
+      hcode hfork hrun hnp (run_h3 s input hscratch hcode hrun)
+  have gh4 : GasSteps (maskFrame s input 5172) (PrefixStateMemory.resultState4 s input) :=
+    maskBlock (PrefixStatePaths.h4Path ++ PrefixStatePaths.storePath) s input 5172 _
+      hcode hfork hrun hnp (run_h4 s input hscratch hcode hrun)
+  have gbail : GasSteps (maskFrame s input 5320) (DriverTrace.compressEntry s input 0) :=
+    maskBlock PrefixStatePaths.bailPath s input 5320 _ hcode hfork hrun hnp
+      (run_bail s input hcode hrun)
   by_cases hw1 : MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1
-  · rw [if_pos hw1]
-    have g1 : GasSteps (rungFrame s input 5035 (PatternedWordData.expectedWordAt 0))
-        (rungFrame s input 5055 (PatternedWordData.expectedWordAt 1)) :=
-      rungBlock PrefixStatePaths.rung1Path s input 5035 _ _ hcode hfork hrun hnp
-        (run_rung1_hit s input hw1 hcalldata hrun)
+  · have g1 : GasSteps (maskFrame s input 5028) (maskFrame s input 5069) :=
+      maskBlock PrefixStatePaths.word1Path s input 5028 _ hcode hfork hrun hnp
+        (run_word1_hit s input hw1 hcalldata hcode hrun)
     by_cases hw2 : MachineState.readWord input 64 = PatternedWordData.expectedWordAt 2
-    · have g2 : GasSteps (rungFrame s input 5055 (PatternedWordData.expectedWordAt 1))
-          (rungFrame s input 5075 (PatternedWordData.expectedWordAt 2)) :=
-        rungBlock PrefixStatePaths.rung2Path s input 5055 _ _ hcode hfork hrun hnp
-          (run_rung2_hit s input hw2 hcalldata hrun)
+    · have g2 : GasSteps (maskFrame s input 5069) (maskFrame s input 5087) :=
+        maskBlock PrefixStatePaths.word2Path s input 5069 _ hcode hfork hrun hnp
+          (run_word2_hit s input hword0 hw2 hcalldata hcode hrun)
       by_cases hw3 : MachineState.readWord input 96 = PatternedWordData.expectedWordAt 3
-      · have hm2 : PrefixStateModel.Matched2 input := ⟨hw2, hw3⟩
-        rw [if_pos hm2]
-        have g3 : GasSteps (rungFrame s input 5075 (PatternedWordData.expectedWordAt 2))
-            (rungFrame s input 5095 (PatternedWordData.expectedWordAt 3)) :=
-          rungBlock PrefixStatePaths.rung3Path s input 5075 _ _ hcode hfork hrun hnp
-            (run_rung3_hit s input hw3 hcalldata hrun)
+      · have g3 : GasSteps (maskFrame s input 5087) (maskFrame s input 5106) :=
+          maskBlock PrefixStatePaths.word3Path s input 5087 _ hcode hfork hrun hnp
+            (run_word3_hit s input hw1 hw3 hcalldata hcode hrun)
         by_cases hw4 : MachineState.readWord input 128 = PatternedWordData.expectedWordAt 4
-        · have g4 : GasSteps (rungFrame s input 5095 (PatternedWordData.expectedWordAt 3))
-              (rungFrame s input 5115 (PatternedWordData.expectedWordAt 4)) :=
-            rungBlock PrefixStatePaths.rung4Path s input 5095 _ _ hcode hfork hrun hnp
-              (run_rung4_hit s input hw4 hcalldata hrun)
+        · have g4 : GasSteps (maskFrame s input 5106) (maskFrame s input 5120) :=
+            maskBlock PrefixStatePaths.word4Path s input 5106 _ hcode hfork hrun hnp
+              (run_word4_hit s input hword0 hw4 hcalldata hcode hrun)
           by_cases hw5 : MachineState.readWord input 160 = PatternedWordData.expectedWordAt 5
-          · have hm3 : PrefixStateModel.Matched3 input := ⟨hw4, hw5⟩
-            rw [if_pos hm3]
-            have g5 : GasSteps (rungFrame s input 5115 (PatternedWordData.expectedWordAt 4))
-                (rungFrame s input 5135 (PatternedWordData.expectedWordAt 5)) :=
-              rungBlock PrefixStatePaths.rung5Path s input 5115 _ _ hcode hfork hrun hnp
-                (run_rung5_hit s input hw5 hcalldata hrun)
-            exact gsetup.trans (g1.trans (g2.trans (g3.trans (g4.trans (g5.trans (ghit3 _))))))
-          · rw [if_neg (fun h => hw5 h.2)]
-            have g5 : GasSteps (rungFrame s input 5115 (PatternedWordData.expectedWordAt 4))
-                (rungFrame s input 5186 (PatternedWordData.expectedWordAt 5)) :=
-              rungBlock PrefixStatePaths.rung5Path s input 5115 _ _ hcode hfork hrun hnp
-                (run_rung5_miss s input hw5 hcalldata hcode hrun)
-            exact gsetup.trans (g1.trans (g2.trans (g3.trans (g4.trans (g5.trans (ghit2 _))))))
-        · rw [if_neg (fun h => hw4 h.1)]
-          have g4 : GasSteps (rungFrame s input 5095 (PatternedWordData.expectedWordAt 3))
-              (rungFrame s input 5186 (PatternedWordData.expectedWordAt 4)) :=
-            rungBlock PrefixStatePaths.rung4Path s input 5095 _ _ hcode hfork hrun hnp
-              (run_rung4_miss s input hw4 hcalldata hcode hrun)
-          exact gsetup.trans (g1.trans (g2.trans (g3.trans (g4.trans (ghit2 _)))))
-      · rw [if_neg (fun h => hw3 h.2)]
-        have g3 : GasSteps (rungFrame s input 5075 (PatternedWordData.expectedWordAt 2))
-            (rungFrame s input 5238 (PatternedWordData.expectedWordAt 3)) :=
-          rungBlock PrefixStatePaths.rung3Path s input 5075 _ _ hcode hfork hrun hnp
-            (run_rung3_miss s input hw3 hcalldata hcode hrun)
-        exact gsetup.trans (g1.trans (g2.trans (g3.trans (ghit1 _))))
-    · rw [if_neg (fun h => hw2 h.1)]
-      have g2 : GasSteps (rungFrame s input 5055 (PatternedWordData.expectedWordAt 1))
-          (rungFrame s input 5238 (PatternedWordData.expectedWordAt 2)) :=
-        rungBlock PrefixStatePaths.rung2Path s input 5055 _ _ hcode hfork hrun hnp
-          (run_rung2_miss s input hw2 hcalldata hcode hrun)
-      exact gsetup.trans (g1.trans (g2.trans (ghit1 _)))
-  · rw [if_neg hw1]
-    have g1 : GasSteps (rungFrame s input 5035 (PatternedWordData.expectedWordAt 0))
-        (rungFrame s input 5285 (PatternedWordData.expectedWordAt 1)) :=
-      rungBlock PrefixStatePaths.rung1Path s input 5035 _ _ hcode hfork hrun hnp
-        (run_rung1_miss s input hw1 hcalldata hcode hrun)
-    exact gsetup.trans (g1.trans (gbail _))
+          · have g5 : GasSteps (maskFrame s input 5120) (maskFrame s input 5135) :=
+              maskBlock PrefixStatePaths.word5Path s input 5120 _ hcode hfork hrun hnp
+                (run_word5_hit s input hw1 hw5 hcalldata hcode hrun)
+            by_cases hw6 : MachineState.readWord input 192 = PatternedWordData.expectedWordAt 6
+            · have g6 : GasSteps (maskFrame s input 5135) (maskFrame s input 5150) :=
+                maskBlock PrefixStatePaths.word6Path s input 5135 _ hcode hfork hrun hnp
+                  (run_word6_hit s input hw2 hw6 hcalldata hcode hrun)
+              by_cases hw7 : MachineState.readWord input 224 = PatternedWordData.expectedWordAt 7
+              · have g7 : GasSteps (maskFrame s input 5150) (maskFrame s input 5172) :=
+                  maskBlock PrefixStatePaths.word7Path s input 5150 _ hcode hfork hrun hnp
+                    (run_word7_hit s input hw3 hw7 hcalldata hcode hrun)
+                simpa [PrefixStateModel.Matched2, PrefixStateModel.Matched3, PrefixStateModel.Matched4, hw1, hw2, hw3, hw4, hw5, hw6, hw7] using
+                  gprepare.trans (g1.trans (g2.trans (g3.trans (g4.trans (g5.trans (g6.trans (g7.trans (gh4))))))))
+              · have g7 : GasSteps (maskFrame s input 5150) (maskFrame s input 5206) :=
+                  maskBlock PrefixStatePaths.word7Path s input 5150 _ hcode hfork hrun hnp
+                    (run_word7_miss s input hw3 hw7 hcalldata hcode hrun)
+                simpa [PrefixStateModel.Matched2, PrefixStateModel.Matched3, PrefixStateModel.Matched4, hw1, hw2, hw3, hw4, hw5, hw6, hw7] using
+                  gprepare.trans (g1.trans (g2.trans (g3.trans (g4.trans (g5.trans (g6.trans (g7.trans (gh3))))))))
+            · have g6 : GasSteps (maskFrame s input 5135) (maskFrame s input 5206) :=
+                maskBlock PrefixStatePaths.word6Path s input 5135 _ hcode hfork hrun hnp
+                  (run_word6_miss s input hw2 hw6 hcalldata hcode hrun)
+              simpa [PrefixStateModel.Matched2, PrefixStateModel.Matched3, PrefixStateModel.Matched4, hw1, hw2, hw3, hw4, hw5, hw6] using
+                gprepare.trans (g1.trans (g2.trans (g3.trans (g4.trans (g5.trans (g6.trans (gh3)))))))
+          · have g5 : GasSteps (maskFrame s input 5120) (maskFrame s input 5241) :=
+              maskBlock PrefixStatePaths.word5Path s input 5120 _ hcode hfork hrun hnp
+                (run_word5_miss s input hw1 hw5 hcalldata hcode hrun)
+            simpa [PrefixStateModel.Matched2, PrefixStateModel.Matched3, PrefixStateModel.Matched4, hw1, hw2, hw3, hw4, hw5] using
+              gprepare.trans (g1.trans (g2.trans (g3.trans (g4.trans (g5.trans (gh2))))))
+        · have g4 : GasSteps (maskFrame s input 5106) (maskFrame s input 5241) :=
+            maskBlock PrefixStatePaths.word4Path s input 5106 _ hcode hfork hrun hnp
+              (run_word4_miss s input hword0 hw4 hcalldata hcode hrun)
+          simpa [PrefixStateModel.Matched2, PrefixStateModel.Matched3, PrefixStateModel.Matched4, hw1, hw2, hw3, hw4] using
+            gprepare.trans (g1.trans (g2.trans (g3.trans (g4.trans (gh2)))))
+      · have g3 : GasSteps (maskFrame s input 5087) (maskFrame s input 5276) :=
+          maskBlock PrefixStatePaths.word3Path s input 5087 _ hcode hfork hrun hnp
+            (run_word3_miss s input hw1 hw3 hcalldata hcode hrun)
+        simpa [PrefixStateModel.Matched2, PrefixStateModel.Matched3, PrefixStateModel.Matched4, hw1, hw2, hw3] using
+          gprepare.trans (g1.trans (g2.trans (g3.trans (gh1))))
+    · have g2 : GasSteps (maskFrame s input 5069) (maskFrame s input 5276) :=
+        maskBlock PrefixStatePaths.word2Path s input 5069 _ hcode hfork hrun hnp
+          (run_word2_miss s input hword0 hw2 hcalldata hcode hrun)
+      simpa [PrefixStateModel.Matched2, PrefixStateModel.Matched3, PrefixStateModel.Matched4, hw1, hw2] using
+        gprepare.trans (g1.trans (g2.trans (gh1)))
+  · have g1 : GasSteps (maskFrame s input 5028) (maskFrame s input 5320) :=
+      maskBlock PrefixStatePaths.word1Path s input 5028 _ hcode hfork hrun hnp
+        (run_word1_miss s input hw1 hcalldata hcode hrun)
+    simpa [PrefixStateModel.Matched2, PrefixStateModel.Matched3, PrefixStateModel.Matched4, hw1] using
+      gprepare.trans (g1.trans (gbail))
 
-#print axioms run_setup
-#print axioms run_hit3
 #print axioms gasSteps_finish
-
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateTraceFinish

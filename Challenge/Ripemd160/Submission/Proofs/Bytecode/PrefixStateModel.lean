@@ -26,6 +26,21 @@ def Matched3 (input : ByteArray) : Prop :=
 
 instance (input : ByteArray) : Decidable (Matched3 input) := inferInstanceAs (Decidable (_ ∧ _))
 
+def Matched4 (input : ByteArray) : Prop :=
+  MachineState.readWord input 192 = PatternedWordData.expectedWordAt 6 ∧
+  MachineState.readWord input 224 = PatternedWordData.expectedWordAt 7
+
+instance (input : ByteArray) : Decidable (Matched4 input) :=
+  inferInstanceAs (Decidable (_ ∧ _))
+
+def quadruple (input : ByteArray) : Bool :=
+  decide (Matched input ∧ Matched2 input ∧ Matched3 input ∧ Matched4 input)
+
+theorem quadruple_iff (input : ByteArray) :
+    quadruple input = true ↔
+      Matched input ∧ Matched2 input ∧ Matched3 input ∧ Matched4 input := by
+  simp [quadruple]
+
 /-- The dispatcher consumes exactly two blocks at once when words 0..3 match
 and word 4 or word 5 does not. -/
 def double (input : ByteArray) : Bool :=
@@ -35,12 +50,12 @@ theorem double_iff (input : ByteArray) :
     double input = true ↔ Matched input ∧ Matched2 input ∧ ¬ Matched3 input := by
   simp [double]
 
-/-- The dispatcher consumes three blocks at once exactly when all six words match. -/
+/-- The dispatcher consumes three blocks at once when the first six words match and the fourth block does not. -/
 def triple (input : ByteArray) : Bool :=
-  decide (Matched input ∧ Matched2 input ∧ Matched3 input)
+  decide ((Matched input ∧ Matched2 input ∧ Matched3 input) ∧ ¬ Matched4 input)
 
 theorem triple_iff (input : ByteArray) :
-    triple input = true ↔ Matched input ∧ Matched2 input ∧ Matched3 input := by
+    triple input = true ↔ (Matched input ∧ Matched2 input ∧ Matched3 input) ∧ ¬ Matched4 input := by
   simp [triple]
 
 def prepared (s : State) (i : Nat) : State :=

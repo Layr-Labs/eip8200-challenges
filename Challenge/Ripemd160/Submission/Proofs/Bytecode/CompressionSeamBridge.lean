@@ -48,6 +48,7 @@ structure CompressionRun (input : ByteArray) where
   double : Bool
   /-- The first dispatcher execution consumes blocks 0, 1 and 2 together. -/
   triple : Bool
+  quadruple : Bool
   initial : DriverTrace.setupEntry (states 0) input = PaddingTrace.padReturned input
   code : ∀ i, i ≤ DriverTrace.blockCount input →
     (states i).executionEnv.code = submissionBytecode
@@ -61,7 +62,7 @@ structure CompressionRun (input : ByteArray) where
   callStack : ∀ i, i ≤ DriverTrace.blockCount input →
     (states i).callStack = []
   blockTrace : ∀ i, i < DriverTrace.blockCount input → (double = true → 2 ≤ i) →
-    (triple = true → 3 ≤ i) →
+    (triple = true → 3 ≤ i) → (quadruple = true → 4 ≤ i) →
     GasSteps (DriverTrace.dispatchEntry (states i) input i)
       (DriverTrace.compressReturned (states (i + 1)) input i)
   blockTraceDoubleBlocks : double = true → 2 ≤ DriverTrace.blockCount input
@@ -72,6 +73,10 @@ structure CompressionRun (input : ByteArray) where
   blockTraceTriple : triple = true →
     GasSteps (DriverTrace.dispatchEntry (states 0) input 0)
       (DriverTrace.compressReturned (states 3) input 2)
+  blockTraceQuadrupleBlocks : quadruple = true → 4 ≤ DriverTrace.blockCount input
+  blockTraceQuadruple : quadruple = true →
+    GasSteps (DriverTrace.dispatchEntry (states 0) input 0)
+      (DriverTrace.compressReturned (states 4) input 3)
   hashWords : ∀ i, i ≤ DriverTrace.blockCount input →
     HashWordsAt input i (states i)
 
@@ -90,6 +95,7 @@ def toCompressionSeam (run : CompressionRun input) :
   states := run.states
   double := run.double
   triple := run.triple
+  quadruple := run.quadruple
   initial := run.initial
   code := run.code
   fork := run.fork
@@ -101,6 +107,8 @@ def toCompressionSeam (run : CompressionRun input) :
   compressDouble := run.blockTraceDouble
   compressTripleBlocks := run.blockTraceTripleBlocks
   compressTriple := run.blockTraceTriple
+  compressQuadrupleBlocks := run.blockTraceQuadrupleBlocks
+  compressQuadruple := run.blockTraceQuadruple
   finalWords := finalWords run
 
 @[simp] theorem toCompressionSeam_states (run : CompressionRun input) :

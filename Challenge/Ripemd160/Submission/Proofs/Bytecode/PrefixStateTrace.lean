@@ -41,7 +41,8 @@ def gasSteps_dispatch (s : State) (input : ByteArray) (i : Nat)
     GasSteps (FastEmptyBlock.nonemptyEntry s input i)
       (if i = 0 ∧ Matched input then
         (if Matched2 input then
-          (if Matched3 input then resultState3 (copied s) input
+          (if Matched3 input then
+            (if Matched4 input then resultState4 (copied s) input else resultState3 (copied s) input)
             else resultState2 (copied s) input)
           else resultState (copied s) input i)
         else DriverTrace.compressEntry (prepared s i) input i) := by
@@ -65,14 +66,12 @@ def gasSteps_dispatch (s : State) (input : ByteArray) (i : Nat)
         simpa using hrun
       have hnp' : Hnp (copied s) := by
         simpa only [Hnp, copied_executionEnv] using hnp
-      have hmem0 : MachineState.readWord (copied s).memory 0 =
-          PatternedWordData.expectedWordAt 0 := copied_word_zero s
       have hentry : PrefixStateTraceFinish.entry (copied s) input =
           PrefixStateTraceFirst.firstMatchedState s input := by
         rfl
-      have g := PrefixStateTraceFinish.gasSteps_finish (copied s) input
-        hcalldata' hcode' hfork' hrun' hnp' hmem0
-      rw [PrefixStateMemory.scratchState_copied, hentry] at g
+      have g := PrefixStateTraceFinish.gasSteps_finish (copied s) input (PrefixStateMemory.scratchState_copied s) hw0
+        hcalldata' hcode' hfork' hrun' hnp'
+      rw [hentry] at g
       by_cases hw1 : MachineState.readWord input 32 =
           PatternedWordData.expectedWordAt 1
       · rw [if_pos hw1] at g

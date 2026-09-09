@@ -187,7 +187,7 @@ theorem nextState3_word_above (s : State) (input : ByteArray) (address : Nat)
 theorem triple_blockCount (input : ByteArray) (ht : triple input = true) :
     3 ≤ DriverTrace.blockCount input := by
   have h := (triple_iff input).1 ht
-  have hsize := PrefixStateData.size_ge_192_of_words input h.2.2.2
+  have hsize := PrefixStateData.size_ge_192_of_words input h.1.2.2.2
   unfold DriverTrace.blockCount Padding.paddedLength
   omega
 
@@ -205,7 +205,7 @@ theorem nextState3_hash (s : State) (input : ByteArray) (ht : triple input = tru
     StackRunBridge.hashAt32 (nextState3 s input) =
       StackRunBridge.embedHashArray (CompressionSeamBridge.hashAfter input 3) := by
   change StackMemory.hashAt (PrefixStateMemory.resultState3 (PrefixStateMemory.copied s) input).memory = _
-  rw [PrefixStateMemory.resultState3_hash, hashAfter_three input ((triple_iff input).1 ht)]
+  rw [PrefixStateMemory.resultState3_hash, hashAfter_three input (((triple_iff input).1 ht).1)]
   rfl
 
 #print axioms nextState3_hash
