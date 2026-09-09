@@ -1,5 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowRoute
 import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
+import Challenge.Modexp.Submission.Proofs.Bytecode.FermatGas
+import Challenge.Modexp.Submission.Proofs.PrimeCertificates
 
 set_option warningAsError true
 
@@ -31,8 +33,9 @@ private theorem miss_eq (input : ByteArray) :
 
 def handled (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
     WindowRoute.Handled input := by
-  obtain ⟨final, ⟨trace⟩, done, result⟩ := WindowTwentyOneGasRoute.handled
-    Artifact.twentyOnePaths (Main.headerState input) (environment input) rfl input hmatch
+  obtain ⟨final, ⟨trace⟩, done, result⟩ := FermatGas.handled
+    Artifact.fermatPaths Artifact.twentyOnePaths (Main.headerState input) (environment input) rfl input hmatch
+    (by exact PrimeCertificates.bn254P_prime) (by exact PrimeCertificates.secpP_prime)
   have guard := WindowTwentyOneGasRoute.steps_hit Artifact.twentyOnePaths
     (Main.headerState input) (environment input) input hmatch
   refine ⟨final, ⟨?_⟩, done, result⟩
