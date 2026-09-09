@@ -206,6 +206,27 @@ opaque gasSteps_l2Mac (pc : Nat) (x tl ts : UInt256)
   block.steps (environment (l2At pc s mem bi mu c0 pa pb n i k pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l2Mac pc x tl ts s mem bi mu c0 pa pb n i k pdst ret rest hcap hact hn32 hk hx htl hts)
 
+opaque gasSteps_l2Last (pc : Nat)
+    (block : Block Artifact.submissionArtifact .Osaka pc
+      (l2LastProgram (UInt256.ofNat 8256) (UInt256.ofNat 8288)))
+    (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
+    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat)
+    (hn32 : n ≤ 32) (hk : k+1 < n)
+    (hx : (UInt256.ofNat 0).toNat = 32 * (n - 2 - k))
+    (htl : (UInt256.ofNat 8256).toNat = 8256 + 32 * (n - 2 - k))
+    (hts : (UInt256.ofNat 8288).toNat = 8256 + 32 * (n - 1 - k)) :
+    Challenge.EvmProof.GasSteps
+      (l2At pc s mem bi mu c0 pa pb n i k pdst ret rest)
+      (l2At (pc+36) s mem bi mu c0 pa pb n i (k+1) pdst ret rest) :=
+  block.steps (environment (l2At pc s mem bi mu c0 pa pb n i k pdst ret rest) hcode hfork hrun hnp) rfl
+    (run_l2LastMac pc s mem bi mu c0 pa pb n i k pdst ret rest hcap hact hn32 hk hx htl hts)
+
 opaque gasSteps_l2Dispatch4 (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (pa pb i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
@@ -261,7 +282,7 @@ opaque gasSteps_l2Final (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
       (l2At 5189 s mem bi mu c0 pa pb n i (n-2) pdst ret rest)
       (tailState s (l2Step mem mu c0 n (n-1)).memory
         (l2Step mem mu c0 n (n-1)).carry mu bi pa pb n i pdst ret rest) := by
-  have h := gasSteps_l2Mac 5189 0 8256 8288 l2Mac6 s mem bi mu c0 pa pb n i (n-2) pdst ret rest
+  have h := gasSteps_l2Last 5189 l2Mac6 s mem bi mu c0 pa pb n i (n-2) pdst ret rest
     hcap hrun hcode hfork hnp hact hn32 (by omega)
     (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)
     (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)

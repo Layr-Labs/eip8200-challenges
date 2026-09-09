@@ -52,4 +52,21 @@ theorem run_l2Mac (pc : Nat) (x tl ts : UInt256) (s : State) (mid : ByteArray) (
   simpa only [CiosCachedL2.state, l2At,
     Challenge.EvmProof.Word.ofNat_add_mod] using h
 
+theorem run_l2LastMac (pc : Nat) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
+    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
+    (hn32 : n ≤ 32) (hk : k+1 < n)
+    (hx : (UInt256.ofNat 0).toNat = 32 * (n - 2 - k))
+    (htl : (UInt256.ofNat 8256).toNat = 8256 + 32 * (n - 2 - k))
+    (hts : (UInt256.ofNat 8288).toNat = 8256 + 32 * (n - 1 - k)) :
+    runInstructions (l2LastProgram (UInt256.ofNat 8256) (UInt256.ofNat 8288))
+      (l2At pc s mid bi mu c0 pa pb n i k pdst ret rest) =
+      some (l2At (pc+36) s mid bi mu c0 pa pb n i (k+1) pdst ret rest) := by
+  have h := CiosCachedL2.run_last_step s (UInt256.ofNat pc) mid bi mu c0 n k
+    hx htl hts
+    (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa + 32*n - 32))
+    (UInt256.ofNat (pb-32)) (isFour n) pdst ret rest hcap hact hn32 hk
+  simpa only [CiosCachedL2.state, l2At,
+    Challenge.EvmProof.Word.ofNat_add_mod] using h
+
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCached

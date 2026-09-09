@@ -36,7 +36,7 @@ def pcNewtonB : Nat := 3980
 def pcShiftLoop : Nat := 4017
 def pcShiftBody : Nat := 4024
 def pcEstimate : Nat := 4038
-def pcMacSetup : Nat := 4105
+def pcMacSetup : Nat := 4104
 def pcMacLoop : Nat := 4119
 def pcMid : Nat := 4262
 /-- The limb-pass body after the pointer steps, before the exit test. -/

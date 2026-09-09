@@ -12,11 +12,11 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open WindowNibbleKernel
 
-def cacheProgram : List Instr := entryProgram.take 12
-def entryBodyProgram : List Instr := entryProgram.drop 12
+def cacheProgram : List Instr := entryProgram.take 11
+def entryBodyProgram : List Instr := entryProgram.drop 11
 
 theorem entryProgram_split : entryProgram = cacheProgram ++ entryBodyProgram := by
-  exact (List.take_append_drop 12 entryProgram).symm
+  exact (List.take_append_drop 11 entryProgram).symm
 
 def cachedEntryState (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=

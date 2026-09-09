@@ -10,8 +10,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
-def zeroProgram : List Instr := (entryProgram.drop 12).take 8
-def pointersProgram : List Instr := entryProgram.drop 20
+def zeroProgram : List Instr := (entryProgram.drop 11).take 8
+def pointersProgram : List Instr := entryProgram.drop 19
 
 theorem entryBody_split : entryBodyProgram = zeroProgram ++ pointersProgram := rfl
 

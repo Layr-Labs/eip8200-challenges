@@ -10,7 +10,7 @@ open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding
 
 structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   table : Block artifact fork 2682 WindowTwentyOneTableBuild.program
-  init : Block artifact fork 2799 WindowTwentyOneInit.program
+  init : Block artifact fork 2800 WindowTwentyOneInit.program
   iteration : Block artifact fork 2821 WindowTwentyOneLoop.iterationProgram
   finish : Block artifact fork 3284 WindowTwentyOneReturn.program
 
@@ -64,11 +64,11 @@ def steps_core {artifact : ProgramArtifact} {fork : Fork}
     (WindowTwentyOneTableBuild.run_all template base modulus exponentOffset rest hrest he)
   have hi := WindowTwentyOneInit.run_enter template base modulus exponent modulusOffset rest hrest hm hmodulus
   have hi' : runInstructions WindowTwentyOneInit.program
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 2799) base modulus 16 ([base, exponent] ++ rest)) =
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 2800) base modulus 16 ([base, exponent] ++ rest)) =
       some (WindowTwentyOneLoop.loopState template base modulus exponent 0 rest) := by
     simpa only [WindowTwentyOneLoop.loopState, WindowTwentyOneMath.accumulator, WindowTwentyOneMath.advance] using hi
   have hinit := paths.init.steps
-    (s := WindowTwentyOneTable.framed template (UInt256.ofNat 2799) base modulus 16 ([base, exponent] ++ rest))
+    (s := WindowTwentyOneTable.framed template (UInt256.ofNat 2800) base modulus 16 ([base, exponent] ++ rest))
     (env.transfer rfl rfl) rfl hi'
   have hloop := steps_three paths template env base modulus exponent rest hrest hjump
   have hfinish := paths.finish.steps

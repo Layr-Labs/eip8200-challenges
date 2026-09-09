@@ -57,7 +57,7 @@ theorem run_all (template : State) (base modulus exponentOffset : UInt256)
     (hoffset : rest[4]? = some exponentOffset) :
     runInstructions program
       (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 2682) base modulus rest) =
-    some (WindowTwentyOneTable.framed template (UInt256.ofNat 2799) base modulus 16
+    some (WindowTwentyOneTable.framed template (UInt256.ofNat 2800) base modulus 16
       ([base, MachineState.readWord template.executionEnv.calldata exponentOffset.toNat] ++ rest)) := by
   have hp := WindowTwentyOneTablePrelude.run_prelude template (UInt256.ofNat 2682)
     base modulus exponentOffset rest hrest hoffset
@@ -67,8 +67,8 @@ theorem run_all (template : State) (base modulus exponentOffset : UInt256)
     (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) 12 (by decide) rest hrest
   have hl := WindowTwentyOneTable.run_last_update template (UInt256.ofNat (tablePC 14))
     base modulus (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) rest hrest
-  have hlastPC : WindowTwentyOneTable.storePC 2 (advancePC 2 (UInt256.ofNat (tablePC 14))) =
-      UInt256.ofNat 2799 := by decide
+  have hlastPC : WindowTwentyOneTable.lastStorePC 4 (advancePC 2 (UInt256.ofNat (tablePC 14))) =
+      UInt256.ofNat 2800 := by decide
   rw [hlastPC] at hl
   exact runInstructions_append_some _ _ _ _ _ (runInstructions_append_some _ _ _ _ _ hp hb) hl
 
