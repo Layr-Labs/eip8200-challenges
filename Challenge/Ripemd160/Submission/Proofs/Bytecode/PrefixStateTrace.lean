@@ -40,7 +40,9 @@ def gasSteps_dispatch (s : State) (input : ByteArray) (i : Nat)
     (hnp : Hnp s) :
     GasSteps (FastEmptyBlock.nonemptyEntry s input i)
       (if i = 0 ∧ Matched input then
-        (if Matched2 input then resultState2 (copied s) input else resultState (copied s) input i)
+        (if Matched3 input then PrefixStateMemory.resultState3 (copied s) input
+          else if Matched2 input then PrefixStateMemory.resultState2 (copied s) input
+          else PrefixStateMemory.resultState (copied s) input i)
         else DriverTrace.compressEntry (prepared s i) input i) := by
   by_cases hzero : i = 0
   · subst i

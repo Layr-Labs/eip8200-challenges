@@ -25,9 +25,8 @@ set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5225 := by
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5361 := by
   simp [submissionBytecode]
-
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 2000000 in
 @[simp] theorem referenceBytecode_get_zero : submissionBytecode[0] = 0x60 := by

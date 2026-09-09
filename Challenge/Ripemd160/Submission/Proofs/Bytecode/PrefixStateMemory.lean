@@ -176,4 +176,59 @@ theorem resultState2_word_above (s : State) (input : ByteArray) (address : Nat)
 @[simp] theorem resultState2_callStack (s : State) (input : ByteArray) :
     (resultState2 s input).callStack = s.callStack := rfl
 
+/-- Depth-3 ladder rung: `H3` install after block 2 was consumed. -/
+def hash3 : Compression.EvmHashState :=
+  { h0 := UInt256.ofNat 0x530c4cbb
+    h1 := UInt256.ofNat 0x2970b1fb
+    h2 := UInt256.ofNat 0x1561d30c
+    h3 := UInt256.ofNat 0x375cc61b
+    h4 := UInt256.ofNat 0xe57f44f9 }
+
+def hashMemory3 (memory : ByteArray) : ByteArray :=
+  let m0 := writeWord memory 32 hash3.h0
+  let m1 := writeWord m0 64 hash3.h1
+  let m2 := writeWord m1 96 hash3.h2
+  let m3 := writeWord m2 128 hash3.h3
+  writeWord m3 160 hash3.h4
+
+/-- After the third checked block the rung installs `H3` and returns to the
+driver's `102` continuation with the block-2 offset (`0x80`) on the stack. -/
+def resultState3 (s : State) (input : ByteArray) : State :=
+  { s with
+    memory := hashMemory3 s.memory
+    activeWords := FastEmptyBlock.emptyActiveWords s
+    pc := UInt256.ofNat 102
+    stack := [DriverTrace.blockOffsetWord 2, Padding.paddedWord input] }
+
+theorem resultState3_hash (s : State) (input : ByteArray) :
+    StackMemory.hashAt (resultState3 s input).memory = hash3 := by
+  unfold resultState3 hashMemory3 StackMemory.hashAt
+  simp only [read_disjoint _ 32 160 _ (Or.inl (by omega)),
+    read_disjoint _ 32 128 _ (Or.inl (by omega)),
+    read_disjoint _ 32 96 _ (Or.inl (by omega)),
+    read_disjoint _ 32 64 _ (Or.inl (by omega)),
+    read_disjoint _ 64 160 _ (Or.inl (by omega)),
+    read_disjoint _ 64 128 _ (Or.inl (by omega)),
+    read_disjoint _ 64 96 _ (Or.inl (by omega)),
+    read_disjoint _ 96 160 _ (Or.inl (by omega)),
+    read_disjoint _ 96 128 _ (Or.inl (by omega)),
+    read_disjoint _ 128 160 _ (Or.inl (by omega)), read_same]
+
+theorem resultState3_word_above (s : State) (input : ByteArray) (address : Nat)
+    (ha : 192 ≤ address) :
+    MachineState.readWord (resultState3 s input).memory address = MachineState.readWord s.memory address := by
+  unfold resultState3 hashMemory3
+  rw [read_disjoint _ _ _ _ (Or.inr (by omega)),
+    read_disjoint _ _ _ _ (Or.inr (by omega)),
+    read_disjoint _ _ _ _ (Or.inr (by omega)),
+    read_disjoint _ _ _ _ (Or.inr (by omega)),
+    read_disjoint _ _ _ _ (Or.inr (by omega))]
+
+@[simp] theorem resultState3_executionEnv (s : State) (input : ByteArray) :
+    (resultState3 s input).executionEnv = s.executionEnv := rfl
+@[simp] theorem resultState3_halt (s : State) (input : ByteArray) :
+    (resultState3 s input).halt = s.halt := rfl
+@[simp] theorem resultState3_callStack (s : State) (input : ByteArray) :
+    (resultState3 s input).callStack = s.callStack := rfl
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateMemory
