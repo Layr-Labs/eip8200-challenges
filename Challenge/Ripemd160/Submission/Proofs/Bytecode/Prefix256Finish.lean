@@ -17,9 +17,12 @@ def paddedDigest : ByteArray := Prefix256Digest.paddedDigest
 
 def answerMemory : ByteArray := DigestReturn.answerMemory paddedDigestWord
 
-def storedState (input : ByteArray) : State := DigestReturn.storedState input paddedDigestWord
+def returnRest : List UInt256 :=
+  [UInt256.ofNat (scalarAt 12), 384, 0, P7, M, m7, P, m8]
 
-def returnedState (input : ByteArray) : State := DigestReturn.returnedState input paddedDigestWord
+def storedState (input : ByteArray) : State := DigestReturn.storedState input paddedDigestWord returnRest
+
+def returnedState (input : ByteArray) : State := DigestReturn.returnedState input paddedDigestWord returnRest
 
 @[simp] theorem paddedDigest_size : paddedDigest.size = 32 := by decide
 
@@ -44,16 +47,16 @@ theorem answerMemory_read :
   rw [returnedState_hReturn, paddedDigest_size]
 
 def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
-    GasSteps (stS input 424 [sv, ov, acc, P7, M, m7, P, m8]) (fallbackState input) :=
+    GasSteps (stS input 418 [sv, ov, acc, P7, M, m7, P, m8]) (fallbackState input) :=
   Prefix256Cleanup.gasSteps_miss input sv ov acc hne
 
 def gasSteps_finish_hit (input : ByteArray) (sv ov acc : UInt256)
     (hz : acc = 0) (hsize : input.size = 376) :
-    GasSteps (stS input 424 [sv, ov, acc, P7, M, m7, P, m8]) (returnedState input) := by
+    GasSteps (stS input 418 [sv, ov, acc, P7, M, m7, P, m8]) (DigestReturn.returnedState input paddedDigestWord [sv, ov, 0, P7, M, m7, P, m8]) := by
   subst acc
-  have select := Prefix256Select.gasSteps_select input
+  have select := Prefix256Select.gasSteps_select input [sv, ov, 0, P7, M, m7, P, m8] (by simp)
   rw [Prefix256Value.selected_256 input hsize] at select
   exact (Prefix256Cleanup.gasSteps_hit input sv ov).trans
-    (select.trans (DigestReturn.gasSteps_return input paddedDigestWord))
+    (select.trans (DigestReturn.gasSteps_return input paddedDigestWord [sv, ov, 0, P7, M, m7, P, m8] (by simp)))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Finish

@@ -34,7 +34,7 @@ def mainStart (input : ByteArray) : State := atPC input 0x4
 
 def path_start : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨0, .push ⟨1, by decide⟩ (UInt256.ofNat 174), by rfl, by decide⟩,
+  [⟨0, .push ⟨1, by decide⟩ (UInt256.ofNat 168), by rfl, by decide⟩,
    ⟨1, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 
@@ -43,7 +43,7 @@ def path_3ee : List
   [⟨2, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def gasSteps_start (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0xae) :=
+    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0xa8) :=
   ExecutionEntry.initial_entry input
 
 def gasSteps_3ee (input : ByteArray) :

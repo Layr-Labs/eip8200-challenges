@@ -12,18 +12,18 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedInputData PatternedDigest PatternedGuardSpec
 
 def storePath : List Located :=
-  [opAt 275 .CALLDATASIZE, pushAt 276 2 376, opAt 277 .EQ,
-   pushAt 278 20 644824770394507154413287103057882351908521126009, opAt 279 .MUL,
-   pushAt 280 20 766350606435067737561421097975693824639675460820, opAt 281 .XOR,
-   pushAt 282 0 0, opAt 283 .MSTORE]
+  [opAt 259 .CALLDATASIZE, pushAt 260 2 376, opAt 261 .EQ,
+   pushAt 262 20 644824770394507154413287103057882351908521126009, opAt 263 .MUL,
+   pushAt 264 20 766350606435067737561421097975693824639675460820, opAt 265 .XOR,
+   pushAt 266 0 0, opAt 267 .MSTORE]
 
-def finishPath : List Located := [pushAt 285 0 0, opAt 286 .RETURN]
+def finishPath : List Located := [pushAt 269 0 0, opAt 270 .RETURN]
 
 def storedState (input : ByteArray) : State :=
-  { atPC input 491 with memory := answerMemory, activeWords := UInt256.ofNat 1 }
+  { atPC input 474 with stack := hitRest, memory := answerMemory, activeWords := UInt256.ofNat 1 }
 
 def sizedState (input : ByteArray) : State :=
-  { storedState input with pc := UInt256.ofNat 492, stack := [UInt256.ofNat 32] }
+  { storedState input with pc := UInt256.ofNat 475, stack := UInt256.ofNat 32 :: hitRest }
 
 /-- The branchless selector on a 1000-byte input: the size test is false, so the
 correction term is multiplied by zero and the general digest survives the `XOR`. -/
@@ -37,7 +37,7 @@ theorem run_store :
     run storePath (hitState patternedInput) = some (storedState patternedInput) := by
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp (config := { maxSteps := 400000 })
-    [storePath, opAt, pushAt, wfOp, hitState, atPC, storedState,
+    [storePath, opAt, pushAt, wfOp, hitState, atPC, storedState, hitRest, frame,
     answerMemory, storeWord, paddedDigestWord, patternedInput_size, selector_value,
     MachineState.mstore, State.activeWordsAfterUInt256,
     MachineState.activeWordsAfter, hzeroNat,
@@ -50,7 +50,7 @@ theorem run_finish :
     run finishPath (sizedState patternedInput) = some (returnedState patternedInput) := by
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp (config := { maxSteps := 400000 })
-    [finishPath, opAt, pushAt, wfOp, sizedState, storedState, atPC, returnedState,
+    [finishPath, opAt, pushAt, wfOp, sizedState, storedState, hitRest, frame, atPC, returnedState,
     answerMemory, storeWord, paddedDigestWord,
     State.activeWordsAfterUInt256, MachineState.activeWordsAfter, hzeroNat,
     Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
@@ -61,18 +61,18 @@ theorem run_finish :
 def gasSteps_return :
     GasSteps (hitState patternedInput) (returnedState patternedInput) := by
   have gs := sound storePath run_store
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 284 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 268 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState patternedInput).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 284 := by
+      Artifact.submissionArtifact.instructionPC 268 := by
     rw [pc2986]; rfl
   have hop : (storedState patternedInput).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedState patternedInput) 284
+    Artifact.submissionArtifact.state_decodedOp_of (storedState patternedInput) 268
       (by rfl) hp .MSIZE none hd (by rfl)
-  have gmraw := Msize.step hop (by simp [storedState, atPC, initialState]) (by rfl)
+  have gmraw := Msize.step hop (by simp [storedState, hitRest, frame, atPC, initialState]) (by rfl)
     deployAddress_not_precompile
   have gm : GasSteps (storedState patternedInput) (sizedState patternedInput) := by
-    simpa [storedState, sizedState, atPC, initialState,
+    simpa [storedState, hitRest, frame, sizedState, atPC, initialState,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat] using gmraw
   exact gs.trans (gm.trans (sound finishPath run_finish))

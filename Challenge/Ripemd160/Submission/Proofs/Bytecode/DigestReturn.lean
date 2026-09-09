@@ -13,53 +13,59 @@ open PatternedScan
 
 def answerMemory (word : UInt256) : ByteArray := storeWord ByteArray.empty 0 word
 
-def storedState (input : ByteArray) (word : UInt256) : State :=
-  { stS input 491 [] with memory := answerMemory word, activeWords := UInt256.ofNat 1 }
+def storedState (input : ByteArray) (word : UInt256) (rest : List UInt256) : State :=
+  { stS input 474 rest with memory := answerMemory word, activeWords := UInt256.ofNat 1 }
 
-def sizedState (input : ByteArray) (word : UInt256) : State :=
-  { storedState input word with pc := UInt256.ofNat 492, stack := [UInt256.ofNat 32] }
+def sizedState (input : ByteArray) (word : UInt256) (rest : List UInt256) : State :=
+  { storedState input word rest with pc := UInt256.ofNat 475, stack := UInt256.ofNat 32 :: rest }
 
-def returnedState (input : ByteArray) (word : UInt256) : State :=
-  { storedState input word with pc := UInt256.ofNat 493, halt := .Returned, hReturn := MachineState.readPadded (answerMemory word) 0 32 }
+def returnedState (input : ByteArray) (word : UInt256) (rest : List UInt256) : State :=
+  { storedState input word rest with pc := UInt256.ofNat 476, halt := .Returned, hReturn := MachineState.readPadded (answerMemory word) 0 32 }
 
-def storePath : List Located := [pushAt 282 0 0, opAt 283 .MSTORE]
-def finishPath : List Located := [pushAt 285 0 0, opAt 286 .RETURN]
+def storePath : List Located := [pushAt 266 0 0, opAt 267 .MSTORE]
+def finishPath : List Located := [pushAt 269 0 0, opAt 270 .RETURN]
 
-theorem run_store (input : ByteArray) (word : UInt256) :
-    run storePath (stS input 489 [word]) = some (storedState input word) := by
+theorem run_store (input : ByteArray) (word : UInt256) (rest : List UInt256) (hlen : rest.length < 1020) :
+    run storePath (stS input 472 (word :: rest)) = some (storedState input word rest) := by
+  have hcap0 : rest.length < 1024 := by omega
+  have hcap1 : rest.length + 1 < 1024 := by omega
+  have hcap2 : rest.length + 1 + 1 < 1024 := by omega
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp [storePath, opAt, pushAt, wfOp, stS, initialState, storedState,
     answerMemory, storeWord, MachineState.mstore, State.activeWordsAfterUInt256,
-    MachineState.activeWordsAfter, hzeroNat, Stepper.runLocatedBlock,
+    MachineState.activeWordsAfter, hzeroNat, hcap0, hcap1, hcap2, Stepper.runLocatedBlock,
     Stepper.runLocated, Stepper.runInstr, Word.literal_eq_ofNat,
     Word.succ_ofNat_mod, Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
-theorem run_finish (input : ByteArray) (word : UInt256) :
-    run finishPath (sizedState input word) = some (returnedState input word) := by
+theorem run_finish (input : ByteArray) (word : UInt256) (rest : List UInt256) (hlen : rest.length < 1020) :
+    run finishPath (sizedState input word rest) = some (returnedState input word rest) := by
+  have hcap0 : rest.length < 1024 := by omega
+  have hcap1 : rest.length + 1 < 1024 := by omega
+  have hcap2 : rest.length + 1 + 1 < 1024 := by omega
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp [finishPath, opAt, pushAt, wfOp, stS, initialState, sizedState,
     storedState, returnedState, State.activeWordsAfterUInt256,
-    MachineState.activeWordsAfter, hzeroNat, Stepper.runLocatedBlock,
+    MachineState.activeWordsAfter, hzeroNat, hcap0, hcap1, hcap2, Stepper.runLocatedBlock,
     Stepper.runLocated, Stepper.runInstr, Word.literal_eq_ofNat,
     Word.succ_ofNat_mod, Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
-def gasSteps_return (input : ByteArray) (word : UInt256) :
-    GasSteps (stS input 489 [word]) (returnedState input word) := by
-  have gs := sound storePath (run_store input word)
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 284 .MSIZE
+def gasSteps_return (input : ByteArray) (word : UInt256) (rest : List UInt256) (hlen : rest.length < 1020) :
+    GasSteps (stS input 472 (word :: rest)) (returnedState input word rest) := by
+  have gs := sound storePath (run_store input word rest hlen)
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 268 .MSIZE
     (by rfl) (by decide) trivial
-  have hp : (storedState input word).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 284 := by
+  have hp : (storedState input word rest).pc.toNat =
+      Artifact.submissionArtifact.instructionPC 268 := by
     rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have hop : (storedState input word).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedState input word) 284
+  have hop : (storedState input word rest).decodedOp = some .MSIZE :=
+    Artifact.submissionArtifact.state_decodedOp_of (storedState input word rest) 268
       (by rfl) hp .MSIZE none hd (by rfl)
-  have gmraw := Msize.step hop (by simp [storedState, stS, initialState]) (by rfl)
+  have gmraw := Msize.step hop (by simp only [storedState, stS, initialState]; omega) (by rfl)
     deployAddress_not_precompile
-  have gm : GasSteps (storedState input word) (sizedState input word) := by
+  have gm : GasSteps (storedState input word rest) (sizedState input word rest) := by
     simpa [storedState, sizedState, stS, initialState,
       Word.succ_ofNat_mod, Word.word_toNat_ofNat] using gmraw
-  exact gs.trans (gm.trans (sound finishPath (run_finish input word)))
+  exact gs.trans (gm.trans (sound finishPath (run_finish input word rest hlen)))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DigestReturn

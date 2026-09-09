@@ -10,37 +10,37 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Select
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan Prefix256Value
 
-def gasSteps_select (input : ByteArray) :
-    GasSteps (stS input 440 []) (stS input 489 [selected input]) := by
-  have a := soundS (opAt 275 .CALLDATASIZE)
-    (blockOfS _ (pcFactS input 275 440 [] (by norm_num) (by rfl))
-      (stepS_calldatasize input 440 [] (by simp) (by norm_num)))
-  have b := soundS (pushAt 276 2 376)
-    (blockOfS _ (pcFactS input 276 441 _ (by norm_num) (by rfl))
-      (stepS_push input 441 2 376 [UInt256.ofNat input.size]
-        (by simp) (by decide) (by decide) (by norm_num)))
-  have c := soundS (opAt 277 .EQ)
-    (blockOfS _ (pcFactS input 277 444 _ (by norm_num) (by rfl))
-      (stepS_eq input 444 376 (UInt256.ofNat input.size) [] (by simp) (by norm_num)))
-  have d := soundS (pushAt 278 20 digestDifference)
-    (blockOfS _ (pcFactS input 278 445 _ (by norm_num) (by rfl))
-      (stepS_push input 445 20 digestDifference
-        [UInt256.eq 376 (UInt256.ofNat input.size)]
-        (by simp) (by decide) (by decide) (by norm_num)))
-  have e := soundS (opAt 279 .MUL)
-    (blockOfS _ (pcFactS input 279 466 _ (by norm_num) (by rfl))
-      (stepS_mul input 466 digestDifference (UInt256.eq 376 (UInt256.ofNat input.size))
-        [] (by simp) (by norm_num)))
-  have f := soundS (pushAt 280 20 digest1000)
-    (blockOfS _ (pcFactS input 280 467 _ (by norm_num) (by rfl))
-      (stepS_push input 467 20 digest1000
-        [digestDifference * UInt256.eq 376 (UInt256.ofNat input.size)]
-        (by simp) (by decide) (by decide) (by norm_num)))
-  have g := soundS (opAt 281 .XOR)
-    (blockOfS _ (pcFactS input 281 488 _ (by norm_num) (by rfl))
-      (stepS_xor input 488 digest1000
+def gasSteps_select (input : ByteArray) (rest : List UInt256) (hlen : rest.length < 1020) :
+    GasSteps (stS input 423 rest) (stS input 472 (selected input :: rest)) := by
+  have a := soundS (opAt 259 .CALLDATASIZE)
+    (blockOfS _ (pcFactS input 259 423 rest (by norm_num) (by rfl))
+      (stepS_calldatasize input 423 rest (by omega) (by norm_num)))
+  have b := soundS (pushAt 260 2 376)
+    (blockOfS _ (pcFactS input 260 424 _ (by norm_num) (by rfl))
+      (stepS_push input 424 2 376 (UInt256.ofNat input.size :: rest)
+        (by simp only [List.length_cons]; omega) (by decide) (by decide) (by norm_num)))
+  have c := soundS (opAt 261 .EQ)
+    (blockOfS _ (pcFactS input 261 427 _ (by norm_num) (by rfl))
+      (stepS_eq input 427 376 (UInt256.ofNat input.size) rest (by omega) (by norm_num)))
+  have d := soundS (pushAt 262 20 digestDifference)
+    (blockOfS _ (pcFactS input 262 428 _ (by norm_num) (by rfl))
+      (stepS_push input 428 20 digestDifference
+        (UInt256.eq 376 (UInt256.ofNat input.size) :: rest)
+        (by simp only [List.length_cons]; omega) (by decide) (by decide) (by norm_num)))
+  have e := soundS (opAt 263 .MUL)
+    (blockOfS _ (pcFactS input 263 449 _ (by norm_num) (by rfl))
+      (stepS_mul input 449 digestDifference (UInt256.eq 376 (UInt256.ofNat input.size))
+        rest (by omega) (by norm_num)))
+  have f := soundS (pushAt 264 20 digest1000)
+    (blockOfS _ (pcFactS input 264 450 _ (by norm_num) (by rfl))
+      (stepS_push input 450 20 digest1000
+        (digestDifference * UInt256.eq 376 (UInt256.ofNat input.size) :: rest)
+        (by simp only [List.length_cons]; omega) (by decide) (by decide) (by norm_num)))
+  have g := soundS (opAt 265 .XOR)
+    (blockOfS _ (pcFactS input 265 471 _ (by norm_num) (by rfl))
+      (stepS_xor input 471 digest1000
         (digestDifference * UInt256.eq 376 (UInt256.ofNat input.size))
-        [] (by simp) (by norm_num)))
+        rest (by omega) (by norm_num)))
   exact a.trans (b.trans (c.trans (d.trans (e.trans (f.trans g)))))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Select
