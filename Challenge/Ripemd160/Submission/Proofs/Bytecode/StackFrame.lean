@@ -75,11 +75,11 @@ def loadSite1238 : GenericRoundSite Artifact.submissionArtifact .Osaka
       (instructions := StackLoadTrace.loadTemplate) (by decide))
     (by simp [StackLoadTrace.loadTemplate])
 
-@[simp] theorem loadSite987_startPC : loadSite987.startPC = UInt256.ofNat 0x29d := by
+@[simp] theorem loadSite987_startPC : loadSite987.startPC = UInt256.ofNat 0x29a := by
   rfl
 
 @[simp] theorem loadSite1238_startPC :
-    loadSite1238.startPC = UInt256.ofNat 0xb6c := by
+    loadSite1238.startPC = UInt256.ofNat 0xb6b := by
   change UInt256.ofNat
     (Artifact.submissionArtifact.instructionPC QuadLayout.rightLoadIndex) = _
   rw [QuadLayout.rightLoad_pc]
@@ -91,7 +91,7 @@ def frameRest (input : ByteArray) (i : Nat) : List UInt256 :=
 with the outer return word preserved on the stack. -/
 def frameSeam (s : State) (input : ByteArray) (i : Nat) : State :=
   { StackBlockModel.scheduledState s input i with
-    pc := UInt256.ofNat 0x28e, stack := frameRest input i }
+    pc := UInt256.ofNat 0x28b, stack := frameRest input i }
 
 def frameLoadEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   StackLoadTrace.loadEntry (StackBlockModel.scheduledState s input i)
@@ -125,25 +125,25 @@ theorem denseEnd_eq_frameSeam (s : State) (input : ByteArray) (i : Nat) :
         (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0xa5)
         (StackBlockModel.driverRest input i) =
       frameSeam s input i := by
-  have hpc : PackedScheduleSite.packedScheduleSite.startPC = UInt256.ofNat 525 :=
+  have hpc : PackedScheduleSite.packedScheduleSite.startPC = UInt256.ofNat 522 :=
     PackedScheduleSite.packedScheduleSite_startPC
   let mo := DriverTrace.messageOffsetWord i
   let dr := StackBlockModel.driverRest input i
   have h := DenseScheduleState.returned_eq_schedule_with_memory_active s
-    (UInt256.ofNat 525) mo (UInt256.ofNat 670) (UInt256.ofNat 0xa5 :: dr)
+    (UInt256.ofNat 522) mo (UInt256.ofNat 670) (UInt256.ofNat 0xa5 :: dr)
     (DenseScheduleTemplate.denseExpectedMemory s mo) rfl
   have hu := congrArg (fun t : State =>
-    { t with pc := UInt256.ofNat 654, stack := UInt256.ofNat 0xa5 :: dr }) h
+    { t with pc := UInt256.ofNat 651, stack := UInt256.ofNat 0xa5 :: dr }) h
   rw [hpc]
-  show DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 525)
+  show DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 522)
       mo (UInt256.ofNat 0xa5) dr = frameSeam s input i
-  calc DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 525)
+  calc DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 522)
         mo (UInt256.ofNat 0xa5) dr =
       { Schedule.scheduleReturned
-          (DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 525)
+          (DenseScheduleTemplate.denseExpectedState s (UInt256.ofNat 522)
             mo (UInt256.ofNat 670) (UInt256.ofNat 0xa5 :: dr))
           (UInt256.ofNat 670) (UInt256.ofNat 0xa5 :: dr) with
-        pc := UInt256.ofNat 654, stack := UInt256.ofNat 0xa5 :: dr } := by
+        pc := UInt256.ofNat 651, stack := UInt256.ofNat 0xa5 :: dr } := by
         unfold DenseScheduleTemplate.denseExpectedState Schedule.scheduleReturned
         rfl
     _ = { Schedule.scheduleReturned
@@ -152,7 +152,7 @@ theorem denseEnd_eq_frameSeam (s : State) (input : ByteArray) (i : Nat) :
                 memory := DenseScheduleTemplate.denseExpectedMemory s mo } with
               activeWords := DenseScheduleTemplate.denseExpectedActiveWords s mo }
             (UInt256.ofNat 670) (UInt256.ofNat 0xa5 :: dr) with
-          pc := UInt256.ofNat 654, stack := UInt256.ofNat 0xa5 :: dr } := hu
+          pc := UInt256.ofNat 651, stack := UInt256.ofNat 0xa5 :: dr } := hu
     _ = frameSeam s input i := by
         unfold frameSeam frameRest StackBlockModel.scheduledState
           StackBlockModel.withMemory StackBlockModel.withActiveWords
@@ -163,8 +163,8 @@ theorem run_exit (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock exitPath (frameSeam s input i) =
       some (frameLoadEntry s input i) := by
-  have hpc940 : Artifact.submissionArtifact.instructionPC 319 = 0x24e := by rfl
-  have hpc941 : Artifact.submissionArtifact.instructionPC 320 = 0x24f := by rfl
+  have hpc940 : Artifact.submissionArtifact.instructionPC 319 = 0x24b := by rfl
+  have hpc941 : Artifact.submissionArtifact.instructionPC 320 = 0x24c := by rfl
   simp [exitPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     frameSeam, frameLoadEntry, StackBlockModel.scheduledState,
     StackBlockModel.withMemory, StackBlockModel.withActiveWords,

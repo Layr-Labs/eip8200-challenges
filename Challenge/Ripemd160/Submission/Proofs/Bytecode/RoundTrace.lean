@@ -352,7 +352,7 @@ private def afterFirstStores (s : State) (base : UInt256) : State :=
 private def rot2Tail (s : State) (base : UInt256) (j : Nat)
     (wordIndex rotation k returnDest word : UInt256) (rest : List UInt256) :
     List UInt256 :=
-  [UInt256.ofNat 0x18d, nextB s base j word rotation k, loadedE s base,
+  [UInt256.ofNat 0x18c, nextB s base j word rotation k, loadedE s base,
     loadedD s base, loadedC s base, loadedB s base, loadedA s base, base,
     UInt256.ofNat j, wordIndex, rotation, k, returnDest] ++ rest
 
@@ -372,7 +372,7 @@ private def setTail (s : State) (base : UInt256) (j : Nat)
 def setCallState (s : State) (base : UInt256) (j : Nat)
     (wordIndex rotation k returnDest word : UInt256) (rest : List UInt256) : State :=
   TableTrace.setEntry (afterFirstStores s base) base (UInt256.ofNat 3)
-    (rotlValue (loadedC s base) (UInt256.ofNat 10)) (UInt256.ofNat 0x18d)
+    (rotlValue (loadedC s base) (UInt256.ofNat 10)) (UInt256.ofNat 0x18c)
     (setTail s base j wordIndex rotation k returnDest word rest)
 
 @[simp] private theorem valid4 :
@@ -408,7 +408,7 @@ def setCallState (s : State) (base : UInt256) (j : Nat)
   exact Artifact.submissionArtifact.isValidJumpDest_index 283 (by rfl)
 
 @[simp] private theorem valid18D :
-    Decode.isValidJumpDest submissionBytecode 0x18d = true := by
+    Decode.isValidJumpDest submissionBytecode 0x18c = true := by
   exact Artifact.submissionArtifact.isValidJumpDest_index 288 (by rfl)
 
 private theorem cap (rest : List UInt256) (h : rest.length < 980)
@@ -515,7 +515,7 @@ theorem run_afterX (q : State) (base : UInt256) (j : Nat)
     (hcode : q.executionEnv.code = submissionBytecode)
     (hrun : q.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock afterXPath
-      { q with pc := UInt256.ofNat 0x179
+      { q with pc := UInt256.ofNat 0x178
                stack := word :: genericTail base j wordIndex rotation k
                  returnDest a b c d e rest } =
       some (BooleanFunctionTrace.fEntry q j b c d (UInt256.ofNat 0x147)
@@ -574,7 +574,7 @@ private def genericAfterFirstStores (q : State) (base e d : UInt256) : State :=
 private def genericRot2Tail (base : UInt256) (j : Nat)
     (wordIndex rotation k returnDest word : UInt256) (a b c d e : UInt256)
     (rest : List UInt256) : List UInt256 :=
-  [UInt256.ofNat 0x18d, genericNextB j word rotation k a b c d e, e, d,
+  [UInt256.ofNat 0x18c, genericNextB j word rotation k a b c d e, e, d,
     c, b, a, base, UInt256.ofNat j, wordIndex, rotation, k, returnDest] ++ rest
 
 set_option linter.unusedSimpArgs false in
@@ -621,7 +621,7 @@ theorem run_afterRot2 (q : State) (base : UInt256) (j : Nat)
         (genericRot2Tail base j wordIndex rotation k returnDest word
           a b c d e rest)) =
       some (TableTrace.setEntry q base (UInt256.ofNat 3)
-        (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18d)
+        (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18c)
         (genericSetTail base j wordIndex rotation k returnDest word
           a b c d e rest)) := by
   simp (config := { maxSteps := 150000 })
@@ -654,7 +654,7 @@ theorem run_suffix (q : State) (base : UInt256) (j : Nat)
     (hvalid : Decode.isValidJumpDest submissionBytecode returnDest.toNat = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock suffixPath
       (TableTrace.setReturned q base (UInt256.ofNat 3)
-        (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18d)
+        (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18c)
         (genericSetTail base j wordIndex rotation k returnDest word
           a b c d e rest)) =
       some (genericReturned q base j word rotation k returnDest
@@ -674,7 +674,7 @@ theorem run_suffix (q : State) (base : UInt256) (j : Nat)
 private def bodyEntry (q : State) (base : UInt256) (j : Nat)
     (wordIndex rotation k returnDest word : UInt256) (a b c d e : UInt256)
     (rest : List UInt256) : State :=
-  { q with pc := UInt256.ofNat 0x179
+  { q with pc := UInt256.ofNat 0x178
            stack := word :: genericTail base j wordIndex rotation k
              returnDest a b c d e rest }
 
@@ -742,13 +742,13 @@ def gasSteps_roundBody (q : State) (base : UInt256) (j : Nat) (hj : j < 5)
       (run_afterRot2 q2 base j wordIndex rotation k returnDest word a b c d e rest
         hstack hcode2 hrun2) hrun2 hnp2
   have gSet := TableTrace.gasSteps_wordSet q2 base (UInt256.ofNat 3)
-    (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18d)
+    (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18c)
     (genericSetTail base j wordIndex rotation k returnDest word a b c d e rest)
     (by simp [genericSetTail]; omega) hcode2 hfork2 hrun2 hnp2 valid18D
   have gSuffix := Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka suffixPath
       (s := TableTrace.setReturned q2 base (UInt256.ofNat 3)
-        (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18d)
+        (rotlValue c (UInt256.ofNat 10)) (UInt256.ofNat 0x18c)
         (genericSetTail base j wordIndex rotation k returnDest word
           a b c d e rest))
       hcode2 hfork2

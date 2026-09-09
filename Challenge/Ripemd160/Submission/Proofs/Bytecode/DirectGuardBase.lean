@@ -48,7 +48,7 @@ def checkEntryPath : List Located :=
    opAt 107 (.Dup ⟨0, by decide⟩),
    pushAt 108 1 255, pushAt 109 0 0, opAt 110 .NOT, opAt 111 .DIV,
    pushAt 112 1 97, opAt 113 .MUL, opAt 114 .XOR,
-   pushAt 115 2 317, opAt 116 .JUMPI,
+   pushAt 115 2 316, opAt 116 .JUMPI,
    pushAt 117 0 0, pushAt 118 1 32]
 
 def checkEarlyPath : List Located :=
@@ -56,7 +56,7 @@ def checkEarlyPath : List Located :=
    opAt 107 (.Dup ⟨0, by decide⟩),
    pushAt 108 1 255, pushAt 109 0 0, opAt 110 .NOT, opAt 111 .DIV,
    pushAt 112 1 97, opAt 113 .MUL, opAt 114 .XOR,
-   pushAt 115 2 317, opAt 116 .JUMPI,
+   pushAt 115 2 316, opAt 116 .JUMPI,
    opAt 150 .JUMPDEST, opAt 151 .POP]
 
 def loopPath : List Located :=
@@ -74,7 +74,7 @@ def tailPath : List Located :=
    pushAt 142 1 3, opAt 143 .JUMPI]
 
 def returnPath : List Located :=
-  [pushAt 144 21 972889429405991776604892044862621566948497025487,
+  [pushAt 144 20 972889429405991776604892044862621566948497025487,
    pushAt 145 0 0, opAt 146 .MSTORE, opAt 147 .MSIZE,
    pushAt 148 0 0, opAt 149 .RETURN]
 
@@ -123,7 +123,7 @@ def answerMemory : ByteArray :=
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x13c
+    pc := UInt256.ofNat 0x13b
     memory := answerMemory
     activeWords := UInt256.ofNat 1
     halt := .Returned
@@ -219,22 +219,22 @@ abbrev run := Challenge.EvmProof.Stepper.runLocatedBlock
 @[simp] theorem pc2854 :
     Artifact.submissionArtifact.instructionPC 144 = 0x122 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2855 :
-    Artifact.submissionArtifact.instructionPC 145 = 0x138 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Artifact.submissionArtifact.instructionPC 145 = 0x137 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2856 :
-    Artifact.submissionArtifact.instructionPC 146 = 0x139 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Artifact.submissionArtifact.instructionPC 146 = 0x138 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2857 :
-    Artifact.submissionArtifact.instructionPC 147 = 0x13a := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Artifact.submissionArtifact.instructionPC 147 = 0x139 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2858 :
-    Artifact.submissionArtifact.instructionPC 148 = 0x13b := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Artifact.submissionArtifact.instructionPC 148 = 0x13a := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2859 :
-    Artifact.submissionArtifact.instructionPC 149 = 0x13c := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Artifact.submissionArtifact.instructionPC 149 = 0x13b := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2860 :
-    Artifact.submissionArtifact.instructionPC 150 = 0x13d := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Artifact.submissionArtifact.instructionPC 150 = 0x13c := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2861 :
-    Artifact.submissionArtifact.instructionPC 151 = 0x13e := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Artifact.submissionArtifact.instructionPC 151 = 0x13d := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2862 :
-    Artifact.submissionArtifact.instructionPC 152 = 0x13f := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Artifact.submissionArtifact.instructionPC 152 = 0x13e := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2863 :
-    Artifact.submissionArtifact.instructionPC 152 = 0x13f := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Artifact.submissionArtifact.instructionPC 152 = 0x13e := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

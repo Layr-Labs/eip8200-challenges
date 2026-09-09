@@ -12,16 +12,16 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 def copied (s : State) : State :=
   { s with
     memory := MachineState.writeBytes s.memory
-      (MachineState.readPadded submissionBytecode 325 32) 0
+      (MachineState.readPadded submissionBytecode 324 32) 0
     activeWords := s.activeWordsAfterUInt256 0 32 }
 
 def writeWord (memory : ByteArray) (offset : Nat) (value : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded value.toNat 32) offset
 
-theorem literal_bytes : MachineState.readPadded submissionBytecode 325 32 =
+theorem literal_bytes : MachineState.readPadded submissionBytecode 324 32 =
     Data.Bytes.natToBytesPadded (PatternedWordData.expectedWordAt 0).toNat 32 := by
-  have hprefix : MachineState.readPadded submissionBytecode 325 32 =
-      MachineState.readPadded submissionByteChunk0 325 32 := by
+  have hprefix : MachineState.readPadded submissionBytecode 324 32 =
+      MachineState.readPadded submissionByteChunk0 324 32 := by
     apply Challenge.EvmProof.Memory.readPadded_congr
     intro i hi
     interval_cases i <;> rfl

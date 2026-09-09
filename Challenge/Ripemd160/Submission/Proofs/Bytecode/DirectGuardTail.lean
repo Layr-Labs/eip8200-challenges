@@ -119,13 +119,13 @@ theorem run_tail_fallback (input : ByteArray) (hsize : input.size = 1000)
 
 def returnStored (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 314
+    pc := UInt256.ofNat 313
     memory := answerMemory
     activeWords := UInt256.ofNat 1 }
 
 def returnSized (input : ByteArray) : State :=
   { returnStored input with
-    pc := UInt256.ofNat 315
+    pc := UInt256.ofNat 314
     stack := [UInt256.ofNat 32] }
 
 theorem run_return_store :

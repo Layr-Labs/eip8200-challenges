@@ -13,13 +13,13 @@ open PatternedInputData PatternedDigest PatternedGuardSpec
 
 def returnStored (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 481
+    pc := UInt256.ofNat 479
     memory := answerMemory
     activeWords := UInt256.ofNat 1 }
 
 def returnSized (input : ByteArray) : State :=
   { returnStored input with
-    pc := UInt256.ofNat 482
+    pc := UInt256.ofNat 480
     stack := [UInt256.ofNat 32] }
 
 theorem run_return_store :

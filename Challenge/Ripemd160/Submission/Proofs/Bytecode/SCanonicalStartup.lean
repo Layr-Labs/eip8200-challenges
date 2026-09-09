@@ -115,7 +115,7 @@ def loadMulTemplate (address : Nat) (dup : Operation.DupOp) : List Instr :=
   [push1 (UInt256.ofNat address), .op .MLOAD, .op (.Dup dup), .op .MUL]
 
 def template : List Instr :=
-  [dup1, .push ⟨6, by decide⟩ (UInt256.ofNat 128), .op .SHL,
+  [dup1, .push ⟨1, by decide⟩ (UInt256.ofNat 128), .op .SHL,
    dup1, .op (.Dup ⟨2, by decide⟩), .op .OR,
    .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .DIV] ++
    loadMulTemplate 160 ⟨1, by decide⟩ ++
@@ -129,7 +129,7 @@ def template : List Instr :=
 theorem template_length : template.length = 32 := by
   norm_num [template, loadMulTemplate]
 
-theorem template_bytes : (template.map Instr.size).sum = 48 := by
+theorem template_bytes : (template.map Instr.size).sum = 43 := by
   norm_num [template, loadMulTemplate, push1, dup1, Instr.size]
 
 theorem lower_toNat :
@@ -212,7 +212,7 @@ open Challenge.EvmProof StackRoundTemplate
 
 /-- Flat 33-op expansion of `template` for the advancement case split. -/
 def frozenInstructions : List Instr :=
-  [DenseScheduleTemplate.dup1, .push ⟨6, by decide⟩ (UInt256.ofNat 128), .op .SHL,
+  [DenseScheduleTemplate.dup1, .push ⟨1, by decide⟩ (UInt256.ofNat 128), .op .SHL,
    DenseScheduleTemplate.dup1, .op (.Dup ⟨2, by decide⟩), .op .OR,
    .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .DIV,
    DenseScheduleTemplate.push1 (UInt256.ofNat 160), .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .MUL,

@@ -14,20 +14,20 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 /-- Entry at the second word comparison in the checked H8 prefix. -/
 def entry (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 5232
+    pc := UInt256.ofNat 5231
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 165,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] ++ Execution.maskTail }
 
 /-- Entry at the H1 stores after the second word guard has matched. -/
 def hitEntry (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 5273
+    pc := UInt256.ofNat 5272
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 165,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] ++ Execution.maskTail }
 
 /-- The generic compression target of the guard is a valid jump destination. -/
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 525 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 273 = 525 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 522 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 273 = 522 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   have h := Artifact.submissionArtifact.isValidJumpDest_index 273 (by rfl)

@@ -156,7 +156,7 @@ def casePath : Nat → List Located
 def fEntry (s : State) (j : Nat) (x y z returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 0x4a0
+    pc := UInt256.ofNat 0x498
     stack := [UInt256.ofNat j, x, y, z, 0, returnDest] ++ rest }
 
 def fReturned (s : State) (j : Nat) (x y z returnDest : UInt256)
@@ -167,31 +167,31 @@ def fReturned (s : State) (j : Nat) (x y z returnDest : UInt256)
 
 @[simp] private theorem validCase0 :
     Decode.isValidJumpDest submissionBytecode 0x484 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 768 = 0x47d := by rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 768 = 0x475 := by rfl
   rw [← hpc]
   exact Artifact.submissionArtifact.isValidJumpDest_index 774 (by rfl)
 
 @[simp] private theorem validCase1 :
     Decode.isValidJumpDest submissionBytecode 0x4a4 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 800 = 0x4a0 := by rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 800 = 0x498 := by rfl
   rw [← hpc]
   exact Artifact.submissionArtifact.isValidJumpDest_index 806 (by rfl)
 
 @[simp] private theorem validCase2 :
     Decode.isValidJumpDest submissionBytecode 0x4c4 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 832 = 0x4c6 := by rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 832 = 0x4be := by rfl
   rw [← hpc]
   exact Artifact.submissionArtifact.isValidJumpDest_index 838 (by rfl)
 
 @[simp] private theorem validCase3 :
     Decode.isValidJumpDest submissionBytecode 0x4e4 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 860 = 0x4e7 := by rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 860 = 0x4df := by rfl
   rw [← hpc]
   exact Artifact.submissionArtifact.isValidJumpDest_index 866 (by rfl)
 
 @[simp] private theorem validCase4 :
     Decode.isValidJumpDest submissionBytecode 0x504 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 892 = 0x50a := by rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 892 = 0x502 := by rfl
   rw [← hpc]
   exact Artifact.submissionArtifact.isValidJumpDest_index 898 (by rfl)
 

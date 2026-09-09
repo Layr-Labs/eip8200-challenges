@@ -28,11 +28,11 @@ private def loadedH (s : State) (i : Nat) : State :=
 private def writeLoopState (s : State) (offset : Nat) (word ret : UInt256)
     (tail : List UInt256) : Nat → State
   | 0 => { s with
-      pc := UInt256.ofNat 0x3ee
+      pc := UInt256.ofNat 0x3e6
       stack := [⟨0⟩, UInt256.ofNat offset, word, ret] ++ tail }
   | j + 1 => { OutputTrace.writeByte (writeLoopState s offset word ret tail j)
         offset word j with
-      pc := UInt256.ofNat 0x3ee
+      pc := UInt256.ofNat 0x3e6
       stack := [UInt256.ofNat (j + 1), UInt256.ofNat offset, word, ret] ++ tail }
 
 private def afterWrittenWord (s : State) (input : ByteArray) (i : Nat) : State :=
@@ -40,12 +40,12 @@ private def afterWrittenWord (s : State) (input : ByteArray) (i : Nat) : State :
   let written := writeLoopState loaded (12 + 4 * i) (OutputTrace.hWord s i)
     (UInt256.ofNat 0x469) [UInt256.ofNat i, Padding.paddedWord input] 4
   { written with
-    pc := UInt256.ofNat 0x46d
+    pc := UInt256.ofNat 0x465
     stack := [UInt256.ofNat (i + 1), Padding.paddedWord input] }
 
 private def outputLoopState (s : State) (input : ByteArray) : Nat → State
   | 0 => { OutputTrace.zeroOutput s with
-      pc := UInt256.ofNat 0x46d
+      pc := UInt256.ofNat 0x465
       stack := [⟨0⟩, Padding.paddedWord input] }
   | i + 1 => afterWrittenWord (outputLoopState s input i) input i
 
@@ -304,7 +304,7 @@ theorem correct_of_compression_trace
   have heval := Challenge.EvmProof.eval_of_steps (trace.trace gas hgas) (by
     change (withGas
       { q with
-        pc := UInt256.ofNat 0x49f
+        pc := UInt256.ofNat 0x497
         stack := [Padding.paddedWord input]
         halt := .Returned
         hReturn := MachineState.readPadded q.memory 0 32

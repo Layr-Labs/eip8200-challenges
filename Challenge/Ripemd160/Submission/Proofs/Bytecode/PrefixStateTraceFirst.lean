@@ -35,12 +35,12 @@ def rho (input : ByteArray) : List UInt256 :=
 with the plain driver stack on top of the copied-code state. -/
 def firstMatchedState (s : State) (input : ByteArray) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5232
+    pc := UInt256.ofNat 5231
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 165,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] ++ Execution.maskTail }
 
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 525 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 273 = 525 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 522 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 273 = 522 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   have h := Artifact.submissionArtifact.isValidJumpDest_index 273 (by rfl)
@@ -119,7 +119,7 @@ arbitrary one: the two persistent mask words at the bottom changed how the
 stack is spelled at this site, and a fixed spelling stopped the rewrite firing. -/
 private theorem compare_mload_active (s : State) (stk : List UInt256) :
     ({ toSharedState := (PrefixStateMemory.copied s).toSharedState,
-        pc := UInt256.ofNat 5226,
+        pc := UInt256.ofNat 5225,
         stack := stk,
         execLength := (PrefixStateMemory.copied s).execLength,
         halt := HaltKind.Running, callStack := s.callStack } : State).activeWordsAfterUInt256 0 32 =
@@ -205,7 +205,7 @@ theorem run_firstCompare_mismatch (s : State) (input : ByteArray)
   have hword : MachineState.readWord (PrefixStateMemory.copied s).memory 0 =
       PatternedWordData.expectedWordAt 0 :=
     PrefixStateMemory.copied_word_zero s
-  have hdest : Decode.isValidJumpDest submissionBytecode 525 = true := jumpDest_generic
+  have hdest : Decode.isValidJumpDest submissionBytecode 522 = true := jumpDest_generic
   have htrue : UInt256.isTrue
       (UInt256.xor (PatternedWordData.expectedWordAt 0)
         (MachineState.readWord input 0)) = true :=

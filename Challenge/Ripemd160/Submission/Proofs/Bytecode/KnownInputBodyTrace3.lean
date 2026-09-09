@@ -19,7 +19,7 @@ theorem run_selector_12 (s : State)
     run (selectorPath 12) (selectorEntry s KnownInputData.targetInput 12) =
       some (bodyEntry s KnownInputData.targetInput 12) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 6732 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3285 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 3281 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath12,
       selectorGroup0, selectorGroup1, selectorGroup2, selectorGroup3,
@@ -66,7 +66,7 @@ theorem run_selector_13 (s : State)
     run (selectorPath 13) (selectorEntry s KnownInputData.targetInput 13) =
       some (bodyEntry s KnownInputData.targetInput 13) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 6775 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3303 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 3299 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath13,
       selectorGroup0, selectorGroup1, selectorGroup2, selectorGroup3,
@@ -113,7 +113,7 @@ theorem run_selector_14 (s : State)
     run (selectorPath 14) (selectorEntry s KnownInputData.targetInput 14) =
       some (bodyEntry s KnownInputData.targetInput 14) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 6818 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3321 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 3317 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath14,
       selectorGroup0, selectorGroup1, selectorGroup2, selectorGroup3,
@@ -160,7 +160,7 @@ theorem run_selector_15 (s : State)
     run (selectorPath 15) (selectorEntry s KnownInputData.targetInput 15) =
       some (bodyEntry s KnownInputData.targetInput 15) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 6861 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3339 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 3335 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath15,
       selectorGroup0, selectorGroup1, selectorGroup2, selectorGroup3,
