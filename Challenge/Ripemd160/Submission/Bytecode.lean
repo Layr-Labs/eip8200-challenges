@@ -6,12 +6,13 @@ set_option maxRecDepth 10000
 /-!
 # The frozen raw-EVM RIPEMD-160 artifact
 
-`submissionBytecode` is the exact `deep` artifact (5,287 bytes).  It is the
-promoted `rotladder` artifact (MUL-scale dual rotation at the 80 round sites)
-whose trailing region carries an O(1) depth-3 patterned-prefix ladder: the
+`submissionBytecode` is the exact deep artifact (5,307 bytes). It is the
+promoted rotladder artifact (MUL-scale dual rotation at the 80 round sites)
+whose trailing region carries an O(1) depth-3 patterned-prefix ladder and
+whose group-0 high-half constant is materialized as one wide literal. The
 expected calldata words are derived by a bytewise `+0xA0` SWAR recurrence
 from the word-0 literal, and a match of 2, 4 or 6 words installs `H1`, `H2`
-or `H3`.  The first 4,996 bytes are byte-identical to `rotladder`.
+or `H3`.
 
 Correctness proofs target these bytes directly; the compiler is used to
 reproduce the artifact, not as an assumption in the bytecode proof.
@@ -27,7 +28,7 @@ set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5294 := by
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5307 := by
   simp [submissionBytecode]
 
 set_option maxRecDepth 100000 in
