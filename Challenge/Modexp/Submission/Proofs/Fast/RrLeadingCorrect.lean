@@ -52,7 +52,7 @@ theorem handled_of_handover (input : ByteArray) (s : State) (mem : ByteArray)
     (htz : Model.FastRepresents mem 8256 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
-        (r1Call s mem 4096 (UInt256.ofNat 1528) n bsize esize msize) final) ∧
+        (r1Call s mem 4096 (UInt256.ofNat 1533) n bsize esize msize) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hact296 : 296 ≤ s.activeWords.toNat :=

@@ -20,15 +20,6 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRoute
 open Challenge.Modexp.Submission.Proofs.Fast.FixedDirectStates
 open Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
 
-private theorem isTrue_of_xor_ne (x : UInt256) (hx : x ≠ 0) :
-    UInt256.isTrue x := by
-  unfold UInt256.isTrue
-  intro hz
-  apply hx
-  apply Challenge.EvmProof.Word.word_ext
-  change x.toNat = 0
-  exact hz
-
 private theorem exponentValue_one (input : ByteArray) (bsize : Nat) :
     exponentValue input bsize 1 =
       (YulSemantics.EVM.byteFrom input.toList (96 + bsize)).toNat := by
@@ -61,8 +52,8 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
       (MachineState.readWord input (96 + bsize)) = UInt256.ofNat 3 := by
     rw [Challenge.EvmProof.Bytes.byteAt_zero_readWord]
     rw [← exponentValue_one, hvalue]
-  have hxor : UInt256.xor (UInt256.ofNat 3) (UInt256.ofNat 3) =
-      UInt256.ofNat 0 := by decide
+  have heq : UInt256.eq (UInt256.ofNat 3) (UInt256.ofNat 3) =
+      UInt256.ofNat 1 := by decide
   simp (config := { maxSteps := 700000 })
     [FixedDirectPaths.checkThree, FixedDirectPaths.threeHit,
       opAt, pushAt, wfOp,
@@ -70,8 +61,8 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       FixedDirectStates.checkThree, FixedDirectStates.special, Exp.outer,
-      hdata, hcode, hrun, heoff, hfix, haddr, hread, hxor,
-      Exp.not_isTrue_zero, jumpDest3952,
+      hdata, hcode, hrun, heoff, hfix, haddr, hread, heq,
+      Exp.isZero_ofNat_one, Exp.not_isTrue_zero, jumpDest3952,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -105,31 +96,18 @@ theorem run_checkThree_miss (s : State) (memory input : ByteArray)
   have hvlt : exponentValue input bsize 1 < 2 ^ 256 :=
     (Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow
       input (96 + bsize) 1).trans_le (by norm_num)
-  have hxor : UInt256.xor (UInt256.ofNat 3)
-      (UInt256.ofNat (exponentValue input bsize 1)) ≠ 0 := by
-    intro hx
-    have heq' : UInt256.ofNat 3 =
-        UInt256.ofNat (exponentValue input bsize 1) :=
-      (Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic.wordXor_eq_zero_iff
-        _ _).mp hx
-    have hnat := congrArg UInt256.toNat heq'
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (by norm_num),
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt hvlt] at hnat
-    exact hvalue hnat.symm
-  have htrue : UInt256.isTrue
-      (UInt256.xor (UInt256.ofNat 3)
-        (UInt256.ofNat (exponentValue input bsize 1))) :=
-    isTrue_of_xor_ne _ hxor
+  have heq : UInt256.eq (UInt256.ofNat 3)
+      (UInt256.ofNat (exponentValue input bsize 1)) = UInt256.ofNat 0 := by
+    rw [UInt256.eq, Exp.toNat_ofNat_self (by norm_num),
+      Exp.toNat_ofNat_self hvlt, if_neg hvalue.symm]
   simp (config := { maxSteps := 700000 })
     [FixedDirectPaths.checkThree, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       FixedDirectStates.checkThree, FixedDirectStates.fallback, Exp.outer,
-      hdata, hcode, hrun, heoff, hfix, haddr, hread, hxor, htrue,
-      Exp.isTrue_one, jumpDest3959,
+      hdata, hcode, hrun, heoff, hfix, haddr, hread, heq,
+      Exp.isZero_ofNat_zero, Exp.isTrue_one, jumpDest4002,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -161,8 +139,8 @@ theorem run_check65537_hit (s : State) (memory input : ByteArray)
   rw [show (32 - 3) * 8 = 232 by norm_num] at hshr
   unfold exponentValue at hvalue
   rw [hvalue] at hshr
-  have hxor : UInt256.xor (UInt256.ofNat 65537) (UInt256.ofNat 65537) =
-      UInt256.ofNat 0 := by decide
+  have heq : UInt256.eq (UInt256.ofNat 65537) (UInt256.ofNat 65537) =
+      UInt256.ofNat 1 := by decide
   simp (config := { maxSteps := 700000 })
     [FixedDirectPaths.check65537, FixedDirectPaths.fermatHit,
       opAt, pushAt, wfOp,
@@ -170,7 +148,7 @@ theorem run_check65537_hit (s : State) (memory input : ByteArray)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       FixedDirectStates.check65537, FixedDirectStates.special, Exp.outer,
-      hdata, hrun, heoff, hfix, haddr, hshr, hxor,
+      hdata, hrun, heoff, hfix, haddr, hshr, heq,
       Exp.isZero_ofNat_one, Exp.not_isTrue_zero,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
@@ -206,31 +184,18 @@ theorem run_check65537_miss (s : State) (memory input : ByteArray)
   have hvlt : exponentValue input bsize 3 < 2 ^ 256 :=
     (Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow
       input (96 + bsize) 3).trans_le (by norm_num)
-  have hxor : UInt256.xor (UInt256.ofNat 65537)
-      (UInt256.ofNat (exponentValue input bsize 3)) ≠ 0 := by
-    intro hx
-    have heq' : UInt256.ofNat 65537 =
-        UInt256.ofNat (exponentValue input bsize 3) :=
-      (Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic.wordXor_eq_zero_iff
-        _ _).mp hx
-    have hnat := congrArg UInt256.toNat heq'
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (by norm_num),
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt hvlt] at hnat
-    exact hvalue hnat.symm
-  have htrue : UInt256.isTrue
-      (UInt256.xor (UInt256.ofNat 65537)
-        (UInt256.ofNat (exponentValue input bsize 3))) :=
-    isTrue_of_xor_ne _ hxor
+  have heq : UInt256.eq (UInt256.ofNat 65537)
+      (UInt256.ofNat (exponentValue input bsize 3)) = UInt256.ofNat 0 := by
+    rw [UInt256.eq, Exp.toNat_ofNat_self (by norm_num),
+      Exp.toNat_ofNat_self hvlt, if_neg hvalue.symm]
   simp (config := { maxSteps := 700000 })
     [FixedDirectPaths.check65537, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       FixedDirectStates.check65537, FixedDirectStates.fallback, Exp.outer,
-      hdata, hcode, hrun, heoff, hfix, haddr, hshr, hxor, htrue,
-      Exp.isZero_ofNat_zero, Exp.isTrue_one, jumpDest3959,
+      hdata, hcode, hrun, heoff, hfix, haddr, hshr, heq,
+      Exp.isZero_ofNat_zero, Exp.isTrue_one, jumpDest4002,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,

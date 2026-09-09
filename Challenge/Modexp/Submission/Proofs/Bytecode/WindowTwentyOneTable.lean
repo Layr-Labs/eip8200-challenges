@@ -52,10 +52,7 @@ def state (template : State) (pc base modulus exponent : UInt256)
 
 /-- Only the final table store consumes the word that it writes. -/
 def lastStoreProgram (width : Fin 33) (count : Nat) : List Instr :=
-  [.push width (UInt256.ofNat (32 * count)), .op .MSTORE]
-
-def lastStorePC (width : Fin 33) (pc : UInt256) : UInt256 :=
-  (pc + UInt256.ofNat (width.val + 1)).succ
+  [.op .JUMPDEST, .push width (UInt256.ofNat (32 * count)), .op .MSTORE]
 
 theorem run_store_last (template : State) (pc base modulus : UInt256)
     (count : Nat) (hcount : count < 16) (width : Fin 33) (hwidth : 0 < width.val)
@@ -63,7 +60,7 @@ theorem run_store_last (template : State) (pc base modulus : UInt256)
     runInstructions (lastStoreProgram width count)
       (framed template pc base modulus count
         (WindowMath.tableWord base modulus count :: tail)) =
-    some (framed template (lastStorePC width pc) base modulus (count + 1) tail) := by
+    some (framed template (storePC width pc) base modulus (count + 1) tail) := by
   have hcap1 : tail.length + 1 < 1024 := by omega
   have hcountWord : (UInt256.ofNat count).toNat = count := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
@@ -73,7 +70,7 @@ theorem run_store_last (template : State) (pc base modulus : UInt256)
     cases count with
     | zero => decide
     | succ count => exact WindowTableMemory.activeWordsAfter_table count
-  simp [runInstructions, lastStoreProgram, lastStorePC, framed, Challenge.EvmProof.Stepper.runInstr,
+  simp [runInstructions, lastStoreProgram, storePC, framed, Challenge.EvmProof.Stepper.runInstr,
     hcap, hcap1, show width.val ≠ 0 by omega,
     hcountWord, hoffsetWord, hactive, State.activeWordsAfterUInt256,
     WindowTableMemory.tableMemoryThrough_succ, WindowTableMemory.storeWord]
@@ -141,7 +138,7 @@ theorem run_last_update (template : State) (pc base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions lastUpdateProgram
       (state template pc base modulus exponent 14 rest) =
-    some (framed template (lastStorePC 2 (advancePC 2 pc)) base modulus 16
+    some (framed template (storePC 2 (advancePC 2 pc)) base modulus 16
       ([base, exponent] ++ rest)) := by
   have hm := run_multiply template pc base modulus exponent 14 (by decide) (by decide) rest hrest
   have hs := run_store_last template (advancePC 2 pc) base modulus 15 (by decide)

@@ -21,28 +21,28 @@ abbrev outer := Exp.outer
 /-- Fallthrough after the three-byte width test, before testing width one. -/
 def otherWidth (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3668
+  { s with pc := UInt256.ofNat 3704
            stack := outer n bsize esize msize
            memory := mem }
 
 /-- One-byte exponent calldata check. -/
 def checkThree (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3677
+  { s with pc := UInt256.ofNat 3713
            stack := outer n bsize esize msize
            memory := mem }
 
 /-- Three-byte exponent calldata check. -/
 def check65537 (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3698
+  { s with pc := UInt256.ofNat 3734
            stack := outer n bsize esize msize
            memory := mem }
 
 /-- Entry shared by the two fixed addition chains. -/
 def special (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 3719
+  { s with pc := UInt256.ofNat 3755
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
@@ -70,7 +70,7 @@ def product (s : State) (mem : ByteArray)
 /-- Return from the final Montgomery product. -/
 def decode (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3772
+  { s with pc := UInt256.ofNat 3808
            stack := outer n bsize esize msize
            memory := mem }
 
@@ -84,7 +84,7 @@ def finish (s : State) (mem : ByteArray)
 /-- Shared generic fallback before copying R1 to ACC. -/
 def fallback (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3802
+  { s with pc := UInt256.ofNat 3838
            stack := outer n bsize esize msize
            memory := mem }
 

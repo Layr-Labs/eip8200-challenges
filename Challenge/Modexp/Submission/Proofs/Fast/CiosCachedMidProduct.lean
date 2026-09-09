@@ -1,93 +1,135 @@
-import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidWords
+import Challenge.Modexp.Submission.Proofs.Fast.CiosEndAroundCarry
+import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidMemory
 
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 200000
 
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidProduct
 
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
-open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCached CiosCachedMidDefs
+open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCachedMidDefs
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
+open Challenge.Modexp.Submission.Proofs.Fast.CiosEndAroundCarry
+open Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidMemory
 
-def loadMuProgram : List Instr :=
-  [.push 2 9440, .op .MLOAD, .op .MLOAD, .push 2 9376, .op .MLOAD, .op .MUL]
-
-def loadM0Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .push 2 9408, .op .MLOAD, .op .MLOAD]
+def loadLow : List Instr := productProgram.take 3
+def makeMu : List Instr := (productProgram.drop 3).take 5
+def loadMod : List Instr := (productProgram.drop 8).take 3
+def makeModProduct : List Instr := (productProgram.drop 11).take 4
+def finishCarry : List Instr := productProgram.drop 15
 
 theorem program_eq : productProgram =
-    (loadMuProgram ++ loadM0Program) ++ CiosCachedMidWords.program := rfl
+    (((loadLow ++ makeMu) ++ loadMod) ++ makeModProduct) ++ finishCarry := rfl
 
-theorem run_loadMu (s : State) (n : Nat) (bi pbi paEnd pbEnd flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
-    (hn32 : n ≤ 32)
-    (htl : MachineState.readWord s.memory 9440 = UInt256.ofNat (8224+32*n)) :
-    runInstructions loadMuProgram
-      (framed s (UInt256.ofNat 4890) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4900)
-      ([rowMu s.memory n] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
-  have hc8 : rest.length+9 < 1024 := by omega
-  have hc9 : rest.length+10 < 1024 := by omega
-  have hc10 : rest.length+11 < 1024 := by omega
-  have h9376 : (9376 : UInt256).toNat = 9376 := by decide
-  have h9440 : (9440 : UInt256).toNat = 9440 := by decide
-  have hTLN : (8224+32*n) %
+theorem run_loadLow (s : State) (bi pbi paEnd pbEnd flag dst ret : UInt256) (n : Nat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hn : n ≤ 32)
+    (hact : 296 ≤ s.activeWords.toNat)
+    (haddr : MachineState.readWord s.memory 9440 = UInt256.ofNat (8224+32*n)) :
+    runInstructions loadLow
+      (framed s (UInt256.ofNat 4851) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4856)
+      ([MachineState.readWord s.memory (8224+32*n)] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
+  have hc9 : rest.length+9 < 1024 := by omega
+  have hc10 : rest.length+10 < 1024 := by omega
+  have hp9440 : (9440 : UInt256).toNat = 9440 := by decide
+  have hmod : (8224+32*n) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       8224+32*n := Nat.mod_eq_of_lt (by omega)
-  have hactTL : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9440 32) =
-      s.activeWords := activeWords_fix s 9440 32 (by decide) (by omega) hact
-  have hactT0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat (8224+32*n) 32) =
-      s.activeWords := activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hactMI : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9376 32) =
-      s.activeWords := activeWords_fix s 9376 32 (by decide) (by omega) hact
-  simp [loadMuProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    baseStack, framed, rowMu, hc8, hc9, hc10, h9376, h9440, hTLN, htl,
-    hactTL, hactT0, hactMI, State.activeWordsAfterUInt256,
+  have hactP := activeWords_fix s 9440 32 (by decide) (by omega) hact
+  have hactQ := activeWords_fix s (8224+32*n) 32 (by decide) (by omega) hact
+  simp [loadLow, productProgram, midProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    framed, baseStack, hp9440, hc9, hc10, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
-    Challenge.EvmProof.Word.word_toNat_ofNat]
+    Challenge.EvmProof.Word.word_toNat_ofNat, haddr, hmod, hactP, hactQ]
 
-theorem run_loadM0 (s : State) (n : Nat) (mu bi pbi paEnd pbEnd flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
-    (hn32 : n ≤ 32)
-    (hml : MachineState.readWord s.memory 9408 = UInt256.ofNat (32*n-32)) :
-    runInstructions loadM0Program
-      (framed s (UInt256.ofNat 4900) ([mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4906)
-      ([MachineState.readWord s.memory (32*n-32), mu, mu] ++
-        baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
-  have hc9 : rest.length+10 < 1024 := by omega
-  have hc10 : rest.length+11 < 1024 := by omega
-  have hc11 : rest.length+12 < 1024 := by omega
-  have h9408 : (9408 : UInt256).toNat = 9408 := by decide
-  have hMLN : (32*n-32) %
+theorem run_makeMu (s : State) (bi pbi paEnd pbEnd flag dst ret t0 : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
+    runInstructions makeMu
+      (framed s (UInt256.ofNat 4856) ([t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4863)
+      ([t0, MachineState.readWord s.memory 9376 * t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
+  have hc10 : rest.length+10 < 1024 := by omega
+  have hc11 : rest.length+11 < 1024 := by omega
+  have hc12 : rest.length+12 < 1024 := by omega
+  have hp9376 : (9376 : UInt256).toNat = 9376 := by decide
+  have hactMI := activeWords_fix s 9376 32 (by decide) (by omega) hact
+  simp [makeMu, productProgram, midProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    framed, baseStack, hp9376, hc10, hc11, hc12, List.exchange,
+    State.activeWordsAfterUInt256, Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod, hactMI]
+
+theorem run_loadMod (s : State) (bi pbi paEnd pbEnd flag dst ret : UInt256)
+    (n : Nat) (mu t0 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006)
+    (hn : n ≤ 32) (hact : 296 ≤ s.activeWords.toNat)
+    (haddr : MachineState.readWord s.memory 9408 = UInt256.ofNat (32*n-32)) :
+    runInstructions loadMod
+      (framed s (UInt256.ofNat 4863) ([t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4868)
+      ([MachineState.readWord s.memory (32*n-32), t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
+  have hc11 : rest.length+11 < 1024 := by omega
+  have hc12 : rest.length+12 < 1024 := by omega
+  have hp9408 : (9408 : UInt256).toNat = 9408 := by decide
+  have hmod : (32*n-32) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       32*n-32 := Nat.mod_eq_of_lt (by omega)
-  have hactML : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9408 32) =
-      s.activeWords := activeWords_fix s 9408 32 (by decide) (by omega) hact
-  have hactM0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat (32*n-32) 32) =
-      s.activeWords := activeWords_fix s _ 32 (by decide) (by omega) hact
-  simp [loadM0Program, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    baseStack, framed, hc9, hc10, hc11, h9408, hMLN, hml, hactML, hactM0,
-    State.activeWordsAfterUInt256, Challenge.EvmProof.Word.succ_ofNat_mod,
-    Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
+  have hactP := activeWords_fix s 9408 32 (by decide) (by omega) hact
+  have hactQ := activeWords_fix s (32*n-32) 32 (by decide) (by omega) hact
+  simp [loadMod, productProgram, midProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    framed, baseStack, hp9408, hc11, hc12, State.activeWordsAfterUInt256,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat, haddr, hmod, hactP, hactQ]
+
+theorem run_makeModProduct (s : State) (bi pbi paEnd pbEnd flag dst ret m0 mu t0 : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) :
+    runInstructions makeModProduct
+      (framed s (UInt256.ofNat 4868) ([m0, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4872)
+      ([UInt256.mulMod m0 mu maxWord, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
+  have hc12 : rest.length+12 < 1024 := by omega
+  have hc13 : rest.length+13 < 1024 := by omega
+  have hc14 : rest.length+14 < 1024 := by omega
+  simp [makeModProduct, productProgram, midProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    framed, baseStack, hc12, hc13, hc14, allOnes_value, maxWord, List.exchange,
+    Challenge.EvmProof.Word.succ_ofNat_mod]
+
+theorem run_finishCarry (s : State) (bi pbi paEnd pbEnd flag dst ret mm mu t0 : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) :
+    runInstructions finishCarry
+      (framed s (UInt256.ofNat 4872) ([mm, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4878)
+      ([endCarry t0 mm, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
+  have hc12 : rest.length+12 < 1024 := by omega
+  have hc13 : rest.length+13 < 1024 := by omega
+  simp [finishCarry, productProgram, midProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    framed, baseStack, endCarry, hc12, hc13, List.exchange,
+    Challenge.EvmProof.Word.succ_ofNat_mod]
 
 theorem run_product (s : State) (n : Nat) (bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
     (_hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hml : MachineState.readWord s.memory 9408 = UInt256.ofNat (32*n-32))
-    (htl : MachineState.readWord s.memory 9440 = UInt256.ofNat (8224+32*n)) :
+    (htl : MachineState.readWord s.memory 9440 = UInt256.ofNat (8224+32*n))
+    (hminv : inverseInvariant s.memory n) :
     runInstructions productProgram
-      (framed s (UInt256.ofNat 4890) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+      (framed s (UInt256.ofNat 4851) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
     some (product s n bi pbi paEnd pbEnd flag dst ret rest) := by
-  rw [program_eq]
-  exact runInstructions_append_some _ _ _ _ _
-    (runInstructions_append_some _ _ _ _ _
-      (run_loadMu s n bi pbi paEnd pbEnd flag dst ret rest hcap hact hn32 htl)
-      (run_loadM0 s n (rowMu s.memory n) bi pbi paEnd pbEnd flag dst ret rest hcap hact hn32 hml))
-    (CiosCachedMidWords.run_words s (MachineState.readWord s.memory (32*n-32)) (rowMu s.memory n)
-      bi pbi paEnd pbEnd flag dst ret rest hcap)
+  let t0 := MachineState.readWord s.memory (8224+32*n)
+  let inv := MachineState.readWord s.memory 9376
+  let m0 := MachineState.readWord s.memory (32*n-32)
+  have h1 := run_loadLow s bi pbi paEnd pbEnd flag dst ret n rest hcap hn32 hact htl
+  have h2 := run_makeMu s bi pbi paEnd pbEnd flag dst ret t0 rest hcap hact
+  have h3 := run_loadMod s bi pbi paEnd pbEnd flag dst ret n (inv*t0) t0 rest hcap hn32 hact hml
+  have h4 := run_makeModProduct s bi pbi paEnd pbEnd flag dst ret m0 (inv*t0) t0 rest hcap
+  have h5 := run_finishCarry s bi pbi paEnd pbEnd flag dst ret
+    (UInt256.mulMod m0 (inv*t0) maxWord) (inv*t0) t0 rest hcap
+  have hc := row_carry_swapped m0 inv t0 hminv
+  have h12 := runInstructions_append_some _ _ _ _ _ h1 h2
+  have h123 := runInstructions_append_some _ _ _ _ _ h12 h3
+  have h1234 := runInstructions_append_some _ _ _ _ _ h123 h4
+  have h12345 := runInstructions_append_some _ _ _ _ _ h1234 h5
+  rw [← program_eq] at h12345
+  simpa only [hc, product, rowC0, rowMu, t0, inv, m0] using h12345
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidProduct

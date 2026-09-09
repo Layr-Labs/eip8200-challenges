@@ -506,22 +506,22 @@ arbitrary state constrained only by its `pc` and stack shape. -/
 /-- Subroutine entry, pc 1939, stack `[pa, pb, pd, ret]`. -/
 def mpEntryState (s : State) (mem : ByteArray) (pa pb : Nat) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1930
+  { s with pc := UInt256.ofNat 1939
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
-/-- The outer loop head, pc 1965, at the start of row `i`. -/
+/-- The outer loop head, pc 1974, at the start of row `i`. -/
 def mpOutState (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1965
+  { s with pc := UInt256.ofNat 1974
            stack := [UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
 
-/-- The first limb loop head, pc 1979, after `j` steps of row `i`. -/
+/-- The first limb loop head, pc 1995, after `j` steps of row `i`. -/
 def mpL1State (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1979
+  { s with pc := UInt256.ofNat 1995
            stack := [UInt256.ofNat (ptrAt (pa + 32 * n - 32) j),
                      UInt256.ofNat (ptrAt (8224 + 32 * n) j),
                      (l1Step mem bi pa n j).carry, bi,
@@ -533,15 +533,15 @@ def mpL1State (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Nat)
 so they stay opaque. -/
 def mpMidState (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2034
+  { s with pc := UInt256.ofNat 2050
            stack := [paj, ptj, c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
 
-/-- The second limb loop head, pc 2103, after `k` steps of row `i`. -/
+/-- The second limb loop head, pc 2119, after `k` steps of row `i`. -/
 def mpL2State (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2103
+  { s with pc := UInt256.ofNat 2119
            stack := [UInt256.ofNat (ptrAt (32 * n - 64) k),
                      UInt256.ofNat (ptrAt (8192 + 32 * n) k),
                      (l2Step mid mu c0 n k).carry, mu, bi,
@@ -552,7 +552,7 @@ def mpL2State (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
 /-- The row tail, pc 2179. -/
 def mpTailState (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2158
+  { s with pc := UInt256.ofNat 2174
            stack := [pmj, ptj, c, mu, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
@@ -560,7 +560,7 @@ def mpTailState (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
 /-- The subroutine exit, pc 2460, after all `n` rows. -/
 def mpExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2196
+  { s with pc := UInt256.ofNat 2212
            stack := [pbi, UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32),
                      pdst, ret] ++ rest
            memory := mem }
@@ -568,7 +568,7 @@ def mpExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
 /-- `CSUB` entry, pc 2309, with stack `[pd, ret]`. -/
 def mpCsubState (s : State) (mem : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2288
+  { s with pc := UInt256.ofNat 2304
            stack := [pdst, ret] ++ rest
            memory := mem }
 
@@ -712,11 +712,11 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
-  have h1995 : (1979 : UInt256).toNat = 1979 := by decide
-  have h1995' : (1979 : UInt256) = UInt256.ofNat 1979 := by decide
+  have h1995 : (1995 : UInt256).toNat = 1995 := by decide
+  have h1995' : (1995 : UInt256) = UInt256.ofNat 1995 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (1979 : UInt256).toNat = true := by
-    rw [h1995]; exact jumpDest1979
+      (1995 : UInt256).toNat = true := by
+    rw [h1995]; exact jumpDest1995
   have hpaj : ptrAt (pa + 32 * n - 32) j %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       pa + 32 * (n - 1 - j) := by
@@ -747,7 +747,7 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       mpL1State, l1Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC11, fastPC12,
       hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK, h1995, h1995', hjump,
-      jumpDest1979, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
+      jumpDest1995, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -951,11 +951,11 @@ theorem run_mpL2Body (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     decide
   have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
-  have h2241 : (2103 : UInt256).toNat = 2103 := by decide
-  have h2241' : (2103 : UInt256) = UInt256.ofNat 2103 := by decide
+  have h2241 : (2119 : UInt256).toNat = 2119 := by decide
+  have h2241' : (2119 : UInt256) = UInt256.ofNat 2119 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (2103 : UInt256).toNat = true := by
-    rw [h2241]; exact jumpDest2225
+      (2119 : UInt256).toNat = true := by
+    rw [h2241]; exact jumpDest2241
   have hpmj : ptrAt (32 * n - 64) k %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       32 * (n - 2 - k) := by
@@ -990,7 +990,7 @@ theorem run_mpL2Body (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       mpL2State, l2Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC13, fastPC14,
       hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, h32, h8224,
-      h2241, h2241', hjump, jumpDest2225,
+      h2241, h2241', hjump, jumpDest2241,
       hpmj, hptj, hwr, hnextT, hgt, hactM, hactT, hactW, ptrAt_succ, ptrAt_shift32,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
@@ -1098,11 +1098,11 @@ theorem run_mpTailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
   have h8192 : (8192 : UInt256).toNat = 8192 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
   have h8256 : (8256 : UInt256).toNat = 8256 := by decide
-  have h1974 : (1965 : UInt256).toNat = 1965 := by decide
-  have h1974' : (1965 : UInt256) = UInt256.ofNat 1965 := by decide
+  have h1974 : (1974 : UInt256).toNat = 1974 := by decide
+  have h1974' : (1974 : UInt256) = UInt256.ofNat 1974 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (1965 : UInt256).toNat = true := by
-    rw [h1974]; exact jumpDest1965
+      (1974 : UInt256).toNat = true := by
+    rw [h1974]; exact jumpDest1974
   have hnextB : ptrAt (pb + 32 * n - 32) (i + 1) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       pb + 32 * (n - 2 - i) := by
@@ -1127,7 +1127,7 @@ theorem run_mpTailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
       Challenge.EvmProof.Stepper.runInstr,
       mpTailState, mpOutState, tailMem, tailMem1, fastPC14, fastPC15,
       hc5, hc6, hc7, hc8, hc9, hc10, hrun, hcode, hK, h8192, h8224, h8256,
-      h1974, h1974', hjump, jumpDest1965, hnextB, hpbmN, hgt,
+      h1974, h1974', hjump, jumpDest1974, hnextB, hpbmN, hgt,
       hactN, hactS, hactP, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
@@ -1203,18 +1203,18 @@ theorem run_mpExit (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have h2642 : (2288 : UInt256).toNat = 2288 := by decide
-  have h2642' : (2288 : UInt256) = UInt256.ofNat 2288 := by decide
+  have h2642 : (2304 : UInt256).toNat = 2304 := by decide
+  have h2642' : (2304 : UInt256) = UInt256.ofNat 2304 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (2288 : UInt256).toNat = true := by
-    rw [h2642]; exact jumpDest2622
+      (2304 : UInt256).toNat = true := by
+    rw [h2642]; exact jumpDest2642
   simp (config := { maxSteps := 400000 })
     [blk1595, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpExitState, mpCsubState, fastPC15,
-      hc2, hc3, hc4, hc5, hrun, hcode, h2642, h2642', hjump, jumpDest2622,
+      hc2, hc3, hc4, hc5, hrun, hcode, h2642, h2642', hjump, jumpDest2642,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,

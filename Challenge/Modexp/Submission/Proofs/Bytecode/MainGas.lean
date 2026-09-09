@@ -13,12 +13,12 @@ open EvmSemantics.EVM
 
 private def gasSteps_tramp0 (input : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (trampolineState input 1314) :=
+      (trampolineState input 5267) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka tramp0Path rfl rfl (run_tramp0 input)
       rfl deployAddress_not_precompile
 
-/-- The body's own `JUMPDEST`, reached directly by the retargeted entry push. -/
+/-- The body's own `JUMPDEST`, reached when the legacy fast path declines. -/
 private def gasSteps_tramp7Dest (input : ByteArray) :
     Challenge.EvmProof.GasSteps (trampolineState input 1196)
       (headerEntryState input) :=
@@ -134,10 +134,10 @@ def gasSteps_headerFromBody (input : ByteArray) :
   exact (gasSteps_tramp7Dest input).trans <|
     (gasSteps_headerLoad input).trans (gasSteps_headerCheck input)
 
-/-- Entry hop into the appended fast path. -/
+/-- The total initial hop to the early-word dispatcher. -/
 def gasSteps_entryHop (input : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (trampolineState input 1314) := gasSteps_tramp0 input
+      (trampolineState input 5267) := gasSteps_tramp0 input
 
 /-- The reference header block, prefixed by whatever trace reaches the body
 `JUMPDEST` at pc 1196.  The appended fast path supplies that prefix on the
