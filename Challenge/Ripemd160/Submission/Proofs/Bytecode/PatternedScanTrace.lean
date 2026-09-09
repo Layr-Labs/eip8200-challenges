@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputLogic
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanMask
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompactGuardConstants
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanState
@@ -71,27 +72,27 @@ def loopState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
 straddling word has already bumped the scalar by eleven, so it is explicit. -/
 def compareState (input : ByteArray) (k s : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x15c
+    pc := UInt256.ofNat 0x181
     stack := guardWord k :: UInt256.mul M (UInt256.ofNat (scalarAt k)) ::
       UInt256.ofNat s :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- At the head of the correction block, for a straddling offset. -/
 def straddleState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x1ca
+    pc := UInt256.ofNat 0x15c
     stack := rawWord k :: UInt256.mul M (UInt256.ofNat (scalarAt k)) ::
       UInt256.ofNat (scalarAt k) :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- After the thirty-one words, at the padded tail. -/
 def tailState (input : ByteArray) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 388
+    pc := UInt256.ofNat 425
     stack := UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: a :: frame }
 
 /-- The stub jumps here, and the guard answers or falls through.  -/
 def patternedEntry (input : ByteArray) : State := atPC input 0x10e
 
-def hitState (input : ByteArray) : State := atPC input 404
+def hitState (input : ByteArray) : State := atPC input 441
 def fallbackState (input : ByteArray) : State := atPC input 0x3
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
@@ -101,7 +102,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x1c9
+    pc := UInt256.ofNat 0x1ee
     memory := answerMemory
     activeWords := UInt256.ofNat 1
     halt := .Returned
@@ -169,18 +170,34 @@ theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 3
       = (32 * k) % 256 := by
     rw [land_ff _ (by omega), Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (Nat.lt_trans (Nat.mod_lt _ (by decide)) (by norm_num))]
-  have hcond : ¬ UInt256.isTrue ((UInt256.ofNat 224).eq
+  have hcond : UInt256.isTrue (UInt256.xor (UInt256.ofNat 224)
       ((UInt256.ofNat 255).land (UInt256.ofNat (32 * k)))) := by
-    unfold UInt256.isTrue UInt256.eq
-    rw [if_neg (by
-      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-        Nat.mod_eq_of_lt (by norm_num : 224 < 2 ^ 256), hval]
-      exact fun he => h he.symm)]
-    decide
+    intro hz
+    have hzero : UInt256.xor (UInt256.ofNat 224)
+        ((UInt256.ofNat 255).land (UInt256.ofNat (32 * k))) = 0 := by
+      apply Challenge.EvmProof.Word.word_ext
+      change _ = 0
+      exact hz
+    have he := (KnownInputLogic.wordXor_eq_zero_iff _ _).1 hzero
+    have hn := congrArg UInt256.toNat he
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by norm_num : 224 < 2 ^ 256), hval] at hn
+    exact h hn.symm
+  have hdest : Decode.isValidJumpDest submissionBytecode 385 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 231 (by rfl)
+  have hdestN : Decode.isValidJumpDest submissionBytecode
+      (UInt256.ofNat 385).toNat = true := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by norm_num : 385 < 2 ^ 256)]
+    exact hdest
+  have hdestL : Decode.isValidJumpDest submissionBytecode
+      ((385 : UInt256)).toNat = true := by
+    rw [show ((385 : UInt256)).toNat = 385 from by decide]
+    exact hdest
   have hk224 : ¬ ((32 * k) % 256 == 224) = true := by simpa using h
   simp (config := { maxSteps := 800000 })
     [wordPath, opAt, pushAt, wfOp, loopState, compareState, frame, rawWord,
-      guardWord, hk224, hcond,
+      guardWord, hk224, hcond, hdest, hdestN, hdestL,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -190,31 +207,19 @@ set_option maxHeartbeats 80000000 in
 theorem run_word_straddle (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 32)
     (h : (32 * k) % 256 = 224) :
     run wordPath (loopState input k a) = some (straddleState input k a) := by
-  have hval : ((UInt256.ofNat 255).land (UInt256.ofNat (32 * k))).toNat
-      = (32 * k) % 256 := by
-    rw [land_ff _ (by omega), Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (Nat.lt_trans (Nat.mod_lt _ (by decide)) (by norm_num))]
-  have hcond : UInt256.isTrue ((UInt256.ofNat 224).eq
+  have he : UInt256.ofNat 224 =
+      (UInt256.ofNat 255).land (UInt256.ofNat (32 * k)) := by
+    rw [land_ff _ (by omega), h]
+  have hzero : UInt256.xor (UInt256.ofNat 224)
+      ((UInt256.ofNat 255).land (UInt256.ofNat (32 * k))) = 0 :=
+    (KnownInputLogic.wordXor_eq_zero_iff _ _).2 he
+  have hcond : ¬ UInt256.isTrue (UInt256.xor (UInt256.ofNat 224)
       ((UInt256.ofNat 255).land (UInt256.ofNat (32 * k)))) := by
-    unfold UInt256.isTrue UInt256.eq
-    rw [if_pos (by
-      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-        Nat.mod_eq_of_lt (by norm_num : 224 < 2 ^ 256), hval, h])]
+    rw [hzero]
     decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x1ca = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 257 (by rfl)
-  have hdestN : Decode.isValidJumpDest submissionBytecode
-      (UInt256.ofNat 458).toNat = true := by
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (by norm_num : 458 < 2 ^ 256)]
-    exact hdest
-  have hdestL : Decode.isValidJumpDest submissionBytecode
-      ((458 : UInt256)).toNat = true := by
-    rw [show ((458 : UInt256)).toNat = 458 from by decide]
-    exact hdest
   simp (config := { maxSteps := 800000 })
     [wordPath, opAt, pushAt, wfOp, loopState, straddleState, frame, rawWord,
-      hcond, hdest, hdestN, hdestL,
+      hcond,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
