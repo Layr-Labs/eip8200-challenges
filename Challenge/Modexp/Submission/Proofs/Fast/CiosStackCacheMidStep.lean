@@ -27,7 +27,7 @@ theorem run_mid (s : State) (c : CachedMemory) (r : ReadOnlyCache) (carry bi : U
     (htl : r.tl = UInt256.ofNat (8224+32*n))
     (hminv : (r.m0.toNat*r.inv.toNat+1)%2^256 = 0) :
     runInstructions midProgram (midAt s c r carry bi pa pb n i dst ret rest) =
-    some (l2At 4924 s (cacheMid c carry) r bi (rowMu c.virtual n) (rowC0 c.virtual n)
+    some (l2At 4953 s (cacheMid c carry) r bi (rowMu c.virtual n) (rowC0 c.virtual n)
       pa pb n i 0 dst ret rest) := by
   let d := cacheMid c carry
   have hro : r.Valid d.virtual n := hread.cacheMid r c carry n hn32
@@ -50,12 +50,12 @@ theorem run_mid (s : State) (c : CachedMemory) (r : ReadOnlyCache) (carry bi : U
   have h1 := Mid.run_store s c r carry bi
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa+32*n-32))
     (UInt256.ofNat (pb-32)) (CiosCached.isFour n) dst ret rest hcap hact
-  have h2 := Mid.run_words { s with memory := d.memory } (UInt256.ofNat 4906) d r bi
+  have h2 := Mid.run_words { s with memory := d.memory } (UInt256.ofNat 4935) d r bi
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa+32*n-32))
     (UInt256.ofNat (pb-32)) (CiosCached.isFour n) dst ret rest hcap
     (by rw [htlNat]; exact activeWords_fix s _ 32 (by decide) (by omega) hact) hminv
   rw [hc, hmu] at h2
-  have hpc : advancePC 18 (UInt256.ofNat 4906) = UInt256.ofNat 4924 := by decide
+  have hpc : advancePC 18 (UInt256.ofNat 4935) = UInt256.ofNat 4953 := by decide
   rw [hpc] at h2
   have hall := runInstructions_append_some _ _ _ _ _ h1 h2
   simpa only [midProgram, midAt, l2At, rowState, cacheL2, d] using hall

@@ -22,12 +22,12 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedDirectStates
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
 theorem jumpD3970 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3693).toNat = true :=
-  Exp.jumpD 3693 (by decide) FixedDirectPaths.jumpDest3970
+    (UInt256.ofNat 3722).toNat = true :=
+  Exp.jumpD 3722 (by decide) FixedDirectPaths.jumpDest3970
 
 theorem jumpD3997 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3720).toNat = true :=
-  Exp.jumpD 3720 (by decide) FixedDirectPaths.jumpDest3954
+    (UInt256.ofNat 3749).toNat = true :=
+  Exp.jumpD 3749 (by decide) FixedDirectPaths.jumpDest3954
 
 /-- Execute the remaining positive number of in-place BASE squares. -/
 def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
@@ -49,7 +49,7 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
   induction count generalizing memory bM with
   | zero => omega
   | succ k ih =>
-      have hcall := sub.monpro 2048 2048 2048 (UInt256.ofNat 3693)
+      have hcall := sub.monpro 2048 2048 2048 (UInt256.ofNat 3722)
         (UInt256.ofNat (k + 1) :: Exp.outer n bsize esize msize)
         memory bM bM (by simp [Exp.outer])
         (by omega) (by omega) (by omega) (by omega) (by omega)

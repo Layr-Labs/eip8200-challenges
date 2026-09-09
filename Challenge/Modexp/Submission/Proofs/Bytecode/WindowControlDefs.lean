@@ -20,43 +20,42 @@ open EvmSemantics.EVM
 
 def guardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 1826 .JUMPDEST,
-   Main.opAt 1827 (.Dup ⟨0, by decide⟩),
-   Main.pushAt 1828 1 32,
-   Main.opAt 1829 .XOR,
-   Main.opAt 1830 (.Dup ⟨2, by decide⟩),
-   Main.pushAt 1831 1 32,
-   Main.opAt 1832 .XOR,
-   Main.opAt 1833 .OR,
-   Main.opAt 1834 (.Dup ⟨3, by decide⟩),
-   Main.pushAt 1835 1 32,
-   Main.opAt 1836 .XOR,
-   Main.opAt 1837 .OR,
-   Main.opAt 1838 .ISZERO]
+  [Main.opAt 1824 .JUMPDEST,
+   Main.opAt 1825 (.Dup ⟨0, by decide⟩),
+   Main.pushAt 1826 1 32,
+   Main.opAt 1827 .XOR,
+   Main.opAt 1828 (.Dup ⟨2, by decide⟩),
+   Main.pushAt 1829 1 32,
+   Main.opAt 1830 .XOR,
+   Main.opAt 1831 .OR,
+   Main.opAt 1832 (.Dup ⟨3, by decide⟩),
+   Main.pushAt 1833 1 32,
+   Main.opAt 1834 .XOR,
+   Main.opAt 1835 .OR,
+   Main.opAt 1836 .ISZERO]
 
 def branchPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.pushAt 1839 2 5233, Main.opAt 1840 .JUMPI]
+  [Main.pushAt 1837 2 5233, Main.opAt 1838 .JUMPI]
 
 def missPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.pushAt 1841 2 517, Main.opAt 1842 .JUMP]
+  [Main.pushAt 1839 2 517, Main.opAt 1840 .JUMP]
 
 /-- The first instruction on the fixed-width hit path. -/
 def hitEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 1843 .JUMPDEST]
+  [Main.opAt 1841 .JUMPDEST]
 
 @[simp] theorem routePCs (i : Nat)
-    (hlo : 1826 ≤ i) (hhi : i ≤ 1843) :
+    (hlo : 1824 ≤ i) (hhi : i ≤ 1841) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2613,2614,2616,2617,2618,2619,2621,2622,2623,2624,2626,2627,2628,
-       2629,2632,2633,2636,2637] : List Nat)[i - 1826]! := by
+      ([2613,2614,2616,2617,2618,2619,2621,2622,2623,2624,2626,2627,2628,2629,2632,2633,2636,2637] : List Nat)[i - 1824]! := by
   interval_cases i <;> decide
 
 @[simp] theorem jump3024 :
     Decode.isValidJumpDest submissionBytecode 2637 = true :=
-  Artifact.isValidJumpDest_index 1843 (by rfl)
+  Artifact.isValidJumpDest_index 1841 (by rfl)
 
 @[simp] theorem jump517 :
     Decode.isValidJumpDest submissionBytecode 517 = true :=

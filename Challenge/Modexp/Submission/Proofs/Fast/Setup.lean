@@ -992,53 +992,53 @@ def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
 `MLOAD` of its least significant limb. -/
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1039 (.Dup ⟨1, by decide⟩), pushAt 1040 2 9344, opAt 1041 .MSTORE,
-   opAt 1042 (.Dup ⟨2, by decide⟩), pushAt 1043 2 9504, opAt 1044 .MSTORE,
-   opAt 1045 (.Dup ⟨3, by decide⟩), pushAt 1046 1 96, opAt 1047 .ADD,
-   pushAt 1048 2 9472, opAt 1049 .MSTORE, pushAt 1050 1 32,
-   opAt 1051 (.Dup ⟨2, by decide⟩), opAt 1052 .JUMPDEST, opAt 1053 .SUB,
-   opAt 1054 (.Dup ⟨0, by decide⟩), pushAt 1055 2 9408, opAt 1056 .MSTORE,
-   opAt 1057 (.Dup ⟨2, by decide⟩), pushAt 1058 2 8224, opAt 1059 .ADD,
-   pushAt 1060 2 9440, opAt 1061 .MSTORE, opAt 1062 (.Dup ⟨2, by decide⟩),
-   opAt 1063 .CALLDATASIZE, pushAt 1064 0 0, opAt 1065 .CALLDATACOPY,
-   opAt 1066 (.Dup ⟨6, by decide⟩), opAt 1067 (.Dup ⟨2, by decide⟩),
-   opAt 1068 (.Dup ⟨1, by decide⟩), opAt 1069 (.Dup ⟨5, by decide⟩),
-   opAt 1070 .SUB, opAt 1071 .CALLDATACOPY,
-   opAt 1072 (.Swap ⟨0, by decide⟩), opAt 1073 .POP,
-   opAt 1074 (.Dup ⟨0, by decide⟩), opAt 1075 .MLOAD]
+  [opAt 1037 (.Dup ⟨1, by decide⟩), pushAt 1038 2 9344, opAt 1039 .MSTORE,
+   opAt 1040 (.Dup ⟨2, by decide⟩), pushAt 1041 2 9504, opAt 1042 .MSTORE,
+   opAt 1043 (.Dup ⟨3, by decide⟩), pushAt 1044 1 96, opAt 1045 .ADD,
+   pushAt 1046 2 9472, opAt 1047 .MSTORE, pushAt 1048 1 32,
+   opAt 1049 (.Dup ⟨2, by decide⟩), opAt 1050 .JUMPDEST, opAt 1051 .SUB,
+   opAt 1052 (.Dup ⟨0, by decide⟩), pushAt 1053 2 9408, opAt 1054 .MSTORE,
+   opAt 1055 (.Dup ⟨2, by decide⟩), pushAt 1056 2 8224, opAt 1057 .ADD,
+   pushAt 1058 2 9440, opAt 1059 .MSTORE, opAt 1060 (.Dup ⟨2, by decide⟩),
+   opAt 1061 .CALLDATASIZE, pushAt 1062 0 0, opAt 1063 .CALLDATACOPY,
+   opAt 1064 (.Dup ⟨6, by decide⟩), opAt 1065 (.Dup ⟨2, by decide⟩),
+   opAt 1066 (.Dup ⟨1, by decide⟩), opAt 1067 (.Dup ⟨5, by decide⟩),
+   opAt 1068 .SUB, opAt 1069 .CALLDATACOPY,
+   opAt 1070 (.Swap ⟨0, by decide⟩), opAt 1071 .POP,
+   opAt 1072 (.Dup ⟨0, by decide⟩), opAt 1073 .MLOAD]
 
 /-- Instructions 1076..1100: `x := 1` and the first four Newton steps. -/
 def setupPathB :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1076 (.Dup ⟨0, by decide⟩), pushAt 1077 1 2,
-   opAt 1078 .SUB, opAt 1079 (.Dup ⟨0, by decide⟩),
-   opAt 1080 (.Dup ⟨2, by decide⟩), opAt 1081 .MUL, pushAt 1082 1 2,
-   opAt 1083 .SUB, opAt 1084 .MUL, opAt 1085 (.Dup ⟨0, by decide⟩),
-   opAt 1086 (.Dup ⟨2, by decide⟩), opAt 1087 .MUL, pushAt 1088 1 2,
-   opAt 1089 .SUB, opAt 1090 .MUL, opAt 1091 (.Dup ⟨0, by decide⟩),
-   opAt 1092 (.Dup ⟨2, by decide⟩), opAt 1093 .MUL, pushAt 1094 1 2,
-   opAt 1095 .SUB, opAt 1096 .MUL]
+  [opAt 1074 (.Dup ⟨0, by decide⟩), pushAt 1075 1 2,
+   opAt 1076 .SUB, opAt 1077 (.Dup ⟨0, by decide⟩),
+   opAt 1078 (.Dup ⟨2, by decide⟩), opAt 1079 .MUL, pushAt 1080 1 2,
+   opAt 1081 .SUB, opAt 1082 .MUL, opAt 1083 (.Dup ⟨0, by decide⟩),
+   opAt 1084 (.Dup ⟨2, by decide⟩), opAt 1085 .MUL, pushAt 1086 1 2,
+   opAt 1087 .SUB, opAt 1088 .MUL, opAt 1089 (.Dup ⟨0, by decide⟩),
+   opAt 1090 (.Dup ⟨2, by decide⟩), opAt 1091 .MUL, pushAt 1092 1 2,
+   opAt 1093 .SUB, opAt 1094 .MUL]
 
 /-- Instructions 1101..1124: the last four Newton steps. -/
 def setupPathC :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1097 (.Dup ⟨0, by decide⟩), opAt 1098 (.Dup ⟨2, by decide⟩),
-   opAt 1099 .MUL, pushAt 1100 1 2, opAt 1101 .SUB, opAt 1102 .MUL,
-   opAt 1103 (.Dup ⟨0, by decide⟩), opAt 1104 (.Dup ⟨2, by decide⟩),
-   opAt 1105 .MUL, pushAt 1106 1 2, opAt 1107 .SUB, opAt 1108 .MUL,
-   opAt 1109 (.Dup ⟨0, by decide⟩), opAt 1110 (.Dup ⟨2, by decide⟩),
-   opAt 1111 .MUL, pushAt 1112 1 2, opAt 1113 .SUB, opAt 1114 .MUL,
-   opAt 1115 (.Dup ⟨0, by decide⟩), opAt 1116 (.Dup ⟨2, by decide⟩),
-   opAt 1117 .MUL, pushAt 1118 1 2, opAt 1119 .SUB, opAt 1120 .MUL]
+  [opAt 1095 (.Dup ⟨0, by decide⟩), opAt 1096 (.Dup ⟨2, by decide⟩),
+   opAt 1097 .MUL, pushAt 1098 1 2, opAt 1099 .SUB, opAt 1100 .MUL,
+   opAt 1101 (.Dup ⟨0, by decide⟩), opAt 1102 (.Dup ⟨2, by decide⟩),
+   opAt 1103 .MUL, pushAt 1104 1 2, opAt 1105 .SUB, opAt 1106 .MUL,
+   opAt 1107 (.Dup ⟨0, by decide⟩), opAt 1108 (.Dup ⟨2, by decide⟩),
+   opAt 1109 .MUL, pushAt 1110 1 2, opAt 1111 .SUB, opAt 1112 .MUL,
+   opAt 1113 (.Dup ⟨0, by decide⟩), opAt 1114 (.Dup ⟨2, by decide⟩),
+   opAt 1115 .MUL, pushAt 1116 1 2, opAt 1117 .SUB, opAt 1118 .MUL]
 
 /-- Instructions 1125..1137: `MSTORE V_MINV`, `MSTORE R1 1` and the tail call
 into the `R1B` guard. -/
 def setupPathD :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1121 0 0, opAt 1122 .SUB, pushAt 1123 2 9376, opAt 1124 .MSTORE,
-   opAt 1125 .POP, opAt 1126 .POP, pushAt 1127 1 1, pushAt 1128 2 4096,
-   opAt 1129 .MSTORE, pushAt 1130 2 3780, pushAt 1131 2 4096,
-   pushAt 1132 2 2514, opAt 1133 .JUMP]
+  [pushAt 1119 0 0, opAt 1120 .SUB, pushAt 1121 2 9376, opAt 1122 .MSTORE,
+   opAt 1123 .POP, opAt 1124 .POP, pushAt 1125 1 1, pushAt 1126 2 4096,
+   opAt 1127 .MSTORE, pushAt 1128 2 3809, pushAt 1129 2 4096,
+   pushAt 1130 2 2543, opAt 1131 .JUMP]
 
 /-- After the variable stores and the modulus load (pc 1451). -/
 def modLoadedState (s : State) (input : ByteArray) (m0 : Nat) : State :=
@@ -1059,8 +1059,8 @@ def newtonState (s : State) (input : ByteArray) (m0 x p : Nat) : State :=
 /-- State at the `R1B` guard entry `JUMPDEST` (pc 2539).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 2514
-           stack := UInt256.ofNat 4096 :: UInt256.ofNat 3780 :: outerStack input
+  { s with pc := UInt256.ofNat 2543
+           stack := UInt256.ofNat 4096 :: UInt256.ofNat 3809 :: outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
 
@@ -1555,11 +1555,11 @@ theorem fastSetupState_memory (input : ByteArray) :
     (fastSetupState input).memory = fastSetupMemory input := rfl
 
 theorem fastSetupState_pc (input : ByteArray) :
-    (fastSetupState input).pc = UInt256.ofNat 2514 := rfl
+    (fastSetupState input).pc = UInt256.ofNat 2543 := rfl
 
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack =
-      UInt256.ofNat 4096 :: UInt256.ofNat 3780 :: outerStack input := rfl
+      UInt256.ofNat 4096 :: UInt256.ofNat 3809 :: outerStack input := rfl
 
 /-- **Setup certificate.**  For every calldata satisfying the fast-path
 precondition (and the `ValidInput` bound on the calldata length), execution

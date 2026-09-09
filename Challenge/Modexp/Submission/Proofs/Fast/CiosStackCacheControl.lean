@@ -20,8 +20,8 @@ theorem run_outWords (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (hcap : rest.length ≤ 998)
     (hactive : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat pbi.toNat 32) = s.activeWords) :
     runInstructions CiosStackCachePrograms.out
-      (framed s (UInt256.ofNat 4591) (rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4596)
+      (framed s (UInt256.ofNat 4620) (rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4625)
       ([paEnd, UInt256.ofNat 0, MachineState.readWord s.memory pbi.toNat] ++
         rowFrame c r pbi paEnd pbEnd flag dst ret rest)) := by
   have h16 : rest.length+16 < 1024 := by omega
@@ -38,7 +38,7 @@ theorem run_out (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hpb : 32 ≤ pb) (hfit : pb+32*n ≤ 8192) (hi : i < n) :
     runInstructions CiosStackCachePrograms.out (outAt s c r pa pb n i dst ret rest) =
-    some (l1At 4596 s c r (rowBi c.virtual pb n i) pa pb n i 0 dst ret rest) := by
+    some (l1At 4625 s c r (rowBi c.virtual pb n i) pa pb n i 0 dst ret rest) := by
   have hp := cursor_toNat pb n i hpb hfit hi
   have hr : rowBi c.virtual pb n i =
       MachineState.readWord c.memory (UInt256.ofNat (ptrAt (pb+32*n-32) i)).toNat := by
@@ -72,8 +72,8 @@ theorem run_dispatch (s : State) (pc target : Nat) (c : CachedMemory) (r : ReadO
       Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt ht, Nat.mod_eq_of_lt ht', Nat.add_assoc]
 
-theorem dispatch_l1 : CiosStackCachePrograms.l1Dispatch = dispatchFor 4753 := rfl
-theorem dispatch_l2 : CiosStackCachePrograms.l2Dispatch = dispatchFor 5081 := rfl
+theorem dispatch_l1 : CiosStackCachePrograms.l1Dispatch = dispatchFor 4782 := rfl
+theorem dispatch_l2 : CiosStackCachePrograms.l2Dispatch = dispatchFor 5110 := rfl
 
 theorem run_join (s : State) (pc : Nat) (stack : List UInt256) (hcap : stack.length < 1024) :
     runInstructions [.op .JUMPDEST] (framed s (UInt256.ofNat pc) stack) =

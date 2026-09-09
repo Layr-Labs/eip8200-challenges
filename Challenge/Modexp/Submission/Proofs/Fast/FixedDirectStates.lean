@@ -18,55 +18,55 @@ abbrev outer := Exp.outer
 
 def otherWidth (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3624
+  { s with pc := UInt256.ofNat 3653
            stack := outer n bsize esize msize
            memory := mem }
 
 def checkThree (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3633
+  { s with pc := UInt256.ofNat 3662
            stack := outer n bsize esize msize
            memory := mem }
 
 def check65537 (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3654
+  { s with pc := UInt256.ofNat 3683
            stack := outer n bsize esize msize
            memory := mem }
 
 def special (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 3675
+  { s with pc := UInt256.ofNat 3704
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 def square (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 3676
+  { s with pc := UInt256.ofNat 3705
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 def squareReturn (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 3693
+  { s with pc := UInt256.ofNat 3722
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 def product (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3703
+  { s with pc := UInt256.ofNat 3732
            stack := UInt256.ofNat 0 :: outer n bsize esize msize
            memory := mem }
 
 def finish (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3720
+  { s with pc := UInt256.ofNat 3749
            stack := outer n bsize esize msize
            memory := mem }
 
 def fallback (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3725
+  { s with pc := UInt256.ofNat 3754
            stack := outer n bsize esize msize
            memory := mem }
 

@@ -87,7 +87,7 @@ def tnMem (mem : ByteArray) : ByteArray :=
 /-- Subroutine entry, pc 2539, stack `[px, ret]`. -/
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2514
+  { s with pc := UInt256.ofNat 2543
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
@@ -102,7 +102,7 @@ def dblState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 /-- Between the test and the store, pc 2550. -/
 def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2525
+  { s with pc := UInt256.ofNat 2554
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 

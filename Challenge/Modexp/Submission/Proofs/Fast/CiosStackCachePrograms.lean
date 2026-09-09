@@ -10,7 +10,7 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.CiosStackCachePrograms
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 
-/-- Bytes 4447 through 4590. -/
+/-- Bytes 4476 through 4590. -/
 def entry : List Instr :=
   [.op .JUMPDEST,
    .push 2 9440,
@@ -75,7 +75,7 @@ def entry : List Instr :=
    .op (.Swap ⟨1, by decide⟩),
    .op .POP]
 
-/-- Bytes 4447 through 4478. -/
+/-- Bytes 4476 through 4478. -/
 def prologue : List Instr :=
   [.op .JUMPDEST,
    .push 2 9440,
@@ -103,7 +103,7 @@ def prologue : List Instr :=
    .op (.Swap ⟨8, by decide⟩),
    .op (.Swap ⟨0, by decide⟩)]
 
-/-- Bytes 4479 through 4555. -/
+/-- Bytes 4508 through 4555. -/
 def entryHead : List Instr :=
   [.push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    .op (.Swap ⟨1, by decide⟩),
@@ -116,7 +116,7 @@ def entryHead : List Instr :=
    .op (.Swap ⟨1, by decide⟩),
    .op (.Swap ⟨0, by decide⟩)]
 
-/-- Bytes 4556 through 4590. -/
+/-- Bytes 4585 through 4590. -/
 def entryBody : List Instr :=
   [.push 2 9344,
    .op .MLOAD,
@@ -146,7 +146,7 @@ def entryBody : List Instr :=
    .op (.Swap ⟨1, by decide⟩),
    .op .POP]
 
-/-- Bytes 4591 through 4595. -/
+/-- Bytes 4620 through 4595. -/
 def out : List Instr :=
   [.op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
@@ -154,13 +154,13 @@ def out : List Instr :=
    .push 0 0,
    .op (.Dup ⟨3, by decide⟩)]
 
-/-- Bytes 4596 through 4600. -/
+/-- Bytes 4625 through 4600. -/
 def l1Dispatch : List Instr :=
   [.op (.Dup ⟨6, by decide⟩),
-   .push 2 4753,
+   .push 2 4782,
    .op .JUMPI]
 
-/-- Bytes 4601 through 4638. -/
+/-- Bytes 4630 through 4638. -/
 def l1Mac0 : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
@@ -197,7 +197,7 @@ def l1Mac0 : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .ADD]
 
-/-- Bytes 4639 through 4676. -/
+/-- Bytes 4668 through 4676. -/
 def l1Mac1 : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
@@ -234,7 +234,7 @@ def l1Mac1 : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .ADD]
 
-/-- Bytes 4677 through 4714. -/
+/-- Bytes 4706 through 4714. -/
 def l1Mac2 : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
@@ -271,7 +271,7 @@ def l1Mac2 : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .ADD]
 
-/-- Bytes 4715 through 4752. -/
+/-- Bytes 4744 through 4752. -/
 def l1Mac3 : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
@@ -308,11 +308,11 @@ def l1Mac3 : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .ADD]
 
-/-- Bytes 4753 through 4753. -/
+/-- Bytes 4782 through 4753. -/
 def l1Join : List Instr :=
   [.op .JUMPDEST]
 
-/-- Bytes 4754 through 4791. -/
+/-- Bytes 4783 through 4791. -/
 def l1Mac4 : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
@@ -349,7 +349,7 @@ def l1Mac4 : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .ADD]
 
-/-- Bytes 4792 through 4824. -/
+/-- Bytes 4821 through 4824. -/
 def l1Mac5 : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
@@ -385,7 +385,7 @@ def l1Mac5 : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .ADD]
 
-/-- Bytes 4825 through 4857. -/
+/-- Bytes 4854 through 4857. -/
 def l1Mac6 : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
@@ -421,7 +421,7 @@ def l1Mac6 : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .ADD]
 
-/-- Bytes 4858 through 4889. -/
+/-- Bytes 4887 through 4889. -/
 def l1Mac7 : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
@@ -456,7 +456,7 @@ def l1Mac7 : List Instr :=
    .op .POP,
    .op .POP]
 
-/-- Bytes 4890 through 4905. -/
+/-- Bytes 4919 through 4905. -/
 def midStore : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .push 2 8224,
@@ -469,7 +469,7 @@ def midStore : List Instr :=
    .push 2 8192,
    .op .MSTORE]
 
-/-- Bytes 4906 through 4923. -/
+/-- Bytes 4935 through 4923. -/
 def midProduct : List Instr :=
   [.op (.Dup ⟨14, by decide⟩),
    .op .MLOAD,
@@ -490,13 +490,13 @@ def midProduct : List Instr :=
    .op .GT,
    .op .ADD]
 
-/-- Bytes 4924 through 4928. -/
+/-- Bytes 4953 through 4928. -/
 def l2Dispatch : List Instr :=
   [.op (.Dup ⟨6, by decide⟩),
-   .push 2 5081,
+   .push 2 5110,
    .op .JUMPI]
 
-/-- Bytes 4929 through 4966. -/
+/-- Bytes 4958 through 4966. -/
 def l2Mac0 : List Instr :=
   [.push 2 192,
    .op .MLOAD,
@@ -531,7 +531,7 @@ def l2Mac0 : List Instr :=
    .push 2 8480,
    .op .MSTORE]
 
-/-- Bytes 4967 through 5004. -/
+/-- Bytes 4996 through 5004. -/
 def l2Mac1 : List Instr :=
   [.push 2 160,
    .op .MLOAD,
@@ -566,7 +566,7 @@ def l2Mac1 : List Instr :=
    .push 2 8448,
    .op .MSTORE]
 
-/-- Bytes 5005 through 5042. -/
+/-- Bytes 5034 through 5042. -/
 def l2Mac2 : List Instr :=
   [.push 2 128,
    .op .MLOAD,
@@ -601,7 +601,7 @@ def l2Mac2 : List Instr :=
    .push 2 8416,
    .op .MSTORE]
 
-/-- Bytes 5043 through 5080. -/
+/-- Bytes 5072 through 5080. -/
 def l2Mac3 : List Instr :=
   [.push 2 96,
    .op .MLOAD,
@@ -636,11 +636,11 @@ def l2Mac3 : List Instr :=
    .push 2 8384,
    .op .MSTORE]
 
-/-- Bytes 5081 through 5081. -/
+/-- Bytes 5110 through 5081. -/
 def l2Join : List Instr :=
   [.op .JUMPDEST]
 
-/-- Bytes 5082 through 5116. -/
+/-- Bytes 5111 through 5116. -/
 def l2Mac4 : List Instr :=
   [.push 2 64,
    .op .MLOAD,
@@ -674,7 +674,7 @@ def l2Mac4 : List Instr :=
    .push 2 8352,
    .op .MSTORE]
 
-/-- Bytes 5117 through 5146. -/
+/-- Bytes 5146 through 5146. -/
 def l2Mac5 : List Instr :=
   [.op (.Dup ⟨14, by decide⟩),
    .op (.Dup ⟨9, by decide⟩),
@@ -707,7 +707,7 @@ def l2Mac5 : List Instr :=
    .op (.Swap ⟨11, by decide⟩),
    .op .POP]
 
-/-- Bytes 5147 through 5176. -/
+/-- Bytes 5176 through 5176. -/
 def l2Mac6 : List Instr :=
   [.op (.Dup ⟨13, by decide⟩),
    .op (.Dup ⟨9, by decide⟩),
@@ -740,13 +740,13 @@ def l2Mac6 : List Instr :=
    .op (.Swap ⟨10, by decide⟩),
    .op .POP]
 
-/-- Bytes 5177 through 5179. -/
+/-- Bytes 5206 through 5179. -/
 def tailCleanup : List Instr :=
   [.op (.Swap ⟨1, by decide⟩),
    .op .POP,
    .op .POP]
 
-/-- Bytes 5180 through 5198. -/
+/-- Bytes 5209 through 5198. -/
 def tailStore : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .push 2 8224,
@@ -762,17 +762,17 @@ def tailStore : List Instr :=
    .push 2 8224,
    .op .MSTORE]
 
-/-- Bytes 5199 through 5207. -/
+/-- Bytes 5228 through 5207. -/
 def tailTest : List Instr :=
   [.op (.Dup ⟨4, by decide⟩),
    .op .ADD,
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4591,
+   .push 2 4620,
    .op .JUMPI]
 
-/-- Bytes 5208 through 5234. -/
+/-- Bytes 5237 through 5234. -/
 def exit : List Instr :=
   [.op .POP,
    .op .POP,

@@ -25,6 +25,6 @@ def gasSteps_bitExit (input : ByteArray) (outer : Nat)
     (bitTail input) (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset
     (UInt256.ofNat outer) acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-    (by exact Artifact.isValidJumpDest_index 525 (by rfl))
+    (by exact Artifact.isValidJumpDest_index 524 (by rfl))
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordLoops

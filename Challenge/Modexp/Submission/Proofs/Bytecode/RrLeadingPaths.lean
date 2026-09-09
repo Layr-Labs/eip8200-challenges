@@ -28,41 +28,40 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem helperPCAnchor :
-    Artifact.submissionArtifact.instructionPC 2435 = 3294 := by
+    Artifact.submissionArtifact.instructionPC 2432 = 3323 := by
   rfl
 
 @[simp] theorem helperPC (i : Nat)
-    (hlo : 2435 ≤ i) (hhi : i ≤ 2457) :
+    (hlo : 2432 ≤ i) (hhi : i ≤ 2454) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3294,3295,3298,3299,3302,3305,3306,3307,3309,3310,3311,3313,3314,
-       3315,3317,3318,3319,3321,3322,3323,3324,3325,3328] : List Nat)[i - 2435]! := by
+      ([3323,3324,3327,3328,3331,3334,3335,3336,3338,3339,3340,3342,3343,3344,3346,3347,3348,3350,3351,3352,3353,3354,3357] : List Nat)[i - 2432]! := by
   interval_cases i <;> decide
 
 def helperPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2435 .JUMPDEST,
-   pushAt 2436 2 9344,
-   opAt 2437 .MLOAD,
-   pushAt 2438 2 5120,
-   pushAt 2439 2 6144,
-   opAt 2440 .MCOPY,
-   opAt 2441 (.Dup ⟨1, by decide⟩),
-   pushAt 2442 1 3,
+  [opAt 2432 .JUMPDEST,
+   pushAt 2433 2 9344,
+   opAt 2434 .MLOAD,
+   pushAt 2435 2 5120,
+   pushAt 2436 2 6144,
+   opAt 2437 .MCOPY,
+   opAt 2438 (.Dup ⟨1, by decide⟩),
+   pushAt 2439 1 3,
+   opAt 2440 .LT,
+   opAt 2441 (.Dup ⟨2, by decide⟩),
+   pushAt 2442 1 7,
    opAt 2443 .LT,
-   opAt 2444 (.Dup ⟨2, by decide⟩),
-   pushAt 2445 1 7,
+   opAt 2444 (.Dup ⟨3, by decide⟩),
+   pushAt 2445 1 15,
    opAt 2446 .LT,
-   opAt 2447 (.Dup ⟨3, by decide⟩),
-   pushAt 2448 1 15,
+   opAt 2447 (.Dup ⟨4, by decide⟩),
+   pushAt 2448 1 31,
    opAt 2449 .LT,
-   opAt 2450 (.Dup ⟨4, by decide⟩),
-   pushAt 2451 1 31,
-   opAt 2452 .LT,
-   opAt 2453 .ADD,
-   opAt 2454 .ADD,
-   opAt 2455 .ADD,
-   pushAt 2456 2 1564,
-   opAt 2457 .JUMP]
+   opAt 2450 .ADD,
+   opAt 2451 .ADD,
+   opAt 2452 .ADD,
+   pushAt 2453 2 1564,
+   opAt 2454 .JUMP]
 
 @[simp] theorem jump1569 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1564 = true :=

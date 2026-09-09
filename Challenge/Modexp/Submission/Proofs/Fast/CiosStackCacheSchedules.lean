@@ -20,7 +20,7 @@ opaque l1Four (s : State) (env : Environment art .Osaka s) (blocks : KernelBlock
     (pa pb i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hfit : pa+32*4 ≤ 8192) :
-    GasSteps (l1At 4596 s c r bi pa pb 4 i 0 dst ret rest)
+    GasSteps (l1At 4625 s c r bi pa pb 4 i 0 dst ret rest)
       (midAt s (cacheL1 c bi pa 4 4).cache r (cacheL1 c bi pa 4 4).carry bi
         pa pb 4 i dst ret rest) := by
   have hd := l1Dispatch s env blocks c r bi pa pb 4 i 0 dst ret rest hcap
@@ -28,9 +28,9 @@ opaque l1Four (s : State) (env : Environment art .Osaka s) (blocks : KernelBlock
   simp only [if_pos hf] at hd
   refine hd.trans ?_
   refine (l1Join s env blocks c r bi pa pb 4 i 0 dst ret rest hcap).trans ?_
-  refine (l1Step 4754 s env c r bi pa pb 4 i 0 dst ret rest blocks.l1Mac4 hcap hact (by decide) (by decide) hpa hfit).trans ?_
-  refine (l1Step 4792 s env c r bi pa pb 4 i 1 dst ret rest blocks.l1Mac5 hcap hact (by decide) (by decide) hpa hfit).trans ?_
-  refine (l1Step 4825 s env c r bi pa pb 4 i 2 dst ret rest blocks.l1Mac6 hcap hact (by decide) (by decide) hpa hfit).trans ?_
+  refine (l1Step 4783 s env c r bi pa pb 4 i 0 dst ret rest blocks.l1Mac4 hcap hact (by decide) (by decide) hpa hfit).trans ?_
+  refine (l1Step 4821 s env c r bi pa pb 4 i 1 dst ret rest blocks.l1Mac5 hcap hact (by decide) (by decide) hpa hfit).trans ?_
+  refine (l1Step 4854 s env c r bi pa pb 4 i 2 dst ret rest blocks.l1Mac6 hcap hact (by decide) (by decide) hpa hfit).trans ?_
   exact l1Last s env blocks c r bi pa pb 4 i dst ret rest hcap hact (by decide) (by decide) hpa hfit
 
 opaque l2Four (s : State) (env : Environment art .Osaka s) (blocks : KernelBlocks art)
@@ -38,7 +38,7 @@ opaque l2Four (s : State) (env : Environment art .Osaka s) (blocks : KernelBlock
     (pa pb i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hread : r.Valid c.virtual 4) :
-    GasSteps (l2At 4924 s c r bi mu c0 pa pb 4 i 0 dst ret rest)
+    GasSteps (l2At 4953 s c r bi mu c0 pa pb 4 i 0 dst ret rest)
       (tailAt s (cacheL2 c mu c0 4 3).cache r (cacheL2 c mu c0 4 3).carry mu bi
         pa pb 4 i dst ret rest) := by
   have hd := l2Dispatch s env blocks c r bi mu c0 pa pb 4 i 0 dst ret rest hcap
@@ -46,30 +46,30 @@ opaque l2Four (s : State) (env : Environment art .Osaka s) (blocks : KernelBlock
   simp only [if_pos hf] at hd
   refine hd.trans ?_
   refine (l2Join s env blocks c r bi mu c0 pa pb 4 i 0 dst ret rest hcap).trans ?_
-  refine (l2Step 5082 s env c r bi mu c0 pa pb 4 i 0 dst ret rest blocks.l2Mac4 hcap hact (by decide) (by decide) hread).trans ?_
-  refine (l2Step 5117 s env c r bi mu c0 pa pb 4 i 1 dst ret rest blocks.l2Mac5 hcap hact (by decide) (by decide) hread).trans ?_
-  exact l2Step 5147 s env c r bi mu c0 pa pb 4 i 2 dst ret rest blocks.l2Mac6 hcap hact (by decide) (by decide) hread
+  refine (l2Step 5111 s env c r bi mu c0 pa pb 4 i 0 dst ret rest blocks.l2Mac4 hcap hact (by decide) (by decide) hread).trans ?_
+  refine (l2Step 5146 s env c r bi mu c0 pa pb 4 i 1 dst ret rest blocks.l2Mac5 hcap hact (by decide) (by decide) hread).trans ?_
+  exact l2Step 5176 s env c r bi mu c0 pa pb 4 i 2 dst ret rest blocks.l2Mac6 hcap hact (by decide) (by decide) hread
 
 opaque l1Eight (s : State) (env : Environment art .Osaka s) (blocks : KernelBlocks art)
     (c : CachedMemory) (r : ReadOnlyCache) (bi : UInt256)
     (pa pb i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hfit : pa+32*8 ≤ 8192) :
-    GasSteps (l1At 4596 s c r bi pa pb 8 i 0 dst ret rest)
+    GasSteps (l1At 4625 s c r bi pa pb 8 i 0 dst ret rest)
       (midAt s (cacheL1 c bi pa 8 8).cache r (cacheL1 c bi pa 8 8).carry bi
         pa pb 8 i dst ret rest) := by
   have hd := l1Dispatch s env blocks c r bi pa pb 8 i 0 dst ret rest hcap
   have hf : ¬UInt256.isTrue (CiosCached.isFour 8) := by decide
   simp only [if_neg hf] at hd
   refine hd.trans ?_
-  refine (l1Step 4601 s env c r bi pa pb 8 i 0 dst ret rest blocks.l1Mac0 hcap hact (by decide) (by decide) hpa hfit).trans ?_
-  refine (l1Step 4639 s env c r bi pa pb 8 i 1 dst ret rest blocks.l1Mac1 hcap hact (by decide) (by decide) hpa hfit).trans ?_
-  refine (l1Step 4677 s env c r bi pa pb 8 i 2 dst ret rest blocks.l1Mac2 hcap hact (by decide) (by decide) hpa hfit).trans ?_
-  refine (l1Step 4715 s env c r bi pa pb 8 i 3 dst ret rest blocks.l1Mac3 hcap hact (by decide) (by decide) hpa hfit).trans ?_
+  refine (l1Step 4630 s env c r bi pa pb 8 i 0 dst ret rest blocks.l1Mac0 hcap hact (by decide) (by decide) hpa hfit).trans ?_
+  refine (l1Step 4668 s env c r bi pa pb 8 i 1 dst ret rest blocks.l1Mac1 hcap hact (by decide) (by decide) hpa hfit).trans ?_
+  refine (l1Step 4706 s env c r bi pa pb 8 i 2 dst ret rest blocks.l1Mac2 hcap hact (by decide) (by decide) hpa hfit).trans ?_
+  refine (l1Step 4744 s env c r bi pa pb 8 i 3 dst ret rest blocks.l1Mac3 hcap hact (by decide) (by decide) hpa hfit).trans ?_
   refine (l1Join s env blocks c r bi pa pb 8 i 4 dst ret rest hcap).trans ?_
-  refine (l1Step 4754 s env c r bi pa pb 8 i 4 dst ret rest blocks.l1Mac4 hcap hact (by decide) (by decide) hpa hfit).trans ?_
-  refine (l1Step 4792 s env c r bi pa pb 8 i 5 dst ret rest blocks.l1Mac5 hcap hact (by decide) (by decide) hpa hfit).trans ?_
-  refine (l1Step 4825 s env c r bi pa pb 8 i 6 dst ret rest blocks.l1Mac6 hcap hact (by decide) (by decide) hpa hfit).trans ?_
+  refine (l1Step 4783 s env c r bi pa pb 8 i 4 dst ret rest blocks.l1Mac4 hcap hact (by decide) (by decide) hpa hfit).trans ?_
+  refine (l1Step 4821 s env c r bi pa pb 8 i 5 dst ret rest blocks.l1Mac5 hcap hact (by decide) (by decide) hpa hfit).trans ?_
+  refine (l1Step 4854 s env c r bi pa pb 8 i 6 dst ret rest blocks.l1Mac6 hcap hact (by decide) (by decide) hpa hfit).trans ?_
   exact l1Last s env blocks c r bi pa pb 8 i dst ret rest hcap hact (by decide) (by decide) hpa hfit
 
 opaque l2Eight (s : State) (env : Environment art .Osaka s) (blocks : KernelBlocks art)
@@ -77,20 +77,20 @@ opaque l2Eight (s : State) (env : Environment art .Osaka s) (blocks : KernelBloc
     (pa pb i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hread : r.Valid c.virtual 8) :
-    GasSteps (l2At 4924 s c r bi mu c0 pa pb 8 i 0 dst ret rest)
+    GasSteps (l2At 4953 s c r bi mu c0 pa pb 8 i 0 dst ret rest)
       (tailAt s (cacheL2 c mu c0 8 7).cache r (cacheL2 c mu c0 8 7).carry mu bi
         pa pb 8 i dst ret rest) := by
   have hd := l2Dispatch s env blocks c r bi mu c0 pa pb 8 i 0 dst ret rest hcap
   have hf : ¬UInt256.isTrue (CiosCached.isFour 8) := by decide
   simp only [if_neg hf] at hd
   refine hd.trans ?_
-  refine (l2Step 4929 s env c r bi mu c0 pa pb 8 i 0 dst ret rest blocks.l2Mac0 hcap hact (by decide) (by decide) hread).trans ?_
-  refine (l2Step 4967 s env c r bi mu c0 pa pb 8 i 1 dst ret rest blocks.l2Mac1 hcap hact (by decide) (by decide) hread).trans ?_
-  refine (l2Step 5005 s env c r bi mu c0 pa pb 8 i 2 dst ret rest blocks.l2Mac2 hcap hact (by decide) (by decide) hread).trans ?_
-  refine (l2Step 5043 s env c r bi mu c0 pa pb 8 i 3 dst ret rest blocks.l2Mac3 hcap hact (by decide) (by decide) hread).trans ?_
+  refine (l2Step 4958 s env c r bi mu c0 pa pb 8 i 0 dst ret rest blocks.l2Mac0 hcap hact (by decide) (by decide) hread).trans ?_
+  refine (l2Step 4996 s env c r bi mu c0 pa pb 8 i 1 dst ret rest blocks.l2Mac1 hcap hact (by decide) (by decide) hread).trans ?_
+  refine (l2Step 5034 s env c r bi mu c0 pa pb 8 i 2 dst ret rest blocks.l2Mac2 hcap hact (by decide) (by decide) hread).trans ?_
+  refine (l2Step 5072 s env c r bi mu c0 pa pb 8 i 3 dst ret rest blocks.l2Mac3 hcap hact (by decide) (by decide) hread).trans ?_
   refine (l2Join s env blocks c r bi mu c0 pa pb 8 i 4 dst ret rest hcap).trans ?_
-  refine (l2Step 5082 s env c r bi mu c0 pa pb 8 i 4 dst ret rest blocks.l2Mac4 hcap hact (by decide) (by decide) hread).trans ?_
-  refine (l2Step 5117 s env c r bi mu c0 pa pb 8 i 5 dst ret rest blocks.l2Mac5 hcap hact (by decide) (by decide) hread).trans ?_
-  exact l2Step 5147 s env c r bi mu c0 pa pb 8 i 6 dst ret rest blocks.l2Mac6 hcap hact (by decide) (by decide) hread
+  refine (l2Step 5111 s env c r bi mu c0 pa pb 8 i 4 dst ret rest blocks.l2Mac4 hcap hact (by decide) (by decide) hread).trans ?_
+  refine (l2Step 5146 s env c r bi mu c0 pa pb 8 i 5 dst ret rest blocks.l2Mac5 hcap hact (by decide) (by decide) hread).trans ?_
+  exact l2Step 5176 s env c r bi mu c0 pa pb 8 i 6 dst ret rest blocks.l2Mac6 hcap hact (by decide) (by decide) hread
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosStackCache.Gas

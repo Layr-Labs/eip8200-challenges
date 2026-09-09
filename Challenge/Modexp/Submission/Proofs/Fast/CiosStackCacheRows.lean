@@ -21,7 +21,7 @@ opaque l1Width (s : State) (env : Environment art .Osaka s) (blocks : KernelBloc
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hw : n = 4 ∨ n = 8) (hpa : 32 ≤ pa) (hfit : pa+32*n ≤ 8192) :
-    GasSteps (l1At 4596 s c r bi pa pb n i 0 dst ret rest)
+    GasSteps (l1At 4625 s c r bi pa pb n i 0 dst ret rest)
       (midAt s (cacheL1 c bi pa n n).cache r (cacheL1 c bi pa n n).carry bi
         pa pb n i dst ret rest) := by
   by_cases h4 : n = 4
@@ -34,7 +34,7 @@ opaque l2Width (s : State) (env : Environment art .Osaka s) (blocks : KernelBloc
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hw : n = 4 ∨ n = 8) (hread : r.Valid c.virtual n) :
-    GasSteps (l2At 4924 s c r bi mu c0 pa pb n i 0 dst ret rest)
+    GasSteps (l2At 4953 s c r bi mu c0 pa pb n i 0 dst ret rest)
       (tailAt s (cacheL2 c mu c0 n (n-1)).cache r (cacheL2 c mu c0 n (n-1)).carry mu bi
         pa pb n i dst ret rest) := by
   by_cases h4 : n = 4
