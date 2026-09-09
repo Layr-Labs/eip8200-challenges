@@ -22,20 +22,20 @@ open Challenge.Modexp.Submission.Proofs.Fast
 abbrev outer := Exp.outer
 
 /-- Program counters of the appended routine. -/
-def pcDispatch : Nat := 3816
-def pcHit : Nat := 3831
-def pcMiss : Nat := 3860
-def pcAfterCsub0 : Nat := 3865
-def pcNegLoop : Nat := 3872
-def pcNegNext : Nat := 3895
+def pcDispatch : Nat := 3801
+def pcHit : Nat := 3816
+def pcMiss : Nat := 3845
+def pcAfterCsub0 : Nat := 3850
+def pcNegLoop : Nat := 3857
+def pcNegNext : Nat := 3880
 /-- The negation body after its store, before the exit test. -/
-def pcNegMid : Nat := 3889
-def pcNegDone : Nat := 3903
-def pcPreNewton : Nat := 3949
-def pcNewtonB : Nat := 3980
-def pcShiftLoop : Nat := 4017
-def pcShiftBody : Nat := 4024
-def pcEstimate : Nat := 4038
+def pcNegMid : Nat := 3874
+def pcNegDone : Nat := 3888
+def pcPreNewton : Nat := 3934
+def pcNewtonB : Nat := 3965
+def pcShiftLoop : Nat := 4002
+def pcShiftBody : Nat := 4009
+def pcEstimate : Nat := 4023
 def pcMacSetup : Nat := 4105
 def pcMacLoop : Nat := 4119
 def pcMid : Nat := 4262

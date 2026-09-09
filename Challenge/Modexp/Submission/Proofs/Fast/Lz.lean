@@ -111,7 +111,7 @@ def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
 /-- The state handed to the relocated leading-bit shortcut at pc3865. -/
 def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3624
+  { s with pc := UInt256.ofNat 3609
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -282,7 +282,7 @@ theorem run_lzFirst (s : State) (mem : ByteArray) (i w : Nat)
   simp (config := { maxSteps := 600000 }) [blk1796, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    lzFirst, lzBase, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, jumpDest3865,
+    lzFirst, lzBase, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, jumpDest3850,
     e1, e2, e3, e4, e5, e6, e7,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,

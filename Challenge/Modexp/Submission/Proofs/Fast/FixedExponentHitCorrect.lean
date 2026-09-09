@@ -66,7 +66,7 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     hcode hfork hrun hnp
   have htraceProdCall := FixedExponentChainTrace.gasSteps_product
     s memSq n bsize esize msize hcode hfork hrun hnp
-  have htraceProdMp := sub.monpro 1024 2048 1024 (UInt256.ofNat 3808)
+  have htraceProdMp := sub.monpro 1024 2048 1024 (UInt256.ofNat 3793)
     (Exp.outer n bsize esize msize) memSq sqVal bM
     (by simp [Exp.outer]) (by omega) (by omega) (by omega) (by omega)
     (by omega) jumpD3808 hframeSq hsqInv.modulus hsqInv.accBlock

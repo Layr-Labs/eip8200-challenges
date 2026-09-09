@@ -102,16 +102,16 @@ def fallback : List Located :=
    pushAt 2494 2 4096, pushAt 2495 2 1024, opAt 2496 .MCOPY,
    pushAt 2497 0 0, pushAt 2498 2 1769, opAt 2499 .JUMP]
 
-theorem jumpDest3695 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3695 = true :=
+theorem jumpDest3680 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3680 = true :=
   Artifact.isValidJumpDest_index 2414 (by rfl)
 
-theorem jumpDest3734 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3734 = true :=
+theorem jumpDest3719 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3719 = true :=
   Artifact.isValidJumpDest_index 2439 (by rfl)
 
-theorem jumpDest3755 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3755 = true :=
+theorem jumpDest3740 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3740 = true :=
   Artifact.isValidJumpDest_index 2451 (by rfl)
 
 theorem jumpDest3764 :
@@ -122,16 +122,16 @@ theorem jumpDest3781 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3781 = true :=
   Artifact.isValidJumpDest_index 2463 (by rfl)
 
-theorem jumpDest3808 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3808 = true :=
+theorem jumpDest3793 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3793 = true :=
   Artifact.isValidJumpDest_index 2477 (by rfl)
 
 theorem jumpDest3833 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3833 = true :=
   Artifact.isValidJumpDest_index 2489 (by rfl)
 
-theorem jumpDest3838 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3838 = true :=
+theorem jumpDest3823 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3823 = true :=
   Artifact.isValidJumpDest_index 2492 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FixedExponentPaths

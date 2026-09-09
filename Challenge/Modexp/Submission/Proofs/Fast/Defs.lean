@@ -663,7 +663,7 @@ their proof modules. -/
 @[simp] theorem fullBasePC (i : Nat)
     (hi : 2467 ≤ i) (hii : i ≤ 2519) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3365,3366,3367,3368,3369,3370,3371,3373,3374,3375,3376,3379,3380,3381,3383,3386,3387,3390,3393,3396,3399,3402,3403,3404,3407,3410,3413,3416,3419,3420,3421,3422,3424,3425,3427,3428,3429,3430,3432,3433,3434,3436,3437,3439,3440,3441,3442,3443,3446,3447,3448,3450,3453] : List Nat)[i - 2467]! := by
+      ([3350,3351,3352,3353,3354,3355,3356,3358,3359,3360,3361,3364,3365,3366,3368,3371,3372,3375,3378,3381,3384,3387,3388,3389,3392,3395,3398,3401,3404,3405,3406,3407,3409,3410,3412,3413,3414,3415,3417,3418,3419,3421,3422,3424,3425,3426,3427,3428,3431,3432,3433,3435,3438] : List Nat)[i - 2467]! := by
   interval_cases i <;> decide
 
 theorem jumpDest1196 :
@@ -838,20 +838,20 @@ theorem jumpDest2995 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2628 = true :=
   Artifact.isValidJumpDest_index 1830 (by rfl)
 
-theorem jumpDest3571 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3330 = true :=
+theorem jumpDest3556 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3315 = true :=
   Artifact.isValidJumpDest_index 2444 (by rfl)
 
-theorem jumpDest3606 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3365 = true :=
+theorem jumpDest3591 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3350 = true :=
   Artifact.isValidJumpDest_index 2467 (by rfl)
 
 theorem jumpDest3644 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3403 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3388 = true :=
   Artifact.isValidJumpDest_index 2489 (by rfl)
 
-theorem jumpDest3661 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3420 = true :=
+theorem jumpDest3646 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3405 = true :=
   Artifact.isValidJumpDest_index 2496 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

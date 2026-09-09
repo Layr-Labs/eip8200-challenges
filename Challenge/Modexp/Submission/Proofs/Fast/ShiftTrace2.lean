@@ -125,6 +125,36 @@ private theorem addMod_comm (a b m : UInt256) :
   simp only [UInt256.addMod, Nat.add_comm]
 
 /-- `blk3026`: quotient estimate with a branchless saturation mask. -/
+@[simp] private theorem productEstimatePC2990 :
+    Artifact.submissionArtifact.instructionPC 2990 = 4093 := by decide
+
+@[simp] private theorem productEstimatePC2991 :
+    Artifact.submissionArtifact.instructionPC 2991 = 4094 := by decide
+
+@[simp] private theorem productEstimatePC2992 :
+    Artifact.submissionArtifact.instructionPC 2992 = 4095 := by decide
+
+@[simp] private theorem productEstimatePC2993 :
+    Artifact.submissionArtifact.instructionPC 2993 = 4096 := by decide
+
+@[simp] private theorem productEstimatePC2994 :
+    Artifact.submissionArtifact.instructionPC 2994 = 4099 := by decide
+
+@[simp] private theorem productEstimatePC2995 :
+    Artifact.submissionArtifact.instructionPC 2995 = 4100 := by decide
+
+@[simp] private theorem productEstimatePC2996 :
+    Artifact.submissionArtifact.instructionPC 2996 = 4101 := by decide
+
+@[simp] private theorem productEstimatePC2997 :
+    Artifact.submissionArtifact.instructionPC 2997 = 4102 := by decide
+
+@[simp] private theorem productEstimatePC2998 :
+    Artifact.submissionArtifact.instructionPC 2998 = 4103 := by decide
+
+@[simp] private theorem productEstimatePC2999 :
+    Artifact.submissionArtifact.instructionPC 2999 = 4104 := by decide
+
 theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hact : 296 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -146,6 +176,10 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hG : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 6272 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hH : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hI : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 600000 })
     [blk3026, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -153,7 +187,7 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       estimateState, macSetupState, kState, pcEstimate, pcMacSetup, qhatOf,
       PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
-      outer, Exp.outer, hcode, hrun, hA, hB, hC, hD, hE, hF, hG, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
+      outer, Exp.outer, hcode, hrun, hA, hB, hC, hD, hE, hF, hG, hH, hI, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

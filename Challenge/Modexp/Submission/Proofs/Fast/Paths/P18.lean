@@ -27,7 +27,7 @@ def blk2557 :
   [opAt 2663 .JUMPDEST,
    opAt 2664 (.Dup ⟨1, by decide⟩),
    opAt 2665 .ISZERO,
-   pushAt 2666 2 3646,
+   pushAt 2666 2 3631,
    opAt 2667 .JUMPI]
 
 /-- Instructions 2562..2568, pc 3872..3650: `ACC := BASE`, then the shift. -/
@@ -54,15 +54,15 @@ instead of unfolding the complete bytecode prefix at every instruction. -/
 @[simp] theorem leadingBitPC (i : Nat)
     (hi : 2663 ≤ i) (hii : i ≤ 2677) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3624,3625,3626,3627,3630,3631,3634,3635,3638,3641,3642,3645,3646,3647,3650] : List Nat)[i - 2663]! := by
+      ([3609,3610,3611,3612,3615,3616,3619,3620,3623,3626,3627,3630,3631,3632,3635] : List Nat)[i - 2663]! := by
   interval_cases i <;> decide
 
-theorem jumpDest3865 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3624 = true :=
+theorem jumpDest3850 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3609 = true :=
   Artifact.isValidJumpDest_index 2663 (by rfl)
 
-theorem jumpDest3887 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3646 = true :=
+theorem jumpDest3872 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3631 = true :=
   Artifact.isValidJumpDest_index 2675 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

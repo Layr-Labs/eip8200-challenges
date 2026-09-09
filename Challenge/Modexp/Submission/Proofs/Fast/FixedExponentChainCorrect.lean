@@ -23,8 +23,8 @@ theorem jumpD3781 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
   Exp.jumpD 3781 (by decide) FixedExponentPaths.jumpDest3781
 
 theorem jumpD3808 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3808).toNat = true :=
-  Exp.jumpD 3808 (by decide) FixedExponentPaths.jumpDest3808
+    (UInt256.ofNat 3793).toNat = true :=
+  Exp.jumpD 3793 (by decide) FixedExponentPaths.jumpDest3793
 
 theorem jumpD3833 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 3833).toNat = true :=

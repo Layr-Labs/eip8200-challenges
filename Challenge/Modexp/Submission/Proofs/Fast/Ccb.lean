@@ -183,7 +183,7 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     loopState, mpCallState, loopStack, fastPC20, hc3, hc4, hc5, hc6, hc7, hc8,
-    hcode, hrun, h2888, h1939, h1939Nat, Cios2Dispatch.jumpDest4057,
+    hcode, hrun, h2888, h1939, h1939Nat, Cios2Dispatch.jumpDest4044,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,

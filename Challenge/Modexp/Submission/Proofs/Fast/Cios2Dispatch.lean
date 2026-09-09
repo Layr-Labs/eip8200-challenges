@@ -33,13 +33,13 @@ def specializedEntryState (s : State) (mem : ByteArray) (pa pb : Nat)
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
-theorem jumpDest4057 :
+theorem jumpDest4044 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4458 = true := by
-  exact Artifact.isValidJumpDest_index 3186 (by rfl)
+  exact Artifact.isValidJumpDest_index 3196 (by rfl)
 
-theorem jumpDest4080 :
+theorem jumpDest4065 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4481 = true := by
-  exact Artifact.isValidJumpDest_index 3200 (by rfl)
+  exact Artifact.isValidJumpDest_index 3210 (by rfl)
 
 private theorem activeWords9344 (s : State) (hact : 296 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) =
@@ -90,7 +90,7 @@ theorem run_dispatch4 (s : State) (mem : ByteArray) (pa pb : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       dispatchState, specializedEntryState, hc4, hc5, hc6, hc7, hrun, hcode,
-      hs32, hcond128, activeWords9344 s hact, h4080, h4080', jumpDest4080,
+      hs32, hcond128, activeWords9344 s hact, h4080, h4080', jumpDest4065,
       UInt256.isTrue, State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -123,7 +123,7 @@ theorem run_dispatch8 (s : State) (mem : ByteArray) (pa pb : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       dispatchState, specializedEntryState, hc4, hc5, hc6, hc7, hrun, hcode,
-      hs32, hcond256, activeWords9344 s hact, h4080, h4080', jumpDest4080,
+      hs32, hcond256, activeWords9344 s hact, h4080, h4080', jumpDest4065,
       UInt256.isTrue, State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,

@@ -68,7 +68,7 @@ def blk1796 :
    opAt 1813 .SHR,
    pushAt 1814 1 1,
    opAt 1815 .ADD,
-   pushAt 1816 2 3624,
+   pushAt 1816 2 3609,
    opAt 1817 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

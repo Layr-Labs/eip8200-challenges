@@ -62,14 +62,14 @@ theorem run_byte2_model (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) :
     runInstructions (byteProgram 2)
       (wordState input pointer 2 3377 accumulator) =
-    some (wordState input pointer 3 3462 accumulator) :=
-  run_wordByte_model input pointer 2 3377 3462 accumulator (by decide) (by decide)
+    some (wordState input pointer 3 3447 accumulator) :=
+  run_wordByte_model input pointer 2 3377 3447 accumulator (by decide) (by decide)
 
 theorem run_byte3_model (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) :
     runInstructions (byteProgram 3)
-      (wordState input pointer 3 3462 accumulator) =
-    some (wordState input pointer 4 3547 accumulator) :=
-  run_wordByte_model input pointer 3 3462 3547 accumulator (by decide) (by decide)
+      (wordState input pointer 3 3447 accumulator) =
+    some (wordState input pointer 4 3532 accumulator) :=
+  run_wordByte_model input pointer 3 3447 3532 accumulator (by decide) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitByteModel

@@ -28,13 +28,13 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem helperPCAnchor :
-    Artifact.submissionArtifact.instructionPC 2444 = 3330 := by
+    Artifact.submissionArtifact.instructionPC 2444 = 3315 := by
   rfl
 
 @[simp] theorem helperPC (i : Nat)
     (hlo : 2444 ≤ i) (hhi : i ≤ 2466) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3330,3331,3334,3335,3338,3341,3342,3343,3345,3346,3347,3349,3350,3351,3353,3354,3355,3357,3358,3359,3360,3361,3364] : List Nat)[i - 2444]! := by
+      ([3315,3316,3319,3320,3323,3326,3327,3328,3330,3331,3332,3334,3335,3336,3338,3339,3340,3342,3343,3344,3345,3346,3349] : List Nat)[i - 2444]! := by
   interval_cases i <;> decide
 
 def helperPath :

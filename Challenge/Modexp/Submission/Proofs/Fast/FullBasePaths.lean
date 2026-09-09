@@ -29,7 +29,7 @@ def blkFullBaseGuard :
    opAt 2474 .SHR,
    opAt 2475 .AND,
    opAt 2476 .ISZERO,
-   pushAt 2477 2 3420,
+   pushAt 2477 2 3405,
    opAt 2478 .JUMPI]
 
 /-- pc 3877..3407, indices 2373..2169: copy the base to ACC and call

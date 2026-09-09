@@ -34,7 +34,7 @@ padding and are not part of the executed block. -/
 def blk1265 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1265 .JUMPDEST,
-   pushAt 1266 2 3651,
+   pushAt 1266 2 3636,
    opAt 1267 .JUMP]
 
 /-- Instructions 1272..1278, pc 1769..1777. -/
