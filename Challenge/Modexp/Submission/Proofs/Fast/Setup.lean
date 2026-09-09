@@ -1007,12 +1007,14 @@ def setupPathA :
    opAt 1072 (.Swap ⟨0, by decide⟩), opAt 1073 .POP,
    opAt 1074 (.Dup ⟨0, by decide⟩), opAt 1075 .MLOAD]
 
-/-- Instructions 1076..1100: `x := 1` and the first four Newton steps. -/
+/-- Instructions 1076..1100: the first four Newton steps, with the
+initial `1 * (2 - m0 * 1)` reduced to `2 - m0`. -/
 def setupPathB :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1076 1 1, opAt 1077 (.Dup ⟨0, by decide⟩),
-   opAt 1078 (.Dup ⟨2, by decide⟩), opAt 1079 .MUL, pushAt 1080 1 2,
-   opAt 1081 .SUB, opAt 1082 .MUL, opAt 1083 (.Dup ⟨0, by decide⟩),
+  [opAt 1076 (.Dup ⟨0, by decide⟩), pushAt 1077 2 2,
+   opAt 1078 .SUB, opAt 1079 .JUMPDEST, opAt 1080 .JUMPDEST,
+   opAt 1081 .JUMPDEST, opAt 1082 .JUMPDEST,
+   opAt 1083 (.Dup ⟨0, by decide⟩),
    opAt 1084 (.Dup ⟨2, by decide⟩), opAt 1085 .MUL, pushAt 1086 1 2,
    opAt 1087 .SUB, opAt 1088 .MUL, opAt 1089 (.Dup ⟨0, by decide⟩),
    opAt 1090 (.Dup ⟨2, by decide⟩), opAt 1091 .MUL, pushAt 1092 1 2,
@@ -1110,11 +1112,19 @@ theorem run_setupB (s : State) (input : ByteArray) (m0 : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathB (modLoadedState s input m0) =
       some (newtonState s input m0 (newton4 m0) 1481) := by
+  have hmul_one (value : UInt256) : value * UInt256.ofNat 1 = value := by
+    cases value with
+    | mk value =>
+        change UInt256.mk (value * (1 : Fin UInt256.size)) = UInt256.mk value
+        rw [mul_one]
+  have hfirst : UInt256.ofNat 2 - UInt256.ofNat m0 =
+      UInt256.ofNat (Model.newtonStep m0 1) := by
+    simpa only [hmul_one] using newton_word_step m0 1
   simp (config := { maxSteps := 1000000 })
     [setupPathB, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     modLoadedState, newtonState, outerStack, newton4, hrun, newton_word_step,
+     modLoadedState, newtonState, outerStack, newton4, hrun, newton_word_step, hfirst,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
