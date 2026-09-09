@@ -215,7 +215,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputPCs
 @[simp] theorem pc2880 : Artifact.submissionArtifact.instructionPC 2880 = 5254 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
-@[simp] theorem pc2881 : Artifact.submissionArtifact.instructionPC 2881 = 5287 := by
+@[simp] theorem pc2881 : Artifact.submissionArtifact.instructionPC 2881 = 11594 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 @[simp] theorem pc2882 : Artifact.submissionArtifact.instructionPC 2882 = 5288 := by

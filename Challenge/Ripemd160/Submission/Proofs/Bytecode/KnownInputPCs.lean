@@ -80,7 +80,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputPCs
 @[simp] theorem pc2878 : Artifact.submissionArtifact.instructionPC 2878 = 5250 := by rfl
 @[simp] theorem pc2879 : Artifact.submissionArtifact.instructionPC 2879 = 5253 := by rfl
 @[simp] theorem pc2880 : Artifact.submissionArtifact.instructionPC 2880 = 5254 := by rfl
-@[simp] theorem pc2881 : Artifact.submissionArtifact.instructionPC 2881 = 5287 := by rfl
+@[simp] theorem pc2881 : Artifact.submissionArtifact.instructionPC 2881 = 11594 := by rfl
 @[simp] theorem pc2882 : Artifact.submissionArtifact.instructionPC 2882 = 5288 := by rfl
 @[simp] theorem pc2883 : Artifact.submissionArtifact.instructionPC 2883 = 5289 := by rfl
 @[simp] theorem pc2884 : Artifact.submissionArtifact.instructionPC 2884 = 5292 := by rfl
