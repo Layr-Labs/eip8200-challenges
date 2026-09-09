@@ -14,23 +14,23 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 /-- Entry at the second word comparison in the checked H8 prefix. -/
 def entry (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 5239
+    pc := UInt256.ofNat 5227
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
 /-- Entry at the H1 stores after the second word guard has matched. -/
 def hitEntry (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 5280
+    pc := UInt256.ofNat 5268
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
 /-- The generic compression target of the guard is a valid jump destination. -/
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 460 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 271 = 460 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 0x1c0 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 260 = 0x1c0 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 271 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 260 (by rfl)
   rw [hpc] at h
   exact h
 
@@ -41,8 +41,8 @@ theorem run_hit (s : State) (input : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock PrefixStatePaths.hitPath
       (hitEntry s input) =
       some (PrefixStateMemory.resultState s input 0) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 102 = true := by
-    have hpc : Artifact.submissionArtifact.instructionPC 64 = 102 := by
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x66 = true := by
+    have hpc : Artifact.submissionArtifact.instructionPC 64 = 0x66 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]
       decide
     have h := Artifact.submissionArtifact.isValidJumpDest_index 64 (by rfl)
