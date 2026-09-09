@@ -31,7 +31,8 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hnd : PrefixStateModel.double input = true → 2 ≤ i) :
     GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i) := by
   by_cases hempty : input.size = 0
@@ -44,11 +45,16 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
       (Nat.pos_of_ne_zero hempty) ctx.calldata hcode hfork hrun hnp
     by_cases hhit : i = 0 ∧ Matched input
     · rcases hhit with ⟨rfl, hmatch⟩
+      have hnot2 : ¬ Matched2 input := by
+        intro h2
+        have := hnd ((PrefixStateModel.double_iff input).2 ⟨hmatch, h2⟩)
+        omega
       have hif : (if 0 = 0 ∧ Matched input then
-          PrefixStateMemory.resultState (PrefixStateMemory.copied s) input 0
+          (if Matched2 input then PrefixStateMemory.resultState2 (PrefixStateMemory.copied s) input
+            else PrefixStateMemory.resultState (PrefixStateMemory.copied s) input 0)
         else DriverTrace.compressEntry (prepared s 0) input 0) =
         PrefixStateMemory.resultState (PrefixStateMemory.copied s) input 0 := by
-        rw [if_pos ⟨rfl, hmatch⟩]
+        rw [if_pos ⟨rfl, hmatch⟩, if_neg hnot2]
       exact (gdispatch.trans
         ((PrefixStateTrace.gasSteps_dispatch s input 0 hfit hi ctx.calldata
             hcode hfork hrun hnp).cast (by rfl) hif)).cast (by rfl) (by
@@ -57,7 +63,8 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     · have ghelper : GasSteps (FastEmptyBlock.nonemptyEntry s input i)
           (DriverTrace.compressEntry (prepared s i) input i) := by
         have hif : (if i = 0 ∧ Matched input then
-            PrefixStateMemory.resultState (PrefixStateMemory.copied s) input i
+            (if Matched2 input then PrefixStateMemory.resultState2 (PrefixStateMemory.copied s) input
+              else PrefixStateMemory.resultState (PrefixStateMemory.copied s) input i)
           else DriverTrace.compressEntry (prepared s i) input i) =
           DriverTrace.compressEntry (prepared s i) input i := by
           rw [if_neg hhit]
@@ -81,6 +88,35 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
         simp [nextState, PrefixStateKernel.nextState, hempty, hhit,
           DriverTrace.compressReturned])
 
+/-- The depth-2 ladder rung: one dispatcher execution consumes blocks 0 and 1. -/
+noncomputable def gasSteps_block2 (s : State) (input : ByteArray)
+    (h : Compression.HashState) (hfit : CalldataFits input)
+    (hd : PrefixStateModel.double input = true)
+    (ctx : StackRunBridge.BlockContext s input 0 h)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps (DriverTrace.dispatchEntry s input 0)
+      (DriverTrace.compressReturned (PrefixStateKernel.nextState2 s input) input 1) := by
+  obtain ⟨hmatch, hmatch2⟩ := (PrefixStateModel.double_iff input).1 hd
+  have hsize := PrefixStateData.size_ge_64_of_words input hmatch.2
+  have hpos : 0 < input.size := by omega
+  have hi : 0 < DriverTrace.blockCount input := DriverTrace.blockCount_pos input
+  have gdispatch := FastEmptyBlock.gasSteps_nonempty s input 0 hfit hpos
+    ctx.calldata hcode hfork hrun hnp
+  have hif : (if 0 = 0 ∧ Matched input then
+      (if Matched2 input then PrefixStateMemory.resultState2 (PrefixStateMemory.copied s) input
+        else PrefixStateMemory.resultState (PrefixStateMemory.copied s) input 0)
+    else DriverTrace.compressEntry (prepared s 0) input 0) =
+    PrefixStateMemory.resultState2 (PrefixStateMemory.copied s) input := by
+    rw [if_pos ⟨rfl, hmatch⟩, if_pos hmatch2]
+  exact (gdispatch.trans
+    ((PrefixStateTrace.gasSteps_dispatch s input 0 hfit hi ctx.calldata
+        hcode hfork hrun hnp).cast (by rfl) hif)).cast (by rfl) (by
+      simp [PrefixStateKernel.nextState2, DriverTrace.compressReturned,
+        PrefixStateMemory.resultState2])
+
 noncomputable def kernel : StackRunBridge.BlockKernel where
   nextState := nextState
   executionEnv := PrefixStateKernel.nextState_executionEnv
@@ -89,7 +125,16 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
   wordAbove := nextState_word_above
   hashResult := fun s input i h hfit hi ctx hmodel =>
     PrefixStateKernel.nextState_hash s input i h hfit hi ctx hmodel
+  double := PrefixStateModel.double
   gasSteps := gasSteps_block
+  nextState2 := PrefixStateKernel.nextState2
+  executionEnv2 := PrefixStateKernel.nextState2_executionEnv
+  halt2 := PrefixStateKernel.nextState2_halt
+  callStack2 := PrefixStateKernel.nextState2_callStack
+  wordAbove2 := PrefixStateKernel.nextState2_word_above
+  doubleBlocks := PrefixStateKernel.double_blockCount
+  hashResult2 := PrefixStateKernel.nextState2_hash
+  gasSteps2 := gasSteps_block2
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)

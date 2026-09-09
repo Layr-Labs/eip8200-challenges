@@ -73,12 +73,12 @@ theorem storeActiveWords_704_672 (current : UInt256)
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (by norm_num : (220 : Nat) < 2 ^ 256)]
     omega
-  have h704 : (UInt256.ofNat 265).toNat + 32 ≤ current.toNat * 32 := by
+  have h704 : (UInt256.ofNat 252).toNat + 32 ≤ current.toNat * 32 := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (by norm_num : (252 : Nat) < 2 ^ 256)]
     omega
   simp only [storeActiveWords, List.foldl]
-  rw [activeAfterWord_eq current (UInt256.ofNat 265) h704]
+  rw [activeAfterWord_eq current (UInt256.ofNat 252) h704]
   rw [activeAfterWord_eq current (UInt256.ofNat 220) h672]
 
 theorem storeActiveWords_loaded_eq (s : State) (messageOffset : UInt256)

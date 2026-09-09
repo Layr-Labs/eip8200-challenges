@@ -395,28 +395,28 @@ theorem runInstrSeq_fastPackTemplate
   simpa only [fastPackTemplate, List.append_assoc] using hfull
 
 theorem runInstrSeq_fastEndianStage8
-    (s : State) (startPC value a b : UInt256) (tail : List UInt256)
-    (hstack : tail.length < 1016) (hrun : s.halt = .Running) :
+    (s : State) (startPC value : UInt256) (rest : List UInt256)
+    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
     runInstrSeq fastEndianStage8
-      { s with pc := startPC, stack := value :: (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) } =
+      { s with pc := startPC, stack := value :: rest } =
       some { s with
         pc := pcAfter startPC fastEndianStage8
         stack := DenseScheduleTemplate.packedStage value 8
-          FastOutputTemplate.mask8 :: (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) } := by
+          FastOutputTemplate.mask8 :: rest } := by
   exact ClosedEndianMultiply.run_endian s startPC value 8
-    DenseScheduleTemplate.mask8 a b tail hstack (Or.inl ⟨rfl, rfl⟩) hrun
+    DenseScheduleTemplate.mask8 rest hstack (Or.inl ⟨rfl, rfl⟩) hrun
 
 theorem runInstrSeq_fastEndianStage16
-    (s : State) (startPC value a b : UInt256) (tail : List UInt256)
-    (hstack : tail.length < 1016) (hrun : s.halt = .Running) :
+    (s : State) (startPC value : UInt256) (rest : List UInt256)
+    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
     runInstrSeq fastEndianStage16
-      { s with pc := startPC, stack := value :: (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) } =
+      { s with pc := startPC, stack := value :: rest } =
       some { s with
         pc := pcAfter startPC fastEndianStage16
         stack := DenseScheduleTemplate.packedStage value 16
-          FastOutputTemplate.mask16 :: (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) } := by
+          FastOutputTemplate.mask16 :: rest } := by
   exact ClosedEndianMultiply.run_endian s startPC value 16
-    DenseScheduleTemplate.mask16 a b tail hstack (Or.inr ⟨rfl, rfl⟩) hrun
+    DenseScheduleTemplate.mask16 rest hstack (Or.inr ⟨rfl, rfl⟩) hrun
 
 theorem runInstrSeq_fastStoreAndSetup
     (s : State) (startPC value : UInt256) (rest : List UInt256)
@@ -457,11 +457,11 @@ theorem runInstrSeq_fastReturn
   constructor <;> rfl
 
 theorem runInstrSeq_fastOutput_beforeReturn
-    (s : State) (startPC a b : UInt256) (tail : List UInt256)
-    (hstack : tail.length < 1016) (hrun : s.halt = .Running) :
+    (s : State) (startPC : UInt256) (rest : List UInt256)
+    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
     runInstrSeq fastOutputBeforeReturnTemplate
-      { s with pc := startPC, stack := (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) } =
-      some (fastOutputBeforeReturnState s startPC (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail)) := by
+      { s with pc := startPC, stack := rest } =
+      some (fastOutputBeforeReturnState s startPC rest) := by
   let packed0 : UInt256 :=
     packWords (inputWord s 0) (inputWord s 1) (inputWord s 2)
       (inputWord s 3) (inputWord s 4)
@@ -469,26 +469,26 @@ theorem runInstrSeq_fastOutput_beforeReturn
     DenseScheduleTemplate.packedStage packed0 8 FastOutputTemplate.mask8
   let packed16 : UInt256 :=
     DenseScheduleTemplate.packedStage packed8 16 FastOutputTemplate.mask16
-  let t0 : State := afterFastPack s startPC (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail)
+  let t0 : State := afterFastPack s startPC rest
   have hpack : runInstrSeq fastPackTemplate
-      { s with pc := startPC, stack := (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) } = some t0 := by
+      { s with pc := startPC, stack := rest } = some t0 := by
     simpa [t0, packed0] using
-      (runInstrSeq_fastPackTemplate s startPC (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) (by simp only [List.length_cons]; omega) hrun)
+      (runInstrSeq_fastPackTemplate s startPC rest hstack hrun)
   let t1 : State := afterFastEndian t0 t0.pc fastEndianStage8 8
-    FastOutputTemplate.mask8 packed0 (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail)
+    FastOutputTemplate.mask8 packed0 rest
   have h8 : runInstrSeq fastEndianStage8 t0 = some t1 := by
-    have h := runInstrSeq_fastEndianStage8 t0 t0.pc packed0 a b tail hstack
+    have h := runInstrSeq_fastEndianStage8 t0 t0.pc packed0 rest hstack
       (by simpa [t0, afterFastPack] using hrun)
     simpa [t1, t0, packed0, afterFastEndian, afterFastPack] using h
   let t2 : State := afterFastEndian t1 t1.pc fastEndianStage16 16
-    FastOutputTemplate.mask16 packed8 (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail)
+    FastOutputTemplate.mask16 packed8 rest
   have h16 : runInstrSeq fastEndianStage16 t1 = some t2 := by
-    have h := runInstrSeq_fastEndianStage16 t1 t1.pc packed8 a b tail hstack
+    have h := runInstrSeq_fastEndianStage16 t1 t1.pc packed8 rest hstack
       (by simpa [t1, t0, afterFastEndian, afterFastPack] using hrun)
     simpa [t2, t1, t0, packed8, afterFastEndian, afterFastPack] using h
-  let t3 : State := afterFastStore t2 t2.pc packed16 (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail)
+  let t3 : State := afterFastStore t2 t2.pc packed16 rest
   have hstore : runInstrSeq fastStoreAndSetup t2 = some t3 := by
-    have h := runInstrSeq_fastStoreAndSetup t2 t2.pc packed16 (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) (by simp only [List.length_cons]; omega)
+    have h := runInstrSeq_fastStoreAndSetup t2 t2.pc packed16 rest hstack
       (by simpa [t2, t1, t0, afterFastEndian, afterFastPack] using hrun)
     simpa [t3, t2, t1, t0, packed16, afterFastStore,
       afterFastEndian, afterFastPack] using h
@@ -504,15 +504,15 @@ theorem runInstrSeq_fastOutput_beforeReturn
   have hfull : runInstrSeq
       (fastPackTemplate ++
         (fastEndianStage8 ++ (fastEndianStage16 ++ fastStoreAndSetup)))
-      { s with pc := startPC, stack := (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) } = some t3 := by
+      { s with pc := startPC, stack := rest } = some t3 := by
     exact runInstrSeq_append_running hpack
       (by simpa [t0, afterFastPack] using hrun) h8store
-  have ht3 : t3 = fastOutputBeforeReturnState s startPC (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) := by
+  have ht3 : t3 = fastOutputBeforeReturnState s startPC rest := by
     have hactive_t2 : 1 ≤ t2.activeWords.toNat := by
       simpa [t2, t1, t0, afterFastEndian, afterFastPack,
         outputActiveWords] using loadActive5_pos s
     have hstore_active :
-        (afterFastStore t2 t2.pc packed16 (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail)).activeWords = t2.activeWords := by
+        (afterFastStore t2 t2.pc packed16 rest).activeWords = t2.activeWords := by
       change t2.activeWordsAfterUInt256 0 32 = t2.activeWords
       exact activeWordsAfterUInt256_zero32_eq t2 hactive_t2
     have ht2_active : t2.activeWords = outputActiveWords s := by
@@ -521,7 +521,7 @@ theorem runInstrSeq_fastOutput_beforeReturn
     · simp [t3, t2, t1, t0, afterFastStore, afterFastEndian, afterFastPack,
         fastOutputBeforeReturnState]
       constructor
-      · change (afterFastStore t2 t2.pc packed16 (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail)).activeWords =
+      · change (afterFastStore t2 t2.pc packed16 rest).activeWords =
           outputActiveWords s
         exact hstore_active.trans ht2_active
       · simp [afterFastStore, t2, t1, t0, packed16, packed8, packed0,
@@ -541,34 +541,34 @@ theorem runInstrSeq_fastOutput_beforeReturn
   simpa only [fastOutputBeforeReturnTemplate, List.append_assoc] using hfull
 
 theorem runInstrSeq_fastOutput
-    (s : State) (startPC a b : UInt256) (tail : List UInt256)
-    (hstack : tail.length < 1016) (hrun : s.halt = .Running) :
+    (s : State) (startPC : UInt256) (rest : List UInt256)
+    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
     runInstrSeq fastOutputTemplate
-      { s with pc := startPC, stack := (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) } =
-      some (fastOutputReturned s startPC (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail)) := by
-  let t : State := fastOutputBeforeReturnState s startPC (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail)
+      { s with pc := startPC, stack := rest } =
+      some (fastOutputReturned s startPC rest) := by
+  let t : State := fastOutputBeforeReturnState s startPC rest
   have hpre : runInstrSeq fastOutputBeforeReturnTemplate
-      { s with pc := startPC, stack := (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) } = some t := by
+      { s with pc := startPC, stack := rest } = some t := by
     simpa [t] using
-      (runInstrSeq_fastOutput_beforeReturn s startPC a b tail hstack hrun)
+      (runInstrSeq_fastOutput_beforeReturn s startPC rest hstack hrun)
   have hret : runInstrSeq fastOutputReturnTemplate t =
-      some (afterFastReturn t t.pc (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail)) := by
-    have h := runInstrSeq_fastReturn t t.pc (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) (by simp only [List.length_cons]; omega)
+      some (afterFastReturn t t.pc rest) := by
+    have h := runInstrSeq_fastReturn t t.pc rest hstack
       (by simpa [t, fastOutputBeforeReturnState] using hrun)
     simpa [t, fastOutputBeforeReturnState] using h
   have hfull : runInstrSeq
       (fastOutputBeforeReturnTemplate ++ fastOutputReturnTemplate)
-      { s with pc := startPC, stack := (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) } =
-      some (afterFastReturn t t.pc (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail)) := by
+      { s with pc := startPC, stack := rest } =
+      some (afterFastReturn t t.pc rest) := by
     exact runInstrSeq_append_running hpre
       (by simpa [t, fastOutputBeforeReturnState] using hrun) hret
-  have hfinal : afterFastReturn t t.pc (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) =
-      fastOutputReturned s startPC (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail) := by
+  have hfinal : afterFastReturn t t.pc rest =
+      fastOutputReturned s startPC rest := by
     have hactive_t : 1 ≤ t.activeWords.toNat := by
       simpa [t, fastOutputBeforeReturnState, outputActiveWords] using
         loadActive5_pos s
     have hreturn_active :
-        (afterFastReturn t t.pc (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail)).activeWords = t.activeWords := by
+        (afterFastReturn t t.pc rest).activeWords = t.activeWords := by
       change t.activeWordsAfterUInt256 0 32 = t.activeWords
       exact activeWordsAfterUInt256_zero32_eq t hactive_t
     have ht_active : t.activeWords = outputActiveWords s := by
@@ -576,7 +576,7 @@ theorem runInstrSeq_fastOutput
     apply state_eq_of_fields
     · simp [t, afterFastReturn, fastOutputBeforeReturnState,
         fastOutputReturned, outputMemory, outputWord, outputActiveWords]
-      change (afterFastReturn t t.pc (a :: b :: DenseScheduleTemplate.mask16 :: DenseScheduleTemplate.mask8 :: tail)).activeWords = outputActiveWords s
+      change (afterFastReturn t t.pc rest).activeWords = outputActiveWords s
       exact hreturn_active.trans ht_active
     · simp [t, afterFastReturn, fastOutputBeforeReturnState,
         fastOutputReturned, outputMemory, outputWord, outputActiveWords]

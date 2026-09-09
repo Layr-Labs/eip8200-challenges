@@ -445,44 +445,8 @@ open Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate
 open PairedScheduleMemory
 
-/-- Minimal `PUSH` immediate width for a schedule cell address: one byte below
-256, two at or above it.  Every schedule cell is below 65536, so two bytes
-always suffice.  The artifact emits the minimal encoding, so the template must
-emit it too. -/
-def storeWidth (address : Nat) : Fin 33 :=
-  if address < 256 then ⟨1, by decide⟩ else ⟨2, by decide⟩
-
-theorem storeWidth_ne_zero (address : Nat) : (storeWidth address).val ≠ 0 := by
-  simp only [storeWidth]
-  split <;> decide
-
-/-- `PUSHw address; MSTORE`, at an explicit immediate width `w`. -/
-def storeTemplateW (w : Fin 33) (address : Nat) : List Instr :=
-  [.push w (UInt256.ofNat address), op .MSTORE]
-
-theorem run_storeTemplateW (w : Fin 33) (s : State) (pc value : UInt256) (address : Nat)
-    (rest : List UInt256) (hstack : rest.length < 1022) (hw : w.val ≠ 0)
-    (haddress : address < 2 ^ 256) (hrun : s.halt = .Running) :
-    runInstrSeq (storeTemplateW w address) {s with pc := pc, stack := value :: rest} =
-      some { s with
-        pc := pcAfter pc (storeTemplateW w address)
-        stack := rest
-        memory := writeWord s.memory address value
-        activeWords := UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32)} := by
-  have hcap1 : rest.length + 1 < 1024 := by omega
-  have hcap : rest.length + 1 + 1 < 1024 := by omega
-  have haddr : (UInt256.ofNat address).toNat = address := by
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat]
-    exact Nat.mod_eq_of_lt haddress
-  have hsize : (1 : Nat) + w.val = w.val + 1 := Nat.add_comm 1 w.val
-  simp [storeTemplateW, op, writeWord, runInstrSeq,
-    Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap1, hcap, hw, hsize,
-    UInt256.succ, Instr.size,
-    State.activeWordsAfterUInt256, haddr]
-  rfl
-
 def storeTemplate (address : Nat) : List Instr :=
-  storeTemplateW (storeWidth address) address
+  [push2 (UInt256.ofNat address), op .MSTORE]
 
 theorem run_storeTemplate (s : State) (pc value : UInt256) (address : Nat)
     (rest : List UInt256) (hstack : rest.length < 1022)
@@ -492,9 +456,17 @@ theorem run_storeTemplate (s : State) (pc value : UInt256) (address : Nat)
         pc := pcAfter pc (storeTemplate address)
         stack := rest
         memory := writeWord s.memory address value
-        activeWords := UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32)} :=
-  run_storeTemplateW (storeWidth address) s pc value address rest hstack
-    (storeWidth_ne_zero address) haddress hrun
+        activeWords := UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32)} := by
+  have hcap1 : rest.length + 1 < 1024 := by omega
+  have hcap : rest.length + 1 + 1 < 1024 := by omega
+  have haddr : (UInt256.ofNat address).toNat = address := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat]
+    exact Nat.mod_eq_of_lt haddress
+  simp [storeTemplate, push2, op, writeWord, runInstrSeq,
+    Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap1, hcap,
+    UInt256.succ, Instr.size,
+    State.activeWordsAfterUInt256, haddr]
+  rfl
 
 def maskTemplate : List Instr :=
   [.push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), op .AND]
@@ -529,8 +501,6 @@ theorem run_duplicateShiftTemplate (s : State) (pc value : UInt256) (shift : Nat
     UInt256.succ, Instr.size]
   rfl
 
-#print axioms storeWidth_ne_zero
-#print axioms run_storeTemplateW
 #print axioms run_storeTemplate
 #print axioms run_maskTemplate
 #print axioms run_duplicateShiftTemplate
@@ -944,18 +914,16 @@ theorem fullTemplate_length : fullTemplate.length = 152 := by
     endianStage, halfTemplate, prefixTemplate, keepTemplate, PairedScheduleStores.firstTemplate,
     PairedScheduleStores.middleTemplate, PairedScheduleStores.lastTemplate,
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.maskTemplate,
-    PairedSchedulePrimitives.storeTemplate,
-    PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth, sentinelTemplate]
+    PairedSchedulePrimitives.storeTemplate, sentinelTemplate]
 
-theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 391 := by
+theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 393 := by
   rw [DenseScheduleTemplate.assembleBytes_length]
   norm_num [fullTemplate, initialTemplate, reversedHalfTemplate, endianStage8, endianStage16,
     endianStage, endianMaskPush, endianFactorPush, endianFactor,
     halfTemplate, prefixTemplate, keepTemplate, PairedScheduleStores.firstTemplate,
     PairedScheduleStores.middleTemplate, PairedScheduleStores.lastTemplate,
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.maskTemplate,
-    PairedSchedulePrimitives.storeTemplate,
-    PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth, sentinelTemplate, cell,
+    PairedSchedulePrimitives.storeTemplate, sentinelTemplate, cell,
     op, push1, push2, push3, dup1, swap1]
 
 theorem fullTemplate_staticGas : staticGas fullTemplate = 461 := by
@@ -964,8 +932,7 @@ theorem fullTemplate_staticGas : staticGas fullTemplate = 461 := by
     halfTemplate, prefixTemplate, keepTemplate, PairedScheduleStores.firstTemplate,
     PairedScheduleStores.middleTemplate, PairedScheduleStores.lastTemplate,
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.maskTemplate,
-    PairedSchedulePrimitives.storeTemplate,
-    PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth, sentinelTemplate, cell,
+    PairedSchedulePrimitives.storeTemplate, sentinelTemplate, cell,
     op, push1, push2, push3, dup1, swap1,
     Challenge.EvmProof.Meter.instrStaticCost, Gas.baseCost]
 
@@ -990,8 +957,8 @@ open EvmSemantics EvmSemantics.EVM
 open YulEvmCompiler
 open DenseScheduleTemplate PairedScheduleMemory PairedScheduleHalves PairedScheduleCombined
 
-/-- Exact instruction decoding of the 391-byte window this file's `fullTemplate`
-assembles to. This list is not generated from test inputs. -/
+/-- Exact instruction decoding of the frozen 5337-byte candidate's 393-byte
+window beginning at physical PC464. This list is not generated from test inputs. -/
 def frozenInstructions : List Instr :=
   [.op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
@@ -1094,14 +1061,14 @@ def frozenInstructions : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0xe0),
    .op .SHR,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x00c0),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x00c0),
    .op .MSTORE,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0xc0),
    .op .SHR,
    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
    .op .AND,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x00e0),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x00e0),
    .op .MSTORE,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0xa0),
@@ -1152,8 +1119,7 @@ theorem fullTemplate_eq_frozenInstructions : fullTemplate = frozenInstructions :
     endianFactor, halfTemplate, prefixTemplate, keepTemplate, PairedScheduleStores.firstTemplate,
     PairedScheduleStores.middleTemplate, PairedScheduleStores.lastTemplate,
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.maskTemplate,
-    PairedSchedulePrimitives.storeTemplate,
-    PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth, sentinelTemplate, cell,
+    PairedSchedulePrimitives.storeTemplate, sentinelTemplate, cell,
     op, push1, push2, push3, dup1, swap1, mask8, mask16]
 
 #print axioms fullTemplate_eq_frozenInstructions

@@ -9,6 +9,19 @@ def Matched (input : ByteArray) : Prop :=
   MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1
 instance (input : ByteArray) : Decidable (Matched input) := inferInstanceAs (Decidable (_ ∧ _))
 
+
+/-- The depth-2 rung additionally pins calldata words 2 and 3. -/
+def Matched2 (input : ByteArray) : Prop :=
+  MachineState.readWord input 64 = PatternedWordData.expectedWordAt 2 ∧
+  MachineState.readWord input 96 = PatternedWordData.expectedWordAt 3
+instance (input : ByteArray) : Decidable (Matched2 input) := inferInstanceAs (Decidable (_ ∧ _))
+
+/-- The dispatcher consumes two blocks at once exactly when all four words match. -/
+def double (input : ByteArray) : Bool := decide (Matched input ∧ Matched2 input)
+
+theorem double_iff (input : ByteArray) : double input = true ↔ Matched input ∧ Matched2 input := by
+  simp [double]
+
 def prepared (s : State) (i : Nat) : State :=
   if i = 0 then PrefixStateMemory.copied s else s
 

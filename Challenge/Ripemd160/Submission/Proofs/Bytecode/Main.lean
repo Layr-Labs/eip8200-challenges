@@ -28,7 +28,7 @@ private def wfOp {op : Operation}
 def applyInitStore (s : State) (w : Artifact.InitStore) : State :=
   { s with
     pc := UInt256.ofNat (Artifact.instructionPC (w.index + 3))
-    stack := Execution.maskTail
+    stack := []
     memory := MachineState.writeBytes s.memory
       (Data.Bytes.natToBytesPadded w.value.toNat 32) w.offset.toNat
     activeWords := s.activeWordsAfterUInt256 w.offset.toNat 32 }
@@ -61,12 +61,12 @@ private theorem pushAvailable (width : Fin 33) :
 def afterInitValue (s : State) (w : Artifact.InitStore) : State :=
   { s with
     pc := UInt256.ofNat (Artifact.instructionPC (w.index + 1))
-    stack := w.value :: Execution.maskTail }
+    stack := [w.value] }
 
 def afterInitOffset (s : State) (w : Artifact.InitStore) : State :=
   { s with
     pc := UInt256.ofNat (Artifact.instructionPC (w.index + 2))
-    stack := w.offset :: w.value :: Execution.maskTail }
+    stack := [w.offset, w.value] }
 
 def locatedInitValue (w : Artifact.InitStore) (hw : w ∈ Artifact.initStores) :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -93,11 +93,11 @@ def initializedState (input : ByteArray) : State :=
   Artifact.initStores.foldl applyInitStore (Execution.mainStart input)
 
 @[simp] theorem initializedState_pc (input : ByteArray) :
-    (initializedState input).pc = UInt256.ofNat (Artifact.instructionPC 26) := by
+    (initializedState input).pc = UInt256.ofNat (Artifact.instructionPC 18) := by
   rfl
 
 @[simp] theorem initializedState_stack (input : ByteArray) :
-    (initializedState input).stack = Execution.maskTail := by rfl
+    (initializedState input).stack = [] := by rfl
 
 @[simp] theorem initializedState_halt (input : ByteArray) :
     (initializedState input).halt = .Running := by rfl
@@ -114,7 +114,7 @@ def initializedState (input : ByteArray) : State :=
 theorem run_initValue (s : State) (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores)
     (hpc : s.pc = UInt256.ofNat (Artifact.instructionPC w.index))
-    (hstack : s.stack = Execution.maskTail)
+    (hstack : s.stack = [])
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (locatedInitValue w hw) s =
       some (afterInitValue s w) := by
@@ -132,7 +132,7 @@ theorem run_initValue (s : State) (w : Artifact.InitStore)
 theorem run_initOffset (s : State) (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores) (hm : w.useMsize = false)
     (hpc : s.pc = UInt256.ofNat (Artifact.instructionPC (w.index + 1)))
-    (hstack : s.stack = w.value :: Execution.maskTail) (hrun : s.halt = .Running) :
+    (hstack : s.stack = [w.value]) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (locatedInitOffset w hw hm) s =
       some (afterInitOffset s w) := by
   simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
@@ -147,7 +147,7 @@ theorem run_initOffset (s : State) (w : Artifact.InitStore)
 theorem run_initWrite (s : State) (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores)
     (hpc : s.pc = UInt256.ofNat (Artifact.instructionPC (w.index + 2)))
-    (hstack : s.stack = w.offset :: w.value :: Execution.maskTail) (hrun : s.halt = .Running) :
+    (hstack : s.stack = [w.offset, w.value]) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (locatedInitWrite w hw) s =
       some (applyInitStore s w) := by
   simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
@@ -186,7 +186,7 @@ private theorem msizeDecoded (s : State) (w : Artifact.InitStore)
 def gasSteps_initStore (s : State) (w : Artifact.InitStore)
     (hw : w ∈ Artifact.initStores)
     (hpc : s.pc = UInt256.ofNat (Artifact.instructionPC w.index))
-    (hstack : s.stack = Execution.maskTail)
+    (hstack : s.stack = [])
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hrun : s.halt = .Running)
@@ -282,7 +282,7 @@ def gasSteps_initStores (s : State) :
     InitChain ws →
     (∀ w, ws.head? = some w →
       s.pc = UInt256.ofNat (Artifact.instructionPC w.index)) →
-    s.stack = Execution.maskTail →
+    s.stack = [] →
     (∀ w, ws.head? = some w → s.activeWords.toNat ≤ w.offset.toNat / 32) →
     (∀ w, ws.head? = some w → w.useMsize = true →
       UInt256.ofNat (32 * s.activeWords.toNat) = w.offset) →

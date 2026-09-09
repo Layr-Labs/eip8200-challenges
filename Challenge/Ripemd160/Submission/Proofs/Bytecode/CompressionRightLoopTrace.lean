@@ -32,7 +32,7 @@ def gasSteps_rightRoundSetup (s : State)
     UInt256.ofNat (roundIndex i), UInt256.ofNat i,
     messageOffset, returnDest] ++ rest
   let q1 := rightFirstReturned s messageOffset returnDest rest i
-  let tail2 := [TableTrace.tableValue s (UInt256.ofNat 1506) (UInt256.ofNat i),
+  let tail2 := [TableTrace.tableValue s (UInt256.ofNat 1472) (UInt256.ofNat i),
     constantAt s 1728 i, UInt256.ofNat 792, UInt256.ofNat (roundIndex i),
     UInt256.ofNat i, messageOffset, returnDest] ++ rest
   let q2 := rightSecondReturned s messageOffset returnDest rest i
@@ -53,7 +53,7 @@ def gasSteps_rightRoundSetup (s : State)
       hcode hfork
       (run_rightRoundPrefix s messageOffset returnDest rest i hi (by omega)
         hcode hrun) hrun hnp
-  have gt1 := TableTrace.gasSteps_tableAt q0 (UInt256.ofNat 1506)
+  have gt1 := TableTrace.gasSteps_tableAt q0 (UInt256.ofNat 1472)
     (UInt256.ofNat i) (UInt256.ofNat 767) tail1 (by simp [tail1]; omega)
     hq0code hq0fork hq0run hq0np (by decide)
   have hq1code : q1.executionEnv.code = submissionBytecode := by
@@ -74,7 +74,7 @@ def gasSteps_rightRoundSetup (s : State)
       (s := q1) hq1code hq1fork
       (run_rightRoundMiddle s messageOffset returnDest rest i (by omega)
         hcode hrun) hq1run hq1np
-  have gt2 := TableTrace.gasSteps_tableAt q1 (UInt256.ofNat 1314)
+  have gt2 := TableTrace.gasSteps_tableAt q1 (UInt256.ofNat 1280)
     (UInt256.ofNat i) (UInt256.ofNat 780) tail2 (by simp [tail2]; omega)
     hq1code hq1fork hq1run hq1np (by decide)
   have hq2code : q2.executionEnv.code = submissionBytecode := by
@@ -97,39 +97,39 @@ def gasSteps_rightRoundSetup (s : State)
         hcode hrun) hq2run hq2np
   have gr := RoundTrace.gasSteps_round q2 (UInt256.ofNat 352)
     (rightRoundIndex i) (by unfold rightRoundIndex roundIndex; omega)
-    (TableTrace.tableValue q1 (UInt256.ofNat 1314) (UInt256.ofNat i))
-    (TableTrace.tableValue s (UInt256.ofNat 1506) (UInt256.ofNat i))
+    (TableTrace.tableValue q1 (UInt256.ofNat 1280) (UInt256.ofNat i))
+    (TableTrace.tableValue s (UInt256.ofNat 1472) (UInt256.ofNat i))
     (constantAt s 1728 i) (UInt256.ofNat 792) roundTail
     (by simp [roundTail]; omega) hq2code hq2fork hq2run hq2np (by decide)
   have hp' : Challenge.EvmProof.GasSteps
       (rightBodyAt s messageOffset returnDest rest i)
-      (TableTrace.tableAtEntry q0 (UInt256.ofNat 1506) (UInt256.ofNat i)
+      (TableTrace.tableAtEntry q0 (UInt256.ofNat 1472) (UInt256.ofNat i)
         (UInt256.ofNat 767) tail1) :=
     Challenge.EvmProof.GasSteps.cast gp rfl (by simp [q0, tail1])
   have ht1' : Challenge.EvmProof.GasSteps
-      (TableTrace.tableAtEntry q0 (UInt256.ofNat 1506) (UInt256.ofNat i)
+      (TableTrace.tableAtEntry q0 (UInt256.ofNat 1472) (UInt256.ofNat i)
         (UInt256.ofNat 767) tail1) q1 :=
     Challenge.EvmProof.GasSteps.cast gt1 rfl (by
       simp [q1, q0, tail1, rightFirstReturned])
   have hm' : Challenge.EvmProof.GasSteps q1
-      (TableTrace.tableAtEntry q1 (UInt256.ofNat 1314) (UInt256.ofNat i)
+      (TableTrace.tableAtEntry q1 (UInt256.ofNat 1280) (UInt256.ofNat i)
         (UInt256.ofNat 780) tail2) :=
     Challenge.EvmProof.GasSteps.cast gm rfl (by simp [q1, tail2])
   have ht2' : Challenge.EvmProof.GasSteps
-      (TableTrace.tableAtEntry q1 (UInt256.ofNat 1314) (UInt256.ofNat i)
+      (TableTrace.tableAtEntry q1 (UInt256.ofNat 1280) (UInt256.ofNat i)
         (UInt256.ofNat 780) tail2) q2 :=
     Challenge.EvmProof.GasSteps.cast gt2 rfl (by
       simp [q2, q1, tail2, rightSecondReturned])
   have hs' : Challenge.EvmProof.GasSteps q2
       (RoundTrace.roundEntry q2 (UInt256.ofNat 352) (rightRoundIndex i)
-        (TableTrace.tableValue q1 (UInt256.ofNat 1314) (UInt256.ofNat i))
-        (TableTrace.tableValue s (UInt256.ofNat 1506) (UInt256.ofNat i))
+        (TableTrace.tableValue q1 (UInt256.ofNat 1280) (UInt256.ofNat i))
+        (TableTrace.tableValue s (UInt256.ofNat 1472) (UInt256.ofNat i))
         (constantAt s 1728 i) (UInt256.ofNat 792) roundTail) :=
     Challenge.EvmProof.GasSteps.cast gs rfl (by simp [q2, q1, roundTail])
   have gr' : Challenge.EvmProof.GasSteps
       (RoundTrace.roundEntry q2 (UInt256.ofNat 352) (rightRoundIndex i)
-        (TableTrace.tableValue q1 (UInt256.ofNat 1314) (UInt256.ofNat i))
-        (TableTrace.tableValue s (UInt256.ofNat 1506) (UInt256.ofNat i))
+        (TableTrace.tableValue q1 (UInt256.ofNat 1280) (UInt256.ofNat i))
+        (TableTrace.tableValue s (UInt256.ofNat 1472) (UInt256.ofNat i))
         (constantAt s 1728 i) (UInt256.ofNat 792) roundTail)
       (rightRoundState s messageOffset returnDest rest i) :=
     Challenge.EvmProof.GasSteps.cast gr rfl (by
@@ -180,12 +180,12 @@ def gasSteps_rightTest_continue (s : State)
 
 def rightExitTested (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 828
+  { s with pc := UInt256.ofNat 804
            stack := UInt256.ofNat 80 :: messageOffset :: returnDest :: rest }
 
 def combinationEntry (s : State) (messageOffset returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 830
+  { s with pc := UInt256.ofNat 806
            stack := [messageOffset, returnDest] ++ rest }
 
 set_option linter.unusedSimpArgs false in
@@ -199,7 +199,7 @@ theorem run_rightTest_exit (s : State) (messageOffset returnDest : UInt256)
   have hlt : UInt256.lt (UInt256.ofNat 80) (UInt256.ofNat 80) = 0 := by decide
   have hzero : UInt256.isZero (0 : UInt256) = 1 := by decide
   have htrue : UInt256.isTrue (1 : UInt256) = true := by decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 838 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 804 = true := by decide
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega

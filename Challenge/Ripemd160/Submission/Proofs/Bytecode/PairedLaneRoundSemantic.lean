@@ -1,11 +1,13 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneSums
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneCarryAdd
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneScaledRotate
 
 set_option warningAsError true
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneRoundSemantic
 
 open PairedLaneCore PairedLaneProduct PairedLaneBoolean PairedLaneRotate PairedLaneCarry
+open PairedLaneScaledRotate
 
 theorem low_blend (x y : BitVec 256) : low (blend x y) = low x := by
   have hm : upperMask.extractLsb' 0 32 = 0#32 :=
@@ -19,37 +21,49 @@ theorem high_blend (x y : BitVec 256) : high (blend x y) = high y := by
   simp only [blend, high, BitVec.extractLsb'_xor, BitVec.extractLsb'_and,
     hm, BitVec.and_allOnes, ← BitVec.xor_assoc, BitVec.xor_self, BitVec.zero_xor]
 
-/-- Equal rotation parameters use the assembler's single-shift branch. -/
+/-- Equal rotation parameters use the single-shift form.  Otherwise the lane
+needing the larger rotation is pre-scaled by `2^(difference)` before the shared
+`factor` multiply, and one shift by `32 - min r s` rotates both lanes. -/
 def rawRotate (x : BitVec 256) (r s : Nat) : BitVec 256 :=
   if r = s then (x * factor) >>> (32 - r)
-  else blend ((x * factor) >>> (32 - r)) ((x * factor) >>> (32 - s))
+  else if s < r then (scaleLow x (r - s) * factor) >>> (32 - s)
+  else (scaleHigh x (s - r) * factor) >>> (32 - r)
 
 theorem low_rawRotate (a b : BitVec 32) (r s : Nat)
-    (hr0 : 0 < r) (hr : r < 32) :
+    (hr0 : 0 < r) (hr : r < 32) (hs0 : 0 < s) (hs : s < 32) :
     low (rawRotate (pack a b) r s) = a.rotateLeft r := by
   by_cases h : r = s
   · simp only [rawRotate, h, ite_true]
     exact low_rotate_product a b s (h ▸ hr0) (h ▸ hr)
-  · simp only [rawRotate, h, ite_false, low_blend]
-    exact low_rotate_product a b r hr0 hr
+  · by_cases hlt : s < r
+    · simp only [rawRotate, h, ite_false, hlt, ite_true]
+      exact low_scaleLow a b r s hs0 hlt hr
+    · simp only [rawRotate, h, ite_false, hlt]
+      exact low_scaleHigh a b r s hr0 (by omega) hs
 
 theorem high_rawRotate (a b : BitVec 32) (r s : Nat)
-    (hs0 : 0 < s) (hs : s < 32) :
+    (hr0 : 0 < r) (hr : r < 32) (hs0 : 0 < s) (hs : s < 32) :
     high (rawRotate (pack a b) r s) = b.rotateLeft s := by
   by_cases h : r = s
   · simp only [rawRotate, h, ite_true]
     exact high_rotate_product a b s hs0 hs
-  · simp only [rawRotate, h, ite_false, high_blend]
-    exact high_rotate_product a b s hs0 hs
+  · by_cases hlt : s < r
+    · simp only [rawRotate, h, ite_false, hlt, ite_true]
+      exact high_scaleLow a b r s hs0 hs hlt hr
+    · simp only [rawRotate, h, ite_false, hlt]
+      exact high_scaleHigh a b r s hr0 (by omega) hs
 
 theorem rawRotate_gap (a b : BitVec 32) (r s : Nat)
-    (hr0 : 0 < r) (hr : r < 32) :
+    (hr0 : 0 < r) (hr : r < 32) (hs0 : 0 < s) (hs : s < 32) :
     (rawRotate (pack a b) r s).getLsbD 64 = false := by
   by_cases h : r = s
   · simp only [rawRotate, h, ite_true]
     exact shifted_product_gap a b s (h ▸ hr0) (h ▸ hr)
-  · simp only [rawRotate, h, ite_false]
-    exact blend_shifted_gap a b r s hr0 hr
+  · by_cases hlt : s < r
+    · simp only [rawRotate, h, ite_false, hlt, ite_true]
+      exact gap_scaleLow a b r s hs0 hlt hr
+    · simp only [rawRotate, h, ite_false, hlt]
+      exact gap_scaleHigh a b r s hr0 (by omega) hs
 
 def pairedSum (j : Nat) (a b c d word k : BitVec 256) : BitVec 256 :=
   (((a + pairedF j b c d) + word) + k) &&& pairMask
@@ -82,8 +96,8 @@ theorem pairedT_pack (j r s : Nat)
         (scalarT (4 - j) s ar br cr dr er wr kr) := by
   unfold pairedT
   rw [pairedSum_pack, ← normalize_eq_and]
-  rw [normalize_add_pack _ el er (rawRotate_gap _ _ r s hr0 hr)]
-  rw [low_rawRotate _ _ r s hr0 hr, high_rawRotate _ _ r s hs0 hs]
+  rw [normalize_add_pack _ el er (rawRotate_gap _ _ r s hr0 hr hs0 hs)]
+  rw [low_rawRotate _ _ r s hr0 hr hs0 hs, high_rawRotate _ _ r s hr0 hr hs0 hs]
   rfl
 
 structure Lane (w : Nat) where

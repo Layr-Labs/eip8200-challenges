@@ -134,7 +134,7 @@ private theorem tail_instruction_pc (i : Nat)
     tailBefore CachedMaskOrderedTail.template
     tailAfter
     artifact_consume_split 0 (by omega)
-  have hzero' : Artifact.submissionArtifact.instructionPC 3721 =
+  have hzero' : Artifact.submissionArtifact.instructionPC 3729 =
       (assembleBytes tailBefore).length := by
     simpa [tailBefore_length] using hzero
   have hbefore : (assembleBytes tailBefore).length = 0x1472 :=

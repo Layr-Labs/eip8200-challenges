@@ -44,6 +44,8 @@ invariant at every iteration, so final digest words follow by specialization.
 -/
 structure CompressionRun (input : ByteArray) where
   states : Nat → State
+  /-- The first dispatcher execution consumes blocks 0 and 1 together. -/
+  double : Bool
   initial : DriverTrace.setupEntry (states 0) input = PaddingTrace.padReturned input
   code : ∀ i, i ≤ DriverTrace.blockCount input →
     (states i).executionEnv.code = submissionBytecode
@@ -56,9 +58,13 @@ structure CompressionRun (input : ByteArray) where
       (states i).executionEnv.codeAddr = false
   callStack : ∀ i, i ≤ DriverTrace.blockCount input →
     (states i).callStack = []
-  blockTrace : ∀ i, i < DriverTrace.blockCount input →
+  blockTrace : ∀ i, i < DriverTrace.blockCount input → (double = true → 2 ≤ i) →
     GasSteps (DriverTrace.dispatchEntry (states i) input i)
       (DriverTrace.compressReturned (states (i + 1)) input i)
+  blockTraceDoubleBlocks : double = true → 2 ≤ DriverTrace.blockCount input
+  blockTraceDouble : double = true →
+    GasSteps (DriverTrace.dispatchEntry (states 0) input 0)
+      (DriverTrace.compressReturned (states 2) input 1)
   hashWords : ∀ i, i ≤ DriverTrace.blockCount input →
     HashWordsAt input i (states i)
 
@@ -75,6 +81,7 @@ single interface consumed by `DirectCorrect`. -/
 def toCompressionSeam (run : CompressionRun input) :
     DirectCorrect.CompressionSeam input where
   states := run.states
+  double := run.double
   initial := run.initial
   code := run.code
   fork := run.fork
@@ -82,6 +89,8 @@ def toCompressionSeam (run : CompressionRun input) :
   noPrecompile := run.noPrecompile
   callStack := run.callStack
   compress := run.blockTrace
+  compressDoubleBlocks := run.blockTraceDoubleBlocks
+  compressDouble := run.blockTraceDouble
   finalWords := finalWords run
 
 @[simp] theorem toCompressionSeam_states (run : CompressionRun input) :

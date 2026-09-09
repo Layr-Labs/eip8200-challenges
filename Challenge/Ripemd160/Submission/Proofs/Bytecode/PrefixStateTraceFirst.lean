@@ -10,9 +10,9 @@ set_option linter.unusedSimpArgs false
 /-!
 # H8 first-block execution (index 0)
 
-Raw `prefixPath` (instructions 4268..4276) from the nonempty dispatcher
+Raw `prefixPath` (instructions 4277..4285) from the nonempty dispatcher
 entry to `PrefixStateCodecopy.preCopyState`, the generic `CODECOPY` step,
-then `firstComparePath` (4278..4282) ending at the compression entry on a
+then `firstComparePath` (4287..4291) ending at the compression entry on a
 word-0 mismatch and at `firstMatchedState` on a word-0 match.  Only the
 first block (`i = 0`) is handled here.
 -/
@@ -26,24 +26,23 @@ checked word: the concrete four-element driver stack for block 0 with the
 `CALLDATALOAD` result on top. -/
 def rho (input : ByteArray) : List UInt256 :=
   [MachineState.readWord input 0, DriverTrace.messageOffsetWord 0,
-    UInt256.ofNat 115, DriverTrace.blockOffsetWord 0, Padding.paddedWord input] ++
-    Execution.maskTail
+    UInt256.ofNat 102, DriverTrace.blockOffsetWord 0, Padding.paddedWord input]
 
-@[simp] theorem rho_length (input : ByteArray) : (rho input).length = 7 := rfl
+@[simp] theorem rho_length (input : ByteArray) : (rho input).length = 5 := rfl
 
-/-- State after the first comparison succeeds: pc 5215 (instruction 4283)
+/-- State after the first comparison succeeds: pc 5012 (instruction 4292)
 with the plain driver stack on top of the copied-code state. -/
 def firstMatchedState (s : State) (input : ByteArray) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5225
-    stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 115,
-      DriverTrace.blockOffsetWord 0, Padding.paddedWord input] ++ Execution.maskTail }
+    pc := UInt256.ofNat 5012
+    stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
+      DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 471 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 279 = 471 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 464 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 272 = 464 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 279 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 272 (by rfl)
   rw [hpc] at h
   exact h
 
@@ -58,9 +57,8 @@ theorem run_prefix (s : State) (input : ByteArray)
       some (PrefixStateCodecopy.preCopyState s (rho input)) := by
   have hdup : ((FastEmptyBlock.nonemptyEntry s input 0).stack[2]? :
       Option UInt256) = some (DriverTrace.blockOffsetWord 0) := by
-    show (([DriverTrace.messageOffsetWord 0, UInt256.ofNat 115,
-        DriverTrace.blockOffsetWord 0, Padding.paddedWord input] ++
-        Execution.maskTail)[2]? :
+    show ([DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
+        DriverTrace.blockOffsetWord 0, Padding.paddedWord input][2]? :
       Option UInt256) = some _
     simp
   have hcond : ¬ UInt256.isTrue (DriverTrace.blockOffsetWord 0) := by
@@ -71,9 +69,9 @@ theorem run_prefix (s : State) (input : ByteArray)
       Stepper.runInstr, FastEmptyBlock.nonemptyEntry,
       PrefixStateCodecopy.preCopyState, rho, hdup, hcond,
       show DriverTrace.blockOffsetWord 0 = UInt256.ofNat 0 from rfl,
-      PrefixStatePaths.pc4013, PrefixStatePaths.pc4014, PrefixStatePaths.pc4015,
-      PrefixStatePaths.pc4016, PrefixStatePaths.pc4017, PrefixStatePaths.pc4018,
-      PrefixStatePaths.pc4019, PrefixStatePaths.pc4020, PrefixStatePaths.pc4021,
+      PrefixStatePaths.pc4072, PrefixStatePaths.pc4073, PrefixStatePaths.pc4074,
+      PrefixStatePaths.pc4075, PrefixStatePaths.pc4076, PrefixStatePaths.pc4077,
+      PrefixStatePaths.pc4078, PrefixStatePaths.pc4079, PrefixStatePaths.pc4080,
       hcalldata, hrun, UInt256.isTrue, Nat.mod_eq_of_lt,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -114,13 +112,12 @@ private theorem act_idem (s : State) :
       (PrefixStateMemory.copied s).activeWords :=
   activeWordsAfterUInt256_idem _ (copied_active_ge s)
 
-/-- `activeWordsAfterUInt256` does not read the stack, so this is stated over an
-arbitrary one: the two persistent mask words at the bottom changed how the
-stack is spelled at this site, and a fixed spelling stopped the rewrite firing. -/
-private theorem compare_mload_active (s : State) (stk : List UInt256) :
+private theorem compare_mload_active (s : State) (input : ByteArray) :
     ({ toSharedState := (PrefixStateMemory.copied s).toSharedState,
-        pc := UInt256.ofNat 5219,
-        stack := stk,
+        pc := UInt256.ofNat 5006,
+        stack := [UInt256.ofNat 0, MachineState.readWord input 0,
+          DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
+          DriverTrace.blockOffsetWord 0, Padding.paddedWord input],
         execLength := (PrefixStateMemory.copied s).execLength,
         halt := HaltKind.Running, callStack := s.callStack } : State).activeWordsAfterUInt256 0 32 =
       (PrefixStateMemory.copied s).activeWords := by
@@ -155,7 +152,7 @@ private theorem cond_mismatch (input : ByteArray)
   simpa using htrue
 
 /-- The five-instruction first-word comparison on a word-0 match: the final
-`JUMPI` is not taken and execution continues at pc 5215 (instruction 4283). -/
+`JUMPI` is not taken and execution continues at pc 5012 (instruction 4292). -/
 theorem run_firstCompare_match (s : State) (input : ByteArray)
     (hmatch : MachineState.readWord input 0 = PatternedWordData.expectedWordAt 0)
     (hrun : s.halt = .Running) :
@@ -183,11 +180,11 @@ theorem run_firstCompare_match (s : State) (input : ByteArray)
   simp (config := { maxSteps := 300000 })
     [PrefixStatePaths.firstComparePath, Stepper.runLocatedBlock, Stepper.runLocated,
       Stepper.runInstr, PrefixStateCodecopy.copiedState, firstMatchedState, rho,
-      hword, hzero, hcond, hcond', hfalse, compare_mload_active s,
+      hword, hzero, hcond, hcond', hfalse, compare_mload_active s input,
       cond_match input hmatch, act_idem,
       UInt256.isTrue, hrun,
-      PrefixStatePaths.pc4023, PrefixStatePaths.pc4024, PrefixStatePaths.pc4025,
-      PrefixStatePaths.pc4026, PrefixStatePaths.pc4027,
+      PrefixStatePaths.pc4082, PrefixStatePaths.pc4083, PrefixStatePaths.pc4084,
+      PrefixStatePaths.pc4085, PrefixStatePaths.pc4086,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
@@ -205,7 +202,7 @@ theorem run_firstCompare_mismatch (s : State) (input : ByteArray)
   have hword : MachineState.readWord (PrefixStateMemory.copied s).memory 0 =
       PatternedWordData.expectedWordAt 0 :=
     PrefixStateMemory.copied_word_zero s
-  have hdest : Decode.isValidJumpDest submissionBytecode 471 = true := jumpDest_generic
+  have hdest : Decode.isValidJumpDest submissionBytecode 464 = true := jumpDest_generic
   have htrue : UInt256.isTrue
       (UInt256.xor (PatternedWordData.expectedWordAt 0)
         (MachineState.readWord input 0)) = true :=
@@ -221,11 +218,11 @@ theorem run_firstCompare_mismatch (s : State) (input : ByteArray)
   simp (config := { maxSteps := 300000 })
     [PrefixStatePaths.firstComparePath, Stepper.runLocatedBlock, Stepper.runLocated,
       Stepper.runInstr, PrefixStateCodecopy.copiedState, DriverTrace.compressEntry, rho,
-      hword, htrue, hcond, hcond', compare_mload_active s,
+      hword, htrue, hcond, hcond', compare_mload_active s input,
       cond_mismatch input hne, act_idem, hdest,
       UInt256.isTrue, hrun, hcode,
-      PrefixStatePaths.pc4023, PrefixStatePaths.pc4024, PrefixStatePaths.pc4025,
-      PrefixStatePaths.pc4026, PrefixStatePaths.pc4027,
+      PrefixStatePaths.pc4082, PrefixStatePaths.pc4083, PrefixStatePaths.pc4084,
+      PrefixStatePaths.pc4085, PrefixStatePaths.pc4086,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
