@@ -92,24 +92,14 @@ def decisionPath : List Located :=
    ⟨78, .push ⟨2, by decide⟩ (UInt256.ofNat 5035), by rfl, by decide⟩,
    ⟨79, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
-def bodyPath : List Located :=
-  [⟨80, .push ⟨4, by decide⟩ h0, by rfl, by decide⟩,
-   ⟨81, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨82, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨83, .push ⟨4, by decide⟩ h1, by rfl, by decide⟩,
-   ⟨84, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
-   ⟨85, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨86, .push ⟨4, by decide⟩ h2, by rfl, by decide⟩,
-   ⟨87, .push ⟨1, by decide⟩ (UInt256.ofNat 96), by rfl, by decide⟩,
-   ⟨88, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨89, .push ⟨4, by decide⟩ h3, by rfl, by decide⟩,
-   ⟨90, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
-   ⟨91, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨92, .push ⟨4, by decide⟩ h4, by rfl, by decide⟩,
-   ⟨93, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
-   ⟨94, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨95, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨96, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+def bodyPrefixPath : List Located :=
+  [⟨80, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
+   ⟨81, .push ⟨2, by decide⟩ (UInt256.ofNat 5270), by rfl, by decide⟩,
+   ⟨82, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩]
+
+def bodySuffixPath : List Located :=
+  [⟨84, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨85, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def bodyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
@@ -144,12 +134,41 @@ def emptyMemory (memory : ByteArray) : ByteArray :=
   let m3 := writeWord m2 0x80 h3
   writeWord m3 0xa0 h4
 
+def emptyCodeTable : ByteArray :=
+  (((Data.Bytes.natToBytesPadded h0.toNat 32 ++
+      Data.Bytes.natToBytesPadded h1.toNat 32) ++
+      Data.Bytes.natToBytesPadded h2.toNat 32) ++
+      Data.Bytes.natToBytesPadded h3.toNat 32) ++
+      Data.Bytes.natToBytesPadded h4.toNat 32
+
+private theorem emptyMemory_codeTable (memory : ByteArray) :
+    emptyMemory memory = MachineState.writeBytes memory emptyCodeTable 0x20 := by
+  unfold emptyMemory emptyCodeTable writeWord
+  rw [Challenge.EvmProof.Memory.writeBytes_append_adjacent,
+    Challenge.EvmProof.Memory.writeBytes_append_adjacent,
+    Challenge.EvmProof.Memory.writeBytes_append_adjacent,
+    Challenge.EvmProof.Memory.writeBytes_append_adjacent]
+
+
 def emptyActiveWords (s : State) : UInt256 :=
   let a0 := s.activeWordsAfterUInt256 0x20 32
   let a1 := UInt256.ofNat (MachineState.activeWordsAfter a0.toNat 0x40 32)
   let a2 := UInt256.ofNat (MachineState.activeWordsAfter a1.toNat 0x60 32)
   let a3 := UInt256.ofNat (MachineState.activeWordsAfter a2.toNat 0x80 32)
   UInt256.ofNat (MachineState.activeWordsAfter a3.toNat 0xa0 32)
+
+def bodyCopyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
+  { bodyEntry s input i with
+    pc := UInt256.ofNat 0x85
+    stack := [UInt256.ofNat 32, UInt256.ofNat 5270, UInt256.ofNat 160,
+      DriverTrace.messageOffsetWord i, UInt256.ofNat 0x66,
+      DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
+
+def bodyCopiedState (s : State) (input : ByteArray) (i : Nat) : State :=
+  { bodyEntry s input i with
+    pc := UInt256.ofNat 0x86
+    memory := emptyMemory s.memory
+    activeWords := emptyActiveWords s }
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
@@ -303,11 +322,38 @@ theorem run_decision_empty (s : State) (input : ByteArray) (i : Nat)
     UInt256.isTrue, Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.succ_ofNat_mod]
 
-theorem run_body (s : State) (input : ByteArray) (i : Nat)
+set_option maxHeartbeats 5000000 in
+private theorem bodyCodeTable :
+    MachineState.readPadded submissionBytecode 5270 160 = emptyCodeTable := by
+  decide
+
+private theorem run_bodyPrefix (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock bodyPath (bodyEntry s input i) =
-      some (resultState s input i) := by
+    Challenge.EvmProof.Stepper.runLocatedBlock bodyPrefixPath
+      (bodyEntry s input i) = some (bodyCopyEntry s input i) := by
+  have hpc80 : Artifact.submissionArtifact.instructionPC 80 = 0x7e := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]
+    decide
+  have hpc81 : Artifact.submissionArtifact.instructionPC 81 = 0x80 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]
+    decide
+  have hpc82 : Artifact.submissionArtifact.instructionPC 82 = 0x83 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]
+    decide
+  have hpc83 : Artifact.submissionArtifact.instructionPC 83 = 0x85 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]
+    decide
+  simp [bodyPrefixPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    bodyEntry, bodyCopyEntry, hcode, hrun, hpc80, hpc81, hpc82, hpc83,
+    Challenge.EvmProof.Word.succ_ofNat_mod]
+
+private theorem run_bodySuffix (s : State) (input : ByteArray) (i : Nat)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock bodySuffixPath
+      (bodyCopiedState s input i) = some (resultState s input i) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 0x66 = true := by
     have hpc : Artifact.submissionArtifact.instructionPC 64 = 0x66 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]
@@ -315,69 +361,67 @@ theorem run_body (s : State) (input : ByteArray) (i : Nat)
     have h := Artifact.submissionArtifact.isValidJumpDest_index 64 (by rfl)
     rw [hpc] at h
     exact h
-  have hpc2796 : Artifact.submissionArtifact.instructionPC 80 = 0x7e := by
+  have hpc84 : Artifact.submissionArtifact.instructionPC 84 = 0x86 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hpc2797 : Artifact.submissionArtifact.instructionPC 81 = 0x83 := by
+  have hpc85 : Artifact.submissionArtifact.instructionPC 85 = 0x87 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hpc2798 : Artifact.submissionArtifact.instructionPC 82 = 0x85 := by
+  simp [bodySuffixPath, Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    bodyCopiedState, resultState, bodyEntry, hcode, hrun, hdest,
+    hpc84, hpc85, Challenge.EvmProof.Word.succ_ofNat_mod]
+
+def gasSteps_codecopy (s : State) (input : ByteArray) (i : Nat)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps (bodyCopyEntry s input i) (bodyCopiedState s input i) := by
+  let pre := bodyCopyEntry s input i
+  let cost := Gas.codecopyTotal pre (UInt256.ofNat 5270) (UInt256.ofNat 160)
+  refine GasSteps.one cost ?_
+  intro gas hgas
+  have hcode' : (withGas pre gas).executionEnv.code =
+      Artifact.submissionArtifact.code := by
+    change s.executionEnv.code = submissionBytecode
+    exact hcode
+  have hpc : (withGas pre gas).pc.toNat =
+      Artifact.submissionArtifact.instructionPC 83 := by
+    change (UInt256.ofNat 0x85).toNat = _
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hpc2799 : Artifact.submissionArtifact.instructionPC 83 = 0x86 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2800 : Artifact.submissionArtifact.instructionPC 84 = 0x8b := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2801 : Artifact.submissionArtifact.instructionPC 85 = 0x8d := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2802 : Artifact.submissionArtifact.instructionPC 86 = 0x8e := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2803 : Artifact.submissionArtifact.instructionPC 87 = 0x93 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2804 : Artifact.submissionArtifact.instructionPC 88 = 0x95 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2805 : Artifact.submissionArtifact.instructionPC 89 = 0x96 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2806 : Artifact.submissionArtifact.instructionPC 90 = 0x9b := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2807 : Artifact.submissionArtifact.instructionPC 91 = 0x9d := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2808 : Artifact.submissionArtifact.instructionPC 92 = 0x9e := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2809 : Artifact.submissionArtifact.instructionPC 93 = 0xa3 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2810 : Artifact.submissionArtifact.instructionPC 94 = 0xa5 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2811 : Artifact.submissionArtifact.instructionPC 95 = 0xa6 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2812 : Artifact.submissionArtifact.instructionPC 96 = 0xa7 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  simp (config := { maxSteps := 300000 })
-    [bodyPath, Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bodyEntry, resultState, emptyMemory, emptyActiveWords, writeWord,
-      h0, h1, h2, h3, h4, hcode, hrun, hdest,
-      hpc2796, hpc2797, hpc2798, hpc2799, hpc2800, hpc2801, hpc2802,
-      hpc2803, hpc2804, hpc2805, hpc2806, hpc2807, hpc2808, hpc2809,
-      hpc2810, hpc2811, hpc2812,
-      State.activeWordsAfterUInt256,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
+  have hdec := Stepper.decodes_of_artifact
+    Artifact.submissionArtifact (withGas pre gas) 83 (.op .CODECOPY)
+    hcode' hpc (by rfl) (by exact ⟨by decide, trivial, rfl⟩)
+  change (withGas pre gas).decodedOp = some .CODECOPY at hdec
+  apply EVM.Step.running
+  · simpa [pre, bodyCopyEntry, withGas] using hrun
+  · simpa [pre, bodyCopyEntry, withGas] using hnp
+  · have hstack :
+        (withGas pre gas).stack =
+          UInt256.ofNat 32 :: UInt256.ofNat 5270 :: UInt256.ofNat 160 ::
+            [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x66,
+              DriverTrace.blockOffsetWord i, Padding.paddedWord input] := by
+      rfl
+    have hcap : (withGas pre gas).stack.length +
+        Operation.pushArity .CODECOPY ≤ 1024 + Operation.popArity .CODECOPY := by
+      norm_num [pre, bodyCopyEntry, bodyEntry, withGas,
+        Operation.pushArity, Operation.popArity]
+    have hstep := StepRunning.codecopy (withGas pre gas)
+      (UInt256.ofNat 32) (UInt256.ofNat 5270) (UInt256.ofNat 160)
+      [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x66,
+        DriverTrace.blockOffsetWord i, Padding.paddedWord input]
+      hdec hstack hgas hcap
+    have h32 : (32 : Nat) % 2 ^ 256 = 32 := Nat.mod_eq_of_lt (by norm_num)
+    have h5270 : (5270 : Nat) % 2 ^ 256 = 5270 :=
+      Nat.mod_eq_of_lt (by norm_num)
+    have h160 : (160 : Nat) % 2 ^ 256 = 160 := Nat.mod_eq_of_lt (by norm_num)
+    simpa [pre, cost, bodyCopyEntry, bodyCopiedState, bodyEntry,
+      emptyMemory_codeTable, emptyActiveWords, withGas, Gas.codecopyTotal,
+      State.activeWordsAfterUInt256, Challenge.EvmProof.Word.word_toNat_ofNat,
+      h32, h5270, h160, bodyCodeTable, hcode,
+      Challenge.EvmProof.Word.succ_ofNat (n := 0x85) (by norm_num)] using hstep
 
 private def gasStepsBlock (path : List Located) (s t : State)
     (hcode : s.executionEnv.code = submissionBytecode)
@@ -414,11 +458,17 @@ def gasSteps_empty (s : State) (input : ByteArray) (i : Nat)
   have gdecision := gasStepsBlock decisionPath
     (legacyDispatchEntry s input i) (bodyEntry s input i)
     hcode hfork (run_decision_empty s input i hempty hcalldata hrun) hrun hnp
-  have gbody := gasStepsBlock bodyPath (bodyEntry s input i)
-    (resultState s input i) (by simpa [bodyEntry] using hcode)
-    (by simpa [bodyEntry, State.fork] using hfork)
-    (run_body s input i hcode hrun) (by simpa [bodyEntry] using hrun)
-    (by simpa [bodyEntry] using hnp)
-  exact gdecision.trans gbody
+  have gprefix := gasStepsBlock bodyPrefixPath
+    (bodyEntry s input i) (bodyCopyEntry s input i)
+    hcode hfork (run_bodyPrefix s input i hcode hrun) hrun hnp
+  have gcopy := gasSteps_codecopy s input i hcode hrun hnp
+  have gsuffix := gasStepsBlock bodySuffixPath
+    (bodyCopiedState s input i) (resultState s input i)
+    (by simpa [bodyCopiedState, bodyEntry] using hcode)
+    (by simpa [bodyCopiedState, bodyEntry, State.fork] using hfork)
+    (run_bodySuffix s input i hcode hrun)
+    (by simpa [bodyCopiedState, bodyEntry] using hrun)
+    (by simpa [bodyCopiedState, bodyEntry] using hnp)
+  exact gdecision.trans (gprefix.trans (gcopy.trans gsuffix))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.FastEmptyBlock
