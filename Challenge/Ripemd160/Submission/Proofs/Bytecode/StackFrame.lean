@@ -79,7 +79,7 @@ def loadSite1238 : GenericRoundSite Artifact.submissionArtifact .Osaka
   rfl
 
 @[simp] theorem loadSite1238_startPC :
-    loadSite1238.startPC = UInt256.ofNat 0xb46 := by
+    loadSite1238.startPC = UInt256.ofNat 0xb4d := by
   change UInt256.ofNat
     (Artifact.submissionArtifact.instructionPC QuadLayout.rightLoadIndex) = _
   rw [QuadLayout.rightLoad_pc]
@@ -163,8 +163,8 @@ theorem run_exit (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock exitPath (frameSeam s input i) =
       some (frameLoadEntry s input i) := by
-  have hpc940 : Artifact.submissionArtifact.instructionPC 323 = 0x28e := by rfl
-  have hpc941 : Artifact.submissionArtifact.instructionPC 324 = 0x293 := by rfl
+  have hpc940 : Artifact.submissionArtifact.instructionPC 323 = 0x21b := by rfl
+  have hpc941 : Artifact.submissionArtifact.instructionPC 324 = 0x21c := by rfl
   simp [exitPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     frameSeam, frameLoadEntry, StackBlockModel.scheduledState,
     StackBlockModel.withMemory, StackBlockModel.withActiveWords,

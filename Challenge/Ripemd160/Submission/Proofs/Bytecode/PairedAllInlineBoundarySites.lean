@@ -63,7 +63,7 @@ theorem startup_instructionPC :
   decide
 
 theorem startup_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 475 = 769 := by
+    Artifact.submissionArtifact.instructionPC 470 = 749 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -84,31 +84,31 @@ theorem startupSite_startPC : startupSite.startPC = UInt256.ofNat 701 := by
     UInt256.ofNat 701
   rw [startup_instructionPC]
 
-theorem startupSite_endPC : startupSite.endPC = UInt256.ofNat 769 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 475) =
-    UInt256.ofNat 769
+theorem startupSite_endPC : startupSite.endPC = UInt256.ofNat 749 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 470) =
+    UInt256.ofNat 749
   rw [startup_endInstructionPC]
 
 theorem tailPrefix_slice :
-    (Artifact.submissionArtifact.instructions.drop 3948).take
+    (Artifact.submissionArtifact.instructions.drop 3947).take
       PairedAllInlineTail.prefixTemplate.length = PairedAllInlineTail.prefixTemplate := by
   rfl
 
 theorem tailPrefix_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3948 = 4829 := by
+    Artifact.submissionArtifact.instructionPC 3947 = 4803 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem tailPrefix_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 4017 = 4913 := by
+    Artifact.submissionArtifact.instructionPC 4016 = 4887 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def tailPrefixSite :
     GenericRoundSite Artifact.submissionArtifact .Osaka PairedAllInlineTail.prefixTemplate :=
-  StackSiteBuilder.ofSlice PairedAllInlineTail.prefixTemplate 3948 tailPrefix_slice
+  StackSiteBuilder.ofSlice PairedAllInlineTail.prefixTemplate 3947 tailPrefix_slice
     (by
-      change 3948 + PairedAllInlineTail.prefixTemplate.length ≤ Artifact.submissionInstructions.length
+      change 3947 + PairedAllInlineTail.prefixTemplate.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -116,14 +116,14 @@ def tailPrefixSite :
       (instructions := PairedAllInlineTail.prefixTemplate) (by decide))
     (by decide)
 
-theorem tailPrefixSite_startPC : tailPrefixSite.startPC = UInt256.ofNat 4829 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3948) =
-    UInt256.ofNat 4829
+theorem tailPrefixSite_startPC : tailPrefixSite.startPC = UInt256.ofNat 4803 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3947) =
+    UInt256.ofNat 4803
   rw [tailPrefix_instructionPC]
 
-theorem tailPrefixSite_endPC : tailPrefixSite.endPC = UInt256.ofNat 4913 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4017) =
-    UInt256.ofNat 4913
+theorem tailPrefixSite_endPC : tailPrefixSite.endPC = UInt256.ofNat 4887 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4016) =
+    UInt256.ofNat 4887
   rw [tailPrefix_endInstructionPC]
 
 private theorem instructionPC_toNat (index : Nat) :
@@ -137,16 +137,16 @@ private theorem instructionPC_toNat (index : Nat) :
 
 def tailJump : LocatedSite Artifact.submissionArtifact .Osaka where
   located :=
-    { index := 4017
+    { index := 4016
       instruction := .op .JUMP
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4017)
-  pc_eq := instructionPC_toNat 4017
+  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4016)
+  pc_eq := instructionPC_toNat 4016
 
-theorem tailJump_pc : tailJump.pc = UInt256.ofNat 4913 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4017) =
-    UInt256.ofNat 4913
+theorem tailJump_pc : tailJump.pc = UInt256.ofNat 4887 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4016) =
+    UInt256.ofNat 4887
   rw [tailPrefix_endInstructionPC]
 
 def tailSite : PairedAllInlineTail.TailSite Artifact.submissionArtifact .Osaka where
@@ -188,7 +188,7 @@ def gasSteps_startup (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1
     (h160 : UInt256.land PairedDerivedStartup.lowerWord (MachineState.readWord s.memory 160) =
       MachineState.readWord s.memory 160) :
     GasSteps {s with pc := UInt256.ofNat 701, stack := rho}
-      {s with pc := UInt256.ofNat 769, stack := PairedStartupTrace.resultStack s.memory rho} := by
+      {s with pc := UInt256.ofNat 749, stack := PairedStartupTrace.resultStack s.memory rho} := by
   have h := PairedNormalizedStartup.gasSteps_template startupSite s rho hstack hrun hactive
     hcode hfork hnp h32 h64 h96 h128 h160
   change GasSteps {s with pc := startupSite.startPC, stack := rho}
@@ -202,7 +202,7 @@ def gasSteps_tail (s : State) (ret : UInt256) (q : PairedTailTrace.Frame)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4829, stack := PairedAllInlineTail.entryStack q ret rho}
+    GasSteps {s with pc := UInt256.ofNat 4803, stack := PairedAllInlineTail.entryStack q ret rho}
       {s with pc := ret, stack := rho, memory := PairedTailTrace.resultMemory s.memory q} := by
   have h := PairedAllInlineTail.gasSteps_tail tailSite s ret q rho hstack hrun hactive hvalid
     hcode hfork hnp
