@@ -6,77 +6,55 @@ set_option maxRecDepth 50000
 set_option maxHeartbeats 5000000
 set_option linter.unusedSimpArgs false
 
-/-! Generic `CODECOPY` step for the H8 checked prefix (index 4081, pc 5004).
-
-The raw symbolic stepper has no `CODECOPY` case, so this module proves the
-single step directly against `StepRunning.codecopy`, following the
-`KnownInputCompactCodecopy` pattern.  It copies 32 code bytes from offset
-262 to scratch word 0.  Branch proofs compose via `gasSteps_codecopy`.
--/
+/-! The first checked word is now installed with a literal `PUSH32` and one
+`MSTORE`.  Three executable `JUMPDEST` bytes preserve the old instruction
+indices while removing the `PUSH1`/`PUSH2`/`CODECOPY` setup. -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateCodecopy
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
+/-- State before the literal first-word setup (instruction 4078, pc 4998). -/
 def preCopyState (s : State) (rho : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 5004
-    stack := [UInt256.ofNat 0, UInt256.ofNat 262, UInt256.ofNat 32] ++ rho }
-
-def copiedState (s : State) (rho : List UInt256) : State :=
-  { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5005
+    pc := UInt256.ofNat 4998
     stack := rho }
 
+/-- State after the literal store and width-preserving executable padding. -/
+def copiedState (s : State) (rho : List UInt256) : State :=
+  { PrefixStateMemory.copied s with
+    pc := UInt256.ofNat 5034
+    stack := rho }
+
+/-- Gas certificate for the literal first-word setup. -/
 def gasSteps_codecopy (s : State) (rho : List UInt256)
-    (hstack : rho.length ≤ 1021)
+    (_hstack : rho.length ≤ 1021)
     (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (preCopyState s rho) (copiedState s rho) := by
-  let pre := preCopyState s rho
-  let cost := Gas.codecopyTotal pre (UInt256.ofNat 0) (UInt256.ofNat 32)
-  refine GasSteps.one cost ?_
-  intro gas hgas
-  have hcode' : (withGas pre gas).executionEnv.code =
-      Artifact.submissionArtifact.code := by
-    change s.executionEnv.code = submissionBytecode
-    exact hcode
-  have hpc : (withGas pre gas).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4081 := by
-    show (UInt256.ofNat 5004).toNat = _
-    rw [PrefixStatePaths.pc4081]
-    decide
-  have hdec := Stepper.decodes_of_artifact
-    Artifact.submissionArtifact (withGas pre gas) 4081 (.op .CODECOPY)
-    hcode' hpc (by rfl) (by exact ⟨by decide, trivial, rfl⟩)
-  change (withGas pre gas).decodedOp = some .CODECOPY at hdec
-  apply EVM.Step.running
-  · simpa [pre, preCopyState, withGas] using hrun
-  · simpa [pre, preCopyState, withGas] using hnp
-  · have hstack' : (withGas pre gas).stack =
-        UInt256.ofNat 0 :: UInt256.ofNat 262 :: UInt256.ofNat 32 :: rho := by
-      rfl
-    have hpush : Operation.pushArity .CODECOPY = 0 := rfl
-    have hpop : Operation.popArity .CODECOPY = 3 := rfl
-    have hlen : (withGas pre gas).stack.length = 3 + rho.length := by
-      simp [pre, preCopyState, withGas]
-      omega
-    have hcap : (withGas pre gas).stack.length +
-        Operation.pushArity .CODECOPY ≤ 1024 + Operation.popArity .CODECOPY := by
-      omega
-    have hstep := StepRunning.codecopy (withGas pre gas)
-      (UInt256.ofNat 0) (UInt256.ofNat 262) (UInt256.ofNat 32) rho
-      hdec hstack' hgas hcap
-    have mz : (0 : Nat) % 2 ^ 256 = 0 := Nat.mod_eq_of_lt (by norm_num)
-    have mz262 : (262 : Nat) % 2 ^ 256 = 262 := Nat.mod_eq_of_lt (by norm_num)
-    have mz32 : (32 : Nat) % 2 ^ 256 = 32 := Nat.mod_eq_of_lt (by norm_num)
-    simpa [pre, cost, preCopyState, copiedState, PrefixStateMemory.copied,
-      withGas, Gas.codecopyTotal, State.activeWordsAfterUInt256,
-      Challenge.EvmProof.Word.word_toNat_ofNat, mz, mz262, mz32,
-      Challenge.EvmProof.Word.succ_ofNat (n := 5004) (by norm_num),
-      hcode] using hstep
+  have hresult :
+      Challenge.EvmProof.Stepper.runLocatedBlock PrefixStatePaths.setupPath
+        (preCopyState s rho) = some (copiedState s rho) := by
+    simp (config := { maxSteps := 500000 })
+      [PrefixStatePaths.setupPath,
+       Challenge.EvmProof.Stepper.runLocatedBlock,
+       Challenge.EvmProof.Stepper.runLocated,
+       Challenge.EvmProof.Stepper.runInstr,
+       preCopyState, copiedState, PrefixStateMemory.copied,
+       PrefixStateMemory.literal_bytes, _hstack, hcode, hrun,
+       PrefixStatePaths.pc4078, PrefixStatePaths.pc4079,
+       PrefixStatePaths.pc4080, PrefixStatePaths.pc4081,
+       State.activeWordsAfterUInt256,
+       Challenge.EvmProof.Word.word_toNat_ofNat,
+       Challenge.EvmProof.Word.ofNat_add_mod,
+       Challenge.EvmProof.Word.succ_ofNat_mod,
+       Nat.add_assoc]
+  exact Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka PrefixStatePaths.setupPath
+    hcode hfork hresult hrun hnp
 
 #print axioms gasSteps_codecopy
 

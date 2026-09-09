@@ -30,11 +30,11 @@ def rho (input : ByteArray) : List UInt256 :=
 
 @[simp] theorem rho_length (input : ByteArray) : (rho input).length = 5 := rfl
 
-/-- State after the first comparison succeeds: pc 5012 (instruction 4292)
+/-- State after the first comparison succeeds: pc 5041 (instruction 4292)
 with the plain driver stack on top of the copied-code state. -/
 def firstMatchedState (s : State) (input : ByteArray) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5012
+    pc := UInt256.ofNat 5041
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
@@ -46,7 +46,7 @@ theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 464 = true 
   rw [hpc] at h
   exact h
 
-/-- The raw nine-instruction checked-prefix setup for block 0 ends exactly at
+/-- The raw six-instruction checked-prefix setup for block 0 ends exactly at
 the generic `CODECOPY` pre-state. -/
 theorem run_prefix (s : State) (input : ByteArray)
     (hcalldata : s.executionEnv.calldata = input)
@@ -114,7 +114,7 @@ private theorem act_idem (s : State) :
 
 private theorem compare_mload_active (s : State) (input : ByteArray) :
     ({ toSharedState := (PrefixStateMemory.copied s).toSharedState,
-        pc := UInt256.ofNat 5006,
+        pc := UInt256.ofNat 5035,
         stack := [UInt256.ofNat 0, MachineState.readWord input 0,
           DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
           DriverTrace.blockOffsetWord 0, Padding.paddedWord input],
@@ -152,7 +152,7 @@ private theorem cond_mismatch (input : ByteArray)
   simpa using htrue
 
 /-- The five-instruction first-word comparison on a word-0 match: the final
-`JUMPI` is not taken and execution continues at pc 5012 (instruction 4292). -/
+`JUMPI` is not taken and execution continues at pc 5041 (instruction 4292). -/
 theorem run_firstCompare_match (s : State) (input : ByteArray)
     (hmatch : MachineState.readWord input 0 = PatternedWordData.expectedWordAt 0)
     (hrun : s.halt = .Running) :
@@ -228,20 +228,21 @@ theorem run_firstCompare_mismatch (s : State) (input : ByteArray)
       Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
   rfl
 
-/-- The single generic `CODECOPY` step for block 0 through the provided
+/-- The literal first-word setup for block 0 through the provided
 `PrefixStateCodecopy` lemma with the concrete five-word suffix. -/
 def gasSteps_codecopy_first (s : State) (input : ByteArray)
     (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (PrefixStateCodecopy.preCopyState s (rho input))
       (PrefixStateCodecopy.copiedState s (rho input)) :=
-  PrefixStateCodecopy.gasSteps_codecopy s (rho input) (by simp [rho]) hcode hrun hnp
+  PrefixStateCodecopy.gasSteps_codecopy s (rho input) (by simp [rho]) hcode hfork hrun hnp
 
-/-- Combined first-block execution certificate: nine setup instructions, the
-`CODECOPY` step, and five comparison instructions, branching on the word-0
-match.  Endpoints: `nonemptyEntry ... 0` to the branch target. -/
+/-- Combined first-block execution certificate: the literal setup, followed by
+the five comparison instructions, branching on the word-0 match.  Endpoints:
+`nonemptyEntry ... 0` to the branch target. -/
 def gasSteps_first (s : State) (input : ByteArray)
     (hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
@@ -270,10 +271,7 @@ def gasSteps_first (s : State) (input : ByteArray)
         change Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
           s.executionEnv.fork s.executionEnv.codeAddr = false
         exact hnp)
-  have gcc := gasSteps_codecopy_first s input
-    (by simpa [PrefixStateCodecopy.preCopyState] using hcode)
-    (by simpa [PrefixStateCodecopy.preCopyState] using hrun)
-    (by simpa [PrefixStateCodecopy.preCopyState] using hnp)
+  have gcc := gasSteps_codecopy_first s input hcode hfork hrun hnp
   by_cases hmatch : MachineState.readWord input 0 = PatternedWordData.expectedWordAt 0
   · have hrun' : (PrefixStateCodecopy.copiedState s (rho input)).halt = .Running := by
       simpa [PrefixStateCodecopy.copiedState, PrefixStateMemory.copied] using hrun
