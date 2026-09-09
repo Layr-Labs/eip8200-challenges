@@ -44,11 +44,11 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def expFinishTailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 536 .JUMPDEST, opAt 537 .POP, opAt 538 (.Dup ⟨0, by decide⟩),
-   opAt 539 (.Dup ⟨6, by decide⟩), pushAt 540 1 32, opAt 541 .SUB,
-   pushAt 542 1 3, opAt 543 .SHL, opAt 544 .SHL,
-   pushAt 545 0 0, opAt 546 .MSTORE,
-   opAt 547 (.Dup ⟨5, by decide⟩), pushAt 548 4 0, opAt 549 .RETURN]
+  [opAt 535 .JUMPDEST, opAt 536 .POP, opAt 537 (.Dup ⟨0, by decide⟩),
+   opAt 538 (.Dup ⟨6, by decide⟩), pushAt 539 1 32, opAt 540 .SUB,
+   pushAt 541 1 3, opAt 542 .SHL, opAt 543 .SHL,
+   pushAt 544 0 0, opAt 545 .MSTORE,
+   opAt 546 (.Dup ⟨5, by decide⟩), pushAt 547 4 0, opAt 548 .RETURN]
 
 def expFinishDispatchState (input : ByteArray) (acc base : UInt256) : State :=
   { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 669 }
@@ -82,14 +82,14 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
       (modulusSize input) }
 
 @[simp] private theorem exitPCs (i : Nat)
-    (hi : 536 ≤ i) (hii : i ≤ 549) :
+    (hi : 535 ≤ i) (hii : i ≤ 548) :
     Artifact.submissionArtifact.instructionPC i =
-      ([669,670,671,672,673,675,676,678,679,680,681,682,683,688] : List Nat)[i - 536]! := by
+      ([669,670,671,672,673,675,676,678,679,680,681,682,683,688] : List Nat)[i - 535]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump669 :
     Decode.isValidJumpDest submissionBytecode 669 = true :=
-  Artifact.isValidJumpDest_index 536 (by rfl)
+  Artifact.isValidJumpDest_index 535 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_expFinishGuard (input : ByteArray) (acc base : UInt256)

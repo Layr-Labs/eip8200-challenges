@@ -27,7 +27,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 3780).toNat = true :=
-  Exp.jumpD 3780 (by decide) jumpDest4608
+  Exp.jumpD 3780 (by decide) jumpDest4612
 
 /-! ## Facts at `BDONE` on the hit path -/
 

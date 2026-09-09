@@ -37,9 +37,9 @@ private def loopHeadState (template : State) (base modulus : UInt256)
     activeWords := UInt256.ofNat 16 }
 
 @[simp] private theorem finishPCs (index : Nat)
-    (hlo : 1963 ≤ index) (hhi : index ≤ 1966) :
+    (hlo : 1961 ≤ index) (hhi : index ≤ 1964) :
     Artifact.submissionArtifact.instructionPC index =
-      ([2790,2792,2793,2795] : List Nat)[index - 1963]! := by
+      ([2790,2792,2793,2795] : List Nat)[index - 1961]! := by
   interval_cases index <;> decide
 
 set_option linter.unusedSimpArgs false in

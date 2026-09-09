@@ -499,8 +499,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 5 }),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.EQ,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
-  YulEvmCompiler.Instr.push 2 669,
+  YulEvmCompiler.Instr.push 3 669,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }),
@@ -1009,8 +1008,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
   YulEvmCompiler.Instr.push 1 33,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.GT,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
-  YulEvmCompiler.Instr.push 2 1877,
+  YulEvmCompiler.Instr.push 3 1877,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.push 1 32,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.CALLDATALOAD,
@@ -1182,7 +1180,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 6144,
   YulEvmCompiler.Instr.push 2 6144,
   YulEvmCompiler.Instr.push 2 6144,
-  YulEvmCompiler.Instr.push 2 4424,
+  YulEvmCompiler.Instr.push 2 4428,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
@@ -1249,7 +1247,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 1024,
   YulEvmCompiler.Instr.push 2 5120,
   YulEvmCompiler.Instr.push 2 1024,
-  YulEvmCompiler.Instr.push 2 4424,
+  YulEvmCompiler.Instr.push 2 4428,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
@@ -1284,7 +1282,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 2048,
   YulEvmCompiler.Instr.push 2 6144,
   YulEvmCompiler.Instr.push 2 1024,
-  YulEvmCompiler.Instr.push 2 4424,
+  YulEvmCompiler.Instr.push 2 4428,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
@@ -1314,7 +1312,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 1024,
   YulEvmCompiler.Instr.push 2 1024,
   YulEvmCompiler.Instr.push 2 1024,
-  YulEvmCompiler.Instr.push 2 4424,
+  YulEvmCompiler.Instr.push 2 4428,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
@@ -1327,7 +1325,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 1024,
   YulEvmCompiler.Instr.push 2 2048,
   YulEvmCompiler.Instr.push 2 1024,
-  YulEvmCompiler.Instr.push 2 4424,
+  YulEvmCompiler.Instr.push 2 4428,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
@@ -1353,7 +1351,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 1024,
   YulEvmCompiler.Instr.push 2 3072,
   YulEvmCompiler.Instr.push 2 1024,
-  YulEvmCompiler.Instr.push 2 4424,
+  YulEvmCompiler.Instr.push 2 4428,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 4 }),
@@ -1777,7 +1775,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
-  YulEvmCompiler.Instr.push 2 4424,
+  YulEvmCompiler.Instr.push 2 4428,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.push 0 0,
@@ -1847,7 +1845,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 6144,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
   YulEvmCompiler.Instr.push 2 6144,
-  YulEvmCompiler.Instr.push 2 4424,
+  YulEvmCompiler.Instr.push 2 4428,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.push 2 1607,
@@ -1865,7 +1863,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op EvmSemantics.Operation.XOR,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.OR,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-  YulEvmCompiler.Instr.push 2 5235,
+  YulEvmCompiler.Instr.push 2 5239,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.push 2 517,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
@@ -2504,14 +2502,14 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 2048,
   YulEvmCompiler.Instr.push 2 1024,
   YulEvmCompiler.Instr.push 2 6144,
-  YulEvmCompiler.Instr.push 2 4424,
+  YulEvmCompiler.Instr.push 2 4428,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.push 2 1746,
   YulEvmCompiler.Instr.push 2 2048,
   YulEvmCompiler.Instr.push 2 6144,
   YulEvmCompiler.Instr.push 2 1024,
-  YulEvmCompiler.Instr.push 2 4424,
+  YulEvmCompiler.Instr.push 2 4428,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
@@ -2663,12 +2661,12 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 7 }),
   YulEvmCompiler.Instr.push 1 1,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 4 }),
-  YulEvmCompiler.Instr.push 1 0,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
+  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
+  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.AND,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.MUL,
-  YulEvmCompiler.Instr.push 1 1,
+  YulEvmCompiler.Instr.push 2 1,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.ADD,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 8 }),
@@ -2738,7 +2736,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 2048,
   YulEvmCompiler.Instr.push 2 2048,
   YulEvmCompiler.Instr.push 2 2048,
-  YulEvmCompiler.Instr.push 2 4424,
+  YulEvmCompiler.Instr.push 2 4428,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.push 1 1,
@@ -2752,7 +2750,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 1024,
   YulEvmCompiler.Instr.push 2 1024,
   YulEvmCompiler.Instr.push 2 2048,
-  YulEvmCompiler.Instr.push 2 4424,
+  YulEvmCompiler.Instr.push 2 4428,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.push 2 1867,
@@ -2942,7 +2940,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-  YulEvmCompiler.Instr.push 2 4418,
+  YulEvmCompiler.Instr.push 2 4422,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
   YulEvmCompiler.Instr.push 2 2048,
@@ -2994,11 +2992,13 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op EvmSemantics.Operation.SUB,
   YulEvmCompiler.Instr.push 1 32,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.MLOAD,
+  YulEvmCompiler.Instr.push 1 128,
+  YulEvmCompiler.Instr.op EvmSemantics.Operation.SHR,
+  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
+  YulEvmCompiler.Instr.push 1 128,
+  YulEvmCompiler.Instr.op EvmSemantics.Operation.SHR,
+  YulEvmCompiler.Instr.op EvmSemantics.Operation.MUL,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.GT,
-  YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
-  YulEvmCompiler.Instr.push 0 0,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.LT,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.AND,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.SUB,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }),
@@ -3057,7 +3057,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 8224,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.GT,
-  YulEvmCompiler.Instr.push 2 4086,
+  YulEvmCompiler.Instr.push 2 4090,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
@@ -3085,7 +3085,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-  YulEvmCompiler.Instr.push 2 4330,
+  YulEvmCompiler.Instr.push 2 4334,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.push 0 0,
@@ -3125,7 +3125,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 8255,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.GT,
-  YulEvmCompiler.Instr.push 2 4269,
+  YulEvmCompiler.Instr.push 2 4273,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
   YulEvmCompiler.Instr.push 2 8224,
@@ -3137,13 +3137,13 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op EvmSemantics.Operation.MSTORE,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.LT,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-  YulEvmCompiler.Instr.push 2 4263,
+  YulEvmCompiler.Instr.push 2 4267,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.push 2 8224,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.MLOAD,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-  YulEvmCompiler.Instr.push 2 4398,
+  YulEvmCompiler.Instr.push 2 4402,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.push 0 0,
   YulEvmCompiler.Instr.push 2 9440,
@@ -3178,7 +3178,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 8255,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.GT,
-  YulEvmCompiler.Instr.push 2 4345,
+  YulEvmCompiler.Instr.push 2 4349,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
   YulEvmCompiler.Instr.push 2 8224,
@@ -3186,10 +3186,10 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op EvmSemantics.Operation.SUB,
   YulEvmCompiler.Instr.push 2 8224,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.MSTORE,
-  YulEvmCompiler.Instr.push 2 4330,
+  YulEvmCompiler.Instr.push 2 4334,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
-  YulEvmCompiler.Instr.push 2 4409,
+  YulEvmCompiler.Instr.push 2 4413,
   YulEvmCompiler.Instr.push 2 2048,
   YulEvmCompiler.Instr.push 2 2288,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
@@ -3213,7 +3213,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 2 256,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.EQ,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.OR,
-  YulEvmCompiler.Instr.push 2 4447,
+  YulEvmCompiler.Instr.push 2 4451,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.push 2 1930,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
@@ -3285,7 +3285,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 0 0,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 3 }),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 6 }),
-  YulEvmCompiler.Instr.push 2 4753,
+  YulEvmCompiler.Instr.push 2 4757,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.MLOAD,
@@ -3585,7 +3585,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op EvmSemantics.Operation.GT,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.ADD,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 6 }),
-  YulEvmCompiler.Instr.push 2 5081,
+  YulEvmCompiler.Instr.push 2 5085,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.push 2 192,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.MLOAD,
@@ -3828,7 +3828,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.GT,
-  YulEvmCompiler.Instr.push 2 4591,
+  YulEvmCompiler.Instr.push 2 4595,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
@@ -3861,16 +3861,16 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op EvmSemantics.Operation.EQ,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.OR,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-  YulEvmCompiler.Instr.push 2 5319,
+  YulEvmCompiler.Instr.push 2 5323,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 5 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.CALLDATALOAD,
   YulEvmCompiler.Instr.push 1 1,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.SUB,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.EQ,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-  YulEvmCompiler.Instr.push 2 5319,
+  YulEvmCompiler.Instr.op EvmSemantics.Operation.XOR,
+  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
+  YulEvmCompiler.Instr.push 2 5323,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 4 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.CALLDATALOAD,
@@ -3946,74 +3946,74 @@ theorem isValidJumpDest_index (index : Nat)
 
 private def nine_width :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2613 WindowTwentyOneEntry.widthProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1826 15 2613 WindowTwentyOneEntry.widthProgram
+  WindowTwentyOneSlice.block allWellFormed 1824 15 2613 WindowTwentyOneEntry.widthProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_miss :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2633 WindowTwentyOneEntry.missProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1841 2 2633 WindowTwentyOneEntry.missProgram
+  WindowTwentyOneSlice.block allWellFormed 1839 2 2633 WindowTwentyOneEntry.missProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_base :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2637 WindowTwentyOneEntry.baseProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1843 5 2637 WindowTwentyOneEntry.baseProgram
+  WindowTwentyOneSlice.block allWellFormed 1841 5 2637 WindowTwentyOneEntry.baseProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_modulus :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2644 WindowTwentyOneEntry.modulusProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1848 6 2644 WindowTwentyOneEntry.modulusProgram
+  WindowTwentyOneSlice.block allWellFormed 1846 6 2644 WindowTwentyOneEntry.modulusProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_normalize :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2652 WindowTwentyOneEntry.normalizeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1854 8 2652 WindowTwentyOneEntry.normalizeProgram
+  WindowTwentyOneSlice.block allWellFormed 1852 8 2652 WindowTwentyOneEntry.normalizeProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_table :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2662 WindowTwentyOneTableBuild.program :=
-  WindowTwentyOneSlice.block allWellFormed 1862 92 2662 WindowTwentyOneTableBuild.program
+  WindowTwentyOneSlice.block allWellFormed 1860 92 2662 WindowTwentyOneTableBuild.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_init :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2778 WindowTwentyOneInit.program :=
-  WindowTwentyOneSlice.block allWellFormed 1954 16 2778 WindowTwentyOneInit.program
+  WindowTwentyOneSlice.block allWellFormed 1952 16 2778 WindowTwentyOneInit.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_iteration :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2799 WindowTwentyOneLoop.iterationProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1970 438 2799 WindowTwentyOneLoop.iterationProgram
+  WindowTwentyOneSlice.block allWellFormed 1968 438 2799 WindowTwentyOneLoop.iterationProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_finish :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 3262 WindowTwentyOneReturn.program :=
-  WindowTwentyOneSlice.block allWellFormed 2408 5 3262 WindowTwentyOneReturn.program
+  WindowTwentyOneSlice.block allWellFormed 2406 5 3262 WindowTwentyOneReturn.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_zeroReturn :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 3268 WindowTwentyOneReturn.zeroProgram :=
-  WindowTwentyOneSlice.block allWellFormed 2413 7 3268 WindowTwentyOneReturn.zeroProgram
+  WindowTwentyOneSlice.block allWellFormed 2411 7 3268 WindowTwentyOneReturn.zeroProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_emptyReturn :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 3276 WindowTwentyOneReturn.emptyProgram :=
-  WindowTwentyOneSlice.block allWellFormed 2420 14 3276 WindowTwentyOneReturn.emptyProgram
+  WindowTwentyOneSlice.block allWellFormed 2418 14 3276 WindowTwentyOneReturn.emptyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-private def fermat_prime : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5235 FermatProgram.primeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3823 14 5235 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
-private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5288 FermatProgram.exponentProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3837 9 5288 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
-private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5300 FermatProgram.returnProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3846 16 5300 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
-private def fermat_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5319 FermatProgram.missProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3862 4 5319 FermatProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_prime : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5239 FermatProgram.primeProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3823 14 5239 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5292 FermatProgram.exponentProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3837 9 5292 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5304 FermatProgram.returnProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3846 16 5304 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5323 FermatProgram.missProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3862 4 5323 FermatProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
 def fermatPaths : FermatProgram.Paths submissionArtifact .Osaka where
   prime := fermat_prime
   exponent := fermat_exponent
   result := fermat_result
   miss := fermat_miss
   missJump := by exact isValidJumpDest_index 3862 (by rfl)
-  legacyJump := by exact isValidJumpDest_index 1843 (by rfl)
+  legacyJump := by exact isValidJumpDest_index 1841 (by rfl)
 
 def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka where
   width := nine_width
@@ -4031,13 +4031,13 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
     have h := isValidJumpDest_index 3823 (by rfl)
     exact h
   emptyJump := by
-    have h := isValidJumpDest_index 2420 (by rfl)
+    have h := isValidJumpDest_index 2418 (by rfl)
     exact h
   zeroJump := by
-    have h := isValidJumpDest_index 2413 (by rfl)
+    have h := isValidJumpDest_index 2411 (by rfl)
     exact h
   loopJump := by
-    have h := isValidJumpDest_index 1970 (by rfl)
+    have h := isValidJumpDest_index 1968 (by rfl)
     exact h
   missJump := by
     have h := isValidJumpDest_index 415 (by rfl)
