@@ -26,7 +26,7 @@ structure CompressionSeam (input : ByteArray) where
   states : Nat → State
   /-- The first dispatcher execution consumes blocks 0 and 1 together. -/
   double : Bool
-  /-- The first dispatcher execution consumes blocks 0, 1 and 2 together. -/
+  /-- The first dispatcher execution consumes blocks 0, 1, and 2 together. -/
   triple : Bool
   initial : DriverTrace.setupEntry (states 0) input = PaddingTrace.padReturned input
   code : ∀ i, i ≤ DriverTrace.blockCount input →
@@ -63,10 +63,9 @@ noncomputable def gasSteps_driver (input : ByteArray)
     (hfit : CalldataFits input) (seam : CompressionSeam input) :
     GasSteps (PaddingTrace.padReturned input)
       (DriverTrace.afterExit (seam.states (DriverTrace.blockCount input)) input) := by
-  have gloop := DriverTrace.gasSteps_loop_of_compress_ladder seam.states input hfit
+  have gloop := DriverTrace.gasSteps_loop_of_compress_double_triple seam.states input hfit
     seam.double seam.triple seam.code seam.fork seam.running seam.noPrecompile seam.compress
-    seam.compressDoubleBlocks seam.compressDouble
-    seam.compressTripleBlocks seam.compressTriple
+    seam.compressDoubleBlocks seam.compressDouble seam.compressTripleBlocks seam.compressTriple
   have hstart : DriverTrace.loopAt (seam.states 0) input 0 =
       PaddingTrace.padReturned input := by
     rw [← seam.initial]

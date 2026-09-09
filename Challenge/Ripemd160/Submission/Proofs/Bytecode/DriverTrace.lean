@@ -417,6 +417,35 @@ def gasSteps_iteration2_of_compress (s next : State) (input : ByteArray)
       (gcall.trans (hcompress.trans gcheck)) rfl
       (by simp [iterationEnd, hlast])
 
+/-! The depth-3 prefix consumes blocks 0, 1, and 2 in one dispatcher call. -/
+def gasSteps_iteration3_of_compress (s next : State) (input : ByteArray)
+    (hfit : Challenge.Ripemd160.CalldataFits input)
+    (h2 : 2 < blockCount input)
+    (hcodeS : s.executionEnv.code = submissionBytecode)
+    (hforkS : s.fork = .Osaka) (hrunS : s.halt = .Running)
+    (hnpS : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false)
+    (hcodeNext : next.executionEnv.code = submissionBytecode)
+    (hforkNext : next.fork = .Osaka) (hrunNext : next.halt = .Running)
+    (hnpNext : Precompile.isPrecompileWithConfig next.executionEnv.precompileConfig next.executionEnv.fork
+      next.executionEnv.codeAddr = false)
+    (hcompress : Challenge.EvmProof.GasSteps (dispatchEntry s input 0)
+      (compressReturned next input 2)) :
+    Challenge.EvmProof.GasSteps (loopAt s input 0)
+      (iterationEnd next input 2) := by
+  have gcall := gasSteps_call s input hfit 0 (by omega) hcodeS hforkS hrunS hnpS
+  by_cases hlast : 2 + 1 = blockCount input
+  · have gexit := gasSteps_postCheck_exit next input hfit 2 hlast hcodeNext
+      hforkNext hrunNext hnpNext
+    exact Challenge.EvmProof.GasSteps.cast
+      (gcall.trans (hcompress.trans gexit)) rfl (by simp [iterationEnd, hlast])
+  · have hnext : 2 + 1 < blockCount input := by omega
+    have gcheck := gasSteps_postCheck_continue next input hfit 2 hnext hcodeNext
+      hforkNext hrunNext hnpNext
+    exact Challenge.EvmProof.GasSteps.cast
+      (gcall.trans (hcompress.trans gcheck)) rfl
+      (by simp [iterationEnd, hlast])
+
 /-- Iterate the driver from block `start` to the exit, one block per
 dispatcher execution. -/
 def gasSteps_loop_from (states : Nat → State) (input : ByteArray)
@@ -492,51 +521,20 @@ def gasSteps_loop_of_compress_double (states : Nat → State) (input : ByteArray
       (fun i hi2 hi => hcompress i hi (fun _ => hi2))
     exact gfirst.trans (Challenge.EvmProof.GasSteps.cast hrest (by simp [iterationEnd]) rfl)
 
-
-/-- One dispatcher execution that consumes three blocks (the depth-3 prefix
-ladder): the call, the three-block certificate, then the post-check for
-block 2. -/
-def gasSteps_iteration3_of_compress (s next : State) (input : ByteArray)
-    (hfit : Challenge.Ripemd160.CalldataFits input)
-    (h2 : 2 < blockCount input)
-    (hcodeS : s.executionEnv.code = submissionBytecode)
-    (hforkS : s.fork = .Osaka) (hrunS : s.halt = .Running)
-    (hnpS : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hcodeNext : next.executionEnv.code = submissionBytecode)
-    (hforkNext : next.fork = .Osaka) (hrunNext : next.halt = .Running)
-    (hnpNext : Precompile.isPrecompileWithConfig next.executionEnv.precompileConfig next.executionEnv.fork
-      next.executionEnv.codeAddr = false)
-    (hcompress : Challenge.EvmProof.GasSteps (dispatchEntry s input 0)
-      (compressReturned next input 2)) :
-    Challenge.EvmProof.GasSteps (loopAt s input 0)
-      (iterationEnd next input 2) := by
-  have gcall := gasSteps_call s input hfit 0 (by omega) hcodeS hforkS hrunS hnpS
-  by_cases hlast : 2 + 1 = blockCount input
-  · have gexit := gasSteps_postCheck_exit next input hfit 2 hlast hcodeNext
-      hforkNext hrunNext hnpNext
-    exact Challenge.EvmProof.GasSteps.cast
-      (gcall.trans (hcompress.trans gexit)) rfl (by simp [iterationEnd, hlast])
-  · have hnext : 2 + 1 < blockCount input := by omega
-    have gcheck := gasSteps_postCheck_continue next input hfit 2 hnext hcodeNext
-      hforkNext hrunNext hnpNext
-    exact Challenge.EvmProof.GasSteps.cast
-      (gcall.trans (hcompress.trans gcheck)) rfl
-      (by simp [iterationEnd, hlast])
-
-/-- Iterate the driver over all padded blocks.  When `triple` is set, the
-first dispatcher execution consumes blocks 0, 1 and 2 together; when
-`double` is set it consumes blocks 0 and 1 together. -/
-def gasSteps_loop_of_compress_ladder (states : Nat → State) (input : ByteArray)
+/-! Compose the ordinary driver with optional depth-2 and depth-3 prefix rungs.
+The depth-3 branch is checked first; its trace already includes the call and
+post-check, so the remaining loop starts at block 3. -/
+def gasSteps_loop_of_compress_double_triple (states : Nat → State) (input : ByteArray)
     (hfit : Challenge.Ripemd160.CalldataFits input) (double triple : Bool)
     (hcode : ∀ i, i ≤ blockCount input →
       (states i).executionEnv.code = submissionBytecode)
     (hfork : ∀ i, i ≤ blockCount input → (states i).fork = .Osaka)
     (hrun : ∀ i, i ≤ blockCount input → (states i).halt = .Running)
     (hnp : ∀ i, i ≤ blockCount input →
-      Precompile.isPrecompileWithConfig (states i).executionEnv.precompileConfig (states i).executionEnv.fork
-        (states i).executionEnv.codeAddr = false)
-    (hcompress : ∀ i, i < blockCount input → (double = true → 2 ≤ i) → (triple = true → 3 ≤ i) →
+      Precompile.isPrecompileWithConfig (states i).executionEnv.precompileConfig
+        (states i).executionEnv.fork (states i).executionEnv.codeAddr = false)
+    (hcompress : ∀ i, i < blockCount input →
+      (double = true → 2 ≤ i) → (triple = true → 3 ≤ i) →
       Challenge.EvmProof.GasSteps (dispatchEntry (states i) input i)
         (compressReturned (states (i + 1)) input i))
     (hdoubleBlocks : double = true → 2 ≤ blockCount input)
@@ -554,26 +552,15 @@ def gasSteps_loop_of_compress_ladder (states : Nat → State) (input : ByteArray
   | true =>
     have h3 := htripleBlocks rfl
     have g3 := htripleTrace rfl
-    have gfirst := gasSteps_iteration3_of_compress (states 0) (states 3) input hfit (by omega)
-      (hcode 0 (by omega)) (hfork 0 (by omega)) (hrun 0 (by omega)) (hnp 0 (by omega))
-      (hcode 3 h3) (hfork 3 h3) (hrun 3 h3) (hnp 3 h3) g3
+    have gfirst := gasSteps_iteration3_of_compress (states 0) (states 3) input hfit
+      (by omega) (hcode 0 (by omega)) (hfork 0 (by omega)) (hrun 0 (by omega))
+      (hnp 0 (by omega)) (hcode 3 h3) (hfork 3 h3) (hrun 3 h3) (hnp 3 h3) g3
     have hrest := gasSteps_loop_from states input hfit hcode hfork hrun hnp 3 h3
       (fun i hi3 hi => hcompress i hi (fun _ => by omega) (fun _ => hi3))
     exact gfirst.trans (Challenge.EvmProof.GasSteps.cast hrest (by simp [iterationEnd]) rfl)
   | false =>
-    cases double with
-    | false =>
-      have h := gasSteps_loop_from states input hfit hcode hfork hrun hnp 0 (Nat.zero_le _)
-        (fun i _ hi => hcompress i hi (fun h => absurd h (by decide)) (fun h => absurd h (by decide)))
-      exact Challenge.EvmProof.GasSteps.cast h (by simp [Nat.ne_of_lt hpositive]) rfl
-    | true =>
-      have h2 := hdoubleBlocks rfl
-      have g2 := hdoubleTrace rfl
-      have gfirst := gasSteps_iteration2_of_compress (states 0) (states 2) input hfit (by omega)
-        (hcode 0 (by omega)) (hfork 0 (by omega)) (hrun 0 (by omega)) (hnp 0 (by omega))
-        (hcode 2 h2) (hfork 2 h2) (hrun 2 h2) (hnp 2 h2) g2
-      have hrest := gasSteps_loop_from states input hfit hcode hfork hrun hnp 2 h2
-        (fun i hi2 hi => hcompress i hi (fun _ => hi2) (fun h => absurd h (by decide)))
-      exact gfirst.trans (Challenge.EvmProof.GasSteps.cast hrest (by simp [iterationEnd]) rfl)
+    exact gasSteps_loop_of_compress_double states input hfit double hcode hfork hrun hnp
+      (fun i hi hd => hcompress i hi hd (fun ht => absurd ht (by decide)))
+      hdoubleBlocks hdoubleTrace
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DriverTrace

@@ -5,9 +5,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateData
 set_option warningAsError true
 set_option maxRecDepth 50000
 set_option maxHeartbeats 5000000
-
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateKernel
-
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PrefixStateModel
 
@@ -22,14 +20,12 @@ def nextState (s : State) (input : ByteArray) (i : Nat) : State :=
   split
   · simp
   · split <;> simp
-
 @[simp] theorem nextState_halt (s : State) (input : ByteArray) (i : Nat) :
     (nextState s input i).halt = s.halt := by
   unfold nextState
   split
   · simp
   · split <;> simp
-
 @[simp] theorem nextState_callStack (s : State) (input : ByteArray) (i : Nat) :
     (nextState s input i).callStack = s.callStack := by
   unfold nextState
@@ -157,16 +153,15 @@ theorem hashAfter_two (input : ByteArray) (h : Matched input ∧ Matched2 input)
 theorem nextState2_hash (s : State) (input : ByteArray) (hd : double input = true) :
     StackRunBridge.hashAt32 (nextState2 s input) =
       StackRunBridge.embedHashArray (CompressionSeamBridge.hashAfter input 2) := by
-  have h := (double_iff input).1 hd
   change StackMemory.hashAt (PrefixStateMemory.resultState2 (PrefixStateMemory.copied s) input).memory = _
-  rw [PrefixStateMemory.resultState2_hash, hashAfter_two input ⟨h.1, h.2.1⟩]
+  have hm := (double_iff input).1 hd
+  rw [PrefixStateMemory.resultState2_hash, hashAfter_two input ⟨hm.1, hm.2.1⟩]
   rfl
 
 #print axioms nextState2_hash
 
 /-! ## The depth-3 rung as a three-block kernel step -/
 
-/-- Three blocks consumed by the dispatcher: `H3` installed over the copied scratch state. -/
 def nextState3 (s : State) (input : ByteArray) : State :=
   PrefixStateMemory.resultState3 (PrefixStateMemory.copied s) input
 
@@ -183,7 +178,6 @@ theorem nextState3_word_above (s : State) (input : ByteArray) (address : Nat)
   (PrefixStateMemory.resultState3_word_above _ _ _ (by omega)).trans
     (PrefixStateMemory.copied_word_above _ _ (by omega))
 
-/-- Six matched words force at least four padded blocks. -/
 theorem triple_blockCount (input : ByteArray) (ht : triple input = true) :
     3 ≤ DriverTrace.blockCount input := by
   have h := (triple_iff input).1 ht
@@ -191,23 +185,19 @@ theorem triple_blockCount (input : ByteArray) (ht : triple input = true) :
   unfold DriverTrace.blockCount Padding.paddedLength
   omega
 
-/-- The chaining state after three blocks of a six-word match is `H3`. -/
 theorem hashAfter_three (input : ByteArray)
     (h : Matched input ∧ Matched2 input ∧ Matched3 input) :
     CompressionSeamBridge.hashAfter input 3 = PatternedDigest.H3 := by
-  have e3 : CompressionSeamBridge.hashAfter input 3 =
-      Crypto.Ripemd160.compressBlock (CompressionSeamBridge.hashAfter input 2)
-        (Padding.paddedMessage input) (2 * 64) := StackRunBridge.hashAfter_succ input 2
-  rw [e3, hashAfter_two input ⟨h.1, h.2.1⟩, show 2 * 64 = 128 from rfl]
+  rw [StackRunBridge.hashAfter_succ input 2, hashAfter_two input ⟨h.1, h.2.1⟩]
   exact PrefixStateData.h_thirdBlock input h.2.2.1 h.2.2.2
 
-theorem nextState3_hash (s : State) (input : ByteArray) (ht : triple input = true) :
+theorem nextState3_hash (s : State) (input : ByteArray)
+    (ht : triple input = true) :
     StackRunBridge.hashAt32 (nextState3 s input) =
       StackRunBridge.embedHashArray (CompressionSeamBridge.hashAfter input 3) := by
-  change StackMemory.hashAt (PrefixStateMemory.resultState3 (PrefixStateMemory.copied s) input).memory = _
+  change StackMemory.hashAt (PrefixStateMemory.resultState3
+    (PrefixStateMemory.copied s) input).memory = _
   rw [PrefixStateMemory.resultState3_hash, hashAfter_three input ((triple_iff input).1 ht)]
   rfl
-
-#print axioms nextState3_hash
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateKernel

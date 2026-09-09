@@ -114,8 +114,8 @@ structure BlockKernel where
     hashAt32 (nextState3 s input) =
       embedHashArray (CompressionSeamBridge.hashAfter input 3)
   gasSteps3 : ∀ (s : State) (input : ByteArray)
-    (h : Compression.HashState) (_hfit : CalldataFits input)
-    (_ht : triple input = true) (_ctx : BlockContext s input 0 h)
+    (_h : Compression.HashState) (_hfit : CalldataFits input)
+    (_ht : triple input = true) (_ctx : BlockContext s input 0 _h)
     (_hcode : s.executionEnv.code = submissionBytecode)
     (_hfork : s.fork = .Osaka) (_hrun : s.halt = .Running)
     (_hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -126,12 +126,13 @@ structure BlockKernel where
 def states (kernel : BlockKernel) (input : ByteArray) : Nat → State
   | 0 => PaddingTrace.padReturned input
   | 1 => kernel.nextState (PaddingTrace.padReturned input) input 0
-  | n + 2 =>
-    if n = 0 ∧ kernel.double input = true then
-      kernel.nextState2 (PaddingTrace.padReturned input) input
-    else if n = 1 ∧ kernel.triple input = true then
-      kernel.nextState3 (PaddingTrace.padReturned input) input
-    else kernel.nextState (states kernel input (n + 1)) input (n + 1)
+  | 2 =>
+    if kernel.double input = true then kernel.nextState2 (PaddingTrace.padReturned input) input
+    else kernel.nextState (states kernel input 1) input 1
+  | 3 =>
+    if kernel.triple input = true then kernel.nextState3 (PaddingTrace.padReturned input) input
+    else kernel.nextState (states kernel input 2) input 2
+  | n + 4 => kernel.nextState (states kernel input (n + 3)) input (n + 3)
 
 @[simp] theorem states_zero (kernel : BlockKernel) (input : ByteArray) :
     states kernel input 0 = PaddingTrace.padReturned input := by
@@ -143,44 +144,52 @@ theorem states_one (kernel : BlockKernel) (input : ByteArray) :
 
 theorem states_add_two (kernel : BlockKernel) (input : ByteArray) (n : Nat) :
     states kernel input (n + 2) =
-      if n = 0 ∧ kernel.double input = true then
-        kernel.nextState2 (PaddingTrace.padReturned input) input
-      else if n = 1 ∧ kernel.triple input = true then
+      if n = 1 ∧ kernel.triple input = true then
         kernel.nextState3 (PaddingTrace.padReturned input) input
-      else kernel.nextState (states kernel input (n + 1)) input (n + 1) := rfl
-
-theorem states_three_triple (kernel : BlockKernel) (input : ByteArray)
-    (ht : kernel.triple input = true) :
-    states kernel input 3 = kernel.nextState3 (PaddingTrace.padReturned input) input := by
-  show (if 1 = 0 ∧ kernel.double input = true then _
-    else if 1 = 1 ∧ kernel.triple input = true then _ else _) = _
-  rw [if_neg (fun h => absurd h.1 (by decide)), if_pos ⟨rfl, ht⟩]
+      else if n = 0 ∧ kernel.double input = true then
+        kernel.nextState2 (PaddingTrace.padReturned input) input
+      else kernel.nextState (states kernel input (n + 1)) input (n + 1) := by
+  cases n with
+  | zero => simp [states]
+  | succ n =>
+    cases n with
+    | zero => simp [states]
+    | succ n => rfl
 
 theorem states_two_double (kernel : BlockKernel) (input : ByteArray)
     (hd : kernel.double input = true) :
     states kernel input 2 = kernel.nextState2 (PaddingTrace.padReturned input) input := by
-  show (if 0 = 0 ∧ kernel.double input = true then _ else _) = _
-  rw [if_pos ⟨rfl, hd⟩]
+  simp [states, hd]
+
+theorem states_three_triple (kernel : BlockKernel) (input : ByteArray)
+    (ht : kernel.triple input = true) :
+    states kernel input 3 = kernel.nextState3 (PaddingTrace.padReturned input) input := by
+  simp [states, ht]
 
 theorem states_succ2 (kernel : BlockKernel) (input : ByteArray) (n : Nat)
-    (hn : ¬ (n = 0 ∧ kernel.double input = true))
-    (hn' : ¬ (n = 1 ∧ kernel.triple input = true)) :
+    (hn : ¬ (n = 0 ∧ kernel.double input = true) ∧
+      ¬ (n = 1 ∧ kernel.triple input = true)) :
     states kernel input (n + 2) = kernel.nextState (states kernel input (n + 1)) input (n + 1) := by
-  show (if n = 0 ∧ kernel.double input = true then _
-    else if n = 1 ∧ kernel.triple input = true then _ else _) = _
-  rw [if_neg hn, if_neg hn']
+  rw [states_add_two, if_neg hn.2, if_neg hn.1]
 
 /-- Every step other than the doubled one is a one-block kernel step. -/
 theorem states_succ_single (kernel : BlockKernel) (input : ByteArray) (n : Nat)
-    (hn : ¬ (n = 1 ∧ kernel.double input = true))
-    (hn' : ¬ (n = 2 ∧ kernel.triple input = true)) :
+    (hn : ¬ (n = 1 ∧ kernel.double input = true) ∧
+      ¬ (n = 2 ∧ kernel.triple input = true)) :
     states kernel input (n + 1) = kernel.nextState (states kernel input n) input n := by
   cases n with
   | zero => rfl
   | succ m =>
-    show (if m = 0 ∧ kernel.double input = true then _
-      else if m = 1 ∧ kernel.triple input = true then _ else _) = _
-    rw [if_neg (fun h => hn ⟨by omega, h.2⟩), if_neg (fun h => hn' ⟨by omega, h.2⟩)]
+    cases m with
+    | zero =>
+      have hd : kernel.double input ≠ true := fun hd => hn.1 ⟨rfl, hd⟩
+      simp [states, hd]
+    | succ m =>
+      cases m with
+      | zero =>
+        have ht : kernel.triple input ≠ true := fun ht => hn.2 ⟨rfl, ht⟩
+        simp [states, ht]
+      | succ m => rfl
 
 theorem states_executionEnv (kernel : BlockKernel) (input : ByteArray) :
     ∀ n, (states kernel input n).executionEnv =
@@ -191,9 +200,9 @@ theorem states_executionEnv (kernel : BlockKernel) (input : ByteArray) :
   | n + 2 => by
     rw [states_add_two]
     split
-    · rw [BlockKernel.executionEnv2]
+    · rw [BlockKernel.executionEnv3]
     · split
-      · rw [BlockKernel.executionEnv3]
+      · rw [BlockKernel.executionEnv2]
       · rw [BlockKernel.executionEnv, states_executionEnv kernel input (n + 1)]
 
 theorem states_halt (kernel : BlockKernel) (input : ByteArray) :
@@ -205,10 +214,10 @@ theorem states_halt (kernel : BlockKernel) (input : ByteArray) :
   | n + 2 => by
     rw [states_add_two]
     split
-    · rw [BlockKernel.halt2]
+    · rw [BlockKernel.halt3]
       exact PaddingTrace.padReturned_halt input
     · split
-      · rw [BlockKernel.halt3]
+      · rw [BlockKernel.halt2]
         exact PaddingTrace.padReturned_halt input
       · rw [BlockKernel.halt, states_halt kernel input (n + 1)]
 
@@ -226,10 +235,10 @@ theorem states_callStack (kernel : BlockKernel) (input : ByteArray) :
   | n + 2 => by
     rw [states_add_two]
     split
-    · rw [BlockKernel.callStack2]
+    · rw [BlockKernel.callStack3]
       rfl
     · split
-      · rw [BlockKernel.callStack3]
+      · rw [BlockKernel.callStack2]
         rfl
       · rw [BlockKernel.callStack, states_callStack kernel input (n + 1)]
 
@@ -244,9 +253,9 @@ theorem states_word_above (kernel : BlockKernel) (input : ByteArray)
   | n + 2 => by
     rw [states_add_two]
     split
-    · exact BlockKernel.wordAbove2 kernel _ input address haddress
+    · exact BlockKernel.wordAbove3 kernel _ input address haddress
     · split
-      · exact BlockKernel.wordAbove3 kernel _ input address haddress
+      · exact BlockKernel.wordAbove2 kernel _ input address haddress
       · exact (BlockKernel.wordAbove kernel (states kernel input (n + 1)) input (n + 1) address
           haddress).trans (states_word_above kernel input address haddress (n + 1))
 
@@ -452,15 +461,25 @@ theorem hashWords (kernel : BlockKernel) (input : ByteArray)
     rw [states_one]
     exact hashWords_next kernel input hfit 0 (by omega) (initialHashWords kernel input hfit)
   | n + 2, hn => by
-    by_cases hd : n = 0 ∧ kernel.double input = true
-    · obtain ⟨rfl, hd⟩ := hd
-      exact hashWords_two_double kernel input hd
-    · by_cases ht : n = 1 ∧ kernel.triple input = true
-      · obtain ⟨rfl, ht⟩ := ht
-        exact hashWords_three_triple kernel input ht
-      · rw [states_succ2 kernel input n hd ht]
-        exact hashWords_next kernel input hfit (n + 1) (by omega)
-          (hashWords kernel input hfit (n + 1) (by omega))
+    cases n with
+    | zero =>
+      by_cases hd : kernel.double input = true
+      · exact hashWords_two_double kernel input hd
+      · rw [states_succ2 kernel input 0 ⟨by simp [hd], by simp⟩]
+        exact hashWords_next kernel input hfit 1 (by omega)
+          (hashWords kernel input hfit 1 (by omega))
+    | succ n =>
+      cases n with
+      | zero =>
+        by_cases ht : kernel.triple input = true
+        · exact hashWords_three_triple kernel input ht
+        · rw [states_succ2 kernel input 1 ⟨by simp, by simp [ht]⟩]
+          exact hashWords_next kernel input hfit 2 (by omega)
+            (hashWords kernel input hfit 2 (by omega))
+      | succ n =>
+        rw [states_succ2 kernel input (n + 2) ⟨by omega, by omega⟩]
+        exact hashWords_next kernel input hfit (n + 3) (by omega)
+          (hashWords kernel input hfit (n + 3) (by omega))
 
 def compressionRun (kernel : BlockKernel) (input : ByteArray)
     (hfit : CalldataFits input) : CompressionSeamBridge.CompressionRun input where
@@ -489,13 +508,12 @@ def compressionRun (kernel : BlockKernel) (input : ByteArray)
     have hstep : states kernel input (i + 1) =
         kernel.nextState (states kernel input i) input i := by
       apply states_succ_single
+      constructor
       · intro h
-        obtain ⟨h1, h2⟩ := h
-        have := hnd h2
+        have := hnd h.2
         omega
       · intro h
-        obtain ⟨h1, h2⟩ := h
-        have := hnt h2
+        have := hnt h.2
         omega
     rw [hstep]
     exact hgas

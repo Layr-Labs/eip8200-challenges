@@ -46,7 +46,7 @@ structure CompressionRun (input : ByteArray) where
   states : Nat → State
   /-- The first dispatcher execution consumes blocks 0 and 1 together. -/
   double : Bool
-  /-- The first dispatcher execution consumes blocks 0, 1 and 2 together. -/
+  /-- The first dispatcher execution consumes blocks 0, 1, and 2 together. -/
   triple : Bool
   initial : DriverTrace.setupEntry (states 0) input = PaddingTrace.padReturned input
   code : ∀ i, i ≤ DriverTrace.blockCount input →
