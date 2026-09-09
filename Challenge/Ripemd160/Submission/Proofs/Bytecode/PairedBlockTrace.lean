@@ -1,7 +1,7 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.SStartupPremises
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineCoreSites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineBoundarySites
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.SStartupPremises
 
 set_option warningAsError true
 
@@ -73,13 +73,13 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp
   have gschedule' : GasSteps (DriverTrace.compressEntry s input i)
       {q with pc := UInt256.ofNat 745, stack := rho} := gschedule
-  have h32 := SStartupPremises.scheduled_canonical32 s input i h ctx
-  have h64 := SStartupPremises.scheduled_canonical64 s input i h ctx
-  have h96 := SStartupPremises.scheduled_canonical96 s input i h ctx
-  have h128 := SStartupPremises.scheduled_canonical128 s input i h ctx
-  have h160 := SStartupPremises.scheduled_canonical160 s input i h ctx
   have gstartup := PairedAllInlineBoundarySites.gasSteps_startup q rho hstack qrun qactive
-    h32 h64 h96 h128 h160 qcode qfork qnp
+    (SStartupPremises.scheduled_canonical32 s input i h ctx)
+    (SStartupPremises.scheduled_canonical64 s input i h ctx)
+    (SStartupPremises.scheduled_canonical96 s input i h ctx)
+    (SStartupPremises.scheduled_canonical128 s input i h ctx)
+    (SStartupPremises.scheduled_canonical160 s input i h ctx)
+    qcode qfork qnp
   have gcore := PairedAllInlineCoreSites.gasSteps_core_normalized q (blockWords input i) lane lane rho
     hstack qrun qactive qcode qfork qnp (scheduled_ready s input i h hfit hi ctx)
   have hentry :

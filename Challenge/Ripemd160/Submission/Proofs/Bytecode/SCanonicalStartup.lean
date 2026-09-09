@@ -1,5 +1,5 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RepeatedByteWord
 import Challenge.EvmProof.Word
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedDivMaskCache
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneUInt256Bridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedDerivedStartup
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Word
@@ -11,19 +11,9 @@ import Init.Data.BitVec.Bitblast
 set_option warningAsError true
 
 /-!
-S canonical multiply startup: raw execution module.
-
-33 ops / 48 bytes. Keeps L/U/P cache construction, derives `R = 1 + 2^128` as `P / L`,
-then five `PUSH address; MLOAD; DUP; MUL` loads for 160/128/96/64/32 with
-`DUP2..DUP6`, restores `F` via `PUSH5 F; SWAP6; POP`.
-
-Under five canonical hash-load bounds the result stack equals
-`PairedDerivedStartup.resultStack` exactly.
-
-The duplication arithmetic (`dupFactor`, `mul_dupFactor`) is inlined
-verbatim from `SCanonicalMultiply` under this module's own namespace so the
-file compiles standalone (single module, tracked-only imports). The Qwen
-owner keeps the canonical `SCanonicalMultiply` copy; statements match.
+Canonical multiply startup, 33 instructions and 48 bytes. The duplication factor
+is the quotient of the paired mask and the lower mask. Canonical hash-load
+bounds imply equality with PairedDerivedStartup.resultStack.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.SCanonicalStartup
@@ -121,9 +111,6 @@ private theorem uint_mul_comm (a b : UInt256) :
 def loadMulTemplate (address : Nat) (dup : Operation.DupOp) : List Instr :=
   [push1 (UInt256.ofNat address), .op .MLOAD, .op (.Dup dup), .op .MUL]
 
-theorem div_pair_lower :
-    PairedDerivedStartup.pairWord / PairedDerivedStartup.lowerWord = dupFactor := by decide
-
 def template : List Instr :=
   [.push ⟨4, by decide⟩ PairedDerivedStartup.lowerWord,
    dup1, push1 (UInt256.ofNat 128), .op .SHL,
@@ -175,6 +162,12 @@ theorem mul_eq_packedHash (memory : ByteArray) (address : Nat)
   rw [hstar, uint_mul_comm]
   exact hmul
 
+theorem pair_div_lower :
+    PairedDerivedStartup.pairWord / PairedDerivedStartup.lowerWord = dupFactor := by
+  decide
+
+#print axioms pair_div_lower
+
 theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
     (h32 : (MachineState.readWord s.memory 32).toNat < 2 ^ 32)
     (h64 : (MachineState.readWord s.memory 64).toNat < 2 ^ 32)
@@ -201,9 +194,10 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, hrun, hcap, h0, Nat.add_assoc,
     PairedDerivedStartup.upper_from_lower, PairedDerivedStartup.pair_from_lower,
+    pair_div_lower,
     List.getElem?_cons_zero, List.getElem?_cons_succ,
     State.activeWordsAfterUInt256, hactiveAt,
-    Challenge.EvmProof.Word.word_toNat_ofNat, div_pair_lower,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
     List.exchange, hmul160, hmul128, hmul96, hmul64, hmul32]
   rfl
 
@@ -232,25 +226,23 @@ def frozenInstructions : List Instr :=
 theorem template_eq_frozenInstructions : template = frozenInstructions := by
   rfl
 
-theorem template_advances {instruction : Instr} {s t : State}
-    (hmem : instruction ∈ template)
-    (hrun : Stepper.runInstr instruction s = some t) :
-    t.pc = s.pc + UInt256.ofNat instruction.size := by
+theorem template_advances :
+    ∀ instruction ∈ template,
+      DenseScheduleLift.Advances instruction ∨ instruction = .op .DIV := by
+  intro instruction hmem
   rw [template_eq_frozenInstructions] at hmem
   simp only [frozenInstructions, List.mem_cons, List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals first
-    | exact RepeatedByteWord.runInstr_pc_div hrun
-    | apply DenseScheduleLift.runInstr_pc_of_advances ?_ hrun
-  all_goals first
-    | exact Or.inl (Or.inl (StraightLine.push _ _))
-    | exact Or.inl (Or.inl StraightLine.shl)
-    | exact Or.inl (Or.inl StraightLine.or)
-    | exact Or.inl (Or.inl StraightLine.mload)
-    | exact Or.inl (Or.inl (StraightLine.dup _))
-    | exact Or.inl (Or.inl (StraightLine.swap _))
-    | exact Or.inl (Or.inl StraightLine.pop)
-    | exact Or.inr (Or.inr rfl)
+    | exact Or.inr rfl
+    | exact Or.inl (Or.inl (Or.inl (StraightLine.push _ _)))
+    | exact Or.inl (Or.inl (Or.inl StraightLine.shl))
+    | exact Or.inl (Or.inl (Or.inl StraightLine.or))
+    | exact Or.inl (Or.inl (Or.inl StraightLine.mload))
+    | exact Or.inl (Or.inl (Or.inl (StraightLine.dup _)))
+    | exact Or.inl (Or.inl (Or.inl (StraightLine.swap _)))
+    | exact Or.inl (Or.inl (Or.inl StraightLine.pop))
+    | exact Or.inl (Or.inr (Or.inr rfl))
 
 theorem runLocatedBlock_template {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork template)
@@ -271,11 +263,15 @@ theorem runLocatedBlock_template {artifact : ProgramArtifact} {fork : Fork}
   have hraw : Stepper.runLocatedBlock site.path
       {s with pc := site.startPC, stack := rho} =
       runInstrSeq template {s with pc := site.startPC, stack := rho} := by
-    apply runLocatedBlock_eq_runInstrSeq_site site _ rfl
+    apply StackRoundTrace.runLocatedBlock_eq_runInstrSeq_site site _ rfl
     intro located hmem u v hresult
-    apply template_advances ?_ hresult
-    rw [← site.instruction_eq]
-    exact List.mem_map_of_mem hmem
+    have hin : located.located.instruction ∈ template := by
+      rw [← site.instruction_eq]
+      exact List.mem_map_of_mem hmem
+    rcases template_advances located.located.instruction hin with hnormal | hdiv
+    · exact DenseScheduleLift.runInstr_pc_of_advances hnormal hresult
+    · rw [hdiv] at hresult
+      simpa only [hdiv] using PairedDivMaskCache.runInstr_pc_div hresult
   rw [hraw]
   have h := run_template s site.startPC rho h32 h64 h96 h128 h160 hstack hrun hactive
   rw [← hend] at h

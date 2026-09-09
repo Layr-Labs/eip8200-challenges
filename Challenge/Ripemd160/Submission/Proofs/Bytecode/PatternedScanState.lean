@@ -84,7 +84,7 @@ private def scanSuffix : List YulEvmCompiler.Instr :=
 private theorem scanBefore_length : scanBefore.length = 150 := by
   simp [scanBefore, scanPrefix]
 
-private theorem scanSuffix_length : scanSuffix.length = 4145 := by
+private theorem scanSuffix_length : scanSuffix.length = 4144 := by
   simp [scanSuffix]
 
 private theorem artifact_scan_split :
@@ -129,7 +129,7 @@ private theorem artifact_instruction_projection :
     Artifact.submissionArtifact.instructions = Artifact.submissionInstructions := by rfl
 
 private theorem scan_instruction_at (index : Nat)
-    (hlo : 150 ≤ index) (hhi : index < 4295) :
+    (hlo : 150 ≤ index) (hhi : index < 4294) :
     Artifact.submissionInstructions[index]? = scanSuffix[index - 150]? := by
   have hi : index - 150 < scanSuffix.length := by
     rw [scanSuffix_length]
@@ -140,7 +140,7 @@ private theorem scan_instruction_at (index : Nat)
     Nat.add_sub_of_le hlo] using h
 
 private theorem scan_instruction_pc (index : Nat)
-    (hlo : 150 ≤ index) (hhi : index ≤ 4295) :
+    (hlo : 150 ≤ index) (hhi : index ≤ 4294) :
     Artifact.submissionArtifact.instructionPC index =
       254 + (YulEvmCompiler.assembleBytes (scanSuffix.take (index - 150))).length := by
   have hi : index - 150 ≤ scanSuffix.length := by
@@ -239,8 +239,8 @@ def tailPath : List Located :=
 
 /-- Store and return the stored digest. -/
 def returnPath : List Located :=
-  [pushAt 233 20 766350606435067737561421097975693824639675460820,
-   pushAt 234 0 0, opAt 235 .MSTORE, pushAt 236 1 32, pushAt 237 0 0,
+  [pushAt 233 21 766350606435067737561421097975693824639675460820,
+   pushAt 234 0 0, opAt 235 .MSTORE, opAt 236 .MSIZE, pushAt 237 0 0,
    opAt 238 .RETURN]
 
 /-- Shift the correction constant out of `M`. -/
@@ -261,9 +261,9 @@ def straddleAddPath : List Located :=
 
 /-- Bump the scalar and rejoin the scan. -/
 def straddleBackPath : List Located :=
-  [opAt 265 (.Dup ⟨2, by decide⟩), pushAt 266 1 11, opAt 267 .ADD,
-   opAt 268 (.Swap ⟨2, by decide⟩), opAt 269 .POP, pushAt 270 2 332,
-   opAt 271 .JUMP]
+  [opAt 265 (.Swap ⟨1, by decide⟩), pushAt 266 1 11, opAt 267 .ADD,
+   opAt 268 (.Swap ⟨1, by decide⟩), pushAt 269 3 332,
+   opAt 270 .JUMP]
 
 
 @[simp] theorem pc2903 : Artifact.submissionArtifact.instructionPC 150 = 0xfe :=
@@ -428,11 +428,11 @@ def straddleBackPath : List Located :=
   by rw [scan_instruction_pc 232 (by decide) (by decide)]; rfl
 @[simp] theorem pc2983 : Artifact.submissionArtifact.instructionPC 233 = 0x188 :=
   by rw [scan_instruction_pc 233 (by decide) (by decide)]; rfl
-@[simp] theorem pc2984 : Artifact.submissionArtifact.instructionPC 234 = 0x19d :=
+@[simp] theorem pc2984 : Artifact.submissionArtifact.instructionPC 234 = 0x19e :=
   by rw [scan_instruction_pc 234 (by decide) (by decide)]; rfl
-@[simp] theorem pc2985 : Artifact.submissionArtifact.instructionPC 235 = 0x19e :=
+@[simp] theorem pc2985 : Artifact.submissionArtifact.instructionPC 235 = 0x19f :=
   by rw [scan_instruction_pc 235 (by decide) (by decide)]; rfl
-@[simp] theorem pc2986 : Artifact.submissionArtifact.instructionPC 236 = 0x19f :=
+@[simp] theorem pc2986 : Artifact.submissionArtifact.instructionPC 236 = 0x1a0 :=
   by rw [scan_instruction_pc 236 (by decide) (by decide)]; rfl
 @[simp] theorem pc2987 : Artifact.submissionArtifact.instructionPC 237 = 0x1a1 :=
   by rw [scan_instruction_pc 237 (by decide) (by decide)]; rfl
@@ -500,10 +500,10 @@ def straddleBackPath : List Located :=
   by rw [scan_instruction_pc 268 (by decide) (by decide)]; rfl
 @[simp] theorem pc3019 : Artifact.submissionArtifact.instructionPC 269 = 0x1c7 :=
   by rw [scan_instruction_pc 269 (by decide) (by decide)]; rfl
-@[simp] theorem pc3020 : Artifact.submissionArtifact.instructionPC 270 = 0x1c8 :=
+@[simp] theorem pc3020 : Artifact.submissionArtifact.instructionPC 269 = 0x1c7 :=
+  by rw [scan_instruction_pc 269 (by decide) (by decide)]; rfl
+@[simp] theorem pc3021 : Artifact.submissionArtifact.instructionPC 270 = 0x1cb :=
   by rw [scan_instruction_pc 270 (by decide) (by decide)]; rfl
-@[simp] theorem pc3021 : Artifact.submissionArtifact.instructionPC 271 = 0x1cb :=
-  by rw [scan_instruction_pc 271 (by decide) (by decide)]; rfl
 #print axioms scan_instruction_at
 #print axioms scan_instruction_pc
 #print axioms setupPath
