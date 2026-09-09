@@ -50,10 +50,45 @@ def primeProgram : List Instr := primeValueProgram ++ WindowTwentyOneEntry.testP
 
 def exponentValueProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .push 1 1,
-   .op (.Dup ⟨2, by decide⟩), .op .SUB, .op .EQ]
+   .op (.Dup ⟨2, by decide⟩), .op .SUB, .op .XOR]
+
+def testNonzeroProgram (target : UInt256) : List Instr :=
+  [.op .JUMPDEST, .push 2 target, .op .JUMPI]
 
 def exponentProgram : List Instr := exponentValueProgram ++
-  WindowTwentyOneEntry.testProgram (UInt256.ofNat 5319)
+  testNonzeroProgram (UInt256.ofNat 5319)
+
+private theorem isTrue_of_toNat_ne (value : UInt256) (hvalue : value.toNat ≠ 0) :
+    UInt256.isTrue value := by
+  unfold UInt256.isTrue
+  intro hz
+  apply hvalue
+  apply Challenge.EvmProof.Word.word_ext
+  change value.toNat = 0
+  exact hz
+
+private theorem run_test_nonzero (template : State) (pc target value : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000)
+    (htarget : Decode.isValidJumpDest template.executionEnv.code target.toNat = true) :
+    runInstructions (testNonzeroProgram target) (framed template pc (value :: rest)) =
+    some (framed template
+      (if value.toNat = 0 then advancePC 5 pc else target) rest) := by
+  have hcap1 : rest.length + 1 < 1024 := by omega
+  have hcap2 : rest.length + 2 < 1024 := by omega
+  have hpush : UInt256.ofNat 3 =
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
+  by_cases hv : value.toNat = 0
+  · have hzero : value = 0 := by
+      apply Challenge.EvmProof.Word.word_ext
+      change value.toNat = 0
+      exact hv
+    simp [runInstructions, testNonzeroProgram, framed,
+      Challenge.EvmProof.Stepper.runInstr, hcap1, hcap2, htarget,
+      hv, hzero, advancePC, succ_eq_add, hpush, word_add_assoc]
+  · have htrue : UInt256.isTrue value := isTrue_of_toNat_ne value hv
+    simp [runInstructions, testNonzeroProgram, framed,
+      Challenge.EvmProof.Stepper.runInstr, hcap1, hcap2, htarget,
+      hv, htrue, advancePC, succ_eq_add, hpush, word_add_assoc]
 
 private theorem zero_lt_eq_double_isZero (x : UInt256) :
     UInt256.lt ({ val := 0 } : UInt256) x = UInt256.isZero (UInt256.isZero x) := by
@@ -120,20 +155,32 @@ theorem run_exponent (template : State) (modulus offset : UInt256) (rest : List 
   have hv : runInstructions exponentValueProgram (framed template (UInt256.ofNat 5288)
       (modulus :: rest)) =
       some (framed template (UInt256.ofNat 5295)
-        (UInt256.eq (modulus - UInt256.ofNat 1)
-          (MachineState.readWord template.executionEnv.calldata offset.toNat) :: modulus :: rest)) := by
+        (UInt256.xor (modulus - UInt256.ofNat 1)
+          (MachineState.readWord template.executionEnv.calldata offset.toNat) ::
+          modulus :: rest)) := by
     simp (config := { maxSteps := 500000 }) [exponentValueProgram, runInstructions, framed, hoff,
       Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
-  have ht := WindowTwentyOneEntry.run_test template (UInt256.ofNat 5295) (UInt256.ofNat 5319)
-    (UInt256.eq (modulus - UInt256.ofNat 1)
+  have ht := run_test_nonzero template (UInt256.ofNat 5295) (UInt256.ofNat 5319)
+    (UInt256.xor (modulus - UInt256.ofNat 1)
       (MachineState.readWord template.executionEnv.calldata offset.toNat)) (modulus :: rest)
     (by simp; omega) htarget
   have both := runInstructions_append_some _ _ _ _ _ hv ht
   have hpc : advancePC 5 (UInt256.ofNat 5295) = UInt256.ofNat 5300 := by decide
-  simpa only [exponentProgram, hpc, framed] using both
+  have hbranch (a b : UInt256) :
+      (if (UInt256.xor a b).toNat = 0 then UInt256.ofNat 5300
+        else UInt256.ofNat 5319) =
+      (if (UInt256.eq a b).toNat = 0 then UInt256.ofNat 5319
+        else UInt256.ofNat 5300) := by
+    have hxzero : (UInt256.xor a b).toNat = 0 ↔ a = b := by
+      rw [toNat_zero_iff, WindowGuardLogic.wordXor_eq_zero_iff]
+    have heqzero : (UInt256.eq a b).toNat = 0 ↔ a ≠ b := by
+      rw [toNat_zero_iff, eq_zero_iff]
+    rw [hxzero, heqzero]
+    by_cases hab : a = b <;> simp [hab]
+  simpa only [exponentProgram, hpc, hbranch, framed] using both
 
 private theorem run_value (template : State) (modulus offset : UInt256) (rest : List UInt256)
     (baseSize : Nat) (hwidth : baseSize ≤ 32)
