@@ -12,9 +12,9 @@ set_option linter.unusedSimpArgs false
 
 This module binds the checked-prefix execution certificates to the nonempty
 block dispatcher.  The first certificate handles the CODECOPY and word-0
-comparison.  On a word-0 match, the finish certificate handles the SWAR
-setup, the five derived-word rungs and the `H1`/`H2`/`H3` installs.  Later
-blocks use the direct later-path certificate.
+comparison.  On a word-0 match, the finish certificate handles the word-32
+comparison and the H1 stores.  Later blocks use the direct later-path
+certificate.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateTrace
@@ -29,8 +29,8 @@ abbrev Hnp (s : State) : Prop :=
 /-- Full nonempty-dispatcher execution certificate.
 
 For block zero this composes the first-word certificate with the finish
-certificate (word-1 guard, the depth-2 and depth-3 rungs, the installs).
-For later blocks it uses the checked later-path certificate. -/
+certificate (word-1 guard, depth-2 rung, install).  For later blocks it uses
+the checked later-path certificate. -/
 def gasSteps_dispatch (s : State) (input : ByteArray) (i : Nat)
     (hfit : Challenge.Ripemd160.CalldataFits input)
     (hi : i < DriverTrace.blockCount input)
@@ -40,10 +40,7 @@ def gasSteps_dispatch (s : State) (input : ByteArray) (i : Nat)
     (hnp : Hnp s) :
     GasSteps (FastEmptyBlock.nonemptyEntry s input i)
       (if i = 0 ∧ Matched input then
-        (if Matched2 input then
-          (if Matched3 input then resultState3 (copied s) input
-            else resultState2 (copied s) input)
-          else resultState (copied s) input i)
+        (if Matched2 input then resultState2 (copied s) input else resultState (copied s) input i)
         else DriverTrace.compressEntry (prepared s i) input i) := by
   by_cases hzero : i = 0
   · subst i
@@ -65,14 +62,12 @@ def gasSteps_dispatch (s : State) (input : ByteArray) (i : Nat)
         simpa using hrun
       have hnp' : Hnp (copied s) := by
         simpa only [Hnp, copied_executionEnv] using hnp
-      have hmem0 : MachineState.readWord (copied s).memory 0 =
-          PatternedWordData.expectedWordAt 0 := copied_word_zero s
       have hentry : PrefixStateTraceFinish.entry (copied s) input =
           PrefixStateTraceFirst.firstMatchedState s input := by
         rfl
       have g := PrefixStateTraceFinish.gasSteps_finish (copied s) input
-        hcalldata' hcode' hfork' hrun' hnp' hmem0
-      rw [PrefixStateMemory.scratchState_copied, hentry] at g
+        hcalldata' hcode' hfork' hrun' hnp'
+      rw [hentry] at g
       by_cases hw1 : MachineState.readWord input 32 =
           PatternedWordData.expectedWordAt 1
       · rw [if_pos hw1] at g

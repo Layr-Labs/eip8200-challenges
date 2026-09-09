@@ -38,51 +38,51 @@ def gasSteps_checkEarly (input : ByteArray)
       apply Challenge.EvmProof.Word.word_ext
       simpa using hnat
     simpa using h
-  have hcleanup : Decode.isValidJumpDest submissionBytecode 0xfe = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 148 (by rfl)
-  rw [show sizeMatched input = stG input 0xb1 [] from rfl,
-    show PatternedScan.patternedEntry input = stG input 0x100 [] from rfl]
+  have hcleanup : Decode.isValidJumpDest submissionBytecode 0x10c = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 158 (by rfl)
+  rw [show sizeMatched input = stG input 0xbf [] from rfl,
+    show PatternedScan.patternedEntry input = stG input 0x10e [] from rfl]
   refine ?_
-  have step0 := soundG (pushAt 103 0 0)
-    (blockOf _ (pcFactG input 103 0xb1 [] (by norm_num) pc2819)
-      (stepG_push0 input 0xb1 [] (by simp) (by norm_num)))
-  have step1 := soundG (opAt 104 .CALLDATALOAD)
-    (blockOf _ (pcFactG input 104 0xb2 [(⟨0⟩ : UInt256)] (by norm_num) pc2820)
-      (stepG_calldataload input 0xb2 ⟨0⟩ [] (by simp) (by norm_num)))
+  have step0 := soundG (pushAt 113 0 0)
+    (blockOf _ (pcFactG input 113 0xbf [] (by norm_num) pc2819)
+      (stepG_push0 input 0xbf [] (by simp) (by norm_num)))
+  have step1 := soundG (opAt 114 .CALLDATALOAD)
+    (blockOf _ (pcFactG input 114 0xc0 [(⟨0⟩ : UInt256)] (by norm_num) pc2820)
+      (stepG_calldataload input 0xc0 ⟨0⟩ [] (by simp) (by norm_num)))
   rw [refW_eq] at step1
-  have step2 := soundG (opAt 105 (.Dup ⟨0, by decide⟩))
-    (blockOf _ (pcFactG input 105 0xb3 [referenceWord input] (by norm_num) pc2821)
-      (stepG_dup1 input 0xb3 (referenceWord input) [] (by simp) (by norm_num)))
+  have step2 := soundG (opAt 115 (.Dup ⟨0, by decide⟩))
+    (blockOf _ (pcFactG input 115 0xc1 [referenceWord input] (by norm_num) pc2821)
+      (stepG_dup1 input 0xc1 (referenceWord input) [] (by simp) (by norm_num)))
   have step3 := RepeatedByteWordSite.gasSteps_fullWord
     (initialState submissionBytecode input 0) [referenceWord input, referenceWord input]
     (by simp) rfl rfl rfl deployAddress_not_precompile
-  have step4 := soundG (opAt 112 .XOR)
-    (blockOf _ (pcFactG input 112 0xbc
+  have step4 := soundG (opAt 122 .XOR)
+    (blockOf _ (pcFactG input 122 0xca
         [KnownInputData.fullWord, referenceWord input, referenceWord input]
         (by norm_num) pc2823)
-      (stepG_xor input 0xbc KnownInputData.fullWord (referenceWord input)
+      (stepG_xor input 0xca KnownInputData.fullWord (referenceWord input)
         [referenceWord input] (by simp) (by norm_num)))
-  have step5 := soundG (pushAt 113 2 (UInt256.ofNat 254))
-    (blockOf _ (pcFactG input 113 0xbd
+  have step5 := soundG (pushAt 123 2 (UInt256.ofNat 268))
+    (blockOf _ (pcFactG input 123 0xcb
         [UInt256.xor KnownInputData.fullWord (referenceWord input), referenceWord input]
         (by norm_num) pc2824)
-      (stepG_push input 0xbd 2 (UInt256.ofNat 254)
+      (stepG_push input 0xcb 2 (UInt256.ofNat 268)
         [UInt256.xor KnownInputData.fullWord (referenceWord input), referenceWord input]
         (by simp) (by decide) (by decide) (by norm_num)))
-  have step6 := soundG (opAt 114 .JUMPI)
-    (blockOf _ (pcFactG input 114 0xc0
-        [UInt256.ofNat 254,
+  have step6 := soundG (opAt 124 .JUMPI)
+    (blockOf _ (pcFactG input 124 0xce
+        [UInt256.ofNat 268,
          UInt256.xor KnownInputData.fullWord (referenceWord input), referenceWord input]
         (by norm_num) pc2825)
-      (stepG_jumpi_taken input 0xc0 254
+      (stepG_jumpi_taken input 0xce 268
         (UInt256.xor KnownInputData.fullWord (referenceWord input))
         [referenceWord input] (by simp) (by norm_num) htrue hcleanup))
-  have step7 := soundG (opAt 148 .JUMPDEST)
-    (blockOf _ (pcFactG input 148 0xfe [referenceWord input] (by norm_num) pc2860)
-      (stepG_jumpdest input 0xfe [referenceWord input] (by simp) (by norm_num)))
-  have step8 := soundG (opAt 149 .POP)
-    (blockOf _ (pcFactG input 149 0xff [referenceWord input] (by norm_num) pc2861)
-      (stepG_pop input 0xff (referenceWord input) [] (by simp) (by norm_num)))
+  have step7 := soundG (opAt 158 .JUMPDEST)
+    (blockOf _ (pcFactG input 158 0x10c [referenceWord input] (by norm_num) pc2860)
+      (stepG_jumpdest input 0x10c [referenceWord input] (by simp) (by norm_num)))
+  have step8 := soundG (opAt 159 .POP)
+    (blockOf _ (pcFactG input 159 0x10d [referenceWord input] (by norm_num) pc2861)
+      (stepG_pop input 0x10d (referenceWord input) [] (by simp) (by norm_num)))
   exact step0.trans (step1.trans (step2.trans (step3.trans (step4.trans (step5.trans (step6.trans (step7.trans (step8))))))))
 
 #print axioms gasSteps_checkEarly

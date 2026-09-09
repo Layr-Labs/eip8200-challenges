@@ -45,7 +45,7 @@ def postCheckPath : List Located :=
    ⟨67, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨68, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨69, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨70, .push ⟨2, by decide⟩ (UInt256.ofNat 4934), by rfl, by decide⟩,
+   ⟨70, .push ⟨2, by decide⟩ (UInt256.ofNat 4959), by rfl, by decide⟩,
    ⟨71, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem pc785 : Artifact.submissionArtifact.instructionPC 64 = 0x66 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -97,7 +97,7 @@ padded-message pointer, its return destination, and the driver invariant
 stack underneath. -/
 def compressEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x1d0
+    pc := UInt256.ofNat 0x200
     stack := [messageOffsetWord i, UInt256.ofNat 0x66,
       blockOffsetWord i, Padding.paddedWord input] }
 
@@ -112,7 +112,7 @@ def afterIteration (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def afterExit (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 0x1346
+    pc := UInt256.ofNat 0x135f
     stack := [blockOffsetWord (blockCount input), Padding.paddedWord input] }
 
 def iterationEnd (s : State) (input : ByteArray) (i : Nat) : State :=
@@ -269,8 +269,8 @@ theorem run_postCheck_exit (s : State) (input : ByteArray)
   have heq := offset_eq_total input hfit
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x1346 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 4005 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x135f = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 4036 (by rfl)
   simp [postCheckPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     compressReturned, afterExit, hrun, hcode, hadd, hlast, heq,
@@ -491,89 +491,5 @@ def gasSteps_loop_of_compress_double (states : Nat → State) (input : ByteArray
     have hrest := gasSteps_loop_from states input hfit hcode hfork hrun hnp 2 h2
       (fun i hi2 hi => hcompress i hi (fun _ => hi2))
     exact gfirst.trans (Challenge.EvmProof.GasSteps.cast hrest (by simp [iterationEnd]) rfl)
-
-
-/-- One dispatcher execution that consumes three blocks (the depth-3 prefix
-ladder): the call, the three-block certificate, then the post-check for
-block 2. -/
-def gasSteps_iteration3_of_compress (s next : State) (input : ByteArray)
-    (hfit : Challenge.Ripemd160.CalldataFits input)
-    (h2 : 2 < blockCount input)
-    (hcodeS : s.executionEnv.code = submissionBytecode)
-    (hforkS : s.fork = .Osaka) (hrunS : s.halt = .Running)
-    (hnpS : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hcodeNext : next.executionEnv.code = submissionBytecode)
-    (hforkNext : next.fork = .Osaka) (hrunNext : next.halt = .Running)
-    (hnpNext : Precompile.isPrecompileWithConfig next.executionEnv.precompileConfig next.executionEnv.fork
-      next.executionEnv.codeAddr = false)
-    (hcompress : Challenge.EvmProof.GasSteps (dispatchEntry s input 0)
-      (compressReturned next input 2)) :
-    Challenge.EvmProof.GasSteps (loopAt s input 0)
-      (iterationEnd next input 2) := by
-  have gcall := gasSteps_call s input hfit 0 (by omega) hcodeS hforkS hrunS hnpS
-  by_cases hlast : 2 + 1 = blockCount input
-  · have gexit := gasSteps_postCheck_exit next input hfit 2 hlast hcodeNext
-      hforkNext hrunNext hnpNext
-    exact Challenge.EvmProof.GasSteps.cast
-      (gcall.trans (hcompress.trans gexit)) rfl (by simp [iterationEnd, hlast])
-  · have hnext : 2 + 1 < blockCount input := by omega
-    have gcheck := gasSteps_postCheck_continue next input hfit 2 hnext hcodeNext
-      hforkNext hrunNext hnpNext
-    exact Challenge.EvmProof.GasSteps.cast
-      (gcall.trans (hcompress.trans gcheck)) rfl
-      (by simp [iterationEnd, hlast])
-
-/-- Iterate the driver over all padded blocks.  When `triple` is set, the
-first dispatcher execution consumes blocks 0, 1 and 2 together; when
-`double` is set it consumes blocks 0 and 1 together. -/
-def gasSteps_loop_of_compress_ladder (states : Nat → State) (input : ByteArray)
-    (hfit : Challenge.Ripemd160.CalldataFits input) (double triple : Bool)
-    (hcode : ∀ i, i ≤ blockCount input →
-      (states i).executionEnv.code = submissionBytecode)
-    (hfork : ∀ i, i ≤ blockCount input → (states i).fork = .Osaka)
-    (hrun : ∀ i, i ≤ blockCount input → (states i).halt = .Running)
-    (hnp : ∀ i, i ≤ blockCount input →
-      Precompile.isPrecompileWithConfig (states i).executionEnv.precompileConfig (states i).executionEnv.fork
-        (states i).executionEnv.codeAddr = false)
-    (hcompress : ∀ i, i < blockCount input → (double = true → 2 ≤ i) → (triple = true → 3 ≤ i) →
-      Challenge.EvmProof.GasSteps (dispatchEntry (states i) input i)
-        (compressReturned (states (i + 1)) input i))
-    (hdoubleBlocks : double = true → 2 ≤ blockCount input)
-    (hdoubleTrace : double = true →
-      Challenge.EvmProof.GasSteps (dispatchEntry (states 0) input 0)
-        (compressReturned (states 2) input 1))
-    (htripleBlocks : triple = true → 3 ≤ blockCount input)
-    (htripleTrace : triple = true →
-      Challenge.EvmProof.GasSteps (dispatchEntry (states 0) input 0)
-        (compressReturned (states 3) input 2)) :
-    Challenge.EvmProof.GasSteps (loopAt (states 0) input 0)
-      (afterExit (states (blockCount input)) input) := by
-  have hpositive := blockCount_pos input
-  cases triple with
-  | true =>
-    have h3 := htripleBlocks rfl
-    have g3 := htripleTrace rfl
-    have gfirst := gasSteps_iteration3_of_compress (states 0) (states 3) input hfit (by omega)
-      (hcode 0 (by omega)) (hfork 0 (by omega)) (hrun 0 (by omega)) (hnp 0 (by omega))
-      (hcode 3 h3) (hfork 3 h3) (hrun 3 h3) (hnp 3 h3) g3
-    have hrest := gasSteps_loop_from states input hfit hcode hfork hrun hnp 3 h3
-      (fun i hi3 hi => hcompress i hi (fun _ => by omega) (fun _ => hi3))
-    exact gfirst.trans (Challenge.EvmProof.GasSteps.cast hrest (by simp [iterationEnd]) rfl)
-  | false =>
-    cases double with
-    | false =>
-      have h := gasSteps_loop_from states input hfit hcode hfork hrun hnp 0 (Nat.zero_le _)
-        (fun i _ hi => hcompress i hi (fun h => absurd h (by decide)) (fun h => absurd h (by decide)))
-      exact Challenge.EvmProof.GasSteps.cast h (by simp [Nat.ne_of_lt hpositive]) rfl
-    | true =>
-      have h2 := hdoubleBlocks rfl
-      have g2 := hdoubleTrace rfl
-      have gfirst := gasSteps_iteration2_of_compress (states 0) (states 2) input hfit (by omega)
-        (hcode 0 (by omega)) (hfork 0 (by omega)) (hrun 0 (by omega)) (hnp 0 (by omega))
-        (hcode 2 h2) (hfork 2 h2) (hrun 2 h2) (hnp 2 h2) g2
-      have hrest := gasSteps_loop_from states input hfit hcode hfork hrun hnp 2 h2
-        (fun i hi2 hi => hcompress i hi (fun _ => hi2) (fun h => absurd h (by decide)))
-      exact gfirst.trans (Challenge.EvmProof.GasSteps.cast hrest (by simp [iterationEnd]) rfl)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DriverTrace

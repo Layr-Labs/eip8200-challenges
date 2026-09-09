@@ -79,12 +79,10 @@ theorem run_tail_target :
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
-theorem run_tail_fallback (input : ByteArray) (hsize : input.size = 1000)
-    (hne : input ≠ KnownInputData.targetInput) :
+/-- The tail needs only that the accumulator is nonzero.  Stating it that way lets
+the 256-byte path, which reaches this tail through the merged classifier, use it. -/
+theorem run_tail_fallback_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0) :
     run tailPath (loopExitState input) = some (fallbackState input) := by
-  have hneAcc : finalAcc input ≠ 0 := by
-    intro hz
-    exact hne ((KnownInputCompactLogic.finalAcc_zero_iff_target input hsize).1 hz)
   have htrue : UInt256.isTrue (finalAcc input) := by
     intro hz
     apply hneAcc
@@ -115,6 +113,12 @@ theorem run_tail_fallback (input : ByteArray) (hsize : input.size = 1000)
     Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
+
+theorem run_tail_fallback (input : ByteArray) (hsize : input.size = 1000)
+    (hne : input ≠ KnownInputData.targetInput) :
+    run tailPath (loopExitState input) = some (fallbackState input) :=
+  run_tail_fallback_acc input (fun hz =>
+    hne ((KnownInputCompactLogic.finalAcc_zero_iff_target input hsize).1 hz))
 
 theorem run_return :
     run returnPath (returnEntry KnownInputData.targetInput) =

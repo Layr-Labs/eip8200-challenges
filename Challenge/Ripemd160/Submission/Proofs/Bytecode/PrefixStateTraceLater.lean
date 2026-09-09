@@ -11,7 +11,7 @@ set_option linter.unusedSimpArgs false
 
 `PrefixStatePaths.laterPath` is the four-instruction prologue at PC 5202:
 `JUMPDEST`, `DUP3` (stack index 2, duplicating the driver block offset),
-`PUSH2 464`, and `JUMPI`.  For a later block (`i ≠ 0`, so the block offset
+`PUSH2 512`, and `JUMPI`.  For a later block (`i ≠ 0`, so the block offset
 word is nonzero under the calldata-fit bound) the jump is taken and the
 helper falls straight into the generic compression entry with the stack
 unchanged.  No prefix bytes are inspected on this branch, so it applies to
@@ -21,12 +21,12 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateTraceLater
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
-/-- The generic compression target `464` is a valid jump destination. -/
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 464 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 272 = 464 := by
+/-- The generic compression target `512` is a valid jump destination. -/
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 512 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 294 = 512 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 272 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 294 (by rfl)
   rw [hpc] at h
   exact h
 

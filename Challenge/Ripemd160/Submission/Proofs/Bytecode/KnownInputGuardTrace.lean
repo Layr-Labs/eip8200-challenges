@@ -51,7 +51,7 @@ theorem run_size_target (s : State) (i : Nat)
     run sizePath (DriverTrace.dispatchEntry s KnownInputData.targetInput i) =
       some (sizeMatched s KnownInputData.targetInput i) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 0x12dc = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2821 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 2839 (by rfl)
   simp [sizePath, KnownInputPaths.opAt, KnownInputPaths.pushAt,
     KnownInputPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -74,7 +74,7 @@ theorem run_size_match (s : State) (input : ByteArray) (i : Nat)
     rw [hsize]
     decide
   have hdest : Decode.isValidJumpDest submissionBytecode 0x12dc = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2821 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 2839 (by rfl)
   simp [sizePath, KnownInputPaths.opAt, KnownInputPaths.pushAt,
     KnownInputPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -117,7 +117,7 @@ theorem run_size_fallback (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
     run sizeFallbackPath (sizeFailed s input i) = some (legacyEntry s input i) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 0x129e = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2792 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 2810 (by rfl)
   simp [sizeFallbackPath, KnownInputPaths.opAt, KnownInputPaths.pushAt,
     KnownInputPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -243,7 +243,7 @@ theorem run_match_fallback (s : State) (input : ByteArray) (i : Nat)
     exact hzero
   have htrue : UInt256.isTrue (acc4 input) := hneNat
   have hdest : Decode.isValidJumpDest submissionBytecode 0x129e = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2792 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 2810 (by rfl)
   simp [matchBranchPath, KnownInputPaths.opAt, KnownInputPaths.pushAt,
     KnownInputPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,

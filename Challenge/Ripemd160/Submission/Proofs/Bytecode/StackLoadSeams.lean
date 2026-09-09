@@ -12,7 +12,7 @@ open StackBlockModel StackEndpoint
 
 theorem firstLoad_end : StackFrame.loadSite987.endPC = QuadLayout.leftPC 0 := rfl
 
-theorem secondLoad_start : StackFrame.loadSite1238.startPC = UInt256.ofNat 0xb46 := rfl
+theorem secondLoad_start : StackFrame.loadSite1238.startPC = UInt256.ofNat 0xb73 := rfl
 
 theorem secondLoad_end : StackFrame.loadSite1238.endPC = QuadLayout.rightPC 0 := rfl
 

@@ -34,7 +34,7 @@ def loopState (s : State) (input : ByteArray) (i n : Nat) : State :=
 
 def loopExitState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0xcb
+    pc := UInt256.ofNat 0xd9
     stack := [UInt256.ofNat 992, loopAcc input 30,
       referenceWord input, DriverTrace.messageOffsetWord i,
       UInt256.ofNat 0x3e7, DriverTrace.blockOffsetWord i,
@@ -42,7 +42,7 @@ def loopExitState (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def bodyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0xde
+    pc := UInt256.ofNat 0xec
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
