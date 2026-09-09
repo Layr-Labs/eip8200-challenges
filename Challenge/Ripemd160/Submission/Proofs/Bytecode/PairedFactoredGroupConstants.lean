@@ -37,11 +37,12 @@ def upperTemplate : List Instr :=
   [.push ⟨4, by decide⟩ (UInt256.ofNat 0x50a28be6),
    .push ⟨1, by decide⟩ (UInt256.ofNat 128), .op .SHL]
 
+/-- The group-16 constant materialised by one wide push, exactly as this tree
+already does for groups 32, 48 and 64.  `mixed_value` proves the literal equals
+the `SHL`/`OR` construction it replaces. -/
 def replaceTemplate : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op .POP,
-   .push ⟨4, by decide⟩ (UInt256.ofNat 0x5c4dd124),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 128), .op .SHL,
-   .push ⟨4, by decide⟩ (UInt256.ofNat 0x5a827999), .op .OR]
+   .push ⟨20, by decide⟩ (UInt256.ofNat 526962527014005041256681316140890030896371104153)]
 
 theorem run_upperTemplate (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length < 1022) (hrun : s.halt = .Running) :
@@ -66,15 +67,10 @@ theorem run_replaceTemplate (s : State) (pc value discarded : UInt256) (rho : Li
         pc := pcAfter pc replaceTemplate
         stack := UInt256.ofNat 526962527014005041256681316140890030896371104153 :: value :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 3) : rho.length + n < 1024 := by omega
-  have hswap (u v : UInt256) (rest : List UInt256) :
-      (u :: v :: rest).exchange 0 1 = some (v :: u :: rest) := by
-    simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rest
-  simp [replaceTemplate, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
-    pcAfter, Instr.size, Nat.add_assoc, UInt256.succ, hrun, hcap, hswap, mixed_value,
-    word_add_ofNat_assoc]
-  change (((((pc + UInt256.ofNat 1) + UInt256.ofNat 1) + UInt256.ofNat 7) +
-    UInt256.ofNat 1) + UInt256.ofNat 5) + UInt256.ofNat 1 = pc + UInt256.ofNat 16
-  simp only [word_add_ofNat_assoc]
+  simp (discharger := omega) [replaceTemplate,
+    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap]
+  rfl
 
 #print axioms run_replaceTemplate
 

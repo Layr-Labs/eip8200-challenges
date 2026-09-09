@@ -154,7 +154,7 @@ def leftRoundSuffixLocated : List Located :=
    ⟨504, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem leftInitPC :
-    Artifact.submissionArtifact.instructionPC 469 = 654 := by rfl
+    Artifact.submissionArtifact.instructionPC 469 = 759 := by rfl
 
 @[simp] private theorem leftRoundSetupPC (j : Nat)
     (hlo : 477 ≤ j) (hhi : j ≤ 504) :
