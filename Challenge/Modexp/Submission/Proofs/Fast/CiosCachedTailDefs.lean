@@ -35,18 +35,18 @@ def baseStack (pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : L
 
 def input (s : State) (c mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 5190) ([c, mu, bi] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 5194) ([c, mu, bi] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def cleaned (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 5193) ([c] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 5197) ([c] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def stored (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := tailMem s.memory c } (UInt256.ofNat 5214)
+  framed { s with memory := tailMem s.memory c } (UInt256.ofNat 5218)
     (baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def result (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
   framed { s with memory := tailMem s.memory c }
-    (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then UInt256.ofNat 4560
+    (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then UInt256.ofNat 4564
       else UInt256.ofNat 5223)
     (baseStack (negative32+pbi) paEnd pbEnd flag dst ret rest)
 

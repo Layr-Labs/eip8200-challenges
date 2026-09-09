@@ -26,8 +26,8 @@ theorem run_cleanup (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (pbi paEnd pbEnd flag dst ret : UInt256) (carry mu bi : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)  :
     runInstructions CiosStackCachePrograms.tailCleanup
-      (framed s (UInt256.ofNat 5177) ([carry, mu, bi] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 5180) ([carry] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) := by
+      (framed s (UInt256.ofNat 5181) ([carry, mu, bi] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 5184) ([carry] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) := by
   have h16 : rest.length+16 < 1024 := by omega
   have h17 : rest.length+17 < 1024 := by omega
   have h18 : rest.length+18 < 1024 := by omega
@@ -44,8 +44,8 @@ theorem run_loadHead (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (pbi paEnd pbEnd flag dst ret : UInt256) (carry : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions loadHead
-      (framed s (UInt256.ofNat 5180) ([carry] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 5186) ([MachineState.readWord s.memory 8224 + carry, carry] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) := by
+      (framed s (UInt256.ofNat 5184) ([carry] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 5190) ([MachineState.readWord s.memory 8224 + carry, carry] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) := by
   have h16 : rest.length+16 < 1024 := by omega
   have h17 : rest.length+17 < 1024 := by omega
   have h18 : rest.length+18 < 1024 := by omega
@@ -66,8 +66,8 @@ theorem run_storeCached (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (pbi paEnd pbEnd flag dst ret : UInt256) (sum carry : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)  :
     runInstructions storeCached
-      (framed s (UInt256.ofNat 5186) ([sum, carry] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 5189) ([sum, carry] ++ rowFrame (c.write 8256 sum) r pbi paEnd pbEnd flag dst ret rest)) := by
+      (framed s (UInt256.ofNat 5190) ([sum, carry] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 5193) ([sum, carry] ++ rowFrame (c.write 8256 sum) r pbi paEnd pbEnd flag dst ret rest)) := by
   have h16 : rest.length+16 < 1024 := by omega
   have h17 : rest.length+17 < 1024 := by omega
   have h18 : rest.length+18 < 1024 := by omega
@@ -84,8 +84,8 @@ theorem run_storeHigh (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (pbi paEnd pbEnd flag dst ret : UInt256) (sum carry : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions storeHigh
-      (framed s (UInt256.ofNat 5189) ([sum, carry] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed { s with memory := storeWord s.memory 8224 (MachineState.readWord s.memory 8192 + UInt256.lt sum carry) } (UInt256.ofNat 5199) (rowFrame c r pbi paEnd pbEnd flag dst ret rest)) := by
+      (framed s (UInt256.ofNat 5193) ([sum, carry] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed { s with memory := storeWord s.memory 8224 (MachineState.readWord s.memory 8192 + UInt256.lt sum carry) } (UInt256.ofNat 5203) (rowFrame c r pbi paEnd pbEnd flag dst ret rest)) := by
   have h16 : rest.length+16 < 1024 := by omega
   have h17 : rest.length+17 < 1024 := by omega
   have h18 : rest.length+18 < 1024 := by omega
@@ -104,10 +104,10 @@ theorem run_storeHigh (s : State) (c : CachedMemory) (r : ReadOnlyCache)
 set_option linter.unusedSimpArgs false in
 theorem run_test (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (pbi paEnd pbEnd flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 998) (htarget : Decode.isValidJumpDest s.executionEnv.code 4591 = true) :
+    (rest : List UInt256) (hcap : rest.length ≤ 998) (htarget : Decode.isValidJumpDest s.executionEnv.code 4595 = true) :
     runInstructions CiosStackCachePrograms.tailTest
-      (framed s (UInt256.ofNat 5199) (rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then UInt256.ofNat 4591 else UInt256.ofNat 5208) (rowFrame c r (negative32+pbi) paEnd pbEnd flag dst ret rest)) := by
+      (framed s (UInt256.ofNat 5203) (rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then UInt256.ofNat 4595 else UInt256.ofNat 5212) (rowFrame c r (negative32+pbi) paEnd pbEnd flag dst ret rest)) := by
   have h16 : rest.length+16 < 1024 := by omega
   have h17 : rest.length+17 < 1024 := by omega
   have h18 : rest.length+18 < 1024 := by omega
@@ -138,10 +138,10 @@ theorem run_store (s : State) (c : CachedMemory) (r : ReadOnlyCache)
     (pbi paEnd pbEnd flag dst ret carry : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions CiosStackCachePrograms.tailStore
-      (framed { s with memory := c.memory } (UInt256.ofNat 5180)
+      (framed { s with memory := c.memory } (UInt256.ofNat 5184)
         ([carry] ++ rowFrame c r pbi paEnd pbEnd flag dst ret rest)) =
     some (framed { s with memory := (CiosStackCacheModel.cacheTail c carry).memory }
-      (UInt256.ofNat 5199)
+      (UInt256.ofNat 5203)
       (rowFrame (CiosStackCacheModel.cacheTail c carry) r pbi paEnd pbEnd flag dst ret rest)) := by
   let sum := MachineState.readWord c.memory 8224 + carry
   have h1 := run_loadHead { s with memory := c.memory } c r pbi paEnd pbEnd flag dst ret carry rest hcap hact

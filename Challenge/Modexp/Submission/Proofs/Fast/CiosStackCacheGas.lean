@@ -32,7 +32,7 @@ opaque l1Last (s : State) (env : Environment art .Osaka s) (blocks : KernelBlock
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hn : n ≤ 32) (hpos : 0 < n) (hpa : 32 ≤ pa) (hfit : pa+32*n ≤ 8192) :
-    GasSteps (l1At 4858 s c r bi pa pb n i (n-1) dst ret rest)
+    GasSteps (l1At 4862 s c r bi pa pb n i (n-1) dst ret rest)
       (midAt s (cacheL1 c bi pa n n).cache r (cacheL1 c bi pa n n).carry bi
         pa pb n i dst ret rest) :=
   blocks.l1Mac7.steps (env.transfer rfl rfl) rfl
@@ -55,7 +55,7 @@ opaque out (s : State) (env : Environment art .Osaka s) (blocks : KernelBlocks a
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hpb : 32 ≤ pb) (hfit : pb+32*n ≤ 8192) (hi : i < n) :
     GasSteps (outAt s c r pa pb n i dst ret rest)
-      (l1At 4596 s c r (rowBi c.virtual pb n i) pa pb n i 0 dst ret rest) :=
+      (l1At 4600 s c r (rowBi c.virtual pb n i) pa pb n i 0 dst ret rest) :=
   blocks.out.steps (env.transfer rfl rfl) rfl
     (run_out s c r pa pb n i dst ret rest hcap hact hpb hfit hi)
 
@@ -67,7 +67,7 @@ opaque mid (s : State) (env : Environment art .Osaka s) (blocks : KernelBlocks a
     (htl : r.tl = UInt256.ofNat (8224+32*n))
     (hminv : (r.m0.toNat*r.inv.toNat+1)%2^256 = 0) :
     GasSteps (midAt s c r carry bi pa pb n i dst ret rest)
-      (l2At 4924 s (cacheMid c carry) r bi (rowMu c.virtual n) (rowC0 c.virtual n)
+      (l2At 4928 s (cacheMid c carry) r bi (rowMu c.virtual n) (rowC0 c.virtual n)
         pa pb n i 0 dst ret rest) :=
   blocks.mid.steps (env.transfer rfl rfl) rfl
     (run_mid s c r carry bi pa pb n i dst ret rest hcap hact hn hn32 hread htl hminv)
@@ -78,7 +78,7 @@ opaque tail (s : State) (env : Environment art .Osaka s) (blocks : KernelBlocks 
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hpb : 32 ≤ pb) (hfit : pb+32*n ≤ 8192) (hi : i+1 ≤ n) :
     GasSteps (tailAt s c r carry mu bi pa pb n i dst ret rest)
-      (rowState s (if i+1 < n then 4591 else 5208) (CiosStackCacheModel.cacheTail c carry)
+      (rowState s (if i+1 < n then 4595 else 5212) (CiosStackCacheModel.cacheTail c carry)
         r pa pb n (i+1) dst ret rest []) :=
   blocks.tail.steps (env.transfer rfl rfl) rfl
     (run_tail s c r carry mu bi pa pb n i dst ret rest hcap hact hpb hfit hi
@@ -88,7 +88,7 @@ opaque exit (s : State) (env : Environment art .Osaka s) (blocks : KernelBlocks 
     (c : CachedMemory) (r : ReadOnlyCache)
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat) :
-    GasSteps (rowState s 5208 c r pa pb n i dst ret rest [])
+    GasSteps (rowState s 5212 c r pa pb n i dst ret rest [])
       (mpCsubState s c.virtual dst ret rest) :=
   blocks.exit.steps (env.transfer rfl rfl) rfl
     (run_exit s c r pa pb n i dst ret rest hcap hact (by rw [env.code]; exact blocks.jumpCsub))
@@ -98,12 +98,12 @@ opaque l1Dispatch (s : State) (env : Environment art .Osaka s) (blocks : KernelB
     (c : CachedMemory) (r : ReadOnlyCache) (bi : UInt256)
     (pa pb n i j : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) :
-    GasSteps (l1At 4596 s c r bi pa pb n i j dst ret rest)
-      (l1At (if UInt256.isTrue (CiosCached.isFour n) then 4753 else 4601)
+    GasSteps (l1At 4600 s c r bi pa pb n i j dst ret rest)
+      (l1At (if UInt256.isTrue (CiosCached.isFour n) then 4757 else 4605)
         s c r bi pa pb n i j dst ret rest) := by
   let p := cacheL1 c bi pa n j
-  refine blocks.l1Dispatch.steps (s := l1At 4596 s c r bi pa pb n i j dst ret rest) (env.transfer rfl rfl) rfl ?_
-  have h := run_dispatch { s with memory := p.cache.memory } 4596 4753 p.cache r
+  refine blocks.l1Dispatch.steps (s := l1At 4600 s c r bi pa pb n i j dst ret rest) (env.transfer rfl rfl) rfl ?_
+  have h := run_dispatch { s with memory := p.cache.memory } 4600 4757 p.cache r
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa+32*n-32))
     (UInt256.ofNat (pb-32)) (CiosCached.isFour n) dst ret (UInt256.ofNat (ptrAt (pa+32*n-32) j)) p.carry bi rest hcap
     (by decide) (by rw [env.code]; exact blocks.jumpL1)
@@ -113,11 +113,11 @@ opaque l1Join (s : State) (env : Environment art .Osaka s) (blocks : KernelBlock
     (c : CachedMemory) (r : ReadOnlyCache) (bi : UInt256)
     (pa pb n i j : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) :
-    GasSteps (l1At 4753 s c r bi pa pb n i j dst ret rest)
-      (l1At 4754 s c r bi pa pb n i j dst ret rest) := by
+    GasSteps (l1At 4757 s c r bi pa pb n i j dst ret rest)
+      (l1At 4758 s c r bi pa pb n i j dst ret rest) := by
   let p := cacheL1 c bi pa n j
-  refine blocks.l1Join.steps (s := l1At 4753 s c r bi pa pb n i j dst ret rest) (env.transfer rfl rfl) rfl ?_
-  have h := run_join { s with memory := p.cache.memory } 4753
+  refine blocks.l1Join.steps (s := l1At 4757 s c r bi pa pb n i j dst ret rest) (env.transfer rfl rfl) rfl ?_
+  have h := run_join { s with memory := p.cache.memory } 4757
     ([UInt256.ofNat (ptrAt (pa+32*n-32) j), p.carry, bi] ++ rowFrame p.cache r
       (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa+32*n-32))
       (UInt256.ofNat (pb-32)) (CiosCached.isFour n) dst ret rest)
@@ -128,12 +128,12 @@ opaque l2Dispatch (s : State) (env : Environment art .Osaka s) (blocks : KernelB
     (c : CachedMemory) (r : ReadOnlyCache) (bi mu c0 : UInt256)
     (pa pb n i j : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) :
-    GasSteps (l2At 4924 s c r bi mu c0 pa pb n i j dst ret rest)
-      (l2At (if UInt256.isTrue (CiosCached.isFour n) then 5081 else 4929)
+    GasSteps (l2At 4928 s c r bi mu c0 pa pb n i j dst ret rest)
+      (l2At (if UInt256.isTrue (CiosCached.isFour n) then 5085 else 4933)
         s c r bi mu c0 pa pb n i j dst ret rest) := by
   let p := cacheL2 c mu c0 n j
-  refine blocks.l2Dispatch.steps (s := l2At 4924 s c r bi mu c0 pa pb n i j dst ret rest) (env.transfer rfl rfl) rfl ?_
-  have h := run_dispatch { s with memory := p.cache.memory } 4924 5081 p.cache r
+  refine blocks.l2Dispatch.steps (s := l2At 4928 s c r bi mu c0 pa pb n i j dst ret rest) (env.transfer rfl rfl) rfl ?_
+  have h := run_dispatch { s with memory := p.cache.memory } 4928 5085 p.cache r
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa+32*n-32))
     (UInt256.ofNat (pb-32)) (CiosCached.isFour n) dst ret p.carry mu bi rest hcap
     (by decide) (by rw [env.code]; exact blocks.jumpL2)
@@ -143,11 +143,11 @@ opaque l2Join (s : State) (env : Environment art .Osaka s) (blocks : KernelBlock
     (c : CachedMemory) (r : ReadOnlyCache) (bi mu c0 : UInt256)
     (pa pb n i j : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) :
-    GasSteps (l2At 5081 s c r bi mu c0 pa pb n i j dst ret rest)
-      (l2At 5082 s c r bi mu c0 pa pb n i j dst ret rest) := by
+    GasSteps (l2At 5085 s c r bi mu c0 pa pb n i j dst ret rest)
+      (l2At 5086 s c r bi mu c0 pa pb n i j dst ret rest) := by
   let p := cacheL2 c mu c0 n j
-  refine blocks.l2Join.steps (s := l2At 5081 s c r bi mu c0 pa pb n i j dst ret rest) (env.transfer rfl rfl) rfl ?_
-  have h := run_join { s with memory := p.cache.memory } 5081
+  refine blocks.l2Join.steps (s := l2At 5085 s c r bi mu c0 pa pb n i j dst ret rest) (env.transfer rfl rfl) rfl ?_
+  have h := run_join { s with memory := p.cache.memory } 5085
     ([p.carry, mu, bi] ++ rowFrame p.cache r
       (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa+32*n-32))
       (UInt256.ofNat (pb-32)) (CiosCached.isFour n) dst ret rest)

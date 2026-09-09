@@ -14,29 +14,29 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- The negation loop body up to its exit test (`blk2896` instructions 0..14). -/
 def blk2896a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2801 .JUMPDEST,
-   opAt 2802 (.Dup ⟨0, by decide⟩),
-   opAt 2803 .MLOAD,
-   opAt 2804 .NOT,
+  [opAt 2799 .JUMPDEST,
+   opAt 2800 (.Dup ⟨0, by decide⟩),
+   opAt 2801 .MLOAD,
+   opAt 2802 .NOT,
+   opAt 2803 (.Dup ⟨2, by decide⟩),
+   opAt 2804 .ADD,
    opAt 2805 (.Dup ⟨2, by decide⟩),
-   opAt 2806 .ADD,
-   opAt 2807 (.Dup ⟨2, by decide⟩),
-   opAt 2808 (.Dup ⟨1, by decide⟩),
-   opAt 2809 .LT,
-   opAt 2810 (.Swap ⟨2, by decide⟩),
-   opAt 2811 .POP,
-   opAt 2812 (.Dup ⟨1, by decide⟩),
-   pushAt 2813 2 5120,
-   opAt 2814 .ADD,
-   opAt 2815 .MSTORE]
+   opAt 2806 (.Dup ⟨1, by decide⟩),
+   opAt 2807 .LT,
+   opAt 2808 (.Swap ⟨2, by decide⟩),
+   opAt 2809 .POP,
+   opAt 2810 (.Dup ⟨1, by decide⟩),
+   pushAt 2811 2 5120,
+   opAt 2812 .ADD,
+   opAt 2813 .MSTORE]
 
 /-- The exit test of the negation loop body (`blk2896` instructions 15..18). -/
 def blk2896b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2816 (.Dup ⟨0, by decide⟩),
-   opAt 2817 .ISZERO,
-   pushAt 2818 2 3867,
-   opAt 2819 .JUMPI]
+  [opAt 2814 (.Dup ⟨0, by decide⟩),
+   opAt 2815 .ISZERO,
+   pushAt 2816 2 3867,
+   opAt 2817 .JUMPI]
 
 /-- The limb-pass body up to its exit test (`blk3077` instructions 0..42). -/
 def blk3077a :
@@ -86,7 +86,7 @@ def blk3077b :
   [pushAt 3028 2 8224,
    opAt 3029 (.Dup ⟨2, by decide⟩),
    opAt 3030 .GT,
-   pushAt 3031 2 4086,
+   pushAt 3031 2 4090,
    opAt 3032 .JUMPI]
 
 /-- The add-round body up to its exit test (`blk3157` instructions 0..26). -/
@@ -129,7 +129,7 @@ def blk3157b :
    pushAt 3096 2 8255,
    opAt 3097 (.Dup ⟨1, by decide⟩),
    opAt 3098 .GT,
-   pushAt 3099 2 4269,
+   pushAt 3099 2 4273,
    opAt 3100 .JUMPI]
 
 /-- The subtract-round body up to its exit test (`blk3213` instructions 0..22). -/
@@ -168,7 +168,7 @@ def blk3213b :
    pushAt 3149 2 8255,
    opAt 3150 (.Dup ⟨1, by decide⟩),
    opAt 3151 .GT,
-   pushAt 3152 2 4345,
+   pushAt 3152 2 4349,
    opAt 3153 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

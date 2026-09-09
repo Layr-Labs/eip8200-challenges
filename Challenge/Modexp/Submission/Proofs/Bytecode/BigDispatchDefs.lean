@@ -33,38 +33,38 @@ def bigJumpPath := Dispatch.wordJumpPath
 
 def bigCheckExpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 928 .JUMPDEST, opAt 929 (.Dup ⟨2, by decide⟩),
-   pushAt 930 1 96, opAt 931 .ADD]
+  [opAt 927 .JUMPDEST, opAt 928 (.Dup ⟨2, by decide⟩),
+   pushAt 929 1 96, opAt 930 .ADD]
 
 def bigCheckModPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 932 (.Dup ⟨2, by decide⟩), opAt 933 (.Dup ⟨1, by decide⟩),
-   opAt 934 .ADD]
+  [opAt 931 (.Dup ⟨2, by decide⟩), opAt 932 (.Dup ⟨1, by decide⟩),
+   opAt 933 .ADD]
 
 def bigCheckComparePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 935 1 32, opAt 936 (.Dup ⟨3, by decide⟩), opAt 937 .GT]
+  [pushAt 934 1 32, opAt 935 (.Dup ⟨3, by decide⟩), opAt 936 .GT]
 
 def bigCheckJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 938 2 1268, opAt 939 .JUMPI]
+  [pushAt 937 2 1268, opAt 938 .JUMPI]
 
 def bigCheckPath := bigCheckExpPath ++ bigCheckModPath ++
   bigCheckComparePath ++ bigCheckJumpPath
 
 def bigTailFramePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 950 .JUMPDEST, pushAt 951 2 1283,
-   opAt 952 (.Dup ⟨1, by decide⟩), opAt 953 (.Dup ⟨3, by decide⟩)]
+  [opAt 949 .JUMPDEST, pushAt 950 2 1283,
+   opAt 951 (.Dup ⟨1, by decide⟩), opAt 952 (.Dup ⟨3, by decide⟩)]
 
 def bigTailArgsPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 954 1 96, opAt 955 (.Dup ⟨6, by decide⟩),
-   opAt 956 (.Dup ⟨8, by decide⟩), opAt 957 (.Dup ⟨10, by decide⟩)]
+  [pushAt 953 1 96, opAt 954 (.Dup ⟨6, by decide⟩),
+   opAt 955 (.Dup ⟨8, by decide⟩), opAt 956 (.Dup ⟨10, by decide⟩)]
 
 def bigTailJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 958 2 704, opAt 959 .JUMP]
+  [pushAt 957 2 704, opAt 958 .JUMP]
 
 def bigTailPath := bigTailFramePath ++ bigTailArgsPath ++ bigTailJumpPath
 
@@ -132,15 +132,15 @@ def bigEntryState (input : ByteArray) : State :=
       UInt256.ofNat m, UInt256.ofNat e, UInt256.ofNat b] }
 
 @[simp] theorem bigTailPCs (i : Nat)
-    (hi : 950 ≤ i) (hii : i ≤ 959) :
+    (hi : 949 ≤ i) (hii : i ≤ 958) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1268,1269,1272,1273,1274,1276,1277,1278,1279,1282] : List Nat)[i - 950]! := by
+      ([1268,1269,1272,1273,1274,1276,1277,1278,1279,1282] : List Nat)[i - 949]! := by
   interval_cases i <;> decide
 
 theorem jump704 : Decode.isValidJumpDest submissionBytecode 704 = true :=
-  Artifact.isValidJumpDest_index 563 (by rfl)
+  Artifact.isValidJumpDest_index 562 (by rfl)
 
 theorem jump1268 : Decode.isValidJumpDest submissionBytecode 1268 = true :=
-  Artifact.isValidJumpDest_index 950 (by rfl)
+  Artifact.isValidJumpDest_index 949 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatch

@@ -43,35 +43,35 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def setupToClear0Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 563 .JUMPDEST, pushAt 564 1 31,
-   opAt 565 (.Dup ⟨3, by decide⟩), opAt 566 .ADD,
-   pushAt 567 1 5, opAt 568 .SHR, pushAt 569 2 721,
-   opAt 570 (.Dup ⟨1, by decide⟩), pushAt 571 0 0,
-   pushAt 572 2 19, opAt 573 .JUMP]
+  [opAt 562 .JUMPDEST, pushAt 563 1 31,
+   opAt 564 (.Dup ⟨3, by decide⟩), opAt 565 .ADD,
+   pushAt 566 1 5, opAt 567 .SHR, pushAt 568 2 721,
+   opAt 569 (.Dup ⟨1, by decide⟩), pushAt 570 0 0,
+   pushAt 571 2 19, opAt 572 .JUMP]
 
 def toClear1024Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 574 .JUMPDEST, pushAt 575 2 733,
-   opAt 576 (.Dup ⟨1, by decide⟩), pushAt 577 2 1024,
-   pushAt 578 2 19, opAt 579 .JUMP]
+  [opAt 573 .JUMPDEST, pushAt 574 2 733,
+   opAt 575 (.Dup ⟨1, by decide⟩), pushAt 576 2 1024,
+   pushAt 577 2 19, opAt 578 .JUMP]
 
 def toClear2048Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 580 .JUMPDEST, pushAt 581 2 745,
-   opAt 582 (.Dup ⟨1, by decide⟩), pushAt 583 2 2048,
-   pushAt 584 2 19, opAt 585 .JUMP]
+  [opAt 579 .JUMPDEST, pushAt 580 2 745,
+   opAt 581 (.Dup ⟨1, by decide⟩), pushAt 582 2 2048,
+   pushAt 583 2 19, opAt 584 .JUMP]
 
 def toClear6144Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 586 .JUMPDEST, pushAt 587 2 757,
-   opAt 588 (.Dup ⟨1, by decide⟩), pushAt 589 2 6144,
-   pushAt 590 2 19, opAt 591 .JUMP]
+  [opAt 585 .JUMPDEST, pushAt 586 2 757,
+   opAt 587 (.Dup ⟨1, by decide⟩), pushAt 588 2 6144,
+   pushAt 589 2 19, opAt 590 .JUMP]
 
 def toLoadModulusPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 592 .JUMPDEST, pushAt 593 2 768, pushAt 594 0 0,
-   opAt 595 (.Dup ⟨5, by decide⟩), opAt 596 (.Dup ⟨9, by decide⟩),
-   pushAt 597 2 439, opAt 598 .JUMP]
+  [opAt 591 .JUMPDEST, pushAt 592 2 768, pushAt 593 0 0,
+   opAt 594 (.Dup ⟨5, by decide⟩), opAt 595 (.Dup ⟨9, by decide⟩),
+   pushAt 596 2 439, opAt 597 .JUMP]
 
 def saved (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
     (rest : List UInt256) : List UInt256 :=
@@ -120,9 +120,9 @@ def setupReturned (s : State) (b e m baseOff expOff modOff : Nat)
     (saved b e m baseOff expOff modOff returnDest rest)
 
 @[simp] private theorem setupPCs (i : Nat)
-    (hi : 563 ≤ i) (hii : i ≤ 598) :
+    (hi : 562 ≤ i) (hii : i ≤ 597) :
     Artifact.submissionArtifact.instructionPC i =
-      ([704,705,707,708,709,711,712,715,716,717,720,721,722,725,726,729,732,733,734,737,738,741,744,745,746,749,750,753,756,757,758,761,762,763,764,767] : List Nat)[i - 563]! := by
+      ([704,705,707,708,709,711,712,715,716,717,720,721,722,725,726,729,732,733,734,737,738,741,744,745,746,749,750,753,756,757,758,761,762,763,764,767] : List Nat)[i - 562]! := by
   interval_cases i <;> decide
 
 private theorem jump19 :
@@ -135,23 +135,23 @@ private theorem jump439 :
 
 private theorem jump721 :
     Decode.isValidJumpDest submissionBytecode 721 = true :=
-  Artifact.isValidJumpDest_index 574 (by rfl)
+  Artifact.isValidJumpDest_index 573 (by rfl)
 
 private theorem jump733 :
     Decode.isValidJumpDest submissionBytecode 733 = true :=
-  Artifact.isValidJumpDest_index 580 (by rfl)
+  Artifact.isValidJumpDest_index 579 (by rfl)
 
 private theorem jump745 :
     Decode.isValidJumpDest submissionBytecode 745 = true :=
-  Artifact.isValidJumpDest_index 586 (by rfl)
+  Artifact.isValidJumpDest_index 585 (by rfl)
 
 private theorem jump757 :
     Decode.isValidJumpDest submissionBytecode 757 = true :=
-  Artifact.isValidJumpDest_index 592 (by rfl)
+  Artifact.isValidJumpDest_index 591 (by rfl)
 
 private theorem jump768 :
     Decode.isValidJumpDest submissionBytecode 768 = true :=
-  Artifact.isValidJumpDest_index 599 (by rfl)
+  Artifact.isValidJumpDest_index 598 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupToClear0 (s : State) (b e m baseOff expOff modOff : Nat)

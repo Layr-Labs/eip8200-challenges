@@ -31,8 +31,8 @@ theorem prologue_split : CiosStackCachePrograms.prologue = ((loadA ++ loadB) ++ 
 set_option linter.unusedSimpArgs false in
 theorem run_loadA (s : State) (rest : List UInt256) (hcap : rest.length ≤ 1010)
     (hact : 296 ≤ s.activeWords.toNat) :
-    runInstructions loadA (framed s (UInt256.ofNat 4447) rest) =
-    some (framed s (UInt256.ofNat 4456) ([MachineState.readWord s.memory 9376, MachineState.readWord s.memory 9440] ++ rest)) := by
+    runInstructions loadA (framed s (UInt256.ofNat 4451) rest) =
+    some (framed s (UInt256.ofNat 4460) ([MachineState.readWord s.memory 9376, MachineState.readWord s.memory 9440] ++ rest)) := by
   have h0 : rest.length < 1024 := by omega
   have h1 : rest.length+1 < 1024 := by omega
   have h2 : rest.length+2 < 1024 := by omega
@@ -49,8 +49,8 @@ theorem run_loadA (s : State) (rest : List UInt256) (hcap : rest.length ≤ 1010
 set_option linter.unusedSimpArgs false in
 theorem run_loadB (s : State) (rest : List UInt256) (hcap : rest.length ≤ 1010)
     (hact : 296 ≤ s.activeWords.toNat) :
-    runInstructions loadB (framed s (UInt256.ofNat 4456) rest) =
-    some (framed s (UInt256.ofNat 4461) ([MachineState.readWord s.memory 0, MachineState.readWord s.memory 32] ++ rest)) := by
+    runInstructions loadB (framed s (UInt256.ofNat 4460) rest) =
+    some (framed s (UInt256.ofNat 4465) ([MachineState.readWord s.memory 0, MachineState.readWord s.memory 32] ++ rest)) := by
   have h0 : rest.length < 1024 := by omega
   have h1 : rest.length+1 < 1024 := by omega
   have h2 : rest.length+2 < 1024 := by omega
@@ -68,8 +68,8 @@ set_option linter.unusedSimpArgs false in
 theorem run_loadC (s : State) (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 1010)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hml : MachineState.readWord s.memory 9408 = UInt256.ofNat (32*n-32)) :
-    runInstructions loadC (framed s (UInt256.ofNat 4461) rest) =
-    some (framed s (UInt256.ofNat 4466) ([MachineState.readWord s.memory (32*n-32)] ++ rest)) := by
+    runInstructions loadC (framed s (UInt256.ofNat 4465) rest) =
+    some (framed s (UInt256.ofNat 4470) ([MachineState.readWord s.memory (32*n-32)] ++ rest)) := by
   have h0 : rest.length < 1024 := by omega
   have h1 : rest.length+1 < 1024 := by omega
   have h2 : rest.length+2 < 1024 := by omega
@@ -87,8 +87,8 @@ set_option linter.unusedSimpArgs false in
 theorem run_reorder (s : State) (r : ReadOnlyCache) (pa pb dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) :
     runInstructions reorder
-      (framed s (UInt256.ofNat 4466) ([r.m0, r.z0, r.m32, r.inv, r.tl, pa, pb, dst, ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 4479) ([pa, pb] ++ cacheTail (zeroCache s.memory) r dst ret rest)) := by
+      (framed s (UInt256.ofNat 4470) ([r.m0, r.z0, r.m32, r.inv, r.tl, pa, pb, dst, ret] ++ rest)) =
+    some (framed s (UInt256.ofNat 4483) ([pa, pb] ++ cacheTail (zeroCache s.memory) r dst ret rest)) := by
   have h9 : rest.length+9 < 1024 := by omega
   have h10 : rest.length+10 < 1024 := by omega
   have h11 : rest.length+11 < 1024 := by omega
@@ -102,8 +102,8 @@ theorem run_prologue (s : State) (n : Nat) (pa pb dst ret : UInt256)
     (hn32 : n ≤ 32)
     (hml : MachineState.readWord s.memory 9408 = UInt256.ofNat (32*n-32)) :
     runInstructions CiosStackCachePrograms.prologue
-      (framed s (UInt256.ofNat 4447) ([pa, pb, dst, ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 4479)
+      (framed s (UInt256.ofNat 4451) ([pa, pb, dst, ret] ++ rest)) =
+    some (framed s (UInt256.ofNat 4483)
       ([pa, pb] ++ cacheTail (zeroCache s.memory) (ReadOnlyCache.capture s.memory n) dst ret rest)) := by
   let r := ReadOnlyCache.capture s.memory n
   have h1 := run_loadA s ([pa, pb, dst, ret] ++ rest) (by simp; omega) hact
@@ -123,8 +123,8 @@ theorem run_head (s : State) (c : CachedMemory) (r : ReadOnlyCache) (n : Nat)
     (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
     (hs32 : MachineState.readWord s.memory 9344 = UInt256.ofNat (32*n)) :
     runInstructions CiosStackCachePrograms.entryHead
-      (framed s (UInt256.ofNat 4479) ([pa, pb] ++ cacheTail c r dst ret rest)) =
-    some (framed s (UInt256.ofNat 4556)
+      (framed s (UInt256.ofNat 4483) ([pa, pb] ++ cacheTail c r dst ret rest)) =
+    some (framed s (UInt256.ofNat 4560)
       ([pa, pb, isFour n, negative32, allOnes] ++ cacheTail c r dst ret rest)) := by
   have h12 : rest.length+12 < 1024 := by omega
   have h13 : rest.length+13 < 1024 := by omega
@@ -157,7 +157,7 @@ theorem run_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
     (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32*n-32)) :
     runInstructions CiosStackCachePrograms.entry
       (CiosCached.entryState s mem pa pb dst ret rest) =
-    some (framed { s with memory := mpZeroed s mem n } (UInt256.ofNat 4591)
+    some (framed { s with memory := mpZeroed s mem n } (UInt256.ofNat 4595)
       (rowFrame (initial s mem n) (ReadOnlyCache.capture mem n)
         (UInt256.ofNat (ptrAt (pb+32*n-32) 0)) (UInt256.ofNat (pa+32*n-32))
         (UInt256.ofNat (pb-32)) (isFour n) dst ret rest)) := by

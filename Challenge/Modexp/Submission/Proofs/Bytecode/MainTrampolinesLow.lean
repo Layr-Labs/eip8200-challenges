@@ -17,7 +17,7 @@ theorem run_tramp0 (input : ByteArray) :
     (a := 0) (b := 3) (by norm_num : 0 + 3 < 2 ^ 256)
   have hdest : (1314 : UInt256).toNat = 1314 := by decide
   have hjump : Decode.isValidJumpDest submissionBytecode 1314 = true :=
-    Artifact.isValidJumpDest_index 977 (by rfl)
+    Artifact.isValidJumpDest_index 976 (by rfl)
   have hdestWord : (1314 : UInt256) = UInt256.ofNat 1314 := by decide
   simp [tramp0Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,

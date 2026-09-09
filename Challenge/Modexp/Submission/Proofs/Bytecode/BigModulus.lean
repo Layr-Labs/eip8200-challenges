@@ -41,33 +41,33 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def scanSetupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 599 .JUMPDEST, pushAt 600 0 0, pushAt 601 0 0]
+  [opAt 598 .JUMPDEST, pushAt 599 0 0, pushAt 600 0 0]
 
 def scanGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 602 .JUMPDEST, opAt 603 (.Dup ⟨2, by decide⟩),
-   opAt 604 (.Dup ⟨1, by decide⟩), opAt 605 .LT, opAt 606 .ISZERO,
-   pushAt 607 2 799, opAt 608 .JUMPI]
+  [opAt 601 .JUMPDEST, opAt 602 (.Dup ⟨2, by decide⟩),
+   opAt 603 (.Dup ⟨1, by decide⟩), opAt 604 .LT, opAt 605 .ISZERO,
+   pushAt 606 2 799, opAt 607 .JUMPI]
 
 def scanBodyPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 609 (.Dup ⟨0, by decide⟩), pushAt 610 1 5,
-   opAt 611 .SHL, opAt 612 .MLOAD, opAt 613 (.Dup ⟨2, by decide⟩),
-   opAt 614 .OR, opAt 615 (.Swap ⟨1, by decide⟩), opAt 616 .POP,
-   pushAt 617 1 1, opAt 618 (.Dup ⟨1, by decide⟩), opAt 619 .ADD,
-   opAt 620 (.Swap ⟨0, by decide⟩), opAt 621 .POP,
-   pushAt 622 2 771, opAt 623 .JUMP]
+  [opAt 608 (.Dup ⟨0, by decide⟩), pushAt 609 1 5,
+   opAt 610 .SHL, opAt 611 .MLOAD, opAt 612 (.Dup ⟨2, by decide⟩),
+   opAt 613 .OR, opAt 614 (.Swap ⟨1, by decide⟩), opAt 615 .POP,
+   pushAt 616 1 1, opAt 617 (.Dup ⟨1, by decide⟩), opAt 618 .ADD,
+   opAt 619 (.Swap ⟨0, by decide⟩), opAt 620 .POP,
+   pushAt 621 2 771, opAt 622 .JUMP]
 
 def scanNonzeroPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 624 .JUMPDEST, opAt 625 .POP, opAt 626 (.Dup ⟨0, by decide⟩),
-   pushAt 627 2 811, opAt 628 .JUMPI]
+  [opAt 623 .JUMPDEST, opAt 624 .POP, opAt 625 (.Dup ⟨0, by decide⟩),
+   pushAt 626 2 811, opAt 627 .JUMPI]
 
 def scanZeroPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   scanNonzeroPath ++
-    [opAt 629 (.Dup ⟨4, by decide⟩), pushAt 630 2 6144,
-     opAt 631 .RETURN]
+    [opAt 628 (.Dup ⟨4, by decide⟩), pushAt 629 2 6144,
+     opAt 630 .RETURN]
 
 def scanOr (memory : ByteArray) : Nat → UInt256
   | 0 => 0
@@ -112,22 +112,22 @@ def scanZeroFinal (s : State) (count b e m baseOff expOff modOff : Nat)
            hReturn := MachineState.readPadded s.memory 6144 m }
 
 @[simp] private theorem scanPCs (i : Nat)
-    (hi : 599 ≤ i) (hii : i ≤ 631) :
+    (hi : 598 ≤ i) (hii : i ≤ 630) :
     Artifact.submissionArtifact.instructionPC i =
-      ([768,769,770,771,772,773,774,775,776,779,780,781,783,784,785,786,787,788,789,791,792,793,794,795,798,799,800,801,802,805,806,807,810] : List Nat)[i - 599]! := by
+      ([768,769,770,771,772,773,774,775,776,779,780,781,783,784,785,786,787,788,789,791,792,793,794,795,798,799,800,801,802,805,806,807,810] : List Nat)[i - 598]! := by
   interval_cases i <;> decide
 
 private theorem jump771 :
     Decode.isValidJumpDest submissionBytecode 771 = true :=
-  Artifact.isValidJumpDest_index 602 (by rfl)
+  Artifact.isValidJumpDest_index 601 (by rfl)
 
 private theorem jump799 :
     Decode.isValidJumpDest submissionBytecode 799 = true :=
-  Artifact.isValidJumpDest_index 624 (by rfl)
+  Artifact.isValidJumpDest_index 623 (by rfl)
 
 private theorem jump811 :
     Decode.isValidJumpDest submissionBytecode 811 = true :=
-  Artifact.isValidJumpDest_index 632 (by rfl)
+  Artifact.isValidJumpDest_index 631 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_scanSetup (s : State) (count : Nat) (rest : List UInt256)

@@ -7,9 +7,9 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.Main
 open EvmSemantics
 open EvmSemantics.EVM
 
-def headerCheckOrPath := [opAt 915 .OR, opAt 916 .OR]
-def headerCheckIsZeroPath := [opAt 917 .ISZERO]
-def headerCheckJumpPath := [pushAt 918 2 1228, opAt 919 .JUMPI]
+def headerCheckOrPath := [opAt 914 .OR, opAt 915 .OR]
+def headerCheckIsZeroPath := [opAt 916 .ISZERO]
+def headerCheckJumpPath := [pushAt 917 2 1228, opAt 918 .JUMPI]
 
 def headerChecksCombinedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
