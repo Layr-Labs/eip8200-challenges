@@ -29,7 +29,7 @@ def blkFullBaseGuard :
    opAt 2465 .SHR,
    opAt 2466 .AND,
    opAt 2467 .ISZERO,
-   pushAt 2468 2 3420,
+   pushAt 2468 2 3384,
    opAt 2469 .JUMPI]
 
 /-- pc 3877..3407, indices 2373..2169: copy the base to ACC and call
@@ -40,11 +40,11 @@ def blkFullBaseCopyAdd :
    pushAt 2471 1 96,
    pushAt 2472 2 1024,
    opAt 2473 .CALLDATACOPY,
-   pushAt 2474 2 1755,
+   pushAt 2474 2 1746,
    pushAt 2475 2 2048,
    pushAt 2476 2 1024,
    pushAt 2477 2 6144,
-   pushAt 2478 2 4458,
+   pushAt 2478 2 4424,
    opAt 2479 .JUMP]
 
 /-- pc 3644..3424, indices 2170..2176: after add-mod, convert ACC to the
@@ -52,11 +52,11 @@ Montgomery BASE block and rejoin at pc 1755. -/
 def blkFullBaseAfterAdd :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2480 .JUMPDEST,
-   pushAt 2481 2 1755,
+   pushAt 2481 2 1746,
    pushAt 2482 2 2048,
    pushAt 2483 2 6144,
    pushAt 2484 2 1024,
-   pushAt 2485 2 4458,
+   pushAt 2485 2 4424,
    opAt 2486 .JUMP]
 
 /-- pc 3425..3458, indices 2177..2200: relocated original base-head
@@ -85,7 +85,7 @@ def blkFullBaseFallback :
    opAt 2506 .ADD,
    opAt 2507 .MSTORE,
    pushAt 2508 1 1,
-   pushAt 2509 2 1668,
+   pushAt 2509 2 1659,
    opAt 2510 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

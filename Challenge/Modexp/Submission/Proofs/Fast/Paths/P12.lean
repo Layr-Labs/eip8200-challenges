@@ -46,7 +46,7 @@ def blk1627 :
    pushAt 1654 2 8224,
    opAt 1655 (.Dup ⟨1, by decide⟩),
    opAt 1656 .GT,
-   pushAt 1657 2 2252,
+   pushAt 1657 2 2236,
    opAt 1658 .JUMPI]
 
 /-- Instructions 1662..1666, pc 2635..2308. -/

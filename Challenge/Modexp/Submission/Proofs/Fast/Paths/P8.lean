@@ -59,7 +59,7 @@ def blk1421 :
    opAt 1458 (.Dup ⟨5, by decide⟩),
    opAt 1459 (.Dup ⟨1, by decide⟩),
    opAt 1460 .GT,
-   pushAt 1461 2 1995,
+   pushAt 1461 2 1979,
    opAt 1462 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

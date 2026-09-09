@@ -15,7 +15,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.FixedExponentPaths
 
 def entryPath : List (Challenge.EvmProof.Stepper.Located
     Artifact.submissionArtifact .Osaka) :=
-  [opAt 1261 .JUMPDEST, pushAt 1262 2 3695, opAt 1263 .JUMP]
+  [opAt 1261 .JUMPDEST, pushAt 1262 2 3615, opAt 1263 .JUMP]
 
 set_option linter.unusedSimpArgs false in
 theorem run_entry (s : State) (memory : ByteArray)
@@ -31,7 +31,7 @@ theorem run_entry (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       Exp.bDone, entryState, Exp.outer, hcode, hrun,
-      FixedExponentPaths.jumpDest3695,
+      FixedExponentPaths.jumpDest3659,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,

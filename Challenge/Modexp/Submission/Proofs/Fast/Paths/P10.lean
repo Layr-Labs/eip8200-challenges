@@ -56,7 +56,7 @@ def blk1519 :
    pushAt 1557 2 8224,
    opAt 1558 (.Dup ⟨2, by decide⟩),
    opAt 1559 .GT,
-   pushAt 1560 2 2119,
+   pushAt 1560 2 2103,
    opAt 1561 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

@@ -51,7 +51,7 @@ def blk1039 :
    opAt 1074 (.Dup ⟨0, by decide⟩),
    opAt 1075 .MLOAD,
    opAt 1076 (.Dup ⟨0, by decide⟩),
-   pushAt 1077 6 2,
+   pushAt 1077 1 2,
    opAt 1078 .SUB,
    opAt 1079 (.Dup ⟨0, by decide⟩),
    opAt 1080 (.Dup ⟨2, by decide⟩),
@@ -104,9 +104,9 @@ def blk1039 :
    pushAt 1127 1 1,
    pushAt 1128 2 4096,
    opAt 1129 .MSTORE,
-   pushAt 1130 2 4643,
+   pushAt 1130 2 3780,
    pushAt 1131 2 4096,
-   pushAt 1132 2 1911,
+   pushAt 1132 2 2514,
    opAt 1133 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

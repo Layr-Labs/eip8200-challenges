@@ -19,9 +19,9 @@ def blk1138 :
    pushAt 1137 2 4096,
    pushAt 1138 2 5120,
    opAt 1139 .MCOPY,
-   pushAt 1140 2 3330,
+   pushAt 1140 2 3294,
    pushAt 1141 2 5120,
-   pushAt 1142 2 3775,
+   pushAt 1142 2 3739,
    opAt 1143 .JUMP]
 
 /-- Instructions 1148..1154, pc 1555..1567. -/
@@ -39,11 +39,11 @@ def blk1148 :
 def blk1155 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1151 .JUMPDEST,
-   pushAt 1152 2 1586,
+   pushAt 1152 2 1581,
    pushAt 1153 2 6144,
    pushAt 1154 2 6144,
    pushAt 1155 2 6144,
-   pushAt 1156 2 4458,
+   pushAt 1156 2 4424,
    opAt 1157 .JUMP]
 
 /-- Instructions 1162..1173, pc 1586..1604. -/
@@ -59,7 +59,7 @@ def blk1162 :
    opAt 1165 .MUL,
    pushAt 1166 2 4096,
    opAt 1167 .ADD,
-   pushAt 1168 2 2604,
+   pushAt 1168 2 2584,
    opAt 1169 .JUMP]
 
 /-- Instructions 1178..1183, pc 1615..1622. -/
@@ -69,7 +69,7 @@ def blk1178 :
    opAt 1175 .POP,
    opAt 1176 (.Dup ⟨0, by decide⟩),
    opAt 1177 .ISZERO,
-   pushAt 1178 2 1631,
+   pushAt 1178 2 1622,
    opAt 1179 .JUMPI]
 
 /-- Instructions 1184..1188, pc 1623..1630. -/
@@ -78,7 +78,7 @@ def blk1184 :
   [pushAt 1180 0 0,
    opAt 1181 .NOT,
    opAt 1182 .ADD,
-   pushAt 1183 3 1569,
+   pushAt 1183 2 1564,
    opAt 1184 .JUMP]
 
 /-- Instructions 1189..1194, pc 1631..1638. -/
@@ -88,7 +88,7 @@ def blk1189 :
    opAt 1186 .POP,
    opAt 1187 (.Dup ⟨2, by decide⟩),
    opAt 1188 .ISZERO,
-   pushAt 1189 2 1756,
+   pushAt 1189 2 1747,
    opAt 1190 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

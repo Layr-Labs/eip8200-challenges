@@ -15,10 +15,10 @@ times, so the `n`-limb block at `px` goes from `x` to `x * radix mod m`.
 The four basic blocks are
 
 * `blk1360` (idx 1360..1361, pc 1911..1912) — `JUMPDEST; PUSH2 256`;
-* `blk1362` (idx 1362..1368, pc 1915..1925) — the loop head `DBL`, which
-  pushes the call frame `[px, px, px, 1926]` and jumps to `ADDMOD` (pc 2224);
-* `blk1369` (idx 1369..1375, pc 1926..1935) — the return point, which
-  decrements the counter and jumps back to pc 1915 while it is nonzero;
+* `blk1362` (idx 1362..1368, pc 1906..1925) — the loop head `DBL`, which
+  pushes the call frame `[px, px, px, 1917]` and jumps to `ADDMOD` (pc 2224);
+* `blk1369` (idx 1369..1375, pc 1917..1935) — the return point, which
+  decrements the counter and jumps back to pc 1906 while it is nonzero;
 * `blk1376` (idx 1376..1378, pc 1936..1938) — `POP; POP; JUMP ret`.
 
 The `ADDMOD` subroutine itself is developed in `Fast.Csub`; here it enters
@@ -54,36 +54,36 @@ def loopStack (px k : Nat) (ret : UInt256) (rest : List UInt256) : List UInt256 
 /-- Subroutine entry, pc 1911, stack `[px, ret]`. -/
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1911
+  { s with pc := UInt256.ofNat 1902
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- The loop head `DBL`, pc 1915, with the counter at `k`. -/
+/-- The loop head `DBL`, pc 1906, with the counter at `k`. -/
 def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1915
+  { s with pc := UInt256.ofNat 1906
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The `ADDMOD` call, pc 2224, with the frame `[px, px, px, 1926]` pushed. -/
+/-- The `ADDMOD` call, pc 2224, with the frame `[px, px, px, 1917]` pushed. -/
 def callState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2219
+  { s with pc := UInt256.ofNat 2203
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
-                     UInt256.ofNat 1926] ++ loopStack px k ret rest
+                     UInt256.ofNat 1917] ++ loopStack px k ret rest
            memory := mem }
 
-/-- The return point, pc 1926, with the counter still at `k`. -/
+/-- The return point, pc 1917, with the counter still at `k`. -/
 def retState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1926
+  { s with pc := UInt256.ofNat 1917
            stack := loopStack px k ret rest
            memory := mem }
 
 /-- The loop exit, pc 1936, with the counter at zero. -/
 def exitState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1936
+  { s with pc := UInt256.ofNat 1927
            stack := loopStack px 0 ret rest
            memory := mem }
 
@@ -115,8 +115,8 @@ theorem run_entry (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1362` (pc 1915..1925): the loop head pushes the `ADDMOD` frame
-`[px, px, px, 1926]` and jumps to pc 2224. -/
+/-- `blk1362` (pc 1906..1925): the loop head pushes the `ADDMOD` frame
+`[px, px, px, 1917]` and jumps to pc 2224. -/
 theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -130,9 +130,9 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
-  have h1926 : (1926 : UInt256) = UInt256.ofNat 1926 := by decide
-  have h2467 : (2219 : UInt256) = UInt256.ofNat 2219 := by decide
-  have h2467Nat : (UInt256.ofNat 2219).toNat = 2219 := by decide
+  have h1926 : (1917 : UInt256) = UInt256.ofNat 1917 := by decide
+  have h2467 : (2203 : UInt256) = UInt256.ofNat 2203 := by decide
+  have h2467Nat : (UInt256.ofNat 2203).toNat = 2203 := by decide
   simp (config := { maxSteps := 400000 }) [blk1362, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -145,7 +145,7 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1369` (pc 1926..1935), counter above one: decrement and loop. -/
+/-- `blk1369` (pc 1917..1935), counter above one: decrement and loop. -/
 theorem run_ret (s : State) (mem : ByteArray) (px k k' : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hk : k = k' + 1) (hk' : 1 ≤ k') (hk256 : k ≤ 256)
@@ -159,8 +159,8 @@ theorem run_ret (s : State) (mem : ByteArray) (px k k' : Nat) (ret : UInt256)
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  have h1915 : (1915 : UInt256) = UInt256.ofNat 1915 := by decide
-  have h1915Nat : (UInt256.ofNat 1915).toNat = 1915 := by decide
+  have h1915 : (1906 : UInt256) = UInt256.ofNat 1906 := by decide
+  have h1915Nat : (UInt256.ofNat 1906).toNat = 1906 := by decide
   have hsub : UInt256.ofNat (k' + 1) - UInt256.ofNat 1 = UInt256.ofNat k' := by
     have h := Challenge.EvmProof.Word.ofNat_sub_ofNat
       (a := k' + 1) (b := 1) (by omega) (by omega)
@@ -173,14 +173,14 @@ theorem run_ret (s : State) (mem : ByteArray) (px k k' : Nat) (ret : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     retState, loopState, loopStack, fastPC9, hc3, hc4, hc5, hcode, hrun,
-    hone, h1915, h1915Nat, hsub, htrue, jumpDest1915, List.exchange,
+    hone, h1915, h1915Nat, hsub, htrue, jumpDest1906, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1369` (pc 1926..1935), counter one: fall through to the exit. -/
+/-- `blk1369` (pc 1917..1935), counter one: fall through to the exit. -/
 theorem run_retLast (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1369
@@ -190,7 +190,7 @@ theorem run_retLast (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  have h1915 : (1915 : UInt256) = UInt256.ofNat 1915 := by decide
+  have h1915 : (1906 : UInt256) = UInt256.ofNat 1906 := by decide
   have hsub : UInt256.ofNat 1 - UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   simp (config := { maxSteps := 400000 }) [blk1369, opAt, pushAt, wfOp,
@@ -500,7 +500,7 @@ theorem vars_iterMem (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤
 theorem csReturned_eq (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) (hpx : px < 2 ^ 256) :
     Csub.csReturnedState s (Csub.amResultMemory mem px px n) n n (UInt256.ofNat px)
-        (UInt256.ofNat 1926) (loopStack px k ret rest) =
+        (UInt256.ofNat 1917) (loopStack px k ret rest) =
       retState s (dblStep px n mem) px k ret rest := by
   have hpxN : (UInt256.ofNat px).toNat = px := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hpx]
@@ -551,9 +551,9 @@ def gasSteps_addmodStep (s : State) (mem : ByteArray) (px n : Nat) (ret' : UInt2
 
 theorem jump1926 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat 1926).toNat = true := by
-  rw [show (UInt256.ofNat 1926).toNat = 1926 by decide]
-  exact jumpDest1926
+      (UInt256.ofNat 1917).toNat = true := by
+  rw [show (UInt256.ofNat 1917).toNat = 1917 by decide]
+  exact jumpDest1917
 
 /-- **`DOUBLE256` against the real `ADDMOD`.**  With the derived variables in
 place, entering pc 1911 with `[px, ret]` returns to `ret` with the block at
@@ -571,7 +571,7 @@ def gasSteps_double256_addmod (s : State) (mem : ByteArray) (px n : Nat)
       (doneState s (iterMem (dblStep px n) mem 256) ret rest) :=
   gasSteps_double256 s px ret rest (iterMem (dblStep px n) mem)
     (fun i _ => Challenge.EvmProof.GasSteps.cast
-      (gasSteps_addmodStep s (iterMem (dblStep px n) mem i) px n (UInt256.ofNat 1926)
+      (gasSteps_addmodStep s (iterMem (dblStep px n) mem i) px n (UInt256.ofNat 1917)
         (loopStack px (256 - i) ret rest)
         (by rw [loopStack_length]; omega) hcode hfork hrun hnp hact hn hn32 hpx hpxFit
         jump1926 (vars_iterMem mem px n hn hn32 hpxFit hv i))

@@ -41,13 +41,13 @@ theorem run_fallback (s : State) (memory : ByteArray)
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
         FixedDirectStates.fallback, Exp.outer, hcode, hrun,
-        jumpDest1769,
+        jumpDest1760,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
         Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Word.ofNat_add_mod]]
   exact run_fallbackProgram s memory n bsize esize msize hn hn32 hactive
-    (by simpa [hcode] using jumpDest1769) hrun
+    (by simpa [hcode] using jumpDest1760) hrun
 
 def gasSteps_fallback (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)

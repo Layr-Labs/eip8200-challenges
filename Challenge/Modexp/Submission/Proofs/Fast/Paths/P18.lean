@@ -27,7 +27,7 @@ def blk2557 :
   [opAt 2654 .JUMPDEST,
    opAt 2655 (.Dup ⟨1, by decide⟩),
    opAt 2656 .ISZERO,
-   pushAt 2657 2 3646,
+   pushAt 2657 2 3610,
    opAt 2658 .JUMPI]
 
 /-- Instructions 2562..2568, pc 3872..3650: `ACC := BASE`, then the shift. -/
@@ -38,14 +38,14 @@ def blk2562 :
    pushAt 2661 2 2048,
    pushAt 2662 2 1024,
    opAt 2663 .MCOPY,
-   pushAt 2664 2 1832,
+   pushAt 2664 2 1823,
    opAt 2665 .JUMP]
 
 /-- Instructions 2569..2571, pc 3651..3655: the zero-byte arm. -/
 def blk2569 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2666 .JUMPDEST,
-   pushAt 2667 2 1789,
+   pushAt 2667 2 1780,
    opAt 2668 .JUMP]
 
 /-- PC table for the relocated leading-bit shortcut.  This range is outside
@@ -54,15 +54,16 @@ instead of unfolding the complete bytecode prefix at every instruction. -/
 @[simp] theorem leadingBitPC (i : Nat)
     (hi : 2654 ≤ i) (hii : i ≤ 2668) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3624,3625,3626,3627,3630,3631,3634,3635,3638,3641,3642,3645,3646,3647,3650] : List Nat)[i - 2654]! := by
+      ([3588,3589,3590,3591,3594,3595,3598,3599,3602,3605,3606,3609,3610,
+       3611,3614] : List Nat)[i - 2654]! := by
   interval_cases i <;> decide
 
-theorem jumpDest3865 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3624 = true :=
+theorem jumpDest3829 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3588 = true :=
   Artifact.isValidJumpDest_index 2654 (by rfl)
 
-theorem jumpDest3887 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3646 = true :=
+theorem jumpDest3851 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3610 = true :=
   Artifact.isValidJumpDest_index 2666 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

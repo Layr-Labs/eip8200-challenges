@@ -33,7 +33,7 @@ private def fallbackWordPath :
 private def fallbackStorePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2504 (.Dup ⟨2, by decide⟩), pushAt 2505 2 992, opAt 2506 .ADD,
-   opAt 2507 .MSTORE, pushAt 2508 1 1, pushAt 2509 2 1668, opAt 2510 .JUMP]
+   opAt 2507 .MSTORE, pushAt 2508 1 1, pushAt 2509 2 1659, opAt 2510 .JUMP]
 
 private theorem shr_ofNat (value shift : Nat) (hv : value < 2 ^ 256)
     (hs : shift < 256) :
@@ -72,8 +72,8 @@ theorem run_fallback (s : State) (mem input : ByteArray)
         (FullBase.storeWord mem (992 + 32 * n)
           (UInt256.ofNat (FullBase.topLimbOf input bsize)))
         n bsize esize msize (FullBase.pbOf bsize) 1) := by
-  have hjump : Decode.isValidJumpDest s.executionEnv.code 1668 = true := by
-    simpa [hcode] using jumpDest1668
+  have hjump : Decode.isValidJumpDest s.executionEnv.code 1659 = true := by
+    simpa [hcode] using jumpDest1659
   have hpb1 : 1 ≤ pbOf bsize := by unfold pbOf; omega
   have hpbLe : pbOf bsize ≤ 32 := by unfold pbOf; omega
   have hpbBig : bsize ≤ 32 * pbOf bsize := by unfold pbOf; omega
@@ -130,7 +130,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
       some (fallbackCountState s mem n bsize esize msize) := by
     simp [fallbackCountPath, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, opAt, pushAt, wfOp,
-      hcode, hrun, fullBasePC, jumpDest1668,
+      hcode, hrun, fullBasePC, jumpDest1659,
       Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Stepper.runInstr,
       fallbackState, fallbackCountState, outer, hshr, hpb,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -141,7 +141,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
       some (fallbackWordState s mem input n bsize esize msize) := by
     simp [fallbackWordPath, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, opAt, pushAt, wfOp,
-      hcode, hrun, fullBasePC, jumpDest1668,
+      hcode, hrun, fullBasePC, jumpDest1659,
       Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Stepper.runInstr,
       fallbackCountState, fallbackWordState, outer, hdata, hshl, hsub, hshl2, hsr,
       List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -154,7 +154,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
         (pbOf bsize) 1) := by
     simp [fallbackStorePath, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, opAt, pushAt, wfOp,
-      hcode, hrun, fullBasePC, jumpDest1668,
+      hcode, hrun, fullBasePC, jumpDest1659,
       Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Stepper.runInstr,
       fallbackWordState, legacyLoopState, storeWord, outer, hmod, hfix, hjump,
       State.activeWordsAfterUInt256,

@@ -28,13 +28,14 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem helperPCAnchor :
-    Artifact.submissionArtifact.instructionPC 2435 = 3330 := by
+    Artifact.submissionArtifact.instructionPC 2435 = 3294 := by
   rfl
 
 @[simp] theorem helperPC (i : Nat)
     (hlo : 2435 ≤ i) (hhi : i ≤ 2457) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3330,3331,3334,3335,3338,3341,3342,3343,3345,3346,3347,3349,3350,3351,3353,3354,3355,3357,3358,3359,3360,3361,3364] : List Nat)[i - 2435]! := by
+      ([3294,3295,3298,3299,3302,3305,3306,3307,3309,3310,3311,3313,3314,
+       3315,3317,3318,3319,3321,3322,3323,3324,3325,3328] : List Nat)[i - 2435]! := by
   interval_cases i <;> decide
 
 def helperPath :
@@ -60,11 +61,11 @@ def helperPath :
    opAt 2453 .ADD,
    opAt 2454 .ADD,
    opAt 2455 .ADD,
-   pushAt 2456 2 1569,
+   pushAt 2456 2 1564,
    opAt 2457 .JUMP]
 
 @[simp] theorem jump1569 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1569 = true :=
-  jumpDest1569
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1564 = true :=
+  jumpDest1564
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.RrLeadingPaths

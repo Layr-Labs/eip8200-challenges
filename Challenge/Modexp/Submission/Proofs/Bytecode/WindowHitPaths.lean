@@ -31,7 +31,7 @@ def tablePreludePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [Main.pushAt 1850 1 96,
    Main.opAt 1851 .CALLDATALOAD,
-   Main.pushAt 1852 1 1,
+   Main.pushAt 1852 2 3268,
    Main.pushAt 1853 0 0,
    Main.opAt 1854 .MSTORE,
    Main.opAt 1855 (.Dup ⟨0, by decide⟩),
@@ -42,7 +42,7 @@ def tablePreludePath :
    Main.opAt 1860 (.Dup ⟨0, by decide⟩),
    Main.opAt 1861 .MULMOD,
    Main.opAt 1862 (.Dup ⟨0, by decide⟩),
-   Main.pushAt 1863 1 64,
+   Main.pushAt 1863 0 0,
    Main.opAt 1864 .MSTORE]
 
 def updateAt (index offset : Nat)
@@ -90,7 +90,7 @@ def tableFinishPath :
   [Main.opAt 1954 .POP,
    Main.opAt 1955 .POP,
    Main.pushAt 1956 1 1,
-   Main.pushAt 1957 1 128]
+   Main.pushAt 1957 1 247]
 
 def loopGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -134,15 +134,15 @@ def zeroReturnPath :
    Main.opAt 2174 .RETURN]
 
 @[simp] theorem jump3563 :
-    Decode.isValidJumpDest submissionBytecode 3066 = true :=
+    Decode.isValidJumpDest submissionBytecode 3044 = true :=
   Artifact.isValidJumpDest_index 2168 (by rfl)
 
 @[simp] theorem jump3555 :
-    Decode.isValidJumpDest submissionBytecode 3058 = true :=
+    Decode.isValidJumpDest submissionBytecode 3036 = true :=
   Artifact.isValidJumpDest_index 2161 (by rfl)
 
 @[simp] theorem jump3197 :
-    Decode.isValidJumpDest submissionBytecode 2830 = true :=
+    Decode.isValidJumpDest submissionBytecode 2808 = true :=
   Artifact.isValidJumpDest_index 1958 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitPaths

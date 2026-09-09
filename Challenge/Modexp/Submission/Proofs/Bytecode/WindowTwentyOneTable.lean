@@ -135,17 +135,17 @@ theorem run_update (template : State) (pc base modulus exponent : UInt256)
     show 15 - (power + 1) = 14 - power by omega] using both
 
 def lastUpdateProgram : List Instr :=
-  multiplyProgram 14 (by decide) ++ lastStoreProgram 4 15
+  multiplyProgram 14 (by decide) ++ lastStoreProgram 2 15
 
 theorem run_last_update (template : State) (pc base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions lastUpdateProgram
       (state template pc base modulus exponent 14 rest) =
-    some (framed template (lastStorePC 4 (advancePC 2 pc)) base modulus 16
+    some (framed template (lastStorePC 2 (advancePC 2 pc)) base modulus 16
       ([base, exponent] ++ rest)) := by
   have hm := run_multiply template pc base modulus exponent 14 (by decide) (by decide) rest hrest
   have hs := run_store_last template (advancePC 2 pc) base modulus 15 (by decide)
-    4 (by decide) ([base, exponent] ++ rest) (by simp; omega)
+    2 (by decide) ([base, exponent] ++ rest) (by simp; omega)
   simp only [show 14 - 14 = 0 by decide, List.replicate_zero] at hm
   exact runInstructions_append_some _ _ _ _ _ hm hs
 

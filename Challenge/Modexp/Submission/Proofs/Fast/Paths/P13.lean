@@ -46,10 +46,10 @@ def blk1683 :
    pushAt 1710 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    opAt 1711 .ADD,
    opAt 1712 (.Swap ⟨1, by decide⟩),
-   pushAt 1713 5 8224,
+   pushAt 1713 2 8224,
    opAt 1714 (.Dup ⟨1, by decide⟩),
    opAt 1715 .GT,
-   pushAt 1716 2 2328,
+   pushAt 1716 2 2312,
    opAt 1717 .JUMPI]
 
 /-- Live instructions 1724..1739, pc 2807..2860; trailing padding is not executed. -/

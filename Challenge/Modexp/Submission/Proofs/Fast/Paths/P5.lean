@@ -16,11 +16,11 @@ def blk1255 :
   [opAt 1251 .JUMPDEST,
    opAt 1252 .POP,
    opAt 1253 .POP,
-   pushAt 1254 2 1755,
+   pushAt 1254 2 1746,
    pushAt 1255 2 2048,
    pushAt 1256 2 6144,
    pushAt 1257 2 1024,
-   pushAt 1258 2 4458,
+   pushAt 1258 2 4424,
    opAt 1259 .JUMP]
 
 /-- Instructions 1264..1264, pc 1755..1755. -/
@@ -34,7 +34,7 @@ padding and are not part of the executed block. -/
 def blk1265 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1261 .JUMPDEST,
-   pushAt 1262 2 3651,
+   pushAt 1262 2 3615,
    opAt 1263 .JUMP]
 
 /-- Instructions 1272..1278, pc 1769..1777. -/
@@ -45,24 +45,24 @@ def blk1272 :
    opAt 1270 (.Dup ⟨1, by decide⟩),
    opAt 1271 .EQ,
    opAt 1272 .JUMPDEST,
-   pushAt 1273 2 1850,
+   pushAt 1273 2 1841,
    opAt 1274 .JUMPI]
 
 /-- Instructions 1279..1286, pc 1778..1787. -/
 def blk1279 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1275 2 2555,
+  [pushAt 1275 2 2535,
    opAt 1276 .JUMP]
 
 /-- Instructions 1287..1293, pc 1789..1805. -/
 def blk1287 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1283 .JUMPDEST,
-   pushAt 1284 2 1806,
+   pushAt 1284 2 1797,
    pushAt 1285 2 1024,
    pushAt 1286 2 1024,
    pushAt 1287 2 1024,
-   pushAt 1288 2 4458,
+   pushAt 1288 2 4424,
    opAt 1289 .JUMP]
 
 /-- Instructions 1294..1300, pc 1806..1814. -/
@@ -73,17 +73,17 @@ def blk1294 :
    opAt 1292 (.Dup ⟨1, by decide⟩),
    opAt 1293 .AND,
    opAt 1294 .ISZERO,
-   pushAt 1295 2 1832,
+   pushAt 1295 2 1823,
    opAt 1296 .JUMPI]
 
 /-- Instructions 1301..1306, pc 1815..1830. -/
 def blk1301 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1297 2 1831,
+  [pushAt 1297 2 1822,
    pushAt 1298 2 1024,
    pushAt 1299 2 2048,
    pushAt 1300 2 1024,
-   pushAt 1301 2 4458,
+   pushAt 1301 2 4424,
    opAt 1302 .JUMP]
 
 /-- Instructions 1307..1307, pc 1831..1831. -/
@@ -98,7 +98,7 @@ def blk1308 :
    pushAt 1305 1 1,
    opAt 1306 .SHR,
    opAt 1307 (.Dup ⟨0, by decide⟩),
-   pushAt 1308 2 1789,
+   pushAt 1308 2 1780,
    opAt 1309 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast
