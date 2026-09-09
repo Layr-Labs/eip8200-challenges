@@ -155,11 +155,11 @@ abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4107 : Artifact.submissionArtifact.instructionPC 4103 = 5144 := by
+@[simp] theorem pc4107 : Artifact.submissionArtifact.instructionPC 4103 = 5145 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4108 : Artifact.submissionArtifact.instructionPC 4104 = 5145 := by
+@[simp] theorem pc4108 : Artifact.submissionArtifact.instructionPC 4104 = 5146 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -167,11 +167,11 @@ abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4110 : Artifact.submissionArtifact.instructionPC 4106 = 5148 := by
+@[simp] theorem pc4110 : Artifact.submissionArtifact.instructionPC 4106 = 5152 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4111 : Artifact.submissionArtifact.instructionPC 4107 = 5153 := by
+@[simp] theorem pc4111 : Artifact.submissionArtifact.instructionPC 4107 = 5154 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -179,11 +179,11 @@ abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4113 : Artifact.submissionArtifact.instructionPC 4109 = 5156 := by
+@[simp] theorem pc4113 : Artifact.submissionArtifact.instructionPC 4109 = 5160 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4114 : Artifact.submissionArtifact.instructionPC 4110 = 5161 := by
+@[simp] theorem pc4114 : Artifact.submissionArtifact.instructionPC 4110 = 5162 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -191,11 +191,11 @@ abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4116 : Artifact.submissionArtifact.instructionPC 4112 = 5164 := by
+@[simp] theorem pc4116 : Artifact.submissionArtifact.instructionPC 4112 = 5168 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4117 : Artifact.submissionArtifact.instructionPC 4113 = 5169 := by
+@[simp] theorem pc4117 : Artifact.submissionArtifact.instructionPC 4113 = 5170 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -203,11 +203,11 @@ abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4119 : Artifact.submissionArtifact.instructionPC 4115 = 5172 := by
+@[simp] theorem pc4119 : Artifact.submissionArtifact.instructionPC 4115 = 5176 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4120 : Artifact.submissionArtifact.instructionPC 4116 = 5177 := by
+@[simp] theorem pc4120 : Artifact.submissionArtifact.instructionPC 4116 = 5178 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -215,11 +215,11 @@ abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4122 : Artifact.submissionArtifact.instructionPC 4118 = 5180 := by
+@[simp] theorem pc4122 : Artifact.submissionArtifact.instructionPC 4118 = 5184 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4123 : Artifact.submissionArtifact.instructionPC 4119 = 5185 := by
+@[simp] theorem pc4123 : Artifact.submissionArtifact.instructionPC 4119 = 5186 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -239,11 +239,11 @@ abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4128 : Artifact.submissionArtifact.instructionPC 4124 = 5191 := by
+@[simp] theorem pc4128 : Artifact.submissionArtifact.instructionPC 4124 = 5195 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4129 : Artifact.submissionArtifact.instructionPC 4125 = 5196 := by
+@[simp] theorem pc4129 : Artifact.submissionArtifact.instructionPC 4125 = 5197 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -251,11 +251,11 @@ abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4131 : Artifact.submissionArtifact.instructionPC 4127 = 5199 := by
+@[simp] theorem pc4131 : Artifact.submissionArtifact.instructionPC 4127 = 5203 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4132 : Artifact.submissionArtifact.instructionPC 4128 = 5204 := by
+@[simp] theorem pc4132 : Artifact.submissionArtifact.instructionPC 4128 = 5205 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -263,11 +263,11 @@ abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4134 : Artifact.submissionArtifact.instructionPC 4130 = 5207 := by
+@[simp] theorem pc4134 : Artifact.submissionArtifact.instructionPC 4130 = 5211 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4135 : Artifact.submissionArtifact.instructionPC 4131 = 5212 := by
+@[simp] theorem pc4135 : Artifact.submissionArtifact.instructionPC 4131 = 5213 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -275,11 +275,11 @@ abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4137 : Artifact.submissionArtifact.instructionPC 4133 = 5215 := by
+@[simp] theorem pc4137 : Artifact.submissionArtifact.instructionPC 4133 = 5219 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4138 : Artifact.submissionArtifact.instructionPC 4134 = 5220 := by
+@[simp] theorem pc4138 : Artifact.submissionArtifact.instructionPC 4134 = 5221 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -287,11 +287,11 @@ abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4140 : Artifact.submissionArtifact.instructionPC 4136 = 5223 := by
+@[simp] theorem pc4140 : Artifact.submissionArtifact.instructionPC 4136 = 5227 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4141 : Artifact.submissionArtifact.instructionPC 4137 = 5228 := by
+@[simp] theorem pc4141 : Artifact.submissionArtifact.instructionPC 4137 = 5229 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -299,9 +299,6 @@ abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4143 : Artifact.submissionArtifact.instructionPC 4139 = 5231 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
 def laterPath : List Located :=
   [⟨4068, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -340,7 +337,7 @@ def thirdComparePath : List Located :=
    ⟨4090, .op .CALLDATALOAD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4091, .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738), by rfl, by decide⟩,
    ⟨4092, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4093, .push ⟨2, by decide⟩ (UInt256.ofNat 5189), by rfl, by decide⟩,
+   ⟨4093, .push ⟨2, by decide⟩ (UInt256.ofNat 5188), by rfl, by decide⟩,
    ⟨4094, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def fourthComparePath : List Located :=
@@ -348,50 +345,49 @@ def fourthComparePath : List Located :=
    ⟨4096, .op .CALLDATALOAD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4097, .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714), by rfl, by decide⟩,
    ⟨4098, .op .XOR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4099, .push ⟨2, by decide⟩ (UInt256.ofNat 5189), by rfl, by decide⟩,
+   ⟨4099, .push ⟨2, by decide⟩ (UInt256.ofNat 5188), by rfl, by decide⟩,
    ⟨4100, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def hit2Path : List Located :=
   [⟨4101, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4102, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4103, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4104, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
-   ⟨4105, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4106, .push ⟨4, by decide⟩ (UInt256.ofNat 2807398299), by rfl, by decide⟩,
-   ⟨4107, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨4108, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4109, .push ⟨4, by decide⟩ (UInt256.ofNat 514068704), by rfl, by decide⟩,
-   ⟨4110, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
-   ⟨4111, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4112, .push ⟨4, by decide⟩ (UInt256.ofNat 3681030016), by rfl, by decide⟩,
-   ⟨4113, .push ⟨1, by decide⟩ (UInt256.ofNat 96), by rfl, by decide⟩,
-   ⟨4114, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4115, .push ⟨4, by decide⟩ (UInt256.ofNat 3354522469), by rfl, by decide⟩,
-   ⟨4116, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
-   ⟨4117, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4118, .push ⟨4, by decide⟩ (UInt256.ofNat 2543018249), by rfl, by decide⟩,
-   ⟨4119, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
-   ⟨4120, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4121, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨4102, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
+   ⟨4103, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4104, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4105, .push ⟨4, by decide⟩ (UInt256.ofNat 2807398299), by rfl, by decide⟩,
+   ⟨4106, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨4107, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4108, .push ⟨4, by decide⟩ (UInt256.ofNat 514068704), by rfl, by decide⟩,
+   ⟨4109, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
+   ⟨4110, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4111, .push ⟨4, by decide⟩ (UInt256.ofNat 3681030016), by rfl, by decide⟩,
+   ⟨4112, .push ⟨1, by decide⟩ (UInt256.ofNat 96), by rfl, by decide⟩,
+   ⟨4113, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4114, .push ⟨4, by decide⟩ (UInt256.ofNat 3354522469), by rfl, by decide⟩,
+   ⟨4115, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
+   ⟨4116, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4117, .push ⟨4, by decide⟩ (UInt256.ofNat 2543018249), by rfl, by decide⟩,
+   ⟨4118, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
+   ⟨4119, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4120, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def hitPath : List Located :=
-  [⟨4122, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4123, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4124, .push ⟨4, by decide⟩ (UInt256.ofNat 1080717082), by rfl, by decide⟩,
-   ⟨4125, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
-   ⟨4126, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4127, .push ⟨4, by decide⟩ (UInt256.ofNat 2391128076), by rfl, by decide⟩,
-   ⟨4128, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
-   ⟨4129, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4130, .push ⟨4, by decide⟩ (UInt256.ofNat 621343384), by rfl, by decide⟩,
-   ⟨4131, .push ⟨1, by decide⟩ (UInt256.ofNat 96), by rfl, by decide⟩,
-   ⟨4132, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4133, .push ⟨4, by decide⟩ (UInt256.ofNat 220066081), by rfl, by decide⟩,
-   ⟨4134, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
-   ⟨4135, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4136, .push ⟨4, by decide⟩ (UInt256.ofNat 1007308478), by rfl, by decide⟩,
-   ⟨4137, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
-   ⟨4138, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4139, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨4121, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4122, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4123, .push ⟨4, by decide⟩ (UInt256.ofNat 1080717082), by rfl, by decide⟩,
+   ⟨4124, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by rfl, by decide⟩,
+   ⟨4125, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4126, .push ⟨4, by decide⟩ (UInt256.ofNat 2391128076), by rfl, by decide⟩,
+   ⟨4127, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
+   ⟨4128, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4129, .push ⟨4, by decide⟩ (UInt256.ofNat 621343384), by rfl, by decide⟩,
+   ⟨4130, .push ⟨1, by decide⟩ (UInt256.ofNat 96), by rfl, by decide⟩,
+   ⟨4131, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4132, .push ⟨4, by decide⟩ (UInt256.ofNat 220066081), by rfl, by decide⟩,
+   ⟨4133, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
+   ⟨4134, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4135, .push ⟨4, by decide⟩ (UInt256.ofNat 1007308478), by rfl, by decide⟩,
+   ⟨4136, .push ⟨1, by decide⟩ (UInt256.ofNat 160), by rfl, by decide⟩,
+   ⟨4137, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4138, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStatePaths

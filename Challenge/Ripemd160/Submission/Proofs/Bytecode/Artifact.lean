@@ -4198,20 +4198,18 @@ private def submissionInstructionsChunk20 : List Instr :=
   .push 1 64,
   op 0x35,
   .push 32 32306037415402008934629779266198679100989968660636699671972189525809707916738,
-  op 0x18,
-  .push 2 5189,
+  .push 2 5188,
   op 0x57,
   .push 1 96,
   op 0x35,
   .push 32 104505810704657832532308207549693575120876051224915683785162626763390386191714,
   op 0x18,
-  .push 2 5189,
+  .push 2 5188,
   op 0x57,
   op 0x50,
-  op 0x90,
-  op 0x50,
   .push 1 64,
-  op 0x90,
+  op 0x91,
+  op 0x50,
   .push 4 2807398299,
   .push 1 32,
   op 0x52,
@@ -4268,7 +4266,7 @@ private def submissionInstructionsChunk20 : List Instr :=
 @[simp] private theorem submissionInstructionsChunk17_length : submissionInstructionsChunk17.length = 200 := by rfl
 @[simp] private theorem submissionInstructionsChunk18_length : submissionInstructionsChunk18.length = 200 := by rfl
 @[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 200 := by rfl
-@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 140 := by rfl
+@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 139 := by rfl
 
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
@@ -4293,7 +4291,7 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk19
  ++ submissionInstructionsChunk20
 
-theorem referenceInstructions_count : submissionInstructions.length = 4140 := by
+theorem referenceInstructions_count : submissionInstructions.length = 4139 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length, submissionInstructionsChunk20_length]
 
 private theorem submissionInstructionsChunk0_assemble : assembleBytes submissionInstructionsChunk0 = [
@@ -4792,11 +4790,11 @@ private theorem submissionInstructionsChunk20_assemble : assembleBytes submissio
   0x40, 0x35, 0x7f, 0x47, 0x6c, 0x91, 0xb6, 0xdb, 0x00, 0x25, 0x4a, 0x6f,
   0x94, 0xb9, 0xde, 0x03, 0x28, 0x4d, 0x72, 0x97, 0xbc, 0xe1, 0x06, 0x2b,
   0x50, 0x75, 0x9a, 0xbf, 0xe4, 0x09, 0x2e, 0x53, 0x78, 0x9d, 0xc2, 0x18,
-  0x61, 0x14, 0x45, 0x57, 0x60, 0x60, 0x35, 0x7f, 0xe7, 0x0c, 0x31, 0x56,
+  0x61, 0x14, 0x44, 0x57, 0x60, 0x60, 0x35, 0x7f, 0xe7, 0x0c, 0x31, 0x56,
   0x7b, 0xa0, 0xc5, 0xea, 0x0f, 0x34, 0x59, 0x7e, 0xa3, 0xc8, 0xed, 0x12,
   0x37, 0x5c, 0x81, 0xa6, 0xcb, 0xf0, 0x15, 0x3a, 0x5f, 0x84, 0xa9, 0xce,
-  0xf3, 0x18, 0x3d, 0x62, 0x18, 0x61, 0x14, 0x45, 0x57, 0x50, 0x90, 0x50,
-  0x60, 0x40, 0x90, 0x63, 0xa7, 0x55, 0x7f, 0x9b, 0x60, 0x20, 0x52, 0x63,
+  0xf3, 0x18, 0x3d, 0x62, 0x18, 0x61, 0x14, 0x44, 0x57, 0x50, 0x60, 0x40,
+  0x91, 0x50, 0x63, 0xa7, 0x55, 0x7f, 0x9b, 0x60, 0x20, 0x52, 0x63,
   0x1e, 0xa4, 0x10, 0xe0, 0x60, 0x40, 0x52, 0x63, 0xdb, 0x68, 0x0f, 0x80,
   0x60, 0x60, 0x52, 0x63, 0xc7, 0xf1, 0xf3, 0x65, 0x60, 0x80, 0x52, 0x63,
   0x97, 0x93, 0x61, 0x09, 0x60, 0xa0, 0x52, 0x56, 0x5b, 0x50, 0x63, 0x40,

@@ -41,7 +41,7 @@ def fourthEntry (s : State) (input : ByteArray) : State := frame s input 5101
 def hit2Entry (s : State) (input : ByteArray) : State := frame s input 5142
 
 /-- Entry at the `H1` install (`JUMPDEST` target of the rung's guards). -/
-def hit1Entry (s : State) (input : ByteArray) : State := frame s input 5189
+def hit1Entry (s : State) (input : ByteArray) : State := frame s input 5188
 
 /-- The generic compression target of the guard is a valid jump destination. -/
 theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 464 = true := by
@@ -53,11 +53,11 @@ theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 464 = true 
   exact h
 
 /-- The `H1` install entry is a valid jump destination. -/
-theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5189 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 4122 = 5189 := by
+theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5188 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 4121 = 5188 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4122 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4121 (by rfl)
   rw [hpc] at h
   exact h
 
@@ -103,7 +103,6 @@ theorem run_hit1 (s : State) (input : ByteArray)
       PrefixStatePaths.pc4140,
       PrefixStatePaths.pc4141,
       PrefixStatePaths.pc4142,
-      PrefixStatePaths.pc4143,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -558,7 +557,7 @@ def gasSteps_finish (s : State) (input : ByteArray)
       else DriverTrace.compressEntry s input 0) := by
   have ghit1 : Challenge.EvmProof.GasSteps (hit1Entry s input)
       (PrefixStateMemory.resultState s input 0) :=
-    frameBlock PrefixStatePaths.hitPath s input 5189 _ hcode hfork hrun hnp
+    frameBlock PrefixStatePaths.hitPath s input 5188 _ hcode hfork hrun hnp
       (run_hit1 s input hcode hrun)
   have ghit2 : Challenge.EvmProof.GasSteps (hit2Entry s input)
       (PrefixStateMemory.resultState2 s input) :=
