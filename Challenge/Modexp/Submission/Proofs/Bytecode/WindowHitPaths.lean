@@ -19,31 +19,31 @@ open EvmSemantics.EVM
 
 def modulusCheckPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 1850 .JUMPDEST,
-   Main.pushAt 1851 1 160,
-   Main.opAt 1852 .CALLDATALOAD,
-   Main.opAt 1853 (.Dup ⟨0, by decide⟩),
-   Main.opAt 1854 .ISZERO,
-   Main.pushAt 1855 2 3066,
-   Main.opAt 1856 .JUMPI]
+  [Main.opAt 1841 .JUMPDEST,
+   Main.pushAt 1842 1 160,
+   Main.opAt 1843 .CALLDATALOAD,
+   Main.opAt 1844 (.Dup ⟨0, by decide⟩),
+   Main.opAt 1845 .ISZERO,
+   Main.pushAt 1846 2 3066,
+   Main.opAt 1847 .JUMPI]
 
 def tablePreludePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.pushAt 1857 1 96,
-   Main.opAt 1858 .CALLDATALOAD,
-   Main.pushAt 1859 1 1,
-   Main.pushAt 1860 0 0,
-   Main.opAt 1861 .MSTORE,
-   Main.opAt 1862 (.Dup ⟨0, by decide⟩),
-   Main.pushAt 1863 1 32,
-   Main.opAt 1864 .MSTORE,
-   Main.opAt 1865 (.Dup ⟨1, by decide⟩),
-   Main.opAt 1866 (.Dup ⟨1, by decide⟩),
-   Main.opAt 1867 (.Dup ⟨0, by decide⟩),
-   Main.opAt 1868 .MULMOD,
-   Main.opAt 1869 (.Dup ⟨0, by decide⟩),
-   Main.pushAt 1870 1 64,
-   Main.opAt 1871 .MSTORE]
+  [Main.pushAt 1848 1 96,
+   Main.opAt 1849 .CALLDATALOAD,
+   Main.pushAt 1850 2 3268,
+   Main.pushAt 1851 0 0,
+   Main.opAt 1852 .MSTORE,
+   Main.opAt 1853 (.Dup ⟨0, by decide⟩),
+   Main.pushAt 1854 1 32,
+   Main.opAt 1855 .MSTORE,
+   Main.opAt 1856 (.Dup ⟨1, by decide⟩),
+   Main.opAt 1857 (.Dup ⟨1, by decide⟩),
+   Main.opAt 1858 (.Dup ⟨0, by decide⟩),
+   Main.opAt 1859 .MULMOD,
+   Main.opAt 1860 (.Dup ⟨0, by decide⟩),
+   Main.pushAt 1861 0 0,
+   Main.opAt 1862 .MSTORE]
 
 def updateAt (index offset : Nat)
     (h0 : Artifact.submissionInstructions[index]? =
@@ -87,62 +87,62 @@ def table15Path := updateAt 1956 480
 
 def tableFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 1963 .POP,
-   Main.opAt 1964 .POP,
-   Main.pushAt 1965 1 1,
-   Main.pushAt 1966 1 128]
+  [Main.opAt 1952 .POP,
+   Main.opAt 1953 .POP,
+   Main.pushAt 1954 1 1,
+   Main.pushAt 1955 1 247]
 
 def loopGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 1967 .JUMPDEST,
-   Main.opAt 1968 (.Dup ⟨0, by decide⟩),
-   Main.pushAt 1969 1 160,
-   Main.opAt 1970 .EQ,
-   Main.pushAt 1971 2 3058,
-   Main.opAt 1972 .JUMPI]
+  [Main.opAt 1956 .JUMPDEST,
+   Main.opAt 1957 (.Dup ⟨0, by decide⟩),
+   Main.pushAt 1958 1 160,
+   Main.opAt 1959 .EQ,
+   Main.pushAt 1960 2 3058,
+   Main.opAt 1961 .JUMPI]
 
 def wordLoadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 1973 (.Dup ⟨0, by decide⟩),
-   Main.opAt 1974 .CALLDATALOAD]
+  [Main.opAt 1962 (.Dup ⟨0, by decide⟩),
+   Main.opAt 1963 .CALLDATALOAD]
 
 def loopAdvancePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.pushAt 2166 1 4,
-   Main.opAt 2167 .ADD,
-   Main.pushAt 2168 2 2830,
-   Main.opAt 2169 .JUMP]
+  [Main.pushAt 2155 1 4,
+   Main.opAt 2156 .ADD,
+   Main.pushAt 2157 2 2830,
+   Main.opAt 2158 .JUMP]
 
 def normalReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 2170 .JUMPDEST,
-   Main.opAt 2171 .POP,
-   Main.pushAt 2172 0 0,
-   Main.opAt 2173 .MSTORE,
-   Main.pushAt 2174 1 32,
-   Main.pushAt 2175 0 0,
-   Main.opAt 2176 .RETURN]
+  [Main.opAt 2159 .JUMPDEST,
+   Main.opAt 2160 .POP,
+   Main.pushAt 2161 0 0,
+   Main.opAt 2162 .MSTORE,
+   Main.pushAt 2163 1 32,
+   Main.pushAt 2164 0 0,
+   Main.opAt 2165 .RETURN]
 
 def zeroReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.opAt 2177 .JUMPDEST,
-   Main.pushAt 2178 0 0,
-   Main.pushAt 2179 0 0,
-   Main.opAt 2180 .MSTORE,
-   Main.pushAt 2181 1 32,
-   Main.pushAt 2182 0 0,
-   Main.opAt 2183 .RETURN]
+  [Main.opAt 2166 .JUMPDEST,
+   Main.pushAt 2167 0 0,
+   Main.pushAt 2168 0 0,
+   Main.opAt 2169 .MSTORE,
+   Main.pushAt 2170 1 32,
+   Main.pushAt 2171 0 0,
+   Main.opAt 2172 .RETURN]
 
 @[simp] theorem jump3563 :
-    Decode.isValidJumpDest submissionBytecode 3066 = true :=
-  Artifact.isValidJumpDest_index 2177 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 3044 = true :=
+  Artifact.isValidJumpDest_index 2166 (by rfl)
 
 @[simp] theorem jump3555 :
-    Decode.isValidJumpDest submissionBytecode 3058 = true :=
-  Artifact.isValidJumpDest_index 2170 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 3036 = true :=
+  Artifact.isValidJumpDest_index 2159 (by rfl)
 
 @[simp] theorem jump3197 :
-    Decode.isValidJumpDest submissionBytecode 2830 = true :=
-  Artifact.isValidJumpDest_index 1967 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 2808 = true :=
+  Artifact.isValidJumpDest_index 1956 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitPaths

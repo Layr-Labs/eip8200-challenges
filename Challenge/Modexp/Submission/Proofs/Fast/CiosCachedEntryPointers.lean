@@ -12,7 +12,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 theorem run_pointers (s : State) (mem : ByteArray) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (_hpa : 32 ≤ pa) (_hpaFit : pa+32*n ≤ 9472)
+    (hpa : 32 ≤ pa) (hpaFit : pa+32*n ≤ 9472)
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) :
     runInstructions pointersProgram (clearedState s mem pa pb n dst ret rest) =
       some (outState s (mpZeroed s mem n) pa pb n 0 dst ret rest) := by
@@ -20,10 +20,12 @@ theorem run_pointers (s : State) (mem : ByteArray) (pa pb n : Nat)
     Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)
   have hsub2 : UInt256.ofNat pb - UInt256.ofNat 32 = UInt256.ofNat (pb-32) :=
     Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)
+  have hsub3 : UInt256.ofNat (pa+32*n) - UInt256.ofNat 32 = UInt256.ofNat (pa+32*n-32) :=
+    Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)
   have hp0 : ptrAt (pb+32*n-32) 0 = pb+32*n-32 := by simp [ptrAt]
   have h := CiosCachedEntryPointerWords.run_words { s with memory := mpZeroed s mem n } (UInt256.ofNat (32*n))
     (UInt256.ofNat pa) (UInt256.ofNat pb) (isFour n) dst ret rest hcap
   simpa only [clearedState, outState, CiosCachedMacCore.framed, hp0, Challenge.EvmProof.Word.ofNat_add_mod,
-    hsub1, hsub2] using h
+    hsub1, hsub2, hsub3] using h
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCached

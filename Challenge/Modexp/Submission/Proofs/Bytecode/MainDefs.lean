@@ -7,10 +7,11 @@ set_option maxHeartbeats 2000000
 /-!
 # MODEXP bytecode entry and header parsing
 
-This module certifies the initial jump to the total early-word dispatcher.
-It also retains the legacy header blocks reached after a wrapper miss and
-fast-path fallback. Those blocks read the three EIP-198 length words and skip
-the redundant size checks on the challenge's unchanged valid-input domain.
+This is the first execution certificate for the frozen artifact. It follows
+the optimized entry jump, reads the three EIP-198 header words, skips the
+redundant EIP-7823 checks on the challenge's already-valid domain, and stops at
+the operand dispatcher. The same `GasSteps` witness is used by the functional
+proof and by the exact gas schedule.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Main
@@ -39,44 +40,45 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨index, .push width value, hget, hwf⟩
 
-/-- The initial jump to the total early-word dispatcher. -/
+/-- First half of the compiler trampoline chain. -/
 def trampoline1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 0 2 5267, opAt 1 .JUMP]
+  [pushAt 0 2 1314, opAt 1 .JUMP]
 
-/-- The legacy body jump destination, reached after fallback. -/
+/-- Second half of the compiler trampoline chain. -/
 def trampoline2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 899 .JUMPDEST]
+  [opAt 898 .JUMPDEST]
 
 /-- Three EIP-198 header loads. -/
 def headerLoadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 900 0 0, opAt 901 .CALLDATALOAD,
-   pushAt 902 1 32, opAt 903 .CALLDATALOAD,
-   pushAt 904 1 64, opAt 905 .CALLDATALOAD]
+  [pushAt 899 0 0, opAt 900 .CALLDATALOAD,
+   pushAt 901 1 32, opAt 902 .CALLDATALOAD,
+   pushAt 903 1 64, opAt 904 .CALLDATALOAD]
 
 /-- Direct jump over the EIP-7823 checks, justified by `Correct`'s valid-input
 precondition. The jump preserves the three loaded length words. -/
 def headerCheckPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 906 2 1228, opAt 907 .JUMP]
+  [pushAt 905 2 1228, opAt 906 .JUMP]
 
-/-- Legacy header instruction inventory, with the separately routed entry jump. -/
+/-- Reachable instructions from byte zero through optimized header parsing,
+retained as a single audit-friendly path. -/
 def headerPath := trampoline1Path ++ trampoline2Path ++
   headerLoadPath ++ headerCheckPath
 
-def tramp0Path := [pushAt 0 2 5267, opAt 1 .JUMP]
+def tramp0Path := [pushAt 0 2 1314, opAt 1 .JUMP]
 def tramp1Path := [opAt 12 .JUMPDEST, pushAt 13 2 53, opAt 14 .JUMP]
 def tramp2Path := [opAt 43 .JUMPDEST, pushAt 44 2 99, opAt 45 .JUMP]
 def tramp3Path := [opAt 80 .JUMPDEST, pushAt 81 2 305, opAt 82 .JUMP]
 def tramp4Path := [opAt 262 .JUMPDEST, pushAt 263 2 434, opAt 264 .JUMP]
 def tramp5Path := [opAt 350 .JUMPDEST, pushAt 351 2 512, opAt 352 .JUMP]
 def tramp6Path := [opAt 412 .JUMPDEST, pushAt 413 2 699, opAt 414 .JUMP]
-def tramp7Path := [opAt 560 .JUMPDEST, pushAt 561 2 1196, opAt 562 .JUMP,
-  opAt 899 .JUMPDEST]
-def tramp7JumpPath := [opAt 560 .JUMPDEST, pushAt 561 2 1196, opAt 562 .JUMP]
-def tramp7DestPath := [opAt 899 .JUMPDEST]
+def tramp7Path := [opAt 559 .JUMPDEST, pushAt 560 2 1196, opAt 561 .JUMP,
+  opAt 898 .JUMPDEST]
+def tramp7JumpPath := [opAt 559 .JUMPDEST, pushAt 560 2 1196, opAt 561 .JUMP]
+def tramp7DestPath := [opAt 898 .JUMPDEST]
 
 def trampolineState (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
@@ -138,7 +140,7 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
     omega
 
 @[simp] theorem headerPCs0 (i : Nat) (hi : i ≤ 1) :
-    Artifact.submissionArtifact.instructionPC i = [0, 3][i]! := by
+    Artifact.submissionArtifact.instructionPC i = [0,3][i]! := by
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs12 (i : Nat)
@@ -178,15 +180,15 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs560 (i : Nat)
-    (hi : 560 ≤ i) (hii : i ≤ 562) :
+    (hi : 559 ≤ i) (hii : i ≤ 561) :
     Artifact.submissionArtifact.instructionPC i =
-      ([699,700,703] : List Nat)[i - 560]! := by
+      ([699,700,703] : List Nat)[i - 559]! := by
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs899 (i : Nat)
-    (hi : 899 ≤ i) (hii : i ≤ 919) :
+    (hi : 898 ≤ i) (hii : i ≤ 918) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1196,1197,1198,1199,1201,1202,1204,1205,1208,1209,1210,1213,1214,1215,1218,1219,1220,1221,1222,1223,1226] : List Nat)[i - 899]! := by
+      ([1196,1197,1198,1199,1201,1202,1204,1205,1208,1209,1210,1213,1214,1215,1218,1219,1220,1221,1222,1223,1226] : List Nat)[i - 898]! := by
   interval_cases i <;> decide
 
 @[simp] theorem jump14 :
@@ -215,15 +217,15 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
 
 @[simp] theorem jump699 :
     Decode.isValidJumpDest submissionBytecode 699 = true :=
-  Artifact.isValidJumpDest_index 560 (by rfl)
+  Artifact.isValidJumpDest_index 559 (by rfl)
 
 @[simp] theorem jump1196 :
     Decode.isValidJumpDest submissionBytecode 1196 = true :=
-  Artifact.isValidJumpDest_index 899 (by rfl)
+  Artifact.isValidJumpDest_index 898 (by rfl)
 
 @[simp] theorem jump1228 :
     Decode.isValidJumpDest submissionBytecode 1228 = true :=
-  Artifact.isValidJumpDest_index 921 (by rfl)
+  Artifact.isValidJumpDest_index 920 (by rfl)
 
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Main

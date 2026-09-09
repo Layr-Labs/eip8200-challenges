@@ -35,70 +35,70 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def toClearDoublePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 632 .JUMPDEST, pushAt 633 2 823,
-   opAt 634 (.Dup ⟨2, by decide⟩), pushAt 635 2 3072,
-   pushAt 636 2 19, opAt 637 .JUMP]
+  [opAt 631 .JUMPDEST, pushAt 632 2 823,
+   opAt 633 (.Dup ⟨2, by decide⟩), pushAt 634 2 3072,
+   pushAt 635 2 19, opAt 636 .JUMP]
 
 def startBaseLoopPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 638 .JUMPDEST, pushAt 639 1 1, pushAt 640 2 3072,
-   opAt 641 .MSTORE, pushAt 642 0 0]
+  [opAt 637 .JUMPDEST, pushAt 638 1 1, pushAt 639 2 3072,
+   opAt 640 .MSTORE, pushAt 641 0 0]
 
 def outerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 643 .JUMPDEST, opAt 644 (.Dup ⟨3, by decide⟩),
-   opAt 645 (.Dup ⟨1, by decide⟩), opAt 646 .LT, opAt 647 .ISZERO,
-   pushAt 648 2 925, opAt 649 .JUMPI]
+  [opAt 642 .JUMPDEST, opAt 643 (.Dup ⟨3, by decide⟩),
+   opAt 644 (.Dup ⟨1, by decide⟩), opAt 645 .LT, opAt 646 .ISZERO,
+   pushAt 647 2 925, opAt 648 .JUMPI]
 
 def outerToInnerPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 650 (.Dup ⟨0, by decide⟩), opAt 651 (.Dup ⟨7, by decide⟩),
-   opAt 652 .ADD, opAt 653 (.Dup ⟨0, by decide⟩),
-   opAt 654 .CALLDATALOAD, pushAt 655 0 0, opAt 656 .BYTE,
-   pushAt 657 0 0]
+  [opAt 649 (.Dup ⟨0, by decide⟩), opAt 650 (.Dup ⟨7, by decide⟩),
+   opAt 651 .ADD, opAt 652 (.Dup ⟨0, by decide⟩),
+   opAt 653 .CALLDATALOAD, pushAt 654 0 0, opAt 655 .BYTE,
+   pushAt 656 0 0]
 
 def innerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 658 .JUMPDEST, pushAt 659 1 8, opAt 660 (.Dup ⟨1, by decide⟩),
-   opAt 661 .LT, opAt 662 .ISZERO, pushAt 663 2 911,
-   opAt 664 .JUMPI]
+  [opAt 657 .JUMPDEST, pushAt 658 1 8, opAt 659 (.Dup ⟨1, by decide⟩),
+   opAt 660 .LT, opAt 661 .ISZERO, pushAt 662 2 911,
+   opAt 663 .JUMPI]
 
 def innerToDoublePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 665 2 875, opAt 666 (.Dup ⟨6, by decide⟩),
-   pushAt 667 0 0, pushAt 668 1 1, pushAt 669 2 1024,
-   pushAt 670 2 1024, pushAt 671 2 104, opAt 672 .JUMP]
+  [pushAt 664 2 875, opAt 665 (.Dup ⟨6, by decide⟩),
+   pushAt 666 0 0, pushAt 667 1 1, pushAt 668 2 1024,
+   pushAt 669 2 1024, pushAt 670 2 104, opAt 671 .JUMP]
 
 def innerToAddBitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 673 .JUMPDEST, pushAt 674 2 900,
-   opAt 675 (.Dup ⟨6, by decide⟩), pushAt 676 0 0,
-   pushAt 677 1 1, opAt 678 (.Dup ⟨5, by decide⟩),
-   opAt 679 (.Dup ⟨5, by decide⟩), pushAt 680 1 7,
-   opAt 681 .SUB, opAt 682 .SHR, opAt 683 .AND,
-   pushAt 684 2 3072, pushAt 685 2 1024,
-   pushAt 686 2 104, opAt 687 .JUMP]
+  [opAt 672 .JUMPDEST, pushAt 673 2 900,
+   opAt 674 (.Dup ⟨6, by decide⟩), pushAt 675 0 0,
+   pushAt 676 1 1, opAt 677 (.Dup ⟨5, by decide⟩),
+   opAt 678 (.Dup ⟨5, by decide⟩), pushAt 679 1 7,
+   opAt 680 .SUB, opAt 681 .SHR, opAt 682 .AND,
+   pushAt 683 2 3072, pushAt 684 2 1024,
+   pushAt 685 2 104, opAt 686 .JUMP]
 
 def innerAfterBitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 688 .JUMPDEST, pushAt 689 1 1,
-   opAt 690 (.Dup ⟨1, by decide⟩), opAt 691 .ADD,
-   opAt 692 (.Swap ⟨0, by decide⟩), opAt 693 .POP,
-   pushAt 694 2 848, opAt 695 .JUMP]
+  [opAt 687 .JUMPDEST, pushAt 688 1 1,
+   opAt 689 (.Dup ⟨1, by decide⟩), opAt 690 .ADD,
+   opAt 691 (.Swap ⟨0, by decide⟩), opAt 692 .POP,
+   pushAt 693 2 848, opAt 694 .JUMP]
 
 def innerFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 696 .JUMPDEST, opAt 697 .POP, opAt 698 .POP, opAt 699 .POP,
-   pushAt 700 1 1, opAt 701 (.Dup ⟨1, by decide⟩), opAt 702 .ADD,
-   opAt 703 (.Swap ⟨0, by decide⟩), opAt 704 .POP,
-   pushAt 705 2 831, opAt 706 .JUMP]
+  [opAt 695 .JUMPDEST, opAt 696 .POP, opAt 697 .POP, opAt 698 .POP,
+   pushAt 699 1 1, opAt 700 (.Dup ⟨1, by decide⟩), opAt 701 .ADD,
+   opAt 702 (.Swap ⟨0, by decide⟩), opAt 703 .POP,
+   pushAt 704 2 831, opAt 705 .JUMP]
 
 def outerFinishToAccumulatorPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 707 .JUMPDEST, opAt 708 .POP, pushAt 709 2 944,
-   opAt 710 (.Dup ⟨2, by decide⟩), pushAt 711 0 0,
-   pushAt 712 1 1, pushAt 713 2 3072, pushAt 714 2 2048,
-   pushAt 715 2 104, opAt 716 .JUMP]
+  [opAt 706 .JUMPDEST, opAt 707 .POP, pushAt 708 2 944,
+   opAt 709 (.Dup ⟨2, by decide⟩), pushAt 710 0 0,
+   pushAt 711 1 1, pushAt 712 2 3072, pushAt 713 2 2048,
+   pushAt 714 2 104, opAt 715 .JUMP]
 
 def frame (accumulator : UInt256) (count : Nat)
     (rest : List UInt256) : List UInt256 :=
@@ -237,15 +237,15 @@ def bitReturned (s : State) (accumulator : UInt256)
     (innerFrame accumulator count baseSize i j offset byte rest)
 
 @[simp] private theorem baseSetupPCs (i : Nat)
-    (hi : 632 ≤ i) (hii : i ≤ 642) :
+    (hi : 631 ≤ i) (hii : i ≤ 641) :
     Artifact.submissionArtifact.instructionPC i =
-      ([811,812,815,816,819,822,823,824,826,829,830] : List Nat)[i - 632]! := by
+      ([811,812,815,816,819,822,823,824,826,829,830] : List Nat)[i - 631]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem baseLoopPCs (i : Nat)
-    (hi : 643 ≤ i) (hii : i ≤ 716) :
+    (hi : 642 ≤ i) (hii : i ≤ 715) :
     Artifact.submissionArtifact.instructionPC i =
-      ([831,832,833,834,835,836,839,840,841,842,843,844,845,846,847,848,849,851,852,853,854,857,858,861,862,863,865,868,871,874,875,876,879,880,881,883,884,885,887,888,889,890,893,896,899,900,901,903,904,905,906,907,910,911,912,913,914,915,917,918,919,920,921,924,925,926,927,930,931,932,934,937,940,943] : List Nat)[i - 643]! := by
+      ([831,832,833,834,835,836,839,840,841,842,843,844,845,846,847,848,849,851,852,853,854,857,858,861,862,863,865,868,871,874,875,876,879,880,881,883,884,885,887,888,889,890,893,896,899,900,901,903,904,905,906,907,910,911,912,913,914,915,917,918,919,920,921,924,925,926,927,930,931,932,934,937,940,943] : List Nat)[i - 642]! := by
   interval_cases i <;> decide
 
 private theorem jump104 :
@@ -254,31 +254,31 @@ private theorem jump104 :
 
 private theorem jump831 :
     Decode.isValidJumpDest submissionBytecode 831 = true :=
-  Artifact.isValidJumpDest_index 643 (by rfl)
+  Artifact.isValidJumpDest_index 642 (by rfl)
 
 private theorem jump848 :
     Decode.isValidJumpDest submissionBytecode 848 = true :=
-  Artifact.isValidJumpDest_index 658 (by rfl)
+  Artifact.isValidJumpDest_index 657 (by rfl)
 
 private theorem jump875 :
     Decode.isValidJumpDest submissionBytecode 875 = true :=
-  Artifact.isValidJumpDest_index 673 (by rfl)
+  Artifact.isValidJumpDest_index 672 (by rfl)
 
 private theorem jump900 :
     Decode.isValidJumpDest submissionBytecode 900 = true :=
-  Artifact.isValidJumpDest_index 688 (by rfl)
+  Artifact.isValidJumpDest_index 687 (by rfl)
 
 private theorem jump911 :
     Decode.isValidJumpDest submissionBytecode 911 = true :=
-  Artifact.isValidJumpDest_index 696 (by rfl)
+  Artifact.isValidJumpDest_index 695 (by rfl)
 
 private theorem jump925 :
     Decode.isValidJumpDest submissionBytecode 925 = true :=
-  Artifact.isValidJumpDest_index 707 (by rfl)
+  Artifact.isValidJumpDest_index 706 (by rfl)
 
 private theorem jump944 :
     Decode.isValidJumpDest submissionBytecode 944 = true :=
-  Artifact.isValidJumpDest_index 717 (by rfl)
+  Artifact.isValidJumpDest_index 716 (by rfl)
 
 private theorem jump19 :
     Decode.isValidJumpDest submissionBytecode 19 = true :=
@@ -286,7 +286,7 @@ private theorem jump19 :
 
 private theorem jump823 :
     Decode.isValidJumpDest submissionBytecode 823 = true :=
-  Artifact.isValidJumpDest_index 638 (by rfl)
+  Artifact.isValidJumpDest_index 637 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_toClearDouble (s : State) (accumulator : UInt256)
