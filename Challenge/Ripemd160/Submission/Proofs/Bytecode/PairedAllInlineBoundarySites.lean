@@ -16,25 +16,25 @@ open StackRoundTemplate
 /-- Exact schedule, startup, and tail windows of the frozen 5298-byte artifact. -/
 
 theorem schedule_slice :
-    (Artifact.submissionArtifact.instructions.drop 272).take
+    (Artifact.submissionArtifact.instructions.drop 271).take
       PairedDivMaskCache.fullTemplate.length = PairedDivMaskCache.fullTemplate := by
   rfl
 
 theorem schedule_instructionPC :
-    Artifact.submissionArtifact.instructionPC 272 = 460 := by
+    Artifact.submissionArtifact.instructionPC 271 = 460 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem schedule_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 431 = 745 := by
+    Artifact.submissionArtifact.instructionPC 430 = 745 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def scheduleSite :
     GenericRoundSite Artifact.submissionArtifact .Osaka PairedDivMaskCache.fullTemplate :=
-  StackSiteBuilder.ofSlice PairedDivMaskCache.fullTemplate 272 schedule_slice
+  StackSiteBuilder.ofSlice PairedDivMaskCache.fullTemplate 271 schedule_slice
     (by
-      change 272 + PairedDivMaskCache.fullTemplate.length ≤ Artifact.submissionInstructions.length
+      change 271 + PairedDivMaskCache.fullTemplate.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -43,34 +43,34 @@ def scheduleSite :
     (by decide)
 
 theorem scheduleSite_startPC : scheduleSite.startPC = UInt256.ofNat 460 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 272) =
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 271) =
     UInt256.ofNat 460
   rw [schedule_instructionPC]
 
 theorem scheduleSite_endPC : scheduleSite.endPC = UInt256.ofNat 745 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 431) = UInt256.ofNat 745
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 430) = UInt256.ofNat 745
   rw [schedule_endInstructionPC]
 
 theorem startup_slice :
-    (Artifact.submissionArtifact.instructions.drop 431).take
+    (Artifact.submissionArtifact.instructions.drop 430).take
       PairedNormalizedStartup.template.length = PairedNormalizedStartup.template := by
   rfl
 
 theorem startup_instructionPC :
-    Artifact.submissionArtifact.instructionPC 431 = 745 := by
+    Artifact.submissionArtifact.instructionPC 430 = 745 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem startup_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 469 = 803 := by
+    Artifact.submissionArtifact.instructionPC 468 = 803 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def startupSite :
     GenericRoundSite Artifact.submissionArtifact .Osaka PairedNormalizedStartup.template :=
-  StackSiteBuilder.ofSlice PairedNormalizedStartup.template 431 startup_slice
+  StackSiteBuilder.ofSlice PairedNormalizedStartup.template 430 startup_slice
     (by
-      change 431 + PairedNormalizedStartup.template.length ≤ Artifact.submissionInstructions.length
+      change 430 + PairedNormalizedStartup.template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -79,33 +79,33 @@ def startupSite :
     (by decide)
 
 theorem startupSite_startPC : startupSite.startPC = UInt256.ofNat 745 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 431) = UInt256.ofNat 745
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 430) = UInt256.ofNat 745
   rw [startup_instructionPC]
 
 theorem startupSite_endPC : startupSite.endPC = UInt256.ofNat 803 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 469) = UInt256.ofNat 803
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 468) = UInt256.ofNat 803
   rw [startup_endInstructionPC]
 
 theorem tailPrefix_slice :
-    (Artifact.submissionArtifact.instructions.drop 4138).take
+    (Artifact.submissionArtifact.instructions.drop 4137).take
       PairedAllInlineTail.prefixTemplate.length = PairedAllInlineTail.prefixTemplate := by
   rfl
 
 theorem tailPrefix_instructionPC :
-    Artifact.submissionArtifact.instructionPC 4138 = 5066 := by
+    Artifact.submissionArtifact.instructionPC 4137 = 5066 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem tailPrefix_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 4207 = 5150 := by
+    Artifact.submissionArtifact.instructionPC 4206 = 5150 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def tailPrefixSite :
     GenericRoundSite Artifact.submissionArtifact .Osaka PairedAllInlineTail.prefixTemplate :=
-  StackSiteBuilder.ofSlice PairedAllInlineTail.prefixTemplate 4138 tailPrefix_slice
+  StackSiteBuilder.ofSlice PairedAllInlineTail.prefixTemplate 4137 tailPrefix_slice
     (by
-      change 4138 + PairedAllInlineTail.prefixTemplate.length ≤ Artifact.submissionInstructions.length
+      change 4137 + PairedAllInlineTail.prefixTemplate.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -114,11 +114,11 @@ def tailPrefixSite :
     (by decide)
 
 theorem tailPrefixSite_startPC : tailPrefixSite.startPC = UInt256.ofNat 5066 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4138) = UInt256.ofNat 5066
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4137) = UInt256.ofNat 5066
   rw [tailPrefix_instructionPC]
 
 theorem tailPrefixSite_endPC : tailPrefixSite.endPC = UInt256.ofNat 5150 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4207) = UInt256.ofNat 5150
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4206) = UInt256.ofNat 5150
   rw [tailPrefix_endInstructionPC]
 
 private theorem instructionPC_toNat (index : Nat) :
@@ -132,15 +132,15 @@ private theorem instructionPC_toNat (index : Nat) :
 
 def tailJump : LocatedSite Artifact.submissionArtifact .Osaka where
   located :=
-    { index := 4207
+    { index := 4206
       instruction := .op .JUMP
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4207)
-  pc_eq := instructionPC_toNat 4207
+  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4206)
+  pc_eq := instructionPC_toNat 4206
 
 theorem tailJump_pc : tailJump.pc = UInt256.ofNat 5150 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4207) = UInt256.ofNat 5150
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4206) = UInt256.ofNat 5150
   rw [tailPrefix_endInstructionPC]
 
 def tailSite : PairedAllInlineTail.TailSite Artifact.submissionArtifact .Osaka where

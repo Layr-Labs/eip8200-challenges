@@ -270,7 +270,7 @@ theorem run_postCheck_exit (s : State) (input : ByteArray)
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
   have hdest : Decode.isValidJumpDest submissionBytecode 0x141f = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 4208 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 4207 (by rfl)
   simp [postCheckPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     compressReturned, afterExit, hrun, hcode, hadd, hlast, heq,

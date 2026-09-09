@@ -39,10 +39,10 @@ def firstMatchedState (s : State) (input : ByteArray) : State :=
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
 theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 460 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 272 = 460 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 271 = 460 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 272 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 271 (by rfl)
   rw [hpc] at h
   exact h
 
