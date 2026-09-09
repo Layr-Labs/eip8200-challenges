@@ -26,97 +26,97 @@ def l1Dispatch : Block Artifact.submissionArtifact .Osaka 4604 l1DispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Join : Block Artifact.submissionArtifact .Osaka 4758 joinProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3390 1 4758 joinProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3398 1 4758 joinProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def mid : Block Artifact.submissionArtifact .Osaka 4907 midProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3531 44 4907 midProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3547 44 4907 midProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Dispatch : Block Artifact.submissionArtifact .Osaka 4975 l2DispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3575 4 4975 l2DispatchProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3591 4 4975 l2DispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Join : Block Artifact.submissionArtifact .Osaka 5141 joinProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3727 1 5141 joinProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3723 1 5141 joinProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def tailLoop : Block Artifact.submissionArtifact .Osaka 5262 (CiosCached.tailProgram.take 26) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3836 26 5262 (CiosCached.tailProgram.take 26)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3820 26 5262 (CiosCached.tailProgram.take 26)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Mac0 : Block Artifact.submissionArtifact .Osaka 4610 (l1Program 8448) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3250 35 4610 (l1Program 8448)
+def l1Mac0 : Block Artifact.submissionArtifact .Osaka 4610 l1Program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3250 37 4610 l1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Mac1 : Block Artifact.submissionArtifact .Osaka 4647 (l1Program 8416) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3285 35 4647 (l1Program 8416)
+def l1Mac1 : Block Artifact.submissionArtifact .Osaka 4647 l1Program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3287 37 4647 l1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Mac2 : Block Artifact.submissionArtifact .Osaka 4684 (l1Program 8384) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3320 35 4684 (l1Program 8384)
+def l1Mac2 : Block Artifact.submissionArtifact .Osaka 4684 l1Program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3324 37 4684 l1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Mac3 : Block Artifact.submissionArtifact .Osaka 4721 (l1Program 8352) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3355 35 4721 (l1Program 8352)
+def l1Mac3 : Block Artifact.submissionArtifact .Osaka 4721 l1Program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3361 37 4721 l1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Mac4 : Block Artifact.submissionArtifact .Osaka 4759 (l1Program 8320) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3391 35 4759 (l1Program 8320)
+def l1Mac4 : Block Artifact.submissionArtifact .Osaka 4759 l1Program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3399 37 4759 l1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Mac5 : Block Artifact.submissionArtifact .Osaka 4796 (l1Program 8288) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3426 35 4796 (l1Program 8288)
+def l1Mac5 : Block Artifact.submissionArtifact .Osaka 4796 l1Program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3436 37 4796 l1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Mac6 : Block Artifact.submissionArtifact .Osaka 4833 (l1Program 8256) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3461 35 4833 (l1Program 8256)
+def l1Mac6 : Block Artifact.submissionArtifact .Osaka 4833 l1Program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3473 37 4833 l1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Mac7 : Block Artifact.submissionArtifact .Osaka 4870 (l1Program 8224) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3496 35 4870 (l1Program 8224)
+def l1Mac7 : Block Artifact.submissionArtifact .Osaka 4870 l1Program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3510 37 4870 l1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac0 : Block Artifact.submissionArtifact .Osaka 4981 (l2Program 8416) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3579 37 4981 (l2Program 8416)
+def l2Mac0 : Block Artifact.submissionArtifact .Osaka 4981 (l2ConstProgram 192) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3595 32 4981 (l2ConstProgram 192)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac1 : Block Artifact.submissionArtifact .Osaka 5021 (l2Program 8384) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3616 37 5021 (l2Program 8384)
+def l2Mac1 : Block Artifact.submissionArtifact .Osaka 5021 (l2ConstProgram 160) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3627 32 5021 (l2ConstProgram 160)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac2 : Block Artifact.submissionArtifact .Osaka 5061 (l2Program 8352) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3653 37 5061 (l2Program 8352)
+def l2Mac2 : Block Artifact.submissionArtifact .Osaka 5061 (l2ConstProgram 128) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3659 32 5061 (l2ConstProgram 128)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac3 : Block Artifact.submissionArtifact .Osaka 5101 (l2Program 8320) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3690 37 5101 (l2Program 8320)
+def l2Mac3 : Block Artifact.submissionArtifact .Osaka 5101 (l2ConstProgram 96) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3691 32 5101 (l2ConstProgram 96)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac4 : Block Artifact.submissionArtifact .Osaka 5142 (l2Program 8288) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3728 37 5142 (l2Program 8288)
+def l2Mac4 : Block Artifact.submissionArtifact .Osaka 5142 (l2ConstProgram 64) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3724 32 5142 (l2ConstProgram 64)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac5 : Block Artifact.submissionArtifact .Osaka 5182 (l2Program 8256) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3765 37 5182 (l2Program 8256)
+def l2Mac5 : Block Artifact.submissionArtifact .Osaka 5182 (l2ConstProgram 32) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3756 32 5182 (l2ConstProgram 32)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac6 : Block Artifact.submissionArtifact .Osaka 5222 l2LastProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3802 34 5222 l2LastProgram
+def l2Mac6 : Block Artifact.submissionArtifact .Osaka 5222 (l2ConstProgram 0) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3788 32 5222 (l2ConstProgram 0)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def exitBlock : Block Artifact.submissionArtifact .Osaka 5298 (CiosCached.tailProgram.drop 26) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3862 8 5298 (CiosCached.tailProgram.drop 26)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3846 8 5298 (CiosCached.tailProgram.drop 26)
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest4339 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4595 = true :=
   Artifact.isValidJumpDest_index 3239 (by rfl)
 
 theorem jumpDest4502 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4758 = true :=
-  Artifact.isValidJumpDest_index 3390 (by rfl)
+  Artifact.isValidJumpDest_index 3398 (by rfl)
 
 theorem jumpDest4885 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5141 = true :=
-  Artifact.isValidJumpDest_index 3727 (by rfl)
+  Artifact.isValidJumpDest_index 3723 (by rfl)
 
 def environment (s : State)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)

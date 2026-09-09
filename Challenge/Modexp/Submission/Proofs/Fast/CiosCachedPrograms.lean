@@ -11,7 +11,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 open WindowNibbleKernel
 
-def l1Program (c : Nat) : List Instr :=
+def l1Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
    .op (.Dup ⟨10, by decide⟩),
@@ -42,13 +42,15 @@ def l1Program (c : Nat) : List Instr :=
    .op .GT,
    .op .ADD,
    .op (.Swap ⟨2, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat c),
+   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup ⟨10, by decide⟩),
+   .op .ADD,
    .op (.Swap ⟨2, by decide⟩),
    .op .MSTORE,
    .op (.Dup ⟨8, by decide⟩),
    .op .ADD]
 
-def l2Program (c : Nat) : List Instr :=
+def l2Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
    .op (.Dup ⟨11, by decide⟩),
@@ -80,7 +82,9 @@ def l2Program (c : Nat) : List Instr :=
    .op .ADD,
    .op (.Swap ⟨2, by decide⟩),
    .push 1 32,
-   .push ⟨2, by decide⟩ (UInt256.ofNat c),
+   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup ⟨12, by decide⟩),
+   .op .ADD,
    .op (.Swap ⟨3, by decide⟩),
    .op .ADD,
    .op .MSTORE,
@@ -122,6 +126,41 @@ def l2LastProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .push 6 32,
    .op .ADD,
+   .op .MSTORE]
+
+/-- Fixed L2 addresses leave both unused pointer slots unchanged. -/
+def l2ConstProgram (p : Nat) : List Instr :=
+  [.push 2 (UInt256.ofNat p),
+   .op .MLOAD,
+   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .MUL,
+   .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup ⟨6, by decide⟩),
+   .op .MULMOD,
+   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩),
+   .op .LT,
+   .op .SUB,
+   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨5, by decide⟩),
+   .op .GT,
+   .op .SUB,
+   .op .SUB,
+   .op (.Dup ⟨3, by decide⟩),
+   .push 2 (UInt256.ofNat (8256 + p)),
+   .op .MLOAD,
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨4, by decide⟩),
+   .op .GT,
+   .op .ADD,
+   .op (.Swap ⟨2, by decide⟩),
+   .push 4 (UInt256.ofNat (8288 + p)),
    .op .MSTORE]
 
 def entryProgram : List Instr :=
