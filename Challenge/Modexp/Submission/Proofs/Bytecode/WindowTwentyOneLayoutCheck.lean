@@ -168,7 +168,7 @@ def tableInstructions : List Instr :=
    YulEvmCompiler.Instr.op EvmSemantics.Operation.MSTORE,
    YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
    YulEvmCompiler.Instr.op EvmSemantics.Operation.MULMOD,
-   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
+   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
    YulEvmCompiler.Instr.push 2 480,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.MSTORE]
 
@@ -177,7 +177,7 @@ theorem table_eq : WindowTwentyOneTableBuild.program = tableInstructions := by r
 theorem table_linear : WindowTwentyOneSlice.linearProgram tableInstructions = true := by decide
 
 def initInstructions : List Instr :=
-  [YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
+  [YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
    YulEvmCompiler.Instr.push 2 480,
    YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),

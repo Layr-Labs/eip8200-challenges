@@ -10,7 +10,7 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInit
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
 
-def cleanProgram : List Instr := [.op .JUMPDEST, .op .POP, .push 2 480]
+def cleanProgram : List Instr := [.op .POP, .op .POP, .push 2 480]
 
 def addressProgram : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .push 1 247, .op .SHR,
@@ -38,15 +38,15 @@ theorem first_address (exponent : UInt256) :
 
 private theorem run_clean (template : State) (pc base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions cleanProgram
-      (WindowTwentyOneTable.framed template pc base modulus 16 ([base, exponent] ++ rest)) =
+    runInstructions cleanProgram (WindowTwentyOneTable.state template pc base modulus exponent 15 rest) =
     some (WindowTwentyOneTable.framed template (advancePC 5 pc) base modulus 16
       ([UInt256.ofNat 480, exponent] ++ rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 2 < 1024 := by omega
+  have hcap3 : rest.length + 3 < 1024 := by omega
   have hp3 : UInt256.ofNat 3 = UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
-  simp [runInstructions, cleanProgram, WindowTwentyOneTable.framed,
-    Challenge.EvmProof.Stepper.runInstr, hcap1, hcap2, Nat.add_assoc,
+  simp [runInstructions, cleanProgram, WindowTwentyOneTable.state, WindowTwentyOneTable.framed,
+    Challenge.EvmProof.Stepper.runInstr, hcap1, hcap2, hcap3, Nat.add_assoc,
     Challenge.EvmProof.Word.literal_eq_ofNat, advancePC, succ_eq_add, hp3, word_add_assoc]
 
 private theorem run_address (template : State) (pc base modulus exponent : UInt256)
@@ -85,8 +85,7 @@ private theorem run_load (template : State) (pc base modulus exponent : UInt256)
 
 theorem run_lookup (template : State) (pc base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions lookupProgram
-      (WindowTwentyOneTable.framed template pc base modulus 16 ([base, exponent] ++ rest)) =
+    runInstructions lookupProgram (WindowTwentyOneTable.state template pc base modulus exponent 15 rest) =
     some (WindowTwentyOneTable.framed template (advancePC 12 pc) base modulus 16
       ([WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat,
         UInt256.ofNat 480, exponent] ++ rest)) := by
@@ -165,7 +164,7 @@ theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt
     (hoffset : rest[5]? = some modulusOffset)
     (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus) :
     runInstructions program
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 2799) base modulus 16 ([base, exponent] ++ rest)) =
+      (WindowTwentyOneTable.state template (UInt256.ofNat 2799) base modulus exponent 15 rest) =
     some (WindowTwentyOneGroup.state template (UInt256.ofNat 2821) base modulus
       (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
       (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) := by

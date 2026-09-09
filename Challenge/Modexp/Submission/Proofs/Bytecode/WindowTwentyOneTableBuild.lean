@@ -48,8 +48,7 @@ theorem run_build (template : State) (base modulus exponent : UInt256)
       have both := runInstructions_append_some _ _ _ _ _ (ih (by omega)) h
       simpa only [buildProgram, show count + 2 + 1 = count + 1 + 2 by omega] using both
 
-def program : List Instr :=
-  WindowTwentyOneTablePrelude.program ++ buildProgram 12 ++ WindowTwentyOneTable.lastUpdateProgram
+def program : List Instr := WindowTwentyOneTablePrelude.program ++ buildProgram 13
 
 /-- The complete 117-byte table construction, including the exponent load. -/
 theorem run_all (template : State) (base modulus exponentOffset : UInt256)
@@ -57,19 +56,14 @@ theorem run_all (template : State) (base modulus exponentOffset : UInt256)
     (hoffset : rest[4]? = some exponentOffset) :
     runInstructions program
       (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 2682) base modulus rest) =
-    some (WindowTwentyOneTable.framed template (UInt256.ofNat 2799) base modulus 16
-      ([base, MachineState.readWord template.executionEnv.calldata exponentOffset.toNat] ++ rest)) := by
+    some (WindowTwentyOneTable.state template (UInt256.ofNat 2799) base modulus
+      (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) 15 rest) := by
   have hp := WindowTwentyOneTablePrelude.run_prelude template (UInt256.ofNat 2682)
     base modulus exponentOffset rest hrest hoffset
   have hpc : WindowTwentyOneTablePrelude.endPC (UInt256.ofNat 2682) = UInt256.ofNat 2713 := by decide
   rw [hpc] at hp
   have hb := run_build template base modulus
-    (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) 12 (by decide) rest hrest
-  have hl := WindowTwentyOneTable.run_last_update template (UInt256.ofNat (tablePC 14))
-    base modulus (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) rest hrest
-  have hlastPC : WindowTwentyOneTable.storePC 2 (advancePC 2 (UInt256.ofNat (tablePC 14))) =
-      UInt256.ofNat 2799 := by decide
-  rw [hlastPC] at hl
-  exact runInstructions_append_some _ _ _ _ _ (runInstructions_append_some _ _ _ _ _ hp hb) hl
+    (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) 13 (by decide) rest hrest
+  exact runInstructions_append_some _ _ _ _ _ hp hb
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTableBuild
