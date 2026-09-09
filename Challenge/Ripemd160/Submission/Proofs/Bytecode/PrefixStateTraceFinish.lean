@@ -104,34 +104,34 @@ theorem jumpDest_driver : Decode.isValidJumpDest submissionBytecode 102 = true :
   rw [hpc] at h
   exact h
 
-theorem jumpDest_hit2 : Decode.isValidJumpDest submissionBytecode 5179 = true := by
+theorem jumpDest_hit2 : Decode.isValidJumpDest submissionBytecode 5272 = true := by
   have h := Artifact.submissionArtifact.isValidJumpDest_index 4203 (by rfl)
   rw [PrefixStatePaths.pc4210] at h
   exact h
 
-theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5231 = true := by
+theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5324 = true := by
   have h := Artifact.submissionArtifact.isValidJumpDest_index 4229 (by rfl)
   rw [PrefixStatePaths.pc4236] at h
   exact h
 
-theorem jumpDest_bail : Decode.isValidJumpDest submissionBytecode 5278 = true := by
+theorem jumpDest_bail : Decode.isValidJumpDest submissionBytecode 5371 = true := by
   have h := Artifact.submissionArtifact.isValidJumpDest_index 4251 (by rfl)
   rw [PrefixStatePaths.pc4258] at h
   exact h
 
 /-! ## SWAR setup -/
 
-/-- The thirteen-instruction setup derives `ONE`, `M7f`, `M80`, `C20` on the
-stack and seeds the running word from scratch word 0. -/
+/-- The thirteen-instruction setup pushes the three SWAR masks, loads the
+scratch word, and uses executable one-byte pads to preserve the ladder index. -/
 theorem run_setup (s : State) (input : ByteArray)
     (hmem0 : MachineState.readWord s.memory 0 = PatternedWordData.expectedWordAt 0)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock PrefixStatePaths.setupPath (entry s input) =
-      some (rungFrame s input 5028 (PatternedWordData.expectedWordAt 0)) := by
+      some (rungFrame s input 5121 (PatternedWordData.expectedWordAt 0)) := by
   simp (config := { maxSteps := 1000000 })
     [PrefixStatePaths.setupPath, Stepper.runLocatedBlock, Stepper.runLocated,
-      Stepper.runInstr, entry, frame, rungFrame, hmem0, hrun,
-      one_eq, one_eq', one_eq'', m7f_eq, m80_eq, c20_eq,
+      Stepper.runInstr, Challenge.EvmProof.Word.literal_eq_ofNat,
+      entry, frame, rungFrame, hmem0, hrun,
       PrefixStatePaths.pc4087,
       PrefixStatePaths.pc4088,
       PrefixStatePaths.pc4089,
@@ -160,8 +160,8 @@ theorem run_rung1_hit (s : State) (input : ByteArray)
     (hcalldata : s.executionEnv.calldata = input)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock PrefixStatePaths.rung1Path
-      (rungFrame s input 5028 (PatternedWordData.expectedWordAt 0)) =
-      some (rungFrame s input 5048 (PatternedWordData.expectedWordAt 1)) := by
+      (rungFrame s input 5121 (PatternedWordData.expectedWordAt 0)) =
+      some (rungFrame s input 5141 (PatternedWordData.expectedWordAt 1)) := by
   have hzero : UInt256.xor (MachineState.readWord input 32)
       (PatternedWordData.expectedWordAt 1) = 0 :=
     (KnownInputLogic.wordXor_eq_zero_iff _ _).2 hword
@@ -222,15 +222,15 @@ theorem run_rung1_hit (s : State) (input : ByteArray)
       Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
 
 /-- Rung 1 on a word-1 mismatch: the running word steps to word 1 and the
-`JUMPI` is taken to pc 5278. -/
+`JUMPI` is taken to pc 5371. -/
 theorem run_rung1_miss (s : State) (input : ByteArray)
     (hword : MachineState.readWord input 32 ≠ PatternedWordData.expectedWordAt 1)
     (hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock PrefixStatePaths.rung1Path
-      (rungFrame s input 5028 (PatternedWordData.expectedWordAt 0)) =
-      some (rungFrame s input 5278 (PatternedWordData.expectedWordAt 1)) := by
+      (rungFrame s input 5121 (PatternedWordData.expectedWordAt 0)) =
+      some (rungFrame s input 5371 (PatternedWordData.expectedWordAt 1)) := by
   have htrue : UInt256.isTrue (UInt256.xor (MachineState.readWord input 32)
       (PatternedWordData.expectedWordAt 1)) := by
     intro hz
@@ -307,8 +307,8 @@ theorem run_rung2_hit (s : State) (input : ByteArray)
     (hcalldata : s.executionEnv.calldata = input)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock PrefixStatePaths.rung2Path
-      (rungFrame s input 5048 (PatternedWordData.expectedWordAt 1)) =
-      some (rungFrame s input 5068 (PatternedWordData.expectedWordAt 2)) := by
+      (rungFrame s input 5141 (PatternedWordData.expectedWordAt 1)) =
+      some (rungFrame s input 5161 (PatternedWordData.expectedWordAt 2)) := by
   have hzero : UInt256.xor (MachineState.readWord input 64)
       (PatternedWordData.expectedWordAt 2) = 0 :=
     (KnownInputLogic.wordXor_eq_zero_iff _ _).2 hword
@@ -369,15 +369,15 @@ theorem run_rung2_hit (s : State) (input : ByteArray)
       Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
 
 /-- Rung 2 on a word-2 mismatch: the running word steps to word 2 and the
-`JUMPI` is taken to pc 5231. -/
+`JUMPI` is taken to pc 5324. -/
 theorem run_rung2_miss (s : State) (input : ByteArray)
     (hword : MachineState.readWord input 64 ≠ PatternedWordData.expectedWordAt 2)
     (hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock PrefixStatePaths.rung2Path
-      (rungFrame s input 5048 (PatternedWordData.expectedWordAt 1)) =
-      some (rungFrame s input 5231 (PatternedWordData.expectedWordAt 2)) := by
+      (rungFrame s input 5141 (PatternedWordData.expectedWordAt 1)) =
+      some (rungFrame s input 5324 (PatternedWordData.expectedWordAt 2)) := by
   have htrue : UInt256.isTrue (UInt256.xor (MachineState.readWord input 64)
       (PatternedWordData.expectedWordAt 2)) := by
     intro hz
@@ -454,8 +454,8 @@ theorem run_rung3_hit (s : State) (input : ByteArray)
     (hcalldata : s.executionEnv.calldata = input)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock PrefixStatePaths.rung3Path
-      (rungFrame s input 5068 (PatternedWordData.expectedWordAt 2)) =
-      some (rungFrame s input 5088 (PatternedWordData.expectedWordAt 3)) := by
+      (rungFrame s input 5161 (PatternedWordData.expectedWordAt 2)) =
+      some (rungFrame s input 5181 (PatternedWordData.expectedWordAt 3)) := by
   have hzero : UInt256.xor (MachineState.readWord input 96)
       (PatternedWordData.expectedWordAt 3) = 0 :=
     (KnownInputLogic.wordXor_eq_zero_iff _ _).2 hword
@@ -516,15 +516,15 @@ theorem run_rung3_hit (s : State) (input : ByteArray)
       Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
 
 /-- Rung 3 on a word-3 mismatch: the running word steps to word 3 and the
-`JUMPI` is taken to pc 5231. -/
+`JUMPI` is taken to pc 5324. -/
 theorem run_rung3_miss (s : State) (input : ByteArray)
     (hword : MachineState.readWord input 96 ≠ PatternedWordData.expectedWordAt 3)
     (hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock PrefixStatePaths.rung3Path
-      (rungFrame s input 5068 (PatternedWordData.expectedWordAt 2)) =
-      some (rungFrame s input 5231 (PatternedWordData.expectedWordAt 3)) := by
+      (rungFrame s input 5161 (PatternedWordData.expectedWordAt 2)) =
+      some (rungFrame s input 5324 (PatternedWordData.expectedWordAt 3)) := by
   have htrue : UInt256.isTrue (UInt256.xor (MachineState.readWord input 96)
       (PatternedWordData.expectedWordAt 3)) := by
     intro hz
@@ -601,8 +601,8 @@ theorem run_rung4_hit (s : State) (input : ByteArray)
     (hcalldata : s.executionEnv.calldata = input)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock PrefixStatePaths.rung4Path
-      (rungFrame s input 5088 (PatternedWordData.expectedWordAt 3)) =
-      some (rungFrame s input 5108 (PatternedWordData.expectedWordAt 4)) := by
+      (rungFrame s input 5181 (PatternedWordData.expectedWordAt 3)) =
+      some (rungFrame s input 5201 (PatternedWordData.expectedWordAt 4)) := by
   have hzero : UInt256.xor (MachineState.readWord input 128)
       (PatternedWordData.expectedWordAt 4) = 0 :=
     (KnownInputLogic.wordXor_eq_zero_iff _ _).2 hword
@@ -663,15 +663,15 @@ theorem run_rung4_hit (s : State) (input : ByteArray)
       Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
 
 /-- Rung 4 on a word-4 mismatch: the running word steps to word 4 and the
-`JUMPI` is taken to pc 5179. -/
+`JUMPI` is taken to pc 5272. -/
 theorem run_rung4_miss (s : State) (input : ByteArray)
     (hword : MachineState.readWord input 128 ≠ PatternedWordData.expectedWordAt 4)
     (hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock PrefixStatePaths.rung4Path
-      (rungFrame s input 5088 (PatternedWordData.expectedWordAt 3)) =
-      some (rungFrame s input 5179 (PatternedWordData.expectedWordAt 4)) := by
+      (rungFrame s input 5181 (PatternedWordData.expectedWordAt 3)) =
+      some (rungFrame s input 5272 (PatternedWordData.expectedWordAt 4)) := by
   have htrue : UInt256.isTrue (UInt256.xor (MachineState.readWord input 128)
       (PatternedWordData.expectedWordAt 4)) := by
     intro hz
@@ -748,8 +748,8 @@ theorem run_rung5_hit (s : State) (input : ByteArray)
     (hcalldata : s.executionEnv.calldata = input)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock PrefixStatePaths.rung5Path
-      (rungFrame s input 5108 (PatternedWordData.expectedWordAt 4)) =
-      some (rungFrame s input 5128 (PatternedWordData.expectedWordAt 5)) := by
+      (rungFrame s input 5201 (PatternedWordData.expectedWordAt 4)) =
+      some (rungFrame s input 5221 (PatternedWordData.expectedWordAt 5)) := by
   have hzero : UInt256.xor (MachineState.readWord input 160)
       (PatternedWordData.expectedWordAt 5) = 0 :=
     (KnownInputLogic.wordXor_eq_zero_iff _ _).2 hword
@@ -810,15 +810,15 @@ theorem run_rung5_hit (s : State) (input : ByteArray)
       Challenge.EvmProof.Word.succ_ofNat_mod, Nat.mod_eq_of_lt]
 
 /-- Rung 5 on a word-5 mismatch: the running word steps to word 5 and the
-`JUMPI` is taken to pc 5179. -/
+`JUMPI` is taken to pc 5272. -/
 theorem run_rung5_miss (s : State) (input : ByteArray)
     (hword : MachineState.readWord input 160 ≠ PatternedWordData.expectedWordAt 5)
     (hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock PrefixStatePaths.rung5Path
-      (rungFrame s input 5108 (PatternedWordData.expectedWordAt 4)) =
-      some (rungFrame s input 5179 (PatternedWordData.expectedWordAt 5)) := by
+      (rungFrame s input 5201 (PatternedWordData.expectedWordAt 4)) =
+      some (rungFrame s input 5272 (PatternedWordData.expectedWordAt 5)) := by
   have htrue : UInt256.isTrue (UInt256.xor (MachineState.readWord input 160)
       (PatternedWordData.expectedWordAt 5)) := by
     intro hz
@@ -895,7 +895,7 @@ theorem run_rung5_miss (s : State) (input : ByteArray)
 theorem run_hit3 (s : State) (input : ByteArray) (e : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.hit3Path (rungFrame s input 5128 e) =
+    Stepper.runLocatedBlock PrefixStatePaths.hit3Path (rungFrame s input 5221 e) =
       some (PrefixStateMemory.resultState3 s input) := by
   have hbo : DriverTrace.blockOffsetWord 2 = UInt256.ofNat 128 := rfl
   simp (config := { maxSteps := 500000 })
@@ -940,7 +940,7 @@ theorem run_hit3 (s : State) (input : ByteArray) (e : UInt256)
 theorem run_hit2 (s : State) (input : ByteArray) (e : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.hit2Path (rungFrame s input 5179 e) =
+    Stepper.runLocatedBlock PrefixStatePaths.hit2Path (rungFrame s input 5272 e) =
       some (PrefixStateMemory.resultState2 s input) := by
   have hbo : DriverTrace.blockOffsetWord 1 = UInt256.ofNat 64 := rfl
   simp (config := { maxSteps := 500000 })
@@ -986,7 +986,7 @@ words, return to the driver with the block offset unchanged. -/
 theorem run_hit1 (s : State) (input : ByteArray) (e : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.hit1Path (rungFrame s input 5231 e) =
+    Stepper.runLocatedBlock PrefixStatePaths.hit1Path (rungFrame s input 5324 e) =
       some (PrefixStateMemory.resultState s input 0) := by
   simp (config := { maxSteps := 500000 })
     [PrefixStatePaths.hit1Path, Stepper.runLocatedBlock, Stepper.runLocated,
@@ -1027,7 +1027,7 @@ compressor with the plain driver stack. -/
 theorem run_bail (s : State) (input : ByteArray) (e : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock PrefixStatePaths.bailPath (rungFrame s input 5278 e) =
+    Stepper.runLocatedBlock PrefixStatePaths.bailPath (rungFrame s input 5371 e) =
       some (DriverTrace.compressEntry (PrefixStateMemory.scratchState s) input 0) := by
   simp (config := { maxSteps := 500000 })
     [PrefixStatePaths.bailPath, Stepper.runLocatedBlock, Stepper.runLocated,
@@ -1107,84 +1107,84 @@ def gasSteps_finish (s : State) (input : ByteArray)
           else PrefixStateMemory.resultState s input 0)
       else DriverTrace.compressEntry (PrefixStateMemory.scratchState s) input 0) := by
   have gsetup : GasSteps (entry s input)
-      (rungFrame s input 5028 (PatternedWordData.expectedWordAt 0)) :=
+      (rungFrame s input 5121 (PatternedWordData.expectedWordAt 0)) :=
     entryBlock PrefixStatePaths.setupPath s input _ hcode hfork hrun hnp
       (run_setup s input hmem0 hrun)
-  have ghit1 : ∀ e, GasSteps (rungFrame s input 5231 e)
+  have ghit1 : ∀ e, GasSteps (rungFrame s input 5324 e)
       (PrefixStateMemory.resultState s input 0) := fun e =>
-    rungBlock PrefixStatePaths.hit1Path s input 5231 e _ hcode hfork hrun hnp
+    rungBlock PrefixStatePaths.hit1Path s input 5324 e _ hcode hfork hrun hnp
       (run_hit1 s input e hcode hrun)
-  have ghit2 : ∀ e, GasSteps (rungFrame s input 5179 e)
+  have ghit2 : ∀ e, GasSteps (rungFrame s input 5272 e)
       (PrefixStateMemory.resultState2 s input) := fun e =>
-    rungBlock PrefixStatePaths.hit2Path s input 5179 e _ hcode hfork hrun hnp
+    rungBlock PrefixStatePaths.hit2Path s input 5272 e _ hcode hfork hrun hnp
       (run_hit2 s input e hcode hrun)
-  have ghit3 : ∀ e, GasSteps (rungFrame s input 5128 e)
+  have ghit3 : ∀ e, GasSteps (rungFrame s input 5221 e)
       (PrefixStateMemory.resultState3 s input) := fun e =>
-    rungBlock PrefixStatePaths.hit3Path s input 5128 e _ hcode hfork hrun hnp
+    rungBlock PrefixStatePaths.hit3Path s input 5221 e _ hcode hfork hrun hnp
       (run_hit3 s input e hcode hrun)
-  have gbail : ∀ e, GasSteps (rungFrame s input 5278 e)
+  have gbail : ∀ e, GasSteps (rungFrame s input 5371 e)
       (DriverTrace.compressEntry (PrefixStateMemory.scratchState s) input 0) := fun e =>
-    rungBlock PrefixStatePaths.bailPath s input 5278 e _ hcode hfork hrun hnp
+    rungBlock PrefixStatePaths.bailPath s input 5371 e _ hcode hfork hrun hnp
       (run_bail s input e hcode hrun)
   by_cases hw1 : MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1
   · rw [if_pos hw1]
-    have g1 : GasSteps (rungFrame s input 5028 (PatternedWordData.expectedWordAt 0))
-        (rungFrame s input 5048 (PatternedWordData.expectedWordAt 1)) :=
-      rungBlock PrefixStatePaths.rung1Path s input 5028 _ _ hcode hfork hrun hnp
+    have g1 : GasSteps (rungFrame s input 5121 (PatternedWordData.expectedWordAt 0))
+        (rungFrame s input 5141 (PatternedWordData.expectedWordAt 1)) :=
+      rungBlock PrefixStatePaths.rung1Path s input 5121 _ _ hcode hfork hrun hnp
         (run_rung1_hit s input hw1 hcalldata hrun)
     by_cases hw2 : MachineState.readWord input 64 = PatternedWordData.expectedWordAt 2
-    · have g2 : GasSteps (rungFrame s input 5048 (PatternedWordData.expectedWordAt 1))
-          (rungFrame s input 5068 (PatternedWordData.expectedWordAt 2)) :=
-        rungBlock PrefixStatePaths.rung2Path s input 5048 _ _ hcode hfork hrun hnp
+    · have g2 : GasSteps (rungFrame s input 5141 (PatternedWordData.expectedWordAt 1))
+          (rungFrame s input 5161 (PatternedWordData.expectedWordAt 2)) :=
+        rungBlock PrefixStatePaths.rung2Path s input 5141 _ _ hcode hfork hrun hnp
           (run_rung2_hit s input hw2 hcalldata hrun)
       by_cases hw3 : MachineState.readWord input 96 = PatternedWordData.expectedWordAt 3
       · have hm2 : PrefixStateModel.Matched2 input := ⟨hw2, hw3⟩
         rw [if_pos hm2]
-        have g3 : GasSteps (rungFrame s input 5068 (PatternedWordData.expectedWordAt 2))
-            (rungFrame s input 5088 (PatternedWordData.expectedWordAt 3)) :=
-          rungBlock PrefixStatePaths.rung3Path s input 5068 _ _ hcode hfork hrun hnp
+        have g3 : GasSteps (rungFrame s input 5161 (PatternedWordData.expectedWordAt 2))
+            (rungFrame s input 5181 (PatternedWordData.expectedWordAt 3)) :=
+          rungBlock PrefixStatePaths.rung3Path s input 5161 _ _ hcode hfork hrun hnp
             (run_rung3_hit s input hw3 hcalldata hrun)
         by_cases hw4 : MachineState.readWord input 128 = PatternedWordData.expectedWordAt 4
-        · have g4 : GasSteps (rungFrame s input 5088 (PatternedWordData.expectedWordAt 3))
-              (rungFrame s input 5108 (PatternedWordData.expectedWordAt 4)) :=
-            rungBlock PrefixStatePaths.rung4Path s input 5088 _ _ hcode hfork hrun hnp
+        · have g4 : GasSteps (rungFrame s input 5181 (PatternedWordData.expectedWordAt 3))
+              (rungFrame s input 5201 (PatternedWordData.expectedWordAt 4)) :=
+            rungBlock PrefixStatePaths.rung4Path s input 5181 _ _ hcode hfork hrun hnp
               (run_rung4_hit s input hw4 hcalldata hrun)
           by_cases hw5 : MachineState.readWord input 160 = PatternedWordData.expectedWordAt 5
           · have hm3 : PrefixStateModel.Matched3 input := ⟨hw4, hw5⟩
             rw [if_pos hm3]
-            have g5 : GasSteps (rungFrame s input 5108 (PatternedWordData.expectedWordAt 4))
-                (rungFrame s input 5128 (PatternedWordData.expectedWordAt 5)) :=
-              rungBlock PrefixStatePaths.rung5Path s input 5108 _ _ hcode hfork hrun hnp
+            have g5 : GasSteps (rungFrame s input 5201 (PatternedWordData.expectedWordAt 4))
+                (rungFrame s input 5221 (PatternedWordData.expectedWordAt 5)) :=
+              rungBlock PrefixStatePaths.rung5Path s input 5201 _ _ hcode hfork hrun hnp
                 (run_rung5_hit s input hw5 hcalldata hrun)
             exact gsetup.trans (g1.trans (g2.trans (g3.trans (g4.trans (g5.trans (ghit3 _))))))
           · rw [if_neg (fun h => hw5 h.2)]
-            have g5 : GasSteps (rungFrame s input 5108 (PatternedWordData.expectedWordAt 4))
-                (rungFrame s input 5179 (PatternedWordData.expectedWordAt 5)) :=
-              rungBlock PrefixStatePaths.rung5Path s input 5108 _ _ hcode hfork hrun hnp
+            have g5 : GasSteps (rungFrame s input 5201 (PatternedWordData.expectedWordAt 4))
+                (rungFrame s input 5272 (PatternedWordData.expectedWordAt 5)) :=
+              rungBlock PrefixStatePaths.rung5Path s input 5201 _ _ hcode hfork hrun hnp
                 (run_rung5_miss s input hw5 hcalldata hcode hrun)
             exact gsetup.trans (g1.trans (g2.trans (g3.trans (g4.trans (g5.trans (ghit2 _))))))
         · rw [if_neg (fun h => hw4 h.1)]
-          have g4 : GasSteps (rungFrame s input 5088 (PatternedWordData.expectedWordAt 3))
-              (rungFrame s input 5179 (PatternedWordData.expectedWordAt 4)) :=
-            rungBlock PrefixStatePaths.rung4Path s input 5088 _ _ hcode hfork hrun hnp
+          have g4 : GasSteps (rungFrame s input 5181 (PatternedWordData.expectedWordAt 3))
+              (rungFrame s input 5272 (PatternedWordData.expectedWordAt 4)) :=
+            rungBlock PrefixStatePaths.rung4Path s input 5181 _ _ hcode hfork hrun hnp
               (run_rung4_miss s input hw4 hcalldata hcode hrun)
           exact gsetup.trans (g1.trans (g2.trans (g3.trans (g4.trans (ghit2 _)))))
       · rw [if_neg (fun h => hw3 h.2)]
-        have g3 : GasSteps (rungFrame s input 5068 (PatternedWordData.expectedWordAt 2))
-            (rungFrame s input 5231 (PatternedWordData.expectedWordAt 3)) :=
-          rungBlock PrefixStatePaths.rung3Path s input 5068 _ _ hcode hfork hrun hnp
+        have g3 : GasSteps (rungFrame s input 5161 (PatternedWordData.expectedWordAt 2))
+            (rungFrame s input 5324 (PatternedWordData.expectedWordAt 3)) :=
+          rungBlock PrefixStatePaths.rung3Path s input 5161 _ _ hcode hfork hrun hnp
             (run_rung3_miss s input hw3 hcalldata hcode hrun)
         exact gsetup.trans (g1.trans (g2.trans (g3.trans (ghit1 _))))
     · rw [if_neg (fun h => hw2 h.1)]
-      have g2 : GasSteps (rungFrame s input 5048 (PatternedWordData.expectedWordAt 1))
-          (rungFrame s input 5231 (PatternedWordData.expectedWordAt 2)) :=
-        rungBlock PrefixStatePaths.rung2Path s input 5048 _ _ hcode hfork hrun hnp
+      have g2 : GasSteps (rungFrame s input 5141 (PatternedWordData.expectedWordAt 1))
+          (rungFrame s input 5324 (PatternedWordData.expectedWordAt 2)) :=
+        rungBlock PrefixStatePaths.rung2Path s input 5141 _ _ hcode hfork hrun hnp
           (run_rung2_miss s input hw2 hcalldata hcode hrun)
       exact gsetup.trans (g1.trans (g2.trans (ghit1 _)))
   · rw [if_neg hw1]
-    have g1 : GasSteps (rungFrame s input 5028 (PatternedWordData.expectedWordAt 0))
-        (rungFrame s input 5278 (PatternedWordData.expectedWordAt 1)) :=
-      rungBlock PrefixStatePaths.rung1Path s input 5028 _ _ hcode hfork hrun hnp
+    have g1 : GasSteps (rungFrame s input 5121 (PatternedWordData.expectedWordAt 0))
+        (rungFrame s input 5371 (PatternedWordData.expectedWordAt 1)) :=
+      rungBlock PrefixStatePaths.rung1Path s input 5121 _ _ hcode hfork hrun hnp
         (run_rung1_miss s input hw1 hcalldata hcode hrun)
     exact gsetup.trans (g1.trans (gbail _))
 

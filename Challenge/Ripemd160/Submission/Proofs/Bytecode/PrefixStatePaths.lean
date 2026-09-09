@@ -7,7 +7,7 @@ set_option maxHeartbeats 3000000
 /-!
 # Located paths of the depth-3 patterned-prefix ladder (instructions 4065..4257)
 
-The ladder occupies the trailing 297 bytes (pc 4990..5286).  Its PC and
+The ladder occupies the trailing 390 bytes (pc 4990..5379).  Its PC and
 instruction lemmas are derived from a split of the instruction list at index
 4065 so every `rfl` evaluates only the 193-instruction ladder segment.
 -/
@@ -220,888 +220,888 @@ private theorem ladder_at (i : Nat) (hi : i < 193) :
   rw [ladder_pc 15 (by decide)]
   rfl
 
-@[simp] theorem pc4088 : Artifact.submissionArtifact.instructionPC 4081 = 5014 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 16) = 5014
+@[simp] theorem pc4088 : Artifact.submissionArtifact.instructionPC 4081 = 5045 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 16) = 5045
   rw [ladder_pc 16 (by decide)]
   rfl
 
-@[simp] theorem pc4089 : Artifact.submissionArtifact.instructionPC 4082 = 5015 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 17) = 5015
+@[simp] theorem pc4089 : Artifact.submissionArtifact.instructionPC 4082 = 5078 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 17) = 5078
   rw [ladder_pc 17 (by decide)]
   rfl
 
-@[simp] theorem pc4090 : Artifact.submissionArtifact.instructionPC 4083 = 5016 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 18) = 5016
+@[simp] theorem pc4090 : Artifact.submissionArtifact.instructionPC 4083 = 5111 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 18) = 5111
   rw [ladder_pc 18 (by decide)]
   rfl
 
-@[simp] theorem pc4091 : Artifact.submissionArtifact.instructionPC 4084 = 5017 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 19) = 5017
+@[simp] theorem pc4091 : Artifact.submissionArtifact.instructionPC 4084 = 5112 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 19) = 5112
   rw [ladder_pc 19 (by decide)]
   rfl
 
-@[simp] theorem pc4092 : Artifact.submissionArtifact.instructionPC 4085 = 5019 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 20) = 5019
+@[simp] theorem pc4092 : Artifact.submissionArtifact.instructionPC 4085 = 5113 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 20) = 5113
   rw [ladder_pc 20 (by decide)]
   rfl
 
-@[simp] theorem pc4093 : Artifact.submissionArtifact.instructionPC 4086 = 5020 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 21) = 5020
+@[simp] theorem pc4093 : Artifact.submissionArtifact.instructionPC 4086 = 5114 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 21) = 5114
   rw [ladder_pc 21 (by decide)]
   rfl
 
-@[simp] theorem pc4094 : Artifact.submissionArtifact.instructionPC 4087 = 5021 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 22) = 5021
+@[simp] theorem pc4094 : Artifact.submissionArtifact.instructionPC 4087 = 5115 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 22) = 5115
   rw [ladder_pc 22 (by decide)]
   rfl
 
-@[simp] theorem pc4095 : Artifact.submissionArtifact.instructionPC 4088 = 5022 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 23) = 5022
+@[simp] theorem pc4095 : Artifact.submissionArtifact.instructionPC 4088 = 5116 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 23) = 5116
   rw [ladder_pc 23 (by decide)]
   rfl
 
-@[simp] theorem pc4096 : Artifact.submissionArtifact.instructionPC 4089 = 5023 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 24) = 5023
+@[simp] theorem pc4096 : Artifact.submissionArtifact.instructionPC 4089 = 5117 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 24) = 5117
   rw [ladder_pc 24 (by decide)]
   rfl
 
-@[simp] theorem pc4097 : Artifact.submissionArtifact.instructionPC 4090 = 5025 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 25) = 5025
+@[simp] theorem pc4097 : Artifact.submissionArtifact.instructionPC 4090 = 5118 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 25) = 5118
   rw [ladder_pc 25 (by decide)]
   rfl
 
-@[simp] theorem pc4098 : Artifact.submissionArtifact.instructionPC 4091 = 5026 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 26) = 5026
+@[simp] theorem pc4098 : Artifact.submissionArtifact.instructionPC 4091 = 5119 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 26) = 5119
   rw [ladder_pc 26 (by decide)]
   rfl
 
-@[simp] theorem pc4099 : Artifact.submissionArtifact.instructionPC 4092 = 5027 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 27) = 5027
+@[simp] theorem pc4099 : Artifact.submissionArtifact.instructionPC 4092 = 5120 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 27) = 5120
   rw [ladder_pc 27 (by decide)]
   rfl
 
-@[simp] theorem pc4100 : Artifact.submissionArtifact.instructionPC 4093 = 5028 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 28) = 5028
+@[simp] theorem pc4100 : Artifact.submissionArtifact.instructionPC 4093 = 5121 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 28) = 5121
   rw [ladder_pc 28 (by decide)]
   rfl
 
-@[simp] theorem pc4101 : Artifact.submissionArtifact.instructionPC 4094 = 5029 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 29) = 5029
+@[simp] theorem pc4101 : Artifact.submissionArtifact.instructionPC 4094 = 5122 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 29) = 5122
   rw [ladder_pc 29 (by decide)]
   rfl
 
-@[simp] theorem pc4102 : Artifact.submissionArtifact.instructionPC 4095 = 5030 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 30) = 5030
+@[simp] theorem pc4102 : Artifact.submissionArtifact.instructionPC 4095 = 5123 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 30) = 5123
   rw [ladder_pc 30 (by decide)]
   rfl
 
-@[simp] theorem pc4103 : Artifact.submissionArtifact.instructionPC 4096 = 5031 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 31) = 5031
+@[simp] theorem pc4103 : Artifact.submissionArtifact.instructionPC 4096 = 5124 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 31) = 5124
   rw [ladder_pc 31 (by decide)]
   rfl
 
-@[simp] theorem pc4104 : Artifact.submissionArtifact.instructionPC 4097 = 5032 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 32) = 5032
+@[simp] theorem pc4104 : Artifact.submissionArtifact.instructionPC 4097 = 5125 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 32) = 5125
   rw [ladder_pc 32 (by decide)]
   rfl
 
-@[simp] theorem pc4105 : Artifact.submissionArtifact.instructionPC 4098 = 5033 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 33) = 5033
+@[simp] theorem pc4105 : Artifact.submissionArtifact.instructionPC 4098 = 5126 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 33) = 5126
   rw [ladder_pc 33 (by decide)]
   rfl
 
-@[simp] theorem pc4106 : Artifact.submissionArtifact.instructionPC 4099 = 5034 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 34) = 5034
+@[simp] theorem pc4106 : Artifact.submissionArtifact.instructionPC 4099 = 5127 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 34) = 5127
   rw [ladder_pc 34 (by decide)]
   rfl
 
-@[simp] theorem pc4107 : Artifact.submissionArtifact.instructionPC 4100 = 5035 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 35) = 5035
+@[simp] theorem pc4107 : Artifact.submissionArtifact.instructionPC 4100 = 5128 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 35) = 5128
   rw [ladder_pc 35 (by decide)]
   rfl
 
-@[simp] theorem pc4108 : Artifact.submissionArtifact.instructionPC 4101 = 5036 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 36) = 5036
+@[simp] theorem pc4108 : Artifact.submissionArtifact.instructionPC 4101 = 5129 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 36) = 5129
   rw [ladder_pc 36 (by decide)]
   rfl
 
-@[simp] theorem pc4109 : Artifact.submissionArtifact.instructionPC 4102 = 5037 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 37) = 5037
+@[simp] theorem pc4109 : Artifact.submissionArtifact.instructionPC 4102 = 5130 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 37) = 5130
   rw [ladder_pc 37 (by decide)]
   rfl
 
-@[simp] theorem pc4110 : Artifact.submissionArtifact.instructionPC 4103 = 5038 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 38) = 5038
+@[simp] theorem pc4110 : Artifact.submissionArtifact.instructionPC 4103 = 5131 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 38) = 5131
   rw [ladder_pc 38 (by decide)]
   rfl
 
-@[simp] theorem pc4111 : Artifact.submissionArtifact.instructionPC 4104 = 5039 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 39) = 5039
+@[simp] theorem pc4111 : Artifact.submissionArtifact.instructionPC 4104 = 5132 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 39) = 5132
   rw [ladder_pc 39 (by decide)]
   rfl
 
-@[simp] theorem pc4112 : Artifact.submissionArtifact.instructionPC 4105 = 5040 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 40) = 5040
+@[simp] theorem pc4112 : Artifact.submissionArtifact.instructionPC 4105 = 5133 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 40) = 5133
   rw [ladder_pc 40 (by decide)]
   rfl
 
-@[simp] theorem pc4113 : Artifact.submissionArtifact.instructionPC 4106 = 5042 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 41) = 5042
+@[simp] theorem pc4113 : Artifact.submissionArtifact.instructionPC 4106 = 5135 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 41) = 5135
   rw [ladder_pc 41 (by decide)]
   rfl
 
-@[simp] theorem pc4114 : Artifact.submissionArtifact.instructionPC 4107 = 5043 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 42) = 5043
+@[simp] theorem pc4114 : Artifact.submissionArtifact.instructionPC 4107 = 5136 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 42) = 5136
   rw [ladder_pc 42 (by decide)]
   rfl
 
-@[simp] theorem pc4115 : Artifact.submissionArtifact.instructionPC 4108 = 5044 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 43) = 5044
+@[simp] theorem pc4115 : Artifact.submissionArtifact.instructionPC 4108 = 5137 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 43) = 5137
   rw [ladder_pc 43 (by decide)]
   rfl
 
-@[simp] theorem pc4116 : Artifact.submissionArtifact.instructionPC 4109 = 5047 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 44) = 5047
+@[simp] theorem pc4116 : Artifact.submissionArtifact.instructionPC 4109 = 5140 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 44) = 5140
   rw [ladder_pc 44 (by decide)]
   rfl
 
-@[simp] theorem pc4117 : Artifact.submissionArtifact.instructionPC 4110 = 5048 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 45) = 5048
+@[simp] theorem pc4117 : Artifact.submissionArtifact.instructionPC 4110 = 5141 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 45) = 5141
   rw [ladder_pc 45 (by decide)]
   rfl
 
-@[simp] theorem pc4118 : Artifact.submissionArtifact.instructionPC 4111 = 5049 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 46) = 5049
+@[simp] theorem pc4118 : Artifact.submissionArtifact.instructionPC 4111 = 5142 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 46) = 5142
   rw [ladder_pc 46 (by decide)]
   rfl
 
-@[simp] theorem pc4119 : Artifact.submissionArtifact.instructionPC 4112 = 5050 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 47) = 5050
+@[simp] theorem pc4119 : Artifact.submissionArtifact.instructionPC 4112 = 5143 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 47) = 5143
   rw [ladder_pc 47 (by decide)]
   rfl
 
-@[simp] theorem pc4120 : Artifact.submissionArtifact.instructionPC 4113 = 5051 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 48) = 5051
+@[simp] theorem pc4120 : Artifact.submissionArtifact.instructionPC 4113 = 5144 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 48) = 5144
   rw [ladder_pc 48 (by decide)]
   rfl
 
-@[simp] theorem pc4121 : Artifact.submissionArtifact.instructionPC 4114 = 5052 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 49) = 5052
+@[simp] theorem pc4121 : Artifact.submissionArtifact.instructionPC 4114 = 5145 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 49) = 5145
   rw [ladder_pc 49 (by decide)]
   rfl
 
-@[simp] theorem pc4122 : Artifact.submissionArtifact.instructionPC 4115 = 5053 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 50) = 5053
+@[simp] theorem pc4122 : Artifact.submissionArtifact.instructionPC 4115 = 5146 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 50) = 5146
   rw [ladder_pc 50 (by decide)]
   rfl
 
-@[simp] theorem pc4123 : Artifact.submissionArtifact.instructionPC 4116 = 5054 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 51) = 5054
+@[simp] theorem pc4123 : Artifact.submissionArtifact.instructionPC 4116 = 5147 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 51) = 5147
   rw [ladder_pc 51 (by decide)]
   rfl
 
-@[simp] theorem pc4124 : Artifact.submissionArtifact.instructionPC 4117 = 5055 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 52) = 5055
+@[simp] theorem pc4124 : Artifact.submissionArtifact.instructionPC 4117 = 5148 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 52) = 5148
   rw [ladder_pc 52 (by decide)]
   rfl
 
-@[simp] theorem pc4125 : Artifact.submissionArtifact.instructionPC 4118 = 5056 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 53) = 5056
+@[simp] theorem pc4125 : Artifact.submissionArtifact.instructionPC 4118 = 5149 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 53) = 5149
   rw [ladder_pc 53 (by decide)]
   rfl
 
-@[simp] theorem pc4126 : Artifact.submissionArtifact.instructionPC 4119 = 5057 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 54) = 5057
+@[simp] theorem pc4126 : Artifact.submissionArtifact.instructionPC 4119 = 5150 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 54) = 5150
   rw [ladder_pc 54 (by decide)]
   rfl
 
-@[simp] theorem pc4127 : Artifact.submissionArtifact.instructionPC 4120 = 5058 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 55) = 5058
+@[simp] theorem pc4127 : Artifact.submissionArtifact.instructionPC 4120 = 5151 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 55) = 5151
   rw [ladder_pc 55 (by decide)]
   rfl
 
-@[simp] theorem pc4128 : Artifact.submissionArtifact.instructionPC 4121 = 5059 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 56) = 5059
+@[simp] theorem pc4128 : Artifact.submissionArtifact.instructionPC 4121 = 5152 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 56) = 5152
   rw [ladder_pc 56 (by decide)]
   rfl
 
-@[simp] theorem pc4129 : Artifact.submissionArtifact.instructionPC 4122 = 5060 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 57) = 5060
+@[simp] theorem pc4129 : Artifact.submissionArtifact.instructionPC 4122 = 5153 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 57) = 5153
   rw [ladder_pc 57 (by decide)]
   rfl
 
-@[simp] theorem pc4130 : Artifact.submissionArtifact.instructionPC 4123 = 5062 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 58) = 5062
+@[simp] theorem pc4130 : Artifact.submissionArtifact.instructionPC 4123 = 5155 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 58) = 5155
   rw [ladder_pc 58 (by decide)]
   rfl
 
-@[simp] theorem pc4131 : Artifact.submissionArtifact.instructionPC 4124 = 5063 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 59) = 5063
+@[simp] theorem pc4131 : Artifact.submissionArtifact.instructionPC 4124 = 5156 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 59) = 5156
   rw [ladder_pc 59 (by decide)]
   rfl
 
-@[simp] theorem pc4132 : Artifact.submissionArtifact.instructionPC 4125 = 5064 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 60) = 5064
+@[simp] theorem pc4132 : Artifact.submissionArtifact.instructionPC 4125 = 5157 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 60) = 5157
   rw [ladder_pc 60 (by decide)]
   rfl
 
-@[simp] theorem pc4133 : Artifact.submissionArtifact.instructionPC 4126 = 5067 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 61) = 5067
+@[simp] theorem pc4133 : Artifact.submissionArtifact.instructionPC 4126 = 5160 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 61) = 5160
   rw [ladder_pc 61 (by decide)]
   rfl
 
-@[simp] theorem pc4134 : Artifact.submissionArtifact.instructionPC 4127 = 5068 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 62) = 5068
+@[simp] theorem pc4134 : Artifact.submissionArtifact.instructionPC 4127 = 5161 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 62) = 5161
   rw [ladder_pc 62 (by decide)]
   rfl
 
-@[simp] theorem pc4135 : Artifact.submissionArtifact.instructionPC 4128 = 5069 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 63) = 5069
+@[simp] theorem pc4135 : Artifact.submissionArtifact.instructionPC 4128 = 5162 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 63) = 5162
   rw [ladder_pc 63 (by decide)]
   rfl
 
-@[simp] theorem pc4136 : Artifact.submissionArtifact.instructionPC 4129 = 5070 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 64) = 5070
+@[simp] theorem pc4136 : Artifact.submissionArtifact.instructionPC 4129 = 5163 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 64) = 5163
   rw [ladder_pc 64 (by decide)]
   rfl
 
-@[simp] theorem pc4137 : Artifact.submissionArtifact.instructionPC 4130 = 5071 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 65) = 5071
+@[simp] theorem pc4137 : Artifact.submissionArtifact.instructionPC 4130 = 5164 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 65) = 5164
   rw [ladder_pc 65 (by decide)]
   rfl
 
-@[simp] theorem pc4138 : Artifact.submissionArtifact.instructionPC 4131 = 5072 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 66) = 5072
+@[simp] theorem pc4138 : Artifact.submissionArtifact.instructionPC 4131 = 5165 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 66) = 5165
   rw [ladder_pc 66 (by decide)]
   rfl
 
-@[simp] theorem pc4139 : Artifact.submissionArtifact.instructionPC 4132 = 5073 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 67) = 5073
+@[simp] theorem pc4139 : Artifact.submissionArtifact.instructionPC 4132 = 5166 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 67) = 5166
   rw [ladder_pc 67 (by decide)]
   rfl
 
-@[simp] theorem pc4140 : Artifact.submissionArtifact.instructionPC 4133 = 5074 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 68) = 5074
+@[simp] theorem pc4140 : Artifact.submissionArtifact.instructionPC 4133 = 5167 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 68) = 5167
   rw [ladder_pc 68 (by decide)]
   rfl
 
-@[simp] theorem pc4141 : Artifact.submissionArtifact.instructionPC 4134 = 5075 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 69) = 5075
+@[simp] theorem pc4141 : Artifact.submissionArtifact.instructionPC 4134 = 5168 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 69) = 5168
   rw [ladder_pc 69 (by decide)]
   rfl
 
-@[simp] theorem pc4142 : Artifact.submissionArtifact.instructionPC 4135 = 5076 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 70) = 5076
+@[simp] theorem pc4142 : Artifact.submissionArtifact.instructionPC 4135 = 5169 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 70) = 5169
   rw [ladder_pc 70 (by decide)]
   rfl
 
-@[simp] theorem pc4143 : Artifact.submissionArtifact.instructionPC 4136 = 5077 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 71) = 5077
+@[simp] theorem pc4143 : Artifact.submissionArtifact.instructionPC 4136 = 5170 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 71) = 5170
   rw [ladder_pc 71 (by decide)]
   rfl
 
-@[simp] theorem pc4144 : Artifact.submissionArtifact.instructionPC 4137 = 5078 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 72) = 5078
+@[simp] theorem pc4144 : Artifact.submissionArtifact.instructionPC 4137 = 5171 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 72) = 5171
   rw [ladder_pc 72 (by decide)]
   rfl
 
-@[simp] theorem pc4145 : Artifact.submissionArtifact.instructionPC 4138 = 5079 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 73) = 5079
+@[simp] theorem pc4145 : Artifact.submissionArtifact.instructionPC 4138 = 5172 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 73) = 5172
   rw [ladder_pc 73 (by decide)]
   rfl
 
-@[simp] theorem pc4146 : Artifact.submissionArtifact.instructionPC 4139 = 5080 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 74) = 5080
+@[simp] theorem pc4146 : Artifact.submissionArtifact.instructionPC 4139 = 5173 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 74) = 5173
   rw [ladder_pc 74 (by decide)]
   rfl
 
-@[simp] theorem pc4147 : Artifact.submissionArtifact.instructionPC 4140 = 5082 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 75) = 5082
+@[simp] theorem pc4147 : Artifact.submissionArtifact.instructionPC 4140 = 5175 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 75) = 5175
   rw [ladder_pc 75 (by decide)]
   rfl
 
-@[simp] theorem pc4148 : Artifact.submissionArtifact.instructionPC 4141 = 5083 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 76) = 5083
+@[simp] theorem pc4148 : Artifact.submissionArtifact.instructionPC 4141 = 5176 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 76) = 5176
   rw [ladder_pc 76 (by decide)]
   rfl
 
-@[simp] theorem pc4149 : Artifact.submissionArtifact.instructionPC 4142 = 5084 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 77) = 5084
+@[simp] theorem pc4149 : Artifact.submissionArtifact.instructionPC 4142 = 5177 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 77) = 5177
   rw [ladder_pc 77 (by decide)]
   rfl
 
-@[simp] theorem pc4150 : Artifact.submissionArtifact.instructionPC 4143 = 5087 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 78) = 5087
+@[simp] theorem pc4150 : Artifact.submissionArtifact.instructionPC 4143 = 5180 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 78) = 5180
   rw [ladder_pc 78 (by decide)]
   rfl
 
-@[simp] theorem pc4151 : Artifact.submissionArtifact.instructionPC 4144 = 5088 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 79) = 5088
+@[simp] theorem pc4151 : Artifact.submissionArtifact.instructionPC 4144 = 5181 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 79) = 5181
   rw [ladder_pc 79 (by decide)]
   rfl
 
-@[simp] theorem pc4152 : Artifact.submissionArtifact.instructionPC 4145 = 5089 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 80) = 5089
+@[simp] theorem pc4152 : Artifact.submissionArtifact.instructionPC 4145 = 5182 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 80) = 5182
   rw [ladder_pc 80 (by decide)]
   rfl
 
-@[simp] theorem pc4153 : Artifact.submissionArtifact.instructionPC 4146 = 5090 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 81) = 5090
+@[simp] theorem pc4153 : Artifact.submissionArtifact.instructionPC 4146 = 5183 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 81) = 5183
   rw [ladder_pc 81 (by decide)]
   rfl
 
-@[simp] theorem pc4154 : Artifact.submissionArtifact.instructionPC 4147 = 5091 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 82) = 5091
+@[simp] theorem pc4154 : Artifact.submissionArtifact.instructionPC 4147 = 5184 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 82) = 5184
   rw [ladder_pc 82 (by decide)]
   rfl
 
-@[simp] theorem pc4155 : Artifact.submissionArtifact.instructionPC 4148 = 5092 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 83) = 5092
+@[simp] theorem pc4155 : Artifact.submissionArtifact.instructionPC 4148 = 5185 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 83) = 5185
   rw [ladder_pc 83 (by decide)]
   rfl
 
-@[simp] theorem pc4156 : Artifact.submissionArtifact.instructionPC 4149 = 5093 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 84) = 5093
+@[simp] theorem pc4156 : Artifact.submissionArtifact.instructionPC 4149 = 5186 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 84) = 5186
   rw [ladder_pc 84 (by decide)]
   rfl
 
-@[simp] theorem pc4157 : Artifact.submissionArtifact.instructionPC 4150 = 5094 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 85) = 5094
+@[simp] theorem pc4157 : Artifact.submissionArtifact.instructionPC 4150 = 5187 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 85) = 5187
   rw [ladder_pc 85 (by decide)]
   rfl
 
-@[simp] theorem pc4158 : Artifact.submissionArtifact.instructionPC 4151 = 5095 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 86) = 5095
+@[simp] theorem pc4158 : Artifact.submissionArtifact.instructionPC 4151 = 5188 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 86) = 5188
   rw [ladder_pc 86 (by decide)]
   rfl
 
-@[simp] theorem pc4159 : Artifact.submissionArtifact.instructionPC 4152 = 5096 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 87) = 5096
+@[simp] theorem pc4159 : Artifact.submissionArtifact.instructionPC 4152 = 5189 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 87) = 5189
   rw [ladder_pc 87 (by decide)]
   rfl
 
-@[simp] theorem pc4160 : Artifact.submissionArtifact.instructionPC 4153 = 5097 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 88) = 5097
+@[simp] theorem pc4160 : Artifact.submissionArtifact.instructionPC 4153 = 5190 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 88) = 5190
   rw [ladder_pc 88 (by decide)]
   rfl
 
-@[simp] theorem pc4161 : Artifact.submissionArtifact.instructionPC 4154 = 5098 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 89) = 5098
+@[simp] theorem pc4161 : Artifact.submissionArtifact.instructionPC 4154 = 5191 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 89) = 5191
   rw [ladder_pc 89 (by decide)]
   rfl
 
-@[simp] theorem pc4162 : Artifact.submissionArtifact.instructionPC 4155 = 5099 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 90) = 5099
+@[simp] theorem pc4162 : Artifact.submissionArtifact.instructionPC 4155 = 5192 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 90) = 5192
   rw [ladder_pc 90 (by decide)]
   rfl
 
-@[simp] theorem pc4163 : Artifact.submissionArtifact.instructionPC 4156 = 5100 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 91) = 5100
+@[simp] theorem pc4163 : Artifact.submissionArtifact.instructionPC 4156 = 5193 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 91) = 5193
   rw [ladder_pc 91 (by decide)]
   rfl
 
-@[simp] theorem pc4164 : Artifact.submissionArtifact.instructionPC 4157 = 5102 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 92) = 5102
+@[simp] theorem pc4164 : Artifact.submissionArtifact.instructionPC 4157 = 5195 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 92) = 5195
   rw [ladder_pc 92 (by decide)]
   rfl
 
-@[simp] theorem pc4165 : Artifact.submissionArtifact.instructionPC 4158 = 5103 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 93) = 5103
+@[simp] theorem pc4165 : Artifact.submissionArtifact.instructionPC 4158 = 5196 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 93) = 5196
   rw [ladder_pc 93 (by decide)]
   rfl
 
-@[simp] theorem pc4166 : Artifact.submissionArtifact.instructionPC 4159 = 5104 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 94) = 5104
+@[simp] theorem pc4166 : Artifact.submissionArtifact.instructionPC 4159 = 5197 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 94) = 5197
   rw [ladder_pc 94 (by decide)]
   rfl
 
-@[simp] theorem pc4167 : Artifact.submissionArtifact.instructionPC 4160 = 5107 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 95) = 5107
+@[simp] theorem pc4167 : Artifact.submissionArtifact.instructionPC 4160 = 5200 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 95) = 5200
   rw [ladder_pc 95 (by decide)]
   rfl
 
-@[simp] theorem pc4168 : Artifact.submissionArtifact.instructionPC 4161 = 5108 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 96) = 5108
+@[simp] theorem pc4168 : Artifact.submissionArtifact.instructionPC 4161 = 5201 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 96) = 5201
   rw [ladder_pc 96 (by decide)]
   rfl
 
-@[simp] theorem pc4169 : Artifact.submissionArtifact.instructionPC 4162 = 5109 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 97) = 5109
+@[simp] theorem pc4169 : Artifact.submissionArtifact.instructionPC 4162 = 5202 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 97) = 5202
   rw [ladder_pc 97 (by decide)]
   rfl
 
-@[simp] theorem pc4170 : Artifact.submissionArtifact.instructionPC 4163 = 5110 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 98) = 5110
+@[simp] theorem pc4170 : Artifact.submissionArtifact.instructionPC 4163 = 5203 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 98) = 5203
   rw [ladder_pc 98 (by decide)]
   rfl
 
-@[simp] theorem pc4171 : Artifact.submissionArtifact.instructionPC 4164 = 5111 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 99) = 5111
+@[simp] theorem pc4171 : Artifact.submissionArtifact.instructionPC 4164 = 5204 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 99) = 5204
   rw [ladder_pc 99 (by decide)]
   rfl
 
-@[simp] theorem pc4172 : Artifact.submissionArtifact.instructionPC 4165 = 5112 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 100) = 5112
+@[simp] theorem pc4172 : Artifact.submissionArtifact.instructionPC 4165 = 5205 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 100) = 5205
   rw [ladder_pc 100 (by decide)]
   rfl
 
-@[simp] theorem pc4173 : Artifact.submissionArtifact.instructionPC 4166 = 5113 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 101) = 5113
+@[simp] theorem pc4173 : Artifact.submissionArtifact.instructionPC 4166 = 5206 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 101) = 5206
   rw [ladder_pc 101 (by decide)]
   rfl
 
-@[simp] theorem pc4174 : Artifact.submissionArtifact.instructionPC 4167 = 5114 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 102) = 5114
+@[simp] theorem pc4174 : Artifact.submissionArtifact.instructionPC 4167 = 5207 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 102) = 5207
   rw [ladder_pc 102 (by decide)]
   rfl
 
-@[simp] theorem pc4175 : Artifact.submissionArtifact.instructionPC 4168 = 5115 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 103) = 5115
+@[simp] theorem pc4175 : Artifact.submissionArtifact.instructionPC 4168 = 5208 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 103) = 5208
   rw [ladder_pc 103 (by decide)]
   rfl
 
-@[simp] theorem pc4176 : Artifact.submissionArtifact.instructionPC 4169 = 5116 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 104) = 5116
+@[simp] theorem pc4176 : Artifact.submissionArtifact.instructionPC 4169 = 5209 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 104) = 5209
   rw [ladder_pc 104 (by decide)]
   rfl
 
-@[simp] theorem pc4177 : Artifact.submissionArtifact.instructionPC 4170 = 5117 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 105) = 5117
+@[simp] theorem pc4177 : Artifact.submissionArtifact.instructionPC 4170 = 5210 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 105) = 5210
   rw [ladder_pc 105 (by decide)]
   rfl
 
-@[simp] theorem pc4178 : Artifact.submissionArtifact.instructionPC 4171 = 5118 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 106) = 5118
+@[simp] theorem pc4178 : Artifact.submissionArtifact.instructionPC 4171 = 5211 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 106) = 5211
   rw [ladder_pc 106 (by decide)]
   rfl
 
-@[simp] theorem pc4179 : Artifact.submissionArtifact.instructionPC 4172 = 5119 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 107) = 5119
+@[simp] theorem pc4179 : Artifact.submissionArtifact.instructionPC 4172 = 5212 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 107) = 5212
   rw [ladder_pc 107 (by decide)]
   rfl
 
-@[simp] theorem pc4180 : Artifact.submissionArtifact.instructionPC 4173 = 5120 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 108) = 5120
+@[simp] theorem pc4180 : Artifact.submissionArtifact.instructionPC 4173 = 5213 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 108) = 5213
   rw [ladder_pc 108 (by decide)]
   rfl
 
-@[simp] theorem pc4181 : Artifact.submissionArtifact.instructionPC 4174 = 5122 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 109) = 5122
+@[simp] theorem pc4181 : Artifact.submissionArtifact.instructionPC 4174 = 5215 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 109) = 5215
   rw [ladder_pc 109 (by decide)]
   rfl
 
-@[simp] theorem pc4182 : Artifact.submissionArtifact.instructionPC 4175 = 5123 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 110) = 5123
+@[simp] theorem pc4182 : Artifact.submissionArtifact.instructionPC 4175 = 5216 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 110) = 5216
   rw [ladder_pc 110 (by decide)]
   rfl
 
-@[simp] theorem pc4183 : Artifact.submissionArtifact.instructionPC 4176 = 5124 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 111) = 5124
+@[simp] theorem pc4183 : Artifact.submissionArtifact.instructionPC 4176 = 5217 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 111) = 5217
   rw [ladder_pc 111 (by decide)]
   rfl
 
-@[simp] theorem pc4184 : Artifact.submissionArtifact.instructionPC 4177 = 5127 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 112) = 5127
+@[simp] theorem pc4184 : Artifact.submissionArtifact.instructionPC 4177 = 5220 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 112) = 5220
   rw [ladder_pc 112 (by decide)]
   rfl
 
-@[simp] theorem pc4185 : Artifact.submissionArtifact.instructionPC 4178 = 5128 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 113) = 5128
+@[simp] theorem pc4185 : Artifact.submissionArtifact.instructionPC 4178 = 5221 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 113) = 5221
   rw [ladder_pc 113 (by decide)]
   rfl
 
-@[simp] theorem pc4186 : Artifact.submissionArtifact.instructionPC 4179 = 5129 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 114) = 5129
+@[simp] theorem pc4186 : Artifact.submissionArtifact.instructionPC 4179 = 5222 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 114) = 5222
   rw [ladder_pc 114 (by decide)]
   rfl
 
-@[simp] theorem pc4187 : Artifact.submissionArtifact.instructionPC 4180 = 5130 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 115) = 5130
+@[simp] theorem pc4187 : Artifact.submissionArtifact.instructionPC 4180 = 5223 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 115) = 5223
   rw [ladder_pc 115 (by decide)]
   rfl
 
-@[simp] theorem pc4188 : Artifact.submissionArtifact.instructionPC 4181 = 5131 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 116) = 5131
+@[simp] theorem pc4188 : Artifact.submissionArtifact.instructionPC 4181 = 5224 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 116) = 5224
   rw [ladder_pc 116 (by decide)]
   rfl
 
-@[simp] theorem pc4189 : Artifact.submissionArtifact.instructionPC 4182 = 5132 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 117) = 5132
+@[simp] theorem pc4189 : Artifact.submissionArtifact.instructionPC 4182 = 5225 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 117) = 5225
   rw [ladder_pc 117 (by decide)]
   rfl
 
-@[simp] theorem pc4190 : Artifact.submissionArtifact.instructionPC 4183 = 5133 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 118) = 5133
+@[simp] theorem pc4190 : Artifact.submissionArtifact.instructionPC 4183 = 5226 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 118) = 5226
   rw [ladder_pc 118 (by decide)]
   rfl
 
-@[simp] theorem pc4191 : Artifact.submissionArtifact.instructionPC 4184 = 5134 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 119) = 5134
+@[simp] theorem pc4191 : Artifact.submissionArtifact.instructionPC 4184 = 5227 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 119) = 5227
   rw [ladder_pc 119 (by decide)]
   rfl
 
-@[simp] theorem pc4192 : Artifact.submissionArtifact.instructionPC 4185 = 5135 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 120) = 5135
+@[simp] theorem pc4192 : Artifact.submissionArtifact.instructionPC 4185 = 5228 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 120) = 5228
   rw [ladder_pc 120 (by decide)]
   rfl
 
-@[simp] theorem pc4193 : Artifact.submissionArtifact.instructionPC 4186 = 5137 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 121) = 5137
+@[simp] theorem pc4193 : Artifact.submissionArtifact.instructionPC 4186 = 5230 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 121) = 5230
   rw [ladder_pc 121 (by decide)]
   rfl
 
-@[simp] theorem pc4194 : Artifact.submissionArtifact.instructionPC 4187 = 5138 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 122) = 5138
+@[simp] theorem pc4194 : Artifact.submissionArtifact.instructionPC 4187 = 5231 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 122) = 5231
   rw [ladder_pc 122 (by decide)]
   rfl
 
-@[simp] theorem pc4195 : Artifact.submissionArtifact.instructionPC 4188 = 5143 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 123) = 5143
+@[simp] theorem pc4195 : Artifact.submissionArtifact.instructionPC 4188 = 5236 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 123) = 5236
   rw [ladder_pc 123 (by decide)]
   rfl
 
-@[simp] theorem pc4196 : Artifact.submissionArtifact.instructionPC 4189 = 5145 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 124) = 5145
+@[simp] theorem pc4196 : Artifact.submissionArtifact.instructionPC 4189 = 5238 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 124) = 5238
   rw [ladder_pc 124 (by decide)]
   rfl
 
-@[simp] theorem pc4197 : Artifact.submissionArtifact.instructionPC 4190 = 5146 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 125) = 5146
+@[simp] theorem pc4197 : Artifact.submissionArtifact.instructionPC 4190 = 5239 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 125) = 5239
   rw [ladder_pc 125 (by decide)]
   rfl
 
-@[simp] theorem pc4198 : Artifact.submissionArtifact.instructionPC 4191 = 5151 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 126) = 5151
+@[simp] theorem pc4198 : Artifact.submissionArtifact.instructionPC 4191 = 5244 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 126) = 5244
   rw [ladder_pc 126 (by decide)]
   rfl
 
-@[simp] theorem pc4199 : Artifact.submissionArtifact.instructionPC 4192 = 5153 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 127) = 5153
+@[simp] theorem pc4199 : Artifact.submissionArtifact.instructionPC 4192 = 5246 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 127) = 5246
   rw [ladder_pc 127 (by decide)]
   rfl
 
-@[simp] theorem pc4200 : Artifact.submissionArtifact.instructionPC 4193 = 5154 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 128) = 5154
+@[simp] theorem pc4200 : Artifact.submissionArtifact.instructionPC 4193 = 5247 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 128) = 5247
   rw [ladder_pc 128 (by decide)]
   rfl
 
-@[simp] theorem pc4201 : Artifact.submissionArtifact.instructionPC 4194 = 5159 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 129) = 5159
+@[simp] theorem pc4201 : Artifact.submissionArtifact.instructionPC 4194 = 5252 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 129) = 5252
   rw [ladder_pc 129 (by decide)]
   rfl
 
-@[simp] theorem pc4202 : Artifact.submissionArtifact.instructionPC 4195 = 5161 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 130) = 5161
+@[simp] theorem pc4202 : Artifact.submissionArtifact.instructionPC 4195 = 5254 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 130) = 5254
   rw [ladder_pc 130 (by decide)]
   rfl
 
-@[simp] theorem pc4203 : Artifact.submissionArtifact.instructionPC 4196 = 5162 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 131) = 5162
+@[simp] theorem pc4203 : Artifact.submissionArtifact.instructionPC 4196 = 5255 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 131) = 5255
   rw [ladder_pc 131 (by decide)]
   rfl
 
-@[simp] theorem pc4204 : Artifact.submissionArtifact.instructionPC 4197 = 5167 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 132) = 5167
+@[simp] theorem pc4204 : Artifact.submissionArtifact.instructionPC 4197 = 5260 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 132) = 5260
   rw [ladder_pc 132 (by decide)]
   rfl
 
-@[simp] theorem pc4205 : Artifact.submissionArtifact.instructionPC 4198 = 5169 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 133) = 5169
+@[simp] theorem pc4205 : Artifact.submissionArtifact.instructionPC 4198 = 5262 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 133) = 5262
   rw [ladder_pc 133 (by decide)]
   rfl
 
-@[simp] theorem pc4206 : Artifact.submissionArtifact.instructionPC 4199 = 5170 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 134) = 5170
+@[simp] theorem pc4206 : Artifact.submissionArtifact.instructionPC 4199 = 5263 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 134) = 5263
   rw [ladder_pc 134 (by decide)]
   rfl
 
-@[simp] theorem pc4207 : Artifact.submissionArtifact.instructionPC 4200 = 5175 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 135) = 5175
+@[simp] theorem pc4207 : Artifact.submissionArtifact.instructionPC 4200 = 5268 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 135) = 5268
   rw [ladder_pc 135 (by decide)]
   rfl
 
-@[simp] theorem pc4208 : Artifact.submissionArtifact.instructionPC 4201 = 5177 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 136) = 5177
+@[simp] theorem pc4208 : Artifact.submissionArtifact.instructionPC 4201 = 5270 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 136) = 5270
   rw [ladder_pc 136 (by decide)]
   rfl
 
-@[simp] theorem pc4209 : Artifact.submissionArtifact.instructionPC 4202 = 5178 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 137) = 5178
+@[simp] theorem pc4209 : Artifact.submissionArtifact.instructionPC 4202 = 5271 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 137) = 5271
   rw [ladder_pc 137 (by decide)]
   rfl
 
-@[simp] theorem pc4210 : Artifact.submissionArtifact.instructionPC 4203 = 5179 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 138) = 5179
+@[simp] theorem pc4210 : Artifact.submissionArtifact.instructionPC 4203 = 5272 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 138) = 5272
   rw [ladder_pc 138 (by decide)]
   rfl
 
-@[simp] theorem pc4211 : Artifact.submissionArtifact.instructionPC 4204 = 5180 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 139) = 5180
+@[simp] theorem pc4211 : Artifact.submissionArtifact.instructionPC 4204 = 5273 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 139) = 5273
   rw [ladder_pc 139 (by decide)]
   rfl
 
-@[simp] theorem pc4212 : Artifact.submissionArtifact.instructionPC 4205 = 5181 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 140) = 5181
+@[simp] theorem pc4212 : Artifact.submissionArtifact.instructionPC 4205 = 5274 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 140) = 5274
   rw [ladder_pc 140 (by decide)]
   rfl
 
-@[simp] theorem pc4213 : Artifact.submissionArtifact.instructionPC 4206 = 5182 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 141) = 5182
+@[simp] theorem pc4213 : Artifact.submissionArtifact.instructionPC 4206 = 5275 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 141) = 5275
   rw [ladder_pc 141 (by decide)]
   rfl
 
-@[simp] theorem pc4214 : Artifact.submissionArtifact.instructionPC 4207 = 5183 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 142) = 5183
+@[simp] theorem pc4214 : Artifact.submissionArtifact.instructionPC 4207 = 5276 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 142) = 5276
   rw [ladder_pc 142 (by decide)]
   rfl
 
-@[simp] theorem pc4215 : Artifact.submissionArtifact.instructionPC 4208 = 5184 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 143) = 5184
+@[simp] theorem pc4215 : Artifact.submissionArtifact.instructionPC 4208 = 5277 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 143) = 5277
   rw [ladder_pc 143 (by decide)]
   rfl
 
-@[simp] theorem pc4216 : Artifact.submissionArtifact.instructionPC 4209 = 5185 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 144) = 5185
+@[simp] theorem pc4216 : Artifact.submissionArtifact.instructionPC 4209 = 5278 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 144) = 5278
   rw [ladder_pc 144 (by decide)]
   rfl
 
-@[simp] theorem pc4217 : Artifact.submissionArtifact.instructionPC 4210 = 5186 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 145) = 5186
+@[simp] theorem pc4217 : Artifact.submissionArtifact.instructionPC 4210 = 5279 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 145) = 5279
   rw [ladder_pc 145 (by decide)]
   rfl
 
-@[simp] theorem pc4218 : Artifact.submissionArtifact.instructionPC 4211 = 5187 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 146) = 5187
+@[simp] theorem pc4218 : Artifact.submissionArtifact.instructionPC 4211 = 5280 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 146) = 5280
   rw [ladder_pc 146 (by decide)]
   rfl
 
-@[simp] theorem pc4219 : Artifact.submissionArtifact.instructionPC 4212 = 5189 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 147) = 5189
+@[simp] theorem pc4219 : Artifact.submissionArtifact.instructionPC 4212 = 5282 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 147) = 5282
   rw [ladder_pc 147 (by decide)]
   rfl
 
-@[simp] theorem pc4220 : Artifact.submissionArtifact.instructionPC 4213 = 5190 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 148) = 5190
+@[simp] theorem pc4220 : Artifact.submissionArtifact.instructionPC 4213 = 5283 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 148) = 5283
   rw [ladder_pc 148 (by decide)]
   rfl
 
-@[simp] theorem pc4221 : Artifact.submissionArtifact.instructionPC 4214 = 5195 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 149) = 5195
+@[simp] theorem pc4221 : Artifact.submissionArtifact.instructionPC 4214 = 5288 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 149) = 5288
   rw [ladder_pc 149 (by decide)]
   rfl
 
-@[simp] theorem pc4222 : Artifact.submissionArtifact.instructionPC 4215 = 5197 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 150) = 5197
+@[simp] theorem pc4222 : Artifact.submissionArtifact.instructionPC 4215 = 5290 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 150) = 5290
   rw [ladder_pc 150 (by decide)]
   rfl
 
-@[simp] theorem pc4223 : Artifact.submissionArtifact.instructionPC 4216 = 5198 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 151) = 5198
+@[simp] theorem pc4223 : Artifact.submissionArtifact.instructionPC 4216 = 5291 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 151) = 5291
   rw [ladder_pc 151 (by decide)]
   rfl
 
-@[simp] theorem pc4224 : Artifact.submissionArtifact.instructionPC 4217 = 5203 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 152) = 5203
+@[simp] theorem pc4224 : Artifact.submissionArtifact.instructionPC 4217 = 5296 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 152) = 5296
   rw [ladder_pc 152 (by decide)]
   rfl
 
-@[simp] theorem pc4225 : Artifact.submissionArtifact.instructionPC 4218 = 5205 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 153) = 5205
+@[simp] theorem pc4225 : Artifact.submissionArtifact.instructionPC 4218 = 5298 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 153) = 5298
   rw [ladder_pc 153 (by decide)]
   rfl
 
-@[simp] theorem pc4226 : Artifact.submissionArtifact.instructionPC 4219 = 5206 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 154) = 5206
+@[simp] theorem pc4226 : Artifact.submissionArtifact.instructionPC 4219 = 5299 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 154) = 5299
   rw [ladder_pc 154 (by decide)]
   rfl
 
-@[simp] theorem pc4227 : Artifact.submissionArtifact.instructionPC 4220 = 5211 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 155) = 5211
+@[simp] theorem pc4227 : Artifact.submissionArtifact.instructionPC 4220 = 5304 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 155) = 5304
   rw [ladder_pc 155 (by decide)]
   rfl
 
-@[simp] theorem pc4228 : Artifact.submissionArtifact.instructionPC 4221 = 5213 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 156) = 5213
+@[simp] theorem pc4228 : Artifact.submissionArtifact.instructionPC 4221 = 5306 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 156) = 5306
   rw [ladder_pc 156 (by decide)]
   rfl
 
-@[simp] theorem pc4229 : Artifact.submissionArtifact.instructionPC 4222 = 5214 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 157) = 5214
+@[simp] theorem pc4229 : Artifact.submissionArtifact.instructionPC 4222 = 5307 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 157) = 5307
   rw [ladder_pc 157 (by decide)]
   rfl
 
-@[simp] theorem pc4230 : Artifact.submissionArtifact.instructionPC 4223 = 5219 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 158) = 5219
+@[simp] theorem pc4230 : Artifact.submissionArtifact.instructionPC 4223 = 5312 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 158) = 5312
   rw [ladder_pc 158 (by decide)]
   rfl
 
-@[simp] theorem pc4231 : Artifact.submissionArtifact.instructionPC 4224 = 5221 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 159) = 5221
+@[simp] theorem pc4231 : Artifact.submissionArtifact.instructionPC 4224 = 5314 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 159) = 5314
   rw [ladder_pc 159 (by decide)]
   rfl
 
-@[simp] theorem pc4232 : Artifact.submissionArtifact.instructionPC 4225 = 5222 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 160) = 5222
+@[simp] theorem pc4232 : Artifact.submissionArtifact.instructionPC 4225 = 5315 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 160) = 5315
   rw [ladder_pc 160 (by decide)]
   rfl
 
-@[simp] theorem pc4233 : Artifact.submissionArtifact.instructionPC 4226 = 5227 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 161) = 5227
+@[simp] theorem pc4233 : Artifact.submissionArtifact.instructionPC 4226 = 5320 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 161) = 5320
   rw [ladder_pc 161 (by decide)]
   rfl
 
-@[simp] theorem pc4234 : Artifact.submissionArtifact.instructionPC 4227 = 5229 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 162) = 5229
+@[simp] theorem pc4234 : Artifact.submissionArtifact.instructionPC 4227 = 5322 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 162) = 5322
   rw [ladder_pc 162 (by decide)]
   rfl
 
-@[simp] theorem pc4235 : Artifact.submissionArtifact.instructionPC 4228 = 5230 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 163) = 5230
+@[simp] theorem pc4235 : Artifact.submissionArtifact.instructionPC 4228 = 5323 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 163) = 5323
   rw [ladder_pc 163 (by decide)]
   rfl
 
-@[simp] theorem pc4236 : Artifact.submissionArtifact.instructionPC 4229 = 5231 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 164) = 5231
+@[simp] theorem pc4236 : Artifact.submissionArtifact.instructionPC 4229 = 5324 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 164) = 5324
   rw [ladder_pc 164 (by decide)]
   rfl
 
-@[simp] theorem pc4237 : Artifact.submissionArtifact.instructionPC 4230 = 5232 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 165) = 5232
+@[simp] theorem pc4237 : Artifact.submissionArtifact.instructionPC 4230 = 5325 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 165) = 5325
   rw [ladder_pc 165 (by decide)]
   rfl
 
-@[simp] theorem pc4238 : Artifact.submissionArtifact.instructionPC 4231 = 5233 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 166) = 5233
+@[simp] theorem pc4238 : Artifact.submissionArtifact.instructionPC 4231 = 5326 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 166) = 5326
   rw [ladder_pc 166 (by decide)]
   rfl
 
-@[simp] theorem pc4239 : Artifact.submissionArtifact.instructionPC 4232 = 5234 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 167) = 5234
+@[simp] theorem pc4239 : Artifact.submissionArtifact.instructionPC 4232 = 5327 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 167) = 5327
   rw [ladder_pc 167 (by decide)]
   rfl
 
-@[simp] theorem pc4240 : Artifact.submissionArtifact.instructionPC 4233 = 5235 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 168) = 5235
+@[simp] theorem pc4240 : Artifact.submissionArtifact.instructionPC 4233 = 5328 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 168) = 5328
   rw [ladder_pc 168 (by decide)]
   rfl
 
-@[simp] theorem pc4241 : Artifact.submissionArtifact.instructionPC 4234 = 5236 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 169) = 5236
+@[simp] theorem pc4241 : Artifact.submissionArtifact.instructionPC 4234 = 5329 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 169) = 5329
   rw [ladder_pc 169 (by decide)]
   rfl
 
-@[simp] theorem pc4242 : Artifact.submissionArtifact.instructionPC 4235 = 5237 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 170) = 5237
+@[simp] theorem pc4242 : Artifact.submissionArtifact.instructionPC 4235 = 5330 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 170) = 5330
   rw [ladder_pc 170 (by decide)]
   rfl
 
-@[simp] theorem pc4243 : Artifact.submissionArtifact.instructionPC 4236 = 5242 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 171) = 5242
+@[simp] theorem pc4243 : Artifact.submissionArtifact.instructionPC 4236 = 5335 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 171) = 5335
   rw [ladder_pc 171 (by decide)]
   rfl
 
-@[simp] theorem pc4244 : Artifact.submissionArtifact.instructionPC 4237 = 5244 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 172) = 5244
+@[simp] theorem pc4244 : Artifact.submissionArtifact.instructionPC 4237 = 5337 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 172) = 5337
   rw [ladder_pc 172 (by decide)]
   rfl
 
-@[simp] theorem pc4245 : Artifact.submissionArtifact.instructionPC 4238 = 5245 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 173) = 5245
+@[simp] theorem pc4245 : Artifact.submissionArtifact.instructionPC 4238 = 5338 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 173) = 5338
   rw [ladder_pc 173 (by decide)]
   rfl
 
-@[simp] theorem pc4246 : Artifact.submissionArtifact.instructionPC 4239 = 5250 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 174) = 5250
+@[simp] theorem pc4246 : Artifact.submissionArtifact.instructionPC 4239 = 5343 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 174) = 5343
   rw [ladder_pc 174 (by decide)]
   rfl
 
-@[simp] theorem pc4247 : Artifact.submissionArtifact.instructionPC 4240 = 5252 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 175) = 5252
+@[simp] theorem pc4247 : Artifact.submissionArtifact.instructionPC 4240 = 5345 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 175) = 5345
   rw [ladder_pc 175 (by decide)]
   rfl
 
-@[simp] theorem pc4248 : Artifact.submissionArtifact.instructionPC 4241 = 5253 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 176) = 5253
+@[simp] theorem pc4248 : Artifact.submissionArtifact.instructionPC 4241 = 5346 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 176) = 5346
   rw [ladder_pc 176 (by decide)]
   rfl
 
-@[simp] theorem pc4249 : Artifact.submissionArtifact.instructionPC 4242 = 5258 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 177) = 5258
+@[simp] theorem pc4249 : Artifact.submissionArtifact.instructionPC 4242 = 5351 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 177) = 5351
   rw [ladder_pc 177 (by decide)]
   rfl
 
-@[simp] theorem pc4250 : Artifact.submissionArtifact.instructionPC 4243 = 5260 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 178) = 5260
+@[simp] theorem pc4250 : Artifact.submissionArtifact.instructionPC 4243 = 5353 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 178) = 5353
   rw [ladder_pc 178 (by decide)]
   rfl
 
-@[simp] theorem pc4251 : Artifact.submissionArtifact.instructionPC 4244 = 5261 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 179) = 5261
+@[simp] theorem pc4251 : Artifact.submissionArtifact.instructionPC 4244 = 5354 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 179) = 5354
   rw [ladder_pc 179 (by decide)]
   rfl
 
-@[simp] theorem pc4252 : Artifact.submissionArtifact.instructionPC 4245 = 5266 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 180) = 5266
+@[simp] theorem pc4252 : Artifact.submissionArtifact.instructionPC 4245 = 5359 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 180) = 5359
   rw [ladder_pc 180 (by decide)]
   rfl
 
-@[simp] theorem pc4253 : Artifact.submissionArtifact.instructionPC 4246 = 5268 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 181) = 5268
+@[simp] theorem pc4253 : Artifact.submissionArtifact.instructionPC 4246 = 5361 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 181) = 5361
   rw [ladder_pc 181 (by decide)]
   rfl
 
-@[simp] theorem pc4254 : Artifact.submissionArtifact.instructionPC 4247 = 5269 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 182) = 5269
+@[simp] theorem pc4254 : Artifact.submissionArtifact.instructionPC 4247 = 5362 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 182) = 5362
   rw [ladder_pc 182 (by decide)]
   rfl
 
-@[simp] theorem pc4255 : Artifact.submissionArtifact.instructionPC 4248 = 5274 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 183) = 5274
+@[simp] theorem pc4255 : Artifact.submissionArtifact.instructionPC 4248 = 5367 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 183) = 5367
   rw [ladder_pc 183 (by decide)]
   rfl
 
-@[simp] theorem pc4256 : Artifact.submissionArtifact.instructionPC 4249 = 5276 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 184) = 5276
+@[simp] theorem pc4256 : Artifact.submissionArtifact.instructionPC 4249 = 5369 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 184) = 5369
   rw [ladder_pc 184 (by decide)]
   rfl
 
-@[simp] theorem pc4257 : Artifact.submissionArtifact.instructionPC 4250 = 5277 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 185) = 5277
+@[simp] theorem pc4257 : Artifact.submissionArtifact.instructionPC 4250 = 5370 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 185) = 5370
   rw [ladder_pc 185 (by decide)]
   rfl
 
-@[simp] theorem pc4258 : Artifact.submissionArtifact.instructionPC 4251 = 5278 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 186) = 5278
+@[simp] theorem pc4258 : Artifact.submissionArtifact.instructionPC 4251 = 5371 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 186) = 5371
   rw [ladder_pc 186 (by decide)]
   rfl
 
-@[simp] theorem pc4259 : Artifact.submissionArtifact.instructionPC 4252 = 5279 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 187) = 5279
+@[simp] theorem pc4259 : Artifact.submissionArtifact.instructionPC 4252 = 5372 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 187) = 5372
   rw [ladder_pc 187 (by decide)]
   rfl
 
-@[simp] theorem pc4260 : Artifact.submissionArtifact.instructionPC 4253 = 5280 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 188) = 5280
+@[simp] theorem pc4260 : Artifact.submissionArtifact.instructionPC 4253 = 5373 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 188) = 5373
   rw [ladder_pc 188 (by decide)]
   rfl
 
-@[simp] theorem pc4261 : Artifact.submissionArtifact.instructionPC 4254 = 5281 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 189) = 5281
+@[simp] theorem pc4261 : Artifact.submissionArtifact.instructionPC 4254 = 5374 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 189) = 5374
   rw [ladder_pc 189 (by decide)]
   rfl
 
-@[simp] theorem pc4262 : Artifact.submissionArtifact.instructionPC 4255 = 5282 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 190) = 5282
+@[simp] theorem pc4262 : Artifact.submissionArtifact.instructionPC 4255 = 5375 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 190) = 5375
   rw [ladder_pc 190 (by decide)]
   rfl
 
-@[simp] theorem pc4263 : Artifact.submissionArtifact.instructionPC 4256 = 5283 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 191) = 5283
+@[simp] theorem pc4263 : Artifact.submissionArtifact.instructionPC 4256 = 5376 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 191) = 5376
   rw [ladder_pc 191 (by decide)]
   rfl
 
-@[simp] theorem pc4264 : Artifact.submissionArtifact.instructionPC 4257 = 5286 := by
-  show Artifact.submissionArtifact.instructionPC (4065 + 192) = 5286
+@[simp] theorem pc4264 : Artifact.submissionArtifact.instructionPC 4257 = 5379 := by
+  show Artifact.submissionArtifact.instructionPC (4065 + 192) = 5379
   rw [ladder_pc 192 (by decide)]
   rfl
 
@@ -1132,19 +1132,35 @@ def firstComparePath : List Located :=
    ⟨4079, .op .JUMPI, (ladder_at 14 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩]
 
 def setupPath : List Located :=
-  [⟨4080, .push ⟨1, by decide⟩ (UInt256.ofNat 255), (ladder_at 15 (by decide)).trans rfl, by decide⟩,
-   ⟨4081, .push ⟨0, by decide⟩ (UInt256.ofNat 0), (ladder_at 16 (by decide)).trans rfl, by decide⟩,
-   ⟨4082, .op .NOT, (ladder_at 17 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4083, .op .DIV, (ladder_at 18 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4084, .push ⟨1, by decide⟩ (UInt256.ofNat 127), (ladder_at 19 (by decide)).trans rfl, by decide⟩,
-   ⟨4085, .op .MUL, (ladder_at 20 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4086, .op (.Dup ⟨0, by decide⟩), (ladder_at 21 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4087, .op .NOT, (ladder_at 22 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4088, .op (.Dup ⟨0, by decide⟩), (ladder_at 23 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4089, .push ⟨1, by decide⟩ (UInt256.ofNat 2), (ladder_at 24 (by decide)).trans rfl, by decide⟩,
-   ⟨4090, .op .SHR, (ladder_at 25 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4091, .push ⟨0, by decide⟩ (UInt256.ofNat 0), (ladder_at 26 (by decide)).trans rfl, by decide⟩,
-   ⟨4092, .op .MLOAD, (ladder_at 27 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨4080, .push ⟨32, by decide⟩
+      (UInt256.ofNat 0x7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f),
+      (ladder_at 15 (by decide)).trans rfl, by decide⟩,
+   ⟨4081, .push ⟨32, by decide⟩
+      (UInt256.ofNat 0x8080808080808080808080808080808080808080808080808080808080808080),
+      (ladder_at 16 (by decide)).trans rfl, by decide⟩,
+   ⟨4082, .push ⟨32, by decide⟩
+      (UInt256.ofNat 0x2020202020202020202020202020202020202020202020202020202020202020),
+      (ladder_at 17 (by decide)).trans rfl, by decide⟩,
+   ⟨4083, .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+      (ladder_at 18 (by decide)).trans rfl, by decide⟩,
+   ⟨4084, .op .MLOAD, (ladder_at 19 (by decide)).trans rfl,
+      wfOp (by decide) trivial rfl⟩,
+   ⟨4085, .op .JUMPDEST, (ladder_at 20 (by decide)).trans rfl,
+      wfOp (by decide) trivial rfl⟩,
+   ⟨4086, .op .JUMPDEST, (ladder_at 21 (by decide)).trans rfl,
+      wfOp (by decide) trivial rfl⟩,
+   ⟨4087, .op .JUMPDEST, (ladder_at 22 (by decide)).trans rfl,
+      wfOp (by decide) trivial rfl⟩,
+   ⟨4088, .op .JUMPDEST, (ladder_at 23 (by decide)).trans rfl,
+      wfOp (by decide) trivial rfl⟩,
+   ⟨4089, .op .JUMPDEST, (ladder_at 24 (by decide)).trans rfl,
+      wfOp (by decide) trivial rfl⟩,
+   ⟨4090, .op .JUMPDEST, (ladder_at 25 (by decide)).trans rfl,
+      wfOp (by decide) trivial rfl⟩,
+   ⟨4091, .op .JUMPDEST, (ladder_at 26 (by decide)).trans rfl,
+      wfOp (by decide) trivial rfl⟩,
+   ⟨4092, .op .JUMPDEST, (ladder_at 27 (by decide)).trans rfl,
+      wfOp (by decide) trivial rfl⟩]
 
 def rung1Path : List Located :=
   [⟨4093, .op (.Dup ⟨0, by decide⟩), (ladder_at 28 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
@@ -1162,7 +1178,7 @@ def rung1Path : List Located :=
    ⟨4105, .push ⟨1, by decide⟩ (UInt256.ofNat 32), (ladder_at 40 (by decide)).trans rfl, by decide⟩,
    ⟨4106, .op .CALLDATALOAD, (ladder_at 41 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4107, .op .XOR, (ladder_at 42 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4108, .push ⟨2, by decide⟩ (UInt256.ofNat 5278), (ladder_at 43 (by decide)).trans rfl, by decide⟩,
+   ⟨4108, .push ⟨2, by decide⟩ (UInt256.ofNat 5371), (ladder_at 43 (by decide)).trans rfl, by decide⟩,
    ⟨4109, .op .JUMPI, (ladder_at 44 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩]
 
 def rung2Path : List Located :=
@@ -1181,7 +1197,7 @@ def rung2Path : List Located :=
    ⟨4122, .push ⟨1, by decide⟩ (UInt256.ofNat 64), (ladder_at 57 (by decide)).trans rfl, by decide⟩,
    ⟨4123, .op .CALLDATALOAD, (ladder_at 58 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4124, .op .XOR, (ladder_at 59 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4125, .push ⟨2, by decide⟩ (UInt256.ofNat 5231), (ladder_at 60 (by decide)).trans rfl, by decide⟩,
+   ⟨4125, .push ⟨2, by decide⟩ (UInt256.ofNat 5324), (ladder_at 60 (by decide)).trans rfl, by decide⟩,
    ⟨4126, .op .JUMPI, (ladder_at 61 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩]
 
 def rung3Path : List Located :=
@@ -1200,7 +1216,7 @@ def rung3Path : List Located :=
    ⟨4139, .push ⟨1, by decide⟩ (UInt256.ofNat 96), (ladder_at 74 (by decide)).trans rfl, by decide⟩,
    ⟨4140, .op .CALLDATALOAD, (ladder_at 75 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4141, .op .XOR, (ladder_at 76 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4142, .push ⟨2, by decide⟩ (UInt256.ofNat 5231), (ladder_at 77 (by decide)).trans rfl, by decide⟩,
+   ⟨4142, .push ⟨2, by decide⟩ (UInt256.ofNat 5324), (ladder_at 77 (by decide)).trans rfl, by decide⟩,
    ⟨4143, .op .JUMPI, (ladder_at 78 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩]
 
 def rung4Path : List Located :=
@@ -1219,7 +1235,7 @@ def rung4Path : List Located :=
    ⟨4156, .push ⟨1, by decide⟩ (UInt256.ofNat 128), (ladder_at 91 (by decide)).trans rfl, by decide⟩,
    ⟨4157, .op .CALLDATALOAD, (ladder_at 92 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4158, .op .XOR, (ladder_at 93 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4159, .push ⟨2, by decide⟩ (UInt256.ofNat 5179), (ladder_at 94 (by decide)).trans rfl, by decide⟩,
+   ⟨4159, .push ⟨2, by decide⟩ (UInt256.ofNat 5272), (ladder_at 94 (by decide)).trans rfl, by decide⟩,
    ⟨4160, .op .JUMPI, (ladder_at 95 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩]
 
 def rung5Path : List Located :=
@@ -1238,7 +1254,7 @@ def rung5Path : List Located :=
    ⟨4173, .push ⟨1, by decide⟩ (UInt256.ofNat 160), (ladder_at 108 (by decide)).trans rfl, by decide⟩,
    ⟨4174, .op .CALLDATALOAD, (ladder_at 109 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4175, .op .XOR, (ladder_at 110 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4176, .push ⟨2, by decide⟩ (UInt256.ofNat 5179), (ladder_at 111 (by decide)).trans rfl, by decide⟩,
+   ⟨4176, .push ⟨2, by decide⟩ (UInt256.ofNat 5272), (ladder_at 111 (by decide)).trans rfl, by decide⟩,
    ⟨4177, .op .JUMPI, (ladder_at 112 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩]
 
 def hit3Path : List Located :=
