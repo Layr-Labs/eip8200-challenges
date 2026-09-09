@@ -89,7 +89,7 @@ theorem compress_empty :
 
 def decisionPath : List Located :=
   [⟨77, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨78, .push ⟨2, by decide⟩ (UInt256.ofNat 5217), by rfl, by decide⟩,
+   ⟨78, .push ⟨2, by decide⟩ (UInt256.ofNat 5205), by rfl, by decide⟩,
    ⟨79, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def bodyPath : List Located :=
@@ -128,7 +128,7 @@ def legacyDispatchEntry (s : State) (input : ByteArray) (i : Nat) : State :=
 /-- Nonempty dispatcher target: checked first-block helper. -/
 def nonemptyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 5217
+    pc := UInt256.ofNat 5205
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
@@ -250,11 +250,11 @@ theorem run_decision_nonempty (s : State) (input : ByteArray) (i : Nat)
   norm_num at hmod
   have htrue : UInt256.isTrue (UInt256.ofNat input.size) := by
     exact hmod
-  have hdest : Decode.isValidJumpDest submissionBytecode 5217 = true := by
-    have hpc : Artifact.submissionArtifact.instructionPC 4255 = 5217 := by
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x1455 = true := by
+    have hpc : Artifact.submissionArtifact.instructionPC 4244 = 0x1455 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]
       decide
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 4255 (by rfl)
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 4244 (by rfl)
     rw [hpc] at h
     exact h
   have hpc2792 : Artifact.submissionArtifact.instructionPC 77 = 0x79 := by

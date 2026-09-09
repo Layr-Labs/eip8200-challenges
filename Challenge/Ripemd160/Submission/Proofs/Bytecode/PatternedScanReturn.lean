@@ -13,21 +13,22 @@ open PatternedInputData PatternedDigest PatternedGuardSpec
 
 def returnStored (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 416
+    pc := UInt256.ofNat 404
+    stack := hitRest input
     memory := answerMemory
     activeWords := UInt256.ofNat 1 }
 
 def returnSized (input : ByteArray) : State :=
   { returnStored input with
-    pc := UInt256.ofNat 417
-    stack := [UInt256.ofNat 32] }
+    pc := UInt256.ofNat 405
+    stack := UInt256.ofNat 32 :: hitRest input }
 
 theorem run_return_store :
     run (returnPath.take 3) (hitState patternedInput) =
       some (returnStored patternedInput) := by
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp (config := { maxSteps := 1000000 })
-    [initialState, returnPath, opAt, pushAt, wfOp, hitState, atPC, returnStored,
+    [initialState, returnPath, opAt, pushAt, wfOp, hitRest, hitState, atPC, returnStored,
     answerMemory, storeWord, paddedDigestWord,
     MachineState.mstore, State.activeWordsAfterUInt256,
     MachineState.activeWordsAfter, hzeroNat,
@@ -41,7 +42,8 @@ theorem run_return_finish :
       some (returnedState patternedInput) := by
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp (config := { maxSteps := 1000000 })
-    [initialState, returnPath, opAt, pushAt, wfOp, returnSized, returnStored, returnedState,
+    [initialState, returnPath, opAt, pushAt, wfOp, hitRest, returnSized, returnStored,
+    returnedState,
     State.activeWordsAfterUInt256, MachineState.activeWordsAfter, hzeroNat,
     Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
     Challenge.EvmProof.Stepper.runInstr,
@@ -55,15 +57,15 @@ def gasSteps_return :
     Artifact.submissionArtifact .Osaka (returnPath.take 3)
     (by rfl) (by rfl) run_return_store (by rfl) deployAddress_not_precompile
   have hd := Artifact.submissionArtifact.decodeAt_op_index
-    236 .MSIZE (by rfl) (by decide) trivial
+    225 .MSIZE (by rfl) (by decide) trivial
   have hp : (returnStored patternedInput).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 236 := by
-    rw [pc2986]
+      Artifact.submissionArtifact.instructionPC 225 := by
+    rw [pcReturn3]
     rfl
   have hop : (returnStored patternedInput).decodedOp = some .MSIZE :=
     Artifact.submissionArtifact.state_decodedOp_of
-      (returnStored patternedInput) 236 (by rfl) hp .MSIZE none hd (by decide)
-  have gmraw := Msize.step hop (by simp [returnStored, initialState]) (by rfl)
+      (returnStored patternedInput) 225 (by rfl) hp .MSIZE none hd (by decide)
+  have gmraw := Msize.step hop (by simp [returnStored, initialState, hitRest]) (by rfl)
     deployAddress_not_precompile
   have gm : GasSteps (returnStored patternedInput)
       (returnSized patternedInput) := by
