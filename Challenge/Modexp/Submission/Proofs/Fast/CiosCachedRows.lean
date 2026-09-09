@@ -33,15 +33,15 @@ opaque gasSteps_l1Four (s : State) (mem : ByteArray) (bi : UInt256)
     Challenge.EvmProof.GasSteps
       (l1At 4604 s mem bi pa pb 4 i 0 pdst ret rest)
       (midState s (l1Step mem bi pa 4 4).memory
-        (UInt256.ofNat (ptrAt (pa + 32 * 4 - 32) 4))
-        (UInt256.ofNat (ptrAt (8224 + 32 * 4) 4))
+        (UInt256.ofNat (ptrAt (pa + 32 * 4 - 32) 3))
+        (UInt256.ofNat (ptrAt (8224 + 32 * 4) 3))
         (l1Step mem bi pa 4 4).carry bi pa pb 4 i pdst ret rest) :=
   (gasSteps_l1Dispatch4 s mem bi pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
   (gasSteps_l1Join s mem bi pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4759 l1Mac4 s mem bi pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4796 l1Mac5 s mem bi pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4833 l1Mac6 s mem bi pa pb 4 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  gasSteps_l1Mac 4870 l1Mac7 s mem bi pa pb 4 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit
+  (gasSteps_l1Mac 4759 l1Mac4 s mem bi pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit (by decide)).trans <|
+  (gasSteps_l1Mac 4796 l1Mac5 s mem bi pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit (by decide)).trans <|
+  (gasSteps_l1Mac 4833 l1Mac6 s mem bi pa pb 4 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit (by decide)).trans <|
+  gasSteps_l1Last s mem bi pa pb 4 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit
 
 opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb i : Nat) (pdst ret : UInt256) (rest : List UInt256)
@@ -55,19 +55,19 @@ opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
     Challenge.EvmProof.GasSteps
       (l1At 4604 s mem bi pa pb 8 i 0 pdst ret rest)
       (midState s (l1Step mem bi pa 8 8).memory
-        (UInt256.ofNat (ptrAt (pa + 32 * 8 - 32) 8))
-        (UInt256.ofNat (ptrAt (8224 + 32 * 8) 8))
+        (UInt256.ofNat (ptrAt (pa + 32 * 8 - 32) 7))
+        (UInt256.ofNat (ptrAt (8224 + 32 * 8) 7))
         (l1Step mem bi pa 8 8).carry bi pa pb 8 i pdst ret rest) :=
   (gasSteps_l1Dispatch8 s mem bi pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4610 l1Mac0 s mem bi pa pb 8 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4647 l1Mac1 s mem bi pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4684 l1Mac2 s mem bi pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4721 l1Mac3 s mem bi pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4610 l1Mac0 s mem bi pa pb 8 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit (by decide)).trans <|
+  (gasSteps_l1Mac 4647 l1Mac1 s mem bi pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit (by decide)).trans <|
+  (gasSteps_l1Mac 4684 l1Mac2 s mem bi pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit (by decide)).trans <|
+  (gasSteps_l1Mac 4721 l1Mac3 s mem bi pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit (by decide)).trans <|
   (gasSteps_l1Join s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4759 l1Mac4 s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4796 l1Mac5 s mem bi pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4833 l1Mac6 s mem bi pa pb 8 i 6 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit).trans <|
-  gasSteps_l1Mac 4870 l1Mac7 s mem bi pa pb 8 i 7 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit
+  (gasSteps_l1Mac 4759 l1Mac4 s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit (by decide)).trans <|
+  (gasSteps_l1Mac 4796 l1Mac5 s mem bi pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit (by decide)).trans <|
+  (gasSteps_l1Mac 4833 l1Mac6 s mem bi pa pb 8 i 6 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit (by decide)).trans <|
+  gasSteps_l1Last s mem bi pa pb 8 i 7 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit
 
 opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pa pb i : Nat) (pdst ret : UInt256) (rest : List UInt256)
@@ -150,8 +150,8 @@ opaque gasSteps_rowFourToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
   refine (gasSteps_l1Four s mem (rowBi mem pb 4 i) pa pb i pdst ret rest hcap
     hrun hcode hfork hnp hact hpa hpaFit).trans ?_
   refine (gasSteps_mid s (l1Step mem (rowBi mem pb 4 i) pa 4 4).memory
-    (UInt256.ofNat (ptrAt (pa + 32 * 4 - 32) 4))
-    (UInt256.ofNat (ptrAt (8224 + 32 * 4) 4))
+    (UInt256.ofNat (ptrAt (pa + 32 * 4 - 32) 3))
+    (UInt256.ofNat (ptrAt (8224 + 32 * 4) 3))
     (l1Step mem (rowBi mem pb 4 i) pa 4 4).carry (rowBi mem pb 4 i)
     pa pb 4 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide)
     (by decide) hml4 htl4).trans ?_
@@ -201,8 +201,8 @@ opaque gasSteps_rowEightToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
   refine (gasSteps_l1Eight s mem (rowBi mem pb 8 i) pa pb i pdst ret rest hcap
     hrun hcode hfork hnp hact hpa hpaFit).trans ?_
   refine (gasSteps_mid s (l1Step mem (rowBi mem pb 8 i) pa 8 8).memory
-    (UInt256.ofNat (ptrAt (pa + 32 * 8 - 32) 8))
-    (UInt256.ofNat (ptrAt (8224 + 32 * 8) 8))
+    (UInt256.ofNat (ptrAt (pa + 32 * 8 - 32) 7))
+    (UInt256.ofNat (ptrAt (8224 + 32 * 8) 7))
     (l1Step mem (rowBi mem pb 8 i) pa 8 8).carry (rowBi mem pb 8 i)
     pa pb 8 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide)
     (by decide) hml8 htl8).trans ?_

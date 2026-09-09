@@ -11,7 +11,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 open WindowNibbleKernel
 
-def l1Program : List Instr :=
+def l1Program (c : Nat) : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
    .op (.Dup ⟨10, by decide⟩),
@@ -42,60 +42,16 @@ def l1Program : List Instr :=
    .op .GT,
    .op .ADD,
    .op (.Swap ⟨2, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op .ADD,
+   .push ⟨2, by decide⟩ (UInt256.ofNat c),
    .op (.Swap ⟨2, by decide⟩),
    .op .MSTORE,
    .op (.Dup ⟨8, by decide⟩),
    .op .ADD]
 
-def l2Program : List Instr :=
+def l1LastProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .MUL,
-   .op (.Swap ⟨1, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
-   .op .MULMOD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op .LT,
-   .op .SUB,
-   .op (.Dup ⟨4, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨5, by decide⟩),
-   .op .GT,
-   .op .SUB,
-   .op .SUB,
-   .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
-   .op .MLOAD,
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨4, by decide⟩),
-   .op .GT,
-   .op .ADD,
-   .op (.Swap ⟨2, by decide⟩),
-   .push 1 32,
-   .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
-   .op .ADD,
-   .op (.Swap ⟨3, by decide⟩),
-   .op .ADD,
-   .op .MSTORE,
-   .op (.Dup ⟨9, by decide⟩),
-   .op .ADD]
-
-/-- Only the final L2 copy leaves its soon-discarded pointers unchanged. -/
-def l2LastProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
-   .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup ⟨10, by decide⟩),
    .op (.Dup ⟨5, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
    .op .MUL,
@@ -124,11 +80,49 @@ def l2LastProgram : List Instr :=
    .op .ADD,
    .op (.Swap ⟨2, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
-   .push 6 32,
-   .op .ADD,
    .op .MSTORE]
 
-/-- Fixed L2 addresses leave both unused pointer slots unchanged. -/
+def l2Program (p : Nat) : List Instr :=
+  [.op (.Dup ⟨0, by decide⟩),
+   .op .MLOAD,
+   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .MUL,
+   .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup ⟨6, by decide⟩),
+   .op .MULMOD,
+   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩),
+   .op .LT,
+   .op .SUB,
+   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨5, by decide⟩),
+   .op .GT,
+   .op .SUB,
+   .op .SUB,
+   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
+   .op .MLOAD,
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨4, by decide⟩),
+   .op .GT,
+   .op .ADD,
+   .op (.Swap ⟨2, by decide⟩),
+   .push 2 (UInt256.ofNat (8288 + p)),
+   .op .MSTORE,
+   .op .POP,
+   .op (.Dup ⟨8, by decide⟩),
+   .op .ADD] ++
+  if p = 0 then
+    [.op (.Dup ⟨8, by decide⟩), .op .JUMPDEST, .op .JUMPDEST]
+  else
+    [.push 2 (UInt256.ofNat (p - 32))]
+
 def l2ConstProgram (p : Nat) : List Instr :=
   [.push 2 (UInt256.ofNat p),
    .op .MLOAD,
@@ -217,7 +211,7 @@ def midProgram : List Instr :=
   [.op .POP,
    .op .POP,
    .op (.Dup ⟨0, by decide⟩),
-   .push 2 8224,
+   .push 7 8224,
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
@@ -265,9 +259,8 @@ def tailProgram : List Instr :=
    .op (.Swap ⟨1, by decide⟩),
    .op .POP,
    .op .POP,
-   .op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
-   .push 2 8224,
+   .push 3 8224,
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
@@ -296,15 +289,13 @@ def tailProgram : List Instr :=
    .op .JUMP]
 
 def l1DispatchProgram : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨7, by decide⟩),
-   .push 2 4758,
+  [.op (.Dup ⟨7, by decide⟩),
+   .push 3 4758,
    .op .JUMPI]
 
 def l2DispatchProgram : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨8, by decide⟩),
-   .push 2 5141,
+  [.op (.Dup ⟨8, by decide⟩),
+   .push 3 5141,
    .op .JUMPI]
 
 def joinProgram : List Instr :=

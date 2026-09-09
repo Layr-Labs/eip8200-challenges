@@ -15,7 +15,7 @@ theorem run_l1Mac (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
     (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hj : j < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32*n ≤ 9472) :
-    runInstructions l1Program (l1At pc s mem bi pa pb n i j pdst ret rest) =
+    runInstructions (l1Program (ptrAt (8224 + 32*n) j - 32)) (l1At pc s mem bi pa pb n i j pdst ret rest) =
       some (l1At (pc+37) s mem bi pa pb n i (j+1) pdst ret rest) := by
   have h := CiosCachedL1.run_step s (UInt256.ofNat pc) mem bi pa n j
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa + 32*n - 32))
