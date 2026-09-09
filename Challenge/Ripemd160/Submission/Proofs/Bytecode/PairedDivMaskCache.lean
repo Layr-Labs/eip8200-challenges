@@ -46,9 +46,9 @@ private theorem add_ofNat_assoc_add (u : UInt256) (a b : Nat) :
   exact word_add_ofNat_assoc u a b
 
 def cachedInitial : List Instr :=
-  [op .JUMPDEST, .push ⟨4, by decide⟩ maskWord,
-    .op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨6, by decide⟩),
-    .op (.Swap ⟨2, by decide⟩), dup1, op .MLOAD, swap1,
+  [op .JUMPDEST, .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
+    .push ⟨4, by decide⟩ maskWord, .op (.Swap ⟨2, by decide⟩),
+    dup1, op .MLOAD, swap1,
     push1 (UInt256.ofNat 32), op .ADD, op .MLOAD]
 
 theorem run_cachedInitial (s : State) (pc messageOffset returnPC a b : UInt256)
@@ -58,54 +58,58 @@ theorem run_cachedInitial (s : State) (pc messageOffset returnPC a b : UInt256)
       some {s with
         pc := pcAfter pc cachedInitial
         stack := inputWord1 s messageOffset :: inputWord0 s messageOffset ::
-          mask8 :: maskWord :: mask16 :: returnPC :: a :: b :: mask16 :: mask8 :: tail
+          mask16 :: mask8 :: maskWord :: returnPC :: a :: b :: mask16 :: mask8 :: tail
         activeWords := loadedActiveWords s messageOffset} := by
-  have hcap (m : Nat) (hm : m ≤ 9) : (a :: b :: mask16 :: mask8 :: tail).length + m < 1024 := by
-    simp only [List.length_cons]; omega
-  have hcapT (m : Nat) (hm : m ≤ 13) : tail.length + m < 1024 := by omega
+  have h6 : tail.length + 6 < 1024 := by omega
+  have h7 : tail.length + 7 < 1024 := by omega
+  have h8 : tail.length + 8 < 1024 := by omega
+  have h9 : tail.length + 9 < 1024 := by omega
+  have h10 : tail.length + 10 < 1024 := by omega
+  have h11 : tail.length + 11 < 1024 := by omega
   have hswap1 (u v : UInt256) (rho : List UInt256) :
       (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
     simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
   have hswap3 (u v w z : UInt256) (rho : List UInt256) :
       (u :: v :: w :: z :: rho).exchange 0 3 = some (z :: v :: w :: u :: rho) := by
     simpa using YulEvmCompiler.exchange_swap u z [v,w] rho
-  have hzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have h32 : UInt256.ofNat 32 + messageOffset = messageOffset + UInt256.ofNat 32 :=
     Word.word_add_comm _ _
   simp [cachedInitial, scheduleEntry, inputWord0, inputWord1,
     loadedActiveWords, activeAfterWord, op, push1, dup1, swap1,
-    runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcapT, List.length_cons, hswap1, hswap3, h32,
+    runInstrSeq, Stepper.runInstr, pcAfter, hrun, h6, h7, h8, h9, h10, h11, hswap1, hswap3,
+
     word_add_assoc, Nat.add_assoc, State.activeWordsAfterUInt256,
     Word.word_toNat_ofNat, Word.ofNat_add_mod, UInt256.succ, Instr.size]
   repeat first
     | rw [add_ofNat_assoc_hAdd]
     | rw [add_ofNat_assoc_add]
     | rw [add_ofNat_assoc]
-  rw [word_add_ofNat_assoc]
+  norm_num [word_add_ofNat_assoc]
+  constructor <;> rw [h32]
 
 #print axioms run_cachedInitial
 
 
 open PairedScheduleHalves PairedScheduleCombined PairedScheduleContract
 
-/-- Schedule cleanup that keeps the 32-bit mask instead of dropping and
-re-pushing it: `POP SWAP1 POP` discards the two wide masks and leaves the
-middle word, which the multiply startup consumes in place of its own `PUSH4`.
-Three stack operations either way; the preserved word is `maskWord` by the
-schedule's own reasoning, not by observation. -/
-def keepCleanupTemplate : List Instr := [op .POP, swap1, op .POP]
+def upperTemplate : List Instr :=
+  PairedMask32Cache.cachedReversedHalf 8 ⟨4, by decide⟩ ⟨3, by decide⟩ ⟨3, by decide⟩
+
+def lowerTemplate : List Instr :=
+  PairedMask32Cache.cachedReversedHalf 0 ⟨3, by decide⟩ ⟨2, by decide⟩ ⟨2, by decide⟩
+
+/-- The reordered cache leaves the 32-bit mask on top after two wide masks.
+`JUMPDEST` preserves the frozen instruction and byte layout at one gas. -/
+def keepCleanupTemplate : List Instr := [op .POP, op .JUMPDEST, op .POP]
 
 theorem run_keepCleanupTemplate (s : State) (pc a b c : UInt256) (rest : List UInt256)
     (hstack : rest.length < 1021) (hrun : s.halt = .Running) :
     runInstrSeq keepCleanupTemplate {s with pc := pc, stack := a :: b :: c :: rest} =
-      some {s with pc := pcAfter pc keepCleanupTemplate, stack := b :: rest} := by
+  some {s with pc := pcAfter pc keepCleanupTemplate, stack := c :: rest} := by
   have hcap2 : rest.length + 1 + 1 < 1024 := by omega
   have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by omega
-  have hswap1 (u v : UInt256) (rho : List UInt256) :
-      (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
-    simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
-  simp [keepCleanupTemplate, op, swap1, runInstrSeq, Stepper.runInstr, pcAfter, hrun,
-    hcap2, hcap3, hswap1, UInt256.succ, Instr.size]
+  simp [keepCleanupTemplate, op, runInstrSeq, Stepper.runInstr, pcAfter, hrun,
+    hcap2, hcap3, UInt256.succ, Instr.size]
   rfl
 
 #print axioms run_keepCleanupTemplate
@@ -127,8 +131,8 @@ theorem run_fullTemplate (s : State) (pc messageOffset returnPC a b : UInt256)
   have h2 := run_cachedReversedHalf
     {s with activeWords := loadedActiveWords s messageOffset}
     (pcAfter pc cachedInitial) (inputWord1 s messageOffset) 8
-    ⟨3, by decide⟩ ⟨5, by decide⟩ ⟨2, by decide⟩
-    (inputWord0 s messageOffset :: mask8 :: maskWord :: mask16 :: returnPC :: (a :: b :: mask16 :: mask8 :: tail))
+    ⟨4, by decide⟩ ⟨3, by decide⟩ ⟨3, by decide⟩
+    (inputWord0 s messageOffset :: mask16 :: mask8 :: maskWord :: returnPC :: (a :: b :: mask16 :: mask8 :: tail))
     (by simp only [List.length_cons]; omega) hrun hactive (by decide)
     (by intros; rfl) (by intros; rfl) rfl
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
@@ -137,8 +141,8 @@ theorem run_fullTemplate (s : State) (pc messageOffset returnPC a b : UInt256)
       activeWords := loadedActiveWords s messageOffset
       memory := storeCells s.memory (halfWords (packedInput1 s messageOffset) 8) 8 8}
     (pcAfter (pcAfter pc cachedInitial) upperTemplate)
-    (inputWord0 s messageOffset) 0 ⟨2, by decide⟩ ⟨4, by decide⟩ ⟨1, by decide⟩
-    (mask8 :: maskWord :: mask16 :: returnPC :: (a :: b :: mask16 :: mask8 :: tail))
+    (inputWord0 s messageOffset) 0 ⟨3, by decide⟩ ⟨2, by decide⟩ ⟨2, by decide⟩
+    (mask16 :: mask8 :: maskWord :: returnPC :: (a :: b :: mask16 :: mask8 :: tail))
     (by simp only [List.length_cons]; omega) hrun hactive (by decide)
     (by intros; rfl) (by intros; rfl) rfl
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
@@ -149,7 +153,7 @@ theorem run_fullTemplate (s : State) (pc messageOffset returnPC a b : UInt256)
         (storeCells s.memory (halfWords (packedInput1 s messageOffset) 8) 8 8)
         (halfWords (packedInput0 s messageOffset) 0) 0 8}
     (pcAfter (pcAfter (pcAfter pc cachedInitial) upperTemplate) lowerTemplate)
-    (mask8 :: maskWord :: mask16 :: returnPC :: (a :: b :: mask16 :: mask8 :: tail))
+    (mask16 :: mask8 :: maskWord :: returnPC :: (a :: b :: mask16 :: mask8 :: tail))
     (by simp only [List.length_cons]; omega) hrun hactive
   have h1234 := DenseScheduleTrace.runInstrSeq_append_running h123 (by exact hrun) h4
   have h5 := run_keepCleanupTemplate
@@ -160,7 +164,7 @@ theorem run_fullTemplate (s : State) (pc messageOffset returnPC a b : UInt256)
           (halfWords (packedInput0 s messageOffset) 0) 0 8)
         (cell 16) (UInt256.ofNat 0)}
     (pcAfter (pcAfter (pcAfter (pcAfter pc cachedInitial) upperTemplate) lowerTemplate)
-      sentinelTemplate) mask8 maskWord mask16 (returnPC :: (a :: b :: mask16 :: mask8 :: tail))
+      sentinelTemplate) mask16 mask8 maskWord (returnPC :: (a :: b :: mask16 :: mask8 :: tail))
     (by simp only [List.length_cons]; omega) hrun
   have hjoin := DenseScheduleTrace.runInstrSeq_append_running h1234 (by exact hrun) h5
   rw [store_upper_schedule, store_lower_schedule] at hjoin
@@ -189,15 +193,8 @@ theorem run_fullTemplate_natural (s : State) (pc returnPC : UInt256)
 #print axioms run_fullTemplate_natural
 
 
-theorem fullTemplate_length : fullTemplate.length = 159 := by
-  have hold := PairedMask32Cache.fullTemplate_length
-  have hi : PairedMask32Cache.cachedInitial.length = 11 := rfl
-  have hc0 : PairedMask32Cache.cleanupTemplate.length = 3 := rfl
-  have hn : cachedInitial.length = 11 := rfl
-  have hc1 : keepCleanupTemplate.length = 3 := rfl
-  simp only [PairedMask32Cache.fullTemplate, List.length_append, hi, hc0] at hold
-  simp only [fullTemplate, List.length_append, hn, hc1]
-  omega
+set_option maxRecDepth 10000 in
+theorem fullTemplate_length : fullTemplate.length = 159 := by decide
 
 #print axioms fullTemplate_length
 
@@ -214,22 +211,96 @@ theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 224 := b
 
 #print axioms fullTemplate_byteLength
 
-theorem fullTemplate_staticGas : staticGas fullTemplate = 480 := by
-  have happend (xs ys : List Instr) : staticGas (xs ++ ys) = staticGas xs + staticGas ys := by
-    simp only [staticGas, List.map_append, List.sum_append]
-  have hold := PairedMask32Cache.fullTemplate_staticGas
-  have hi : staticGas PairedMask32Cache.cachedInitial = 31 := by decide
-  have hc0 : staticGas PairedMask32Cache.cleanupTemplate = 6 := by decide
-  have hn : staticGas cachedInitial = 31 := by decide
-  have hc1 : staticGas keepCleanupTemplate = 7 := by decide
-  simp only [PairedMask32Cache.fullTemplate, happend, hi, hc0] at hold
-  simp only [fullTemplate, happend, hn, hc1]
-  omega
+set_option maxRecDepth 10000 in
+theorem fullTemplate_staticGas : staticGas fullTemplate = 478 := by
+  decide
 
 #print axioms fullTemplate_staticGas
 
-
 open StackRoundTemplate
+
+private theorem cachedStage_advances_local (shift : Nat) (slot : Fin 16) :
+    ∀ instruction ∈ PairedMask32Cache.cachedStage shift slot,
+      DenseScheduleLift.Advances instruction := by
+  intro instruction hmem
+  simp only [PairedMask32Cache.cachedStage, List.mem_cons, List.not_mem_nil, or_false] at hmem
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  all_goals first
+    | exact Or.inl (Or.inl (StraightLine.push _ _))
+    | exact Or.inl (Or.inl (StraightLine.dup _))
+    | exact Or.inl (Or.inl StraightLine.shr)
+    | exact Or.inl (Or.inl StraightLine.xor)
+    | exact Or.inl (Or.inl StraightLine.and)
+    | exact Or.inr (Or.inr rfl)
+    | (unfold endianFactorPush; split <;>
+        exact Or.inl (Or.inl (StraightLine.push _ _)))
+
+private theorem keepTemplate_advances_local (first j : Nat) (slot : Fin 14) :
+    ∀ instruction ∈ PairedMask32Cache.keepTemplate first j slot,
+      DenseScheduleLift.Advances instruction := by
+  intro instruction hmem
+  unfold PairedMask32Cache.keepTemplate at hmem
+  split at hmem
+  · simp only [PairedScheduleStores.firstTemplate,
+      PairedSchedulePrimitives.duplicateShiftTemplate,
+      PairedSchedulePrimitives.storeTemplate,
+      PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth,
+      List.mem_append, List.mem_cons, List.not_mem_nil, or_false] at hmem
+    rcases hmem with (rfl | rfl | rfl) | (rfl | rfl)
+    all_goals first
+      | exact Or.inl (Or.inl (StraightLine.push _ _))
+      | exact Or.inl (Or.inl (StraightLine.dup _))
+      | exact Or.inl (Or.inl StraightLine.shr)
+      | exact Or.inr (Or.inl rfl)
+  · simp only [PairedMask32Cache.middleTemplate, PairedMask32Cache.maskTemplate,
+      PairedSchedulePrimitives.duplicateShiftTemplate,
+      PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth,
+      List.mem_append, List.mem_cons, List.not_mem_nil, or_false] at hmem
+    rcases hmem with (rfl | rfl | rfl) | ((rfl | rfl) | (rfl | rfl))
+    all_goals first
+      | exact Or.inl (Or.inl (StraightLine.push _ _))
+      | exact Or.inl (Or.inl (StraightLine.dup _))
+      | exact Or.inl (Or.inl StraightLine.shr)
+      | exact Or.inl (Or.inl StraightLine.and)
+      | exact Or.inr (Or.inl rfl)
+
+private theorem prefixTemplate_advances_local (first : Nat) (slot : Fin 14) (n : Nat) :
+    ∀ instruction ∈ PairedMask32Cache.prefixTemplate first slot n,
+      DenseScheduleLift.Advances instruction := by
+  induction n with
+  | zero => simp [PairedMask32Cache.prefixTemplate]
+  | succ n ih =>
+    intro instruction hmem
+    rcases List.mem_append.mp hmem with hp | hk
+    · exact ih instruction hp
+    · exact keepTemplate_advances_local first n slot instruction hk
+
+private theorem halfTemplate_advances_local (first : Nat) (slot : Fin 14) :
+    ∀ instruction ∈ PairedMask32Cache.halfTemplate first slot,
+      DenseScheduleLift.Advances instruction := by
+  intro instruction hmem
+  rcases List.mem_append.mp hmem with hp | hl
+  · exact prefixTemplate_advances_local first slot 7 instruction hp
+  · simp only [PairedMask32Cache.lastTemplate, PairedMask32Cache.maskTemplate,
+      PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth,
+      List.mem_append, List.mem_cons, List.not_mem_nil, or_false] at hl
+    rcases hl with (rfl | rfl) | (rfl | rfl)
+    all_goals first
+      | exact Or.inl (Or.inl (StraightLine.push _ _))
+      | exact Or.inl (Or.inl (StraightLine.dup _))
+      | exact Or.inl (Or.inl StraightLine.and)
+      | exact Or.inr (Or.inl rfl)
+
+private theorem cachedReversedHalf_advances_local (first : Nat)
+    (slot8 slot16 : Fin 16) (slot32 : Fin 14) :
+    ∀ instruction ∈ PairedMask32Cache.cachedReversedHalf first slot8 slot16 slot32,
+      DenseScheduleLift.Advances instruction := by
+  intro instruction hmem
+  simp only [PairedMask32Cache.cachedReversedHalf, List.mem_append] at hmem
+  rcases hmem with (h8 | h16) | hhalf
+  · exact cachedStage_advances_local 8 slot8 instruction h8
+  · exact cachedStage_advances_local 16 slot16 instruction h16
+  · exact halfTemplate_advances_local first slot32 instruction hhalf
 
 theorem runInstr_pc_div {s t : State}
     (hresult : Stepper.runInstr (.op .DIV) s = some t) :
@@ -274,22 +345,22 @@ theorem fullTemplate_advances :
   rcases hmem with (((hi | hu) | hl) | hs) | hc
   · exact cachedInitial_advances instruction hi
   · apply Or.inl
-    apply PairedMask32Cache.fullTemplate_advances instruction
-    simp only [PairedMask32Cache.fullTemplate, List.mem_append]
-    exact Or.inl (Or.inl (Or.inl (Or.inr hu)))
+    exact cachedReversedHalf_advances_local 8 ⟨4, by decide⟩ ⟨3, by decide⟩ ⟨3, by decide⟩ instruction
+      (by simpa [upperTemplate] using hu)
   · apply Or.inl
-    apply PairedMask32Cache.fullTemplate_advances instruction
-    simp only [PairedMask32Cache.fullTemplate, List.mem_append]
-    exact Or.inl (Or.inl (Or.inr hl))
+    exact cachedReversedHalf_advances_local 0 ⟨3, by decide⟩ ⟨2, by decide⟩ ⟨2, by decide⟩ instruction
+      (by simpa [lowerTemplate] using hl)
   · apply Or.inl
     apply PairedMask32Cache.fullTemplate_advances instruction
     simp only [PairedMask32Cache.fullTemplate, List.mem_append]
     exact Or.inl (Or.inr hs)
   · simp only [keepCleanupTemplate, List.mem_cons, List.not_mem_nil, or_false] at hc
     rcases hc with rfl | rfl | rfl
-    all_goals first
-      | exact Or.inl (Or.inl (Or.inl StraightLine.pop))
-      | exact Or.inl (Or.inl (Or.inl (StraightLine.swap _)))
+    · exact Or.inl (Or.inl (Or.inl StraightLine.pop))
+    · apply Or.inl
+      apply Or.inl
+      exact Or.inr (Or.inr rfl)
+    · exact Or.inl (Or.inl (Or.inl StraightLine.pop))
 
 #print axioms fullTemplate_advances
 
@@ -358,53 +429,23 @@ def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
 #print axioms runLocatedBlock_fullTemplate
 #print axioms gasSteps_fullTemplate
 
+set_option maxRecDepth 10000 in
 theorem fullTemplate_exactBytes : assembleBytes fullTemplate =
-  (((([
-    0x5b, 0x63, 0xff, 0xff, 0xff, 0xff, 0x86, 0x86, 0x92, 0x80, 0x51, 0x90, 0x60, 0x20, 0x01, 0x51] ++ [
-    0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x83, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
-    0x10, 0x1c, 0x18, 0x85, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x61,
-    0x01, 0xc0, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x84, 0x16, 0x61, 0x01, 0xe0, 0x52, 0x80, 0x60, 0xa0,
-    0x1c, 0x84, 0x16, 0x61, 0x02, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x84, 0x16, 0x61, 0x02, 0x20,
-    0x52, 0x80, 0x60, 0x60, 0x1c, 0x84, 0x16, 0x61, 0x02, 0x40, 0x52, 0x80, 0x60, 0x40, 0x1c, 0x84,
-    0x16, 0x61, 0x02, 0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x84, 0x16, 0x61, 0x02, 0x80, 0x52, 0x83,
-    0x16, 0x61, 0x02, 0xa0, 0x52]) ++ [
-    0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x82, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
-    0x10, 0x1c, 0x18, 0x84, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x60, 0xc0, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x83, 0x16, 0x60, 0xe0, 0x52, 0x80, 0x60, 0xa0,
-    0x1c, 0x83, 0x16, 0x61, 0x01, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x20,
-    0x52, 0x80, 0x60, 0x60, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x40, 0x52, 0x80, 0x60, 0x40, 0x1c, 0x83,
-    0x16, 0x61, 0x01, 0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x80, 0x52, 0x82,
-    0x16, 0x61, 0x01, 0xa0, 0x52]) ++ [
-    0x5f, 0x61, 0x02, 0xc0, 0x52]) ++ [
-    0x50, 0x90, 0x50]) := by
-  have h0 : assembleBytes cachedInitial = [
-    0x5b, 0x63, 0xff, 0xff, 0xff, 0xff, 0x86, 0x86, 0x92, 0x80, 0x51, 0x90, 0x60, 0x20, 0x01, 0x51] := by decide
-  have h1 : assembleBytes upperTemplate = [
-    0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x83, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
-    0x10, 0x1c, 0x18, 0x85, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x61,
-    0x01, 0xc0, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x84, 0x16, 0x61, 0x01, 0xe0, 0x52, 0x80, 0x60, 0xa0,
-    0x1c, 0x84, 0x16, 0x61, 0x02, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x84, 0x16, 0x61, 0x02, 0x20,
-    0x52, 0x80, 0x60, 0x60, 0x1c, 0x84, 0x16, 0x61, 0x02, 0x40, 0x52, 0x80, 0x60, 0x40, 0x1c, 0x84,
-    0x16, 0x61, 0x02, 0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x84, 0x16, 0x61, 0x02, 0x80, 0x52, 0x83,
-    0x16, 0x61, 0x02, 0xa0, 0x52] := by decide
-  have h2 : assembleBytes lowerTemplate = [
-    0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x82, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
-    0x10, 0x1c, 0x18, 0x84, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x60, 0xc0, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x83, 0x16, 0x60, 0xe0, 0x52, 0x80, 0x60, 0xa0,
-    0x1c, 0x83, 0x16, 0x61, 0x01, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x20,
-    0x52, 0x80, 0x60, 0x60, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x40, 0x52, 0x80, 0x60, 0x40, 0x1c, 0x83,
-    0x16, 0x61, 0x01, 0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x80, 0x52, 0x82,
-    0x16, 0x61, 0x01, 0xa0, 0x52] := by decide
-  have h3 : assembleBytes sentinelTemplate = [
-    0x5f, 0x61, 0x02, 0xc0, 0x52] := by decide
-  have h4 : assembleBytes keepCleanupTemplate = [
-    0x50, 0x90, 0x50] := by decide
-  have h01 := (assembleBytes_append cachedInitial upperTemplate).trans
-    (congrArg₂ List.append h0 h1)
-  have h012 := (assembleBytes_append (cachedInitial ++ upperTemplate) lowerTemplate).trans
-    (congrArg₂ List.append h01 h2)
-  have h0123 := (assembleBytes_append ((cachedInitial ++ upperTemplate) ++ lowerTemplate)
-    sentinelTemplate).trans (congrArg₂ List.append h012 h3)
-  exact (assembleBytes_append (((cachedInitial ++ upperTemplate) ++ lowerTemplate) ++
-    sentinelTemplate) keepCleanupTemplate).trans (congrArg₂ List.append h0123 h4)
+  [0x5b, 0x85, 0x85, 0x63, 0xff, 0xff, 0xff, 0xff, 0x92, 0x80, 0x51, 0x90, 0x60, 0x20, 0x01, 0x51,
+   0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x84, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
+   0x10, 0x1c, 0x18, 0x83, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x61,
+   0x01, 0xc0, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x85, 0x16, 0x61, 0x01, 0xe0, 0x52, 0x80, 0x60, 0xa0,
+   0x1c, 0x85, 0x16, 0x61, 0x02, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x85, 0x16, 0x61, 0x02, 0x20,
+   0x52, 0x80, 0x60, 0x60, 0x1c, 0x85, 0x16, 0x61, 0x02, 0x40, 0x52, 0x80, 0x60, 0x40, 0x1c, 0x85,
+   0x16, 0x61, 0x02, 0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x85, 0x16, 0x61, 0x02, 0x80, 0x52, 0x84,
+   0x16, 0x61, 0x02, 0xa0, 0x52, 0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x83, 0x16, 0x61, 0x01, 0x01,
+   0x02, 0x18, 0x80, 0x80, 0x60, 0x10, 0x1c, 0x18, 0x82, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18,
+   0x80, 0x60, 0xe0, 0x1c, 0x60, 0xc0, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x84, 0x16, 0x60, 0xe0, 0x52,
+   0x80, 0x60, 0xa0, 0x1c, 0x84, 0x16, 0x61, 0x01, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x84, 0x16,
+   0x61, 0x01, 0x20, 0x52, 0x80, 0x60, 0x60, 0x1c, 0x84, 0x16, 0x61, 0x01, 0x40, 0x52, 0x80, 0x60,
+   0x40, 0x1c, 0x84, 0x16, 0x61, 0x01, 0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x84, 0x16, 0x61, 0x01,
+   0x80, 0x52, 0x83, 0x16, 0x61, 0x01, 0xa0, 0x52, 0x5f, 0x61, 0x02, 0xc0, 0x52, 0x50, 0x5b, 0x50] := by
+  decide
 
 #print axioms fullTemplate_exactBytes
 
