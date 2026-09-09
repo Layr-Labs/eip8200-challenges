@@ -35,13 +35,30 @@ theorem double_iff (input : ByteArray) :
     double input = true ↔ Matched input ∧ Matched2 input ∧ ¬ Matched3 input := by
   simp [double]
 
-/-- The dispatcher consumes three blocks at once exactly when all six words match. -/
+/-- The depth-4 rung additionally pins calldata words 6 and 7. -/
+def Matched4 (input : ByteArray) : Prop :=
+  MachineState.readWord input 192 = PatternedWordData.expectedWordAt 6 ∧
+  MachineState.readWord input 224 = PatternedWordData.expectedWordAt 7
+
+instance (input : ByteArray) : Decidable (Matched4 input) := inferInstanceAs (Decidable (_ ∧ _))
+
+/-- The dispatcher consumes three blocks at once when all six words match
+but the depth-4 guard does not. -/
 def triple (input : ByteArray) : Bool :=
-  decide (Matched input ∧ Matched2 input ∧ Matched3 input)
+  decide (Matched input ∧ Matched2 input ∧ Matched3 input ∧ ¬ Matched4 input)
 
 theorem triple_iff (input : ByteArray) :
-    triple input = true ↔ Matched input ∧ Matched2 input ∧ Matched3 input := by
+    triple input = true ↔
+      Matched input ∧ Matched2 input ∧ Matched3 input ∧ ¬ Matched4 input := by
   simp [triple]
+
+def quadruple (input : ByteArray) : Bool :=
+  decide (Matched input ∧ Matched2 input ∧ Matched3 input ∧ Matched4 input)
+
+theorem quadruple_iff (input : ByteArray) :
+    quadruple input = true ↔
+      Matched input ∧ Matched2 input ∧ Matched3 input ∧ Matched4 input := by
+  simp [quadruple]
 
 def prepared (s : State) (i : Nat) : State :=
   if i = 0 then PrefixStateMemory.copied s else s

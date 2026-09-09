@@ -27,7 +27,9 @@ theorem nextState_word_above (s : State) (input : ByteArray) (i address : Nat)
 private abbrev dispatchResult (s : State) (input : ByteArray) (i : Nat) : State :=
   if i = 0 ∧ Matched input then
     (if Matched2 input then
-      (if Matched3 input then PrefixStateMemory.resultState3 (PrefixStateMemory.copied s) input
+      (if Matched3 input then
+        (if Matched4 input then PrefixStateMemory.resultState4 (PrefixStateMemory.copied s) input
+          else PrefixStateMemory.resultState3 (PrefixStateMemory.copied s) input)
         else PrefixStateMemory.resultState2 (PrefixStateMemory.copied s) input)
       else PrefixStateMemory.resultState (PrefixStateMemory.copied s) input i)
     else DriverTrace.compressEntry (prepared s i) input i
@@ -41,7 +43,8 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hnd : PrefixStateModel.double input = true → 2 ≤ i)
-    (hnt : PrefixStateModel.triple input = true → 3 ≤ i) :
+    (hnt : PrefixStateModel.triple input = true → 3 ≤ i)
+    (hnq : PrefixStateModel.quadruple input = true → 4 ≤ i) :
     GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i) := by
   by_cases hempty : input.size = 0
@@ -57,8 +60,13 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
       have hnot2 : ¬ Matched2 input := by
         intro h2
         by_cases h3 : Matched3 input
-        · have := hnt ((PrefixStateModel.triple_iff input).2 ⟨hmatch, h2, h3⟩)
-          omega
+        · by_cases h4 : Matched4 input
+          · have := hnq ((PrefixStateModel.quadruple_iff input).2
+              ⟨hmatch, h2, h3, h4⟩)
+            omega
+          · have := hnt ((PrefixStateModel.triple_iff input).2
+              ⟨hmatch, h2, h3, h4⟩)
+            omega
         · have := hnd ((PrefixStateModel.double_iff input).2 ⟨hmatch, h2, h3⟩)
           omega
       have hif : dispatchResult s input 0 =
@@ -134,7 +142,7 @@ noncomputable def gasSteps_block3 (s : State) (input : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (DriverTrace.dispatchEntry s input 0)
       (DriverTrace.compressReturned (PrefixStateKernel.nextState3 s input) input 2) := by
-  obtain ⟨hmatch, hmatch2, hmatch3⟩ := (PrefixStateModel.triple_iff input).1 ht
+  obtain ⟨hmatch, hmatch2, hmatch3, hnot4⟩ := (PrefixStateModel.triple_iff input).1 ht
   have hsize := PrefixStateData.size_ge_64_of_words input hmatch.2
   have hpos : 0 < input.size := by omega
   have hi : 0 < DriverTrace.blockCount input := DriverTrace.blockCount_pos input
@@ -143,12 +151,41 @@ noncomputable def gasSteps_block3 (s : State) (input : ByteArray)
   have hif : dispatchResult s input 0 =
       PrefixStateMemory.resultState3 (PrefixStateMemory.copied s) input := by
     show (if 0 = 0 ∧ Matched input then _ else _) = _
-    rw [if_pos ⟨rfl, hmatch⟩, if_pos hmatch2, if_pos hmatch3]
+    rw [if_pos ⟨rfl, hmatch⟩, if_pos hmatch2, if_pos hmatch3, if_neg hnot4]
   exact (gdispatch.trans
     ((PrefixStateTrace.gasSteps_dispatch s input 0 hfit hi ctx.calldata
         hcode hfork hrun hnp).cast (by rfl) hif)).cast (by rfl) (by
       simp [PrefixStateKernel.nextState3, DriverTrace.compressReturned,
         PrefixStateMemory.resultState3])
+
+/-- The depth-4 ladder rung: one dispatcher execution consumes blocks 0, 1,
+2 and 3. -/
+noncomputable def gasSteps_block4 (s : State) (input : ByteArray)
+    (h : Compression.HashState) (hfit : CalldataFits input)
+    (hq : PrefixStateModel.quadruple input = true)
+    (ctx : StackRunBridge.BlockContext s input 0 h)
+    (hcode : s.executionEnv.code = submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps (DriverTrace.dispatchEntry s input 0)
+      (DriverTrace.compressReturned (PrefixStateKernel.nextState4 s input) input 3) := by
+  obtain ⟨hmatch, hmatch2, hmatch3, hmatch4⟩ :=
+    (PrefixStateModel.quadruple_iff input).1 hq
+  have hsize := PrefixStateData.size_ge_256_of_words input hmatch4.2
+  have hpos : 0 < input.size := by omega
+  have hi : 0 < DriverTrace.blockCount input := DriverTrace.blockCount_pos input
+  have gdispatch := FastEmptyBlock.gasSteps_nonempty s input 0 hfit hpos
+    ctx.calldata hcode hfork hrun hnp
+  have hif : dispatchResult s input 0 =
+      PrefixStateMemory.resultState4 (PrefixStateMemory.copied s) input := by
+    show (if 0 = 0 ∧ Matched input then _ else _) = _
+    rw [if_pos ⟨rfl, hmatch⟩, if_pos hmatch2, if_pos hmatch3, if_pos hmatch4]
+  exact (gdispatch.trans
+    ((PrefixStateTrace.gasSteps_dispatch s input 0 hfit hi ctx.calldata
+        hcode hfork hrun hnp).cast (by rfl) hif)).cast (by rfl) (by
+      simp [PrefixStateKernel.nextState4, DriverTrace.compressReturned,
+        PrefixStateMemory.resultState4])
 
 noncomputable def kernel : StackRunBridge.BlockKernel where
   nextState := nextState
@@ -160,6 +197,7 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
     PrefixStateKernel.nextState_hash s input i h hfit hi ctx hmodel
   double := PrefixStateModel.double
   triple := PrefixStateModel.triple
+  quadruple := PrefixStateModel.quadruple
   gasSteps := gasSteps_block
   nextState2 := PrefixStateKernel.nextState2
   executionEnv2 := PrefixStateKernel.nextState2_executionEnv
@@ -177,6 +215,14 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
   tripleBlocks := PrefixStateKernel.triple_blockCount
   hashResult3 := PrefixStateKernel.nextState3_hash
   gasSteps3 := gasSteps_block3
+  nextState4 := PrefixStateKernel.nextState4
+  executionEnv4 := PrefixStateKernel.nextState4_executionEnv
+  halt4 := PrefixStateKernel.nextState4_halt
+  callStack4 := PrefixStateKernel.nextState4_callStack
+  wordAbove4 := PrefixStateKernel.nextState4_word_above
+  quadrupleBlocks := PrefixStateKernel.quadruple_blockCount
+  hashResult4 := PrefixStateKernel.nextState4_hash
+  gasSteps4 := gasSteps_block4
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)

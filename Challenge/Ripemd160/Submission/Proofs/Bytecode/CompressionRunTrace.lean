@@ -395,6 +395,9 @@ theorem states_final_activeWords (input : ByteArray) (hfit : CalldataFits input)
 noncomputable def compressionRun (input : ByteArray) (hfit : CalldataFits input) :
     CompressionSeamBridge.CompressionRun input where
   states := states input
+  double := false
+  triple := false
+  quadruple := false
   initial := by
     let s := PaddingTrace.padReturned input
     have hpc : s.pc = UInt256.ofNat 0x41f := PaddingTrace.padReturned_pc input
@@ -418,7 +421,7 @@ noncomputable def compressionRun (input : ByteArray) (hfit : CalldataFits input)
     exact PaddingTrace.padReturned_noPrecompile input
   callStack := fun i _ => states_callStack input i
   blockTrace := by
-    intro i hi
+    intro i hi _ _ _
     exact CompressionFullTrace.gasSteps_compress (states input i) input i
       (by rw [states_executionEnv]; exact PaddingTrace.padReturned_code input)
       (by
@@ -428,6 +431,24 @@ noncomputable def compressionRun (input : ByteArray) (hfit : CalldataFits input)
       (by
         rw [states_executionEnv]
         exact PaddingTrace.padReturned_noPrecompile input)
+  blockTraceDoubleBlocks := by
+    intro h
+    cases h
+  blockTraceDouble := by
+    intro h
+    cases h
+  blockTraceTripleBlocks := by
+    intro h
+    cases h
+  blockTraceTriple := by
+    intro h
+    cases h
+  blockTraceQuadrupleBlocks := by
+    intro h
+    cases h
+  blockTraceQuadruple := by
+    intro h
+    cases h
   hashWords := hashWords input hfit
 
 /-- The executable compressor satisfies the strong seam for every realizable

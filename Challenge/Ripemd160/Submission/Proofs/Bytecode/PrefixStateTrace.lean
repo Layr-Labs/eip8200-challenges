@@ -13,7 +13,7 @@ set_option linter.unusedSimpArgs false
 This module binds the checked-prefix execution certificates to the nonempty
 block dispatcher.  The first certificate handles the CODECOPY and word-0
 comparison.  On a word-0 match, the finish certificate handles the SWAR
-setup, the five derived-word rungs and the `H1`/`H2`/`H3` installs.  Later
+setup, the seven derived-word rungs and the `H1`/`H2`/`H3`/`H4` installs.  Later
 blocks use the direct later-path certificate.
 -/
 
@@ -41,7 +41,9 @@ def gasSteps_dispatch (s : State) (input : ByteArray) (i : Nat)
     GasSteps (FastEmptyBlock.nonemptyEntry s input i)
       (if i = 0 ∧ Matched input then
         (if Matched2 input then
-          (if Matched3 input then resultState3 (copied s) input
+          (if Matched3 input then
+            (if Matched4 input then resultState4 (copied s) input
+              else resultState3 (copied s) input)
             else resultState2 (copied s) input)
           else resultState (copied s) input i)
         else DriverTrace.compressEntry (prepared s i) input i) := by

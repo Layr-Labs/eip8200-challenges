@@ -523,4 +523,161 @@ theorem h_thirdBlock (input : ByteArray)
   rw [hpad, hdrop, hthird, PatternedDigest.compress2]
   exact PatternedDigestA.step2
 
+/-! ## Fourth checked block (the depth-4 ladder rung) -/
+
+/-- Byte 255 of the vector is `0xed`. -/
+theorem paddedByte_255 : PatternedWordData.paddedByte 255 = 0xed := by decide
+
+/-- The eighth checked word forces `256 <= input.size`: byte 255 reads
+`0xed` from the word but would read zero past the end. -/
+theorem size_ge_256_of_words (input : ByteArray)
+    (h224 : EvmSemantics.MachineState.readWord input 224 =
+      PatternedWordData.expectedWordAt 7) :
+    256 <= input.size := by
+  by_cases hle : 256 <= input.size
+  · exact hle
+  · exfalso
+    have hlt : input.size < 256 := by omega
+    have hword : EvmSemantics.MachineState.readWord input (32 * 7) =
+        PatternedWordData.expectedWordAt 7 := by
+      simpa using h224
+    have hbyte := byteFrom_of_word input 7 31 (by omega) hword
+    have e1 : 32 * 7 + 31 = 255 := by omega
+    rw [e1] at hbyte
+    have hzero : YulSemantics.EVM.byteFrom input.toList 255 = 0 := by
+      rw [YulEvmCompiler.ByteArray.toList_eq_data]
+      unfold YulSemantics.EVM.byteFrom
+      rw [List.getD_eq_getElem?_getD, Array.getElem?_toList,
+        Array.getElem?_eq_none
+          (by have hsz : input.data.size = input.size := rfl; omega)]
+      rfl
+    rw [hbyte, paddedByte_255] at hzero
+    exact absurd hzero (by decide)
+
+theorem readWord_fourth64 (input : ByteArray)
+    (h192 : EvmSemantics.MachineState.readWord input 192 =
+      PatternedWordData.expectedWordAt 6)
+    (h224 : EvmSemantics.MachineState.readWord input 224 =
+      PatternedWordData.expectedWordAt 7)
+    (j : Nat) (hj : 6 ≤ j) (hj' : j < 8) :
+    EvmSemantics.MachineState.readWord input (32 * j) =
+      PatternedWordData.expectedWordAt j := by
+  have hdiv : j = 6 ∨ j = 7 := by omega
+  cases hdiv with
+  | inl h =>
+    rw [h]
+    simpa using h192
+  | inr h =>
+    rw [h]
+    simpa using h224
+
+theorem byteFrom_fourth64 (input : ByteArray)
+    (h192 : EvmSemantics.MachineState.readWord input 192 =
+      PatternedWordData.expectedWordAt 6)
+    (h224 : EvmSemantics.MachineState.readWord input 224 =
+      PatternedWordData.expectedWordAt 7)
+    (k : Nat) (hk : 192 ≤ k) (hk' : k < 256) :
+    YulSemantics.EVM.byteFrom input.toList k =
+      PatternedWordData.paddedByte k := by
+  have hr : k % 32 < 32 := Nat.mod_lt _ (by omega)
+  have hdecomp : 32 * (k / 32) + k % 32 = k := by omega
+  have hlo : 6 ≤ k / 32 := by omega
+  have hhi : k / 32 < 8 := by omega
+  have hw := readWord_fourth64 input h192 h224 (k / 32) hlo hhi
+  have hbyte := byteFrom_of_word input (k / 32) (k % 32) hr hw
+  rwa [hdecomp] at hbyte
+
+theorem getElem_fourth64 (input : ByteArray)
+    (h192 : EvmSemantics.MachineState.readWord input 192 =
+      PatternedWordData.expectedWordAt 6)
+    (h224 : EvmSemantics.MachineState.readWord input 224 =
+      PatternedWordData.expectedWordAt 7)
+    (k : Nat) (hk : 192 ≤ k) (hk' : k < 256) (hleft : k < input.size)
+    (hright : k < PatternedInputData.patternedInput.size) :
+    input[k]'(hleft) = PatternedInputData.patternedInput[k]'(hright) := by
+  have hbyte := byteFrom_fourth64 input h192 h224 k hk hk'
+  have hpat := PatternedWordLogic.byteFrom_patterned k
+  have heq : YulSemantics.EVM.byteFrom input.toList k =
+      YulSemantics.EVM.byteFrom
+        PatternedInputData.patternedInput.toList k := by
+    rw [hbyte, hpat]
+  have hgi : YulSemantics.EVM.byteFrom input.toList k =
+      input[k]'(hleft) := by
+    have hdata : k < input.data.size := hleft
+    rw [YulEvmCompiler.ByteArray.toList_eq_data]
+    unfold YulSemantics.EVM.byteFrom
+    rw [List.getD_eq_getElem?_getD, Array.getElem?_toList,
+      Array.getElem?_eq_getElem hdata, Option.getD_some]
+    rfl
+  have hgp : YulSemantics.EVM.byteFrom
+        PatternedInputData.patternedInput.toList k =
+        PatternedInputData.patternedInput[k]'(hright) := by
+    have hdata : k < PatternedInputData.patternedInput.data.size := hright
+    rw [YulEvmCompiler.ByteArray.toList_eq_data]
+    unfold YulSemantics.EVM.byteFrom
+    rw [List.getD_eq_getElem?_getD, Array.getElem?_toList,
+      Array.getElem?_eq_getElem hdata, Option.getD_some]
+    rfl
+  rw [← hgi, ← hgp]
+  exact heq
+
+theorem readLE32_fourth64 (input : ByteArray)
+    (h192 : EvmSemantics.MachineState.readWord input 192 =
+      PatternedWordData.expectedWordAt 6)
+    (h224 : EvmSemantics.MachineState.readWord input 224 =
+      PatternedWordData.expectedWordAt 7)
+    (i : Nat) (hi : i < 16) :
+    EvmSemantics.Crypto.Ripemd160.readLE32 input (192 + i * 4) =
+      EvmSemantics.Crypto.Ripemd160.readLE32
+        PatternedInputData.patternedInput (192 + i * 4) := by
+  apply HashSpecBridge.readLE32_eq_of_byte
+  intro j hj
+  have hk : 192 + i * 4 + j < 256 := by omega
+  have hk0 : 192 ≤ 192 + i * 4 + j := by omega
+  have hsize : 256 <= input.size := size_ge_256_of_words input h224
+  have hleft : 192 + i * 4 + j < input.size := by omega
+  have hright : 192 + i * 4 + j < PatternedInputData.patternedInput.size := by
+    rw [PatternedInputData.patternedInput_size]
+    omega
+  have hkk := getElem_fourth64 input h192 h224 (192 + i * 4 + j) hk0 hk hleft hright
+  rw [dif_pos hleft, dif_pos hright]
+  exact congrArg UInt8.toUInt32 hkk
+
+theorem compressBlock_fourth64 (input : ByteArray)
+    (h192 : EvmSemantics.MachineState.readWord input 192 =
+      PatternedWordData.expectedWordAt 6)
+    (h224 : EvmSemantics.MachineState.readWord input 224 =
+      PatternedWordData.expectedWordAt 7) :
+    EvmSemantics.Crypto.Ripemd160.compressBlock PatternedDigest.H3 input 192 =
+      EvmSemantics.Crypto.Ripemd160.compressBlock PatternedDigest.H3
+        PatternedInputData.patternedInput 192 := by
+  apply HashSpecBridge.compressBlock_eq_of_readLE32
+  intro i hi
+  exact readLE32_fourth64 input h192 h224 i hi
+
+/-- Checked fourth block: two more word matches send arbitrary-suffix
+calldata from `H3` to `H4` after padding. -/
+theorem h_fourthBlock (input : ByteArray)
+    (h192 : EvmSemantics.MachineState.readWord input 192 =
+      PatternedWordData.expectedWordAt 6)
+    (h224 : EvmSemantics.MachineState.readWord input 224 =
+      PatternedWordData.expectedWordAt 7) :
+    EvmSemantics.Crypto.Ripemd160.compressBlock PatternedDigest.H3
+        (Padding.paddedMessage input) 192 = PatternedDigest.H4 := by
+  have hsize : 256 <= input.size := size_ge_256_of_words input h224
+  have hfourth := compressBlock_fourth64 input h192 h224
+  have hpad : Padding.paddedMessage input = input ++
+      (ByteArray.mk #[0x80] ++ Padding.zeroBytes input.size ++
+        Padding.lengthBytes input) := by
+    unfold Padding.paddedMessage
+    simp only [ByteArray.append_assoc]
+  have hdrop : EvmSemantics.Crypto.Ripemd160.compressBlock PatternedDigest.H3
+        (input ++ (ByteArray.mk #[0x80] ++ Padding.zeroBytes input.size ++
+          Padding.lengthBytes input)) 192 =
+        EvmSemantics.Crypto.Ripemd160.compressBlock PatternedDigest.H3
+          input 192 :=
+    HashSpecBridge.compressBlock_append_left _ _ _ _ (by omega)
+  rw [hpad, hdrop, hfourth, PatternedDigest.compress3]
+  exact PatternedDigestA.step3
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateData

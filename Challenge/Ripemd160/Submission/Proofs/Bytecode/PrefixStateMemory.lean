@@ -241,6 +241,62 @@ theorem resultState3_word_above (s : State) (input : ByteArray) (address : Nat)
     (resultState3 s input).callStack = s.callStack := rfl
 
 
+/-! ## Depth-4 ladder rung: `H4` install with blocks 1, 2 and 3 consumed -/
+
+def hash4 : Compression.EvmHashState :=
+  { h0 := UInt256.ofNat 0xf2b65335
+    h1 := UInt256.ofNat 0x632596df
+    h2 := UInt256.ofNat 0xb57a0387
+    h3 := UInt256.ofNat 0xfe2f65dc
+    h4 := UInt256.ofNat 0x2bf007d7 }
+
+def hashMemory4 (memory : ByteArray) : ByteArray :=
+  let m0 := writeWord memory 32 hash4.h0
+  let m1 := writeWord m0 64 hash4.h1
+  let m2 := writeWord m1 96 hash4.h2
+  let m3 := writeWord m2 128 hash4.h3
+  writeWord m3 160 hash4.h4
+
+/-- After eight matched words the ladder installs `H4` and returns to the
+driver's `102` continuation with the block-3 offset (`0xc0`) on the stack. -/
+def resultState4 (s : State) (input : ByteArray) : State :=
+  { s with
+    memory := hashMemory4 s.memory
+    activeWords := FastEmptyBlock.emptyActiveWords (scratchState s)
+    pc := UInt256.ofNat 102
+    stack := [DriverTrace.blockOffsetWord 3, Padding.paddedWord input] }
+
+theorem resultState4_hash (s : State) (input : ByteArray) :
+    StackMemory.hashAt (resultState4 s input).memory = hash4 := by
+  unfold resultState4 hashMemory4 StackMemory.hashAt
+  simp only [read_disjoint _ 32 160 _ (Or.inl (by omega)),
+    read_disjoint _ 32 128 _ (Or.inl (by omega)),
+    read_disjoint _ 32 96 _ (Or.inl (by omega)),
+    read_disjoint _ 32 64 _ (Or.inl (by omega)),
+    read_disjoint _ 64 160 _ (Or.inl (by omega)),
+    read_disjoint _ 64 128 _ (Or.inl (by omega)),
+    read_disjoint _ 64 96 _ (Or.inl (by omega)),
+    read_disjoint _ 96 160 _ (Or.inl (by omega)),
+    read_disjoint _ 96 128 _ (Or.inl (by omega)),
+    read_disjoint _ 128 160 _ (Or.inl (by omega)), read_same]
+
+theorem resultState4_word_above (s : State) (input : ByteArray) (address : Nat)
+    (ha : 192 ≤ address) :
+    MachineState.readWord (resultState4 s input).memory address = MachineState.readWord s.memory address := by
+  unfold resultState4 hashMemory4
+  rw [read_disjoint _ _ _ _ (Or.inr (by omega)),
+    read_disjoint _ _ _ _ (Or.inr (by omega)),
+    read_disjoint _ _ _ _ (Or.inr (by omega)),
+    read_disjoint _ _ _ _ (Or.inr (by omega)),
+    read_disjoint _ _ _ _ (Or.inr (by omega))]
+
+@[simp] theorem resultState4_executionEnv (s : State) (input : ByteArray) :
+    (resultState4 s input).executionEnv = s.executionEnv := rfl
+@[simp] theorem resultState4_halt (s : State) (input : ByteArray) :
+    (resultState4 s input).halt = s.halt := rfl
+@[simp] theorem resultState4_callStack (s : State) (input : ByteArray) :
+    (resultState4 s input).callStack = s.callStack := rfl
+
 /-! ## The scratch `MLOAD` on the copied state is idempotent -/
 
 theorem activeWordsAfter_zero_idem (t : State)

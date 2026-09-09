@@ -5,11 +5,11 @@ set_option maxRecDepth 50000
 set_option maxHeartbeats 3000000
 
 /-!
-# Located paths of the depth-3 patterned-prefix ladder (instructions 4072..4264)
+# Located paths of the depth-4 patterned-prefix ladder (instructions 4072..4351)
 
-The ladder occupies the trailing 297 bytes (pc 4990..5286).  Its PC and
+The ladder occupies the trailing 442 bytes (pc 4990..5431).  Its PC and
 instruction lemmas are derived from a split of the instruction list at index
-4072 so every `rfl` evaluates only the 193-instruction ladder segment.
+4072 so every `rfl` evaluates only the 280-instruction ladder segment.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStatePaths
@@ -39,6 +39,7 @@ open private
   submissionInstructionsChunk19
   submissionInstructionsChunk20
   submissionInstructionsChunk21
+  submissionInstructionsChunk22
   submissionInstructionsChunk0_length
   submissionInstructionsChunk1_length
   submissionInstructionsChunk2_length
@@ -61,6 +62,7 @@ open private
   submissionInstructionsChunk19_length
   submissionInstructionsChunk20_length
   submissionInstructionsChunk21_length
+  submissionInstructionsChunk22_length
   from Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 
 private def wfOp {op : Operation}
@@ -77,12 +79,13 @@ private def ladderBefore : List YulEvmCompiler.Instr :=
   submissionInstructionsChunk0 ++ submissionInstructionsChunk1 ++ submissionInstructionsChunk2 ++ submissionInstructionsChunk3 ++ submissionInstructionsChunk4 ++ submissionInstructionsChunk5 ++ submissionInstructionsChunk6 ++ submissionInstructionsChunk7 ++ submissionInstructionsChunk8 ++ submissionInstructionsChunk9 ++ submissionInstructionsChunk10 ++ submissionInstructionsChunk11 ++ submissionInstructionsChunk12 ++ submissionInstructionsChunk13 ++ submissionInstructionsChunk14 ++ submissionInstructionsChunk15 ++ submissionInstructionsChunk16 ++ submissionInstructionsChunk17 ++ submissionInstructionsChunk18 ++ submissionInstructionsChunk19 ++ submissionInstructionsChunk20.take 72
 
 private def ladderSegment : List YulEvmCompiler.Instr :=
-  submissionInstructionsChunk20.drop 72 ++ submissionInstructionsChunk21
+  submissionInstructionsChunk20.drop 72 ++ submissionInstructionsChunk21 ++
+    submissionInstructionsChunk22
 
 private theorem ladderBefore_length : ladderBefore.length = 4072 := by
   simp [ladderBefore]
 
-private theorem ladderSegment_length : ladderSegment.length = 193 := by
+private theorem ladderSegment_length : ladderSegment.length = 280 := by
   simp [ladderSegment]
 
 private theorem artifact_ladder_split :
@@ -110,7 +113,8 @@ private theorem artifact_ladder_split :
       submissionInstructionsChunk18 ++
       submissionInstructionsChunk19 ++
       submissionInstructionsChunk20 ++
-      submissionInstructionsChunk21 := by
+      submissionInstructionsChunk21 ++
+      submissionInstructionsChunk22 := by
     simp only [Artifact.submissionInstructions, List.append_assoc]
   have hchunk : submissionInstructionsChunk20 =
       submissionInstructionsChunk20.take 72 ++ submissionInstructionsChunk20.drop 72 :=
@@ -124,7 +128,7 @@ private theorem ladderBefore_pc :
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
-private theorem ladder_pc (i : Nat) (hi : i ≤ 193) :
+private theorem ladder_pc (i : Nat) (hi : i ≤ 280) :
     Artifact.submissionArtifact.instructionPC (4072 + i) =
       4990 + ArtifactByteLength.byteLength (ladderSegment.take i) := by
   rw [ArtifactByteLength.byteLength_eq_assemble]
@@ -132,7 +136,7 @@ private theorem ladder_pc (i : Nat) (hi : i ≤ 193) :
     ladderBefore ladderSegment [] 4072 4990 artifact_ladder_split ladderBefore_length
     ladderBefore_pc i (by rw [ladderSegment_length]; exact hi)
 
-private theorem ladder_at (i : Nat) (hi : i < 193) :
+private theorem ladder_at (i : Nat) (hi : i < 280) :
     Artifact.submissionArtifact.instructions[4072 + i]? = ladderSegment[i]? := by
   have h := ArtifactSegment.getElem?_segment Artifact.submissionArtifact
     ladderBefore ladderSegment [] artifact_ladder_split i (by rw [ladderSegment_length]; exact hi)
@@ -1105,6 +1109,354 @@ private theorem ladder_at (i : Nat) (hi : i < 193) :
   rw [ladder_pc 192 (by decide)]
   rfl
 
+@[simp] theorem pc4265 : Artifact.submissionArtifact.instructionPC 4265 = 5287 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 193) = 5287
+  rw [ladder_pc 193 (by decide)]
+  rfl
+@[simp] theorem pc4266 : Artifact.submissionArtifact.instructionPC 4266 = 5288 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 194) = 5288
+  rw [ladder_pc 194 (by decide)]
+  rfl
+@[simp] theorem pc4267 : Artifact.submissionArtifact.instructionPC 4267 = 5289 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 195) = 5289
+  rw [ladder_pc 195 (by decide)]
+  rfl
+@[simp] theorem pc4268 : Artifact.submissionArtifact.instructionPC 4268 = 5290 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 196) = 5290
+  rw [ladder_pc 196 (by decide)]
+  rfl
+@[simp] theorem pc4269 : Artifact.submissionArtifact.instructionPC 4269 = 5291 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 197) = 5291
+  rw [ladder_pc 197 (by decide)]
+  rfl
+@[simp] theorem pc4270 : Artifact.submissionArtifact.instructionPC 4270 = 5292 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 198) = 5292
+  rw [ladder_pc 198 (by decide)]
+  rfl
+@[simp] theorem pc4271 : Artifact.submissionArtifact.instructionPC 4271 = 5293 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 199) = 5293
+  rw [ladder_pc 199 (by decide)]
+  rfl
+@[simp] theorem pc4272 : Artifact.submissionArtifact.instructionPC 4272 = 5294 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 200) = 5294
+  rw [ladder_pc 200 (by decide)]
+  rfl
+@[simp] theorem pc4273 : Artifact.submissionArtifact.instructionPC 4273 = 5295 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 201) = 5295
+  rw [ladder_pc 201 (by decide)]
+  rfl
+@[simp] theorem pc4274 : Artifact.submissionArtifact.instructionPC 4274 = 5296 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 202) = 5296
+  rw [ladder_pc 202 (by decide)]
+  rfl
+@[simp] theorem pc4275 : Artifact.submissionArtifact.instructionPC 4275 = 5297 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 203) = 5297
+  rw [ladder_pc 203 (by decide)]
+  rfl
+@[simp] theorem pc4276 : Artifact.submissionArtifact.instructionPC 4276 = 5298 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 204) = 5298
+  rw [ladder_pc 204 (by decide)]
+  rfl
+@[simp] theorem pc4277 : Artifact.submissionArtifact.instructionPC 4277 = 5299 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 205) = 5299
+  rw [ladder_pc 205 (by decide)]
+  rfl
+@[simp] theorem pc4278 : Artifact.submissionArtifact.instructionPC 4278 = 5300 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 206) = 5300
+  rw [ladder_pc 206 (by decide)]
+  rfl
+@[simp] theorem pc4279 : Artifact.submissionArtifact.instructionPC 4279 = 5302 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 207) = 5302
+  rw [ladder_pc 207 (by decide)]
+  rfl
+@[simp] theorem pc4280 : Artifact.submissionArtifact.instructionPC 4280 = 5303 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 208) = 5303
+  rw [ladder_pc 208 (by decide)]
+  rfl
+@[simp] theorem pc4281 : Artifact.submissionArtifact.instructionPC 4281 = 5304 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 209) = 5304
+  rw [ladder_pc 209 (by decide)]
+  rfl
+@[simp] theorem pc4282 : Artifact.submissionArtifact.instructionPC 4282 = 5307 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 210) = 5307
+  rw [ladder_pc 210 (by decide)]
+  rfl
+@[simp] theorem pc4283 : Artifact.submissionArtifact.instructionPC 4283 = 5308 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 211) = 5308
+  rw [ladder_pc 211 (by decide)]
+  rfl
+@[simp] theorem pc4284 : Artifact.submissionArtifact.instructionPC 4284 = 5309 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 212) = 5309
+  rw [ladder_pc 212 (by decide)]
+  rfl
+@[simp] theorem pc4285 : Artifact.submissionArtifact.instructionPC 4285 = 5310 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 213) = 5310
+  rw [ladder_pc 213 (by decide)]
+  rfl
+@[simp] theorem pc4286 : Artifact.submissionArtifact.instructionPC 4286 = 5311 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 214) = 5311
+  rw [ladder_pc 214 (by decide)]
+  rfl
+@[simp] theorem pc4287 : Artifact.submissionArtifact.instructionPC 4287 = 5312 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 215) = 5312
+  rw [ladder_pc 215 (by decide)]
+  rfl
+@[simp] theorem pc4288 : Artifact.submissionArtifact.instructionPC 4288 = 5313 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 216) = 5313
+  rw [ladder_pc 216 (by decide)]
+  rfl
+@[simp] theorem pc4289 : Artifact.submissionArtifact.instructionPC 4289 = 5314 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 217) = 5314
+  rw [ladder_pc 217 (by decide)]
+  rfl
+@[simp] theorem pc4290 : Artifact.submissionArtifact.instructionPC 4290 = 5315 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 218) = 5315
+  rw [ladder_pc 218 (by decide)]
+  rfl
+@[simp] theorem pc4291 : Artifact.submissionArtifact.instructionPC 4291 = 5316 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 219) = 5316
+  rw [ladder_pc 219 (by decide)]
+  rfl
+@[simp] theorem pc4292 : Artifact.submissionArtifact.instructionPC 4292 = 5317 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 220) = 5317
+  rw [ladder_pc 220 (by decide)]
+  rfl
+@[simp] theorem pc4293 : Artifact.submissionArtifact.instructionPC 4293 = 5318 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 221) = 5318
+  rw [ladder_pc 221 (by decide)]
+  rfl
+@[simp] theorem pc4294 : Artifact.submissionArtifact.instructionPC 4294 = 5319 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 222) = 5319
+  rw [ladder_pc 222 (by decide)]
+  rfl
+@[simp] theorem pc4295 : Artifact.submissionArtifact.instructionPC 4295 = 5320 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 223) = 5320
+  rw [ladder_pc 223 (by decide)]
+  rfl
+@[simp] theorem pc4296 : Artifact.submissionArtifact.instructionPC 4296 = 5322 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 224) = 5322
+  rw [ladder_pc 224 (by decide)]
+  rfl
+@[simp] theorem pc4297 : Artifact.submissionArtifact.instructionPC 4297 = 5323 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 225) = 5323
+  rw [ladder_pc 225 (by decide)]
+  rfl
+@[simp] theorem pc4298 : Artifact.submissionArtifact.instructionPC 4298 = 5324 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 226) = 5324
+  rw [ladder_pc 226 (by decide)]
+  rfl
+@[simp] theorem pc4299 : Artifact.submissionArtifact.instructionPC 4299 = 5327 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 227) = 5327
+  rw [ladder_pc 227 (by decide)]
+  rfl
+@[simp] theorem pc4300 : Artifact.submissionArtifact.instructionPC 4300 = 5328 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 228) = 5328
+  rw [ladder_pc 228 (by decide)]
+  rfl
+@[simp] theorem pc4301 : Artifact.submissionArtifact.instructionPC 4301 = 5329 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 229) = 5329
+  rw [ladder_pc 229 (by decide)]
+  rfl
+@[simp] theorem pc4302 : Artifact.submissionArtifact.instructionPC 4302 = 5330 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 230) = 5330
+  rw [ladder_pc 230 (by decide)]
+  rfl
+@[simp] theorem pc4303 : Artifact.submissionArtifact.instructionPC 4303 = 5331 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 231) = 5331
+  rw [ladder_pc 231 (by decide)]
+  rfl
+@[simp] theorem pc4304 : Artifact.submissionArtifact.instructionPC 4304 = 5332 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 232) = 5332
+  rw [ladder_pc 232 (by decide)]
+  rfl
+@[simp] theorem pc4305 : Artifact.submissionArtifact.instructionPC 4305 = 5333 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 233) = 5333
+  rw [ladder_pc 233 (by decide)]
+  rfl
+@[simp] theorem pc4306 : Artifact.submissionArtifact.instructionPC 4306 = 5334 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 234) = 5334
+  rw [ladder_pc 234 (by decide)]
+  rfl
+@[simp] theorem pc4307 : Artifact.submissionArtifact.instructionPC 4307 = 5335 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 235) = 5335
+  rw [ladder_pc 235 (by decide)]
+  rfl
+@[simp] theorem pc4308 : Artifact.submissionArtifact.instructionPC 4308 = 5336 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 236) = 5336
+  rw [ladder_pc 236 (by decide)]
+  rfl
+@[simp] theorem pc4309 : Artifact.submissionArtifact.instructionPC 4309 = 5338 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 237) = 5338
+  rw [ladder_pc 237 (by decide)]
+  rfl
+@[simp] theorem pc4310 : Artifact.submissionArtifact.instructionPC 4310 = 5339 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 238) = 5339
+  rw [ladder_pc 238 (by decide)]
+  rfl
+@[simp] theorem pc4311 : Artifact.submissionArtifact.instructionPC 4311 = 5344 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 239) = 5344
+  rw [ladder_pc 239 (by decide)]
+  rfl
+@[simp] theorem pc4312 : Artifact.submissionArtifact.instructionPC 4312 = 5346 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 240) = 5346
+  rw [ladder_pc 240 (by decide)]
+  rfl
+@[simp] theorem pc4313 : Artifact.submissionArtifact.instructionPC 4313 = 5347 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 241) = 5347
+  rw [ladder_pc 241 (by decide)]
+  rfl
+@[simp] theorem pc4314 : Artifact.submissionArtifact.instructionPC 4314 = 5352 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 242) = 5352
+  rw [ladder_pc 242 (by decide)]
+  rfl
+@[simp] theorem pc4315 : Artifact.submissionArtifact.instructionPC 4315 = 5354 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 243) = 5354
+  rw [ladder_pc 243 (by decide)]
+  rfl
+@[simp] theorem pc4316 : Artifact.submissionArtifact.instructionPC 4316 = 5355 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 244) = 5355
+  rw [ladder_pc 244 (by decide)]
+  rfl
+@[simp] theorem pc4317 : Artifact.submissionArtifact.instructionPC 4317 = 5360 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 245) = 5360
+  rw [ladder_pc 245 (by decide)]
+  rfl
+@[simp] theorem pc4318 : Artifact.submissionArtifact.instructionPC 4318 = 5362 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 246) = 5362
+  rw [ladder_pc 246 (by decide)]
+  rfl
+@[simp] theorem pc4319 : Artifact.submissionArtifact.instructionPC 4319 = 5363 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 247) = 5363
+  rw [ladder_pc 247 (by decide)]
+  rfl
+@[simp] theorem pc4320 : Artifact.submissionArtifact.instructionPC 4320 = 5368 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 248) = 5368
+  rw [ladder_pc 248 (by decide)]
+  rfl
+@[simp] theorem pc4321 : Artifact.submissionArtifact.instructionPC 4321 = 5370 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 249) = 5370
+  rw [ladder_pc 249 (by decide)]
+  rfl
+@[simp] theorem pc4322 : Artifact.submissionArtifact.instructionPC 4322 = 5371 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 250) = 5371
+  rw [ladder_pc 250 (by decide)]
+  rfl
+@[simp] theorem pc4323 : Artifact.submissionArtifact.instructionPC 4323 = 5376 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 251) = 5376
+  rw [ladder_pc 251 (by decide)]
+  rfl
+@[simp] theorem pc4324 : Artifact.submissionArtifact.instructionPC 4324 = 5378 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 252) = 5378
+  rw [ladder_pc 252 (by decide)]
+  rfl
+@[simp] theorem pc4325 : Artifact.submissionArtifact.instructionPC 4325 = 5379 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 253) = 5379
+  rw [ladder_pc 253 (by decide)]
+  rfl
+@[simp] theorem pc4326 : Artifact.submissionArtifact.instructionPC 4326 = 5380 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 254) = 5380
+  rw [ladder_pc 254 (by decide)]
+  rfl
+@[simp] theorem pc4327 : Artifact.submissionArtifact.instructionPC 4327 = 5381 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 255) = 5381
+  rw [ladder_pc 255 (by decide)]
+  rfl
+@[simp] theorem pc4328 : Artifact.submissionArtifact.instructionPC 4328 = 5382 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 256) = 5382
+  rw [ladder_pc 256 (by decide)]
+  rfl
+@[simp] theorem pc4329 : Artifact.submissionArtifact.instructionPC 4329 = 5383 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 257) = 5383
+  rw [ladder_pc 257 (by decide)]
+  rfl
+@[simp] theorem pc4330 : Artifact.submissionArtifact.instructionPC 4330 = 5384 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 258) = 5384
+  rw [ladder_pc 258 (by decide)]
+  rfl
+@[simp] theorem pc4331 : Artifact.submissionArtifact.instructionPC 4331 = 5385 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 259) = 5385
+  rw [ladder_pc 259 (by decide)]
+  rfl
+@[simp] theorem pc4332 : Artifact.submissionArtifact.instructionPC 4332 = 5386 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 260) = 5386
+  rw [ladder_pc 260 (by decide)]
+  rfl
+@[simp] theorem pc4333 : Artifact.submissionArtifact.instructionPC 4333 = 5387 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 261) = 5387
+  rw [ladder_pc 261 (by decide)]
+  rfl
+@[simp] theorem pc4334 : Artifact.submissionArtifact.instructionPC 4334 = 5388 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 262) = 5388
+  rw [ladder_pc 262 (by decide)]
+  rfl
+@[simp] theorem pc4335 : Artifact.submissionArtifact.instructionPC 4335 = 5390 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 263) = 5390
+  rw [ladder_pc 263 (by decide)]
+  rfl
+@[simp] theorem pc4336 : Artifact.submissionArtifact.instructionPC 4336 = 5391 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 264) = 5391
+  rw [ladder_pc 264 (by decide)]
+  rfl
+@[simp] theorem pc4337 : Artifact.submissionArtifact.instructionPC 4337 = 5396 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 265) = 5396
+  rw [ladder_pc 265 (by decide)]
+  rfl
+@[simp] theorem pc4338 : Artifact.submissionArtifact.instructionPC 4338 = 5398 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 266) = 5398
+  rw [ladder_pc 266 (by decide)]
+  rfl
+@[simp] theorem pc4339 : Artifact.submissionArtifact.instructionPC 4339 = 5399 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 267) = 5399
+  rw [ladder_pc 267 (by decide)]
+  rfl
+@[simp] theorem pc4340 : Artifact.submissionArtifact.instructionPC 4340 = 5404 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 268) = 5404
+  rw [ladder_pc 268 (by decide)]
+  rfl
+@[simp] theorem pc4341 : Artifact.submissionArtifact.instructionPC 4341 = 5406 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 269) = 5406
+  rw [ladder_pc 269 (by decide)]
+  rfl
+@[simp] theorem pc4342 : Artifact.submissionArtifact.instructionPC 4342 = 5407 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 270) = 5407
+  rw [ladder_pc 270 (by decide)]
+  rfl
+@[simp] theorem pc4343 : Artifact.submissionArtifact.instructionPC 4343 = 5412 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 271) = 5412
+  rw [ladder_pc 271 (by decide)]
+  rfl
+@[simp] theorem pc4344 : Artifact.submissionArtifact.instructionPC 4344 = 5414 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 272) = 5414
+  rw [ladder_pc 272 (by decide)]
+  rfl
+@[simp] theorem pc4345 : Artifact.submissionArtifact.instructionPC 4345 = 5415 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 273) = 5415
+  rw [ladder_pc 273 (by decide)]
+  rfl
+@[simp] theorem pc4346 : Artifact.submissionArtifact.instructionPC 4346 = 5420 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 274) = 5420
+  rw [ladder_pc 274 (by decide)]
+  rfl
+@[simp] theorem pc4347 : Artifact.submissionArtifact.instructionPC 4347 = 5422 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 275) = 5422
+  rw [ladder_pc 275 (by decide)]
+  rfl
+@[simp] theorem pc4348 : Artifact.submissionArtifact.instructionPC 4348 = 5423 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 276) = 5423
+  rw [ladder_pc 276 (by decide)]
+  rfl
+@[simp] theorem pc4349 : Artifact.submissionArtifact.instructionPC 4349 = 5428 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 277) = 5428
+  rw [ladder_pc 277 (by decide)]
+  rfl
+@[simp] theorem pc4350 : Artifact.submissionArtifact.instructionPC 4350 = 5430 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 278) = 5430
+  rw [ladder_pc 278 (by decide)]
+  rfl
+@[simp] theorem pc4351 : Artifact.submissionArtifact.instructionPC 4351 = 5431 := by
+  show Artifact.submissionArtifact.instructionPC (4072 + 279) = 5431
+  rw [ladder_pc 279 (by decide)]
+  rfl
 /-! ## Paths -/
 
 def laterPath : List Located :=
@@ -1237,11 +1589,105 @@ def rung5Path : List Located :=
    ⟨4179, .op (.Dup ⟨0, by decide⟩), (ladder_at 107 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4180, .push ⟨1, by decide⟩ (UInt256.ofNat 160), (ladder_at 108 (by decide)).trans rfl, by decide⟩,
    ⟨4181, .op .CALLDATALOAD, (ladder_at 109 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4182, .op .XOR, (ladder_at 110 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4183, .push ⟨2, by decide⟩ (UInt256.ofNat 5179), (ladder_at 111 (by decide)).trans rfl, by decide⟩,
+   ⟨4182, .op .EQ, (ladder_at 110 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4183, .push ⟨2, by decide⟩ (UInt256.ofNat 5287), (ladder_at 111 (by decide)).trans rfl, by decide⟩,
    ⟨4184, .op .JUMPI, (ladder_at 112 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩]
 
-def hit3Path : List Located :=
+def rung6Path : List Located :=
+  [⟨4265, .op .JUMPDEST, (ladder_at 193 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4266, .op (.Dup ⟨0, by decide⟩), (ladder_at 194 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4267, .op (.Dup ⟨4, by decide⟩), (ladder_at 195 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4268, .op .AND, (ladder_at 196 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4269, .op (.Dup ⟨2, by decide⟩), (ladder_at 197 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4270, .op .ADD, (ladder_at 198 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4271, .op (.Swap ⟨0, by decide⟩), (ladder_at 199 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4272, .op (.Dup ⟨3, by decide⟩), (ladder_at 200 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4273, .op .AND, (ladder_at 201 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4274, .op .XOR, (ladder_at 202 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4275, .op (.Dup ⟨2, by decide⟩), (ladder_at 203 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4276, .op .XOR, (ladder_at 204 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4277, .op (.Dup ⟨0, by decide⟩), (ladder_at 205 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4278, .push ⟨1, by decide⟩ (UInt256.ofNat 192), (ladder_at 206 (by decide)).trans rfl, by decide⟩,
+   ⟨4279, .op .CALLDATALOAD, (ladder_at 207 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4280, .op .XOR, (ladder_at 208 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4281, .push ⟨2, by decide⟩ (UInt256.ofNat 5380), (ladder_at 209 (by decide)).trans rfl, by decide⟩,
+   ⟨4282, .op .JUMPI, (ladder_at 210 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩]
+
+def rung7Path : List Located :=
+  [⟨4283, .op (.Dup ⟨0, by decide⟩), (ladder_at 211 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4284, .op (.Dup ⟨4, by decide⟩), (ladder_at 212 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4285, .op .AND, (ladder_at 213 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4286, .op (.Dup ⟨2, by decide⟩), (ladder_at 214 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4287, .op .ADD, (ladder_at 215 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4288, .op (.Swap ⟨0, by decide⟩), (ladder_at 216 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4289, .op (.Dup ⟨3, by decide⟩), (ladder_at 217 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4290, .op .AND, (ladder_at 218 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4291, .op .XOR, (ladder_at 219 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4292, .op (.Dup ⟨2, by decide⟩), (ladder_at 220 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4293, .op .XOR, (ladder_at 221 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4294, .op (.Dup ⟨0, by decide⟩), (ladder_at 222 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4295, .push ⟨1, by decide⟩ (UInt256.ofNat 224), (ladder_at 223 (by decide)).trans rfl, by decide⟩,
+   ⟨4296, .op .CALLDATALOAD, (ladder_at 224 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4297, .op .XOR, (ladder_at 225 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4298, .push ⟨2, by decide⟩ (UInt256.ofNat 5380), (ladder_at 226 (by decide)).trans rfl, by decide⟩,
+   ⟨4299, .op .JUMPI, (ladder_at 227 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩]
+
+def hit4Path : List Located :=
+  [⟨4300, .op .JUMPDEST, (ladder_at 228 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4301, .op .POP, (ladder_at 229 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4302, .op .POP, (ladder_at 230 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4303, .op .POP, (ladder_at 231 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4304, .op .POP, (ladder_at 232 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4305, .op .POP, (ladder_at 233 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4306, .op (.Swap ⟨0, by decide⟩), (ladder_at 234 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4307, .op .POP, (ladder_at 235 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4308, .push ⟨1, by decide⟩ (UInt256.ofNat 192), (ladder_at 236 (by decide)).trans rfl, by decide⟩,
+   ⟨4309, .op (.Swap ⟨0, by decide⟩), (ladder_at 237 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4310, .push ⟨4, by decide⟩ (UInt256.ofNat 4072035125), (ladder_at 238 (by decide)).trans rfl, by decide⟩,
+   ⟨4311, .push ⟨1, by decide⟩ (UInt256.ofNat 32), (ladder_at 239 (by decide)).trans rfl, by decide⟩,
+   ⟨4312, .op .MSTORE, (ladder_at 240 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4313, .push ⟨4, by decide⟩ (UInt256.ofNat 1663407839), (ladder_at 241 (by decide)).trans rfl, by decide⟩,
+   ⟨4314, .push ⟨1, by decide⟩ (UInt256.ofNat 64), (ladder_at 242 (by decide)).trans rfl, by decide⟩,
+   ⟨4315, .op .MSTORE, (ladder_at 243 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4316, .push ⟨4, by decide⟩ (UInt256.ofNat 3044672391), (ladder_at 244 (by decide)).trans rfl, by decide⟩,
+   ⟨4317, .push ⟨1, by decide⟩ (UInt256.ofNat 96), (ladder_at 245 (by decide)).trans rfl, by decide⟩,
+   ⟨4318, .op .MSTORE, (ladder_at 246 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4319, .push ⟨4, by decide⟩ (UInt256.ofNat 4264519132), (ladder_at 247 (by decide)).trans rfl, by decide⟩,
+   ⟨4320, .push ⟨1, by decide⟩ (UInt256.ofNat 128), (ladder_at 248 (by decide)).trans rfl, by decide⟩,
+   ⟨4321, .op .MSTORE, (ladder_at 249 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4322, .push ⟨4, by decide⟩ (UInt256.ofNat 737150935), (ladder_at 250 (by decide)).trans rfl, by decide⟩,
+   ⟨4323, .push ⟨1, by decide⟩ (UInt256.ofNat 160), (ladder_at 251 (by decide)).trans rfl, by decide⟩,
+   ⟨4324, .op .MSTORE, (ladder_at 252 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4325, .op .JUMP, (ladder_at 253 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩]
+def hit3FallbackPath : List Located :=
+  [⟨4326, .op .JUMPDEST, (ladder_at 254 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4327, .op .POP, (ladder_at 255 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4328, .op .POP, (ladder_at 256 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4329, .op .POP, (ladder_at 257 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4330, .op .POP, (ladder_at 258 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4331, .op .POP, (ladder_at 259 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4332, .op (.Swap ⟨0, by decide⟩), (ladder_at 260 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4333, .op .POP, (ladder_at 261 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4334, .push ⟨1, by decide⟩ (UInt256.ofNat 128), (ladder_at 262 (by decide)).trans rfl, by decide⟩,
+   ⟨4335, .op (.Swap ⟨0, by decide⟩), (ladder_at 263 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4336, .push ⟨4, by decide⟩ (UInt256.ofNat 1393315003), (ladder_at 264 (by decide)).trans rfl, by decide⟩,
+   ⟨4337, .push ⟨1, by decide⟩ (UInt256.ofNat 32), (ladder_at 265 (by decide)).trans rfl, by decide⟩,
+   ⟨4338, .op .MSTORE, (ladder_at 266 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4339, .push ⟨4, by decide⟩ (UInt256.ofNat 695251451), (ladder_at 267 (by decide)).trans rfl, by decide⟩,
+   ⟨4340, .push ⟨1, by decide⟩ (UInt256.ofNat 64), (ladder_at 268 (by decide)).trans rfl, by decide⟩,
+   ⟨4341, .op .MSTORE, (ladder_at 269 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4342, .push ⟨4, by decide⟩ (UInt256.ofNat 358732556), (ladder_at 270 (by decide)).trans rfl, by decide⟩,
+   ⟨4343, .push ⟨1, by decide⟩ (UInt256.ofNat 96), (ladder_at 271 (by decide)).trans rfl, by decide⟩,
+   ⟨4344, .op .MSTORE, (ladder_at 272 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4345, .push ⟨4, by decide⟩ (UInt256.ofNat 928826907), (ladder_at 273 (by decide)).trans rfl, by decide⟩,
+   ⟨4346, .push ⟨1, by decide⟩ (UInt256.ofNat 128), (ladder_at 274 (by decide)).trans rfl, by decide⟩,
+   ⟨4347, .op .MSTORE, (ladder_at 275 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4348, .push ⟨4, by decide⟩ (UInt256.ofNat 3850323193), (ladder_at 276 (by decide)).trans rfl, by decide⟩,
+   ⟨4349, .push ⟨1, by decide⟩ (UInt256.ofNat 160), (ladder_at 277 (by decide)).trans rfl, by decide⟩,
+   ⟨4350, .op .MSTORE, (ladder_at 278 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4351, .op .JUMP, (ladder_at 279 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩]
+
+def hit2FallbackPath : List Located :=
   [⟨4185, .op .POP, (ladder_at 113 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4186, .op .POP, (ladder_at 114 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4187, .op .POP, (ladder_at 115 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
@@ -1249,21 +1695,21 @@ def hit3Path : List Located :=
    ⟨4189, .op .POP, (ladder_at 117 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4190, .op (.Swap ⟨0, by decide⟩), (ladder_at 118 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4191, .op .POP, (ladder_at 119 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4192, .push ⟨1, by decide⟩ (UInt256.ofNat 128), (ladder_at 120 (by decide)).trans rfl, by decide⟩,
+   ⟨4192, .push ⟨1, by decide⟩ (UInt256.ofNat 64), (ladder_at 120 (by decide)).trans rfl, by decide⟩,
    ⟨4193, .op (.Swap ⟨0, by decide⟩), (ladder_at 121 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4194, .push ⟨4, by decide⟩ (UInt256.ofNat 1393315003), (ladder_at 122 (by decide)).trans rfl, by decide⟩,
+   ⟨4194, .push ⟨4, by decide⟩ (UInt256.ofNat 2807398299), (ladder_at 122 (by decide)).trans rfl, by decide⟩,
    ⟨4195, .push ⟨1, by decide⟩ (UInt256.ofNat 32), (ladder_at 123 (by decide)).trans rfl, by decide⟩,
    ⟨4196, .op .MSTORE, (ladder_at 124 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4197, .push ⟨4, by decide⟩ (UInt256.ofNat 695251451), (ladder_at 125 (by decide)).trans rfl, by decide⟩,
+   ⟨4197, .push ⟨4, by decide⟩ (UInt256.ofNat 514068704), (ladder_at 125 (by decide)).trans rfl, by decide⟩,
    ⟨4198, .push ⟨1, by decide⟩ (UInt256.ofNat 64), (ladder_at 126 (by decide)).trans rfl, by decide⟩,
    ⟨4199, .op .MSTORE, (ladder_at 127 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4200, .push ⟨4, by decide⟩ (UInt256.ofNat 358732556), (ladder_at 128 (by decide)).trans rfl, by decide⟩,
+   ⟨4200, .push ⟨4, by decide⟩ (UInt256.ofNat 3681030016), (ladder_at 128 (by decide)).trans rfl, by decide⟩,
    ⟨4201, .push ⟨1, by decide⟩ (UInt256.ofNat 96), (ladder_at 129 (by decide)).trans rfl, by decide⟩,
    ⟨4202, .op .MSTORE, (ladder_at 130 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4203, .push ⟨4, by decide⟩ (UInt256.ofNat 928826907), (ladder_at 131 (by decide)).trans rfl, by decide⟩,
+   ⟨4203, .push ⟨4, by decide⟩ (UInt256.ofNat 3354522469), (ladder_at 131 (by decide)).trans rfl, by decide⟩,
    ⟨4204, .push ⟨1, by decide⟩ (UInt256.ofNat 128), (ladder_at 132 (by decide)).trans rfl, by decide⟩,
    ⟨4205, .op .MSTORE, (ladder_at 133 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4206, .push ⟨4, by decide⟩ (UInt256.ofNat 3850323193), (ladder_at 134 (by decide)).trans rfl, by decide⟩,
+   ⟨4206, .push ⟨4, by decide⟩ (UInt256.ofNat 2543018249), (ladder_at 134 (by decide)).trans rfl, by decide⟩,
    ⟨4207, .push ⟨1, by decide⟩ (UInt256.ofNat 160), (ladder_at 135 (by decide)).trans rfl, by decide⟩,
    ⟨4208, .op .MSTORE, (ladder_at 136 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4209, .op .JUMP, (ladder_at 137 (by decide)).trans rfl, wfOp (by decide) trivial rfl⟩]
