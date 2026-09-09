@@ -17,6 +17,51 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowBodyCorrect
 open EvmSemantics
 open EvmSemantics.EVM
 
+private theorem shortcutResult_correct (input : ByteArray)
+    (hvalid : ValidInput input) (hword : modulusSize input ≤ 32)
+    (hmodpos : 0 < Word.modulusValue input)
+    (hm255 : Word.modulusValue input = 2 ^ 255)
+    (he2 : exponentSize input = 2) :
+    Word.shortcutResult input (WordCorrect.wordBase input) =
+      WordCorrect.wordResult input := by
+  have hmodlt : Word.modulusValue input < 2 ^ 256 :=
+    (Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow input
+      (Word.modulusOffset input) (modulusSize input)).trans_le (by
+        have hp := pow_le_pow_right₀ (by omega : 1 ≤ (256 : Nat)) hword
+        exact hp.trans (by norm_num))
+  have hbase := WordCorrect.wordBase_correct input hvalid hmodpos hmodlt
+  have hresult := WordCorrect.wordResult_correct input hvalid hmodpos hmodlt
+  have hexp : Word.shortcutExponent input =
+      UInt256.ofNat (WordCorrect.exponentNat input) := by
+    unfold Word.shortcutExponent WordCorrect.exponentNat
+    rw [he2]
+    simpa using
+      (Challenge.EvmProof.Bytes.shiftRight_readWord input
+        (Word.expOffset input) 2 (by norm_num) (by norm_num))
+  have hbaseLt : WordCorrect.baseNat input % (2 ^ 255) < 2 ^ 256 := by
+    exact (Nat.mod_lt _ (by norm_num)).trans (by norm_num)
+  have hexponentLt : WordCorrect.exponentNat input < 2 ^ 256 := by
+    rw [WordCorrect.exponentNat, he2]
+    exact (Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow input
+      (Word.expOffset input) 2).trans (by norm_num)
+  rw [hm255] at hbase hresult
+  have hmodPowLt : Precompile.modPow
+      (WordCorrect.baseNat input) (WordCorrect.exponentNat input)
+      (2 ^ 255) < 2 ^ 256 :=
+    (Algorithm.modPow_lt (by norm_num : 0 < 2 ^ 255)).trans (by norm_num)
+  rw [hresult, Word.shortcutResult, hbase, hexp]
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_land]
+  simp only [UInt256.exp, Challenge.EvmProof.Word.word_toNat_ofNat]
+  rw [Nat.mod_eq_of_lt hbaseLt, Nat.mod_eq_of_lt hexponentLt,
+    Nat.mod_eq_of_lt (by norm_num : 2 ^ 255 - 1 < 2 ^ 256),
+    Nat.mod_eq_of_lt hmodPowLt, Nat.and_two_pow_sub_one_eq_mod]
+  rw [Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega))]
+  simpa using
+    (WordCorrect.residue_power_eq_modPow
+      (WordCorrect.baseNat input) (WordCorrect.exponentNat input)
+      (2 ^ 255) 0 (by norm_num : 0 < 2 ^ 255))
+
 /-- A complete successful execution from the submission's initial state. -/
 abbrev Handled (input : ByteArray) : Prop :=
   ∃ final : State,
@@ -43,18 +88,76 @@ def gasSteps_wordNonzeroFromEntry (input : ByteArray)
     simpa [WordCorrect.wordBase, WordCorrect.wordInitialAcc] using
       Word.gasSteps_baseFinish input (WordCorrect.wordBase input)
         hvalid hword
-  let exponentLoop : Challenge.EvmProof.GasSteps
-      (Word.expLoopState input 0 (WordCorrect.wordInitialAcc input)
-        (WordCorrect.wordBase input))
-      (Word.expLoopState input (exponentSize input)
-        (WordCorrect.wordResult input) (WordCorrect.wordBase input)) := by
-    simpa [WordCorrect.wordResult] using
-      WordLoops.gasSteps_expLoop input (WordCorrect.wordInitialAcc input)
-        (WordCorrect.wordBase input) hvalid
-  let finish := WordExit.gasSteps_expFinish input
-    (WordCorrect.wordResult input) (WordCorrect.wordBase input) hvalid hword
-  exact (((((start.trans setup).trans baseLoop).trans baseFinish).trans
-    exponentLoop).trans finish)
+  let prefix := (((start.trans setup).trans baseLoop).trans baseFinish)
+  by_cases hroute : Word.shortcutMatches input
+  · rcases hroute with ⟨hm255, he2⟩
+    have hshortcut := shortcutResult_correct input hvalid hword hmodpos hm255 he2
+    let enter : Challenge.EvmProof.GasSteps
+        (Word.expLoopState input 0 (WordCorrect.wordInitialAcc input)
+          (WordCorrect.wordBase input))
+        (Word.bitLoopState input 0 0
+          (Word.byteWord input (Word.expOffset input))
+          (UInt256.ofNat (Word.expOffset input))
+          (WordCorrect.wordInitialAcc input) (WordCorrect.wordBase input)) := by
+      simpa using
+        WordLoops.gasSteps_expEnter input 0 (WordCorrect.wordInitialAcc input)
+          (WordCorrect.wordBase input) hvalid (by omega)
+    let entry :=
+      Challenge.EvmProof.Stepper.runLocatedBlock_sound
+        Artifact.submissionArtifact .Osaka Word.bitEntryPath rfl rfl
+        (Word.run_bitEntry input 0
+          (Word.byteWord input (Word.expOffset input))
+          (UInt256.ofNat (Word.expOffset input))
+          (WordCorrect.wordInitialAcc input) (WordCorrect.wordBase input))
+        rfl deployAddress_not_precompile
+    let jump :=
+      Challenge.EvmProof.Stepper.runLocatedBlock_sound
+        Artifact.submissionArtifact .Osaka Word.bitJumpPath rfl rfl
+        (Word.run_bitJump input 0
+          (Word.byteWord input (Word.expOffset input))
+          (UInt256.ofNat (Word.expOffset input))
+          (WordCorrect.wordInitialAcc input) (WordCorrect.wordBase input))
+        rfl deployAddress_not_precompile
+    let dispatch :=
+      Challenge.EvmProof.Stepper.runLocatedBlock_sound
+        Artifact.submissionArtifact .Osaka Word.shortcutDispatchPath rfl rfl
+        (Word.run_shortcutDispatch_match input 0
+          (Word.byteWord input (Word.expOffset input))
+          (UInt256.ofNat (Word.expOffset input))
+          (WordCorrect.wordInitialAcc input) (WordCorrect.wordBase input)
+          hvalid hword ⟨hm255, he2⟩ rfl)
+        rfl deployAddress_not_precompile
+    let direct :=
+      Challenge.EvmProof.Stepper.runLocatedBlock_sound
+        Artifact.submissionArtifact .Osaka Word.shortcutDirectPath rfl rfl
+        (Word.run_shortcutDirect input 0
+          (Word.byteWord input (Word.expOffset input))
+          (UInt256.ofNat (Word.expOffset input))
+          (WordCorrect.wordInitialAcc input) (WordCorrect.wordBase input)
+          hvalid)
+        rfl deployAddress_not_precompile
+    let tail :=
+      Challenge.EvmProof.Stepper.runLocatedBlock_sound
+        Artifact.submissionArtifact .Osaka WordExit.expFinishTailPath rfl rfl
+        (WordExit.run_expFinishTail input
+          (Word.shortcutResult input (WordCorrect.wordBase input))
+          (WordCorrect.wordBase input) hvalid hword)
+        rfl deployAddress_not_precompile
+    have tail' := Challenge.EvmProof.GasSteps.cast tail (by rfl)
+      (by rw [hshortcut])
+    let routed := (((enter.trans entry).trans jump).trans dispatch).trans direct
+    exact prefix.trans (routed.trans tail')
+  · let exponentLoop : Challenge.EvmProof.GasSteps
+        (Word.expLoopState input 0 (WordCorrect.wordInitialAcc input)
+          (WordCorrect.wordBase input))
+        (Word.expLoopState input (exponentSize input)
+          (WordCorrect.wordResult input) (WordCorrect.wordBase input)) := by
+      simpa [WordCorrect.wordResult] using
+        WordLoops.gasSteps_expLoop input (WordCorrect.wordInitialAcc input)
+          (WordCorrect.wordBase input) hvalid hword hroute
+    let finish := WordExit.gasSteps_expFinish input
+      (WordCorrect.wordResult input) (WordCorrect.wordBase input) hvalid hword
+    exact prefix.trans (exponentLoop.trans finish)
 
 /-- The old one-word implementation is a complete fallback from pc 517. -/
 def legacyWordHandled (input : ByteArray) (hvalid : ValidInput input)

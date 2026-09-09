@@ -120,10 +120,10 @@ def expLoadPath :
    opAt 478 .ADD, opAt 479 (.Dup ⟨0, by decide⟩), opAt 480 .CALLDATALOAD,
    pushAt 481 0 0, opAt 482 .BYTE, pushAt 483 0 0]
 
-/-- The loop head now pushes the unrolled block and jumps to it. -/
+/- The loop head dispatches the first byte through the guarded shortcut. -/
 def bitEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 484 .JUMPDEST, pushAt 485 2 3454]
+  [opAt 484 .JUMPDEST, pushAt 485 2 5360]
 
 def bitJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -325,6 +325,49 @@ def bitLoopState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     stack := [UInt256.ofNat j, byte, offset, UInt256.ofNat outer, acc, base,
       UInt256.ofNat (modulusValue input)] ++ bitTail input }
 
+
+def shortcutMatches (input : ByteArray) : Prop :=
+  modulusValue input = 2 ^ 255 ∧ exponentSize input = 2
+
+def shortcutExponent (input : ByteArray) : UInt256 :=
+  UInt256.shiftRight
+    (MachineState.readWord input (expOffset input))
+    (UInt256.ofNat 240)
+
+def shortcutResult (input : ByteArray) (base : UInt256) : UInt256 :=
+  UInt256.land (UInt256.exp base (shortcutExponent input))
+    (UInt256.ofNat (2 ^ 255 - 1))
+
+def shortcutEntryState (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) : State :=
+  { bitLoopState input outer 0 byte offset acc base with pc := UInt256.ofNat 5413 }
+
+def shortcutFinishState (input : ByteArray) (result base : UInt256) : State :=
+  { expLoopState input (exponentSize input) result base with pc := UInt256.ofNat 669 }
+
+def shortcutDispatchPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 3855 .JUMPDEST, opAt 3856 (.Dup ⟨6, by decide⟩),
+   pushAt 3857 32 0x8000000000000000000000000000000000000000000000000000000000000000,
+   opAt 3858 .EQ, opAt 3859 (.Dup ⟨9, by decide⟩), pushAt 3860 1 2,
+   opAt 3861 .EQ, opAt 3862 .AND, opAt 3863 (.Dup ⟨4, by decide⟩),
+   pushAt 3864 0 0, opAt 3865 .EQ, opAt 3866 .AND,
+   pushAt 3867 2 5413, opAt 3868 .JUMPI, pushAt 3869 2 3454,
+   opAt 3870 .JUMP]
+
+def shortcutDirectPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 3871 .JUMPDEST, opAt 3872 .POP, opAt 3873 .POP, opAt 3874 .POP,
+   opAt 3875 .POP, opAt 3876 .POP, opAt 3877 (.Dup ⟨6, by decide⟩),
+   opAt 3878 .CALLDATALOAD, pushAt 3879 1 240, opAt 3880 .SHR,
+   opAt 3881 (.Dup ⟨1, by decide⟩), opAt 3882 .EXP,
+   pushAt 3883 32 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+   opAt 3884 .AND, opAt 3885 (.Dup ⟨4, by decide⟩), pushAt 3886 2 669,
+   opAt 3887 .JUMP]
+
+def shortcutDispatchState (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) : State :=
+  { bitLoopState input outer 0 byte offset acc base with pc := UInt256.ofNat 5360 }
 theorem bitFrame (input : ByteArray) (outer : Nat) (byte offset acc base : UInt256) :
     WordStep.Frame (bitLoopState input outer 0 byte offset acc base) :=
   ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
@@ -335,11 +378,10 @@ def bitUnrollState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
   WordStep.stW (bitLoopState input outer 0 byte offset acc base) (bitPC j)
     ([base - UInt256.ofNat 1, UInt256.ofNat 0, byte, offset, UInt256.ofNat outer,
       acc, base, UInt256.ofNat (modulusValue input)] ++ bitTail input)
-
 def bitPushState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
   let s := bitLoopState input outer 0 byte offset acc base
-  { s with pc := UInt256.ofNat 610, stack := UInt256.ofNat 3454 :: s.stack }
+  { s with pc := UInt256.ofNat 610, stack := UInt256.ofNat 5360 :: s.stack }
 
 def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
@@ -350,16 +392,6 @@ def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
 theorem jump3695 : Decode.isValidJumpDest submissionBytecode 3454 = true :=
   Artifact.isValidJumpDest_index 2520 (by rfl)
 
-/-- The loop head jumps into the unrolled block. -/
-def gasSteps_bitEntry (input : ByteArray) (outer : Nat)
-    (byte offset acc base : UInt256) :
-    Challenge.EvmProof.GasSteps (bitLoopState input outer 0 byte offset acc base)
-      (bitHeadState input outer byte offset acc base) :=
-  WordEnds.gasSteps_bitEntry_sym (bitLoopState input outer 0 byte offset acc base)
-    (bitTail input) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer) acc base
-    (UInt256.ofNat (modulusValue input))
-    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-    (by exact jump3695)
 
 /-- The head of the block derives `base - 1` for the eight copies. -/
 def gasSteps_bitHead (input : ByteArray) (outer : Nat)
@@ -461,6 +493,7 @@ def bitMaskedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
   { bitLoopState input outer j byte offset acc base with
     pc := UInt256.ofNat 632
     stack := [UInt256.ofNat 0 - exponentBit byte j,
+ 
       UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)),
       exponentBit byte j, UInt256.ofNat j, byte, offset, UInt256.ofNat outer,
       acc, base, UInt256.ofNat (modulusValue input),
@@ -590,6 +623,200 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
     Artifact.submissionArtifact.instructionPC i =
       ([589,590,591,592,593,594,597,598,599,600,601,602,603,604,605,606,607,610,611,613,614,615,616,618,619,620,622,623,624,625,626,627,628,629,630,631,632,633,634,635,636,637,638,639,640,641,642,643,644,645,647,648,651,652,653,654,655,656,657,658,659,661,662,665,666,667,668] : List Nat)[i - 469]! := by
   interval_cases i <;> decide
+
+@[simp] private theorem shortcutPCs (i : Nat)
+    (hi : 3855 ≤ i) (hii : i ≤ 3887) :
+    Artifact.submissionArtifact.instructionPC i =
+      ([5360,5361,5362,5395,5396,5397,5399,5400,5401,5402,5403,5404,
+        5405,5408,5409,5412,5413,5414,5415,5416,5417,5418,5419,5420,
+        5421,5423,5424,5425,5426,5459,5460,5461,5464] : List Nat)[i - 3855]! := by
+  interval_cases i <;> decide
+
+@[simp] private theorem jump5360 :
+    Decode.isValidJumpDest submissionBytecode 5360 = true :=
+  Artifact.isValidJumpDest_index 3855 (by rfl)
+
+@[simp] private theorem jump5413 :
+    Decode.isValidJumpDest submissionBytecode 5413 = true :=
+  Artifact.isValidJumpDest_index 3871 (by rfl)
+@[simp] private theorem shortcutJump669 :
+    Decode.isValidJumpDest submissionBytecode 669 = true :=
+  Artifact.isValidJumpDest_index 536 (by rfl)
+
+set_option linter.unusedSimpArgs false in
+theorem run_bitEntry (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) :
+    Challenge.EvmProof.Stepper.runLocatedBlock bitEntryPath
+      (bitLoopState input outer 0 byte offset acc base) =
+        some (bitPushState input outer byte offset acc base) := by
+  simp (config := { maxSteps := 100000 })
+    [bitEntryPath, opAt, pushAt,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      bitLoopState, bitPushState, nonzeroState, callerRest,
+      Dispatch.wordEntryState, Main.headerState, initialState, expPCs,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_bitJump (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) :
+    Challenge.EvmProof.Stepper.runLocatedBlock bitJumpPath
+      (bitPushState input outer byte offset acc base) =
+        some (shortcutDispatchState input outer byte offset acc base) := by
+  simp (config := { maxSteps := 100000 })
+    [bitJumpPath, opAt,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      bitPushState, shortcutDispatchState, bitLoopState, nonzeroState, callerRest,
+      Dispatch.wordEntryState, Main.headerState, initialState, expPCs, jump5360]
+
+set_option linter.unusedSimpArgs false in
+theorem run_shortcutDispatch_match (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) (hvalid : ValidInput input)
+    (hword : modulusSize input ≤ 32) (hmatch : shortcutMatches input)
+    (houter : outer = 0) :
+    Challenge.EvmProof.Stepper.runLocatedBlock shortcutDispatchPath
+      (shortcutDispatchState input outer byte offset acc base) =
+        some (shortcutEntryState input outer byte offset acc base) := by
+  rcases hvalid with ⟨_, hb, he, hm⟩
+  rcases hmatch with ⟨hm255, he2⟩
+  have hmodlt : modulusValue input < 2 ^ 256 :=
+    (Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow input
+      (modulusOffset input) (modulusSize input)).trans_le (by
+        have hp := pow_le_pow_right₀ (by omega : 1 ≤ (256 : Nat)) hword
+        exact hp.trans (by norm_num))
+  have hmodmod : modulusValue input % 2 ^ 256 = modulusValue input :=
+    Nat.mod_eq_of_lt hmodlt
+  have he256 : exponentSize input < 2 ^ 256 := by omega
+  have hemod : exponentSize input % 2 ^ 256 = exponentSize input :=
+    Nat.mod_eq_of_lt he256
+  have hmEq : UInt256.eq (UInt256.ofNat (modulusValue input))
+      (UInt256.ofNat (2 ^ 255)) = UInt256.ofNat 1 := by
+    rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat, hmodmod,
+      Nat.mod_eq_of_lt (by norm_num : 2 ^ 255 < 2 ^ 256), hm255]
+    simp
+  have heEq : UInt256.eq (UInt256.ofNat (exponentSize input))
+      (UInt256.ofNat 2) = UInt256.ofNat 1 := by
+    rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat, hemod, he2]
+    simp
+  have hoEq : UInt256.eq (UInt256.ofNat outer) (UInt256.ofNat 0) =
+      UInt256.ofNat 1 := by
+    rw [houter]
+    simp [UInt256.eq]
+  simp (config := { maxSteps := 300000 })
+    [shortcutDispatchPath, opAt, pushAt,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      shortcutDispatchState, shortcutEntryState, bitLoopState, bitTail,
+      nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
+      initialState, shortcutPCs, UInt256.isTrue, UInt256.eq,
+      Challenge.EvmProof.Word.word_toNat_ofNat, hmEq, heEq, hoEq,
+      houter, shortcutMatches, jump5413, jump3695]
+
+set_option linter.unusedSimpArgs false in
+theorem run_shortcutDispatch_miss (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) (hvalid : ValidInput input)
+    (hword : modulusSize input ≤ 32) (hmiss : ¬ shortcutMatches input) :
+    Challenge.EvmProof.Stepper.runLocatedBlock shortcutDispatchPath
+      (shortcutDispatchState input outer byte offset acc base) =
+        some (bitHeadState input outer byte offset acc base) := by
+  rcases hvalid with ⟨_, hb, he, hm⟩
+  have hmodlt : modulusValue input < 2 ^ 256 :=
+    (Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow input
+      (modulusOffset input) (modulusSize input)).trans_le (by
+        have hp := pow_le_pow_right₀ (by omega : 1 ≤ (256 : Nat)) hword
+        exact hp.trans (by norm_num))
+  have hmodmod : modulusValue input % 2 ^ 256 = modulusValue input :=
+    Nat.mod_eq_of_lt hmodlt
+  have he256 : exponentSize input < 2 ^ 256 := by omega
+  have hemod : exponentSize input % 2 ^ 256 = exponentSize input :=
+    Nat.mod_eq_of_lt he256
+  have hmEq : UInt256.eq (UInt256.ofNat (modulusValue input))
+      (UInt256.ofNat (2 ^ 255)) =
+        if modulusValue input = 2 ^ 255 then UInt256.ofNat 1 else UInt256.ofNat 0 := by
+    by_cases hm255 : modulusValue input = 2 ^ 255
+    · rw [if_pos hm255, UInt256.eq,
+        Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.word_toNat_ofNat, hmodmod,
+        Nat.mod_eq_of_lt (by norm_num : 2 ^ 255 < 2 ^ 256), hm255]
+      simp
+    · rw [if_neg hm255, UInt256.eq,
+        Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.word_toNat_ofNat, hmodmod,
+        Nat.mod_eq_of_lt (by norm_num : 2 ^ 255 < 2 ^ 256)]
+      simp [hm255]
+  have heEq : UInt256.eq (UInt256.ofNat (exponentSize input))
+      (UInt256.ofNat 2) =
+        if exponentSize input = 2 then UInt256.ofNat 1 else UInt256.ofNat 0 := by
+    by_cases he2 : exponentSize input = 2
+    · rw [if_pos he2, UInt256.eq,
+        Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.word_toNat_ofNat, hemod, he2]
+      simp
+    · rw [if_neg he2, UInt256.eq,
+        Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.word_toNat_ofNat, hemod]
+      simp [he2]
+  have hrouteEq :
+      UInt256.land
+          (if exponentSize input = 2 then UInt256.ofNat 1 else UInt256.ofNat 0)
+          (if modulusValue input = 2 ^ 255 then UInt256.ofNat 1 else UInt256.ofNat 0) =
+        UInt256.ofNat 0 := by
+    by_cases hm255 : modulusValue input = 2 ^ 255
+    · by_cases he2 : exponentSize input = 2
+      · exact False.elim (hmiss ⟨hm255, he2⟩)
+      · simp [hm255, he2]
+    · simp [hm255]
+  simp (config := { maxSteps := 300000 })
+    [shortcutDispatchPath, opAt, pushAt,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      shortcutDispatchState, bitHeadState, bitLoopState, bitTail,
+      nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
+      initialState, shortcutPCs, UInt256.isTrue, UInt256.eq,
+      Challenge.EvmProof.Word.word_toNat_ofNat, hmEq, heEq, hrouteEq, jump3695]
+
+set_option linter.unusedSimpArgs false in
+theorem run_shortcutDirect (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) (hvalid : ValidInput input) :
+    Challenge.EvmProof.Stepper.runLocatedBlock shortcutDirectPath
+      (shortcutEntryState input outer byte offset acc base) =
+        some (shortcutFinishState input (shortcutResult input base) base) := by
+  rcases hvalid with ⟨_, hb, he, hm⟩
+  have hoff : expOffset input < 2 ^ 256 := by
+    simp only [expOffset]
+    omega
+  simp (config := { maxSteps := 350000 })
+    [shortcutDirectPath, opAt, pushAt,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      shortcutEntryState, shortcutFinishState, shortcutResult, shortcutExponent,
+      bitLoopState, expLoopState, bitTail, nonzeroState, callerRest,
+      Dispatch.wordEntryState, Main.headerState, initialState, shortcutPCs,
+      Challenge.EvmProof.Word.word_toNat_ofNat, UInt256.expFast_eq_exp,
+      hoff, shortcutJump669]
+
+/- The entry jump is followed by the guarded dispatch; generic callers use
+   the miss branch so the unrolled body receives its original frame. -/
+def gasSteps_bitEntry (input : ByteArray) (outer : Nat)
+    (byte offset acc base : UInt256) (hvalid : ValidInput input)
+    (hword : modulusSize input ≤ 32) (hmiss : ¬ shortcutMatches input) :
+    Challenge.EvmProof.GasSteps (bitLoopState input outer 0 byte offset acc base)
+      (bitHeadState input outer byte offset acc base) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka bitEntryPath rfl rfl
+        (run_bitEntry input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka bitJumpPath rfl rfl
+        (run_bitJump input outer byte offset acc base) rfl
+        deployAddress_not_precompile).trans <|
+      Challenge.EvmProof.Stepper.runLocatedBlock_sound
+        Artifact.submissionArtifact .Osaka shortcutDispatchPath rfl rfl
+        (run_shortcutDispatch_miss input outer byte offset acc base
+          hvalid hword hmiss) rfl deployAddress_not_precompile
 
 @[simp] theorem jump669 :
     Decode.isValidJumpDest submissionBytecode 669 = true :=

@@ -144,12 +144,13 @@ def bitAfter (input : ByteArray) (byte : UInt256) (base : UInt256) :
   | j + 1, acc => bitStepSel input byte j (bitAfter input byte base j acc) base
 
 def gasSteps_bitLoop (input : ByteArray) (outer : Nat)
-    (byte offset acc base : UInt256) :
+    (byte offset acc base : UInt256) (hvalid : ValidInput input)
+    (hword : modulusSize input ≤ 32) (hmiss : ¬ shortcutMatches input) :
     Challenge.EvmProof.GasSteps
       (bitLoopState input outer 0 byte offset acc base)
       (bitUnrollState input outer 8 byte offset
         (bitAfter input byte base 8 acc) base) :=
-  (gasSteps_bitEntry input outer byte offset acc base).trans <|
+  (gasSteps_bitEntry input outer byte offset acc base hvalid hword hmiss).trans <|
   (gasSteps_bitHead input outer byte offset acc base).trans <|
   (gasSteps_bitCopy0 input outer byte offset
     (bitAfter input byte base 0 acc) base).trans <|
@@ -186,26 +187,27 @@ def expStep (input : ByteArray) (i : Nat) (acc base : UInt256) : UInt256 :=
 def expAfter (input : ByteArray) (base : UInt256) : Nat → UInt256 → UInt256
   | 0, acc => acc
   | i + 1, acc => expStep input i (expAfter input base i acc) base
-
 def gasSteps_expIteration (input : ByteArray) (i : Nat) (acc base : UInt256)
-    (hvalid : ValidInput input) (hi : i < exponentSize input) :
+    (hvalid : ValidInput input) (hword : modulusSize input ≤ 32)
+    (hmiss : ¬ shortcutMatches input) (hi : i < exponentSize input) :
     Challenge.EvmProof.GasSteps (expLoopState input i acc base)
       (expLoopState input (i + 1) (expStep input i acc base) base) := by
   let byte := byteWord input (expOffset input + i)
   let offset := UInt256.ofNat (expOffset input + i)
   exact (gasSteps_expEnter input i acc base hvalid hi).trans <|
-    (gasSteps_bitLoop input i byte offset acc base).trans
+    (gasSteps_bitLoop input i byte offset acc base hvalid hword hmiss).trans
       (gasSteps_bitFinish input i byte offset (bitAfter input byte base 8 acc)
         base hvalid hi)
 
 def gasSteps_expLoop (input : ByteArray) (acc base : UInt256)
-    (hvalid : ValidInput input) :
+    (hvalid : ValidInput input) (hword : modulusSize input ≤ 32)
+    (hmiss : ¬ shortcutMatches input) :
     Challenge.EvmProof.GasSteps (expLoopState input 0 acc base)
       (expLoopState input (exponentSize input)
         (expAfter input base (exponentSize input) acc) base) := by
   exact Challenge.EvmProof.GasSteps.iterateBounded (I := fun i =>
       expLoopState input i (expAfter input base i acc) base) (exponentSize input)
     (fun i hi => gasSteps_expIteration input i
-      (expAfter input base i acc) base hvalid hi)
+      (expAfter input base i acc) base hvalid hword hmiss hi)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordLoops
