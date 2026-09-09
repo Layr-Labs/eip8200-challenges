@@ -1,5 +1,4 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardLoop
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -117,23 +116,12 @@ theorem run_tail_fallback (input : ByteArray) (hsize : input.size = 1000)
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
-def returnStored (input : ByteArray) : State :=
-  { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 249
-    memory := answerMemory
-    activeWords := UInt256.ofNat 1 }
-
-def returnSized (input : ByteArray) : State :=
-  { returnStored input with
-    pc := UInt256.ofNat 250
-    stack := [UInt256.ofNat 32] }
-
-theorem run_return_store :
-    run (returnPath.take 3) (returnEntry KnownInputData.targetInput) =
-      some (returnStored KnownInputData.targetInput) := by
+theorem run_return :
+    run returnPath (returnEntry KnownInputData.targetInput) =
+      some (returnedState KnownInputData.targetInput) := by
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp (config := { maxSteps := 1000000 })
-    [returnPath, opAt, pushAt, wfOp, returnEntry, atPC, returnStored,
+    [returnPath, opAt, pushAt, wfOp, returnEntry, atPC, returnedState,
     answerMemory, storeWord, ExactGuardSpec.paddedDigestWord,
     MachineState.mstore, State.activeWordsAfterUInt256,
     MachineState.activeWordsAfter, hzeroNat,
@@ -141,46 +129,5 @@ theorem run_return_store :
     Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
-
-theorem run_return_finish :
-    run (returnPath.drop 4) (returnSized KnownInputData.targetInput) =
-      some (returnedState KnownInputData.targetInput) := by
-  have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
-  simp (config := { maxSteps := 1000000 })
-    [returnPath, opAt, pushAt, wfOp, returnSized, returnStored, returnedState,
-    State.activeWordsAfterUInt256, MachineState.activeWordsAfter, hzeroNat,
-    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
-    Challenge.EvmProof.Stepper.runInstr,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
-    Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
-
-def gasSteps_return :
-    GasSteps (returnEntry KnownInputData.targetInput)
-      (returnedState KnownInputData.targetInput) := by
-  have gs := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka (returnPath.take 3)
-    (by rfl) (by rfl) run_return_store (by rfl) deployAddress_not_precompile
-  have hd := Artifact.submissionArtifact.decodeAt_op_index
-    145 .MSIZE (by rfl) (by decide) trivial
-  have hp : (returnStored KnownInputData.targetInput).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 145 := by
-    rw [pc2857]
-    rfl
-  have hop : (returnStored KnownInputData.targetInput).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of
-      (returnStored KnownInputData.targetInput) 145 (by rfl) hp .MSIZE none hd (by decide)
-  have gmraw := Msize.step hop (by simp [returnStored]) (by rfl)
-    deployAddress_not_precompile
-  have gm : GasSteps (returnStored KnownInputData.targetInput)
-      (returnSized KnownInputData.targetInput) := by
-    simpa [returnStored, returnSized,
-      Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.word_toNat_ofNat] using gmraw
-  have gr := Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka (returnPath.drop 4)
-    (by rfl) (by rfl) run_return_finish (by rfl) deployAddress_not_precompile
-  exact gs.trans (gm.trans gr)
-
-#print axioms gasSteps_return
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
