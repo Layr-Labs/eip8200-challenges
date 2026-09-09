@@ -30,11 +30,11 @@ def rho (input : ByteArray) : List UInt256 :=
 
 @[simp] theorem rho_length (input : ByteArray) : (rho input).length = 4 := rfl
 
-/-- State after the first comparison succeeds: pc 5012 (instruction 4087)
+/-- State after the first comparison succeeds: pc 5062 (instruction 4081)
 with the plain driver stack on top of the copied-code state. -/
 def firstMatchedState (s : State) (input : ByteArray) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5012
+    pc := UInt256.ofNat 5062
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
@@ -42,7 +42,7 @@ def firstMatchedState (s : State) (input : ByteArray) : State :=
 explicit; it collapses by `PrefixStateMemory.scratchState_copied`. -/
 private def firstMatchedScratch (s : State) (input : ByteArray) : State :=
   { PrefixStateMemory.scratchState (PrefixStateMemory.copied s) with
-    pc := UInt256.ofNat 5012
+    pc := UInt256.ofNat 5062
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
@@ -117,7 +117,7 @@ private theorem cond_mismatch (input : ByteArray)
   simpa using htrue
 
 /-- The seven-instruction first-word comparison on a word-0 match: the final
-`JUMPI` is not taken and execution continues at pc 5012 (instruction 4087). -/
+`JUMPI` is not taken and execution continues at pc 5062 (instruction 4081). -/
 theorem run_firstCompare_match (s : State) (input : ByteArray)
     (hmatch : MachineState.readWord input 0 = PatternedWordData.expectedWordAt 0)
     (hcalldata : s.executionEnv.calldata = input)
