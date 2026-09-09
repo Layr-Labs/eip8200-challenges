@@ -35,8 +35,8 @@ def l1At (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
 def l2At (pc : Nat) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc
-           stack := [UInt256.ofNat (ptrAt (32 * n - 64) k),
-                     UInt256.ofNat (ptrAt (8192 + 32 * n) k),
+           stack := [UInt256.ofNat (32 * n - 64),
+                     UInt256.ofNat (8192 + 32 * n),
                      (l2Step mid mu c0 n k).carry, mu, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa + 32*n - 32), UInt256.ofNat (pb - 32), isFour n, negative32, allOnes, pdst, ret] ++ rest

@@ -15,7 +15,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast CiosCached CiosCachedMacCore
 
-def program (c : Nat) : List Instr :=
+def program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op .MLOAD,
    .op (.Dup ⟨10, by decide⟩),
@@ -46,7 +46,9 @@ def program (c : Nat) : List Instr :=
    .op .GT,
    .op .ADD,
    .op (.Swap ⟨2, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat c),
+   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup ⟨10, by decide⟩),
+   .op .ADD,
    .op (.Swap ⟨2, by decide⟩),
    .op .MSTORE,
    .op (.Dup ⟨8, by decide⟩),
@@ -68,17 +70,12 @@ def loadProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op .MLOAD,
    .op (.Dup ⟨10, by decide⟩)]
 
-/-- `c` is the scratch pointer decremented by one limb.  The artifact pushes it
-as a literal instead of recomputing `Dup;Dup;ADD` each iteration; `c` is a
-parameter here because the eight unrolled copies carry eight different literals.
-`PUSH2` is three bytes, exactly what the three folded opcodes were, so every
-`advancePC` and every pc claim downstream is unchanged. -/
-def tailProgram (c : Nat) : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat c),
+def tailProgram : List Instr :=
+  [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op .ADD,
    .op (.Swap ⟨2, by decide⟩), .op .MSTORE, .op (.Dup ⟨8, by decide⟩), .op .ADD]
 
-theorem program_eq (c : Nat) :
-    program c = (loadProgram ++ CiosCachedMacCore.program) ++ tailProgram c := rfl
+theorem program_eq :
+    program = (loadProgram ++ CiosCachedMacCore.program) ++ tailProgram := rfl
 
 theorem run_load (template : State) (pc pa pt carry bi pbi paEnd pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
@@ -97,11 +94,10 @@ theorem run_load (template : State) (pc pa pt carry bi pbi paEnd pbEnd flag dest
     advancePC, hc11, hc12, State.activeWordsAfterUInt256, hactive, hN]
 
 theorem run_tail (template : State) (pc pa pt sum carry bi pbi paEnd pbEnd flag destination returnPC : UInt256)
-    (c : Nat) (hc : UInt256.ofNat c = negative32 + pt)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
     (hactive : UInt256.ofNat (MachineState.activeWordsAfter
       template.activeWords.toNat pt.toNat 32) = template.activeWords) :
-    runInstructions (tailProgram c)
+    runInstructions tailProgram
       (framed template pc
         ([sum, pa, pt, carry, bi, pbi, paEnd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) =
     some (framed
@@ -114,10 +110,10 @@ theorem run_tail (template : State) (pc pa pt sum carry bi pbi paEnd pbEnd flag 
   have hc11 : rest.length + 12 < 1024 := by omega
   have hc12 : rest.length + 13 < 1024 := by omega
   have hc13 : rest.length + 14 < 1024 := by omega
-  simp [runInstructions, tailProgram, framed, Challenge.EvmProof.Stepper.runInstr, hc,
-    advancePC, hc11, hc12, hc13, List.exchange,
+  have hc14 : rest.length + 15 < 1024 := by omega
+  simp [runInstructions, tailProgram, framed, Challenge.EvmProof.Stepper.runInstr,
+    advancePC, hc11, hc12, hc13, hc14, List.exchange,
     State.activeWordsAfterUInt256, hactive]
-  simp [succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- One copy works also at j=n-1; its following loop test is separate. -/
 theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
@@ -125,8 +121,7 @@ theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
     (hactive : 296 ≤ template.activeWords.toNat) (hn : n ≤ 32) (hj : j < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
-    runInstructions (program (ptrAt (8224 + 32*n) j - 32))
-      (state template pc mem bi pa n j pbi paEnd pbEnd flag destination returnPC rest) =
+    runInstructions program (state template pc mem bi pa n j pbi paEnd pbEnd flag destination returnPC rest) =
     some (state template (pc + UInt256.ofNat 37) mem bi pa n (j+1)
       pbi paEnd pbEnd flag destination returnPC rest) := by
   have hc11 : rest.length + 12 < 1024 := by omega
@@ -170,33 +165,21 @@ theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
     (MachineState.readWord st.memory pa0.toNat) bi (l1Step mem bi pa n j).carry pa0 pt0
     ([pbi, paEnd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT
-  have hcdef : UInt256.ofNat (ptrAt (8224 + 32*n) j - 32) = negative32 + pt0 := by
-    have hb : 32 ≤ ptrAt (8224 + 32*n) j := by
-      simp only [ptrAt]; omega
-    simp only [pt0]
-    rw [hK, Challenge.EvmProof.Word.ofNat_add_mod]
-    apply Challenge.EvmProof.Word.word_ext
-    simp only [Challenge.EvmProof.Word.word_toNat_ofNat]
-    have heq :
-        115792089237316195423570985008687907853269984665640564039457584007913129639904 + ptrAt (8224 + 32*n) j =
-        (ptrAt (8224 + 32*n) j - 32) + 2 ^ 256 := by omega
-    rw [heq, Nat.add_mod, Nat.mod_self, Nat.add_zero, Nat.mod_mod]
   have ht := run_tail st (advancePC 9 (advancePC 18 (advancePC 3 pc))) pa0 pt0
     (macSum (MachineState.readWord st.memory pa0.toNat) bi
       (MachineState.readWord st.memory pt0.toNat) (l1Step mem bi pa n j).carry)
     (macCarry (MachineState.readWord st.memory pa0.toNat) bi
       (MachineState.readWord st.memory pt0.toNat) (l1Step mem bi pa n j).carry)
-    bi pbi paEnd pbEnd flag destination returnPC (ptrAt (8224 + 32*n) j - 32) hcdef
-    rest hrest hT
+    bi pbi paEnd pbEnd flag destination returnPC rest hrest hT
   have both := runInstructions_append_some _ _ _ _ _ hl hm
   have hall := runInstructions_append_some _ _ _ _ _ both ht
   have hpc : advancePC 7 (advancePC 9 (advancePC 18 (advancePC 3 pc))) =
       pc + UInt256.ofNat 37 := by
     simp [advancePC, succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-  simpa only [program_eq (ptrAt (8224 + 32*n) j - 32), st, pa0, pt0, state, framed, l1Step,
+  simpa only [program_eq, st, pa0, pt0, state, framed, l1Step,
     Challenge.EvmProof.Word.word_toNat_ofNat, hsize, hpaj, hptj, hpc, hK,
     Challenge.EvmProof.Word.ofNat_add_mod, ptrAt_succ] using hall
 
-theorem program_matches (c : Nat) : program c = CiosCached.l1Program c := rfl
+theorem program_matches : program = CiosCached.l1Program := rfl
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedL1
