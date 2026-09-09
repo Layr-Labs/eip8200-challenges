@@ -27,10 +27,10 @@ def hitEntry (s : State) (input : ByteArray) : State :=
 
 /-- The generic compression target of the guard is a valid jump destination. -/
 theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 464 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 272 = 464 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 271 = 464 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 272 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 271 (by rfl)
   rw [hpc] at h
   exact h
 
