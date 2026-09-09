@@ -85,8 +85,31 @@ theorem run_cachedInitial (s : State) (pc messageOffset returnPC : UInt256)
 
 open PairedScheduleHalves PairedScheduleCombined PairedScheduleContract
 
+/-- Schedule cleanup that keeps the 32-bit mask instead of dropping and
+re-pushing it: `POP SWAP1 POP` discards the two wide masks and leaves the
+middle word, which the multiply startup consumes in place of its own `PUSH4`.
+Three stack operations either way; the preserved word is `maskWord` by the
+schedule's own reasoning, not by observation. -/
+def keepCleanupTemplate : List Instr := [op .POP, swap1, op .POP]
+
+theorem run_keepCleanupTemplate (s : State) (pc a b c : UInt256) (rest : List UInt256)
+    (hstack : rest.length < 1021) (hrun : s.halt = .Running) :
+    runInstrSeq keepCleanupTemplate {s with pc := pc, stack := a :: b :: c :: rest} =
+      some {s with pc := pcAfter pc keepCleanupTemplate, stack := b :: rest} := by
+  have hcap2 : rest.length + 1 + 1 < 1024 := by omega
+  have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by omega
+  have hswap1 (u v : UInt256) (rho : List UInt256) :
+      (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
+    simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
+  simp [keepCleanupTemplate, op, swap1, runInstrSeq, Stepper.runInstr, pcAfter, hrun,
+    hcap2, hcap3, hswap1, UInt256.succ, Instr.size]
+  rfl
+
+#print axioms run_keepCleanupTemplate
+
 def fullTemplate : List Instr :=
-  (((cachedInitial ++ upperTemplate) ++ lowerTemplate) ++ sentinelTemplate) ++ cleanupTemplate
+  (((cachedInitial ++ upperTemplate) ++ lowerTemplate) ++ sentinelTemplate) ++
+    keepCleanupTemplate
 
 theorem run_fullTemplate (s : State) (pc messageOffset returnPC : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1015) (hrun : s.halt = .Running)
@@ -94,7 +117,7 @@ theorem run_fullTemplate (s : State) (pc messageOffset returnPC : UInt256)
     runInstrSeq fullTemplate (scheduleEntry s pc messageOffset returnPC rest) =
       some {s with
         pc := pcAfter pc fullTemplate
-        stack := returnPC :: rest
+        stack := maskWord :: returnPC :: rest
         memory := normalizedMemory s.memory (scheduleWords s messageOffset)
         activeWords := loadedActiveWords s messageOffset} := by
   have h1 := run_cachedInitial s pc messageOffset returnPC rest hstack hrun
@@ -126,7 +149,7 @@ theorem run_fullTemplate (s : State) (pc messageOffset returnPC : UInt256)
     (mask8 :: maskWord :: mask16 :: returnPC :: rest)
     (by simp only [List.length_cons]; omega) hrun hactive
   have h1234 := DenseScheduleTrace.runInstrSeq_append_running h123 (by exact hrun) h4
-  have h5 := run_cleanupTemplate
+  have h5 := run_keepCleanupTemplate
     {s with
       activeWords := loadedActiveWords s messageOffset
       memory := writeWord
@@ -150,7 +173,7 @@ theorem run_fullTemplate_natural (s : State) (pc returnPC : UInt256)
     runInstrSeq fullTemplate (scheduleEntry s pc (UInt256.ofNat p) returnPC rest) =
       some {s with
         pc := pcAfter pc fullTemplate
-        stack := returnPC :: rest
+        stack := maskWord :: returnPC :: rest
         memory := normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   have h := run_fullTemplate s pc (UInt256.ofNat p) returnPC rest hstack hrun
@@ -166,9 +189,11 @@ theorem run_fullTemplate_natural (s : State) (pc returnPC : UInt256)
 theorem fullTemplate_length : fullTemplate.length = 159 := by
   have hold := PairedMask32Cache.fullTemplate_length
   have hi : PairedMask32Cache.cachedInitial.length = 11 := rfl
+  have hc0 : PairedMask32Cache.cleanupTemplate.length = 3 := rfl
   have hn : cachedInitial.length = 11 := rfl
-  simp only [PairedMask32Cache.fullTemplate, List.length_append, hi] at hold
-  simp only [fullTemplate, List.length_append, hn]
+  have hc1 : keepCleanupTemplate.length = 3 := rfl
+  simp only [PairedMask32Cache.fullTemplate, List.length_append, hi, hc0] at hold
+  simp only [fullTemplate, List.length_append, hn, hc1]
   omega
 
 #print axioms fullTemplate_length
@@ -182,18 +207,20 @@ theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 285 := b
     PairedMask32Cache.lastTemplate, maskTemplate,
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.storeTemplate,
     PairedSchedulePrimitives.storeTemplateW, PairedSchedulePrimitives.storeWidth,
-    sentinelTemplate, cleanupTemplate, cell, op, push1, push2, push3, dup1, swap1]
+    sentinelTemplate, keepCleanupTemplate, cell, op, push1, push2, push3, dup1, swap1]
 
 #print axioms fullTemplate_byteLength
 
-theorem fullTemplate_staticGas : staticGas fullTemplate = 479 := by
+theorem fullTemplate_staticGas : staticGas fullTemplate = 480 := by
   have happend (xs ys : List Instr) : staticGas (xs ++ ys) = staticGas xs + staticGas ys := by
     simp only [staticGas, List.map_append, List.sum_append]
   have hold := PairedMask32Cache.fullTemplate_staticGas
   have hi : staticGas PairedMask32Cache.cachedInitial = 31 := by decide
+  have hc0 : staticGas PairedMask32Cache.cleanupTemplate = 6 := by decide
   have hn : staticGas cachedInitial = 31 := by decide
-  simp only [PairedMask32Cache.fullTemplate, happend, hi] at hold
-  simp only [fullTemplate, happend, hn]
+  have hc1 : staticGas keepCleanupTemplate = 7 := by decide
+  simp only [PairedMask32Cache.fullTemplate, happend, hi, hc0] at hold
+  simp only [fullTemplate, happend, hn, hc1]
   omega
 
 #print axioms fullTemplate_staticGas
@@ -255,10 +282,11 @@ theorem fullTemplate_advances :
     apply PairedMask32Cache.fullTemplate_advances instruction
     simp only [PairedMask32Cache.fullTemplate, List.mem_append]
     exact Or.inl (Or.inr hs)
-  · apply Or.inl
-    apply PairedMask32Cache.fullTemplate_advances instruction
-    simp only [PairedMask32Cache.fullTemplate, List.mem_append]
-    exact Or.inr hc
+  · simp only [keepCleanupTemplate, List.mem_cons, List.not_mem_nil, or_false] at hc
+    rcases hc with rfl | rfl | rfl
+    all_goals first
+      | exact Or.inl (Or.inl (Or.inl StraightLine.pop))
+      | exact Or.inl (Or.inl (Or.inl (StraightLine.swap _)))
 
 #print axioms fullTemplate_advances
 
@@ -281,7 +309,7 @@ theorem runLocatedBlock_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
       (scheduleEntry s site.startPC (UInt256.ofNat p) returnPC rest) =
       some {s with
         pc := site.endPC
-        stack := returnPC :: rest
+        stack := maskWord :: returnPC :: rest
         memory := normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   have hend : site.endPC = pcAfter site.startPC fullTemplate := by
@@ -313,7 +341,7 @@ def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
     GasSteps (scheduleEntry s site.startPC (UInt256.ofNat p) returnPC rest)
       {s with
         pc := site.endPC
-        stack := returnPC :: rest
+        stack := maskWord :: returnPC :: rest
         memory := normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   apply Stepper.runLocatedBlock_sound artifact fork site.path
@@ -348,7 +376,7 @@ theorem fullTemplate_exactBytes : assembleBytes fullTemplate =
     0x16, 0x61, 0x01, 0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x80, 0x52, 0x82,
     0x16, 0x61, 0x01, 0xa0, 0x52]) ++ [
     0x5f, 0x61, 0x02, 0xc0, 0x52]) ++ [
-    0x50, 0x50, 0x50]) := by
+    0x50, 0x90, 0x50]) := by
   have h0 : assembleBytes cachedInitial = [
     0x5b, 0x63, 0xff, 0xff, 0xff, 0xff, 0x7e, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff,
     0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff,
@@ -372,8 +400,8 @@ theorem fullTemplate_exactBytes : assembleBytes fullTemplate =
     0x16, 0x61, 0x01, 0xa0, 0x52] := by decide
   have h3 : assembleBytes sentinelTemplate = [
     0x5f, 0x61, 0x02, 0xc0, 0x52] := by decide
-  have h4 : assembleBytes cleanupTemplate = [
-    0x50, 0x50, 0x50] := by decide
+  have h4 : assembleBytes keepCleanupTemplate = [
+    0x50, 0x90, 0x50] := by decide
   have h01 := (assembleBytes_append cachedInitial upperTemplate).trans
     (congrArg₂ List.append h0 h1)
   have h012 := (assembleBytes_append (cachedInitial ++ upperTemplate) lowerTemplate).trans
@@ -381,7 +409,7 @@ theorem fullTemplate_exactBytes : assembleBytes fullTemplate =
   have h0123 := (assembleBytes_append ((cachedInitial ++ upperTemplate) ++ lowerTemplate)
     sentinelTemplate).trans (congrArg₂ List.append h012 h3)
   exact (assembleBytes_append (((cachedInitial ++ upperTemplate) ++ lowerTemplate) ++
-    sentinelTemplate) cleanupTemplate).trans (congrArg₂ List.append h0123 h4)
+    sentinelTemplate) keepCleanupTemplate).trans (congrArg₂ List.append h0123 h4)
 
 #print axioms fullTemplate_exactBytes
 
