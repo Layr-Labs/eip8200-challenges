@@ -236,8 +236,8 @@ def tailPath : List Located :=
 
 /-- Store and return the stored digest. -/
 def returnPath : List Located :=
-  [pushAt 233 20 766350606435067737561421097975693824639675460820,
-   pushAt 234 0 0, opAt 235 .MSTORE, pushAt 236 1 32, pushAt 237 0 0,
+  [pushAt 233 21 766350606435067737561421097975693824639675460820,
+   pushAt 234 0 0, opAt 235 .MSTORE, opAt 236 .MSIZE, pushAt 237 0 0,
    opAt 238 .RETURN]
 
 /-- Shift the correction constant out of `M`. -/
@@ -425,11 +425,11 @@ def straddleBackPath : List Located :=
   by rw [scan_instruction_pc 232 (by decide) (by decide)]; rfl
 @[simp] theorem pc2983 : Artifact.submissionArtifact.instructionPC 233 = 0x18c :=
   by rw [scan_instruction_pc 233 (by decide) (by decide)]; rfl
-@[simp] theorem pc2984 : Artifact.submissionArtifact.instructionPC 234 = 0x1a1 :=
+@[simp] theorem pc2984 : Artifact.submissionArtifact.instructionPC 234 = 0x1a2 :=
   by rw [scan_instruction_pc 234 (by decide) (by decide)]; rfl
-@[simp] theorem pc2985 : Artifact.submissionArtifact.instructionPC 235 = 0x1a2 :=
+@[simp] theorem pc2985 : Artifact.submissionArtifact.instructionPC 235 = 0x1a3 :=
   by rw [scan_instruction_pc 235 (by decide) (by decide)]; rfl
-@[simp] theorem pc2986 : Artifact.submissionArtifact.instructionPC 236 = 0x1a3 :=
+@[simp] theorem pc2986 : Artifact.submissionArtifact.instructionPC 236 = 0x1a4 :=
   by rw [scan_instruction_pc 236 (by decide) (by decide)]; rfl
 @[simp] theorem pc2987 : Artifact.submissionArtifact.instructionPC 237 = 0x1a5 :=
   by rw [scan_instruction_pc 237 (by decide) (by decide)]; rfl
