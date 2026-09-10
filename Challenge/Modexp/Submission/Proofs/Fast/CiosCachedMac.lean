@@ -44,13 +44,13 @@ theorem run_l1Last (t : UInt256) (s : State) (mem : ByteArray) (bi : UInt256)
     (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hpos : 0 < n) (ht : t.toNat = 8256)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32*n ≤ 9472) :
-    runInstructions (l1LastProgram t) (l1At 4807 s mem bi pa pb n i (n-1) pdst ret rest) =
+    runInstructions (l1LastProgram t) (l1At 4800 s mem bi pa pb n i (n-1) pdst ret rest) =
       some (midState s (l1Step mem bi pa n n).memory (l1Step mem bi pa n n).carry bi
         pa pb n i pdst ret rest) := by
-  have h := CiosCachedL1.run_last s (UInt256.ofNat 4807) mem bi pa n t ht
+  have h := CiosCachedL1.run_last s (UInt256.ofNat 4800) mem bi pa n t ht
     (UInt256.ofNat (ptrAt (pb+32*n-32) i))
     (UInt256.ofNat (pb-32)) (isFour n) pdst ret rest hcap hact hn32 hpos hpa hpaFit
-  have hpc : UInt256.ofNat 4807 + UInt256.ofNat 35 = UInt256.ofNat 4842 := by decide
+  have hpc : UInt256.ofNat 4800 + UInt256.ofNat 35 = UInt256.ofNat 4835 := by decide
   simpa only [CiosCachedL1.state, CiosCachedL1.doneState, l1At, midState, hpc] using h
 
 theorem run_l2Mac (pc : Nat) (w : Fin 33) (x tl ts : UInt256)

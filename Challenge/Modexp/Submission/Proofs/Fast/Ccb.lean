@@ -87,7 +87,7 @@ def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
 /-- The `MONPRO` call, pc 4458, with the frame `[px, px, px, 2526]` pushed. -/
 def mpCallState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4465
+  { s with pc := UInt256.ofNat 4458
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
                      UInt256.ofNat 2521] ++ loopStack px k ret rest
            memory := mem }
@@ -177,8 +177,8 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have h2888 : (2521 : UInt256) = UInt256.ofNat 2521 := by decide
-  have h1939 : (4465 : UInt256) = UInt256.ofNat 4465 := by decide
-  have h1939Nat : (UInt256.ofNat 4465).toNat = 4465 := by decide
+  have h1939 : (4458 : UInt256) = UInt256.ofNat 4458 := by decide
+  have h1939Nat : (UInt256.ofNat 4458).toNat = 4458 := by decide
   simp (config := { maxSteps := 400000 }) [blk1751, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,

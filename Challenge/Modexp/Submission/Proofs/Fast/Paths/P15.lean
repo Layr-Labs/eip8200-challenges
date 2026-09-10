@@ -33,23 +33,23 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 back into `DOUBLE256`. -/
 def blk1768 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1762 .JUMPDEST,
-   pushAt 1763 0 0,
-   opAt 1764 .MLOAD,
-   pushAt 1765 1 255,
-   opAt 1766 .SHR,
-   opAt 1767 .ISZERO,
-   pushAt 1768 2 1911,
-   opAt 1769 .JUMPI]
+  [opAt 1750 .JUMPDEST,
+   pushAt 1751 0 0,
+   opAt 1752 .MLOAD,
+   pushAt 1753 1 255,
+   opAt 1754 .SHR,
+   opAt 1755 .ISZERO,
+   pushAt 1756 2 1911,
+   opAt 1757 .JUMPI]
 
 /-- Instructions 1776..1780, pc 2550..2921: `t[n] := 1` and the tail call into
 `CSUB`. -/
 def blk1776 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1770 1 1,
-   pushAt 1771 2 8224,
-   opAt 1772 .MSTORE,
-   pushAt 1773 2 2304,
-   opAt 1774 .JUMP]
+  [pushAt 1758 1 1,
+   pushAt 1759 2 8224,
+   opAt 1760 .MSTORE,
+   pushAt 1761 2 2304,
+   opAt 1762 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

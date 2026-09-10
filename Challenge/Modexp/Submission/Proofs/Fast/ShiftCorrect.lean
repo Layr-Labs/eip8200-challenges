@@ -46,7 +46,7 @@ theorem hitFinal_readWord_disjoint (mem input : ByteArray) (n mm addr : Nat) (hn
     (hdisj : (addr + 32 ≤ 1024 ∨ 1024 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ 2048 ∨ 2048 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ NEG ∨ NEG + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ PRE_L ∨ PRE_M1_HIGH + 32 ≤ addr) ∧
+      (addr + 32 ≤ PRE_L ∨ PRE_DINV + 32 ≤ addr) ∧
       (addr + 32 ≤ 7168 ∨ 7168 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ 8224 ∨ 8256 + 32 * n ≤ addr)) :
     MachineState.readWord (hitFinalMem mem input n mm) addr = MachineState.readWord mem addr := by
@@ -58,7 +58,7 @@ theorem hitFinal_preserves (mem input : ByteArray) (n mm ptr cnt v : Nat) (hn : 
     (hdisj : (ptr + 32 * cnt ≤ 1024 ∨ 1024 + 32 * n ≤ ptr) ∧
       (ptr + 32 * cnt ≤ 2048 ∨ 2048 + 32 * n ≤ ptr) ∧
       (ptr + 32 * cnt ≤ NEG ∨ NEG + 32 * n ≤ ptr) ∧
-      (ptr + 32 * cnt ≤ PRE_L ∨ PRE_M1_HIGH + 32 ≤ ptr) ∧
+      (ptr + 32 * cnt ≤ PRE_L ∨ PRE_DINV + 32 ≤ ptr) ∧
       (ptr + 32 * cnt ≤ 7168 ∨ 7168 + 32 * n ≤ ptr) ∧
       (ptr + 32 * cnt ≤ 8224 ∨ 8256 + 32 * n ≤ ptr))
     (hrep : Model.FastRepresents mem ptr cnt v) :
