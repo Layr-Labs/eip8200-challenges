@@ -100,7 +100,7 @@ def cios2DispatchGuard :
    pushAt 10 2 4160,
    opAt 11 .JUMPI]
 
-/-- Full fallback path (indices 2670..2683, pc 4458..4480). -/
+/-- Full fallback path (indices 2670..2683, pc 4479..4501). -/
 def cios2Dispatch :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   cios2DispatchGuard ++

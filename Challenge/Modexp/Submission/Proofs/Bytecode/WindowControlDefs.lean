@@ -36,7 +36,7 @@ def guardPath :
 
 def branchPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Main.pushAt 1839 2 5233, Main.opAt 1840 .JUMPI]
+  [Main.pushAt 1839 2 5230, Main.opAt 1840 .JUMPI]
 
 def missPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=

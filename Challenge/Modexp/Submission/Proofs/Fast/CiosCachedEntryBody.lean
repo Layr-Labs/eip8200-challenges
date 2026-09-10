@@ -13,7 +13,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 theorem run_entryBody (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (_hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1005) (_hrun : s.halt = .Running)
     (hact : 296 ≤ s.activeWords.toNat)
     (_hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32*n ≤ 9472)
@@ -25,6 +25,6 @@ theorem run_entryBody (s : State) (mem : ByteArray) (pa pb n : Nat)
   rw [entryBody_split]
   exact runInstructions_append_some _ _ _ _ _
     (run_zero s mem pa pb n pdst ret rest hcap hact hn32 hcds hs32)
-    (run_pointers s mem pa pb n pdst ret rest hcap hn32 hpa hpaFit hpb hpbFit)
+    (run_pointers s mem pa pb n pdst ret rest hcap hpa hpaFit hpb hpbFit)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCached
