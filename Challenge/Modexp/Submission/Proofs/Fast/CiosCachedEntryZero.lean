@@ -1,6 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedEntryDefs
 
 set_option warningAsError true
+set_option linter.unusedSimpArgs false
 set_option maxHeartbeats 200000
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.CiosCached
@@ -11,12 +12,18 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 theorem run_zero (s : State) (mem : ByteArray) (pa pb n : Nat)
-    (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006)
+    (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1004)
     (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 32)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32*n)) :
     runInstructions zeroProgram (cachedEntryState s mem pa pb n dst ret rest) =
       some (clearedState s mem pa pb n dst ret rest) := by
+  have hExtra9 : rest.length + 9 < 1024 := by omega
+  have hExtra10 : rest.length + 10 < 1024 := by omega
+  have hExtra11 : rest.length + 11 < 1024 := by omega
+  have hExtra12 : rest.length + 12 < 1024 := by omega
+  have hExtra13 : rest.length + 13 < 1024 := by omega
+  have hExtra14 : rest.length + 14 < 1024 := by omega
   have hc6 : rest.length+7 < 1024 := by omega
   have hc7 : rest.length+8 < 1024 := by omega
   have hc8 : rest.length+9 < 1024 := by omega
@@ -35,7 +42,7 @@ theorem run_zero (s : State) (mem : ByteArray) (pa pb n : Nat)
       s.activeWords := activeWords_fix s 9344 32 (by decide) (by omega) hact
   have hactC : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 8192 (64+32*n)) =
       s.activeWords := activeWords_fix s 8192 (64+32*n) (by omega) (by omega) hact
-  simp [zeroProgram, entryProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+  simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, zeroProgram, entryProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     cachedEntryState, clearedState, mpZeroed, hc6, hc7, hc8, hc9, hc10, h64, h8192, h9344, hs32,
     hsizeN, hcdsN, hactS, hactC, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,

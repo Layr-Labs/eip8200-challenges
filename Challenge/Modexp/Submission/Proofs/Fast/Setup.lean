@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.SeededInverse
 import Challenge.Modexp.Submission.Proofs.Fast.Defs
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P0
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P1
@@ -937,17 +938,16 @@ theorem neg_word (v : Nat) :
   rw [Nat.mod_mod_of_dvd _ (dvd_refl (2 ^ 256))]
   congr 1
 
-/-- The first four Newton steps. -/
+/-- A four-bit inverse seed followed by two Newton steps. -/
 def newton4 (m0 : Nat) : Nat :=
-  Model.newtonStep m0 (Model.newtonStep m0 (Model.newtonStep m0
-    (Model.newtonStep m0 1)))
+  Model.newtonStep m0 (Model.newtonStep m0 ((3 * m0) ^^^ 2))
 
-/-- All eight Newton steps. -/
+/-- Six Newton steps after the seed, at the unchanged final boundary. -/
 def newton8 (m0 : Nat) : Nat :=
   Model.newtonStep m0 (Model.newtonStep m0 (Model.newtonStep m0
     (Model.newtonStep m0 (newton4 m0))))
 
-theorem newton8_eq (m0 : Nat) : newton8 m0 = Model.newtonIter m0 8 := rfl
+theorem newton8_eq (m0 : Nat) : newton8 m0 = SeededInverse.seededIter m0 6 := rfl
 
 /-- One `MSTORE` of a natural-number value. -/
 def mstoreAt (mem : ByteArray) (addr value : Nat) : ByteArray :=
@@ -1010,15 +1010,31 @@ def setupPathA :
 /-- Instructions 1076..1100: `x := 1` and the first four Newton steps. -/
 def setupPathB :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1076 1 1, opAt 1077 (.Dup ⟨0, by decide⟩),
-   opAt 1078 (.Dup ⟨2, by decide⟩), opAt 1079 .MUL, pushAt 1080 1 2,
-   opAt 1081 .SUB, opAt 1082 .MUL, opAt 1083 (.Dup ⟨0, by decide⟩),
-   opAt 1084 (.Dup ⟨2, by decide⟩), opAt 1085 .MUL, pushAt 1086 1 2,
-   opAt 1087 .SUB, opAt 1088 .MUL, opAt 1089 (.Dup ⟨0, by decide⟩),
-   opAt 1090 (.Dup ⟨2, by decide⟩), opAt 1091 .MUL, pushAt 1092 1 2,
-   opAt 1093 .SUB, opAt 1094 .MUL, opAt 1095 (.Dup ⟨0, by decide⟩),
-   opAt 1096 (.Dup ⟨2, by decide⟩), opAt 1097 .MUL, pushAt 1098 1 2,
-   opAt 1099 .SUB, opAt 1100 .MUL]
+  [opAt 1076 (.Dup ⟨0, by decide⟩),
+   pushAt 1077 2 3,
+   opAt 1078 .MUL,
+   pushAt 1079 1 2,
+   opAt 1080 .XOR,
+   opAt 1081 .JUMPDEST,
+   opAt 1082 .JUMPDEST,
+   opAt 1083 .JUMPDEST,
+   opAt 1084 .JUMPDEST,
+   opAt 1085 .JUMPDEST,
+   opAt 1086 .JUMPDEST,
+   opAt 1087 .JUMPDEST,
+   opAt 1088 .JUMPDEST,
+   opAt 1089 (.Dup ⟨0, by decide⟩),
+   opAt 1090 (.Dup ⟨2, by decide⟩),
+   opAt 1091 .MUL,
+   pushAt 1092 1 2,
+   opAt 1093 .SUB,
+   opAt 1094 .MUL,
+   opAt 1095 (.Dup ⟨0, by decide⟩),
+   opAt 1096 (.Dup ⟨2, by decide⟩),
+   opAt 1097 .MUL,
+   pushAt 1098 1 2,
+   opAt 1099 .SUB,
+   opAt 1100 .MUL]
 
 /-- Instructions 1101..1124: the last four Newton steps. -/
 def setupPathC :
@@ -1114,7 +1130,7 @@ theorem run_setupB (s : State) (input : ByteArray) (m0 : Nat)
     [setupPathB, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     modLoadedState, newtonState, outerStack, newton4, hrun, newton_word_step,
+     modLoadedState, newtonState, outerStack, newton4, hrun, newton_word_step, SeededInverse.seed_word,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1456,22 +1472,22 @@ theorem minv_correct (input : ByteArray) (m0 : Nat)
     (hodd : modulus input % 2 = 1) (hm0 : m0 = modulus input % Limbs.radix) :
     (m0 * negWord (newton8 m0) + 1) % Limbs.radix = 0 := by
   have hodd0 : m0 % 2 = 1 := by rw [hm0]; exact Model.low_limb_odd hodd
-  have height : m0 * Model.newtonIter m0 8 % Limbs.radix = 1 :=
-    Model.newtonIter_eight hodd0
-  have hlt : Model.newtonIter m0 8 < Limbs.radix := by
-    rw [show (8 : Nat) = 7 + 1 from rfl, Model.newtonIter_succ]
+  have height : m0 * newton8 m0 % Limbs.radix = 1 := by
+    simpa only [newton8_eq] using SeededInverse.seeded_inverse_six m0 hodd0
+  have hlt : newton8 m0 < Limbs.radix := by
+    unfold newton8
     exact Model.newtonStep_lt _ _
-  have hpos : 0 < Model.newtonIter m0 8 := by
-    rcases Nat.eq_zero_or_pos (Model.newtonIter m0 8) with hz | hp
+  have hpos : 0 < newton8 m0 := by
+    rcases Nat.eq_zero_or_pos (newton8 m0) with hz | hp
     · rw [hz, Nat.mul_zero, Nat.zero_mod] at height
       omega
     · exact hp
   have hm0lt : m0 < Limbs.radix := by
     rw [hm0]
     exact Nat.mod_lt _ Limbs.radix_pos
-  have hneg : negWord (newton8 m0) = Limbs.radix - Model.newtonIter m0 8 := by
+  have hneg : negWord (newton8 m0) = Limbs.radix - newton8 m0 := by
     unfold negWord
-    rw [newton8_eq, Nat.mod_eq_of_lt hlt]
+    rw [Nat.mod_eq_of_lt hlt]
     exact Nat.mod_eq_of_lt (by omega)
   rw [hneg]
   refine Model.minv_spec ?_ (le_of_lt hlt)

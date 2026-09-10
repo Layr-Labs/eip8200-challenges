@@ -62,7 +62,7 @@ def threeHit : List Located :=
 def check65537 : List Located :=
   [opAt 2439 .JUMPDEST, pushAt 2440 2 9472, opAt 2441 .MLOAD,
    opAt 2442 .CALLDATALOAD, pushAt 2443 1 232, opAt 2444 .SHR,
-   pushAt 2445 3 65537, opAt 2446 .EQ, opAt 2447 .ISZERO,
+   pushAt 2445 2 1569, opAt 2446 .EQ, opAt 2447 .ISZERO,
    pushAt 2448 2 3838, opAt 2449 .JUMPI]
 
 def fermatHit : List Located :=
@@ -73,7 +73,7 @@ def start : List Located :=
    pushAt 2453 2 2048, pushAt 2454 2 1024, opAt 2455 .MCOPY]
 
 def squareCall : List Located :=
-  [opAt 2456 .JUMPDEST, pushAt 2457 2 3781, pushAt 2458 2 1024,
+  [opAt 2456 .JUMPDEST, pushAt 2457 2 3420, pushAt 2458 2 1024,
    pushAt 2459 2 1024, pushAt 2460 2 1024, pushAt 2461 2 1939,
    opAt 2462 .JUMP]
 
@@ -84,7 +84,7 @@ def squareReturn : List Located :=
 
 def product : List Located :=
   [opAt 2470 .POP, pushAt 2471 2 3808, pushAt 2472 2 1024,
-   pushAt 2473 2 2048, pushAt 2474 2 1024, pushAt 2475 2 1939,
+   pushAt 2473 2 2048, pushAt 2474 2 4458, pushAt 2475 2 1939,
    opAt 2476 .JUMP]
 
 def decode : List Located :=
@@ -100,7 +100,7 @@ def finish : List Located :=
 def fallback : List Located :=
   [opAt 2492 .JUMPDEST, opAt 2493 (.Dup ⟨0, by decide⟩),
    pushAt 2494 2 4096, pushAt 2495 2 1024, opAt 2496 .MCOPY,
-   pushAt 2497 0 0, pushAt 2498 2 1769, opAt 2499 .JUMP]
+   pushAt 2497 0 0, pushAt 2498 2 1668, opAt 2499 .JUMP]
 
 theorem jumpDest3695 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3695 = true :=

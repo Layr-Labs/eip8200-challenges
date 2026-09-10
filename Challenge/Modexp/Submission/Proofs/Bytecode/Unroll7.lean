@@ -5,8 +5,8 @@ set_option maxHeartbeats 8000000
 /-!
 # Copy 7 of the unrolled exponent-bit body
 
-The copy handles exponent bit 7 at instruction indices 2537 .. 2553 and bytes
-3840 .. 3623.  Its seventeen instructions are taken one at a time.
+The copy handles exponent bit 7 at instruction indices 2623 .. 2639 and bytes
+3599 .. 3619.  Its seventeen instructions are taken one at a time.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Unroll7
@@ -33,18 +33,18 @@ def gasSteps_bitCopy7_sym (s : State) (rest : List UInt256)
   have step2484 := soundW hs (opAt 2623 (.Dup ⟨7, by decide⟩))
     (blockOfW _ (pcFactW s 2623 3599 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2537)
       (stepW_dup s 3599 7 (by decide) ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (m) (by rfl) (by simp; omega) (by norm_num)))
-  have step2485 := soundW hs (pushAt 2624 1 1)
+  have step2485 := soundW hs (pushAt 2624 2 1)
     (blockOfW _ (pcFactW s 2624 3600 ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2538)
-      (stepW_push s 3600 1 (1 : UInt256) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
+      (stepW_push s 3600 2 (1 : UInt256) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
   have step2486 := soundW hs (opAt 2625 (.Dup ⟨4, by decide⟩))
-    (blockOfW _ (pcFactW s 2625 3602 ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2539)
-      (stepW_dup s 3602 4 (by decide) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (byte) (by rfl) (by simp; omega) (by norm_num)))
-  have step2487 := soundW hs (pushAt 2626 1 0)
-    (blockOfW _ (pcFactW s 2626 3603 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2540)
-      (stepW_push s 3603 1 (0 : UInt256) ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
-  have step2488 := (soundW hs (opAt 2627 .POP)
-    (blockOfW _ (pcFactW s 2627 3605 ([(0 : UInt256), byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2541)
-      (stepW_pop s 3605 (0 : UInt256) ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))).cast rfl
+    (blockOfW _ (pcFactW s 2625 3603 ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2539)
+      (stepW_dup s 3603 4 (by decide) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (byte) (by rfl) (by simp; omega) (by norm_num)))
+  have step2487 := soundW hs (opAt 2626 .JUMPDEST)
+    (blockOfW _ (pcFactW s 2626 3604 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2540)
+      (stepW_jumpdest s 3604 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
+  have step2488 := (soundW hs (opAt 2627 .JUMPDEST)
+    (blockOfW _ (pcFactW s 2627 3605 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2541)
+      (stepW_jumpdest s 3605 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))).cast rfl
         (show stW s 3606 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) =
           stW s 3606 ([UInt256.shiftRight byte (0 : UInt256), (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) by
             rw [shiftRight_zero])
@@ -90,23 +90,23 @@ def gasSteps_bitCopy7_sym (s : State) (rest : List UInt256)
 theorem gasSteps_bitCopy7_sym_cost (s : State) (rest : List UInt256)
     (Bm1 zero byte offset outerW acc base m : UInt256)
     (hs : Frame s) (hrest : rest.length < 1000) :
-    (gasSteps_bitCopy7_sym s rest Bm1 zero byte offset outerW acc base m hs hrest).cost = 61 := by
+    (gasSteps_bitCopy7_sym s rest Bm1 zero byte offset outerW acc base m hs hrest).cost = 58 := by
   unfold gasSteps_bitCopy7_sym
   have c2484 := blockCostW [opAt 2623 (.Dup ⟨7, by decide⟩)] 3
     (blockOfW _ (pcFactW s 2623 3599 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2537)
       (stepW_dup s 3599 7 (by decide) ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (m) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2485 := blockCostW [pushAt 2624 1 1] 3
+  have c2485 := blockCostW [pushAt 2624 2 1] 3
     (blockOfW _ (pcFactW s 2624 3600 ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2538)
-      (stepW_push s 3600 1 (1 : UInt256) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+      (stepW_push s 3600 2 (1 : UInt256) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
   have c2486 := blockCostW [opAt 2625 (.Dup ⟨4, by decide⟩)] 3
-    (blockOfW _ (pcFactW s 2625 3602 ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2539)
-      (stepW_dup s 3602 4 (by decide) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (byte) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2487 := blockCostW [pushAt 2626 1 0] 3
-    (blockOfW _ (pcFactW s 2626 3603 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2540)
-      (stepW_push s 3603 1 (0 : UInt256) ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2488 := blockCostW [opAt 2627 .POP] 2
-    (blockOfW _ (pcFactW s 2627 3605 ([(0 : UInt256), byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2541)
-      (stepW_pop s 3605 (0 : UInt256) ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+    (blockOfW _ (pcFactW s 2625 3603 ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2539)
+      (stepW_dup s 3603 4 (by decide) ([(1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (byte) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c2487 := blockCostW [opAt 2626 .JUMPDEST] 1
+    (blockOfW _ (pcFactW s 2626 3604 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2540)
+      (stepW_jumpdest s 3604 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c2488 := blockCostW [opAt 2627 .JUMPDEST] 1
+    (blockOfW _ (pcFactW s 2627 3605 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2541)
+      (stepW_jumpdest s 3605 ([byte, (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
   have c2489 := blockCostW [opAt 2628 .AND] 3
     (blockOfW _ (pcFactW s 2628 3606 ([(UInt256.shiftRight byte (0 : UInt256)), (1 : UInt256), m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2542)
       (stepW_and s 3606 ((UInt256.shiftRight byte (0 : UInt256))) ((1 : UInt256)) ([m, Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
