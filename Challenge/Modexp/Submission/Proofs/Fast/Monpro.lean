@@ -929,6 +929,23 @@ theorem ptrAt_shift32 (n k : Nat) :
     32 + ptrAt (8192 + 32 * n) k = ptrAt (8224 + 32 * n) k := by
   simp only [ptrAt]
   omega
+theorem sub32_eq_negative32 (x : UInt256) :
+    x - UInt256.ofNat 32 =
+      x + UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+  apply Challenge.EvmProof.Word.word_ext
+  simp only [Challenge.EvmProof.Word.word_toNat_sub,
+    Challenge.EvmProof.Word.word_toNat_add,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  have h32 : (32 : Nat) % 2 ^ 256 = 32 :=
+    Nat.mod_eq_of_lt (by norm_num)
+  have hC : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
+      Nat) = 2 ^ 256 - 32 := by norm_num
+  have hCmod : (2 ^ 256 - 32) % 2 ^ 256 = 2 ^ 256 - 32 :=
+    Nat.mod_eq_of_lt (by omega)
+  rw [h32, hC, hCmod]
+  congr 1
+  omega
 
 set_option linter.unusedSimpArgs false in
 theorem run_mpL2Body (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -991,7 +1008,8 @@ theorem run_mpL2Body (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       fastPC13, fastPC14,
       hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, h32, h8224,
       h2241, h2241', hjump, jumpDest2241,
-      hpmj, hptj, hwr, hnextT, hgt, hactM, hactT, hactW, ptrAt_succ, ptrAt_shift32,
+      hpmj, hptj, hwr, hnextT, hactM, hactT, hactW, ptrAt_succ, ptrAt_shift32,
+      sub32_eq_negative32,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -1061,6 +1079,7 @@ theorem run_mpL2Exit (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       fastPC13, fastPC14,
       hc10, hc11, hc12, hc13, hc14, hrun, hK, h32, h8224,
       hpmj, hptj, hwr, hnextT, hactM, hactT, hactW, ptrAt_succ, ptrAt_shift32,
+      sub32_eq_negative32,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
