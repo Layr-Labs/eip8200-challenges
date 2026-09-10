@@ -136,7 +136,7 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
 /-- The `MONPRO` call state, pc 4458, stack `[pa, pb, pd, ret] ++ tail`. -/
 def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4458
+  { s with pc := UInt256.ofNat 4465
            stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
              ret :: tail
            memory := mem }
@@ -383,7 +383,7 @@ theorem run_rrHead (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       (rrHead s mem n bsize esize msize k) =
       some (mpCall s mem 6144 6144 6144 (UInt256.ofNat 1586)
         (UInt256.ofNat k :: outer n bsize esize msize)) := by
-  have h1939Nat : (UInt256.ofNat 4458).toNat = 4458 := by decide
+  have h1939Nat : (UInt256.ofNat 4465).toNat = 4465 := by decide
   simp (config := { maxSteps := 400000 }) [blk1155, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -866,7 +866,7 @@ theorem run_blMul (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat)
       (blMul s mem n bsize esize msize pb j) =
       some (mpCall s mem 1024 5120 1024 (UInt256.ofNat 1693)
         (UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize)) := by
-  have h1939Nat : (UInt256.ofNat 4458).toNat = 4458 := by decide
+  have h1939Nat : (UInt256.ofNat 4465).toNat = 4465 := by decide
   simp (config := { maxSteps := 400000 }) [blk1223, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -905,7 +905,7 @@ theorem run_blExit (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat
       (blExit s mem n bsize esize msize pb j) =
       some (mpCall s mem 1024 6144 2048 (UInt256.ofNat 1755)
         (outer n bsize esize msize)) := by
-  have h1939Nat : (UInt256.ofNat 4458).toNat = 4458 := by decide
+  have h1939Nat : (UInt256.ofNat 4465).toNat = 4465 := by decide
   simp (config := { maxSteps := 400000 }) [blk1255, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1546,7 +1546,7 @@ theorem run_ebitHead (s : State) (mem : ByteArray)
       (ebitHead s mem n bsize esize msize i w mask) =
       some (mpCall s mem 1024 1024 1024 (UInt256.ofNat 1806)
         (bitStack n bsize esize msize i w mask)) := by
-  have h1939Nat : (UInt256.ofNat 4458).toNat = 4458 := by decide
+  have h1939Nat : (UInt256.ofNat 4465).toNat = 4465 := by decide
   simp (config := { maxSteps := 400000 }) [blk1287, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1612,7 +1612,7 @@ theorem run_ebitMul (s : State) (mem : ByteArray)
       (ebitMul s mem n bsize esize msize i w mask) =
       some (mpCall s mem 1024 2048 1024 (UInt256.ofNat 1831)
         (bitStack n bsize esize msize i w mask)) := by
-  have h1939Nat : (UInt256.ofNat 4458).toNat = 4458 := by decide
+  have h1939Nat : (UInt256.ofNat 4465).toNat = 4465 := by decide
   simp (config := { maxSteps := 400000 }) [blk1301, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1721,7 +1721,7 @@ theorem run_ebEnd (s : State) (mem : ByteArray) (n bsize esize msize i : Nat)
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (3040 + 32 * n) 32) = s.activeWords :=
     activeWords_fix s (3040 + 32 * n) 32 (by omega) (by omega) hact
-  have h1939Nat : (UInt256.ofNat 4458).toNat = 4458 := by decide
+  have h1939Nat : (UInt256.ofNat 4465).toNat = 4465 := by decide
   simp (config := { maxSteps := 600000 }) [blk1320, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
