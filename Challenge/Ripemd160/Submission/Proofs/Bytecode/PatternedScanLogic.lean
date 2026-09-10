@@ -23,16 +23,6 @@ theorem scanAcc_eq_guardedAcc_376 (input : ByteArray) (hsize : input.size = 376)
     rw [maskShift, hsize, rawShift_376 n (by omega)]
     exact lor_comm _ _
 
-theorem scanAcc_eq_guardedAcc_256 (input : ByteArray) (hsize : input.size = 256)
-    (n : Nat) (hn : n ≤ 8) :
-    scanAcc input n = guardedAcc input guardWord (wordShift 256) n := by
-  induction n with
-  | zero => rfl
-  | succ n ih =>
-    rw [scanAcc, guardedAcc, ih (by omega)]
-    rw [maskShift, hsize, rawShift_256 n (by omega)]
-    exact lor_comm _ _
-
 theorem scanAcc_eq_guardedAcc_1000 (input : ByteArray) (hsize : input.size = 1000)
     (n : Nat) (hn : n ≤ 32) :
     scanAcc input n = guardedAcc input guardWord (wordShift 1000) n := by

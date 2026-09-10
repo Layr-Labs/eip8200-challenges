@@ -1,4 +1,3 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned256Correct
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardTail
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Correct
 
@@ -49,7 +48,7 @@ def gasSteps_target :
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
     (hne : input ≠ KnownInputData.targetInput)
     (hpne : input ≠ PatternedInputData.patternedInput)
-    (h256 : input.size ≠ 376) (hshort : input.size ≠ 256) :
+    (h256 : input.size ≠ 376) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) := by
   by_cases hsize : input.size = 1000
   · by_cases href : referenceWord input = KnownInputData.fullWord
@@ -63,7 +62,7 @@ def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
           ((gasSteps_checkEarly input href).trans
             (PatternedScan.gasSteps_patterned_miss input hsize hpne)))
   · exact (Execution.gasSteps_start input).trans
-      (sound sizePath (run_size_fail input hfit hsize h256 hshort))
+      (sound sizePath (run_size_fail input hfit hsize h256))
 
 private theorem answerMemory_read :
     MachineState.readPadded answerMemory 0 32 = ExactGuardSpec.paddedDigest := by
@@ -94,7 +93,7 @@ private theorem bytesToNatPadded_zero_beyond (bs : ByteArray) (off : Nat)
       rfl
 
 /-- The compare loop's last word is read entirely past the end of a 376-byte input. -/
-private theorem readWord_past_end (input : ByteArray) (hsize : input.size ≤ 992) :
+private theorem readWord_past_end (input : ByteArray) (hsize : input.size = 376) :
     MachineState.readWord input 992 = 0 := by
   apply Challenge.EvmProof.Word.word_ext
   rw [Challenge.EvmProof.Bytes.readWord_toNat,
@@ -104,7 +103,7 @@ private theorem readWord_past_end (input : ByteArray) (hsize : input.size ≤ 99
 /-- With the first word pinned at `0x6161..61` and the last word read past the end,
 the compare accumulator cannot be zero.  `wordOr_eq_zero_iff` splits the `lor` so
 the contradiction is a closed computation with no free variables left in it. -/
-private theorem finalAcc_ne_zero_short (input : ByteArray) (hsize : input.size ≤ 992)
+private theorem finalAcc_ne_zero_short (input : ByteArray) (hsize : input.size = 376)
     (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
     KnownInputCompactState.finalAcc input ≠ 0 := by
   intro hz
@@ -122,17 +121,7 @@ private def gasSteps_fallback256 (input : ByteArray) (hsize : input.size = 376)
       ((sound checkEntryPath (run_checkEntry input href)).trans
         ((gasSteps_loop input).trans
           (sound tailPath (run_tail_fallback_acc input
-            (finalAcc_ne_zero_short input (by omega) href))))))
-
-private def gasSteps_fallback_short (input : ByteArray) (hsize : input.size = 256)
-    (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
-    GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
-  (Execution.gasSteps_start input).trans
-    ((sound sizePath (run_size_match_short input hsize)).trans
-      ((sound checkEntryPath (run_checkEntry input href)).trans
-        ((gasSteps_loop input).trans
-          (sound tailPath (run_tail_fallback_acc input
-            (finalAcc_ne_zero_short input (by omega) href))))))
+            (finalAcc_ne_zero_short input hsize href))))))
 
 theorem correct : Correct submissionBytecode := by
   intro input hfit
@@ -142,10 +131,6 @@ theorem correct : Correct submissionBytecode := by
     · exact StackCorrect.correct input hfit
         (gasSteps_fallback256 input h256 href)
     · exact Prefix256Correct.correct input hfit h256 href
-  by_cases hshort : input.size = 256
-  · by_cases href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord
-    · exact StackCorrect.correct input hfit (gasSteps_fallback_short input hshort href)
-    · exact Patterned256Correct.correct input hfit hshort href
   by_cases h : input = KnownInputData.targetInput
   · subst input
     let trace := gasSteps_target
@@ -181,6 +166,6 @@ theorem correct : Correct submissionBytecode := by
       rw [PatternedScan.answerMemory_read, ← PatternedGuardSpec.spec_patternedInput_eq] at heval
       simpa [GasCost.withGas_initialState_zero] using heval
     · exact StackCorrect.correct input hfit
-        (gasSteps_fallback input hfit h hp h256 hshort)
+        (gasSteps_fallback input hfit h hp h256)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
