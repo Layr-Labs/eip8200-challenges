@@ -15,11 +15,11 @@ open KnownInputCompactState
 theorem run_checkEntry (input : ByteArray)
     (href : referenceWord input = KnownInputData.fullWord) :
     run checkEntryPath (sizeMatched input) = some (loopState input 0) := by
-  have hpc3278 : Artifact.submissionArtifact.instructionPC 19 = 29 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3279 : Artifact.submissionArtifact.instructionPC 20 = 30 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3280 : Artifact.submissionArtifact.instructionPC 21 = 31 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3281 : Artifact.submissionArtifact.instructionPC 22 = 32 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3282 : Artifact.submissionArtifact.instructionPC 23 = 34 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3278 : Artifact.submissionArtifact.instructionPC 18 = 29 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3279 : Artifact.submissionArtifact.instructionPC 19 = 30 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3280 : Artifact.submissionArtifact.instructionPC 20 = 31 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3281 : Artifact.submissionArtifact.instructionPC 21 = 32 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3282 : Artifact.submissionArtifact.instructionPC 22 = 34 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hzero : UInt256.xor KnownInputData.fullWord (referenceWord input) = 0 := by
     exact (KnownInputLogic.wordXor_eq_zero_iff
       KnownInputData.fullWord (referenceWord input)).2 href.symm

@@ -28,31 +28,24 @@ private def frame (s : State) (input : ByteArray) (pc : Nat) : State :=
 /-- Entry at the second word comparison in the checked prefix. -/
 def entry (s : State) (input : ByteArray) : State := frame s input 5044
 
-/-- Entry at the `H1` install (`JUMPDEST` target of the rung's guards). -/
+/-- Entry at the `H1` install after a guard match. -/
 def hit1Entry (s : State) (input : ByteArray) : State := frame s input 5085
 
 /-- The generic compression target of the guard is a valid jump destination. -/
 theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 536 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 299 = 536 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 298 = 536 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 299 (by rfl)
-  rw [hpc] at h
-  exact h
-
-/-- The `H1` install entry is a valid jump destination. -/
-theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5085 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 4119 = 5085 := PrefixStatePaths.pc4093
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4119 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 298 (by rfl)
   rw [hpc] at h
   exact h
 
 /-- The driver's `102` continuation is a valid jump destination. -/
 theorem jumpDest_driver : Decode.isValidJumpDest submissionBytecode 469 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 266 = 469 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 265 = 469 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 266 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 265 (by rfl)
   rw [hpc] at h
   exact h
 
