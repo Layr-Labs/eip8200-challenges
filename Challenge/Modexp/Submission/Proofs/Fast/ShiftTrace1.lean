@@ -323,24 +323,19 @@ theorem run_negDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
-/-- `blk2956`: the first four Newton steps. -/
+/-- `blk2956`: the inverse seed and two Newton refinements. -/
 theorem run_preNewton (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2956
       (preNewtonState s mem n bsize esize msize) =
       some (newtonBState s mem n bsize esize msize) := by
-  have hmul_one (value : UInt256) : value * UInt256.ofNat 1 = value := by
-    cases value with
-    | mk value =>
-        change UInt256.mk (value * (1 : Fin UInt256.size)) = UInt256.mk value
-        rw [mul_one]
   simp (config := { maxSteps := 600000 })
     [blk2956, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      preNewtonState, newtonBState, pcPreNewton, pcNewtonB, newton4W, newtonW, hmul_one,
+      preNewtonState, newtonBState, pcPreNewton, pcNewtonB, newton4W, newtonW,
       outer, Exp.outer, hcode, hrun,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
