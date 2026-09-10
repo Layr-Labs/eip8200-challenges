@@ -11,65 +11,65 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedInputData PatternedDigest PatternedGuardSpec
 
-@[simp] private theorem selectPC265 : Artifact.submissionArtifact.instructionPC 167 = 269 := rfl
-@[simp] private theorem selectPC270 : Artifact.submissionArtifact.instructionPC 172 = 296 := rfl
-@[simp] private theorem selectPC271 : Artifact.submissionArtifact.instructionPC 173 = 297 := rfl
-@[simp] private theorem selectPC272 : Artifact.submissionArtifact.instructionPC 174 = 300 := rfl
-@[simp] private theorem selectPC273 : Artifact.submissionArtifact.instructionPC 175 = 301 := rfl
-@[simp] private theorem selectPC274 : Artifact.submissionArtifact.instructionPC 176 = 322 := rfl
-@[simp] private theorem selectPC275 : Artifact.submissionArtifact.instructionPC 177 = 323 := rfl
+@[simp] private theorem selectPC265 : Artifact.submissionArtifact.instructionPC 169 = 269 := rfl
+@[simp] private theorem selectPC270 : Artifact.submissionArtifact.instructionPC 174 = 296 := rfl
+@[simp] private theorem selectPC271 : Artifact.submissionArtifact.instructionPC 175 = 297 := rfl
+@[simp] private theorem selectPC272 : Artifact.submissionArtifact.instructionPC 176 = 300 := rfl
+@[simp] private theorem selectPC273 : Artifact.submissionArtifact.instructionPC 177 = 301 := rfl
+@[simp] private theorem selectPC274 : Artifact.submissionArtifact.instructionPC 178 = 322 := rfl
+@[simp] private theorem selectPC275 : Artifact.submissionArtifact.instructionPC 179 = 323 := rfl
 
 def selectorPath : List Located :=
-  [opAt 161 .CALLDATASIZE,
-   pushAt 162 1 129,
-   opAt 163 .GT,
-   pushAt 164 2 5198,
-   opAt 165 .JUMPI]
+  [opAt 163 .CALLDATASIZE,
+   pushAt 164 1 129,
+   opAt 165 .GT,
+   pushAt 166 2 5198,
+   opAt 167 .JUMPI]
 
 @[simp] private theorem selectorPC166 :
-    Artifact.submissionArtifact.instructionPC 161 = 260 := by
+    Artifact.submissionArtifact.instructionPC 163 = 260 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem selectorPC167 :
-    Artifact.submissionArtifact.instructionPC 162 = 261 := by
+    Artifact.submissionArtifact.instructionPC 164 = 261 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem selectorPC168 :
-    Artifact.submissionArtifact.instructionPC 163 = 263 := by
+    Artifact.submissionArtifact.instructionPC 165 = 263 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem selectorPC169 :
-    Artifact.submissionArtifact.instructionPC 164 = 264 := by
+    Artifact.submissionArtifact.instructionPC 166 = 264 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem selectorPC170 :
-    Artifact.submissionArtifact.instructionPC 165 = 267 := by
+    Artifact.submissionArtifact.instructionPC 167 = 267 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def storePath : List Located :=
-  selectorPath ++ [opAt 166 .CALLDATASIZE,
-   opAt 167 (.Dup ⟨0, by decide⟩),
-   pushAt 168 2 376,
-   opAt 169 .EQ,
-   pushAt 170 20 644824770394507154413287103057882351908521126009,
-   opAt 171 .MUL,
-   opAt 172 (.Swap ⟨0, by decide⟩),
-   pushAt 173 2 256,
-   opAt 174 .EQ,
-   pushAt 175 20 370937159678419008737987698595703314930111331934,
-   opAt 176 .MUL,
-   opAt 177 .XOR,
-   pushAt 178 20 766350606435067737561421097975693824639675460820,
+  selectorPath ++ [opAt 168 .CALLDATASIZE,
+   opAt 169 (.Dup ⟨0, by decide⟩),
+   pushAt 170 2 376,
+   opAt 171 .EQ,
+   pushAt 172 20 644824770394507154413287103057882351908521126009,
+   opAt 173 .MUL,
+   opAt 174 (.Swap ⟨0, by decide⟩),
+   pushAt 175 2 256,
+   opAt 176 .EQ,
+   pushAt 177 20 370937159678419008737987698595703314930111331934,
+   opAt 178 .MUL,
    opAt 179 .XOR,
-   pushAt 180 0 0,
-   opAt 181 .MSTORE]
+   pushAt 180 20 766350606435067737561421097975693824639675460820,
+   opAt 181 .XOR,
+   pushAt 182 0 0,
+   opAt 183 .MSTORE]
 
-def finishPath : List Located := [pushAt 183 0 0, opAt 184 .RETURN]
+def finishPath : List Located := [pushAt 185 0 0, opAt 186 .RETURN]
 
 def storedState (input : ByteArray) : State :=
   { atPC input 348 with stack := hitRest, memory := answerMemory, activeWords := UInt256.ofNat 1 }
@@ -122,13 +122,13 @@ theorem run_finish :
 def gasSteps_return :
     GasSteps (hitState patternedInput) (returnedState patternedInput) := by
   have gs := sound storePath run_store
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 182 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 184 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState patternedInput).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 182 := by
+      Artifact.submissionArtifact.instructionPC 184 := by
     rw [pc2986]; rfl
   have hop : (storedState patternedInput).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedState patternedInput) 182
+    Artifact.submissionArtifact.state_decodedOp_of (storedState patternedInput) 184
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop (by simp [storedState, hitRest, frame, atPC, initialState]) (by rfl)
     deployAddress_not_precompile
