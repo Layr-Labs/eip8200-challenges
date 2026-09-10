@@ -13,92 +13,92 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 1255..1263, pc 1736..1754. -/
 def blk1255 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1255 .JUMPDEST,
-   opAt 1256 .POP,
-   opAt 1257 .POP,
-   pushAt 1258 2 1755,
-   pushAt 1259 2 2048,
-   pushAt 1260 2 6144,
-   pushAt 1261 2 1024,
-   pushAt 1262 2 4458,
-   opAt 1263 .JUMP]
+  [opAt 1249 .JUMPDEST,
+   opAt 1250 .POP,
+   opAt 1251 .POP,
+   pushAt 1252 2 1746,
+   pushAt 1253 2 2048,
+   pushAt 1254 2 6144,
+   pushAt 1255 2 1024,
+   pushAt 1256 2 4428,
+   opAt 1257 .JUMP]
 
 /-- Instructions 1264..1264, pc 1755..1755. -/
 def blk1264 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1264 .JUMPDEST]
+  [opAt 1258 .JUMPDEST]
 
 /-- Instructions 1265..1267, pc 1756..1760. The fixed-exponent candidate
 redirects `BDONE` to its appended dispatcher; indices 1268..1271 are inert
 padding and are not part of the executed block. -/
 def blk1265 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1265 .JUMPDEST,
-   pushAt 1266 2 3651,
-   opAt 1267 .JUMP]
+  [opAt 1259 .JUMPDEST,
+   pushAt 1260 2 3615,
+   opAt 1261 .JUMP]
 
 /-- Instructions 1272..1278, pc 1769..1777. -/
 def blk1272 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1272 .JUMPDEST,
-   opAt 1273 (.Dup ⟨4, by decide⟩),
-   opAt 1274 (.Dup ⟨1, by decide⟩),
-   opAt 1275 .EQ,
-   opAt 1276 .JUMPDEST,
-   pushAt 1277 2 1850,
-   opAt 1278 .JUMPI]
+  [opAt 1266 .JUMPDEST,
+   opAt 1267 (.Dup ⟨4, by decide⟩),
+   opAt 1268 (.Dup ⟨1, by decide⟩),
+   opAt 1269 .EQ,
+   opAt 1270 .JUMPDEST,
+   pushAt 1271 2 1841,
+   opAt 1272 .JUMPI]
 
 /-- Instructions 1279..1286, pc 1778..1787. -/
 def blk1279 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1279 2 2555,
-   opAt 1280 .JUMP]
+  [pushAt 1273 2 2535,
+   opAt 1274 .JUMP]
 
 /-- Instructions 1287..1293, pc 1789..1805. -/
 def blk1287 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1287 .JUMPDEST,
-   pushAt 1288 2 1806,
-   pushAt 1289 2 1024,
-   pushAt 1290 2 1024,
-   pushAt 1291 2 1024,
-   pushAt 1292 2 4458,
-   opAt 1293 .JUMP]
+  [opAt 1281 .JUMPDEST,
+   pushAt 1282 2 1797,
+   pushAt 1283 2 1024,
+   pushAt 1284 2 1024,
+   pushAt 1285 2 1024,
+   pushAt 1286 2 4428,
+   opAt 1287 .JUMP]
 
 /-- Instructions 1294..1300, pc 1806..1814. -/
 def blk1294 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1294 .JUMPDEST,
-   opAt 1295 (.Dup ⟨1, by decide⟩),
-   opAt 1296 (.Dup ⟨1, by decide⟩),
-   opAt 1297 .AND,
-   opAt 1298 .ISZERO,
-   pushAt 1299 2 1832,
-   opAt 1300 .JUMPI]
+  [opAt 1288 .JUMPDEST,
+   opAt 1289 (.Dup ⟨1, by decide⟩),
+   opAt 1290 (.Dup ⟨1, by decide⟩),
+   opAt 1291 .AND,
+   opAt 1292 .ISZERO,
+   pushAt 1293 2 1823,
+   opAt 1294 .JUMPI]
 
 /-- Instructions 1301..1306, pc 1815..1830. -/
 def blk1301 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1301 2 1831,
-   pushAt 1302 2 1024,
-   pushAt 1303 2 2048,
-   pushAt 1304 2 1024,
-   pushAt 1305 2 4458,
-   opAt 1306 .JUMP]
+  [pushAt 1295 2 1822,
+   pushAt 1296 2 1024,
+   pushAt 1297 2 2048,
+   pushAt 1298 2 1024,
+   pushAt 1299 2 4428,
+   opAt 1300 .JUMP]
 
 /-- Instructions 1307..1307, pc 1831..1831. -/
 def blk1307 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1307 .JUMPDEST]
+  [opAt 1301 .JUMPDEST]
 
 /-- Instructions 1308..1313, pc 1832..1840. -/
 def blk1308 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1308 .JUMPDEST,
-   pushAt 1309 1 1,
-   opAt 1310 .SHR,
-   opAt 1311 (.Dup ⟨0, by decide⟩),
-   pushAt 1312 2 1789,
-   opAt 1313 .JUMPI]
+  [opAt 1302 .JUMPDEST,
+   pushAt 1303 1 1,
+   opAt 1304 .SHR,
+   opAt 1305 (.Dup ⟨0, by decide⟩),
+   pushAt 1306 2 1780,
+   opAt 1307 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast
