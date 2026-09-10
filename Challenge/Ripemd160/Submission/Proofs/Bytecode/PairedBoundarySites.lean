@@ -21,12 +21,12 @@ theorem schedule_slice :
   rfl
 
 theorem schedule_instructionPC :
-    Artifact.submissionArtifact.instructionPC 294 = 537 := by
+    Artifact.submissionArtifact.instructionPC 294 = 524 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem schedule_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 453 = 764 := by
+    Artifact.submissionArtifact.instructionPC 453 = 750 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -58,12 +58,12 @@ theorem startup_slice :
   rfl
 
 theorem startup_instructionPC :
-    Artifact.submissionArtifact.instructionPC 453 = 764 := by
+    Artifact.submissionArtifact.instructionPC 453 = 750 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem startup_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 501 = 834 := by
+    Artifact.submissionArtifact.instructionPC 501 = 822 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -95,12 +95,12 @@ theorem tailPrefix_slice :
   rfl
 
 theorem tailPrefix_instructionPC :
-    Artifact.submissionArtifact.instructionPC 4019 = 4923 := by
+    Artifact.submissionArtifact.instructionPC 4019 = 4909 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem tailPrefix_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 4088 = 5018 := by
+    Artifact.submissionArtifact.instructionPC 4088 = 5000 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 

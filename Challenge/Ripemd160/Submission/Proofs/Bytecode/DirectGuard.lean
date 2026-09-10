@@ -52,7 +52,7 @@ def gasSteps_target :
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
     (hne : input ≠ KnownInputData.targetInput)
     (hpne : input ≠ PatternedInputData.patternedInput)
-    (hbad : (input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63) ∨ firstByte input ≠ 7)
+    (hbad : (input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 128) ∨ firstByte input ≠ 7)
     (h256 : input.size ≠ 376) (hshort : input.size ≠ 256) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) := by
   by_cases hsize : input.size = 1000
@@ -197,7 +197,7 @@ theorem correct : Correct submissionBytecode := by
             (Patterned128Entry.gasSteps_hit input hfit (Or.inr (Or.inl hsize120)) hbyte)
         · exact StackCorrect.correct input hfit
             (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
-      by_cases hsize128 : input.size = 63
+      by_cases hsize128 : input.size = 128
       · by_cases hbyte : firstByte input = 7
         · exact Patterned128Correct.correct_from_patternedEntry input hfit hsize128 hbyte
             (Patterned128Entry.gasSteps_hit input hfit (Or.inr (Or.inr hsize128)) hbyte)

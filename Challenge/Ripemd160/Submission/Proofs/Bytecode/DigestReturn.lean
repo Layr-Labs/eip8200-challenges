@@ -14,19 +14,19 @@ open PatternedScan
 def answerMemory (word : UInt256) : ByteArray := storeWord ByteArray.empty 0 word
 
 def storedState (input : ByteArray) (word : UInt256) (rest : List UInt256) : State :=
-  { stS input 349 rest with memory := answerMemory word, activeWords := UInt256.ofNat 1 }
+  { stS input 348 rest with memory := answerMemory word, activeWords := UInt256.ofNat 1 }
 
 def sizedState (input : ByteArray) (word : UInt256) (rest : List UInt256) : State :=
-  { storedState input word rest with pc := UInt256.ofNat 350, stack := UInt256.ofNat 32 :: rest }
+  { storedState input word rest with pc := UInt256.ofNat 349, stack := UInt256.ofNat 32 :: rest }
 
 def returnedState (input : ByteArray) (word : UInt256) (rest : List UInt256) : State :=
-  { storedState input word rest with pc := UInt256.ofNat 351, halt := .Returned, hReturn := MachineState.readPadded (answerMemory word) 0 32 }
+  { storedState input word rest with pc := UInt256.ofNat 350, halt := .Returned, hReturn := MachineState.readPadded (answerMemory word) 0 32 }
 
 def storePath : List Located := [pushAt 179 0 0, opAt 180 .MSTORE]
 def finishPath : List Located := [pushAt 182 0 0, opAt 183 .RETURN]
 
 theorem run_store (input : ByteArray) (word : UInt256) (rest : List UInt256) (hlen : rest.length < 1020) :
-    run storePath (stS input 347 (word :: rest)) = some (storedState input word rest) := by
+    run storePath (stS input 346 (word :: rest)) = some (storedState input word rest) := by
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 1 + 1 < 1024 := by omega
@@ -50,7 +50,7 @@ theorem run_finish (input : ByteArray) (word : UInt256) (rest : List UInt256) (h
     Word.succ_ofNat_mod, Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
 def gasSteps_return (input : ByteArray) (word : UInt256) (rest : List UInt256) (hlen : rest.length < 1020) :
-    GasSteps (stS input 347 (word :: rest)) (returnedState input word rest) := by
+    GasSteps (stS input 346 (word :: rest)) (returnedState input word rest) := by
   have gs := sound storePath (run_store input word rest hlen)
   have hd := Artifact.submissionArtifact.decodeAt_op_index 181 .MSIZE
     (by rfl) (by decide) trivial

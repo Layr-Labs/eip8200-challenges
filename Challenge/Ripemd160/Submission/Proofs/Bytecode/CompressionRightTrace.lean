@@ -21,7 +21,7 @@ open EvmSemantics.EVM
 open CompressionTrace
 
 @[simp] private theorem rightInitPC :
-    Artifact.submissionArtifact.instructionPC 538 = 877 := by rfl
+    Artifact.submissionArtifact.instructionPC 538 = 864 := by rfl
 
 @[simp] private theorem rightTestPC (j : Nat) (hlo : 517 ≤ j) (hhi : j ≤ 523) :
     Artifact.submissionArtifact.instructionPC j =

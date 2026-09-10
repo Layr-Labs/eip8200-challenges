@@ -137,11 +137,11 @@ private theorem denseScheduleTemplate_byteLength :
   exact DenseScheduleTemplate.denseBeforeJumpTemplate_byteLength
 
 private theorem packedSchedule_start_instructionPC :
-    Artifact.submissionArtifact.instructionPC 294 = 0x219 :=
+    Artifact.submissionArtifact.instructionPC 294 = 0x20c :=
   QuadLayout.schedule_pc
 
 private theorem packedSchedule_end_instructionPC :
-    Artifact.submissionArtifact.instructionPC 345 = 0x264 :=
+    Artifact.submissionArtifact.instructionPC 345 = 0x255 :=
   QuadLayout.scheduleJump_pc
 
 @[simp] theorem packedScheduleSite_startPC :

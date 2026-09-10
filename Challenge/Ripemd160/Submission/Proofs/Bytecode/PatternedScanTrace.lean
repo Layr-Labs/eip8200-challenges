@@ -86,7 +86,7 @@ def straddleState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
 /-- After the thirty-one words, at the padded tail. -/
 def tailState (input : ByteArray) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 256
+    pc := UInt256.ofNat 255
     stack := UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: a :: frame }
 
 /-- The stub jumps here, and the guard answers or falls through.  -/
@@ -96,8 +96,8 @@ def hitRest : List UInt256 :=
   UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: 0 :: frame
 
 def hitState (input : ByteArray) : State :=
-  { atPC input 261 with stack := hitRest }
-def fallbackState (input : ByteArray) : State := atPC input 0x171
+  { atPC input 260 with stack := hitRest }
+def fallbackState (input : ByteArray) : State := atPC input 0x170
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded word.toNat 32) address
@@ -106,7 +106,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x15f
+    pc := UInt256.ofNat 0x15e
     stack := hitRest
     memory := answerMemory
     activeWords := UInt256.ofNat 1

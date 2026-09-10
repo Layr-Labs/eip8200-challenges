@@ -25,7 +25,7 @@ theorem modifiedTemplate_bytes : (modifiedTemplate.map Instr.size).sum = 47 := b
   decide
 
 theorem modifiedTemplate_pc :
-    pcAfter (UInt256.ofNat 4814) modifiedTemplate = UInt256.ofNat 4861 := by
+    pcAfter (UInt256.ofNat 4813) modifiedTemplate = UInt256.ofNat 4860 := by
   decide
 
 def modifiedC10 (q : PairedHelperBooleanTrace.Frame) : UInt256 :=
