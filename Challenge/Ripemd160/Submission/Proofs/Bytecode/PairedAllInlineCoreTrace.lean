@@ -6603,19 +6603,8 @@ theorem run_group0Template (s : State) (pc : UInt256) (q : PairedHelperBooleanTr
 
 #print axioms run_group0Template
 
-private theorem trace_add_eq_hadd (a b : UInt256) : UInt256.add a b = a + b := rfl
-private theorem trace_add_assoc (u v w : UInt256) : (u + v) + w = u + (v + w) := by
-  apply Challenge.EvmProof.Word.word_ext
-  change ((u.val + v.val) + w.val).val = (u.val + (v.val + w.val)).val
-  simp [Fin.add_def, Nat.add_assoc]
-private theorem trace_add_nat_assoc (u : UInt256) (a b : Nat) :
-    (u + UInt256.ofNat a) + UInt256.ofNat b = u + UInt256.ofNat (a + b) := by
-  rw [trace_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-
 def group16Template : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .op .POP,
-   .push ⟨20, by decide⟩ (UInt256.ofNat 526962527014005041256681316140890030896371104153)]
-
+  PairedFactoredGroupConstants.replaceTemplate
 
 def group16Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -6627,12 +6616,22 @@ theorem run_group16Template (s : State) (pc : UInt256) (q : PairedHelperBooleanT
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running) :
     runInstrSeq group16Template {s with pc := pc, stack := group16Entry q rho} =
       some {s with pc := pcAfter pc group16Template, stack := group16Output q rho} := by
-  have hcap (n : Nat) (hn : n ≤ 12) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [group16Template, group16Entry, group16Output,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
-    Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, Challenge.EvmProof.Word.literal_eq_ofNat, trace_add_eq_hadd, trace_add_nat_assoc]
+  have h := PairedFactoredGroupConstants.run_replaceTemplate s pc q.d q.k
+    ([q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho)
+    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hrun
+  simpa only [group16Template, group16Entry, group16Output, List.cons_append, List.nil_append] using h
+
 
 #print axioms run_group16Template
+
+private theorem trace_add_eq_hadd (a b : UInt256) : UInt256.add a b = a + b := rfl
+private theorem trace_add_assoc (u v w : UInt256) : (u + v) + w = u + (v + w) := by
+  apply Challenge.EvmProof.Word.word_ext
+  change ((u.val + v.val) + w.val).val = (u.val + (v.val + w.val)).val
+  simp [Fin.add_def, Nat.add_assoc]
+private theorem trace_add_nat_assoc (u : UInt256) (a b : Nat) :
+    (u + UInt256.ofNat a) + UInt256.ofNat b = u + UInt256.ofNat (a + b) := by
+  rw [trace_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
 def group32Template : List Instr :=
   [.op (.Swap ⟨3, by decide⟩),
@@ -6652,7 +6651,7 @@ theorem run_group32Template (s : State) (pc : UInt256) (q : PairedHelperBooleanT
   have hcap (n : Nat) (hn : n ≤ 12) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [group32Template, group32Entry, group32Output,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
-    Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, Challenge.EvmProof.Word.literal_eq_ofNat, trace_add_eq_hadd, trace_add_nat_assoc]
+    Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, trace_add_eq_hadd, trace_add_nat_assoc]
 
 #print axioms run_group32Template
 
@@ -6674,7 +6673,7 @@ theorem run_group48Template (s : State) (pc : UInt256) (q : PairedHelperBooleanT
   have hcap (n : Nat) (hn : n ≤ 12) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [group48Template, group48Entry, group48Output,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
-    Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, Challenge.EvmProof.Word.literal_eq_ofNat, trace_add_eq_hadd, trace_add_nat_assoc]
+    Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, trace_add_eq_hadd, trace_add_nat_assoc]
 
 #print axioms run_group48Template
 

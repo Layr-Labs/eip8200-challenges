@@ -3,6 +3,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStatePaths
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.BooleanSelect
 
 set_option warningAsError true
+set_option Elab.async false
 set_option maxRecDepth 50000
 set_option maxHeartbeats 5000000
 set_option linter.unusedSimpArgs false
