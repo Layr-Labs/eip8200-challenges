@@ -60,19 +60,19 @@ def rightConstant (i : Nat) : UInt256 :=
 
 def leftHelperPCOfGroup (group : Nat) : UInt256 :=
   match group with
-  | 0 => UInt256.ofNat 0xfd7
-  | 1 => UInt256.ofNat 0x100b
-  | 2 => UInt256.ofNat 0xe5b
-  | 3 => UInt256.ofNat 0x10a2
-  | _ => UInt256.ofNat 0x10de
+  | 0 => UInt256.ofNat 0xfde
+  | 1 => UInt256.ofNat 0x1012
+  | 2 => UInt256.ofNat 0xe62
+  | 3 => UInt256.ofNat 0x10a9
+  | _ => UInt256.ofNat 0x10e5
 
 def rightHelperPCOfGroup (group : Nat) : UInt256 :=
   match group with
-  | 0 => UInt256.ofNat 0xf11
-  | 1 => UInt256.ofNat 0x1159
-  | 2 => UInt256.ofNat 0xf7d
-  | 3 => UInt256.ofNat 0xfc3
-  | _ => UInt256.ofNat 0xfda
+  | 0 => UInt256.ofNat 0xf18
+  | 1 => UInt256.ofNat 0x1160
+  | 2 => UInt256.ofNat 0xf84
+  | 3 => UInt256.ofNat 0xfca
+  | _ => UInt256.ofNat 0xfe1
 
 def leftHelperPC (i : Nat) : UInt256 :=
   leftHelperPCOfGroup (i / 16)

@@ -82,7 +82,7 @@ private def scanSuffix : List YulEvmCompiler.Instr :=
 private theorem scanBefore_length : scanBefore.length = 53 := by
   simp [scanBefore, scanPrefix]
 
-private theorem scanSuffix_length : scanSuffix.length = 4109 := by
+private theorem scanSuffix_length : scanSuffix.length = 4105 := by
   simp [scanSuffix]
 
 private theorem artifact_scan_split :
@@ -126,7 +126,7 @@ private theorem artifact_instruction_projection :
     Artifact.submissionArtifact.instructions = Artifact.submissionInstructions := by rfl
 
 private theorem scan_instruction_at (index : Nat)
-    (hlo : 53 ≤ index) (hhi : index < 4162) :
+    (hlo : 53 ≤ index) (hhi : index < 4158) :
     Artifact.submissionInstructions[index]? = scanSuffix[index - 53]? := by
   have hi : index - 53 < scanSuffix.length := by
     rw [scanSuffix_length]
@@ -137,7 +137,7 @@ private theorem scan_instruction_at (index : Nat)
     Nat.add_sub_of_le hlo] using h
 
 private theorem scan_instruction_pc (index : Nat)
-    (hlo : 53 ≤ index) (hhi : index ≤ 4162) :
+    (hlo : 53 ≤ index) (hhi : index ≤ 4158) :
     Artifact.submissionArtifact.instructionPC index =
       72 + (YulEvmCompiler.assembleBytes (scanSuffix.take (index - 53))).length := by
   have hi : index - 53 ≤ scanSuffix.length := by
