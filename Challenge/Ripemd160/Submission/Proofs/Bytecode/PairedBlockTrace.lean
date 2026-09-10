@@ -2,6 +2,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineCoreSites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineBoundarySites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.SStartupPremises
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.TerminalRoundSite
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -10,6 +11,19 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockTrace
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PairedBlockModel PairedHelperBooleanTrace
+
+theorem terminal_eval (memory : ByteArray) (words : Nat → UInt32)
+    (left right : PairedLaneCryptoBridge.CryptoLane)
+    (hready : NormalizedScheduleReady memory words) :
+    PairedAllInlineCoreTrace.inline79Block.eval memory
+      (PairedAllInlineCoreTrace.corePrefixChain.eval memory
+        ⟨PairedLaneWordRound.packCrypto left right, 0⟩) =
+      coreCryptoResult words left right := by
+  rw [PairedAllInlineCoreTrace.corePrefixChain_eval,
+    PairedAllInlineCoreTrace.inline79Block_eval]
+  have h := PairedSynthCoreTrace.hoistedAlgorithmFold_crypto memory words 80
+    (by decide) left right (algorithmMessage_of_normalized memory words hready)
+  exact congrArg (fun lane => CoreFrame.mk lane (algorithmKey 4)) h
 
 def driverRest (input : ByteArray) (i : Nat) : List UInt256 :=
   [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
@@ -78,8 +92,10 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
   have gstartup := PairedAllInlineBoundarySites.gasSteps_startup q rho hstack qrun qactive
     hcanonical.1 hcanonical.2.1 hcanonical.2.2.1 hcanonical.2.2.2.1 hcanonical.2.2.2.2
     qcode qfork qnp
-  have gcore := PairedAllInlineCoreSites.gasSteps_core_normalized q (blockWords input i) lane lane rho
-    hstack qrun qactive qcode qfork qnp (scheduled_ready s input i h hfit hi ctx)
+  let initial : CoreFrame := ⟨PairedLaneWordRound.packCrypto lane lane, 0⟩
+  let terminal := PairedAllInlineCoreTrace.corePrefixChain.eval q.memory initial
+  have gcore := PairedAllInlineCoreSites.gasSteps_core_prefix q initial rho
+    hstack qrun qactive qcode qfork qnp
   have hentry :
       {q with
         pc := UInt256.ofNat 811
@@ -87,29 +103,28 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
           ⟨PairedLaneWordRound.packCrypto lane lane, 0⟩ rho} =
       {q with pc := UInt256.ofNat 811, stack := PairedStartupTrace.resultStack q.memory rho} := by
     rw [startup_stack, scheduled_readLane]
-  have htail :
-      {q with
-        pc := UInt256.ofNat 4871
-        stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower]
-          (coreCryptoResult (blockWords input i) lane lane) rho} =
-      {q with
-        pc := UInt256.ofNat 4871
-        stack := PairedAllInlineTail.entryStack (resultFrame s input i)
-          (UInt256.ofNat 461) (driverRest input i)} := by
-    rw [show coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower]
-        (coreCryptoResult (blockWords input i) lane lane) rho =
-      PairedAllInlineTail.entryStack (resultFrame s input i) (UInt256.ofNat 461)
-        (driverRest input i) from tail_stack s input i]
-  have gtail := PairedAllInlineBoundarySites.gasSteps_tail q (UInt256.ofNat 461) (resultFrame s input i)
-    (driverRest input i) (by simp [driverRest]) qrun qactive
+  have hterminal : TerminalRound.canonicalFrame q.memory terminal.frame =
+      resultFrame s input i := by
+    rw [TerminalRound.canonicalFrame_eval]
+    unfold TerminalRound.evaluatedTailFrame
+    rw [terminal_eval q.memory (blockWords input i) lane lane
+      (scheduled_ready s input i h hfit hi ctx)]
+    rfl
+  have hmemory : PairedTailTrace.resultMemory q.memory
+      (TerminalRound.modifiedFrame q.memory terminal.frame) =
+      PairedTailTrace.resultMemory q.memory (resultFrame s input i) := by
+    rw [TerminalRound.resultMemory_modified_eq_canonical _ _ rfl rfl, hterminal]
+  have gsuffix := TerminalRoundSite.gasSteps_suffix q terminal.frame
+    (UInt256.ofNat 461) (driverRest input i) hstack qrun qactive
     (valid_return q qcode) qcode qfork qnp
-  have gtail' : GasSteps
+  rw [hmemory] at gsuffix
+  have gsuffix' : GasSteps
       {q with
-        pc := UInt256.ofNat 4871
-        stack := PairedAllInlineTail.entryStack (resultFrame s input i)
-          (UInt256.ofNat 461) (driverRest input i)}
-      (DriverTrace.compressReturned (resultState s input i) input i) := gtail
-  exact gschedule'.trans (gstartup.trans ((gcore.cast hentry htail).trans gtail'))
+        pc := UInt256.ofNat 4818
+        stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower]
+          terminal rho}
+      (DriverTrace.compressReturned (resultState s input i) input i) := gsuffix
+  exact gschedule'.trans (gstartup.trans ((gcore.cast hentry rfl).trans gsuffix'))
 
 #print axioms startup_stack
 #print axioms scheduled_readLane
