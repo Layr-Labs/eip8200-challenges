@@ -120,7 +120,7 @@ private theorem artifact_scan_split :
   simp only [scanBefore, scanSuffix, List.append_assoc, List.append_nil]
 
 private theorem scanBefore_pc :
-    (YulEvmCompiler.assembleBytes scanBefore).length = 70 := by rfl
+    (YulEvmCompiler.assembleBytes scanBefore).length = 72 := by rfl
 
 private theorem artifact_instruction_projection :
     Artifact.submissionArtifact.instructions = Artifact.submissionInstructions := by rfl
@@ -139,12 +139,12 @@ private theorem scan_instruction_at (index : Nat)
 private theorem scan_instruction_pc (index : Nat)
     (hlo : 53 ≤ index) (hhi : index ≤ 4170) :
     Artifact.submissionArtifact.instructionPC index =
-      70 + (YulEvmCompiler.assembleBytes (scanSuffix.take (index - 53))).length := by
+      72 + (YulEvmCompiler.assembleBytes (scanSuffix.take (index - 53))).length := by
   have hi : index - 53 ≤ scanSuffix.length := by
     rw [scanSuffix_length]
     omega
   have h := ArtifactSegment.instructionPC_segment_of_bounds Artifact.submissionArtifact
-    scanBefore scanSuffix [] 53 70 artifact_scan_split scanBefore_length
+    scanBefore scanSuffix [] 53 72 artifact_scan_split scanBefore_length
     scanBefore_pc (index - 53) hi
   simpa only [Nat.add_sub_of_le hlo] using h
 

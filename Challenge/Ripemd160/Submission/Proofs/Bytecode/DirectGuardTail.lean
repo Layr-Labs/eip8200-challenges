@@ -122,16 +122,16 @@ theorem run_tail_fallback (input : ByteArray) (hsize : input.size = 1000)
     hne ((KnownInputCompactLogic.finalAcc_zero_iff_target input hsize).1 hz))
 
 def returnStorePath : List Located :=
-  [pushAt 55 20 972889429405991776604892044862621566948497025487,
-   pushAt 56 0 0, opAt 57 .MSTORE]
+  [pushAt 53 20 972889429405991776604892044862621566948497025487,
+   pushAt 54 0 0, opAt 55 .MSTORE]
 
-def returnFinishPath : List Located := [pushAt 59 0 0, opAt 60 .RETURN]
+def returnFinishPath : List Located := [pushAt 57 0 0, opAt 58 .RETURN]
 
 def returnStoredState (input : ByteArray) : State :=
-  { atPC input 97 with memory := answerMemory, activeWords := UInt256.ofNat 1 }
+  { atPC input 95 with memory := answerMemory, activeWords := UInt256.ofNat 1 }
 
 def returnSizedState (input : ByteArray) : State :=
-  { returnStoredState input with pc := UInt256.ofNat 98, stack := [UInt256.ofNat 32] }
+  { returnStoredState input with pc := UInt256.ofNat 96, stack := [UInt256.ofNat 32] }
 
 theorem run_returnStore (input : ByteArray) :
     run returnStorePath (returnEntry input) = some (returnStoredState input) := by
@@ -163,14 +163,14 @@ def gasSteps_return :
   have gs := Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     returnStorePath (by rfl) (by rfl) (run_returnStore input) (by rfl)
     deployAddress_not_precompile
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 58 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 56 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (returnStoredState input).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 58 := by
+      Artifact.submissionArtifact.instructionPC 56 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (returnStoredState input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (returnStoredState input) 58
+    Artifact.submissionArtifact.state_decodedOp_of (returnStoredState input) 56
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop (by simp [returnStoredState, atPC]) (by rfl)
     deployAddress_not_precompile
