@@ -47,14 +47,14 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
     GasSteps (selectorState n input sv ov) (returnedState n input sv ov) := by
   have gselect := sound selectorPath (run_selector n input sv ov hn hsize)
   have gstore := sound digestStorePath (run_store n input sv ov hn hsize)
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 4189 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 4191 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4189 := by
+      Artifact.submissionArtifact.instructionPC 4191 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedState n input sv ov).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedState n input sv ov) 4189
+    Artifact.submissionArtifact.state_decodedOp_of (storedState n input sv ov) 4191
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedState, returnRest, stS, initialState])

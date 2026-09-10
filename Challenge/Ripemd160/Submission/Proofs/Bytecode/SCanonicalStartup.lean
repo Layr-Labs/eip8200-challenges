@@ -13,12 +13,14 @@ set_option warningAsError true
 /-!
 S canonical multiply startup: raw execution module.
 
-33 ops / 48 bytes. Keeps L/U/P cache construction, derives `R = 1 + 2^128` as `P / L`,
-then five `PUSH address; MLOAD; DUP; MUL` loads for 160/128/96/64/32 with
-`DUP2..DUP6`, restores `F` via `PUSH5 F; SWAP6; POP`.
+32 ops / 43 bytes. Entry stack is `lowerWord :: rho`: the caller retains the
+`L = 0xffffffff` mask on top (old first `PUSH4 L` deleted, all remaining
+instructions unchanged). Keeps U/P cache construction, derives `R = 1 + 2^128`
+as `P / L`, then five `PUSH address; MLOAD; DUP; MUL` loads for 160/128/96/64/32
+with `DUP2..DUP6`, restores `F` via `PUSH5 F; SWAP6; POP`.
 
 Under five canonical hash-load bounds the result stack equals
-`PairedDerivedStartup.resultStack` exactly.
+`PairedDerivedStartup.resultStack s.memory rho` exactly.
 
 The duplication arithmetic (`dupFactor`, `mul_dupFactor`) and execution
 proof are reused from the previously promoted compact-startup implementation.
@@ -30,7 +32,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open StackRoundTrace DenseScheduleTemplate
 open PairedLaneUInt256Bridge
 
-/-- The 17-byte duplication literal `R = 1 + 2 ^ 128` pushed by the S startup. -/
+/-- The duplication factor `R = 1 + 2 ^ 128` derived by the S startup. -/
 def dupFactor : UInt256 := UInt256.ofNat (1 + 2 ^ 128)
 
 /-- `2 ^ 128 < 2 ^ 256`: small decides only, no giant evaluation. -/
@@ -123,8 +125,7 @@ theorem div_pair_lower :
     PairedDerivedStartup.pairWord / PairedDerivedStartup.lowerWord = dupFactor := by decide
 
 def template : List Instr :=
-  [.push ⟨4, by decide⟩ PairedDerivedStartup.lowerWord,
-   dup1, push1 (UInt256.ofNat 128), .op .SHL,
+  [dup1, push1 (UInt256.ofNat 128), .op .SHL,
    dup1, .op (.Dup ⟨2, by decide⟩), .op .OR,
    .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .DIV] ++
    loadMulTemplate 160 ⟨1, by decide⟩ ++
@@ -135,10 +136,10 @@ def template : List Instr :=
    [.push ⟨5, by decide⟩ PairedDerivedStartup.factorWord,
     .op (.Swap ⟨5, by decide⟩), .op .POP]
 
-theorem template_length : template.length = 33 := by
+theorem template_length : template.length = 32 := by
   norm_num [template, loadMulTemplate]
 
-theorem template_bytes : (template.map Instr.size).sum = 48 := by
+theorem template_bytes : (template.map Instr.size).sum = 43 := by
   norm_num [template, loadMulTemplate, push1, dup1, Instr.size]
 
 theorem lower_toNat :
@@ -181,10 +182,9 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
     (h160 : (MachineState.readWord s.memory 160).toNat < 2 ^ 32)
     (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
-    runInstrSeq template {s with pc := pc, stack := rho} =
+    runInstrSeq template {s with pc := pc, stack := PairedDerivedStartup.lowerWord :: rho} =
       some {s with pc := pcAfter pc template, stack := PairedDerivedStartup.resultStack s.memory rho} := by
   have hcap (n : Nat) (hn : n ≤ 11) : rho.length + n < 1024 := by omega
-  have h0 : rho.length < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 160) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords :=
@@ -197,7 +197,7 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
   simp (discharger := omega) [template, loadMulTemplate, push1, dup1,
     PairedDerivedStartup.packedHash, PairedDerivedStartup.resultStack,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
-    pcAfter, UInt256.succ, Instr.size, hrun, hcap, h0, Nat.add_assoc,
+    pcAfter, UInt256.succ, Instr.size, hrun, hcap, Nat.add_assoc,
     PairedDerivedStartup.upper_from_lower, PairedDerivedStartup.pair_from_lower,
     List.getElem?_cons_zero, List.getElem?_cons_succ,
     State.activeWordsAfterUInt256, hactiveAt,
@@ -213,10 +213,9 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
 
 open Challenge.EvmProof StackRoundTemplate
 
-/-- Flat 33-op expansion of `template` for the advancement case split. -/
+/-- Flat 32-op expansion of `template` for the advancement case split. -/
 def frozenInstructions : List Instr :=
-  [.push ⟨4, by decide⟩ PairedDerivedStartup.lowerWord,
-   DenseScheduleTemplate.dup1, DenseScheduleTemplate.push1 (UInt256.ofNat 128), .op .SHL,
+  [DenseScheduleTemplate.dup1, DenseScheduleTemplate.push1 (UInt256.ofNat 128), .op .SHL,
    DenseScheduleTemplate.dup1, .op (.Dup ⟨2, by decide⟩), .op .OR,
    .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .DIV,
    DenseScheduleTemplate.push1 (UInt256.ofNat 160), .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .MUL,
@@ -236,7 +235,7 @@ theorem template_advances {instruction : Instr} {s t : State}
     t.pc = s.pc + UInt256.ofNat instruction.size := by
   rw [template_eq_frozenInstructions] at hmem
   simp only [frozenInstructions, List.mem_cons, List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals first
     | exact RepeatedByteWord.runInstr_pc_div hrun
     | apply DenseScheduleLift.runInstr_pc_of_advances ?_ hrun
@@ -260,15 +259,15 @@ theorem runLocatedBlock_template {artifact : ProgramArtifact} {fork : Fork}
     (h160 : (MachineState.readWord s.memory 160).toNat < 2 ^ 32)
     (hstack : rho.length ≤ 1002)
     (hrun : s.halt = .Running) (hactive : 23 ≤ s.activeWords.toNat) :
-    Stepper.runLocatedBlock site.path {s with pc := site.startPC, stack := rho} =
+    Stepper.runLocatedBlock site.path {s with pc := site.startPC, stack := PairedDerivedStartup.lowerWord :: rho} =
       some {s with pc := site.endPC, stack := PairedDerivedStartup.resultStack s.memory rho} := by
   have hend : site.endPC = pcAfter site.startPC template := by
     have h := StackRoundTrace.endPC_eq_pcAfter_sites site.sites site.startPC site.endPC
       site.head_eq site.end_eq site.contiguous
     rwa [site.instruction_eq] at h
   have hraw : Stepper.runLocatedBlock site.path
-      {s with pc := site.startPC, stack := rho} =
-      runInstrSeq template {s with pc := site.startPC, stack := rho} := by
+      {s with pc := site.startPC, stack := PairedDerivedStartup.lowerWord :: rho} =
+      runInstrSeq template {s with pc := site.startPC, stack := PairedDerivedStartup.lowerWord :: rho} := by
     apply runLocatedBlock_eq_runInstrSeq_site site _ rfl
     intro located hmem u v hresult
     apply template_advances ?_ hresult
@@ -292,7 +291,7 @@ def gasSteps_template {artifact : ProgramArtifact} {fork : Fork}
     (hcode : s.executionEnv.code = artifact.code) (hfork : s.fork = fork)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := site.startPC, stack := rho}
+    GasSteps {s with pc := site.startPC, stack := PairedDerivedStartup.lowerWord :: rho}
       {s with pc := site.endPC, stack := PairedDerivedStartup.resultStack s.memory rho} := by
   apply Stepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode
