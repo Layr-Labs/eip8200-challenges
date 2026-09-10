@@ -105,7 +105,7 @@ theorem run_tail_fallback_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0
       BooleanSelect.xor_comm _ _
     rw [hcomm]
     exact htrue
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x170 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x171 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 199 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, fallbackState, atPC,

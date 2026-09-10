@@ -60,7 +60,11 @@ private theorem eq_as_if (a b : UInt256) :
   have he : a.toNat = b.toNat ↔ a = b :=
     ⟨fun h => Challenge.EvmProof.Word.word_ext h,
       fun h => congrArg UInt256.toNat h⟩
-  simp only [UInt256.eq, he, Challenge.EvmProof.Word.literal_eq_ofNat]
+  by_cases hab : a = b
+  · simp only [UInt256.eq, he, hab, ite_true]
+    decide
+  · simp only [UInt256.eq, he, hab, ite_false]
+    decide
 
 theorem flags (x : UInt256) :
     UInt256.eq 56 (UInt256.land (UInt256.lnot 64) x) =

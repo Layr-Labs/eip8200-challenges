@@ -43,9 +43,9 @@ def selectorGroup4 : List Located :=
 
 def selectorGroup5 : List Located :=
   [opAt 3010 (.Dup ⟨2, by decide⟩),
-   pushAt 3011 2 320,
+   pushAt 3011 2 416,
    opAt 3012 .EQ,
-   pushAt 3013 2 6431,
+   pushAt 3013 2 272,
    opAt 3014 .JUMPI]
 
 def selectorGroup6 : List Located :=
@@ -80,7 +80,7 @@ def selectorGroup10 : List Located :=
   [opAt 3035 (.Dup ⟨2, by decide⟩),
    pushAt 3036 2 640,
    opAt 3037 .EQ,
-   pushAt 3038 2 6646,
+   pushAt 3038 1 22,
    opAt 3039 .JUMPI]
 
 def selectorGroup11 : List Located :=

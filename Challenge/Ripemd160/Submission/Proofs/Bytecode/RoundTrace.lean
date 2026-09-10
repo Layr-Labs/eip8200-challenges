@@ -376,39 +376,39 @@ def setCallState (s : State) (base : UInt256) (j : Nat)
     (setTail s base j wordIndex rotation k returnDest word rest)
 
 @[simp] private theorem valid4 :
-    Decode.isValidJumpDest submissionBytecode 3 = true := by
+    Decode.isValidJumpDest submissionBytecode 5 = true := by
   exact Artifact.submissionArtifact.isValidJumpDest_index 2 (by rfl)
 
 @[simp] private theorem valid33 :
-    Decode.isValidJumpDest submissionBytecode 0x33 = true := by
+    Decode.isValidJumpDest submissionBytecode 0x35 = true := by
   exact Artifact.submissionArtifact.isValidJumpDest_index 38 (by rfl)
 
 @[simp] private theorem valid4B :
-    Decode.isValidJumpDest submissionBytecode 0x4b = true := by
+    Decode.isValidJumpDest submissionBytecode 0x60 = true := by
   exact Artifact.submissionArtifact.isValidJumpDest_index 55 (by rfl)
 
 @[simp] private theorem valid687 :
-    Decode.isValidJumpDest submissionBytecode 0x47a = true := by
+    Decode.isValidJumpDest submissionBytecode 0x48b = true := by
   exact Artifact.submissionArtifact.isValidJumpDest_index 787 (by rfl)
 
 @[simp] private theorem valid13A :
-    Decode.isValidJumpDest submissionBytecode 0x13a = true := by
+    Decode.isValidJumpDest submissionBytecode 0x1d1 = true := by
   exact Artifact.submissionArtifact.isValidJumpDest_index 256 (by rfl)
 
 @[simp] private theorem valid147 :
-    Decode.isValidJumpDest submissionBytecode 0x147 = true := by
+    Decode.isValidJumpDest submissionBytecode 0x1db = true := by
   exact Artifact.submissionArtifact.isValidJumpDest_index 265 (by rfl)
 
 @[simp] private theorem valid15D :
-    Decode.isValidJumpDest submissionBytecode 0x15d = true := by
+    Decode.isValidJumpDest submissionBytecode 0x1f6 = true := by
   exact Artifact.submissionArtifact.isValidJumpDest_index 279 (by rfl)
 
 @[simp] private theorem valid185 :
-    Decode.isValidJumpDest submissionBytecode 0x185 = true := by
+    Decode.isValidJumpDest submissionBytecode 0x22b = true := by
   exact Artifact.submissionArtifact.isValidJumpDest_index 303 (by rfl)
 
 @[simp] private theorem valid18D :
-    Decode.isValidJumpDest submissionBytecode 0x18d = true := by
+    Decode.isValidJumpDest submissionBytecode 0x230 = true := by
   exact Artifact.submissionArtifact.isValidJumpDest_index 308 (by rfl)
 
 private theorem cap (rest : List UInt256) (h : rest.length < 980)
