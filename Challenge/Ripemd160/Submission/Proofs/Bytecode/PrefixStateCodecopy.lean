@@ -44,7 +44,7 @@ def gasSteps_codecopy (s : State) (rho : List UInt256)
     change s.executionEnv.code = submissionBytecode
     exact hcode
   have hpc : (withGas pre gas).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4107 := by
+      Artifact.submissionArtifact.instructionPC 4106 := by
     show (UInt256.ofNat 5036).toNat = _
     rw [PrefixStatePaths.pc4081]
     decide
