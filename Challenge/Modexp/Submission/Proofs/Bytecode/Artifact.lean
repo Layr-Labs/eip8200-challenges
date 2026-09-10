@@ -3181,11 +3181,10 @@ def submissionInstructions : List Instr :=
   .op .EQ,
   .push 1 153,
   .op .MUL,
-  .op (.Dup ⟨0, by decide⟩),
   .push 2 4278,
   .op .ADD,
-  .op (.Swap ⟨0, by decide⟩),
-  .push 2 4578,
+  .op (.Dup ⟨0, by decide⟩),
+  .push 3 300,
   .op .ADD,
   .op (.Swap ⟨3, by decide⟩),
   .push 0 0,
@@ -3194,7 +3193,7 @@ def submissionInstructions : List Instr :=
   .push 2 9344,
   .op .MLOAD,
   .op (.Dup ⟨0, by decide⟩),
-  .push 1 64,
+  .push 5 64,
   .op .ADD,
   .op .CALLDATASIZE,
   .push 2 8192,
@@ -3202,14 +3201,12 @@ def submissionInstructions : List Instr :=
   .op (.Dup ⟨0, by decide⟩),
   .op (.Dup ⟨3, by decide⟩),
   .op .ADD,
-  .push 1 32,
-  .op (.Swap ⟨0, by decide⟩),
-  .op .SUB,
-  .push 1 32,
-  .op (.Dup ⟨4, by decide⟩),
-  .op .SUB,
-  .op (.Swap ⟨3, by decide⟩),
-  .op .POP,
+  .op (.Dup ⟨5, by decide⟩),
+  .op .ADD,
+  .op (.Swap ⟨2, by decide⟩),
+  .op (.Dup ⟨5, by decide⟩),
+  .op .ADD,
+  .op (.Swap ⟨2, by decide⟩),
   .op (.Swap ⟨0, by decide⟩),
   .op .POP,
   .op .JUMPDEST,
@@ -4039,7 +4036,7 @@ def submissionInstructions : List Instr :=
   .op .JUMP
 ]
 
-theorem submissionInstructions_count : submissionInstructions.length = 4014 := by
+theorem submissionInstructions_count : submissionInstructions.length = 4011 := by
   decide
 
 theorem assemble_submissionInstructions :
