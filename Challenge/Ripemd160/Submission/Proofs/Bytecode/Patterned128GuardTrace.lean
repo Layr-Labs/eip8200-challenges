@@ -56,35 +56,31 @@ attribute [simp] Challenge.Ripemd160.initialState_stack
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_4118 : Artifact.submissionArtifact.instructionPC 4118 = 5267 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4119 : Artifact.submissionArtifact.instructionPC 4119 = 5269 := by
+@[simp] theorem pc_4119 : Artifact.submissionArtifact.instructionPC 4119 = 5270 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4120 : Artifact.submissionArtifact.instructionPC 4120 = 5270 := by
+@[simp] theorem pc_4121 : Artifact.submissionArtifact.instructionPC 4120 = 5271 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4121 : Artifact.submissionArtifact.instructionPC 4121 = 5271 := by
+@[simp] theorem pc_4122 : Artifact.submissionArtifact.instructionPC 4121 = 5272 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4122 : Artifact.submissionArtifact.instructionPC 4122 = 5272 := by
+@[simp] theorem pc_4123 : Artifact.submissionArtifact.instructionPC 4122 = 5273 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4123 : Artifact.submissionArtifact.instructionPC 4123 = 5273 := by
+@[simp] theorem pc_4124 : Artifact.submissionArtifact.instructionPC 4123 = 5274 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4124 : Artifact.submissionArtifact.instructionPC 4124 = 5274 := by
+@[simp] theorem pc_4125 : Artifact.submissionArtifact.instructionPC 4124 = 5275 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4125 : Artifact.submissionArtifact.instructionPC 4125 = 5275 := by
+@[simp] theorem pc_4126 : Artifact.submissionArtifact.instructionPC 4125 = 5278 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4126 : Artifact.submissionArtifact.instructionPC 4126 = 5277 := by
+@[simp] theorem pc_4128 : Artifact.submissionArtifact.instructionPC 4126 = 5279 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4127 : Artifact.submissionArtifact.instructionPC 4127 = 5278 := by
+@[simp] theorem pc_4129 : Artifact.submissionArtifact.instructionPC 4127 = 5280 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4128 : Artifact.submissionArtifact.instructionPC 4128 = 5279 := by
+@[simp] theorem pc_4130 : Artifact.submissionArtifact.instructionPC 4128 = 5283 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4129 : Artifact.submissionArtifact.instructionPC 4129 = 5280 := by
+@[simp] theorem pc_4131 : Artifact.submissionArtifact.instructionPC 4129 = 5284 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4130 : Artifact.submissionArtifact.instructionPC 4130 = 5283 := by
+@[simp] theorem pc_4132 : Artifact.submissionArtifact.instructionPC 4130 = 5285 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4131 : Artifact.submissionArtifact.instructionPC 4131 = 5284 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4132 : Artifact.submissionArtifact.instructionPC 4132 = 5285 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4133 : Artifact.submissionArtifact.instructionPC 4133 = 5287 := by
+@[simp] theorem pc_4133 : Artifact.submissionArtifact.instructionPC 4131 = 5287 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_61 : Artifact.submissionArtifact.instructionPC 61 = 101 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -94,24 +90,22 @@ attribute [simp] Challenge.Ripemd160.initialState_stack
 def guardCheckPath : List Located :=
   [opAt 4116 .JUMPDEST,
    opAt 4117 .CALLDATASIZE,
-   pushAt 4118 1 128,
+   pushAt 4118 2 128,
    opAt 4119 .XOR,
-   opAt 4120 .JUMPDEST,
-   pushAt 4121 0 0,
-   opAt 4122 .CALLDATALOAD,
-   pushAt 4123 0 0,
-   opAt 4124 .BYTE,
-   pushAt 4125 1 7,
-   opAt 4126 .XOR,
-   opAt 4127 .JUMPDEST,
-   opAt 4128 .OR,
-   pushAt 4129 2 368,
-   opAt 4130 .JUMPI]
+   pushAt 4120 0 0,
+   opAt 4121 .CALLDATALOAD,
+   pushAt 4122 0 0,
+   opAt 4123 .BYTE,
+   pushAt 4124 2 7,
+   opAt 4125 .XOR,
+   opAt 4126 .OR,
+   pushAt 4127 2 368,
+   opAt 4128 .JUMPI]
 
 def guardMatchSuffix : List Located :=
-  [pushAt 4131 0 0,
-   pushAt 4132 1 101,
-   opAt 4133 .JUMP]
+  [pushAt 4129 0 0,
+   pushAt 4130 1 101,
+   opAt 4131 .JUMP]
 
 def guardMatchTail : List Located :=
   [opAt 61 .JUMPDEST, opAt 62 .POP]

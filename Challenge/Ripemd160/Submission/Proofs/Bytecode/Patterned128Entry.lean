@@ -32,24 +32,22 @@ private def sound (path : List Located) {s t : State}
 private def guardCheckPath : List Located :=
   [DirectGuard.opAt 4116 .JUMPDEST,
    DirectGuard.opAt 4117 .CALLDATASIZE,
-   DirectGuard.pushAt 4118 1 128,
+   DirectGuard.pushAt 4118 2 128,
    DirectGuard.opAt 4119 .XOR,
-   DirectGuard.opAt 4120 .JUMPDEST,
-   DirectGuard.pushAt 4121 0 0,
-   DirectGuard.opAt 4122 .CALLDATALOAD,
-   DirectGuard.pushAt 4123 0 0,
-   DirectGuard.opAt 4124 .BYTE,
-   DirectGuard.pushAt 4125 1 7,
-   DirectGuard.opAt 4126 .XOR,
-   DirectGuard.opAt 4127 .JUMPDEST,
-   DirectGuard.opAt 4128 .OR,
-   DirectGuard.pushAt 4129 2 368,
-   DirectGuard.opAt 4130 .JUMPI]
+   DirectGuard.pushAt 4120 0 0,
+   DirectGuard.opAt 4121 .CALLDATALOAD,
+   DirectGuard.pushAt 4122 0 0,
+   DirectGuard.opAt 4123 .BYTE,
+   DirectGuard.pushAt 4124 2 7,
+   DirectGuard.opAt 4125 .XOR,
+   DirectGuard.opAt 4126 .OR,
+   DirectGuard.pushAt 4127 2 368,
+   DirectGuard.opAt 4128 .JUMPI]
 
 private def guardMatchSuffix : List Located :=
-  [DirectGuard.pushAt 4131 0 0,
-   DirectGuard.pushAt 4132 1 101,
-   DirectGuard.opAt 4133 .JUMP]
+  [DirectGuard.pushAt 4129 0 0,
+   DirectGuard.pushAt 4130 1 101,
+   DirectGuard.opAt 4131 .JUMP]
 
 private def guardMatchTail : List Located :=
   [DirectGuard.opAt 61 .JUMPDEST, DirectGuard.opAt 62 .POP]

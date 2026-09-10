@@ -75,13 +75,13 @@ def selectorPath : List Located :=
    opAt 170 .JUMPI]
 
 def digestStorePath : List Located :=
-  [opAt 4134 .JUMPDEST,
-   pushAt 4135 20 paddedDigestWord,
-   pushAt 4136 0 0,
-   opAt 4137 .MSTORE]
+  [opAt 4132 .JUMPDEST,
+   pushAt 4133 20 paddedDigestWord,
+   pushAt 4134 0 0,
+   opAt 4135 .MSTORE]
 
 def digestFinishPath : List Located :=
-  [pushAt 4139 0 0, opAt 4140 .RETURN]
+  [pushAt 4137 0 0, opAt 4138 .RETURN]
 
 @[simp] private theorem selectorPC166 :
     Artifact.submissionArtifact.instructionPC 166 = 260 := by
@@ -109,32 +109,32 @@ def digestFinishPath : List Located :=
   decide
 
 @[simp] private theorem digestStorePC4160 :
-    Artifact.submissionArtifact.instructionPC 4134 = 5288 := by
+    Artifact.submissionArtifact.instructionPC 4132 = 5288 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem digestStorePC4161 :
-    Artifact.submissionArtifact.instructionPC 4135 = 5289 := by
+    Artifact.submissionArtifact.instructionPC 4133 = 5289 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem digestStorePC4162 :
-    Artifact.submissionArtifact.instructionPC 4136 = 5310 := by
+    Artifact.submissionArtifact.instructionPC 4134 = 5310 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem digestStorePC4163 :
-    Artifact.submissionArtifact.instructionPC 4137 = 5311 := by
+    Artifact.submissionArtifact.instructionPC 4135 = 5311 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem digestFinishPC4165 :
-    Artifact.submissionArtifact.instructionPC 4139 = 5313 := by
+    Artifact.submissionArtifact.instructionPC 4137 = 5313 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem digestFinishPC4166 :
-    Artifact.submissionArtifact.instructionPC 4140 = 5314 := by
+    Artifact.submissionArtifact.instructionPC 4138 = 5314 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -145,7 +145,7 @@ theorem run_selector (input : ByteArray) (sv ov : UInt256)
   change run selectorPath (stS input 260 (returnRest sv ov)) =
     some (stS input 5288 (returnRest sv ov))
   have hdest : Decode.isValidJumpDest submissionBytecode 5288 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 4134 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 4132 (by rfl)
   have htrue : UInt256.isTrue (UInt256.eq 128 (UInt256.ofNat input.size)) := by
     rw [hsize]
     decide
@@ -277,14 +277,14 @@ def gasSteps_return (input : ByteArray) (sv ov : UInt256)
     GasSteps (selectorState input sv ov) (returnedState input sv ov) := by
   have gselect := sound selectorPath (run_selector input sv ov hsize)
   have gstore := sound digestStorePath (run_store input sv ov)
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 4138 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 4136 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4138 := by
+      Artifact.submissionArtifact.instructionPC 4136 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedState input sv ov).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedState input sv ov) 4138
+    Artifact.submissionArtifact.state_decodedOp_of (storedState input sv ov) 4136
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedState, returnRest, stS, initialState])
