@@ -53,12 +53,50 @@ theorem returned_result (template : State) (pc word : UInt256)
   rw [WindowTableMemory.readPadded_storeWord]
   rfl
 
+/-- `1 % x` is the `1 < x` predicate: `0` for `x ∈ {0, 1}`, `1` otherwise. -/
+private theorem lt_one_eq_mod_one (x : UInt256) :
+    UInt256.lt (UInt256.ofNat 1) x = UInt256.ofNat 1 % x := by
+  by_cases h0 : x.toNat = 0
+  · have hx : x = UInt256.ofNat 0 :=
+      (Challenge.EvmProof.Word.word_eq_ofNat_toNat x).trans
+        (congrArg UInt256.ofNat h0)
+    subst hx
+    decide
+  by_cases h1 : x.toNat = 1
+  · have hx : x = UInt256.ofNat 1 :=
+      (Challenge.EvmProof.Word.word_eq_ofNat_toNat x).trans
+        (congrArg UInt256.ofNat h1)
+    subst hx
+    decide
+  by_cases h2 : x.toNat = 2
+  · have hx : x = UInt256.ofNat 2 :=
+      (Challenge.EvmProof.Word.word_eq_ofNat_toNat x).trans
+        (congrArg UInt256.ofNat h2)
+    subst hx
+    decide
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_lt]
+  have _h1t : (UInt256.ofNat 1).toNat = 1 := by decide
+  rw [if_pos (by omega : (UInt256.ofNat 1).toNat < x.toNat)]
+  change (1 : Nat) =
+    (if x.toNat = 0 then (0 : UInt256) else
+      UInt256.mk ((UInt256.ofNat 1).val % x.val)).toNat
+  rw [if_neg h0]
+  show (1 : Nat) = ((UInt256.ofNat 1).val % x.val).val
+  rw [Fin.mod_val]
+  have _hxv : x.val.val > 2 := by
+    have h' : x.toNat > 2 := by omega
+    exact h'
+  rw [Fin.val_ofNat,
+    Nat.mod_eq_of_lt (by decide : (1 : Nat) < UInt256.size),
+    Nat.mod_eq_of_lt (by omega : (1 : Nat) < x.val.val)]
+
 def emptyValue (exponent modulus : UInt256) : UInt256 :=
   UInt256.mul (UInt256.mod (UInt256.ofNat 1) modulus) (UInt256.isZero exponent)
 
 def emptyValueProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨4, by decide⟩), .op .CALLDATALOAD, .op .ISZERO,
-   .op (.Dup ⟨6, by decide⟩), .op .CALLDATALOAD, .push 1 1, .op .MOD, .op .MUL]
+   .op (.Dup ⟨6, by decide⟩), .op .CALLDATALOAD, .push 1 1, .op .LT, .op .MUL]
 
 theorem run_empty_value (template : State) (pc exponentOffset modulusOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length + 3 < 1024)
@@ -75,8 +113,8 @@ theorem run_empty_value (template : State) (pc exponentOffset modulusOffset : UI
   simp [runInstructions, emptyValueProgram, framed, emptyValue,
     Challenge.EvmProof.Stepper.runInstr, hcap0, hcap1, hcap2, hcap3,
     List.getElem?_cons_succ, he, hm, Challenge.EvmProof.Word.literal_eq_ofNat,
-    advancePC, succ_eq_add, hp2, word_add_assoc]
-  rfl
+    advancePC, succ_eq_add, hp2, word_add_assoc, lt_one_eq_mod_one]
+  try rfl
 
 def emptyProgram : List Instr := emptyValueProgram ++ program
 

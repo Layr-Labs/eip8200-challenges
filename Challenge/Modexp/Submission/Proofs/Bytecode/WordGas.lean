@@ -108,11 +108,11 @@ theorem gasSteps_baseLoop_cost (input : ByteArray) (hvalid : ValidInput input) :
 
 theorem gasSteps_baseFinish_cost (input : ByteArray) (base : UInt256)
     (hvalid : ValidInput input) (hword : modulusSize input ≤ 32) :
-    (gasSteps_baseFinish input base hvalid hword).cost = 42 := by
+    (gasSteps_baseFinish input base hvalid hword).cost = 40 := by
   have hguard := blockCost_of_static baseGuardPath 26
     (run_baseFinishGuard input base hvalid) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have htail := blockCost_of_static baseFinishTailPath 16
+  have htail := blockCost_of_static baseFinishTailPath 14
     (run_baseFinishTail input base hvalid hword) (by rfl)
     (by decide) (by rfl) (by rfl)
   unfold gasSteps_baseFinish
@@ -356,6 +356,6 @@ theorem gasSteps_zeroModulus_cost (input : ByteArray)
   omega
 
 def wordGas (input : ByteArray) : Nat :=
-  929 + 132 * baseSize input + 626 * exponentSize input
+  927 + 132 * baseSize input + 626 * exponentSize input
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordGas
