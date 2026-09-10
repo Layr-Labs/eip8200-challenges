@@ -36,7 +36,7 @@ private theorem word_add_ofNat_assoc (u : UInt256) (a b : Nat) :
 private theorem add_eq_hadd (a b : UInt256) : UInt256.add a b = a + b := rfl
 
 def upperTemplate : List Instr :=
-  [.push ⟨4, by decide⟩ (UInt256.ofNat 0x50a28be6), .push ⟨1, by decide⟩ 128, .op .SHL]
+  [.push ⟨20, by decide⟩ (UInt256.ofNat 460344169260758029377710773882198039553172832256)]
 
 /-- Construct the group-16 constant from two32-bit halves. -/
 def replaceTemplate : List Instr :=
@@ -50,10 +50,8 @@ theorem run_upperTemplate (s : State) (pc : UInt256) (rho : List UInt256)
         pc := pcAfter pc upperTemplate
         stack := UInt256.ofNat 460344169260758029377710773882198039553172832256 :: rho} := by
   have hzero : rho.length < 1024 := by omega
-  have hcap (n : Nat) (hn : n ≤ 2) : rho.length + n < 1024 := by omega
   simp [upperTemplate, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
-    pcAfter, Instr.size, hrun, hzero, hcap, List.length_cons, Nat.add_assoc,
-    Word.literal_eq_ofNat, upper_value, UInt256.succ, add_eq_hadd, word_add_ofNat_assoc]
+    pcAfter, Instr.size, hrun, hzero]
 
 #print axioms run_upperTemplate
 
