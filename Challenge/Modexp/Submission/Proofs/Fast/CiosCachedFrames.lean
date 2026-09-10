@@ -23,15 +23,41 @@ def isFour (n : Nat) : UInt256 :=
 
 
 def l1Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 4222 + UInt256.ofNat 150 * isFour n
+  UInt256.ofNat 4229 + UInt256.ofNat 150 * isFour n
 
 def l2Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 4567 + UInt256.ofNat 150 * isFour n
+  UInt256.ofNat 4570 + UInt256.ofNat 150 * isFour n
 
-@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 4372 := by decide
-@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 4222 := by decide
-@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 4717 := by decide
-@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 4567 := by decide
+@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 4379 := by decide
+@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 4229 := by decide
+@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 4720 := by decide
+@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 4570 := by decide
+
+def modulusAddress (n : Nat) : UInt256 := UInt256.ofNat (32*n-32)
+
+
+def modulusValue (mem : ByteArray) (n : Nat) : UInt256 :=
+  MachineState.readWord mem (32*n-32)
+
+theorem modulusValue_zero (s : State) (mem : ByteArray) (n : Nat) (hn : n ≤ 32) :
+    modulusValue (mpZeroed s mem n) n = modulusValue mem n :=
+  readWord_mpZeroed s mem n (32*n-32) hn (Or.inl (by omega))
+
+theorem modulusValue_l1 (mem : ByteArray) (bi : UInt256) (pa n j : Nat) (hn : n ≤ 32) :
+    modulusValue (l1Step mem bi pa n j).memory n = modulusValue mem n :=
+  readWord_l1Step mem bi pa n (32*n-32) j hn (Or.inl (by omega))
+
+theorem modulusValue_l2 (mem : ByteArray) (mu c0 : UInt256) (n k : Nat) (hn : n ≤ 32) :
+    modulusValue (l2Step mem mu c0 n k).memory n = modulusValue mem n :=
+  readWord_l2Step mem mu c0 n (32*n-32) k hn (Or.inl (by omega))
+
+theorem modulusValue_mid (mem : ByteArray) (c : UInt256) (n : Nat) (hn : n ≤ 32) :
+    modulusValue (midMem mem c) n = modulusValue mem n :=
+  readWord_midMem mem c (32*n-32) (Or.inl (by omega))
+
+theorem modulusValue_tail (mem : ByteArray) (c : UInt256) (n : Nat) (hn : n ≤ 32) :
+    modulusValue (tailMem mem c) n = modulusValue mem n :=
+  readWord_tailMem mem c (32*n-32) (Or.inl (by omega))
 
 /-- Before first-loop step `j`: carry and `b_i` above the honest cached base. -/
 def l1At (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
@@ -39,7 +65,7 @@ def l1At (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
   { s with pc := UInt256.ofNat pc
            stack := [(l1Step mem bi pa n j).carry, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, pdst, ret] ++ rest
+                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, modulusValue mem n, pdst, ret] ++ rest
            memory := (l1Step mem bi pa n j).memory }
 
 /-- Before second-loop step `k` of row `i`: only the carry and `mu` above
@@ -49,7 +75,7 @@ def l2At (pc : Nat) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
   { s with pc := UInt256.ofNat pc
            stack := [(l2Step mid mu c0 n k).carry, mu, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, pdst, ret] ++ rest
+                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, modulusValue mid n, pdst, ret] ++ rest
            memory := (l2Step mid mu c0 n k).memory }
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCached

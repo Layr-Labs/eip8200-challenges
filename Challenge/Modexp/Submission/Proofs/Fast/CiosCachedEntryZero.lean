@@ -12,7 +12,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 theorem run_zero (s : State) (mem : ByteArray) (pa pb n : Nat)
-    (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005)
+    (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1004)
     (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 32)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32*n)) :
