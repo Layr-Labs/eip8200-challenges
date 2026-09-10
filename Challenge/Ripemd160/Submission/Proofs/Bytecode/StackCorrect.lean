@@ -32,85 +32,68 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hnd : PrefixStateModel.double input = true → 2 ≤ i) (hpositive : 0 < input.size) :
+    (_hnd : PrefixStateModel.double input = true → 2 ≤ i) :
     GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i) := by
-  have hempty : input.size ≠ 0 := Nat.ne_of_gt hpositive
-  have gdispatch := FastEmptyBlock.gasSteps_nonempty s input i hfit
-    (Nat.pos_of_ne_zero hempty) ctx.calldata hcode hfork hrun hnp
-  by_cases hhit : i = 0 ∧ Matched input
-  · rcases hhit with ⟨rfl, hmatch⟩
-    have hnot2 : ¬ Matched2 input := by
-      intro h2
-      have := hnd ((PrefixStateModel.double_iff input).2 ⟨hmatch, h2⟩)
-      omega
-    have hif : (if 0 = 0 ∧ Matched input then
-        (if Matched2 input then PrefixStateMemory.resultState2 (PrefixStateMemory.copied s) input
-          else PrefixStateMemory.resultState (PrefixStateMemory.copied s) input 0)
-      else DriverTrace.compressEntry (prepared s 0) input 0) =
-      PrefixStateMemory.resultState (PrefixStateMemory.copied s) input 0 := by
-      rw [if_pos ⟨rfl, hmatch⟩, if_neg hnot2]
-    exact (gdispatch.trans
-      ((PrefixStateTrace.gasSteps_dispatch s input 0 hfit hi ctx.calldata
-          hcode hfork hrun hnp).cast (by rfl) hif)).cast (by rfl) (by
-        simp [nextState, PrefixStateKernel.nextState, hempty, hmatch,
-          DriverTrace.compressReturned, PrefixStateMemory.resultState])
-  · have ghelper : GasSteps (FastEmptyBlock.nonemptyEntry s input i)
-        (DriverTrace.compressEntry (prepared s i) input i) := by
-      have hif : (if i = 0 ∧ Matched input then
-          (if Matched2 input then PrefixStateMemory.resultState2 (PrefixStateMemory.copied s) input
-            else PrefixStateMemory.resultState (PrefixStateMemory.copied s) input i)
-        else DriverTrace.compressEntry (prepared s i) input i) =
-        DriverTrace.compressEntry (prepared s i) input i := by
-        rw [if_neg hhit]
-      exact (PrefixStateTrace.gasSteps_dispatch s input i hfit hi ctx.calldata
-        hcode hfork hrun hnp).cast (by rfl) hif
-    have hcode' : (prepared s i).executionEnv.code = submissionBytecode := by
-      rw [PrefixStateModel.prepared_executionEnv]; exact hcode
-    have hfork' : (prepared s i).fork = .Osaka := by
-      simpa [State.fork] using hfork
-    have hrun' : (prepared s i).halt = .Running := by
-      rw [PrefixStateModel.prepared_halt]; exact hrun
-    have hnp' : Precompile.isPrecompileWithConfig
-        (prepared s i).executionEnv.precompileConfig
-        (prepared s i).executionEnv.fork
-        (prepared s i).executionEnv.codeAddr = false := by
-      rw [PrefixStateModel.prepared_executionEnv]; exact hnp
-    have gcompress := PairedBlockTrace.gasSteps_compress (prepared s i)
-      input i h hfit hi (PrefixStateKernel.preparedContext s input i h ctx)
-      hcode' hfork' hrun' hnp'
-    exact GasSteps.cast (gdispatch.trans (ghelper.trans gcompress)) (by rfl) (by
-      simp [nextState, PrefixStateKernel.nextState, hempty, hhit,
-        DriverTrace.compressReturned])
+  by_cases hempty : input.size = 0
+  · have gempty := FastEmptyBlock.gasSteps_empty s input i hempty
+      ctx.calldata hcode hfork hrun hnp
+    exact GasSteps.cast gempty (by rfl) (by
+      simp [nextState, PrefixStateKernel.nextState, hempty,
+        DriverTrace.compressReturned, FastEmptyBlock.resultState])
+  · have gdispatch := FastEmptyBlock.gasSteps_nonempty s input i hfit
+      (Nat.pos_of_ne_zero hempty) ctx.calldata hcode hfork hrun hnp
+    by_cases hhit : i = 0 ∧ Matched input
+    · rcases hhit with ⟨rfl, hmatch⟩
+      have hif : (if 0 = 0 ∧ Matched input then
+          PrefixStateMemory.resultState (PrefixStateMemory.copied s) input 0
+        else DriverTrace.compressEntry (prepared s 0) input 0) =
+        PrefixStateMemory.resultState (PrefixStateMemory.copied s) input 0 := by
+        rw [if_pos ⟨rfl, hmatch⟩]
+      exact (gdispatch.trans
+        ((PrefixStateTrace.gasSteps_dispatch s input 0 hfit hi ctx.calldata
+            hcode hfork hrun hnp).cast (by rfl) hif)).cast (by rfl) (by
+          simp [nextState, PrefixStateKernel.nextState, hempty, hmatch,
+            DriverTrace.compressReturned, PrefixStateMemory.resultState])
+    · have ghelper : GasSteps (FastEmptyBlock.nonemptyEntry s input i)
+          (DriverTrace.compressEntry (prepared s i) input i) := by
+        have hif : (if i = 0 ∧ Matched input then
+            PrefixStateMemory.resultState (PrefixStateMemory.copied s) input i
+          else DriverTrace.compressEntry (prepared s i) input i) =
+          DriverTrace.compressEntry (prepared s i) input i := by
+          rw [if_neg hhit]
+        exact (PrefixStateTrace.gasSteps_dispatch s input i hfit hi ctx.calldata
+          hcode hfork hrun hnp).cast (by rfl) hif
+      have hcode' : (prepared s i).executionEnv.code = submissionBytecode := by
+        rw [PrefixStateModel.prepared_executionEnv]; exact hcode
+      have hfork' : (prepared s i).fork = .Osaka := by
+        simpa [State.fork] using hfork
+      have hrun' : (prepared s i).halt = .Running := by
+        rw [PrefixStateModel.prepared_halt]; exact hrun
+      have hnp' : Precompile.isPrecompileWithConfig
+          (prepared s i).executionEnv.precompileConfig
+          (prepared s i).executionEnv.fork
+          (prepared s i).executionEnv.codeAddr = false := by
+        rw [PrefixStateModel.prepared_executionEnv]; exact hnp
+      have gcompress := PairedBlockTrace.gasSteps_compress (prepared s i)
+        input i h hfit hi (PrefixStateKernel.preparedContext s input i h ctx)
+        hcode' hfork' hrun' hnp'
+      exact GasSteps.cast (gdispatch.trans (ghelper.trans gcompress)) (by rfl) (by
+        simp [nextState, PrefixStateKernel.nextState, hempty, hhit,
+          DriverTrace.compressReturned])
 
-/-- The depth-2 ladder rung: one dispatcher execution consumes blocks 0 and 1. -/
+/-- The retained two-block interface cannot be selected by this dispatcher. -/
 noncomputable def gasSteps_block2 (s : State) (input : ByteArray)
-    (h : Compression.HashState) (hfit : CalldataFits input)
+    (h : Compression.HashState) (_hfit : CalldataFits input)
     (hd : PrefixStateModel.double input = true)
-    (ctx : StackRunBridge.BlockContext s input 0 h)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+    (_ctx : StackRunBridge.BlockContext s input 0 h)
+    (_hcode : s.executionEnv.code = submissionBytecode)
+    (_hfork : s.fork = .Osaka) (_hrun : s.halt = .Running)
+    (_hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (DriverTrace.dispatchEntry s input 0)
       (DriverTrace.compressReturned (PrefixStateKernel.nextState2 s input) input 1) := by
-  obtain ⟨hmatch, hmatch2⟩ := (PrefixStateModel.double_iff input).1 hd
-  have hsize := PrefixStateData.size_ge_64_of_words input hmatch.2
-  have hpos : 0 < input.size := by omega
-  have hi : 0 < DriverTrace.blockCount input := DriverTrace.blockCount_pos input
-  have gdispatch := FastEmptyBlock.gasSteps_nonempty s input 0 hfit hpos
-    ctx.calldata hcode hfork hrun hnp
-  have hif : (if 0 = 0 ∧ Matched input then
-      (if Matched2 input then PrefixStateMemory.resultState2 (PrefixStateMemory.copied s) input
-        else PrefixStateMemory.resultState (PrefixStateMemory.copied s) input 0)
-    else DriverTrace.compressEntry (prepared s 0) input 0) =
-    PrefixStateMemory.resultState2 (PrefixStateMemory.copied s) input := by
-    rw [if_pos ⟨rfl, hmatch⟩, if_pos hmatch2]
-  exact (gdispatch.trans
-    ((PrefixStateTrace.gasSteps_dispatch s input 0 hfit hi ctx.calldata
-        hcode hfork hrun hnp).cast (by rfl) hif)).cast (by rfl) (by
-      simp [PrefixStateKernel.nextState2, DriverTrace.compressReturned,
-        PrefixStateMemory.resultState2])
+  simp [PrefixStateModel.double] at hd
 
 noncomputable def kernel : StackRunBridge.BlockKernel where
   nextState := nextState
@@ -131,73 +114,11 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
   hashResult2 := PrefixStateKernel.nextState2_hash
   gasSteps2 := gasSteps_block2
 
-private theorem input_eq_empty (input : ByteArray) (hempty : input.size = 0) :
-    input = ByteArray.empty := by
-  apply ByteArray.ext
-  apply Array.ext
-  · simpa using hempty
-  · intro i hi
-    simp [hempty] at hi
-
-private theorem spec_empty :
-    spec ByteArray.empty =
-      Data.Bytes.natToBytesPadded FastEmptyBlock.digestWord.toNat 32 := by
-  rw [FastOutputResultBridge.spec_eq, ← HashSpecBridge.paddedHash_eq_hash]
-  change ByteArray.mk (Array.replicate 12 0) ++
-      SpecBridge.emitDigest
-        (SpecBridge.absorbBlocks Crypto.Ripemd160.H0
-          (Padding.paddedMessage ByteArray.empty) 0 1) = _
-  rw [SpecBridge.absorbBlocks_succ, SpecBridge.absorbBlocks_zero]
-  rw [show 0 + 0 * 64 = (0 : Nat) from rfl, FastEmptyBlock.compress_empty]
-  rw [Challenge.EvmProof.Memory.natToBytesPadded_eq_natToBE]
-  unfold SpecBridge.emitDigest Crypto.Ripemd160.writeLE32
-  simp only [Std.Legacy.Range.forIn_eq_forIn_range', Std.Legacy.Range.size,
-    Nat.sub_zero, Nat.add_sub_cancel, Nat.div_one, pure_bind,
-    List.forIn_pure_yield_eq_foldl, Id.run_pure]
-  norm_num [List.range', List.range.loop]
-  simp [ByteArray.empty, ByteArray.emptyWithCapacity, ByteArray.push]
-  decide
-
-theorem correct_empty (input : ByteArray) (hfit : CalldataFits input)
-    (hempty : input.size = 0)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 0x168)) :
-    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
-      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  let s := PaddingTrace.padReturned input
-  have hnp := PaddingTrace.padReturned_noPrecompile input
-  have gcall := DriverTrace.gasSteps_call s input hfit 0
-    (DriverTrace.blockCount_pos input) (by rfl) (by rfl) (by rfl) hnp
-  have gempty := FastEmptyBlock.gasSteps_empty s input 0 hempty
-    (by rfl) (by rfl) (by rfl) (by rfl) hnp
-  have hentry : DriverTrace.loopAt s input 0 = s := by rfl
-  have gcall' := gcall.cast hentry (by rfl)
-  let trace := (PaddingTrace.gasSteps_pad input hfit entryPrefix).trans
-    (gcall'.trans (gempty.cast (by rfl) (by rfl)))
-  let final := FastEmptyBlock.directReturned s input 0
-  have hcall : final.callStack = [] := by rfl
-  have hreturned : final.halt = .Returned := by rfl
-  have hbytes : final.hReturn = spec input := by
-    rw [FastEmptyBlock.directReturned_bytes, input_eq_empty input hempty]
-    exact spec_empty.symm
-  refine ⟨trace.cost, fun gas hgas => ?_⟩
-  have heval := Challenge.EvmProof.eval_of_steps (trace.trace gas hgas) (by
-    change (withGas final (gas - trace.cost)).isDone = true
-    simp [withGas, State.isDone, State.isHalted, State.isRunning, hcall, hreturned])
-  rw [State.toResult_returned _ (by rfl)] at heval
-  change Eval (withGas (initialState submissionBytecode input 0) gas)
-    (.returned final.hReturn) at heval
-  rw [hbytes] at heval
-  simpa [GasCost.withGas_initialState_zero] using heval
-
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 0x168)) :
+      (Execution.atPC input 0x170)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
-      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  by_cases hempty : input.size = 0
-  · exact correct_empty input hfit hempty entryPrefix
-  · exact StackRunBridge.correct_of_block_kernel kernel input hfit
-      (Nat.pos_of_ne_zero hempty) entryPrefix
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) :=
+  StackRunBridge.correct_of_block_kernel kernel input hfit entryPrefix
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
