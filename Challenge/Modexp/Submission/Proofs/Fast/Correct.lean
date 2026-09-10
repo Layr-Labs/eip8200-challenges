@@ -9,7 +9,7 @@ set_option maxHeartbeats 2000000
 /-!
 # Top-level dispatch between the appended fast path and the reference body
 
-Instruction 0 enters the early one-word dispatcher at pc 5252. Matching headers
+Instruction 0 enters the early one-word dispatcher at pc 5248. Matching headers
 use the complete Fermat/window trace. Every other header restores the exact old
 entry at pc 1314. From there, the fast path either returns the result or reaches
 the reference body at pc 1196 with an empty stack and untouched memory.

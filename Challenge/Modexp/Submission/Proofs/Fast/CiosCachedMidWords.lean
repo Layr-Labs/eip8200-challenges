@@ -30,10 +30,10 @@ def roundedProgram : List Instr := CiosCachedRoundedCarry.newProgram.take 7
 def program : List Instr := firstProgram ++ roundedProgram
 
 theorem run_first (s : State) (x mu bi pbi paEnd pbEnd flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1004) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1005) :
     runInstructions firstProgram
-      (framed s (UInt256.ofNat 4634) ([x, mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4641)
+      (framed s (UInt256.ofNat 4631) ([x, mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4638)
       ([UInt256.mulMod x mu maxWord, x*mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc11 : rest.length+12 < 1024 := by omega
   have hc12 : rest.length+13 < 1024 := by omega
@@ -43,10 +43,10 @@ theorem run_first (s : State) (x mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     Challenge.EvmProof.Word.succ_ofNat_mod]
 
 theorem run_high (s : State) (mm lo mu bi pbi paEnd pbEnd flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1004) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1005) :
     runInstructions highProgram
-      (framed s (UInt256.ofNat 4641) ([mm, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4648)
+      (framed s (UInt256.ofNat 4638) ([mm, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4645)
       ([mm-(lo+UInt256.lt mm lo), lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc11 : rest.length+12 < 1024 := by omega
   have hc12 : rest.length+13 < 1024 := by omega
@@ -56,10 +56,10 @@ theorem run_high (s : State) (mm lo mu bi pbi paEnd pbEnd flag dst ret : UInt256
     Challenge.EvmProof.Word.succ_ofNat_mod]
 
 theorem run_low (s : State) (hi lo mu bi pbi paEnd pbEnd flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1004) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1005) :
     runInstructions lowProgram
-      (framed s (UInt256.ofNat 4648) ([hi, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4652)
+      (framed s (UInt256.ofNat 4645) ([hi, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4649)
       ([UInt256.isZero (UInt256.isZero lo)+hi, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc11 : rest.length+12 < 1024 := by omega
   have hc12 : rest.length+13 < 1024 := by omega
@@ -68,10 +68,10 @@ theorem run_low (s : State) (hi lo mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     Challenge.EvmProof.Word.succ_ofNat_mod]
 
 theorem run_rounded (s : State) (mm lo mu bi pbi paEnd pbEnd flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1004) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1005) :
     runInstructions roundedProgram
-      (framed s (UInt256.ofNat 4641) ([mm, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4648)
+      (framed s (UInt256.ofNat 4638) ([mm, lo, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4645)
       ([UInt256.lt (UInt256.ofNat 0) lo + (mm-(lo+UInt256.lt mm lo)), mu] ++
         baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc12 : rest.length + 12 < 1024 := by omega
@@ -83,10 +83,10 @@ theorem run_rounded (s : State) (mm lo mu bi pbi paEnd pbEnd flag dst ret : UInt
   exact (CiosCachedRoundedCarry.rounded_high mm lo).symm
 
 theorem run_words (s : State) (x mu bi pbi paEnd pbEnd flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1004) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1005) :
     runInstructions program
-      (framed s (UInt256.ofNat 4634) ([x, mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4648)
+      (framed s (UInt256.ofNat 4631) ([x, mu, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4645)
       ([UInt256.isZero (UInt256.isZero (x*mu))+mulHi x mu, mu] ++
         baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hf := run_first s x mu bi pbi paEnd pbEnd flag dst ret rest hcap

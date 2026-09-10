@@ -16,9 +16,9 @@ open Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidMemory
 
 def loadLow : List Instr := productProgram.take 3
 def makeMu : List Instr := (productProgram.drop 3).take 5
-def loadMod : List Instr := (productProgram.drop 8).take 1
-def makeModProduct : List Instr := (productProgram.drop 9).take 4
-def finishCarry : List Instr := productProgram.drop 13
+def loadMod : List Instr := (productProgram.drop 8).take 3
+def makeModProduct : List Instr := (productProgram.drop 11).take 4
+def finishCarry : List Instr := productProgram.drop 15
 
 theorem program_eq : productProgram =
     (((loadLow ++ makeMu) ++ loadMod) ++ makeModProduct) ++ finishCarry := rfl
@@ -28,8 +28,8 @@ theorem run_loadLow (s : State) (bi pbi paEnd pbEnd flag dst ret : UInt256) (n :
     (hact : 296 ≤ s.activeWords.toNat)
     (haddr : MachineState.readWord s.memory 9440 = UInt256.ofNat (8224+32*n)) :
     runInstructions loadLow
-      (framed s (UInt256.ofNat 4545) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4550)
+      (framed s (UInt256.ofNat 4538) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4543)
       ([MachineState.readWord s.memory (8224+32*n)] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc9 : rest.length+9 < 1024 := by omega
   have hc10 : rest.length+10 < 1024 := by omega
@@ -47,8 +47,8 @@ theorem run_loadLow (s : State) (bi pbi paEnd pbEnd flag dst ret : UInt256) (n :
 theorem run_makeMu (s : State) (bi pbi paEnd pbEnd flag dst ret t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions makeMu
-      (framed s (UInt256.ofNat 4550) ([t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4557)
+      (framed s (UInt256.ofNat 4543) ([t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4550)
       ([t0, MachineState.readWord s.memory 9376 * t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc10 : rest.length+10 < 1024 := by omega
   have hc11 : rest.length+11 < 1024 := by omega
@@ -62,22 +62,30 @@ theorem run_makeMu (s : State) (bi pbi paEnd pbEnd flag dst ret t0 : UInt256)
 
 theorem run_loadMod (s : State) (bi pbi paEnd pbEnd flag dst ret : UInt256)
     (n : Nat) (mu t0 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (_hn : n ≤ 32) (_hact : 296 ≤ s.activeWords.toNat)
-    (_haddr : MachineState.readWord s.memory 9408 = UInt256.ofNat (32*n-32))
-    (hret : ret = modulusValue s.memory n) :
+    (hn : n ≤ 32) (hact : 296 ≤ s.activeWords.toNat)
+    (haddr : MachineState.readWord s.memory 9408 = UInt256.ofNat (32*n-32)) :
     runInstructions loadMod
-      (framed s (UInt256.ofNat 4557) ([t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4558)
+      (framed s (UInt256.ofNat 4550) ([t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4555)
       ([MachineState.readWord s.memory (32*n-32), t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc11 : rest.length+11 < 1024 := by omega
+  have hc12 : rest.length+12 < 1024 := by omega
+  have hp9408 : (9408 : UInt256).toNat = 9408 := by decide
+  have hmod : (32*n-32) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      32*n-32 := Nat.mod_eq_of_lt (by omega)
+  have hactP := activeWords_fix s 9408 32 (by decide) (by omega) hact
+  have hactQ := activeWords_fix s (32*n-32) 32 (by decide) (by omega) hact
   simp [loadMod, productProgram, midProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    framed, baseStack, hc11, hret, modulusValue, Challenge.EvmProof.Word.succ_ofNat_mod]
+    framed, baseStack, hp9408, hc11, hc12, State.activeWordsAfterUInt256,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat, haddr, hmod, hactP, hactQ]
 
 theorem run_makeModProduct (s : State) (bi pbi paEnd pbEnd flag dst ret m0 mu t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions makeModProduct
-      (framed s (UInt256.ofNat 4558) ([m0, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4562)
+      (framed s (UInt256.ofNat 4555) ([m0, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4559)
       ([UInt256.mulMod m0 mu maxWord, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc12 : rest.length+12 < 1024 := by omega
   have hc13 : rest.length+13 < 1024 := by omega
@@ -89,8 +97,8 @@ theorem run_makeModProduct (s : State) (bi pbi paEnd pbEnd flag dst ret m0 mu t0
 theorem run_finishCarry (s : State) (bi pbi paEnd pbEnd flag dst ret mm mu t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions finishCarry
-      (framed s (UInt256.ofNat 4562) ([mm, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4568)
+      (framed s (UInt256.ofNat 4559) ([mm, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4565)
       ([endCarry t0 mm, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc12 : rest.length+12 < 1024 := by omega
   have hc13 : rest.length+13 < 1024 := by omega
@@ -103,16 +111,16 @@ theorem run_product (s : State) (n : Nat) (bi pbi paEnd pbEnd flag dst ret : UIn
     (_hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hml : MachineState.readWord s.memory 9408 = UInt256.ofNat (32*n-32))
     (htl : MachineState.readWord s.memory 9440 = UInt256.ofNat (8224+32*n))
-    (hminv : inverseInvariant s.memory n) (hret : ret = modulusValue s.memory n) :
+    (hminv : inverseInvariant s.memory n) :
     runInstructions productProgram
-      (framed s (UInt256.ofNat 4545) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+      (framed s (UInt256.ofNat 4538) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
     some (product s n bi pbi paEnd pbEnd flag dst ret rest) := by
   let t0 := MachineState.readWord s.memory (8224+32*n)
   let inv := MachineState.readWord s.memory 9376
   let m0 := MachineState.readWord s.memory (32*n-32)
   have h1 := run_loadLow s bi pbi paEnd pbEnd flag dst ret n rest hcap hn32 hact htl
   have h2 := run_makeMu s bi pbi paEnd pbEnd flag dst ret t0 rest hcap hact
-  have h3 := run_loadMod s bi pbi paEnd pbEnd flag dst ret n (inv*t0) t0 rest hcap hn32 hact hml hret
+  have h3 := run_loadMod s bi pbi paEnd pbEnd flag dst ret n (inv*t0) t0 rest hcap hn32 hact hml
   have h4 := run_makeModProduct s bi pbi paEnd pbEnd flag dst ret m0 (inv*t0) t0 rest hcap
   have h5 := run_finishCarry s bi pbi paEnd pbEnd flag dst ret
     (UInt256.mulMod m0 (inv*t0) maxWord) (inv*t0) t0 rest hcap

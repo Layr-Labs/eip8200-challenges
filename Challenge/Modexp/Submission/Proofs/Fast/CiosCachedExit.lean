@@ -15,11 +15,11 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open CiosCachedTailDefs
 open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCached
 
-theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 cachedAddress dst ret : UInt256) (rest : List UInt256)
+theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006)
     (htarget : Decode.isValidJumpDest s.executionEnv.code 2220 = true) :
     runInstructions exitProgram
-      (framed s (UInt256.ofNat 4861) ([pbi, paEnd, pbEnd, flag, negative32, allOnes, target2, cachedAddress, dst, ret] ++ rest)) =
+      (framed s (UInt256.ofNat 4858) ([pbi, paEnd, pbEnd, flag, negative32, allOnes, target2, dst, ret] ++ rest)) =
     some (framed s (UInt256.ofNat 2220) ([dst, ret] ++ rest)) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
