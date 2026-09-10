@@ -10,9 +10,9 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Cleanup
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
 
-@[simp] private theorem branchPC0 : Artifact.submissionArtifact.instructionPC 163 = 255 := rfl
-@[simp] private theorem branchPC1 : Artifact.submissionArtifact.instructionPC 164 = 256 := rfl
-@[simp] private theorem branchPC2 : Artifact.submissionArtifact.instructionPC 165 = 259 := rfl
+@[simp] private theorem branchPC0 : Artifact.submissionArtifact.instructionPC 162 = 254 := rfl
+@[simp] private theorem branchPC1 : Artifact.submissionArtifact.instructionPC 163 = 255 := rfl
+@[simp] private theorem branchPC2 : Artifact.submissionArtifact.instructionPC 164 = 258 := rfl
 @[simp] private theorem cleanupDupPC : Artifact.submissionArtifact.instructionPC 186 = 344 := rfl
 @[simp] private theorem cleanupDest : Decode.isValidJumpDest submissionBytecode 343 = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 185 (by rfl)
@@ -20,7 +20,7 @@ open PatternedScan PatternedSwar
   Artifact.submissionArtifact.isValidJumpDest_index 200 (by rfl)
 
 def branchPath : List Located :=
-  [opAt 163 (.Dup ⟨2, by decide⟩), pushAt 164 2 343, opAt 165 .JUMPI]
+  [opAt 162 (.Dup ⟨2, by decide⟩), pushAt 163 2 343, opAt 164 .JUMPI]
 
 def cleanupPath : List Located :=
   [opAt 185 .JUMPDEST, opAt 186 (.Dup ⟨2, by decide⟩),
@@ -31,8 +31,8 @@ def cleanupPath : List Located :=
    pushAt 198 2 360, opAt 199 .JUMPI]
 
 theorem run_branch (input : ByteArray) (sv ov acc : UInt256) :
-    run branchPath (stS input 255 [sv, ov, acc, P7, M, m7, P, m8]) =
-      some (stS input (if UInt256.isTrue acc then 343 else 260)
+    run branchPath (stS input 254 [sv, ov, acc, P7, M, m7, P, m8]) =
+      some (stS input (if UInt256.isTrue acc then 343 else 259)
         [sv, ov, acc, P7, M, m7, P, m8]) := by
   by_cases hc : UInt256.isTrue acc <;>
     simp (config := { maxSteps := 400000 })
@@ -54,7 +54,7 @@ theorem run_cleanup (input : ByteArray) (sv ov acc : UInt256)
      Word.word_toNat_ofNat]
 
 def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
-    GasSteps (stS input 255 [sv, ov, acc, P7, M, m7, P, m8]) (fallbackState input) := by
+    GasSteps (stS input 254 [sv, ov, acc, P7, M, m7, P, m8]) (fallbackState input) := by
   have hc : UInt256.isTrue acc := by
     intro hz
     apply hne
@@ -70,8 +70,8 @@ def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
   exact branch.trans cleanup
 
 def gasSteps_hit (input : ByteArray) (sv ov : UInt256) :
-    GasSteps (stS input 255 [sv, ov, 0, P7, M, m7, P, m8])
-      (stS input 260 [sv, ov, 0, P7, M, m7, P, m8]) := by
+    GasSteps (stS input 254 [sv, ov, 0, P7, M, m7, P, m8])
+      (stS input 259 [sv, ov, 0, P7, M, m7, P, m8]) := by
   have h := run_branch input sv ov 0
   rw [if_neg (by decide)] at h
   exact Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka branchPath
