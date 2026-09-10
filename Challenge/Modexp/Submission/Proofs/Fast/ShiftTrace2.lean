@@ -146,18 +146,14 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hG : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 6272 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hH : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hI : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 6304 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 600000 })
     [blk3026, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       estimateState, macSetupState, kState, pcEstimate, pcMacSetup, qhatOf,
-      PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV, PRE_M1_HIGH,
-      outer, Exp.outer, hcode, hrun, hA, hB, hC, hD, hE, hF, hG, hH, hI, Exp.push0_word,
+      PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
+      outer, Exp.outer, hcode, hrun, hA, hB, hC, hD, hE, hF, hG, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

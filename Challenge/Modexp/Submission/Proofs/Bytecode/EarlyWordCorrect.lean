@@ -42,7 +42,7 @@ def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input) :
       (Main.trampolineState input 1314) := by
   have tail := EarlyWordGas.steps_miss Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl hmiss
-  change Challenge.EvmProof.GasSteps (Main.trampolineState input 5274)
+  change Challenge.EvmProof.GasSteps (Main.trampolineState input 5267)
     (Main.trampolineState input 1314) at tail
   exact (Main.gasSteps_entryHop input).trans tail
 
@@ -55,8 +55,8 @@ def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
     (by exact PrimeCertificates.bn254P_prime) (by exact PrimeCertificates.secpP_prime)
   have entrySteps := EarlyWordGas.steps_hit Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl hmatch
-  change Challenge.EvmProof.GasSteps (Main.trampolineState input 5274)
-    (state (initialState submissionBytecode input 0) input (UInt256.ofNat 5185)) at entrySteps
+  change Challenge.EvmProof.GasSteps (Main.trampolineState input 5267)
+    (state (initialState submissionBytecode input 0) input (UInt256.ofNat 5178)) at entrySteps
   exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans (entrySteps.trans tail)⟩,
     done, result⟩
 

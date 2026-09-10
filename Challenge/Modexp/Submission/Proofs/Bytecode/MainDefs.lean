@@ -42,7 +42,7 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 /-- The initial jump to the total early-word dispatcher. -/
 def trampoline1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 0 2 5274, opAt 1 .JUMP]
+  [pushAt 0 2 5267, opAt 1 .JUMP]
 
 /-- The legacy body jump destination, reached after fallback. -/
 def trampoline2Path :
@@ -66,7 +66,7 @@ def headerCheckPath :
 def headerPath := trampoline1Path ++ trampoline2Path ++
   headerLoadPath ++ headerCheckPath
 
-def tramp0Path := [pushAt 0 2 5274, opAt 1 .JUMP]
+def tramp0Path := [pushAt 0 2 5267, opAt 1 .JUMP]
 def tramp1Path := [opAt 12 .JUMPDEST, pushAt 13 2 53, opAt 14 .JUMP]
 def tramp2Path := [opAt 43 .JUMPDEST, pushAt 44 2 99, opAt 45 .JUMP]
 def tramp3Path := [opAt 80 .JUMPDEST, pushAt 81 2 305, opAt 82 .JUMP]
