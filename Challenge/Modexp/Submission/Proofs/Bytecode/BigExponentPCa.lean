@@ -18,6 +18,6 @@ open Challenge.Modexp
 @[simp] theorem exponentPCs (i : Nat)
     (hi : 717 ≤ i) (hii : i ≤ 755) :
     Artifact.submissionArtifact.instructionPC i =
-      ([944,945,946,947,948,949,950,951,954,955,956,957,958,959,960,961,962,963,964,966,967,968,969,972,973,975,976,977,979,980,981,982,985,986,987,990,993,996,999] : List Nat)[i - 717]! := by
+      ([937,938,939,940,941,942,943,944,947,948,949,950,951,952,953,954,955,956,957,959,960,961,962,965,966,968,969,970,972,973,974,975,978,979,980,983,986,989,992] : List Nat)[i - 717]! := by
   interval_cases i <;> decide
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigExponent

@@ -23,9 +23,9 @@ theorem run (template : State)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hcode : template.executionEnv.code = submissionBytecode) :
     Challenge.EvmProof.Stepper.runLocatedBlock (loopAdvancePath.drop 2)
-      (WindowHitLoopAdvanceHead.framed template 3054
+      (WindowHitLoopAdvanceHead.framed template 3053
         (pointer :: accumulator :: modulus :: rest)) =
-    some (WindowHitLoopAdvanceHead.framed template 2830
+    some (WindowHitLoopAdvanceHead.framed template 2829
       (pointer :: accumulator :: modulus :: rest)) := by
   have hcap3 : rest.length + 3 < 1024 := by omega
   have hcap4 : rest.length + 4 < 1024 := by omega

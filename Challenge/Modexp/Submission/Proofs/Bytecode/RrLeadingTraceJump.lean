@@ -10,7 +10,7 @@ open YulEvmCompiler
 
 theorem run_jump (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 1569 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 1562 = true) :
     runInstructions jumpProgram (counterState template mem n bsize esize msize) =
       some (exitState template mem n bsize esize msize) := by
   simp [jumpProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,

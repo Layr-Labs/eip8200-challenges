@@ -26,8 +26,8 @@ theorem run (template : State)
     (hpointer : pointerNat < 160) (hrest : rest.length ≤ 1000)
     (hrun : template.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (loopAdvancePath.take 2)
-      (framed template 3051 (pointer :: accumulator :: modulus :: rest)) =
-    some (framed template 3054
+      (framed template 3050 (pointer :: accumulator :: modulus :: rest)) =
+    some (framed template 3053
       (UInt256.ofNat (pointerNat + 4) :: accumulator :: modulus :: rest)) := by
   have hlt : pointerNat + 4 < 2 ^ 256 := by omega
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat

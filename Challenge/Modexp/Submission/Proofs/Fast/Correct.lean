@@ -29,11 +29,11 @@ open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
 /-- The unchanged legacy fast-path entry: pc 1314 with empty stack and memory. -/
-abbrev entryState (input : ByteArray) : State := Main.trampolineState input 1314
+abbrev entryState (input : ByteArray) : State := Main.trampolineState input 1307
 
 /-- The state the fast path leaves when it declines an input: pc 1196, empty
 stack, memory untouched -- exactly the reference body's entry. -/
-abbrev bodyState (input : ByteArray) : State := Main.trampolineState input 1196
+abbrev bodyState (input : ByteArray) : State := Main.trampolineState input 1189
 
 /-- What the success side of the fast path must deliver for one input. -/
 abbrev Handled (input : ByteArray) : Prop :=

@@ -15,7 +15,7 @@ open WindowHitPaths
 private def startState (template : State) (modulus : UInt256)
     (rest : List UInt256) : State :=
   { template with
-    pc := UInt256.ofNat 2667
+    pc := UInt256.ofNat 2666
     stack := modulus :: rest
     memory := ByteArray.empty
     activeWords := UInt256.ofNat 0 }
@@ -23,7 +23,7 @@ private def startState (template : State) (modulus : UInt256)
 private def endState (template : State) (base modulus : UInt256)
     (rest : List UInt256) : State :=
   { template with
-    pc := UInt256.ofNat 2686
+    pc := UInt256.ofNat 2685
     stack := [WindowMath.tableWord base modulus 2, base, modulus] ++ rest
     memory := WindowTableMemory.tableMemoryThrough base modulus 3
     activeWords := UInt256.ofNat 3 }
@@ -69,7 +69,7 @@ theorem run_generic (template : State) (modulus : UInt256)
 
 theorem run_tablePrelude (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tablePreludePath
-      (nonzeroState input) = some (tableState input 2 2686) := by
+      (nonzeroState input) = some (tableState input 2 2685) := by
   have h := run_generic (Dispatch.wordEntryState input) (modulusWord input)
     (routeStack input) (by simp [routeStack]) rfl
   have hcalldata :
@@ -79,7 +79,7 @@ theorem run_tablePrelude (input : ByteArray) :
       (routeStack input) = nonzeroState input := by rfl
   have hend : endState (Dispatch.wordEntryState input)
       (MachineState.readWord input 96)
-      (modulusWord input) (routeStack input) = tableState input 2 2686 := by rfl
+      (modulusWord input) (routeStack input) = tableState input 2 2685 := by rfl
   rw [hstart, hend] at h
   exact h
 

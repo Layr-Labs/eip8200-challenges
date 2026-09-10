@@ -122,7 +122,7 @@ theorem run_product (s : State) (memory : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedExponentPaths.product
       (FixedExponentStates.product s memory n bsize esize msize) =
-      some (Exp.mpCall s memory 1024 2048 1024 (UInt256.ofNat 3808)
+      some (Exp.mpCall s memory 1024 2048 1024 (UInt256.ofNat 3791)
         (Exp.outer n bsize esize msize)) := by
   simp (config := { maxSteps := 400000 })
     [FixedExponentPaths.product, opAt, pushAt, wfOp,
@@ -261,7 +261,7 @@ def gasSteps_product (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedExponentStates.product s memory n bsize esize msize)
-      (Exp.mpCall s memory 1024 2048 1024 (UInt256.ofNat 3808)
+      (Exp.mpCall s memory 1024 2048 1024 (UInt256.ofNat 3791)
         (Exp.outer n bsize esize msize)) :=
   sound FixedExponentPaths.product
     (run_product s memory n bsize esize msize hcode hrun)

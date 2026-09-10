@@ -13,12 +13,12 @@ open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCached CiosCachedTailDe
 
 theorem run_test (s : State) (pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4534 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4509 = true) :
     runInstructions testProgram
-      (framed s (UInt256.ofNat 5166) (baseStack pbi paEnd pbEnd flag dst ret rest)) =
+      (framed s (UInt256.ofNat 5141) (baseStack pbi paEnd pbEnd flag dst ret rest)) =
     some (framed s
-      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then UInt256.ofNat 4534
-        else UInt256.ofNat 5175)
+      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then UInt256.ofNat 4509
+        else UInt256.ofNat 5150)
       (baseStack (negative32+pbi) paEnd pbEnd flag dst ret rest)) := by
   have hc7 : rest.length+8 < 1024 := by omega
   have hc8 : rest.length+9 < 1024 := by omega

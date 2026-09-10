@@ -10,22 +10,22 @@ open EvmSemantics.EVM
 
 set_option linter.unusedSimpArgs false in
 private theorem run_tramp0_code (code input : ByteArray)
-    (hjump : Decode.isValidJumpDest code 5274 = true) :
+    (hjump : Decode.isValidJumpDest code 5249 = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path
       (initialState code input 0) =
-      some { initialState code input 0 with pc := UInt256.ofNat 5274 } := by
+      some { initialState code input 0 with pc := UInt256.ofNat 5249 } := by
   have hzero : (0 : UInt256).toNat = 0 := by decide
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 0) (b := 3) (by norm_num : 0 + 3 < 2 ^ 256)
-  have hdest : (5274 : UInt256).toNat = 5274 := by decide
-  have hdestWord : (5274 : UInt256) = UInt256.ofNat 5274 := by decide
+  have hdest : (5249 : UInt256).toNat = 5249 := by decide
+  have hdestWord : (5249 : UInt256) = UInt256.ofNat 5249 := by decide
   simp [tramp0Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     initialState, hzero, hadd, hdest, hjump, hdestWord]
 
 theorem run_tramp0 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path
-      (initialState submissionBytecode input 0) = some (trampolineState input 5274) := by
+      (initialState submissionBytecode input 0) = some (trampolineState input 5249) := by
   exact run_tramp0_code submissionBytecode input Artifact.earlyWordPaths.helperJump
 
 set_option linter.unusedSimpArgs false in
@@ -101,12 +101,12 @@ theorem run_tramp5 (input : ByteArray) :
 set_option linter.unusedSimpArgs false in
 theorem run_tramp6 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp6Path
-      (trampolineState input 512) = some (trampolineState input 699) := by
+      (trampolineState input 512) = some (trampolineState input 692) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
     (n := 512) (by norm_num : 512 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 513) (b := 3) (by norm_num : 513 + 3 < 2 ^ 256)
-  have hdest : (699 : UInt256).toNat = 699 := by decide
+  have hdest : (692 : UInt256).toNat = 692 := by decide
   simp [tramp6Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     trampolineState, initialState, hsucc, hadd, hdest,

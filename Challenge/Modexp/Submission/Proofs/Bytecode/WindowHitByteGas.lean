@@ -38,9 +38,9 @@ def gasSteps_byte0 (template : State) (base modulus word pointer accumulator : U
     (hnp : Precompile.isPrecompileWithConfig template.executionEnv.precompileConfig
       template.executionEnv.fork template.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2841)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2840)
         base modulus word pointer accumulator rest)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2893)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2892)
         base modulus word pointer
         (WindowMath.byteWordStep modulus base accumulator
           (byteValue 0 word).toNat) rest) :=
@@ -55,9 +55,9 @@ def gasSteps_byte1 (template : State) (base modulus word pointer accumulator : U
     (hnp : Precompile.isPrecompileWithConfig template.executionEnv.precompileConfig
       template.executionEnv.fork template.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2893)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2892)
         base modulus word pointer accumulator rest)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2946)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2945)
         base modulus word pointer
         (WindowMath.byteWordStep modulus base accumulator
           (byteValue 1 word).toNat) rest) :=
@@ -72,9 +72,9 @@ def gasSteps_byte2 (template : State) (base modulus word pointer accumulator : U
     (hnp : Precompile.isPrecompileWithConfig template.executionEnv.precompileConfig
       template.executionEnv.fork template.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2946)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2945)
         base modulus word pointer accumulator rest)
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2999)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2998)
         base modulus word pointer
         (WindowMath.byteWordStep modulus base accumulator
           (byteValue 2 word).toNat) rest) :=
@@ -89,9 +89,9 @@ def gasSteps_byte3 (template : State) (base modulus word pointer accumulator : U
     (hnp : Precompile.isPrecompileWithConfig template.executionEnv.precompileConfig
       template.executionEnv.fork template.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2999)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2998)
         base modulus word pointer accumulator rest)
-      (finalWordKernelState { template with halt := .Running } (UInt256.ofNat 3051)
+      (finalWordKernelState { template with halt := .Running } (UInt256.ofNat 3050)
         base modulus word pointer
         (WindowMath.byteWordStep modulus base accumulator
           (byteValue 3 word).toNat) rest) :=
@@ -107,9 +107,9 @@ def gasSteps_fourBytes (template : State)
     (hnp : Precompile.isPrecompileWithConfig template.executionEnv.precompileConfig
       template.executionEnv.fork template.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2841)
+      (wordKernelState { template with halt := .Running } (UInt256.ofNat 2840)
         base modulus word pointer accumulator rest)
-      (finalWordKernelState { template with halt := .Running } (UInt256.ofNat 3051)
+      (finalWordKernelState { template with halt := .Running } (UInt256.ofNat 3050)
         base modulus word pointer
         (WindowMath.chunkWordStep modulus base accumulator word) rest) := by
   let a1 := WindowMath.byteWordStep modulus base accumulator

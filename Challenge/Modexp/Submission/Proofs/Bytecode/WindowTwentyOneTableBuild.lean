@@ -10,7 +10,7 @@ open WindowNibbleKernel
 def width (power : Nat) : Fin 33 := if power < 7 then 1 else 2
 
 def tablePC (power : Nat) : Nat :=
-  if power ≤ 7 then 2701 + 6 * power else 2694 + 7 * power
+  if power ≤ 7 then 2700 + 6 * power else 2693 + 7 * power
 
 private theorem updatePC (power : Nat) (hlo : 2 ≤ power) (hhi : power < 15) :
     WindowTwentyOneTable.storePC (width power) (advancePC 2 (UInt256.ofNat (tablePC power))) =
@@ -38,7 +38,7 @@ theorem run_build (template : State) (base modulus exponent : UInt256)
     (count : Nat) (hcount : count ≤ 13)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (buildProgram count)
-      (WindowTwentyOneTable.state template (UInt256.ofNat 2713) base modulus exponent 2 rest) =
+      (WindowTwentyOneTable.state template (UInt256.ofNat 2712) base modulus exponent 2 rest) =
     some (WindowTwentyOneTable.state template (UInt256.ofNat (tablePC (count + 2)))
       base modulus exponent (count + 2) rest) := by
   induction count with
@@ -56,19 +56,19 @@ theorem run_all (template : State) (base modulus exponentOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hoffset : rest[4]? = some exponentOffset) :
     runInstructions program
-      (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 2682) base modulus rest) =
-    some (WindowTwentyOneTable.framed template (UInt256.ofNat 2799) base modulus 16
+      (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 2681) base modulus rest) =
+    some (WindowTwentyOneTable.framed template (UInt256.ofNat 2798) base modulus 16
       ([base, MachineState.readWord template.executionEnv.calldata exponentOffset.toNat] ++ rest)) := by
-  have hp := WindowTwentyOneTablePrelude.run_prelude template (UInt256.ofNat 2682)
+  have hp := WindowTwentyOneTablePrelude.run_prelude template (UInt256.ofNat 2681)
     base modulus exponentOffset rest hrest hoffset
-  have hpc : WindowTwentyOneTablePrelude.endPC (UInt256.ofNat 2682) = UInt256.ofNat 2713 := by decide
+  have hpc : WindowTwentyOneTablePrelude.endPC (UInt256.ofNat 2681) = UInt256.ofNat 2712 := by decide
   rw [hpc] at hp
   have hb := run_build template base modulus
     (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) 12 (by decide) rest hrest
   have hl := WindowTwentyOneTable.run_last_update template (UInt256.ofNat (tablePC 14))
     base modulus (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) rest hrest
   have hlastPC : WindowTwentyOneTable.storePC 2 (advancePC 2 (UInt256.ofNat (tablePC 14))) =
-      UInt256.ofNat 2799 := by decide
+      UInt256.ofNat 2798 := by decide
   rw [hlastPC] at hl
   exact runInstructions_append_some _ _ _ _ _ (runInstructions_append_some _ _ _ _ _ hp hb) hl
 

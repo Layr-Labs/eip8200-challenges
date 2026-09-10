@@ -12,7 +12,7 @@ open WindowControlDefs WindowHitStates WindowHitPaths
 
 /-- RETURN retains its own pc; the output-memory bridge is pc-independent. -/
 def normalReturnedState (input : ByteArray) (word : UInt256) : State :=
-  { returnedState input word with pc := UInt256.ofNat 3065 }
+  { returnedState input word with pc := UInt256.ofNat 3064 }
 
 private def framed (template : State) (pc : Nat) (stack : List UInt256) : State :=
   { template with pc := UInt256.ofNat pc, stack := stack }
@@ -42,8 +42,8 @@ private theorem run_normal_generic (template : State) (pointer word : UInt256)
     (hrun : template.halt = .Running)
     (hactive : template.activeWords = UInt256.ofNat 16) :
     Challenge.EvmProof.Stepper.runLocatedBlock normalReturnPath
-      (framed template 3058 (pointer :: word :: rest)) =
-    some (outputState template 3065 16 word rest) := by
+      (framed template 3057 (pointer :: word :: rest)) =
+    some (outputState template 3064 16 word rest) := by
   have hcap (n : Nat) (hn : n ≤ 4) : rest.length + n < 1024 := by omega
   have hcap0 : rest.length < 1024 := by omega
   simp (disch := omega) [normalReturnPath, Main.opAt, Main.pushAt, Main.wfOp,
@@ -63,8 +63,8 @@ private theorem run_zero_generic (template : State) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hactive : template.activeWords = UInt256.ofNat 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock zeroReturnPath
-      (framed template 3066 rest) =
-    some (outputState template 3073 1 0 rest) := by
+      (framed template 3065 rest) =
+    some (outputState template 3072 1 0 rest) := by
   have hcap (n : Nat) (hn : n ≤ 4) : rest.length + n < 1024 := by omega
   have hcap0 : rest.length < 1024 := by omega
   simp (disch := omega) [zeroReturnPath, Main.opAt, Main.pushAt, Main.wfOp,

@@ -47,29 +47,29 @@ theorem run_wordByte_model (input : ByteArray) (pointer count startPC endPC : Na
 theorem run_byte0_model (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) :
     runInstructions (byteProgram 0)
-      (wordState input pointer 0 3208 accumulator) =
-    some (wordState input pointer 1 3292 accumulator) :=
-  run_wordByte_model input pointer 0 3208 3292 accumulator (by decide) (by decide)
+      (wordState input pointer 0 3207 accumulator) =
+    some (wordState input pointer 1 3291 accumulator) :=
+  run_wordByte_model input pointer 0 3207 3291 accumulator (by decide) (by decide)
 
 theorem run_byte1_model (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) :
     runInstructions (byteProgram 1)
-      (wordState input pointer 1 3292 accumulator) =
+      (wordState input pointer 1 3291 accumulator) =
     some (wordState input pointer 2 3377 accumulator) :=
-  run_wordByte_model input pointer 1 3292 3377 accumulator (by decide) (by decide)
+  run_wordByte_model input pointer 1 3291 3377 accumulator (by decide) (by decide)
 
 theorem run_byte2_model (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) :
     runInstructions (byteProgram 2)
       (wordState input pointer 2 3377 accumulator) =
-    some (wordState input pointer 3 3462 accumulator) :=
-  run_wordByte_model input pointer 2 3377 3462 accumulator (by decide) (by decide)
+    some (wordState input pointer 3 3446 accumulator) :=
+  run_wordByte_model input pointer 2 3377 3446 accumulator (by decide) (by decide)
 
 theorem run_byte3_model (input : ByteArray) (pointer : Nat)
     (accumulator : UInt256) :
     runInstructions (byteProgram 3)
-      (wordState input pointer 3 3462 accumulator) =
-    some (wordState input pointer 4 3547 accumulator) :=
-  run_wordByte_model input pointer 3 3462 3547 accumulator (by decide) (by decide)
+      (wordState input pointer 3 3446 accumulator) =
+    some (wordState input pointer 4 3531 accumulator) :=
+  run_wordByte_model input pointer 3 3446 3531 accumulator (by decide) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowHitByteModel

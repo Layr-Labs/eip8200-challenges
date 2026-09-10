@@ -9,17 +9,17 @@ open EvmSemantics.EVM
 
 def headerCheckOrPath := [opAt 915 .OR, opAt 916 .OR]
 def headerCheckIsZeroPath := [opAt 917 .ISZERO]
-def headerCheckJumpPath := [pushAt 918 2 1228, opAt 919 .JUMPI]
+def headerCheckJumpPath := [pushAt 918 2 1221, opAt 919 .JUMPI]
 
 def headerChecksCombinedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1222
+    pc := UInt256.ofNat 1215
     stack := [0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def headerCheckPassedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1223
+    pc := UInt256.ofNat 1216
     stack := [1, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 

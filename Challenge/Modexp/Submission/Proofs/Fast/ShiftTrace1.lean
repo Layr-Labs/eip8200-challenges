@@ -330,12 +330,17 @@ theorem run_preNewton (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock blk2956
       (preNewtonState s mem n bsize esize msize) =
       some (newtonBState s mem n bsize esize msize) := by
+  have hmul_one (value : UInt256) : value * UInt256.ofNat 1 = value := by
+    cases value with
+    | mk value =>
+        change UInt256.mk (value * (1 : Fin UInt256.size)) = UInt256.mk value
+        rw [mul_one]
   simp (config := { maxSteps := 600000 })
     [blk2956, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      preNewtonState, newtonBState, pcPreNewton, pcNewtonB, newton4W, newtonW,
+      preNewtonState, newtonBState, pcPreNewton, pcNewtonB, newton4W, newtonW, hmul_one,
       outer, Exp.outer, hcode, hrun,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -352,18 +357,14 @@ theorem run_newtonB (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       some (shiftLoopState s (preMem mem) n bsize esize msize n) := by
   have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 6272 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hread : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hwrite : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 6304 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 600000 })
     [blk2982, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       newtonBState, preNewtonState, shiftLoopState, kState, pcNewtonB, pcShiftLoop,
-      preMem, preMemOf, preDinv, newton8W, newtonW, PRE_DINV, PRE_M1_HIGH, Exp.storeWord,
-      outer, Exp.outer, hcode, hrun, haw, hread, hwrite,
+      preMem, preMemOf, preDinv, newton8W, newtonW, PRE_DINV, Exp.storeWord,
+      outer, Exp.outer, hcode, hrun, haw,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

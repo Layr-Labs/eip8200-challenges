@@ -34,8 +34,8 @@ theorem run_nonzero_generic (template : State) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hword : MachineState.readWord template.executionEnv.calldata 160 ≠ 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock modulusCheckPath
-      (framed template 2657 rest) =
-    some (framed template 2667
+      (framed template 2656 rest) =
+    some (framed template 2666
       (MachineState.readWord template.executionEnv.calldata 160 :: rest)) := by
   have hnat := toNat_ne_zero hword
   have hcap0 : rest.length < 1024 := by omega
@@ -59,8 +59,8 @@ theorem run_zero_generic (template : State) (rest : List UInt256)
     (hcode : template.executionEnv.code = submissionBytecode)
     (hword : MachineState.readWord template.executionEnv.calldata 160 = 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock modulusCheckPath
-      (framed template 2657 rest) =
-    some (framed template 3066
+      (framed template 2656 rest) =
+    some (framed template 3065
       (MachineState.readWord template.executionEnv.calldata 160 :: rest)) := by
   have hnat : (MachineState.readWord template.executionEnv.calldata 160).toNat = 0 := by
     rw [hword]

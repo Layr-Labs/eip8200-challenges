@@ -47,7 +47,7 @@ def scanGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 602 .JUMPDEST, opAt 603 (.Dup ⟨2, by decide⟩),
    opAt 604 (.Dup ⟨1, by decide⟩), opAt 605 .LT, opAt 606 .ISZERO,
-   pushAt 607 2 799, opAt 608 .JUMPI]
+   pushAt 607 2 792, opAt 608 .JUMPI]
 
 def scanBodyPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -56,12 +56,12 @@ def scanBodyPath :
    opAt 614 .OR, opAt 615 (.Swap ⟨1, by decide⟩), opAt 616 .POP,
    pushAt 617 1 1, opAt 618 (.Dup ⟨1, by decide⟩), opAt 619 .ADD,
    opAt 620 (.Swap ⟨0, by decide⟩), opAt 621 .POP,
-   pushAt 622 2 771, opAt 623 .JUMP]
+   pushAt 622 2 764, opAt 623 .JUMP]
 
 def scanNonzeroPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 624 .JUMPDEST, opAt 625 .POP, opAt 626 (.Dup ⟨0, by decide⟩),
-   pushAt 627 2 811, opAt 628 .JUMPI]
+   pushAt 627 2 804, opAt 628 .JUMPI]
 
 def scanZeroPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -80,29 +80,29 @@ def scanWords (active : UInt256) : Nat → UInt256
       (scanWords active i).toNat (32 * i) 32)
 
 def scanEntry (s : State) (count : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 768
+  { s with pc := UInt256.ofNat 761
            stack := [UInt256.ofNat count] ++ rest }
 
 def scanLoop (s : State) (count i : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 771
+  { s with pc := UInt256.ofNat 764
            stack := [UInt256.ofNat i, scanOr s.memory i,
              UInt256.ofNat count] ++ rest
            activeWords := scanWords s.activeWords i }
 
 def scanBody (s : State) (count i : Nat) (rest : List UInt256) : State :=
-  { scanLoop s count i rest with pc := UInt256.ofNat 780 }
+  { scanLoop s count i rest with pc := UInt256.ofNat 773 }
 
 def scanExit (s : State) (count : Nat) (rest : List UInt256) : State :=
-  { scanLoop s count count rest with pc := UInt256.ofNat 799 }
+  { scanLoop s count count rest with pc := UInt256.ofNat 792 }
 
 def scanNonzero (s : State) (count : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 811
+  { s with pc := UInt256.ofNat 804
            stack := [scanOr s.memory count, UInt256.ofNat count] ++ rest
            activeWords := scanWords s.activeWords count }
 
 def scanZeroFinal (s : State) (count b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 810
+  { s with pc := UInt256.ofNat 803
            stack := [0, UInt256.ofNat count, UInt256.ofNat b,
              UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff,
              UInt256.ofNat expOff, UInt256.ofNat modOff, returnDest] ++ rest
@@ -114,19 +114,19 @@ def scanZeroFinal (s : State) (count b e m baseOff expOff modOff : Nat)
 @[simp] private theorem scanPCs (i : Nat)
     (hi : 599 ≤ i) (hii : i ≤ 631) :
     Artifact.submissionArtifact.instructionPC i =
-      ([768,769,770,771,772,773,774,775,776,779,780,781,783,784,785,786,787,788,789,791,792,793,794,795,798,799,800,801,802,805,806,807,810] : List Nat)[i - 599]! := by
+      ([761,762,763,764,765,766,767,768,769,772,773,774,776,777,778,779,780,781,782,784,785,786,787,788,791,792,793,794,795,798,799,800,803] : List Nat)[i - 599]! := by
   interval_cases i <;> decide
 
 private theorem jump771 :
-    Decode.isValidJumpDest submissionBytecode 771 = true :=
+    Decode.isValidJumpDest submissionBytecode 764 = true :=
   Artifact.isValidJumpDest_index 602 (by rfl)
 
 private theorem jump799 :
-    Decode.isValidJumpDest submissionBytecode 799 = true :=
+    Decode.isValidJumpDest submissionBytecode 792 = true :=
   Artifact.isValidJumpDest_index 624 (by rfl)
 
 private theorem jump811 :
-    Decode.isValidJumpDest submissionBytecode 811 = true :=
+    Decode.isValidJumpDest submissionBytecode 804 = true :=
   Artifact.isValidJumpDest_index 632 (by rfl)
 
 set_option linter.unusedSimpArgs false in
@@ -198,8 +198,8 @@ theorem run_scanBody (s : State) (count i : Nat) (rest : List UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have h5Word : (5 : UInt256) = UInt256.ofNat 5 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  have h771 : (771 : UInt256).toNat = 771 := by decide
-  have h771Word : (771 : UInt256) = UInt256.ofNat 771 := by decide
+  have h771 : (764 : UInt256).toNat = 764 := by decide
+  have h771Word : (764 : UInt256) = UInt256.ofNat 764 := by decide
   have hinc := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := i) (b := 1) hiSucc
   simp [scanBodyPath, opAt, pushAt, wfOp, scanBody, scanLoop, scanOr,
@@ -222,8 +222,8 @@ theorem run_scanFinishGuard (s : State) (count : Nat) (rest : List UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have h799 : (799 : UInt256).toNat = 799 := by decide
-  have h799Word : (799 : UInt256) = UInt256.ofNat 799 := by decide
+  have h799 : (792 : UInt256).toNat = 792 := by decide
+  have h799Word : (792 : UInt256) = UInt256.ofNat 792 := by decide
   simp [scanGuardPath, opAt, pushAt, wfOp, scanLoop, scanExit, scanPCs,
     hrun, hcode, hc3, hc4, hc5, h799, h799Word, jump799,
     UInt256.lt, UInt256.isTrue,
@@ -243,8 +243,8 @@ theorem run_scanNonzero (s : State) (count : Nat) (rest : List UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
-  have h811 : (811 : UInt256).toNat = 811 := by decide
-  have h811Word : (811 : UInt256) = UInt256.ofNat 811 := by decide
+  have h811 : (804 : UInt256).toNat = 804 := by decide
+  have h811Word : (804 : UInt256) = UInt256.ofNat 804 := by decide
   have horNat : (scanOr s.memory count).toNat ≠ 0 := by
     intro hz
     apply hor

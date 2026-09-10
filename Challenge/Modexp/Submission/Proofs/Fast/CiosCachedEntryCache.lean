@@ -20,7 +20,7 @@ theorem entryProgram_split : entryProgram = cacheProgram ++ entryBodyProgram := 
 
 def cachedEntryState (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4506
+  { s with pc := UInt256.ofNat 4481
            stack := [UInt256.ofNat pa, UInt256.ofNat pb,
              isFour n, negative32, allOnes, pdst, ret] ++ rest
            memory := mem }

@@ -39,8 +39,8 @@ private theorem run_table4_generic (template : State) (base modulus : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hrun : template.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock table4Path
-      (tableKernelState template base modulus 3 2696 rest) =
-        some (tableKernelState template base modulus 4 2706 rest) := by
+      (tableKernelState template base modulus 3 2695 rest) =
+        some (tableKernelState template base modulus 4 2705 rest) := by
   have h3 : rest.length + 3 < 1024 := by omega
   have h4 : rest.length + 4 < 1024 := by omega
   have h5 : rest.length + 5 < 1024 := by omega
@@ -67,7 +67,7 @@ private theorem run_table4_generic (template : State) (base modulus : UInt256)
 
 theorem run_table4 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock table4Path
-      (tableState input 3 2696) = some (tableState input 4 2706) := by
+      (tableState input 3 2695) = some (tableState input 4 2705) := by
   have h := run_table4_generic (Dispatch.wordEntryState input)
     (baseWord input) (modulusWord input) (routeStack input)
     (by simp [routeStack]) rfl
