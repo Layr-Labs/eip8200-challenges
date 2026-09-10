@@ -202,7 +202,7 @@ def setupPath : List Located :=
 
 /-- Derive the expected word and test for a straddler. -/
 def wordPath : List Located :=
-  [opAt 81 .JUMPDEST, opAt 82 (.Dup ⟨0, by decide⟩),
+  [opAt 81 .JUMPDEST, pushAt 82 0 0,
    opAt 83 (.Dup ⟨5, by decide⟩), opAt 84 .MUL,
    opAt 85 (.Dup ⟨0, by decide⟩), opAt 86 (.Dup ⟨7, by decide⟩),
    opAt 87 .AND, opAt 88 (.Dup ⟨5, by decide⟩), opAt 89 .ADD,
