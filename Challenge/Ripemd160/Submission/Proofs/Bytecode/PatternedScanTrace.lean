@@ -165,6 +165,11 @@ theorem straddle_iff (k : Nat) (hk : k < 32) :
     exact this
   · intro h; rw [h]
 
+theorem notmask224_eq (k : Nat) (hk : k < 32) :
+    UInt256.land (UInt256.ofNat 224) (UInt256.lnot (UInt256.ofNat (32*k))) =
+      UInt256.xor (UInt256.ofNat 224) (UInt256.land (UInt256.ofNat 255) (UInt256.ofNat (32*k))) := by
+  interval_cases k <;> decide
+
 /-! ### Deriving one expected word -/
 
 set_option maxHeartbeats 80000000 in
@@ -189,7 +194,7 @@ theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 3
       Nat.mod_eq_of_lt (by norm_num : 224 < 2 ^ 256), hval] at hn
     exact h hn.symm
   have hdest : Decode.isValidJumpDest submissionBytecode 216 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 128 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 127 (by rfl)
   have hdestN : Decode.isValidJumpDest submissionBytecode
       (UInt256.ofNat 216).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -202,7 +207,7 @@ theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 3
   have hk224 : ¬ ((32 * k) % 256 == 224) = true := by simpa using h
   simp (config := { maxSteps := 800000 })
     [wordPath, opAt, pushAt, wfOp, loopState, compareState, frame, rawWord,
-      guardWord, hk224, hcond, hdest, hdestN, hdestL,
+      guardWord, hk224, notmask224_eq k hk, hcond, hdest, hdestN, hdestL,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -224,7 +229,7 @@ theorem run_word_straddle (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 
     decide
   simp (config := { maxSteps := 800000 })
     [wordPath, opAt, pushAt, wfOp, loopState, straddleState, frame, rawWord,
-      hcond,
+      notmask224_eq k hk, hcond,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
