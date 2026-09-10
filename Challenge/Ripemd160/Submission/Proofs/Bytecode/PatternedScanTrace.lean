@@ -31,7 +31,7 @@ def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
 
 /-! Only these projections of the initial state are ever unfolded, so `simp`
-never normalizes the 5298-byte array. -/
+never normalizes the 5294-byte array. -/
 
 @[simp] theorem initialState_code (code calldata : ByteArray) (gas : Nat) :
     (initialState code calldata gas).executionEnv.code = code := rfl

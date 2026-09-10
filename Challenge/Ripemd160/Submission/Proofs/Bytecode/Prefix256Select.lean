@@ -83,13 +83,13 @@ def gasSteps_skip128 (input : ByteArray) (rest : List UInt256)
     (blockOfS _ (pcFactS input 168 263 (128 :: UInt256.ofNat input.size :: rest) (by norm_num) (by rfl))
       (stepS_eq input 263 128 (UInt256.ofNat input.size) rest
         (by omega) (by norm_num)))
-  have t3 := soundS (pushAt 169 2 5288)
+  have t3 := soundS (pushAt 169 2 5284)
     (blockOfS _ (pcFactS input 169 264 (UInt256.eq 128 (UInt256.ofNat input.size) :: rest) (by norm_num) (by rfl))
-      (stepS_push input 264 2 5288 (UInt256.eq 128 (UInt256.ofNat input.size) :: rest)
+      (stepS_push input 264 2 5284 (UInt256.eq 128 (UInt256.ofNat input.size) :: rest)
         (by simp only [List.length_cons]; omega) (by decide) (by decide) (by norm_num)))
   have t4 := soundS (opAt 170 .JUMPI)
-    (blockOfS _ (pcFactS input 170 267 (5288 :: UInt256.eq 128 (UInt256.ofNat input.size) :: rest) (by norm_num) (by rfl))
-      (stepS_jumpi_fall input 267 5288 (UInt256.eq 128 (UInt256.ofNat input.size)) rest
+    (blockOfS _ (pcFactS input 170 267 (5284 :: UInt256.eq 128 (UInt256.ofNat input.size) :: rest) (by norm_num) (by rfl))
+      (stepS_jumpi_fall input 267 5284 (UInt256.eq 128 (UInt256.ofNat input.size)) rest
         (by omega) (by norm_num) hfalse))
   exact t0.trans (t1.trans (t2.trans (t3.trans t4)))
 
