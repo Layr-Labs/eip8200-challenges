@@ -11,7 +11,7 @@ open StackRoundTrace PairedTailTrace
 def entryStack (q : PairedTailTrace.Frame) (ret : UInt256) (rho : List UInt256) : List UInt256 :=
   [q.d, q.b, q.c, q.a, q.e, q.unused5, q.unused6, q.unused3, q.lower, ret] ++ rho
 
-/-- Exact frozen5357 window5196..5277: all results are computed before any write. -/
+/-- Exact frozen5357 window5196..5281: all results are computed before any write. -/
 def template : List Instr :=
   [.op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),

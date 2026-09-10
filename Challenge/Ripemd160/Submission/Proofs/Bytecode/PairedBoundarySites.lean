@@ -16,17 +16,17 @@ open StackRoundTemplate
 /-- Exact schedule, startup, and tail windows of the frozen 5324-byte artifact. -/
 
 theorem schedule_slice :
-    (Artifact.submissionArtifact.instructions.drop 294).take
+    (Artifact.submissionArtifact.instructions.drop 272).take
       PairedMask32Cache.fullTemplate.length = PairedMask32Cache.fullTemplate := by
   rfl
 
 theorem schedule_instructionPC :
-    Artifact.submissionArtifact.instructionPC 294 = 524 := by
+    Artifact.submissionArtifact.instructionPC 272 = 464 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem schedule_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 453 = 750 := by
+    Artifact.submissionArtifact.instructionPC 431 = 751 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -42,28 +42,28 @@ def scheduleSite :
       (instructions := PairedMask32Cache.fullTemplate) (by decide))
     (by decide)
 
-theorem scheduleSite_startPC : scheduleSite.startPC = UInt256.ofNat 512 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 294) =
-    UInt256.ofNat 512
+theorem scheduleSite_startPC : scheduleSite.startPC = UInt256.ofNat 464 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 272) =
+    UInt256.ofNat 464
   rw [schedule_instructionPC]
 
 theorem scheduleSite_endPC : scheduleSite.endPC = UInt256.ofNat 751 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 453) =
-    UInt256.ofNat 741
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 431) =
+    UInt256.ofNat 751
   rw [schedule_endInstructionPC]
 
 theorem startup_slice :
-    (Artifact.submissionArtifact.instructions.drop 453).take
+    (Artifact.submissionArtifact.instructions.drop 431).take
       PairedDerivedStartup.template.length = PairedDerivedStartup.template := by
   rfl
 
 theorem startup_instructionPC :
-    Artifact.submissionArtifact.instructionPC 453 = 750 := by
+    Artifact.submissionArtifact.instructionPC 431 = 751 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem startup_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 501 = 822 := by
+    Artifact.submissionArtifact.instructionPC 479 = 819 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -80,27 +80,27 @@ def startupSite :
     (by decide)
 
 theorem startupSite_startPC : startupSite.startPC = UInt256.ofNat 751 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 453) =
-    UInt256.ofNat 741
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 431) =
+    UInt256.ofNat 751
   rw [startup_instructionPC]
 
-theorem startupSite_endPC : startupSite.endPC = UInt256.ofNat 857 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 501) =
-    UInt256.ofNat 816
+theorem startupSite_endPC : startupSite.endPC = UInt256.ofNat 819 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 479) =
+    UInt256.ofNat 819
   rw [startup_endInstructionPC]
 
 theorem tailPrefix_slice :
-    (Artifact.submissionArtifact.instructions.drop 4019).take
+    (Artifact.submissionArtifact.instructions.drop 4001).take
       PairedTailTrace.prefixTemplate.length = PairedTailTrace.prefixTemplate := by
   rfl
 
 theorem tailPrefix_instructionPC :
-    Artifact.submissionArtifact.instructionPC 4019 = 4909 := by
+    Artifact.submissionArtifact.instructionPC 4001 = 4965 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem tailPrefix_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 4088 = 5000 := by
+    Artifact.submissionArtifact.instructionPC 4070 = 5049 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -116,14 +116,14 @@ def tailPrefixSite :
       (instructions := PairedTailTrace.prefixTemplate) (by decide))
     (by decide)
 
-theorem tailPrefixSite_startPC : tailPrefixSite.startPC = UInt256.ofNat 5010 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4019) =
-    UInt256.ofNat 4939
+theorem tailPrefixSite_startPC : tailPrefixSite.startPC = UInt256.ofNat 4965 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4001) =
+    UInt256.ofNat 4965
   rw [tailPrefix_instructionPC]
 
-theorem tailPrefixSite_endPC : tailPrefixSite.endPC = UInt256.ofNat 5094 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4088) =
-    UInt256.ofNat 5033
+theorem tailPrefixSite_endPC : tailPrefixSite.endPC = UInt256.ofNat 5049 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4070) =
+    UInt256.ofNat 5049
   rw [tailPrefix_endInstructionPC]
 
 private theorem instructionPC_toNat (index : Nat) :
@@ -141,12 +141,12 @@ def tailJump : LocatedSite Artifact.submissionArtifact .Osaka where
       instruction := .op .JUMP
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4088)
+  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4070)
   pc_eq := instructionPC_toNat 4070
 
 theorem tailJump_pc : tailJump.pc = UInt256.ofNat 5049 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4088) =
-    UInt256.ofNat 5033
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4070) =
+    UInt256.ofNat 5049
   rw [tailPrefix_endInstructionPC]
 
 def tailSite : PairedTailTrace.TailSite Artifact.submissionArtifact .Osaka where
@@ -161,7 +161,7 @@ def gasSteps_schedule (s : State) (returnPC : UInt256) (p : Nat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 527) (UInt256.ofNat p) returnPC rest)
+    GasSteps (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 464) (UInt256.ofNat p) returnPC rest)
       { s with
         pc := UInt256.ofNat 751
         stack := returnPC :: rest

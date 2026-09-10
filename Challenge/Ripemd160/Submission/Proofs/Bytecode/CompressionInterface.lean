@@ -24,8 +24,6 @@ open EvmSemantics.EVM
 
 structure CompressionSeam (input : ByteArray) where
   states : Nat → State
-  /-- The first dispatcher execution consumes blocks 0 and 1 together. -/
-  double : Bool
   initial : DriverTrace.setupEntry (states 0) input = PaddingTrace.padReturned input
   code : ∀ i, i ≤ DriverTrace.blockCount input →
     (states i).executionEnv.code = submissionBytecode
@@ -38,13 +36,9 @@ structure CompressionSeam (input : ByteArray) where
       (states i).executionEnv.fork (states i).executionEnv.codeAddr = false
   callStack : ∀ i, i ≤ DriverTrace.blockCount input →
     (states i).callStack = []
-  compress : ∀ i, i < DriverTrace.blockCount input → (double = true → 2 ≤ i) →
+  compress : ∀ i, i < DriverTrace.blockCount input →
     GasSteps (DriverTrace.dispatchEntry (states i) input i)
       (DriverTrace.compressReturned (states (i + 1)) input i)
-  compressDoubleBlocks : double = true → 2 ≤ DriverTrace.blockCount input
-  compressDouble : double = true →
-    GasSteps (DriverTrace.dispatchEntry (states 0) input 0)
-      (DriverTrace.compressReturned (states 2) input 1)
   finalWords : ∀ i : Fin 5,
     OutputTrace.hWord (states (DriverTrace.blockCount input)) i =
       Challenge.EvmProof.Word.ofUInt32
@@ -56,9 +50,8 @@ noncomputable def gasSteps_driver (input : ByteArray)
     (hfit : CalldataFits input) (seam : CompressionSeam input) :
     GasSteps (PaddingTrace.padReturned input)
       (DriverTrace.afterExit (seam.states (DriverTrace.blockCount input)) input) := by
-  have gloop := DriverTrace.gasSteps_loop_of_compress_double seam.states input hfit
-    seam.double seam.code seam.fork seam.running seam.noPrecompile seam.compress
-    seam.compressDoubleBlocks seam.compressDouble
+  have gloop := DriverTrace.gasSteps_loop_of_compress seam.states input hfit
+    seam.code seam.fork seam.running seam.noPrecompile seam.compress
   have hstart : DriverTrace.loopAt (seam.states 0) input 0 =
       PaddingTrace.padReturned input := by
     rw [← seam.initial]

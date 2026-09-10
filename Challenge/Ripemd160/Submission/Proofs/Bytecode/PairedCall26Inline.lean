@@ -124,6 +124,28 @@ theorem run_inline26Template (s : State) (pc : UInt256) (q : PairedHelperBoolean
 
 #print axioms run_inline26Template
 
+theorem run_inline26Template_word (s : State) (pc : UInt256) (q : PairedHelperBooleanTrace.Frame)
+    (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
+    (hactive : 23 ≤ s.activeWords.toNat)
+    (hfactor : q.factor = PairedLaneWordRotate.factorWord)
+    (hpair : q.pair = pairWord) (hupper : q.upper = upperWord) :
+    runInstrSeq inline26Template {s with pc := pc, stack := inline26Entry q rho} =
+      some {s with pc := pcAfter pc inline26Template, stack := inline26WordStack q (PairedLaneWordRound.wordStep 1 15 12 (inline26Frame s.memory q).message0 q.k (frameLane q)) rho} := by
+  have ht : inlineT (inline26Frame s.memory q) (rawBoolean q) =
+      PairedLaneWordRound.wordT 1 15 12 q.a q.b q.c q.d q.e
+        (inline26Frame s.memory q).message0 q.k :=
+    (inlineT_eq_rawT _ _).trans
+      ((congrArg (rawT (inline26Frame s.memory q)) (rawBoolean_eq q hupper)).trans
+        (rawT_of_boolean (inline26Frame s.memory q) 1 15 12 hfactor hpair hupper rfl rfl))
+  have hout : inline26Output q (inlineT (inline26Frame s.memory q) (rawBoolean q)) rho =
+      inline26WordStack q (PairedLaneWordRound.wordStep 1 15 12
+        (inline26Frame s.memory q).message0 q.k (frameLane q)) rho := by
+    simp only [inline26Output, inline26WordStack, PairedLaneWordRound.wordStep, frameLane,
+      ht, rawC10_eq q hfactor hpair]
+  exact (run_inline26Template s pc q rho hstack hrun hactive).trans
+    (congrArg (fun vs => some {s with pc := pcAfter pc inline26Template, stack := vs}) hout)
+
+#print axioms run_inline26Template_word
 
 theorem inline26Template_terminal_advances :
     ∀ instruction ∈ inline26Template.dropLast, DenseScheduleLift.Advances instruction := by
@@ -228,6 +250,28 @@ theorem run_inline27Template (s : State) (pc : UInt256) (q : PairedHelperBoolean
 
 #print axioms run_inline27Template
 
+theorem run_inline27Template_word (s : State) (pc : UInt256) (q : PairedHelperBooleanTrace.Frame)
+    (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
+    (hactive : 23 ≤ s.activeWords.toNat)
+    (hfactor : q.factor = PairedLaneWordRotate.factorWord)
+    (hpair : q.pair = pairWord) (hupper : q.upper = upperWord) :
+    runInstrSeq inline27Template {s with pc := pc, stack := inline27Entry q rho} =
+      some {s with pc := pcAfter pc inline27Template, stack := inline27WordStack q (PairedLaneWordRound.wordStep 1 9 7 (inline27Frame s.memory q).message0 q.k (frameLane q)) rho} := by
+  have ht : inlineT (inline27Frame s.memory q) (rawBoolean q) =
+      PairedLaneWordRound.wordT 1 9 7 q.a q.b q.c q.d q.e
+        (inline27Frame s.memory q).message0 q.k :=
+    (inlineT_eq_rawT _ _).trans
+      ((congrArg (rawT (inline27Frame s.memory q)) (rawBoolean_eq q hupper)).trans
+        (rawT_of_boolean (inline27Frame s.memory q) 1 9 7 hfactor hpair hupper rfl rfl))
+  have hout : inline27Output q (inlineT (inline27Frame s.memory q) (rawBoolean q)) rho =
+      inline27WordStack q (PairedLaneWordRound.wordStep 1 9 7
+        (inline27Frame s.memory q).message0 q.k (frameLane q)) rho := by
+    simp only [inline27Output, inline27WordStack, PairedLaneWordRound.wordStep, frameLane,
+      ht, rawC10_eq q hfactor hpair]
+  exact (run_inline27Template s pc q rho hstack hrun hactive).trans
+    (congrArg (fun vs => some {s with pc := pcAfter pc inline27Template, stack := vs}) hout)
+
+#print axioms run_inline27Template_word
 
 theorem inline27Template_terminal_advances :
     ∀ instruction ∈ inline27Template.dropLast, DenseScheduleLift.Advances instruction := by

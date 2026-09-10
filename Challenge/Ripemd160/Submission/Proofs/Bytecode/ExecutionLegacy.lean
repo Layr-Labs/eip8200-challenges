@@ -103,9 +103,9 @@ def gasSteps_8e (input : ByteArray) :
   · exact deployAddress_not_precompile
 
 def gasSteps_10f (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 0x10f) (atPC input 0x1e2) := by
+    Challenge.EvmProof.GasSteps (atPC input 0x10f) (atPC input 0x1b2) := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_10f
-      (atPC input 0x10f) = some (atPC input 0x1e2) := by
+      (atPC input 0x10f) = some (atPC input 0x1b2) := by
     simp [path_10f, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, initialState]
@@ -118,9 +118,9 @@ def gasSteps_10f (input : ByteArray) :
   · exact deployAddress_not_precompile
 
 def gasSteps_1b2 (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 0x1e2) (atPC input 0x20b) := by
+    Challenge.EvmProof.GasSteps (atPC input 0x1b2) (atPC input 0x1db) := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_1b2
-      (atPC input 0x1e2) = some (atPC input 0x20b) := by
+      (atPC input 0x1b2) = some (atPC input 0x1db) := by
     simp [path_1b2, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, initialState]
@@ -133,9 +133,9 @@ def gasSteps_1b2 (input : ByteArray) :
   · exact deployAddress_not_precompile
 
 def gasSteps_1db (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 0x20b) (atPC input 0x261) := by
+    Challenge.EvmProof.GasSteps (atPC input 0x1db) (atPC input 0x231) := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_1db
-      (atPC input 0x20b) = some (atPC input 0x261) := by
+      (atPC input 0x1db) = some (atPC input 0x231) := by
     simp [path_1db, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, initialState]
@@ -148,9 +148,9 @@ def gasSteps_1db (input : ByteArray) :
   · exact deployAddress_not_precompile
 
 def gasSteps_231 (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 0x261) (atPC input 0x268) := by
+    Challenge.EvmProof.GasSteps (atPC input 0x231) (atPC input 0x268) := by
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_231
-      (atPC input 0x261) = some (atPC input 0x268) := by
+      (atPC input 0x231) = some (atPC input 0x268) := by
     simp [path_231, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       atPC, initialState]

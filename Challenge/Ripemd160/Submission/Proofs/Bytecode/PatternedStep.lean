@@ -158,14 +158,6 @@ theorem stepS_or (input : ByteArray) (pc : Nat) (a b : UInt256) (rest : List UIn
   rw [if_pos (by simpa using hlen)]
   simp only [stS, Challenge.EvmProof.Word.succ_ofNat hpc]
 
-theorem stepS_byte (input : ByteArray) (pc : Nat) (a b : UInt256) (rest : List UInt256)
-    (hlen : rest.length + 2 < 1024) (hpc : pc + 1 < 2 ^ 256) :
-    Challenge.EvmProof.Stepper.runInstr (.op .BYTE) (stS input pc (a :: b :: rest)) =
-      some (stS input (pc + 1) (UInt256.byteAt a b :: rest)) := by
-  unfold Challenge.EvmProof.Stepper.runInstr
-  rw [if_pos (by simpa using hlen)]
-  simp only [stS, Challenge.EvmProof.Word.succ_ofNat hpc]
-
 theorem stepS_xor (input : ByteArray) (pc : Nat) (a b : UInt256) (rest : List UInt256)
     (hlen : rest.length + 2 < 1024) (hpc : pc + 1 < 2 ^ 256) :
     Challenge.EvmProof.Stepper.runInstr (.op .XOR) (stS input pc (a :: b :: rest)) =

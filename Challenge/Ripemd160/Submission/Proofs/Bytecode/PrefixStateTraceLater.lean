@@ -9,9 +9,9 @@ set_option linter.unusedSimpArgs false
 
 /-! Raw later-block dispatch for the H8 checked prefix.
 
-`PrefixStatePaths.laterPath` is the four-instruction prologue at PC 5198:
+`PrefixStatePaths.laterPath` is the four-instruction prologue at PC 5193:
 `JUMPDEST`, `DUP3` (stack index 2, duplicating the driver block offset),
-`PUSH2 512`, and `JUMPI`.  For a later block (`i ≠ 0`, so the block offset
+`PUSH2 464`, and `JUMPI`.  For a later block (`i ≠ 0`, so the block offset
 word is nonzero under the calldata-fit bound) the jump is taken and the
 helper falls straight into the generic compression entry with the stack
 unchanged.  No prefix bytes are inspected on this branch, so it applies to
@@ -21,12 +21,12 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateTraceLater
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
-/-- The generic compression target `512` is a valid jump destination. -/
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 599 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 300 = 599 := by
+/-- The generic compression target `464` is a valid jump destination. -/
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 464 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 271 = 464 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 300 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 271 (by rfl)
   rw [hpc] at h
   exact h
 
@@ -52,10 +52,8 @@ theorem run_later (s : State) (input : ByteArray) (i : Nat)
       some (DriverTrace.compressEntry s input i) := by
   have hdup : ((FastEmptyBlock.nonemptyEntry s input i).stack[2]? :
       Option UInt256) = some (DriverTrace.blockOffsetWord i) := by
-    show ([DriverTrace.messageOffsetWord i, UInt256.ofNat 532,
-        DriverTrace.blockOffsetWord i, Padding.paddedWord input,
-      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
-      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff][2]? :
+    show ([DriverTrace.messageOffsetWord i, UInt256.ofNat 102,
+        DriverTrace.blockOffsetWord i, Padding.paddedWord input][2]? :
         Option UInt256) = some _
     simp
   have hcond : UInt256.isTrue (DriverTrace.blockOffsetWord i) := by
@@ -67,8 +65,8 @@ theorem run_later (s : State) (input : ByteArray) (i : Nat)
     [PrefixStatePaths.laterPath, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       FastEmptyBlock.nonemptyEntry, DriverTrace.compressEntry,
-      hdup, hcond, PrefixStatePaths.pc4072, PrefixStatePaths.pc4073,
-      PrefixStatePaths.pc4074, PrefixStatePaths.pc4075,
+      hdup, hcond, PrefixStatePaths.pc4013, PrefixStatePaths.pc4014,
+      PrefixStatePaths.pc4015, PrefixStatePaths.pc4016,
       jumpDest_generic, hrun, hcode,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.ofNat_add_mod,

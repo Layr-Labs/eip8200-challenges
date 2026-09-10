@@ -54,8 +54,8 @@ private def wfOp {op : Operation}
 (index 324, pc 0x293).  The removed call prefix and the removed inner-return
 JUMPDEST are no longer live instructions. -/
 def exitPath : List Located :=
-  [⟨345, .push ⟨4, by decide⟩ mask, by rfl, by decide⟩,
-   ⟨346, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
+  [⟨323, .push ⟨4, by decide⟩ mask, by rfl, by decide⟩,
+   ⟨324, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
 
 def loadSite987 : GenericRoundSite Artifact.submissionArtifact .Osaka
     StackLoadTrace.loadTemplate :=
@@ -79,7 +79,7 @@ def loadSite1238 : GenericRoundSite Artifact.submissionArtifact .Osaka
   rfl
 
 @[simp] theorem loadSite1238_startPC :
-    loadSite1238.startPC = UInt256.ofNat 0xb73 := by
+    loadSite1238.startPC = UInt256.ofNat 0xb46 := by
   change UInt256.ofNat
     (Artifact.submissionArtifact.instructionPC QuadLayout.rightLoadIndex) = _
   rw [QuadLayout.rightLoad_pc]
@@ -125,7 +125,7 @@ theorem denseEnd_eq_frameSeam (s : State) (input : ByteArray) (i : Nat) :
         (DriverTrace.messageOffsetWord i) (UInt256.ofNat 0x66)
         (StackBlockModel.driverRest input i) =
       frameSeam s input i := by
-  have hpc : PackedScheduleSite.packedScheduleSite.startPC = UInt256.ofNat 512 :=
+  have hpc : PackedScheduleSite.packedScheduleSite.startPC = UInt256.ofNat 464 :=
     PackedScheduleSite.packedScheduleSite_startPC
   let mo := DriverTrace.messageOffsetWord i
   let dr := StackBlockModel.driverRest input i
@@ -163,8 +163,8 @@ theorem run_exit (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock exitPath (frameSeam s input i) =
       some (frameLoadEntry s input i) := by
-  have hpc940 : Artifact.submissionArtifact.instructionPC 345 = 0x255 := by rfl
-  have hpc941 : Artifact.submissionArtifact.instructionPC 346 = 0x258 := by rfl
+  have hpc940 : Artifact.submissionArtifact.instructionPC 323 = 0x28e := by rfl
+  have hpc941 : Artifact.submissionArtifact.instructionPC 324 = 0x293 := by rfl
   simp [exitPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     frameSeam, frameLoadEntry, StackBlockModel.scheduledState,
     StackBlockModel.withMemory, StackBlockModel.withActiveWords,

@@ -1,8 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned256Correct
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Entry
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Correct
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardTail
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Correct
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -50,9 +46,7 @@ def gasSteps_target :
 
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
     (hne : input ≠ KnownInputData.targetInput)
-    (hpne : input ≠ PatternedInputData.patternedInput)
-    (hbad : input.size ≠ 128 ∨ firstByte input ≠ 7)
-    (h256 : input.size ≠ 376) (hshort : input.size ≠ 256) :
+    (hpne : input ≠ PatternedInputData.patternedInput) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) := by
   by_cases hsize : input.size = 1000
   · by_cases href : referenceWord input = KnownInputData.fullWord
@@ -66,8 +60,7 @@ def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
           ((gasSteps_checkEarly input href).trans
             (PatternedScan.gasSteps_patterned_miss input hsize hpne)))
   · exact (Execution.gasSteps_start input).trans
-      ((sound sizePath (run_size_fail input hfit hsize h256 hshort)).trans
-        (Patterned128Entry.gasSteps_fail input hfit hbad))
+      (sound sizePath (run_size_fail input hfit hsize))
 
 private theorem answerMemory_read :
     MachineState.readPadded answerMemory 0 32 = ExactGuardSpec.paddedDigest := by
@@ -78,78 +71,8 @@ private theorem answerMemory_read :
     ExactGuardSpec.wordBytes_eq_paddedDigest,
     ExactGuardSpec.paddedDigest_size] using h
 
-/-- A byte read at or past the end of an array is zero. -/
-private theorem byteFrom_zero_beyond (bs : ByteArray) (i : Nat) (h : bs.size ≤ i) :
-    YulSemantics.EVM.byteFrom bs.toList i = 0 := by
-  unfold YulSemantics.EVM.byteFrom
-  rw [YulEvmCompiler.ByteArray.toList_eq_data, List.getD_eq_getElem?_getD,
-    Array.getElem?_toList]
-  exact Challenge.EvmProof.Memory.getElem?_getD_eq_zero_of_size_le bs i h
-
-/-- A zero-padded read starting at or past the end contributes nothing. -/
-private theorem bytesToNatPadded_zero_beyond (bs : ByteArray) (off : Nat)
-    (hoff : bs.size ≤ off) : ∀ n : Nat,
-    EvmSemantics.EVM.Precompile.bytesToNatPadded bs off n = 0
-  | 0 => Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width bs off
-  | n + 1 => by
-      rw [Challenge.EvmProof.Bytes.bytesToNatPadded_succ,
-        bytesToNatPadded_zero_beyond bs off hoff n,
-        byteFrom_zero_beyond bs (off + n) (by omega)]
-      rfl
-
-/-- The compare loop's last word is read entirely past the end of a 376-byte input. -/
-private theorem readWord_past_end (input : ByteArray) (hsize : input.size ≤ 992) :
-    MachineState.readWord input 992 = 0 := by
-  apply Challenge.EvmProof.Word.word_ext
-  rw [Challenge.EvmProof.Bytes.readWord_toNat,
-    bytesToNatPadded_zero_beyond input 992 (by omega) 32]
-  rfl
-
-/-- With the first word pinned at `0x6161..61` and the last word read past the end,
-the compare accumulator cannot be zero.  `wordOr_eq_zero_iff` splits the `lor` so
-the contradiction is a closed computation with no free variables left in it. -/
-private theorem finalAcc_ne_zero_short (input : ByteArray) (hsize : input.size ≤ 992)
-    (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
-    KnownInputCompactState.finalAcc input ≠ 0 := by
-  intro hz
-  rw [KnownInputCompactState.finalAcc, KnownInputLogic.wordOr_eq_zero_iff] at hz
-  obtain ⟨hleft, -⟩ := hz
-  rw [KnownInputLogic.wordXor_eq_zero_iff, readWord_past_end input hsize, href] at hleft
-  revert hleft
-  decide
-
-private def gasSteps_fallback256 (input : ByteArray) (hsize : input.size = 376)
-    (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
-    GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
-  (Execution.gasSteps_start input).trans
-    ((sound sizePath (run_size_match_256 input hsize)).trans
-      ((sound checkEntryPath (run_checkEntry input href)).trans
-        ((gasSteps_loop input).trans
-          (sound tailPath (run_tail_fallback_acc input
-            (finalAcc_ne_zero_short input (by omega) href))))))
-
-private def gasSteps_fallback_short (input : ByteArray) (hsize : input.size = 256)
-    (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
-    GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
-  (Execution.gasSteps_start input).trans
-    ((sound sizePath (run_size_match_short input hsize)).trans
-      ((sound checkEntryPath (run_checkEntry input href)).trans
-        ((gasSteps_loop input).trans
-          (sound tailPath (run_tail_fallback_acc input
-            (finalAcc_ne_zero_short input (by omega) href))))))
-
 theorem correct : Correct submissionBytecode := by
   intro input hfit
-  by_cases h256 : input.size = 376
-  · by_cases href : KnownInputCompactState.referenceWord input =
-      KnownInputData.fullWord
-    · exact StackCorrect.correct input hfit
-        (gasSteps_fallback256 input h256 href)
-    · exact Prefix256Correct.correct input hfit h256 href
-  by_cases hshort : input.size = 256
-  · by_cases href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord
-    · exact StackCorrect.correct input hfit (gasSteps_fallback_short input hshort href)
-    · exact Patterned256Correct.correct input hfit hshort href
   by_cases h : input = KnownInputData.targetInput
   · subst input
     let trace := gasSteps_target
@@ -184,13 +107,7 @@ theorem correct : Correct submissionBytecode := by
         (.returned (MachineState.readPadded PatternedScan.answerMemory 0 32)) at heval
       rw [PatternedScan.answerMemory_read, ← PatternedGuardSpec.spec_patternedInput_eq] at heval
       simpa [GasCost.withGas_initialState_zero] using heval
-    · by_cases hsize128 : input.size = 128
-      · by_cases hbyte : firstByte input = 7
-        · exact Patterned128Correct.correct_from_patternedEntry input hfit hsize128 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit hsize128 hbyte)
-        · exact StackCorrect.correct input hfit
-            (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
-      · exact StackCorrect.correct input hfit
-          (gasSteps_fallback input hfit h hp (Or.inl hsize128) h256 hshort)
+    · exact StackCorrect.correct input hfit
+        (gasSteps_fallback input hfit h hp)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

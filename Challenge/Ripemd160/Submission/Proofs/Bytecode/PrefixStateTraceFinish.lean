@@ -3,102 +3,75 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStatePaths
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.BooleanSelect
 
 set_option warningAsError true
-set_option Elab.async false
 set_option maxRecDepth 50000
 set_option maxHeartbeats 5000000
 set_option linter.unusedSimpArgs false
-
-/-!
-# Checked-prefix finish: word-1 guard and the H1 install
-
-After the word-0 match the dispatcher checks calldata word 1.  On a match it
-falls into the depth-1 install of `H1` (`resultState`).  A word-1 mismatch
-goes to the generic compressor.
--/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateTraceFinish
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
-private def frame (s : State) (input : ByteArray) (pc : Nat) : State :=
+/-- Entry at the second word comparison in the checked H8 prefix. -/
+def entry (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat pc
-    stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 532,
-      DriverTrace.blockOffsetWord 0, Padding.paddedWord input,
-      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
-      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
+    pc := UInt256.ofNat 5245
+    stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
+      DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
-/-- Entry at the second word comparison in the checked prefix. -/
-def entry (s : State) (input : ByteArray) : State := frame s input 5168
-
-/-- Entry at the `H1` install (`JUMPDEST` target of the rung's guards). -/
-def hit1Entry (s : State) (input : ByteArray) : State := frame s input 5209
+/-- Entry at the H1 stores after the second word guard has matched. -/
+def hitEntry (s : State) (input : ByteArray) : State :=
+  { s with
+    pc := UInt256.ofNat 5286
+    stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
+      DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
 /-- The generic compression target of the guard is a valid jump destination. -/
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 599 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 300 = 599 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 464 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 271 = 464 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 300 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 271 (by rfl)
   rw [hpc] at h
   exact h
 
-/-- The `H1` install entry is a valid jump destination. -/
-theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5209 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 4088 = 5209 := PrefixStatePaths.pc4093
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4088 (by rfl)
-  rw [hpc] at h
-  exact h
-
-/-- The driver's `102` continuation is a valid jump destination. -/
-theorem jumpDest_driver : Decode.isValidJumpDest submissionBytecode 532 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 267 = 532 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 267 (by rfl)
-  rw [hpc] at h
-  exact h
-
-/-- The `H1` stores return to the driver's `102` continuation. -/
-theorem run_hit1 (s : State) (input : ByteArray)
+/-- The H1 stores return to the driver's `102` continuation. -/
+theorem run_hit (s : State) (input : ByteArray)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock PrefixStatePaths.hitPath
-      (hit1Entry s input) =
+      (hitEntry s input) =
       some (PrefixStateMemory.resultState s input 0) := by
+  have hdest : Decode.isValidJumpDest submissionBytecode 102 = true := by
+    have hpc : Artifact.submissionArtifact.instructionPC 64 = 102 := by
+      rw [ArtifactByteLength.instructionPC_eq_byteLength]
+      decide
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 64 (by rfl)
+    rw [hpc] at h
+    exact h
   simp (config := { maxSteps := 500000 })
     [PrefixStatePaths.hitPath,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      hit1Entry, frame, PrefixStateMemory.resultState,
+      hitEntry, PrefixStateMemory.resultState,
       PrefixStateMemory.hashMemory, PrefixStateMemory.writeWord,
       PrefixStateMemory.hash, FastEmptyBlock.emptyActiveWords,
-      hcode, hrun, jumpDest_driver,
-      PrefixStatePaths.pc4093,
-      PrefixStatePaths.pc4094,
-      PrefixStatePaths.pc4095,
-      PrefixStatePaths.pc4096,
-      PrefixStatePaths.pc4097,
-      PrefixStatePaths.pc4098,
-      PrefixStatePaths.pc4099,
-      PrefixStatePaths.pc4100,
-      PrefixStatePaths.pc4101,
-      PrefixStatePaths.pc4102,
-      PrefixStatePaths.pc4103,
-      PrefixStatePaths.pc4104,
-      PrefixStatePaths.pc4105,
-      PrefixStatePaths.pc4106,
-      PrefixStatePaths.pc4107,
-      PrefixStatePaths.pc4108,
-      PrefixStatePaths.pc4109,
-      PrefixStatePaths.pc4110,
+      hcode, hrun, hdest,
+      PrefixStatePaths.pc4034, PrefixStatePaths.pc4035,
+      PrefixStatePaths.pc4036, PrefixStatePaths.pc4037,
+      PrefixStatePaths.pc4038, PrefixStatePaths.pc4039,
+      PrefixStatePaths.pc4040, PrefixStatePaths.pc4041,
+      PrefixStatePaths.pc4042, PrefixStatePaths.pc4043,
+      PrefixStatePaths.pc4044, PrefixStatePaths.pc4045,
+      PrefixStatePaths.pc4046, PrefixStatePaths.pc4047,
+      PrefixStatePaths.pc4048, PrefixStatePaths.pc4049,
+      PrefixStatePaths.pc4050,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc]
 
-/-- Word-1 guard on a match: the `JUMPI` is not taken. -/
+/-- The second word guard falls through to the H1 stores on a match. -/
 theorem run_secondCompare_hit (s : State) (input : ByteArray)
     (hword : MachineState.readWord input 32 =
       PatternedWordData.expectedWordAt 1)
@@ -106,7 +79,7 @@ theorem run_secondCompare_hit (s : State) (input : ByteArray)
     (_hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock PrefixStatePaths.secondComparePath
-      (entry s input) = some (hit1Entry s input) := by
+      (entry s input) = some (hitEntry s input) := by
   have hzero : UInt256.xor (MachineState.readWord input 32)
       (PatternedWordData.expectedWordAt 1) = 0 :=
     (KnownInputLogic.wordXor_eq_zero_iff _ _).2 hword
@@ -137,20 +110,17 @@ theorem run_secondCompare_hit (s : State) (input : ByteArray)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      entry, hit1Entry, frame, hcalldata, hrun, hzero, hzero', hcond, hcondLit,
+      entry, hitEntry, hcalldata, hrun, hzero, hzero', hcond, hcondLit,
       BooleanSelect.xor_comm, UInt256.isTrue,
-      PrefixStatePaths.pc4087,
-      PrefixStatePaths.pc4088,
-      PrefixStatePaths.pc4089,
-      PrefixStatePaths.pc4090,
-      PrefixStatePaths.pc4091,
-      PrefixStatePaths.pc4092,
+      PrefixStatePaths.pc4028, PrefixStatePaths.pc4029,
+      PrefixStatePaths.pc4030, PrefixStatePaths.pc4031,
+      PrefixStatePaths.pc4032, PrefixStatePaths.pc4033,
       jumpDest_generic,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.succ_ofNat_mod]
 
-/-- Word-1 guard on a mismatch: the `JUMPI` is taken. -/
+/-- The second word guard jumps to the generic compressor on a mismatch. -/
 theorem run_secondCompare_miss (s : State) (input : ByteArray)
     (hword : MachineState.readWord input 32 ≠
       PatternedWordData.expectedWordAt 1)
@@ -206,14 +176,11 @@ theorem run_secondCompare_miss (s : State) (input : ByteArray)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      entry, DriverTrace.compressEntry, frame, hcalldata, hcode, hrun,
+      entry, DriverTrace.compressEntry, hcalldata, hcode, hrun,
       htrue, htrue', hcond, hcond', hcondLit, BooleanSelect.xor_comm, UInt256.isTrue,
-      PrefixStatePaths.pc4087,
-      PrefixStatePaths.pc4088,
-      PrefixStatePaths.pc4089,
-      PrefixStatePaths.pc4090,
-      PrefixStatePaths.pc4091,
-      PrefixStatePaths.pc4092,
+      PrefixStatePaths.pc4028, PrefixStatePaths.pc4029,
+      PrefixStatePaths.pc4030, PrefixStatePaths.pc4031,
+      PrefixStatePaths.pc4032, PrefixStatePaths.pc4033,
       jumpDest_generic,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -231,23 +198,7 @@ private def gasStepsBlock (path : List PrefixStatePaths.Located) (s t : State)
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka path hcode hfork hresult hrun hnp
 
-/-- Any frame state carries the environment facts of `s`. -/
-private def frameBlock (path : List PrefixStatePaths.Located) (s : State) (input : ByteArray)
-    (pc : Nat) (t : State)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hresult : Challenge.EvmProof.Stepper.runLocatedBlock path (frame s input pc) = some t) :
-    Challenge.EvmProof.GasSteps (frame s input pc) t :=
-  gasStepsBlock path (frame s input pc) t
-    (by simpa [frame] using hcode)
-    (by simpa [frame, State.fork] using hfork)
-    hresult
-    (by simpa [frame] using hrun)
-    (by simpa [frame] using hnp)
-
-/-- Execute the word-1 guard and the matching H1 install. -/
+/-- Execute the second word guard and, on a match, the H1 store/return block. -/
 def gasSteps_finish (s : State) (input : ByteArray)
     (hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
@@ -258,21 +209,35 @@ def gasSteps_finish (s : State) (input : ByteArray)
       (if MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1 then
         PrefixStateMemory.resultState s input 0
       else DriverTrace.compressEntry s input 0) := by
-  have ghit1 : Challenge.EvmProof.GasSteps (hit1Entry s input)
-      (PrefixStateMemory.resultState s input 0) :=
-    frameBlock PrefixStatePaths.hitPath s input 5209 _ hcode hfork hrun hnp
-      (run_hit1 s input hcode hrun)
-  by_cases hw1 : MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1
-  · rw [if_pos hw1]
-    have gsecond : Challenge.EvmProof.GasSteps (entry s input) (hit1Entry s input) :=
-      frameBlock PrefixStatePaths.secondComparePath s input 5168 _ hcode hfork hrun hnp
-        (run_secondCompare_hit s input hw1 hcalldata hcode hrun)
-    exact gsecond.trans ghit1
-  · rw [if_neg hw1]
-    exact frameBlock PrefixStatePaths.secondComparePath s input 5168 _ hcode hfork hrun hnp
-      (run_secondCompare_miss s input hw1 hcalldata hcode hrun)
+  by_cases hword : MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1
+  · rw [if_pos hword]
+    have gsecond : Challenge.EvmProof.GasSteps (entry s input) (hitEntry s input) :=
+      gasStepsBlock PrefixStatePaths.secondComparePath (entry s input) (hitEntry s input)
+        (by simpa [entry] using hcode)
+        (by simpa [entry, State.fork] using hfork)
+        (run_secondCompare_hit s input hword hcalldata hcode hrun)
+        (by simpa [entry] using hrun)
+        (by simpa [entry] using hnp)
+    have ghit : Challenge.EvmProof.GasSteps (hitEntry s input)
+        (PrefixStateMemory.resultState s input 0) :=
+      gasStepsBlock PrefixStatePaths.hitPath (hitEntry s input)
+        (PrefixStateMemory.resultState s input 0)
+        (by simpa [hitEntry] using hcode)
+        (by simpa [hitEntry, State.fork] using hfork)
+        (run_hit s input hcode hrun)
+        (by simpa [hitEntry] using hrun)
+        (by simpa [hitEntry] using hnp)
+    exact gsecond.trans ghit
+  · rw [if_neg hword]
+    exact gasStepsBlock PrefixStatePaths.secondComparePath (entry s input)
+      (DriverTrace.compressEntry s input 0)
+      (by simpa [entry] using hcode)
+      (by simpa [entry, State.fork] using hfork)
+      (run_secondCompare_miss s input hword hcalldata hcode hrun)
+      (by simpa [entry] using hrun)
+      (by simpa [entry] using hnp)
 
-#print axioms run_hit1
+#print axioms run_hit
 #print axioms run_secondCompare_hit
 #print axioms run_secondCompare_miss
 #print axioms gasSteps_finish

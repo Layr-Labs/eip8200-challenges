@@ -13,12 +13,10 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open DirectCorrect
 
 def driverRest (input : ByteArray) : List UInt256 :=
-  [DriverTrace.blockOffsetWord (DriverTrace.blockCount input), Padding.paddedWord input,
-    UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
-    UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff]
+  [DriverTrace.blockOffsetWord (DriverTrace.blockCount input), Padding.paddedWord input]
 
 def outputState (s : State) (input : ByteArray) : State :=
-  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x13da) (driverRest input)
+  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x141b) (driverRest input)
 
 def outputBytes (s : State) : ByteArray :=
   MachineState.readPadded (FastOutputTrace.outputMemory s) 0 32
@@ -99,13 +97,12 @@ private theorem outputBytes_eq_spec (input : ByteArray) (seam : CompressionSeam 
 
 noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
     (seam : CompressionSeam input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x170)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x3)) :
     GasSteps (initialState submissionBytecode input 0)
       (outputState (seam.states (DriverTrace.blockCount input)) input) := by
   let final := seam.states (DriverTrace.blockCount input)
   have gout := FastOutputSite.gasSteps_fastOutput final (driverRest input)
-    (by simp [driverRest]) (by rfl) (by rfl)
-    (seam.code _ (by omega)) (seam.fork _ (by omega))
+    (by simp [driverRest]) (seam.code _ (by omega)) (seam.fork _ (by omega))
     (seam.running _ (by omega)) (seam.noPrecompile _ (by omega))
   exact (PaddingTrace.gasSteps_pad input hfit entryPrefix).trans
     ((DirectCorrect.gasSteps_driver input hfit seam).trans
@@ -115,7 +112,7 @@ noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
 theorem correct_of_compression_trace
     (seam : ∀ input : ByteArray, CalldataFits input → CompressionSeam input)
     (input : ByteArray) (hfit : CalldataFits input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x170)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x3)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let trace := fullTrace input hfit (seam input hfit) entryPrefix

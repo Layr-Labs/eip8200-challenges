@@ -28,9 +28,9 @@ abbrev Hnp (s : State) : Prop :=
 
 /-- Full nonempty-dispatcher execution certificate.
 
-For block zero this composes the first-word certificate with the finish
-certificate (word-1 guard and one-block install). For later blocks it uses
-the checked later-path certificate. -/
+For block zero this composes the real first-word certificate with the real
+second-word/H1 certificate.  For later blocks it uses the checked later-path
+certificate. -/
 def gasSteps_dispatch (s : State) (input : ByteArray) (i : Nat)
     (hfit : Challenge.Ripemd160.CalldataFits input)
     (hi : i < DriverTrace.blockCount input)
@@ -39,8 +39,7 @@ def gasSteps_dispatch (s : State) (input : ByteArray) (i : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Hnp s) :
     GasSteps (FastEmptyBlock.nonemptyEntry s input i)
-      (if i = 0 ∧ Matched input then
-        resultState (copied s) input i
+      (if i = 0 ∧ Matched input then resultState (copied s) input i
         else DriverTrace.compressEntry (prepared s i) input i) := by
   by_cases hzero : i = 0
   · subst i
@@ -65,21 +64,30 @@ def gasSteps_dispatch (s : State) (input : ByteArray) (i : Nat)
       have hentry : PrefixStateTraceFinish.entry (copied s) input =
           PrefixStateTraceFirst.firstMatchedState s input := by
         rfl
-      have g := PrefixStateTraceFinish.gasSteps_finish (copied s) input
-        hcalldata' hcode' hfork' hrun' hnp'
-      rw [hentry] at g
       by_cases hw1 : MachineState.readWord input 32 =
           PatternedWordData.expectedWordAt 1
-      · rw [if_pos hw1] at g
+      · have gfinish : GasSteps (PrefixStateTraceFirst.firstMatchedState s input)
+            (resultState (copied s) input 0) := by
+          have g := PrefixStateTraceFinish.gasSteps_finish (copied s) input
+            hcalldata' hcode' hfork' hrun' hnp'
+          rw [if_pos hw1] at g
+          rw [hentry] at g
+          exact g
         have hmatch : Matched input := ⟨hw0, hw1⟩
         rw [if_pos ⟨rfl, hmatch⟩]
-        exact gfirst.trans g
-      · rw [if_neg hw1] at g
+        exact gfirst.trans gfinish
+      · have gfinish : GasSteps (PrefixStateTraceFirst.firstMatchedState s input)
+            (DriverTrace.compressEntry (copied s) input 0) := by
+          have g := PrefixStateTraceFinish.gasSteps_finish (copied s) input
+            hcalldata' hcode' hfork' hrun' hnp'
+          rw [if_neg hw1] at g
+          rw [hentry] at g
+          exact g
         have hnot : ¬ (0 = 0 ∧ Matched input) := by
           intro h
           exact hw1 h.2.2
         rw [if_neg hnot]
-        simpa [PrefixStateModel.prepared] using gfirst.trans g
+        simpa [PrefixStateModel.prepared] using gfirst.trans gfinish
     · have gfirst : GasSteps (FastEmptyBlock.nonemptyEntry s input 0)
           (DriverTrace.compressEntry (copied s) input 0) := by
         have g := PrefixStateTraceFirst.gasSteps_first s input
