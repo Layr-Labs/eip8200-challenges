@@ -13,26 +13,26 @@ open PatternedScan PatternedSwar
 @[simp] private theorem branchPC0 : Artifact.submissionArtifact.instructionPC 163 = 255 := rfl
 @[simp] private theorem branchPC1 : Artifact.submissionArtifact.instructionPC 164 = 256 := rfl
 @[simp] private theorem branchPC2 : Artifact.submissionArtifact.instructionPC 165 = 259 := rfl
-@[simp] private theorem cleanupDupPC : Artifact.submissionArtifact.instructionPC 186 = 344 := rfl
-@[simp] private theorem cleanupDest : Decode.isValidJumpDest submissionBytecode 343 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 185 (by rfl)
-@[simp] private theorem fallbackDest : Decode.isValidJumpDest submissionBytecode 360 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 200 (by rfl)
+@[simp] private theorem cleanupDupPC : Artifact.submissionArtifact.instructionPC 191 = 352 := rfl
+@[simp] private theorem cleanupDest : Decode.isValidJumpDest submissionBytecode 351 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 190 (by rfl)
+@[simp] private theorem fallbackDest : Decode.isValidJumpDest submissionBytecode 368 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 205 (by rfl)
 
 def branchPath : List Located :=
-  [opAt 163 (.Dup ⟨2, by decide⟩), pushAt 164 2 343, opAt 165 .JUMPI]
+  [opAt 163 (.Dup ⟨2, by decide⟩), pushAt 164 2 351, opAt 165 .JUMPI]
 
 def cleanupPath : List Located :=
-  [opAt 185 .JUMPDEST, opAt 186 (.Dup ⟨2, by decide⟩),
-   opAt 187 (.Swap ⟨2, by decide⟩), opAt 188 .POP,
-   opAt 189 (.Swap ⟨1, by decide⟩), opAt 190 (.Swap ⟨6, by decide⟩),
-   opAt 191 .POP, opAt 192 .POP, opAt 193 .POP, opAt 194 .POP,
-   opAt 195 .POP, opAt 196 .POP, opAt 197 .POP,
-   pushAt 198 2 360, opAt 199 .JUMPI]
+  [opAt 190 .JUMPDEST, opAt 191 (.Dup ⟨2, by decide⟩),
+   opAt 192 (.Swap ⟨2, by decide⟩), opAt 193 .POP,
+   opAt 194 (.Swap ⟨1, by decide⟩), opAt 195 (.Swap ⟨6, by decide⟩),
+   opAt 196 .POP, opAt 197 .POP, opAt 198 .POP, opAt 199 .POP,
+   opAt 200 .POP, opAt 201 .POP, opAt 202 .POP,
+   pushAt 203 2 368, opAt 204 .JUMPI]
 
 theorem run_branch (input : ByteArray) (sv ov acc : UInt256) :
     run branchPath (stS input 255 [sv, ov, acc, P7, M, m7, P, m8]) =
-      some (stS input (if UInt256.isTrue acc then 343 else 260)
+      some (stS input (if UInt256.isTrue acc then 351 else 260)
         [sv, ov, acc, P7, M, m7, P, m8]) := by
   by_cases hc : UInt256.isTrue acc <;>
     simp (config := { maxSteps := 400000 })
@@ -44,7 +44,7 @@ theorem run_branch (input : ByteArray) (sv ov acc : UInt256) :
 
 theorem run_cleanup (input : ByteArray) (sv ov acc : UInt256)
     (hc : UInt256.isTrue acc) :
-    run cleanupPath (stS input 343 [sv, ov, acc, P7, M, m7, P, m8]) =
+    run cleanupPath (stS input 351 [sv, ov, acc, P7, M, m7, P, m8]) =
       some (fallbackState input) := by
   simp (config := { maxSteps := 400000 })
     [cleanupPath, opAt, pushAt, stS, fallbackState, atPC, List.exchange, hc,

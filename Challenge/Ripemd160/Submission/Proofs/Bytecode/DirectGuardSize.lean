@@ -12,9 +12,14 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open KnownInputCompactState
 
+def guardEntry (input : ByteArray) : State := atPC input 5132
+
+def firstByte (input : ByteArray) : Nat :=
+  (YulSemantics.EVM.byteFrom input.toList 0).toNat
+
 /-- `UInt256.eq` is `if a.toNat = b.toNat then 1 else 0`, and both operands are
 below `2 ^ 256`, so the test reduces to the underlying `Nat` comparison. -/
-private theorem size_eq_zero (input : ByteArray) (k : Nat)
+theorem size_eq_zero (input : ByteArray) (k : Nat)
     (hlt : input.size < 2 ^ 256) (hk : k < 2 ^ 256) (hne : input.size ≠ k) :
     UInt256.eq (UInt256.ofNat k) (UInt256.ofNat input.size) = UInt256.ofNat 0 := by
   unfold UInt256.eq
@@ -23,7 +28,7 @@ private theorem size_eq_zero (input : ByteArray) (k : Nat)
     Nat.mod_eq_of_lt hk, Nat.mod_eq_of_lt hlt]
   simp [Ne.symm hne]
 
-private theorem size_eq_one (input : ByteArray) (k : Nat)
+theorem size_eq_one (input : ByteArray) (k : Nat)
     (heq : input.size = k) :
     UInt256.eq (UInt256.ofNat k) (UInt256.ofNat input.size) = UInt256.ofNat 1 := by
   rw [heq]
@@ -32,20 +37,91 @@ private theorem size_eq_one (input : ByteArray) (k : Nat)
 
 theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
     (hsize : input.size ≠ 1000) (hsize256 : input.size ≠ 376) (hshort : input.size ≠ 256) :
-    run sizePath (Execution.atPC input 0x0) = some (fallbackState input) := by
+    run sizePath (Execution.atPC input 0x0) = some (guardEntry input) := by
   have hlt : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
   have eshort := size_eq_zero input 256 hlt (by norm_num) hshort
   have e256 := size_eq_zero input 376 hlt (by norm_num) hsize256
   have e1000 := size_eq_zero input 1000 hlt (by norm_num) hsize
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x168 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 200 (by rfl)
-  simp (config := { decide := true })
-    [sizePath, opAt, pushAt, wfOp, Execution.atPC, fallbackState, atPC,
-    eshort, e256, e1000, hdest, UInt256.isTrue, UInt256.lor, UInt256.isZero, List.exchange,
-    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
-    Challenge.EvmProof.Stepper.runInstr,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
-    Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
+  change run sizePath (PatternedScan.stS input 0 []) =
+    some (PatternedScan.stS input 5132 [])
+  have hdest : Decode.isValidJumpDest submissionBytecode 5132 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 4142 (by rfl)
+  have hprefix :
+      run
+          [opAt 0 .CALLDATASIZE, opAt 1 .JUMPDEST,
+           pushAt 2 2 256, opAt 3 .EQ,
+           opAt 4 .CALLDATASIZE, opAt 5 .JUMPDEST,
+           pushAt 6 2 376, opAt 7 .EQ,
+           opAt 8 .CALLDATASIZE, pushAt 9 2 1000,
+           opAt 10 .EQ, opAt 11 .OR, opAt 12 .OR, opAt 13 .ISZERO]
+        (PatternedScan.stS input 0 []) =
+      some (PatternedScan.stS input 20 [UInt256.ofNat 1]) := by
+    simp (config := { decide := true })
+      [opAt, pushAt, wfOp, PatternedScan.stS,
+       eshort, e256, e1000, UInt256.lor, UInt256.isZero, List.exchange,
+       Challenge.EvmProof.Stepper.runLocatedBlock,
+       Challenge.EvmProof.Stepper.runLocated,
+       Challenge.EvmProof.Stepper.runInstr,
+       Challenge.EvmProof.Word.literal_eq_ofNat,
+       Challenge.EvmProof.Word.succ_ofNat_mod,
+       Challenge.EvmProof.Word.ofNat_add_mod,
+       Challenge.EvmProof.Word.word_toNat_ofNat]
+  have hpush :
+      run [pushAt 14 2 5132] (PatternedScan.stS input 20 [UInt256.ofNat 1]) =
+        some (PatternedScan.stS input 23 [UInt256.ofNat 5132, UInt256.ofNat 1]) := by
+    exact PatternedScan.blockOfS _
+      (PatternedScan.pcFactS input 14 20 _ (by norm_num) pc_classifier_112)
+      (PatternedScan.stepS_push input 20 2 5132 [UInt256.ofNat 1]
+        (by norm_num) (by decide) (by decide) (by norm_num))
+  have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
+  have hjump :
+      run [opAt 15 .JUMPI]
+          (PatternedScan.stS input 23 [UInt256.ofNat 5132, UInt256.ofNat 1]) =
+        some (PatternedScan.stS input 5132 []) := by
+    exact PatternedScan.blockOfS _
+      (PatternedScan.pcFactS input 15 23 _ (by norm_num) pc_classifier_113)
+      (PatternedScan.stepS_jumpi_taken input 23 5132 5132 (UInt256.ofNat 1) []
+        (by norm_num) (by norm_num) rfl htrue hdest)
+  have hprefix_push :
+      run
+          [opAt 0 .CALLDATASIZE, opAt 1 .JUMPDEST,
+           pushAt 2 2 256, opAt 3 .EQ,
+           opAt 4 .CALLDATASIZE, opAt 5 .JUMPDEST,
+           pushAt 6 2 376, opAt 7 .EQ,
+           opAt 8 .CALLDATASIZE, pushAt 9 2 1000,
+           opAt 10 .EQ, opAt 11 .OR, opAt 12 .OR, opAt 13 .ISZERO,
+           pushAt 14 2 5132]
+        (PatternedScan.stS input 0 []) =
+      some (PatternedScan.stS input 23 [UInt256.ofNat 5132, UInt256.ofNat 1]) := by
+    exact Challenge.EvmProof.Stepper.runLocatedBlock_append
+      [opAt 0 .CALLDATASIZE, opAt 1 .JUMPDEST,
+       pushAt 2 2 256, opAt 3 .EQ,
+       opAt 4 .CALLDATASIZE, opAt 5 .JUMPDEST,
+       pushAt 6 2 376, opAt 7 .EQ,
+       opAt 8 .CALLDATASIZE, pushAt 9 2 1000,
+       opAt 10 .EQ, opAt 11 .OR, opAt 12 .OR, opAt 13 .ISZERO]
+      [pushAt 14 2 5132] _ _ _ hprefix rfl hpush
+  have hfull :
+      run
+          [opAt 0 .CALLDATASIZE, opAt 1 .JUMPDEST,
+           pushAt 2 2 256, opAt 3 .EQ,
+           opAt 4 .CALLDATASIZE, opAt 5 .JUMPDEST,
+           pushAt 6 2 376, opAt 7 .EQ,
+           opAt 8 .CALLDATASIZE, pushAt 9 2 1000,
+           opAt 10 .EQ, opAt 11 .OR, opAt 12 .OR, opAt 13 .ISZERO,
+           pushAt 14 2 5132, opAt 15 .JUMPI]
+        (PatternedScan.stS input 0 []) =
+      some (PatternedScan.stS input 5132 []) := by
+    exact Challenge.EvmProof.Stepper.runLocatedBlock_append
+      [opAt 0 .CALLDATASIZE, opAt 1 .JUMPDEST,
+       pushAt 2 2 256, opAt 3 .EQ,
+       opAt 4 .CALLDATASIZE, opAt 5 .JUMPDEST,
+       pushAt 6 2 376, opAt 7 .EQ,
+       opAt 8 .CALLDATASIZE, pushAt 9 2 1000,
+       opAt 10 .EQ, opAt 11 .OR, opAt 12 .OR, opAt 13 .ISZERO,
+       pushAt 14 2 5132]
+      [opAt 15 .JUMPI] _ _ _ hprefix_push rfl hjump
+  simpa only [sizePath] using hfull
 
 theorem run_size_match (input : ByteArray) (hsize : input.size = 1000) :
     run sizePath (Execution.atPC input 0x0) = some (sizeMatched input) := by

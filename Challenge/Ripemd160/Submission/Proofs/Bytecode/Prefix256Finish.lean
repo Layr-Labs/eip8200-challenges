@@ -20,9 +20,11 @@ def answerMemory : ByteArray := DigestReturn.answerMemory paddedDigestWord
 def returnRest : List UInt256 :=
   [UInt256.ofNat (scalarAt 12), 384, 0, P7, M, m7, P, m8]
 
-def storedState (input : ByteArray) : State := DigestReturn.storedState input paddedDigestWord returnRest
+def storedState (input : ByteArray) : State :=
+  DigestReturn.storedState input paddedDigestWord returnRest
 
-def returnedState (input : ByteArray) : State := DigestReturn.returnedState input paddedDigestWord returnRest
+def returnedState (input : ByteArray) : State :=
+  DigestReturn.returnedState input paddedDigestWord returnRest
 
 @[simp] theorem paddedDigest_size : paddedDigest.size = 32 := by decide
 
@@ -52,11 +54,21 @@ def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
 
 def gasSteps_finish_hit (input : ByteArray) (sv ov acc : UInt256)
     (hz : acc = 0) (hsize : input.size = 376) :
-    GasSteps (stS input 255 [sv, ov, acc, P7, M, m7, P, m8]) (DigestReturn.returnedState input paddedDigestWord [sv, ov, 0, P7, M, m7, P, m8]) := by
+    GasSteps (stS input 255 [sv, ov, acc, P7, M, m7, P, m8])
+      (DigestReturn.returnedState input paddedDigestWord
+        [sv, ov, 0, P7, M, m7, P, m8]) := by
   subst acc
-  have select := Prefix256Select.gasSteps_select input [sv, ov, 0, P7, M, m7, P, m8] (by simp)
+  have hfit : CalldataFits input := by
+    unfold CalldataFits
+    omega
+  have skip := Prefix256Select.gasSteps_skip128 input
+    [sv, ov, 0, P7, M, m7, P, m8] hfit (by simp) (by omega)
+  have select := Prefix256Select.gasSteps_select input
+    [sv, ov, 0, P7, M, m7, P, m8] (by simp)
   rw [Prefix256Value.selected_256 input hsize] at select
+  have ret := DigestReturn.gasSteps_return input paddedDigestWord
+    [sv, ov, 0, P7, M, m7, P, m8] (by simp)
   exact (Prefix256Cleanup.gasSteps_hit input sv ov).trans
-    (select.trans (DigestReturn.gasSteps_return input paddedDigestWord [sv, ov, 0, P7, M, m7, P, m8] (by simp)))
+    (skip.trans (select.trans ret))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Finish

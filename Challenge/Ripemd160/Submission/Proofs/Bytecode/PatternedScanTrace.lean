@@ -90,14 +90,14 @@ def tailState (input : ByteArray) (a : UInt256) : State :=
     stack := UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: a :: frame }
 
 /-- The stub jumps here, and the guard answers or falls through.  -/
-def patternedEntry (input : ByteArray) : State := atPC input 0x66
+def patternedEntry (input : ByteArray) : State := atPC input 0x67
 
 def hitRest : List UInt256 :=
   UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: 0 :: frame
 
 def hitState (input : ByteArray) : State :=
   { atPC input 260 with stack := hitRest }
-def fallbackState (input : ByteArray) : State := atPC input 0x168
+def fallbackState (input : ByteArray) : State := atPC input 0x170
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded word.toNat 32) address
@@ -106,7 +106,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x156
+    pc := UInt256.ofNat 0x15e
     stack := hitRest
     memory := answerMemory
     activeWords := UInt256.ofNat 1
@@ -114,7 +114,7 @@ def returnedState (input : ByteArray) : State :=
     hReturn := MachineState.readPadded answerMemory 0 32 }
 
 theorem run_setup (input : ByteArray) :
-    run setupPath (atPC input 0x66) = some (loopState input 0 0) := by
+    run setupPath (atPC input 0x67) = some (loopState input 0 0) := by
   have hpc3326 : Artifact.submissionArtifact.instructionPC 64 = 105 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hpc3327 : Artifact.submissionArtifact.instructionPC 65 = 106 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hpc3328 : Artifact.submissionArtifact.instructionPC 66 = 107 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl

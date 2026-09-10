@@ -128,13 +128,10 @@ theorem nextState2_word_above (s : State) (input : ByteArray) (address : Nat)
   (PrefixStateMemory.resultState2_word_above _ _ _ (by omega)).trans
     (PrefixStateMemory.copied_word_above _ _ (by omega))
 
-/-- Four matched words force at least three padded blocks. -/
+/-- The retained two-block interface is disabled by the compact dispatcher. -/
 theorem double_blockCount (input : ByteArray) (hd : double input = true) :
     2 ≤ DriverTrace.blockCount input := by
-  have h := (double_iff input).1 hd
-  have hsize := PrefixStateData.size_ge_128_of_words input h.2.2
-  unfold DriverTrace.blockCount Padding.paddedLength
-  omega
+  simp [double] at hd
 
 /-- The chaining state after two blocks of a four-word match is `H2`. -/
 theorem hashAfter_two (input : ByteArray) (h : Matched input ∧ Matched2 input) :
@@ -153,9 +150,7 @@ theorem hashAfter_two (input : ByteArray) (h : Matched input ∧ Matched2 input)
 theorem nextState2_hash (s : State) (input : ByteArray) (hd : double input = true) :
     StackRunBridge.hashAt32 (nextState2 s input) =
       StackRunBridge.embedHashArray (CompressionSeamBridge.hashAfter input 2) := by
-  change StackMemory.hashAt (PrefixStateMemory.resultState2 (PrefixStateMemory.copied s) input).memory = _
-  rw [PrefixStateMemory.resultState2_hash, hashAfter_two input ((double_iff input).1 hd)]
-  rfl
+  simp [double] at hd
 
 #print axioms nextState2_hash
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateKernel
