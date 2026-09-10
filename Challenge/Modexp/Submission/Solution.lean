@@ -33,3 +33,5 @@ theorem candidate : Challenge.Modexp.Correct bytecode :=
     Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCorrect.route
 
 end Challenge.Modexp.Benchmark
+
+#print axioms Challenge.Modexp.Benchmark.candidate

@@ -88,7 +88,7 @@ def wordTailPath := wordRestPath.drop 12
 
 @[simp] theorem jump3000 :
     Decode.isValidJumpDest submissionBytecode 2633 = true :=
-  Artifact.isValidJumpDest_index 1813 (by rfl)
+  Artifact.isValidJumpDest_index 1825 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with
