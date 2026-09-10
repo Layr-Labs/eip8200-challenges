@@ -22,11 +22,11 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PrefixStateTraceLater
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
 /-- The generic compression target `512` is a valid jump destination. -/
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 529 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 298 = 529 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 528 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 295 = 528 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 298 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 295 (by rfl)
   rw [hpc] at h
   exact h
 
@@ -52,7 +52,7 @@ theorem run_later (s : State) (input : ByteArray) (i : Nat)
       some (DriverTrace.compressEntry s input i) := by
   have hdup : ((FastEmptyBlock.nonemptyEntry s input i).stack[2]? :
       Option UInt256) = some (DriverTrace.blockOffsetWord i) := by
-    show ([DriverTrace.messageOffsetWord i, UInt256.ofNat 102,
+    show ([DriverTrace.messageOffsetWord i, UInt256.ofNat 461,
         DriverTrace.blockOffsetWord i, Padding.paddedWord input][2]? :
         Option UInt256) = some _
     simp

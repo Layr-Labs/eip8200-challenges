@@ -25,46 +25,46 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 private def frame (s : State) (input : ByteArray) (pc : Nat) : State :=
   { s with
     pc := UInt256.ofNat pc
-    stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 102,
+    stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 461,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
 /-- Entry at the second word comparison in the checked prefix. -/
-def entry (s : State) (input : ByteArray) : State := frame s input 5042
+def entry (s : State) (input : ByteArray) : State := frame s input 5040
 
 /-- Entry at the depth-2 rung (word-2 comparison). -/
-def rungEntry (s : State) (input : ByteArray) : State := frame s input 5083
+def rungEntry (s : State) (input : ByteArray) : State := frame s input 5081
 
 /-- Entry at the word-3 comparison. -/
-def fourthEntry (s : State) (input : ByteArray) : State := frame s input 5124
+def fourthEntry (s : State) (input : ByteArray) : State := frame s input 5122
 
 /-- Entry at the `H2` install after both rung words matched. -/
-def hit2Entry (s : State) (input : ByteArray) : State := frame s input 5165
+def hit2Entry (s : State) (input : ByteArray) : State := frame s input 5163
 
 /-- Entry at the `H1` install (`JUMPDEST` target of the rung's guards). -/
-def hit1Entry (s : State) (input : ByteArray) : State := frame s input 5212
+def hit1Entry (s : State) (input : ByteArray) : State := frame s input 5210
 
 /-- The generic compression target of the guard is a valid jump destination. -/
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 529 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 298 = 529 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 528 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 295 = 528 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 298 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 295 (by rfl)
   rw [hpc] at h
   exact h
 
 /-- The `H1` install entry is a valid jump destination. -/
-theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5212 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 4155 = 5212 := PrefixStatePaths.pc4126
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4155 (by rfl)
+theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5210 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 4152 = 5210 := PrefixStatePaths.pc4126
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4152 (by rfl)
   rw [hpc] at h
   exact h
 
 /-- The driver's `102` continuation is a valid jump destination. -/
-theorem jumpDest_driver : Decode.isValidJumpDest submissionBytecode 102 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 64 = 102 := by
+theorem jumpDest_driver : Decode.isValidJumpDest submissionBytecode 461 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 262 = 461 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 64 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 262 (by rfl)
   rw [hpc] at h
   exact h
 
@@ -556,39 +556,39 @@ def gasSteps_finish (s : State) (input : ByteArray)
       else DriverTrace.compressEntry s input 0) := by
   have ghit1 : Challenge.EvmProof.GasSteps (hit1Entry s input)
       (PrefixStateMemory.resultState s input 0) :=
-    frameBlock PrefixStatePaths.hitPath s input 5212 _ hcode hfork hrun hnp
+    frameBlock PrefixStatePaths.hitPath s input 5210 _ hcode hfork hrun hnp
       (run_hit1 s input hcode hrun)
   have ghit2 : Challenge.EvmProof.GasSteps (hit2Entry s input)
       (PrefixStateMemory.resultState2 s input) :=
-    frameBlock PrefixStatePaths.hit2Path s input 5165 _ hcode hfork hrun hnp
+    frameBlock PrefixStatePaths.hit2Path s input 5163 _ hcode hfork hrun hnp
       (run_hit2 s input hcode hrun)
   by_cases hw1 : MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1
   · rw [if_pos hw1]
     have gsecond : Challenge.EvmProof.GasSteps (entry s input) (rungEntry s input) :=
-      frameBlock PrefixStatePaths.secondComparePath s input 5042 _ hcode hfork hrun hnp
+      frameBlock PrefixStatePaths.secondComparePath s input 5040 _ hcode hfork hrun hnp
         (run_secondCompare_hit s input hw1 hcalldata hcode hrun)
     by_cases hw2 : MachineState.readWord input 64 = PatternedWordData.expectedWordAt 2
     · have gthird : Challenge.EvmProof.GasSteps (rungEntry s input) (fourthEntry s input) :=
-        frameBlock PrefixStatePaths.thirdComparePath s input 5083 _ hcode hfork hrun hnp
+        frameBlock PrefixStatePaths.thirdComparePath s input 5081 _ hcode hfork hrun hnp
           (run_thirdCompare_hit s input hw2 hcalldata hcode hrun)
       by_cases hw3 : MachineState.readWord input 96 = PatternedWordData.expectedWordAt 3
       · rw [if_pos ⟨hw2, hw3⟩]
         have gfourth : Challenge.EvmProof.GasSteps (fourthEntry s input) (hit2Entry s input) :=
-          frameBlock PrefixStatePaths.fourthComparePath s input 5124 _ hcode hfork hrun hnp
+          frameBlock PrefixStatePaths.fourthComparePath s input 5122 _ hcode hfork hrun hnp
             (run_fourthCompare_hit s input hw3 hcalldata hcode hrun)
         exact gsecond.trans (gthird.trans (gfourth.trans ghit2))
       · rw [if_neg (fun h => hw3 h.2)]
         have gfourth : Challenge.EvmProof.GasSteps (fourthEntry s input) (hit1Entry s input) :=
-          frameBlock PrefixStatePaths.fourthComparePath s input 5124 _ hcode hfork hrun hnp
+          frameBlock PrefixStatePaths.fourthComparePath s input 5122 _ hcode hfork hrun hnp
             (run_fourthCompare_miss s input hw3 hcalldata hcode hrun)
         exact gsecond.trans (gthird.trans (gfourth.trans ghit1))
     · rw [if_neg (fun h => hw2 h.1)]
       have gthird : Challenge.EvmProof.GasSteps (rungEntry s input) (hit1Entry s input) :=
-        frameBlock PrefixStatePaths.thirdComparePath s input 5083 _ hcode hfork hrun hnp
+        frameBlock PrefixStatePaths.thirdComparePath s input 5081 _ hcode hfork hrun hnp
           (run_thirdCompare_miss s input hw2 hcalldata hcode hrun)
       exact gsecond.trans (gthird.trans ghit1)
   · rw [if_neg hw1]
-    exact frameBlock PrefixStatePaths.secondComparePath s input 5042 _ hcode hfork hrun hnp
+    exact frameBlock PrefixStatePaths.secondComparePath s input 5040 _ hcode hfork hrun hnp
       (run_secondCompare_miss s input hw1 hcalldata hcode hrun)
 
 #print axioms run_hit1

@@ -11,39 +11,39 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedInputData PatternedDigest PatternedGuardSpec
 
-@[simp] private theorem selectPC265 : Artifact.submissionArtifact.instructionPC 265 = 431 := rfl
-@[simp] private theorem selectPC270 : Artifact.submissionArtifact.instructionPC 270 = 458 := rfl
-@[simp] private theorem selectPC271 : Artifact.submissionArtifact.instructionPC 271 = 459 := rfl
-@[simp] private theorem selectPC272 : Artifact.submissionArtifact.instructionPC 272 = 462 := rfl
-@[simp] private theorem selectPC273 : Artifact.submissionArtifact.instructionPC 273 = 463 := rfl
-@[simp] private theorem selectPC274 : Artifact.submissionArtifact.instructionPC 274 = 484 := rfl
-@[simp] private theorem selectPC275 : Artifact.submissionArtifact.instructionPC 275 = 485 := rfl
+@[simp] private theorem selectPC265 : Artifact.submissionArtifact.instructionPC 167 = 261 := rfl
+@[simp] private theorem selectPC270 : Artifact.submissionArtifact.instructionPC 172 = 288 := rfl
+@[simp] private theorem selectPC271 : Artifact.submissionArtifact.instructionPC 173 = 289 := rfl
+@[simp] private theorem selectPC272 : Artifact.submissionArtifact.instructionPC 174 = 292 := rfl
+@[simp] private theorem selectPC273 : Artifact.submissionArtifact.instructionPC 175 = 293 := rfl
+@[simp] private theorem selectPC274 : Artifact.submissionArtifact.instructionPC 176 = 314 := rfl
+@[simp] private theorem selectPC275 : Artifact.submissionArtifact.instructionPC 177 = 315 := rfl
 
 def storePath : List Located :=
-  [opAt 264 .CALLDATASIZE,
-   opAt 265 (.Dup ⟨0, by decide⟩),
-   pushAt 266 2 376,
-   opAt 267 .EQ,
-   pushAt 268 20 644824770394507154413287103057882351908521126009,
-   opAt 269 .MUL,
-   opAt 270 (.Swap ⟨0, by decide⟩),
-   pushAt 271 2 256,
-   opAt 272 .EQ,
-   pushAt 273 20 370937159678419008737987698595703314930111331934,
-   opAt 274 .MUL,
-   opAt 275 .XOR,
-   pushAt 276 20 766350606435067737561421097975693824639675460820,
-   opAt 277 .XOR,
-   pushAt 278 0 0,
-   opAt 279 .MSTORE]
+  [opAt 166 .CALLDATASIZE,
+   opAt 167 (.Dup ⟨0, by decide⟩),
+   pushAt 168 2 376,
+   opAt 169 .EQ,
+   pushAt 170 20 644824770394507154413287103057882351908521126009,
+   opAt 171 .MUL,
+   opAt 172 (.Swap ⟨0, by decide⟩),
+   pushAt 173 2 256,
+   opAt 174 .EQ,
+   pushAt 175 20 370937159678419008737987698595703314930111331934,
+   opAt 176 .MUL,
+   opAt 177 .XOR,
+   pushAt 178 20 766350606435067737561421097975693824639675460820,
+   opAt 179 .XOR,
+   pushAt 180 0 0,
+   opAt 181 .MSTORE]
 
-def finishPath : List Located := [pushAt 281 0 0, opAt 282 .RETURN]
+def finishPath : List Located := [pushAt 183 0 0, opAt 184 .RETURN]
 
 def storedState (input : ByteArray) : State :=
-  { atPC input 510 with stack := hitRest, memory := answerMemory, activeWords := UInt256.ofNat 1 }
+  { atPC input 340 with stack := hitRest, memory := answerMemory, activeWords := UInt256.ofNat 1 }
 
 def sizedState (input : ByteArray) : State :=
-  { storedState input with pc := UInt256.ofNat 511, stack := UInt256.ofNat 32 :: hitRest }
+  { storedState input with pc := UInt256.ofNat 341, stack := UInt256.ofNat 32 :: hitRest }
 
 /-- Both size flags are zero for a 1000-byte input. -/
 theorem selector_value :
@@ -82,13 +82,13 @@ theorem run_finish :
 def gasSteps_return :
     GasSteps (hitState patternedInput) (returnedState patternedInput) := by
   have gs := sound storePath run_store
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 280 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 182 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState patternedInput).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 280 := by
+      Artifact.submissionArtifact.instructionPC 182 := by
     rw [pc2986]; rfl
   have hop : (storedState patternedInput).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedState patternedInput) 280
+    Artifact.submissionArtifact.state_decodedOp_of (storedState patternedInput) 182
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop (by simp [storedState, hitRest, frame, atPC, initialState]) (by rfl)
     deployAddress_not_precompile
