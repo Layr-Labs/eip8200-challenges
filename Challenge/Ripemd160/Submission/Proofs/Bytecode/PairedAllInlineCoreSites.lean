@@ -2029,55 +2029,7 @@ theorem inline78Site_startPC : inline78Site.startPC = UInt256.ofNat 4762 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3888) = UInt256.ofNat 4762
   rw [inline78_instructionPC]
 
-theorem inline79_slice :
-    (Artifact.submissionArtifact.instructions.drop 3932).take PairedAllInlineCoreTrace.inline79Template.length = PairedAllInlineCoreTrace.inline79Template := by
-  rfl
-
-theorem inline79_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3932 = 4813 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  decide
-
-def inline79Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedAllInlineCoreTrace.inline79Template :=
-  StackSiteBuilder.ofSlice PairedAllInlineCoreTrace.inline79Template 3932 inline79_slice
-    (by
-      change 3932 + PairedAllInlineCoreTrace.inline79Template.length ≤ Artifact.submissionInstructions.length
-      rw [Artifact.referenceInstructions_count]
-      decide)
-    StackRoundData.artifact_code_bound
-    (StackRoundData.templateWellFormed_mem
-      (instructions := PairedAllInlineCoreTrace.inline79Template) (by decide))
-    (by decide)
-
-theorem inline79Site_startPC : inline79Site.startPC = UInt256.ofNat 4813 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3932) = UInt256.ofNat 4813
-  rw [inline79_instructionPC]
-
-theorem coreExit_slice :
-    (Artifact.submissionArtifact.instructions.drop 3976).take PairedAllInlineCoreTrace.coreExitTemplate.length = PairedAllInlineCoreTrace.coreExitTemplate := by
-  rfl
-
-theorem coreExit_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3976 = 4864 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  decide
-
-def coreExitSite : GenericRoundSite Artifact.submissionArtifact .Osaka PairedAllInlineCoreTrace.coreExitTemplate :=
-  StackSiteBuilder.ofSlice PairedAllInlineCoreTrace.coreExitTemplate 3976 coreExit_slice
-    (by
-      change 3976 + PairedAllInlineCoreTrace.coreExitTemplate.length ≤ Artifact.submissionInstructions.length
-      rw [Artifact.referenceInstructions_count]
-      decide)
-    StackRoundData.artifact_code_bound
-    (StackRoundData.templateWellFormed_mem
-      (instructions := PairedAllInlineCoreTrace.coreExitTemplate) (by decide))
-    (by decide)
-
-theorem coreExitSite_startPC : coreExitSite.startPC = UInt256.ofNat 4864 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3976) = UInt256.ofNat 4864
-  rw [coreExit_instructionPC]
-
-def wholeSites : PairedAllInlineCoreTrace.WholeCoreSites Artifact.submissionArtifact .Osaka where
+def corePrefixSites : PairedAllInlineCoreTrace.CorePrefixSites Artifact.submissionArtifact .Osaka where
   group0 := ⟨group0Site, group0Site_startPC⟩
   inline0 := ⟨inline0Site, inline0Site_startPC⟩
   inline1 := ⟨inline1Site, inline1Site_startPC⟩
@@ -2162,22 +2114,20 @@ def wholeSites : PairedAllInlineCoreTrace.WholeCoreSites Artifact.submissionArti
   inline76 := ⟨inline76Site, inline76Site_startPC⟩
   inline77 := ⟨inline77Site, inline77Site_startPC⟩
   inline78 := ⟨inline78Site, inline78Site_startPC⟩
-  inline79 := ⟨inline79Site, inline79Site_startPC⟩
-  coreExit := ⟨coreExitSite, coreExitSite_startPC⟩
 
-def gasSteps_core_normalized (s : State) (words : Nat → UInt32)
-    (left right : PairedLaneCryptoBridge.CryptoLane) (rho : List UInt256)
+def gasSteps_core_prefix (s : State) (f : CoreFrame) (rho : List UInt256)
     (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hready : NormalizedScheduleReady s.memory words) :
-    GasSteps {s with pc := UInt256.ofNat 819, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho}
-      {s with pc := UInt256.ofNat 4866, stack := coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (coreCryptoResult words left right) rho} :=
-  PairedAllInlineCoreTrace.gasSteps_wholeCore_normalized wholeSites s words left right rho hstack hrun hactive
-    hcode hfork hnp hready
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps {s with pc := UInt256.ofNat 819, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] f rho}
+      {s with
+        pc := UInt256.ofNat 4813
+        stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower]
+          (PairedAllInlineCoreTrace.corePrefixChain.eval s.memory f) rho} :=
+  PairedAllInlineCoreTrace.gasSteps_core_prefix corePrefixSites s f rho hstack hrun hactive hcode hfork hnp
 
 #print axioms group0_slice
 #print axioms group0_instructionPC
@@ -2431,13 +2381,5 @@ def gasSteps_core_normalized (s : State) (words : Nat → UInt32)
 #print axioms inline78_slice
 #print axioms inline78_instructionPC
 #print axioms inline78Site_startPC
-#print axioms inline79_slice
-#print axioms inline79_instructionPC
-#print axioms inline79Site_startPC
-#print axioms coreExit_slice
-#print axioms coreExit_instructionPC
-#print axioms coreExitSite_startPC
-#print axioms wholeSites
-#print axioms gasSteps_core_normalized
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineCoreSites

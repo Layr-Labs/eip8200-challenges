@@ -9814,4 +9814,624 @@ def gasSteps_wholeCore_normalized {artifact : ProgramArtifact} {fork : Fork}
 #print axioms gasSteps_wholeCore_normalized
 
 
+def corePrefixChain : CoreChain 819 [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] 4813 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] :=
+  .cons group0Block (
+  .cons inline0Block (
+  .cons inline1Block (
+  .cons inline2Block (
+  .cons inline3Block (
+  .cons inline4Block (
+  .cons inline5Block (
+  .cons inline6Block (
+  .cons inline7Block (
+  .cons inline8Block (
+  .cons inline9Block (
+  .cons inline10Block (
+  .cons inline11Block (
+  .cons inline12Block (
+  .cons inline13Block (
+  .cons inline14Block (
+  .cons inline15Block (
+  .cons group16Block (
+  .cons inline16Block (
+  .cons inline17Block (
+  .cons inline18Block (
+  .cons inline19Block (
+  .cons inline20Block (
+  .cons inline21Block (
+  .cons inline22Block (
+  .cons inline23Block (
+  .cons inline24Block (
+  .cons inline25Block (
+  .cons inline26Block (
+  .cons inline27Block (
+  .cons inline28Block (
+  .cons inline29Block (
+  .cons inline30Block (
+  .cons inline31Block (
+  .cons group32Block (
+  .cons inline32Block (
+  .cons inline33Block (
+  .cons inline34Block (
+  .cons inline35Block (
+  .cons inline36Block (
+  .cons inline37Block (
+  .cons inline38Block (
+  .cons inline39Block (
+  .cons inline40Block (
+  .cons inline41Block (
+  .cons inline42Block (
+  .cons inline43Block (
+  .cons inline44Block (
+  .cons inline45Block (
+  .cons inline46Block (
+  .cons inline47Block (
+  .cons group48Block (
+  .cons inline48Block (
+  .cons inline49Block (
+  .cons inline50Block (
+  .cons inline51Block (
+  .cons inline52Block (
+  .cons inline53Block (
+  .cons inline54Block (
+  .cons inline55Block (
+  .cons inline56Block (
+  .cons inline57Block (
+  .cons inline58Block (
+  .cons inline59Block (
+  .cons inline60Block (
+  .cons inline61Block (
+  .cons inline62Block (
+  .cons inline63Block (
+  .cons group64Block (
+  .cons inline64Block (
+  .cons inline65Block (
+  .cons inline66Block (
+  .cons inline67Block (
+  .cons inline68Block (
+  .cons inline69Block (
+  .cons inline70Block (
+  .cons inline71Block (
+  .cons inline72Block (
+  .cons inline73Block (
+  .cons inline74Block (
+  .cons inline75Block (
+  .cons inline76Block (
+  .cons inline77Block (
+  .cons inline78Block (
+  .nil 4813 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower]))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+
+structure CorePrefixSites (artifact : ProgramArtifact) (fork : Fork) where
+  group0 : {site : GenericRoundSite artifact fork group0Block.code // site.startPC = UInt256.ofNat 819}
+  inline0 : {site : GenericRoundSite artifact fork inline0Block.code // site.startPC = UInt256.ofNat 827}
+  inline1 : {site : GenericRoundSite artifact fork inline1Block.code // site.startPC = UInt256.ofNat 877}
+  inline2 : {site : GenericRoundSite artifact fork inline2Block.code // site.startPC = UInt256.ofNat 927}
+  inline3 : {site : GenericRoundSite artifact fork inline3Block.code // site.startPC = UInt256.ofNat 978}
+  inline4 : {site : GenericRoundSite artifact fork inline4Block.code // site.startPC = UInt256.ofNat 1025}
+  inline5 : {site : GenericRoundSite artifact fork inline5Block.code // site.startPC = UInt256.ofNat 1076}
+  inline6 : {site : GenericRoundSite artifact fork inline6Block.code // site.startPC = UInt256.ofNat 1127}
+  inline7 : {site : GenericRoundSite artifact fork inline7Block.code // site.startPC = UInt256.ofNat 1178}
+  inline8 : {site : GenericRoundSite artifact fork inline8Block.code // site.startPC = UInt256.ofNat 1229}
+  inline9 : {site : GenericRoundSite artifact fork inline9Block.code // site.startPC = UInt256.ofNat 1280}
+  inline10 : {site : GenericRoundSite artifact fork inline10Block.code // site.startPC = UInt256.ofNat 1331}
+  inline11 : {site : GenericRoundSite artifact fork inline11Block.code // site.startPC = UInt256.ofNat 1382}
+  inline12 : {site : GenericRoundSite artifact fork inline12Block.code // site.startPC = UInt256.ofNat 1433}
+  inline13 : {site : GenericRoundSite artifact fork inline13Block.code // site.startPC = UInt256.ofNat 1483}
+  inline14 : {site : GenericRoundSite artifact fork inline14Block.code // site.startPC = UInt256.ofNat 1534}
+  inline15 : {site : GenericRoundSite artifact fork inline15Block.code // site.startPC = UInt256.ofNat 1585}
+  group16 : {site : GenericRoundSite artifact fork group16Block.code // site.startPC = UInt256.ofNat 1636}
+  inline16 : {site : GenericRoundSite artifact fork inline16Block.code // site.startPC = UInt256.ofNat 1652}
+  inline17 : {site : GenericRoundSite artifact fork inline17Block.code // site.startPC = UInt256.ofNat 1705}
+  inline18 : {site : GenericRoundSite artifact fork inline18Block.code // site.startPC = UInt256.ofNat 1758}
+  inline19 : {site : GenericRoundSite artifact fork inline19Block.code // site.startPC = UInt256.ofNat 1811}
+  inline20 : {site : GenericRoundSite artifact fork inline20Block.code // site.startPC = UInt256.ofNat 1863}
+  inline21 : {site : GenericRoundSite artifact fork inline21Block.code // site.startPC = UInt256.ofNat 1912}
+  inline22 : {site : GenericRoundSite artifact fork inline22Block.code // site.startPC = UInt256.ofNat 1962}
+  inline23 : {site : GenericRoundSite artifact fork inline23Block.code // site.startPC = UInt256.ofNat 2015}
+  inline24 : {site : GenericRoundSite artifact fork inline24Block.code // site.startPC = UInt256.ofNat 2068}
+  inline25 : {site : GenericRoundSite artifact fork inline25Block.code // site.startPC = UInt256.ofNat 2114}
+  inline26 : {site : GenericRoundSite artifact fork inline26Block.code // site.startPC = UInt256.ofNat 2166}
+  inline27 : {site : GenericRoundSite artifact fork inline27Block.code // site.startPC = UInt256.ofNat 2219}
+  inline28 : {site : GenericRoundSite artifact fork inline28Block.code // site.startPC = UInt256.ofNat 2272}
+  inline29 : {site : GenericRoundSite artifact fork inline29Block.code // site.startPC = UInt256.ofNat 2325}
+  inline30 : {site : GenericRoundSite artifact fork inline30Block.code // site.startPC = UInt256.ofNat 2378}
+  inline31 : {site : GenericRoundSite artifact fork inline31Block.code // site.startPC = UInt256.ofNat 2423}
+  group32 : {site : GenericRoundSite artifact fork group32Block.code // site.startPC = UInt256.ofNat 2473}
+  inline32 : {site : GenericRoundSite artifact fork inline32Block.code // site.startPC = UInt256.ofNat 2491}
+  inline33 : {site : GenericRoundSite artifact fork inline33Block.code // site.startPC = UInt256.ofNat 2537}
+  inline34 : {site : GenericRoundSite artifact fork inline34Block.code // site.startPC = UInt256.ofNat 2583}
+  inline35 : {site : GenericRoundSite artifact fork inline35Block.code // site.startPC = UInt256.ofNat 2629}
+  inline36 : {site : GenericRoundSite artifact fork inline36Block.code // site.startPC = UInt256.ofNat 2675}
+  inline37 : {site : GenericRoundSite artifact fork inline37Block.code // site.startPC = UInt256.ofNat 2721}
+  inline38 : {site : GenericRoundSite artifact fork inline38Block.code // site.startPC = UInt256.ofNat 2767}
+  inline39 : {site : GenericRoundSite artifact fork inline39Block.code // site.startPC = UInt256.ofNat 2813}
+  inline40 : {site : GenericRoundSite artifact fork inline40Block.code // site.startPC = UInt256.ofNat 2855}
+  inline41 : {site : GenericRoundSite artifact fork inline41Block.code // site.startPC = UInt256.ofNat 2901}
+  inline42 : {site : GenericRoundSite artifact fork inline42Block.code // site.startPC = UInt256.ofNat 2947}
+  inline43 : {site : GenericRoundSite artifact fork inline43Block.code // site.startPC = UInt256.ofNat 2992}
+  inline44 : {site : GenericRoundSite artifact fork inline44Block.code // site.startPC = UInt256.ofNat 3038}
+  inline45 : {site : GenericRoundSite artifact fork inline45Block.code // site.startPC = UInt256.ofNat 3084}
+  inline46 : {site : GenericRoundSite artifact fork inline46Block.code // site.startPC = UInt256.ofNat 3126}
+  inline47 : {site : GenericRoundSite artifact fork inline47Block.code // site.startPC = UInt256.ofNat 3165}
+  group48 : {site : GenericRoundSite artifact fork group48Block.code // site.startPC = UInt256.ofNat 3204}
+  inline48 : {site : GenericRoundSite artifact fork inline48Block.code // site.startPC = UInt256.ofNat 3220}
+  inline49 : {site : GenericRoundSite artifact fork inline49Block.code // site.startPC = UInt256.ofNat 3272}
+  inline50 : {site : GenericRoundSite artifact fork inline50Block.code // site.startPC = UInt256.ofNat 3325}
+  inline51 : {site : GenericRoundSite artifact fork inline51Block.code // site.startPC = UInt256.ofNat 3378}
+  inline52 : {site : GenericRoundSite artifact fork inline52Block.code // site.startPC = UInt256.ofNat 3430}
+  inline53 : {site : GenericRoundSite artifact fork inline53Block.code // site.startPC = UInt256.ofNat 3475}
+  inline54 : {site : GenericRoundSite artifact fork inline54Block.code // site.startPC = UInt256.ofNat 3525}
+  inline55 : {site : GenericRoundSite artifact fork inline55Block.code // site.startPC = UInt256.ofNat 3578}
+  inline56 : {site : GenericRoundSite artifact fork inline56Block.code // site.startPC = UInt256.ofNat 3630}
+  inline57 : {site : GenericRoundSite artifact fork inline57Block.code // site.startPC = UInt256.ofNat 3683}
+  inline58 : {site : GenericRoundSite artifact fork inline58Block.code // site.startPC = UInt256.ofNat 3736}
+  inline59 : {site : GenericRoundSite artifact fork inline59Block.code // site.startPC = UInt256.ofNat 3789}
+  inline60 : {site : GenericRoundSite artifact fork inline60Block.code // site.startPC = UInt256.ofNat 3842}
+  inline61 : {site : GenericRoundSite artifact fork inline61Block.code // site.startPC = UInt256.ofNat 3895}
+  inline62 : {site : GenericRoundSite artifact fork inline62Block.code // site.startPC = UInt256.ofNat 3945}
+  inline63 : {site : GenericRoundSite artifact fork inline63Block.code // site.startPC = UInt256.ofNat 3999}
+  group64 : {site : GenericRoundSite artifact fork group64Block.code // site.startPC = UInt256.ofNat 4052}
+  inline64 : {site : GenericRoundSite artifact fork inline64Block.code // site.startPC = UInt256.ofNat 4059}
+  inline65 : {site : GenericRoundSite artifact fork inline65Block.code // site.startPC = UInt256.ofNat 4107}
+  inline66 : {site : GenericRoundSite artifact fork inline66Block.code // site.startPC = UInt256.ofNat 4158}
+  inline67 : {site : GenericRoundSite artifact fork inline67Block.code // site.startPC = UInt256.ofNat 4209}
+  inline68 : {site : GenericRoundSite artifact fork inline68Block.code // site.startPC = UInt256.ofNat 4260}
+  inline69 : {site : GenericRoundSite artifact fork inline69Block.code // site.startPC = UInt256.ofNat 4310}
+  inline70 : {site : GenericRoundSite artifact fork inline70Block.code // site.startPC = UInt256.ofNat 4361}
+  inline71 : {site : GenericRoundSite artifact fork inline71Block.code // site.startPC = UInt256.ofNat 4409}
+  inline72 : {site : GenericRoundSite artifact fork inline72Block.code // site.startPC = UInt256.ofNat 4460}
+  inline73 : {site : GenericRoundSite artifact fork inline73Block.code // site.startPC = UInt256.ofNat 4511}
+  inline74 : {site : GenericRoundSite artifact fork inline74Block.code // site.startPC = UInt256.ofNat 4558}
+  inline75 : {site : GenericRoundSite artifact fork inline75Block.code // site.startPC = UInt256.ofNat 4609}
+  inline76 : {site : GenericRoundSite artifact fork inline76Block.code // site.startPC = UInt256.ofNat 4661}
+  inline77 : {site : GenericRoundSite artifact fork inline77Block.code // site.startPC = UInt256.ofNat 4711}
+  inline78 : {site : GenericRoundSite artifact fork inline78Block.code // site.startPC = UInt256.ofNat 4762}
+
+
+def corePrefixGasChain {artifact : ProgramArtifact} {fork : Fork}
+    (sites : CorePrefixSites artifact fork) : CoreGasChain artifact fork corePrefixChain :=
+  .cons group0Block _ (CoreGasBlock.of_site group0Block sites.group0.val sites.group0.property group0Block_terminal_advances) (
+  .cons inline0Block _ (CoreGasBlock.of_site inline0Block sites.inline0.val sites.inline0.property inline0Block_terminal_advances) (
+  .cons inline1Block _ (CoreGasBlock.of_site inline1Block sites.inline1.val sites.inline1.property inline1Block_terminal_advances) (
+  .cons inline2Block _ (CoreGasBlock.of_site inline2Block sites.inline2.val sites.inline2.property inline2Block_terminal_advances) (
+  .cons inline3Block _ (CoreGasBlock.of_site inline3Block sites.inline3.val sites.inline3.property inline3Block_terminal_advances) (
+  .cons inline4Block _ (CoreGasBlock.of_site inline4Block sites.inline4.val sites.inline4.property inline4Block_terminal_advances) (
+  .cons inline5Block _ (CoreGasBlock.of_site inline5Block sites.inline5.val sites.inline5.property inline5Block_terminal_advances) (
+  .cons inline6Block _ (CoreGasBlock.of_site inline6Block sites.inline6.val sites.inline6.property inline6Block_terminal_advances) (
+  .cons inline7Block _ (CoreGasBlock.of_site inline7Block sites.inline7.val sites.inline7.property inline7Block_terminal_advances) (
+  .cons inline8Block _ (CoreGasBlock.of_site inline8Block sites.inline8.val sites.inline8.property inline8Block_terminal_advances) (
+  .cons inline9Block _ (CoreGasBlock.of_site inline9Block sites.inline9.val sites.inline9.property inline9Block_terminal_advances) (
+  .cons inline10Block _ (CoreGasBlock.of_site inline10Block sites.inline10.val sites.inline10.property inline10Block_terminal_advances) (
+  .cons inline11Block _ (CoreGasBlock.of_site inline11Block sites.inline11.val sites.inline11.property inline11Block_terminal_advances) (
+  .cons inline12Block _ (CoreGasBlock.of_site inline12Block sites.inline12.val sites.inline12.property inline12Block_terminal_advances) (
+  .cons inline13Block _ (CoreGasBlock.of_site inline13Block sites.inline13.val sites.inline13.property inline13Block_terminal_advances) (
+  .cons inline14Block _ (CoreGasBlock.of_site inline14Block sites.inline14.val sites.inline14.property inline14Block_terminal_advances) (
+  .cons inline15Block _ (CoreGasBlock.of_site inline15Block sites.inline15.val sites.inline15.property inline15Block_terminal_advances) (
+  .cons group16Block _ (CoreGasBlock.of_site group16Block sites.group16.val sites.group16.property group16Block_terminal_advances) (
+  .cons inline16Block _ (CoreGasBlock.of_site inline16Block sites.inline16.val sites.inline16.property inline16Block_terminal_advances) (
+  .cons inline17Block _ (CoreGasBlock.of_site inline17Block sites.inline17.val sites.inline17.property inline17Block_terminal_advances) (
+  .cons inline18Block _ (CoreGasBlock.of_site inline18Block sites.inline18.val sites.inline18.property inline18Block_terminal_advances) (
+  .cons inline19Block _ (CoreGasBlock.of_site inline19Block sites.inline19.val sites.inline19.property inline19Block_terminal_advances) (
+  .cons inline20Block _ (CoreGasBlock.of_site inline20Block sites.inline20.val sites.inline20.property inline20Block_terminal_advances) (
+  .cons inline21Block _ (CoreGasBlock.of_site inline21Block sites.inline21.val sites.inline21.property inline21Block_terminal_advances) (
+  .cons inline22Block _ (CoreGasBlock.of_site inline22Block sites.inline22.val sites.inline22.property inline22Block_terminal_advances) (
+  .cons inline23Block _ (CoreGasBlock.of_site inline23Block sites.inline23.val sites.inline23.property inline23Block_terminal_advances) (
+  .cons inline24Block _ (CoreGasBlock.of_site inline24Block sites.inline24.val sites.inline24.property inline24Block_terminal_advances) (
+  .cons inline25Block _ (CoreGasBlock.of_site inline25Block sites.inline25.val sites.inline25.property inline25Block_terminal_advances) (
+  .cons inline26Block _ (CoreGasBlock.of_site inline26Block sites.inline26.val sites.inline26.property inline26Block_terminal_advances) (
+  .cons inline27Block _ (CoreGasBlock.of_site inline27Block sites.inline27.val sites.inline27.property inline27Block_terminal_advances) (
+  .cons inline28Block _ (CoreGasBlock.of_site inline28Block sites.inline28.val sites.inline28.property inline28Block_terminal_advances) (
+  .cons inline29Block _ (CoreGasBlock.of_site inline29Block sites.inline29.val sites.inline29.property inline29Block_terminal_advances) (
+  .cons inline30Block _ (CoreGasBlock.of_site inline30Block sites.inline30.val sites.inline30.property inline30Block_terminal_advances) (
+  .cons inline31Block _ (CoreGasBlock.of_site inline31Block sites.inline31.val sites.inline31.property inline31Block_terminal_advances) (
+  .cons group32Block _ (CoreGasBlock.of_site group32Block sites.group32.val sites.group32.property group32Block_terminal_advances) (
+  .cons inline32Block _ (CoreGasBlock.of_site inline32Block sites.inline32.val sites.inline32.property inline32Block_terminal_advances) (
+  .cons inline33Block _ (CoreGasBlock.of_site inline33Block sites.inline33.val sites.inline33.property inline33Block_terminal_advances) (
+  .cons inline34Block _ (CoreGasBlock.of_site inline34Block sites.inline34.val sites.inline34.property inline34Block_terminal_advances) (
+  .cons inline35Block _ (CoreGasBlock.of_site inline35Block sites.inline35.val sites.inline35.property inline35Block_terminal_advances) (
+  .cons inline36Block _ (CoreGasBlock.of_site inline36Block sites.inline36.val sites.inline36.property inline36Block_terminal_advances) (
+  .cons inline37Block _ (CoreGasBlock.of_site inline37Block sites.inline37.val sites.inline37.property inline37Block_terminal_advances) (
+  .cons inline38Block _ (CoreGasBlock.of_site inline38Block sites.inline38.val sites.inline38.property inline38Block_terminal_advances) (
+  .cons inline39Block _ (CoreGasBlock.of_site inline39Block sites.inline39.val sites.inline39.property inline39Block_terminal_advances) (
+  .cons inline40Block _ (CoreGasBlock.of_site inline40Block sites.inline40.val sites.inline40.property inline40Block_terminal_advances) (
+  .cons inline41Block _ (CoreGasBlock.of_site inline41Block sites.inline41.val sites.inline41.property inline41Block_terminal_advances) (
+  .cons inline42Block _ (CoreGasBlock.of_site inline42Block sites.inline42.val sites.inline42.property inline42Block_terminal_advances) (
+  .cons inline43Block _ (CoreGasBlock.of_site inline43Block sites.inline43.val sites.inline43.property inline43Block_terminal_advances) (
+  .cons inline44Block _ (CoreGasBlock.of_site inline44Block sites.inline44.val sites.inline44.property inline44Block_terminal_advances) (
+  .cons inline45Block _ (CoreGasBlock.of_site inline45Block sites.inline45.val sites.inline45.property inline45Block_terminal_advances) (
+  .cons inline46Block _ (CoreGasBlock.of_site inline46Block sites.inline46.val sites.inline46.property inline46Block_terminal_advances) (
+  .cons inline47Block _ (CoreGasBlock.of_site inline47Block sites.inline47.val sites.inline47.property inline47Block_terminal_advances) (
+  .cons group48Block _ (CoreGasBlock.of_site group48Block sites.group48.val sites.group48.property group48Block_terminal_advances) (
+  .cons inline48Block _ (CoreGasBlock.of_site inline48Block sites.inline48.val sites.inline48.property inline48Block_terminal_advances) (
+  .cons inline49Block _ (CoreGasBlock.of_site inline49Block sites.inline49.val sites.inline49.property inline49Block_terminal_advances) (
+  .cons inline50Block _ (CoreGasBlock.of_site inline50Block sites.inline50.val sites.inline50.property inline50Block_terminal_advances) (
+  .cons inline51Block _ (CoreGasBlock.of_site inline51Block sites.inline51.val sites.inline51.property inline51Block_terminal_advances) (
+  .cons inline52Block _ (CoreGasBlock.of_site inline52Block sites.inline52.val sites.inline52.property inline52Block_terminal_advances) (
+  .cons inline53Block _ (CoreGasBlock.of_site inline53Block sites.inline53.val sites.inline53.property inline53Block_terminal_advances) (
+  .cons inline54Block _ (CoreGasBlock.of_site inline54Block sites.inline54.val sites.inline54.property inline54Block_terminal_advances) (
+  .cons inline55Block _ (CoreGasBlock.of_site inline55Block sites.inline55.val sites.inline55.property inline55Block_terminal_advances) (
+  .cons inline56Block _ (CoreGasBlock.of_site inline56Block sites.inline56.val sites.inline56.property inline56Block_terminal_advances) (
+  .cons inline57Block _ (CoreGasBlock.of_site inline57Block sites.inline57.val sites.inline57.property inline57Block_terminal_advances) (
+  .cons inline58Block _ (CoreGasBlock.of_site inline58Block sites.inline58.val sites.inline58.property inline58Block_terminal_advances) (
+  .cons inline59Block _ (CoreGasBlock.of_site inline59Block sites.inline59.val sites.inline59.property inline59Block_terminal_advances) (
+  .cons inline60Block _ (CoreGasBlock.of_site inline60Block sites.inline60.val sites.inline60.property inline60Block_terminal_advances) (
+  .cons inline61Block _ (CoreGasBlock.of_site inline61Block sites.inline61.val sites.inline61.property inline61Block_terminal_advances) (
+  .cons inline62Block _ (CoreGasBlock.of_site inline62Block sites.inline62.val sites.inline62.property inline62Block_terminal_advances) (
+  .cons inline63Block _ (CoreGasBlock.of_site inline63Block sites.inline63.val sites.inline63.property inline63Block_terminal_advances) (
+  .cons group64Block _ (CoreGasBlock.of_site group64Block sites.group64.val sites.group64.property group64Block_terminal_advances) (
+  .cons inline64Block _ (CoreGasBlock.of_site inline64Block sites.inline64.val sites.inline64.property inline64Block_terminal_advances) (
+  .cons inline65Block _ (CoreGasBlock.of_site inline65Block sites.inline65.val sites.inline65.property inline65Block_terminal_advances) (
+  .cons inline66Block _ (CoreGasBlock.of_site inline66Block sites.inline66.val sites.inline66.property inline66Block_terminal_advances) (
+  .cons inline67Block _ (CoreGasBlock.of_site inline67Block sites.inline67.val sites.inline67.property inline67Block_terminal_advances) (
+  .cons inline68Block _ (CoreGasBlock.of_site inline68Block sites.inline68.val sites.inline68.property inline68Block_terminal_advances) (
+  .cons inline69Block _ (CoreGasBlock.of_site inline69Block sites.inline69.val sites.inline69.property inline69Block_terminal_advances) (
+  .cons inline70Block _ (CoreGasBlock.of_site inline70Block sites.inline70.val sites.inline70.property inline70Block_terminal_advances) (
+  .cons inline71Block _ (CoreGasBlock.of_site inline71Block sites.inline71.val sites.inline71.property inline71Block_terminal_advances) (
+  .cons inline72Block _ (CoreGasBlock.of_site inline72Block sites.inline72.val sites.inline72.property inline72Block_terminal_advances) (
+  .cons inline73Block _ (CoreGasBlock.of_site inline73Block sites.inline73.val sites.inline73.property inline73Block_terminal_advances) (
+  .cons inline74Block _ (CoreGasBlock.of_site inline74Block sites.inline74.val sites.inline74.property inline74Block_terminal_advances) (
+  .cons inline75Block _ (CoreGasBlock.of_site inline75Block sites.inline75.val sites.inline75.property inline75Block_terminal_advances) (
+  .cons inline76Block _ (CoreGasBlock.of_site inline76Block sites.inline76.val sites.inline76.property inline76Block_terminal_advances) (
+  .cons inline77Block _ (CoreGasBlock.of_site inline77Block sites.inline77.val sites.inline77.property inline77Block_terminal_advances) (
+  .cons inline78Block _ (CoreGasBlock.of_site inline78Block sites.inline78.val sites.inline78.property inline78Block_terminal_advances) (
+  .nil 4813 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower]))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+
+theorem corePrefixChain_eval (memory : ByteArray) (f : CoreFrame) :
+    corePrefixChain.eval memory f =
+      ⟨hoistedAlgorithmFold memory 0 79 f.lane, physicalKey 4⟩ := by
+  let f0 : CoreFrame := f
+  let f1 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 0 f.lane, physicalKey 0⟩
+  let f2 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 1 f.lane, physicalKey 0⟩
+  let f3 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 2 f.lane, physicalKey 0⟩
+  let f4 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 3 f.lane, physicalKey 0⟩
+  let f5 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 4 f.lane, physicalKey 0⟩
+  let f6 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 5 f.lane, physicalKey 0⟩
+  let f7 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 6 f.lane, physicalKey 0⟩
+  let f8 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 7 f.lane, physicalKey 0⟩
+  let f9 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 8 f.lane, physicalKey 0⟩
+  let f10 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 9 f.lane, physicalKey 0⟩
+  let f11 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 10 f.lane, physicalKey 0⟩
+  let f12 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 11 f.lane, physicalKey 0⟩
+  let f13 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 12 f.lane, physicalKey 0⟩
+  let f14 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 13 f.lane, physicalKey 0⟩
+  let f15 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 14 f.lane, physicalKey 0⟩
+  let f16 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 15 f.lane, physicalKey 0⟩
+  let f17 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 16 f.lane, physicalKey 0⟩
+  let f18 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 16 f.lane, physicalKey 1⟩
+  let f19 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 17 f.lane, physicalKey 1⟩
+  let f20 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 18 f.lane, physicalKey 1⟩
+  let f21 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 19 f.lane, physicalKey 1⟩
+  let f22 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 20 f.lane, physicalKey 1⟩
+  let f23 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 21 f.lane, physicalKey 1⟩
+  let f24 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 22 f.lane, physicalKey 1⟩
+  let f25 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 23 f.lane, physicalKey 1⟩
+  let f26 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 24 f.lane, physicalKey 1⟩
+  let f27 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 25 f.lane, physicalKey 1⟩
+  let f28 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 26 f.lane, physicalKey 1⟩
+  let f29 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 27 f.lane, physicalKey 1⟩
+  let f30 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 28 f.lane, physicalKey 1⟩
+  let f31 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 29 f.lane, physicalKey 1⟩
+  let f32 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 30 f.lane, physicalKey 1⟩
+  let f33 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 31 f.lane, physicalKey 1⟩
+  let f34 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 32 f.lane, physicalKey 1⟩
+  let f35 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 32 f.lane, physicalKey 2⟩
+  let f36 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 33 f.lane, physicalKey 2⟩
+  let f37 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 34 f.lane, physicalKey 2⟩
+  let f38 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 35 f.lane, physicalKey 2⟩
+  let f39 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 36 f.lane, physicalKey 2⟩
+  let f40 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 37 f.lane, physicalKey 2⟩
+  let f41 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 38 f.lane, physicalKey 2⟩
+  let f42 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 39 f.lane, physicalKey 2⟩
+  let f43 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 40 f.lane, physicalKey 2⟩
+  let f44 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 41 f.lane, physicalKey 2⟩
+  let f45 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 42 f.lane, physicalKey 2⟩
+  let f46 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 43 f.lane, physicalKey 2⟩
+  let f47 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 44 f.lane, physicalKey 2⟩
+  let f48 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 45 f.lane, physicalKey 2⟩
+  let f49 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 46 f.lane, physicalKey 2⟩
+  let f50 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 47 f.lane, physicalKey 2⟩
+  let f51 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 48 f.lane, physicalKey 2⟩
+  let f52 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 48 f.lane, physicalKey 3⟩
+  let f53 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 49 f.lane, physicalKey 3⟩
+  let f54 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 50 f.lane, physicalKey 3⟩
+  let f55 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 51 f.lane, physicalKey 3⟩
+  let f56 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 52 f.lane, physicalKey 3⟩
+  let f57 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 53 f.lane, physicalKey 3⟩
+  let f58 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 54 f.lane, physicalKey 3⟩
+  let f59 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 55 f.lane, physicalKey 3⟩
+  let f60 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 56 f.lane, physicalKey 3⟩
+  let f61 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 57 f.lane, physicalKey 3⟩
+  let f62 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 58 f.lane, physicalKey 3⟩
+  let f63 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 59 f.lane, physicalKey 3⟩
+  let f64 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 60 f.lane, physicalKey 3⟩
+  let f65 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 61 f.lane, physicalKey 3⟩
+  let f66 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 62 f.lane, physicalKey 3⟩
+  let f67 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 63 f.lane, physicalKey 3⟩
+  let f68 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 64 f.lane, physicalKey 3⟩
+  let f69 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 64 f.lane, physicalKey 4⟩
+  let f70 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 65 f.lane, physicalKey 4⟩
+  let f71 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 66 f.lane, physicalKey 4⟩
+  let f72 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 67 f.lane, physicalKey 4⟩
+  let f73 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 68 f.lane, physicalKey 4⟩
+  let f74 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 69 f.lane, physicalKey 4⟩
+  let f75 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 70 f.lane, physicalKey 4⟩
+  let f76 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 71 f.lane, physicalKey 4⟩
+  let f77 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 72 f.lane, physicalKey 4⟩
+  let f78 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 73 f.lane, physicalKey 4⟩
+  let f79 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 74 f.lane, physicalKey 4⟩
+  let f80 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 75 f.lane, physicalKey 4⟩
+  let f81 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 76 f.lane, physicalKey 4⟩
+  let f82 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 77 f.lane, physicalKey 4⟩
+  let f83 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 78 f.lane, physicalKey 4⟩
+  let f84 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 79 f.lane, physicalKey 4⟩
+  let f86 : CoreFrame := ⟨hoistedAlgorithmFold memory 0 79 f.lane, physicalKey 4⟩
+  have h0 : group0Block.eval memory f0 = f1 := by
+    exact group0Block_eval memory f0
+  have h1 : inline0Block.eval memory f1 = f2 := by
+    exact inline0Block_eval memory (hoistedAlgorithmFold memory 0 0 f.lane)
+  have h2 : inline1Block.eval memory f2 = f3 := by
+    exact inline1Block_eval memory (hoistedAlgorithmFold memory 0 1 f.lane)
+  have h3 : inline2Block.eval memory f3 = f4 := by
+    exact inline2Block_eval memory (hoistedAlgorithmFold memory 0 2 f.lane)
+  have h4 : inline3Block.eval memory f4 = f5 := by
+    exact inline3Block_eval memory (hoistedAlgorithmFold memory 0 3 f.lane)
+  have h5 : inline4Block.eval memory f5 = f6 := by
+    exact inline4Block_eval memory (hoistedAlgorithmFold memory 0 4 f.lane)
+  have h6 : inline5Block.eval memory f6 = f7 := by
+    exact inline5Block_eval memory (hoistedAlgorithmFold memory 0 5 f.lane)
+  have h7 : inline6Block.eval memory f7 = f8 := by
+    exact inline6Block_eval memory (hoistedAlgorithmFold memory 0 6 f.lane)
+  have h8 : inline7Block.eval memory f8 = f9 := by
+    exact inline7Block_eval memory (hoistedAlgorithmFold memory 0 7 f.lane)
+  have h9 : inline8Block.eval memory f9 = f10 := by
+    exact inline8Block_eval memory (hoistedAlgorithmFold memory 0 8 f.lane)
+  have h10 : inline9Block.eval memory f10 = f11 := by
+    exact inline9Block_eval memory (hoistedAlgorithmFold memory 0 9 f.lane)
+  have h11 : inline10Block.eval memory f11 = f12 := by
+    exact inline10Block_eval memory (hoistedAlgorithmFold memory 0 10 f.lane)
+  have h12 : inline11Block.eval memory f12 = f13 := by
+    exact inline11Block_eval memory (hoistedAlgorithmFold memory 0 11 f.lane)
+  have h13 : inline12Block.eval memory f13 = f14 := by
+    exact inline12Block_eval memory (hoistedAlgorithmFold memory 0 12 f.lane)
+  have h14 : inline13Block.eval memory f14 = f15 := by
+    exact inline13Block_eval memory (hoistedAlgorithmFold memory 0 13 f.lane)
+  have h15 : inline14Block.eval memory f15 = f16 := by
+    exact inline14Block_eval memory (hoistedAlgorithmFold memory 0 14 f.lane)
+  have h16 : inline15Block.eval memory f16 = f17 := by
+    exact inline15Block_eval memory (hoistedAlgorithmFold memory 0 15 f.lane)
+  have h17 : group16Block.eval memory f17 = f18 := by
+    exact group16Block_eval memory f17
+  have h18 : inline16Block.eval memory f18 = f19 := by
+    exact inline16Block_eval memory (hoistedAlgorithmFold memory 0 16 f.lane)
+  have h19 : inline17Block.eval memory f19 = f20 := by
+    exact inline17Block_eval memory (hoistedAlgorithmFold memory 0 17 f.lane)
+  have h20 : inline18Block.eval memory f20 = f21 := by
+    exact inline18Block_eval memory (hoistedAlgorithmFold memory 0 18 f.lane)
+  have h21 : inline19Block.eval memory f21 = f22 := by
+    exact inline19Block_eval memory (hoistedAlgorithmFold memory 0 19 f.lane)
+  have h22 : inline20Block.eval memory f22 = f23 := by
+    exact inline20Block_eval memory (hoistedAlgorithmFold memory 0 20 f.lane)
+  have h23 : inline21Block.eval memory f23 = f24 := by
+    exact inline21Block_eval memory (hoistedAlgorithmFold memory 0 21 f.lane)
+  have h24 : inline22Block.eval memory f24 = f25 := by
+    exact inline22Block_eval memory (hoistedAlgorithmFold memory 0 22 f.lane)
+  have h25 : inline23Block.eval memory f25 = f26 := by
+    exact inline23Block_eval memory (hoistedAlgorithmFold memory 0 23 f.lane)
+  have h26 : inline24Block.eval memory f26 = f27 := by
+    exact inline24Block_eval memory (hoistedAlgorithmFold memory 0 24 f.lane)
+  have h27 : inline25Block.eval memory f27 = f28 := by
+    exact inline25Block_eval memory (hoistedAlgorithmFold memory 0 25 f.lane)
+  have h28 : inline26Block.eval memory f28 = f29 := by
+    exact inline26Block_eval memory (hoistedAlgorithmFold memory 0 26 f.lane)
+  have h29 : inline27Block.eval memory f29 = f30 := by
+    exact inline27Block_eval memory (hoistedAlgorithmFold memory 0 27 f.lane)
+  have h30 : inline28Block.eval memory f30 = f31 := by
+    exact inline28Block_eval memory (hoistedAlgorithmFold memory 0 28 f.lane)
+  have h31 : inline29Block.eval memory f31 = f32 := by
+    exact inline29Block_eval memory (hoistedAlgorithmFold memory 0 29 f.lane)
+  have h32 : inline30Block.eval memory f32 = f33 := by
+    exact inline30Block_eval memory (hoistedAlgorithmFold memory 0 30 f.lane)
+  have h33 : inline31Block.eval memory f33 = f34 := by
+    exact inline31Block_eval memory (hoistedAlgorithmFold memory 0 31 f.lane)
+  have h34 : group32Block.eval memory f34 = f35 := by
+    exact group32Block_eval memory f34
+  have h35 : inline32Block.eval memory f35 = f36 := by
+    exact inline32Block_eval memory (hoistedAlgorithmFold memory 0 32 f.lane)
+  have h36 : inline33Block.eval memory f36 = f37 := by
+    exact inline33Block_eval memory (hoistedAlgorithmFold memory 0 33 f.lane)
+  have h37 : inline34Block.eval memory f37 = f38 := by
+    exact inline34Block_eval memory (hoistedAlgorithmFold memory 0 34 f.lane)
+  have h38 : inline35Block.eval memory f38 = f39 := by
+    exact inline35Block_eval memory (hoistedAlgorithmFold memory 0 35 f.lane)
+  have h39 : inline36Block.eval memory f39 = f40 := by
+    exact inline36Block_eval memory (hoistedAlgorithmFold memory 0 36 f.lane)
+  have h40 : inline37Block.eval memory f40 = f41 := by
+    exact inline37Block_eval memory (hoistedAlgorithmFold memory 0 37 f.lane)
+  have h41 : inline38Block.eval memory f41 = f42 := by
+    exact inline38Block_eval memory (hoistedAlgorithmFold memory 0 38 f.lane)
+  have h42 : inline39Block.eval memory f42 = f43 := by
+    exact inline39Block_eval memory (hoistedAlgorithmFold memory 0 39 f.lane)
+  have h43 : inline40Block.eval memory f43 = f44 := by
+    exact inline40Block_eval memory (hoistedAlgorithmFold memory 0 40 f.lane)
+  have h44 : inline41Block.eval memory f44 = f45 := by
+    exact inline41Block_eval memory (hoistedAlgorithmFold memory 0 41 f.lane)
+  have h45 : inline42Block.eval memory f45 = f46 := by
+    exact inline42Block_eval memory (hoistedAlgorithmFold memory 0 42 f.lane)
+  have h46 : inline43Block.eval memory f46 = f47 := by
+    exact inline43Block_eval memory (hoistedAlgorithmFold memory 0 43 f.lane)
+  have h47 : inline44Block.eval memory f47 = f48 := by
+    exact inline44Block_eval memory (hoistedAlgorithmFold memory 0 44 f.lane)
+  have h48 : inline45Block.eval memory f48 = f49 := by
+    exact inline45Block_eval memory (hoistedAlgorithmFold memory 0 45 f.lane)
+  have h49 : inline46Block.eval memory f49 = f50 := by
+    exact inline46Block_eval memory (hoistedAlgorithmFold memory 0 46 f.lane)
+  have h50 : inline47Block.eval memory f50 = f51 := by
+    exact inline47Block_eval memory (hoistedAlgorithmFold memory 0 47 f.lane)
+  have h51 : group48Block.eval memory f51 = f52 := by
+    exact group48Block_eval memory f51
+  have h52 : inline48Block.eval memory f52 = f53 := by
+    exact inline48Block_eval memory (hoistedAlgorithmFold memory 0 48 f.lane)
+  have h53 : inline49Block.eval memory f53 = f54 := by
+    exact inline49Block_eval memory (hoistedAlgorithmFold memory 0 49 f.lane)
+  have h54 : inline50Block.eval memory f54 = f55 := by
+    exact inline50Block_eval memory (hoistedAlgorithmFold memory 0 50 f.lane)
+  have h55 : inline51Block.eval memory f55 = f56 := by
+    exact inline51Block_eval memory (hoistedAlgorithmFold memory 0 51 f.lane)
+  have h56 : inline52Block.eval memory f56 = f57 := by
+    exact inline52Block_eval memory (hoistedAlgorithmFold memory 0 52 f.lane)
+  have h57 : inline53Block.eval memory f57 = f58 := by
+    exact inline53Block_eval memory (hoistedAlgorithmFold memory 0 53 f.lane)
+  have h58 : inline54Block.eval memory f58 = f59 := by
+    exact inline54Block_eval memory (hoistedAlgorithmFold memory 0 54 f.lane)
+  have h59 : inline55Block.eval memory f59 = f60 := by
+    exact inline55Block_eval memory (hoistedAlgorithmFold memory 0 55 f.lane)
+  have h60 : inline56Block.eval memory f60 = f61 := by
+    exact inline56Block_eval memory (hoistedAlgorithmFold memory 0 56 f.lane)
+  have h61 : inline57Block.eval memory f61 = f62 := by
+    exact inline57Block_eval memory (hoistedAlgorithmFold memory 0 57 f.lane)
+  have h62 : inline58Block.eval memory f62 = f63 := by
+    exact inline58Block_eval memory (hoistedAlgorithmFold memory 0 58 f.lane)
+  have h63 : inline59Block.eval memory f63 = f64 := by
+    exact inline59Block_eval memory (hoistedAlgorithmFold memory 0 59 f.lane)
+  have h64 : inline60Block.eval memory f64 = f65 := by
+    exact inline60Block_eval memory (hoistedAlgorithmFold memory 0 60 f.lane)
+  have h65 : inline61Block.eval memory f65 = f66 := by
+    exact inline61Block_eval memory (hoistedAlgorithmFold memory 0 61 f.lane)
+  have h66 : inline62Block.eval memory f66 = f67 := by
+    exact inline62Block_eval memory (hoistedAlgorithmFold memory 0 62 f.lane)
+  have h67 : inline63Block.eval memory f67 = f68 := by
+    exact inline63Block_eval memory (hoistedAlgorithmFold memory 0 63 f.lane)
+  have h68 : group64Block.eval memory f68 = f69 := by
+    exact group64Block_eval memory f68
+  have h69 : inline64Block.eval memory f69 = f70 := by
+    exact inline64Block_eval memory (hoistedAlgorithmFold memory 0 64 f.lane)
+  have h70 : inline65Block.eval memory f70 = f71 := by
+    exact inline65Block_eval memory (hoistedAlgorithmFold memory 0 65 f.lane)
+  have h71 : inline66Block.eval memory f71 = f72 := by
+    exact inline66Block_eval memory (hoistedAlgorithmFold memory 0 66 f.lane)
+  have h72 : inline67Block.eval memory f72 = f73 := by
+    exact inline67Block_eval memory (hoistedAlgorithmFold memory 0 67 f.lane)
+  have h73 : inline68Block.eval memory f73 = f74 := by
+    exact inline68Block_eval memory (hoistedAlgorithmFold memory 0 68 f.lane)
+  have h74 : inline69Block.eval memory f74 = f75 := by
+    exact inline69Block_eval memory (hoistedAlgorithmFold memory 0 69 f.lane)
+  have h75 : inline70Block.eval memory f75 = f76 := by
+    exact inline70Block_eval memory (hoistedAlgorithmFold memory 0 70 f.lane)
+  have h76 : inline71Block.eval memory f76 = f77 := by
+    exact inline71Block_eval memory (hoistedAlgorithmFold memory 0 71 f.lane)
+  have h77 : inline72Block.eval memory f77 = f78 := by
+    exact inline72Block_eval memory (hoistedAlgorithmFold memory 0 72 f.lane)
+  have h78 : inline73Block.eval memory f78 = f79 := by
+    exact inline73Block_eval memory (hoistedAlgorithmFold memory 0 73 f.lane)
+  have h79 : inline74Block.eval memory f79 = f80 := by
+    exact inline74Block_eval memory (hoistedAlgorithmFold memory 0 74 f.lane)
+  have h80 : inline75Block.eval memory f80 = f81 := by
+    exact inline75Block_eval memory (hoistedAlgorithmFold memory 0 75 f.lane)
+  have h81 : inline76Block.eval memory f81 = f82 := by
+    exact inline76Block_eval memory (hoistedAlgorithmFold memory 0 76 f.lane)
+  have h82 : inline77Block.eval memory f82 = f83 := by
+    exact inline77Block_eval memory (hoistedAlgorithmFold memory 0 77 f.lane)
+  have h83 : inline78Block.eval memory f83 = f84 := by
+    exact inline78Block_eval memory (hoistedAlgorithmFold memory 0 78 f.lane)
+  have hc : CoreEvalCert corePrefixChain memory f0 f84 :=
+    .cons group0Block _ h0 (
+    .cons inline0Block _ h1 (
+    .cons inline1Block _ h2 (
+    .cons inline2Block _ h3 (
+    .cons inline3Block _ h4 (
+    .cons inline4Block _ h5 (
+    .cons inline5Block _ h6 (
+    .cons inline6Block _ h7 (
+    .cons inline7Block _ h8 (
+    .cons inline8Block _ h9 (
+    .cons inline9Block _ h10 (
+    .cons inline10Block _ h11 (
+    .cons inline11Block _ h12 (
+    .cons inline12Block _ h13 (
+    .cons inline13Block _ h14 (
+    .cons inline14Block _ h15 (
+    .cons inline15Block _ h16 (
+    .cons group16Block _ h17 (
+    .cons inline16Block _ h18 (
+    .cons inline17Block _ h19 (
+    .cons inline18Block _ h20 (
+    .cons inline19Block _ h21 (
+    .cons inline20Block _ h22 (
+    .cons inline21Block _ h23 (
+    .cons inline22Block _ h24 (
+    .cons inline23Block _ h25 (
+    .cons inline24Block _ h26 (
+    .cons inline25Block _ h27 (
+    .cons inline26Block _ h28 (
+    .cons inline27Block _ h29 (
+    .cons inline28Block _ h30 (
+    .cons inline29Block _ h31 (
+    .cons inline30Block _ h32 (
+    .cons inline31Block _ h33 (
+    .cons group32Block _ h34 (
+    .cons inline32Block _ h35 (
+    .cons inline33Block _ h36 (
+    .cons inline34Block _ h37 (
+    .cons inline35Block _ h38 (
+    .cons inline36Block _ h39 (
+    .cons inline37Block _ h40 (
+    .cons inline38Block _ h41 (
+    .cons inline39Block _ h42 (
+    .cons inline40Block _ h43 (
+    .cons inline41Block _ h44 (
+    .cons inline42Block _ h45 (
+    .cons inline43Block _ h46 (
+    .cons inline44Block _ h47 (
+    .cons inline45Block _ h48 (
+    .cons inline46Block _ h49 (
+    .cons inline47Block _ h50 (
+    .cons group48Block _ h51 (
+    .cons inline48Block _ h52 (
+    .cons inline49Block _ h53 (
+    .cons inline50Block _ h54 (
+    .cons inline51Block _ h55 (
+    .cons inline52Block _ h56 (
+    .cons inline53Block _ h57 (
+    .cons inline54Block _ h58 (
+    .cons inline55Block _ h59 (
+    .cons inline56Block _ h60 (
+    .cons inline57Block _ h61 (
+    .cons inline58Block _ h62 (
+    .cons inline59Block _ h63 (
+    .cons inline60Block _ h64 (
+    .cons inline61Block _ h65 (
+    .cons inline62Block _ h66 (
+    .cons inline63Block _ h67 (
+    .cons group64Block _ h68 (
+    .cons inline64Block _ h69 (
+    .cons inline65Block _ h70 (
+    .cons inline66Block _ h71 (
+    .cons inline67Block _ h72 (
+    .cons inline68Block _ h73 (
+    .cons inline69Block _ h74 (
+    .cons inline70Block _ h75 (
+    .cons inline71Block _ h76 (
+    .cons inline72Block _ h77 (
+    .cons inline73Block _ h78 (
+    .cons inline74Block _ h79 (
+    .cons inline75Block _ h80 (
+    .cons inline76Block _ h81 (
+    .cons inline77Block _ h82 (
+    .cons inline78Block _ h83 (.nil))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  exact hc.sound
+
+
+def gasSteps_core_prefix {artifact : ProgramArtifact} {fork : Fork}
+    (sites : CorePrefixSites artifact fork) (s : State) (f : CoreFrame) (rho : List UInt256)
+    (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
+    (hactive : 23 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = artifact.code) (hfork : s.fork = fork)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps {s with pc := UInt256.ofNat 819, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] f rho}
+      {s with pc := UInt256.ofNat 4813, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] (corePrefixChain.eval s.memory f) rho} :=
+  (corePrefixGasChain sites).run s f rho hstack hrun hactive hcode hfork hnp
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineCoreTrace

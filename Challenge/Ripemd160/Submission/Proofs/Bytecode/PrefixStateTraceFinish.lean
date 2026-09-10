@@ -26,10 +26,10 @@ private def frame (s : State) (input : ByteArray) (pc : Nat) : State :=
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
 /-- Entry at the second word comparison in the checked prefix. -/
-def entry (s : State) (input : ByteArray) : State := frame s input 5048
+def entry (s : State) (input : ByteArray) : State := frame s input 5044
 
 /-- Entry at the `H1` install (`JUMPDEST` target of the rung's guards). -/
-def hit1Entry (s : State) (input : ByteArray) : State := frame s input 5089
+def hit1Entry (s : State) (input : ByteArray) : State := frame s input 5085
 
 /-- The generic compression target of the guard is a valid jump destination. -/
 theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 536 = true := by
@@ -41,9 +41,9 @@ theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 536 = true 
   exact h
 
 /-- The `H1` install entry is a valid jump destination. -/
-theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5089 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 4123 = 5089 := PrefixStatePaths.pc4093
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4123 (by rfl)
+theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5085 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 4119 = 5085 := PrefixStatePaths.pc4093
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4119 (by rfl)
   rw [hpc] at h
   exact h
 
@@ -257,16 +257,16 @@ def gasSteps_finish (s : State) (input : ByteArray)
       else DriverTrace.compressEntry s input 0) := by
   have ghit1 : Challenge.EvmProof.GasSteps (hit1Entry s input)
       (PrefixStateMemory.resultState s input 0) :=
-    frameBlock PrefixStatePaths.hitPath s input 5089 _ hcode hfork hrun hnp
+    frameBlock PrefixStatePaths.hitPath s input 5085 _ hcode hfork hrun hnp
       (run_hit1 s input hcode hrun)
   by_cases hw1 : MachineState.readWord input 32 = PatternedWordData.expectedWordAt 1
   · rw [if_pos hw1]
     have gsecond : Challenge.EvmProof.GasSteps (entry s input) (hit1Entry s input) :=
-      frameBlock PrefixStatePaths.secondComparePath s input 5048 _ hcode hfork hrun hnp
+      frameBlock PrefixStatePaths.secondComparePath s input 5044 _ hcode hfork hrun hnp
         (run_secondCompare_hit s input hw1 hcalldata hcode hrun)
     exact gsecond.trans ghit1
   · rw [if_neg hw1]
-    exact frameBlock PrefixStatePaths.secondComparePath s input 5048 _ hcode hfork hrun hnp
+    exact frameBlock PrefixStatePaths.secondComparePath s input 5044 _ hcode hfork hrun hnp
       (run_secondCompare_miss s input hw1 hcalldata hcode hrun)
 
 #print axioms run_hit1
