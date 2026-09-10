@@ -75,8 +75,10 @@ def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
     memory := hashMemory s.memory
     activeWords := FastEmptyBlock.emptyActiveWords s
-    pc := UInt256.ofNat 469
-    stack := [DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
+    pc := UInt256.ofNat 532
+    stack := [DriverTrace.blockOffsetWord i, Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
 
 private theorem read_same (memory : ByteArray) (offset : Nat) (value : UInt256) :
     MachineState.readWord (writeWord memory offset value) offset = value :=
@@ -142,8 +144,10 @@ def resultState2 (s : State) (input : ByteArray) : State :=
   { s with
     memory := hashMemory2 s.memory
     activeWords := FastEmptyBlock.emptyActiveWords s
-    pc := UInt256.ofNat 469
-    stack := [DriverTrace.blockOffsetWord 1, Padding.paddedWord input] }
+    pc := UInt256.ofNat 532
+    stack := [DriverTrace.blockOffsetWord 1, Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
 
 theorem resultState2_hash (s : State) (input : ByteArray) :
     StackMemory.hashAt (resultState2 s input).memory = hash2 := by

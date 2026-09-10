@@ -30,7 +30,9 @@ def loopState (s : State) (input : ByteArray) (i n : Nat) : State :=
     stack := [UInt256.ofNat (32 * (n + 1)), loopAcc input n,
       referenceWord input, DriverTrace.messageOffsetWord i,
       UInt256.ofNat 0x3e7, DriverTrace.blockOffsetWord i,
-      Padding.paddedWord input] }
+      Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
 
 def loopExitState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
@@ -38,12 +40,16 @@ def loopExitState (s : State) (input : ByteArray) (i : Nat) : State :=
     stack := [UInt256.ofNat 992, loopAcc input 30,
       referenceWord input, DriverTrace.messageOffsetWord i,
       UInt256.ofNat 0x3e7, DriverTrace.blockOffsetWord i,
-      Padding.paddedWord input] }
+      Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
 
 def bodyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
     pc := UInt256.ofNat 0xec
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
-      DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
+      DriverTrace.blockOffsetWord i, Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactState
