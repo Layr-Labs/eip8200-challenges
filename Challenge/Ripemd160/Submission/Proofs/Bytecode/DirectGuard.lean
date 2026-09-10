@@ -44,7 +44,7 @@ def gasSteps_target :
       ((sound checkEntryPath (run_checkEntry KnownInputData.targetInput href)).trans
         ((gasSteps_loop KnownInputData.targetInput).trans
           ((sound tailPath run_tail_target).trans
-            (sound returnPath run_return)))))
+            gasSteps_return))))
 
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
     (hne : input ≠ KnownInputData.targetInput)

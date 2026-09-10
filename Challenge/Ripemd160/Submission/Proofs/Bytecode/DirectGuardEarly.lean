@@ -38,10 +38,10 @@ def gasSteps_checkEarly (input : ByteArray)
       apply Challenge.EvmProof.Word.word_ext
       simpa using hnat
     simpa using h
-  have hcleanup : Decode.isValidJumpDest submissionBytecode 0x65 = true :=
+  have hcleanup : Decode.isValidJumpDest submissionBytecode 0x64 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 61 (by rfl)
   rw [show sizeMatched input = stG input 0x18 [] from rfl,
-    show PatternedScan.patternedEntry input = stG input 0x67 [] from rfl]
+    show PatternedScan.patternedEntry input = stG input 0x66 [] from rfl]
   refine ?_
   have step0 := soundG (pushAt 16 0 0)
     (blockOf _ (pcFactG input 16 0x18 [] (by norm_num) pc2819)
@@ -62,27 +62,27 @@ def gasSteps_checkEarly (input : ByteArray)
         (by norm_num) pc2823)
       (stepG_xor input 0x23 KnownInputData.fullWord (referenceWord input)
         [referenceWord input] (by simp) (by norm_num)))
-  have step5 := soundG (pushAt 26 1 (UInt256.ofNat 101))
+  have step5 := soundG (pushAt 26 1 (UInt256.ofNat 100))
     (blockOf _ (pcFactG input 26 0x24
         [UInt256.xor KnownInputData.fullWord (referenceWord input), referenceWord input]
         (by norm_num) pc2824)
-      (stepG_push input 0x24 1 (UInt256.ofNat 101)
+      (stepG_push input 0x24 1 (UInt256.ofNat 100)
         [UInt256.xor KnownInputData.fullWord (referenceWord input), referenceWord input]
         (by simp) (by decide) (by decide) (by norm_num)))
   have step6 := soundG (opAt 27 .JUMPI)
     (blockOf _ (pcFactG input 27 0x26
-        [UInt256.ofNat 101,
+        [UInt256.ofNat 100,
          UInt256.xor KnownInputData.fullWord (referenceWord input), referenceWord input]
         (by norm_num) pc2825)
-      (stepG_jumpi_taken input 0x26 101
+      (stepG_jumpi_taken input 0x26 100
         (UInt256.xor KnownInputData.fullWord (referenceWord input))
         [referenceWord input] (by simp) (by norm_num) htrue hcleanup))
   have step7 := soundG (opAt 61 .JUMPDEST)
-    (blockOf _ (pcFactG input 61 0x65 [referenceWord input] (by norm_num) pc2860)
-      (stepG_jumpdest input 0x65 [referenceWord input] (by simp) (by norm_num)))
+    (blockOf _ (pcFactG input 61 0x64 [referenceWord input] (by norm_num) pc2860)
+      (stepG_jumpdest input 0x64 [referenceWord input] (by simp) (by norm_num)))
   have step8 := soundG (opAt 62 .POP)
-    (blockOf _ (pcFactG input 62 0x66 [referenceWord input] (by norm_num) pc2861)
-      (stepG_pop input 0x66 (referenceWord input) [] (by simp) (by norm_num)))
+    (blockOf _ (pcFactG input 62 0x65 [referenceWord input] (by norm_num) pc2861)
+      (stepG_pop input 0x65 (referenceWord input) [] (by simp) (by norm_num)))
   exact step0.trans (step1.trans (step2.trans (step3.trans (step4.trans (step5.trans (step6.trans (step7.trans (step8))))))))
 
 #print axioms gasSteps_checkEarly

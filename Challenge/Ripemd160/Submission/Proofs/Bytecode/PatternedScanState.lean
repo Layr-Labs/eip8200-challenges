@@ -181,7 +181,7 @@ abbrev run := Challenge.EvmProof.Stepper.runLocatedBlock
 
 /-- Push the five constants and start the scan. -/
 def setupPath : List Located :=
-  [pushAt 63 1 255,
+  [pushAt 63 2 255,
    pushAt 64 0 0,
    opAt 65 .NOT,
    opAt 66 .DIV,
@@ -283,9 +283,9 @@ def straddleBackPath : List Located :=
    opAt 132 (.Swap ⟨1, by decide⟩)]
 
 
-@[simp] theorem pc2903 : Artifact.submissionArtifact.instructionPC 63 = 0x67 :=
+@[simp] theorem pc2903 : Artifact.submissionArtifact.instructionPC 63 = 0x66 :=
   by rw [scan_instruction_pc 63 (by decide) (by decide)]; rfl
-@[simp] theorem pc2904 : Artifact.submissionArtifact.instructionPC 63 = 0x67 :=
+@[simp] theorem pc2904 : Artifact.submissionArtifact.instructionPC 63 = 0x66 :=
   by rw [scan_instruction_pc 63 (by decide) (by decide)]; rfl
 @[simp] theorem pc2905 : Artifact.submissionArtifact.instructionPC 67 = 0x6c :=
   by rw [scan_instruction_pc 67 (by decide) (by decide)]; rfl
