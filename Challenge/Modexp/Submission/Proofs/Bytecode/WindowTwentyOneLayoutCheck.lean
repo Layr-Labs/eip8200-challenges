@@ -26,7 +26,7 @@ def widthInstructions : List Instr :=
    YulEvmCompiler.Instr.op EvmSemantics.Operation.XOR,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.OR,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-   YulEvmCompiler.Instr.push 2 4869,
+   YulEvmCompiler.Instr.push 2 4873,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI]
 
 theorem width_eq : WindowTwentyOneEntry.widthProgram = widthInstructions := by rfl

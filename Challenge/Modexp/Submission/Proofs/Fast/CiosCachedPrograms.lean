@@ -85,7 +85,15 @@ def l2Program (w : Fin 33) (x tl ts : UInt256) : List Instr :=
     macProductProgram) ++ macFinishProgram tl ts
 
 def entryProgram : List Instr :=
-  [.op .JUMPDEST,
+  [
+   .op .JUMPDEST,
+   .push 2 9408,
+   .op .MLOAD,
+   .op .MLOAD,
+   .push 2 9440,
+   .op .MLOAD,
+   .push 2 9376,
+   .op .MLOAD,
    .push 1 31,
    .op .NOT,
    .push 2 9344,
@@ -95,15 +103,17 @@ def entryProgram : List Instr :=
    .push 1 150,
    .op .MUL,
    .op (.Dup ⟨0, by decide⟩),
-   .push 2 4222,
+   .push 2 4237,
    .op .ADD,
    .op (.Swap ⟨0, by decide⟩),
-   .push 2 4567,
+   .push 2 4572,
    .op .ADD,
    .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap ⟨6, by decide⟩),
    .push 0 0,
    .op .NOT,
    .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap ⟨6, by decide⟩),
    .push 2 9344,
    .op .MLOAD,
    .op (.Dup ⟨0, by decide⟩),
@@ -133,7 +143,8 @@ def outProgram : List Instr :=
    .push 0 0]
 
 def midProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
+  [
+   .op (.Dup ⟨0, by decide⟩),
    .push 2 8224,
    .op .MLOAD,
    .op .ADD,
@@ -143,17 +154,13 @@ def midProgram : List Instr :=
    .op .LT,
    .push 2 8192,
    .op .MSTORE,
-   .push 2 9440,
-   .op .MLOAD,
+   .op (.Dup ⟨10, by decide⟩),
    .op .MLOAD,
    .op (.Dup ⟨0, by decide⟩),
-   .push 2 9376,
-   .op .MLOAD,
+   .op (.Dup ⟨11, by decide⟩),
    .op .MUL,
    .op (.Swap ⟨0, by decide⟩),
-   .push 2 9408,
-   .op .MLOAD,
-   .op .MLOAD,
+   .op (.Dup ⟨10, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨10, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
@@ -166,7 +173,8 @@ def midProgram : List Instr :=
    .op .ADD]
 
 def tailProgram : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩),
+  [
+   .op (.Swap ⟨1, by decide⟩),
    .op .POP,
    .op .POP,
    .op (.Dup ⟨0, by decide⟩),
@@ -187,8 +195,11 @@ def tailProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4216,
+   .push 2 4231,
    .op .JUMPI,
+   .op .POP,
+   .op .POP,
+   .op .POP,
    .op .POP,
    .op .POP,
    .op .POP,
