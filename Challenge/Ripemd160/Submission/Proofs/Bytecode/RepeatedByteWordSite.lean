@@ -15,15 +15,15 @@ abbrev A := Artifact.submissionArtifact
 def template : List Instr := RepeatedByteWord.code (UInt256.ofNat 97)
 
 private theorem template_slice :
-    (A.instructions.drop 18).take template.length = template := by rfl
+    (A.instructions.drop 17).take template.length = template := by rfl
 
 private theorem template_wellFormed : ∀ instruction ∈ template,
     Stepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def site : GenericRoundSite A .Osaka template :=
-  StackSiteBuilder.ofSlice _ 18 template_slice (by
-    change 18 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 17 template_slice (by
+    change 17 + template.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) StackRoundData.artifact_code_bound template_wellFormed (by decide)
 
