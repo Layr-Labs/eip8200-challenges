@@ -80,9 +80,9 @@ def loopPath : List Located :=
    pushAt 41 1 40, opAt 42 .JUMPI]
 
 def tailPath : List Located :=
-  [opAt 43 .CALLDATALOAD, opAt 44 (.Dup ⟨2, by decide⟩),
-   opAt 45 .XOR, pushAt 46 1 192, opAt 47 .SHR, opAt 48 .OR,
-   opAt 49 (.Swap ⟨0, by decide⟩), opAt 50 .POP,
+  [opAt 43 .CALLDATALOAD, opAt 44 (.Swap ⟨0, by decide⟩),
+   opAt 45 (.Swap ⟨1, by decide⟩), opAt 46 .XOR, pushAt 47 1 192,
+   opAt 48 .SHR, opAt 49 .OR, opAt 50 .JUMPDEST,
    pushAt 51 2 360, opAt 52 .JUMPI]
 
 def returnPath : List Located :=
@@ -235,7 +235,7 @@ abbrev run := Challenge.EvmProof.Stepper.runLocatedBlock
 @[simp] theorem pc2846 :
     Artifact.submissionArtifact.instructionPC 46 = 0x3e := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2847 :
-    Artifact.submissionArtifact.instructionPC 47 = 0x40 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Artifact.submissionArtifact.instructionPC 47 = 0x3f := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2848 :
     Artifact.submissionArtifact.instructionPC 48 = 0x41 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2849 :
