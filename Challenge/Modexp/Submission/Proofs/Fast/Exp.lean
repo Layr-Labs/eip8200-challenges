@@ -1,4 +1,4 @@
-import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFull
+import Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P3
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P4
@@ -253,14 +253,14 @@ theorem amMemOf_frame {mem : ByteArray} {n bsize minv : Nat} (pa pb pd : Nat)
 theorem monproMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat}
     (pa pb pd : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32) (hpd : pd + 32 * n ≤ 8192)
     (hf : Frame mem n bsize minv) :
-    Frame (Monpro.monproMem s mem pa pb n pd) n bsize minv :=
-  have key := Monpro.monproMem_frame s mem pa pb n pd hn hn32 hpd
+    Frame (CarryResult.monproMem s mem pa pb n pd) n bsize minv :=
+  have key := CarryResult.monproMem_frame s mem pa pb n pd hn hn32 hpd
   ⟨by rw [key.1]; exact hf.s32, by rw [key.2.1]; exact hf.minvW,
    by rw [key.2.2.1]; exact hf.ml, by rw [key.2.2.2.1]; exact hf.tl,
    by rw [key.2.2.2.2]; exact hf.eoff⟩
 
 /-- The two subroutines this module calls, as abstract single-step contracts
-carrying exactly the side conditions `Fast.CiosCachedFull.gasSteps_monproFull` and
+carrying exactly the side conditions `Fast.CarryFull.gasSteps_monproFull` and
 `Fast.Csub.gasSteps_addmod`/`gasSteps_csub` require: the configuration words
 (`Frame`), the pointer bounds, the return-address jump destination, and — for
 `MONPRO` — the values of the two operand blocks. -/
@@ -4845,7 +4845,7 @@ theorem handled_of_rrHead (input : ByteArray) (s : State) (mem : ByteArray)
 
 /-! ## The concrete subroutine instance
 
-`MONPRO` comes from `Fast.CiosCachedFull.gasSteps_monproFull`, `ADDMOD` from the pair
+`MONPRO` comes from `Fast.CarryFull.gasSteps_monproFull`, `ADDMOD` from the pair
 `Fast.Csub.gasSteps_addmod` / `gasSteps_csub` packaged as `gasSteps_addmodFull`. -/
 
 /-- The `MONPRO` step of the concrete instance. -/
@@ -4866,7 +4866,7 @@ def subsMonpro (s : State) (n bsize mm minv : Nat)
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem pa n a → Model.FastRepresents mem pb n b → a < mm →
       Challenge.EvmProof.GasSteps (mpCall s mem pa pb pd ret tail)
-        (retTo s (Monpro.monproMem s mem pa pb n pd) ret tail) := by
+        (retTo s (CarryResult.monproMem s mem pa pb n pd) ret tail) := by
   intro pa pb pd ret tail mem a b hcap hpa hpaFit hpb hpbFit hpdFit hjump hf hm ha hb ham
   -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
   cases n with
@@ -4886,12 +4886,12 @@ def subsMonpro (s : State) (n bsize mm minv : Nat)
       have hmi : (MachineState.readWord mem 9376).toNat = minv := by
         rw [hf.minvW, toNat_ofNat_self hminvlt]
       exact Challenge.EvmProof.GasSteps.cast
-        (CiosCachedFull.gasSteps_monproFull s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
+        (CarryFull.gasSteps_monproFull s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
           (by omega) hrun hcode hfork hnp hact hn32 hpa hpaFit hpb hpbFit hcds
           hf.s32 hf.tl hf.ml hjump (by omega) ha hb hm ham hmpos
           (by rw [hlow, hmi]; exact hminvA))
         rfl
-        (by simp only [Csub.csReturnedState, retTo, Monpro.monproMem_def,
+        (by simp only [Csub.csReturnedState, retTo, CarryResult.monproMem_def,
           Csub.csResultMemory, hpdN])
 
 /-- The `ADDMOD` step of the concrete instance. -/
@@ -4924,7 +4924,7 @@ def subs (s : State) (n bsize mm minv : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     Subroutines s n bsize mm minv where
-  mpMem pa pb pd mem := Monpro.monproMem s mem pa pb n pd
+  mpMem pa pb pd mem := CarryResult.monproMem s mem pa pb n pd
   amMem pa pb pd mem := amMemOf mem pa pb n pd
   mpFrame pa pb pd mem hpd hf := monproMem_frame' pa pb pd (by omega) hn32 (by omega) hf
   amFrame pa pb pd mem hpd hf := amMemOf_frame pa pb pd (by omega) hn32 (by omega) hf
@@ -4936,7 +4936,7 @@ def subs (s : State) (n bsize mm minv : Nat)
 theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hodd : mm % 2 = 1) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
-    SubSpec (fun pa pb pd mem => Monpro.monproMem s mem pa pb n pd)
+    SubSpec (fun pa pb pd mem => CarryResult.monproMem s mem pa pb n pd)
       (fun pa pb pd mem => amMemOf mem pa pb n pd) n mm (Limbs.radix ^ n) minv where
   mpValueRaw pa pb pd mem a b hpa hpb hpd hm hminv ha hb ham := by
     have hlow : (MachineState.readWord mem (32 * n - 32)).toNat = mm % Limbs.radix := by
@@ -4947,13 +4947,13 @@ theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     have hmi : (MachineState.readWord mem 9376).toNat = minv := by
       rw [hminv, toNat_ofNat_self hminvlt]
     obtain ⟨p, rfl⟩ : ∃ p, n = p + 2 := ⟨n - 2, by omega⟩
-    exact Monpro.monproMem_represents s mem pa pb p pd a b mm hn32 hpa hpb ha hb hm hodd
+    exact CarryResult.monproMem_represents s mem pa pb p pd a b mm hn32 hpa hpb hpd ha hb hm hodd
       ham (by rw [hlow, hmi]; exact hminvA)
   mpFrame pa pb pd ptr v mem hptr hdisj hrep :=
-    Monpro.monproMem_fastRepresents_outside s mem pa pb n pd ptr n v (by omega) hn32
+    CarryResult.monproMem_fastRepresents_outside s mem pa pb n pd ptr n v (by omega) hn32
       (by omega) (by omega) (by omega) hrep
   mpMinv pa pb pd mem hpd :=
-    Monpro.monproMem_readWord_high s mem pa pb n pd 9376 (by omega) hn32 (by omega)
+    CarryResult.monproMem_readWord_high s mem pa pb n pd 9376 (by omega) hn32 (by omega)
       (by omega)
   amValue pa pb pd mem a b hpa hpb hpd hm ha hb hab :=
     Csub.addmod_csub_correct mem pa pb n a b mm pd hn hn32 hpa hpb ha hb hm hmpos hab
@@ -4967,7 +4967,7 @@ theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
 to unify a projection of `subs` with a lambda. -/
 theorem specOf_of {s : State} {n bsize mm minv : Nat}
     (sub : Subroutines s n bsize mm minv)
-    (hmp : sub.mpMem = fun pa pb pd mem => Monpro.monproMem s mem pa pb n pd)
+    (hmp : sub.mpMem = fun pa pb pd mem => CarryResult.monproMem s mem pa pb n pd)
     (ham : sub.amMem = fun pa pb pd mem => amMemOf mem pa pb n pd)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hodd : mm % 2 = 1) (hmpos : 0 < mm)
     (hminvlt : minv < 2 ^ 256)
@@ -5788,7 +5788,7 @@ theorem fastSetup_entry_eq (input : ByteArray) :
 /-- The two memory transformers of `subs`, read off by `iota` rather than by
 unification: `unfold` turns the projection into a projection *of a
 constructor*, which `whnfCore` reduces without ever unfolding
-`Monpro.monproMem` into its `writeBytes` / `rowsMem` recursion. -/
+`CarryResult.monproMem` into its `writeBytes` / `rowsMem` recursion. -/
 theorem subs_mpMem (s : State) (n bsize mm minv : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -5800,7 +5800,7 @@ theorem subs_mpMem (s : State) (n bsize mm minv : Nat)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn hn32 hmpos
       hminvlt hminvA).mpMem =
-      fun pa pb pd mem => Monpro.monproMem s mem pa pb n pd := by
+      fun pa pb pd mem => CarryResult.monproMem s mem pa pb n pd := by
   delta subs
   rfl
 
