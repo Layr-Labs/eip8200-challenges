@@ -9,7 +9,7 @@ set_option maxHeartbeats 20000000
 # The fall-through into the patterned guard
 
 The first word of the calldata is not the 1000-a word, so the `JUMPI` at
-pc 5146 is taken, the stub at pc 5208 drops the word and falls through to the appended
+pc 5166 is taken, the stub at pc 5208 drops the word and falls through to the appended
 guard at pc 5214. The repeated-word construction is lifted as one block;
 the remaining instructions are taken one at a time.
 -/
