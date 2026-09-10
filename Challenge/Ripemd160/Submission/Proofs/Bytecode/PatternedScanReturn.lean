@@ -53,7 +53,7 @@ def selectorPath : List Located :=
 
 def storePath : List Located :=
   selectorPath ++ [opAt 171 .CALLDATASIZE,
-   opAt 172 (.Dup ⟨0, by decide⟩),
+   opAt 172 .CALLDATASIZE,
    pushAt 173 2 376,
    opAt 174 .EQ,
    pushAt 175 20 644824770394507154413287103057882351908521126009,
