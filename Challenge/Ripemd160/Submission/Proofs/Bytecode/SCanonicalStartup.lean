@@ -124,9 +124,9 @@ theorem div_pair_lower :
 
 def template : List Instr :=
   [.push ⟨4, by decide⟩ PairedDerivedStartup.lowerWord,
-   dup1, push1 (UInt256.ofNat 128), .op .SHL,
-   dup1, .op (.Dup ⟨2, by decide⟩), .op .OR,
-   .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .DIV] ++
+   .push ⟨20, by decide⟩ PairedDerivedStartup.upperWord,
+   .push ⟨20, by decide⟩ PairedDerivedStartup.pairWord,
+   .push ⟨17, by decide⟩ dupFactor] ++
    loadMulTemplate 160 ⟨1, by decide⟩ ++
    loadMulTemplate 128 ⟨2, by decide⟩ ++
    loadMulTemplate 96 ⟨3, by decide⟩ ++
@@ -135,11 +135,11 @@ def template : List Instr :=
    [.push ⟨5, by decide⟩ PairedDerivedStartup.factorWord,
     .op (.Swap ⟨5, by decide⟩), .op .POP]
 
-theorem template_length : template.length = 33 := by
+theorem template_length : template.length = 27 := by
   norm_num [template, loadMulTemplate]
 
-theorem template_bytes : (template.map Instr.size).sum = 48 := by
-  norm_num [template, loadMulTemplate, push1, dup1, Instr.size]
+theorem template_bytes : (template.map Instr.size).sum = 98 := by
+  norm_num [template, loadMulTemplate, push1, Instr.size]
 
 theorem lower_toNat :
     PairedDerivedStartup.lowerWord.toNat = 0xffffffff := by
@@ -194,14 +194,13 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
   have hmul96 := mul_eq_packedHash s.memory 96 h96
   have hmul64 := mul_eq_packedHash s.memory 64 h64
   have hmul32 := mul_eq_packedHash s.memory 32 h32
-  simp (discharger := omega) [template, loadMulTemplate, push1, dup1,
+  simp (discharger := omega) [template, loadMulTemplate, push1,
     PairedDerivedStartup.packedHash, PairedDerivedStartup.resultStack,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, hrun, hcap, h0, Nat.add_assoc,
-    PairedDerivedStartup.upper_from_lower, PairedDerivedStartup.pair_from_lower,
     List.getElem?_cons_zero, List.getElem?_cons_succ,
     State.activeWordsAfterUInt256, hactiveAt,
-    Challenge.EvmProof.Word.word_toNat_ofNat, div_pair_lower,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
     List.exchange, hmul160, hmul128, hmul96, hmul64, hmul32]
   rfl
 
@@ -216,9 +215,9 @@ open Challenge.EvmProof StackRoundTemplate
 /-- Flat 33-op expansion of `template` for the advancement case split. -/
 def frozenInstructions : List Instr :=
   [.push ⟨4, by decide⟩ PairedDerivedStartup.lowerWord,
-   DenseScheduleTemplate.dup1, DenseScheduleTemplate.push1 (UInt256.ofNat 128), .op .SHL,
-   DenseScheduleTemplate.dup1, .op (.Dup ⟨2, by decide⟩), .op .OR,
-   .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .DIV,
+   .push ⟨20, by decide⟩ PairedDerivedStartup.upperWord,
+   .push ⟨20, by decide⟩ PairedDerivedStartup.pairWord,
+   .push ⟨17, by decide⟩ dupFactor,
    DenseScheduleTemplate.push1 (UInt256.ofNat 160), .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .MUL,
    DenseScheduleTemplate.push1 (UInt256.ofNat 128), .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .op .MUL,
    DenseScheduleTemplate.push1 (UInt256.ofNat 96), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .MUL,
@@ -236,7 +235,7 @@ theorem template_advances {instruction : Instr} {s t : State}
     t.pc = s.pc + UInt256.ofNat instruction.size := by
   rw [template_eq_frozenInstructions] at hmem
   simp only [frozenInstructions, List.mem_cons, List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals first
     | exact RepeatedByteWord.runInstr_pc_div hrun
     | apply DenseScheduleLift.runInstr_pc_of_advances ?_ hrun
