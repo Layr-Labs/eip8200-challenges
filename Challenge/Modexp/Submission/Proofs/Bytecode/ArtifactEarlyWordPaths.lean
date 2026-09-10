@@ -5,12 +5,12 @@ set_option maxRecDepth 20000
 set_option maxHeartbeats 2000000
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
-private def earlyWord_guard : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5218 EarlyWordProgram.guardProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3954 20 5218 EarlyWordProgram.guardProgram (by decide) (by rfl) (by rfl) (by decide)
-private def earlyWord_hit : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5245 EarlyWordProgram.hitProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3974 15 5245 EarlyWordProgram.hitProgram (by decide) (by rfl) (by rfl) (by decide)
-private def earlyWord_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5266 EarlyWordProgram.missProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3989 6 5266 EarlyWordProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
+private def earlyWord_guard : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5220 EarlyWordProgram.guardProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3954 20 5220 EarlyWordProgram.guardProgram (by decide) (by rfl) (by rfl) (by decide)
+private def earlyWord_hit : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5247 EarlyWordProgram.hitProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3974 15 5247 EarlyWordProgram.hitProgram (by decide) (by rfl) (by rfl) (by decide)
+private def earlyWord_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5268 EarlyWordProgram.missProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3989 6 5268 EarlyWordProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
 def earlyWordPaths : EarlyWordProgram.Paths submissionArtifact .Osaka where
   guard := earlyWord_guard
   hit := earlyWord_hit

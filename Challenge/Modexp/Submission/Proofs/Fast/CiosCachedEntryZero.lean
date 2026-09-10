@@ -12,7 +12,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 theorem run_zero (s : State) (mem : ByteArray) (pa pb n : Nat)
-    (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1001)
+    (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1000)
     (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 32)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32*n)) :
@@ -26,6 +26,7 @@ theorem run_zero (s : State) (mem : ByteArray) (pa pb n : Nat)
   have hExtra14 : rest.length + 14 < 1024 := by omega
   have hExtra15 : rest.length + 15 < 1024 := by omega
   have hExtra16 : rest.length + 16 < 1024 := by omega
+  have hExtra17 : rest.length + 17 < 1024 := by omega
   have hc6 : rest.length+7 < 1024 := by omega
   have hc7 : rest.length+8 < 1024 := by omega
   have hc8 : rest.length+9 < 1024 := by omega
@@ -44,7 +45,7 @@ theorem run_zero (s : State) (mem : ByteArray) (pa pb n : Nat)
       s.activeWords := activeWords_fix s 9344 32 (by decide) (by omega) hact
   have hactC : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 8192 (64+32*n)) =
       s.activeWords := activeWords_fix s 8192 (64+32*n) (by omega) (by omega) hact
-  simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, hExtra15, hExtra16, zeroProgram, entryProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+  simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, hExtra15, hExtra16, hExtra17, zeroProgram, entryProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     cachedEntryState, clearedState, mpZeroed, hc6, hc7, hc8, hc9, hc10, h64, h8192, h9344, hs32,
     hsizeN, hcdsN, hactS, hactC, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
