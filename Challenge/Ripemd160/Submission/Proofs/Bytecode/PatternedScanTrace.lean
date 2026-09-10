@@ -72,21 +72,21 @@ def loopState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
 straddling word has already bumped the scalar by eleven, so it is explicit. -/
 def compareState (input : ByteArray) (k s : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0xd8
+    pc := UInt256.ofNat 0xd2
     stack := guardWord k :: UInt256.mul M (UInt256.ofNat (scalarAt k)) ::
       UInt256.ofNat s :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- At the head of the correction block, for a straddling offset. -/
 def straddleState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0xb4
+    pc := UInt256.ofNat 0xb2
     stack := rawWord k :: UInt256.mul M (UInt256.ofNat (scalarAt k)) ::
       UInt256.ofNat (scalarAt k) :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- After the thirty-one words, at the padded tail. -/
 def tailState (input : ByteArray) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 256
+    pc := UInt256.ofNat 250
     stack := UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: a :: frame }
 
 /-- The stub jumps here, and the guard answers or falls through.  -/
@@ -96,8 +96,8 @@ def hitRest : List UInt256 :=
   UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: 0 :: frame
 
 def hitState (input : ByteArray) : State :=
-  { atPC input 261 with stack := hitRest }
-def fallbackState (input : ByteArray) : State := atPC input 0x171
+  { atPC input 255 with stack := hitRest }
+def fallbackState (input : ByteArray) : State := atPC input 0x16b
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded word.toNat 32) address
@@ -106,7 +106,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 0x15f
+    pc := UInt256.ofNat 0x159
     stack := hitRest
     memory := answerMemory
     activeWords := UInt256.ofNat 1
@@ -193,16 +193,16 @@ theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 3
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (by norm_num : 224 < 2 ^ 256), hval] at hn
     exact h hn.symm
-  have hdest : Decode.isValidJumpDest submissionBytecode 216 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 210 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 127 (by rfl)
   have hdestN : Decode.isValidJumpDest submissionBytecode
-      (UInt256.ofNat 216).toNat = true := by
+      (UInt256.ofNat 210).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (by norm_num : 216 < 2 ^ 256)]
+      Nat.mod_eq_of_lt (by norm_num : 210 < 2 ^ 256)]
     exact hdest
   have hdestL : Decode.isValidJumpDest submissionBytecode
-      ((216 : UInt256)).toNat = true := by
-    rw [show ((216 : UInt256)).toNat = 216 from by decide]
+      ((210 : UInt256)).toNat = true := by
+    rw [show ((210 : UInt256)).toNat = 210 from by decide]
     exact hdest
   have hk224 : ¬ ((32 * k) % 256 == 224) = true := by simpa using h
   simp (config := { maxSteps := 800000 })

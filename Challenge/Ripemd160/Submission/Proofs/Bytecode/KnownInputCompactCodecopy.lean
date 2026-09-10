@@ -33,7 +33,7 @@ def gasSteps_codecopy (s : State) (input : ByteArray) (i : Nat)
     rw [KnownInputCompactPaths.pc2876]
     decide
   have hdec := Challenge.EvmProof.Stepper.decodes_of_artifact
-    Artifact.submissionArtifact (withGas pre gas) 2876 (.op .CODECOPY)
+    Artifact.submissionArtifact (withGas pre gas) 2864 (.op .CODECOPY)
     hcode' hpc (by rfl) (by exact ⟨by decide, trivial, rfl⟩)
   change (withGas pre gas).decodedOp = some .CODECOPY at hdec
   apply EVM.Step.running

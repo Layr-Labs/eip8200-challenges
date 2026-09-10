@@ -24,7 +24,7 @@ private theorem rightWrapper_slice (k : Fin 40) :
 private theorem rightWrapper_fits (k : Fin 40) :
     rightWrapperIndex k.val + (rightWrapperTemplate k).length ≤
       Artifact.instructions.length := by
-  change 1260 + 8 * k.val + 8 ≤ Artifact.submissionInstructions.length
+  change 1256 + 8 * k.val + 8 ≤ Artifact.submissionInstructions.length
   rw [Artifact.referenceInstructions_count]
   omega
 
@@ -64,7 +64,7 @@ private theorem rightCall_fits (k : Fin 40) :
         (PairCallTrace.pairCallPushes (rightReturnPC k.val) (rightAddress0 k)
           (rightAddress1 k) (rightHelperPC k.val) (rightRotation0 k)
           (rightRotation1 k)).length ≤ Artifact.instructions.length := by
-  change 1260 + 8 * k.val + 6 ≤ Artifact.submissionInstructions.length
+  change 1256 + 8 * k.val + 6 ≤ Artifact.submissionInstructions.length
   rw [Artifact.referenceInstructions_count]
   omega
 

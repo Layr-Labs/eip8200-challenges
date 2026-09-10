@@ -90,7 +90,7 @@ theorem startupSite_endPC : startupSite.endPC = UInt256.ofNat 857 := by
   rw [startup_endInstructionPC]
 
 theorem tailPrefix_slice :
-    (Artifact.submissionArtifact.instructions.drop 4019).take
+    (Artifact.submissionArtifact.instructions.drop 4007).take
       PairedTailTrace.prefixTemplate.length = PairedTailTrace.prefixTemplate := by
   rfl
 
@@ -106,9 +106,9 @@ theorem tailPrefix_endInstructionPC :
 
 def tailPrefixSite :
     GenericRoundSite Artifact.submissionArtifact .Osaka PairedTailTrace.prefixTemplate :=
-  StackSiteBuilder.ofSlice PairedTailTrace.prefixTemplate 4001 tailPrefix_slice
+  StackSiteBuilder.ofSlice PairedTailTrace.prefixTemplate 3989 tailPrefix_slice
     (by
-      change 4001 + PairedTailTrace.prefixTemplate.length ≤ Artifact.submissionInstructions.length
+      change 3989 + PairedTailTrace.prefixTemplate.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -137,12 +137,12 @@ private theorem instructionPC_toNat (index : Nat) :
 
 def tailJump : LocatedSite Artifact.submissionArtifact .Osaka where
   located :=
-    { index := 4070
+    { index := 4058
       instruction := .op .JUMP
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
   pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4088)
-  pc_eq := instructionPC_toNat 4070
+  pc_eq := instructionPC_toNat 4058
 
 theorem tailJump_pc : tailJump.pc = UInt256.ofNat 5049 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4088) =

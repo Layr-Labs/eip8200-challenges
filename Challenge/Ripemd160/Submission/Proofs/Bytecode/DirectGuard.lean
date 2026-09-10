@@ -47,7 +47,7 @@ def gasSteps_target :
       ((sound checkEntryPath (run_checkEntry KnownInputData.targetInput href)).trans
         ((gasSteps_loop KnownInputData.targetInput).trans
           ((sound tailPath run_tail_target).trans
-            (gasSteps_direct_return KnownInputData.targetInput)))))
+            (sound returnPath run_return)))))
 
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
     (hne : input ≠ KnownInputData.targetInput)
@@ -197,13 +197,13 @@ theorem correct : Correct submissionBytecode := by
             (Patterned128Entry.gasSteps_hit input hfit (Or.inr (Or.inl hsize120)) hbyte)
         · exact StackCorrect.correct input hfit
             (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
-      by_cases hsize128 : input.size = 63
+      by_cases hsize63 : input.size = 63
       · by_cases hbyte : firstByte input = 7
-        · exact Patterned128Correct.correct_from_patternedEntry input hfit hsize128 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit (Or.inr (Or.inr hsize128)) hbyte)
+        · exact Patterned128Correct.correct_from_patternedEntry input hfit hsize63 hbyte
+            (Patterned128Entry.gasSteps_hit input hfit (Or.inr (Or.inr hsize63)) hbyte)
         · exact StackCorrect.correct input hfit
             (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
       · exact StackCorrect.correct input hfit
-          (gasSteps_fallback input hfit h hp (Or.inl ⟨hsize56, hsize120, hsize128⟩) h256 hshort)
+          (gasSteps_fallback input hfit h hp (Or.inl ⟨hsize56, hsize120, hsize63⟩) h256 hshort)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

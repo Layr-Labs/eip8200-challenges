@@ -162,13 +162,13 @@ theorem run_rightRoundPrefix (s : State) (messageOffset returnDest : UInt256)
   have hmodSize : (1728 + roundIndex i * 32) % UInt256.size =
       1728 + roundIndex i * 32 := by
     apply Nat.mod_eq_of_lt
-    change 1728 + roundIndex i * 32 < 2 ^ 256
+    change 1724 + roundIndex i * 32 < 2 ^ 256
     exact hsmall
   have hmodLiteral : (1728 + roundIndex i * 32) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       1728 + roundIndex i * 32 := by
     apply Nat.mod_eq_of_lt
-    change 1728 + roundIndex i * 32 < 2 ^ 256
+    change 1724 + roundIndex i * 32 < 2 ^ 256
     exact hsmall
   have hdest : Decode.isValidJumpDest submissionBytecode 120 = true := by decide
   have hcap (m : Nat) (hm : m ≤ 12) : rest.length + m < 1024 := by omega

@@ -185,7 +185,7 @@ private theorem tail_instruction_wellFormed (i : Nat)
 
 def tailLocated (i : Nat) (hi : i < StackTail.tailInstructions.length) :
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka where
-  index := 1646 + i
+  index := 1642 + i
   instruction := ((StackTail.tailInstructions)[i]'(by exact hi))
   atIndex := by
     have h := tail_instruction_at i hi
