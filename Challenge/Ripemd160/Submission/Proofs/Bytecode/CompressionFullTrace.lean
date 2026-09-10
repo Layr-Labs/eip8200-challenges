@@ -23,9 +23,7 @@ open CompressionRightTrace
 open CompressionTailTrace
 
 def driverRest (input : ByteArray) (i : Nat) : List UInt256 :=
-  [DriverTrace.blockOffsetWord i, Padding.paddedWord input,
-    UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
-    UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff]
+  [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   let messageOffset := DriverTrace.messageOffsetWord i

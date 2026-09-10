@@ -1,0 +1,125 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanMask
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanTrace
+set_option warningAsError true
+set_option maxRecDepth 100000
+set_option maxHeartbeats 20000000
+namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternLogic
+open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
+open PatternedScan PatternedInputData PatternedSwar PatternedWordData TailProjection TailProjectionInstances
+def data56 : ByteArray := patternedInput.extract 0 56
+@[simp] theorem data56_size : data56.size = 56 := by
+  simp [data56, patternedInput_size]
+
+@[simp] theorem data56_getElem (i : Nat) (hi : i < data56.size) :
+    data56[i] = expectedByte i := by
+  simp only [data56, ByteArray.getElem_extract, Nat.zero_add]
+  apply patternedInput_getElem
+
+theorem byteFrom_data56 (i : Nat) (hi : i < 56) :
+    YulSemantics.EVM.byteFrom data56.toList i = PatternedWordData.paddedByte i := by
+  have hdata : i < data56.size := by rw [data56_size]; exact hi
+  rw [byteFrom_getElem data56 i hdata, data56_getElem]
+  simp only [PatternedWordData.paddedByte, if_pos (show i < 1000 by omega)]
+
+theorem bytesToNatPadded_data56 (off width : Nat) (hfit : off + width ≤ 56) :
+    Precompile.bytesToNatPadded data56 off width =
+      Precompile.bytesToNatPadded patternedInput off width := by
+  apply (bytesToNatPadded_eq_iff data56 patternedInput off width).mpr
+  intro i hi
+  rw [byteFrom_data56 (off + i) (by omega), PatternedWordLogic.byteFrom_patterned]
+
+theorem guardWord_projection_56 (j : Nat) (hj : j < 2) :
+    UInt256.shiftRight (guardWord j) (wordShift 56 j) =
+      UInt256.shiftRight (MachineState.readWord data56 (32 * j)) (wordShift 56 j) := by
+  have hg : guardWord j = PatternedWordData.expectedWordAt j := by
+    interval_cases j <;> simp
+  have hp : 0 < min 32 (56 - 32 * j) := by omega
+  have hw : min 32 (56 - 32 * j) ≤ 32 := Nat.min_le_left _ _
+  rw [hg, ← PatternedWordLogic.readWord_patterned j, wordShift,
+    Challenge.EvmProof.Bytes.shiftRight_readWord patternedInput (32 * j) _ hp hw,
+    Challenge.EvmProof.Bytes.shiftRight_readWord data56 (32 * j) _ hp hw,
+    bytesToNatPadded_data56 (32 * j) _ (by omega)]
+
+theorem rawShift_56 (k : Nat) (hk : k < 2) :
+    rawShift 56 (UInt256.ofNat (32 * k)) = wordShift 56 k := by
+  interval_cases k <;> decide
+
+theorem scanAcc_eq_guardedAcc_56 (input : ByteArray) (hsize : input.size = 56)
+    (n : Nat) (hn : n ≤ 2) :
+    scanAcc input n = guardedAcc input guardWord (wordShift 56) n := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    rw [scanAcc, guardedAcc, ih (by omega)]
+    rw [maskShift, hsize, rawShift_56 n (by omega)]
+    exact lor_comm _ _
+
+theorem scanAcc_zero_iff_eq_56 (input : ByteArray) (hsize : input.size = 56) :
+    scanAcc input 2 = 0 ↔ input = data56 := by
+  rw [scanAcc_eq_guardedAcc_56 input hsize 2 (by omega)]
+  change guardedAcc input guardWord (fun j => UInt256.ofNat ((32 - min 32 (56 - 32 * j)) * 8)) 2 = 0 ↔ input = data56
+  have hs : input.size = data56.size := by simpa only [data56_size] using hsize
+  have hc : data56.size ≤ 32 * 2 := by rw [data56_size]; decide
+  simpa only [data56_size, wordShift] using
+    (guardedAcc_zero_iff_eq input data56 guardWord 2 hs hc
+      (by simpa only [data56_size, wordShift] using guardWord_projection_56))
+#print axioms scanAcc_zero_iff_eq_56
+def data120 : ByteArray := patternedInput.extract 0 120
+@[simp] theorem data120_size : data120.size = 120 := by
+  simp [data120, patternedInput_size]
+
+@[simp] theorem data120_getElem (i : Nat) (hi : i < data120.size) :
+    data120[i] = expectedByte i := by
+  simp only [data120, ByteArray.getElem_extract, Nat.zero_add]
+  apply patternedInput_getElem
+
+theorem byteFrom_data120 (i : Nat) (hi : i < 120) :
+    YulSemantics.EVM.byteFrom data120.toList i = PatternedWordData.paddedByte i := by
+  have hdata : i < data120.size := by rw [data120_size]; exact hi
+  rw [byteFrom_getElem data120 i hdata, data120_getElem]
+  simp only [PatternedWordData.paddedByte, if_pos (show i < 1000 by omega)]
+
+theorem bytesToNatPadded_data120 (off width : Nat) (hfit : off + width ≤ 120) :
+    Precompile.bytesToNatPadded data120 off width =
+      Precompile.bytesToNatPadded patternedInput off width := by
+  apply (bytesToNatPadded_eq_iff data120 patternedInput off width).mpr
+  intro i hi
+  rw [byteFrom_data120 (off + i) (by omega), PatternedWordLogic.byteFrom_patterned]
+
+theorem guardWord_projection_120 (j : Nat) (hj : j < 4) :
+    UInt256.shiftRight (guardWord j) (wordShift 120 j) =
+      UInt256.shiftRight (MachineState.readWord data120 (32 * j)) (wordShift 120 j) := by
+  have hg : guardWord j = PatternedWordData.expectedWordAt j := by
+    interval_cases j <;> simp
+  have hp : 0 < min 32 (120 - 32 * j) := by omega
+  have hw : min 32 (120 - 32 * j) ≤ 32 := Nat.min_le_left _ _
+  rw [hg, ← PatternedWordLogic.readWord_patterned j, wordShift,
+    Challenge.EvmProof.Bytes.shiftRight_readWord patternedInput (32 * j) _ hp hw,
+    Challenge.EvmProof.Bytes.shiftRight_readWord data120 (32 * j) _ hp hw,
+    bytesToNatPadded_data120 (32 * j) _ (by omega)]
+
+theorem rawShift_120 (k : Nat) (hk : k < 4) :
+    rawShift 120 (UInt256.ofNat (32 * k)) = wordShift 120 k := by
+  interval_cases k <;> decide
+
+theorem scanAcc_eq_guardedAcc_120 (input : ByteArray) (hsize : input.size = 120)
+    (n : Nat) (hn : n ≤ 4) :
+    scanAcc input n = guardedAcc input guardWord (wordShift 120) n := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    rw [scanAcc, guardedAcc, ih (by omega)]
+    rw [maskShift, hsize, rawShift_120 n (by omega)]
+    exact lor_comm _ _
+
+theorem scanAcc_zero_iff_eq_120 (input : ByteArray) (hsize : input.size = 120) :
+    scanAcc input 4 = 0 ↔ input = data120 := by
+  rw [scanAcc_eq_guardedAcc_120 input hsize 4 (by omega)]
+  change guardedAcc input guardWord (fun j => UInt256.ofNat ((32 - min 32 (120 - 32 * j)) * 8)) 4 = 0 ↔ input = data120
+  have hs : input.size = data120.size := by simpa only [data120_size] using hsize
+  have hc : data120.size ≤ 32 * 4 := by rw [data120_size]; decide
+  simpa only [data120_size, wordShift] using
+    (guardedAcc_zero_iff_eq input data120 guardWord 4 hs hc
+      (by simpa only [data120_size, wordShift] using guardWord_projection_120))
+#print axioms scanAcc_zero_iff_eq_120
+end Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternLogic

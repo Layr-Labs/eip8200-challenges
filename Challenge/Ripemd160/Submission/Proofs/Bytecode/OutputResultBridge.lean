@@ -41,16 +41,12 @@ private def afterWrittenWord (s : State) (input : ByteArray) (i : Nat) : State :
     (UInt256.ofNat 0x469) [UInt256.ofNat i, Padding.paddedWord input] 4
   { written with
     pc := UInt256.ofNat 0x447
-    stack := [UInt256.ofNat (i + 1), Padding.paddedWord input,
-      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
-      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
+    stack := [UInt256.ofNat (i + 1), Padding.paddedWord input] }
 
 private def outputLoopState (s : State) (input : ByteArray) : Nat → State
   | 0 => { OutputTrace.zeroOutput s with
       pc := UInt256.ofNat 0x447
-      stack := [⟨0⟩, Padding.paddedWord input,
-      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
-      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
+      stack := [⟨0⟩, Padding.paddedWord input] }
   | i + 1 => afterWrittenWord (outputLoopState s input i) input i
 
 private def wordBytes (word : UInt256) : ByteArray :=
@@ -309,9 +305,7 @@ theorem correct_of_compression_trace
     change (withGas
       { q with
         pc := UInt256.ofNat 0x479
-        stack := [Padding.paddedWord input,
-      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
-      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff]
+        stack := [Padding.paddedWord input]
         halt := .Returned
         hReturn := MachineState.readPadded q.memory 0 32
         activeWords := (State.activeWordsAfterUInt256 q 0 32) }
