@@ -189,7 +189,7 @@ theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 3
       Nat.mod_eq_of_lt (by norm_num : 224 < 2 ^ 256), hval] at hn
     exact h hn.symm
   have hdest : Decode.isValidJumpDest submissionBytecode 216 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 131 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 130 (by rfl)
   have hdestN : Decode.isValidJumpDest submissionBytecode
       (UInt256.ofNat 216).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
