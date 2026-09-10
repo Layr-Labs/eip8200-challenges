@@ -691,6 +691,23 @@ theorem run_mpOut (s : State) (mem : ByteArray) (pa pb n i : Nat)
 theorem maxWord_literal :
     (115792089237316195423570985008687907853269984665640564039457584007913129639935 :
       UInt256) = maxWord := rfl
+theorem sub32_eq_negative32_l1 (x : UInt256) :
+    x - UInt256.ofNat 32 =
+      x + UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+  apply Challenge.EvmProof.Word.word_ext
+  simp only [Challenge.EvmProof.Word.word_toNat_sub,
+    Challenge.EvmProof.Word.word_toNat_add,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  have h32 : (32 : Nat) % 2 ^ 256 = 32 :=
+    Nat.mod_eq_of_lt (by norm_num)
+  have hC : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
+      Nat) = 2 ^ 256 - 32 := by norm_num
+  have hCmod : (2 ^ 256 - 32) % 2 ^ 256 = 2 ^ 256 - 32 :=
+    Nat.mod_eq_of_lt (by omega)
+  rw [h32, hC, hCmod]
+  congr 1
+  omega
 
 set_option linter.unusedSimpArgs false in
 theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Nat)
@@ -748,6 +765,7 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       fastPC11, fastPC12,
       hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK, h1995, h1995', hjump,
       jumpDest1995, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
+      sub32_eq_negative32_l1,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -806,6 +824,7 @@ theorem run_mpL1Exit (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       mpL1State, mpMidState, l1Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC11, fastPC12,
       hc9, hc10, hc11, hc12, hc13, hrun, hK,
+      sub32_eq_negative32_l1,
       hpaj, hptj, hnextA, hpamN, hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
