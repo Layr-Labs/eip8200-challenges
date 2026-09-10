@@ -13,59 +13,61 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 1627..1661, pc 2257..2634. -/
 def blk1627 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1625 .JUMPDEST,
-   opAt 1626 (.Dup ⟨1, by decide⟩),
-   opAt 1627 .MLOAD,
-   opAt 1628 (.Dup ⟨3, by decide⟩),
-   opAt 1629 .MLOAD,
-   opAt 1630 (.Dup ⟨1, by decide⟩),
-   opAt 1631 .ADD,
-   opAt 1632 (.Swap ⟨0, by decide⟩),
-   opAt 1633 (.Dup ⟨1, by decide⟩),
-   opAt 1634 .LT,
-   opAt 1635 (.Swap ⟨0, by decide⟩),
-   opAt 1636 (.Dup ⟨5, by decide⟩),
-   opAt 1637 .ADD,
-   opAt 1638 (.Swap ⟨4, by decide⟩),
-   opAt 1639 (.Dup ⟨5, by decide⟩),
-   opAt 1640 .LT,
-   opAt 1641 .OR,
-   opAt 1642 (.Swap ⟨3, by decide⟩),
-   opAt 1643 (.Dup ⟨1, by decide⟩),
-   opAt 1644 .MSTORE,
-   pushAt 1645 1 31, opAt 1646 .NOT,
-   opAt 1647 .ADD,
-   opAt 1648 (.Swap ⟨0, by decide⟩),
-   pushAt 1649 1 31, opAt 1650 .NOT,
-   opAt 1651 .ADD,
-   opAt 1652 (.Swap ⟨0, by decide⟩),
-   opAt 1653 (.Swap ⟨1, by decide⟩),
-   pushAt 1654 1 31, opAt 1655 .NOT,
-   opAt 1656 .ADD,
-   opAt 1657 (.Swap ⟨1, by decide⟩),
-   pushAt 1658 2 8224,
-   opAt 1659 (.Dup ⟨1, by decide⟩),
-   opAt 1660 .GT,
-   pushAt 1661 2 2252,
-   opAt 1662 .JUMPI]
+  [opAt 1604 .JUMPDEST,
+   opAt 1605 (.Dup ⟨1, by decide⟩),
+   opAt 1606 .MLOAD,
+   opAt 1607 (.Dup ⟨3, by decide⟩),
+   opAt 1608 .MLOAD,
+   opAt 1609 (.Dup ⟨1, by decide⟩),
+   opAt 1610 .ADD,
+   opAt 1611 (.Swap ⟨0, by decide⟩),
+   opAt 1612 (.Dup ⟨1, by decide⟩),
+   opAt 1613 .LT,
+   opAt 1614 (.Swap ⟨0, by decide⟩),
+   opAt 1615 (.Dup ⟨5, by decide⟩),
+   opAt 1616 .ADD,
+   opAt 1617 (.Swap ⟨4, by decide⟩),
+   opAt 1618 (.Dup ⟨5, by decide⟩),
+   opAt 1619 .LT,
+   opAt 1620 .OR,
+   opAt 1621 (.Swap ⟨3, by decide⟩),
+   opAt 1622 (.Dup ⟨1, by decide⟩),
+   opAt 1623 .MSTORE,
+   pushAt 1624 1 31,
+   opAt 1625 .NOT,
+   opAt 1626 .ADD,
+   opAt 1627 (.Swap ⟨0, by decide⟩),
+   pushAt 1628 1 31,
+   opAt 1629 .NOT,
+   opAt 1630 .ADD,
+   opAt 1631 (.Swap ⟨0, by decide⟩),
+   opAt 1632 (.Swap ⟨1, by decide⟩),
+   pushAt 1633 1 31,
+   opAt 1634 .NOT,
+   opAt 1635 .ADD,
+   opAt 1636 (.Swap ⟨1, by decide⟩),
+   pushAt 1637 2 8224,
+   opAt 1638 (.Dup ⟨1, by decide⟩),
+   opAt 1639 .GT,
+   pushAt 1640 2 2230,
+   opAt 1641 .JUMPI]
 
 /-- Instructions 1662..1666, pc 2635..2308. -/
 def blk1662 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1663 .POP,
-   opAt 1664 .POP,
-   opAt 1665 .POP,
-   pushAt 1666 2 8224,
-   opAt 1667 .MSTORE]
+  [opAt 1642 .POP,
+   opAt 1643 .POP,
+   opAt 1644 .POP,
+   pushAt 1645 2 8224,
+   opAt 1646 .MSTORE]
 
-/-- Instructions 1668..1672, pc 2304..2336: new one-pointer `CSUB` entry.
-Reads word 9440 for the `t` top pointer and pushes borrow `0`. -/
+/-- Instructions 1667..1682, pc 2309..2332. -/
 def blk1667 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1668 .JUMPDEST,
-   pushAt 1669 28 9440,
-   opAt 1670 .MLOAD,
-   pushAt 1671 0 0,
-   opAt 1672 (.Swap ⟨0, by decide⟩)]
+  [opAt 1647 .JUMPDEST,
+   pushAt 1648 24 9440,
+   opAt 1649 .MLOAD,
+   pushAt 1650 0 0,
+   opAt 1651 (.Swap ⟨0, by decide⟩)]
 
 end Challenge.Modexp.Submission.Proofs.Fast

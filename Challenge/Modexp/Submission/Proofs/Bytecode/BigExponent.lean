@@ -132,8 +132,8 @@ theorem run_innerToSquare (s : State) (accumulatorWord : UInt256)
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
-  have h310 : (310 : UInt256).toNat = 310 := by decide
-  have h310Word : (310 : UInt256) = UInt256.ofNat 310 := by decide
+  have h310 : (309 : UInt256).toNat = 309 := by decide
+  have h310Word : (309 : UInt256) = UInt256.ofNat 309 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   have hseven : (7 : UInt256) = UInt256.ofNat 7 := by decide
@@ -159,7 +159,7 @@ theorem run_squareToCopy (s : State) (accumulatorWord : UInt256)
       some (BigHelpers.copyEntry
         (squareReturned s accumulatorWord count b e m baseOff expOff i j
           offset byte rest)
-        2048 3072 count 1015
+        2048 3072 count 1010
         (bitFrame accumulatorWord count b e m baseOff expOff i j offset byte
           (exponentBit byte j) rest)) := by
   have hc12 : rest.length + 12 < 1024 := by omega
@@ -172,10 +172,10 @@ theorem run_squareToCopy (s : State) (accumulatorWord : UInt256)
       offset byte (exponentBit byte j) rest).length < 1024 := by
     simp [bitFrame]
     omega
-  have h58 : (58 : UInt256).toNat = 58 := by decide
-  have h58Word : (58 : UInt256) = UInt256.ofNat 58 := by decide
-  have h1000 : (1000 : UInt256).toNat = 1000 := by decide
-  have h1000Word : (1000 : UInt256) = UInt256.ofNat 1000 := by decide
+  have h58 : (57 : UInt256).toNat = 57 := by decide
+  have h58Word : (57 : UInt256) = UInt256.ofNat 57 := by decide
+  have h1000 : (995 : UInt256).toNat = 995 := by decide
+  have h1000Word : (995 : UInt256) = UInt256.ofNat 995 := by decide
   simp [squareToCopyPath, opAt, pushAt, wfOp,
     BigHelpers.copyEntry, bitFrame, exponentMidPCs, hcode, hrun,
     jump58, h58, h58Word, h1000, h1000Word,
@@ -198,7 +198,7 @@ theorem run_copyToProduct (s : State) (accumulatorWord : UInt256)
       some (BigMul.mulEntry
         (copiedSquare s accumulatorWord count b e m baseOff expOff i j
           offset byte rest)
-        2048 1024 3072 0 count 1034
+        2048 1024 3072 0 count 1029
         (bitFrame accumulatorWord count b e m baseOff expOff i j offset byte
           (exponentBit byte j) rest)) := by
   have hc12 : rest.length + 12 < 1024 := by omega
@@ -213,10 +213,10 @@ theorem run_copyToProduct (s : State) (accumulatorWord : UInt256)
       offset byte (exponentBit byte j) rest).length < 1024 := by
     simp [bitFrame]
     omega
-  have h310 : (310 : UInt256).toNat = 310 := by decide
-  have h310Word : (310 : UInt256) = UInt256.ofNat 310 := by decide
-  have h1015 : (1015 : UInt256).toNat = 1015 := by decide
-  have h1015Word : (1015 : UInt256) = UInt256.ofNat 1015 := by decide
+  have h310 : (309 : UInt256).toNat = 309 := by decide
+  have h310Word : (309 : UInt256) = UInt256.ofNat 309 := by decide
+  have h1015 : (1010 : UInt256).toNat = 1010 := by decide
+  have h1015Word : (1010 : UInt256) = UInt256.ofNat 1010 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
   simp [copyToProductPath, opAt, pushAt, wfOp, copiedSquare,
     BigHelpers.copyReturned, BigMul.mulEntry, bitFrame, exponentMidPCs,
@@ -246,8 +246,8 @@ theorem run_productToSelect (s : State) (accumulatorWord : UInt256)
       offset byte (exponentBit byte j) rest).length < 1024 := by
     simp [bitFrame]
     omega
-  have h1034 : (1034 : UInt256).toNat = 1034 := by decide
-  have h1034Word : (1034 : UInt256) = UInt256.ofNat 1034 := by decide
+  have h1034 : (1029 : UInt256).toNat = 1029 := by decide
+  have h1034Word : (1029 : UInt256) = UInt256.ofNat 1029 := by decide
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have h0Word : (0 : UInt256) = UInt256.ofNat 0 := by decide
   simp [productToSelectPath, opAt, pushAt, wfOp, productReturned,
@@ -310,8 +310,8 @@ theorem run_selectBody (s : State) (accumulatorWord : UInt256)
   have hc20 : rest.length + 20 < 1024 := by omega
   have hinc := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := k) (b := 1) hk
-  have h1039 : (1039 : UInt256).toNat = 1039 := by decide
-  have h1039Word : (1039 : UInt256) = UInt256.ofNat 1039 := by decide
+  have h1039 : (1034 : UInt256).toNat = 1034 := by decide
+  have h1039Word : (1034 : UInt256) = UInt256.ofNat 1034 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   have hfive : (5 : UInt256) = UInt256.ofNat 5 := by decide
   simp (config := { maxSteps := 300000 })
@@ -342,8 +342,8 @@ theorem run_selectFinishGuard (s : State) (accumulatorWord : UInt256)
   have hc15 : rest.length + 15 < 1024 := by omega
   have hc16 : rest.length + 16 < 1024 := by omega
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
-  have h1090 : (1090 : UInt256).toNat = 1090 := by decide
-  have h1090Word : (1090 : UInt256) = UInt256.ofNat 1090 := by decide
+  have h1090 : (1085 : UInt256).toNat = 1085 := by decide
+  have h1090Word : (1085 : UInt256) = UInt256.ofNat 1085 := by decide
   simp [selectGuardPath, opAt, pushAt, wfOp, selectLoop, selectExit,
     selectPCs, hcode, hrun, hzeroFalse, h1090, h1090Word, jump1090,
     hc14, hc15, hc16, UInt256.lt, UInt256.isTrue,
@@ -373,8 +373,8 @@ theorem run_selectFinish (s : State) (accumulatorWord : UInt256)
   have hc13 : rest.length + 13 < 1024 := by omega
   have hc14 : rest.length + 14 < 1024 := by omega
   have hc15 : rest.length + 15 < 1024 := by omega
-  have h963 : (963 : UInt256).toNat = 963 := by decide
-  have h963Word : (963 : UInt256) = UInt256.ofNat 963 := by decide
+  have h963 : (958 : UInt256).toNat = 958 := by decide
+  have h963Word : (958 : UInt256) = UInt256.ofNat 958 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   simp [selectFinishPath, opAt, pushAt, wfOp, selectExit, selectLoop,
     afterSelectedBit, innerLoop, selectPCs, hcode, hrun, jump963,
@@ -401,8 +401,8 @@ theorem run_innerFinishGuard (s : State) (accumulatorWord : UInt256)
   have hc13 : rest.length + 13 < 1024 := by omega
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   have h8Nat : (8 : UInt256).toNat = 8 := by decide
-  have h1104 : (1104 : UInt256).toNat = 1104 := by decide
-  have h1104Word : (1104 : UInt256) = UInt256.ofNat 1104 := by decide
+  have h1104 : (1099 : UInt256).toNat = 1099 := by decide
+  have h1104Word : (1099 : UInt256) = UInt256.ofNat 1099 := by decide
   simp [innerGuardPath, opAt, pushAt, wfOp, innerLoop, innerExit,
     exponentPCs, hcode, hrun, hzeroFalse, h8Nat, h1104, h1104Word, jump1104,
     hc11, hc12, hc13, UInt256.lt, UInt256.isTrue,
@@ -430,8 +430,8 @@ theorem run_innerFinish (s : State) (accumulatorWord : UInt256)
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
-  have h946 : (946 : UInt256).toNat = 946 := by decide
-  have h946Word : (946 : UInt256) = UInt256.ofNat 946 := by decide
+  have h946 : (941 : UInt256).toNat = 941 := by decide
+  have h946Word : (941 : UInt256) = UInt256.ofNat 941 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   simp [innerFinishPath, opAt, pushAt, wfOp, innerExit, innerLoop,
     outerLoop, innerFinishPCs, hcode, hrun, jump946, h946, h946Word, hone,

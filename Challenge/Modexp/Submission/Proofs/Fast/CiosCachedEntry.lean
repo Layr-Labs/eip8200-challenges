@@ -21,7 +21,7 @@ theorem run_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32*n ≤ 9472)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32*n)) :
-    runInstructions entryProgram (entryState s mem pa pb pdst ret rest) =
+    runInstructions entryProgram (maskEntryState s mem pa pb pdst ret rest) =
       some (outState s (mpZeroed s mem n) pa pb n 0 pdst ret rest) := by
   rw [entryProgram_split]
   exact runInstructions_append_some _ _ _ _ _

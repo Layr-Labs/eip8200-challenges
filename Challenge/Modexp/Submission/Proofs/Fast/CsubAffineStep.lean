@@ -22,9 +22,9 @@ New loop state (internal only):
 pt = 8224 + 32*n - 32*j
 ```
 
-Entry schedule `[2304, 2337)`: `JUMPDEST; PUSH28 9440; MLOAD; PUSH0; SWAP1`
+Entry schedule `[2282, 2311)`: `JUMPDEST; PUSH24 9440; MLOAD; PUSH0; SWAP1`
 turns `[pdst, ret]` into `[pt, 0, dst, ret]` with `pt = 8224 + 32*n`,
-falling through into the loop head at 2337.  Both arrivals at 2337
+falling through into the loop head at 2311.  Both arrivals at 2311
 (fall-through with borrow `0`, loopback with the propagated borrow) carry
 the same `[pt, borrow, dst, ret]` stack shape, so `affineLoopState` is
 well-formed as the single loop invariant.
@@ -53,7 +53,7 @@ PUSH2 8224; DUP2; GT; PUSH2 loop; JUMPI
 POP
 ```
 
-followed by the unchanged common return tail at `[2472, 2494)`.
+followed by the unchanged common return tail at `[2446, 2468)`.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.CsubAffineStep
@@ -71,7 +71,7 @@ def affinePt (n j : Nat) : Nat :=
 memory/borrow as the current three-pointer invariant. -/
 def affineLoopState (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2337
+  { s with pc := UInt256.ofNat 2311
            stack := [UInt256.ofNat (affinePt n j),
                      (csStep memory n j).flag, pdst, ret] ++ rest
            memory := (csStep memory n j).memory }

@@ -15,7 +15,7 @@ their `runRaw` → `Located` bridge.
 
 What is verified **now** (no whole-program artifact needed):
 
-* `csubWindowBytes`: the exact 190-byte new CSUB window `[2304, 2494)`.
+* `csubWindowBytes`: the exact 190-byte new CSUB window `[2282, 2468)`.
 * `csubWindowInstrs`: the same window as instructions
   (`affineEntry ++ affineLoopExit ++ affineTailInstrs`, 54 instructions).
 * `csubWindow_assembles`: the instruction lists assemble to the exact
@@ -29,14 +29,14 @@ code): four `Located` block definitions over indices `1668..1721`
 (entry `1668..1672`, loop `1673..1706`, tail `1707..1721`), the four
 `runLocatedBlock` transition lemmas (same `simp` recipes as
 `CsubAffineRun`, plus per-index program-counter facts from the new
-`fastPC` tables and the new loop-dest jumpdest fact at pc 2337), and the
+`fastPC` tables and the new loop-dest jumpdest fact at pc 2311), and the
 bridge corollaries identifying each `runLocatedBlock` with its `runRaw`
 segment by transitivity through the shared affine end states.
 
-Tail contract: `csTailState` (pc 2469, three pointers) is superseded by
-`affineTailPreState` (pc 2472, `[borrow, dst, ret]` only).  The tail block
+Tail contract: `csTailState` (pc 2443, three pointers) is superseded by
+`affineTailPreState` (pc 2446, `[borrow, dst, ret]` only).  The tail block
 reuses the old tail `MCOPY` reasoning with the old three-`POP` prefix
-dropped (single stale-`pt` `POP` at 2471 instead); the endpoint
+dropped (single stale-`pt` `POP` at 2445 instead); the endpoint
 `csReturnedState` is unchanged.
 -/
 
@@ -51,27 +51,27 @@ open Challenge.Modexp.Submission.Proofs.Fast.Csub
 open Challenge.Modexp.Submission.Proofs.Fast.CsubAffineStep
 open Challenge.Modexp.Submission.Proofs.Fast.CsubAffineRun
 
-/-- Exact new CSUB window bytes `[2304, 2494)` (190 bytes; identical
+/-- Exact new CSUB window bytes `[2282, 2468)` (190 bytes; identical
 outside the window to the frozen baseline). -/
 def csubWindowBytes : ByteArray := ByteArray.mk #[
-  0x5b, 0x7b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x5b, 0x77, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x24, 0xe0, 0x51, 0x5f, 0x90, 0x5b, 0x80, 0x51,
+  0x24, 0xe0, 0x51, 0x5f, 0x90, 0x5b, 0x80, 0x51, 0x7f, 0xff, 0xff, 0xff,
+  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+  0xff, 0xff, 0xff, 0xdf, 0xc0, 0x82, 0x01, 0x51, 0x81, 0x81, 0x11, 0x91,
+  0x03, 0x83, 0x81, 0x03, 0x90, 0x84, 0x11, 0x90, 0x91, 0x17, 0x92, 0x50,
   0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xdf, 0xc0, 0x82, 0x01, 0x51,
-  0x81, 0x81, 0x11, 0x91, 0x03, 0x83, 0x81, 0x03, 0x90, 0x84, 0x11, 0x90,
-  0x91, 0x17, 0x92, 0x50, 0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfb, 0xc0, 0x82, 0x01, 0x52,
+  0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfb,
-  0xc0, 0x82, 0x01, 0x52, 0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xe0, 0x01, 0x61, 0x20, 0x20, 0x81, 0x11, 0x61, 0x09, 0x21, 0x57, 0x50,
-  0x15, 0x61, 0x20, 0x20, 0x51, 0x17, 0x61, 0x04, 0x3f, 0x19, 0x02, 0x61,
-  0x20, 0x40, 0x01, 0x61, 0x24, 0x80, 0x51, 0x91, 0x5e, 0x56]
+  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xe0, 0x01, 0x61, 0x20,
+  0x20, 0x81, 0x11, 0x61, 0x09, 0x07, 0x57, 0x50, 0x15, 0x61, 0x20, 0x20,
+  0x51, 0x17, 0x61, 0x04, 0x3f, 0x19, 0x02, 0x61, 0x20, 0x40, 0x01, 0x61,
+  0x24, 0x80, 0x51, 0x91, 0x5e, 0x56]
 
-/-- Unchanged common return tail `[2472, 2494)` as instructions (14). -/
+/-- Unchanged common return tail `[2446, 2468)` as instructions (14). -/
 def affineTailInstrs : List Instr :=
   [Instr.op .ISZERO,
    Instr.push 2 8224,
@@ -92,7 +92,7 @@ def affineTailInstrs : List Instr :=
 def csubWindowInstrs : List Instr :=
   affineEntry ++ affineLoopExit ++ affineTailInstrs
 
-theorem csubWindowBytes_size : csubWindowBytes.size = 190 := by rfl
+theorem csubWindowBytes_size : csubWindowBytes.size = 186 := by rfl
 
 theorem affineTailInstrs_length : affineTailInstrs.length = 14 := by rfl
 
@@ -100,7 +100,7 @@ theorem csubWindowInstrs_length : csubWindowInstrs.length = 54 := by rfl
 
 /-- The proven instruction lists assemble to the exact native-passing
 bytes.  Structural lane: the regenerated artifact's disassembly of
-`[2304, 2494)` must reproduce `csubWindowInstrs` in order. -/
+`[2282, 2468)` must reproduce `csubWindowInstrs` in order. -/
 theorem csubWindow_assembles :
     YulEvmCompiler.assemble csubWindowInstrs = csubWindowBytes := by
   decide
@@ -284,8 +284,8 @@ theorem run_csubRestBodyLocated (s : State) (memory : ByteArray) (n j : Nat)
       decide
     rw [hC]; omega
   have h8224 : ((8224 : UInt256)).toNat = 8224 := by decide
-  have h2337 : ((2337 : UInt256)) = UInt256.ofNat 2337 := by decide
-  have hdest : ((2337 : UInt256)).toNat = 2337 := by decide
+  have h2337 : ((2311 : UInt256)) = UInt256.ofNat 2311 := by decide
+  have hdest : ((2311 : UInt256)).toNat = 2311 := by decide
   have hgt : affinePt n (j + 1) > 8224 :=
     (affinePt_guard n j (by omega)).mpr hj
   have hgtM : 8224 < affinePt n (j + 1) %
@@ -298,7 +298,7 @@ theorem run_csubRestBodyLocated (s : State) (memory : ByteArray) (n j : Nat)
         UInt256) + UInt256.ofNat (affinePt n j) =
       UInt256.ofNat (affinePt n (j + 1)) :=
     affine_add_next_word_left n j (by omega) hn32
-  have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2337 = true :=
+  have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2311 = true :=
     jumpDest2666
   have hactD : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (7168 + 32 * (n - 1 - j)) 32) = s.activeWords :=
@@ -350,7 +350,7 @@ theorem run_csubLoopBodyLocated (s : State) (memory : ByteArray) (n j : Nat)
 /-! ## Located loop exit and tail (active)
 
 Not taken (`j + 1 = n`), the same `blk1683` reaches the post-guard exit
-state at pc 2471 (recipe: `run_affineRestExit` facts on the `drop 7`
+state at pc 2445 (recipe: `run_affineRestExit` facts on the `drop 7`
 rest, same load prefix as the taken case).  `blk1724` (`Paths.P13`,
 indices `1707..1721`) then runs the stale-pointer `POP` plus the common
 return tail to `csReturnedState` (recipe: old `run_csTail` facts minus
@@ -578,7 +578,7 @@ def blkAffineLoop : List (Located Artifact.submissionArtifact .Osaka) :=
    pushAt 1702 2 8224,
    opAt 1703 (.Dup ⟨1, by decide⟩),
    opAt 1704 .GT,
-   pushAt 1705 2 2337,
+   pushAt 1705 2 2311,
    opAt 1706 .JUMPI]
 
 def blkAffineTail : List (Located Artifact.submissionArtifact .Osaka) :=
@@ -600,7 +600,7 @@ def blkAffineTail : List (Located Artifact.submissionArtifact .Osaka) :=
 
 2. Prove the four `runLocatedBlock` transitions with the `CsubAffineRun`
    `simp` recipes (same fact sets; add per-index program-counter facts
-   from the new tables and the new pc-2337 jumpdest fact for the loopback):
+   from the new tables and the new pc-2311 jumpdest fact for the loopback):
    - `run_affineEntryLocated`: `blkAffineEntry` from `csEntryState` to
      `affineLoopState j = 0` (recipe: `run_affineEntry`).
    - `run_affineLoopBodyLocated`: `blkAffineLoop` from `affineLoopState j`

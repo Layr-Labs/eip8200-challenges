@@ -230,7 +230,7 @@ theorem run_check65537_miss (s : State) (memory input : ByteArray)
       Challenge.EvmProof.Stepper.runInstr,
       FixedDirectStates.check65537, FixedDirectStates.fallback, Exp.outer,
       hdata, hcode, hrun, heoff, hfix, haddr, hshr, hxor, htrue,
-      Exp.isTrue_one, jumpDest4002,
+      Exp.isZero_ofNat_zero, Exp.isTrue_one, jumpDest4002,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,

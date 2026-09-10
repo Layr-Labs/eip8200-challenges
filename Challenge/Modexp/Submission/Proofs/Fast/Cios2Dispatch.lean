@@ -23,23 +23,23 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 def dispatchState (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4458
+  { s with pc := UInt256.ofNat 4428
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
 def specializedEntryState (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4481
+  { s with pc := UInt256.ofNat 4451
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
 theorem jumpDest4057 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4458 = true := by
-  exact Artifact.isValidJumpDest_index 3166 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4428 = true := by
+  exact Artifact.isValidJumpDest_index 3135 (by rfl)
 
 theorem jumpDest4080 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4481 = true := by
-  exact Artifact.isValidJumpDest_index 3180 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4451 = true := by
+  exact Artifact.isValidJumpDest_index 3149 (by rfl)
 
 private theorem activeWords9344 (s : State) (hact : 296 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) =
@@ -78,8 +78,8 @@ theorem run_dispatch4 (s : State) (mem : ByteArray) (pa pb : Nat)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
-  have h4080 : (4481 : UInt256).toNat = 4481 := by decide
-  have h4080' : (4481 : UInt256) = UInt256.ofNat 4481 := by decide
+  have h4080 : (4451 : UInt256).toNat = 4451 := by decide
+  have h4080' : (4451 : UInt256) = UInt256.ofNat 4451 := by decide
   have hcond128 :
       ((UInt256.ofNat 256).eq (UInt256.ofNat 128)).toNat |||
         ((UInt256.ofNat 128).eq (UInt256.ofNat 128)).toNat ≠ 0 := by decide
@@ -111,8 +111,8 @@ theorem run_dispatch8 (s : State) (mem : ByteArray) (pa pb : Nat)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
-  have h4080 : (4481 : UInt256).toNat = 4481 := by decide
-  have h4080' : (4481 : UInt256) = UInt256.ofNat 4481 := by decide
+  have h4080 : (4451 : UInt256).toNat = 4451 := by decide
+  have h4080' : (4451 : UInt256) = UInt256.ofNat 4451 := by decide
   have hcond256 :
       ((UInt256.ofNat 256).eq (UInt256.ofNat 256)).toNat |||
         ((UInt256.ofNat 128).eq (UInt256.ofNat 256)).toNat ≠ 0 := by decide
@@ -145,8 +145,8 @@ theorem run_dispatchFallback (s : State) (mem : ByteArray) (pa pb : Nat)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
-  have h1939 : (1939 : UInt256).toNat = 1939 := by decide
-  have h1939' : (1939 : UInt256) = UInt256.ofNat 1939 := by decide
+  have h1939 : (1920 : UInt256).toNat = 1920 := by decide
+  have h1939' : (1920 : UInt256) = UInt256.ofNat 1920 := by decide
   have h128Nat : (UInt256.ofNat 128).toNat ≠
       (MachineState.readWord mem 9344).toNat :=
     toNat_ne_of_ne h128.symm

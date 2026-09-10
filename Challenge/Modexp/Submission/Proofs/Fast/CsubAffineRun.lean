@@ -21,25 +21,25 @@ instruction, the program-counter side goals (parent's `fastPC` tables) and
 reusing the same `simp` fact sets; the hard content — stack evolution,
 memory writes, and the two-comparison borrow recurrence — is settled here.
 
-Exact bytes under proof (new CSUB window `[2304, 2494)`, 190 bytes,
+Exact bytes under proof (new CSUB window `[2282, 2468)`, 190 bytes,
 identical outside the window to the frozen baseline; raw-SHA256
 `2b74ddba…`, see the native evidence record):
 
 ```text
-entry [2304,2337): JUMPDEST; PUSH28 9440; MLOAD; PUSH0; SWAP1
-loop  [2337,2471): JUMPDEST; DUP1; MLOAD
+entry [2282,2311): JUMPDEST; PUSH24 9440; MLOAD; PUSH0; SWAP1
+loop  [2311,2445): JUMPDEST; DUP1; MLOAD
                    PUSH32 (W-8256); DUP3; ADD; MLOAD
                    DUP2; DUP2; GT; SWAP2; SUB
                    DUP4; DUP2; SUB; SWAP1; DUP5; GT
                    SWAP1; SWAP2; OR; SWAP3; POP
                    PUSH32 (W-1088); DUP3; ADD; MSTORE
                    PUSH32 (W-32); ADD
-                   PUSH2 8224; DUP2; GT; PUSH2 2337; JUMPI
-exit  2471:        POP
-tail  [2472,2494): unchanged common return tail (structural lane)
+                   PUSH2 8224; DUP2; GT; PUSH2 2311; JUMPI
+exit  2445:        POP
+tail  [2446,2468): unchanged common return tail (structural lane)
 ```
 
-Loop-state shape (both arrivals at pc 2337 — fall-through from entry with
+Loop-state shape (both arrivals at pc 2311 — fall-through from entry with
 borrow `0`, loopback with the propagated borrow — carry the same shape):
 
 ```text
@@ -122,22 +122,22 @@ theorem runRaw_append (left right : List Instr) (s t u : State)
               | Reverted => simp [runRaw, hnext, hhalt] at hleft
               | Exception error => simp [runRaw, hnext, hhalt] at hleft
 
-/-- New CSUB entry `[2304, 2337)`: `JUMPDEST; PUSH28 9440; MLOAD; PUSH0;
+/-- New CSUB entry `[2282, 2311)`: `JUMPDEST; PUSH24 9440; MLOAD; PUSH0;
 SWAP1`.  Reads only word 9440 (never 9408). -/
 def affineEntry : List Instr :=
   [Instr.op .JUMPDEST,
-   Instr.push 28 9440,
+   Instr.push 24 9440,
    Instr.op .MLOAD,
    Instr.push 0 0,
    Instr.op (.Swap ⟨0, by decide⟩)]
 
-/-- Load prefix, T half `[2337, 2340)`: `JUMPDEST; DUP1; MLOAD`. -/
+/-- Load prefix, T half `[2311, 2314)`: `JUMPDEST; DUP1; MLOAD`. -/
 def affineLoadT : List Instr :=
   [Instr.op .JUMPDEST,
    Instr.op (.Dup ⟨0, by decide⟩),
    Instr.op .MLOAD]
 
-/-- Load prefix, M half `[2340, 2376)`: `PUSH32 (W-8256); DUP3; ADD;
+/-- Load prefix, M half `[2314, 2350)`: `PUSH32 (W-8256); DUP3; ADD;
 MLOAD`. -/
 def affineLoadM : List Instr :=
   [Instr.push 32
@@ -146,10 +146,10 @@ def affineLoadM : List Instr :=
    Instr.op .ADD,
    Instr.op .MLOAD]
 
-/-- Full 7-instruction load prefix `[2337, 2376)`, by concatenation. -/
+/-- Full 7-instruction load prefix `[2311, 2350)`, by concatenation. -/
 def affineLoad : List Instr := affineLoadT ++ affineLoadM
 
-/-- Remaining 27 loop-body instructions `[2376, 2471)`: borrow recurrence,
+/-- Remaining 27 loop-body instructions `[2350, 2445)`: borrow recurrence,
 store, pointer advance, guard. -/
 def affineRest : List Instr :=
   [Instr.op (.Dup ⟨1, by decide⟩),
@@ -179,14 +179,14 @@ def affineRest : List Instr :=
    Instr.push 2 8224,
    Instr.op (.Dup ⟨1, by decide⟩),
    Instr.op .GT,
-   Instr.push 2 2337,
+   Instr.push 2 2311,
    Instr.op .JUMPI]
 
-/-- New CSUB loop body `[2337, 2471)`: 34 instructions ending in
-`PUSH2 2337; JUMPI`. -/
+/-- New CSUB loop body `[2311, 2445)`: 34 instructions ending in
+`PUSH2 2311; JUMPI`. -/
 def affineLoopBody : List Instr := affineLoad ++ affineRest
 
-/-- Loop-exit trace: body plus the stale-pointer `POP` at 2471. -/
+/-- Loop-exit trace: body plus the stale-pointer `POP` at 2445. -/
 def affineLoopExit : List Instr :=
   affineLoopBody ++ [Instr.op .POP]
 
@@ -204,21 +204,21 @@ theorem affineLoopBody_length : affineLoopBody.length = 34 := by rfl
 
 theorem affineLoopExit_length : affineLoopExit.length = 35 := by rfl
 
-/-- Intermediate state at pc 2340 with stack `[t, pt, borrow, dst, ret]`. -/
+/-- Intermediate state at pc 2314 with stack `[t, pt, borrow, dst, ret]`. -/
 def affineLoadedTState (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2340
+  { s with pc := UInt256.ofNat 2314
            stack := [MachineState.readWord (csStep memory n j).memory
                        (8256 + 32 * (n - 1 - j)),
                      UInt256.ofNat (affinePt n j),
                      (csStep memory n j).flag, pdst, ret] ++ rest
            memory := (csStep memory n j).memory }
 
-/-- Intermediate state at pc 2376 with stack `[m, t, pt, borrow, dst,
+/-- Intermediate state at pc 2350 with stack `[m, t, pt, borrow, dst,
 ret]`. -/
 def affineLoadedState (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2376
+  { s with pc := UInt256.ofNat 2350
            stack := [MachineState.readWord (csStep memory n j).memory
                        (32 * (n - 1 - j)),
                      MachineState.readWord (csStep memory n j).memory
@@ -227,24 +227,24 @@ def affineLoadedState (s : State) (memory : ByteArray) (n j : Nat)
                      (csStep memory n j).flag, pdst, ret] ++ rest
            memory := (csStep memory n j).memory }
 
-/-- Post-guard exit state at pc 2471 with stack `[pt, borrow, dst, ret]`. -/
+/-- Post-guard exit state at pc 2445 with stack `[pt, borrow, dst, ret]`. -/
 def affineGuardExitState (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2471
+  { s with pc := UInt256.ofNat 2445
            stack := [UInt256.ofNat (affinePt n (j + 1)),
                      (csStep memory n (j + 1)).flag, pdst, ret] ++ rest
            memory := (csStep memory n (j + 1)).memory }
 
-/-- Handoff state at pc 2472 with stack `[borrow, dst, ret]`: what the
+/-- Handoff state at pc 2446 with stack `[borrow, dst, ret]`: what the
 unchanged common return tail consumes. -/
 def affineTailPreState (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2472
+  { s with pc := UInt256.ofNat 2446
            stack := [(csStep memory n j).flag, pdst, ret] ++ rest
            memory := (csStep memory n j).memory }
 
 set_option linter.unusedSimpArgs false in
-/-- Entry execution: `[pdst, ret]` at 2304 becomes the affine loop state
+/-- Entry execution: `[pdst, ret]` at 2282 becomes the affine loop state
 with `j = 0` (borrow `0`, `pt = 8224 + 32 * n`). -/
 theorem run_affineEntry (s : State) (memory : ByteArray) (n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
@@ -273,8 +273,8 @@ theorem run_affineEntry (s : State) (memory : ByteArray) (n : Nat)
       List.exchange]
 
 set_option linter.unusedSimpArgs false in
-/-- T-load execution: `[pt, borrow, dst, ret]` at 2337 becomes
-`[t, pt, borrow, dst, ret]` at 2340. -/
+/-- T-load execution: `[pt, borrow, dst, ret]` at 2311 becomes
+`[t, pt, borrow, dst, ret]` at 2314. -/
 theorem run_affineLoadT (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
@@ -308,8 +308,8 @@ theorem run_affineLoadT (s : State) (memory : ByteArray) (n j : Nat)
       List.exchange]
 
 set_option linter.unusedSimpArgs false in
-/-- M-load execution: `[t, pt, borrow, dst, ret]` at 2340 becomes
-`[m, t, pt, borrow, dst, ret]` at 2376. -/
+/-- M-load execution: `[t, pt, borrow, dst, ret]` at 2314 becomes
+`[m, t, pt, borrow, dst, ret]` at 2350. -/
 theorem run_affineLoadM (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
@@ -363,14 +363,14 @@ theorem run_affineLoad (s : State) (memory : ByteArray) (n j : Nat)
 
 set_option linter.unusedSimpArgs false in
 /-- Remainder execution, guard taken (`j + 1 < n`): `[m, t, pt, borrow,
-dst, ret]` at 2376 becomes the next affine loop state at 2337, with memory
+dst, ret]` at 2350 becomes the next affine loop state at 2311, with memory
 and borrow exactly `csStep (j + 1)`. -/
 theorem run_affineRestBody (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hact : 296 ≤ s.activeWords.toNat)
     (hj : j + 1 < n) (hn32 : n ≤ 32)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 2337 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 2311 = true) :
     runRaw affineRest (affineLoadedState s memory n j pdst ret rest) =
       some (affineLoopState s memory n (j + 1) pdst ret rest) := by
   have hjn : j < n := by omega
@@ -413,8 +413,8 @@ theorem run_affineRestBody (s : State) (memory : ByteArray) (n j : Nat)
       decide
     rw [hC]; omega
   have h8224 : ((8224 : UInt256)).toNat = 8224 := by decide
-  have h2337 : ((2337 : UInt256)) = UInt256.ofNat 2337 := by decide
-  have hdest : ((2337 : UInt256)).toNat = 2337 := by decide
+  have h2337 : ((2311 : UInt256)) = UInt256.ofNat 2311 := by decide
+  have hdest : ((2311 : UInt256)).toNat = 2311 := by decide
   have hgt : affinePt n (j + 1) > 8224 :=
     (affinePt_guard n j (by omega)).mpr hj
   have h256 : (2 ^ 256 : Nat) =
@@ -447,7 +447,7 @@ theorem run_affineRestBody (s : State) (memory : ByteArray) (n j : Nat)
 
 set_option linter.unusedSimpArgs false in
 /-- Remainder execution, guard not taken (`j + 1 = n`): `[m, t, pt,
-borrow, dst, ret]` at 2376 reaches the post-guard exit state at 2471. -/
+borrow, dst, ret]` at 2350 reaches the post-guard exit state at 2445. -/
 theorem run_affineRestExit (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
@@ -517,8 +517,8 @@ theorem run_affineRestExit (s : State) (memory : ByteArray) (n j : Nat)
       List.exchange]
 
 set_option linter.unusedSimpArgs false in
-/-- Stale-pointer pop at 2471: `[pt, borrow, dst, ret]` becomes
-`[borrow, dst, ret]` at 2472. -/
+/-- Stale-pointer pop at 2445: `[pt, borrow, dst, ret]` becomes
+`[borrow, dst, ret]` at 2446. -/
 theorem run_affinePop (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running) :
@@ -539,7 +539,7 @@ theorem run_affineLoopBody (s : State) (memory : ByteArray) (n j : Nat)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hact : 296 ≤ s.activeWords.toNat)
     (hj : j + 1 < n) (hn32 : n ≤ 32)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 2337 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 2311 = true) :
     runRaw affineLoopBody (affineLoopState s memory n j pdst ret rest) =
       some (affineLoopState s memory n (j + 1) pdst ret rest) := by
   have hjn : j < n := by omega
