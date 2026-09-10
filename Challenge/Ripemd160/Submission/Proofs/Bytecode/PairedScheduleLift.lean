@@ -446,7 +446,7 @@ open StackRoundTrace DenseScheduleTemplate
 open PairedScheduleMemory
 
 def storeTemplate (address : Nat) : List Instr :=
-  [push2 (UInt256.ofNat address), op .MSTORE]
+  [if address = 192 ∨ address = 224 then push1 (UInt256.ofNat address) else push2 (UInt256.ofNat address), op .MSTORE]
 
 theorem run_storeTemplate (s : State) (pc value : UInt256) (address : Nat)
     (rest : List UInt256) (hstack : rest.length < 1022)
@@ -462,11 +462,12 @@ theorem run_storeTemplate (s : State) (pc value : UInt256) (address : Nat)
   have haddr : (UInt256.ofNat address).toNat = address := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat]
     exact Nat.mod_eq_of_lt haddress
-  simp [storeTemplate, push2, op, writeWord, runInstrSeq,
+  by_cases hsmall : address = 192 ∨ address = 224 <;>
+    simp [storeTemplate, hsmall, push1, push2, op, writeWord, runInstrSeq,
     Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap1, hcap,
     UInt256.succ, Instr.size,
     State.activeWordsAfterUInt256, haddr]
-  rfl
+  all_goals rfl
 
 def maskTemplate : List Instr :=
   [.push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), op .AND]
@@ -916,7 +917,7 @@ theorem fullTemplate_length : fullTemplate.length = 152 := by
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.maskTemplate,
     PairedSchedulePrimitives.storeTemplate, sentinelTemplate]
 
-theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 393 := by
+theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 391 := by
   rw [DenseScheduleTemplate.assembleBytes_length]
   norm_num [fullTemplate, initialTemplate, reversedHalfTemplate, endianStage8, endianStage16,
     endianStage, endianMaskPush, endianFactorPush, endianFactor,
@@ -1061,14 +1062,14 @@ def frozenInstructions : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0xe0),
    .op .SHR,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x00c0),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0x00c0),
    .op .MSTORE,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0xc0),
    .op .SHR,
    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
    .op .AND,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x00e0),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0x00e0),
    .op .MSTORE,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0xa0),

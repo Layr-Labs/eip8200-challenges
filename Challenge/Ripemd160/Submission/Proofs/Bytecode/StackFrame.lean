@@ -163,8 +163,8 @@ theorem run_exit (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock exitPath (frameSeam s input i) =
       some (frameLoadEntry s input i) := by
-  have hpc940 : Artifact.submissionArtifact.instructionPC 345 = 0x24b := by rfl
-  have hpc941 : Artifact.submissionArtifact.instructionPC 346 = 0x24c := by rfl
+  have hpc940 : Artifact.submissionArtifact.instructionPC 345 = 0x255 := by rfl
+  have hpc941 : Artifact.submissionArtifact.instructionPC 346 = 0x258 := by rfl
   simp [exitPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     frameSeam, frameLoadEntry, StackBlockModel.scheduledState,
     StackBlockModel.withMemory, StackBlockModel.withActiveWords,

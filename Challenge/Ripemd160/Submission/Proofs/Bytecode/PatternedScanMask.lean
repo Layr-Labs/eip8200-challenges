@@ -237,6 +237,41 @@ theorem guardWord_projection_376 (j : Nat) (hj : j < 12) :
     Challenge.EvmProof.Bytes.shiftRight_readWord data376 (32 * j) _ hp hw,
     bytesToNatPadded_data376 (32 * j) _ (by omega)]
 
+
+def data256 : ByteArray := patternedInput.extract 0 256
+@[simp] theorem data256_size : data256.size = 256 := by
+  simp [data256, patternedInput_size]
+
+@[simp] theorem data256_getElem (i : Nat) (hi : i < data256.size) :
+    data256[i] = expectedByte i := by
+  simp only [data256, ByteArray.getElem_extract, Nat.zero_add]
+  apply patternedInput_getElem
+
+theorem byteFrom_data256 (i : Nat) (hi : i < 256) :
+    YulSemantics.EVM.byteFrom data256.toList i = PatternedWordData.paddedByte i := by
+  have hdata : i < data256.size := by rw [data256_size]; exact hi
+  rw [byteFrom_getElem data256 i hdata, data256_getElem]
+  simp only [PatternedWordData.paddedByte, if_pos (show i < 1000 by omega)]
+
+theorem bytesToNatPadded_data256 (off width : Nat) (hfit : off + width ≤ 256) :
+    Precompile.bytesToNatPadded data256 off width =
+      Precompile.bytesToNatPadded patternedInput off width := by
+  apply (bytesToNatPadded_eq_iff data256 patternedInput off width).mpr
+  intro i hi
+  rw [byteFrom_data256 (off + i) (by omega), PatternedWordLogic.byteFrom_patterned]
+
+theorem guardWord_projection_256 (j : Nat) (hj : j < 8) :
+    UInt256.shiftRight (guardWord j) (wordShift 256 j) =
+      UInt256.shiftRight (MachineState.readWord data256 (32 * j)) (wordShift 256 j) := by
+  have hg : guardWord j = PatternedWordData.expectedWordAt j := by
+    interval_cases j <;> simp
+  have hp : 0 < min 32 (256 - 32 * j) := by omega
+  have hw : min 32 (256 - 32 * j) ≤ 32 := Nat.min_le_left _ _
+  rw [hg, ← PatternedWordLogic.readWord_patterned j, wordShift,
+    Challenge.EvmProof.Bytes.shiftRight_readWord patternedInput (32 * j) _ hp hw,
+    Challenge.EvmProof.Bytes.shiftRight_readWord data256 (32 * j) _ hp hw,
+    bytesToNatPadded_data256 (32 * j) _ (by omega)]
+
 theorem guardWord_projection_1000 (j : Nat) (hj : j < 32) :
     UInt256.shiftRight (guardWord j) (wordShift 1000 j) =
       UInt256.shiftRight (MachineState.readWord patternedInput (32 * j)) (wordShift 1000 j) := by
@@ -252,6 +287,15 @@ theorem acc376_zero_iff (input : ByteArray) (hsize : input.size = 376) :
   simpa only [data376_size, wordShift] using
     guardedAcc_zero_iff_eq input data376 guardWord 12 hs hc
       (by simpa only [data376_size, wordShift] using guardWord_projection_376)
+
+theorem acc256_zero_iff (input : ByteArray) (hsize : input.size = 256) :
+    guardedAcc input guardWord (wordShift 256) 8 = 0 ↔ input = data256 := by
+  change guardedAcc input guardWord (fun j => UInt256.ofNat ((32 - min 32 (256 - 32 * j)) * 8)) 8 = 0 ↔ input = data256
+  have hs : input.size = data256.size := by simpa only [data256_size]
+  have hc : data256.size ≤ 32 * 8 := by change 256 ≤ 32 * 8; norm_num
+  simpa only [data256_size, wordShift] using
+    guardedAcc_zero_iff_eq input data256 guardWord 8 hs hc
+      (by simpa only [data256_size, wordShift] using guardWord_projection_256)
 
 theorem acc1000_zero_iff (input : ByteArray) (hsize : input.size = 1000) :
     guardedAcc input guardWord (wordShift 1000) 32 = 0 ↔ input = patternedInput := by
@@ -275,6 +319,10 @@ def rawShift (length : Nat) (offset : UInt256) : UInt256 :=
 
 theorem rawShift_376 (k : Nat) (hk : k < 12) :
     rawShift 376 (UInt256.ofNat (32 * k)) = wordShift 376 k := by
+  interval_cases k <;> decide
+
+theorem rawShift_256 (k : Nat) (hk : k < 8) :
+    rawShift 256 (UInt256.ofNat (32 * k)) = wordShift 256 k := by
   interval_cases k <;> decide
 
 theorem rawShift_1000 (k : Nat) (hk : k < 32) :

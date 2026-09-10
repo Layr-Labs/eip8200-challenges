@@ -6,19 +6,19 @@ set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 4000000
 
-namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Finish
+namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned256Finish
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
 
-def paddedDigestWord : UInt256 := Prefix256Digest.paddedDigestWord
+def paddedDigestWord : UInt256 := Patterned256Digest.paddedDigestWord
 
-def paddedDigest : ByteArray := Prefix256Digest.paddedDigest
+def paddedDigest : ByteArray := Patterned256Digest.paddedDigest
 
 def answerMemory : ByteArray := DigestReturn.answerMemory paddedDigestWord
 
 def returnRest : List UInt256 :=
-  [UInt256.ofNat (scalarAt 12), 384, 0, P7, M, m7, P, m8]
+  [UInt256.ofNat (scalarAt 8), 256, 0, P7, M, m7, P, m8]
 
 def storedState (input : ByteArray) : State := DigestReturn.storedState input paddedDigestWord returnRest
 
@@ -51,12 +51,12 @@ def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
   Prefix256Cleanup.gasSteps_miss input sv ov acc hne
 
 def gasSteps_finish_hit (input : ByteArray) (sv ov acc : UInt256)
-    (hz : acc = 0) (hsize : input.size = 376) :
+    (hz : acc = 0) (hsize : input.size = 256) :
     GasSteps (stS input 425 [sv, ov, acc, P7, M, m7, P, m8]) (DigestReturn.returnedState input paddedDigestWord [sv, ov, 0, P7, M, m7, P, m8]) := by
   subst acc
   have select := Prefix256Select.gasSteps_select input [sv, ov, 0, P7, M, m7, P, m8] (by simp)
-  rw [Prefix256Value.selected_256 input hsize] at select
+  rw [Prefix256Value.selected_short input hsize] at select
   exact (Prefix256Cleanup.gasSteps_hit input sv ov).trans
     (select.trans (DigestReturn.gasSteps_return input paddedDigestWord [sv, ov, 0, P7, M, m7, P, m8] (by simp)))
 
-end Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Finish
+end Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned256Finish

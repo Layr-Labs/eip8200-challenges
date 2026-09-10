@@ -33,15 +33,16 @@ private theorem word_add_ofNat_assoc (u : UInt256) (a b : Nat) :
     (u + UInt256.ofNat a) + UInt256.ofNat b = u + UInt256.ofNat (a + b) := by
   rw [word_add_assoc, Word.ofNat_add_mod]
 
-def upperTemplate : List Instr :=
-  [.push ⟨20, by decide⟩ (UInt256.ofNat 460344169260758029377710773882198039553172832256)]
+private theorem add_eq_hadd (a b : UInt256) : UInt256.add a b = a + b := rfl
 
-/-- The group-16 constant materialised by one wide push, exactly as this tree
-already does for groups 32, 48 and 64.  `mixed_value` proves the literal equals
-the `SHL`/`OR` construction it replaces. -/
+def upperTemplate : List Instr :=
+  [.push ⟨4, by decide⟩ (UInt256.ofNat 0x50a28be6), .push ⟨1, by decide⟩ 128, .op .SHL]
+
+/-- Construct the group-16 constant from two32-bit halves. -/
 def replaceTemplate : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op .POP,
-   .push ⟨20, by decide⟩ (UInt256.ofNat 526962527014005041256681316140890030896371104153)]
+   .push ⟨4, by decide⟩ (UInt256.ofNat 0x5c4dd124), .push ⟨1, by decide⟩ 128, .op .SHL,
+   .push ⟨4, by decide⟩ (UInt256.ofNat 0x5a827999), .op .OR]
 
 theorem run_upperTemplate (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length < 1022) (hrun : s.halt = .Running) :
@@ -50,8 +51,10 @@ theorem run_upperTemplate (s : State) (pc : UInt256) (rho : List UInt256)
         pc := pcAfter pc upperTemplate
         stack := UInt256.ofNat 460344169260758029377710773882198039553172832256 :: rho} := by
   have hzero : rho.length < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 2) : rho.length + n < 1024 := by omega
   simp [upperTemplate, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
-    pcAfter, Instr.size, hrun, hzero]
+    pcAfter, Instr.size, hrun, hzero, hcap, List.length_cons, Nat.add_assoc,
+    Word.literal_eq_ofNat, upper_value, UInt256.succ, add_eq_hadd, word_add_ofNat_assoc]
 
 #print axioms run_upperTemplate
 
@@ -64,8 +67,8 @@ theorem run_replaceTemplate (s : State) (pc value discarded : UInt256) (rho : Li
   have hcap (n : Nat) (hn : n ≤ 3) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [replaceTemplate,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
-    Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap]
-  rfl
+    Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
+    Word.literal_eq_ofNat, mixed_value, add_eq_hadd, word_add_ofNat_assoc]
 
 #print axioms run_replaceTemplate
 
