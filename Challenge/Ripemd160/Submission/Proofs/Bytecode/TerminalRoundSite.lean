@@ -12,13 +12,13 @@ open StackRoundTemplate StackRoundTrace PairedAllInlineCoreTrace TerminalRound
 def template : List Instr := modifiedTemplate ++ coreExitTemplate
 
 theorem template_slice :
-    (Artifact.submissionArtifact.instructions.drop 3930).take template.length = template := by
+    (Artifact.submissionArtifact.instructions.drop 3928).take template.length = template := by
   rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3930 template_slice
+  StackSiteBuilder.ofSlice template 3928 template_slice
     (by
-      change 3930 + template.length ≤ Artifact.submissionInstructions.length
+      change 3928 + template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -26,7 +26,7 @@ def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
     (by decide)
 
 theorem site_startPC : site.startPC = UInt256.ofNat 4813 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3930) = UInt256.ofNat 4813
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3928) = UInt256.ofNat 4813
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
