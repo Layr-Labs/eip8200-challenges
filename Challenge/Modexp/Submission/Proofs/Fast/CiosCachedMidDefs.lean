@@ -25,16 +25,16 @@ def baseStack (bi pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) 
 
 def input (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 4522) ([c] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 4540) ([c] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 def stored (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed { s with memory := midMem s.memory c } (UInt256.ofNat 4538)
+  framed { s with memory := midMem s.memory c } (UInt256.ofNat 4556)
     (baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 def product (s : State) (n : Nat) (bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 4565)
+  framed s (UInt256.ofNat 4573)
     ([rowC0 s.memory n, rowMu s.memory n] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidDefs
