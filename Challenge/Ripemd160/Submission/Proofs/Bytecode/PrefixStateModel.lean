@@ -16,11 +16,10 @@ def Matched2 (input : ByteArray) : Prop :=
   MachineState.readWord input 96 = PatternedWordData.expectedWordAt 3
 instance (input : ByteArray) : Decidable (Matched2 input) := inferInstanceAs (Decidable (_ ∧ _))
 
-/-- The dispatcher consumes two blocks at once exactly when all four words match. -/
-def double (input : ByteArray) : Bool := decide (Matched input ∧ Matched2 input)
+/-- The compact dispatcher consumes one block. The exact 128-byte return is separate. -/
+def double (_input : ByteArray) : Bool := false
 
-theorem double_iff (input : ByteArray) : double input = true ↔ Matched input ∧ Matched2 input := by
-  simp [double]
+@[simp] theorem double_eq_false (input : ByteArray) : double input = false := rfl
 
 def prepared (s : State) (i : Nat) : State :=
   if i = 0 then PrefixStateMemory.copied s else s
