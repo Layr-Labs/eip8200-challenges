@@ -14,7 +14,7 @@ open WindowNibbleKernel
 
 theorem run_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1004) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1001) (hrun : s.halt = .Running)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32*n ≤ 9472)

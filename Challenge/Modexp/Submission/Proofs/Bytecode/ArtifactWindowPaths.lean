@@ -73,20 +73,20 @@ private def nine_emptyReturn :
   WindowTwentyOneSlice.block allWellFormed 2362 14 3095 WindowTwentyOneReturn.emptyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-private def fermat_prime : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4873 FermatProgram.primeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3724 14 4873 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
-private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4926 FermatProgram.exponentProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3738 9 4926 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
-private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4938 FermatProgram.returnProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3747 16 4938 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
-private def fermat_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4957 FermatProgram.missProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3763 4 4957 FermatProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_prime : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4879 FermatProgram.primeProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3730 14 4879 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4932 FermatProgram.exponentProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3744 9 4932 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4944 FermatProgram.returnProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3753 16 4944 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4963 FermatProgram.missProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3769 4 4963 FermatProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
 def fermatPaths : FermatProgram.Paths submissionArtifact .Osaka where
   prime := fermat_prime
   exponent := fermat_exponent
   result := fermat_result
   miss := fermat_miss
-  missJump := by exact isValidJumpDest_index 3763 (by rfl)
+  missJump := by exact isValidJumpDest_index 3769 (by rfl)
   legacyJump := by exact isValidJumpDest_index 1773 (by rfl)
 
 def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka where
@@ -104,7 +104,7 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
   zeroReturn := nine_zeroReturn
   emptyReturn := nine_emptyReturn
   hitJump := by
-    have h := isValidJumpDest_index 3724 (by rfl)
+    have h := isValidJumpDest_index 3730 (by rfl)
     exact h
   emptyJump := by
     have h := isValidJumpDest_index 2362 (by rfl)

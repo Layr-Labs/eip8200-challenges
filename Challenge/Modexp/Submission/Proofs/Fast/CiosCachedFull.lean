@@ -25,7 +25,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.CiosCachedRows
 
 opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1004) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1001) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -78,7 +78,7 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
 
 opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1004) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1001) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -131,7 +131,7 @@ opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
 
 opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1004) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1001) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -156,7 +156,7 @@ opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
 
 opaque gasSteps_specializedEight (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1004) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1001) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -183,7 +183,7 @@ opaque gasSteps_specializedEight (s : State) (mem : ByteArray) (pa pb : Nat)
 existing MONPRO trace at the CSUB entry for every admitted limb count. -/
 opaque gasSteps_toCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1004) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1001) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -230,7 +230,7 @@ opaque gasSteps_toCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
 /-- The universal dispatcher followed by the unchanged CSUB tail. -/
 opaque gasSteps_monproCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1004) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1001) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -270,7 +270,7 @@ opaque gasSteps_monproCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
 discharging the accumulator bound. -/
 opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)
     (a b mm : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1004) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1001) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
