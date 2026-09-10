@@ -94,7 +94,7 @@ theorem gasSteps_baseLoop_cost_potential (s : State)
 
 private theorem jump944 :
     Decode.isValidJumpDest submissionBytecode 944 = true :=
-  Artifact.isValidJumpDest_index 717 (by rfl)
+  Artifact.isValidJumpDest_index 716 (by rfl)
 
 def baseConvertedExit (s : State) (accumulator : UInt256)
     (count baseSize e m baseOff : Nat) (rest : List UInt256) : State :=

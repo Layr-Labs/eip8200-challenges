@@ -29,26 +29,26 @@ theorem jump58 :
 
 theorem jump1039 :
     Decode.isValidJumpDest submissionBytecode 1039 = true :=
-  Artifact.isValidJumpDest_index 777 (by rfl)
+  Artifact.isValidJumpDest_index 776 (by rfl)
 
 
 theorem jump1090 :
     Decode.isValidJumpDest submissionBytecode 1090 = true :=
-  Artifact.isValidJumpDest_index 816 (by rfl)
+  Artifact.isValidJumpDest_index 815 (by rfl)
 
 
 theorem jump963 :
     Decode.isValidJumpDest submissionBytecode 963 = true :=
-  Artifact.isValidJumpDest_index 734 (by rfl)
+  Artifact.isValidJumpDest_index 733 (by rfl)
 
 
 
 theorem jump1104 :
     Decode.isValidJumpDest submissionBytecode 1104 = true :=
-  Artifact.isValidJumpDest_index 827 (by rfl)
+  Artifact.isValidJumpDest_index 826 (by rfl)
 
 
 theorem jump946 :
     Decode.isValidJumpDest submissionBytecode 946 = true :=
-  Artifact.isValidJumpDest_index 719 (by rfl)
+  Artifact.isValidJumpDest_index 718 (by rfl)
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigExponent

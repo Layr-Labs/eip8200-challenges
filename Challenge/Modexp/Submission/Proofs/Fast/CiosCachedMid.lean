@@ -20,26 +20,24 @@ theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
     (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32*n-32))
-    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224+32*n))
-    (hminv : inverseInvariant mem n) :
+    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224+32*n)) :
     runInstructions midProgram
       (CiosCached.midState s mem c bi pa pb n i dst ret rest) =
-    some (CiosCached.l2At 4878 s (midMem mem c) bi (rowMu mem n) (rowC0 mem n)
+    some (CiosCached.l2At 4924 s (midMem mem c) bi (rowMu mem n) (rowC0 mem n)
       pa pb n i 0 dst ret rest) := by
   have hml' : MachineState.readWord (midMem mem c) 9408 = UInt256.ofNat (32*n-32) :=
     (read_mid mem c 9408 (Or.inr (by decide))).trans hml
   have htl' : MachineState.readWord (midMem mem c) 9440 = UInt256.ofNat (8224+32*n) :=
     (read_mid mem c 9440 (Or.inr (by decide))).trans htl
-  have hminv' := inverse_midMem mem c n hn32 hminv
   have hmu := rowMu_mid mem c n hn
   have hc0 := rowC0_mid mem c n hn hn32
   have trace := runInstructions_append_some _ _ _ _ _
     (run_store { s with memory := mem } c bi
-      (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
+      (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa + 32*n - 32)) (UInt256.ofNat (pb-32))
       (isFour n) dst ret rest hcap hact)
     (run_product { s with memory := midMem mem c } n bi
-      (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
-      (isFour n) dst ret rest hcap hact hn hn32 hml' htl' hminv')
+      (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa + 32*n - 32)) (UInt256.ofNat (pb-32))
+      (isFour n) dst ret rest hcap hact hn hn32 hml' htl')
   rw [CiosCachedMidDefs.program_eq]
   simpa only [input, stored, product, baseStack, framed, CiosCached.midState,
     CiosCached.l2At, l2Step, hmu, hc0, List.append_assoc,

@@ -62,7 +62,7 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
         dispState, hitState, frameState, pcDispatch, pcHit, outer, Exp.outer,
-        hcode, hrun, hzeroNat, haw, jumpDest4687, hm, FullBase.guardWord, hc,
+        hcode, hrun, hzeroNat, haw, jumpDest4656, hm, FullBase.guardWord, hc,
         State.activeWordsAfterUInt256,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -79,7 +79,7 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
         dispState, missState, frameState, pcDispatch, pcMiss, outer, Exp.outer,
-        hcode, hrun, hzeroNat, haw, jumpDest4687, hm, FullBase.guardWord, hc,
+        hcode, hrun, hzeroNat, haw, jumpDest4656, hm, FullBase.guardWord, hc,
         State.activeWordsAfterUInt256,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -99,7 +99,7 @@ theorem run_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       missState, frameState, pcMiss, Exp.r0State, outer, Exp.outer,
-      hcode, hrun, jumpDest1533,
+      hcode, hrun, jumpDest1528,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -134,7 +134,7 @@ theorem run_hit (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       hitState, frameState, pcHit, pcAfterCsub0, Csub.csEntryState, hitMem,
       FullBase.copyBaseMem, Exp.storeWord, outer, Exp.outer,
-      hcode, hrun, hdata, hsize, haw1, haw2, haw3, jumpDest2642, Exp.push0_word,
+      hcode, hrun, hdata, hsize, haw1, haw2, haw3, jumpDest2622, Exp.push0_word,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -218,7 +218,7 @@ theorem run_negTail (s : State) (m : ByteArray) (p c : UInt256) (n bsize esize m
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcNegMid, pcNegNext, outer, Exp.outer, hcode, hrun, hp0, jumpDest4760,
+      pcNegMid, pcNegNext, outer, Exp.outer, hcode, hrun, hp0, jumpDest4729,
       UInt256.isZero, UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -260,7 +260,7 @@ theorem run_negLast (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       negLoopState, negDoneState, pcNegLoop, pcNegDone, negStep, NEG,
-      outer, Exp.outer, hcode, hrun, hp, hp0, hdst, hidx, hawL, hawS, jumpDest4760,
+      outer, Exp.outer, hcode, hrun, hp, hp0, hdst, hidx, hawL, hawS, jumpDest4729,
       UInt256.isZero, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
@@ -285,7 +285,7 @@ theorem run_negNext (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       negLoopState, negNextState, pcNegLoop, pcNegNext,
-      outer, Exp.outer, hcode, hrun, hK, jumpDest4699, Monpro.ptrAt_succ,
+      outer, Exp.outer, hcode, hrun, hK, jumpDest4668, Monpro.ptrAt_succ,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -330,17 +330,16 @@ theorem run_preNewton (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock blk2956
       (preNewtonState s mem n bsize esize msize) =
       some (newtonBState s mem n bsize esize msize) := by
-  have hmul_one (value : UInt256) : value * UInt256.ofNat 1 = value := by
-    cases value with
-    | mk value =>
-        change UInt256.mk (value * (1 : Fin UInt256.size)) = UInt256.mk value
-        rw [mul_one]
+  have hmulone (x : UInt256) : x * UInt256.ofNat 1 = x := by
+    change UInt256.mk (x.val * (1 : Fin UInt256.size)) = x
+    simp
   simp (config := { maxSteps := 600000 })
     [blk2956, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      preNewtonState, newtonBState, pcPreNewton, pcNewtonB, newton4W, newtonW, hmul_one,
+      preNewtonState, newtonBState, pcPreNewton, pcNewtonB, newton4W, newtonW,
+      hmulone,
       outer, Exp.outer, hcode, hrun,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

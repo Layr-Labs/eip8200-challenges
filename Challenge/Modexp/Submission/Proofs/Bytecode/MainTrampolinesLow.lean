@@ -9,24 +9,19 @@ open EvmSemantics
 open EvmSemantics.EVM
 
 set_option linter.unusedSimpArgs false in
-private theorem run_tramp0_code (code input : ByteArray)
-    (hjump : Decode.isValidJumpDest code 5267 = true) :
+theorem run_tramp0 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path
-      (initialState code input 0) =
-      some { initialState code input 0 with pc := UInt256.ofNat 5267 } := by
+      (initialState submissionBytecode input 0) = some (trampolineState input 1314) := by
   have hzero : (0 : UInt256).toNat = 0 := by decide
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 0) (b := 3) (by norm_num : 0 + 3 < 2 ^ 256)
-  have hdest : (5267 : UInt256).toNat = 5267 := by decide
-  have hdestWord : (5267 : UInt256) = UInt256.ofNat 5267 := by decide
+  have hdest : (1314 : UInt256).toNat = 1314 := by decide
+  have hjump : Decode.isValidJumpDest submissionBytecode 1314 = true :=
+    Artifact.isValidJumpDest_index 976 (by rfl)
+  have hdestWord : (1314 : UInt256) = UInt256.ofNat 1314 := by decide
   simp [tramp0Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    initialState, hzero, hadd, hdest, hjump, hdestWord]
-
-theorem run_tramp0 (input : ByteArray) :
-    Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path
-      (initialState submissionBytecode input 0) = some (trampolineState input 5267) := by
-  exact run_tramp0_code submissionBytecode input Artifact.earlyWordPaths.helperJump
+    trampolineState, initialState, hzero, hadd, hdest, hjump, hdestWord]
 
 set_option linter.unusedSimpArgs false in
 theorem run_tramp1 (input : ByteArray) :
