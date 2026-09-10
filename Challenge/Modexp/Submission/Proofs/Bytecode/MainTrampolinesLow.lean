@@ -8,30 +8,37 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.Main
 open EvmSemantics
 open EvmSemantics.EVM
 
+private def trampolineStateCode (code input : ByteArray) (pc : Nat) : State :=
+  { initialState code input 0 with pc := UInt256.ofNat pc }
+
 set_option linter.unusedSimpArgs false in
 private theorem run_tramp0_code (code input : ByteArray)
-    (hjump : Decode.isValidJumpDest code 5267 = true) :
+    (hjump : Decode.isValidJumpDest code 1314 = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path
-      (initialState code input 0) =
-      some { initialState code input 0 with pc := UInt256.ofNat 5267 } := by
+      (initialState code input 0) = some (trampolineStateCode code input 1314) := by
   have hzero : (0 : UInt256).toNat = 0 := by decide
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 0) (b := 3) (by norm_num : 0 + 3 < 2 ^ 256)
-  have hdest : (5267 : UInt256).toNat = 5267 := by decide
-  have hdestWord : (5267 : UInt256) = UInt256.ofNat 5267 := by decide
+  have hdest : (1314 : UInt256).toNat = 1314 := by decide
+  have hdestWord : (1314 : UInt256) = UInt256.ofNat 1314 := by decide
   simp [tramp0Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    initialState, hzero, hadd, hdest, hjump, hdestWord]
-
-theorem run_tramp0 (input : ByteArray) :
-    Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path
-      (initialState submissionBytecode input 0) = some (trampolineState input 5267) := by
-  exact run_tramp0_code submissionBytecode input Artifact.earlyWordPaths.helperJump
+    trampolineStateCode, initialState, hzero, hadd, hdest, hjump, hdestWord]
 
 set_option linter.unusedSimpArgs false in
-theorem run_tramp1 (input : ByteArray) :
+theorem run_tramp0 (input : ByteArray) :
+    Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path
+      (initialState submissionBytecode input 0) = some (trampolineState input 1314) := by
+  have hpc : Artifact.instructionPC 977 = 1314 := by decide
+  have hjump : Decode.isValidJumpDest submissionBytecode 1314 = true := by
+    simpa only [hpc] using Artifact.isValidJumpDest_index 977 (by rfl)
+  exact run_tramp0_code submissionBytecode input hjump
+
+set_option linter.unusedSimpArgs false in
+private theorem run_tramp1_code (code input : ByteArray)
+    (hjump : Decode.isValidJumpDest code 53 = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp1Path
-      (trampolineState input 14) = some (trampolineState input 53) := by
+      (trampolineStateCode code input 14) = some (trampolineStateCode code input 53) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
     (n := 14) (by norm_num : 14 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
@@ -39,13 +46,20 @@ theorem run_tramp1 (input : ByteArray) :
   have hdest : (53 : UInt256).toNat = 53 := by decide
   simp [tramp1Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    trampolineState, initialState, hsucc, hadd, hdest,
+    trampolineStateCode, initialState, hsucc, hadd, hdest, hjump,
     Challenge.EvmProof.Word.word_toNat_ofNat]; rfl
 
 set_option linter.unusedSimpArgs false in
-theorem run_tramp2 (input : ByteArray) :
+theorem run_tramp1 (input : ByteArray) :
+    Challenge.EvmProof.Stepper.runLocatedBlock tramp1Path
+      (trampolineState input 14) = some (trampolineState input 53) := by
+  exact run_tramp1_code submissionBytecode input jump53
+
+set_option linter.unusedSimpArgs false in
+private theorem run_tramp2_code (code input : ByteArray)
+    (hjump : Decode.isValidJumpDest code 99 = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp2Path
-      (trampolineState input 53) = some (trampolineState input 99) := by
+      (trampolineStateCode code input 53) = some (trampolineStateCode code input 99) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
     (n := 53) (by norm_num : 53 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
@@ -53,13 +67,20 @@ theorem run_tramp2 (input : ByteArray) :
   have hdest : (99 : UInt256).toNat = 99 := by decide
   simp [tramp2Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    trampolineState, initialState, hsucc, hadd, hdest,
+    trampolineStateCode, initialState, hsucc, hadd, hdest, hjump,
     Challenge.EvmProof.Word.word_toNat_ofNat]; rfl
 
 set_option linter.unusedSimpArgs false in
-theorem run_tramp3 (input : ByteArray) :
+theorem run_tramp2 (input : ByteArray) :
+    Challenge.EvmProof.Stepper.runLocatedBlock tramp2Path
+      (trampolineState input 53) = some (trampolineState input 99) := by
+  exact run_tramp2_code submissionBytecode input jump99
+
+set_option linter.unusedSimpArgs false in
+private theorem run_tramp3_code (code input : ByteArray)
+    (hjump : Decode.isValidJumpDest code 305 = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp3Path
-      (trampolineState input 99) = some (trampolineState input 305) := by
+      (trampolineStateCode code input 99) = some (trampolineStateCode code input 305) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
     (n := 99) (by norm_num : 99 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
@@ -67,13 +88,20 @@ theorem run_tramp3 (input : ByteArray) :
   have hdest : (305 : UInt256).toNat = 305 := by decide
   simp [tramp3Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    trampolineState, initialState, hsucc, hadd, hdest,
+    trampolineStateCode, initialState, hsucc, hadd, hdest, hjump,
     Challenge.EvmProof.Word.word_toNat_ofNat]; rfl
 
 set_option linter.unusedSimpArgs false in
-theorem run_tramp4 (input : ByteArray) :
+theorem run_tramp3 (input : ByteArray) :
+    Challenge.EvmProof.Stepper.runLocatedBlock tramp3Path
+      (trampolineState input 99) = some (trampolineState input 305) := by
+  exact run_tramp3_code submissionBytecode input jump305
+
+set_option linter.unusedSimpArgs false in
+private theorem run_tramp4_code (code input : ByteArray)
+    (hjump : Decode.isValidJumpDest code 434 = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp4Path
-      (trampolineState input 305) = some (trampolineState input 434) := by
+      (trampolineStateCode code input 305) = some (trampolineStateCode code input 434) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
     (n := 305) (by norm_num : 305 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
@@ -81,13 +109,20 @@ theorem run_tramp4 (input : ByteArray) :
   have hdest : (434 : UInt256).toNat = 434 := by decide
   simp [tramp4Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    trampolineState, initialState, hsucc, hadd, hdest,
+    trampolineStateCode, initialState, hsucc, hadd, hdest, hjump,
     Challenge.EvmProof.Word.word_toNat_ofNat]; rfl
 
 set_option linter.unusedSimpArgs false in
-theorem run_tramp5 (input : ByteArray) :
+theorem run_tramp4 (input : ByteArray) :
+    Challenge.EvmProof.Stepper.runLocatedBlock tramp4Path
+      (trampolineState input 305) = some (trampolineState input 434) := by
+  exact run_tramp4_code submissionBytecode input jump434
+
+set_option linter.unusedSimpArgs false in
+private theorem run_tramp5_code (code input : ByteArray)
+    (hjump : Decode.isValidJumpDest code 512 = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp5Path
-      (trampolineState input 434) = some (trampolineState input 512) := by
+      (trampolineStateCode code input 434) = some (trampolineStateCode code input 512) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
     (n := 434) (by norm_num : 434 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
@@ -95,13 +130,20 @@ theorem run_tramp5 (input : ByteArray) :
   have hdest : (512 : UInt256).toNat = 512 := by decide
   simp [tramp5Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    trampolineState, initialState, hsucc, hadd, hdest,
+    trampolineStateCode, initialState, hsucc, hadd, hdest, hjump,
     Challenge.EvmProof.Word.word_toNat_ofNat]; rfl
 
 set_option linter.unusedSimpArgs false in
-theorem run_tramp6 (input : ByteArray) :
+theorem run_tramp5 (input : ByteArray) :
+    Challenge.EvmProof.Stepper.runLocatedBlock tramp5Path
+      (trampolineState input 434) = some (trampolineState input 512) := by
+  exact run_tramp5_code submissionBytecode input jump512
+
+set_option linter.unusedSimpArgs false in
+private theorem run_tramp6_code (code input : ByteArray)
+    (hjump : Decode.isValidJumpDest code 699 = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp6Path
-      (trampolineState input 512) = some (trampolineState input 699) := by
+      (trampolineStateCode code input 512) = some (trampolineStateCode code input 699) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
     (n := 512) (by norm_num : 512 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
@@ -109,8 +151,14 @@ theorem run_tramp6 (input : ByteArray) :
   have hdest : (699 : UInt256).toNat = 699 := by decide
   simp [tramp6Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    trampolineState, initialState, hsucc, hadd, hdest,
+    trampolineStateCode, initialState, hsucc, hadd, hdest, hjump,
     Challenge.EvmProof.Word.word_toNat_ofNat]; rfl
+set_option linter.unusedSimpArgs false in
+theorem run_tramp6 (input : ByteArray) :
+    Challenge.EvmProof.Stepper.runLocatedBlock tramp6Path
+      (trampolineState input 512) = some (trampolineState input 699) := by
+  exact run_tramp6_code submissionBytecode input jump699
+
 
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Main

@@ -1,6 +1,8 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 set_option warningAsError true
+set_option maxRecDepth 40000
+set_option maxHeartbeats 1000000
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.CiosEndAroundCarry
 
@@ -11,16 +13,6 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 /-- Add a word and fold its overflow bit back into the low word. -/
 def endCarry (a b : UInt256) : UInt256 :=
   UInt256.gt a (a + b) + (a + b)
-
-/-- Both operands detect the same overflow, including the all-ones result. -/
-opaque endCarry_comm (a b : UInt256) : endCarry a b = endCarry b a := by
-  apply word_ext
-  have ha := word_lt_size a
-  have hb := word_lt_size b
-  change (UInt256.lt (a + b) a + (a + b)).toNat =
-    (UInt256.lt (b + a) b + (b + a)).toNat
-  simp only [word_toNat_add, word_toNat_lt]
-  split <;> split <;> omega
 
 /-- End-around addition computes the rounded high word from the negated low
 word. This identity also covers a zero low word and the all-ones result. -/
@@ -60,13 +52,6 @@ theorem row_carry (m0 minv t0 : UInt256)
   conv_lhs => arg 2; rw [cancelled_low m0 minv t0 hminv]
   exact endCarry_neg _ _
 
-/-- The selected trace retains the accumulator as the first operand. -/
-opaque row_carry_swapped (m0 minv t0 : UInt256)
-    (hminv : (m0.toNat * minv.toNat + 1) % 2 ^ 256 = 0) :
-    endCarry t0 (UInt256.mulMod m0 (minv * t0) maxWord) =
-      UInt256.isZero (UInt256.isZero (m0 * (minv * t0))) +
-        mulHi m0 (minv * t0) := by
-  rw [endCarry_comm]
-  exact row_carry m0 minv t0 hminv
-
 end Challenge.Modexp.Submission.Proofs.Fast.CiosEndAroundCarry
+
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.CiosEndAroundCarry.row_carry

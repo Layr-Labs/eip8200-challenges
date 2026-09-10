@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 3166
+def startIndex : Nat := 3115
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
@@ -23,9 +23,9 @@ private def template : List Instr :=
    .push 2 256,
    .op .EQ,
    .op .OR,
-   .push 2 4481,
+   .push 2 4160,
    .op .JUMPI,
-   .push 2 1939,
+   .push 2 1865,
    .op .JUMP]
 
 private theorem slice_eq :
@@ -38,7 +38,7 @@ private theorem getElem_slice (offset : Nat) (hoffset : offset < template.length
   rw [List.getElem?_take, if_pos hoffset, List.getElem?_drop] at hs
   simpa [Nat.add_comm] using hs
 
-private theorem startPC : Artifact.submissionArtifact.instructionPC startIndex = 4458 := by
+private theorem startPC : Artifact.submissionArtifact.instructionPC startIndex = 4137 := by
   rfl
 
 private theorem instructionPC_add
@@ -50,9 +50,9 @@ private theorem instructionPC_add
 
 /-- Exact program-counter table for the bounded dispatcher slice. -/
 @[simp] theorem dispatchPC (i : Nat) (hi : startIndex ≤ i)
-    (hii : i ≤ 3179) :
+    (hii : i ≤ 3128) :
     Artifact.submissionArtifact.instructionPC i =
-      [4458,4459,4462,4463,4464,4466,4467,4468,4471,4472,4473,4476,4477,4480][i - startIndex]! := by
+      [4137,4138,4141,4142,4143,4145,4146,4147,4150,4151,4152,4155,4156,4159][i - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (startIndex + (i - startIndex)) := by
@@ -64,6 +64,7 @@ private theorem instructionPC_add
       instructionPC_add Artifact.submissionArtifact startIndex (i - startIndex)
     _ = _ := by
       rw [startPC]
+      simp only [startIndex] at hi
       interval_cases i <;> rfl
 
 def opAt (offset : Nat) (op : Operation)
@@ -96,7 +97,7 @@ def cios2DispatchGuard :
    pushAt 7 2 256,
    opAt 8 .EQ,
    opAt 9 .OR,
-   pushAt 10 2 4481,
+   pushAt 10 2 4160,
    opAt 11 .JUMPI]
 
 /-- Full fallback path (indices 2670..2683, pc 4458..4480). -/
@@ -104,7 +105,7 @@ def cios2Dispatch :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   cios2DispatchGuard ++
   [
-   pushAt 12 2 1939,
+   pushAt 12 2 1865,
    opAt 13 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Dispatch

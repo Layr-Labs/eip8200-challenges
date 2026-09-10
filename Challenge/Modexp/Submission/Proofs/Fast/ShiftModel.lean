@@ -115,7 +115,10 @@ def qhatOf (mem : ByteArray) : UInt256 :=
   -- correction proof below accepts every UInt256 quotient, including this one.
   let overflow := UInt256.isZero (UInt256.lt hi dodd)
   UInt256.lor (UInt256.ofNat 0 - overflow)
-    (q - UInt256.isZero (UInt256.isZero q))
+    (q - UInt256.land
+      (UInt256.isZero (UInt256.isZero q))
+      (UInt256.gt (MachineState.readWord mem 32)
+        (unext - MachineState.readWord mem 0 * q)))
 
 /-- The limb pass `t += q * NEG` is exactly a CIOS first loop with `a = NEG`. -/
 def macOf (mem : ByteArray) (n : Nat) (q : UInt256) : Monpro.MacState :=

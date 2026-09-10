@@ -87,7 +87,7 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
         (FullBase.addCallState s mem input n bsize esize msize)
         (FullBase.rejoinState s converted n bsize esize msize) := by
       exact Challenge.EvmProof.GasSteps.cast
-        (sub.monpro 6144 1024 2048 (UInt256.ofNat 1755)
+        (sub.monpro 6144 1024 2048 (UInt256.ofNat 1697)
           (outer n bsize esize msize) copied rr base
           (by simp [outer]) (by omega) (by omega) (by omega) (by omega) (by omega)
           jumpD1755 hframeCopy hmodCopy hrrCopy hrawCopy hrrlt) rfl rfl

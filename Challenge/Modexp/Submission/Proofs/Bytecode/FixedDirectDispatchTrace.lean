@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic
 import Challenge.Modexp.Submission.Proofs.Fast.FixedDirectStates
 
 set_option warningAsError true
@@ -40,13 +41,13 @@ theorem run_entry_three (s : State) (memory : ByteArray)
   have heq : UInt256.eq (UInt256.ofNat 3) (UInt256.ofNat 3) =
       UInt256.ofNat 1 := by decide
   simp (config := { maxSteps := 400000 })
-    [entryPrefix, opAt, pushAt, wfOp,
+    [entryPrefix, opAt, pushAt, wfOp, jumpBridge3423,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       entryState, Exp.bDone, FixedDirectStates.check65537, Exp.outer,
       hcode, hrun, heq,
-      Exp.isTrue_one, jumpDest3931,
+      Exp.isTrue_one, jumpDest3895,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -55,6 +56,7 @@ theorem run_entry_three (s : State) (memory : ByteArray)
 set_option linter.unusedSimpArgs false in
 theorem run_entry_other (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 1024)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock entryPrefix
       (entryState s memory n bsize esize msize) =
@@ -65,11 +67,11 @@ theorem run_entry_other (s : State) (memory : ByteArray)
       Exp.toNat_ofNat_self (Nat.lt_of_le_of_lt he (by norm_num)),
       if_neg hne.symm]
   simp (config := { maxSteps := 400000 })
-    [entryPrefix, opAt, pushAt, wfOp,
+    [entryPrefix, opAt, pushAt, wfOp, jumpBridge3423,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      entryState, Exp.bDone, otherWidth, Exp.outer, hrun, heq,
+      entryState, Exp.bDone, otherWidth, Exp.outer, hcode, hrun, heq,
       Exp.not_isTrue_zero,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -125,7 +127,7 @@ theorem run_oneWidth_miss (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       otherWidth, FixedDirectStates.fallback, Exp.outer, hcode, hrun, hxor, htrue,
-      Exp.isTrue_one, jumpDest4002,
+      Exp.isTrue_one, jumpDest3959,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -169,7 +171,7 @@ def gasSteps_entry_other (s : State) (memory : ByteArray)
       (entryState s memory n bsize esize msize)
       (otherWidth s memory n bsize esize msize) :=
   sound entryPrefix
-    (run_entry_other s memory n bsize esize msize hne he hrun)
+    (run_entry_other s memory n bsize esize msize hne he hcode hrun)
     (by simpa [entryState, Exp.bDone, Artifact.submissionArtifact] using hcode)
     (by simpa [entryState, Exp.bDone] using hfork)
     (by simpa [entryState, Exp.bDone] using hrun)

@@ -1,6 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowBodyCorrect
 import Challenge.Modexp.Submission.Proofs.Fast.Setup
-import Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordCorrect
 
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -9,10 +8,9 @@ set_option maxHeartbeats 2000000
 /-!
 # Full fast/reference composition for the fixed-width route
 
-The early wrapper handles matching headers first. Every other header restores
-the exact legacy entry at pc 1314. The Montgomery success proof is then reused
-verbatim. If that fast path declines, the unchanged broad Setup fallback reaches
-pc 1196 and the route-aware reference-body proof takes over.
+The existing Montgomery success proof is reused verbatim.  If that fast path
+declines, `Fast.Setup.gasSteps_fallback` reaches pc 1196 and the route-aware
+reference-body proof takes over.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.WindowCorrect
@@ -32,22 +30,20 @@ private theorem withGas_initialState (code cd : ByteArray) (gas : Nat) :
     Challenge.EvmProof.withGas (initialState code cd 0) gas =
       initialState code cd gas := rfl
 
-/-- Package the complete early-hit / legacy-fast / legacy-fallback split. -/
+/-- Package both outer cases as one successful initial-state execution. -/
 def handledOf (route : WindowRoute.Route)
     (fastHandled : ∀ input : ByteArray, ValidInput input →
       Setup.FastPath input → FastHandled input)
     (input : ByteArray) (hvalid : ValidInput input) :
     WindowBodyCorrect.Handled input := by
-  by_cases hmatch : WindowTwentyOneInput.Matches input
-  · exact EarlyWordCorrect.hit input hmatch
-  · by_cases hfast : Setup.FastPath input
-    · rcases fastHandled input hvalid hfast with
-        ⟨final, ⟨fastTrace⟩, hdone, hresult⟩
-      exact ⟨final, ⟨(EarlyWordCorrect.legacy input hmatch).trans fastTrace⟩,
-        hdone, hresult⟩
-    · let bodyEntry := (EarlyWordCorrect.legacy input hmatch).trans
-        (Setup.gasSteps_fallback input hfast)
-      exact WindowBodyCorrect.handledOf route input hvalid bodyEntry
+  by_cases hfast : Setup.FastPath input
+  · rcases fastHandled input hvalid hfast with
+      ⟨final, ⟨fastTrace⟩, hdone, hresult⟩
+    exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans fastTrace⟩,
+      hdone, hresult⟩
+  · let bodyEntry := (Main.gasSteps_entryHop input).trans
+      (Setup.gasSteps_fallback input hfast)
+    exact WindowBodyCorrect.handledOf route input hvalid bodyEntry
 
 private noncomputable def chosenFinal (route : WindowRoute.Route)
     (fastHandled : ∀ input : ByteArray, ValidInput input →

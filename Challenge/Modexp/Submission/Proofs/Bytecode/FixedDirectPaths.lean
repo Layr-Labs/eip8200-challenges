@@ -8,7 +8,7 @@ set_option maxHeartbeats 4000000
 /-!
 # Exact located blocks for the direct fixed-exponent handler
 
-The appended handler occupies pc3892..3779 and instruction indices2572..2308.
+The direct handler starts at pc3412 and bypasses the protected island via3423.
 This file is the generated-Artifact boundary for its concrete trace proofs.
 -/
 
@@ -21,99 +21,142 @@ open Challenge.Modexp.Submission.Proofs.Fast
 abbrev Located :=
   Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka
 
-@[simp] theorem directPC0 (i : Nat)
-    (hi : 2658 ≤ i) (hii : i ≤ 2694) :
+@[simp] theorem directPC0 (i : Nat) (hi : 2601 ≤ i) (hii : i ≤ 2640) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3651,3652,3653,3655,3656,3659,3660,3661,3663,3664,3665,3668,3669,3672,3673,3674,3675,3676,3678,3679,3680,3683,3684,3686,3689,3690,3691,3694,3695,3696,3698,3699,3703,3704,3705,3708,3709] : List Nat)[i - 2658]! := by
+      ([3412,3413,3414,3417,3418,3419,3422,3423,3424,3426,3427,3430,3431,3432,3434,3435,3438,3439,3442,3443,3444,3445,3446,3448,3449,3452,3453,3455,3458,3459,3460,3463,3464,3465,3467,3468,3472,3473,3476,3477] : List Nat)[i - 2601]! := by
   interval_cases i <;> decide
 
-@[simp] theorem directPC1 (i : Nat)
-    (hi : 2695 ≤ i) (hii : i ≤ 2727) :
+@[simp] theorem directPC1 (i : Nat) (hi : 2641 ≤ i) (hii : i ≤ 2673) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3711,3712,3713,3716,3719,3722,3725,3728,3729,3730,3732,3733,3734,3735,3738,3739,3740,3743,3746,3749,3752,3755,3756,3757,3760,3761,3762,3763,3766,3769,3770,3771,3774] : List Nat)[i - 2695]! := by
+      ([3479,3480,3481,3484,3487,3490,3493,3496,3497,3498,3500,3501,3502,3503,3506,3507,3508,3511,3514,3517,3520,3523,3524,3525,3528,3529,3530,3531,3534,3537,3538,3539,3542] : List Nat)[i - 2641]! := by
   interval_cases i <;> decide
+
 
 def entryPrefix : List Located :=
-  [opAt 2658 .JUMPDEST, opAt 2659 (.Dup ⟨3, by decide⟩),
-   pushAt 2660 1 3, opAt 2661 .EQ, pushAt 2662 2 3690,
-   opAt 2663 .JUMPI]
+  [opAt 2601 .JUMPDEST,
+   opAt 2602 (.Dup ⟨3, by decide⟩),
+   pushAt 2603 2 3423,
+   opAt 2604 .JUMP,
+   opAt 2608 .JUMPDEST,
+   pushAt 2609 1 3,
+   opAt 2610 .EQ,
+   pushAt 2611 2 3459,
+   opAt 2612 .JUMPI]
 
 def oneWidth : List Located :=
-  [opAt 2664 (.Dup ⟨3, by decide⟩), pushAt 2665 1 1,
-   opAt 2666 .XOR, opAt 2667 .JUMPDEST, pushAt 2668 2 3761,
-   opAt 2669 .JUMPI]
+  [opAt 2613 (.Dup ⟨3, by decide⟩),
+   pushAt 2614 1 1,
+   opAt 2615 .XOR,
+   pushAt 2616 2 3529,
+   opAt 2617 .JUMPI]
 
 def checkThree : List Located :=
-  [pushAt 2670 2 9472, opAt 2671 .MLOAD, opAt 2672 .CALLDATALOAD,
-   pushAt 2673 0 0, opAt 2674 .BYTE, pushAt 2675 1 3,
-   opAt 2676 .XOR, opAt 2677 .JUMPDEST, pushAt 2678 2 3761,
-   opAt 2679 .JUMPI]
+  [pushAt 2618 2 9472,
+   opAt 2619 .MLOAD,
+   opAt 2620 .CALLDATALOAD,
+   pushAt 2621 0 0,
+   opAt 2622 .BYTE,
+   pushAt 2623 1 3,
+   opAt 2624 .XOR,
+   pushAt 2625 2 3529,
+   opAt 2626 .JUMPI]
 
 def threeHit : List Located :=
-  [pushAt 2680 1 1, pushAt 2681 2 3711, opAt 2682 .JUMP]
+  [pushAt 2627 1 1,
+   pushAt 2628 2 3479,
+   opAt 2629 .JUMP]
 
 def check65537 : List Located :=
-  [opAt 2683 .JUMPDEST, pushAt 2684 2 9472, opAt 2685 .MLOAD,
-   opAt 2686 .CALLDATALOAD, pushAt 2687 1 232, opAt 2688 .SHR,
-   pushAt 2689 3 65537, opAt 2690 .XOR, opAt 2691 .JUMPDEST,
-   pushAt 2692 2 3761, opAt 2693 .JUMPI]
+  [opAt 2630 .JUMPDEST,
+   pushAt 2631 2 9472,
+   opAt 2632 .MLOAD,
+   opAt 2633 .CALLDATALOAD,
+   pushAt 2634 1 232,
+   opAt 2635 .SHR,
+   pushAt 2636 3 65537,
+   opAt 2637 .XOR,
+   pushAt 2638 2 3529,
+   opAt 2639 .JUMPI]
 
 def fermatHit : List Located :=
-  [pushAt 2694 1 16]
+  [pushAt 2640 1 16]
 
 def start : List Located :=
-  [opAt 2695 .JUMPDEST]
+  [opAt 2641 .JUMPDEST]
 
 def squareCall : List Located :=
-  [opAt 2696 .JUMPDEST, pushAt 2697 2 3729, pushAt 2698 2 2048,
-   pushAt 2699 2 2048, pushAt 2700 2 2048, pushAt 2701 2 4458,
-   opAt 2702 .JUMP]
+  [opAt 2642 .JUMPDEST,
+   pushAt 2643 2 3497,
+   pushAt 2644 2 2048,
+   pushAt 2645 2 2048,
+   pushAt 2646 2 2048,
+   pushAt 2647 2 4137,
+   opAt 2648 .JUMP]
 
 def squareReturn : List Located :=
-  [opAt 2703 .JUMPDEST, pushAt 2704 1 1,
-   opAt 2705 (.Swap ⟨0, by decide⟩), opAt 2706 .SUB,
-   opAt 2707 (.Dup ⟨0, by decide⟩), pushAt 2708 2 3712,
-   opAt 2709 .JUMPI]
+  [opAt 2649 .JUMPDEST,
+   pushAt 2650 1 1,
+   opAt 2651 (.Swap ⟨0, by decide⟩),
+   opAt 2652 .SUB,
+   opAt 2653 (.Dup ⟨0, by decide⟩),
+   pushAt 2654 2 3480,
+   opAt 2655 .JUMPI]
 
 def product : List Located :=
-  [opAt 2710 .POP, pushAt 2711 2 3756, pushAt 2712 2 1024,
-   pushAt 2713 2 1024, pushAt 2714 2 2048, pushAt 2715 2 4458,
-   opAt 2716 .JUMP]
+  [opAt 2656 .POP,
+   pushAt 2657 2 3524,
+   pushAt 2658 2 1024,
+   pushAt 2659 2 1024,
+   pushAt 2660 2 2048,
+   pushAt 2661 2 4137,
+   opAt 2662 .JUMP]
 
 def finish : List Located :=
-  [opAt 2717 .JUMPDEST, pushAt 2718 2 1876, opAt 2719 .JUMP]
+  [opAt 2663 .JUMPDEST,
+   pushAt 2664 2 1802,
+   opAt 2665 .JUMP]
 
 def fallback : List Located :=
-  [opAt 2720 .JUMPDEST, opAt 2721 (.Dup ⟨0, by decide⟩),
-   pushAt 2722 2 4096, pushAt 2723 2 1024, opAt 2724 .MCOPY,
-   pushAt 2725 0 0, pushAt 2726 2 1769, opAt 2727 .JUMP]
+  [opAt 2666 .JUMPDEST,
+   opAt 2667 (.Dup ⟨0, by decide⟩),
+   pushAt 2668 2 4096,
+   pushAt 2669 2 1024,
+   opAt 2670 .MCOPY,
+   pushAt 2671 0 0,
+   pushAt 2672 2 1703,
+   opAt 2673 .JUMP]
 
 theorem jumpDest3892 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3651 = true :=
-  Artifact.isValidJumpDest_index 2658 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3412 = true :=
+  Artifact.isValidJumpDest_index 2601 (by rfl)
 
-theorem jumpDest3931 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3690 = true :=
-  Artifact.isValidJumpDest_index 2683 (by rfl)
+theorem jumpDest3895 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3459 = true :=
+  Artifact.isValidJumpDest_index 2630 (by rfl)
 
 theorem jumpDest3952 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3711 = true :=
-  Artifact.isValidJumpDest_index 2695 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3479 = true :=
+  Artifact.isValidJumpDest_index 2641 (by rfl)
 
 theorem jumpDest3953 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3712 = true :=
-  Artifact.isValidJumpDest_index 2696 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3480 = true :=
+  Artifact.isValidJumpDest_index 2642 (by rfl)
 
 theorem jumpDest3970 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3729 = true :=
-  Artifact.isValidJumpDest_index 2703 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3497 = true :=
+  Artifact.isValidJumpDest_index 2649 (by rfl)
 
-theorem jumpDest3997 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3756 = true :=
-  Artifact.isValidJumpDest_index 2717 (by rfl)
+theorem jumpDest3954 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3524 = true :=
+  Artifact.isValidJumpDest_index 2663 (by rfl)
 
-theorem jumpDest4002 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3761 = true :=
-  Artifact.isValidJumpDest_index 2720 (by rfl)
+theorem jumpDest3959 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3529 = true :=
+  Artifact.isValidJumpDest_index 2666 (by rfl)
+
+/-- Actual bypass target around the protected word-path island. -/
+theorem jumpBridge3423 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3423 = true :=
+  Artifact.isValidJumpDest_index 2608 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
