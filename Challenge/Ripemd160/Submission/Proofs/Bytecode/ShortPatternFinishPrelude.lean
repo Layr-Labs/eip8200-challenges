@@ -70,109 +70,109 @@ theorem answerMemory_read (n : Nat) :
     (returnedState n input sv ov).hReturn = paddedDigest n := answerMemory_read n
 
 def selectorPath : List Located :=
-  [opAt 166 .CALLDATASIZE, pushAt 167 1 129, opAt 168 .GT,
-   pushAt 169 2 5202, opAt 170 .JUMPI]
+  [opAt 165 .CALLDATASIZE, pushAt 166 1 129, opAt 167 .GT,
+   pushAt 168 2 5202, opAt 169 .JUMPI]
 
 def digestStorePath : List Located :=
-  [opAt 4181 .JUMPDEST, opAt 4182 .CALLDATASIZE, pushAt 4183 1 128,
-   opAt 4184 .EQ, pushAt 4185 2 5155, opAt 4186 .JUMPI,
-   pushAt 4187 20 (paddedDigestWord 56),
-   pushAt 4188 20 (UInt256.xor (paddedDigestWord 56) (paddedDigestWord 120)),
-   opAt 4189 .CALLDATASIZE, pushAt 4190 1 120, opAt 4191 .EQ,
-   opAt 4192 .MUL, opAt 4193 .XOR, pushAt 4194 0 0, opAt 4195 .MSTORE]
+  [opAt 4180 .JUMPDEST, opAt 4181 .CALLDATASIZE, pushAt 4182 1 128,
+   opAt 4183 .EQ, pushAt 4184 2 5155, opAt 4185 .JUMPI,
+   pushAt 4186 20 (paddedDigestWord 56),
+   pushAt 4187 20 (UInt256.xor (paddedDigestWord 56) (paddedDigestWord 120)),
+   opAt 4188 .CALLDATASIZE, pushAt 4189 1 120, opAt 4190 .EQ,
+   opAt 4191 .MUL, opAt 4192 .XOR, pushAt 4193 0 0, opAt 4194 .MSTORE]
 
 def digestFinishPath : List Located :=
-  [pushAt 4197 0 0, opAt 4198 .RETURN]
+  [pushAt 4196 0 0, opAt 4197 .RETURN]
 
-@[simp] private theorem shortPC166 : Artifact.submissionArtifact.instructionPC 166 = 260 := by
+@[simp] private theorem shortPC166 : Artifact.submissionArtifact.instructionPC 165 = 260 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC167 : Artifact.submissionArtifact.instructionPC 167 = 261 := by
+@[simp] private theorem shortPC167 : Artifact.submissionArtifact.instructionPC 166 = 261 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC168 : Artifact.submissionArtifact.instructionPC 168 = 263 := by
+@[simp] private theorem shortPC168 : Artifact.submissionArtifact.instructionPC 167 = 263 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC169 : Artifact.submissionArtifact.instructionPC 169 = 264 := by
+@[simp] private theorem shortPC169 : Artifact.submissionArtifact.instructionPC 168 = 264 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC170 : Artifact.submissionArtifact.instructionPC 170 = 267 := by
+@[simp] private theorem shortPC170 : Artifact.submissionArtifact.instructionPC 169 = 267 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4181 : Artifact.submissionArtifact.instructionPC 4181 = 5202 := by
+@[simp] private theorem shortPC4181 : Artifact.submissionArtifact.instructionPC 4180 = 5202 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4182 : Artifact.submissionArtifact.instructionPC 4182 = 5203 := by
+@[simp] private theorem shortPC4182 : Artifact.submissionArtifact.instructionPC 4181 = 5203 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4183 : Artifact.submissionArtifact.instructionPC 4183 = 5204 := by
+@[simp] private theorem shortPC4183 : Artifact.submissionArtifact.instructionPC 4182 = 5204 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4184 : Artifact.submissionArtifact.instructionPC 4184 = 5206 := by
+@[simp] private theorem shortPC4184 : Artifact.submissionArtifact.instructionPC 4183 = 5206 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4185 : Artifact.submissionArtifact.instructionPC 4185 = 5207 := by
+@[simp] private theorem shortPC4185 : Artifact.submissionArtifact.instructionPC 4184 = 5207 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4186 : Artifact.submissionArtifact.instructionPC 4186 = 5210 := by
+@[simp] private theorem shortPC4186 : Artifact.submissionArtifact.instructionPC 4185 = 5210 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4187 : Artifact.submissionArtifact.instructionPC 4187 = 5211 := by
+@[simp] private theorem shortPC4187 : Artifact.submissionArtifact.instructionPC 4186 = 5211 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4188 : Artifact.submissionArtifact.instructionPC 4188 = 5232 := by
+@[simp] private theorem shortPC4188 : Artifact.submissionArtifact.instructionPC 4187 = 5232 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4189 : Artifact.submissionArtifact.instructionPC 4189 = 5253 := by
+@[simp] private theorem shortPC4189 : Artifact.submissionArtifact.instructionPC 4188 = 5253 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4190 : Artifact.submissionArtifact.instructionPC 4190 = 5254 := by
+@[simp] private theorem shortPC4190 : Artifact.submissionArtifact.instructionPC 4189 = 5254 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4191 : Artifact.submissionArtifact.instructionPC 4191 = 5256 := by
+@[simp] private theorem shortPC4191 : Artifact.submissionArtifact.instructionPC 4190 = 5256 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4192 : Artifact.submissionArtifact.instructionPC 4192 = 5257 := by
+@[simp] private theorem shortPC4192 : Artifact.submissionArtifact.instructionPC 4191 = 5257 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4193 : Artifact.submissionArtifact.instructionPC 4193 = 5258 := by
+@[simp] private theorem shortPC4193 : Artifact.submissionArtifact.instructionPC 4192 = 5258 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4194 : Artifact.submissionArtifact.instructionPC 4194 = 5259 := by
+@[simp] private theorem shortPC4194 : Artifact.submissionArtifact.instructionPC 4193 = 5259 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4195 : Artifact.submissionArtifact.instructionPC 4195 = 5260 := by
+@[simp] private theorem shortPC4195 : Artifact.submissionArtifact.instructionPC 4194 = 5260 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4196 : Artifact.submissionArtifact.instructionPC 4196 = 5261 := by
+@[simp] private theorem shortPC4196 : Artifact.submissionArtifact.instructionPC 4195 = 5261 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4197 : Artifact.submissionArtifact.instructionPC 4197 = 5262 := by
+@[simp] private theorem shortPC4197 : Artifact.submissionArtifact.instructionPC 4196 = 5262 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4198 : Artifact.submissionArtifact.instructionPC 4198 = 5263 := by
+@[simp] private theorem shortPC4198 : Artifact.submissionArtifact.instructionPC 4197 = 5263 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -183,98 +183,98 @@ theorem run_selector (n : Nat) (input : ByteArray) (sv ov : UInt256)
   change run selectorPath (stS input 260 (returnRest sv ov)) =
     some (stS input 5202 (returnRest sv ov))
   have hdest : Decode.isValidJumpDest submissionBytecode 5202 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 4181 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 4180 (by rfl)
   have htrue : UInt256.isTrue (UInt256.gt 129 (UInt256.ofNat input.size)) := by
     rw [hsize]
     rcases hn with rfl | rfl <;> decide
   have h0 :
       Challenge.EvmProof.Stepper.runLocatedBlock
-          [opAt 166 .CALLDATASIZE]
+          [opAt 165 .CALLDATASIZE]
           (stS input 260 (returnRest sv ov)) =
         some (stS input 261 (UInt256.ofNat input.size :: returnRest sv ov)) := by
     exact blockOfS _
-      (pcFactS input 166 260 _ (by norm_num) shortPC166)
+      (pcFactS input 165 260 _ (by norm_num) shortPC166)
       (stepS_calldatasize input 260 (returnRest sv ov)
         (by simp [returnRest]) (by norm_num))
   have h1 :
       Challenge.EvmProof.Stepper.runLocatedBlock
-          [pushAt 167 1 129]
+          [pushAt 166 1 129]
           (stS input 261 (UInt256.ofNat input.size :: returnRest sv ov)) =
         some (stS input 263 (129 :: UInt256.ofNat input.size :: returnRest sv ov)) := by
     exact blockOfS _
-      (pcFactS input 167 261 _ (by norm_num) shortPC167)
+      (pcFactS input 166 261 _ (by norm_num) shortPC167)
       (stepS_push input 261 1 129
         (UInt256.ofNat input.size :: returnRest sv ov)
         (by simp [returnRest]) (by decide) (by decide) (by norm_num))
   have h2 :
       Challenge.EvmProof.Stepper.runLocatedBlock
-          [opAt 168 .GT]
+          [opAt 167 .GT]
           (stS input 263 (129 :: UInt256.ofNat input.size :: returnRest sv ov)) =
         some (stS input 264
           (UInt256.gt 129 (UInt256.ofNat input.size) :: returnRest sv ov)) := by
     exact blockOfS _
-      (pcFactS input 168 263 _ (by norm_num) shortPC168)
+      (pcFactS input 167 263 _ (by norm_num) shortPC168)
       (stepS_gt input 263 129 (UInt256.ofNat input.size) (returnRest sv ov)
         (by simp [returnRest]) (by norm_num))
   have h3 :
       Challenge.EvmProof.Stepper.runLocatedBlock
-          [pushAt 169 2 5202]
+          [pushAt 168 2 5202]
           (stS input 264
             (UInt256.gt 129 (UInt256.ofNat input.size) :: returnRest sv ov)) =
         some (stS input 267
           (5202 :: UInt256.gt 129 (UInt256.ofNat input.size) :: returnRest sv ov)) := by
     exact blockOfS _
-      (pcFactS input 169 264 _ (by norm_num) shortPC169)
+      (pcFactS input 168 264 _ (by norm_num) shortPC169)
       (stepS_push input 264 2 5202
         (UInt256.gt 129 (UInt256.ofNat input.size) :: returnRest sv ov)
         (by simp [returnRest]) (by decide) (by decide) (by norm_num))
   have h4 :
       Challenge.EvmProof.Stepper.runLocatedBlock
-          [opAt 170 .JUMPI]
+          [opAt 169 .JUMPI]
           (stS input 267
             (5202 :: UInt256.gt 129 (UInt256.ofNat input.size) :: returnRest sv ov)) =
         some (stS input 5202 (returnRest sv ov)) := by
     exact blockOfS _
-      (pcFactS input 170 267 _ (by norm_num) shortPC170)
+      (pcFactS input 169 267 _ (by norm_num) shortPC170)
       (stepS_jumpi_taken input 267 5202 5202
         (UInt256.gt 129 (UInt256.ofNat input.size)) (returnRest sv ov)
         (by simp [returnRest]) (by norm_num) rfl htrue hdest)
   have h01 :
       Challenge.EvmProof.Stepper.runLocatedBlock
-          [opAt 166 .CALLDATASIZE, pushAt 167 1 129]
+          [opAt 165 .CALLDATASIZE, pushAt 166 1 129]
           (stS input 260 (returnRest sv ov)) =
         some (stS input 263 (129 :: UInt256.ofNat input.size :: returnRest sv ov)) := by
     exact Challenge.EvmProof.Stepper.runLocatedBlock_append
-      [opAt 166 .CALLDATASIZE] [pushAt 167 1 129]
+      [opAt 165 .CALLDATASIZE] [pushAt 166 1 129]
       _ _ _ h0 (by rfl) h1
   have h012 :
       Challenge.EvmProof.Stepper.runLocatedBlock
-          [opAt 166 .CALLDATASIZE, pushAt 167 1 129, opAt 168 .GT]
+          [opAt 165 .CALLDATASIZE, pushAt 166 1 129, opAt 167 .GT]
           (stS input 260 (returnRest sv ov)) =
         some (stS input 264
           (UInt256.gt 129 (UInt256.ofNat input.size) :: returnRest sv ov)) := by
     exact Challenge.EvmProof.Stepper.runLocatedBlock_append
-      [opAt 166 .CALLDATASIZE, pushAt 167 1 129] [opAt 168 .GT]
+      [opAt 165 .CALLDATASIZE, pushAt 166 1 129] [opAt 167 .GT]
       _ _ _ h01 (by rfl) h2
   have h0123 :
       Challenge.EvmProof.Stepper.runLocatedBlock
-          [opAt 166 .CALLDATASIZE, pushAt 167 1 129, opAt 168 .GT,
-            pushAt 169 2 5202]
+          [opAt 165 .CALLDATASIZE, pushAt 166 1 129, opAt 167 .GT,
+            pushAt 168 2 5202]
           (stS input 260 (returnRest sv ov)) =
         some (stS input 267
           (5202 :: UInt256.gt 129 (UInt256.ofNat input.size) :: returnRest sv ov)) := by
     exact Challenge.EvmProof.Stepper.runLocatedBlock_append
-      [opAt 166 .CALLDATASIZE, pushAt 167 1 129, opAt 168 .GT]
-      [pushAt 169 2 5202] _ _ _ h012 (by rfl) h3
+      [opAt 165 .CALLDATASIZE, pushAt 166 1 129, opAt 167 .GT]
+      [pushAt 168 2 5202] _ _ _ h012 (by rfl) h3
   have h01234 :
       Challenge.EvmProof.Stepper.runLocatedBlock
-          [opAt 166 .CALLDATASIZE, pushAt 167 1 129, opAt 168 .GT,
-            pushAt 169 2 5202, opAt 170 .JUMPI]
+          [opAt 165 .CALLDATASIZE, pushAt 166 1 129, opAt 167 .GT,
+            pushAt 168 2 5202, opAt 169 .JUMPI]
           (stS input 260 (returnRest sv ov)) =
         some (stS input 5202 (returnRest sv ov)) := by
     exact Challenge.EvmProof.Stepper.runLocatedBlock_append
-      [opAt 166 .CALLDATASIZE, pushAt 167 1 129, opAt 168 .GT,
-        pushAt 169 2 5202] [opAt 170 .JUMPI] _ _ _ h0123 (by rfl) h4
+      [opAt 165 .CALLDATASIZE, pushAt 166 1 129, opAt 167 .GT,
+        pushAt 168 2 5202] [opAt 169 .JUMPI] _ _ _ h0123 (by rfl) h4
   simpa only [selectorPath] using h01234
 
 

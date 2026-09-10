@@ -44,12 +44,12 @@ def gasSteps_codecopy (s : State) (rho : List UInt256)
     change s.executionEnv.code = submissionBytecode
     exact hcode
   have hpc : (withGas pre gas).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4112 := by
+      Artifact.submissionArtifact.instructionPC 4111 := by
     show (UInt256.ofNat 5040).toNat = _
     rw [PrefixStatePaths.pc4081]
     decide
   have hdec := Stepper.decodes_of_artifact
-    Artifact.submissionArtifact (withGas pre gas) 4112 (.op .CODECOPY)
+    Artifact.submissionArtifact (withGas pre gas) 4111 (.op .CODECOPY)
     hcode' hpc (by rfl) (by exact ⟨by decide, trivial, rfl⟩)
   change (withGas pre gas).decodedOp = some .CODECOPY at hdec
   apply EVM.Step.running
