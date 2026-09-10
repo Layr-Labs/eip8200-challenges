@@ -40,13 +40,13 @@ def entryPrefix : List Located :=
 
 def oneWidth : List Located :=
   [opAt 2676 (.Dup ⟨3, by decide⟩), pushAt 2677 1 1,
-   opAt 2678 .EQ, opAt 2679 .ISZERO, pushAt 2680 2 3761,
+   opAt 2678 .XOR, opAt 2679 .JUMPDEST, pushAt 2680 2 3761,
    opAt 2681 .JUMPI]
 
 def checkThree : List Located :=
   [pushAt 2682 2 9472, opAt 2683 .MLOAD, opAt 2684 .CALLDATALOAD,
    pushAt 2685 0 0, opAt 2686 .BYTE, pushAt 2687 1 3,
-   opAt 2688 .EQ, opAt 2689 .ISZERO, pushAt 2690 2 3761,
+   opAt 2688 .XOR, opAt 2689 .JUMPDEST, pushAt 2690 2 3761,
    opAt 2691 .JUMPI]
 
 def threeHit : List Located :=
@@ -55,7 +55,7 @@ def threeHit : List Located :=
 def check65537 : List Located :=
   [opAt 2695 .JUMPDEST, pushAt 2696 2 9472, opAt 2697 .MLOAD,
    opAt 2698 .CALLDATALOAD, pushAt 2699 1 232, opAt 2700 .SHR,
-   pushAt 2701 3 65537, opAt 2702 .EQ, opAt 2703 .ISZERO,
+   pushAt 2701 3 65537, opAt 2702 .XOR, opAt 2703 .JUMPDEST,
    pushAt 2704 2 3761, opAt 2705 .JUMPI]
 
 def fermatHit : List Located :=
