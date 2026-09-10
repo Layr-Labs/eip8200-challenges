@@ -54,10 +54,19 @@ def primeFilterProgram : List Instr :=
    .op (.Dup ⟨1, by decide⟩), .push 5 0x01000003d0, .op .NOT, .op .EQ, .op .OR] ++
     WindowTwentyOneEntry.testProgram (UInt256.ofNat 5261)
 
+private theorem zero_lt_eq_double_isZero (x : UInt256) :
+    UInt256.lt ({ val := 0 } : UInt256) x = UInt256.isZero (UInt256.isZero x) := by
+  unfold UInt256.lt UInt256.isZero
+  have hzero : ({ val := 0 } : UInt256).toNat = 0 := rfl
+  by_cases h : x.toNat = 0
+  · simp [h, hzero]
+  · have hp : 0 < x.toNat := Nat.pos_of_ne_zero h
+    simp [h, hzero, Nat.not_le_of_gt hp]
+
 def valueProgram : List Instr :=
   [.op (.Dup ⟨4, by decide⟩), .op .CALLDATALOAD] ++
     WindowTwentyOneEntry.normalizeProgram.drop 2 ++
-    [.op .MOD, .op .ISZERO, .op .ISZERO]
+    [.op .MOD, .push 0 0, .op .LT]
 
 def returnProgram : List Instr := valueProgram ++ WindowTwentyOneReturn.program
 
@@ -145,7 +154,7 @@ private theorem run_value (template : State) (modulus offset : UInt256) (rest : 
   simp (config := { maxSteps := 500000 }) [valueProgram, WindowTwentyOneEntry.normalizeProgram,
     runInstructions, framed, hbase, hoff, hshift,
     Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4,
-    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.literal_eq_ofNat, zero_lt_eq_double_isZero,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
   rfl
