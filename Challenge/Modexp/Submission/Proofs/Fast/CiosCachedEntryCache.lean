@@ -16,17 +16,17 @@ open WindowNibbleKernel
 /-- Virtual leading JUMPDEST for composing the uncached entry template. -/
 def maskEntryState (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { entryState s mem pa pb pdst ret rest with pc := UInt256.ofNat 4191 }
+  { entryState s mem pa pb pdst ret rest with pc := UInt256.ofNat 4194 }
 
-def cacheProgram : List Instr := entryProgram.take 18
-def entryBodyProgram : List Instr := entryProgram.drop 18
+def cacheProgram : List Instr := entryProgram.take 19
+def entryBodyProgram : List Instr := entryProgram.drop 19
 
 theorem entryProgram_split : entryProgram = cacheProgram ++ entryBodyProgram := by
-  exact (List.take_append_drop 18 entryProgram).symm
+  exact (List.take_append_drop 19 entryProgram).symm
 
 def cachedEntryState (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4219
+  { s with pc := UInt256.ofNat 4222
            stack := [UInt256.ofNat pa, UInt256.ofNat pb,
              l1Target n, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
@@ -58,7 +58,7 @@ theorem run_cache (s : State) (mem : ByteArray) (pa pb n : Nat)
     maskEntryState, entryState, cachedEntryState, l1Target, l2Target, isFour, hc4, hc5, hc6, hc7, hc8,
     ← negative32_not, ← allOnes_not, h128, h9344, hs32, hactS, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
-    List.exchange, ← word_add_assoc]
+    List.exchange]
   exact ⟨rfl, rfl, rfl, rfl⟩
 
 

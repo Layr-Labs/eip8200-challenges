@@ -17,7 +17,7 @@ def program : List Instr :=
 def returnedState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
   let finish := WindowTwentyOneLoop.finishState template base modulus exponent rest
-  WindowTwentyOneReturn.returned finish (UInt256.ofNat 3086)
+  WindowTwentyOneReturn.returned finish (UInt256.ofNat 2998)
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 16 finish.stack.tail
 
 theorem run_finish (template : State) (base modulus exponent : UInt256)
@@ -31,10 +31,10 @@ theorem run_finish (template : State) (base modulus exponent : UInt256)
       WindowTwentyOneLookup.framed, List.replicate_zero, List.nil_append, List.cons_append,
       List.tail_cons, List.length_cons]
     omega
-  have h := WindowTwentyOneReturn.run_return finish (UInt256.ofNat 3081)
+  have h := WindowTwentyOneReturn.run_return finish (UInt256.ofNat 2993)
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 16 (by decide) rfl
     finish.stack.tail htail
-  have hpc : advancePC 5 (UInt256.ofNat 3081) = UInt256.ofNat 3086 := by decide
+  have hpc : advancePC 5 (UInt256.ofNat 2993) = UInt256.ofNat 2998 := by decide
   simpa only [returnedState, finish, WindowTwentyOneReturn.framed, WindowTwentyOneLoop.finishState,
     WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, List.replicate_zero,
     List.nil_append, List.cons_append, List.tail_cons, hpc] using h
@@ -45,9 +45,9 @@ theorem run_core (template : State) (base modulus exponentOffset modulusOffset :
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (he : rest[4]? = some exponentOffset) (hm : rest[5]? = some modulusOffset)
     (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 2618 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 2530 = true) :
     runInstructions program
-      (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 2465) base modulus rest) =
+      (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 2384) base modulus rest) =
     some (returnedState template base modulus
       (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) rest) := by
   let exponent := MachineState.readWord template.executionEnv.calldata exponentOffset.toNat
@@ -56,7 +56,7 @@ theorem run_core (template : State) (base modulus exponentOffset modulusOffset :
   have hl := WindowTwentyOneLoop.run_three template base modulus exponent rest hrest hjump
   have hr := run_finish template base modulus exponent rest hrest
   have hi' : runInstructions WindowTwentyOneInit.program
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 2581) base modulus 16 ([base, exponent] ++ rest)) =
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 2500) base modulus 16 ([base, exponent] ++ rest)) =
       some (WindowTwentyOneLoop.loopState template base modulus exponent 0 rest) := by
     simpa only [WindowTwentyOneLoop.loopState, WindowTwentyOneMath.accumulator, WindowTwentyOneMath.advance] using hi
   have hti := runInstructions_append_some _ _ _ _ _ ht hi'

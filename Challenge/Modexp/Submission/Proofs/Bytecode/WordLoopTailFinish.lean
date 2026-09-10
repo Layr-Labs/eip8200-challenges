@@ -13,14 +13,14 @@ attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
 
 @[simp] private theorem exitPCs (i : Nat)
-    (hi : 525 ≤ i) (hii : i ≤ 549) :
+    (hi : 518 ≤ i) (hii : i ≤ 539) :
     Artifact.submissionArtifact.instructionPC i =
-      ([655,656,657,658,659,661,662,665,666,667,668,669,670,671,672,673,675,676,678,679,680,681,682,683,688] : List Nat)[i - 525]! := by
+      ([628,629,630,631,632,634,635,638,639,640,641,642,643,645,646,648,649,650,651,652,653,654] : List Nat)[i - 518]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump589 :
-    Decode.isValidJumpDest submissionBytecode 589 = true :=
-  Artifact.isValidJumpDest_index 469 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 567 = true :=
+  Artifact.isValidJumpDest_index 466 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_bitFinishTailFinish (input : ByteArray) (outer : Nat)
@@ -37,8 +37,8 @@ theorem run_bitFinishTailFinish (input : ByteArray) (outer : Nat)
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact hsucc
   have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  have h589 : (589 : UInt256).toNat = 589 := by decide
-  have h589Word : (589 : UInt256) = UInt256.ofNat 589 := by decide
+  have h589 : (567 : UInt256).toNat = 567 := by decide
+  have h589Word : (567 : UInt256) = UInt256.ofNat 567 := by decide
   simp (config := { maxSteps := 125000 })
     [bitFinishTailFinishPath, Word.opAt, Word.pushAt, Word.wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,

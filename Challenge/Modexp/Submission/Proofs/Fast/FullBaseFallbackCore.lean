@@ -20,7 +20,7 @@ def fallbackProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .push ⟨2, by decide⟩ (UInt256.ofNat 992), .op .ADD, .op .MSTORE,
    .push ⟨1, by decide⟩ (UInt256.ofNat 1),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1611), .op .JUMP]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1530), .op .JUMP]
 
 def pbOf (bsize : Nat) : Nat := (31 + bsize) / 32
 def topWidth (bsize : Nat) : Nat := bsize - 32 * (pbOf bsize - 1)
@@ -31,7 +31,7 @@ def storeWord (memory : ByteArray) (addr : Nat) (w : UInt256) : ByteArray :=
 
 def legacyLoopState (s : State) (memory : ByteArray)
     (n bsize esize msize pb j : Nat) : State :=
-  { s with pc := UInt256.ofNat 1611
+  { s with pc := UInt256.ofNat 1530
            stack := UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize
            memory := memory }
 
@@ -67,17 +67,17 @@ def fallbackStoreProgram : List Instr :=
   [.op (.Dup ⟨2, by decide⟩),
    .push ⟨2, by decide⟩ (UInt256.ofNat 992), .op .ADD, .op .MSTORE,
    .push ⟨1, by decide⟩ (UInt256.ofNat 1),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1611), .op .JUMP]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1530), .op .JUMP]
 
 def fallbackCountState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3192
+  { s with pc := UInt256.ofNat 3104
            stack := UInt256.ofNat (pbOf bsize) :: outer n bsize esize msize
            memory := memory }
 
 def fallbackWordState (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3206
+  { s with pc := UInt256.ofNat 3118
            stack := UInt256.ofNat (topLimbOf input bsize) ::
              UInt256.ofNat (pbOf bsize) :: outer n bsize esize msize
            memory := memory }
@@ -112,7 +112,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
     (hdata : s.executionEnv.calldata = input)
     (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
     (hact : 298 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 1611 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 1530 = true) :
     runInstructions fallbackProgram (fallbackState s mem n bsize esize msize) =
       some (legacyLoopState s (storeWord mem (992 + 32 * n)
         (UInt256.ofNat (topLimbOf input bsize))) n bsize esize msize

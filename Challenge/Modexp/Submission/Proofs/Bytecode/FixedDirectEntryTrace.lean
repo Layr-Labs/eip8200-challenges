@@ -15,9 +15,9 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
 
 def entryPath : List (Challenge.EvmProof.Stepper.Located
     Artifact.submissionArtifact .Osaka) :=
-  [opAt 1228 .JUMPDEST,
-   pushAt 1229 2 3412,
-   opAt 1230 .JUMP]
+  [opAt 1186 .JUMPDEST,
+   pushAt 1187 2 3324,
+   opAt 1188 .JUMP]
 
 set_option linter.unusedSimpArgs false in
 theorem run_entry (s : State) (memory : ByteArray)

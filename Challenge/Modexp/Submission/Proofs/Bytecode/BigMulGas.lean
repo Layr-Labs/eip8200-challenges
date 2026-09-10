@@ -83,7 +83,7 @@ theorem gasSteps_mulInnerFinishSegment_cost_potential (current : State)
     (gasSteps_mulInnerFinishSegment current word a b out modulus count i
       returnDest rest hcap hcode hfork hrun hnp).cost +
         MachineState.memCost inner.activeWords.toNat =
-      26 + MachineState.memCost ({ inner with pc := UInt256.ofNat 413 }).activeWords.toNat := by
+      26 + MachineState.memCost ({ inner with pc := UInt256.ofNat 398 }).activeWords.toNat := by
   dsimp only
   unfold gasSteps_mulInnerFinishSegment
   have hm := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
@@ -106,7 +106,7 @@ theorem gasSteps_mulInnerExitSegment_cost_potential (current : State)
       returnDest rest
     (gasSteps_mulInnerExitSegment current word a b out modulus count i
       returnDest rest hcap hcount hi hcode hfork hrun hnp).cost +
-        MachineState.memCost ({ inner with pc := UInt256.ofNat 413 }).activeWords.toNat =
+        MachineState.memCost ({ inner with pc := UInt256.ofNat 398 }).activeWords.toNat =
       30 + MachineState.memCost
         (mulOuterNext inner a b out modulus count i returnDest rest).activeWords.toNat := by
   dsimp only

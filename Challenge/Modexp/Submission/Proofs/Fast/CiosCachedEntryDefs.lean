@@ -10,14 +10,14 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
-def zeroProgram : List Instr := (entryProgram.drop 18).take 8
-def pointersProgram : List Instr := entryProgram.drop 26
+def zeroProgram : List Instr := (entryProgram.drop 19).take 8
+def pointersProgram : List Instr := entryProgram.drop 27
 
 theorem entryBody_split : entryBodyProgram = zeroProgram ++ pointersProgram := rfl
 
 def clearedState (s : State) (mem : ByteArray) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4236
+  { s with pc := UInt256.ofNat 4235
            stack := [UInt256.ofNat (32*n), UInt256.ofNat pa, UInt256.ofNat pb,
              l1Target n, negative32, allOnes, l2Target n, dst, ret] ++ rest
            memory := mpZeroed s mem n }

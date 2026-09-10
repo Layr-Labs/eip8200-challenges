@@ -85,7 +85,7 @@ theorem run_makeModProduct (s : State) (bi pbi paEnd pbEnd flag dst ret m0 mu t0
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions makeModProduct
       (framed s (UInt256.ofNat 4563) ([m0, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4567)
+    some (framed s (UInt256.ofNat 4569)
       ([UInt256.mulMod m0 mu maxWord, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc12 : rest.length+12 < 1024 := by omega
   have hc13 : rest.length+13 < 1024 := by omega
@@ -97,8 +97,8 @@ theorem run_makeModProduct (s : State) (bi pbi paEnd pbEnd flag dst ret m0 mu t0
 theorem run_finishCarry (s : State) (bi pbi paEnd pbEnd flag dst ret mm mu t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions finishCarry
-      (framed s (UInt256.ofNat 4567) ([mm, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4573)
+      (framed s (UInt256.ofNat 4569) ([mm, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4572)
       ([endCarry t0 mm, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc12 : rest.length+12 < 1024 := by omega
   have hc13 : rest.length+13 < 1024 := by omega

@@ -13,14 +13,14 @@ open EvmSemantics.EVM
 
 private def gasSteps_tramp0 (input : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (trampolineState input 5225) :=
+      (trampolineState input 5256) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka tramp0Path rfl rfl (run_tramp0 input)
       rfl deployAddress_not_precompile
 
 /-- The body's own `JUMPDEST`, reached when the legacy fast path declines. -/
 private def gasSteps_tramp7Dest (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 1196)
+    Challenge.EvmProof.GasSteps (trampolineState input 1134)
       (headerEntryState input) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka tramp7DestPath rfl rfl
@@ -28,48 +28,48 @@ private def gasSteps_tramp7Dest (input : ByteArray) :
 
 private def gasSteps_tramp1 (input : ByteArray) :
     Challenge.EvmProof.GasSteps (trampolineState input 14)
-      (trampolineState input 53) :=
+      (trampolineState input 50) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka tramp1Path rfl rfl (run_tramp1 input)
       rfl deployAddress_not_precompile
 
 private def gasSteps_tramp2 (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 53)
-      (trampolineState input 99) :=
+    Challenge.EvmProof.GasSteps (trampolineState input 50)
+      (trampolineState input 93) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka tramp2Path rfl rfl (run_tramp2 input)
       rfl deployAddress_not_precompile
 
 private def gasSteps_tramp3 (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 99)
-      (trampolineState input 305) :=
+    Challenge.EvmProof.GasSteps (trampolineState input 93)
+      (trampolineState input 294) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka tramp3Path rfl rfl (run_tramp3 input)
       rfl deployAddress_not_precompile
 
 private def gasSteps_tramp4 (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 305)
-      (trampolineState input 434) :=
+    Challenge.EvmProof.GasSteps (trampolineState input 294)
+      (trampolineState input 419) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka tramp4Path rfl rfl (run_tramp4 input)
       rfl deployAddress_not_precompile
 
 private def gasSteps_tramp5 (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 434)
-      (trampolineState input 512) :=
+    Challenge.EvmProof.GasSteps (trampolineState input 419)
+      (trampolineState input 496) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka tramp5Path rfl rfl (run_tramp5 input)
       rfl deployAddress_not_precompile
 
 private def gasSteps_tramp6 (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 512)
-      (trampolineState input 699) :=
+    Challenge.EvmProof.GasSteps (trampolineState input 496)
+      (trampolineState input 655) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka tramp6Path rfl rfl (run_tramp6 input)
       rfl deployAddress_not_precompile
 
 private def gasSteps_tramp7 (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 699)
+    Challenge.EvmProof.GasSteps (trampolineState input 655)
       (headerEntryState input) := by
   apply Challenge.EvmProof.GasSteps.trans
   · exact Challenge.EvmProof.Stepper.runLocatedBlock_sound
@@ -129,7 +129,7 @@ private def gasSteps_headerCheck (input : ByteArray) :
 from the entry.  The appended fast path reaches that pc itself, so the entry hop
 is factored out. -/
 def gasSteps_headerFromBody (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 1196)
+    Challenge.EvmProof.GasSteps (trampolineState input 1134)
       (headerState input) := by
   exact (gasSteps_tramp7Dest input).trans <|
     (gasSteps_headerLoad input).trans (gasSteps_headerCheck input)
@@ -137,14 +137,14 @@ def gasSteps_headerFromBody (input : ByteArray) :
 /-- The total initial hop to the early-word dispatcher. -/
 def gasSteps_entryHop (input : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (trampolineState input 5225) := gasSteps_tramp0 input
+      (trampolineState input 5256) := gasSteps_tramp0 input
 
 /-- The reference header block, prefixed by whatever trace reaches the body
 `JUMPDEST` at pc 1196.  The appended fast path supplies that prefix on the
 inputs it declines. -/
 def gasSteps_header (input : ByteArray) (_hvalid : ValidInput input)
     (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (trampolineState input 1196)) :
+      (trampolineState input 1134)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (headerState input) :=
   entry.trans (gasSteps_headerFromBody input)

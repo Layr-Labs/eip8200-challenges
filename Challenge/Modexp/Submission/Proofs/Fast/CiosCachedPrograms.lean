@@ -85,8 +85,7 @@ def l2Program (w : Fin 33) (x tl ts : UInt256) : List Instr :=
     macProductProgram) ++ macFinishProgram tl ts
 
 def entryProgram : List Instr :=
-  [
-   .op .JUMPDEST,
+  [.op .JUMPDEST,
    .push 1 31,
    .op .NOT,
    .push 2 9344,
@@ -95,10 +94,11 @@ def entryProgram : List Instr :=
    .op .EQ,
    .push 1 153,
    .op .MUL,
-   .push 2 4278,
-   .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
-   .push 3 300,
+   .push 2 4281,
+   .op .ADD,
+   .op (.Swap ⟨0, by decide⟩),
+   .push 2 4580,
    .op .ADD,
    .op (.Swap ⟨3, by decide⟩),
    .push 0 0,
@@ -107,7 +107,7 @@ def entryProgram : List Instr :=
    .push 2 9344,
    .op .MLOAD,
    .op (.Dup ⟨0, by decide⟩),
-   .push 5 64,
+   .push 1 64,
    .op .ADD,
    .op .CALLDATASIZE,
    .push 2 8192,
@@ -115,12 +115,14 @@ def entryProgram : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨3, by decide⟩),
    .op .ADD,
-   .op (.Dup ⟨5, by decide⟩),
-   .op .ADD,
-   .op (.Swap ⟨2, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
-   .op .ADD,
-   .op (.Swap ⟨2, by decide⟩),
+   .push 1 32,
+   .op (.Swap ⟨0, by decide⟩),
+   .op .SUB,
+   .push 1 32,
+   .op (.Dup ⟨4, by decide⟩),
+   .op .SUB,
+   .op (.Swap ⟨3, by decide⟩),
+   .op .POP,
    .op (.Swap ⟨0, by decide⟩),
    .op .POP]
 
@@ -182,7 +184,7 @@ def tailProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4247,
+   .push 2 4250,
    .op .JUMPI,
    .op .POP,
    .op .POP,
@@ -191,7 +193,7 @@ def tailProgram : List Instr :=
    .op .POP,
    .op .POP,
    .op .POP,
-   .push 2 2220,
+   .push 2 2139,
    .op .JUMP]
 
 def l1DispatchProgram : List Instr :=
