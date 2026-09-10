@@ -8,8 +8,8 @@ set_option maxHeartbeats 2000000
 /-!
 # Structural certificate for the frozen RIPEMD-160 artifact
 
-The exact candidate has 5260 bytes, 4189 instructions, and SHA-256
-`23993c5cb436ef9bd43b9e2265033d57035b1609d8b6ca621242057a3a03a028`. PUSH rows carry their typed width and value.
+The exact candidate has 5260 bytes, 4187 instructions, and SHA-256
+`5a44dadca142648bac98f4378e5e09271b4485b3aef22bf309077621e4a8a223`. PUSH rows carry their typed width and value.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -4279,12 +4279,11 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0x56,
   op 0x5b,
   op 0x36,
+  .push 2 64,
+  op 0x19,
+  op 0x16,
   .push 1 56,
   op 0x14,
-  op 0x36,
-  .push 1 120,
-  op 0x14,
-  op 0x17,
   op 0x36,
   .push 1 128,
   op 0x14,
@@ -4294,9 +4293,8 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0x35,
   .push 0 0,
   op 0x1a,
-  .push 1 7,
-  op 0x14,
-  op 0x15,
+  .push 2 7,
+  op 0x18,
   op 0x17,
   .push 2 368,
   op 0x57,
@@ -4336,7 +4334,7 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0xf3
 ]
 
-@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 191 := by rfl
+@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 189 := by rfl
 
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
@@ -4361,7 +4359,7 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk19
  ++ submissionInstructionsChunk20
 
-theorem referenceInstructions_count : submissionInstructions.length = 4189 := by
+theorem referenceInstructions_count : submissionInstructions.length = 4187 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length, submissionInstructionsChunk20_length]
 
 private theorem submissionInstructionsChunk0_assemble : assembleBytes submissionInstructionsChunk0 = [
@@ -4864,9 +4862,9 @@ private theorem submissionInstructionsChunk20_assemble : assembleBytes submissio
   0x40, 0x6a, 0x6f, 0x1a, 0x60, 0x20, 0x52, 0x63, 0x8e, 0x85, 0xb8, 0x0c,
   0x60, 0x40, 0x52, 0x63, 0x25, 0x08, 0xf2, 0x98, 0x60, 0x60, 0x52, 0x63,
   0x0d, 0x1d, 0xf1, 0x21, 0x60, 0x80, 0x52, 0x63, 0x3c, 0x0a, 0x4e, 0xbe,
-  0x60, 0xa0, 0x52, 0x56, 0x5b, 0x36, 0x60, 0x38, 0x14, 0x36, 0x60, 0x78,
-  0x14, 0x17, 0x36, 0x60, 0x80, 0x14, 0x17, 0x15, 0x5f, 0x35, 0x5f, 0x1a,
-  0x60, 0x07, 0x14, 0x15, 0x17, 0x61, 0x01, 0x70, 0x57, 0x5f, 0x60, 0x65,
+  0x60, 0xa0, 0x52, 0x56, 0x5b, 0x36, 0x61, 0x00, 0x40, 0x19, 0x16, 0x60,
+  0x38, 0x14, 0x36, 0x60, 0x80, 0x14, 0x17, 0x15, 0x5f, 0x35, 0x5f, 0x1a,
+  0x61, 0x00, 0x07, 0x18, 0x17, 0x61, 0x01, 0x70, 0x57, 0x5f, 0x60, 0x65,
   0x56, 0x5b, 0x73, 0x28, 0xdf, 0xaf, 0x14, 0xed, 0x99, 0x53, 0xf4, 0x9c,
   0x7a, 0xbb, 0x56, 0x13, 0x08, 0xd0, 0xc6, 0x4b, 0xc4, 0xc1, 0x79, 0x5f,
   0x52, 0x59, 0x5f, 0xf3, 0x61, 0x00, 0x00, 0x61, 0x00, 0x00, 0x00, 0x00,
