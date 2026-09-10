@@ -22,34 +22,34 @@ open Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
 private def fallbackCountPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2448 .JUMPDEST,
-   opAt 2449 (.Dup ⟨2, by decide⟩),
-   pushAt 2450 1 31,
-   opAt 2451 .ADD,
-   pushAt 2452 1 5,
-   opAt 2453 .SHR]
+  [opAt 2482 .JUMPDEST,
+   opAt 2483 (.Dup ⟨2, by decide⟩),
+   pushAt 2484 1 31,
+   opAt 2485 .ADD,
+   pushAt 2486 1 5,
+   opAt 2487 .SHR]
 private def fallbackWordPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2454 (.Dup ⟨3, by decide⟩),
-   opAt 2455 (.Dup ⟨1, by decide⟩),
-   pushAt 2456 1 5,
-   opAt 2457 .SHL,
-   opAt 2458 .SUB,
-   pushAt 2459 1 3,
-   opAt 2460 .SHL,
-   pushAt 2461 1 96,
-   opAt 2462 .CALLDATALOAD,
-   opAt 2463 (.Swap ⟨0, by decide⟩),
-   opAt 2464 .SHR]
+  [opAt 2488 (.Dup ⟨3, by decide⟩),
+   opAt 2489 (.Dup ⟨1, by decide⟩),
+   pushAt 2490 1 5,
+   opAt 2491 .SHL,
+   opAt 2492 .SUB,
+   pushAt 2493 1 3,
+   opAt 2494 .SHL,
+   pushAt 2495 1 96,
+   opAt 2496 .CALLDATALOAD,
+   opAt 2497 (.Swap ⟨0, by decide⟩),
+   opAt 2498 .SHR]
 private def fallbackStorePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2465 (.Dup ⟨2, by decide⟩),
-   pushAt 2466 2 992,
-   opAt 2467 .ADD,
-   opAt 2468 .MSTORE,
-   pushAt 2469 1 1,
-   pushAt 2470 2 1651,
-   opAt 2471 .JUMP]
+  [opAt 2499 (.Dup ⟨2, by decide⟩),
+   pushAt 2500 2 992,
+   opAt 2501 .ADD,
+   opAt 2502 .MSTORE,
+   pushAt 2503 1 1,
+   pushAt 2504 2 1605,
+   opAt 2505 .JUMP]
 
 private theorem shr_ofNat (value shift : Nat) (hv : value < 2 ^ 256)
     (hs : shift < 256) :
@@ -88,7 +88,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
         (FullBase.storeWord mem (992 + 32 * n)
           (UInt256.ofNat (FullBase.topLimbOf input bsize)))
         n bsize esize msize (FullBase.pbOf bsize) 1) := by
-  have hjump : Decode.isValidJumpDest s.executionEnv.code 1651 = true := by
+  have hjump : Decode.isValidJumpDest s.executionEnv.code 1605 = true := by
     simpa [hcode] using jumpDest1668
   have hpb1 : 1 ≤ pbOf bsize := by unfold pbOf; omega
   have hpbLe : pbOf bsize ≤ 32 := by unfold pbOf; omega

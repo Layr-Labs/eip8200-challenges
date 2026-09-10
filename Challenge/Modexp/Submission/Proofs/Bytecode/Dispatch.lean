@@ -133,7 +133,7 @@ theorem gasSteps_wordRouteEnter_cost (input : ByteArray)
 def gasSteps_zeroSize_total (input : ByteArray) (hvalid : ValidInput input)
     (hzero : modulusSize input = 0)
     (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 1191)) :
+      (Main.trampolineState input 1158)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (zeroSizeFinalState input) :=
   (Main.gasSteps_header input hvalid entry).trans (gasSteps_zeroSize input hzero)

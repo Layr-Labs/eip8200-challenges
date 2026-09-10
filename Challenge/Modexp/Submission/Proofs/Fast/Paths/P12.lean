@@ -49,7 +49,7 @@ def blk1627 :
    pushAt 1637 2 8224,
    opAt 1638 (.Dup ⟨1, by decide⟩),
    opAt 1639 .GT,
-   pushAt 1640 2 2230,
+   pushAt 1640 2 2173,
    opAt 1641 .JUMPI]
 
 /-- Instructions 1662..1666, pc 2635..2308. -/
@@ -65,9 +65,15 @@ def blk1662 :
 def blk1667 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1647 .JUMPDEST,
-   pushAt 1648 24 9440,
+   pushAt 1648 2 9440,
    opAt 1649 .MLOAD,
    pushAt 1650 0 0,
-   opAt 1651 (.Swap ⟨0, by decide⟩)]
+   opAt 1651 (.Swap ⟨0, by decide⟩),
+   opAt 1652 (.Dup ⟨0, by decide⟩),
+   pushAt 1653 1 32,
+   opAt 1654 .AND,
+   opAt 1655 .ISZERO,
+   pushAt 1656 2 2366,
+   opAt 1657 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

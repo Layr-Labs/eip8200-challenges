@@ -18,6 +18,6 @@ open Challenge.Modexp
 @[simp] theorem innerFinishPCs (i : Nat)
     (hi : 822 ≤ i) (hii : i ≤ 832) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1099,1100,1101,1102,1103,1105,1106,1107,1108,1109,1112] : List Nat)[i - 822]! := by
+      ([1066,1067,1068,1069,1070,1072,1073,1074,1075,1076,1079] : List Nat)[i - 822]! := by
   interval_cases i <;> decide
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigExponent

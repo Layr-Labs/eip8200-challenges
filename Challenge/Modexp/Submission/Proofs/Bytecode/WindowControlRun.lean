@@ -81,7 +81,7 @@ private theorem run_miss_generic (template : State) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hrun : template.halt = .Running)
     (hcode : template.executionEnv.code = submissionBytecode) :
     Challenge.EvmProof.Stepper.runLocatedBlock missPath
-      (framed template 2653 rest) = some (framed template 517 rest) := by
+      (framed template 2653 rest) = some (framed template 501 rest) := by
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
   simp (disch := omega) [missPath, Main.opAt, Main.pushAt, Main.wfOp,

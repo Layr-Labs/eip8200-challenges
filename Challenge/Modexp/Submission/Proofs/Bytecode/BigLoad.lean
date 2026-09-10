@@ -53,7 +53,7 @@ def loadGuardPath :
    opAt 356 (.Dup ⟨1, by decide⟩),
    opAt 357 .LT,
    opAt 358 .ISZERO,
-   pushAt 359 2 505,
+   pushAt 359 2 489,
    opAt 360 .JUMPI]
 
 def loadToBytePath :
@@ -76,12 +76,12 @@ def loadToBytePath :
    opAt 376 .SHL,
    opAt 377 (.Dup ⟨7, by decide⟩),
    opAt 378 .ADD,
-   pushAt 379 2 483,
+   pushAt 379 2 467,
    pushAt 380 0 0,
    opAt 381 (.Dup ⟨6, by decide⟩),
    opAt 382 (.Dup ⟨8, by decide⟩),
    opAt 383 .ADD,
-   pushAt 384 2 4,
+   pushAt 384 1 4,
    opAt 385 .JUMP]
 
 def loadAfterBytePath :
@@ -103,7 +103,7 @@ def loadAfterBytePath :
    opAt 400 .ADD,
    opAt 401 (.Swap ⟨0, by decide⟩),
    opAt 402 .POP,
-   pushAt 403 2 440,
+   pushAt 403 2 425,
    opAt 404 .JUMP]
 
 def loadExitPath :
@@ -161,12 +161,12 @@ def loadWords (active : UInt256) (dst : UInt256) (length : Nat) : Nat → UInt25
 
 def loadEntry (s : State) (offset length dst returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 438
+  { s with pc := UInt256.ofNat 423
            stack := [offset, length, dst, returnDest] ++ rest }
 
 def loadLoop (s : State) (offset length dst : UInt256) (i : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 440
+  { s with pc := UInt256.ofNat 425
            stack := [UInt256.ofNat i, offset, length, dst, returnDest] ++ rest
            memory := loadMemory s.executionEnv.calldata offset.toNat dst
              length.toNat i s.memory
@@ -174,7 +174,7 @@ def loadLoop (s : State) (offset length dst : UInt256) (i : Nat)
 
 def loadBody (s : State) (offset length dst : UInt256) (i : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
-  { loadLoop s offset length dst i returnDest rest with pc := UInt256.ofNat 449 }
+  { loadLoop s offset length dst i returnDest rest with pc := UInt256.ofNat 434 }
 
 def loadSaved (offset length dst : UInt256) (i : Nat)
     (returnDest : UInt256) (rest : List UInt256) : List UInt256 :=
@@ -188,14 +188,14 @@ def loadSaved (offset length dst : UInt256) (i : Nat)
 def loadByteEntry (s : State) (offset length dst : UInt256) (i : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   Accessors.calldataByteEntry (loadBody s offset length dst i returnDest rest)
-    (offset + UInt256.ofNat i) (UInt256.ofNat 0) (UInt256.ofNat 483)
+    (offset + UInt256.ofNat i) (UInt256.ofNat 0) (UInt256.ofNat 467)
     (loadSaved offset length dst i returnDest rest)
 
 def loadAfterByte (s : State) (offset length dst : UInt256) (i : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   Accessors.calldataByteReturned
     (loadBody s offset length dst i returnDest rest)
-    (offset + UInt256.ofNat i) (UInt256.ofNat 483)
+    (offset + UInt256.ofNat i) (UInt256.ofNat 467)
     (loadSaved offset length dst i returnDest rest)
 
 def loadReturned (s : State) (offset length dst returnDest : UInt256)
@@ -216,29 +216,29 @@ def loadReturned (s : State) (offset length dst returnDest : UInt256)
 @[simp] private theorem loadSetupPCs (i : Nat)
     (hi : 352 ≤ i) (hii : i ≤ 360) :
     Artifact.submissionArtifact.instructionPC i =
-      ([438,439,440,441,442,443,444,445,448] : List Nat)[i - 352]! := by
+      ([423,424,425,426,427,428,429,430,433] : List Nat)[i - 352]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem loadBodyPCs (i : Nat)
     (hi : 361 ≤ i) (hii : i ≤ 385) :
     Artifact.submissionArtifact.instructionPC i =
-      ([449,450,452,453,454,455,456,458,459,461,462,463,465,466,467,469,470,471,472,475,476,477,478,479,482] : List Nat)[i - 361]! := by
+      ([434,435,437,438,439,440,441,443,444,446,447,448,450,451,452,454,455,456,457,460,461,462,463,464,466] : List Nat)[i - 361]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem loadStorePCs (i : Nat)
     (hi : 386 ≤ i) (hii : i ≤ 404) :
     Artifact.submissionArtifact.instructionPC i =
-      ([483,484,485,486,487,488,489,490,491,492,493,494,495,497,498,499,500,501,504] : List Nat)[i - 386]! := by
+      ([467,468,469,470,471,472,473,474,475,476,477,478,479,481,482,483,484,485,488] : List Nat)[i - 386]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem loadExitPCs (i : Nat)
     (hi : 405 ≤ i) (hii : i ≤ 410) :
     Artifact.submissionArtifact.instructionPC i =
-      ([505,506,507,508,509,510] : List Nat)[i - 405]! := by
+      ([489,490,491,492,493,494] : List Nat)[i - 405]! := by
   interval_cases i <;> decide
 
 private theorem jump441 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 440 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 425 = true :=
   Artifact.isValidJumpDest_index 354 (by rfl)
 
 private theorem jump4 :
@@ -246,11 +246,11 @@ private theorem jump4 :
   Artifact.isValidJumpDest_index 2 (by rfl)
 
 private theorem jump484 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 483 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 467 = true :=
   Artifact.isValidJumpDest_index 386 (by rfl)
 
 private theorem jump506 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 505 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 489 = true :=
   Artifact.isValidJumpDest_index 405 (by rfl)
 
 set_option linter.unusedSimpArgs false in
@@ -281,15 +281,15 @@ theorem run_loadGuard (s : State) (offset length : Nat) (dst returnDest : UInt25
       (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst i
         returnDest rest) =
     some { loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst i
-      returnDest rest with pc := UInt256.ofNat 449 } := by
+      returnDest rest with pc := UInt256.ofNat 434 } := by
   have hc : ∀ n ≤ 8, rest.length + n < 1024 := by omega
   have hi256 : i < 2 ^ 256 := hi.trans hlength
   have hlt : i % 2 ^ 256 < length % 2 ^ 256 := by
     rw [Nat.mod_eq_of_lt hi256, Nat.mod_eq_of_lt hlength]
     exact hi
   have honeIsZero : (UInt256.ofNat 1).isZero.toNat = 0 := by decide
-  have hpc : (UInt256.ofNat 445 + UInt256.ofNat 3).succ =
-      UInt256.ofNat 449 := by decide
+  have hpc : (UInt256.ofNat 430 + UInt256.ofNat 3).succ =
+      UInt256.ofNat 434 := by decide
   simp (disch := omega) [loadGuardPath, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -309,13 +309,13 @@ theorem run_loadFinishGuard (s : State) (offset length : Nat)
       (loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst length
         returnDest rest) =
     some { loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst length
-      returnDest rest with pc := UInt256.ofNat 505 } := by
+      returnDest rest with pc := UInt256.ofNat 489 } := by
   have hc : ∀ n ≤ 8, rest.length + n < 1024 := by omega
-  have h506 : (505 : UInt256) = UInt256.ofNat 505 := by decide
+  have h506 : (489 : UInt256) = UInt256.ofNat 489 := by decide
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   have hvalid : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (505 : UInt256).toNat = true := by
-    rw [show (505 : UInt256).toNat = 505 by decide]
+      (489 : UInt256).toNat = true := by
+    rw [show (489 : UInt256).toNat = 489 by decide]
     exact jump506
   simp (disch := omega) [loadGuardPath, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -335,7 +335,7 @@ theorem run_loadExit (s : State) (offset length : Nat) (dst returnDest : UInt256
       returnDest.toNat = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock loadExitPath
       { loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst length
-        returnDest rest with pc := UInt256.ofNat 505 } =
+        returnDest rest with pc := UInt256.ofNat 489 } =
     some (loadReturned s (UInt256.ofNat offset) (UInt256.ofNat length) dst
       returnDest rest) := by
   have hc : ∀ n ≤ 8, rest.length + n < 1024 := by omega
@@ -369,7 +369,7 @@ theorem run_loadToByte (s : State) (offset length : Nat) (dst returnDest : UInt2
   have hfour : (4 : UInt256) = UInt256.ofNat 4 := by decide
   have hfive : (5 : UInt256) = UInt256.ofNat 5 := by decide
   have hthirtyOne : (31 : UInt256) = UInt256.ofNat 31 := by decide
-  have h484 : (483 : UInt256) = UInt256.ofNat 483 := by decide
+  have h484 : (467 : UInt256) = UInt256.ofNat 467 := by decide
   simp (config := { maxSteps := 600000 }) (disch := omega)
     [loadToBytePath, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -403,16 +403,16 @@ theorem run_loadAfterByte (s : State) (offset length : Nat)
       UInt256.ofNat (i + 1) :=
     Challenge.EvmProof.Word.ofNat_add_ofNat hi1
   have hvalid : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (440 : UInt256).toNat = true := by
-    rw [show (440 : UInt256).toNat = 440 by decide]
+      (425 : UInt256).toNat = true := by
+    rw [show (425 : UInt256).toNat = 425 by decide]
     exact jump441
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  have h441 : (440 : UInt256) = UInt256.ofNat 440 := by decide
+  have h441 : (425 : UInt256) = UInt256.ofNat 425 := by decide
   have hbody :
       loadBody s (UInt256.ofNat offset) (UInt256.ofNat length) dst i
           returnDest rest =
         { loadLoop s (UInt256.ofNat offset) (UInt256.ofNat length) dst i
-            returnDest rest with pc := UInt256.ofNat 449 } := by
+            returnDest rest with pc := UInt256.ofNat 434 } := by
     rfl
   unfold loadAfterByte
   rw [hbody]
@@ -492,7 +492,7 @@ def gasSteps_loadIteration (s : State) (offset length : Nat)
       (by simpa [body, loadBody, loadLoop, State.fork] using hnp)
   have hbyte := Accessors.gasSteps_calldataByte body
     (UInt256.ofNat offset + UInt256.ofNat i) (UInt256.ofNat 0)
-    (UInt256.ofNat 483) (loadSaved (UInt256.ofNat offset)
+    (UInt256.ofNat 467) (loadSaved (UInt256.ofNat offset)
       (UInt256.ofNat length) dst i returnDest rest)
     (by simp [loadSaved]; omega)
     (by simpa [body, loadBody, loadLoop] using hcode)
@@ -501,7 +501,7 @@ def gasSteps_loadIteration (s : State) (offset length : Nat)
     (by simpa [body, loadBody, loadLoop, State.fork] using hnp)
     (by
       rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-        Nat.mod_eq_of_lt (by norm_num : 483 < 2 ^ 256)]
+        Nat.mod_eq_of_lt (by norm_num : 467 < 2 ^ 256)]
       exact jump484)
   have hbyte' : Challenge.EvmProof.GasSteps byteEntry afterByte := by
     exact Challenge.EvmProof.GasSteps.cast hbyte
@@ -561,7 +561,7 @@ theorem gasSteps_loadIteration_cost_potential (s : State)
       (by decide) (by decide)
   have hbyte := Accessors.gasSteps_calldataByte_cost_potential body
     (UInt256.ofNat offset + UInt256.ofNat i) (UInt256.ofNat 0)
-    (UInt256.ofNat 483) (loadSaved (UInt256.ofNat offset)
+    (UInt256.ofNat 467) (loadSaved (UInt256.ofNat offset)
       (UInt256.ofNat length) dst i returnDest rest)
     (by simp [loadSaved]; omega)
     (by simpa [body, loadBody, loadLoop] using hcode)
@@ -570,7 +570,7 @@ theorem gasSteps_loadIteration_cost_potential (s : State)
     (by simpa [body, loadBody, loadLoop, State.fork] using hnp)
     (by
       rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-        Nat.mod_eq_of_lt (by norm_num : 483 < 2 ^ 256)]
+        Nat.mod_eq_of_lt (by norm_num : 467 < 2 ^ 256)]
       exact jump484)
   have hafter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     loadAfterBytePath 55

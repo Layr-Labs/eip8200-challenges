@@ -71,7 +71,7 @@ def affinePt (n j : Nat) : Nat :=
 memory/borrow as the current three-pointer invariant. -/
 def affineLoopState (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2311
+  { s with pc := UInt256.ofNat 2241
            stack := [UInt256.ofNat (affinePt n j),
                      (csStep memory n j).flag, pdst, ret] ++ rest
            memory := (csStep memory n j).memory }

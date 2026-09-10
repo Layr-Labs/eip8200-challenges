@@ -165,15 +165,15 @@ theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt
     (hoffset : rest[5]? = some modulusOffset)
     (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus) :
     runInstructions program
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 2768) base modulus 16 ([base, exponent] ++ rest)) =
-    some (WindowTwentyOneGroup.state template (UInt256.ofNat 2789) base modulus
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 2851) base modulus 16 ([base, exponent] ++ rest)) =
+    some (WindowTwentyOneGroup.state template (UInt256.ofNat 2872) base modulus
       (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
       (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) := by
-  have hl := run_lookup template (UInt256.ofNat 2768) base modulus exponent rest hrest
-  have hf := run_frame template (advancePC 11 (UInt256.ofNat 2768)) base modulus exponent modulusOffset
+  have hl := run_lookup template (UInt256.ofNat 2851) base modulus exponent rest hrest
+  have hf := run_frame template (advancePC 11 (UInt256.ofNat 2851)) base modulus exponent modulusOffset
     (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat) rest hrest hoffset hmodulus
   have both := runInstructions_append_some _ _ _ _ _ hl hf
-  have hpc : advancePC 10 (advancePC 11 (UInt256.ofNat 2768)) = UInt256.ofNat 2789 := by decide
+  have hpc : advancePC 10 (advancePC 11 (UInt256.ofNat 2851)) = UInt256.ofNat 2872 := by decide
   simpa only [program, hpc] using both
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInit

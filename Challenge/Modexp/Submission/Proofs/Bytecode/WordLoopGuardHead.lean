@@ -13,7 +13,7 @@ open Word
 entered with; the tail at pc 655 pops it. -/
 def bitFinishDispatchState (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) : State :=
-  { bitLoopState input outer 0 byte offset acc base with pc := UInt256.ofNat 650 }
+  { bitLoopState input outer 0 byte offset acc base with pc := UInt256.ofNat 630 }
 
 /-- The tail of the block drops `base - 1` and rejoins the byte loop. -/
 def gasSteps_bitExit (input : ByteArray) (outer : Nat)

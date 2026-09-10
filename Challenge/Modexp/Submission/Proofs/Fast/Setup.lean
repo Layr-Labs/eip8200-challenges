@@ -205,21 +205,21 @@ in reasonable memory. -/
 
 /-- Gas-erased state at the fast-path entry: pc 1314, empty stack. -/
 def entryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 1308, stack := [] }
+  { s with pc := UInt256.ofNat 1275, stack := [] }
 
 /-- The fallback target: pc 1196 with an empty stack; memory and `activeWords`
 are untouched because indices 977..1038 and the bail blocks contain no memory
 opcode. -/
 def fallbackState (s : State) : State :=
-  { s with pc := UInt256.ofNat 1191, stack := [] }
+  { s with pc := UInt256.ofNat 1158, stack := [] }
 
 /-- Entry of `BAIL1` (pc 1886): one live stack word. -/
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 1867, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 1817, stack := [UInt256.ofNat (modulusSize input)] }
 
 /-- After the `msize > 32` check (pc 1327). -/
 def sizeCheckState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 1320, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 1287, stack := [UInt256.ofNat (modulusSize input)] }
 
 set_option linter.unusedSimpArgs false in
 theorem run_entry_pass (s : State) (input : ByteArray)
@@ -298,10 +298,10 @@ def sizesOkStack (input : ByteArray) : List UInt256 :=
    UInt256.ofNat (modulusSize input)]
 
 def topCheckState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 1346, stack := sizesOkStack input }
+  { s with pc := UInt256.ofNat 1313, stack := sizesOkStack input }
 
 def bail3State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 1873, stack := sizesOkStack input }
+  { s with pc := UInt256.ofNat 1823, stack := sizesOkStack input }
 
 set_option linter.unusedSimpArgs false in
 theorem run_sizeCheck_pass (s : State) (input : ByteArray)
@@ -434,12 +434,12 @@ def outerStack (input : ByteArray) : List UInt256 :=
 
 /-- After the top-limb check (pc 1385). -/
 def oddCheckState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 1378
+  { s with pc := UInt256.ofNat 1345
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 /-- Entry of `BAIL6` (pc 1900): six live stack words. -/
 def bail6State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 1881
+  { s with pc := UInt256.ofNat 1831
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 set_option linter.unusedSimpArgs false in
@@ -515,7 +515,7 @@ theorem land_one_lastWord (input : ByteArray) (h : 32 < modulusSize input) :
 
 /-- State after all four checks passed (pc 1400), before any memory write. -/
 def setupEntryState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 1393
+  { s with pc := UInt256.ofNat 1360
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 set_option linter.unusedSimpArgs false in
@@ -855,11 +855,11 @@ def gasSteps_fallback_of (s : State) (input : ByteArray)
 
 theorem entryState_initial (input : ByteArray) :
     entryState (initialState submissionBytecode input 0) =
-      Main.trampolineState input 1308 := rfl
+      Main.trampolineState input 1275 := rfl
 
 theorem fallbackState_initial (input : ByteArray) :
     fallbackState (initialState submissionBytecode input 0) =
-      Main.trampolineState input 1191 := rfl
+      Main.trampolineState input 1158 := rfl
 
 /-- **Fallback certificate.**  For every calldata failing the fast-path
 precondition, the appended entry block runs from the state the retargeted
@@ -867,8 +867,8 @@ entry `PUSH2 1314; JUMP` produces to `Main.trampolineState input 1196` — pc
 1196, empty stack, untouched memory and `activeWords` — which is exactly the
 state the pre-existing reference proof consumes. -/
 def gasSteps_fallback (input : ByteArray) (hfail : ¬ FastPath input) :
-    Challenge.EvmProof.GasSteps (Main.trampolineState input 1308)
-      (Main.trampolineState input 1191) :=
+    Challenge.EvmProof.GasSteps (Main.trampolineState input 1275)
+      (Main.trampolineState input 1158) :=
   Challenge.EvmProof.GasSteps.cast
     (gasSteps_fallback_of (initialState submissionBytecode input 0) input rfl rfl rfl rfl
       deployAddress_not_precompile hfail)
@@ -1092,14 +1092,14 @@ def setupPathD :
    pushAt 1116 1 1,
    pushAt 1117 2 4096,
    opAt 1118 .MSTORE,
-   pushAt 1119 2 3780,
+   pushAt 1119 2 3845,
    pushAt 1120 2 4096,
-   pushAt 1121 2 2505,
+   pushAt 1121 2 2588,
    opAt 1122 .JUMP]
 
 /-- After the variable stores and the modulus load (pc 1451). -/
 def modLoadedState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 1444
+  { s with pc := UInt256.ofNat 1411
            stack := UInt256.ofNat m0 :: UInt256.ofNat (s32 input - 32) ::
              outerStack input
            memory := modulusMem s.memory input
@@ -1116,8 +1116,8 @@ def newtonState (s : State) (input : ByteArray) (m0 x p : Nat) : State :=
 /-- State at the `R1B` guard entry `JUMPDEST` (pc 2539).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 2505
-           stack := UInt256.ofNat 4096 :: UInt256.ofNat 3780 :: outerStack input
+  { s with pc := UInt256.ofNat 2588
+           stack := UInt256.ofNat 4096 :: UInt256.ofNat 3845 :: outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
 
@@ -1165,7 +1165,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_setupB (s : State) (input : ByteArray) (m0 : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathB (modLoadedState s input m0) =
-      some (newtonState s input m0 (newton4 m0) 1465) := by
+      some (newtonState s input m0 (newton4 m0) 1432) := by
   simp (config := { maxSteps := 1000000 })
     [setupPathB, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -1180,8 +1180,8 @@ set_option linter.unusedSimpArgs false in
 theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathC
-        (newtonState s input m0 (newton4 m0) 1465) =
-      some (newtonState s input m0 (newton8 m0) 1493) := by
+        (newtonState s input m0 (newton4 m0) 1432) =
+      some (newtonState s input m0 (newton8 m0) 1460) := by
   simp (config := { maxSteps := 1000000 })
     [setupPathC, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -1196,7 +1196,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_setupD (s : State) (input : ByteArray) (m0 : Nat)
     (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathD
-        (newtonState s input m0 (newton8 m0) 1493) =
+        (newtonState s input m0 (newton8 m0) 1460) =
       some (setupExitState s input m0) := by
   have hmodminv : ∀ v : Nat,
       negWord v %
@@ -1558,11 +1558,11 @@ def gasSteps_setup (s : State) (input : ByteArray) (m0 : Nat)
           (run_setupB s input m0 hrun) hrun hnp).trans
       ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
           Artifact.submissionArtifact .Osaka setupPathC
-            (s := newtonState s input m0 (newton4 m0) 1465) hcode hfork
+            (s := newtonState s input m0 (newton4 m0) 1432) hcode hfork
             (run_setupC s input m0 hrun) hrun hnp).trans
         (Challenge.EvmProof.Stepper.runLocatedBlock_sound
           Artifact.submissionArtifact .Osaka setupPathD
-            (s := newtonState s input m0 (newton8 m0) 1493) hcode hfork
+            (s := newtonState s input m0 (newton8 m0) 1460) hcode hfork
             (run_setupD s input m0 hcode hrun) hrun hnp)))
 
 def gasSteps_fastPath_of (s : State) (input : ByteArray) (m0 : Nat)
@@ -1606,18 +1606,18 @@ theorem fastSetupState_memory (input : ByteArray) :
     (fastSetupState input).memory = fastSetupMemory input := rfl
 
 theorem fastSetupState_pc (input : ByteArray) :
-    (fastSetupState input).pc = UInt256.ofNat 2505 := rfl
+    (fastSetupState input).pc = UInt256.ofNat 2588 := rfl
 
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack =
-      UInt256.ofNat 4096 :: UInt256.ofNat 3780 :: outerStack input := rfl
+      UInt256.ofNat 4096 :: UInt256.ofNat 3845 :: outerStack input := rfl
 
 /-- **Setup certificate.**  For every calldata satisfying the fast-path
 precondition (and the `ValidInput` bound on the calldata length), execution
 runs from the state the retargeted entry produces to the `R1B` guard, with the modulus loaded, `minv` computed and `R1` initialised. -/
 def gasSteps_fastSetup (input : ByteArray) (hsize : input.size < 2 ^ 256)
     (hpath : FastPath input) :
-    Challenge.EvmProof.GasSteps (Main.trampolineState input 1308)
+    Challenge.EvmProof.GasSteps (Main.trampolineState input 1275)
       (fastSetupState input) :=
   Challenge.EvmProof.GasSteps.cast
     (gasSteps_fastPath_of (initialState submissionBytecode input 0) input

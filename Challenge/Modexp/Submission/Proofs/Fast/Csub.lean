@@ -1,12 +1,10 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
 import Challenge.Modexp.Submission.Proofs.Fast.CsubModel
 import Challenge.Modexp.Submission.Proofs.Fast.CsubAffineStep
-import Challenge.Modexp.Submission.Proofs.Fast.CsubAffineRun
-import Challenge.Modexp.Submission.Proofs.Fast.CsubAffineLocations
+import Challenge.Modexp.Submission.Proofs.Fast.CsubPairsBlocks
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P11
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P12
-import Challenge.Modexp.Submission.Proofs.Fast.Paths.P13
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
@@ -41,8 +39,6 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.CsubAffineStep
-open Challenge.Modexp.Submission.Proofs.Fast.CsubAffineRun
-open Challenge.Modexp.Submission.Proofs.Fast.CsubAffineLocations
 
 /-! ## Pointer arithmetic
 
@@ -98,14 +94,14 @@ theorem ptrAt_toNat (base j : Nat) (hj : 32 * j ≤ base) (hbase : base < 2 ^ 25
 /-- Subroutine entry (pc 2224) with stack `[pa, pb, pd, ret]`. -/
 def amEntryState (s : State) (memory : ByteArray) (pa pb : Nat)
     (pd ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2199
+  { s with pc := UInt256.ofNat 2142
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pd, ret] ++ rest
            memory := memory }
 
 /-- The `ADDMOD` loop head (pc 2257) after `j` limb steps. -/
 def amLoopState (s : State) (memory : ByteArray) (pa pb n j : Nat)
     (pd ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2230
+  { s with pc := UInt256.ofNat 2173
            stack := [UInt256.ofNat (ptrAt (8224 + 32 * n) j),
                      UInt256.ofNat (ptrAt (pa + 32 * n - 32) j),
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) j),
@@ -195,10 +191,10 @@ theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
-  have h2500 : (2230 : UInt256).toNat = 2230 := by decide
-  have h2500' : (2230 : UInt256) = UInt256.ofNat 2230 := by decide
+  have h2500 : (2173 : UInt256).toNat = 2173 := by decide
+  have h2500' : (2173 : UInt256) = UInt256.ofNat 2173 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (2230 : UInt256).toNat = true := by
+      (2173 : UInt256).toNat = true := by
     rw [h2500]; exact jumpDest2500
   have hta : ptrAt (pa + 32 * n - 32) j %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
@@ -246,7 +242,7 @@ theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
 pointers plus the carry are still on the stack. -/
 def amTailState (s : State) (memory : ByteArray) (pa pb n j : Nat)
     (pd ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2275
+  { s with pc := UInt256.ofNat 2218
            stack := [UInt256.ofNat (ptrAt (8224 + 32 * n) j),
                      UInt256.ofNat (ptrAt (pa + 32 * n - 32) j),
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) j),
@@ -873,100 +869,6 @@ def gasSteps_addmod (s : State) (memory : ByteArray) (pa pb n : Nat)
         hrun hnp hact))
     rfl (by rw [hnn])
 
-def gasSteps_csEntry (s : State) (memory : ByteArray) (n : Nat)
-    (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32)
-    (htl : MachineState.readWord memory 9440 = UInt256.ofNat (8224 + 32 * n)) :
-    Challenge.EvmProof.GasSteps (csEntryState s memory pdst ret rest)
-      (affineLoopState s memory n 0 pdst ret rest) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka blk1667
-    (by simpa [csEntryState, Artifact.submissionArtifact] using hcode)
-    (by simpa [csEntryState, State.fork] using hfork)
-    (run_csubEntryLocated s memory n pdst ret rest hcap hrun hact hn32 htl)
-    (by simpa [csEntryState] using hrun)
-    (by simpa [csEntryState, State.fork] using hnp)
-
-def gasSteps_csIteration (s : State) (memory : ByteArray) (n j : Nat)
-    (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hj : j + 1 < n) (hn32 : n ≤ 32) :
-    Challenge.EvmProof.GasSteps (affineLoopState s memory n j pdst ret rest)
-      (affineLoopState s memory n (j + 1) pdst ret rest) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka blk1683
-    (by simpa [affineLoopState, Artifact.submissionArtifact] using hcode)
-    (by simpa [affineLoopState, State.fork] using hfork)
-    (run_csubLoopBodyLocated s memory n j pdst ret rest hcap hrun hcode hact hj hn32)
-    (by simpa [affineLoopState] using hrun)
-    (by simpa [affineLoopState, State.fork] using hnp)
-
-def gasSteps_csLoop (s : State) (memory : ByteArray) (n : Nat)
-    (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn32 : n ≤ 32) :
-    Challenge.EvmProof.GasSteps (affineLoopState s memory n 0 pdst ret rest)
-      (affineLoopState s memory n (n - 1) pdst ret rest) := by
-  exact Challenge.EvmProof.GasSteps.iterateBounded (n - 1) fun i hi =>
-    gasSteps_csIteration s memory n i pdst ret rest hcap hcode hfork hrun hnp hact
-      (by omega) hn32
-
-def gasSteps_csExit (s : State) (memory : ByteArray) (n : Nat)
-    (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32) :
-    Challenge.EvmProof.GasSteps (affineLoopState s memory n (n - 1) pdst ret rest)
-      (affineGuardExitState s memory n (n - 1) pdst ret rest) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka blk1683
-    (by simpa [affineLoopState, Artifact.submissionArtifact] using hcode)
-    (by simpa [affineLoopState, State.fork] using hfork)
-    (run_csubLoopExitLocated s memory n (n - 1) pdst ret rest hcap hrun hact
-      (by omega) hn32)
-    (by simpa [affineLoopState] using hrun)
-    (by simpa [affineLoopState, State.fork] using hnp)
-
-def gasSteps_csTailStep (s : State) (memory : ByteArray) (n j : Nat)
-    (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
-    (hs32 : MachineState.readWord (csStep memory n (j + 1)).memory 9344 =
-      UInt256.ofNat (32 * n))
-    (hdstFit : pdst.toNat + 32 * n ≤ 9472)
-    (hsrcFit : (csSrc memory n (j + 1)).toNat + 32 * n ≤ 9472) :
-    Challenge.EvmProof.GasSteps (affineGuardExitState s memory n j pdst ret rest)
-      (csReturnedState s memory n (j + 1) pdst ret rest) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka blk1724
-    (by simpa [affineGuardExitState, Artifact.submissionArtifact] using hcode)
-    (by simpa [affineGuardExitState, State.fork] using hfork)
-    (run_csubTailLocated s memory n j pdst ret rest hcap hrun hcode hact hn hn32 hjump
-      hs32 hdstFit hsrcFit)
-    (by simpa [affineGuardExitState] using hrun)
-    (by simpa [affineGuardExitState, State.fork] using hnp)
-
 /-- Whole-subroutine trace for `CSUB`: from the entry `[pd, ret]` to the return
 jump, with `t mod m` copied into the block at `pd`. -/
 def gasSteps_csub (s : State) (memory : ByteArray) (n : Nat)
@@ -986,28 +888,15 @@ def gasSteps_csub (s : State) (memory : ByteArray) (n : Nat)
     (htn : (MachineState.readWord (csStep memory n n).memory 8224).toNat ≤ 1) :
     Challenge.EvmProof.GasSteps (csEntryState s memory pdst ret rest)
       (csReturnedState s memory n n pdst ret rest) := by
-  have hnn : n - 1 + 1 = n := by omega
-  -- `hml` (the `9408` config word) is unused by the affine entry; retained in
-  -- the public header for caller stability.
   have _hml := hml
   have hsrcFit : (csSrc memory n n).toNat + 32 * n ≤ 9472 := by
     rw [csSrc_toNat memory n n (csUse_le_one memory n n htn)]
     split <;> omega
-  have hs32' : MachineState.readWord (csStep memory n (n - 1 + 1)).memory 9344 =
-      UInt256.ofNat (32 * n) := by
-    rw [hnn]; exact hs32
-  have hsrcFit' : (csSrc memory n (n - 1 + 1)).toNat + 32 * n ≤ 9472 := by
-    rw [hnn]; exact hsrcFit
-  exact (((gasSteps_csEntry s memory n pdst ret rest hcap hcode hfork hrun hnp hact
-        hn32 htl).trans
-      (gasSteps_csLoop s memory n pdst ret rest hcap hcode hfork hrun hnp hact
-        hn32)).trans
-      (gasSteps_csExit s memory n pdst ret rest hcap hcode hfork hrun hnp hact hn
-        hn32)).trans
-    (Challenge.EvmProof.GasSteps.cast
-      (gasSteps_csTailStep s memory n (n - 1) pdst ret rest hcap hcode hfork hrun hnp
-        hact hn hn32 hjump hs32' hdstFit hsrcFit')
-      rfl (by rw [hnn]))
+  exact CsubPairsTrace.gasSteps_csub CsubPairsBlocks.blocks s memory n pdst ret rest
+    (CsubPairsBlocks.environment s hcode hfork hrun hnp) hcap hact hn hn32
+    (by rw [hcode]; exact CsubPairsBlocks.jumpFirst)
+    (by rw [hcode]; exact CsubPairsBlocks.jumpSecond)
+    (by rw [hcode]; exact hjump) htl hs32 hdstFit hsrcFit
 
 /-! ## Functional correctness -/
 

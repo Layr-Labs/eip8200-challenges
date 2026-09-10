@@ -11,14 +11,14 @@ open EvmSemantics.EVM
 set_option linter.unusedSimpArgs false in
 theorem run_tramp7 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp7Path
-      (trampolineState input 694) = some (headerEntryState input) := by
+      (trampolineState input 670) = some (headerEntryState input) := by
   have hsucc699 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 694) (by norm_num : 694 + 1 < 2 ^ 256)
+    (n := 670) (by norm_num : 670 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 695) (b := 3) (by norm_num : 695 + 3 < 2 ^ 256)
-  have hdest : (1191 : UInt256).toNat = 1191 := by decide
+    (a := 671) (b := 3) (by norm_num : 671 + 3 < 2 ^ 256)
+  have hdest : (1158 : UInt256).toNat = 1158 := by decide
   have hsucc1196 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1191) (by norm_num : 1191 + 1 < 2 ^ 256)
+    (n := 1158) (by norm_num : 1158 + 1 < 2 ^ 256)
   simp [tramp7Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     trampolineState, headerEntryState, initialState,
@@ -28,12 +28,12 @@ theorem run_tramp7 (input : ByteArray) :
 set_option linter.unusedSimpArgs false in
 theorem run_tramp7Jump (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp7JumpPath
-      (trampolineState input 694) = some (trampolineState input 1191) := by
+      (trampolineState input 670) = some (trampolineState input 1158) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
-    (n := 694) (by norm_num : 694 + 1 < 2 ^ 256)
+    (n := 670) (by norm_num : 670 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 695) (b := 3) (by norm_num : 695 + 3 < 2 ^ 256)
-  have hdest : (1191 : UInt256).toNat = 1191 := by decide
+    (a := 671) (b := 3) (by norm_num : 671 + 3 < 2 ^ 256)
+  have hdest : (1158 : UInt256).toNat = 1158 := by decide
   simp [tramp7JumpPath, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -43,9 +43,9 @@ theorem run_tramp7Jump (input : ByteArray) :
 set_option linter.unusedSimpArgs false in
 theorem run_tramp7Dest (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp7DestPath
-      (trampolineState input 1191) = some (headerEntryState input) := by
+      (trampolineState input 1158) = some (headerEntryState input) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1191) (by norm_num : 1191 + 1 < 2 ^ 256)
+    (n := 1158) (by norm_num : 1158 + 1 < 2 ^ 256)
   simp [tramp7DestPath, opAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     trampolineState, headerEntryState, initialState, hsucc,

@@ -18,7 +18,7 @@ def blk1369 :
    opAt 1353 (.Swap ⟨0, by decide⟩),
    opAt 1354 .SUB,
    opAt 1355 (.Dup ⟨0, by decide⟩),
-   pushAt 1356 2 1896,
+   pushAt 1356 2 1846,
    opAt 1357 .JUMPI]
 
 /-- Instructions 1376..1378, pc 1936..1938. -/
@@ -66,10 +66,10 @@ def blk1406 :
    opAt 1389 (.Dup ⟨0, by decide⟩),
    opAt 1390 .MLOAD,
    pushAt 1391 0 0,
-   pushAt 1392 4 9440,
+   pushAt 1392 2 9440,
    opAt 1393 .MLOAD,
    opAt 1394 (.Dup ⟨4, by decide⟩),
-   pushAt 1395 7 9344,
+   pushAt 1395 2 9344,
    opAt 1396 .MLOAD,
    opAt 1397 .ADD]
 

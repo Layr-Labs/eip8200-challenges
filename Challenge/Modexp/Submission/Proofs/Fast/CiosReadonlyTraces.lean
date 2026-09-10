@@ -36,7 +36,7 @@ theorem run_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
     (m0 :: m64 :: m32 :: dst :: ret :: rest) hcap' hact hs32
   have hskip : runInstructions [.op .JUMPDEST]
       (maskEntryState s mem pa pb tl inv (m0 :: m64 :: m32 :: dst :: ret :: rest)) =
-    some (framed { s with memory := mem } (UInt256.ofNat 4477)
+    some (framed { s with memory := mem } (UInt256.ofNat 4542)
       ([UInt256.ofNat pa,UInt256.ofNat pb,tl,inv,m0,m64,m32,dst,ret] ++ rest)) := by
       simp only [runInstructions, Challenge.EvmProof.Stepper.runInstr, maskEntryState,
         entryState, framed, List.cons_append, List.nil_append, List.length_cons,
@@ -45,7 +45,7 @@ theorem run_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
   rw [show CiosCached.cacheProgram = [.op .JUMPDEST] ++ CiosCached.cacheProgram.drop 1 from rfl,
     runInstructions_append, hskip] at hlegacy
   have hstart : runInstructions [.op .JUMPDEST] (entryState s mem pa pb dst ret rest) =
-    some (framed { s with memory := mem } (UInt256.ofNat 4452)
+    some (framed { s with memory := mem } (UInt256.ofNat 4517)
       ([UInt256.ofNat pa,UInt256.ofNat pb,dst,ret] ++ rest)) := by
       simp only [runInstructions, Challenge.EvmProof.Stepper.runInstr,
         entryState, framed, List.cons_append, List.nil_append, List.length_cons,
@@ -72,7 +72,7 @@ theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
     (hc : ReadonlyCache mem n tl inv m0) (hminv : inverseInvariant mem n) :
     runInstructions fullMidProgram
       (CiosCached.midState s mem c bi pa pb n i tl inv (m0 :: dst :: ret :: rest)) =
-    some (CiosCached.l2At 4893 s (midMem mem c) bi (rowMu mem n) (rowC0 mem n)
+    some (CiosCached.l2At 4928 s (midMem mem c) bi (rowMu mem n) (rowC0 mem n)
       pa pb n i 0 tl inv (m0 :: dst :: ret :: rest)) := by
   have hcap' : (m0 :: dst :: ret :: rest).length ≤ 1006 := by simp only [List.length_cons]; omega
   have hmu := rowMu_mid mem c n hn
@@ -92,11 +92,11 @@ theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
 
 theorem run_exit (s : State) (pbi paEnd pbEnd flag tl inv m0 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1001)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 2282 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 2225 = true) :
     runInstructions fullExitProgram
-      (framed s (UInt256.ofNat 5179)
+      (framed s (UInt256.ofNat 5214)
         ([pbi,paEnd,pbEnd,flag,negative32,allOnes,tl,inv,m0,m64,m32,dst,ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 2282) ([dst,ret] ++ rest)) := by
+    some (framed s (UInt256.ofNat 2225) ([dst,ret] ++ rest)) := by
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega
   have hc4 : rest.length+4 < 1024 := by omega

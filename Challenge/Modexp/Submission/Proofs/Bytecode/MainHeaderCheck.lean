@@ -13,9 +13,9 @@ theorem run_headerCheck (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock headerCheckPath
       (headerLoadedState input) = some (headerState input) := by
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1200) (b := 3) (by norm_num : 1200 + 3 < 2 ^ 256)
-  have hdest : (1223 : UInt256).toNat = 1223 := by decide
-  have hdestWord : (1223 : UInt256) = UInt256.ofNat 1223 := by decide
+    (a := 1167) (b := 3) (by norm_num : 1167 + 3 < 2 ^ 256)
+  have hdest : (1190 : UInt256).toNat = 1190 := by decide
+  have hdestWord : (1190 : UInt256) = UInt256.ofNat 1190 := by decide
   simp [headerCheckPath, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,

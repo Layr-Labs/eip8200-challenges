@@ -71,7 +71,7 @@ theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
 /-- Entry of `CSUB` (pc 2282) with stack `[pd, ret]`. -/
 def csEntryState (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2282
+  { s with pc := UInt256.ofNat 2225
            stack := [pdst, ret] ++ rest
            memory := memory }
 

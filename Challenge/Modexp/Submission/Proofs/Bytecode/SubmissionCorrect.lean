@@ -176,7 +176,7 @@ def bigRest (input : ByteArray) : List UInt256 :=
     UInt256.ofNat (modulusSize input), UInt256.ofNat (exponentSize input),
     UInt256.ofNat (baseSize input)]
 
-def bigReturnDest : UInt256 := UInt256.ofNat 1278
+def bigReturnDest : UInt256 := UInt256.ofNat 1245
 
 def bigCompletedState (input : ByteArray) : State :=
   BigComplete.completedState (Main.headerState input) (baseSize input)
@@ -192,7 +192,7 @@ private def certifiedBigNonzeroTotal (input : ByteArray)
     (hvalid : ValidInput input) (hbig : 32 < modulusSize input)
     (hmodulusPos : 0 < Word.modulusValue input)
     (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 1191)) :
+      (Main.trampolineState input 1158)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (bigCompletedState input) := by
   have hb := hvalid.2.1
@@ -239,7 +239,7 @@ private def certifiedBigNonzeroTotal (input : ByteArray)
 def gasSteps_bigNonzeroTotal (input : ByteArray) (hvalid : ValidInput input)
     (hbig : 32 < modulusSize input) (hmodulusPos : 0 < Word.modulusValue input)
     (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 1191)) :
+      (Main.trampolineState input 1158)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (bigCompletedState input) :=
   certifiedBigNonzeroTotal input hvalid hbig hmodulusPos entry
@@ -247,7 +247,7 @@ def gasSteps_bigNonzeroTotal (input : ByteArray) (hvalid : ValidInput input)
 private def certifiedBigZeroTotal (input : ByteArray) (hvalid : ValidInput input)
     (hbig : 32 < modulusSize input) (hmodulus : Word.modulusValue input = 0)
     (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 1191)) :
+      (Main.trampolineState input 1158)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (bigZeroFinalState input) := by
   have hb := hvalid.2.1
@@ -286,7 +286,7 @@ private def certifiedBigZeroTotal (input : ByteArray) (hvalid : ValidInput input
 def gasSteps_bigZeroTotal (input : ByteArray) (hvalid : ValidInput input)
     (hbig : 32 < modulusSize input) (hmodulus : Word.modulusValue input = 0)
     (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 1191)) :
+      (Main.trampolineState input 1158)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (bigZeroFinalState input) :=
   certifiedBigZeroTotal input hvalid hbig hmodulus entry

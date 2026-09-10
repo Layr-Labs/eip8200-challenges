@@ -15,7 +15,7 @@ dispatcher. The remaining decoded instructions through index 1215 are
 unreachable padding, preserving the old loop head at index 1216 / pc 1668. -/
 def blk1195 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1179 2 3333,
+  [pushAt 1179 2 3401,
    opAt 1180 .JUMP]
 
 /-- Instructions 1216..1222, pc 1668..1676. -/
@@ -25,17 +25,17 @@ def blk1216 :
    opAt 1201 (.Dup ⟨1, by decide⟩),
    opAt 1202 (.Dup ⟨1, by decide⟩),
    opAt 1203 .EQ,
-   pushAt 1204 2 1718,
+   pushAt 1204 2 1672,
    opAt 1205 .JUMPI]
 
 /-- Instructions 1223..1228, pc 1677..1692. -/
 def blk1223 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1206 2 1675,
+  [pushAt 1206 2 1629,
    pushAt 1207 2 1024,
    pushAt 1208 2 5120,
    pushAt 1209 2 1024,
-   pushAt 1210 2 4428,
+   pushAt 1210 2 4493,
    opAt 1211 .JUMP]
 
 /-- Instructions 1229..1249, pc 1693..1727. -/
@@ -56,11 +56,11 @@ def blk1229 :
    pushAt 1224 2 3040,
    opAt 1225 .ADD,
    opAt 1226 .MSTORE,
-   pushAt 1227 2 1710,
+   pushAt 1227 2 1664,
    pushAt 1228 2 1024,
    pushAt 1229 2 3072,
    pushAt 1230 2 1024,
-   pushAt 1231 2 2199,
+   pushAt 1231 2 2142,
    opAt 1232 .JUMP]
 
 /-- Instructions 1250..1254, pc 1728..1735. -/
@@ -69,7 +69,7 @@ def blk1250 :
   [opAt 1233 .JUMPDEST,
    pushAt 1234 1 1,
    opAt 1235 .ADD,
-   pushAt 1236 2 1651,
+   pushAt 1236 2 1605,
    opAt 1237 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

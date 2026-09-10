@@ -11,5 +11,4 @@ import Challenge.Modexp.Submission.Proofs.Fast.Paths.P9
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P10
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P11
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P12
-import Challenge.Modexp.Submission.Proofs.Fast.Paths.P13
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P14

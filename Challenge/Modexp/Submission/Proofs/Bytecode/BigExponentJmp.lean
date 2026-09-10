@@ -16,39 +16,39 @@ open EvmSemantics.EVM
 open Challenge.Modexp
 
 theorem jump310 :
-    Decode.isValidJumpDest submissionBytecode 309 = true :=
+    Decode.isValidJumpDest submissionBytecode 298 = true :=
   Artifact.isValidJumpDest_index 264 (by rfl)
 
 
 
 theorem jump58 :
-    Decode.isValidJumpDest submissionBytecode 57 = true :=
+    Decode.isValidJumpDest submissionBytecode 53 = true :=
   Artifact.isValidJumpDest_index 45 (by rfl)
 
 
 
 theorem jump1039 :
-    Decode.isValidJumpDest submissionBytecode 1034 = true :=
+    Decode.isValidJumpDest submissionBytecode 1001 = true :=
   Artifact.isValidJumpDest_index 772 (by rfl)
 
 
 theorem jump1090 :
-    Decode.isValidJumpDest submissionBytecode 1085 = true :=
+    Decode.isValidJumpDest submissionBytecode 1052 = true :=
   Artifact.isValidJumpDest_index 811 (by rfl)
 
 
 theorem jump963 :
-    Decode.isValidJumpDest submissionBytecode 958 = true :=
+    Decode.isValidJumpDest submissionBytecode 926 = true :=
   Artifact.isValidJumpDest_index 729 (by rfl)
 
 
 
 theorem jump1104 :
-    Decode.isValidJumpDest submissionBytecode 1099 = true :=
+    Decode.isValidJumpDest submissionBytecode 1066 = true :=
   Artifact.isValidJumpDest_index 822 (by rfl)
 
 
 theorem jump946 :
-    Decode.isValidJumpDest submissionBytecode 941 = true :=
+    Decode.isValidJumpDest submissionBytecode 909 = true :=
   Artifact.isValidJumpDest_index 714 (by rfl)
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigExponent

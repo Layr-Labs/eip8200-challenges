@@ -15,11 +15,11 @@ attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
 @[simp] private theorem exitPCs (i : Nat)
     (hi : 520 ≤ i) (hii : i ≤ 544) :
     Artifact.submissionArtifact.instructionPC i =
-      ([650,651,652,653,654,656,657,660,661,662,663,664,665,666,667,668,670,671,673,674,675,676,677,678,683] : List Nat)[i - 520]! := by
+      ([630,631,632,633,634,636,637,640,641,642,643,644,645,646,647,648,650,651,653,654,655,656,657,658,659] : List Nat)[i - 520]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump589 :
-    Decode.isValidJumpDest submissionBytecode 588 = true :=
+    Decode.isValidJumpDest submissionBytecode 569 = true :=
   Artifact.isValidJumpDest_index 468 (by rfl)
 
 set_option linter.unusedSimpArgs false in
@@ -37,8 +37,8 @@ theorem run_bitFinishTailFinish (input : ByteArray) (outer : Nat)
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact hsucc
   have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  have h589 : (588 : UInt256).toNat = 588 := by decide
-  have h589Word : (588 : UInt256) = UInt256.ofNat 588 := by decide
+  have h589 : (569 : UInt256).toNat = 569 := by decide
+  have h589Word : (569 : UInt256) = UInt256.ofNat 569 := by decide
   simp (config := { maxSteps := 125000 })
     [bitFinishTailFinishPath, Word.opAt, Word.pushAt, Word.wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,

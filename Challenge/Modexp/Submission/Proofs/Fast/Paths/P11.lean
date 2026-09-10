@@ -37,7 +37,7 @@ def blk1569 :
    opAt 1569 (.Dup ⟨2, by decide⟩),
    opAt 1570 (.Dup ⟨1, by decide⟩),
    opAt 1571 .GT,
-   pushAt 1572 2 1955,
+   pushAt 1572 2 1905,
    opAt 1573 .JUMPI]
 
 /-- Instructions 1595..1599, pc 2460..2223. -/
@@ -46,7 +46,7 @@ def blk1595 :
   [opAt 1574 .POP,
    opAt 1575 .POP,
    opAt 1576 .POP,
-   pushAt 1577 2 2282,
+   pushAt 1577 2 2225,
    opAt 1578 .JUMP]
 
 /-- Instructions 1600..1626, pc 2224..2256. -/

@@ -49,47 +49,47 @@ def setupToClear0Path :
    opAt 561 .ADD,
    pushAt 562 1 5,
    opAt 563 .SHR,
-   pushAt 564 2 716,
+   pushAt 564 2 691,
    opAt 565 (.Dup ⟨1, by decide⟩),
    pushAt 566 0 0,
-   pushAt 567 2 18,
+   pushAt 567 1 17,
    opAt 568 .JUMP]
 
 def toClear1024Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 569 .JUMPDEST,
-   pushAt 570 2 728,
+   pushAt 570 2 702,
    opAt 571 (.Dup ⟨1, by decide⟩),
    pushAt 572 2 1024,
-   pushAt 573 2 18,
+   pushAt 573 1 17,
    opAt 574 .JUMP]
 
 def toClear2048Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 575 .JUMPDEST,
-   pushAt 576 2 740,
+   pushAt 576 2 713,
    opAt 577 (.Dup ⟨1, by decide⟩),
    pushAt 578 2 2048,
-   pushAt 579 2 18,
+   pushAt 579 1 17,
    opAt 580 .JUMP]
 
 def toClear6144Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 581 .JUMPDEST,
-   pushAt 582 2 752,
+   pushAt 582 2 724,
    opAt 583 (.Dup ⟨1, by decide⟩),
    pushAt 584 2 6144,
-   pushAt 585 2 18,
+   pushAt 585 1 17,
    opAt 586 .JUMP]
 
 def toLoadModulusPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 587 .JUMPDEST,
-   pushAt 588 2 763,
+   pushAt 588 2 735,
    pushAt 589 0 0,
    opAt 590 (.Dup ⟨5, by decide⟩),
    opAt 591 (.Dup ⟨9, by decide⟩),
-   pushAt 592 2 438,
+   pushAt 592 2 423,
    opAt 593 .JUMP]
 
 def saved (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
@@ -100,76 +100,76 @@ def saved (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
 
 def setupEntry (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 699
+  { s with pc := UInt256.ofNat 675
            stack := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
              UInt256.ofNat baseOff, UInt256.ofNat expOff,
              UInt256.ofNat modOff, returnDest] ++ rest }
 
 def afterClear0 (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
-  BigHelpers.clearReturned s 0 (Limbs.limbCount m) 716
+  BigHelpers.clearReturned s 0 (Limbs.limbCount m) 691
     (saved b e m baseOff expOff modOff returnDest rest)
 
 def afterClear1024 (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   BigHelpers.clearReturned
     (afterClear0 s b e m baseOff expOff modOff returnDest rest)
-    1024 (Limbs.limbCount m) 728
+    1024 (Limbs.limbCount m) 702
     (saved b e m baseOff expOff modOff returnDest rest)
 
 def afterClear2048 (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   BigHelpers.clearReturned
     (afterClear1024 s b e m baseOff expOff modOff returnDest rest)
-    2048 (Limbs.limbCount m) 740
+    2048 (Limbs.limbCount m) 713
     (saved b e m baseOff expOff modOff returnDest rest)
 
 def afterClear6144 (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   BigHelpers.clearReturned
     (afterClear2048 s b e m baseOff expOff modOff returnDest rest)
-    6144 (Limbs.limbCount m) 752
+    6144 (Limbs.limbCount m) 724
     (saved b e m baseOff expOff modOff returnDest rest)
 
 def setupReturned (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   BigLoad.loadReturned
     (afterClear6144 s b e m baseOff expOff modOff returnDest rest)
-    (UInt256.ofNat modOff) (UInt256.ofNat m) 0 763
+    (UInt256.ofNat modOff) (UInt256.ofNat m) 0 735
     (saved b e m baseOff expOff modOff returnDest rest)
 
 @[simp] private theorem setupPCs (i : Nat)
     (hi : 558 ≤ i) (hii : i ≤ 593) :
     Artifact.submissionArtifact.instructionPC i =
-      ([699,700,702,703,704,706,707,710,711,712,715,716,717,720,721,724,727,728,729,732,733,736,739,740,741,744,745,748,751,752,753,756,757,758,759,762] : List Nat)[i - 558]! := by
+      ([675,676,678,679,680,682,683,686,687,688,690,691,692,695,696,699,701,702,703,706,707,710,712,713,714,717,718,721,723,724,725,728,729,730,731,734] : List Nat)[i - 558]! := by
   interval_cases i <;> decide
 
 private theorem jump19 :
-    Decode.isValidJumpDest submissionBytecode 18 = true :=
+    Decode.isValidJumpDest submissionBytecode 17 = true :=
   Artifact.isValidJumpDest_index 14 (by rfl)
 
 private theorem jump439 :
-    Decode.isValidJumpDest submissionBytecode 438 = true :=
+    Decode.isValidJumpDest submissionBytecode 423 = true :=
   Artifact.isValidJumpDest_index 352 (by rfl)
 
 private theorem jump721 :
-    Decode.isValidJumpDest submissionBytecode 716 = true :=
+    Decode.isValidJumpDest submissionBytecode 691 = true :=
   Artifact.isValidJumpDest_index 569 (by rfl)
 
 private theorem jump733 :
-    Decode.isValidJumpDest submissionBytecode 728 = true :=
+    Decode.isValidJumpDest submissionBytecode 702 = true :=
   Artifact.isValidJumpDest_index 575 (by rfl)
 
 private theorem jump745 :
-    Decode.isValidJumpDest submissionBytecode 740 = true :=
+    Decode.isValidJumpDest submissionBytecode 713 = true :=
   Artifact.isValidJumpDest_index 581 (by rfl)
 
 private theorem jump757 :
-    Decode.isValidJumpDest submissionBytecode 752 = true :=
+    Decode.isValidJumpDest submissionBytecode 724 = true :=
   Artifact.isValidJumpDest_index 587 (by rfl)
 
 private theorem jump768 :
-    Decode.isValidJumpDest submissionBytecode 763 = true :=
+    Decode.isValidJumpDest submissionBytecode 735 = true :=
   Artifact.isValidJumpDest_index 594 (by rfl)
 
 set_option linter.unusedSimpArgs false in
@@ -180,7 +180,7 @@ theorem run_setupToClear0 (s : State) (b e m baseOff expOff modOff : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupToClear0Path
       (setupEntry s b e m baseOff expOff modOff returnDest rest) =
-        some (BigHelpers.clearEntry s 0 (Limbs.limbCount m) 716
+        some (BigHelpers.clearEntry s 0 (Limbs.limbCount m) 691
           (saved b e m baseOff expOff modOff returnDest rest)) := by
   have hm256 : m < 2 ^ 256 := by omega
   have haddFit : m + 31 < 2 ^ 256 := by omega
@@ -195,10 +195,10 @@ theorem run_setupToClear0 (s : State) (b e m baseOff expOff modOff : Nat)
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have h0Word : (0 : UInt256) = UInt256.ofNat 0 := by decide
   have h5Word : (5 : UInt256) = UInt256.ofNat 5 := by decide
-  have h19 : (18 : UInt256).toNat = 18 := by decide
-  have h19Word : (18 : UInt256) = UInt256.ofNat 18 := by decide
+  have h19 : (17 : UInt256).toNat = 17 := by decide
+  have h19Word : (17 : UInt256) = UInt256.ofNat 17 := by decide
   have h31Word : (31 : UInt256) = UInt256.ofNat 31 := by decide
-  have h721Word : (716 : UInt256) = UInt256.ofNat 716 := by decide
+  have h721Word : (691 : UInt256) = UInt256.ofNat 691 := by decide
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
@@ -228,12 +228,12 @@ theorem run_toClear1024 (s : State) (b e m baseOff expOff modOff : Nat)
       (afterClear0 s b e m baseOff expOff modOff returnDest rest) =
         some (BigHelpers.clearEntry
           (afterClear0 s b e m baseOff expOff modOff returnDest rest)
-          1024 (Limbs.limbCount m) 728
+          1024 (Limbs.limbCount m) 702
           (saved b e m baseOff expOff modOff returnDest rest)) := by
-  have h721 : (716 : UInt256).toNat = 716 := by decide
-  have h721Word : (716 : UInt256) = UInt256.ofNat 716 := by decide
-  have h19 : (18 : UInt256).toNat = 18 := by decide
-  have h19Word : (18 : UInt256) = UInt256.ofNat 18 := by decide
+  have h721 : (691 : UInt256).toNat = 691 := by decide
+  have h721Word : (691 : UInt256) = UInt256.ofNat 691 := by decide
+  have h19 : (17 : UInt256).toNat = 17 := by decide
+  have h19Word : (17 : UInt256) = UInt256.ofNat 17 := by decide
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
@@ -260,12 +260,12 @@ theorem run_toClear2048 (s : State) (b e m baseOff expOff modOff : Nat)
       (afterClear1024 s b e m baseOff expOff modOff returnDest rest) =
         some (BigHelpers.clearEntry
           (afterClear1024 s b e m baseOff expOff modOff returnDest rest)
-          2048 (Limbs.limbCount m) 740
+          2048 (Limbs.limbCount m) 713
           (saved b e m baseOff expOff modOff returnDest rest)) := by
-  have h733 : (728 : UInt256).toNat = 728 := by decide
-  have h733Word : (728 : UInt256) = UInt256.ofNat 728 := by decide
-  have h19 : (18 : UInt256).toNat = 18 := by decide
-  have h19Word : (18 : UInt256) = UInt256.ofNat 18 := by decide
+  have h733 : (702 : UInt256).toNat = 702 := by decide
+  have h733Word : (702 : UInt256) = UInt256.ofNat 702 := by decide
+  have h19 : (17 : UInt256).toNat = 17 := by decide
+  have h19Word : (17 : UInt256) = UInt256.ofNat 17 := by decide
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
@@ -292,12 +292,12 @@ theorem run_toClear6144 (s : State) (b e m baseOff expOff modOff : Nat)
       (afterClear2048 s b e m baseOff expOff modOff returnDest rest) =
         some (BigHelpers.clearEntry
           (afterClear2048 s b e m baseOff expOff modOff returnDest rest)
-          6144 (Limbs.limbCount m) 752
+          6144 (Limbs.limbCount m) 724
           (saved b e m baseOff expOff modOff returnDest rest)) := by
-  have h745 : (740 : UInt256).toNat = 740 := by decide
-  have h745Word : (740 : UInt256) = UInt256.ofNat 740 := by decide
-  have h19 : (18 : UInt256).toNat = 18 := by decide
-  have h19Word : (18 : UInt256) = UInt256.ofNat 18 := by decide
+  have h745 : (713 : UInt256).toNat = 713 := by decide
+  have h745Word : (713 : UInt256) = UInt256.ofNat 713 := by decide
+  have h19 : (17 : UInt256).toNat = 17 := by decide
+  have h19Word : (17 : UInt256) = UInt256.ofNat 17 := by decide
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
@@ -325,14 +325,14 @@ theorem run_toLoadModulus (s : State) (b e m baseOff expOff modOff : Nat)
       (afterClear6144 s b e m baseOff expOff modOff returnDest rest) =
         some (BigLoad.loadEntry
           (afterClear6144 s b e m baseOff expOff modOff returnDest rest)
-          (UInt256.ofNat modOff) (UInt256.ofNat m) 0 763
+          (UInt256.ofNat modOff) (UInt256.ofNat m) 0 735
           (saved b e m baseOff expOff modOff returnDest rest)) := by
-  have h757 : (752 : UInt256).toNat = 752 := by decide
-  have h757Word : (752 : UInt256) = UInt256.ofNat 752 := by decide
+  have h757 : (724 : UInt256).toNat = 724 := by decide
+  have h757Word : (724 : UInt256) = UInt256.ofNat 724 := by decide
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have h0Word : (0 : UInt256) = UInt256.ofNat 0 := by decide
-  have h439 : (438 : UInt256).toNat = 438 := by decide
-  have h439Word : (438 : UInt256) = UInt256.ofNat 438 := by decide
+  have h439 : (423 : UInt256).toNat = 423 := by decide
+  have h439Word : (423 : UInt256) = UInt256.ofNat 423 := by decide
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
@@ -361,7 +361,7 @@ def gasSteps_setupToClear0 (s : State) (b e m baseOff expOff modOff : Nat)
       s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (setupEntry s b e m baseOff expOff modOff returnDest rest)
-      (BigHelpers.clearEntry s 0 (Limbs.limbCount m) 716
+      (BigHelpers.clearEntry s 0 (Limbs.limbCount m) 691
         (saved b e m baseOff expOff modOff returnDest rest)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka setupToClear0Path
@@ -383,7 +383,7 @@ def gasSteps_toClear1024 (s : State) (b e m baseOff expOff modOff : Nat)
       (afterClear0 s b e m baseOff expOff modOff returnDest rest)
       (BigHelpers.clearEntry
         (afterClear0 s b e m baseOff expOff modOff returnDest rest)
-        1024 (Limbs.limbCount m) 728
+        1024 (Limbs.limbCount m) 702
         (saved b e m baseOff expOff modOff returnDest rest)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka toClear1024Path
@@ -406,7 +406,7 @@ def gasSteps_toClear2048 (s : State) (b e m baseOff expOff modOff : Nat)
       (afterClear1024 s b e m baseOff expOff modOff returnDest rest)
       (BigHelpers.clearEntry
         (afterClear1024 s b e m baseOff expOff modOff returnDest rest)
-        2048 (Limbs.limbCount m) 740
+        2048 (Limbs.limbCount m) 713
         (saved b e m baseOff expOff modOff returnDest rest)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka toClear2048Path
@@ -432,7 +432,7 @@ def gasSteps_toClear6144 (s : State) (b e m baseOff expOff modOff : Nat)
       (afterClear2048 s b e m baseOff expOff modOff returnDest rest)
       (BigHelpers.clearEntry
         (afterClear2048 s b e m baseOff expOff modOff returnDest rest)
-        6144 (Limbs.limbCount m) 752
+        6144 (Limbs.limbCount m) 724
         (saved b e m baseOff expOff modOff returnDest rest)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka toClear6144Path
@@ -459,7 +459,7 @@ def gasSteps_toLoadModulus (s : State) (b e m baseOff expOff modOff : Nat)
       (afterClear6144 s b e m baseOff expOff modOff returnDest rest)
       (BigLoad.loadEntry
         (afterClear6144 s b e m baseOff expOff modOff returnDest rest)
-        (UInt256.ofNat modOff) (UInt256.ofNat m) 0 763
+        (UInt256.ofNat modOff) (UInt256.ofNat m) 0 735
         (saved b e m baseOff expOff modOff returnDest rest)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka toLoadModulusPath
@@ -491,7 +491,7 @@ theorem gasSteps_setupToClear0_cost (s : State)
       (by decide) (by decide)
   have hactive :
       (setupEntry s b e m baseOff expOff modOff returnDest rest).activeWords =
-      (BigHelpers.clearEntry s 0 (Limbs.limbCount m) 716
+      (BigHelpers.clearEntry s 0 (Limbs.limbCount m) 691
         (saved b e m baseOff expOff modOff returnDest rest)).activeWords := by
     rfl
   rw [hactive] at hmeter
@@ -520,7 +520,7 @@ theorem gasSteps_toClear1024_cost (s : State)
       (afterClear0 s b e m baseOff expOff modOff returnDest rest).activeWords =
       (BigHelpers.clearEntry
         (afterClear0 s b e m baseOff expOff modOff returnDest rest)
-        1024 (Limbs.limbCount m) 728
+        1024 (Limbs.limbCount m) 702
         (saved b e m baseOff expOff modOff returnDest rest)).activeWords := by
     rfl
   rw [hactive] at hmeter
@@ -550,7 +550,7 @@ theorem gasSteps_toClear2048_cost (s : State)
       (afterClear1024 s b e m baseOff expOff modOff returnDest rest).activeWords =
       (BigHelpers.clearEntry
         (afterClear1024 s b e m baseOff expOff modOff returnDest rest)
-        2048 (Limbs.limbCount m) 740
+        2048 (Limbs.limbCount m) 713
         (saved b e m baseOff expOff modOff returnDest rest)).activeWords := by
     rfl
   rw [hactive] at hmeter
@@ -580,7 +580,7 @@ theorem gasSteps_toClear6144_cost (s : State)
       (afterClear2048 s b e m baseOff expOff modOff returnDest rest).activeWords =
       (BigHelpers.clearEntry
         (afterClear2048 s b e m baseOff expOff modOff returnDest rest)
-        6144 (Limbs.limbCount m) 752
+        6144 (Limbs.limbCount m) 724
         (saved b e m baseOff expOff modOff returnDest rest)).activeWords := by
     rfl
   rw [hactive] at hmeter
@@ -611,7 +611,7 @@ theorem gasSteps_toLoadModulus_cost (s : State)
       (afterClear6144 s b e m baseOff expOff modOff returnDest rest).activeWords =
       (BigLoad.loadEntry
         (afterClear6144 s b e m baseOff expOff modOff returnDest rest)
-        (UInt256.ofNat modOff) (UInt256.ofNat m) 0 763
+        (UInt256.ofNat modOff) (UInt256.ofNat m) 0 735
         (saved b e m baseOff expOff modOff returnDest rest)).activeWords := by
     rfl
   rw [hactive] at hmeter
@@ -699,23 +699,23 @@ def gasSteps_setup (s : State) (b e m baseOff expOff modOff : Nat)
   exact
     (gasSteps_setupToClear0 s b e m baseOff expOff modOff returnDest rest
       hmBound hcapSetup hcode hfork hrun hnp).trans <|
-    (BigHelpers.gasSteps_clear s 0 (Limbs.limbCount m) 716 frame
+    (BigHelpers.gasSteps_clear s 0 (Limbs.limbCount m) 691 frame
       hframeClear hn hcode hfork hrun hnp jump721).trans <|
     (gasSteps_toClear1024 s b e m baseOff expOff modOff returnDest rest
       hcapSetup hcode hfork hrun hnp).trans <|
-    (BigHelpers.gasSteps_clear s0 1024 (Limbs.limbCount m) 728 frame
+    (BigHelpers.gasSteps_clear s0 1024 (Limbs.limbCount m) 702 frame
       hframeClear hn hcode0 hfork0 hrun0 hnp0 jump733).trans <|
     (gasSteps_toClear2048 s b e m baseOff expOff modOff returnDest rest
       hcapSetup hcode hfork hrun hnp).trans <|
-    (BigHelpers.gasSteps_clear s1 2048 (Limbs.limbCount m) 740 frame
+    (BigHelpers.gasSteps_clear s1 2048 (Limbs.limbCount m) 713 frame
       hframeClear hn hcode1 hfork1 hrun1 hnp1 jump745).trans <|
     (gasSteps_toClear6144 s b e m baseOff expOff modOff returnDest rest
       hcapSetup hcode hfork hrun hnp).trans <|
-    (BigHelpers.gasSteps_clear s2 6144 (Limbs.limbCount m) 752 frame
+    (BigHelpers.gasSteps_clear s2 6144 (Limbs.limbCount m) 724 frame
       hframeClear hn hcode2 hfork2 hrun2 hnp2 jump757).trans <|
     (gasSteps_toLoadModulus s b e m baseOff expOff modOff returnDest rest
       hm hmodOff hcap hcode hfork hrun hnp).trans <|
-    BigLoad.gasSteps_loadBigEndian s3 modOff m 0 763 frame hframeLoad
+    BigLoad.gasSteps_loadBigEndian s3 modOff m 0 735 frame hframeLoad
       hmodOff hinputFit hm hcode3 hfork3 hrun3 hnp3 jump768
 
 theorem gasSteps_setup_cost_potential (s : State)
@@ -808,15 +808,15 @@ theorem gasSteps_setup_cost_potential (s : State)
     returnDest rest hcapSetup hcode hfork hrun hnp
   have hr4 := gasSteps_toLoadModulus_cost s b e m baseOff expOff modOff
     returnDest rest hm hmodOff hcap hcode hfork hrun hnp
-  have hc0 := BigHelpers.gasSteps_clear_cost_potential s 0 n 716 frame
+  have hc0 := BigHelpers.gasSteps_clear_cost_potential s 0 n 691 frame
     hframeClear hn hcode hfork hrun hnp jump721
-  have hc1 := BigHelpers.gasSteps_clear_cost_potential s0 1024 n 728 frame
+  have hc1 := BigHelpers.gasSteps_clear_cost_potential s0 1024 n 702 frame
     hframeClear hn hcode0 hfork0 hrun0 hnp0 jump733
-  have hc2 := BigHelpers.gasSteps_clear_cost_potential s1 2048 n 740 frame
+  have hc2 := BigHelpers.gasSteps_clear_cost_potential s1 2048 n 713 frame
     hframeClear hn hcode1 hfork1 hrun1 hnp1 jump745
-  have hc3 := BigHelpers.gasSteps_clear_cost_potential s2 6144 n 752 frame
+  have hc3 := BigHelpers.gasSteps_clear_cost_potential s2 6144 n 724 frame
     hframeClear hn hcode2 hfork2 hrun2 hnp2 jump757
-  have hl := BigLoad.gasSteps_loadBigEndian_cost_potential s3 modOff m 0 763
+  have hl := BigLoad.gasSteps_loadBigEndian_cost_potential s3 modOff m 0 735
     frame hframeLoad hmodOff hinputFit hm hcode3 hfork3 hrun3 hnp3 jump768
   unfold gasSteps_setup
   simp only [Challenge.EvmProof.GasSteps.trans_cost]
@@ -824,7 +824,7 @@ theorem gasSteps_setup_cost_potential (s : State)
   change _ + MachineState.memCost s.activeWords.toNat =
     _ + MachineState.memCost
       (BigLoad.loadReturned s3 (UInt256.ofNat modOff) (UInt256.ofNat m) 0
-        763 frame).activeWords.toNat
+        735 frame).activeWords.toNat
   simp only [n, frame, s0, s1, s2, s3, afterClear0, afterClear1024,
     afterClear2048, afterClear6144] at hc0 hc1 hc2 hc3 hl
   simp only [frame, s3, afterClear0, afterClear1024, afterClear2048,
@@ -873,7 +873,7 @@ theorem setupReturned_modulus_represents (s : State)
     simpa [s3, afterClear6144, s2, n, BigHelpers.clearReturned,
       h6144Word] using hkeep
   have hm : m < 2 ^ 256 := by omega
-  have hloaded := BigLoadCorrect.loadReturned_represents s3 modOff 0 m 763
+  have hloaded := BigLoadCorrect.loadReturned_represents s3 modOff 0 m 735
     (saved b e m baseOff expOff modOff returnDest rest) hmodOff hm hfit0 hz3
   simpa [setupReturned, s3, afterClear6144, afterClear2048,
     afterClear1024, afterClear0, BigHelpers.clearReturned, n, h0Word] using hloaded

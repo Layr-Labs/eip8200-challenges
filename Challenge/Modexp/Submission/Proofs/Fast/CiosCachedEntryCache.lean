@@ -16,17 +16,17 @@ open WindowNibbleKernel
 when composing the actual entry trace. -/
 def maskEntryState (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { entryState s mem pa pb pdst ret rest with pc := UInt256.ofNat 4476 }
+  { entryState s mem pa pb pdst ret rest with pc := UInt256.ofNat 4541 }
 
-def cacheProgram : List Instr := entryProgram.take 13
-def entryBodyProgram : List Instr := entryProgram.drop 13
+def cacheProgram : List Instr := entryProgram.take 14
+def entryBodyProgram : List Instr := entryProgram.drop 14
 
 theorem entryProgram_split : entryProgram = cacheProgram ++ entryBodyProgram := by
-  exact (List.take_append_drop 13 entryProgram).symm
+  exact (List.take_append_drop 14 entryProgram).symm
 
 def cachedEntryState (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4524
+  { s with pc := UInt256.ofNat 4559
            stack := [UInt256.ofNat pa, UInt256.ofNat pb,
              isFour n, negative32, allOnes, pdst, ret] ++ rest
            memory := mem }
@@ -49,7 +49,8 @@ theorem run_cache (s : State) (mem : ByteArray) (pa pb n : Nat)
   have h128 : (128 : UInt256) = UInt256.ofNat 128 := by decide
   have h9344 : (9344 : UInt256).toNat = 9344 := by decide
   have hnegative : (115792089237316195423570985008687907853269984665640564039457584007913129639904 : UInt256) = negative32 := by decide
-  simp [cacheProgram, entryProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+  have hnegativeNot : UInt256.lnot 31 = negative32 := by decide
+  simp [hnegativeNot, cacheProgram, entryProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     maskEntryState, entryState, cachedEntryState, isFour, hc4, hc5, hc6, hc7, hc8,
     hnegative, ← allOnes_not, h128, h9344, hs32, hactS, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,

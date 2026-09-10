@@ -20,23 +20,23 @@ def bitFinishTailFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 524 1 1,
    opAt 525 .ADD,
-   pushAt 526 2 588,
+   pushAt 526 2 569,
    opAt 527 .JUMP]
 
 def bitFinishTailMidState (input : ByteArray) (outer : Nat)
     (acc base : UInt256) : State :=
   { bitLoopState input outer 8 0 0 acc base with
-    pc := UInt256.ofNat 654
+    pc := UInt256.ofNat 634
     stack := [UInt256.ofNat outer, acc, base,
       UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
       UInt256.ofNat 96, UInt256.ofNat (expOffset input),
-      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1262] ++ callerRest input }
+      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1229] ++ callerRest input }
 
 @[simp] private theorem exitPCs (i : Nat)
     (hi : 520 ≤ i) (hii : i ≤ 544) :
     Artifact.submissionArtifact.instructionPC i =
-      ([650,651,652,653,654,656,657,660,661,662,663,664,665,666,667,668,670,671,673,674,675,676,677,678,683] : List Nat)[i - 520]! := by
+      ([630,631,632,633,634,636,637,640,641,642,643,644,645,646,647,648,650,651,653,654,655,656,657,658,659] : List Nat)[i - 520]! := by
   interval_cases i <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -45,10 +45,10 @@ theorem run_bitFinishTailHead (input : ByteArray) (outer : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock bitFinishTailHeadPath
       (bitFinishDispatchState input outer byte offset acc base) =
         some (bitFinishTailMidState input outer acc base) := by
-  have h656 : (UInt256.ofNat 650).succ = UInt256.ofNat 651 := by decide
-  have h657 : (UInt256.ofNat 651).succ = UInt256.ofNat 652 := by decide
-  have h658 : (UInt256.ofNat 652).succ = UInt256.ofNat 653 := by decide
-  have h659 : (UInt256.ofNat 653).succ = UInt256.ofNat 654 := by decide
+  have h656 : (UInt256.ofNat 630).succ = UInt256.ofNat 631 := by decide
+  have h657 : (UInt256.ofNat 631).succ = UInt256.ofNat 632 := by decide
+  have h658 : (UInt256.ofNat 632).succ = UInt256.ofNat 633 := by decide
+  have h659 : (UInt256.ofNat 633).succ = UInt256.ofNat 634 := by decide
   simp (config := { maxSteps := 100000 })
     [bitFinishTailHeadPath, Word.opAt, Word.wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,

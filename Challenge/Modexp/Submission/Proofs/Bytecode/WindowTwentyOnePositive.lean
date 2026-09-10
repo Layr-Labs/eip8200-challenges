@@ -22,7 +22,7 @@ def modulusOffset (input : ByteArray) : UInt256 :=
 def routeStack (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
    UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
-   exponentOffset input, modulusOffset input, UInt256.ofNat 1262,
+   exponentOffset input, modulusOffset input, UInt256.ofNat 1229,
    modulusOffset input, exponentOffset input, UInt256.ofNat (modulusSize input),
    UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)]
 
@@ -47,15 +47,15 @@ def prepareProgram : List Instr :=
   WindowTwentyOneEntry.baseProgram ++ WindowTwentyOneEntry.modulusProgram ++ WindowTwentyOneEntry.normalizeProgram
 
 def normalized (template : State) (input : ByteArray) : State :=
-  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 2652)
+  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 2735)
     (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input) (routeStack input)
 
 theorem run_prepare (template : State) (input : ByteArray)
     (hmatch : WindowTwentyOneInput.Matches input) (hbase : 0 < baseSize input)
     (hmodulus : 0 < (WindowTwentyOneInput.modulusWord input).toNat)
-    (hzeroBase : Decode.isValidJumpDest template.executionEnv.code 3266 = true)
-    (hzeroModulus : Decode.isValidJumpDest template.executionEnv.code 3258 = true) :
-    runInstructions prepareProgram (state template input (UInt256.ofNat 2627)) =
+    (hzeroBase : Decode.isValidJumpDest template.executionEnv.code 3349 = true)
+    (hzeroModulus : Decode.isValidJumpDest template.executionEnv.code 3341 = true) :
+    runInstructions prepareProgram (state template input (UInt256.ofNat 2710)) =
       some (normalized template input) := by
   have hsmall : baseSize input < 2 ^ 256 := by have := hmatch.1; omega
   have hb : (UInt256.ofNat (baseSize input)).toNat ≠ 0 := by
@@ -69,16 +69,16 @@ theorem run_prepare (template : State) (input : ByteArray)
     (WindowTwentyOneInput.modulusWord input) (UInt256.ofNat 96) (baseSize input) hmatch.1
     (routeStack input) (by simp [routeStack]) rfl rfl
   have hb' : runInstructions WindowTwentyOneEntry.baseProgram
-      (state template input (UInt256.ofNat 2627)) =
-      some (state template input (UInt256.ofNat 2634)) := by
+      (state template input (UInt256.ofNat 2710)) =
+      some (state template input (UInt256.ofNat 2717)) := by
     simpa only [state, if_neg hb] using hbr
   have hm' : runInstructions WindowTwentyOneEntry.modulusProgram
-      (state template input (UInt256.ofNat 2634)) =
-      some (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 2642)
+      (state template input (UInt256.ofNat 2717)) =
+      some (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 2725)
         (WindowTwentyOneInput.modulusWord input :: routeStack input)) := by
     simpa only [state, modulus_at template input hmatch, if_neg (Nat.ne_of_gt hmodulus)] using hm
   have hn' : runInstructions WindowTwentyOneEntry.normalizeProgram
-      (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 2642)
+      (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 2725)
         (WindowTwentyOneInput.modulusWord input :: routeStack input)) =
       some (normalized template input) := by
     simpa only [normalized, WindowTwentyOneTablePrelude.initial, WindowTwentyOneEntry.framed,
@@ -96,10 +96,10 @@ def returned (template : State) (input : ByteArray) : State :=
 theorem run_positive (template : State) (input : ByteArray)
     (hmatch : WindowTwentyOneInput.Matches input) (hbase : 0 < baseSize input)
     (hmodulus : 0 < (WindowTwentyOneInput.modulusWord input).toNat)
-    (hzeroBase : Decode.isValidJumpDest template.executionEnv.code 3266 = true)
-    (hzeroModulus : Decode.isValidJumpDest template.executionEnv.code 3258 = true)
-    (hloop : Decode.isValidJumpDest template.executionEnv.code 2789 = true) :
-    runInstructions program (state template input (UInt256.ofNat 2627)) =
+    (hzeroBase : Decode.isValidJumpDest template.executionEnv.code 3349 = true)
+    (hzeroModulus : Decode.isValidJumpDest template.executionEnv.code 3341 = true)
+    (hloop : Decode.isValidJumpDest template.executionEnv.code 2872 = true) :
+    runInstructions program (state template input (UInt256.ofNat 2710)) =
       some (returned template input) := by
   have hp := run_prepare template input hmatch hbase hmodulus hzeroBase hzeroModulus
   have hc := WindowTwentyOneCore.run_core (context template input)
