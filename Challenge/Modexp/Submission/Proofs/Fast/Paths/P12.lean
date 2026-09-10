@@ -52,13 +52,17 @@ def blk1627 :
    pushAt 1610 2 2168,
    opAt 1611 .JUMPI]
 
-/-- Instructions 1662..1666, pc 2635..2308. -/
+/-- Instructions 1662..1669, pc 2213..2224: the ADDMOD tail plus the CSUB
+    trampoline hop to the real entry at 4976. -/
 def blk1662 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1612 .POP,
    opAt 1613 .POP,
    opAt 1614 .POP,
    pushAt 1615 2 8224,
-   opAt 1616 .MSTORE]
+   opAt 1616 .MSTORE,
+   opAt 1617 .JUMPDEST,
+   pushAt 1618 2 4976,
+   opAt 1619 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

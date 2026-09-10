@@ -42,7 +42,7 @@ def blk2874 :
    opAt 2724 .MSTORE,
    pushAt 2725 2 3633,
    pushAt 2726 2 2048,
-   pushAt 2727 2 2220,
+   pushAt 2727 2 4976,
    opAt 2728 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/
@@ -502,7 +502,7 @@ def blk3253 :
   [opAt 3100 .JUMPDEST,
    pushAt 3101 2 4122,
    pushAt 3102 2 2048,
-   pushAt 3103 2 2220,
+   pushAt 3103 2 4976,
    opAt 3104 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/
@@ -520,7 +520,7 @@ def blk3264 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 3111 .JUMPDEST,
    opAt 3112 .POP,
-   pushAt 3113 2 1698,
+   pushAt 3113 2 3412,
    opAt 3114 .JUMP]
 
 theorem jumpDest4608 :

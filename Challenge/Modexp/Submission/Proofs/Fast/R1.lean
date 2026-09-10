@@ -106,12 +106,12 @@ def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- The `CSUB` entry, pc 2309, stack `[px, ret]`, with `t[n] = 1` stored.
+/-- The `CSUB` entry, pc 4976, stack `[px, ret]`, with `t[n] = 1` stored.
 `TN = 0x2020` lies below the `296` words the caller already holds, so the
 store does not grow memory. -/
 def csubState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2220
+  { s with pc := UInt256.ofNat 4976
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := tnMem mem }
 
@@ -229,7 +229,7 @@ theorem run_fast (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     fastState, csubState, tnMem, fastPC21, hc2, hc3, hc4, hcode, hrun,
-    jumpDest2220, haw',
+    jumpDest4976, haw',
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,

@@ -565,10 +565,10 @@ def mpExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
                      pdst, ret] ++ rest
            memory := mem }
 
-/-- `CSUB` entry, pc 2309, with stack `[pd, ret]`. -/
+/-- `CSUB` entry, pc 4976, with stack `[pd, ret]`. -/
 def mpCsubState (s : State) (mem : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2220
+  { s with pc := UInt256.ofNat 4976
            stack := [pdst, ret] ++ rest
            memory := mem }
 
@@ -1203,18 +1203,18 @@ theorem run_mpExit (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have h2642 : (2220 : UInt256).toNat = 2220 := by decide
-  have h2642' : (2220 : UInt256) = UInt256.ofNat 2220 := by decide
+  have h2642 : (4976 : UInt256).toNat = 4976 := by decide
+  have h2642' : (4976 : UInt256) = UInt256.ofNat 4976 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (2220 : UInt256).toNat = true := by
-    rw [h2642]; exact jumpDest2220
+      (4976 : UInt256).toNat = true := by
+    rw [h2642]; exact jumpDest4976
   simp (config := { maxSteps := 400000 })
     [blk1595, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpExitState, mpCsubState, fastPC15,
-      hc2, hc3, hc4, hc5, hrun, hcode, h2642, h2642', hjump, jumpDest2220,
+      hc2, hc3, hc4, hc5, hrun, hcode, h2642, h2642', hjump, jumpDest4976,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,

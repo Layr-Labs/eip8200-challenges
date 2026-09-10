@@ -727,6 +727,10 @@ theorem jumpDest1698 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1698 = true :=
   Artifact.isValidJumpDest_index 1228 (by rfl)
 
+theorem jumpDest3412 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3412 = true :=
+  Artifact.isValidJumpDest_index 2601 (by rfl)
+
 theorem jumpDest1703 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1703 = true :=
   Artifact.isValidJumpDest_index 1231 (by rfl)
@@ -806,6 +810,10 @@ theorem jumpDest2168 :
 theorem jumpDest2220 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2220 = true :=
   Artifact.isValidJumpDest_index 1617 (by rfl)
+
+theorem jumpDest4976 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4976 = true :=
+  Artifact.isValidJumpDest_index 3778 (by rfl)
 
 theorem jumpDest2225 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2225 = true :=
