@@ -12,7 +12,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 theorem run_pointers (s : State) (mem : ByteArray) (pa pb n : Nat)
-    (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1004) (hn32 : n ≤ 32)
+    (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1002) (hn32 : n ≤ 32)
     (_hpa : 32 ≤ pa) (_hpaFit : pa+32*n ≤ 9472)
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) :
     runInstructions pointersProgram (clearedState s mem pa pb n dst ret rest) =
@@ -23,8 +23,8 @@ theorem run_pointers (s : State) (mem : ByteArray) (pa pb n : Nat)
     Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)
   have hp0 : ptrAt (pb+32*n-32) 0 = pb+32*n-32 := by simp [ptrAt]
   have h := CiosCachedEntryPointerWords.run_words { s with memory := mpZeroed s mem n } (UInt256.ofNat (32*n))
-    (UInt256.ofNat pa) (UInt256.ofNat pb) (l1Target n) (l2Target n) (modulusValue mem n) (dst :: ret :: rest) (by simp only [List.length_cons]; omega)
+    (UInt256.ofNat pa) (UInt256.ofNat pb) (l1Target n) (l2Target n) (modulusValue mem n) (inverseValue mem :: tailPointerValue mem :: dst :: ret :: rest) (by simp only [List.length_cons]; omega)
   simpa only [List.cons_append, List.nil_append, clearedState, outState, CiosCachedMacCore.framed, hp0, Challenge.EvmProof.Word.ofNat_add_mod,
-    hsub1, hsub2, modulusValue_zero s mem n hn32] using h
+    hsub1, hsub2, modulusValue_zero s mem n hn32, inverseValue_zero s mem n hn32, tailPointerValue_zero s mem n hn32] using h
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCached

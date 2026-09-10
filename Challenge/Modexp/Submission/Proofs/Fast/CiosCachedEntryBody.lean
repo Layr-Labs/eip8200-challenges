@@ -13,7 +13,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 theorem run_entryBody (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1004) (_hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1002) (_hrun : s.halt = .Running)
     (hact : 296 ≤ s.activeWords.toNat)
     (_hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32*n ≤ 9472)

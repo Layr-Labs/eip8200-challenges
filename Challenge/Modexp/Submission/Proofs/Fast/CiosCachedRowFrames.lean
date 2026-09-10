@@ -20,25 +20,25 @@ def entryState (s : State) (mem : ByteArray) (pa pb : Nat)
 
 def outState (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4223
+  { s with pc := UInt256.ofNat 4233
            stack := [UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, modulusValue mem n, pdst, ret] ++ rest
+                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, modulusValue mem n, inverseValue mem, tailPointerValue mem, pdst, ret] ++ rest
            memory := mem }
 
 /-- After the first loop: the carry and `b_i` above the row frame. -/
 def midState (s : State) (mem : ByteArray) (c bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4529
+  { s with pc := UInt256.ofNat 4539
            stack := [c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, modulusValue mem n, pdst, ret] ++ rest
+                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, modulusValue mem n, inverseValue mem, tailPointerValue mem, pdst, ret] ++ rest
            memory := mem }
 
 /-- After the second loop: the carry, `mu` and `b_i` above the row frame. -/
 def tailState (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4828
+  { s with pc := UInt256.ofNat 4832
            stack := [c, mu, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, modulusValue mem n, pdst, ret] ++ rest
+                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, modulusValue mem n, inverseValue mem, tailPointerValue mem, pdst, ret] ++ rest
            memory := mem }
 
 theorem negative32_not : UInt256.lnot (UInt256.ofNat 31) = negative32 := by decide

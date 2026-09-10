@@ -20,9 +20,9 @@ def exitProgram : List Instr := CiosCached.tailProgram.drop 23
 
 def exitState (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := mem } (UInt256.ofNat 4861)
+  framed { s with memory := mem } (UInt256.ofNat 4865)
     ([pbi, UInt256.ofNat pa, UInt256.ofNat (pb-32),
-      l1Target n, negative32, allOnes, l2Target n, modulusValue mem n, dst, ret] ++ rest)
+      l1Target n, negative32, allOnes, l2Target n, modulusValue mem n, inverseValue mem, tailPointerValue mem, dst, ret] ++ rest)
 
 def cleanupProgram : List Instr := tailLoopProgram.take 3
 def storeProgram : List Instr := (tailLoopProgram.drop 3).take 13
@@ -35,19 +35,19 @@ def baseStack (pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : L
 
 def input (s : State) (c mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 4828) ([c, mu, bi] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 4832) ([c, mu, bi] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def cleaned (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 4831) ([c] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 4835) ([c] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def stored (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := tailMem s.memory c } (UInt256.ofNat 4852)
+  framed { s with memory := tailMem s.memory c } (UInt256.ofNat 4856)
     (baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def result (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
   framed { s with memory := tailMem s.memory c }
-    (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then UInt256.ofNat 4223
-      else UInt256.ofNat 4861)
+    (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then UInt256.ofNat 4233
+      else UInt256.ofNat 4865)
     (baseStack (negative32+pbi) paEnd pbEnd flag dst ret rest)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedTailDefs
