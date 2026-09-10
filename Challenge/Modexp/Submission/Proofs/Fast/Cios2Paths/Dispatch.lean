@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 3166
+def startIndex : Nat := 3179
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
@@ -23,7 +23,7 @@ private def template : List Instr :=
    .push 2 256,
    .op .EQ,
    .op .OR,
-   .push 2 4481,
+   .push 2 4488,
    .op .JUMPI,
    .push 2 1939,
    .op .JUMP]
@@ -38,7 +38,7 @@ private theorem getElem_slice (offset : Nat) (hoffset : offset < template.length
   rw [List.getElem?_take, if_pos hoffset, List.getElem?_drop] at hs
   simpa [Nat.add_comm] using hs
 
-private theorem startPC : Artifact.submissionArtifact.instructionPC startIndex = 4458 := by
+private theorem startPC : Artifact.submissionArtifact.instructionPC startIndex = 4465 := by
   rfl
 
 private theorem instructionPC_add
@@ -50,9 +50,9 @@ private theorem instructionPC_add
 
 /-- Exact program-counter table for the bounded dispatcher slice. -/
 @[simp] theorem dispatchPC (i : Nat) (hi : startIndex ≤ i)
-    (hii : i ≤ 3179) :
+    (hii : i ≤ 3192) :
     Artifact.submissionArtifact.instructionPC i =
-      [4458,4459,4462,4463,4464,4466,4467,4468,4471,4472,4473,4476,4477,4480][i - startIndex]! := by
+      [4465,4466,4469,4470,4471,4473,4474,4475,4478,4479,4480,4483,4484,4487][i - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (startIndex + (i - startIndex)) := by
@@ -96,7 +96,7 @@ def cios2DispatchGuard :
    pushAt 7 2 256,
    opAt 8 .EQ,
    opAt 9 .OR,
-   pushAt 10 2 4481,
+   pushAt 10 2 4488,
    opAt 11 .JUMPI]
 
 /-- Full fallback path (indices 2670..2683, pc 4458..4480). -/

@@ -15,7 +15,7 @@ their `runRaw` → `Located` bridge.
 
 What is verified **now** (no whole-program artifact needed):
 
-* `csubWindowBytes`: the exact 190-byte new CSUB window `[2304, 2494)`.
+* `csubWindowBytes`: the exact 190-byte new CSUB window `[2304, 2474)`.
 * `csubWindowInstrs`: the same window as instructions
   (`affineEntry ++ affineLoopExit ++ affineTailInstrs`, 54 instructions).
 * `csubWindow_assembles`: the instruction lists assemble to the exact
@@ -29,14 +29,14 @@ code): four `Located` block definitions over indices `1668..1721`
 (entry `1668..1672`, loop `1673..1706`, tail `1707..1721`), the four
 `runLocatedBlock` transition lemmas (same `simp` recipes as
 `CsubAffineRun`, plus per-index program-counter facts from the new
-`fastPC` tables and the new loop-dest jumpdest fact at pc 2337), and the
+`fastPC` tables and the new loop-dest jumpdest fact at pc 2317), and the
 bridge corollaries identifying each `runLocatedBlock` with its `runRaw`
 segment by transitivity through the shared affine end states.
 
 Tail contract: `csTailState` (pc 2469, three pointers) is superseded by
-`affineTailPreState` (pc 2472, `[borrow, dst, ret]` only).  The tail block
+`affineTailPreState` (pc 2452, `[borrow, dst, ret]` only).  The tail block
 reuses the old tail `MCOPY` reasoning with the old three-`POP` prefix
-dropped (single stale-`pt` `POP` at 2471 instead); the endpoint
+dropped (single stale-`pt` `POP` at 2451 instead); the endpoint
 `csReturnedState` is unchanged.
 -/
 
@@ -51,27 +51,12 @@ open Challenge.Modexp.Submission.Proofs.Fast.Csub
 open Challenge.Modexp.Submission.Proofs.Fast.CsubAffineStep
 open Challenge.Modexp.Submission.Proofs.Fast.CsubAffineRun
 
-/-- Exact new CSUB window bytes `[2304, 2494)` (190 bytes; identical
+/-- Exact new CSUB window bytes `[2304, 2474)` (190 bytes; identical
 outside the window to the frozen baseline). -/
 def csubWindowBytes : ByteArray := ByteArray.mk #[
-  0x5b, 0x7b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x24, 0xe0, 0x51, 0x5f, 0x90, 0x5b, 0x80, 0x51,
-  0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xdf, 0xc0, 0x82, 0x01, 0x51,
-  0x81, 0x81, 0x11, 0x91, 0x03, 0x83, 0x81, 0x03, 0x90, 0x84, 0x11, 0x90,
-  0x91, 0x17, 0x92, 0x50, 0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfb,
-  0xc0, 0x82, 0x01, 0x52, 0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xe0, 0x01, 0x61, 0x20, 0x20, 0x81, 0x11, 0x61, 0x09, 0x21, 0x57, 0x50,
-  0x15, 0x61, 0x20, 0x20, 0x51, 0x17, 0x61, 0x04, 0x3f, 0x19, 0x02, 0x61,
-  0x20, 0x40, 0x01, 0x61, 0x24, 0x80, 0x51, 0x91, 0x5e, 0x56]
+  0x5b, 0x67, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x24, 0xe0, 0x51, 0x5f, 0x90, 0x5b, 0x80, 0x51, 0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xdf, 0xc0, 0x82, 0x01, 0x51, 0x81, 0x81, 0x11, 0x91, 0x03, 0x83, 0x81, 0x03, 0x90, 0x84, 0x11, 0x90, 0x91, 0x17, 0x92, 0x50, 0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfb, 0xc0, 0x82, 0x01, 0x52, 0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xe0, 0x01, 0x61, 0x20, 0x20, 0x81, 0x11, 0x61, 0x09, 0x0d, 0x57, 0x50, 0x15, 0x61, 0x20, 0x20, 0x51, 0x17, 0x61, 0x04, 0x3f, 0x19, 0x02, 0x61, 0x20, 0x40, 0x01, 0x61, 0x24, 0x80, 0x51, 0x91, 0x5e, 0x56]
 
-/-- Unchanged common return tail `[2472, 2494)` as instructions (14). -/
+/-- Unchanged common return tail `[2452, 2474)` as instructions (14). -/
 def affineTailInstrs : List Instr :=
   [Instr.op .ISZERO,
    Instr.push 2 8224,
@@ -92,7 +77,7 @@ def affineTailInstrs : List Instr :=
 def csubWindowInstrs : List Instr :=
   affineEntry ++ affineLoopExit ++ affineTailInstrs
 
-theorem csubWindowBytes_size : csubWindowBytes.size = 190 := by rfl
+theorem csubWindowBytes_size : csubWindowBytes.size = 170 := by rfl
 
 theorem affineTailInstrs_length : affineTailInstrs.length = 14 := by rfl
 
@@ -100,7 +85,7 @@ theorem csubWindowInstrs_length : csubWindowInstrs.length = 54 := by rfl
 
 /-- The proven instruction lists assemble to the exact native-passing
 bytes.  Structural lane: the regenerated artifact's disassembly of
-`[2304, 2494)` must reproduce `csubWindowInstrs` in order. -/
+`[2304, 2474)` must reproduce `csubWindowInstrs` in order. -/
 theorem csubWindow_assembles :
     YulEvmCompiler.assemble csubWindowInstrs = csubWindowBytes := by
   decide
@@ -284,8 +269,8 @@ theorem run_csubRestBodyLocated (s : State) (memory : ByteArray) (n j : Nat)
       decide
     rw [hC]; omega
   have h8224 : ((8224 : UInt256)).toNat = 8224 := by decide
-  have h2337 : ((2337 : UInt256)) = UInt256.ofNat 2337 := by decide
-  have hdest : ((2337 : UInt256)).toNat = 2337 := by decide
+  have h2337 : ((2317 : UInt256)) = UInt256.ofNat 2317 := by decide
+  have hdest : ((2317 : UInt256)).toNat = 2317 := by decide
   have hgt : affinePt n (j + 1) > 8224 :=
     (affinePt_guard n j (by omega)).mpr hj
   have hgtM : 8224 < affinePt n (j + 1) %
@@ -298,7 +283,7 @@ theorem run_csubRestBodyLocated (s : State) (memory : ByteArray) (n j : Nat)
         UInt256) + UInt256.ofNat (affinePt n j) =
       UInt256.ofNat (affinePt n (j + 1)) :=
     affine_add_next_word_left n j (by omega) hn32
-  have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2337 = true :=
+  have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2317 = true :=
     jumpDest2666
   have hactD : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (7168 + 32 * (n - 1 - j)) 32) = s.activeWords :=
@@ -350,7 +335,7 @@ theorem run_csubLoopBodyLocated (s : State) (memory : ByteArray) (n j : Nat)
 /-! ## Located loop exit and tail (active)
 
 Not taken (`j + 1 = n`), the same `blk1683` reaches the post-guard exit
-state at pc 2471 (recipe: `run_affineRestExit` facts on the `drop 7`
+state at pc 2451 (recipe: `run_affineRestExit` facts on the `drop 7`
 rest, same load prefix as the taken case).  `blk1724` (`Paths.P13`,
 indices `1707..1721`) then runs the stale-pointer `POP` plus the common
 return tail to `csReturnedState` (recipe: old `run_csTail` facts minus
@@ -539,68 +524,68 @@ in `Paths.P12`/`Paths.P13` under their historic names `blk1667`/`blk1683` /
 
 ```lean
 def blkAffineEntry : List (Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1668 .JUMPDEST,
-   pushAt 1669 28 9440,
-   opAt 1670 .MLOAD,
-   pushAt 1671 0 0,
-   opAt 1672 (.Swap ⟨0, by decide⟩)]
+  [opAt 1660 .JUMPDEST,
+   pushAt 1661 8 9440,
+   opAt 1662 .MLOAD,
+   pushAt 1663 0 0,
+   opAt 1664 (.Swap ⟨0, by decide⟩)]
 
 def blkAffineLoop : List (Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1673 .JUMPDEST,
-   opAt 1674 (.Dup ⟨0, by decide⟩),
-   opAt 1675 .MLOAD,
-   pushAt 1676 32 115792089237316195423570985008687907853269984665640564039457584007913129631680,
-   opAt 1677 (.Dup ⟨2, by decide⟩),
-   opAt 1678 .ADD,
-   opAt 1679 .MLOAD,
-   opAt 1680 (.Dup ⟨1, by decide⟩),
-   opAt 1681 (.Dup ⟨1, by decide⟩),
+  [opAt 1665 .JUMPDEST,
+   opAt 1666 (.Dup ⟨0, by decide⟩),
+   opAt 1667 .MLOAD,
+   pushAt 1668 32 115792089237316195423570985008687907853269984665640564039457584007913129631680,
+   opAt 1669 (.Dup ⟨2, by decide⟩),
+   opAt 1670 .ADD,
+   opAt 1671 .MLOAD,
+   opAt 1672 (.Dup ⟨1, by decide⟩),
+   opAt 1673 (.Dup ⟨1, by decide⟩),
+   opAt 1674 .GT,
+   opAt 1675 (.Swap ⟨1, by decide⟩),
+   opAt 1676 .SUB,
+   opAt 1677 (.Dup ⟨3, by decide⟩),
+   opAt 1678 (.Dup ⟨1, by decide⟩),
+   opAt 1679 .SUB,
+   opAt 1680 (.Swap ⟨0, by decide⟩),
+   opAt 1681 (.Dup ⟨4, by decide⟩),
    opAt 1682 .GT,
-   opAt 1683 (.Swap ⟨1, by decide⟩),
-   opAt 1684 .SUB,
-   opAt 1685 (.Dup ⟨3, by decide⟩),
-   opAt 1686 (.Dup ⟨1, by decide⟩),
-   opAt 1687 .SUB,
-   opAt 1688 (.Swap ⟨0, by decide⟩),
-   opAt 1689 (.Dup ⟨4, by decide⟩),
-   opAt 1690 .GT,
-   opAt 1691 (.Swap ⟨0, by decide⟩),
-   opAt 1692 (.Swap ⟨1, by decide⟩),
-   opAt 1693 .OR,
-   opAt 1694 (.Swap ⟨2, by decide⟩),
-   opAt 1695 .POP,
-   pushAt 1696 32 115792089237316195423570985008687907853269984665640564039457584007913129638848,
-   opAt 1697 (.Dup ⟨2, by decide⟩),
-   opAt 1698 .ADD,
-   opAt 1699 .MSTORE,
-   pushAt 1700 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 1701 .ADD,
-   pushAt 1702 2 8224,
-   opAt 1703 (.Dup ⟨1, by decide⟩),
-   opAt 1704 .GT,
-   pushAt 1705 2 2337,
-   opAt 1706 .JUMPI]
+   opAt 1683 (.Swap ⟨0, by decide⟩),
+   opAt 1684 (.Swap ⟨1, by decide⟩),
+   opAt 1685 .OR,
+   opAt 1686 (.Swap ⟨2, by decide⟩),
+   opAt 1687 .POP,
+   pushAt 1688 32 115792089237316195423570985008687907853269984665640564039457584007913129638848,
+   opAt 1689 (.Dup ⟨2, by decide⟩),
+   opAt 1690 .ADD,
+   opAt 1691 .MSTORE,
+   pushAt 1692 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 1693 .ADD,
+   pushAt 1694 2 8224,
+   opAt 1695 (.Dup ⟨1, by decide⟩),
+   opAt 1696 .GT,
+   pushAt 1697 2 2317,
+   opAt 1698 .JUMPI]
 
 def blkAffineTail : List (Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1707 .POP,
-   opAt 1708 .ISZERO,
-   pushAt 1709 2 8224,
+  [opAt 1699 .POP,
+   opAt 1700 .ISZERO,
+   pushAt 1701 2 8224,
+   opAt 1702 .MLOAD,
+   opAt 1703 .OR,
+   pushAt 1704 2 1087, opAt 1705 .NOT,
+   opAt 1706 .MUL,
+   pushAt 1707 2 8256,
+   opAt 1708 .ADD,
+   pushAt 1709 2 9344,
    opAt 1710 .MLOAD,
-   opAt 1711 .OR,
-   pushAt 1712 2 1087, opAt 1713 .NOT,
-   opAt 1714 .MUL,
-   pushAt 1715 2 8256,
-   opAt 1716 .ADD,
-   pushAt 1717 2 9344,
-   opAt 1718 .MLOAD,
-   opAt 1719 (.Swap ⟨1, by decide⟩),
-   opAt 1720 .MCOPY,
-   opAt 1721 .JUMP]
+   opAt 1711 (.Swap ⟨1, by decide⟩),
+   opAt 1712 .MCOPY,
+   opAt 1713 .JUMP]
 ```
 
 2. Prove the four `runLocatedBlock` transitions with the `CsubAffineRun`
    `simp` recipes (same fact sets; add per-index program-counter facts
-   from the new tables and the new pc-2337 jumpdest fact for the loopback):
+   from the new tables and the new pc-2317 jumpdest fact for the loopback):
    - `run_affineEntryLocated`: `blkAffineEntry` from `csEntryState` to
      `affineLoopState j = 0` (recipe: `run_affineEntry`).
    - `run_affineLoopBodyLocated`: `blkAffineLoop` from `affineLoopState j`
