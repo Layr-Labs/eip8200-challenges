@@ -1417,11 +1417,13 @@ theorem run_csFixedStep8_0 (s : State) (memory : ByteArray) (pdst ret : UInt256)
        { memory := MachineState.writeBytes prev.memory
            (Data.Bytes.natToBytesPadded d2.toNat 32) (7168 + 32 * (8 - 1 - 0))
          flag := UInt256.lor (UInt256.lt t md) (UInt256.lt d1 prev.flag) } : LimbState) := rfl
+  have hzero : (csStep memory 8 0).flag = UInt256.ofNat 0 := by rfl
+  have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := by rfl
   have hword224 : (224 : UInt256).toNat = 224 := by decide
   have hword8480 : (8480 : UInt256).toNat = 8480 := by decide
   have hword7392 : (7392 : UInt256).toNat = 7392 := by decide
   simp (config := { maxSteps := 800000 })
-    [csFixedStep8_0, csFixedState, hstep, hrun,
+    [csFixedStep8_0, csFixedState, hstep, hzero, hzeroNat, hrun,
       hc3, hc4, hc5, hc6, hc7, hc8, hc9, ha0, ha1, ha2, UInt256.gt, UInt256.lt,
       opAt, pushAt, wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
