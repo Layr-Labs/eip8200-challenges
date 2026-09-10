@@ -58,7 +58,36 @@ def emptyValue (exponent modulus : UInt256) : UInt256 :=
 
 def emptyValueProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨4, by decide⟩), .op .CALLDATALOAD, .op .ISZERO,
-   .op (.Dup ⟨6, by decide⟩), .op .CALLDATALOAD, .push 1 1, .op .MOD, .op .MUL]
+   .op (.Dup ⟨6, by decide⟩), .op .CALLDATALOAD, .push 1 1, .op .LT, .op .MUL]
+
+/-- `LT 1 x` and `MOD 1 x` agree on every `x`: both are `0` for `x ≤ 1` and
+`1` for `x ≥ 2`. The cheaper opcode produces the same word the `MOD` trace
+certified. -/
+private theorem lt_one_eq_mod_one (x : UInt256) :
+    UInt256.lt (UInt256.ofNat 1) x = UInt256.ofNat 1 % x := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_lt,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by norm_num)]
+  change (if 1 < x.toNat then 1 else 0) =
+    (if x.toNat = 0 then (0 : UInt256)
+     else UInt256.mk ((UInt256.ofNat 1).val % x.val)).toNat
+  by_cases hzero : x.toNat = 0
+  · rw [if_pos hzero]
+    rw [if_neg (by omega)]
+  · rw [if_neg hzero]
+    change (if 1 < x.toNat then 1 else 0) =
+      ((UInt256.ofNat 1).val % x.val).val
+    rw [Fin.mod_val]
+    have hv : (UInt256.ofNat 1).val.val = 1 := by decide
+    rw [hv]
+    have hx : x.val.val = x.toNat := rfl
+    rw [hx]
+    by_cases hone : x.toNat = 1
+    · rw [hone]
+      decide
+    · have hgt : 1 < x.toNat := by omega
+      rw [if_pos hgt]
+      exact (Nat.mod_eq_of_lt hgt).symm
 
 theorem run_empty_value (template : State) (pc exponentOffset modulusOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length + 3 < 1024)
@@ -75,7 +104,7 @@ theorem run_empty_value (template : State) (pc exponentOffset modulusOffset : UI
   simp [runInstructions, emptyValueProgram, framed, emptyValue,
     Challenge.EvmProof.Stepper.runInstr, hcap0, hcap1, hcap2, hcap3,
     List.getElem?_cons_succ, he, hm, Challenge.EvmProof.Word.literal_eq_ofNat,
-    advancePC, succ_eq_add, hp2, word_add_assoc]
+    advancePC, succ_eq_add, hp2, word_add_assoc, lt_one_eq_mod_one]
   rfl
 
 def emptyProgram : List Instr := emptyValueProgram ++ program

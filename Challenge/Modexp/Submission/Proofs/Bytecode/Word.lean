@@ -106,7 +106,7 @@ def baseTailPath :
 def baseFinishTailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 460 .JUMPDEST, opAt 461 .POP, opAt 462 (.Dup ⟨1, by decide⟩),
-   pushAt 463 1 1, opAt 464 .MOD, pushAt 465 0 0]
+   pushAt 463 1 1, opAt 464 .LT, pushAt 465 0 0]
 
 def expGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
