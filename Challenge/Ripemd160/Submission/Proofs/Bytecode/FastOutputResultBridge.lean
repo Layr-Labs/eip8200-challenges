@@ -16,7 +16,7 @@ def driverRest (input : ByteArray) : List UInt256 :=
   [DriverTrace.blockOffsetWord (DriverTrace.blockCount input), Padding.paddedWord input]
 
 def outputState (s : State) (input : ByteArray) : State :=
-  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x134f) (driverRest input)
+  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x1355) (driverRest input)
 
 def outputBytes (s : State) : ByteArray :=
   MachineState.readPadded (FastOutputTrace.outputMemory s) 0 32
@@ -77,7 +77,7 @@ private theorem outputBytes_eq_emitDigest (s : State) (H : Array UInt32)
   rw [PackedOutputMath.packedOutput_eq_prefix_emitDigest]
   rfl
 
-theorem spec_eq (input : ByteArray) :
+private theorem spec_eq (input : ByteArray) :
     spec input = ByteArray.mk (Array.replicate 12 0) ++ Crypto.Ripemd160.hash input := by
   unfold spec
   simp only [Std.Legacy.Range.forIn_eq_forIn_range', Std.Legacy.Range.size,
@@ -128,27 +128,6 @@ theorem correct_of_compression_trace
   change Eval (withGas (initialState submissionBytecode input 0) gas)
     (.returned (outputBytes final)) at heval
   rw [outputBytes_eq_spec input (seam input hfit)] at heval
-  simpa [GasCost.withGas_initialState_zero] using heval
-
-theorem correct_of_compression_trace_at
-    (input : ByteArray) (hfit : CalldataFits input)
-    (seam : CompressionSeam input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 0x168)) :
-    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
-      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  let trace := fullTrace input hfit seam entryPrefix
-  let final := seam.states (DriverTrace.blockCount input)
-  have hcall : (outputState final input).callStack = [] :=
-    seam.callStack _ (by omega)
-  have hreturned : (outputState final input).halt = .Returned := by rfl
-  refine ⟨trace.cost, fun gas hgas => ?_⟩
-  have heval := Challenge.EvmProof.eval_of_steps (trace.trace gas hgas) (by
-    change (withGas (outputState final input) (gas - trace.cost)).isDone = true
-    simp [withGas, State.isDone, State.isHalted, State.isRunning, hcall, hreturned])
-  rw [State.toResult_returned _ (by rfl)] at heval
-  change Eval (withGas (initialState submissionBytecode input 0) gas)
-    (.returned (outputBytes final)) at heval
-  rw [outputBytes_eq_spec input seam] at heval
   simpa [GasCost.withGas_initialState_zero] using heval
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputResultBridge

@@ -90,25 +90,25 @@ theorem startupSite_endPC : startupSite.endPC = UInt256.ofNat 811 := by
   rw [startup_endInstructionPC]
 
 theorem tailPrefix_slice :
-    (Artifact.submissionArtifact.instructions.drop 3974).take
+    (Artifact.submissionArtifact.instructions.drop 3970).take
       PairedAllInlineTail.prefixTemplate.length = PairedAllInlineTail.prefixTemplate := by
   rfl
 
 theorem tailPrefix_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3974 = 4858 := by
+    Artifact.submissionArtifact.instructionPC 3970 = 4864 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem tailPrefix_endInstructionPC :
-    Artifact.submissionArtifact.instructionPC 4043 = 4942 := by
+    Artifact.submissionArtifact.instructionPC 4039 = 4948 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def tailPrefixSite :
     GenericRoundSite Artifact.submissionArtifact .Osaka PairedAllInlineTail.prefixTemplate :=
-  StackSiteBuilder.ofSlice PairedAllInlineTail.prefixTemplate 3974 tailPrefix_slice
+  StackSiteBuilder.ofSlice PairedAllInlineTail.prefixTemplate 3970 tailPrefix_slice
     (by
-      change 3974 + PairedAllInlineTail.prefixTemplate.length ≤ Artifact.submissionInstructions.length
+      change 3970 + PairedAllInlineTail.prefixTemplate.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -116,14 +116,14 @@ def tailPrefixSite :
       (instructions := PairedAllInlineTail.prefixTemplate) (by decide))
     (by decide)
 
-theorem tailPrefixSite_startPC : tailPrefixSite.startPC = UInt256.ofNat 4858 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3974) =
-    UInt256.ofNat 4858
+theorem tailPrefixSite_startPC : tailPrefixSite.startPC = UInt256.ofNat 4864 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3970) =
+    UInt256.ofNat 4864
   rw [tailPrefix_instructionPC]
 
-theorem tailPrefixSite_endPC : tailPrefixSite.endPC = UInt256.ofNat 4942 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4043) =
-    UInt256.ofNat 4942
+theorem tailPrefixSite_endPC : tailPrefixSite.endPC = UInt256.ofNat 4948 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4039) =
+    UInt256.ofNat 4948
   rw [tailPrefix_endInstructionPC]
 
 private theorem instructionPC_toNat (index : Nat) :
@@ -137,16 +137,16 @@ private theorem instructionPC_toNat (index : Nat) :
 
 def tailJump : LocatedSite Artifact.submissionArtifact .Osaka where
   located :=
-    { index := 4043
+    { index := 4039
       instruction := .op .JUMP
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4043)
-  pc_eq := instructionPC_toNat 4043
+  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4039)
+  pc_eq := instructionPC_toNat 4039
 
-theorem tailJump_pc : tailJump.pc = UInt256.ofNat 4942 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4043) =
-    UInt256.ofNat 4942
+theorem tailJump_pc : tailJump.pc = UInt256.ofNat 4948 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4039) =
+    UInt256.ofNat 4948
   rw [tailPrefix_endInstructionPC]
 
 def tailSite : PairedAllInlineTail.TailSite Artifact.submissionArtifact .Osaka where
@@ -208,7 +208,7 @@ def gasSteps_tail (s : State) (ret : UInt256) (q : PairedTailTrace.Frame)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4858, stack := PairedAllInlineTail.entryStack q ret rho}
+    GasSteps {s with pc := UInt256.ofNat 4864, stack := PairedAllInlineTail.entryStack q ret rho}
       {s with pc := ret, stack := rho, memory := PairedTailTrace.resultMemory s.memory q} := by
   have h := PairedAllInlineTail.gasSteps_tail tailSite s ret q rho hstack hrun hactive hvalid
     hcode hfork hnp

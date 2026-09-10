@@ -45,7 +45,7 @@ def postCheckPath : List Located :=
    ⟨265, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨266, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨267, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨268, .push ⟨2, by decide⟩ (UInt256.ofNat 4943), by rfl, by decide⟩,
+   ⟨268, .push ⟨2, by decide⟩ (UInt256.ofNat 4949), by rfl, by decide⟩,
    ⟨269, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem pc785 : Artifact.submissionArtifact.instructionPC 262 = 0x1cd := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -112,7 +112,7 @@ def afterIteration (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def afterExit (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 0x134f
+    pc := UInt256.ofNat 0x1355
     stack := [blockOffsetWord (blockCount input), Padding.paddedWord input] }
 
 def iterationEnd (s : State) (input : ByteArray) (i : Nat) : State :=
@@ -269,8 +269,8 @@ theorem run_postCheck_exit (s : State) (input : ByteArray)
   have heq := offset_eq_total input hfit
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x134f = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 4044 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x1355 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 4040 (by rfl)
   simp [postCheckPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     compressReturned, afterExit, hrun, hcode, hadd, hlast, heq,
