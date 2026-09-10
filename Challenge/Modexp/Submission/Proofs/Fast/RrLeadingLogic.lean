@@ -36,6 +36,10 @@ theorem directCounter_formula (n : Nat) :
         (if 15 < n then 1 else 0) + (if 31 < n then 1 else 0) := by
   rfl
 
+theorem directCounter_of_le_three {n : Nat} (hn2 : 2 ≤ n) (hn3 : n ≤ 3) :
+    directCounter n = 0 := by
+  interval_cases n <;> norm_num [directCounter, ltWord]
+
 /-- The direct counter always fits the inherited RR counter range. -/
 theorem directCounter_le_four {n : Nat} (_hn2 : 2 ≤ n) (_hn32 : n ≤ 32) :
     directCounter n ≤ 4 := by

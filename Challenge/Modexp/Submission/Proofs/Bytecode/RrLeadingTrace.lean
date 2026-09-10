@@ -23,28 +23,71 @@ open Challenge.Modexp.Submission.Proofs.Fast.RrLeadingMemory
 open RrLeadingPaths
 
 set_option linter.unusedSimpArgs false in
-theorem run_helper (template : State) (mem : ByteArray)
-    (n bsize esize msize : Nat) (_hn2 : 2 ≤ n) (hn32 : n ≤ 32)
-    (_hactive : 298 ≤ template.activeWords.toNat)
+theorem run_helper_small (template : State) (mem : ByteArray)
+    (n bsize esize msize : Nat) (hn2 : 2 ≤ n) (hn32 : n ≤ 32)
+    (hsmall : n ≤ 3) (_hactive : 298 ≤ template.activeWords.toNat)
     (hsize : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
     (hcode : template.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : template.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock helperPath
+    Challenge.EvmProof.Stepper.runLocatedBlock helperSmallPath
       (entryState template mem n bsize esize msize) =
       some (exitState template mem n bsize esize msize) := by
+  have hcounter : directCounter n = 0 :=
+    directCounter_of_le_three hn2 hsmall
+  have hn : n < 2 ^ 256 := by
+    have hpow : 32 < 2 ^ 256 := by norm_num
+    omega
+  have hnot : ¬ 3 < n := by omega
+  have hlt : UInt256.lt (UInt256.ofNat 3) (UInt256.ofNat n) =
+      UInt256.ofNat 0 := by
+    rw [wordLt_ofNat 3 n (by norm_num) hn]
+    simp [ltWord, hnot]
   simp (config := { maxSteps := 600000 })
-    [helperPath, opAt, pushAt, wfOp,
+    [helperSmallPath, helperPrefixPath, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       entryState, exitState, outer, copiedMemory, copiedActiveWords,
       loadActiveWords, State.activeWordsAfterUInt256,
-      State.activeWordsAfterUInt256_2, hrun, hcode, hsize,
-      sizeWord_toNat hn32, counterWord n hn32, helperPC, jump1569,
+      State.activeWordsAfterUInt256_2, hrun, hcode, hsize, hsmall, hlt,
+      sizeWord_toNat hn32, helperPC, jump5323, jump1569, hcounter,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
+
+set_option linter.unusedSimpArgs false in
+theorem run_helper_large (template : State) (mem : ByteArray)
+    (n bsize esize msize : Nat) (hn2 : 2 ≤ n) (hn32 : n ≤ 32)
+    (hlarge : 3 < n) (_hactive : 298 ≤ template.activeWords.toNat)
+    (hsize : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
+    (hcode : template.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : template.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock helperLargePath
+      (entryState template mem n bsize esize msize) =
+      some (exitState template mem n bsize esize msize) := by
+  have hn : n < 2 ^ 256 := by
+    have hpow : 32 < 2 ^ 256 := by norm_num
+    omega
+  have hlt : UInt256.lt (UInt256.ofNat 3) (UInt256.ofNat n) =
+      UInt256.ofNat 1 := by
+    rw [wordLt_ofNat 3 n (by norm_num) hn]
+    simp [ltWord, hlarge]
+  simp (config := { maxSteps := 600000 })
+    [helperLargePath, helperPrefixPath, fallbackPath, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      entryState, exitState, outer, copiedMemory, copiedActiveWords,
+      loadActiveWords, State.activeWordsAfterUInt256,
+      State.activeWordsAfterUInt256_2, hrun, hcode, hsize, hlarge, hlt,
+      sizeWord_toNat hn32, helperPC, fallbackPC, jump5323, jump1569,
+      counterWord n hn32,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod]
+
 
 def gasSteps_helper (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) (hn2 : 2 ≤ n) (hn32 : n ≤ 32)
@@ -57,10 +100,16 @@ def gasSteps_helper (template : State) (mem : ByteArray)
       template.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (entryState template mem n bsize esize msize)
-      (exitState template mem n bsize esize msize) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka helperPath hcode hfork
-      (run_helper template mem n bsize esize msize hn2 hn32 hactive hsize
-        hcode hrun) hrun hnp
+      (exitState template mem n bsize esize msize) := by
+  by_cases hsmall : n ≤ 3
+  · exact Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka helperSmallPath hcode hfork
+      (run_helper_small template mem n bsize esize msize hn2 hn32 hsmall
+        hactive hsize hcode hrun) hrun hnp
+  · have hlarge : 3 < n := by omega
+    exact Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka helperLargePath hcode hfork
+      (run_helper_large template mem n bsize esize msize hn2 hn32 hlarge
+        hactive hsize hcode hrun) hrun hnp
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.RrLeadingTrace

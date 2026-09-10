@@ -7,9 +7,10 @@ set_option maxHeartbeats 4000000
 /-!
 # Located direct RR-leading helper
 
-The appended helper occupies instruction indices 2338..2360 and bytes
-3335..3369. It copies CC to RR, computes the remaining RR counter from the
-limb count, and rejoins the unchanged RR loop at byte 1569.
+The fixed-width RR helper now keeps its 23-byte footprint: it dispatches
+`n > 3` to an appended generic counter and directly materializes counter zero
+for the common `n ≤ 3` case.  The appended fallback occupies indices
+3868..3885 and bytes 5323..5346.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.RrLeadingPaths
@@ -34,10 +35,22 @@ private theorem helperPCAnchor :
 @[simp] theorem helperPC (i : Nat)
     (hlo : 2444 ≤ i) (hhi : i ≤ 2466) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3330,3331,3334,3335,3338,3341,3342,3343,3345,3346,3347,3349,3350,3351,3353,3354,3355,3357,3358,3359,3360,3361,3364] : List Nat)[i - 2444]! := by
+      ([3330,3331,3334,3335,3338,3341,3342,3343,3345,3346,3349,3350,
+        3351,3354,3355,3357,3358,3359,3360,3361,3362,3363,3364] : List Nat)[i - 2444]! := by
   interval_cases i <;> decide
 
-def helperPath :
+@[simp] theorem fallbackPC (i : Nat)
+    (hlo : 3868 ≤ i) (hhi : i ≤ 3885) :
+    Artifact.submissionArtifact.instructionPC i =
+      ([5323,5324,5325,5327,5328,5329,5331,5332,5333,5335,5336,5337,
+        5339,5340,5341,5342,5343,5346] : List Nat)[i - 3868]! := by
+  interval_cases i <;> decide
+
+@[simp] theorem jump5323 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5323 = true :=
+  Artifact.isValidJumpDest_index 3868 (by rfl)
+
+def helperPrefixPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2444 .JUMPDEST,
    pushAt 2445 2 9344,
@@ -48,20 +61,40 @@ def helperPath :
    opAt 2450 (.Dup ⟨1, by decide⟩),
    pushAt 2451 1 3,
    opAt 2452 .LT,
-   opAt 2453 (.Dup ⟨2, by decide⟩),
-   pushAt 2454 1 7,
-   opAt 2455 .LT,
-   opAt 2456 (.Dup ⟨3, by decide⟩),
-   pushAt 2457 1 15,
-   opAt 2458 .LT,
-   opAt 2459 (.Dup ⟨4, by decide⟩),
-   pushAt 2460 1 31,
-   opAt 2461 .LT,
-   opAt 2462 .ADD,
-   opAt 2463 .ADD,
-   opAt 2464 .ADD,
-   pushAt 2465 2 1569,
-   opAt 2466 .JUMP]
+   pushAt 2453 2 5323,
+   opAt 2454 .JUMPI]
+
+def fallbackPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 3868 .JUMPDEST,
+   opAt 3869 (.Dup ⟨1, by decide⟩),
+   pushAt 3870 1 3,
+   opAt 3871 .LT,
+   opAt 3872 (.Dup ⟨2, by decide⟩),
+   pushAt 3873 1 7,
+   opAt 3874 .LT,
+   opAt 3875 (.Dup ⟨3, by decide⟩),
+   pushAt 3876 1 15,
+   opAt 3877 .LT,
+   opAt 3878 (.Dup ⟨4, by decide⟩),
+   pushAt 3879 1 31,
+   opAt 3880 .LT,
+   opAt 3881 .ADD,
+   opAt 3882 .ADD,
+   opAt 3883 .ADD,
+   pushAt 3884 2 1569,
+   opAt 3885 .JUMP]
+
+def helperSmallPath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  helperPrefixPath ++
+    [pushAt 2455 0 0,
+     pushAt 2456 2 1569,
+     opAt 2457 .JUMP]
+
+def helperLargePath :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  helperPrefixPath ++ fallbackPath
 
 @[simp] theorem jump1569 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1569 = true :=
