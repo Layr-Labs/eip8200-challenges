@@ -75,7 +75,7 @@ def selectorPath : List Located :=
 
 def digestStorePath : List Located :=
   [opAt 4173 .JUMPDEST, opAt 4174 .CALLDATASIZE, pushAt 4175 1 128,
-   opAt 4176 .EQ, pushAt 4177 2 5151, opAt 4178 .JUMPI,
+   opAt 4176 .EQ, pushAt 4177 2 5161, opAt 4178 .JUMPI,
    pushAt 4179 20 (paddedDigestWord 56),
    pushAt 4180 20 (UInt256.xor (paddedDigestWord 56) (paddedDigestWord 120)),
    opAt 4181 .CALLDATASIZE, pushAt 4182 1 120, opAt 4183 .EQ,

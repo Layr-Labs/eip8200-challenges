@@ -26,21 +26,21 @@ def selectorState (input : ByteArray) (sv ov : UInt256) : State :=
   stS input 260 (returnRest sv ov)
 
 def digestEntryState (input : ByteArray) (sv ov : UInt256) : State :=
-  stS input 5151 (returnRest sv ov)
+  stS input 5161 (returnRest sv ov)
 
 def storedState (input : ByteArray) (sv ov : UInt256) : State :=
-  { stS input 5175 (returnRest sv ov) with
+  { stS input 5185 (returnRest sv ov) with
     memory := answerMemory
     activeWords := UInt256.ofNat 1 }
 
 def sizedState (input : ByteArray) (sv ov : UInt256) : State :=
   { storedState input sv ov with
-    pc := UInt256.ofNat 5176
+    pc := UInt256.ofNat 5186
     stack := UInt256.ofNat 32 :: returnRest sv ov }
 
 def returnedState (input : ByteArray) (sv ov : UInt256) : State :=
   { storedState input sv ov with
-    pc := UInt256.ofNat 5177
+    pc := UInt256.ofNat 5187
     halt := .Returned
     hReturn := MachineState.readPadded answerMemory 0 32 }
 
@@ -71,16 +71,16 @@ def selectorPath : List Located :=
   [opAt 163 .CALLDATASIZE, pushAt 164 1 129, opAt 165 .GT,
    pushAt 166 2 5198, opAt 167 .JUMPI,
    opAt 4173 .JUMPDEST, opAt 4174 .CALLDATASIZE, pushAt 4175 1 128,
-   opAt 4176 .EQ, pushAt 4177 2 5151, opAt 4178 .JUMPI]
+   opAt 4176 .EQ, pushAt 4177 2 5161, opAt 4178 .JUMPI]
 
 def digestStorePath : List Located :=
-  [opAt 4151 .JUMPDEST,
-   pushAt 4152 20 paddedDigestWord,
-   pushAt 4153 0 0,
-   opAt 4154 .MSTORE]
+  [opAt 4160 .JUMPDEST,
+   pushAt 4161 20 paddedDigestWord,
+   pushAt 4162 0 0,
+   opAt 4163 .MSTORE]
 
 def digestFinishPath : List Located :=
-  [pushAt 4156 0 0, opAt 4157 .RETURN]
+  [pushAt 4165 0 0, opAt 4166 .RETURN]
 
 @[simp] private theorem selectorPC166 :
     Artifact.submissionArtifact.instructionPC 163 = 260 := by
@@ -108,32 +108,32 @@ def digestFinishPath : List Located :=
   decide
 
 @[simp] private theorem digestStorePC4160 :
-    Artifact.submissionArtifact.instructionPC 4151 = 5151 := by
+    Artifact.submissionArtifact.instructionPC 4160 = 5161 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem digestStorePC4161 :
-    Artifact.submissionArtifact.instructionPC 4152 = 5152 := by
+    Artifact.submissionArtifact.instructionPC 4161 = 5162 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem digestStorePC4162 :
-    Artifact.submissionArtifact.instructionPC 4153 = 5173 := by
+    Artifact.submissionArtifact.instructionPC 4162 = 5183 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem digestStorePC4163 :
-    Artifact.submissionArtifact.instructionPC 4154 = 5174 := by
+    Artifact.submissionArtifact.instructionPC 4163 = 5184 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem digestFinishPC4165 :
-    Artifact.submissionArtifact.instructionPC 4156 = 5176 := by
+    Artifact.submissionArtifact.instructionPC 4165 = 5186 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] private theorem digestFinishPC4166 :
-    Artifact.submissionArtifact.instructionPC 4157 = 5177 := by
+    Artifact.submissionArtifact.instructionPC 4166 = 5187 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -269,9 +269,9 @@ theorem run_selector (input : ByteArray) (sv ov : UInt256)
   have hb : run [opAt 4173 .JUMPDEST] (stS input 5198 (returnRest sv ov)) = some (stS input 5199 (returnRest sv ov)) := by
     exact blockOfS _ (pcFactS input 4173 5198 _ (by norm_num) shortHelperPC4181)
       (stepS_jumpdest input 5198 (returnRest sv ov) (by simp [returnRest]) (by norm_num))
-  have hc : run [opAt 4174 .CALLDATASIZE, pushAt 4175 1 128, opAt 4176 .EQ, pushAt 4177 2 5151, opAt 4178 .JUMPI] (stS input 5199 (returnRest sv ov)) = some (stS input 5151 (returnRest sv ov)) := by
-    have hdest : Decode.isValidJumpDest submissionBytecode 5151 = true :=
-      Artifact.submissionArtifact.isValidJumpDest_index 4151 (by rfl)
+  have hc : run [opAt 4174 .CALLDATASIZE, pushAt 4175 1 128, opAt 4176 .EQ, pushAt 4177 2 5161, opAt 4178 .JUMPI] (stS input 5199 (returnRest sv ov)) = some (stS input 5161 (returnRest sv ov)) := by
+    have hdest : Decode.isValidJumpDest submissionBytecode 5161 = true :=
+      Artifact.submissionArtifact.isValidJumpDest_index 4160 (by rfl)
     have htrue : UInt256.isTrue (UInt256.eq 128 (UInt256.ofNat input.size)) := by
       rw [hsize]
       decide
@@ -306,25 +306,25 @@ theorem run_selector (input : ByteArray) (sv ov : UInt256)
           (by simp [returnRest]) (by norm_num))
     have h3 :
         Challenge.EvmProof.Stepper.runLocatedBlock
-            [pushAt 4177 2 5151]
+            [pushAt 4177 2 5161]
             (stS input 5203
               (UInt256.eq 128 (UInt256.ofNat input.size) :: returnRest sv ov)) =
           some (stS input 5206
-            (5151 :: UInt256.eq 128 (UInt256.ofNat input.size) :: returnRest sv ov)) := by
+            (5161 :: UInt256.eq 128 (UInt256.ofNat input.size) :: returnRest sv ov)) := by
       exact blockOfS _
         (pcFactS input 4177 5203 _ (by norm_num) shortHelperPC4185)
-        (stepS_push input 5203 2 5151
+        (stepS_push input 5203 2 5161
           (UInt256.eq 128 (UInt256.ofNat input.size) :: returnRest sv ov)
           (by simp [returnRest]) (by decide) (by decide) (by norm_num))
     have h4 :
         Challenge.EvmProof.Stepper.runLocatedBlock
             [opAt 4178 .JUMPI]
             (stS input 5206
-              (5151 :: UInt256.eq 128 (UInt256.ofNat input.size) :: returnRest sv ov)) =
-          some (stS input 5151 (returnRest sv ov)) := by
+              (5161 :: UInt256.eq 128 (UInt256.ofNat input.size) :: returnRest sv ov)) =
+          some (stS input 5161 (returnRest sv ov)) := by
       exact blockOfS _
         (pcFactS input 4178 5206 _ (by norm_num) shortHelperPC4186)
-        (stepS_jumpi_taken input 5206 5151 5151
+        (stepS_jumpi_taken input 5206 5161 5161
           (UInt256.eq 128 (UInt256.ofNat input.size)) (returnRest sv ov)
           (by simp [returnRest]) (by norm_num) rfl htrue hdest)
     have h01 :
@@ -347,27 +347,27 @@ theorem run_selector (input : ByteArray) (sv ov : UInt256)
     have h0123 :
         Challenge.EvmProof.Stepper.runLocatedBlock
             [opAt 4174 .CALLDATASIZE, pushAt 4175 1 128, opAt 4176 .EQ,
-              pushAt 4177 2 5151]
+              pushAt 4177 2 5161]
             (stS input 5199 (returnRest sv ov)) =
           some (stS input 5206
-            (5151 :: UInt256.eq 128 (UInt256.ofNat input.size) :: returnRest sv ov)) := by
+            (5161 :: UInt256.eq 128 (UInt256.ofNat input.size) :: returnRest sv ov)) := by
       exact Challenge.EvmProof.Stepper.runLocatedBlock_append
         [opAt 4174 .CALLDATASIZE, pushAt 4175 1 128, opAt 4176 .EQ]
-        [pushAt 4177 2 5151] _ _ _ h012 (by rfl) h3
+        [pushAt 4177 2 5161] _ _ _ h012 (by rfl) h3
     have h01234 :
         Challenge.EvmProof.Stepper.runLocatedBlock
             [opAt 4174 .CALLDATASIZE, pushAt 4175 1 128, opAt 4176 .EQ,
-              pushAt 4177 2 5151, opAt 4178 .JUMPI]
+              pushAt 4177 2 5161, opAt 4178 .JUMPI]
             (stS input 5199 (returnRest sv ov)) =
-          some (stS input 5151 (returnRest sv ov)) := by
+          some (stS input 5161 (returnRest sv ov)) := by
       exact Challenge.EvmProof.Stepper.runLocatedBlock_append
         [opAt 4174 .CALLDATASIZE, pushAt 4175 1 128, opAt 4176 .EQ,
-          pushAt 4177 2 5151] [opAt 4178 .JUMPI] _ _ _ h0123 (by rfl) h4
+          pushAt 4177 2 5161] [opAt 4178 .JUMPI] _ _ _ h0123 (by rfl) h4
     exact h01234
   have hbc := Challenge.EvmProof.Stepper.runLocatedBlock_append
-    [opAt 4173 .JUMPDEST] [opAt 4174 .CALLDATASIZE, pushAt 4175 1 128, opAt 4176 .EQ, pushAt 4177 2 5151, opAt 4178 .JUMPI] _ _ _ hb (by rfl) hc
+    [opAt 4173 .JUMPDEST] [opAt 4174 .CALLDATASIZE, pushAt 4175 1 128, opAt 4176 .EQ, pushAt 4177 2 5161, opAt 4178 .JUMPI] _ _ _ hb (by rfl) hc
   have habc := Challenge.EvmProof.Stepper.runLocatedBlock_append
-    [opAt 163 .CALLDATASIZE, pushAt 164 1 129, opAt 165 .GT, pushAt 166 2 5198, opAt 167 .JUMPI] ([opAt 4173 .JUMPDEST] ++ [opAt 4174 .CALLDATASIZE, pushAt 4175 1 128, opAt 4176 .EQ, pushAt 4177 2 5151, opAt 4178 .JUMPI]) _ _ _ ha (by rfl) hbc
+    [opAt 163 .CALLDATASIZE, pushAt 164 1 129, opAt 165 .GT, pushAt 166 2 5198, opAt 167 .JUMPI] ([opAt 4173 .JUMPDEST] ++ [opAt 4174 .CALLDATASIZE, pushAt 4175 1 128, opAt 4176 .EQ, pushAt 4177 2 5161, opAt 4178 .JUMPI]) _ _ _ ha (by rfl) hbc
   exact habc
 
 theorem run_store (input : ByteArray) (sv ov : UInt256) :
@@ -408,14 +408,14 @@ def gasSteps_return (input : ByteArray) (sv ov : UInt256)
     GasSteps (selectorState input sv ov) (returnedState input sv ov) := by
   have gselect := sound selectorPath (run_selector input sv ov hsize)
   have gstore := sound digestStorePath (run_store input sv ov)
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 4155 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 4164 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4155 := by
+      Artifact.submissionArtifact.instructionPC 4164 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedState input sv ov).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedState input sv ov) 4155
+    Artifact.submissionArtifact.state_decodedOp_of (storedState input sv ov) 4164
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedState, returnRest, stS, initialState])
