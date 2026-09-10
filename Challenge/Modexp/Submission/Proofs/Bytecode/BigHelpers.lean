@@ -54,8 +54,8 @@ def clearBodyPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 24 0 0, opAt 25 (.Dup ⟨1, by decide⟩), pushAt 26 1 5,
    opAt 27 .SHL, opAt 28 (.Dup ⟨3, by decide⟩), opAt 29 .ADD,
-   opAt 30 .MSTORE, pushAt 31 1 1, opAt 32 (.Dup ⟨1, by decide⟩),
-   opAt 33 .ADD, opAt 34 (.Swap ⟨0, by decide⟩), opAt 35 .POP,
+   opAt 30 .MSTORE, pushAt 31 1 1, opAt 32 .ADD,
+   opAt 33 .JUMPDEST, opAt 34 .JUMPDEST, opAt 35 .JUMPDEST,
    pushAt 36 2 21, opAt 37 .JUMP]
 
 def clearExitPath :
