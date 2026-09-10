@@ -12,15 +12,15 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open WindowNibbleKernel
 
-def cacheProgram : List Instr := entryProgram.take 14
-def entryBodyProgram : List Instr := entryProgram.drop 14
+def cacheProgram : List Instr := entryProgram.take 11
+def entryBodyProgram : List Instr := entryProgram.drop 11
 
 theorem entryProgram_split : entryProgram = cacheProgram ++ entryBodyProgram := by
-  exact (List.take_append_drop 14 entryProgram).symm
+  exact (List.take_append_drop 11 entryProgram).symm
 
 def cachedEntryState (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4499
+  { s with pc := UInt256.ofNat 4529
            stack := [UInt256.ofNat pa, UInt256.ofNat pb,
              isFour n, negative32, allOnes, pdst, ret] ++ rest
            memory := mem }
@@ -44,7 +44,7 @@ theorem run_cache (s : State) (mem : ByteArray) (pa pb n : Nat)
   have h9344 : (9344 : UInt256).toNat = 9344 := by decide
   simp [cacheProgram, entryProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     entryState, cachedEntryState, isFour, hc4, hc5, hc6, hc7, hc8,
-    ← negative32_not, ← allOnes_not, h128, h9344, hs32, hactS, State.activeWordsAfterUInt256,
+    negative32, allOnes, h128, h9344, hs32, hactS, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
     List.exchange]
   decide

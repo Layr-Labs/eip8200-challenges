@@ -26,7 +26,7 @@ theorem run_next (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) (hi : i+1 < n)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4527 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4564 = true) :
     runInstructions tailLoopProgram
       (CiosCached.tailState s mem c mu bi pa pb n i dst ret rest) =
     some (CiosCached.outState s (tailMem mem c) pa pb n (i+1) dst ret rest) := by
@@ -35,7 +35,7 @@ theorem run_next (s : State) (mem : ByteArray) (c mu bi : UInt256)
       (UInt256.gt (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) (UInt256.ofNat (pb-32))) :=
     (l1_condition pb n (i+1) hpb hpbFit (by omega)).mpr hi
   have trace := run_tail { s with memory := mem } c mu bi
-    (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
+    (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa + 32*n - 32)) (UInt256.ofNat (pb-32))
     (isFour n) dst ret rest hcap hact htarget
   simpa only [input, result, baseStack, framed, CiosCached.tailState,
     CiosCached.outState, hp, if_pos hcond, List.cons_append, List.nil_append] using trace
@@ -44,7 +44,7 @@ theorem run_last (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) (hi : i+1 = n)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4527 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4564 = true) :
     runInstructions tailLoopProgram
       (CiosCached.tailState s mem c mu bi pa pb n i dst ret rest) =
     some (exitState s (tailMem mem c)
@@ -55,7 +55,7 @@ theorem run_last (s : State) (mem : ByteArray) (c mu bi : UInt256)
     rw [l1_condition pb n (i+1) hpb hpbFit (by omega)]
     omega
   have trace := run_tail { s with memory := mem } c mu bi
-    (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
+    (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat (pa + 32*n - 32)) (UInt256.ofNat (pb-32))
     (isFour n) dst ret rest hcap hact htarget
   simpa only [input, result, baseStack, framed, CiosCached.tailState,
     exitState, hp, if_neg hcond, List.cons_append, List.nil_append] using trace

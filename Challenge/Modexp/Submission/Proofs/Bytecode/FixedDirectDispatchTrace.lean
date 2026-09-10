@@ -20,6 +20,15 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRoute
 open Challenge.Modexp.Submission.Proofs.Fast.FixedDirectStates
 open Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
 
+private theorem isTrue_of_xor_ne (x : UInt256) (hx : x ≠ 0) :
+    UInt256.isTrue x := by
+  unfold UInt256.isTrue
+  intro hz
+  apply hx
+  apply Challenge.EvmProof.Word.word_ext
+  change x.toNat = 0
+  exact hz
+
 set_option linter.unusedSimpArgs false in
 theorem run_entry_three (s : State) (memory : ByteArray)
     (n bsize msize : Nat)
@@ -37,7 +46,7 @@ theorem run_entry_three (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runInstr,
       entryState, Exp.bDone, FixedDirectStates.check65537, Exp.outer,
       hcode, hrun, heq,
-      Exp.isTrue_one, jumpDest3931,
+      Exp.isTrue_one, jumpDest3895,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -73,15 +82,15 @@ theorem run_oneWidth_hit (s : State) (memory : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock oneWidth
       (otherWidth s memory n bsize 1 msize) =
       some (FixedDirectStates.checkThree s memory n bsize 1 msize) := by
-  have heq : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat 1) =
-      UInt256.ofNat 1 := by decide
+  have hxor : UInt256.xor (UInt256.ofNat 1) (UInt256.ofNat 1) =
+      UInt256.ofNat 0 := by decide
   simp (config := { maxSteps := 400000 })
     [oneWidth, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      otherWidth, FixedDirectStates.checkThree, Exp.outer, hrun, heq,
-      Exp.isZero_ofNat_one, Exp.not_isTrue_zero,
+      otherWidth, FixedDirectStates.checkThree, Exp.outer, hrun, hxor,
+      Exp.not_isTrue_zero,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -95,18 +104,28 @@ theorem run_oneWidth_miss (s : State) (memory : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock oneWidth
       (otherWidth s memory n bsize esize msize) =
       some (FixedDirectStates.fallback s memory n bsize esize msize) := by
-  have heq : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat esize) =
-      UInt256.ofNat 0 := by
-    rw [UInt256.eq, Exp.toNat_ofNat_self (by norm_num),
-      Exp.toNat_ofNat_self (Nat.lt_of_le_of_lt he (by norm_num)),
-      if_neg hne.symm]
+  have helt : esize < 2 ^ 256 := Nat.lt_of_le_of_lt he (by norm_num)
+  have hxor : UInt256.xor (UInt256.ofNat 1) (UInt256.ofNat esize) ≠ 0 := by
+    intro hx
+    have heq' : UInt256.ofNat 1 = UInt256.ofNat esize :=
+      (Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic.wordXor_eq_zero_iff
+        _ _).mp hx
+    have hnat := congrArg UInt256.toNat heq'
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by norm_num),
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt helt] at hnat
+    exact hne hnat.symm
+  have htrue : UInt256.isTrue
+      (UInt256.xor (UInt256.ofNat 1) (UInt256.ofNat esize)) :=
+    isTrue_of_xor_ne _ hxor
   simp (config := { maxSteps := 400000 })
     [oneWidth, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      otherWidth, FixedDirectStates.fallback, Exp.outer, hcode, hrun, heq,
-      Exp.isZero_ofNat_zero, Exp.isTrue_one, jumpDest4002,
+      otherWidth, FixedDirectStates.fallback, Exp.outer, hcode, hrun, hxor, htrue,
+      Exp.isTrue_one, jumpDest3959,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,

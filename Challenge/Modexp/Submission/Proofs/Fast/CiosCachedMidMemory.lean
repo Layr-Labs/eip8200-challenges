@@ -52,41 +52,4 @@ theorem rowC0_mid (mem : ByteArray) (c : UInt256) (n : Nat)
   unfold rowC0
   rw [rowMu_mid mem c n hn, read_mid mem c (32*n-32) (Or.inl (by omega))]
 
-/-- The row-head inverse relation belongs to the logical memory state. -/
-def inverseInvariant (mem : ByteArray) (n : Nat) : Prop :=
-  ((MachineState.readWord mem (32*n-32)).toNat *
-    (MachineState.readWord mem 9376).toNat + 1) % 2 ^ 256 = 0
-
-opaque inverse_mpZeroed (s : State) (mem : ByteArray) (n : Nat)
-    (hn : n ≤ 32) (hminv : inverseInvariant mem n) :
-    inverseInvariant (mpZeroed s mem n) n := by
-  unfold inverseInvariant at *
-  rw [readWord_mpZeroed s mem n (32*n-32) hn (Or.inl (by omega)),
-    readWord_mpZeroed s mem n 9376 hn (Or.inr (by decide))]
-  exact hminv
-
-opaque inverse_rowsMem (mem : ByteArray) (pa pb n i : Nat)
-    (hn : n ≤ 32) (hminv : inverseInvariant mem n) :
-    inverseInvariant (rowsMem mem pa pb n i) n := by
-  unfold inverseInvariant at *
-  rw [readWord_rowsMem mem pa pb n (32*n-32) hn (Or.inl (by omega)) i,
-    readWord_rowsMem mem pa pb n 9376 hn (Or.inr (by decide)) i]
-  exact hminv
-
-opaque inverse_l1Step (mem : ByteArray) (bi : UInt256) (pa n j : Nat)
-    (hn : n ≤ 32) (hminv : inverseInvariant mem n) :
-    inverseInvariant (l1Step mem bi pa n j).memory n := by
-  unfold inverseInvariant at *
-  rw [readWord_l1Step mem bi pa n (32*n-32) j hn (Or.inl (by omega)),
-    readWord_l1Step mem bi pa n 9376 j hn (Or.inr (by decide))]
-  exact hminv
-
-opaque inverse_midMem (mem : ByteArray) (c : UInt256) (n : Nat)
-    (hn : n ≤ 32) (hminv : inverseInvariant mem n) :
-    inverseInvariant (midMem mem c) n := by
-  unfold inverseInvariant at *
-  rw [read_mid mem c (32*n-32) (Or.inl (by omega)),
-    read_mid mem c 9376 (Or.inr (by decide))]
-  exact hminv
-
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidMemory
