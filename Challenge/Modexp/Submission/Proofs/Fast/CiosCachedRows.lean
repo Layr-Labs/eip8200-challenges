@@ -24,7 +24,7 @@ open CiosCachedMidMemory
 
 opaque gasSteps_l1Four (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb i : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 999) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -32,19 +32,19 @@ opaque gasSteps_l1Four (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4241 s mem bi pa pb 4 i 0 pdst ret rest)
+      (l1At 4244 s mem bi pa pb 4 i 0 pdst ret rest)
       (midState s (l1Step mem bi pa 4 4).memory (l1Step mem bi pa 4 4).carry bi
         pa pb 4 i pdst ret rest) :=
   (gasSteps_l1Dispatch4 s mem bi pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
   (gasSteps_l1Join s mem bi pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4394 96 8352 l1Mac4 s mem bi pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4432 64 8320 l1Mac5 s mem bi pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4470 32 8288 l1Mac6 s mem bi pa pb 4 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4397 96 8352 l1Mac4 s mem bi pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4435 64 8320 l1Mac5 s mem bi pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4473 32 8288 l1Mac6 s mem bi pa pb 4 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
   gasSteps_l1Last s mem bi pa pb 4 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit
 
 opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb i : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 999) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -52,64 +52,64 @@ opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4241 s mem bi pa pb 8 i 0 pdst ret rest)
+      (l1At 4244 s mem bi pa pb 8 i 0 pdst ret rest)
       (midState s (l1Step mem bi pa 8 8).memory (l1Step mem bi pa 8 8).carry bi
         pa pb 8 i pdst ret rest) :=
   (gasSteps_l1Dispatch8 s mem bi pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1First 4244 224 8480 l1Mac0 s mem bi pa pb 8 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4279 192 8448 l1Mac1 s mem bi pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4317 160 8416 l1Mac2 s mem bi pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4355 128 8384 l1Mac3 s mem bi pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1First 4247 224 8480 l1Mac0 s mem bi pa pb 8 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4282 192 8448 l1Mac1 s mem bi pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4320 160 8416 l1Mac2 s mem bi pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4358 128 8384 l1Mac3 s mem bi pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
   (gasSteps_l1Join s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4394 96 8352 l1Mac4 s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4432 64 8320 l1Mac5 s mem bi pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
-  (gasSteps_l1Mac 4470 32 8288 l1Mac6 s mem bi pa pb 8 i 6 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4397 96 8352 l1Mac4 s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4435 64 8320 l1Mac5 s mem bi pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
+  (gasSteps_l1Mac 4473 32 8288 l1Mac6 s mem bi pa pb 8 i 6 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa hpaFit).trans <|
   gasSteps_l1Last s mem bi pa pb 8 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa hpaFit
 
 opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pa pb i : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 999) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (l2At 4576 s mid bi mu c0 pa pb 4 i 0 pdst ret rest)
+      (l2At 4579 s mid bi mu c0 pa pb 4 i 0 pdst ret rest)
       (tailState s (l2Step mid mu c0 4 3).memory
         (l2Step mid mu c0 4 3).carry mu bi pa pb 4 i pdst ret rest) :=
   (gasSteps_l2Dispatch4 s mid bi mu c0 pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
   (gasSteps_l2Join s mid bi mu c0 pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l2Low64 4729 64 8320 8352 l2Mac4 s mid bi mu c0 pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Low32 4763 32 8288 8320 l2Mac5 s mid bi mu c0 pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Low64 4732 64 8320 8352 l2Mac4 s mid bi mu c0 pa pb 4 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Low32 4766 32 8288 8320 l2Mac5 s mid bi mu c0 pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
   gasSteps_l2Final s mid bi mu c0 pa pb 4 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide)
 
 opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pa pb i : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 999) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (l2At 4576 s mid bi mu c0 pa pb 8 i 0 pdst ret rest)
+      (l2At 4579 s mid bi mu c0 pa pb 8 i 0 pdst ret rest)
       (tailState s (l2Step mid mu c0 8 7).memory
         (l2Step mid mu c0 8 7).carry mu bi pa pb 8 i pdst ret rest) :=
   (gasSteps_l2Dispatch8 s mid bi mu c0 pa pb i 0 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l2Mac 4579 6 192 8448 8480 l2Mac0 s mid bi mu c0 pa pb 8 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 4620 1 160 8416 8448 l2Mac1 s mid bi mu c0 pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 4656 1 128 8384 8416 l2Mac2 s mid bi mu c0 pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 4692 1 96 8352 8384 l2Mac3 s mid bi mu c0 pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 4582 8 192 8448 8480 l2Mac0 s mid bi mu c0 pa pb 8 i 0 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 4625 1 160 8416 8448 l2Mac1 s mid bi mu c0 pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 4661 1 128 8384 8416 l2Mac2 s mid bi mu c0 pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Low96 4697 96 8352 8384 l2Mac3 s mid bi mu c0 pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
   (gasSteps_l2Join s mid bi mu c0 pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l2Low64 4729 64 8320 8352 l2Mac4 s mid bi mu c0 pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Low32 4763 32 8288 8320 l2Mac5 s mid bi mu c0 pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Low64 4732 64 8320 8352 l2Mac4 s mid bi mu c0 pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Low32 4766 32 8288 8320 l2Mac5 s mid bi mu c0 pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
   gasSteps_l2Final s mid bi mu c0 pa pb 8 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide)
 
 /-- One complete four-limb row, stopping at the common tail block. -/
 opaque gasSteps_rowFourToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 999) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -157,7 +157,7 @@ opaque gasSteps_rowFourToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
 /-- One complete eight-limb row, stopping at the common tail block. -/
 opaque gasSteps_rowEightToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 999) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -204,7 +204,7 @@ opaque gasSteps_rowEightToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
 
 opaque gasSteps_rowFourNext (s : State) (mem : ByteArray) (pa pb i : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 999) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -230,7 +230,7 @@ opaque gasSteps_rowFourNext (s : State) (mem : ByteArray) (pa pb i : Nat)
 
 opaque gasSteps_rowFourLast (s : State) (mem : ByteArray) (pa pb i : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 999) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -256,7 +256,7 @@ opaque gasSteps_rowFourLast (s : State) (mem : ByteArray) (pa pb i : Nat)
 
 opaque gasSteps_rowEightNext (s : State) (mem : ByteArray) (pa pb i : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 999) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -282,7 +282,7 @@ opaque gasSteps_rowEightNext (s : State) (mem : ByteArray) (pa pb i : Nat)
 
 opaque gasSteps_rowEightLast (s : State) (mem : ByteArray) (pa pb i : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 999) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

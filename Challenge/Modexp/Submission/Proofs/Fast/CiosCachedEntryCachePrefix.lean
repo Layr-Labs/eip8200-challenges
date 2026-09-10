@@ -14,6 +14,8 @@ open Challenge.Modexp.Submission.Proofs.Fast.CiosCached
 def loadProgram : List Instr :=
   [
    .op .JUMPDEST,
+   .push 1 96,
+   .op .MLOAD,
    .push 2 9440,
    .op .MLOAD,
    .push 2 9376,
@@ -37,31 +39,31 @@ def loadProgram : List Instr :=
 
 def shuffleProgram : List Instr :=
   [
-   .push 2 4243,
+   .push 2 4246,
    .op .ADD,
    .op (.Swap ⟨0, by decide⟩),
-   .push 2 4578,
+   .push 2 4581,
    .op .ADD,
    .op (.Swap ⟨3, by decide⟩),
-   .op (.Swap ⟨8, by decide⟩),
+   .op (.Swap ⟨9, by decide⟩),
    .push 0 0,
    .op .NOT,
    .op (.Swap ⟨3, by decide⟩),
-   .op (.Swap ⟨8, by decide⟩)]
+   .op (.Swap ⟨9, by decide⟩)]
 
 def displacement (mem : ByteArray) : UInt256 :=
   UInt256.ofNat 150 * UInt256.eq (UInt256.ofNat 128) (MachineState.readWord mem 9344)
 
 theorem run_load (s : State) (pa pb dst ret : UInt256) (rest : List UInt256)
-    (addr : Nat) (hcap : rest.length ≤ 1000) (hact : 296 ≤ s.activeWords.toNat)
+    (addr : Nat) (hcap : rest.length ≤ 999) (hact : 296 ≤ s.activeWords.toNat)
     (haddr : addr + 32 ≤ 9472)
     (hml : MachineState.readWord s.memory 9408 = UInt256.ofNat addr) :
     runInstructions loadProgram
       {s with pc := UInt256.ofNat 4160, stack := [pa, pb, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 4194
+        pc := UInt256.ofNat 4197
         stack := [displacement s.memory, displacement s.memory, negative32,
-        MachineState.readWord s.memory 64, MachineState.readWord s.memory 32, MachineState.readWord s.memory addr, MachineState.readWord s.memory 9376, MachineState.readWord s.memory 9440, pa, pb, dst, ret] ++ rest} := by
+        MachineState.readWord s.memory 64, MachineState.readWord s.memory 32, MachineState.readWord s.memory addr, MachineState.readWord s.memory 9376, MachineState.readWord s.memory 9440, MachineState.readWord s.memory 96, pa, pb, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
@@ -74,6 +76,7 @@ theorem run_load (s : State) (pa pb dst ret : UInt256) (rest : List UInt256)
   have hc13 : rest.length + 13 < 1024 := by omega
   have hc14 : rest.length + 14 < 1024 := by omega
   have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
   have htonat : (UInt256.ofNat addr).toNat = addr := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat]
     exact Nat.mod_eq_of_lt (by omega)
@@ -83,6 +86,8 @@ theorem run_load (s : State) (pa pb dst ret : UInt256) (rest : List UInt256)
   have hact4 := activeWords_fix s 9376 32 (by decide) (by omega) hact
   have hact6 := activeWords_fix s 32 32 (by decide) (by omega) hact
   have hact7 := activeWords_fix s 64 32 (by decide) (by omega) hact
+  have hact8 := activeWords_fix s 96 32 (by decide) (by omega) hact
+  have h96 : (96 : UInt256).toNat = 96 := by decide
   have h64 : (64 : UInt256).toNat = 64 := by decide
   have h32 : (32 : UInt256).toNat = 32 := by decide
   have hact5 := activeWords_fix s 9440 32 (by decide) (by omega) hact
@@ -92,21 +97,21 @@ theorem run_load (s : State) (pa pb dst ret : UInt256) (rest : List UInt256)
   have h9344 : (9344 : UInt256).toNat = 9344 := by decide
   simp [loadProgram, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, displacement,
-    ← negative32_not, hml, htonat, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, h9408, h9344, h9376, h9440, h32, h64,
-    State.activeWordsAfterUInt256, hact1, hact2, hact3, hact4, hact5, hact6, hact7,
+    ← negative32_not, hml, htonat, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, h9408, h9344, h9376, h9440, h32, h64, h96,
+    State.activeWordsAfterUInt256, hact1, hact2, hact3, hact4, hact5, hact6, hact7, hact8,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
   exact ⟨rfl, rfl⟩
 
-theorem run_shuffle (s : State) (pa pb dst ret value inverse tailPointer low64 low32 delta : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1000) :
+theorem run_shuffle (s : State) (pa pb dst ret value inverse tailPointer low96 low64 low32 delta : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 999) :
     runInstructions shuffleProgram
       {s with
-        pc := UInt256.ofNat 4194
-        stack := [delta, delta, negative32, low64, low32, value, inverse, tailPointer, pa, pb, dst, ret] ++ rest} =
+        pc := UInt256.ofNat 4197
+        stack := [delta, delta, negative32, low64, low32, value, inverse, tailPointer, low96, pa, pb, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 4209
-        stack := [pa, pb, UInt256.ofNat 4243 + delta, negative32, allOnes,
-        UInt256.ofNat 4578 + delta, value, inverse, tailPointer, low64, low32, dst, ret] ++ rest} := by
+        pc := UInt256.ofNat 4212
+        stack := [pa, pb, UInt256.ofNat 4246 + delta, negative32, allOnes,
+        UInt256.ofNat 4581 + delta, value, inverse, tailPointer, low96, low64, low32, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
@@ -119,8 +124,9 @@ theorem run_shuffle (s : State) (pa pb dst ret value inverse tailPointer low64 l
   have hc13 : rest.length + 13 < 1024 := by omega
   have hc14 : rest.length + 14 < 1024 := by omega
   have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
   simp [shuffleProgram, runInstructions,
-    Challenge.EvmProof.Stepper.runInstr, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, ← allOnes_not, List.exchange,
+    Challenge.EvmProof.Stepper.runInstr, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, ← allOnes_not, List.exchange,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
   exact ⟨rfl, rfl, rfl⟩
 

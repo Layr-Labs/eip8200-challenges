@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedLow96
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedLow64
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedLow32
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedL1
@@ -16,7 +17,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 theorem run_l1Mac (pc : Nat) (off t : UInt256) (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 999) (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hj : j < n) (hoff : off.toNat = 32 * (n - 1 - j))
     (ht : t.toNat = 8256 + 32 * (n - 1 - j))
     (hpa : 32 ≤ pa) (hpaFit : pa + 32*n ≤ 9472) :
@@ -24,13 +25,13 @@ theorem run_l1Mac (pc : Nat) (off t : UInt256) (s : State) (mem : ByteArray) (bi
       some (l1At (pc+38) s mem bi pa pb n i (j+1) pdst ret rest) := by
   have h := CiosCachedL1.run_step s (UInt256.ofNat pc) mem bi pa n j off t hoff ht
     (UInt256.ofNat (ptrAt (pb+32*n-32) i))
-    (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) (modulusValue mem n) (inverseValue mem :: tailPointerValue mem :: low64Value mem :: low32Value mem :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hact hn32 hj hpa hpaFit
+    (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) (modulusValue mem n) (inverseValue mem :: tailPointerValue mem :: low96Value mem :: low64Value mem :: low32Value mem :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hact hn32 hj hpa hpaFit
   simpa only [List.cons_append, List.nil_append, CiosCachedL1.state, l1At,
     Challenge.EvmProof.Word.ofNat_add_mod] using h
 
 theorem run_l1First (pc : Nat) (off t : UInt256) (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 999) (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hpos : 0 < n) (hoff : off.toNat = 32 * (n - 1))
     (ht : t.toNat = 8256 + 32 * (n - 1))
     (hpa : 32 ≤ pa) (hpaFit : pa + 32*n ≤ 9472) :
@@ -38,28 +39,28 @@ theorem run_l1First (pc : Nat) (off t : UInt256) (s : State) (mem : ByteArray) (
       some (l1At (pc+35) s mem bi pa pb n i 1 pdst ret rest) := by
   have h := CiosCachedL1.run_first s (UInt256.ofNat pc) mem bi pa n off t hoff ht
     (UInt256.ofNat (ptrAt (pb+32*n-32) i))
-    (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) (modulusValue mem n) (inverseValue mem :: tailPointerValue mem :: low64Value mem :: low32Value mem :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hact hn32 hpos hpa hpaFit
+    (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) (modulusValue mem n) (inverseValue mem :: tailPointerValue mem :: low96Value mem :: low64Value mem :: low32Value mem :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hact hn32 hpos hpa hpaFit
   simpa only [List.cons_append, List.nil_append, CiosCachedL1.state, l1At,
     Challenge.EvmProof.Word.ofNat_add_mod] using h
 
 theorem run_l1Last (t : UInt256) (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 999) (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hpos : 0 < n) (ht : t.toNat = 8256)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32*n ≤ 9472) :
-    runInstructions (l1LastProgram t) (l1At 4508 s mem bi pa pb n i (n-1) pdst ret rest) =
+    runInstructions (l1LastProgram t) (l1At 4511 s mem bi pa pb n i (n-1) pdst ret rest) =
       some (midState s (l1Step mem bi pa n n).memory (l1Step mem bi pa n n).carry bi
         pa pb n i pdst ret rest) := by
-  have h := CiosCachedL1.run_last s (UInt256.ofNat 4508) mem bi pa n t ht
+  have h := CiosCachedL1.run_last s (UInt256.ofNat 4511) mem bi pa n t ht
     (UInt256.ofNat (ptrAt (pb+32*n-32) i))
-    (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) (modulusValue mem n) (inverseValue mem :: tailPointerValue mem :: low64Value mem :: low32Value mem :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hact hn32 hpos hpa hpaFit
-  have hpc : UInt256.ofNat 4508 + UInt256.ofNat 35 = UInt256.ofNat 4543 := by decide
-  simpa only [List.cons_append, List.nil_append, CiosCachedL1.state, CiosCachedL1.doneState, l1At, midState, hpc, modulusValue_l1 mem bi pa n n hn32, inverseValue_l1 mem bi pa n n hn32, tailPointerValue_l1 mem bi pa n n hn32, low64Value_l1 mem bi pa n n hn32, low32Value_l1 mem bi pa n n hn32] using h
+    (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) (modulusValue mem n) (inverseValue mem :: tailPointerValue mem :: low96Value mem :: low64Value mem :: low32Value mem :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hact hn32 hpos hpa hpaFit
+  have hpc : UInt256.ofNat 4511 + UInt256.ofNat 35 = UInt256.ofNat 4546 := by decide
+  simpa only [List.cons_append, List.nil_append, CiosCachedL1.state, CiosCachedL1.doneState, l1At, midState, hpc, modulusValue_l1 mem bi pa n n hn32, inverseValue_l1 mem bi pa n n hn32, tailPointerValue_l1 mem bi pa n n hn32, low96Value_l1 mem bi pa n n hn32, low64Value_l1 mem bi pa n n hn32, low32Value_l1 mem bi pa n n hn32] using h
 
 theorem run_l2Mac (pc : Nat) (w : Fin 33) (x tl ts : UInt256)
     (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 999) (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hk : k+1 < n)
     (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 8256 + 32 * (n - 2 - k))
     (hts : ts.toNat = 8256 + 32 * (n - 1 - k))
@@ -68,14 +69,14 @@ theorem run_l2Mac (pc : Nat) (w : Fin 33) (x tl ts : UInt256)
       some (l2At (pc+(w.val+35)) s mid bi mu c0 pa pb n i (k+1) pdst ret rest) := by
   have h := CiosCachedL2.run_step w s (UInt256.ofNat pc) mid bi mu c0 n k x tl ts hx htl hts
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat pa)
-    (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) (modulusValue mid n) (inverseValue mid :: tailPointerValue mid :: low64Value mid :: low32Value mid :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hact hn32 hk hpush
+    (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) (modulusValue mid n) (inverseValue mid :: tailPointerValue mid :: low96Value mid :: low64Value mid :: low32Value mid :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hact hn32 hk hpush
   simpa only [List.cons_append, List.nil_append, CiosCachedL2.state, l2At,
     Challenge.EvmProof.Word.ofNat_add_mod] using h
 
 theorem run_l2Low32 (pc : Nat) (x tl ts : UInt256)
     (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 999) (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hk : k+1 < n)
     (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 8256 + 32 * (n - 2 - k))
     (hts : ts.toNat = 8256 + 32 * (n - 1 - k))
@@ -84,7 +85,7 @@ theorem run_l2Low32 (pc : Nat) (x tl ts : UInt256)
       some (l2At (pc+34) s mid bi mu c0 pa pb n i (k+1) pdst ret rest) := by
   have h := CiosCachedLow32.run_cached_step s (UInt256.ofNat pc) mid bi mu c0 n k x tl ts hx hselect htl hts
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat pa)
-    (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) (modulusValue mid n) (inverseValue mid :: tailPointerValue mid :: low64Value mid :: low32Value mid :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hact hn32 hk (by rfl)
+    (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) (modulusValue mid n) (inverseValue mid :: tailPointerValue mid :: low96Value mid :: low64Value mid :: low32Value mid :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hact hn32 hk (by rfl)
   have hprog : l2Cached32Program tl ts = CiosCachedLow32.cachedProgram tl ts := rfl
   simpa only [hprog, List.cons_append, List.nil_append, CiosCachedL2.state, l2At,
     Challenge.EvmProof.Word.ofNat_add_mod] using h
@@ -92,7 +93,7 @@ theorem run_l2Low32 (pc : Nat) (x tl ts : UInt256)
 theorem run_l2Low64 (pc : Nat) (x tl ts : UInt256)
     (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 999) (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hk : k+1 < n)
     (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 8256 + 32 * (n - 2 - k))
     (hts : ts.toNat = 8256 + 32 * (n - 1 - k))
@@ -101,8 +102,25 @@ theorem run_l2Low64 (pc : Nat) (x tl ts : UInt256)
       some (l2At (pc+34) s mid bi mu c0 pa pb n i (k+1) pdst ret rest) := by
   have h := CiosCachedLow64.run_cached_step s (UInt256.ofNat pc) mid bi mu c0 n k x tl ts hx hselect htl hts
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat pa)
-    (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) (modulusValue mid n) (inverseValue mid :: tailPointerValue mid :: low64Value mid :: low32Value mid :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hact hn32 hk (by rfl)
+    (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) (modulusValue mid n) (inverseValue mid :: tailPointerValue mid :: low96Value mid :: low64Value mid :: low32Value mid :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hact hn32 hk (by rfl)
   have hprog : l2Cached64Program tl ts = CiosCachedLow64.cachedProgram tl ts := rfl
+  simpa only [hprog, List.cons_append, List.nil_append, CiosCachedL2.state, l2At,
+    Challenge.EvmProof.Word.ofNat_add_mod] using h
+
+theorem run_l2Low96 (pc : Nat) (x tl ts : UInt256)
+    (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
+    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 999) (hact : 296 ≤ s.activeWords.toNat)
+    (hn32 : n ≤ 32) (hk : k+1 < n)
+    (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 8256 + 32 * (n - 2 - k))
+    (hts : ts.toNat = 8256 + 32 * (n - 1 - k))
+    (hselect : x.toNat = 96) :
+    runInstructions (l2Cached96Program tl ts) (l2At pc s mid bi mu c0 pa pb n i k pdst ret rest) =
+      some (l2At (pc+34) s mid bi mu c0 pa pb n i (k+1) pdst ret rest) := by
+  have h := CiosCachedLow96.run_cached_step s (UInt256.ofNat pc) mid bi mu c0 n k x tl ts hx hselect htl hts
+    (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat pa)
+    (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) (modulusValue mid n) (inverseValue mid :: tailPointerValue mid :: low96Value mid :: low64Value mid :: low32Value mid :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hact hn32 hk (by rfl)
+  have hprog : l2Cached96Program tl ts = CiosCachedLow96.cachedProgram tl ts := rfl
   simpa only [hprog, List.cons_append, List.nil_append, CiosCachedL2.state, l2At,
     Challenge.EvmProof.Word.ofNat_add_mod] using h
 

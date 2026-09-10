@@ -87,6 +87,8 @@ def l2Program (w : Fin 33) (x tl ts : UInt256) : List Instr :=
 def entryProgram : List Instr :=
   [
    .op .JUMPDEST,
+   .push 1 96,
+   .op .MLOAD,
    .push 2 9440,
    .op .MLOAD,
    .push 2 9376,
@@ -107,17 +109,17 @@ def entryProgram : List Instr :=
    .push 1 150,
    .op .MUL,
    .op (.Dup ⟨0, by decide⟩),
-   .push 2 4243,
+   .push 2 4246,
    .op .ADD,
    .op (.Swap ⟨0, by decide⟩),
-   .push 2 4578,
+   .push 2 4581,
    .op .ADD,
    .op (.Swap ⟨3, by decide⟩),
-   .op (.Swap ⟨8, by decide⟩),
+   .op (.Swap ⟨9, by decide⟩),
    .push 0 0,
    .op .NOT,
    .op (.Swap ⟨3, by decide⟩),
-   .op (.Swap ⟨8, by decide⟩),
+   .op (.Swap ⟨9, by decide⟩),
    .push 2 9344,
    .op .MLOAD,
    .op (.Dup ⟨0, by decide⟩),
@@ -197,8 +199,9 @@ def tailProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4237,
+   .push 2 4240,
    .op .JUMPI,
+   .op .POP,
    .op .POP,
    .op .POP,
    .op .POP,
@@ -224,9 +227,12 @@ def joinProgram : List Instr :=
   [.op .JUMPDEST]
 
 def l2Cached32Program (tl ts : UInt256) : List Instr :=
-  [.op (.Dup ⟨14, by decide⟩)] ++ (l2Program 1 32 tl ts).drop 2
+  [.op (.Dup ⟨15, by decide⟩)] ++ (l2Program 1 32 tl ts).drop 2
 
 def l2Cached64Program (tl ts : UInt256) : List Instr :=
-  [.op (.Dup ⟨13, by decide⟩)] ++ (l2Program 1 64 tl ts).drop 2
+  [.op (.Dup ⟨14, by decide⟩)] ++ (l2Program 1 64 tl ts).drop 2
+
+def l2Cached96Program (tl ts : UInt256) : List Instr :=
+  [.op (.Dup ⟨13, by decide⟩)] ++ (l2Program 1 96 tl ts).drop 2
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCached

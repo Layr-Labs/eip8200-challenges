@@ -12,12 +12,12 @@ open Challenge.Modexp.Submission.Proofs.Fast CiosCached CiosCachedMacCore
 open CiosCachedL2
 
 def cachedLoadProgram : List Instr :=
-  [.op (.Dup ⟨13, by decide⟩), .op (.Dup ⟨9, by decide⟩)]
+  [.op (.Dup ⟨14, by decide⟩), .op (.Dup ⟨9, by decide⟩)]
 
 theorem run_cached_load
     (template : State) (pc value carry mu bi pbi paEnd pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hcache : rest[2]? = some value) :
+    (hcache : rest[3]? = some value) :
     runInstructions cachedLoadProgram
       (framed template pc
         ([carry, mu, bi, pbi, paEnd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) =
@@ -41,7 +41,7 @@ theorem run_cached_step (template : State) (pc : UInt256) (mem : ByteArray)
     (pbi paEnd pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
     (hactive : 296 ≤ template.activeWords.toNat) (hn : n ≤ 32) (hk : k+1 < n)
-    (hcache : rest[2]? = some (MachineState.readWord mem 64)) :
+    (hcache : rest[3]? = some (MachineState.readWord mem 64)) :
     runInstructions (cachedProgram tl ts)
       (state template pc mem bi mu c0 n k pbi paEnd pbEnd flag destination returnPC rest) =
     some (state template (pc + UInt256.ofNat 34) mem bi mu c0 n (k+1)
@@ -59,7 +59,7 @@ theorem run_cached_step (template : State) (pc : UInt256) (mem : ByteArray)
       st.activeWords := by simpa only [st, hts] using hactW
   have hpres : MachineState.readWord st.memory 64 = MachineState.readWord mem 64 :=
     readWord_l2Step mem mu c0 n 64 k hn (Or.inl (by decide))
-  have hcacheStep : rest[2]? = some (MachineState.readWord st.memory x.toNat) := by
+  have hcacheStep : rest[3]? = some (MachineState.readWord st.memory x.toNat) := by
     simpa only [hselect, hpres] using hcache
   have hl := run_cached_load st pc (MachineState.readWord st.memory x.toNat)
     (l2Step mem mu c0 n k).carry mu bi pbi paEnd pbEnd flag destination returnPC rest hrest hcacheStep
