@@ -16,21 +16,27 @@ open EvmSemantics.EVM
 
 def legacyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x42
+    pc := UInt256.ofNat 0x39
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
-      DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
+      DriverTrace.blockOffsetWord i, Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
 
 def sizeMatched (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
     pc := UInt256.ofNat 0x14ca
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
-      DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
+      DriverTrace.blockOffsetWord i, Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
 
 def sizeFailed (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
     pc := UInt256.ofNat 0xbf
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
-      DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
+      DriverTrace.blockOffsetWord i, Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
 
 def chunk0 := KnownInputData.checks.take 8
 def chunk1 := (KnownInputData.checks.drop 8).take 8
@@ -59,13 +65,17 @@ def accState (s : State) (input : ByteArray) (i pc n : Nat) : State :=
     pc := UInt256.ofNat pc
     stack := [accAfter input n, DriverTrace.messageOffsetWord i,
       UInt256.ofNat 0x3e7, DriverTrace.blockOffsetWord i,
-      Padding.paddedWord input] }
+      Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
 
 def selectorEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
     pc := UInt256.ofNat 0x17b1
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
-      DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
+      DriverTrace.blockOffsetWord i, Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
 
 def bodyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
@@ -73,7 +83,9 @@ def bodyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
       0x18f4, 0x191f, 0x194a, 0x1975, 0x19a0, 0x19cb, 0x19f6,
       0x1a21, 0x1a4c, 0x1a77, 0x1aa2, 0x1acd][i]!)
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
-      DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
+      DriverTrace.blockOffsetWord i, Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
 
 def knownAfter (i : Nat) : Array UInt32 :=
   match i with
@@ -121,7 +133,9 @@ def resultActiveWords (s : State) : UInt256 :=
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
     pc := UInt256.ofNat 0x66
-    stack := [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
+    stack := [DriverTrace.blockOffsetWord i, Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff]
     memory := resultMemory s.memory i
     activeWords := resultActiveWords s }
 

@@ -47,13 +47,13 @@ private theorem add_ofNat_assoc_add (u : UInt256) (a b : Nat) :
 
 def cachedInitial : List Instr :=
   [op .JUMPDEST, .push ⟨4, by decide⟩ maskWord,
-    .push ⟨31, by decide⟩ mask8,
-    .push ⟨30, by decide⟩ mask16,
+    .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨7, by decide⟩),
     .op (.Swap ⟨2, by decide⟩), dup1, op .MLOAD, swap1,
     push1 (UInt256.ofNat 32), op .ADD, op .MLOAD]
 
 theorem run_cachedInitial (s : State) (pc messageOffset returnPC : UInt256)
-    (rest : List UInt256) (hstack : rest.length < 1015) (hrun : s.halt = .Running) :
+    (rest : List UInt256) (hstack : rest.length < 1015) (hrun : s.halt = .Running)
+    (hm8 : rest[2]? = some mask8) (hm16 : rest[3]? = some mask16) :
     runInstrSeq cachedInitial (scheduleEntry s pc messageOffset returnPC rest) =
       some {s with
         pc := pcAfter pc cachedInitial
@@ -70,7 +70,7 @@ theorem run_cachedInitial (s : State) (pc messageOffset returnPC : UInt256)
   have hzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have h32 : UInt256.ofNat 32 + messageOffset = messageOffset + UInt256.ofNat 32 :=
     Word.word_add_comm _ _
-  simp [cachedInitial, scheduleEntry, inputWord0, inputWord1,
+  simp [hm8, hm16, cachedInitial, scheduleEntry, inputWord0, inputWord1,
     loadedActiveWords, activeAfterWord, op, push1, dup1, swap1,
     
     runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap, hswap1, hswap3, h32,
@@ -92,6 +92,7 @@ def fullTemplate : List Instr :=
 
 theorem run_fullTemplate (s : State) (pc messageOffset returnPC : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1015) (hrun : s.halt = .Running)
+    (hm8 : rest[2]? = some mask8) (hm16 : rest[3]? = some mask16)
     (hactive : 23 ≤ (loadedActiveWords s messageOffset).toNat) :
     runInstrSeq fullTemplate (scheduleEntry s pc messageOffset returnPC rest) =
       some {s with
@@ -99,7 +100,7 @@ theorem run_fullTemplate (s : State) (pc messageOffset returnPC : UInt256)
         stack := returnPC :: rest
         memory := normalizedMemory s.memory (scheduleWords s messageOffset)
         activeWords := loadedActiveWords s messageOffset} := by
-  have h1 := run_cachedInitial s pc messageOffset returnPC rest hstack hrun
+  have h1 := run_cachedInitial s pc messageOffset returnPC rest hstack hrun hm8 hm16
   have h2 := run_cachedReversedHalf
     {s with activeWords := loadedActiveWords s messageOffset}
     (pcAfter pc cachedInitial) (inputWord1 s messageOffset) 8
@@ -148,6 +149,7 @@ theorem run_fullTemplate (s : State) (pc messageOffset returnPC : UInt256)
 theorem run_fullTemplate_natural (s : State) (pc returnPC : UInt256)
     (p : Nat) (rest : List UInt256)
     (hstack : rest.length < 1015) (hrun : s.halt = .Running)
+    (hm8 : rest[2]? = some mask8) (hm16 : rest[3]? = some mask16)
     (hp : 736 ≤ p) (hbound : p + 64 < 2 ^ 256) :
     runInstrSeq fullTemplate (scheduleEntry s pc (UInt256.ofNat p) returnPC rest) =
       some {s with
@@ -155,7 +157,7 @@ theorem run_fullTemplate_natural (s : State) (pc returnPC : UInt256)
         stack := returnPC :: rest
         memory := normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
-  have h := run_fullTemplate s pc (UInt256.ofNat p) returnPC rest hstack hrun
+  have h := run_fullTemplate s pc (UInt256.ofNat p) returnPC rest hstack hrun hm8 hm16
     (loaded_active_ge23 s p hp hbound)
   rw [normalizedMemory_congr s.memory (scheduleWords s (UInt256.ofNat p))
     (PairedScheduleData.extractedWord s.memory p)
@@ -175,7 +177,7 @@ theorem fullTemplate_length : fullTemplate.length = 159 := by
 
 #print axioms fullTemplate_length
 
-theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 285 := by
+theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 224 := by
   rw [DenseScheduleTemplate.assembleBytes_length]
   norm_num [fullTemplate, cachedInitial, upperTemplate, lowerTemplate, cachedReversedHalf,
     cachedStage, endianFactorPush, endianFactor, PairedMask32Cache.halfTemplate,
@@ -277,6 +279,7 @@ theorem runLocatedBlock_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork fullTemplate)
     (s : State) (returnPC : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length < 1015) (hrun : s.halt = .Running)
+    (hm8 : rest[2]? = some mask8) (hm16 : rest[3]? = some mask16)
     (hp : 736 ≤ p) (hbound : p + 64 < 2 ^ 256) :
     Stepper.runLocatedBlock site.path
       (scheduleEntry s site.startPC (UInt256.ofNat p) returnPC rest) =
@@ -299,7 +302,7 @@ theorem runLocatedBlock_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
     rw [← site.instruction_eq]
     exact List.mem_map_of_mem hmem
   rw [hraw]
-  have h := run_fullTemplate_natural s site.startPC returnPC p rest hstack hrun hp hbound
+  have h := run_fullTemplate_natural s site.startPC returnPC p rest hstack hrun hm8 hm16 hp hbound
   rw [← hend] at h
   exact h
 
@@ -307,6 +310,7 @@ def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork fullTemplate)
     (s : State) (returnPC : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length < 1015) (hrun : s.halt = .Running)
+    (hm8 : rest[2]? = some mask8) (hm16 : rest[3]? = some mask16)
     (hp : 736 ≤ p) (hbound : p + 64 < 2 ^ 256)
     (hcode : s.executionEnv.code = artifact.code) (hfork : s.fork = fork)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -320,7 +324,7 @@ def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
   apply Stepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode
   · exact hfork
-  · exact runLocatedBlock_fullTemplate site s returnPC p rest hstack hrun hp hbound
+  · exact runLocatedBlock_fullTemplate site s returnPC p rest hstack hrun hm8 hm16 hp hbound
   · exact hrun
   · exact hnp
 
@@ -330,11 +334,7 @@ def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
 
 theorem fullTemplate_exactBytes : assembleBytes fullTemplate =
   (((([
-    0x5b, 0x63, 0xff, 0xff, 0xff, 0xff, 0x7e, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff,
-    0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff,
-    0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x7d, 0xff, 0xff, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0xff,
-    0xff, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0xff,
-    0xff, 0x00, 0x00, 0xff, 0xff, 0x92, 0x80, 0x51, 0x90, 0x60, 0x20, 0x01, 0x51] ++ [
+    0x5b, 0x63, 0xff, 0xff, 0xff, 0xff, 0x85, 0x87, 0x92, 0x80, 0x51, 0x90, 0x60, 0x20, 0x01, 0x51] ++ [
     0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x83, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
     0x10, 0x1c, 0x18, 0x85, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x61,
     0x01, 0xc0, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x84, 0x16, 0x61, 0x01, 0xe0, 0x52, 0x80, 0x60, 0xa0,
@@ -350,7 +350,7 @@ theorem fullTemplate_exactBytes : assembleBytes fullTemplate =
     0x16, 0x61, 0x01, 0xa0, 0x52]) ++ [
     0x5f, 0x61, 0x02, 0xc0, 0x52]) ++ [
     0x50, 0x50, 0x50]) := by
-  have h0 : assembleBytes cachedInitial = [91, 99, 255, 255, 255, 255, 126, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 125, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 146, 128, 81, 144, 96, 32, 1, 81] := by decide
+  have h0 : assembleBytes cachedInitial = [91, 99, 255, 255, 255, 255, 133, 135, 146, 128, 81, 144, 96, 32, 1, 81] := by decide
   have h1 : assembleBytes upperTemplate = [
     0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x83, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
     0x10, 0x1c, 0x18, 0x85, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x61,

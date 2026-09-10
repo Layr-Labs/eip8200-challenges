@@ -396,27 +396,33 @@ theorem runInstrSeq_fastPackTemplate
 
 theorem runInstrSeq_fastEndianStage8
     (s : State) (startPC value : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1020)
+    (hm8 : rest[2]? = some FastOutputTemplate.mask8)
+    (hrun : s.halt = .Running) :
     runInstrSeq fastEndianStage8
       { s with pc := startPC, stack := value :: rest } =
       some { s with
         pc := pcAfter startPC fastEndianStage8
         stack := DenseScheduleTemplate.packedStage value 8
           FastOutputTemplate.mask8 :: rest } := by
-  exact ClosedEndianMultiply.run_endian s startPC value 8
-    DenseScheduleTemplate.mask8 rest hstack (Or.inl ⟨rfl, rfl⟩) hrun
+  exact CachedEndianMultiply.run_endian s startPC value 8
+    DenseScheduleTemplate.mask8 rest hstack (Or.inl ⟨rfl, rfl⟩)
+    (by simpa using hm8) hrun
 
 theorem runInstrSeq_fastEndianStage16
     (s : State) (startPC value : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1020)
+    (hm16 : rest[3]? = some FastOutputTemplate.mask16)
+    (hrun : s.halt = .Running) :
     runInstrSeq fastEndianStage16
       { s with pc := startPC, stack := value :: rest } =
       some { s with
         pc := pcAfter startPC fastEndianStage16
         stack := DenseScheduleTemplate.packedStage value 16
           FastOutputTemplate.mask16 :: rest } := by
-  exact ClosedEndianMultiply.run_endian s startPC value 16
-    DenseScheduleTemplate.mask16 rest hstack (Or.inr ⟨rfl, rfl⟩) hrun
+  exact CachedEndianMultiply.run_endian s startPC value 16
+    DenseScheduleTemplate.mask16 rest hstack (Or.inr ⟨rfl, rfl⟩)
+    (by simpa using hm16) hrun
 
 theorem runInstrSeq_fastStoreAndSetup
     (s : State) (startPC value : UInt256) (rest : List UInt256)
@@ -458,7 +464,10 @@ theorem runInstrSeq_fastReturn
 
 theorem runInstrSeq_fastOutput_beforeReturn
     (s : State) (startPC : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1020)
+    (hm8 : rest[2]? = some FastOutputTemplate.mask8)
+    (hm16 : rest[3]? = some FastOutputTemplate.mask16)
+    (hrun : s.halt = .Running) :
     runInstrSeq fastOutputBeforeReturnTemplate
       { s with pc := startPC, stack := rest } =
       some (fastOutputBeforeReturnState s startPC rest) := by
@@ -477,13 +486,13 @@ theorem runInstrSeq_fastOutput_beforeReturn
   let t1 : State := afterFastEndian t0 t0.pc fastEndianStage8 8
     FastOutputTemplate.mask8 packed0 rest
   have h8 : runInstrSeq fastEndianStage8 t0 = some t1 := by
-    have h := runInstrSeq_fastEndianStage8 t0 t0.pc packed0 rest hstack
+    have h := runInstrSeq_fastEndianStage8 t0 t0.pc packed0 rest hstack hm8
       (by simpa [t0, afterFastPack] using hrun)
     simpa [t1, t0, packed0, afterFastEndian, afterFastPack] using h
   let t2 : State := afterFastEndian t1 t1.pc fastEndianStage16 16
     FastOutputTemplate.mask16 packed8 rest
   have h16 : runInstrSeq fastEndianStage16 t1 = some t2 := by
-    have h := runInstrSeq_fastEndianStage16 t1 t1.pc packed8 rest hstack
+    have h := runInstrSeq_fastEndianStage16 t1 t1.pc packed8 rest hstack hm16
       (by simpa [t1, t0, afterFastEndian, afterFastPack] using hrun)
     simpa [t2, t1, t0, packed8, afterFastEndian, afterFastPack] using h
   let t3 : State := afterFastStore t2 t2.pc packed16 rest
@@ -542,7 +551,10 @@ theorem runInstrSeq_fastOutput_beforeReturn
 
 theorem runInstrSeq_fastOutput
     (s : State) (startPC : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1020) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1020)
+    (hm8 : rest[2]? = some FastOutputTemplate.mask8)
+    (hm16 : rest[3]? = some FastOutputTemplate.mask16)
+    (hrun : s.halt = .Running) :
     runInstrSeq fastOutputTemplate
       { s with pc := startPC, stack := rest } =
       some (fastOutputReturned s startPC rest) := by
@@ -550,7 +562,7 @@ theorem runInstrSeq_fastOutput
   have hpre : runInstrSeq fastOutputBeforeReturnTemplate
       { s with pc := startPC, stack := rest } = some t := by
     simpa [t] using
-      (runInstrSeq_fastOutput_beforeReturn s startPC rest hstack hrun)
+      (runInstrSeq_fastOutput_beforeReturn s startPC rest hstack hm8 hm16 hrun)
   have hret : runInstrSeq fastOutputReturnTemplate t =
       some (afterFastReturn t t.pc rest) := by
     have h := runInstrSeq_fastReturn t t.pc rest hstack

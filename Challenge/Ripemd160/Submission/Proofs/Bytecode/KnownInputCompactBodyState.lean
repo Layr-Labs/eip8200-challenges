@@ -13,13 +13,17 @@ def preCopyState (s : State) (input : ByteArray) (i : Nat) : State :=
     pc := UInt256.ofNat 0x132e
     stack := [UInt256.ofNat 0, UInt256.ofNat (tableSource i), UInt256.ofNat 20,
       DriverTrace.messageOffsetWord i, UInt256.ofNat 0x436,
-      DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
+      DriverTrace.blockOffsetWord i, Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
 
 def copiedState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
     pc := UInt256.ofNat 0x132f
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x436,
-      DriverTrace.blockOffsetWord i, Padding.paddedWord input]
+      DriverTrace.blockOffsetWord i, Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff]
     activeWords := s.activeWordsAfterUInt256 0 20
     memory := MachineState.writeBytes s.memory
       (MachineState.readPadded s.executionEnv.code (tableSource i) 20) 0 }
@@ -61,7 +65,9 @@ def resultActiveWords (s : State) : UInt256 :=
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
     pc := UInt256.ofNat 0x436
-    stack := [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
+    stack := [DriverTrace.blockOffsetWord i, Padding.paddedWord input,
+      UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+      UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff]
     memory := resultMemory s i
     activeWords := resultActiveWords s }
 

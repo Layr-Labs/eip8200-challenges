@@ -13,10 +13,12 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open DirectCorrect
 
 def driverRest (input : ByteArray) : List UInt256 :=
-  [DriverTrace.blockOffsetWord (DriverTrace.blockCount input), Padding.paddedWord input]
+  [DriverTrace.blockOffsetWord (DriverTrace.blockCount input), Padding.paddedWord input,
+    UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+    UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff]
 
 def outputState (s : State) (input : ByteArray) : State :=
-  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x13dc) (driverRest input)
+  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 0x13de) (driverRest input)
 
 def outputBytes (s : State) : ByteArray :=
   MachineState.readPadded (FastOutputTrace.outputMemory s) 0 32
@@ -102,7 +104,8 @@ noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
       (outputState (seam.states (DriverTrace.blockCount input)) input) := by
   let final := seam.states (DriverTrace.blockCount input)
   have gout := FastOutputSite.gasSteps_fastOutput final (driverRest input)
-    (by simp [driverRest]) (seam.code _ (by omega)) (seam.fork _ (by omega))
+    (by simp [driverRest]) (by rfl) (by rfl)
+    (seam.code _ (by omega)) (seam.fork _ (by omega))
     (seam.running _ (by omega)) (seam.noPrecompile _ (by omega))
   exact (PaddingTrace.gasSteps_pad input hfit entryPrefix).trans
     ((DirectCorrect.gasSteps_driver input hfit seam).trans

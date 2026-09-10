@@ -23,7 +23,9 @@ open Challenge.Ripemd160
 open EvmSemantics EvmSemantics.EVM
 
 def driverRest (input : ByteArray) (i : Nat) : List UInt256 :=
-  [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
+  [DriverTrace.blockOffsetWord i, Padding.paddedWord input,
+    UInt256.ofNat 0x00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff,
+    UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff]
 
 def scheduleRest (input : ByteArray) (i : Nat) : List UInt256 :=
   [UInt256.ofNat 0x66] ++ driverRest input i
