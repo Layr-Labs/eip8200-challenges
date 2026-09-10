@@ -50,7 +50,7 @@ theorem run_size_target (s : State) (i : Nat)
     (hrun : s.halt = .Running) :
     run sizePath (DriverTrace.dispatchEntry s KnownInputData.targetInput i) =
       some (sizeMatched s KnownInputData.targetInput i) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x12dc = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 0xde5 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 2839 (by rfl)
   simp [sizePath, KnownInputPaths.opAt, KnownInputPaths.pushAt,
     KnownInputPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -73,7 +73,7 @@ theorem run_size_match (s : State) (input : ByteArray) (i : Nat)
       (UInt256.eq (UInt256.ofNat 1000) (UInt256.ofNat input.size)) := by
     rw [hsize]
     decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x12dc = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 0xde5 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 2839 (by rfl)
   simp [sizePath, KnownInputPaths.opAt, KnownInputPaths.pushAt,
     KnownInputPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -116,7 +116,7 @@ theorem run_size_fallback (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     run sizeFallbackPath (sizeFailed s input i) = some (legacyEntry s input i) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x129e = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 0xdc4 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 2810 (by rfl)
   simp [sizeFallbackPath, KnownInputPaths.opAt, KnownInputPaths.pushAt,
     KnownInputPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -242,7 +242,7 @@ theorem run_match_fallback (s : State) (input : ByteArray) (i : Nat)
     rw [show (0 : UInt256).toNat = 0 by decide]
     exact hzero
   have htrue : UInt256.isTrue (acc4 input) := hneNat
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x129e = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 0xdc4 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 2810 (by rfl)
   simp [matchBranchPath, KnownInputPaths.opAt, KnownInputPaths.pushAt,
     KnownInputPaths.wfOp, Challenge.EvmProof.Stepper.runLocatedBlock,
