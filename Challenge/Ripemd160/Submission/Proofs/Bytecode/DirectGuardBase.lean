@@ -41,14 +41,14 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def sizePath : List Located :=
   [opAt 0 .CALLDATASIZE,
-   opAt 1 (.Dup ⟨0, by decide⟩),
+   opAt 1 .JUMPDEST,
    pushAt 2 2 256,
    opAt 3 .EQ,
-   opAt 4 (.Swap ⟨0, by decide⟩),
-   opAt 5 (.Dup ⟨0, by decide⟩),
+   opAt 4 .CALLDATASIZE,
+   opAt 5 .JUMPDEST,
    pushAt 6 2 376,
    opAt 7 .EQ,
-   opAt 8 (.Swap ⟨0, by decide⟩),
+   opAt 8 .CALLDATASIZE,
    pushAt 9 2 1000,
    opAt 10 .EQ,
    opAt 11 .OR,
