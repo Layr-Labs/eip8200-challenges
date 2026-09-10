@@ -15,13 +15,16 @@ The lower-is-better score is gas summed over the public vectors.
 Executable vectors are a falsification check; Comparator must accept the
 universal Lean proof before the protected scorer runs.
 
-## Immediate-address cached CIOS kernel
+## Cached CIOS kernel and fixed conditional subtraction
 
-The four- and eight-limb Montgomery rows (bytes 4595 onward) address every
-accumulator limb `t[j]` and modulus limb `m[k]` through `PUSH2` immediates.
-The first loop keeps only the `a` cursor, the running carry and `b_i` above
-the row frame; the second loop keeps no pointer at all. The arithmetic
-schedule, memory map and the `Monpro` memory model are unchanged, so the
-existing `l1Step`/`l2Step`/`rowsMem` recursion is reused verbatim and only the
-`CiosCached*` frame, block and gas certificates were re-derived for the new
-stack layout. Bytes 0 through 4594 are byte-identical to the parent.
+The four- and eight-limb Montgomery kernels retain seven read-only values on
+stack across all rows: the Montgomery inverse, low modulus word, modulus
+words at addresses 128, 96, 64 and 32, and the low accumulator address.
+Entry loads are ordered so that three swaps establish the frame; exit removes
+all seven values before the shared conditional-subtraction calling convention.
+The existing arithmetic recurrence and generic fallback remain in place.
+
+Fixed-width subtraction uses the seven-instruction borrow combination and
+dedicated zero-borrow first limbs. Code addresses and Located-block certificates
+are bound to the complete bytecode artifact. Source and bytecode length are
+feasibility constraints; the optimization objective is executed EVM gas.
