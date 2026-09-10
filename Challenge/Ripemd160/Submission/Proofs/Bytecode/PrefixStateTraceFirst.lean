@@ -43,10 +43,10 @@ def firstMatchedState (s : State) (input : ByteArray) : State :=
       UInt256.ofNat 0x0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff] }
 
 theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 599 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 302 = 599 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 300 = 599 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 302 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 300 (by rfl)
   rw [hpc] at h
   exact h
 

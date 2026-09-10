@@ -10,8 +10,8 @@ open DenseScheduleTemplate
 
 def cachePath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨221, .push 30 mask16, by rfl, ⟨by decide, by decide⟩⟩,
-   ⟨222, .push 31 mask8, by rfl, ⟨by decide, by decide⟩⟩]
+  [⟨219, .push 30 mask16, by rfl, ⟨by decide, by decide⟩⟩,
+   ⟨220, .push 31 mask8, by rfl, ⟨by decide, by decide⟩⟩]
 
 def cachedState (s : State) : State :=
   { s with pc := UInt256.ofNat 468, stack := [mask8, mask16] }
@@ -21,10 +21,10 @@ theorem run_cache (s : State)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock cachePath s =
       some (cachedState s) := by
-  have hp1 : Artifact.submissionArtifact.instructionPC 221 = 405 := by
+  have hp1 : Artifact.submissionArtifact.instructionPC 219 = 405 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have hp2 : Artifact.submissionArtifact.instructionPC 222 = 436 := by
+  have hp2 : Artifact.submissionArtifact.instructionPC 220 = 436 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   simp [cachePath, cachedState, hpc, hstack, hrun, hp1, hp2,

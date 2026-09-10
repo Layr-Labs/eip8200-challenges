@@ -111,7 +111,7 @@ private theorem fastOutputBeforeReturn_advances
       (fastStoreAndSetup_advances instruction hstore) hrun
 
 private theorem fastOutput_slice :
-    (Artifact.submissionArtifact.instructions.drop 4021).take
+    (Artifact.submissionArtifact.instructions.drop 4019).take
         FastOutputTemplate.fastOutputBeforeReturnTemplate.length =
       FastOutputTemplate.fastOutputBeforeReturnTemplate := by
   rfl
@@ -121,10 +121,10 @@ def fastOutputSite :
       FastOutputTemplate.fastOutputBeforeReturnTemplate :=
   StackSiteBuilder.ofSlice
     (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    FastOutputTemplate.fastOutputBeforeReturnTemplate 4021
+    FastOutputTemplate.fastOutputBeforeReturnTemplate 4019
     fastOutput_slice
     (by
-      change 4021 + FastOutputTemplate.fastOutputBeforeReturnTemplate.length ≤
+      change 4019 + FastOutputTemplate.fastOutputBeforeReturnTemplate.length ≤
         Artifact.submissionInstructions.length
       rw [FastOutputTemplate.fastOutputBeforeReturnTemplate_length,
         Artifact.referenceInstructions_count]
@@ -136,14 +136,14 @@ def fastOutputSite :
 
 @[simp] theorem fastOutputSite_startPC :
     fastOutputSite.startPC = UInt256.ofNat 0x13da := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4021) =
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4019) =
     UInt256.ofNat 0x13da
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] theorem fastOutputSite_endPC :
     fastOutputSite.endPC = UInt256.ofNat 0x141a := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4068) =
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4066) =
     UInt256.ofNat 0x141a
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
@@ -168,12 +168,12 @@ private theorem pc_toNat_instructionPC (index : Nat) :
 
 def fastOutputReturn : LocatedSite Artifact.submissionArtifact .Osaka where
   located :=
-    { index := 4068
+    { index := 4066
       instruction := .op .RETURN
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4068)
-  pc_eq := pc_toNat_instructionPC 4068
+  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4066)
+  pc_eq := pc_toNat_instructionPC 4066
 
 def fastOutputReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -181,7 +181,7 @@ def fastOutputReturnPath :
 
 @[simp] theorem fastOutputReturn_pc :
     fastOutputReturn.pc = UInt256.ofNat 0x141a := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4068) =
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4066) =
     UInt256.ofNat 0x141a
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
@@ -270,12 +270,12 @@ private theorem runFastOutputReturn
           simpa [h] using hret_raw
         subst next
         rfl
-  have hpc_nat : t.pc.toNat = Artifact.submissionArtifact.instructionPC 4068 := by
+  have hpc_nat : t.pc.toNat = Artifact.submissionArtifact.instructionPC 4066 := by
     calc
       t.pc.toNat = fastOutputReturn.pc.toNat := by rw [hpc_t]
       _ = Artifact.submissionArtifact.instructionPC fastOutputReturn.located.index :=
         fastOutputReturn.pc_eq
-      _ = Artifact.submissionArtifact.instructionPC 4068 := by rfl
+      _ = Artifact.submissionArtifact.instructionPC 4066 := by rfl
   have hlocated :
       Stepper.runLocated fastOutputReturn.located t =
         some (FastOutputTrace.afterFastReturn t t.pc rest) := by

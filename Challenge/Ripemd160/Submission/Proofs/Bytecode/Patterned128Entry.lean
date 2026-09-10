@@ -30,27 +30,27 @@ private def sound (path : List Located) {s t : State}
    a taken JUMPI changes the PC to 368, so the next located instruction would
    fail the PC check. -/
 private def guardCheckPath : List Located :=
-  [DirectGuard.opAt 4108 .JUMPDEST,
-   DirectGuard.opAt 4109 .CALLDATASIZE,
-   DirectGuard.pushAt 4110 2 128,
-   DirectGuard.opAt 4111 .XOR,
+  [DirectGuard.opAt 4106 .JUMPDEST,
+   DirectGuard.opAt 4107 .CALLDATASIZE,
+   DirectGuard.pushAt 4108 2 128,
+   DirectGuard.opAt 4109 .XOR,
+   DirectGuard.pushAt 4110 0 0,
+   DirectGuard.opAt 4111 .CALLDATALOAD,
    DirectGuard.pushAt 4112 0 0,
-   DirectGuard.opAt 4113 .CALLDATALOAD,
-   DirectGuard.pushAt 4114 0 0,
-   DirectGuard.opAt 4115 .BYTE,
-   DirectGuard.pushAt 4116 2 7,
-   DirectGuard.opAt 4117 .XOR,
-   DirectGuard.opAt 4118 .OR,
-   DirectGuard.pushAt 4119 2 368,
-   DirectGuard.opAt 4120 .JUMPI]
+   DirectGuard.opAt 4113 .BYTE,
+   DirectGuard.pushAt 4114 2 7,
+   DirectGuard.opAt 4115 .XOR,
+   DirectGuard.opAt 4116 .OR,
+   DirectGuard.pushAt 4117 2 368,
+   DirectGuard.opAt 4118 .JUMPI]
 
 private def guardMatchSuffix : List Located :=
-  [DirectGuard.pushAt 4121 0 0,
-   DirectGuard.pushAt 4122 1 101,
-   DirectGuard.opAt 4123 .JUMP]
+  [DirectGuard.pushAt 4119 0 0,
+   DirectGuard.pushAt 4120 1 101,
+   DirectGuard.opAt 4121 .JUMP]
 
 private def guardMatchTail : List Located :=
-  [DirectGuard.opAt 61 .JUMPDEST, DirectGuard.opAt 62 .POP]
+  [DirectGuard.opAt 59 .JUMPDEST, DirectGuard.opAt 60 .POP]
 
 private def guardJumpState (input : ByteArray) : State :=
   { DirectGuard.guardEntry input with

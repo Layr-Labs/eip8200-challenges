@@ -115,14 +115,14 @@ def returnedState (input : ByteArray) : State :=
 
 theorem run_setup (input : ByteArray) :
     run setupPath (atPC input 0x67) = some (loopState input 0 0) := by
-  have hpc3326 : Artifact.submissionArtifact.instructionPC 64 = 105 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3327 : Artifact.submissionArtifact.instructionPC 65 = 106 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3328 : Artifact.submissionArtifact.instructionPC 66 = 107 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3330 : Artifact.submissionArtifact.instructionPC 68 = 141 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3331 : Artifact.submissionArtifact.instructionPC 69 = 142 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3332 : Artifact.submissionArtifact.instructionPC 70 = 144 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3333 : Artifact.submissionArtifact.instructionPC 71 = 145 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3335 : Artifact.submissionArtifact.instructionPC 73 = 147 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3326 : Artifact.submissionArtifact.instructionPC 62 = 105 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3327 : Artifact.submissionArtifact.instructionPC 63 = 106 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3328 : Artifact.submissionArtifact.instructionPC 64 = 107 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3330 : Artifact.submissionArtifact.instructionPC 66 = 141 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3331 : Artifact.submissionArtifact.instructionPC 67 = 142 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3332 : Artifact.submissionArtifact.instructionPC 68 = 144 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3333 : Artifact.submissionArtifact.instructionPC 69 = 145 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3335 : Artifact.submissionArtifact.instructionPC 71 = 147 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := rfl
   have hhigh := CompactGuardConstants.repeated_high_ofNat
   simp only [M, m8] at hhigh
@@ -189,7 +189,7 @@ theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 3
       Nat.mod_eq_of_lt (by norm_num : 224 < 2 ^ 256), hval] at hn
     exact h hn.symm
   have hdest : Decode.isValidJumpDest submissionBytecode 216 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 133 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 131 (by rfl)
   have hdestN : Decode.isValidJumpDest submissionBytecode
       (UInt256.ofNat 216).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
