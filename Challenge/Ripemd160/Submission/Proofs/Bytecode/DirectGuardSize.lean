@@ -45,7 +45,7 @@ theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
   change run sizePath (PatternedScan.stS input 0 []) =
     some (PatternedScan.stS input 5178 [])
   have hdest : Decode.isValidJumpDest submissionBytecode 5178 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 4158 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 4156 (by rfl)
   have hprefix :
       run
           [opAt 0 .CALLDATASIZE, pushAt 1 3 256, opAt 2 .EQ,
