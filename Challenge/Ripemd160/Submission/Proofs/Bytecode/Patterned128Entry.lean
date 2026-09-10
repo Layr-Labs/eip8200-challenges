@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128GuardTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardSize
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
 
@@ -32,15 +33,15 @@ private def guardCheckPath : List Located :=
   [DirectGuard.opAt 4116 .JUMPDEST,
    DirectGuard.opAt 4117 .CALLDATASIZE,
    DirectGuard.pushAt 4118 1 128,
-   DirectGuard.opAt 4119 .EQ,
-   DirectGuard.opAt 4120 .ISZERO,
+   DirectGuard.opAt 4119 .XOR,
+   DirectGuard.opAt 4120 .JUMPDEST,
    DirectGuard.pushAt 4121 0 0,
    DirectGuard.opAt 4122 .CALLDATALOAD,
    DirectGuard.pushAt 4123 0 0,
    DirectGuard.opAt 4124 .BYTE,
    DirectGuard.pushAt 4125 1 7,
-   DirectGuard.opAt 4126 .EQ,
-   DirectGuard.opAt 4127 .ISZERO,
+   DirectGuard.opAt 4126 .XOR,
+   DirectGuard.opAt 4127 .JUMPDEST,
    DirectGuard.opAt 4128 .OR,
    DirectGuard.pushAt 4129 2 368,
    DirectGuard.opAt 4130 .JUMPI]
@@ -58,123 +59,17 @@ private def guardJumpState (input : ByteArray) : State :=
     pc := UInt256.ofNat 101
     stack := [UInt256.ofNat 0] }
 
-private theorem firstByte_eq_byteAt (input : ByteArray) :
-    UInt256.byteAt (UInt256.ofNat 0) (MachineState.readWord input 0) =
-      UInt256.ofNat (DirectGuard.firstByte input) := by
-  simpa [DirectGuard.firstByte] using
-    (Challenge.EvmProof.Bytes.byteAt_zero_readWord input 0)
-
-private theorem guard_byte_eq_zero (input : ByteArray)
-    (hbyte : DirectGuard.firstByte input ≠ 7) :
-    UInt256.eq (UInt256.ofNat 7)
-        (UInt256.byteAt (UInt256.ofNat 0) (MachineState.readWord input 0)) =
-      UInt256.ofNat 0 := by
-  rw [firstByte_eq_byteAt]
-  unfold UInt256.eq
-  have hlt : DirectGuard.firstByte input < 2 ^ 256 := by
-    unfold DirectGuard.firstByte
-    exact Nat.lt_trans (YulSemantics.EVM.byteFrom input.toList 0).toNat_lt
-      (by norm_num)
-  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.word_toNat_ofNat,
-    Nat.mod_eq_of_lt (by norm_num), Nat.mod_eq_of_lt hlt]
-  simp [Ne.symm hbyte]
-
-private theorem guard_byte_eq_one (input : ByteArray)
-    (hbyte : DirectGuard.firstByte input = 7) :
-    UInt256.eq (UInt256.ofNat 7)
-        (UInt256.byteAt (UInt256.ofNat 0) (MachineState.readWord input 0)) =
-      UInt256.ofNat 1 := by
-  rw [firstByte_eq_byteAt]
-  unfold UInt256.eq
-  simp [hbyte]
-
-private theorem guard_fallback_dest :
-    Decode.isValidJumpDest submissionBytecode 368 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 205 (by rfl)
-
-private theorem guard_match_dest :
-    Decode.isValidJumpDest submissionBytecode 101 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 61 (by rfl)
-
 private theorem run_guard_fail (input : ByteArray) (hfit : CalldataFits input)
     (hbad : input.size ≠ 128 ∨ DirectGuard.firstByte input ≠ 7) :
     DirectGuard.run guardCheckPath (DirectGuard.guardEntry input) =
       some (DirectGuard.fallbackState input) := by
-  have hlt : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
-  rcases hbad with hsize | hbyte
-  · have esize := DirectGuard.size_eq_zero input 128 hlt (by norm_num) hsize
-    by_cases hbyteEq :
-        ((UInt256.ofNat 7).eq (UInt256.ofNat (DirectGuard.firstByte input))).toNat = 0
-    · simp (config := { decide := true })
-        [guardCheckPath, DirectGuard.opAt, DirectGuard.pushAt, DirectGuard.wfOp,
-         DirectGuard.guardEntry, DirectGuard.fallbackState, DirectGuard.atPC,
-         esize, hbyteEq, guard_fallback_dest, UInt256.isTrue, UInt256.lor,
-         UInt256.isZero, List.exchange, Challenge.EvmProof.Stepper.runLocatedBlock,
-         Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-         Challenge.EvmProof.Word.literal_eq_ofNat,
-         Challenge.EvmProof.Word.succ_ofNat_mod,
-         Challenge.EvmProof.Word.ofNat_add_mod,
-         Challenge.EvmProof.Word.word_toNat_ofNat, firstByte_eq_byteAt]
-    · simp (config := { decide := true })
-        [guardCheckPath, DirectGuard.opAt, DirectGuard.pushAt, DirectGuard.wfOp,
-         DirectGuard.guardEntry, DirectGuard.fallbackState, DirectGuard.atPC,
-         esize, hbyteEq, guard_fallback_dest, UInt256.isTrue, UInt256.lor,
-         UInt256.isZero, List.exchange, Challenge.EvmProof.Stepper.runLocatedBlock,
-         Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-         Challenge.EvmProof.Word.literal_eq_ofNat,
-         Challenge.EvmProof.Word.succ_ofNat_mod,
-         Challenge.EvmProof.Word.ofNat_add_mod,
-         Challenge.EvmProof.Word.word_toNat_ofNat, firstByte_eq_byteAt]
-  · have ebyte := guard_byte_eq_zero input hbyte
-    have ebyte' :
-        UInt256.eq (UInt256.ofNat 7)
-            (UInt256.ofNat (DirectGuard.firstByte input)) = UInt256.ofNat 0 := by
-      simpa only [firstByte_eq_byteAt] using ebyte
-    by_cases hsizeEq :
-        ((UInt256.ofNat 128).eq (UInt256.ofNat input.size)).toNat = 0
-    · simp (config := { decide := true })
-        [guardCheckPath, DirectGuard.opAt, DirectGuard.pushAt, DirectGuard.wfOp,
-         DirectGuard.guardEntry, DirectGuard.fallbackState, DirectGuard.atPC,
-         ebyte', hsizeEq, guard_fallback_dest, UInt256.isTrue, UInt256.lor,
-         UInt256.isZero, List.exchange, Challenge.EvmProof.Stepper.runLocatedBlock,
-         Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-         Challenge.EvmProof.Word.literal_eq_ofNat,
-         Challenge.EvmProof.Word.succ_ofNat_mod,
-         Challenge.EvmProof.Word.ofNat_add_mod,
-         Challenge.EvmProof.Word.word_toNat_ofNat, firstByte_eq_byteAt]
-    · simp (config := { decide := true })
-        [guardCheckPath, DirectGuard.opAt, DirectGuard.pushAt, DirectGuard.wfOp,
-         DirectGuard.guardEntry, DirectGuard.fallbackState, DirectGuard.atPC,
-         ebyte', hsizeEq, guard_fallback_dest, UInt256.isTrue, UInt256.lor,
-         UInt256.isZero, List.exchange, Challenge.EvmProof.Stepper.runLocatedBlock,
-         Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-         Challenge.EvmProof.Word.literal_eq_ofNat,
-         Challenge.EvmProof.Word.succ_ofNat_mod,
-         Challenge.EvmProof.Word.ofNat_add_mod,
-         Challenge.EvmProof.Word.word_toNat_ofNat, firstByte_eq_byteAt]
+  exact Patterned128GuardTrace.run_guard_fail input hfit hbad
 
-private theorem run_guard_match_helper (input : ByteArray) (_hfit : CalldataFits input)
+private theorem run_guard_match_helper (input : ByteArray) (hfit : CalldataFits input)
     (hsize : input.size = 128) (hbyte : DirectGuard.firstByte input = 7) :
     DirectGuard.run (guardCheckPath ++ guardMatchSuffix)
       (DirectGuard.guardEntry input) = some (guardJumpState input) := by
-  have esize := DirectGuard.size_eq_one input 128 hsize
-  have ebyte := guard_byte_eq_one input hbyte
-  have ebyte' :
-      UInt256.eq (UInt256.ofNat 7)
-          (UInt256.ofNat (DirectGuard.firstByte input)) = UInt256.ofNat 1 := by
-    simpa only [firstByte_eq_byteAt] using ebyte
-  simp (config := { decide := true })
-    [guardCheckPath, guardMatchSuffix, DirectGuard.opAt, DirectGuard.pushAt,
-     DirectGuard.wfOp, DirectGuard.guardEntry, guardJumpState,
-     DirectGuard.atPC, esize, ebyte', guard_match_dest, UInt256.isTrue,
-     UInt256.lor, UInt256.isZero, List.exchange,
-     Challenge.EvmProof.Stepper.runLocatedBlock,
-     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     Challenge.EvmProof.Word.literal_eq_ofNat,
-     Challenge.EvmProof.Word.succ_ofNat_mod,
-     Challenge.EvmProof.Word.ofNat_add_mod,
-     Challenge.EvmProof.Word.word_toNat_ofNat, firstByte_eq_byteAt]
+  exact Patterned128GuardTrace.run_guard_match_helper input hfit hsize hbyte
 
 private theorem run_guard_match_tail (input : ByteArray) :
     DirectGuard.run guardMatchTail (guardJumpState input) =
