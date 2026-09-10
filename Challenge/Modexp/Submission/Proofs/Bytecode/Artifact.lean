@@ -27,7 +27,7 @@ open YulEvmCompiler
 
 def submissionInstructions : List Instr :=
 [
-  YulEvmCompiler.Instr.push 2 5267,
+  YulEvmCompiler.Instr.push 2 5293,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
@@ -2713,8 +2713,8 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 3 }),
   YulEvmCompiler.Instr.push 1 1,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.EQ,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
+  YulEvmCompiler.Instr.op EvmSemantics.Operation.XOR,
+  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.push 2 3761,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.push 2 9472,
@@ -2723,8 +2723,8 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 0 0,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.BYTE,
   YulEvmCompiler.Instr.push 1 3,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.EQ,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
+  YulEvmCompiler.Instr.op EvmSemantics.Operation.XOR,
+  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.push 2 3761,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.push 1 1,
@@ -2737,8 +2737,8 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 1 232,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.SHR,
   YulEvmCompiler.Instr.push 3 65537,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.EQ,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
+  YulEvmCompiler.Instr.op EvmSemantics.Operation.XOR,
+  YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
   YulEvmCompiler.Instr.push 2 3761,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.push 1 16,
@@ -3821,18 +3821,17 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.SUB,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.XOR,
-  YulEvmCompiler.Instr.push 2 5261,
+  YulEvmCompiler.Instr.push 2 5287,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
   YulEvmCompiler.Instr.push 32 21888242871839275222246405745257275088696311157297823662689037894645226208583,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.EQ,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
-  YulEvmCompiler.Instr.push 5 4294968272,
-  YulEvmCompiler.Instr.op EvmSemantics.Operation.NOT,
+  YulEvmCompiler.Instr.push 32 115792089237316195423570985008687907853269984665640564039457584007908834671663,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.EQ,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.OR,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-  YulEvmCompiler.Instr.push 2 5261,
+  YulEvmCompiler.Instr.push 2 5287,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 4 }),
   YulEvmCompiler.Instr.op EvmSemantics.Operation.CALLDATALOAD,
@@ -3872,7 +3871,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.push 1 32,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.XOR,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.OR,
-  YulEvmCompiler.Instr.push 2 5315,
+  YulEvmCompiler.Instr.push 2 5341,
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI,
   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
   YulEvmCompiler.Instr.push 1 96,
@@ -3897,7 +3896,7 @@ def submissionInstructions : List Instr :=
   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP
 ]
 
-theorem submissionInstructions_count : submissionInstructions.length = 3868 := by
+theorem submissionInstructions_count : submissionInstructions.length = 3867 := by
   decide
 
 theorem assemble_submissionInstructions :
@@ -4007,32 +4006,32 @@ private def fermat_load : WindowTwentyOneBinding.Block submissionArtifact .Osaka
 private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5181 FermatProgram.exponentXorProgram :=
   WindowTwentyOneSlice.block allWellFormed 3788 8 5181 FermatProgram.exponentXorProgram (by decide) (by rfl) (by rfl) (by decide)
 private def fermat_prime : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5192 FermatProgram.primeFilterProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3796 11 5192 FermatProgram.primeFilterProgram (by decide) (by rfl) (by rfl) (by decide)
-private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5242 FermatProgram.returnProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3807 16 5242 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
-private def fermat_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5261 FermatProgram.missProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3823 4 5261 FermatProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3796 10 5192 FermatProgram.primeFilterProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5268 FermatProgram.returnProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3806 16 5268 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5287 FermatProgram.missProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3822 4 5287 FermatProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
 def fermatPaths : FermatProgram.Paths submissionArtifact .Osaka where
   load := fermat_load
   exponent := fermat_exponent
   prime := fermat_prime
   result := fermat_result
   miss := fermat_miss
-  missJump := by exact isValidJumpDest_index 3823 (by rfl)
+  missJump := by exact isValidJumpDest_index 3822 (by rfl)
   legacyJump := by exact isValidJumpDest_index 1850 (by rfl)
 
-private def earlyWord_guard : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5267 EarlyWordProgram.guardProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3827 20 5267 EarlyWordProgram.guardProgram (by decide) (by rfl) (by rfl) (by decide)
-private def earlyWord_hit : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5294 EarlyWordProgram.hitProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3847 15 5294 EarlyWordProgram.hitProgram (by decide) (by rfl) (by rfl) (by decide)
-private def earlyWord_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5315 EarlyWordProgram.missProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3862 6 5315 EarlyWordProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
+private def earlyWord_guard : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5293 EarlyWordProgram.guardProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3826 20 5293 EarlyWordProgram.guardProgram (by decide) (by rfl) (by rfl) (by decide)
+private def earlyWord_hit : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5320 EarlyWordProgram.hitProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3846 15 5320 EarlyWordProgram.hitProgram (by decide) (by rfl) (by rfl) (by decide)
+private def earlyWord_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5341 EarlyWordProgram.missProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3861 6 5341 EarlyWordProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
 def earlyWordPaths : EarlyWordProgram.Paths submissionArtifact .Osaka where
   guard := earlyWord_guard
   hit := earlyWord_hit
   miss := earlyWord_miss
-  helperJump := by exact isValidJumpDest_index 3827 (by rfl)
-  missJump := by exact isValidJumpDest_index 3862 (by rfl)
+  helperJump := by exact isValidJumpDest_index 3826 (by rfl)
+  missJump := by exact isValidJumpDest_index 3861 (by rfl)
   hitJump := by exact isValidJumpDest_index 3785 (by rfl)
   legacyJump := by exact isValidJumpDest_index 977 (by rfl)
 
