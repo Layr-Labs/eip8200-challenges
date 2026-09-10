@@ -29,7 +29,7 @@ abbrev Hnp (s : State) : Prop :=
 /-- Full nonempty-dispatcher execution certificate.
 
 For block zero this composes the first-word certificate with the finish
-certificate (word-1 guard, depth-2 rung, install).  For later blocks it uses
+certificate (word-1 guard and one-block install). For later blocks it uses
 the checked later-path certificate. -/
 def gasSteps_dispatch (s : State) (input : ByteArray) (i : Nat)
     (hfit : Challenge.Ripemd160.CalldataFits input)
@@ -40,7 +40,7 @@ def gasSteps_dispatch (s : State) (input : ByteArray) (i : Nat)
     (hnp : Hnp s) :
     GasSteps (FastEmptyBlock.nonemptyEntry s input i)
       (if i = 0 ∧ Matched input then
-        (if Matched2 input then resultState2 (copied s) input else resultState (copied s) input i)
+        resultState (copied s) input i
         else DriverTrace.compressEntry (prepared s i) input i) := by
   by_cases hzero : i = 0
   · subst i

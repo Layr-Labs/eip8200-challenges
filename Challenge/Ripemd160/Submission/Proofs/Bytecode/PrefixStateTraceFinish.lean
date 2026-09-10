@@ -25,7 +25,7 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 private def frame (s : State) (input : ByteArray) (pc : Nat) : State :=
   { s with
     pc := UInt256.ofNat pc
-    stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 461,
+    stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 469,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
 /-- Entry at the second word comparison in the checked prefix. -/
@@ -44,27 +44,27 @@ def hit2Entry (s : State) (input : ByteArray) : State := frame s input 5163
 def hit1Entry (s : State) (input : ByteArray) : State := frame s input 5210
 
 /-- The generic compression target of the guard is a valid jump destination. -/
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 528 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 295 = 528 := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 536 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 300 = 536 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 295 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 300 (by rfl)
   rw [hpc] at h
   exact h
 
 /-- The `H1` install entry is a valid jump destination. -/
-theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5210 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 4152 = 5210 := PrefixStatePaths.pc4126
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4152 (by rfl)
+theorem jumpDest_hit1 : Decode.isValidJumpDest submissionBytecode 5218 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 4157 = 5218 := PrefixStatePaths.pc4126
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4157 (by rfl)
   rw [hpc] at h
   exact h
 
 /-- The driver's `102` continuation is a valid jump destination. -/
-theorem jumpDest_driver : Decode.isValidJumpDest submissionBytecode 461 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 262 = 461 := by
+theorem jumpDest_driver : Decode.isValidJumpDest submissionBytecode 469 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 267 = 469 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 262 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 267 (by rfl)
   rw [hpc] at h
   exact h
 
