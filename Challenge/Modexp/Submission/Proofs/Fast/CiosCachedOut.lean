@@ -1,6 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedRowFrames
 
 set_option warningAsError true
+set_option linter.unusedSimpArgs false
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 
@@ -16,14 +17,20 @@ set_option linter.unusedVariables false in
 set_option linter.unusedSimpArgs false in
 theorem run_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
     (hact : 296 ≤ s.activeWords.toNat)
     (_hn : 2 ≤ n) (_hn32 : n ≤ 32) (hi : i < n)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472) :
     runInstructions outProgram
       (outState s mem pa pb n i pdst ret rest) =
-      some (l1At 4556 s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) := by
+      some (l1At 4220 s mem (rowBi mem pb n i) pa pb n i 0 pdst ret rest) := by
+  have hExtra9 : rest.length + 9 < 1024 := by omega
+  have hExtra10 : rest.length + 10 < 1024 := by omega
+  have hExtra11 : rest.length + 11 < 1024 := by omega
+  have hExtra12 : rest.length + 12 < 1024 := by omega
+  have hExtra13 : rest.length + 13 < 1024 := by omega
+  have hExtra14 : rest.length + 14 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
@@ -38,7 +45,7 @@ theorem run_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
       (pb + 32 * (n - 1 - i)) 32) = s.activeWords :=
     activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 800000 })
-    [outProgram, runInstructions,
+    [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, outProgram, runInstructions,
       Challenge.EvmProof.Stepper.runInstr,
       outState, l1At, l1Step, rowBi,
       hc8, hc9, hc10, hc11, hzero, hpbi, hactB,

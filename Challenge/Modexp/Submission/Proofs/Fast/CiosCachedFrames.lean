@@ -21,13 +21,25 @@ def isFour (n : Nat) : UInt256 :=
 @[simp] theorem isFour_four : isFour 4 = UInt256.ofNat 1 := by decide
 @[simp] theorem isFour_eight : isFour 8 = UInt256.ofNat 0 := by decide
 
+
+def l1Target (n : Nat) : UInt256 :=
+  UInt256.ofNat 4222 + UInt256.ofNat 150 * isFour n
+
+def l2Target (n : Nat) : UInt256 :=
+  UInt256.ofNat 4567 + UInt256.ofNat 150 * isFour n
+
+@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 4372 := by decide
+@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 4222 := by decide
+@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 4717 := by decide
+@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 4567 := by decide
+
 /-- Before first-loop step `j`: carry and `b_i` above the honest cached base. -/
 def l1At (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc
            stack := [(l1Step mem bi pa n j).carry, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), isFour n, negative32, allOnes, pdst, ret] ++ rest
+                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := (l1Step mem bi pa n j).memory }
 
 /-- Before second-loop step `k` of row `i`: only the carry and `mu` above
@@ -37,7 +49,7 @@ def l2At (pc : Nat) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
   { s with pc := UInt256.ofNat pc
            stack := [(l2Step mid mu c0 n k).carry, mu, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), isFour n, negative32, allOnes, pdst, ret] ++ rest
+                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := (l2Step mid mu c0 n k).memory }
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCached

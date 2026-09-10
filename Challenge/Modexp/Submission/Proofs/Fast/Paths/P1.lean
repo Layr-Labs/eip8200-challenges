@@ -13,16 +13,16 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 1028..1038, pc 1385..1399. -/
 def blk1028 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1021 1 32,
-   opAt 1022 (.Dup ⟨6, by decide⟩),
-   opAt 1023 (.Dup ⟨2, by decide⟩),
-   opAt 1024 .ADD,
-   opAt 1025 .SUB,
-   opAt 1026 .CALLDATALOAD,
-   pushAt 1027 1 1,
-   opAt 1028 .AND,
-   opAt 1029 .ISZERO,
-   pushAt 1030 2 1881,
-   opAt 1031 .JUMPI]
+  [pushAt 1027 1 32,
+   opAt 1028 (.Dup ⟨6, by decide⟩),
+   opAt 1029 (.Dup ⟨2, by decide⟩),
+   opAt 1030 .ADD,
+   opAt 1031 .SUB,
+   opAt 1032 .CALLDATALOAD,
+   pushAt 1033 1 1,
+   opAt 1034 .AND,
+   opAt 1035 .ISZERO,
+   pushAt 1036 2 1826,
+   opAt 1037 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

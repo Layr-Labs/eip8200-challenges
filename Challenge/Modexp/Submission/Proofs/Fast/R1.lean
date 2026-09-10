@@ -87,7 +87,7 @@ def tnMem (mem : ByteArray) : ByteArray :=
 /-- Subroutine entry, pc 2539, stack `[px, ret]`. -/
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2505
+  { s with pc := UInt256.ofNat 2322
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
@@ -95,14 +95,14 @@ def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 stack and memory exactly as they arrived. -/
 def dblState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1892
+  { s with pc := UInt256.ofNat 1837
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
 /-- Between the test and the store, pc 2550. -/
 def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2516
+  { s with pc := UInt256.ofNat 2333
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
@@ -111,7 +111,7 @@ def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 store does not grow memory. -/
 def csubState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2282
+  { s with pc := UInt256.ofNat 2220
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := tnMem mem }
 
@@ -200,7 +200,7 @@ theorem run_test_fallback (s : State) (mem : ByteArray) (px : Nat) (ret : UInt25
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     entryState, dblState, fastPC21, hc2, hc3, hc4, hcode, hrun, hcond, htrue,
     hzeroNat, hawL,
-    jumpDest1911,
+    jumpDest1837,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -229,7 +229,7 @@ theorem run_fast (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     fastState, csubState, tnMem, fastPC21, hc2, hc3, hc4, hcode, hrun,
-    jumpDest2642, haw',
+    jumpDest2220, haw',
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,

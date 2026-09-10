@@ -13,7 +13,7 @@ def guardProgram : List Instr :=
    .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .MLOAD,
    .push ⟨1, by decide⟩ (UInt256.ofNat 255), .op .SHR,
    .op .AND, .op .ISZERO,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 3387), .op .JUMPI]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 3184), .op .JUMPI]
 
 def guardWord (memory : ByteArray) (n bsize : Nat) : UInt256 :=
   UInt256.isZero (UInt256.land
@@ -45,7 +45,7 @@ theorem guardWord_eq (memory : ByteArray) (n bsize : Nat)
 
 theorem run_guard_word (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hactive : 298 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3387 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3184 = true) :
     runInstructions guardProgram (entryState s memory n bsize esize msize) =
       some (if UInt256.isTrue (guardWord memory n bsize)
         then fallbackState s memory n bsize esize msize
@@ -68,7 +68,7 @@ theorem run_guard_word (s : State) (memory : ByteArray)
 theorem run_guard (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 32)
     (hb : bsize < 2 ^ 256) (hactive : 298 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3387 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3184 = true) :
     runInstructions guardProgram (entryState s memory n bsize esize msize) =
       some (if Matches memory n bsize
         then copyState s memory n bsize esize msize

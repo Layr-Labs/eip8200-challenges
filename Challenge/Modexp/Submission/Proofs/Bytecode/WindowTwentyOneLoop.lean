@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
 
 def iterationProgram : List Instr :=
-  [.op .JUMPDEST] ++ WindowTwentyOneBody.program ++ WindowTwentyOneTail.program (UInt256.ofNat 2789)
+  [.op .JUMPDEST] ++ WindowTwentyOneBody.program ++ WindowTwentyOneTail.program (UInt256.ofNat 2618)
 
 def repeatProgram : Nat → List Instr
   | 0 => []
@@ -17,7 +17,7 @@ def repeatProgram : Nat → List Instr
 
 def loopState (template : State) (base modulus exponent : UInt256)
     (count : Nat) (rest : List UInt256) : State :=
-  WindowTwentyOneGroup.state template (UInt256.ofNat 2789) base modulus
+  WindowTwentyOneGroup.state template (UInt256.ofNat 2618) base modulus
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count))
     (UInt256.shiftLeft exponent (UInt256.ofNat (4 * (1 + 21 * count))))
     (UInt256.ofNat (2 - count)) 0 rest
@@ -25,7 +25,7 @@ def loopState (template : State) (base modulus exponent : UInt256)
 /-- The final decrement wraps, but no instruction reads this dead counter again. -/
 def finishState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
-  WindowTwentyOneGroup.state template (UInt256.ofNat 3252) base modulus
+  WindowTwentyOneGroup.state template (UInt256.ofNat 3081) base modulus
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63)
     (UInt256.shiftLeft
       (UInt256.shiftLeft exponent (UInt256.ofNat 172)) (UInt256.ofNat 84))
@@ -41,7 +41,7 @@ private theorem advancePC_ofNat (count pc : Nat) :
 theorem run_continue (template : State) (base modulus exponent : UInt256)
     (count : Nat) (hcount : count < 2)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 2789 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 2618 = true) :
     runInstructions iterationProgram (loopState template base modulus exponent count rest) =
     some (loopState template base modulus exponent (count + 1) rest) := by
   let a := WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count)
@@ -62,11 +62,11 @@ theorem run_continue (template : State) (base modulus exponent : UInt256)
       UInt256.shiftLeft exponent (UInt256.ofNat (4 * (1 + 21 * (count + 1)))) := by
     rw [WindowTwentyOneTail.shift_twentyOne exponent (1 + 21 * count) (by omega)]
     congr 2
-  have hh := WindowTwentyOneTail.run_head template (UInt256.ofNat 2789)
+  have hh := WindowTwentyOneTail.run_head template (UInt256.ofNat 2618)
     base modulus a e c rest hrest
-  have hb := WindowTwentyOneBody.run_twentyOne template (UInt256.ofNat 2790)
+  have hb := WindowTwentyOneBody.run_twentyOne template (UInt256.ofNat 2619)
     base modulus a exponent c (1 + 21 * count) (by omega) rest hrest
-  have ht := WindowTwentyOneTail.run_tail template (UInt256.ofNat 3238) (UInt256.ofNat 2789)
+  have ht := WindowTwentyOneTail.run_tail template (UInt256.ofNat 3067) (UInt256.ofNat 2618)
     base modulus nextA e c rest hrest hjump
   rw [ha, advancePC_ofNat] at hb
   rw [if_pos hc, hsub, hshift] at ht
@@ -76,7 +76,7 @@ theorem run_continue (template : State) (base modulus exponent : UInt256)
 
 theorem run_last (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 2789 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 2618 = true) :
     runInstructions iterationProgram (loopState template base modulus exponent 2 rest) =
     some (finishState template base modulus exponent rest) := by
   let a := WindowTwentyOneMath.accumulator base modulus exponent.toNat 42
@@ -84,11 +84,11 @@ theorem run_last (template : State) (base modulus exponent : UInt256)
   let nextA := WindowTwentyOneMath.accumulator base modulus exponent.toNat 63
   have ha : WindowTwentyOneMath.advance base modulus exponent.toNat 43 21 a = nextA := by
     exact (WindowTwentyOneMath.accumulator_twentyOne base modulus exponent.toNat 42).symm
-  have hh := WindowTwentyOneTail.run_head template (UInt256.ofNat 2789)
+  have hh := WindowTwentyOneTail.run_head template (UInt256.ofNat 2618)
     base modulus a e (UInt256.ofNat 0) rest hrest
-  have hb := WindowTwentyOneBody.run_twentyOne template (UInt256.ofNat 2790)
+  have hb := WindowTwentyOneBody.run_twentyOne template (UInt256.ofNat 2619)
     base modulus a exponent (UInt256.ofNat 0) 43 (by decide) rest hrest
-  have ht := WindowTwentyOneTail.run_tail template (UInt256.ofNat 3238) (UInt256.ofNat 2789)
+  have ht := WindowTwentyOneTail.run_tail template (UInt256.ofNat 3067) (UInt256.ofNat 2618)
     base modulus nextA e (UInt256.ofNat 0) rest hrest hjump
   rw [ha, advancePC_ofNat] at hb
   rw [if_neg (by decide : ¬ UInt256.isTrue (UInt256.ofNat 0)), advancePC_ofNat] at ht
@@ -99,7 +99,7 @@ theorem run_last (template : State) (base modulus exponent : UInt256)
 theorem run_prefix (template : State) (base modulus exponent : UInt256)
     (count : Nat) (hcount : count ≤ 2)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 2789 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 2618 = true) :
     runInstructions (repeatProgram count) (loopState template base modulus exponent 0 rest) =
     some (loopState template base modulus exponent count rest) := by
   induction count with
@@ -111,7 +111,7 @@ theorem run_prefix (template : State) (base modulus exponent : UInt256)
 /-- Exactly three passes process the remaining sixty-three exponent nibbles. -/
 theorem run_three (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 2789 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 2618 = true) :
     runInstructions (repeatProgram 3) (loopState template base modulus exponent 0 rest) =
     some (finishState template base modulus exponent rest) := by
   exact runInstructions_append_some _ _ _ _ _

@@ -28,8 +28,8 @@ theorem run_loadLow (s : State) (bi pbi paEnd pbEnd flag dst ret : UInt256) (n :
     (hact : 296 ≤ s.activeWords.toNat)
     (haddr : MachineState.readWord s.memory 9440 = UInt256.ofNat (8224+32*n)) :
     runInstructions loadLow
-      (framed s (UInt256.ofNat 4874) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4876)
+      (framed s (UInt256.ofNat 4538) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4543)
       ([MachineState.readWord s.memory (8224+32*n)] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc9 : rest.length+9 < 1024 := by omega
   have hc10 : rest.length+10 < 1024 := by omega
@@ -47,8 +47,8 @@ theorem run_loadLow (s : State) (bi pbi paEnd pbEnd flag dst ret : UInt256) (n :
 theorem run_makeMu (s : State) (bi pbi paEnd pbEnd flag dst ret t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions makeMu
-      (framed s (UInt256.ofNat 4876) ([t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4880)
+      (framed s (UInt256.ofNat 4543) ([t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4550)
       ([t0, MachineState.readWord s.memory 9376 * t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc10 : rest.length+10 < 1024 := by omega
   have hc11 : rest.length+11 < 1024 := by omega
@@ -65,8 +65,8 @@ theorem run_loadMod (s : State) (bi pbi paEnd pbEnd flag dst ret : UInt256)
     (hn : n ≤ 32) (hact : 296 ≤ s.activeWords.toNat)
     (haddr : MachineState.readWord s.memory 9408 = UInt256.ofNat (32*n-32)) :
     runInstructions loadMod
-      (framed s (UInt256.ofNat 4880) ([t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4881)
+      (framed s (UInt256.ofNat 4550) ([t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4555)
       ([MachineState.readWord s.memory (32*n-32), t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc11 : rest.length+11 < 1024 := by omega
   have hc12 : rest.length+12 < 1024 := by omega
@@ -84,8 +84,8 @@ theorem run_loadMod (s : State) (bi pbi paEnd pbEnd flag dst ret : UInt256)
 theorem run_makeModProduct (s : State) (bi pbi paEnd pbEnd flag dst ret m0 mu t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions makeModProduct
-      (framed s (UInt256.ofNat 4881) ([m0, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4885)
+      (framed s (UInt256.ofNat 4555) ([m0, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4559)
       ([UInt256.mulMod m0 mu maxWord, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc12 : rest.length+12 < 1024 := by omega
   have hc13 : rest.length+13 < 1024 := by omega
@@ -97,8 +97,8 @@ theorem run_makeModProduct (s : State) (bi pbi paEnd pbEnd flag dst ret m0 mu t0
 theorem run_finishCarry (s : State) (bi pbi paEnd pbEnd flag dst ret mm mu t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions finishCarry
-      (framed s (UInt256.ofNat 4885) ([mm, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4891)
+      (framed s (UInt256.ofNat 4559) ([mm, t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4565)
       ([endCarry t0 mm, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hc12 : rest.length+12 < 1024 := by omega
   have hc13 : rest.length+13 < 1024 := by omega
@@ -113,7 +113,7 @@ theorem run_product (s : State) (n : Nat) (bi pbi paEnd pbEnd flag dst ret : UIn
     (htl : MachineState.readWord s.memory 9440 = UInt256.ofNat (8224+32*n))
     (hminv : inverseInvariant s.memory n) :
     runInstructions productProgram
-      (framed s (UInt256.ofNat 4874) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+      (framed s (UInt256.ofNat 4538) (baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
     some (product s n bi pbi paEnd pbEnd flag dst ret rest) := by
   let t0 := MachineState.readWord s.memory (8224+32*n)
   let inv := MachineState.readWord s.memory 9376

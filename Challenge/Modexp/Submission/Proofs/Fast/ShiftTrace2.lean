@@ -17,6 +17,7 @@ middle block, the repair rounds, the `CSUB` call and the exits.
 namespace Challenge.Modexp.Submission.Proofs.Fast.Shift
 
 attribute [local simp] CompactConstants.notThirtyOne notThirtyOneOfNat
+attribute [local simp] CompactConstants.notZero CompactConstants.notZeroStruct
 
 open EvmSemantics
 open EvmSemantics.EVM
@@ -124,6 +125,22 @@ private theorem addMod_comm (a b m : UInt256) :
     UInt256.addMod a b m = UInt256.addMod b a m := by
   simp only [UInt256.addMod, Nat.add_comm]
 
+@[simp] private theorem newEstimatePC2960 : Artifact.submissionArtifact.instructionPC 2895 = 3849 := by rfl
+@[simp] private theorem newEstimatePC2961 : Artifact.submissionArtifact.instructionPC 2896 = 3850 := by rfl
+@[simp] private theorem newEstimatePC2962 : Artifact.submissionArtifact.instructionPC 2897 = 3851 := by rfl
+@[simp] private theorem newEstimatePC2963 : Artifact.submissionArtifact.instructionPC 2898 = 3852 := by rfl
+@[simp] private theorem newEstimatePC2964 : Artifact.submissionArtifact.instructionPC 2899 = 3855 := by rfl
+@[simp] private theorem newEstimatePC2965 : Artifact.submissionArtifact.instructionPC 2900 = 3856 := by rfl
+@[simp] private theorem newEstimatePC2966 : Artifact.submissionArtifact.instructionPC 2901 = 3857 := by rfl
+@[simp] private theorem newEstimatePC2967 : Artifact.submissionArtifact.instructionPC 2902 = 3859 := by rfl
+@[simp] private theorem newEstimatePC2968 : Artifact.submissionArtifact.instructionPC 2903 = 3860 := by rfl
+@[simp] private theorem newEstimatePC2969 : Artifact.submissionArtifact.instructionPC 2904 = 3861 := by rfl
+@[simp] private theorem newEstimatePC2970 : Artifact.submissionArtifact.instructionPC 2905 = 3862 := by rfl
+@[simp] private theorem newEstimatePC2971 : Artifact.submissionArtifact.instructionPC 2906 = 3863 := by rfl
+@[simp] private theorem newEstimatePC2972 : Artifact.submissionArtifact.instructionPC 2907 = 3864 := by rfl
+@[simp] private theorem newEstimatePC2973 : Artifact.submissionArtifact.instructionPC 2908 = 3865 := by rfl
+@[simp] private theorem newEstimatePC2974 : Artifact.submissionArtifact.instructionPC 2909 = 3866 := by rfl
+
 /-- `blk3026`: quotient estimate with a branchless saturation mask. -/
 theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hact : 296 ≤ s.activeWords.toNat)
@@ -148,7 +165,7 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hH : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hI : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 6304 32) =
+  have hI : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 600000 })
     [blk3026, opAt, pushAt, wfOp,
@@ -156,8 +173,8 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       estimateState, macSetupState, kState, pcEstimate, pcMacSetup, qhatOf,
-      PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV, PRE_M1_HIGH,
-      outer, Exp.outer, hcode, hrun, hA, hB, hC, hD, hE, hF, hG, hH, hI, Exp.push0_word,
+      PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
+      outer, Exp.outer, hcode, hrun, hA, hB, hC, hD, hE, hF, hG, hH, hI, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -254,7 +271,7 @@ theorem run_macTail_go (s : State) (mm : ByteArray) (pa pt c q : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcMacTail, pcMacLoop, outer, Exp.outer, hcode, hrun, hgt, jumpDest4968,
+      pcMacTail, pcMacLoop, outer, Exp.outer, hcode, hrun, hgt, jumpDest4933,
       UInt256.gt, UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -278,7 +295,7 @@ theorem run_macTail_exit (s : State) (mm : ByteArray) (pa pt c q : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcMacTail, pcMid, outer, Exp.outer, hcode, hrun, hpt, jumpDest4968,
+      pcMacTail, pcMid, outer, Exp.outer, hcode, hrun, hpt, jumpDest4933,
       UInt256.gt, UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

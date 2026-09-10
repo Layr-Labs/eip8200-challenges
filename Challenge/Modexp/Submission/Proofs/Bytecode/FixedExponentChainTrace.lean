@@ -60,7 +60,7 @@ theorem run_squareCall (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      FixedExponentStates.square, Exp.mpCall, Exp.outer, hcode, hrun, jumpDest1939,
+      FixedExponentStates.square, Exp.mpCall, Exp.outer, hcode, hrun, jumpDest1865,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -130,7 +130,7 @@ theorem run_product (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       FixedExponentStates.product, Exp.mpCall, Exp.outer,
-      hcode, hrun, jumpDest1939,
+      hcode, hrun, jumpDest1865,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -158,13 +158,13 @@ theorem run_decode (s : State) (memory : ByteArray)
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
-        FixedExponentStates.decode, Exp.outer, hcode, hrun, jumpDest1939,
+        FixedExponentStates.decode, Exp.outer, hcode, hrun, jumpDest1865,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
         Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Word.ofNat_add_mod]]
   exact run_decodeProgram s memory n bsize esize msize hn32 hactive
-    (by simpa [hcode] using jumpDest1939) hrun
+    (by simpa [hcode] using jumpDest1865) hrun
 
 set_option linter.unusedSimpArgs false in
 theorem run_finish (s : State) (memory : ByteArray)
@@ -180,7 +180,7 @@ theorem run_finish (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       FixedExponentStates.finish, Exp.finHead, Exp.outer,
-      hcode, hrun, jumpDest1876,
+      hcode, hrun, jumpDest1802,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,

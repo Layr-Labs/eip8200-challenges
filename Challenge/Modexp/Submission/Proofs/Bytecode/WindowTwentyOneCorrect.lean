@@ -1,5 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowRoute
-import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
+import Challenge.Modexp.Submission.Proofs.Bytecode.ArtifactWindowPaths
 import Challenge.Modexp.Submission.Proofs.Bytecode.FermatGas
 import Challenge.Modexp.Submission.Proofs.PrimeCertificates
 
@@ -22,12 +22,12 @@ private def environment (input : ByteArray) :
   noPrecompile := deployAddress_not_precompile
 
 private theorem entry_eq (input : ByteArray) :
-    state (Main.headerState input) input (UInt256.ofNat 2603) =
+    state (Main.headerState input) input (UInt256.ofNat 2613) =
       Dispatch.wordRouteEntryState input := by
   rfl
 
 private theorem miss_eq (input : ByteArray) :
-    state (Main.headerState input) input (UInt256.ofNat 516) =
+    state (Main.headerState input) input (UInt256.ofNat 517) =
       Dispatch.wordEntryState input := by
   rfl
 

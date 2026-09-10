@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.ArtifactEarlyWordPaths
 import Challenge.Modexp.Submission.Proofs.Bytecode.MainDefs
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -10,33 +11,33 @@ open EvmSemantics.EVM
 
 set_option linter.unusedSimpArgs false in
 private theorem run_tramp0_code (code input : ByteArray)
-    (hjump : Decode.isValidJumpDest code 5283 = true) :
+    (hjump : Decode.isValidJumpDest code 5248 = true) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path
       (initialState code input 0) =
-      some { initialState code input 0 with pc := UInt256.ofNat 5283 } := by
+      some { initialState code input 0 with pc := UInt256.ofNat 5248 } := by
   have hzero : (0 : UInt256).toNat = 0 := by decide
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 0) (b := 3) (by norm_num : 0 + 3 < 2 ^ 256)
-  have hdest : (5283 : UInt256).toNat = 5283 := by decide
-  have hdestWord : (5283 : UInt256) = UInt256.ofNat 5283 := by decide
+  have hdest : (5248 : UInt256).toNat = 5248 := by decide
+  have hdestWord : (5248 : UInt256) = UInt256.ofNat 5248 := by decide
   simp [tramp0Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     initialState, hzero, hadd, hdest, hjump, hdestWord]
 
 theorem run_tramp0 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path
-      (initialState submissionBytecode input 0) = some (trampolineState input 5283) := by
+      (initialState submissionBytecode input 0) = some (trampolineState input 5248) := by
   exact run_tramp0_code submissionBytecode input Artifact.earlyWordPaths.helperJump
 
 set_option linter.unusedSimpArgs false in
 theorem run_tramp1 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp1Path
-      (trampolineState input 14) = some (trampolineState input 52) := by
+      (trampolineState input 14) = some (trampolineState input 53) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
     (n := 14) (by norm_num : 14 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 14) (b := 3) (by norm_num : 14 + 3 < 2 ^ 256)
-  have hdest : (52 : UInt256).toNat = 52 := by decide
+    (a := 15) (b := 3) (by norm_num : 15 + 3 < 2 ^ 256)
+  have hdest : (53 : UInt256).toNat = 53 := by decide
   simp [tramp1Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     trampolineState, initialState, hsucc, hadd, hdest,
@@ -45,12 +46,12 @@ theorem run_tramp1 (input : ByteArray) :
 set_option linter.unusedSimpArgs false in
 theorem run_tramp2 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp2Path
-      (trampolineState input 52) = some (trampolineState input 98) := by
+      (trampolineState input 53) = some (trampolineState input 99) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
-    (n := 52) (by norm_num : 52 + 1 < 2 ^ 256)
+    (n := 53) (by norm_num : 53 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 53) (b := 3) (by norm_num : 53 + 3 < 2 ^ 256)
-  have hdest : (98 : UInt256).toNat = 98 := by decide
+    (a := 54) (b := 3) (by norm_num : 54 + 3 < 2 ^ 256)
+  have hdest : (99 : UInt256).toNat = 99 := by decide
   simp [tramp2Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     trampolineState, initialState, hsucc, hadd, hdest,
@@ -59,12 +60,12 @@ theorem run_tramp2 (input : ByteArray) :
 set_option linter.unusedSimpArgs false in
 theorem run_tramp3 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp3Path
-      (trampolineState input 98) = some (trampolineState input 304) := by
+      (trampolineState input 99) = some (trampolineState input 305) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
-    (n := 98) (by norm_num : 98 + 1 < 2 ^ 256)
+    (n := 99) (by norm_num : 99 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 99) (b := 3) (by norm_num : 99 + 3 < 2 ^ 256)
-  have hdest : (304 : UInt256).toNat = 304 := by decide
+    (a := 100) (b := 3) (by norm_num : 100 + 3 < 2 ^ 256)
+  have hdest : (305 : UInt256).toNat = 305 := by decide
   simp [tramp3Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     trampolineState, initialState, hsucc, hadd, hdest,
@@ -73,12 +74,12 @@ theorem run_tramp3 (input : ByteArray) :
 set_option linter.unusedSimpArgs false in
 theorem run_tramp4 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp4Path
-      (trampolineState input 304) = some (trampolineState input 433) := by
+      (trampolineState input 305) = some (trampolineState input 434) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
-    (n := 304) (by norm_num : 304 + 1 < 2 ^ 256)
+    (n := 305) (by norm_num : 305 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 305) (b := 3) (by norm_num : 305 + 3 < 2 ^ 256)
-  have hdest : (433 : UInt256).toNat = 433 := by decide
+    (a := 306) (b := 3) (by norm_num : 306 + 3 < 2 ^ 256)
+  have hdest : (434 : UInt256).toNat = 434 := by decide
   simp [tramp4Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     trampolineState, initialState, hsucc, hadd, hdest,
@@ -87,12 +88,12 @@ theorem run_tramp4 (input : ByteArray) :
 set_option linter.unusedSimpArgs false in
 theorem run_tramp5 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp5Path
-      (trampolineState input 433) = some (trampolineState input 511) := by
+      (trampolineState input 434) = some (trampolineState input 512) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
-    (n := 433) (by norm_num : 433 + 1 < 2 ^ 256)
+    (n := 434) (by norm_num : 434 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 434) (b := 3) (by norm_num : 434 + 3 < 2 ^ 256)
-  have hdest : (511 : UInt256).toNat = 511 := by decide
+    (a := 435) (b := 3) (by norm_num : 435 + 3 < 2 ^ 256)
+  have hdest : (512 : UInt256).toNat = 512 := by decide
   simp [tramp5Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     trampolineState, initialState, hsucc, hadd, hdest,
@@ -101,12 +102,12 @@ theorem run_tramp5 (input : ByteArray) :
 set_option linter.unusedSimpArgs false in
 theorem run_tramp6 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp6Path
-      (trampolineState input 511) = some (trampolineState input 694) := by
+      (trampolineState input 512) = some (trampolineState input 699) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
-    (n := 511) (by norm_num : 511 + 1 < 2 ^ 256)
+    (n := 512) (by norm_num : 512 + 1 < 2 ^ 256)
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 512) (b := 3) (by norm_num : 512 + 3 < 2 ^ 256)
-  have hdest : (694 : UInt256).toNat = 694 := by decide
+    (a := 513) (b := 3) (by norm_num : 513 + 3 < 2 ^ 256)
+  have hdest : (699 : UInt256).toNat = 699 := by decide
   simp [tramp6Path, opAt, pushAt, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     trampolineState, initialState, hsucc, hadd, hdest,

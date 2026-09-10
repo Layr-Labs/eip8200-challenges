@@ -13,17 +13,17 @@ theorem run_headerLoad (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock headerLoadPath
       (headerEntryState input) = some (headerLoadedState input) := by
   have hs1197 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1192) (by norm_num : 1192 + 1 < 2 ^ 256)
+    (n := 1197) (by norm_num : 1197 + 1 < 2 ^ 256)
   have hs1198 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1193) (by norm_num : 1193 + 1 < 2 ^ 256)
+    (n := 1198) (by norm_num : 1198 + 1 < 2 ^ 256)
   have ha1199 := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1194) (b := 2) (by norm_num : 1194 + 2 < 2 ^ 256)
+    (a := 1199) (b := 2) (by norm_num : 1199 + 2 < 2 ^ 256)
   have hs1201 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1196) (by norm_num : 1196 + 1 < 2 ^ 256)
+    (n := 1201) (by norm_num : 1201 + 1 < 2 ^ 256)
   have ha1202 := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1197) (b := 2) (by norm_num : 1197 + 2 < 2 ^ 256)
+    (a := 1202) (b := 2) (by norm_num : 1202 + 2 < 2 ^ 256)
   have hs1204 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1199) (by norm_num : 1199 + 1 < 2 ^ 256)
+    (n := 1204) (by norm_num : 1204 + 1 < 2 ^ 256)
   have h0 : (0 : UInt256).toNat = 0 := by decide
   have h32 : (32 : UInt256).toNat = 32 := by decide
   have h64 : (64 : UInt256).toNat = 64 := by decide

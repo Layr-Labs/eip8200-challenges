@@ -6,6 +6,7 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneReturn
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
 
 set_option warningAsError true
+set_option maxRecDepth 20000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLayoutCheck
 
@@ -25,7 +26,7 @@ def widthInstructions : List Instr :=
    YulEvmCompiler.Instr.op EvmSemantics.Operation.XOR,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.OR,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-   YulEvmCompiler.Instr.push 2 2657,
+   YulEvmCompiler.Instr.push 2 4869,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI]
 
 theorem width_eq : WindowTwentyOneEntry.widthProgram = widthInstructions := by rfl
@@ -44,7 +45,7 @@ def baseInstructions : List Instr :=
   [YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
    YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
    YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-   YulEvmCompiler.Instr.push 2 3298,
+   YulEvmCompiler.Instr.push 2 3095,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI]
 
 theorem base_eq : WindowTwentyOneEntry.baseProgram = baseInstructions := by rfl
@@ -56,7 +57,7 @@ def modulusInstructions : List Instr :=
    YulEvmCompiler.Instr.op EvmSemantics.Operation.CALLDATALOAD,
    YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 0 }),
    YulEvmCompiler.Instr.op EvmSemantics.Operation.ISZERO,
-   YulEvmCompiler.Instr.push 2 3290,
+   YulEvmCompiler.Instr.push 2 3087,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI]
 
 theorem modulus_eq : WindowTwentyOneEntry.modulusProgram = modulusInstructions := by rfl
@@ -168,7 +169,6 @@ def tableInstructions : List Instr :=
    YulEvmCompiler.Instr.op EvmSemantics.Operation.MSTORE,
    YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 2 }),
    YulEvmCompiler.Instr.op EvmSemantics.Operation.MULMOD,
-   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
    YulEvmCompiler.Instr.push 2 480,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.MSTORE]
 
@@ -177,8 +177,7 @@ theorem table_eq : WindowTwentyOneTableBuild.program = tableInstructions := by r
 theorem table_linear : WindowTwentyOneSlice.linearProgram tableInstructions = true := by decide
 
 def initInstructions : List Instr :=
-  [YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPDEST,
-   YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
+  [YulEvmCompiler.Instr.op EvmSemantics.Operation.POP,
    YulEvmCompiler.Instr.push 2 480,
    YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 1 }),
    YulEvmCompiler.Instr.push 1 247,
@@ -193,7 +192,9 @@ def initInstructions : List Instr :=
    YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 2 }),
    YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 9 }),
    YulEvmCompiler.Instr.op EvmSemantics.Operation.CALLDATALOAD,
-   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 })]
+   YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 0 }),
+   YulEvmCompiler.Instr.push 2 2618,
+   YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMP]
 
 theorem init_eq : WindowTwentyOneInit.program = initInstructions := by rfl
 
@@ -636,7 +637,7 @@ def iterationInstructions : List Instr :=
    YulEvmCompiler.Instr.op (EvmSemantics.Operation.Dup { idx := 5 }),
    YulEvmCompiler.Instr.op EvmSemantics.Operation.SUB,
    YulEvmCompiler.Instr.op (EvmSemantics.Operation.Swap { idx := 4 }),
-   YulEvmCompiler.Instr.push 2 2821,
+   YulEvmCompiler.Instr.push 2 2618,
    YulEvmCompiler.Instr.op EvmSemantics.Operation.JUMPI]
 
 theorem iteration_eq : WindowTwentyOneLoop.iterationProgram = iterationInstructions := by rfl

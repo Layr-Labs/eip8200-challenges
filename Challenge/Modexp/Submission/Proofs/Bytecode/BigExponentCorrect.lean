@@ -240,9 +240,9 @@ theorem selectProgress_represents_bitStep (s : State)
   have h1024 : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
   have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
   have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
-  have h1000 : (995 : UInt256) = UInt256.ofNat 995 := by decide
-  have h1015 : (1010 : UInt256) = UInt256.ofNat 1010 := by decide
-  have h1034 : (1029 : UInt256) = UInt256.ofNat 1029 := by decide
+  have h1000 : (1000 : UInt256) = UInt256.ofNat 1000 := by decide
+  have h1015 : (1015 : UInt256) = UInt256.ofNat 1015 := by decide
+  have h1034 : (1034 : UInt256) = UInt256.ofNat 1034 := by decide
   have hbodyAcc : Limbs.Represents body.memory 2048 count acc := by
     simpa [body, innerBody, innerLoop] using hacc
   have hbodyBase : Limbs.Represents body.memory 1024 count base := by
@@ -253,19 +253,19 @@ theorem selectProgress_represents_bitStep (s : State)
     simpa [squared, squareReturned, mulResult, body, frame, squareValue,
       h0, h2048, h3072, h1000] using
       BigMul.mulReturned_represents_product body 2048 count acc acc modulus
-        (UInt256.ofNat 995) frame hcount (by omega) hmodulusPos haccReduced
+        (UInt256.ofNat 1000) frame hcount (by omega) hmodulusPos haccReduced
         hbodyAcc hbodyAcc hbodyModulus
   have hsquaredBase : Limbs.Represents squared.memory 1024 count base := by
     simpa [squared, squareReturned, body, frame, h0, h2048, h3072, h1000]
       using
       mulResult_preserves_region body (UInt256.ofNat 2048)
-        (UInt256.ofNat 2048) count 1024 base (UInt256.ofNat 995) frame hcount
+        (UInt256.ofNat 2048) count 1024 base (UInt256.ofNat 1000) frame hcount
         (Or.inr (by omega)) (Or.inr (by omega)) (Or.inl (by omega)) hbodyBase
   have hsquaredModulus : Limbs.Represents squared.memory 0 count modulus := by
     simpa [squared, squareReturned, body, frame, h0, h2048, h3072, h1000]
       using
       mulResult_preserves_region body (UInt256.ofNat 2048)
-        (UInt256.ofNat 2048) count 0 modulus (UInt256.ofNat 995) frame hcount
+        (UInt256.ofNat 2048) count 0 modulus (UInt256.ofNat 1000) frame hcount
         (Or.inr (by omega)) (Or.inr (by omega)) (Or.inl (by omega))
         hbodyModulus
   have hcopiedSquare : Limbs.Represents copied.memory 2048 count squareValue := by
@@ -288,20 +288,20 @@ theorem selectProgress_represents_bitStep (s : State)
     simpa [product, productReturned, mulResult, squareValue, productValue,
       frame, h0, h1024, h2048, h3072, h1034] using
       BigMul.mulReturned_represents_product copied 1024 count squareValue base
-        modulus (UInt256.ofNat 1029) frame hcount (by omega) hmodulusPos
+        modulus (UInt256.ofNat 1034) frame hcount (by omega) hmodulusPos
         hsquareReduced hcopiedSquare hcopiedBase hcopiedModulus
   have hproductBase : Limbs.Represents product.memory 1024 count base := by
     simpa [product, productReturned, mulResult, squareValue, frame, h0, h1024,
       h2048, h3072, h1034, BigMul.mulReturned] using
       (BigMul.mulOuterProgress_afterCopy_represents_product copied 1024 count
-        squareValue base modulus (UInt256.ofNat 1029) frame hcount (by omega)
+        squareValue base modulus (UInt256.ofNat 1034) frame hcount (by omega)
         hmodulusPos hsquareReduced hcopiedSquare hcopiedBase
         hcopiedModulus).2.1
   have hproductModulus : Limbs.Represents product.memory 0 count modulus := by
     simpa [product, productReturned, mulResult, squareValue, frame, h0, h1024,
       h2048, h3072, h1034, BigMul.mulReturned] using
       (BigMul.mulOuterProgress_afterCopy_represents_product copied 1024 count
-        squareValue base modulus (UInt256.ofNat 1029) frame hcount (by omega)
+        squareValue base modulus (UInt256.ofNat 1034) frame hcount (by omega)
         hmodulusPos hsquareReduced hcopiedSquare hcopiedBase
         hcopiedModulus).2.2
   have hselected := selectMemory_represents product.memory byte j count
@@ -310,7 +310,7 @@ theorem selectProgress_represents_bitStep (s : State)
       simpa [product, productReturned, squareValue, frame, h0, h1024, h2048,
         h3072, h1034] using
         mulResult_preserves_region copied (UInt256.ofNat 2048)
-          (UInt256.ofNat 1024) count 2048 squareValue (UInt256.ofNat 1029)
+          (UInt256.ofNat 1024) count 2048 squareValue (UInt256.ofNat 1034)
           frame hcount (Or.inr (by omega)) (Or.inr (by omega))
           (Or.inl (by omega)) hcopiedSquare)
     hproduct

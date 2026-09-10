@@ -86,18 +86,24 @@ def l2Program (w : Fin 33) (x tl ts : UInt256) : List Instr :=
 
 def entryProgram : List Instr :=
   [.op .JUMPDEST,
-   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   .op (.Swap ⟨1, by decide⟩),
-   .push 0 0,
+   .push 1 31,
    .op .NOT,
-   .op (.Swap ⟨2, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
    .push 2 9344,
    .op .MLOAD,
    .push 1 128,
    .op .EQ,
-   .op (.Swap ⟨1, by decide⟩),
+   .push 1 150,
+   .op .MUL,
+   .op (.Dup ⟨0, by decide⟩),
+   .push 2 4222,
+   .op .ADD,
    .op (.Swap ⟨0, by decide⟩),
+   .push 2 4567,
+   .op .ADD,
+   .op (.Swap ⟨3, by decide⟩),
+   .push 0 0,
+   .op .NOT,
+   .op (.Swap ⟨3, by decide⟩),
    .push 2 9344,
    .op .MLOAD,
    .op (.Dup ⟨0, by decide⟩),
@@ -181,7 +187,7 @@ def tailProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4552,
+   .push 2 4216,
    .op .JUMPI,
    .op .POP,
    .op .POP,
@@ -189,18 +195,15 @@ def tailProgram : List Instr :=
    .op .POP,
    .op .POP,
    .op .POP,
-   .push 2 2282,
+   .op .POP,
+   .push 2 2220,
    .op .JUMP]
 
 def l1DispatchProgram : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩),
-   .push 2 4710,
-   .op .JUMPI]
+  [.op (.Dup ⟨5, by decide⟩), .op .JUMP]
 
 def l2DispatchProgram : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩),
-   .push 2 5042,
-   .op .JUMPI]
+  [.op (.Dup ⟨9, by decide⟩), .op .JUMP]
 
 def joinProgram : List Instr :=
   [.op .JUMPDEST]

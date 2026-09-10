@@ -70,3 +70,5 @@ opaque row_carry_swapped (m0 minv t0 : UInt256)
   exact row_carry m0 minv t0 hminv
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosEndAroundCarry
+
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.CiosEndAroundCarry.row_carry_swapped
