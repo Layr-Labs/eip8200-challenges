@@ -31,38 +31,38 @@ abbrev Located :=
   Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka
 
 def callPath : List Located :=
-  [⟨275, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨276, .push ⟨2, by decide⟩ (UInt256.ofNat 469), by rfl, by decide⟩,
-   ⟨277, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨278, .push ⟨2, by decide⟩ (UInt256.ofNat Padding.messageOffset),
+  [⟨72, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨73, .push ⟨1, by decide⟩ (UInt256.ofNat 102), by rfl, by decide⟩,
+   ⟨74, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨75, .push ⟨2, by decide⟩ (UInt256.ofNat Padding.messageOffset),
       by rfl, by decide⟩,
-   ⟨279, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨76, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def postCheckPath : List Located :=
-  [⟨267, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨268, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
-   ⟨269, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨270, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨271, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨272, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨273, .push ⟨2, by decide⟩ (UInt256.ofNat 5084), by rfl, by decide⟩,
-   ⟨274, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨64, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨65, .push ⟨1, by decide⟩ (UInt256.ofNat 64), by rfl, by decide⟩,
+   ⟨66, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨67, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨68, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨69, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨70, .push ⟨2, by decide⟩ (UInt256.ofNat 5147), by rfl, by decide⟩,
+   ⟨71, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
-@[simp] private theorem pc785 : Artifact.submissionArtifact.instructionPC 267 = 0x1d5 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc786 : Artifact.submissionArtifact.instructionPC 268 = 0x1d6 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc787 : Artifact.submissionArtifact.instructionPC 269 = 0x1d8 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc788 : Artifact.submissionArtifact.instructionPC 270 = 0x1d9 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc789 : Artifact.submissionArtifact.instructionPC 271 = 0x1da := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc790 : Artifact.submissionArtifact.instructionPC 272 = 0x1db := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc791 : Artifact.submissionArtifact.instructionPC 273 = 0x1dc := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc792 : Artifact.submissionArtifact.instructionPC 274 = 0x1df := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc793 : Artifact.submissionArtifact.instructionPC 275 = 0x1e0 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc794 : Artifact.submissionArtifact.instructionPC 276 = 0x1e1 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc795 : Artifact.submissionArtifact.instructionPC 277 = 0x1e4 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc796 : Artifact.submissionArtifact.instructionPC 278 = 0x1e5 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc797 : Artifact.submissionArtifact.instructionPC 279 = 0x1e8 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc798 : Artifact.submissionArtifact.instructionPC 280 = 0x1e9 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc799 : Artifact.submissionArtifact.instructionPC 280 = 0x1e9 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc785 : Artifact.submissionArtifact.instructionPC 64 = 0x66 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc786 : Artifact.submissionArtifact.instructionPC 65 = 0x67 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc787 : Artifact.submissionArtifact.instructionPC 66 = 0x69 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc788 : Artifact.submissionArtifact.instructionPC 67 = 0x6a := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc789 : Artifact.submissionArtifact.instructionPC 68 = 0x6b := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc790 : Artifact.submissionArtifact.instructionPC 69 = 0x6c := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc791 : Artifact.submissionArtifact.instructionPC 70 = 0x6d := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc792 : Artifact.submissionArtifact.instructionPC 71 = 0x70 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc793 : Artifact.submissionArtifact.instructionPC 72 = 0x71 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc794 : Artifact.submissionArtifact.instructionPC 73 = 0x72 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc795 : Artifact.submissionArtifact.instructionPC 74 = 0x74 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc796 : Artifact.submissionArtifact.instructionPC 75 = 0x75 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc797 : Artifact.submissionArtifact.instructionPC 76 = 0x78 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc798 : Artifact.submissionArtifact.instructionPC 77 = 0x79 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc799 : Artifact.submissionArtifact.instructionPC 77 = 0x79 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 def blockCount (input : ByteArray) : Nat :=
   Padding.paddedLength input.size / 64
@@ -76,20 +76,20 @@ def messageOffsetWord (i : Nat) : UInt256 :=
 
 def setupEntry (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 0x1e0
+    pc := UInt256.ofNat 0x71
     stack := [UInt256.ofNat 0, Padding.paddedWord input] }
 
 def loopAt (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x1e0
+    pc := UInt256.ofNat 0x71
     stack := [blockOffsetWord i, Padding.paddedWord input] }
 
 /-- State at the appended empty-input dispatcher. Its stack matches the
 ordinary compression entry stack. -/
 def dispatchEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x1e9
-    stack := [messageOffsetWord i, UInt256.ofNat 0x1d5,
+    pc := UInt256.ofNat 0x79
+    stack := [messageOffsetWord i, UInt256.ofNat 0x66,
       blockOffsetWord i, Padding.paddedWord input] }
 
 /-- State at the compression entry point. The helper receives the concrete
@@ -97,14 +97,14 @@ padded-message pointer, its return destination, and the driver invariant
 stack underneath. -/
 def compressEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x218
-    stack := [messageOffsetWord i, UInt256.ofNat 0x1d5,
+    pc := UInt256.ofNat 0x1d0
+    stack := [messageOffsetWord i, UInt256.ofNat 0x66,
       blockOffsetWord i, Padding.paddedWord input] }
 
 /-- Normalize an arbitrary post-compression state to the driver's return seam. -/
 def compressReturned (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x1d5
+    pc := UInt256.ofNat 0x66
     stack := [blockOffsetWord i, Padding.paddedWord input] }
 
 def afterIteration (s : State) (input : ByteArray) (i : Nat) : State :=
@@ -112,7 +112,7 @@ def afterIteration (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def afterExit (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 0x13dc
+    pc := UInt256.ofNat 0x141b
     stack := [blockOffsetWord (blockCount input), Padding.paddedWord input] }
 
 def iterationEnd (s : State) (input : ByteArray) (i : Nat) : State :=
@@ -269,8 +269,8 @@ theorem run_postCheck_exit (s : State) (input : ByteArray)
   have heq := offset_eq_total input hfit
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x13dc = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 4023 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x141b = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 4202 (by rfl)
   simp [postCheckPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     compressReturned, afterExit, hrun, hcode, hadd, hlast, heq,
@@ -384,112 +384,5 @@ def gasSteps_loop_of_compress (states : Nat → State) (input : ByteArray)
   have hpositive := blockCount_pos input
   exact Challenge.EvmProof.GasSteps.cast hall
     (by simp [I, Nat.ne_of_lt hpositive]) (by simp [I])
-
-
-/-- One dispatcher execution that consumes two blocks (the depth-2 prefix
-ladder): the call, the two-block certificate, then the post-check for
-block 1. -/
-def gasSteps_iteration2_of_compress (s next : State) (input : ByteArray)
-    (hfit : Challenge.Ripemd160.CalldataFits input)
-    (h1 : 1 < blockCount input)
-    (hcodeS : s.executionEnv.code = submissionBytecode)
-    (hforkS : s.fork = .Osaka) (hrunS : s.halt = .Running)
-    (hnpS : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false)
-    (hcodeNext : next.executionEnv.code = submissionBytecode)
-    (hforkNext : next.fork = .Osaka) (hrunNext : next.halt = .Running)
-    (hnpNext : Precompile.isPrecompileWithConfig next.executionEnv.precompileConfig next.executionEnv.fork
-      next.executionEnv.codeAddr = false)
-    (hcompress : Challenge.EvmProof.GasSteps (dispatchEntry s input 0)
-      (compressReturned next input 1)) :
-    Challenge.EvmProof.GasSteps (loopAt s input 0)
-      (iterationEnd next input 1) := by
-  have gcall := gasSteps_call s input hfit 0 (by omega) hcodeS hforkS hrunS hnpS
-  by_cases hlast : 1 + 1 = blockCount input
-  · have gexit := gasSteps_postCheck_exit next input hfit 1 hlast hcodeNext
-      hforkNext hrunNext hnpNext
-    exact Challenge.EvmProof.GasSteps.cast
-      (gcall.trans (hcompress.trans gexit)) rfl (by simp [iterationEnd, hlast])
-  · have hnext : 1 + 1 < blockCount input := by omega
-    have gcheck := gasSteps_postCheck_continue next input hfit 1 hnext hcodeNext
-      hforkNext hrunNext hnpNext
-    exact Challenge.EvmProof.GasSteps.cast
-      (gcall.trans (hcompress.trans gcheck)) rfl
-      (by simp [iterationEnd, hlast])
-
-/-- Iterate the driver from block `start` to the exit, one block per
-dispatcher execution. -/
-def gasSteps_loop_from (states : Nat → State) (input : ByteArray)
-    (hfit : Challenge.Ripemd160.CalldataFits input)
-    (hcode : ∀ i, i ≤ blockCount input →
-      (states i).executionEnv.code = submissionBytecode)
-    (hfork : ∀ i, i ≤ blockCount input → (states i).fork = .Osaka)
-    (hrun : ∀ i, i ≤ blockCount input → (states i).halt = .Running)
-    (hnp : ∀ i, i ≤ blockCount input →
-      Precompile.isPrecompileWithConfig (states i).executionEnv.precompileConfig (states i).executionEnv.fork
-        (states i).executionEnv.codeAddr = false)
-    (start : Nat) (hstart : start ≤ blockCount input)
-    (hcompress : ∀ i, start ≤ i → i < blockCount input →
-      Challenge.EvmProof.GasSteps (dispatchEntry (states i) input i)
-        (compressReturned (states (i + 1)) input i)) :
-    Challenge.EvmProof.GasSteps
-      (if start = blockCount input then afterExit (states start) input
-        else loopAt (states start) input start)
-      (afterExit (states (blockCount input)) input) := by
-  let I := fun i =>
-    if i = blockCount input then afterExit (states i) input
-    else loopAt (states i) input i
-  let J := fun j => I (start + j)
-  have hall : Challenge.EvmProof.GasSteps (J 0) (J (blockCount input - start)) := by
-    apply Challenge.EvmProof.GasSteps.iterateBounded
-      (I := J) (count := blockCount input - start)
-    intro j hj
-    have hi : start + j < blockCount input := by omega
-    have gi := gasSteps_iteration_of_compress (states (start + j)) (states (start + j + 1))
-      input hfit (start + j) hi (hcode _ (by omega)) (hfork _ (by omega))
-      (hrun _ (by omega)) (hnp _ (by omega)) (hcode _ (by omega))
-      (hfork _ (by omega)) (hrun _ (by omega))
-      (hnp _ (by omega)) (hcompress (start + j) (by omega) hi)
-    exact Challenge.EvmProof.GasSteps.cast gi
-      (by simp [J, I, Nat.ne_of_lt hi])
-      (by simp [J, I, iterationEnd, Nat.add_assoc])
-  have hend : start + (blockCount input - start) = blockCount input := by omega
-  exact Challenge.EvmProof.GasSteps.cast hall (by simp [J, I]) (by simp [J, I, hend])
-
-/-- Iterate the driver over all padded blocks.  When `double` is set, the
-first dispatcher execution consumes blocks 0 and 1 together. -/
-def gasSteps_loop_of_compress_double (states : Nat → State) (input : ByteArray)
-    (hfit : Challenge.Ripemd160.CalldataFits input) (double : Bool)
-    (hcode : ∀ i, i ≤ blockCount input →
-      (states i).executionEnv.code = submissionBytecode)
-    (hfork : ∀ i, i ≤ blockCount input → (states i).fork = .Osaka)
-    (hrun : ∀ i, i ≤ blockCount input → (states i).halt = .Running)
-    (hnp : ∀ i, i ≤ blockCount input →
-      Precompile.isPrecompileWithConfig (states i).executionEnv.precompileConfig (states i).executionEnv.fork
-        (states i).executionEnv.codeAddr = false)
-    (hcompress : ∀ i, i < blockCount input → (double = true → 2 ≤ i) →
-      Challenge.EvmProof.GasSteps (dispatchEntry (states i) input i)
-        (compressReturned (states (i + 1)) input i))
-    (hdoubleBlocks : double = true → 2 ≤ blockCount input)
-    (hdoubleTrace : double = true →
-      Challenge.EvmProof.GasSteps (dispatchEntry (states 0) input 0)
-        (compressReturned (states 2) input 1)) :
-    Challenge.EvmProof.GasSteps (loopAt (states 0) input 0)
-      (afterExit (states (blockCount input)) input) := by
-  have hpositive := blockCount_pos input
-  cases double with
-  | false =>
-    have h := gasSteps_loop_from states input hfit hcode hfork hrun hnp 0 (Nat.zero_le _)
-      (fun i _ hi => hcompress i hi (fun h => absurd h (by decide)))
-    exact Challenge.EvmProof.GasSteps.cast h (by simp [Nat.ne_of_lt hpositive]) rfl
-  | true =>
-    have h2 := hdoubleBlocks rfl
-    have g2 := hdoubleTrace rfl
-    have gfirst := gasSteps_iteration2_of_compress (states 0) (states 2) input hfit (by omega)
-      (hcode 0 (by omega)) (hfork 0 (by omega)) (hrun 0 (by omega)) (hnp 0 (by omega))
-      (hcode 2 h2) (hfork 2 h2) (hrun 2 h2) (hnp 2 h2) g2
-    have hrest := gasSteps_loop_from states input hfit hcode hfork hrun hnp 2 h2
-      (fun i hi2 hi => hcompress i hi (fun _ => hi2))
-    exact gfirst.trans (Challenge.EvmProof.GasSteps.cast hrest (by simp [iterationEnd]) rfl)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DriverTrace

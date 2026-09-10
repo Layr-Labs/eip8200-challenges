@@ -1,8 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedCall26Inline
 
 set_option warningAsError true
-set_option linter.unusedSimpArgs false
-set_option linter.unusedVariables false
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineNewPairs
 
@@ -50,16 +48,19 @@ def inline16Template : List Instr :=
    .op .ADD,
    .op (.Dup ⟨7, by decide⟩),
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
-   .op .AND,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 3),
-   .op .MUL,
-   .op .ADD,
    .op (.Dup ⟨6, by decide⟩),
    .op .MUL,
+   .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 25),
    .op .SHR,
+   .op (.Swap ⟨0, by decide⟩),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 23),
+   .op .SHR,
+   .op (.Dup ⟨1, by decide⟩),
+   .op .XOR,
+   .op (.Dup ⟨9, by decide⟩),
+   .op .AND,
+   .op .XOR,
    .op (.Dup ⟨5, by decide⟩),
    .op .ADD,
    .op (.Dup ⟨7, by decide⟩),
@@ -72,7 +73,7 @@ def inline16Template : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .AND]
 
-theorem inline16Template_length : inline16Template.length = 46 := rfl
+theorem inline16Template_length : inline16Template.length = 49 := rfl
 
 #print axioms inline16Template_length
 
@@ -80,13 +81,13 @@ theorem run_inline16Template_raw (s : State) (pc : UInt256) (q : PairedHelperBoo
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
     runInstrSeq inline16Template {s with pc := pc, stack := inline16Entry q rho} =
-      some {s with pc := pcAfter pc inline16Template, stack := inline16Output q (scaledT (inline16Frame s.memory q) q.upper (UInt256.ofNat 3) (UInt256.ofNat 25) (oneRaw q)) rho} := by
+      some {s with pc := pcAfter pc inline16Template, stack := inline16Output q (inlineT (inline16Frame s.memory q) (oneRaw q)) rho} := by
   have hcap (n : Nat) (hn : n ≤ 14) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline16Template, inline16Entry, inline16Output,
-    scaledT, scaledRotation, inlineSum, inline16Frame, oneRaw, inlineProduct, rawC10,
+    inlineT, inlineRotation, inline16Frame, oneRaw, inlineProduct, rawC10,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
@@ -99,7 +100,7 @@ theorem run_inline16Template (s : State) (pc : UInt256) (q : PairedHelperBoolean
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
     runInstrSeq inline16Template {s with pc := pc, stack := inline16Entry q rho} =
-      some {s with pc := pcAfter pc inline16Template, stack := inline16Output q (scaledT (inline16Frame s.memory q) q.upper (UInt256.ofNat 3) (UInt256.ofNat 25) (rawBoolean q)) rho} := by
+      some {s with pc := pcAfter pc inline16Template, stack := inline16Output q (inlineT (inline16Frame s.memory q) (rawBoolean q)) rho} := by
   simpa only [oneRaw_eq_rawBoolean] using
     run_inline16Template_raw s pc q rho hstack hrun hactive
 
@@ -109,15 +110,16 @@ theorem run_inline16Template_word (s : State) (pc : UInt256) (q : PairedHelperBo
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
     (hfactor : q.factor = PairedLaneWordRotate.factorWord)
-    (hpair : q.pair = pairWord) (hupper : q.upper = upperWord) (hlower : q.lower = lowerWord) :
+    (hpair : q.pair = pairWord) (hupper : q.upper = upperWord) :
     runInstrSeq inline16Template {s with pc := pc, stack := inline16Entry q rho} =
       some {s with pc := pcAfter pc inline16Template, stack := inline16WordStack q (PairedLaneWordRound.wordStep 1 7 9 (inline16Frame s.memory q).message0 q.k (frameLane q)) rho} := by
-  have ht : scaledT (inline16Frame s.memory q) q.upper (UInt256.ofNat 3) (UInt256.ofNat 25) (rawBoolean q) =
+  have ht : inlineT (inline16Frame s.memory q) (rawBoolean q) =
       PairedLaneWordRound.wordT 1 7 9 q.a q.b q.c q.d q.e
         (inline16Frame s.memory q).message0 q.k :=
-    (congrArg (scaledT (inline16Frame s.memory q) q.upper (UInt256.ofNat 3) (UInt256.ofNat 25)) (rawBoolean_eq q hupper)).trans
-      (scaledT_of_boolean_high (inline16Frame s.memory q) 1 7 9 (UInt256.ofNat 3) (UInt256.ofNat 25) (by decide) hfactor hpair hupper rfl rfl)
-  have hout : inline16Output q (scaledT (inline16Frame s.memory q) q.upper (UInt256.ofNat 3) (UInt256.ofNat 25) (rawBoolean q)) rho =
+    (inlineT_eq_rawT _ _).trans
+      ((congrArg (rawT (inline16Frame s.memory q)) (rawBoolean_eq q hupper)).trans
+        (rawT_of_boolean (inline16Frame s.memory q) 1 7 9 hfactor hpair hupper rfl rfl))
+  have hout : inline16Output q (inlineT (inline16Frame s.memory q) (rawBoolean q)) rho =
       inline16WordStack q (PairedLaneWordRound.wordStep 1 7 9
         (inline16Frame s.memory q).message0 q.k (frameLane q)) rho := by
     simp only [inline16Output, inline16WordStack, PairedLaneWordRound.wordStep, frameLane,
@@ -173,16 +175,19 @@ def inline17Template : List Instr :=
    .op .ADD,
    .op (.Dup ⟨7, by decide⟩),
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
-   .op .AND,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 127),
-   .op .MUL,
-   .op .ADD,
    .op (.Dup ⟨6, by decide⟩),
    .op .MUL,
+   .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 26),
    .op .SHR,
+   .op (.Swap ⟨0, by decide⟩),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+   .op .SHR,
+   .op (.Dup ⟨1, by decide⟩),
+   .op .XOR,
+   .op (.Dup ⟨9, by decide⟩),
+   .op .AND,
+   .op .XOR,
    .op (.Dup ⟨1, by decide⟩),
    .op .ADD,
    .op (.Dup ⟨7, by decide⟩),
@@ -195,7 +200,7 @@ def inline17Template : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .AND]
 
-theorem inline17Template_length : inline17Template.length = 46 := rfl
+theorem inline17Template_length : inline17Template.length = 49 := rfl
 
 #print axioms inline17Template_length
 
@@ -203,13 +208,13 @@ theorem run_inline17Template_raw (s : State) (pc : UInt256) (q : PairedHelperBoo
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
     runInstrSeq inline17Template {s with pc := pc, stack := inline17Entry q rho} =
-      some {s with pc := pcAfter pc inline17Template, stack := inline17Output q (scaledT (inline17Frame s.memory q) q.upper (UInt256.ofNat 127) (UInt256.ofNat 26) (oneRaw q)) rho} := by
+      some {s with pc := pcAfter pc inline17Template, stack := inline17Output q (inlineT (inline17Frame s.memory q) (oneRaw q)) rho} := by
   have hcap (n : Nat) (hn : n ≤ 14) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline17Template, inline17Entry, inline17Output,
-    scaledT, scaledRotation, inlineSum, inline17Frame, oneRaw, inlineProduct, rawC10,
+    inlineT, inlineRotation, inline17Frame, oneRaw, inlineProduct, rawC10,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
@@ -222,7 +227,7 @@ theorem run_inline17Template (s : State) (pc : UInt256) (q : PairedHelperBoolean
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
     runInstrSeq inline17Template {s with pc := pc, stack := inline17Entry q rho} =
-      some {s with pc := pcAfter pc inline17Template, stack := inline17Output q (scaledT (inline17Frame s.memory q) q.upper (UInt256.ofNat 127) (UInt256.ofNat 26) (rawBoolean q)) rho} := by
+      some {s with pc := pcAfter pc inline17Template, stack := inline17Output q (inlineT (inline17Frame s.memory q) (rawBoolean q)) rho} := by
   simpa only [oneRaw_eq_rawBoolean] using
     run_inline17Template_raw s pc q rho hstack hrun hactive
 
@@ -232,15 +237,16 @@ theorem run_inline17Template_word (s : State) (pc : UInt256) (q : PairedHelperBo
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
     (hfactor : q.factor = PairedLaneWordRotate.factorWord)
-    (hpair : q.pair = pairWord) (hupper : q.upper = upperWord) (hlower : q.lower = lowerWord) :
+    (hpair : q.pair = pairWord) (hupper : q.upper = upperWord) :
     runInstrSeq inline17Template {s with pc := pc, stack := inline17Entry q rho} =
       some {s with pc := pcAfter pc inline17Template, stack := inline17WordStack q (PairedLaneWordRound.wordStep 1 6 13 (inline17Frame s.memory q).message0 q.k (frameLane q)) rho} := by
-  have ht : scaledT (inline17Frame s.memory q) q.upper (UInt256.ofNat 127) (UInt256.ofNat 26) (rawBoolean q) =
+  have ht : inlineT (inline17Frame s.memory q) (rawBoolean q) =
       PairedLaneWordRound.wordT 1 6 13 q.a q.b q.c q.d q.e
         (inline17Frame s.memory q).message0 q.k :=
-    (congrArg (scaledT (inline17Frame s.memory q) q.upper (UInt256.ofNat 127) (UInt256.ofNat 26)) (rawBoolean_eq q hupper)).trans
-      (scaledT_of_boolean_high (inline17Frame s.memory q) 1 6 13 (UInt256.ofNat 127) (UInt256.ofNat 26) (by decide) hfactor hpair hupper rfl rfl)
-  have hout : inline17Output q (scaledT (inline17Frame s.memory q) q.upper (UInt256.ofNat 127) (UInt256.ofNat 26) (rawBoolean q)) rho =
+    (inlineT_eq_rawT _ _).trans
+      ((congrArg (rawT (inline17Frame s.memory q)) (rawBoolean_eq q hupper)).trans
+        (rawT_of_boolean (inline17Frame s.memory q) 1 6 13 hfactor hpair hupper rfl rfl))
+  have hout : inline17Output q (inlineT (inline17Frame s.memory q) (rawBoolean q)) rho =
       inline17WordStack q (PairedLaneWordRound.wordStep 1 6 13
         (inline17Frame s.memory q).message0 q.k (frameLane q)) rho := by
     simp only [inline17Output, inline17WordStack, PairedLaneWordRound.wordStep, frameLane,
@@ -296,16 +302,18 @@ def inline28Template : List Instr :=
    .op .ADD,
    .op (.Dup ⟨7, by decide⟩),
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op .AND,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 31),
-   .op .MUL,
-   .op .ADD,
    .op (.Dup ⟨6, by decide⟩),
    .op .MUL,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 21),
    .op .SHR,
+   .op (.Dup ⟨0, by decide⟩),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 5),
+   .op .SHR,
+   .op (.Dup ⟨1, by decide⟩),
+   .op .XOR,
+   .op (.Dup ⟨9, by decide⟩),
+   .op .AND,
+   .op .XOR,
    .op (.Dup ⟨5, by decide⟩),
    .op .ADD,
    .op (.Dup ⟨7, by decide⟩),
@@ -318,7 +326,7 @@ def inline28Template : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .AND]
 
-theorem inline28Template_length : inline28Template.length = 46 := rfl
+theorem inline28Template_length : inline28Template.length = 48 := rfl
 
 #print axioms inline28Template_length
 
@@ -326,13 +334,13 @@ theorem run_inline28Template_raw (s : State) (pc : UInt256) (q : PairedHelperBoo
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
     runInstrSeq inline28Template {s with pc := pc, stack := inline28Entry q rho} =
-      some {s with pc := pcAfter pc inline28Template, stack := inline28Output q (scaledT (inline28Frame s.memory q) q.lower (UInt256.ofNat 31) (UInt256.ofNat 26) (oneRaw q)) rho} := by
+      some {s with pc := pcAfter pc inline28Template, stack := inline28Output q (inlineT (inline28Frame s.memory q) (oneRaw q)) rho} := by
   have hcap (n : Nat) (hn : n ≤ 14) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [PairedLaneSequentialShift.shr_word, inline28Template, inline28Entry, inline28Output,
-    scaledT, scaledRotation, inlineSum, inline28Frame, oneRaw, inlineProduct, rawC10,
+    inlineT, inlineRotation, inline28Frame, oneRaw, inlineProduct, rawC10,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
@@ -345,7 +353,7 @@ theorem run_inline28Template (s : State) (pc : UInt256) (q : PairedHelperBoolean
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
     runInstrSeq inline28Template {s with pc := pc, stack := inline28Entry q rho} =
-      some {s with pc := pcAfter pc inline28Template, stack := inline28Output q (scaledT (inline28Frame s.memory q) q.lower (UInt256.ofNat 31) (UInt256.ofNat 26) (rawBoolean q)) rho} := by
+      some {s with pc := pcAfter pc inline28Template, stack := inline28Output q (inlineT (inline28Frame s.memory q) (rawBoolean q)) rho} := by
   simpa only [oneRaw_eq_rawBoolean] using
     run_inline28Template_raw s pc q rho hstack hrun hactive
 
@@ -355,15 +363,16 @@ theorem run_inline28Template_word (s : State) (pc : UInt256) (q : PairedHelperBo
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
     (hfactor : q.factor = PairedLaneWordRotate.factorWord)
-    (hpair : q.pair = pairWord) (hupper : q.upper = upperWord) (hlower : q.lower = lowerWord) :
+    (hpair : q.pair = pairWord) (hupper : q.upper = upperWord) :
     runInstrSeq inline28Template {s with pc := pc, stack := inline28Entry q rho} =
       some {s with pc := pcAfter pc inline28Template, stack := inline28WordStack q (PairedLaneWordRound.wordStep 1 11 6 (inline28Frame s.memory q).message0 q.k (frameLane q)) rho} := by
-  have ht : scaledT (inline28Frame s.memory q) q.lower (UInt256.ofNat 31) (UInt256.ofNat 26) (rawBoolean q) =
+  have ht : inlineT (inline28Frame s.memory q) (rawBoolean q) =
       PairedLaneWordRound.wordT 1 11 6 q.a q.b q.c q.d q.e
         (inline28Frame s.memory q).message0 q.k :=
-    (congrArg (scaledT (inline28Frame s.memory q) q.lower (UInt256.ofNat 31) (UInt256.ofNat 26)) (rawBoolean_eq q hupper)).trans
-      (scaledT_of_boolean_low (inline28Frame s.memory q) 1 11 6 (UInt256.ofNat 31) (UInt256.ofNat 26) (by decide) hfactor hpair hlower rfl rfl)
-  have hout : inline28Output q (scaledT (inline28Frame s.memory q) q.lower (UInt256.ofNat 31) (UInt256.ofNat 26) (rawBoolean q)) rho =
+    (inlineT_eq_rawT _ _).trans
+      ((congrArg (rawT (inline28Frame s.memory q)) (rawBoolean_eq q hupper)).trans
+        (rawT_of_boolean (inline28Frame s.memory q) 1 11 6 hfactor hpair hupper rfl rfl))
+  have hout : inline28Output q (inlineT (inline28Frame s.memory q) (rawBoolean q)) rho =
       inline28WordStack q (PairedLaneWordRound.wordStep 1 11 6
         (inline28Frame s.memory q).message0 q.k (frameLane q)) rho := by
     simp only [inline28Output, inline28WordStack, PairedLaneWordRound.wordStep, frameLane,
@@ -419,16 +428,19 @@ def inline29Template : List Instr :=
    .op .ADD,
    .op (.Dup ⟨7, by decide⟩),
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
-   .op .AND,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 255),
-   .op .MUL,
-   .op .ADD,
    .op (.Dup ⟨6, by decide⟩),
    .op .MUL,
+   .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 25),
    .op .SHR,
+   .op (.Swap ⟨0, by decide⟩),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 17),
+   .op .SHR,
+   .op (.Dup ⟨1, by decide⟩),
+   .op .XOR,
+   .op (.Dup ⟨9, by decide⟩),
+   .op .AND,
+   .op .XOR,
    .op (.Dup ⟨1, by decide⟩),
    .op .ADD,
    .op (.Dup ⟨7, by decide⟩),
@@ -441,7 +453,7 @@ def inline29Template : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .AND]
 
-theorem inline29Template_length : inline29Template.length = 46 := rfl
+theorem inline29Template_length : inline29Template.length = 49 := rfl
 
 #print axioms inline29Template_length
 
@@ -449,13 +461,13 @@ theorem run_inline29Template_raw (s : State) (pc : UInt256) (q : PairedHelperBoo
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
     runInstrSeq inline29Template {s with pc := pc, stack := inline29Entry q rho} =
-      some {s with pc := pcAfter pc inline29Template, stack := inline29Output q (scaledT (inline29Frame s.memory q) q.upper (UInt256.ofNat 255) (UInt256.ofNat 25) (oneRaw q)) rho} := by
+      some {s with pc := pcAfter pc inline29Template, stack := inline29Output q (inlineT (inline29Frame s.memory q) (oneRaw q)) rho} := by
   have hcap (n : Nat) (hn : n ≤ 14) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline29Template, inline29Entry, inline29Output,
-    scaledT, scaledRotation, inlineSum, inline29Frame, oneRaw, inlineProduct, rawC10,
+    inlineT, inlineRotation, inline29Frame, oneRaw, inlineProduct, rawC10,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
@@ -468,7 +480,7 @@ theorem run_inline29Template (s : State) (pc : UInt256) (q : PairedHelperBoolean
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
     runInstrSeq inline29Template {s with pc := pc, stack := inline29Entry q rho} =
-      some {s with pc := pcAfter pc inline29Template, stack := inline29Output q (scaledT (inline29Frame s.memory q) q.upper (UInt256.ofNat 255) (UInt256.ofNat 25) (rawBoolean q)) rho} := by
+      some {s with pc := pcAfter pc inline29Template, stack := inline29Output q (inlineT (inline29Frame s.memory q) (rawBoolean q)) rho} := by
   simpa only [oneRaw_eq_rawBoolean] using
     run_inline29Template_raw s pc q rho hstack hrun hactive
 
@@ -478,15 +490,16 @@ theorem run_inline29Template_word (s : State) (pc : UInt256) (q : PairedHelperBo
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
     (hfactor : q.factor = PairedLaneWordRotate.factorWord)
-    (hpair : q.pair = pairWord) (hupper : q.upper = upperWord) (hlower : q.lower = lowerWord) :
+    (hpair : q.pair = pairWord) (hupper : q.upper = upperWord) :
     runInstrSeq inline29Template {s with pc := pc, stack := inline29Entry q rho} =
       some {s with pc := pcAfter pc inline29Template, stack := inline29WordStack q (PairedLaneWordRound.wordStep 1 7 15 (inline29Frame s.memory q).message0 q.k (frameLane q)) rho} := by
-  have ht : scaledT (inline29Frame s.memory q) q.upper (UInt256.ofNat 255) (UInt256.ofNat 25) (rawBoolean q) =
+  have ht : inlineT (inline29Frame s.memory q) (rawBoolean q) =
       PairedLaneWordRound.wordT 1 7 15 q.a q.b q.c q.d q.e
         (inline29Frame s.memory q).message0 q.k :=
-    (congrArg (scaledT (inline29Frame s.memory q) q.upper (UInt256.ofNat 255) (UInt256.ofNat 25)) (rawBoolean_eq q hupper)).trans
-      (scaledT_of_boolean_high (inline29Frame s.memory q) 1 7 15 (UInt256.ofNat 255) (UInt256.ofNat 25) (by decide) hfactor hpair hupper rfl rfl)
-  have hout : inline29Output q (scaledT (inline29Frame s.memory q) q.upper (UInt256.ofNat 255) (UInt256.ofNat 25) (rawBoolean q)) rho =
+    (inlineT_eq_rawT _ _).trans
+      ((congrArg (rawT (inline29Frame s.memory q)) (rawBoolean_eq q hupper)).trans
+        (rawT_of_boolean (inline29Frame s.memory q) 1 7 15 hfactor hpair hupper rfl rfl))
+  have hout : inline29Output q (inlineT (inline29Frame s.memory q) (rawBoolean q)) rho =
       inline29WordStack q (PairedLaneWordRound.wordStep 1 7 15
         (inline29Frame s.memory q).message0 q.k (frameLane q)) rho := by
     simp only [inline29Output, inline29WordStack, PairedLaneWordRound.wordStep, frameLane,

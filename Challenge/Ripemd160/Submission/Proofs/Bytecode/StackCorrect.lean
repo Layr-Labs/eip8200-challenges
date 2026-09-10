@@ -31,8 +31,7 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (_hnd : PrefixStateModel.double input = true → 2 ≤ i) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i) := by
   by_cases hempty : input.size = 0
@@ -82,19 +81,6 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
         simp [nextState, PrefixStateKernel.nextState, hempty, hhit,
           DriverTrace.compressReturned])
 
-/-- The retained two-block interface cannot be selected by this dispatcher. -/
-noncomputable def gasSteps_block2 (s : State) (input : ByteArray)
-    (h : Compression.HashState) (_hfit : CalldataFits input)
-    (hd : PrefixStateModel.double input = true)
-    (_ctx : StackRunBridge.BlockContext s input 0 h)
-    (_hcode : s.executionEnv.code = submissionBytecode)
-    (_hfork : s.fork = .Osaka) (_hrun : s.halt = .Running)
-    (_hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps (DriverTrace.dispatchEntry s input 0)
-      (DriverTrace.compressReturned (PrefixStateKernel.nextState2 s input) input 1) := by
-  simp [PrefixStateModel.double] at hd
-
 noncomputable def kernel : StackRunBridge.BlockKernel where
   nextState := nextState
   executionEnv := PrefixStateKernel.nextState_executionEnv
@@ -103,20 +89,11 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
   wordAbove := nextState_word_above
   hashResult := fun s input i h hfit hi ctx hmodel =>
     PrefixStateKernel.nextState_hash s input i h hfit hi ctx hmodel
-  double := PrefixStateModel.double
   gasSteps := gasSteps_block
-  nextState2 := PrefixStateKernel.nextState2
-  executionEnv2 := PrefixStateKernel.nextState2_executionEnv
-  halt2 := PrefixStateKernel.nextState2_halt
-  callStack2 := PrefixStateKernel.nextState2_callStack
-  wordAbove2 := PrefixStateKernel.nextState2_word_above
-  doubleBlocks := PrefixStateKernel.double_blockCount
-  hashResult2 := PrefixStateKernel.nextState2_hash
-  gasSteps2 := gasSteps_block2
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 0x170)) :
+      (Execution.atPC input 0x3)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) :=
   StackRunBridge.correct_of_block_kernel kernel input hfit entryPrefix

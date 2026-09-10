@@ -79,10 +79,12 @@ theorem run_tail_target :
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
-/-- The tail needs only that the accumulator is nonzero.  Stating it that way lets
-the 256-byte path, which reaches this tail through the merged classifier, use it. -/
-theorem run_tail_fallback_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0) :
+theorem run_tail_fallback (input : ByteArray) (hsize : input.size = 1000)
+    (hne : input ≠ KnownInputData.targetInput) :
     run tailPath (loopExitState input) = some (fallbackState input) := by
+  have hneAcc : finalAcc input ≠ 0 := by
+    intro hz
+    exact hne ((KnownInputCompactLogic.finalAcc_zero_iff_target input hsize).1 hz)
   have htrue : UInt256.isTrue (finalAcc input) := by
     intro hz
     apply hneAcc
@@ -104,8 +106,8 @@ theorem run_tail_fallback_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0
       BooleanSelect.xor_comm _ _
     rw [hcomm]
     exact htrue
-  have hdest : Decode.isValidJumpDest submissionBytecode 0x170 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 205 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0x3 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, fallbackState, atPC,
     htrue', hdest, List.exchange,
@@ -113,12 +115,6 @@ theorem run_tail_fallback_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0
     Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
-
-theorem run_tail_fallback (input : ByteArray) (hsize : input.size = 1000)
-    (hne : input ≠ KnownInputData.targetInput) :
-    run tailPath (loopExitState input) = some (fallbackState input) :=
-  run_tail_fallback_acc input (fun hz =>
-    hne ((KnownInputCompactLogic.finalAcc_zero_iff_target input hsize).1 hz))
 
 theorem run_return :
     run returnPath (returnEntry KnownInputData.targetInput) =
