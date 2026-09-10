@@ -28,40 +28,40 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem helperPCAnchor :
-    Artifact.submissionArtifact.instructionPC 2444 = 3330 := by
+    Artifact.submissionArtifact.instructionPC 2436 = 3330 := by
   rfl
 
 @[simp] theorem helperPC (i : Nat)
-    (hlo : 2444 ≤ i) (hhi : i ≤ 2466) :
+    (hlo : 2436 ≤ i) (hhi : i ≤ 2458) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3330,3331,3334,3335,3338,3341,3342,3343,3345,3346,3347,3349,3350,3351,3353,3354,3355,3357,3358,3359,3360,3361,3364] : List Nat)[i - 2444]! := by
+      ([3330,3331,3334,3335,3338,3341,3342,3343,3345,3346,3347,3349,3350,3351,3353,3354,3355,3357,3358,3359,3360,3361,3364] : List Nat)[i - 2436]! := by
   interval_cases i <;> decide
 
 def helperPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2444 .JUMPDEST,
-   pushAt 2445 2 9344,
-   opAt 2446 .MLOAD,
-   pushAt 2447 2 5120,
-   pushAt 2448 2 6144,
-   opAt 2449 .MCOPY,
-   opAt 2450 (.Dup ⟨1, by decide⟩),
-   pushAt 2451 1 3,
-   opAt 2452 .LT,
-   opAt 2453 (.Dup ⟨2, by decide⟩),
-   pushAt 2454 1 7,
-   opAt 2455 .LT,
-   opAt 2456 (.Dup ⟨3, by decide⟩),
-   pushAt 2457 1 15,
-   opAt 2458 .LT,
-   opAt 2459 (.Dup ⟨4, by decide⟩),
-   pushAt 2460 1 31,
-   opAt 2461 .LT,
-   opAt 2462 .ADD,
-   opAt 2463 .ADD,
-   opAt 2464 .ADD,
-   pushAt 2465 2 1569,
-   opAt 2466 .JUMP]
+  [opAt 2436 .JUMPDEST,
+   pushAt 2437 2 9344,
+   opAt 2438 .MLOAD,
+   pushAt 2439 2 5120,
+   pushAt 2440 2 6144,
+   opAt 2441 .MCOPY,
+   opAt 2442 (.Dup ⟨1, by decide⟩),
+   pushAt 2443 1 3,
+   opAt 2444 .LT,
+   opAt 2445 (.Dup ⟨2, by decide⟩),
+   pushAt 2446 1 7,
+   opAt 2447 .LT,
+   opAt 2448 (.Dup ⟨3, by decide⟩),
+   pushAt 2449 1 15,
+   opAt 2450 .LT,
+   opAt 2451 (.Dup ⟨4, by decide⟩),
+   pushAt 2452 1 31,
+   opAt 2453 .LT,
+   opAt 2454 .ADD,
+   opAt 2455 .ADD,
+   opAt 2456 .ADD,
+   pushAt 2457 2 1569,
+   opAt 2458 .JUMP]
 
 @[simp] theorem jump1569 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1569 = true :=

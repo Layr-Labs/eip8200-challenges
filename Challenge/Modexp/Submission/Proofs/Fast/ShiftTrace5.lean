@@ -169,7 +169,7 @@ theorem m2_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ 
     (hdisj : (addr + 32 ≤ 1024 ∨ 1024 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ 2048 ∨ 2048 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ NEG ∨ NEG + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ PRE_L ∨ PRE_DINV + 32 ≤ addr) ∧
+      (addr + 32 ≤ PRE_L ∨ PRE_M1_HIGH + 32 ≤ addr) ∧
       (addr + 32 ≤ 7168 ∨ 7168 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ 8224 ∨ 8256 + 32 * n ≤ addr)) :
     MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr := by
@@ -187,7 +187,7 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
       MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr :=
     fun addr haddr => m2_readWord_disjoint mem input n addr (by omega) hn32
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by unfold NEG; omega),
-        Or.inr (by unfold PRE_DINV; omega), Or.inr (by omega), Or.inr (by omega)⟩
+        Or.inr (by unfold PRE_M1_HIGH; omega), Or.inr (by omega), Or.inr (by omega)⟩
   have hframe2 : Exp.Frame (m2Of mem input n) n bsize minv :=
     ⟨by rw [hm2high 9344 le_rfl]; exact hframe.s32,
      by rw [hm2high 9376 (by omega)]; exact hframe.minvW,
@@ -237,7 +237,7 @@ def gasSteps_hitPath (s : State) (mem input : ByteArray) (n bsize esize msize mm
       MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr :=
     fun addr haddr => m2_readWord_disjoint mem input n addr (by omega) hn32
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by unfold NEG; omega),
-        Or.inr (by unfold PRE_DINV; omega), Or.inr (by omega), Or.inr (by omega)⟩
+        Or.inr (by unfold PRE_M1_HIGH; omega), Or.inr (by omega), Or.inr (by omega)⟩
   have hframe2 : Exp.Frame (m2Of mem input n) n bsize minv :=
     ⟨by rw [hm2high 9344 le_rfl]; exact hframe.s32,
      by rw [hm2high 9376 (by omega)]; exact hframe.minvW,

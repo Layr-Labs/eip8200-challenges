@@ -38,6 +38,7 @@ def PRE_DODD : Nat := 6176
 def PRE_X : Nat := 6208
 def PRE_BMOD : Nat := 6240
 def PRE_DINV : Nat := 6272
+def PRE_M1_HIGH : Nat := 6304
 
 /-! ## Phase 1: the raw base into `ACC` and `TS` -/
 
@@ -67,7 +68,7 @@ def negStep (mem : ByteArray) (n : Nat) : Nat → Csub.LimbState
 def newtonW (d x : UInt256) : UInt256 := (UInt256.ofNat 2 - d * x) * x
 
 def newton4W (d : UInt256) : UInt256 :=
-  newtonW d (newtonW d (newtonW d (newtonW d (UInt256.ofNat 1))))
+  newtonW d (newtonW d (UInt256.xor (UInt256.ofNat 2) (UInt256.ofNat 3 * d)))
 
 def newton8W (d : UInt256) : UInt256 :=
   newtonW d (newtonW d (newtonW d (newtonW d (newton4W d))))
@@ -78,11 +79,13 @@ def preX (d : UInt256) : UInt256 := UInt256.ofNat 1 + (UInt256.ofNat 0 - preL d)
 def preBmod (d : UInt256) : UInt256 := (UInt256.ofNat 0 - preDodd d) % preDodd d
 def preDinv (d : UInt256) : UInt256 := newton8W (preDodd d)
 
-/-- The five stores, in program order, from the top limb `d` of the modulus. -/
+/-- The five inverse-estimator words and a cached high half of the second modulus limb. -/
 def preMemOf (mem : ByteArray) (d : UInt256) : ByteArray :=
-  Exp.storeWord (Exp.storeWord (Exp.storeWord (Exp.storeWord (Exp.storeWord mem
+  let base := Exp.storeWord (Exp.storeWord (Exp.storeWord (Exp.storeWord (Exp.storeWord mem
     PRE_L (preL d)) PRE_DODD (preDodd d)) PRE_X (preX d)) PRE_BMOD (preBmod d))
     PRE_DINV (preDinv d)
+  Exp.storeWord base PRE_M1_HIGH
+    (UInt256.shiftRight (MachineState.readWord base 32) (UInt256.ofNat 128))
 
 def preMem (mem : ByteArray) : ByteArray := preMemOf mem (MachineState.readWord mem 0)
 
@@ -98,9 +101,8 @@ def qhatOf (mem : ByteArray) : UInt256 :=
   let utop := MachineState.readWord mem 2048
   let L := MachineState.readWord mem PRE_L
   let hi := utop / L
-  let r := utop % L
   let X := MachineState.readWord mem PRE_X
-  let xr := X * r
+  let xr := X * utop
   let unext := MachineState.readWord mem 2080
   let uL := unext / L
   let lo := uL + xr
@@ -115,7 +117,9 @@ def qhatOf (mem : ByteArray) : UInt256 :=
   -- correction proof below accepts every UInt256 quotient, including this one.
   let overflow := UInt256.isZero (UInt256.lt hi dodd)
   UInt256.lor (UInt256.ofNat 0 - overflow)
-    (q - UInt256.isZero (UInt256.isZero q))
+    (q - UInt256.gt
+      (UInt256.shiftRight q (UInt256.ofNat 128) * MachineState.readWord mem PRE_M1_HIGH)
+      (unext - MachineState.readWord mem 0 * q))
 
 /-- The limb pass `t += q * NEG` is exactly a CIOS first loop with `a = NEG`. -/
 def macOf (mem : ByteArray) (n : Nat) (q : UInt256) : Monpro.MacState :=
@@ -427,23 +431,24 @@ theorem fastRepresents_negStep (mem : ByteArray) (n ptr cnt v : Nat)
 /-! ## The estimator words -/
 
 theorem preMemOf_readWord_disjoint (mem : ByteArray) (d : UInt256) (addr : Nat)
-    (hdisj : addr + 32 ≤ PRE_L ∨ PRE_DINV + 32 ≤ addr) :
+    (hdisj : addr + 32 ≤ PRE_L ∨ PRE_M1_HIGH + 32 ≤ addr) :
     MachineState.readWord (preMemOf mem d) addr = MachineState.readWord mem addr := by
-  unfold PRE_L PRE_DINV at hdisj
-  unfold preMemOf PRE_L PRE_DODD PRE_X PRE_BMOD PRE_DINV Exp.storeWord
+  unfold PRE_L PRE_M1_HIGH at hdisj
+  unfold preMemOf PRE_L PRE_DODD PRE_X PRE_BMOD PRE_DINV PRE_M1_HIGH Exp.storeWord
   rw [Csub.readWord_write_disjoint _ _ _ _ (by omega),
+    Csub.readWord_write_disjoint _ _ _ _ (by omega),
     Csub.readWord_write_disjoint _ _ _ _ (by omega),
     Csub.readWord_write_disjoint _ _ _ _ (by omega),
     Csub.readWord_write_disjoint _ _ _ _ (by omega),
     Csub.readWord_write_disjoint _ _ _ _ (by omega)]
 
 theorem fastRepresents_preMemOf (mem : ByteArray) (d : UInt256) (ptr cnt v : Nat)
-    (hdisj : ptr + 32 * cnt ≤ PRE_L ∨ PRE_DINV + 32 ≤ ptr)
+    (hdisj : ptr + 32 * cnt ≤ PRE_L ∨ PRE_M1_HIGH + 32 ≤ ptr)
     (hrep : Model.FastRepresents mem ptr cnt v) :
     Model.FastRepresents (preMemOf mem d) ptr cnt v := by
   refine (Model.fastRepresents_congr ?_ v).2 hrep
   intro i hi
-  exact preMemOf_readWord_disjoint mem d _ (by unfold PRE_L PRE_DINV at hdisj ⊢; omega)
+  exact preMemOf_readWord_disjoint mem d _ (by unfold PRE_L PRE_M1_HIGH at hdisj ⊢; omega)
 
 /-! ## `u = r * radix` -/
 
