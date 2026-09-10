@@ -26,8 +26,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3584).toNat = true :=
-  Exp.jumpD 3584 (by decide) jumpDest4608
+    (UInt256.ofNat 3496).toNat = true :=
+  Exp.jumpD 3496 (by decide) jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 
@@ -149,7 +149,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (htz : Model.FastRepresents mem 8256 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
-        (Exp.r1Call s mem 4096 (UInt256.ofNat 3584) n bsize esize msize) final) ∧
+        (Exp.r1Call s mem 4096 (UInt256.ofNat 3496) n bsize esize msize) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hact296 : 296 ≤ s.activeWords.toNat :=
@@ -165,10 +165,10 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
   -- the R1B call
   set mem1 := Exp.r1Mem n 4096 mem with hmem1
   have hr1 : Challenge.EvmProof.GasSteps
-      (Exp.r1Call s mem 4096 (UInt256.ofNat 3584) n bsize esize msize)
+      (Exp.r1Call s mem 4096 (UInt256.ofNat 3496) n bsize esize msize)
       (dispState s mem1 n bsize esize msize) :=
     Exp.gasSteps_r1Block s esize msize hcode hfork hrun hnp hact296 hn hn32
-      (UInt256.ofNat 3584) mem jumpD4643 hframe0
+      (UInt256.ofNat 3496) mem jumpD4643 hframe0
   have hframe1 : Exp.Frame mem1 n bsize minv := Exp.r1Mem_frame hn hn32 hframe0
   have hmod1 : Model.FastRepresents mem1 0 n mm :=
     Exp.r1Mem_modulus hn hn32 hmpos mem hmod0 hr10 hxlt
@@ -245,7 +245,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       (Exp.gasSteps_r0 s mem1 n bsize esize msize hn hn32 hact hframe1.s32 hcode hfork hrun
         hnp).trans
       (Exp.gasSteps_ccbFull s sub hspec esize msize hmpos hn hn32 5120 (by omega) (by omega)
-        (UInt256.ofNat 3111) (Exp.mcopyMem mem1 5120 4096 (32 * n)) (Limbs.radix ^ n % mm)
+        (UInt256.ofNat 3023) (Exp.mcopyMem mem1 5120 4096 (32 * n)) (Limbs.radix ^ n % mm)
         Exp.jumpD3571 hf2 hcc.1 hcc.2 (Nat.mod_lt _ hmpos) hact296 hcode hfork hrun hnp)
     have hframeDirect : Exp.Frame directMem n bsize minv := by
       dsimp only [directMem]
@@ -297,7 +297,7 @@ theorem gasSteps_handled (input : ByteArray)
     (hpath : Challenge.Modexp.Submission.Proofs.Fast.Setup.FastPath input) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
-        (Main.trampolineState input 1314) final) ∧
+        (Main.trampolineState input 1233) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hsize : input.size < 2 ^ 256 := lt_trans hvalid.1 (by norm_num)

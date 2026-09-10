@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 3115
+def startIndex : Nat := 3063
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
@@ -23,9 +23,9 @@ private def template : List Instr :=
    .push 2 256,
    .op .EQ,
    .op .OR,
-   .push 2 4160,
+   .push 2 4163,
    .op .JUMPI,
-   .push 2 1865,
+   .push 2 1784,
    .op .JUMP]
 
 private theorem slice_eq :
@@ -38,7 +38,7 @@ private theorem getElem_slice (offset : Nat) (hoffset : offset < template.length
   rw [List.getElem?_take, if_pos hoffset, List.getElem?_drop] at hs
   simpa [Nat.add_comm] using hs
 
-private theorem startPC : Artifact.submissionArtifact.instructionPC startIndex = 4137 := by
+private theorem startPC : Artifact.submissionArtifact.instructionPC startIndex = 4140 := by
   rfl
 
 private theorem instructionPC_add
@@ -50,9 +50,9 @@ private theorem instructionPC_add
 
 /-- Exact program-counter table for the bounded dispatcher slice. -/
 @[simp] theorem dispatchPC (i : Nat) (hi : startIndex ≤ i)
-    (hii : i ≤ 3128) :
+    (hii : i ≤ 3076) :
     Artifact.submissionArtifact.instructionPC i =
-      [4137,4138,4141,4142,4143,4145,4146,4147,4150,4151,4152,4155,4156,4159][i - startIndex]! := by
+      [4140,4141,4144,4145,4146,4148,4149,4150,4153,4154,4155,4158,4159,4162][i - startIndex]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (startIndex + (i - startIndex)) := by
@@ -97,7 +97,7 @@ def cios2DispatchGuard :
    pushAt 7 2 256,
    opAt 8 .EQ,
    opAt 9 .OR,
-   pushAt 10 2 4160,
+   pushAt 10 2 4163,
    opAt 11 .JUMPI]
 
 /-- Full fallback path (indices 2670..2683, pc 4479..4501). -/
@@ -105,7 +105,7 @@ def cios2Dispatch :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   cios2DispatchGuard ++
   [
-   pushAt 12 2 1865,
+   pushAt 12 2 1784,
    opAt 13 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Dispatch

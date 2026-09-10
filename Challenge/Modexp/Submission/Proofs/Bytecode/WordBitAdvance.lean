@@ -53,8 +53,8 @@ theorem run_bitAdvance_finish (input : ByteArray) (outer j : Nat)
       UInt256.ofNat (j + 1) := by
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact hsucc'
-  have h606 : (606 : UInt256).toNat = 606 := by decide
-  have h606Word : (606 : UInt256) = UInt256.ofNat 606 := by decide
+  have h606 : (584 : UInt256).toNat = 584 := by decide
+  have h606Word : (584 : UInt256) = UInt256.ofNat 584 := by decide
   have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
   simp (config := { maxSteps := 175000 })
     [bitAdvanceFinishPath, opAt, pushAt,

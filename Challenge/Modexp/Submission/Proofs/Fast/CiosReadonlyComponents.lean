@@ -28,8 +28,8 @@ theorem run_entryPrelude (s : State) (pa pb dst ret : UInt256) (n : Nat)
     (hact : 296 ≤ s.activeWords.toNat)
     (hml : MachineState.readWord s.memory 9408 = UInt256.ofNat (32*n-32)) :
     runInstructions entryPrelude
-      (framed s (UInt256.ofNat 4161) ([pa,pb,dst,ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 4192)
+      (framed s (UInt256.ofNat 4164) ([pa,pb,dst,ret] ++ rest)) =
+    some (framed s (UInt256.ofNat 4195)
       ([pa,pb,MachineState.readWord s.memory 9376,MachineState.readWord s.memory (32*n-32),
         MachineState.readWord s.memory 9440,MachineState.readWord s.memory 96,
         MachineState.readWord s.memory 64,MachineState.readWord s.memory 32,
@@ -70,8 +70,8 @@ def dropCache : List Instr := [.op .POP, .op .POP, .op .POP, .op .POP, .op .POP,
 theorem run_dropCache (s : State) (tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) :
     runInstructions dropCache
-      (framed s (UInt256.ofNat 4875) ([inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 4882) ([dst,ret] ++ rest)) := by
+      (framed s (UInt256.ofNat 4877) ([inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest)) =
+    some (framed s (UInt256.ofNat 4884) ([dst,ret] ++ rest)) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -86,15 +86,15 @@ def cachedLoadLow : List Instr := [.op (.Dup ⟨10, by decide⟩), .op .MLOAD]
 def cachedMakeMu : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op .MUL,
    .op (.Swap ⟨0, by decide⟩)]
-def cachedLoadMod : List Instr := [.op (.Dup ⟨11, by decide⟩)]
+def cachedLoadMask : List Instr := [.op (.Dup ⟨8, by decide⟩)]
 
 theorem run_cachedLoadLow (s : State) (bi pbi pa pb flag target2 inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 32)
     (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions cachedLoadLow
-      (framed s (UInt256.ofNat 4559)
+      (framed s (UInt256.ofNat 4562)
         (cacheStack bi pbi pa pb flag target2 (UInt256.ofNat (8224+32*n)) inv m0 aEnd m96 m64 m32 dst ret rest)) =
-    some (framed s (UInt256.ofNat 4561)
+    some (framed s (UInt256.ofNat 4564)
       ([MachineState.readWord s.memory (8224+32*n)] ++
         cacheStack bi pbi pa pb flag target2 (UInt256.ofNat (8224+32*n)) inv m0 aEnd m96 m64 m32 dst ret rest)) := by
   have hc17 : rest.length + 17 < 1024 := by omega
@@ -111,9 +111,9 @@ theorem run_cachedLoadLow (s : State) (bi pbi pa pb flag target2 inv m0 aEnd m96
 theorem run_cachedMakeMu (s : State) (bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) :
     runInstructions cachedMakeMu
-      (framed s (UInt256.ofNat 4561)
+      (framed s (UInt256.ofNat 4564)
         ([t0] ++ cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
-    some (framed s (UInt256.ofNat 4565)
+    some (framed s (UInt256.ofNat 4568)
       ([t0, inv*t0] ++ cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
@@ -122,20 +122,19 @@ theorem run_cachedMakeMu (s : State) (bi pbi pa pb flag target2 tl inv m0 aEnd m
     framed, cacheStack, baseStack, Nat.add_assoc, hc18, hc19, hc20, List.exchange,
     Challenge.EvmProof.Word.succ_ofNat_mod]
 
-theorem run_cachedLoadMod (s : State) (bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret mu t0 : UInt256)
+theorem run_cachedLoadMask (s : State) (bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret mu t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) :
-    runInstructions cachedLoadMod
-      (framed s (UInt256.ofNat 4565)
+    runInstructions cachedLoadMask
+      (framed s (UInt256.ofNat 4568)
         ([t0,mu] ++ cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
-    some (framed s (UInt256.ofNat 4566)
-      ([m0,t0,mu] ++ cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
+    some (framed s (UInt256.ofNat 4569)
+      ([maxWord,t0,mu] ++ cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
   have hc19 : rest.length + 19 < 1024 := by omega
-  simp [cachedLoadMod, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    framed, cacheStack, baseStack, Nat.add_assoc, hc19, Challenge.EvmProof.Word.succ_ofNat_mod]
+  simp [cachedLoadMask, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    framed, cacheStack, baseStack, Nat.add_assoc, hc19, allOnes_value, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 def makeModProduct : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨10, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩), .op .MULMOD]
+  [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .MULMOD]
 
 def finishCarry : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩),
@@ -145,9 +144,9 @@ theorem run_cachedMakeModProduct (s : State)
     (bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret mu t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) :
     runInstructions makeModProduct
-      (framed s (UInt256.ofNat 4566)
-        ([m0,t0,mu] ++ cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
-    some (framed s (UInt256.ofNat 4570)
+      (framed s (UInt256.ofNat 4569)
+        ([maxWord,t0,mu] ++ cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
+    some (framed s (UInt256.ofNat 4572)
       ([UInt256.mulMod m0 mu maxWord,t0,mu] ++
         cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
   have hc20 : rest.length + 20 < 1024 := by omega
@@ -156,15 +155,15 @@ theorem run_cachedMakeModProduct (s : State)
   simp [makeModProduct,
     runInstructions, Challenge.EvmProof.Stepper.runInstr,
     framed, cacheStack, baseStack, Nat.add_assoc, hc20, hc21, hc22,
-    allOnes_value, maxWord, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod]
+    allOnes_value, maxWord, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 theorem run_cachedFinishCarry (s : State)
     (bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret mm mu t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) :
     runInstructions finishCarry
-      (framed s (UInt256.ofNat 4570)
+      (framed s (UInt256.ofNat 4572)
         ([mm,t0,mu] ++ cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
-    some (framed s (UInt256.ofNat 4576)
+    some (framed s (UInt256.ofNat 4578)
       ([endCarry t0 mm,mu] ++ cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
   have hc20 : rest.length + 20 < 1024 := by omega
   have hc21 : rest.length + 21 < 1024 := by omega
@@ -174,7 +173,7 @@ theorem run_cachedFinishCarry (s : State)
     List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 def cachedProduct : List Instr :=
-  (((cachedLoadLow ++ cachedMakeMu) ++ cachedLoadMod) ++
+  (((cachedLoadLow ++ cachedMakeMu) ++ cachedLoadMask) ++
     makeModProduct) ++ finishCarry
 
 theorem run_cachedProduct (s : State) (bi pbi pa pb flag target2 inv m0 aEnd m96 m64 m32 dst ret : UInt256)
@@ -183,16 +182,16 @@ theorem run_cachedProduct (s : State) (bi pbi pa pb flag target2 inv m0 aEnd m96
     let tl := UInt256.ofNat (8224+32*n)
     let t0 := MachineState.readWord s.memory (8224+32*n)
     runInstructions cachedProduct
-      (framed s (UInt256.ofNat 4559)
+      (framed s (UInt256.ofNat 4562)
         (cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
-    some (framed s (UInt256.ofNat 4576)
+    some (framed s (UInt256.ofNat 4578)
       ([endCarry t0 (UInt256.mulMod m0 (inv*t0) maxWord),inv*t0] ++
         cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
   let tl := UInt256.ofNat (8224+32*n)
   let t0 := MachineState.readWord s.memory (8224+32*n)
   have h1 := run_cachedLoadLow s bi pbi pa pb flag target2 inv m0 aEnd m96 m64 m32 dst ret n rest hcap hn hact
   have h2 := run_cachedMakeMu s bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret t0 rest hcap
-  have h3 := run_cachedLoadMod s bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret (inv*t0) t0 rest hcap
+  have h3 := run_cachedLoadMask s bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret (inv*t0) t0 rest hcap
   have h4 := run_cachedMakeModProduct s bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret (inv*t0) t0 rest hcap
   have h5 := run_cachedFinishCarry s bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret
     (UInt256.mulMod m0 (inv*t0) maxWord) (inv*t0) t0 rest hcap
@@ -256,9 +255,9 @@ theorem run_cachedProduct_model (s : State)
     (hc : ReadonlyCache s.memory n tl inv m0)
     (hminv : CiosCachedMidMemory.inverseInvariant s.memory n) :
     runInstructions cachedProduct
-      (framed s (UInt256.ofNat 4559)
+      (framed s (UInt256.ofNat 4562)
         (cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
-    some (framed s (UInt256.ofNat 4576)
+    some (framed s (UInt256.ofNat 4578)
       ([rowC0 s.memory n,rowMu s.memory n] ++
         cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
   rw [hc.lowAddress, hc.inverse, hc.modulusLow]

@@ -80,7 +80,7 @@ theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
     simp [baseRest, callerRest]
   have hhelper := blockCost_of_static Accessors.calldataBytePath 30
     (Accessors.run_calldataByte (baseLoopState input i base)
-      (UInt256.ofNat (96 + i)) 0 562 (baseRest input i base) hcap rfl rfl
+      (UInt256.ofNat (96 + i)) 0 543 (baseRest input i base) hcap rfl rfl
       (by decide)) (by rfl)
     (by decide) (by rfl) (by rfl)
   have htail := blockCost_of_static baseTailPath 48
@@ -88,7 +88,7 @@ theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
     (by decide) (by rfl) (by rfl)
   have htail' : Challenge.EvmProof.Stepper.runLocatedBlockCost baseTailPath
       (Accessors.calldataByteReturned (baseLoopState input i base)
-        (UInt256.ofNat (96 + i)) 562 (baseRest input i base)) = 48 := by
+        (UInt256.ofNat (96 + i)) 543 (baseRest input i base)) = 48 := by
     simpa [baseReturnedState, Accessors.calldataByteReturned] using htail
   unfold gasSteps_baseIteration
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
@@ -159,7 +159,7 @@ theorem gasSteps_bitExit_cost (input : ByteArray) (outer : Nat)
     (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-    (by exact Artifact.isValidJumpDest_index 525 (by rfl))
+    (by exact Artifact.isValidJumpDest_index 518 (by rfl))
 
 theorem gasSteps_bitCopy0_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
@@ -284,12 +284,12 @@ theorem gasSteps_expLoop_cost (input : ByteArray) (acc base : UInt256)
 
 theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)
     (hvalid : ValidInput input) (hword : modulusSize input ≤ 32) :
-    (gasSteps_expFinish input acc base hvalid hword).cost = 62 := by
+    (gasSteps_expFinish input acc base hvalid hword).cost = 61 := by
   have hguard := blockCost_of_static expGuardPath 24
     (run_expFinishGuard input acc base hvalid) (by rfl)
     (by decide) (by rfl) (by rfl)
   have htail := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    expFinishTailPath 35
+    expFinishTailPath 34
     (run_expFinishTail input acc base hvalid hword) (by rfl)
     (by decide) (by rfl)
   have hreturned : MachineState.activeWordsAfter 1 0
@@ -320,7 +320,7 @@ theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)
 theorem gasSteps_zeroModulus_cost (input : ByteArray)
     (hvalid : ValidInput input) (hmsize : 0 < modulusSize input)
     (hword : modulusSize input ≤ 32) (hmodulus : modulusValue input = 0) :
-    (gasSteps_zeroModulus input hvalid hmsize hword hmodulus).cost = 50 := by
+    (gasSteps_zeroModulus input hvalid hmsize hword hmodulus).cost = 49 := by
   have hload := blockCost_of_static startLoadPath 31
     (run_startLoad input hvalid hmsize hword) (by rfl)
     (by decide) (by rfl) (by rfl)
@@ -328,7 +328,7 @@ theorem gasSteps_zeroModulus_cost (input : ByteArray)
     (run_startJump_zero input hmodulus) (by rfl)
     (by decide) (by rfl) (by rfl)
   have htail := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    zeroTailPath 6 (run_zeroTail input hvalid hmodulus) (by rfl)
+    zeroTailPath 5 (run_zeroTail input hvalid hmodulus) (by rfl)
       (by decide) (by decide)
   have hfinal : (zeroModulusFinalState input).activeWords.toNat = 1 := by
     change (UInt256.ofNat

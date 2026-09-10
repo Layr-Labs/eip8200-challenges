@@ -12,8 +12,8 @@ set_option linter.unusedSimpArgs false in
 theorem run_bigTailJump (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock bigTailJumpPath
       (bigTailArgsState input) = some (bigEntryState input) := by
-  have h704 : (704 : UInt256).toNat = 704 := by decide
-  have h704Word : (704 : UInt256) = UInt256.ofNat 704 := by decide
+  have h704 : (660 : UInt256).toNat = 660 := by decide
+  have h704Word : (660 : UInt256) = UInt256.ofNat 660 := by decide
   simp (config := { maxSteps := 50000 })
     [bigTailJumpPath, opAt, pushAt, wfOp, bigTailArgsState,
       bigEntryState, Main.headerState, initialState,

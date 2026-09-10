@@ -29,7 +29,7 @@ theorem run_expGuard (input : ByteArray) (i : Nat) (acc base : UInt256)
       UInt256.ofNat 0 := by
     rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat, himod, hemod, if_neg hne]
-  have h598 : (598 : UInt256).toNat = 598 := by decide
+  have h598 : (576 : UInt256).toNat = 576 := by decide
   have hzeroNat : (UInt256.ofNat 0).toNat = 0 := by decide
   simp (config := { maxSteps := 150000 })
     [expGuardPath, opAt, pushAt,
@@ -163,8 +163,8 @@ theorem run_bitAdvance (input : ByteArray) (outer j : Nat)
       UInt256.ofNat (j + 1) := by
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact hsucc'
-  have h606 : (606 : UInt256).toNat = 606 := by decide
-  have h606Word : (606 : UInt256) = UInt256.ofNat 606 := by decide
+  have h606 : (584 : UInt256).toNat = 584 := by decide
+  have h606Word : (584 : UInt256) = UInt256.ofNat 584 := by decide
   have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
   simp (config := { maxSteps := 175000 })
     [bitAdvancePath, opAt, pushAt,
