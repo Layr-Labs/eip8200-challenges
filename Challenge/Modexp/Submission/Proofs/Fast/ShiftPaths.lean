@@ -137,18 +137,18 @@ def blk2956 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2851 .JUMPDEST,
    opAt 2852 (.Dup ⟨0, by decide⟩),
-   pushAt 2853 2 2,
-   opAt 2854 .SUB,
-   opAt 2855 .JUMPDEST,
-   opAt 2856 .JUMPDEST,
+   pushAt 2853 2 3,
+   opAt 2854 .MUL,
+   pushAt 2855 1 2,
+   opAt 2856 .XOR,
    opAt 2857 .JUMPDEST,
    opAt 2858 .JUMPDEST,
-   opAt 2859 (.Dup ⟨0, by decide⟩),
-   opAt 2860 (.Dup ⟨2, by decide⟩),
-   opAt 2861 .MUL,
-   pushAt 2862 1 2,
-   opAt 2863 .SUB,
-   opAt 2864 .MUL,
+   opAt 2859 .JUMPDEST,
+   opAt 2860 .JUMPDEST,
+   opAt 2861 .JUMPDEST,
+   opAt 2862 .JUMPDEST,
+   opAt 2863 .JUMPDEST,
+   opAt 2864 .JUMPDEST,
    opAt 2865 (.Dup ⟨0, by decide⟩),
    opAt 2866 (.Dup ⟨2, by decide⟩),
    opAt 2867 .MUL,
@@ -222,301 +222,297 @@ def blk3018 :
 def blk3026 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2921 .JUMPDEST,
-   pushAt 2922 2 2048,
+   pushAt 2922 8 2048,
    opAt 2923 .MLOAD,
    pushAt 2924 2 6144,
    opAt 2925 .MLOAD,
    opAt 2926 (.Dup ⟨1, by decide⟩),
-   opAt 2927 (.Dup ⟨1, by decide⟩),
-   opAt 2928 (.Swap ⟨0, by decide⟩),
-   opAt 2929 .DIV,
-   opAt 2930 (.Swap ⟨1, by decide⟩),
-   opAt 2931 .MOD,
-   pushAt 2932 2 6208,
-   opAt 2933 .MLOAD,
-   opAt 2934 .MUL,
-   pushAt 2935 2 2080,
-   opAt 2936 .MLOAD,
-   pushAt 2937 2 6144,
-   opAt 2938 .MLOAD,
-   opAt 2939 (.Swap ⟨0, by decide⟩),
-   opAt 2940 .DIV,
-   opAt 2941 .ADD,
-   pushAt 2942 2 6176,
-   opAt 2943 .MLOAD,
-   opAt 2944 (.Dup ⟨0, by decide⟩),
-   pushAt 2945 2 6240,
-   opAt 2946 .MLOAD,
-   opAt 2947 (.Dup ⟨4, by decide⟩),
-   opAt 2948 .MULMOD,
-   opAt 2949 (.Dup ⟨2, by decide⟩),
+   pushAt 2927 2 6208,
+   opAt 2928 .MLOAD,
+   opAt 2929 .MUL,
+   opAt 2930 (.Dup ⟨1, by decide⟩),
+   pushAt 2931 2 2080,
+   opAt 2932 .MLOAD,
+   opAt 2933 .DIV,
+   opAt 2934 .ADD,
+   opAt 2935 (.Swap ⟨1, by decide⟩),
+   opAt 2936 .DIV,
+   opAt 2937 (.Swap ⟨0, by decide⟩),
+   pushAt 2938 2 6176,
+   opAt 2939 .MLOAD,
+   opAt 2940 (.Dup ⟨0, by decide⟩),
+   pushAt 2941 2 6240,
+   opAt 2942 .MLOAD,
+   opAt 2943 (.Dup ⟨4, by decide⟩),
+   opAt 2944 .MULMOD,
+   opAt 2945 (.Dup ⟨2, by decide⟩),
 
-   opAt 2950 .ADDMOD,
-   opAt 2951 (.Swap ⟨0, by decide⟩),
-   opAt 2952 .SUB,
-   pushAt 2953 2 6272,
-   opAt 2954 .MLOAD,
-   opAt 2955 .MUL,
-   opAt 2956 (.Dup ⟨0, by decide⟩),
-   pushAt 2957 0 0,
-   opAt 2958 .LT,
-   opAt 2959 (.Swap ⟨0, by decide⟩),
-   opAt 2960 .SUB,
-   opAt 2961 (.Swap ⟨0, by decide⟩),
-   pushAt 2962 2 6176,
-   opAt 2963 .MLOAD,
-   opAt 2964 .JUMPDEST,
-   opAt 2965 .GT,
-   opAt 2966 .ISZERO,
-   pushAt 2967 0 0,
-   opAt 2968 .SUB,
-   opAt 2969 .OR]
+   opAt 2946 .ADDMOD,
+   opAt 2947 (.Swap ⟨0, by decide⟩),
+   opAt 2948 .SUB,
+   pushAt 2949 2 6272,
+   opAt 2950 .MLOAD,
+   opAt 2951 .MUL,
+   opAt 2952 (.Dup ⟨0, by decide⟩),
+   pushAt 2953 0 0,
+   opAt 2954 .LT,
+   opAt 2955 (.Swap ⟨0, by decide⟩),
+   opAt 2956 .SUB,
+   opAt 2957 (.Swap ⟨0, by decide⟩),
+   pushAt 2958 2 6176,
+   opAt 2959 .MLOAD,
+   opAt 2960 .JUMPDEST,
+   opAt 2961 .GT,
+   opAt 2962 .ISZERO,
+   pushAt 2963 0 0,
+   opAt 2964 .SUB,
+   opAt 2965 .OR]
 
 /-- Instructions 2707..3076, pc 4121..5223. -/
 def blk3069 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2970 .JUMPDEST,
-   pushAt 2971 0 0,
-   pushAt 2972 2 9440,
-   opAt 2973 .MLOAD,
-   pushAt 2974 2 9408,
-   opAt 2975 .MLOAD,
-   pushAt 2976 2 5120,
-   opAt 2977 .ADD]
+  [opAt 2966 .JUMPDEST,
+   pushAt 2967 0 0,
+   pushAt 2968 2 9440,
+   opAt 2969 .MLOAD,
+   pushAt 2970 2 9408,
+   opAt 2971 .MLOAD,
+   pushAt 2972 2 5120,
+   opAt 2973 .ADD]
 
 /-- Instructions 2715..2762, pc 5224..4282. -/
 def blk3077 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2978 .JUMPDEST,
-   opAt 2979 (.Dup ⟨0, by decide⟩),
-   opAt 2980 .MLOAD,
-   pushAt 2981 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   opAt 2982 (.Dup ⟨5, by decide⟩),
-   opAt 2983 (.Dup ⟨2, by decide⟩),
-   opAt 2984 .MUL,
-   opAt 2985 (.Swap ⟨1, by decide⟩),
-   opAt 2986 (.Dup ⟨6, by decide⟩),
-   opAt 2987 .MULMOD,
-   opAt 2988 (.Dup ⟨1, by decide⟩),
-   opAt 2989 (.Dup ⟨1, by decide⟩),
-   opAt 2990 .LT,
-   opAt 2991 .SUB,
-   opAt 2992 (.Dup ⟨4, by decide⟩),
-   opAt 2993 (.Dup ⟨2, by decide⟩),
-   opAt 2994 .ADD,
-   opAt 2995 (.Dup ⟨0, by decide⟩),
-   opAt 2996 (.Swap ⟨5, by decide⟩),
-   opAt 2997 .GT,
-   opAt 2998 .SUB,
-   opAt 2999 .SUB,
-   opAt 3000 (.Dup ⟨3, by decide⟩),
-   opAt 3001 (.Dup ⟨3, by decide⟩),
-   opAt 3002 .MLOAD,
+  [opAt 2974 .JUMPDEST,
+   opAt 2975 (.Dup ⟨0, by decide⟩),
+   opAt 2976 .MLOAD,
+   pushAt 2977 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   opAt 2978 (.Dup ⟨5, by decide⟩),
+   opAt 2979 (.Dup ⟨2, by decide⟩),
+   opAt 2980 .MUL,
+   opAt 2981 (.Swap ⟨1, by decide⟩),
+   opAt 2982 (.Dup ⟨6, by decide⟩),
+   opAt 2983 .MULMOD,
+   opAt 2984 (.Dup ⟨1, by decide⟩),
+   opAt 2985 (.Dup ⟨1, by decide⟩),
+   opAt 2986 .LT,
+   opAt 2987 .SUB,
+   opAt 2988 (.Dup ⟨4, by decide⟩),
+   opAt 2989 (.Dup ⟨2, by decide⟩),
+   opAt 2990 .ADD,
+   opAt 2991 (.Dup ⟨0, by decide⟩),
+   opAt 2992 (.Swap ⟨5, by decide⟩),
+   opAt 2993 .GT,
+   opAt 2994 .SUB,
+   opAt 2995 .SUB,
+   opAt 2996 (.Dup ⟨3, by decide⟩),
+   opAt 2997 (.Dup ⟨3, by decide⟩),
+   opAt 2998 .MLOAD,
+   opAt 2999 .ADD,
+   opAt 3000 (.Dup ⟨0, by decide⟩),
+   opAt 3001 (.Swap ⟨4, by decide⟩),
+   opAt 3002 .GT,
    opAt 3003 .ADD,
-   opAt 3004 (.Dup ⟨0, by decide⟩),
-   opAt 3005 (.Swap ⟨4, by decide⟩),
-   opAt 3006 .GT,
+   opAt 3004 (.Swap ⟨2, by decide⟩),
+   opAt 3005 (.Dup ⟨2, by decide⟩),
+   pushAt 3006 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    opAt 3007 .ADD,
    opAt 3008 (.Swap ⟨2, by decide⟩),
-   opAt 3009 (.Dup ⟨2, by decide⟩),
+   opAt 3009 .MSTORE,
    pushAt 3010 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    opAt 3011 .ADD,
-   opAt 3012 (.Swap ⟨2, by decide⟩),
-   opAt 3013 .MSTORE,
-   pushAt 3014 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 3015 .ADD,
-   pushAt 3016 2 8224,
-   opAt 3017 (.Dup ⟨2, by decide⟩),
-   opAt 3018 .GT,
-   pushAt 3019 2 4119,
-   opAt 3020 .JUMPI]
+   pushAt 3012 2 8224,
+   opAt 3013 (.Dup ⟨2, by decide⟩),
+   opAt 3014 .GT,
+   pushAt 3015 2 4119,
+   opAt 3016 .JUMPI]
 
 /-- Instructions 2763..2790, pc 4283..4316. -/
 def blk3125 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3021 .POP,
-   opAt 3022 .POP,
-   pushAt 3023 2 8224,
-   opAt 3024 .MLOAD,
-   opAt 3025 (.Dup ⟨1, by decide⟩),
-   opAt 3026 .ADD,
-   opAt 3027 (.Dup ⟨1, by decide⟩),
-   opAt 3028 (.Dup ⟨1, by decide⟩),
-   opAt 3029 .LT,
-   opAt 3030 (.Swap ⟨1, by decide⟩),
-   opAt 3031 .POP,
-   opAt 3032 (.Dup ⟨2, by decide⟩),
-   opAt 3033 (.Dup ⟨1, by decide⟩),
-   opAt 3034 .LT,
-   opAt 3035 (.Swap ⟨0, by decide⟩),
-   opAt 3036 (.Dup ⟨3, by decide⟩),
-   opAt 3037 (.Swap ⟨0, by decide⟩),
-   opAt 3038 .SUB,
-   opAt 3039 (.Dup ⟨0, by decide⟩),
-   pushAt 3040 2 8224,
-   opAt 3041 .MSTORE,
-   opAt 3042 .POP,
-   opAt 3043 .GT,
-   opAt 3044 (.Swap ⟨0, by decide⟩),
-   opAt 3045 .POP,
-   opAt 3046 .ISZERO,
-   pushAt 3047 2 4363,
-   opAt 3048 .JUMPI]
+  [opAt 3017 .POP,
+   opAt 3018 .POP,
+   pushAt 3019 2 8224,
+   opAt 3020 .MLOAD,
+   opAt 3021 (.Dup ⟨1, by decide⟩),
+   opAt 3022 .ADD,
+   opAt 3023 (.Dup ⟨1, by decide⟩),
+   opAt 3024 (.Dup ⟨1, by decide⟩),
+   opAt 3025 .LT,
+   opAt 3026 (.Swap ⟨1, by decide⟩),
+   opAt 3027 .POP,
+   opAt 3028 (.Dup ⟨2, by decide⟩),
+   opAt 3029 (.Dup ⟨1, by decide⟩),
+   opAt 3030 .LT,
+   opAt 3031 (.Swap ⟨0, by decide⟩),
+   opAt 3032 (.Dup ⟨3, by decide⟩),
+   opAt 3033 (.Swap ⟨0, by decide⟩),
+   opAt 3034 .SUB,
+   opAt 3035 (.Dup ⟨0, by decide⟩),
+   pushAt 3036 2 8224,
+   opAt 3037 .MSTORE,
+   opAt 3038 .POP,
+   opAt 3039 .GT,
+   opAt 3040 (.Swap ⟨0, by decide⟩),
+   opAt 3041 .POP,
+   opAt 3042 .ISZERO,
+   pushAt 3043 2 4363,
+   opAt 3044 .JUMPI]
 
 /-- Instructions 2791..2794, pc 4317..4322. -/
 def blk3153 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3049 .JUMPDEST,
-   pushAt 3050 0 0,
-   pushAt 3051 2 9440,
-   opAt 3052 .MLOAD]
+  [opAt 3045 .JUMPDEST,
+   pushAt 3046 0 0,
+   pushAt 3047 2 9440,
+   opAt 3048 .MLOAD]
 
 /-- Instructions 2795..3447, pc 4323..5172. -/
 def blk3157 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3053 .JUMPDEST,
-   opAt 3054 (.Dup ⟨0, by decide⟩),
-   opAt 3055 .MLOAD,
-   opAt 3056 (.Dup ⟨1, by decide⟩),
-   pushAt 3057 2 8256,
-   opAt 3058 (.Swap ⟨0, by decide⟩),
-   opAt 3059 .SUB,
-   opAt 3060 .MLOAD,
-   opAt 3061 (.Dup ⟨1, by decide⟩),
-   opAt 3062 .ADD,
-   opAt 3063 (.Dup ⟨0, by decide⟩),
-   opAt 3064 (.Dup ⟨2, by decide⟩),
-   opAt 3065 .GT,
-   opAt 3066 (.Swap ⟨1, by decide⟩),
-   opAt 3067 .POP,
-   opAt 3068 (.Dup ⟨3, by decide⟩),
-   opAt 3069 .ADD,
-   opAt 3070 (.Dup ⟨0, by decide⟩),
-   opAt 3071 (.Dup ⟨4, by decide⟩),
-   opAt 3072 .GT,
-   opAt 3073 (.Swap ⟨3, by decide⟩),
-   opAt 3074 .POP,
-   opAt 3075 (.Dup ⟨2, by decide⟩),
-   opAt 3076 .MSTORE,
-   opAt 3077 (.Swap ⟨0, by decide⟩),
-   opAt 3078 (.Swap ⟨1, by decide⟩),
-   opAt 3079 .OR,
-   opAt 3080 (.Swap ⟨0, by decide⟩),
-   pushAt 3081 1 31, opAt 3082 .NOT,
-   opAt 3083 .ADD,
-   pushAt 3084 2 8255,
-   opAt 3085 (.Dup ⟨1, by decide⟩),
-   opAt 3086 .GT,
-   pushAt 3087 2 4302,
-   opAt 3088 .JUMPI]
+  [opAt 3049 .JUMPDEST,
+   opAt 3050 (.Dup ⟨0, by decide⟩),
+   opAt 3051 .MLOAD,
+   opAt 3052 (.Dup ⟨1, by decide⟩),
+   pushAt 3053 2 8256,
+   opAt 3054 (.Swap ⟨0, by decide⟩),
+   opAt 3055 .SUB,
+   opAt 3056 .MLOAD,
+   opAt 3057 (.Dup ⟨1, by decide⟩),
+   opAt 3058 .ADD,
+   opAt 3059 (.Dup ⟨0, by decide⟩),
+   opAt 3060 (.Dup ⟨2, by decide⟩),
+   opAt 3061 .GT,
+   opAt 3062 (.Swap ⟨1, by decide⟩),
+   opAt 3063 .POP,
+   opAt 3064 (.Dup ⟨3, by decide⟩),
+   opAt 3065 .ADD,
+   opAt 3066 (.Dup ⟨0, by decide⟩),
+   opAt 3067 (.Dup ⟨4, by decide⟩),
+   opAt 3068 .GT,
+   opAt 3069 (.Swap ⟨3, by decide⟩),
+   opAt 3070 .POP,
+   opAt 3071 (.Dup ⟨2, by decide⟩),
+   opAt 3072 .MSTORE,
+   opAt 3073 (.Swap ⟨0, by decide⟩),
+   opAt 3074 (.Swap ⟨1, by decide⟩),
+   opAt 3075 .OR,
+   opAt 3076 (.Swap ⟨0, by decide⟩),
+   pushAt 3077 1 31, opAt 3078 .NOT,
+   opAt 3079 .ADD,
+   pushAt 3080 2 8255,
+   opAt 3081 (.Dup ⟨1, by decide⟩),
+   opAt 3082 .GT,
+   pushAt 3083 2 4302,
+   opAt 3084 .JUMPI]
 
 /-- Instructions 2830..2841, pc 4917..5221. -/
 def blk3192 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3089 .POP,
-   pushAt 3090 2 8224,
-   opAt 3091 .MLOAD,
-   opAt 3092 (.Dup ⟨1, by decide⟩),
-   opAt 3093 .ADD,
-   opAt 3094 (.Dup ⟨0, by decide⟩),
-   pushAt 3095 2 8224,
-   opAt 3096 .MSTORE,
-   opAt 3097 .LT,
-   opAt 3098 .ISZERO,
-   pushAt 3099 2 4296,
-   opAt 3100 .JUMPI]
+  [opAt 3085 .POP,
+   pushAt 3086 2 8224,
+   opAt 3087 .MLOAD,
+   opAt 3088 (.Dup ⟨1, by decide⟩),
+   opAt 3089 .ADD,
+   opAt 3090 (.Dup ⟨0, by decide⟩),
+   pushAt 3091 2 8224,
+   opAt 3092 .MSTORE,
+   opAt 3093 .LT,
+   opAt 3094 .ISZERO,
+   pushAt 3095 2 4296,
+   opAt 3096 .JUMPI]
 
 /-- Instructions 2842..2847, pc 5222..4393. -/
 def blk3204 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3101 .JUMPDEST,
-   pushAt 3102 2 8224,
-   opAt 3103 .MLOAD,
-   opAt 3104 .ISZERO,
-   pushAt 3105 2 4432,
-   opAt 3106 .JUMPI]
+  [opAt 3097 .JUMPDEST,
+   pushAt 3098 2 8224,
+   opAt 3099 .MLOAD,
+   opAt 3100 .ISZERO,
+   pushAt 3101 2 4432,
+   opAt 3102 .JUMPI]
 
 /-- Instructions 2848..2850, pc 4394..4398. -/
 def blk3210 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3107 0 0,
-   pushAt 3108 2 9440,
-   opAt 3109 .MLOAD]
+  [pushAt 3103 0 0,
+   pushAt 3104 2 9440,
+   opAt 3105 .MLOAD]
 
 /-- Instructions 2851..2866, pc 4399..5232. -/
 def blk3213 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3110 .JUMPDEST,
-   opAt 3111 (.Dup ⟨0, by decide⟩),
-   opAt 3112 .MLOAD,
-   opAt 3113 (.Dup ⟨1, by decide⟩),
-   pushAt 3114 2 8256,
-   opAt 3115 (.Swap ⟨0, by decide⟩),
-   opAt 3116 .SUB,
-   opAt 3117 .MLOAD,
-   opAt 3118 (.Dup ⟨1, by decide⟩),
-   opAt 3119 (.Dup ⟨1, by decide⟩),
-   opAt 3120 .GT,
-   opAt 3121 (.Swap ⟨1, by decide⟩),
-   opAt 3122 .SUB,
-   opAt 3123 (.Dup ⟨3, by decide⟩),
-   opAt 3124 (.Dup ⟨1, by decide⟩),
-   opAt 3125 .LT,
-   opAt 3126 (.Swap ⟨0, by decide⟩),
-   opAt 3127 (.Dup ⟨4, by decide⟩),
-   opAt 3128 (.Swap ⟨0, by decide⟩),
-   opAt 3129 .SUB,
-   opAt 3130 (.Dup ⟨3, by decide⟩),
-   opAt 3131 .MSTORE,
-   opAt 3132 .OR,
-   opAt 3133 (.Swap ⟨1, by decide⟩),
-   opAt 3134 .POP,
-   pushAt 3135 1 31, opAt 3136 .NOT,
-   opAt 3137 .ADD,
-   pushAt 3138 2 8255,
-   opAt 3139 (.Dup ⟨1, by decide⟩),
-   opAt 3140 .GT,
-   pushAt 3141 2 4378,
-   opAt 3142 .JUMPI]
+  [opAt 3106 .JUMPDEST,
+   opAt 3107 (.Dup ⟨0, by decide⟩),
+   opAt 3108 .MLOAD,
+   opAt 3109 (.Dup ⟨1, by decide⟩),
+   pushAt 3110 2 8256,
+   opAt 3111 (.Swap ⟨0, by decide⟩),
+   opAt 3112 .SUB,
+   opAt 3113 .MLOAD,
+   opAt 3114 (.Dup ⟨1, by decide⟩),
+   opAt 3115 (.Dup ⟨1, by decide⟩),
+   opAt 3116 .GT,
+   opAt 3117 (.Swap ⟨1, by decide⟩),
+   opAt 3118 .SUB,
+   opAt 3119 (.Dup ⟨3, by decide⟩),
+   opAt 3120 (.Dup ⟨1, by decide⟩),
+   opAt 3121 .LT,
+   opAt 3122 (.Swap ⟨0, by decide⟩),
+   opAt 3123 (.Dup ⟨4, by decide⟩),
+   opAt 3124 (.Swap ⟨0, by decide⟩),
+   opAt 3125 .SUB,
+   opAt 3126 (.Dup ⟨3, by decide⟩),
+   opAt 3127 .MSTORE,
+   opAt 3128 .OR,
+   opAt 3129 (.Swap ⟨1, by decide⟩),
+   opAt 3130 .POP,
+   pushAt 3131 1 31, opAt 3132 .NOT,
+   opAt 3133 .ADD,
+   pushAt 3134 2 8255,
+   opAt 3135 (.Dup ⟨1, by decide⟩),
+   opAt 3136 .GT,
+   pushAt 3137 2 4378,
+   opAt 3138 .JUMPI]
 
 /-- Instructions 2867..2874, pc 4439..4452. -/
 def blk3245 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3143 .POP,
-   pushAt 3144 2 8224,
-   opAt 3145 .MLOAD,
-   opAt 3146 .SUB,
-   pushAt 3147 2 8224,
-   opAt 3148 .MSTORE,
-   pushAt 3149 2 4363,
-   opAt 3150 .JUMP]
+  [opAt 3139 .POP,
+   pushAt 3140 2 8224,
+   opAt 3141 .MLOAD,
+   opAt 3142 .SUB,
+   pushAt 3143 2 8224,
+   opAt 3144 .MSTORE,
+   pushAt 3145 2 4363,
+   opAt 3146 .JUMP]
 
 /-- Instructions 2875..2879, pc 4453..5257. -/
 def blk3253 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3151 .JUMPDEST,
-   pushAt 3152 2 4443,
-   pushAt 3153 2 2048,
-   pushAt 3154 2 2304,
-   opAt 3155 .JUMP]
+  [opAt 3147 .JUMPDEST,
+   pushAt 3148 2 4443,
+   pushAt 3149 2 2048,
+   pushAt 3150 2 2304,
+   opAt 3151 .JUMP]
 
 /-- Instructions 2880..2885, pc 5357..5296. -/
 def blk3258 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3156 .JUMPDEST,
-   pushAt 3157 1 1,
-   opAt 3158 (.Swap ⟨0, by decide⟩),
-   opAt 3159 .SUB,
-   pushAt 3160 2 4017,
-   opAt 3161 .JUMP]
+  [opAt 3152 .JUMPDEST,
+   pushAt 3153 1 1,
+   opAt 3154 (.Swap ⟨0, by decide⟩),
+   opAt 3155 .SUB,
+   pushAt 3156 2 4017,
+   opAt 3157 .JUMP]
 
 /-- Instructions 2886..3523, pc 5297..5332. -/
 def blk3264 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3162 .JUMPDEST,
-   opAt 3163 .POP,
-   pushAt 3164 2 1756,
-   opAt 3165 .JUMP]
+  [opAt 3158 .JUMPDEST,
+   opAt 3159 .POP,
+   pushAt 3160 2 1756,
+   opAt 3161 .JUMP]
 
 theorem jumpDest4643 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3816 = true :=
@@ -556,38 +552,38 @@ theorem jumpDest4895 :
 
 theorem jumpDest4954 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4105 = true :=
-  Artifact.isValidJumpDest_index 2970 (by rfl)
+  Artifact.isValidJumpDest_index 2966 (by rfl)
 
 theorem jumpDest4968 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4119 = true :=
-  Artifact.isValidJumpDest_index 2978 (by rfl)
+  Artifact.isValidJumpDest_index 2974 (by rfl)
 
 theorem jumpDest5150 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4296 = true :=
-  Artifact.isValidJumpDest_index 3049 (by rfl)
+  Artifact.isValidJumpDest_index 3045 (by rfl)
 
 theorem jumpDest5156 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4302 = true :=
-  Artifact.isValidJumpDest_index 3053 (by rfl)
+  Artifact.isValidJumpDest_index 3049 (by rfl)
 
 theorem jumpDest5247 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4363 = true :=
-  Artifact.isValidJumpDest_index 3101 (by rfl)
+  Artifact.isValidJumpDest_index 3097 (by rfl)
 
 theorem jumpDest5262 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4378 = true :=
-  Artifact.isValidJumpDest_index 3110 (by rfl)
+  Artifact.isValidJumpDest_index 3106 (by rfl)
 
 theorem jumpDest5346 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4432 = true :=
-  Artifact.isValidJumpDest_index 3151 (by rfl)
+  Artifact.isValidJumpDest_index 3147 (by rfl)
 
 theorem jumpDest5357 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4443 = true :=
-  Artifact.isValidJumpDest_index 3156 (by rfl)
+  Artifact.isValidJumpDest_index 3152 (by rfl)
 
 theorem jumpDest5366 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4452 = true :=
-  Artifact.isValidJumpDest_index 3162 (by rfl)
+  Artifact.isValidJumpDest_index 3158 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

@@ -67,7 +67,7 @@ def negStep (mem : ByteArray) (n : Nat) : Nat → Csub.LimbState
 def newtonW (d x : UInt256) : UInt256 := (UInt256.ofNat 2 - d * x) * x
 
 def newton4W (d : UInt256) : UInt256 :=
-  newtonW d (newtonW d (newtonW d (newtonW d (UInt256.ofNat 1))))
+  newtonW d (newtonW d (UInt256.xor (UInt256.ofNat 2) (UInt256.ofNat 3 * d)))
 
 def newton8W (d : UInt256) : UInt256 :=
   newtonW d (newtonW d (newtonW d (newtonW d (newton4W d))))
@@ -98,9 +98,8 @@ def qhatOf (mem : ByteArray) : UInt256 :=
   let utop := MachineState.readWord mem 2048
   let L := MachineState.readWord mem PRE_L
   let hi := utop / L
-  let r := utop % L
   let X := MachineState.readWord mem PRE_X
-  let xr := X * r
+  let xr := X * utop
   let unext := MachineState.readWord mem 2080
   let uL := unext / L
   let lo := uL + xr
