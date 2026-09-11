@@ -9,7 +9,6 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOnePositive
 
 structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyOneGasCore.Paths artifact fork where
-  entryBridge : Block artifact fork 2525 WindowTwentyOneEntry.bridgeProgram
   entryJump : Decode.isValidJumpDest artifact.code 2335 = true
   width : Block artifact fork 2335 WindowTwentyOneEntry.widthProgram
   miss : Block artifact fork 2355 WindowTwentyOneEntry.missProgram
@@ -191,28 +190,18 @@ private theorem guard_zero_iff (input : ByteArray) :
     rw [h]
     rfl
 
-def steps_bridge {artifact : ProgramArtifact} {fork : Fork}
-    (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
-    (input : ByteArray) :
-    GasSteps (state template input (UInt256.ofNat 2525)) (state template input (UInt256.ofNat 2335)) := by
-  have ec := context_env template env input
-  have h := WindowTwentyOneEntry.run_bridge (context template input) (routeStack input)
-    (by simp [routeStack]) (jump_env ec paths.entryJump)
-  exact lift paths.entryBridge h (ec.transfer rfl rfl) rfl
-
 def steps_hit {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
-    GasSteps (state template input (UInt256.ofNat 2525)) (state template input (UInt256.ofNat 4812)) := by
+    GasSteps (state template input (UInt256.ofNat 2335)) (state template input (UInt256.ofNat 4812)) := by
   have h := width_raw template input (jump_env env paths.hitJump)
   rw [if_pos ((guard_zero_iff input).mpr hmatch)] at h
-  exact (steps_bridge paths template env input).trans
-    (lift paths.width h ((context_env template env input).transfer rfl rfl) rfl)
+  exact lift paths.width h ((context_env template env input).transfer rfl rfl) rfl
 
 def steps_miss {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hmatch : ¬ WindowTwentyOneInput.Matches input) :
-    GasSteps (state template input (UInt256.ofNat 2525)) (state template input (UInt256.ofNat 501)) := by
+    GasSteps (state template input (UInt256.ofNat 2335)) (state template input (UInt256.ofNat 501)) := by
   have h := width_raw template input (jump_env env paths.hitJump)
   have hn : (WindowTwentyOneInput.guardDiff input).toNat ≠ 0 := by
     intro hz
@@ -221,8 +210,7 @@ def steps_miss {artifact : ProgramArtifact} {fork : Fork}
   have hm := WindowTwentyOneEntry.run_miss (context template input) (routeStack input)
     (by simp [routeStack]) (jump_env env paths.missJump)
   have ec := context_env template env input
-  exact (steps_bridge paths template env input).trans
-    ((lift paths.width h (ec.transfer rfl rfl) rfl).trans
-      (lift paths.miss hm (ec.transfer rfl rfl) rfl))
+  exact (lift paths.width h (ec.transfer rfl rfl) rfl).trans
+    (lift paths.miss hm (ec.transfer rfl rfl) rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGasRoute
