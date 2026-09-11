@@ -17,16 +17,16 @@ def bodyTemplate : List Instr :=
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .RETURN ]
 theorem body_slice :
-    (Artifact.submissionArtifact.instructions.drop 257).take bodyTemplate.length = bodyTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 256).take bodyTemplate.length = bodyTemplate := by rfl
 def bodySite : GenericRoundSite Artifact.submissionArtifact .Osaka bodyTemplate :=
-  StackSiteBuilder.ofSlice bodyTemplate 257 body_slice
-    (by change 257 + bodyTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice bodyTemplate 256 body_slice
+    (by change 256 + bodyTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := bodyTemplate) (by decide))
     (by decide)
 theorem body_pc : bodySite.startPC = UInt256.ofNat 402 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 257) = UInt256.ofNat 402
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 256) = UInt256.ofNat 402
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem body_advances : ∀ instruction ∈ bodyTemplate.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound

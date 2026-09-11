@@ -79,7 +79,7 @@ def xSetEntry (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
   let loaded := afterRead s msgOff returnDest rest i
   { loaded with
-    pc := UInt256.ofNat 93
+    pc := UInt256.ofNat 101
     stack := [UInt256.ofNat i,
         readLEWord s.memory (loadOffsetWord msgOff i), UInt256.ofNat 0x259,
         UInt256.ofNat i, msgOff, returnDest] ++ rest }

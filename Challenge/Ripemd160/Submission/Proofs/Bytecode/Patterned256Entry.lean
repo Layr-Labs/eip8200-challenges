@@ -22,7 +22,7 @@ def gasSteps_hit (input : ByteArray) (hsize : input.size = 256)
       (PatternedScan.patternedEntry input) :=
   (Execution.gasSteps_start input).trans
     ((Challenge.EvmProof.Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
-        DirectGuard.sizePath (by rfl) (by rfl)
+        (DirectGuard.sizePath input) (by rfl) (by rfl)
         (DirectGuard.run_size_match_short input hsize) (by rfl)
         deployAddress_not_precompile).trans
       (DirectGuard.gasSteps_checkEarly input href))

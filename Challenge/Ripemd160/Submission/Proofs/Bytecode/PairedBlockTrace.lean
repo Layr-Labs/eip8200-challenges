@@ -55,10 +55,10 @@ theorem tail_stack (s : State) (input : ByteArray) (i : Nat) :
 
 theorem valid_return (s : State) (hcode : s.executionEnv.code = submissionBytecode) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 377).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 241 = 377 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 240 = 377 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 241 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 240 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 377 = true
   rw [hcode]
