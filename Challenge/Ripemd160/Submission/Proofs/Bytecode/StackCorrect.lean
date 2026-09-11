@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.SentinelPreserve
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastEmptyBlock
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
@@ -17,6 +18,14 @@ and retains this abstract state only for the common hash-state interface. -/
 def nextState (s : State) (input : ByteArray) (i : Nat) : State :=
   if input.size = 0 then FastEmptyBlock.resultState s input i
   else PairedBlockModel.resultState s input i
+
+theorem nextState_sentinel (s : State) (input : ByteArray) (i : Nat)
+    (hs : SentinelCore.SentinelOK s.memory) :
+    SentinelCore.SentinelOK (nextState s input i).memory := by
+  unfold nextState
+  split
+  · exact SentinelPreserve.sentinel_emptyMemory s.memory hs
+  · exact SentinelPreserve.sentinel_pairedResultState s input i
 
 @[simp] theorem nextState_executionEnv (s : State) (input : ByteArray) (i : Nat) :
     (nextState s input i).executionEnv = s.executionEnv := by
@@ -101,6 +110,7 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
 
 noncomputable def kernel : StackRunBridge.BlockKernel where
   nextState := nextState
+  sentinel := nextState_sentinel
   executionEnv := nextState_executionEnv
   halt := nextState_halt
   callStack := nextState_callStack
@@ -110,6 +120,7 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
   gasSteps := fun s input i h hfit hi ctx hcode hfork hrun hnp _ hpositive =>
     gasSteps_block s input i h hfit hi ctx hpositive hcode hfork hrun hnp
   nextState2 := fun s _ => s
+  sentinel2 := by intros; assumption
   executionEnv2 := by intros; rfl
   halt2 := by intros; rfl
   callStack2 := by intros; rfl
