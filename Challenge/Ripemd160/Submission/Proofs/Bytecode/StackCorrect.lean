@@ -98,14 +98,9 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i) := by
   have hempty : input.size ≠ 0 := Nat.ne_of_gt hpositive
-  have gdispatch := FastEmptyBlock.gasSteps_nonempty s input i hfit
-    hpositive ctx.calldata hcode hfork hrun hnp
   have gcompress := PairedBlockTrace.gasSteps_compress s input i h hfit hi ctx
     hcode hfork hrun hnp
-  have hentry : FastEmptyBlock.nonemptyEntry s input i =
-      DriverTrace.compressEntry s input i := by rfl
-  rw [hentry] at gdispatch
-  exact GasSteps.cast (gdispatch.trans gcompress) (by rfl) (by
+  exact GasSteps.cast gcompress (by rfl) (by
     simp [nextState, hempty, DriverTrace.compressReturned])
 
 noncomputable def kernel : StackRunBridge.BlockKernel where

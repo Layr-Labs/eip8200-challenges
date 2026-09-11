@@ -41,7 +41,7 @@ theorem messagePointer_bound (input : ByteArray) (hfit : CalldataFits input)
 def scheduledState (s : State) (i : Nat) : State :=
   { s with
     memory := PairedScheduleMemory.normalizedMemory s.memory
-      (PairedScheduleData.extractedWordG s.memory (messagePointer i))
+      (PairedScheduleData.extractedWord s.memory (messagePointer i))
     activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat (messagePointer i)) }
 
 theorem scheduled_active (s : State) (input : ByteArray) (i : Nat)
@@ -60,6 +60,28 @@ theorem extracted_words (s : State) (input : ByteArray) (i : Nat)
     (messagePointer_bound input hfit i hi)]
   change ScheduleCorrect.expectedWord s.memory (DriverTrace.messageOffsetWord i) k = _
   rw [ctx.messageBlock k hk, blockWords_eq_readLE32 input i k hk]
+
+theorem scheduled_ready (s : State) (input : ByteArray) (i : Nat)
+    (h : Compression.HashState) (hfit : CalldataFits input)
+    (hi : i < DriverTrace.blockCount input) (ctx : StackRunBridge.BlockContext s input i h) :
+    NormalizedScheduleReady (scheduledState s i).memory (blockWords input i) := by
+  constructor
+  · intro k hk
+    change MachineState.readWord
+      (PairedScheduleMemory.normalizedMemory s.memory
+        (PairedScheduleData.extractedWord s.memory (messagePointer i)))
+        (PairedScheduleMemory.cell k) = _
+    rw [PairedScheduleMemory.read_normalized_cell _ _ _ (by omega), if_neg (by omega)]
+    exact extracted_words s input i h hfit hi ctx k hk
+  · intro k hk
+    change MachineState.readWord
+      (PairedScheduleMemory.normalizedMemory s.memory
+        (PairedScheduleData.extractedWord s.memory (messagePointer i)))
+        (PairedScheduleMemory.cell k + 16) = _
+    rw [PairedScheduleData.read_normalized_extracted_upper _ _ _ hk,
+      ← PairedScheduleData.extractedWord_eq_littleWord,
+      extracted_words s input i h hfit hi ctx k hk]
+    rfl
 
 theorem scheduled_hashWords (s : State) (i : Nat) :
     PairedBlockMath.hashWords (scheduledState s i).memory = PairedBlockMath.hashWords s.memory := by
@@ -128,6 +150,7 @@ theorem resultState_hash (s : State) (input : ByteArray) (i : Nat) (h : Compress
 #print axioms messagePointer_bound
 #print axioms scheduled_active
 #print axioms extracted_words
+#print axioms scheduled_ready
 #print axioms scheduled_hashWords
 #print axioms resultState_executionEnv
 #print axioms resultState_halt

@@ -22,7 +22,7 @@ structure Input where
   v9 : UInt256
 
 def cache (memory : ByteArray) : List UInt256 :=
-  [MachineState.readWord memory 288, MachineState.readWord memory 256, MachineState.readWord memory 384, MachineState.readWord memory 416, MachineState.readWord memory 352, MachineState.readWord memory 320]
+  [UInt256.ofNat 22, MachineState.readWord memory 256, MachineState.readWord memory 384, MachineState.readWord memory 416, MachineState.readWord memory 352, MachineState.readWord memory 320]
 @[simp] theorem cache_length (memory : ByteArray) : (cache memory).length = 6 := rfl
 
 def inputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
