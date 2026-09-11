@@ -18,6 +18,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
+open Challenge.Modexp.Submission.Proofs.Fast.CiosCached (negative32)
 
 abbrev outer := Exp.outer
 
@@ -36,25 +37,25 @@ def pcNewtonB : Nat := 3654
 def pcShiftLoop : Nat := 3690
 def pcShiftBody : Nat := 3697
 def pcEstimate : Nat := 3711
-def pcMacSetup : Nat := 3789
-def pcMacLoop : Nat := 3802
-def pcMid : Nat := 3854
+def pcMacSetup : Nat := 3793
+def pcMacLoop : Nat := 3809
+def pcMid : Nat := 3857
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 3845
-def pcAddLoop : Nat := 3888
-def pcAddInner : Nat := 3894
-def pcAddTail : Nat := 3937
+def pcMacTail : Nat := 3848
+def pcAddLoop : Nat := 3892
+def pcAddInner : Nat := 3898
+def pcAddTail : Nat := 3941
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3923
-def pcSubCheck : Nat := 3955
-def pcSubEntry : Nat := 3965
-def pcSubInner : Nat := 3970
-def pcSubTail : Nat := 4009
+def pcAddMid : Nat := 3927
+def pcSubCheck : Nat := 3959
+def pcSubEntry : Nat := 3969
+def pcSubInner : Nat := 3974
+def pcSubTail : Nat := 4013
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 3994
-def pcCsubCall : Nat := 4023
-def pcAfterCsub : Nat := 4034
-def pcShiftDone : Nat := 4043
+def pcSubMid : Nat := 3998
+def pcCsubCall : Nat := 4027
+def pcAfterCsub : Nat := 4038
+def pcShiftDone : Nat := 4047
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
@@ -68,7 +69,7 @@ def kState (s : State) (mem : ByteArray) (pc k : Nat) (n bsize esize msize : Nat
            stack := UInt256.ofNat k :: outer n bsize esize msize
            memory := mem }
 
-/-- The dispatcher entry (pc 3810), reached from `R1B` with the outer frame. -/
+/-- The dispatcher entry (pc 3814), reached from `R1B` with the outer frame. -/
 def dispState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   frameState s mem pcDispatch n bsize esize msize
 
@@ -138,22 +139,24 @@ def macSetupState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : 
            stack := qhatOf (uMem mem n) :: UInt256.ofNat k :: outer n bsize esize msize
            memory := uMem mem n }
 
-/-- The limb-pass loop head after `j` limbs, over the `u` memory `um` and guess `q`. -/
+/-- The limb-pass loop head after `j` limbs, over the `u` memory `um` and guess `q`.
+`negative32` is the loop-invariant `~31` hoisted out of the body by `MAC_SETUP`. -/
 def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k j : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcMacLoop
            stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j) ::
-             UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) j) ::
+             UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) j) :: negative32 ::
              (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n j).memory }
 
-/-- The middle block entry: the two spent pointers still on the stack. -/
+/-- The middle block entry: the two spent pointers and the hoisted constant
+still on the stack. -/
 def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcMid
            stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) n) ::
-             UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) n) ::
+             UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) n) :: negative32 ::
              (Monpro.l1Step um q NEG n n).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n n).memory }
