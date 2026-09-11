@@ -95,7 +95,7 @@ def entryProgram : List Instr :=
    .op .EQ,
    .push 1 152,
    .op .MUL,
-   .push 2 4195,
+   .push 2 4204,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
    .push 3 314,
@@ -112,17 +112,17 @@ def entryProgram : List Instr :=
    .op .CALLDATASIZE,
    .push 2 8192,
    .op .CALLDATACOPY,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
-   .op .ADD,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
+   .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨5, by decide⟩),
    .op .ADD,
    .op (.Swap ⟨2, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
    .op .ADD,
-   .op (.Swap ⟨2, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
-   .op .POP]
+   .op (.Dup ⟨4, by decide⟩),
+   .op .ADD]
 
 def outProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .op .MLOAD]
@@ -182,7 +182,7 @@ def tailProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4164,
+   .push 2 4173,
    .op .JUMPI,
    .op .POP,
    .op .POP,

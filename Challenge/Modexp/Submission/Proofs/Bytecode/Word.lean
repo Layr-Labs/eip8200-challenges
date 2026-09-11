@@ -204,7 +204,7 @@ def nonzeroState (input : ByteArray) : State :=
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1186] ++ callerRest input }
+      UInt256.ofNat 0] ++ callerRest input }
 
 def loadedState (input : ByteArray) : State :=
   { nonzeroState input with
@@ -221,7 +221,7 @@ def zeroModulusFinalState (input : ByteArray) : State :=
     stack := [UInt256.ofNat 0, UInt256.ofNat (baseSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
       UInt256.ofNat 96, UInt256.ofNat (expOffset input),
-      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1186] ++ callerRest input
+      UInt256.ofNat (modulusOffset input), UInt256.ofNat 0] ++ callerRest input
     halt := .Returned
     hReturn := MachineState.readPadded ByteArray.empty 0 (modulusSize input)
     activeWords := (Dispatch.wordEntryState input).activeWordsAfterUInt256
@@ -246,7 +246,7 @@ def baseLoopState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1186] ++ callerRest input }
+      UInt256.ofNat 0] ++ callerRest input }
 
 def baseGuardState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
   { baseLoopState input i base with pc := UInt256.ofNat 532 }
@@ -256,7 +256,7 @@ def baseRest (input : ByteArray) (i : Nat) (base : UInt256) : List UInt256 :=
     UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
     UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
     UInt256.ofNat 96, UInt256.ofNat (expOffset input),
-    UInt256.ofNat (modulusOffset input), UInt256.ofNat 1186] ++ callerRest input
+    UInt256.ofNat (modulusOffset input), UInt256.ofNat 0] ++ callerRest input
 
 def baseCallState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
   Accessors.calldataByteEntry (baseLoopState input i base)
@@ -274,7 +274,7 @@ def baseTailMidState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
       UInt256.ofNat (baseSize input) :: UInt256.ofNat (exponentSize input) ::
       UInt256.ofNat (modulusSize input) :: UInt256.ofNat 96 ::
       UInt256.ofNat (expOffset input) :: UInt256.ofNat (modulusOffset input) ::
-      UInt256.ofNat 1186 :: callerRest input }
+      UInt256.ofNat 0 :: callerRest input }
 
 def baseTailSwappedState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
   { baseLoopState input i base with
@@ -284,7 +284,7 @@ def baseTailSwappedState (input : ByteArray) (i : Nat) (base : UInt256) : State 
       UInt256.ofNat (baseSize input) :: UInt256.ofNat (exponentSize input) ::
       UInt256.ofNat (modulusSize input) :: UInt256.ofNat 96 ::
       UInt256.ofNat (expOffset input) :: UInt256.ofNat (modulusOffset input) ::
-      UInt256.ofNat 1186 :: callerRest input }
+      UInt256.ofNat 0 :: callerRest input }
 
 def baseTailPoppedState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
   { baseLoopState input i base with
@@ -294,7 +294,7 @@ def baseTailPoppedState (input : ByteArray) (i : Nat) (base : UInt256) : State :
       UInt256.ofNat (baseSize input) :: UInt256.ofNat (exponentSize input) ::
       UInt256.ofNat (modulusSize input) :: UInt256.ofNat 96 ::
       UInt256.ofNat (expOffset input) :: UInt256.ofNat (modulusOffset input) ::
-      UInt256.ofNat 1186 :: callerRest input }
+      UInt256.ofNat 0 :: callerRest input }
 
 def baseFinishDispatchState (input : ByteArray) (base : UInt256) : State :=
   { baseLoopState input (baseSize input) base with pc := UInt256.ofNat 560 }
@@ -306,7 +306,7 @@ def expLoopState (input : ByteArray) (i : Nat) (acc base : UInt256) : State :=
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1186] ++ callerRest input }
+      UInt256.ofNat 0] ++ callerRest input }
 
 def expGuardState (input : ByteArray) (i : Nat) (acc base : UInt256) : State :=
   { expLoopState input i acc base with pc := UInt256.ofNat 576 }
@@ -317,7 +317,7 @@ def bitTail (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
     UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
     UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-    UInt256.ofNat 1186] ++ callerRest input
+    UInt256.ofNat 0] ++ callerRest input
 
 def bitLoopState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
@@ -407,7 +407,7 @@ def bitDecodedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1186] ++ callerRest input }
+      UInt256.ofNat 0] ++ callerRest input }
 
 def bitSelectedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
@@ -420,7 +420,7 @@ def bitSelectedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1186] ++ callerRest input }
+      UInt256.ofNat 0] ++ callerRest input }
 
 def bitAdvanceSwappedState (input : ByteArray) (outer j : Nat)
     (byte offset acc base : UInt256) : State :=
@@ -432,7 +432,7 @@ def bitAdvanceSwappedState (input : ByteArray) (outer j : Nat)
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1186] ++ callerRest input }
+      UInt256.ofNat 0] ++ callerRest input }
 
 def bitAdvanceDroppedState (input : ByteArray) (outer j : Nat)
     (byte offset acc base : UInt256) : State :=
@@ -443,7 +443,7 @@ def bitAdvanceDroppedState (input : ByteArray) (outer j : Nat)
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1186] ++ callerRest input }
+      UInt256.ofNat 0] ++ callerRest input }
 
 def bitSquaredState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
@@ -455,7 +455,7 @@ def bitSquaredState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1186] ++ callerRest input }
+      UInt256.ofNat 0] ++ callerRest input }
 
 def bitMaskedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
@@ -468,7 +468,7 @@ def bitMaskedState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1186] ++ callerRest input }
+      UInt256.ofNat 0] ++ callerRest input }
 
 def bitProductState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
@@ -484,7 +484,7 @@ def bitProductState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1186] ++ callerRest input }
+      UInt256.ofNat 0] ++ callerRest input }
 
 theorem byteWord_eq (input : ByteArray) (offset : Nat)
     (hoffset : offset < 2 ^ 256) :

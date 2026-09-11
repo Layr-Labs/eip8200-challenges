@@ -853,9 +853,9 @@ theorem jumpDest3184 :
 
 
 theorem jumpDest4976 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4902 = true :=
-  Artifact.isValidJumpDest_index 3738 (by rfl)
+  Artifact.isValidJumpDest_index 3745 (by rfl)
 
 theorem jumpDestSub : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4930 = true :=
-  Artifact.isValidJumpDest_index 3756 (by rfl)
+  Artifact.isValidJumpDest_index 3763 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

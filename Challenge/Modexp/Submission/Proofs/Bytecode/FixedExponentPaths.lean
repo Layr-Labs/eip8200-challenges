@@ -9,7 +9,7 @@ set_option maxHeartbeats 4000000
 # Exact located blocks for the fixed-exponent dispatcher
 
 The inherited program ends at pc 3694.  The appended handler occupies
-pc 3695..3820 and instruction indices 2414..2499.  These definitions are the
+pc 3695..3824 and instruction indices 2414..2499.  These definitions are the
 artifact-dependent boundary of the fixed-exponent proof; the regenerated
 artifact must discharge the PC and jump-destination certificates below.
 -/
@@ -25,19 +25,12 @@ abbrev Located :=
 
 @[simp] theorem fixedPC0 (i : Nat) (hi : 2405 ≤ i) (hii : i ≤ 2441) :
     Artifact.submissionArtifact.instructionPC i =
-      [3257,3258,3261,3262,3263,3264,3266,3267,3268,3269,3270,3271,3272,
-       3274,3275,3276,3277,3278,3279,3280,3281,3282,3284,3285,
-       3286,3287,3288,3290,3291,3292,3294,3295,3298,3299,3302,
-       3305,3306][i - 2405]! := by
+      [3142,3143,3144,3145,3147,3148,3149,3150,3151,3152,3153,3154,3155,3156,3158,3159,3161,3162,3163,3164,3165,3167,3168,3169,3170,3171,3172,3173,3174,3175,3176,3178,3179,3181,3182,3183,3184][i - 2405]! := by
   interval_cases i <;> decide
 
 @[simp] theorem fixedPC1 (i : Nat) (hi : 2442 ≤ i) (hii : i ≤ 2490) :
     Artifact.submissionArtifact.instructionPC i =
-      [3307,3309,3310,3311,3313,3314,3315,3317,3318,3319,3321,3322,3323,
-       3324,3325,3328,3329,3330,3331,3332,3333,3334,3335,3337,
-       3338,3339,3340,3343,3344,3345,3347,3350,3351,3354,3357,
-       3360,3363,3366,3367,3368,3371,3374,3377,3380,3383,3384,
-       3385,3386,3388][i - 2442]! := by
+      [3185,3187,3188,3189,3190,3191,3192,3193,3194,3195,3196,3198,3199,3201,3202,3203,3204,3205,3207,3208,3209,3210,3211,3212,3213,3214,3215,3216,3218,3219,3221,3222,3223,3224,3225,3227,3228,3229,3230,3231,3232,3233,3234,3235,3236,3238,3239,3241,3242][i - 2442]! := by
   interval_cases i <;> decide
 
 def entryPrefix : List Located :=
@@ -53,7 +46,7 @@ def oneWidth : List Located :=
 def checkThree : List Located :=
   [pushAt 2417 1 32, opAt 2418 .MLOAD, opAt 2419 .CALLDATALOAD,
    pushAt 2420 0 0, opAt 2421 .BYTE, pushAt 2422 1 3,
-   opAt 2423 .EQ, opAt 2424 .ISZERO, pushAt 2425 2 3807,
+   opAt 2423 .EQ, opAt 2424 .ISZERO, pushAt 2425 2 3811,
    opAt 2426 .JUMPI]
 
 def threeHit : List Located :=
@@ -92,14 +85,14 @@ def decode : List Located :=
    opAt 2470 (.Dup ⟨1, by decide⟩), pushAt 2471 1 96,
    opAt 2472 .ADD, opAt 2473 .MSTORE, pushAt 2474 2 1746,
    pushAt 2475 2 2048, pushAt 2476 2 1024, pushAt 2477 2 6144,
-   pushAt 2478 2 4416, opAt 2479 .JUMP]
+   pushAt 2478 2 4425, opAt 2479 .JUMP]
 
 def finish : List Located :=
   [opAt 2480 .JUMPDEST, pushAt 2481 2 1746, opAt 2482 .JUMP]
 
 def fallback : List Located :=
   [opAt 2483 .JUMPDEST, opAt 2484 (.Dup ⟨0, by decide⟩),
-   pushAt 2485 2 4416, pushAt 2486 2 1024, opAt 2487 .MCOPY,
+   pushAt 2485 2 4425, pushAt 2486 2 1024, opAt 2487 .MCOPY,
    pushAt 2488 0 0, pushAt 2489 1 31, opAt 2490 .JUMP]
 
 theorem jumpDest3659 :
@@ -119,7 +112,7 @@ theorem jumpDest3764 :
   Artifact.isValidJumpDest_index 2447 (by rfl)
 
 theorem jumpDest3781 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3781 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3785 = true :=
   Artifact.isValidJumpDest_index 2454 (by rfl)
 
 theorem jumpDest3772 :
@@ -127,11 +120,11 @@ theorem jumpDest3772 :
   Artifact.isValidJumpDest_index 2468 (by rfl)
 
 theorem jumpDest3833 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3833 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3837 = true :=
   Artifact.isValidJumpDest_index 2480 (by rfl)
 
 theorem jumpDest3802 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3802 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3806 = true :=
   Artifact.isValidJumpDest_index 2483 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FixedExponentPaths
