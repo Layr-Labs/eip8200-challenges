@@ -1157,7 +1157,7 @@ def submissionInstructions : List Instr :=
  .op .ISZERO,
  .push 2 1560,
  .op .JUMPI,
- .push 2 1559,
+ .push 2 1560,
  .push 2 1024,
  .push 2 2048,
  .push 2 1024,
