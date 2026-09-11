@@ -17,24 +17,24 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode.Compression
 
 /-- The five chaining words at their H10 input locations. -/
 def hashAt (memory : ByteArray) : Compression.EvmHashState :=
-  { h0 := MachineState.readWord memory 544
-    h1 := MachineState.readWord memory 576
-    h2 := MachineState.readWord memory 608
-    h3 := MachineState.readWord memory 640
-    h4 := MachineState.readWord memory 672 }
+  { h0 := MachineState.readWord memory 32
+    h1 := MachineState.readWord memory 64
+    h2 := MachineState.readWord memory 96
+    h3 := MachineState.readWord memory 128
+    h4 := MachineState.readWord memory 160 }
 
 /-- The H10 final stores, in their emitted order: `H1`, `H2`, `H3`, `H4`, `H0`. -/
 def storeHash (memory : ByteArray) (value : Compression.EvmHashState) : ByteArray :=
   let m1 := MachineState.writeBytes memory
-    (Data.Bytes.natToBytesPadded value.h1.toNat 32) 0x240
+    (Data.Bytes.natToBytesPadded value.h1.toNat 32) 0x40
   let m2 := MachineState.writeBytes m1
-    (Data.Bytes.natToBytesPadded value.h2.toNat 32) 0x260
+    (Data.Bytes.natToBytesPadded value.h2.toNat 32) 0x60
   let m3 := MachineState.writeBytes m2
-    (Data.Bytes.natToBytesPadded value.h3.toNat 32) 0x280
+    (Data.Bytes.natToBytesPadded value.h3.toNat 32) 0x80
   let m4 := MachineState.writeBytes m3
-    (Data.Bytes.natToBytesPadded value.h4.toNat 32) 0x2a0
+    (Data.Bytes.natToBytesPadded value.h4.toNat 32) 0xa0
   MachineState.writeBytes m4
-    (Data.Bytes.natToBytesPadded value.h0.toNat 32) 0x220
+    (Data.Bytes.natToBytesPadded value.h0.toNat 32) 0x20
 
 private theorem readWord_writeHashWord_disjoint (memory : ByteArray)
     (readStart writeStart : Nat) (value : UInt256)
@@ -61,13 +61,13 @@ private theorem readWord_writeHashWord_same (memory : ByteArray)
 
 @[simp] theorem readWord_storeHash_h0 (memory : ByteArray)
     (value : Compression.EvmHashState) :
-    MachineState.readWord (storeHash memory value) 544 = value.h0 := by
+    MachineState.readWord (storeHash memory value) 32 = value.h0 := by
   unfold storeHash
   exact readWord_writeHashWord_same _ _ _
 
 @[simp] theorem readWord_storeHash_h1 (memory : ByteArray)
     (value : Compression.EvmHashState) :
-    MachineState.readWord (storeHash memory value) 576 = value.h1 := by
+    MachineState.readWord (storeHash memory value) 64 = value.h1 := by
   unfold storeHash
   rw [readWord_writeHashWord_disjoint _ _ _ _ (Or.inr (by omega)),
     readWord_writeHashWord_disjoint _ _ _ _ (Or.inl (by omega)),
@@ -77,7 +77,7 @@ private theorem readWord_writeHashWord_same (memory : ByteArray)
 
 @[simp] theorem readWord_storeHash_h2 (memory : ByteArray)
     (value : Compression.EvmHashState) :
-    MachineState.readWord (storeHash memory value) 608 = value.h2 := by
+    MachineState.readWord (storeHash memory value) 96 = value.h2 := by
   unfold storeHash
   rw [readWord_writeHashWord_disjoint _ _ _ _ (Or.inr (by omega)),
     readWord_writeHashWord_disjoint _ _ _ _ (Or.inl (by omega)),
@@ -86,7 +86,7 @@ private theorem readWord_writeHashWord_same (memory : ByteArray)
 
 @[simp] theorem readWord_storeHash_h3 (memory : ByteArray)
     (value : Compression.EvmHashState) :
-    MachineState.readWord (storeHash memory value) 640 = value.h3 := by
+    MachineState.readWord (storeHash memory value) 128 = value.h3 := by
   unfold storeHash
   rw [readWord_writeHashWord_disjoint _ _ _ _ (Or.inr (by omega)),
     readWord_writeHashWord_disjoint _ _ _ _ (Or.inl (by omega))]
@@ -94,15 +94,15 @@ private theorem readWord_writeHashWord_same (memory : ByteArray)
 
 @[simp] theorem readWord_storeHash_h4 (memory : ByteArray)
     (value : Compression.EvmHashState) :
-    MachineState.readWord (storeHash memory value) 672 = value.h4 := by
+    MachineState.readWord (storeHash memory value) 160 = value.h4 := by
   unfold storeHash
   rw [readWord_writeHashWord_disjoint _ _ _ _ (Or.inr (by omega))]
   exact readWord_writeHashWord_same _ _ _
 
 private theorem readWord_writeHashWord_outside (memory : ByteArray)
     (address writeStart : Nat) (value : UInt256)
-    (hwrite : 0x220 ≤ writeStart ∧ writeStart + 32 ≤ 0x2c0)
-    (houtside : address + 32 ≤ 0x220 ∨ 0x2c0 ≤ address) :
+    (hwrite : 0x20 ≤ writeStart ∧ writeStart + 32 ≤ 0xc0)
+    (houtside : address + 32 ≤ 0x20 ∨ 0xc0 ≤ address) :
     MachineState.readWord
         (MachineState.writeBytes memory
           (Data.Bytes.natToBytesPadded value.toNat 32) writeStart)
@@ -116,19 +116,19 @@ private theorem readWord_writeHashWord_outside (memory : ByteArray)
 
 theorem readWord_storeHash_outside (memory : ByteArray)
     (value : Compression.EvmHashState) (address : Nat)
-    (houtside : address + 32 ≤ 0x220 ∨ 0x2c0 ≤ address) :
+    (houtside : address + 32 ≤ 0x20 ∨ 0xc0 ≤ address) :
     MachineState.readWord (storeHash memory value) address =
       MachineState.readWord memory address := by
   unfold storeHash
-  rw [readWord_writeHashWord_outside _ address 544 value.h0 (by omega) houtside,
-    readWord_writeHashWord_outside _ address 672 value.h4 (by omega) houtside,
-    readWord_writeHashWord_outside _ address 640 value.h3 (by omega) houtside,
-    readWord_writeHashWord_outside _ address 608 value.h2 (by omega) houtside,
-    readWord_writeHashWord_outside _ address 576 value.h1 (by omega) houtside]
+  rw [readWord_writeHashWord_outside _ address 32 value.h0 (by omega) houtside,
+    readWord_writeHashWord_outside _ address 160 value.h4 (by omega) houtside,
+    readWord_writeHashWord_outside _ address 128 value.h3 (by omega) houtside,
+    readWord_writeHashWord_outside _ address 96 value.h2 (by omega) houtside,
+    readWord_writeHashWord_outside _ address 64 value.h1 (by omega) houtside]
 
 theorem readWord_storeHash_ge_120 (memory : ByteArray)
     (value : Compression.EvmHashState) (address : Nat)
-    (haddress : 0x2c0 ≤ address) :
+    (haddress : 0x120 ≤ address) :
     MachineState.readWord (storeHash memory value) address =
       MachineState.readWord memory address := by
   apply readWord_storeHash_outside

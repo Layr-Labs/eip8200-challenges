@@ -85,12 +85,31 @@ def patternedInput : ByteArray := ByteArray.mk #[
   0x88, 0xad, 0xd2, 0xf7, 0x1c, 0x41, 0x66, 0x8b,
 ]
 
-private def patternedFormula : Array UInt8 :=
-  Array.ofFn fun i : Fin 1000 => expectedByte i.val
+/-- Linear checker over the literal's list: one kernel step per byte (the
+previous `Array.ofFn` formula unfolds through well-founded recursion and
+needs more than 12 GB to check). -/
+private def checkList : List UInt8 → Nat → Bool
+  | [], _ => true
+  | x :: xs, k => (x == expectedByte k) && checkList xs (k + 1)
 
-private theorem patternedInput_data_eq :
-    patternedInput.data = patternedFormula := by
+private theorem checkList_patterned : checkList patternedInput.data.toList 0 = true := by
   decide
+
+private theorem getElem_of_checkList :
+    ∀ (l : List UInt8) (k : Nat), checkList l k = true →
+      ∀ (i : Nat) (hi : i < l.length), l[i] = expectedByte (k + i)
+  | [], _, _, i, hi => absurd hi (Nat.not_lt_zero i)
+  | x :: xs, k, h, i, hi => by
+    simp only [checkList, Bool.and_eq_true, beq_iff_eq] at h
+    cases i with
+    | zero => simpa using h.1
+    | succ j =>
+      have hj : j < xs.length := by simpa using hi
+      have := getElem_of_checkList xs (k + 1) h.2 j hj
+      simp only [List.getElem_cons_succ]
+      rw [this]
+      congr 1
+      omega
 
 @[simp] theorem patternedInput_size : patternedInput.size = 1000 := by
   decide
@@ -101,8 +120,11 @@ private theorem patternedInput_data_eq :
     simpa [patternedInput_size] using hi
   -- Do not `simp [patternedInput]`: the 1000-byte literal would explode.
   rw [ByteArray.getElem_eq_getElem_data]
-  simp only [patternedInput_data_eq]
-  simp [patternedFormula, expectedByte]
+  have hd : i < patternedInput.data.size := hi
+  rw [← Array.getElem_toList]
+  have h := getElem_of_checkList _ 0 checkList_patterned i (by simpa using hd)
+  rw [Nat.zero_add] at h
+  exact h
 
 theorem expectedByte_lt (i : Nat) : (expectedByte i).toNat < 256 :=
   UInt8.toNat_lt _
