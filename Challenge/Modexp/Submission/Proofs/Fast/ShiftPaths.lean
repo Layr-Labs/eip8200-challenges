@@ -42,7 +42,7 @@ def blk2874 :
    opAt 2675 .MSTORE,
    pushAt 2676 2 3545,
    pushAt 2677 2 2048,
-   pushAt 2678 2 4978,
+   pushAt 2678 2 2139,
    opAt 2679 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/
@@ -499,7 +499,7 @@ def blk3253 :
   [opAt 3048 .JUMPDEST,
    pushAt 3049 2 4125,
    pushAt 3050 2 2048,
-   pushAt 3051 2 4978,
+   pushAt 3051 2 2139,
    opAt 3052 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/

@@ -134,7 +134,7 @@ theorem run_hit (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       hitState, frameState, pcHit, pcAfterCsub0, Csub.csEntryState, hitMem,
       FullBase.copyBaseMem, Exp.storeWord, outer, Exp.outer,
-      hcode, hrun, hdata, hsize, haw1, haw2, haw3, jumpDest4976, Exp.push0_word,
+      hcode, hrun, hdata, hsize, haw1, haw2, haw3, jumpDest2220, Exp.push0_word,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
