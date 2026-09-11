@@ -32,7 +32,7 @@ def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
 
 /-! Only these projections of the initial state are ever unfolded, so `simp`
-never normalizes the 5298-byte array. -/
+never normalizes the 5304-byte array. -/
 
 @[simp] theorem initialState_code (code calldata : ByteArray) (gas : Nat) :
     (initialState code calldata gas).executionEnv.code = code := rfl
@@ -98,7 +98,7 @@ def hitRest : List UInt256 :=
 
 def hitState (input : ByteArray) : State :=
   { atPC input 255 with stack := hitRest }
-def fallbackState (input : ByteArray) : State := atPC input 268
+def fallbackState (input : ByteArray) : State := atPC input 393
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded word.toNat 32) address
@@ -107,7 +107,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4872
+    pc := UInt256.ofNat 588
     stack := hitRest
     memory := answerMemory
     activeWords := UInt256.ofNat 1

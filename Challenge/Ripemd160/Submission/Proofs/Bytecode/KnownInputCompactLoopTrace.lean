@@ -18,8 +18,8 @@ theorem run_loop_more (s : State) (input : ByteArray) (i n : Nat)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     run loopPath (loopState s input i n) = some (loopState s input i (n + 1)) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 0xdf6 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 2854 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 0xdfc = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 2850 (by rfl)
   have hptr : 32 * (n + 2) < 992 := by omega
   have hstart : 32 * n + 32 < 2 ^ 256 := by omega
   have hnext : 32 * n + 64 < 2 ^ 256 := by omega

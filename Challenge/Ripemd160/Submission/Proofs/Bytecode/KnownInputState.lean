@@ -22,7 +22,7 @@ def legacyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def sizeMatched (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 5238
+    pc := UInt256.ofNat 5244
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
@@ -63,7 +63,7 @@ def accState (s : State) (input : ByteArray) (i pc n : Nat) : State :=
 
 def selectorEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 5981
+    pc := UInt256.ofNat 5987
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
@@ -105,18 +105,18 @@ def writeWord (memory : ByteArray) (offset : Nat)
 
 def resultMemory (memory : ByteArray) (i : Nat) : ByteArray :=
   let h := knownAfter i
-  let m0 := writeWord memory 0x220 (Word.ofUInt32 h[0]!)
-  let m1 := writeWord m0 0x240 (Word.ofUInt32 h[1]!)
-  let m2 := writeWord m1 0x260 (Word.ofUInt32 h[2]!)
-  let m3 := writeWord m2 0x280 (Word.ofUInt32 h[3]!)
-  writeWord m3 0x2a0 (Word.ofUInt32 h[4]!)
+  let m0 := writeWord memory 0x20 (Word.ofUInt32 h[0]!)
+  let m1 := writeWord m0 0x40 (Word.ofUInt32 h[1]!)
+  let m2 := writeWord m1 0x60 (Word.ofUInt32 h[2]!)
+  let m3 := writeWord m2 0x80 (Word.ofUInt32 h[3]!)
+  writeWord m3 0xa0 (Word.ofUInt32 h[4]!)
 
 def resultActiveWords (s : State) : UInt256 :=
-  let a0 := s.activeWordsAfterUInt256 0x220 32
-  let a1 := UInt256.ofNat (MachineState.activeWordsAfter a0.toNat 0x240 32)
-  let a2 := UInt256.ofNat (MachineState.activeWordsAfter a1.toNat 0x260 32)
-  let a3 := UInt256.ofNat (MachineState.activeWordsAfter a2.toNat 0x280 32)
-  UInt256.ofNat (MachineState.activeWordsAfter a3.toNat 0x2a0 32)
+  let a0 := s.activeWordsAfterUInt256 0x20 32
+  let a1 := UInt256.ofNat (MachineState.activeWordsAfter a0.toNat 0x40 32)
+  let a2 := UInt256.ofNat (MachineState.activeWordsAfter a1.toNat 0x60 32)
+  let a3 := UInt256.ofNat (MachineState.activeWordsAfter a2.toNat 0x80 32)
+  UInt256.ofNat (MachineState.activeWordsAfter a3.toNat 0xa0 32)
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
@@ -148,7 +148,7 @@ private theorem readWord_writeWord_disjoint (memory : ByteArray)
   simpa only [YulEvmCompiler.BytesLemmas.natToBytesPadded_size] using hdisjoint
 
 @[simp] private theorem resultMemory_h0 (memory : ByteArray) (i : Nat) :
-    MachineState.readWord (resultMemory memory i) 0x220 =
+    MachineState.readWord (resultMemory memory i) 0x20 =
       Word.ofUInt32 (knownAfter i)[0]! := by
   unfold resultMemory
   rw [readWord_writeWord_disjoint _ _ _ _ (Or.inl (by omega)),
@@ -158,7 +158,7 @@ private theorem readWord_writeWord_disjoint (memory : ByteArray)
   exact readWord_writeWord_same _ _ _
 
 @[simp] private theorem resultMemory_h1 (memory : ByteArray) (i : Nat) :
-    MachineState.readWord (resultMemory memory i) 0x240 =
+    MachineState.readWord (resultMemory memory i) 0x40 =
       Word.ofUInt32 (knownAfter i)[1]! := by
   unfold resultMemory
   rw [readWord_writeWord_disjoint _ _ _ _ (Or.inl (by omega)),
@@ -167,7 +167,7 @@ private theorem readWord_writeWord_disjoint (memory : ByteArray)
   exact readWord_writeWord_same _ _ _
 
 @[simp] private theorem resultMemory_h2 (memory : ByteArray) (i : Nat) :
-    MachineState.readWord (resultMemory memory i) 0x260 =
+    MachineState.readWord (resultMemory memory i) 0x60 =
       Word.ofUInt32 (knownAfter i)[2]! := by
   unfold resultMemory
   rw [readWord_writeWord_disjoint _ _ _ _ (Or.inl (by omega)),
@@ -175,14 +175,14 @@ private theorem readWord_writeWord_disjoint (memory : ByteArray)
   exact readWord_writeWord_same _ _ _
 
 @[simp] private theorem resultMemory_h3 (memory : ByteArray) (i : Nat) :
-    MachineState.readWord (resultMemory memory i) 0x280 =
+    MachineState.readWord (resultMemory memory i) 0x80 =
       Word.ofUInt32 (knownAfter i)[3]! := by
   unfold resultMemory
   rw [readWord_writeWord_disjoint _ _ _ _ (Or.inl (by omega))]
   exact readWord_writeWord_same _ _ _
 
 @[simp] private theorem resultMemory_h4 (memory : ByteArray) (i : Nat) :
-    MachineState.readWord (resultMemory memory i) 0x2a0 =
+    MachineState.readWord (resultMemory memory i) 0xa0 =
       Word.ofUInt32 (knownAfter i)[4]! := by
   unfold resultMemory
   exact readWord_writeWord_same _ _ _

@@ -52,7 +52,7 @@ def sizePath : List Located :=
    opAt 9 .OR,
    opAt 10 .OR,
    opAt 11 .ISZERO,
-   pushAt 12 2 4798,
+   pushAt 12 2 276,
    opAt 13 .JUMPI]
 
 def checkEntryPath : List Located :=
@@ -83,7 +83,7 @@ def tailPath : List Located :=
   [opAt 43 .CALLDATALOAD, opAt 44 (.Dup ⟨2, by decide⟩),
    opAt 45 .XOR, pushAt 46 1 192, opAt 47 .SHR, opAt 48 .OR,
    opAt 49 (.Swap ⟨0, by decide⟩), opAt 50 .POP,
-   pushAt 51 2 268, opAt 52 .JUMPI]
+   pushAt 51 2 393, opAt 52 .JUMPI]
 
 def returnPath : List Located :=
   [pushAt 53 20 972889429405991776604892044862621566948497025487,
@@ -95,7 +95,7 @@ def returnFinishPath : List Located :=
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
 
-/-! The 6572-byte array stays opaque: only these projections of the initial
+/-! The 6578-byte array stays opaque: only these projections of the initial
 state are unfolded, so `simp` never normalizes it. -/
 
 @[simp] theorem initialState_code (code calldata : ByteArray) (gas : Nat) :
@@ -115,7 +115,7 @@ attribute [simp] Challenge.Ripemd160.initialState_stack
   Challenge.Ripemd160.initialState_calldata
 
 def sizeMatched (input : ByteArray) : State := atPC input 22
-def fallbackState (input : ByteArray) : State := atPC input 268
+def fallbackState (input : ByteArray) : State := atPC input 393
 
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with

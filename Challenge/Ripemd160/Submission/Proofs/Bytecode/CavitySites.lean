@@ -79,7 +79,7 @@ def rightFirst : GenericRoundSite A .Osaka (CavityParams.rightCode.take 298) :=
     decide) code_bound wellFormed_rightFirst (by decide)
 
 private theorem rightSecond_slice :
-    (A.instructions.drop 2492).take (CavityParams.rightCode.drop 298).length =
+    (A.instructions.drop 2488).take (CavityParams.rightCode.drop 298).length =
       CavityParams.rightCode.drop 298 := by rfl
 
 private theorem wellFormed_rightSecond : ∀ instruction ∈ CavityParams.rightCode.drop 298,
@@ -87,8 +87,8 @@ private theorem wellFormed_rightSecond : ∀ instruction ∈ CavityParams.rightC
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def rightSecond : GenericRoundSite A .Osaka (CavityParams.rightCode.drop 298) :=
-  StackSiteBuilder.ofSlice _ 2492 rightSecond_slice (by
-    change 2474 + (CavityParams.rightCode.drop 298).length ≤
+  StackSiteBuilder.ofSlice _ 2488 rightSecond_slice (by
+    change 2470 + (CavityParams.rightCode.drop 298).length ≤
       Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) code_bound wellFormed_rightSecond (by decide)

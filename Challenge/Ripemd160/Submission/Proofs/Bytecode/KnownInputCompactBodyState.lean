@@ -6,18 +6,18 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactBodySt
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
-def tableSource (i : Nat) : Nat := 4958 + 21 * i
+def tableSource (i : Nat) : Nat := 4973 + 21 * i
 
 def preCopyState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x132e
+    pc := UInt256.ofNat 0x1334
     stack := [UInt256.ofNat 0, UInt256.ofNat (tableSource i), UInt256.ofNat 20,
       DriverTrace.messageOffsetWord i, UInt256.ofNat 0x436,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 def copiedState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 0x132f
+    pc := UInt256.ofNat 0x1335
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x436,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input]
     activeWords := s.activeWordsAfterUInt256 0 20

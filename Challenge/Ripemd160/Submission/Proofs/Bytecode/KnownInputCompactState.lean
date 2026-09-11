@@ -26,7 +26,7 @@ def finalAcc (input : ByteArray) : UInt256 :=
 
 def loopState (s : State) (input : ByteArray) (i n : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 5270
+    pc := UInt256.ofNat 5276
     stack := [UInt256.ofNat (32 * (n + 1)), loopAcc input n,
       referenceWord input, DriverTrace.messageOffsetWord i,
       UInt256.ofNat 0x3e7, DriverTrace.blockOffsetWord i,

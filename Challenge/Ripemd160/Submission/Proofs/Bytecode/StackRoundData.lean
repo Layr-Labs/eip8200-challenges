@@ -29,7 +29,7 @@ def leftWrapperPC (i : Nat) : UInt256 :=
   UInt256.ofNat (0x533 + 13 * i)
 
 def rightWrapperPC (i : Nat) : UInt256 :=
-  UInt256.ofNat (0xb5f + 13 * i)
+  UInt256.ofNat (0xb65 + 13 * i)
 
 def leftReturnPC (i : Nat) : UInt256 :=
   leftWrapperPC i + UInt256.ofNat 12
@@ -60,19 +60,19 @@ def rightConstant (i : Nat) : UInt256 :=
 
 def leftHelperPCOfGroup (group : Nat) : UInt256 :=
   match group with
-  | 0 => UInt256.ofNat 0xfc7
-  | 1 => UInt256.ofNat 0xffb
-  | 2 => UInt256.ofNat 0xe4b
-  | 3 => UInt256.ofNat 0x1092
-  | _ => UInt256.ofNat 0x10ce
+  | 0 => UInt256.ofNat 0xfcd
+  | 1 => UInt256.ofNat 0x1001
+  | 2 => UInt256.ofNat 0xe51
+  | 3 => UInt256.ofNat 0x1098
+  | _ => UInt256.ofNat 0x10d4
 
 def rightHelperPCOfGroup (group : Nat) : UInt256 :=
   match group with
-  | 0 => UInt256.ofNat 0xf01
-  | 1 => UInt256.ofNat 0x1149
-  | 2 => UInt256.ofNat 0xf73
-  | 3 => UInt256.ofNat 0xfb3
-  | _ => UInt256.ofNat 0xfca
+  | 0 => UInt256.ofNat 0xf07
+  | 1 => UInt256.ofNat 0x114f
+  | 2 => UInt256.ofNat 0xf79
+  | 3 => UInt256.ofNat 0xfb9
+  | _ => UInt256.ofNat 0xfd0
 
 def leftHelperPC (i : Nat) : UInt256 :=
   leftHelperPCOfGroup (i / 16)

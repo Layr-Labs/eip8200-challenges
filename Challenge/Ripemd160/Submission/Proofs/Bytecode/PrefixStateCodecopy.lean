@@ -20,12 +20,12 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
 def preCopyState (s : State) (rho : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 5048
+    pc := UInt256.ofNat 5054
     stack := [UInt256.ofNat 0, UInt256.ofNat 106, UInt256.ofNat 32] ++ rho }
 
 def copiedState (s : State) (rho : List UInt256) : State :=
   { PrefixStateMemory.copied s with
-    pc := UInt256.ofNat 5049
+    pc := UInt256.ofNat 5055
     stack := rho }
 
 def gasSteps_codecopy (s : State) (rho : List UInt256)
@@ -44,7 +44,7 @@ def gasSteps_codecopy (s : State) (rho : List UInt256)
     change s.executionEnv.code = submissionBytecode
     exact hcode
   have hpc : (withGas pre gas).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4090 := by
+      Artifact.submissionArtifact.instructionPC 4086 := by
     show (UInt256.ofNat 5048).toNat = _
     rw [PrefixStatePaths.pc4081]
     decide

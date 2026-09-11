@@ -68,18 +68,18 @@ def rightReturnPC (k : Nat) : UInt256 :=
   UInt256.ofNat (Artifact.instructionPC (rightWrapperIndex k + 7))
 
 def leftHelperPCOfGroup : Nat → UInt256
-  | 0 => UInt256.ofNat 0xb3d
-  | 1 => UInt256.ofNat 0xb9a
-  | 2 => UInt256.ofNat 0xc07
-  | 3 => UInt256.ofNat 0xc72
-  | _ => UInt256.ofNat 0xcdf
+  | 0 => UInt256.ofNat 0xb43
+  | 1 => UInt256.ofNat 0xba0
+  | 2 => UInt256.ofNat 0xc0d
+  | 3 => UInt256.ofNat 0xc78
+  | _ => UInt256.ofNat 0xce5
 
 def rightHelperPCOfGroup : Nat → UInt256
-  | 0 => UInt256.ofNat 0xd4a
-  | 1 => UInt256.ofNat 0xdb5
-  | 2 => UInt256.ofNat 0xe22
-  | 3 => UInt256.ofNat 0xe8d
-  | _ => UInt256.ofNat 0xefa
+  | 0 => UInt256.ofNat 0xd50
+  | 1 => UInt256.ofNat 0xdbb
+  | 2 => UInt256.ofNat 0xe28
+  | 3 => UInt256.ofNat 0xe93
+  | _ => UInt256.ofNat 0xf00
 
 def leftHelperPC (k : Nat) : UInt256 := leftHelperPCOfGroup (k / 8)
 
@@ -94,10 +94,10 @@ def leftHelperStartIndex : Nat → Nat
 
 def rightHelperStartIndex : Nat → Nat
   | 0 => 1944
-  | 1 => 2005
-  | 2 => 2068
-  | 3 => 2129
-  | _ => 2192
+  | 1 => 2001
+  | 2 => 2064
+  | 3 => 2125
+  | _ => 2188
 
 def leftHelperJumpIndex : Nat → Nat
   | 0 => 1695
@@ -107,11 +107,11 @@ def leftHelperJumpIndex : Nat → Nat
   | _ => 1943
 
 def rightHelperJumpIndex : Nat → Nat
-  | 0 => 2004
-  | 1 => 2067
-  | 2 => 2128
-  | 3 => 2191
-  | _ => 2246
+  | 0 => 2000
+  | 1 => 2063
+  | 2 => 2124
+  | 3 => 2187
+  | _ => 2242
 
 def leftAddress0 (k : Fin 40) : UInt256 :=
   StackRoundData.leftAddress (2 * k.val)

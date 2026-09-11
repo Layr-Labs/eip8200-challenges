@@ -883,7 +883,7 @@ def inline33Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline33Template) (by decide))
     (by decide)
 
-theorem inline33Site_startPC : inline33Site.startPC = UInt256.ofNat 2532 := by
+theorem inline33Site_startPC : inline33Site.startPC = UInt256.ofNat 2538 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1721) = UInt256.ofNat 2238
   rw [inline33_instructionPC]
 
@@ -908,7 +908,7 @@ def inline34Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline34Template) (by decide))
     (by decide)
 
-theorem inline34Site_startPC : inline34Site.startPC = UInt256.ofNat 2581 := by
+theorem inline34Site_startPC : inline34Site.startPC = UInt256.ofNat 2587 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1763) = UInt256.ofNat 2285
   rw [inline34_instructionPC]
 
@@ -933,7 +933,7 @@ def inline35Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline35Template) (by decide))
     (by decide)
 
-theorem inline35Site_startPC : inline35Site.startPC = UInt256.ofNat 2629 := by
+theorem inline35Site_startPC : inline35Site.startPC = UInt256.ofNat 2635 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1805) = UInt256.ofNat 2332
   rw [inline35_instructionPC]
 
@@ -958,7 +958,7 @@ def inline36Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline36Template) (by decide))
     (by decide)
 
-theorem inline36Site_startPC : inline36Site.startPC = UInt256.ofNat 2678 := by
+theorem inline36Site_startPC : inline36Site.startPC = UInt256.ofNat 2684 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1847) = UInt256.ofNat 2381
   rw [inline36_instructionPC]
 
@@ -983,7 +983,7 @@ def inline37Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline37Template) (by decide))
     (by decide)
 
-theorem inline37Site_startPC : inline37Site.startPC = UInt256.ofNat 2727 := by
+theorem inline37Site_startPC : inline37Site.startPC = UInt256.ofNat 2733 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1889) = UInt256.ofNat 2428
   rw [inline37_instructionPC]
 
@@ -1008,7 +1008,7 @@ def inline38Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline38Template) (by decide))
     (by decide)
 
-theorem inline38Site_startPC : inline38Site.startPC = UInt256.ofNat 2776 := by
+theorem inline38Site_startPC : inline38Site.startPC = UInt256.ofNat 2782 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1931) = UInt256.ofNat 2497
   rw [inline38_instructionPC]
 
@@ -1018,7 +1018,7 @@ theorem inline39_slice :
   rfl
 
 theorem inline39_instructionPC :
-    Artifact.submissionArtifact.instructionPC 1973 = 2543 := by
+    Artifact.submissionArtifact.instructionPC 1973 = 2549 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1033,17 +1033,17 @@ def inline39Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline39Template) (by decide))
     (by decide)
 
-theorem inline39Site_startPC : inline39Site.startPC = UInt256.ofNat 2825 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1973) = UInt256.ofNat 2546
+theorem inline39Site_startPC : inline39Site.startPC = UInt256.ofNat 2831 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1973) = UInt256.ofNat 2552
   rw [inline39_instructionPC]
 
 
 theorem inline40_slice :
-    (Artifact.submissionArtifact.instructions.drop 2007).take PairedHoistedCoreTrace.inline40Template.length = PairedHoistedCoreTrace.inline40Template := by
+    (Artifact.submissionArtifact.instructions.drop 2003).take PairedHoistedCoreTrace.inline40Template.length = PairedHoistedCoreTrace.inline40Template := by
   rfl
 
 theorem inline40_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2015 = 2592 := by
+    Artifact.submissionArtifact.instructionPC 2011 = 2598 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -1058,24 +1058,24 @@ def inline40Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline40Template) (by decide))
     (by decide)
 
-theorem inline40Site_startPC : inline40Site.startPC = UInt256.ofNat 2873 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2015) = UInt256.ofNat 2598
+theorem inline40Site_startPC : inline40Site.startPC = UInt256.ofNat 2879 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2011) = UInt256.ofNat 2604
   rw [inline40_instructionPC]
 
 
 theorem inline41_slice :
-    (Artifact.submissionArtifact.instructions.drop 2049).take PairedHoistedCoreTrace.inline41Template.length = PairedHoistedCoreTrace.inline41Template := by
+    (Artifact.submissionArtifact.instructions.drop 2045).take PairedHoistedCoreTrace.inline41Template.length = PairedHoistedCoreTrace.inline41Template := by
   rfl
 
 theorem inline41_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2057 = 2645 := by
+    Artifact.submissionArtifact.instructionPC 2053 = 2651 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline41Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoistedCoreTrace.inline41Template :=
-  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline41Template 2031 inline41_slice
+  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline41Template 2027 inline41_slice
     (by
-      change 2031 + PairedHoistedCoreTrace.inline41Template.length ≤ Artifact.submissionInstructions.length
+      change 2027 + PairedHoistedCoreTrace.inline41Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1083,24 +1083,24 @@ def inline41Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline41Template) (by decide))
     (by decide)
 
-theorem inline41Site_startPC : inline41Site.startPC = UInt256.ofNat 2922 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2057) = UInt256.ofNat 2648
+theorem inline41Site_startPC : inline41Site.startPC = UInt256.ofNat 2928 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2053) = UInt256.ofNat 2654
   rw [inline41_instructionPC]
 
 
 theorem inline42_slice :
-    (Artifact.submissionArtifact.instructions.drop 2091).take PairedHoistedCoreTrace.inline42Template.length = PairedHoistedCoreTrace.inline42Template := by
+    (Artifact.submissionArtifact.instructions.drop 2087).take PairedHoistedCoreTrace.inline42Template.length = PairedHoistedCoreTrace.inline42Template := by
   rfl
 
 theorem inline42_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2099 = 2694 := by
+    Artifact.submissionArtifact.instructionPC 2095 = 2700 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline42Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoistedCoreTrace.inline42Template :=
-  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline42Template 2073 inline42_slice
+  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline42Template 2069 inline42_slice
     (by
-      change 2073 + PairedHoistedCoreTrace.inline42Template.length ≤ Artifact.submissionInstructions.length
+      change 2069 + PairedHoistedCoreTrace.inline42Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1108,24 +1108,24 @@ def inline42Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline42Template) (by decide))
     (by decide)
 
-theorem inline42Site_startPC : inline42Site.startPC = UInt256.ofNat 2971 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2099) = UInt256.ofNat 2697
+theorem inline42Site_startPC : inline42Site.startPC = UInt256.ofNat 2977 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2095) = UInt256.ofNat 2703
   rw [inline42_instructionPC]
 
 
 theorem inline43_slice :
-    (Artifact.submissionArtifact.instructions.drop 2133).take PairedHoistedCoreTrace.inline43Template.length = PairedHoistedCoreTrace.inline43Template := by
+    (Artifact.submissionArtifact.instructions.drop 2129).take PairedHoistedCoreTrace.inline43Template.length = PairedHoistedCoreTrace.inline43Template := by
   rfl
 
 theorem inline43_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2141 = 2743 := by
+    Artifact.submissionArtifact.instructionPC 2137 = 2749 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline43Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoistedCoreTrace.inline43Template :=
-  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline43Template 2115 inline43_slice
+  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline43Template 2111 inline43_slice
     (by
-      change 2115 + PairedHoistedCoreTrace.inline43Template.length ≤ Artifact.submissionInstructions.length
+      change 2111 + PairedHoistedCoreTrace.inline43Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1133,24 +1133,24 @@ def inline43Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline43Template) (by decide))
     (by decide)
 
-theorem inline43Site_startPC : inline43Site.startPC = UInt256.ofNat 2974 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2141) = UInt256.ofNat 2746
+theorem inline43Site_startPC : inline43Site.startPC = UInt256.ofNat 2980 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2137) = UInt256.ofNat 2752
   rw [inline43_instructionPC]
 
 
 theorem inline44_slice :
-    (Artifact.submissionArtifact.instructions.drop 2175).take PairedHoistedCoreTrace.inline44Template.length = PairedHoistedCoreTrace.inline44Template := by
+    (Artifact.submissionArtifact.instructions.drop 2171).take PairedHoistedCoreTrace.inline44Template.length = PairedHoistedCoreTrace.inline44Template := by
   rfl
 
 theorem inline44_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2183 = 2792 := by
+    Artifact.submissionArtifact.instructionPC 2179 = 2798 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline44Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoistedCoreTrace.inline44Template :=
-  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline44Template 2157 inline44_slice
+  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline44Template 2153 inline44_slice
     (by
-      change 2157 + PairedHoistedCoreTrace.inline44Template.length ≤ Artifact.submissionInstructions.length
+      change 2153 + PairedHoistedCoreTrace.inline44Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1158,24 +1158,24 @@ def inline44Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline44Template) (by decide))
     (by decide)
 
-theorem inline44Site_startPC : inline44Site.startPC = UInt256.ofNat 3068 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2183) = UInt256.ofNat 2796
+theorem inline44Site_startPC : inline44Site.startPC = UInt256.ofNat 3074 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2179) = UInt256.ofNat 2802
   rw [inline44_instructionPC]
 
 
 theorem inline45_slice :
-    (Artifact.submissionArtifact.instructions.drop 2217).take PairedHoistedCoreTrace.inline45Template.length = PairedHoistedCoreTrace.inline45Template := by
+    (Artifact.submissionArtifact.instructions.drop 2213).take PairedHoistedCoreTrace.inline45Template.length = PairedHoistedCoreTrace.inline45Template := by
   rfl
 
 theorem inline45_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2225 = 2840 := by
+    Artifact.submissionArtifact.instructionPC 2221 = 2846 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline45Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoistedCoreTrace.inline45Template :=
-  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline45Template 2199 inline45_slice
+  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline45Template 2195 inline45_slice
     (by
-      change 2199 + PairedHoistedCoreTrace.inline45Template.length ≤ Artifact.submissionInstructions.length
+      change 2195 + PairedHoistedCoreTrace.inline45Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1183,24 +1183,24 @@ def inline45Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline45Template) (by decide))
     (by decide)
 
-theorem inline45Site_startPC : inline45Site.startPC = UInt256.ofNat 3117 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2225) = UInt256.ofNat 2844
+theorem inline45Site_startPC : inline45Site.startPC = UInt256.ofNat 3123 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2221) = UInt256.ofNat 2850
   rw [inline45_instructionPC]
 
 
 theorem inline46_slice :
-    (Artifact.submissionArtifact.instructions.drop 2259).take PairedHoistedCoreTrace.inline46Template.length = PairedHoistedCoreTrace.inline46Template := by
+    (Artifact.submissionArtifact.instructions.drop 2255).take PairedHoistedCoreTrace.inline46Template.length = PairedHoistedCoreTrace.inline46Template := by
   rfl
 
 theorem inline46_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2267 = 2890 := by
+    Artifact.submissionArtifact.instructionPC 2263 = 2896 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline46Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoistedCoreTrace.inline46Template :=
-  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline46Template 2241 inline46_slice
+  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline46Template 2237 inline46_slice
     (by
-      change 2241 + PairedHoistedCoreTrace.inline46Template.length ≤ Artifact.submissionInstructions.length
+      change 2237 + PairedHoistedCoreTrace.inline46Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1208,24 +1208,24 @@ def inline46Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline46Template) (by decide))
     (by decide)
 
-theorem inline46Site_startPC : inline46Site.startPC = UInt256.ofNat 3165 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2267) = UInt256.ofNat 2893
+theorem inline46Site_startPC : inline46Site.startPC = UInt256.ofNat 3171 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2263) = UInt256.ofNat 2899
   rw [inline46_instructionPC]
 
 
 theorem inline47_slice :
-    (Artifact.submissionArtifact.instructions.drop 2292).take PairedHoistedCoreTrace.inline47Template.length = PairedHoistedCoreTrace.inline47Template := by
+    (Artifact.submissionArtifact.instructions.drop 2288).take PairedHoistedCoreTrace.inline47Template.length = PairedHoistedCoreTrace.inline47Template := by
   rfl
 
 theorem inline47_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2300 = 2929 := by
+    Artifact.submissionArtifact.instructionPC 2296 = 2935 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline47Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoistedCoreTrace.inline47Template :=
-  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline47Template 2274 inline47_slice
+  StackSiteBuilder.ofSlice PairedHoistedCoreTrace.inline47Template 2270 inline47_slice
     (by
-      change 2274 + PairedHoistedCoreTrace.inline47Template.length ≤ Artifact.submissionInstructions.length
+      change 2270 + PairedHoistedCoreTrace.inline47Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1233,24 +1233,24 @@ def inline47Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHoi
       (instructions := PairedHoistedCoreTrace.inline47Template) (by decide))
     (by decide)
 
-theorem inline47Site_startPC : inline47Site.startPC = UInt256.ofNat 3204 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2300) = UInt256.ofNat 2932
+theorem inline47Site_startPC : inline47Site.startPC = UInt256.ofNat 3210 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2296) = UInt256.ofNat 2938
   rw [inline47_instructionPC]
 
 
 theorem group48_slice :
-    (Artifact.submissionArtifact.instructions.drop 2325).take PairedHelperBooleanTrace.group48Template.length = PairedHelperBooleanTrace.group48Template := by
+    (Artifact.submissionArtifact.instructions.drop 2321).take PairedHelperBooleanTrace.group48Template.length = PairedHelperBooleanTrace.group48Template := by
   rfl
 
 theorem group48_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2333 = 2967 := by
+    Artifact.submissionArtifact.instructionPC 2329 = 2973 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def group48Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.group48Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.group48Template 2307 group48_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.group48Template 2303 group48_slice
     (by
-      change 2307 + PairedHelperBooleanTrace.group48Template.length ≤ Artifact.submissionInstructions.length
+      change 2303 + PairedHelperBooleanTrace.group48Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1258,24 +1258,24 @@ def group48Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelp
       (instructions := PairedHelperBooleanTrace.group48Template) (by decide))
     (by decide)
 
-theorem group48Site_startPC : group48Site.startPC = UInt256.ofNat 3243 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2333) = UInt256.ofNat 2970
+theorem group48Site_startPC : group48Site.startPC = UInt256.ofNat 3249 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2329) = UInt256.ofNat 2976
   rw [group48_instructionPC]
 
 
 theorem inline48_slice :
-    (Artifact.submissionArtifact.instructions.drop 2328).take PairedHelperBooleanTrace.inline48Template.length = PairedHelperBooleanTrace.inline48Template := by
+    (Artifact.submissionArtifact.instructions.drop 2324).take PairedHelperBooleanTrace.inline48Template.length = PairedHelperBooleanTrace.inline48Template := by
   rfl
 
 theorem inline48_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2336 = 2970 := by
+    Artifact.submissionArtifact.instructionPC 2332 = 2976 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline48Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline48Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline48Template 2310 inline48_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline48Template 2306 inline48_slice
     (by
-      change 2310 + PairedHelperBooleanTrace.inline48Template.length ≤ Artifact.submissionInstructions.length
+      change 2306 + PairedHelperBooleanTrace.inline48Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1283,24 +1283,24 @@ def inline48Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline48Template) (by decide))
     (by decide)
 
-theorem inline48Site_startPC : inline48Site.startPC = UInt256.ofNat 3221 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2336) = UInt256.ofNat 2974
+theorem inline48Site_startPC : inline48Site.startPC = UInt256.ofNat 3227 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2332) = UInt256.ofNat 2980
   rw [inline48_instructionPC]
 
 
 theorem inline49_slice :
-    (Artifact.submissionArtifact.instructions.drop 2382).take PairedHelperBooleanTrace.inline49Template.length = PairedHelperBooleanTrace.inline49Template := by
+    (Artifact.submissionArtifact.instructions.drop 2378).take PairedHelperBooleanTrace.inline49Template.length = PairedHelperBooleanTrace.inline49Template := by
   rfl
 
 theorem inline49_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2390 = 3033 := by
+    Artifact.submissionArtifact.instructionPC 2386 = 3039 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline49Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline49Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline49Template 2364 inline49_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline49Template 2360 inline49_slice
     (by
-      change 2364 + PairedHelperBooleanTrace.inline49Template.length ≤ Artifact.submissionInstructions.length
+      change 2360 + PairedHelperBooleanTrace.inline49Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1308,24 +1308,24 @@ def inline49Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline49Template) (by decide))
     (by decide)
 
-theorem inline49Site_startPC : inline49Site.startPC = UInt256.ofNat 3326 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2390) = UInt256.ofNat 3037
+theorem inline49Site_startPC : inline49Site.startPC = UInt256.ofNat 3332 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2386) = UInt256.ofNat 3043
   rw [inline49_instructionPC]
 
 
 theorem inline50_slice :
-    (Artifact.submissionArtifact.instructions.drop 2436).take PairedHelperBooleanTrace.inline50Template.length = PairedHelperBooleanTrace.inline50Template := by
+    (Artifact.submissionArtifact.instructions.drop 2432).take PairedHelperBooleanTrace.inline50Template.length = PairedHelperBooleanTrace.inline50Template := by
   rfl
 
 theorem inline50_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2444 = 3097 := by
+    Artifact.submissionArtifact.instructionPC 2440 = 3103 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline50Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline50Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline50Template 2418 inline50_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline50Template 2414 inline50_slice
     (by
-      change 2418 + PairedHelperBooleanTrace.inline50Template.length ≤ Artifact.submissionInstructions.length
+      change 2414 + PairedHelperBooleanTrace.inline50Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1333,24 +1333,24 @@ def inline50Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline50Template) (by decide))
     (by decide)
 
-theorem inline50Site_startPC : inline50Site.startPC = UInt256.ofNat 3387 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2444) = UInt256.ofNat 3101
+theorem inline50Site_startPC : inline50Site.startPC = UInt256.ofNat 3393 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2440) = UInt256.ofNat 3107
   rw [inline50_instructionPC]
 
 
 theorem inline51_slice :
-    (Artifact.submissionArtifact.instructions.drop 2490).take PairedHelperBooleanTrace.inline51Template.length = PairedHelperBooleanTrace.inline51Template := by
+    (Artifact.submissionArtifact.instructions.drop 2486).take PairedHelperBooleanTrace.inline51Template.length = PairedHelperBooleanTrace.inline51Template := by
   rfl
 
 theorem inline51_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2498 = 3159 := by
+    Artifact.submissionArtifact.instructionPC 2494 = 3165 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline51Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline51Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline51Template 2472 inline51_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline51Template 2468 inline51_slice
     (by
-      change 2472 + PairedHelperBooleanTrace.inline51Template.length ≤ Artifact.submissionInstructions.length
+      change 2468 + PairedHelperBooleanTrace.inline51Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1358,24 +1358,24 @@ def inline51Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline51Template) (by decide))
     (by decide)
 
-theorem inline51Site_startPC : inline51Site.startPC = UInt256.ofNat 3448 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2498) = UInt256.ofNat 3163
+theorem inline51Site_startPC : inline51Site.startPC = UInt256.ofNat 3454 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2494) = UInt256.ofNat 3169
   rw [inline51_instructionPC]
 
 
 theorem inline52_slice :
-    (Artifact.submissionArtifact.instructions.drop 2540).take PairedHelperBooleanTrace.inline52Template.length = PairedHelperBooleanTrace.inline52Template := by
+    (Artifact.submissionArtifact.instructions.drop 2536).take PairedHelperBooleanTrace.inline52Template.length = PairedHelperBooleanTrace.inline52Template := by
   rfl
 
 theorem inline52_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2552 = 3229 := by
+    Artifact.submissionArtifact.instructionPC 2548 = 3235 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline52Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline52Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline52Template 2526 inline52_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline52Template 2522 inline52_slice
     (by
-      change 2526 + PairedHelperBooleanTrace.inline52Template.length ≤ Artifact.submissionInstructions.length
+      change 2522 + PairedHelperBooleanTrace.inline52Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1383,24 +1383,24 @@ def inline52Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline52Template) (by decide))
     (by decide)
 
-theorem inline52Site_startPC : inline52Site.startPC = UInt256.ofNat 3508 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2552) = UInt256.ofNat 3243
+theorem inline52Site_startPC : inline52Site.startPC = UInt256.ofNat 3514 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2548) = UInt256.ofNat 3249
   rw [inline52_instructionPC]
 
 
 theorem inline53_slice :
-    (Artifact.submissionArtifact.instructions.drop 2585).take PairedHelperBooleanTrace.inline53Template.length = PairedHelperBooleanTrace.inline53Template := by
+    (Artifact.submissionArtifact.instructions.drop 2581).take PairedHelperBooleanTrace.inline53Template.length = PairedHelperBooleanTrace.inline53Template := by
   rfl
 
 theorem inline53_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2597 = 3280 := by
+    Artifact.submissionArtifact.instructionPC 2593 = 3286 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline53Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline53Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline53Template 2567 inline53_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline53Template 2563 inline53_slice
     (by
-      change 2567 + PairedHelperBooleanTrace.inline53Template.length ≤ Artifact.submissionInstructions.length
+      change 2563 + PairedHelperBooleanTrace.inline53Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1408,24 +1408,24 @@ def inline53Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline53Template) (by decide))
     (by decide)
 
-theorem inline53Site_startPC : inline53Site.startPC = UInt256.ofNat 3558 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2597) = UInt256.ofNat 3294
+theorem inline53Site_startPC : inline53Site.startPC = UInt256.ofNat 3564 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2593) = UInt256.ofNat 3300
   rw [inline53_instructionPC]
 
 
 theorem inline54_slice :
-    (Artifact.submissionArtifact.instructions.drop 2639).take PairedHelperBooleanTrace.inline54Template.length = PairedHelperBooleanTrace.inline54Template := by
+    (Artifact.submissionArtifact.instructions.drop 2635).take PairedHelperBooleanTrace.inline54Template.length = PairedHelperBooleanTrace.inline54Template := by
   rfl
 
 theorem inline54_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2651 = 3341 := by
+    Artifact.submissionArtifact.instructionPC 2647 = 3347 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline54Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline54Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline54Template 2621 inline54_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline54Template 2617 inline54_slice
     (by
-      change 2621 + PairedHelperBooleanTrace.inline54Template.length ≤ Artifact.submissionInstructions.length
+      change 2617 + PairedHelperBooleanTrace.inline54Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1433,24 +1433,24 @@ def inline54Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline54Template) (by decide))
     (by decide)
 
-theorem inline54Site_startPC : inline54Site.startPC = UInt256.ofNat 3619 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2651) = UInt256.ofNat 3359
+theorem inline54Site_startPC : inline54Site.startPC = UInt256.ofNat 3625 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2647) = UInt256.ofNat 3365
   rw [inline54_instructionPC]
 
 
 theorem inline55_slice :
-    (Artifact.submissionArtifact.instructions.drop 2693).take PairedHelperBooleanTrace.inline55Template.length = PairedHelperBooleanTrace.inline55Template := by
+    (Artifact.submissionArtifact.instructions.drop 2689).take PairedHelperBooleanTrace.inline55Template.length = PairedHelperBooleanTrace.inline55Template := by
   rfl
 
 theorem inline55_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2705 = 3405 := by
+    Artifact.submissionArtifact.instructionPC 2701 = 3411 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline55Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline55Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline55Template 2675 inline55_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline55Template 2671 inline55_slice
     (by
-      change 2675 + PairedHelperBooleanTrace.inline55Template.length ≤ Artifact.submissionInstructions.length
+      change 2671 + PairedHelperBooleanTrace.inline55Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1458,24 +1458,24 @@ def inline55Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline55Template) (by decide))
     (by decide)
 
-theorem inline55Site_startPC : inline55Site.startPC = UInt256.ofNat 3680 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2705) = UInt256.ofNat 3420
+theorem inline55Site_startPC : inline55Site.startPC = UInt256.ofNat 3686 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2701) = UInt256.ofNat 3426
   rw [inline55_instructionPC]
 
 
 theorem inline56_slice :
-    (Artifact.submissionArtifact.instructions.drop 2747).take PairedHelperBooleanTrace.inline56Template.length = PairedHelperBooleanTrace.inline56Template := by
+    (Artifact.submissionArtifact.instructions.drop 2743).take PairedHelperBooleanTrace.inline56Template.length = PairedHelperBooleanTrace.inline56Template := by
   rfl
 
 theorem inline56_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2759 = 3466 := by
+    Artifact.submissionArtifact.instructionPC 2755 = 3472 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline56Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline56Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline56Template 2729 inline56_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline56Template 2725 inline56_slice
     (by
-      change 2729 + PairedHelperBooleanTrace.inline56Template.length ≤ Artifact.submissionInstructions.length
+      change 2725 + PairedHelperBooleanTrace.inline56Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1483,24 +1483,24 @@ def inline56Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline56Template) (by decide))
     (by decide)
 
-theorem inline56Site_startPC : inline56Site.startPC = UInt256.ofNat 3695 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2759) = UInt256.ofNat 3481
+theorem inline56Site_startPC : inline56Site.startPC = UInt256.ofNat 3701 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2755) = UInt256.ofNat 3487
   rw [inline56_instructionPC]
 
 
 theorem inline57_slice :
-    (Artifact.submissionArtifact.instructions.drop 2801).take PairedHelperBooleanTrace.inline57Template.length = PairedHelperBooleanTrace.inline57Template := by
+    (Artifact.submissionArtifact.instructions.drop 2797).take PairedHelperBooleanTrace.inline57Template.length = PairedHelperBooleanTrace.inline57Template := by
   rfl
 
 theorem inline57_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2813 = 3527 := by
+    Artifact.submissionArtifact.instructionPC 2809 = 3533 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline57Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline57Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline57Template 2783 inline57_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline57Template 2779 inline57_slice
     (by
-      change 2783 + PairedHelperBooleanTrace.inline57Template.length ≤ Artifact.submissionInstructions.length
+      change 2779 + PairedHelperBooleanTrace.inline57Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1508,24 +1508,24 @@ def inline57Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline57Template) (by decide))
     (by decide)
 
-theorem inline57Site_startPC : inline57Site.startPC = UInt256.ofNat 3801 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2813) = UInt256.ofNat 3541
+theorem inline57Site_startPC : inline57Site.startPC = UInt256.ofNat 3807 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2809) = UInt256.ofNat 3547
   rw [inline57_instructionPC]
 
 
 theorem inline58_slice :
-    (Artifact.submissionArtifact.instructions.drop 2855).take PairedHelperBooleanTrace.inline58Template.length = PairedHelperBooleanTrace.inline58Template := by
+    (Artifact.submissionArtifact.instructions.drop 2851).take PairedHelperBooleanTrace.inline58Template.length = PairedHelperBooleanTrace.inline58Template := by
   rfl
 
 theorem inline58_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2867 = 3588 := by
+    Artifact.submissionArtifact.instructionPC 2863 = 3594 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline58Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline58Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline58Template 2837 inline58_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline58Template 2833 inline58_slice
     (by
-      change 2837 + PairedHelperBooleanTrace.inline58Template.length ≤ Artifact.submissionInstructions.length
+      change 2833 + PairedHelperBooleanTrace.inline58Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1533,24 +1533,24 @@ def inline58Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline58Template) (by decide))
     (by decide)
 
-theorem inline58Site_startPC : inline58Site.startPC = UInt256.ofNat 3862 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2867) = UInt256.ofNat 3604
+theorem inline58Site_startPC : inline58Site.startPC = UInt256.ofNat 3868 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2863) = UInt256.ofNat 3610
   rw [inline58_instructionPC]
 
 
 theorem inline59_slice :
-    (Artifact.submissionArtifact.instructions.drop 2909).take PairedHelperBooleanTrace.inline59Template.length = PairedHelperBooleanTrace.inline59Template := by
+    (Artifact.submissionArtifact.instructions.drop 2905).take PairedHelperBooleanTrace.inline59Template.length = PairedHelperBooleanTrace.inline59Template := by
   rfl
 
 theorem inline59_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2921 = 3650 := by
+    Artifact.submissionArtifact.instructionPC 2917 = 3656 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline59Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline59Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline59Template 2891 inline59_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline59Template 2887 inline59_slice
     (by
-      change 2891 + PairedHelperBooleanTrace.inline59Template.length ≤ Artifact.submissionInstructions.length
+      change 2887 + PairedHelperBooleanTrace.inline59Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1558,24 +1558,24 @@ def inline59Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline59Template) (by decide))
     (by decide)
 
-theorem inline59Site_startPC : inline59Site.startPC = UInt256.ofNat 3878 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2921) = UInt256.ofNat 3666
+theorem inline59Site_startPC : inline59Site.startPC = UInt256.ofNat 3884 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2917) = UInt256.ofNat 3672
   rw [inline59_instructionPC]
 
 
 theorem inline60_slice :
-    (Artifact.submissionArtifact.instructions.drop 2963).take PairedHelperBooleanTrace.inline60Template.length = PairedHelperBooleanTrace.inline60Template := by
+    (Artifact.submissionArtifact.instructions.drop 2959).take PairedHelperBooleanTrace.inline60Template.length = PairedHelperBooleanTrace.inline60Template := by
   rfl
 
 theorem inline60_instructionPC :
-    Artifact.submissionArtifact.instructionPC 2975 = 3713 := by
+    Artifact.submissionArtifact.instructionPC 2971 = 3719 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline60Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline60Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline60Template 2945 inline60_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline60Template 2941 inline60_slice
     (by
-      change 2945 + PairedHelperBooleanTrace.inline60Template.length ≤ Artifact.submissionInstructions.length
+      change 2941 + PairedHelperBooleanTrace.inline60Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1583,24 +1583,24 @@ def inline60Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline60Template) (by decide))
     (by decide)
 
-theorem inline60Site_startPC : inline60Site.startPC = UInt256.ofNat 3984 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2975) = UInt256.ofNat 3728
+theorem inline60Site_startPC : inline60Site.startPC = UInt256.ofNat 3990 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2971) = UInt256.ofNat 3734
   rw [inline60_instructionPC]
 
 
 theorem inline61_slice :
-    (Artifact.submissionArtifact.instructions.drop 3017).take PairedHelperBooleanTrace.inline61Template.length = PairedHelperBooleanTrace.inline61Template := by
+    (Artifact.submissionArtifact.instructions.drop 3013).take PairedHelperBooleanTrace.inline61Template.length = PairedHelperBooleanTrace.inline61Template := by
   rfl
 
 theorem inline61_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3029 = 3775 := by
+    Artifact.submissionArtifact.instructionPC 3025 = 3781 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline61Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline61Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline61Template 2999 inline61_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline61Template 2995 inline61_slice
     (by
-      change 2999 + PairedHelperBooleanTrace.inline61Template.length ≤ Artifact.submissionInstructions.length
+      change 2995 + PairedHelperBooleanTrace.inline61Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1608,24 +1608,24 @@ def inline61Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline61Template) (by decide))
     (by decide)
 
-theorem inline61Site_startPC : inline61Site.startPC = UInt256.ofNat 4045 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3029) = UInt256.ofNat 3790
+theorem inline61Site_startPC : inline61Site.startPC = UInt256.ofNat 4051 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3025) = UInt256.ofNat 3796
   rw [inline61_instructionPC]
 
 
 theorem inline62_slice :
-    (Artifact.submissionArtifact.instructions.drop 3071).take PairedHelperBooleanTrace.inline62Template.length = PairedHelperBooleanTrace.inline62Template := by
+    (Artifact.submissionArtifact.instructions.drop 3067).take PairedHelperBooleanTrace.inline62Template.length = PairedHelperBooleanTrace.inline62Template := by
   rfl
 
 theorem inline62_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3083 = 3837 := by
+    Artifact.submissionArtifact.instructionPC 3079 = 3843 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline62Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline62Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline62Template 3053 inline62_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline62Template 3049 inline62_slice
     (by
-      change 3053 + PairedHelperBooleanTrace.inline62Template.length ≤ Artifact.submissionInstructions.length
+      change 3049 + PairedHelperBooleanTrace.inline62Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1633,24 +1633,24 @@ def inline62Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline62Template) (by decide))
     (by decide)
 
-theorem inline62Site_startPC : inline62Site.startPC = UInt256.ofNat 4106 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3083) = UInt256.ofNat 3852
+theorem inline62Site_startPC : inline62Site.startPC = UInt256.ofNat 4112 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3079) = UInt256.ofNat 3858
   rw [inline62_instructionPC]
 
 
 theorem inline63_slice :
-    (Artifact.submissionArtifact.instructions.drop 3125).take PairedHelperBooleanTrace.inline63Template.length = PairedHelperBooleanTrace.inline63Template := by
+    (Artifact.submissionArtifact.instructions.drop 3121).take PairedHelperBooleanTrace.inline63Template.length = PairedHelperBooleanTrace.inline63Template := by
   rfl
 
 theorem inline63_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3137 = 3899 := by
+    Artifact.submissionArtifact.instructionPC 3133 = 3905 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline63Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline63Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline63Template 3107 inline63_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline63Template 3103 inline63_slice
     (by
-      change 3107 + PairedHelperBooleanTrace.inline63Template.length ≤ Artifact.submissionInstructions.length
+      change 3103 + PairedHelperBooleanTrace.inline63Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1658,24 +1658,24 @@ def inline63Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline63Template) (by decide))
     (by decide)
 
-theorem inline63Site_startPC : inline63Site.startPC = UInt256.ofNat 4167 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3137) = UInt256.ofNat 3913
+theorem inline63Site_startPC : inline63Site.startPC = UInt256.ofNat 4173 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3133) = UInt256.ofNat 3919
   rw [inline63_instructionPC]
 
 
 theorem group64_slice :
-    (Artifact.submissionArtifact.instructions.drop 3179).take PairedHelperBooleanTrace.group64Template.length = PairedHelperBooleanTrace.group64Template := by
+    (Artifact.submissionArtifact.instructions.drop 3175).take PairedHelperBooleanTrace.group64Template.length = PairedHelperBooleanTrace.group64Template := by
   rfl
 
 theorem group64_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3191 = 3959 := by
+    Artifact.submissionArtifact.instructionPC 3187 = 3965 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def group64Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.group64Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.group64Template 3161 group64_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.group64Template 3157 group64_slice
     (by
-      change 3161 + PairedHelperBooleanTrace.group64Template.length ≤ Artifact.submissionInstructions.length
+      change 3157 + PairedHelperBooleanTrace.group64Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1683,24 +1683,24 @@ def group64Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelp
       (instructions := PairedHelperBooleanTrace.group64Template) (by decide))
     (by decide)
 
-theorem group64Site_startPC : group64Site.startPC = UInt256.ofNat 4228 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3191) = UInt256.ofNat 3977
+theorem group64Site_startPC : group64Site.startPC = UInt256.ofNat 4234 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3187) = UInt256.ofNat 3983
   rw [group64_instructionPC]
 
 
 theorem inline64_slice :
-    (Artifact.submissionArtifact.instructions.drop 3182).take PairedHelperBooleanTrace.inline64Template.length = PairedHelperBooleanTrace.inline64Template := by
+    (Artifact.submissionArtifact.instructions.drop 3178).take PairedHelperBooleanTrace.inline64Template.length = PairedHelperBooleanTrace.inline64Template := by
   rfl
 
 theorem inline64_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3194 = 3964 := by
+    Artifact.submissionArtifact.instructionPC 3190 = 3970 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline64Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline64Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline64Template 3164 inline64_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline64Template 3160 inline64_slice
     (by
-      change 3164 + PairedHelperBooleanTrace.inline64Template.length ≤ Artifact.submissionInstructions.length
+      change 3160 + PairedHelperBooleanTrace.inline64Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1708,24 +1708,24 @@ def inline64Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline64Template) (by decide))
     (by decide)
 
-theorem inline64Site_startPC : inline64Site.startPC = UInt256.ofNat 4190 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3194) = UInt256.ofNat 3980
+theorem inline64Site_startPC : inline64Site.startPC = UInt256.ofNat 4196 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3190) = UInt256.ofNat 3986
   rw [inline64_instructionPC]
 
 
 theorem inline65_slice :
-    (Artifact.submissionArtifact.instructions.drop 3230).take PairedHelperBooleanTrace.inline65Template.length = PairedHelperBooleanTrace.inline65Template := by
+    (Artifact.submissionArtifact.instructions.drop 3226).take PairedHelperBooleanTrace.inline65Template.length = PairedHelperBooleanTrace.inline65Template := by
   rfl
 
 theorem inline65_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3242 = 4022 := by
+    Artifact.submissionArtifact.instructionPC 3238 = 4028 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline65Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline65Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline65Template 3212 inline65_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline65Template 3208 inline65_slice
     (by
-      change 3212 + PairedHelperBooleanTrace.inline65Template.length ≤ Artifact.submissionInstructions.length
+      change 3208 + PairedHelperBooleanTrace.inline65Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1733,24 +1733,24 @@ def inline65Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline65Template) (by decide))
     (by decide)
 
-theorem inline65Site_startPC : inline65Site.startPC = UInt256.ofNat 4290 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3242) = UInt256.ofNat 4036
+theorem inline65Site_startPC : inline65Site.startPC = UInt256.ofNat 4296 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3238) = UInt256.ofNat 4042
   rw [inline65_instructionPC]
 
 
 theorem inline66_slice :
-    (Artifact.submissionArtifact.instructions.drop 3278).take PairedHelperBooleanTrace.inline66Template.length = PairedHelperBooleanTrace.inline66Template := by
+    (Artifact.submissionArtifact.instructions.drop 3274).take PairedHelperBooleanTrace.inline66Template.length = PairedHelperBooleanTrace.inline66Template := by
   rfl
 
 theorem inline66_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3290 = 4081 := by
+    Artifact.submissionArtifact.instructionPC 3286 = 4087 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline66Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline66Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline66Template 3260 inline66_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline66Template 3256 inline66_slice
     (by
-      change 3260 + PairedHelperBooleanTrace.inline66Template.length ≤ Artifact.submissionInstructions.length
+      change 3256 + PairedHelperBooleanTrace.inline66Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1758,24 +1758,24 @@ def inline66Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline66Template) (by decide))
     (by decide)
 
-theorem inline66Site_startPC : inline66Site.startPC = UInt256.ofNat 4344 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3290) = UInt256.ofNat 4095
+theorem inline66Site_startPC : inline66Site.startPC = UInt256.ofNat 4350 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3286) = UInt256.ofNat 4101
   rw [inline66_instructionPC]
 
 
 theorem inline67_slice :
-    (Artifact.submissionArtifact.instructions.drop 3326).take PairedHelperBooleanTrace.inline67Template.length = PairedHelperBooleanTrace.inline67Template := by
+    (Artifact.submissionArtifact.instructions.drop 3322).take PairedHelperBooleanTrace.inline67Template.length = PairedHelperBooleanTrace.inline67Template := by
   rfl
 
 theorem inline67_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3338 = 4134 := by
+    Artifact.submissionArtifact.instructionPC 3334 = 4140 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline67Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline67Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline67Template 3308 inline67_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline67Template 3304 inline67_slice
     (by
-      change 3308 + PairedHelperBooleanTrace.inline67Template.length ≤ Artifact.submissionInstructions.length
+      change 3304 + PairedHelperBooleanTrace.inline67Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1783,24 +1783,24 @@ def inline67Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline67Template) (by decide))
     (by decide)
 
-theorem inline67Site_startPC : inline67Site.startPC = UInt256.ofNat 4399 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3338) = UInt256.ofNat 4150
+theorem inline67Site_startPC : inline67Site.startPC = UInt256.ofNat 4405 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3334) = UInt256.ofNat 4156
   rw [inline67_instructionPC]
 
 
 theorem inline68_slice :
-    (Artifact.submissionArtifact.instructions.drop 3374).take PairedHelperBooleanTrace.inline68Template.length = PairedHelperBooleanTrace.inline68Template := by
+    (Artifact.submissionArtifact.instructions.drop 3370).take PairedHelperBooleanTrace.inline68Template.length = PairedHelperBooleanTrace.inline68Template := by
   rfl
 
 theorem inline68_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3386 = 4191 := by
+    Artifact.submissionArtifact.instructionPC 3382 = 4197 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline68Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline68Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline68Template 3356 inline68_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline68Template 3352 inline68_slice
     (by
-      change 3356 + PairedHelperBooleanTrace.inline68Template.length ≤ Artifact.submissionInstructions.length
+      change 3352 + PairedHelperBooleanTrace.inline68Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1808,24 +1808,24 @@ def inline68Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline68Template) (by decide))
     (by decide)
 
-theorem inline68Site_startPC : inline68Site.startPC = UInt256.ofNat 4409 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3386) = UInt256.ofNat 4206
+theorem inline68Site_startPC : inline68Site.startPC = UInt256.ofNat 4415 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3382) = UInt256.ofNat 4212
   rw [inline68_instructionPC]
 
 
 theorem inline69_slice :
-    (Artifact.submissionArtifact.instructions.drop 3422).take PairedHelperBooleanTrace.inline69Template.length = PairedHelperBooleanTrace.inline69Template := by
+    (Artifact.submissionArtifact.instructions.drop 3418).take PairedHelperBooleanTrace.inline69Template.length = PairedHelperBooleanTrace.inline69Template := by
   rfl
 
 theorem inline69_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3434 = 4246 := by
+    Artifact.submissionArtifact.instructionPC 3430 = 4252 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline69Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline69Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline69Template 3404 inline69_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline69Template 3400 inline69_slice
     (by
-      change 3404 + PairedHelperBooleanTrace.inline69Template.length ≤ Artifact.submissionInstructions.length
+      change 3400 + PairedHelperBooleanTrace.inline69Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1833,24 +1833,24 @@ def inline69Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline69Template) (by decide))
     (by decide)
 
-theorem inline69Site_startPC : inline69Site.startPC = UInt256.ofNat 4508 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3434) = UInt256.ofNat 4261
+theorem inline69Site_startPC : inline69Site.startPC = UInt256.ofNat 4514 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3430) = UInt256.ofNat 4267
   rw [inline69_instructionPC]
 
 
 theorem inline70_slice :
-    (Artifact.submissionArtifact.instructions.drop 3470).take PairedHelperBooleanTrace.inline70Template.length = PairedHelperBooleanTrace.inline70Template := by
+    (Artifact.submissionArtifact.instructions.drop 3466).take PairedHelperBooleanTrace.inline70Template.length = PairedHelperBooleanTrace.inline70Template := by
   rfl
 
 theorem inline70_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3482 = 4301 := by
+    Artifact.submissionArtifact.instructionPC 3478 = 4307 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline70Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline70Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline70Template 3452 inline70_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline70Template 3448 inline70_slice
     (by
-      change 3452 + PairedHelperBooleanTrace.inline70Template.length ≤ Artifact.submissionInstructions.length
+      change 3448 + PairedHelperBooleanTrace.inline70Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1858,24 +1858,24 @@ def inline70Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline70Template) (by decide))
     (by decide)
 
-theorem inline70Site_startPC : inline70Site.startPC = UInt256.ofNat 4563 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3482) = UInt256.ofNat 4316
+theorem inline70Site_startPC : inline70Site.startPC = UInt256.ofNat 4569 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3478) = UInt256.ofNat 4322
   rw [inline70_instructionPC]
 
 
 theorem inline71_slice :
-    (Artifact.submissionArtifact.instructions.drop 3518).take PairedHelperBooleanTrace.inline71Template.length = PairedHelperBooleanTrace.inline71Template := by
+    (Artifact.submissionArtifact.instructions.drop 3514).take PairedHelperBooleanTrace.inline71Template.length = PairedHelperBooleanTrace.inline71Template := by
   rfl
 
 theorem inline71_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3530 = 4356 := by
+    Artifact.submissionArtifact.instructionPC 3526 = 4362 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline71Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline71Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline71Template 3500 inline71_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline71Template 3496 inline71_slice
     (by
-      change 3500 + PairedHelperBooleanTrace.inline71Template.length ≤ Artifact.submissionInstructions.length
+      change 3496 + PairedHelperBooleanTrace.inline71Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1883,24 +1883,24 @@ def inline71Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline71Template) (by decide))
     (by decide)
 
-theorem inline71Site_startPC : inline71Site.startPC = UInt256.ofNat 4618 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3530) = UInt256.ofNat 4371
+theorem inline71Site_startPC : inline71Site.startPC = UInt256.ofNat 4624 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3526) = UInt256.ofNat 4377
   rw [inline71_instructionPC]
 
 
 theorem inline72_slice :
-    (Artifact.submissionArtifact.instructions.drop 3566).take PairedHelperBooleanTrace.inline72Template.length = PairedHelperBooleanTrace.inline72Template := by
+    (Artifact.submissionArtifact.instructions.drop 3562).take PairedHelperBooleanTrace.inline72Template.length = PairedHelperBooleanTrace.inline72Template := by
   rfl
 
 theorem inline72_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3578 = 4411 := by
+    Artifact.submissionArtifact.instructionPC 3574 = 4417 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline72Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline72Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline72Template 3548 inline72_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline72Template 3544 inline72_slice
     (by
-      change 3548 + PairedHelperBooleanTrace.inline72Template.length ≤ Artifact.submissionInstructions.length
+      change 3544 + PairedHelperBooleanTrace.inline72Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1908,24 +1908,24 @@ def inline72Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline72Template) (by decide))
     (by decide)
 
-theorem inline72Site_startPC : inline72Site.startPC = UInt256.ofNat 4673 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3578) = UInt256.ofNat 4425
+theorem inline72Site_startPC : inline72Site.startPC = UInt256.ofNat 4679 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3574) = UInt256.ofNat 4431
   rw [inline72_instructionPC]
 
 
 theorem inline73_slice :
-    (Artifact.submissionArtifact.instructions.drop 3614).take PairedHelperBooleanTrace.inline73Template.length = PairedHelperBooleanTrace.inline73Template := by
+    (Artifact.submissionArtifact.instructions.drop 3610).take PairedHelperBooleanTrace.inline73Template.length = PairedHelperBooleanTrace.inline73Template := by
   rfl
 
 theorem inline73_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3626 = 4466 := by
+    Artifact.submissionArtifact.instructionPC 3622 = 4472 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline73Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline73Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline73Template 3596 inline73_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline73Template 3592 inline73_slice
     (by
-      change 3596 + PairedHelperBooleanTrace.inline73Template.length ≤ Artifact.submissionInstructions.length
+      change 3592 + PairedHelperBooleanTrace.inline73Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1933,24 +1933,24 @@ def inline73Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline73Template) (by decide))
     (by decide)
 
-theorem inline73Site_startPC : inline73Site.startPC = UInt256.ofNat 4728 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3626) = UInt256.ofNat 4480
+theorem inline73Site_startPC : inline73Site.startPC = UInt256.ofNat 4734 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3622) = UInt256.ofNat 4486
   rw [inline73_instructionPC]
 
 
 theorem inline74_slice :
-    (Artifact.submissionArtifact.instructions.drop 3662).take PairedHelperBooleanTrace.inline74Template.length = PairedHelperBooleanTrace.inline74Template := by
+    (Artifact.submissionArtifact.instructions.drop 3658).take PairedHelperBooleanTrace.inline74Template.length = PairedHelperBooleanTrace.inline74Template := by
   rfl
 
 theorem inline74_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3674 = 4521 := by
+    Artifact.submissionArtifact.instructionPC 3670 = 4527 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline74Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline74Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline74Template 3644 inline74_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline74Template 3640 inline74_slice
     (by
-      change 3644 + PairedHelperBooleanTrace.inline74Template.length ≤ Artifact.submissionInstructions.length
+      change 3640 + PairedHelperBooleanTrace.inline74Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1958,24 +1958,24 @@ def inline74Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline74Template) (by decide))
     (by decide)
 
-theorem inline74Site_startPC : inline74Site.startPC = UInt256.ofNat 4782 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3674) = UInt256.ofNat 4538
+theorem inline74Site_startPC : inline74Site.startPC = UInt256.ofNat 4788 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3670) = UInt256.ofNat 4544
   rw [inline74_instructionPC]
 
 
 theorem inline75_slice :
-    (Artifact.submissionArtifact.instructions.drop 3710).take PairedHelperBooleanTrace.inline75Template.length = PairedHelperBooleanTrace.inline75Template := by
+    (Artifact.submissionArtifact.instructions.drop 3706).take PairedHelperBooleanTrace.inline75Template.length = PairedHelperBooleanTrace.inline75Template := by
   rfl
 
 theorem inline75_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3722 = 4576 := by
+    Artifact.submissionArtifact.instructionPC 3718 = 4582 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline75Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline75Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline75Template 3692 inline75_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline75Template 3688 inline75_slice
     (by
-      change 3692 + PairedHelperBooleanTrace.inline75Template.length ≤ Artifact.submissionInstructions.length
+      change 3688 + PairedHelperBooleanTrace.inline75Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -1983,24 +1983,24 @@ def inline75Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline75Template) (by decide))
     (by decide)
 
-theorem inline75Site_startPC : inline75Site.startPC = UInt256.ofNat 4837 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3722) = UInt256.ofNat 4592
+theorem inline75Site_startPC : inline75Site.startPC = UInt256.ofNat 4843 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3718) = UInt256.ofNat 4598
   rw [inline75_instructionPC]
 
 
 theorem inline76_slice :
-    (Artifact.submissionArtifact.instructions.drop 3758).take PairedHelperBooleanTrace.inline76Template.length = PairedHelperBooleanTrace.inline76Template := by
+    (Artifact.submissionArtifact.instructions.drop 3754).take PairedHelperBooleanTrace.inline76Template.length = PairedHelperBooleanTrace.inline76Template := by
   rfl
 
 theorem inline76_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3770 = 4633 := by
+    Artifact.submissionArtifact.instructionPC 3766 = 4639 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline76Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline76Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline76Template 3740 inline76_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline76Template 3736 inline76_slice
     (by
-      change 3740 + PairedHelperBooleanTrace.inline76Template.length ≤ Artifact.submissionInstructions.length
+      change 3736 + PairedHelperBooleanTrace.inline76Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -2008,24 +2008,24 @@ def inline76Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline76Template) (by decide))
     (by decide)
 
-theorem inline76Site_startPC : inline76Site.startPC = UInt256.ofNat 4892 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3770) = UInt256.ofNat 4647
+theorem inline76Site_startPC : inline76Site.startPC = UInt256.ofNat 4898 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3766) = UInt256.ofNat 4653
   rw [inline76_instructionPC]
 
 
 theorem inline77_slice :
-    (Artifact.submissionArtifact.instructions.drop 3806).take PairedHelperBooleanTrace.inline77Template.length = PairedHelperBooleanTrace.inline77Template := by
+    (Artifact.submissionArtifact.instructions.drop 3802).take PairedHelperBooleanTrace.inline77Template.length = PairedHelperBooleanTrace.inline77Template := by
   rfl
 
 theorem inline77_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3818 = 4688 := by
+    Artifact.submissionArtifact.instructionPC 3814 = 4694 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline77Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline77Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline77Template 3788 inline77_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline77Template 3784 inline77_slice
     (by
-      change 3788 + PairedHelperBooleanTrace.inline77Template.length ≤ Artifact.submissionInstructions.length
+      change 3784 + PairedHelperBooleanTrace.inline77Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -2033,24 +2033,24 @@ def inline77Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline77Template) (by decide))
     (by decide)
 
-theorem inline77Site_startPC : inline77Site.startPC = UInt256.ofNat 4946 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3818) = UInt256.ofNat 4703
+theorem inline77Site_startPC : inline77Site.startPC = UInt256.ofNat 4952 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3814) = UInt256.ofNat 4709
   rw [inline77_instructionPC]
 
 
 theorem inline78_slice :
-    (Artifact.submissionArtifact.instructions.drop 3854).take PairedHelperBooleanTrace.inline78Template.length = PairedHelperBooleanTrace.inline78Template := by
+    (Artifact.submissionArtifact.instructions.drop 3850).take PairedHelperBooleanTrace.inline78Template.length = PairedHelperBooleanTrace.inline78Template := by
   rfl
 
 theorem inline78_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3866 = 4744 := by
+    Artifact.submissionArtifact.instructionPC 3862 = 4750 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline78Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline78Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline78Template 3836 inline78_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline78Template 3832 inline78_slice
     (by
-      change 3836 + PairedHelperBooleanTrace.inline78Template.length ≤ Artifact.submissionInstructions.length
+      change 3832 + PairedHelperBooleanTrace.inline78Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -2058,24 +2058,24 @@ def inline78Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline78Template) (by decide))
     (by decide)
 
-theorem inline78Site_startPC : inline78Site.startPC = UInt256.ofNat 5001 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3866) = UInt256.ofNat 4759
+theorem inline78Site_startPC : inline78Site.startPC = UInt256.ofNat 5007 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3862) = UInt256.ofNat 4765
   rw [inline78_instructionPC]
 
 
 theorem inline79_slice :
-    (Artifact.submissionArtifact.instructions.drop 3902).take PairedHelperBooleanTrace.inline79Template.length = PairedHelperBooleanTrace.inline79Template := by
+    (Artifact.submissionArtifact.instructions.drop 3898).take PairedHelperBooleanTrace.inline79Template.length = PairedHelperBooleanTrace.inline79Template := by
   rfl
 
 theorem inline79_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3914 = 4799 := by
+    Artifact.submissionArtifact.instructionPC 3910 = 4805 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def inline79Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.inline79Template :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline79Template 3884 inline79_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.inline79Template 3880 inline79_slice
     (by
-      change 3884 + PairedHelperBooleanTrace.inline79Template.length ≤ Artifact.submissionInstructions.length
+      change 3880 + PairedHelperBooleanTrace.inline79Template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -2083,24 +2083,24 @@ def inline79Site : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.inline79Template) (by decide))
     (by decide)
 
-theorem inline79Site_startPC : inline79Site.startPC = UInt256.ofNat 5056 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3914) = UInt256.ofNat 4814
+theorem inline79Site_startPC : inline79Site.startPC = UInt256.ofNat 5062 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3910) = UInt256.ofNat 4820
   rw [inline79_instructionPC]
 
 
 theorem coreExit_slice :
-    (Artifact.submissionArtifact.instructions.drop 3950).take PairedHelperBooleanTrace.coreExitTemplate.length = PairedHelperBooleanTrace.coreExitTemplate := by
+    (Artifact.submissionArtifact.instructions.drop 3946).take PairedHelperBooleanTrace.coreExitTemplate.length = PairedHelperBooleanTrace.coreExitTemplate := by
   rfl
 
 theorem coreExit_instructionPC :
-    Artifact.submissionArtifact.instructionPC 3962 = 4855 := by
+    Artifact.submissionArtifact.instructionPC 3958 = 4861 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def coreExitSite : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.coreExitTemplate :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.coreExitTemplate 3932 coreExit_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.coreExitTemplate 3928 coreExit_slice
     (by
-      change 3932 + PairedHelperBooleanTrace.coreExitTemplate.length ≤ Artifact.submissionInstructions.length
+      change 3928 + PairedHelperBooleanTrace.coreExitTemplate.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -2108,24 +2108,24 @@ def coreExitSite : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHel
       (instructions := PairedHelperBooleanTrace.coreExitTemplate) (by decide))
     (by decide)
 
-theorem coreExitSite_startPC : coreExitSite.startPC = UInt256.ofNat 5066 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3962) = UInt256.ofNat 4870
+theorem coreExitSite_startPC : coreExitSite.startPC = UInt256.ofNat 5072 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3958) = UInt256.ofNat 4876
   rw [coreExit_instructionPC]
 
 
 theorem helper_slice :
-    (Artifact.submissionArtifact.instructions.drop 4022).take PairedHelperBooleanTrace.fullTemplate.length = PairedHelperBooleanTrace.fullTemplate := by
+    (Artifact.submissionArtifact.instructions.drop 4018).take PairedHelperBooleanTrace.fullTemplate.length = PairedHelperBooleanTrace.fullTemplate := by
   rfl
 
 theorem helper_instructionPC :
-    Artifact.submissionArtifact.instructionPC 4034 = 4943 := by
+    Artifact.submissionArtifact.instructionPC 4030 = 4949 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def helperSite : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelperBooleanTrace.fullTemplate :=
-  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.fullTemplate 4004 helper_slice
+  StackSiteBuilder.ofSlice PairedHelperBooleanTrace.fullTemplate 4000 helper_slice
     (by
-      change 4004 + PairedHelperBooleanTrace.fullTemplate.length ≤ Artifact.submissionInstructions.length
+      change 4000 + PairedHelperBooleanTrace.fullTemplate.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
@@ -2133,8 +2133,8 @@ def helperSite : GenericRoundSite Artifact.submissionArtifact .Osaka PairedHelpe
       (instructions := PairedHelperBooleanTrace.fullTemplate) (by decide))
     (by decide)
 
-theorem helperSite_startPC : helperSite.startPC = UInt256.ofNat 5153 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4034) = UInt256.ofNat 4957
+theorem helperSite_startPC : helperSite.startPC = UInt256.ofNat 5159 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4030) = UInt256.ofNat 4963
   rw [helper_instructionPC]
 
 
@@ -2226,8 +2226,8 @@ def wholeSites : PairedHoistedCoreTrace.WholeCoreSites Artifact.submissionArtifa
   helper := ⟨helperSite, helperSite_startPC⟩
 
 theorem validJumpDest_5153 :
-    Decode.isValidJumpDest Artifact.submissionArtifact.code 5153 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4034 (by rfl)
+    Decode.isValidJumpDest Artifact.submissionArtifact.code 5159 = true := by
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4030 (by rfl)
   rw [helper_instructionPC] at h
   exact h
 
@@ -2284,7 +2284,7 @@ def gasSteps_core_normalized (s : State) (words : Nat → UInt32)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hready : NormalizedScheduleReady s.memory words) :
     GasSteps {s with pc := UInt256.ofNat 960, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto left right, 0⟩ rho}
-      {s with pc := UInt256.ofNat 5068, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (coreCryptoResult words left right) rho} :=
+      {s with pc := UInt256.ofNat 5074, stack := coreStack [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] (coreCryptoResult words left right) rho} :=
   PairedHoistedCoreTrace.gasSteps_wholeCore_normalized wholeSites s words left right rho hstack hrun hactive
     (coreJumpValid s hcode) hcode hfork hnp hready
 

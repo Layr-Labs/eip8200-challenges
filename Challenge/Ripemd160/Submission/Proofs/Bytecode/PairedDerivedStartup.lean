@@ -28,14 +28,14 @@ def cacheTemplate : List Instr :=
    .push ⟨5, by decide⟩ factorWord]
 
 def loadTemplate (address : Nat) (dup : Operation.DupOp) : List Instr :=
-  [push2 (UInt256.ofNat address), .op .MLOAD, .op (.Dup dup), .op .AND,
+  [push1 (UInt256.ofNat address), .op .MLOAD, .op (.Dup dup), .op .AND,
    dup1, push1 (UInt256.ofNat 128), .op .SHL, .op .OR]
 
 /-- Exact physical instructions 751..819 of the frozen 5324-byte candidate. -/
 def template : List Instr :=
-  cacheTemplate ++ loadTemplate 672 ⟨4, by decide⟩ ++
-    loadTemplate 640 ⟨5, by decide⟩ ++ loadTemplate 608 ⟨6, by decide⟩ ++
-    loadTemplate 576 ⟨7, by decide⟩ ++ loadTemplate 544 ⟨8, by decide⟩
+  cacheTemplate ++ loadTemplate 160 ⟨4, by decide⟩ ++
+    loadTemplate 128 ⟨5, by decide⟩ ++ loadTemplate 96 ⟨6, by decide⟩ ++
+    loadTemplate 64 ⟨7, by decide⟩ ++ loadTemplate 32 ⟨8, by decide⟩
 
 /-- Arbitrary 256-bit words are explicitly normalized before duplicating lanes. -/
 def packedHash (memory : ByteArray) (address : Nat) : UInt256 :=
@@ -43,12 +43,12 @@ def packedHash (memory : ByteArray) (address : Nat) : UInt256 :=
   UInt256.lor (UInt256.shiftLeft value (UInt256.ofNat 128)) value
 
 def resultStack (memory : ByteArray) (rho : List UInt256) : List UInt256 :=
-  [packedHash memory 544, packedHash memory 576, packedHash memory 608,
-    packedHash memory 640, packedHash memory 672,
+  [packedHash memory 32, packedHash memory 64, packedHash memory 96,
+    packedHash memory 128, packedHash memory 160,
     factorWord, pairWord, upperWord, lowerWord] ++ rho
 
 theorem active_preserved (current : UInt256) (address : Nat)
-    (hcurrent : 23 ≤ current.toNat) (haddress : address ≤ 672) :
+    (hcurrent : 23 ≤ current.toNat) (haddress : address ≤ 160) :
     UInt256.ofNat (MachineState.activeWordsAfter current.toNat address 32) = current := by
   have hwords : (address + 32 - 1) / 32 + 1 ≤ current.toNat := by omega
   simp only [MachineState.activeWordsAfter, if_neg (by decide : (32 : Nat) ≠ 0)]
@@ -59,8 +59,8 @@ theorem active_preserved (current : UInt256) (address : Nat)
 theorem template_length : template.length = 48 := by
   norm_num [template, cacheTemplate, loadTemplate]
 
-theorem template_bytes : (template.map Instr.size).sum = 73 := by
-  norm_num [template, cacheTemplate, loadTemplate, push1, push2, dup1, Instr.size]
+theorem template_bytes : (template.map Instr.size).sum = 68 := by
+  norm_num [template, cacheTemplate, loadTemplate, push1, dup1, Instr.size]
 
 theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
@@ -69,10 +69,10 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
       some {s with pc := pcAfter pc template, stack := resultStack s.memory rho} := by
   have hcap (n : Nat) (hn : n ≤ 11) : rho.length + n < 1024 := by omega
   have h0 : rho.length < 1024 := by omega
-  have hactiveAt (address : Nat) (haddress : address ≤ 672) :
+  have hactiveAt (address : Nat) (haddress : address ≤ 160) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_preserved s.activeWords address hactive haddress
-  simp (discharger := omega) [template, cacheTemplate, loadTemplate, push1, push2, dup1,
+  simp (discharger := omega) [template, cacheTemplate, loadTemplate, push1, dup1,
     packedHash, resultStack, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, hrun, hcap, h0, Nat.add_assoc,
     upper_from_lower, pair_from_lower,
@@ -97,7 +97,7 @@ def frozenInstructions : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op .OR,
    .push ⟨5, by decide⟩ (UInt256.ofNat 0x0100000001),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x2a0),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0xa0),
    .op .MLOAD,
    .op (.Dup ⟨4, by decide⟩),
    .op .AND,
@@ -105,7 +105,7 @@ def frozenInstructions : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHL,
    .op .OR,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x280),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .MLOAD,
    .op (.Dup ⟨5, by decide⟩),
    .op .AND,
@@ -113,7 +113,7 @@ def frozenInstructions : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHL,
    .op .OR,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x260),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0x60),
    .op .MLOAD,
    .op (.Dup ⟨6, by decide⟩),
    .op .AND,
@@ -121,7 +121,7 @@ def frozenInstructions : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHL,
    .op .OR,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x240),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0x40),
    .op .MLOAD,
    .op (.Dup ⟨7, by decide⟩),
    .op .AND,
@@ -129,7 +129,7 @@ def frozenInstructions : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHL,
    .op .OR,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x220),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0x20),
    .op .MLOAD,
    .op (.Dup ⟨8, by decide⟩),
    .op .AND,
@@ -194,7 +194,7 @@ def gasSteps_template {artifact : ProgramArtifact} {fork : Fork}
 
 
 theorem template_exactBytes : assembleBytes template =
-  [0x63, 0xff, 0xff, 0xff, 0xff, 0x80, 0x60, 0x80, 0x1b, 0x80, 0x82, 0x17, 0x64, 0x01, 0x00, 0x00, 0x00, 0x01, 0x61, 0x02, 0xa0, 0x51, 0x84, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17, 0x61, 0x02, 0x80, 0x51, 0x85, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17, 0x61, 0x02, 0x60, 0x51, 0x86, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17, 0x61, 0x02, 0x40, 0x51, 0x87, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17, 0x61, 0x02, 0x20, 0x51, 0x88, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17] := by decide
+  [0x63, 0xff, 0xff, 0xff, 0xff, 0x80, 0x60, 0x80, 0x1b, 0x80, 0x82, 0x17, 0x64, 0x01, 0x00, 0x00, 0x00, 0x01, 0x60, 0xa0, 0x51, 0x84, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17, 0x60, 0x80, 0x51, 0x85, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17, 0x60, 0x60, 0x51, 0x86, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17, 0x60, 0x40, 0x51, 0x87, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17, 0x60, 0x20, 0x51, 0x88, 0x16, 0x80, 0x60, 0x80, 0x1b, 0x17] := by decide
 
 #print axioms template_exactBytes
 

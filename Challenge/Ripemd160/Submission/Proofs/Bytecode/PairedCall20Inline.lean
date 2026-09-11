@@ -10,7 +10,7 @@ open PairedHelperBooleanTrace
 open PairedCall26Inline (oneRaw oneRaw_eq_rawBoolean)
 
 def inline20Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 16) (MachineState.readWord memory 128), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 20}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 512), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 20}
 
 def inline20Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -38,9 +38,9 @@ def inline20Template : List Instr :=
    .op .AND,
    .op .OR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 512),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 208),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -115,7 +115,7 @@ theorem inline20Template_terminal_advances :
 #print axioms inline20Template_terminal_advances
 
 def inline21Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 240) (MachineState.readWord memory 384), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 24}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 624) (MachineState.readWord memory 384), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 24}
 
 def inline21Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -145,7 +145,7 @@ def inline21Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 384),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 240),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 624),
    .op .MLOAD,
    .op .OR,
    .op .ADD,

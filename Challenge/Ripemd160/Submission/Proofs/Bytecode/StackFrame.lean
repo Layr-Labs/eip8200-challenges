@@ -79,7 +79,7 @@ def loadSite1238 : GenericRoundSite Artifact.submissionArtifact .Osaka
   rfl
 
 @[simp] theorem loadSite1238_startPC :
-    loadSite1238.startPC = UInt256.ofNat 0xb73 := by
+    loadSite1238.startPC = UInt256.ofNat 0xb79 := by
   change UInt256.ofNat
     (Artifact.submissionArtifact.instructionPC QuadLayout.rightLoadIndex) = _
   rw [QuadLayout.rightLoad_pc]

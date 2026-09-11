@@ -56,24 +56,24 @@ def helperTemplate : List Instr :=
     .op (.Swap ⟨9, by decide⟩),
     .op .JUMP ]
 theorem helper_slice :
-    (Artifact.submissionArtifact.instructions.drop 3940).take helperTemplate.length = helperTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3936).take helperTemplate.length = helperTemplate := by rfl
 def helperSite : GenericRoundSite Artifact.submissionArtifact .Osaka helperTemplate :=
-  StackSiteBuilder.ofSlice helperTemplate 3940 helper_slice
-    (by change 3940 + helperTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice helperTemplate 3936 helper_slice
+    (by change 3936 + helperTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := helperTemplate) (by decide))
     (by decide)
-theorem helper_pc : helperSite.startPC = UInt256.ofNat 5168 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3940) = UInt256.ofNat 5168
+theorem helper_pc : helperSite.startPC = UInt256.ofNat 5174 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3936) = UInt256.ofNat 5174
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem helper_advances : ∀ instruction ∈ helperTemplate.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 theorem helper_valid (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code 5168 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3940 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 3940 = 5168 := by
+    Decode.isValidJumpDest s.executionEnv.code 5174 = true := by
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3936 (by rfl)
+  have hp : Artifact.submissionArtifact.instructionPC 3936 = 5174 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   rw [hp] at h
   rw [hcode]
