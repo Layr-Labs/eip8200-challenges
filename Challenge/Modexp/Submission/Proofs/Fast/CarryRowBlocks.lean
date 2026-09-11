@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.CarryRowPrograms
 import Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyPrograms
 import Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyExtra
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedPrograms
@@ -8,7 +9,7 @@ set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 1000000
 
-namespace Challenge.Modexp.Submission.Proofs.Fast.CiosCachedBlocks
+namespace Challenge.Modexp.Submission.Proofs.Fast.CarryRowBlocks
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
@@ -17,7 +18,7 @@ open CiosCached WindowTwentyOneBinding
 
 def entry : Block Artifact.submissionArtifact .Osaka 4163 CiosReadonly.fullEntryProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3077 57 4163 CiosReadonly.fullEntryProgram
-    (by decide) (by rfl) (by rfl) (by decide)
+    (by decide) (by decide) (by rfl) (by decide)
 
 def out : Block Artifact.submissionArtifact .Osaka 4250 outProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3134 3 4250 outProgram
@@ -63,8 +64,8 @@ def l1Mac7 : Block Artifact.submissionArtifact .Osaka 4511 (l1LastProgram 8256) 
   WindowTwentyOneSlice.block Artifact.allWellFormed 3365 31 4511 (l1LastProgram 8256)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def mid : Block Artifact.submissionArtifact .Osaka 4546 CiosReadonly.fullMidProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3396 26 4546 CiosReadonly.fullMidProgram
+def mid : Block Artifact.submissionArtifact .Osaka 4546 CarryRowPrograms.middle :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3396 26 4546 CarryRowPrograms.middle
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Dispatch : Block Artifact.submissionArtifact .Osaka 4578 l2DispatchProgram :=
@@ -103,12 +104,12 @@ def l2Mac6 : Block Artifact.submissionArtifact .Osaka 4802 (l2Program 0 0 8256 8
   WindowTwentyOneSlice.block Artifact.allWellFormed 3609 31 4802 (l2Program 0 0 8256 8288)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def tailLoop : Block Artifact.submissionArtifact .Osaka 4837 (CiosCached.tailProgram.take 23) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3640 23 4837 (CiosCached.tailProgram.take 23)
+def tailLoop : Block Artifact.submissionArtifact .Osaka 4837 CarryRowPrograms.tail :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3640 20 4837 CarryRowPrograms.tail
     (by decide) (by rfl) (by rfl) (by decide)
 
 def exitBlock : Block Artifact.submissionArtifact .Osaka 4870 CiosReadonly.fullExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3663 16 4870 CiosReadonly.fullExitProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3660 16 4870 CiosReadonly.fullExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Join8 : Block Artifact.submissionArtifact .Osaka 4281 joinProgram :=
@@ -134,9 +135,9 @@ theorem jumpDest4757 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecod
 theorem jumpDest5112 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4733 = true :=
   Artifact.isValidJumpDest_index 3548 (by rfl)
 
-end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedBlocks
+end Challenge.Modexp.Submission.Proofs.Fast.CarryRowBlocks
 
-namespace Challenge.Modexp.Submission.Proofs.Fast.CiosCachedBlocks
+namespace Challenge.Modexp.Submission.Proofs.Fast.CarryRowBlocks
 
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
@@ -150,4 +151,4 @@ def environment (s : State)
   ⟨by change Challenge.Modexp.submissionBytecode.size < 2^256; rw [Challenge.Modexp.submissionBytecode_size]; decide,
     hcode, hfork, hrun, hnp⟩
 
-end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedBlocks
+end Challenge.Modexp.Submission.Proofs.Fast.CarryRowBlocks
