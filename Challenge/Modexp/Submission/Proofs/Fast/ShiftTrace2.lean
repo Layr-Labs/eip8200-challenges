@@ -134,12 +134,12 @@ private theorem addMod_comm (a b m : UInt256) :
 @[simp] private theorem newEstimatePC2966 : Artifact.submissionArtifact.instructionPC 2852 = 3769 := by rfl
 @[simp] private theorem newEstimatePC2967 : Artifact.submissionArtifact.instructionPC 2853 = 3771 := by rfl
 @[simp] private theorem newEstimatePC2968 : Artifact.submissionArtifact.instructionPC 2854 = 3772 := by rfl
-@[simp] private theorem newEstimatePC2969 : Artifact.submissionArtifact.instructionPC 2855 = 3773 := by rfl
-@[simp] private theorem newEstimatePC2970 : Artifact.submissionArtifact.instructionPC 2856 = 3774 := by rfl
-@[simp] private theorem newEstimatePC2971 : Artifact.submissionArtifact.instructionPC 2857 = 3775 := by rfl
-@[simp] private theorem newEstimatePC2972 : Artifact.submissionArtifact.instructionPC 2858 = 3776 := by rfl
-@[simp] private theorem newEstimatePC2973 : Artifact.submissionArtifact.instructionPC 2859 = 3777 := by rfl
-@[simp] private theorem newEstimatePC2974 : Artifact.submissionArtifact.instructionPC 2860 = 3778 := by rfl
+@[simp] private theorem newEstimatePC2969 : Artifact.submissionArtifact.instructionPC 2855 = 3774 := by rfl
+@[simp] private theorem newEstimatePC2970 : Artifact.submissionArtifact.instructionPC 2856 = 3775 := by rfl
+@[simp] private theorem newEstimatePC2971 : Artifact.submissionArtifact.instructionPC 2857 = 3776 := by rfl
+@[simp] private theorem newEstimatePC2972 : Artifact.submissionArtifact.instructionPC 2858 = 3778 := by rfl
+@[simp] private theorem newEstimatePC2973 : Artifact.submissionArtifact.instructionPC 2859 = 3779 := by rfl
+@[simp] private theorem newEstimatePC2974 : Artifact.submissionArtifact.instructionPC 2860 = 3780 := by rfl
 
 /-- `blk3026`: quotient estimate with a branchless saturation mask. -/
 theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
@@ -237,10 +237,10 @@ theorem run_macBodyA (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (8256 + 32 * (n - 1 - j)) 32) = s.activeWords :=
     Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have h3837 : (3807 : UInt256).toNat = 3807 := by decide
-  have heq3837 : (3807 : UInt256) = UInt256.ofNat 3807 := by decide
-  have h3898 : (3838 : UInt256).toNat = 3838 := by decide
-  have heq3898 : (3838 : UInt256) = UInt256.ofNat 3838 := by decide
+  have h3837 : (3811 : UInt256).toNat = 3811 := by decide
+  have heq3837 : (3811 : UInt256) = UInt256.ofNat 3811 := by decide
+  have h3898 : (3842 : UInt256).toNat = 3842 := by decide
+  have heq3898 : (3842 : UInt256) = UInt256.ofNat 3842 := by decide
   simp (config := { maxSteps := 800000 })
     [blk3077a, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,

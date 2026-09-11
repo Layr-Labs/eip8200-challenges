@@ -1468,7 +1468,7 @@ theorem lowLimb_eq (mem : ByteArray) (input : ByteArray) (h32 : 32 < modulusSize
 
 /-- Nothing in the setup block touches memory between `0x1020` and `0x2480`. -/
 theorem readWord_setupMem_high (input : ByteArray) (m0 target : Nat)
-    (hm : modulusSize input ≤ 1024) (hlo : 4128 ≤ target) (hhi : target + 32 ≤ 9344) :
+    (hm : modulusSize input ≤ 1024) (hlo : 4137 ≤ target) (hhi : target + 32 ≤ 9344) :
     MachineState.readWord (setupMem ByteArray.empty input m0) target =
       UInt256.ofNat 0 := by
   have hS := s32_le_1024 input hm

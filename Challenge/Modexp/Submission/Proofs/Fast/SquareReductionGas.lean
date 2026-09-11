@@ -14,8 +14,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore SquareInit
 open _root_.Challenge.Modexp.Submission.Proofs.Fast.SquareDiagonal (base)
 
-def qBlock : Block Artifact.submissionArtifact .Osaka 4491 CiosReadonly.cachedProduct :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3422 16 4491 CiosReadonly.cachedProduct
+def qBlock : Block Artifact.submissionArtifact .Osaka 4500 CiosReadonly.cachedProduct :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3428 16 4500 CiosReadonly.cachedProduct
     (by decide) (by rfl) (by rfl) (by decide)
 
 def gasSteps_reduce (s : State) (mem : ByteArray) (f pbi pa pb tag tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
@@ -26,21 +26,21 @@ def gasSteps_reduce (s : State) (mem : ByteArray) (f pbi pa pb tag tl inv m0 aEn
     (hroute : MachineState.readWord mem 9280 = UInt256.ofNat 5190)
     (env : Environment Artifact.submissionArtifact .Osaka s) :
     Challenge.EvmProof.GasSteps
-      (stateAt s mem 4491 (f :: base pbi pa pb tag (UInt256.ofNat 4509) inv
+      (stateAt s mem 4500 (f :: base pbi pa pb tag (UInt256.ofNat 4518) inv
         (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)))
       (stateAt s (SquareReduce.reduction mem f)
         (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then 5190 else 4794)
-        (base (negative32+pbi) pa pb tag (UInt256.ofNat 4509) inv
+        (base (negative32+pbi) pa pb tag (UInt256.ofNat 4518) inv
           (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by
   let mu := rowMu mem 8
   let c0 := rowC0 mem 8
   let S := SquareL2.state s mem f mu c0 pbi pa pb tag tl inv m0 aEnd m96 m64 m32 dst ret rest
   have hq : Challenge.EvmProof.GasSteps
-      (stateAt s mem 4491 (f :: base pbi pa pb tag (UInt256.ofNat 4509) inv
-        (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) (S 4507 0) := by
-    apply qBlock.steps (s := stateAt s mem 4491 (f :: base pbi pa pb tag (UInt256.ofNat 4509) inv
+      (stateAt s mem 4500 (f :: base pbi pa pb tag (UInt256.ofNat 4518) inv
+        (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) (S 4516 0) := by
+    apply qBlock.steps (s := stateAt s mem 4500 (f :: base pbi pa pb tag (UInt256.ofNat 4518) inv
         (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) (env.transfer rfl rfl) rfl
-    exact CiosReadonly.run_cachedProduct_model {s with memory := mem} f pbi pa pb tag (UInt256.ofNat 4509)
+    exact CiosReadonly.run_cachedProduct_model {s with memory := mem} f pbi pa pb tag (UInt256.ofNat 4518)
       tl inv m0 aEnd m96 m64 m32 dst ret 8 rest hcap (by decide) hact hc hinv
   refine hq.trans <| (SquareL2.gasSteps_loops s mem f mu c0 pbi pa pb tag tl inv m0 aEnd m96 m64 m32 dst ret rest
     hcap hact he env).trans ?_
@@ -48,7 +48,7 @@ def gasSteps_reduce (s : State) (mem : ByteArray) (f pbi pa pb tag tl inv m0 aEn
   have hr : MachineState.readWord (l2Step mem mu c0 8 7).memory 9280 = UInt256.ofNat 5190 :=
     (SquareReduce.read_l2_outside mem mu c0 9280 (Or.inr (by decide)) 7 (by decide)).trans hroute
   have h := CarryRowRun.run_tail {s with memory := (l2Step mem mu c0 8 7).memory}
-    (l2Step mem mu c0 8 7).carry mu f pbi pa pb tag (UInt256.ofNat 4509) inv
+    (l2Step mem mu c0 8 7).carry mu f pbi pa pb tag (UInt256.ofNat 4518) inv
     (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hact (UInt256.ofNat 5190) hr
     (by change Decode.isValidJumpDest s.executionEnv.code 5190 = true; rw [env.code]; exact SquareParts.jump_row)

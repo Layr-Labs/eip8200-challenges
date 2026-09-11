@@ -54,13 +54,13 @@ opaque gasSteps_specializedEight (s : State) (mem : ByteArray) (pa pb : Nat)
   refine (SquareEntry.gasSteps_header s mem pa pb 8 pdst ret rest hcap hact (Or.inr rfl)
     hpa hpaFit hpb hpbFit hcds hs32 hml env).trans ?_
   have hr : Challenge.EvmProof.GasSteps
-      {SquareEntry.out s mem pa pb 8 pdst ret rest with pc := UInt256.ofNat 4159}
+      {SquareEntry.out s mem pa pb 8 pdst ret rest with pc := UInt256.ofNat 4168}
       (SquareEntry.out s mem pa pb 8 pdst ret rest) := by
-    exact SquareEntry.gasSteps_route s (mpZeroed s (before mem pa pb 8) 8) (UInt256.ofNat 4164)
+    exact SquareEntry.gasSteps_route s (mpZeroed s (before mem pa pb 8) 8) (UInt256.ofNat 4173)
       (SquareEntry.out s mem pa pb 8 pdst ret rest).stack
       (by simp only [SquareEntry.out, outState, SquareEntry.args, List.length_append, List.length_cons, List.length_nil]; omega)
       hact (hctrl.zeroed s 8 (by decide)).route
-      (Artifact.isValidJumpDest_index 3143 (by rfl)) env
+      (Artifact.isValidJumpDest_index 3149 (by rfl)) env
   refine hr.trans ?_
   exact gasSteps_rowsEight s (before mem pa pb 8) pa pb
     (MachineState.readWord mem 9440) (MachineState.readWord mem 9376)
