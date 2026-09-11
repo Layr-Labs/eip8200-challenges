@@ -85,7 +85,7 @@ theorem answerMemory_read (n : Nat) :
 @[simp] theorem returnedState_hReturn (n : Nat) (input : ByteArray) (sv ov : UInt256) :
     (returnedState n input sv ov).hReturn = paddedDigest n := answerMemory_read n
 
-def tableOffset (n : Nat) : Nat := 5106 + 21 * (((19 * n) / 16) % 7)
+def tableOffset (n : Nat) : Nat := 5106 + 21 * (((69 * n) / 64) % 8)
 def copyReadyState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   stS input 5101 ([12, UInt256.ofNat (tableOffset n), 20] ++ returnRest sv ov)
 
@@ -151,7 +151,7 @@ private theorem codePrefix_size : codePrefix.size = 4926 := by
 private theorem code_split : submissionBytecode = codePrefix ++ submissionByteChunk20 := rfl
 private theorem tableRead (n : Nat) :
     MachineState.readPadded submissionBytecode (tableOffset n) 20 =
-      MachineState.readPadded submissionByteChunk20 (180 + 21 * (((19 * n) / 16) % 7)) 20 := by
+      MachineState.readPadded submissionByteChunk20 (180 + 21 * (((69 * n) / 64) % 8)) 20 := by
   rw [code_split, readPadded_append_right _ _ _ _ (by rw [codePrefix_size]; unfold tableOffset; omega), codePrefix_size]
   congr 1
   unfold tableOffset
@@ -159,7 +159,7 @@ private theorem tableRead (n : Nat) :
 
 private theorem tablePayload (n : Nat)
     (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119) :
-    MachineState.readPadded submissionByteChunk20 (180 + 21 * (((19 * n) / 16) % 7)) 20 =
+    MachineState.readPadded submissionByteChunk20 (180 + 21 * (((69 * n) / 64) % 8)) 20 =
       (paddedDigest n).extract 12 32 := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> decide
 
@@ -188,11 +188,11 @@ def digestStorePath : List Located :=
   [opAt 4105 .JUMPDEST,
    pushAt 4106 1 7,
    opAt 4107 .CALLDATASIZE,
-   pushAt 4108 1 19,
+   pushAt 4108 1 69,
    opAt 4109 .MUL,
-   pushAt 4110 1 4,
+   pushAt 4110 1 6,
    opAt 4111 .SHR,
-   opAt 4112 .MOD,
+   opAt 4112 .AND,
    pushAt 4113 1 21,
    opAt 4114 .MUL,
    pushAt 4115 2 5106,

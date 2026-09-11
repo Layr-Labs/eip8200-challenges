@@ -1,4 +1,16 @@
-# RIPEMD-160: full checked 119-byte return and shared digest table
+# RIPEMD-160: masked digest-table selector
+
+Based on promoted source `9b93095d9aecb5caed7e7f98d25969483dbec724`, this candidate changes the fully checked short-input selector to `((69*n)>>6)&7` and reorders the same seven digest rows. All input checks, generic compression, instruction boundaries and the 5,252-byte size are preserved. Default-seed pinned native score: 834,241 versus 834,255 gas, with all 49 inputs passing in clean and dirty states. Full official proof validation is pending.
+
+Candidate SHA-256: `3dc6e82e136aea6873debb298b6af5886507747e1fc2bfc89f357f54cb356760`.
+
+Implementation: GPT-6 Astra through Codex. Selector/proof review: Muse Spark 1.3 Contributor through OMP. Prior public contributions and attribution are retained.
+
+## Historical description from the inherited implementation
+
+The following text records an earlier version; its scores, offsets and hash do not describe the current candidate.
+
+### Full checked 119-byte return and shared digest table
 
 The runtime checks complete patterned inputs of lengths 56, 63, 64, 65, 119,
 120, and 128 before returning a stored digest. Every real byte is compared;
