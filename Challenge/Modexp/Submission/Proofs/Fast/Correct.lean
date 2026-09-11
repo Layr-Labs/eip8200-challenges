@@ -71,17 +71,24 @@ private noncomputable def chosenData (F : FastPath) (input : ByteArray) (hvalid 
     ⟨Classical.choose (EarlyWordCorrect.hit input hmatch),
       Classical.choose_spec (EarlyWordCorrect.hit input hmatch)⟩
   else
-    if h : F.Handles input then
-      ⟨Classical.choose (F.handled input hvalid h),
-        ⟨⟨(EarlyWordCorrect.legacy input hmatch).trans
-            (Classical.choice (Classical.choose_spec (F.handled input hvalid h)).1)⟩,
-          (Classical.choose_spec (F.handled input hvalid h)).2.1,
-          (Classical.choose_spec (F.handled input hvalid h)).2.2⟩⟩
+    if hsmall : EarlyWordSmallExp.SmallExpGuard input then
+      ⟨Classical.choose (EarlyWordCorrect.smallExp input hmatch hsmall),
+        Classical.choose_spec
+          (EarlyWordCorrect.smallExp input hmatch hsmall)⟩
     else
-      let completed := WindowBodyCorrect.handledOf WindowTwentyOneCorrect.route
-        input hvalid
-        ((EarlyWordCorrect.legacy input hmatch).trans (F.bail input hvalid h))
-      ⟨Classical.choose completed, Classical.choose_spec completed⟩
+      if h : F.Handles input then
+        ⟨Classical.choose (F.handled input hvalid h),
+          ⟨⟨(EarlyWordCorrect.legacy input hmatch hsmall).trans
+              (Classical.choice
+                (Classical.choose_spec (F.handled input hvalid h)).1)⟩,
+            (Classical.choose_spec (F.handled input hvalid h)).2.1,
+            (Classical.choose_spec (F.handled input hvalid h)).2.2⟩⟩
+      else
+        let completed := WindowBodyCorrect.handledOf WindowTwentyOneCorrect.route
+          input hvalid
+          ((EarlyWordCorrect.legacy input hmatch hsmall).trans
+            (F.bail input hvalid h))
+        ⟨Classical.choose completed, Classical.choose_spec completed⟩
 
 private noncomputable def chosenFinal (F : FastPath) (input : ByteArray)
     (hvalid : ValidInput input) : State :=

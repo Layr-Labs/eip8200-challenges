@@ -40,14 +40,16 @@ def handledOf (route : WindowRoute.Route)
     WindowBodyCorrect.Handled input := by
   by_cases hmatch : WindowTwentyOneInput.Matches input
   · exact EarlyWordCorrect.hit input hmatch
-  · by_cases hfast : Setup.FastPath input
-    · rcases fastHandled input hvalid hfast with
-        ⟨final, ⟨fastTrace⟩, hdone, hresult⟩
-      exact ⟨final, ⟨(EarlyWordCorrect.legacy input hmatch).trans fastTrace⟩,
-        hdone, hresult⟩
-    · let bodyEntry := (EarlyWordCorrect.legacy input hmatch).trans
-        (Setup.gasSteps_fallback input hfast)
-      exact WindowBodyCorrect.handledOf route input hvalid bodyEntry
+  · by_cases hsmall : EarlyWordSmallExp.SmallExpGuard input
+    · exact EarlyWordCorrect.smallExp input hmatch hsmall
+    · by_cases hfast : Setup.FastPath input
+      · rcases fastHandled input hvalid hfast with
+          ⟨final, ⟨fastTrace⟩, hdone, hresult⟩
+        exact ⟨final, ⟨(EarlyWordCorrect.legacy input hmatch hsmall).trans
+          fastTrace⟩, hdone, hresult⟩
+      · let bodyEntry := (EarlyWordCorrect.legacy input hmatch hsmall).trans
+          (Setup.gasSteps_fallback input hfast)
+        exact WindowBodyCorrect.handledOf route input hvalid bodyEntry
 
 private noncomputable def chosenFinal (route : WindowRoute.Route)
     (fastHandled : ∀ input : ByteArray, ValidInput input →

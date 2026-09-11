@@ -17,7 +17,7 @@ entry at pc 1314 with an empty stack and unchanged memory and environment.
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordCorrect
 
 open EvmSemantics EvmSemantics.EVM
-open WindowTwentyOneBinding WindowTwentyOnePositive
+open WindowTwentyOneBinding WindowTwentyOnePositive EarlyWordProgram
 
 abbrev Handled (input : ByteArray) : Prop :=
   ∃ final : State,
@@ -37,15 +37,42 @@ private def environment (input : ByteArray) :
   running := rfl
   noPrecompile := deployAddress_not_precompile
 
-/-- Every non-matching header reaches the unchanged legacy entry exactly. -/
-def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input) :
+/-- Every non-matching header that is not a small-exponent hit reaches the
+unchanged legacy entry exactly. -/
+def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input)
+    (hsmall : ¬ EarlyWordSmallExp.SmallExpGuard input) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (Main.trampolineState input 1233) := by
-  have tail := EarlyWordGas.steps_miss Artifact.earlyWordPaths
-    (initialState submissionBytecode input 0) (environment input) input rfl hmiss
+  have tail := (EarlyWordGas.steps_toSmallExp Artifact.earlyWordPaths
+    (initialState submissionBytecode input 0) (environment input) input rfl
+    hmiss).trans
+    (EarlyWordGas.steps_smallExp_bail Artifact.earlyWordPaths
+      Artifact.earlyWordSmallExpPaths
+      (initialState submissionBytecode input 0) (environment input) input rfl
+      hsmall)
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 5256)
     (Main.trampolineState input 1233) at tail
   exact (Main.gasSteps_entryHop input).trans tail
+
+/-- A small-exponent hit returns the decided word directly. -/
+def smallExp (input : ByteArray)
+    (hmiss : ¬ WindowTwentyOneInput.Matches input)
+    (hsmall : EarlyWordSmallExp.SmallExpGuard input) :
+    Handled input := by
+  have hfront := (EarlyWordGas.steps_toSmallExp Artifact.earlyWordPaths
+    (initialState submissionBytecode input 0) (environment input) input rfl
+    hmiss).trans
+    (EarlyWordGas.steps_smallExp_hit Artifact.earlyWordPaths
+      Artifact.earlyWordSmallExpPaths
+      (initialState submissionBytecode input 0) (environment input) input rfl
+      rfl hsmall)
+  change Challenge.EvmProof.GasSteps (Main.trampolineState input 5256)
+    (EarlyWordSmallExp.smallExpFinal
+      (initialState submissionBytecode input 0) input 0
+      (EarlyWordProgram.headerStack input)) at hfront
+  refine ⟨_, ⟨(Main.gasSteps_entryHop input).trans hfront⟩,
+    EarlyWordSmallExp.smallExpFinal_isDone _ _ _ _ rfl,
+    EarlyWordSmallExp.smallExpFinal_result _ _ _ _ hsmall⟩
 
 /-- Every matching header has a complete initial-state correctness trace. -/
 def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
