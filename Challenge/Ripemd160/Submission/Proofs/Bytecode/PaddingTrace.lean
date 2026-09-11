@@ -750,9 +750,9 @@ def lengthExitPath : List
 
 @[simp] private theorem validPadReturn :
     Decode.isValidJumpDest submissionBytecode 600 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 364 = 600 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 363 = 600 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   rw [← hpc]
-  exact Artifact.submissionArtifact.isValidJumpDest_index 364 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 363 (by rfl)
 
 def lengthExitPopPath := lengthExitPath.take 2
 def lengthExitJumpPath := lengthExitPath.drop 2
