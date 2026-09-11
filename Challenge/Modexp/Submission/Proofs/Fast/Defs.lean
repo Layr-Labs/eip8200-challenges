@@ -807,6 +807,11 @@ theorem jumpDest2220 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2139 = true :=
   Artifact.isValidJumpDest_index 1575 (by rfl)
 
+/-- Direct conditional-subtraction entry; ADDMOD fallthrough keeps its trampoline. -/
+theorem jumpDestCsubDirect :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4993 = true :=
+  Artifact.isValidJumpDest_index 3716 (by rfl)
+
 theorem jumpDest2225 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2144 = true :=
   Artifact.isValidJumpDest_index 1578 (by rfl)

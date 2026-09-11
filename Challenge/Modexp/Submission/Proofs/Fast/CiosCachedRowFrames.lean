@@ -20,7 +20,7 @@ def entryState (s : State) (mem : ByteArray) (pa pb : Nat)
 
 def outState (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4250
+  { s with pc := UInt256.ofNat 4252
            stack := [UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
@@ -28,7 +28,7 @@ def outState (s : State) (mem : ByteArray) (pa pb n i : Nat)
 /-- After the first loop: the carry and `b_i` above the row frame. -/
 def midState (s : State) (mem : ByteArray) (c bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4546
+  { s with pc := UInt256.ofNat 4537
            stack := [c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
@@ -36,7 +36,7 @@ def midState (s : State) (mem : ByteArray) (c bi : UInt256)
 /-- After the second loop: the carry, `mu` and `b_i` above the row frame. -/
 def tailState (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4837
+  { s with pc := UInt256.ofNat 4828
            stack := [c, mu, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }

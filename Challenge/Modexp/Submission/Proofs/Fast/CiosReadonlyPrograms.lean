@@ -19,7 +19,7 @@ def fullExitProgram : List Instr :=
 
 /-- First operand and accumulator pointers remain cached across every row. -/
 def commonFirstLoad : List Instr :=
-  [.op (.Dup ⟨14, by decide⟩), .op .MLOAD, .op (.Dup ⟨7, by decide⟩)]
+  [.op (.Dup ⟨14, by decide⟩), .op (.Dup ⟨7, by decide⟩)]
 
 def commonFinishLoad : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
@@ -29,8 +29,13 @@ def commonFinishStore : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨14, by decide⟩),
    .op .MSTORE, .op .LT, .op .ADD]
 
+def commonFusedFinish : List Instr :=
+  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB,
+   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .MLOAD, .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .MSTORE,
+   .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB, .op .SUB]
+
 def commonFirstProgram : List Instr :=
-  (commonFirstLoad ++ CiosNoDummyCarry.productProgram) ++
-    (commonFinishLoad ++ commonFinishStore)
+  (commonFirstLoad ++ CiosNoDummyCarry.multiplyProgram) ++ commonFusedFinish
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosReadonly
