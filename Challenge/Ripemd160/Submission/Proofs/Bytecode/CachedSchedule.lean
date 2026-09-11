@@ -5,7 +5,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedDivMaskCache
 The decoder retains six schedule words below the core's working registers.
 `originalLower` is a virtual execution model: its PC 599 is used only to
 identify written memory with the established store contract. The actual
-lower sequence starts at PC 763, and the complete physical decoder at 609.
+lower sequence starts at PC 761, and the complete physical decoder at 607.
 The located-site certificate is supplied by PairedAllInlineBoundarySites.
 -/
 set_option warningAsError true
@@ -135,9 +135,8 @@ def actualLower : List Instr :=
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 416),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 704),
+    .push ⟨3, by decide⟩ (UInt256.ofNat 704),
     .op .POP,
-    .op .JUMPDEST,
     .op (.Swap ⟨5, by decide⟩),
     .op .POP,
     .op (.Swap ⟨6, by decide⟩),

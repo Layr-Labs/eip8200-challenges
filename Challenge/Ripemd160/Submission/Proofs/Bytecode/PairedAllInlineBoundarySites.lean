@@ -175,9 +175,8 @@ def scheduleTemplate : List Instr :=
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 416),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 704),
+    .push ⟨3, by decide⟩ (UInt256.ofNat 704),
     .op .POP,
-    .op .JUMPDEST,
     .op (.Swap ⟨5, by decide⟩),
     .op .POP,
     .op (.Swap ⟨6, by decide⟩),
@@ -274,19 +273,19 @@ def startupTemplate : List Instr :=
     .op (.Swap ⟨5, by decide⟩),
     .op .POP ]
 theorem startup_slice :
-    (Artifact.submissionArtifact.instructions.drop 542).take startupTemplate.length = startupTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 541).take startupTemplate.length = startupTemplate := by rfl
 def startupSite : GenericRoundSite Artifact.submissionArtifact .Osaka startupTemplate :=
-  StackSiteBuilder.ofSlice startupTemplate 542 startup_slice
-    (by change 542 + startupTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice startupTemplate 541 startup_slice
+    (by change 541 + startupTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := startupTemplate) (by decide))
     (by decide)
 theorem startup_pc : startupSite.startPC = UInt256.ofNat 852 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 542) = UInt256.ofNat 852
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 541) = UInt256.ofNat 852
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem startup_endPC : startupSite.endPC = UInt256.ofNat 893 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 576) = UInt256.ofNat 893
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 575) = UInt256.ofNat 893
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem startup_resultStack (memory : ByteArray) (rho : List UInt256) :
     PairedDerivedStartup.resultStack memory rho =
@@ -397,16 +396,16 @@ def tailTemplate : List Instr :=
     .op .POP,
     .op .JUMP ]
 theorem tail_slice :
-    (Artifact.submissionArtifact.instructions.drop 4019).take tailTemplate.length = tailTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 4018).take tailTemplate.length = tailTemplate := by rfl
 def tailSite : GenericRoundSite Artifact.submissionArtifact .Osaka tailTemplate :=
-  StackSiteBuilder.ofSlice tailTemplate 4019 tail_slice
-    (by change 4019 + tailTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice tailTemplate 4018 tail_slice
+    (by change 4018 + tailTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := tailTemplate) (by decide))
     (by decide)
 theorem tail_pc : tailSite.startPC = UInt256.ofNat 4853 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4019) = UInt256.ofNat 4853
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4018) = UInt256.ofNat 4853
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem tail_advances : ∀ instruction ∈ tailTemplate.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
