@@ -38,11 +38,32 @@ theorem messagePointer_bound (input : ByteArray) (hfit : CalldataFits input)
   norm_num [messagePointer, Padding.messageOffset] at hfit ⊢
   omega
 
+def selectedWords (s : State) (i : Nat) : Nat → UInt256 :=
+  if s.executionEnv.calldata.size = DriverTrace.blockOffset i then
+    PairedScheduleData.extractedWord s.memory (messagePointer i)
+  else PairedScheduleData.extractedWordG s.memory (messagePointer i)
+
+def selectedGarbage (s : State) (i : Nat) : Nat → Nat :=
+  if s.executionEnv.calldata.size = DriverTrace.blockOffset i then fun _ => 0
+  else PairedScheduleData.extractedGarbage s.memory (messagePointer i)
+
 def scheduledState (s : State) (i : Nat) : State :=
   { s with
     memory := PairedScheduleMemory.normalizedMemory s.memory
-      (PairedScheduleData.extractedWord s.memory (messagePointer i))
+      (selectedWords s i)
     activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat (messagePointer i)) }
+
+theorem scheduled_memory_hit (s : State) (i : Nat)
+    (hhit : s.executionEnv.calldata.size = DriverTrace.blockOffset i) :
+    (scheduledState s i).memory = PairedScheduleMemory.normalizedMemory s.memory
+      (PairedScheduleData.extractedWord s.memory (messagePointer i)) := by
+  simp only [scheduledState, selectedWords, if_pos hhit]
+
+theorem scheduled_memory_miss (s : State) (i : Nat)
+    (hmiss : s.executionEnv.calldata.size ≠ DriverTrace.blockOffset i) :
+    (scheduledState s i).memory = PairedScheduleMemory.normalizedMemory s.memory
+      (PairedScheduleData.extractedWordG s.memory (messagePointer i)) := by
+  simp only [scheduledState, selectedWords, if_neg hmiss]
 
 theorem scheduled_active (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) :
@@ -63,8 +84,10 @@ theorem extracted_words (s : State) (input : ByteArray) (i : Nat)
 
 theorem scheduled_ready (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (hfit : CalldataFits input)
-    (hi : i < DriverTrace.blockCount input) (ctx : StackRunBridge.BlockContext s input i h) :
+    (hi : i < DriverTrace.blockCount input) (ctx : StackRunBridge.BlockContext s input i h)
+    (hclean : s.executionEnv.calldata.size = DriverTrace.blockOffset i) :
     NormalizedScheduleReady (scheduledState s i).memory (blockWords input i) := by
+  rw [scheduled_memory_hit s i hclean]
   constructor
   · intro k hk
     change MachineState.readWord

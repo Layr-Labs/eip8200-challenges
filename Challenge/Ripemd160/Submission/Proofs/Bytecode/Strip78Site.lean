@@ -74,33 +74,33 @@ theorem run_actual (s : State) (pc : UInt256) (q : PairedHelperBooleanTrace.Fram
     rw [PairedSynthCoreTrace.fourRaw_eq_inline4Boolean]
 
 theorem template_slice :
-    (Artifact.submissionArtifact.instructions.drop 3852).take actualTemplate.length = actualTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3842).take actualTemplate.length = actualTemplate := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka actualTemplate :=
-  StackSiteBuilder.ofSlice actualTemplate 3852 template_slice
+  StackSiteBuilder.ofSlice actualTemplate 3842 template_slice
     (by
-      change 3852 + actualTemplate.length ≤ Artifact.submissionInstructions.length
+      change 3842 + actualTemplate.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := actualTemplate) (by decide))
     (by decide)
 
-theorem site_startPC : site.startPC = UInt256.ofNat 4514 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3852) = UInt256.ofNat 4514
+theorem site_startPC : site.startPC = UInt256.ofNat 4516 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3842) = UInt256.ofNat 4516
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-theorem actualTemplate_pc : pcAfter (UInt256.ofNat 4514) actualTemplate = UInt256.ofNat 4559 := by decide
+theorem actualTemplate_pc : pcAfter (UInt256.ofNat 4516) actualTemplate = UInt256.ofNat 4561 := by decide
 
 def gasSteps (s : State) (f : PairedHelperBooleanTrace.CoreFrame) (rho : List UInt256)
     (hstack : rho.length ≤ 996) (hrun : s.halt = .Running) (hactive : 23 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4514, stack := inline78Entry f.frame (cache s.memory ++ rho)}
-      {s with pc := UInt256.ofNat 4559, stack := inline79Entry (dirtyFrame s.memory f) (cache s.memory ++ rho)} := by
-  have hraw := run_actual s (UInt256.ofNat 4514) f.frame rho hstack hrun hactive
+    GasSteps {s with pc := UInt256.ofNat 4516, stack := inline78Entry f.frame (cache s.memory ++ rho)}
+      {s with pc := UInt256.ofNat 4561, stack := inline79Entry (dirtyFrame s.memory f) (cache s.memory ++ rho)} := by
+  have hraw := run_actual s (UInt256.ofNat 4516) f.frame rho hstack hrun hactive
   rw [actualTemplate_pc, output_dirtyFrame] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp
     site_startPC.symm

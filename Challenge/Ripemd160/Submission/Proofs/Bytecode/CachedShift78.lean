@@ -145,7 +145,7 @@ theorem run_actual (s : State) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 996) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
     runInstrSeq actualTemplate {s with pc := UInt256.ofNat 4514, stack := inputStack s.memory x rho} =
-      some {s with pc := UInt256.ofNat 4559, stack := outputStack s.memory x rho} := by
+      some {s with pc := UInt256.ofNat 4563, stack := outputStack s.memory x rho} := by
   have hcap (n : Nat) (hn : n ≤ 26) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
@@ -163,7 +163,7 @@ def gasSteps (s : State) (f : CoreFrame) (rho : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4514, stack := coreStack [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] f (cache s.memory ++ rho)}
-      {s with pc := UInt256.ofNat 4559, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] (PairedAllInlineCoreTrace.inline78Block.eval s.memory f) (cache s.memory ++ rho)} := by
+      {s with pc := UInt256.ofNat 4563, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] (PairedAllInlineCoreTrace.inline78Block.eval s.memory f) (cache s.memory ++ rho)} := by
   let x : Input := ⟨CoreReg.word .d f, CoreReg.word .k f, CoreReg.word .b f, CoreReg.word .c f, CoreReg.word .a f, CoreReg.word .e f, CoreReg.word .factor f, CoreReg.word .pair f, CoreReg.word .upper f, CoreReg.word .lower f⟩
   have hin : inputStack s.memory x rho = coreStack [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] f (cache s.memory ++ rho) := rfl
   have hs : (cache s.memory ++ rho).length ≤ 1002 := by simp only [List.length_append, cache_length]; omega

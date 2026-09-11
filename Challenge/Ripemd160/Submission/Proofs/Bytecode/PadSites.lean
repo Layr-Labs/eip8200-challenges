@@ -23,8 +23,8 @@ def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchT
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := dispatchTemplate) (by decide))
     (by decide)
-theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 471 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 287) = UInt256.ofNat 471
+theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 468 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 287) = UInt256.ofNat 468
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem dispatch_advances : ∀ instruction ∈ dispatchTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound
@@ -64,7 +64,7 @@ theorem body_advances : ∀ instruction ∈ bodyTemplate.dropLast, PadLift.Advan
   apply PadLift.advancesAll_sound
   decide
 
-def jumpTemplate : List Instr := PadJump.template 712
+def jumpTemplate : List Instr := PadJump.template 701
 theorem jump_slice :
     (Artifact.submissionArtifact.instructions.drop 272).take jumpTemplate.length = jumpTemplate := by rfl
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpTemplate :=
@@ -74,8 +74,8 @@ def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpTemplate 
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := jumpTemplate) (by decide))
     (by decide)
-theorem jump_pc : jumpSite.startPC = UInt256.ofNat 447 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 272) = UInt256.ofNat 447
+theorem jump_pc : jumpSite.startPC = UInt256.ofNat 444 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 272) = UInt256.ofNat 444
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem jump_advances : ∀ instruction ∈ jumpTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound
@@ -83,16 +83,16 @@ theorem jump_advances : ∀ instruction ∈ jumpTemplate.dropLast, PadLift.Advan
 
 def mergeTemplate : List Instr := [.op .JUMPDEST]
 theorem merge_slice :
-    (Artifact.submissionArtifact.instructions.drop 464).take mergeTemplate.length = mergeTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 456).take mergeTemplate.length = mergeTemplate := by rfl
 def mergeSite : GenericRoundSite Artifact.submissionArtifact .Osaka mergeTemplate :=
-  StackSiteBuilder.ofSlice mergeTemplate 464 merge_slice
-    (by change 464 + mergeTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice mergeTemplate 456 merge_slice
+    (by change 456 + mergeTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := mergeTemplate) (by decide))
     (by decide)
-theorem merge_pc : mergeSite.startPC = UInt256.ofNat 712 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 464) = UInt256.ofNat 712
+theorem merge_pc : mergeSite.startPC = UInt256.ofNat 701 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 456) = UInt256.ofNat 701
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem merge_advances : ∀ instruction ∈ mergeTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound
@@ -109,12 +109,12 @@ theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submission
   exact h
 
 theorem valid_merge (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 712).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 464 = 712 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 701).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 456 = 701 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 464 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 456 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 712 = true
+  change Decode.isValidJumpDest s.executionEnv.code 701 = true
   rw [hcode]
   exact h
 
@@ -125,11 +125,11 @@ def gasSteps_miss (s : State) (ptr ret off : UInt256) (rho : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 471, stack := ptr :: ret :: off :: rho}
-      {s with pc := UInt256.ofNat 478, stack := ptr :: ret :: off :: rho} := by
-  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 471, stack := ptr :: ret :: off :: rho} _ hcode hfork hrun hnp dispatch_pc.symm dispatch_advances
-  have h := PadDispatch.run_miss s (UInt256.ofNat 471) ptr ret off rho 396 hstack hrun hfit hmiss
-  have hp : pcAfter (UInt256.ofNat 471) (PadDispatch.template 396) = UInt256.ofNat 478 := by rfl
+    GasSteps {s with pc := UInt256.ofNat 468, stack := ptr :: ret :: off :: rho}
+      {s with pc := UInt256.ofNat 475, stack := ptr :: ret :: off :: rho} := by
+  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 468, stack := ptr :: ret :: off :: rho} _ hcode hfork hrun hnp dispatch_pc.symm dispatch_advances
+  have h := PadDispatch.run_miss s (UInt256.ofNat 468) ptr ret off rho 396 hstack hrun hfit hmiss
+  have hp : pcAfter (UInt256.ofNat 468) (PadDispatch.template 396) = UInt256.ofNat 475 := by rfl
   rw [hp] at h
   exact h
 
@@ -140,10 +140,10 @@ def gasSteps_hit (s : State) (ptr ret off : UInt256) (rho : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 471, stack := ptr :: ret :: off :: rho}
+    GasSteps {s with pc := UInt256.ofNat 468, stack := ptr :: ret :: off :: rho}
       {s with pc := UInt256.ofNat 396, stack := ptr :: ret :: off :: rho} := by
-  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 471, stack := ptr :: ret :: off :: rho} _ hcode hfork hrun hnp dispatch_pc.symm dispatch_advances
-  have h := PadDispatch.run_hit s (UInt256.ofNat 471) ptr ret off rho 396 hstack hrun hfit hhit (valid_pad s hcode)
+  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 468, stack := ptr :: ret :: off :: rho} _ hcode hfork hrun hnp dispatch_pc.symm dispatch_advances
+  have h := PadDispatch.run_hit s (UInt256.ofNat 468) ptr ret off rho 396 hstack hrun hfit hhit (valid_pad s hcode)
   exact h
 
 def gasSteps_prefix (s : State) (ret : UInt256) (p : Nat) (rest : List UInt256)
@@ -168,10 +168,10 @@ def gasSteps_body (s : State) (ret : UInt256) (rest : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 402, stack := ret :: rest}
-      {s with pc := UInt256.ofNat 447, stack := [UInt256.ofNat 22, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0] ++ (ret :: rest), memory := PadOnlySchedule.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)} := by
+      {s with pc := UInt256.ofNat 444, stack := [UInt256.ofNat 22, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0] ++ (ret :: rest), memory := PadOnlySchedule.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)} := by
   apply PadLift.gasSteps_of_raw bodySite {s with pc := UInt256.ofNat 402, stack := ret :: rest} _ hcode hfork hrun hnp body_pc.symm body_advances
   have h := PadOnlySchedule.run_template s (UInt256.ofNat 402) ret rest hstack hrun hactive hfit
-  have hp : pcAfter (UInt256.ofNat 402) PadOnlySchedule.template = UInt256.ofNat 447 := by rfl
+  have hp : pcAfter (UInt256.ofNat 402) PadOnlySchedule.template = UInt256.ofNat 444 := by rfl
   rw [hp] at h
   exact h
 
@@ -180,20 +180,20 @@ def gasSteps_jump (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1022
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 447, stack := rho}
-      {s with pc := UInt256.ofNat 712, stack := rho} := by
-  apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 447, stack := rho} _ hcode hfork hrun hnp jump_pc.symm jump_advances
-  exact PadJump.run_template s (UInt256.ofNat 447) rho 712 hstack hrun (valid_merge s hcode)
+    GasSteps {s with pc := UInt256.ofNat 444, stack := rho}
+      {s with pc := UInt256.ofNat 701, stack := rho} := by
+  apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 444, stack := rho} _ hcode hfork hrun hnp jump_pc.symm jump_advances
+  exact PadJump.run_template s (UInt256.ofNat 444) rho 701 hstack hrun (valid_merge s hcode)
 
 def gasSteps_merge (s : State) (rho : List UInt256) (hstack : rho.length < 1024)
     (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 712, stack := rho}
-      {s with pc := UInt256.ofNat 713, stack := rho} := by
-  apply PadLift.gasSteps_of_raw mergeSite {s with pc := UInt256.ofNat 712, stack := rho} _ hcode hfork hrun hnp merge_pc.symm merge_advances
-  exact PadJump.run_merge s (UInt256.ofNat 712) rho hstack hrun
+    GasSteps {s with pc := UInt256.ofNat 701, stack := rho}
+      {s with pc := UInt256.ofNat 702, stack := rho} := by
+  apply PadLift.gasSteps_of_raw mergeSite {s with pc := UInt256.ofNat 701, stack := rho} _ hcode hfork hrun hnp merge_pc.symm merge_advances
+  exact PadJump.run_merge s (UInt256.ofNat 701) rho hstack hrun
 #print axioms gasSteps_hit
 #print axioms gasSteps_miss
 #print axioms gasSteps_prefix
