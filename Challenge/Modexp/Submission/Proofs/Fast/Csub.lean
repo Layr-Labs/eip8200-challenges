@@ -287,10 +287,10 @@ def amTailState (s : State) (memory : ByteArray) (pa pb n j : Nat)
                      (amStep memory pa pb n j).flag, pd, ret] ++ rest
            memory := (amStep memory pa pb n j).memory }
 
-/-- Entry of `CSUB` (pc 2220) with stack `[pd, ret]`. -/
+/-- Entry of `CSUB` (pc 4978) with stack `[pd, ret]`. -/
 def csEntryState (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2139
+  { s with pc := UInt256.ofNat 4978
            stack := [pdst, ret] ++ rest
            memory := memory }
 
@@ -358,6 +358,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_amTail (s : State) (memory : ByteArray) (pa pb n j : Nat)
     (pd ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1662
       (amTailState s memory pa pb n j pd ret rest) =
@@ -373,18 +374,22 @@ theorem run_amTail (s : State) (memory : ByteArray) (pa pb n j : Nat)
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 8224 32) =
       s.activeWords := activeWords_fix s 8224 32 (by decide) (by omega) hact
+  have h4978 : (4978 : UInt256).toNat = 4978 := by decide
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4978 = true := by
+    rw [hcode]; exact jumpDest4978
   simp (config := { maxSteps := 400000 })
     [blk1662, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       amTailState, csEntryState, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,
-      hc2, hc3, hc4, hc5, hc6, hrun, h8224, hactT,
+      hc2, hc3, hc4, hc5, hc6, hrun, h8224, hactT, h4978, hjd,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
+  rfl
 
 
 /-! ## The `CSUB` subroutine -/
@@ -1215,7 +1220,7 @@ def gasSteps_amTailStep (s : State) (memory : ByteArray) (pa pb n j : Nat)
     Artifact.submissionArtifact .Osaka blk1662
     (by simpa [amTailState, Artifact.submissionArtifact] using hcode)
     (by simpa [amTailState, State.fork] using hfork)
-    (run_amTail s memory pa pb n j pd ret rest hcap hrun hact)
+    (run_amTail s memory pa pb n j pd ret rest hcap hrun hcode hact)
     (by simpa [amTailState] using hrun)
     (by simpa [amTailState, State.fork] using hnp)
 

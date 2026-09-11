@@ -16,10 +16,7 @@ private theorem instructionPC_succ
     assembleBytes_cons, assembleBytes_nil, List.append_nil, List.length_append]
 
 def csGenericPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1575 .JUMPDEST,
-   pushAt 1576 2 4978,
-   opAt 1577 .JUMP,
-   opAt 3710 .JUMPDEST,
+  [opAt 3710 .JUMPDEST,
    pushAt 3711 2 9344,
    opAt 3712 .MLOAD,
    pushAt 3713 2 256,
@@ -48,10 +45,7 @@ def csGenericPath : List (Challenge.EvmProof.Stepper.Located Artifact.submission
    opAt 3736 .JUMP]
 
 def csFixedEntry8 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1575 .JUMPDEST,
-   pushAt 1576 2 4978,
-   opAt 1577 .JUMP,
-   opAt 3710 .JUMPDEST,
+  [opAt 3710 .JUMPDEST,
    pushAt 3711 2 9344,
    opAt 3712 .MLOAD,
    pushAt 3713 2 256,
@@ -61,10 +55,7 @@ def csFixedEntry8 : List (Challenge.EvmProof.Stepper.Located Artifact.submission
    opAt 3737 .JUMPDEST]
 
 def csFixedEntry4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1575 .JUMPDEST,
-   pushAt 1576 2 4978,
-   opAt 1577 .JUMP,
-   opAt 3710 .JUMPDEST,
+  [opAt 3710 .JUMPDEST,
    pushAt 3711 2 9344,
    opAt 3712 .MLOAD,
    pushAt 3713 2 256,
