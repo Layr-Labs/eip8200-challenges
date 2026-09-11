@@ -32,46 +32,31 @@ theorem run_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
   let m64 := MachineState.readWord mem 64
   let m32 := MachineState.readWord mem 32
   have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest).length ≤ 1005 := by simp only [List.length_cons]; omega
-  have hc4 : rest.length+4 < 1024 := by omega
-  have hc11 : rest.length+11 < 1024 := by omega
-  have hlegacy := CiosCached.run_cache s mem pa pb n inv m0
-    (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest) hcap' hact hs32
-  have hskip : runInstructions [.op .JUMPDEST]
-      (maskEntryState s mem pa pb inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-    some (framed { s with memory := mem } (UInt256.ofNat 4195)
-      ([UInt256.ofNat pa,UInt256.ofNat pb,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest)) := by
-      simp only [runInstructions, Challenge.EvmProof.Stepper.runInstr, maskEntryState,
-        entryState, framed, List.cons_append, List.nil_append, List.length_cons,
-        Nat.add_assoc, Nat.reduceAdd, hc11, if_pos]
-      rfl
-  rw [show CiosCached.cacheProgram = [.op .JUMPDEST] ++ CiosCached.cacheProgram.drop 1 from rfl,
-    runInstructions_append, hskip] at hlegacy
-  have hstart : runInstructions [.op .JUMPDEST] (entryState s mem pa pb dst ret rest) =
-    some (framed { s with memory := mem } (UInt256.ofNat 4164)
-      ([UInt256.ofNat pa,UInt256.ofNat pb,dst,ret] ++ rest)) := by
-      simp only [runInstructions, Challenge.EvmProof.Stepper.runInstr,
-        entryState, framed, List.cons_append, List.nil_append, List.length_cons,
-        Nat.add_assoc, Nat.reduceAdd, hc4, if_pos]
-      rfl
-  have hp := run_entryPrelude { s with memory := mem } (UInt256.ofNat pa)
-    (UInt256.ofNat pb) dst ret n rest hcap hn32 hact hml
+  have hreads := EntryPrefix.run_load { s with memory := mem }
+    (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest (32*n-32)
+    hcap hact (by omega) hml
   have hAend : UInt256.ofNat pa + UInt256.ofNat (32*n-32) = aEnd := by
     dsimp [aEnd]
     rw [Challenge.EvmProof.Word.ofNat_add_mod]
     congr 1
     omega
-  rw [hAend] at hp
-  have hprefix := runInstructions_append_some _ _ _ _ _ hstart hp
-  have hmasked := runInstructions_append_some _ _ _ _ _ hprefix hlegacy
+  rw [hAend] at hreads
+  have hshuffle := EntryPrefix.run_shuffle { s with memory := mem }
+    (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret m0 inv aEnd tl m96 m64 m32
+    (EntryPrefix.displacement mem) rest hcap
+  have hprefix := runInstructions_append_some _ _ _ _ _ hreads hshuffle
+  have hmasked :
+      runInstructions (EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram)
+        (entryState s mem pa pb dst ret rest) =
+      some (cachedEntryState s mem pa pb n inv m0
+        (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
+    simpa only [entryState, cachedEntryState, EntryPrefix.displacement,
+      hs32, l1Target, l2Target, isFour, tl, inv, m0, aEnd, m96, m64, m32,
+      List.cons_append, List.nil_append] using hprefix
   have hbody := CiosCached.run_entryBody s mem pa pb n inv m0
-    (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest) hcap' hrun hact hn hn32 hpa hpaFit hpb hpbFit hcds hs32
-  have hresult := runInstructions_append_some _ _ _ _ _ hmasked hbody
-  have hprogram : fullEntryProgram =
-      ((([.op .JUMPDEST] ++ entryPrelude) ++ CiosCached.cacheProgram.drop 1) ++
-        CiosCached.entryBodyProgram) := by
-    rfl
-  exact (congrArg (fun program => runInstructions program
-    (entryState s mem pa pb dst ret rest)) hprogram).trans hresult
+    (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
+    hcap' hrun hact hn hn32 hpa hpaFit hpb hpbFit hcds hs32
+  exact runInstructions_append_some _ _ _ _ _ hmasked hbody
 
 theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
     (pa pb n i : Nat) (tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256)
