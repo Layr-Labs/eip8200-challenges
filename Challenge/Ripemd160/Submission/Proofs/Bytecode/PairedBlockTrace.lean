@@ -120,7 +120,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
   rw [hmemory] at gsuffix
   have gsuffix' : GasSteps
       {q with
-        pc := UInt256.ofNat 4805
+        pc := UInt256.ofNat 4811
         stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower]
           terminal rho}
       (DriverTrace.compressReturned (resultState s input i) input i) := gsuffix
