@@ -63,16 +63,16 @@ theorem startup_packedHash (memory : ByteArray) (address : Nat) :
   exact (packed_eq_or _ _).symm
 
 def hashWords (memory : ByteArray) : Compression.EvmHashState :=
-  ⟨MachineState.readWord memory 544, MachineState.readWord memory 576,
-    MachineState.readWord memory 608, MachineState.readWord memory 640,
-    MachineState.readWord memory 672⟩
+  ⟨MachineState.readWord memory 32, MachineState.readWord memory 64,
+    MachineState.readWord memory 96, MachineState.readWord memory 128,
+    MachineState.readWord memory 160⟩
 
 def readLane (memory : ByteArray) : CryptoLane :=
-  ⟨Challenge.EvmProof.Word.toUInt32 (MachineState.readWord memory 544),
-    Challenge.EvmProof.Word.toUInt32 (MachineState.readWord memory 576),
-    Challenge.EvmProof.Word.toUInt32 (MachineState.readWord memory 608),
-    Challenge.EvmProof.Word.toUInt32 (MachineState.readWord memory 640),
-    Challenge.EvmProof.Word.toUInt32 (MachineState.readWord memory 672)⟩
+  ⟨Challenge.EvmProof.Word.toUInt32 (MachineState.readWord memory 32),
+    Challenge.EvmProof.Word.toUInt32 (MachineState.readWord memory 64),
+    Challenge.EvmProof.Word.toUInt32 (MachineState.readWord memory 96),
+    Challenge.EvmProof.Word.toUInt32 (MachineState.readWord memory 128),
+    Challenge.EvmProof.Word.toUInt32 (MachineState.readWord memory 160)⟩
 
 theorem readLane_of_hash (memory : ByteArray) (h : Compression.HashState)
     (hh : hashWords memory = Compression.embedHash h) :
@@ -82,11 +82,11 @@ theorem readLane_of_hash (memory : ByteArray) (h : Compression.HashState)
   have h2 := congrArg Compression.EvmHashState.h2 hh
   have h3 := congrArg Compression.EvmHashState.h3 hh
   have h4 := congrArg Compression.EvmHashState.h4 hh
-  change MachineState.readWord memory 544 = Challenge.EvmProof.Word.ofUInt32 h.h0 at h0
-  change MachineState.readWord memory 576 = Challenge.EvmProof.Word.ofUInt32 h.h1 at h1
-  change MachineState.readWord memory 608 = Challenge.EvmProof.Word.ofUInt32 h.h2 at h2
-  change MachineState.readWord memory 640 = Challenge.EvmProof.Word.ofUInt32 h.h3 at h3
-  change MachineState.readWord memory 672 = Challenge.EvmProof.Word.ofUInt32 h.h4 at h4
+  change MachineState.readWord memory 32 = Challenge.EvmProof.Word.ofUInt32 h.h0 at h0
+  change MachineState.readWord memory 64 = Challenge.EvmProof.Word.ofUInt32 h.h1 at h1
+  change MachineState.readWord memory 96 = Challenge.EvmProof.Word.ofUInt32 h.h2 at h2
+  change MachineState.readWord memory 128 = Challenge.EvmProof.Word.ofUInt32 h.h3 at h3
+  change MachineState.readWord memory 160 = Challenge.EvmProof.Word.ofUInt32 h.h4 at h4
   simp only [readLane, h0, h1, h2, h3, h4, Challenge.EvmProof.Word.toUInt32_ofUInt32,
     PairedCompressionBridge.ofWorking, CompressionCorrect.workingOfHash]
 
@@ -122,11 +122,11 @@ theorem tail_hash (memory : ByteArray) (h : Compression.HashState) (left right :
   rw [reads.1, reads.2.1, reads.2.2.1, reads.2.2.2.1, reads.2.2.2.2]
   simp only [PairedTailTrace.result0, PairedTailTrace.result1, PairedTailTrace.result2,
     PairedTailTrace.result3, PairedTailTrace.result4, tailFrame]
-  rw [combine_packed memory 576 h.h1 _ _ _ _ h1,
-    combine_packed memory 608 h.h2 _ _ _ _ h2,
-    combine_packed memory 640 h.h3 _ _ _ _ h3,
-    combine_packed memory 672 h.h4 _ _ _ _ h4,
-    combine_packed memory 544 h.h0 _ _ _ _ h0]
+  rw [combine_packed memory 64 h.h1 _ _ _ _ h1,
+    combine_packed memory 96 h.h2 _ _ _ _ h2,
+    combine_packed memory 128 h.h3 _ _ _ _ h3,
+    combine_packed memory 160 h.h4 _ _ _ _ h4,
+    combine_packed memory 32 h.h0 _ _ _ _ h0]
   rfl
 
 #print axioms projection_bits

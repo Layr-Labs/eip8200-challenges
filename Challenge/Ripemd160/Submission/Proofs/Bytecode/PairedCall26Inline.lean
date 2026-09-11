@@ -29,7 +29,7 @@ theorem oneRaw_eq_rawBoolean (q : PairedHelperBooleanTrace.Frame) :
 
 
 def inline26Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 80) (MachineState.readWord memory 96), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 20}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 20}
 
 def inline26Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -57,9 +57,9 @@ def inline26Template : List Instr :=
    .op .AND,
    .op .OR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 480),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 80),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 464),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -133,7 +133,7 @@ theorem inline26Template_terminal_advances :
 #print axioms inline26Template_terminal_advances
 
 def inline27Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 352), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 25}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 592) (MachineState.readWord memory 352), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 25}
 
 def inline27Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -163,7 +163,7 @@ def inline27Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 352),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 208),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 592),
    .op .MLOAD,
    .op .OR,
    .op .ADD,

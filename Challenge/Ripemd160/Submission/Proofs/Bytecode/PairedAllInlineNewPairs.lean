@@ -135,7 +135,7 @@ theorem inline16Template_terminal_advances :
 #print axioms inline16Template_terminal_advances
 
 def inline17Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 176) (MachineState.readWord memory 320), leftShift0 := UInt256.ofNat 26, rightShift0 := UInt256.ofNat 19}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 560) (MachineState.readWord memory 320), leftShift0 := UInt256.ofNat 26, rightShift0 := UInt256.ofNat 19}
 
 def inline17Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.k, q.a, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -165,7 +165,7 @@ def inline17Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 320),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 176),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 560),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -381,7 +381,7 @@ theorem inline28Template_terminal_advances :
 #print axioms inline28Template_terminal_advances
 
 def inline29Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 112) (MachineState.readWord memory 448), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 17}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 640), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 17}
 
 def inline29Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.k, q.a, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -409,9 +409,9 @@ def inline29Template : List Instr :=
    .op .AND,
    .op .OR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 448),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 640),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 112),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 496),
    .op .MLOAD,
    .op .OR,
    .op .ADD,

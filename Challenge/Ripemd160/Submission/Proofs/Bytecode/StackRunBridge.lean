@@ -17,6 +17,8 @@ The kernel is the only bytecode-specific compression premise.  In particular,
 this file does not assert that any concrete H10 endpoint has been verified.
 -/
 
+noncomputable section
+
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRunBridge
 
 open Challenge.Ripemd160
@@ -28,11 +30,11 @@ def wordAt (s : State) (address : Nat) : UInt256 :=
   MachineState.readWord s.memory address
 
 def hashAt32 (s : State) : Compression.EvmHashState :=
-  { h0 := wordAt s 544
-    h1 := wordAt s 576
-    h2 := wordAt s 608
-    h3 := wordAt s 640
-    h4 := wordAt s 672 }
+  { h0 := wordAt s 32
+    h1 := wordAt s 64
+    h2 := wordAt s 96
+    h3 := wordAt s 128
+    h4 := wordAt s 160 }
 
 def embedHashArray (a : Array UInt32) : Compression.EvmHashState :=
   { h0 := Word.ofUInt32 a[0]!
@@ -287,7 +289,7 @@ private theorem padReturned_word_below (input : ByteArray)
     wordAt (PaddingTrace.padReturned input) address =
       wordAt (Main.initializedState input) address := by
   unfold wordAt
-  rw [PaddingTrace.padReturned_memory input hfit]
+  rw [PaddingTrace.padReturned_readWord input hfit]
   unfold Padding.paddedMemory Padding.sentinelMemory Padding.copiedMemory
   have hpadded := Padding.input_and_footer_fit input.size
   rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint,
@@ -353,11 +355,11 @@ private theorem hashAt32_of_hashWords
     (hw : CompressionSeamBridge.HashWordsAt input n s) :
     hashAt32 s = Compression.embedHash (hashStateAfter input n) := by
   unfold hashAt32 Compression.embedHash
-  rw [show wordAt s 544 = OutputTrace.hWord s 0 by rfl,
-    show wordAt s 576 = OutputTrace.hWord s 1 by rfl,
-    show wordAt s 608 = OutputTrace.hWord s 2 by rfl,
-    show wordAt s 640 = OutputTrace.hWord s 3 by rfl,
-    show wordAt s 672 = OutputTrace.hWord s 4 by rfl,
+  rw [show wordAt s 32 = OutputTrace.hWord s 0 by rfl,
+    show wordAt s 64 = OutputTrace.hWord s 1 by rfl,
+    show wordAt s 96 = OutputTrace.hWord s 2 by rfl,
+    show wordAt s 128 = OutputTrace.hWord s 3 by rfl,
+    show wordAt s 160 = OutputTrace.hWord s 4 by rfl,
     hw ⟨0, by omega⟩, hw ⟨1, by omega⟩, hw ⟨2, by omega⟩,
     hw ⟨3, by omega⟩, hw ⟨4, by omega⟩]
   rw [← hashArray_hashStateAfter input n]
@@ -423,7 +425,6 @@ def compressionRun (kernel : BlockKernel) (input : ByteArray)
   states := states kernel input
   double := kernel.double input
   initial := states_initial kernel input
-  positive := hpositive
   code := fun i _ => states_code kernel input i
   fork := fun i _ => states_fork kernel input i
   running := fun i _ => states_halt kernel input i
@@ -479,7 +480,7 @@ def compressionSeam (kernel : BlockKernel) (input : ByteArray)
 /-- Nonempty inputs use the compression loop; the caller proves the empty return separately. -/
 theorem correct_of_block_kernel (kernel : BlockKernel)
     (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 268)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 462)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   exact FastOutputResultBridge.correct_of_seam input hfit

@@ -21,11 +21,11 @@ def modifiedTemplate : List Instr :=
 theorem modifiedTemplate_length : modifiedTemplate.length = 40 := by
   decide
 
-theorem modifiedTemplate_bytes : (modifiedTemplate.map Instr.size).sum = 45 := by
+theorem modifiedTemplate_bytes : (modifiedTemplate.map Instr.size).sum = 47 := by
   decide
 
 theorem modifiedTemplate_pc :
-    pcAfter (UInt256.ofNat 4569) modifiedTemplate = UInt256.ofNat 4614 := by
+    pcAfter (UInt256.ofNat 4806) modifiedTemplate = UInt256.ofNat 4853 := by
   decide
 
 def modifiedC10 (q : PairedHelperBooleanTrace.Frame) : UInt256 :=

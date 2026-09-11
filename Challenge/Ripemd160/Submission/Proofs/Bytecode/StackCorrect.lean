@@ -2,7 +2,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.SentinelPreserve
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastEmptyBlock
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectEmptyReturn
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.TinyGuard
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -13,7 +13,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
 /-- Mathematical single-block state for the hash invariant. Nonempty inputs
-execute the generic compressor. The empty case returns through DirectEmptyReturn
+execute the generic compressor. The empty case returns through TinyGuard
 and retains this abstract state only for the common hash-state interface. -/
 def nextState (s : State) (input : ByteArray) (i : Nat) : State :=
   if input.size = 0 then FastEmptyBlock.resultState s input i
@@ -131,11 +131,16 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 268)) :
+      (Execution.atPC input 387)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  by_cases hempty : input.size = 0
-  · exact DirectEmptyReturn.correct_empty input hfit hempty entryPrefix
-  · exact StackRunBridge.correct_of_block_kernel kernel input hfit (Nat.pos_of_ne_zero hempty) entryPrefix
+  by_cases hhit : TinyGuardLogic.condition input = 0
+  · exact TinyGuard.correct_hit input hfit hhit entryPrefix
+  · have hnonempty : 0 < input.size := by
+      by_contra h
+      have he : input = ByteArray.empty := TinyGuardLogic.input_eq_empty input (by omega)
+      exact hhit (he ▸ TinyGuardLogic.condition_empty)
+    exact StackRunBridge.correct_of_block_kernel kernel input hfit hnonempty
+      (entryPrefix.trans (TinyGuard.gasSteps_miss input hhit))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
