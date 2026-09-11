@@ -6,47 +6,37 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.SizeLookupFlag
 open EvmSemantics
 open Challenge.EvmProof
 
-/-- Exact size membership for all eight short checked scan paths. -/
-def maskNat : Nat := (2 ^ 1) ||| (2 ^ 65) ||| (2 ^ 8) ||| (2 ^ 9) ||| (2 ^ 10) ||| (2 ^ 73) ||| (2 ^ 64) ||| (2 ^ 0)
+/-- Exact size membership for the eight short checked scan paths. -/
+def maskNat : Nat := (2 ^ 56) ||| (2 ^ 120) ||| (2 ^ 63) ||| (2 ^ 64) ||| (2 ^ 65) ||| (2 ^ 128) ||| (2 ^ 119) ||| (2 ^ 55)
 def mask : UInt256 := UInt256.ofNat maskNat
-theorem mask_literal : mask = UInt256.ofNat 9500073197960419084035 := by decide
+theorem mask_literal : mask = UInt256.ofNat 342276208914615837337402008671229050880 := by decide
 private theorem mask_toNat : mask.toNat = maskNat := by decide
 
 private theorem mask_bit_false (n : Nat)
-    (h1 : n ≠ 1) (h65 : n ≠ 65) (h8 : n ≠ 8) (h9 : n ≠ 9) (h10 : n ≠ 10) (h73 : n ≠ 73) (h64 : n ≠ 64) (h0 : n ≠ 0) : maskNat.testBit n = false := by
+    (h56 : n ≠ 56) (h120 : n ≠ 120) (h63 : n ≠ 63)
+    (h64 : n ≠ 64) (h65 : n ≠ 65) (h128 : n ≠ 128) (h119 : n ≠ 119) (h55 : n ≠ 55) : maskNat.testBit n = false := by
   simp only [maskNat, Nat.testBit_or,
-    Nat.testBit_two_pow_of_ne (Ne.symm h1), Nat.testBit_two_pow_of_ne (Ne.symm h65), Nat.testBit_two_pow_of_ne (Ne.symm h8), Nat.testBit_two_pow_of_ne (Ne.symm h9), Nat.testBit_two_pow_of_ne (Ne.symm h10), Nat.testBit_two_pow_of_ne (Ne.symm h73), Nat.testBit_two_pow_of_ne (Ne.symm h64), Nat.testBit_two_pow_of_ne (Ne.symm h0), Bool.false_or]
+    Nat.testBit_two_pow_of_ne (Ne.symm h56), Nat.testBit_two_pow_of_ne (Ne.symm h120),
+    Nat.testBit_two_pow_of_ne (Ne.symm h63), Nat.testBit_two_pow_of_ne (Ne.symm h64),
+    Nat.testBit_two_pow_of_ne (Ne.symm h65), Nat.testBit_two_pow_of_ne (Ne.symm h128), Nat.testBit_two_pow_of_ne (Ne.symm h119), Nat.testBit_two_pow_of_ne (Ne.symm h55), Bool.false_or]
 
-private theorem bit_zero (x : UInt256)
-    (h56 : x.toNat ≠ 56) (h120 : x.toNat ≠ 120) (h63 : x.toNat ≠ 63) (h64 : x.toNat ≠ 64) (h65 : x.toNat ≠ 65) (h128 : x.toNat ≠ 128) (h119 : x.toNat ≠ 119) (h55 : x.toNat ≠ 55) :
-    UInt256.land (UInt256.ofNat 1)
-      (UInt256.shiftRight mask (x - UInt256.ofNat 55)) = UInt256.ofNat 0 := by
-  set s : UInt256 := x - UInt256.ofNat 55 with hs
-  -- Below 55, word subtraction wraps and the shift exceeds 256.
-  have h55v : (UInt256.ofNat 55).toNat = 55 := by decide
-  have hcond : s.toNat =
-      if x.toNat < 55 then 2 ^ 256 + x.toNat - 55 else x.toNat - 55 := by
-    rw [hs, Word.word_toNat_sub_cond, h55v]
-  by_cases hbig : s.toNat ≥ 256
+private theorem bit_zero (x : UInt256) (h56 : x.toNat ≠ 56)
+    (h120 : x.toNat ≠ 120) (h63 : x.toNat ≠ 63)
+    (h64 : x.toNat ≠ 64) (h65 : x.toNat ≠ 65) (h128 : x.toNat ≠ 128) (h119 : x.toNat ≠ 119) (h55 : x.toNat ≠ 55) :
+    UInt256.land (UInt256.ofNat 1) (UInt256.shiftRight mask x) = UInt256.ofNat 0 := by
+  by_cases hbig : x.toNat ≥ 256
   · simp only [UInt256.shiftRight, if_pos hbig]
     decide
-  · have hsmall : s.toNat < 256 := by omega
-    have hge : 55 ≤ x.toNat := by
-      by_contra hlt
-      rw [if_pos (by omega : x.toNat < 55)] at hcond
-      have : x.toNat < 2 ^ 256 := x.val.isLt
-      omega
-    have hval : s.toNat = x.toNat - 55 := by
-      rw [hcond, if_neg (by omega)]
+  · have hsmall : x.toNat < 256 := by omega
     have hsr := Word.shiftRight_toNat mask hsmall
-    rw [← Word.word_eq_ofNat_toNat s] at hsr
+    rw [← Word.word_eq_ofNat_toNat x] at hsr
     apply Word.word_ext
     rw [Word.word_toNat_land, hsr, mask_toNat]
-    change 1 &&& (maskNat >>> s.toNat) = 0
-    have hb : (maskNat >>> s.toNat).testBit 0 = false := by
+    change 1 &&& (maskNat >>> x.toNat) = 0
+    have hb : (maskNat >>> x.toNat).testBit 0 = false := by
       rw [Nat.testBit_shiftRight, Nat.add_zero]
-      refine mask_bit_false _ ?_  ?_  ?_  ?_  ?_  ?_  ?_  ?_ <;> (rw [hval]; omega)
-    have h := Nat.two_pow_and (maskNat >>> s.toNat) 0
+      exact mask_bit_false x.toNat h56 h120 h63 h64 h65 h128 h119 h55
+    have h := Nat.two_pow_and (maskNat >>> x.toNat) 0
     simpa [hb] using h
 
 private theorem eq_zero (n : Nat) (hn : n < 2 ^ 256) (x : UInt256)
@@ -56,7 +46,7 @@ private theorem eq_zero (n : Nat) (hn : n < 2 ^ 256) (x : UInt256)
 
 theorem flag (x : UInt256) :
     UInt256.isZero (UInt256.land (UInt256.ofNat 1)
-        (UInt256.shiftRight mask (x - UInt256.ofNat 55))) =
+        (UInt256.shiftRight mask x)) =
       UInt256.isZero (UInt256.lor (UInt256.eq (UInt256.ofNat 56) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 120) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 63) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 64) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 65) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 128) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 119) x) (UInt256.eq (UInt256.ofNat 55) x)))))))) := by
   by_cases h56 : x = UInt256.ofNat 56
   · subst x; decide
