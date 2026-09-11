@@ -575,13 +575,13 @@ theorem run_rrDone_skip (s : State) (mem : ByteArray) (n esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1189
       (rrDone s mem n 0 esize msize) =
-      some (bDone s mem n 0 esize msize) := by
-  have h1756Nat : (UInt256.ofNat 1617).toNat = 1617 := by decide
+      some { bDone s mem n 0 esize msize with pc := UInt256.ofNat 3324 } := by
+  have h1756Nat : (UInt256.ofNat 3324).toNat = 3324 := by decide
   simp (config := { maxSteps := 400000 }) [blk1189, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     rrDone, bDone, outer, hcode, hrun, isZero_ofNat_zero, isTrue_one,
-    h1756Nat, jumpDest1698,
+    h1756Nat, jumpDest3412,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -708,7 +708,7 @@ def gasSteps_rrDone_skip (s : State) (mem : ByteArray) (n esize msize : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (rrDone s mem n 0 esize msize)
-      (bDone s mem n 0 esize msize) :=
+      { bDone s mem n 0 esize msize with pc := UInt256.ofNat 3324 } :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1189 hcode hfork
       (run_rrDone_skip s mem n esize msize hcode hrun) hrun hnp
