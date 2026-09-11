@@ -221,7 +221,7 @@ def resultMemory (memory : ByteArray) (q : Frame) : ByteArray :=
     160 (result4 memory q)) 128 (result3 memory q)) 96 (result2 memory q))
     64 (result1 memory q)) 32 (result0 memory q)
 
-/-- Exact physical bytes5083..5168 (or relocated5068..5153), including the final indirect return. -/
+/-- Exact physical bytes5083..5231 (or relocated5068..5153), including the final indirect return. -/
 def template : List Instr :=
   [.op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
