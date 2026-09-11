@@ -395,16 +395,16 @@ def tailTemplate : List Instr :=
     .op .POP,
     .op .JUMP ]
 theorem tail_slice :
-    (Artifact.submissionArtifact.instructions.drop 3938).take tailTemplate.length = tailTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3934).take tailTemplate.length = tailTemplate := by rfl
 def tailSite : GenericRoundSite Artifact.submissionArtifact .Osaka tailTemplate :=
-  StackSiteBuilder.ofSlice tailTemplate 3938 tail_slice
-    (by change 3938 + tailTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice tailTemplate 3934 tail_slice
+    (by change 3934 + tailTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := tailTemplate) (by decide))
     (by decide)
-theorem tail_pc : tailSite.startPC = UInt256.ofNat 4610 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3938) = UInt256.ofNat 4610
+theorem tail_pc : tailSite.startPC = UInt256.ofNat 4606 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3934) = UInt256.ofNat 4606
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem tail_advances : ∀ instruction ∈ tailTemplate.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -413,7 +413,7 @@ theorem run_tail (s : State) (ret : UInt256) (q : PairedTailTrace.Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 996)
     (hrun : s.halt = .Running) (hactive : 23 ≤ s.activeWords.toNat)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
-    runInstrSeq tailTemplate {s with pc := UInt256.ofNat 4610, stack := cachedTailEntry s.memory q ret rho} =
+    runInstrSeq tailTemplate {s with pc := UInt256.ofNat 4606, stack := cachedTailEntry s.memory q ret rho} =
       some {s with pc := ret, stack := rho, memory := PairedTailTrace.resultMemory s.memory q} := by
   have hcap (n : Nat) (hn : n ≤ 26) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 672) :
@@ -434,7 +434,7 @@ def gasSteps_tail (s : State) (ret : UInt256) (q : PairedTailTrace.Frame)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4610, stack := cachedTailEntry s.memory q ret rho}
+    GasSteps {s with pc := UInt256.ofNat 4606, stack := cachedTailEntry s.memory q ret rho}
       {s with pc := ret, stack := rho, memory := PairedTailTrace.resultMemory s.memory q} := by
   exact gasSteps_terminal_of_raw tailSite _ _ hcode hfork hrun hnp tail_pc.symm tail_advances
     (run_tail s ret q rho hstack hrun hactive hvalid)

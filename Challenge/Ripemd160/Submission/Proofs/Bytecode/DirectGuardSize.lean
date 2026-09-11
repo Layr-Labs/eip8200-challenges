@@ -12,7 +12,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open KnownInputCompactState
 
-def guardEntry (input : ByteArray) : State := atPC input 4792
+def guardEntry (input : ByteArray) : State := atPC input 4788
 
 def firstByte (input : ByteArray) : Nat :=
   (YulSemantics.EVM.byteFrom input.toList 0).toNat
@@ -43,15 +43,15 @@ theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
   have e256 := size_eq_zero input 376 hlt (by norm_num) hsize256
   have e1000 := size_eq_zero input 1000 hlt (by norm_num) hsize
   change run sizePath (PatternedScan.stS input 0 []) =
-    some (PatternedScan.stS input 4792 [])
-  -- rw idiom rather than term mode: the term form forces instructionPC 4068 and
+    some (PatternedScan.stS input 4788 [])
+  -- rw idiom rather than term mode: the term form forces instructionPC 4064 and
   -- submissionBytecode into definitional equality with the literals, which ran
   -- past 800s at 18 GB on the other base.  Same statement, cheap elaboration.
-  have hpc4131 : Artifact.submissionArtifact.instructionPC 4068 = 4792 := by
+  have hpc4131 : Artifact.submissionArtifact.instructionPC 4064 = 4788 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 4792 = true := by
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 4068 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 4788 = true := by
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 4064 (by rfl)
     rw [hpc4131] at h
     exact h
   have hprefix :
@@ -73,20 +73,20 @@ theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
        Challenge.EvmProof.Word.ofNat_add_mod,
        Challenge.EvmProof.Word.word_toNat_ofNat]
   have hpush :
-      run [pushAt 12 2 4792] (PatternedScan.stS input 18 [UInt256.ofNat 1]) =
-        some (PatternedScan.stS input 21 [UInt256.ofNat 4792, UInt256.ofNat 1]) := by
+      run [pushAt 12 2 4788] (PatternedScan.stS input 18 [UInt256.ofNat 1]) =
+        some (PatternedScan.stS input 21 [UInt256.ofNat 4788, UInt256.ofNat 1]) := by
     exact PatternedScan.blockOfS _
       (PatternedScan.pcFactS input 12 18 _ (by norm_num) pc_classifier_112)
-      (PatternedScan.stepS_push input 18 2 4792 [UInt256.ofNat 1]
+      (PatternedScan.stepS_push input 18 2 4788 [UInt256.ofNat 1]
         (by norm_num) (by decide) (by decide) (by norm_num))
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have hjump :
       run [opAt 13 .JUMPI]
-          (PatternedScan.stS input 21 [UInt256.ofNat 4792, UInt256.ofNat 1]) =
-        some (PatternedScan.stS input 4792 []) := by
+          (PatternedScan.stS input 21 [UInt256.ofNat 4788, UInt256.ofNat 1]) =
+        some (PatternedScan.stS input 4788 []) := by
     exact PatternedScan.blockOfS _
       (PatternedScan.pcFactS input 13 21 _ (by norm_num) pc_classifier_113)
-      (PatternedScan.stepS_jumpi_taken input 21 4792 4792 (UInt256.ofNat 1) []
+      (PatternedScan.stepS_jumpi_taken input 21 4788 4788 (UInt256.ofNat 1) []
         (by norm_num) (by norm_num) rfl htrue hdest)
   have hprefix_push :
       run
@@ -94,30 +94,30 @@ theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
            opAt 3 .CALLDATASIZE, pushAt 4 2 376, opAt 5 .EQ,
            opAt 6 .CALLDATASIZE, pushAt 7 2 1000,
            opAt 8 .EQ, opAt 9 .OR, opAt 10 .OR, opAt 11 .ISZERO,
-           pushAt 12 2 4792]
+           pushAt 12 2 4788]
         (PatternedScan.stS input 0 []) =
-      some (PatternedScan.stS input 21 [UInt256.ofNat 4792, UInt256.ofNat 1]) := by
+      some (PatternedScan.stS input 21 [UInt256.ofNat 4788, UInt256.ofNat 1]) := by
     exact Challenge.EvmProof.Stepper.runLocatedBlock_append
       [opAt 0 .CALLDATASIZE, pushAt 1 2 256, opAt 2 .EQ,
        opAt 3 .CALLDATASIZE, pushAt 4 2 376, opAt 5 .EQ,
        opAt 6 .CALLDATASIZE, pushAt 7 2 1000,
        opAt 8 .EQ, opAt 9 .OR, opAt 10 .OR, opAt 11 .ISZERO]
-      [pushAt 12 2 4792] _ _ _ hprefix rfl hpush
+      [pushAt 12 2 4788] _ _ _ hprefix rfl hpush
   have hfull :
       run
           [opAt 0 .CALLDATASIZE, pushAt 1 2 256, opAt 2 .EQ,
            opAt 3 .CALLDATASIZE, pushAt 4 2 376, opAt 5 .EQ,
            opAt 6 .CALLDATASIZE, pushAt 7 2 1000,
            opAt 8 .EQ, opAt 9 .OR, opAt 10 .OR, opAt 11 .ISZERO,
-           pushAt 12 2 4792, opAt 13 .JUMPI]
+           pushAt 12 2 4788, opAt 13 .JUMPI]
         (PatternedScan.stS input 0 []) =
-      some (PatternedScan.stS input 4792 []) := by
+      some (PatternedScan.stS input 4788 []) := by
     exact Challenge.EvmProof.Stepper.runLocatedBlock_append
       [opAt 0 .CALLDATASIZE, pushAt 1 2 256, opAt 2 .EQ,
        opAt 3 .CALLDATASIZE, pushAt 4 2 376, opAt 5 .EQ,
        opAt 6 .CALLDATASIZE, pushAt 7 2 1000,
        opAt 8 .EQ, opAt 9 .OR, opAt 10 .OR, opAt 11 .ISZERO,
-       pushAt 12 2 4792]
+       pushAt 12 2 4788]
       [opAt 13 .JUMPI] _ _ _ hprefix_push rfl hjump
   simpa only [sizePath] using hfull
 
