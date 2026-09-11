@@ -69,13 +69,13 @@ def gasSteps_product (s : State) (mem : ByteArray) (ai : UInt256) (i : Nat)
       rw [env.code, delta, SquareControls.target_index i hin, Challenge.EvmProof.Word.word_toNat_ofNat,
         Nat.mod_eq_of_lt (by omega)]
       interval_cases i
-      · exact Artifact.isValidJumpDest_index 3208 (by rfl)
-      · exact Artifact.isValidJumpDest_index 3240 (by rfl)
-      · exact Artifact.isValidJumpDest_index 3272 (by rfl)
-      · exact Artifact.isValidJumpDest_index 3304 (by rfl)
-      · exact Artifact.isValidJumpDest_index 3336 (by rfl)
-      · exact Artifact.isValidJumpDest_index 3368 (by rfl)
-      · exact Artifact.isValidJumpDest_index 3400 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3209 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3241 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3273 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3305 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3337 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3369 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3401 (by rfl)
     have hd : Challenge.EvmProof.GasSteps
         (partState s mem ai i 2 5282 pbi pa pb (delta i) dst ret rest)
         (partState s mem ai i 2 (4157+38*(i+2)) pbi pa pb (delta i) dst ret rest) := by

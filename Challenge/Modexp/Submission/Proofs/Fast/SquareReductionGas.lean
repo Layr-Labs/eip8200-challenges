@@ -15,7 +15,7 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open _root_.Challenge.Modexp.Submission.Proofs.Fast.SquareDiagonal (base)
 
 def qBlock : Block Artifact.submissionArtifact .Osaka 4491 CiosReadonly.cachedProduct :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3424 16 4491 CiosReadonly.cachedProduct
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3425 16 4491 CiosReadonly.cachedProduct
     (by decide) (by rfl) (by rfl) (by decide)
 
 def gasSteps_reduce (s : State) (mem : ByteArray) (f pbi pa pb tag tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
