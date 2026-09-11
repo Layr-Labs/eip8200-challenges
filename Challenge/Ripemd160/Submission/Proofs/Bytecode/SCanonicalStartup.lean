@@ -9,12 +9,13 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleLift
 import Init.Data.BitVec.Bitblast
 
 set_option warningAsError true
+set_option maxRecDepth 10000
 
 /-!
 S canonical multiply startup: raw execution module.
 
-33 ops / 53 bytes. Keeps L/U/P cache construction, derives `R = 1 + 2^128` as `P / L`,
-then five `PUSH2 address; MLOAD; DUP; MUL` loads for 672/640/608/576/544 with
+33 ops / 48 bytes. Keeps L/U/P cache construction, derives `R = 1 + 2^128` as `P / L`,
+then five `PUSH address; MLOAD; DUP; MUL` loads for 160/128/96/64/32 with
 `DUP2..DUP6`, restores `F` via `PUSH5 F; SWAP6; POP`.
 
 Under five canonical hash-load bounds the result stack equals
@@ -117,29 +118,28 @@ private theorem uint_mul_comm (a b : UInt256) :
   rw [mul_toNat, mul_toNat, Nat.mul_comm]
 
 def loadMulTemplate (address : Nat) (dup : Operation.DupOp) : List Instr :=
-  [push2 (UInt256.ofNat address), .op .MLOAD, .op (.Dup dup), .op .MUL]
+  [push1 (UInt256.ofNat address), .op .MLOAD, .op (.Dup dup), .op .MUL]
 
 theorem div_pair_lower :
     PairedDerivedStartup.pairWord / PairedDerivedStartup.lowerWord = dupFactor := by decide
 
 def template : List Instr :=
-  [.push ⟨4, by decide⟩ PairedDerivedStartup.lowerWord,
-   dup1, push1 (UInt256.ofNat 128), .op .SHL,
+  [dup1, push1 (UInt256.ofNat 128), .op .SHL,
    dup1, .op (.Dup ⟨2, by decide⟩), .op .OR,
    .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .DIV] ++
-   loadMulTemplate 672 ⟨1, by decide⟩ ++
-   loadMulTemplate 640 ⟨2, by decide⟩ ++
-   loadMulTemplate 608 ⟨3, by decide⟩ ++
-   loadMulTemplate 576 ⟨4, by decide⟩ ++
-   loadMulTemplate 544 ⟨5, by decide⟩ ++
-   [.push ⟨5, by decide⟩ PairedDerivedStartup.factorWord,
+   loadMulTemplate 160 ⟨1, by decide⟩ ++
+   loadMulTemplate 128 ⟨2, by decide⟩ ++
+   loadMulTemplate 96 ⟨3, by decide⟩ ++
+   loadMulTemplate 64 ⟨4, by decide⟩ ++
+   loadMulTemplate 32 ⟨5, by decide⟩ ++
+   [.op (.Dup ⟨8, by decide⟩), DenseScheduleTemplate.push1 (UInt256.ofNat 2), .op .ADD,
     .op (.Swap ⟨5, by decide⟩), .op .POP]
 
-theorem template_length : template.length = 33 := by
+theorem template_length : template.length = 34 := by
   norm_num [template, loadMulTemplate]
 
-theorem template_bytes : (template.map Instr.size).sum = 53 := by
-  norm_num [template, loadMulTemplate, push1, push2, dup1, Instr.size]
+theorem template_bytes : (template.map Instr.size).sum = 41 := by
+  norm_num [template, loadMulTemplate, push1, dup1, Instr.size]
 
 theorem lower_toNat :
     PairedDerivedStartup.lowerWord.toNat = 0xffffffff := by
@@ -173,35 +173,39 @@ theorem mul_eq_packedHash (memory : ByteArray) (address : Nat)
   rw [hstar, uint_mul_comm]
   exact hmul
 
+theorem retained_factor :
+    (UInt256.ofNat 2) + PairedDerivedStartup.lowerWord =
+      PairedDerivedStartup.factorWord := by decide
+
 theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
-    (h32 : (MachineState.readWord s.memory 544).toNat < 2 ^ 32)
-    (h64 : (MachineState.readWord s.memory 576).toNat < 2 ^ 32)
-    (h96 : (MachineState.readWord s.memory 608).toNat < 2 ^ 32)
-    (h128 : (MachineState.readWord s.memory 640).toNat < 2 ^ 32)
-    (h160 : (MachineState.readWord s.memory 672).toNat < 2 ^ 32)
+    (h32 : (MachineState.readWord s.memory 32).toNat < 2 ^ 32)
+    (h64 : (MachineState.readWord s.memory 64).toNat < 2 ^ 32)
+    (h96 : (MachineState.readWord s.memory 96).toNat < 2 ^ 32)
+    (h128 : (MachineState.readWord s.memory 128).toNat < 2 ^ 32)
+    (h160 : (MachineState.readWord s.memory 160).toNat < 2 ^ 32)
     (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
-    runInstrSeq template {s with pc := pc, stack := rho} =
+    runInstrSeq template {s with pc := pc, stack := PairedDerivedStartup.lowerWord :: rho} =
       some {s with pc := pcAfter pc template, stack := PairedDerivedStartup.resultStack s.memory rho} := by
   have hcap (n : Nat) (hn : n ≤ 11) : rho.length + n < 1024 := by omega
   have h0 : rho.length < 1024 := by omega
-  have hactiveAt (address : Nat) (haddress : address ≤ 672) :
+  have hactiveAt (address : Nat) (haddress : address ≤ 160) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords :=
     PairedDerivedStartup.active_preserved s.activeWords address hactive haddress
-  have hmul160 := mul_eq_packedHash s.memory 672 h160
-  have hmul128 := mul_eq_packedHash s.memory 640 h128
-  have hmul96 := mul_eq_packedHash s.memory 608 h96
-  have hmul64 := mul_eq_packedHash s.memory 576 h64
-  have hmul32 := mul_eq_packedHash s.memory 544 h32
-  simp (discharger := omega) [template, loadMulTemplate, push1, push2, dup1,
+  have hmul160 := mul_eq_packedHash s.memory 160 h160
+  have hmul128 := mul_eq_packedHash s.memory 128 h128
+  have hmul96 := mul_eq_packedHash s.memory 96 h96
+  have hmul64 := mul_eq_packedHash s.memory 64 h64
+  have hmul32 := mul_eq_packedHash s.memory 32 h32
+  simp (discharger := omega) [template, loadMulTemplate, push1, dup1,
     PairedDerivedStartup.packedHash, PairedDerivedStartup.resultStack,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
-    pcAfter, UInt256.succ, Instr.size, hrun, hcap, h0, Nat.add_assoc,
+    pcAfter, UInt256.succ, Instr.size, hrun, hcap, Nat.add_assoc,
     PairedDerivedStartup.upper_from_lower, PairedDerivedStartup.pair_from_lower,
     List.getElem?_cons_zero, List.getElem?_cons_succ,
     State.activeWordsAfterUInt256, hactiveAt,
-    Challenge.EvmProof.Word.word_toNat_ofNat, div_pair_lower,
+    Challenge.EvmProof.Word.word_toNat_ofNat, div_pair_lower, retained_factor,
     List.exchange, hmul160, hmul128, hmul96, hmul64, hmul32]
   rfl
 
@@ -215,16 +219,15 @@ open Challenge.EvmProof StackRoundTemplate
 
 /-- Flat 33-op expansion of `template` for the advancement case split. -/
 def frozenInstructions : List Instr :=
-  [.push ⟨4, by decide⟩ PairedDerivedStartup.lowerWord,
-   DenseScheduleTemplate.dup1, DenseScheduleTemplate.push1 (UInt256.ofNat 128), .op .SHL,
+  [DenseScheduleTemplate.dup1, DenseScheduleTemplate.push1 (UInt256.ofNat 128), .op .SHL,
    DenseScheduleTemplate.dup1, .op (.Dup ⟨2, by decide⟩), .op .OR,
    .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .DIV,
-   DenseScheduleTemplate.push2 (UInt256.ofNat 672), .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .MUL,
-   DenseScheduleTemplate.push2 (UInt256.ofNat 640), .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .op .MUL,
-   DenseScheduleTemplate.push2 (UInt256.ofNat 608), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .MUL,
-   DenseScheduleTemplate.push2 (UInt256.ofNat 576), .op .MLOAD, .op (.Dup ⟨4, by decide⟩), .op .MUL,
-   DenseScheduleTemplate.push2 (UInt256.ofNat 544), .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL,
-   .push ⟨5, by decide⟩ PairedDerivedStartup.factorWord,
+   DenseScheduleTemplate.push1 (UInt256.ofNat 160), .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .MUL,
+   DenseScheduleTemplate.push1 (UInt256.ofNat 128), .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .op .MUL,
+   DenseScheduleTemplate.push1 (UInt256.ofNat 96), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .MUL,
+   DenseScheduleTemplate.push1 (UInt256.ofNat 64), .op .MLOAD, .op (.Dup ⟨4, by decide⟩), .op .MUL,
+   DenseScheduleTemplate.push1 (UInt256.ofNat 32), .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL,
+   .op (.Dup ⟨8, by decide⟩), DenseScheduleTemplate.push1 (UInt256.ofNat 2), .op .ADD,
    .op (.Swap ⟨5, by decide⟩), .op .POP]
 
 theorem template_eq_frozenInstructions : template = frozenInstructions := by
@@ -236,12 +239,13 @@ theorem template_advances {instruction : Instr} {s t : State}
     t.pc = s.pc + UInt256.ofNat instruction.size := by
   rw [template_eq_frozenInstructions] at hmem
   simp only [frozenInstructions, List.mem_cons, List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals first
     | exact RepeatedByteWord.runInstr_pc_div hrun
     | apply DenseScheduleLift.runInstr_pc_of_advances ?_ hrun
   all_goals first
     | exact Or.inl (Or.inl (StraightLine.push _ _))
+    | exact Or.inl (Or.inl StraightLine.add)
     | exact Or.inl (Or.inl StraightLine.shl)
     | exact Or.inl (Or.inl StraightLine.or)
     | exact Or.inl (Or.inl StraightLine.mload)
@@ -253,22 +257,22 @@ theorem template_advances {instruction : Instr} {s t : State}
 theorem runLocatedBlock_template {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork template)
     (s : State) (rho : List UInt256)
-    (h32 : (MachineState.readWord s.memory 544).toNat < 2 ^ 32)
-    (h64 : (MachineState.readWord s.memory 576).toNat < 2 ^ 32)
-    (h96 : (MachineState.readWord s.memory 608).toNat < 2 ^ 32)
-    (h128 : (MachineState.readWord s.memory 640).toNat < 2 ^ 32)
-    (h160 : (MachineState.readWord s.memory 672).toNat < 2 ^ 32)
+    (h32 : (MachineState.readWord s.memory 32).toNat < 2 ^ 32)
+    (h64 : (MachineState.readWord s.memory 64).toNat < 2 ^ 32)
+    (h96 : (MachineState.readWord s.memory 96).toNat < 2 ^ 32)
+    (h128 : (MachineState.readWord s.memory 128).toNat < 2 ^ 32)
+    (h160 : (MachineState.readWord s.memory 160).toNat < 2 ^ 32)
     (hstack : rho.length ≤ 1002)
     (hrun : s.halt = .Running) (hactive : 23 ≤ s.activeWords.toNat) :
-    Stepper.runLocatedBlock site.path {s with pc := site.startPC, stack := rho} =
+    Stepper.runLocatedBlock site.path {s with pc := site.startPC, stack := PairedDerivedStartup.lowerWord :: rho} =
       some {s with pc := site.endPC, stack := PairedDerivedStartup.resultStack s.memory rho} := by
   have hend : site.endPC = pcAfter site.startPC template := by
     have h := StackRoundTrace.endPC_eq_pcAfter_sites site.sites site.startPC site.endPC
       site.head_eq site.end_eq site.contiguous
     rwa [site.instruction_eq] at h
   have hraw : Stepper.runLocatedBlock site.path
-      {s with pc := site.startPC, stack := rho} =
-      runInstrSeq template {s with pc := site.startPC, stack := rho} := by
+      {s with pc := site.startPC, stack := PairedDerivedStartup.lowerWord :: rho} =
+      runInstrSeq template {s with pc := site.startPC, stack := PairedDerivedStartup.lowerWord :: rho} := by
     apply runLocatedBlock_eq_runInstrSeq_site site _ rfl
     intro located hmem u v hresult
     apply template_advances ?_ hresult
@@ -282,17 +286,17 @@ theorem runLocatedBlock_template {artifact : ProgramArtifact} {fork : Fork}
 def gasSteps_template {artifact : ProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork template)
     (s : State) (rho : List UInt256)
-    (h32 : (MachineState.readWord s.memory 544).toNat < 2 ^ 32)
-    (h64 : (MachineState.readWord s.memory 576).toNat < 2 ^ 32)
-    (h96 : (MachineState.readWord s.memory 608).toNat < 2 ^ 32)
-    (h128 : (MachineState.readWord s.memory 640).toNat < 2 ^ 32)
-    (h160 : (MachineState.readWord s.memory 672).toNat < 2 ^ 32)
+    (h32 : (MachineState.readWord s.memory 32).toNat < 2 ^ 32)
+    (h64 : (MachineState.readWord s.memory 64).toNat < 2 ^ 32)
+    (h96 : (MachineState.readWord s.memory 96).toNat < 2 ^ 32)
+    (h128 : (MachineState.readWord s.memory 128).toNat < 2 ^ 32)
+    (h160 : (MachineState.readWord s.memory 160).toNat < 2 ^ 32)
     (hstack : rho.length ≤ 1002)
     (hrun : s.halt = .Running) (hactive : 23 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = artifact.code) (hfork : s.fork = fork)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := site.startPC, stack := rho}
+    GasSteps {s with pc := site.startPC, stack := PairedDerivedStartup.lowerWord :: rho}
       {s with pc := site.endPC, stack := PairedDerivedStartup.resultStack s.memory rho} := by
   apply Stepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode

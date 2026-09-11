@@ -1,3 +1,5 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.SentinelCore
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.SentinelPadding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputResultBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionSeamBridge
@@ -15,6 +17,8 @@ The kernel is the only bytecode-specific compression premise.  In particular,
 this file does not assert that any concrete H10 endpoint has been verified.
 -/
 
+noncomputable section
+
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRunBridge
 
 open Challenge.Ripemd160
@@ -26,11 +30,11 @@ def wordAt (s : State) (address : Nat) : UInt256 :=
   MachineState.readWord s.memory address
 
 def hashAt32 (s : State) : Compression.EvmHashState :=
-  { h0 := wordAt s 544
-    h1 := wordAt s 576
-    h2 := wordAt s 608
-    h3 := wordAt s 640
-    h4 := wordAt s 672 }
+  { h0 := wordAt s 32
+    h1 := wordAt s 64
+    h2 := wordAt s 96
+    h3 := wordAt s 128
+    h4 := wordAt s 160 }
 
 def embedHashArray (a : Array UInt32) : Compression.EvmHashState :=
   { h0 := Word.ofUInt32 a[0]!
@@ -49,12 +53,15 @@ structure BlockContext (s : State) (input : ByteArray) (i : Nat)
   separated : ∀ k, k < 16 →
     0x2e0 ≤ (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord i) k).toNat
   hash : hashAt32 s = Compression.embedHash h
+  sentinel : SentinelCore.SentinelOK s.memory
 
 /-- A genuine compression endpoint and its exact one-block certificate.  The
 `double` path additionally certifies one dispatcher execution consuming
 blocks 0 and 1 together (the depth-2 prefix ladder). -/
 structure BlockKernel where
   nextState : State → ByteArray → Nat → State
+  sentinel : ∀ s input i, SentinelCore.SentinelOK s.memory →
+    SentinelCore.SentinelOK (nextState s input i).memory
   executionEnv : ∀ s input i, (nextState s input i).executionEnv = s.executionEnv
   halt : ∀ s input i, (nextState s input i).halt = s.halt
   callStack : ∀ s input i, (nextState s input i).callStack = s.callStack
@@ -82,6 +89,8 @@ structure BlockKernel where
     GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i)
   nextState2 : State → ByteArray → State
+  sentinel2 : ∀ s input, SentinelCore.SentinelOK s.memory →
+    SentinelCore.SentinelOK (nextState2 s input).memory
   executionEnv2 : ∀ s input, (nextState2 s input).executionEnv = s.executionEnv
   halt2 : ∀ s input, (nextState2 s input).halt = s.halt
   callStack2 : ∀ s input, (nextState2 s input).callStack = s.callStack
@@ -144,6 +153,17 @@ theorem states_succ_single (kernel : BlockKernel) (input : ByteArray) (n : Nat)
   | succ m =>
     show (if m = 0 ∧ kernel.double input = true then _ else _) = _
     rw [if_neg (fun h => hn ⟨by omega, h.2⟩)]
+
+theorem states_sentinel (kernel : BlockKernel) (input : ByteArray) (hfit : CalldataFits input) :
+    ∀ n, SentinelCore.SentinelOK (states kernel input n).memory
+  | 0 => ⟨SentinelPadding.padReturned_size input hfit,
+      SentinelPadding.padReturned_zero input hfit⟩
+  | 1 => kernel.sentinel _ input 0 (states_sentinel kernel input hfit 0)
+  | n + 2 => by
+    rw [states_add_two]
+    split
+    · exact kernel.sentinel2 _ input (states_sentinel kernel input hfit 0)
+    · exact kernel.sentinel _ input (n + 1) (states_sentinel kernel input hfit (n + 1))
 
 theorem states_executionEnv (kernel : BlockKernel) (input : ByteArray) :
     ∀ n, (states kernel input n).executionEnv =
@@ -269,7 +289,7 @@ private theorem padReturned_word_below (input : ByteArray)
     wordAt (PaddingTrace.padReturned input) address =
       wordAt (Main.initializedState input) address := by
   unfold wordAt
-  rw [PaddingTrace.padReturned_memory input hfit]
+  rw [PaddingTrace.padReturned_readWord input hfit]
   unfold Padding.paddedMemory Padding.sentinelMemory Padding.copiedMemory
   have hpadded := Padding.input_and_footer_fit input.size
   rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint,
@@ -335,11 +355,11 @@ private theorem hashAt32_of_hashWords
     (hw : CompressionSeamBridge.HashWordsAt input n s) :
     hashAt32 s = Compression.embedHash (hashStateAfter input n) := by
   unfold hashAt32 Compression.embedHash
-  rw [show wordAt s 544 = OutputTrace.hWord s 0 by rfl,
-    show wordAt s 576 = OutputTrace.hWord s 1 by rfl,
-    show wordAt s 608 = OutputTrace.hWord s 2 by rfl,
-    show wordAt s 640 = OutputTrace.hWord s 3 by rfl,
-    show wordAt s 672 = OutputTrace.hWord s 4 by rfl,
+  rw [show wordAt s 32 = OutputTrace.hWord s 0 by rfl,
+    show wordAt s 64 = OutputTrace.hWord s 1 by rfl,
+    show wordAt s 96 = OutputTrace.hWord s 2 by rfl,
+    show wordAt s 128 = OutputTrace.hWord s 3 by rfl,
+    show wordAt s 160 = OutputTrace.hWord s 4 by rfl,
     hw ⟨0, by omega⟩, hw ⟨1, by omega⟩, hw ⟨2, by omega⟩,
     hw ⟨3, by omega⟩, hw ⟨4, by omega⟩]
   rw [← hashArray_hashStateAfter input n]
@@ -354,6 +374,7 @@ private theorem hashWords_next (kernel : BlockKernel) (input : ByteArray)
   let h := hashStateAfter input n
   let ctx : BlockContext (states kernel input n) input n h := {
     calldata := states_calldata kernel input n
+    sentinel := states_sentinel kernel input hfit n
     messageBlock := messageBlockAt kernel input hfit n hn
     separated := blockSeparated input hfit n hn
     hash := hashAt32_of_hashWords hw }
@@ -414,6 +435,7 @@ def compressionRun (kernel : BlockKernel) (input : ByteArray)
     let h := hashStateAfter input i
     let ctx : BlockContext (states kernel input i) input i h := {
       calldata := states_calldata kernel input i
+      sentinel := states_sentinel kernel input hfit i
       messageBlock := messageBlockAt kernel input hfit i hi
       separated := blockSeparated input hfit i hi
       hash := hashAt32_of_hashWords
@@ -438,6 +460,7 @@ def compressionRun (kernel : BlockKernel) (input : ByteArray)
     have hpos := DriverTrace.blockCount_pos input
     let ctx : BlockContext (states kernel input 0) input 0 h := {
       calldata := states_calldata kernel input 0
+      sentinel := states_sentinel kernel input hfit 0
       messageBlock := messageBlockAt kernel input hfit 0 hpos
       separated := blockSeparated input hfit 0 hpos
       hash := hashAt32_of_hashWords
@@ -457,7 +480,7 @@ def compressionSeam (kernel : BlockKernel) (input : ByteArray)
 /-- Nonempty inputs use the compression loop; the caller proves the empty return separately. -/
 theorem correct_of_block_kernel (kernel : BlockKernel)
     (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 268)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 465)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   exact FastOutputResultBridge.correct_of_seam input hfit
