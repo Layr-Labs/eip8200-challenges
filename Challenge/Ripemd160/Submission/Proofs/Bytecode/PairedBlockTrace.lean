@@ -1,9 +1,10 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.TerminalRoundSite
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneGarbageSchedule
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PenultimateSite
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PenultimatePrefix
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineCoreSites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineBoundarySites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.SStartupPremises
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneGarbageSchedule
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -167,6 +168,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     qcode qfork qnp
   let initial : CoreFrame := ⟨PairedLaneWordRound.packCrypto lane lane, 0⟩
   let terminal := PairedAllInlineCoreTrace.corePrefixChain.eval q.memory initial
+  let penultimate := PairedAllInlineCoreTrace.corePenultimateChain.eval q.memory initial
   have gcore := PairedAllInlineCoreSites.gasSteps_core_prefix q initial rho
     hstack qrun qactive qcode qfork qnp
   have hentry :
@@ -182,15 +184,71 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
       (scheduled_ready_garbage s input i h hfit hi ctx)]
     rfl
   have hmemory : PairedTailTrace.resultMemory q.memory
-      (TerminalRound.modifiedFrame q.memory terminal.frame) =
+      (TerminalRound.modifiedFrame q.memory (PenultimateFinish.dirty78Frame q.memory penultimate.frame)) =
       PairedTailTrace.resultMemory q.memory (resultFrame s input i) := by
-    rw [TerminalRound.resultMemory_modified_eq_canonical _ _ rfl rfl, hterminal]
-  have gsuffix := TerminalRoundSite.gasSteps_suffix q terminal.frame
+    let garbage := PairedScheduleData.extractedGarbage s.memory (messagePointer i)
+    have hready := scheduled_ready_garbage s input i h hfit hi ctx
+    have hpacked : ∃ l r : PairedLaneCryptoBridge.CryptoLane,
+        penultimate = ⟨PairedLaneWordRound.packCrypto l r, PairedSynthCoreTrace.physicalKey 4⟩ := by
+      dsimp only [penultimate]
+      rw [PairedAllInlineCoreTrace.corePenultimateChain_eval]
+      have hbound (k : Nat) (hk : k < 80) :
+          garbage Crypto.Ripemd160.r[k]! % 2 ^ 32 = 0 ∧
+          garbage Crypto.Ripemd160.r[k]! < 2 ^ 96 ∧
+          garbage Crypto.Ripemd160.rP[k]! / 2 ^ 32 < 2 ^ 64 := by
+        have hb := PairedHelperBooleanTrace.algorithmIndex_bounds ⟨k, hk⟩
+        have hlo := hready.1 Crypto.Ripemd160.r[k]! hb.1
+        have hhi := hready.1 Crypto.Ripemd160.rP[k]! hb.2
+        refine ⟨hlo.1, hlo.2, ?_⟩
+        have : garbage Crypto.Ripemd160.rP[k]! < 2 ^ 96 := hhi.2
+        omega
+      have hp := PairedSynthCoreTrace.hoistedAlgorithmFold_crypto_garbage q.memory
+        (blockWords input i) (fun k => garbage Crypto.Ripemd160.r[k]!)
+        (fun k => garbage Crypto.Ripemd160.rP[k]! / 2 ^ 32) 78 (by decide) lane lane
+        (fun k hk => hbound k (by omega))
+        (fun k hk => algorithmMessage_of_garbage_add q.memory (blockWords input i)
+          garbage hready k (by omega))
+      dsimp only [initial]
+      rw [hp]
+      exact ⟨_, _, rfl⟩
+    rcases hpacked with ⟨l, r, hp⟩
+    have hmessage79 : PenultimateRound.Normal (algorithmMessage q.memory 79) := by
+      rw [algorithmMessage_of_garbage_add q.memory (blockWords input i) garbage hready 79 (by decide)]
+      have hr : Crypto.Ripemd160.r[79]! = 13 := by decide
+      have hrp : Crypto.Ripemd160.rP[79]! = 11 := by decide
+      have hg13 : garbage 13 = 0 := by
+        simp [garbage, PairedScheduleData.extractedGarbage, PairedScheduleData.extractedWordG,
+          PairedScheduleData.chunkG, PairedScheduleData.extractedWord]
+      have hg11 : garbage 11 = 0 := by
+        simp [garbage, PairedScheduleData.extractedGarbage, PairedScheduleData.extractedWordG,
+          PairedScheduleData.chunkG, PairedScheduleData.extractedWord]
+      rw [hr, hrp, hg13, hg11]
+      change PenultimateRound.Normal (UInt256.add
+        (packed32 (blockWords input i 13) (blockWords input i 11)) (UInt256.ofNat 0))
+      have hzero (x : UInt256) : UInt256.add x (UInt256.ofNat 0) = x := by
+        apply Challenge.EvmProof.Word.word_ext
+        change (x.val + 0).val = x.val.val
+        simp
+      rw [hzero]
+      exact PairedLaneCore.normalize_pack _ _
+    have hm := PenultimateFinish.resultMemory_dirty78_message q.memory l r
+      (PairedSynthCoreTrace.physicalKey 4) (by unfold PenultimateRound.Normal; decide) hmessage79
+    change PairedTailTrace.resultMemory q.memory
+        (TerminalRound.modifiedFrame q.memory
+          (PenultimateFinish.dirty78Frame q.memory (CoreFrame.mk (PairedLaneWordRound.packCrypto l r) (PairedSynthCoreTrace.physicalKey 4)).frame)) =
+      PairedTailTrace.resultMemory q.memory
+        (TerminalRound.canonicalFrame q.memory
+          (PairedAllInlineCoreTrace.inline78Block.eval q.memory
+            (CoreFrame.mk (PairedLaneWordRound.packCrypto l r) (PairedSynthCoreTrace.physicalKey 4))).frame) at hm
+    rw [← hp] at hm
+    rw [PairedAllInlineCoreTrace.prefix_after_penultimate, hterminal] at hm
+    exact hm
+  have gsuffix := PenultimateSite.gasSteps_suffix q penultimate.frame
     (UInt256.ofNat 402) (driverRest input i) hstack qrun qactive
     (valid_return q qcode) qcode qfork qnp
   rw [hmemory] at gsuffix
   have gsuffix' : GasSteps
-      {q with pc := UInt256.ofNat 4569, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] terminal (cache q.memory ++ rho)}
+      {q with pc := UInt256.ofNat 4519, stack := coreStack [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] penultimate (cache q.memory ++ rho)}
       (DriverTrace.compressReturned (resultState s input i) input i) := gsuffix
   exact gschedule'.trans (gstartup.trans ((gcore.cast hentry rfl).trans gsuffix'))
 
