@@ -52,8 +52,8 @@ theorem run_load (s : State) (c ai pbi pa pb delta dst ret : UInt256) (rest : Li
     (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (UInt256.ofNat 2368+delta).toNat 32) = s.activeWords) :
     runInstructions loadProgram
-      (framed s (UInt256.ofNat 5231) ([c,ai] ++ base pbi pa pb delta dst ret rest)) =
-      some (framed s (UInt256.ofNat 5242)
+      (framed s (UInt256.ofNat 5236) ([c,ai] ++ base pbi pa pb delta dst ret rest)) =
+      some (framed s (UInt256.ofNat 5247)
         ([maxWord,xword s.memory delta,c,ai] ++ base pbi pa pb delta dst ret rest)) := by
   have hc10 : rest.length+10 < 1024 := by omega
   have hc11 : rest.length+11 < 1024 := by omega
@@ -72,8 +72,8 @@ theorem run_finish_load (s : State) (part sum ai pbi pa pb delta dst ret : UInt2
     (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (UInt256.ofNat 2080+delta).toNat 32) = s.activeWords) :
     runInstructions finishLoadProgram
-      (framed s (UInt256.ofNat 5260) ([part,sum,ai] ++ base pbi pa pb delta dst ret rest)) =
-      some (framed s (UInt256.ofNat 5269)
+      (framed s (UInt256.ofNat 5265) ([part,sum,ai] ++ base pbi pa pb delta dst ret rest)) =
+      some (framed s (UInt256.ofNat 5274)
         ([MachineState.readWord s.memory (UInt256.ofNat 2080+delta).toNat+sum,sum,part,ai] ++
           base pbi pa pb delta dst ret rest)) := by
   have hc11 : rest.length+11 < 1024 := by omega
@@ -92,9 +92,9 @@ theorem run_finish_store (s : State) (v sum part ai pbi pa pb delta dst ret : UI
     (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (UInt256.ofNat 2080+delta).toNat 32) = s.activeWords) :
     runInstructions finishStoreProgram
-      (framed s (UInt256.ofNat 5269) ([v,sum,part,ai] ++ base pbi pa pb delta dst ret rest)) =
+      (framed s (UInt256.ofNat 5274) ([v,sum,part,ai] ++ base pbi pa pb delta dst ret rest)) =
       some (framed {s with memory := storeWord s.memory (UInt256.ofNat 2080+delta).toNat v}
-        (UInt256.ofNat 5278)
+        (UInt256.ofNat 5283)
         ([UInt256.lt v sum+part,ai] ++ base pbi pa pb delta dst ret rest)) := by
   have hc10 : rest.length+10 < 1024 := by omega
   have hc11 : rest.length+11 < 1024 := by omega
@@ -116,10 +116,10 @@ theorem run_finish (s : State) (x c ai pbi pa pb delta dst ret : UInt256) (rest 
     (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (UInt256.ofNat 2080+delta).toNat 32) = s.activeWords) :
     runInstructions finishProgram
-      (framed s (UInt256.ofNat 5260) ([partialCarry x ai c,x*ai+c,ai] ++ base pbi pa pb delta dst ret rest)) =
+      (framed s (UInt256.ofNat 5265) ([partialCarry x ai c,x*ai+c,ai] ++ base pbi pa pb delta dst ret rest)) =
       some (framed {s with memory := (storeWord s.memory (UInt256.ofNat 2080+delta).toNat
           (macSum x ai (MachineState.readWord s.memory (UInt256.ofNat 2080+delta).toNat) c))}
-        (UInt256.ofNat 5278)
+        (UInt256.ofNat 5283)
         ([macCarry x ai (MachineState.readWord s.memory (UInt256.ofNat 2080+delta).toNat) c,ai] ++
           base pbi pa pb delta dst ret rest)) := by
   let t := MachineState.readWord s.memory (UInt256.ofNat 2080+delta).toNat
@@ -139,14 +139,14 @@ theorem run_cross (s : State) (c ai pbi pa pb delta dst ret : UInt256) (rest : L
     (ht : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (UInt256.ofNat 2080+delta).toNat 32) = s.activeWords) :
     runInstructions crossProgram
-      (framed s (UInt256.ofNat 5231) ([c,ai] ++ base pbi pa pb delta dst ret rest)) =
+      (framed s (UInt256.ofNat 5236) ([c,ai] ++ base pbi pa pb delta dst ret rest)) =
       some (framed {s with memory := (storeWord s.memory (UInt256.ofNat 2080+delta).toNat
           (macSum (xword s.memory delta) ai (MachineState.readWord s.memory (UInt256.ofNat 2080+delta).toNat) c))}
-        (UInt256.ofNat 5278)
+        (UInt256.ofNat 5283)
         ([macCarry (xword s.memory delta) ai (MachineState.readWord s.memory (UInt256.ofNat 2080+delta).toNat) c,ai] ++
           base pbi pa pb delta dst ret rest)) := by
   have hl := run_load s c ai pbi pa pb delta dst ret rest hcap ha
-  have hp := L2.run_product s (UInt256.ofNat 5242) (xword s.memory delta) ai c
+  have hp := L2.run_product s (UInt256.ofNat 5247) (xword s.memory delta) ai c
     (base pbi pa pb delta dst ret rest)
     (by simp only [base, List.length_append, List.length_cons, List.length_nil]; omega)
   have hf := run_finish s (xword s.memory delta) c ai pbi pa pb delta dst ret rest hcap ht

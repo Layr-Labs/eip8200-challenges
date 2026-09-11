@@ -29,12 +29,16 @@ theorem run_cell (s : State) (pc off t c ai pbi pa pb delta dst ret : UInt256)
           ai (MachineState.readWord s.memory t.toNat) c,ai] ++ base pbi pa pb delta dst ret rest)) := by
   let x := MachineState.readWord s.memory (UInt256.ofNat 2400+off).toNat
   have hl := StagedOperand.run_load s pc off c ai pbi pa pb delta dst ret rest hcap ha
-  have hf := CiosCachedFused.run_fused s (pc+UInt256.ofNat 6) x ai c t t
+  have hp := L2.run_product s (pc+UInt256.ofNat 6) x ai c
+    (base pbi pa pb delta dst ret rest)
+    (by simp only [base, List.length_append, List.length_cons, List.length_nil]; omega)
+  have hf := L2.run_finish s (advancePC 18 (pc+UInt256.ofNat 6)) x ai c t t
     (base pbi pa pb delta dst ret rest)
     (by simp only [base, List.length_append, List.length_cons, List.length_nil]; omega) ht ht
-  have hpc : (pc+UInt256.ofNat 6)+UInt256.ofNat 32 = pc+UInt256.ofNat 38 := by
+  have hpc : advancePC 18 (pc+UInt256.ofNat 6)+UInt256.ofNat 14 = pc+UInt256.ofNat 38 := by
     simp [advancePC, succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-  have h := runInstructions_append_some _ _ _ _ _ hl hf
+  have h := runInstructions_append_some _ _ _ _ _
+    (runInstructions_append_some _ _ _ _ _ hl hp) hf
   simpa only [StagedOperand.l1Program, hpc, base, x, storeWord,
     List.cons_append, List.nil_append] using h
 
@@ -44,7 +48,7 @@ def partState (s : State) (mem : ByteArray) (ai : UInt256) (i k pc : Nat)
   stateAt s p.memory pc ([p.carry,ai] ++ base pbi pa pb delta dst ret rest)
 
 def cellBlock (j : Nat) (hj : 1 ≤ j) (hj8 : j < 8) :
-    Block Artifact.submissionArtifact .Osaka (4162+38*j)
+    Block Artifact.submissionArtifact .Osaka (4166+38*j)
       (StagedOperand.l1Program (UInt256.ofNat (32*(7-j))) (UInt256.ofNat (tAddr 8 j))) := by
   interval_cases j
   · exact CarryRowBlocks.l1Mac1
@@ -61,8 +65,8 @@ theorem run_part (s : State) (mem : ByteArray) (ai : UInt256) (i k : Nat)
     (hk : 2 ≤ k) (hjk : i+k < 8) :
     runInstructions (StagedOperand.l1Program (UInt256.ofNat (32*(7-(i+k))))
         (UInt256.ofNat (tAddr 8 (i+k))))
-      (partState s mem ai i k (4162+38*(i+k)) pbi pa pb delta dst ret rest) =
-      some (partState s mem ai i (k+1) (4162+38*(i+(k+1))) pbi pa pb delta dst ret rest) := by
+      (partState s mem ai i k (4166+38*(i+k)) pbi pa pb delta dst ret rest) =
+      some (partState s mem ai i (k+1) (4166+38*(i+(k+1))) pbi pa pb delta dst ret rest) := by
   let p := products mem (coefficient mem ai i) ai i k
   have hD : (UInt256.ofNat 2400+UInt256.ofNat (32*(7-(i+k)))).toNat = 2368+32*(8-(i+k)) := by
     rw [Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -80,11 +84,11 @@ theorem run_part (s : State) (mem : ByteArray) (ai : UInt256) (i k : Nat)
   have ht : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (tAddr 8 (i+k)) 32) = s.activeWords :=
     EarlyCsub.activeWords_fix s _ 32 (by decide) (by simp only [tAddr]; omega) hact
-  have h := run_cell {s with memory := p.memory} (UInt256.ofNat (4162+38*(i+k)))
+  have h := run_cell {s with memory := p.memory} (UInt256.ofNat (4166+38*(i+k)))
     (UInt256.ofNat (32*(7-(i+k)))) (UInt256.ofNat (tAddr 8 (i+k))) p.carry ai
     pbi pa pb delta dst ret rest hcap (by simpa only [hD] using ha) (by simpa only [hT] using ht)
   rw [hD, hT, hread, Challenge.EvmProof.Word.ofNat_add_mod] at h
-  have hpc : 4162+38*(i+k)+38 = 4162+38*(i+(k+1)) := by omega
+  have hpc : 4166+38*(i+k)+38 = 4166+38*(i+(k+1)) := by omega
   simpa only [partState, products, stateAt, framed, p, hpc] using h
 
 def gasSteps_part (s : State) (mem : ByteArray) (ai : UInt256) (i k : Nat)
@@ -96,10 +100,10 @@ def gasSteps_part (s : State) (mem : ByteArray) (ai : UInt256) (i k : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (partState s mem ai i k (4162+38*(i+k)) pbi pa pb delta dst ret rest)
-      (partState s mem ai i (k+1) (4162+38*(i+(k+1))) pbi pa pb delta dst ret rest) :=
+      (partState s mem ai i k (4166+38*(i+k)) pbi pa pb delta dst ret rest)
+      (partState s mem ai i (k+1) (4166+38*(i+(k+1))) pbi pa pb delta dst ret rest) :=
   (cellBlock (i+k) (by omega) hjk).steps
-    (EarlyCsub.environment (partState s mem ai i k (4162+38*(i+k)) pbi pa pb delta dst ret rest)
+    (EarlyCsub.environment (partState s mem ai i k (4166+38*(i+k)) pbi pa pb delta dst ret rest)
       hcode hfork hrun hnp) rfl
     (run_part s mem ai i k pbi pa pb delta dst ret rest hcap hact hk hjk)
 
@@ -111,11 +115,11 @@ def gasSteps_suffix (s : State) (mem : ByteArray) (ai : UInt256) (i : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (partState s mem ai i 2 (4162+38*(i+2)) pbi pa pb delta dst ret rest)
-      (partState s mem ai i (8-i) 4466 pbi pa pb delta dst ret rest) := by
+      (partState s mem ai i 2 (4166+38*(i+2)) pbi pa pb delta dst ret rest)
+      (partState s mem ai i (8-i) 4470 pbi pa pb delta dst ret rest) := by
   have h : ∀ k, i+(2+k) ≤ 8 → Challenge.EvmProof.GasSteps
-      (partState s mem ai i 2 (4162+38*(i+2)) pbi pa pb delta dst ret rest)
-      (partState s mem ai i (2+k) (4162+38*(i+(2+k))) pbi pa pb delta dst ret rest) := by
+      (partState s mem ai i 2 (4166+38*(i+2)) pbi pa pb delta dst ret rest)
+      (partState s mem ai i (2+k) (4166+38*(i+(2+k))) pbi pa pb delta dst ret rest) := by
     intro k
     induction k with
     | zero => intro _; exact Challenge.EvmProof.GasSteps.refl _

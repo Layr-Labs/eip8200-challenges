@@ -37,7 +37,7 @@ appended path runs three loops and returns:
    flagless square-and-multiply steps producing `ACC = φ(b ^ e)`, the final
    `MonPro(ACC, 1)` and the `RETURN`.
 
-`MONPRO` (pc 4463) and `ADDMOD` (pc 2224) are developed in `Fast.Monpro` and
+`MONPRO` (pc 4467) and `ADDMOD` (pc 2224) are developed in `Fast.Monpro` and
 `Fast.Csub`; here they enter only through the abstract `Subroutines` contract,
 so this module does not depend on those developments.
 -/
@@ -134,7 +134,7 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
   [UInt256.ofNat (32 * n), UInt256.ofNat n, UInt256.ofNat bsize,
    UInt256.ofNat esize, UInt256.ofNat msize]
 
-/-- The `MONPRO` call state, pc 4463, stack `[pa, pb, pd, ret] ++ tail`. -/
+/-- The `MONPRO` call state, pc 4467, stack `[pa, pb, pd, ret] ++ tail`. -/
 def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
   { s with pc := UInt256.ofNat 4053
@@ -276,7 +276,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
   /-- `ADDMOD` preserves the configuration words. -/
   amFrame : ∀ (pa pb pd : Nat) (mem : ByteArray), pd ≤ 1536 →
     Frame mem n bsize minv → Frame (amMem pa pb pd mem) n bsize minv
-  /-- `MONPRO` at pc 4463. -/
+  /-- `MONPRO` at pc 4467. -/
   monpro : ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256)
     (mem : ByteArray) (a b : Nat), tail.length ≤ 998 →
     32 ≤ pa → pa + 32 * n ≤ 2048 → 32 ≤ pb → pb + 32 * n ≤ 2048 →

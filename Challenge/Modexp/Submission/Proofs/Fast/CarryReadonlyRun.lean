@@ -22,7 +22,7 @@ theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
     runInstructions CarryRowPrograms.middle
       (CiosCached.midState s mem c bi pa pb n i inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-    some (CiosCached.l2At 4512 s (midMem1 mem c) (overflow mem c)
+    some (CiosCached.l2At 4516 s (midMem1 mem c) (overflow mem c)
       (rowMu mem n) (rowC0 mem n) pa pb n i 0 inv m0
       (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
   have hmem := middle_agree mem mem (refl mem) c

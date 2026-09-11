@@ -13,18 +13,14 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore SquareInit StagedOperand SquarePrepared
 
-theorem guard_iff (mem : ByteArray) (pa pb n : Nat) (hn : n ≤ 8)
+theorem guard_iff (mem : ByteArray) (pa pb n : Nat) (_hn : n ≤ 8)
     (hpa : pa < 2^256) (hpb : pb < 2^256)
-    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32*n)) :
-    UInt256.isTrue (SquareSelect.guard mem (UInt256.ofNat pa) (UInt256.ofNat pb)) ↔ n = 8 ∧ pa = pb := by
-  have he : 256 = 32*n ↔ n = 8 := by omega
-  simp only [SquareSelect.guard, hs32, UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Nat.mod_eq_of_lt hpa, Nat.mod_eq_of_lt hpb, Nat.mod_eq_of_lt (show 32*n < 2^256 by omega)]
-  change UInt256.isTrue (UInt256.land (if 256=32*n then UInt256.ofNat 1 else UInt256.ofNat 0)
-    (if pb=pa then UInt256.ofNat 1 else UInt256.ofNat 0)) ↔ _
-  simp only [he]
-  by_cases hn8 : n=8 <;> by_cases hp : pa=pb <;>
-    simp [hn8, hp, Eq.comm, UInt256.land, UInt256.isTrue, UInt256.toNat, Fin.land] <;> decide
+    (_hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32*n)) :
+    UInt256.isTrue (SquareSelect.guard mem (UInt256.ofNat pa) (UInt256.ofNat pb)) ↔ pa = pb := by
+  simp only [SquareSelect.guard, UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt hpa, Nat.mod_eq_of_lt hpb]
+  by_cases hp : pa=pb <;>
+    simp [hp, Eq.comm, UInt256.isTrue, UInt256.toNat] <;> decide
 
 def args (mem : ByteArray) (pa n : Nat) (dst ret : UInt256) (rest : List UInt256) : List UInt256 :=
   MachineState.readWord mem 2880 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 ::
@@ -43,7 +39,7 @@ def gasSteps_header (s : State) (mem : ByteArray) (pa pb n : Nat) (dst ret : UIn
     (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32*n-32))
     (env : Environment Artifact.submissionArtifact .Osaka s) :
     Challenge.EvmProof.GasSteps (Cios2Dispatch.dispatchState s mem pa pb dst ret rest)
-      {out s mem pa pb n dst ret rest with pc := UInt256.ofNat 4164} := by
+      {out s mem pa pb n dst ret rest with pc := UInt256.ofNat 4168} := by
   have hn8 : n ≤ 8 := by rcases hn with rfl | rfl <;> decide
   have hn2 : 2 ≤ n := by rcases hn with rfl | rfl <;> decide
   have hdispatch : Challenge.EvmProof.GasSteps (Cios2Dispatch.dispatchState s mem pa pb dst ret rest)
@@ -65,8 +61,8 @@ def gasSteps_header (s : State) (mem : ByteArray) (pa pb n : Nat) (dst ret : UIn
     hread 2880 (Or.inr (by decide)), hread 96 (Or.inl (by decide)),
     hread 64 (Or.inl (by decide)), hread 32 (Or.inl (by decide))] using he
 
-def routerBlock : Block Artifact.submissionArtifact .Osaka 4164 SquareRoute.headerProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3145 3 4164 SquareRoute.headerProgram
+def routerBlock : Block Artifact.submissionArtifact .Osaka 4168 SquareRoute.headerProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3149 3 4168 SquareRoute.headerProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def gasSteps_route (s : State) (mem : ByteArray) (route : UInt256) (rest : List UInt256)
@@ -74,7 +70,7 @@ def gasSteps_route (s : State) (mem : ByteArray) (route : UInt256) (rest : List 
     (hr : MachineState.readWord mem 2720 = route)
     (hj : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode route.toNat = true)
     (env : Environment Artifact.submissionArtifact .Osaka s) :
-    Challenge.EvmProof.GasSteps (stateAt s mem 4164 rest) (framed {s with memory := mem} route rest) :=
+    Challenge.EvmProof.GasSteps (stateAt s mem 4168 rest) (framed {s with memory := mem} route rest) :=
   routerBlock.steps (env.transfer rfl rfl) rfl
     (SquareRoute.run_header s mem route rest hcap hact hr (by rw [env.code]; exact hj))
 

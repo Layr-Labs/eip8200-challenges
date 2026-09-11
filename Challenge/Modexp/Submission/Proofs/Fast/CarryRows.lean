@@ -41,12 +41,12 @@ opaque gasSteps_l1Four (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 91 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 2048) (hsnapshot : StagedOperand.Snapshot mem pa 4) :
     Challenge.EvmProof.GasSteps
-      (l1At 4198 s mem bi pa pb 4 i 1 pdst ret rest)
+      (l1At 4202 s mem bi pa pb 4 i 1 pdst ret rest)
       (midState s (l1Step mem bi pa 4 4).memory (l1Step mem bi pa 4 4).carry bi
         pa pb 4 i pdst ret rest) :=
   (gasSteps_l1Dispatch4 s mem bi pa pb i 1 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4352 64 2176 l1Mac5 s mem bi pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4390 32 2144 l1Mac6 s mem bi pa pb 4 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4356 64 2176 l1Mac5 s mem bi pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4394 32 2144 l1Mac6 s mem bi pa pb 4 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
   gasSteps_l1Last s mem bi pa pb 4 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa (by omega) hsnapshot
 
 opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
@@ -59,16 +59,16 @@ opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 91 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 2048) (hsnapshot : StagedOperand.Snapshot mem pa 8) :
     Challenge.EvmProof.GasSteps
-      (l1At 4198 s mem bi pa pb 8 i 1 pdst ret rest)
+      (l1At 4202 s mem bi pa pb 8 i 1 pdst ret rest)
       (midState s (l1Step mem bi pa 8 8).memory (l1Step mem bi pa 8 8).carry bi
         pa pb 8 i pdst ret rest) :=
   (gasSteps_l1Dispatch8 s mem bi pa pb i 1 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4200 192 2304 l1Mac1 s mem bi pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4238 160 2272 l1Mac2 s mem bi pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4276 128 2240 l1Mac3 s mem bi pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4314 96 2208 l1Mac4 s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4352 64 2176 l1Mac5 s mem bi pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4390 32 2144 l1Mac6 s mem bi pa pb 8 i 6 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4204 192 2304 l1Mac1 s mem bi pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4242 160 2272 l1Mac2 s mem bi pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4280 128 2240 l1Mac3 s mem bi pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4318 96 2208 l1Mac4 s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4356 64 2176 l1Mac5 s mem bi pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4394 32 2144 l1Mac6 s mem bi pa pb 8 i 6 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
   gasSteps_l1Last s mem bi pa pb 8 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa (by omega) hsnapshot
 
 opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -81,15 +81,15 @@ opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hact : 91 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32) :
     Challenge.EvmProof.GasSteps
-      (l2At 4512 s mid bi mu c0 pa pb 4 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l2At 4516 s mid bi mu c0 pa pb 4 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (tailState s (l2Step mid mu c0 4 3).memory
         (l2Step mid mu c0 4 3).carry mu bi pa pb 4 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) := by
   have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest).length ≤ 1005 := by
     simp only [List.length_cons]; omega
   exact (gasSteps_l2Dispatch4 s mid bi mu c0 pa pb i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
   (gasSteps_l2Join s mid bi mu c0 pa pb 4 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
-  (gasSteps_extraL2 1 4658 64 2176 2208 l2Mac4 s mid bi mu c0 pa pb 4 i 0 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
-  (gasSteps_extraL2 2 4692 32 2144 2176 l2Mac5 s mid bi mu c0 pa pb 4 i 1 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  (gasSteps_extraL2 1 4662 64 2176 2208 l2Mac4 s mid bi mu c0 pa pb 4 i 0 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  (gasSteps_extraL2 2 4696 32 2144 2176 l2Mac5 s mid bi mu c0 pa pb 4 i 1 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
   gasSteps_l2Final s mid bi mu c0 pa pb 4 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide)
 
 opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -102,19 +102,19 @@ opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hact : 91 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32) :
     Challenge.EvmProof.GasSteps
-      (l2At 4512 s mid bi mu c0 pa pb 8 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l2At 4516 s mid bi mu c0 pa pb 8 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (tailState s (l2Step mid mu c0 8 7).memory
         (l2Step mid mu c0 8 7).carry mu bi pa pb 8 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) := by
   have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest).length ≤ 1005 := by
     simp only [List.length_cons]; omega
   exact (gasSteps_l2Dispatch8 s mid bi mu c0 pa pb i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
-(gasSteps_l2Mac 4515 1 192 2304 2336 l2Mac0 s mid bi mu c0 pa pb 8 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 4551 1 160 2272 2304 l2Mac1 s mid bi mu c0 pa pb 8 i 1 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 4587 1 128 2240 2272 l2Mac2 s mid bi mu c0 pa pb 8 i 2 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_extraL2 0 4623 96 2208 2240 l2Mac3 s mid bi mu c0 pa pb 8 i 3 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+(gasSteps_l2Mac 4519 1 192 2304 2336 l2Mac0 s mid bi mu c0 pa pb 8 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 4555 1 160 2272 2304 l2Mac1 s mid bi mu c0 pa pb 8 i 1 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 4591 1 128 2240 2272 l2Mac2 s mid bi mu c0 pa pb 8 i 2 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_extraL2 0 4627 96 2208 2240 l2Mac3 s mid bi mu c0 pa pb 8 i 3 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
   (gasSteps_l2Join s mid bi mu c0 pa pb 8 i 4 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
-  (gasSteps_extraL2 1 4658 64 2176 2208 l2Mac4 s mid bi mu c0 pa pb 8 i 4 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
-  (gasSteps_extraL2 2 4692 32 2144 2176 l2Mac5 s mid bi mu c0 pa pb 8 i 5 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  (gasSteps_extraL2 1 4662 64 2176 2208 l2Mac4 s mid bi mu c0 pa pb 8 i 4 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  (gasSteps_extraL2 2 4696 32 2144 2176 l2Mac5 s mid bi mu c0 pa pb 8 i 5 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
   gasSteps_l2Final s mid bi mu c0 pa pb 8 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide)
 
 /-- One complete four-limb row, stopping at the common tail block. -/

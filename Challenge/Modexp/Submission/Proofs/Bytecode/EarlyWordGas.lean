@@ -19,22 +19,22 @@ def steps_hit {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hdata : template.executionEnv.calldata = input)
     (hmatch : WindowTwentyOneInput.Matches input) :
-    GasSteps (framed template (UInt256.ofNat 4947) [])
-      (framed template (UInt256.ofNat 4808) (WindowTwentyOnePositive.routeStack input)) := by
+    GasSteps (framed template (UInt256.ofNat 4951) [])
+      (framed template (UInt256.ofNat 4812) (WindowTwentyOnePositive.routeStack input)) := by
   have hg := run_guard template input hdata (jump_env env paths.missJump)
   rw [if_pos ((guard_zero_iff input).mpr hmatch)] at hg
   have hh := run_hit template input (jump_env env paths.hitJump)
   exact (paths.guard.steps
-    (env.transfer (t := framed template (UInt256.ofNat 4947) []) rfl rfl) rfl hg).trans
+    (env.transfer (t := framed template (UInt256.ofNat 4951) []) rfl rfl) rfl hg).trans
     (paths.hit.steps
-      (env.transfer (t := framed template (UInt256.ofNat 4974) (headerStack input)) rfl rfl) rfl hh)
+      (env.transfer (t := framed template (UInt256.ofNat 4978) (headerStack input)) rfl rfl) rfl hh)
 
 /-- Every width miss reaches exactly the old entry with an empty stack. -/
 def steps_miss {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hdata : template.executionEnv.calldata = input)
     (hmatch : ¬ WindowTwentyOneInput.Matches input) :
-    GasSteps (framed template (UInt256.ofNat 4947) []) (framed template (UInt256.ofNat 1233) []) := by
+    GasSteps (framed template (UInt256.ofNat 4951) []) (framed template (UInt256.ofNat 1233) []) := by
   have hg := run_guard template input hdata (jump_env env paths.missJump)
   have hn : (WindowTwentyOneInput.guardDiff input).toNat ≠ 0 := by
     intro hz
@@ -42,8 +42,8 @@ def steps_miss {artifact : ProgramArtifact} {fork : Fork}
   rw [if_neg hn] at hg
   have hm := run_miss template input (jump_env env paths.legacyJump)
   exact (paths.guard.steps
-    (env.transfer (t := framed template (UInt256.ofNat 4947) []) rfl rfl) rfl hg).trans
+    (env.transfer (t := framed template (UInt256.ofNat 4951) []) rfl rfl) rfl hg).trans
     (paths.miss.steps
-      (env.transfer (t := framed template (UInt256.ofNat 4995) (headerStack input)) rfl rfl) rfl hm)
+      (env.transfer (t := framed template (UInt256.ofNat 4999) (headerStack input)) rfl rfl) rfl hm)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordGas

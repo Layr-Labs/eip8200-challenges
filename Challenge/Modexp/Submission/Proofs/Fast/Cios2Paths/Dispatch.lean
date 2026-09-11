@@ -23,7 +23,7 @@ private def template : List Instr :=
    .push 2 256,
    .op .EQ,
    .op .OR,
-   .push 2 5003,
+   .push 2 5007,
    .op .JUMPI,
    .push 2 1784,
    .op .JUMP]
@@ -97,10 +97,10 @@ def cios2DispatchGuard :
    pushAt 7 2 256,
    opAt 8 .EQ,
    opAt 9 .OR,
-   pushAt 10 2 5003,
+   pushAt 10 2 5007,
    opAt 11 .JUMPI]
 
-/-- Full fallback path (indices 2670..2683, pc 4484..4506). -/
+/-- Full fallback path (indices 2670..2683, pc 4488..4510). -/
 def cios2Dispatch :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   cios2DispatchGuard ++

@@ -11,7 +11,7 @@ set_option maxHeartbeats 4000000
 # The `ADDMOD` and `CSUB` subroutines of the appended Montgomery path
 
 `ADDMOD` starts at PC 2137 and falls through into `CSUB` at PC 2220.
-`CSUB` enters at PC 4926 and uses the generic loop at PC 2144 for every width.
+`CSUB` enters at PC 4930 and uses the generic loop at PC 2144 for every width.
 
 `ADDMOD` is entered with stack `[pa, pb, pd, ret]`.  It adds the `n`-limb
 big-endian blocks at `pa` and `pb` limb by limb from the least significant
@@ -289,14 +289,14 @@ def amTailState (s : State) (memory : ByteArray) (pa pb n j : Nat)
 /-- Entry of `CSUB` (pc 2220) with stack `[pd, ret]`. -/
 def subEntryState (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4926
+  { s with pc := UInt256.ofNat 4930
            stack := [pdst, ret] ++ rest
            memory := memory }
 
 /-- Entry of the high-limb guard with the original destination and return stack. -/
 def csEntryState (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4898, stack := [pdst, ret] ++ rest, memory := memory }
+  { s with pc := UInt256.ofNat 4902, stack := [pdst, ret] ++ rest, memory := memory }
 
 set_option linter.unusedSimpArgs false in
 theorem run_amLoopExit (s : State) (memory : ByteArray) (pa pb n j : Nat)
@@ -378,8 +378,8 @@ theorem run_amTail (s : State) (memory : ByteArray) (pa pb n j : Nat)
   have h8224 : (2080 : UInt256).toNat = 2080 := by decide
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
       s.activeWords := activeWords_fix s 2080 32 (by decide) (by omega) hact
-  have h3811 : (4898 : UInt256).toNat = 4898 := by decide
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4898 = true := by
+  have h3811 : (4902 : UInt256).toNat = 4902 := by decide
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4902 = true := by
     rw [hcode]; exact jumpDest4976
   simp (config := { maxSteps := 400000 })
     [blk1662, opAt, pushAt, wfOp,

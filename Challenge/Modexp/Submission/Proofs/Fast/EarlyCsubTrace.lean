@@ -36,7 +36,7 @@ def gasSteps_csub (s : State) (memory : ByteArray) (n : Nat)
       rw [csStep_readWord_disjoint memory n 2784 (by omega) (by omega) n le_rfl] at hs32
       exact hs32
     have hk := copyBlock.steps
-      (environment (atState s memory 4916 pdst ret rest) hcode hfork hrun hnp) rfl
+      (environment (atState s memory 4920 pdst ret rest) hcode hfork hrun hnp) rfl
       (run_copy s memory n pdst ret rest hcap hact hn hn32 hcode hs hdstFit hjump)
     simpa only [csReturnedState,if_pos hskip,copiedState] using hc.trans hk
   · rw [if_neg hskip] at hc

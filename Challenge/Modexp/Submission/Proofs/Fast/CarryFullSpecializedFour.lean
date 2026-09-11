@@ -32,14 +32,14 @@ opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
     (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * 4))
     (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * 4))
     (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * 4 - 32))
-    (hminv : inverseInvariant mem 4) :
+    (hminv : inverseInvariant mem 4) (hneq : pa ≠ pb) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (mpCsubState s (rowsCarry (mpZeroed s (before mem pa pb 4) 4) pa pb 4 4) pdst ret rest) := by
   have env := EarlyCsub.environment s hcode hfork hrun hnp
   have hguard : ¬UInt256.isTrue (SquareSelect.guard mem (UInt256.ofNat pa) (UInt256.ofNat pb)) := by
     rw [SquareEntry.guard_iff mem pa pb 4 (by decide) (by omega) (by omega) hs32]
-    simp
+    exact hneq
   have hctrl := SquareEntry.control_before mem pa pb 4 (Or.inl rfl) hguard
   have hread (addr : Nat) (hd : addr+32 ≤ 2048 ∨ 2752 ≤ addr) :
       MachineState.readWord (before mem pa pb 4) addr = MachineState.readWord mem addr :=
@@ -54,13 +54,13 @@ opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
   refine (SquareEntry.gasSteps_header s mem pa pb 4 pdst ret rest hcap hact (Or.inl rfl)
     hpa hpaFit hpb hpbFit hcds hs32 hml env).trans ?_
   have hr : Challenge.EvmProof.GasSteps
-      {SquareEntry.out s mem pa pb 4 pdst ret rest with pc := UInt256.ofNat 4164}
+      {SquareEntry.out s mem pa pb 4 pdst ret rest with pc := UInt256.ofNat 4168}
       (SquareEntry.out s mem pa pb 4 pdst ret rest) := by
-    exact SquareEntry.gasSteps_route s (mpZeroed s (before mem pa pb 4) 4) (UInt256.ofNat 4169)
+    exact SquareEntry.gasSteps_route s (mpZeroed s (before mem pa pb 4) 4) (UInt256.ofNat 4173)
       (SquareEntry.out s mem pa pb 4 pdst ret rest).stack
       (by simp only [SquareEntry.out, outState, SquareEntry.args, List.length_append, List.length_cons, List.length_nil]; omega)
       hact (hctrl.zeroed s 4 (by decide)).route
-      (Artifact.isValidJumpDest_index 3148 (by rfl)) env
+      (Artifact.isValidJumpDest_index 3152 (by rfl)) env
   refine hr.trans ?_
   exact gasSteps_rowsFour s (before mem pa pb 4) pa pb
     (MachineState.readWord mem 2880) (MachineState.readWord mem 2816)

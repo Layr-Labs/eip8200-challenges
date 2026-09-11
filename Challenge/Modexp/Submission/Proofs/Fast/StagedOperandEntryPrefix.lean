@@ -28,12 +28,12 @@ def shuffleProgram : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push 1 143,
    .op .MUL,
-   .push 2 4514,
+   .push 2 4518,
    .op .ADD,
    .op (.Swap ⟨0, by decide⟩),
    .push 1 152,
    .op .MUL,
-   .push 2 4200,
+   .push 2 4204,
    .op .ADD,
    .op (.Swap ⟨0, by decide⟩),
    .op (.Swap ⟨3, by decide⟩),
@@ -155,8 +155,8 @@ theorem run_shuffle (s : State) (pa pb dst ret value inverse aEnd tailPointer lo
         stack := [delta, negative32, low32, aEnd, inverse, value, tailPointer, low96, low64, pa, pb, dst, ret] ++ rest} =
     some {s with
         pc := UInt256.ofNat 4138
-        stack := [pa, pb, UInt256.ofNat 4200 + UInt256.ofNat 152 * delta, negative32, allOnes,
-        UInt256.ofNat 4514 + UInt256.ofNat 143 * delta, inverse, value, tailPointer, low96, low64, low32, aEnd, dst, ret] ++ rest} := by
+        stack := [pa, pb, UInt256.ofNat 4204 + UInt256.ofNat 152 * delta, negative32, allOnes,
+        UInt256.ofNat 4518 + UInt256.ofNat 143 * delta, inverse, value, tailPointer, low96, low64, low32, aEnd, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega

@@ -30,16 +30,16 @@ theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
 def checkProgram : List Instr :=
   [.op .JUMPDEST, .push 0 0, .op .MLOAD, .push 2 2112, .op .MLOAD,
    .op .LT, .op .ISZERO, .push 2 2080, .op .MLOAD, .op .OR,
-   .push 2 4926, .op .JUMPI]
+   .push 2 4930, .op .JUMPI]
 def copyProgram : List Instr :=
   [.push 2 2112, .push 2 2784, .op .MLOAD,
    .op (.Swap ⟨1, by decide⟩), .op .MCOPY, .op .JUMP]
 
-def checkBlock : Block Artifact.submissionArtifact .Osaka 4898 checkProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3727 12 4898 checkProgram
+def checkBlock : Block Artifact.submissionArtifact .Osaka 4902 checkProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3745 12 4902 checkProgram
     (by decide) (by rfl) (by rfl) (by decide)
-def copyBlock : Block Artifact.submissionArtifact .Osaka 4916 copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3739 6 4916 copyProgram
+def copyBlock : Block Artifact.submissionArtifact .Osaka 4920 copyProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3757 6 4920 copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def atState (s : State) (mem : ByteArray) (pc : Nat) (dst ret : UInt256)
@@ -56,8 +56,8 @@ def copiedState (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256)
 theorem run_check (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hact : 91 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
-    runInstructions checkProgram (atState s mem 4898 dst ret rest) =
-      some (atState s mem (if Skip mem then 4916 else 4926) dst ret rest) := by
+    runInstructions checkProgram (atState s mem 4902 dst ret rest) =
+      some (atState s mem (if Skip mem then 4920 else 4930) dst ret rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega
@@ -66,8 +66,8 @@ theorem run_check (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List
   have h0 : ({val := 0} : UInt256).toNat = 0 := rfl
   have h8256 : (2112 : UInt256).toNat = 2112 := by decide
   have h8224 : (2080 : UInt256).toNat = 2080 := by decide
-  have heq4978 : (4926 : UInt256) = UInt256.ofNat 4926 := by decide
-  have h4978 : (4926 : UInt256).toNat = 4926 := by decide
+  have heq4978 : (4930 : UInt256) = UInt256.ofNat 4930 := by decide
+  have h4978 : (4930 : UInt256).toNat = 4930 := by decide
   have ha0 := activeWords_fix s 0 32 (by decide) (by omega) hact
   have haT := activeWords_fix s 2112 32 (by decide) (by omega) hact
   have haN := activeWords_fix s 2080 32 (by decide) (by omega) hact
@@ -89,7 +89,7 @@ theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256) (re
     (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32*n))
     (hdstFit : dst.toNat+32*n ≤ 2912)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true) :
-    runInstructions copyProgram (atState s mem 4916 dst ret rest) =
+    runInstructions copyProgram (atState s mem 4920 dst ret rest) =
       some (copiedState s mem n dst ret rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega
