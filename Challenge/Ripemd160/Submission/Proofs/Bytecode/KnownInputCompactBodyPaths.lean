@@ -23,7 +23,7 @@ def prePath : List Located :=
 def postPath : List Located :=
   [pushAt 2877 0 0,
    opAt 2878 .MLOAD,
-   pushAt 2879 1 224,
+   pushAt 2879 1 24,
    opAt 2880 .SHR,
    pushAt 2881 1 32,
    opAt 2882 .MSTORE,

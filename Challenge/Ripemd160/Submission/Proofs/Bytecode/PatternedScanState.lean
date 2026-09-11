@@ -82,7 +82,7 @@ private def scanSuffix : List YulEvmCompiler.Instr :=
 private theorem scanBefore_length : scanBefore.length = 51 := by
   simp [scanBefore, scanPrefix]
 
-private theorem scanSuffix_length : scanSuffix.length = 4114 := by
+private theorem scanSuffix_length : scanSuffix.length = 4112 := by
   simp [scanSuffix]
 
 private theorem artifact_scan_split :
