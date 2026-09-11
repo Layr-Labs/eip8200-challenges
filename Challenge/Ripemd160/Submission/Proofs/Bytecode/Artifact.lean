@@ -9,7 +9,7 @@ set_option maxHeartbeats 2000000
 # Structural certificate for the frozen RIPEMD-160 artifact
 
 The exact candidate has 5216 bytes, 4102 instructions, and SHA-256
-`d8f1693a2796fcacc4a41ae7c511a8f8bcd8f0b0e5395d557b79145edcf6cabc`. PUSH rows carry their typed width and value.
+`025111ce86b6135da5249dd64aa5cc95eefd9e3c0e5db5327d47d54883260bae`. PUSH rows carry their typed width and value.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -185,10 +185,10 @@ private def submissionInstructionsChunk0 : List Instr :=
   .push 1 152,
   op 0x57,
   op 0x82,
-  .push 2 259,
+  op 0x15,
+  .push 4 4842,
   op 0x57,
-  .push 2 4842,
-  op 0x56,
+  op 0x5b,
   op 0x5b,
   op 0x50,
   op 0x50,

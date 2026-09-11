@@ -62,9 +62,6 @@ def answerMemory (n : Nat) : ByteArray := storeWord ByteArray.empty 0 (paddedDig
 def returnRest (sv ov : UInt256) : List UInt256 :=
   [sv, ov, 0, P7, M, m7, P, m8]
 
-def selectorState (_n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
-  stS input 255 (returnRest sv ov)
-
 def digestEntryState (_n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   stS input 4842 (returnRest sv ov)
 
@@ -236,9 +233,6 @@ theorem tableMemory_eq (n : Nat) (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 
       List.forIn_pure_yield_eq_foldl, Id.run_pure]
     decide
 
-def selectorPath : List Located :=
-  [pushAt 162 2 4842, opAt 163 .JUMP]
-
 def digestStorePath : List Located :=
   [ opAt 4047 .JUMPDEST,
     pushAt 4048 1 14,
@@ -261,10 +255,6 @@ def digestStorePath : List Located :=
 def digestFinishPath : List Located :=
   [pushAt 4066 0 0, opAt 4067 .RETURN]
 
-@[simp] theorem pc255 : Artifact.submissionArtifact.instructionPC 162 = 255 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc258 : Artifact.submissionArtifact.instructionPC 163 = 258 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 @[simp] theorem pc4843 : Artifact.submissionArtifact.instructionPC 4047 = 4842 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 @[simp] theorem pc4844 : Artifact.submissionArtifact.instructionPC 4048 = 4843 := by
@@ -307,26 +297,5 @@ def digestFinishPath : List Located :=
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 @[simp] theorem pc4873 : Artifact.submissionArtifact.instructionPC 4067 = 4872 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem run_selector (n : Nat) (input : ByteArray) (sv ov : UInt256) :
-    run selectorPath (selectorState n input sv ov) =
-      some (digestEntryState n input sv ov) := by
-  change run selectorPath (stS input 255 (returnRest sv ov)) =
-    some (stS input 4842 (returnRest sv ov))
-  have hdest : Decode.isValidJumpDest submissionBytecode 4842 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 4047 (by rfl)
-  have h0 : Stepper.runLocatedBlock [pushAt 162 2 4842]
-      (stS input 255 (returnRest sv ov)) =
-      some (stS input 258 (4842 :: returnRest sv ov)) := by
-    exact blockOfS _ (pcFactS input 162 255 _ (by norm_num) pc255)
-      (stepS_push input 255 2 4842 (returnRest sv ov)
-        (by simp [returnRest]) (by decide) (by decide) (by norm_num))
-  have h1 : Stepper.runLocatedBlock [opAt 163 .JUMP]
-      (stS input 258 (4842 :: returnRest sv ov)) =
-      some (stS input 4842 (returnRest sv ov)) := by
-    exact blockOfS _ (pcFactS input 163 258 _ (by norm_num) pc258)
-      (stepS_jump input 258 4842 4842 (returnRest sv ov)
-        (by simp [returnRest]) (by norm_num) rfl hdest)
-  exact Stepper.runLocatedBlock_append [pushAt 162 2 4842] [opAt 163 .JUMP]
-    _ _ _ h0 (by rfl) h1
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternFinish

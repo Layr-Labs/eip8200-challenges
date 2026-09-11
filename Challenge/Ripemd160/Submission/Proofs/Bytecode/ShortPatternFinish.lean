@@ -44,8 +44,7 @@ theorem run_finish (n : Nat) (input : ByteArray) (sv ov : UInt256) :
 
 def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
     (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119 ∨ n = 55 ∨ n = 256 ∨ n = 376 ∨ n = 1000 ∨ n = 1 ∨ n = 31 ∨ n = 32) (hsize : input.size = n) :
-    GasSteps (selectorState n input sv ov) (returnedState n input sv ov) := by
-  have gselect := sound selectorPath (run_selector n input sv ov)
+    GasSteps (digestEntryState n input sv ov) (returnedState n input sv ov) := by
   have gstore := sound digestStorePath (run_store n input sv ov hn hsize)
   have hc := Artifact.submissionArtifact.decodeAt_op_index 4064 .CODECOPY
     (by rfl) (by decide) trivial
@@ -92,8 +91,8 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
     simpa [storedState, sizedState, returnRest, stS, initialState,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat] using gmraw
-  exact gselect.trans (gstore.trans (gc.trans (gm.trans (sound digestFinishPath
-    (run_finish n input sv ov)))))
+  exact gstore.trans (gc.trans (gm.trans (sound digestFinishPath
+    (run_finish n input sv ov))))
 
 def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256)
     (hne : acc ≠ 0) :

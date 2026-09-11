@@ -405,7 +405,7 @@ def straddleBackPath : List Located :=
   by rw [scan_instruction_pc 157 (by decide) (by decide)]; rfl
 @[simp] theorem pc2969 : Artifact.submissionArtifact.instructionPC 158 = 249 :=
   by rw [scan_instruction_pc 158 (by decide) (by decide)]; rfl
-@[simp] theorem pc2969a : Artifact.submissionArtifact.instructionPC 164 = 259 :=
+@[simp] theorem pc2969a : Artifact.submissionArtifact.instructionPC 164 = 258 :=
   by rw [scan_instruction_pc 164 (by decide) (by decide)]; rfl
 @[simp] theorem pc2970 : Artifact.submissionArtifact.instructionPC 166 = 261 :=
   by rw [scan_instruction_pc 166 (by decide) (by decide)]; rfl
