@@ -1,3 +1,5 @@
+import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedEntryCache
+import Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyEntryPrefix
 import Challenge.Modexp.Submission.Proofs.Fast.CiosNoDummyCarry
 import Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyComponents
 
@@ -7,7 +9,7 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.CiosReadonly
 open YulEvmCompiler
 
 def fullEntryProgram : List Instr :=
-  [.op .JUMPDEST] ++ entryPrelude ++ CiosCached.entryProgram.drop 1
+  (EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++ CiosCached.entryBodyProgram
 
 def fullMidProgram : List Instr :=
   CiosCached.midProgram.take 10 ++ cachedProduct

@@ -74,19 +74,19 @@ private def nine_emptyReturn :
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def fermat_prime : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4888 FermatProgram.primeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3676 14 4888 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3675 14 4888 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
 private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4941 FermatProgram.exponentProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3690 9 4941 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3689 9 4941 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
 private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4953 FermatProgram.returnProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3699 16 4953 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3698 16 4953 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
 private def fermat_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4972 FermatProgram.missProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3715 4 4972 FermatProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3714 4 4972 FermatProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
 def fermatPaths : FermatProgram.Paths submissionArtifact .Osaka where
   prime := fermat_prime
   exponent := fermat_exponent
   result := fermat_result
   miss := fermat_miss
-  missJump := by exact isValidJumpDest_index 3715 (by rfl)
+  missJump := by exact isValidJumpDest_index 3714 (by rfl)
   legacyJump := by exact isValidJumpDest_index 1731 (by rfl)
 
 def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka where
@@ -104,7 +104,7 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
   zeroReturn := nine_zeroReturn
   emptyReturn := nine_emptyReturn
   hitJump := by
-    have h := isValidJumpDest_index 3676 (by rfl)
+    have h := isValidJumpDest_index 3675 (by rfl)
     exact h
   emptyJump := by
     have h := isValidJumpDest_index 2313 (by rfl)
