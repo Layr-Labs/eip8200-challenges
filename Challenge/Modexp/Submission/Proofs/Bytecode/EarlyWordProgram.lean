@@ -18,7 +18,7 @@ def guardValueProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩), .push 1 32, .op .XOR, .op .OR,
    .op (.Dup ⟨1, by decide⟩), .push 1 32, .op .XOR, .op .OR]
 
-def branchProgram : List Instr := [.push 2 5304, .op .JUMPI]
+def branchProgram : List Instr := [.push 2 5312, .op .JUMPI]
 
 /-- Twenty instructions at pc 5224, ending at the conditional branch. -/
 def guardProgram : List Instr := headerProgram ++ guardValueProgram ++ branchProgram
@@ -49,7 +49,7 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   hit : WindowTwentyOneBinding.Block artifact fork 5283 hitProgram
   miss : WindowTwentyOneBinding.Block artifact fork 5304 missProgram
   helperJump : Decode.isValidJumpDest artifact.code 5256 = true
-  missJump : Decode.isValidJumpDest artifact.code 5304 = true
+  smallExpJump : Decode.isValidJumpDest artifact.code 5312 = true
   hitJump : Decode.isValidJumpDest artifact.code 4888 = true
   legacyJump : Decode.isValidJumpDest artifact.code 1233 = true
 
@@ -84,11 +84,11 @@ theorem run_guard_value (template : State) (b e m : UInt256) :
     Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod, xor_comm]
 
 theorem run_branch (template : State) (value b e m : UInt256)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 5304 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 5312 = true) :
     runInstructions branchProgram
       (framed template (UInt256.ofNat 5279) (value :: [m, e, b])) =
       some (framed template
-        (if value.toNat = 0 then UInt256.ofNat 5283 else UInt256.ofNat 5304) [m, e, b]) := by
+        (if value.toNat = 0 then UInt256.ofNat 5283 else UInt256.ofNat 5312) [m, e, b]) := by
   by_cases hv : value.toNat = 0 <;>
     simp [branchProgram, runInstructions, framed, Stepper.runInstr, UInt256.isTrue,
       hv, hjump, Word.literal_eq_ofNat, Word.word_toNat_ofNat,
@@ -97,11 +97,11 @@ theorem run_branch (template : State) (value b e m : UInt256)
 /-- The header guard covers all byte arrays, including truncated headers. -/
 theorem run_guard (template : State) (input : ByteArray)
     (hdata : template.executionEnv.calldata = input)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 5304 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 5312 = true) :
     runInstructions guardProgram (framed template (UInt256.ofNat 5256) []) =
       some (framed template
         (if (WindowTwentyOneInput.guardDiff input).toNat = 0
-          then UInt256.ofNat 5283 else UInt256.ofNat 5304) (headerStack input)) := by
+          then UInt256.ofNat 5283 else UInt256.ofNat 5312) (headerStack input)) := by
   have hh := run_header template input hdata
   have hv := run_guard_value template (UInt256.ofNat (baseSize input))
     (UInt256.ofNat (exponentSize input)) (UInt256.ofNat (modulusSize input))

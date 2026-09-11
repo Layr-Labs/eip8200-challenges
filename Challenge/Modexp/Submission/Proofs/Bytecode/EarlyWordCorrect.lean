@@ -1,5 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.ArtifactEarlyWordPaths
 import Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordGas
+import Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordSmallExp
 import Challenge.Modexp.Submission.Proofs.Bytecode.MainGas
 import Challenge.Modexp.Submission.Proofs.Bytecode.FermatGas
 import Challenge.Modexp.Submission.Proofs.PrimeCertificates
@@ -17,7 +18,7 @@ entry at pc 1314 with an empty stack and unchanged memory and environment.
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordCorrect
 
 open EvmSemantics EvmSemantics.EVM
-open WindowTwentyOneBinding WindowTwentyOnePositive
+open WindowTwentyOneBinding WindowTwentyOnePositive EarlyWordSmallExp
 
 abbrev Handled (input : ByteArray) : Prop :=
   ∃ final : State,
@@ -37,15 +38,38 @@ private def environment (input : ByteArray) :
   running := rfl
   noPrecompile := deployAddress_not_precompile
 
-/-- Every non-matching header reaches the unchanged legacy entry exactly. -/
-def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input) :
+/-- Every non-matching header that is not a zero-exponent hit reaches the
+unchanged legacy entry exactly. -/
+def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input)
+    (hzero : ¬ ZeroExpGuard input) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (Main.trampolineState input 1233) := by
   have tail := EarlyWordGas.steps_miss Artifact.earlyWordPaths
-    (initialState submissionBytecode input 0) (environment input) input rfl hmiss
+    Artifact.zeroExpPaths
+    (initialState submissionBytecode input 0) (environment input) input rfl
+    hmiss hzero
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 5256)
     (Main.trampolineState input 1233) at tail
   exact (Main.gasSteps_entryHop input).trans tail
+
+/-- A non-matching header with a zero one-word exponent returns `1 < m`
+directly from the appended dispatcher. -/
+def smallExp (input : ByteArray) (hvalid : ValidInput input)
+    (hmiss : ¬ WindowTwentyOneInput.Matches input)
+    (hzero : ZeroExpGuard input) :
+    Handled input := by
+  obtain ⟨_, hb, he, _⟩ := hvalid
+  have tail := EarlyWordGas.steps_smallExp_hit Artifact.earlyWordPaths
+    Artifact.zeroExpPaths
+    (initialState submissionBytecode input 0) (environment input) input rfl
+    hmiss hzero rfl
+  change Challenge.EvmProof.GasSteps (Main.trampolineState input 5256)
+    (zeroExpFinal (initialState submissionBytecode input 0) input 0
+      [UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)])
+    at tail
+  refine ⟨_, ⟨(Main.gasSteps_entryHop input).trans tail⟩, ?_, ?_⟩
+  · exact zeroExpFinal_isDone _ _ _ _ rfl
+  · exact zeroExpFinal_result _ _ _ _ hb he hzero
 
 /-- Every matching header has a complete initial-state correctness trace. -/
 def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
