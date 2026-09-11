@@ -32,14 +32,14 @@ opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * 4))
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * 4))
     (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * 4 - 32))
-    (hminv : inverseInvariant mem 4) (hneq : pa ≠ pb) :
+    (hminv : inverseInvariant mem 4) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (mpCsubState s (rowsCarry (mpZeroed s (before mem pa pb 4) 4) pa pb 4 4) pdst ret rest) := by
   have env := EarlyCsub.environment s hcode hfork hrun hnp
   have hguard : ¬UInt256.isTrue (SquareSelect.guard mem (UInt256.ofNat pa) (UInt256.ofNat pb)) := by
     rw [SquareEntry.guard_iff mem pa pb 4 (by decide) (by omega) (by omega) hs32]
-    exact hneq
+    simp
   have hctrl := SquareEntry.control_before mem pa pb 4 (Or.inl rfl) hguard
   have hread (addr : Nat) (hd : addr+32 ≤ 8192 ∨ 9312 ≤ addr) :
       MachineState.readWord (before mem pa pb 4) addr = MachineState.readWord mem addr :=
@@ -54,17 +54,17 @@ opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
   refine (SquareEntry.gasSteps_header s mem pa pb 4 pdst ret rest hcap hact (Or.inl rfl)
     hpa hpaFit hpb hpbFit hcds hs32 hml env).trans ?_
   have hr : Challenge.EvmProof.GasSteps
-      {SquareEntry.out s mem pa pb 4 pdst ret rest with pc := UInt256.ofNat 4168}
+      {SquareEntry.out s mem pa pb 4 pdst ret rest with pc := UInt256.ofNat 4160}
       (SquareEntry.out s mem pa pb 4 pdst ret rest) := by
-    exact SquareEntry.gasSteps_route s (mpZeroed s (before mem pa pb 4) 4) (UInt256.ofNat 4173)
+    exact SquareEntry.gasSteps_route s (mpZeroed s (before mem pa pb 4) 4) (UInt256.ofNat 4165)
       (SquareEntry.out s mem pa pb 4 pdst ret rest).stack
       (by simp only [SquareEntry.out, outState, SquareEntry.args, List.length_append, List.length_cons, List.length_nil]; omega)
       hact (hctrl.zeroed s 4 (by decide)).route
-      (Artifact.isValidJumpDest_index 3150 (by rfl)) env
+      (Artifact.isValidJumpDest_index 3144 (by rfl)) env
   refine hr.trans ?_
   exact gasSteps_rowsFour s (before mem pa pb 4) pa pb
     (MachineState.readWord mem 9440) (MachineState.readWord mem 9376)
-    (MachineState.readWord mem (32*4-32)) (UInt256.ofNat (pa+32*4-32))
+    (MachineState.readWord mem (32*4-32)) (MachineState.readWord mem (pa+32*4-32))
     (MachineState.readWord mem 96) (MachineState.readWord mem 64)
     (MachineState.readWord mem 32) pdst ret rest hcap hrun hcode hfork hnp hact
     hpa hpaFit hpb (by omega)
@@ -75,6 +75,7 @@ opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
       (hread (32*4-32) (Or.inl (by decide))).symm⟩
     ⟨(hread 96 (Or.inl (by decide))).symm,
       (hread 64 (Or.inl (by decide))).symm,
-      (hread 32 (Or.inl (by decide))).symm⟩ rfl hsz hctrl
+      (hread 32 (Or.inl (by decide))).symm⟩
+    (hread (pa+32*4-32) (Or.inl (by omega))).symm hsz hctrl
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull

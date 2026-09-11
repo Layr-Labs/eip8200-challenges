@@ -42,7 +42,7 @@ theorem run_header (s : State) (mem : ByteArray) (route : UInt256) (rest : List 
     (hcap : rest.length ≤ 1022) (hact : 296 ≤ s.activeWords.toNat)
     (hr : MachineState.readWord mem 9280 = route)
     (htarget : Decode.isValidJumpDest s.executionEnv.code route.toNat = true) :
-    runInstructions headerProgram (SquareInit.stateAt s mem 4168 rest) =
+    runInstructions headerProgram (SquareInit.stateAt s mem 4160 rest) =
       some (framed {s with memory := mem} route rest) := by
   have hc0 : rest.length < 1024 := by omega
   have hc1 : rest.length+1 < 1024 := by omega

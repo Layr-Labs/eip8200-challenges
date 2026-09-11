@@ -16,7 +16,7 @@ theorem run_pointers (s : State) (mem : ByteArray) (pa pb n : Nat)
     (_hpa : 32 ≤ pa) (_hpaFit : pa+32*n ≤ 9472)
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) :
     runInstructions pointersProgram (clearedState s mem pa pb n dst ret rest) =
-      some {outState s (mpZeroed s mem n) pa pb n 0 dst ret rest with pc := UInt256.ofNat 4168} := by
+      some {outState s (mpZeroed s mem n) pa pb n 0 dst ret rest with pc := UInt256.ofNat 4160} := by
   have hsub1 : UInt256.ofNat (pb+32*n) - UInt256.ofNat 32 = UInt256.ofNat (pb+32*n-32) :=
     Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)
   have hsub2 : UInt256.ofNat pb - UInt256.ofNat 32 = UInt256.ofNat (pb-32) :=

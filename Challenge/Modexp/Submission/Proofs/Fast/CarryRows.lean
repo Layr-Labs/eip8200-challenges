@@ -41,12 +41,12 @@ opaque gasSteps_l1Four (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 8192) (hsnapshot : StagedOperand.Snapshot mem pa 4) :
     Challenge.EvmProof.GasSteps
-      (l1At 4202 s mem bi pa pb 4 i 1 pdst ret rest)
+      (l1At 4193 s mem bi pa pb 4 i 1 pdst ret rest)
       (midState s (l1Step mem bi pa 4 4).memory (l1Step mem bi pa 4 4).carry bi
         pa pb 4 i pdst ret rest) :=
   (gasSteps_l1Dispatch4 s mem bi pa pb i 1 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4356 64 8320 l1Mac5 s mem bi pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4394 32 8288 l1Mac6 s mem bi pa pb 4 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4347 64 8320 l1Mac5 s mem bi pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4385 32 8288 l1Mac6 s mem bi pa pb 4 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
   gasSteps_l1Last s mem bi pa pb 4 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa (by omega) hsnapshot
 
 opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
@@ -59,16 +59,16 @@ opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 8192) (hsnapshot : StagedOperand.Snapshot mem pa 8) :
     Challenge.EvmProof.GasSteps
-      (l1At 4202 s mem bi pa pb 8 i 1 pdst ret rest)
+      (l1At 4193 s mem bi pa pb 8 i 1 pdst ret rest)
       (midState s (l1Step mem bi pa 8 8).memory (l1Step mem bi pa 8 8).carry bi
         pa pb 8 i pdst ret rest) :=
   (gasSteps_l1Dispatch8 s mem bi pa pb i 1 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4204 192 8448 l1Mac1 s mem bi pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4242 160 8416 l1Mac2 s mem bi pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4280 128 8384 l1Mac3 s mem bi pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4318 96 8352 l1Mac4 s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4356 64 8320 l1Mac5 s mem bi pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4394 32 8288 l1Mac6 s mem bi pa pb 8 i 6 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4195 192 8448 l1Mac1 s mem bi pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4233 160 8416 l1Mac2 s mem bi pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4271 128 8384 l1Mac3 s mem bi pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4309 96 8352 l1Mac4 s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4347 64 8320 l1Mac5 s mem bi pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4385 32 8288 l1Mac6 s mem bi pa pb 8 i 6 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
   gasSteps_l1Last s mem bi pa pb 8 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa (by omega) hsnapshot
 
 opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -81,7 +81,7 @@ opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32) :
     Challenge.EvmProof.GasSteps
-      (l2At 4516 s mid bi mu c0 pa pb 4 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l2At 4507 s mid bi mu c0 pa pb 4 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (tailState s (l2Step mid mu c0 4 3).memory
         (l2Step mid mu c0 4 3).carry mu bi pa pb 4 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) := by
   have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest).length ≤ 1005 := by
@@ -102,13 +102,13 @@ opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32) :
     Challenge.EvmProof.GasSteps
-      (l2At 4516 s mid bi mu c0 pa pb 8 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l2At 4507 s mid bi mu c0 pa pb 8 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (tailState s (l2Step mid mu c0 8 7).memory
         (l2Step mid mu c0 8 7).carry mu bi pa pb 8 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) := by
   have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest).length ≤ 1005 := by
     simp only [List.length_cons]; omega
   exact (gasSteps_l2Dispatch8 s mid bi mu c0 pa pb i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
-(gasSteps_l2Mac 4519 1 192 8448 8480 l2Mac0 s mid bi mu c0 pa pb 8 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 4510 10 192 8448 8480 l2Mac0 s mid bi mu c0 pa pb 8 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
   (gasSteps_l2Mac 4555 1 160 8416 8448 l2Mac1 s mid bi mu c0 pa pb 8 i 1 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
   (gasSteps_l2Mac 4591 1 128 8384 8416 l2Mac2 s mid bi mu c0 pa pb 8 i 2 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
   (gasSteps_extraL2 0 4627 96 8352 8384 l2Mac3 s mid bi mu c0 pa pb 8 i 3 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
@@ -133,7 +133,7 @@ opaque gasSteps_rowFourToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hminv : inverseInvariant mem 4)
     (hc : CiosReadonly.ReadonlyCache mem 4 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
-    (hAend : aEnd = UInt256.ofNat (pa+32*4-32))
+    (hAend : aEnd = MachineState.readWord mem (pa+32*4-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 4)
     (hcontrol : CarryControl.Control mem) :
     Challenge.EvmProof.GasSteps
@@ -194,7 +194,7 @@ opaque gasSteps_rowEightToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hminv : inverseInvariant mem 8)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
-    (hAend : aEnd = UInt256.ofNat (pa+32*8-32))
+    (hAend : aEnd = MachineState.readWord mem (pa+32*8-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 8)
     (hcontrol : CarryControl.Control mem) :
     Challenge.EvmProof.GasSteps
@@ -255,7 +255,7 @@ opaque gasSteps_rowFourNext (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hminv : inverseInvariant mem 4)
     (hc : CiosReadonly.ReadonlyCache mem 4 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
-    (hAend : aEnd = UInt256.ofNat (pa+32*4-32))
+    (hAend : aEnd = MachineState.readWord mem (pa+32*4-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 4)
     (hcontrol : CarryControl.Control mem) :
     Challenge.EvmProof.GasSteps
@@ -287,7 +287,7 @@ opaque gasSteps_rowFourLast (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hminv : inverseInvariant mem 4)
     (hc : CiosReadonly.ReadonlyCache mem 4 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
-    (hAend : aEnd = UInt256.ofNat (pa+32*4-32))
+    (hAend : aEnd = MachineState.readWord mem (pa+32*4-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 4)
     (hcontrol : CarryControl.Control mem) :
     Challenge.EvmProof.GasSteps
@@ -319,7 +319,7 @@ opaque gasSteps_rowEightNext (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hminv : inverseInvariant mem 8)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
-    (hAend : aEnd = UInt256.ofNat (pa+32*8-32))
+    (hAend : aEnd = MachineState.readWord mem (pa+32*8-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 8)
     (hcontrol : CarryControl.Control mem) :
     Challenge.EvmProof.GasSteps
@@ -351,7 +351,7 @@ opaque gasSteps_rowEightLast (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hminv : inverseInvariant mem 8)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
-    (hAend : aEnd = UInt256.ofNat (pa+32*8-32))
+    (hAend : aEnd = MachineState.readWord mem (pa+32*8-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 8)
     (hcontrol : CarryControl.Control mem) :
     Challenge.EvmProof.GasSteps

@@ -37,7 +37,7 @@ def decodeProgram : List Instr :=
    .push ⟨2, by decide⟩ (UInt256.ofNat 3040),
    .op .ADD,
    .op .MSTORE,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 3837),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 3833),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1024),
    .push ⟨2, by decide⟩ (UInt256.ofNat 3072),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1024),
@@ -80,7 +80,7 @@ theorem run_decodeProgram (s : State) (memory : ByteArray)
     runInstructions decodeProgram (decode s memory n bsize esize msize) =
       some (Exp.mpCall s
         (Exp.storeWord memory (3040 + 32 * n) (UInt256.ofNat 1))
-        1024 3072 1024 (UInt256.ofNat 3837)
+        1024 3072 1024 (UInt256.ofNat 3833)
         (Exp.outer n bsize esize msize)) := by
   have haddr : (3040 + 32 * n) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =

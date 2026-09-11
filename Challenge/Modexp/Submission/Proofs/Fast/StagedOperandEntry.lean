@@ -24,24 +24,25 @@ theorem run_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
     runInstructions fullEntryProgram (entryState s mem pa pb dst ret rest) =
     some {outState s (mpZeroed s (stage mem pa n) n) pa pb n 0
       (MachineState.readWord mem 9376) (MachineState.readWord mem (32*n-32))
-      (MachineState.readWord mem 9440 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 :: MachineState.readWord mem 32 :: UInt256.ofNat (pa+32*n-32) :: dst :: ret :: rest) with pc := UInt256.ofNat 4168} := by
+      (MachineState.readWord mem 9440 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 :: MachineState.readWord mem 32 :: MachineState.readWord mem (pa+32*n-32) :: dst :: ret :: rest) with pc := UInt256.ofNat 4160} := by
   let tl := MachineState.readWord mem 9440
   let inv := MachineState.readWord mem 9376
   let m0 := MachineState.readWord mem (32*n-32)
-  let aEnd := UInt256.ofNat (pa+32*n-32)
+  let aEnd := MachineState.readWord mem (pa+32*n-32)
   let m96 := MachineState.readWord mem 96
   let m64 := MachineState.readWord mem 64
   let m32 := MachineState.readWord mem 32
   have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest).length ≤ 1005 := by simp only [List.length_cons]; omega
+  have hAddr : (UInt256.ofNat pa + UInt256.ofNat (32*n-32)).toNat = pa+32*n-32 := by
+    rw [Challenge.EvmProof.Word.word_toNat_add,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (show pa < 2^256 by omega),
+      Nat.mod_eq_of_lt (show 32*n-32 < 2^256 by omega), Nat.mod_eq_of_lt (by omega)]
+    omega
   have hreads := EntryPrefix.run_load { s with memory := mem }
     (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest (32*n-32)
-    hcap hact (by omega) hml
-  have hAend : UInt256.ofNat pa + UInt256.ofNat (32*n-32) = aEnd := by
-    dsimp [aEnd]
-    rw [Challenge.EvmProof.Word.ofNat_add_mod]
-    congr 1
-    omega
-  rw [hAend] at hreads
+    hcap hact (by omega) hml (by rw [hAddr]; omega)
+  simp only [hAddr] at hreads
   have hshuffle := EntryPrefix.run_shuffle { s with memory := mem }
     (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret m0 inv aEnd tl m96 m64 m32
     (EntryPrefix.displacement mem) rest hcap
@@ -50,7 +51,7 @@ theorem run_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
       runInstructions (EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram)
         (entryState s mem pa pb dst ret rest) =
       some {cachedEntryState s mem pa pb n inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest) with pc := UInt256.ofNat 4138} := by
+        (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest) with pc := UInt256.ofNat 4130} := by
     simpa only [entryState, cachedEntryState, EntryPrefix.displacement,
       hs32, l1Target, l2Target, isFour, tl, inv, m0, aEnd, m96, m64, m32,
       List.cons_append, List.nil_append] using hprefix

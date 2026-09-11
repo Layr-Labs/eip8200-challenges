@@ -1,6 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.SquareSelect
 import Challenge.Modexp.Submission.Proofs.Fast.SquareInitMemory
-import Challenge.Modexp.Submission.Proofs.Fast.SquareFourInitMemory
 import Challenge.Modexp.Submission.Proofs.Fast.SquareProductGas
 import Challenge.Modexp.Submission.Proofs.Fast.StagedOperandMemory
 
@@ -21,7 +20,6 @@ def before (mem : ByteArray) (pa pb n : Nat) : ByteArray :=
 
 def prepared (s : State) (mem : ByteArray) (pa pb n : Nat) : ByteArray :=
   if n = 8 ∧ pa = pb then initMemory (mpZeroed s (before mem pa pb n) n)
-  else if n = 4 ∧ pa = pb then SquareFourInit.initMemory (mpZeroed s (before mem pa pb n) n)
   else mpZeroed s (before mem pa pb n) n
 
 theorem read_select_outside (mem : ByteArray) (pa pb : UInt256) (addr : Nat)
@@ -52,10 +50,7 @@ theorem read_prepared_outside (s : State) (mem : ByteArray) (pa pb n addr : Nat)
   split
   · rw [read_init_outside _ _ (by omega), mpZeroed_readWord_outside _ _ _ _ (by omega),
       read_before_outside _ _ _ _ _ hd]
-  · split
-    · rw [SquareFourInit.read_init_outside _ _ (by omega), mpZeroed_readWord_outside _ _ _ _ (by omega),
-        read_before_outside _ _ _ _ _ hd]
-    · rw [mpZeroed_readWord_outside _ _ _ _ (by omega), read_before_outside _ _ _ _ _ hd]
+  · rw [mpZeroed_readWord_outside _ _ _ _ (by omega), read_before_outside _ _ _ _ _ hd]
 
 theorem represents_before (mem : ByteArray) (pa pb n ptr count v : Nat)
     (hd : ptr+32*count ≤ 8192 ∨ 9312 ≤ ptr)
