@@ -128,7 +128,7 @@ theorem read_init_high (mem : ByteArray) :
   rw [initMemory, read_storeWord_outside _ _ _ _ (Or.inl (by decide)), read_storeWord]
 
 theorem read_init_route (mem : ByteArray) :
-    MachineState.readWord (initMemory mem) 9280 = UInt256.ofNat 5190 := by
+    MachineState.readWord (initMemory mem) 9280 = UInt256.ofNat 5191 := by
   exact read_storeWord _ _ _
 
 theorem read_init_outside (mem : ByteArray) (addr : Nat)

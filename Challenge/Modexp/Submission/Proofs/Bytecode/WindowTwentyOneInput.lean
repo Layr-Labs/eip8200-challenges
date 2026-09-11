@@ -103,18 +103,6 @@ theorem baseWord_toNat (input : ByteArray) (hpositive : 0 < baseSize input)
   rw [baseWord_eq input hpositive hwidth, Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt (baseValue_lt input hwidth)]
 
-/-- The base word is the base value for every accepted width, including zero:
-with `baseSize = 0` the shift is by 256 bits, so the word is `0 = baseValue`. -/
-theorem baseWord_toNat_of_le (input : ByteArray) (hwidth : baseSize input ≤ 32) :
-    (baseWord input).toNat = baseValue input := by
-  by_cases hp : 0 < baseSize input
-  · exact baseWord_toNat input hp hwidth
-  · have hz : baseSize input = 0 := by omega
-    simp [baseWord, baseValue, hz, UInt256.shiftRight,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width]
-    rfl
-
 theorem exponentWord_toNat (input : ByteArray) :
     (exponentWord input).toNat = exponentValue input :=
   Challenge.EvmProof.Bytes.readWord_toNat input (96 + baseSize input)

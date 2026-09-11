@@ -1,5 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CarryRowModel
 import Challenge.Modexp.Submission.Proofs.Fast.SquarePreparedCorrect
+import Challenge.Modexp.Submission.Proofs.Fast.SquareFourPreparedCorrect
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -13,14 +14,15 @@ open _root_.Challenge.Modexp.Submission.Proofs.Fast.SquarePrepared (prepared bef
 
 def selectedRows (mem : ByteArray) (pa pb n i : Nat) : ByteArray :=
   if n = 8 ∧ pa = pb then SquareRowsModel.rows mem pa i
+  else if n = 4 ∧ pa = pb then SquareFourRowsModel.rows mem pa i
   else if n = 4 ∨ n = 8 then rowsCarry mem pa pb n i else rowsMem mem pa pb n i
 
 theorem selectedRows_agree (mem : ByteArray) (pa pb n i : Nat)
     (hpa : pa+32*n ≤ 8192) (hpb : pb+32*n ≤ 8192)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hi : i ≤ n) (hns : ¬(n=8 ∧ pa=pb)) :
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hi : i ≤ n) (hns : ¬(n=8 ∧ pa=pb)) (hns4 : ¬(n=4 ∧ pa=pb)) :
     Agree (selectedRows mem pa pb n i) (rowsMem mem pa pb n i) := by
   unfold selectedRows
-  rw [if_neg hns]
+  rw [if_neg hns, if_neg hns4]
   split
   · exact rows_agree mem pa pb n i hpa hpb hn hn32 hi
   · exact refl _
@@ -33,8 +35,11 @@ theorem selectedRows_readWord_outside (mem : ByteArray) (pa pb n i addr : Nat)
   · rename_i hsq
     exact SquareRowsModel.read_rows_outside mem pa addr (by omega) i (by omega)
   · split
-    · exact readWord_rowsCarry mem pa pb n addr hn (by omega) i
-    · exact rowsMem_readWord_outside mem pa pb n i addr hn (by omega)
+    · rename_i hsq
+      exact SquareFourRowsModel.read_rows_outside mem pa addr (by omega) i (by omega)
+    · split
+      · exact readWord_rowsCarry mem pa pb n addr hn (by omega) i
+      · exact rowsMem_readWord_outside mem pa pb n i addr hn (by omega)
 
 /-- The memory a whole `MonPro(pa, pb) → pd` call leaves behind. -/
 def monproMem (s : State) (mem : ByteArray) (pa pb n pdst : Nat) : ByteArray :=
@@ -111,7 +116,7 @@ theorem monproMem_fastRepresents_outside (s : State) (mem : ByteArray)
     (by omega) (by omega) (by omega)).symm
 
 
-attribute [local irreducible] SquarePrepared.prepared SquarePrepared.before SquareRowsModel.rows
+attribute [local irreducible] SquarePrepared.prepared SquarePrepared.before SquareRowsModel.rows SquareFourRowsModel.rows
 
 theorem monproMem_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
     (a b mm : Nat) (hn32 : p+2 ≤ 32)
@@ -133,7 +138,16 @@ theorem monproMem_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
     subst b
     rw [monproMem, selectedRows, if_pos (show 6+2=8 ∧ pa=pa from ⟨rfl,rfl⟩)]
     exact (SquarePrepared.square_spec s mem pa pdst a mm hpa ha hm ham hminv).2 hodd
-  rw [monproMem, SquarePrepared.prepared, if_neg hsq]
+  by_cases hsq4 : p+2=4 ∧ pa=pb
+  · have hp : p=2 := by omega
+    subst p
+    rcases hsq4 with ⟨_,rfl⟩
+    have hab : a=b := Model.fastRepresents_value_unique (memory := mem) (ptr := pa) (count := 4) ha hb
+    subst b
+    rw [monproMem, selectedRows, if_neg (by simp : ¬(2+2=8 ∧ pa=pa)),
+      if_pos (show 2+2=4 ∧ pa=pa from ⟨rfl,rfl⟩)]
+    exact (SquarePrepared.square_spec_four s mem pa pdst a mm hpa ha hm ham hminv).2 hodd
+  rw [monproMem, SquarePrepared.prepared, if_neg hsq, if_neg hsq4]
   let prepared := before mem pa pb (p+2)
   have ha' : Model.FastRepresents prepared pa (p+2) a :=
     SquarePrepared.represents_before mem pa pb (p+2) pa (p+2) a (Or.inl hpa) ha
@@ -147,7 +161,7 @@ theorem monproMem_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
       SquarePrepared.read_before_outside mem pa pb (p+2) (32*(p+2)-32) (Or.inl (by omega)),
       SquarePrepared.read_before_outside mem pa pb (p+2) 9376 (Or.inr (by decide))] using hminv
   have hrow := selectedRows_agree (mpZeroed s prepared (p+2)) pa pb (p+2) (p+2)
-    hpa hpb (by omega) hn32 (by omega) hsq
+    hpa hpb (by omega) hn32 (by omega) hsq hsq4
   have htn := Monpro.monpro_tn_le_one s prepared pa pb p a b mm hn32 hpa hpb ha' hb' hm' ham (by omega) hminv'
   have hres := csResult_agree _ _ hrow (p+2) pdst (by omega) hn32 htn
   have hrep := Monpro.monproMem_represents s prepared pa pb p pdst a b mm hn32 hpa hpb ha' hb' hm' hodd ham hminv'

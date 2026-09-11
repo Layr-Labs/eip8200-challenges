@@ -17,7 +17,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
 attribute [local irreducible] SquarePrepared.prepared SquarePrepared.before Monpro.mpZeroed
-  SquareRowsModel.rows CarryRowModel.rowsCarry Monpro.rowsMem
+  SquareRowsModel.rows SquareFourRowsModel.rows CarryRowModel.rowsCarry Monpro.rowsMem
 
 opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)
     (a b mm : Nat) (pdst ret : UInt256) (rest : List UInt256)
