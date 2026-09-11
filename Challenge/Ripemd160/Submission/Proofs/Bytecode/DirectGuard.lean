@@ -42,7 +42,7 @@ def gasSteps_target :
     simpa [referenceWord, KnownInputData.expectedWord] using
       (KnownInputData.targetInput_readWord 0 (by decide))
   (Execution.gasSteps_start KnownInputData.targetInput).trans
-    ((sound (sizePath KnownInputData.targetInput) (run_size_match KnownInputData.targetInput
+    ((sound sizePath (run_size_match KnownInputData.targetInput
       KnownInputData.targetInput_size)).trans
       ((sound checkEntryPath (run_checkEntry KnownInputData.targetInput href)).trans
         ((gasSteps_loop KnownInputData.targetInput).trans
@@ -52,22 +52,22 @@ def gasSteps_target :
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
     (hne : input ≠ KnownInputData.targetInput)
     (hpne : input ≠ PatternedInputData.patternedInput)
-    (hbad : (input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55) ∨ firstByte input ≠ 7)
+    (hbad : (input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32) ∨ firstByte input ≠ 7)
     (h256 : input.size ≠ 376) (hshort : input.size ≠ 256) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) := by
   by_cases hsize : input.size = 1000
   · by_cases href : referenceWord input = KnownInputData.fullWord
     · exact (Execution.gasSteps_start input).trans
-        ((sound (sizePath input) (run_size_match input hsize)).trans
+        ((sound sizePath (run_size_match input hsize)).trans
           ((sound checkEntryPath (run_checkEntry input href)).trans
             ((gasSteps_loop input).trans
               (sound tailPath (run_tail_fallback input hsize hne)))))
     · exact (Execution.gasSteps_start input).trans
-        ((sound (sizePath input) (run_size_match input hsize)).trans
+        ((sound sizePath (run_size_match input hsize)).trans
           ((gasSteps_checkEarly input href).trans
             (PatternedScan.gasSteps_patterned_miss input hsize hpne)))
   · exact (Execution.gasSteps_start input).trans
-      ((sound (sizePath input) (run_size_fail input hfit hsize h256 hshort)).trans
+      ((sound sizePath (run_size_fail input hfit hsize h256 hshort)).trans
         (Patterned128Entry.gasSteps_fail input hfit hbad))
 
 private theorem answerMemory_read :
@@ -123,7 +123,7 @@ private def gasSteps_fallback256 (input : ByteArray) (hsize : input.size = 376)
     (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
   (Execution.gasSteps_start input).trans
-    ((sound (sizePath input) (run_size_match_256 input hsize)).trans
+    ((sound sizePath (run_size_match_256 input hsize)).trans
       ((sound checkEntryPath (run_checkEntry input href)).trans
         ((gasSteps_loop input).trans
           (sound tailPath (run_tail_fallback_acc input
@@ -133,7 +133,7 @@ private def gasSteps_fallback_short (input : ByteArray) (hsize : input.size = 25
     (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
   (Execution.gasSteps_start input).trans
-    ((sound (sizePath input) (run_size_match_short input hsize)).trans
+    ((sound sizePath (run_size_match_short input hsize)).trans
       ((sound checkEntryPath (run_checkEntry input href)).trans
         ((gasSteps_loop input).trans
           (sound tailPath (run_tail_fallback_acc input
@@ -172,7 +172,7 @@ theorem correct : Correct submissionBytecode := by
       have hsize := PatternedInputData.patternedInput_size
       let trace :=
         (Execution.gasSteps_start PatternedInputData.patternedInput).trans
-          ((sound (sizePath PatternedInputData.patternedInput) (run_size_match PatternedInputData.patternedInput hsize)).trans
+          ((sound sizePath (run_size_match PatternedInputData.patternedInput hsize)).trans
             ((gasSteps_checkEarly PatternedInputData.patternedInput href).trans
               PatternedScan.gasSteps_patterned))
       refine ⟨trace.cost, fun gas hgas => ?_⟩
@@ -188,6 +188,24 @@ theorem correct : Correct submissionBytecode := by
     · by_cases hsize56 : input.size = 56
       · by_cases hbyte : firstByte input = 7
         · exact ShortPatternCorrect.correct56_from_patternedEntry input hfit hsize56 hbyte
+            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+        · exact StackCorrect.correct input hfit
+            (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
+      by_cases hsize1 : input.size = 1
+      · by_cases hbyte : firstByte input = 7
+        · exact ShortPatternCorrect.correct1_from_patternedEntry input hfit hsize1 hbyte
+            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+        · exact StackCorrect.correct input hfit
+            (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
+      by_cases hsize31 : input.size = 31
+      · by_cases hbyte : firstByte input = 7
+        · exact ShortPatternCorrect.correct31_from_patternedEntry input hfit hsize31 hbyte
+            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+        · exact StackCorrect.correct input hfit
+            (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
+      by_cases hsize32 : input.size = 32
+      · by_cases hbyte : firstByte input = 7
+        · exact ShortPatternCorrect.correct32_from_patternedEntry input hfit hsize32 hbyte
             (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
         · exact StackCorrect.correct input hfit
             (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
@@ -235,6 +253,6 @@ theorem correct : Correct submissionBytecode := by
             (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
       exact StackCorrect.correct input hfit
         (gasSteps_fallback input hfit h hp
-          (Or.inl ⟨hsize56, hsize120, hsize63, hsize64, hsize65, hsize128, hsize119, hsize55⟩) h256 hshort)
+          (Or.inl ⟨hsize56, hsize120, hsize63, hsize64, hsize65, hsize128, hsize119, hsize55, hsize1, hsize31, hsize32⟩) h256 hshort)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
