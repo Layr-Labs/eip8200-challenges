@@ -10,29 +10,29 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Cleanup
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
 
-@[simp] private theorem branchPC0 : Artifact.submissionArtifact.instructionPC 159 = 250 := rfl
-@[simp] private theorem branchPC1 : Artifact.submissionArtifact.instructionPC 160 = 251 := rfl
-@[simp] private theorem branchPC2 : Artifact.submissionArtifact.instructionPC 161 = 254 := rfl
-@[simp] private theorem cleanupDupPC : Artifact.submissionArtifact.instructionPC 187 = 347 := rfl
-@[simp] private theorem cleanupDest : Decode.isValidJumpDest submissionBytecode 346 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 186 (by rfl)
-@[simp] private theorem fallbackDest : Decode.isValidJumpDest submissionBytecode 363 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 201 (by rfl)
+@[simp] private theorem branchPC0 : Artifact.submissionArtifact.instructionPC 164 = 258 := rfl
+@[simp] private theorem branchPC1 : Artifact.submissionArtifact.instructionPC 165 = 259 := rfl
+@[simp] private theorem branchPC2 : Artifact.submissionArtifact.instructionPC 166 = 262 := rfl
+@[simp] private theorem cleanupDupPC : Artifact.submissionArtifact.instructionPC 192 = 355 := rfl
+@[simp] private theorem cleanupDest : Decode.isValidJumpDest submissionBytecode 354 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 191 (by rfl)
+@[simp] private theorem fallbackDest : Decode.isValidJumpDest submissionBytecode 371 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 206 (by rfl)
 
 def branchPath : List Located :=
-  [opAt 159 (.Dup ⟨2, by decide⟩), pushAt 160 2 346, opAt 161 .JUMPI]
+  [opAt 164 (.Dup ⟨2, by decide⟩), pushAt 165 2 354, opAt 166 .JUMPI]
 
 def cleanupPath : List Located :=
-  [opAt 186 .JUMPDEST, opAt 187 (.Dup ⟨2, by decide⟩),
-   opAt 188 (.Swap ⟨2, by decide⟩), opAt 189 .POP,
-   opAt 190 (.Swap ⟨1, by decide⟩), opAt 191 (.Swap ⟨6, by decide⟩),
-   opAt 192 .POP, opAt 193 .POP, opAt 194 .POP, opAt 195 .POP,
-   opAt 196 .POP, opAt 197 .POP, opAt 198 .POP,
-   pushAt 199 2 363, opAt 200 .JUMPI]
+  [opAt 191 .JUMPDEST, opAt 192 (.Dup ⟨2, by decide⟩),
+   opAt 193 (.Swap ⟨2, by decide⟩), opAt 194 .POP,
+   opAt 195 (.Swap ⟨1, by decide⟩), opAt 196 (.Swap ⟨6, by decide⟩),
+   opAt 197 .POP, opAt 198 .POP, opAt 199 .POP, opAt 200 .POP,
+   opAt 201 .POP, opAt 202 .POP, opAt 203 .POP,
+   pushAt 204 2 371, opAt 205 .JUMPI]
 
 theorem run_branch (input : ByteArray) (sv ov acc : UInt256) :
-    run branchPath (stS input 250 [sv, ov, acc, P7, M, m7, P, m8]) =
-      some (stS input (if UInt256.isTrue acc then 346 else 255)
+    run branchPath (stS input 258 [sv, ov, acc, P7, M, m7, P, m8]) =
+      some (stS input (if UInt256.isTrue acc then 354 else 263)
         [sv, ov, acc, P7, M, m7, P, m8]) := by
   by_cases hc : UInt256.isTrue acc <;>
     simp (config := { maxSteps := 400000 })
@@ -44,7 +44,7 @@ theorem run_branch (input : ByteArray) (sv ov acc : UInt256) :
 
 theorem run_cleanup (input : ByteArray) (sv ov acc : UInt256)
     (hc : UInt256.isTrue acc) :
-    run cleanupPath (stS input 346 [sv, ov, acc, P7, M, m7, P, m8]) =
+    run cleanupPath (stS input 354 [sv, ov, acc, P7, M, m7, P, m8]) =
       some (fallbackState input) := by
   simp (config := { maxSteps := 400000 })
     [cleanupPath, opAt, pushAt, stS, fallbackState, atPC, List.exchange, hc,
@@ -54,7 +54,7 @@ theorem run_cleanup (input : ByteArray) (sv ov acc : UInt256)
      Word.word_toNat_ofNat]
 
 def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
-    GasSteps (stS input 250 [sv, ov, acc, P7, M, m7, P, m8]) (fallbackState input) := by
+    GasSteps (stS input 258 [sv, ov, acc, P7, M, m7, P, m8]) (fallbackState input) := by
   have hc : UInt256.isTrue acc := by
     intro hz
     apply hne
@@ -70,8 +70,8 @@ def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
   exact branch.trans cleanup
 
 def gasSteps_hit (input : ByteArray) (sv ov : UInt256) :
-    GasSteps (stS input 250 [sv, ov, 0, P7, M, m7, P, m8])
-      (stS input 255 [sv, ov, 0, P7, M, m7, P, m8]) := by
+    GasSteps (stS input 258 [sv, ov, 0, P7, M, m7, P, m8])
+      (stS input 263 [sv, ov, 0, P7, M, m7, P, m8]) := by
   have h := run_branch input sv ov 0
   rw [if_neg (by decide)] at h
   exact Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka branchPath
