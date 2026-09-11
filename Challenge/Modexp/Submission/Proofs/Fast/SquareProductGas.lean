@@ -30,7 +30,7 @@ def gasSteps_product (s : State) (mem : ByteArray) (ai : UInt256) (i : Nat)
     (hlast : i = 7 → coefficient mem ai i 8 = UInt256.ofNat 0)
     (env : Environment Artifact.submissionArtifact .Osaka s) :
     Challenge.EvmProof.GasSteps (stateAt s mem 5190 (base pbi pa pb tag dst ret rest))
-      (stateAt s (SquareRowModel.mid mem ai i) 4491
+      (stateAt s (SquareRowModel.mid mem ai i) 4500
         (SquareRowModel.flag mem ai i :: base pbi pa pb (delta i) dst ret rest)) := by
   let P := products mem (coefficient mem ai i) ai i
   have hguard : Challenge.EvmProof.GasSteps
@@ -52,14 +52,14 @@ def gasSteps_product (s : State) (mem : ByteArray) (ai : UInt256) (i : Nat)
     let bs := base pbi pa pb (delta 7) dst ret rest
     have hlen : bs.length ≤ 1016 := by simp only [bs, base, List.length_append, List.length_cons, List.length_nil]; omega
     have hl : Challenge.EvmProof.GasSteps (stateAt s (P 1).memory 5294 ((P 1).carry :: ai :: bs))
-        (stateAt s (storeWord (P 1).memory 8224 (MachineState.readWord (P 1).memory 8224+(P 1).carry)) 4488
+        (stateAt s (storeWord (P 1).memory 8224 (MachineState.readWord (P 1).memory 8224+(P 1).carry)) 4497
           (UInt256.lt (MachineState.readWord (P 1).memory 8224+(P 1).carry) (P 1).carry :: ai :: bs)) :=
       SquareControls.lastBlock.steps (env.transfer rfl rfl) rfl
         (SquareControls.run_last s (P 1).memory (P 1).carry ai bs hlen hact
           (by rw [env.code]; exact jump_mu))
     have hm := SquareControls.muBlock.steps
       (env.transfer (t := stateAt s (storeWord (P 1).memory 8224 (MachineState.readWord (P 1).memory 8224+(P 1).carry))
-        4488 (UInt256.lt (MachineState.readWord (P 1).memory 8224+(P 1).carry) (P 1).carry :: ai :: bs)) rfl rfl) rfl
+        4497 (UInt256.lt (MachineState.readWord (P 1).memory 8224+(P 1).carry) (P 1).carry :: ai :: bs)) rfl rfl) rfl
       (SquareControls.run_mu s _ _ ai bs (by omega))
     simpa only [partState, stateAt, SquareRowModel.mid, SquareRowModel.flag, he,
       SquareTop.memory_zero, SquareTop.flag_zero, SquareRowModel.product, Nat.reduceSub,
@@ -69,16 +69,16 @@ def gasSteps_product (s : State) (mem : ByteArray) (ai : UInt256) (i : Nat)
       rw [env.code, delta, SquareControls.target_index i hin, Challenge.EvmProof.Word.word_toNat_ofNat,
         Nat.mod_eq_of_lt (by omega)]
       interval_cases i
-      · exact Artifact.isValidJumpDest_index 3208 (by rfl)
-      · exact Artifact.isValidJumpDest_index 3240 (by rfl)
-      · exact Artifact.isValidJumpDest_index 3272 (by rfl)
-      · exact Artifact.isValidJumpDest_index 3304 (by rfl)
-      · exact Artifact.isValidJumpDest_index 3336 (by rfl)
-      · exact Artifact.isValidJumpDest_index 3368 (by rfl)
-      · exact Artifact.isValidJumpDest_index 3400 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3213 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3245 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3277 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3309 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3341 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3373 (by rfl)
+      · exact Artifact.isValidJumpDest_index 3405 (by rfl)
     have hd : Challenge.EvmProof.GasSteps
         (partState s mem ai i 2 5282 pbi pa pb (delta i) dst ret rest)
-        (partState s mem ai i 2 (4157+38*(i+2)) pbi pa pb (delta i) dst ret rest) := by
+        (partState s mem ai i 2 (4166+38*(i+2)) pbi pa pb (delta i) dst ret rest) := by
       apply SquareControls.dispatchBlock.steps (s := partState s mem ai i 2 5282 pbi pa pb (delta i) dst ret rest)
         (env.transfer rfl rfl) rfl
       have h := SquareControls.run_dispatch {s with memory := (P 2).memory} (P 2).carry ai pbi pa pb (delta i)
@@ -95,8 +95,8 @@ def gasSteps_product (s : State) (mem : ByteArray) (ai : UInt256) (i : Nat)
       hact env.code env.forkEq env.running env.noPrecompile
     rw [he] at ht
     have ht' : Challenge.EvmProof.GasSteps
-        (partState s mem ai i (8-i) 4461 pbi pa pb (delta i) dst ret rest)
-        (stateAt s (SquareRowModel.mid mem ai i) 4491
+        (partState s mem ai i (8-i) 4470 pbi pa pb (delta i) dst ret rest)
+        (stateAt s (SquareRowModel.mid mem ai i) 4500
           (SquareRowModel.flag mem ai i :: base pbi pa pb (delta i) dst ret rest)) := ht
     simpa only [if_neg hilast] using
       (gasSteps_cross s mem ai i pbi pa pb dst ret rest hcap hact hin env).trans
